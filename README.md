@@ -5,7 +5,7 @@
   <b>Dogu</b>
 </p>
 <p align="center">
-Dogu is an integrated platform for automated testing - TestOps
+Dogu is an integrated testing platform for automated test - TestOps
 </p>
 <p align="center">
 <a href="https://dogutech.io" target="_blank" rel="noopener noreferrer">Homepage</a> | 
@@ -15,8 +15,8 @@ Dogu is an integrated platform for automated testing - TestOps
 
 ## What is Dogu?
 
-Dogu is an platform which integrates device-farm, CI, test-reporting for automated testing.  
-If you use Dogu then you don't need to set up platform like jenkins, device-farm, test-reporting for automated test to Dogu and focus on your test.
+Dogu is an testing platform which integrates device-farm, CI, test-reporting for automated testing.  
+If you use Dogu then you don't need to set up platform like jenkins, device-farm, test-reporting for automated test and focus on your test with Dogu.
 
 ## Architecture
 
@@ -30,6 +30,9 @@ If you use Dogu then you don't need to set up platform like jenkins, device-farm
 
 Manage project, user, device, test script, workflow according to role of organization
 
+- Build systematic organization and project
+- Isolate resource like application, device, test script, workflow according to project
+
 <div style="display: flex; flex-direction: row; margin-bottom: 8px">
   <img src=".github/resources/organization-member.png" width="49%"/>
   <img src=".github/resources/organization-team.png" width="49%"/>
@@ -38,6 +41,9 @@ Manage project, user, device, test script, workflow according to role of organiz
 ### [Host & Device](https://docs.dogutech.io/host-and-device/introduction)
 
 Build device farm with your own devices
+
+- Manage device farm in dashboard
+- Control host and device remotely
 
 <div style="display: flex; flex-direction: row; margin-bottom: 8px">
   <img src=".github/resources/host.png" width="49%"/>
@@ -52,6 +58,9 @@ Build device farm with your own devices
 
 Integrate test script with workflow and run it on your own device farm
 
+- Integrate workflow with your CI/CD
+- Run test script on tartgeted multiple devices
+
 <div style="display: flex; flex-direction: row;">
   <img src=".github/resources/workflow-outside.png" width="49%"/>
   <img src=".github/resources/workflow-inside.png" width="49%"/>
@@ -59,12 +68,12 @@ Integrate test script with workflow and run it on your own device farm
 
 ### [Testing Report](https://docs.dogutech.io/script-and-routine/report)
 
-Visualize test result from workflow
+Visualize test result in workflow
 
-- Profiling device (memory, cpu, fps)
-- Recording video
-- Visualize test result (test unit)
-- Testing script log
+- Recorded video
+- Profiled device (memory, cpu, fps)
+- Visualized test result (test unit)
+- Log (test script, device, application)
 
 <div style="display: flex; flex-direction: row; margin-bottom: 8px">
   <img src=".github/resources/reporting-video.png" width="49%"/>
@@ -78,7 +87,7 @@ Visualize test result from workflow
 
 ## Hardware requirements
 
-<p style="font-size:18px;">Main Server</p>
+**Main-Server**
 
 |                          | Minimum Requirements   |
 | :----------------------: | ---------------------- |
@@ -87,7 +96,7 @@ Visualize test result from workflow
 |     <b> Memory </b>      | 32 Gb RAM              |
 | <b> Free Disk Space </b> | SSD 128Gb              |
 
-<p style="font-size:18px;">Host</p>
+**Host**
 
 |                          | Minimum Requirements |
 | :----------------------: | -------------------- |
@@ -98,7 +107,8 @@ Visualize test result from workflow
 
 ## Getting Started (Self-Managed)
 
-We are preparing to make Dogu be open-source project.
+We are preparing to make Dogu be open-source project.  
+It will be released to this repository soon.
 
 ## Getting Started (SaaS)
 
