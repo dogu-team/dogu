@@ -5,7 +5,7 @@
   <b>Dogu</b>
 </p>
 <p align="center">
-Dogu is an integrated testing platform for automated test - TestOps
+Dogu is an integrated testing platform for test automation - TestOps
 </p>
 <p align="center">
 <a href="https://dogutech.io" target="_blank" rel="noopener noreferrer">Homepage</a> | 
