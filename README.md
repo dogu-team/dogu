@@ -117,3 +117,6 @@ You can start without setting up Dogu by using our [cloud service](https://dogut
 ## Resources
 
 [Documentation](https://docs.dogutech.io)
+
+## Join the Community
+[Discord](https://discord.gg/bVycd6Tu9g)
