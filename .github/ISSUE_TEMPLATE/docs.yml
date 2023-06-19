@@ -1,0 +1,24 @@
+name: 📝 Documentation
+title: "[Docs]: "
+description: Let's make the Dogu documentation more comprehensive. If you find any issues, please let us know!
+body:
+  - type: input
+    id: link
+    attributes:
+      label: Link
+      description: Which page of the document requires an update? If this needs a new page, leave it blank.
+      placeholder: |-
+        https://docs.dogutech.io/docs/get-started/introduction
+    validations:
+      required: false
+  - type: textarea
+    id: update
+    attributes:
+      label: Update
+      description: What content needs to be added/modified/removed? Please provide specific details if possible!
+      placeholder: |-
+        1. foo
+        2. bar
+        3. baz
+    validations:
+      required: true
