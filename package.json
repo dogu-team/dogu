@@ -23,7 +23,7 @@
     "format-package-json": "yarn prettier-package-json --write package.json packages/**/*/package.json projects/*/package.json prebuilds/*/package.json samples/*/package.json actions/*/package.json",
     "mirror:nm": "ts-node scripts/nm-space/mirror",
     "newbie": "yarn newbie:cicd && yarn run newbie:nm-space",
-    "newbie:cicd": "yarn cache clean --all &&  yarn install && yarn workspaces foreach --exclude 'dogu' --jobs unlimited -ptvi run newbie",
+    "newbie:cicd": "yarn cache clean --all && yarn install && yarn workspaces foreach --exclude 'dogu' --jobs unlimited -ptvi run newbie",
     "newbie:localdev": "husky install",
     "newbie:nm-space": "ts-node scripts/nm-space/mirrorCopyOnly && ts-node scripts/nm-space/run run 'yarn install --no-immutable'",
     "publish:github:dev": "cross-env DOGU_RUN_TYPE=development yarn workspaces foreach -ptvi --jobs unlimited run publish:github",
