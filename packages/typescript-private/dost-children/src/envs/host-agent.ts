@@ -11,9 +11,6 @@ export class PreloadHostAgentEnv {
   DOGU_RUN_TYPE!: DoguRunType;
 
   @IsFilledString()
-  DOGU_API_BASE_URL!: string;
-
-  @IsFilledString()
   DOGU_DEVICE_SERVER_HOST_PORT!: string;
 
   @IsNumber()
@@ -22,6 +19,9 @@ export class PreloadHostAgentEnv {
 }
 
 export class HostAgentEnv extends PreloadHostAgentEnv {
+  @IsFilledString()
+  DOGU_API_BASE_URL!: string;
+
   @IsFilledString()
   DOGU_HOST_TOKEN!: string;
 }
