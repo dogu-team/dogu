@@ -1,5 +1,6 @@
 name: 🐛 Bug Report
 title: "[Bug]: "
+labels: ["type: bug", "bug: needs investigation", "status: needs triage"]
 description: Please explain something that's not working in proper way.
 body:
   - type: textarea

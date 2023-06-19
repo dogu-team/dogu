@@ -1,5 +1,6 @@
 name: 📝 Documentation
 title: "[Docs]: "
+labels: ["type: documentation", "status: needs triage"]
 description: Let's make the Dogu documentation more comprehensive. If you find any issues, please let us know!
 body:
   - type: input

@@ -1,5 +1,6 @@
 name: 💡 Feature Request
 title: "[Feature]: "
+labels: ["type: feature request", "status: needs triage"]
 description: If you have a brilliant idea, don't hesitate to share it!
 body:
   - type: textarea
