@@ -1,5 +1,5 @@
 **AGPL-3.0-only**  
-The default license for this project is [AGPL-3.0-only](https://spdx.org/licenses/AGPL-3.0-only.html)  
+The default license for Dogu is [AGPL-3.0-only](https://spdx.org/licenses/AGPL-3.0-only.html)  
 but following licenses are applied to some directories.
 
 **Enterprise Edition License**  
