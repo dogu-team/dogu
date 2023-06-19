@@ -95,5 +95,5 @@ ida-runspaces/
 .publish-gitlab
 
 # third party
-third-party
+third-party/*
 !third-party/README.md
