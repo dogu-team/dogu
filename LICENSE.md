@@ -2,12 +2,8 @@
 The default license for this project is [AGPL-3.0-only](https://spdx.org/licenses/AGPL-3.0-only.html)  
 but following licenses are applied to some directories.
 
-<br/>
-
 **Enterprise Edition License**  
 All content that resides under the "ee/" directory of this repository, if that directory exists, is licensed under the license defined in "ee/LICENSE".
-
-<br/>
 
 **Creative Commons: CC BY-SA 4.0 license**  
 All contents inside of the following directories are licensed under the [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) license as defined below.
@@ -16,12 +12,10 @@ All contents inside of the following directories are licensed under the [CC BY-S
 - /.github/resources/*
 ```
 
-<br/>
-
 **Third Parties**  
 All third party components incorporated into the Dogu are licensed under the original license provided by the owner of the applicable component.
 
-<br/>
+</br>
 
 ## AGPL-3.0-only
 
