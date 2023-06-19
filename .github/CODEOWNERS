@@ -3,4 +3,4 @@
 # https://help.github.com/articles/about-codeowners
 # https://git-scm.com/docs/gitignore
 
-*   @dogu-team/dogu-team
+*   @dogu-team/owners
