@@ -1,6 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import child_process from 'child_process';
+import { newCleanNodeEnv } from './node';
 
 export function pnpmInstall(outPath: string): void {
   const nodeBinDir = process.platform === 'win32' ? '' : 'bin';
@@ -15,6 +16,7 @@ export function pnpmInstall(outPath: string): void {
   }
   const proc = child_process.spawnSync(pnpmPath, ['install', '--force'], {
     cwd,
+    env: newCleanNodeEnv(),
     stdio: 'inherit',
   });
   proc.error && console.error(proc.error);
