@@ -8,7 +8,7 @@ yarn node validate-workspace.mjs
 echo [validate-workspace] end
 
 echo [lint-staged] start
-yarn lint-staged --allow-empty
+yarn lint-staged --allow-empty --config ./lint-staged.config.mjs
 echo [lint-staged] end
 
 echo [pre-commit] end
