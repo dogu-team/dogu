@@ -1,0 +1,37 @@
+name: 🚀release-self-hosted
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        description: 'console version'
+        default: '0.0.1'
+
+jobs:
+  build-and-push-dogu-console:
+    runs-on: dev-onpremise
+
+    steps:
+      - name: docker init
+        run: docker system prune --volumes -a -f
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: ./dogu/
+          file: ./dogu/Dockerfile
+          push: true
+          target: dogu-console
+          tags: |
+            dogutechio/dogu:latest
+            dogutechio/dogu:${{ github.event.inputs.version }}
