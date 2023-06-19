@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package outer.streaming;
+
+import "outer/errors.proto";
+import "outer/platform.proto";
+import "outer/streaming/screencapture_option.proto";
+import "outer/streaming/webrtc.proto";
+
+option go_package = "go-device-controller/types/protocol/generated/proto/outer/streaming";
+option java_package = "com.dogu.protocol.generated.outer.streaming";
+
+message StreamingOption {
+  ScreenCaptureOption screen = 1;
+}
+
+message StartStreaming {
+  ProtoRTCPeerDescription peer_description = 1;
+  StreamingOption option = 2;
+  string turn_server_url = 3;
+  string turn_server_username = 4;
+  string turn_server_password = 5;
+  Platform platform = 6;
+}
+
+message StreamingOffer {
+  string serial = 1;
+  oneof value {
+    StartStreaming start_streaming = 2;
+    ProtoRTCIceCandidateInit ice_candidate = 3;
+  }
+}
+
+message StreamingAnswer {
+  oneof value {
+    ProtoRTCPeerDescription peer_description = 1;
+    ProtoRTCIceCandidateInit ice_candidate = 2;
+    outer.ErrorResult error_result = 3;
+  }
+}

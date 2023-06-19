@@ -1,0 +1,28 @@
+{
+  "appTableNameColumn": "Name",
+  "appTableVersionColumn": "Version",
+  "appTableExtensionColumn": "Extension",
+  "appTableUploader": "Uploader",
+  "appTableUploadDateColumn": "Uploaded",
+  "appTableSizeColumn": "Size",
+
+  "appEmptyDescription": "No application.<br></br>Upload your game application and use it for routines and script tests.<br></br><br></br><link>Click here</link> for more information",
+
+  "appItemDownloadMenuTitle": "Download",
+  "appItemDeleteMenuTitle": "Delete",
+
+  "appItemDownloadFailureMessage": "Failed to download\n{{reason}}",
+
+  "appItemDeleteConfirmModalTitle": "Delete application",
+  "appItemDeleteConfirmModalDescription": "Are you sure to delete the application?\nThis action may effect routines that use this application.",
+  "appItemDeleteConfirmModalConfirmButtonTitle": "Confirm and delete",
+  "appItemDeleteSuccessMessage": "Deleted!",
+  "appItemDeleteFailureMessage": "Failed to delete\n{{reason}}",
+
+  "uploadAppButtonTitle": "Upload app",
+  "uploadAppModalTitle": "Upload an application",
+  "uploadAppDescriptionText": "Upload an application",
+  "uploadAppDescriptionHintText": "You can upload an application by dragging it here or clicking on the button.<br></br>Only <code>.apk .ipa</code> files are supported.",
+  "uploadAppSuccessMessage": "Uploaded successfully.",
+  "uploadAppFailureMessage": "Failed to upload.\n{{reason}}"
+}

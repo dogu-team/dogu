@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package outer.profile;
+
+option go_package = "go-device-controller/types/protocol/generated/proto/outer/profile";
+option java_package = "com.dogu.protocol.generated.outer.profile";
+
+message RuntimeProcessInfoCpu {
+  string name = 1;
+  float percent = 2;
+}
+
+message RuntimeProcessInfoMem {
+  string name = 1;
+  float percent = 2;
+}
+
+message RuntimeProcessInfoFs {
+  string name = 1;
+  fixed64 write_bytes = 2;
+  fixed64 read_bytes = 3;
+}
+
+message RuntimeProcessInfoNet {
+  string name = 1;
+  fixed64 send_bytes = 2;
+  fixed64 read_bytes = 3;
+}
+
+message RuntimeProcessInfo {
+  string name = 1;
+  fixed32 pid = 2;
+  bool is_foreground = 3;
+  repeated RuntimeProcessInfoCpu cpues = 5;
+  repeated RuntimeProcessInfoMem mems = 6;
+  repeated RuntimeProcessInfoFs fses = 7;
+  repeated RuntimeProcessInfoNet nets = 8;
+}

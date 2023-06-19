@@ -1,0 +1,58 @@
+---
+sidebar_position: 4
+title: 멤버 관리
+locale: ko
+---
+
+import OrganizationAdminPermission from '@site/src/components/console/OrganizationAdminPermission.mdx';
+
+조직 내 멤버를 추가하거나, 비활성화할 수 있습니다.
+
+## 멤버 초대하기
+
+<OrganizationAdminPermission prefix="멤버 초대는" />
+
+1. 조직 페이지의 왼쪽 사이드바에서 "멤버" 메뉴를 클릭합니다.
+2. "멤버 초대" 버튼을 클릭합니다.
+3. 초대할 이메일을 입력 후 초대하기 버튼을 클릭합니다.
+4. 해당 멤버의 권한을 선택하고 전송 버튼을 클릭합니다.
+5. "초대 관리" 메뉴를 클릭합니다.
+6. 해당 이메일로 "Pending" 상태인지 확인합니다.
+
+:::tip 초대장 취소
+
+이메일을 잘못 입력했거나, 권한을 잘못 선택한 경우 메뉴 버튼(`···`)을 눌러 초대를 취소할 수 있습니다.
+![Menu](/img/console/organization/invite-result-menu.png)
+
+:::
+
+:::tip Expired 상태
+
+초대장의 유효기간은 7일입니다. 만약 7일동안 초대 이메일을 수락하지 않으면, "Expired" 상태로 변경됩니다.
+초대장을 재전송하거나, 목록에서 삭제하고 싶은 경우 초대를 취소하세요.
+
+:::
+
+## 멤버 권한 변경
+
+<OrganizationAdminPermission prefix="멤버의 권한 변경은" />
+
+1. 조직 페이지의 왼쪽 사이드바에서 "멤버" 메뉴를 클릭합니다.
+2. 권한을 변경시킬 멤버를 목록에서 찾아, 선택 상자를 클릭해 권한을 변경합니다.
+   ![update-org-permission](/img/console/organization/update-org-permission.png)
+
+## 멤버 비활성화
+
+<OrganizationAdminPermission prefix="맴버 비활성화는" />
+
+:::danger
+
+멤버 비활성화는 신중하게 진행되어야 합니다. 비활성화 된 멤버는 다시 초대받아야만 조직에 들어올 수 있으며, 비활성화 된 멤버는 작업물을 잃을 수 있습니다.
+
+:::
+
+1. 조직 페이지의 왼쪽 사이드바에서 "멤버" 메뉴를 클릭합니다.
+2. 비활성화할 멤버를 목록에서 찾아, 메뉴 버튼(`···`)을 클릭합니다.
+3. "비활성화" 메뉴를 클릭합니다
+   ![inactive menu](/img/console/organization/inactivate-menu.png)
+4. 확인 모달 창이 뜨면, "확인 및 비활성화" 버튼을 클릭해 비활성화를 완료합니다.

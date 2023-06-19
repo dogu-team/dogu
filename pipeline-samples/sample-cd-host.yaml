@@ -1,0 +1,68 @@
+name: test gamium
+
+on:
+  workflow_dispatch:
+
+jobs:
+  checkout-gamium-script:
+    runs-on:
+      group: my-host-device
+    steps:
+      - name: checkout-gamium-script
+        uses: command
+        with:
+          command: echo
+          args:
+            - checkout
+            - completed
+
+  download-app:
+    needs: checkout-gamium-script
+    runs-on:
+      group: my-host-device
+    steps:
+      - name: download-app
+        uses: command
+        with:
+          command: echo
+          args:
+            - download
+            - completed
+
+  test-android:
+    needs: download-app
+    runs-on:
+      group: my-android-devices
+    steps:
+      - name: test-android
+        uses: command
+        with:
+          command: yarn
+          args:
+            - workspace
+            - gamium-client-userproject
+            - run
+            - run:DoguRpgSample
+        env:
+          DOGU_GAMIUM_BUILD_DIRECTORYPATH: /Users/dogu/.dogu/temp/android
+          DOGU_GAMIUM_BUILD_FILEPATH: '**/dogurpgsample.apk'
+          DOGU_GAMIUM_PLATFORM: PLATFORM_ANDROID
+
+  test-ios:
+    needs: download-app
+    runs-on:
+      group: my-ios-devices
+    steps:
+      - name: test-ios
+        uses: command
+        with:
+          command: yarn
+          args:
+            - workspace
+            - gamium-client-userproject
+            - run
+            - run:DoguRpgSample
+        env:
+          DOGU_GAMIUM_BUILD_DIRECTORYPATH: /Users/dogu/.dogu/temp/ios
+          DOGU_GAMIUM_BUILD_FILEPATH: '**/DoguRpgSample.ipa'
+          DOGU_GAMIUM_PLATFORM: PLATFORM_IOS

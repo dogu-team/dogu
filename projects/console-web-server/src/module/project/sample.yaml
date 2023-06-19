@@ -1,0 +1,57 @@
+name: CD Real
+
+on:
+  workflow_dispatch:
+
+env:
+  TEST_SCRIPT: test/room-based-game.ts
+
+jobs:
+  build:
+    runs-on:
+      group: adb
+    steps:
+      - name: 'clone project'
+        run: git clone
+      - name: 'build project'
+        run: yarn build
+
+  e2e:
+    needs: build
+    runs-on:
+      group: adb
+    steps:
+      - name: signin
+        run: echo "signin"
+      - name: select character
+        run: echo "character"
+      - name: exit
+        run: echo "exit"
+
+  deploy-appstore:
+    needs: e2e
+    runs-on:
+      group: adb
+    steps:
+      - name: build production
+        run: xcodebuild production
+      - name: release
+        run: echo 'release!'
+
+  deploy-playstore:
+    needs: e2e
+    runs-on:
+      group: adb
+    steps:
+      - name: build production
+        run: ./gradlew assembleProd
+      - name: release
+        run: echo 'release!'
+
+  send-slack:
+    needs: [deploy-appstore, deploy-playstore]
+    runs-on:
+      group: adb
+    steps:
+      - name: send
+        run: echo "send slack"

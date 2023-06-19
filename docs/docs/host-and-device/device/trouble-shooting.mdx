@@ -1,0 +1,79 @@
+---
+sidebar_position: 3
+title: Trouble Shooting
+locale: en
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+## Checking device connection
+
+### Check the cable
+
+1. Please ensure that you are using a cable capable of data transfer.
+2. Disconnect and reconnect the cable.
+
+### Check device configurations
+
+1. Verify if you have followed the instructions in the [Device Configuration](/host-and-device/device/settings) documentation.
+
+### Troubleshooting by platform
+
+<Tabs>
+  <TabItem value="android" label="Android" default>
+    <ol>
+      <li>Open a shell such as CMD or Terminal on your host device.</li>
+      <li>Install ADB and set up the environment variables.</li>
+      <li>
+        Enter the command <code>adb devices</code>.
+        <ul>
+          <li>
+            <code>offline</code>: When connecting the device to the host PC,
+            choose to allow the device or enable the USB debugging option in the
+            developer options on the device.
+            <br />
+            Try changing the USB usage mode on the device.
+          </li>
+          <li>
+            <code>unauthorized</code>: When connecting the device to the host
+            PC, choose to allow the device or enable the USB debugging option in
+            the developer options on the device.
+          </li>
+          <li>
+            <code>device</code>: The device is successfully connected. In this
+            case, try restarting Dost.
+          </li>
+        </ul>
+      </li>
+    </ol>
+  </TabItem>
+</Tabs>
+
+## Checking the Host
+
+Please use the following methods to check the host.
+
+### Restart Dost
+
+Completely exit Dost and launch it again. Check if the device reconnects.
+
+:::caution
+
+Restarting Dost will set the connection status of the connected devices to `Offline`.
+
+:::
+
+### Check for the Latest Dost Version
+
+Make sure you have the latest version of Dost. You can download the latest version of Dost [here](https://dogutech.io/downloads/dost).
+
+### Regenerate Host Token
+
+Try regenerating the host token and re-registering the host by following the instructions in the [Host Management](/organization-and-project/organization/host) documentation.
+
+### Reinstall Dost
+
+---
+
+Has the issue been resolved? If not, please contact us through [Contact Us](https://dogutech.io/contact-us) for further assistance.

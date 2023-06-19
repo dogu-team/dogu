@@ -1,0 +1,62 @@
+{
+  "signin": "Sign in",
+  "signup": "Sign up",
+  "signout": "Sign out",
+  "cancel": "Cancel",
+  "submit": "Submit",
+  "add": "Add",
+  "save": "Save",
+  "uploadImage": "Upload image",
+  "send": "Send",
+  "copy": "Copy",
+  "confirm": "OK",
+  "edit": "Edit",
+
+  "name": "Name",
+  "email": "Email",
+  "description": "Description",
+
+  "nameInputEmptyError": "Please input name",
+  "descriptionInputEmptyError": "Please input description",
+
+  "copyClipboard": "Copied to clipboard",
+
+  "doguDocs": "Dogu docs",
+
+  "footerCompanyTitle": "Company",
+
+  "accountMenuAccountTitle": "Account",
+  "accountMenuWorksTitle": "Works",
+  "accountMenuMyOrgListButton": "Organizations",
+  "accountMenuMyProjectButton": "My projects",
+
+  "footerTermsOfUse": "Terms of use",
+  "footerPrivacyPolicy": "Privacy policy",
+
+  "invalidPasswordFormatErrorMsg": "Password should be contain alphabet, number, special character with at least 8 characters",
+  "confirmPasswordNotEqualErrorMsg": "Passwords are not equal",
+
+  "imageCropModalTitle": "Edit image",
+
+  "verifyEmail": "Verify your email! Check your inbox or spam.",
+  "resendEmail": "Resend Email",
+  "sendEmailSuccess": "We sent you a email. Please check your inbox or spam",
+
+  "emptySearchResultText": "Cannot find result.",
+
+  "deviceProfileCpuUsage": "CPU usage",
+  "deviceProfileMemoryUsage": "Memory usage",
+  "deviceProfileMemoryMax": "Device memory",
+  "deviceProfileFps": "FPS",
+
+  "feedbackModalTitle": "Give us feedback",
+  "feedbackModalTextareaPlaceholder": "Anything you want to tell us",
+  "feedbackModalSuccessMessage": "Thanks for your feedback!",
+  "feedbackModalFailureMessage": "Failed to send feedback. Please try again later.",
+  "sendFeedbackButtonTitle": "Send",
+
+  "footerCompanyName": "Dogu Technologies, Inc.",
+  "footerCompanyAddress": "Address: 2008B, A-dong, Anyang IS Biztower, 27, Deokcheon-ro 152beon-gil, Manan-gu, Anyang-si, Gyeonggi-do, Republic of Korea.",
+  "footerRepresentative": "Representative: Juwon Seong",
+  "footerCompanyRegistrationNumber": "Business registration number: 166-86-02618"
+}

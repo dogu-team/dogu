@@ -1,0 +1,126 @@
+{
+  "routineSidebarTitle": "루틴",
+
+  "createRoutineModalTitle": "새 루틴 추가하기",
+  "uploadRoutineNudgeDescription": "여기를 누르거나 파일을 끌어오세요.",
+  "uploadRoutineFileDescription": "<0>.yml</0> 또는 <0>.yaml</0> 파일만 가능합니다.",
+  "uploadRoutineConfigFailureMsg": "업로드 실패\n{{reason}}",
+  "createRoutineSuccessMsg": "추가됨",
+  "createRoutineFailureMsg": "추가 실패\n{{reason}}",
+  "createRoutineConflictErrorMsg": "루틴 파일 내 이름은 이미 사용중입니다.",
+
+  "routineSidebarAllMenuTitle": "전체 루틴",
+
+  "editRoutineMenuTitle": "루틴 수정",
+  "routineHistoryMenuTitle": "수정 히스토리",
+  "deleteRoutineMenuTitle": "루틴 삭제",
+
+  "editRoutineModalTitle": "루틴 수정하기",
+  "editRoutineSuccessMsg": "수정됨",
+  "editRoutineFailureMsg": "수정 실패\n{{reason}}",
+  "editRoutineConflictMsg": "루틴 설정 파일 내 이름이 루틴과 일치하지 않습니다.",
+
+  "deleteRoutineModalTitle": "루틴 삭제하기",
+  "deleteRoutineModalButtonText": "확인 및 삭제",
+  "deleteRoutineModalWarningMsg": "루틴 {{name}}을/를 정말 삭제할까요?\n삭제 후 루틴과 파이프라인은 복구할 수 없습니다.",
+  "deleteRoutineSuccessMsg": "삭제됨",
+  "deleteRoutineFailureMsg": "삭제 실패\n{{reason}}",
+
+  "runRoutineButtonText": "루틴 실행",
+  "editRoutineButtonText": "루틴 수정",
+  "runRoutineWithFixedRoutineButtonText": "{{name}} 실행",
+  "runRoutineSuccessMsg": "성공함",
+  "runRoutineFailureMsg": "실행 실패\n{{reason}}",
+
+  "routineSelectorTitle": "실행할 루틴 선택하기",
+  "routineSelectorInputPlaceholder": "루틴 검색",
+  "routineSelectorRunButtonText": "실행",
+
+  "pipelineFilterStatusTitle": "상태",
+
+  "jobSidebarTitle": "작업",
+  "jobSummaryText": "요약",
+
+  "pipelineSummaryRunByTitle": "실행자",
+  "pipelineSummaryRuntimeTitle": "실행 시간",
+  "pipelineSummaryRoutineTitle": "루틴",
+  "pipelineSummaryRoutineConfigTitle": "루틴 설정",
+
+  "deviceJobSuccessSingularText": "성공",
+  "deviceJobSuccessPlurarText": "성공",
+  "deviceJobFailureSingularText": "실패",
+  "deviceJobFailurePlularText": "실패",
+
+  "deviceJobTitle": "디바이스 작업",
+
+  "deviceJobStatisticStatusTitle": "상태",
+  "deviceJobStatisticPlatformTitle": "플랫폼",
+  "deviceJobStatisticVersionTitle": "버전",
+  "deviceJobStatisticNameTitle": "이름",
+  "deviceJobStatisticModelTitle": "모델",
+  "deviceJobStatisticRuntimeTitle": "실행 시간",
+
+  "deviceJobInfoContentTitle": "디바이스 작업 정보",
+  "stepInfoContentTitle": "스텝 정보",
+
+  "deviceJobInfoVideoTitle": "녹화 영상",
+  "deviceJobInfoProfileTitle": "디바이스 프로파일",
+
+  "deviceJobRecordController": "영상 컨트롤러",
+
+  "stepTitle": "스텝",
+
+  "resultTabTestMenuTitle": "테스트",
+  "resultTabDeviceLogMenuTitle": "디바이스 로그",
+  "resultTabScriptLogMenuTitle": "테스트 스크립트 로그",
+  "resultTabDeviceProfileMenuTitle": "디바이스 프로파일",
+
+  "routineChangeLogBackButtonText": "파이프라인",
+  "routineChangeLogTitleDescription": "히스토리",
+
+  "pipelineEmptyDescription": "루틴을 만들고, 자동화 테스트를 위해 파이프라인을 실행해보세요.<br></br><br></br><link>여기를 눌러</link> 더 많은 정보 보기",
+
+  "stepTestTabMenuTitle": "테스트",
+  "setpLogTabMenuTitle": "로그",
+  "destTestDeviceProfileTabMenuTitle": "디바이스 프로파일",
+  "destTestDeviceLogTabMenuTitle": "디바이스 로그",
+  "destTestCpuGraphTitle": "CPU 사용량",
+  "destTestMemoryGraphTitle": "메모리 사용량",
+  "destTestFpsGraphTitle": "FPS",
+  "destTestNoGraphDataTitle": "데이터가 없습니다",
+  "destTestNoCpuGraphDataDescription": "이 작업이 수행될 때 CPU 사용량 데이터가 없습니다.",
+  "destTestNoMemoryGraphDataDescription": "이 작업이 수행될 때 메모리 사용량 데이터가 없습니다.",
+  "destTestNoFpsGraphDataDescription": "이 작업이 수행될 때 FPS 데이터가 없습니다.",
+
+  "routineEditGuiModeButtonTitle": "GUI 에디터",
+  "routineEditScriptModeButtonTitle": "YAML 에디터",
+  "routineEditPreviewModeButtonTitle": "미리보기",
+  "updateRoutineButtonTitle": "저장",
+  "createRoutineButtonTitle": "저장",
+
+  "updateRoutineSuccessMessage": "저장됨",
+  "updateRoutineFailureMessage": "저장 실패\n{{reason}}",
+  "createRoutineSuccessMessage": "생성됨",
+  "createRoutineFailureMessage": "생성 실패\n{{reason}}",
+
+  "routineGuiEditorRoutineNameLabel": "루틴 이름",
+  "routineGuiEditorRoutineNamePlaceholder": "이름",
+  "routineGuiEditorJobLabel": "작업",
+  "routineGuiEditorJobNamePlaceholder": "이름",
+  "routineGuiEditorJobNeedLabel": "선행 작업",
+  "routineGuiEditorJobNeedDescription": "선행 작업이 모두 완료된 다음에 작업이 실행됩니다.",
+  "routineGuiEditorJobNeedSelectorPlaceholder": "작업 이름",
+  "routineGuiEditorJobDeviceTagLabel": "디바이스 태그",
+  "routineGuiEditorJobDeviceTagDescription": "해당 태그가 있는 디바이스에서 작업이 실행됩니다.",
+  "routineGuiEditorJobDeviceTagSelectorPlaceholder": "태그 이름",
+  "routineGuiEditorJobScreenRecordLabel": "디바이스 화면 녹화",
+  "routineGuiEditorJobScreenRecordDescription": "활성화하면 작업이 실행될 때 디바이스 화면을 녹화합니다.",
+  "routineGuiEditorStepLabel": "스텝",
+  "routineGuiEditorStepNamePlaceholder": "이름",
+  "routineGuiEditorStepActionLabel": "액션",
+  "routineGuiEditorStepActionDescription": "Install app: 테스트 실행 전 앱을 설치하고 실행합니다.\nRun test: 테스트 스크립트를 실행합니다.",
+  "routineGuiEditorStepAppVersionLabel": "앱 버전",
+  "routineGuiEditorStepScriptLabel": "스크립트",
+  "routineGuiEditorAddJobButtonTitle": "새 작업 추가",
+  "routineGuiEditorAddStepButtonTitle": "새 스텝 추가"
+}

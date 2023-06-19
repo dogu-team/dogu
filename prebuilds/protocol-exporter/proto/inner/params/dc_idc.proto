@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package inner.params;
+
+import "inner/types/dc_idc.proto";
+
+option go_package = "go-device-controller/types/protocol/generated/proto/inner/params";
+option java_package = "com.dogu.protocol.generated.inner.params";
+
+message DcIdcParam {
+  oneof value {
+    types.DcIdcScanIdsParam dc_idc_scan_ids_param = 1;
+    types.DcIdcOpenGrpcClientParam dc_idc_open_grpc_client_param = 3;
+    types.DcIdcCheckGrpcHealthParam dc_idc_check_grpc_health_param = 4;
+    types.DcIdcStartScreenRecordParam dc_idc_start_screen_record_param = 5;
+    types.DcIdcStopScreenRecordParam dc_idc_stop_screen_record_param = 6;
+  }
+}
+
+message DcIdcResult {
+  oneof value {
+    types.DcIdcScanIdsResult dc_idc_scan_ids_result = 1;
+    types.DcIdcOpenGrpcClientResult dc_idc_open_grpc_client_result = 3;
+    types.DcIdcCheckGrpcHealthResult dc_idc_check_grpc_health_result = 4;
+    types.DcIdcStartScreenRecordResult dc_idc_start_screen_record_result = 5;
+    types.DcIdcStopScreenRecordResult dc_idc_stop_screen_record_result = 6;
+  }
+}

@@ -1,0 +1,86 @@
+---
+sidebar_position: 2
+title: Project Permissions
+locale: en
+---
+
+The permissions within a project are separate from the permissions within the organization.
+
+Project permissions apply only within the project, and the organization owner or members with "Admin" or higher permissions within the organization have full access to all permissions within the project, regardless of project permissions or membership.
+
+The project permissions are structured as follows:
+
+- `Admin`: Has all permissions within the project.
+- `Write`: Has all permissions within the project but cannot modify project members or settings.
+- `Read`: Can view test results.
+
+## Compare permissions
+
+### Project management
+
+| Permission                          | Admin | Write | Read |
+| ----------------------------------- | ----- | ----- | ---- |
+| Change project name and description | ✅    | ❌    | ❌   |
+
+:::info Removing a Project
+
+Only the organization owner or colleagues with "Admin" or higher permissions can delete a project, regardless of project permissions.
+
+Refer to the topic <a href="../organization/project#remove-a-project">Remove a project</a> for more information.
+
+:::
+
+### Routine
+
+| Features              | Admin | Write | Read |
+| --------------------- | ----- | ----- | ---- |
+| Create routines       | ✅    | ✅    | ❌   |
+| Remove routines       | ✅    | ❌    | ❌   |
+| Update routines       | ✅    | ✅    | ❌   |
+| View routine list     | ✅    | ✅    | ✅   |
+| Run routine           | ✅    | ✅    | ❌   |
+| View pipeline results | ✅    | ✅    | ✅   |
+
+### Test script
+
+| Features            | Admin | Write | Read |
+| ------------------- | ----- | ----- | ---- |
+| Create test scripts | ✅    | ✅    | ❌   |
+| Remove test scripts | ✅    | ✅    | ❌   |
+| Update test scripts | ✅    | ✅    | ❌   |
+| View test scripts   | ✅    | ✅    | ✅   |
+| Run test scripts    | ✅    | ✅    | ❌   |
+
+### App management
+
+| Features      | Admin | Write | Read |
+| ------------- | ----- | ----- | ---- |
+| Upload apps   | ✅    | ✅    | ❌   |
+| Remove apps   | ✅    | ✅    | ❌   |
+| Download apps | ✅    | ✅    | ✅   |
+| View app list | ✅    | ✅    | ✅   |
+
+### Project member management
+
+| Features                           | Admin | Write | Read |
+| ---------------------------------- | ----- | ----- | ---- |
+| Add project members                | ✅    | ❌    | ❌   |
+| Remove project members             | ✅    | ❌    | ❌   |
+| Change project member's permission | ✅    | ❌    | ❌   |
+| View project member list           | ✅    | ✅    | ✅   |
+
+### Project device management
+
+| Features                                             | Admin | Write | Read |
+| ---------------------------------------------------- | ----- | ----- | ---- |
+| Remove assigned device                               | ✅    | ❌    | ❌   |
+| Stream and remote control assigned or public devices | ✅    | ✅    | ✅   |
+| View assigned or public device list                  | ✅    | ✅    | ✅   |
+
+:::info Assigning devices
+
+Assigning devices to a project is possible only for the organization owner or colleagues with "Admin" or higher permissions, regardless of project permissions.
+
+Refer to the topic <a href="../organization/device/device-management#adding-projects-to-a-device">Add projects to a device</a> for more information.
+
+:::

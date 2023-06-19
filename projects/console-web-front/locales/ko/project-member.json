@@ -1,0 +1,35 @@
+{
+  "projectMemberTableProfileColumn": "프로필",
+  "projectMemberTableTypeColumn": "유형",
+  "projectMemberTablePermissionColum": "권한",
+
+  "memberItemDeleteMenu": "삭제",
+  "removeMemberModalTitle": "멤버 삭제하기",
+  "removeMemberModalButtonText": "확인 및 멤버 삭제",
+  "removeMemberModalContent": "멤버를 삭제할까요?",
+
+  "colleagueMemberType": "멤버",
+  "teamMemberType": "팀",
+
+  "projectMemberFilterPlaceholder": "이름 또는 이메일",
+
+  "updateMemberPermissionSuccessMsg": "변경됨",
+  "updateMemberPermissionFailureMsg": "변경 실패\n{{reason}}",
+
+  "removeMemberConfirmDesc": "프로젝트에서 내보낼까요?",
+  "removeMemberSuccessMsg": "삭제됨",
+  "removeMemberFailMsg": "삭제 실패.\n{{reason}}",
+
+  "addProjectColleagueMember": "멤버 추가",
+  "addProjectColleagueModalTitle": "멤버 추가하기",
+  "addProjectColleagueInputPlaceholder": "이름 또는 이메일로 검색",
+  "addProjectTeamMember": "팀 추가",
+  "addProjectTeamModalTitle": "팀 추가하기",
+  "addProjectTeamInputPlaceholder": "이름으로 검색",
+  "addProjectMemberSubmitButtonTitle": "프로젝트에 추가하기",
+  "addProjectEmptyResult": "결과 없음",
+  "addProjectMemberSuccessMsg": "추가됨",
+  "addProjectMemberFailMsg": "추가 실패.\n{{reason}}",
+
+  "projectMemberEmptyDescription": "멤버를 추가해 멤버의 접근 권한을 관리해보세요.<br></br><link>여리를 눌러</link> 더 많은 정보 보기."
+}

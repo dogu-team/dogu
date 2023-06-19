@@ -1,0 +1,22 @@
+{
+  "title": {
+    "message": "Dogu Docs",
+    "description": "The title in the navbar"
+  },
+  "item.label.Gamium": {
+    "message": "Gamium",
+    "description": "Navbar item with label Gamium"
+  },
+  "item.label.API": {
+    "message": "API",
+    "description": "Navbar item with label API"
+  },
+  "item.label.GitHub": {
+    "message": "GitHub",
+    "description": "Navbar item with label GitHub"
+  },
+  "logo.alt": {
+    "message": "Dogu Logo",
+    "description": "The alt text of navbar logo"
+  }
+}

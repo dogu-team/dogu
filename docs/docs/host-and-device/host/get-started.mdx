@@ -1,0 +1,185 @@
+---
+sidebar_position: 2
+title: Getting Started with Dost
+locale: en
+---
+
+import {
+  getBrowserPlatform,
+  BrowserPlatform,
+} from '@site/src/platform/platform.ts';
+import dost_macos_general from '@site/static/img/dost/dost_macos_general.png';
+import dost_macos_troubleshoot from '@site/static/img/dost/dost_macos_troubleshoot.png';
+import dost_macos_to_application from '@site/static/img/dost/dost_macos_to_application.png';
+import dost_windows_general from '@site/static/img/dost/dost_windows_general.png';
+import dost_windows_troubleshoot from '@site/static/img/dost/dost_windows_troubleshoot.png';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
+import BrowserOnly from '@docusaurus/BrowserOnly';
+
+This page covers how to start the [`Dost`](../introduction#host-and-dost) program, which is installed on the [`Host`](../introduction#host-and-dost) machine.
+
+### Requirements
+
+<BrowserOnly>
+  {() => (
+    <Tabs groupId="os" defaultValue={getBrowserPlatform('windows')}>
+      <TabItem value="windows" label="Windows" default>
+        <h4>Operating systems</h4>
+        <ul>
+          <li>Windows 10 64-bit</li>
+          <li>Windows 11 64-bit</li>
+        </ul>
+        <h4>Architestures</h4>
+        <ul>
+          <li>x64</li>
+        </ul>
+      </TabItem>
+      <TabItem value="macos" label="macOS">
+        <h4>Operating systems</h4>
+        <ul>
+          <li>macOS 10.13 (High Sierra) or later</li>
+        </ul>
+        <h4>Architestures</h4>
+        <ul>
+          <li>x64</li>
+          <li>arm64</li>
+        </ul>
+      </TabItem>
+    </Tabs>
+  )}
+</BrowserOnly>
+
+### Installation
+
+You can download `Dost` from the [Dost Download](https://dogutech.io/downloads/dost) page.
+Please download it according to your desired platform and architecture.
+
+<BrowserOnly>
+  {() => (
+    <Tabs groupId="os" defaultValue={getBrowserPlatform('windows')}>
+      <TabItem value="windows" label="Windows" default>
+        <ul>
+          <li>
+            Please run the exe installation file and agree to allow additional
+            network access.
+          </li>
+        </ul>
+      </TabItem>
+      <TabItem value="macos" label="macOS">
+        <img src={dost_macos_to_application} style={{ width: 400 }} />
+        <ul>
+          <li>
+            Please open the dmg file and move Dost to the Applications folder.
+          </li>
+        </ul>
+      </TabItem>
+    </Tabs>
+  )}
+</BrowserOnly>
+
+### Run
+
+1. When you first run Dost, you need to review and agree to the terms of service and third-party licenses.
+2. Dost checks if the necessary tools are installed and displays an installation window if any tools are missing. If there are tools that are not installed, please proceed with the installation.
+3. To ensure smooth operation of Dost, the appropriate permissions for the operating system you are installing on are required. If the permissions are not granted, please allow the permissions.
+
+### Console connection
+
+Please go to the [Managing Hosts](/organization-and-project/organization/host) page to obtain the host token and enter the obtained token in Dost.
+
+### Settings
+
+Once connected, Dost will open the settings window where you can customize Dost's default settings.
+
+export const GeneralBlock = ({ platform }) => (
+  <div>
+    <h4>General</h4>
+    <br />
+    {platform === 'windows' ? (
+      <img src={dost_windows_general} style={{ width: 400 }} />
+    ) : (
+      <img src={dost_macos_general} style={{ width: 400 }} />
+    )}
+    <ul>
+      <li>
+        Start Dost when you log in
+        <ul>
+          <li>Dost starts automatically when PC turns on.</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+);
+
+export const TroubleShootBlock = ({ platform }) => (
+  <div>
+    <h4>TroubleShoot </h4>
+    <br />
+    {platform === 'windows' ? (
+      <img src={dost_windows_troubleshoot} style={{ width: 400 }} />
+    ) : (
+      <img src={dost_macos_troubleshoot} style={{ width: 400 }} />
+    )}
+    <ul>
+      <li>
+        Connection
+        <ul>
+          <li>
+            When you click the "Reconnect" button, Dost attempts to establish a
+            connection using a new token.
+          </li>
+        </ul>
+      </li>
+      {platform === 'macos' ? (
+        <li>
+          macOS Permission
+          <ul>
+            <li>
+              It is only visible on macOS, and it shows the status of the
+              necessary permissions required for smooth streaming.
+              <Admonition type="info">
+                macOS needs &nbsp;
+                <a href="https://support.apple.com/guide/mac-help/mchld6aa7d23/mac">
+                  Screen recording
+                </a>
+                ,&nbsp;
+                <a href="https://support.apple.com/guide/mac-help/mh43185/mac">
+                  Accessibility
+                </a>
+              </Admonition>
+            </li>
+          </ul>
+        </li>
+      ) : null}
+      <li>
+        Open Docs
+        <ul>
+          <li>Open documents website</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+);
+
+<BrowserOnly>
+  {() => (
+    <Tabs groupId="os" defaultValue={getBrowserPlatform('windows')}>
+      <TabItem value="windows" label="Windows" default>
+        <GeneralBlock platform="windows" />
+        <TroubleShootBlock platform="windows" />
+      </TabItem>
+      <TabItem value="macos" label="macOS">
+        <GeneralBlock platform="macos" />
+        <TroubleShootBlock platform="macos" />
+      </TabItem>
+    </Tabs>
+  )}
+</BrowserOnly>
+
+:::info
+
+Dost installation has been completed? Try adding devices through [Device configuration](../device/settings).
+
+:::

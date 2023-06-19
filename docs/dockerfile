@@ -1,0 +1,19 @@
+FROM node:16.16.0-alpine AS node-base-docs
+WORKDIR /dogu
+COPY .yarnrc.yml yarn.lock .pnp.cjs .pnp.loader.mjs package.json tsconfig.json ./
+COPY .yarn ./.yarn
+
+
+FROM node-base-docs AS dogu-docs
+COPY . .
+RUN yarn run newbie:cicd
+RUN yarn run build
+EXPOSE 3100
+
+
+FROM dogu-docs AS dev-dogu-docs
+CMD ["yarn", "run", "start:dev"]
+
+
+FROM dogu-docs AS prod-dogu-docs
+CMD ["yarn", "run", "serve"]

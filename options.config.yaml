@@ -1,0 +1,19 @@
+logLevel: verbose
+
+actionSource:
+  use: true
+  # note: find ${searchPath}/${actionId}/action.config.yaml
+  searchPaths:
+    # from host-agent workspace
+    - ../../
+    # from dost workspace
+    - ../../../
+
+localUserProject:
+  use: true
+  # note: find ${searchPath}/dogu.config.json
+  searchPaths:
+    # from host-agent workspace
+    - ../../user-templates/typescript-template
+    # from dost workspace
+    - ../../../user-templates/typescript-template

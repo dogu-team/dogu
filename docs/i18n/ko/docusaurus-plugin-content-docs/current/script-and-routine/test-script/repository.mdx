@@ -1,0 +1,50 @@
+---
+sidebar_position: 2
+title: 저장소
+locale: ko
+---
+
+테스트 스크립트는 Dogu Gitlab에 저장됩니다. 테스트 스크립트를 관리하는 방법은 2가지 방식이 존재합니다.
+
+- **Web IDE**
+- **Local (Git)**
+
+# Web IDE
+
+Web IDE를 이용하면 웹 페이지에서 테스트 스크립트를 작성 및 수정할 수 있습니다.  
+Web IDE는 **프로젝트** > **스크립트** 페이지에서 **수정** 버튼을 클릭하면 사용할 수 있습니다.
+
+<img src="/ko/img/test/test_ide.png" />
+<p style={{ fontSize: '1.3rem', textAlign: 'center' }}>&lt;Web IDE&gt;</p>
+
+<br />
+
+# Local (Git)
+
+[Git](https://git-scm.com/downloads)을 이용해 테스트 스크립트 저장소를 Clone 할 수 있습니다.
+
+1. **프로젝트** 페이지에서 **Gitlab** 버튼을 클릭해 프로젝트의 Gitlab 페이지로 이동합니다.
+
+2. Gitlab 페이지에서 **Clone with HTTPS** 버튼을 클릭해 Clone URL을 복사합니다.
+
+3. [Account](https://dogutech.io/account) 페이지에서 **Gitlab** 섹션의 **token**을 복사합니다.
+
+4. Clone URL의 `https://` 뒤에 `oauth2:{token}@`을 붙여줍니다.
+
+5. Terminal에서 아래 명령어를 이용해 Clone 받습니다.
+
+```
+git clone <Clone URL>
+```
+
+예시.
+
+```
+git clone https://oauth2:{token}@gitlab.dogutech.io/{my-organization-id}/{my-project-id}.git
+```
+
+:::tip
+
+**Git CLI 이외에 다른 Git Client도 사용할 수 있습니다.**
+
+:::

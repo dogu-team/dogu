@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package inner.types;
+
+import "outer/errors.proto";
+
+option go_package = "go-device-controller/types/protocol/generated/proto/inner/types";
+option java_package = "com.dogu.protocol.generated.inner.types";
+
+message DcIdaRunAppParam {
+  string app_path = 1;
+  repeated string installed_app_names = 2;
+  string bundle_id = 3;
+}
+
+message DcIdaRunAppResult {
+  outer.ErrorResult error = 1;
+}
+
+message DcIdaGetSystemInfoParam {
+}
+
+message DcIdaGetSystemInfoResult {
+  uint32 screen_width = 1;
+  uint32 screen_height = 2;
+}

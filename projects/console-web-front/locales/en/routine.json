@@ -1,0 +1,126 @@
+{
+  "routineSidebarTitle": "Routines",
+
+  "createRoutineModalTitle": "Add new routine",
+  "uploadRoutineNudgeDescription": "Click here or drag file for upload.",
+  "uploadRoutineFileDescription": "<0>.yml</0> or <0>.yaml</0> file only",
+  "uploadRoutineConfigFailureMsg": "Upload failed.\n{{reason}}",
+  "createRoutineSuccessMsg": "Added!",
+  "createRoutineFailureMsg": "Failed to add\n{{reason}}",
+  "createRoutineConflictErrorMsg": "Routine name in configuration already exist.",
+
+  "routineSidebarAllMenuTitle": "All routines",
+
+  "editRoutineMenuTitle": "Edit routine",
+  "routineHistoryMenuTitle": "History",
+  "deleteRoutineMenuTitle": "Delete routine",
+
+  "editRoutineModalTitle": "Edit routine",
+  "editRoutineSuccessMsg": "Updated!",
+  "editRoutineFailureMsg": "Failed to update\n{{reason}}",
+  "editRoutineConflictMsg": "Name in configuration file doesn't match with routine",
+
+  "deleteRoutineModalTitle": "Delete routine",
+  "deleteRoutineModalButtonText": "Confirm and delete",
+  "deleteRoutineModalWarningMsg": "Would you liked to delete routine {{name}}?\nRoutine and pipelines cannot be restored.",
+  "deleteRoutineSuccessMsg": "Deleted!",
+  "deleteRoutineFailureMsg": "Failed to delete.\n{{reason}}",
+
+  "runRoutineButtonText": "Run routine",
+  "editRoutineButtonText": "Edit routine",
+  "runRoutineWithFixedRoutineButtonText": "Run {{name}}",
+  "runRoutineSuccessMsg": "Success!",
+  "runRoutineFailureMsg": "Failed to run\n{{reason}}",
+
+  "routineSelectorTitle": "Select a routine for run",
+  "routineSelectorInputPlaceholder": "Search routine",
+  "routineSelectorRunButtonText": "Run",
+
+  "pipelineFilterStatusTitle": "Status",
+
+  "jobSidebarTitle": "Jobs",
+  "jobSummaryText": "Summary",
+
+  "pipelineSummaryRunByTitle": "Run by",
+  "pipelineSummaryRuntimeTitle": "Runtime",
+  "pipelineSummaryRoutineTitle": "Routine",
+  "pipelineSummaryRoutineConfigTitle": "Configuration",
+
+  "deviceJobSuccessSingularText": "Success",
+  "deviceJobSuccessPlurarText": "Successes",
+  "deviceJobFailureSingularText": "Failure",
+  "deviceJobFailurePlularText": "Failures",
+
+  "deviceJobTitle": "Device jobs",
+
+  "deviceJobStatisticStatusTitle": "Status",
+  "deviceJobStatisticPlatformTitle": "Platform",
+  "deviceJobStatisticVersionTitle": "Version",
+  "deviceJobStatisticNameTitle": "Name",
+  "deviceJobStatisticModelTitle": "Model",
+  "deviceJobStatisticRuntimeTitle": "Runtime",
+
+  "deviceJobInfoContentTitle": "Device job information",
+  "stepInfoContentTitle": "Step information",
+
+  "deviceJobInfoVideoTitle": "Record",
+  "deviceJobInfoProfileTitle": "Device profiles",
+
+  "deviceJobRecordController": "Record controller",
+
+  "stepTitle": "Step",
+
+  "resultTabTestMenuTitle": "Tests",
+  "resultTabDeviceLogMenuTitle": "Device logs",
+  "resultTabScriptLogMenuTitle": "Test script logs",
+  "resultTabDeviceProfileMenuTitle": "Device profiles",
+
+  "routineChangeLogBackButtonText": "Pipelines",
+  "routineChangeLogTitleDescription": "History",
+
+  "pipelineEmptyDescription": "Create routine and run pipeline for tests.<br></br><br></br><link>Click here</link> for more information",
+
+  "stepTestTabMenuTitle": "Tests",
+  "setpLogTabMenuTitle": "Logs",
+  "destTestDeviceProfileTabMenuTitle": "Device profiles",
+  "destTestDeviceLogTabMenuTitle": "Device logs",
+  "destTestCpuGraphTitle": "CPU usage",
+  "destTestMemoryGraphTitle": "Memory usage",
+  "destTestFpsGraphTitle": "FPS",
+  "destTestNoGraphDataTitle": "No data",
+  "destTestNoCpuGraphDataDescription": "There's no CPU usage information when this task was executed.",
+  "destTestNoMemoryGraphDataDescription": "There's no memory usage information when this task was executed.",
+  "destTestNoFpsGraphDataDescription": "There's no FPS usage information when this task was executed.",
+
+  "routineEditGuiModeButtonTitle": "GUI Editor",
+  "routineEditScriptModeButtonTitle": "YAML Editor",
+  "routineEditPreviewModeButtonTitle": "Preview",
+  "updateRoutineButtonTitle": "Update",
+  "createRoutineButtonTitle": "Create",
+
+  "updateRoutineSuccessMessage": "Updated!",
+  "updateRoutineFailureMessage": "Failed to update.\n{{reason}}",
+  "createRoutineSuccessMessage": "Created!",
+  "createRoutineFailureMessage": "Failed to create.\n{{reason}}",
+
+  "routineGuiEditorRoutineNameLabel": "Routine name",
+  "routineGuiEditorRoutineNamePlaceholder": "Name",
+  "routineGuiEditorJobLabel": "Jobs",
+  "routineGuiEditorJobNamePlaceholder": "Name",
+  "routineGuiEditorJobNeedLabel": "Predecessors",
+  "routineGuiEditorJobNeedDescription": "This job will be executed after the predecessor jobs are completed.",
+  "routineGuiEditorJobNeedSelectorPlaceholder": "Job name",
+  "routineGuiEditorJobDeviceTagLabel": "Device tags",
+  "routineGuiEditorJobDeviceTagDescription": "This job will be executed on the devices with the selected tags.",
+  "routineGuiEditorJobDeviceTagSelectorPlaceholder": "Tag name",
+  "routineGuiEditorJobScreenRecordLabel": "Device screen recording",
+  "routineGuiEditorJobScreenRecordDescription": "This job will record the screen of the device if the option is enabled.",
+  "routineGuiEditorStepLabel": "Steps",
+  "routineGuiEditorStepNamePlaceholder": "Name",
+  "routineGuiEditorStepActionLabel": "Action",
+  "routineGuiEditorStepActionDescription": "Install app: Install and run app before test.\nRun test: Run test script.",
+  "routineGuiEditorStepAppVersionLabel": "App version",
+  "routineGuiEditorStepScriptLabel": "Script",
+  "routineGuiEditorAddJobButtonTitle": "Add new job",
+  "routineGuiEditorAddStepButtonTitle": "Add new step"
+}

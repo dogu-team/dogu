@@ -1,0 +1,47 @@
+{
+  "sidebarSubTitle": "조직",
+  "projectPageTitle": "프로젝트",
+  "memberPageTitle": "멤버",
+  "hostPageTitle": "호스트",
+  "devicePageTitle": "디바이스",
+  "cloudDevicePageTitle": "클라우드 디바이스",
+  "addDevicePageTitle": "추가 대기중인 디바이스",
+  "organizationSettingPageTitle": "설정",
+  "deviceTagPageTitle": "디바이스 태그",
+  "teamPageTitle": "팀",
+
+  "addNewProject": "새 프로젝트 생성",
+  "newProjectModalInputName": "프로젝트 이름",
+  "newProjectModalInputDesc": "프로젝트 설명",
+  "newProjectModalInputDescPlaceholder": "설명 (선택사항)",
+  "newProjectSuccessTitle": "'{{name}}' 프로젝트를 성공적으로 생성했습니다",
+  "newProjectFailTitle": "프로젝트 생성 실패\n{{reason}}",
+
+  "tableAction": "메뉴",
+  "tableName": "이름",
+  "memberTablePermission": "권한",
+
+  "addNewDevice": "새 디바이스 추가",
+
+  "settingChangeImage": "이미지 변경",
+  "settingOrgName": "조직 이름",
+
+  "settingChangeOwnerMenuTitle": "조직 소유자 변경",
+  "settingChangeOwnerDescriptionText": "조직 소유자를 다른 멤버로 변경합니다. 기존 소유자는 Admin 권한을 갖게 됩니다.",
+  "settingChangeOwnerButtonTitle": "소유자 변경",
+  "settingchangeOwnerConfirmModalTitle": "소유자 변경",
+  "settingchangeOwnerConfirmModalContent": "기존 소유자는 Admin 권한을 가지게 됩니다.<br></br>새 소유자를 선택하세요.",
+  "settingchangeOwnerConfirmModalButtonTitle": "확인 및 변경",
+
+  "settingRemoveOrgMenuTitle": "조직 삭제",
+  "settingRemoveOrgDescriptionText": "조직을 영구적으로 삭제합니다.",
+  "settingRemoveOrgButtonTitle": "조직 삭제",
+  "settingRemoveOrgConfirmModalTitle": "조직 삭제",
+  "settingRemoveOrgConfirmModalContent": "정말 <b>{{name}}</b> 조직을 영구적으로 삭제하시겠습니까?<br></br>이 작업은 되돌릴 수 없습니다.",
+  "settingRemoveOrgConfirmModalButtonTitle": "확인 및 삭제",
+
+  "projectRecentActivity": "최근 활동: {{date}}",
+  "projectMemberCountSingular": "{{count}} 멤버",
+  "projectMemberCountPlural": "{{count}} 멤버",
+  "projectTeamMemberTooltipTitle": "팀 {{name}}"
+}

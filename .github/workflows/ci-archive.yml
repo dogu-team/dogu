@@ -1,0 +1,170 @@
+name: 🔄ci-archive
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches: ['main']
+    paths:
+      - 'prebuilds/protocol-exporter/**.proto'
+      - 'packages/typescript-dev-private/build-tools/**'
+      - 'projects/go-device-controller/**'
+      - 'projects/ios-device-agent/**'
+      - 'projects/ios-device-controller/**'
+      - 'projects/android-device-agent/**'
+      - 'nm-space/projects/dost/**'
+  pull_request:
+    branches: ['main']
+
+env:
+  YARN_CHECKSUM_BEHAVIOR: update yarn
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        label: [archive]
+        platform: [Windows, macOS]
+    runs-on: ['${{ matrix.label }}', '${{ matrix.platform }}']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          clean: false
+          fetch-depth: 0
+
+      - name: Windows - Powershell - Check
+        if: runner.os == 'Windows'
+        id: checkpowershell
+        run: winget list Microsoft.PowerShell --accept-source-agreements
+        continue-on-error: true
+
+      - name: Windows - Powershell - Upgrade
+        if: runner.os == 'Windows' && steps.checkpowershell.outcome == 'success'
+        run: |
+          winget install --id Microsoft.Powershell --source winget --silent
+        continue-on-error: true
+
+      - name: Windows - Powershell - Add to Env
+        if: runner.os == 'Windows'
+        run: |
+          "C:\Program Files\PowerShell\7" >> $env:GITHUB_PATH
+
+      - name: Windows - Msys2 - MIGW32 - Setup for cgo
+        uses: msys2/setup-msys2@v2
+        if: runner.os == 'Windows'
+        with:
+          msystem: MINGW32
+          location: ${{ github.workspace }}
+          install: >-
+            git
+            base-devel
+            mingw-w64-i686-gcc
+
+      - name: Windows - Msys2 - MIGW64 - Setup for cgo
+        uses: msys2/setup-msys2@v2
+        if: runner.os == 'Windows'
+        with:
+          msystem: MINGW64
+          location: ${{ github.workspace }}
+          install: >-
+            git
+            base-devel
+            mingw-w64-x86_64-gcc
+
+      - name: Windows - Setup Cmake
+        if: runner.os == 'Windows'
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: 3.25.1
+          ninjaVersion: 1.11.1
+
+      - name: Macos - Setup Cmake,
+        if: runner.os == 'macOS'
+        run: brew install cmake
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: 1
+        continue-on-error: true
+
+      - name: Common - Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.18.4'
+
+      - name: Common - Set up JDK 11 for android build
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: 'temurin'
+
+      - name: Common - Setup Android SDK
+        uses: android-actions/setup-android@v2.0.10
+
+      - name: Newbie
+        run: |
+          yarn workspace dogu run newbie
+
+      - name: Build Projects
+        run: |
+          yarn workspace dogu run build:packages
+
+      - name: Build Archive
+        run: |
+          yarn workspace dogu run build:archive
+
+      - name: Git - add and commit
+        run: git add third-party && git commit -m "[ci-archive] update archive" && git push -f
+
+      - name: Dost - Newbie nm-space
+        run: |
+          yarn workspace dogu run newbie:nm-space
+
+      - name: Dost - Install nm-space
+        run: |
+          yarn install
+        working-directory: ./nm-space
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+      - name: load credentials
+        id: create-json
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: 'service-account-key.json'
+          json: ${{ secrets.SEVICE_ACCOUNT_KEY_JSON }}
+
+      - name: Dost - Set productName
+        run: |
+          yarn util:set-productname Dost-ci-development && yarn
+        working-directory: ./nm-space/projects/dost
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+      - name: Dost - Set version 0.0.1
+        run: |
+          yarn util:set-version 0.0.1
+        working-directory: ./nm-space/projects/dost
+
+      - name: Dost - Build
+        run: |
+          yarn run env:dev && yarn run build && yarn run deploy
+        working-directory: ./nm-space/projects/dost
+
+  send-slack:
+    runs-on: ubuntu-latest
+    needs: [build]
+    if: ${{ always() }}
+
+    steps:
+      - name: Send Slack
+        uses: dogu-team/slack@v1.0
+        with:
+          template: 'CI'
+          slack-channel-id: 'C03PL9TC44Q'
+          result-status: ${{ needs.build.result }}
+          ignore-notify: ${{ needs.build.result == 'success' }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

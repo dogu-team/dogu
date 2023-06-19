@@ -1,0 +1,5 @@
+package env
+
+const (
+	DOGU_PROTOCOL_VERSION string = "991c566157f6433f65791afe48514522"
+)

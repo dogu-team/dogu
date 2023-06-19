@@ -1,0 +1,7 @@
+{
+  "verbose": true,
+  "watch": ["./src", "../typescript-private/types/src", "../typescript-private/env-tools/src", "../../typescript/common/src"],
+  "exec": "tsc -b",
+  "ext": "ts",
+  "delay": 3000
+}

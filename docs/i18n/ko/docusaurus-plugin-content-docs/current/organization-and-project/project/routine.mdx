@@ -1,0 +1,79 @@
+---
+sidebar_position: 3
+title: 루틴 관리
+locale: ko
+---
+
+import ProjectWritePermission from '/src/components/console/ProjectWritePermission.mdx';
+import ProjectAdminPermission from '/src/components/console/ProjectAdminPermission.mdx';
+
+:::tip
+
+이 문서에서는 프로젝트 내에서 루틴 기능에 대해 설명합니다.
+
+루틴 작성법, 개념 등에 대한 자세한 내용은 [루틴](/script-and-routine/introduction) 문서를 참고해주세요.
+
+:::
+
+## 루틴 생성하기
+
+<ProjectWritePermission prefix="루틴 생성은" />
+
+1. 프로젝트 페이지에서 "루틴" 탭을 클릭합니다.
+2. 왼쪽 사이드바에서 "+" 버튼을 눌러 루틴 생성 페이지로 이동합니다.
+3. 루틴 샘플 코드를 참고하거나, [루틴 편집기](/script-and-routine/routine/editor) 문서를 참고해서 루틴을 작성합니다.
+   <img
+     src="/ko/img/console/project/create-routine.png"
+     style={{ width: 600, display: 'block' }}
+   />
+4. "생성" 버튼을 눌러 루틴을 생성합니다.
+
+## 루틴 실행하기
+
+<ProjectWritePermission prefix="루틴 실행은" />
+
+:::info
+
+루틴, 파이프라인, 테스트 실행 결과 등에 대한 자세한 정보는 [루틴](/script-and-routine/routine/about) 문서를 참고해주세요.
+
+:::
+
+1. 프로젝트 페이지에서 "루틴" 탭을 클릭합니다.
+2. 왼쪽 사이드바의 루틴 목록에서 실행하고자 하는 루틴을 클릭합니다.
+3. "루틴 실행" 버튼을 눌러 파이프라인을 생성합니다.
+   <img
+     src="/ko/img/console/project/run-routine.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+## 루틴 수정하기
+
+<ProjectWritePermission prefix="루틴 수정은" />
+
+1. 프로젝트 페이지에서 "루틴" 탭을 클릭합니다.
+2. 왼쪽 사이드바의 루틴 목록에서 수정하고자 하는 루틴을 클릭합니다.
+3. "루틴 수정" 버튼을 눌러 루틴 수정 페이지로 이동합니다.
+4. 루틴 샘플 코드를 참고하거나, [루틴 편집기](/script-and-routine/routine/editor) 문서를 참고해서 루틴을 수정합니다.
+   <img
+     src="/ko/img/console/project/edit-routine.png"
+     style={{ width: 600, display: 'block' }}
+   />
+5. "저장" 버튼을 눌러 루틴을 수정을 완료합니다.
+
+## 루틴 삭제하기
+
+<ProjectAdminPermission prefix="루틴 삭제는" />
+
+:::danger
+
+루틴을 삭제하면 파이프라인 실행 결과를 모두 잃게 됩니다.
+
+:::
+
+1. 프로젝트 페이지에서 "루틴" 탭을 클릭합니다.
+2. 왼쪽 사이드바의 루틴 목록에서 삭제하고자 하는 루틴을 클릭합니다.
+3. 루틴 제목 옆의 메뉴 버튼(`···`)을 눌러 "루틴 삭제" 메뉴를 클릭합니다.
+   <img
+     src="/ko/img/console/project/delete-routine.png"
+     style={{ width: 600, display: 'block' }}
+   />

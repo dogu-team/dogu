@@ -1,0 +1,52 @@
+---
+sidebar_position: 6
+title: Managing Project Devices
+locale: en
+---
+
+import ProjectAdminPermission from '/src/components/console/ProjectAdminPermissionEng.mdx';
+import ProjectMemberPermission from '/src/components/console/ProjectMemberPermissionEng.mdx';
+
+Devices assigned to the project are assets for real game testing.
+
+:::info Assigning devices
+
+To assign a device to a project, refer to the <a href='../organization/device/device-management#assigning-devices-to-a-project'>Assigning Devices to a Project</a> section.
+
+:::
+
+## Device streaming and remote control
+
+<ProjectMemberPermission prefix="Device streaming and remote control for assigned devices" />
+
+:::info
+
+Device streaming and remote control are only available when the device is in the `Online` state.
+
+:::
+
+1. Go to the project page and click on the "Devices" tab.
+2. Find the device you want to stream and remote control from the list, and click the menu button(`···`).
+3. Click the "Streaming" button.
+   <img
+     src="/img/console/project/project-device-streaming-menu.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+:::info Device Remote Control Feature
+
+For information about the features of device streaming and remote control, please refer to the [Device Streaming and Remote Control](/host-and-device/device/streaming-and-remote-control/about) documentation.
+
+:::
+
+## Removing assigned devices
+
+<ProjectAdminPermission prefix="Removing assigned devices" />
+
+1. Go to the project page and click on the "Devices" tab.
+2. Find the device you want to remove the assignment for from the list, and click the menu button(`···`).
+3. Click the "Delete from project" button, then click confirmation button and complete the removal.
+   <img
+     src="/img/console/project/project-device-dealloc-menu.png"
+     style={{ width: 600, display: 'block' }}
+   />

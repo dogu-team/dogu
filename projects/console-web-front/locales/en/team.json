@@ -1,0 +1,85 @@
+{
+  "teamTableNameColumn": "Name",
+  "teamTableMembersColumn": "Members",
+
+  "teamItemMemberMenu": "Manage members",
+  "teamItemProjectMenu": "Manage projects",
+  "teamItemSettingMenu": "Settings",
+
+  "createNewTeamButtonText": "Create new team",
+  "createNewTeamModalTitle": "Create new team",
+  "createNewTeamModalNameLabel": "Team name",
+  "createNewTeamModalNamePlaceHolder": "Name",
+  "createNewTeamSuccessMsg": "Created",
+  "createNewTeamFailedMsg": "Failed to create - {{reason}}",
+
+  "teamFilterNamePlaceholder": "Search by name",
+
+  "teamDetailPageTitle": "Team {{name}}",
+  "teamDetailPageMemberTab": "Members",
+  "teamDetailPageProjectTab": "Projects",
+  "teamDetailPageSettingTab": "Settings",
+  "teamDetailPageSettingNameLabel": "Team name",
+  "teamDetailPageSettingNamePlaceholder": "Name",
+  "teamDetailPageSettingNameEmptyMsg": "Please input team name",
+
+  "removeTeamMenuTitle": "Remove team",
+  "removeTeamMenuDescriptionText": "Remove team permanently",
+  "removeTeamButtonText": "Remove team",
+  "removeTeamConfirmModalTitle": "Remove team",
+  "removeTeamConfirmModalContent": "Are you sure to remove team <b>{{name}}</b>?<br></br>This cannot be undone.",
+  "removeTeamConfirmModalButtonTitle": "Confirm and remove",
+  "removeTeamSuccessMessage": "Removed",
+  "removeTeamFailureMessage": "Failed to remove\n{{reason}}",
+
+  "teamUpdateSuccessMsg": "Updated!",
+  "teamUpdateFailureMsg": "Failed to update\n{{reason}}",
+
+  "addMemberTooltipTitle": "Add member",
+  "deleteTeamConfirmMsg": "Delete this team? This can't undo.",
+
+  "addMemberModalTitle": "Add members",
+  "addMemberModalInputPlaceholder": "Search by name or email",
+  "addMemberSuccessMsg": "Added!",
+  "addMemberFailMsg": "Failed to add.\n{{reason}}",
+  "addMemberEmptyResult": "Cannot find colleague",
+
+  "memberTableProfileColumn": "Profile",
+
+  "memberItemRemoveMenu": "Remove member",
+
+  "memberRemoveModalTitle": "Remove member",
+  "memberRemoveButtonText": "Confirm & remove from team",
+  "memberRemoveContent": "Would you like to remove member from the team?",
+
+  "addMemberButtonTitle": "Add members",
+  "memberFilterInputPlaceholder": "Name or email",
+  "memberRemoveConfirmMsg": "Remove this member?",
+  "memberRemoveSuccessMsg": "Removed!",
+  "memberRemoveFailMsg": "Failed to remove.\n{{reason}}",
+
+  "projectTableNameColumn": "Name",
+  "projectTablePermissionColumn": "Permission",
+
+  "projectItemRemoveMenu": "Remove from team",
+
+  "removeProjectModalTitle": "Remove project from team",
+  "removeProjectModalButtonText": "Confirm & remove from team",
+  "removeProjectModalContentText": "Would you like to remove project {{name}} from team?",
+
+  "addProjectButtonTitle": "Add a project",
+  "addProjectModalTitle": "Add a project",
+  "addProjectModalInputPlaceholder": "Search with name",
+  "addProjectModalEmptyResult": "No result",
+  "projectFilterInputPlaceholder": "Name",
+  "projectAddSuccessMsg": "Added!",
+  "projectAddFailMsg": "Failed to add.\n{{reason}}",
+  "projectPermissionUpdateSuccessMsg": "Updated!",
+  "projectPermissionUpdateFailMsg": "Failed to update.\n{{reason}}",
+  "projectRemoveSuccessMsg": "Removed!",
+  "projectRemoveFailMsg": "Failed to remove.\n{{reason}}",
+
+  "teamEmptyDescription": "Make it easier to manage permission by grouping the members into teams.<br></br><br></br><link>Click here</link> for more information",
+  "teamMemberEmptyDescription": "Add team member for managing members.",
+  "teamProjectEmptyDescription": "Bring your team into the project, manage your permissions."
+}

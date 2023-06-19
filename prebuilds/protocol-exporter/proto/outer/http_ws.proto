@@ -1,0 +1,115 @@
+syntax = "proto3";
+
+package outer;
+
+import "google/protobuf/struct.proto";
+import "outer/errors.proto";
+
+option go_package = "go-device-controller/types/protocol/generated/proto/outer";
+option java_package = "com.dogu.protocol.generated.outer";
+
+message HeaderValue {
+  string key = 1;
+  string value = 2;
+}
+
+message Headers {
+  repeated HeaderValue values = 1;
+}
+
+message Body {
+  oneof value {
+    string string_value = 1;
+    bytes bytes_value = 2;
+  }
+}
+
+message HttpRequest {
+  optional string protocol_domain = 1;
+  string method = 2;
+  string path = 3;
+  optional Headers headers = 4;
+  optional google.protobuf.Struct query = 5;
+  optional Body body = 6;
+}
+
+message HttpResponse {
+  sfixed32 status_code = 1;
+  Headers headers = 2;
+  optional Body body = 3;
+  HttpRequest request = 4;
+}
+
+message HttpRequestParam {
+  sfixed32 sequence_id = 1;
+  HttpRequest request = 2;
+}
+
+message HttpRequestResult {
+  oneof value {
+    HttpResponse response = 2;
+    outer.ErrorResult error = 3;
+  }
+}
+
+message WebSocketConnection {
+  optional string protocol_domain = 1;
+  string path = 2;
+  optional google.protobuf.Struct query = 3;
+}
+
+message WebSocketMessage {
+  oneof value {
+    string string_value = 1;
+    bytes bytes_value = 2;
+  }
+}
+
+message WebSocketClose {
+  sfixed32 code = 1;
+  string reason = 2;
+}
+
+message WebSocketParam {
+  oneof value {
+    outer.WebSocketConnection connection = 1;
+    WebSocketMessage message = 2;
+    WebSocketClose close = 3;
+  }
+}
+
+message WebSocketOpenEvent {
+}
+
+message WebSocketErrorEvent {
+}
+
+message WebSocketCloseEvent {
+  sfixed32 code = 1;
+  string reason = 2;
+}
+
+message WebSocketMessageEvent {
+  oneof value {
+    string string_value = 1;
+    bytes bytes_value = 2;
+  }
+}
+
+message WebSocketResult {
+  oneof value {
+    WebSocketOpenEvent open_event = 1;
+    WebSocketErrorEvent error_event = 2;
+    WebSocketCloseEvent close_event = 3;
+    WebSocketMessageEvent message_event = 4;
+    outer.ErrorResult error = 5;
+  }
+}
+
+message HttpRequestWebSocketResult {
+  sfixed32 sequence_id = 1;
+  oneof value {
+    HttpRequestResult http_request_result = 2;
+    WebSocketResult web_socket_result = 3;
+  }
+}

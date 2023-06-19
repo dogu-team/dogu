@@ -1,0 +1,46 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.dostAndDeviceSidebar.category.Host": {
+    "message": "Host",
+    "description": "The label for category Host in sidebar dostAndDeviceSidebar"
+  },
+  "sidebar.dostAndDeviceSidebar.category.Device": {
+    "message": "Device",
+    "description": "The label for category Device in sidebar dostAndDeviceSidebar"
+  },
+  "sidebar.dostAndDeviceSidebar.category.Streaming & Remote Control": {
+    "message": "Streaming & Remote Control",
+    "description": "The label for category Streaming & Remote Control in sidebar dostAndDeviceSidebar"
+  },
+  "sidebar.routineSidebar.category.Test script": {
+    "message": "Test script",
+    "description": "The label for category Test script in sidebar routineSidebar"
+  },
+  "sidebar.routineSidebar.category.Routine": {
+    "message": "Routine",
+    "description": "The label for category Routine in sidebar routineSidebar"
+  },
+  "sidebar.routineSidebar.category.Action": {
+    "message": "Action",
+    "description": "The label for category Action in sidebar routineSidebar"
+  },
+  "sidebar.routineSidebar.category.Pre-defined Actions": {
+    "message": "Pre-defined Actions",
+    "description": "The label for category Pre-defined Actions in sidebar routineSidebar"
+  },
+  "sidebar.organizationAndProjectSidebar.category.Organization": {
+    "message": "Organization",
+    "description": "The label for category Organization in sidebar organizationAndProjectSidebar"
+  },
+  "sidebar.organizationAndProjectSidebar.category.Device": {
+    "message": "Device",
+    "description": "The label for category Device in sidebar organizationAndProjectSidebar"
+  },
+  "sidebar.organizationAndProjectSidebar.category.Project": {
+    "message": "Project",
+    "description": "The label for category Project in sidebar organizationAndProjectSidebar"
+  }
+}

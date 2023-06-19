@@ -1,0 +1,81 @@
+{
+  "teamTableNameColumn": "이름",
+  "teamTableMembersColumn": "멤버",
+
+  "teamItemMemberMenu": "멤버 관리",
+  "teamItemProjectMenu": "프로젝트 관리",
+  "teamItemSettingMenu": "설정",
+
+  "createNewTeamButtonText": "새 팀 만들기",
+  "createNewTeamModalTitle": "새 팀 만들기",
+  "createNewTeamModalNameLabel": "팀 이름",
+  "createNewTeamModalNamePlaceHolder": "이름",
+  "createNewTeamSuccessMsg": "생성됨",
+  "createNewTeamFailedMsg": "생성 실패 - {{reason}}",
+
+  "teamFilterNamePlaceholder": "이름 검색",
+
+  "teamDetailPageTitle": "팀 {{name}}",
+  "teamDetailPageMemberTab": "멤버",
+  "teamDetailPageProjectTab": "프로젝트",
+  "teamDetailPageSettingTab": "설정",
+  "teamDetailPageSettingNameLabel": "팀 이름",
+  "teamDetailPageSettingNamePlaceholder": "이름",
+  "teamDetailPageSettingNameEmptyMsg": "이름을 입력해 주세요",
+
+  "removeTeamMenuTitle": "팀 삭제",
+  "removeTeamMenuDescriptionText": "팀을 영구적으로 삭제합니다",
+  "removeTeamButtonText": "팀 삭제",
+  "removeTeamConfirmModalTitle": "팀 삭제",
+  "removeTeamConfirmModalContent": "<b>{{name}}</b>팀을 영구적으로 삭제하시겠습니까?<br></br>이 작업은 취소할 수 없습니다.",
+  "removeTeamConfirmModalButtonTitle": "확인 및 삭제",
+  "removeTeamSuccessMessage": "삭제됨",
+  "removeTeamFailureMessage": "삭제 실패\n{{reason}}",
+
+  "teamUpdateSuccessMsg": "변경됨",
+  "teamUpdateFailureMsg": "변경 실패\n{{reason}}",
+
+  "addMemberModalTitle": "멤버 추가하기",
+  "addMemberModalInputPlaceholder": "이름 또는 이메일로 검색",
+  "addMemberSuccessMsg": "추가됨",
+  "addMemberFailMsg": "추가 실패.\n{{reason}}",
+  "addMemberEmptyResult": "결과가 없습니다",
+
+  "memberTableProfileColumn": "프로필",
+
+  "memberItemRemoveMenu": "멤버 삭제",
+
+  "memberRemoveModalTitle": "멤버 삭제하기",
+  "memberRemoveButtonText": "확인 및 팀에서 삭제",
+  "memberRemoveContent": "팀에서 삭제하시겠습니까?",
+  "memberRemoveSuccessMsg": "삭제됨",
+  "memberRemoveFailMsg": "삭제 실패.\n{{reason}}",
+
+  "addMemberButtonTitle": "멤버 추가",
+  "memberFilterInputPlaceholder": "이름 또는 이메일",
+
+  "projectTableNameColumn": "이름",
+  "projectTablePermissionColumn": "권한",
+
+  "projectItemRemoveMenu": "팀에서 삭제",
+
+  "removeProjectModalTitle": "프로젝트 삭제",
+  "removeProjectModalButtonText": "확인 및 팀에서 삭제",
+  "removeProjectModalContentText": "팀에서 프로젝트 '{{name}}'을/를 삭제할까요?",
+
+  "addProjectButtonTitle": "프로젝트 추가",
+  "addProjectModalTitle": "프로젝트 추가하기",
+  "addProjectModalInputPlaceholder": "이름으로 검색",
+  "addProjectModalEmptyResult": "결과 없음",
+  "projectFilterInputPlaceholder": "이름",
+  "projectAddSuccessMsg": "추가됨",
+  "projectAddFailMsg": "추가 실패.\n{{reason}}",
+  "projectPermissionUpdateSuccessMsg": "변경됨",
+  "projectPermissionUpdateFailMsg": "변경 실패\n{{reason}}",
+  "projectRemoveSuccessMsg": "삭제됨",
+  "projectRemoveFailMsg": "삭제 실패\n{{reason}}",
+
+  "teamEmptyDescription": "멤버들을 한 팀으로 묶어 권한 관리를 쉽게 해보세요.<br></br><br></br><link>여기를 눌러</link> 더 많은 정보 보기",
+  "teamMemberEmptyDescription": "멤버 관리를 위해 팀 멤버를 추가해 보세요.",
+  "teamProjectEmptyDescription": "팀을 프로젝트에 참여시키고, 권한을 관리해보세요"
+}

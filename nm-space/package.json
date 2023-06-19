@@ -1,0 +1,28 @@
+{
+  "private": true,
+  "name": "nm-space",
+  "version": "0.2.0",
+  "description": "node modules space",
+  "type": "commonjs",
+  "scripts": {
+    "build": "yarn workspaces foreach --exclude '@dogu**/*'  --jobs unlimited -ptvi run build",
+    "env:e2e": "yarn workspaces foreach --exclude '@dogu**/*'  --jobs unlimited -ptvi run env:e2e",
+    "env:local": "yarn workspaces foreach --exclude '@dogu**/*' --jobs unlimited -ptvi run env:local",
+    "env:prod": "yarn workspaces foreach --exclude '@dogu**/*'  --jobs unlimited -ptvi run env:prod"
+  },
+  "workspaces": [
+    "projects/*",
+    "mirror/packages/*",
+    "samples/*"
+  ],
+  "devDependencies": {
+    "@types/node": "18.15.5",
+    "@types/prettier": "2",
+    "@types/prettier-package-json": "2",
+    "organize-imports-cli": "0.10.0",
+    "prettier": "2.8.6",
+    "prettier-package-json": "2.8.0",
+    "ts-node": "10.9.1",
+    "typescript": "4.7.4"
+  }
+}

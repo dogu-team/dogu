@@ -1,0 +1,7 @@
+{
+  "verbose": true,
+  "watch": ["./src", "../../packages/typescript/action-kit/src", "../../packages/typescript-dev-private/publish-package/src"],
+  "exec": "yarn run build",
+  "ext": "ts",
+  "delay": 3000
+}

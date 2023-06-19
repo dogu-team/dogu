@@ -1,0 +1,37 @@
+name: dogu-actions/prepare
+description: prepare run test
+author: dogu
+inputs:
+  appVersion:
+    description: app version to download and install
+    required: true
+  branchOrTag:
+    description: branch or tag to download
+    default: main
+    required: false
+  clean:
+    description: run git clean -fdx before git pull without git clone
+    default: true
+    required: false
+  uninstallApp:
+    description: uninstall app before install
+    default: false
+    required: false
+  gamiumEnginePort:
+    description: gamium engine port
+    default: 50061
+    required: false
+  retryCount:
+    description: retry count to gamium engine connection
+    default: 2
+    required: false
+  retryInterval:
+    description: retry interval to gamium engine connection
+    default: 1000
+    required: false
+  requestTimeout:
+    description: request timeout
+    default: 50000
+    required: false
+runs:
+  main: build/src/main.js

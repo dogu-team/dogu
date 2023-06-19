@@ -1,0 +1,31 @@
+{
+  "name": "routine-interface-exporter",
+  "scripts": {
+    "clean": "shx rm -rf build generated .export",
+    "dev": "nodemon",
+    "export": "ts-node scripts/export.ts"
+  },
+  "dependencies": {
+    "copyfiles": "2.4.1",
+    "js-yaml": "4.1.0",
+    "json-schema-to-typescript": "11.0.2"
+  },
+  "devDependencies": {
+    "@dogu-dev-private/base-build-tools": "workspace:^",
+    "@types/copyfiles": "2",
+    "@types/eslint": "8",
+    "@types/js-yaml": "4.0.5",
+    "@types/node": "18.15.11",
+    "@types/prettier": "2",
+    "@types/shelljs": "0.8.11",
+    "@typescript-eslint/eslint-plugin": "5.36.2",
+    "@typescript-eslint/parser": "5.36.2",
+    "eslint": "8.23.0",
+    "nodemon": "2.0.22",
+    "prettier": "2.8.6",
+    "shelljs": "0.8.5",
+    "shx": "0.3.4",
+    "ts-node": "10.9.1",
+    "typescript": "4.7.4"
+  }
+}

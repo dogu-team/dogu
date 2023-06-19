@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package inner.grpc.services;
+
+import "inner/params/dc_gdc.proto";
+import "inner/types/dc_gdc.proto";
+
+option go_package = "go-device-controller/types/protocol/generated/proto/inner/grpc/services";
+option java_package = "com.dogu.protocol.generated.inner.grpc.services";
+
+service GoDeviceControllerService {
+  rpc Call(params.DcGdcParam) returns (params.DcGdcResult);
+  rpc StartStreaming(types.DcGdcStartStreamingParam)
+      returns (stream types.DcGdcStartStreamingResult);
+}

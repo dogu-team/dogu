@@ -1,0 +1,82 @@
+name: test room-based game
+
+on:
+  workflow_dispatch:
+
+env:
+  TEST_SCRIPT: test/room-based-game.ts
+
+jobs:
+  build-android:
+    runs-on: my-android-build-machine
+    steps:
+      - name: build
+        run: ./gradlew assembleDebug
+      - name: upload
+        uses: actions/upload-artifact@master
+        with:
+          name: android-build
+          path: app.apk
+
+  build-ios:
+    runs-on: my-ios-build-machine
+    steps:
+      - name: build
+        run: xcodebuild
+      - name: upload
+        uses: actions/upload-artifact@master
+        with:
+          name: ios-build
+          path: app.ipa
+
+  install-android:
+    needs: build-android
+    runs-on:
+      group: my-game-android-group
+    steps:
+      - name: download
+        uses: actions/download-artifact@master
+        with:
+          name: android-build
+          path: app.apk
+      - name: install android
+        uses: actions/dogu-install-android@v1
+        with:
+          build-path: app.apk
+
+  install-ios:
+    needs: build-ios
+    runs-on:
+      group: my-game-ios-group
+    steps:
+      - name: download
+        uses: actions/download-artifact@master
+        with:
+          name: ios-build
+          path: app.ipa
+      - name: install
+        uses: actions/dogu-install-ios@v1
+        with:
+          build-path: app.ipa
+
+  test-room-leader:
+    needs: [install-android, install-ios]
+    runs-on:
+      group: my-game-leader-group
+    steps:
+      - name: test room leader
+        uses: actions/dest@v1
+        with:
+          script: $TEST_SCRIPT
+          role: leader
+
+  test-room-follower:
+    needs: [install-android, install-ios]
+    runs-on:
+      group: my-game-follower-group
+    steps:
+      - name: test room follower
+        uses: actions/dest@v1
+        with:
+          script: $TEST_SCRIPT
+          role: follower

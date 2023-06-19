@@ -1,0 +1,41 @@
+{
+  "signInPageTitle": "Sign In",
+  "forgotPasswordPageTitle": "Forgot Password",
+  "signUpPageTitle": "Sign Up",
+  "signUpWithInvitationPageTitle": "Sign Up",
+
+  "signInForgotPasswordLinkText": "Forgot password?",
+  "orText": "or",
+  "signInSignUpLinkText": "Create an account",
+
+  "signInFormEmailLabel": "Email",
+  "signInFormPasswordLabel": "Passoword",
+  "signInFormEmailPlaceholder": "Email",
+  "signInFormPasswordPlaceholder": "Password (8 ~ 28 characters)",
+  "signInValidationFailErrorMsg": "Check your email or password.",
+  "signInErrorMsg": "Failed to sign in.\n{{reason}}",
+  "signInSubmitButtonTitle": "Sign in",
+
+  "forgotPasswordFormEmailLabel": "Email",
+  "forgotPasswordFormEmailPlaceholder": "Registered email",
+  "forgotPasswordSubmitButtonTitle": "Send",
+  "forgotPasswordSignInLinkText": "Sign in",
+  "forgotPasswordSignUpLinkText": "Create an account",
+
+  "signUpServiceAgreement": "By signing up, you agree to our <0>Privacy Policy</0>",
+  "signUpAlreadyAccountExist": "Have an account? <0>Sign in</0>",
+  "signUpFormOrganizationNameLabel": "Organization name",
+  "signUpFormNameLabel": "Username",
+  "signUpFormEmailLabel": "Email",
+  "signUpFormPasswordLabel": "Password",
+  "signUpFormConfirmPasswordLabel": "Confirm Password",
+  "signUpFormOrganizationNamePlaceholder": "Organization name",
+  "signUpFormNamePlaceholder": "Name or nickname",
+  "signUpFormEmailPlaceholder": "email",
+  "signUpFormPasswordPlaceholder": "password (8 ~ 28 characters)",
+  "signUpFormConfirmPasswordPlaceholder": "confirm password",
+  "signUpFormSubmitButtonTitle": "Create an account",
+
+  "signUpAlreadyExistEmailErrorMsg": "This email already exist.",
+  "signUpFailedErrorMsg": "Failed to sign up.\n{{reason}}"
+}

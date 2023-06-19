@@ -1,0 +1,47 @@
+{
+  "sidebarSubTitle": "Organization",
+  "projectPageTitle": "Projects",
+  "memberPageTitle": "Colleagues",
+  "hostPageTitle": "Hosts",
+  "devicePageTitle": "Devices",
+  "cloudDevicePageTitle": "Cloud Devices",
+  "addDevicePageTitle": "Standby devices",
+  "organizationSettingPageTitle": "Settings",
+  "deviceTagPageTitle": "Device tags",
+  "teamPageTitle": "Teams",
+
+  "addNewProject": "Add new project",
+  "newProjectModalInputName": "Project name",
+  "newProjectModalInputDesc": "Project description",
+  "newProjectModalInputDescPlaceholder": "Description (optional)",
+  "newProjectSuccessTitle": "Project '{{name}}' is created successfully",
+  "newProjectFailTitle": "Failed to create project.\n{{reason}}",
+
+  "tableName": "Name",
+  "memberTablePermission": "Permission",
+  "tableAction": "Actions",
+
+  "addNewDevice": "Add new device",
+
+  "settingChangeImage": "Change image",
+  "settingOrgName": "Organization name",
+
+  "settingChangeOwnerMenuTitle": "Change organization owner",
+  "settingChangeOwnerDescriptionText": "Change organization owner to another colleague. Former owner will become Admin.",
+  "settingChangeOwnerButtonTitle": "Change owner",
+  "settingchangeOwnerConfirmModalTitle": "Change owner",
+  "settingchangeOwnerConfirmModalContent": "Former organization owner will become Admin.<br></br>Select new owner.",
+  "settingchangeOwnerConfirmModalButtonTitle": "Confirm and change",
+
+  "settingRemoveOrgMenuTitle": "Remove organization",
+  "settingRemoveOrgDescriptionText": "Remove organization permanently",
+  "settingRemoveOrgButtonTitle": "Remove organization",
+  "settingRemoveOrgConfirmModalTitle": "Remove organization",
+  "settingRemoveOrgConfirmModalContent": "Are you sure to remove <b>{{name}}</b> organization permanently?<br></br>This cannot be undone and may lose your works.",
+  "settingRemoveOrgConfirmModalButtonTitle": "Confirm and remove",
+
+  "projectRecentActivity": "Recent activity: {{date}}",
+  "projectMemberCountSingular": "{{count}} member",
+  "projectMemberCountPlural": "{{count}} members",
+  "projectTeamMemberTooltipTitle": "Team {{name}}"
+}

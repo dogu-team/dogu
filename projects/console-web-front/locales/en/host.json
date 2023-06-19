@@ -1,0 +1,69 @@
+{
+  "hostTableNameColumn": "Name",
+  "hostTableOSColumn": "OS",
+  "hostTableConnectionStatusColumn": "Connection",
+  "hostTableDevciesColumn": "Devices",
+
+  "hostItemStartUseMenu": "Start using as device",
+  "hostItemStreamingMenu": "Streaming",
+  "hostItemRevokeTokenMenu": "Revoke token",
+  "hostItemEditMenu": "Edit host",
+  "hostItemStopUseMenu": "Stop using as device",
+  "hostStopUsingModalTitle": "Stop using as device",
+  "hostStopUsingModalContentInfo": "Are you sure to stop using this host as a device?\nIf you stop using the host as a device, it will be removed from the device list, and any ongoing routines will fail.\n\nThe devices connected to the host will not be affected.",
+  "hostStopUsingModalButtontText": "Confirm and stop using",
+  "hostItemDeleteMenu": "Delete host",
+  "hostDeleteModalTitle": "Delete host",
+  "hostDeleteModalButtonText": "Confirm and delete.",
+  "hostDeleteModalContentInfo": "Are you sure to delete this host?\nDeleting a host also deletes the devices attached to the host. Devices will lose their tags and projects.",
+  "hostDeleteModalContentCountSingular": "Host <0>{{name}}</0> has <0>{{count}}</0> device.",
+  "hostDeleteModalContentCountPlural": "Host <0>{{name}}</0> has <0>{{count}}</0> devices.",
+  "dostDownloadTitle": "Download Agent",
+
+  "hostCreateModalSuccessHint": "Host created successfully. <link1>Click here</link1> to install Dost, copy and paste the token to Dost for connecting host. Visit <link2>Host document</link2> for more information.",
+  "hostCreateModalCopyTokenButtonTitle": "Copy token",
+  "hostCreateModalTokenDescription": "Host token",
+  "hostCreateModalTokenCheckDescription": "You can check the token again in host detail",
+
+  "hostStartUsingSuccessMsg": "Start using as device.\nCheck 'Standby devices' in Devices menu.",
+  "hostStartUsingFailMsg": "Failed to use as device.\n{{reason}}",
+
+  "hostStopUsingSuccessMsg": "Stopped successfully",
+  "hostStopUsingFailMsg": "Failed to stop using.\n{{reason}}",
+
+  "hostCopyTokenFailedMsg": "Failed to copy.\n{{reason}}",
+  "hostDeleteSuccessMsg": "Deleted!",
+  "hostDeleteFailedMsg": "Failed to delete.\n{{reason}}",
+
+  "hostTokenRevokeModalTitle": "Revoke host token",
+  "hostTokenRevokeModalContent": "Are you sure to revoke host token? Revoking the host token will result in the device being offline until the host is reconnected with new token.",
+  "hostTokenRevokeModalConfirmButtonTitle": "Confirm and revoke",
+  "hostRevokeTokenSuccessMsg": "Revoked",
+  "hostRevokeTokenFailedMsg": "Failed to revoke.\n{{reason}}",
+  "hostRevokeAfterDescription": "The new token can be used when reconnecting by clicking the 'Troubleshoot' - 'Reconnect' button in Dost.<br></br>Please refer to the <link>host</link> document for more information",
+
+  "addNewHost": "Add new host",
+  "newHostModalInputName": "Host name",
+  "newHostTokenPrefix": "New host token",
+  "newHostTokenCopyTooltip": "Copy connection token",
+  "deleteHostWaringMsg": "Are you sure to delete this host?\nIts devices will be deleted automatically.",
+  "newHostSuccessTitle": "Host '{{name}}' is created successfully",
+  "newHostFailTitle": "Failed to create host '{{name}}'\n{{reason}}",
+
+  "hostEditModalTitle": "Edit host",
+  "hostEditNameInputPlaceholder": "New host name",
+  "hostEditSuccessMsg": "Saved",
+  "hostEditFailMsg": "Failed - {{reason}}",
+
+  "hostDetailModalTitle": "Host information",
+  "hostDetilNameTitle": "Name",
+  "hostDetailCreatedDateTitle": "Created date",
+  "hostDetailConnectedDeviceTitle": "Connected devices",
+  "hostDetailCreatorTitle": "Creator",
+  "hostDetailTokenTitle": "Token",
+  "hostDetailShowTokenButtonTitle": "Show token",
+
+  "hostFilterNamePlaceholder": "Search by name",
+
+  "hostEmptyDescription": "There's no host in your organization.<1></1>Easily manage your devices by adding hosts.<1></1><1></1><0>Click here</0> for see more information"
+}

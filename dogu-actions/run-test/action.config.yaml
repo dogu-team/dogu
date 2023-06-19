@@ -1,0 +1,9 @@
+name: dogu-actions/run-test
+description: run test with gamium
+author: dogu
+inputs:
+  script:
+    description: test script file path
+    required: true
+runs:
+  main: build/src/main.js

@@ -1,0 +1,49 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "rootDirs": ["."],
+    "baseUrl": ".",
+    "outDir": "build",
+    "paths": {
+      "src/*": ["./src/*"]
+    }
+  },
+  "exclude": ["node_modules", "test", "build", "**/*spec.ts"],
+  "include": ["src/**/*.ts"],
+  "references": [
+    {
+      "path": "../../packages/typescript-private/console"
+    },
+    {
+      "path": "../../packages/typescript-private/console-host-agent"
+    },
+    {
+      "path": "../../packages/typescript-private/types"
+    },
+    {
+      "path": "../../packages/typescript/common"
+    },
+    {
+      "path": "../../packages/typescript/console-action"
+    },
+    {
+      "path": "../../packages/typescript/console-dest"
+    },
+    {
+      "path": "../../packages/typescript/console-gamium"
+    },
+    {
+      "path": "../../packages/typescript/device-client-common"
+    },
+    {
+      "path": "../../packages/typescript/env-tools"
+    },
+    {
+      "path": "../../packages/typescript/node"
+    },
+    {
+      "path": "../../packages/typescript-dev-private/build-tools"
+    },
+  ]
+}

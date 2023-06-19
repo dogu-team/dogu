@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "rootDirs": ["."],
+    "baseUrl": ".",
+    "outDir": "build",
+    "incremental": true,
+    "removeComments": true,
+    "module": "es2022",
+    "target": "es2022",
+    "moduleResolution": "node16"
+  },
+  "exclude": ["node_modules", "test", "build", "**/*spec.ts"],
+  "include": ["src"]
+}

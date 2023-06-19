@@ -1,0 +1,41 @@
+{
+  "signInPageTitle": "로그인",
+  "forgotPasswordPageTitle": "비밀번호 찾기",
+  "signUpPageTitle": "회원가입",
+  "signUpWithInvitationPageTitle": "회원가입",
+
+  "signInForgotPasswordLinkText": "비밀번호를 잊으셨나요?",
+  "orText": "또는",
+  "signInSignUpLinkText": "회원가입",
+
+  "signInFormEmailLabel": "이메일",
+  "signInFormPasswordLabel": "비밀번호",
+  "signInFormEmailPlaceholder": "이메일",
+  "signInFormPasswordPlaceholder": "비밀번호 (8 ~ 28자)",
+  "signInValidationFailErrorMsg": "이메일 또는 비밀번호를 확인해 주세요.",
+  "signInErrorMsg": "로그인 실패\n{{reason}}",
+  "signInSubmitButtonTitle": "로그인",
+
+  "forgotPasswordFormEmailLabel": "이메일",
+  "forgotPasswordFormEmailPlaceholder": "가입한 이메일",
+  "forgotPasswordSubmitButtonTitle": "보내기",
+  "forgotPasswordSignInLinkText": "로그인",
+  "forgotPasswordSignUpLinkText": "회원가입",
+
+  "signUpServiceAgreement": "가입하기 버튼을 클릭하면 Dogu의 <0>개인정보처리방침</0>에 동의하게 됩니다.",
+  "signUpAlreadyAccountExist": "계정이 이미 있나요? <0>로그인</0>",
+  "signUpFormOrganizationNameLabel": "조직 이름",
+  "signUpFormNameLabel": "사용자 이름",
+  "signUpFormEmailLabel": "이메일",
+  "signUpFormPasswordLabel": "비밀번호",
+  "signUpFormConfirmPasswordLabel": "비밀번호 확인",
+  "signUpFormOrganizationNamePlaceholder": "조직 이름",
+  "signUpFormNamePlaceholder": "이름 또는 별명",
+  "signUpFormEmailPlaceholder": "이메일",
+  "signUpFormPasswordPlaceholder": "비밀번호 (8 ~ 28자)",
+  "signUpFormConfirmPasswordPlaceholder": "비밀번호 확인",
+  "signUpFormSubmitButtonTitle": "가입하기",
+
+  "signUpAlreadyExistEmailErrorMsg": "이미 등록된 이메일입니다.",
+  "signUpFailedErrorMsg": "회원가입 실패\n{{reason}}"
+}

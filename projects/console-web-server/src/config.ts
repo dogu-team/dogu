@@ -1,0 +1,138 @@
+import { WebSocketProxyId } from '@dogu-private/console-host-agent';
+import { DeviceId, OrganizationId } from '@dogu-private/types';
+import { DataSourceOptions } from 'typeorm';
+import { CONSOLE_BACKEND_ENTITIES_PATH } from './db/entity/index';
+import { env } from './env';
+import { FeatureConfig } from './feature.config';
+import { logger } from './module/logger/logger.instance';
+
+export const config = {
+  pipeline: {},
+  gaurd: {
+    validation: {
+      emailVerified: true,
+      organiationRole: true,
+      projectRole: true,
+      hostVerified: true,
+      deviceAccess: true,
+    },
+    jwt: {
+      logging: false,
+    },
+    role: {
+      logging: false,
+    },
+  },
+  middleware: {
+    logger: {
+      logging: false,
+    },
+  },
+  google: {
+    oauth: {
+      login: {
+        clientId: env.DOGU_CONSOLE_GOOGLE_OAUTH_LOGIN_CLIENT_ID,
+        clientSecret: env.DOGU_CONSOLE_GOOGLE_OAUTH_LOGIN_CLIENT_SECRET,
+        callbackUrl:
+          env.DOGU_RUN_TYPE === 'local'
+            ? `http://${env.DOGU_CONSOLE_DOMAIN}:${env.DOGU_CONSOLE_WEB_SERVER_PORT}/registery/google/callback` //
+            : `https://api.${env.DOGU_CONSOLE_DOMAIN}/registery/google/callback`,
+      },
+    },
+  },
+  redis: {
+    options: {
+      host: env.DOGU_REDIS_HOST,
+      port: env.DOGU_REDIS_PORT,
+      password: env.DOGU_REDIS_PASSWORD,
+      db: env.DOGU_REDIS_DB,
+    },
+    key: {
+      deviceParam: (organizationId: OrganizationId, deviceId: DeviceId): string => `/organizations/${organizationId}/devices/${deviceId}/params`,
+      deviceResult: (organizationId: OrganizationId, deviceId: DeviceId, resultId: string): string => `/organizations/${organizationId}/devices/${deviceId}/results/${resultId}`,
+      updateConnection: '/updateConnection',
+      WebSocketProxyReceive: (organizationId: OrganizationId, deviceId: DeviceId, webSocketProxyId: WebSocketProxyId): string =>
+        `/organizations/${organizationId}/devices/${deviceId}/webSocketProxies/${webSocketProxyId}/receives`,
+    },
+    expireSeconds: 10 * 60,
+  },
+  influxdb: {
+    host: env.DOGU_INFLUX_DB_HOST,
+    port: env.DOGU_INFLUX_DB_PORT,
+    token: env.DOGU_INFLUX_DB_TOKEN,
+    org: env.DOGU_INFLUX_DB_ORG,
+    bucket: env.DOGU_INFLUX_DB_BUCKET,
+    url: `http://${env.DOGU_INFLUX_DB_HOST}:${env.DOGU_INFLUX_DB_PORT}`,
+  },
+  gitlab: {
+    host: env.DOGU_GITLAB_HOST,
+    port: env.DOGU_GITLAB_PORT,
+    url: `${env.DOGU_GITLAB_PROTOCOL}://${env.DOGU_GITLAB_HOST}:${env.DOGU_GITLAB_PORT}`,
+    templeteGroupUrl: `${env.DOGU_GITLAB_PROTOCOL}://${env.DOGU_GITLAB_HOST}:${env.DOGU_GITLAB_PORT}/${env.DOGU_GITLAB_TEMPLATE_GROUP}`,
+    rootToken: env.DOGU_GITLAB_ROOT_TOKEN,
+  },
+  virtualWebSocket: {
+    pop: {
+      count: 10,
+      intervalMilliseconds: 1000,
+    },
+  },
+  event: {
+    updateConnection: {
+      push: {
+        intervalMilliseconds: 1000,
+      },
+      pop: {
+        intervalMilliseconds: 1000,
+      },
+    },
+  },
+  host: {
+    heartbeat: {
+      allowedSeconds: 10,
+    },
+  },
+  device: {
+    heartbeat: {
+      allowedSeconds: 10,
+    },
+    param: {
+      timeoutMilliseconds: 60 * 1000,
+    },
+    message: {
+      intervalMilliseconds: 1000,
+    },
+  },
+  deviceJob: {
+    heartbeat: {
+      allowedSeconds: 10,
+    },
+    timeoutMilliseconds: 10 * 1000,
+  },
+};
+
+export const dataSourceConfig: DataSourceOptions = {
+  type: 'postgres',
+  database: env.DOGU_RDS_SCHEMA,
+  host: env.DOGU_RDS_HOST,
+  port: env.DOGU_RDS_PORT,
+  username: env.DOGU_RDS_USERNAME,
+  password: env.DOGU_RDS_PASSWORD,
+  logging: false,
+  // synchronize: false,
+  entities: [CONSOLE_BACKEND_ENTITIES_PATH],
+  migrations: [__dirname + `/db/migrations/${env.DOGU_RUN_TYPE}/*.{ts,js}`],
+  migrationsRun: false,
+  migrationsTableName: 'migration',
+  useUTC: true,
+  ssl: FeatureConfig.get('rdbSslConnection') ? { rejectUnauthorized: false } : false,
+};
+
+logger.warn('[DB Config]', {
+  database: dataSourceConfig.database,
+  host: dataSourceConfig.host,
+  port: dataSourceConfig.port,
+  username: dataSourceConfig.username,
+  useUTC: true,
+  syncronize: dataSourceConfig.synchronize,
+});

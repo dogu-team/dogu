@@ -1,0 +1,17 @@
+{
+  "verbose": true,
+  "watch": [
+    "./src",
+    "../action-common/src",
+    "../console-action/src",
+    "../common/src",
+    "../types/src",
+    "../node/src",
+    "../device-client/src",
+    "../env-tools/src",
+    "../../typescript-dev-private/publish-package/src"
+  ],
+  "exec": "yarn run build",
+  "ext": "ts",
+  "delay": 3000
+}

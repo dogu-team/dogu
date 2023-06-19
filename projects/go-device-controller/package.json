@@ -1,0 +1,28 @@
+{
+  "name": "go-device-controller",
+  "scripts": {
+    "build": "",
+    "build:archive": "tsc -b && cross-env NODE_ENV=development ts-node ./scripts/build",
+    "clean": "shx rm -rf build generated",
+    "debug": "yarn run dev",
+    "dev": "air",
+    "killonport": "lsof -ti:50055,2345 -sTCP:LISTEN | xargs kill",
+    "newbie:dev": "go install -v golang.org/x/tools/gopls@v0.11.0 && go install -v github.com/cosmtrek/air@v1.41.0",
+    "start:dev": "./build/go-device-controller"
+  },
+  "devDependencies": {
+    "@dogu-dev-private/base-build-tools": "workspace:^",
+    "@dogu-dev-private/build-tools": "workspace:^",
+    "@dogu-private/env-tools": "workspace:^",
+    "@dogu-private/types": "workspace:^",
+    "@dogu-tech/node": "workspace:^",
+    "@types/node": "18.15.11",
+    "@types/shelljs": "0.8.11",
+    "class-validator": "0.14.0",
+    "cross-env": "7.0.3",
+    "shelljs": "0.8.5",
+    "shx": "0.3.4",
+    "ts-node": "10.9.1",
+    "typescript": "4.7.4"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "verbose": true,
+  "watch": ["scripts", "yaml", "../../packages/typescript/bulid-tools/src"],
+  "exec": "ts-node scripts/export.ts",
+  "events": {
+    "restart": ""
+  },
+  "ext": "ts yaml"
+}

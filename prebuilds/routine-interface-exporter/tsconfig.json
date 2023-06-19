@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "build"
+  },
+  "include": ["src/**/*.ts", "scripts/**/*.ts", ".export/typescript"],
+  "references": [
+    {
+      "path": "../../packages/typescript-dev-private/build-tools"
+    }
+  ]
+}

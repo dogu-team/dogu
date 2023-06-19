@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package inner.types;
+
+import "inner/types/device_control.proto";
+import "outer/profile/profile_method.proto";
+import "outer/profile/runtime_info.proto";
+import "outer/streaming/streaming.proto";
+
+option go_package = "go-device-controller/types/protocol/generated/proto/inner/types";
+option java_package = "com.dogu.protocol.generated.inner.types";
+
+message DcDaConnectionParam {
+  string version = 1;
+  string nickname = 2;
+}
+
+message DcDaConnectionReturn {
+}
+
+message DcDaQueryProfileParam {
+  repeated outer.profile.ProfileMethod profile_methods = 1;
+}
+
+message DcDaQueryProfileReturn {
+  outer.profile.RuntimeInfo info = 1;
+}
+
+message DcDaApplyStreamingOptionParam {
+  outer.streaming.StreamingOption option = 1;
+}
+
+message DcDaApplyStreamingOptionReturn {
+}
+
+message DcDaControlParam {
+  DeviceControl control = 1;
+}
+
+message DcDaControlReturn {
+}

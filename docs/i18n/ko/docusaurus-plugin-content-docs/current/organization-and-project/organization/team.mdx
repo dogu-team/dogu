@@ -1,0 +1,95 @@
+---
+sidebar_position: 5
+title: 팀 관리
+locale: ko
+---
+
+import OrganizationAdminPermission from '@site/src/components/console/OrganizationAdminPermission.mdx';
+
+조직 내 멤버들을 팀으로 그룹 지어 관리하세요. 팀 단위로 프로젝트에 추가할 수 있습니다.
+
+## 팀 만들기
+
+<OrganizationAdminPermission prefix="팀 생성은" />
+
+1. 조직 페이지 내 왼쪽 사이드바에서 "팀" 메뉴를 클릭하세요.
+2. "새 팀 만들기" 버튼을 클릭하세요.
+3. 팀 이름을 입력하고 팀 생성을 완료하세요.
+   ![create team modal](/img/console/organization/create-team-modal.png)
+
+## 팀 멤버 추가하기
+
+<OrganizationAdminPermission prefix="팀 멤버 추가는" />
+
+1. 조직 페이지 내 왼쪽 사이드바에서 "팀" 메뉴를 클릭하세요.
+2. 멤버를 추가할 팀을 목록에서 찾은 후, 메뉴 버튼(`···`)을 클릭하세요.
+3. "멤버 관리" 메뉴를 클릭하세요.
+   ![manage member](/img/console/organization/team-manage-member.png)
+4. "멤버 추가" 버튼을 클릭하세요.
+5. 추가할 멤버의 이름이나 이메일로 검색 후, + 버튼을 눌러 추가를 완료합니다.
+   ![add team member](/img/console/organization/add-team-member.png)
+
+## 팀 멤버 삭제하기
+
+<OrganizationAdminPermission prefix="팀 멤버 삭제는" />
+
+1. 조직 페이지 내 왼쪽 사이드바에서 "팀" 메뉴를 클릭하세요.
+2. 멤버를 추가할 팀을 목록에서 찾은 후, 메뉴 버튼(`···`)을 클릭하세요.
+3. "멤버 관리" 메뉴를 클릭하세요.
+   ![manage member](/img/console/organization/team-manage-member.png)
+4. 삭제할 멤버를 목록에서 찾고, 메뉴 버튼(`···`)을 클릭하세요.
+5. "멤버 삭제" 메뉴를 클릭하고 확인 버튼을 누르면 팀 멤버가 삭제됩니다.
+   ![add team member](/img/console/organization/remove-team-member.png)
+
+## 프로젝트에 팀 추가하기
+
+<OrganizationAdminPermission prefix="프로젝트에 팀 추가는" />
+
+:::tip 팀원 권한
+
+팀이 프로젝트에 추가되면, 팀원은 모두 그 권한을 이어받게 됩니다.
+
+:::
+
+1. 조직 페이지 내 왼쪽 사이드바에서 "팀" 메뉴를 클릭하세요.
+2. 프로젝트를 추가할 팀을 목록에서 찾은 후, 메뉴 버튼(`···`)을 클릭하세요.
+3. "프로젝트 관리" 메뉴를 클릭하세요.
+   ![manage project](/img/console/organization/team-menu-project.png)
+4. "프로젝트 추가" 버튼을 클릭하세요.
+5. 프로젝트 이름으로 검색 후 추가할 프로젝트를 선택합니다.
+   ![team add project](/img/console/organization/team-add-project-modal.png)
+6. 팀이 프로젝트에서 행사할 수 있는 권한을 선택하고, 추가하기 버튼을 클릭해 완료합니다.
+
+## 프로젝트에서 팀 삭제하기
+
+<OrganizationAdminPermission prefix="프로젝트에 팀 삭제는" />
+
+1. 조직 페이지 내 왼쪽 사이드바에서 "팀" 메뉴를 클릭하세요.
+2. 프로젝트를 추가할 팀을 목록에서 찾은 후, 메뉴 버튼(`···`)을 클릭하세요.
+3. "프로젝트 관리" 메뉴를 클릭하세요.
+   ![manage project](/img/console/organization/team-menu-project.png)
+4. 팀에서 삭제할 프로젝트를 찾고 메뉴 버튼(`···`)을 클릭하세요.
+5. "팀에서 삭제" 메뉴를 클릭하세요.
+   ![remove project](/img/console/organization/remove-project-from-team-menu.png)
+6. 확인창이 뜨면 확인 버튼을 눌러 완료합니다.
+
+## 팀 이름 변경
+
+<OrganizationAdminPermission prefix="팀 이름 변경은" />
+
+1. 조직 페이지 내 왼쪽 사이드바에서 "팀" 메뉴를 클릭하세요.
+2. 프로젝트를 추가할 팀을 목록에서 찾은 후, 메뉴 버튼(`···`)을 클릭하세요.
+3. "설정" 메뉴를 클릭합니다.
+   ![team settings](/img/console/organization/team-menu-settings.png)
+4. 팀 이름을 수정하고, "저장" 버튼을 눌러 완료합니다.
+
+## 팀 삭제하기
+
+<OrganizationAdminPermission prefix="팀 삭제는" />
+
+1. 조직 페이지 내 왼쪽 사이드바에서 "팀" 메뉴를 클릭하세요.
+2. 프로젝트를 추가할 팀을 목록에서 찾은 후, 메뉴 버튼(`···`)을 클릭하세요.
+3. "설정" 메뉴를 클릭합니다.
+   ![team settings](/img/console/organization/team-menu-settings.png)
+4. "팀 삭제" 버튼을 클릭 후 확인 버튼을 클릭해 팀을 삭제합니다.
+   ![remove team](/img/console/organization/remove-team.png)

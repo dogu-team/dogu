@@ -1,0 +1,56 @@
+{
+  "deviceStreamingPageTitle": "Streaming",
+
+  "deviceStreamingLoadingText": "Getting device screen...<br></br>If this screen continues for more than 30 seconds, please refresh or follow <link>Device troubleshoot</link> guides.",
+
+  "deviceStreamingHAErrorTitle": "Device connection error",
+  "deviceStreamingStreamingErrorTitle": "Device streaming connection error",
+  "deviceDisconnectedWithHAErrorMessage": "Connection between device and host agent is unstable",
+  "deviceRTCStreamingDisconnectedErrorMessage": "Device streaming is disconnected.",
+  "deviceRTCStreamingFailedErrorMessage": "Device streaming failed to connect.",
+
+  "tabMenuInfo": "Info",
+  "tabMenuInspector": "Inspector",
+  "tabMenuAppInstallation": "App install",
+  "tabMenuProfile": "Profiles",
+  "tabMenuLog": "Device logs",
+
+  "infoTabDeviceInfoTitle": "About device",
+  "devicePlatform": "Platform",
+  "deviceVersion": "Version",
+  "deviceModel": "Model",
+  "deviceName": "Name",
+  "infoTabVideoPerfomanceTitle": "Video Quality",
+  "infoTabOptionTitle": "Video Options",
+  "maxFPS": "Max FPS",
+  "maxFPSCaution": "Device can be slow down",
+  "resolution": "Resolution",
+  "scrollSensitivity": "Scroll sensitivity",
+  "infoTabKeyboardTitle": "Keyboard shortcuts",
+  "pasteToClipboard": "Paste to clipboard",
+  "inspectorInitializingText": "Initializing...",
+  "inspectorLoadingText": "Reading game objects...",
+  "inspectorRefreshedAtText": "Refreshed at",
+  "inspectorSelectObjectText": "Select object",
+  "uploadApplicationDescription": "Click or drag file to this area to install",
+  "uploadApplicationHint": "Support {{extension}} file",
+  "uploadApplicationAppInfo": "Application Info",
+  "uploadApplicationName": "Name",
+  "uploadApplicationSize": "Size",
+  "uploadApplicationStatus": "Status",
+  "uploadApplicationUploadStatus": "Uploading app",
+  "uploadApplicationGatheringStatus": "Gathering app fragments",
+  "uploadApplicationInstallingStatus": "Installing app",
+  "uploadSuccessMessage": "App installation finished",
+  "uploadFailureMessage": "App installation failed. Please retry.",
+
+  "uploadApplicationOptionTitle": "Options",
+  "uploadApplicationRunOptionText": "Open app after installation",
+
+  "deviceLogFilterMenuTitle": "Filter logs",
+  "deviceLogFilterMenuHelp": "Retrieve only the logs that contain the specified string starting from the subsequent log.",
+  "deviceLogFilterInputPlaceholder": "Text",
+  "deviceLogFilterSetButtonText": "Set",
+
+  "inspectorEmptyTreeText": "No game objects found.<br></br>If you want to see game objects, please refer to <link>document</link>."
+}

@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package inner.params;
+
+import "inner/types/dc_gdc.proto";
+
+option go_package = "go-device-controller/types/protocol/generated/proto/inner/params";
+option java_package = "com.dogu.protocol.generated.inner.params";
+
+message DcGdcParam {
+  oneof value {
+    types.DcGdcUpdateDeviceListParam dc_gdc_update_devicelist_param = 10;
+    types.DcGdcStartScreenRecordParam dc_gdc_start_screen_record_param = 13;
+    types.DcGdcStopScreenRecordParam dc_gdc_stop_screen_record_param = 14;
+  }
+}
+
+message DcGdcResult {
+  oneof value {
+    types.DcGdcUpdateDeviceListResult dc_gdc_update_devicelist_result = 10;
+    types.DcGdcStartScreenRecordResult dc_gdc_start_screen_record_result = 13;
+    types.DcGdcStopScreenRecordResult dc_gdc_stop_screen_record_result = 14;
+  }
+}

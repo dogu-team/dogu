@@ -1,0 +1,69 @@
+{
+  "hostTableNameColumn": "이름",
+  "hostTableOSColumn": "운영체제",
+  "hostTableConnectionStatusColumn": "연결상태",
+  "hostTableDevciesColumn": "디바이스",
+
+  "hostItemStartUseMenu": "디바이스로 사용하기",
+  "hostItemStreamingMenu": "스트리밍",
+  "hostItemRevokeTokenMenu": "토큰 재발급",
+  "hostItemEditMenu": "수정",
+  "hostItemStopUseMenu": "디바이스로 사용 중지하기",
+  "hostStopUsingModalTitle": "디바이스로 사용 중지하기",
+  "hostStopUsingModalContentInfo": "이 호스트를 디바이스로 사용하는 것을 중지할까요?\n호스트를 디바이스로 사용하는 것을 중지하면, 해당 호스트 디바이스는 디바이스 목록에서 삭제되고, 진행중인 루틴은 실패하게 됩니다.\n\n호스트에 연결된 디바이스는 영향을 받지 않습니다.",
+  "hostStopUsingModalButtontText": "확인 및 사용 중지",
+  "hostItemDeleteMenu": "호스트 삭제",
+  "hostDeleteModalTitle": "호스트 삭제",
+  "hostDeleteModalButtonText": "확인 및 삭제",
+  "hostDeleteModalContentInfo": "이 호스트를 정말 삭제할까요?\n호스트를 삭제하면, 해당 호스트에 연결된 디바이스는 새로운 호스트에 연결해야 합니다. 또한 디바이스는 태그와 프로젝트를 잃게 됩니다.",
+  "hostDeleteModalContentCountSingular": "호스트 <0>{{name}}</0>은/는 디바이스 <0>{{count}}</0> 대를 갖고 있습니다.",
+  "hostDeleteModalContentCountPlural": "호스트 <0>{{name}}</0>은/는 디바이스 <0>{{count}}</0> 대를 갖고 있습니다.",
+  "dostDownloadTitle": "Agent 다운로드",
+
+  "hostCreateModalSuccessHint": "호스트가 생성되었습니다. <link1>Agent 다운로드</link1> 페이지에서 Dost를 설치하고, 토큰을 Dost에 입력하여 호스트를 등록하세요. 자세한 정보는 <link2>호스트</link2> 문서를 참고하세요.",
+  "hostCreateModalCopyTokenButtonTitle": "토큰 복사",
+  "hostCreateModalTokenDescription": "호스트 토큰",
+  "hostCreateModalTokenCheckDescription": "토큰은 호스트 상세 정보에서 다시 확인할 수 있습니다.",
+
+  "hostStartUsingSuccessMsg": "디바이스로 사용합니다.\n디바이스 - 대기중인 디바이스 목록에서 확인할 수 있습니다.",
+  "hostStartUsingFailMsg": "디바이스로 사용하는 데 실패함.\n{{reason}}",
+
+  "hostStopUsingSuccessMsg": "디바이스로 사용을 중지함",
+  "hostStopUsingFailMsg": "디바이스로 사용 중지 실패\n{{reason}}",
+
+  "hostCopyTokenFailedMsg": "복사 실패\n{{reason}}",
+  "hostDeleteSuccessMsg": "삭제됨",
+  "hostDeleteFailedMsg": "삭제 실패\n{{resaon}}",
+
+  "hostTokenRevokeModalTitle": "호스트 토큰 재발급하기",
+  "hostTokenRevokeModalContent": "정말 호스트 토큰을 재발급할까요? 새 토큰으로 호스트를 다시 연결하기 전까지는 호스트에 연결된 디바이스들의 연결상태가 Offline이 됩니다.",
+  "hostTokenRevokeModalConfirmButtonTitle": "확인 및 재발급",
+  "hostRevokeTokenSuccessMsg": "재발급 성공",
+  "hostRevokeTokenFailedMsg": "재발급 실패\n{{reason}}",
+  "hostRevokeAfterDescription": "새 토큰은 Dost에서 'Troubleshoot' - 'Reconnect' 버튼을 클릭하여 다시 연결할 때 사용할 수 있습니다.<br></br>자세한 정보는 <link>호스트</link> 문서를 참고하세요.",
+
+  "addNewHost": "새 호스트 생성",
+  "newHostModalInputName": "호스트 이름",
+  "newHostTokenPrefix": "새 호스트 토큰",
+  "newHostTokenCopyTooltip": "토큰 복사하기",
+  "deleteHostWaringMsg": "정말 삭제하시겠습니까?\n이 호스트의 디바이스도 삭제됩니다.",
+  "newHostSuccessTitle": "'{{name}}' 호스트를 성공적으로 생성했습니다",
+  "newHostFailTitle": "'{{name}}' 호스트를 만드는 데 실패했습니다\n{{reason}}",
+
+  "hostEditModalTitle": "호스트 수정하기",
+  "hostEditNameInputPlaceholder": "호스트 이름",
+  "hostEditSuccessMsg": "저장됨",
+  "hostEditFailMsg": "호스트 수정 실패 - {{reason}}",
+
+  "hostDetailModalTitle": "호스트 정보",
+  "hostDetilNameTitle": "이름",
+  "hostDetailCreatedDateTitle": "생성 날짜",
+  "hostDetailConnectedDeviceTitle": "연결된 기기",
+  "hostDetailCreatorTitle": "생성한 멤버",
+  "hostDetailTokenTitle": "토큰",
+  "hostDetailShowTokenButtonTitle": "토큰 확인하기",
+
+  "hostFilterNamePlaceholder": "이름 검색",
+
+  "hostEmptyDescription": "호스트가 없습니다.<1></1>호스트를 추가해 여러 디바이스를 쉽게 관리해보세요.<1></1><1></1><0>여기를 눌러</0> 더 많은 정보 확인하기"
+}

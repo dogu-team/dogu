@@ -1,0 +1,62 @@
+{
+  "signin": "로그인",
+  "signup": "시작하기",
+  "signout": "로그아웃",
+  "cancel": "취소",
+  "submit": "제출하기",
+  "add": "생성",
+  "save": "저장",
+  "uploadImage": "이미지 업로드",
+  "send": "전송",
+  "copy": "복사",
+  "confirm": "확인",
+  "edit": "수정",
+
+  "name": "이름",
+  "email": "이메일",
+  "description": "설명",
+
+  "nameInputEmptyError": "이름을 입력하세요",
+  "descriptionInputEmptyError": "설명을 입력하세요",
+
+  "copyClipboard": "클립보드에 복사되었습니다",
+
+  "doguDocs": "Dogu 문서",
+
+  "footerCompanyTitle": "회사",
+
+  "accountMenuAccountTitle": "계정",
+  "accountMenuWorksTitle": "작업",
+  "accountMenuMyOrgListButton": "모든 조직",
+  "accountMenuMyProjectButton": "나의 프로젝트",
+
+  "footerTermsOfUse": "이용 약관",
+  "footerPrivacyPolicy": "개인정보처리방침",
+
+  "invalidPasswordFormatErrorMsg": "비밀번호는 알파벳, 숫자, 특수문자를 포함해 8자 이상이어야 합니다.",
+  "confirmPasswordNotEqualErrorMsg": "비밀번호가 일치하지 않습니다.",
+
+  "imageCropModalTitle": "이미지 편집",
+
+  "verifyEmail": "이메일 인증을 확인해주세요! 이메일이 도착하지 않았다면 스팸함을 확인해 주세요",
+  "resendEmail": "이메일 재전송",
+  "sendEmailSuccess": "이메일을 전송했습니다. 이메일이 도착하지 않았다면 스팸함을 확인해 주세요",
+
+  "emptySearchResultText": "결과 찾을 수 없음",
+
+  "deviceProfileCpuUsage": "CPU 사용량",
+  "deviceProfileMemoryUsage": "메모리 사용량",
+  "deviceProfileMemoryMax": "디바이스 메모리",
+  "deviceProfileFps": "FPS",
+
+  "feedbackModalTitle": "피드백 보내기",
+  "feedbackModalTextareaPlaceholder": "저희에게 전달하고 싶은 의견을 들려주세요!",
+  "feedbackModalSuccessMessage": "소중한 의견 감사합니다!",
+  "feedbackModalFailureMessage": "피드백 전송에 실패했습니다. 나중에 다시 시도해주세요.",
+  "sendFeedbackButtonTitle": "보내기",
+
+  "footerCompanyName": "도구테크놀로지스(주)",
+  "footerCompanyAddress": "주소: 경기도 안양시 만안구 덕천로152번길 27(안양아이에스비즈타워) A동 2008B호",
+  "footerRepresentative": "대표: 성주원",
+  "footerCompanyRegistrationNumber": "사업자등록번호: 166-86-02618"
+}

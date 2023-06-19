@@ -1,0 +1,38 @@
+{
+  "private": true,
+  "name": "host-agent",
+  "version": "0.0.1",
+  "description": "",
+  "license": "UNLICENSED",
+  "author": "",
+  "main": "./build/src/index.js",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "shx rm -rf build generated",
+    "debug": "cross-env NODE_ENV=development nodemon --config nodemon.json --inspect=60002",
+    "dev": "cross-env NODE_ENV=development nodemon --config nodemon.json",
+    "dist": "ts-node scripts/dist",
+    "rebuild": "yarn run clean && yarn run build",
+    "start": "cross-env NODE_ENV=production node -r tsconfig-paths/register -r ts-node/register build/src/main"
+  },
+  "types": "./build/src/index.d.ts",
+  "dependencies": {
+    "@dogu-private/host-agent": "workspace:^",
+    "cross-env": "7.0.3"
+  },
+  "devDependencies": {
+    "@dogu-dev-private/build-tools": "workspace:^",
+    "@nestjs/cli": "9.1.2",
+    "@types/node": "18.15.11",
+    "nodemon": "2.0.22",
+    "shx": "0.3.4",
+    "source-map-support": "0.5.21",
+    "ts-node": "10.9.1",
+    "tsconfig-paths": "4.0.0",
+    "typescript": "4.7.4"
+  },
+  "pkg": {
+    "scripts": "build/**/*.js",
+    "assets": "node_modules/**/*"
+  }
+}

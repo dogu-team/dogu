@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package outer.profile;
+
+import "google/protobuf/timestamp.proto";
+import "outer/platform.proto";
+import "outer/profile/runtime_process_info.proto";
+
+option go_package = "go-device-controller/types/protocol/generated/proto/outer/profile";
+option java_package = "com.dogu.protocol.generated.outer.profile";
+
+message RuntimeInfoCpu {
+  string name = 1;
+  fixed64 current_load = 2;
+  fixed64 current_load_user = 3;
+  fixed64 current_load_system = 4;
+  fixed64 current_load_nice = 5;
+  fixed64 current_load_idle = 6;
+  fixed64 current_load_irq = 7;
+  fixed64 current_load_cpu = 8;
+}
+
+message RuntimeInfoCpuFreq {
+  fixed32 idx = 1;
+  fixed64 min = 2;
+  fixed64 cur = 3;
+  fixed64 max = 4;
+}
+
+message RuntimeInfoGpu {
+  string desc = 1;
+}
+
+message RuntimeInfoMem {
+  string name = 1;
+  fixed64 total = 2;
+  fixed64 free = 3;
+  fixed64 used = 4;
+  fixed64 active = 5;
+  fixed64 available = 6;
+  fixed64 swaptotal = 7;
+  fixed64 swapused = 8;
+  fixed64 swapfree = 9;
+  bool is_low = 10;
+}
+
+message RuntimeInfoFs {
+  string name = 1;
+  string type = 2;
+  string mount = 3;
+  fixed64 size = 4;
+  fixed64 used = 5;
+  fixed64 available = 6;
+  fixed64 use = 7;
+  fixed64 reads_completed = 8;
+  fixed64 time_spent_read_ms = 9;
+  fixed64 writes_completed = 10;
+  fixed64 time_spent_write_ms = 11;
+}
+
+message RuntimeInfoNet {
+  string name = 1;
+  fixed64 mobile_rxbytes = 2;
+  fixed64 mobile_txbytes = 3;
+  fixed64 wifi_rxbytes = 4;
+  fixed64 wifi_txbytes = 5;
+  fixed64 total_rxbytes = 6;
+  fixed64 total_txbytes = 7;
+}
+
+message RuntimeInfoDisplay {
+  string name = 1;
+  bool is_screen_on = 2;
+}
+
+message RuntimeInfoBattery {
+  string name = 1;
+  float percent = 2;
+}
+
+message RuntimeInfo {
+  optional outer.Platform platform = 1;
+  optional google.protobuf.Timestamp local_time_stamp = 10;
+
+  repeated RuntimeInfoCpu cpues = 2;
+  repeated RuntimeInfoCpuFreq cpufreqs = 3;
+  repeated RuntimeInfoGpu gpues = 4;
+  repeated RuntimeInfoMem mems = 5;
+  repeated RuntimeInfoFs fses = 6;
+  repeated RuntimeInfoNet nets = 7;
+  repeated RuntimeInfoDisplay displays = 8;
+  repeated RuntimeInfoBattery batteries = 9;
+  repeated RuntimeProcessInfo processes = 11;
+}

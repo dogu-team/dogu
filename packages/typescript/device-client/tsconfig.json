@@ -1,0 +1,21 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "build"
+  },
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../types"
+    },
+    {
+      "path": "../node"
+    },
+    {
+      "path": "../device-client-common"
+    },
+    {
+      "path": "../../typescript-dev-private/publish-package"
+    }
+  ]
+}

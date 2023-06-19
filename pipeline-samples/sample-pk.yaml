@@ -1,0 +1,77 @@
+name: CD Real
+
+on:
+  workflow_dispatch:
+
+env:
+  TEST_SCRIPT: test/room-based-game.ts
+
+jobs:
+  build:
+    runs-on:
+      group: adb
+    steps:
+      - name: 'clone project'
+        run: echo checkout user project script...
+
+      - name: 'build project'
+        run: echo checkout user project script...
+
+  e2e:
+    needs: build
+    runs-on:
+      group: adb
+    steps:
+      - name: signin
+        run: echo checkout user project script...
+      - name: select character
+        run: echo checkout user project script...
+      - name: exit
+        run: echo checkout user project script...
+
+  deploy-1:
+    needs: e2e
+    runs-on:
+      group: adb
+    steps:
+      - name: build production
+        run: echo checkout user project script...
+      - name: release
+        run: echo checkout user project script...
+
+  deploy-2:
+    needs: e2e
+    runs-on:
+      group: adb
+    steps:
+      - name: build production
+        run: echo checkout user project script...
+      - name: release
+        run: echo checkout user project script...
+
+  deploy-3:
+    needs: e2e
+    runs-on:
+      group: adb
+    steps:
+      - name: build production
+        run: echo checkout user project script...
+      - name: release
+        run: echo checkout user project script...
+  deploy-4:
+    needs: e2e
+    runs-on:
+      group: adb
+    steps:
+      - name: build production
+        run: echo checkout user project script...
+      - name: release
+        run: echo checkout user project script...
+
+  send-slack:
+    needs: [deploy-1, deploy-2, deploy-3, deploy-4]
+    runs-on:
+      group: adb
+    steps:
+      - name: send
+        run: echo checkout user project script...

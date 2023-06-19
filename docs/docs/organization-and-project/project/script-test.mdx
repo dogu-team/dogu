@@ -1,0 +1,125 @@
+---
+sidebar_position: 4
+title: Script Testing
+locale: en
+---
+
+:::info PREREQUISITES
+
+- You need to have at least one device assigned to the project or a public device. Refer to the [Adding Devices to a Project](/organization-and-project/organization/device/device-management#adding-projects-to-a-device) document for more information.
+- An app needs to be uploaded to the project or installed on the device. Refer to the [Managing Apps](./app) document for information on uploading apps.
+
+:::
+
+Even if you don't create a routine in the Dogu console, you can still execute the test scripts you have written.
+
+:::note
+
+Script testing does not support script editing. Refer to the [Test Scripts](/script-and-routine/test-script/about) document for more information on script editing.
+
+:::
+
+## Run a script testing
+
+:::danger Working Device
+
+Script testing is also considered a device operation. If the device is already executing a routine or another script test, the script test cannot be performed.
+
+Make sure the device is not running a routine before executing the script test.
+
+:::
+
+1. Click on the "Script test" tab within the project.
+   <img
+     src="/img/console/project/script-test-tab.png"
+     style={{ width: 600, display: 'block' }}
+   />
+2. In the left file explorer, select the script you want to test.
+
+   <img
+     src="/img/console/project/select-test-script.png"
+     style={{ width: 800, display: 'block' }}
+   />
+
+   <br />
+
+   :::info File Explorer
+
+   The folders displayed in the file explorer are the ones specified in the repository settings. Refer to the repository settings document for more information.
+
+   :::
+
+3. On the top right, select the device on which you want to run the test script.
+
+   <img
+     src="/img/console/project/select-device.png"
+     style={{ width: 800, display: 'block' }}
+   />
+
+   <br />
+
+   :::info Device List
+
+   The devices displayed in the selection box are the devices assigned to the project or public devices with an `Online` connection status.
+
+   :::
+
+4. _(Optional)_ Select the app to run from the app list.
+
+   <img
+     src="/img/console/project/script-select-app.png"
+     style={{ width: 800, display: 'block' }}
+   />
+
+   <br />
+
+   :::tip Behavior without Specifying an App
+
+   If you don't select an app, the currently running app on the device will be used. The app used must have the [Gamium Engine SDK](https://gamium.dogutech.io/docs/engine/unity/project-configuration) installed.
+
+   **Make sure to run the app so that the test script can be executed.**
+
+   :::
+
+   :::info App Upload
+
+   If you haven't uploaded an app, refer to the [Managing Apps](./app) document to upload an app.
+
+   :::
+
+5. Click the active "Run" button.
+   <img
+     src="/img/console/project/script-run.png"
+     style={{ width: 800, display: 'block' }}
+   />
+
+:::tip Stopping the Execution
+
+While the test script is running, the "Run" button changes to a "Stop" button. Clicking the "Stop" button will halt the test script. Once the test is fully stopped, it will change back to the "Run" button.
+
+<img
+  src="/img/console/project/script-stop.png"
+  style={{ width: 700, display: 'block' }}
+/>
+
+:::
+
+## Menu
+
+### Game UI inspector
+
+In script testing, you can inspect the game objects of an app with the Gamium Engine SDK installed. For more information on the Game UI Inspector feature, refer to the [Game UI Inspector](/host-and-device/device/streaming-and-remote-control/game-ui-inspector) document.
+
+<img
+  src="/img/console/project/script-ui-inspector.png"
+  style={{ width: 700, display: 'block' }}
+/>
+
+### Test script logs
+
+During script testing, real-time script logs are displayed. This allows you to see the success or failure of script execution and the locations of any failures.
+
+<img
+  src="/img/console/project/script-log.png"
+  style={{ width: 700, display: 'block' }}
+/>

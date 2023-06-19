@@ -1,0 +1,10 @@
+export enum ORGANIZATION_ROLE {
+  OWNER = 1,
+  ADMIN,
+  MEMBER,
+}
+
+export enum INVITATION_STATUS {
+  PENDING,
+  EXPIRED,
+}

@@ -1,0 +1,35 @@
+{
+  "tabMenuHomeTitle": "홈",
+  "tabMenuRunScriptTitle": "스크립트 실행",
+  "tabMenuRoutineTitle": "루틴",
+  "tabMenuAppTitle": "앱",
+  "tabMenuDeviceTitle": "디바이스",
+  "tabMenuMemberTitle": "멤버",
+  "tabMenuRepositoryTitle": "스크립트 저장소",
+  "tabMenuSettingTitle": "설정",
+
+  "settingNameInputLabel": "프로젝트 이름",
+  "settingNameInputPH": "이름",
+  "settingDescInputLabel": "프로젝트 설명",
+  "settingDescInputPH": "설명",
+
+  "deleteProjectMenuTitle": "프로젝트 삭제",
+  "deleteProjectDescriptionText": "프로젝트를 영구적으로 삭제합니다.",
+  "deleteProjectButtonText": "프로젝트 삭제",
+  "deleteProjectConfirmModalTitle": "프로젝트 삭제",
+  "deleteProjectConfirmModalButtonText": "확인 및 삭제",
+  "settingDeleteProjectConfirmContent": "정말 <b>{{name}}</b> 프로젝트를 영구적으로 삭제하시겠습니까?<br></br>이 작업은 되돌릴 수 없으며, 프로젝트 작업 내용을 잃게 됩니다.",
+
+  "projectUpdateSuccessMsg": "변경됨",
+  "projectUpdateFailedMsg": "변경 실패\n{{reason}}",
+  "projectDeleteSuccessMsg": "삭제됨",
+  "projectDeleteFailedMsg": "삭제 실패\n{{reason}}",
+
+  "projectTableNameColumn": "이름",
+  "projectTableMembersColumn": "멤버",
+  "projectTableLastUpdatedColumn": "최근 활동일",
+
+  "createProjectButtonTitle": "프로젝트 생성",
+
+  "projectEmptyDescription": "프로젝트를 만들고 게임 테스트를 시작해보세요.<br></br><br></br><link>여기를 눌러</link> 더 많은 정보 보기"
+}

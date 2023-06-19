@@ -1,0 +1,63 @@
+{
+  "accountPageTitle": "My account",
+  "resetPassword": "Reset password",
+
+  "profileContentTitle": "Profile",
+  "profileContentSubmitButton": "Update profile",
+  "profileUpdateSuccessMsg": "Updated!",
+  "profileUpdateFailMsg": "Failed to upate.\n{{reason}}",
+  "securityContentTitle": "Security",
+  "resetPasswordSuccessMsg": "Updated!",
+  "resetPasswordFailMsg": "Failed to upate.\n{{reason}}",
+  "resetPasswordValidationFailMsg": "Check the current password",
+
+  "resetPasswordFormCurrentLabel": "Current password",
+  "resetPasswordFormNewLabel": "New password",
+  "resetPasswordFormConfirmLabel": "Confirm password",
+  "resetPasswordFormCurrentPlaceholder": "Password",
+  "resetPasswordFormNewPlaceholder": "Password (8 ~ 28 characters)",
+  "resetPasswordFormConfirmPlaceholder": "Password",
+  "resetPasswordFormSubmitButton": "Update password",
+
+  "resetPasswordWithTokenSuccessMsg": "Your password changed successfully.",
+  "resetPasswordWithTokenFailMsg": "Failed to reset password.\n{{reason}}",
+
+  "myOrganizationPageTitle": "My organizations",
+
+  "organizationListOwnerText": "Owned by",
+  "organizationListMemberSingularText": "member",
+  "organizationListMemberPluralText": "members",
+  "leaveOrganizationMenuText": "Leave",
+  "leaveOraganizationModalTitle": "Leave organization",
+  "leaveOrganizationModalDescription": "Are you sure to leave organization <b>{{organizationName}}</b>?\nThis cannot be undone.",
+  "leaveOrganizationModalDescription2": "This cannot be undone and may lose your work.",
+  "leaveOrganizationConfirmButtonText": "Confirm and leave",
+
+  "createOrganizationButtonText": "Create organization",
+  "createOrganizationModalTitle": "Create new organization",
+  "createOrganizaitonNameLabelText": "Organization name",
+  "createOrganizationNameInputPlaceholder": "Name",
+  "createOrganizationNaameInputErrorMesssage": "Inpue organization name.",
+  "createOrganizationSuccessMessage": "Created!",
+  "createOrganizationFailureMessage": "Failed to create.\n{{reason}}",
+
+  "verifyEntryPageTitle": "Verify your email",
+  "verifyEntryDescription": "Hi, {{name}}!\n\nTo use Dogu, please verify your email first.",
+  "verifyEntryEmailDescription": "Didn't get an email?",
+
+  "deleteAccountMenuTitle": "Delete account",
+  "deleteAccountMenuDescriptionText": "Delete your account and all data associated with it.",
+  "deleteAccountButtonTitle": "Delete account",
+  "deleteAccountConfirmModalTitle": "Delete account",
+  "deleteAccountConfirmModalContent": "Are you sure to delete your account? Your data will be remained for 30 days.\nIf you want to restore your account, please contact us within 30 days.",
+  "deleteAccountConfirmModalButtonTitle": "Confirm and delete",
+  "deleteAccountConfirmSuccessMessage": "Your account deleted successfully.",
+  "deleteAccountConfirmFailureMessage": "Failed to delete your account.\n{{reason}}",
+
+  "emailPreferenceTitle": "Email preference",
+  "newsletterCheckboxLabel": "Receive Dogu newsletter.",
+  "updateEmailPreferenceSuccessMessage": "Saved!",
+  "updateEmailPreferenceFailureMessage": "Failed to save.\n{{reason}}",
+
+  "emptyOrganizationDescription": "Are you new to Dogu?<br></br><br></br><link>Click here</link> to proceed with the tutorial."
+}

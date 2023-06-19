@@ -1,0 +1,7 @@
+{
+  "verbose": true,
+  "watch": ["./src", "../common/src", "../types/src"],
+  "exec": "yarn run build",
+  "ext": "ts",
+  "delay": 3000
+}

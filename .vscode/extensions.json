@@ -1,0 +1,30 @@
+{
+  "recommendations": [
+    "arcanis.vscode-zipfs",
+    "bungcip.better-toml",
+    "dbaeumer.vscode-eslint",
+    "eamodio.gitlens",
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
+    "fvclaus.sort-json-array",
+    "github.copilot",
+    "golang.go",
+    "jeff-hykin.better-objc-syntax",
+    "jeff-hykin.better-objcpp-syntax",
+    "mathiasfrohlich.kotlin",
+    "medo64.render-crlf",
+    "mikestead.dotenv",
+    "redhat.java",
+    "richie5um2.vscode-sort-json",
+    "seatonjiang.gitmoji-vscode",
+    "sswg.swift-lang",
+    "vknabel.vscode-apple-swift-format",
+    "wayou.vscode-todo-highlight",
+    "xaver.clang-format",
+    "zxh404.vscode-proto3",
+    "emeraldwalk.runonsave",
+    "github.vscode-github-actions",
+    "iliazeus.vscode-ansi",
+    "mhutchie.git-graph"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "rootDirs": ["."],
+    "baseUrl": ".",
+    "outDir": "build",
+    "incremental": true,
+    "removeComments": true,
+    "paths": {
+      "src/*": ["./src/*"]
+    }
+  },
+  "exclude": ["node_modules", "test", "build", "**/*spec.ts"],
+  "include": ["src", "scripts"],
+  "references": [
+    {
+      "path": "../../packages/typescript-private/device-server"
+    },
+    {
+      "path": "../../packages/typescript-dev-private/build-tools"
+    },
+    {
+      "path": "../../packages/typescript/node"
+    }
+  ]
+}

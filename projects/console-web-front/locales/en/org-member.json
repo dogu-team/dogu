@@ -1,0 +1,46 @@
+{
+  "memberTableProfileColumn": "Name",
+  "memberTablePermissionColumn": "Permission",
+
+  "memberItemRemoveMenu": "Inactivate",
+
+  "removeModalTitle": "Inactivate member",
+  "removeModalButtonText": "Confirm and inactivate",
+  "removeModalContentText": "If you inactivate a member, the member will depart from teams and projects they belong to.",
+  "removeMemberSuccessMsg": "Inactivated!",
+  "removeMemberFailureMsg": "Failed to inactivate.\n{{reason}}",
+
+  "permissionUpdateSuccessMsg": "Updated!",
+  "permissionUpdateFailureMsg": "Failed to update.\n{{reason}}",
+
+  "inviteMemberButtonText": "Invite colleagues",
+  "inviteModalTitle": "Invite your colleagues",
+  "emailPlaceholder": "Email",
+  "inviteEmailButtonText": "Invite <b>{{email}}</b>",
+  "inviteEmailPermissionSelectDescription1": "Send invitation for <b>{{email}}</b>",
+  "inviteEmailPermissionSelectDescription2": "Select permission",
+  "inviteAdminPermssionDescription": "With administrative privileges, will attain comprehensive organizational access and editing capabilities.",
+  "inviteMemberPermissionDescription": "The Member role entails limited privileges granted to individuals affiliated with a project or team, enabling them to utilize certain functionalities.",
+  "inviteMemberSuccessMsg": "Invitation success",
+  "inviteMemberFailMsg": "Failed to invite\n{{reason}}",
+
+  "memberFilterNamePlaceholder": "Name or email",
+
+  "memberLinkButtonTitle": "Colleagues",
+  "invitationLinkButtonTitle": "Invitations",
+
+  "invitationTableEmailColumn": "Email",
+  "invitationTablePermissionColumn": "Permission",
+  "invitationTableStatusColumn": "Status",
+  "invitationTableDateColumn": "Date",
+  "invitationEmptyDescription": "No invitations",
+
+  "invitationResendMenuTitle": "Resend",
+  "invitationCancelMenuTitle": "Cancel",
+
+  "invitationCancelModalTitle": "Cancel invitation",
+  "invitationCancelModalDescription": "Are you sure to cancel invitation for <b>{{email}}<b/>?",
+  "invitationCancelConfirmButtonText": "Confirm and cancel",
+  "invitationCancelSuccessMessage": "Canceled",
+  "invitationCancelFailureMessage": "Failed to cancel\n{{reason}}"
+}

@@ -1,0 +1,73 @@
+---
+sidebar_position: 2
+title: Device Configuration
+locale: en
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
+
+On this page, we cover the configuration process to smoothly register a [`device`](../introduction#device) in the console.
+
+<Tabs defaultValue="android">
+  <TabItem value="windows" label="Windows" default>
+    <ul>
+      <li>If Dost is installed and running, there is nothing more to do.</li>
+    </ul>
+  </TabItem>
+  <TabItem value="macos" label="macOS">
+    <ul>
+      <li>
+        If Dost is installed, please check if you have agreed to all the&nbsp;
+        <a href="../host/get-started#troubleshoot">Permissions</a>.
+      </li>
+    </ul>
+  </TabItem>
+  <TabItem value="android" label="Android">
+    <h2>Android</h2>
+    <h3>Requirements</h3>
+    <ul>
+      <li>Android 8.0 or higher</li>
+    </ul>
+    <h3>Configuration</h3>
+    <ul>
+      <li>
+        Connect your Android device to your PC using a USB cable and keep it
+        connected
+      </li>
+      <ul>
+        <li>Use a USB cable that supports data transfer.</li>
+      </ul>
+      <li>
+        Enable{' '}
+        <a href="https://developer.android.com/studio/debug/dev-options">
+          Developer options
+        </a>
+      </li>
+      <li>
+        Enable{' '}
+        <a href="https://developer.android.com/studio/run/device#setting-up">
+          USB debugging
+        </a>
+      </li>
+      <li>
+        When a message "Allow USB debugging?" appears on the device screen,
+        check "Always allow from this computer" and click confirm button to
+        grant permission
+      </li>
+      <li>Disable voice recognition features such as Siri or Bixby</li>
+    </ul>
+  </TabItem>
+</Tabs>
+
+:::info
+
+- Preparation steps are completed.
+- Host is Connected in the console.
+
+Once you reach the above status, you can add devices to your organization in the console.
+
+Refer to the [Managing Devices](/organization-and-project/organization/device/device-management) page to add devices and proceed with [Streaming and Remote Control](streaming-and-remote-control/about).
+
+:::

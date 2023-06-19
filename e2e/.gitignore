@@ -1,0 +1,11 @@
+generated
+
+#credentials
+local-credentials.json
+saved-token.json
+service-account-key.json
+
+# env
+.env
+.env.local
+

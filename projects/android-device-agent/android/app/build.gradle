@@ -1,0 +1,101 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlinx-serialization'
+
+android {
+    compileSdkVersion 31
+    defaultConfig {
+        applicationId "com.dogu.deviceagent"
+        minSdkVersion 21
+        targetSdkVersion 31
+        versionCode 12400
+        versionName "1.24"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            debuggable true
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main.java.srcDirs += 'src/main/java'
+        main.java.srcDirs += 'src/main/kotlin'
+        main.jniLibs.srcDirs += 'libs'
+        main.jni.srcDirs = []
+    }
+
+    packagingOptions {
+        pickFirst 'META-INF/INDEX.LIST'
+        pickFirst 'META-INF/LICENSE'
+        pickFirst 'META-INF/io.netty.versions.properties'
+        jniLibs {
+            useLegacyPackaging false
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "androidx.appcompat:appcompat:1.0.2"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinx_version"
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.0'
+    implementation "ch.qos.logback:logback-classic:1.2.3"
+    implementation "io.ktor:ktor-server-core:$ktor_version"
+    implementation "io.ktor:ktor-server-cio:$ktor_version"
+    implementation "io.ktor:ktor-server-websockets:$ktor_version"
+    implementation "com.google.protobuf:protobuf-kotlin:$protobuf_version"
+
+    testImplementation 'junit:junit:4.13.1'
+}
+
+apply from: "$project.rootDir/config/android-checkstyle.gradle"
+
+
+task runDebugBuild {
+    dependsOn 'kill'
+    doLast {
+        println "push >>"
+        println "adb push $project.rootDir/app/build/outputs/apk/debug/app-debug.apk /data/local/tmp/dogu-deviceagent".execute().text.trim()
+        println "execute >>"
+        println "adb shell CLASSPATH=/data/local/tmp/dogu-deviceagent app_process / com.dogu.deviceagent.Entry".execute().text.trim()
+    }
+}
+
+task runReleaseBuild {
+    dependsOn 'kill'
+    doLast {
+        println "push >>"
+        println "adb push $project.rootDir/app/build/outputs/apk/release/app-release-unsigned.apk /data/local/tmp/dogu-deviceagent".execute().text.trim()
+        println "execute >>"
+        println "adb shell CLASSPATH=/data/local/tmp/dogu-deviceagent app_process / com.dogu.deviceagent.Entry".execute().text.trim()
+    }
+}
+
+// android 8 or below
+task openDebugOld_DebugBuild {
+    dependsOn 'kill'
+    doLast {
+        println "push >>"
+        println "adb push $project.rootDir/app/build/outputs/apk/debug/app-debug.apk /data/local/tmp/dogu-deviceagent".execute().text.trim()
+        println "forward >>"
+        println "adb forward tcp:5005 tcp:5005".execute().text.trim()
+        println "execute >>"
+        println "adb shell CLASSPATH=/data/local/tmp/dogu-deviceagent app_process -agentlib:jdwp=transport=dt_socket,suspend=y,server=y,address=5005 / com.dogu.deviceagent.Entry".execute().text.trim()
+    }
+}
+
+task kill {
+    doLast {
+        println "kill >>"
+        def pid = "adb shell pidof app_process".execute().text.trim()
+        println "adb shell kill ${pid}".execute().text.trim()
+    }
+}
+

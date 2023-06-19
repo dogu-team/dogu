@@ -1,0 +1,7 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "include": [".eslintrc.cjs", "prebuilds/protocol-exporter/.eslintrc.cjs", "**/*.config.js", "scripts/**/*.ts"]
+}

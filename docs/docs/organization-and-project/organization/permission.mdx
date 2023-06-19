@@ -1,0 +1,118 @@
+---
+sidebar_position: 2
+title: Organization Permissions
+locale: en
+---
+
+The permissions in the organization are structured as follows:
+
+- Organization owner
+  - The user who creates the organization becomes the owner of the organization.
+- `Admin`
+- `Member`
+
+## Comparing permissions
+
+### Organization management
+
+| Features                    | Owner | Admin | Member |
+| --------------------------- | ----- | ----- | ------ |
+| Remove organization         | ✅    | ❌    | ❌     |
+| Change organization owner   | ✅    | ❌    | ❌     |
+| Billing management          | ✅    | ❌    | ❌     |
+| Change organization profile | ✅    | ❌    | ❌     |
+
+### Project management
+
+| Features                           | Owner | Admin | Member                           |
+| ---------------------------------- | ----- | ----- | -------------------------------- |
+| Create projects                    | ✅    | ✅    | ❌                               |
+| Remove projects                    | ✅    | ✅    | ❌                               |
+| Change project name, description   | ✅    | ✅    | Limited to participated projects |
+| Add project members                | ✅    | ✅    | Limited to participated projects |
+| Remove project members             | ✅    | ✅    | Limited to participated projects |
+| Change project member's permission | ✅    | ✅    | Limited to participated projects |
+| Assign devices to project          | ✅    | ✅    | ❌                               |
+| Remove devices from project        | ✅    | ✅    | Limited to participated projects |
+| View assigned devices in project   | ✅    | ✅    | Limited to participated projects |
+| Create test scripts                | ✅    | ✅    | Limited to participated projects |
+| Remove test scripts                | ✅    | ✅    | Limited to participated projects |
+| Modify test scripts                | ✅    | ✅    | Limited to participated projects |
+| View test script list              | ✅    | ✅    | Limited to participated projects |
+| Execute test scripts               | ✅    | ✅    | Limited to participated projects |
+| Create routines                    | ✅    | ✅    | Limited to participated projects |
+| Remove routines                    | ✅    | ✅    | Limited to participated projects |
+| Modify routines                    | ✅    | ✅    | Limited to participated projects |
+| View routine list                  | ✅    | ✅    | Limited to participated projects |
+| Run routines                       | ✅    | ✅    | Limited to participated projects |
+| View project member list           | ✅    | ✅    | Limited to participated projects |
+| View project list                  | ✅    | ✅    | Limited to participated projects |
+
+:::info
+
+The organization owner and colleagues with the `Admin` permission can view all projects.
+
+Colleagues with the `Member` permission can only view the projects they are part of. For activity permissions within a project, please refer to the [Project Permissions](../project/permission) page.
+
+:::
+
+### Host management
+
+| Features                   | Owner | Admin | Member |
+| -------------------------- | ----- | ----- | ------ |
+| Add hosts                  | ✅    | ✅    | ❌     |
+| Remove Hosts               | ✅    | ✅    | ❌     |
+| Rename host                | ✅    | ✅    | ❌     |
+| Check host's current token | ✅    | ✅    | ❌     |
+| Revoke host token          | ✅    | ✅    | ❌     |
+| View host list             | ✅    | ✅    | ✅     |
+
+### Device management
+
+| Features                                      | Owner | Admin | Member                           |
+| --------------------------------------------- | ----- | ----- | -------------------------------- |
+| Start using devices                           | ✅    | ✅    | ❌                               |
+| Remove devices                                | ✅    | ✅    | ❌                               |
+| Rename devices                                | ✅    | ✅    | ❌                               |
+| View in-use device list                       | ✅    | ✅    | ✅                               |
+| View standby device list                      | ✅    | ✅    | ✅                               |
+| Create device tags                            | ✅    | ✅    | ❌                               |
+| Remove device tags                            | ✅    | ✅    | ❌                               |
+| Rename device tag                             | ✅    | ✅    | ❌                               |
+| Attach tag to device                          | ✅    | ✅    | ❌                               |
+| Detach tag from device                        | ✅    | ✅    | ❌                               |
+| View device tag list                          | ✅    | ✅    | ✅                               |
+| Public Device streaming and remote control    | ✅    | ✅    | ✅                               |
+| Project-specific Device streaming and control | ✅    | ✅    | Limited to participated projects |
+
+:::info
+
+For colleagues with the `Member` permission, only the colleagues belonging to the respective project can stream and remotely control the devices assigned to that project.
+
+:::
+
+### Colleague management
+
+| Features                      | Owner | Admin | Member |
+| ----------------------------- | ----- | ----- | ------ |
+| Invite colleague              | ✅    | ✅    | ❌     |
+| Change colleague's permission | ✅    | ✅    | ❌     |
+| Inactivate colleague          | ✅    | ✅    | ❌     |
+| View colleague list           | ✅    | ✅    | ✅     |
+| Resend invitation             | ✅    | ✅    | ❌     |
+| Cancel invitation             | ✅    | ✅    | ❌     |
+| View invitation list          | ✅    | ✅    | ✅     |
+
+### Team management
+
+| Features                   | Owner | Admin | Member                           |
+| -------------------------- | ----- | ----- | -------------------------------- |
+| Create teams               | ✅    | ✅    | ❌                               |
+| Rename teams               | ✅    | ✅    | ❌                               |
+| Remove teams               | ✅    | ✅    | ❌                               |
+| View team list             | ✅    | ✅    | ✅                               |
+| Add team members           | ✅    | ✅    | ❌                               |
+| Remove team members        | ✅    | ✅    | ❌                               |
+| View team member list      | ✅    | ✅    | ✅                               |
+| Add team as project member | ✅    | ✅    | Limited to participated projects |
+| Remove team from project   | ✅    | ✅    | Limited to participated projects |

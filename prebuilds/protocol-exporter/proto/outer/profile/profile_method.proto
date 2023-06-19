@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package outer.profile;
+
+option go_package = "go-device-controller/types/protocol/generated/proto/outer/profile";
+option java_package = "com.dogu.protocol.generated.outer.profile";
+
+enum ProfileMethodKind {
+  PROFILE_METHOD_KIND_UNSPECIFIED = 0;
+
+  PROFILE_METHOD_KIND_DESKTOP_CPU = 100;
+  PROFILE_METHOD_KIND_DESKTOP_CPUFREQ = 101;
+  PROFILE_METHOD_KIND_DESKTOP_GPU = 102;
+  PROFILE_METHOD_KIND_DESKTOP_MEM = 103;
+  PROFILE_METHOD_KIND_DESKTOP_FS = 104;
+  PROFILE_METHOD_KIND_DESKTOP_NET = 105;
+
+  PROFILE_METHOD_KIND_ANDROID_CPU_SHELLTOP = 300;
+  PROFILE_METHOD_KIND_ANDROID_CPUFREQ_CAT = 311;
+  PROFILE_METHOD_KIND_ANDROID_GPU_NOTYET = 320;
+  PROFILE_METHOD_KIND_ANDROID_MEM_ACTIVITYMANAGER = 330;
+  PROFILE_METHOD_KIND_ANDROID_MEM_PROCMEMINFO = 341;
+  PROFILE_METHOD_KIND_ANDROID_FS_PROCDISKSTATS = 350;
+  PROFILE_METHOD_KIND_ANDROID_NET_TRAFFICSTATS = 360;
+  PROFILE_METHOD_KIND_ANDROID_PROCESS_SHELLTOP = 370;
+}
+
+message ProfileMethod {
+  ProfileMethodKind kind = 1;
+  string name = 2;
+}
+
+message ProfileMethodWithConfig {
+  ProfileMethod profile_method = 1;
+  fixed32 period_sec = 2;
+}
+
+message DeviceConfig {
+  repeated ProfileMethodWithConfig profile_methods = 1;
+}

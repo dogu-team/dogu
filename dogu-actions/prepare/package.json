@@ -1,0 +1,34 @@
+{
+  "name": "@dogu-actions/prepare",
+  "version": "0.0.0",
+  "description": "",
+  "license": "MIT",
+  "author": "dogu",
+  "main": "./build/src/main.js",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "shx rm -rf build generated .publish-github",
+    "dev": "nodemon",
+    "publish:github": "tsc -b && ts-node scripts/publish-github.ts",
+    "rebuild": "yarn run clean && yarn run build",
+    "start": "yarn run build && ts-node src/main.ts",
+    "watch": "clear; echo @dogu-actions/prepare Watching... && nodemon"
+  },
+  "types": "./build/src/main.d.ts",
+  "dependencies": {
+    "@dogu-tech/action-kit": "workspace:^",
+    "@dogu-tech/toolkit": "workspace:^"
+  },
+  "devDependencies": {
+    "@dogu-dev-private/publish-package": "workspace:^",
+    "@types/node": "18.15.11",
+    "cross-env": "7.0.3",
+    "nodemon": "2.0.22",
+    "shx": "0.3.4",
+    "ts-node": "10.9.1",
+    "typescript": "4.7.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package inner.types;
+
+import "inner/types/device_control.proto";
+import "outer/errors.proto";
+import "outer/http_ws.proto";
+
+option go_package = "go-device-controller/types/protocol/generated/proto/inner/types";
+option java_package = "com.dogu.protocol.generated.inner.types";
+
+// ConsoleFront  ----(Streamer (WebRTC Peer))----> DeviceAgent
+
+message DataChannelProtocolDefault {
+}
+
+message DataChannelProtocolRelayTcp {
+  uint32 port = 1;
+}
+
+message DataChannelProtocolDeviceHttp {
+}
+
+message DataChannelProtocolDeviceWebSocket {
+  outer.WebSocketConnection connection = 1;
+}
+
+message DataChannelLabel {
+  string name = 1;
+  oneof protocol {
+    DataChannelProtocolDefault default = 2;
+    DataChannelProtocolRelayTcp relay_tcp = 3;
+    DataChannelProtocolDeviceHttp device_http = 4;
+    DataChannelProtocolDeviceWebSocket device_web_socket = 5;
+  }
+}
+
+message CfGdcDaControlParam {
+  types.DeviceControl control = 1;
+}
+
+message CfGdcDaControlResult {
+  outer.ErrorResult error = 1;
+}

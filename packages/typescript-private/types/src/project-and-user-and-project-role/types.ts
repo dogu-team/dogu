@@ -1,0 +1,1 @@
+export const PROJECT_AND_USER_AND_PROJECT_ROLE_TABLE_NAME = 'project_and_user_and_project_role';

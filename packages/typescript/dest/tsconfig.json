@@ -1,0 +1,25 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "build",
+    "rootDir": "."
+  },
+  "include": ["src/**/*.ts"],
+  "references": [
+    {
+      "path": "../../typescript/types"
+    },
+    {
+      "path": "../../typescript/env-tools"
+    },
+    {
+      "path": "../../typescript/common"
+    },
+    {
+      "path": "../../typescript/console-dest"
+    },
+    {
+      "path": "../../typescript-dev-private/publish-package"
+    }
+  ]
+}

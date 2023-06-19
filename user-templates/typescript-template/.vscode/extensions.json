@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "arcanis.vscode-zipfs",
+    "bungcip.better-toml",
+    "dbaeumer.vscode-eslint",
+    "eamodio.gitlens",
+    "editorconfig.editorconfig",
+    "esbenp.prettier-vscode",
+    "fvclaus.sort-json-array",
+    "medo64.render-crlf",
+    "richie5um2.vscode-sort-json",
+    "seatonjiang.gitmoji-vscode",
+    "wayou.vscode-todo-highlight",
+    "iliazeus.vscode-ansi"
+  ]
+}

@@ -1,0 +1,85 @@
+import { RedisModule } from '@liaoliaots/nestjs-redis';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { config, dataSourceConfig } from '../../config';
+import { LoggerMiddleware } from '../../middleware/logger.middleware';
+import { SlackBotModule } from '../../module/slack-bot/slack-bot.module';
+import { TokenModule } from '../../module/token/token.module';
+import { DeviceStreamingModule } from '../../ws/device-streaming/device-streaming.module';
+import { LiveLogModule } from '../../ws/live-log/live-log.module';
+import { LivePipelineStatusModule } from '../../ws/live-pipeline-status/live-pipeline-status.module';
+import { LiveProfileModule } from '../../ws/live-profile/live-profile.module';
+import { AuthModule } from '../auth/auth.module';
+import { DeviceMessageModule } from '../device-message/device-message.module';
+import { DownloadModule } from '../download/download.module';
+import { EventModule } from '../event/event.module';
+import { FeatureFileModule } from '../feature/file/feature-file.module';
+import { FileModule } from '../file/file.module';
+import { GitlabModule } from '../gitlab/gitlab.module';
+import { InitModule } from '../init/init.module';
+import { LoggerModule } from '../logger/logger.module';
+import { DeviceTagModule } from '../organization/device-tag/device-tag.module';
+import { DeviceModule } from '../organization/device/device.module';
+import { HostModule } from '../organization/host/host.module';
+import { OrganizationModule } from '../organization/organization.module';
+import { TeamModule } from '../organization/team/team.module';
+import { PrivateModule } from '../private/private.module';
+import { ProjectRoleModule } from '../project-role/project-role.module';
+import { ProjectModule } from '../project/project.module';
+import { PublicModule } from '../public/public.module';
+import { RegisteryModule } from '../registery/registery.module';
+import { RoutineModule } from '../routine/routine.module';
+import { UserModule } from '../user/user.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+
+const IMPORT_MODULES = [
+  TypeOrmModule.forRoot(dataSourceConfig),
+  RedisModule.forRoot({
+    config: config.redis.options,
+  }),
+  EventEmitterModule.forRoot({
+    delimiter: '.',
+  }),
+  ScheduleModule.forRoot(),
+  RegisteryModule,
+  OrganizationModule,
+  ProjectModule,
+  HostModule,
+  UserModule,
+  DeviceModule,
+  SlackBotModule,
+  TokenModule,
+  DeviceTagModule,
+  TeamModule,
+  ProjectRoleModule,
+  LiveLogModule,
+  EventModule,
+  PrivateModule,
+  DeviceMessageModule,
+  InitModule,
+  RoutineModule,
+  LoggerModule,
+  DeviceStreamingModule,
+  DownloadModule,
+  PublicModule,
+  LivePipelineStatusModule,
+  LiveProfileModule,
+  GitlabModule,
+  FeatureFileModule,
+  AuthModule,
+  FileModule,
+];
+
+@Module({
+  imports: IMPORT_MODULES,
+  controllers: [AppController],
+  providers: [AppService],
+})
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer): void {
+    consumer.apply(LoggerMiddleware).forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}

@@ -1,0 +1,81 @@
+---
+sidebar_position: 7
+title: 프로젝트 멤버 관리
+locale: ko
+---
+
+import ProjectAdminPermission from '/src/components/console/ProjectAdminPermission.mdx';
+
+## 프로젝트 멤버 추가하기
+
+프로젝트 멤버는 조직 멤버 또는 팀이 될 수 있습니다.
+
+<ProjectAdminPermission prefix="프로젝트 멤버 추가는" />
+
+:::tip 조직 멤버와 팀
+
+프로젝트 멤버 목록에서 **"유형"**에 따라 조직 멤버와 팀이 구분됩니다.
+
+:::
+
+### 조직 멤버 추가하기
+
+1. 프로젝트 페이지에서 "멤버" 탭을 클릭합니다.
+2. "멤버 추가" 버튼을 클릭합니다.
+   <img
+     src="/ko/img/console/project/add-colleague-button.png"
+     style={{ width: 600, display: 'block' }}
+   />
+3. 추가할 멤버의 이름이나 이메일을 입력 후 결과에서 클릭합니다.
+   <img
+     src="/ko/img/console/project/add-colleague-modal.png"
+     style={{ width: 600, display: 'block' }}
+   />
+4. 멤버의 권한을 선택하고 "프로젝트에 추가하기" 버튼을 클릭합니다.
+   <img
+     src="/ko/img/console/project/add-colleague-modal-permission.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+### 팀 멤버 추가하기
+
+1. 프로젝트 페이지에서 "멤버" 탭을 클릭합니다.
+2. "팀 추가" 버튼을 클릭합니다.
+   <img
+     src="/ko/img/console/project/add-team-button.png"
+     style={{ width: 600, display: 'block' }}
+   />
+3. 추가할 팀 이름을 입력하고 결과에서 클릭합니다.
+   <img
+     src="/ko/img/console/project/add-team-modal.png"
+     style={{ width: 600, display: 'block' }}
+   />
+4. 팀의 권한을 선택하고 "프로젝트에 추가하기" 버튼을 클릭합니다.
+   <img
+     src="/ko/img/console/project/add-team-modal-permission.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+## 프로젝트 멤버 권한 변경하기
+
+<ProjectAdminPermission prefix="프로젝트 멤버 권한 변경은" />
+
+1. 프로젝트 페이지에서 "멤버" 탭을 클릭합니다.
+2. 멤버 목록에서 권한을 변경할 멤버를 찾아 권한 선택 상자를 클릭합니다.
+3. 변경할 권한을 선택해 변경을 완료합니다.
+   <img
+     src="/ko/img/console/project/update-member-permission.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+## 프로젝트 멤버 삭제하기
+
+<ProjectAdminPermission prefix="프로젝트 멤버 삭제는" />
+
+1. 프로젝트 페이지에서 "멤버" 탭을 클릭합니다.
+2. 멤버 목록에서 삭제할 멤버를 찾아 메뉴 버튼(`···`)을 클릭합니다.
+3. "삭제" 메뉴를 클릭하고 확인 버튼을 눌러 삭제를 완료합니다.
+   <img
+     src="/ko/img/console/project/delete-member.png"
+     style={{ width: 600, display: 'block' }}
+   />

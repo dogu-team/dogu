@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "build"
+  },
+  "include": ["**/*.ts"],
+  "references": [
+    {
+      "path": "../../packages/typescript-private/types"
+    },
+    {
+      "path": "../../packages/typescript-private/env-tools"
+    },
+    {
+      "path": "../../packages/typescript-dev-private/build-tools"
+    },
+    {
+      "path": "../../packages/typescript/node"
+    }
+  ]
+}

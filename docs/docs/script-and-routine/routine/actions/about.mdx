@@ -1,0 +1,41 @@
+---
+sidebar_position: 1
+title: About Actions
+locale: en
+---
+
+# Action
+
+The execution unit described under 'steps' in 'Tasks' is 'steps'.<br/>
+And each step executes an 'action'.<br/>
+Actions can run [Execute Shell Script](./run) or [Predefined Actions](./predefined-actions/about).<br/>
+
+:::info
+The action runs on the 'host' that is connected to the 'device' and controls the 'device'.
+:::
+
+### Flow
+
+```mermaid
+flowchart LR
+    subgraph deviceJob[device job on each device]
+        start(start)
+        subgraph steps
+            subgraph step1
+                action1(action)
+            end
+            subgraph step2
+                action2(action)
+            end
+        end
+        subgraph complete
+            success(success)
+            failure(failure)
+        end
+    end
+
+    start --> action1
+    action1 -- if succeeded --> action2
+    action2 -- if succeeded --> success
+    action1 -- if failed --> failure
+```

@@ -1,0 +1,11 @@
+{
+  "fileService": "s3",
+  "useSampleProject": true,
+  "gitlabInitCheck": false,
+  "useGitlabIdByUserId": false,
+  "emailVerification": true,
+  "rdbSslConnection": true,
+  "cookieSecure": true,
+  "forceInvitation": false,
+  "thirdPartyLogin": true
+}

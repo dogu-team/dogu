@@ -1,0 +1,1 @@
+export const ORGANIZATION_AND_USER_AND_ORGANIZATION_ROLE_TABLE_NAME = 'organization_and_user_and_organization_role';

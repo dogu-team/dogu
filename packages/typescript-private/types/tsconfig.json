@@ -1,0 +1,15 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "build"
+  },
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../../typescript/common"
+    },
+    {
+      "path": "../../typescript/types"
+    }
+  ]
+}

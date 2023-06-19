@@ -1,0 +1,80 @@
+---
+sidebar_position: 1
+title: About Streaming & Remote control
+locale: en
+---
+
+Dogu provides the ability to manage and remotely control devices from a web page, regardless of the difference in physical space between the user and the devices.
+
+The features offered in Device Streaming and Remote Control include:
+
+1. Basic Features
+   - Device screen streaming
+   - Device touch input
+   - Keyboard input
+   - Device button input (sound, power, app switching, home, etc.)
+2. Device profile information (CPU, MEM)
+3. Game UI inspector
+4. Remote app installation
+5. Device logcat
+
+:::tip
+
+To utilize the above features, the device **must** be maintained in an `Online` connection state, assigned to one or more projects, or be a public device.
+
+For instructions on how to use devices, refer to the [Organization Device Management](/organization-and-project/organization/device/device-management) or [Host Management](/organization-and-project/organization/host) documentation.
+
+:::
+
+## Platform-specific features
+
+| Platform                | Android |       Windows       |        macOS        |
+| :---------------------- | :-----: | :-----------------: | :-----------------: |
+| Streaming               |   ✅    |         ✅          |         ✅          |
+| Touch Input             |   ✅    |         ✅          |         ✅          |
+| Keyboard Input          |   ✅    |         ✅          |         ✅          |
+| Device Button Input     |   ✅    |         ✅          |         ✅          |
+| Device Profile          |   ✅    | Partially Supported | Partially Supported |
+| Game UI Inspector       |   ✅    |         ❌          |         ❌          |
+| Remote App Installation |   ✅    |         ❌          |         ❌          |
+| Device Logcat           |   ✅    |         ❌          |         ❌          |
+
+## Usage guides
+
+:::info Streaming permissions
+
+The device streaming feature is available based on the organization's and project's permissions.
+
+Refer to the [Organization Permissions](/organization-and-project/organization/permission) and [Project Permissions](/organization-and-project/project/permission) documentation for more information.
+
+:::
+
+### Starting from the hosts
+
+1. In the Dogu console, click on the "Hosts" menu in the left sidebar of the organization page.
+2. Find the host with a `Connected` status from the list, which you want to stream or remote control, and click on the menu button(`···`).
+3. Click on the "Streaming" menu to navigate to the host streaming and remote control page.
+   <img
+     src="/img/console/organization/host-streaming-menu.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+### Starting from the organization devices
+
+1. In the Dogu console, click on the "Devices" menu in the left sidebar of the organization page.
+2. Find the device with an `Online` status from the list, which you want to stream or remote control, and click on the menu button(`···`).
+3. Click on the "Streaming" menu to navigate to the device streaming and remote control page.
+   <img
+     src="/img/console/device-streaming/org-device-streaming-menu.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+### Starting from the project devices
+
+1. In the Dogu console, go to the project page and click on the "Devices" tab.
+2. Find the device with an `Online` status from the list, which you want to stream or remote control, and click on the menu button(`···`).
+3. Click on the "Streaming" menu to navigate to the device streaming and remote control page.
+   <img
+     src="/img/console/project/project-device-streaming-menu.png"
+     style={{ width: 600, display: 'block' }}
+   />

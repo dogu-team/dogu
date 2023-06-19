@@ -1,0 +1,84 @@
+title: RoutineSchema
+type: object
+additionalProperties: false
+description: The schema for a pipeline.
+properties:
+  env:
+    type: object
+    additionalProperties:
+      type: string
+    description: The environment variables for the pipeline.
+  jobs:
+    type: object
+    additionalProperties:
+      '$ref': '#/definitions/Job'
+  name:
+    type: string
+  'on':
+    type: object
+    additionalProperties:
+      type:
+        - string
+        - 'null'
+required:
+  - jobs
+  - name
+  - 'on'
+definitions:
+  Job:
+    title: JobSchema
+    type: object
+    additionalProperties: false
+    properties:
+      needs:
+        anyOf:
+          - type: string
+          - items:
+              type: string
+            type: array
+      record:
+        type: boolean
+      runs-on:
+        anyOf:
+          - additionalProperties: false
+            properties:
+              group:
+                anyOf:
+                  - type: string
+                  - items:
+                      type: string
+                    type: array
+            required:
+              - group
+            type: object
+          - type: string
+          - items:
+              type: string
+            type: array
+      steps:
+        type: array
+        items:
+          '$ref': '#/definitions/Step'
+    required:
+      - runs-on
+      - steps
+  Step:
+    title: StepSchema
+    type: object
+    additionalProperties: false
+    properties:
+      name:
+        type: string
+      run:
+        type: string
+      uses:
+        type: string
+      with:
+        type: object
+      env:
+        type: object
+        additionalProperties:
+          type: string
+        description: The environment variables for the step.
+    required:
+      - name

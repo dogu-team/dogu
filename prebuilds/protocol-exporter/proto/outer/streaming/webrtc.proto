@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package outer.streaming;
+
+option go_package = "go-device-controller/types/protocol/generated/proto/outer/streaming";
+option java_package = "com.dogu.protocol.generated.outer.streaming";
+
+enum ProtoRTCSdpType {
+  PROTO_RTCSDP_TYPE_RTCSDP_TYPE_UNSPECIFIED = 0;
+  PROTO_RTCSDP_TYPE_RTCSDP_TYPE_OFFER = 1;
+  PROTO_RTCSDP_TYPE_RTCSDP_TYPE_ANSWER = 2;
+  PROTO_RTCSDP_TYPE_RTCSDP_TYPE_PRANSWER = 3;
+  PROTO_RTCSDP_TYPE_RTCSDP_TYPE_ROLLBACK = 4;
+}
+
+message ProtoRTCPeerDescription {
+  string sdp_base64 = 1;
+  ProtoRTCSdpType type = 2;
+}
+
+message ProtoRTCIceCandidateInit {
+  string candidate = 1;
+  int32 sdp_mline_index = 2;
+  string sdp_mid = 3;
+  string username_fragment = 4;
+}

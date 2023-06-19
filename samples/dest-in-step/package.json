@@ -1,0 +1,20 @@
+{
+  "name": "dest-in-step",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": "",
+  "homepage": "https://github.com/dogu-team/user-testscript.git",
+  "main": "./build/src/index.js",
+  "scripts": {
+    "test": "tsc -b && ts-node test/dest-in-step.test.ts"
+  },
+  "types": "./build/src/index.d.ts",
+  "dependencies": {
+    "@dogu-tech/console-dest": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/node": "18.15.11",
+    "ts-node": "10.9.1",
+    "typescript": "4.7.4"
+  }
+}

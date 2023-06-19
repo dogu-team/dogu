@@ -1,0 +1,405 @@
+{
+  "tasks": [
+    /*************************************************************************
+      build
+     *************************************************************************/
+    {
+      "type": "npm",
+      "script": "build",
+      "label": "Build: all",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "type": "npm",
+      "script": "build:archive",
+      "label": "Build: android-device-agent",
+      "path": "projects/android-device-agent",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "buildWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "build:archive",
+      "label": "Build: go-device-controller",
+      "path": "projects/go-device-controller",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "buildWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+
+    /*************************************************************************
+      dev
+     *************************************************************************/
+    {
+      "type": "npm",
+      "script": "dev:next",
+      "label": "Dev: CDN console-desktop-app:Next",
+      "path": "projects/console-desktop-app",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "dev:electron",
+      "label": "Dev: CDE console-desktop-app:Electron",
+      "path": "projects/console-desktop-app",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "dev",
+      "label": "Dev: CF console-web-front",
+      "path": "projects/console-web-front",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "dev",
+      "label": "Dev: CB console-web-server",
+      "path": "projects/console-web-server",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "dev",
+      "label": "Dev: HA host-agent",
+      "path": "projects/host-agent",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "dev",
+      "label": "Dev: HB host-browser",
+      "path": "projects/host-browser",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "dev",
+      "label": "Dev: DS device-server",
+      "path": "projects/device-server",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "newbie:nm-space",
+      "label": "Newbie: NM Space",
+      "path": ".",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "dev",
+      "label": "Dev: Dost",
+      "path": "nm-space/projects/dost",
+      "problemMatcher": [],
+      "dependsOn": ["Newbie: NM Space"],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+
+    /*************************************************************************
+      local db
+     *************************************************************************/
+    {
+      "type": "npm",
+      "script": "start:pgsql",
+      "label": "Dev: pgsql",
+      "path": "projects/console-web-server",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "start:redis",
+      "label": "Dev: redis",
+      "path": "projects/console-web-server",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+
+    /*************************************************************************
+      env
+     *************************************************************************/
+    {
+      "type": "npm",
+      "script": "env:intranet",
+      "label": "Dev: Env intranet",
+      "path": "",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "envWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Dev: Server All",
+      "type": "shell",
+      "problemMatcher": [],
+      "dependsOrder": "parallel",
+      "dependsOn": ["Dev: CF console-web-front", "Dev: CB console-web-server", "Dev: Dost"]
+    },
+    {
+      "label": "Dev: Local DB All",
+      "type": "shell",
+      "problemMatcher": [],
+      "dependsOrder": "parallel",
+      "dependsOn": ["Dev: pgsql", "Dev: redis"]
+    },
+    {
+      "label": "Dev: Local All",
+      "type": "shell",
+      "problemMatcher": [],
+      "dependsOrder": "sequence",
+      "dependsOn": ["Dev: Server All"]
+    },
+
+    /*************************************************************************
+      debug
+     *************************************************************************/
+    {
+      "type": "npm",
+      "script": "debug",
+      "label": "Debug:Dev: CB console-web-server",
+      "path": "projects/console-web-server",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "debug",
+      "label": "Debug:Dev: HA host-agent",
+      "path": "projects/host-agent",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "debug",
+      "label": "Debug:Dev: DS device-server",
+      "path": "projects/device-server",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "debug",
+      "label": "Debug:Dev: Dost",
+      "path": "nm-space/projects/dost",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Debug:Dev: CB HA DS",
+      "type": "shell",
+      "problemMatcher": [],
+      "dependsOrder": "parallel",
+      "dependsOn": ["Debug:Dev: CB console-web-server", "Debug:Dev: HA host-agent", "Debug:Dev: DS device-server"]
+    },
+
+    /*************************************************************************
+      watch and mirror to nm-space
+     *************************************************************************/
+    {
+      "type": "npm",
+      "script": "watch",
+      "label": "Watch: packages",
+      "path": "",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "packagesWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "mirror:nm",
+      "label": "Watch: mirror to nm-space",
+      "path": "",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "packagesWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Watch: packages and mirror to nm-space",
+      "type": "shell",
+      "problemMatcher": [],
+      "dependsOrder": "parallel",
+      "dependsOn": ["Watch: packages", "Watch: mirror to nm-space"]
+    },
+
+    /*************************************************************************
+      export
+     *************************************************************************/
+    {
+      "type": "npm",
+      "script": "export",
+      "label": "Export: PE protocol-exporter",
+      "path": "prebuilds/protocol-exporter",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "exportWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "rebuild",
+      "label": "Rebuild: typescript/types",
+      "path": "packages/typescript/types",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "exportWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Export: protocol-exporter, reload",
+      "type": "shell",
+      "problemMatcher": [],
+      "dependsOrder": "sequence",
+      "dependsOn": ["Export: PE protocol-exporter", "Rebuild: typescript/types", "workbench.action.reloadWindow"]
+    },
+    {
+      "type": "npm",
+      "script": "export",
+      "label": "Export: FE flatbuffer-exporter",
+      "path": "prebuilds/flatbuffer-exporter",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "exportWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "rebuild",
+      "label": "Rebuild: typescript/gamium-protocol",
+      "path": "packages/typescript/gamium-protocol",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "exportWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Export: flatbuffer-exporter, reload",
+      "type": "shell",
+      "problemMatcher": [],
+      "dependsOrder": "sequence",
+      "dependsOn": ["Export: FE flatbuffer-exporter", "Rebuild: typescript/gamium-protocol", "workbench.action.reloadWindow"]
+    },
+    {
+      "label": "Terminate task",
+      "type": "shell",
+      "problemMatcher": [],
+      "dependsOrder": "sequence",
+      "dependsOn": ["workbench.action.tasks.terminate"]
+    },
+    {
+      "label": "workbench.action.reloadWindow",
+      "command": "${command:workbench.action.reloadWindow}",
+      "type": "shell",
+      "problemMatcher": []
+    },
+    {
+      "label": "workbench.action.tasks.terminate",
+      "command": "${command:workbench.action.tasks.terminate}",
+      "type": "shell",
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "reload",
+      "type": "command",
+      "command": "workbench.action.reloadWindow"
+    }
+  ]
+}

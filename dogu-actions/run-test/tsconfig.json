@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "build"
+  },
+  "include": ["src"],
+  "references": [
+    {
+      "path": "../../packages/typescript/action-kit"
+    },
+    {
+      "path": "../../packages/typescript-dev-private/publish-package"
+    }
+  ]
+}

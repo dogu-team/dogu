@@ -1,0 +1,92 @@
+---
+sidebar_position: 5
+title: Managing Apps
+locale: en
+---
+
+import ProjectWritePermission from '/src/components/console/ProjectWritePermissionEng.mdx';
+import ProjectMemberPermission from '/src/components/console/ProjectMemberPermissionEng.mdx';
+
+In a project, you can upload an app that has the Gamium Engine SDK applied and use it for routine or script testing.
+
+:::info
+
+For information on how to apply the Gamium Engine SDK to your game, refer to the [Gamium](https://gamium.dogutech.io) documentation.
+
+:::
+
+## App information
+
+Dogu collects the following information from your app:
+
+- App ID
+- App name
+- App version
+- App icon
+- App size
+
+## Uplaod an app
+
+:::info Supported File Extension
+
+Only `.apk` files are supported for app uploads.
+
+:::
+
+<ProjectWritePermission prefix="Uploading an app" />
+
+1. Go to the project page and click on the "Apps" tab.
+2. Click the "Upload app" button.
+   <img
+     src="/img/console/project/upload-app.png"
+     style={{ width: 600, display: 'block' }}
+   />
+3. Drag and drop or select the app file to complete the upload.
+   <img
+     src="/img/console/project/upload-app-modal.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+:::caution App Version
+
+If an app with the same version already exists, it will be overwritten by the uploaded app.
+
+:::
+
+## Using an app
+
+### Routines
+
+When conducting game tests through routines, you utilize the uploaded app version. If the app version is not available in the app list, the routine will not work.
+
+Refer to the [Routine Guide](/script-and-routine/routine/about) for instructions on how to use the app version in routines.
+
+### Script testing
+
+When conducting script testing, you utilize the uploaded app version. You can select the app version from the app selection box to proceed with script testing.
+
+For detailed information about script testing, refer to the [Script Testing](./script-test) guide.
+
+## Download an app
+
+<ProjectMemberPermission prefix="Downloading the app" />
+
+1. Go to the project page and click on the "Apps" tab.
+2. Find the app you want to download from the list and click the menu button(`···`).
+3. Click the "Download" button.
+   <img
+     src="/img/console/project/download-app.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+## Remove an app
+
+<ProjectWritePermission prefix="Removing an app" />
+
+1. Go to the project page and click on the "Apps" tab.
+2. Find the app you want to remove from the list and click the menu button(`···`).
+3. Click the "Delete" button.
+   <img
+     src="/img/console/project/delete-app.png"
+     style={{ width: 600, display: 'block' }}
+   />

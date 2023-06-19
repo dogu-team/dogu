@@ -1,0 +1,90 @@
+---
+sidebar_position: 8
+title: 조직 관리
+locale: ko
+---
+
+import OrgnizationOwnerPermission from '@site/src/components/console/OrgnizationOwnerPermission.mdx';
+
+## 조직 프로필 변경하기
+
+<OrgnizationOwnerPermission prefix="조직 프로필 변경은" />
+
+1. Dogu 콘솔에서 조직 페이지 내 왼쪽 사이드바에서 "설정"을 클릭합니다.
+2. 원하는 프로필 이미지를 업로드하거나, 기존 조직 이름을 변경합니다.
+
+## 조직 소유자 변경하기
+
+<OrgnizationOwnerPermission prefix="조직 소유자 변경은" />
+
+:::caution 조직 소유자 변경 시 주의사항
+
+기존 조직 소유자는 조직 소유자 변경 후 `Admin` 권한 멤버가 됩니다.
+
+:::
+
+1. Dogu 콘솔에서 조직 페이지 내 왼쪽 사이드바에서 "설정"을 클릭합니다.
+2. "조직 소유자 변경" 메뉴에서 "소유자 변경" 버튼을 클릭합니다.
+   <img
+     src="/ko/img/console/organization/change-org-owner-menu.png"
+     style={{
+       width: 600,
+       display: 'block',
+     }}
+   />
+3. 조직 소유자로 변경할 멤버를 선택합니다.
+   <img
+     src="/ko/img/console/organization/change-org-owner-modal.png"
+     style={{
+       width: 600,
+       display: 'block',
+     }}
+   />
+4. 확인 버튼을 클릭 후 변경을 완료합니다.
+
+## 조직 삭제하기
+
+<OrgnizationOwnerPermission prefix="조직 삭제는" />
+
+:::danger 조직 삭제
+
+조직을 삭제하면 조직에 속한 모든 데이터가 삭제됩니다. 조직에 속한 모든 멤버가 조직에서 나가게 됩니다.
+
+:::
+
+1. Dogu 콘솔에서 조직 페이지 내 왼쪽 사이드바에서 "설정"을 클릭합니다.
+2. "조직 삭제" 버튼을 클릭합니다.
+   <img
+     src="/ko/img/console/organization/remove-org-menu.png"
+     style={{
+       width: 600,
+       display: 'block',
+     }}
+   />
+
+## 조직 나가기
+
+:::info
+
+조직 소유자는 조직을 나갈 수 없습니다. 조직 소유자가 조직을 나가려면 조직 소유자를 다른 멤버로 변경한 후 나가야 합니다.
+
+:::
+
+1. Dogu 콘솔에서 상단 메뉴에서 프로필 이미지를 클릭합니다.
+2. "모든 조직" 메뉴를 클릭합니다.
+   <img
+     src="/ko/img/console/organization/move-to-my-organizations.png"
+     style={{
+       width: 600,
+       display: 'block',
+     }}
+   />
+3. 나갈 조직을 목록에서 찾아 메뉴 버튼(`···`)을 클릭합니다.
+4. "나가기" 메뉴를 클릭 후, 확인 버튼을 눌러 나가기를 완료합니다.
+   <img
+     src="/ko/img/console/organization/leave-org-menu.png"
+     style={{
+       width: 600,
+       display: 'block',
+     }}
+   />

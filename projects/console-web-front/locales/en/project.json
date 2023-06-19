@@ -1,0 +1,35 @@
+{
+  "tabMenuHomeTitle": "Home",
+  "tabMenuRunScriptTitle": "Run Script",
+  "tabMenuRoutineTitle": "Routines",
+  "tabMenuAppTitle": "Apps",
+  "tabMenuDeviceTitle": "Devices",
+  "tabMenuMemberTitle": "Members",
+  "tabMenuRepositoryTitle": "Script Repository",
+  "tabMenuSettingTitle": "Settings",
+
+  "settingNameInputLabel": "Project name",
+  "settingNameInputPH": "Name",
+  "settingDescInputLabel": "Project description",
+  "settingDescInputPH": "Description",
+
+  "deleteProjectMenuTitle": "Remove project",
+  "deleteProjectDescriptionText": "Remove project permanently.",
+  "deleteProjectButtonText": "Remove project",
+  "deleteProjectConfirmModalTitle": "Remove project",
+  "deleteProjectConfirmModalButtonText": "Confirm and remove",
+  "settingDeleteProjectConfirmContent": "Are you sure to remove project <b>{{name}}</b> permanently?<br></br>This cannot be undone and may lose your works.",
+
+  "projectUpdateSuccessMsg": "Updated!",
+  "projectUpdateFailedMsg": "Failed to update\n{{reason}}",
+  "projectDeleteSuccessMsg": "Removed!",
+  "projectDeleteFailedMsg": "Failed to remove\n{{reason}}",
+
+  "projectTableNameColumn": "Name",
+  "projectTableMembersColumn": "Members",
+  "projectTableLastUpdatedColumn": "Recent Activities",
+
+  "createProjectButtonTitle": "Create project",
+
+  "projectEmptyDescription": "Create new project and start game test automation!<br></br><br></br><link>Click here</link> for more information."
+}

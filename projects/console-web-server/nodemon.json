@@ -1,0 +1,20 @@
+{
+  "verbose": true,
+  "watch": [
+    "../../packages/typescript-private/console/src",
+    "../../packages/typescript-private/console-host-agent/src",
+    "../../packages/typescript-private/types/src",
+    "../../packages/typescript/common/src",
+    "../../packages/typescript/console-action/src",
+    "../../packages/typescript/console-dest/src",
+    "../../packages/typescript/console-gamium/src",
+    "../../packages/typescript/device-client-common/src",
+    "../../packages/typescript/env-tools/src",
+    "../../packages/typescript/node/src",
+    "../../packages/typescript-dev-private/build-tools/src",
+    "./src",
+    "./scripts"
+  ],
+  "exec": "yarn run build && node -r tsconfig-paths/register -r ts-node/register ./build/src/main",
+  "ext": "ts"
+}

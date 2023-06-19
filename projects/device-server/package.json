@@ -1,0 +1,38 @@
+{
+  "private": true,
+  "name": "device-server",
+  "version": "0.0.1",
+  "description": "",
+  "license": "UNLICENSED",
+  "author": "",
+  "main": "./build/src/index.js",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "shx rm -rf build generated dist",
+    "debug": "cross-env NODE_ENV=development nodemon --config nodemon.json --inspect=60003",
+    "dev": "cross-env NODE_ENV=development nodemon --config nodemon.json",
+    "rebuild": "yarn run clean && yarn run build",
+    "start": "cross-env NODE_ENV=production node -r tsconfig-paths/register -r ts-node/register build/src/main"
+  },
+  "types": "./build/src/index.d.ts",
+  "dependencies": {
+    "@dogu-private/device-server": "workspace:^"
+  },
+  "devDependencies": {
+    "@dogu-dev-private/build-tools": "workspace:^",
+    "@dogu-tech/node": "workspace:^",
+    "@nestjs/cli": "9.1.2",
+    "@types/node": "18.15.11",
+    "cross-env": "7.0.3",
+    "nodemon": "2.0.22",
+    "shx": "0.3.4",
+    "source-map-support": "0.5.21",
+    "ts-node": "10.9.1",
+    "tsconfig-paths": "4.0.0",
+    "typescript": "4.7.4"
+  },
+  "pkg": {
+    "scripts": "build/src/*.js",
+    "assets": "node_modules/**/*"
+  }
+}

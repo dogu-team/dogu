@@ -1,0 +1,223 @@
+{
+  "[go]": {
+    "editor.defaultFormatter": "golang.go"
+  },
+  "[javascript]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[proto3]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    },
+    "editor.defaultFormatter": "xaver.clang-format"
+  },
+  "[swift]": {
+    "editor.defaultFormatter": "vknabel.vscode-apple-swift-format",
+    "editor.inlayHints.enabled": "off"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": false
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "apple-swift-format.configSearchPaths": [
+    "./.swift-format"
+  ],
+  "apple-swift-format.enable": true,
+  "clang-format.language.proto.enable": true,
+  "clang-format.language.proto.style": "google",
+  "debug.javascript.autoAttachFilter": "onlyWithFlag",
+  "editor.formatOnPaste": false,
+  "editor.formatOnSave": true,
+  "editor.formatOnSaveMode": "file",
+  "editor.formatOnType": false,
+  "eslint.alwaysShowStatus": true,
+  "eslint.codeAction.showDocumentation": {
+    "enable": true
+  },
+  "eslint.codeActionsOnSave.mode": "problems",
+  "eslint.enable": true,
+  "eslint.format.enable": true,
+  "eslint.lintTask.enable": true,
+  "eslint.lintTask.options": ".ts",
+  "eslint.nodePath": ".yarn/sdks",
+  "eslint.packageManager": "yarn",
+  "eslint.probe": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "html",
+    "vue",
+    "markdown"
+  ],
+  "eslint.workingDirectories": [
+    "."
+  ],
+  "git.rebaseWhenSync": true,
+  "go.inlayHints.assignVariableTypes": true,
+  "go.inlayHints.compositeLiteralFields": true,
+  "go.inlayHints.compositeLiteralTypes": true,
+  "go.inlayHints.constantValues": true,
+  "go.inlayHints.functionTypeParameters": true,
+  "go.inlayHints.parameterNames": true,
+  "go.inlayHints.rangeVariableTypes": true,
+  "go.lintOnSave": "package",
+  "go.lintTool": "golangci-lint",
+  "go.useLanguageServer": true,
+  "gopls": {
+    "formatting.gofumpt": true,
+    "ui.semanticTokens": true
+  },
+  "java.compile.nullAnalysis.mode": "automatic",
+  "javascript.preferences.importModuleSpecifier": "relative",
+  "prettier.documentSelectors": [
+    "*.ts, *.json"
+  ],
+  "prettier.prettierPath": ".yarn/sdks/prettier/index.js",
+  "protoc": {
+    "options": [
+      "--proto_path=./prebuilds/protocol-exporter/proto",
+      "--proto_path=./packages/typescript/types/src/protocol/generated/proto",
+      "--proto_path=./packages/typescript/types/build/src/protocol/generated/proto"
+    ]
+  },
+  "search.exclude": {
+    "**/.pnp.*": true,
+    "**/.yarn": true
+  },
+  "sourcekit-lsp.trace.server": "messages",
+  "swift.autoGenerateLaunchConfigurations": false,
+  "swift.backgroundCompilation": true,
+  "swift.diagnostics": true,
+  "swift.disableAutoResolve": true,
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.inlayHints.variableTypes.enabled": true,
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.preferences.importModuleSpecifierEnding": "minimal",
+  "typescript.tsdk": ".yarn/sdks/typescript/lib",
+  "files.associations": {
+    "__bit_reference": "cpp",
+    "__bits": "cpp",
+    "__config": "cpp",
+    "__debug": "cpp",
+    "__errc": "cpp",
+    "__hash_table": "cpp",
+    "__locale": "cpp",
+    "__mutex_base": "cpp",
+    "__node_handle": "cpp",
+    "__nullptr": "cpp",
+    "__split_buffer": "cpp",
+    "__string": "cpp",
+    "__threading_support": "cpp",
+    "__tree": "cpp",
+    "__tuple": "cpp",
+    "any": "cpp",
+    "array": "cpp",
+    "atomic": "cpp",
+    "bit": "cpp",
+    "bitset": "cpp",
+    "cctype": "cpp",
+    "charconv": "cpp",
+    "chrono": "cpp",
+    "cinttypes": "cpp",
+    "clocale": "cpp",
+    "cmath": "cpp",
+    "compare": "cpp",
+    "complex": "cpp",
+    "concepts": "cpp",
+    "condition_variable": "cpp",
+    "cstdarg": "cpp",
+    "cstddef": "cpp",
+    "cstdint": "cpp",
+    "cstdio": "cpp",
+    "cstdlib": "cpp",
+    "cstring": "cpp",
+    "ctime": "cpp",
+    "cwchar": "cpp",
+    "cwctype": "cpp",
+    "deque": "cpp",
+    "exception": "cpp",
+    "forward_list": "cpp",
+    "fstream": "cpp",
+    "initializer_list": "cpp",
+    "iomanip": "cpp",
+    "ios": "cpp",
+    "iosfwd": "cpp",
+    "iostream": "cpp",
+    "istream": "cpp",
+    "limits": "cpp",
+    "list": "cpp",
+    "locale": "cpp",
+    "map": "cpp",
+    "memory": "cpp",
+    "mutex": "cpp",
+    "new": "cpp",
+    "numeric": "cpp",
+    "optional": "cpp",
+    "ostream": "cpp",
+    "queue": "cpp",
+    "random": "cpp",
+    "ratio": "cpp",
+    "regex": "cpp",
+    "set": "cpp",
+    "span": "cpp",
+    "sstream": "cpp",
+    "stack": "cpp",
+    "stdexcept": "cpp",
+    "streambuf": "cpp",
+    "string": "cpp",
+    "string_view": "cpp",
+    "system_error": "cpp",
+    "thread": "cpp",
+    "tuple": "cpp",
+    "type_traits": "cpp",
+    "typeindex": "cpp",
+    "typeinfo": "cpp",
+    "unordered_map": "cpp",
+    "unordered_set": "cpp",
+    "valarray": "cpp",
+    "variant": "cpp",
+    "vector": "cpp",
+    "algorithm": "cpp"
+  },
+  "todohighlight.isEnable": true,
+  "emeraldwalk.runonsave": {
+    // "autoClearConsole": true,
+    "shell": "/bin/zsh",
+    "commands": [
+      {
+        "match": "\\package.json$",
+        "cmd": "yarn run timeout -s 1s -- prettier-package-json --write ${file}"
+      }
+      // {
+      //   "match": "\\.ts.?$",
+      //   "cmd": "yarn run timeout -s 1s -- organize-imports-cli ${file}"
+      // }
+      // {
+      //   "match": "\\.ts$",
+      //   "cmd": "yarn run timeout -s 1s -- eslint --fix ${file}" // <- cpu burner
+      // }
+    ]
+  },
+  "files.saveConflictResolution": "overwriteFileOnDisk",
+  "eslint.run": "onSave",
+  "cmake.sourceDirectory": "${workspaceFolder}/packages/swift/types/DoguTypes/.build/checkouts/swift-atomics/Tests",
+  "lldb.library": "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB"
+}

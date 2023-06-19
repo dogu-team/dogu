@@ -1,0 +1,20 @@
+{
+  "selectTestScriptHintText": "Select test script from the list.<br></br><link>Click here</link> for more information.",
+  "selectDeviceHintText": "Select device to run test.<br></br><link>Click here</link> for more information.",
+  "appVersionSelectDescription": "* If app not selected, device's current app will be used.",
+
+  "deviceStreamingLogMenu": "Test script log",
+
+  "runButtonTitle": "Run",
+  "stopButtonTitle": "Stop",
+
+  "runTestSuccessMessage": "Test running...",
+  "runTestFailureMessage": "Failed to run test.\n{{reason}}",
+  "cancelTestSuccessMessage": "Canceling test...",
+  "cancelTestFailureMessage": "Failed to cancel\n{{reason}}",
+
+  "editorEditOnGitlabButtonTitle": "Edit on<icon></icon>",
+
+  "deviceSelectPlaceholder": "Select device",
+  "appVersionSelectPlaceholder": "Select app version"
+}

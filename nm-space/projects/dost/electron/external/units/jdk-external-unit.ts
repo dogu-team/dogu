@@ -1,0 +1,253 @@
+import { PrefixLogger, stringify } from '@dogu-tech/common';
+import { HostPaths } from '@dogu-tech/node';
+import { spawn } from 'child_process';
+import compressing from 'compressing';
+import { download } from 'electron-dl';
+import fs from 'fs';
+import path from 'path';
+import { ExternalKey } from '../../../src/shares/external';
+import { DotEnvConfigService } from '../../dot-env-config/dot-env-config-service';
+import { logger } from '../../log/logger.instance';
+import { StdLogCallbackService } from '../../log/std-log-callback-service';
+import { DefaultJavaHomePath } from '../../path-map';
+import { WindowService } from '../../window/window-service';
+import { ExternalUnitCallback, IExternalUnit } from '../external-unit';
+
+const Infos = {
+  darwin: {
+    url: {
+      x64: 'https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.7%2B7/OpenJDK17U-jdk_x64_mac_hotspot_17.0.7_7.tar.gz',
+      arm64: 'https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.7%2B7/OpenJDK17U-jdk_aarch64_mac_hotspot_17.0.7_7.tar.gz',
+    },
+    uncompress: compressing.tgz.uncompress,
+    fileExtensionPattern: /\.tar(?: \(\d+\))?\.gz$/,
+    relativeJavaHomePath: 'jdk-17.0.7+7/Contents/Home',
+  },
+  win32: {
+    url: {
+      x64: 'https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.7%2B7/OpenJDK17U-jdk_x64_windows_hotspot_17.0.7_7.zip',
+    },
+    uncompress: compressing.zip.uncompress,
+    fileExtensionPattern: /\.zip$/,
+    relativeJavaHomePath: 'jdk-17.0.7+7',
+  },
+};
+
+export class JdkExternalUnit extends IExternalUnit {
+  private readonly logger = new PrefixLogger(logger, '[JDK]');
+
+  constructor(
+    private readonly dotEnvConfigService: DotEnvConfigService,
+    private readonly stdLogCallbackService: StdLogCallbackService,
+    private readonly windowService: WindowService,
+    private readonly unitCallback: ExternalUnitCallback,
+  ) {
+    super();
+  }
+
+  isPlatformSupported(): boolean {
+    return true;
+  }
+
+  isManualInstallNeeded(): boolean {
+    return false;
+  }
+
+  getKey(): ExternalKey {
+    return 'jdk';
+  }
+
+  getName(): string {
+    return 'Java Development Kit';
+  }
+
+  getEnvKeys(): string[] {
+    return ['JAVA_HOME'];
+  }
+
+  async validateInternal(): Promise<void> {
+    const javaHomePath = this.dotEnvConfigService.get('JAVA_HOME');
+    if (!javaHomePath) {
+      throw new Error('JAVA_HOME not exist in env file');
+    }
+    const javaHomeStat = await fs.promises.stat(javaHomePath).catch(() => null);
+    if (!javaHomeStat || !javaHomeStat.isDirectory()) {
+      throw new Error(`JAVA_HOME not exist or not directory. path: ${javaHomePath}`);
+    }
+    await this.checkJavaVersion(javaHomePath);
+  }
+
+  private async checkJavaVersion(javaHomePath: string): Promise<void> {
+    const javaPath = HostPaths.java.javaPath(javaHomePath);
+    const javaStat = await fs.promises.stat(javaPath).catch(() => null);
+    if (!javaStat || !javaStat.isFile()) {
+      throw new Error(`java executable not exist or not file. path: ${javaPath}`);
+    }
+    await new Promise<void>((resolve, reject) => {
+      const child = spawn(javaPath, ['-version']);
+      child.on('spawn', () => {
+        this.stdLogCallbackService.stdout(`Checking java version... path: ${javaPath}`);
+      });
+      child.on('error', (error) => {
+        this.stdLogCallbackService.stderr(stringify(error));
+      });
+      child.on('close', (code, signal) => {
+        this.stdLogCallbackService.stdout(`exit code: ${code}, signal: ${signal}`);
+        if (code !== null) {
+          if (code === 0) {
+            resolve();
+          } else {
+            reject(new Error(`java executable exit with code ${code}`));
+          }
+        } else {
+          reject(new Error(`java executable exit with signal ${signal}`));
+        }
+      });
+      child.stdout.setEncoding('utf8');
+      child.stdout.on('data', (data) => {
+        const stringifiedData = stringify(data);
+        if (!stringifiedData) {
+          return;
+        }
+        this.stdLogCallbackService.stdout(stringifiedData);
+        logger.info(stringifiedData);
+      });
+      child.stderr.setEncoding('utf8');
+      child.stderr.on('data', (data) => {
+        const stringifiedData = stringify(data);
+        if (!stringifiedData) {
+          return;
+        }
+        this.stdLogCallbackService.stderr(stringifiedData);
+        logger.warn(stringifiedData);
+      });
+    });
+  }
+
+  private getDownloadUrl(): string {
+    if (process.platform === 'darwin' && process.arch === 'x64') {
+      return Infos.darwin.url.x64;
+    } else if (process.platform === 'darwin' && process.arch === 'arm64') {
+      return Infos.darwin.url.arm64;
+    } else if (process.platform === 'win32' && process.arch === 'x64') {
+      return Infos.win32.url.x64;
+    } else {
+      throw new Error(`platform not supported. platform: ${process.platform}, arch: ${process.arch}`);
+    }
+  }
+
+  private getRelativeJavaHomePath(): string {
+    if (process.platform === 'darwin') {
+      return Infos.darwin.relativeJavaHomePath;
+    } else if (process.platform === 'win32') {
+      return Infos.win32.relativeJavaHomePath;
+    } else {
+      throw new Error(`platform not supported. platform: ${process.platform}`);
+    }
+  }
+
+  async install(): Promise<void> {
+    const window = this.windowService.window;
+    if (!window) {
+      throw new Error('window not exist');
+    }
+    if (this.canceler) {
+      throw new Error('already installing');
+    }
+    const downloadUrl = this.getDownloadUrl();
+    const item = await download(window, downloadUrl, {
+      onStarted: (item) => {
+        this.canceler = () => {
+          item.cancel();
+        };
+        this.unitCallback.onDownloadStarted();
+        this.stdLogCallbackService.stdout(`Download started. url: ${item.getURL()}`);
+      },
+      onProgress: (progress) => {
+        this.unitCallback.onDownloadInProgress(progress);
+      },
+    });
+    this.canceler = null;
+    const savePath = item.getSavePath();
+    this.stdLogCallbackService.stdout(`Download complete. path: ${savePath}`);
+    this.unitCallback.onDownloadCompleted();
+    this.unitCallback.onInstallStarted();
+    this.stdLogCallbackService.stdout(`Uncompressing... path: ${savePath}`);
+    const uncompressedPath = await this.uncompress(savePath);
+    this.stdLogCallbackService.stdout(`Uncompress complete. path: ${uncompressedPath}`);
+    const uncompressedHomePath = path.resolve(uncompressedPath, this.getRelativeJavaHomePath());
+    const javaHomeStat = await fs.promises.stat(uncompressedHomePath).catch(() => null);
+    if (!javaHomeStat || !javaHomeStat.isDirectory()) {
+      throw new Error(`JAVA_HOME not exist or not directory. path: ${uncompressedHomePath}`);
+    }
+    const defaultJavaHomeStat = await fs.promises.stat(DefaultJavaHomePath).catch(() => null);
+    if (defaultJavaHomeStat && defaultJavaHomeStat.isDirectory()) {
+      this.stdLogCallbackService.stdout(`Deleting default JAVA_HOME... ${DefaultJavaHomePath}`);
+      await fs.promises.rm(DefaultJavaHomePath, { recursive: true, force: true });
+      this.stdLogCallbackService.stdout(`Delete complete. ${DefaultJavaHomePath}`);
+    }
+    const defaultJavaHomeParentPath = path.dirname(DefaultJavaHomePath);
+    await fs.promises.mkdir(defaultJavaHomeParentPath, { recursive: true });
+    this.stdLogCallbackService.stdout(`Moving... ${uncompressedHomePath} to ${DefaultJavaHomePath}`);
+    await fs.promises.rename(uncompressedHomePath, DefaultJavaHomePath);
+    this.stdLogCallbackService.stdout(`Move complete. ${uncompressedPath} to ${DefaultJavaHomePath}`);
+    this.stdLogCallbackService.stdout('Writing JAVA_HOME to env file...');
+    await this.dotEnvConfigService.write('JAVA_HOME', DefaultJavaHomePath);
+    this.stdLogCallbackService.stdout('Write complete');
+    this.unitCallback.onInstallCompleted();
+  }
+
+  private getFileExtensionPattern(): RegExp {
+    if (process.platform === 'darwin') {
+      return Infos.darwin.fileExtensionPattern;
+    } else if (process.platform === 'win32') {
+      return Infos.win32.fileExtensionPattern;
+    } else {
+      throw new Error(`platform not supported. platform: ${process.platform}`);
+    }
+  }
+
+  private getUncompressFunction(): (savePath: string, uncompressedPath: string) => Promise<void> {
+    if (process.platform === 'darwin') {
+      return compressing.tgz.uncompress;
+    } else if (process.platform === 'win32') {
+      return compressing.zip.uncompress;
+    } else {
+      throw new Error(`platform not supported. platform: ${process.platform}`);
+    }
+  }
+
+  private async uncompress(savePath: string): Promise<string> {
+    const uncompress = this.getUncompressFunction();
+    const fileExtensionPattern = this.getFileExtensionPattern();
+    const uncompressedPath = savePath.replace(fileExtensionPattern, '');
+    await fs.promises.rm(uncompressedPath, { recursive: true, force: true });
+    await uncompress(savePath, uncompressedPath);
+    return uncompressedPath;
+  }
+
+  cancelInstall(): void {
+    if (!this.canceler) {
+      this.logger.warn('canceler not exist');
+      return;
+    }
+    this.canceler();
+    this.canceler = null;
+  }
+
+  uninstall(): void {
+    this.logger.warn('uninstall not supported');
+  }
+
+  isAgreementNeeded(): boolean {
+    return false;
+  }
+
+  writeAgreement(): void {
+    this.logger.warn('do not need agreement');
+  }
+
+  getTermUrl(): string | null {
+    return 'https://www.eclipse.org/legal/termsofuse.php';
+  }
+}

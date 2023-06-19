@@ -1,0 +1,34 @@
+config("libwebrtc") {
+  defines = []
+  include_dirs = [
+    "externals/webrtc/include",
+    "externals/webrtc/include/third_party/abseil-cpp",
+    "externals/webrtc/include/third_party/libvpx/source/libvpx",
+    "externals/webrtc/include/third_party/libyuv/include",
+  ]
+  libs = []
+  if (is_win) {
+    libs += [ "externals/webrtc/lib/windows-x64/webrtc.lib" ]
+  } else if (is_mac) {
+    if (target_cpu == "arm" || target_cpu == "arm64") {
+      libs += [ "externals/webrtc/lib/darwin-arm64/libwebrtc.a" ]
+    } else {
+      libs += [ "externals/webrtc/lib/darwin-amd64/libwebrtc.a" ]
+    }
+  } else if (is_linux) {
+    libs += [ "externals/webrtc/lib/linux-arm64/libwebrtc.a" ]
+  }
+}
+
+executable("webrtc-desktopcapturer") {
+  sources = [ "code/*.cpp" ]
+
+  configs += [ ":libwebrtc" ]
+
+  frameworks = [
+    "AppKit.framework",
+    "IOSurface.framework",
+    "CoreGraphics.framework",
+    "CoreFoundation.framework",
+  ]
+}

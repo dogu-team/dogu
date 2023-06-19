@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package inner.params;
+
+import "inner/types/cf_gdc_da.proto";
+
+option go_package = "go-device-controller/types/protocol/generated/proto/inner/params";
+option java_package = "com.dogu.protocol.generated.inner.params";
+
+// ConsoleFront  ----(GoDeviceController (WebRTC Peer))----> DeviceAgent
+
+message CfGdcDaParam {
+  fixed32 seq = 1;
+  string serial = 2;
+  oneof value {
+    types.CfGdcDaControlParam cf_gdc_da_control_param = 10;
+  }
+}
+
+message CfGdcDaResult {
+  fixed32 seq = 1;
+  oneof value {
+    types.CfGdcDaControlResult cf_gdc_da_control_result = 10;
+  }
+}
+
+message CfGdcDaParamList {
+  repeated CfGdcDaParam params = 1;
+}
+
+message CfGdcDaResultList {
+  repeated CfGdcDaResult results = 1;
+}

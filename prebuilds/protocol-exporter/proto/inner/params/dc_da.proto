@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package inner.params;
+
+import "inner/types/dc_da.proto";
+
+option go_package = "go-device-controller/types/protocol/generated/proto/inner/params";
+option java_package = "com.dogu.protocol.generated.inner.params";
+
+message DcDaParam {
+  fixed32 seq = 1;
+  oneof value {
+    types.DcDaConnectionParam dc_da_connection_param = 2;
+    types.DcDaQueryProfileParam dc_da_query_profile_param = 3;
+    types.DcDaApplyStreamingOptionParam dc_da_apply_streaming_option_param = 4;
+    types.DcDaControlParam dc_da_control_param = 5;
+  }
+}
+
+message DcDaReturn {
+  fixed32 seq = 1;
+  oneof value {
+    types.DcDaConnectionReturn dc_da_connection_return = 2;
+    types.DcDaQueryProfileReturn dc_da_query_profile_return = 3;
+    types.DcDaApplyStreamingOptionReturn dc_da_apply_streaming_option_return =
+        4;
+    types.DcDaControlReturn dc_da_control_return = 5;
+  }
+}

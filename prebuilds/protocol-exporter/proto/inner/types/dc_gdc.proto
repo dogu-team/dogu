@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package inner.types;
+
+import "outer/errors.proto";
+import "outer/platform.proto";
+import "outer/streaming/screenrecord_option.proto";
+import "outer/streaming/streaming.proto";
+
+option go_package = "go-device-controller/types/protocol/generated/proto/inner/types";
+option java_package = "com.dogu.protocol.generated.inner.types";
+
+message DcGdcDeviceContext {
+  string serial = 1;
+  outer.Platform platform = 2;
+
+  string screen_url = 3;
+  string input_url = 4;
+
+  uint32 screen_width = 30;
+  uint32 screen_height = 31;
+}
+
+message DcGdcUpdateDeviceListParam {
+  repeated DcGdcDeviceContext devices = 1;
+}
+
+message DcGdcUpdateDeviceListResult {
+}
+
+message DcGdcStartStreamingParam {
+  outer.streaming.StreamingOffer offer = 1;
+}
+
+message DcGdcStartStreamingResult {
+  outer.streaming.StreamingAnswer answer = 1;
+}
+
+message DcGdcStopStreamingParam {
+  string serial = 1;
+}
+
+message DcGdcStopStreamingResult {
+}
+
+message DcGdcStartScreenRecordParam {
+  string serial = 1;
+  outer.streaming.ScreenRecordOption option = 2;
+}
+
+message DcGdcStartScreenRecordResult {
+  outer.ErrorResult error = 1;
+}
+
+message DcGdcStopScreenRecordParam {
+  string serial = 1;
+}
+
+message DcGdcStopScreenRecordResult {
+  outer.ErrorResult error = 1;
+  string file_path = 2;
+}

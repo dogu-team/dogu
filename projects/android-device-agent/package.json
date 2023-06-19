@@ -1,0 +1,42 @@
+{
+  "private": true,
+  "name": "android-device-agent",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "",
+    "build:android:debug": "ts-node ./scripts/buildAndroidDebug",
+    "build:archive": "tsc -b && ts-node ./scripts/buildArchive",
+    "clean": "shx rm -rf generated ./node_modules"
+  },
+  "resolutions": {
+    "@types/react": "18.0.28"
+  },
+  "dependencies": {
+    "@dogu-private/types": "portal:../../packages/typescript-private/types",
+    "buffer": "6.0.3",
+    "events": "3.3.0",
+    "react": "17.0.2",
+    "react-native": "0.68.2",
+    "react-native-tcp-socket": "6.0.1"
+  },
+  "devDependencies": {
+    "@babel/core": "7.19.6",
+    "@babel/runtime": "7.12.5",
+    "@dogu-dev-private/build-tools": "workspace:^",
+    "@types/events": "3.0.0",
+    "@types/jest": "29.4.0",
+    "@types/node": "18.15.11",
+    "@types/react-native": "0.67.3",
+    "@types/react-test-renderer": "17.0.1",
+    "@types/shelljs": "0.8.11",
+    "babel-jest": "26.6.3",
+    "jest": "29.1.2",
+    "metro-react-native-babel-preset": "0.67.0",
+    "react-test-renderer": "17.0.2",
+    "shelljs": "0.8.5",
+    "shx": "0.3.4",
+    "ts-jest": "29.0.3",
+    "ts-node": "10.9.1",
+    "typescript": "4.7.4"
+  }
+}

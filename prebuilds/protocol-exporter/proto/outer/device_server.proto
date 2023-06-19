@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package outer;
+
+import "google/protobuf/struct.proto";
+import "outer/errors.proto";
+
+option go_package = "go-device-controller/types/protocol/generated/proto/outer";
+option java_package = "com.dogu.protocol.generated.outer";
+
+message DeviceHostUploadFileStartSendValue {
+  string file_name = 1;
+  fixed32 file_size = 2;
+}
+
+message DeviceHostUploadFileInProgressSendValue {
+  bytes chunk = 1;
+}
+
+message DeviceHostUploadFileCompleteSendValue {
+}
+
+message DeviceHostUploadFileSendMessage {
+  oneof value {
+    DeviceHostUploadFileStartSendValue start = 1;
+    DeviceHostUploadFileInProgressSendValue in_progress = 2;
+    DeviceHostUploadFileCompleteSendValue complete = 3;
+  }
+}
+
+message DeviceHostUploadFileReceiveMessage {
+  string file_path = 1;
+}
+
+message DeviceServerResponse {
+  oneof value {
+    outer.ErrorResult error = 1;
+    google.protobuf.Struct data = 2;
+  }
+}
+
+enum DeviceConnectionState {
+  // Not used. must be initialized to a different value.
+  DEVICE_CONNECTION_STATE_UNSPECIFIED = 0;
+  DEVICE_CONNECTION_STATE_DISCONNECTED = 1;
+  DEVICE_CONNECTION_STATE_CONNECTED = 2;
+}

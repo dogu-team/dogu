@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+# . "$(dirname -- "$0")/_/husky.sh"
+
+# echo [pre-commit] start
+
+# echo [validate-workspace] start
+# yarn node validate-workspace.mjs
+# echo [validate-workspace] end
+
+# echo [lint-staged] start
+# yarn lint-staged --allow-empty
+# echo [lint-staged] end
+
+# echo [pre-commit] end

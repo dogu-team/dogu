@@ -1,0 +1,46 @@
+{
+  "memberTableProfileColumn": "이름",
+  "memberTablePermissionColumn": "권한",
+
+  "memberItemRemoveMenu": "비활성화",
+
+  "removeModalTitle": "멤버 비활성화",
+  "removeModalButtonText": "확인 및 비활성화",
+  "removeModalContentText": "멤버를 비활성화하면 해당 멤버가 속한 팀, 프로젝트에서 나가게 됩니다.",
+  "removeMemberSuccessMsg": "비활성화됨",
+  "removeMemberFailureMsg": "비활성화 실패\n{{reason}}",
+
+  "permissionUpdateSuccessMsg": "업데이트됨",
+  "permissionUpdateFailureMsg": "업데이트 실패\n{{reason}}",
+
+  "inviteMemberButtonText": "멤버 초대",
+  "inviteModalTitle": "멤버를 초대해 보세요",
+  "emailPlaceholder": "이메일",
+  "inviteEmailButtonText": "<b>{{email}}</b> 초대하기",
+  "inviteEmailPermissionSelectDescription1": "<b>{{email}}</b>에게 초대 보내기",
+  "inviteEmailPermissionSelectDescription2": "권한을 선택하세요",
+  "inviteAdminPermssionDescription": "Admin 권한은 조직 전체 엑세스 권한 및 편집 권한을 가지게 됩니다.",
+  "inviteMemberPermissionDescription": "Member 권한은 프로젝트 또는 팀에 소속되어 부여받은 제한된 권한으로 기능을 이용할 수 있습니다.",
+  "inviteMemberSuccessMsg": "초대 성공",
+  "inviteMemberFailMsg": "초대 실패\n{{reason}}",
+
+  "memberFilterNamePlaceholder": "이름 또는 이메일",
+
+  "memberLinkButtonTitle": "멤버",
+  "invitationLinkButtonTitle": "초대 관리",
+
+  "invitationTableEmailColumn": "이메일",
+  "invitationTablePermissionColumn": "권한",
+  "invitationTableStatusColumn": "상태",
+  "invitationTableDateColumn": "날짜",
+  "invitationEmptyDescription": "초대중인 이메일이 없습니다.",
+
+  "invitationResendMenuTitle": "재전송",
+  "invitationCancelMenuTitle": "초대 취소",
+
+  "invitationCancelModalTitle": "초대 취소하기",
+  "invitationCancelModalDescription": "<b>{{email}}</b>에게 보낸 초대를 취소하시겠습니까?",
+  "invitationCancelConfirmButtonText": "확인 및 취소",
+  "invitationCancelSuccessMessage": "취소됨",
+  "invitationCancelFailureMessage": "취소 실패\n{{reason}}"
+}

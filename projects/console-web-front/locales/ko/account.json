@@ -1,0 +1,65 @@
+{
+  "accountPageTitle": "내 계정",
+  "resetPassword": "비밀번호 초기화",
+
+  "profileContentTitle": "프로필",
+  "profileContentSubmitButton": "프로필 변경",
+  "profileUpdateSuccessMsg": "변경됨",
+  "profileUpdateFailMsg": "변경 실패.\n{{reason}}",
+  "securityContentTitle": "보안",
+  "resetPasswordSuccessMsg": "변경됨",
+  "resetPasswordFailMsg": "변경 실패.\n{{reason}}",
+  "resetPasswordValidationFailMsg": "현재 비밀번호를 확인하세요",
+
+  "resetPasswordFormCurrentLabel": "현재 비밀번호",
+  "resetPasswordFormNewLabel": "새 비밀번호",
+  "resetPasswordFormConfirmLabel": "비밀번호 확인",
+  "resetPasswordFormCurrentPlaceholder": "비밀번호",
+  "resetPasswordFormNewPlaceholder": "비밀번호 (8 ~ 28 자)",
+  "resetPasswordFormConfirmPlaceholder": "비밀번호",
+  "resetPasswordFormSubmitButton": "비밀번호 변경",
+
+  "resetPasswordWithTokenSuccessMsg": "비밀번호를 변경했습니다.",
+  "resetPasswordWithTokenFailMsg": "비밀번호 변경에 실패함.\n{{reason}}",
+
+  "myOrganizationPageTitle": "내 조직",
+
+  "organizationListOwnerText": "소유자",
+  "organizationListMemberSingularText": "멤버",
+  "organizationListMemberPluralText": "멤버",
+  "leaveOrganizationMenuText": "나가기",
+  "leaveOraganizationModalTitle": "조직에서 나가기",
+  "leaveOrganizationModalDescription": "정말 조직 <b>{{organizationName}}</b>에서 나가시겠습니까?",
+  "leaveOrganizationModalDescription2": "이 작업은 되돌릴 수 없으며, 작업물을 잃을 수 있습니다.",
+  "leaveOrganizationConfirmButtonText": "확인 및 나가기",
+  "leaveOrganizationSuccessMessage": "성공함",
+  "leaveOrganizationFailureMessage": "나가기 실패\n{{reason}}",
+
+  "createOrganizationButtonText": "조직 생성하기",
+  "createOrganizationModalTitle": "새 조직 생성하기",
+  "createOrganizaitonNameLabelText": "조직 이름",
+  "createOrganizationNameInputPlaceholder": "이름",
+  "createOrganizationNaameInputErrorMesssage": "이름을 입력해 주세요.",
+  "createOrganizationSuccessMessage": "생성됨",
+  "createOrganizationFailureMessage": "조직 생성 실패\n{{reason}}",
+
+  "verifyEntryPageTitle": "이메일 인증을 완료하세요",
+  "verifyEntryDescription": "안녕하세요 {{name}}!.\n\n원할한 Dogu 서비스 이용을 위해 먼저 이메일 인증을 완료해 주세요.",
+  "verifyEntryEmailDescription": "이메일을 받지 못했나요?",
+
+  "deleteAccountMenuTitle": "계정 삭제",
+  "deleteAccountMenuDescriptionText": "계정과 관련된 모든 데이터를 삭제합니다.",
+  "deleteAccountButtonTitle": "계정 삭제",
+  "deleteAccountConfirmModalTitle": "계정 삭제",
+  "deleteAccountConfirmModalContent": "이 작업은 되돌릴 수 없으며 작업물을 잃을 수 있습니다.",
+  "deleteAccountConfirmModalButtonTitle": "계정 삭제",
+  "deleteAccountConfirmSuccessMessage": "계정이 삭제되었습니다.",
+  "deleteAccountConfirmFailureMessage": "계정 삭제에 실패했습니다.\n{{reason}}",
+
+  "emailPreferenceTitle": "이메일 수신 설정",
+  "newsletterCheckboxLabel": "Dogu 의 최신 소식을 받습니다.",
+  "updateEmailPreferenceSuccessMessage": "저장됨",
+  "updateEmailPreferenceFailureMessage": "저장 실패\n{{reason}}",
+
+  "emptyOrganizationDescription": "Dogu에 처음이신가요?<br></br><br></br><link>여기를 눌러</link> 튜토리얼을 진행해 보세요."
+}

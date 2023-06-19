@@ -1,0 +1,7 @@
+go-device-controller.exe
+
+scripts/build_tools/local/pkg_config
+desktop-capturer/externals/webrtc/lib/*
+record
+
+.env.*.local

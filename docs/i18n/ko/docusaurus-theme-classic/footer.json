@@ -1,0 +1,78 @@
+{
+  "link.title.Docs": {
+    "message": "Docs",
+    "description": "The title of the footer links column with title=Docs in the footer"
+  },
+  "link.title.Product": {
+    "message": "Product",
+    "description": "The title of the footer links column with title=Product in the footer"
+  },
+  "link.title.More": {
+    "message": "More",
+    "description": "The title of the footer links column with title=More in the footer"
+  },
+  "link.item.label.Gamium": {
+    "message": "Gamium",
+    "description": "The label of footer link with label=Gamium linking to https://dogutech.io/products/automation"
+  },
+  "link.item.label.API": {
+    "message": "API",
+    "description": "The label of footer link with label=API linking to /api/get-started"
+  },
+  "link.item.label.Dogu": {
+    "message": "Dogu",
+    "description": "The label of footer link with label=Dogu linking to https://dogutech.io"
+  },
+  "link.item.label.Device Farm": {
+    "message": "Device Farm",
+    "description": "The label of footer link with label=Device Farm linking to https://dogutech.io/products/device-farm"
+  },
+  "link.item.label.GitHub": {
+    "message": "GitHub",
+    "description": "The label of footer link with label=GitHub linking to https://github.com/dogu-team/dogu-docs"
+  },
+  "copyright": {
+    "message": "Copyright © 2023 Dogu Technologies, Inc. Built with Docusaurus.",
+    "description": "The footer copyright"
+  },
+  "link.item.label.getStarted": {
+    "message": "시작하기",
+    "description": "The label of footer link with label=getStarted linking to /get-started/introduction"
+  },
+  "link.item.label.orgAndProject": {
+    "message": "조직 & 프로젝트",
+    "description": "The label of footer link with label=orgAndProject linking to /organization-and-project/introduction"
+  },
+  "link.item.label.hostAndDevice": {
+    "message": "호스트 & 디바이스",
+    "description": "The label of footer link with label=hostAndDevice linking to /host-and-device/introduction"
+  },
+  "link.item.label.scriptAndRoutine": {
+    "message": "스크립트 & 루틴",
+    "description": "The label of footer link with label=scriptAndRoutine linking to /script-and-routine/introduction"
+  },
+  "link.item.label.community": {
+    "message": "커뮤니티",
+    "description": "The label of footer link with label=community linking to /community/discord"
+  },
+  "link.item.label.selfHosted": {
+    "message": "Self-Hosted",
+    "description": "The label of footer link with label=selfHosted linking to /self-hosted/get-started"
+  },
+  "link.title.Services": {
+    "message": "Services",
+    "description": "The title of the footer links column with title=Services in the footer"
+  },
+  "link.item.label.GamiumKit": {
+    "message": "GamiumKit",
+    "description": "The label of footer link with label=GamiumKit linking to /toolkit/introduction"
+  },
+  "link.item.label.Dogu Console": {
+    "message": "Dogu Console",
+    "description": "The label of footer link with label=Dogu Console linking to https://dogutech.io"
+  },
+  "link.item.label.Download Dost": {
+    "message": "Download Dost",
+    "description": "The label of footer link with label=Download Dost linking to https://dogutech.io/downloads/dost"
+  }
+}

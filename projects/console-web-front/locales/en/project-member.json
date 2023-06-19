@@ -1,0 +1,35 @@
+{
+  "projectMemberTableProfileColumn": "Profile",
+  "projectMemberTableTypeColumn": "Type",
+  "projectMemberTablePermissionColum": "Permission",
+
+  "memberItemDeleteMenu": "Remove",
+  "removeMemberModalTitle": "Remove member",
+  "removeMemberModalButtonText": "Confirm and remove from project",
+  "removeMemberModalContent": "Would you like to remove from project?",
+
+  "colleagueMemberType": "Colleague",
+  "teamMemberType": "Team",
+
+  "projectMemberFilterPlaceholder": "Name or email",
+
+  "updateMemberPermissionSuccessMsg": "Updated!",
+  "updateMemberPermissionFailureMsg": "Failed to update.\n{{reason}}",
+
+  "removeMemberConfirmDesc": "Remove from project?",
+  "removeMemberSuccessMsg": "Removed!",
+  "removeMemberFailMsg": "Failed to remove.\n{{reason}}",
+
+  "addProjectColleagueMember": "Add colleagues",
+  "addProjectColleagueModalTitle": "Add colleagues",
+  "addProjectColleagueInputPlaceholder": "Search by name or email",
+  "addProjectTeamMember": "Add teams",
+  "addProjectTeamModalTitle": "Add teams",
+  "addProjectTeamInputPlaceholder": "Search by name",
+  "addProjectMemberSubmitButtonTitle": "Add to project",
+  "addProjectEmptyResult": "Cannot find result",
+  "addProjectMemberSuccessMsg": "Added!",
+  "addProjectMemberFailMsg": "Failed to add.\n{{reason}}",
+
+  "projectMemberEmptyDescription": "Add project member and manage member's permission.<br></br><link>Click here</link> for more information."
+}

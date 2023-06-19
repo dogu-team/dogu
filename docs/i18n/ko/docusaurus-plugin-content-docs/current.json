@@ -1,0 +1,46 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.dostAndDeviceSidebar.category.Host": {
+    "message": "호스트",
+    "description": "The label for category Host in sidebar dostAndDeviceSidebar"
+  },
+  "sidebar.dostAndDeviceSidebar.category.Device": {
+    "message": "디바이스",
+    "description": "The label for category Device in sidebar dostAndDeviceSidebar"
+  },
+  "sidebar.dostAndDeviceSidebar.category.Streaming & Remote Control": {
+    "message": "스트리밍 & 원격제어",
+    "description": "The label for category Streaming & Remote Control in sidebar dostAndDeviceSidebar"
+  },
+  "sidebar.routineSidebar.category.Test script": {
+    "message": "테스트 스크립트",
+    "description": "The label for category Test script in sidebar routineSidebar"
+  },
+  "sidebar.routineSidebar.category.Routine": {
+    "message": "루틴",
+    "description": "The label for category Routine in sidebar routineSidebar"
+  },
+  "sidebar.routineSidebar.category.Action": {
+    "message": "액션",
+    "description": "The label for category Action in sidebar routineSidebar"
+  },
+  "sidebar.routineSidebar.category.Pre-defined Actions": {
+    "message": "미리 정의된 액션",
+    "description": "The label for category Pre-defined Actions in sidebar routineSidebar"
+  },
+  "sidebar.organizationAndProjectSidebar.category.Organization": {
+    "message": "조직",
+    "description": "The label for category Organization in sidebar organizationAndProjectSidebar"
+  },
+  "sidebar.organizationAndProjectSidebar.category.Device": {
+    "message": "디바이스",
+    "description": "The label for category Device in sidebar organizationAndProjectSidebar"
+  },
+  "sidebar.organizationAndProjectSidebar.category.Project": {
+    "message": "프로젝트",
+    "description": "The label for category Project in sidebar organizationAndProjectSidebar"
+  }
+}

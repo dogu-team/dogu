@@ -1,0 +1,355 @@
+---
+sidebar_position: 3
+title: Self-Hosted Dogu
+locale: ko
+---
+
+:::info PREREQUISITES
+이 문서는 Dogu를 Self-Hosted로 시작하는 방법에 대해 설명합니다.
+:::
+
+Self-Hosted로 시작하기 단계에서 Self-Hosted 환경을 구성하고, Dogu를 시작해 보세요.
+
+## 장비 구성하기
+
+Dogu를 실행하기 위한 장비를 구성합니다.
+
+1. 운영체제 : Ubuntu 22.04(x86_64), Windows 10(x86_64)
+2. 하드웨어 : CPU 8 Core, RAM 16GB, STORAGE 100GB 이상
+3. Docker : 24.0.2 이상
+
+### Docker 설치하기
+
+Dogu를 실행하기 위해서는 Docker가 필요합니다.
+:::note docker 설치 가이드
+Docker를 설치하려면, [Docker 설치 가이드](https://docs.docker.com/engine/install/ubuntu/)를 참고하세요.
+:::
+
+<br />
+
+## Dogu 실행하기
+
+### Dogu 볼륨 경로 생성 및 권한 설정하기
+
+```
+- linux
+sudo mkdir /var/lib/dogu
+sudo mkdir /var/lib/dogu/nexus-data
+sudo chown 200 -R /var/lib/dogu/nexus-data
+
+- windows
+icacls "C:\var\lib\dogu\nexus-data" /setowner 200 /T
+```
+
+:::note
+위에서 생성한 `/var/lib/dogu` 경로를
+다음 단계에서 생성할 .env 파일의 `VOLUME_PATH` 값으로 대체해도 괜찮습니다.
+:::
+
+### .env 파일, docker-compose.yml 파일 생성 경로 설정하기
+
+```
+mkdir ~/dogu
+cd ~/dogu
+```
+
+:::note
+사용자가 원하는 경로에 생성해도 괜찮습니다.
+:::
+
+### .env 파일 생성
+
+아래 내용에 필요한 정보들을 입력하여 .env 파일로 생성합니다.
+
+```
+DOGU_HOST= # needs to be set to the public IP or hostname of your Dogu server. (required)
+
+INFLUX_DB_INIT_BUCKET=dogu # influxdb bucket (default: dogu)
+INFLUX_DB_INIT_ORG=dogu # influxdb org (default: dogu)
+INFLUX_DB_INIT_ADMIN_TOKEN=dogu-onprem # influxdb token (default: dogu-onprem)
+INFLUX_DB_USERNAME=admin
+INFLUX_DB_PASSWORD=dogu-onprem # influxdb password (default: dogu-onprem)
+# INFLUX_DB_RETENTION=     # needs to be set to a valid duration, e.g. 1w.  (default: never)
+
+REDIS_PASSWORD=dogu-onprem # redis password (default: dogu-onprem)
+
+POSTGRES_USER=admin     # postgres user id (default: admin)
+POSTGRES_PASSWORD=dogu-onprem # postgres password (default: dogu-onprem)
+
+DOGU_CONSOLE_JWT_SECRET_KEY=dogu # console jwt secret key (default: dogu)
+
+DEVICE_WIFI_SSID=  # wifi ssid of the device (required)
+DEVICE_WIFI_PASSWORD= # wifi password of the device (required)
+
+FILE_SERVER_USERNAME=admin # file server username (default: admin)
+FILE_SERVER_PASSWORD=dogu-onprem # file server password (default: dogu-onprem)
+
+GITLAB_ROOT_ACCESS_TOKEN= # gitlab root token. create gitlab access token and paste it here. (required)
+GITLAB_ROOT_PASSWORD=dogu-onprem # gitlab root password. (default: dogu-onprem)
+
+VOLUME_PATH=/var/lib/dogu # path to volume (default: /var/lib/dogu)
+
+TURN_SERVER_USERNAME=admin
+TURN_SERVER_PASSWORD=dogu-onprem
+```
+
+:::note
+GITLAB_ROOT_ACCESS_TOKEN 값은
+Dogu 실행 후 아래 [단계](/self-hosted/get-started#gitlab-root-access-token-발급받기)에서 token을 발급받은 후 재설정 해 주세요.
+:::
+
+### docker-compose.yml 설정
+
+아래 내용을 docker-compose.yml 파일로 생성합니다. ( 아래 값들은 수정할 필요 없습니다. )
+
+```version: '3.7'
+
+services:
+  redis:
+    container_name: dogu-redis
+    image: redis:7.0.7
+    restart: always
+    pull_policy: always
+    ports:
+      - 6379:6379
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    networks:
+      - console_network
+
+  influxdb:
+    container_name: dogu-influx
+    image: influxdb:2.6.1
+    restart: always
+    pull_policy: always
+    ports:
+      - 8086:8086
+    volumes:
+      - ${VOLUME_PATH}/influxdb-volume:/var/lib/influxdb2:rw
+    environment:
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUX_DB_USERNAME}
+      - DOCKER_INFLUXDB_INIT_PASSWORD=${INFLUX_DB_PASSWORD}
+      - DOCKER_INFLUXDB_INIT_ORG=${INFLUX_DB_INIT_ORG}
+      - DOCKER_INFLUXDB_INIT_BUCKET=${INFLUX_DB_INIT_BUCKET}
+      - DOCKER_INFLUXDB_INIT_RETENTION=${INFLUX_DB_RETENTION}
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=${INFLUX_DB_INIT_ADMIN_TOKEN}
+    networks:
+      - console_network
+
+  postgres:
+    container_name: dogu-postgres
+    image: postgres:15.3
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: "console_web"
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ${VOLUME_PATH}/postgresql:/var/lib/postgresql/data
+    networks:
+      - console_network
+
+  coturn:
+    container_name: dogu-coturn
+    image: coturn/coturn:4.5.2
+    restart: always
+    pull_policy: always
+    ports:
+      - 3478:3478/tcp
+      - 3478:3478/udp
+      - 5349:5349/tcp
+      - 5349:5349/udp
+      - 49160-49170:49160-49170/udp
+    command: >
+      --log-file=stdout
+      --min-port=49160
+      --max-port=55000
+      --total-quota=100
+      --user=${TURN_SERVER_USERNAME}:${TURN_SERVER_PASSWORD}
+      --realm=${DOGU_HOST}
+      --listening-port=3478
+      --tls-listening-port=5349
+      --verbose
+      --fingerprint
+      --lt-cred-mech
+      --stale-nonce
+      --no-stun
+      --no-sslv3
+      --no-tlsv1
+      --no-multicast-peers
+      --server-relay
+      --listening-ip=0.0.0.0
+    networks:
+      - console_network
+
+  nexus:
+      container_name: dogu-nexus
+      image: sonatype/nexus3
+      restart: always
+      pull_policy: always
+      ports:
+        - 8081:8081
+      volumes:
+        - ${VOLUME_PATH}/nexus-data:/nexus-data
+      ulimits:
+        nofile:
+          soft: 65536
+          hard: 65536
+      deploy:
+        resources:
+          reservations:
+            cpus: '1'
+            memory: 1G
+      networks:
+        - console_network
+
+  gitlab:
+    container_name: dogu-gitlab
+    image: 'gitlab/gitlab-ce:15.10.0-ce.0'
+    restart: always
+    environment:
+      GITLAB_ROOT_PASSWORD: ${GITLAB_ROOT_PASSWORD}
+      GITLAB_OMNIBUS_CONFIG: |
+        gitlab_rails['gitlab_shell_ssh_port'] = 22
+        gitlab_rails['monitoring_whitelist'] = ['0.0.0.0/0']
+    ports:
+      - '8080:80'
+      - '8443:443'
+    volumes:
+      - '${VOLUME_PATH}/gitlab/config:/etc/gitlab'
+      - '${VOLUME_PATH}/gitlab/logs:/var/log/gitlab'
+      - '${VOLUME_PATH}/gitlab/data:/var/opt/gitlab'
+    shm_size: '512m'
+    deploy:
+      resources:
+        reservations:
+          cpus: '1'
+          memory: 2G
+    networks:
+      - console_network
+
+  console:
+    container_name: dogu-console
+    image: dogutechio/dogu:test
+    restart: always
+    depends_on:
+      - influxdb
+      - redis
+      - postgres
+      - coturn
+      - gitlab
+      - nexus
+    ports:
+      - '3001:3001'
+      - '4000:4000'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      resources:
+        reservations:
+          cpus: '2'
+          memory: 2G
+    environment:
+      - NEXT_PUBLIC_TURN_SERVER_USERNAME=${TURN_SERVER_USERNAME}
+      - NEXT_PUBLIC_TURN_SERVER_PASSWORD=${TURN_SERVER_PASSWORD}
+      - DOGU_NEXUS_USERNAME=${FILE_SERVER_USERNAME}
+      - DOGU_NEXUS_PASSWORD=${FILE_SERVER_PASSWORD}
+      - DOGU_WIFI_SSID=${DEVICE_WIFI_SSID}
+      - DOGU_WIFI_PASSWORD=${DEVICE_WIFI_PASSWORD}
+      - DOGU_GITLAB_ROOT_TOKEN=${GITLAB_ROOT_ACCESS_TOKEN}
+      - DOGU_RDS_USERNAME=${POSTGRES_USER}
+      - DOGU_RDS_PASSWORD=${POSTGRES_PASSWORD}
+      - DOGU_INFLUX_DB_TOKEN=${INFLUX_DB_INIT_ADMIN_TOKEN}
+      - DOGU_INFLUX_DB_ORG=${INFLUX_DB_INIT_ORG}
+      - DOGU_INFLUX_DB_BUCKET=${INFLUX_DB_INIT_BUCKET}
+      - DOGU_SECRET=${DOGU_CONSOLE_JWT_SECRET_KEY}
+      - NEXT_PUBLIC_DOGU_GITLAB_HOST=${DOGU_HOST}
+      - NEXT_PUBLIC_DOGU_API_BASE_URL=http://${DOGU_HOST}:4000
+      - NEXT_PUBLIC_DOGU_WS_BASE_URL=ws://${DOGU_HOST}:4000
+      - DOGU_CONSOLE_DOMAIN=${DOGU_HOST}
+      - NEXT_PUBLIC_TURN_SERVER_HOST=${DOGU_HOST}
+      - DOGU_REDIS_PASSWORD=${REDIS_PASSWORD}
+    networks:
+      - console_network
+
+
+networks:
+  console_network:
+    driver: bridge
+
+```
+
+### Dogu 실행
+
+.env, docker-compose.yml 파일이 있는 디렉토리에서 아래 명령어를 실행합니다.
+
+```
+docker compose -f ./docker-compose.yml --env-file ./.env up  -d
+```
+
+### gitlab root Access Token 발급받기
+
+Dogu를 실행하기 위해서는 gitlab의 root access token이 필요합니다.
+아래는 gitlab의 root access token을 발급하는 방법입니다.
+
+- gitlab 접속하기
+  - .env에 지정한 DOGU_HOST의 주소 값과 8080포트로 접속합니다.
+    :::info
+    ex. 10.32.123.14:8080 ( gitlab이 실행되는 데 약 5분 정도 걸립니다 )
+    :::
+- gitlab root 계정 로그인
+
+  - .env에 지정한 GITLAB_ROOT_PASSWORD로 로그인 합니다.
+    <img
+      src="/ko/img/get-started/gitlab-login.png"
+      style={{ width: 400, display: 'block' }}
+    />
+
+- Access token 발급하기
+
+  - GitLab에서 우측 상단에 있는 아바타를 클릭, Edit profile 선택합니다.
+  - User Settings 페이지의 왼쪽 사이드바에서 Access Tokens를 클릭합니다.
+  - 아래 내용을 설정하고 토큰을 생성합니다.
+
+    - Token name을 작성합니다.
+    - Expiration data에서 x버튼을 클릭하여 만료기간을 없앱니다.
+    - Select scopes를 모두 클릭합니다.
+      <img
+        src="/ko/img/get-started/gitlab-issue-access-token.png"
+        style={{ width: 400, display: 'block' }}
+      />
+
+  - 생성된 Access Token을 확인합니다
+    <img
+      src="/ko/img/get-started/gitlab-check-access-token.png"
+      style={{ width: 400, display: 'block' }}
+    />
+
+### gitlab Access Token 설정하기
+
+위 단계에서 생성한 .env에 GITLAB_ROOT_ACCESS_TOKEN에 위에 값을 추가로 설정합니다.
+
+```
+ex. GITLAB_ROOT_ACCESS_TOKEN=glpat-Z5Zq-XkrtKjzq5FiAMAA
+```
+
+### Dogu 재실행
+
+.env, docker-compose.yml 파일이 있는 디렉토리에서 아래 명령어를 실행합니다. ( 이전에 실행했던 docker-compose는 중지할 필요 없습니다.)
+
+```
+docker compose -f ./docker-compose.yml --env-file ./.env up  -d
+```
+
+### Dogu 접속
+
+env에 지정한 DOGU_HOST의 주소 값과 3001포트로 접속합니다
+:::info
+ex. 10.32.123.14:3001 ( dogu console이 실행되는 데 약 3분 정도 걸립니다. )
+:::
+
+## NOTICE
+
+사용 가능한 gitlab 버전은 15.10.0입니다. (gitlab security warning, upgrade 권장 노출은 무시해주세요.)

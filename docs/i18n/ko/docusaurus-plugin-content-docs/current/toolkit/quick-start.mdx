@@ -1,0 +1,68 @@
+---
+sidebar_position: 2
+title: 시작하기
+locale: ko
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# 시작하기
+
+:::note
+Toolkit을 사용하기에 앞서 [Gamium](https://gamium.dogutech.io/)이 무엇인지 모르고 익숙하지 않다면 Gamium [Introduction](https://gamium.dogutech.io/docs/get-started/introduction) 및 [Quick Start](https://gamium.dogutech.io/docs/get-started/quick-start)를 읽고 Gamium을 한 번 실행해보세요.
+:::
+
+### toolkit 설치
+
+<Tabs groupId="language" defaultValue="ts">
+<TabItem value="ts" label="TypeScript" default>
+
+기존 `Gamium Client`를 사용하던 node.js 프로젝트에 toolkit을 설치합니다.
+
+```bash
+yarn add @dogu-tech/toolkit
+```
+
+</TabItem>
+</Tabs>
+
+### toolkit 초기화
+
+`Gamium Client`를 초기화 하는 부분을 변경해야합니다.
+
+기존에 Before로 사용하던 부분을 After로 변경해주세요.
+
+<Tabs groupId="language" defaultValue="ts">
+<TabItem value="ts" label="TypeScript" default>
+
+##### Before
+
+```ts
+import { GamiumClient, NodeGamiumService } from 'gamium';
+
+const gamiumService = new NodeGamiumService('127.0.0.1', 50061);
+await gamiumService.connect();
+const gamium = new GamiumClient(gamiumService);
+const ui = gamium.ui();
+```
+
+##### After
+
+```ts
+import { prepareGamium } from '@dogu-tech/toolkit';
+
+const gamiumKit = await prepareGamium();
+const gamium = gamiumKit.gamium;
+const device = gamiumKit.device;
+const ui = gamium.ui();
+```
+
+</TabItem>
+</Tabs>
+
+### Gamium 및 Device 제어 사용
+
+위 과정에서 gamium 객체, device 객체를 획득한 부분을 주목해주세요.  
+획득한 gamium 객체, device 객체를 통해, 게임, 디바이스를 제어할 수 있습니다.
+device 제어기능은 현재 더 다양한 기능을 추가하기 위해 노력하고 있습니다.

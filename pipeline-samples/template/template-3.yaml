@@ -1,0 +1,60 @@
+#
+#     ㅁ
+#   /    \
+# ㅁ       ㅁ
+#   \    /
+#     ㅁ
+#
+
+name: template 3
+
+on:
+  workflow_dispatch:
+
+env:
+  TEST_SCRIPT: test/room-based-game.ts
+
+jobs:
+  JOB-1:
+    runs-on:
+      group: TEST_GROUP
+    record: true
+    steps:
+      - name: STEP 1
+        run: echo TEST template...
+
+      - name: STEP 2
+        run: echo TEST template...
+  JOB-2:
+    needs: JOB-1
+    runs-on:
+      group: TEST_GROUP
+    record: true
+    steps:
+      - name: STEP 1
+        run: echo TEST template...
+
+      - name: STEP 2
+        run: echo TEST template...
+  JOB-3:
+    needs: JOB-1
+    runs-on:
+      group: TEST_GROUP
+    record: true
+    steps:
+      - name: STEP 1
+        run: echo TEST template...
+
+      - name: STEP 2
+        run: echo TEST template...
+  JOB-4:
+    needs: [JOB-2, JOB-3]
+    runs-on:
+      group: TEST_GROUP
+    record: true
+    steps:
+      - name: STEP 1
+        run: echo TEST template...
+
+      - name: STEP 2
+        run: echo TEST template...

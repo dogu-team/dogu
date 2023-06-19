@@ -1,0 +1,68 @@
+---
+sidebar_position: 2
+Title: Quick Start
+locale: en
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Quick Start
+
+:::note
+Before using the Toolkit, if you do not know what [Gamium](https://gamium.dogutech.io/) is and are not familiar with it, you can read the [Introduction](https://gamium.dogutech.io/docs/get-started/introduction) and [Quick Start](https://gamium.dogutech.io/docs/get-started/quick-start) and try running Gamium once.
+:::
+
+### toolkit installation
+
+<Tabs groupId="language" defaultValue="ts">
+<TabItem value="ts" label="TypeScript" default>
+
+Install additionally `@dogu-tech/toolkit` to the node.js project that contains the existing `Gamium Client`.
+
+```bash
+yarn add @dogu-tech/toolkit
+```
+
+</TabItem>
+</Tabs>
+
+### toolkit initialization
+
+You need to change the part that initializes `Gamium Client`.
+
+Change the previously used Before to After.
+
+<Tabs groupId="language" defaultValue="ts">
+<TabItem value="ts" label="TypeScript" default>
+
+##### Before
+
+```ts
+import { GamiumClient, NodeGamiumService } from 'gamium';
+
+const gamiumService = new NodeGamiumService('127.0.0.1', 50061);
+await gamiumService.connect();
+const gamium = new GamiumClient(gamiumService);
+const ui = gamium.ui();
+```
+
+##### After
+
+```ts
+import { prepareGamium } from '@dogu-tech/toolkit';
+
+const gamiumKit = await prepareGamium();
+const gamium = gamiumKit.gamium;
+const device = gamiumKit.device;
+const ui = gamium.ui();
+```
+
+</TabItem>
+</Tabs>
+
+### Using Gamium and Device Control
+
+In the above process, pay attention to the acquisition of the gamium object and the device object.
+You can control games and devices through the acquired gamium object and device object.
+The device control function is currently working on adding more functions.

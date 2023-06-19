@@ -1,0 +1,7 @@
+{
+  "verbose": true,
+  "watch": ["./public", "./electron", "../../mirror/packages"],
+  "exec": "yarn install  && concurrently \"cross-env BROWSER=none yarn start\" \"wait-on http://127.0.0.1:3333 && tsc -p electron -w\" \"wait-on http://127.0.0.1:3333 && tsc -p electron && electron .\"",
+  "ext": "ts,tsx,js,json",
+  "delay": 3000
+}
