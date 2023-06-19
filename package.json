@@ -6,9 +6,10 @@
   "author": "Dogu Team",
   "repository": "https://github.com/dogu-team/dogu.git",
   "scripts": {
-    "build": "yarn workspaces foreach --exclude 'dogu' --jobs unlimited -ptvi run build",
+    "build": "yarn workspaces foreach --exclude 'docs' --exclude 'dogu' --jobs unlimited -ptvi run build",
     "build:actions": "yarn workspaces foreach --include '@dogu-actions/*' --jobs unlimited -ptvi run build",
     "build:archive": "yarn workspaces foreach --jobs unlimited -ptvi run build:archive",
+    "build:docs": "yarn workspace docs build",
     "build:packages": "yarn workspaces foreach --include '@dogu{-tech,-private,-dev-private}/*' --jobs unlimited -ptvi run build",
     "build:projects": "yarn workspaces foreach --exclude '@dogu{,-private,-actions}/*' --exclude 'dogu' --jobs unlimited -ptvi run build",
     "clean": "yarn workspaces foreach --jobs unlimited -ptvi run clean",
