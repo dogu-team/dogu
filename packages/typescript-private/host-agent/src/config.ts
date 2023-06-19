@@ -2,7 +2,7 @@ export const config = {
   host: {
     connect: {
       retry: {
-        count: 5,
+        count: 10,
         intervalMilliseconds: 3000,
       },
     },
