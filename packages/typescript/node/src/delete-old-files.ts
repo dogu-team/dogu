@@ -1,4 +1,4 @@
-import { Closable, errorify, Printable } from '@dogu-tech/common';
+import { Closable, errorify, isFunction, Printable } from '@dogu-tech/common';
 import fs from 'fs';
 import { glob } from 'glob';
 
@@ -47,6 +47,16 @@ export async function deleteOldFiles(dir: string, maxStorePeriod: Period, printa
     }
   }
 
+  /**
+   * @note files.map TypeError: files.map is not a function
+   */
+  // eslint-disable-next-line @typescript-eslint/unbound-method
+  if (!isFunction(files.map)) {
+    printable.error(`files.map is not a function`, {
+      files,
+    });
+    return;
+  }
   const promises = files.map((file) => deleteOldFile(file));
   const results = await Promise.allSettled(promises);
   const rejected = results.filter((result) => result.status === 'rejected') as PromiseRejectedResult[];

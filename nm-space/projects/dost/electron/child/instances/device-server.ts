@@ -23,7 +23,6 @@ export class DeviceServerChild implements Child {
           DOGU_RUN_TYPE,
           DOGU_DEVICE_SERVER_PORT,
           DOGU_LOGS_PATH: DeviceServerLogsPath,
-          DOGU_PACKAGED_RESOURCES_PATH: process.resourcesPath,
         },
       },
     });
