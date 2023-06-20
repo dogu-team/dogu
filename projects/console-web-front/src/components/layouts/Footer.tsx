@@ -76,7 +76,7 @@ const Footer = ({ showCompanyInfo = false, className }: Props) => {
               </LanguageMenu>
             </Dropdown>
           </LanguageWrapper>
-          <StyledLink href="https://github.com/dogu-team" target="_blank">
+          <StyledLink href="https://github.com/dogu-team/dogu" target="_blank">
             <GithubOutlined style={{ fontSize: '2rem', cursor: 'pointer' }} />
           </StyledLink>
           <StyledLink href="https://www.linkedin.com/company/dogu-technologies" target="_blank">
