@@ -10,7 +10,6 @@ import { AppConfigService } from '../../app-config/app-config-service';
 import { DotEnvConfigService } from '../../dot-env-config/dot-env-config-service';
 import { logger } from '../../log/logger.instance';
 import { StdLogCallbackService } from '../../log/std-log-callback-service';
-import { DefaultAndroidHomePath } from '../../path-map';
 import { WindowService } from '../../window/window-service';
 import { ExternalUnitCallback, IExternalUnit } from '../external-unit';
 
@@ -116,19 +115,21 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
       });
       child.stdout.setEncoding('utf8');
       child.stdout.on('data', (data) => {
-        const stringifiedData = stringify(data);
-        if (stringifiedData.length === 0) {
+        const message = stringify(data);
+        if (!message) {
           return;
         }
-        this.stdLogCallbackService.stdout(stringifiedData);
+        this.stdLogCallbackService.stdout(message);
+        this.logger.info(message);
       });
       child.stderr.setEncoding('utf8');
       child.stderr.on('data', (data) => {
-        const stringifiedData = stringify(data);
-        if (stringifiedData.length === 0) {
+        const message = stringify(data);
+        if (!message) {
           return;
         }
-        this.stdLogCallbackService.stderr(stringifiedData);
+        this.stdLogCallbackService.stderr(message);
+        this.logger.warn(message);
       });
     });
   }
@@ -149,7 +150,7 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
     const commandLineToolsUncompressedPath = await this.uncompressCommandLineTools(commandLineToolsSavePath);
     const commandLineToolsUncompressedDirPath = await this.validateCommandLineToolsDirInUncompressedPath(commandLineToolsUncompressedPath);
     await this.moveCommandLineTools(commandLineToolsUncompressedDirPath);
-    const sdkManagerPath = await this.ensureSdkManagerPath(DefaultAndroidHomePath);
+    const sdkManagerPath = await this.ensureSdkManagerPath(HostPaths.external.defaultAndroidHomePath());
     await this.acceptSdkManagerLicenses(sdkManagerPath);
     await this.updateSdkManager(sdkManagerPath);
     await this.downloadBuildToolsAndPlatformTools(sdkManagerPath);
@@ -159,7 +160,7 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
 
   private async writeEnv_ANDROID_HOME(): Promise<void> {
     this.stdLogCallbackService.stdout('Writing ANDROID_HOME to env file...');
-    await this.dotEnvConfigService.write('ANDROID_HOME', DefaultAndroidHomePath);
+    await this.dotEnvConfigService.write('ANDROID_HOME', HostPaths.external.defaultAndroidHomePath());
     this.stdLogCallbackService.stdout('Write complete');
   }
 
@@ -188,19 +189,21 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
       });
       child.stdout.setEncoding('utf8');
       child.stdout.on('data', (data) => {
-        const stringifiedData = stringify(data);
-        if (stringifiedData.length === 0) {
+        const message = stringify(data);
+        if (!message) {
           return;
         }
-        this.stdLogCallbackService.stdout(stringifiedData);
+        this.stdLogCallbackService.stdout(message);
+        this.logger.info(message);
       });
       child.stderr.setEncoding('utf8');
       child.stderr.on('data', (data) => {
-        const stringifiedData = stringify(data);
-        if (stringifiedData.length === 0) {
+        const message = stringify(data);
+        if (!message) {
           return;
         }
-        this.stdLogCallbackService.stderr(stringifiedData);
+        this.stdLogCallbackService.stderr(message);
+        this.logger.warn(message);
       });
     });
   }
@@ -258,19 +261,21 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
       });
       child.stdout.setEncoding('utf8');
       child.stdout.on('data', (data) => {
-        const stringifiedData = stringify(data);
-        if (stringifiedData.length === 0) {
+        const message = stringify(data);
+        if (!message) {
           return;
         }
-        this.stdLogCallbackService.stdout(stringifiedData);
+        this.stdLogCallbackService.stdout(message);
+        this.logger.info(message);
       });
       child.stderr.setEncoding('utf8');
       child.stderr.on('data', (data) => {
-        const stringifiedData = stringify(data);
-        if (stringifiedData.length === 0) {
+        const message = stringify(data);
+        if (!message) {
           return;
         }
-        this.stdLogCallbackService.stderr(stringifiedData);
+        this.stdLogCallbackService.stderr(message);
+        this.logger.warn(message);
       });
     });
   }
@@ -300,24 +305,24 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
       });
       child.stdout.setEncoding('utf8');
       child.stdout.on('data', (data) => {
-        const stringifiedData = stringify(data);
-        if (!stringifiedData) {
+        const message = stringify(data);
+        if (!message) {
           return;
         }
-        if (stringifiedData.includes('(y/N)')) {
+        if (message.includes('(y/N)')) {
           child.stdin.write('y\n');
         }
-        this.stdLogCallbackService.stdout(stringifiedData);
-        logger.info(stringifiedData);
+        this.stdLogCallbackService.stdout(message);
+        this.logger.info(message);
       });
       child.stderr.setEncoding('utf8');
       child.stderr.on('data', (data) => {
-        const stringifiedData = stringify(data);
-        if (!stringifiedData) {
+        const message = stringify(data);
+        if (!message) {
           return;
         }
-        this.stdLogCallbackService.stderr(stringifiedData);
-        logger.error(stringifiedData);
+        this.stdLogCallbackService.stderr(message);
+        this.logger.warn(message);
       });
     });
   }
@@ -332,16 +337,17 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
   }
 
   private async moveCommandLineTools(commandLineToolsUncompressedDirPath: string): Promise<void> {
-    const defaultAndroidHomeStat = await fs.promises.stat(DefaultAndroidHomePath).catch(() => null);
+    const defaultAndroidHomePath = HostPaths.external.defaultAndroidHomePath();
+    const defaultAndroidHomeStat = await fs.promises.stat(defaultAndroidHomePath).catch(() => null);
     if (defaultAndroidHomeStat && defaultAndroidHomeStat.isDirectory()) {
-      this.stdLogCallbackService.stdout(`Deleting default ANDROID_HOME... ${DefaultAndroidHomePath}`);
-      await fs.promises.rm(DefaultAndroidHomePath, { recursive: true, force: true });
-      this.stdLogCallbackService.stdout(`Delete complete. ${DefaultAndroidHomePath}`);
+      this.stdLogCallbackService.stdout(`Deleting default ANDROID_HOME... ${defaultAndroidHomePath}`);
+      await fs.promises.rm(defaultAndroidHomePath, { recursive: true, force: true });
+      this.stdLogCallbackService.stdout(`Delete complete. ${defaultAndroidHomePath}`);
     }
-    this.stdLogCallbackService.stdout(`Creating... ${DefaultAndroidHomePath}`);
-    await fs.promises.mkdir(DefaultAndroidHomePath, { recursive: true });
-    this.stdLogCallbackService.stdout(`Create complete. ${DefaultAndroidHomePath}`);
-    const defaultCommandLineToolsPath = HostPaths.android.cmdlineToolsPath(DefaultAndroidHomePath);
+    this.stdLogCallbackService.stdout(`Creating... ${defaultAndroidHomePath}`);
+    await fs.promises.mkdir(defaultAndroidHomePath, { recursive: true });
+    this.stdLogCallbackService.stdout(`Create complete. ${defaultAndroidHomePath}`);
+    const defaultCommandLineToolsPath = HostPaths.android.cmdlineToolsPath(defaultAndroidHomePath);
     const defaultCommandLineToolsParentPath = path.dirname(defaultCommandLineToolsPath);
     this.stdLogCallbackService.stdout(`Creating... ${defaultCommandLineToolsParentPath}`);
     await fs.promises.mkdir(defaultCommandLineToolsParentPath, { recursive: true });

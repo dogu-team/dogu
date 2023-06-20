@@ -89,7 +89,7 @@ const ExternaltoolInstaller = ({ externalKeyAndNames, onStart, onFinish }: Props
       <div style={{ marginTop: '.5rem' }}>
         <LogBox ref={logRef}>
           {logs.map((item, i) => (
-            <Text key={item.log + i} color={item.isError ? 'red' : 'inherit'} fontSize="smaller" fontFamily="monospace">
+            <Text key={item.log + i} color={item.isError ? 'yellow' : 'inherit'} fontSize="smaller" fontFamily="monospace">
               {item.log}
             </Text>
           ))}

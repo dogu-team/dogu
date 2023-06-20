@@ -14,6 +14,7 @@ import { AppiumUiAutomator2DriverExternalUnit } from './units/appium-uiautomator
 import { AppiumXcUiTestDriverExternalUnit } from './units/appium-xcuitest-driver-external-unit';
 import { JdkExternalUnit } from './units/jdk-external-unit';
 import { XcodeExternalUnit } from './units/xcode-external-unit';
+import { AppiumExternalUnit } from './units/appium-external-unit';
 
 export class ExternalService {
   static instance: ExternalService;
@@ -68,6 +69,7 @@ export class ExternalService {
       'android-sdk',
       (unitCallback) => new AndroidSdkExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, this.appConfigService, this.windowService, unitCallback),
     );
+    this.registerUnit('appium', (unitCallback) => new AppiumExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, unitCallback));
     this.registerUnit('appium-uiautomator2-driver', (unitCallback) => new AppiumUiAutomator2DriverExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, unitCallback));
     this.registerUnit('xcode', () => new XcodeExternalUnit(this.stdLogCallbackService));
     this.registerUnit('appium-xcuitest-driver', (unitCallback) => new AppiumXcUiTestDriverExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, unitCallback));

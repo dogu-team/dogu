@@ -1,5 +1,5 @@
 import { FeatureConfig, loadFeatureConfig } from '@dogu-tech/node';
-import { ipcMain } from 'electron';
+import { app, ipcMain } from 'electron';
 import { featureConfigClientKey, FeatureKey, FeatureTable, FeatureValue } from '../../src/shares/feature-config';
 import { AppConfigService } from '../app-config/app-config-service';
 import { logger } from '../log/logger.instance';
@@ -27,8 +27,7 @@ export class FeatureConfigService {
   async load(): Promise<void> {
     logger.verbose('feature config load');
     const runType = await this.appConfigService.get<string>('DOGU_RUN_TYPE');
-    const featureConfig = await loadFeatureConfig<FeatureTable>(runType, logger, process.resourcesPath);
-    this._featureConfig = featureConfig;
+    this._featureConfig = await loadFeatureConfig<FeatureTable>(runType, logger, app.isPackaged ? process.resourcesPath : process.cwd());
   }
 
   get<Key extends FeatureKey>(key: Key): FeatureValue<Key> {

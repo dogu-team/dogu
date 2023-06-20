@@ -6,11 +6,12 @@ export const externalKey = instanceKeys<IExternalClient>('externalClient');
 
 export const JdkKey = 'jdk';
 export const AndroidSdkKey = 'android-sdk';
+export const AppiumKey = 'appium';
 export const AppiumUiAutomator2DriverKey = 'appium-uiautomator2-driver';
 export const XcodeKey = 'xcode';
 export const AppiumXcuitestDriverKey = 'appium-xcuitest-driver';
 
-export const ExternalKey = [JdkKey, AndroidSdkKey, AppiumUiAutomator2DriverKey, XcodeKey, AppiumXcuitestDriverKey] as const;
+export const ExternalKey = [JdkKey, AndroidSdkKey, AppiumKey, AppiumUiAutomator2DriverKey, XcodeKey, AppiumXcuitestDriverKey] as const;
 export type ExternalKey = (typeof ExternalKey)[number];
 
 export const ExternalKeysProvidedByDost = [JdkKey, AndroidSdkKey, AppiumUiAutomator2DriverKey, AppiumXcuitestDriverKey] as const;

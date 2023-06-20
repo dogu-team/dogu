@@ -9,7 +9,6 @@ interface CommonPathMap {
   yarn: string;
   pnpm: string;
   ffmpeg: string;
-  appiumProject: string;
 }
 
 interface MacosPathMap {

@@ -10829,6 +10829,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-private/env-tools", "workspace:packages/typescript-private/env-tools"],\
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
+            ["@dogu-tech/node", "workspace:packages/typescript/node"],\
             ["@types/node", "npm:18.15.11"],\
             ["class-transformer", "npm:0.5.1"],\
             ["class-validator", "npm:0.14.0"],\

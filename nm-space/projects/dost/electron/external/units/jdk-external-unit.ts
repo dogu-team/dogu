@@ -9,7 +9,6 @@ import { ExternalKey } from '../../../src/shares/external';
 import { DotEnvConfigService } from '../../dot-env-config/dot-env-config-service';
 import { logger } from '../../log/logger.instance';
 import { StdLogCallbackService } from '../../log/std-log-callback-service';
-import { DefaultJavaHomePath } from '../../path-map';
 import { WindowService } from '../../window/window-service';
 import { ExternalUnitCallback, IExternalUnit } from '../external-unit';
 
@@ -105,21 +104,21 @@ export class JdkExternalUnit extends IExternalUnit {
       });
       child.stdout.setEncoding('utf8');
       child.stdout.on('data', (data) => {
-        const stringifiedData = stringify(data);
-        if (!stringifiedData) {
+        const message = stringify(data);
+        if (!message) {
           return;
         }
-        this.stdLogCallbackService.stdout(stringifiedData);
-        logger.info(stringifiedData);
+        this.stdLogCallbackService.stdout(message);
+        this.logger.info(message);
       });
       child.stderr.setEncoding('utf8');
       child.stderr.on('data', (data) => {
-        const stringifiedData = stringify(data);
-        if (!stringifiedData) {
+        const message = stringify(data);
+        if (!message) {
           return;
         }
-        this.stdLogCallbackService.stderr(stringifiedData);
-        logger.warn(stringifiedData);
+        this.stdLogCallbackService.stderr(message);
+        this.logger.warn(message);
       });
     });
   }
@@ -180,19 +179,20 @@ export class JdkExternalUnit extends IExternalUnit {
     if (!javaHomeStat || !javaHomeStat.isDirectory()) {
       throw new Error(`JAVA_HOME not exist or not directory. path: ${uncompressedHomePath}`);
     }
-    const defaultJavaHomeStat = await fs.promises.stat(DefaultJavaHomePath).catch(() => null);
+    const defaultJavaHomePath = HostPaths.external.defaultJavaHomePath();
+    const defaultJavaHomeStat = await fs.promises.stat(defaultJavaHomePath).catch(() => null);
     if (defaultJavaHomeStat && defaultJavaHomeStat.isDirectory()) {
-      this.stdLogCallbackService.stdout(`Deleting default JAVA_HOME... ${DefaultJavaHomePath}`);
-      await fs.promises.rm(DefaultJavaHomePath, { recursive: true, force: true });
-      this.stdLogCallbackService.stdout(`Delete complete. ${DefaultJavaHomePath}`);
+      this.stdLogCallbackService.stdout(`Deleting default JAVA_HOME... ${defaultJavaHomePath}`);
+      await fs.promises.rm(defaultJavaHomePath, { recursive: true, force: true });
+      this.stdLogCallbackService.stdout(`Delete complete. ${defaultJavaHomePath}`);
     }
-    const defaultJavaHomeParentPath = path.dirname(DefaultJavaHomePath);
+    const defaultJavaHomeParentPath = path.dirname(defaultJavaHomePath);
     await fs.promises.mkdir(defaultJavaHomeParentPath, { recursive: true });
-    this.stdLogCallbackService.stdout(`Moving... ${uncompressedHomePath} to ${DefaultJavaHomePath}`);
-    await fs.promises.rename(uncompressedHomePath, DefaultJavaHomePath);
-    this.stdLogCallbackService.stdout(`Move complete. ${uncompressedPath} to ${DefaultJavaHomePath}`);
+    this.stdLogCallbackService.stdout(`Moving... ${uncompressedHomePath} to ${defaultJavaHomePath}`);
+    await fs.promises.rename(uncompressedHomePath, defaultJavaHomePath);
+    this.stdLogCallbackService.stdout(`Move complete. ${uncompressedPath} to ${defaultJavaHomePath}`);
     this.stdLogCallbackService.stdout('Writing JAVA_HOME to env file...');
-    await this.dotEnvConfigService.write('JAVA_HOME', DefaultJavaHomePath);
+    await this.dotEnvConfigService.write('JAVA_HOME', defaultJavaHomePath);
     this.stdLogCallbackService.stdout('Write complete');
     this.unitCallback.onInstallCompleted();
   }

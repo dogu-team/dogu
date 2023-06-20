@@ -16,14 +16,6 @@ export const ConfigsPath = HostPaths.configsPath(WritablePath);
 
 export const dotEnvConfigPath = (runType: string): string => path.resolve(ConfigsPath, `${runType === 'production' ? '' : runType}.env`);
 
-/**
- * @note henry: The external tools or libraries can be related to the host machine settings, and is not related to the development flag, run type, so install it in $HOME/.dogu/externals
- */
-export const ExternalsPath = HostPaths.externalsPath(HostPaths.doguHomePath);
-export const DefaultAndroidHomePath = path.resolve(ExternalsPath, 'android');
-export const DefaultJavaHomePath = path.resolve(ExternalsPath, 'java');
-export const DefaultAppiumHomePath = path.resolve(ExternalsPath, 'appium');
-
 export const LogsPath = HostPaths.logsPath(WritablePath);
 export const HostAgentLogsPath = path.resolve(LogsPath, 'child/host-agent');
 export const DeviceServerLogsPath = path.resolve(LogsPath, 'child/device-server');

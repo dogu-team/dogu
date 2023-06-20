@@ -2,6 +2,7 @@ import { DoguRunType, NodeEnvType } from '@dogu-private/env-tools';
 import { IsFilledString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { IsIn, IsNumber, IsString } from 'class-validator';
+import { HostPaths } from '@dogu-tech/node';
 
 export class PreloadDeviceServerEnv {
   @IsIn(NodeEnvType)
@@ -26,11 +27,11 @@ export class PreloadDeviceServerEnv {
 
 export class DeviceServerEnv extends PreloadDeviceServerEnv {
   @IsFilledString()
-  JAVA_HOME!: string;
+  JAVA_HOME = HostPaths.external.defaultJavaHomePath();
 
   @IsFilledString()
-  ANDROID_HOME!: string;
+  ANDROID_HOME = HostPaths.external.defaultAndroidHomePath();
 
   @IsFilledString()
-  APPIUM_HOME!: string;
+  APPIUM_HOME = HostPaths.external.defaultAppiumHomePath();
 }

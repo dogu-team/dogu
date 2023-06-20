@@ -14,7 +14,7 @@ const AppiumNewCommandTimeout = 24 * 60 * 60;
 
 export interface DefaultAppiumChannelOptions {
   pnpmPath: string;
-  appiumProjectPath: string;
+  appiumPath: string;
   androidHomePath: string;
   javaHomePath: string;
   serverEnv: NodeJS.ProcessEnv;
@@ -94,7 +94,7 @@ export class AppiumChannel {
       sessionId: this.browser.sessionId,
       server: {
         port: this.serverPort,
-        workingDirectory: this.options.appiumProjectPath,
+        workingDirectory: this.options.appiumPath,
         command: this.serverCommand,
         env: this.options.serverEnv,
       },
@@ -124,11 +124,11 @@ export class AppiumChannel {
     this.logger.info('Appium server starting with', {
       serverPort: this.serverPort,
     });
-    const { pnpmPath, appiumProjectPath, serverEnv } = this.options;
+    const { pnpmPath, appiumPath, serverEnv } = this.options;
     const appiumServerCommands = ['appium', '--log-no-colors', '--port', `${this.serverPort}`, '--session-override'];
     this._serverProcess = await new Promise<ChildProcessWithoutNullStreams>((resolve, reject) => {
       const child = spawn(pnpmPath, appiumServerCommands, {
-        cwd: appiumProjectPath,
+        cwd: appiumPath,
         env: serverEnv,
       });
       const onErrorForReject = (error: Error): void => {

@@ -6,7 +6,6 @@ import { findRootWorkspace } from '../workspace';
 import compressing from 'compressing';
 import tar from 'tar';
 import { enableCorepack } from './node';
-import { pnpmInstall } from './appium';
 
 interface ThirdPartyFile {
   /**
@@ -87,12 +86,6 @@ const files: ThirdPartyFile[] = [
     path: 'darwin/x64/git',
   },
   {
-    condition: () => process.platform === 'darwin',
-    url: 'https://github.com/dogu-team/third-party-binaries/releases/download/appium-2.0.0-beta.71/appium-darwin.tar.gz',
-    path: 'darwin/common/node-packages/appium',
-    postAction: pnpmInstall,
-  },
-  {
     condition: () => process.platform === 'win32',
     url: 'https://nodejs.org/dist/v16.20.0/node-v16.20.0-win-x64.zip',
     path: 'win32/x64/node/v16.20.0',
@@ -117,12 +110,6 @@ const files: ThirdPartyFile[] = [
     condition: () => process.platform === 'win32',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/git-2.39.3/git-windows-x64.zip',
     path: 'win32/x64/git',
-  },
-  {
-    condition: () => process.platform === 'win32',
-    url: 'https://github.com/dogu-team/third-party-binaries/releases/download/appium-2.0.0-beta.71/appium-windows.zip',
-    path: 'win32/common/node-packages/appium',
-    postDownload: pnpmInstall,
   },
 ];
 

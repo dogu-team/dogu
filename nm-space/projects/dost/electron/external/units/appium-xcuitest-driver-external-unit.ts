@@ -1,5 +1,5 @@
 import { PrefixLogger, stringify } from '@dogu-tech/common';
-import { newCleanNodeEnv } from '@dogu-tech/node';
+import { HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
 import { spawn } from 'child_process';
 import fs from 'fs';
 import lodash from 'lodash';
@@ -83,13 +83,14 @@ export class AppiumXcUiTestDriverExternalUnit extends IExternalUnit {
       await fs.promises.mkdir(appiumHome, { recursive: true });
     }
     await new Promise<void>((resolve, reject) => {
-      const { pnpm, appiumProject } = ThirdPartyPathMap.common;
+      const { pnpm } = ThirdPartyPathMap.common;
+      const appiumPath = HostPaths.external.nodePackage.appiumPath();
       const env = lodash.merge(newCleanNodeEnv(), {
         APPIUM_HOME: appiumHome,
       });
       logger.verbose('merged env', { env });
       const child = spawn(pnpm, ['appium', 'driver', 'install', 'xcuitest'], {
-        cwd: appiumProject,
+        cwd: appiumPath,
         env,
       });
       const onErrorForReject = (error: Error) => {
@@ -111,20 +112,20 @@ export class AppiumXcUiTestDriverExternalUnit extends IExternalUnit {
           }
         });
         child.stdout.on('data', (data) => {
-          const message = String(data);
+          const message = stringify(data);
           if (!message) {
             return;
           }
           this.stdLogCallbackService.stdout(message);
-          logger.info(message);
+          this.logger.info(message);
         });
         child.stderr.on('data', (data) => {
-          const message = String(data);
+          const message = stringify(data);
           if (!message) {
             return;
           }
           this.stdLogCallbackService.stderr(message);
-          logger.error(message);
+          this.logger.warn(message);
         });
       });
     });

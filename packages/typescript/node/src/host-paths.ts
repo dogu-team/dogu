@@ -8,6 +8,7 @@ export const HostPaths = {
   doguHomePath: process.env.DOGU_HOME || path.resolve(os.homedir(), '.dogu'),
   workingGeneratedPath: path.resolve(process.cwd(), 'generated'),
   tempPath: path.resolve(os.tmpdir(), 'dogu'),
+
   configsPath: (doguHomePath: string): string => path.resolve(doguHomePath, 'configs'),
   logsPath: (doguHomePath: string): string => path.resolve(doguHomePath, 'logs'),
   recordWorkspacePath: (doguHomePath: string): string => path.resolve(doguHomePath, 'records'),
@@ -40,6 +41,17 @@ export const HostPaths = {
 
   thirdParty: {
     pathMap: (options?: ThirdPartyPathMapOptions): ThirdPartyPathMap => createThirdPartyPathMap(options),
+  },
+
+  external: {
+    externalsPath: (): string => path.resolve(HostPaths.doguHomePath, 'externals'),
+    defaultAndroidHomePath: (): string => path.resolve(HostPaths.external.externalsPath(), 'android'),
+    defaultJavaHomePath: (): string => path.resolve(HostPaths.external.externalsPath(), 'java'),
+    defaultAppiumHomePath: (): string => path.resolve(HostPaths.external.externalsPath(), 'appium'),
+    nodePackage: {
+      nodePackagesPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'node-packages'),
+      appiumPath: (): string => path.resolve(HostPaths.external.nodePackage.nodePackagesPath(), 'appium'),
+    },
   },
 };
 
@@ -119,7 +131,6 @@ function createThirdPartyPathMap(options?: ThirdPartyPathMapOptions): ThirdParty
       yarn: path.resolve(thirdPartyPath, platformDir, archDir, 'node', 'v16.20.0', nodeBinDir, `yarn${cmdExtension}`),
       pnpm: path.resolve(thirdPartyPath, platformDir, archDir, 'node', 'v16.20.0', nodeBinDir, `pnpm${cmdExtension}`),
       ffmpeg: path.resolve(thirdPartyPath, platformDir, archCommonDir, `ffmpeg${exeExtension}`),
-      appiumProject: path.resolve(thirdPartyPath, platformDir, archCommonDir, 'node-packages', 'appium'),
     },
     macos: {
       iosDeviceAgentRunnerZip: process.platform === 'darwin' ? path.resolve(thirdPartyPath, platformDir, archCommonDir, 'ios-device-agent/ios-device-agent-runner.zip') : '',

@@ -2,10 +2,14 @@ import { Printable } from '@dogu-tech/common';
 import fs from 'fs';
 import path from 'path';
 
-const CwdConfigFilePath = path.resolve(process.cwd(), 'feature.config.json');
+const ConfigFileName = 'feature.config.json';
 
-function configPathByDoguRunType(doguRunType: string): string {
-  return path.resolve(process.cwd(), 'features', `${doguRunType}.feature.config.json`);
+function getRootConfigPath(configDir: string): string {
+  return path.resolve(configDir, ConfigFileName);
+}
+
+function getRunTypeConfigPath(configDir: string, runType: string): string {
+  return path.resolve(configDir, 'features', `${runType}.${ConfigFileName}`);
 }
 
 function createFeatureConfigFileNotFoundError(...paths: string[]): Error {
@@ -23,23 +27,22 @@ function parseConfig<T>(filePath: string, content: string, printable: Printable)
   }
 }
 
-export function loadFeatureConfigSync<T>(doguRunType: string, printable: Printable): FeatureConfig<T> {
-  const isCwdConfigExist = fs.existsSync(CwdConfigFilePath);
-  if (isCwdConfigExist) {
-    const content = fs.readFileSync(CwdConfigFilePath, 'utf8');
-    return parseConfig<T>(CwdConfigFilePath, content, printable);
+export function loadFeatureConfigSync<T>(doguRunType: string, printable: Printable, configDir: string = process.cwd()): FeatureConfig<T> {
+  const rootConfigPath = getRootConfigPath(configDir);
+  if (fs.existsSync(rootConfigPath)) {
+    const content = fs.readFileSync(rootConfigPath, 'utf8');
+    return parseConfig<T>(rootConfigPath, content, printable);
   } else {
-    const configPath = configPathByDoguRunType(doguRunType);
-    const isRunTypeConfigExist = fs.existsSync(configPath);
-    if (!isRunTypeConfigExist) {
-      throw createFeatureConfigFileNotFoundError(CwdConfigFilePath, configPath);
+    const runTypeConfigPath = getRunTypeConfigPath(configDir, doguRunType);
+    if (!fs.existsSync(runTypeConfigPath)) {
+      throw createFeatureConfigFileNotFoundError(rootConfigPath, runTypeConfigPath);
     }
-    const content = fs.readFileSync(configPath, 'utf8');
-    return parseConfig<T>(configPath, content, printable);
+    const content = fs.readFileSync(runTypeConfigPath, 'utf8');
+    return parseConfig<T>(runTypeConfigPath, content, printable);
   }
 }
 
-export async function loadFeatureConfig<T>(doguRunType: string, printable: Printable, resourcesPath?: string): Promise<FeatureConfig<T>> {
+export async function loadFeatureConfig<T>(doguRunType: string, printable: Printable, configDir: string = process.cwd()): Promise<FeatureConfig<T>> {
   const isExist = async (path: string): Promise<boolean> => {
     return fs.promises
       .stat(path)
@@ -48,27 +51,18 @@ export async function loadFeatureConfig<T>(doguRunType: string, printable: Print
       })
       .catch(() => false);
   };
-  if (resourcesPath) {
-    const resourcesConfigPath = path.resolve(resourcesPath, 'feature.config.json');
-    const isResourcesConfigExist = await isExist(resourcesConfigPath);
-    if (isResourcesConfigExist) {
-      const content = await fs.promises.readFile(resourcesConfigPath, 'utf8');
-      return parseConfig<T>(resourcesConfigPath, content, printable);
-    }
-    throw new Error(`Feature config file not found. path: ${resourcesConfigPath}`);
-  }
-  const isCwdConfigExist = await isExist(CwdConfigFilePath);
-  if (isCwdConfigExist) {
-    const content = await fs.promises.readFile(CwdConfigFilePath, 'utf8');
-    return parseConfig<T>(CwdConfigFilePath, content, printable);
+
+  const rootConfigPath = getRootConfigPath(configDir);
+  if (await isExist(rootConfigPath)) {
+    const content = await fs.promises.readFile(rootConfigPath, 'utf8');
+    return parseConfig<T>(rootConfigPath, content, printable);
   } else {
-    const configPath = configPathByDoguRunType(doguRunType);
-    const isRunTypeConfigExist = await isExist(configPath);
-    if (!isRunTypeConfigExist) {
-      throw createFeatureConfigFileNotFoundError(CwdConfigFilePath, configPath);
+    const runTypeConfigPath = getRunTypeConfigPath(configDir, doguRunType);
+    if (!(await isExist(runTypeConfigPath))) {
+      throw createFeatureConfigFileNotFoundError(rootConfigPath, runTypeConfigPath);
     }
-    const content = await fs.promises.readFile(configPath, 'utf8');
-    return parseConfig<T>(configPath, content, printable);
+    const content = await fs.promises.readFile(runTypeConfigPath, 'utf8');
+    return parseConfig<T>(runTypeConfigPath, content, printable);
   }
 }
 
