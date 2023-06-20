@@ -52,7 +52,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          context: ./docs
+          context: .
           tags: ${{ steps.login-ecr.outputs.registry }}/prod-dogu-docs:latest
           platforms: linux/amd64
           target: dogu-docs
