@@ -115,9 +115,6 @@ jobs:
         run: |
           yarn workspace dogu run build:archive
 
-      - name: Git - add and commit
-        run: git add third-party && git commit -m "[ci-archive] update archive" && git push -f
-
       - name: Dost - Newbie nm-space
         run: |
           yarn workspace dogu run newbie:nm-space
