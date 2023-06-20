@@ -17,7 +17,7 @@ const config = {
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'dogu-team', // Usually your GitHub org/user name.
-  projectName: 'dogu-docs', // Usually your repo name.
+  projectName: 'dogu', // Usually your repo name.
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
@@ -74,7 +74,7 @@ const config = {
         },
         items: [
           {
-            href: 'https://github.com/dogu-team/dogu-docs',
+            href: 'https://github.com/dogu-team/dogu/blob/main/docs',
             label: 'GitHub',
             position: 'right',
           },
@@ -138,7 +138,7 @@ const config = {
             items: [
               {
                 label: 'GitHub',
-                href: 'https://github.com/dogu-team/dogu-docs',
+                href: 'https://github.com/dogu-team/dogu',
               },
             ],
           },
