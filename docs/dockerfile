@@ -1,7 +1,5 @@
 FROM node:16.16.0-alpine AS node-base-docs
 WORKDIR /dogu
-COPY .yarnrc.yml yarn.lock .pnp.cjs .pnp.loader.mjs package.json tsconfig.json ./
-COPY .yarn ./.yarn
 
 FROM node-base-docs AS dogu-docs
 COPY . .
