@@ -1,4 +1,4 @@
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { GithubOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -9,7 +9,6 @@ import useAuth from '../../hooks/useAuth';
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
 import { getLocaledLink } from '../../utils/locale';
 import AccountMenu from '../AccountMenu';
-import FeedbackButton from '../buttons/FeedbackButton';
 import Header from './Header';
 
 interface Props {
@@ -40,7 +39,9 @@ const ConsoleBasicLayout = ({ children }: Props) => {
         <Header
           right={
             <FlexRow>
-              <FeedbackButton />
+              <StyledLink href={`https://github.com/dogu-team/dogu`} target="_blank">
+                <GithubOutlined />
+              </StyledLink>
               <Tooltip title="Docs" arrow={false} overlayInnerStyle={{ fontSize: '.8rem' }} style={{ minHeight: '0' }}>
                 <StyledLink href={`https://docs.dogutech.io${getLocaledLink(router.locale, '')}`} target="_blank">
                   <QuestionCircleOutlined />

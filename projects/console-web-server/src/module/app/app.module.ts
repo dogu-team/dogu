@@ -5,7 +5,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { config, dataSourceConfig } from '../../config';
 import { LoggerMiddleware } from '../../middleware/logger.middleware';
-import { SlackBotModule } from '../../module/slack-bot/slack-bot.module';
 import { TokenModule } from '../../module/token/token.module';
 import { DeviceStreamingModule } from '../../ws/device-streaming/device-streaming.module';
 import { LiveLogModule } from '../../ws/live-log/live-log.module';
@@ -50,7 +49,6 @@ const IMPORT_MODULES = [
   HostModule,
   UserModule,
   DeviceModule,
-  SlackBotModule,
   TokenModule,
   DeviceTagModule,
   TeamModule,
