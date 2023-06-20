@@ -3,10 +3,15 @@ import { XMLParser } from 'fast-xml-parser';
 import fs from 'fs';
 import path from 'path';
 import { HttpClient } from 'typed-rest-client/HttpClient';
+import { ChromeVersionFinder } from '../src/chrome-version';
 
 const thirdPartyDir = path.resolve(__dirname, '..', 'third-party');
 // const versionPrefix = '113.';
-const versionPrefix = 'latest';
+// const versionPrefix = 'latest';
+const versionFinder = new ChromeVersionFinder();
+const version = versionFinder.findSync();
+const { major } = version;
+const versionPrefix = `${major}.`;
 const files = [
   {
     postfix: 'mac_arm64.zip',

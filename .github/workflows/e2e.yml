@@ -64,7 +64,7 @@ jobs:
       - name: Run e2e
         if: ${{ success() }}
         run: |
-          yarn workspace e2e run start:ci
+          yarn workspace e2e run util:install-chromedriver && yarn workspace e2e run start:ci
 
       - name: Upload video
         if: ${{ failure() }}
