@@ -1,12 +1,15 @@
 name: 🔄e2e
 
 on:
-  workflow_dispatch:
-
   push:
     branches: ['main']
+    paths-ignore:
+      - 'docs/**'
   pull_request:
     branches: ['main']
+    paths-ignore:
+      - 'docs/**'
+  workflow_dispatch:
 
 jobs:
   e2e:
