@@ -411,7 +411,7 @@ Dest.withOptions({
     });
 
     //
-    job('Test sample routin', () => {
+    job('Test sample routine', () => {
       job('Add routine', () => {
         test('Go to project menu', async () => {
           await Driver.clickElement({ xpath: '//*[@access-id="side-bar-project"]' });
@@ -423,11 +423,11 @@ Dest.withOptions({
       });
 
       job('Execute sample ', () => {
-        test('Clikc sample routin', async () => {
+        test('Clikc sample routine', async () => {
           await Driver.clickElement({ xpath: `//*[text()="${values.value.SAMPLE_ROUTINE_NAME}"]` });
         });
 
-        test('Click sample routin execute button', async () => {
+        test('Click sample routine execute button', async () => {
           await Driver.clickElement({ xpath: '//*[@access-id="run-routine-btn"]' });
         });
 
@@ -453,8 +453,8 @@ Dest.withOptions({
     });
     //
 
-    job('Test routin', () => {
-      job('Add routin', () => {
+    job('Test routine', () => {
+      job('Add routine', () => {
         test('Go to project menu', async () => {
           await Driver.clickElement({ xpath: '//*[@access-id="side-bar-project"]' });
         });

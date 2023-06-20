@@ -183,7 +183,7 @@ function removeMacosxFiles(destPath: string): void {
 
 function renameUnzipedDir(fileUrl: string, destPath: string, ext: string): void {
   const uncompressedDirPath = path.resolve(path.dirname(destPath), path.basename(fileUrl).replace(ext, ''));
-  if (fs.existsSync(uncompressedDirPath)) {
+  if (fs.existsSync(uncompressedDirPath) && !fs.existsSync(destPath)) {
     fs.renameSync(uncompressedDirPath, destPath);
   }
 }
