@@ -68,7 +68,6 @@ export * from './dto/project/project.dto';
 export * from './dto/registery/registery-response.dto';
 export * from './dto/registery/registery.dto';
 export * from './dto/routine/routine.dto';
-export * from './dto/slack-bot/slack-bot.dto';
 export * from './dto/subscribe-user/subscribe-user.dto';
 export * from './dto/team/team-response.dto';
 export * from './dto/team/team.dto';
