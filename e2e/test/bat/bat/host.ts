@@ -62,52 +62,22 @@ export function runHost(random: number): void {
     test('Execute Dost', async () => {
       const mainPage = await launchDost();
       const delayMs = 300;
+      const InstallTimeoutMs = 180000;
       const longTimeoutMs = 30000;
       const shortTimeoutMs = 1000;
       const clickOption = { delay: 300, timeout: shortTimeoutMs };
 
-      await (await mainPage.waitForSelector('.chakra-checkbox__control', { timeout: longTimeoutMs })).click({ trial: true });
-      for (let index = 0; index < 100; index++) {
-        const isCheckboxVisible = await mainPage.locator('.chakra-checkbox__control').first().isVisible({ timeout: shortTimeoutMs });
-        const isNextVisible = await mainPage.getByText('Next', { exact: true }).first().isVisible({ timeout: shortTimeoutMs });
-        const isInstallVisible = await mainPage.getByText('Install', { exact: true }).first().isVisible({ timeout: shortTimeoutMs });
-        if (!isCheckboxVisible && !isNextVisible && !isInstallVisible) {
-          break;
-        }
-
-        try {
-          if (isInstallVisible) {
-            await mainPage.getByText('Install', { exact: true }).click(clickOption);
-            await Timer.wait(delayMs, 'dost launch. after click install');
-          }
-          if (isCheckboxVisible) {
-            await mainPage.locator('.chakra-checkbox__control').first().click(clickOption);
-            await Timer.wait(delayMs, 'dost launch. after click checkbox');
-          }
-          if (isNextVisible) {
-            await mainPage.getByText('Next', { exact: true }).click(clickOption);
-            await Timer.wait(delayMs, 'dost launch. after click next');
-          }
-        } catch (e: unknown) {
-          console.error(`Dost launch. pass error`, e);
-        }
-
-        await Timer.wait(delayMs, 'dost launch. after click');
+      await (await mainPage.waitForSelector('.chakra-checkbox__control', { timeout: longTimeoutMs })).click({ timeout: shortTimeoutMs });
+      await mainPage.getByText('Install', { exact: true }).first().click({ timeout: longTimeoutMs });
+      await mainPage.getByText('Finish', { exact: true }).first().click({ timeout: InstallTimeoutMs });
+      await (await mainPage.waitForSelector('.chakra-input', { timeout: longTimeoutMs })).click({ timeout: shortTimeoutMs });
+      await (await mainPage.waitForSelector('.chakra-input', { timeout: longTimeoutMs })).fill(token, { timeout: shortTimeoutMs });
+      await mainPage.getByText('Connect', { exact: true }).first().click({ timeout: InstallTimeoutMs });
+      await Timer.wait(6000, 'dost launch');
+      const isConnected = await mainPage.getByText('Connected', { exact: true }).first().isVisible({ timeout: longTimeoutMs });
+      if (!isConnected) {
+        throw new Error('Dost is not connected');
       }
-      await mainPage.getByPlaceholder('token', { exact: true }).fill(token);
-      await Timer.wait(delayMs, 'dost launch');
-      await mainPage.getByText('Connect', { exact: true }).click(clickOption);
-      await Timer.wait(delayMs, 'dost launch');
-      if (await mainPage.locator('.chakra-alert').isVisible({ timeout: longTimeoutMs })) {
-        const contents = (await mainPage.locator('.chakra-alert').allTextContents()).join('\n');
-        throw new Error(`Dost connect failed. contents: ${contents}`);
-      }
-      // const hostAgent = ProcessManager.spawn('yarn', ['workspace', 'host-agent', 'run', 'start'], {
-      //   name: 'host-agent',
-      //   printLog: true,
-      //   cwd: pathMap.root,
-      // });
-      // await Timer.waitStream(hostAgent, 'ready - connected server with', 3 * 60 * 1000);
     });
 
     test('Check host added', async () => {
