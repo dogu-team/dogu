@@ -1,10 +1,11 @@
-import fs from 'fs';
-import path from 'path';
-import https from 'https';
-import shelljs from 'shelljs';
-import { findRootWorkspace } from '../workspace';
 import compressing from 'compressing';
+import fs from 'fs';
+import https from 'https';
+import path from 'path';
+import shelljs from 'shelljs';
 import tar from 'tar';
+import { findRootWorkspace } from '../workspace';
+import { getFileSizeRecursive } from './filesystem';
 import { enableCorepack } from './node';
 
 interface ThirdPartyFile {
@@ -125,6 +126,27 @@ function makeDirectories(): void {
   }
 }
 
+async function requestFileSize(url: string): Promise<number> {
+  return new Promise((resolve, reject) => {
+    https
+      .get(url, (res) => {
+        if (res.statusCode === 301 || res.statusCode === 302) {
+          requestFileSize(res.headers.location!).then(resolve).catch(reject);
+          return;
+        }
+        if (res.statusCode !== 200) {
+          reject(new Error(`Failed to download ${url} with status code ${res.statusCode!}`));
+          return;
+        }
+        resolve(Number(res.headers['content-length']));
+      })
+      .on('error', (err) => {
+        console.error(`Failed to download ${url}`);
+        reject(err);
+      });
+  });
+}
+
 async function get(url: string, destPath: string): Promise<void> {
   return new Promise((resolve, reject): void => {
     const file = fs.createWriteStream(destPath);
@@ -182,6 +204,16 @@ async function download(thirdPartyFile: ThirdPartyFile): Promise<void> {
   }
   const fileUrl = thirdPartyFile.url;
   const destinationPath = path.resolve(rootPath, 'third-party', thirdPartyFile.path);
+
+  const fileSize = await requestFileSize(fileUrl);
+  const preExistFileSize = fs.existsSync(destinationPath) ? getFileSizeRecursive(destinationPath) : 0;
+  if (fileSize <= preExistFileSize) {
+    const mbFileSize = (fileSize / 1024 / 1024).toFixed(2);
+    const mbPreExistFileSize = (preExistFileSize / 1024 / 1024).toFixed(2);
+    console.log(`File: ${thirdPartyFile.path} size is ${mbPreExistFileSize} MB, remote size is ${mbFileSize} MB. Skip download`);
+    return;
+  }
+
   shelljs.rm('-rf', destinationPath);
   const isZip = fileUrl.endsWith('.zip');
   const isTgz = fileUrl.endsWith('.tar.gz');
