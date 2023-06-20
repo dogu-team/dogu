@@ -30,6 +30,7 @@ function getName(): string {
   const { archs, extraResources } = await prepare(platform, deviceServerEnv.DOGU_RUN_TYPE);
   await checkIdentity();
   await generateKeyFile();
+  process.env.CSC_IDENTITY_AUTO_DISCOVERY = 'false';
   await build(getOptions(archs, extraResources));
   await deleteKeyFile();
 })();
@@ -65,7 +66,7 @@ function getOptions(archs: Arch[], extraRess: ExtraResource[]): CliOptions {
       },
       mac: {
         target: 'default', // caution. for auto update. both dmg and zip are required. https://www.electron.build/configuration/mac
-        identity: 'Dogu Technologies Inc. (THJJSQ3S6P)',
+        // identity: 'Dogu Technologies Inc. (THJJSQ3S6P)',
       },
       artifactBuildCompleted: async (ctx) => {
         console.log('ctx', ctx);

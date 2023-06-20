@@ -52,6 +52,18 @@ export async function checkIdentity(): Promise<void> {
   }
 }
 
+async function signDmg(dmgFilePath: string): Promise<void> {
+  const { stdout, stderr } = await spawnAndOutputs(
+    'codesign',
+    ['--options=runtime', '--force', '--verify', '--verbose', '--timestamp', '--sign', 'Developer ID Application: Dogu Technologies Inc. (THJJSQ3S6P)', dmgFilePath],
+    {},
+  );
+
+  if (stderr) {
+    throw new Error(stderr.toString());
+  }
+}
+
 export async function generateKeyFile(): Promise<void> {
   if (process.platform !== 'darwin') {
     console.info('Not on darwin. Skipping key file generation.');
@@ -73,18 +85,6 @@ export async function deleteKeyFile(): Promise<void> {
   }
   if (fs.existsSync(KeyFilePath)) {
     await fs.promises.rm(KeyFilePath);
-  }
-}
-
-async function signDmg(dmgFilePath: string): Promise<void> {
-  const { stdout, stderr } = await spawnAndOutputs(
-    'codesign',
-    ['--options=runtime', '--force', '--verify', '--verbose', '--timestamp', '--sign', 'Developer ID Application: Dogu Technologies Inc. (THJJSQ3S6P)', dmgFilePath],
-    {},
-  );
-
-  if (stderr) {
-    throw new Error(stderr.toString());
   }
 }
 
@@ -150,7 +150,7 @@ export async function findDarwinDistfile(ctx: ArtifactCreated): Promise<string> 
 }
 
 export async function notarizeDarwin(dmgFilePath: string): Promise<void> {
-  //   await signDmg(dmgFilePath);
+  await signDmg(dmgFilePath);
   const submissionId = await notaryDmg(dmgFilePath);
   await waitUntilProgressDone(submissionId);
   await viewNotarizeLog(submissionId);
