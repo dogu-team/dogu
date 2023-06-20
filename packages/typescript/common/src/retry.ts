@@ -38,6 +38,7 @@ function fillRetryOptions(options?: RetryOptions): FilledRetryOptions {
 
 export async function retry<Result>(func: () => PromiseOrValue<Result>, options?: RetryOptions): Promise<Result> {
   const { retryCount, retryInterval, printable } = fillRetryOptions(options);
+  const currentTime = Date.now();
   let lastError: Error | null = null;
   for (let tryCount = 1; tryCount <= retryCount; tryCount++) {
     let isPromiseResult = false;
@@ -55,7 +56,11 @@ export async function retry<Result>(func: () => PromiseOrValue<Result>, options?
     }
     if (isPromiseResult && tryCount < retryCount) {
       printable.warn?.(`Retry after ${retryInterval} milliseconds`, { tryCount, retryCount, retryInterval });
-      await delay(retryInterval);
+      const deltaTime = Date.now() - currentTime;
+      const sleepTime = retryInterval - deltaTime;
+      if (sleepTime > 0) {
+        await delay(sleepTime);
+      }
     }
   }
   if (lastError) {
