@@ -47,7 +47,8 @@ export async function deleteOldFiles(dir: string, maxStorePeriod: Period, printa
     }
   }
 
-  const results = await Promise.allSettled(files.map((file) => deleteOldFile(file)));
+  const promises = files.map((file) => deleteOldFile(file));
+  const results = await Promise.allSettled(promises);
   const rejected = results.filter((result) => result.status === 'rejected') as PromiseRejectedResult[];
   if (rejected.length > 0) {
     printable.error(`Failed to delete old files`, {

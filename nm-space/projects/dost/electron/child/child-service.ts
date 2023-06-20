@@ -49,6 +49,7 @@ export class ChildService implements IChildClient {
     child.stdout?.on('data', (data) => {
       const dataString = data.toString();
       const stripped = stripAnsi ? stripAnsi(dataString) : dataString;
+      logger.info(`[${key}] ${stripped}`);
       Sentry.addBreadcrumb({
         type: 'default',
         category: key,
@@ -59,6 +60,7 @@ export class ChildService implements IChildClient {
     child.stderr?.on('data', (data) => {
       const dataString = data.toString();
       const stripped = stripAnsi ? stripAnsi(dataString) : dataString;
+      logger.warn(`[${key}] ${stripped}`);
       Sentry.addBreadcrumb({
         type: 'default',
         category: key,
@@ -67,7 +69,7 @@ export class ChildService implements IChildClient {
       });
     });
     child.on('error', (error) => {
-      logger.info('child process error', { key, error });
+      logger.error('child process error', { key, error });
     });
     child.on('close', (code, signal) => {
       logger.info('child process exited', { key, code, signal });

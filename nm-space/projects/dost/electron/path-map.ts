@@ -21,5 +21,5 @@ export const HostAgentLogsPath = path.resolve(LogsPath, 'child/host-agent');
 export const DeviceServerLogsPath = path.resolve(LogsPath, 'child/device-server');
 
 export const ThirdPartyPathMap = HostPaths.thirdParty.pathMap({
-  appIsPackaged: app.isPackaged,
+  resourcesPath: process.env.DOGU_PACKAGED_RESOURCES_PATH || '',
 });

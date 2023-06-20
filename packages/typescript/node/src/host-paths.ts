@@ -55,8 +55,12 @@ export const HostPaths = {
   },
 };
 
-export function parseEnv_DOGU_APP_IS_PACKAGED(): boolean {
-  return (process.env.DOGU_APP_IS_PACKAGED || 'false') === 'true';
+export function parseEnv_DOGU_PACKAGED_RESOURCES_PATH(): string {
+  return process.env.DOGU_PACKAGED_RESOURCES_PATH || '';
+}
+
+export function appIsPackaged(): boolean {
+  return parseEnv_DOGU_PACKAGED_RESOURCES_PATH() !== '';
 }
 
 export interface ThirdPartyPathMapOptions {
@@ -68,27 +72,23 @@ export interface ThirdPartyPathMapOptions {
   depth?: number;
 
   /**
-   * @default (process.env.DOGU_APP_IS_PACKAGED || 'false') === 'true'
-   * @description if true, search only in resourcesPath
-   * @see https://www.electronjs.org/docs/latest/api/app#appispackaged-readonly
+   * @default process.env.DOGU_PACKAGED_RESOURCES_PATH || ''
+   * @description if exists, search from resourcesPath
+   * @see https://www.electronjs.org/docs/latest/api/process#processresourcespath-readonly
    */
-  appIsPackaged?: boolean;
+  resourcesPath?: string;
 }
 
 function defaultThirdPartyPathMapOptions(): Required<ThirdPartyPathMapOptions> {
   return {
     depth: 4,
-    appIsPackaged: parseEnv_DOGU_APP_IS_PACKAGED(),
+    resourcesPath: parseEnv_DOGU_PACKAGED_RESOURCES_PATH(),
   };
 }
 
 function findThirdPartyPath(options?: ThirdPartyPathMapOptions): string {
-  const { depth, appIsPackaged } = lodash.merge(defaultThirdPartyPathMapOptions(), options);
-  if (appIsPackaged) {
-    const resourcesPath = lodash.get(process, 'resourcesPath') as string | undefined;
-    if (!resourcesPath) {
-      throw new Error('resourcesPath not found in process with appIsPackaged true');
-    }
+  const { depth, resourcesPath } = lodash.merge(defaultThirdPartyPathMapOptions(), options);
+  if (resourcesPath) {
     return path.resolve(resourcesPath, 'third-party');
   } else {
     let current = process.cwd();
@@ -108,12 +108,11 @@ function findThirdPartyPath(options?: ThirdPartyPathMapOptions): string {
 }
 
 function createThirdPartyPathMap(options?: ThirdPartyPathMapOptions): ThirdPartyPathMap {
-  const { appIsPackaged } = lodash.merge(defaultThirdPartyPathMapOptions(), options);
   const thirdPartyPath = findThirdPartyPath(options);
-  const platformDir = appIsPackaged ? '' : process.platform;
-  const platformCommonDir = appIsPackaged ? '' : 'common';
-  const archDir = appIsPackaged ? '' : process.arch;
-  const archCommonDir = appIsPackaged ? '' : 'common';
+  const platformDir = appIsPackaged() ? '' : process.platform;
+  const platformCommonDir = appIsPackaged() ? '' : 'common';
+  const archDir = appIsPackaged() ? '' : process.arch;
+  const archCommonDir = appIsPackaged() ? '' : 'common';
   const exeExtension = process.platform === 'win32' ? '.exe' : '';
   const cmdExtension = process.platform === 'win32' ? '.cmd' : '';
   const gitBinDir = process.platform === 'win32' ? 'cmd' : 'bin';

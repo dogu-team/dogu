@@ -1,6 +1,15 @@
-import { HostPaths } from '@dogu-tech/node';
-import * as Sentry from '@sentry/electron/main';
+import { logger, rendererLogger } from './log/logger.instance';
 import { app, BrowserWindow } from 'electron';
+
+/**
+ * @note process.env.DOGU_PACKAGED_RESOURCES_PATH is used in self and child processes.
+ */
+(() => {
+  process.env.DOGU_PACKAGED_RESOURCES_PATH = app.isPackaged ? process.resourcesPath : '';
+  logger.info('DOGU_PACKAGED_RESOURCES_PATH', { DOGU_PACKAGED_RESOURCES_PATH: process.env.DOGU_PACKAGED_RESOURCES_PATH });
+})();
+
+import * as Sentry from '@sentry/electron/main';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import electronDl from 'electron-dl';
 import isDev from 'electron-is-dev';
@@ -11,7 +20,6 @@ import { ChildService } from './child/child-service';
 import { DotEnvConfigService } from './dot-env-config/dot-env-config-service';
 import { ExternalService } from './external/external-service';
 import { FeatureConfigService } from './feature-config/feature-config-service';
-import { logger, rendererLogger } from './log/logger.instance';
 import { RendererLogService } from './log/renderer-log-service';
 import { StdLogCallbackService } from './log/std-log-callback-service';
 import { LogsPath } from './path-map';

@@ -31,6 +31,8 @@ export class FeatureConfigService {
   }
 
   get<Key extends FeatureKey>(key: Key): FeatureValue<Key> {
-    return this.featureConfig.get(key);
+    const value = this.featureConfig.get(key);
+    logger.verbose('feature config get', { key, value });
+    return value;
   }
 }

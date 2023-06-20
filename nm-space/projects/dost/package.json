@@ -15,6 +15,7 @@
     "deploy": "ts-node scripts/build --upload=true",
     "deploy:electron": "ts-node scripts/build",
     "deploy:publish": "ts-node scripts/build --notarize=true --upload=true --publish=true",
+    "deploy:notarize": "ts-node scripts/build --notarize=true",
     "deploy:notarize:upload": "ts-node scripts/build --notarize=true --upload=true",
     "dev": "yarn run build:react && nodemon",
     "eject": "react-app-rewired eject",

@@ -4,7 +4,7 @@ import { Format, TransformableInfo } from 'logform';
 import winston, { format, LoggerOptions, transports } from 'winston';
 import 'winston-daily-rotate-file';
 import Transport from 'winston-transport';
-import { HostPaths, parseEnv_DOGU_APP_IS_PACKAGED } from '.';
+import { HostPaths, appIsPackaged } from '.';
 
 const logLevels: Record<LogLevel, LogLevelEnum> = {
   error: LogLevelEnum.ERROR,
@@ -92,7 +92,7 @@ export class LogTransportFactory {
       if (process.env.DOGU_LOGS_PATH) {
         logsPath = process.env.DOGU_LOGS_PATH;
       } else {
-        logsPath = HostPaths.logsPath(parseEnv_DOGU_APP_IS_PACKAGED() ? HostPaths.doguHomePath : HostPaths.workingGeneratedPath);
+        logsPath = HostPaths.logsPath(appIsPackaged() ? HostPaths.doguHomePath : HostPaths.workingGeneratedPath);
       }
     }
     const extensionResolved = extension.startsWith('.') ? extension : `.${extension}`;
