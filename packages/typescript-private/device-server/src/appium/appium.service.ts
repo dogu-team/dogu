@@ -10,6 +10,7 @@ import { exec } from 'child_process';
 import { errorify, PrefixLogger } from '@dogu-tech/common';
 import { HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
 import { AppiumChannelKey } from '@dogu-tech/device-client-common';
+import _ from 'lodash';
 
 const execAsync = util.promisify(exec);
 
@@ -60,7 +61,10 @@ export class AppiumService implements OnModuleInit {
     const appiumPath = HostPaths.external.nodePackage.appiumPath();
     const androidHomePath = path.resolve(env.ANDROID_HOME);
     const javaHomePath = path.resolve(env.JAVA_HOME);
-    const serverEnv = newCleanNodeEnv();
+    const cleanEnv = newCleanNodeEnv();
+    const serverEnv = _.merge(cleanEnv, {
+      PATH: `${pathMap().common.nodeBin}${path.delimiter}${cleanEnv.PATH ?? ''}`,
+    });
     this._defaultAppiumChannelOptions = {
       pnpmPath,
       appiumPath,

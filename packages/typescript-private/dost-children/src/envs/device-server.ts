@@ -14,15 +14,6 @@ export class PreloadDeviceServerEnv {
   @IsNumber()
   @Type(() => Number)
   DOGU_DEVICE_SERVER_PORT!: number;
-
-  @IsString()
-  DOGU_DOST_RESOURCES_PATH = '';
-
-  /**
-   * @deprecated use ANDROID_HOME instead
-   */
-  @IsFilledString()
-  ANDROID_SDK_ROOT = '$HOME/.dogu/android';
 }
 
 export class DeviceServerEnv extends PreloadDeviceServerEnv {
@@ -34,4 +25,7 @@ export class DeviceServerEnv extends PreloadDeviceServerEnv {
 
   @IsFilledString()
   APPIUM_HOME = HostPaths.external.defaultAppiumHomePath();
+
+  @IsString()
+  DOGU_PACKAGED_RESOURCES_PATH = '';
 }

@@ -84,8 +84,10 @@ export class AppiumExternalUnit extends IExternalUnit {
     if (!appiumHome) {
       throw new Error('APPIUM_HOME not exist in env file');
     }
-    const env = _.merge(newCleanNodeEnv(), {
+    const cleanNodeEnv = newCleanNodeEnv();
+    const env = _.merge(cleanNodeEnv, {
       APPIUM_HOME: appiumHome,
+      PATH: `${ThirdPartyPathMap.common.nodeBin}${path.delimiter}${cleanNodeEnv.PATH}`,
     });
     this.logger.verbose('merged env', { env });
     return env;
