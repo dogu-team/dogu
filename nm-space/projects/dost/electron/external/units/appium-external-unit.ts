@@ -117,6 +117,7 @@ export class AppiumExternalUnit extends IExternalUnit {
             reject(new Error(`appium pnpm project initialize failed. code: ${code} signal: ${signal}`));
           }
         });
+        child.stdout.setEncoding('utf8');
         child.stdout.on('data', (data) => {
           const message = stringify(data);
           if (!message) {
@@ -125,6 +126,7 @@ export class AppiumExternalUnit extends IExternalUnit {
           this.stdLogCallbackService.stdout(message);
           this.logger.info(message);
         });
+        child.stderr.setEncoding('utf8');
         child.stderr.on('data', (data) => {
           const message = stringify(data);
           if (!message) {
@@ -163,6 +165,7 @@ export class AppiumExternalUnit extends IExternalUnit {
             reject(new Error(`appium install failed. code: ${code} signal: ${signal}`));
           }
         });
+        child.stdout.setEncoding('utf8');
         child.stdout.on('data', (data) => {
           const message = stringify(data);
           if (!message) {
@@ -171,6 +174,7 @@ export class AppiumExternalUnit extends IExternalUnit {
           this.stdLogCallbackService.stdout(message);
           this.logger.info(message);
         });
+        child.stderr.setEncoding('utf8');
         child.stderr.on('data', (data) => {
           const message = stringify(data);
           if (!message) {
