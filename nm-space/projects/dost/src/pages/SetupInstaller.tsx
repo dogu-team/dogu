@@ -47,6 +47,9 @@ const SetupInstaller = () => {
     if (platform === 'darwin') {
       navigate('/setup/manual');
       return;
+    } else if (platform === 'win32') {
+      navigate('/setup/config');
+      return;
     }
 
     navigate('/home/connect');
