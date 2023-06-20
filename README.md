@@ -124,7 +124,7 @@ You can get started right away with [Cloud Service](https://dogutech.io)
 
 ## Documentation
 
-- [Documentation](https://docs.dogutech.io/organization-and-project/organization/about)  
+- [Documentation](https://docs.dogutech.io)  
 - [Quick Start - Device Farm](https://docs.dogutech.io/get-started/device-farm)  
 
 ## Community Support
