@@ -9,6 +9,7 @@
     "dev": "docusaurus start --port 3100 --host 0.0.0.0",
     "dev:en": "cross-env DOCUSAURUS_GENERATED_FILES_DIR_NAME=.docusaurus/en docusaurus start --port 3101 --host 0.0.0.0 --locale en",
     "docusaurus": "docusaurus",
+    "release:prepare": "yarn set version 3.3.1 && yarn install",
     "serve": "docusaurus serve --port 3100 --host 0.0.0.0",
     "start:dev": "yarn run dev",
     "start:prod": "yarn run start:dev",
