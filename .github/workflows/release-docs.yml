@@ -76,5 +76,5 @@ jobs:
       - name: Run
         run: |
           docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.DOGU_AWS_REGION }}.amazonaws.com/prod-dogu-docs:latest
-          docker run -d -p 3100:3100 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.DOGU_AWS_REGION }}.amazonaws.com/prod-dogu-docs:latest
+          docker run -d -i -p 3100:3100 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.DOGU_AWS_REGION }}.amazonaws.com/prod-dogu-docs:latest
           docker image prune -f
