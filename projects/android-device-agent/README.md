@@ -15,3 +15,12 @@
 - android-device-agent/android_proc 폴더를 Android Studio로 연다.
 - app 모듈 빌드
 - android/app/build.gradle에 runDebugBuild() task 실행.
+
+## settings
+
+download android studio
+install android sdk
+
+- build-tools 31.0.0
+  cmdline-tools latest
+  platform-tools latest
