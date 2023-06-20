@@ -4,4 +4,4 @@ WORKDIR /dogu
 FROM node-base-docs AS dogu-docs
 COPY . .
 EXPOSE 3100
-CMD ["yarn", "workspace", "docs", "serve"]
+CMD ["yarn", "run", "serve"]
