@@ -5,6 +5,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { env } from './env';
+import { ThirdPartyPath } from './prepare';
 
 const DoguIdentityUrls = [
   'https://drive.google.com/drive/folders/1-ISuTEI1j_WNKNmzyGOm02ODZq8XkVwY',
@@ -52,16 +53,14 @@ export async function checkIdentity(): Promise<void> {
   }
 }
 
-async function signDmg(dmgFilePath: string): Promise<void> {
+async function sign(filePath: string): Promise<void> {
   const { stdout, stderr } = await spawnAndOutputs(
     'codesign',
-    ['--options=runtime', '--force', '--verify', '--verbose', '--timestamp', '--sign', 'Developer ID Application: Dogu Technologies Inc. (THJJSQ3S6P)', dmgFilePath],
+    ['--options=runtime', '--force', '--verify', '--verbose', '--timestamp', '--sign', 'Developer ID Application: Dogu Technologies Inc. (THJJSQ3S6P)', filePath],
     {},
   );
-
-  if (stderr) {
-    throw new Error(stderr.toString());
-  }
+  console.log(`stdout: ${stdout}`);
+  console.error(`stderr: ${stderr}`);
 }
 
 export async function generateKeyFile(): Promise<void> {
@@ -98,6 +97,25 @@ async function notaryDmg(dmgFilePath: string): Promise<string> {
     .match(/id: (.*)/)?.[0]
     .replace('id: ', '');
   return submissionId!;
+}
+
+export async function signThirdParties(): Promise<void> {
+  const darwinPath = path.resolve(ThirdPartyPath, 'darwin');
+  const files = [
+    path.resolve(darwinPath, 'arm64/lib/libimobiledevice/libcrypto.1.1.dylib'),
+    path.resolve(darwinPath, 'arm64/lib/libimobiledevice/libimobiledevice-1.0.6.dylib'),
+    path.resolve(darwinPath, 'arm64/lib/libimobiledevice/libplist-2.0.3.dylib'),
+    path.resolve(darwinPath, 'arm64/lib/libimobiledevice/libssl.1.1.dylib'),
+    path.resolve(darwinPath, 'arm64/lib/libimobiledevice/libusbmuxd-2.0.6.dylib'),
+    path.resolve(darwinPath, 'x64/lib/libimobiledevice/libcrypto.1.1.dylib'),
+    path.resolve(darwinPath, 'x64/lib/libimobiledevice/libimobiledevice-1.0.6.dylib'),
+    path.resolve(darwinPath, 'x64/lib/libimobiledevice/libplist-2.0.3.dylib'),
+    path.resolve(darwinPath, 'x64/lib/libimobiledevice/libssl.1.1.dylib'),
+    path.resolve(darwinPath, 'x64/lib/libimobiledevice/libusbmuxd-2.0.6.dylib'),
+  ];
+  for (const file of files) {
+    await sign(file);
+  }
 }
 
 async function waitUntilProgressDone(submissionId: string): Promise<void> {
@@ -150,7 +168,6 @@ export async function findDarwinDistfile(ctx: ArtifactCreated): Promise<string> 
 }
 
 export async function notarizeDarwin(dmgFilePath: string): Promise<void> {
-  await signDmg(dmgFilePath);
   const submissionId = await notaryDmg(dmgFilePath);
   await waitUntilProgressDone(submissionId);
   await viewNotarizeLog(submissionId);

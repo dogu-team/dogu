@@ -1,7 +1,9 @@
 import fs from 'fs';
 import path from 'path';
+import { signThirdParties } from './deployDarwin';
 
 export type Arch = 'ia32' | 'x64' | 'arm64';
+export const ThirdPartyPath = path.resolve(__dirname, '../../../../third-party');
 
 export interface ExtraResource {
   from: string;
@@ -39,7 +41,7 @@ async function validateResourceEnvs(): Promise<void> {
 }
 
 async function copyThirdParty(platform: NodeJS.Platform, archs: NodeJS.Architecture[]): Promise<ExtraResource[]> {
-  const srcRoot = path.resolve(__dirname, '../../../../third-party');
+  const srcRoot = ThirdPartyPath;
   if (!(await access(srcRoot, fs.constants.R_OK))) {
     console.error('Third party path not found', { srcRoot });
     process.exit(1);
@@ -88,6 +90,9 @@ async function copyFeatureConfig(runType: string): Promise<ExtraResource> {
 export async function prepare(platform: NodeJS.Platform, runType: string): Promise<{ archs: Arch[]; extraResources: ExtraResource[] }> {
   await validateResourceEnvs();
   const archs = getArchs(platform);
+  if (process.platform === 'darwin') {
+    await signThirdParties();
+  }
   const extraResources = await copyThirdParty(platform, archs);
   const featureConfig = await copyFeatureConfig(runType);
   extraResources.push(featureConfig);
