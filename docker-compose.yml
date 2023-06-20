@@ -82,7 +82,7 @@ services:
 
   nexus:
       container_name: dogu-nexus
-      image: sonatype/nexus3
+      image: sonatype/nexus3:3.56.0
       restart: always
       pull_policy: always
       ports:
