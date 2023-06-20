@@ -3,5 +3,6 @@ WORKDIR /dogu
 
 FROM node-base-docs AS dogu-docs
 COPY docs ./docs
+RUN cd docs
 EXPOSE 3100
 CMD ["yarn", "run", "serve"]
