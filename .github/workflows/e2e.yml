@@ -56,10 +56,11 @@ jobs:
         with:
           name: 'service-account-key.json'
           json: ${{ secrets.SEVICE_ACCOUNT_KEY_JSON }}
+          dir: ~/.dogu_secret/
 
       - name: create dotEnv
         run: |
-          yarn run env:e2e
+          env-generator gen-all e2e
 
       - name: Run e2e
         if: ${{ success() }}
