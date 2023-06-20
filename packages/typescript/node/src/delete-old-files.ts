@@ -1,6 +1,6 @@
 import { Closable, errorify, isFunction, Printable } from '@dogu-tech/common';
 import fs from 'fs';
-import { glob } from 'glob';
+import fg from 'fast-glob';
 
 export type Day = `${number}d`;
 export type Period = Day;
@@ -23,7 +23,10 @@ export function periodToMilliseconds(period: Period): number {
 
 export async function deleteOldFiles(dir: string, maxStorePeriod: Period, printable: Printable): Promise<void> {
   const maxStorePeriodTime = periodToMilliseconds(maxStorePeriod);
-  const files = await glob(`${dir}/**/*`);
+  const files = await fg(`${dir}/**/*`, { dot: true });
+  printable.verbose?.(`deleteOldFiles files`, {
+    files,
+  });
   if (files.length === 0) {
     return;
   }

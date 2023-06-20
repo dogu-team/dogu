@@ -11332,7 +11332,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["death", "npm:1.1.0"],\
             ["dotenv", "npm:16.1.3"],\
             ["eventemitter2", "npm:6.4.9"],\
-            ["glob", "npm:10.2.2"],\
+            ["fast-glob", "npm:3.2.12"],\
             ["lodash", "npm:4.17.21"],\
             ["logform", "npm:2.5.1"],\
             ["nodemon", "npm:2.0.22"],\

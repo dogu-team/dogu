@@ -48,8 +48,11 @@ const SetupInstaller = () => {
       navigate('/setup/manual');
       return;
     } else if (platform === 'win32') {
-      navigate('/setup/config');
-      return;
+      const [apiUrlInsertable, apiUrl] = await Promise.all([ipc.featureConfigClient.get('apiUrlInsertable'), ipc.appConfigClient.get<string>('DOGU_API_BASE_URL')]);
+      if (apiUrlInsertable && !apiUrl) {
+        navigate('/setup/config');
+        return;
+      }
     }
 
     navigate('/home/connect');
