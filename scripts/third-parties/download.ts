@@ -181,10 +181,19 @@ function removeMacosxFiles(destPath: string): void {
   shelljs.rm('-rf', macosxPath);
 }
 
-function renameUnzipedDir(fileUrl: string, destPath: string, ext: string): void {
+async function renameUnzipedDir(fileUrl: string, destPath: string, ext: string): Promise<void> {
   const uncompressedDirPath = path.resolve(path.dirname(destPath), path.basename(fileUrl).replace(ext, ''));
   if (fs.existsSync(uncompressedDirPath) && !fs.existsSync(destPath)) {
-    fs.renameSync(uncompressedDirPath, destPath);
+    for (let i = 0; i < 10; i++) {
+      try {
+        fs.renameSync(uncompressedDirPath, destPath);
+        break;
+      } catch (e) {
+        console.log(`rename failed ${i} times. ${e}`);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        continue;
+      }
+    }
   }
 }
 
@@ -225,7 +234,7 @@ async function download(thirdPartyFile: ThirdPartyFile): Promise<void> {
     fs.renameSync(destinationPath, destinationPath + '.zip');
     await compressing.zip.uncompress(destinationPath + '.zip', path.dirname(destinationPath));
     removeMacosxFiles(destinationPath);
-    renameUnzipedDir(fileUrl, destinationPath, '.zip');
+    await renameUnzipedDir(fileUrl, destinationPath, '.zip');
 
     fs.unlinkSync(destinationPath + '.zip');
   }
@@ -234,7 +243,7 @@ async function download(thirdPartyFile: ThirdPartyFile): Promise<void> {
     fs.renameSync(destinationPath, destinationPath + '.tar.gz');
     extractTarball(destinationPath + '.tar.gz', path.dirname(destinationPath));
     removeMacosxFiles(destinationPath);
-    renameUnzipedDir(fileUrl, destinationPath, '.tar.gz');
+    await renameUnzipedDir(fileUrl, destinationPath, '.tar.gz');
 
     fs.unlinkSync(destinationPath + '.tar.gz');
   }
