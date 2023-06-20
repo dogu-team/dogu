@@ -4,8 +4,16 @@ title: Self-Hosted Dogu
 locale: ko
 ---
 
+import {
+  getBrowserPlatform,
+  BrowserPlatform,
+} from '@site/src/platform/platform.ts';
+
+import dost_api_url_input from '@site/static/img/get-started/dost-api-url-input.png';
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import BrowserOnly from '@docusaurus/BrowserOnly';
 
 :::info PREREQUISITES
 이 문서는 Dogu를 Self-Hosted로 시작하는 방법에 대해 설명합니다.
@@ -59,7 +67,7 @@ icacls "C:\var\lib\dogu\nexus-data" /setowner 200 /T
 
 :::note
 GITLAB_ROOT_ACCESS_TOKEN 값은
-Dogu 실행 후 아래 [단계](/self-hosted/get-started#gitlab-root-access-token-발급받기)에서 token을 발급받은 후 재설정 해 주세요.
+Dogu 실행 후 아래 [gitlab root Access Token 발급 받기](/self-hosted/get-started#gitlab-root-access-token-발급-받기)에서 token을 발급받은 후 재설정 해 주세요.
 :::
 
 ### docker-compose.yml 설정
@@ -133,6 +141,32 @@ docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up  -d
 
 Dogu Console: DOGU_HOST:3001  
 Dogu Gitlab: DOGU_HOST:8080
+
+### Dost 설치
+
+다운로드 후 설치는 [Dost 설치](/host-and-device/host/get-started#설치)를 참고해주세요.
+
+### Dost 실행
+
+dogu console에 연결할 수 있는 dost를 실행합니다.
+
+- Dost 접속 환경 설정
+
+  - [docker-compose.env 파일 생성](/self-hosted/get-started#docker-composeenv-파일-생성)에서 설정한 DOGU_HOST값을 사용하여 접속 URL을 설정합니다.
+    `ex. localhost:4000`
+
+  <BrowserOnly>
+    {() => (
+      <Tabs groupId="os" defaultValue={getBrowserPlatform('windows')}>
+        <TabItem value="windows" label="Windows" default>
+          <img src={dost_api_url_input} style={{ width: 600 }} />
+        </TabItem>
+        <TabItem value="macos" label="macOS">
+          <img src={dost_api_url_input} style={{ width: 600 }} />
+        </TabItem>
+      </Tabs>
+    )}
+  </BrowserOnly>
 
 ## 디바이스를 디바이스 팜에 연결하기
 

@@ -4,8 +4,16 @@ title: Self-Hosted Dogu
 locale: en
 ---
 
+import {
+  getBrowserPlatform,
+  BrowserPlatform,
+} from '@site/src/platform/platform.ts';
+
+import dost_api_url_input from '@site/static/img/get-started/dost-api-url-input.png';
+
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import BrowserOnly from '@docusaurus/BrowserOnly';
 
 :::info PREREQUISITES
 This document explains how to start Dogu with self-hosted.
@@ -58,7 +66,7 @@ You can replace the `/var/lib/dogu` path created above with the `VOLUME_PATH` va
 
 :::note
 The GITLAB_ROOT_ACCESS_TOKEN value
-After Dogu is executed, obtain a token in the [step](/self-hosted/get-started#issuing-the-gitlab-root-access-token) below and reset it.
+After Dogu is executed, obtain a token in the [Issuing the GitLab Root Access Token](/self-hosted/get-started#get-the-gitlab-root-access-token) below and reset it.
 :::
 
 ### Create docker-compose.yml
@@ -134,6 +142,32 @@ executed docker-compose.)
 
 Dogu Console: DOGU_HOST:3001  
 Dogu Gitlab: DOGU_HOST:8080
+
+### Installing Dost
+
+After downloading, please refer to [Dost Installation](/host-and-device/host/get-started#installation) for installation
+
+### Running Dost
+
+Run the dost agent that can connect to the dogu console.
+
+- Configuring Dost connection environment
+
+  - Set the connection URL using the DOGU_HOST value set in the [Create docker-compose.env File](/self-hosted/get-started#create-docker-composeenv-file).
+    `ex. localhost:4000`
+
+  <BrowserOnly>
+    {() => (
+      <Tabs groupId="os" defaultValue={getBrowserPlatform('windows')}>
+        <TabItem value="windows" label="Windows" default>
+          <img src={dost_api_url_input} style={{ width: 600 }} />
+        </TabItem>
+        <TabItem value="macos" label="macOS">
+          <img src={dost_api_url_input} style={{ width: 600 }} />
+        </TabItem>
+      </Tabs>
+    )}
+  </BrowserOnly>
 
 ## Connect Device to Device Farm
 
