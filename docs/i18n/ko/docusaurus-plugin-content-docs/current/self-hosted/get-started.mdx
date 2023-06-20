@@ -15,13 +15,13 @@ self-hosted 방식으로 도구를 셋팅할 수 있습니다.
 
 ## 하드웨어 요구사항
 
-|                          | Minimum Requirements            |
-| :----------------------: | ------------------------------- |
-| <b>Operating System</b>  | Ubuntu(x86_64), Windows(x86_64) |
-|       <b> CPU </b>       | 8 Cores                         |
-|     <b> Memory </b>      | 16 Gb RAM                       |
-| <b> Free Disk Space </b> | SSD 128Gb                       |
-|  <b> Dependencies </b>   | Docker, Docker-Compose          |
+|                          | Minimum Requirements      |
+| :----------------------: | ------------------------- |
+| <b>Operating System</b>  | Ubuntu(x64), Windows(x64) |
+|       <b> CPU </b>       | 8 Cores                   |
+|     <b> Memory </b>      | 16 Gb RAM                 |
+| <b> Free Disk Space </b> | SSD 128Gb                 |
+|  <b> Dependencies </b>   | Docker, Docker-Compose    |
 
 ## Dogu 설치
 
@@ -69,10 +69,10 @@ Dogu 실행 후 아래 [단계](/self-hosted/get-started#gitlab-root-access-toke
 
 ### Dogu 실행
 
-.env, docker-compose.yml 파일이 있는 디렉토리에서 아래 명령어를 실행합니다.
+docker-compose.env, docker-compose.yml 파일이 있는 디렉토리에서 아래 명령어를 실행합니다.
 
 ```
-docker compose -f ./docker-compose.yml --env-file ./.env up  -d
+docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up  -d
 ```
 
 ### gitlab root Access Token 발급 받기
@@ -81,13 +81,13 @@ Dogu를 실행하기 위해서는 gitlab의 root access token이 필요합니다
 아래는 gitlab의 root access token을 발급하는 방법입니다.
 
 - gitlab 접속하기
-  - .env에 지정한 DOGU_HOST의 주소 값과 8080포트로 접속합니다.
+  - docker-compose.env에 지정한 DOGU_HOST의 주소 값과 8080포트로 접속합니다.
     :::info
     ex. 10.32.123.14:8080 ( gitlab이 실행되는 데 약 5분 정도 걸립니다 )
     :::
 - gitlab root 계정 로그인
 
-  - .env에 지정한 GITLAB_ROOT_PASSWORD로 로그인 합니다.
+  - docker-compose.env에 지정한 GITLAB_ROOT_PASSWORD로 로그인 합니다.
     <img
       src="/ko/img/get-started/gitlab-login.png"
       style={{ width: 400, display: 'block' }}
@@ -115,7 +115,7 @@ Dogu를 실행하기 위해서는 gitlab의 root access token이 필요합니다
 
 ### gitlab Access Token 설정하기
 
-위 단계에서 생성한 .env에 GITLAB_ROOT_ACCESS_TOKEN에 위에 값을 추가로 설정합니다.
+위 단계에서 생성한 docker-compose.env에 GITLAB_ROOT_ACCESS_TOKEN에 위에 값을 추가로 설정합니다.
 
 ```
 ex. GITLAB_ROOT_ACCESS_TOKEN=glpat-Z5Zq-XkrtKjzq5FiAMAA
@@ -123,10 +123,10 @@ ex. GITLAB_ROOT_ACCESS_TOKEN=glpat-Z5Zq-XkrtKjzq5FiAMAA
 
 ### Dogu 재실행
 
-.env, docker-compose.yml 파일이 있는 디렉토리에서 아래 명령어를 실행합니다. ( 이전에 실행했던 docker-compose는 중지할 필요 없습니다.)
+docker-compose.env, docker-compose.yml 파일이 있는 디렉토리에서 아래 명령어를 실행합니다. ( 이전에 실행했던 docker-compose는 중지할 필요 없습니다.)
 
 ```
-docker compose -f ./docker-compose.yml --env-file ./.env up  -d
+docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up  -d
 ```
 
 ### Dogu 접속

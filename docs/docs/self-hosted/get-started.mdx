@@ -15,13 +15,13 @@ You can set up Dogu with self-hosted.
 
 ## Hardware Requirements
 
-|                          | Minimum Requirements             |
-| :----------------------: | -------------------------------- |
-| <b>Operating System</b>  | Ubuntu (x86_64), Windows(x86_64) |
-|       <b> CPU </b>       | 8 Cores                          |
-|     <b> Memory </b>      | 16 Gb RAM                        |
-| <b> Free Disk Space </b> | SSD 128Gb                        |
-|  <b> Dependencies </b>   | Docker, Docker-Compose           |
+|                          | Minimum Requirements      |
+| :----------------------: | ------------------------- |
+| <b>Operating System</b>  | Ubuntu(x64), Windows(x64) |
+|       <b> CPU </b>       | 8 Cores                   |
+|     <b> Memory </b>      | 16 Gb RAM                 |
+| <b> Free Disk Space </b> | SSD 128Gb                 |
+|  <b> Dependencies </b>   | Docker, Docker-Compose    |
 
 ## Set up Dogu
 
@@ -48,7 +48,7 @@ icacls "C:\var\lib\dogu\nexus-data" /setowner 200 /T
 </Tabs>
 
 :::note
-You can replace the `/var/lib/dogu` path created above with the `VOLUME_PATH` value in the .env file to be created in the next step.
+You can replace the `/var/lib/dogu` path created above with the `VOLUME_PATH` value in the docker-compose.env file to be created in the next step.
 :::
 
 ### Create docker-compose.env File
@@ -68,11 +68,11 @@ After Dogu is executed, obtain a token in the [step](/self-hosted/get-started#is
 
 ### Run Dogu
 
-Run the following command in the directory where the .env and docker-compose.yml files are located.
+Run the following command in the directory where the docker-compose.env and docker-compose.yml files are located.
 
 ```
 
-docker compose -f ./docker-compose.yml --env-file ./.env up -d
+docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up -d
 
 ```
 
@@ -83,14 +83,14 @@ The following are the steps to get a GitLab root access token.
 
 - Access to GitLab
 
-  - Access it with the DOGU_HOST address value specified in .env and the 8080 port.
+  - Access it with the DOGU_HOST address value specified in docker-compose.env and the 8080 port.
     :::info
     e.g. 10.32.123.14:8080 (GitLab takes about 5 minutes to run.)
     :::
 
 - Log in with the GitLab root account
 
-  - Log in with the GITLAB_ROOT_PASSWORD specified in .env.
+  - Log in with the GITLAB_ROOT_PASSWORD specified in docker-compose.env.
     <img
       src="/img/get-started/gitlab-login.png"
       style={{ width: 400, display: 'block' }}
@@ -115,7 +115,7 @@ The following are the steps to get a GitLab root access token.
 
 ### Set the GitLab Access Token
 
-Add the above value to GITLAB_ROOT_ACCESS_TOKEN in .env already created.
+Add the above value to GITLAB_ROOT_ACCESS_TOKEN in docker-compose.env already created.
 
 ```
  e.g. GITLAB_ROOT_ACCESS_TOKEN=glpat-Z5Zq-XkrtKjzq5FiAMAA
@@ -123,16 +123,16 @@ Add the above value to GITLAB_ROOT_ACCESS_TOKEN in .env already created.
 
 ### Run Dogu again
 
-Run the following command in the directory where the .env and docker-compose.yml files are located. (It is not necessary to stop the previously
+Run the following command in the directory where the docker-compose.env and docker-compose.yml files are located. (It is not necessary to stop the previously
 executed docker-compose.)
 
 ```
-   docker compose -f ./docker-compose.yml --env-file ./.env up -d
+   docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up -d
 ```
 
 ## Access to Dogu
 
-Accessing the Tool Access to DOGU_HOST value and port 3001 specified in .env
+Accessing the Tool Access to DOGU_HOST value and port 3001 specified in docker-compose.env
 :::info
 e.g. localhost:3001 (It takes about 3 minutes for Dogu console to run.)
 :::
