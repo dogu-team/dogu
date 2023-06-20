@@ -5,10 +5,7 @@
   "description": "node modules space",
   "type": "commonjs",
   "scripts": {
-    "build": "yarn workspaces foreach --exclude '@dogu**/*'  --jobs unlimited -ptvi run build",
-    "env:e2e": "yarn workspaces foreach --exclude '@dogu**/*'  --jobs unlimited -ptvi run env:e2e",
-    "env:local": "yarn workspaces foreach --exclude '@dogu**/*' --jobs unlimited -ptvi run env:local",
-    "env:prod": "yarn workspaces foreach --exclude '@dogu**/*'  --jobs unlimited -ptvi run env:prod"
+    "build": "yarn workspaces foreach --exclude '@dogu**/*'  --jobs unlimited -ptvi run build"
   },
   "workspaces": [
     "projects/*",
