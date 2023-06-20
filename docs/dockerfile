@@ -4,4 +4,5 @@ WORKDIR /dogu
 FROM node-base-docs AS dogu-docs
 COPY . .
 EXPOSE 3100
+RUN yarn install
 CMD ["yarn", "run", "serve"]
