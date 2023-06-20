@@ -165,19 +165,6 @@ export default function Home(): JSX.Element {
         <div className={styles.docsSection}>
           <h2 className={styles.docsSectionTitle}>
             <div className={styles.logoWrapper}>
-              <CommunityLogo className={styles.svg} />
-            </div>
-            <Translate id="main.communityTitle" />
-          </h2>
-          <ul className={styles.docsSectionListContainer}>
-            <li className={styles.docsSectionListItem}>
-              <Link to="/community/discord">Discord</Link>
-            </li>
-          </ul>
-        </div>
-        <div className={styles.docsSection}>
-          <h2 className={styles.docsSectionTitle}>
-            <div className={styles.logoWrapper}>
               <SelfManagedLogo className={styles.svg} />
             </div>
             <Translate id="main.selfHostedTitle" />
@@ -187,6 +174,19 @@ export default function Home(): JSX.Element {
               <Link to="/self-hosted/get-started">
                 <Translate id="main.selfHostedStartLinkTitle" />
               </Link>
+            </li>
+          </ul>
+        </div>
+        <div className={styles.docsSection}>
+          <h2 className={styles.docsSectionTitle}>
+            <div className={styles.logoWrapper}>
+              <CommunityLogo className={styles.svg} />
+            </div>
+            <Translate id="main.communityTitle" />
+          </h2>
+          <ul className={styles.docsSectionListContainer}>
+            <li className={styles.docsSectionListItem}>
+              <Link to="/community/discord">Discord</Link>
             </li>
           </ul>
         </div>
