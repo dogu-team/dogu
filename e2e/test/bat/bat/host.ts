@@ -6,18 +6,18 @@ import { Timer } from '../../../src/timer';
 import { l10n } from './l10n';
 
 export function runHost(random: number): void {
-  job('호스트 생성', () => {
+  job('Create host', () => {
     let token = '';
-    test('호스트 페이지 이동', async () => {
+    test('Go to host page', async () => {
       await Driver.clickElement({ xpath: '//*[@access-id="project-layout-org-name"]' });
     });
 
-    test('호스트 메뉴 클릭', async () => {
+    test('Click host menu', async () => {
       // side-bar-host
       await Driver.clickElement({ xpath: '//*[@access-id="side-bar-host"]' });
     });
 
-    test('Host Agent 토큰 발행', async () => {
+    test('Get new host token', async () => {
       // add-new-host
       await Driver.clickElement(
         {
@@ -59,7 +59,7 @@ export function runHost(random: number): void {
       console.log(`Token@@@@:${token}`);
     });
 
-    test('Dost 실행', async () => {
+    test('Execute Dost', async () => {
       const mainPage = await launchDost();
       const delayMs = 300;
       const longTimeoutMs = 30000;
@@ -110,7 +110,7 @@ export function runHost(random: number): void {
       // await Timer.waitStream(hostAgent, 'ready - connected server with', 3 * 60 * 1000);
     });
 
-    test('Host 등록 확인', async () => {
+    test('Check host added', async () => {
       await Driver.clickElement(
         { xpath: '/html/body/div[3]/div/div[2]/div/div[2]/button' },
         {

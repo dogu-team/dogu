@@ -97,27 +97,27 @@ Dest.withOptions({
     }
     startConsole(env.CONSOLE_WEB_FRONT_PORT);
 
-    job('브라우저 실행', () => {
-      test('브라우저 실행', () => {
+    job('Launch browser', () => {
+      test('Launch browser', () => {
         Driver.open({ l10n: currentL10n });
       });
-      test('녹화 실행', () => {
+      test('Run record', () => {
         gdcRecorder = new GdcScreenRecorder(console);
         gdcRecorder.start();
       });
     });
 
-    job('회원가입', () => {
-      test('메인 페이지 이동', async () => {
+    job('Sign up', () => {
+      test('Go to main page', async () => {
         await Driver.moveTo(values.value.HOME_URL);
       });
 
       // Move to signup page due to landing page has no sign up button
-      test('회원가입 페이지 이동', async () => {
+      test('Move to sign up', async () => {
         await Driver.clickElement({ xpath: '//a[@access-id="sign-up-btn"]' });
       });
 
-      test('회원가입', async () => {
+      test('Sign up', async () => {
         const firstClickOptions = {
           focusWindow: true,
         };
@@ -147,40 +147,40 @@ Dest.withOptions({
     });
 
     /**
-     * @note 회원가입하면 자동 로그인함
+     * @note When you sign up, you are automatically logged in
      */
-    // job('로그인', () => {
-    //   test('로그인 페이지 이동', async () => {
+    // job('Login', () => {
+    //   test('Move to login', async () => {
     //     await Driver.moveTo(`${values.value.HOME_URL}/signin`);
     //   });
 
-    //   test('이메일 입력', async () => {
+    //   test('Enter email', async () => {
     //     await Driver.sendKeys({ xpath: '/html/body/div[1]/div/div/div[1]/div[2]/div[2]/div[1]/form/div[1]/input' }, values.value.USER_EMAIL);
     //   });
 
-    //   test('비밀번호 입력', async () => {
+    //   test('Enter password', async () => {
     //     await Driver.sendKeys({ xpath: '/html/body/div[1]/div/div/div[1]/div[2]/div[2]/div[1]/form/div[2]/span/input' }, 'qwer1234!');
     //   });
 
-    //   test('로그인 버튼 클릭', async () => {
+    //   test('Click login', async () => {
     //     await Driver.clickElement({ xpath: '/html/body/div[1]/div/div/div[1]/div[2]/div[2]/div[1]/form/button' });
     //   });
     // });
 
-    job('조직 생성', () => {
-      test('조직 생성 버튼 클릭', async () => {
+    job('Create organization', () => {
+      test('Click create organization button', async () => {
         await Driver.clickElement({ xpath: '//*[@access-id="new-org-btn"]' }, { waitTime: 60 * 1000 });
       });
 
-      test('조직 이름 입력', async () => {
+      test('Enter organization name', async () => {
         await Driver.sendKeys({ xpath: '//*[@id="name"]' }, values.value.ORG_NAME);
       });
 
-      test('조직 생성 클릭', async () => {
+      test('Click create organization button', async () => {
         await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[3]/div/button[2]' });
       });
 
-      test('조직 생성 확인', async () => {
+      test('Check organization creation', async () => {
         // const orgName = await Driver.getText({ xpath: '//*[@access-id="sb-title"]/div/div/p' });
         // /**
         //  * @note uppercase due to css property: text-transform
@@ -191,8 +191,8 @@ Dest.withOptions({
       });
     });
 
-    job('프로젝트 생성', () => {
-      test('프로젝트 메뉴 클릭', async () => {
+    job('Create project', () => {
+      test('Click project menu', async () => {
         await Driver.clickElement(
           { xpath: '//*[@access-id="side-bar-project"]' },
           {
@@ -201,25 +201,25 @@ Dest.withOptions({
         );
       });
 
-      test('새 프로젝트 생성 클릭', async () => {
+      test('Click create new project button', async () => {
         await Driver.clickElement({ xpath: '//*[@access-id="add-project-btn"]' });
       });
 
-      test('프로젝트 정보 입력', async () => {
+      test('Enter project info', async () => {
         await Driver.sendKeys({ xpath: '//*[@id="name"]' }, values.value.PROJECT_NAME);
         await Driver.sendKeys({ xpath: '//*[@id="desc"]' }, 'Test Project Description');
       });
 
-      test('프로젝트 생성 버튼 클릭', async () => {
+      test('Click create project button', async () => {
         await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[3]/div/button[2]' });
       });
 
-      test('프로젝트 생성 확인', async () => {
+      test('Check project creation', async () => {
         const createdProjectName = await Driver.getText({ xpath: '//*[@access-id="project-layout-project-name"]' });
         expect(createdProjectName).toBe(values.value.PROJECT_NAME);
       });
 
-      test('조직 클릭', async () => {
+      test('Create organization', async () => {
         await Driver.clickElement(
           { xpath: '//*[@access-id="project-layout-org-name"]' },
           {
@@ -229,21 +229,21 @@ Dest.withOptions({
       });
     });
 
-    job('sample project 생성 확인', () => {
-      test('샘플 프로젝트 생성 확인', async () => {
+    job('Check sample project creation', () => {
+      test('Check sample project creation', async () => {
         const sampleProjectName = await Driver.getText({ xpath: `//*[text()="${values.value.SAMPLE_PROJECT_NAME}"]` }, { focusWindow: true });
         expect(sampleProjectName).toBe(values.value.SAMPLE_PROJECT_NAME);
       });
 
-      test('샘플 프로젝트 클릭', async () => {
+      test('Click sample project', async () => {
         await Driver.clickElement({ xpath: `//*[text()="${values.value.SAMPLE_PROJECT_NAME}"]` }, { focusWindow: true });
       });
 
-      test('앱 버튼 클릭', async () => {
+      test('Click app button', async () => {
         await Driver.clickElement({ xpath: '//*[@access-id="project-app-tab"]' }, { focusWindow: true });
       });
 
-      test('샘플 앱 등록 확인', async () => {
+      test('Check sample app added ', async () => {
         const sampleAppName = await Driver.getText({ xpath: `//*[text()="${values.value.SAMPLE_APP_EXTENSION}"]` }, { focusWindow: true });
         expect(sampleAppName).toBe(values.value.SAMPLE_APP_EXTENSION);
       });
@@ -253,14 +253,14 @@ Dest.withOptions({
 
     const deviceSettingInfos = [
       // {
-      //   name: 'Host 디바이스 세팅',
+      //   name: 'Host device setting',
       //   addTabMenu: '//*[text()="Host"]/../../../div[5]/div/div/button',
       //   listTabMenu: '//*[text()="Host"]/../../../../div[5]/div/div[2]/button',
       //   tag: values.value.HOST_DEVICE_TAG,
       //   isHost: true,
       // },
       {
-        name: 'Android 디바이스 세팅',
+        name: 'Android device setting',
         addTabMenu: '//*[@icon-id="android-icon"]/../../../div[5]/div/div/button',
         listTabMenu: '//*[@icon-id="android-icon"]/../../../div[5]/div/div[2]/button',
         tag: values.value.ANDROID_DEVICE_TAG,
@@ -269,7 +269,7 @@ Dest.withOptions({
     ];
     // if (process.platform === 'darwin') {
     //   deviceSettingInfos.push({
-    //     name: 'iOS 디바이스 세팅',
+    //     name: 'iOS device setting',
     //     addTabMenu: '//*[@data-icon="apple"]/../../../../div[5]/div/div/button',
     //     listTabMenu: '//*[@data-icon="apple"]/../../../../div[5]/div/div[2]/button',
     //     tag: values.value.IOS_DEVICE_TAG,
@@ -281,24 +281,24 @@ Dest.withOptions({
       const { name, addTabMenu, listTabMenu, tag, isHost } = deviceSettingInfo;
 
       job(name, () => {
-        job('디바이스 추가', () => {
-          test('디바이스 메뉴 이동', async () => {
+        job('Add device', () => {
+          test('Go to device menu', async () => {
             await Driver.clickElement({ xpath: '//*[@access-id="side-bar-device"]' });
           });
 
-          test('추가 탭 클릭', async () => {
+          test('Click on add tab', async () => {
             await Driver.clickElement({ xpath: '//*[@access-id="org-add-device-tab"]' });
           });
 
-          test('메뉴 클릭', async () => {
+          test('Click menu', async () => {
             await Driver.clickElement({ xpath: addTabMenu });
           });
 
-          test('사용하기 클릭', async () => {
+          test('Click to use', async () => {
             await Driver.clickElement({ xpath: `//*[text()="${l10n('START_USING')}"]` });
           });
 
-          test('프로젝트에 추가', async () => {
+          test('Add to project', async () => {
             await Driver.sendKeys({ xpath: '/html/body/div[4]/div/div[2]/div/div[2]/div[2]/div/div[1]/span/span/span[1]/input' }, values.value.PROJECT_NAME);
             await Timer.wait(3000, 'wait for editor to load');
             await Driver.clickElement({ xpath: '/html/body/div[4]/div/div[2]/div/div[2]/div[2]/div/div[1]/span/span/span[2]/button' });
@@ -321,31 +321,31 @@ Dest.withOptions({
           });
         });
 
-        job('태그 추가', () => {
-          test('태그 탭 클릭', async () => {
+        job('Add tag', () => {
+          test('Click tag tab', async () => {
             await Driver.clickElement({ xpath: '//*[@access-id="org-tag-list-tab"]' });
           });
 
-          test('태그 추가 클릭', async () => {
+          test('Click add tag', async () => {
             await Driver.clickElement({ xpath: '/html/body/div[1]/div/section/main/div[1]/div/div[2]/div/div[1]/div/div/button' });
           });
 
-          test('태그 입력', async () => {
+          test('Enter tag', async () => {
             await Driver.sendKeys({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[2]/form/div/div/div[2]/div/div/input' }, tag);
           });
 
-          test('태그 생성 버튼 클릭', async () => {
+          test('Click create tag button', async () => {
             await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[3]/div/button[2]' });
             await waitUntilModalClosed();
           });
         });
 
-        job('디바이스에 태그 추가', () => {
-          test('목록 탭 클릭', async () => {
+        job('Add tag to device', () => {
+          test('Add list tab', async () => {
             await Driver.clickElement({ xpath: '//*[@access-id="org-device-list-tab"]' });
           });
 
-          test('메뉴 클릭', async () => {
+          test('Click menu', async () => {
             await Driver.clickElement(
               { xpath: listTabMenu },
               {
@@ -354,38 +354,38 @@ Dest.withOptions({
             );
           });
 
-          test('태그 변경 클릭', async () => {
+          test('Click chagne tag', async () => {
             await Driver.clickElement({ xpath: `//*[text()="${l10n('EDIT_TAGS')}"]` });
           });
 
-          test('태그 입력', async () => {
+          test('Enter tag', async () => {
             await Driver.sendKeys({ xpath: '/html/body/div[4]/div/div[2]/div/div[2]/div[2]/div/div[1]/span/span/span[1]/input' }, tag);
           });
 
-          test('태그 클릭', async () => {
+          test('Click tag', async () => {
             await Driver.clickElement({ xpath: '/html/body/div[4]/div/div[2]/div/div[2]/div[2]/div/div[1]/div/button' });
           });
 
-          test('태그 변경하기 창 닫기', async () => {
+          test('Close tag change window', async () => {
             await Driver.clickElement({ xpath: '/html/body/div[4]/div/div[2]/div/div[2]/button' });
             await waitUntilModalClosed();
           });
         });
 
-        job('디바이스 스트리밍', () => {
-          test('디바이스 메뉴 이동', async () => {
+        job('Device streaming', () => {
+          test('Go to device menu', async () => {
             await Driver.clickElement({ xpath: '//*[@access-id="side-bar-device"]' });
           });
 
-          test('메뉴 클릭', async () => {
+          test('Click menu', async () => {
             await Driver.clickElement({ xpath: listTabMenu });
           });
 
-          test('스트리밍 버튼 클릭', async () => {
+          test('Click streaming button', async () => {
             await Driver.clickElement({ xpath: `//*[text()="${l10n('STREAMING')}"]` });
           });
 
-          test('스트리밍 시작 확인', async () => {
+          test('Check streaming start', async () => {
             const status = await Driver.getText(
               {
                 xpath: `//*[text()="${l10n('INFORMATION')}"]`,
@@ -397,7 +397,7 @@ Dest.withOptions({
             expect(status).toBe(l10n('INFORMATION'));
           });
 
-          test('스트리밍 입력 전송 확인', async () => {
+          test('Check streaming input ', async () => {
             const xpath = isHost ? '//*[@alt="volume down"]/..' : '//*[@data-icon="home"]/../..';
             await Driver.clickElement({ xpath });
             await Timer.wait(5000, 'wait for input processing');
@@ -411,27 +411,27 @@ Dest.withOptions({
     });
 
     //
-    job('Sample 루틴 테스트', () => {
-      job('루틴 추가', () => {
-        test('프로젝트 메뉴 이동', async () => {
+    job('Test sample routin', () => {
+      job('Add routine', () => {
+        test('Go to project menu', async () => {
           await Driver.clickElement({ xpath: '//*[@access-id="side-bar-project"]' });
         });
 
-        test('sample 프로젝트 클릭', async () => {
+        test('Click sample project', async () => {
           await Driver.clickElement({ xpath: `//a[text()="${values.value.SAMPLE_PROJECT_NAME}"]` });
         });
       });
 
-      job('sample 루틴 실행', () => {
-        test('sample 루틴 클릭', async () => {
+      job('Execute sample ', () => {
+        test('Clikc sample routin', async () => {
           await Driver.clickElement({ xpath: `//*[text()="${values.value.SAMPLE_ROUTINE_NAME}"]` });
         });
 
-        test('sample 루틴 실행 버튼 클릭', async () => {
+        test('Click sample routin execute button', async () => {
           await Driver.clickElement({ xpath: '//*[@access-id="run-routine-btn"]' });
         });
 
-        test('sample 루틴 실행 확인', async () => {
+        test('Check sample routine execution', async () => {
           for (let i = 0; i < 60; i++) {
             try {
               await Driver.clickElement({ xpath: '//*[@access-id="refresh-btn"]' });
@@ -446,32 +446,32 @@ Dest.withOptions({
           }
         });
 
-        test('조직 페이지로 이동', async () => {
+        test('Go to organization page', async () => {
           await Driver.clickElement({ xpath: `//*[text()="${values.value.ORG_NAME}"]/..` });
         });
       });
     });
     //
 
-    job('루틴 테스트', () => {
-      job('루틴 추가', () => {
-        test('프로젝트 메뉴 이동', async () => {
+    job('Test routin', () => {
+      job('Add routin', () => {
+        test('Go to project menu', async () => {
           await Driver.clickElement({ xpath: '//*[@access-id="side-bar-project"]' });
         });
 
-        test('테스트 프로젝트 클릭', async () => {
+        test('Click test project', async () => {
           await Driver.clickElement({ xpath: `//a[text()="${values.value.PROJECT_NAME}"]` });
         });
 
-        test('파이프라인 탭 클릭', async () => {
+        test('Click pipeline tab', async () => {
           await Driver.clickElement({ xpath: '//*[@access-id="project-routine-tab"]' });
         });
 
-        test('루틴 추가 버튼 클릭', async () => {
+        test('Click add routine button', async () => {
           await Driver.clickElement({ xpath: '//*[@access-id="add-routine-btn"]' });
         });
 
-        test('루틴 yaml 편집 버튼 클릭', async () => {
+        test('Click routine yaml edit button', async () => {
           const elems = await Driver.findElements({ className: 'ant-radio-button-wrapper' });
           const elemInfos = await Promise.all(
             elems.map(async (e) => {
@@ -489,7 +489,7 @@ Dest.withOptions({
           await elem.click();
         });
 
-        test('루틴 파일 작성', async () => {
+        test('Write routine file', async () => {
           await Driver.findElement({ className: 'monaco-editor-background' });
 
           await Timer.wait(3000, 'wait for editor to load');
@@ -535,21 +535,21 @@ Dest.withOptions({
           }
         });
 
-        test('루틴 생성 클릭', async () => {
+        test('Click create routine button', async () => {
           await Driver.clickElement({ xpath: '//*[@access-id="save-routine-btn"]' });
         });
       });
 
-      job('루틴 실행', () => {
-        test('루틴 클릭', async () => {
+      job('Execute routine', () => {
+        test('Click routine', async () => {
           await Driver.clickElement({ xpath: `//*[text()="${values.value.ROUTINE_NAME}"]` });
         });
 
-        test('루틴 실행 버튼 클릭', async () => {
+        test('Click routine execute button', async () => {
           await Driver.clickElement({ xpath: '//*[@access-id="run-routine-btn"]' });
         });
 
-        test('루틴 실행 확인', async () => {
+        test('Check routine execution', async () => {
           // retry 3 times
           for (let i = 0; i < 3; i++) {
             try {
@@ -565,57 +565,57 @@ Dest.withOptions({
           }
         });
 
-        test('조직 페이지로 이동', async () => {
+        test('Go to organization page', async () => {
           await Driver.clickElement({ xpath: `//*[text()="${values.value.ORG_NAME}"]/..` });
         });
       });
     });
 
-    job('멤버 추가', () => {
-      test('멤버 메뉴 이동', async () => {
+    job('Add member', () => {
+      test('Go to member menu', async () => {
         await Driver.clickElement({ xpath: '//*[@access-id="side-bar-member"]' });
       });
 
-      test('멤버 초대 버튼 클릭', async () => {
+      test('Click member invite button ', async () => {
         await Driver.clickElement({ xpath: '//*[@access-id="invite-user-btn"]' });
       });
 
-      test('초대 이메일 입력', async () => {
+      test('Enter invite email', async () => {
         await Driver.sendKeys({ xpath: '//input[@access-id="invite-user-input"]' }, values.value.INVITE_USER_EMAIL);
         await Driver.clickElement({ xpath: '//button[@access-id="invite-user-add-email-btn"]' });
       });
 
-      test('초대 권한 선택 및 전송', async () => {
+      test('Selecte invite permission and send ', async () => {
         await Driver.clickElement({ xpath: '//*[@id="invite-user-send-btn"]' });
       });
 
-      test('초대 이메일 페이지 이동', async () => {
+      test('Go to invite email page', async () => {
         await Driver.clickElement({ xpath: '//*[@access-id="org-invitation-tab"]' });
       });
 
-      test('멤버 초대 성공 확인', async () => {
+      test('Check invite result', async () => {
         const state = await Driver.getText({ xpath: `//*[text()="${l10n('PENDING')}"]` });
         expect(state).toBe(l10n('PENDING'));
       });
     });
 
-    job('팀 생성', () => {
-      test('팀 메뉴 클릭', async () => {
+    job('Create team', () => {
+      test('Click team menu', async () => {
         await Driver.clickElement({ xpath: '//*[@access-id="side-bar-team"]' });
       });
 
-      test('팀 생성 클릭', async () => {
+      test('Click create team', async () => {
         await Driver.clickElement({ xpath: '//button[@access-id="create-team-btn"]' });
       });
 
-      test('새 팀 생성', async () => {
+      test('Create new team', async () => {
         await Driver.sendKeys({ xpath: '//input[@id="name"]' }, values.value.TEAM_NAME);
         await Driver.clickElement({ xpath: '//button[@form="new-team"]' });
       });
     });
 
-    job('팀 설정', () => {
-      test('팀 페이지 이동', async () => {
+    job('Team setting', () => {
+      test('Go to team page', async () => {
         const teamXPath = `//p[text()="${values.value.TEAM_NAME}"]`;
         const teamName = await Driver.getText({ xpath: teamXPath });
         expect(teamName).toBe(values.value.TEAM_NAME);
@@ -623,7 +623,7 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: teamXPath });
       });
 
-      test('팀 멤버 추가', async () => {
+      test('Add team member', async () => {
         await Driver.clickElement({ xpath: '//*[@access-id="add-team-member-btn"]' });
         await Driver.sendKeys({ xpath: '//input[@access-id="add-team-member-input"]' }, values.value.USER_NAME);
         await Driver.clickElement({ xpath: '//*[@aria-label="plus"]/..' });

@@ -4,8 +4,8 @@ import { ProcessManager } from '../../../src/process-manager';
 import { Timer } from '../../../src/timer';
 
 export function startConsole(consoleWebFrontPort: number): void {
-  job('프로젝트 실행', () => {
-    test('프로젝트 실행', async () => {
+  job('Execute project', () => {
+    test('Execute project', async () => {
       const consoleWebFront = ProcessManager.spawn('yarn', ['workspace', 'console-web-front', 'run', 'dev', '-p', `${consoleWebFrontPort}`], {
         name: 'console-web-front',
         printLog: true,
