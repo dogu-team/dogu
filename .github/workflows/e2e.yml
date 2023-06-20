@@ -50,13 +50,12 @@ jobs:
           yarn workspace nm-space run build
         working-directory: ./nm-space
 
-      - name: load credentials
-        id: create-json
-        uses: jsdaniell/create-json@v1.2.2
-        with:
-          name: 'service-account-key.json'
-          json: ${{ secrets.SEVICE_ACCOUNT_KEY_JSON }}
-          dir: ~/.dogu_secret/
+#       - name: load credentials
+#         id: create-json
+#         uses: jsdaniell/create-json@v1.2.2
+#         with:
+#           name: 'service-account-key.json'
+#           json: ${{ secrets.SEVICE_ACCOUNT_KEY_JSON }}
 
       - name: create dotEnv
         run: |
