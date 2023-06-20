@@ -9,7 +9,8 @@ import {
   BrowserPlatform,
 } from '@site/src/platform/platform.ts';
 
-import dost_api_url_input from '@site/static/img/get-started/dost-api-url-input.png';
+import dost_macos_api_url_input from '@site/static/img/dost/dost_macos_api_url_input.png';
+import dost_windows_api_url_input from '@site/static/img/dost/dost_windows_api_url_input.png';
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -160,10 +161,10 @@ Run the dost agent that can connect to the dogu console.
     {() => (
       <Tabs groupId="os" defaultValue={getBrowserPlatform('windows')}>
         <TabItem value="windows" label="Windows" default>
-          <img src={dost_api_url_input} style={{ width: 600 }} />
+          <img src={dost_windows_api_url_input} style={{ width: 600 }} />
         </TabItem>
         <TabItem value="macos" label="macOS">
-          <img src={dost_api_url_input} style={{ width: 600 }} />
+          <img src={dost_macos_api_url_input} style={{ width: 600 }} />
         </TabItem>
       </Tabs>
     )}
