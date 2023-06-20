@@ -100,6 +100,7 @@ async function notaryDmg(dmgFilePath: string): Promise<string> {
 }
 
 export async function signThirdParties(): Promise<void> {
+  const { stdout, stderr } = await spawnAndOutputs('dot_clean', [ThirdPartyPath], {});
   const darwinPath = path.resolve(ThirdPartyPath, 'darwin');
   const files = [
     path.resolve(darwinPath, 'arm64/lib/libimobiledevice/libcrypto.1.1.dylib'),
