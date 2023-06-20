@@ -50,16 +50,69 @@ jobs:
           yarn workspace nm-space run build
         working-directory: ./nm-space
 
-#       - name: load credentials
-#         id: create-json
-#         uses: jsdaniell/create-json@v1.2.2
-#         with:
-#           name: 'service-account-key.json'
-#           json: ${{ secrets.SEVICE_ACCOUNT_KEY_JSON }}
+      - name: Windows - Powershell - Check
+        if: runner.os == 'Windows'
+        id: checkpowershell
+        run: winget list Microsoft.PowerShell --accept-source-agreements
+        continue-on-error: true
+
+      - name: Windows - Powershell - Upgrade
+        if: runner.os == 'Windows' && steps.checkpowershell.outcome == 'success'
+        run: |
+          winget install --id Microsoft.Powershell --source winget --silent
+        continue-on-error: true
+
+      - name: Windows - Powershell - Add to Env
+        if: runner.os == 'Windows'
+        run: |
+          "C:\Program Files\PowerShell\7" >> $env:GITHUB_PATH
+
+      - name: Windows - Msys2 - MIGW64 - Setup for cgo
+        uses: msys2/setup-msys2@v2
+        if: runner.os == 'Windows'
+        with:
+          msystem: MINGW64
+          location: ${{ github.workspace }}
+          install: >-
+            git
+            base-devel
+            mingw-w64-x86_64-gcc
+
+      - name: Windows - Setup Cmake
+        if: runner.os == 'Windows'
+        uses: lukka/get-cmake@latest
+        with:
+          cmakeVersion: 3.25.1
+          ninjaVersion: 1.11.1
+
+      - name: Macos - Setup Cmake,
+        if: runner.os == 'macOS'
+        run: brew install cmake
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: 1
+        continue-on-error: true
+
+      - name: Common - Setup go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.18.4'
+
+      - name: Common - Set up JDK 11 for android build
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: 'temurin'
+
+      - name: Common - Setup Android SDK
+        uses: android-actions/setup-android@v2.0.10
 
       - name: create dotEnv
         run: |
           env-generator gen-all e2e
+
+      - name: Download, Build third-party
+        run: |
+          yarn third-party:download:build
 
       - name: Run e2e
         if: ${{ success() }}

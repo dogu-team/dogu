@@ -53,17 +53,6 @@ jobs:
         run: |
           "C:\Program Files\PowerShell\7" >> $env:GITHUB_PATH
 
-      - name: Windows - Msys2 - MIGW32 - Setup for cgo
-        uses: msys2/setup-msys2@v2
-        if: runner.os == 'Windows'
-        with:
-          msystem: MINGW32
-          location: ${{ github.workspace }}
-          install: >-
-            git
-            base-devel
-            mingw-w64-i686-gcc
-
       - name: Windows - Msys2 - MIGW64 - Setup for cgo
         uses: msys2/setup-msys2@v2
         if: runner.os == 'Windows'
@@ -125,13 +114,6 @@ jobs:
         working-directory: ./nm-space
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
-
-      - name: load credentials
-        id: create-json
-        uses: jsdaniell/create-json@v1.2.2
-        with:
-          name: 'service-account-key.json'
-          json: ${{ secrets.SEVICE_ACCOUNT_KEY_JSON }}
 
       - name: Dost - Set productName
         run: |
