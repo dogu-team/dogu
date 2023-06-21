@@ -66,8 +66,7 @@ You can replace the `/var/lib/dogu` path created above with the `VOLUME_PATH` va
 2. Paste all of [this file](https://github.com/dogu-team/dogu/blob/main/docker-compose.env) to docker-compose.env file
 
 :::note
-The GITLAB_ROOT_ACCESS_TOKEN value
-After Dogu is executed, obtain a token in the [Issuing the GitLab Root Access Token](/self-hosted/get-started#get-the-gitlab-root-access-token) below and reset it.
+Set the GITLAB_ROOT_ACCESS_TOKEN after running Dogu and getting token from [Issuing the GitLab Root Access Token](/self-hosted/get-started#get-the-gitlab-root-access-token).
 :::
 
 ### Create docker-compose.yml
@@ -92,7 +91,7 @@ The following are the steps to get a GitLab root access token.
 
 - Access to GitLab
 
-  - Access it with the DOGU_HOST address value specified in docker-compose.env and the 8080 port.
+  - Access it with the DOGU_HOST address specified in docker-compose.env and the 8080 port.
     :::info
     e.g. localhost:8080 (GitLab takes about 5 minutes to run.)
     :::
@@ -146,7 +145,7 @@ Dogu Gitlab: DOGU_HOST:8080
 
 ### Install Dost
 
-Download Dost from the [github releases](https://github.com/dogu-team/dogu/releases)
+Download Dost from the [github releases](https://github.com/dogu-team/dogu/releases?q=dost&expanded=true)
 
 After downloading, refer to [Dost Installation](/host-and-device/host/get-started#installation) for installation
 
@@ -156,7 +155,7 @@ Run the dost agent that can connect to the dogu console.
 
 - Configuring Dost connection environment
 
-  - Set the connection URL using the DOGU_HOST value set in the [Create docker-compose.env File](/self-hosted/get-started#create-docker-composeenv-file).
+  - Set the connection URL using the DOGU_HOST set in the [Create docker-compose.env File](/self-hosted/get-started#create-docker-composeenv-file).
     `ex. localhost:4000`
 
   <BrowserOnly>
