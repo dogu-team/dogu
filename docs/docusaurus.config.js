@@ -37,7 +37,7 @@ const config = {
           routeBasePath: '/',
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl: 'https://github.com/dogu-team/dogu-docs/blob/main',
+          editUrl: 'https://github.com/dogu-team/dogu/tree/main/docs',
         },
         // blog: {
         //   showReadingTime: true,
@@ -74,7 +74,7 @@ const config = {
         },
         items: [
           {
-            href: 'https://github.com/dogu-team/dogu/blob/main/docs',
+            href: 'https://github.com/dogu-team/dogu',
             label: 'GitHub',
             position: 'right',
           },
