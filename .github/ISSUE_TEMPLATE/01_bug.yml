@@ -28,11 +28,11 @@ body:
       description: What actually happened? Please include any relevant error messages and/or screenshots.
     validations:
       required: true
-  - type: input
+  - type: textarea
     id: version
     attributes:
       label: Version
-      placeholder: x.y.z (semver)
+      placeholder: Dogu x.y.z (semver) or Dost x.y.z
       description: What version are you using?
     validations:
       required: true
