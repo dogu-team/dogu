@@ -133,7 +133,7 @@ jobs:
 
       - name: Dost - Build
         run: |
-          yarn run build && yarn run deploy
+          yarn run build && yarn run deploy:notarize:upload
         working-directory: ./nm-space/projects/dost
 
       - name: create dotEnv self-hosted
@@ -154,7 +154,7 @@ jobs:
 
       - name: Dost - Build
         run: |
-          yarn run build && yarn run deploy
+          yarn run build && yarn run deploy:notarize:upload
         working-directory: ./nm-space/projects/dost
 
   send-slack:
