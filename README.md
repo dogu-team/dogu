@@ -18,6 +18,12 @@ Dogu is a web-based testing platform for test automation
 Dogu provides device farm, CI, test report for test automation.  
 If you use Dogu then you don't need to set up platform like jenkins, device farm, test report for test automation and can focus on your test with Dogu.
 
+## Why Dogu?
+
+It needs so many time and effort to build and maintain infrastructure like _Appium_, _OpenSTF_, _Jenkins_, _Grafana_ for test automation.
+Dogu provides **integrated platform** for these infrastructure and helps you to focus on test automation.  
+Especially, Dogu is tightly integrated with test script and test framework so that you can focus on test automation without developing infrastructure related works like parallel test execution, data transfer for test report.
+
 ## Architecture
 
 <img src=".github/resources/architecture.png"/>
@@ -25,10 +31,11 @@ If you use Dogu then you don't need to set up platform like jenkins, device farm
 - [Gamium](https://github.com/dogu-team/gamium) - Gamium allows you to automate game developed by Unity Engine.
 
 #### Following functions are not supported now but we have plan to support them in the future.
-- Test Toolkit - Selenium client  
-- Test Framework - Integrate test report with Jest, PyTest  
-- Git Server - Integrate with Github  
-- Workflow API - for Jenkins and Github Action  
+
+- Test Toolkit - Selenium client
+- Test Framework - Integrate test report with Jest, PyTest
+- Git Server - Integrate with Github
+- Workflow API - for Jenkins and Github Action
 
 ## Features
 
@@ -109,23 +116,18 @@ Visualize test result
 
 <br/>
 
-## Why Dogu?
-It needs so many time and effort to build and maintain infrastructure like *Appium*, *OpenSTF*, *Jenkins*, *Grafana* for test automation.
-Dogu provides **unified platform** for these infrastructure and helps you to focus on test automation.  
-Especially, Dogu is tightly integrated with test script and test framework so that you can focus on test automation without developing infrastructure related works like parallel test execution, data transfer for test report.
-
-## Getting Started With Self-Hosted
+## Start With Self-Hosted
 
 See [Get Started](https://docs.dogutech.io/self-hosted/get-started) with self-hosted.
 
-## Getting Started With Cloud
+## Start With Cloud
 
 You can get started right away with [Cloud Service](https://dogutech.io)
 
 ## Documentation
 
-- [Documentation](https://docs.dogutech.io)  
-- [Quick Start - Device Farm](https://docs.dogutech.io/get-started/device-farm)  
+- [Documentation](https://docs.dogutech.io)
+- [Quick Start - Device Farm](https://docs.dogutech.io/get-started/device-farm)
 
 ## Community Support
 
@@ -143,6 +145,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 ## License
 
-We provide two editions of Dogu: Community Edition and Enterprise Edition.  
+We provide two editions of Dogu: Community Edition and Enterprise Edition.
 
 See [LICENSE](LICENSE.md) for more details.
