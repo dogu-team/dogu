@@ -80,7 +80,9 @@ const HostDetailModal = ({ isOpen, host, close }: Props) => {
                   try {
                     await navigator.clipboard.writeText(token);
                     message.success(t('common:copyClipboard'));
-                  } catch (e) {}
+                  } catch (e) {
+                    message.error(t('common:copyClipboardFailed'));
+                  }
                 }}
               >
                 {t('common:copy')}

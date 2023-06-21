@@ -20,6 +20,7 @@
   "descriptionInputEmptyError": "설명을 입력하세요",
 
   "copyClipboard": "클립보드에 복사되었습니다",
+  "copyClipboardFailed": "복사 실패",
 
   "doguDocs": "Dogu 문서",
 

@@ -13,7 +13,10 @@ const TextCopyInput = ({ value }: Props) => {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(value);
-    } catch (e) {}
+      message.success(t('common:copyClipboard'));
+    } catch (e) {
+      message.error(t('common:copyClipboardFailed'));
+    }
   };
 
   return (

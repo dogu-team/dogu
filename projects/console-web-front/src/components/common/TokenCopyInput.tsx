@@ -14,7 +14,9 @@ const TokenCopyInput = ({ value }: Props) => {
     try {
       await navigator.clipboard.writeText(value);
       message.success(t('common:copyClipboard'));
-    } catch (e) {}
+    } catch (e) {
+      message.error(t('common:copyClipboardFailed'));
+    }
   };
 
   return (

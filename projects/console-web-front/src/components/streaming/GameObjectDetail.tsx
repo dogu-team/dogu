@@ -12,6 +12,8 @@ interface ButtonProps {
 }
 
 const CopyButton = ({ children, disabled }: ButtonProps) => {
+  const { t } = useTranslation();
+
   const copyText = async () => {
     if (!children) {
       return;
@@ -19,9 +21,9 @@ const CopyButton = ({ children, disabled }: ButtonProps) => {
 
     try {
       await navigator.clipboard.writeText(children);
-      message.success('Copied to clipboard');
+      message.success(t('common:copyClipboard'));
     } catch (e) {
-      message.error('Failed to copy');
+      message.error(t('common:copyClipboardFailed'));
     }
   };
 

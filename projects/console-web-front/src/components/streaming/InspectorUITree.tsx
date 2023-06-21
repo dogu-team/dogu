@@ -67,9 +67,11 @@ const InspectorUITree = ({ isInspecting, treeData, inspectingNode, selectedNode,
         if (clickedItem) {
           try {
             await navigator.clipboard.writeText(clickedItem.key);
-            message.success('Copied to clipboard');
+            message.success(t('common:copyClipboard'));
             setClickedItem(undefined);
-          } catch (e) {}
+          } catch (e) {
+            message.error(t('common:copyClipboardFailed'));
+          }
         }
       },
       style: { padding: '0' },
