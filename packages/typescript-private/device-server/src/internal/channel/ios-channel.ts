@@ -123,12 +123,16 @@ export class IosChannel implements DeviceChannel {
 
     logger.verbose('appium channel proxy starting');
     const appiumChannelProxy = new AppiumChannelProxy(appiumService, platform, serial);
-    appiumChannelProxy.get('inspector').catch((error) => {
-      logger.error('ios appium inspector channel open failed.', { error: errorify(error) });
-    });
-    appiumChannelProxy.get('automation').catch((error) => {
-      logger.error('ios appium automation channel open failed.', { error: errorify(error) });
-    });
+    const onCatchInspectorAppiumChannelProxyError = (error: Error): void => {
+      logger.error('AppiumChannelProxy inspector error.', { error: errorify(error) });
+      appiumChannelProxy.get('inspector').catch(onCatchInspectorAppiumChannelProxyError);
+    };
+    appiumChannelProxy.get('inspector').catch(onCatchInspectorAppiumChannelProxyError);
+    const onCatchAutomationAppiumChannelProxyError = (error: Error): void => {
+      logger.error('AppiumChannelProxy automation error.', { error: errorify(error) });
+      appiumChannelProxy.get('automation').catch(onCatchAutomationAppiumChannelProxyError);
+    };
+    appiumChannelProxy.get('automation').catch(onCatchAutomationAppiumChannelProxyError);
     logger.verbose('appium channel proxy started');
 
     const deviceChannel = new IosChannel(serial, portContext, systemInfo, streaming, iosDeviceAgentProcess, deviceAgent, appiumChannelProxy, logger);

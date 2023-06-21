@@ -1,14 +1,14 @@
 import { Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { errorify, NullLogger, Retry } from '@dogu-tech/common';
+import { Android, AppiumChannelInfo, AppiumChannelKey, ContextPageSource, Rect, ScreenSize, SystemBar } from '@dogu-tech/device-client-common';
 import { HostPaths, Logger } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
+import _ from 'lodash';
 import path from 'path';
 import { getFreePort } from '../internal/util/net';
 import { createAppiumLogger } from '../logger/logger.instance';
 import { AppiumService } from './appium.service';
-import _ from 'lodash';
-import { Android, AppiumChannelInfo, AppiumChannelKey, ContextPageSource, Rect, ScreenSize, SystemBar } from '@dogu-tech/device-client-common';
 
 const AppiumNewCommandTimeout = 24 * 60 * 60;
 
@@ -315,7 +315,7 @@ Error: Xcode signing certificate is not found. Please check the following:
    * https://webdriver.io/docs/api/webdriver#newsession
    * https://webdriver.io/docs/api/modules#webdriverio
    */
-  @Retry({ retryCount: 5, retryInterval: 3000, printable: NullLogger.instance })
+  @Retry({ retryCount: 10, retryInterval: 3000, printable: NullLogger.instance })
   private async restartClient(): Promise<void> {
     await this.stopClient();
     this.logger.info('Appium client starting');
