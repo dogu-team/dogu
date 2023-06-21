@@ -10799,7 +10799,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["find-free-ports", "npm:3.0.0"],\
             ["gamium", "npm:2.0.2"],\
             ["glob", "npm:10.0.0"],\
-            ["libxmljs2", "npm:0.32.0"],\
             ["lodash", "npm:4.17.21"],\
             ["nest-winston", "virtual:d0508fb1c987a55ce593348c3c3508bc662c7271db932ea69a120075a5cf1c1208122c8c0d6b8e79e0a37a88088966bd934935bdae901a07544f17c740a10f2e#npm:1.8.0"],\
             ["nodemon", "npm:2.0.22"],\
@@ -12271,24 +12270,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             "@types/nestjs__common",\
             "@types/nestjs__core",\
             "ioredis"\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["@mapbox/node-pre-gyp", [\
-        ["npm:1.0.10", {\
-          "packageLocation": "./.yarn/cache/@mapbox-node-pre-gyp-npm-1.0.10-1811160047-1a98db05d9.zip/node_modules/@mapbox/node-pre-gyp/",\
-          "packageDependencies": [\
-            ["@mapbox/node-pre-gyp", "npm:1.0.10"],\
-            ["detect-libc", "npm:2.0.1"],\
-            ["https-proxy-agent", "npm:5.0.1"],\
-            ["make-dir", "npm:3.1.0"],\
-            ["node-fetch", "virtual:1b72fec7bb0f7f65631883ba39976a89b23a387bb935170eee37fef528f0caab0bcc7663f8211ff33a22ee11d361aa1b8f34bec752dd83d1882c9de3d3bc1fbf#npm:2.6.9"],\
-            ["nopt", "npm:5.0.0"],\
-            ["npmlog", "npm:5.0.1"],\
-            ["rimraf", "npm:3.0.2"],\
-            ["semver", "npm:7.5.0"],\
-            ["tar", "npm:6.1.13"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -20108,15 +20089,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "HARD"\
         }],\
-        ["npm:2.0.0", {\
-          "packageLocation": "./.yarn/cache/are-we-there-yet-npm-2.0.0-7d2f5201ce-6c80b4fd04.zip/node_modules/are-we-there-yet/",\
-          "packageDependencies": [\
-            ["are-we-there-yet", "npm:2.0.0"],\
-            ["delegates", "npm:1.0.0"],\
-            ["readable-stream", "npm:3.6.2"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:3.0.1", {\
           "packageLocation": "./.yarn/cache/are-we-there-yet-npm-3.0.1-3395b1512f-52590c2486.zip/node_modules/are-we-there-yet/",\
           "packageDependencies": [\
@@ -21448,16 +21420,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/binary-extensions-npm-2.2.0-180c33fec7-ccd267956c.zip/node_modules/binary-extensions/",\
           "packageDependencies": [\
             ["binary-extensions", "npm:2.2.0"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["bindings", [\
-        ["npm:1.5.0", {\
-          "packageLocation": "./.yarn/cache/bindings-npm-1.5.0-77ce1d213c-65b6b48095.zip/node_modules/bindings/",\
-          "packageDependencies": [\
-            ["bindings", "npm:1.5.0"],\
-            ["file-uri-to-path", "npm:1.0.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -25352,13 +25314,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["detect-libc", "npm:1.0.3"]\
           ],\
           "linkType": "HARD"\
-        }],\
-        ["npm:2.0.1", {\
-          "packageLocation": "./.yarn/cache/detect-libc-npm-2.0.1-2699cb2ac4-ccb05fcabb.zip/node_modules/detect-libc/",\
-          "packageDependencies": [\
-            ["detect-libc", "npm:2.0.1"]\
-          ],\
-          "linkType": "HARD"\
         }]\
       ]],\
       ["detect-newline", [\
@@ -27977,13 +27932,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["file-uri-to-path", [\
-        ["npm:1.0.0", {\
-          "packageLocation": "./.yarn/cache/file-uri-to-path-npm-1.0.0-1043ac6206-b648580bdd.zip/node_modules/file-uri-to-path/",\
-          "packageDependencies": [\
-            ["file-uri-to-path", "npm:1.0.0"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:2.0.0", {\
           "packageLocation": "./.yarn/cache/file-uri-to-path-npm-2.0.0-667f38da3a-4a71a99dda.zip/node_modules/file-uri-to-path/",\
           "packageDependencies": [\
@@ -28710,22 +28658,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["signal-exit", "npm:3.0.7"],\
             ["string-width", "npm:1.0.2"],\
             ["strip-ansi", "npm:3.0.1"],\
-            ["wide-align", "npm:1.1.5"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
-        ["npm:3.0.2", {\
-          "packageLocation": "./.yarn/cache/gauge-npm-3.0.2-9e22f7af9e-81296c00c7.zip/node_modules/gauge/",\
-          "packageDependencies": [\
-            ["gauge", "npm:3.0.2"],\
-            ["aproba", "npm:2.0.0"],\
-            ["color-support", "npm:1.1.3"],\
-            ["console-control-strings", "npm:1.1.0"],\
-            ["has-unicode", "npm:2.0.1"],\
-            ["object-assign", "npm:4.1.1"],\
-            ["signal-exit", "npm:3.0.7"],\
-            ["string-width", "npm:4.2.3"],\
-            ["strip-ansi", "npm:6.0.1"],\
             ["wide-align", "npm:1.1.5"]\
           ],\
           "linkType": "HARD"\
@@ -32808,18 +32740,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["libxmljs2", [\
-        ["npm:0.32.0", {\
-          "packageLocation": "./.yarn/unplugged/libxmljs2-npm-0.32.0-2a13549ddb/node_modules/libxmljs2/",\
-          "packageDependencies": [\
-            ["libxmljs2", "npm:0.32.0"],\
-            ["@mapbox/node-pre-gyp", "npm:1.0.10"],\
-            ["bindings", "npm:1.5.0"],\
-            ["nan", "npm:2.17.0"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["lie", [\
         ["npm:3.1.1", {\
           "packageLocation": "./.yarn/cache/lie-npm-3.1.1-91350720d9-6da9f2121d.zip/node_modules/lie/",\
@@ -35203,16 +35123,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["nan", [\
-        ["npm:2.17.0", {\
-          "packageLocation": "./.yarn/unplugged/nan-npm-2.17.0-bf36a21d6f/node_modules/nan/",\
-          "packageDependencies": [\
-            ["nan", "npm:2.17.0"],\
-            ["node-gyp", "npm:9.3.1"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
       ["nanoid", [\
         ["npm:3.3.6", {\
           "packageLocation": "./.yarn/cache/nanoid-npm-3.3.6-e6d6ae7e71-7d0eda6570.zip/node_modules/nanoid/",\
@@ -35990,17 +35900,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["are-we-there-yet", "npm:1.1.7"],\
             ["console-control-strings", "npm:1.1.0"],\
             ["gauge", "npm:2.7.4"],\
-            ["set-blocking", "npm:2.0.0"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
-        ["npm:5.0.1", {\
-          "packageLocation": "./.yarn/cache/npmlog-npm-5.0.1-366cab64a2-516b266302.zip/node_modules/npmlog/",\
-          "packageDependencies": [\
-            ["npmlog", "npm:5.0.1"],\
-            ["are-we-there-yet", "npm:2.0.0"],\
-            ["console-control-strings", "npm:1.1.0"],\
-            ["gauge", "npm:3.0.2"],\
             ["set-blocking", "npm:2.0.0"]\
           ],\
           "linkType": "HARD"\
