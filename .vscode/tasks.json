@@ -104,13 +104,13 @@
     {
       "type": "npm",
       "script": "dev",
-      "label": "Dev: HB host-browser",
-      "path": "projects/host-browser",
+      "label": "Dev: Docs",
+      "path": "docs",
       "problemMatcher": [],
       "presentation": {
         "group": "devWatchers",
         "close": false,
-        "panel": "shared"
+        "panel": "dedicated"
       }
     },
     {
