@@ -94,15 +94,15 @@ jobs:
 
       - name: Newbie
         run: |
-          yarn workspace dogu run newbie
+          yarn run newbie:cicd
 
       - name: Build Projects
         run: |
           yarn workspace dogu run build:packages
 
-      - name: Build Archive
+      - name: Download, Build third-party
         run: |
-          yarn workspace dogu run build:archive
+          yarn third-party:download:build
 
       - name: Dost - Newbie nm-space
         run: |
@@ -114,6 +114,10 @@ jobs:
         working-directory: ./nm-space
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+      - name: create dotEnv development
+        run: |
+          env-generator gen-all development
 
       - name: Dost - Set productName
         run: |
@@ -129,7 +133,28 @@ jobs:
 
       - name: Dost - Build
         run: |
-          yarn run env:dev && yarn run build && yarn run deploy
+          yarn run build && yarn run deploy
+        working-directory: ./nm-space/projects/dost
+
+      - name: create dotEnv self-hosted
+        run: |
+          env-generator gen-all self-hosted
+
+      - name: Dost - Set productName
+        run: |
+          yarn util:set-productname Dost && yarn
+        working-directory: ./nm-space/projects/dost
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+      - name: Dost - Set version 0.0.1
+        run: |
+          yarn util:set-version 1.0.0
+        working-directory: ./nm-space/projects/dost
+
+      - name: Dost - Build
+        run: |
+          yarn run build && yarn run deploy
         working-directory: ./nm-space/projects/dost
 
   send-slack:
