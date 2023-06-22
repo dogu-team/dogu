@@ -3,6 +3,7 @@ import { Platform } from '@dogu-private/types';
 import { ScreenSize } from '@dogu-tech/device-client-common';
 import { throttle } from 'lodash';
 import React, { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
 import { DeviceRotationDirection, InspectorModule } from '../../modules/inspector';
 import AndroidInspectorModule from '../../modules/inspector/android';
 import {
@@ -16,7 +17,6 @@ import {
   NodePosition,
   SelectedNodePosition,
 } from '../../types/inspector';
-
 import { BrowserDeviceInspector } from '../../utils/browser-device-inspector';
 
 export const GAMIUM_CONTEXT_KEY = 'GAMIUM';
@@ -104,7 +104,6 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
       inspectArea: NodePosition;
       nodePos: NodePosition;
     }): SelectedNodePosition | undefined => {
-      console.log(nodePos);
       if (!videoRef?.current) {
         return;
       }
