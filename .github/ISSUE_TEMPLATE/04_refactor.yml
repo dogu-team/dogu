@@ -6,7 +6,7 @@ body:
   - type: textarea
     id: problem
     attributes:
-      label: Problme
+      label: Problem
       description: Need to refactor something? Please describe the problem.
     validations:
       required: true
