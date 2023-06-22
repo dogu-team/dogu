@@ -1,14 +1,12 @@
 import { Platform, Serial } from '@dogu-private/types';
-import { delay, errorify, Printable, stringifyError } from '@dogu-tech/common';
-import { HostPaths } from '@dogu-tech/node';
-import compressing from 'compressing';
+import { delay, Printable, stringifyError } from '@dogu-tech/common';
+import { copyDirectoryRecursive, HostPaths } from '@dogu-tech/node';
 import fs from 'fs';
 import { glob } from 'glob';
 import { Socket } from 'net';
 import path from 'path';
 import plist from 'plist';
 import { idcLogger } from '../../../logger/logger.instance';
-import { pathMap } from '../../../path-map';
 import { config } from '../../config';
 import { Zombieable, ZombieProps, ZombieWaiter } from '../../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
@@ -181,13 +179,12 @@ export async function clearRunspace(): Promise<void> {
 }
 
 async function copyToDeviceRunPath(serial: Serial): Promise<string> {
-  const idaRunspacesPath = HostPaths.idaRunspacesPath(HostPaths.doguHomePath);
+  const idaRunspacesPath = HostPaths.external.xcodeProject.idaRootPath();
   const deviceRunPath = path.resolve(idaRunspacesPath, serial);
   if (fs.existsSync(deviceRunPath)) {
     await fs.promises.rm(deviceRunPath, { recursive: true });
   }
-  await fs.promises.mkdir(deviceRunPath, { recursive: true });
-  await compressing.zip.uncompress(pathMap().macos.iosDeviceAgentRunnerZip, deviceRunPath);
+  await copyDirectoryRecursive(HostPaths.external.xcodeProject.idaDerivedDataPath(), deviceRunPath, idcLogger);
   return deviceRunPath;
 }
 

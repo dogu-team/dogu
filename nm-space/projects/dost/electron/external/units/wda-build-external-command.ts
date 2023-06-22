@@ -86,7 +86,7 @@ export class WdaBuildExternalUnit extends IExternalUnit {
         });
         this.stdLogCallbackService.stdout(`Start ${this.getName()}...`);
         child.on('close', (code, signal) => {
-          this.stdLogCallbackService.stdout(`${this.getName()} completed. code: ${code} signal: ${signal}`);
+          this.stdLogCallbackService.stdout(`${this.getName()} is closed. code: ${code} signal: ${signal}`);
           if (code === 0) {
             resolve();
           } else {

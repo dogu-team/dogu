@@ -54,9 +54,10 @@ export const HostPaths = {
     },
     xcodeProject: {
       wdaProjectDirectoryPath: (): string => path.resolve(HostPaths.external.defaultAppiumHomePath(), 'node_modules/appium-xcuitest-driver/node_modules/appium-webdriveragent'),
-      idaProjectDirectoryPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'ios-device-agent/project'),
       wdaDerivedDataPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'web-driver-agent/build'),
-      idaDerivedDataPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'ios-device-agent/build'),
+      idaRootPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'ios-device-agent'),
+      idaProjectDirectoryPath: (): string => path.resolve(HostPaths.external.xcodeProject.idaRootPath(), 'project'),
+      idaDerivedDataPath: (): string => path.resolve(HostPaths.external.xcodeProject.idaRootPath(), 'build'),
     },
   },
 };
@@ -139,7 +140,6 @@ function createThirdPartyPathMap(options?: ThirdPartyPathMapOptions): ThirdParty
     },
     macos: {
       iosDeviceAgentProject: process.platform === 'darwin' ? path.resolve(thirdPartyPath, platformDir, archCommonDir, 'ios-device-agent') : '',
-      iosDeviceAgentRunnerZip: process.platform === 'darwin' ? path.resolve(thirdPartyPath, platformDir, archCommonDir, 'ios-device-agent/ios-device-agent-runner.zip') : '',
       mobiledevice: process.platform === 'darwin' ? path.resolve(thirdPartyPath, platformDir, archDir, 'mobiledevice') : '',
       idevicediagnostics: process.platform === 'darwin' ? path.resolve(thirdPartyPath, platformDir, archDir, 'idevicediagnostics') : '',
       libimobiledeviceLibPath: process.platform === 'darwin' ? path.resolve(thirdPartyPath, platformDir, archDir, 'lib', 'libimobiledevice') : '',
