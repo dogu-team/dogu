@@ -2,11 +2,6 @@ name: 🚀release-self-hosted
 
 on:
   workflow_dispatch:
-    inputs:
-      gitpat:
-        type: string
-        description: 'gitlab root token'
-        default: 'gitpat'
 
 jobs:
   # build-and-push-dogu-console:
@@ -65,7 +60,7 @@ jobs:
           sed -i 's/^REDIS_PASSWORD=.*$/REDIS_PASSWORD=${{ secrets.DEV_DOGU_REDIS_PASSWORD }}/' ./docker-compose.env
 
           # console
-          sed -i 's/^GITLAB_ROOT_ACCESS_TOKEN=.*$/GITLAB_ROOT_ACCESS_TOKEN=${{ github.event.inputs.gitpat }}/' ./docker-compose.env
+          sed -i 's/^GITLAB_ROOT_ACCESS_TOKEN=.*$/GITLAB_ROOT_ACCESS_TOKEN=${{ secrets.DEV_DOGU_GITLAB_ROOT_TOKEN }}/' ./docker-compose.env
           sed -i 's/^GITLAB_ROOT_PASSWORD=.*$/GITLAB_ROOT_PASSWORD=${{ secrets.DEV_DOGU_GITLAB_ROOT_PASSWORD }}/' ./docker-compose.env
           sed -i 's/^DOGU_CONSOLE_JWT_SECRET_KEY=.*$/DOGU_CONSOLE_JWT_SECRET_KEY=${{ secrets.DEV_DOGU_JWT_SECRET_KEY }}/' ./docker-compose.env
           sed -i 's/^DEVICE_WIFI_SSID=.*$/DEVICE_WIFI_SSID=${{ secrets.DOGU_DEVICE_WIFI_SSID }}/' ./docker-compose.env
