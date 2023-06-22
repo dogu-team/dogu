@@ -81,7 +81,7 @@ const ManualExternalToolDetail = ({ externalKey }: Props): ManualExternalToolDet
                       }}
                       mt="8px"
                     >
-                      IosDeviceAgent project
+                      iOSDeviceAgent project
                     </Button>
                     <Text fontSize={'sm'}> and configure Signing & Capabilities</Text>
                   </Stack>

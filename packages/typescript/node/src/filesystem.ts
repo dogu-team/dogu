@@ -1,10 +1,9 @@
+import { Printable } from '@dogu-tech/common';
 import fs from 'fs/promises';
 import path from 'path';
-import { logger } from '../log/logger.instance';
 
-export async function copyDirectoryRecursive(sourceDir: string, destinationDir: string) {
+export async function copyDirectoryRecursive(sourceDir: string, destinationDir: string, logger: Printable): Promise<void> {
   try {
-    // Create the destination directory if it doesn't exist
     if (!(await directoryExists(destinationDir))) {
       await fs.mkdir(destinationDir);
     }
@@ -20,7 +19,7 @@ export async function copyDirectoryRecursive(sourceDir: string, destinationDir: 
       // Check if the current item is a directory
       if (await isDirectory(sourcePath)) {
         // Recursively copy the subdirectory
-        await copyDirectoryRecursive(sourcePath, destinationPath);
+        await copyDirectoryRecursive(sourcePath, destinationPath, logger);
       } else {
         // Copy the file
         await fs.copyFile(sourcePath, destinationPath);
@@ -31,7 +30,7 @@ export async function copyDirectoryRecursive(sourceDir: string, destinationDir: 
   }
 }
 
-export async function directoryExists(dir: string) {
+export async function directoryExists(dir: string): Promise<boolean> {
   try {
     const stats = await fs.stat(dir);
     return stats.isDirectory();
@@ -44,7 +43,7 @@ export async function directoryExists(dir: string) {
   }
 }
 
-export async function isDirectory(file: string) {
+export async function isDirectory(file: string): Promise<boolean> {
   const stats = await fs.stat(file);
   return stats.isDirectory();
 }

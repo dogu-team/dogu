@@ -1,5 +1,7 @@
 import compressing from 'compressing';
+import fs from 'fs';
 import fsPromise from 'fs/promises';
+import path from 'path';
 import shelljs from 'shelljs';
 
 if (process.platform !== 'darwin') {
@@ -7,17 +9,9 @@ if (process.platform !== 'darwin') {
   process.exit(0);
 }
 
-async function buildArchive(): Promise<void> {
-  shelljs.rm('-rf', '.build');
-  if (
-    shelljs.exec(
-      'xcodebuild build-for-testing -project IOSDeviceAgent/IOSDeviceAgent.xcodeproj -scheme DoguRunner -destination generic/platform=iOS -derivedDataPath .build -allowProvisioningUpdates',
-    ).code !== 0
-  ) {
-    throw new Error('Failed to build the archive');
-  }
+async function copyArtifact(): Promise<void> {
   const buildProductsSubDir = '.build/Build/Products/Debug-iphoneos';
-  // const allowedExtensions = ['.app', '.appex'];
+
   const allowedExtensions = ['.app'];
   const files = await fsPromise.readdir(buildProductsSubDir);
   files.forEach((file) => {
@@ -42,6 +36,35 @@ async function buildArchive(): Promise<void> {
     }
   }
 }
+
+async function buildArchive(): Promise<void> {
+  shelljs.rm('-rf', '.build');
+  if (
+    shelljs.exec(
+      'xcodebuild build-for-testing -project IOSDeviceAgent/IOSDeviceAgent.xcodeproj -scheme DoguRunner -destination generic/platform=iOS -derivedDataPath .build -allowProvisioningUpdates',
+    ).code !== 0
+  ) {
+    throw new Error('Failed to build the archive');
+  }
+
+  const sourceDirPath = path.resolve('IOSDeviceAgent');
+  const destDirPath = path.resolve(`../../third-party/${process.platform}/common/ios-device-agent`);
+  if (fs.existsSync(destDirPath)) {
+    if (shelljs.rm('-rf', destDirPath).code !== 0) {
+      throw new Error(`Failed to remove the directory: ${destDirPath}`);
+    }
+  }
+  if (shelljs.mkdir('-p', destDirPath).code !== 0) {
+    throw new Error(`Failed to create the directory: ${destDirPath}`);
+  }
+  const files = await fsPromise.readdir(sourceDirPath);
+  for (const file of files) {
+    if (shelljs.cp('-rf', path.resolve(sourceDirPath, file), path.resolve(destDirPath, file)).code !== 0) {
+      throw new Error(`Failed to copy the file: ${sourceDirPath} -> ${destDirPath}`);
+    }
+  }
+}
+
 // if (ci.isCI()) {
 //   if (!git.matchesChangedFiles(['projects/ios-device-agent/**', 'prebuilds/protocol-exporter/**'])) {
 //     console.log('No changes to ios-device-agent, skipping build.');
