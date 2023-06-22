@@ -14,7 +14,7 @@ const InspectorContextMenu = ({ contexts, selectedContext, onContextChange }: Pr
   return (
     <Box>
       <Title>Context:</Title>
-      <Select<string> options={options} value={selectedContext} onChange={onContextChange} placeholder="Select context..." />
+      <Select<string> options={options} value={selectedContext} onChange={onContextChange} placeholder="Select context..." dropdownMatchSelectWidth={false} />
     </Box>
   );
 };
