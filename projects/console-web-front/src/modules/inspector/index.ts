@@ -1,28 +1,34 @@
 import { ScreenSize } from '@dogu-tech/device-client-common';
-import { ContextAndNode } from '../../hooks/streaming/useInspector';
-import { DeviceRotationDirection, InspectNode } from '../../workers/native-ui-tree';
+import { ContextAndNode, InspectNode, NodePosition } from '../../types/inspector';
 
-export type NodeBound = {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-};
+export enum AppiumRotation {
+  PORTRAIT = 0,
+  LANDSCAPE_LEFT = 1,
+  PORTRAIT_UPSIDE_DOWN = 2,
+  LANDSCAPE_RIGHT = 3,
+}
 
-export type GetInspectingAreaFunc = () => NodeBound;
-export type GetNodeBoundFunc = (node: InspectNode) => NodeBound;
+export enum DeviceRotationDirection {
+  TOP_DOWN,
+  LEFT,
+  UPSIDE_DOWN,
+  RIGHT,
+}
+
+export type GetInspectingAreaFunc = () => NodePosition;
+export type GetNodeBoundFunc<A> = (node: InspectNode<A>) => NodePosition;
 export type GetDeviceScreenSizeFunc = () => ScreenSize;
 export type GetDeviceRotationFunc = () => DeviceRotationDirection;
 
-export abstract class InspectorModule {
-  protected contextAndNode: ContextAndNode;
+export abstract class InspectorModule<A> {
+  protected contextAndNode: ContextAndNode<A>;
 
-  constructor(contextAndNode: ContextAndNode) {
+  constructor(contextAndNode: ContextAndNode<A>) {
     this.contextAndNode = contextAndNode;
   }
 
   abstract getInspectingArea: GetInspectingAreaFunc;
-  abstract getNodeBound: GetNodeBoundFunc;
+  abstract getNodeBound: GetNodeBoundFunc<A>;
   abstract getDeviceRotation: GetDeviceRotationFunc;
   abstract getDeviceScreenSize: GetDeviceScreenSizeFunc;
 }

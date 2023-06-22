@@ -1,11 +1,10 @@
 import { Tooltip } from 'antd';
 import styled from 'styled-components';
-import { InspectNodeWithPosition } from '../../hooks/streaming/useInspector';
 
-import { ResizedObjectInfo } from '../../types/streaming';
+import { InspectNodeAttributes, InspectNodeWithPosition } from '../../types/inspector';
 
 interface Props {
-  nodeInfo: InspectNodeWithPosition;
+  nodeInfo: InspectNodeWithPosition<InspectNodeAttributes>;
 }
 
 const InspectorSelectedNode = ({ nodeInfo }: Props) => {

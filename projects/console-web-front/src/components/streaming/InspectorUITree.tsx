@@ -7,15 +7,13 @@ import Trans from 'next-translate/Trans';
 import Link from 'next/link';
 
 import { flexRowCenteredStyle } from '../../styles/box';
-import { ResizedObjectInfo } from '../../types/streaming';
-import { InspectNode } from '../../workers/native-ui-tree';
-import { InspectNodeWithPosition } from '../../hooks/streaming/useInspector';
+import { InspectNodeAttributes, InspectNodeWithPosition } from '../../types/inspector';
 
 interface Props {
   isInspecting: boolean;
   treeData: DataNode[];
-  inspectingNode: InspectNodeWithPosition | undefined;
-  selectedNode: InspectNodeWithPosition | undefined;
+  inspectingNode: InspectNodeWithPosition<InspectNodeAttributes> | undefined;
+  selectedNode: InspectNodeWithPosition<InspectNodeAttributes> | undefined;
   onClickNode: (key: string) => Promise<void> | void;
   onHoverNode: (key: string) => Promise<void> | void;
   onLeaveNode: () => void;
