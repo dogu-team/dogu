@@ -6,6 +6,7 @@ import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
+import { Adb } from '../internal/externals/index';
 import { getFreePort } from '../internal/util/net';
 import { createAppiumLogger } from '../logger/logger.instance';
 import { AppiumService } from './appium.service';
@@ -253,7 +254,7 @@ Error: Xcode signing certificate is not found. Please check the following:
   }
 
   async getAndroid(): Promise<Android | undefined> {
-    const { platform } = this.options;
+    const { platform, serial } = this.options;
     if (platform !== Platform.PLATFORM_ANDROID) {
       return undefined;
     }
@@ -264,7 +265,8 @@ Error: Xcode signing certificate is not found. Please check the following:
       width: _.get(viewportRect, 'width') ?? -1,
       height: _.get(viewportRect, 'height') ?? -1,
     };
-    const systemBar = (await this.browser.getSystemBars()) as unknown as {
+    const systemBarsResult = await this.browser.getSystemBars();
+    const systemBar = systemBarsResult as unknown as {
       statusBar: SystemBar;
       navigationBar: SystemBar;
     };
@@ -284,6 +286,15 @@ Error: Xcode signing certificate is not found. Please check the following:
       width: _.get(navigationBarRaw, 'width') ?? -1,
       height: _.get(navigationBarRaw, 'height') ?? -1,
     };
+
+    try {
+      const systemBarVisibility = await Adb.getSystemBarVisibility(serial);
+      statusBar.visible = systemBarVisibility.statusBar;
+      navigationBar.visible = systemBarVisibility.navigationBar;
+    } catch (error) {
+      this.logger.error('Adb getSystemBarVisibility failed', { error: errorify(error) });
+    }
+
     return {
       viewport,
       statusBar,

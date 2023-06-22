@@ -143,7 +143,10 @@ export class AndroidChannel implements DeviceChannel {
     await this._gamiumContext?.close().catch((error) => {
       this.logger.error('android gamium context close failed', { error: errorify(error) });
     });
-    await this._AppiumChannelProxy.close().catch((error) => {
+    /**
+     * @note Does not wait for appium to shut down
+     */
+    this._AppiumChannelProxy.close().catch((error) => {
       this.logger.error('android appium context close failed', { error: errorify(error) });
     });
     ZombieServiceInstance.deleteComponent(this._deviceAgent, `AndroidChannel closed: ${this.serial}`);
