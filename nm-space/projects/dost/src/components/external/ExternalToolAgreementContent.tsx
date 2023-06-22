@@ -2,7 +2,6 @@ import { VStack, Text, Button, Flex, Spinner } from '@chakra-ui/react';
 import { stringify } from '@dogu-tech/common';
 import { useEffect, useState } from 'react';
 
-import { externalTerms } from '../../resources/terms';
 import { ExternalKey } from '../../shares/external';
 import { ipc } from '../../utils/window';
 

@@ -1,5 +1,6 @@
+import { HostPaths } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
-import { app } from 'electron';
+import path from 'path';
 import { deviceServerKey } from '../../../src/shares/child';
 import { AppConfigService } from '../../app-config/app-config-service';
 import { DeviceServerLogsPath, DeviceServerMainScriptPath } from '../../path-map';
@@ -15,6 +16,12 @@ export class DeviceServerChild implements Child {
     const NODE_ENV = await appConfigService.get('NODE_ENV');
     const DOGU_RUN_TYPE = await appConfigService.get('DOGU_RUN_TYPE');
     const DOGU_DEVICE_SERVER_PORT = await appConfigService.get('DOGU_DEVICE_SERVER_PORT');
+    const androidHomePath = process.env.ANDROID_HOME;
+    if (!androidHomePath) {
+      throw new Error('ANDROID_HOME not exist');
+    }
+    const androidPlatformToolsPath = HostPaths.android.platformToolsPath(androidHomePath);
+    const PATH = `${androidPlatformToolsPath}${path.delimiter}${process.env.PATH}`;
     const options = await fillChildOptions({
       forkOptions: {
         env: {
@@ -23,6 +30,7 @@ export class DeviceServerChild implements Child {
           DOGU_RUN_TYPE,
           DOGU_DEVICE_SERVER_PORT,
           DOGU_LOGS_PATH: DeviceServerLogsPath,
+          PATH,
         },
       },
     });
