@@ -49,7 +49,7 @@ jobs:
 
       - name: set .env
         run: |
-          sed -i 's/dogutechio/dogu:latest/dogutechio/dogu:rc/' ./docker-compose.yml
+          sed -i 's/dogu:latest/dogu:rc/' ./docker-compose.yml
           sed -i 's/^DOGU_HOST=.*$/DOGU_HOST=${{ secrets.DEV_DOGU_HOST }}/' ./docker-compose.env
 
           # postgres
