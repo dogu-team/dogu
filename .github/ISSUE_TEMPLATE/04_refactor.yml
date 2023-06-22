@@ -1,0 +1,19 @@
+name: 🛠 Refactor
+title: '[Refactor]: '
+labels: ['type: refactor', 'status: needs triage']
+description: Let's make the Dogu more simple. If you find something to need to refactor, please let us know!
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problme
+      description: Need to refactor something? Please describe the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: update
+    attributes:
+      label: Update
+      description: What needs to be added/modified/removed? Please provide specific details if possible!
+    validations:
+      required: true
