@@ -1,8 +1,8 @@
 export const config = {
   containerName: 'dogu-influxdb',
   userName: 'admin',
-  password: 'dogu',
-  token: 'dogu',
+  password: 'dogutechio',
+  token: 'dogutechio',
   bucket: 'dogu',
   org: 'dogu',
 };
