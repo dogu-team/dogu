@@ -37,11 +37,9 @@ function IosSettings() {
       <Divider mb={4} />
 
       <Center>
-        <List spacing={4} width="100%">
+        <List spacing={2} width="100%">
           {results?.map((result) => (
-            <Box key={result.key} border="1px" borderColor="rgba(255, 255,255, 0.4)" p={4} rounded="md">
-              <ManualExternalToolValidCheckerItem key={result.key} isValid={result.isValid} externalKey={result.key} name={result.name} />
-            </Box>
+            <ManualExternalToolValidCheckerItem key={result.key} isValid={result.isValid} externalKey={result.key} name={result.name} />
           ))}
         </List>
       </Center>

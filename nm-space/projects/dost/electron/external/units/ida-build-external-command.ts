@@ -40,7 +40,7 @@ export class IdaBuildExternalUnit extends IExternalUnit {
   async validateInternal(): Promise<void> {
     await validateXcode(this.stdLogCallbackService);
     const idaProductsPath = path.resolve(HostPaths.external.xcodeProject.idaDerivedDataPath(), 'Build/Products');
-    const idaExePaths = [path.resolve(idaProductsPath, 'Debug-iphoneos/DoguDev.app/DoguDev'), path.resolve(idaProductsPath, 'Debug-iphoneos/DoguRunner-Runner/DoguRunner-Runner')];
+    const idaExePaths = [path.resolve(idaProductsPath, 'Debug-iphoneos/DoguRunner-Runner.app/DoguRunner-Runner')];
     for (const idaExePath of idaExePaths) {
       if (!fs.existsSync(idaExePath)) {
         throw Error(`iOSDeviceAgent executable not found. path: ${idaExePath}`);

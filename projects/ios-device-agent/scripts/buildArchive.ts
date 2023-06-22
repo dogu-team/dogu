@@ -37,6 +37,34 @@ async function copyArtifact(): Promise<void> {
   }
 }
 
+function copyDirectoryRecursive(
+  sourceDir: string,
+  destinationDir: string,
+  filter: {
+    ignoreDirectoryNames: string[];
+  },
+): void {
+  if (!fs.existsSync(destinationDir)) {
+    fs.mkdirSync(destinationDir);
+  }
+
+  const files = fs.readdirSync(sourceDir);
+
+  for (const file of files) {
+    const sourcePath = path.join(sourceDir, file);
+    const destinationPath = path.join(destinationDir, file);
+
+    if (fs.lstatSync(sourcePath).isDirectory()) {
+      if (filter.ignoreDirectoryNames.includes(file)) {
+        continue;
+      }
+      copyDirectoryRecursive(sourcePath, destinationPath, filter);
+    } else {
+      fs.copyFileSync(sourcePath, destinationPath);
+    }
+  }
+}
+
 async function buildArchive(): Promise<void> {
   shelljs.rm('-rf', '.build');
   if (
@@ -57,12 +85,7 @@ async function buildArchive(): Promise<void> {
   if (shelljs.mkdir('-p', destDirPath).code !== 0) {
     throw new Error(`Failed to create the directory: ${destDirPath}`);
   }
-  const files = await fsPromise.readdir(sourceDirPath);
-  for (const file of files) {
-    if (shelljs.cp('-rf', path.resolve(sourceDirPath, file), path.resolve(destDirPath, file)).code !== 0) {
-      throw new Error(`Failed to copy the file: ${sourceDirPath} -> ${destDirPath}`);
-    }
-  }
+  copyDirectoryRecursive(sourceDirPath, destDirPath, { ignoreDirectoryNames: ['DerivedData', '.build'] });
 }
 
 // if (ci.isCI()) {
