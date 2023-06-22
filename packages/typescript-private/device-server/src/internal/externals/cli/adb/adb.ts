@@ -3,6 +3,7 @@ import { errorify, Printable, stringify } from '@dogu-tech/common';
 import { ChildProcess } from '@dogu-tech/node';
 import child_process, { execFile, ExecFileOptionsWithStringEncoding, spawn } from 'child_process';
 import fs from 'fs';
+import util from 'util';
 import { registerBootstrapHandler } from '../../../../bootstrap/bootstrap.service';
 import { adbLogger } from '../../../../logger/logger.instance';
 import { pathMap } from '../../../../path-map';
@@ -10,6 +11,8 @@ import { LogHandler } from '../../../public/device-channel';
 import { parseRecord } from '../../../util/parse';
 import { AndroidDfInfo, AndroidProcCpuInfo, AndroidProcDiskstats, AndroidProcMemInfo, AndroidPropInfo, AndroidShellTopInfo } from './info';
 import { parseAndroidProcCpuInfo, parseAndroidProcDiskstats, parseAndroidProcMemInfo, parseAndroidShellDf, parseAndroidShellProp, parseAndroidShellTop } from './parse';
+
+const execFileAsync = util.promisify(execFile);
 
 type DeviceControlKeycode = PrivateProtocol.DeviceControlKeycode;
 const DeviceControlKeycode = PrivateProtocol.DeviceControlKeycode;
@@ -630,6 +633,74 @@ export async function reset(serial: Serial): Promise<void> {
       },
     );
   });
+}
+
+export interface AndroidSystemBarVisibility {
+  /**
+   * @default false
+   */
+  statusBar: boolean;
+
+  /**
+   * @default false
+   */
+  navigationBar: boolean;
+}
+
+export async function getSystemBarVisibility(serial: Serial): Promise<AndroidSystemBarVisibility> {
+  /**
+   * @example `  Window #5 Window{8926e0c u0 StatusBar}:`
+   */
+  const WindowPattern = /^\s+Window\s#\d+\sWindow\{\w+\s\w+\s(.+)\}:$/;
+
+  /**
+   * @example `    mHasSurface=true isReadyForDisplay()=true mWindowRemovalAllowed=false`
+   */
+  const VisibilityPattern = /^.*isReadyForDisplay\(\)=(true|false).*$/;
+  const MaxWindowLineCount = 40;
+  const StatusBarWindowName = 'StatusBar';
+  const NavigationBarWindowName = 'NavigationBar';
+
+  const findVisibility = (index: number, lines: string[]): boolean => {
+    for (let i = index; i < index + MaxWindowLineCount; i++) {
+      const visibilityMatch = lines[i].match(VisibilityPattern);
+      if (visibilityMatch) {
+        const visibility = visibilityMatch[1];
+        return visibility === 'true';
+      }
+    }
+    return false;
+  };
+
+  const temp = [
+    {
+      name: StatusBarWindowName,
+      visibility: false,
+    },
+    {
+      name: NavigationBarWindowName,
+      visibility: false,
+    },
+  ];
+
+  const { stdout, stderr } = await execFileAsync(pathMap().android.adb, ['-s', serial, 'shell', 'dumpsys', 'window', 'windows'], {
+    timeout: 10 * 1000,
+  });
+  adbLogger.warn('adb.getSystemBarVisibilities', { serial, stderr });
+  stdout.split('\n').forEach((line, index, lines) => {
+    const windowMatch = line.match(WindowPattern);
+    if (windowMatch) {
+      const windowName = windowMatch[1];
+      const target = temp.find((v) => v.name === windowName);
+      if (target) {
+        target.visibility = findVisibility(index, lines);
+      }
+    }
+  });
+  return {
+    statusBar: temp.find((v) => v.name === StatusBarWindowName)?.visibility ?? false,
+    navigationBar: temp.find((v) => v.name === NavigationBarWindowName)?.visibility ?? false,
+  };
 }
 
 registerBootstrapHandler(__filename, async (): Promise<void> => {
