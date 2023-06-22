@@ -436,6 +436,20 @@
 			remoteGlobalIDString = A69289542A2739BF0026DC33;
 			remoteInfo = DoguScreen;
 		};
+		A6A423CC2A446052007380AD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 91F9DAE11B99DBC2001349B2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1488CB602940C9250036284F;
+			remoteInfo = DoguDev;
+		};
+		A6A423CE2A446055007380AD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 91F9DAE11B99DBC2001349B2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1488CB602940C9250036284F;
+			remoteInfo = DoguDev;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -2086,7 +2100,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				A6DC1D092A443E5D00CA84DB /* PBXTargetDependency */,
+				A6A423CF2A446055007380AD /* PBXTargetDependency */,
 				140E05DF2940574E00A32DB5 /* PBXTargetDependency */,
 			);
 			name = DoguRunner;
@@ -2151,7 +2165,7 @@
 			buildRules = (
 			);
 			dependencies = (
-				A6DC1D072A443DFC00CA84DB /* PBXTargetDependency */,
+				A6A423CD2A446052007380AD /* PBXTargetDependency */,
 				1488CB822941A14D0036284F /* PBXTargetDependency */,
 			);
 			name = DoguDevRunner;
@@ -2525,13 +2539,15 @@
 			target = A69289542A2739BF0026DC33 /* DoguScreen */;
 			targetProxy = A692895C2A2739BF0026DC33 /* PBXContainerItemProxy */;
 		};
-		A6DC1D072A443DFC00CA84DB /* PBXTargetDependency */ = {
+		A6A423CD2A446052007380AD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = A6DC1D062A443DFC00CA84DB /* DoguTypes */;
+			target = 1488CB602940C9250036284F /* DoguDev */;
+			targetProxy = A6A423CC2A446052007380AD /* PBXContainerItemProxy */;
 		};
-		A6DC1D092A443E5D00CA84DB /* PBXTargetDependency */ = {
+		A6A423CF2A446055007380AD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = A6DC1D082A443E5D00CA84DB /* DoguTypes */;
+			target = 1488CB602940C9250036284F /* DoguDev */;
+			targetProxy = A6A423CE2A446055007380AD /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -3318,14 +3334,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A692896E2A2863790026DC33 /* XCRemoteSwiftPackageReference "swift-nio" */;
 			productName = NIOWebSocket;
-		};
-		A6DC1D062A443DFC00CA84DB /* DoguTypes */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = DoguTypes;
-		};
-		A6DC1D082A443E5D00CA84DB /* DoguTypes */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = DoguTypes;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

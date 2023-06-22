@@ -42,7 +42,7 @@ export class IdaBuildExternalUnit extends IExternalUnit {
     const idaProductsPath = path.resolve(HostPaths.external.xcodeProject.idaDerivedDataPath(), 'Build/Products');
     const idaExePaths = [
       path.resolve(idaProductsPath, 'Debug-iphoneos/DoguRunner-Runner.app/DoguRunner-Runner'),
-      path.resolve(idaProductsPath, 'Debug-iphoneos/DoguDev.app”/DoguDev'),
+      path.resolve(idaProductsPath, 'Debug-iphoneos/DoguDev.app/DoguDev'),
     ];
     for (const idaExePath of idaExePaths) {
       if (!fs.existsSync(idaExePath)) {
