@@ -1,8 +1,8 @@
-import { GetDeviceRotationFunc, GetDeviceScreenSizeFunc, GetInspectingAreaFunc, GetNodeBoundFunc, InspectorModule } from '.';
-import { AppiumRotation, DeviceRotationDirection } from '../../workers/native-ui-tree';
+import { AppiumRotation, DeviceRotationDirection, GetDeviceRotationFunc, GetDeviceScreenSizeFunc, GetInspectingAreaFunc, GetNodeBoundFunc, InspectorModule } from '.';
+import { AndroidNodeAttributes } from '../../types/inspector';
 
-class AndroidInspectorModule extends InspectorModule {
-  public getNodeBound: GetNodeBoundFunc = (node) => {
+class AndroidInspectorModule extends InspectorModule<AndroidNodeAttributes> {
+  public getNodeBound: GetNodeBoundFunc<AndroidNodeAttributes> = (node) => {
     const { bounds } = node.attributes;
 
     if (bounds) {

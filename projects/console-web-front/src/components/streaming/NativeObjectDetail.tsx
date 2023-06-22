@@ -1,8 +1,9 @@
 import styled from 'styled-components';
-import { InspectNode } from '../../workers/native-ui-tree';
+
+import { InspectNode, InspectNodeAttributes } from '../../types/inspector';
 
 interface Props {
-  node: InspectNode | undefined;
+  node: InspectNode<InspectNodeAttributes> | undefined;
 }
 
 const NativeObjectDetail = ({ node }: Props) => {
