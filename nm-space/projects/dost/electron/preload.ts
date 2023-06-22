@@ -5,7 +5,7 @@ import { childCallbackKey, childClientKey, childFactoryKey, HostAgentConnectionS
 import { SentyDSNUrl } from '../src/shares/constants';
 import { dotEnvConfigClientKey, DotEnvConfigKey } from '../src/shares/dot-env-config';
 import { IElectronIpc } from '../src/shares/electron-ipc';
-import { DownloadProgress, externalCallbackKey, ExternalKey, externalKey } from '../src/shares/external';
+import { DownloadProgress, externalCallbackKey, ExternalCommandKey, ExternalKey, externalKey } from '../src/shares/external';
 import { featureConfigClientKey, FeatureKey } from '../src/shares/feature-config';
 import { rendererLoggerKey, stdLogCallbackKey } from '../src/shares/log';
 import { ILoginItemSettingsOptions, ISettings, MediaType, settingsClientKey } from '../src/shares/settings';
@@ -111,6 +111,8 @@ expose('externalClient', {
   cancelInstall: (key: ExternalKey) => ipcRenderer.invoke(externalKey.cancelInstall, key),
   validate: (key: ExternalKey) => ipcRenderer.invoke(externalKey.validate, key),
   isValid: (key: ExternalKey) => ipcRenderer.invoke(externalKey.isValid, key),
+  runCommand: (key: ExternalCommandKey) => ipcRenderer.invoke(externalKey.runCommand, key),
+  validateCommandResult: (key: ExternalCommandKey) => ipcRenderer.invoke(externalKey.validateCommandResult, key),
   isSupportedPlatformValidationCompleted: () => ipcRenderer.invoke(externalKey.isSupportedPlatformValidationCompleted),
   isSupportedPlatformValid: () => ipcRenderer.invoke(externalKey.isSupportedPlatformValid),
   getSupportedPlatformKeys: () => ipcRenderer.invoke(externalKey.getSupportedPlatformKeys),

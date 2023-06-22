@@ -52,6 +52,11 @@ export const HostPaths = {
       nodePackagesPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'node-packages'),
       appiumPath: (): string => path.resolve(HostPaths.external.nodePackage.nodePackagesPath(), 'appium'),
     },
+    xcodeProject: {
+      wdaProjectDirectoryPath: (): string => path.resolve(HostPaths.external.defaultAppiumHomePath(), 'node_modules/appium-xcuitest-driver/node_modules/appium-webdriveragent'),
+      wdaDerivedDataPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'web-driver-agent/build'),
+      idaDerivedDataPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'ios-device-agent/build'),
+    },
   },
 };
 

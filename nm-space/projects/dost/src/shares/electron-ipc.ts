@@ -1,7 +1,7 @@
 import { IAppConfigClient } from './app-config';
 import { IChildCallback, IChildClient, IChildFactory } from './child';
 import { IDotEnvConfigClient } from './dot-env-config';
-import { IExternalCallback, IExternalClient } from './external';
+import { IExternalCallback, IExternalClient, IExternalCommandCallback } from './external';
 import { IFeatureConfigClient } from './feature-config';
 import { ILogger, IStdLogCallback } from './log';
 import { ISettingsClient } from './settings';
@@ -21,6 +21,7 @@ export interface IElectronIpc {
   dotEnvConfigClient: IDotEnvConfigClient;
   externalClient: IExternalClient;
   externalCallback: IExternalCallback;
+  externalCommandCallback: IExternalCommandCallback;
   stdLogCallback: IStdLogCallback;
   windowClient: IWindowClient;
   featureConfigClient: IFeatureConfigClient;

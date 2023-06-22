@@ -17,6 +17,7 @@ import useHostAgentConnectionStatusStore from './stores/host-agent-connection-st
 import SetupInstaller from './pages/SetupInstaller';
 import SetupManual from './pages/SetupManual';
 import SetupConfig from './pages/SetupConfig';
+import IosSettings from './pages/iOSSettings';
 
 function App() {
   const { setEnvironment } = useEnvironmentStore();
@@ -69,6 +70,7 @@ function App() {
       <Route path="/home" element={<HomeLayout />}>
         <Route path="connect" element={<Connect />} />
         <Route path="trouble-shooting" element={<TroubleShoot />} />
+        <Route path="ios-settings" element={<IosSettings />} />
       </Route>
       <Route path="/settings" element={<Settings />} />
       <Route path="/doctor" element={<Doctor />} />
