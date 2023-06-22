@@ -36,7 +36,7 @@ jobs:
             dogutechio/dogu:rc
 
   start-rc-dogu:
-    runs-on: dogu-self-hosted
+    runs-on: dev-dogu-self-hosted
     needs: build-and-push-dogu-console
 
     steps:
