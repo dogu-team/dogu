@@ -3,18 +3,36 @@ name: 🔄e2e
 on:
   push:
     branches: ['main']
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - '.husky/**'
-      - '.vscode/**'
+    paths:
+      - 'dogu-actions/**'
+      - 'e2e/**'
+      - 'nm-space/**'
+      - 'packages/**'
+      - 'pipeline-samples/**'
+      - 'prebuilds/**'
+      - 'projects/**'
+      - 'scripts/**'
+      - '.pnp.cjs'
+      - '.pnp.loader.mjs'
+      - 'package.json'
+      - 'tsconfig.json'
+      - 'yarn.lock'
   pull_request:
     branches: ['main']
-    paths-ignore:
-      - 'docs/**'
-      - 'README.md'
-      - '.husky/**'
-      - '.vscode/**'
+    paths:
+      - 'dogu-actions/**'
+      - 'e2e/**'
+      - 'nm-space/**'
+      - 'packages/**'
+      - 'pipeline-samples/**'
+      - 'prebuilds/**'
+      - 'projects/**'
+      - 'scripts/**'
+      - '.pnp.cjs'
+      - '.pnp.loader.mjs'
+      - 'package.json'
+      - 'tsconfig.json'
+      - 'yarn.lock'
   workflow_dispatch:
 
 jobs:
