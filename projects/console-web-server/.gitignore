@@ -50,7 +50,8 @@ saved-token.json
 service-account-key.json
 
 # env
-.env.local
+.env.local*
+
 
 *feature.config.json
 !features/*feature.config.json
