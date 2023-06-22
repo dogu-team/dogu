@@ -1,5 +1,4 @@
 {
-  "fileService": "s3",
   "useSampleProject": true,
   "gitlabInitCheck": false,
   "useGitlabIdByUserId": true,

@@ -1,5 +1,4 @@
 {
-  "fileService": "nexus",
   "useSampleProject": false,
   "gitlabInitCheck": true,
   "useGitlabIdByUserId": false,

@@ -3,7 +3,6 @@ import { env } from './env';
 import { logger } from './module/logger/logger.instance';
 
 export interface FeatureTable {
-  fileService: 's3' | 'nexus';
   useSampleProject: boolean;
   gitlabInitCheck: boolean;
   emailVerification: boolean;

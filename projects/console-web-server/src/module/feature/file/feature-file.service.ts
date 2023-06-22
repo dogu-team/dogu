@@ -1,6 +1,5 @@
 import { PromiseOrValue } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
-import { FeatureTable } from '../../../feature.config';
 
 export const BucketKey = ['user', 'organization', 'public'] as const;
 export type BucketKey = (typeof BucketKey)[number];
@@ -183,7 +182,7 @@ export interface ListResult {
 
 @Injectable()
 export abstract class FeatureFileService {
-  constructor(protected readonly key: FeatureTable['fileService']) {}
+  constructor(protected readonly key: 'nexus') {}
 
   /**
    * @description

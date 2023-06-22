@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { env } from '../../../../env';
 import { S3 } from '../../../../sdk/s3';
-import { DoguLogger } from '../../../logger/logger';
 import {
   BucketKey,
   DeleteOptions,
@@ -21,20 +19,24 @@ import {
   PutResult,
 } from '../feature-file.service';
 
+/**
+ * @deprecated
+ */
+
 @Injectable()
 export class S3FeatureFileService extends FeatureFileService {
-  constructor(private readonly logger: DoguLogger) {
-    super('s3');
-  }
+  // constructor(private readonly logger: DoguLogger) {
+  //   super('s3');
+  // }
 
   parseBucketKey(bucketKey: BucketKey): string {
     switch (bucketKey) {
       case 'organization':
-        return env.DOGU_ORGANIZATION_BUCKET;
+      // return env.DOGU_ORGANIZATION_BUCKET;
       case 'user':
-        return env.DOGU_USER_BUCKET;
+      // return env.DOGU_USER_BUCKET;
       case 'public':
-        return env.DOGU_PUBLIC_BUCKET;
+      // return env.DOGU_PUBLIC_BUCKET;
       default:
         throw new Error(`Invalid bucketKey: ${bucketKey}`);
     }

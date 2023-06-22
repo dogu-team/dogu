@@ -68,9 +68,9 @@ export class Env {
   @IsFilledString()
   DOGU_TIMEZONE: string = process.env.TZ ?? 'local';
 
-  @IsOptional()
-  @IsString()
-  DOGU_AWS_KEY_ID!: string;
+  // @IsOptional()
+  // @IsString()
+  // DOGU_AWS_KEY_ID!: string;
 
   @IsFilledString()
   DOGU_SECRET!: string;
@@ -83,9 +83,9 @@ export class Env {
   @IsString()
   DOGU_EMAIL_PW!: string | undefined;
 
-  @IsOptional()
-  @IsString()
-  DOGU_AWS_ACCESS_KEY!: string;
+  // @IsOptional()
+  // @IsString()
+  // DOGU_AWS_ACCESS_KEY!: string;
 
   @IsFilledString()
   DOGU_REDIS_HOST!: string;
@@ -102,10 +102,6 @@ export class Env {
   @IsString()
   DOGU_REDIS_PASSWORD!: string | undefined;
 
-  @IsOptional()
-  @IsString()
-  DOGU_SLACK_BOT_TOKEN!: string | undefined;
-
   @IsNumber()
   @Type(() => Number)
   DOGU_REDIS_DB!: number;
@@ -118,17 +114,17 @@ export class Env {
   @IsString()
   DOGU_DOST_DOWNLOAD_BASE_URL!: string;
 
-  @IsOptional()
-  @IsString()
-  DOGU_USER_BUCKET!: string;
+  // @IsOptional()
+  // @IsString()
+  // DOGU_USER_BUCKET!: string;
 
-  @IsOptional()
-  @IsString()
-  DOGU_ORGANIZATION_BUCKET!: string;
+  // @IsOptional()
+  // @IsString()
+  // DOGU_ORGANIZATION_BUCKET!: string;
 
-  @IsOptional()
-  @IsString()
-  DOGU_PUBLIC_BUCKET!: string;
+  // @IsOptional()
+  // @IsString()
+  // DOGU_PUBLIC_BUCKET!: string;
 
   @IsOptional()
   @IsString()
