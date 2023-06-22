@@ -38,14 +38,13 @@ jobs:
   start-rc-dogu:
     runs-on: dogu-self-hosted
     needs: build-and-push-dogu-console
-    
+
     steps:
       - name: Checkout
         uses: Bhacaz/checkout-files@v2
         with:
           files: docker-compose.yml docker-compose.env
-  
-    steps:
+
       - name: docker init
         run: docker system prune --volumes -a -f
 
@@ -56,7 +55,7 @@ jobs:
           echo "DOGU_RDS_HOST=${{ secrets.DEV_DOGU_RDS_HOST }}" >> docker-compose.env
           sed -i '/POSTGRES_USER=/POSTGRES_USER=${{ secrets.DEV_DOGU_RDS_USERNAME }}' docker-compose.env
           sed -i '/POSTGRES_PASSWORD=/POSTGRES_PASSWORD=${{ secrets.DEV_DOGU_RDS_PASSWORD }}' docker-compose.env
-          
+
 
           # influxdb
           sed -i '/INFLUX_DB_INIT_ADMIN_TOKEN=/INFLUX_DB_INIT_ADMIN_TOKEN=${{ secrets.DEV_DOGU_INFLUX_DB_TOKEN }}' docker-compose.env
@@ -72,7 +71,7 @@ jobs:
           sed -i '/DOGU_CONSOLE_JWT_SECRET_KEY=/DOGU_CONSOLE_JWT_SECRET_KEY=${{ secrets.DEV_DOGU_JWT_SECRET_KEY }}' docker-compose.env
           sed -i '/DEVICE_WIFI_SSID=/DEVICE_WIFI_SSID=${{ secrets.DEV_DOGU_DEVICE_WIFI_SSID }}' docker-compose.env
           sed -i '/DEVICE_WIFI_PASSWORD=/DEVICE_WIFI_PASSWORD=${{ secrets.DEV_DOGU_DEVICE_WIFI_PASSWORD }}' docker-compose.env
-          
+
           echo "DOGU_CONSOLE_URL=https://console.${DOGU_HOST}" >> docker-compose.env
           echo "DOGU_EMAIL_ID=${{ secrets.DOGU_EMAIL_ID }}" >> docker-compose.env
           echo "DOGU_EMAIL_PW=${{ secrets.DOGU_EMAIL_PW }}" >> docker-compose.env
@@ -84,7 +83,7 @@ jobs:
           echo "DOGU_GITLAB_PORT=443" >> docker-compose.env
           echo "DOGU_GITLAB_PROTOCOL=https" >> docker-compose.env
           echo "DOGU_GITLAB_TEMPLATE_GROUP=dogu" >> docker-compose.env
-          
+
           # file server
           sed -i '/FILE_SERVER_USERNAME=/FILE_SERVER_USERNAME=${{ secrets.DEV_DOGU_FILE_SERVER_USERNAME }}' docker-compose.env
           sed -i '/FILE_SERVER_PASSWORD=/FILE_SERVER_PASSWORD=${{ secrets.DEV_DOGU_FILE_SERVER_PASSWORD }}' docker-compose.env
@@ -93,13 +92,6 @@ jobs:
           sed -i '/TURN_SERVER_USERNAME=/TURN_SERVER_USERNAME=${{ secrets.DEV_DOGU_TURN_SERVER_USERNAME }}' docker-compose.env
           sed -i '/TURN_SERVER_PASSWORD=/TURN_SERVER_PASSWORD=${{ secrets.DEV_DOGU_TURN_SERVER_PASSWORD }}' docker-compose.env
 
-          
-
-
-
-
       - name: run dogu
         run: |
           docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up -d --scale postgres=0
-
-
