@@ -49,10 +49,10 @@ jobs:
 
       - name: set .env
         run: |
-          sed -i 's/^DOGU_HOST=.*$/DOGU_HOST=dev.dogutech.io/' ./docker-compose.env
+          sed -i 's/dogutechio/dogu:latest/dogutechio/dogu:rc/' ./docker-compose.yml
+          sed -i 's/^DOGU_HOST=.*$/DOGU_HOST=${{ secrets.DEV_DOGU_HOST }}/' ./docker-compose.env
 
           # postgres
-          echo "DOGU_RDS_HOST=${{ secrets.DEV_DOGU_RDS_HOST }}" >> ./docker-compose.env
           sed -i 's/^POSTGRES_USER=.*$/POSTGRES_USER=${{ secrets.DEV_DOGU_RDS_USERNAME }}/' ./docker-compose.env
           sed -i 's/^POSTGRES_PASSWORD=.*$/POSTGRES_PASSWORD=${{ secrets.DEV_DOGU_RDS_PASSWORD }}/' ./docker-compose.env
 
@@ -68,17 +68,17 @@ jobs:
           sed -i 's/^GITLAB_ROOT_ACCESS_TOKEN=.*$/GITLAB_ROOT_ACCESS_TOKEN=${{ github.event.inputs.gitpat }}/' ./docker-compose.env
           sed -i 's/^GITLAB_ROOT_PASSWORD=.*$/GITLAB_ROOT_PASSWORD=${{ secrets.DEV_DOGU_GITLAB_ROOT_PASSWORD }}/' ./docker-compose.env
           sed -i 's/^DOGU_CONSOLE_JWT_SECRET_KEY=.*$/DOGU_CONSOLE_JWT_SECRET_KEY=${{ secrets.DEV_DOGU_JWT_SECRET_KEY }}/' ./docker-compose.env
-          sed -i 's/^DEVICE_WIFI_SSID=.*$/DEVICE_WIFI_SSID=${{ secrets.DEV_DOGU_DEVICE_WIFI_SSID }}/' ./docker-compose.env
-          sed -i 's/^DEVICE_WIFI_PASSWORD=.*$/DEVICE_WIFI_PASSWORD=${{ secrets.DEV_DOGU_DEVICE_WIFI_PASSWORD }}/' ./docker-compose.env
+          sed -i 's/^DEVICE_WIFI_SSID=.*$/DEVICE_WIFI_SSID=${{ secrets.DOGU_DEVICE_WIFI_SSID }}/' ./docker-compose.env
+          sed -i 's/^DEVICE_WIFI_PASSWORD=.*$/DEVICE_WIFI_PASSWORD=${{ secrets.DOGU_DEVICE_WIFI_PASSWORD }}/' ./docker-compose.env
 
-          echo "DOGU_CONSOLE_URL=https://console.${DOGU_HOST}" >> ./docker-compose.env
+          echo "DOGU_CONSOLE_URL=https://console.${{ secrets.DEV_DOGU_HOST }}" >> ./docker-compose.env
           echo "DOGU_EMAIL_ID=${{ secrets.DOGU_EMAIL_ID }}" >> ./docker-compose.env
           echo "DOGU_EMAIL_PW=${{ secrets.DOGU_EMAIL_PW }}" >> ./docker-compose.env
-          echo "DOGU_DOST_DOWNLOAD_BASE_URL=${{ secrets.DOGU_DOST_DOWNLOAD_BASE_URL }}" >> ./docker-compose.env
+          echo "DOGU_DOST_DOWNLOAD_BASE_URL=${{ secrets.DEV_DOGU_DOST_DOWNLOAD_BASE_URL }}" >> ./docker-compose.env
           echo "DOGU_RECAPTCHA_KEY=${{ secrets.DOGU_RECAPTCHA_KEY }}" >> ./docker-compose.env
           echo "DOGU_CONSOLE_GOOGLE_OAUTH_LOGIN_CLIENT_ID=${{ secrets.DOGU_CONSOLE_GOOGLE_OAUTH_LOGIN_CLIENT_ID }}" >> ./docker-compose.env
           echo "DOGU_CONSOLE_GOOGLE_OAUTH_LOGIN_CLIENT_SECRET=${{ secrets.DOGU_CONSOLE_GOOGLE_OAUTH_LOGIN_CLIENT_SECRET }}" >> ./docker-compose.env
-          echo "DOGU_GITLAB_HOST=gitlab.dev.dogutech.io" >> ./docker-compose.env
+
           echo "DOGU_GITLAB_PORT=443" >> ./docker-compose.env
           echo "DOGU_GITLAB_PROTOCOL=https" >> ./docker-compose.env
           echo "DOGU_GITLAB_TEMPLATE_GROUP=dogu" >> ./docker-compose.env
@@ -93,4 +93,4 @@ jobs:
 
       - name: run dogu
         run: |
-          docker compose -f ./docker-compose.yml --env-file ././docker-compose.env up -d --scale postgres=0
+          docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up -d --scale postgres=0
