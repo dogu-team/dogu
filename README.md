@@ -2,15 +2,18 @@
 <img src=".github/resources/logo.png" width="100px" height="100px" title="Gamium_Logo"/>
 </p>
 <p align="center">
-  <b>Dogu</b>
+  <a href="https://dogutech.io"><b>Dogu</b></a>
 </p>
 <p align="center">
 Dogu is a web-based testing platform for test automation
 </p>
+
 <p align="center">
-<a href="https://dogutech.io" target="_blank" rel="noopener noreferrer">Homepage</a> | 
-<a href="https://twitter.com/dogutechio" target="_blank" rel="noopener noreferrer">Twitter</a> |
-<a href="https://discord.gg/bVycd6Tu9g" target="_blank" rel="noopener noreferrer">Discord</a>
+  <a href="https://github.com/dogu-team/dogu/issues"><img src="https://img.shields.io/badge/Issues-welcome-brightgreen.svg" alt="Issues Welcome"></a>
+  <a href="https://github.com/dogu-team/dogu/discussions"><img src="https://img.shields.io/badge/Discussions-welcome-brightgreen.svg" alt="Issues Welcome"></a>
+  <a href="https://github.com/dogu-team/dogu/actions/workflows/e2e.yml"><img src="https://github.com/dogu-team/dogu/actions/workflows/e2e.yml/badge.svg" alt="GitHub Actions status"></a>
+  <a href="https://twitter.com/dogutechio"><img src="https://img.shields.io/twitter/follow/dogutechio.svg?style=social" alt="Twitter Follow" /></a>
+  <a href="https://discord.gg/bVycd6Tu9g"><img src="https://dcbadge.vercel.app/api/server/bVycd6Tu9g?style=flat" /></a>
 </p>
 
 ## What is Dogu?
