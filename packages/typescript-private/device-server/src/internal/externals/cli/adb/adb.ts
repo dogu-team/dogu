@@ -657,6 +657,17 @@ export async function getSystemBarVisibility(serial: Serial): Promise<AndroidSys
    * @example `    mHasSurface=true isReadyForDisplay()=true mWindowRemovalAllowed=false`
    */
   const VisibilityPattern = /^.*isReadyForDisplay\(\)=(true|false).*$/;
+
+  /**
+   * @example `StatusBar`
+   */
+  const StatusBarWindowNamePattern = /^StatusBar$/;
+
+  /**
+   * @example `NavigationBar` or `NavigationBar0`
+   */
+  const NavigationBarWindowNamePattern = /^NavigationBar\d*$/;
+
   const MaxWindowLineCount = 40;
   const StatusBarWindowName = 'StatusBar';
   const NavigationBarWindowName = 'NavigationBar';
@@ -675,10 +686,12 @@ export async function getSystemBarVisibility(serial: Serial): Promise<AndroidSys
   const temp = [
     {
       name: StatusBarWindowName,
+      pattern: StatusBarWindowNamePattern,
       visibility: false,
     },
     {
       name: NavigationBarWindowName,
+      pattern: NavigationBarWindowNamePattern,
       visibility: false,
     },
   ];
@@ -691,7 +704,7 @@ export async function getSystemBarVisibility(serial: Serial): Promise<AndroidSys
     const windowMatch = line.match(WindowPattern);
     if (windowMatch) {
       const windowName = windowMatch[1];
-      const target = temp.find((v) => v.name === windowName);
+      const target = temp.find((v) => windowName.match(v.pattern));
       if (target) {
         target.visibility = findVisibility(index, lines);
       }
