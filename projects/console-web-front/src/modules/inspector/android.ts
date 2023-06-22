@@ -24,7 +24,6 @@ class AndroidInspectorModule extends InspectorModule<AndroidNodeAttributes> {
 
   public getInspectingArea: GetInspectingAreaFunc = () => {
     const android = this.contextAndNode.android;
-    console.log(android);
 
     if (!android) {
       return {
@@ -40,75 +39,34 @@ class AndroidInspectorModule extends InspectorModule<AndroidNodeAttributes> {
     const isStatusBarVisible = android.statusBar.visible;
     const isNavigationBarVisible = android.navigationBar.visible;
 
-    console.log(rotation);
-
     switch (rotation) {
       case DeviceRotationDirection.TOP_DOWN:
-        if (isStatusBarVisible) {
-          return {
-            x: android.statusBar.x,
-            y: android.statusBar.height,
-            width: this.contextAndNode.node.attributes.width || screenSize.width,
-            height:
-              this.contextAndNode.node.attributes.height ||
-              (isNavigationBarVisible ? screenSize.height - android.statusBar.height - android.navigationBar.height : screenSize.height - android.statusBar.height),
-          };
-        } else {
-          return {
-            x: 0,
-            y: 0,
-            width: this.contextAndNode.node.attributes.width || screenSize.width,
-            height: this.contextAndNode.node.attributes.height || screenSize.height,
-          };
-        }
+        return {
+          x: 0,
+          y: isStatusBarVisible ? android.statusBar.height : 0,
+          width: this.contextAndNode.node.attributes.width || screenSize.width,
+          height: isNavigationBarVisible ? screenSize.height - android.statusBar.height - android.navigationBar.height : screenSize.height - android.statusBar.height,
+        };
       case DeviceRotationDirection.LEFT:
-        console.log(this.contextAndNode.screenSize);
-        if (isStatusBarVisible) {
-          return {
-            x: 0,
-            y: isStatusBarVisible ? android.statusBar.height : 0,
-            width: isNavigationBarVisible ? screenSize.width - android.navigationBar.width : screenSize.width,
-            height: this.contextAndNode.node.attributes.height ? this.contextAndNode.node.attributes.height - android.statusBar.height : screenSize.height,
-          };
-        } else {
-          return {
-            x: 0,
-            y: isStatusBarVisible ? android.statusBar.height : 0,
-            width: isNavigationBarVisible ? screenSize.width - android.navigationBar.width : screenSize.width,
-            height: this.contextAndNode.node.attributes.height || screenSize.height,
-          };
-        }
+        return {
+          x: 0,
+          y: isStatusBarVisible ? android.statusBar.height : 0,
+          width: isNavigationBarVisible ? screenSize.width - android.navigationBar.width : screenSize.width,
+          height: isStatusBarVisible ? screenSize.height - android.statusBar.height : screenSize.height,
+        };
       case DeviceRotationDirection.RIGHT:
-        if (isStatusBarVisible) {
-          return {
-            x: isNavigationBarVisible ? android.navigationBar.width : 0,
-            y: isStatusBarVisible ? android.statusBar.height : 0,
-            width: isNavigationBarVisible ? screenSize.width - android.navigationBar.width : screenSize.width,
-            height: this.contextAndNode.node.attributes.height ? this.contextAndNode.node.attributes.height - android.statusBar.height : screenSize.height,
-          };
-        }
         return {
           x: isNavigationBarVisible ? android.navigationBar.width : 0,
           y: isStatusBarVisible ? android.statusBar.height : 0,
-          width: this.contextAndNode.node.attributes.height || screenSize.height,
-          height: this.contextAndNode.node.attributes.width || screenSize.width,
+          width: isNavigationBarVisible ? screenSize.width - android.navigationBar.width : screenSize.width,
+          height: isStatusBarVisible ? screenSize.height - android.statusBar.height : screenSize.height,
         };
       case DeviceRotationDirection.UPSIDE_DOWN:
-        if (isStatusBarVisible) {
-          return {
-            x: 0,
-            y: android.statusBar.height,
-            width: this.contextAndNode.node.attributes.width || screenSize.width,
-            height:
-              this.contextAndNode.node.attributes.height ||
-              (isNavigationBarVisible ? screenSize.height - android.statusBar.height - android.navigationBar.height : screenSize.height - android.statusBar.height),
-          };
-        }
         return {
           x: 0,
-          y: 0,
+          y: android.statusBar.height,
           width: this.contextAndNode.node.attributes.width || screenSize.width,
-          height: this.contextAndNode.node.attributes.height || screenSize.height,
+          height: isNavigationBarVisible ? screenSize.height - android.statusBar.height - android.navigationBar.height : screenSize.height - android.statusBar.height,
         };
       default:
         return {
