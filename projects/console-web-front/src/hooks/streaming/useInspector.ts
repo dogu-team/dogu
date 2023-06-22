@@ -226,10 +226,30 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
         return;
       }
 
-      const lastNode = nodes[nodes.length - 1];
+      let smallestNodeIndex = 0;
+      let smallestValue: number;
+      nodes.forEach((node, i) => {
+        const pos = inspectorModule.current?.getNodeBound(node);
+        if (!pos) {
+          return;
+        }
+
+        const value = pos.width * pos.height;
+        if (i === 0) {
+          smallestValue = value;
+        }
+
+        if (value < smallestValue) {
+          smallestValue = value;
+          smallestNodeIndex = i;
+        }
+      });
+
+      const smallestNode = nodes[smallestNodeIndex];
+
       const position = getScreenPosition({
         screenSize: inspectorModule.current.getDeviceScreenSize(),
-        nodePos: inspectorModule.current.getNodeBound(lastNode),
+        nodePos: inspectorModule.current.getNodeBound(smallestNode),
         rotation: inspectorModule.current.getDeviceRotation(),
         inspectArea: inspectorModule.current.getInspectingArea(),
       });
@@ -238,7 +258,7 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
         return;
       }
 
-      return { node: lastNode, position };
+      return { node: smallestNode, position };
     },
     [getScreenPosition, selectedContextAndNode, videoRef, device],
   );
