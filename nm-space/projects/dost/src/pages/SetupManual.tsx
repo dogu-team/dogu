@@ -2,7 +2,6 @@ import { Button, Divider, Flex, Spinner } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import ManaulExternalToolSolution from '../components/external/ManualExternalToolSolution';
 import ManualExternalToolValidCheckerItem from '../components/external/ManualExternalToolValidCheckerItem';
 import PageTitle from '../components/layouts/PageTitle';
 import useManualSetupExternalValidResult from '../hooks/manaul-setup-external-valid-result';
@@ -41,16 +40,7 @@ const SetupManual = () => {
           <div>
             {results.length ? (
               results.map((result) => {
-                return (
-                  <ManualExternalToolValidCheckerItem
-                    key={result.key}
-                    isValid={result.isValid}
-                    externalKey={result.key}
-                    name={result.name}
-                    solution={<ManaulExternalToolSolution externalKey={result.key} />}
-                    onValidateEnd={validate}
-                  />
-                );
+                return <ManualExternalToolValidCheckerItem key={result.key} isValid={result.isValid} externalKey={result.key} name={result.name} onValidateEnd={validate} />;
               })
             ) : (
               <div>Nothing to do.</div>

@@ -4,14 +4,14 @@ import { spawn } from 'child_process';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
-import { ExternalCommandKey } from '../../../src/shares/external';
+import { ExternalKey } from '../../../src/shares/external';
 import { logger } from '../../log/logger.instance';
 import { StdLogCallbackService } from '../../log/std-log-callback-service';
-import { IExternalCommand } from '../external-command';
+import { IExternalUnit } from '../external-unit';
 import { validateXcode } from '../xcode';
 
-export class WdaBuildExternalCommand extends IExternalCommand {
-  private readonly logger = new PrefixLogger(logger, '[WebDriverAgentBuild]');
+export class IdaBuildExternalUnit extends IExternalUnit {
+  private readonly logger = new PrefixLogger(logger, '[IosDeviceAgentBuild]');
 
   constructor(private readonly stdLogCallbackService: StdLogCallbackService) {
     super();
@@ -21,12 +21,16 @@ export class WdaBuildExternalCommand extends IExternalCommand {
     return process.platform === 'darwin';
   }
 
-  getKey(): ExternalCommandKey {
-    return 'web-driver-agent-build';
+  isManualInstallNeeded(): boolean {
+    return true;
+  }
+
+  getKey(): ExternalKey {
+    return 'ios-device-agent-build';
   }
 
   getName(): string {
-    return 'WebDriverAgentBuild';
+    return 'iOSDeviceAgent';
   }
 
   getEnvKeys(): string[] {
@@ -35,40 +39,45 @@ export class WdaBuildExternalCommand extends IExternalCommand {
 
   async validateInternal(): Promise<void> {
     await validateXcode(this.stdLogCallbackService);
-    const wdaProductsPath = path.resolve(HostPaths.external.xcodeProject.wdaDerivedDataPath(), 'Build/Products');
-    const webDriverAgentExePath = path.resolve(wdaProductsPath, 'Debug-iphoneos/WebDriverAgentRunner-Runner.app/WebDriverAgentRunner-Runner');
-    if (!fs.existsSync(webDriverAgentExePath)) {
-      throw Error(`WebDriverAgentRunner-Runner not found. path: ${webDriverAgentExePath}`);
+    const idaProductsPath = path.resolve(HostPaths.external.xcodeProject.idaDerivedDataPath(), 'Build/Products');
+    const idaExePaths = [path.resolve(idaProductsPath, 'Debug-iphoneos/DoguDev.app/DoguDev'), path.resolve(idaProductsPath, 'Debug-iphoneos/DoguRunner-Runner/DoguRunner-Runner')];
+    for (const idaExePath of idaExePaths) {
+      if (!fs.existsSync(idaExePath)) {
+        throw Error(`iOSDeviceAgent executable not found. path: ${idaExePath}`);
+      }
+      const stat = await fsPromises.stat(idaExePath);
+      if (stat.size === 0) {
+        throw Error(`iOSDeviceAgent executable is empty. path: ${idaExePath}`);
+      }
     }
-    const stat = await fsPromises.stat(webDriverAgentExePath);
-    if (stat.size === 0) {
-      throw Error(`WebDriverAgentRunner-Runner is empty. path: ${webDriverAgentExePath}`);
-    }
-    const xctestrunFile = (await fsPromises.readdir(wdaProductsPath)).find((file) => file.endsWith('.xctestrun'));
+    const xctestrunFile = (await fsPromises.readdir(idaProductsPath)).find((file) => file.endsWith('.xctestrun'));
     if (!xctestrunFile) {
-      throw Error(`xctestrun file not found. path: ${wdaProductsPath}`);
+      throw Error(`xctestrun file not found. path: ${idaProductsPath}`);
     }
-    const xctestrunPath = path.resolve(wdaProductsPath, xctestrunFile);
+    const xctestrunPath = path.resolve(idaProductsPath, xctestrunFile);
     const xctestrunStat = await fsPromises.stat(xctestrunPath);
     if (xctestrunStat.size === 0) {
       throw Error(`xctestrun file is empty. path: ${xctestrunPath}`);
     }
   }
 
-  async run(): Promise<void> {
-    const wdaDerivedDataPath = HostPaths.external.xcodeProject.wdaDerivedDataPath();
-    const wdaProjectPath = path.resolve(HostPaths.external.xcodeProject.wdaProjectDirectoryPath(), 'WebDriverAgent.xcodeproj');
+  async install(): Promise<void> {
+    const idaDerivedDataPath = HostPaths.external.xcodeProject.idaDerivedDataPath();
+    const idaProjectPath = path.resolve(HostPaths.external.xcodeProject.idaProjectDirectoryPath(), 'IOSDeviceAgent.xcodeproj');
+    if (!fs.existsSync(idaProjectPath)) {
+      throw Error(`iOSDeviceAgent project not found. path: ${idaProjectPath}`);
+    }
     await new Promise<void>((resolve, reject) => {
       const child = spawn('xcodebuild', [
         'build-for-testing',
         '-project',
-        wdaProjectPath,
+        idaProjectPath,
         '-scheme',
-        'WebDriverAgentRunner',
+        'DoguRunner',
         '-destination',
         'generic/platform=iOS',
         '-derivedDataPath',
-        wdaDerivedDataPath,
+        idaDerivedDataPath,
       ]);
 
       const onErrorForReject = (error: Error) => {
@@ -111,5 +120,23 @@ export class WdaBuildExternalCommand extends IExternalCommand {
     });
   }
 
-  cancel(): void {}
+  isAgreementNeeded(): boolean {
+    return false;
+  }
+
+  writeAgreement(): void {
+    this.logger.warn('do not need agreement');
+  }
+
+  cancelInstall(): void {
+    this.logger.warn('cancel install not supported');
+  }
+
+  uninstall(): void {
+    this.logger.warn('uninstall not supported');
+  }
+
+  getTermUrl(): string | null {
+    return null;
+  }
 }

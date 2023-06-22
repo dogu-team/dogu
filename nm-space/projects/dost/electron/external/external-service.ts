@@ -2,20 +2,20 @@ import { errorify } from '@dogu-tech/common';
 import { ipcMain } from 'electron';
 import { setInterval } from 'timers/promises';
 import { DotEnvConfigKey } from '../../src/shares/dot-env-config';
-import { DownloadProgress, externalCallbackKey, externalCommandCallbackKey, ExternalCommandKey, externalKey, ExternalKey } from '../../src/shares/external';
+import { DownloadProgress, externalCallbackKey, externalKey, ExternalKey, ValidationCheckOption } from '../../src/shares/external';
 import { AppConfigService } from '../app-config/app-config-service';
 import { DotEnvConfigService } from '../dot-env-config/dot-env-config-service';
 import { logger } from '../log/logger.instance';
 import { StdLogCallbackService } from '../log/std-log-callback-service';
 import { WindowService } from '../window/window-service';
-import { WdaBuildExternalCommand } from './commands/wda-build-external-command';
-import { ExternalCommandCallback, IExternalCommand } from './external-command';
 import { ExternalUnitCallback, IExternalUnit } from './external-unit';
 import { AndroidSdkExternalUnit } from './units/android-sdk-external-unit';
 import { AppiumExternalUnit } from './units/appium-external-unit';
 import { AppiumUiAutomator2DriverExternalUnit } from './units/appium-uiautomator2-driver-external-unit';
 import { AppiumXcUiTestDriverExternalUnit } from './units/appium-xcuitest-driver-external-unit';
+import { IdaBuildExternalUnit } from './units/ida-build-external-command';
 import { JdkExternalUnit } from './units/jdk-external-unit';
+import { WdaBuildExternalUnit } from './units/wda-build-external-command';
 import { XcodeExternalUnit } from './units/xcode-external-unit';
 
 export class ExternalService {
@@ -30,16 +30,13 @@ export class ExternalService {
     ExternalService.instance = new ExternalService(dotEnvConfigService, stdLogCallbackService, appConfigService, windowService);
     const { instance } = ExternalService;
     instance.registerUnits();
-    instance.registerCommands();
     instance.registerHandlers();
     await instance.validateSupportedPlatform();
     instance.startLoopUpdateIsSupportedPlatformValid();
   }
 
   private units: Map<ExternalKey, IExternalUnit> = new Map();
-  private commands: Map<ExternalCommandKey, IExternalCommand> = new Map();
   private unitCallbackCreator: (key: ExternalKey) => ExternalUnitCallback;
-  private commandCallbackCreator: (key: ExternalCommandKey) => ExternalCommandCallback;
 
   private constructor(
     private readonly dotEnvConfigService: DotEnvConfigService,
@@ -66,19 +63,6 @@ export class ExternalService {
         },
       };
     };
-    this.commandCallbackCreator = (key: ExternalCommandKey) => {
-      return {
-        onCommandStarted: () => {
-          this.windowService.window?.webContents.send(externalCommandCallbackKey.onCommandStarted, key);
-        },
-        onCommandInProgress: () => {
-          this.windowService.window?.webContents.send(externalCommandCallbackKey.onCommandInProgress, key);
-        },
-        onCommandCompleted: () => {
-          this.windowService.window?.webContents.send(externalCommandCallbackKey.onCommandCompleted, key);
-        },
-      };
-    };
   }
 
   private registerUnits(): void {
@@ -91,10 +75,8 @@ export class ExternalService {
     this.registerUnit('appium-uiautomator2-driver', (unitCallback) => new AppiumUiAutomator2DriverExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, unitCallback));
     this.registerUnit('xcode', () => new XcodeExternalUnit(this.stdLogCallbackService));
     this.registerUnit('appium-xcuitest-driver', (unitCallback) => new AppiumXcUiTestDriverExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, unitCallback));
-  }
-
-  private registerCommands(): void {
-    this.registerCommand('web-driver-agent-build', () => new WdaBuildExternalCommand(this.stdLogCallbackService));
+    this.registerUnit('web-driver-agent-build', () => new WdaBuildExternalUnit(this.stdLogCallbackService));
+    this.registerUnit('ios-device-agent-build', () => new IdaBuildExternalUnit(this.stdLogCallbackService));
   }
 
   private registerHandlers(): void {
@@ -113,10 +95,8 @@ export class ExternalService {
     ipcMain.handle(externalKey.cancelInstall, (_, key: ExternalKey) => this.getUnit(key).cancelInstall());
     ipcMain.handle(externalKey.validate, (_, key: ExternalKey) => this.getUnit(key).validate());
     ipcMain.handle(externalKey.isValid, (_, key: ExternalKey) => this.getUnit(key).isValid());
-    ipcMain.handle(externalKey.runCommand, (_, key: ExternalCommandKey) => this.getCommand(key).run());
-    ipcMain.handle(externalKey.validateCommandResult, (_, key: ExternalCommandKey) => this.getCommand(key).validate());
     ipcMain.handle(externalKey.isSupportedPlatformValidationCompleted, () => this.isSupportedPlatformValidationCompleted());
-    ipcMain.handle(externalKey.isSupportedPlatformValid, () => this.isSupportedPlatformValid());
+    ipcMain.handle(externalKey.isSupportedPlatformValid, (_, option: ValidationCheckOption) => this.isSupportedPlatformValid(option));
     ipcMain.handle(externalKey.getSupportedPlatformKeys, () => this.getSupportedPlatformKeys());
     ipcMain.handle(externalKey.getTermUrl, (_, key: ExternalKey) => this.getUnit(key).getTermUrl());
   }
@@ -126,25 +106,12 @@ export class ExternalService {
     this.units.set(key, unit);
   }
 
-  private registerCommand(key: ExternalCommandKey, onRegister: (commandCallback: ExternalCommandCallback) => IExternalCommand): void {
-    const command = onRegister(this.commandCallbackCreator(key));
-    this.commands.set(key, command);
-  }
-
   private getUnit(key: ExternalKey): IExternalUnit {
     const unit = this.units.get(key);
     if (!unit) {
       throw new Error(`external tool unit not found. key: ${key}`);
     }
     return unit;
-  }
-
-  private getCommand(key: ExternalCommandKey): IExternalCommand {
-    const command = this.commands.get(key);
-    if (!command) {
-      throw new Error(`external tool unit not found. key: ${key}`);
-    }
-    return command;
   }
 
   private getKeys(): ExternalKey[] {
@@ -174,13 +141,16 @@ export class ExternalService {
     return Promise.resolve([...this.units.values()].filter((unit) => unit.isPlatformSupported()).every((unit) => unit.lastValidationResult !== null));
   }
 
-  private isSupportedPlatformValid(): Promise<boolean> {
+  private isSupportedPlatformValid(option: ValidationCheckOption): Promise<boolean> {
+    if (option.ignoreManual) {
+      return Promise.resolve([...this.units.values()].filter((unit) => unit.isPlatformSupported() && !unit.isManualInstallNeeded()).every((unit) => unit.isValid()));
+    }
     return Promise.resolve([...this.units.values()].filter((unit) => unit.isPlatformSupported()).every((unit) => unit.isValid()));
   }
 
   private async updateIsSupportedPlatformValid(): Promise<void> {
     const doguIsSupportedPlatformValid = await this.appConfigService.get<boolean>('DOGU_IS_SUPPORTED_PLATFORM_VALID');
-    const isSupportedPlatformValid = await this.isSupportedPlatformValid();
+    const isSupportedPlatformValid = await this.isSupportedPlatformValid({ ignoreManual: false });
     if (doguIsSupportedPlatformValid !== isSupportedPlatformValid) {
       await this.appConfigService.set('DOGU_IS_SUPPORTED_PLATFORM_VALID', isSupportedPlatformValid);
     }

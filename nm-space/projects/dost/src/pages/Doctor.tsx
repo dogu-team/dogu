@@ -1,5 +1,5 @@
 import { QuestionIcon } from '@chakra-ui/icons';
-import { Flex, Icon, Input, Spinner, Text, Tooltip, VStack } from '@chakra-ui/react';
+import { Box, Flex, Icon, Input, Spinner, Text, Tooltip, VStack } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -9,7 +9,6 @@ import SinglePageLayout from '../components/layouts/SinglePageLayout';
 import DoctorExternalToolInspector from '../components/external/DoctorExternalToolInspector';
 import useManualSetupExternalValidResult from '../hooks/manaul-setup-external-valid-result';
 import ManualExternalToolValidCheckerItem from '../components/external/ManualExternalToolValidCheckerItem';
-import ManaulExternalToolSolution from '../components/external/ManualExternalToolSolution';
 import usePlatformSupportedExternalInfo from '../hooks/platform-supported-external-info';
 
 export default function Doctor() {
@@ -47,13 +46,9 @@ export default function Doctor() {
           Manaul setup packages
         </Text>
         {results?.map((result) => (
-          <ManualExternalToolValidCheckerItem
-            key={result.key}
-            isValid={result.isValid}
-            externalKey={result.key}
-            name={result.name}
-            solution={<ManaulExternalToolSolution externalKey={result.key} />}
-          />
+          <Box key={result.key} border="1px" borderColor="rgba(255, 255,255, 0.4)" p={4} rounded="md">
+            <ManualExternalToolValidCheckerItem key={result.key} isValid={result.isValid} externalKey={result.key} name={result.name} />
+          </Box>
         ))}
       </StyledContent>
     </SinglePageLayout>

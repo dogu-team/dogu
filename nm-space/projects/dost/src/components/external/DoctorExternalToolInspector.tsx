@@ -32,7 +32,7 @@ const DoctorExternalToolInspector = ({ externalTools, onFinishInstall }: Props) 
   };
 
   const openAgreementOrInstaller = async () => {
-    const isValid = await ipc.externalClient.isSupportedPlatformValid();
+    const isValid = await ipc.externalClient.isSupportedPlatformValid({ ignoreManual: true });
 
     // do not need to install external
     if (isValid) {
