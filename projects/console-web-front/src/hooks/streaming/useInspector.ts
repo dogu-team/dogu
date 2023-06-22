@@ -1,13 +1,13 @@
 import { DeviceBase } from '@dogu-private/console';
 import { Platform } from '@dogu-private/types';
-import { ContextPageSource, Rect, ScreenSize } from '@dogu-tech/device-client-common';
+import { ContextPageSource, ScreenSize } from '@dogu-tech/device-client-common';
 import { throttle } from 'lodash';
-import { node } from 'prop-types';
-import { T } from 'ramda';
-import React, { RefObject, useCallback, useMemo, useState } from 'react';
+import React, { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { InspectorModule, NodeBound } from '../../modules/inspector';
+import AndroidInspectorModule from '../../modules/inspector/android';
 
 import { BrowserDeviceInspector } from '../../utils/browser-device-inspector';
-import { DeviceRotationDirection, GamiumAttributes, InspectNode, InspectNodeAttributes, InspectorWorkerResponse } from '../../workers/native-ui-tree';
+import { DeviceRotationDirection, InspectNode, InspectorWorkerResponse } from '../../workers/native-ui-tree';
 
 export type InspectorWorkerMessage = {
   type: 'convert';
@@ -42,9 +42,25 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
   const [hitPoint, setHitPoint] = useState();
   const [selectedNode, setSelectedNode] = useState<InspectNodeWithPosition>();
   const [inspectingNode, setInspectingNode] = useState<InspectNodeWithPosition>();
+  const inspectorModule = useRef<InspectorModule>();
 
   const worker = useMemo(() => new Worker(new URL('../../workers/native-ui-tree.ts', import.meta.url)), []);
+  const selectedContextAndNode = contextAndNodes?.find((c) => c.context === selectedContextKey);
   const isGamium = selectedContextKey === GAMIUM_CONTEXT_KEY;
+
+  useEffect(() => {
+    if (selectedContextAndNode) {
+      if (isGamium) {
+      } else {
+        if (device?.platform) {
+          switch (device.platform) {
+            case Platform.PLATFORM_ANDROID:
+              inspectorModule.current = new AndroidInspectorModule(selectedContextAndNode);
+          }
+        }
+      }
+    }
+  }, [selectedContextAndNode, isGamium, device?.platform]);
 
   const getRawSources = useCallback(async () => {
     if (deviceInspector && device) {
@@ -91,70 +107,30 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
     }
   }, [getRawSources, worker, device]);
 
-  const getSelectedContextAndNode = useCallback(() => {
-    if (!contextAndNodes || !selectedContextKey) {
-      return;
-    }
-
-    const item = contextAndNodes.find((item) => item.context === selectedContextKey);
-    return item;
-  }, [contextAndNodes, selectedContextKey]);
-
-  const getRotationDirection = useCallback(
-    (platform: Platform): DeviceRotationDirection => {
-      const selectedNodes = getSelectedContextAndNode();
-
-      if (!selectedNodes) {
-        return DeviceRotationDirection.TOP_DOWN;
-      }
-
-      switch (platform) {
-        case Platform.PLATFORM_ANDROID:
-          const rotation = Number(selectedNodes.node.attributes?.rotation) || 0;
-          return rotation;
-        default:
-          return DeviceRotationDirection.TOP_DOWN;
-      }
-    },
-    [getSelectedContextAndNode],
-  );
-
   const getScreenPosition = useCallback(
-    (
-      deviceInfo: { deviceWidth: number; deviceHeight: number },
-      bounds: InspectNodeAttributes['bounds'],
-      options: { landscapce: boolean; screenSize?: ScreenSize; androidViewport?: Rect },
-    ): SelectedNodePosition | undefined => {
-      if (!bounds || !videoRef?.current) {
+    ({
+      rotation,
+      screenSize,
+      inspectArea,
+      nodePos,
+    }: {
+      rotation: DeviceRotationDirection;
+      screenSize: ScreenSize;
+      inspectArea: NodeBound;
+      nodePos: NodeBound;
+    }): SelectedNodePosition | undefined => {
+      console.log(nodePos);
+      if (!videoRef?.current) {
         return;
       }
 
-      let deviceWidth = options?.screenSize?.width || deviceInfo.deviceWidth;
-      let deviceHeight = options?.screenSize?.height || deviceInfo.deviceHeight;
-      let inspectAreaWidth = options?.androidViewport?.width || deviceInfo.deviceWidth;
-      let inspectAreaHeight = options?.androidViewport?.height || deviceInfo.deviceHeight;
+      const deviceWidthRatio = videoRef.current.offsetWidth / screenSize.width;
+      const deviceHeightRatio = videoRef.current.offsetHeight / screenSize.height;
 
-      if (options.landscapce) {
-        [deviceWidth, deviceHeight] = [deviceHeight, deviceWidth];
-        [inspectAreaWidth, inspectAreaHeight] = [inspectAreaHeight, inspectAreaWidth];
-        inspectAreaWidth += options.androidViewport?.y || 0;
-        inspectAreaHeight -= options.androidViewport?.y || 0;
-      }
-
-      const deviceWidthRatio = videoRef.current.offsetWidth / deviceWidth;
-      const deviceHeightRatio = videoRef.current.offsetHeight / deviceHeight;
-
-      // DO NOT ADD INSPECT AREA in x,y
-      // bounds is screen offset.
-      let screenX = bounds.start[0];
-      let screenY = bounds.start[1];
-      let screenWidth = Math.abs(bounds.end[0] - bounds.start[0]);
-      let screenHeight = Math.abs(bounds.end[1] - bounds.start[1]);
-
-      const x = screenX * deviceWidthRatio;
-      const y = screenY * deviceHeightRatio;
-      const width = Math.abs(screenWidth) * deviceWidthRatio;
-      const height = Math.abs(screenHeight) * deviceHeightRatio;
+      const x = nodePos.x * deviceWidthRatio;
+      const y = nodePos.y * deviceHeightRatio;
+      const width = Math.abs(nodePos.width) * deviceWidthRatio;
+      const height = Math.abs(nodePos.height) * deviceHeightRatio;
 
       return { x, y, width, height };
     },
@@ -163,13 +139,11 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
 
   const getNodeByKey = useCallback(
     (key: string): InspectNodeWithPosition | undefined => {
-      const item = getSelectedContextAndNode();
-
-      if (!item) {
+      if (!selectedContextAndNode || !inspectorModule.current) {
         return;
       }
 
-      const { node } = item;
+      const { node } = selectedContextAndNode;
 
       const findNode = (node: InspectNode): InspectNode | undefined => {
         if (node.key === key) {
@@ -192,42 +166,11 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
         return;
       }
 
-      const deviceHeight = node.attributes.height;
-      const deviceWidth = node.attributes.width;
-
-      if (!deviceHeight || !deviceWidth) {
-        return;
-      }
-
-      if (isGamium) {
-        const attrs = result.attributes as GamiumAttributes;
-
-        if (!attrs['screen-position'] || !attrs['screen-rect-size']) {
-          return;
-        }
-
-        const start: [number, number] = [attrs['screen-position'].x - attrs['screen-rect-size'].width / 2, attrs['screen-position'].y - attrs['screen-rect-size'].height / 2];
-        const end: [number, number] = [attrs['screen-position'].x + attrs['screen-rect-size'].width / 2, attrs['screen-position'].y + attrs['screen-rect-size'].height / 2];
-
-        const position = getScreenPosition(
-          { deviceHeight: Number(deviceHeight), deviceWidth: Number(deviceWidth) },
-          { start, end },
-          {
-            landscapce: true,
-          },
-        );
-
-        if (!position) {
-          return;
-        }
-
-        return { node: result, position };
-      }
-
-      const position = getScreenPosition({ deviceHeight, deviceWidth }, result.attributes.bounds, {
-        landscapce: Number(node.attributes.rotation) % 2 === 1,
-        screenSize: item.screenSize,
-        androidViewport: item.android?.viewport,
+      const position = getScreenPosition({
+        screenSize: inspectorModule.current.getDeviceScreenSize(),
+        nodePos: inspectorModule.current.getNodeBound(result),
+        rotation: inspectorModule.current.getDeviceRotation(),
+        inspectArea: inspectorModule.current.getInspectingArea(),
       });
 
       if (!position) {
@@ -236,28 +179,18 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
 
       return { node: result, position };
     },
-    [getScreenPosition, getSelectedContextAndNode, isGamium],
+    [getScreenPosition, selectedContextAndNode],
   );
 
   const getNodeByPos = useCallback(
     (e: React.MouseEvent): InspectNodeWithPosition | undefined => {
-      const item = getSelectedContextAndNode();
-
-      if (!item || !videoRef?.current || !device) {
+      if (!selectedContextAndNode || !videoRef?.current || !device || !inspectorModule.current) {
         return;
       }
 
-      const { node, screenSize, android } = item;
+      const { node } = selectedContextAndNode;
 
-      let deviceWidth = screenSize?.width || node.attributes.width;
-      let deviceHeight = screenSize?.height || node.attributes.height;
-
-      if (!deviceHeight || !deviceWidth) {
-        return;
-      }
-
-      const rotationDirection = getRotationDirection(device.platform);
-      const isLandscape = rotationDirection % 2 === 1;
+      const deviceSize = inspectorModule.current.getDeviceScreenSize();
 
       const mouseX = e.nativeEvent.offsetX;
       const mouseY = e.nativeEvent.offsetY;
@@ -265,20 +198,18 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
       const videoWidth = videoRef.current.offsetWidth;
       const videoHeight = videoRef.current.offsetHeight;
 
-      const deviceWidthRatio = videoWidth / deviceWidth;
-      const deviceHeightRatio = videoHeight / deviceHeight;
+      const deviceWidthRatio = videoWidth / deviceSize.width;
+      const deviceHeightRatio = videoHeight / deviceSize.height;
 
-      const inspectAreaOffsetX = android?.viewport?.x || 0;
-      const inspectAreaOffsetY = android?.viewport?.y || 0;
-      const inspectAreaRealWidth = android?.viewport?.width || deviceWidth;
-      const inspectAreaRealHeight = android?.viewport?.height || deviceHeight;
+      const inspectArea = inspectorModule.current.getInspectingArea();
 
-      const inspectAreaX = inspectAreaOffsetX * deviceWidthRatio;
-      const inspectAreaY = inspectAreaOffsetY * deviceHeightRatio;
-      const inspectAreaWidth = inspectAreaRealWidth * deviceWidthRatio;
-      const inspectAreaHeight = inspectAreaRealHeight * deviceHeightRatio;
+      const inspectAreaX = inspectArea.x * deviceWidthRatio;
+      const inspectAreaY = inspectArea.y * deviceHeightRatio;
+      const inspectAreaWidth = inspectArea.width * deviceWidthRatio;
+      const inspectAreaHeight = inspectArea.height * deviceHeightRatio;
 
       if (mouseX < inspectAreaX || mouseX > inspectAreaX + inspectAreaWidth || mouseY < inspectAreaY || mouseY > inspectAreaY + inspectAreaHeight) {
+        console.log('wrong');
         return;
       }
 
@@ -324,10 +255,11 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
       }
 
       const lastNode = nodes[nodes.length - 1];
-      const position = getScreenPosition({ deviceHeight, deviceWidth }, lastNode.attributes.bounds, {
-        landscapce: isLandscape,
-        screenSize: item.screenSize,
-        androidViewport: item.android?.viewport,
+      const position = getScreenPosition({
+        screenSize: inspectorModule.current.getDeviceScreenSize(),
+        nodePos: inspectorModule.current.getNodeBound(lastNode),
+        rotation: inspectorModule.current.getDeviceRotation(),
+        inspectArea: inspectorModule.current.getInspectingArea(),
       });
 
       if (!position) {
@@ -336,7 +268,7 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
 
       return { node: lastNode, position };
     },
-    [getScreenPosition, getSelectedContextAndNode, videoRef, device, getRotationDirection],
+    [getScreenPosition, selectedContextAndNode, videoRef, device],
   );
 
   const updateInspectingNodeByKey = useCallback(
