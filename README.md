@@ -5,7 +5,7 @@
   <a href="https://dogutech.io"><b>Dogu</b></a>
 </p>
 <p align="center">
-Dogu is a web-based testing platform for test automation
+Dogu is a web-based test platform for test automation
 </p>
 
 <p align="center">
@@ -33,12 +33,13 @@ Especially, Dogu is tightly integrated with test script and test framework so th
 
 - [Gamium](https://github.com/dogu-team/gamium) - Gamium allows you to automate game developed by Unity Engine.
 
-#### Following functions are not supported now but we have plan to support them in the future.
+## Test Automation Flow
 
-- Test Toolkit - Selenium client
-- Test Framework - Integrate test report with Jest, PyTest
-- Git Server - Integrate with Github
-- Workflow API - for Jenkins and Github Action
+### Target Device for Test Script Execution
+
+<img src=".github/resources/architecture-test-automation-flow.png"/>
+
+Dogu Agent helps you to run test script on your own device farm. Especially, Dogu Agent is tightly integrated with test script and test framework so that you can focus on test automation without developing infrastructure related works like, target device for test execution, parallel test execution, pulling test script.
 
 ## Features
 
@@ -72,7 +73,7 @@ Build device farm with your own devices
   <img src=".github/resources/device-ios-streaming.png" width="32%"/>
 </div>
 
-### [Inspector](https://docs.dogutech.io/host-and-device/device/streaming-and-remote-control/game-ui-inspector)
+### [UI Inspector](https://docs.dogutech.io/host-and-device/device/streaming-and-remote-control/game-ui-inspector)
 
 Inspect UI of device in web page
 
@@ -84,7 +85,7 @@ Inspect UI of device in web page
   <img src=".github/resources/inspector-unity.png" width="49%"/>
 </div>
 
-### [Script & Workflow](https://docs.dogutech.io/script-and-routine/introduction)
+### [Test Script & Workflow](https://docs.dogutech.io/script-and-routine/introduction)
 
 Integrate test script with workflow and run it on your own device farm
 
@@ -119,13 +120,23 @@ Visualize test result
 
 <br/>
 
+### Following functions are not supported now but we have plan to support them in the future.
+
+- Test Toolkit - Selenium client
+- Test Framework - Integrate test report with Jest, PyTest
+- Git Server - Integrate with Github
+- Workflow API - for Jenkins and Github Action
+
+<br/>
+
 ## Start With Self-Hosted
 
-See [Get Started](https://docs.dogutech.io/self-hosted/get-started) with self-hosted.
+You can set up Dogu on your own server.  
+See [Guide setting up Dogu with self-hosted](https://docs.dogutech.io/self-hosted/get-started)
 
 ## Start With Cloud
 
-You can get started right away with [Cloud Service](https://dogutech.io)
+You can start right now with [Cloud Service](https://dogutech.io)
 
 ## Documentation
 
