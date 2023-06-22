@@ -194,7 +194,6 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
       const inspectAreaHeight = inspectArea.height * deviceHeightRatio;
 
       if (mouseX < inspectAreaX || mouseX > inspectAreaX + inspectAreaWidth || mouseY < inspectAreaY || mouseY > inspectAreaY + inspectAreaHeight) {
-        console.log('wrong');
         return;
       }
 
