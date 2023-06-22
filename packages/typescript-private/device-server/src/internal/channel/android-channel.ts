@@ -99,12 +99,16 @@ export class AndroidChannel implements DeviceChannel {
     await deviceAgent.install();
 
     const appiumChannelProxy = new AppiumChannelProxy(appiumService, platform, serial);
-    appiumChannelProxy.get('inspector').catch((error) => {
+    const onCatchInspectorAppiumChannelProxyError = (error: Error): void => {
       logger.error('android appium inspector channel open failed', { error: errorify(error) });
-    });
-    appiumChannelProxy.get('automation').catch((error) => {
-      logger.error('android appium automation channel open failed', { error: errorify(error) });
-    });
+      appiumChannelProxy.get('inspector').catch(onCatchInspectorAppiumChannelProxyError);
+    };
+    appiumChannelProxy.get('inspector').catch(onCatchInspectorAppiumChannelProxyError);
+    // const onCatchAutomationAppiumChannelProxyError = (error: Error): void => {
+    //   logger.error('android appium automation channel open failed', { error: errorify(error) });
+    //   appiumChannelProxy.get('automation').catch(onCatchAutomationAppiumChannelProxyError);
+    // };
+    // appiumChannelProxy.get('automation').catch(onCatchAutomationAppiumChannelProxyError);
 
     const deviceChannel = new AndroidChannel(
       serial,
