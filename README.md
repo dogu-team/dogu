@@ -50,10 +50,7 @@ Manage project, user, device, test script, workflow according to role of organiz
 - Build systematic organization and project
 - Isolate resource like application, device, test script, workflow according to project
 
-<div style="display: flex; flex-direction: row; margin-bottom: 8px">
-  <img src=".github/resources/organization-member.png" width="49%"/>
-  <img src=".github/resources/organization-team.png" width="49%"/>
-</div>
+<img src=".github/resources/organization-member.png"/>
 
 ### [Host & Device](https://docs.dogutech.io/host-and-device/introduction)
 
@@ -63,15 +60,8 @@ Build device farm with your own devices
 - Control host and device remotely
 - Support many platform devices (Android, iOS, Windows, MacOS)
 
-<div style="display: flex; flex-direction: row; margin-bottom: 8px">
-  <img src=".github/resources/host-dashboard.png" width="49%"/>
-  <img src=".github/resources/device-dashboard.png" width="49%"/>
-</div>
-<div style="display: flex; flex-direction: row;">
-  <img src=".github/resources/host-streaming.png" width="32%"/>
-  <img src=".github/resources/device-streaming.png" width="32%"/>
-  <img src=".github/resources/device-ios-streaming.png" width="32%"/>
-</div>
+<img src=".github/resources/device-streaming.png"/>
+<img src=".github/resources/device-ios-streaming.png"/>
 
 ### [UI Inspector](https://docs.dogutech.io/host-and-device/device/streaming-and-remote-control/game-ui-inspector)
 
@@ -80,10 +70,8 @@ Inspect UI of device in web page
 - Inspect native UI
 - Inspect UI of game developed by Unity Engine
 
-<div style="display: flex; flex-direction: row;">
-  <img src=".github/resources/inspector-android.png" width="49%"/>
-  <img src=".github/resources/inspector-unity.png" width="49%"/>
-</div>
+<img src=".github/resources/inspector-android.png" />
+  <img src=".github/resources/inspector-unity.png" />
 
 ### [Test Script & Workflow](https://docs.dogutech.io/script-and-routine/introduction)
 
@@ -94,10 +82,7 @@ Integrate test script with workflow and run it on your own device farm
 - Import test script from Gitlab, Github
 - Parallel test execution
 
-<div style="display: flex; flex-direction: row;">
-  <img src=".github/resources/workflow-outside.png" width="49%"/>
-  <img src=".github/resources/workflow-inside.png" width="49%"/>
-</div>
+<img src=".github/resources/workflow-inside.png"/>
 
 ### [Test Report](https://docs.dogutech.io/script-and-routine/report)
 
@@ -108,15 +93,10 @@ Visualize test result
 - Profiled device (memory, cpu, fps)
 - Log (test script, device, application)
 
-<div style="display: flex; flex-direction: row; margin-bottom: 8px">
-  <img src=".github/resources/reporting-video.png" width="49%"/>
-  <img src=".github/resources/reporting-profiling.png" width="49%"/>
-</div>
-<div style="display: flex; flex-direction: row;">
-  
-  <img src=".github/resources/reporting-visualization.png" width="49%"/>
-  <img src=".github/resources/reporting-testing-profiling.png" width="49%"/>
-</div>
+<img src=".github/resources/reporting-testing-profiling.png"/>
+<img src=".github/resources/reporting-video.png"/>
+<img src=".github/resources/reporting-visualization.png"/>
+<img src=".github/resources/reporting-profiling.png"/>
 
 <br/>
 
