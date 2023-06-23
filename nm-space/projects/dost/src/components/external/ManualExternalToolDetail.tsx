@@ -1,4 +1,4 @@
-import { Button, ListItem, Stack, UnorderedList, Text, useDisclosure } from '@chakra-ui/react';
+import { Button, ListItem, Stack, UnorderedList, Text, useDisclosure, Input } from '@chakra-ui/react';
 import { ExternalKey } from '../../shares/external';
 import { DoguDocsXcodeSettingsUrl } from '../../utils/constants';
 import { ipc } from '../../utils/window';
@@ -17,6 +17,15 @@ const ManualExternalToolDetail = ({ externalKey }: Props): ManualExternalToolDet
   switch (externalKey) {
     case 'xcode':
       return {
+        description: () => {
+          return (
+            <div>
+              <UnorderedList width="100%">
+                <ListItem>Required for iOS device control.</ListItem>
+              </UnorderedList>
+            </div>
+          );
+        },
         solution: () => (
           <Button
             onClick={() => {

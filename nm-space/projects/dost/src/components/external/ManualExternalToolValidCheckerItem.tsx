@@ -1,10 +1,11 @@
 import { CheckCircleIcon, QuestionIcon } from '@chakra-ui/icons';
-import { Box, Button, Flex, Icon, Text, useToast } from '@chakra-ui/react';
+import { Box, Button, Flex, Icon, Text, useColorMode, useToast } from '@chakra-ui/react';
 import { stringify } from '@dogu-tech/common';
 import { useState } from 'react';
 
 import { ExternalKey, ExternalValidationResult } from '../../shares/external';
 import { ipc } from '../../utils/window';
+import BorderBox from '../layouts/BorderBox';
 import ManualExternalToolDetail from './ManualExternalToolDetail';
 
 interface Props {
@@ -18,6 +19,7 @@ const ManualExternalToolValidCheckerItem = ({ externalKey, name, isValid, onVali
   const [valid, setValid] = useState<boolean>(isValid);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
+  const { colorMode } = useColorMode();
 
   const handleValidate = async () => {
     setLoading(true);
@@ -42,7 +44,7 @@ const ManualExternalToolValidCheckerItem = ({ externalKey, name, isValid, onVali
 
   return (
     <div>
-      <Box border="1px" borderColor="rgba(255, 255,255, 0.2)" p={4} rounded="md">
+      <BorderBox>
         <Flex justifyContent="space-between" alignItems="center" mb={2}>
           <Text fontWeight="medium" fontSize="sm" mb="8px">
             {name}
@@ -58,7 +60,7 @@ const ManualExternalToolValidCheckerItem = ({ externalKey, name, isValid, onVali
             </Button>
           )}
         </div>
-      </Box>
+      </BorderBox>
     </div>
   );
 };

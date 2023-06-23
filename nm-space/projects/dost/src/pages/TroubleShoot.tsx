@@ -2,6 +2,7 @@ import { Box, Button, Center, Divider, List, ListItem, Stack, Text } from '@chak
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import BorderBox from '../components/layouts/BorderBox';
 import PageTitle from '../components/layouts/PageTitle';
 
 import MacOsPermissions from '../components/MacOSPermissions';
@@ -28,7 +29,7 @@ function TroubleShoot() {
       <Center>
         <List spacing={4} width="100%">
           {platform && platform === 'darwin' ? (
-            <Box border="1px" borderColor="rgba(255, 255,255, 0.4)" p={4} rounded="md">
+            <BorderBox>
               <Stack spacing="8px">
                 <div>
                   <MenuTitle>macOS Permissions</MenuTitle>
@@ -36,25 +37,25 @@ function TroubleShoot() {
                 </div>
                 <MacOsPermissions />
               </Stack>
-            </Box>
+            </BorderBox>
           ) : null}
 
           <ListItem>
-            <Box border="1px" borderColor="rgba(255, 255,255, 0.4)" p={4} rounded="md">
+            <BorderBox>
               <MenuTitle>Diagnose packages</MenuTitle>
               <Button size="sm" onClick={() => navigate('/doctor')} mt="8px">
                 Dost doctor
               </Button>
-            </Box>
+            </BorderBox>
           </ListItem>
 
           <ListItem>
-            <Box border="1px" borderColor="rgba(255, 255,255, 0.4)" p={4} rounded="md">
+            <BorderBox>
               <MenuTitle>Dogu documents</MenuTitle>
               <Button size="sm" onClick={onClickDoguDocs} mt="8px">
                 Open docs website
               </Button>
-            </Box>
+            </BorderBox>
           </ListItem>
         </List>
       </Center>
