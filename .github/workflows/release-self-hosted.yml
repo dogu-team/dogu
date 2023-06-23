@@ -70,7 +70,7 @@ jobs:
           sed -i 's|NEXT_PUBLIC_DOGU_WS_BASE_URL=.*$|NEXT_PUBLIC_DOGU_WS_BASE_URL=${{ secrets.DEV_DOGU_WS_BASE_URL }}|' ./docker-compose.yml
           sed -i 's|NEXT_PUBLIC_DOGU_GITLAB_HOST=.*$|NEXT_PUBLIC_DOGU_GITLAB_HOST=${{ secrets.DEV_DOGU_GITLAB_HOST }}|' ./docker-compose.yml
 
-          sed -i 's|DOGU_CONSOLE_DOMAIN=.*$|DOGU_CONSOLE_DOMAIN=${{ secrets.DOGU_CONSOLE_DOMAIN }}|' ./docker-compose.yml
+          sed -i 's|DOGU_CONSOLE_DOMAIN=.*$|DOGU_CONSOLE_DOMAIN=${{ secrets.DEV_DOGU_CONSOLE_DOMAIN }}|' ./docker-compose.yml
           echo "DOGU_CONSOLE_URL=https://console.${{ secrets.DEV_DOGU_CONSOLE_DOMAIN }}" >> ./docker-compose.env
           echo "DOGU_EMAIL_ID=${{ secrets.DOGU_EMAIL_ID }}" >> ./docker-compose.env
           echo "DOGU_EMAIL_PW=${{ secrets.DOGU_EMAIL_PW }}" >> ./docker-compose.env
