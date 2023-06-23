@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-and-push-dogu-console:
-    runs-on: dev-doug
+    runs-on: dev-dogu-build
 
     steps:
       - name: docker init
