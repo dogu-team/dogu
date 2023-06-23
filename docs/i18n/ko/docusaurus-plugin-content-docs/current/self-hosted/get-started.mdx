@@ -133,10 +133,6 @@ Dogu를 실행하기 위해서는 gitlab의 root access token이 필요합니다
 
 위 단계에서 생성한 docker-compose.env에 GITLAB_ROOT_ACCESS_TOKEN에 위에 값을 추가로 설정합니다.
 
-```
-ex. GITLAB_ROOT_ACCESS_TOKEN=glpat-Z5Zq-XkrtKjzq5FiAMAA
-```
-
 ### Dogu 재실행
 
 docker-compose.env, docker-compose.yml 파일이 있는 디렉토리에서 아래 명령어를 실행합니다. ( 이전에 실행했던 docker-compose는 중지할 필요 없습니다.)
@@ -163,7 +159,6 @@ dogu console에 연결할 수 있는 dost를 실행합니다.
 - Dost 접속 환경 설정
 
   - [docker-compose.env 파일 생성](/self-hosted/get-started#docker-composeenv-파일-생성)에서 설정한 DOGU_HOST값을 사용하여 접속 URL을 설정합니다.
-    `ex. localhost:4000`
 
   <BrowserOnly>
     {() => (
