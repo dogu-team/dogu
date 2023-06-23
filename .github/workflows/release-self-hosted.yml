@@ -77,6 +77,8 @@ jobs:
           echo "DOGU_GITLAB_PORT=443" >> ./docker-compose.env
           echo "DOGU_GITLAB_PROTOCOL=https" >> ./docker-compose.env
           echo "DOGU_GITLAB_TEMPLATE_GROUP=dogu" >> ./docker-compose.env
+          echo "DOGU_RUN_TYPE=development" >> ./docker-compose.env
+          echo "NEXT_PUBLIC_ENV=development" >> ./docker-compose.env
 
           # file server
           sed -i 's/^FILE_SERVER_USERNAME=.*$/FILE_SERVER_USERNAME=${{ secrets.DEV_DOGU_FILE_SERVER_USERNAME }}/' ./docker-compose.env
@@ -88,4 +90,4 @@ jobs:
 
       - name: run dogu
         run: |
-          docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up -d redis influxdb coturn nexus gitlab console
+          docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up redis influxdb coturn nexus gitlab console -d
