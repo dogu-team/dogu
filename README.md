@@ -1,5 +1,5 @@
 <p align="center">
-<img src=".github/resources/logo.png" width="100px" height="100px" title="Gamium_Logo"/>
+<img src=".github/resources/logo.png" width="128px" height="128px" title="Gamium_Logo"/>
 </p>
 <p align="center">
   <a href="https://dogutech.io"><b>Dogu</b></a>
