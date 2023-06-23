@@ -66,6 +66,10 @@ jobs:
           sed -i 's/^DEVICE_WIFI_SSID=.*$/DEVICE_WIFI_SSID=${{ secrets.DOGU_DEVICE_WIFI_SSID }}/' ./docker-compose.env
           sed -i 's/^DEVICE_WIFI_PASSWORD=.*$/DEVICE_WIFI_PASSWORD=${{ secrets.DOGU_DEVICE_WIFI_PASSWORD }}/' ./docker-compose.env
 
+          sed -i 's/NEXT_PUBLIC_DOGU_API_BASE_URL=/NEXT_PUBLIC_DOGU_API_BASE_URL=${{ secrets.DEV_DOGU_API_BASE_URL }}/' ./docker-compose.yml
+          sed -i 's/NEXT_PUBLIC_DOGU_WS_BASE_URL=/NEXT_PUBLIC_DOGU_WS_BASE_URL=${{ secrets.DEV_DOGU_WS_BASE_URL }}/' ./docker-compose.yml
+
+
           echo "DOGU_CONSOLE_URL=https://console.${{ secrets.DEV_DOGU_HOST }}" >> ./docker-compose.env
           echo "DOGU_EMAIL_ID=${{ secrets.DOGU_EMAIL_ID }}" >> ./docker-compose.env
           echo "DOGU_EMAIL_PW=${{ secrets.DOGU_EMAIL_PW }}" >> ./docker-compose.env
@@ -80,12 +84,7 @@ jobs:
           echo "DOGU_GITLAB_PROTOCOL=https" >> ./docker-compose.env
           echo "DOGU_GITLAB_TEMPLATE_GROUP=dogu" >> ./docker-compose.env
           echo "DOGU_RDS_HOST=${{ secrets.DEV_DOGU_RDS_HOST }}" >> ./docker-compose.env
-          echo "NEXT_PUBLIC_DOGU_API_BASE_URL=${{ secrets.DEV_DOGU_API_BASE_URL }}" >> ./docker-compose.env
-          echo "NEXT_PUBLIC_DOGU_WS_BASE_URL=${{ secrets.DEV_DOGU_WS_BASE_URL }}" >> ./docker-compose.env
-          echo "NEXT_PUBLIC_LANDING_URL=${{ secrets.DEV_DOGU_LANDING_URL }}" >> ./docker-compose.env
-          echo "NEXT_PUBLIC_DOGU_GA_ID=${{ secrets.DEV_DOGU_GA_ID }}" >> ./docker-compose.env
-
-
+          echo "NEXT_PUBLIC_LANDING_URL=${{ secrets.DEV_DOGU_LANDING_URL }}" >> ./docker-compose.env          echo "NEXT_PUBLIC_DOGU_GA_ID=${{ secrets.DEV_DOGU_GA_ID }}" >> ./docker-compose.env
 
 
           # file server
