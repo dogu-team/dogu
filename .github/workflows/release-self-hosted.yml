@@ -89,4 +89,4 @@ jobs:
 
       - name: run dogu
         run: |
-          docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up --scale postgres=0 -d
+          docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up -d
