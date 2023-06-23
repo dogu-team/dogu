@@ -1,7 +1,7 @@
-import { Code, Serial } from '@dogu-private/types';
+import { Serial } from '@dogu-private/types';
 import { errorify, Instance } from '@dogu-tech/common';
-import { TryConnectGamiumInspectorRequest, DeviceInspector, DeviceServerResponseDto, SwitchContextRequest, AppiumChannelKey } from '@dogu-tech/device-client-common';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { DeviceInspector, GetHitPointQuery, SwitchContextRequest, TryConnectGamiumInspectorRequest } from '@dogu-tech/device-client-common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { deviceNotFoundError } from '../device/device.utils';
 import { DoguLogger } from '../logger/logger';
 import { appiumChannelNotFoundError, gamiumContextNotFoundError } from '../response-utils';
@@ -201,5 +201,51 @@ export class DeviceInspectorController {
         },
       };
     }
+  }
+
+  @Get(DeviceInspector.getHitPoint.path)
+  async getHitPoint(@Param('serial') serial: Serial, @Query() getHitPointQueryDto: GetHitPointQuery): Promise<Instance<typeof DeviceInspector.getHitPoint.responseBody>> {
+    const channel = this.scanService.findChannel(serial);
+    if (!channel) {
+      return deviceNotFoundError(serial);
+    }
+
+    const { gamiumContext } = channel;
+    if (!gamiumContext) {
+      return gamiumContextNotFoundError(serial);
+    }
+
+    if (gamiumContext.connected) {
+      try {
+        const { x: screenX, y: screenY, deviceWidth, deviceHeight } = getHitPointQueryDto;
+        const hitPoint = await gamiumContext.getHitPoint({ x: screenX, y: screenY }, { x: deviceWidth, y: deviceHeight });
+        return {
+          value: {
+            $case: 'data',
+            data: {
+              hitPoint,
+            },
+          },
+        };
+      } catch (error) {
+        return {
+          value: {
+            $case: 'data',
+            data: {
+              hitPoint: undefined,
+            },
+          },
+        };
+      }
+    }
+
+    return {
+      value: {
+        $case: 'data',
+        data: {
+          hitPoint: undefined,
+        },
+      },
+    };
   }
 }

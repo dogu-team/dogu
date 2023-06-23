@@ -1,7 +1,7 @@
 import { Tooltip } from 'antd';
 import styled from 'styled-components';
 
-import { InspectNodeAttributes, InspectNodeWithPosition } from '../../types/inspector';
+import { GamiumNodeAttributes, InspectNodeAttributes, InspectNodeWithPosition } from '../../types/inspector';
 
 interface Props {
   nodeInfo: InspectNodeWithPosition<InspectNodeAttributes>;
@@ -12,9 +12,11 @@ const InspectorSelectedNode = ({ nodeInfo }: Props) => {
     <Tooltip
       title={
         <div>
-          {/* <p style={{ wordBreak: 'break-all' }}>
-            <b style={{ color: 'red' }}>Path:</b>&nbsp;{objectInfo.origin.path}
-          </p> */}
+          {!!(nodeInfo.node.attributes as GamiumNodeAttributes).path && (
+            <p style={{ wordBreak: 'break-all' }}>
+              <b style={{ color: 'red' }}>Path:</b>&nbsp;{(nodeInfo.node.attributes as GamiumNodeAttributes).path}
+            </p>
+          )}
           <p style={{ wordBreak: 'break-all' }}>
             <b style={{ color: 'yellow' }}>Name:</b>&nbsp;{nodeInfo.node.title}
           </p>

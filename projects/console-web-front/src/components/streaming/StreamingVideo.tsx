@@ -69,6 +69,7 @@ const StreamingVideo = ({ rightSidebar, videoId, children, onResize, inspector }
       if (mode === 'inspect') {
         inspector?.updateInspectingNodeByPos(e);
         inspector?.updateSelectedNodeFromInspectingNode();
+        inspector?.updateHitPoint(e);
         updateMode('input');
         inspector?.clearInspectingNode();
       } else {

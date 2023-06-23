@@ -282,7 +282,7 @@ func newDeviceServerHttpLabeledDatachannel(label *types.DataChannelLabel, d *web
 		if query := request.GetQuery(); query != nil {
 			queryMap := url.Values{}
 			for k, v := range query.AsMap() {
-				queryMap.Add(k, v.(string))
+				queryMap.Add(k, fmt.Sprintf("%v", v))
 			}
 			rawQuery = queryMap.Encode()
 		}

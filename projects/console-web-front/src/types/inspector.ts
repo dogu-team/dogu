@@ -1,7 +1,7 @@
 import { Platform } from '@dogu-private/types';
 import { ContextPageSource } from '@dogu-tech/device-client-common';
 import { Transform, Type } from 'class-transformer';
-import { AppiumRotation } from '../modules/inspector';
+import { AppiumRotation, GamiumRotation } from '../modules/inspector';
 
 export interface InspectNode<A> {
   tag: string;
@@ -156,6 +156,14 @@ export class GameObjectRotation {
 
 export class GamiumNodeAttributes {
   @Type(() => Number)
+  width?: number;
+
+  @Type(() => Number)
+  height?: number;
+
+  orientation?: GamiumRotation;
+
+  @Type(() => Number)
   index?: number;
 
   @Type(() => GameObjectScreenPosition)
@@ -205,7 +213,6 @@ export class GamiumNodeAttributes {
   name?: string;
   path?: string;
   text?: string;
-  orientation?: string;
 }
 
 export type GamiumAttributeFields = keyof GamiumNodeAttributes;
