@@ -49,6 +49,7 @@ export class GitlabService {
     while (!gitLabIsReady) {
       try {
         this.logger.info('healthCheck. Checking GitLab health check...');
+        this.logger.info(`healthCheck. gitLabUrl: ${gitLabUrl}`);
         const responses = await Promise.all([axios.get(readinessUrl), axios.get(livenessUrl), axios.get(healthUrl)]);
 
         gitLabIsReady = responses.every((response) => {

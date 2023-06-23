@@ -79,6 +79,7 @@ jobs:
 
           echo "DOGU_RUN_TYPE=development" >> ./docker-compose.env
           echo "NEXT_PUBLIC_ENV=development" >> ./docker-compose.env
+          echo "DOGU_GITLAB_HOST=${{ secrets.DEV_DOGU_GITLAB_HOST }}" >> ./docker-compose.env
           echo "DOGU_GITLAB_PORT=443" >> ./docker-compose.env
           echo "DOGU_GITLAB_PROTOCOL=https" >> ./docker-compose.env
           echo "DOGU_GITLAB_TEMPLATE_GROUP=dogu" >> ./docker-compose.env
