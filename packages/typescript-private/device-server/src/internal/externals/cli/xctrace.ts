@@ -31,6 +31,7 @@ export async function listDevices(printable: Printable, filterIos = true): Promi
   const result = await ChildProcess.exec(`${XcTraceCommand} list devices`, {}, printable);
 
   const serials: Serial[] = [];
+  let firstDeviceLine = undefined;
 
   for await (const line of result.stdout.split('\n')) {
     if (line.startsWith('==') && line.endsWith('==')) {
@@ -39,9 +40,13 @@ export async function listDevices(printable: Printable, filterIos = true): Promi
       }
       continue;
     }
-    if (filterIos && !line.startsWith('iP')) {
-      continue;
+    if (!firstDeviceLine) {
+      firstDeviceLine = line;
+      if (filterIos) {
+        continue;
+      }
     }
+
     const matches = line.match(/\([^)]+\)/g);
     if (!matches) {
       continue;
