@@ -14,7 +14,6 @@ import OrganizationSideBar from 'src/components/layouts/OrganizationSideBar';
 import ErrorBox from 'src/components/common/boxes/ErrorBox';
 import useStreamingOptionStore from 'src/stores/streaming-option';
 import { swrAuthFetcher } from '../../../../../src/api';
-import useDeviceInspector from '../../../../../src/hooks/streaming/useDeviceInspector';
 import InspectorSelectedNode from '../../../../../src/components/streaming/InspectorSelectedNode';
 import { ResizedObjectInfo, StreamingTabMenuKey } from '../../../../../src/types/streaming';
 import ResizableLayout from '../../../../../src/components/layouts/ResizableLayout';
