@@ -6,9 +6,11 @@ import React, { RefObject, useCallback, useEffect, useMemo, useRef, useState } f
 
 import { DeviceRotationDirection, InspectorModule } from '../../modules/inspector';
 import AndroidInspectorModule from '../../modules/inspector/android';
+import GamiumInspectorModule from '../../modules/inspector/gamium';
 import {
   AndroidNodeAttributes,
   ContextAndNode,
+  GamiumNodeAttributes,
   InspectNode,
   InspectNodeAttributes,
   InspectNodeWithPosition,
@@ -36,6 +38,7 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
   useEffect(() => {
     if (selectedContextAndNode) {
       if (isGamium) {
+        inspectorModule.current = new GamiumInspectorModule(selectedContextAndNode as ContextAndNode<GamiumNodeAttributes>);
       } else {
         if (device?.platform) {
           switch (device.platform) {
@@ -227,6 +230,7 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
 
       let smallestNodeIndex = 0;
       let smallestValue: number;
+
       nodes.forEach((node, i) => {
         const pos = inspectorModule.current?.getNodeBound(node);
         if (!pos) {
