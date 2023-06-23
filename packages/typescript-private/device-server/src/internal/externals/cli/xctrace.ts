@@ -26,3 +26,29 @@ export async function record(appPath: string, serial: Serial, printable: Printab
   await fs.promises.rmdir(tempDirPath, { recursive: true });
   return proc;
 }
+
+export async function listDevices(printable: Printable, filterIos = true): Promise<Serial[]> {
+  const result = await ChildProcess.exec(`${XcTraceCommand} list devices`, {}, printable);
+
+  const serials: Serial[] = [];
+
+  for await (const line of result.stdout.split('\n')) {
+    if (line.startsWith('==') && line.endsWith('==')) {
+      if (!line.includes('Devices')) {
+        break;
+      }
+      continue;
+    }
+    if (filterIos && !line.startsWith('iP')) {
+      continue;
+    }
+    const matches = line.match(/\([^)]+\)/g);
+    if (!matches) {
+      continue;
+    }
+    const serial = matches[matches.length - 1].slice(1, -1);
+    serials.push(serial);
+  }
+
+  return serials;
+}

@@ -15,7 +15,7 @@ const Splash = () => {
   useEffect(() => {
     const redirectOnInit = async () => {
       try {
-        const isExternalReady = await ipc.externalClient.isSupportedPlatformValid();
+        const isExternalReady = await ipc.externalClient.isSupportedPlatformValid({ ignoreManual: true });
 
         if (!isExternalReady) {
           navigate('/setup/installer');

@@ -14,7 +14,7 @@ interface Props {
 }
 
 const InstallableExternalTable = ({ externalTools, onToggleCheck }: Props) => {
-  const externalToolsForList = externalTools.filter((externalTool) => externalTool.name !== 'XCode');
+  const externalToolsForList = externalTools.filter((externalTool) => !externalTool.isManualInstallNeeded);
 
   return (
     <TableContainer>

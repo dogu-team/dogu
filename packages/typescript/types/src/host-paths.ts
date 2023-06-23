@@ -12,7 +12,7 @@ interface CommonPathMap {
 }
 
 interface MacosPathMap {
-  iosDeviceAgentRunnerZip: string;
+  iosDeviceAgentProject: string;
   mobiledevice: string;
   idevicediagnostics: string;
   libimobiledeviceLibPath: string;

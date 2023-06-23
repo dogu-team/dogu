@@ -1,7 +1,8 @@
 import { ColorMode, Flex, useColorMode } from '@chakra-ui/react';
-import { ImConnection } from 'react-icons/im';
+import { ImConnection, ImMobile2 } from 'react-icons/im';
 import { MdTroubleshoot } from 'react-icons/md';
 import styled from 'styled-components';
+import useEnvironmentStore from '../../stores/environment';
 
 import useHostAgentConnectionStatusStore from '../../stores/host-agent-connection-status';
 import HostAgentConnectionStatusIcon from '../connection/HostAgentConnectionStatusIcon';
@@ -11,6 +12,7 @@ import SiderButton from './SiderButton';
 const HomeMenuSider = () => {
   const { colorMode } = useColorMode();
   const hostAgentConnectionStatus = useHostAgentConnectionStatusStore((state) => state.status);
+  const platform = useEnvironmentStore((state) => state.platform);
 
   return (
     <Sider mode={colorMode}>
@@ -26,6 +28,12 @@ const HomeMenuSider = () => {
           <MdTroubleshoot />
           &nbsp;&nbsp;Troubleshoot
         </SiderButton>
+        {platform && platform === 'darwin' ? (
+          <SiderButton link="/home/ios-settings">
+            <ImMobile2 />
+            &nbsp;&nbsp;iOS Settings
+          </SiderButton>
+        ) : null}
       </div>
 
       <div>

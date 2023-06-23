@@ -1,8 +1,7 @@
-import { Button, Divider, Flex, Spinner } from '@chakra-ui/react';
+import { Button, Divider, Flex, List, Spinner } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import ManaulExternalToolSolution from '../components/external/ManualExternalToolSolution';
 import ManualExternalToolValidCheckerItem from '../components/external/ManualExternalToolValidCheckerItem';
 import PageTitle from '../components/layouts/PageTitle';
 import useManualSetupExternalValidResult from '../hooks/manaul-setup-external-valid-result';
@@ -39,22 +38,15 @@ const SetupManual = () => {
       <Flex direction="column" justifyContent="space-between" flex={1}>
         {results ? (
           <div>
-            {results.length ? (
-              results.map((result) => {
-                return (
-                  <ManualExternalToolValidCheckerItem
-                    key={result.key}
-                    isValid={result.isValid}
-                    externalKey={result.key}
-                    name={result.name}
-                    solution={<ManaulExternalToolSolution externalKey={result.key} />}
-                    onValidateEnd={validate}
-                  />
-                );
-              })
-            ) : (
-              <div>Nothing to do.</div>
-            )}
+            <List spacing={2} width="100%">
+              {results.length ? (
+                results.map((result) => {
+                  return <ManualExternalToolValidCheckerItem key={result.key} isValid={result.isValid} externalKey={result.key} name={result.name} onValidateEnd={validate} />;
+                })
+              ) : (
+                <div>Nothing to do.</div>
+              )}
+            </List>
           </div>
         ) : (
           <Spinner />

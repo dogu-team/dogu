@@ -21,7 +21,7 @@ type DeviceControl = PrivateProtocol.DeviceControl;
 
 export interface DeviceChannelOpenParam {
   serial: Serial;
-  deviceAgentDevicePort: number;
+  deviceAgentDevicePort: number; // android:
   deviceAgentDeviceSecondPort: number;
   deviceAgentDeviceThirdPort: number;
 }

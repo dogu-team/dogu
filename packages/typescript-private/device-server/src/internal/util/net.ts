@@ -12,16 +12,16 @@ export async function getFreePort(excludes: number[] = [], offset = 0): Promise<
     const mergedExcludes = excludes.concat(...usedportToAccessTime.keys());
 
     const frees = await findFreePorts(mergedExcludes.length + 1, { startPort: startPort + offset, endPort });
-    const excludeds = frees.filter((port) => !mergedExcludes.includes(port));
-    if (excludeds.length === 0) {
+    const filteredPorts = frees.filter((port) => !mergedExcludes.includes(port));
+    if (filteredPorts.length === 0) {
       throw Error('getFreePort. there is no port available');
     }
-    for (const excluded of excludeds) {
-      if (usedportToAccessTime.has(excluded)) {
+    for (const port of filteredPorts) {
+      if (usedportToAccessTime.has(port)) {
         continue;
       }
-      usedportToAccessTime.set(excluded, Date.now());
-      return excluded;
+      usedportToAccessTime.set(port, Date.now());
+      return port;
     }
   }
   throw Error('getFreePort. failed to get free port');
