@@ -17,7 +17,7 @@ export abstract class IExternalUnit {
     return this._lastValidationResult;
   }
 
-  async validate(): Promise<void> {
+  async validate(): Promise<ExternalValidationResult> {
     this._lastValidationResult = await Promise.resolve(this.validateInternal())
       .then(() => {
         return {
@@ -31,6 +31,7 @@ export abstract class IExternalUnit {
           error,
         };
       });
+    return this._lastValidationResult;
   }
 
   isValid(): boolean {

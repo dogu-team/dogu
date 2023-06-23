@@ -10,8 +10,10 @@ export const AppiumKey = 'appium';
 export const AppiumUiAutomator2DriverKey = 'appium-uiautomator2-driver';
 export const XcodeKey = 'xcode';
 export const AppiumXcuitestDriverKey = 'appium-xcuitest-driver';
+export const WebDriverAgentBuild = 'web-driver-agent-build';
+export const IosDeviceAgentBuild = 'ios-device-agent-build';
 
-export const ExternalKey = [JdkKey, AndroidSdkKey, AppiumKey, AppiumUiAutomator2DriverKey, XcodeKey, AppiumXcuitestDriverKey] as const;
+export const ExternalKey = [JdkKey, AndroidSdkKey, AppiumKey, AppiumUiAutomator2DriverKey, XcodeKey, AppiumXcuitestDriverKey, WebDriverAgentBuild, IosDeviceAgentBuild] as const;
 export type ExternalKey = (typeof ExternalKey)[number];
 
 export const ExternalKeysProvidedByDost = [JdkKey, AndroidSdkKey, AppiumUiAutomator2DriverKey, AppiumXcuitestDriverKey] as const;
@@ -27,6 +29,10 @@ export const ExternalKeyAndNames: Record<ExternalKeysProvidedByDost, string> = {
 export interface ExternalValidationResult {
   valid: boolean;
   error: Error | null;
+}
+
+export interface ValidationCheckOption {
+  ignoreManual: boolean;
 }
 
 export interface IExternalClient {
@@ -46,7 +52,7 @@ export interface IExternalClient {
   validate(key: ExternalKey): Promise<ExternalValidationResult>;
   isValid(key: ExternalKey): Promise<boolean>;
   isSupportedPlatformValidationCompleted(): Promise<boolean>;
-  isSupportedPlatformValid(): Promise<boolean>;
+  isSupportedPlatformValid(option: ValidationCheckOption): Promise<boolean>;
   getSupportedPlatformKeys(): Promise<ExternalKey[]>;
   getTermUrl(key: ExternalKey): Promise<string | null>;
 }

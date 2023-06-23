@@ -1,18 +1,13 @@
 import { Platform, Serial } from '@dogu-private/types';
-import { delay, errorify, Printable, stringifyError } from '@dogu-tech/common';
+import { delay, Printable, stringifyError } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
-import compressing from 'compressing';
-import fs from 'fs';
-import { glob } from 'glob';
 import { Socket } from 'net';
-import path from 'path';
-import plist from 'plist';
-import { idcLogger } from '../../../logger/logger.instance';
-import { pathMap } from '../../../path-map';
 import { config } from '../../config';
 import { Zombieable, ZombieProps, ZombieWaiter } from '../../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
-import { IosDeviceAgent, MobileDevice, XcodeBuild } from '../index';
+import { MobileDevice, XcodeBuild } from '../index';
+import { DerivedData } from '../xcode/deriveddata';
+import { Xctestrun as XctestrunFile } from '../xcode/xctestrun';
 import { ZombieTunnel } from './mobiledevice-tunnel';
 import { XCTestRunContext } from './xcodebuild';
 
@@ -23,6 +18,7 @@ export class IosDeviceAgentProcess {
   private readonly screenChecker: ZombieScreenChecker;
   constructor(
     private readonly serial: Serial,
+    private readonly xctestrunFile: XctestrunFile,
     private readonly screenForwardPort: number,
     private readonly screenDevicePort: number,
     private readonly grpcForwardPort: number,
@@ -56,10 +52,10 @@ export class IosDeviceAgentProcess {
       }
       return false;
     }, 'kill previous screenchecker');
-    this.xctest = new ZombieXCTest(this.serial, this, this.webDriverPort, this.grpcDevicePort, this.logger);
+    this.xctest = new ZombieXCTest(this.serial, xctestrunFile, this.webDriverPort, this.grpcDevicePort, this.logger);
     this.screenTunnel = new ZombieTunnel(this.serial, this.screenForwardPort, this.screenDevicePort, this.logger);
     this.grpcTunnel = new ZombieTunnel(this.serial, this.grpcForwardPort, this.grpcDevicePort, this.logger);
-    this.screenChecker = new ZombieScreenChecker(this.serial, this, this.screenForwardPort, this.xctest, this.logger);
+    this.screenChecker = new ZombieScreenChecker(this.serial, this.screenForwardPort, this.xctest, this.logger);
   }
 
   static async start(
@@ -85,7 +81,17 @@ export class IosDeviceAgentProcess {
       webDriverPort = device.webDriverPort;
       grpcPort = device.grpcPort;
     }
-    const ret = new IosDeviceAgentProcess(serial, screenForwardPort, screenDevicePort, grpcForwardPort, grpcPort, webDriverPort, logger);
+    const originDerivedData = await DerivedData.create(HostPaths.external.xcodeProject.idaDerivedDataPath());
+    if (!originDerivedData.hasSerial(serial)) {
+      throw new Error(`iOSDeviceAgent can't be executed on ${serial}`);
+    }
+    const copiedDerivedData = await originDerivedData.copyToSerial(HostPaths.external.xcodeProject.idaDerivedDataClonePath(), serial, logger);
+    const xctestrun = copiedDerivedData.xctestrun;
+    if (!xctestrun) {
+      throw new Error('xctestrun not found');
+    }
+    await copiedDerivedData.removeExceptAppsAndXctestrun();
+    const ret = new IosDeviceAgentProcess(serial, xctestrun, screenForwardPort, screenDevicePort, grpcForwardPort, grpcPort, webDriverPort, logger);
     await ret.xctest.zombieWaiter.waitUntilAlive();
     await ret.screenTunnel.zombieWaiter.waitUntilAlive();
     await ret.grpcTunnel.zombieWaiter.waitUntilAlive();
@@ -110,7 +116,7 @@ class ZombieXCTest implements Zombieable {
   public readonly zombieWaiter: ZombieWaiter;
   constructor(
     public readonly serial: Serial,
-    private readonly iosDeviceAgentProcess: IosDeviceAgentProcess,
+    private readonly xctestrunfile: XctestrunFile,
     private readonly webDriverPort: number,
     private readonly grpcPort: number,
     // private readonly iosDeviceControllerGrpcClient: IosDeviceControllerGrpcClient,
@@ -138,7 +144,8 @@ class ZombieXCTest implements Zombieable {
     if (config.externalIosDeviceAgent.use) {
       return;
     }
-    const xctestrunPath = await IosDeviceAgent.copyXctestrun(this.serial);
+
+    const xctestrunPath = this.xctestrunfile.filePath;
     await MobileDevice.uninstallApp(this.serial, 'com.dogu.IOSDeviceAgentRunner').catch(() => {
       // ignore
       this.logger.warn?.('uninstallApp com.dogu.IOSDeviceAgentRunner failed');
@@ -147,7 +154,7 @@ class ZombieXCTest implements Zombieable {
       // ignore
       this.logger.warn?.('uninstallApp com.dogu.IOSDeviceAgentRunner.xctrunner failed');
     });
-    await updateXctestrunFile(xctestrunPath, this.webDriverPort, this.grpcPort);
+    await this.xctestrunfile.updateIdaXctestrunFile(this.webDriverPort, this.grpcPort);
     this.xctestrun = XcodeBuild.testWithoutBuilding(xctestrunPath, this.serial, this.printable);
     this.xctestrun.proc.on('close', () => {
       this.xctestrun = null;
@@ -172,64 +179,9 @@ class ZombieXCTest implements Zombieable {
   }
 }
 
-export async function clearRunspace(): Promise<void> {
-  const idaRunspacesPath = HostPaths.idaRunspacesPath(HostPaths.doguHomePath);
-  if (fs.existsSync(idaRunspacesPath)) {
-    await fs.promises.rm(idaRunspacesPath, { recursive: true });
-  }
-  await fs.promises.mkdir(idaRunspacesPath, { recursive: true });
-}
-
-async function copyToDeviceRunPath(serial: Serial): Promise<string> {
-  const idaRunspacesPath = HostPaths.idaRunspacesPath(HostPaths.doguHomePath);
-  const deviceRunPath = path.resolve(idaRunspacesPath, serial);
-  if (fs.existsSync(deviceRunPath)) {
-    await fs.promises.rm(deviceRunPath, { recursive: true });
-  }
-  await fs.promises.mkdir(deviceRunPath, { recursive: true });
-  await compressing.zip.uncompress(pathMap().macos.iosDeviceAgentRunnerZip, deviceRunPath);
-  return deviceRunPath;
-}
-
-async function updateXctestrunFile(xctestrunPath: string, webDriverPort: number, grpcPort: number): Promise<void> {
-  const content = await fs.promises.readFile(xctestrunPath, 'utf8');
-  const value = plist.parse(content);
-  if (typeof value === 'object') {
-    const object = value as Record<string, unknown>;
-    if ('DoguRunner' in object) {
-      const runner = Reflect.get(object, 'DoguRunner') as Record<string, unknown>;
-      if ('EnvironmentVariables' in runner) {
-        const environment = Reflect.get(runner, 'EnvironmentVariables') as Record<string, string>;
-        environment.DOGU_IOS_DEVICE_AGENT_WEB_DRIVER_PORT = `${webDriverPort}`;
-        environment.DOGU_IOS_DEVICE_AGENT_GRPC_PORT = `${grpcPort}`;
-        await fs.promises.writeFile(xctestrunPath, plist.build(value));
-        return;
-      }
-    }
-  }
-  throw new Error(`xctestrun file is invalid. ${xctestrunPath}`);
-}
-
-export async function copyXctestrun(serial: Serial): Promise<string> {
-  const deviceRunPath = await copyToDeviceRunPath(serial);
-  const files = await glob(`${deviceRunPath}/**/*.xctestrun`);
-  if (files.length === 0) {
-    throw new Error('xctestrun file not found');
-  }
-  const xctestrunPath = files[0];
-  idcLogger.info(`xctestrun file path: ${xctestrunPath}`);
-  return xctestrunPath;
-}
-
 class ZombieScreenChecker implements Zombieable {
   public readonly zombieWaiter: ZombieWaiter;
-  constructor(
-    public readonly serial: Serial,
-    private readonly iosDeviceAgentProcess: IosDeviceAgentProcess,
-    private readonly screenForwadPort: number,
-    private readonly xctest: ZombieXCTest,
-    private readonly logger: Printable,
-  ) {
+  constructor(public readonly serial: Serial, private readonly screenForwadPort: number, private readonly xctest: ZombieXCTest, private readonly logger: Printable) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }
   get parent(): null {

@@ -422,13 +422,6 @@
 			remoteGlobalIDString = 140E05BC294055BF00A32DB5;
 			remoteInfo = IOSDeviceAgentLib;
 		};
-		1488CB7C2941A07C0036284F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 91F9DAE11B99DBC2001349B2 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 1488CB602940C9250036284F;
-			remoteInfo = DoguDev;
-		};
 		1488CB812941A14D0036284F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 91F9DAE11B99DBC2001349B2 /* Project object */;
@@ -443,7 +436,14 @@
 			remoteGlobalIDString = A69289542A2739BF0026DC33;
 			remoteInfo = DoguScreen;
 		};
-		A6D860062A2DABF80012E5E2 /* PBXContainerItemProxy */ = {
+		A6A423CC2A446052007380AD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 91F9DAE11B99DBC2001349B2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1488CB602940C9250036284F;
+			remoteInfo = DoguDev;
+		};
+		A6A423CE2A446055007380AD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 91F9DAE11B99DBC2001349B2 /* Project object */;
 			proxyType = 1;
@@ -486,6 +486,16 @@
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A6DC1CFB2A443D1700CA84DB /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -508,7 +518,6 @@
 		140E05A2294050EB00A32DB5 /* DoguRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoguRunner.swift; sourceTree = "<group>"; };
 		140E05BD294055BF00A32DB5 /* IOSDeviceAgentLib.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = IOSDeviceAgentLib.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		140E05BF294055BF00A32DB5 /* IOSDeviceAgentLib.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IOSDeviceAgentLib.h; sourceTree = "<group>"; };
-		143EECB82949B920000F54D4 /* DoguTypes */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = DoguTypes; path = ../../../packages/swift/types/DoguTypes; sourceTree = "<group>"; };
 		14882537293BAC7400FABE8E /* ServiceProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceProvider.swift; sourceTree = "<group>"; };
 		1488253A293BB7C500FABE8E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		14882543293BC23400FABE8E /* WebDriverAgentLibUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebDriverAgentLibUtils.swift; sourceTree = "<group>"; };
@@ -690,6 +699,7 @@
 		A69289882A2C5AA30026DC33 /* ImageUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageUtils.swift; sourceTree = "<group>"; };
 		A6B953A22A3053BC000A5349 /* SizePrefixedRecvQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SizePrefixedRecvQueue.swift; sourceTree = "<group>"; };
 		A6B953A42A305576000A5349 /* StreamingOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StreamingOption.swift; sourceTree = "<group>"; };
+		A6DC1D032A443DB400CA84DB /* DoguTypes */ = {isa = PBXFileReference; lastKnownFileType = text; path = DoguTypes; sourceTree = SOURCE_ROOT; };
 		AD6C26921CF2379700F8B5FF /* FBAlert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FBAlert.h; path = WebDriverAgentLib/FBAlert.h; sourceTree = SOURCE_ROOT; };
 		AD6C26931CF2379700F8B5FF /* FBAlert.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = FBAlert.m; path = WebDriverAgentLib/FBAlert.m; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		AD6C26961CF2481700F8B5FF /* XCUIDevice+FBHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "XCUIDevice+FBHelpers.h"; sourceTree = "<group>"; };
@@ -1075,7 +1085,7 @@
 		14882533293BAC4B00FABE8E /* Packages */ = {
 			isa = PBXGroup;
 			children = (
-				143EECB82949B920000F54D4 /* DoguTypes */,
+				A6DC1D032A443DB400CA84DB /* DoguTypes */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -2090,8 +2100,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				A6A423CF2A446055007380AD /* PBXTargetDependency */,
 				140E05DF2940574E00A32DB5 /* PBXTargetDependency */,
-				A6D860072A2DABF80012E5E2 /* PBXTargetDependency */,
 			);
 			name = DoguRunner;
 			packageProductDependencies = (
@@ -2131,6 +2141,7 @@
 				1488CB5E2940C9250036284F /* Frameworks */,
 				1488CB5F2940C9250036284F /* Resources */,
 				A692895F2A2739BF0026DC33 /* Embed Foundation Extensions */,
+				A6DC1CFB2A443D1700CA84DB /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2154,8 +2165,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				A6A423CD2A446052007380AD /* PBXTargetDependency */,
 				1488CB822941A14D0036284F /* PBXTargetDependency */,
-				1488CB7D2941A07C0036284F /* PBXTargetDependency */,
 			);
 			name = DoguDevRunner;
 			packageProductDependencies = (
@@ -2518,11 +2529,6 @@
 			isa = PBXTargetDependency;
 			productRef = 143EECB92949B948000F54D4 /* DoguTypes */;
 		};
-		1488CB7D2941A07C0036284F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 1488CB602940C9250036284F /* DoguDev */;
-			targetProxy = 1488CB7C2941A07C0036284F /* PBXContainerItemProxy */;
-		};
 		1488CB822941A14D0036284F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 140E05BC294055BF00A32DB5 /* IOSDeviceAgentLib */;
@@ -2533,10 +2539,15 @@
 			target = A69289542A2739BF0026DC33 /* DoguScreen */;
 			targetProxy = A692895C2A2739BF0026DC33 /* PBXContainerItemProxy */;
 		};
-		A6D860072A2DABF80012E5E2 /* PBXTargetDependency */ = {
+		A6A423CD2A446052007380AD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 1488CB602940C9250036284F /* DoguDev */;
-			targetProxy = A6D860062A2DABF80012E5E2 /* PBXContainerItemProxy */;
+			targetProxy = A6A423CC2A446052007380AD /* PBXContainerItemProxy */;
+		};
+		A6A423CF2A446055007380AD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1488CB602940C9250036284F /* DoguDev */;
+			targetProxy = A6A423CE2A446055007380AD /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

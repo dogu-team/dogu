@@ -52,6 +52,14 @@ export const HostPaths = {
       nodePackagesPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'node-packages'),
       appiumPath: (): string => path.resolve(HostPaths.external.nodePackage.nodePackagesPath(), 'appium'),
     },
+    xcodeProject: {
+      wdaProjectDirectoryPath: (): string => path.resolve(HostPaths.external.defaultAppiumHomePath(), 'node_modules/appium-xcuitest-driver/node_modules/appium-webdriveragent'),
+      wdaDerivedDataPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'web-driver-agent/build'),
+      wdaDerivedDataClonePath: (): string => path.resolve(HostPaths.external.externalsPath(), 'web-driver-agent/build-clone'),
+      idaProjectDirectoryPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'ios-device-agent/project'),
+      idaDerivedDataPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'ios-device-agent/build'),
+      idaDerivedDataClonePath: (): string => path.resolve(HostPaths.external.externalsPath(), 'ios-device-agent/build-clone'),
+    },
   },
 };
 
@@ -132,7 +140,7 @@ function createThirdPartyPathMap(options?: ThirdPartyPathMapOptions): ThirdParty
       ffmpeg: path.resolve(thirdPartyPath, platformDir, archCommonDir, `ffmpeg${exeExtension}`),
     },
     macos: {
-      iosDeviceAgentRunnerZip: process.platform === 'darwin' ? path.resolve(thirdPartyPath, platformDir, archCommonDir, 'ios-device-agent/ios-device-agent-runner.zip') : '',
+      iosDeviceAgentProject: process.platform === 'darwin' ? path.resolve(thirdPartyPath, platformDir, archCommonDir, 'ios-device-agent') : '',
       mobiledevice: process.platform === 'darwin' ? path.resolve(thirdPartyPath, platformDir, archDir, 'mobiledevice') : '',
       idevicediagnostics: process.platform === 'darwin' ? path.resolve(thirdPartyPath, platformDir, archDir, 'idevicediagnostics') : '',
       libimobiledeviceLibPath: process.platform === 'darwin' ? path.resolve(thirdPartyPath, platformDir, archDir, 'lib', 'libimobiledevice') : '',

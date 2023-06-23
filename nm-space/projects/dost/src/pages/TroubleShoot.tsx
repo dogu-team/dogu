@@ -1,4 +1,4 @@
-import { Button, Center, Divider, List, ListItem, Stack, Text } from '@chakra-ui/react';
+import { Box, Button, Center, Divider, List, ListItem, Stack, Text } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -28,42 +28,33 @@ function TroubleShoot() {
       <Center>
         <List spacing={4} width="100%">
           {platform && platform === 'darwin' ? (
-            <Stack spacing="8px">
-              <div>
-                <MenuTitle>macOS Permissions</MenuTitle>
-                <Text fontSize=".9rem">Following permissions are required to control macOS.</Text>
-              </div>
-              <MacOsPermissions />
-            </Stack>
+            <Box border="1px" borderColor="rgba(255, 255,255, 0.4)" p={4} rounded="md">
+              <Stack spacing="8px">
+                <div>
+                  <MenuTitle>macOS Permissions</MenuTitle>
+                  <Text fontSize=".9rem">Following permissions are required to control macOS.</Text>
+                </div>
+                <MacOsPermissions />
+              </Stack>
+            </Box>
           ) : null}
 
           <ListItem>
-            <MenuTitle>Diagnose packages</MenuTitle>
-            <Button size="sm" onClick={() => navigate('/doctor')} mt="8px">
-              Dost doctor
-            </Button>
+            <Box border="1px" borderColor="rgba(255, 255,255, 0.4)" p={4} rounded="md">
+              <MenuTitle>Diagnose packages</MenuTitle>
+              <Button size="sm" onClick={() => navigate('/doctor')} mt="8px">
+                Dost doctor
+              </Button>
+            </Box>
           </ListItem>
 
           <ListItem>
-            <MenuTitle>Dogu documents</MenuTitle>
-            <Button size="sm" onClick={onClickDoguDocs} mt="8px">
-              Open docs website
-            </Button>
-          </ListItem>
-
-          <ListItem>
-            <MenuTitle>WebDriverAgent</MenuTitle>
-            <Button
-              size="sm"
-              onClick={() => {
-                ipc.settingsClient.openWdaProject().catch((error) => {
-                  ipc.rendererLogger.error('Failed to open WDA project', { error });
-                });
-              }}
-              mt="8px"
-            >
-              Open WebDriverAgent project
-            </Button>
+            <Box border="1px" borderColor="rgba(255, 255,255, 0.4)" p={4} rounded="md">
+              <MenuTitle>Dogu documents</MenuTitle>
+              <Button size="sm" onClick={onClickDoguDocs} mt="8px">
+                Open docs website
+              </Button>
+            </Box>
           </ListItem>
         </List>
       </Center>

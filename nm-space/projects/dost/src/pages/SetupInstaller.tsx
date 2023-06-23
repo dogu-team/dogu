@@ -29,7 +29,7 @@ const SetupInstaller = () => {
       await ipc.externalClient.validate(key);
     }
 
-    const isValid = await ipc.externalClient.isSupportedPlatformValid();
+    const isValid = await ipc.externalClient.isSupportedPlatformValid({ ignoreManual: true });
 
     if (!isValid) {
       toast({

@@ -2,7 +2,7 @@ import { errorify } from '@dogu-tech/common';
 import { ipcMain } from 'electron';
 import { setInterval } from 'timers/promises';
 import { DotEnvConfigKey } from '../../src/shares/dot-env-config';
-import { DownloadProgress, externalCallbackKey, externalKey, ExternalKey } from '../../src/shares/external';
+import { DownloadProgress, externalCallbackKey, externalKey, ExternalKey, ValidationCheckOption } from '../../src/shares/external';
 import { AppConfigService } from '../app-config/app-config-service';
 import { DotEnvConfigService } from '../dot-env-config/dot-env-config-service';
 import { logger } from '../log/logger.instance';
@@ -10,11 +10,13 @@ import { StdLogCallbackService } from '../log/std-log-callback-service';
 import { WindowService } from '../window/window-service';
 import { ExternalUnitCallback, IExternalUnit } from './external-unit';
 import { AndroidSdkExternalUnit } from './units/android-sdk-external-unit';
+import { AppiumExternalUnit } from './units/appium-external-unit';
 import { AppiumUiAutomator2DriverExternalUnit } from './units/appium-uiautomator2-driver-external-unit';
 import { AppiumXcUiTestDriverExternalUnit } from './units/appium-xcuitest-driver-external-unit';
+import { IdaBuildExternalUnit } from './units/ida-build-external-command';
 import { JdkExternalUnit } from './units/jdk-external-unit';
+import { WdaBuildExternalUnit } from './units/wda-build-external-command';
 import { XcodeExternalUnit } from './units/xcode-external-unit';
-import { AppiumExternalUnit } from './units/appium-external-unit';
 
 export class ExternalService {
   static instance: ExternalService;
@@ -73,6 +75,8 @@ export class ExternalService {
     this.registerUnit('appium-uiautomator2-driver', (unitCallback) => new AppiumUiAutomator2DriverExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, unitCallback));
     this.registerUnit('xcode', () => new XcodeExternalUnit(this.stdLogCallbackService));
     this.registerUnit('appium-xcuitest-driver', (unitCallback) => new AppiumXcUiTestDriverExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, unitCallback));
+    this.registerUnit('web-driver-agent-build', () => new WdaBuildExternalUnit(this.stdLogCallbackService));
+    this.registerUnit('ios-device-agent-build', () => new IdaBuildExternalUnit(this.stdLogCallbackService));
   }
 
   private registerHandlers(): void {
@@ -92,7 +96,7 @@ export class ExternalService {
     ipcMain.handle(externalKey.validate, (_, key: ExternalKey) => this.getUnit(key).validate());
     ipcMain.handle(externalKey.isValid, (_, key: ExternalKey) => this.getUnit(key).isValid());
     ipcMain.handle(externalKey.isSupportedPlatformValidationCompleted, () => this.isSupportedPlatformValidationCompleted());
-    ipcMain.handle(externalKey.isSupportedPlatformValid, () => this.isSupportedPlatformValid());
+    ipcMain.handle(externalKey.isSupportedPlatformValid, (_, option: ValidationCheckOption) => this.isSupportedPlatformValid(option));
     ipcMain.handle(externalKey.getSupportedPlatformKeys, () => this.getSupportedPlatformKeys());
     ipcMain.handle(externalKey.getTermUrl, (_, key: ExternalKey) => this.getUnit(key).getTermUrl());
   }
@@ -137,13 +141,16 @@ export class ExternalService {
     return Promise.resolve([...this.units.values()].filter((unit) => unit.isPlatformSupported()).every((unit) => unit.lastValidationResult !== null));
   }
 
-  private isSupportedPlatformValid(): Promise<boolean> {
+  private isSupportedPlatformValid(option: ValidationCheckOption): Promise<boolean> {
+    if (option.ignoreManual) {
+      return Promise.resolve([...this.units.values()].filter((unit) => unit.isPlatformSupported() && !unit.isManualInstallNeeded()).every((unit) => unit.isValid()));
+    }
     return Promise.resolve([...this.units.values()].filter((unit) => unit.isPlatformSupported()).every((unit) => unit.isValid()));
   }
 
   private async updateIsSupportedPlatformValid(): Promise<void> {
     const doguIsSupportedPlatformValid = await this.appConfigService.get<boolean>('DOGU_IS_SUPPORTED_PLATFORM_VALID');
-    const isSupportedPlatformValid = await this.isSupportedPlatformValid();
+    const isSupportedPlatformValid = await this.isSupportedPlatformValid({ ignoreManual: false });
     if (doguIsSupportedPlatformValid !== isSupportedPlatformValid) {
       await this.appConfigService.set('DOGU_IS_SUPPORTED_PLATFORM_VALID', isSupportedPlatformValid);
     }

@@ -11,7 +11,7 @@ export type ExternalKeyAndName = { key: ExternalKey; name: string };
 interface Props {
   externalKeyAndNames: ExternalKeyAndName[];
   onStart: () => void | Promise<void>;
-  onFinish: () => void | Promise<void>;
+  onFinish: (isOk: boolean) => void | Promise<void>;
 }
 
 const ExternaltoolInstaller = ({ externalKeyAndNames, onStart, onFinish }: Props) => {
@@ -64,6 +64,7 @@ const ExternaltoolInstaller = ({ externalKeyAndNames, onStart, onFinish }: Props
 
     const install = async () => {
       await onStart();
+      let isOk = true;
       for (const { key, name } of externalKeyAndNames) {
         try {
           await ipc.externalClient.install(key);
@@ -71,13 +72,14 @@ const ExternaltoolInstaller = ({ externalKeyAndNames, onStart, onFinish }: Props
           ipc.rendererLogger.error(`Error occurred while installing: ${key} | ${stringify(e)}`);
           toast({
             title: `Error occurred while installing: ${name}`,
-            description: stringify(e),
+            description: e instanceof Error ? e.message : stringify(e),
             status: 'error',
           });
+          let isOk = false;
         }
         setCurrentCount((prev) => prev + 1);
       }
-      await onFinish();
+      await onFinish(isOk);
     };
 
     install();

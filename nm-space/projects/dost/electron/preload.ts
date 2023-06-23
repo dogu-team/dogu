@@ -5,7 +5,7 @@ import { childCallbackKey, childClientKey, childFactoryKey, HostAgentConnectionS
 import { SentyDSNUrl } from '../src/shares/constants';
 import { dotEnvConfigClientKey, DotEnvConfigKey } from '../src/shares/dot-env-config';
 import { IElectronIpc } from '../src/shares/electron-ipc';
-import { DownloadProgress, externalCallbackKey, ExternalKey, externalKey } from '../src/shares/external';
+import { DownloadProgress, externalCallbackKey, ExternalKey, externalKey, ValidationCheckOption } from '../src/shares/external';
 import { featureConfigClientKey, FeatureKey } from '../src/shares/feature-config';
 import { rendererLoggerKey, stdLogCallbackKey } from '../src/shares/log';
 import { ILoginItemSettingsOptions, ISettings, MediaType, settingsClientKey } from '../src/shares/settings';
@@ -52,6 +52,7 @@ expose('settingsClient', {
   getDefaultAppiumHomePath: () => ipcRenderer.invoke(settingsClientKey.getDefaultAppiumHomePath),
 
   openWdaProject: () => ipcRenderer.invoke(settingsClientKey.openWdaProject),
+  openIdaProject: () => ipcRenderer.invoke(settingsClientKey.openIdaProject),
 });
 
 expose('childClient', {
@@ -112,7 +113,7 @@ expose('externalClient', {
   validate: (key: ExternalKey) => ipcRenderer.invoke(externalKey.validate, key),
   isValid: (key: ExternalKey) => ipcRenderer.invoke(externalKey.isValid, key),
   isSupportedPlatformValidationCompleted: () => ipcRenderer.invoke(externalKey.isSupportedPlatformValidationCompleted),
-  isSupportedPlatformValid: () => ipcRenderer.invoke(externalKey.isSupportedPlatformValid),
+  isSupportedPlatformValid: (option: ValidationCheckOption) => ipcRenderer.invoke(externalKey.isSupportedPlatformValid, option),
   getSupportedPlatformKeys: () => ipcRenderer.invoke(externalKey.getSupportedPlatformKeys),
   getTermUrl: (key: ExternalKey) => ipcRenderer.invoke(externalKey.getTermUrl, key),
 });
