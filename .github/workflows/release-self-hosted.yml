@@ -5,7 +5,7 @@ on:
 
 jobs:
   build-and-push-dogu-console:
-    runs-on: dogu-self-hosted
+    runs-on: dev-dogu-docker-build
     steps:
       - name: docker init
         run: docker system prune --volumes -a -f
