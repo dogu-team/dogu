@@ -14,6 +14,8 @@ export * from './from-process-env.decorator';
 export * from './git';
 export * from './github/octokit-context';
 export * from './host-paths';
+export * from './ios/mobile-provisioning-profile';
+export * from './ios/plist-parser';
 export * from './logs';
 export * from './options-config';
 export * from './platforms';

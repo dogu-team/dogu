@@ -1,5 +1,7 @@
 import { Platform, Serial } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
+import { HostPaths } from '@dogu-tech/node';
+import fs from 'fs';
 import { AppiumService } from '../../appium/appium.service';
 import { GamiumService } from '../../gamium/gamium.service';
 import { logger } from '../../logger/logger.instance';
@@ -16,7 +18,7 @@ export class IosDriver implements DeviceDriver {
   private constructor(private readonly streaming: PionStreamingService, private readonly appiumService: AppiumService, private readonly gamiumService: GamiumService) {}
 
   static async create(deviceServerPort: number, appiumService: AppiumService, gamiumService: GamiumService): Promise<IosDriver> {
-    // await IosDeviceAgent.clearRunspace();
+    await IosDriver.clearIdaClones();
     await XcodeBuild.validateXcodeBuild();
 
     const streaming = await PionStreamingService.create(Platform.PLATFORM_IOS, deviceServerPort);
@@ -52,5 +54,13 @@ export class IosDriver implements DeviceDriver {
 
   reset(): void {
     throw new Error('Method not implemented.');
+  }
+
+  static async clearIdaClones(): Promise<void> {
+    const idaRunspacesPath = HostPaths.external.xcodeProject.idaDerivedDataClonePath();
+    if (fs.existsSync(idaRunspacesPath)) {
+      await fs.promises.rm(idaRunspacesPath, { recursive: true });
+    }
+    await fs.promises.mkdir(idaRunspacesPath, { recursive: true });
   }
 }

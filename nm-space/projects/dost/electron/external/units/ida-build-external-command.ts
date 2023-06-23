@@ -1,5 +1,5 @@
 import { PrefixLogger, stringify } from '@dogu-tech/common';
-import { HostPaths } from '@dogu-tech/node';
+import { HostPaths, removeItemRecursive } from '@dogu-tech/node';
 import { spawn } from 'child_process';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
@@ -94,12 +94,26 @@ export class IdaBuildExternalUnit extends IExternalUnit {
         });
         this.stdLogCallbackService.stdout(`Start ${this.getName()}...`);
         child.on('close', (code, signal) => {
-          this.stdLogCallbackService.stdout(`${this.getName()} is closed. code: ${code} signal: ${signal}`);
-          if (code === 0) {
-            resolve();
-          } else {
-            reject(new Error(`${this.getName()} failed. code: ${code} signal: ${signal}`));
-          }
+          (async () => {
+            this.stdLogCallbackService.stdout(`${this.getName()} is closed. code: ${code} signal: ${signal}`);
+            const buildProductsSubDir = path.resolve(idaDerivedDataPath, 'Build/Products/Debug-iphoneos');
+
+            const allowedExtensions = ['.app'];
+            const files = await fsPromises.readdir(buildProductsSubDir);
+            for (const file of files) {
+              if (!allowedExtensions.some((ext) => file.endsWith(ext))) {
+                await removeItemRecursive(`${buildProductsSubDir}/${file}`);
+              }
+            }
+            if (code === 0) {
+              resolve();
+            } else {
+              reject(new Error(`${this.getName()} failed. code: ${code} signal: ${signal}`));
+            }
+          })().catch((error) => {
+            this.logger.error(error);
+            reject(error);
+          });
         });
         child.stdout.setEncoding('utf8');
         child.stdout.on('data', (data) => {

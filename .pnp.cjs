@@ -32,10 +32,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:e2e"\
       },\
       {\
-        "name": "@dogu-swift/types",\
-        "reference": "workspace:packages/swift/types"\
-      },\
-      {\
         "name": "@dogu-dev-private/base-build-tools",\
         "reference": "workspace:packages/typescript-dev-private/base-build-tools"\
       },\
@@ -225,7 +221,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@dogu-private/nestjs-common", ["workspace:packages/typescript-private/nestjs-common"]],\
       ["@dogu-private/types", ["workspace:packages/typescript-private/types"]],\
       ["@dogu-private/webrtc", ["workspace:packages/typescript-private/webrtc"]],\
-      ["@dogu-swift/types", ["workspace:packages/swift/types"]],\
       ["@dogu-tech/action-common", ["workspace:packages/typescript/action-common"]],\
       ["@dogu-tech/action-kit", ["workspace:packages/typescript/action-kit"]],\
       ["@dogu-tech/common", ["workspace:packages/typescript/common"]],\
@@ -11016,22 +11011,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
-      ["@dogu-swift/types", [\
-        ["workspace:packages/swift/types", {\
-          "packageLocation": "./packages/swift/types/",\
-          "packageDependencies": [\
-            ["@dogu-swift/types", "workspace:packages/swift/types"],\
-            ["@types/glob", "npm:8.1.0"],\
-            ["@types/node", "npm:18.15.11"],\
-            ["@types/shelljs", "npm:0.8.11"],\
-            ["glob", "npm:10.0.0"],\
-            ["shelljs", "npm:0.8.5"],\
-            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
-            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
       ["@dogu-tech/action-common", [\
         ["workspace:packages/typescript/action-common", {\
           "packageLocation": "./packages/typescript/action-common/",\
@@ -11324,7 +11303,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/death", "npm:1.1.2"],\
             ["@types/lodash", "npm:4.14.186"],\
             ["@types/node", "npm:18.15.11"],\
+            ["@types/plist", "npm:3.0.2"],\
             ["@types/ws", "npm:8.5.4"],\
+            ["bplist-parser", "npm:0.3.2"],\
             ["class-transformer", "npm:0.5.1"],\
             ["class-validator", "npm:0.14.0"],\
             ["cross-env", "npm:7.0.3"],\
@@ -11336,6 +11317,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["logform", "npm:2.5.1"],\
             ["nodemon", "npm:2.0.22"],\
             ["octokit", "npm:2.0.7"],\
+            ["plist", "npm:3.0.6"],\
             ["reflect-metadata", "npm:0.1.13"],\
             ["rxjs", "npm:7.5.6"],\
             ["shx", "npm:0.3.4"],\

@@ -4215,7 +4215,9 @@ __metadata:
     "@types/death": 1
     "@types/lodash": 4.14.186
     "@types/node": 18.15.11
+    "@types/plist": 3.0.2
     "@types/ws": 8
+    bplist-parser: 0.3.2
     class-transformer: 0.5.1
     class-validator: 0.14.0
     cross-env: 7.0.3
@@ -4227,6 +4229,7 @@ __metadata:
     logform: 2.5.1
     nodemon: 2.0.22
     octokit: 2.0.7
+    plist: 3.0.6
     reflect-metadata: 0.1.13
     rxjs: 7.5.6
     shx: 0.3.4
@@ -7544,7 +7547,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/plist@npm:3, @types/plist@npm:^3.0.1":
+"@types/plist@npm:3, @types/plist@npm:3.0.2, @types/plist@npm:^3.0.1":
   version: 3.0.2
   resolution: "@types/plist@npm:3.0.2"
   dependencies:
@@ -9673,6 +9676,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"big-integer@npm:1.6.x":
+  version: 1.6.51
+  resolution: "big-integer@npm:1.6.51"
+  checksum: 3d444173d1b2e20747e2c175568bedeebd8315b0637ea95d75fd27830d3b8e8ba36c6af40374f36bdaea7b5de376dcada1b07587cb2a79a928fccdb6e6e3c518
+  languageName: node
+  linkType: hard
+
 "big.js@npm:^5.2.2":
   version: 5.2.2
   resolution: "big.js@npm:5.2.2"
@@ -9774,6 +9784,15 @@ __metadata:
   version: 2.19.5
   resolution: "bottleneck@npm:2.19.5"
   checksum: c5eef1bbea12cef1f1405e7306e7d24860568b0f7ac5eeab706a86762b3fc65ef6d1c641c8a166e4db90f412fc5c948fc5ce8008a8cd3d28c7212ef9c3482bda
+  languageName: node
+  linkType: hard
+
+"bplist-parser@npm:0.3.2":
+  version: 0.3.2
+  resolution: "bplist-parser@npm:0.3.2"
+  dependencies:
+    big-integer: 1.6.x
+  checksum: fad0f6eb155a9b636b4096a1725ce972a0386490d7d38df7be11a3a5645372446b7c44aacbc6626d24d2c17d8b837765361520ebf2960aeffcaf56765811620e
   languageName: node
   linkType: hard
 

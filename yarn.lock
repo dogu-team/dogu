@@ -4962,20 +4962,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-swift/types@workspace:packages/swift/types":
-  version: 0.0.0-use.local
-  resolution: "@dogu-swift/types@workspace:packages/swift/types"
-  dependencies:
-    "@types/glob": 8
-    "@types/node": 18.15.11
-    "@types/shelljs": 0.8.11
-    glob: 10.0.0
-    shelljs: 0.8.5
-    ts-node: 10.9.1
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
 "@dogu-tech/action-common@workspace:^, @dogu-tech/action-common@workspace:packages/typescript/action-common":
   version: 0.0.0-use.local
   resolution: "@dogu-tech/action-common@workspace:packages/typescript/action-common"
@@ -5245,7 +5231,9 @@ __metadata:
     "@types/death": 1
     "@types/lodash": 4.14.186
     "@types/node": 18.15.11
+    "@types/plist": 3.0.2
     "@types/ws": 8
+    bplist-parser: 0.3.2
     class-transformer: 0.5.1
     class-validator: 0.14.0
     cross-env: 7.0.3
@@ -5257,6 +5245,7 @@ __metadata:
     logform: 2.5.1
     nodemon: 2.0.22
     octokit: 2.0.7
+    plist: 3.0.6
     reflect-metadata: 0.1.13
     rxjs: 7.5.6
     shx: 0.3.4
@@ -9726,7 +9715,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/plist@npm:3, @types/plist@npm:^3.0.2":
+"@types/plist@npm:3, @types/plist@npm:3.0.2":
   version: 3.0.2
   resolution: "@types/plist@npm:3.0.2"
   dependencies:
@@ -12587,7 +12576,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"bplist-parser@npm:0.3.2, bplist-parser@npm:^0.3.2":
+"bplist-parser@npm:0.3.2":
   version: 0.3.2
   resolution: "bplist-parser@npm:0.3.2"
   dependencies:
@@ -13072,7 +13061,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cgbi-to-png@npm:^1.0.7":
+"cgbi-to-png@npm:1.0.7":
   version: 1.0.7
   resolution: "cgbi-to-png@npm:1.0.7"
   dependencies:
@@ -14179,7 +14168,7 @@ __metadata:
     "@types/passport-google-oauth20": ^2.0.11
     "@types/passport-jwt": 3.0.7
     "@types/pg": ^8
-    "@types/plist": ^3.0.2
+    "@types/plist": 3.0.2
     "@types/shelljs": 0.8.11
     "@types/supertest": 2.0.12
     "@types/swagger-ui-express": 4
@@ -14193,8 +14182,8 @@ __metadata:
     axios: ^1.4.0
     bcrypt: 5.0.0
     body-parser: 1.20.2
-    bplist-parser: ^0.3.2
-    cgbi-to-png: ^1.0.7
+    bplist-parser: 0.3.2
+    cgbi-to-png: 1.0.7
     class-transformer: 0.5.1
     class-validator: 0.14.0
     cookie-parser: 1.4.6
@@ -14218,7 +14207,7 @@ __metadata:
     passport-google-oauth20: ^2.0.0
     passport-jwt: 4.0.0
     pg: ^8.11.0
-    plist: ^3.0.6
+    plist: 3.0.6
     reflect-metadata: 0.1.13
     rxjs: 7.5.6
     shelljs: 0.8.5
@@ -26280,7 +26269,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"plist@npm:3.0.6, plist@npm:^3.0.2, plist@npm:^3.0.5, plist@npm:^3.0.6":
+"plist@npm:3.0.6, plist@npm:^3.0.2, plist@npm:^3.0.5":
   version: 3.0.6
   resolution: "plist@npm:3.0.6"
   dependencies:

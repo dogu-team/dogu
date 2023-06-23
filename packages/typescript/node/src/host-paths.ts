@@ -58,6 +58,7 @@ export const HostPaths = {
       idaRootPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'ios-device-agent'),
       idaProjectDirectoryPath: (): string => path.resolve(HostPaths.external.xcodeProject.idaRootPath(), 'project'),
       idaDerivedDataPath: (): string => path.resolve(HostPaths.external.xcodeProject.idaRootPath(), 'build'),
+      idaDerivedDataClonePath: (): string => path.resolve(HostPaths.external.xcodeProject.idaRootPath(), 'build-clone'),
     },
   },
 };
