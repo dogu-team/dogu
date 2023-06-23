@@ -1,6 +1,6 @@
 import { DeviceBase } from '@dogu-private/console';
 import { Platform } from '@dogu-private/types';
-import { ScreenSize } from '@dogu-tech/device-client-common';
+import { HitPoint, ScreenSize } from '@dogu-tech/device-client-common';
 import { throttle } from 'lodash';
 import React, { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -26,7 +26,7 @@ export const GAMIUM_CONTEXT_KEY = 'GAMIUM';
 const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, device: DeviceBase | null, videoRef: RefObject<HTMLVideoElement> | null) => {
   const [contextAndNodes, setContextAndNodes] = useState<ContextAndNode<InspectNodeAttributes>[]>();
   const [selectedContextKey, setSelectedContextKey] = useState<string>();
-  const [hitPoint, setHitPoint] = useState();
+  const [hitPoint, setHitPoint] = useState<HitPoint>();
   const [selectedNode, setSelectedNode] = useState<InspectNodeWithPosition<InspectNodeAttributes>>();
   const [inspectingNode, setInspectingNode] = useState<InspectNodeWithPosition<InspectNodeAttributes>>();
   const inspectorModule = useRef<InspectorModule<any>>();
@@ -285,8 +285,6 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
     }, 50);
   }, [getNodeByPos]);
 
-  const getHitPoint = useCallback(async () => {}, []);
-
   const updateSelectedContextKey = useCallback((key: string | undefined) => {
     setSelectedContextKey(key);
     setInspectingNode(undefined);
@@ -329,21 +327,59 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
     }
   }, [deviceInspector, device]);
 
+  const updateHitPoint = useCallback(
+    async (e: React.MouseEvent) => {
+      if (isGamium && device?.serial && deviceInspector && videoRef?.current) {
+        const mouseX = e.nativeEvent.offsetX;
+        const mouseY = e.nativeEvent.offsetY;
+
+        const deviceSize = inspectorModule.current?.getDeviceScreenSize();
+
+        if (!deviceSize) {
+          return;
+        }
+
+        const videoWidth = videoRef.current.offsetWidth;
+        const videoHeight = videoRef.current.offsetHeight;
+        const deviceWidthRatio = videoWidth / deviceSize.width;
+        const deviceHeightRatio = videoHeight / deviceSize.height;
+        const deviceX = mouseX / deviceWidthRatio;
+        const deviceY = mouseY / deviceHeightRatio;
+
+        try {
+          const hitpoint = await deviceInspector.getHitPoint(
+            device.serial,
+            {
+              x: deviceX,
+              y: deviceY,
+            },
+            deviceSize,
+          );
+          setHitPoint(hitpoint);
+        } catch (e) {
+          console.debug('error get hitpoint', e);
+        }
+      }
+    },
+    [isGamium, device?.serial, deviceInspector, videoRef],
+  );
+
   return {
     contextAndNodes,
     selectedContextKey,
     inspectingNode,
     selectedNode,
+    hitPoint,
     updateSources,
     updateInspectingNodeByKey,
     updateInspectingNodeByPos,
-    getHitPoint,
     updateSelectedContextKey,
     clearInspectingNode,
     updateSelectedNode,
     updateSelectedNodeFromInspectingNode,
     clearSelectedNode,
     connectGamium,
+    updateHitPoint,
   };
 };
 

@@ -62,7 +62,7 @@ const Inspector = ({ inspector }: Props) => {
       </Inner>
       <Inner h={45} style={{ overflow: 'auto' }}>
         {inspector.selectedContextKey === GAMIUM_CONTEXT_KEY ? (
-          <GameObjectDetail node={inspector.selectedNode?.node as InspectNode<GamiumNodeAttributes> | undefined} hitPoint={undefined} />
+          <GameObjectDetail node={inspector.selectedNode?.node as InspectNode<GamiumNodeAttributes> | undefined} hitPoint={inspector.hitPoint} />
         ) : (
           <NativeObjectDetail node={inspector.selectedNode?.node} />
         )}

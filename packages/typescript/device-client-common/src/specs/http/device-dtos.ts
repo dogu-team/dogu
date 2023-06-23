@@ -189,6 +189,44 @@ export class TryConnectGamiumInspectorResponse {
   status!: TryConnectGamiumInspectorStatus;
 }
 
+export class GetHitPointQuery {
+  @IsNumber()
+  @Type(() => Number)
+  x!: number;
+
+  @IsNumber()
+  @Type(() => Number)
+  y!: number;
+
+  @IsNumber()
+  @Type(() => Number)
+  deviceWidth!: number;
+
+  @IsNumber()
+  @Type(() => Number)
+  deviceHeight!: number;
+}
+
+export class HitPoint {
+  @IsNumber()
+  @Type(() => Number)
+  x!: number;
+
+  @IsNumber()
+  @Type(() => Number)
+  y!: number;
+
+  @IsNumber()
+  @Type(() => Number)
+  z!: number;
+}
+
+export class GetHitPointResponse {
+  @ValidateNested()
+  @Type(() => HitPoint)
+  hitPoint: HitPoint | undefined;
+}
+
 export const AppiumChannelKey = ['inspector', 'automation'] as const;
 export type AppiumChannelKey = (typeof AppiumChannelKey)[number];
 

@@ -1,3 +1,4 @@
+import { HitPoint } from '@dogu-tech/device-client-common';
 import { Vector3 } from 'gamium/common';
 import useTranslation from 'next-translate/useTranslation';
 import styled, { css } from 'styled-components';
@@ -8,7 +9,7 @@ import InspectObjectProperty from './InspectObjectProperty';
 
 interface Props {
   node: InspectNode<GamiumNodeAttributes> | undefined;
-  hitPoint: Vector3 | undefined;
+  hitPoint: HitPoint | undefined;
 }
 
 const GameObjectDetail = ({ node, hitPoint }: Props) => {
@@ -18,7 +19,15 @@ const GameObjectDetail = ({ node, hitPoint }: Props) => {
     <Box>
       <Section>
         <StyledTitle>Hit Point</StyledTitle>
-        <p>No hitpoint</p>
+        {hitPoint ? (
+          <FlexRow>
+            <InspectObjectProperty title="" values={[{ label: 'X', value: hitPoint?.x.toFixed(1) }]} />
+            <InspectObjectProperty title="" values={[{ label: 'Y', value: hitPoint?.y.toFixed(1) }]} />
+            <InspectObjectProperty title="" values={[{ label: 'Z', value: hitPoint?.z.toFixed(1) }]} />
+          </FlexRow>
+        ) : (
+          <div>No hit point</div>
+        )}
       </Section>
 
       <Section>

@@ -24,7 +24,7 @@ const InspectObjectProperty = ({ title, values, disableCopy }: Props) => {
 
   return (
     <FlexRow>
-      <StyledTitle>{title}</StyledTitle>
+      {!!title && <StyledTitle>{title}</StyledTitle>}
       {Array.isArray(values) ? (
         <FlexRow>
           {values.map((item) => (

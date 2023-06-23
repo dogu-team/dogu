@@ -1,6 +1,14 @@
 import { Serial } from '@dogu-private/types';
 import { Instance } from '@dogu-tech/common';
-import { ContextPageSource, DeviceHttpClient, DeviceInspector, DeviceClientOptions, DeviceService, TryConnectGamiumInspectorStatus } from '@dogu-tech/device-client-common';
+import {
+  ContextPageSource,
+  DeviceClientOptions,
+  DeviceHttpClient,
+  DeviceInspector,
+  DeviceService,
+  HitPoint,
+  TryConnectGamiumInspectorStatus,
+} from '@dogu-tech/device-client-common';
 
 export class BrowserDeviceInspector extends DeviceHttpClient {
   constructor(deviceService: DeviceService, options?: DeviceClientOptions) {
@@ -55,5 +63,17 @@ export class BrowserDeviceInspector extends DeviceHttpClient {
     };
     const response = await this.httpRequest(DeviceInspector.tryConnectGamiumInspector, pathProvider, undefined, body);
     return response.status;
+  }
+
+  async getHitPoint(serial: Serial, screenPos: { x: number; y: number }, deviceSize: { width: number; height: number }): Promise<HitPoint | undefined> {
+    const pathProvider = new DeviceInspector.getHitPoint.pathProvider(serial);
+    const query: Instance<typeof DeviceInspector.getHitPoint.query> = {
+      x: screenPos.x,
+      y: screenPos.y,
+      deviceWidth: deviceSize.width,
+      deviceHeight: deviceSize.height,
+    };
+    const response = await this.httpRequest(DeviceInspector.getHitPoint, pathProvider, query);
+    return response.hitPoint;
   }
 }
