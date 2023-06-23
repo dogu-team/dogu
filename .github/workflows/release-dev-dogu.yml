@@ -1,4 +1,4 @@
-name: 🚀release-self-hosted
+name: 🚀release-dev-dogu
 
 on:
   workflow_dispatch:
