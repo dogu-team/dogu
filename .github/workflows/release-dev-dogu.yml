@@ -9,35 +9,35 @@ on:
         default: '0.0.1'
 
 jobs:
-  build-and-push-dogu-console:
-    runs-on: dev-dogu-build
+  # build-and-push-dogu-console:
+  #   runs-on: dev-dogu-build
 
-    steps:
-      - name: docker init
-        run: docker system prune --volumes -a -f
+  #   steps:
+  #     - name: docker init
+  #       run: docker system prune --volumes -a -f
 
-      - name: Checkout
-        uses: actions/checkout@v3
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #     - name: Login to Docker Hub
+  #       uses: docker/login-action@v2
+  #       with:
+  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          target: dogu-console
-          tags: |
-            dogutechio/dogu:rc
+  #     - name: Build and push Docker image
+  #       uses: docker/build-push-action@v3
+  #       with:
+  #         context: .
+  #         file: ./Dockerfile
+  #         push: true
+  #         target: dogu-console
+  #         tags: |
+  #           dogutechio/dogu:rc
 
-  start-rc-dogu:
+  start-dev-dogu:
     runs-on: dev-dogu
-    needs: build-and-push-dogu-console
+    # needs: build-and-push-dogu-console
 
     steps:
       - name: Checkout
@@ -76,6 +76,12 @@ jobs:
           sed -i 's|NEXT_PUBLIC_DOGU_API_BASE_URL=.*$|NEXT_PUBLIC_DOGU_API_BASE_URL=${{ secrets.DEV_DOGU_API_BASE_URL }}|' ./docker-compose.yml
           sed -i 's|NEXT_PUBLIC_DOGU_WS_BASE_URL=.*$|NEXT_PUBLIC_DOGU_WS_BASE_URL=${{ secrets.DEV_DOGU_WS_BASE_URL }}|' ./docker-compose.yml
           sed -i 's|NEXT_PUBLIC_DOGU_GITLAB_HOST=.*$|NEXT_PUBLIC_DOGU_GITLAB_HOST=${{ secrets.DEV_DOGU_GITLAB_HOST }}|' ./docker-compose.yml
+          sed -i 's|NEXT_PUBLIC_DOGU_GITLAB_PORT=.*$|NEXT_PUBLIC_DOGU_GITLAB_PORT=443|' ./docker-compose.yml
+          sed -i 's|NEXT_PUBLIC_DOGU_GITLAB_PROTOCOL=.*$|NEXT_PUBLIC_DOGU_GITLAB_PROTOCOL=https|' ./docker-compose.yml
+
+
+
+          sed -i 's|DOGU_GITLAB_HOST=.*$|DOGU_GITLAB_HOST=${{ secrets.DEV_DOGU_GITLAB_HOST }}|' ./docker-compose.yml
 
           sed -i 's|DOGU_CONSOLE_DOMAIN=.*$|DOGU_CONSOLE_DOMAIN=${{ secrets.DEV_DOGU_CONSOLE_DOMAIN }}|' ./docker-compose.yml
           echo "DOGU_CONSOLE_URL=https://console.${{ secrets.DEV_DOGU_CONSOLE_DOMAIN }}" >> ./docker-compose.env
@@ -88,7 +94,6 @@ jobs:
 
           echo "DOGU_RUN_TYPE=development" >> ./docker-compose.env
           echo "NEXT_PUBLIC_ENV=development" >> ./docker-compose.env
-          echo "DOGU_GITLAB_HOST=${{ secrets.DEV_DOGU_GITLAB_HOST }}" >> ./docker-compose.env
           echo "DOGU_GITLAB_PORT=443" >> ./docker-compose.env
           echo "DOGU_GITLAB_PROTOCOL=https" >> ./docker-compose.env
           echo "DOGU_GITLAB_TEMPLATE_GROUP=dogu" >> ./docker-compose.env
