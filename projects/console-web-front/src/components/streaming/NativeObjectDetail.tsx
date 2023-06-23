@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 import { InspectNode, InspectNodeAttributes } from '../../types/inspector';
+import InspectObjectProperty from './InspectObjectProperty';
 
 interface Props {
   node: InspectNode<InspectNodeAttributes> | undefined;
@@ -22,12 +23,7 @@ const NativeObjectDetail = ({ node }: Props) => {
           }
 
           if (typeof value !== 'object') {
-            return (
-              <div key={key}>
-                <b style={{ fontWeight: '700', marginRight: '.25rem' }}>{key}</b>
-                <span>{`${value}`}</span>
-              </div>
-            );
+            return <InspectObjectProperty key={key} title={key} values={value} />;
           }
         })}
       </Section>

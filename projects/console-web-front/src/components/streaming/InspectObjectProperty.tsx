@@ -58,6 +58,7 @@ const FlexRow = styled.div`
 const StyledTitle = styled.b`
   font-weight: 600;
   margin-right: 0.75rem;
+  flex-shrink: 0;
 `;
 
 const StyledLabel = styled.b`
