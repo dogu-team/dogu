@@ -61,8 +61,10 @@ Build device farm with your own devices
 - Control host and device remotely
 - Support many platform devices (Android, iOS, Windows, MacOS)
 
-<img src=".github/resources/device-android-streaming.gif"/>
-<img src=".github/resources/device-ios-streaming.gif"/>
+<div style="display: flex; flex-direction: row; margin-bottom: 8px">
+  <img src=".github/resources/device-android-streaming.gif" width="49%"/>
+  <img src=".github/resources/device-ios-streaming.gif" width="49%"/>
+</div>
 
 ### [UI Inspector](https://docs.dogutech.io/host-and-device/device/streaming-and-remote-control/game-ui-inspector)
 
@@ -72,7 +74,7 @@ Inspect UI of device in web page
 - Inspect UI of game developed by Unity Engine
 
 <img src=".github/resources/inspector-android.png" />
-  <img src=".github/resources/inspector-unity.png" />
+<img src=".github/resources/inspector-unity.png" />
 
 ### [Test Script & Workflow](https://docs.dogutech.io/script-and-routine/introduction)
 
