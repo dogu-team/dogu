@@ -7,6 +7,7 @@ import path from 'path';
 import { ExternalKey } from '../../../src/shares/external';
 import { logger } from '../../log/logger.instance';
 import { StdLogCallbackService } from '../../log/std-log-callback-service';
+import { copyiOSDeviceAgentProject } from '../../settings/ios-device-agent-project';
 import { IExternalUnit } from '../external-unit';
 import { validateXcode } from '../xcode';
 
@@ -65,6 +66,7 @@ export class IdaBuildExternalUnit extends IExternalUnit {
   }
 
   async install(): Promise<void> {
+    await copyiOSDeviceAgentProject(logger);
     const idaDerivedDataPath = HostPaths.external.xcodeProject.idaDerivedDataPath();
     const idaProjectPath = path.resolve(HostPaths.external.xcodeProject.idaProjectDirectoryPath(), 'IOSDeviceAgent.xcodeproj');
     if (!fs.existsSync(idaProjectPath)) {

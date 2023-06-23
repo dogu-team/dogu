@@ -75,7 +75,7 @@ const ExternaltoolInstaller = ({ externalKeyAndNames, onStart, onFinish }: Props
             description: e instanceof Error ? e.message : stringify(e),
             status: 'error',
           });
-          let isOk = false;
+          isOk = false;
         }
         setCurrentCount((prev) => prev + 1);
       }

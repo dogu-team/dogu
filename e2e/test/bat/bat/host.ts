@@ -1,7 +1,9 @@
 import { expect, job, test } from '@dogu-tech/dest';
+import { Page } from 'playwright';
 import { Key } from 'selenium-webdriver';
 import { Driver } from '../../../src/chromedriver';
 import { launchDost } from '../../../src/dost';
+import { replaceWebDriverAgentSigningStyle } from '../../../src/ios-helper';
 import { Timer } from '../../../src/timer';
 import { l10n } from './l10n';
 
@@ -59,21 +61,45 @@ export function runHost(random: number): void {
       console.log(`Token@@@@:${token}`);
     });
 
-    test('Execute Dost', async () => {
-      const mainPage = await launchDost();
-      const delayMs = 300;
-      const InstallTimeoutMs = 180000;
-      const longTimeoutMs = 30000;
-      const shortTimeoutMs = 1000;
-      const clickOption = { delay: 300, timeout: shortTimeoutMs };
+    let mainPage: Page | undefined = undefined;
+    const InstallTimeoutMs = 180000;
+    const longTimeoutMs = 30000;
+    const shortTimeoutMs = 1000;
 
+    test('Execute Dost', async () => {
+      mainPage = await launchDost();
+    });
+
+    test('Dost Install externals', async () => {
+      if (!mainPage) {
+        throw new Error('mainPage is undefined');
+      }
       await (await mainPage.waitForSelector('.chakra-checkbox__control', { timeout: longTimeoutMs })).click({ timeout: shortTimeoutMs });
       await mainPage.getByText('Install', { exact: true }).first().click({ timeout: longTimeoutMs });
-      await mainPage.getByText('Finish', { exact: true }).first().click({ timeout: InstallTimeoutMs });
+      // await mainPage.getByText('Finish', { exact: true }).first().click({ timeout: InstallTimeoutMs });
+    });
+
+    test('Dost manual setup', async () => {
+      if (!mainPage) {
+        throw new Error('mainPage is undefined');
+      }
+      if (process.platform !== 'darwin') {
+        return;
+      }
+      replaceWebDriverAgentSigningStyle();
+
+      await mainPage.getByText('Click here to build', { exact: true }).first().click({ timeout: InstallTimeoutMs });
+      await mainPage.getByText('Click here to build', { exact: true }).first().click({ timeout: InstallTimeoutMs });
+    });
+
+    test('Dost connect', async () => {
+      if (!mainPage) {
+        throw new Error('mainPage is undefined');
+      }
       await (await mainPage.waitForSelector('.chakra-input', { timeout: longTimeoutMs })).click({ timeout: shortTimeoutMs });
       await (await mainPage.waitForSelector('.chakra-input', { timeout: longTimeoutMs })).fill(token, { timeout: shortTimeoutMs });
       await mainPage.getByText('Connect', { exact: true }).first().click({ timeout: InstallTimeoutMs });
-      await Timer.wait(6000, 'dost launch');
+      await Timer.wait(10000, 'dost launch');
       const isConnected = await mainPage.getByText('Connected', { exact: true }).first().isVisible({ timeout: longTimeoutMs });
       if (!isConnected) {
         throw new Error('Dost is not connected');

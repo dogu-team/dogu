@@ -16265,6 +16265,7 @@ __metadata:
     jest: 29.1.2
     lodash: 4.17.21
     nodemon: 2.0.22
+    pbxproj-dom: 1.2.0
     playwright: 1.32.1
     reflect-metadata: 0.1.13
     selenium-webdriver: 4.3.0

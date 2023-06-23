@@ -1,9 +1,8 @@
-import { copyDirectoryRecursive, HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
+import { HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
 import { exec } from 'child_process';
 import { app, desktopCapturer, ipcMain, shell, systemPreferences } from 'electron';
 import isDev from 'electron-is-dev';
 import fs from 'fs';
-import fsPromise from 'fs/promises';
 import _ from 'lodash';
 import path from 'path';
 import shelljs from 'shelljs';
@@ -12,6 +11,7 @@ import { ILoginItemSettingsOptions, ISettings, MediaType, settingsClientKey } fr
 import { DotEnvConfigService } from '../dot-env-config/dot-env-config-service';
 import { logger } from '../log/logger.instance';
 import { ThirdPartyPathMap, WritablePath } from '../path-map';
+import { copyiOSDeviceAgentProject } from './ios-device-agent-project';
 
 const execAsync = promisify(exec);
 
@@ -101,14 +101,12 @@ export class SettingsService {
   }
 
   private async openIdaProject(): Promise<void> {
-    const idaOriginProjectDirectoryPath = HostPaths.thirdParty.pathMap().macos.iosDeviceAgentProject;
     const idaDestProjectDirectoryPath = HostPaths.external.xcodeProject.idaProjectDirectoryPath();
 
     if (fs.existsSync(idaDestProjectDirectoryPath)) {
       shelljs.rm('-rf', idaDestProjectDirectoryPath);
     }
-    await fsPromise.mkdir(idaDestProjectDirectoryPath, { recursive: true });
-    await copyDirectoryRecursive(idaOriginProjectDirectoryPath, idaDestProjectDirectoryPath, logger);
+    await copyiOSDeviceAgentProject(logger);
 
     const idaDestProjectPath = path.resolve(idaDestProjectDirectoryPath, 'IOSDeviceAgent.xcodeproj');
     const { stdout, stderr } = await execAsync(`open ${idaDestProjectPath}`, {});

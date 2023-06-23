@@ -25827,6 +25827,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["jest", "virtual:da41e68dc71233b9c882eeff9361d8de0e473b61bcdb51151099ca0b04c2002213c7795bcfb970497741a25f92014dde50c5af7549c4b6ae944acaaff53dda6f#npm:29.1.2"],\
             ["lodash", "npm:4.17.21"],\
             ["nodemon", "npm:2.0.22"],\
+            ["pbxproj-dom", "npm:1.2.0"],\
             ["playwright", "npm:1.32.1"],\
             ["reflect-metadata", "npm:0.1.13"],\
             ["selenium-webdriver", "npm:4.3.0"],\

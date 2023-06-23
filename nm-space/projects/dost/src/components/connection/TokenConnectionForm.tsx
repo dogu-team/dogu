@@ -1,4 +1,4 @@
-import { Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input } from '@chakra-ui/react';
+import { Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, Spacer } from '@chakra-ui/react';
 import { stringify } from '@dogu-tech/common';
 import { useState } from 'react';
 import styled from 'styled-components';
