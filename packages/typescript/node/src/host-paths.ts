@@ -55,10 +55,10 @@ export const HostPaths = {
     xcodeProject: {
       wdaProjectDirectoryPath: (): string => path.resolve(HostPaths.external.defaultAppiumHomePath(), 'node_modules/appium-xcuitest-driver/node_modules/appium-webdriveragent'),
       wdaDerivedDataPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'web-driver-agent/build'),
-      idaRootPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'ios-device-agent'),
-      idaProjectDirectoryPath: (): string => path.resolve(HostPaths.external.xcodeProject.idaRootPath(), 'project'),
-      idaDerivedDataPath: (): string => path.resolve(HostPaths.external.xcodeProject.idaRootPath(), 'build'),
-      idaDerivedDataClonePath: (): string => path.resolve(HostPaths.external.xcodeProject.idaRootPath(), 'build-clone'),
+      wdaDerivedDataClonePath: (): string => path.resolve(HostPaths.external.externalsPath(), 'web-driver-agent/build-clone'),
+      idaProjectDirectoryPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'ios-device-agent/project'),
+      idaDerivedDataPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'ios-device-agent/build'),
+      idaDerivedDataClonePath: (): string => path.resolve(HostPaths.external.externalsPath(), 'ios-device-agent/build-clone'),
     },
   },
 };

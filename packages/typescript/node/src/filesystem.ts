@@ -5,7 +5,7 @@ import path from 'path';
 export async function copyDirectoryRecursive(sourceDir: string, destinationDir: string, logger: Printable): Promise<void> {
   try {
     if (!(await directoryExists(destinationDir))) {
-      await fs.mkdir(destinationDir);
+      await fs.mkdir(destinationDir, { recursive: true });
     }
 
     const files = await fs.readdir(sourceDir);

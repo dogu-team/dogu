@@ -85,11 +85,12 @@ export class IosDeviceAgentProcess {
     if (!originDerivedData.hasSerial(serial)) {
       throw new Error(`iOSDeviceAgent can't be executed on ${serial}`);
     }
-    const copiedDerivedData = await originDerivedData.copyToSerial(serial, logger);
+    const copiedDerivedData = await originDerivedData.copyToSerial(HostPaths.external.xcodeProject.idaDerivedDataClonePath(), serial, logger);
     const xctestrun = copiedDerivedData.xctestrun;
     if (!xctestrun) {
       throw new Error('xctestrun not found');
     }
+    await copiedDerivedData.removeExceptAppsAndXctestrun();
     const ret = new IosDeviceAgentProcess(serial, xctestrun, screenForwardPort, screenDevicePort, grpcForwardPort, grpcPort, webDriverPort, logger);
     await ret.xctest.zombieWaiter.waitUntilAlive();
     await ret.screenTunnel.zombieWaiter.waitUntilAlive();

@@ -96,8 +96,22 @@ export class IdaBuildExternalUnit extends IExternalUnit {
         child.on('close', (code, signal) => {
           (async () => {
             this.stdLogCallbackService.stdout(`${this.getName()} is closed. code: ${code} signal: ${signal}`);
-            const buildProductsSubDir = path.resolve(idaDerivedDataPath, 'Build/Products/Debug-iphoneos');
 
+            const remainDirs = [
+              { parent: idaDerivedDataPath, dir: ['Build', 'Logs'] },
+              { parent: path.resolve(idaDerivedDataPath, 'Build'), dir: ['Products'] },
+            ];
+
+            for (const remainDir of remainDirs) {
+              const dirs = await fsPromises.readdir(remainDir.parent);
+              for (const dir of dirs) {
+                if (remainDir.dir.indexOf(dir) === -1) {
+                  await removeItemRecursive(path.resolve(remainDir.parent, dir));
+                }
+              }
+            }
+
+            const buildProductsSubDir = path.resolve(idaDerivedDataPath, 'Build/Products/Debug-iphoneos');
             const allowedExtensions = ['.app'];
             const files = await fsPromises.readdir(buildProductsSubDir);
             for (const file of files) {

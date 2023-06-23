@@ -14,6 +14,7 @@ import {
 } from '@dogu-private/types';
 import { Closable, errorify, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { AppiumChannelKey, StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { HostPaths } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
 import compressing from 'compressing';
 import fs from 'fs';
@@ -28,6 +29,7 @@ import { createIdaLogger } from '../../logger/logger.instance';
 import { IdeviceDiagnostics, IdeviceSyslog, MobileDevice } from '../externals';
 import { IosDeviceAgentProcess } from '../externals/cli/ios-device-agent';
 import { ZombieTunnel } from '../externals/cli/mobiledevice-tunnel';
+import { DerivedData } from '../externals/xcode/deriveddata';
 import { DeviceChannel, DeviceChannelOpenParam, LogHandler } from '../public/device-channel';
 import { IosDeviceAgentService } from '../services/device-agent/ios-device-agent-service';
 import { StreamingService } from '../services/streaming/streaming-service';
@@ -120,6 +122,10 @@ export class IosChannel implements DeviceChannel {
       throw error;
     });
     logger.verbose('ios system info service started');
+
+    logger.verbose('appium wdb privisioning check starting');
+    const _ = await DerivedData.create(HostPaths.external.xcodeProject.wdaDerivedDataPath());
+    logger.verbose('appium wdb privisioning check done');
 
     logger.verbose('appium channel proxy starting');
     const appiumChannelProxy = new AppiumChannelProxy(appiumService, platform, serial);

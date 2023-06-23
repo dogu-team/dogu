@@ -1,5 +1,5 @@
 import { Printable } from '@dogu-tech/common';
-import { copyDirectoryRecursive, HostPaths, removeItemRecursive } from '@dogu-tech/node';
+import { copyDirectoryRecursive, removeItemRecursive } from '@dogu-tech/node';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
@@ -7,7 +7,10 @@ import { AppleApp } from './apple-app';
 import { Xctestrun } from './xctestrun';
 
 export class DerivedData {
-  private constructor(readonly filePath: string, readonly debugiOSApps: AppleApp[], readonly xctestrun: Xctestrun | null) {}
+  readonly productsPath: string;
+  private constructor(readonly filePath: string, readonly debugiOSApps: AppleApp[], readonly xctestrun: Xctestrun | null) {
+    this.productsPath = path.resolve(filePath, 'Build', 'Products');
+  }
 
   static async create(filePath: string): Promise<DerivedData> {
     if (fs.existsSync(filePath) === false) {
@@ -15,7 +18,14 @@ export class DerivedData {
     }
     const buildPath = path.resolve(filePath, 'Build');
     const productsPath = path.resolve(buildPath, 'Products');
-    const debugiOSbuildPath = path.resolve(productsPath, 'Debug-iphoneos');
+
+    const debugiOSbuildName = (await fsPromises.readdir(productsPath)).find((item) => {
+      return item.startsWith('Debug-iphone');
+    });
+    if (!debugiOSbuildName) {
+      throw new Error(`Debug-iphone build path not found: ${productsPath}`);
+    }
+    const debugiOSbuildPath = path.resolve(productsPath, debugiOSbuildName);
 
     const debugiOSAppPaths = (await fsPromises.readdir(debugiOSbuildPath))
       .filter((item) => {
@@ -38,20 +48,38 @@ export class DerivedData {
   }
 
   async removeExceptAppsAndXctestrun(): Promise<void> {
-    const buildProductsSubDir = path.resolve(this.filePath, 'Build/Products/Debug-iphoneos');
+    const remainDirs = [
+      { parent: this.filePath, dir: ['Build', 'Logs'] },
+      { parent: path.resolve(this.filePath, 'Build'), dir: ['Products'] },
+    ];
+
+    for (const remainDir of remainDirs) {
+      const dirs = await fsPromises.readdir(remainDir.parent);
+      for (const dir of dirs) {
+        if (remainDir.dir.indexOf(dir) === -1) {
+          await removeItemRecursive(path.resolve(remainDir.parent, dir));
+        }
+      }
+    }
+    const debugiOSbuildName = (await fsPromises.readdir(this.productsPath)).find((item) => {
+      return item.startsWith('Debug-iphone');
+    });
+    if (!debugiOSbuildName) {
+      return;
+    }
+    const debugiOSbuildPath = path.resolve(this.productsPath, debugiOSbuildName);
 
     const allowedExtensions = ['.app'];
-    const files = await fsPromises.readdir(buildProductsSubDir);
+    const files = await fsPromises.readdir(debugiOSbuildPath);
     for (const file of files) {
       if (!allowedExtensions.some((ext) => file.endsWith(ext))) {
-        await removeItemRecursive(`${buildProductsSubDir}/${file}`);
+        await removeItemRecursive(path.resolve(debugiOSbuildPath, file));
       }
     }
   }
 
-  async copyToSerial(serial: string, logger: Printable): Promise<DerivedData> {
-    const idaRunspacesPath = HostPaths.external.xcodeProject.idaDerivedDataClonePath();
-    const deviceRunPath = path.resolve(idaRunspacesPath, serial);
+  async copyToSerial(parentDirectoryPath: string, serial: string, logger: Printable): Promise<DerivedData> {
+    const deviceRunPath = path.resolve(parentDirectoryPath, serial);
 
     if (fs.existsSync(deviceRunPath)) {
       await fs.promises.rm(deviceRunPath, { recursive: true });
