@@ -20,8 +20,6 @@ import BrowserOnly from '@docusaurus/BrowserOnly';
 This document explains how to start Dogu with self-hosted.
 :::
 
-You can set up Dogu with self-hosted.
-
 ## Hardware Requirements
 
 |                          | Minimum Requirements                           |
@@ -32,9 +30,16 @@ You can set up Dogu with self-hosted.
 | <b> Free Disk Space </b> | SSD 128GB                                      |
 |  <b> Dependencies </b>   | Docker, Docker-Compose                         |
 
-## Set up Dogu
+## Set up Dogu With Docker
 
-### Create a Volume Path
+### Docker and Docker-compose Install
+
+If Docker and Docker-compose aren't installed on your system, install them first.
+
+- [Docker Install](https://docs.docker.com/engine/install/)
+- [Docker-compose Install](https://docs.docker.com/compose/install/)
+
+### Create Mount Path
 
 <Tabs groupId="os" defaultValue="linux">
 <TabItem value="linux" label="Linux" default>
@@ -86,15 +91,18 @@ docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up -d
 
 ### Get the GitLab Root Access Token
 
+:::info
+
+The available GitLab version is 15.10.0. (Ignore GitLab security warnings and upgrade recommendations.)
+
+:::
+
 A GitLab root access token is required to run Dogu.
 The following are the steps to get a GitLab root access token.
 
 - Access to GitLab
 
   - Access it with the DOGU_HOST address specified in docker-compose.env and the 8080 port.
-    :::info
-    e.g. localhost:8080 (GitLab takes about 5 minutes to run.)
-    :::
 
 - Log in with the GitLab root account
 
@@ -175,6 +183,9 @@ Run the dost agent that can connect to the dogu console.
 
 See [Quick start - Device farm](/get-started/device-farm)
 
-## NOTICE
+## Issues
 
-The available GitLab version is 15.10.0. (Ignore GitLab security warnings and upgrade recommendations.)
+If you have any questions or problems, please contact community.
+
+- [Discord Community](https://discord.com/invite/bVycd6Tu9g)
+- [Github Issues](https://github.com/dogu-team/dogu/issues)
