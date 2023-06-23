@@ -44,7 +44,7 @@ const InspectorToolbar = ({ onRefresh, onReset }: Props) => {
       </p>
 
       <ButtonWrapper>
-        <Tooltip title="Reset">
+        <Tooltip title="Reconnect">
           <StyledButton onClick={onReset}>
             <DisconnectOutlined style={{ fontSize: '.75rem' }} />
           </StyledButton>
