@@ -94,4 +94,4 @@ jobs:
           sed -i '/^  console:/a\    env_file:\n      - docker-compose.env' docker-compose.yml
       - name: run
         run: |
-          docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up dogu-redis dogu-influxdb dogu-coturn dogu-nexus dogu-gitlab dogu-console -d
+          docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up redis influxdb coturn nexus gitlab console -d
