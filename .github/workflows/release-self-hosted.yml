@@ -45,7 +45,6 @@ jobs:
       - name: set .env
         run: |
           sed -i 's/dogu:latest/dogu:rc/' ./docker-compose.yml
-          sed -i 's/postgres:15.3/null/' ./docker-compose.yml
           sed -i 's/^DOGU_HOST=.*$/DOGU_HOST=${{ secrets.DEV_DOGU_HOST }}/' ./docker-compose.env
 
           # postgres
@@ -89,4 +88,4 @@ jobs:
 
       - name: run dogu
         run: |
-          docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up -d
+          docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up -d redis influxdb coturn nexus gitlab console
