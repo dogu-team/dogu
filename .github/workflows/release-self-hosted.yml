@@ -90,6 +90,6 @@ jobs:
           sed -i 's/^TURN_SERVER_USERNAME=.*$/TURN_SERVER_USERNAME=${{ secrets.DEV_DOGU_TURN_SERVER_USERNAME }}/' ./docker-compose.env
           sed -i 's/^TURN_SERVER_PASSWORD=.*$/TURN_SERVER_PASSWORD=${{ secrets.DEV_DOGU_TURN_SERVER_PASSWORD }}/' ./docker-compose.env
 
-      - name: run dogu
+      - name: run
         run: |
-          docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up redis influxdb coturn nexus gitlab console -d
+          docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up dogu-redis dogu-influxdb dogu-coturn dogu-nexus dogu-gitlab dogu-console -d
