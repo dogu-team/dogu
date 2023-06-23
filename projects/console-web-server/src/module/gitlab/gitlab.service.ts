@@ -21,7 +21,6 @@ import { OrganizationAndUserAndOrganizationRole, OrganizationAndUserAndTeam, Pro
 import { OrganizationGitlab } from '../../db/entity/organization-gitlab.entity';
 import { ProjectGitlab } from '../../db/entity/project-gitlab.entity';
 import { UserGitlab } from '../../db/entity/user-gitlab.entity';
-import { FeatureConfig } from '../../feature.config';
 import { Gitlab } from '../../sdk/gitlab';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { DoguLogger } from '../logger/logger';
@@ -35,9 +34,7 @@ export class GitlabService {
   ) {}
 
   async onModuleInit(): Promise<void> {
-    if (FeatureConfig.get('gitlabInitCheck')) {
-      await this.healthCheck();
-    }
+    await this.healthCheck();
   }
 
   private async healthCheck() {
