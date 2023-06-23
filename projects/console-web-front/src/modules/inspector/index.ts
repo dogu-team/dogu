@@ -8,6 +8,14 @@ export enum AppiumRotation {
   LANDSCAPE_RIGHT = 3,
 }
 
+export enum GamiumRotation {
+  PORTRAIT = 'Portrait',
+  LANDSCAPE_LEFT = 'LandscapeLeft',
+  LANDSCAPE_RIGHT = 'LandscapeRight',
+  PORTRAIT_UPSIDE_DOWN = 'PortraitUpsideDown',
+  AUTO_ROTATION = 'AutoRotation',
+}
+
 export enum DeviceRotationDirection {
   TOP_DOWN,
   LEFT,

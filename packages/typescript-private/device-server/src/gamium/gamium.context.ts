@@ -2,7 +2,7 @@ import { categoryFromPlatform, platformTypeFromPlatform } from '@dogu-private/ty
 import { errorify } from '@dogu-tech/common';
 import { ContextPageSource } from '@dogu-tech/device-client-common';
 import { Logger } from '@dogu-tech/node';
-import { GamiumClient, NodeGamiumService } from 'gamium';
+import { GamiumClient, NodeGamiumService, Vector2, Vector3 } from 'gamium';
 import lodash from 'lodash';
 import { setInterval } from 'timers/promises';
 import { DeviceChannel } from '../internal/public/device-channel';
@@ -161,5 +161,10 @@ export class GamiumContext {
   async getContextPageSource(): Promise<GamiumContextPageSource> {
     const pageSource = await this.getPageSource();
     return this.createContextPageSource(pageSource);
+  }
+
+  async getHitPoint(pos: Vector2, screenSize: Vector2): Promise<Vector3 | undefined> {
+    const result = await this.gamiumClient?.inspector().inspectOnPos(pos, screenSize);
+    return result?.hitPoint;
   }
 }

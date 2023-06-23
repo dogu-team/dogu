@@ -3,13 +3,15 @@ import { Serial } from '@dogu-tech/types';
 import { DeviceServerResponseDto } from '../../validations/types/responses';
 import { DeviceServerControllerMethodSpec } from '../types';
 import {
-  GetPageSourceResponse,
-  GetContextsResponse,
+  GetContextPageSourcesResponse,
   GetContextResponse,
-  SwitchContextRequest,
+  GetContextsResponse,
+  GetHitPointQuery,
+  GetHitPointResponse,
+  GetPageSourceResponse,
   SwitchContextAndGetPageSourceRequest,
   SwitchContextAndGetPageSourceResponse,
-  GetContextPageSourcesResponse,
+  SwitchContextRequest,
   TryConnectGamiumInspectorRequest,
   TryConnectGamiumInspectorResponse,
 } from './device-dtos';
@@ -96,5 +98,17 @@ export const DeviceInspector = {
     requestBody: TryConnectGamiumInspectorRequest,
     responseBody: DeviceServerResponseDto,
     responseBodyData: TryConnectGamiumInspectorResponse,
+  }),
+
+  getHitPoint: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceInspectorController,
+    method: 'GET',
+    path: '/:serial/get-hit-point',
+    pathProvider: class {
+      constructor(readonly serial: Serial) {}
+    },
+    query: GetHitPointQuery,
+    responseBody: DeviceServerResponseDto,
+    responseBodyData: GetHitPointResponse,
   }),
 };

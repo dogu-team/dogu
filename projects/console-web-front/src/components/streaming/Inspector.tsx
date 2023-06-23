@@ -1,14 +1,15 @@
 import { DataNode } from 'antd/es/tree';
 import styled from 'styled-components';
-import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
+import { useEffect } from 'react';
 
+import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 import GameObjectDetail from './GameObjectDetail';
 import InspectorUITree from './InspectorUITree';
 import InspectorToolbar from './InspectorToolbar';
 import InspectorContextMenu from './InspectorContextMenu';
-import useInspector from '../../hooks/streaming/useInspector';
+import useInspector, { GAMIUM_CONTEXT_KEY } from '../../hooks/streaming/useInspector';
 import NativeObjectDetail from './NativeObjectDetail';
-import { useEffect } from 'react';
+import { GamiumNodeAttributes, InspectNode } from '../../types/inspector';
 
 interface Props {
   inspector: ReturnType<typeof useInspector>;
@@ -60,7 +61,11 @@ const Inspector = ({ inspector }: Props) => {
         </Content>
       </Inner>
       <Inner h={45} style={{ overflow: 'auto' }}>
-        <NativeObjectDetail node={inspector.selectedNode?.node} />
+        {inspector.selectedContextKey === GAMIUM_CONTEXT_KEY ? (
+          <GameObjectDetail node={inspector.selectedNode?.node as InspectNode<GamiumNodeAttributes> | undefined} hitPoint={inspector.hitPoint} />
+        ) : (
+          <NativeObjectDetail node={inspector.selectedNode?.node} />
+        )}
       </Inner>
     </Box>
   );
