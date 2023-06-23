@@ -86,6 +86,24 @@ export class IosChannel implements DeviceChannel {
     const platform = Platform.PLATFORM_IOS;
 
     const logger = createIdaLogger(param.serial);
+    logger.verbose('appium wda privisioning check starting');
+    const _ = await DerivedData.create(HostPaths.external.xcodeProject.wdaDerivedDataPath());
+    logger.verbose('appium wda privisioning check done');
+
+    logger.verbose('appium channel proxy starting');
+    const appiumChannelProxy = new AppiumChannelProxy(appiumService, platform, serial);
+    const onCatchInspectorAppiumChannelProxyError = (error: Error): void => {
+      logger.error('AppiumChannelProxy inspector error.', { error: errorify(error) });
+      appiumChannelProxy.get('inspector').catch(onCatchInspectorAppiumChannelProxyError);
+    };
+    await appiumChannelProxy.get('inspector').catch(onCatchInspectorAppiumChannelProxyError);
+    // const onCatchAutomationAppiumChannelProxyError = (error: Error): void => {
+    //   logger.error('AppiumChannelProxy automation error.', { error: errorify(error) });
+    //   appiumChannelProxy.get('automation').catch(onCatchAutomationAppiumChannelProxyError);
+    // };
+    // appiumChannelProxy.get('automation').catch(onCatchAutomationAppiumChannelProxyError);
+    logger.verbose('appium channel proxy started');
+
     let portContext = portContextes.get(serial);
     if (portContext == null) {
       portContext = await createPortContext(serial);
@@ -122,24 +140,6 @@ export class IosChannel implements DeviceChannel {
       throw error;
     });
     logger.verbose('ios system info service started');
-
-    logger.verbose('appium wdb privisioning check starting');
-    const _ = await DerivedData.create(HostPaths.external.xcodeProject.wdaDerivedDataPath());
-    logger.verbose('appium wdb privisioning check done');
-
-    logger.verbose('appium channel proxy starting');
-    const appiumChannelProxy = new AppiumChannelProxy(appiumService, platform, serial);
-    const onCatchInspectorAppiumChannelProxyError = (error: Error): void => {
-      logger.error('AppiumChannelProxy inspector error.', { error: errorify(error) });
-      appiumChannelProxy.get('inspector').catch(onCatchInspectorAppiumChannelProxyError);
-    };
-    appiumChannelProxy.get('inspector').catch(onCatchInspectorAppiumChannelProxyError);
-    const onCatchAutomationAppiumChannelProxyError = (error: Error): void => {
-      logger.error('AppiumChannelProxy automation error.', { error: errorify(error) });
-      appiumChannelProxy.get('automation').catch(onCatchAutomationAppiumChannelProxyError);
-    };
-    appiumChannelProxy.get('automation').catch(onCatchAutomationAppiumChannelProxyError);
-    logger.verbose('appium channel proxy started');
 
     const deviceChannel = new IosChannel(serial, portContext, systemInfo, streaming, iosDeviceAgentProcess, deviceAgent, appiumChannelProxy, logger);
 
