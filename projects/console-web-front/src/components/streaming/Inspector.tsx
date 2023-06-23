@@ -35,6 +35,7 @@ const Inspector = ({ inspector }: Props) => {
             inspector.clearSelectedNode();
             inspector.updateSources();
             inspector.connectGamium();
+            inspector.updateSelectedContextKey(undefined);
           }}
         />
         <InspectorContextMenu
