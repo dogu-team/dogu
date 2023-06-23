@@ -80,6 +80,12 @@ jobs:
           echo "DOGU_GITLAB_PROTOCOL=https" >> ./docker-compose.env
           echo "DOGU_GITLAB_TEMPLATE_GROUP=dogu" >> ./docker-compose.env
           echo "DOGU_RDS_HOST=${{ secrets.DEV_DOGU_RDS_HOST }}" >> ./docker-compose.env
+          echo "NEXT_PUBLIC_DOGU_API_BASE_URL=${{ secrets.DEV_DOGU_API_BASE_URL }}" >> ./docker-compose.env
+          echo "NEXT_PUBLIC_DOGU_WS_BASE_URL=${{ secrets.DEV_DOGU_WS_BASE_URL }}" >> ./docker-compose.env
+          echo "NEXT_PUBLIC_LANDING_URL=${{ secrets.DEV_DOGU_LANDING_URL }}" >> ./docker-compose.env
+          echo "NEXT_PUBLIC_DOGU_GA_ID=${{ secrets.DEV_DOGU_GA_ID }}" >> ./docker-compose.env
+
+
 
 
           # file server
