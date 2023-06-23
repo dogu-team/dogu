@@ -5,6 +5,7 @@ class GamiumInspectorModule extends InspectorModule<GamiumNodeAttributes> {
   public getNodeBound: GetNodeBoundFunc<GamiumNodeAttributes> = (node) => {
     const screenPosition = node.attributes['screen-position'];
     const screenRectSize = node.attributes['screen-rect-size'];
+    const deviceScreenSize = this.getDeviceScreenSize();
 
     if (!screenPosition) {
       return {
@@ -31,7 +32,7 @@ class GamiumInspectorModule extends InspectorModule<GamiumNodeAttributes> {
      */
     return {
       x: screenPosition.x - screenRectSize.width / 2,
-      y: this.contextAndNode.screenSize.height - screenPosition.y - screenRectSize.height / 2,
+      y: deviceScreenSize.height - screenPosition.y - screenRectSize.height / 2,
       width: screenRectSize.width,
       height: screenRectSize.height,
     };
