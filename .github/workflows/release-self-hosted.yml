@@ -89,6 +89,7 @@ jobs:
           echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.DOGU_SENTRY_DSN }}" >> ./docker-compose.env
 
           # file server
+          sed -i 's|DOGU_NEXUS_HOST=.*$|DOGU_NEXUS_HOST=nexus|' ./docker-compose.yml
           sed -i 's/^FILE_SERVER_USERNAME=.*$/FILE_SERVER_USERNAME=${{ secrets.DEV_DOGU_FILE_SERVER_USERNAME }}/' ./docker-compose.env
           sed -i 's/^FILE_SERVER_PASSWORD=.*$/FILE_SERVER_PASSWORD=${{ secrets.DEV_DOGU_FILE_SERVER_PASSWORD }}/' ./docker-compose.env
 
