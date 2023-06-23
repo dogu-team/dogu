@@ -7,10 +7,10 @@ import { flexRowBaseStyle } from '../../styles/box';
 interface Props {
   title: string;
   values: string | number | boolean | { label: string; value: string | number | boolean | undefined }[] | undefined;
-  copyable?: boolean;
+  disableCopy?: boolean;
 }
 
-const InspectObjectProperty = ({ title, values, copyable }: Props) => {
+const InspectObjectProperty = ({ title, values, disableCopy }: Props) => {
   const { t } = useTranslation();
 
   const handleCopy = async (text: string) => {
@@ -31,7 +31,7 @@ const InspectObjectProperty = ({ title, values, copyable }: Props) => {
             <FlexRow key={item.label} style={{ marginRight: '.25rem' }}>
               <StyledLabel>{item.label}:</StyledLabel>
               {item.value !== undefined && (
-                <StyledButton onClick={() => handleCopy(`${item.value}`)} disabled={!copyable}>
+                <StyledButton onClick={() => handleCopy(`${item.value}`)} disabled={disableCopy}>
                   {item.value}
                 </StyledButton>
               )}
@@ -40,7 +40,7 @@ const InspectObjectProperty = ({ title, values, copyable }: Props) => {
         </FlexRow>
       ) : (
         values !== undefined && (
-          <StyledButton onClick={() => handleCopy(`${values}`)} disabled={!copyable}>
+          <StyledButton onClick={() => handleCopy(`${values}`)} disabled={disableCopy}>
             {values}
           </StyledButton>
         )
@@ -54,8 +54,6 @@ export default InspectObjectProperty;
 const FlexRow = styled.div`
   ${flexRowBaseStyle}
 `;
-
-const Box = styled.div``;
 
 const StyledTitle = styled.b`
   font-weight: 600;
