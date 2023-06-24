@@ -1,0 +1,31 @@
+name: 🚀release-e2e-dogu
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-push-dogu-console:
+    runs-on: e2e-dogu-build
+
+    steps:
+      - name: docker init
+        run: docker system prune --volumes -a -f
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          target: dogu-console
+          tags: |
+            dogutechio/dogu-e2e:latest
