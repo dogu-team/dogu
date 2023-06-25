@@ -24,7 +24,7 @@ jobs:
       fail-fast: false
       max-parallel: 2
       matrix:
-        runner: [windows-latest, macos-latest]
+        runner: [windows-2019, macos-latest]
     runs-on: ['${{ matrix.runner }}']
 
     steps:
@@ -62,11 +62,14 @@ jobs:
       - name: Install the Apple certificate and provisioning profile
         if: runner.os == 'macOS'
         env:
-          BUILD_CERTIFICATE_BASE64: ${{ secrets.DOGU_BUILD_MACOS_CERTIFICATE_BASE64 }}
+          BUILD_CERTIFICATE_BASE64: ${{ secrets.DOGU_MACOS_CERTIFICATE_BASE64 }}
           P12_PASSWORD: ${{ secrets.DOGU_MACOS_P12_PASSWORD }}
+          BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.DOGU_MACOS_WILDCARD_PROVISION_PROFILE_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.DOGU_MACOS_KEYCHAIN_PASSWORD }}
         run: |
           # create variables
           CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
           # import certificate and provisioning profile from secrets
@@ -80,6 +83,10 @@ jobs:
           # import certificate to keychain
           security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH
+
+          # apply provisioning profile
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
       - name: Common - Setup go
         uses: actions/setup-go@v3
@@ -164,6 +171,7 @@ jobs:
         if: ${{ always() && runner.os == 'macOS' }}
         run: |
           security delete-keychain $RUNNER_TEMP/app-signing.keychain-db
+          rm ~/Library/MobileDevice/Provisioning\ Profiles/build_pp.mobileprovision
 
   send-slack:
     runs-on: ubuntu-latest
