@@ -32,8 +32,6 @@ Especially, Dogu is tightly integrated with test script and test framework so th
 
 <img src=".github/resources/architecture.png"/>
 
-- [Gamium](https://github.com/dogu-team/gamium) - Gamium allows you to automate game developed by Unity Engine.
-
 ## Test Automation Flow
 
 ### Target Device for Test Script Execution
@@ -42,9 +40,9 @@ Especially, Dogu is tightly integrated with test script and test framework so th
 
 Dogu Agent helps you to run test script on your own device farm. Especially, Dogu Agent is tightly integrated with test script and test framework so that you can focus on test automation without developing infrastructure related works like, target device for test execution, parallel test execution, pulling test script.
 
-## Features
+## Platform Features
 
-### [Organization & Project](https://docs.dogutech.io/organization-and-project/introduction)
+### [Management](https://docs.dogutech.io/organization-and-project/introduction)
 
 Manage project, user, device, test script, workflow according to role of organization
 
@@ -53,7 +51,7 @@ Manage project, user, device, test script, workflow according to role of organiz
 
 <img src=".github/resources/organization-member.png"/>
 
-### [Host & Device](https://docs.dogutech.io/host-and-device/introduction)
+### [Device Farm](https://docs.dogutech.io/host-and-device/introduction)
 
 Build device farm with your own devices
 
@@ -76,7 +74,7 @@ Inspect UI of device in web page
 <img src=".github/resources/inspector-android.png" />
 <img src=".github/resources/inspector-unity.png" />
 
-### [Test Script & Workflow](https://docs.dogutech.io/script-and-routine/introduction)
+### [Run Test Script](https://docs.dogutech.io/script-and-routine/introduction)
 
 Integrate test script with workflow and run it on your own device farm
 
@@ -100,16 +98,28 @@ Visualize test result
 <img src=".github/resources/reporting-visualization.png"/>
 <img src=".github/resources/reporting-profiling.png"/>
 
-<br/>
+## Integrate Test Script With Dogu
 
-### Following functions are not supported now but we have plan to support them in the future.
+You can integrate existing test script with Dogu.
 
-- Test Toolkit - Selenium client
-- Test Framework - Integrate test report with Jest, PyTest
-- Git Server - Integrate with Github
-- Workflow API - for Jenkins and Github Action
+### Javascript & Typescript
+Coming soon. following client & framework could be integrated with Dogu
 
-<br/>
+**Client**
+* Webdriverio
+* [Gamium](https://github.com/dogu-team/gamium)
+
+**Test Framework**
+* Jest
+
+### Python
+Coming soon. following client & framework could be integrated with Dogu
+
+**Client**
+* [Gamium](https://github.com/dogu-team/gamium)
+
+**Test Framework**
+* Pytest
 
 ## Start With Self-Hosted
 
@@ -141,6 +151,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 ## License
 
-We provide two editions of Dogu: Community Edition and Enterprise Edition.
+We provide two editions of Dogu: Community Edition and Enterprise Edition.  
+Community Edition is free under licensed AGPL3.0.
 
 See [LICENSE](LICENSE.md) for more details.
