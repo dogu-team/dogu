@@ -96,7 +96,6 @@ Visualize test result
 - Profiled device (memory, cpu, fps)
 - Log (test script, device, application)
 
-<img src=".github/resources/reporting-testing-profiling.png"/>
 <img src=".github/resources/reporting-video.png"/>
 <img src=".github/resources/reporting-visualization.png"/>
 <img src=".github/resources/reporting-profiling.png"/>
