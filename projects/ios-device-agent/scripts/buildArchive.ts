@@ -67,11 +67,12 @@ function copyDirectoryRecursive(
 
 async function buildArchive(): Promise<void> {
   shelljs.rm('-rf', '.build');
-  if (
-    shelljs.exec(
-      'xcodebuild build-for-testing -project IOSDeviceAgent/IOSDeviceAgent.xcodeproj -scheme DoguRunner -destination generic/platform=iOS -derivedDataPath .build -allowProvisioningUpdates',
-    ).code !== 0
-  ) {
+  let command =
+    'xcodebuild build-for-testing -project IOSDeviceAgent/IOSDeviceAgent.xcodeproj -scheme DoguRunner -destination generic/platform=iOS -derivedDataPath .build -allowProvisioningUpdates';
+  if (process.env.DOGU_APPLE_API_KEY_ID && process.env.DOGU_APPLE_API_ISSUER_ID) {
+    command += ` -authenticationKeyID ${process.env.DOGU_APPLE_API_KEY_ID} -authenticationKeyIssuerID ${process.env.DOGU_APPLE_API_ISSUER_ID}`;
+  }
+  if (shelljs.exec(command).code !== 0) {
     throw new Error('Failed to build the archive');
   }
 

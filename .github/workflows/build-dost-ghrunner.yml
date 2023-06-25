@@ -114,6 +114,9 @@ jobs:
       - name: Download, Build third-party
         run: |
           yarn third-party:download:build
+        env:
+          DOGU_APPLE_API_KEY_ID: ${{ secrets.DOGU_APPLE_API_KEY_ID }}
+          DOGU_APPLE_API_ISSUER_ID: ${{ secrets.DOGU_APPLE_API_ISSUER_ID }}
 
       - name: Dost - Newbie nm-space
         run: |
@@ -128,12 +131,12 @@ jobs:
 
       - name: create dotEnv deploy
         run: |
-          echo "DOGU_GITHUB_TOKEN=${{ secrets.DOGU_GITHUB_TOKEN }}" > .env.deploy_secret
-          echo "DOGU_APPLE_API_KEY_ID=${{ secrets.DOGU_APPLE_API_KEY_ID }}" >> .env.deploy_secret
-          echo "DOGU_APPLE_API_ISSUER_ID=${{ secrets.DOGU_APPLE_API_ISSUER_ID }}" >> .env.deploy_secret
-          echo "DOGU_APPLE_API_PRIVATEKEY=${{ secrets.DOGU_APPLE_API_PRIVATEKEY }}" >> .env.deploy_secret
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env.deploy_secret
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env.deploy_secret
+          echo "DOGU_GITHUB_TOKEN=${{ secrets.DOGU_GITHUB_TOKEN }}" > .env.deploy-secret
+          echo "DOGU_APPLE_API_KEY_ID=${{ secrets.DOGU_APPLE_API_KEY_ID }}" >> .env.deploy-secret
+          echo "DOGU_APPLE_API_ISSUER_ID=${{ secrets.DOGU_APPLE_API_ISSUER_ID }}" >> .env.deploy-secret
+          echo "DOGU_APPLE_API_PRIVATEKEY=${{ secrets.DOGU_APPLE_API_PRIVATEKEY }}" >> .env.deploy-secret
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env.deploy-secret
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env.deploy-secret
 
       - name: create dotEnv development
         run: |
