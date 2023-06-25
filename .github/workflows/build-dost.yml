@@ -1,4 +1,4 @@
-name: 🔄ci-archive
+name: build-dost
 
 on:
   workflow_dispatch:
