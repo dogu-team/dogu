@@ -63,17 +63,20 @@ jobs:
         if: runner.os == 'macOS'
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.DOGU_MACOS_CERTIFICATE_BASE64 }}
+          BUILD_YOW_DEVELOPMENT_CERTIFICATE_BASE64: ${{ secrets.DOGU_MACOS_YOW_DEVELOPMENT_CERTIFICATE_BASE64 }}
           P12_PASSWORD: ${{ secrets.DOGU_MACOS_P12_PASSWORD }}
           BUILD_PROVISION_PROFILE_BASE64: ${{ secrets.DOGU_MACOS_WILDCARD_PROVISION_PROFILE_BASE64 }}
           KEYCHAIN_PASSWORD: ${{ secrets.DOGU_MACOS_KEYCHAIN_PASSWORD }}
         run: |
           # create variables
           CERTIFICATE_PATH=$RUNNER_TEMP/build_certificate.p12
+          DEVELOPMENT_CERTIFICATE_PATH=$RUNNER_TEMP/build_development_certificate.p12
           PP_PATH=$RUNNER_TEMP/build_pp.mobileprovision
           KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
 
           # import certificate and provisioning profile from secrets
           echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+          echo -n "$BUILD_YOW_DEVELOPMENT_CERTIFICATE_BASE64" | base64 --decode -o $DEVELOPMENT_CERTIFICATE_PATH
           echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
 
           # create temporary keychain
@@ -83,6 +86,7 @@ jobs:
 
           # import certificate to keychain
           security import $CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          security import $DEVELOPMENT_CERTIFICATE_PATH -P "$P12_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
           security list-keychain -d user -s $KEYCHAIN_PATH
 
           # apply provisioning profile
@@ -137,6 +141,7 @@ jobs:
           echo "DOGU_APPLE_API_PRIVATEKEY=${{ secrets.DOGU_APPLE_API_PRIVATEKEY }}" >> .env.deploy-secret
           echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env.deploy-secret
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env.deploy-secret
+        working-directory: ./nm-space/projects/dost
 
       - name: create dotEnv development
         run: |
@@ -155,6 +160,7 @@ jobs:
           echo "DOGU_APPUPDATE_URL=public.dev.dogutech.io" >> .env.dost
           echo "DOGU_APPUPDATE_SUBPATH=dost" >> .env.dost
           echo "DOGU_APPUPDATE_REGION=ap-northeast-2" >> .env.dost
+        working-directory: ./nm-space/projects/dost
 
       - name: Dost - Set productName
         run: |
@@ -190,6 +196,7 @@ jobs:
           echo "DOGU_APPUPDATE_URL=public.dev.dogutech.io" >> .env.dost
           echo "DOGU_APPUPDATE_SUBPATH=dost" >> .env.dost
           echo "DOGU_APPUPDATE_REGION=ap-northeast-2" >> .env.dost
+        working-directory: ./nm-space/projects/dost
 
       - name: Dost - Set productName
         run: |
