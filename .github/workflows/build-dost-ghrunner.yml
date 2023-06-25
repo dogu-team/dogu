@@ -74,6 +74,7 @@ jobs:
 
           # import certificate and provisioning profile from secrets
           echo -n "$BUILD_CERTIFICATE_BASE64" | base64 --decode -o $CERTIFICATE_PATH
+          echo -n "$BUILD_PROVISION_PROFILE_BASE64" | base64 --decode -o $PP_PATH
 
           # create temporary keychain
           security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
@@ -125,9 +126,32 @@ jobs:
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
+      - name: create dotEnv deploy
+        run: |
+          echo "DOGU_GITHUB_TOKEN=${{ secrets.DOGU_GITHUB_TOKEN }}" > .env.deploy_secret
+          echo "DOGU_APPLE_API_KEY_ID=${{ secrets.DOGU_APPLE_API_KEY_ID }}" >> .env.deploy_secret
+          echo "DOGU_APPLE_API_ISSUER_ID=${{ secrets.DOGU_APPLE_API_ISSUER_ID }}" >> .env.deploy_secret
+          echo "DOGU_APPLE_API_PRIVATEKEY=${{ secrets.DOGU_APPLE_API_PRIVATEKEY }}" >> .env.deploy_secret
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env.deploy_secret
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env.deploy_secret
+
       - name: create dotEnv development
         run: |
-          env-generator gen-all development
+          echo "DOGU_DEVICE_SERVER_PORT=5001" > .env.device-server
+          echo "DOGU_RUN_TYPE=development" >> .env.device-server
+          echo "NODE_ENV=development" >> .env.device-server
+
+          echo "DOGU_API_BASE_URL=https://api.dev.dogutech.io" > .env.host-agent
+          echo "DOGU_DEVICE_SERVER_HOST_PORT=localhost:5001" >> .env.host-agent
+          echo "DOGU_HOST_TOKEN=" >> .env.host-agent
+          echo "DOGU_RUN_TYPE=development" >> .env.host-agent
+          echo "NODE_ENV=development" >> .env.host-agent
+          echo "DOGU_HOST_AGENT_PORT=5100" >> .env.host-agent
+
+          echo "DOGU_APPUPDATE_PROVIDER=s3" > .env.dost
+          echo "DOGU_APPUPDATE_URL=public.dev.dogutech.io" >> .env.dost
+          echo "DOGU_APPUPDATE_SUBPATH=dost" >> .env.dost
+          echo "DOGU_APPUPDATE_REGION=ap-northeast-2" >> .env.dost
 
       - name: Dost - Set productName
         run: |
@@ -148,7 +172,21 @@ jobs:
 
       - name: create dotEnv self-hosted
         run: |
-          env-generator gen-all self-hosted
+          echo "DOGU_DEVICE_SERVER_PORT=5001" > .env.device-server
+          echo "DOGU_RUN_TYPE=self-hosted" >> .env.device-server
+          echo "NODE_ENV=production" >> .env.device-server
+
+          echo "DOGU_API_BASE_URL=" > .env.host-agent
+          echo "DOGU_DEVICE_SERVER_HOST_PORT=localhost:5001" >> .env.host-agent
+          echo "DOGU_HOST_TOKEN=" >> .env.host-agent
+          echo "DOGU_RUN_TYPE=self-hosted" >> .env.host-agent
+          echo "NODE_ENV=production" >> .env.host-agent
+          echo "DOGU_HOST_AGENT_PORT=5100" >> .env.host-agent
+
+          echo "DOGU_APPUPDATE_PROVIDER=s3" > .env.dost
+          echo "DOGU_APPUPDATE_URL=public.dev.dogutech.io" >> .env.dost
+          echo "DOGU_APPUPDATE_SUBPATH=dost" >> .env.dost
+          echo "DOGU_APPUPDATE_REGION=ap-northeast-2" >> .env.dost
 
       - name: Dost - Set productName
         run: |
