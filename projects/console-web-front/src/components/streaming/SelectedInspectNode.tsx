@@ -12,9 +12,9 @@ const SelectedInspectNode = ({ nodeInfo }: Props) => {
     <Tooltip
       title={
         <div>
-          {/* <p style={{ wordBreak: 'break-all' }}>
-            <b style={{ color: 'red' }}>Path:</b>&nbsp;{nodeInfo.node.title}
-          </p> */}
+          <p style={{ wordBreak: 'break-all' }}>
+            <b style={{ color: 'red' }}>Path:</b>&nbsp;{nodeInfo.node.attributes.path}
+          </p>
           <p style={{ wordBreak: 'break-all' }}>
             <b style={{ color: 'yellow' }}>Name:</b>&nbsp;{nodeInfo.node.title}
           </p>

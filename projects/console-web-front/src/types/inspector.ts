@@ -13,6 +13,7 @@ export interface InspectNode<A> {
 
 export type AndroidInspectorNode = InspectNode<AndroidNodeAttributes>;
 export type GamiumInspectorNode = InspectNode<GamiumNodeAttributes>;
+export type IosInspectorNode = InspectNode<IosNodeAttributes>;
 
 export type InspectorWorkerMessage = {
   type: 'convert';
@@ -127,6 +128,7 @@ export class AndroidNodeAttributes {
   text?: string;
   'resource-id'?: string;
   'content-desc'?: string;
+  path?: string;
 }
 
 export type AndroidAttributeFields = keyof AndroidNodeAttributes;
@@ -217,7 +219,7 @@ export class GamiumNodeAttributes {
 
 export type GamiumAttributeFields = keyof GamiumNodeAttributes;
 
-export type InspectNodeAttributes = AndroidNodeAttributes | GamiumNodeAttributes;
+export type InspectNodeAttributes = AndroidNodeAttributes | GamiumNodeAttributes | IosNodeAttributes;
 
 export class IosNodeAttributes {
   @Type(() => Number)
@@ -250,4 +252,5 @@ export class IosNodeAttributes {
   type?: string;
   name?: string;
   label?: string;
+  path?: string;
 }
