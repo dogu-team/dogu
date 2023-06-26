@@ -9,6 +9,11 @@ interface DevDrawerProps {
 }
 
 function DevDrawer(props: DevDrawerProps) {
+  const onOpenJsonConfig = () => {
+    (async () => {
+      await ipc.settingsClient.openJsonConfig();
+    })();
+  };
   const onOpenWritableDirectoryClicked = () => {
     (async () => {
       await ipc.settingsClient.openWritableDirectory();
@@ -66,6 +71,17 @@ function DevDrawer(props: DevDrawerProps) {
           <DrawerBody>
             <Center>
               <List spacing={3} width="100%">
+                <ListItem>
+                  <Stack direction={['row']} spacing="20px">
+                    <Text width="100%" align="left">
+                      Open Json Config
+                    </Text>
+                    <Button size="sm" onClick={onOpenJsonConfig}>
+                      Open
+                    </Button>
+                  </Stack>
+                </ListItem>
+
                 <ListItem>
                   <Stack direction={['row']} spacing="20px">
                     <Text width="100%" align="left">

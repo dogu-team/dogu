@@ -14449,6 +14449,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@playwright/test", [\
+        ["npm:1.35.1", {\
+          "packageLocation": "./.yarn/cache/@playwright-test-npm-1.35.1-3073e07fa7-3509d2f2c7.zip/node_modules/@playwright/test/",\
+          "packageDependencies": [\
+            ["@playwright/test", "npm:1.35.1"],\
+            ["@types/node", "npm:18.15.13"],\
+            ["fsevents", "patch:fsevents@npm%3A2.3.2#~builtin<compat/fsevents>::version=2.3.2&hash=df0bf1"],\
+            ["playwright-core", "npm:1.35.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@polka/url", [\
         ["npm:1.0.0-next.21", {\
           "packageLocation": "./.yarn/cache/@polka-url-npm-1.0.0-next.21-02342f3d90-c7654046d3.zip/node_modules/@polka/url/",\
@@ -25805,6 +25817,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-tech/dest", "workspace:packages/typescript/dest"],\
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
             ["@jest/globals", "npm:29.1.2"],\
+            ["@playwright/test", "npm:1.35.1"],\
             ["@types/death", "npm:1.1.2"],\
             ["@types/jest", "npm:29.4.0"],\
             ["@types/lodash", "npm:4.14.186"],\
@@ -37266,6 +37279,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/unplugged/playwright-core-npm-1.32.1-302a9df56e/node_modules/playwright-core/",\
           "packageDependencies": [\
             ["playwright-core", "npm:1.32.1"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:1.35.1", {\
+          "packageLocation": "./.yarn/unplugged/playwright-core-npm-1.35.1-69a99ef963/node_modules/playwright-core/",\
+          "packageDependencies": [\
+            ["playwright-core", "npm:1.35.1"]\
           ],\
           "linkType": "HARD"\
         }]\

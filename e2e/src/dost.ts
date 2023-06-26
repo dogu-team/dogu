@@ -8,14 +8,21 @@ import { Page, _electron as electron } from 'playwright';
 import stc from 'string-to-color';
 import waiton from 'wait-on';
 import { pathMap } from './path-map';
+import { getClockTime } from './time';
+
+const dostReactName = 'dost-react';
+const dostReactHexColor = stc(dostReactName);
+const dostReactColor = chalk.hex(dostReactHexColor)(`[${dostReactName}]`);
+
+const dostElectronName = 'dost-electron';
+const dostElectronHexColor = stc(dostElectronName);
+const dostElectronColor = chalk.hex(dostElectronHexColor)(`[${dostElectronName}]`);
+
+const dostPlaywrightName = 'dost-playwright';
+const dostPlaywrightHexColor = stc(dostPlaywrightName);
+export const dostPlaywrightColor = chalk.hex(dostPlaywrightHexColor)(`[${dostPlaywrightName}]`);
 
 export async function launchDost(): Promise<Page> {
-  const dostReactName = 'dost-react';
-  const dostReactHexColor = stc(dostReactName);
-  const dostReactColor = chalk.hex(dostReactHexColor)(`[${dostReactName}]`);
-  const dostElectronName = 'dost-electron';
-  const dostElectronHexColor = stc(dostElectronName);
-  const dostElectronColor = chalk.hex(dostElectronHexColor)(`[${dostElectronName}]`);
   let electronExePath = '';
 
   if (process.platform === 'win32') {
@@ -44,23 +51,23 @@ export async function launchDost(): Promise<Page> {
   });
 
   reactProc.stdout.on('data', (stdout: string | Buffer) => {
-    console.log(`${dostReactColor} ${stdout.toString()}`);
+    console.log(`${dostReactColor} ${getClockTime()} ${stdout.toString()}`);
   });
 
   reactProc.stderr.on('data', (stderr: string | Buffer) => {
-    console.log(`${dostReactColor} ${stderr.toString()}`);
+    console.log(`${dostReactColor} ${getClockTime()} ${stderr.toString()}`);
   });
 
   reactProc.stdout.on('error', (stdout: string | Buffer) => {
-    console.log(`${dostReactColor} ${stdout.toString()}`);
+    console.log(`${dostReactColor} ${getClockTime()} ${stdout.toString()}`);
   });
 
   reactProc.stderr.on('error', (stderr: string | Buffer) => {
-    console.log(`${dostReactColor} ${stderr.toString()}`);
+    console.log(`${dostReactColor} ${getClockTime()} ${stderr.toString()}`);
   });
 
   reactProc.on('close', (code, signal) => {
-    console.log(`${dostReactColor} closed. ${code ?? 0} ${signal ?? ''}}`);
+    console.log(`${dostReactColor} ${getClockTime()} closed. ${code ?? 0} ${signal ?? ''}}`);
   });
 
   await waiton({ resources: ['http://127.0.0.1:3333'], timeout: 60000 });
@@ -69,6 +76,22 @@ export async function launchDost(): Promise<Page> {
     args: [electronMainjsPath],
     executablePath: electronExePath,
     cwd: dostRootPath,
+  });
+  const electronProc = electronApp.process();
+  electronProc.stdout?.on('data', (stdout: string | Buffer) => {
+    console.log(`${dostElectronColor} ${getClockTime()} ${stdout.toString()}`);
+  });
+
+  electronProc.stderr?.on('data', (stderr: string | Buffer) => {
+    console.log(`${dostElectronColor} ${getClockTime()} ${stderr.toString()}`);
+  });
+
+  electronProc.stdout?.on('error', (stdout: string | Buffer) => {
+    console.log(`${dostElectronColor} ${getClockTime()} ${stdout.toString()}`);
+  });
+
+  electronProc.stderr?.on('error', (stderr: string | Buffer) => {
+    console.log(`${dostElectronColor} ${getClockTime()} ${stderr.toString()}`);
   });
 
   return new Promise((resolve) => {
@@ -82,10 +105,10 @@ export async function launchDost(): Promise<Page> {
       }
 
       page.on('pageerror', (error) => {
-        console.error(`${dostElectronColor} ${error.message}`);
+        console.error(`${dostPlaywrightColor} ${getClockTime()} ${error.message}`);
       });
       page.on('console', (msg) => {
-        console.log(`${dostElectronColor} ${msg.text()}`);
+        console.log(`${dostPlaywrightColor} ${getClockTime()} ${msg.text()}`);
       });
     });
   });

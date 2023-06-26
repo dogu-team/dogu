@@ -35,6 +35,7 @@ expose('settingsClient', {
   getLoginItemSettings: (option: ILoginItemSettingsOptions) => ipcRenderer.invoke(settingsClientKey.getLoginItemSettings, option),
   setLoginItemSettings: (setting: ISettings) => ipcRenderer.invoke(settingsClientKey.setLoginItemSettings, setting),
   setSecureKeyboardEntryEnabled: (enabled: boolean) => ipcRenderer.invoke(settingsClientKey.setSecureKeyboardEntryEnabled, enabled),
+  openJsonConfig: () => ipcRenderer.invoke(settingsClientKey.openJsonConfig),
   openWritableDirectory: () => ipcRenderer.invoke(settingsClientKey.openWritableDirectory),
   openExternal: (url: string) => ipcRenderer.invoke(settingsClientKey.openExternal, url),
 

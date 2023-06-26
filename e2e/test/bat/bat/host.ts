@@ -1,9 +1,11 @@
-import { expect, job, test } from '@dogu-tech/dest';
-import { Page } from 'playwright';
+import { job, test } from '@dogu-tech/dest';
+import { expect } from '@playwright/test';
+import { ElementHandle, Locator, Page } from 'playwright';
 import { Key } from 'selenium-webdriver';
 import { Driver } from '../../../src/chromedriver';
-import { launchDost } from '../../../src/dost';
+import { dostPlaywrightColor, launchDost } from '../../../src/dost';
 import { replaceWebDriverAgentSigningStyle } from '../../../src/ios-helper';
+import { getClockTime } from '../../../src/time';
 import { Timer } from '../../../src/timer';
 import { l10n } from './l10n';
 
@@ -61,12 +63,12 @@ export function runHost(random: number): void {
       console.log(`Token@@@@:${token}`);
     });
 
-    let mainPage: Page | undefined = undefined;
+    let mainPage: PageWrapper | undefined = undefined;
     const InstallTimeoutMs = 180000;
     const longTimeoutMs = 30000;
 
     test('Execute Dost', async () => {
-      mainPage = await launchDost();
+      mainPage = new PageWrapper(await launchDost());
     });
 
     test('Dost Install externals', async () => {
@@ -75,7 +77,8 @@ export function runHost(random: number): void {
       }
       await (await mainPage.waitForSelector('.chakra-checkbox__control', { timeout: longTimeoutMs })).click({ timeout: longTimeoutMs });
       await mainPage.getByText('Install', { exact: true }).first().click({ timeout: longTimeoutMs });
-      await mainPage.getByText('Installing packages...', { exact: true }).first().isHidden({ timeout: InstallTimeoutMs });
+      await mainPage.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: InstallTimeoutMs, state: 'visible' });
+      await mainPage.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: InstallTimeoutMs, state: 'hidden' });
     });
 
     test('Dost manual setup', async () => {
@@ -85,16 +88,19 @@ export function runHost(random: number): void {
       if (process.platform !== 'darwin') {
         return;
       }
-      await mainPage.getByText('Manual Setup', { exact: true }).first().isVisible({ timeout: InstallTimeoutMs });
+      await mainPage.getByText('Manual Setup', { exact: true }).first().waitFor({ timeout: InstallTimeoutMs, state: 'visible' });
       replaceWebDriverAgentSigningStyle();
 
       await mainPage.getByText('Click here to build', { exact: true }).first().click({ timeout: longTimeoutMs });
-      await mainPage.getByText('Installing packages...', { exact: true }).first().isHidden({ timeout: InstallTimeoutMs });
+      await mainPage.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: InstallTimeoutMs, state: 'hidden' });
       await mainPage.getByText('Check', { exact: true }).first().click({ timeout: longTimeoutMs });
       await mainPage.getByText('Click here to build', { exact: true }).first().click({ timeout: longTimeoutMs });
-      await mainPage.getByText('Installing packages...', { exact: true }).first().isHidden({ timeout: InstallTimeoutMs });
+      await mainPage
+        .getByText('Installing packages...', { exact: true })
+        .first()
+        .waitFor({ timeout: InstallTimeoutMs * 10, state: 'hidden' });
       await mainPage.getByText('Check', { exact: true }).first().click({ timeout: longTimeoutMs });
-      await mainPage.getByText('Finish', { exact: true }).first().click({ timeout: InstallTimeoutMs });
+      await mainPage.getByText('Continue', { exact: true }).first().click({ timeout: InstallTimeoutMs });
     });
 
     test('Dost connect', async () => {
@@ -133,4 +139,28 @@ export function runHost(random: number): void {
       expect(status).toBe(l10n('CONNECTED'));
     });
   });
+}
+
+class PageWrapper {
+  constructor(private readonly page: Page) {}
+
+  getByText(
+    text: string,
+    options?: {
+      exact?: boolean;
+    },
+  ): Locator {
+    console.log(`${dostPlaywrightColor} ${getClockTime()} getByText: ${text}`);
+    return this.page.getByText(text, options);
+  }
+
+  waitForSelector(
+    selector: string,
+    options?: {
+      timeout?: number;
+    },
+  ): Promise<ElementHandle<SVGElement | HTMLElement>> {
+    console.log(`${dostPlaywrightColor} ${getClockTime()} waitForSelector: ${selector}`);
+    return this.page.waitForSelector(selector, options);
+  }
 }
