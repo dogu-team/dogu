@@ -79,15 +79,19 @@ async function setReleaseAsset(release: ReleaseInfo, filePath: string): Promise<
     }
   }
   // upload asset
-  await client.request('POST {url}', {
-    url: release.upload_url,
-    headers: {
-      'content-type': 'application/octet-stream',
-      'content-length': 0,
-    },
-    name: fileName,
-    data: await fs.promises.readFile(filePath),
-  });
+  try {
+    await client.request('POST {url}', {
+      url: release.upload_url,
+      headers: {
+        'content-type': 'application/octet-stream',
+        'content-length': 0,
+      },
+      name: fileName,
+      data: await fs.promises.readFile(filePath),
+    });
+  } catch (e) {
+    console.error(`Failed to upload ${filePath} to github`);
+  }
 }
 
 export async function upload(filePath: string): Promise<void> {
