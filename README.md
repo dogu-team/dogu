@@ -108,12 +108,28 @@ You can integrate existing test script with Dogu.
 
 ### Javascript & Typescript
 
-Coming soon. following client & framework could be integrated with Dogu
+Coming soon. following test client could be integrated with Dogu
 
 **Client**
 
 - Webdriverio
 - [Gamium](https://github.com/dogu-team/gamium)
+
+### Python
+
+Coming soon. following test client could be integrated with Dogu
+
+**Client**
+
+- [Gamium](https://github.com/dogu-team/gamium)
+
+## Integrate Test Framework With Dogu
+
+You can integrate existing test framework with Dogu.
+
+### Javascript & Typescript
+
+Coming soon. following test framework could be integrated with Dogu
 
 **Test Framework**
 
@@ -121,11 +137,7 @@ Coming soon. following client & framework could be integrated with Dogu
 
 ### Python
 
-Coming soon. following client & framework could be integrated with Dogu
-
-**Client**
-
-- [Gamium](https://github.com/dogu-team/gamium)
+Coming soon. following test framework could be integrated with Dogu
 
 **Test Framework**
 
@@ -162,6 +174,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 ## License
 
 We provide two editions of Dogu: Community Edition and Enterprise Edition.  
-Community Edition is free under licensed AGPL3.0.
+Community Edition is free under licensed AGPL-3.0.
 
 See [LICENSE](LICENSE.md) for more details.
