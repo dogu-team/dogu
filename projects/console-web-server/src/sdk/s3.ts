@@ -1,18 +1,27 @@
 import { OrganizationId, ProjectId, RoutineDeviceJobId, RoutineId, RoutinePipelineId } from '@dogu-private/types';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { AWSError, Request, S3 as awsS3 } from 'aws-sdk';
+import { config } from '../config';
+import { FeatureConfig } from '../feature.config';
 
 const s3 = new awsS3({
-  // credentials: {
-  //   accessKeyId: ,
-  //   secretAccessKey: ,
-  // },
+  credentials: {
+    accessKeyId: config.aws.keyId ?? '',
+    secretAccessKey: config.aws.accessKey ?? '',
+  },
   region: 'ap-northeast-2',
 });
 
-/**
- * @deprecated
- */
+if (FeatureConfig.get('fileService') === 's3') {
+  if (config.aws.keyId === undefined) {
+    throw new Error('DOGU_AWS_KEY_ID is undefined');
+  }
+
+  if (config.aws.accessKey === undefined) {
+    throw new Error('DOGU_AWS_ACCESS_KEY is undefined');
+  }
+}
+
 export module S3 {
   export function getObject(params: awsS3.GetObjectRequest): Request<awsS3.GetObjectOutput, AWSError> {
     const replacedKey = params.Key ? parseSpace(params.Key) : '';

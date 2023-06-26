@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { config } from '../../../../config';
 import { S3 } from '../../../../sdk/s3';
+import { DoguLogger } from '../../../logger/logger';
 import {
   BucketKey,
   DeleteOptions,
@@ -19,24 +21,39 @@ import {
   PutResult,
 } from '../feature-file.service';
 
-/**
- * @deprecated
- */
-
 @Injectable()
 export class S3FeatureFileService extends FeatureFileService {
-  // constructor(private readonly logger: DoguLogger) {
-  //   super('s3');
-  // }
+  private readonly orgBucket: string;
+  private readonly userBucket: string;
+  private readonly publicBucket: string;
+
+  constructor(private readonly logger: DoguLogger) {
+    super('s3');
+    if (config.fileService.s3.orgBucket === undefined) {
+      throw new Error('config.fileService.s3.orgBucket is undefined');
+    }
+
+    if (config.fileService.s3.userBucket === undefined) {
+      throw new Error('env.fileService.s3.userBucket is undefined');
+    }
+
+    if (config.fileService.s3.publicBucket === undefined) {
+      throw new Error('env.fileService.s3.publicBucket is undefined');
+    }
+
+    this.orgBucket = config.fileService.s3.orgBucket;
+    this.userBucket = config.fileService.s3.userBucket;
+    this.publicBucket = config.fileService.s3.publicBucket;
+  }
 
   parseBucketKey(bucketKey: BucketKey): string {
     switch (bucketKey) {
       case 'organization':
-      // return env.DOGU_ORGANIZATION_BUCKET;
+        return this.orgBucket;
       case 'user':
-      // return env.DOGU_USER_BUCKET;
+        return this.userBucket;
       case 'public':
-      // return env.DOGU_PUBLIC_BUCKET;
+        return this.publicBucket;
       default:
         throw new Error(`Invalid bucketKey: ${bucketKey}`);
     }
@@ -134,7 +151,7 @@ export class S3FeatureFileService extends FeatureFileService {
       })) ?? [];
     return {
       contents,
-      continuationToken: output.ContinuationToken,
+      continuationToken: output.NextContinuationToken,
       isTruncated: output.IsTruncated,
     };
   }
