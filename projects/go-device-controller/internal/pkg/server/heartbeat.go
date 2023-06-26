@@ -14,7 +14,7 @@ import (
 var (
 	tickTime          time.Duration = 1000 * time.Millisecond
 	connectionTimeout time.Duration = 10000 * time.Millisecond
-	tryCount          int           = 30
+	tryCount          int           = 10
 )
 
 func goCheckDeviceServer(port uint32) {

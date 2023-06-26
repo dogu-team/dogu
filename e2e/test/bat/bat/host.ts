@@ -96,10 +96,7 @@ export function runHost(random: number): void {
       await mainPage.getByText('Check', { exact: true }).first().click({ timeout: longTimeoutMs });
       const buildButtons = await mainPage.getByText('Click here to build', { exact: true }).all();
       await buildButtons[1].click({ timeout: longTimeoutMs });
-      await mainPage
-        .getByText('Installing packages...', { exact: true })
-        .first()
-        .waitFor({ timeout: InstallTimeoutMs * 10, state: 'hidden' });
+      await mainPage.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: InstallTimeoutMs, state: 'hidden' });
       await mainPage.getByText('Check', { exact: true }).first().click({ timeout: longTimeoutMs });
       await mainPage.getByText('Continue', { exact: true }).first().click({ timeout: InstallTimeoutMs });
     });
@@ -111,7 +108,7 @@ export function runHost(random: number): void {
       await (await mainPage.waitForSelector('.chakra-input', { timeout: longTimeoutMs })).click({ timeout: longTimeoutMs });
       await (await mainPage.waitForSelector('.chakra-input', { timeout: longTimeoutMs })).fill(token, { timeout: longTimeoutMs });
       await mainPage.getByText('Connect', { exact: true }).first().click({ timeout: InstallTimeoutMs });
-      await Timer.wait(10000, 'dost launch');
+      await Timer.wait(20000, 'dost launch');
       const isConnected = await mainPage.getByText('Connected', { exact: true }).first().isVisible({ timeout: longTimeoutMs });
       if (!isConnected) {
         throw new Error('Dost is not connected');

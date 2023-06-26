@@ -17,10 +17,11 @@
     "deploy:notarize": "ts-node scripts/build --notarize=true",
     "deploy:notarize:upload": "ts-node scripts/build --notarize=true --upload=true",
     "deploy:publish": "ts-node scripts/build --notarize=true --upload=true --publish=true",
-    "dev": "yarn run build:react && nodemon",
+    "dev": "nodemon",
     "eject": "react-app-rewired eject",
     "rebuild": "yarn run clean && yarn run build",
-    "start": "cross-env PORT=3333 react-app-rewired start",
+    "start": "yarn install && yarn build && concurrently \"cross-env BROWSER=none yarn start:react\" \"wait-on http://127.0.0.1:3333 && electron .\"",
+    "start:react": "cross-env PORT=3333 react-app-rewired start",
     "test": "react-app-rewired test",
     "util:set-productname": "ts-node scripts/util/set-productname.ts name",
     "util:set-version": "ts-node scripts/util/set-version.ts version"
