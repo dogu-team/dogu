@@ -97,31 +97,33 @@ export class IdaBuildExternalUnit extends IExternalUnit {
         this.stdLogCallbackService.stdout(`Start ${this.getName()}...`);
         child.on('close', (code, signal) => {
           (async () => {
-            this.stdLogCallbackService.stdout(`${this.getName()} is closed. code: ${code} signal: ${signal}`);
+            const msg = `${this.getName()} is closed. code: ${code} signal: ${signal}`;
+            this.logger.info(msg);
+            this.stdLogCallbackService.stdout(msg);
 
-            const remainDirs = [
-              { parent: idaDerivedDataPath, dir: ['Build', 'Logs'] },
-              { parent: path.resolve(idaDerivedDataPath, 'Build'), dir: ['Products'] },
-            ];
+            if (code === 0) {
+              const remainDirs = [
+                { parent: idaDerivedDataPath, dir: ['Build', 'Logs'] },
+                { parent: path.resolve(idaDerivedDataPath, 'Build'), dir: ['Products'] },
+              ];
 
-            for (const remainDir of remainDirs) {
-              const dirs = await fsPromises.readdir(remainDir.parent);
-              for (const dir of dirs) {
-                if (remainDir.dir.indexOf(dir) === -1) {
-                  await removeItemRecursive(path.resolve(remainDir.parent, dir));
+              for (const remainDir of remainDirs) {
+                const dirs = await fsPromises.readdir(remainDir.parent);
+                for (const dir of dirs) {
+                  if (remainDir.dir.indexOf(dir) === -1) {
+                    await removeItemRecursive(path.resolve(remainDir.parent, dir));
+                  }
                 }
               }
-            }
 
-            const buildProductsSubDir = path.resolve(idaDerivedDataPath, 'Build/Products/Debug-iphoneos');
-            const allowedExtensions = ['.app'];
-            const files = await fsPromises.readdir(buildProductsSubDir);
-            for (const file of files) {
-              if (!allowedExtensions.some((ext) => file.endsWith(ext))) {
-                await removeItemRecursive(`${buildProductsSubDir}/${file}`);
+              const buildProductsSubDir = path.resolve(idaDerivedDataPath, 'Build/Products/Debug-iphoneos');
+              const allowedExtensions = ['.app'];
+              const files = await fsPromises.readdir(buildProductsSubDir);
+              for (const file of files) {
+                if (!allowedExtensions.some((ext) => file.endsWith(ext))) {
+                  await removeItemRecursive(`${buildProductsSubDir}/${file}`);
+                }
               }
-            }
-            if (code === 0) {
               resolve();
             } else {
               reject(new Error(`${this.getName()} failed. code: ${code} signal: ${signal}`));
