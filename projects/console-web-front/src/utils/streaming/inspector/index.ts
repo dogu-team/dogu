@@ -1,5 +1,6 @@
 import { ScreenSize } from '@dogu-tech/device-client-common';
-import { ContextAndNode, InspectNode, NodePosition } from '../../types/inspector';
+
+import { ContextAndNode, InspectNode, NodePosition } from 'src/types/inspector';
 
 export enum AppiumRotation {
   PORTRAIT = 0,

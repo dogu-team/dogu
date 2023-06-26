@@ -1,5 +1,5 @@
+import { AndroidNodeAttributes } from 'src/types/inspector';
 import { AppiumRotation, DeviceRotationDirection, GetDeviceRotationFunc, GetDeviceScreenSizeFunc, GetInspectingAreaFunc, GetNodeBoundFunc, InspectorModule } from '.';
-import { AndroidNodeAttributes } from '../../types/inspector';
 
 class AndroidInspectorModule extends InspectorModule<AndroidNodeAttributes> {
   public getNodeBound: GetNodeBoundFunc<AndroidNodeAttributes> = (node) => {

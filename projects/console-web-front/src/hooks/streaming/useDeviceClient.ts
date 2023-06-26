@@ -2,10 +2,10 @@ import { PrivateProtocol, WebSocketConnection } from '@dogu-private/types';
 import { DeviceClient, DeviceHostClient } from '@dogu-tech/device-client-common';
 import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { BrowserDeviceInspector } from '../../utils/browser-device-inspector';
-import { BrowserDeviceService } from '../../utils/browser-device-service';
 
-import { createDataChannel } from '../../utils/web-rtc';
+import { BrowserDeviceInspector } from '../../utils/streaming/browser-device-inspector';
+import { BrowserDeviceService } from '../../utils/streaming/browser-device-service';
+import { createDataChannel } from '../../utils/streaming/web-rtc';
 
 type DataChannelLabel = PrivateProtocol.DataChannelLabel;
 
