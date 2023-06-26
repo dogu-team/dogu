@@ -8,24 +8,21 @@ interface Props {
 }
 
 const NativeObjectDetail = ({ node }: Props) => {
-  if (!node) {
-    return <div>Select UI</div>;
-  }
-
   return (
     <Box>
       <Section>
         <StyledTitle>Attributes</StyledTitle>
-        {Object.keys(node.attributes).map((key) => {
-          const value = node.attributes[key as keyof typeof node.attributes];
-          if (typeof value === 'boolean') {
-            return null;
-          }
+        {!!node &&
+          Object.keys(node.attributes).map((key) => {
+            const value = node.attributes[key as keyof typeof node.attributes];
+            if (typeof value === 'boolean') {
+              return null;
+            }
 
-          if (typeof value !== 'object') {
-            return <InspectObjectProperty key={key} title={key} values={value} />;
-          }
-        })}
+            if (typeof value !== 'object') {
+              return <InspectObjectProperty key={key} title={key} values={value} />;
+            }
+          })}
       </Section>
     </Box>
   );
