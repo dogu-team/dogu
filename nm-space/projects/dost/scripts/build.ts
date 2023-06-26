@@ -5,7 +5,7 @@ import { hideBin } from 'yargs/helpers';
 import yargs from 'yargs/yargs';
 import { checkIdentity, deleteKeyFile, findDarwinDistfile, generateKeyFile, notarizeDarwin } from './deployDarwin';
 import { findWindowsDistfile } from './deployWindows';
-import { deviceServerEnv } from './env';
+import { deviceServerEnv, dostEnv, env } from './env';
 import { Arch, ExtraResource, prepare } from './prepare';
 import { upload } from './upload';
 
@@ -85,24 +85,24 @@ function getOptions(archs: Arch[], extraRess: ExtraResource[]): CliOptions {
           await upload(filePath);
         }
       },
-      // publish: {
-      //   provider: dostEnv.DOGU_APPUPDATE_PROVIDER as 's3',
-      //   bucket: dostEnv.DOGU_APPUPDATE_URL,
-      //   acl: null,
-      //   path: dostEnv.DOGU_APPUPDATE_SUBPATH,
-      //   region: dostEnv.DOGU_APPUPDATE_REGION,
-      // },
+      publish: {
+        provider: dostEnv.DOGU_APPUPDATE_PROVIDER as 's3',
+        bucket: dostEnv.DOGU_APPUPDATE_URL,
+        acl: null,
+        path: dostEnv.DOGU_APPUPDATE_SUBPATH,
+        region: dostEnv.DOGU_APPUPDATE_REGION,
+      },
     },
   };
-  // if (argv.publish) {
-  //   if (!env.AWS_ACCESS_KEY_ID) {
-  //     throw new Error('AWS_ACCESS_KEY_ID is not set');
-  //   }
-  //   if (!env.AWS_SECRET_ACCESS_KEY) {
-  //     throw new Error('AWS_SECRET_ACCESS_KEY is not set');
-  //   }
-  //   options.publish = 'always';
-  // }
+  if (argv.publish) {
+    if (!env.AWS_ACCESS_KEY_ID) {
+      throw new Error('AWS_ACCESS_KEY_ID is not set');
+    }
+    if (!env.AWS_SECRET_ACCESS_KEY) {
+      throw new Error('AWS_SECRET_ACCESS_KEY is not set');
+    }
+    options.publish = 'always';
+  }
   archs.forEach((arch) => {
     options[arch] = true;
   });
