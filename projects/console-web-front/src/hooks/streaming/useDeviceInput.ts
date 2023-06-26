@@ -9,7 +9,7 @@ import {
   mapToolbarMenuToDeviceKeyboard,
   mapWebKeyboardToDeviceKeyboard,
   mapWebMetaKeyToDeviceMetaState,
-} from 'src/utils/streaming';
+} from 'src/utils/streaming/streaming';
 import { sendErrorNotification } from '../../utils/antd';
 
 type DeviceControlType = PrivateProtocol.DeviceControlType;

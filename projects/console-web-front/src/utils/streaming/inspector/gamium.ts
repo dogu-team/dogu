@@ -1,5 +1,5 @@
+import { GamiumNodeAttributes } from 'src/types/inspector';
 import { DeviceRotationDirection, GamiumRotation, GetDeviceRotationFunc, GetDeviceScreenSizeFunc, GetInspectingAreaFunc, GetNodeBoundFunc, InspectorModule } from '.';
-import { GamiumNodeAttributes } from '../../types/inspector';
 
 class GamiumInspectorModule extends InspectorModule<GamiumNodeAttributes> {
   public getNodeBound: GetNodeBoundFunc<GamiumNodeAttributes> = (node) => {

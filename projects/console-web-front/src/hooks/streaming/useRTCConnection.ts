@@ -9,8 +9,8 @@ import { checkDeviceStateAsync } from 'src/api/device';
 import useStreamingOptionStore from 'src/stores/streaming-option';
 import { StreamingError, StreamingErrorType } from 'src/types/streaming';
 import { config } from '../../../config';
-import { createDataChannel } from '../../utils/web-rtc';
-import { WebRtcExchangerFactory } from '../../utils/web-rtc-exchanger';
+import { createDataChannel } from '../../utils/streaming/web-rtc';
+import { WebRtcExchangerFactory } from '../../utils/streaming/web-rtc-exchanger';
 
 type DataChannelLabel = PrivateProtocol.DataChannelLabel;
 

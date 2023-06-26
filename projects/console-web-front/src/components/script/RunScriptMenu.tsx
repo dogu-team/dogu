@@ -6,7 +6,7 @@ import useDebouncedInputValues from '../../hooks/useDebouncedInputValues';
 import useSelect from '../../hooks/useSelect';
 
 import { flexRowBaseStyle } from '../../styles/box';
-import { getAvailableApplicationExtension } from '../../utils/streaming';
+import { getAvailableApplicationExtension } from '../../utils/streaming/streaming';
 import ProjectApplicationSelector from '../project-application/ProjectApplicationSelector';
 import ScriptDeviceSeletor from './ScriptDeviceSelector';
 

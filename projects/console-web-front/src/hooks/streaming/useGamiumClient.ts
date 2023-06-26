@@ -5,9 +5,9 @@ import { DeviceClient, DeviceHostClient } from '@dogu-tech/device-client-common'
 import { DefaultGamiumEnginePort, GamiumClient, Param } from 'gamium/common';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { BrowserGamiumService, RequestPriority } from '../../utils/browser-gamium-service';
 import { isDesktop } from '../../utils/device';
-import { createDataChannel } from '../../utils/web-rtc';
+import { BrowserGamiumService, RequestPriority } from '../../utils/streaming/browser-gamium-service';
+import { createDataChannel } from '../../utils/streaming/web-rtc';
 
 type DataChannelLabel = PrivateProtocol.DataChannelLabel;
 

@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import useDeviceAppInstall from '../../hooks/streaming/useDeviceAppInstall';
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 import { flexRowCenteredStyle, flexRowSpaceBetweenStyle } from '../../styles/box';
-import { getAvailableApplicationExtension } from '../../utils/streaming';
+import { getAvailableApplicationExtension } from '../../utils/streaming/streaming';
 import { convertByteWithMaxUnit } from '../../utils/unit';
 
 interface Props {

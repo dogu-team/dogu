@@ -1,10 +1,10 @@
 import styled from 'styled-components';
 import Image from 'next/image';
 import { HomeOutlined, LockOutlined, MenuOutlined, PoweroffOutlined, RollbackOutlined, UnlockOutlined, AlignLeftOutlined } from '@ant-design/icons';
-import React, { useContext } from 'react';
+import React from 'react';
 import { Platform } from '@dogu-private/types';
 
-import { DeviceToolBarMenu } from 'src/utils/streaming';
+import { DeviceToolBarMenu } from 'src/utils/streaming/streaming';
 import resources from 'src/resources';
 import useDeviceInput from '../../hooks/streaming/useDeviceInput';
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';

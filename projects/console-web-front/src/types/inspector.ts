@@ -1,7 +1,7 @@
 import { Platform } from '@dogu-private/types';
 import { ContextPageSource } from '@dogu-tech/device-client-common';
 import { Transform, Type } from 'class-transformer';
-import { AppiumRotation, GamiumRotation } from '../modules/inspector';
+import { AppiumRotation, GamiumRotation } from '../utils/streaming/inspector';
 
 export interface InspectNode<A> {
   tag: string;

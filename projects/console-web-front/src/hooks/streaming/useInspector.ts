@@ -4,9 +4,6 @@ import { HitPoint, ScreenSize } from '@dogu-tech/device-client-common';
 import { throttle } from 'lodash';
 import React, { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { DeviceRotationDirection, InspectorModule } from '../../modules/inspector';
-import AndroidInspectorModule from '../../modules/inspector/android';
-import GamiumInspectorModule from '../../modules/inspector/gamium';
 import {
   AndroidNodeAttributes,
   ContextAndNode,
@@ -19,7 +16,10 @@ import {
   NodePosition,
   SelectedNodePosition,
 } from '../../types/inspector';
-import { BrowserDeviceInspector } from '../../utils/browser-device-inspector';
+import { BrowserDeviceInspector } from '../../utils/streaming/browser-device-inspector';
+import { DeviceRotationDirection, InspectorModule } from '../../utils/streaming/inspector';
+import AndroidInspectorModule from '../../utils/streaming/inspector/android';
+import GamiumInspectorModule from '../../utils/streaming/inspector/gamium';
 
 export const GAMIUM_CONTEXT_KEY = 'GAMIUM';
 

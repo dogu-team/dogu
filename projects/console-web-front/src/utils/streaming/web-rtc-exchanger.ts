@@ -3,11 +3,11 @@ import { DefaultScreenCaptureOption, DeviceId, OrganizationId, Platform, Serial,
 import { sdpExt } from '@dogu-private/webrtc';
 import { PromiseOrValue, transformAndValidate } from '@dogu-tech/common';
 import { StreamingAnswerDto } from '@dogu-tech/device-client-common';
-import { config } from '../../config';
 
-import { startDeviceStreaming } from '../api/device';
-import { StreamingError, StreamingErrorType } from '../types/streaming';
-import { WebSocketUrlResolver } from './web-socket';
+import { config } from '../../../config';
+import { startDeviceStreaming } from '../../api/device';
+import { StreamingError, StreamingErrorType } from '../../types/streaming';
+import { WebSocketUrlResolver } from '../web-socket';
 
 export interface WebRtcExchanger {
   startExchange(
