@@ -1,20 +1,24 @@
 import { Tooltip } from 'antd';
 import styled from 'styled-components';
 
-import { GamiumNodeAttributes, InspectNodeAttributes, InspectNodeWithPosition } from '../../types/inspector';
+import { InspectNodeAttributes, InspectNodeWithPosition } from '../../types/inspector';
 
 interface Props {
   nodeInfo: InspectNodeWithPosition<InspectNodeAttributes>;
 }
 
 const InspectorSelectedNode = ({ nodeInfo }: Props) => {
+  const pathValue = nodeInfo.node.attributes.path;
+  const splited = pathValue?.split('/');
+  const displayedPath = !!splited && splited.length > 5 ? splited.slice(0, 4).join('/') + '/.../' + splited[splited.length - 1] : pathValue;
+
   return (
     <Tooltip
       title={
         <div>
-          {!!(nodeInfo.node.attributes as GamiumNodeAttributes).path && (
+          {!!nodeInfo.node.attributes.path && (
             <p style={{ wordBreak: 'break-all' }}>
-              <b style={{ color: 'red' }}>Path:</b>&nbsp;{(nodeInfo.node.attributes as GamiumNodeAttributes).path}
+              <b style={{ color: 'red' }}>Xpath:</b>&nbsp;{displayedPath}
             </p>
           )}
           <p style={{ wordBreak: 'break-all' }}>

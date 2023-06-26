@@ -10,7 +10,7 @@ interface Props {
   disableCopy?: boolean;
 }
 
-const InspectObjectProperty = ({ title, values, disableCopy }: Props) => {
+const InspectObjectAttribute = ({ title, values, disableCopy }: Props) => {
   const { t } = useTranslation();
 
   const handleCopy = async (text: string) => {
@@ -49,7 +49,7 @@ const InspectObjectProperty = ({ title, values, disableCopy }: Props) => {
   );
 };
 
-export default InspectObjectProperty;
+export default InspectObjectAttribute;
 
 const FlexRow = styled.div`
   ${flexRowBaseStyle}

@@ -1,6 +1,7 @@
 import { DataNode } from 'antd/es/tree';
 import styled from 'styled-components';
 import { useCallback, useEffect } from 'react';
+import { InfoCircleOutlined } from '@ant-design/icons';
 
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 import GameObjectDetail from './GameObjectDetail';
@@ -10,7 +11,6 @@ import InspectorContextMenu from './InspectorContextMenu';
 import useInspector, { GAMIUM_CONTEXT_KEY } from '../../hooks/streaming/useInspector';
 import NativeObjectDetail from './NativeObjectDetail';
 import { GamiumNodeAttributes, InspectNode } from '../../types/inspector';
-import { InfoCircleOutlined } from '@ant-design/icons';
 
 interface Props {
   inspector: ReturnType<typeof useInspector>;
@@ -123,6 +123,7 @@ const Inner = styled.div<{ h: number }>`
   display: flex;
   height: ${(props) => props.h}%;
   flex-direction: column;
+  border-top: 1px solid ${(props) => props.theme.main.colors.gray6};
 `;
 
 const Content = styled.div`

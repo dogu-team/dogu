@@ -76,7 +76,7 @@ const Box = styled.div`
   ${flexRowBaseStyle}
   height: 28px;
   font-size: 0.8rem;
-  border-bottom: 1px solid ${(props) => props.theme.main.colors.gray5};
+  border-bottom: 1px solid ${(props) => props.theme.main.colors.gray6};
 `;
 
 const ButtonWrapper = styled.div`
