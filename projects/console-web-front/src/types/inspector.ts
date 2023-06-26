@@ -218,3 +218,36 @@ export class GamiumNodeAttributes {
 export type GamiumAttributeFields = keyof GamiumNodeAttributes;
 
 export type InspectNodeAttributes = AndroidNodeAttributes | GamiumNodeAttributes;
+
+export class IosNodeAttributes {
+  @Type(() => Number)
+  index: number = 0;
+
+  @Type(() => Boolean)
+  @Transform(({ value }) => value === 'true')
+  accessible?: boolean;
+
+  @Type(() => Boolean)
+  @Transform(({ value }) => value === 'true')
+  enabled?: boolean;
+
+  @Type(() => Boolean)
+  @Transform(({ value }) => value === 'true')
+  visible?: boolean;
+
+  @Type(() => Number)
+  x?: number;
+
+  @Type(() => Number)
+  y?: number;
+
+  @Type(() => Number)
+  width?: number;
+
+  @Type(() => Number)
+  height?: number;
+
+  type?: string;
+  name?: string;
+  label?: string;
+}

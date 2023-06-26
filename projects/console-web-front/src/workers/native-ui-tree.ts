@@ -10,6 +10,7 @@ import {
   InspectNode,
   InspectorWorkerMessage,
   InspectorWorkerResponse,
+  IosNodeAttributes,
 } from '../types/inspector';
 
 function elementToObject<A extends { index: number }>(element: HTMLElement, parentKey: string, elementKey: keyof HTMLElement, attributeClass: ClassConstructor<A>): InspectNode<A> {
@@ -214,10 +215,11 @@ globalThis.onmessage = (e: MessageEvent<InspectorWorkerMessage>) => {
               const androidResult = elementToObject(root, '', 'tagName', AndroidNodeAttributes);
               convertedResult.push({ context, node: androidResult });
               break;
-            // case Platform.PLATFORM_IOS:
-            //   const iosResult = elementToObject(root, '', 'tagName');
-            //   convertedResult.push({ context, node: iosResult });
-            //   break;
+            case Platform.PLATFORM_IOS:
+              console.log(root);
+              const iosResult = elementToObject(root, '', 'tagName', IosNodeAttributes);
+              convertedResult.push({ context, node: iosResult });
+              break;
           }
         }
       }
