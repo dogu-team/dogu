@@ -25,6 +25,12 @@ jobs:
       max-parallel: 2
       matrix:
         runner: [windows-2019, macos-latest]
+        extension: [exe, dmg]
+        include:
+          - runner: windows-2019
+            extension: exe
+          - runner: macos-latest
+            extension: dmg
     runs-on: ['${{ matrix.runner }}']
 
     steps:
@@ -179,13 +185,13 @@ jobs:
           yarn run build && yarn run deploy:notarize
         working-directory: ./nm-space/projects/dost
 
-      # - name: Upload dost todo(yow)
-      #   if: ${{ failure() }}
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: 'dost-${{ runner.os }}-${{ matrix.arch }}'
-      #     path: |
-      #       ./e2e/generated/record/screen-${{ runner.os }}-${{github.sha}}.webm
+      - name: Upload dost
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'dost-${{ runner.os }'
+          path: |
+            ./nm-space/projects/dost/dist/*.${{ matrix.extension }}
 
       # - name: create dotEnv self-hosted
       #   run: |
