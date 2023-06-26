@@ -8,6 +8,7 @@ import path from 'path';
 import shelljs from 'shelljs';
 import { promisify } from 'util';
 import { ILoginItemSettingsOptions, ISettings, MediaType, settingsClientKey } from '../../src/shares/settings';
+import { AppConfigService } from '../app-config/app-config-service';
 import { DotEnvConfigService } from '../dot-env-config/dot-env-config-service';
 import { logger } from '../log/logger.instance';
 import { ThirdPartyPathMap, WritablePath } from '../path-map';
@@ -30,6 +31,7 @@ export class SettingsService {
     ipcMain.handle(settingsClientKey.setSecureKeyboardEntryEnabled, (_, enabled: boolean) => {
       app.setSecureKeyboardEntryEnabled(enabled);
     });
+    ipcMain.handle(settingsClientKey.openJsonConfig, () => AppConfigService.instance.openJsonConfig());
     ipcMain.handle(settingsClientKey.openWritableDirectory, () => this.openWritableDirectory());
     ipcMain.handle(settingsClientKey.openExternal, (_, url: string) => shell.openExternal(url));
 

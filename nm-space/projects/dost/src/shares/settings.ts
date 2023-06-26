@@ -37,6 +37,7 @@ export interface ISettingsClient {
   getLoginItemSettings(option: ILoginItemSettingsOptions): Promise<ILoginItemSettings>;
   setLoginItemSettings(setting: ISettings): Promise<void>;
   setSecureKeyboardEntryEnabled(enabled: boolean): Promise<void>;
+  openJsonConfig(): Promise<void>;
   openWritableDirectory(): Promise<void>;
   openExternal(url: string): Promise<void>;
 

@@ -1,7 +1,7 @@
 import { app, ipcMain } from 'electron';
 import isDev from 'electron-is-dev';
 import Store from 'electron-store';
-import { IAppConfigClient, Key, schema, Schema, appConfigClientKey } from '../../src/shares/app-config';
+import { appConfigClientKey, IAppConfigClient, Key, schema, Schema } from '../../src/shares/app-config';
 import { logger } from '../log/logger.instance';
 import { ConfigsPath } from '../path-map';
 import { DotenvMerger } from './dotenv-merger';
@@ -32,9 +32,6 @@ export class AppConfigService implements IAppConfigClient {
     ipcMain.handle(appConfigClientKey.get, (_, key: Key) => instance.get(key));
     ipcMain.handle(appConfigClientKey.set, (_, key: Key, value: any) => instance.set(key, value));
     ipcMain.handle(appConfigClientKey.delete, (_, key: Key) => instance.delete(key));
-    if (isDev) {
-      instance.client.openInEditor();
-    }
   }
 
   private constructor(readonly client: Client) {}
@@ -49,5 +46,11 @@ export class AppConfigService implements IAppConfigClient {
 
   delete(key: Key): Promise<void> {
     return Promise.resolve(this.client.delete(key));
+  }
+
+  openJsonConfig(): void {
+    if (isDev) {
+      AppConfigService.instance.client.openInEditor();
+    }
   }
 }
