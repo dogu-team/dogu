@@ -86,9 +86,10 @@ export function runHost(random: number): void {
       if (process.platform !== 'darwin') {
         return;
       }
+      await mainPage.getByText('Click here to build', { exact: true }).first().isVisible({ timeout: InstallTimeoutMs });
       replaceWebDriverAgentSigningStyle();
 
-      await mainPage.getByText('Click here to build', { exact: true }).first().click({ timeout: InstallTimeoutMs });
+      await mainPage.getByText('Click here to build', { exact: true }).first().click({ timeout: shortTimeoutMs });
       await mainPage.getByText('Click here to build', { exact: true }).first().click({ timeout: InstallTimeoutMs });
     });
 
