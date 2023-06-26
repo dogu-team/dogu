@@ -11,9 +11,10 @@ import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
 interface Props {
   onRefresh: () => void | Promise<void>;
   onReset: () => void | Promise<void>;
+  selectDisabled?: boolean;
 }
 
-const InspectorToolbar = ({ onRefresh, onReset }: Props) => {
+const InspectorToolbar = ({ onRefresh, onReset, selectDisabled }: Props) => {
   const { mode, updateMode } = useDeviceStreamingContext();
   const [refreshTime, setRefreshTime] = useState(moment().format('LTS'));
   const [refreshEnabled, setRefreshEnabled] = useState(true);
@@ -60,6 +61,7 @@ const InspectorToolbar = ({ onRefresh, onReset }: Props) => {
           onClick={() => {
             updateMode(mode === 'input' ? 'inspect' : 'input');
           }}
+          disabled={selectDisabled}
         >
           <SelectOutlined style={{ fontSize: '.75rem', color: mode === 'inspect' ? '#fff' : 'black' }} />
         </StyledButton>
