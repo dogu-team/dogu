@@ -13,6 +13,7 @@ import {
   InspectNodeWithPosition,
   InspectorWorkerMessage,
   InspectorWorkerResponse,
+  IosNodeAttributes,
   NodePosition,
   SelectedNodePosition,
 } from '../../types/inspector';
@@ -20,6 +21,7 @@ import { BrowserDeviceInspector } from '../../utils/streaming/browser-device-ins
 import { DeviceRotationDirection, InspectorModule } from '../../utils/streaming/inspector';
 import AndroidInspectorModule from '../../utils/streaming/inspector/android';
 import GamiumInspectorModule from '../../utils/streaming/inspector/gamium';
+import IosInspectorModule from '../../utils/streaming/inspector/ios';
 
 export const GAMIUM_CONTEXT_KEY = 'GAMIUM';
 
@@ -35,8 +37,6 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
   const selectedContextAndNode = contextAndNodes?.find((c) => c.context === selectedContextKey);
   const isGamium = selectedContextKey === GAMIUM_CONTEXT_KEY;
 
-  console.log(contextAndNodes);
-
   useEffect(() => {
     if (selectedContextAndNode) {
       if (isGamium) {
@@ -46,6 +46,10 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
           switch (device.platform) {
             case Platform.PLATFORM_ANDROID:
               inspectorModule.current = new AndroidInspectorModule(selectedContextAndNode as ContextAndNode<AndroidNodeAttributes>);
+              break;
+            case Platform.PLATFORM_IOS:
+              inspectorModule.current = new IosInspectorModule(selectedContextAndNode as ContextAndNode<IosNodeAttributes>);
+              break;
           }
         }
       }
