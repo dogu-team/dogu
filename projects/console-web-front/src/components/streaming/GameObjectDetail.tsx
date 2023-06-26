@@ -1,11 +1,10 @@
 import { HitPoint } from '@dogu-tech/device-client-common';
-import { Vector3 } from 'gamium/common';
 import useTranslation from 'next-translate/useTranslation';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 import { flexRowBaseStyle } from '../../styles/box';
 import { GamiumNodeAttributes, InspectNode } from '../../types/inspector';
-import InspectObjectProperty from './InspectObjectProperty';
+import InspectObjectAttribute from './InspectObjectAttribute';
 
 interface Props {
   node: InspectNode<GamiumNodeAttributes> | undefined;
@@ -21,9 +20,9 @@ const GameObjectDetail = ({ node, hitPoint }: Props) => {
         <StyledTitle>Hit Point</StyledTitle>
         {hitPoint ? (
           <FlexRow>
-            <InspectObjectProperty title="" values={[{ label: 'X', value: hitPoint?.x.toFixed(1) }]} />
-            <InspectObjectProperty title="" values={[{ label: 'Y', value: hitPoint?.y.toFixed(1) }]} />
-            <InspectObjectProperty title="" values={[{ label: 'Z', value: hitPoint?.z.toFixed(1) }]} />
+            <InspectObjectAttribute title="" values={[{ label: 'X', value: hitPoint?.x.toFixed(1) }]} />
+            <InspectObjectAttribute title="" values={[{ label: 'Y', value: hitPoint?.y.toFixed(1) }]} />
+            <InspectObjectAttribute title="" values={[{ label: 'Z', value: hitPoint?.z.toFixed(1) }]} />
           </FlexRow>
         ) : (
           <div>No hit point</div>
@@ -31,12 +30,17 @@ const GameObjectDetail = ({ node, hitPoint }: Props) => {
       </Section>
 
       <Section>
-        <StyledTitle>Properties</StyledTitle>
+        <StyledTitle>Attributes</StyledTitle>
         {node ? (
           <div>
+            <InspectObjectAttribute title="XPath" values={node.attributes.path} />
             {Object.entries(node.attributes).map(([key, value]) => {
+              if (key === 'path') {
+                return null;
+              }
+
               return (
-                <InspectObjectProperty
+                <InspectObjectAttribute
                   key={key}
                   title={key}
                   values={
@@ -63,7 +67,6 @@ export default GameObjectDetail;
 
 const Box = styled.div`
   height: 100%;
-  border-top: 1px solid ${(props) => props.theme.main.colors.gray6};
   padding: 0.5rem 0;
   font-size: 0.75rem;
 `;

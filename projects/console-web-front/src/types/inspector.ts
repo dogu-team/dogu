@@ -1,6 +1,7 @@
 import { Platform } from '@dogu-private/types';
 import { ContextPageSource } from '@dogu-tech/device-client-common';
 import { Transform, Type } from 'class-transformer';
+
 import { AppiumRotation, GamiumRotation } from '../utils/streaming/inspector';
 
 export interface InspectNode<A> {
@@ -49,7 +50,7 @@ export type NodePosition = {
   height: number;
 };
 
-class ScreenPosition {
+export class ScreenPosition {
   start!: [number, number];
   end!: [number, number];
 }
