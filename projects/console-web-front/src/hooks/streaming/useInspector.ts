@@ -35,6 +35,8 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
   const selectedContextAndNode = contextAndNodes?.find((c) => c.context === selectedContextKey);
   const isGamium = selectedContextKey === GAMIUM_CONTEXT_KEY;
 
+  console.log(contextAndNodes);
+
   useEffect(() => {
     if (selectedContextAndNode) {
       if (isGamium) {
