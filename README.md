@@ -13,8 +13,12 @@ Dogu is a web-based test platform for test automation
   <a href="https://github.com/dogu-team/dogu/discussions"><img src="https://img.shields.io/badge/Discussions-welcome-brightgreen.svg" alt="Issues Welcome"></a>
   <a href="https://github.com/dogu-team/dogu/pulse" alt="Activity"><img src="https://img.shields.io/github/commit-activity/m/dogu-team/dogu" /></a>
   <a href="https://github.com/dogu-team/dogu/actions/workflows/e2e.yml"><img src="https://github.com/dogu-team/dogu/actions/workflows/e2e.yml/badge.svg" alt="GitHub Actions status"></a>
-  <a href="https://twitter.com/dogutechio"><img src="https://img.shields.io/twitter/follow/dogutechio.svg?style=social" alt="Twitter Follow" /></a>
   <a href="https://discord.gg/bVycd6Tu9g"><img src="https://dcbadge.vercel.app/api/server/bVycd6Tu9g?style=flat" /></a>
+  <div align="center">
+  <a href="https://blog.dogutech.io"><img src="https://img.shields.io/badge/ghost-000?style=for-the-badge&logo=ghost&logoColor=%23F7DF1E" alt="Blog" /></a>
+    <a href="https://www.linkedin.com/company/dogu-technologies"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>
+    <a href="https://twitter.com/dogutechio"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter" /></a>
+  </div>
 </p>
 
 ## What is Dogu?
@@ -103,23 +107,29 @@ Visualize test result
 You can integrate existing test script with Dogu.
 
 ### Javascript & Typescript
+
 Coming soon. following client & framework could be integrated with Dogu
 
 **Client**
-* Webdriverio
-* [Gamium](https://github.com/dogu-team/gamium)
+
+- Webdriverio
+- [Gamium](https://github.com/dogu-team/gamium)
 
 **Test Framework**
-* Jest
+
+- Jest
 
 ### Python
+
 Coming soon. following client & framework could be integrated with Dogu
 
 **Client**
-* [Gamium](https://github.com/dogu-team/gamium)
+
+- [Gamium](https://github.com/dogu-team/gamium)
 
 **Test Framework**
-* Pytest
+
+- Pytest
 
 ## Start With Self-Hosted
 
