@@ -41,3 +41,15 @@ export abstract class InspectorModule<A> {
   abstract getDeviceRotation: GetDeviceRotationFunc;
   abstract getDeviceScreenSize: GetDeviceScreenSizeFunc;
 }
+
+export abstract class InspectorElementParser<A> {
+  public rootElement: Element;
+
+  constructor(rootElement: Element) {
+    this.rootElement = rootElement;
+  }
+
+  abstract getXpath: (element: Element) => string;
+  abstract convertElementToNode: (element: Element, parentNode?: InspectNode<A>) => InspectNode<A>;
+  abstract parse: () => InspectNode<A>;
+}

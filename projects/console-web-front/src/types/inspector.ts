@@ -13,6 +13,7 @@ export interface InspectNode<A> {
 
 export type AndroidInspectorNode = InspectNode<AndroidNodeAttributes>;
 export type GamiumInspectorNode = InspectNode<GamiumNodeAttributes>;
+export type IosInspectorNode = InspectNode<IosNodeAttributes>;
 
 export type InspectorWorkerMessage = {
   type: 'convert';
