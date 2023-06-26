@@ -64,7 +64,6 @@ export function runHost(random: number): void {
     let mainPage: Page | undefined = undefined;
     const InstallTimeoutMs = 180000;
     const longTimeoutMs = 30000;
-    const shortTimeoutMs = 1000;
 
     test('Execute Dost', async () => {
       mainPage = await launchDost();
@@ -74,9 +73,9 @@ export function runHost(random: number): void {
       if (!mainPage) {
         throw new Error('mainPage is undefined');
       }
-      await (await mainPage.waitForSelector('.chakra-checkbox__control', { timeout: longTimeoutMs })).click({ timeout: shortTimeoutMs });
+      await (await mainPage.waitForSelector('.chakra-checkbox__control', { timeout: longTimeoutMs })).click({ timeout: longTimeoutMs });
       await mainPage.getByText('Install', { exact: true }).first().click({ timeout: longTimeoutMs });
-      // await mainPage.getByText('Finish', { exact: true }).first().click({ timeout: InstallTimeoutMs });
+      await mainPage.getByText('Installing packages...', { exact: true }).first().isHidden({ timeout: InstallTimeoutMs });
     });
 
     test('Dost manual setup', async () => {
@@ -86,19 +85,24 @@ export function runHost(random: number): void {
       if (process.platform !== 'darwin') {
         return;
       }
-      await mainPage.getByText('Click here to build', { exact: true }).first().isVisible({ timeout: InstallTimeoutMs });
+      await mainPage.getByText('Manual Setup', { exact: true }).first().isVisible({ timeout: InstallTimeoutMs });
       replaceWebDriverAgentSigningStyle();
 
-      await mainPage.getByText('Click here to build', { exact: true }).first().click({ timeout: shortTimeoutMs });
-      await mainPage.getByText('Click here to build', { exact: true }).first().click({ timeout: InstallTimeoutMs });
+      await mainPage.getByText('Click here to build', { exact: true }).first().click({ timeout: longTimeoutMs });
+      await mainPage.getByText('Installing packages...', { exact: true }).first().isHidden({ timeout: InstallTimeoutMs });
+      await mainPage.getByText('Check', { exact: true }).first().click({ timeout: longTimeoutMs });
+      await mainPage.getByText('Click here to build', { exact: true }).first().click({ timeout: longTimeoutMs });
+      await mainPage.getByText('Installing packages...', { exact: true }).first().isHidden({ timeout: InstallTimeoutMs });
+      await mainPage.getByText('Check', { exact: true }).first().click({ timeout: longTimeoutMs });
+      await mainPage.getByText('Finish', { exact: true }).first().click({ timeout: InstallTimeoutMs });
     });
 
     test('Dost connect', async () => {
       if (!mainPage) {
         throw new Error('mainPage is undefined');
       }
-      await (await mainPage.waitForSelector('.chakra-input', { timeout: longTimeoutMs })).click({ timeout: shortTimeoutMs });
-      await (await mainPage.waitForSelector('.chakra-input', { timeout: longTimeoutMs })).fill(token, { timeout: shortTimeoutMs });
+      await (await mainPage.waitForSelector('.chakra-input', { timeout: longTimeoutMs })).click({ timeout: longTimeoutMs });
+      await (await mainPage.waitForSelector('.chakra-input', { timeout: longTimeoutMs })).fill(token, { timeout: longTimeoutMs });
       await mainPage.getByText('Connect', { exact: true }).first().click({ timeout: InstallTimeoutMs });
       await Timer.wait(10000, 'dost launch');
       const isConnected = await mainPage.getByText('Connected', { exact: true }).first().isVisible({ timeout: longTimeoutMs });
