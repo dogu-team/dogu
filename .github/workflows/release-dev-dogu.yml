@@ -43,6 +43,7 @@ jobs:
       - name: Checkout
         uses: Bhacaz/checkout-files@v2
         with:
+          branch: ${{ github.ref_name  }}
           files: docker-compose.yml docker-compose.env
 
       - name: docker init
