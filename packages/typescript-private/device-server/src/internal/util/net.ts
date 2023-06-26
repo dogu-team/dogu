@@ -3,6 +3,7 @@ import { findFreePorts, isFreePort } from 'find-free-ports';
 
 const startPort = 20000;
 const endPort = 60000;
+const accessBlockTime = 3 * 60 * 1000;
 
 const usedportToAccessTime: Map<number, number> = new Map();
 
@@ -30,7 +31,7 @@ export async function getFreePort(excludes: number[] = [], offset = 0): Promise<
 function cleanUpUsedPorts(): void {
   const now = Date.now();
   usedportToAccessTime.forEach((usedPort, accessTime) => {
-    if (now - accessTime > 30000) {
+    if (now - accessTime > accessBlockTime) {
       usedportToAccessTime.delete(usedPort);
     }
   });
