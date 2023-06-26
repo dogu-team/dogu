@@ -1,20 +1,26 @@
 import { plainToInstance } from 'class-transformer';
 
 import { AndroidInspectorNode, AndroidNodeAttributes } from '../../../types/inspector';
-import { InspectorElementParser, ParseFunc } from './index';
+import { ConvertElementToNodeFunc, GetXPathFunc, InspectorElementParser, ParseFunc } from './index';
 
 class AndroidElementParser extends InspectorElementParser<AndroidNodeAttributes> {
-  public getXpath: (element: Element, parentPath: string, index?: number) => string = (element, parentPath, index) => {
-    return '';
+  public getXpath: GetXPathFunc = (element, parentPath, index) => {
+    const currentPath = `${element.tagName}${index === undefined ? '' : `[${index}]`}`;
+    if (parentPath === '/') {
+      return `${parentPath}${currentPath}`;
+    } else {
+      return `${parentPath}/${currentPath}`;
+    }
   };
 
-  public convertElementToNode: (element: Element, parentNode?: AndroidInspectorNode) => AndroidInspectorNode = (element, parentNode) => {
+  public convertElementToNode: ConvertElementToNodeFunc<AndroidNodeAttributes> = (element, parentNode, index) => {
     const json: AndroidInspectorNode = {
       tag: element.nodeName,
       key: '',
       title: '',
       attributes: {
         index: 1,
+        path: '',
       },
     };
 
@@ -29,19 +35,12 @@ class AndroidElementParser extends InspectorElementParser<AndroidNodeAttributes>
 
     json.attributes = plainToInstance(AndroidNodeAttributes, rawAttributes);
 
-    let key = parentNode?.key || '';
-    if (element.tagName !== 'hierarchy') {
-      const currentPath = `${element.tagName}[${rawAttributes.index}]`;
-      if (key === '/') {
-        key = `${key}${currentPath}`;
-      } else {
-        key = `${key}/${currentPath}`;
-      }
-    } else {
-      key = '/';
-    }
-    json.key = key;
+    const path = this.getXpath(element, parentNode?.key || '/', index);
+    json.key = path;
+    json.attributes.path = path;
     json.title = `${element.tagName}` || 'No title';
+
+    const childIndexes = this.getChildIndexes(element);
 
     // Convert child elements recursively
     if (element.childNodes.length > 0) {
@@ -54,7 +53,7 @@ class AndroidElementParser extends InspectorElementParser<AndroidNodeAttributes>
           continue;
         }
 
-        json.children.push(this.convertElementToNode(child as HTMLElement, json));
+        json.children.push(this.convertElementToNode(child as HTMLElement, json, childIndexes[i]));
       }
     }
 

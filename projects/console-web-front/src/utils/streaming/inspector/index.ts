@@ -42,8 +42,9 @@ export abstract class InspectorModule<A> {
   abstract getDeviceScreenSize: GetDeviceScreenSizeFunc;
 }
 
+// index is same tagName index
 export type GetXPathFunc = (element: Element, parentPath: string, index?: number) => string;
-export type ConvertElementToNodeFunc<A> = (element: Element, parentNode?: InspectNode<A>) => InspectNode<A>;
+export type ConvertElementToNodeFunc<A> = (element: Element, parentNode?: InspectNode<A>, index?: number) => InspectNode<A>;
 export type ParseFunc<A> = () => InspectNode<A>;
 
 export abstract class InspectorElementParser<A> {
@@ -52,6 +53,30 @@ export abstract class InspectorElementParser<A> {
   constructor(rootElement: Element) {
     this.rootElement = rootElement;
   }
+
+  public getChildIndexes: (element: Element) => (number | undefined)[] = (element) => {
+    const childTagNames = Array.from(element.childNodes).map((elem) => (elem as Element).tagName);
+
+    const indexMap: { [key: string]: undefined | number } = {};
+    const indexes: (number | undefined)[] = Array.from({ length: childTagNames.length });
+
+    for (let i = 0; i < childTagNames.length; i++) {
+      const item = childTagNames[i];
+      const value = indexMap[item];
+      if (value === undefined) {
+        indexMap[item] = 1;
+      } else {
+        if (value === 1) {
+          const idx = childTagNames.findIndex((name) => name === item);
+          indexes[idx] = 1;
+        }
+        indexes[i] = value + 1;
+        indexMap[item] = value + 1;
+      }
+    }
+
+    return indexes;
+  };
 
   abstract getXpath: GetXPathFunc;
   abstract convertElementToNode: ConvertElementToNodeFunc<A>;
