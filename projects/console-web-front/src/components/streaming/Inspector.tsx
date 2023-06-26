@@ -1,6 +1,6 @@
 import { DataNode } from 'antd/es/tree';
 import styled from 'styled-components';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 import GameObjectDetail from './GameObjectDetail';
@@ -16,7 +16,7 @@ interface Props {
 }
 
 const Inspector = ({ inspector }: Props) => {
-  const { mode, peerConnection, loading } = useDeviceStreamingContext();
+  const { mode, peerConnection, loading, updateMode } = useDeviceStreamingContext();
   const node = inspector.contextAndNodes?.find((item) => item.context === inspector.selectedContextKey)?.node;
 
   useEffect(() => {
@@ -24,6 +24,14 @@ const Inspector = ({ inspector }: Props) => {
       inspector.connectGamium();
     }
   }, [inspector.connectGamium, peerConnection?.connectionState, loading]);
+
+  const handleClickNode = useCallback(
+    (key: string) => {
+      inspector.updateSelectedNode(key);
+      updateMode('input');
+    },
+    [inspector.updateSelectedNode, updateMode],
+  );
 
   return (
     <Box>
@@ -51,7 +59,7 @@ const Inspector = ({ inspector }: Props) => {
                 treeData={node ? [node] : ([] as DataNode[])}
                 inspectingNode={inspector.inspectingNode}
                 selectedNode={inspector.selectedNode}
-                onClickNode={inspector.updateSelectedNode}
+                onClickNode={handleClickNode}
                 onHoverNode={inspector.updateInspectingNodeByKey}
                 onLeaveNode={inspector.clearInspectingNode}
               />
