@@ -87,8 +87,10 @@ export class SettingsService {
   }
 
   private async openWdaProject(): Promise<void> {
-    const env = _.merge(newCleanNodeEnv(), {
+    const cleanNodeEnv = newCleanNodeEnv();
+    const env = _.merge(cleanNodeEnv, {
       APPIUM_HOME: this.dotEnvConfigService.get('APPIUM_HOME'),
+      PATH: `${ThirdPartyPathMap.common.nodeBin}${path.delimiter}${cleanNodeEnv.PATH}`,
     });
     const { stdout, stderr } = await execAsync(`${ThirdPartyPathMap.common.pnpm} appium driver run xcuitest open-wda`, {
       cwd: HostPaths.external.nodePackage.appiumPath(),
