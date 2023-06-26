@@ -4,11 +4,16 @@ import { IosInspectorNode, IosNodeAttributes } from '../../../types/inspector';
 import { ConvertElementToNodeFunc, GetXPathFunc, InspectorElementParser, ParseFunc } from './index';
 
 class IosElementParser extends InspectorElementParser<IosNodeAttributes> {
-  public getXpath: GetXPathFunc = (element) => {
-    return '';
+  public getXpath: GetXPathFunc = (element, parentPath, index) => {
+    const currentPath = `${element.tagName}${index === undefined ? '' : `[${index}]`}`;
+    if (parentPath === '/') {
+      return `${parentPath}${currentPath}`;
+    } else {
+      return `${parentPath}/${currentPath}`;
+    }
   };
 
-  public convertElementToNode: ConvertElementToNodeFunc<IosNodeAttributes> = (element, parentNode) => {
+  public convertElementToNode: ConvertElementToNodeFunc<IosNodeAttributes> = (element, parentNode, index) => {
     const json: IosInspectorNode = {
       tag: element.nodeName,
       key: '',
@@ -29,19 +34,12 @@ class IosElementParser extends InspectorElementParser<IosNodeAttributes> {
 
     json.attributes = plainToInstance(IosNodeAttributes, rawAttributes);
 
-    let key = parentNode?.key || '';
-    if (element.tagName !== 'hierarchy') {
-      const currentPath = `${element.tagName}[${rawAttributes.index}]`;
-      if (key === '/') {
-        key = `${key}${currentPath}`;
-      } else {
-        key = `${key}/${currentPath}`;
-      }
-    } else {
-      key = '/';
-    }
-    json.key = key;
+    const path = this.getXpath(element, parentNode?.key || '/', index);
+    json.key = path;
+    json.attributes.path = path;
     json.title = `${element.tagName}` || 'No title';
+
+    const childIndexes = this.getChildIndexes(element);
 
     // Convert child elements recursively
     if (element.childNodes.length > 0) {
@@ -54,7 +52,7 @@ class IosElementParser extends InspectorElementParser<IosNodeAttributes> {
           continue;
         }
 
-        json.children.push(this.convertElementToNode(child as HTMLElement, json));
+        json.children.push(this.convertElementToNode(child as HTMLElement, json, childIndexes[i]));
       }
     }
 

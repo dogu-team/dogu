@@ -84,6 +84,7 @@ globalThis.onmessage = (e: MessageEvent<InspectorWorkerMessage>) => {
           const json = webviewToElement<any>(root, '', 0);
           convertedResult.push({ context, node: json });
         } else {
+          console.log(platform);
           switch (platform) {
             case Platform.PLATFORM_ANDROID:
               const androidParser = new AndroidElementParser(root);
@@ -91,6 +92,7 @@ globalThis.onmessage = (e: MessageEvent<InspectorWorkerMessage>) => {
               convertedResult.push({ context, node: androidNode });
               break;
             case Platform.PLATFORM_IOS:
+              console.log(root);
               const iosParser = new IosElementParser(root);
               const iosNode = iosParser.parse();
               convertedResult.push({ context, node: iosNode });

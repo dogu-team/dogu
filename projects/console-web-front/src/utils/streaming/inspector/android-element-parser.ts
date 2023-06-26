@@ -20,7 +20,6 @@ class AndroidElementParser extends InspectorElementParser<AndroidNodeAttributes>
       title: '',
       attributes: {
         index: 1,
-        path: '',
       },
     };
 
