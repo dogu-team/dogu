@@ -94,7 +94,8 @@ export function runHost(random: number): void {
       await mainPage.getByText('Click here to build', { exact: true }).first().click({ timeout: longTimeoutMs });
       await mainPage.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: InstallTimeoutMs, state: 'hidden' });
       await mainPage.getByText('Check', { exact: true }).first().click({ timeout: longTimeoutMs });
-      await mainPage.getByText('Click here to build', { exact: true }).first().click({ timeout: longTimeoutMs });
+      const buildButtons = await mainPage.getByText('Click here to build', { exact: true }).all();
+      await buildButtons[1].click({ timeout: longTimeoutMs });
       await mainPage
         .getByText('Installing packages...', { exact: true })
         .first()
