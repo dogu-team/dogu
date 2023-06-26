@@ -42,6 +42,10 @@ export abstract class InspectorModule<A> {
   abstract getDeviceScreenSize: GetDeviceScreenSizeFunc;
 }
 
+export type GetXPathFunc = (element: Element, parentPath: string, index?: number) => string;
+export type ConvertElementToNodeFunc<A> = (element: Element, parentNode?: InspectNode<A>) => InspectNode<A>;
+export type ParseFunc<A> = () => InspectNode<A>;
+
 export abstract class InspectorElementParser<A> {
   public rootElement: Element;
 
@@ -49,7 +53,7 @@ export abstract class InspectorElementParser<A> {
     this.rootElement = rootElement;
   }
 
-  abstract getXpath: (element: Element) => string;
-  abstract convertElementToNode: (element: Element, parentNode?: InspectNode<A>) => InspectNode<A>;
-  abstract parse: () => InspectNode<A>;
+  abstract getXpath: GetXPathFunc;
+  abstract convertElementToNode: ConvertElementToNodeFunc<A>;
+  abstract parse: ParseFunc<A>;
 }

@@ -1,14 +1,14 @@
 import { plainToInstance } from 'class-transformer';
 
 import { GamiumAttributeFields, GamiumInspectorNode, GamiumNodeAttributes } from '../../../types/inspector';
-import { InspectorElementParser } from './index';
+import { ConvertElementToNodeFunc, GetXPathFunc, InspectorElementParser, ParseFunc } from './index';
 
 class GamiumElementParser extends InspectorElementParser<GamiumNodeAttributes> {
-  public getXpath: (element: Element) => string = (element) => {
+  public getXpath: GetXPathFunc = (element) => {
     return '';
   };
 
-  public convertElementToNode: (element: Element, parentNode?: GamiumInspectorNode) => GamiumInspectorNode = (element, parentNode) => {
+  public convertElementToNode: ConvertElementToNodeFunc<GamiumNodeAttributes> = (element, parentNode) => {
     const json: GamiumInspectorNode = {
       tag: element.nodeName,
       key: '',
@@ -78,7 +78,7 @@ class GamiumElementParser extends InspectorElementParser<GamiumNodeAttributes> {
     return json;
   };
 
-  public parse: () => GamiumInspectorNode = () => {
+  public parse: ParseFunc<GamiumNodeAttributes> = () => {
     const result = this.convertElementToNode(this.rootElement);
     return result;
   };

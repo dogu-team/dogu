@@ -1,14 +1,14 @@
 import { plainToInstance } from 'class-transformer';
 
 import { IosInspectorNode, IosNodeAttributes } from '../../../types/inspector';
-import { InspectorElementParser } from './index';
+import { ConvertElementToNodeFunc, GetXPathFunc, InspectorElementParser, ParseFunc } from './index';
 
 class IosElementParser extends InspectorElementParser<IosNodeAttributes> {
-  public getXpath: (element: Element) => string = (element) => {
+  public getXpath: GetXPathFunc = (element) => {
     return '';
   };
 
-  public convertElementToNode: (element: Element, parentNode?: IosInspectorNode) => IosInspectorNode = (element, parentNode) => {
+  public convertElementToNode: ConvertElementToNodeFunc<IosNodeAttributes> = (element, parentNode) => {
     const json: IosInspectorNode = {
       tag: element.nodeName,
       key: '',
@@ -61,7 +61,7 @@ class IosElementParser extends InspectorElementParser<IosNodeAttributes> {
     return json;
   };
 
-  public parse: () => IosInspectorNode = () => {
+  public parse: ParseFunc<IosNodeAttributes> = () => {
     const result = this.convertElementToNode(this.rootElement);
     return result;
   };

@@ -1,10 +1,10 @@
 import { plainToInstance } from 'class-transformer';
 
 import { AndroidInspectorNode, AndroidNodeAttributes } from '../../../types/inspector';
-import { InspectorElementParser } from './index';
+import { InspectorElementParser, ParseFunc } from './index';
 
 class AndroidElementParser extends InspectorElementParser<AndroidNodeAttributes> {
-  public getXpath: (element: Element) => string = (element) => {
+  public getXpath: (element: Element, parentPath: string, index?: number) => string = (element, parentPath, index) => {
     return '';
   };
 
@@ -61,7 +61,7 @@ class AndroidElementParser extends InspectorElementParser<AndroidNodeAttributes>
     return json;
   };
 
-  public parse: () => AndroidInspectorNode = () => {
+  public parse: ParseFunc<AndroidNodeAttributes> = () => {
     const result = this.convertElementToNode(this.rootElement);
     return result;
   };
