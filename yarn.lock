@@ -7306,7 +7306,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@playwright/test@npm:^1.35.1":
+"@playwright/test@npm:1.35.1":
   version: 1.35.1
   resolution: "@playwright/test@npm:1.35.1"
   dependencies:
@@ -16259,7 +16259,7 @@ __metadata:
     "@dogu-tech/dest": "workspace:^"
     "@dogu-tech/node": "workspace:^"
     "@jest/globals": 29.1.2
-    "@playwright/test": ^1.35.1
+    "@playwright/test": 1.35.1
     "@types/death": 1
     "@types/jest": 29.4.0
     "@types/lodash": 4.14.186

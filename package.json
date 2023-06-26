@@ -20,7 +20,7 @@
     "mirror:nm": "ts-node scripts/nm-space/mirror",
     "newbie": "yarn run newbie:localdev && yarn newbie:cicd && yarn run newbie:nm-space",
     "newbie:cicd": "yarn cache clean --all && yarn run newbie:cicd:dirty",
-    "newbie:cicd:dirty": "&& yarn install && yarn workspaces foreach --exclude 'dogu' --jobs unlimited -ptvi run newbie",
+    "newbie:cicd:dirty": "yarn install && yarn workspaces foreach --exclude 'dogu' --jobs unlimited -ptvi run newbie",
     "newbie:localdev": "husky install",
     "newbie:nm-space": "ts-node scripts/nm-space/mirrorCopyOnly && ts-node scripts/nm-space/run run 'yarn install --no-immutable'",
     "publish:github:dev": "cross-env DOGU_RUN_TYPE=development yarn workspaces foreach -ptvi --jobs unlimited run publish:github",
