@@ -62,15 +62,14 @@ jobs:
         with:
           go-version: '1.18'
 
-      - name: Common - Setup pyenv
-        uses: 'gabrielfalcao/pyenv-action@v11'
+      - uses: actions/setup-python@v4
         with:
-          default: 3.9
+          python-version: '3.9'
 
       - name: Common - Setup poetry
         uses: abatilo/actions-poetry@v2
         with:
-          poetry-version: 1.5
+          poetry-version: '1.5'
 
       - name: Run newbie
         run: |
