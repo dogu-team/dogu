@@ -53,6 +53,8 @@ jobs:
       - name: set .env
         run: |
           sed -i 's/dogu:latest/dogu-e2e:latest/' ./docker-compose.yml
+          sed -i '/^  console:/a\    env_file:\n      - docker-compose.env' docker-compose.yml
+
           sed -i 's/^DOGU_HOST=.*$/DOGU_HOST=${{ secrets.E2E_DOGU_HOST }}/' ./docker-compose.env
           sed -i 's/^DEVICE_WIFI_SSID=.*$/DEVICE_WIFI_SSID=${{ secrets.DOGU_DEVICE_WIFI_SSID }}/' ./docker-compose.env
           sed -i 's/^DEVICE_WIFI_PASSWORD=.*$/DEVICE_WIFI_PASSWORD=${{ secrets.DOGU_DEVICE_WIFI_PASSWORD }}/' ./docker-compose.env
