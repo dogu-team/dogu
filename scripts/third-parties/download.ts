@@ -4,6 +4,7 @@ import https from 'https';
 import path from 'path';
 import shelljs from 'shelljs';
 import tar from 'tar';
+import util from 'util';
 import { findRootWorkspace } from '../workspace';
 import { getFileSizeRecursive } from './filesystem';
 import { enableCorepack } from './node';
@@ -189,7 +190,7 @@ async function renameUnzipedDir(fileUrl: string, destPath: string, ext: string):
         fs.renameSync(uncompressedDirPath, destPath);
         break;
       } catch (e) {
-        console.log(`rename failed ${i} times. ${e}`);
+        console.log(`rename failed ${i} times. ${util.inspect(e)}`);
         await new Promise((resolve) => setTimeout(resolve, 1000));
         continue;
       }
@@ -227,7 +228,16 @@ async function download(thirdPartyFile: ThirdPartyFile): Promise<void> {
   const isZip = fileUrl.endsWith('.zip');
   const isTgz = fileUrl.endsWith('.tar.gz');
 
-  await get(fileUrl, destinationPath);
+  for (let i = 0; i < 10; i++) {
+    try {
+      await get(fileUrl, destinationPath);
+      break;
+    } catch (e: unknown) {
+      console.log(`download failed ${i} times.${util.inspect(e)}`);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      continue;
+    }
+  }
   console.log(`${thirdPartyFile.path} downloaded`);
   if (isZip) {
     console.log(`${thirdPartyFile.path} unzipping`);
