@@ -1,3 +1,4 @@
+import { delay } from '@dogu-tech/common';
 import { job, test } from '@dogu-tech/dest';
 import { expect } from '@playwright/test';
 import { ElementHandle, Locator, Page } from 'playwright';
@@ -9,7 +10,7 @@ import { getClockTime } from '../../../src/time';
 import { Timer } from '../../../src/timer';
 import { l10n } from './l10n';
 
-export function runHost(random: number): void {
+export function runHost(random: number, dost: Dost): void {
   job('Create host', () => {
     let token = '';
     test('Go to host page', async () => {
@@ -63,57 +64,11 @@ export function runHost(random: number): void {
       console.log(`Token@@@@:${token}`);
     });
 
-    let mainPage: PageWrapper | undefined = undefined;
-    const InstallTimeoutMs = 180000;
-    const longTimeoutMs = 30000;
+    while (!dost.nextTest()) {
+      // wait for install
+    }
 
-    test('Execute Dost', async () => {
-      mainPage = new PageWrapper(await launchDost());
-    });
-
-    test('Dost Install externals', async () => {
-      if (!mainPage) {
-        throw new Error('mainPage is undefined');
-      }
-      await (await mainPage.waitForSelector('.chakra-checkbox__control', { timeout: longTimeoutMs })).click({ timeout: longTimeoutMs });
-      await mainPage.getByText('Install', { exact: true }).first().click({ timeout: longTimeoutMs });
-      await mainPage.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: InstallTimeoutMs, state: 'visible' });
-      await mainPage.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: InstallTimeoutMs, state: 'hidden' });
-    });
-
-    test('Dost manual setup', async () => {
-      if (!mainPage) {
-        throw new Error('mainPage is undefined');
-      }
-      if (process.platform !== 'darwin') {
-        return;
-      }
-      await mainPage.getByText('Manual Setup', { exact: true }).first().waitFor({ timeout: InstallTimeoutMs, state: 'visible' });
-      replaceWebDriverAgentSigningStyle();
-
-      await mainPage.getByText('Click here to build', { exact: true }).first().click({ timeout: longTimeoutMs });
-      await mainPage.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: InstallTimeoutMs, state: 'hidden' });
-      await mainPage.getByText('Check', { exact: true }).first().click({ timeout: longTimeoutMs });
-      const buildButtons = await mainPage.getByText('Click here to build', { exact: true }).all();
-      await buildButtons[1].click({ timeout: longTimeoutMs });
-      await mainPage.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: InstallTimeoutMs, state: 'hidden' });
-      await mainPage.getByText('Check', { exact: true }).first().click({ timeout: longTimeoutMs });
-      await mainPage.getByText('Continue', { exact: true }).first().click({ timeout: InstallTimeoutMs });
-    });
-
-    test('Dost connect', async () => {
-      if (!mainPage) {
-        throw new Error('mainPage is undefined');
-      }
-      await (await mainPage.waitForSelector('.chakra-input', { timeout: longTimeoutMs })).click({ timeout: longTimeoutMs });
-      await (await mainPage.waitForSelector('.chakra-input', { timeout: longTimeoutMs })).fill(token, { timeout: longTimeoutMs });
-      await mainPage.getByText('Connect', { exact: true }).first().click({ timeout: InstallTimeoutMs });
-      await Timer.wait(20000, 'dost launch');
-      const isConnected = await mainPage.getByText('Connected', { exact: true }).first().isVisible({ timeout: longTimeoutMs });
-      if (!isConnected) {
-        throw new Error('Dost is not connected');
-      }
-    });
+    dost.testConnect(() => token);
 
     test('Check host added', async () => {
       await Driver.clickElement(
@@ -137,6 +92,98 @@ export function runHost(random: number): void {
       expect(status).toBe(l10n('CONNECTED'));
     });
   });
+}
+
+export class Dost {
+  private mainPage: PageWrapper | undefined = undefined;
+  private installGenerator: Generator<void>;
+  InstallTimeoutMs = 180000;
+  longTimeoutMs = 30000;
+
+  constructor() {
+    this.installGenerator = this.InstallExternalsGenerator();
+  }
+
+  nextTest(): boolean {
+    const { done } = this.installGenerator.next();
+    return done === true;
+  }
+
+  private *InstallExternalsGenerator(): Generator<void> {
+    test('Dost execute', async () => {
+      this.mainPage = new PageWrapper(await launchDost());
+    });
+    yield;
+
+    test('Dost Install externals', async () => {
+      await (await this.mainPage!.waitForSelector('.chakra-checkbox__control', { timeout: this.longTimeoutMs })).click({ timeout: this.longTimeoutMs });
+      await this.mainPage!.getByText('Install', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+    });
+    yield;
+
+    test('Dost Install externals wait', async () => {
+      await this.mainPage!.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'visible' });
+      await this.mainPage!.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'hidden' });
+    });
+    yield;
+
+    test('Dost manual setup install wda', async () => {
+      if (process.platform !== 'darwin') {
+        return;
+      }
+      await this.mainPage!.getByText('Manual Setup', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'visible' });
+      replaceWebDriverAgentSigningStyle();
+
+      await this.mainPage!.getByText('Click here to build', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+    });
+    yield;
+
+    test('Dost manual setup install wda wait', async () => {
+      if (process.platform !== 'darwin') {
+        return;
+      }
+      await this.mainPage!.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'hidden' });
+      await this.mainPage!.getByText('Check', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+    });
+    yield;
+
+    test('Dost manual setup install ida', async () => {
+      if (process.platform !== 'darwin') {
+        return;
+      }
+
+      await delay(3000);
+
+      const buildButtons = await this.mainPage!.getByText('Click here to build', { exact: true }).all();
+      await buildButtons[1].dispatchEvent('click');
+    });
+    yield;
+
+    test('Dost manual setup install ida wait', async () => {
+      if (process.platform !== 'darwin') {
+        return;
+      }
+
+      await this.mainPage!.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'hidden' });
+      await this.mainPage!.getByText('Check', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+
+      await this.mainPage!.getByText('Finish', { exact: true }).first().click({ timeout: this.InstallTimeoutMs });
+    });
+  }
+
+  testConnect(token: () => string): void {
+    test('Dost connect', async () => {
+      console.log(`Dost connect ${token()}`);
+      await (await this.mainPage!.waitForSelector('.chakra-input', { timeout: this.longTimeoutMs })).click({ timeout: this.longTimeoutMs });
+      await (await this.mainPage!.waitForSelector('.chakra-input', { timeout: this.longTimeoutMs })).fill(token(), { timeout: this.longTimeoutMs });
+      await this.mainPage!.getByText('Connect', { exact: true }).first().click({ timeout: this.InstallTimeoutMs });
+      await Timer.wait(20000, 'dost launch');
+      const isConnected = await this.mainPage!.getByText('Connected', { exact: true }).first().isVisible({ timeout: this.longTimeoutMs });
+      if (!isConnected) {
+        throw new Error('Dost is not connected');
+      }
+    });
+  }
 }
 
 class PageWrapper {
