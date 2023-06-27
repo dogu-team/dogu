@@ -65,6 +65,6 @@ jobs:
 
       - name: run
         run: |
-          docker compose -f ./docker-compose.yml down console
+          docker compose -f ./docker-compose.yml stop console
           docker compose -f docker-compose.yml pull
           docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up -d
