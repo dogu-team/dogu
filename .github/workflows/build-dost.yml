@@ -189,7 +189,7 @@ jobs:
         if: ${{ failure() }}
         uses: actions/upload-artifact@v3
         with:
-          name: 'dost-${{ runner.os }'
+          name: 'dost-${{ runner.os }}'
           path: |
             ./nm-space/projects/dost/dist/*.${{ matrix.extension }}
 
