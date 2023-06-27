@@ -25,7 +25,6 @@ jobs:
       max-parallel: 2
       matrix:
         runner: [windows-2019, macos-latest]
-        extension: [exe, dmg]
         include:
           - runner: windows-2019
             extension: exe
@@ -186,7 +185,7 @@ jobs:
         working-directory: ./nm-space/projects/dost
 
       - name: Upload dost
-        if: ${{ failure() }}
+        if: ${{ success() }}
         uses: actions/upload-artifact@v3
         with:
           name: 'dost-${{ runner.os }}'
