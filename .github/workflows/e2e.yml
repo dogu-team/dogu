@@ -62,7 +62,8 @@ jobs:
         with:
           go-version: '1.18'
 
-      - uses: actions/setup-python@v4
+      - name: Common - Setup Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10.12'
 
