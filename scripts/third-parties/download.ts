@@ -4,6 +4,7 @@ import https from 'https';
 import path from 'path';
 import shelljs from 'shelljs';
 import tar from 'tar';
+import util from 'util';
 import { findRootWorkspace } from '../workspace';
 import { getFileSizeRecursive } from './filesystem';
 import { enableCorepack } from './node';
@@ -126,6 +127,18 @@ function makeDirectories(): void {
   }
 }
 
+async function requestFileSizeRetry(url: string): Promise<number> {
+  for (let i = 0; i < 10; i++) {
+    try {
+      return await requestFileSize(url);
+    } catch (err) {
+      console.error(`Failed to download ${url}, retrying...`);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  }
+  throw new Error(`Failed to download ${url}`);
+}
+
 async function requestFileSize(url: string): Promise<number> {
   return new Promise((resolve, reject) => {
     https
@@ -145,6 +158,16 @@ async function requestFileSize(url: string): Promise<number> {
         reject(err);
       });
   });
+}
+async function getRetry(url: string, destPath: string): Promise<void> {
+  for (let i = 0; i < 10; i++) {
+    try {
+      return await get(url, destPath);
+    } catch (err) {
+      console.error(`Failed to download ${url}, retrying...`);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  }
 }
 
 async function get(url: string, destPath: string): Promise<void> {
@@ -189,7 +212,7 @@ async function renameUnzipedDir(fileUrl: string, destPath: string, ext: string):
         fs.renameSync(uncompressedDirPath, destPath);
         break;
       } catch (e) {
-        console.log(`rename failed ${i} times. ${e}`);
+        console.log(`rename failed ${i} times. ${util.inspect(e)}`);
         await new Promise((resolve) => setTimeout(resolve, 1000));
         continue;
       }
@@ -214,7 +237,7 @@ async function download(thirdPartyFile: ThirdPartyFile): Promise<void> {
   const fileUrl = thirdPartyFile.url;
   const destinationPath = path.resolve(rootPath, 'third-party', thirdPartyFile.path);
 
-  const fileSize = await requestFileSize(fileUrl);
+  const fileSize = await requestFileSizeRetry(fileUrl);
   const preExistFileSize = fs.existsSync(destinationPath) ? getFileSizeRecursive(destinationPath) : 0;
   if (fileSize <= preExistFileSize) {
     const mbFileSize = (fileSize / 1024 / 1024).toFixed(2);
@@ -227,7 +250,8 @@ async function download(thirdPartyFile: ThirdPartyFile): Promise<void> {
   const isZip = fileUrl.endsWith('.zip');
   const isTgz = fileUrl.endsWith('.tar.gz');
 
-  await get(fileUrl, destinationPath);
+  await getRetry(fileUrl, destinationPath);
+
   console.log(`${thirdPartyFile.path} downloaded`);
   if (isZip) {
     console.log(`${thirdPartyFile.path} unzipping`);
