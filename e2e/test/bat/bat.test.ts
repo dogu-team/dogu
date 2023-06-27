@@ -10,10 +10,8 @@ import { GdcScreenRecorder } from '../../src/gdc-screen-recorder';
 import { ProcessManager } from '../../src/process-manager';
 import { Timer } from '../../src/timer';
 import { Utils } from '../../src/utils';
-import { prepareDB } from './bat/db';
 import { runHost } from './bat/host';
 import { currentL10n, l10n } from './bat/l10n';
-import { startConsole } from './bat/workspace';
 
 const isCI = process.env.CI === 'true' || undefined !== process.env.GITHUB_ACTION;
 const switchConfig = {
@@ -82,9 +80,12 @@ Dest.withOptions({
 }).describe(() => {
   job('BAT', () => {
     beforeAll(async () => {
-      values.value.HOME_URL = `http://localhost:${env.CONSOLE_WEB_FRONT_PORT}`;
+      values.value.HOME_URL = `http://${env.DOGU_E2E_HOST}:${env.CONSOLE_WEB_FRONT_PORT}`;
 
-      await ProcessManager.killByPorts([Number(env.DOGU_CONSOLE_WEB_SERVER_PORT), Number(env.CONSOLE_WEB_FRONT_PORT), Number(env.DOGU_DEVICE_SERVER_PORT)]);
+      // await ProcessManager.killByPorts([Number(env.DOGU_CONSOLE_WEB_SERVER_PORT), Number(env.CONSOLE_WEB_FRONT_PORT), Number(env.DOGU_DEVICE_SERVER_PORT)]);
+
+      await ProcessManager.killByPorts([Number(env.DOGU_DEVICE_SERVER_PORT)]);
+
       await ProcessManager.killByNames(['IOSDeviceController', 'go-device-controller', 'host-agent']);
 
       // screenRecordStopper = await new ScreenRecorder().start({
@@ -92,10 +93,13 @@ Dest.withOptions({
       // });
     });
 
-    if (switchConfig.prepareDB) {
-      prepareDB();
-    }
-    startConsole(env.CONSOLE_WEB_FRONT_PORT);
+    /**
+     * @deprecated
+     */
+    // if (switchConfig.prepareDB) {
+    //   prepareDB();
+    // }
+    // startConsole(env.CONSOLE_WEB_FRONT_PORT);
 
     job('Launch browser', () => {
       test('Launch browser', () => {
@@ -177,7 +181,7 @@ Dest.withOptions({
       });
 
       test('Click create organization button', async () => {
-        await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[3]/div/button[2]' });
+        await Driver.clickElement({ xpath: '/html/body/div[2]/div/div[2]/div/div[2]/div[3]/div/button[2]' }), { waitTime: 10 * 1000 };
       });
 
       test('Check organization creation', async () => {
