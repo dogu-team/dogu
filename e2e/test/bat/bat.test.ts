@@ -22,7 +22,8 @@ const env = loadEnvLazySync(E2eEnv);
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 
-const random = Utils.random();
+const randomId = Utils.random();
+const randomInvitationId = Utils.random();
 let gdcRecorder: GdcScreenRecorder | null = null;
 // let screenRecordStopper: ScreenRecordStopper | null = null;
 
@@ -30,11 +31,12 @@ const values = {
   value: {
     HOME_URL: '',
     USER_NAME: 'test',
-    USER_EMAIL: `test${random}@dogutech.io`,
-    INVITE_USER_EMAIL: `test@dogutech.io`,
+    USER_EMAIL: `test${randomId}@dogutech.io`,
+    INVITE_USER_NAME: 'test_invitation',
+    INVITE_USER_EMAIL: `test${randomInvitationId}@dogutech.io`,
     ORG_NAME: `Test Org`,
     PROJECT_NAME: 'Test Project',
-    TEAM_NAME: `test team ${random}`,
+    TEAM_NAME: `test team ${randomId}`,
     HOST_DEVICE_TAG: `test-host-tag`,
     ANDROID_DEVICE_TAG: `test-android-tag`,
     IOS_DEVICE_TAG: `test-ios-tag`,
@@ -108,6 +110,54 @@ Dest.withOptions({
       test('Run record', () => {
         gdcRecorder = new GdcScreenRecorder(console);
         gdcRecorder.start();
+      });
+    });
+
+    job('Sign up', () => {
+      test('Go to main page', async () => {
+        await Driver.moveTo(values.value.HOME_URL);
+      });
+
+      // Move to signup page due to landing page has no sign up button
+      test('Move to sign up', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="sign-up-btn"]' });
+      });
+
+      test('Make Invitatin user', async () => {
+        const firstClickOptions = {
+          focusWindow: true,
+        };
+
+        await Driver.sendKeys({ xpath: '//*[@access-id="sign-up-form-user-name"]' }, values.value.INVITE_USER_NAME, firstClickOptions);
+        await Driver.sendKeys({ xpath: '//*[@access-id="sign-up-form-email"]' }, values.value.INVITE_USER_EMAIL);
+        await Driver.sendKeys({ xpath: '//*[@access-id="sign-up-form-pw"]' }, 'qwer1234!');
+
+        await Driver.clickElement(
+          {
+            xpath: '//*[@access-id="sign-up-form-submit"]',
+          },
+          {
+            focusWindow: true,
+          },
+        );
+
+        await Driver.clickElement(
+          {
+            xpath: '/html/body/div[1]/div/header/div/div/div[2]/div[1]/div/span',
+          },
+          {
+            focusWindow: true,
+          },
+        );
+
+        await Driver.clickElement(
+          {
+            xpath: '/html/body/div[3]/div/div/ul/li[5]/span/div/button',
+          },
+          {
+            focusWindow: true,
+          },
+        );
       });
     });
 
@@ -253,7 +303,7 @@ Dest.withOptions({
       });
     });
 
-    runHost(random);
+    runHost(randomId);
 
     const deviceSettingInfos = [
       // {
@@ -414,7 +464,6 @@ Dest.withOptions({
       });
     });
 
-    //
     job('Test sample routine', () => {
       job('Add routine', () => {
         test('Go to project menu', async () => {
@@ -455,7 +504,6 @@ Dest.withOptions({
         });
       });
     });
-    //
 
     job('Test routine', () => {
       job('Add routine', () => {
@@ -540,7 +588,7 @@ Dest.withOptions({
         });
 
         test('Click create routine button', async () => {
-          await Driver.clickElement({ xpath: '//*[@access-id="save-routine-btn"]' });
+          await Driver.clickElement({ xpath: '//*[@access-id="save-routine-btn"]' }, { waitTime: 5 * 1000 });
         });
       });
 
@@ -577,11 +625,11 @@ Dest.withOptions({
 
     job('Add member', () => {
       test('Go to member menu', async () => {
-        await Driver.clickElement({ xpath: '//*[@access-id="side-bar-member"]' });
+        await Driver.clickElement({ xpath: '//*[@access-id="side-bar-member"]' }, { waitTime: 1 * 1000 });
       });
 
       test('Click member invite button ', async () => {
-        await Driver.clickElement({ xpath: '//*[@access-id="invite-user-btn"]' });
+        await Driver.clickElement({ xpath: '//*[@access-id="invite-user-btn"]' }, { waitTime: 1 * 1000 });
       });
 
       test('Enter invite email', async () => {
@@ -593,14 +641,24 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: '//*[@id="invite-user-send-btn"]' });
       });
 
-      test('Go to invite email page', async () => {
-        await Driver.clickElement({ xpath: '//*[@access-id="org-invitation-tab"]' });
+      test('Go to member page', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="org-member-tab"]' });
       });
 
       test('Check invite result', async () => {
-        const state = await Driver.getText({ xpath: `//*[text()="${l10n('PENDING')}"]` });
-        expect(state).toBe(l10n('PENDING'));
+        const invitedUserEmail = await Driver.getText({ xpath: `//*[text()="${values.value.INVITE_USER_NAME}"]` }, { focusWindow: true });
+        expect(invitedUserEmail).toBe(values.value.INVITE_USER_NAME);
       });
+
+      // email invite.
+      // test('Go to invite email page', async () => {
+      //   await Driver.clickElement({ xpath: '//*[@access-id="org-invitation-tab"]' });
+      // });
+
+      // test('Check invite result', async () => {
+      //   const state = await Driver.getText({ xpath: `//*[text()="${l10n('PENDING')}"]` });
+      //   expect(state).toBe(l10n('PENDING'));
+      // });
     });
 
     job('Create team', () => {
@@ -629,19 +687,15 @@ Dest.withOptions({
 
       test('Add team member', async () => {
         await Driver.clickElement({ xpath: '//*[@access-id="add-team-member-btn"]' });
-        await Driver.sendKeys({ xpath: '//input[@access-id="add-team-member-input"]' }, values.value.USER_NAME);
+        await Driver.sendKeys({ xpath: '//input[@access-id="add-team-member-input"]' }, values.value.INVITE_USER_EMAIL);
         await Driver.clickElement({ xpath: '//*[@aria-label="plus"]/..' });
 
         const [userName, userEmail] = await Promise.all([
-          Driver.getText({
-            xpath: '/html/body/div[1]/div/section/main/div/div/div/div[2]/div/div[2]/div[2]/div[1]/div/ul/li/div/div[1]/div/div/p[1]',
-          }),
-          Driver.getText({
-            xpath: '/html/body/div[1]/div/section/main/div/div/div/div[2]/div/div[2]/div[2]/div[1]/div/ul/li/div/div[1]/div/div/p[2]',
-          }),
+          Driver.getText({ xpath: `//*[text()="${values.value.INVITE_USER_NAME}"]` }),
+          Driver.getText({ xpath: `//*[text()="${values.value.INVITE_USER_EMAIL}"]` }),
         ]);
-        expect(userName).toBe(values.value.USER_NAME);
-        expect(userEmail).toBe(values.value.USER_EMAIL);
+        expect(userName).toBe(values.value.INVITE_USER_NAME);
+        expect(userEmail).toBe(values.value.INVITE_USER_EMAIL);
       });
     });
 
