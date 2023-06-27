@@ -1,6 +1,6 @@
 import { PrefixLogger, stringify } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
-import { spawn } from 'child_process';
+import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
@@ -12,6 +12,7 @@ import { validateXcode } from '../xcode';
 
 export class WdaBuildExternalUnit extends IExternalUnit {
   private readonly logger = new PrefixLogger(logger, '[WebDriverAgentBuild]');
+  private child: ChildProcessWithoutNullStreams | null = null;
 
   constructor(private readonly stdLogCallbackService: StdLogCallbackService) {
     super();
@@ -60,10 +61,16 @@ export class WdaBuildExternalUnit extends IExternalUnit {
   }
 
   async install(): Promise<void> {
+    this.logger.info(`Start ${this.getName()} `);
+    if (this.child) {
+      this.logger.info(`${this.getName()} is already running. kill it.`);
+      this.child.kill();
+      this.child = null;
+    }
     const wdaDerivedDataPath = HostPaths.external.xcodeProject.wdaDerivedDataPath();
     const wdaProjectPath = path.resolve(HostPaths.external.xcodeProject.wdaProjectDirectoryPath(), 'WebDriverAgent.xcodeproj');
     await new Promise<void>((resolve, reject) => {
-      const child = spawn('xcodebuild', [
+      this.child = spawn('xcodebuild', [
         'build-for-testing',
         '-project',
         wdaProjectPath,
@@ -78,23 +85,24 @@ export class WdaBuildExternalUnit extends IExternalUnit {
       const onErrorForReject = (error: Error) => {
         reject(error);
       };
-      child.on('error', onErrorForReject);
-      child.on('spawn', () => {
-        child.off('error', onErrorForReject);
-        child.on('error', (error) => {
+      this.child.on('error', onErrorForReject);
+      this.child.on('spawn', () => {
+        this.child?.off('error', onErrorForReject);
+        this.child?.on('error', (error) => {
           this.stdLogCallbackService.stderr(stringify(error));
         });
-        this.stdLogCallbackService.stdout(`Start ${this.getName()}...`);
-        child.on('close', (code, signal) => {
+        this.stdLogCallbackService.stdout(`${this.getName()} spawned`);
+        this.child?.on('close', (code, signal) => {
           this.stdLogCallbackService.stdout(`${this.getName()} is closed. code: ${code} signal: ${signal}`);
+          this.child = null;
           if (code === 0) {
             resolve();
           } else {
             reject(new Error(`${this.getName()} failed. code: ${code} signal: ${signal}`));
           }
         });
-        child.stdout.setEncoding('utf8');
-        child.stdout.on('data', (data) => {
+        this.child?.stdout.setEncoding('utf8');
+        this.child?.stdout.on('data', (data) => {
           const message = stringify(data);
           if (!message) {
             return;
@@ -102,8 +110,8 @@ export class WdaBuildExternalUnit extends IExternalUnit {
           this.stdLogCallbackService.stdout(message);
           this.logger.info(message);
         });
-        child.stderr.setEncoding('utf8');
-        child.stderr.on('data', (data) => {
+        this.child?.stderr.setEncoding('utf8');
+        this.child?.stderr.on('data', (data) => {
           const message = stringify(data);
           if (!message) {
             return;

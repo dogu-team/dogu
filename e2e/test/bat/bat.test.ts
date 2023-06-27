@@ -12,6 +12,7 @@ import { Timer } from '../../src/timer';
 import { Utils } from '../../src/utils';
 import { runHost } from './bat/host';
 import { currentL10n, l10n } from './bat/l10n';
+import { startConsoleAndDost } from './bat/workspace';
 
 const isCI = process.env.CI === 'true' || undefined !== process.env.GITHUB_ACTION;
 const switchConfig = {
@@ -95,21 +96,18 @@ Dest.withOptions({
       // });
     });
 
-    /**
-     * @deprecated
-     */
-    // if (switchConfig.prepareDB) {
-    //   prepareDB();
-    // }
-    // startConsole(env.CONSOLE_WEB_FRONT_PORT);
+    if (switchConfig.prepareDB) {
+      prepareDB();
+    }
+    test('Run record', () => {
+      gdcRecorder = new GdcScreenRecorder(console);
+      gdcRecorder.start();
+    });
+    const { dost } = startConsoleAndDost(env.CONSOLE_WEB_FRONT_PORT);
 
     job('Launch browser', () => {
       test('Launch browser', () => {
         Driver.open({ l10n: currentL10n });
-      });
-      test('Run record', () => {
-        gdcRecorder = new GdcScreenRecorder(console);
-        gdcRecorder.start();
       });
     });
 
@@ -198,6 +196,7 @@ Dest.withOptions({
           },
         );
       });
+      dost.nextTest();
     });
 
     /**
@@ -243,6 +242,7 @@ Dest.withOptions({
 
         await Driver.getText({ xpath: `//*[text()='${values.value.ORG_NAME}']` }, { waitTime: 20000 });
       });
+      dost.nextTest();
     });
 
     job('Create project', () => {
@@ -281,6 +281,8 @@ Dest.withOptions({
           },
         );
       });
+
+      dost.nextTest();
     });
 
     job('Check sample project creation', () => {
@@ -301,9 +303,11 @@ Dest.withOptions({
         const sampleAppName = await Driver.getText({ xpath: `//*[text()="${values.value.SAMPLE_APP_EXTENSION}"]` }, { focusWindow: true });
         expect(sampleAppName).toBe(values.value.SAMPLE_APP_EXTENSION);
       });
+
+      dost.nextTest();
     });
 
-    runHost(randomId);
+    runHost(random, dost);
 
     const deviceSettingInfos = [
       // {
