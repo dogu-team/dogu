@@ -135,6 +135,16 @@ jobs:
       - name: Common - Setup Android SDK
         uses: android-actions/setup-android@v2.0.10
 
+      - name: Common - Setup pyenv
+        uses: 'gabrielfalcao/pyenv-action@v11'
+        with:
+          default: 3.9
+
+      - name: Common - Setup poetry
+        uses: abatilo/actions-poetry@v2
+        with:
+          poetry-version: 1.5
+
       - name: create dotEnv
         run: |
           env-generator gen-all e2e
