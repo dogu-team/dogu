@@ -57,6 +57,7 @@ jobs:
           sed -i 's/^DEVICE_WIFI_SSID=.*$/DEVICE_WIFI_SSID=${{ secrets.DOGU_DEVICE_WIFI_SSID }}/' ./docker-compose.env
           sed -i 's/^DEVICE_WIFI_PASSWORD=.*$/DEVICE_WIFI_PASSWORD=${{ secrets.DOGU_DEVICE_WIFI_PASSWORD }}/' ./docker-compose.env
           sed -i 's/^GITLAB_ROOT_ACCESS_TOKEN=.*$/GITLAB_ROOT_ACCESS_TOKEN=${{ secrets.E2E_DOGU_GITLAB_ROOT_TOKEN }}/' ./docker-compose.env
+          echo "DOGU_RUN_TYPE=e2e" >> ./docker-compose.env
 
       - name: run
         run: |
