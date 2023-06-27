@@ -114,7 +114,7 @@ jobs:
           cmakeVersion: 3.25.1
           ninjaVersion: 1.11.1
 
-      - name: Macos - Setup Cmake,
+      - name: Macos - Setup Cmake
         if: runner.os == 'macOS'
         run: brew install cmake
         env:
