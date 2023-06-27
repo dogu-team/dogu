@@ -75,8 +75,13 @@ Inspect UI of device in web page
 - Inspect native UI
 - Inspect UI of game developed by Unity Engine
 
-<img src=".github/resources/inspector-android.png" />
-<img src=".github/resources/inspector-unity.png" />
+<div style="display: flex; flex-direction: row; justify-content: center">
+  <img src=".github/resources/android-inspecting.gif" width="49%" />
+  <img src=".github/resources/ios-inspecting.gif" width="49%" />  
+</div>
+<div align='center' style="margin-bottom: 8px;">
+  <img src=".github/resources/gamium-inspecting.gif" width="49%"/>
+</div>
 
 ### [Run Test Script](https://docs.dogutech.io/script-and-routine/introduction)
 
