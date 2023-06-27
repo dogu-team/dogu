@@ -32,6 +32,9 @@ jobs:
             extension: dmg
     runs-on: ['${{ matrix.runner }}']
 
+    env:
+      RUNNER_TOOL_CACHE: ${{ github.workspace }}/runner-tool-cache
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3

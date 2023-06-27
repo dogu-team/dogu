@@ -52,6 +52,9 @@ jobs:
 
     runs-on: [e2e, '${{ matrix.platform }}', '${{ matrix.arch }}']
 
+    env:
+      RUNNER_TOOL_CACHE: ${{ github.workspace }}/runner-tool-cache
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
