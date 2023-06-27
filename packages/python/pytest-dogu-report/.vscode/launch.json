@@ -1,0 +1,23 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Module",
+      "type": "python",
+      "request": "launch",
+      "module": "pytest",
+      "justMyCode": true,
+      "args": ["--capture=no", "tests"],
+      "env": {
+        "DOGU_API_BASE_URL": "http://127.0.0.1:4000",
+        "DOGU_ORGANIZATION_ID": "e5740b7f-2348-4092-8a4a-2bfdf8061241",
+        "DOGU_DEVICE_ID": "4e0b171a-3192-46f0-b49a-ed8799dd835c",
+        "DOGU_STEP_ID": "10",
+        "DOGU_HOST_TOKEN": "dw0rv0gq3k2f843kxgxtal5y44"
+      }
+    },
+  ]
+}
