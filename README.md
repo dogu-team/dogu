@@ -35,7 +35,7 @@ Dogu is a web-based test platform for test automation
       <img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter" />
     </a>
     <a href="https://github.com/dogu-team/dogu/discussions">
-      <img src="https://img.shields.io/badge/Discussion-white?style=for-the-badge&logo=github&logoColor=black" alt="Twitter" />
+      <img src="https://img.shields.io/badge/Discussion-10A1D2?style=for-the-badge&logo=github&logoColor=white" alt="Github" />
     </a>
   </div>
 </p>
