@@ -5,7 +5,7 @@ import { ElementHandle, Locator, Page } from 'playwright';
 import { Key } from 'selenium-webdriver';
 import { Driver } from '../../../src/chromedriver';
 import { dostPlaywrightColor, launchDost } from '../../../src/dost';
-import { replaceWebDriverAgentSigningStyle } from '../../../src/ios-helper';
+import { replaceIosDeviceAgentSigningStyle, replaceWebDriverAgentSigningStyle } from '../../../src/ios-helper';
 import { getClockTime } from '../../../src/time';
 import { Timer } from '../../../src/timer';
 import { l10n } from './l10n';
@@ -152,6 +152,7 @@ export class Dost {
         return;
       }
 
+      replaceIosDeviceAgentSigningStyle();
       await delay(3000);
 
       const buildButtons = await this.mainPage!.getByText('Click here to build', { exact: true }).all();

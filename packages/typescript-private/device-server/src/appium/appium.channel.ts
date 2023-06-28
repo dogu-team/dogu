@@ -220,6 +220,8 @@ Error: Xcode signing certificate is not found. Please check the following:
     const { platform, serial, key } = this.options;
     switch (platform) {
       case Platform.PLATFORM_ANDROID: {
+        const systemPort = await getFreePort();
+        const chromedriverPort = await getFreePort();
         const mjepgServerPort = await getFreePort();
         return {
           platformName: 'android',
@@ -228,6 +230,8 @@ Error: Xcode signing certificate is not found. Please check the following:
           'appium:udid': serial,
           'appium:mjpegServerPort': mjepgServerPort,
           'appium:newCommandTimeout': AppiumNewCommandTimeout,
+          'appium:systemPort': systemPort,
+          'appium:chromedriverPort': chromedriverPort,
         };
       }
       case Platform.PLATFORM_IOS: {
