@@ -9,15 +9,34 @@ Dogu is a web-based test platform for test automation
 </p>
 
 <p align="center">
-  <a href="https://github.com/dogu-team/dogu/issues"><img src="https://img.shields.io/badge/Issues-welcome-brightgreen.svg" alt="Issues Welcome"></a>
-  <a href="https://github.com/dogu-team/dogu/discussions"><img src="https://img.shields.io/badge/Discussions-welcome-brightgreen.svg" alt="Issues Welcome"></a>
-  <a href="https://github.com/dogu-team/dogu/pulse" alt="Activity"><img src="https://img.shields.io/github/commit-activity/m/dogu-team/dogu" /></a>
-  <a href="https://github.com/dogu-team/dogu/actions/workflows/e2e.yml"><img src="https://github.com/dogu-team/dogu/actions/workflows/e2e.yml/badge.svg" alt="GitHub Actions status"></a>
-  <a href="https://discord.gg/bVycd6Tu9g"><img src="https://dcbadge.vercel.app/api/server/bVycd6Tu9g?style=flat" /></a>
+  <a href="https://github.com/dogu-team/dogu/actions/workflows/e2e.yml">
+    <img src="https://github.com/dogu-team/dogu/actions/workflows/e2e.yml/badge.svg" alt="GitHub Actions status">
+  </a>
+  <a href="https://github.com/dogu-team/dogu/releases" alt="Activity">
+    <img alt="GitHub tag (latest SemVer pre-release)" src="https://img.shields.io/github/v/tag/dogu-team/dogu?label=release">
+  </a>
+  <a href="https://hub.docker.com/r/dogutechio/dogu/tags" alt="Activity">
+    <img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/dogutechio/dogu?label=downloads">
+  </a>
+  <a href="https://github.com/dogu-team/dogu/pulse" alt="Activity">
+    <img src="https://img.shields.io/github/commit-activity/m/dogu-team/dogu" />
+  </a>
+  <a href="https://discord.gg/bVycd6Tu9g">
+    <img src="https://dcbadge.vercel.app/api/server/bVycd6Tu9g?style=flat" />
+  </a>
   <div align="center">
-  <a href="https://blog.dogutech.io"><img src="https://img.shields.io/badge/ghost-000?style=for-the-badge&logo=ghost&logoColor=%23F7DF1E" alt="Blog" /></a>
-    <a href="https://www.linkedin.com/company/dogu-technologies"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>
-    <a href="https://twitter.com/dogutechio"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter" /></a>
+  <a href="https://blog.dogutech.io">
+    <img src="https://img.shields.io/badge/blog-007396?style=for-the-badge&logo=ghost&logoColor=white" alt="Blog" />
+  </a>
+    <a href="https://www.linkedin.com/company/dogu-technologies">
+      <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
+    </a>
+    <a href="https://twitter.com/dogutechio">
+      <img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter" />
+    </a>
+    <a href="https://github.com/dogu-team/dogu/discussions">
+      <img src="https://img.shields.io/badge/Discussion-white?style=for-the-badge&logo=github&logoColor=black" alt="Twitter" />
+    </a>
   </div>
 </p>
 
