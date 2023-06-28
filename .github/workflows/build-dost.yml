@@ -18,6 +18,7 @@ on:
 env:
   YARN_CHECKSUM_BEHAVIOR: update yarn
   CSC_FOR_PULL_REQUEST: true
+  DOGU_PYTHON_VERSION: 3.9.13
 
 jobs:
   build:
@@ -47,22 +48,19 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1" -OutFile "./install-pyenv-win.ps1"; &"./install-pyenv-win.ps1"
-          $newPath = "$env:USERPROFILE\.pyenv\pyenv-win\bin;$env:USERPROFILE\.pyenv\pyenv-win\shims;$env:PATH"
-          $env:PATH = $newPath
-          [Environment]::SetEnvironmentVariable("PATH", $newPath, [EnvironmentVariableTarget]::User)
-          Get-Command pyenv
-          pyenv install 3.9.13
-          pyenv global 3.9.13
+          echo "$env:USERPROFILE\.pyenv\pyenv-win\bin" >> $env:GITHUB_PATH
+          echo "$env:USERPROFILE\.pyenv\pyenv-win\shims" >> $env:GITHUB_PATH
+          pyenv install ${{ env.DOGU_PYTHON_VERSION }}
+          pyenv global ${{ env.DOGU_PYTHON_VERSION }}
           pip install poetry==1.5
-          Get-Command poetry
         shell: pwsh
 
       - name: Macos - Setup Python & Poetry
         if: runner.os == 'macOS'
         uses: gabrielfalcao/pyenv-action@v11
         with:
-          default: 3.9.13
-          command: pyenv global 3.9.13 && pip install poetry==1.5 && where poetry
+          default: ${{ env.DOGU_PYTHON_VERSION }}
+          command: pyenv global ${{ env.DOGU_PYTHON_VERSION }} && pip install poetry==1.5 && which poetry
 
       - name: Windows - Msys2 - MIGW64 - Setup for cgo
         uses: msys2/setup-msys2@v2
