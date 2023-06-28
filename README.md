@@ -140,21 +140,20 @@ Visualize test result
 
 ## Integrate Test Framework With Dogu
 
-You can integrate existing test framework with Dogu.  
-Coming soon. following test frameworks could be integrated with Dogu
+You can integrate existing test framework with Dogu.
 
 ### Browser
 
-- Selenium
-- Playwright
-- Puppeteer
-- Cypress
-- Webdriverio
+- Selenium (Not yet supported)
+- Playwright (Not yet supported)
+- Puppeteer (Not yet supported)
+- Cypress (Not yet supported)
+- Webdriverio (Not yet supported)
 
 ### Mobile
 
-- Appium
-- Webdriverio
+- Appium (Not yet supported)
+- Webdriverio (Not yet supported)
 
 ### Game
 
@@ -162,19 +161,18 @@ Coming soon. following test frameworks could be integrated with Dogu
 
 ## Integrate Test Unit Framework With Test Report
 
-You can integrate existing test unit framework with test report.  
-Coming soon. following test unit framework could be integrated with Dogu
+You can integrate existing test unit framework with test report.
 
-- Jest
-- Pytest
+- Jest (Not yet supported)
+- Pytest (Not yet supported)
+- TestNG (Not yet supported)
 
 ## Integrate External Workflow With Routine
 
-You can integrate existing workflow with routine.  
-Coming soon. following workflow could be integrated with Dogu
+You can integrate existing workflow with routine.
 
-- Jenkins
-- Github Action
+- Jenkins (Not yet supported)
+- Github Action (Not yet supported)
 
 ## Start With Self-Hosted
 
