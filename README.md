@@ -9,15 +9,34 @@ Dogu is a web-based test platform for test automation
 </p>
 
 <p align="center">
-  <a href="https://github.com/dogu-team/dogu/issues"><img src="https://img.shields.io/badge/Issues-welcome-brightgreen.svg" alt="Issues Welcome"></a>
-  <a href="https://github.com/dogu-team/dogu/discussions"><img src="https://img.shields.io/badge/Discussions-welcome-brightgreen.svg" alt="Issues Welcome"></a>
-  <a href="https://github.com/dogu-team/dogu/pulse" alt="Activity"><img src="https://img.shields.io/github/commit-activity/m/dogu-team/dogu" /></a>
-  <a href="https://github.com/dogu-team/dogu/actions/workflows/e2e.yml"><img src="https://github.com/dogu-team/dogu/actions/workflows/e2e.yml/badge.svg" alt="GitHub Actions status"></a>
-  <a href="https://discord.gg/bVycd6Tu9g"><img src="https://dcbadge.vercel.app/api/server/bVycd6Tu9g?style=flat" /></a>
+  <a href="https://github.com/dogu-team/dogu/actions/workflows/e2e.yml">
+    <img src="https://github.com/dogu-team/dogu/actions/workflows/e2e.yml/badge.svg" alt="GitHub Actions status">
+  </a>
+  <a href="https://github.com/dogu-team/dogu/releases" alt="Activity">
+    <img alt="GitHub tag (latest SemVer pre-release)" src="https://img.shields.io/github/v/tag/dogu-team/dogu?label=release">
+  </a>
+  <a href="https://hub.docker.com/r/dogutechio/dogu/tags" alt="Activity">
+    <img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/dogutechio/dogu?label=downloads">
+  </a>
+  <a href="https://github.com/dogu-team/dogu/pulse" alt="Activity">
+    <img src="https://img.shields.io/github/commit-activity/m/dogu-team/dogu" />
+  </a>
+  <a href="https://discord.gg/bVycd6Tu9g">
+    <img src="https://dcbadge.vercel.app/api/server/bVycd6Tu9g?style=flat" />
+  </a>
   <div align="center">
-  <a href="https://blog.dogutech.io"><img src="https://img.shields.io/badge/ghost-000?style=for-the-badge&logo=ghost&logoColor=%23F7DF1E" alt="Blog" /></a>
-    <a href="https://www.linkedin.com/company/dogu-technologies"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>
-    <a href="https://twitter.com/dogutechio"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter" /></a>
+  <a href="https://blog.dogutech.io">
+    <img src="https://img.shields.io/badge/blog-007396?style=for-the-badge&logo=ghost&logoColor=white" alt="Blog" />
+  </a>
+    <a href="https://www.linkedin.com/company/dogu-technologies">
+      <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
+    </a>
+    <a href="https://twitter.com/dogutechio">
+      <img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter" />
+    </a>
+    <a href="https://github.com/dogu-team/dogu/discussions">
+      <img src="https://img.shields.io/badge/Discussion-10A1D2?style=for-the-badge&logo=github&logoColor=white" alt="Github" />
+    </a>
   </div>
 </p>
 
@@ -35,6 +54,8 @@ Especially, Dogu is tightly integrated with test script and test framework so th
 ## Architecture
 
 <img src=".github/resources/architecture.png"/>
+
+Some features are not yet supported. But we are working hard to support them.
 
 ## Test Automation Flow
 
@@ -75,8 +96,13 @@ Inspect UI of device in web page
 - Inspect native UI
 - Inspect UI of game developed by Unity Engine
 
-<img src=".github/resources/inspector-android.png" />
-<img src=".github/resources/inspector-unity.png" />
+<div style="display: flex; flex-direction: row; justify-content: center">
+  <img src=".github/resources/android-inspecting.gif" width="49%" />
+  <img src=".github/resources/ios-inspecting.gif" width="49%" />  
+</div>
+<div align='center' style="margin-bottom: 8px;">
+  <img src=".github/resources/gamium-inspecting.gif" width="49%"/>
+</div>
 
 ### [Run Test Script](https://docs.dogutech.io/script-and-routine/introduction)
 
@@ -98,49 +124,42 @@ Visualize test result
 - Profiled device (memory, cpu, fps)
 - Log (test script, device, application)
 
-<img src=".github/resources/reporting-video.png"/>
-<img src=".github/resources/reporting-visualization.png"/>
-<img src=".github/resources/reporting-profiling.png"/>
-
-## Integrate Test Script With Dogu
-
-You can integrate existing test script with Dogu.
-
-### Javascript & Typescript
-
-Coming soon. following test client could be integrated with Dogu
-
-**Client**
-
-- Webdriverio
-- [Gamium](https://github.com/dogu-team/gamium)
-
-### Python
-
-Coming soon. following test client could be integrated with Dogu
-
-**Client**
-
-- [Gamium](https://github.com/dogu-team/gamium)
+<div style="display: flex; flex-direction: row; justify-content: center">
+  <img src=".github/resources/reporting-video.png" width="49%"/>
+  <img src=".github/resources/reporting-visualization.png" width="49%"/>
+</div>
+<div align='center' style="margin-bottom: 8px;">
+  <img src=".github/resources/reporting-profiling.png" width="49%"/>
+</div>
 
 ## Integrate Test Framework With Dogu
 
-You can integrate existing test framework with Dogu.
+You can integrate existing test framework with Dogu.  
+Coming soon. following test frameworks could be integrated with Dogu
 
-### Javascript & Typescript
+### Browser
 
-Coming soon. following test framework could be integrated with Dogu
+- Selenium
+- Playwright
+- Puppeteer
+- Cypress
+- Webdriverio
 
-**Test Framework**
+### Mobile
+
+- Appium
+- Webdriverio
+
+### Game
+
+- [Gamium](https://github.com/dogu-team/gamium)
+
+## Integrate Test Unit Framework With Test Report
+
+You can integrate existing test unit framework with test report.  
+Coming soon. following test unit framework could be integrated with Dogu
 
 - Jest
-
-### Python
-
-Coming soon. following test framework could be integrated with Dogu
-
-**Test Framework**
-
 - Pytest
 
 ## Start With Self-Hosted
