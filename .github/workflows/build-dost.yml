@@ -6,6 +6,7 @@ on:
   push:
     branches: ['main']
     paths:
+      - '.github/workflows/build-dost.yml'
       - 'prebuilds/protocol-exporter/**.proto'
       - 'packages/typescript-dev-private/build-tools/**'
       - 'projects/go-device-controller/**'
