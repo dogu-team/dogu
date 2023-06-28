@@ -57,13 +57,19 @@ Especially, Dogu is tightly integrated with test script and test framework so th
 
 Some features are not yet supported. But we are working hard to support them.
 
-## Test Automation Flow
+## Run Test Automation Flow
 
-### Target Device for Test Script Execution
+### Uploaded Test Script Execution By Workflow
 
 <img src=".github/resources/architecture-test-automation-flow.png"/>
 
-Dogu Agent helps you to run test script on your own device farm. Especially, Dogu Agent is tightly integrated with test script and test framework so that you can focus on test automation without developing infrastructure related works like, target device for test execution, parallel test execution, pulling test script.
+Dogu Agent helps you to run test script on your device farm. Especially, Dogu Agent is tightly integrated with test script and test framework so that you can focus on test automation without developing infrastructure related works like, target device for test execution, parallel test execution, pulling test script.
+
+### Local Test Script Excution By Relay Hub (Not yet supported)
+
+<img src=".github/resources/architecture-test-remote-automation-flow.png"/>
+
+In contrast to uploaded test script execution, you can run test script existing in local on device farm.
 
 ## Platform Features
 
@@ -161,6 +167,14 @@ Coming soon. following test unit framework could be integrated with Dogu
 
 - Jest
 - Pytest
+
+## Integrate External Workflow With Routine
+
+You can integrate existing workflow with routine.  
+Coming soon. following workflow could be integrated with Dogu
+
+- Jenkins
+- Github Action
 
 ## Start With Self-Hosted
 
