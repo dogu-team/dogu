@@ -227,18 +227,18 @@ jobs:
           path: |
             ./e2e/generated/record/screen-${{ runner.os }}-${{github.sha}}.webm
 
-  # send-slack:
-  #   runs-on: ubuntu-latest
-  #   needs: e2e
-  #   if: ${{ always() }}
+  send-slack:
+    runs-on: ubuntu-latest
+    needs: e2e
+    if: ${{ always() }}
 
-  #   steps:
-  #     - name: Send Slack
-  #       uses: dogu-team/slack@v1.0
-  #       with:
-  #         template: 'e2e'
-  #         slack-channel-id: 'C03PL9TC44Q'
-  #         result-status: ${{ needs.e2e.result }}
-  #         ignore-notify: ${{ needs.e2e.result == 'success' }}
-  #       env:
-  #         SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+    steps:
+      - name: Send Slack
+        uses: dogu-team/slack@v1.0
+        with:
+          template: 'e2e'
+          slack-channel-id: 'C03PL9TC44Q'
+          result-status: ${{ needs.e2e.result }}
+          ignore-notify: ${{ needs.e2e.result == 'success' }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
