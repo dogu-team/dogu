@@ -39,6 +39,7 @@ on:
 
 env:
   DOGU_PYTHON_VERSION: 3.9.13
+  DOGU_POETRY_VERSION: 1.5.1
 
 jobs:
   e2e:
@@ -71,7 +72,7 @@ jobs:
           $env:PATH="$env:USERPROFILE\.pyenv\pyenv-win\bin;$env:USERPROFILE\.pyenv\pyenv-win\shims;$env:PATH"
           pyenv install ${{ env.DOGU_PYTHON_VERSION }}
           pyenv global ${{ env.DOGU_PYTHON_VERSION }}
-          pip install poetry==1.5
+          pip install poetry==${{ env.DOGU_POETRY_VERSION }}
           echo "$env:USERPROFILE\.pyenv\pyenv-win\bin" >> $env:GITHUB_PATH
           echo "$env:USERPROFILE\.pyenv\pyenv-win\shims" >> $env:GITHUB_PATH
         shell: pwsh
@@ -81,7 +82,7 @@ jobs:
         uses: gabrielfalcao/pyenv-action@v11
         with:
           default: ${{ env.DOGU_PYTHON_VERSION }}
-          command: pyenv global ${{ env.DOGU_PYTHON_VERSION }} && pip install poetry==1.5 && which poetry
+          command: pyenv global ${{ env.DOGU_PYTHON_VERSION }} && pip install poetry==${{ env.DOGU_POETRY_VERSION }} && which poetry
 
       - uses: actions/setup-go@v3
         with:
