@@ -1,4 +1,4 @@
-import { PrefixLogger, stringify } from '@dogu-tech/common';
+import { errorify, PrefixLogger, stringify } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import { spawn } from 'child_process';
 import compressing from 'compressing';
@@ -154,7 +154,10 @@ export class JdkExternalUnit extends IExternalUnit {
       throw new Error('already installing');
     }
     const downloadUrl = this.getDownloadUrl();
+    const downloadsPath = HostPaths.downloadsPath(HostPaths.doguHomePath);
+    fs.promises.mkdir(downloadsPath, { recursive: true });
     const item = await download(window, downloadUrl, {
+      directory: downloadsPath,
       onStarted: (item) => {
         this.canceler = () => {
           item.cancel();
@@ -194,6 +197,20 @@ export class JdkExternalUnit extends IExternalUnit {
     this.stdLogCallbackService.stdout('Writing JAVA_HOME to env file...');
     await this.dotEnvConfigService.write('JAVA_HOME', defaultJavaHomePath);
     this.stdLogCallbackService.stdout('Write complete');
+    try {
+      this.logger.info('deleting uncompressedPath and savePath...', {
+        uncompressedPath,
+        savePath,
+      });
+      await fs.promises.rmdir(uncompressedPath, { recursive: true });
+      await fs.promises.unlink(savePath);
+    } catch (error) {
+      this.logger.warn('uncompressedPath or savePath delete failed.', {
+        uncompressedPath,
+        savePath,
+        error: errorify(error),
+      });
+    }
     this.unitCallback.onInstallCompleted();
   }
 

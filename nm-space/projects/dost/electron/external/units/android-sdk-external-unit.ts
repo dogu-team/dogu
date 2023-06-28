@@ -1,4 +1,4 @@
-import { PrefixLogger, stringify } from '@dogu-tech/common';
+import { errorify, PrefixLogger, stringify } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import { spawn } from 'child_process';
 import compressing from 'compressing';
@@ -155,6 +155,20 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
     await this.updateSdkManager(sdkManagerPath);
     await this.downloadBuildToolsAndPlatformTools(sdkManagerPath);
     await this.writeEnv_ANDROID_HOME();
+    try {
+      this.logger.info('Deleting commandLineToolsUncompressedPath or commandLineToolsSavePath...', {
+        commandLineToolsUncompressedPath,
+        commandLineToolsSavePath,
+      });
+      await fs.promises.rmdir(commandLineToolsUncompressedPath, { recursive: true });
+      await fs.promises.unlink(commandLineToolsSavePath);
+    } catch (error) {
+      this.logger.warn('commandLineToolsUncompressedPath or commandLineToolsSavePath delete failed.', {
+        commandLineToolsUncompressedPath,
+        commandLineToolsSavePath,
+        error: errorify(error),
+      });
+    }
     this.unitCallback.onInstallCompleted();
   }
 
@@ -217,7 +231,10 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
       throw new Error('already installing');
     }
     const commandLineToolsDownloadUrl = this.getCommandLineToolsDownloadUrl();
+    const downloadsPath = HostPaths.downloadsPath(HostPaths.doguHomePath);
+    fs.promises.mkdir(downloadsPath, { recursive: true });
     const commandLineToolsItem = await download(window, commandLineToolsDownloadUrl, {
+      directory: downloadsPath,
       onStarted: (item) => {
         this.canceler = () => {
           item.cancel();
