@@ -51,8 +51,8 @@ jobs:
           $env:PATH = $newPath
           [Environment]::SetEnvironmentVariable("PATH", $newPath, [EnvironmentVariableTarget]::User)
           Get-Command pyenv
-          pyenv install 3.9
-          pyenv global 3.9
+          pyenv install 3.9.13
+          pyenv global 3.9.13
           pip install poetry==1.5
           Get-Command poetry
         shell: pwsh
@@ -61,8 +61,8 @@ jobs:
         if: runner.os == 'macOS'
         uses: gabrielfalcao/pyenv-action@v11
         with:
-          default: 3.9
-          command: pyenv global 3.9 && pip install poetry==1.5 && where poetry
+          default: 3.9.13
+          command: pyenv global 3.9.13 && pip install poetry==1.5 && where poetry
 
       - name: Windows - Msys2 - MIGW64 - Setup for cgo
         uses: msys2/setup-msys2@v2
