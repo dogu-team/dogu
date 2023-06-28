@@ -204,7 +204,7 @@ jobs:
 
       - name: create dotEnv
         run: |
-          env-generator gen-all new-e2e
+          env-generator gen-all e2e
 
       - name: Download, Build third-party
         run: |
