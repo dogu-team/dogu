@@ -1,5 +1,9 @@
 name: 🔄e2e
 
+concurrency:
+  group: e2e
+  cancel-in-progress: true
+
 on:
   push:
     branches: ['feature/deployment-process']
