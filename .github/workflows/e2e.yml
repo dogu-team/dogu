@@ -2,7 +2,7 @@ name: 🔄e2e
 
 concurrency:
   group: e2e
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 on:
   push:
