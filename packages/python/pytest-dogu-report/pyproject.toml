@@ -1,0 +1,50 @@
+[tool.poetry]
+name = "pytest-dogu-report"
+version = "1.0.0"
+description = "pytest plugin for dogu report"
+readme = "README.md"
+packages = [{include = "pytest_dogu_report", from = "src"}]
+authors = ["henry"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.31.0"
+dacite = "^1.8.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.3.2"
+setuptools = "^68.0.0"
+black = "^23.3.0"
+pylint = "^2.17.4"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pytest_dogu_report"
+version = "1.0.0"
+description = "pytest plugin for dogu report"
+license = {text = "MIT License"}
+classifiers = [
+    "Framework :: Pytest",
+]
+requires-python = '>=3.9,<4.0'
+
+[project.entry-points.pytest11]
+dogu_report = "pytest_dogu_report"
+
+[tool.pylint.'MESSAGES CONTROL']
+max-line-length = 180
+disable = """
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring,
+    broad-exception-raised,
+    broad-exception-caught,
+    too-few-public-methods,
+    unused-argument,
+"""
+
+[tool.pylint.BASIC]
+good-names = "e"

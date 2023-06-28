@@ -10,7 +10,6 @@
     "debug": "cross-env TZ=UTC NODE_ENV=development nodemon --config nodemon.json --debug 61233",
     "dev": "cross-env TZ=UTC NODE_ENV=development nodemon --config nodemon.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "rebuild": "yarn run clean && yarn run build",
     "start": "cross-env TZ=UTC NODE_ENV=production node -r tsconfig-paths/register -r ts-node/register build/src/main",
     "start:pgsql": "yarn run rebuild && cross-env TZ=UTC NODE_ENV=development ts-node scripts/start-pgsql/run.ts",
