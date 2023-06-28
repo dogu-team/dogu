@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-and-push-dogu-console:
-    runs-on: dev-doug
+    runs-on: prod-dogu-build
 
     steps:
       - name: docker init
@@ -33,80 +33,79 @@ jobs:
           push: true
           target: dogu-console
           tags: |
-            dogutechio/dogu:rc
+            dogutechio/dogu:nightly
 
-  start-rc-dogu:
-    runs-on: dev-dogu
-    needs: build-and-push-dogu-console
+  # start-prod-dogu:
+  #   runs-on: prod-dogu
 
-    steps:
-      - name: Checkout
-        uses: Bhacaz/checkout-files@v2
-        with:
-          files: docker-compose.yml docker-compose.env
+  #   steps:
+  #     - name: Checkout
+  #       uses: Bhacaz/checkout-files@v2
+  #       with:
+  #         branch: ${{ github.ref_name  }}
+  #         files: docker-compose.yml docker-compose.env
 
-      - name: docker init
-        run: docker system prune --volumes -a -f
+  #     - name: docker init
+  #       run: docker system prune --volumes -a -f
 
-      - name: set .env
-        run: |
-          sed -i 's/dogu:latest/dogu:rc/' ./docker-compose.yml
-          sed -i 's/^DOGU_HOST=.*$/DOGU_HOST=${{ secrets.DEV_DOGU_HOST }}/' ./docker-compose.env
+  #     - name: set .env
+  #       run: |
+  #         sed -i 's/dogu:latest/dogu:rc/' ./docker-compose.yml
+  #         sed -i 's/^DOGU_HOST=.*$/DOGU_HOST=${{ secrets.PROD_DOGU_HOST }}/' ./docker-compose.env
 
-          # postgres
-          sed -i 's/^POSTGRES_USER=.*$/POSTGRES_USER=${{ secrets.DEV_DOGU_RDS_USERNAME }}/' ./docker-compose.env
-          sed -i 's/^POSTGRES_PASSWORD=.*$/POSTGRES_PASSWORD=${{ secrets.DEV_DOGU_RDS_PASSWORD }}/' ./docker-compose.env
+  #         # postgres
+  #         sed -i 's/^POSTGRES_USER=.*$/POSTGRES_USER=${{ secrets.PROD_DOGU_RDS_USERNAME }}/' ./docker-compose.env
+  #         sed -i 's/^POSTGRES_PASSWORD=.*$/POSTGRES_PASSWORD=${{ secrets.PROD_DOGU_RDS_PASSWORD }}/' ./docker-compose.env
 
-          # influxdb
-          sed -i 's/^INFLUX_DB_INIT_ADMIN_TOKEN=.*$/INFLUX_DB_INIT_ADMIN_TOKEN=${{ secrets.DEV_DOGU_INFLUX_DB_TOKEN }}/' ./docker-compose.env
-          sed -i 's/^INFLUX_DB_USERNAME=.*$/INFLUX_DB_USERNAME=${{ secrets.DEV_DOGU_INFLUX_DB_USERNAME }}/' ./docker-compose.env
-          sed -i 's/^INFLUX_DB_PASSWORD=.*$/INFLUX_DB_PASSWORD=${{ secrets.DEV_DOGU_INFLUX_DB_PASSWORD }}/' ./docker-compose.env
+  #         # influxdb
+  #         sed -i 's/^INFLUX_DB_INIT_ADMIN_TOKEN=.*$/INFLUX_DB_INIT_ADMIN_TOKEN=${{ secrets.PROD_DOGU_INFLUX_DB_TOKEN }}/' ./docker-compose.env
+  #         sed -i 's/^INFLUX_DB_USERNAME=.*$/INFLUX_DB_USERNAME=${{ secrets.PROD_DOGU_INFLUX_DB_USERNAME }}/' ./docker-compose.env
+  #         sed -i 's/^INFLUX_DB_PASSWORD=.*$/INFLUX_DB_PASSWORD=${{ secrets.PROD_DOGU_INFLUX_DB_PASSWORD }}/' ./docker-compose.env
 
-          # redis
-          sed -i 's/^REDIS_PASSWORD=.*$/REDIS_PASSWORD=${{ secrets.DEV_DOGU_REDIS_PASSWORD }}/' ./docker-compose.env
+  #         # redis
+  #         sed -i 's/^REDIS_PASSWORD=.*$/REDIS_PASSWORD=${{ secrets.PROD_DOGU_REDIS_PASSWORD }}/' ./docker-compose.env
 
-          # console
-          sed -i 's/^GITLAB_ROOT_ACCESS_TOKEN=.*$/GITLAB_ROOT_ACCESS_TOKEN=${{ secrets.DEV_DOGU_GITLAB_ROOT_TOKEN }}/' ./docker-compose.env
-          sed -i 's/^GITLAB_ROOT_PASSWORD=.*$/GITLAB_ROOT_PASSWORD=${{ secrets.DEV_DOGU_GITLAB_ROOT_PASSWORD }}/' ./docker-compose.env
-          sed -i 's/^DOGU_CONSOLE_JWT_SECRET_KEY=.*$/DOGU_CONSOLE_JWT_SECRET_KEY=${{ secrets.DEV_DOGU_JWT_SECRET_KEY }}/' ./docker-compose.env
-          sed -i 's/^DEVICE_WIFI_SSID=.*$/DEVICE_WIFI_SSID=${{ secrets.DOGU_DEVICE_WIFI_SSID }}/' ./docker-compose.env
-          sed -i 's/^DEVICE_WIFI_PASSWORD=.*$/DEVICE_WIFI_PASSWORD=${{ secrets.DOGU_DEVICE_WIFI_PASSWORD }}/' ./docker-compose.env
+  #         # console
+  #         sed -i 's/^GITLAB_ROOT_ACCESS_TOKEN=.*$/GITLAB_ROOT_ACCESS_TOKEN=${{ secrets.PROD_DOGU_GITLAB_ROOT_TOKEN }}/' ./docker-compose.env
+  #         sed -i 's/^GITLAB_ROOT_PASSWORD=.*$/GITLAB_ROOT_PASSWORD=${{ secrets.PROD_DOGU_GITLAB_ROOT_PASSWORD }}/' ./docker-compose.env
+  #         sed -i 's/^DOGU_CONSOLE_JWT_SECRET_KEY=.*$/DOGU_CONSOLE_JWT_SECRET_KEY=${{ secrets.PROD_DOGU_JWT_SECRET_KEY }}/' ./docker-compose.env
+  #         sed -i 's/^DEVICE_WIFI_SSID=.*$/DEVICE_WIFI_SSID=${{ secrets.DOGU_DEVICE_WIFI_SSID }}/' ./docker-compose.env
+  #         sed -i 's/^DEVICE_WIFI_PASSWORD=.*$/DEVICE_WIFI_PASSWORD=${{ secrets.DOGU_DEVICE_WIFI_PASSWORD }}/' ./docker-compose.env
 
-          sed -i 's|NEXT_PUBLIC_DOGU_API_BASE_URL=.*$|NEXT_PUBLIC_DOGU_API_BASE_URL=${{ secrets.DEV_DOGU_API_BASE_URL }}|' ./docker-compose.yml
-          sed -i 's|NEXT_PUBLIC_DOGU_WS_BASE_URL=.*$|NEXT_PUBLIC_DOGU_WS_BASE_URL=${{ secrets.DEV_DOGU_WS_BASE_URL }}|' ./docker-compose.yml
-          sed -i 's|NEXT_PUBLIC_DOGU_GITLAB_HOST=.*$|NEXT_PUBLIC_DOGU_GITLAB_HOST=${{ secrets.DEV_DOGU_GITLAB_HOST }}|' ./docker-compose.yml
+  #         sed -i 's|NEXT_PUBLIC_DOGU_API_BASE_URL=.*$|NEXT_PUBLIC_DOGU_API_BASE_URL=${{ secrets.PROD_DOGU_API_BASE_URL }}|' ./docker-compose.yml
+  #         sed -i 's|NEXT_PUBLIC_DOGU_WS_BASE_URL=.*$|NEXT_PUBLIC_DOGU_WS_BASE_URL=${{ secrets.PROD_DOGU_WS_BASE_URL }}|' ./docker-compose.yml
+  #         sed -i 's|NEXT_PUBLIC_DOGU_GITLAB_HOST=.*$|NEXT_PUBLIC_DOGU_GITLAB_HOST=${{ secrets.PROD_DOGU_GITLAB_HOST }}|' ./docker-compose.yml
 
-          sed -i 's|DOGU_CONSOLE_DOMAIN=.*$|DOGU_CONSOLE_DOMAIN=${{ secrets.DEV_DOGU_CONSOLE_DOMAIN }}|' ./docker-compose.yml
-          echo "DOGU_CONSOLE_URL=https://console.${{ secrets.DEV_DOGU_CONSOLE_DOMAIN }}" >> ./docker-compose.env
-          echo "DOGU_EMAIL_ID=${{ secrets.DOGU_EMAIL_ID }}" >> ./docker-compose.env
-          echo "DOGU_EMAIL_PW=${{ secrets.DOGU_EMAIL_PW }}" >> ./docker-compose.env
-          echo "DOGU_DOST_DOWNLOAD_BASE_URL=${{ secrets.DEV_DOGU_DOST_DOWNLOAD_BASE_URL }}" >> ./docker-compose.env
-          echo "DOGU_RECAPTCHA_KEY=${{ secrets.DOGU_RECAPTCHA_KEY }}" >> ./docker-compose.env
-          echo "DOGU_CONSOLE_GOOGLE_OAUTH_LOGIN_CLIENT_ID=${{ secrets.DOGU_CONSOLE_GOOGLE_OAUTH_LOGIN_CLIENT_ID }}" >> ./docker-compose.env
-          echo "DOGU_CONSOLE_GOOGLE_OAUTH_LOGIN_CLIENT_SECRET=${{ secrets.DOGU_CONSOLE_GOOGLE_OAUTH_LOGIN_CLIENT_SECRET }}" >> ./docker-compose.env
+  #         sed -i 's|DOGU_CONSOLE_DOMAIN=.*$|DOGU_CONSOLE_DOMAIN=${{ secrets.PROD_DOGU_CONSOLE_DOMAIN }}|' ./docker-compose.yml
+  #         echo "DOGU_CONSOLE_URL=https://console.${{ secrets.PROD_DOGU_CONSOLE_DOMAIN }}" >> ./docker-compose.env
+  #         echo "DOGU_EMAIL_ID=${{ secrets.DOGU_EMAIL_ID }}" >> ./docker-compose.env
+  #         echo "DOGU_EMAIL_PW=${{ secrets.DOGU_EMAIL_PW }}" >> ./docker-compose.env
+  #         echo "DOGU_DOST_DOWNLOAD_BASE_URL=${{ secrets.PROD_DOGU_DOST_DOWNLOAD_BASE_URL }}" >> ./docker-compose.env
+  #         echo "DOGU_RECAPTCHA_KEY=${{ secrets.DOGU_RECAPTCHA_KEY }}" >> ./docker-compose.env
+  #         echo "DOGU_CONSOLE_GOOGLE_OAUTH_LOGIN_CLIENT_ID=${{ secrets.DOGU_CONSOLE_GOOGLE_OAUTH_LOGIN_CLIENT_ID }}" >> ./docker-compose.env
+  #         echo "DOGU_CONSOLE_GOOGLE_OAUTH_LOGIN_CLIENT_SECRET=${{ secrets.DOGU_CONSOLE_GOOGLE_OAUTH_LOGIN_CLIENT_SECRET }}" >> ./docker-compose.env
 
-          echo "DOGU_RUN_TYPE=development" >> ./docker-compose.env
-          echo "NEXT_PUBLIC_ENV=development" >> ./docker-compose.env
-          echo "DOGU_GITLAB_HOST=${{ secrets.DEV_DOGU_GITLAB_HOST }}" >> ./docker-compose.env
-          echo "DOGU_GITLAB_PORT=443" >> ./docker-compose.env
-          echo "DOGU_GITLAB_PROTOCOL=https" >> ./docker-compose.env
-          echo "DOGU_GITLAB_TEMPLATE_GROUP=dogu" >> ./docker-compose.env
-          echo "DOGU_RDS_HOST=${{ secrets.DEV_DOGU_RDS_HOST }}" >> ./docker-compose.env
-          echo "NEXT_PUBLIC_LANDING_URL=${{ secrets.DEV_DOGU_LANDING_URL }}" >> ./docker-compose.env
-          echo "NEXT_PUBLIC_DOGU_GA_ID=${{ secrets.DEV_DOGU_GA_ID }}" >> ./docker-compose.env
-          echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.DOGU_SENTRY_DSN }}" >> ./docker-compose.env
+  #         echo "DOGU_RUN_TYPE=development" >> ./docker-compose.env
+  #         echo "NEXT_PUBLIC_ENV=development" >> ./docker-compose.env
+  #         echo "DOGU_GITLAB_HOST=${{ secrets.PROD_DOGU_GITLAB_HOST }}" >> ./docker-compose.env
+  #         echo "DOGU_GITLAB_PORT=443" >> ./docker-compose.env
+  #         echo "DOGU_GITLAB_PROTOCOL=https" >> ./docker-compose.env
+  #         echo "DOGU_GITLAB_TEMPLATE_GROUP=dogu" >> ./docker-compose.env
+  #         echo "DOGU_RDS_HOST=${{ secrets.PROD_DOGU_RDS_HOST }}" >> ./docker-compose.env
+  #         echo "NEXT_PUBLIC_LANDING_URL=${{ secrets.PROD_DOGU_LANDING_URL }}" >> ./docker-compose.env
+  #         echo "NEXT_PUBLIC_DOGU_GA_ID=${{ secrets.PROD_DOGU_GA_ID }}" >> ./docker-compose.env
+  #         echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.DOGU_SENTRY_DSN }}" >> ./docker-compose.env
 
-          # file server
-          sed -i 's|DOGU_NEXUS_HOST=.*$|DOGU_NEXUS_HOST=${{ secrets.DEV_DOGU_HOST }}|' ./docker-compose.yml
-          sed -i 's/^FILE_SERVER_USERNAME=.*$/FILE_SERVER_USERNAME=${{ secrets.DEV_DOGU_FILE_SERVER_USERNAME }}/' ./docker-compose.env
-          sed -i 's/^FILE_SERVER_PASSWORD=.*$/FILE_SERVER_PASSWORD=${{ secrets.DEV_DOGU_FILE_SERVER_PASSWORD }}/' ./docker-compose.env
+  #         # file server
+  #         sed -i 's|DOGU_NEXUS_HOST=.*$|DOGU_NEXUS_HOST=${{ secrets.PROD_DOGU_NEXUS_HOST }}|' ./docker-compose.yml
+  #         sed -i 's/^FILE_SERVER_USERNAME=.*$/FILE_SERVER_USERNAME=${{ secrets.PROD_DOGU_FILE_SERVER_USERNAME }}/' ./docker-compose.env
+  #         sed -i 's/^FILE_SERVER_PASSWORD=.*$/FILE_SERVER_PASSWORD=${{ secrets.PROD_DOGU_FILE_SERVER_PASSWORD }}/' ./docker-compose.env
 
-          # turn server
-          sed -i 's/^TURN_SERVER_USERNAME=.*$/TURN_SERVER_USERNAME=${{ secrets.DEV_DOGU_TURN_SERVER_USERNAME }}/' ./docker-compose.env
-          sed -i 's/^TURN_SERVER_PASSWORD=.*$/TURN_SERVER_PASSWORD=${{ secrets.DEV_DOGU_TURN_SERVER_PASSWORD }}/' ./docker-compose.env
+  #         # turn server
+  #         sed -i 's/^TURN_SERVER_USERNAME=.*$/TURN_SERVER_USERNAME=${{ secrets.PROD_DOGU_TURN_SERVER_USERNAME }}/' ./docker-compose.env
+  #         sed -i 's/^TURN_SERVER_PASSWORD=.*$/TURN_SERVER_PASSWORD=${{ secrets.PROD_DOGU_TURN_SERVER_PASSWORD }}/' ./docker-compose.env
 
-
-          sed -i '/^  console:/a\    env_file:\n      - docker-compose.env' docker-compose.yml
-      - name: run
-        run: |
-          docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up redis influxdb coturn nexus gitlab console -d
+  #         sed -i '/^  console:/a\    env_file:\n      - docker-compose.env' docker-compose.yml
+  #     - name: run
+  #       run: |
+  #         docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up redis influxdb coturn nexus gitlab console -d
