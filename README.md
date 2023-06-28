@@ -57,7 +57,7 @@ Especially, Dogu is tightly integrated with test script and test framework so th
 
 Some features are not yet supported. But we are working hard to support them.
 
-## Run Test Automation Flow
+## Run Test Script Flow
 
 ### Uploaded Test Script Execution By Workflow
 
