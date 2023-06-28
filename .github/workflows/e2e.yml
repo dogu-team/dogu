@@ -61,10 +61,6 @@ jobs:
         with:
           clean: true
 
-      - uses: actions/setup-go@v3
-        with:
-          go-version: '1.18'
-
       - name: Windows - Setup Python & Poetry
         if: runner.os == 'Windows'
         run: |
@@ -72,8 +68,6 @@ jobs:
           $newPath = "$env:USERPROFILE\.pyenv\pyenv-win\bin;$env:USERPROFILE\.pyenv\pyenv-win\shims;$env:PATH"
           $env:PATH = $newPath
           [Environment]::SetEnvironmentVariable("PATH", $newPath, [EnvironmentVariableTarget]::User)
-          pyenv --version
-          pyenv install -l
           pyenv install 3.9
           pyenv global 3.9
           pip install poetry==1.5
@@ -87,6 +81,10 @@ jobs:
           command: |
             pyenv global 3.9
             pip install poetry==1.5
+
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.18'
 
       - name: Run newbie
         run: |
