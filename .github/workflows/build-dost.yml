@@ -62,10 +62,7 @@ jobs:
         uses: gabrielfalcao/pyenv-action@v11
         with:
           default: 3.9
-          command: |
-            pyenv global 3.9
-            pip install poetry==1.5
-            where poetry
+          command: pyenv global 3.9 && pip install poetry==1.5 && where poetry
 
       - name: Windows - Msys2 - MIGW64 - Setup for cgo
         uses: msys2/setup-msys2@v2
