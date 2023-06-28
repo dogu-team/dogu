@@ -83,7 +83,9 @@ jobs:
         uses: gabrielfalcao/pyenv-action@v11
         with:
           default: 3.9
-          command: pip install poetry==1.5
+          command: |
+            pyenv global 3.9
+            pip install poetry==1.5
 
       - name: Run newbie
         run: |
