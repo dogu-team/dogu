@@ -50,9 +50,11 @@ jobs:
           $newPath = "$env:USERPROFILE\.pyenv\pyenv-win\bin;$env:USERPROFILE\.pyenv\pyenv-win\shims;$env:PATH"
           $env:PATH = $newPath
           [Environment]::SetEnvironmentVariable("PATH", $newPath, [EnvironmentVariableTarget]::User)
+          Get-Command pyenv
           pyenv install 3.9
           pyenv global 3.9
           pip install poetry==1.5
+          Get-Command poetry
         shell: pwsh
 
       - name: Macos - Setup Python & Poetry
@@ -63,6 +65,7 @@ jobs:
           command: |
             pyenv global 3.9
             pip install poetry==1.5
+            where poetry
 
       - name: Windows - Msys2 - MIGW64 - Setup for cgo
         uses: msys2/setup-msys2@v2
