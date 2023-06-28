@@ -103,49 +103,31 @@ Visualize test result
 - Profiled device (memory, cpu, fps)
 - Log (test script, device, application)
 
-<img src=".github/resources/reporting-video.png"/>
-<img src=".github/resources/reporting-visualization.png"/>
-<img src=".github/resources/reporting-profiling.png"/>
-
-## Integrate Test Script With Dogu
-
-You can integrate existing test script with Dogu.
-
-### Javascript & Typescript
-
-Coming soon. following test client could be integrated with Dogu
-
-**Client**
-
-- Webdriverio
-- [Gamium](https://github.com/dogu-team/gamium)
-
-### Python
-
-Coming soon. following test client could be integrated with Dogu
-
-**Client**
-
-- [Gamium](https://github.com/dogu-team/gamium)
+<div style="display: flex; flex-direction: row; justify-content: center">
+  <img src=".github/resources/reporting-video.png" width="49%"/>
+  <img src=".github/resources/reporting-visualization.png" width="49%"/>
+</div>
+<div align='center' style="margin-bottom: 8px;">
+  <img src=".github/resources/reporting-profiling.png" width="49%"/>
+</div>
 
 ## Integrate Test Framework With Dogu
 
-You can integrate existing test framework with Dogu.
+You can integrate existing test framework with Dogu.  
+Coming soon. following test frameworks could be integrated with Dogu
 
-### Javascript & Typescript
+- Selenium
+- Puppeteer
+- Cypress
+- Webdriverio
+- [Gamium](https://github.com/dogu-team/gamium)
 
-Coming soon. following test framework could be integrated with Dogu
+## Integrate Test Unit Framework With Test Report
 
-**Test Framework**
+You can integrate existing test unit framework with test report.  
+Coming soon. following test unit framework could be integrated with Dogu
 
 - Jest
-
-### Python
-
-Coming soon. following test framework could be integrated with Dogu
-
-**Test Framework**
-
 - Pytest
 
 ## Start With Self-Hosted
