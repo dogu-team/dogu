@@ -36,6 +36,8 @@ Especially, Dogu is tightly integrated with test script and test framework so th
 
 <img src=".github/resources/architecture.png"/>
 
+Some features are not yet supported. But we are working hard to support them.
+
 ## Test Automation Flow
 
 ### Target Device for Test Script Execution
@@ -119,6 +121,7 @@ Coming soon. following test frameworks could be integrated with Dogu
 ### Browser
 
 - Selenium
+- Playwright
 - Puppeteer
 - Cypress
 - Webdriverio
