@@ -17,6 +17,7 @@ on:
 
 env:
   YARN_CHECKSUM_BEHAVIOR: update yarn
+  CSC_FOR_PULL_REQUEST: true
 
 jobs:
   build:
