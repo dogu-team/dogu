@@ -25,7 +25,6 @@ export function startConsoleAndDost(consoleWebFrontPort: number): { dost: Dost }
 
 export function startDost(): { dost: Dost } {
   const dost = new Dost();
-
   job('Execute dost', () => {
     dost.nextTest();
     dost.nextTest();

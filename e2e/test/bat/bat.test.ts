@@ -357,23 +357,24 @@ Dest.withOptions({
           });
 
           test('Add to project', async () => {
-            await Driver.sendKeys({ xpath: '/html/body/div[4]/div/div[2]/div/div[2]/div[2]/div/div[1]/span/span/span[1]/input' }, values.value.PROJECT_NAME);
+            await Driver.sendKeys({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[2]/div/div[1]/span/span/span[1]/input' }, values.value.PROJECT_NAME);
+
             await Timer.wait(3000, 'wait for editor to load');
-            await Driver.clickElement({ xpath: '/html/body/div[4]/div/div[2]/div/div[2]/div[2]/div/div[1]/span/span/span[2]/button' });
+            await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[2]/div/div[1]/div' });
             await Timer.wait(3000, 'wait for editor to load');
-            await Driver.clickElement({ xpath: '/html/body/div[4]/div/div[2]/div/div[2]/div[2]/div/div[1]/div/button' });
+            await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[2]/div/div[1]/span/span/span[1]/span/span/span' });
             await Timer.wait(3000, 'wait for editor to load');
 
-            await Driver.clickElement({ xpath: '/html/body/div[4]/div/div[2]/div/div[2]/div[2]/div/div[1]/span/span/span[1]/span/span/span' });
-            await Timer.wait(3000, 'wait for editor to load');
+            // await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[2]/div/div[1]/span/span/span[1]/span/span/span' });
+            // await Timer.wait(3000, 'wait for editor to load');
 
-            await Driver.sendKeys({ xpath: '/html/body/div[4]/div/div[2]/div/div[2]/div[2]/div/div[1]/span/span/span[1]/input' }, values.value.SAMPLE_PROJECT_NAME);
+            await Driver.sendKeys({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[2]/div/div[1]/span/span/span[1]/input' }, values.value.SAMPLE_PROJECT_NAME);
             await Timer.wait(3000, 'wait for editor to load');
-            await Driver.clickElement({ xpath: '/html/body/div[4]/div/div[2]/div/div[2]/div[2]/div/div[1]/span/span/span[2]/button' });
+            await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[2]/div/div[1]/div' });
             await Timer.wait(3000, 'wait for editor to load');
-            await Driver.clickElement({ xpath: '/html/body/div[4]/div/div[2]/div/div[2]/div[2]/div/div[1]/div/button' });
-            await Timer.wait(3000, 'wait for editor to load');
-            await Driver.clickElement({ xpath: '/html/body/div[4]/div/div[2]/div/div[2]/button' });
+            await Driver.clickElement({ xpath: '//button[@aria-label="Close"]' });
+            // await Timer.wait(3000, 'wait for editor to load');
+            // await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/button' });
 
             await waitUntilModalClosed();
           });
@@ -385,15 +386,16 @@ Dest.withOptions({
           });
 
           test('Click add tag', async () => {
-            await Driver.clickElement({ xpath: '/html/body/div[1]/div/section/main/div[1]/div/div[2]/div/div[1]/div/div/button' });
+            await Driver.clickElement({ xpath: '/html/body/div/div/section/main/div/div[2]/div[2]/div/div[1]/div/div/button' });
           });
 
           test('Enter tag', async () => {
-            await Driver.sendKeys({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[2]/form/div/div/div[2]/div/div/input' }, tag);
+            await Driver.sendKeys({ xpath: '/html/body/div[2]/div/div[2]/div/div[2]/div[2]/form/div/div/div[2]/div/div/input' }, tag);
           });
 
           test('Click create tag button', async () => {
-            await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[3]/div/button[2]' });
+            await Driver.clickElement({ xpath: '/html/body/div[2]/div/div[2]/div/div[2]/div[3]/div/button[2]' });
+
             await waitUntilModalClosed();
           });
         });
@@ -417,15 +419,15 @@ Dest.withOptions({
           });
 
           test('Enter tag', async () => {
-            await Driver.sendKeys({ xpath: '/html/body/div[4]/div/div[2]/div/div[2]/div[2]/div/div[1]/span/span/span[1]/input' }, tag);
+            await Driver.sendKeys({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[2]/div/div[1]/span/span/span[1]/input' }, tag);
           });
 
           test('Click tag', async () => {
-            await Driver.clickElement({ xpath: '/html/body/div[4]/div/div[2]/div/div[2]/div[2]/div/div[1]/div/button' });
+            await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[2]/div/div[1]/div' });
           });
 
           test('Close tag change window', async () => {
-            await Driver.clickElement({ xpath: '/html/body/div[4]/div/div[2]/div/div[2]/button' });
+            await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/button' });
             await waitUntilModalClosed();
           });
         });

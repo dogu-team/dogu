@@ -1,4 +1,4 @@
-export const DoguRunType = ['unknown', 'local', 'new-local', 'self-hosted', 'e2e', 'development', 'production', 'staging', 'test'] as const;
+export const DoguRunType = ['unknown', 'local', 'new-local', 'self-hosted', 'e2e', 'new-e2e', 'development', 'production', 'staging', 'test'] as const;
 export type DoguRunType = (typeof DoguRunType)[number];
 
 export function isValidDoguRunType(value: string): value is DoguRunType {
