@@ -116,11 +116,20 @@ Visualize test result
 You can integrate existing test framework with Dogu.  
 Coming soon. following test frameworks could be integrated with Dogu
 
+### Browser
+
 - Selenium
 - Puppeteer
 - Cypress
 - Webdriverio
+
+### Mobile
+
 - Appium
+- Webdriverio
+
+### Game
+
 - [Gamium](https://github.com/dogu-team/gamium)
 
 ## Integrate Test Unit Framework With Test Report
