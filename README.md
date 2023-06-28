@@ -69,7 +69,7 @@ Dogu Agent helps you to run test script on your device farm. Especially, Dogu Ag
 
 <img src=".github/resources/architecture-test-remote-automation-flow.png"/>
 
-In contrast to uploaded test script execution, you can run test script existing in local on device farm.
+In contrast to uploaded test script execution, you can run test script existing in local through relay hub on device farm
 
 ## Platform Features
 
