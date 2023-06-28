@@ -120,6 +120,7 @@ Coming soon. following test frameworks could be integrated with Dogu
 - Puppeteer
 - Cypress
 - Webdriverio
+- Appium
 - [Gamium](https://github.com/dogu-team/gamium)
 
 ## Integrate Test Unit Framework With Test Report
