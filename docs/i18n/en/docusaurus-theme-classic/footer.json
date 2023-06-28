@@ -40,11 +40,11 @@
     "description": "The label of footer link with label=getStarted linking to /get-started/introduction"
   },
   "link.item.label.orgAndProject": {
-    "message": "Organization & Project",
+    "message": "Maganement",
     "description": "The label of footer link with label=orgAndProject linking to /organization-and-project/introduction"
   },
   "link.item.label.hostAndDevice": {
-    "message": "Host & Device",
+    "message": "Device Farm",
     "description": "The label of footer link with label=hostAndDevice linking to /host-and-device/introduction"
   },
   "link.item.label.scriptAndRoutine": {
