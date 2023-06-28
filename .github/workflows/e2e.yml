@@ -75,6 +75,8 @@ jobs:
           pyenv global 3.9
           pip install poetry==1.5
         shell: pwsh
+        env:
+          PATH: "${{ env.USERPROFILE }}\\.pyenv\\pyenv-win\\bin;${{ env.USERPROFILE }}\\.pyenv\\pyenv-win\\shims;${{ env.PATH }}"
 
       - name: Macos - Setup Python & Poetry
         if: runner.os == 'macOS'
