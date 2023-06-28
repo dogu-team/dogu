@@ -12,7 +12,7 @@ import { Timer } from '../../src/timer';
 import { Utils } from '../../src/utils';
 import { runHost } from './bat/host';
 import { currentL10n, l10n } from './bat/l10n';
-import { startConsoleAndDost } from './bat/workspace';
+import { startDost } from './bat/workspace';
 
 const isCI = process.env.CI === 'true' || undefined !== process.env.GITHUB_ACTION;
 const switchConfig = {
@@ -96,14 +96,14 @@ Dest.withOptions({
       // });
     });
 
-    if (switchConfig.prepareDB) {
-      prepareDB();
-    }
+    // if (switchConfig.prepareDB) {
+    //   prepareDB();
+    // }
     test('Run record', () => {
       gdcRecorder = new GdcScreenRecorder(console);
       gdcRecorder.start();
     });
-    const { dost } = startConsoleAndDost(env.CONSOLE_WEB_FRONT_PORT);
+    const { dost } = startDost();
 
     job('Launch browser', () => {
       test('Launch browser', () => {
@@ -307,7 +307,7 @@ Dest.withOptions({
       dost.nextTest();
     });
 
-    runHost(random, dost);
+    runHost(randomId, dost);
 
     const deviceSettingInfos = [
       // {
