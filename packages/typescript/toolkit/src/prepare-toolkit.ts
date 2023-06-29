@@ -115,8 +115,8 @@ export async function prepareToolkit(options?: ToolkitOptions): Promise<Toolkit>
         const webdriverioModule = await import('webdriverio');
         const browser = await webdriverioModule.attach({
           port: appiumContextInfo.server.port,
-          sessionId: appiumContextInfo.sessionId,
-          capabilities: appiumContextInfo.capabilities,
+          sessionId: appiumContextInfo.client.sessionId,
+          capabilities: appiumContextInfo.client.capabilities,
         });
         return browser;
       });
