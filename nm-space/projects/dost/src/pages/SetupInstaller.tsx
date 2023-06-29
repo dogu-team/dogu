@@ -1,24 +1,28 @@
-import { Button, Checkbox, Divider, Flex, Spinner, Text, useDisclosure, useEnvironment, useToast } from '@chakra-ui/react';
-import { useState } from 'react';
+import { Button, Checkbox, Divider, Flex, Spinner, Text, useDisclosure, useToast } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import ExternalToolAgreementContent from '../components/external/ExternalToolAgreementContent';
 import ExternalToolInstallerModal from '../components/external/ExternalToolInstallerModal';
-
 import PageTitle from '../components/layouts/PageTitle';
 import usePlatformSupportedExternalInfo from '../hooks/platform-supported-external-info';
-import useEnvironmentStore from '../stores/environment';
 import { ipc } from '../utils/window';
 
 const SetupInstaller = () => {
-  const { externalInfos, getExternalInfos } = usePlatformSupportedExternalInfo();
+  const { externalInfos } = usePlatformSupportedExternalInfo();
   const [isAgreed, setIsAgreed] = useState(false);
-  const platform = useEnvironmentStore((state) => state.platform);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
   const [isInstalling, setIsInstalling] = useState(false);
   const toast = useToast();
 
   const externalInfosExcludedManual = externalInfos?.filter((item) => !item.isManualInstallNeeded).filter((item) => !item.result?.valid);
+
+  useEffect(() => {
+    if (externalInfosExcludedManual !== undefined && externalInfosExcludedManual.length === 0) {
+      navigate('/setup/manual');
+    }
+  }, [externalInfosExcludedManual]);
 
   const handleFinish = async () => {
     setIsAgreed(false);
@@ -43,19 +47,7 @@ const SetupInstaller = () => {
     }
 
     setIsInstalling(false);
-
-    if (platform === 'darwin') {
-      navigate('/setup/manual');
-      return;
-    } else if (platform === 'win32') {
-      const [apiUrlInsertable, apiUrl] = await Promise.all([ipc.featureConfigClient.get('apiUrlInsertable'), ipc.appConfigClient.get<string>('DOGU_API_BASE_URL')]);
-      if (apiUrlInsertable && !apiUrl) {
-        navigate('/setup/config');
-        return;
-      }
-    }
-
-    navigate('/home/connect');
+    navigate('/setup/manual');
   };
 
   return (

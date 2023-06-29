@@ -246,6 +246,12 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
         const value = pos.width * pos.height;
         if (i === 0) {
           smallestValue = value;
+          return;
+        }
+
+        // if node is too small, ignore it
+        if (value <= 4) {
+          return;
         }
 
         if (value < smallestValue) {

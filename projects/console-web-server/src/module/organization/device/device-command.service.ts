@@ -92,6 +92,9 @@ export class DeviceCommandService {
   }
 
   async resetAndJoinWifi(organizationId: OrganizationId, deviceId: DeviceId, serial: Serial): Promise<void> {
+    if (!env.DOGU_WIFI_SSID || !env.DOGU_WIFI_PASSWORD) {
+      throw new Error(`DOGU_WIFI_SSID or DOGU_WIFI_PASSWORD is not set`);
+    }
     const resetProxy = await this.deviceMessageRelayer.connectWebSocket(organizationId, deviceId, DeviceReset);
     await resetProxy.send({
       serial,

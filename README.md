@@ -51,6 +51,15 @@ It needs so many time and effort to build and maintain infrastructure like _Appi
 Dogu provides **integrated platform** for these infrastructure and helps you to focus on test automation.  
 Especially, Dogu is tightly integrated with test script and test framework so that you can focus on test automation without developing infrastructure related works like parallel test execution, data transfer for test report.
 
+## Start With Self-Hosted
+
+You can set up Dogu on your own server.  
+See [Guide setting up Dogu with self-hosted](https://docs.dogutech.io/self-hosted/get-started)
+
+## Start With Cloud
+
+You can start right now with [Cloud Service](https://dogutech.io)
+
 ## Architecture
 
 <img src=".github/resources/architecture.png"/>
@@ -110,7 +119,7 @@ Inspect UI of device in web page
   <img src=".github/resources/gamium-inspecting.gif" width="49%"/>
 </div>
 
-### [Run Test Script](https://docs.dogutech.io/script-and-routine/introduction)
+### [Workflow](https://docs.dogutech.io/script-and-routine/introduction)
 
 Integrate test script with workflow and run it on your own device farm
 
@@ -174,17 +183,9 @@ You can integrate existing workflow with routine.
 - Jenkins (Not yet supported)
 - Github Action (Not yet supported)
 
-## Start With Self-Hosted
-
-You can set up Dogu on your own server.  
-See [Guide setting up Dogu with self-hosted](https://docs.dogutech.io/self-hosted/get-started)
-
-## Start With Cloud
-
-You can start right now with [Cloud Service](https://dogutech.io)
-
 ## Documentation
 
+- [Milestones](https://github.com/dogu-team/dogu/milestones)
 - [Documentation](https://docs.dogutech.io)
 - [Quick Start - Device Farm](https://docs.dogutech.io/get-started/device-farm)
 

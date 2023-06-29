@@ -1,6 +1,7 @@
 import { stringify } from '@dogu-tech/common';
 import { useEffect, useRef, useState } from 'react';
 import { Text, Textarea, useToast } from '@chakra-ui/react';
+import Convert from 'ansi-to-html';
 
 import { ExternalKey } from '../../shares/external';
 import { ipc } from '../../utils/window';
@@ -91,9 +92,13 @@ const ExternaltoolInstaller = ({ externalKeyAndNames, onStart, onFinish }: Props
       <div style={{ marginTop: '.5rem' }}>
         <LogBox ref={logRef}>
           {logs.map((item, i) => (
-            <Text key={item.log + i} color={item.isError ? 'orange.500' : 'inherit'} fontSize="smaller" fontFamily="monospace">
-              {item.log}
-            </Text>
+            <Text
+              key={item.log + i}
+              color={item.isError ? 'orange.500' : 'inherit'}
+              fontSize="smaller"
+              fontFamily="monospace"
+              dangerouslySetInnerHTML={{ __html: new Convert({ newline: true }).toHtml(item.log) }}
+            />
           ))}
         </LogBox>
 

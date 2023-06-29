@@ -1,16 +1,18 @@
-import { Button, ListItem, Stack, UnorderedList, Text, useDisclosure, Input } from '@chakra-ui/react';
+import { Button, ListItem, UnorderedList } from '@chakra-ui/react';
+
 import { ExternalKey } from '../../shares/external';
 import { DoguDocsXcodeSettingsUrl } from '../../utils/constants';
 import { ipc } from '../../utils/window';
-import ExternalToolInstallerModal from './ExternalToolInstallerModal';
+import XCodeProjectBuildDescription from './XCodeProjectBuildDescription';
 
 interface Props {
   externalKey: ExternalKey;
 }
 
 interface ManualExternalToolDetailInfo {
-  description?: () => React.ReactNode;
-  solution?: () => React.ReactNode;
+  description: React.ReactNode;
+  solution: React.ReactNode;
+  docsLink: string | null;
 }
 
 const ManualExternalToolDetail = ({ externalKey }: Props): ManualExternalToolDetailInfo | null => {
@@ -111,5 +113,3 @@ const ManualExternalToolDetail = ({ externalKey }: Props): ManualExternalToolDet
       return null;
   }
 };
-
-export default ManualExternalToolDetail;

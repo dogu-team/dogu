@@ -51,7 +51,7 @@ const DoctorExternalToolInspector = ({ externalTools, onFinishInstall }: Props) 
   return (
     <>
       <div>
-        <InstallableExternalTable externalTools={externalTools} onToggleCheck={toggleCheck} />
+        <InstallableExternalTable checkedEnvKeys={checkedEnvKeys} externalTools={externalTools} onToggleCheck={toggleCheck} />
         <Flex justifyContent="flex-end" mt={4}>
           <Button onClick={openAgreementOrInstaller} isDisabled={checkedEnvKeys.length === 0}>
             {`Install (${checkedEnvKeys.length})`}

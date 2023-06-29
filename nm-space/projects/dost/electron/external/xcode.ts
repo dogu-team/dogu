@@ -6,7 +6,9 @@ const execAsync = promisify(exec);
 export async function validateXcode(logger: { stdout: (message: string) => void; stderr: (message: string) => void }): Promise<void> {
   const command = 'xcodebuild -version';
   logger.stdout(command);
-  const { stdout, stderr } = await execAsync(command);
+  const { stdout, stderr } = await execAsync(command, {
+    timeout: 5 * 1000,
+  });
   if (stdout) {
     logger.stdout(stdout);
   }

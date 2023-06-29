@@ -6,6 +6,7 @@ import { DotEnvConfigKey } from '../../shares/dot-env-config';
 import { ExternalKey } from '../../shares/external';
 
 interface Props {
+  isChecked: boolean;
   toolKey: ExternalKey;
   name: string;
   envs: { key: DotEnvConfigKey; value: string }[];
@@ -14,11 +15,11 @@ interface Props {
   onChange: (e: React.ChangeEvent<HTMLInputElement>, key: ExternalKey) => void | Promise<void>;
 }
 
-const ExternalToolCheckboxItem = ({ toolKey, name, envs, isValid, onChange, errorMessage }: Props) => {
+const ExternalToolCheckboxItem = ({ isChecked, toolKey, name, envs, isValid, onChange, errorMessage }: Props) => {
   return (
     <Tr>
       <Td>
-        <Checkbox isDisabled={isValid} onChange={(e) => onChange(e, toolKey)} />
+        <Checkbox isDisabled={isValid} checked={isChecked} onChange={(e) => onChange(e, toolKey)} />
       </Td>
 
       <Td>

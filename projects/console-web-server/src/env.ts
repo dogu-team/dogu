@@ -149,11 +149,11 @@ export class Env {
 
   @IsOptional()
   @IsString()
-  DOGU_WIFI_SSID!: string;
+  DOGU_WIFI_SSID?: string;
 
   @IsOptional()
   @IsString()
-  DOGU_WIFI_PASSWORD!: string;
+  DOGU_WIFI_PASSWORD?: string;
 
   @IsFilledString()
   DOGU_NEXUS_PROTOCOL!: string;
