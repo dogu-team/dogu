@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 
 import { DoguRunType, NodeEnvType } from '@dogu-private/env-tools';
+import { IsFilledString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { IsIn, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
@@ -10,6 +11,9 @@ export class E2eEnv {
 
   @IsIn(DoguRunType)
   DOGU_RUN_TYPE!: DoguRunType;
+
+  @IsFilledString()
+  DOGU_E2E_HOST!: string;
 
   @IsNumber()
   @Type(() => Number)

@@ -70,7 +70,7 @@ export class Env {
 
   @IsOptional()
   @IsString()
-  DOGU_AWS_KEY_ID!: string;
+  DOGU_AWS_KEY_ID!: string | undefined;
 
   @IsFilledString()
   DOGU_SECRET!: string;
@@ -85,7 +85,7 @@ export class Env {
 
   @IsOptional()
   @IsString()
-  DOGU_AWS_ACCESS_KEY!: string;
+  DOGU_AWS_ACCESS_KEY!: string | undefined;
 
   @IsFilledString()
   DOGU_REDIS_HOST!: string;
@@ -102,10 +102,6 @@ export class Env {
   @IsString()
   DOGU_REDIS_PASSWORD!: string | undefined;
 
-  @IsOptional()
-  @IsString()
-  DOGU_SLACK_BOT_TOKEN!: string | undefined;
-
   @IsNumber()
   @Type(() => Number)
   DOGU_REDIS_DB!: number;
@@ -120,15 +116,15 @@ export class Env {
 
   @IsOptional()
   @IsString()
-  DOGU_USER_BUCKET!: string;
+  DOGU_USER_BUCKET!: string | undefined;
 
   @IsOptional()
   @IsString()
-  DOGU_ORGANIZATION_BUCKET!: string;
+  DOGU_ORGANIZATION_BUCKET!: string | undefined;
 
   @IsOptional()
   @IsString()
-  DOGU_PUBLIC_BUCKET!: string;
+  DOGU_PUBLIC_BUCKET!: string | undefined;
 
   @IsOptional()
   @IsString()
@@ -147,13 +143,11 @@ export class Env {
   @IsString()
   DOGU_GITLAB_TEMPLATE_GROUP!: string | undefined;
 
-  @IsOptional()
-  @IsString()
-  DOGU_WIFI_SSID?: string;
+  @IsFilledString()
+  DOGU_WIFI_SSID!: string;
 
-  @IsOptional()
-  @IsString()
-  DOGU_WIFI_PASSWORD?: string;
+  @IsFilledString()
+  DOGU_WIFI_PASSWORD!: string;
 
   @IsFilledString()
   DOGU_NEXUS_PROTOCOL!: string;

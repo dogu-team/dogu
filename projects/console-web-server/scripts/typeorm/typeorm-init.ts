@@ -1,6 +1,7 @@
 import { node_package } from '@dogu-dev-private/build-tools';
 import process from 'process';
 import { env } from '../../src/env';
+import { FeatureConfig } from '../../src/feature.config';
 import { PostgreSql } from '../utils/pgsql';
 import { exec, execute, spawnWithFindPattern } from '../utils/utils';
 
@@ -10,6 +11,7 @@ export const pgsqlConnectionOptions = {
   user: env.DOGU_RDS_USERNAME,
   password: env.DOGU_RDS_PASSWORD,
   database: env.DOGU_RDS_SCHEMA,
+  ssl: FeatureConfig.get('rdbSslConnection') ? { rejectUnauthorized: false } : false,
 };
 console.log('config', pgsqlConnectionOptions);
 

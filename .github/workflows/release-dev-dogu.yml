@@ -10,7 +10,7 @@ on:
 
 jobs:
   build-and-push-dogu-console:
-    runs-on: dev-doug
+    runs-on: dev-dogu-build
 
     steps:
       - name: docker init
@@ -35,7 +35,7 @@ jobs:
           tags: |
             dogutechio/dogu:rc
 
-  start-rc-dogu:
+  start-dev-dogu:
     runs-on: dev-dogu
     needs: build-and-push-dogu-console
 
@@ -43,6 +43,7 @@ jobs:
       - name: Checkout
         uses: Bhacaz/checkout-files@v2
         with:
+          branch: ${{ github.ref_name  }}
           files: docker-compose.yml docker-compose.env
 
       - name: docker init
@@ -75,6 +76,12 @@ jobs:
           sed -i 's|NEXT_PUBLIC_DOGU_API_BASE_URL=.*$|NEXT_PUBLIC_DOGU_API_BASE_URL=${{ secrets.DEV_DOGU_API_BASE_URL }}|' ./docker-compose.yml
           sed -i 's|NEXT_PUBLIC_DOGU_WS_BASE_URL=.*$|NEXT_PUBLIC_DOGU_WS_BASE_URL=${{ secrets.DEV_DOGU_WS_BASE_URL }}|' ./docker-compose.yml
           sed -i 's|NEXT_PUBLIC_DOGU_GITLAB_HOST=.*$|NEXT_PUBLIC_DOGU_GITLAB_HOST=${{ secrets.DEV_DOGU_GITLAB_HOST }}|' ./docker-compose.yml
+          sed -i 's|NEXT_PUBLIC_DOGU_GITLAB_PORT=.*$|NEXT_PUBLIC_DOGU_GITLAB_PORT=443|' ./docker-compose.yml
+          sed -i 's|NEXT_PUBLIC_DOGU_GITLAB_PROTOCOL=.*$|NEXT_PUBLIC_DOGU_GITLAB_PROTOCOL=https|' ./docker-compose.yml
+
+
+
+          sed -i 's|DOGU_GITLAB_HOST=.*$|DOGU_GITLAB_HOST=${{ secrets.DEV_DOGU_GITLAB_HOST }}|' ./docker-compose.yml
 
           sed -i 's|DOGU_CONSOLE_DOMAIN=.*$|DOGU_CONSOLE_DOMAIN=${{ secrets.DEV_DOGU_CONSOLE_DOMAIN }}|' ./docker-compose.yml
           echo "DOGU_CONSOLE_URL=https://console.${{ secrets.DEV_DOGU_CONSOLE_DOMAIN }}" >> ./docker-compose.env
@@ -87,7 +94,6 @@ jobs:
 
           echo "DOGU_RUN_TYPE=development" >> ./docker-compose.env
           echo "NEXT_PUBLIC_ENV=development" >> ./docker-compose.env
-          echo "DOGU_GITLAB_HOST=${{ secrets.DEV_DOGU_GITLAB_HOST }}" >> ./docker-compose.env
           echo "DOGU_GITLAB_PORT=443" >> ./docker-compose.env
           echo "DOGU_GITLAB_PROTOCOL=https" >> ./docker-compose.env
           echo "DOGU_GITLAB_TEMPLATE_GROUP=dogu" >> ./docker-compose.env
@@ -97,7 +103,7 @@ jobs:
           echo "NEXT_PUBLIC_SENTRY_DSN=${{ secrets.DOGU_SENTRY_DSN }}" >> ./docker-compose.env
 
           # file server
-          sed -i 's|DOGU_NEXUS_HOST=.*$|DOGU_NEXUS_HOST=${{ secrets.DEV_DOGU_HOST }}|' ./docker-compose.yml
+          sed -i 's|DOGU_NEXUS_HOST=.*$|DOGU_NEXUS_HOST=${{ secrets.DEV_DOGU_NEXUS_HOST }}|' ./docker-compose.yml
           sed -i 's/^FILE_SERVER_USERNAME=.*$/FILE_SERVER_USERNAME=${{ secrets.DEV_DOGU_FILE_SERVER_USERNAME }}/' ./docker-compose.env
           sed -i 's/^FILE_SERVER_PASSWORD=.*$/FILE_SERVER_PASSWORD=${{ secrets.DEV_DOGU_FILE_SERVER_PASSWORD }}/' ./docker-compose.env
 
