@@ -6,13 +6,11 @@ import ExternalToolAgreementContent from '../components/external/ExternalToolAgr
 import ExternalToolInstallerModal from '../components/external/ExternalToolInstallerModal';
 import PageTitle from '../components/layouts/PageTitle';
 import usePlatformSupportedExternalInfo from '../hooks/platform-supported-external-info';
-import useEnvironmentStore from '../stores/environment';
 import { ipc } from '../utils/window';
 
 const SetupInstaller = () => {
   const { externalInfos } = usePlatformSupportedExternalInfo();
   const [isAgreed, setIsAgreed] = useState(false);
-  const platform = useEnvironmentStore((state) => state.platform);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
   const [isInstalling, setIsInstalling] = useState(false);
@@ -43,19 +41,7 @@ const SetupInstaller = () => {
     }
 
     setIsInstalling(false);
-
-    if (platform === 'darwin') {
-      navigate('/setup/manual');
-      return;
-    } else if (platform === 'win32') {
-      const [apiUrlInsertable, apiUrl] = await Promise.all([ipc.featureConfigClient.get('apiUrlInsertable'), ipc.appConfigClient.get<string>('DOGU_API_BASE_URL')]);
-      if (apiUrlInsertable && !apiUrl) {
-        navigate('/setup/config');
-        return;
-      }
-    }
-
-    navigate('/home/connect');
+    navigate('/setup/manual');
   };
 
   return (

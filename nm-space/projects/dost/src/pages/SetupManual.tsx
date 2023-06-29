@@ -1,5 +1,5 @@
 import { Button, Divider, Flex, List, Spinner } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import ManualExternalToolValidCheckerItem from '../components/external/ManualExternalToolValidCheckerItem';
@@ -12,7 +12,7 @@ const SetupManual = () => {
   const { results, loading, validate } = useManualSetupExternalValidResult();
   const navigate = useNavigate();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const check = async () => {
       try {
         const needConfiguration = await ipc.featureConfigClient.get('apiUrlInsertable');

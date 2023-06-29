@@ -1,18 +1,16 @@
-import { Box, Button, Center, Divider, List, ListItem, Stack, Text, UnorderedList, useDisclosure } from '@chakra-ui/react';
+import { Center, Divider, List, Text } from '@chakra-ui/react';
 import { stringify } from '@dogu-tech/common';
 import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import ExternalToolInstallerModal from '../components/external/ExternalToolInstallerModal';
+
 import ManualExternalToolValidCheckerItem from '../components/external/ManualExternalToolValidCheckerItem';
 import PageTitle from '../components/layouts/PageTitle';
-
 import useManualSetupExternalValidResult from '../hooks/manaul-setup-external-valid-result';
 import { ExternalValidationResult } from '../shares/external';
 import { ipc } from '../utils/window';
 
 function IosSettings() {
   const { results } = useManualSetupExternalValidResult(['xcode', 'web-driver-agent-build', 'ios-device-agent-build']);
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const [wdaResult, setWdaResult] = useState<ExternalValidationResult | null>(null);
 
   const validateWda = useCallback(async () => {
