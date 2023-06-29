@@ -1,8 +1,8 @@
 name: 🔄e2e
 
-concurrency:
-  group: e2e
-  cancel-in-progress: false
+# concurrency:
+#   group: e2e
+#   cancel-in-progress: false
 
 on:
   push:
