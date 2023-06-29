@@ -1,5 +1,5 @@
 import { Button, Checkbox, Divider, Flex, Spinner, Text, useDisclosure, useToast } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import ExternalToolAgreementContent from '../components/external/ExternalToolAgreementContent';
@@ -17,6 +17,12 @@ const SetupInstaller = () => {
   const toast = useToast();
 
   const externalInfosExcludedManual = externalInfos?.filter((item) => !item.isManualInstallNeeded).filter((item) => !item.result?.valid);
+
+  useEffect(() => {
+    if (externalInfosExcludedManual !== undefined && externalInfosExcludedManual.length === 0) {
+      navigate('/setup/manual');
+    }
+  }, [externalInfosExcludedManual]);
 
   const handleFinish = async () => {
     setIsAgreed(false);
