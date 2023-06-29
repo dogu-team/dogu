@@ -8864,6 +8864,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ansi-to-html@npm:0.7.2":
+  version: 0.7.2
+  resolution: "ansi-to-html@npm:0.7.2"
+  dependencies:
+    entities: ^2.2.0
+  bin:
+    ansi-to-html: bin/ansi-to-html
+  checksum: 8f6ecec6e0d01c37a36541703688870a2a89382117229c54b1af19f455cb87d4645b0b8580691edb50d531fa02dfb7e2b8af3d0768e1527d4164d1e124286516
+  languageName: node
+  linkType: hard
+
 "antd@npm:5.3.0":
   version: 5.3.0
   resolution: "antd@npm:5.3.0"
@@ -11987,6 +11998,7 @@ __metadata:
     "@types/shelljs": 0.8.11
     "@types/styled-components": 5.1.26
     "@types/yargs": 17.0.23
+    ansi-to-html: 0.7.2
     class-transformer: 0.5.1
     class-validator: 0.14.0
     concurrently: 7.6.0
@@ -12401,7 +12413,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"entities@npm:^2.0.0":
+"entities@npm:^2.0.0, entities@npm:^2.2.0":
   version: 2.2.0
   resolution: "entities@npm:2.2.0"
   checksum: 19010dacaf0912c895ea262b4f6128574f9ccf8d4b3b65c7e8334ad0079b3706376360e28d8843ff50a78aabcb8f08f0a32dbfacdc77e47ed77ca08b713669b3

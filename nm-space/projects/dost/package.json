@@ -44,6 +44,7 @@
     "@sentry/electron": "4.5.0",
     "@sentry/react": "7.50.0",
     "@types/yargs": "17.0.23",
+    "ansi-to-html": "0.7.2",
     "dotenv": "16.0.3",
     "electron-devtools-installer": "3.2.0",
     "electron-dl": "^3.5.0",
