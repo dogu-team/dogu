@@ -76,7 +76,7 @@ const ManualExternalToolValidCheckerItem = ({ externalKey, name, isValid, onVali
             {!valid && (
               <>
                 <div>{manualExternalToolDetail[externalKey]?.solution}</div>
-                <Button mt={2} size="sm" onClick={handleValidate} isLoading={loading}>
+                <Button mt={2} size="sm" onClick={handleValidate} isLoading={loading} colorScheme="blue">
                   Check
                 </Button>
               </>
