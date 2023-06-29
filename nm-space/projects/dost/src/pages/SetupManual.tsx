@@ -5,25 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import ManualExternalToolValidCheckerItem from '../components/external/ManualExternalToolValidCheckerItem';
 import PageTitle from '../components/layouts/PageTitle';
 import useManualSetupExternalValidResult from '../hooks/manaul-setup-external-valid-result';
+import useEnvironmentStore from '../stores/environment';
 import { ipc } from '../utils/window';
 
 const SetupManual = () => {
-  const [needConfiguration, setNeedConfiguration] = useState(false);
+  const { apiUrlInsertable } = useEnvironmentStore((state) => state.features);
   const { results, loading, validate } = useManualSetupExternalValidResult();
   const navigate = useNavigate();
-
-  useLayoutEffect(() => {
-    const check = async () => {
-      try {
-        const needConfiguration = await ipc.featureConfigClient.get('apiUrlInsertable');
-        setNeedConfiguration(needConfiguration);
-      } catch (e) {
-        ipc.rendererLogger.error('Error while checking need configuration', { error: e });
-      }
-    };
-
-    check();
-  }, []);
 
   if (!loading && !results) {
     return <div>Error occured while checking...</div>;
@@ -53,8 +41,8 @@ const SetupManual = () => {
         )}
 
         <Flex justifyContent="flex-end">
-          <Button onClick={() => navigate(needConfiguration ? '/setup/config' : '/home/connect')} isDisabled={!results?.every((item) => item.isValid)} colorScheme="blue">
-            {needConfiguration ? 'Continue' : 'Finish'}
+          <Button onClick={() => navigate(apiUrlInsertable ? '/setup/config' : '/home/connect')} isDisabled={!results?.every((item) => item.isValid)} colorScheme="blue">
+            {apiUrlInsertable ? 'Continue' : 'Finish'}
           </Button>
         </Flex>
       </Flex>

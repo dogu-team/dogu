@@ -27,8 +27,12 @@ function App() {
   useEffect(() => {
     (async () => {
       try {
-        const [platform, isDev] = await Promise.all([ipc.settingsClient.getPlatform(), ipc.settingsClient.isDev()]);
-        setEnvironment({ platform, isDev });
+        const [platform, isDev, apiUrlInsertable] = await Promise.all([
+          ipc.settingsClient.getPlatform(),
+          ipc.settingsClient.isDev(),
+          ipc.featureConfigClient.get('apiUrlInsertable'),
+        ]);
+        setEnvironment({ platform, isDev, features: { apiUrlInsertable } });
       } catch (e) {
         ipc.rendererLogger.error(`Error while getting platform in App: ${stringify(e)}`);
       }

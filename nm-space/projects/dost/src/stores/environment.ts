@@ -4,7 +4,10 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 export interface EnvironmentStore {
   platform: NodeJS.Platform | null;
   isDev: boolean;
-  setEnvironment: (updates: Partial<Omit<EnvironmentStore, 'setPlatform'>>) => void;
+  features: {
+    apiUrlInsertable: boolean;
+  };
+  setEnvironment: (updates: Partial<Omit<EnvironmentStore, 'setEnvironment'>>) => void;
 }
 
 const useEnvironmentStore = create<EnvironmentStore>()(
@@ -12,6 +15,9 @@ const useEnvironmentStore = create<EnvironmentStore>()(
     (set) => ({
       platform: null,
       isDev: false,
+      features: {
+        apiUrlInsertable: false,
+      },
       setEnvironment: (updates) => set({ ...updates }),
     }),
     { name: 'environment-store', storage: createJSONStorage(() => localStorage) },
