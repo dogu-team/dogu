@@ -341,9 +341,9 @@ public enum Outer_Code: SwiftProtobuf.Enum {
   /// @note reserved for signal to code conversion.
   case deviceServerSigterm // = 3315
   case deviceServerDeviceNotFound // = 3400
-  case deviceServerAppiumChannelNotFound // = 3401
+  case deviceServerAppiumContextNotFound // = 3401
   case deviceServerGamiumContextNotFound // = 3402
-  case deviceServerAppiumChannelInfoNotFound // = 3403
+  case deviceServerAppiumContextInfoNotFound // = 3403
 
   ///*
   /// @note Device server errors end.
@@ -504,9 +504,9 @@ public enum Outer_Code: SwiftProtobuf.Enum {
     case 3314: self = .deviceServerSigalrm
     case 3315: self = .deviceServerSigterm
     case 3400: self = .deviceServerDeviceNotFound
-    case 3401: self = .deviceServerAppiumChannelNotFound
+    case 3401: self = .deviceServerAppiumContextNotFound
     case 3402: self = .deviceServerGamiumContextNotFound
-    case 3403: self = .deviceServerAppiumChannelInfoNotFound
+    case 3403: self = .deviceServerAppiumContextInfoNotFound
     case 3999: self = .deviceServerEnd
     case 4000: self = .deviceControllerBegin
     case 4001: self = .deviceControllerInputNotsupported
@@ -646,9 +646,9 @@ public enum Outer_Code: SwiftProtobuf.Enum {
     case .deviceServerSigalrm: return 3314
     case .deviceServerSigterm: return 3315
     case .deviceServerDeviceNotFound: return 3400
-    case .deviceServerAppiumChannelNotFound: return 3401
+    case .deviceServerAppiumContextNotFound: return 3401
     case .deviceServerGamiumContextNotFound: return 3402
-    case .deviceServerAppiumChannelInfoNotFound: return 3403
+    case .deviceServerAppiumContextInfoNotFound: return 3403
     case .deviceServerEnd: return 3999
     case .deviceControllerBegin: return 4000
     case .deviceControllerInputNotsupported: return 4001
@@ -793,9 +793,9 @@ extension Outer_Code: CaseIterable {
     .deviceServerSigalrm,
     .deviceServerSigterm,
     .deviceServerDeviceNotFound,
-    .deviceServerAppiumChannelNotFound,
+    .deviceServerAppiumContextNotFound,
     .deviceServerGamiumContextNotFound,
-    .deviceServerAppiumChannelInfoNotFound,
+    .deviceServerAppiumContextInfoNotFound,
     .deviceServerEnd,
     .deviceControllerBegin,
     .deviceControllerInputNotsupported,
@@ -970,9 +970,9 @@ extension Outer_Code: SwiftProtobuf._ProtoNameProviding {
     3314: .same(proto: "CODE_DEVICE_SERVER_SIGALRM"),
     3315: .same(proto: "CODE_DEVICE_SERVER_SIGTERM"),
     3400: .same(proto: "CODE_DEVICE_SERVER_DEVICE_NOT_FOUND"),
-    3401: .same(proto: "CODE_DEVICE_SERVER_APPIUM_CHANNEL_NOT_FOUND"),
+    3401: .same(proto: "CODE_DEVICE_SERVER_APPIUM_CONTEXT_NOT_FOUND"),
     3402: .same(proto: "CODE_DEVICE_SERVER_GAMIUM_CONTEXT_NOT_FOUND"),
-    3403: .same(proto: "CODE_DEVICE_SERVER_APPIUM_CHANNEL_INFO_NOT_FOUND"),
+    3403: .same(proto: "CODE_DEVICE_SERVER_APPIUM_CONTEXT_INFO_NOT_FOUND"),
     3999: .same(proto: "CODE_DEVICE_SERVER_END"),
     4000: .same(proto: "CODE_DEVICE_CONTROLLER_BEGIN"),
     4001: .same(proto: "CODE_DEVICE_CONTROLLER_INPUT_NOTSUPPORTED"),

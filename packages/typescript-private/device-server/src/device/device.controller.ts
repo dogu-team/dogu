@@ -1,10 +1,10 @@
 import { Code, Serial } from '@dogu-private/types';
 import { Instance } from '@dogu-tech/common';
-import { CreateLocalDeviceDetectTokenRequest, Device, DeviceConfigDto, GetAppiumChannelInfoQuery, StreamingOfferDto } from '@dogu-tech/device-client-common';
-import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { CreateLocalDeviceDetectTokenRequest, Device, DeviceConfigDto, StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ConfigService } from '../config/config.service';
 import { LocalDeviceService } from '../local-device/local-device.service';
-import { appiumChannelNotFoundError } from '../response-utils';
+import { appiumContextNotFoundError } from '../response-utils';
 import { ScanService } from '../scan/scan.service';
 import { deviceNotFoundError } from './device.utils';
 
@@ -128,20 +128,19 @@ export class DeviceController {
     };
   }
 
-  @Get(Device.getAppiumChannelInfo.path)
-  async getAppiumChannelInfo(@Param('serial') serial: Serial, @Query() query: GetAppiumChannelInfoQuery): Promise<Instance<typeof Device.getAppiumChannelInfo.responseBody>> {
+  @Get(Device.getAppiumContextInfo.path)
+  async getAppiumContextInfo(@Param('serial') serial: Serial): Promise<Instance<typeof Device.getAppiumContextInfo.responseBody>> {
     const channel = this.scanService.findChannel(serial);
     if (channel === null) {
       return deviceNotFoundError(serial);
     }
-    const { key } = query;
-    const appiumChannel = await channel.getAppiumChannel(key);
-    if (appiumChannel === null) {
-      return appiumChannelNotFoundError(serial, key);
+    const appiumContext = await channel.getAppiumContext();
+    if (appiumContext === null) {
+      return appiumContextNotFoundError(serial);
     }
     try {
-      const data: Instance<typeof Device.getAppiumChannelInfo.responseBodyData> = {
-        info: appiumChannel.info,
+      const data: Instance<typeof Device.getAppiumContextInfo.responseBodyData> = {
+        info: appiumContext.getInfo(),
       };
       return {
         value: {
@@ -154,11 +153,10 @@ export class DeviceController {
         value: {
           $case: 'error',
           error: {
-            code: Code.CODE_DEVICE_SERVER_APPIUM_CHANNEL_INFO_NOT_FOUND,
-            message: `Appium channel get info failed for key: ${key}`,
+            code: Code.CODE_DEVICE_SERVER_APPIUM_CONTEXT_INFO_NOT_FOUND,
+            message: 'Appium context get info failed',
             details: {
               serial,
-              key,
             },
           },
         },

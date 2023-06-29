@@ -14,15 +14,14 @@ import {
   StreamingAnswer,
 } from '@dogu-private/types';
 import { Closable, delay, errorify, FilledPrintable, Printable, stringify } from '@dogu-tech/common';
-import { AppiumChannelKey, StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { HostPaths } from '@dogu-tech/node';
 import { Manifest, open } from 'adbkit-apkreader';
 import { ChildProcess, execFile } from 'child_process';
 import fs from 'fs';
 import lodash from 'lodash';
 import { Observable } from 'rxjs';
-import { AppiumChannel } from '../../appium/appium.channel';
-import { AppiumChannelProxy } from '../../appium/appium.channel-proxy';
+import { AppiumContext } from '../../appium/appium.context';
 import { AppiumService } from '../../appium/appium.service';
 import { env } from '../../env';
 import { GamiumContext } from '../../gamium/gamium.context';
@@ -73,7 +72,7 @@ export class AndroidChannel implements DeviceChannel {
     private readonly _deviceAgent: AndroidDeviceAgentService,
     private readonly _profilers: ProfileServices,
     private readonly _streaming: StreamingService,
-    private _AppiumChannelProxy: AppiumChannelProxy,
+    private _appiumContext: AppiumContext,
     private readonly logger: FilledPrintable,
     private isClosed = false,
   ) {
@@ -98,17 +97,12 @@ export class AndroidChannel implements DeviceChannel {
     await deviceAgent.wakeUp();
     await deviceAgent.install();
 
-    const appiumChannelProxy = new AppiumChannelProxy(appiumService, platform, serial);
-    const onCatchInspectorAppiumChannelProxyError = (error: Error): void => {
-      logger.error('android appium inspector channel open failed', { error: errorify(error) });
-      appiumChannelProxy.get('inspector').catch(onCatchInspectorAppiumChannelProxyError);
+    const appiumContext = appiumService.createAppiumContext(platform, serial);
+    const onCatchAppiumContextError = (error: Error): void => {
+      logger.error('android appium context open failed', { error: errorify(error) });
+      appiumContext.open().catch(onCatchAppiumContextError);
     };
-    appiumChannelProxy.get('inspector').catch(onCatchInspectorAppiumChannelProxyError);
-    // const onCatchAutomationAppiumChannelProxyError = (error: Error): void => {
-    //   logger.error('android appium automation channel open failed', { error: errorify(error) });
-    //   appiumChannelProxy.get('automation').catch(onCatchAutomationAppiumChannelProxyError);
-    // };
-    // appiumChannelProxy.get('automation').catch(onCatchAutomationAppiumChannelProxyError);
+    appiumContext.open().catch(onCatchAppiumContextError);
 
     const deviceChannel = new AndroidChannel(
       serial,
@@ -118,7 +112,7 @@ export class AndroidChannel implements DeviceChannel {
       // [new AndroidAdbProfileService(), new AndroidDeviceAgentProfileService(deviceAgent)],
       [new AndroidAdbProfileService()],
       streaming,
-      appiumChannelProxy,
+      appiumContext,
       logger,
     );
 
@@ -144,9 +138,9 @@ export class AndroidChannel implements DeviceChannel {
       this.logger.error('android gamium context close failed', { error: errorify(error) });
     });
     /**
-     * @note Does not wait for appium to shut down
+     * @note Does not wait for appium to shutdown
      */
-    this._AppiumChannelProxy.close().catch((error) => {
+    this._appiumContext.close().catch((error) => {
       this.logger.error('android appium context close failed', { error: errorify(error) });
     });
     ZombieServiceInstance.deleteComponent(this._deviceAgent, `AndroidChannel closed: ${this.serial}`);
@@ -374,8 +368,8 @@ export class AndroidChannel implements DeviceChannel {
     });
   }
 
-  getAppiumChannel(key: AppiumChannelKey): Promise<AppiumChannel | null> {
-    return this._AppiumChannelProxy.get(key);
+  getAppiumContext(): AppiumContext {
+    return this._appiumContext;
   }
 
   set gamiumContext(context: GamiumContext | null) {

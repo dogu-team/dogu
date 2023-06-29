@@ -227,29 +227,23 @@ export class GetHitPointResponse {
   hitPoint: HitPoint | undefined;
 }
 
-export const AppiumChannelKey = ['inspector', 'automation'] as const;
-export type AppiumChannelKey = (typeof AppiumChannelKey)[number];
-
-export class GetAppiumChannelInfoQuery {
-  @IsIn(AppiumChannelKey)
-  key!: AppiumChannelKey;
-}
-
-export interface AppiumChannelInfo {
+export interface AppiumContextInfo {
   serial: Serial;
-  channelKey: AppiumChannelKey;
-  remoteOptions: object;
-  capabilities: Record<string, unknown>;
-  sessionId: string;
+  platform: Platform;
+  client: {
+    remoteOptions: Record<string, unknown>;
+    capabilities: Record<string, unknown>;
+    sessionId: string;
+  };
   server: {
     port: number;
-    workingDirectory: string;
+    workingPath: string;
     command: string;
     env: Record<string, string | undefined>;
   };
 }
 
-export class GetAppiumChannelInfoResponse {
+export class GetAppiumContextInfoResponse {
   @IsObject()
-  info!: AppiumChannelInfo;
+  info!: AppiumContextInfo;
 }
