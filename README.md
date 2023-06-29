@@ -110,7 +110,7 @@ Inspect UI of device in web page
   <img src=".github/resources/gamium-inspecting.gif" width="49%"/>
 </div>
 
-### [Run Test Script](https://docs.dogutech.io/script-and-routine/introduction)
+### [Workflow](https://docs.dogutech.io/script-and-routine/introduction)
 
 Integrate test script with workflow and run it on your own device farm
 
