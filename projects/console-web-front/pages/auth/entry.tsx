@@ -98,7 +98,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  if (process.env.NEXT_PUBLIC_ENV === 'local' || process.env.NEXT_PUBLIC_ENV === 'test') {
+  if (process.env.NEXT_PUBLIC_ENV === 'local' || process.env.NEXT_PUBLIC_ENV === 'test' || process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
     return {
       redirect: redirectWithLocale(context, '/account/organizations', false),
     };
