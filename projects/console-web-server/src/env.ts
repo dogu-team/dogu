@@ -143,11 +143,13 @@ export class Env {
   @IsString()
   DOGU_GITLAB_TEMPLATE_GROUP!: string | undefined;
 
-  @IsFilledString()
-  DOGU_WIFI_SSID!: string;
+  @IsOptional()
+  @IsString()
+  DOGU_WIFI_SSID?: string;
 
-  @IsFilledString()
-  DOGU_WIFI_PASSWORD!: string;
+  @IsOptional()
+  @IsString()
+  DOGU_WIFI_PASSWORD?: string;
 
   @IsFilledString()
   DOGU_NEXUS_PROTOCOL!: string;
