@@ -16,7 +16,10 @@ interface Props {
   onValidateEnd?: (isValid: boolean) => Promise<void> | void;
 }
 
-export const ValidContext = createContext<boolean>(false);
+export const ValidContext = createContext<{
+  isValid: boolean;
+  validate: () => Promise<void>;
+}>({ isValid: false, validate: async () => {} });
 
 const ManualExternalToolValidCheckerItem = ({ externalKey, name, isValid, onValidateEnd }: Props) => {
   const [valid, setValid] = useState<boolean>(isValid);
@@ -47,7 +50,12 @@ const ManualExternalToolValidCheckerItem = ({ externalKey, name, isValid, onVali
   const doscLink = manualExternalToolDetail[externalKey]?.docsLink;
 
   return (
-    <ValidContext.Provider value={valid}>
+    <ValidContext.Provider
+      value={{
+        isValid: valid,
+        validate: handleValidate,
+      }}
+    >
       <div>
         <BorderBox>
           <Flex justifyContent="space-between" alignItems="center" mb={2}>

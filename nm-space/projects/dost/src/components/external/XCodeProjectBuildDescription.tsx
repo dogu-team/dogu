@@ -14,7 +14,7 @@ interface Props {
 const XCodeProjectBuildDescription = ({ projectName, externalKeyAndNames, onOpenProject }: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [loading, setLoading] = useState(false);
-  const isValid = useContext(ValidContext);
+  const { isValid, validate } = useContext(ValidContext);
 
   return (
     <div>
@@ -46,7 +46,10 @@ const XCodeProjectBuildDescription = ({ projectName, externalKeyAndNames, onOpen
         title={<Text>Building project...</Text>}
         isOpen={isOpen}
         onClose={onClose}
-        onFinish={() => setLoading(false)}
+        onFinish={() => {
+          setLoading(false);
+          validate();
+        }}
         externalKeyAndNames={externalKeyAndNames}
       />
     </div>
