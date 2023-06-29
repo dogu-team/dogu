@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['main']
+    branches: ['feature/deploy-process2']
     paths:
       - '.github/workflows/e2e.yml'
       - 'dogu-actions/**'
@@ -23,7 +23,7 @@ on:
       - 'tsconfig.json'
       - 'yarn.lock'
   pull_request:
-    branches: ['main']
+    branches: ['feature/deploy-process2']
     paths:
       - '.github/workflows/e2e.yml'
       - 'dogu-actions/**'
