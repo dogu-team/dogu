@@ -185,6 +185,7 @@ You can start right now with [Cloud Service](https://dogutech.io)
 
 ## Documentation
 
+- [Milestones](https://github.com/dogu-team/dogu/milestones)
 - [Documentation](https://docs.dogutech.io)
 - [Quick Start - Device Farm](https://docs.dogutech.io/get-started/device-farm)
 
