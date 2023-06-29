@@ -1,16 +1,16 @@
-import { Button, Checkbox, Divider, Flex, Spinner, Text, useDisclosure, useEnvironment, useToast } from '@chakra-ui/react';
+import { Button, Checkbox, Divider, Flex, Spinner, Text, useDisclosure, useToast } from '@chakra-ui/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import ExternalToolAgreementContent from '../components/external/ExternalToolAgreementContent';
 import ExternalToolInstallerModal from '../components/external/ExternalToolInstallerModal';
-
 import PageTitle from '../components/layouts/PageTitle';
 import usePlatformSupportedExternalInfo from '../hooks/platform-supported-external-info';
 import useEnvironmentStore from '../stores/environment';
 import { ipc } from '../utils/window';
 
 const SetupInstaller = () => {
-  const { externalInfos, getExternalInfos } = usePlatformSupportedExternalInfo();
+  const { externalInfos } = usePlatformSupportedExternalInfo();
   const [isAgreed, setIsAgreed] = useState(false);
   const platform = useEnvironmentStore((state) => state.platform);
   const { isOpen, onOpen, onClose } = useDisclosure();
