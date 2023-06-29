@@ -1,5 +1,5 @@
 import { Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
-import { errorify, NullLogger, Retry } from '@dogu-tech/common';
+import { callAsyncWithTimeout, errorify, NullLogger, Retry } from '@dogu-tech/common';
 import { Android, AppiumChannelInfo, AppiumChannelKey, ContextPageSource, Rect, ScreenSize, SystemBar } from '@dogu-tech/device-client-common';
 import { HostPaths, Logger } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
@@ -11,7 +11,8 @@ import { getFreePort } from '../internal/util/net';
 import { createAppiumLogger } from '../logger/logger.instance';
 import { AppiumService } from './appium.service';
 
-const AppiumNewCommandTimeout = 24 * 60 * 60;
+const AppiumNewCommandTimeout = 24 * 60 * 60; // 24 hours in seconds
+const AppiumClientCallAsyncTimeout = 10 * 1000; // 10 seconds in milliseconds
 
 export interface DefaultAppiumChannelOptions {
   pnpmPath: string;
@@ -28,7 +29,7 @@ export interface AppiumChannelOptions extends DefaultAppiumChannelOptions {
   key: AppiumChannelKey;
 }
 
-function transformId(context: any): string {
+function transformId(context: unknown): string {
   if (typeof context === 'string') {
     return context;
   } else {
@@ -40,8 +41,13 @@ function transformId(context: any): string {
   }
 }
 
+async function callClientAsyncWithTimeout<T>(callClientAsync: Promise<T>): Promise<T> {
+  return callAsyncWithTimeout(callClientAsync, { timeout: AppiumClientCallAsyncTimeout });
+}
+
 export class AppiumChannel {
   private readonly logger: Logger;
+
   private _serverProcess: ChildProcessWithoutNullStreams | null = null;
   private get serverProcess(): ChildProcessWithoutNullStreams {
     if (!this._serverProcess) {
@@ -66,33 +72,33 @@ export class AppiumChannel {
     return this._serverCommand;
   }
 
-  private _browser: WebdriverIO.Browser | null = null;
-  private get browser(): WebdriverIO.Browser {
-    if (!this._browser) {
-      throw new Error('Browser is null');
+  private _driver: WebdriverIO.Browser | null = null;
+  private get driver(): WebdriverIO.Browser {
+    if (!this._driver) {
+      throw new Error('Driver is null');
     }
-    return this._browser;
+    return this._driver;
   }
 
-  private _requestedCapabilities: Record<string, unknown> | null = null;
-  private get requestedCapabilities(): Record<string, unknown> {
-    if (!this._requestedCapabilities) {
-      throw new Error('Requested capabilities is null');
+  private _remoteOptions: object | null = null;
+  private get remoteOptions(): object {
+    if (!this._remoteOptions) {
+      throw new Error('Remote options is null');
     }
-    return this._requestedCapabilities;
+    return this._remoteOptions;
   }
 
   private get capabilities(): Record<string, unknown> {
-    return this.browser.capabilities as Record<string, unknown>;
+    return this.driver.capabilities as Record<string, unknown>;
   }
 
   get info(): AppiumChannelInfo {
     return {
       serial: this.options.serial,
       channelKey: this.options.key,
-      requestedCapabilities: this.requestedCapabilities,
+      remoteOptions: this.remoteOptions,
       capabilities: this.capabilities,
-      sessionId: this.browser.sessionId,
+      sessionId: this.driver.sessionId,
       server: {
         port: this.serverPort,
         workingDirectory: this.options.appiumPath,
@@ -264,12 +270,12 @@ Error: Xcode signing certificate is not found. Please check the following:
     }
     const viewportRect = _.get(this.capabilities, 'viewportRect') as { left: number; top: number; width: number; height: number } | undefined;
     const viewport: Rect = {
-      x: _.get(viewportRect, 'left') ?? -1,
-      y: _.get(viewportRect, 'top') ?? -1,
-      width: _.get(viewportRect, 'width') ?? -1,
-      height: _.get(viewportRect, 'height') ?? -1,
+      x: _.get(viewportRect, 'left') ?? 0,
+      y: _.get(viewportRect, 'top') ?? 0,
+      width: _.get(viewportRect, 'width') ?? 0,
+      height: _.get(viewportRect, 'height') ?? 0,
     };
-    const systemBarsResult = await this.browser.getSystemBars();
+    const systemBarsResult = await callClientAsyncWithTimeout(this.driver.getSystemBars());
     const systemBar = systemBarsResult as unknown as {
       statusBar: SystemBar;
       navigationBar: SystemBar;
@@ -277,18 +283,18 @@ Error: Xcode signing certificate is not found. Please check the following:
     const statusBarRaw = _.get(systemBar, 'statusBar');
     const statusBar: SystemBar = {
       visible: _.get(statusBarRaw, 'visible') ?? false,
-      x: _.get(statusBarRaw, 'x') ?? -1,
-      y: _.get(statusBarRaw, 'y') ?? -1,
-      width: _.get(statusBarRaw, 'width') ?? -1,
-      height: _.get(statusBarRaw, 'height') ?? -1,
+      x: _.get(statusBarRaw, 'x') ?? 0,
+      y: _.get(statusBarRaw, 'y') ?? 0,
+      width: _.get(statusBarRaw, 'width') ?? 0,
+      height: _.get(statusBarRaw, 'height') ?? 0,
     };
     const navigationBarRaw = _.get(systemBar, 'navigationBar') as SystemBar | undefined;
     const navigationBar: SystemBar = {
       visible: _.get(navigationBarRaw, 'visible') ?? false,
-      x: _.get(navigationBarRaw, 'x') ?? -1,
-      y: _.get(navigationBarRaw, 'y') ?? -1,
-      width: _.get(navigationBarRaw, 'width') ?? -1,
-      height: _.get(navigationBarRaw, 'height') ?? -1,
+      x: _.get(navigationBarRaw, 'x') ?? 0,
+      y: _.get(navigationBarRaw, 'y') ?? 0,
+      width: _.get(navigationBarRaw, 'width') ?? 0,
+      height: _.get(navigationBarRaw, 'height') ?? 0,
     };
 
     try {
@@ -318,7 +324,7 @@ Error: Xcode signing certificate is not found. Please check the following:
         return { width, height };
       }
       default: {
-        const { width, height } = await this.browser.getWindowSize();
+        const { width, height } = await callClientAsyncWithTimeout(this.driver.getWindowSize());
         return { width, height };
       }
     }
@@ -336,16 +342,20 @@ Error: Xcode signing certificate is not found. Please check the following:
     this.logger.info('Appium client starting');
     const webdriverio = await import('webdriverio');
     const requestedCapabilities = await this.createRequestedCapabilities();
-    const browser = await webdriverio.remote({
+
+    const remoteOptions: Parameters<typeof webdriverio.remote>[0] = {
       port: this.serverPort,
+      logLevel: 'trace',
       capabilities: {
         alwaysMatch: {},
         firstMatch: [requestedCapabilities],
       },
-    });
-    this._requestedCapabilities = requestedCapabilities;
-    this._browser = browser;
-    this.logger.info('Appium client started', { requestedCapabilities, sessionId: browser.sessionId, capabilities: this.capabilities });
+    };
+
+    const driver = await webdriverio.remote(remoteOptions);
+    this._remoteOptions = remoteOptions;
+    this._driver = driver;
+    this.logger.info('Appium client started', { remoteOptions, sessionId: driver.sessionId, capabilities: this.capabilities });
   }
 
   /**
@@ -354,16 +364,16 @@ Error: Xcode signing certificate is not found. Please check the following:
    * https://webdriver.io/docs/api/webdriver/#deletesession
    */
   private async stopClient(): Promise<void> {
-    if (!this._browser) {
+    if (!this._driver) {
       return;
     }
     try {
-      await this.browser.deleteSession();
+      await callClientAsyncWithTimeout(this.driver.deleteSession());
     } catch (error) {
       this.logger.error('Appium client delete session failed', { error: errorify(error) });
     } finally {
-      this._browser = null;
-      this._requestedCapabilities = null;
+      this._driver = null;
+      this._remoteOptions = null;
     }
   }
 
@@ -374,7 +384,7 @@ Error: Xcode signing certificate is not found. Please check the following:
    */
   @Retry({ retryCount: 3, retryInterval: 3000, printable: NullLogger.instance })
   async getPageSource(): Promise<string> {
-    return this.browser.getPageSource();
+    return callClientAsyncWithTimeout(this.driver.getPageSource());
   }
 
   /**
@@ -383,7 +393,7 @@ Error: Xcode signing certificate is not found. Please check the following:
    */
   @Retry({ retryCount: 3, retryInterval: 3000, printable: NullLogger.instance })
   async getContexts(): Promise<string[]> {
-    const contexts = await this.browser.getContexts();
+    const contexts = await callClientAsyncWithTimeout(this.driver.getContexts());
     const contextIds = contexts.map(transformId);
     return contextIds;
   }
@@ -394,7 +404,7 @@ Error: Xcode signing certificate is not found. Please check the following:
    */
   @Retry({ retryCount: 3, retryInterval: 3000, printable: NullLogger.instance })
   async getContext(): Promise<string> {
-    const context = await this.browser.getContext();
+    const context = await callClientAsyncWithTimeout(this.driver.getContext());
     const contextId = transformId(context);
     return contextId;
   }
@@ -405,7 +415,7 @@ Error: Xcode signing certificate is not found. Please check the following:
    */
   @Retry({ retryCount: 3, retryInterval: 3000, printable: NullLogger.instance })
   async switchContext(contextId: string): Promise<void> {
-    return this.browser.switchContext(contextId);
+    return callClientAsyncWithTimeout(this.driver.switchContext(contextId));
   }
 
   async switchContextAndGetPageSource(contextId: string): Promise<string> {
@@ -429,9 +439,11 @@ Error: Xcode signing certificate is not found. Please check the following:
       });
     }
     if (currentContext) {
-      await this.switchContext(currentContext).catch((error) => {
+      try {
+        await this.switchContext(currentContext);
+      } catch (error) {
         this.logger.error('Appium context switch failed', { error: errorify(error) });
-      });
+      }
     }
     return contextPageSources;
   }

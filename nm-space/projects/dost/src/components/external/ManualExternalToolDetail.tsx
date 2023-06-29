@@ -101,7 +101,7 @@ const ManualExternalToolDetail = ({ externalKey }: Props): ManualExternalToolDet
                   </Button>
                 </ListItem>
               </UnorderedList>
-              <ExternalToolInstallerModal isOpen={isOpen} onClose={onClose} externalKeyAndNames={[{ key: 'ios-device-agent-build', name: 'IosDeviceAgent build' }]} />
+              <ExternalToolInstallerModal isOpen={isOpen} onClose={onClose} externalKeyAndNames={[{ key: 'ios-device-agent-build', name: 'iOSDeviceAgent build' }]} />
             </div>
           );
         },

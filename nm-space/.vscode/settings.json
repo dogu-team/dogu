@@ -76,7 +76,7 @@
   "java.compile.nullAnalysis.mode": "automatic",
   "javascript.preferences.importModuleSpecifier": "relative",
   "prettier.documentSelectors": ["*.ts, *.json"],
-  "prettier.prettierPath": ".yarn/sdks/prettier/index.js",
+  "prettier.prettierPath": "node_modules/prettier/index.js",
   "protoc": {
     "options": [
       "--proto_path=./prebuilds/protocol-exporter/proto",

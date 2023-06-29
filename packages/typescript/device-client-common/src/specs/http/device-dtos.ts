@@ -238,7 +238,7 @@ export class GetAppiumChannelInfoQuery {
 export interface AppiumChannelInfo {
   serial: Serial;
   channelKey: AppiumChannelKey;
-  requestedCapabilities: Record<string, unknown>;
+  remoteOptions: object;
   capabilities: Record<string, unknown>;
   sessionId: string;
   server: {
