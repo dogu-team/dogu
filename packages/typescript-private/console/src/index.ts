@@ -8,6 +8,7 @@ export * from './base/dest-edge';
 export * from './base/device';
 export * from './base/device-and-device-tag';
 export * from './base/device-tag';
+export * from './base/device-webdriver';
 export * from './base/download';
 export * from './base/gitlab';
 export * from './base/gitlab-project';

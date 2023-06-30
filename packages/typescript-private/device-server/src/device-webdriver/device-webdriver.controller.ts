@@ -25,7 +25,7 @@ export class DeviceWebDriverController {
       return apiNotFoundError(serial, request.method);
     }
 
-    const url = `http://localhost:${channel.info.server.port}${request.path}`;
+    const url = `http://localhost:${channel.info.server.port}/${request.path}`;
     const res = await handlers[request.method](url, request);
 
     return {

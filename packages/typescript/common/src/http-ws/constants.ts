@@ -1,5 +1,5 @@
 export const DefaultHttpOptions = {
   request: {
-    timeout: 10 * 1000,
+    timeout: 10 * 10 * 1000,
   },
 };

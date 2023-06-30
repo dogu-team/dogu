@@ -1,4 +1,4 @@
-import { DeviceConnectionState, Serial } from '@dogu-private/types';
+import { DeviceConnectionState, DeviceId, Serial } from '@dogu-private/types';
 import { HeaderRecord, Method, transformAndValidate } from '@dogu-tech/common';
 import { RelayRequest } from '@dogu-tech/device-client-common';
 import { Request } from 'express';
@@ -22,7 +22,7 @@ export interface WebDriverDeviceAPIHandlerResultOk {
   isHandlable: true;
   error?: undefined;
   organizationId: string;
-  deviceId: string;
+  deviceId: DeviceId;
   serial: Serial;
   request: RelayRequest;
 }
