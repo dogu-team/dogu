@@ -1,0 +1,35 @@
+name: 🚀release-npm-and-actions
+
+on:
+  workflow_dispatch:
+
+env:
+  DOGU_DEPLOY: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Run newbie
+        run: |
+          yarn newbie:cicd
+
+      - name: Build packages
+        run: |
+          yarn build:packages
+
+      - name: Build actions
+        run: |
+          yarn build:actions
+
+      - name: Publish to npm
+        run: |
+          yarn publish:npm:prod
+
+      - name: Publish to github
+        run: |
+          yarn publish:github:prod
