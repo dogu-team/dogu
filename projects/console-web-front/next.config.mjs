@@ -32,7 +32,7 @@ const nextConfig = {
     return config;
   },
   images: {
-    domains: ['s3.ap-northeast-2.amazonaws.com', 'localhost'],
+    domains: ['s3.ap-northeast-2.amazonaws.com', 'localhost', 'nexus.dev.dogutech.io', 'nexus.dogutech.io', 'nexus'],
     minimumCacheTTL: 20,
   },
   experimental: {

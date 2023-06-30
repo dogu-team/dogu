@@ -1,5 +1,5 @@
 {
-  "fileService": "s3",
+  "fileService": "nexus",
   "useSampleProject": true,
   "gitlabInitCheck": false,
   "useGitlabIdByUserId": true,

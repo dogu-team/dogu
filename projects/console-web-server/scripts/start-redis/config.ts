@@ -5,6 +5,7 @@ export const config = {
   containerName: 'dogu-redis',
   host: env.DOGU_REDIS_HOST,
   port: env.DOGU_REDIS_PORT,
+  password: env.DOGU_REDIS_PASSWORD,
 };
 
 console.log('config', config);

@@ -71,6 +71,26 @@ export const config = {
     templeteGroupUrl: `${env.DOGU_GITLAB_PROTOCOL}://${env.DOGU_GITLAB_HOST}:${env.DOGU_GITLAB_PORT}/${env.DOGU_GITLAB_TEMPLATE_GROUP}`,
     rootToken: env.DOGU_GITLAB_ROOT_TOKEN,
   },
+  fileService: {
+    s3: {
+      accessKeyId: env.DOGU_AWS_KEY_ID,
+      secretAccessKey: env.DOGU_AWS_ACCESS_KEY,
+      userBucket: env.DOGU_USER_BUCKET,
+      orgBucket: env.DOGU_ORGANIZATION_BUCKET,
+      publicBucket: env.DOGU_PUBLIC_BUCKET,
+    },
+    nexus: {
+      host: env.DOGU_NEXUS_HOST,
+      port: env.DOGU_NEXUS_PORT,
+      url: `${env.DOGU_NEXUS_PROTOCOL}://${env.DOGU_NEXUS_HOST}:${env.DOGU_NEXUS_PORT}`,
+      username: env.DOGU_NEXUS_USERNAME,
+      password: env.DOGU_NEXUS_PASSWORD,
+    },
+  },
+  aws: {
+    keyId: env.DOGU_AWS_KEY_ID,
+    accessKey: env.DOGU_AWS_ACCESS_KEY,
+  },
   virtualWebSocket: {
     pop: {
       count: 10,

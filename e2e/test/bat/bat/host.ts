@@ -35,7 +35,7 @@ export function runHost(random: number, dost: Dost): void {
       // add-host-form-name
       await Driver.sendKeys(
         {
-          xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[2]/form/div/div/div[2]/div/div/input',
+          xpath: '//*[@access-id="add-host-form-name"]',
         },
         `test host ${random}`,
         {
@@ -44,7 +44,7 @@ export function runHost(random: number, dost: Dost): void {
       );
       await Driver.clickElement(
         {
-          xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[3]/div/button[2]',
+          xpath: '/html/body/div[2]/div/div[2]/div/div[2]/div[3]/div/button[2]/span',
         },
         {
           focusWindow: true,
@@ -72,7 +72,7 @@ export function runHost(random: number, dost: Dost): void {
 
     test('Check host added', async () => {
       await Driver.clickElement(
-        { xpath: '/html/body/div[3]/div/div[2]/div/div[2]/button' },
+        { xpath: '//button[@aria-label="Close"]' },
         {
           focusWindow: true,
         },
@@ -97,7 +97,7 @@ export function runHost(random: number, dost: Dost): void {
 export class Dost {
   private mainPage: PageWrapper | undefined = undefined;
   private installGenerator: Generator<void>;
-  InstallTimeoutMs = 10 * 60 * 1000;
+  InstallTimeoutMs = 180000;
   longTimeoutMs = 30000;
 
   constructor() {

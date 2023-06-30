@@ -22,6 +22,7 @@ const OrganizationMemberLayout = ({ titleI18nKey, children, isWebview }: Props) 
       href: `/dashboard/${orgId}/members`,
       icon: <UserOutlined />,
       title: t('org-member:memberLinkButtonTitle'),
+      'access-id': 'org-member-tab',
     },
     {
       href: `/dashboard/${orgId}/members/invitations`,
