@@ -1,4 +1,4 @@
-name: build-dost-self-hosted
+name: build-dost-saas-production
 
 on:
   workflow_dispatch:
@@ -169,23 +169,23 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env.deploy-secret
         working-directory: ./nm-space/projects/dost
 
-      - name: create dotEnv self-hosted
+      - name: create dotEnv production
         run: |
           echo "DOGU_DEVICE_SERVER_PORT=5001" > .env.device-server
-          echo "DOGU_RUN_TYPE=self-hosted" >> .env.device-server
+          echo "DOGU_RUN_TYPE=production" >> .env.device-server
           echo "NODE_ENV=production" >> .env.device-server
 
-          echo "DOGU_API_BASE_URL=" > .env.host-agent
+          echo "DOGU_API_BASE_URL=https://api.dogutech.io" > .env.host-agent
           echo "DOGU_DEVICE_SERVER_HOST_PORT=localhost:5001" >> .env.host-agent
           echo "DOGU_HOST_TOKEN=" >> .env.host-agent
-          echo "DOGU_RUN_TYPE=self-hosted" >> .env.host-agent
+          echo "DOGU_RUN_TYPE=production" >> .env.host-agent
           echo "NODE_ENV=production" >> .env.host-agent
           echo "DOGU_HOST_AGENT_PORT=5100" >> .env.host-agent
 
-          echo "DOGU_APPUPDATE_PROVIDER=" > .env.dost
-          echo "DOGU_APPUPDATE_URL=" >> .env.dost
-          echo "DOGU_APPUPDATE_SUBPATH=" >> .env.dost
-          echo "DOGU_APPUPDATE_REGION=" >> .env.dost
+          echo "DOGU_APPUPDATE_PROVIDER=s3" > .env.dost
+          echo "DOGU_APPUPDATE_URL=public.dogutech.io" >> .env.dost
+          echo "DOGU_APPUPDATE_SUBPATH=dost" >> .env.dost
+          echo "DOGU_APPUPDATE_REGION=ap-northeast-2" >> .env.dost
         working-directory: ./nm-space/projects/dost
 
       - name: Dost - Set productName
@@ -202,16 +202,8 @@ jobs:
 
       - name: Dost - Build
         run: |
-          yarn run build && yarn run deploy:notarize
+          yarn run build && yarn run deploy:notarize:upload
         working-directory: ./nm-space/projects/dost
-
-      - name: Upload dost
-        if: ${{ success() }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: 'dost-${{ runner.os }}'
-          path: |
-            ./nm-space/projects/dost/dist/*.${{ matrix.extension }}
 
   send-slack:
     runs-on: ubuntu-latest
