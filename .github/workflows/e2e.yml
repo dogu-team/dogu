@@ -6,7 +6,7 @@ concurrency:
 
 on:
   push:
-    branches: ['feature/deploy-process2']
+    branches: ['main']
     paths:
       - '.github/workflows/e2e.yml'
       - 'dogu-actions/**'
@@ -23,7 +23,7 @@ on:
       - 'tsconfig.json'
       - 'yarn.lock'
   pull_request:
-    branches: ['feature/deploy-process2']
+    branches: ['main']
     paths:
       - '.github/workflows/e2e.yml'
       - 'dogu-actions/**'
@@ -63,7 +63,7 @@ jobs:
         with:
           no-cache: true
           context: .
-          file: ./Dockerfile
+          file: ./dockerfile
           push: true
           target: dogu-console
           tags: |

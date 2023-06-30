@@ -1,43 +1,11 @@
-name: 🚀release-self-hosted
+name: 🚀release-self-hosted-dogu
 
 on:
   workflow_dispatch:
-    inputs:
-      gitpat:
-        type: string
-        description: 'gitlab root token'
-        default: 'gitpat'
 
 jobs:
-  build-and-push-dogu-console:
-    runs-on: dev-build
-
-    steps:
-      - name: docker init
-        run: docker system prune --volumes -a -f
-
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: ./Dockerfile
-          push: true
-          target: dogu-console
-          tags: |
-            dogutechio/dogu:rc
-
-  start-rc-dogu:
-    runs-on: dogu-self-hosted
-    needs: build-and-push-dogu-console
+  start-self-hosted-dogu:
+    runs-on: self-hosted-dogu
 
     steps:
       - name: Checkout

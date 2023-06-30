@@ -2,11 +2,6 @@ name: 🚀release-dev-dogu
 
 on:
   workflow_dispatch:
-    inputs:
-      version:
-        type: string
-        description: 'console version'
-        default: '0.0.1'
 
 jobs:
   build-and-push-dogu-console:
@@ -29,7 +24,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: ./Dockerfile
+          file: ./dockerfile
           push: true
           target: dogu-console
           tags: |
