@@ -54,5 +54,17 @@
   "sidebar.testAutomationSidebar.category.Game": {
     "message": "Game",
     "description": "The label for category Game in sidebar testAutomation"
+  },
+  "sidebar.testautomationSidebar.category.sidebar.testAutomationSidebar.category.Browser": {
+    "message": "Browser",
+    "description": "The label for category sidebar.testAutomationSidebar.category.Browser in sidebar testautomationSidebar"
+  },
+  "sidebar.testautomationSidebar.category.sidebar.testAutomationSidebar.category.Mobile": {
+    "message": "Mobile",
+    "description": "The label for category sidebar.testAutomationSidebar.category.Mobile in sidebar testautomationSidebar"
+  },
+  "sidebar.testautomationSidebar.category.sidebar.testAutomationSidebar.category.Game": {
+    "message": "Game",
+    "description": "The label for category sidebar.testAutomationSidebar.category.Game in sidebar testautomationSidebar"
   }
 }

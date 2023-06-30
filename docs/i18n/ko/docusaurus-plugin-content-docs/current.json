@@ -54,5 +54,17 @@
   "sidebar.testAutomationSidebar.category.Game": {
     "message": "게임",
     "description": "The label for category Game in sidebar testAutomation"
+  },
+  "sidebar.testautomationSidebar.category.sidebar.testAutomationSidebar.category.Browser": {
+    "message": "브라우저",
+    "description": "The label for category sidebar.testAutomationSidebar.category.Browser in sidebar testautomationSidebar"
+  },
+  "sidebar.testautomationSidebar.category.sidebar.testAutomationSidebar.category.Mobile": {
+    "message": "모바일",
+    "description": "The label for category sidebar.testAutomationSidebar.category.Mobile in sidebar testautomationSidebar"
+  },
+  "sidebar.testautomationSidebar.category.sidebar.testAutomationSidebar.category.Game": {
+    "message": "게임",
+    "description": "The label for category sidebar.testAutomationSidebar.category.Game in sidebar testautomationSidebar"
   }
 }
