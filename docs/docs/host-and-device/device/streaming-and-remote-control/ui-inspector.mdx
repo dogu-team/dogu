@@ -1,0 +1,134 @@
+---
+sidebar_position: 4
+title: UI Inspector
+locale: en
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+:::info
+
+Available on Android and iOS devices.
+
+:::
+
+## Native UI Inspector
+
+If your device is registered on the Dogu device farm, you can use the UI inspector.
+
+<div align="center">
+  <img
+    src="https://github.com/dogu-team/dogu/blob/main/.github/resources/android-inspecting.gif?raw=true"
+    width="600"
+  />
+  <img
+    src="https://github.com/dogu-team/dogu/blob/main/.github/resources/ios-inspecting.gif?raw=true"
+    width="600"
+  />
+</div>
+
+### How to Use
+
+1. Access the device streaming page in the Dogu console, then click on the "Inspector" menu.
+2. Select `NATIVE_APP` from the context.
+3. Expand the UI tree to view UI elements or click on buttons. Hover over the device streaming screen and click to see detailed information.
+
+### UI Element Information
+
+<Tabs>
+  <TabItem value="Android" label="Android" default>
+    <ul>
+      <li><code>XPath</code></li>
+      <li><code>index</code></li>
+      <li><code>package</code></li>
+      <li><code>class</code></li>
+      <li><code>text</code></li>
+      <li><code>content-desc</code></li>
+      <li><code>resource-id</code></li>
+      <li><code>checkable</code></li>
+      <li><code>checked</code></li>
+      <li><code>clickable</code></li>
+      <li><code>enabled</code></li>
+      <li><code>focusable</code></li>
+      <li><code>focused</code></li>
+      <li><code>long-clickable</code></li>
+      <li><code>scrollable</code></li>
+      <li><code>selected</code></li>
+      <li><code>displayed</code></li>
+      <li><code>password</code></li>
+      <li><code>bounds</code></li>
+    </ul>
+    <ul>
+      <li><code>rotation</code></li>
+      <li><code>width</code></li>
+      <li><code>height</code></li>
+    </ul>
+  </TabItem>
+
+  <TabItem value="iOS" label="iOS">
+    <ul>
+      <li><code>XPath</code></li>
+      <li><code>index</code></li>
+      <li><code>name</code></li>
+      <li><code>type</code></li>
+      <li><code>label</code></li>
+      <li><code>accessible</code></li>
+      <li><code>enabled</code></li>
+      <li><code>visible</code></li>
+      <li><code>x</code></li>
+      <li><code>y</code></li>
+    </ul>
+    <ul>
+      <li><code>width</code></li>
+      <li><code>height</code></li>
+    </ul>
+  </TabItem>
+</Tabs>
+
+## Game UI Inspector
+
+If your game includes the Gamium Engine SDK in its build, you can use the UI inspector in the Dogu console to view the UI.
+
+:::info Gamium Engine SDK
+
+For instructions on how to include the Gamium Engine SDK in your game build, please refer to the [Gamium Engine](https://gamium.dogutech.io/docs/engine/unity/project-configuration) documentation.
+
+:::
+
+<div align="center">
+  <img
+    src="https://github.com/dogu-team/dogu/blob/main/.github/resources/gamium-inspecting.gif?raw=true"
+    width="600"
+  />
+</div>
+
+### How to Use
+
+1. Run the game app on your device.
+2. Access the device streaming page in the Dogu console, then click on the "Inspector" menu.
+3. Select `GAMIUM` from the context.
+   :::tip
+   If you don't see `GAMIUM` in the context, try clicking the `Reconnect` button to reconnect.
+   :::
+4. Expand the UI tree to view game objects or click on buttons. Hover over the device streaming screen and click <svg viewBox="64 64 896 896" focusable="false" data-icon="select" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M880 112H144c-17.7 0-32 14.3-32 32v736c0 17.7 14.3 32 32 32h360c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H184V184h656v320c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V144c0-17.7-14.3-32-32-32zM653.3 599.4l52.2-52.2a8.01 8.01 0 00-4.7-13.6l-179.4-21c-5.1-.6-9.5 3.7-8.9 8.9l21 179.4c.8 6.6 8.9 9.4 13.6 4.7l52.4-52.4 256.2 256.2c3.1 3.1 8.2 3.1 11.3 0l42.4-42.4c3.1-3.1 3.1-8.2 0-11.3L653.3 599.4z"></path></svg> to see detailed information.
+
+### Object Information
+
+You can view detailed information by clicking on a game object in the UI tree or by clicking <svg viewBox="64 64 896 896" focusable="false" data-icon="select" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M880 112H144c-17.7 0-32 14.3-32 32v736c0 17.7 14.3 32 32 32h360c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H184V184h656v320c0 4.4 3.6 8 8 8h56c4.4 0 8-3.6 8-8V144c0-17.7-14.3-32-32-32zM653.3 599.4l52.2-52.2a8.01 8.01 0 00-4.7-13.6l-179.4-21c-5.1-.6-9.5 3.7-8.9 8.9l21 179.4c.8 6.6 8.9 9.4 13.6 4.7l52.4-52.4 256.2 256.2c3.1 3.1 8.2 3.1 11.3 0l42.4-42.4c3.1-3.1 3.1-8.2 0-11.3L653.3 599.4z"></path></svg> button and hovering over the device streaming screen and clicking.
+
+<img
+  src="/img/console/device-streaming/game-object-detail.png"
+  style={{ width: 600, display: 'block' }}
+/>
+
+<br />
+
+- Hit Point: The world coordinate where the RayCast intersects with the mouse position.
+- Path: Displays the unique path of the object.
+- Name: Displays the name of the object.
+- Text: Displays the text within the object.
+- Screen position: The center coordinate of the object (relative to the screen).
+- Screen rect size: Displays the x and y size of the object (relative to the screen).
+- Position: Displays the world coordinates of the object.
+- Rotation: Displays the world-based rotation of the object.
