@@ -22,3 +22,19 @@ jobs:
       - name: Build
         run: |
           yarn workspace docs install && yarn build:docs
+
+  send-slack:
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ always() }}
+
+    steps:
+      - name: Send Slack
+        uses: dogu-team/slack@v1.0
+        with:
+          template: 'ci'
+          slack-channel-id: 'C03PL9TC44Q'
+          result-status: ${{ needs.e2e.result }}
+          ignore-notify: ${{ needs.e2e.result == 'success' }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
