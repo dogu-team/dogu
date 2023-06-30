@@ -1,3 +1,4 @@
+import { parseAxiosError } from '@dogu-tech/common';
 import { DeviceClient, DeviceClientsFactory, DeviceHostClient } from '@dogu-tech/device-client';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, OnModuleInit } from '@nestjs/common';
@@ -8,6 +9,7 @@ import { DoguLogger } from '../logger/logger';
 export class DeviceClientService implements OnModuleInit {
   private _deviceClient: DeviceClient | null = null;
   private _deviceHostClient: DeviceHostClient | null = null;
+  private _hasIntercepter = false;
 
   constructor(private readonly httpService: HttpService, private readonly logger: DoguLogger) {}
 
@@ -34,6 +36,17 @@ export class DeviceClientService implements OnModuleInit {
   }
 
   get service(): HttpService {
+    if (!this._hasIntercepter) {
+      this.httpService.axiosRef.interceptors.response.use(
+        (response) => {
+          return response;
+        },
+        (error) => {
+          throw parseAxiosError(error);
+        },
+      );
+      this._hasIntercepter = true;
+    }
     return this.httpService;
   }
 

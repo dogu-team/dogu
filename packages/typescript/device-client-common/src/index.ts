@@ -10,6 +10,7 @@ export * from './specs/http/device';
 export * from './specs/http/device-dtos';
 export * from './specs/http/device-host';
 export * from './specs/http/device-inspector';
+export * from './specs/http/device-webdriver';
 export * from './specs/types';
 export * from './specs/ws/device-host/download-shared-resource';
 export * from './specs/ws/device-host/record-postprocess';

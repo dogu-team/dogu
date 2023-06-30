@@ -42,7 +42,7 @@
     "util:parse-device": "ts-node scripts/device-csv-parser",
     "util:rename-files": "ts-node scripts/util/rename-files rename",
     "watch": "yarn workspaces foreach --include '@dogu{-tech,-private,-dev-private,-actions}/*' --jobs unlimited -pvi run watch",
-    "watch:packages2": "ts-node scripts/watch-packages"
+    "watch:packages:only-changed": "ts-node scripts/watch-packages-only-changed"
   },
   "workspaces": [
     "packages/cpp/*",

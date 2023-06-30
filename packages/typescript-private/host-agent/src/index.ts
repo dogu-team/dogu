@@ -31,7 +31,9 @@ export async function bootstrap(): Promise<void> {
     strategy: messageMicroService,
     logger: winstonModuleLogger,
   });
+
   const messagePuller = app.get(MessagePuller);
+
   messagePuller.setMessageHandlers(messageMicroService.getHandlers() as MessageHandlers);
   await app.startAllMicroservices();
   try {

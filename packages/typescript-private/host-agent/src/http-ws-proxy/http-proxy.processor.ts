@@ -1,5 +1,5 @@
 import { HttpProxyRequest, HttpProxyResponse } from '@dogu-private/console-host-agent';
-import { DefaultHttpOptions, errorify, parseAxiosError, transformAndValidate } from '@dogu-tech/common';
+import { DefaultHttpOptions, errorify, transformAndValidate } from '@dogu-tech/common';
 import { DeviceServerResponseDto } from '@dogu-tech/device-client';
 import { Injectable } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
@@ -23,17 +23,7 @@ export class HttpProxyProcessor {
           data: body,
           timeout: DefaultHttpOptions.request.timeout,
         }),
-      ).catch((error) => {
-        this.logger.error('Failed to send http request', {
-          method,
-          path,
-          headers,
-          query,
-          body,
-          error: parseAxiosError(error),
-        });
-        throw error;
-      });
+      );
       const { status, data } = response;
       const responseBody = await transformAndValidate(DeviceServerResponseDto, data);
       const result: HttpProxyResponse = {

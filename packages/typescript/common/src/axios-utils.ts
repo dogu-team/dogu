@@ -1,5 +1,6 @@
 import { AxiosError, isAxiosError } from 'axios';
 import _ from 'lodash';
+import { stringify } from '.';
 import { errorify } from './utilities/functions';
 
 export interface FilteredAxiosRequest {
@@ -77,28 +78,28 @@ export function parseAxiosError(value: unknown): Error | PartialAxiosError {
             if (typeof value === 'string') {
               return value;
             }
-            return undefined;
+            return stringify(value).substr(0, 100);
           })(),
           host: ((): string | undefined => {
             const value = _.get(error.request, 'host') as string | undefined;
             if (typeof value === 'string') {
               return value;
             }
-            return undefined;
+            return stringify(value).substr(0, 100);
           })(),
           path: ((): string | undefined => {
             const value = _.get(error.request, 'path') as string | undefined;
             if (typeof value === 'string') {
               return value;
             }
-            return undefined;
+            return stringify(value).substr(0, 100);
           })(),
           method: ((): string | undefined => {
             const value = _.get(error.request, 'method') as string | undefined;
             if (typeof value === 'string') {
               return value;
             }
-            return undefined;
+            return stringify(value).substr(0, 100);
           })(),
         }
       : undefined,

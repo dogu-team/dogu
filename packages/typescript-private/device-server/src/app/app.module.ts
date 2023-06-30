@@ -6,6 +6,7 @@ import { BootstrapModule } from '../bootstrap/bootstrap.module';
 import { ConfigModule } from '../config/config.module';
 import { DeviceHostModule } from '../device-host/device-host.module';
 import { DeviceInspectorModule } from '../device-inspector/device-inspector.module';
+import { DeviceWebDriverModule } from '../device-webdriver/device-webdriver.module';
 import { DeviceModule } from '../device/device.module';
 import { GamiumModule } from '../gamium/gamium.module';
 import { LoggerModule } from '../logger/logger.module';
@@ -32,6 +33,7 @@ import { AppService } from './app.service';
     AppiumModule,
     DeviceInspectorModule,
     GamiumModule,
+    DeviceWebDriverModule,
   ],
   controllers: [AppController],
   providers: [AppService],
