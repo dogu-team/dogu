@@ -40,6 +40,7 @@ export class PrivateHostController {
     @Body() body: UpdateHostRequestBody,
   ): Promise<void> {
     const update: QueryDeepPartialEntity<Host> = {};
+
     if (body.platform) {
       update.platform = body.platform;
     }
@@ -49,6 +50,10 @@ export class PrivateHostController {
 
     if (body.deviceServerPort) {
       update.deviceServerPort = body.deviceServerPort;
+    }
+
+    if (body.agentVersion) {
+      update.agentVersion = body.agentVersion;
     }
 
     await this.hostRepository.update({ hostId }, update);
