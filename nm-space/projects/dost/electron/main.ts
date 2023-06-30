@@ -1,12 +1,16 @@
-import { logger, rendererLogger } from './log/logger.instance';
 import { app, BrowserWindow } from 'electron';
+import { logger, rendererLogger } from './log/logger.instance';
 
 /**
- * @note process.env.DOGU_PACKAGED_RESOURCES_PATH is used in self and child processes.
+ * @note process.env.DOGU_PACKAGED_RESOURCES_PATH and process.env.DOGU_APP_VERSION is used in self and child processes.
  */
 (() => {
   process.env.DOGU_PACKAGED_RESOURCES_PATH = app.isPackaged ? process.resourcesPath : '';
-  logger.info('DOGU_PACKAGED_RESOURCES_PATH', { DOGU_PACKAGED_RESOURCES_PATH: process.env.DOGU_PACKAGED_RESOURCES_PATH });
+  process.env.DOGU_AGENT_VERSION = app.getVersion();
+  logger.info('bootstrap', {
+    DOGU_PACKAGED_RESOURCES_PATH: process.env.DOGU_PACKAGED_RESOURCES_PATH,
+    DOGU_AGENT_VERSION: process.env.DOGU_AGENT_VERSION,
+  });
 })();
 
 import * as Sentry from '@sentry/electron/main';
