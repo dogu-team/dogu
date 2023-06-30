@@ -40,6 +40,9 @@ export const schema = {
   DOGU_HOST_AGENT_PORT: {
     type: 'number',
   },
+  DOGU_AGENT_VERSION: {
+    type: 'string',
+  },
 } as const;
 
 export type Schema = typeof schema;

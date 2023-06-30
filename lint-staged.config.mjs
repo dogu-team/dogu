@@ -6,6 +6,7 @@ export default {
       .filter((file) => !file.endsWith('.d.ts'))
       .filter((file) => !IgnorePatterns.some((pattern) => file.includes(pattern)))
       .join(' ');
+    if (joins.trim() === '') return [];
     return [`organize-imports-cli ${joins}`, `prettier --write ${joins}`];
   },
   'package.json': (files) => {

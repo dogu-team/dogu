@@ -6,7 +6,7 @@
   "author": "",
   "type": "commonjs",
   "scripts": {
-    "build": "cross-env NODE_ENV=local next build",
+    "build": "node ./prebuild.mjs && cross-env NODE_ENV=local next build",
     "clean": "shx rm -rf generated .next",
     "dev": "node ./prerun.mjs start && next dev -p 3001",
     "lint": "next lint",

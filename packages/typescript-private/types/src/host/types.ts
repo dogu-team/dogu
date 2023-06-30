@@ -20,6 +20,7 @@ export interface Host {
   creatorId: UserId;
   organizationId: OrganizationId;
   tokenId: TokenId;
+  agentVersion: string | null;
 }
 
 /**

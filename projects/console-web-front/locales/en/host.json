@@ -2,6 +2,7 @@
   "hostTableNameColumn": "Name",
   "hostTableOSColumn": "OS",
   "hostTableConnectionStatusColumn": "Connection",
+  "hostTableAgentVersion": "Dost version",
   "hostTableDevciesColumn": "Devices",
 
   "hostItemStartUseMenu": "Start using as device",

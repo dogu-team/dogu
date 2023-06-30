@@ -2,7 +2,7 @@ import { Host, HostId, OrganizationId, Platform } from '@dogu-private/types';
 import { ControllerMethodSpec, ControllerSpec } from '@dogu-tech/common';
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class UpdateHostRequestBody implements Pick<Partial<Host>, 'platform' | 'rootWorkspace'> {
+export class UpdateHostRequestBody implements Pick<Partial<Host>, 'platform' | 'rootWorkspace' | 'agentVersion'> {
   @IsEnum(Platform)
   @IsOptional()
   platform?: Platform;
@@ -14,6 +14,10 @@ export class UpdateHostRequestBody implements Pick<Partial<Host>, 'platform' | '
   @IsNumber()
   @IsOptional()
   deviceServerPort?: number;
+
+  @IsString()
+  @IsOptional()
+  agentVersion?: string;
 }
 
 const PrivateHostController = new ControllerSpec({

@@ -24,4 +24,7 @@ export class HostAgentEnv extends PreloadHostAgentEnv {
 
   @IsFilledString()
   DOGU_HOST_TOKEN!: string;
+
+  @IsFilledString()
+  DOGU_AGENT_VERSION = '0.0.0';
 }

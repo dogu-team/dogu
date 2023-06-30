@@ -2,6 +2,7 @@
   "hostTableNameColumn": "이름",
   "hostTableOSColumn": "운영체제",
   "hostTableConnectionStatusColumn": "연결상태",
+  "hostTableAgentVersion": "Dost 버전",
   "hostTableDevciesColumn": "디바이스",
 
   "hostItemStartUseMenu": "디바이스로 사용하기",

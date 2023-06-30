@@ -1,7 +1,7 @@
 import { PrivateHost } from '@dogu-private/console-host-agent';
 import { createConsoleApiAuthHeader, HostId, OrganizationId, Platform } from '@dogu-private/types';
 import { DefaultHttpOptions, Instance, parseAxiosError, validateAndEmitEventAsync } from '@dogu-tech/common';
-import { DeleteOldFilesCloser, MultiPlatformEnvironmentVariableReplacer, openDeleteOldFiles, processPlatform, HostPaths } from '@dogu-tech/node';
+import { DeleteOldFilesCloser, HostPaths, MultiPlatformEnvironmentVariableReplacer, openDeleteOldFiles, processPlatform } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { isNotEmptyObject } from 'class-validator';
@@ -157,6 +157,9 @@ export class HostResolver {
     }
     if (localDeviceServerPortNeedUpdate.needUpdate === 'yes') {
       body.deviceServerPort = localDeviceServerPortNeedUpdate.deviceServerPort;
+    }
+    if (env.DOGU_AGENT_VERSION) {
+      body.agentVersion = env.DOGU_AGENT_VERSION;
     }
     if (!isNotEmptyObject(body)) {
       return;
