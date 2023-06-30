@@ -103,7 +103,9 @@ export class IosDeviceAgentProcess {
   delete(): void {
     this.isKilled = true;
     ZombieServiceInstance.deleteComponent(this.xctest);
+    ZombieServiceInstance.deleteComponent(this.screenTunnel);
     ZombieServiceInstance.deleteComponent(this.grpcTunnel);
+    ZombieServiceInstance.deleteComponent(this.screenChecker);
   }
 
   get hasKilled(): boolean {
