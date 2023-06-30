@@ -1,20 +1,12 @@
-name: build-dost
+name: build-dost-self-hosted
 
 on:
   workflow_dispatch:
-
-  push:
-    branches: ['main']
-    paths:
-      - '.github/workflows/build-dost.yml'
-      - 'prebuilds/protocol-exporter/**.proto'
-      - 'packages/typescript-dev-private/build-tools/**'
-      - 'projects/go-device-controller/**'
-      - 'projects/ios-device-agent/**'
-      - 'projects/android-device-agent/**'
-      - 'nm-space/projects/dost/**'
-  pull_request:
-    branches: ['main']
+    inputs:
+      version:
+        type: string
+        description: 'Dost app version'
+        default: '0.0.1'
 
 env:
   YARN_CHECKSUM_BEHAVIOR: update yarn
@@ -40,6 +32,9 @@ jobs:
       RUNNER_TOOL_CACHE: ${{ github.workspace }}/runner-tool-cache
 
     steps:
+      - name: Version ${{ github.event.inputs.version }}
+        run: echo "${{ toJSON(github.event.inputs) }}"
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
@@ -174,23 +169,23 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env.deploy-secret
         working-directory: ./nm-space/projects/dost
 
-      - name: create dotEnv development
+      - name: create dotEnv self-hosted
         run: |
           echo "DOGU_DEVICE_SERVER_PORT=5001" > .env.device-server
-          echo "DOGU_RUN_TYPE=development" >> .env.device-server
-          echo "NODE_ENV=development" >> .env.device-server
+          echo "DOGU_RUN_TYPE=self-hosted" >> .env.device-server
+          echo "NODE_ENV=production" >> .env.device-server
 
-          echo "DOGU_API_BASE_URL=https://api.dev.dogutech.io" > .env.host-agent
+          echo "DOGU_API_BASE_URL=" > .env.host-agent
           echo "DOGU_DEVICE_SERVER_HOST_PORT=localhost:5001" >> .env.host-agent
           echo "DOGU_HOST_TOKEN=" >> .env.host-agent
-          echo "DOGU_RUN_TYPE=development" >> .env.host-agent
-          echo "NODE_ENV=development" >> .env.host-agent
+          echo "DOGU_RUN_TYPE=self-hosted" >> .env.host-agent
+          echo "NODE_ENV=production" >> .env.host-agent
           echo "DOGU_HOST_AGENT_PORT=5100" >> .env.host-agent
 
-          echo "DOGU_APPUPDATE_PROVIDER=s3" > .env.dost
-          echo "DOGU_APPUPDATE_URL=public.dev.dogutech.io" >> .env.dost
-          echo "DOGU_APPUPDATE_SUBPATH=dost" >> .env.dost
-          echo "DOGU_APPUPDATE_REGION=ap-northeast-2" >> .env.dost
+          echo "DOGU_APPUPDATE_PROVIDER=" > .env.dost
+          echo "DOGU_APPUPDATE_URL=" >> .env.dost
+          echo "DOGU_APPUPDATE_SUBPATH=" >> .env.dost
+          echo "DOGU_APPUPDATE_REGION=" >> .env.dost
         working-directory: ./nm-space/projects/dost
 
       - name: Dost - Set productName
@@ -200,9 +195,9 @@ jobs:
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
-      - name: Dost - Set version 0.0.1
+      - name: Dost - Set version ${{ github.event.inputs.version }}
         run: |
-          yarn util:set-version 0.0.1
+          yarn util:set-version ${{ github.event.inputs.version }}
         working-directory: ./nm-space/projects/dost
 
       - name: Dost - Build
