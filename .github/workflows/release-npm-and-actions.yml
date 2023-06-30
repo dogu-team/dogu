@@ -30,6 +30,6 @@ jobs:
         run: |
           yarn publish:npm:prod
 
-      - name: Publish to github
+      - name: Publish to github dogu-actions
         run: |
           yarn publish:github:prod
