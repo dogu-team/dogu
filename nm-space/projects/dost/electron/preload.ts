@@ -1,8 +1,6 @@
-import * as Sentry from '@sentry/electron/renderer';
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { appConfigClientKey } from '../src/shares/app-config';
 import { childCallbackKey, childClientKey, childFactoryKey, HostAgentConnectionStatus, Key } from '../src/shares/child';
-import { SentyDSNUrl } from '../src/shares/constants';
 import { dotEnvConfigClientKey, DotEnvConfigKey } from '../src/shares/dot-env-config';
 import { IElectronIpc } from '../src/shares/electron-ipc';
 import { DownloadProgress, externalCallbackKey, ExternalKey, externalKey, ValidationCheckOption } from '../src/shares/external';
@@ -12,8 +10,6 @@ import { ILoginItemSettingsOptions, ISettings, MediaType, settingsClientKey } fr
 import { themeClientKey } from '../src/shares/theme';
 import { updaterClientKey } from '../src/shares/updater';
 import { windowClientKey } from '../src/shares/window';
-
-Sentry.init({ dsn: SentyDSNUrl, maxBreadcrumbs: 10000 });
 
 type IpcKey = keyof IElectronIpc;
 type IpcValue<IpcKey extends keyof IElectronIpc> = IElectronIpc[IpcKey];

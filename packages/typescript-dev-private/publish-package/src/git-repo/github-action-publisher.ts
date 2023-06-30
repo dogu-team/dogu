@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { checkEnv_DOGU_DEPLOY, cleanTemp, getNpmTagFromRunType, getPackageNameFromPackageJson, getRunType, rebuild } from '../common';
+import { checkEnv_DOGU_DEPLOY, cleanTemp, getActionTagByRunType, getNpmTagByRunType, getPackageNameFromPackageJson, getRunType, rebuild } from '../common';
 import { GitRepoPublisher } from './publisher';
 
 export class GithubActionPublisher extends GitRepoPublisher {
@@ -7,8 +7,8 @@ export class GithubActionPublisher extends GitRepoPublisher {
     checkEnv_DOGU_DEPLOY();
     this.checkEnv_DOGU_ACTIONS_PUBLISH_TOKEN();
     const runType = getRunType();
-    const tag = runType;
-    const npmTag = getNpmTagFromRunType(tag);
+    const tag = getActionTagByRunType(runType);
+    const npmTag = getNpmTagByRunType(runType);
     await cleanTemp(this.getTempDir());
     rebuild();
     const packageName = await getPackageNameFromPackageJson();

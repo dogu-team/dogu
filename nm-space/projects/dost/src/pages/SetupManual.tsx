@@ -9,7 +9,7 @@ import useEnvironmentStore from '../stores/environment';
 import { ipc } from '../utils/window';
 
 const SetupManual = () => {
-  const { apiUrlInsertable } = useEnvironmentStore((state) => state.features);
+  const { useApiUrlInput } = useEnvironmentStore((state) => state.features);
   const { results, loading, validate } = useManualSetupExternalValidResult();
   const navigate = useNavigate();
 
@@ -41,8 +41,8 @@ const SetupManual = () => {
         )}
 
         <Flex justifyContent="flex-end">
-          <Button onClick={() => navigate(apiUrlInsertable ? '/setup/config' : '/home/connect')} isDisabled={!results?.every((item) => item.isValid)} colorScheme="blue">
-            {apiUrlInsertable ? 'Continue' : 'Finish'}
+          <Button onClick={() => navigate(useApiUrlInput ? '/setup/config' : '/home/connect')} isDisabled={!results?.every((item) => item.isValid)} colorScheme="blue">
+            {useApiUrlInput ? 'Continue' : 'Finish'}
           </Button>
         </Flex>
       </Flex>

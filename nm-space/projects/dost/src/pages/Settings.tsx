@@ -10,7 +10,7 @@ import { logger } from '../utils/logger';
 import { ipc } from '../utils/window';
 
 function Settings() {
-  const { apiUrlInsertable } = useEnvironmentStore((state) => state.features);
+  const { useApiUrlInput } = useEnvironmentStore((state) => state.features);
   const [startupAtLogin, setStartupAtLogin] = useState<boolean | null>(null);
   const { colorMode, toggleColorMode } = useColorMode();
 
@@ -64,7 +64,7 @@ function Settings() {
           </Stack>
         </ListItem>
 
-        {apiUrlInsertable && (
+        {useApiUrlInput && (
           <ListItem>
             <Stack direction="column" spacing="4px">
               <MenuTitle>Custom API URL</MenuTitle>

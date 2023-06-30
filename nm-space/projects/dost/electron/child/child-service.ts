@@ -8,6 +8,7 @@ import { ipcMain } from 'electron';
 import pidtree from 'pidtree';
 import { childClientKey, HostAgentConnectionStatus, IChildClient, Key } from '../../src/shares/child';
 import { AppConfigService } from '../app-config/app-config-service';
+import { FeatureConfigService } from '../feature-config/feature-config-service';
 import { logger } from '../log/logger.instance';
 import { FilledChildOptions } from './types';
 
@@ -19,8 +20,8 @@ import('strip-ansi').then((module) => {
 export class ChildService implements IChildClient {
   static instance: ChildService;
 
-  static open(appConfigService: AppConfigService) {
-    ChildService.instance = new ChildService(appConfigService);
+  static open(appConfigService: AppConfigService, featureConfigService: FeatureConfigService) {
+    ChildService.instance = new ChildService(appConfigService, featureConfigService);
     const { instance } = ChildService;
     ipcMain.handle(childClientKey.close, (_, key: Key) => instance.close(key));
     ipcMain.handle(childClientKey.isActive, (_, key: Key) => instance.isActive(key));
@@ -33,7 +34,7 @@ export class ChildService implements IChildClient {
 
   private children = new Map<Key, ChildProcess>();
 
-  private constructor(private readonly appConfigService: AppConfigService) {}
+  private constructor(private readonly appConfigService: AppConfigService, private readonly featureConfigService: FeatureConfigService) {}
 
   open(key: Key, module: string, options: FilledChildOptions): ChildProcess {
     if (this.children.has(key)) {
@@ -50,23 +51,27 @@ export class ChildService implements IChildClient {
       const dataString = data.toString();
       const stripped = stripAnsi ? stripAnsi(dataString) : dataString;
       logger.info(`[${key}] ${stripped}`);
-      Sentry.addBreadcrumb({
-        type: 'default',
-        category: key,
-        message: stripped,
-        level: 'info',
-      });
+      if (this.featureConfigService.get('useSentry')) {
+        Sentry.addBreadcrumb({
+          type: 'default',
+          category: key,
+          message: stripped,
+          level: 'info',
+        });
+      }
     });
     child.stderr?.on('data', (data) => {
       const dataString = data.toString();
       const stripped = stripAnsi ? stripAnsi(dataString) : dataString;
       logger.warn(`[${key}] ${stripped}`);
-      Sentry.addBreadcrumb({
-        type: 'default',
-        category: key,
-        message: stripped,
-        level: 'error',
-      });
+      if (this.featureConfigService.get('useSentry')) {
+        Sentry.addBreadcrumb({
+          type: 'default',
+          category: key,
+          message: stripped,
+          level: 'error',
+        });
+      }
     });
     child.on('error', (error) => {
       logger.error('child process error', { key, error });
@@ -79,12 +84,14 @@ export class ChildService implements IChildClient {
       }
       this.children.delete(key);
       if (code !== 0) {
-        Sentry.addBreadcrumb({
-          type: 'default',
-          category: key,
-          message: `child process(${key}) exited with code ${code} and signal ${signal}`,
-          level: 'fatal',
-        });
+        if (this.featureConfigService.get('useSentry')) {
+          Sentry.addBreadcrumb({
+            type: 'default',
+            category: key,
+            message: `child process(${key}) exited with code ${code} and signal ${signal}`,
+            level: 'fatal',
+          });
+        }
       }
     });
     child.on('message', (message, sendHandle) => {

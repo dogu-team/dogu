@@ -1,12 +1,11 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { FeatureTable } from '../shares/feature-config';
 
 export interface EnvironmentStore {
   platform: NodeJS.Platform | null;
   isDev: boolean;
-  features: {
-    apiUrlInsertable: boolean;
-  };
+  features: FeatureTable;
   setEnvironment: (updates: Partial<Omit<EnvironmentStore, 'setEnvironment'>>) => void;
 }
 
@@ -16,7 +15,9 @@ const useEnvironmentStore = create<EnvironmentStore>()(
       platform: null,
       isDev: false,
       features: {
-        apiUrlInsertable: false,
+        useApiUrlInput: false,
+        useSentry: false,
+        useAppUpdate: false,
       },
       setEnvironment: (updates) => set({ ...updates }),
     }),
