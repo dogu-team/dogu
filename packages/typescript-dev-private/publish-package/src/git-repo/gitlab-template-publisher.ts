@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { checkEnv_DOGU_DEPLOY, cleanTemp, getNpmTagFromRunType, getPackageNameFromPackageJson, getRunType, rebuild } from '../common';
+import { checkEnv_DOGU_DEPLOY, cleanTemp, getNpmTagByRunType, getPackageNameFromPackageJson, getRunType, rebuild } from '../common';
 import { GitRepoPublisher } from './publisher';
 
 export class GitlabTemplatePublisher extends GitRepoPublisher {
@@ -12,7 +12,7 @@ export class GitlabTemplatePublisher extends GitRepoPublisher {
     this.checkEnv_DOGU_GITLAB_ROOT_TOKEN();
     const runType = getRunType();
     const branch = 'main';
-    const npmTag = getNpmTagFromRunType(runType);
+    const npmTag = getNpmTagByRunType(runType);
     await cleanTemp(this.getTempDir());
     rebuild();
     const packageName = await getPackageNameFromPackageJson();

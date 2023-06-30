@@ -1,19 +1,15 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class Env {
   @IsString()
-  @IsNotEmpty()
-  DOGU_APPUPDATE_PROVIDER!: string;
+  DOGU_APPUPDATE_PROVIDER = '';
 
   @IsString()
-  @IsNotEmpty()
-  DOGU_APPUPDATE_URL!: string;
+  DOGU_APPUPDATE_URL = '';
 
   @IsString()
-  @IsNotEmpty()
-  DOGU_APPUPDATE_SUBPATH!: string;
+  DOGU_APPUPDATE_SUBPATH = '';
 
   @IsString()
-  @IsNotEmpty()
-  DOGU_APPUPDATE_REGION!: string;
+  DOGU_APPUPDATE_REGION = '';
 }

@@ -21,11 +21,23 @@ export function getRunType(): string {
   return runType;
 }
 
-export function getNpmTagFromRunType(tag: string): string {
-  if (tag === 'production') {
-    return 'latest';
-  } else {
-    return tag;
+export function getActionTagByRunType(runType: string): string {
+  switch (runType) {
+    case 'production':
+    case 'self-hosted':
+      return 'latest';
+    default:
+      return runType;
+  }
+}
+
+export function getNpmTagByRunType(runType: string): string {
+  switch (runType) {
+    case 'production':
+    case 'self-hosted':
+      return 'latest';
+    default:
+      return runType;
   }
 }
 

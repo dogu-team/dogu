@@ -35,8 +35,6 @@ import { WindowService } from './window/window-service';
 
 electronDl();
 
-Sentry.init({ dsn: SentyDSNUrl, maxBreadcrumbs: 10000, environment: isDev ? 'development' : 'production' });
-
 app.whenReady().then(async () => {
   logger.addFileTransports(LogsPath);
   rendererLogger.addFileTransports(LogsPath);
@@ -51,14 +49,17 @@ app.whenReady().then(async () => {
   ThemeService.open();
   await AppConfigService.open();
   await FeatureConfigService.open(AppConfigService.instance);
+  if (FeatureConfigService.instance.get('useSentry')) {
+    Sentry.init({ dsn: SentyDSNUrl, maxBreadcrumbs: 10000, environment: isDev ? 'development' : 'production' });
+  }
   await DotEnvConfigService.open(AppConfigService.instance);
-  await UpdaterService.open(AppConfigService.instance);
+  await UpdaterService.open(AppConfigService.instance, FeatureConfigService.instance);
   SettingsService.open(DotEnvConfigService.instance);
   TrayService.open();
   WindowService.open();
   StdLogCallbackService.open(WindowService.instance);
   await ExternalService.open(DotEnvConfigService.instance, StdLogCallbackService.instance, AppConfigService.instance, WindowService.instance);
-  ChildService.open(AppConfigService.instance);
+  ChildService.open(AppConfigService.instance, FeatureConfigService.instance);
   await ChildFactory.open(ChildService.instance, AppConfigService.instance, WindowService.instance);
 
   app.on('activate', () => {

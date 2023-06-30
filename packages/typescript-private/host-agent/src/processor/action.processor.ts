@@ -21,6 +21,16 @@ interface PrepareResult {
   actionGitPath?: string;
 }
 
+function getActionTagByRunType(runType: string): string {
+  switch (runType) {
+    case 'production':
+    case 'self-hosted':
+      return 'latest';
+    default:
+      return runType;
+  }
+}
+
 @Injectable()
 export class ActionProcessor {
   constructor(private readonly deviceClientService: DeviceClientService, private readonly logger: DoguLogger, private readonly commandProcessRegistry: CommandProcessRegistry) {}
@@ -89,13 +99,14 @@ export class ActionProcessor {
     const dotGitPath = path.resolve(actionGitPath, '.git');
     const stat = await fs.promises.stat(dotGitPath).catch(() => null);
     const configArgs = ['-c', 'core.longpaths=true'];
+    const tag = getActionTagByRunType(env.DOGU_RUN_TYPE);
     if (!stat) {
       this.logger.verbose('action git path is not git repo', { actionGitPath });
       this.logger.verbose('delete action git path', { actionGitPath });
       await fs.promises.rm(actionGitPath, { recursive: true, force: true });
       const url = `https://github.com/${actionId}.git`;
       this.logger.verbose('action git clone', { url, actionGitPath });
-      const result = await this.commandProcessRegistry.command(gitPath, [...configArgs, 'clone', '--depth', '1', '--branch', env.DOGU_RUN_TYPE, url, actionGitPath], {}, context);
+      const result = await this.commandProcessRegistry.command(gitPath, [...configArgs, 'clone', '--depth', '1', '--branch', tag, url, actionGitPath], {}, context);
       if (result.value.code !== 0) {
         return { error: result };
       }
@@ -112,12 +123,12 @@ export class ActionProcessor {
         return { error: cleanResult };
       }
       this.logger.verbose('action git fetch', { actionGitPath });
-      const fetchResult = await this.commandProcessRegistry.command(gitPath, [...configArgs, '-C', actionGitPath, 'fetch', 'origin', env.DOGU_RUN_TYPE], {}, context);
+      const fetchResult = await this.commandProcessRegistry.command(gitPath, [...configArgs, '-C', actionGitPath, 'fetch', 'origin', tag], {}, context);
       if (fetchResult.value.code !== 0) {
         return { error: fetchResult };
       }
       this.logger.verbose('action git checkout', { actionGitPath });
-      const pullResult = await this.commandProcessRegistry.command(gitPath, [...configArgs, '-C', actionGitPath, 'checkout', env.DOGU_RUN_TYPE], {}, context);
+      const pullResult = await this.commandProcessRegistry.command(gitPath, [...configArgs, '-C', actionGitPath, 'checkout', tag], {}, context);
       if (pullResult.value.code !== 0) {
         return { error: pullResult };
       }

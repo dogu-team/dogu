@@ -28,9 +28,9 @@ const Splash = () => {
           return;
         }
 
-        const [apiUrlInsertable, apiUrl] = await Promise.all([ipc.featureConfigClient.get('apiUrlInsertable'), ipc.appConfigClient.get<string>('DOGU_API_BASE_URL')]);
+        const [useApiUrlInput, apiUrl] = await Promise.all([ipc.featureConfigClient.get('useApiUrlInput'), ipc.appConfigClient.get<string>('DOGU_API_BASE_URL')]);
 
-        if (apiUrlInsertable && !apiUrl) {
+        if (useApiUrlInput && !apiUrl) {
           navigate('/setup/config');
           return;
         }

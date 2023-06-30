@@ -2,6 +2,9 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Button } from '@chakra-ui/react';
 import { stringify } from '@dogu-tech/common';
+import { init } from '@sentry/electron/renderer';
+import { init as reactInit } from '@sentry/react';
+import * as Sentry from '@sentry/electron/renderer';
 
 import Connect from './pages/Connect';
 import { ipc } from './utils/window';
@@ -18,6 +21,7 @@ import SetupInstaller from './pages/SetupInstaller';
 import SetupManual from './pages/SetupManual';
 import SetupConfig from './pages/SetupConfig';
 import IosSettings from './pages/iOSSettings';
+import { SentyDSNUrl } from './shares/constants';
 
 function App() {
   const { setEnvironment } = useEnvironmentStore();
@@ -27,12 +31,32 @@ function App() {
   useEffect(() => {
     (async () => {
       try {
-        const [platform, isDev, apiUrlInsertable] = await Promise.all([
+        const [platform, isDev, useApiUrlInput, useAppUpdate, useSentry] = await Promise.all([
           ipc.settingsClient.getPlatform(),
           ipc.settingsClient.isDev(),
-          ipc.featureConfigClient.get('apiUrlInsertable'),
+          ipc.featureConfigClient.get('useApiUrlInput'),
+          ipc.featureConfigClient.get('useAppUpdate'),
+          ipc.featureConfigClient.get('useSentry'),
         ]);
-        setEnvironment({ platform, isDev, features: { apiUrlInsertable } });
+        setEnvironment({
+          platform,
+          isDev,
+          features: {
+            useApiUrlInput,
+            useAppUpdate,
+            useSentry,
+          },
+        });
+
+        if (useSentry) {
+          init(
+            {
+              /* config */
+            },
+            reactInit,
+          );
+          Sentry.init({ dsn: SentyDSNUrl, maxBreadcrumbs: 10000 });
+        }
       } catch (e) {
         ipc.rendererLogger.error(`Error while getting platform in App: ${stringify(e)}`);
       }
