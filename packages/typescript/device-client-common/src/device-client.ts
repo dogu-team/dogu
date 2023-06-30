@@ -1,10 +1,10 @@
 import { Class, Closable, errorify, Instance, Log, stringify, transformAndValidate, WebSocketSpec } from '@dogu-tech/common';
 import { DeviceInterface } from '@dogu-tech/device-interface';
 import { FilledRuntimeInfo, PlatformSerial, Serial } from '@dogu-tech/types';
-import { DeviceCloser, DeviceClientOptions, DeviceService, DeviceWebSocket } from './bases';
+import { DeviceClientOptions, DeviceCloser, DeviceService, DeviceWebSocket } from './bases';
 import { DeviceHttpClient } from './device-http-client';
 import { Device } from './specs/http/device';
-import { AppiumChannelInfo, AppiumChannelKey } from './specs/http/device-dtos';
+import { AppiumContextInfo } from './specs/http/device-dtos';
 import { DeviceForward } from './specs/ws/device/forward';
 import { DeviceInstallApp } from './specs/ws/device/install-app';
 import { DeviceLogSubscribe } from './specs/ws/device/log-subscribe';
@@ -49,10 +49,8 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
     return platformSerials;
   }
 
-  async getAppiumChannelInfo(serial: Serial, key: AppiumChannelKey): Promise<AppiumChannelInfo> {
-    const response = await this.httpRequest(Device.getAppiumChannelInfo, new Device.getAppiumChannelInfo.pathProvider(serial), {
-      key,
-    });
+  async getAppiumContextInfo(serial: Serial): Promise<AppiumContextInfo> {
+    const response = await this.httpRequest(Device.getAppiumContextInfo, new Device.getAppiumContextInfo.pathProvider(serial));
     const { info } = response;
     return info;
   }

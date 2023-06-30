@@ -4,7 +4,7 @@ import { DeviceInspector, GetHitPointQuery, SwitchContextRequest, TryConnectGami
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { deviceNotFoundError } from '../device/device.utils';
 import { DoguLogger } from '../logger/logger';
-import { appiumChannelNotFoundError, gamiumContextNotFoundError } from '../response-utils';
+import { appiumContextNotFoundError, gamiumContextNotFoundError } from '../response-utils';
 import { ScanService } from '../scan/scan.service';
 
 @Controller(DeviceInspector.controller)
@@ -17,11 +17,11 @@ export class DeviceInspectorController {
     if (!channel) {
       return deviceNotFoundError(serial);
     }
-    const appiumChannel = await channel.getAppiumChannel('inspector');
-    if (!appiumChannel) {
-      return appiumChannelNotFoundError(serial, 'inspector');
+    const appiumContext = await channel.getAppiumContext();
+    if (!appiumContext) {
+      return appiumContextNotFoundError(serial);
     }
-    const pageSource = await appiumChannel.getPageSource();
+    const pageSource = await appiumContext.getPageSource();
     return {
       value: {
         $case: 'data',
@@ -38,11 +38,11 @@ export class DeviceInspectorController {
     if (!channel) {
       return deviceNotFoundError(serial);
     }
-    const appiumChannel = await channel.getAppiumChannel('inspector');
-    if (!appiumChannel) {
-      return appiumChannelNotFoundError(serial, 'inspector');
+    const appiumContext = await channel.getAppiumContext();
+    if (!appiumContext) {
+      return appiumContextNotFoundError(serial);
     }
-    const contexts = await appiumChannel.getContexts();
+    const contexts = await appiumContext.getContexts();
     return {
       value: {
         $case: 'data',
@@ -59,11 +59,11 @@ export class DeviceInspectorController {
     if (!channel) {
       return deviceNotFoundError(serial);
     }
-    const appiumChannel = await channel.getAppiumChannel('inspector');
-    if (!appiumChannel) {
-      return appiumChannelNotFoundError(serial, 'inspector');
+    const appiumContext = await channel.getAppiumContext();
+    if (!appiumContext) {
+      return appiumContextNotFoundError(serial);
     }
-    const context = await appiumChannel.getContext();
+    const context = await appiumContext.getContext();
     return {
       value: {
         $case: 'data',
@@ -80,12 +80,12 @@ export class DeviceInspectorController {
     if (!channel) {
       return deviceNotFoundError(serial);
     }
-    const appiumChannel = await channel.getAppiumChannel('inspector');
-    if (!appiumChannel) {
-      return appiumChannelNotFoundError(serial, 'inspector');
+    const appiumContext = await channel.getAppiumContext();
+    if (!appiumContext) {
+      return appiumContextNotFoundError(serial);
     }
     const { context } = body;
-    await appiumChannel.switchContext(context);
+    await appiumContext.switchContext(context);
     return {
       value: {
         $case: 'data',
@@ -103,12 +103,12 @@ export class DeviceInspectorController {
     if (!channel) {
       return deviceNotFoundError(serial);
     }
-    const appiumChannel = await channel.getAppiumChannel('inspector');
-    if (!appiumChannel) {
-      return appiumChannelNotFoundError(serial, 'inspector');
+    const appiumContext = await channel.getAppiumContext();
+    if (!appiumContext) {
+      return appiumContextNotFoundError(serial);
     }
     const { context } = body;
-    const pageSource = await appiumChannel.switchContextAndGetPageSource(context);
+    const pageSource = await appiumContext.switchContextAndGetPageSource(context);
     return {
       value: {
         $case: 'data',
@@ -126,19 +126,19 @@ export class DeviceInspectorController {
       return deviceNotFoundError(serial);
     }
     const { gamiumContext } = channel;
-    const appiumChannel = await channel.getAppiumChannel('inspector');
-    if (!appiumChannel) {
-      return appiumChannelNotFoundError(serial, 'inspector');
+    const appiumContext = await channel.getAppiumContext();
+    if (!appiumContext) {
+      return appiumContextNotFoundError(serial);
     }
-    const contextPageSources = await appiumChannel.getContextPageSources();
+    const contextPageSources = await appiumContext.getContextPageSources();
     if (gamiumContext) {
       if (gamiumContext.connected) {
         try {
           const gamiumContextPageSource = await gamiumContext.getContextPageSource();
           const mergedGamiumContextPageSource = {
             ...gamiumContextPageSource,
-            screenSize: await appiumChannel.getScreenSize(),
-            android: await appiumChannel.getAndroid(),
+            screenSize: await appiumContext.getScreenSize(),
+            android: await appiumContext.getAndroid(),
           };
           contextPageSources.push(mergedGamiumContextPageSource);
         } catch (error) {

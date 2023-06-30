@@ -11,9 +11,9 @@ import {
   StreamingAnswer,
 } from '@dogu-private/types';
 import { Closable, Printable, PromiseOrValue } from '@dogu-tech/common';
-import { AppiumChannelKey, StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { Observable } from 'rxjs';
-import { AppiumChannel } from '../../appium/appium.channel';
+import { AppiumContext } from '../../appium/appium.context';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { DevicePortContext } from '../types/device-port-context';
 
@@ -62,7 +62,7 @@ export interface DeviceChannel {
   runApp(appPath: string, printable?: Printable): PromiseOrValue<void>;
 
   // appium
-  getAppiumChannel(key: AppiumChannelKey): PromiseOrValue<AppiumChannel | null>;
+  getAppiumContext(): PromiseOrValue<AppiumContext | null>;
 
   // gamium
   set gamiumContext(context: GamiumContext | null);

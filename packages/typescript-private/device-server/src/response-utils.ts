@@ -1,16 +1,15 @@
 import { Code, Serial } from '@dogu-private/types';
-import { AppiumChannelKey, DeviceServerResponseDto } from '@dogu-tech/device-client-common';
+import { DeviceServerResponseDto } from '@dogu-tech/device-client-common';
 
-export function appiumChannelNotFoundError(serial: Serial, key: AppiumChannelKey): DeviceServerResponseDto {
+export function appiumContextNotFoundError(serial: Serial): DeviceServerResponseDto {
   return {
     value: {
       $case: 'error',
       error: {
-        code: Code.CODE_DEVICE_SERVER_APPIUM_CHANNEL_NOT_FOUND,
-        message: `Appium channel not found for key: ${key}`,
+        code: Code.CODE_DEVICE_SERVER_APPIUM_CONTEXT_NOT_FOUND,
+        message: 'Appium context not found',
         details: {
           serial,
-          key,
         },
       },
     },

@@ -13,15 +13,14 @@ import {
   StreamingAnswer,
 } from '@dogu-private/types';
 import { Closable, errorify, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
-import { AppiumChannelKey, StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { HostPaths } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
 import compressing from 'compressing';
 import fs from 'fs';
 import path from 'path';
 import { Observable } from 'rxjs';
-import { AppiumChannel } from '../../appium/appium.channel';
-import { AppiumChannelProxy } from '../../appium/appium.channel-proxy';
+import { AppiumContext } from '../../appium/appium.context';
 import { AppiumService } from '../../appium/appium.service';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { GamiumService } from '../../gamium/gamium.service';
@@ -59,7 +58,7 @@ export class IosChannel implements DeviceChannel {
     private readonly streaming: StreamingService,
     private iosDeviceAgentProcess: IosDeviceAgentProcess,
     private readonly deviceAgent: IosDeviceAgentService,
-    private readonly _appiumChannelProxy: AppiumChannelProxy,
+    private readonly _appiumContext: AppiumContext,
     private readonly logger: Printable,
   ) {
     this.logger.info(`IosChannel created: ${this.serial}`);
@@ -90,19 +89,14 @@ export class IosChannel implements DeviceChannel {
     const _ = await DerivedData.create(HostPaths.external.xcodeProject.wdaDerivedDataPath());
     logger.verbose('appium wda privisioning check done');
 
-    logger.verbose('appium channel proxy starting');
-    const appiumChannelProxy = new AppiumChannelProxy(appiumService, platform, serial);
-    const onCatchInspectorAppiumChannelProxyError = (error: Error): void => {
-      logger.error('AppiumChannelProxy inspector error.', { error: errorify(error) });
-      appiumChannelProxy.get('inspector').catch(onCatchInspectorAppiumChannelProxyError);
+    logger.verbose('appium context starting');
+    const appiumContext = appiumService.createAppiumContext(platform, serial);
+    const onCatchAppiumContextError = (error: Error): void => {
+      logger.error('AppiumContext inspector error.', { error: errorify(error) });
+      appiumContext.open().catch(onCatchAppiumContextError);
     };
-    await appiumChannelProxy.get('inspector').catch(onCatchInspectorAppiumChannelProxyError);
-    // const onCatchAutomationAppiumChannelProxyError = (error: Error): void => {
-    //   logger.error('AppiumChannelProxy automation error.', { error: errorify(error) });
-    //   appiumChannelProxy.get('automation').catch(onCatchAutomationAppiumChannelProxyError);
-    // };
-    // appiumChannelProxy.get('automation').catch(onCatchAutomationAppiumChannelProxyError);
-    logger.verbose('appium channel proxy started');
+    await appiumContext.open().catch(onCatchAppiumContextError);
+    logger.verbose('appium context started');
 
     let portContext = portContextes.get(serial);
     if (portContext == null) {
@@ -141,7 +135,7 @@ export class IosChannel implements DeviceChannel {
     });
     logger.verbose('ios system info service started');
 
-    const deviceChannel = new IosChannel(serial, portContext, systemInfo, streaming, iosDeviceAgentProcess, deviceAgent, appiumChannelProxy, logger);
+    const deviceChannel = new IosChannel(serial, portContext, systemInfo, streaming, iosDeviceAgentProcess, deviceAgent, appiumContext, logger);
 
     logger.verbose('streaming service calling deviceConnected');
     await Promise.resolve(
@@ -175,8 +169,11 @@ export class IosChannel implements DeviceChannel {
     await this._gamiumContext?.close().catch((error) => {
       this.logger.error('ios gamium context close failed.', { error: errorify(error) });
     });
-    await this._appiumChannelProxy.close().catch((error) => {
-      this.logger.error('ios appium context proxy close failed.', { error: errorify(error) });
+    /**
+     * @note Does not wait for appium to shutdown
+     */
+    this._appiumContext.close().catch((error) => {
+      this.logger.error('ios appium context close failed.', { error: errorify(error) });
     });
     this.iosDeviceAgentProcess.delete();
   }
@@ -324,8 +321,8 @@ export class IosChannel implements DeviceChannel {
     throw new Error('Method not implemented.');
   }
 
-  getAppiumChannel(key: AppiumChannelKey): Promise<AppiumChannel | null> {
-    return this._appiumChannelProxy.get(key);
+  getAppiumContext(): AppiumContext {
+    return this._appiumContext;
   }
 
   set gamiumContext(context: GamiumContext | null) {
