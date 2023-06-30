@@ -1,16 +1,15 @@
 import { Platform, Serial } from '@dogu-private/types';
+import { errorify, PrefixLogger } from '@dogu-tech/common';
+import { HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
 import { Injectable, OnModuleInit } from '@nestjs/common';
+import { exec } from 'child_process';
+import _ from 'lodash';
 import path from 'path';
+import util from 'util';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
 import { pathMap } from '../path-map';
-import { AppiumChannel, DefaultAppiumChannelOptions } from './appium.channel';
-import util from 'util';
-import { exec } from 'child_process';
-import { errorify, PrefixLogger } from '@dogu-tech/common';
-import { HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
-import { AppiumChannelKey } from '@dogu-tech/device-client-common';
-import _ from 'lodash';
+import { AppiumContext, AppiumContextProxy, DefaultAppiumContextOptions } from './appium.context';
 
 const execAsync = util.promisify(exec);
 
@@ -22,12 +21,12 @@ const execAsync = util.promisify(exec);
  */
 @Injectable()
 export class AppiumService implements OnModuleInit {
-  private _defaultAppiumChannelOptions: DefaultAppiumChannelOptions | null = null;
-  get defaultAppiumChannelOptions(): Readonly<DefaultAppiumChannelOptions> {
-    if (!this._defaultAppiumChannelOptions) {
+  private _defaultAppiumContextOptions: DefaultAppiumContextOptions | null = null;
+  get defaultAppiumContextOptions(): Readonly<DefaultAppiumContextOptions> {
+    if (!this._defaultAppiumContextOptions) {
       throw new Error('Appium channel options is not initialized');
     }
-    return this._defaultAppiumChannelOptions;
+    return this._defaultAppiumContextOptions;
   }
 
   private logger: PrefixLogger;
@@ -37,26 +36,21 @@ export class AppiumService implements OnModuleInit {
   }
 
   async onModuleInit(): Promise<void> {
-    this.createDefaultAppiumChannelOptions();
+    this.createDefaultAppiumContextOptions();
     await this.validateExternalAppium();
   }
 
-  /**
-   * @note This method does not guarantee key duplication.
-   */
-  async createAppiumChannel(platform: Platform, serial: Serial, key: AppiumChannelKey): Promise<AppiumChannel> {
-    const channel = new AppiumChannel({
-      ...this.defaultAppiumChannelOptions,
+  createAppiumContext(platform: Platform, serial: Serial): AppiumContext {
+    const context = new AppiumContextProxy({
+      ...this.defaultAppiumContextOptions,
       service: this,
       platform,
       serial,
-      key,
     });
-    await channel.open();
-    return channel;
+    return context;
   }
 
-  private createDefaultAppiumChannelOptions(): void {
+  private createDefaultAppiumContextOptions(): void {
     const pnpmPath = pathMap().common.pnpm;
     const appiumPath = HostPaths.external.nodePackage.appiumPath();
     const androidHomePath = path.resolve(env.ANDROID_HOME);
@@ -65,7 +59,7 @@ export class AppiumService implements OnModuleInit {
     const serverEnv = _.merge(cleanEnv, {
       PATH: `${pathMap().common.nodeBin}${path.delimiter}${cleanEnv.PATH ?? ''}`,
     });
-    this._defaultAppiumChannelOptions = {
+    this._defaultAppiumContextOptions = {
       pnpmPath,
       appiumPath,
       androidHomePath,
@@ -73,12 +67,12 @@ export class AppiumService implements OnModuleInit {
       serverEnv,
     };
     this.logger.verbose('Default appium channel options created', {
-      defaultAppiumChannelOptions: this._defaultAppiumChannelOptions,
+      defaultAppiumContextOptions: this._defaultAppiumContextOptions,
     });
   }
 
   private async validateExternalAppium(): Promise<void> {
-    const { pnpmPath, appiumPath, serverEnv } = this.defaultAppiumChannelOptions;
+    const { pnpmPath, appiumPath, serverEnv } = this.defaultAppiumContextOptions;
     const command = `${pnpmPath} appium --version`;
     try {
       const { stdout, stderr } = await execAsync(command, {

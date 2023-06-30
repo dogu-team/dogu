@@ -49,3 +49,43 @@ export function notEmpty<T>(value: T | null | undefined): value is T {
 export function errorify(value: unknown): Error {
   return isError(value) ? value : new Error(stringify(value));
 }
+
+export interface CallAsyncWithTimeoutOptions {
+  /**
+   * @unit milliseconds
+   */
+  timeout: number;
+
+  /**
+   * @default 'Timeout error ${timeout}ms'
+   * @example 'Timeout error 1000ms'
+   * @description The error message when the timeout is reached. The timeout is replaced with the actual timeout value.
+   */
+  timeoutErrorMessage?: string;
+}
+
+export async function callAsyncWithTimeout<T>(returningPromise: Promise<T>, options: CallAsyncWithTimeoutOptions): Promise<T> {
+  const { timeout } = options;
+  const timeoutErrorMessage = options.timeoutErrorMessage ?? `Timeout occurred after ${timeout}ms`;
+  let returned = false;
+  return new Promise<T>((resolve, reject) => {
+    const timeoutId = setTimeout(() => {
+      if (returned) return;
+      returned = true;
+      reject(new Error(timeoutErrorMessage));
+    }, timeout);
+    returningPromise
+      .then((value) => {
+        if (returned) return;
+        returned = true;
+        clearTimeout(timeoutId);
+        resolve(value);
+      })
+      .catch((error) => {
+        if (returned) return;
+        returned = true;
+        clearTimeout(timeoutId);
+        reject(errorify(error));
+      });
+  });
+}

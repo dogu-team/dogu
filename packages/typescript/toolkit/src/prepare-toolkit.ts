@@ -111,11 +111,12 @@ export async function prepareToolkit(options?: ToolkitOptions): Promise<Toolkit>
     let appiumContext: WebdriverIO.Browser | null = null;
     if (appium) {
       appiumContext = await step('Create Appium context', async () => {
-        const appiumChannelInfo = await deviceClient.getAppiumChannelInfo(deviceSerial, 'automation');
+        const appiumContextInfo = await deviceClient.getAppiumContextInfo(deviceSerial);
         const webdriverioModule = await import('webdriverio');
         const browser = await webdriverioModule.attach({
-          sessionId: appiumChannelInfo.sessionId,
-          capabilities: appiumChannelInfo.capabilities,
+          port: appiumContextInfo.server.port,
+          sessionId: appiumContextInfo.client.sessionId,
+          capabilities: appiumContextInfo.client.capabilities,
         });
         return browser;
       });

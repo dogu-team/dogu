@@ -161,7 +161,7 @@ export class MacosChannel implements DeviceChannel {
     throw new Error('Method not implemented.');
   }
 
-  getAppiumChannel(): null {
+  getAppiumContext(): null {
     return null;
   }
 
