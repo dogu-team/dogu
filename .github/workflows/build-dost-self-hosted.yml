@@ -1,4 +1,4 @@
-name: build-dost-self-hosted
+name: 🛠️build-dost-self-hosted
 
 on:
   workflow_dispatch:

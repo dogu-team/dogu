@@ -1,4 +1,4 @@
-name: build-dost
+name: 🛠️build-dost
 
 on:
   workflow_dispatch:

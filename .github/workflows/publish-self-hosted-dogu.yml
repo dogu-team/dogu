@@ -1,4 +1,4 @@
-name: 🚀release-self-hosted-dogu
+name: 📤publish-self-hosted-dogu
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-name: 🚀release-e2e-dogu
+name: 📤publish-e2e-dogu
 
 on:
   workflow_dispatch:
