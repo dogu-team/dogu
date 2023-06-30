@@ -169,6 +169,7 @@ services:
       - NEXT_PUBLIC_TURN_SERVER_HOST=${DOGU_HOST}
       - NEXT_PUBLIC_DOGU_GITLAB_PORT=8080
       - NEXT_PUBLIC_DOGU_GITLAB_PROTOCOL=http
+      - NEXT_PUBLIC_ENV=self-hosted
 
     networks:
       - console_network
