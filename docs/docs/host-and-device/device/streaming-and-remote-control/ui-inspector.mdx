@@ -4,6 +4,9 @@ title: UI Inspector
 locale: en
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 :::info
 
 Available on Android and iOS devices.
@@ -30,6 +33,58 @@ If your device is registered on the Dogu device farm, you can use the UI inspect
 1. Access the device streaming page in the Dogu console, then click on the "Inspector" menu.
 2. Select `NATIVE_APP` from the context.
 3. Expand the UI tree to view UI elements or click on buttons. Hover over the device streaming screen and click to see detailed information.
+
+### UI Element Information
+
+<Tabs>
+  <TabItem value="Android" label="Android" default>
+    <ul>
+      <li><code>XPath</code></li>
+      <li><code>index</code></li>
+      <li><code>package</code></li>
+      <li><code>class</code></li>
+      <li><code>text</code></li>
+      <li><code>content-desc</code></li>
+      <li><code>resource-id</code></li>
+      <li><code>checkable</code></li>
+      <li><code>checked</code></li>
+      <li><code>clickable</code></li>
+      <li><code>enabled</code></li>
+      <li><code>focusable</code></li>
+      <li><code>focused</code></li>
+      <li><code>long-clickable</code></li>
+      <li><code>scrollable</code></li>
+      <li><code>selected</code></li>
+      <li><code>displayed</code></li>
+      <li><code>password</code></li>
+      <li><code>bounds</code></li>
+    </ul>
+    <ul>
+      <li><code>rotation</code></li>
+      <li><code>width</code></li>
+      <li><code>height</code></li>
+    </ul>
+  </TabItem>
+
+  <TabItem value="iOS" label="iOS">
+    <ul>
+      <li><code>XPath</code></li>
+      <li><code>index</code></li>
+      <li><code>name</code></li>
+      <li><code>type</code></li>
+      <li><code>label</code></li>
+      <li><code>accessible</code></li>
+      <li><code>enabled</code></li>
+      <li><code>visible</code></li>
+      <li><code>x</code></li>
+      <li><code>y</code></li>
+    </ul>
+    <ul>
+      <li><code>width</code></li>
+      <li><code>height</code></li>
+    </ul>
+  </TabItem>
+</Tabs>
 
 ## Game UI Inspector
 
