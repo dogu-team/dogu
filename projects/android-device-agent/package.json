@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "android-device-agent",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "scripts": {
     "build": "",
     "build:android:debug": "ts-node ./scripts/buildAndroidDebug",
