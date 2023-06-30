@@ -71,7 +71,7 @@ jobs:
       - name: Send Slack
         uses: dogu-team/slack@v1.0
         with:
-          template: 'Release'
+          template: 'CD'
           slack-channel-id: 'C057ML9UH34'
           result-status: ${{ needs.publish.result }}
           ignore-notify: false
