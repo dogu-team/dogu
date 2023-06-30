@@ -41,6 +41,10 @@ on:
       - 'yarn.lock'
   workflow_dispatch:
 
+env:
+  DOGU_PYTHON_VERSION: 3.9.13
+  DOGU_POETRY_VERSION: 1.5.1
+
 jobs:
   build-and-push-dogu-console:
     runs-on: e2e-dogu-build

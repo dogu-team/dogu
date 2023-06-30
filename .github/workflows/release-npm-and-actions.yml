@@ -5,6 +5,8 @@ on:
 
 env:
   DOGU_DEPLOY: true
+  DOGU_PYTHON_VERSION: 3.9.13
+  DOGU_POETRY_VERSION: 1.5.1
 
 jobs:
   publish:
@@ -14,6 +16,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Setup Python & Poetry
+        uses: gabrielfalcao/pyenv-action@v11
+        with:
+          default: ${{ env.DOGU_PYTHON_VERSION }}
+          command: pyenv global ${{ env.DOGU_PYTHON_VERSION }} && pip install poetry==${{ env.DOGU_POETRY_VERSION }} && which poetry
+
       - name: Run newbie
         run: |
           yarn newbie:cicd
@@ -22,7 +30,7 @@ jobs:
         run: |
           yarn build:packages
 
-      - name: Build actions
+      - name: Build dogu-actions
         run: |
           yarn build:actions
 
@@ -33,3 +41,18 @@ jobs:
       - name: Publish to github dogu-actions
         run: |
           yarn publish:github:prod
+
+  send-slack:
+    runs-on: ubuntu-latest
+    needs: publish
+    if: ${{ always() }}
+
+    steps:
+      - name: Send Slack
+        uses: dogu-team/slack@v1.0
+        with:
+          template: 'CD'
+          slack-channel-id: 'C03PL9TC44Q'
+          result-status: ${{ needs.publish.result }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
