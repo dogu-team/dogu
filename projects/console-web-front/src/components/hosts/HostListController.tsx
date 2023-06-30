@@ -30,6 +30,7 @@ import PlatformIcon from '../device/PlatformIcon';
 import TokenCopyInput from '../common/TokenCopyInput';
 import { menuItemButtonStyles } from '../../styles/button';
 import useRequest from '../../hooks/useRequest';
+import HostVesrsionBadge from './HostVersionBadge';
 
 interface HostItemProps {
   host: HostBase;
@@ -261,6 +262,9 @@ const HostItem = ({ host }: HostItemProps) => {
           <StatusCell>
             <HostStateTag state={host.connectionState} />
           </StatusCell>
+          <AgentVersionCell>
+            <HostVesrsionBadge version={host.agentVersion} />
+          </AgentVersionCell>
           <PlatformCell>
             <HostPlatformBox>
               <PlatformIcon platform={host.platform} />
@@ -305,6 +309,7 @@ const HostListController = () => {
         <ItemInner>
           <NameCell>{t('host:hostTableNameColumn')}</NameCell>
           <StatusCell>{t('host:hostTableConnectionStatusColumn')}</StatusCell>
+          <AgentVersionCell>{t('host:hostTableAgentVersion')}</AgentVersionCell>
           <PlatformCell>{t('host:hostTableOSColumn')}</PlatformCell>
           <InfoCell>{t('host:hostTableDevciesColumn')}</InfoCell>
         </ItemInner>
@@ -373,6 +378,10 @@ const NameCell = styled(Cell)`
 
 const StatusCell = styled(Cell)`
   flex: 2.5;
+`;
+
+const AgentVersionCell = styled(Cell)`
+  flex: 1.5;
 `;
 
 const PlatformCell = styled(Cell)`
