@@ -1,4 +1,4 @@
-name: 🔄e2e
+name: 🔄ci-e2e
 
 concurrency:
   group: e2e

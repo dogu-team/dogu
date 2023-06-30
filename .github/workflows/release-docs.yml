@@ -1,4 +1,4 @@
-name: release-docs
+name: 🚀release-docs
 
 on:
   workflow_dispatch:
