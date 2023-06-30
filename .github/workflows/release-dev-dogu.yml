@@ -26,6 +26,7 @@ jobs:
           context: .
           file: ./dockerfile
           push: true
+          no-cache: true
           target: dogu-console
           tags: |
             dogutechio/dogu:rc
