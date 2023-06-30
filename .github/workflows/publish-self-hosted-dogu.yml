@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  start-self-hosted-dogu:
+  publish:
     runs-on: self-hosted-dogu
 
     steps:
@@ -63,3 +63,19 @@ jobs:
       - name: run dogu
         run: |
           docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up -d --scale postgres=0
+
+  send-slack:
+    runs-on: ubuntu-latest
+    needs: publish
+    if: ${{ always() }}
+
+    steps:
+      - name: Send Slack
+        uses: dogu-team/slack@v1.0
+        with:
+          template: 'CD'
+          slack-channel-id: 'C057ML9UH34'
+          result-status: ${{ needs.publish.result }}
+          ignore-notify: false
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

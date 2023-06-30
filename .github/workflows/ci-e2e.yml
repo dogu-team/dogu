@@ -262,7 +262,7 @@ jobs:
       - name: Send Slack
         uses: dogu-team/slack@v1.0
         with:
-          template: 'ci'
+          template: 'CI'
           slack-channel-id: 'C03PL9TC44Q'
           result-status: ${{ needs.e2e.result }}
           ignore-notify: ${{ needs.e2e.result == 'success' }}

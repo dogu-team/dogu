@@ -9,7 +9,7 @@ on:
         default: '0.0.1'
 
 jobs:
-  build-and-push-dogu-console:
+  publish:
     runs-on: prod-dogu-build
 
     steps:
@@ -34,6 +34,22 @@ jobs:
           target: dogu-console
           tags: |
             dogutechio/dogu:nightly
+
+  send-slack:
+    runs-on: ubuntu-latest
+    needs: publish
+    if: ${{ always() }}
+
+    steps:
+      - name: Send Slack
+        uses: dogu-team/slack@v1.0
+        with:
+          template: 'CD'
+          slack-channel-id: 'C057ML9UH34'
+          result-status: ${{ needs.publish.result }}
+          ignore-notify: false
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
 
   # start-prod-dogu:
   #   runs-on: prod-dogu

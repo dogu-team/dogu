@@ -214,9 +214,9 @@ jobs:
       - name: Send Slack
         uses: dogu-team/slack@v1.0
         with:
-          template: 'CI'
+          template: 'CD'
           slack-channel-id: 'C03PL9TC44Q'
           result-status: ${{ needs.build.result }}
-          ignore-notify: ${{ needs.build.result == 'success' }}
+          ignore-notify: false
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
