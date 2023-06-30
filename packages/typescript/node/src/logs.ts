@@ -4,7 +4,7 @@ import { Format, TransformableInfo } from 'logform';
 import winston, { format, LoggerOptions, transports } from 'winston';
 import 'winston-daily-rotate-file';
 import Transport from 'winston-transport';
-import { HostPaths, appIsPackaged } from '.';
+import { appIsPackaged, HostPaths } from '.';
 
 const logLevels: Record<LogLevel, LogLevelEnum> = {
   error: LogLevelEnum.ERROR,
@@ -165,9 +165,11 @@ export class LoggerOptionsFactory {
     if (withConsoleTransport) {
       transports.push(LogTransportFactory.createConsole());
     }
+    const levelArray = LogLevel as readonly string[];
+    const levelResolved = process.env.DOGU_LOG_LEVEL && levelArray.includes(process.env.DOGU_LOG_LEVEL) ? process.env.DOGU_LOG_LEVEL : level;
     return {
       levels: logLevels,
-      level,
+      level: levelResolved,
       defaultMeta: { category },
       format: format.errors({ stack: true }),
       transports,
