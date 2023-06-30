@@ -9,8 +9,8 @@ Dogu is a web-based test platform for test automation
 </p>
 
 <p align="center">
-  <a href="https://github.com/dogu-team/dogu/actions/workflows/e2e.yml">
-    <img src="https://github.com/dogu-team/dogu/actions/workflows/e2e.yml/badge.svg" alt="GitHub Actions status">
+  <a href="https://github.com/dogu-team/dogu/actions/workflows/ci-e2e.yml">
+    <img src="https://github.com/dogu-team/dogu/actions/workflows/ci-e2e.yml/badge.svg" alt="GitHub Actions status">
   </a>
   <a href="https://github.com/dogu-team/dogu/releases" alt="Activity">
     <img alt="GitHub tag (latest SemVer pre-release)" src="https://img.shields.io/github/v/tag/dogu-team/dogu?label=release">
