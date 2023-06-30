@@ -202,7 +202,7 @@ jobs:
 
       - name: Dost - Build
         run: |
-          yarn run build && yarn run deploy:notarize:upload
+          yarn run build && yarn run deploy:publish
         working-directory: ./nm-space/projects/dost
 
   send-slack:
