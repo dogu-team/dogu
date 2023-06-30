@@ -1,4 +1,4 @@
-name: 🛠️build-dost-saas-development
+name: 📤publish-dost-saas-development
 
 on:
   workflow_dispatch:
