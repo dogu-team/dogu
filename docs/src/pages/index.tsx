@@ -49,22 +49,37 @@ export default function Home(): JSX.Element {
             <div className={styles.logoWrapper}>
               <RocketLogo className={styles.svg} />
             </div>
+            <Translate id="main.introduction" />
+          </h2>
+          <ul className={styles.docsSectionListContainer}>
+            <li className={styles.docsSectionListItem}>
+              <Link to="/introduction/dogu">
+                <Translate id="main.getStartedAboutLinkTitle" />
+              </Link>
+            </li>
+          </ul>
+        </div>
+        <div className={styles.docsSection}>
+          <h2 className={styles.docsSectionTitle}>
+            <div className={styles.logoWrapper}>
+              <RocketLogo className={styles.svg} />
+            </div>
             <Translate id="main.getStartedTitle" />
           </h2>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
               <Link to="/get-started/introduction">
-                <Translate id="main.getStartedAboutLinkTitle" />
+                <Translate id="main.getStartedLinkTitle" />
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/get-started/device-farm">
-                <Translate id="main.getStartedDevicefarmLinkTitle" />
+              <Link to="/get-started/dogu-cloud">
+                <Translate id="main.getStartedWithCloud" />
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/get-started/game-test">
-                <Translate id="main.getStartedGameTestLinkTitle" />
+              <Link to="/get-started/dogu-self-hosted">
+                <Translate id="main.getStartedWithSelfHosted" />
               </Link>
             </li>
           </ul>
@@ -83,12 +98,12 @@ export default function Home(): JSX.Element {
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/organization-and-project/organization/about">
+              <Link to="/organization-and-project/organization">
                 <Translate id="main.orgAndProjectOrgLinkTitle" />
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/organization-and-project/project/about">
+              <Link to="/organization-and-project/project">
                 <Translate id="main.orgAndProjectProjectLinkTitle" />
               </Link>
             </li>
@@ -115,6 +130,57 @@ export default function Home(): JSX.Element {
             <li className={styles.docsSectionListItem}>
               <Link to="/host-and-device/device/settings">
                 <Translate id="main.hostAndDeviceDeviceLinkTitle" />
+              </Link>
+            </li>
+          </ul>
+        </div>
+        <div className={styles.docsSection}>
+          <h2 className={styles.docsSectionTitle}>
+            <div className={styles.logoWrapper}>
+              <CommunityLogo className={styles.svg} />
+            </div>
+            <Translate id="main.testAutomationTitle" />
+          </h2>
+          <ul className={styles.docsSectionListContainer}>
+            <li className={styles.docsSectionListItem}>
+              <Link to="/test-automation/introduction">
+                <Translate id="main.testAutomationTitle" />
+              </Link>
+            </li>
+          </ul>
+          <ul className={styles.docsSectionListContainer}>
+            <li className={styles.docsSectionListItem}>
+              <Link to="/test-automation/browser">
+                <Translate id="main.testAutomationBrowserLinkTitle" />
+              </Link>
+            </li>
+          </ul>
+          <ul className={styles.docsSectionListContainer}>
+            <li className={styles.docsSectionListItem}>
+              <Link to="/test-automation/mobile">
+                <Translate id="main.testAutomationMobileLinkTitle" />
+              </Link>
+            </li>
+          </ul>
+          <ul className={styles.docsSectionListContainer}>
+            <li className={styles.docsSectionListItem}>
+              <Link to="/test-automation/game">
+                <Translate id="main.testAutomationGameLinkTitle" />
+              </Link>
+            </li>
+          </ul>
+        </div>
+        <div className={styles.docsSection}>
+          <h2 className={styles.docsSectionTitle}>
+            <div className={styles.logoWrapper}>
+              <CommunityLogo className={styles.svg} />
+            </div>
+            <Translate id="main.testReportTitle" />
+          </h2>
+          <ul className={styles.docsSectionListContainer}>
+            <li className={styles.docsSectionListItem}>
+              <Link to="/test-report/introduction">
+                <Translate id="main.testReportTitle" />
               </Link>
             </li>
           </ul>
@@ -149,7 +215,7 @@ export default function Home(): JSX.Element {
             </li>
           </ul>
         </div>
-        <div className={styles.docsSection}>
+        {/* <div className={styles.docsSection}>
           <h2 className={styles.docsSectionTitle}>
             <div className={styles.logoWrapper}>
               <CodeLogo className={styles.svg} />
@@ -168,8 +234,8 @@ export default function Home(): JSX.Element {
               </Link>
             </li>
           </ul>
-        </div>
-        <div className={styles.docsSection}>
+        </div> */}
+        {/* <div className={styles.docsSection}>
           <h2 className={styles.docsSectionTitle}>
             <div className={styles.logoWrapper}>
               <SelfManagedLogo className={styles.svg} />
@@ -183,7 +249,7 @@ export default function Home(): JSX.Element {
               </Link>
             </li>
           </ul>
-        </div>
+        </div> */}
         <div className={styles.docsSection}>
           <h2 className={styles.docsSectionTitle}>
             <div className={styles.logoWrapper}>
@@ -193,7 +259,14 @@ export default function Home(): JSX.Element {
           </h2>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/community/discord">Discord</Link>
+              <Link to="https://discord.com/invite/bVycd6Tu9g">Discord</Link>
+            </li>
+          </ul>
+          <ul className={styles.docsSectionListContainer}>
+            <li className={styles.docsSectionListItem}>
+              <Link to="https://github.com/dogu-team/dogu/discussions">
+                Github Discussion
+              </Link>
             </li>
           </ul>
         </div>

@@ -275,23 +275,29 @@
   "main.descriptionText": {
     "message": "Dogu를 이용해 게임 테스트 케이스를 자동화하는 방법을 알아보세요\n해당 문서에서는 예시 코드 및 튜토리얼 등 다양한 정보를 제공합니다."
   },
+  "main.introduction": {
+    "message": "소개"
+  },
   "main.getStartedTitle": {
     "message": "시작하기"
   },
+  "main.getStartedLinkTitle": {
+    "message": "시작하기"
+  },
   "main.getStartedAboutLinkTitle": {
-    "message": "Dogu 소개"
+    "message": "Dogu"
   },
-  "main.getStartedDevicefarmLinkTitle": {
-    "message": "디바이스 팜 시작하기"
+  "main.getStartedWithCloud": {
+    "message": "Cloud"
   },
-  "main.getStartedGameTestLinkTitle": {
-    "message": "게임 테스트 자동화 시작하기"
+  "main.getStartedWithSelfHosted": {
+    "message": "Self-Hosted"
   },
   "main.orgAndProjectTitle": {
-    "message": "조직 & 프로젝트"
+    "message": "관리"
   },
   "main.orgAndProjectIntroLinkTitle": {
-    "message": "소개"
+    "message": "조직과 프로젝트"
   },
   "main.orgAndProjectOrgLinkTitle": {
     "message": "조직"
@@ -300,10 +306,10 @@
     "message": "프로젝트"
   },
   "main.hostAndDeviceTitle": {
-    "message": "호스트 & 디바이스"
+    "message": "디바이스 팜"
   },
   "main.hostAndDeviceIntroLinkTitle": {
-    "message": "소개"
+    "message": "디바이스 팜"
   },
   "main.hostAndDeviceHostLinkTitle": {
     "message": "호스트"
@@ -311,8 +317,20 @@
   "main.hostAndDeviceDeviceLinkTitle": {
     "message": "디바이스"
   },
+  "main.testAutomationTitle": {
+    "message": "테스트 자동화"
+  },
+  "main.testAutomationBrowserLinkTitle": {
+    "message": "브라우저"
+  },
+  "main.testAutomationMobileLinkTitle": {
+    "message": "모바일"
+  },
+  "main.testAutomationGameLinkTitle": {
+    "message": "게임"
+  },
   "main.scriptAndRoutineTitle": {
-    "message": "스크립트 & 루틴"
+    "message": "루틴"
   },
   "main.scriptAndRoutineIntroLinkTitle": {
     "message": "소개"
@@ -340,6 +358,9 @@
   },
   "main.selfHostedStartLinkTitle": {
     "message": "시작하기"
+  },
+  "main.testReportTitle": {
+    "message": "테스트 리포트"
   },
   "theme.NavBar.navAriaLabel": {
     "message": "Main",

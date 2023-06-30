@@ -29,7 +29,7 @@
   },
   "link.item.label.GitHub": {
     "message": "GitHub",
-    "description": "The label of footer link with label=GitHub linking to https://github.com/dogu-team/dogu-docs"
+    "description": "The label of footer link with label=GitHub linking to https://github.com/dogu-team/dogu"
   },
   "copyright": {
     "message": "Copyright © 2023 Dogu Technologies, Inc. Built with Docusaurus.",
@@ -40,11 +40,11 @@
     "description": "The label of footer link with label=getStarted linking to /get-started/introduction"
   },
   "link.item.label.orgAndProject": {
-    "message": "조직 & 프로젝트",
+    "message": "관리",
     "description": "The label of footer link with label=orgAndProject linking to /organization-and-project/introduction"
   },
   "link.item.label.hostAndDevice": {
-    "message": "호스트 & 디바이스",
+    "message": "디바이스 팜",
     "description": "The label of footer link with label=hostAndDevice linking to /host-and-device/introduction"
   },
   "link.item.label.scriptAndRoutine": {

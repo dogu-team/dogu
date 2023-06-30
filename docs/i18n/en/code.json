@@ -275,17 +275,23 @@
   "main.descriptionText": {
     "message": "Explore how to automate game test cases using Dogu.\nThe documentation provides various resources, including example code and tutorials, to guide you through the process."
   },
+  "main.introduction": {
+    "message": "Introduction"
+  },
   "main.getStartedTitle": {
+    "message": "Get started"
+  },
+  "main.getStartedLinkTitle": {
     "message": "Get started"
   },
   "main.getStartedAboutLinkTitle": {
     "message": "About Dogu"
   },
-  "main.getStartedDevicefarmLinkTitle": {
-    "message": "Start device farm"
+  "main.getStartedWithCloud": {
+    "message": "Cloud"
   },
-  "main.getStartedGameTestLinkTitle": {
-    "message": "Start game test automation"
+  "main.getStartedWithSelfHosted": {
+    "message": "Self-Hosted"
   },
   "main.orgAndProjectTitle": {
     "message": "Maganement"
@@ -311,8 +317,20 @@
   "main.hostAndDeviceDeviceLinkTitle": {
     "message": "Device"
   },
+  "main.testAutomationTitle": {
+    "message": "Test Automation"
+  },
+  "main.testAutomationBrowserLinkTitle": {
+    "message": "Browser"
+  },
+  "main.testAutomationMobileLinkTitle": {
+    "message": "Mobile"
+  },
+  "main.testAutomationGameLinkTitle": {
+    "message": "Game"
+  },
   "main.scriptAndRoutineTitle": {
-    "message": "Script & Routine"
+    "message": "Routine"
   },
   "main.scriptAndRoutineIntroLinkTitle": {
     "message": "Intro"
@@ -340,6 +358,9 @@
   },
   "main.selfHostedStartLinkTitle": {
     "message": "Get Started"
+  },
+  "main.testReportTitle": {
+    "message": "Test Report"
   },
   "theme.NavBar.navAriaLabel": {
     "message": "Main",

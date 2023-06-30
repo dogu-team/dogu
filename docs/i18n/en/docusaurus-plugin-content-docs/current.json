@@ -42,5 +42,17 @@
   "sidebar.organizationAndProjectSidebar.category.Project": {
     "message": "Project",
     "description": "The label for category Project in sidebar organizationAndProjectSidebar"
+  },
+  "sidebar.testAutomationSidebar.category.Browser": {
+    "message": "Browser",
+    "description": "The label for category Browser in sidebar testAutomation"
+  },
+  "sidebar.testAutomationSidebar.category.Mobile": {
+    "message": "Mobile",
+    "description": "The label for category Mobile in sidebar testAutomation"
+  },
+  "sidebar.testAutomationSidebar.category.Game": {
+    "message": "Game",
+    "description": "The label for category Game in sidebar testAutomation"
   }
 }
