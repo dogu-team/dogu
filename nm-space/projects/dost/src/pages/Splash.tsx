@@ -18,7 +18,7 @@ const Splash = () => {
       ipc.externalClient
         .isSupportedPlatformValidationCompleted()
         .then((isExternalValidationCompleted) => {
-          console.log('isExternalValidationCompleted', isExternalValidationCompleted);
+          ipc.rendererLogger.info(`External client validation status in Splash: ${stringify(isExternalValidationCompleted)}`);
           if (isExternalValidationCompleted) {
             setIsLoading(false);
           } else {
