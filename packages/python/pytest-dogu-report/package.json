@@ -6,13 +6,13 @@
   "author": "dogu",
   "scripts": {
     "black": "poetry run black src tests",
-    "build": "poetry run python setup.py build",
+    "build:python": "poetry run python setup.py build",
     "clean": "ts-node ./scripts/clean.ts",
     "lint": "yarn black && yarn pylint",
-    "newbie": "poetry install",
+    "newbie:python": "poetry install",
     "pylint": "poetry run pylint src tests",
-    "rebuild": "yarn clean && yarn build",
-    "test": "poetry run pytest"
+    "rebuild:python": "yarn clean && yarn build:python",
+    "test:python": "poetry run pytest"
   },
   "devDependencies": {
     "@types/shelljs": "0.8.11",
