@@ -1,4 +1,4 @@
-name: 📤publish-dost-saas-development
+name: 📤publish-dost-cloud-development
 
 on:
   workflow_dispatch:
@@ -173,7 +173,7 @@ jobs:
 
       - name: Dost - Set productName
         run: |
-          yarn util:set-productname Dost-saas-development && yarn
+          yarn util:set-productname Dost-cloud-development && yarn
         working-directory: ./nm-space/projects/dost
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false

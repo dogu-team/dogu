@@ -1,4 +1,4 @@
-name: 📤publish-dost-saas-production
+name: 📤publish-dost-cloud-production
 
 on:
   workflow_dispatch:
