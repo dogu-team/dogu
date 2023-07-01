@@ -21,7 +21,7 @@ jobs:
           node-version: '16'
 
       - name: Install Dependencies
-        run: yarn workspace docs install
+        run: yarn install
 
       - name: Build
         run: yarn build:docs
