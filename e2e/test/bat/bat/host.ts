@@ -5,7 +5,7 @@ import { ElementHandle, Locator, Page } from 'playwright';
 import { Key } from 'selenium-webdriver';
 import { Driver } from '../../../src/chromedriver';
 import { dostPlaywrightColor, launchDost } from '../../../src/dost';
-import { replaceIosDeviceAgentSigningStyle, replaceWebDriverAgentSigningStyle } from '../../../src/ios-helper';
+import { copyIosDeviceAgentProject, replaceIosDeviceAgentSigningStyle, replaceWebDriverAgentSigningStyle } from '../../../src/ios-helper';
 import { getClockTime } from '../../../src/time';
 import { Timer } from '../../../src/timer';
 import { l10n } from './l10n';
@@ -142,8 +142,7 @@ export class Dost {
       if (process.platform !== 'darwin') {
         return;
       }
-      await this.mainPage!.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'hidden' });
-      await this.mainPage!.getByText('Check', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+      await this.mainPage!.getByText('Building project...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'hidden' });
     });
     yield;
 
@@ -152,6 +151,7 @@ export class Dost {
         return;
       }
 
+      await copyIosDeviceAgentProject();
       replaceIosDeviceAgentSigningStyle();
       await delay(3000);
 
@@ -165,10 +165,15 @@ export class Dost {
         return;
       }
 
-      await this.mainPage!.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'hidden' });
-      await this.mainPage!.getByText('Check', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+      await this.mainPage!.getByText('Building project...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'hidden' });
+      await delay(1000);
 
-      await this.mainPage!.getByText('Finish', { exact: true }).first().click({ timeout: this.InstallTimeoutMs });
+      await this.mainPage!.getByText('Continue', { exact: true }).first().click({ timeout: this.InstallTimeoutMs });
+    });
+
+    test('Set API url', async () => {
+      await this.mainPage!.getByText('Set', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+      await this.mainPage!.getByText('Finish', { exact: true }).first().click({ timeout: this.longTimeoutMs });
     });
   }
 
