@@ -148,13 +148,13 @@ class ZombieXCTest implements Zombieable {
       return;
     }
 
+    await delay(1000);
+
     const xctestrunPath = this.xctestrunfile.filePath;
-    await MobileDevice.uninstallApp(this.serial, 'com.dogu.IOSDeviceAgentRunner').catch(() => {
-      // ignore
+    await MobileDevice.uninstallApp(this.serial, 'com.dogu.IOSDeviceAgentRunner', this.logger).catch(() => {
       this.logger.warn?.('uninstallApp com.dogu.IOSDeviceAgentRunner failed');
     });
-    await MobileDevice.uninstallApp(this.serial, 'com.dogu.IOSDeviceAgentRunner.xctrunner').catch(() => {
-      // ignore
+    await MobileDevice.uninstallApp(this.serial, 'com.dogu.IOSDeviceAgentRunner.xctrunner', this.logger).catch(() => {
       this.logger.warn?.('uninstallApp com.dogu.IOSDeviceAgentRunner.xctrunner failed');
     });
     await this.xctestrunfile.updateIdaXctestrunFile(this.webDriverPort, this.grpcPort);
@@ -229,15 +229,17 @@ class ZombieScreenChecker implements Zombieable {
       }
       this.logger.debug?.(`ZombieScreenChecker. hello success. `);
       const onClose = (): void => {
-        this.logger.info(`ZombieScreenChecker. close. `);
+        this.logger.info(`ZombieScreenChecker.close. `);
         if (this.xctest.dieTime) {
           // screenCheck should kill xctest only if xctest is alive and doguscreen is dead.
           // temporarily prevent xctest die -> screenCheck die -> xctest die loop
           const diffTime = new Date().getTime() - this.xctest.dieTime.getTime();
           if (1000 * 10 < diffTime) {
+            this.logger.info(`ZombieScreenChecker. kill xctest`);
             ZombieServiceInstance.notifyDie(this.xctest, 'screen check failed');
           }
         } else {
+          this.logger.info(`ZombieScreenChecker. kill xctest first`);
           ZombieServiceInstance.notifyDie(this.xctest, 'screen check failed');
         }
         ZombieServiceInstance.notifyDie(this, 'close');
