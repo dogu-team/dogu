@@ -36,9 +36,8 @@ const XCodeProjectBuildDescription = ({ projectName, externalKeyAndNames, onOpen
             }}
             isLoading={loading}
             colorScheme="blue"
-            isDisabled={isValid}
           >
-            Click here to build
+            {isValid ? 'Rebuild & Check' : 'Build & Check'}
           </Button>
         </ListItem>
       </UnorderedList>

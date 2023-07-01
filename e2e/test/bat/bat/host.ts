@@ -140,7 +140,7 @@ export class Dost {
       await this.mainPage!.getByText('Manual Setup', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'visible' });
       replaceWebDriverAgentSigningStyle();
 
-      await this.mainPage!.getByText('Click here to build', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+      await this.mainPage!.getByText('Build & Check', { exact: true }).first().click({ timeout: this.longTimeoutMs });
     });
     yield;
 
@@ -160,9 +160,7 @@ export class Dost {
       await copyIosDeviceAgentProject();
       replaceIosDeviceAgentSigningStyle();
       await delay(3000);
-
-      const buildButtons = await this.mainPage!.getByText('Click here to build', { exact: true }).all();
-      await buildButtons[1].dispatchEvent('click');
+      await this.mainPage!.getByText('Build & Check', { exact: true }).first().click({ timeout: this.longTimeoutMs });
     });
     yield;
 
