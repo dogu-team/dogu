@@ -29,15 +29,14 @@ jobs:
       max-parallel: 2
       matrix:
         runner: [windows-2019, macos-latest]
+        arch: [arm64, x64]
         include:
           - runner: windows-2019
             extension: exe
-            arch: x64
           - runner: macos-latest
             extension: dmg
-            arch: x64
-          - runner: macos-latest
-            extension: dmg
+        exclude:
+          - runner: windows-2019
             arch: arm64
     runs-on: ['${{ matrix.runner }}']
 
