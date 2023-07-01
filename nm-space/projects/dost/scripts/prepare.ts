@@ -3,6 +3,7 @@ import path from 'path';
 import { signThirdParties } from './deployDarwin';
 
 export type Arch = 'ia32' | 'x64' | 'arm64';
+export const Archs: Arch[] = ['ia32', 'x64', 'arm64'];
 export const ThirdPartyPath = path.resolve(__dirname, '../../../../third-party');
 
 export interface ExtraResource {
@@ -20,6 +21,9 @@ async function access(path: string, mode: number): Promise<boolean> {
 }
 
 function getArchs(platform: NodeJS.Platform): Arch[] {
+  if (process.env.DOGU_BUILD_ARCH && Archs.includes(process.env.DOGU_BUILD_ARCH as Arch)) {
+    return [process.env.DOGU_BUILD_ARCH as Arch];
+  }
   switch (platform) {
     case 'win32':
       return ['x64'];

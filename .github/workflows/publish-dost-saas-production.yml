@@ -22,8 +22,13 @@ jobs:
         include:
           - runner: windows-2019
             extension: exe
+            arch: x64
           - runner: macos-latest
             extension: dmg
+            arch: x64
+          - runner: macos-latest
+            extension: dmg
+            arch: arm64
     runs-on: ['${{ matrix.runner }}']
 
     env:
@@ -183,6 +188,8 @@ jobs:
         run: |
           yarn run build && yarn run deploy:publish
         working-directory: ./nm-space/projects/dost
+        env:
+          DOGU_BUILD_ARCH: ${{ matrix.arch }}
 
   send-slack:
     runs-on: ubuntu-latest

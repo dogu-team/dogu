@@ -32,8 +32,13 @@ jobs:
         include:
           - runner: windows-2019
             extension: exe
+            arch: x64
           - runner: macos-latest
             extension: dmg
+            arch: x64
+          - runner: macos-latest
+            extension: dmg
+            arch: arm64
     runs-on: ['${{ matrix.runner }}']
 
     env:
@@ -209,12 +214,14 @@ jobs:
         run: |
           yarn run build && yarn run deploy:notarize
         working-directory: ./nm-space/projects/dost
+        env:
+          DOGU_BUILD_ARCH: ${{ matrix.arch }}
 
       - name: Upload dost
         if: ${{ success() }}
         uses: actions/upload-artifact@v3
         with:
-          name: 'dost-${{ runner.os }}'
+          name: 'dost-${{ runner.os }}-${{ matrix.arch }}'
           path: |
             ./nm-space/projects/dost/dist/*.${{ matrix.extension }}
 
