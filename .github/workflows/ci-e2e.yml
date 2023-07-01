@@ -47,7 +47,7 @@ env:
 
 jobs:
   build-and-push-dogu-console:
-    runs-on: e2e-dogu-build
+    runs-on: dogu-build
 
     steps:
       - name: docker init
