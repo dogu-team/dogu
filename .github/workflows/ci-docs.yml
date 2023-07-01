@@ -20,6 +20,18 @@ jobs:
         with:
           node-version: '16'
 
+      - name: Cache Unplugged
+        uses: actions/cache@v2
+        env:
+          cache-name: unplugged
+        with:
+          path: /yarn/unplugged
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       - name: Install Dependencies
         run: yarn unplug
 
