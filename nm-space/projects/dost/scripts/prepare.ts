@@ -24,7 +24,7 @@ function getArchs(platform: NodeJS.Platform): Arch[] {
     case 'win32':
       return ['x64'];
     case 'darwin':
-      return ['x64', 'arm64'];
+      return ['arm64', 'x64'];
     // return ['arm64'];
     default:
       throw new Error(`Unsupported platform ${platform}`);
