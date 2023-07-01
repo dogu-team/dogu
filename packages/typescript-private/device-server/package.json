@@ -50,7 +50,7 @@
     "rxjs": "7.5.6",
     "systeminformation": "5.17.14",
     "uuid": "9.0.0",
-    "webdriverio": "8.10.5",
+    "webdriverio": "7.32.0",
     "winston": "3.8.2",
     "ws": "8.13.0"
   },

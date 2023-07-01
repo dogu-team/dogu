@@ -5,11 +5,6 @@ import { IsBoolean, IsIn, IsNumber, IsString } from 'class-validator';
 import { DefaultGamiumEnginePort } from 'gamium';
 import { logger } from './internal/logger-instance';
 
-import('webdriverio').catch((error) => {
-  logger.error('Failed to import webdriverio', { error: errorify(error) });
-  process.exit(1);
-});
-
 type DoguEnvDependencies = Pick<
   StepContextEnv,
   | 'DOGU_DEVICE_SERIAL' //
