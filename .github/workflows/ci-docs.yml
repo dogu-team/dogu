@@ -26,7 +26,7 @@ jobs:
         env:
           cache-name: cache-yarn
         with:
-          path: /.yarn
+          path: ${{ github.workspace }}/.yarn
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
