@@ -1,4 +1,4 @@
-import { build, CliOptions, Configuration } from 'electron-builder';
+import { build, CliOptions, CompressionLevel, Configuration } from 'electron-builder';
 import fs from 'fs';
 import path from 'path';
 import { hideBin } from 'yargs/helpers';
@@ -38,6 +38,13 @@ function getArtifactPrefix(): string {
     return 'dost';
   }
   return `dost-${deviceServerEnv.DOGU_RUN_TYPE}`;
+}
+
+function getCompression(): CompressionLevel {
+  if (deviceServerEnv.DOGU_RUN_TYPE === 'production' || deviceServerEnv.DOGU_RUN_TYPE === 'self-hosted') {
+    return 'normal';
+  }
+  return 'store';
 }
 
 function getOptions(archs: Arch[], extraRess: ExtraResource[]): CliOptions {
@@ -85,6 +92,7 @@ function getOptions(archs: Arch[], extraRess: ExtraResource[]): CliOptions {
           await upload(filePath);
         }
       },
+      compression: getCompression(),
     },
   };
   if (argv.publish) {
