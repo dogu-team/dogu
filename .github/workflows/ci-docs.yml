@@ -20,6 +20,9 @@ jobs:
         with:
           node-version: '16'
 
+      - name: Install Dependencies
+        run: yarn unplug
+
       - name: Build
         run: yarn build:docs
 
