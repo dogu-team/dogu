@@ -24,7 +24,7 @@ const SignUpForm = (props: Props) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     const { userName, email, password, newsletter } = form.getFieldsValue(['orgName', 'userName', 'email', 'password', 'newsletter']);
     setLoading(true);
-    await props.onSubmit(email, userName, password, newsletter);
+    await props.onSubmit(email, userName, password, newsletter ?? false);
     setLoading(false);
   };
 
@@ -83,13 +83,15 @@ const SignUpForm = (props: Props) => {
           {props.submitButtonText ?? t('registery:signUpFormSubmitButtonTitle')}
         </SubmitButton>
       </Form.Item>
-      <Form.Item name="newsletter" valuePropName="checked">
-        <Checkbox>
-          <NewsletterText>
-            이메일로 <DoguText />의 최신 소식을 받겠습니다.
-          </NewsletterText>
-        </Checkbox>
-      </Form.Item>
+      {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
+        <Form.Item name="newsletter" valuePropName="checked">
+          <Checkbox>
+            <NewsletterText>
+              이메일로 <DoguText />의 최신 소식을 받겠습니다.
+            </NewsletterText>
+          </Checkbox>
+        </Form.Item>
+      )}
     </Form>
   );
 };
