@@ -19,15 +19,11 @@ jobs:
       max-parallel: 99
       matrix:
         runner: [windows-2019, macos-latest]
-        arch: [arm64, x64]
         include:
           - runner: windows-2019
             extension: exe
           - runner: macos-latest
             extension: dmg
-        exclude:
-          - runner: windows-2019
-            arch: arm64
     runs-on: ['${{ matrix.runner }}']
 
     env:
@@ -187,8 +183,6 @@ jobs:
         run: |
           yarn run build && yarn run deploy:publish
         working-directory: ./nm-space/projects/dost
-        env:
-          DOGU_BUILD_ARCH: ${{ matrix.arch }}
 
   send-slack:
     runs-on: ubuntu-latest
