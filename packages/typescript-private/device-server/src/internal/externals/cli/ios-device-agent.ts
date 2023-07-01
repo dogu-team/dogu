@@ -237,6 +237,8 @@ class ZombieScreenChecker implements Zombieable {
           if (diffTime < 1000 * 10) {
             ZombieServiceInstance.notifyDie(this.xctest, 'screen check failed');
           }
+        } else {
+          ZombieServiceInstance.notifyDie(this.xctest, 'screen check failed');
         }
         ZombieServiceInstance.notifyDie(this, 'close');
       };
