@@ -140,7 +140,7 @@ jobs:
 
       - name: Newbie
         run: |
-          yarn run newbie:cicd:dirty
+          yarn run newbie:cicd
 
       - name: Build Projects
         run: |
