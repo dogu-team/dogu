@@ -116,6 +116,7 @@ export class IosDeviceAgentProcess {
 class ZombieXCTest implements Zombieable {
   private xctestrun: XCTestRunContext | null = null;
   public readonly zombieWaiter: ZombieWaiter;
+  public dieTime?: Date;
   constructor(
     public readonly serial: Serial,
     private readonly xctestrunfile: XctestrunFile,
@@ -142,7 +143,7 @@ class ZombieXCTest implements Zombieable {
     return this.logger;
   }
   async revive(): Promise<void> {
-    this.logger.debug?.(`ZombieScreenChecker.revive`);
+    this.logger.debug?.(`ZombieXCTest.revive`);
     if (config.externalIosDeviceAgent.use) {
       return;
     }
@@ -176,6 +177,7 @@ class ZombieXCTest implements Zombieable {
   }
 
   onDie(): void {
+    this.dieTime = new Date();
     this.logger.debug?.(`ZombieXCTest.onDie`);
     this.xctestrun?.kill();
   }
@@ -228,7 +230,14 @@ class ZombieScreenChecker implements Zombieable {
       this.logger.debug?.(`ZombieScreenChecker. hello success. `);
       const onClose = (): void => {
         this.logger.info(`ZombieScreenChecker. close. `);
-        ZombieServiceInstance.notifyDie(this.xctest, 'screen check failed');
+        if (this.xctest.dieTime) {
+          // screenCheck should kill xctest only if xctest is alive and doguscreen is dead.
+          // temporarily prevent xctest die -> screenCheck die -> xctest die loop
+          const diffTime = new Date().getTime() - this.xctest.dieTime.getTime();
+          if (diffTime < 1000 * 10) {
+            ZombieServiceInstance.notifyDie(this.xctest, 'screen check failed');
+          }
+        }
         ZombieServiceInstance.notifyDie(this, 'close');
       };
       socketOrError.on('close', onClose);
