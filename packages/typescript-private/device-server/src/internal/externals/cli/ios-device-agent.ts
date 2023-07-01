@@ -234,7 +234,7 @@ class ZombieScreenChecker implements Zombieable {
           // screenCheck should kill xctest only if xctest is alive and doguscreen is dead.
           // temporarily prevent xctest die -> screenCheck die -> xctest die loop
           const diffTime = new Date().getTime() - this.xctest.dieTime.getTime();
-          if (diffTime < 1000 * 10) {
+          if (1000 * 10 < diffTime) {
             ZombieServiceInstance.notifyDie(this.xctest, 'screen check failed');
           }
         } else {
