@@ -127,6 +127,12 @@ export class Dost {
     });
     yield;
 
+    test('Dost skip manual setup install', async () => {
+      if (process.platform !== 'darwin') {
+        await this.mainPage!.getByText('Continue', { exact: true }).first().click({ timeout: this.InstallTimeoutMs });
+      }
+    });
+
     test('Dost manual setup install wda', async () => {
       if (process.platform !== 'darwin') {
         return;
