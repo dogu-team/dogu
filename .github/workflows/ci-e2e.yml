@@ -111,15 +111,15 @@ jobs:
           echo "DOGU_RUN_TYPE=e2e" >> ./docker-compose.env
 
       - name: Cache Yarn Unplugged
-          uses: actions/cache@v2
-          id: cache_yarn_unplugged
-          env:
-            cache-name: cache-yarn-unplugged
-          with:
-            path: ${{ github.workspace }}/.yarn/unplugged
-            key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
-            restore-keys: |
-              ${{ runner.os }}-${{ env.cache-name }}-
+        uses: actions/cache@v2
+        id: cache_yarn_unplugged
+        env:
+          cache-name: cache-yarn-unplugged
+        with:
+          path: ${{ github.workspace }}/.yarn/unplugged
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
 
       - name: run
         run: |
