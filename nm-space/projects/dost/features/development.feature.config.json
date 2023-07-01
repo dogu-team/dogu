@@ -1,5 +1,5 @@
 {
   "useApiUrlInput": false,
   "useAppUpdate": true,
-  "useSentry": true
+  "useSentry": false
 }
