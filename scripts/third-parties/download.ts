@@ -67,15 +67,15 @@ const files: ThirdPartyFile[] = [
   },
   {
     condition: () => process.platform === 'darwin',
-    url: 'https://nodejs.org/dist/v16.20.0/node-v16.20.0-darwin-arm64.tar.gz',
+    url: 'https://github.com/dogu-team/third-party-binaries/releases/download/node-16.20.0/node-darwin-arm64.tar.gz',
     path: 'darwin/arm64/node/v16.20.0',
-    postAction: enableCorepack,
+    // postAction: enableCorepack,
   },
   {
     condition: () => process.platform === 'darwin',
-    url: 'https://nodejs.org/dist/v16.20.0/node-v16.20.0-darwin-x64.tar.gz',
+    url: 'https://github.com/dogu-team/third-party-binaries/releases/download/node-16.20.0/node-darwin-x64.tar.gz',
     path: 'darwin/x64/node/v16.20.0',
-    postAction: enableCorepack,
+    // postAction: enableCorepack,
   },
   {
     condition: () => process.platform === 'darwin',
