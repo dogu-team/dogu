@@ -341,6 +341,9 @@
   "main.selfHostedStartLinkTitle": {
     "message": "시작하기"
   },
+  "main.selfHostedUpdateLinkTitle": {
+    "message": "업데이트"
+  },
   "theme.NavBar.navAriaLabel": {
     "message": "Main",
     "description": "The ARIA label for the main navigation"

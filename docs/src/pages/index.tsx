@@ -182,6 +182,11 @@ export default function Home(): JSX.Element {
                 <Translate id="main.selfHostedStartLinkTitle" />
               </Link>
             </li>
+            {/* <li className={styles.docsSectionListItem}>
+              <Link to="/self-hosted/update">
+                <Translate id="main.selfHostedUpdateLinkTitle" />
+              </Link>
+            </li> */}
           </ul>
         </div>
         <div className={styles.docsSection}>

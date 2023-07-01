@@ -341,6 +341,9 @@
   "main.selfHostedStartLinkTitle": {
     "message": "Get Started"
   },
+  "main.selfHostedUpdateLinkTitle": {
+    "message": "Update"
+  },
   "theme.NavBar.navAriaLabel": {
     "message": "Main",
     "description": "The ARIA label for the main navigation"
