@@ -27,15 +27,14 @@ jobs:
           cache-name: cache-yarn
         with:
           path: /.yarn
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.json') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
+            ${{ runner.os }}-${{ env.cache-name }}-
             ${{ runner.os }}-
 
       - if: steps.cache_yarn.outputs.cache-hit != 'true'
         name: Install Dependencies
-        run: yarn unplug
+        run: yarn install
 
       - name: Build
         run: yarn build:docs
