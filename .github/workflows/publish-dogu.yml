@@ -10,7 +10,7 @@ on:
 
 jobs:
   publish:
-    runs-on: dogu-build
+    runs-on: ubuntu-latest
 
     steps:
       - name: docker init
