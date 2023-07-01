@@ -47,7 +47,7 @@ env:
 
 jobs:
   build-and-push-dogu-console:
-    runs-on: dogu-build
+    runs-on: ubuntu-latest
 
     steps:
       - name: docker init
