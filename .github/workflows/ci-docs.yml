@@ -30,7 +30,6 @@ jobs:
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
-            ${{ runner.os }}-
 
       - if: steps.cache_yarn.outputs.cache-hit != 'true'
         name: Install Dependencies
