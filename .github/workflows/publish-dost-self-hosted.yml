@@ -16,7 +16,7 @@ jobs:
   build:
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 99
       matrix:
         runner: [windows-2019, macos-latest]
         arch: [arm64, x64]
