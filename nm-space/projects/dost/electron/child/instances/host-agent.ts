@@ -22,6 +22,7 @@ export class HostAgentChild implements Child {
     const DOGU_DEVICE_SERVER_HOST_PORT = await appConfigService.get('DOGU_DEVICE_SERVER_HOST_PORT');
     const DOGU_HOST_AGENT_PORT = await appConfigService.get('DOGU_HOST_AGENT_PORT');
     const DOGU_LOG_LEVEL = getLogLevel(DOGU_RUN_TYPE);
+    logger.info(`HostAgentChild DOGU_LOG_LEVEL: ${DOGU_LOG_LEVEL}`);
     const options = await fillChildOptions({
       forkOptions: {
         env: {

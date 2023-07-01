@@ -213,10 +213,10 @@ export class Logger implements FilledPrintable {
   }
 }
 
-function newLogMessage(category: string): string {
+function newLogMessage(category: string, level: string): string {
   return `
 
-| Logger created category: ${category} |
+| Logger created category: ${category} | ${level} |
 
 `;
 }
@@ -225,10 +225,11 @@ export class LoggerFactory {
   static create(category: string, options?: LoggerFactoryOptions): Logger {
     const { withFileTransports, logsPath } = fillLoggerFactoryOptions(options);
     const winstonLogger = winston.createLogger(LoggerOptionsFactory.create(category, options));
+
     if (withFileTransports) {
       addFileTransports(winstonLogger, category, logsPath);
     }
-    winstonLogger.info(newLogMessage(category));
+    winstonLogger.info(newLogMessage(category, winstonLogger.level));
     return new Logger(winstonLogger, category);
   }
 
