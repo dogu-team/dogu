@@ -125,7 +125,7 @@ jobs:
         run: |
           docker compose -f ./docker-compose.yml stop console
           docker compose -f docker-compose.yml pull
-          docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up -d
+          docker compose -f ./docker-compose.yml --env-file ./docker-compose.env --verbose up -d
 
   e2e:
     needs: start-e2e-dogu
