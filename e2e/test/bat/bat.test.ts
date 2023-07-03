@@ -58,7 +58,12 @@ jobs:
       group: ${values.value.ANDROID_DEVICE_TAG}
     steps:
       - name: test runs-on.group
-        run: echo test run...`;
+        run: echo test run...
+  test-landing-external-links:
+    runs-on: ${values.value.HOST_DEVICE_TAG}
+    steps:
+      - name: test landing external links
+        run: cd samples/pytest-bdd-playwright-dogu-report && yarn test:python`;
 
 const waitUntilModalClosed = async (): Promise<void> => {
   for (let i = 0; i < 10; i++) {

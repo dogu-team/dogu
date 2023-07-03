@@ -38792,6 +38792,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cross-env", "npm:7.0.3"],\
             ["fast-glob", "npm:3.2.12"],\
             ["nodemon", "npm:2.0.22"],\
+            ["playwright-core", "npm:1.35.1"],\
             ["shelljs", "npm:0.8.5"],\
             ["shx", "npm:0.3.4"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\

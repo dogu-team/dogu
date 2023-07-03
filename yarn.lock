@@ -26098,7 +26098,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.35.1":
+"playwright-core@npm:1.35.1, playwright-core@npm:^1.35.1":
   version: 1.35.1
   resolution: "playwright-core@npm:1.35.1"
   bin:
@@ -27237,6 +27237,7 @@ __metadata:
     cross-env: 7.0.3
     fast-glob: 3.2.12
     nodemon: 2.0.22
+    playwright-core: ^1.35.1
     shelljs: 0.8.5
     shx: 0.3.4
     ts-node: 10.9.1

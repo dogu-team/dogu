@@ -175,20 +175,22 @@ jobs:
           go-version: '1.18'
 
       - name: Run newbie
-        run: |
-          yarn run newbie:cicd
+        run: yarn newbie:cicd
+
+      - name: Run newbie:python
+        run: yarn newbie:python
 
       - name: Build Projects
-        run: |
-          yarn workspace dogu run build
+        run: yarn workspace dogu run build
+
+      - name: Run build:python
+        run: yarn build:python
 
       - name: Newbie nm-space
-        run: |
-          yarn workspace dogu run newbie:nm-space
+        run: yarn workspace dogu run newbie:nm-space
 
       - name: Build nm-space
-        run: |
-          yarn workspace nm-space run build
+        run: yarn workspace nm-space run build
         working-directory: ./nm-space
 
       - name: Windows - Powershell - Check

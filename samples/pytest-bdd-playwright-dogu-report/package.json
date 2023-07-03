@@ -9,7 +9,7 @@
     "build:python": "poetry build",
     "clean": "ts-node ./scripts/clean.ts",
     "lint": "yarn black && yarn pylint",
-    "newbie:python": "poetry install",
+    "newbie:python": "poetry install && poetry run playwright install",
     "pylint": "poetry run pylint tests",
     "rebuild:python": "yarn clean && yarn build:python",
     "test:python": "poetry run pytest tests"
@@ -20,6 +20,7 @@
     "cross-env": "7.0.3",
     "fast-glob": "3.2.12",
     "nodemon": "2.0.22",
+    "playwright-core": "^1.35.1",
     "shelljs": "0.8.5",
     "shx": "0.3.4",
     "ts-node": "10.9.1",
