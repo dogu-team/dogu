@@ -33,7 +33,7 @@ const ProjectRoutineEditorPage: NextPageWithLayout<WithProjectProps> = ({ organi
 };
 
 ProjectRoutineEditorPage.getLayout = (page) => {
-  return <ProjectLayout isWebview={page.props.isWebview}>{page}</ProjectLayout>;
+  return <ProjectLayout>{page}</ProjectLayout>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

@@ -18,17 +18,15 @@ export interface OrganizationServerSideProps {
   fallback: {
     [key: string]: OrganizationBase | UserBase;
   };
-  isWebview: boolean;
 }
 
 export interface WithOrganizationProps {
   organization: OrganizationBase;
   mutateOrganization: KeyedMutator<OrganizationBase>;
-  isWebview: boolean;
 }
 
 export default function withOrganization(WrappedComponents: NextPageWithLayout<WithOrganizationProps>) {
-  const Component: NextPageWithLayout<OrganizationServerSideProps> = ({ fallback, isWebview }) => {
+  const Component: NextPageWithLayout<OrganizationServerSideProps> = ({ fallback }) => {
     const router = useRouter();
     const organizationId = router.query.orgId;
     const { data, error, mutate, isLoading } = useSWR<OrganizationBase>(`/organizations/${organizationId}`, swrAuthFetcher, { revalidateOnFocus: false });
@@ -44,7 +42,7 @@ export default function withOrganization(WrappedComponents: NextPageWithLayout<W
 
     return (
       <SWRConfig value={{ fallback }}>
-        <WrappedComponents organization={data} mutateOrganization={mutate} isWebview={isWebview} />
+        <WrappedComponents organization={data} mutateOrganization={mutate} />
       </SWRConfig>
     );
   };

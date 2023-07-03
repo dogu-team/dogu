@@ -18,11 +18,10 @@ import useGitlabAlert from '../../hooks/useGitlabAlert';
 
 interface Props {
   children: React.ReactNode;
-  isWebview: boolean;
   sidebar?: React.ReactNode;
 }
 
-const ProjectLayout = ({ children, isWebview, sidebar }: Props) => {
+const ProjectLayout = ({ children, sidebar }: Props) => {
   const { me, error, isLoading } = useAuth();
   const router = useRouter();
   const { t } = useTranslation();

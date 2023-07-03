@@ -13,10 +13,9 @@ import ConsoleLayout from './ConsoleLayout';
 
 interface Props {
   children: React.ReactNode;
-  isWebview: boolean;
 }
 
-const TeamPageLayout = ({ children, isWebview }: Props) => {
+const TeamPageLayout = ({ children }: Props) => {
   const router = useRouter();
   const orgId = router.query.orgId;
   const teamId = router.query.teamId;
@@ -46,7 +45,7 @@ const TeamPageLayout = ({ children, isWebview }: Props) => {
   }
 
   return (
-    <ConsoleLayout isWebview={isWebview} sidebar={<OrganizationSideBar />} title={t('team:teamDetailPageTitle', { name: data?.name ?? '' })}>
+    <ConsoleLayout sidebar={<OrganizationSideBar />} title={t('team:teamDetailPageTitle', { name: data?.name ?? '' })}>
       <Box>
         <MenuLinkTabs tabs={tabs} />
         <Inner>{children}</Inner>

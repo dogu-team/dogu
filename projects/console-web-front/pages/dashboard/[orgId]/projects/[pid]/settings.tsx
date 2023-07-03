@@ -129,7 +129,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, mut
 };
 
 ProjectSettingPage.getLayout = (page) => {
-  return <ProjectLayout isWebview={page.props.isWebview}>{page}</ProjectLayout>;
+  return <ProjectLayout>{page}</ProjectLayout>;
 };
 
 export const getServerSideProps: GetServerSideProps = getProjectPageServerSideProps;

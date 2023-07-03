@@ -1,11 +1,8 @@
 import styled from 'styled-components';
-import Head from 'next/head';
+import { GetServerSideProps } from 'next';
 
 import { NextPageWithLayout } from 'pages/_app';
 import ProjectLayout from 'src/components/layouts/ProjectLayout';
-import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
-import PipelineReport from 'src/components/projects/PipelineReport';
-import { GetServerSideProps } from 'next';
 import { redirectWithLocale } from '../../../../../src/ssr/locale';
 
 const ProjectPage: NextPageWithLayout = () => {
@@ -13,7 +10,7 @@ const ProjectPage: NextPageWithLayout = () => {
 };
 
 ProjectPage.getLayout = (page) => {
-  return <ProjectLayout isWebview={page.props.isWebview}>{page}</ProjectLayout>;
+  return <ProjectLayout>{page}</ProjectLayout>;
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

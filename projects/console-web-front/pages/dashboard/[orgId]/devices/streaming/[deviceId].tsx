@@ -197,7 +197,7 @@ const DeviceStreamingPage: NextPageWithLayout<WithOrganizationProps> = ({ organi
 
 DeviceStreamingPage.getLayout = (page) => {
   return (
-    <ConsoleLayout isWebview={page.props.isWebview} sidebar={<OrganizationSideBar />} titleI18nKey="device-streaming:deviceStreamingPageTitle">
+    <ConsoleLayout sidebar={<OrganizationSideBar />} titleI18nKey="device-streaming:deviceStreamingPageTitle">
       {page}
     </ConsoleLayout>
   );

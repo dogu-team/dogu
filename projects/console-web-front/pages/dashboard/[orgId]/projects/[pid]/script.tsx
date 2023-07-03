@@ -297,7 +297,7 @@ const ScriptPage: NextPageWithLayout<WithProjectScriptProps> = ({ organization, 
 };
 
 ScriptPage.getLayout = (page) => {
-  return <ProjectLayout isWebview={page.props.isWebview}>{page}</ProjectLayout>;
+  return <ProjectLayout>{page}</ProjectLayout>;
 };
 
 export const getServerSideProps: GetServerSideProps<ProjectScriptServerSideProps> = getProjectScriptPageServerSideProps;

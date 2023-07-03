@@ -26,10 +26,9 @@ import ProjectLayout from './ProjectLayout';
 
 interface Props {
   children: React.ReactNode;
-  isWebview: boolean;
 }
 
-const PipelineJobLayout = ({ children, isWebview }: Props) => {
+const PipelineJobLayout = ({ children }: Props) => {
   const router = useRouter();
   const orgId = router.query.orgId;
   const projectId = router.query.pid;
@@ -80,7 +79,7 @@ const PipelineJobLayout = ({ children, isWebview }: Props) => {
   }
 
   return (
-    <ProjectLayout isWebview={isWebview} sidebar={<JobListSideBar pipeline={pipeline} />}>
+    <ProjectLayout sidebar={<JobListSideBar pipeline={pipeline} />}>
       <PipelineContainer>
         <PipelineHeadContainer>
           <FlexRowBase>
