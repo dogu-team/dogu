@@ -1,18 +1,18 @@
 {
-  "name": "pytest-dogu-report",
+  "name": "pytest-playwright-dogu-report",
   "version": "0.0.0",
   "description": "",
   "license": "MIT",
   "author": "dogu",
   "scripts": {
-    "black": "poetry run black src tests",
+    "black": "poetry run black tests",
     "build:python": "poetry build",
     "clean": "ts-node ./scripts/clean.ts",
     "lint": "yarn black && yarn pylint",
     "newbie:python": "poetry install",
-    "pylint": "poetry run pylint src tests",
+    "pylint": "poetry run pylint tests",
     "rebuild:python": "yarn clean && yarn build:python",
-    "test:python": "poetry run pytest"
+    "test:python": "poetry run pytest tests"
   },
   "devDependencies": {
     "@types/node": "18.15.11",
