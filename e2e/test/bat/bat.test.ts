@@ -26,7 +26,6 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 const randomId = Utils.random();
 const randomInvitationId = Utils.random();
 let gdcRecorder: GdcScreenRecorder | null = null;
-// let screenRecordStopper: ScreenRecordStopper | null = null;
 
 const values = {
   value: {
@@ -88,10 +87,6 @@ Dest.withOptions({
       await ProcessManager.killByPorts([Number(env.DOGU_DEVICE_SERVER_PORT)]);
 
       await ProcessManager.killByNames(['IOSDeviceController', 'go-device-controller', 'host-agent']);
-
-      // screenRecordStopper = await new ScreenRecorder().start({
-      //   outputPath: path.resolve('generated', 'record', 'screen.webm'),
-      // });
     });
 
     // if (switchConfig.prepareDB) {
@@ -704,8 +699,6 @@ Dest.withOptions({
     });
 
     afterAll(async () => {
-      // await screenRecordStopper?.stop();
-
       if (gdcRecorder) {
         await Timer.wait(2000, 'capture more seconds');
         await gdcRecorder.stop();
