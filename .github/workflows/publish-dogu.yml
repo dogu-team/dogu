@@ -1,4 +1,5 @@
 name: 📤publish-dogu
+run-name: 📤publish-dogu-${{ github.event.inputs.version }}
 
 on:
   workflow_dispatch:
