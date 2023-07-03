@@ -1,3 +1,5 @@
 {
-  "apiUrlInsertable": true
+  "useApiUrlInput": true,
+  "useAppUpdate": false,
+  "useSentry": false
 }

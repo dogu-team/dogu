@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import lodash from 'lodash';
-import { env } from '../../../../env';
+import { config } from '../../../../config';
 import { DoguLogger } from '../../../logger/logger';
 import {
   BucketKey,
@@ -24,7 +24,9 @@ import {
 
 @Injectable()
 export class NexusFeatureFileService extends FeatureFileService {
-  private readonly url = `${env.DOGU_NEXUS_PROTOCOL}://${env.DOGU_NEXUS_HOST}:${env.DOGU_NEXUS_PORT}`;
+  private readonly url = config.fileService.nexus.url;
+  private readonly userName = config.fileService.nexus.username;
+  private readonly password = config.fileService.nexus.password;
 
   constructor(private readonly logger: DoguLogger) {
     super('nexus');
@@ -32,8 +34,8 @@ export class NexusFeatureFileService extends FeatureFileService {
 
   private createBasicCredentials(): { username: string; password: string } {
     return {
-      username: env.DOGU_NEXUS_USERNAME,
-      password: env.DOGU_NEXUS_PASSWORD,
+      username: this.userName,
+      password: this.password,
     };
   }
 
@@ -107,8 +109,9 @@ export class NexusFeatureFileService extends FeatureFileService {
       throw new Error('Invalid response');
     }
     const items = response.data.items as any[];
-    const continuationToken = response.data.continuationToken as string;
-    if (!Array.isArray(items) || typeof continuationToken !== 'string') {
+    const continuationToken = response.data.continuationToken as string | null;
+
+    if (!Array.isArray(items)) {
       throw new Error('Invalid response');
     }
     const contents = items.map((item) => {
@@ -129,8 +132,8 @@ export class NexusFeatureFileService extends FeatureFileService {
     }
     return {
       contents,
-      continuationToken,
-      isTruncated: continuationToken === null,
+      continuationToken: typeof continuationToken === 'string' ? continuationToken : undefined,
+      isTruncated: continuationToken !== null,
     };
   }
 

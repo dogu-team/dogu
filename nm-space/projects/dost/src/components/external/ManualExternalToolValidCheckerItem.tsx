@@ -1,12 +1,13 @@
-import { CheckCircleIcon, QuestionIcon } from '@chakra-ui/icons';
-import { Box, Button, Flex, Icon, Text, useColorMode, useToast } from '@chakra-ui/react';
+import { CheckCircleIcon, QuestionIcon, QuestionOutlineIcon } from '@chakra-ui/icons';
+import { Button, Flex, Icon, Text, Tooltip, useToast } from '@chakra-ui/react';
 import { stringify } from '@dogu-tech/common';
-import { useState } from 'react';
+import { useState, createContext } from 'react';
+import styled from 'styled-components';
 
-import { ExternalKey, ExternalValidationResult } from '../../shares/external';
+import { ExternalKey } from '../../shares/external';
 import { ipc } from '../../utils/window';
 import BorderBox from '../layouts/BorderBox';
-import ManualExternalToolDetail from './ManualExternalToolDetail';
+import { manualExternalToolDetail } from './ManualExternalToolDetail';
 
 interface Props {
   externalKey: ExternalKey;
@@ -15,11 +16,15 @@ interface Props {
   onValidateEnd?: (isValid: boolean) => Promise<void> | void;
 }
 
+export const ValidContext = createContext<{
+  isValid: boolean;
+  validate: () => Promise<void>;
+}>({ isValid: false, validate: async () => {} });
+
 const ManualExternalToolValidCheckerItem = ({ externalKey, name, isValid, onValidateEnd }: Props) => {
   const [valid, setValid] = useState<boolean>(isValid);
   const [loading, setLoading] = useState(false);
   const toast = useToast();
-  const { colorMode } = useColorMode();
 
   const handleValidate = async () => {
     setLoading(true);
@@ -42,27 +47,51 @@ const ManualExternalToolValidCheckerItem = ({ externalKey, name, isValid, onVali
     setLoading(false);
   };
 
+  const doscLink = manualExternalToolDetail[externalKey]?.docsLink;
+
   return (
-    <div>
-      <BorderBox>
-        <Flex justifyContent="space-between" alignItems="center" mb={2}>
-          <Text fontWeight="medium" fontSize="sm" mb="8px">
-            {name}
-          </Text>
-          {valid ? <Icon as={CheckCircleIcon} color="green.500" /> : <Icon as={QuestionIcon} color="red.500" />}
-        </Flex>
-        <div>
-          <div>{ManualExternalToolDetail({ externalKey })?.description?.()}</div>
-          <div>{!valid && ManualExternalToolDetail({ externalKey })?.solution?.()}</div>
-          {!valid && (
-            <Button mt={2} size="sm" onClick={handleValidate} isLoading={loading}>
-              Check
-            </Button>
-          )}
-        </div>
-      </BorderBox>
-    </div>
+    <ValidContext.Provider
+      value={{
+        isValid: valid,
+        validate: handleValidate,
+      }}
+    >
+      <div>
+        <BorderBox>
+          <Flex justifyContent="space-between" alignItems="center" mb={2}>
+            <Flex alignItems="center" mb="8px">
+              <Text fontWeight="medium" fontSize="m">
+                {name}
+              </Text>
+
+              {!!doscLink && (
+                <Tooltip label="Open docs">
+                  <StyledButton>
+                    <Icon
+                      as={QuestionOutlineIcon}
+                      onClick={() => {
+                        ipc.settingsClient.openExternal(doscLink);
+                      }}
+                    />
+                  </StyledButton>
+                </Tooltip>
+              )}
+            </Flex>
+            {valid ? <Icon as={CheckCircleIcon} color="green.500" /> : <Icon as={QuestionIcon} color="red.500" />}
+          </Flex>
+          <div>
+            <div>{manualExternalToolDetail[externalKey]?.description}</div>
+            {!valid && <div>{manualExternalToolDetail[externalKey]?.solution}</div>}
+          </div>
+        </BorderBox>
+      </div>
+    </ValidContext.Provider>
   );
 };
 
 export default ManualExternalToolValidCheckerItem;
+
+const StyledButton = styled.button`
+  margin-left: 0.5rem;
+  padding: 0.1rem;
+`;

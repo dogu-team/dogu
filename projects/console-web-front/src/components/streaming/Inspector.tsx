@@ -11,6 +11,7 @@ import InspectorContextMenu from './InspectorContextMenu';
 import useInspector, { GAMIUM_CONTEXT_KEY } from '../../hooks/streaming/useInspector';
 import NativeObjectDetail from './NativeObjectDetail';
 import { GamiumNodeAttributes, InspectNode } from '../../types/inspector';
+import Link from 'next/link';
 
 interface Props {
   inspector: ReturnType<typeof useInspector>;
@@ -49,7 +50,15 @@ const Inspector = ({ inspector }: Props) => {
             <div>
               <InfoCircleOutlined style={{ fontSize: '3rem' }} />
             </div>
-            <p style={{ marginTop: '1rem', fontSize: '1rem' }}>Select context first for inspecting</p>
+            <p style={{ marginTop: '1rem', fontSize: '1rem' }}>
+              Select context first for inspecting.
+              <br />
+              <br />
+              <Link href="https://docs.dogutech.io/host-and-device/device/streaming-and-remote-control/ui-inspector" target="_blank">
+                Click here
+              </Link>{' '}
+              for more information.
+            </p>
           </EmptyContextBox>
         )}
         <Inner h={55}>

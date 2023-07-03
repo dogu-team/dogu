@@ -3,7 +3,7 @@ import semver from 'semver';
 import shelljs from 'shelljs';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { checkEnv_DOGU_DEPLOY, cleanTemp, findRootWorkspace, getNpmTagFromRunType, getPackageNameFromPackageJson, getRunType, rebuild } from '../common';
+import { checkEnv_DOGU_DEPLOY, cleanTemp, findRootWorkspace, getNpmTagByRunType, getPackageNameFromPackageJson, getRunType, rebuild } from '../common';
 import { PartialPackageJson } from '../types';
 
 const TempDir = '.publish-npm';
@@ -23,7 +23,7 @@ export class NpmPublisher {
 
   async publish(): Promise<void> {
     checkEnv_DOGU_DEPLOY();
-    const tag = getNpmTagFromRunType(getRunType());
+    const tag = getNpmTagByRunType(getRunType());
     await cleanTemp(TempDir);
     rebuild();
     const packageName = await getPackageNameFromPackageJson();

@@ -4,6 +4,9 @@ import { Logger } from '@dogu-tech/node';
 import { GamiumClient } from 'gamium';
 import { GamiumContext } from './internal/gamium-context';
 import { FilledToolkitOptions } from './options';
+import { remote } from 'webdriverio';
+
+export type AppiumContext = Awaited<ReturnType<typeof remote>>;
 
 export class Toolkit implements AsyncClosable {
   private closeRequested = false;
@@ -14,7 +17,7 @@ export class Toolkit implements AsyncClosable {
     readonly device: DeviceClient,
     readonly deviceHost: DeviceHostClient,
     readonly _gamium: GamiumContext | null,
-    readonly _appium: WebdriverIO.Browser | null,
+    readonly _appium: AppiumContext | null,
   ) {
     process.on('exit', () => {
       this.close().catch((error) => {
@@ -32,7 +35,8 @@ export class Toolkit implements AsyncClosable {
     await this._gamium?.close().catch((error) => {
       this.logger.error('Failed to close gamium context', { error: errorify(error) });
     });
-    await this._appium?.deleteSession().catch((error) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+    await this._appium?.deleteSession().catch((error: unknown) => {
       this.logger.error('Failed to close appium session', { error: errorify(error) });
     });
   }
@@ -44,7 +48,7 @@ export class Toolkit implements AsyncClosable {
     return this._gamium.client;
   }
 
-  get appium(): WebdriverIO.Browser {
+  get appium(): AppiumContext {
     if (!this._appium) {
       throw new Error('Appium is not enabled');
     }

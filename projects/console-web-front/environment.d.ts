@@ -19,6 +19,7 @@ declare global {
       NEXT_PUBLIC_TURN_SERVER_PASSWORD: string;
       NEXT_PUBLIC_TURN_SERVER_CREDENTIAL_TYPE: 'password';
       NEXT_PUBLIC_LANDING_URL: string | undefined;
+      NEXT_PUBLIC_DOGU_VERSION: string;
     }
   }
 }

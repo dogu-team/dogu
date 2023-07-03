@@ -5,13 +5,14 @@ import { useCallback, useState } from 'react';
 import ExternaltoolInstaller, { ExternalKeyAndName } from './ExternalToolInstaller';
 
 interface Props {
+  title?: React.ReactNode;
   externalKeyAndNames: ExternalKeyAndName[];
   isOpen: boolean;
   onClose: () => void;
   onFinish?: () => void;
 }
 
-const ExternalToolInstallerModal = ({ externalKeyAndNames, isOpen, onClose, onFinish }: Props) => {
+const ExternalToolInstallerModal = ({ title, externalKeyAndNames, isOpen, onClose, onFinish }: Props) => {
   const [isOpenCloseBtn, setIsOpenCloseBtn] = useState(false);
   const handleFinsish = useCallback(
     (isOk: boolean) => {
@@ -31,7 +32,7 @@ const ExternalToolInstallerModal = ({ externalKeyAndNames, isOpen, onClose, onFi
       <ModalContent>
         <ModalHeader>
           <Flex justifyContent="space-between" alignItems="center">
-            <Text>Installing packages...</Text>
+            {title ?? <Text>Installing packages...</Text>}
             <Spacer />
             {isOpenCloseBtn ? (
               <IconButton

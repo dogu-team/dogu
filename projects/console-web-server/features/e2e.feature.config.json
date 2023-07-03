@@ -1,11 +1,11 @@
 {
-  "fileService": "s3",
+  "fileService": "nexus",
   "useSampleProject": true,
-  "gitlabInitCheck": false,
+  "gitlabInitCheck": true,
   "useGitlabIdByUserId": true,
   "emailVerification": false,
   "rdbSslConnection": false,
-  "cookieSecure": true,
-  "forceInvitation": false,
-  "thirdPartyLogin": true
+  "cookieSecure": false,
+  "forceInvitation": true,
+  "thirdPartyLogin": false
 }

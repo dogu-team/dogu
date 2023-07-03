@@ -9,15 +9,34 @@ Dogu is a web-based test platform for test automation
 </p>
 
 <p align="center">
-  <a href="https://github.com/dogu-team/dogu/issues"><img src="https://img.shields.io/badge/Issues-welcome-brightgreen.svg" alt="Issues Welcome"></a>
-  <a href="https://github.com/dogu-team/dogu/discussions"><img src="https://img.shields.io/badge/Discussions-welcome-brightgreen.svg" alt="Issues Welcome"></a>
-  <a href="https://github.com/dogu-team/dogu/pulse" alt="Activity"><img src="https://img.shields.io/github/commit-activity/m/dogu-team/dogu" /></a>
-  <a href="https://github.com/dogu-team/dogu/actions/workflows/e2e.yml"><img src="https://github.com/dogu-team/dogu/actions/workflows/e2e.yml/badge.svg" alt="GitHub Actions status"></a>
-  <a href="https://discord.gg/bVycd6Tu9g"><img src="https://dcbadge.vercel.app/api/server/bVycd6Tu9g?style=flat" /></a>
+  <a href="https://github.com/dogu-team/dogu/actions/workflows/ci-e2e.yml">
+    <img src="https://github.com/dogu-team/dogu/actions/workflows/ci-e2e.yml/badge.svg" alt="GitHub Actions status">
+  </a>
+  <a href="https://github.com/dogu-team/dogu/releases" alt="Activity">
+    <img alt="GitHub tag (latest SemVer pre-release)" src="https://img.shields.io/github/v/tag/dogu-team/dogu?label=release">
+  </a>
+  <a href="https://hub.docker.com/r/dogutechio/dogu/tags" alt="Activity">
+    <img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/dogutechio/dogu?label=downloads">
+  </a>
+  <a href="https://github.com/dogu-team/dogu/pulse" alt="Activity">
+    <img src="https://img.shields.io/github/commit-activity/m/dogu-team/dogu" />
+  </a>
+  <a href="https://discord.gg/bVycd6Tu9g">
+    <img src="https://dcbadge.vercel.app/api/server/bVycd6Tu9g?style=flat" />
+  </a>
   <div align="center">
-  <a href="https://blog.dogutech.io"><img src="https://img.shields.io/badge/ghost-000?style=for-the-badge&logo=ghost&logoColor=%23F7DF1E" alt="Blog" /></a>
-    <a href="https://www.linkedin.com/company/dogu-technologies"><img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>
-    <a href="https://twitter.com/dogutechio"><img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter" /></a>
+  <a href="https://blog.dogutech.io">
+    <img src="https://img.shields.io/badge/blog-007396?style=for-the-badge&logo=ghost&logoColor=white" alt="Blog" />
+  </a>
+    <a href="https://www.linkedin.com/company/dogu-technologies">
+      <img src="https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" />
+    </a>
+    <a href="https://twitter.com/dogutechio">
+      <img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter" />
+    </a>
+    <a href="https://github.com/dogu-team/dogu/discussions">
+      <img src="https://img.shields.io/badge/Discussion-10A1D2?style=for-the-badge&logo=github&logoColor=white" alt="Github" />
+    </a>
   </div>
 </p>
 
@@ -32,17 +51,34 @@ It needs so many time and effort to build and maintain infrastructure like _Appi
 Dogu provides **integrated platform** for these infrastructure and helps you to focus on test automation.  
 Especially, Dogu is tightly integrated with test script and test framework so that you can focus on test automation without developing infrastructure related works like parallel test execution, data transfer for test report.
 
+## Start With Self-Hosted
+
+You can set up Dogu on your own server.  
+See [Guide setting up Dogu with self-hosted](https://docs.dogutech.io/self-hosted/get-started)
+
+## Start With Cloud
+
+You can start right now with [Cloud Service](https://dogutech.io)
+
 ## Architecture
 
 <img src=".github/resources/architecture.png"/>
 
-## Test Automation Flow
+Some features are not yet supported. But we are working hard to support them.
 
-### Target Device for Test Script Execution
+## Run Test Script Flow
+
+### Uploaded Test Script Execution By Workflow
 
 <img src=".github/resources/architecture-test-automation-flow.png"/>
 
-Dogu Agent helps you to run test script on your own device farm. Especially, Dogu Agent is tightly integrated with test script and test framework so that you can focus on test automation without developing infrastructure related works like, target device for test execution, parallel test execution, pulling test script.
+Dogu Agent helps you to run test script on your device farm. Especially, Dogu Agent is tightly integrated with test script and test framework so that you can focus on test automation without developing infrastructure related works like, target device for test execution, parallel test execution, pulling test script.
+
+### Local Test Script Excution By Relay Hub (Not yet supported)
+
+<img src=".github/resources/architecture-test-remote-automation-flow.png"/>
+
+In contrast to uploaded test script execution, you can run test script existing in local through relay hub on device farm
 
 ## Platform Features
 
@@ -83,7 +119,7 @@ Inspect UI of device in web page
   <img src=".github/resources/gamium-inspecting.gif" width="49%"/>
 </div>
 
-### [Run Test Script](https://docs.dogutech.io/script-and-routine/introduction)
+### [Workflow](https://docs.dogutech.io/script-and-routine/introduction)
 
 Integrate test script with workflow and run it on your own device farm
 
@@ -103,62 +139,53 @@ Visualize test result
 - Profiled device (memory, cpu, fps)
 - Log (test script, device, application)
 
-<img src=".github/resources/reporting-video.png"/>
-<img src=".github/resources/reporting-visualization.png"/>
-<img src=".github/resources/reporting-profiling.png"/>
-
-## Integrate Test Script With Dogu
-
-You can integrate existing test script with Dogu.
-
-### Javascript & Typescript
-
-Coming soon. following test client could be integrated with Dogu
-
-**Client**
-
-- Webdriverio
-- [Gamium](https://github.com/dogu-team/gamium)
-
-### Python
-
-Coming soon. following test client could be integrated with Dogu
-
-**Client**
-
-- [Gamium](https://github.com/dogu-team/gamium)
+<div style="display: flex; flex-direction: row; justify-content: center">
+  <img src=".github/resources/reporting-video.png" width="49%"/>
+  <img src=".github/resources/reporting-visualization.png" width="49%"/>
+</div>
+<div align='center' style="margin-bottom: 8px;">
+  <img src=".github/resources/reporting-profiling.png" width="49%"/>
+</div>
 
 ## Integrate Test Framework With Dogu
 
 You can integrate existing test framework with Dogu.
 
-### Javascript & Typescript
+### Browser
 
-Coming soon. following test framework could be integrated with Dogu
+- Selenium (Not yet supported)
+- Playwright (Not yet supported)
+- Puppeteer (Not yet supported)
+- Cypress (Not yet supported)
+- Webdriverio (Not yet supported)
 
-**Test Framework**
+### Mobile
 
-- Jest
+- Appium (Not yet supported)
+- Webdriverio (Not yet supported)
 
-### Python
+### Game
 
-Coming soon. following test framework could be integrated with Dogu
+- [Gamium](https://github.com/dogu-team/gamium)
 
-**Test Framework**
+## Integrate Test Unit Framework With Test Report
 
-- Pytest
+You can integrate existing test unit framework with test report.
 
-## Start With Self-Hosted
+- Jest (Not yet supported)
+- Pytest (Not yet supported)
+- TestNG (Not yet supported)
 
-You can set up Dogu on your own server.  
-See [Guide setting up Dogu with self-hosted](https://docs.dogutech.io/self-hosted/get-started)
+## Integrate External Workflow With Routine
 
-## Start With Cloud
+You can integrate existing workflow with routine.
 
-You can start right now with [Cloud Service](https://dogutech.io)
+- Jenkins (Not yet supported)
+- Github Action (Not yet supported)
 
 ## Documentation
 
+- [Milestones](https://github.com/dogu-team/dogu/milestones)
 - [Documentation](https://docs.dogutech.io)
 - [Quick Start - Device Farm](https://docs.dogutech.io/get-started/device-farm)
 

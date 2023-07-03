@@ -26,14 +26,18 @@ const InspectorUITree = ({ isInspecting, treeData, inspectingNode, selectedNode,
   const ref = useRef<HTMLDivElement>(null);
   const treeRef = useRef<any>(null);
 
+  const updateTreeWidth = () => {
+    const elems = document.getElementsByClassName('ant-tree-list-holder-inner');
+    if (elems.length > 0) {
+      setTreeWidth(elems[0].clientWidth);
+    }
+  };
+
   const handleExpand = (keys: Key[]) => {
     setExpandedKeys(keys);
     setAutoExpandedParents(false);
     setTimeout(() => {
-      const elems = document.getElementsByClassName('ant-tree-list-holder-inner');
-      if (elems.length > 0) {
-        setTreeWidth(elems[0].clientWidth);
-      }
+      updateTreeWidth();
     }, 50);
   };
 
@@ -41,6 +45,7 @@ const InspectorUITree = ({ isInspecting, treeData, inspectingNode, selectedNode,
     if (selectedNode) {
       setAutoExpandedParents(true);
       setTimeout(() => {
+        updateTreeWidth();
         treeRef.current?.scrollTo({ key: selectedNode.node.key, offset: 10 });
       }, 100);
     }
@@ -49,7 +54,9 @@ const InspectorUITree = ({ isInspecting, treeData, inspectingNode, selectedNode,
   useEffect(() => {
     if (isInspecting && inspectingNode) {
       setAutoExpandedParents(true);
+      setExpandedKeys((prev) => [...prev, inspectingNode.node.key]);
       setTimeout(() => {
+        updateTreeWidth();
         treeRef.current?.scrollTo({ key: inspectingNode.node.key, offset: 10 });
       }, 100);
     }
@@ -64,7 +71,7 @@ const InspectorUITree = ({ isInspecting, treeData, inspectingNode, selectedNode,
               description={
                 <Trans
                   i18nKey="device-streaming:inspectorEmptyTreeText"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/host-and-device/device/streaming-and-remote-control/game-ui-inspector" target="_blank" /> }}
+                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/host-and-device/device/streaming-and-remote-control/ui-inspector" target="_blank" /> }}
                 />
               }
             />
@@ -82,7 +89,14 @@ const InspectorUITree = ({ isInspecting, treeData, inspectingNode, selectedNode,
             titleRender={(node) => {
               if ('key' in node) {
                 return (
-                  <InspectorTreeTitle node={node} selected={selectedNode?.node.key === node.key} onClickNode={onClickNode} onHoverNode={onHoverNode} onLeaveNode={onLeaveNode} />
+                  <InspectorTreeTitle
+                    node={node}
+                    selected={selectedNode?.node.key === node.key}
+                    hovered={inspectingNode?.node.key === node.key}
+                    onClickNode={onClickNode}
+                    onHoverNode={onHoverNode}
+                    onLeaveNode={onLeaveNode}
+                  />
                 );
               }
 

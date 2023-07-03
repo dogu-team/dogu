@@ -33,6 +33,9 @@ export class Host extends BaseEntity implements HostBase {
   @Column({ type: 'int', name: HostPropSnake.device_server_port, default: 0, nullable: false })
   deviceServerPort!: number;
 
+  @Column({ type: 'character varying', name: HostPropSnake.agent_version, length: 50, unique: false, nullable: true, default: null })
+  agentVersion!: string | null;
+
   @ColumnTemplate.RelationUuid(HostPropSnake.token_id)
   tokenId!: TokenId;
 

@@ -1,13 +1,16 @@
 import { Checkbox, List, ListItem, Radio, RadioGroup, Stack, Text, useColorMode } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import ApiUrlInputForm from '../components/connection/ApiUrlInputForm';
 
 import PageTitle from '../components/layouts/PageTitle';
 import SinglePageLayout from '../components/layouts/SinglePageLayout';
+import useEnvironmentStore from '../stores/environment';
 import { logger } from '../utils/logger';
 import { ipc } from '../utils/window';
 
 function Settings() {
+  const { useApiUrlInput } = useEnvironmentStore((state) => state.features);
   const [startupAtLogin, setStartupAtLogin] = useState<boolean | null>(null);
   const { colorMode, toggleColorMode } = useColorMode();
 
@@ -31,9 +34,9 @@ function Settings() {
         General
       </Text>
 
-      <List spacing={4} width="100%">
+      <List spacing={6} width="100%">
         <ListItem>
-          <Stack direction={['row']} spacing="8px">
+          <Stack direction={['row']} spacing="4px">
             <Checkbox isChecked={startupAtLogin ?? false} onChange={(e) => setStartupAtLogin(e.target.checked)}>
               <Text width="100%" align="left">
                 Start Dost when you log in
@@ -43,7 +46,7 @@ function Settings() {
         </ListItem>
 
         <ListItem>
-          <Stack direction="column" spacing="8px">
+          <Stack direction="column" spacing="4px">
             <MenuTitle>Theme for Dost</MenuTitle>
             <RadioGroup
               value={colorMode}
@@ -60,6 +63,15 @@ function Settings() {
             </RadioGroup>
           </Stack>
         </ListItem>
+
+        {useApiUrlInput && (
+          <ListItem>
+            <Stack direction="column" spacing="4px">
+              <MenuTitle>Custom API URL</MenuTitle>
+              <ApiUrlInputForm />
+            </Stack>
+          </ListItem>
+        )}
       </List>
     </SinglePageLayout>
   );
@@ -68,5 +80,6 @@ function Settings() {
 export default Settings;
 
 const MenuTitle = styled(Text)`
-  font-weight: 500;
+  font-size: 1.1rem;
+  font-weight: 600;
 `;

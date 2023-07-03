@@ -4,6 +4,7 @@ import { Code } from '@dogu-private/types';
 import { ChildProcess } from 'child_process';
 import { hostAgentKey } from '../../../src/shares/child';
 import { AppConfigService } from '../../app-config/app-config-service';
+import { getLogLevel } from '../../log/logger.instance';
 import { HostAgentLogsPath, HostAgentMainScriptPath } from '../../path-map';
 import { ChildFactory } from '../child-factory';
 import { ChildService } from '../child-service';
@@ -20,6 +21,8 @@ export class HostAgentChild implements Child {
     const DOGU_API_BASE_URL = await appConfigService.get('DOGU_API_BASE_URL');
     const DOGU_DEVICE_SERVER_HOST_PORT = await appConfigService.get('DOGU_DEVICE_SERVER_HOST_PORT');
     const DOGU_HOST_AGENT_PORT = await appConfigService.get('DOGU_HOST_AGENT_PORT');
+    const DOGU_LOG_LEVEL = getLogLevel(DOGU_RUN_TYPE);
+    logger.info(`HostAgentChild DOGU_LOG_LEVEL: ${DOGU_LOG_LEVEL}`);
     const options = await fillChildOptions({
       forkOptions: {
         env: {
@@ -31,6 +34,7 @@ export class HostAgentChild implements Child {
           DOGU_DEVICE_SERVER_HOST_PORT,
           DOGU_LOGS_PATH: HostAgentLogsPath,
           DOGU_HOST_AGENT_PORT,
+          DOGU_LOG_LEVEL,
         },
       },
     });

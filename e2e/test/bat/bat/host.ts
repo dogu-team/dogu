@@ -5,7 +5,7 @@ import { ElementHandle, Locator, Page } from 'playwright';
 import { Key } from 'selenium-webdriver';
 import { Driver } from '../../../src/chromedriver';
 import { dostPlaywrightColor, launchDost } from '../../../src/dost';
-import { replaceWebDriverAgentSigningStyle } from '../../../src/ios-helper';
+import { copyIosDeviceAgentProject, replaceIosDeviceAgentSigningStyle, replaceWebDriverAgentSigningStyle } from '../../../src/ios-helper';
 import { getClockTime } from '../../../src/time';
 import { Timer } from '../../../src/timer';
 import { l10n } from './l10n';
@@ -35,7 +35,7 @@ export function runHost(random: number, dost: Dost): void {
       // add-host-form-name
       await Driver.sendKeys(
         {
-          xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[2]/form/div/div/div[2]/div/div/input',
+          xpath: '//*[@access-id="add-host-form-name"]',
         },
         `test host ${random}`,
         {
@@ -44,7 +44,7 @@ export function runHost(random: number, dost: Dost): void {
       );
       await Driver.clickElement(
         {
-          xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[3]/div/button[2]',
+          xpath: '/html/body/div[2]/div/div[2]/div/div[2]/div[3]/div/button[2]/span',
         },
         {
           focusWindow: true,
@@ -72,7 +72,7 @@ export function runHost(random: number, dost: Dost): void {
 
     test('Check host added', async () => {
       await Driver.clickElement(
-        { xpath: '/html/body/div[3]/div/div[2]/div/div[2]/button' },
+        { xpath: '//button[@aria-label="Close"]' },
         {
           focusWindow: true,
         },
@@ -127,6 +127,12 @@ export class Dost {
     });
     yield;
 
+    test('Dost skip manual setup install', async () => {
+      if (process.platform !== 'darwin') {
+        await this.mainPage!.getByText('Continue', { exact: true }).first().click({ timeout: this.InstallTimeoutMs });
+      }
+    });
+
     test('Dost manual setup install wda', async () => {
       if (process.platform !== 'darwin') {
         return;
@@ -134,7 +140,7 @@ export class Dost {
       await this.mainPage!.getByText('Manual Setup', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'visible' });
       replaceWebDriverAgentSigningStyle();
 
-      await this.mainPage!.getByText('Click here to build', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+      await this.mainPage!.getByText('Build & Check', { exact: true }).first().click({ timeout: this.longTimeoutMs });
     });
     yield;
 
@@ -142,8 +148,7 @@ export class Dost {
       if (process.platform !== 'darwin') {
         return;
       }
-      await this.mainPage!.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'hidden' });
-      await this.mainPage!.getByText('Check', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+      await this.mainPage!.getByText('Building project...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'hidden' });
     });
     yield;
 
@@ -152,10 +157,10 @@ export class Dost {
         return;
       }
 
+      await copyIosDeviceAgentProject();
+      replaceIosDeviceAgentSigningStyle();
       await delay(3000);
-
-      const buildButtons = await this.mainPage!.getByText('Click here to build', { exact: true }).all();
-      await buildButtons[1].dispatchEvent('click');
+      await this.mainPage!.getByText('Build & Check', { exact: true }).first().click({ timeout: this.longTimeoutMs });
     });
     yield;
 
@@ -164,10 +169,15 @@ export class Dost {
         return;
       }
 
-      await this.mainPage!.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'hidden' });
-      await this.mainPage!.getByText('Check', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+      await this.mainPage!.getByText('Building project...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'hidden' });
+      await delay(1000);
 
-      await this.mainPage!.getByText('Finish', { exact: true }).first().click({ timeout: this.InstallTimeoutMs });
+      await this.mainPage!.getByText('Continue', { exact: true }).first().click({ timeout: this.InstallTimeoutMs });
+    });
+
+    test('Set API url', async () => {
+      await this.mainPage!.getByText('Set', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+      await this.mainPage!.getByText('Finish', { exact: true }).first().click({ timeout: this.longTimeoutMs });
     });
   }
 

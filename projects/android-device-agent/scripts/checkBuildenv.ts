@@ -13,11 +13,8 @@ function checkAndroidEnv(): boolean {
     return true;
   }
   console.error(`ANDROID_HOME or ANDROID_SDK_ROOT is not set. try default path.`);
-  const androidHomes = [
-    path.resolve(process.env.HOME ?? '', 'Android/Sdk'),
-    path.resolve(process.env.HOME ?? '', 'Library/Android/sdk'),
-    path.resolve(process.env.HOME ?? '', 'AppData/Local/Android/Sdk'),
-  ];
+  const homePath = process.env.HOME ?? process.env.USERPROFILE ?? '';
+  const androidHomes = [path.resolve(homePath, 'Android/Sdk'), path.resolve(homePath, 'Library/Android/sdk'), path.resolve(homePath, 'AppData/Local/Android/Sdk')];
   let androidHome = '';
   for (const home of androidHomes) {
     if (fs.existsSync(home)) {

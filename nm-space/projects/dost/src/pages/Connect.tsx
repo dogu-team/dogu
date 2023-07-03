@@ -26,7 +26,7 @@ function Connect() {
       <Divider mb={4} />
 
       <List spacing="20px">
-        {/* {apiUrlInsertable && (
+        {/* {useApiUrlInput && (
           <ListItem>
             <ApiUrlInputForm />
           </ListItem>
@@ -50,7 +50,7 @@ function Connect() {
           {hostAgentConnectionStatus && tokenInputable && (
             <Item>
               <TokenConnectionForm
-              // notInputable={!(apiUrlInsertable ? apiUrl.length > 0 : true)}
+              // notInputable={!(useApiUrlInput ? apiUrl.length > 0 : true)}
               // onBeforeSubmit={() => {
               //   ipc.appConfigClient.set('DOGU_API_BASE_URL', apiUrl);
               // }}

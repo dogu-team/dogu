@@ -1,4 +1,5 @@
 import { env } from '../../src/env';
+import { FeatureConfig } from '../../src/feature.config';
 
 export const config = {
   containerName: 'dogu-pgsql',
@@ -17,4 +18,5 @@ export const pgsqlConnectionOptions = {
   user: config.rootUser,
   password: config.rootPassword,
   database: config.schema,
+  ssl: FeatureConfig.get('rdbSslConnection') ? { rejectUnauthorized: false } : false,
 };

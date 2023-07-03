@@ -24,10 +24,7 @@ WORKDIR /dogu
 ENV NODE_OPTIONS --max-old-space-size=8192
 COPY .dogu-workspace ./.dogu-workspace
 COPY .yarnrc.yml package.json tsconfig.json tsconfig.eslint.json .pnp.cjs .pnp.loader.mjs yarn.lock ./
-COPY .yarn/cache ./.yarn/cache
-COPY .yarn/plugins ./.yarn/plugins
-COPY .yarn/releases ./.yarn/releases
-COPY .yarn/sdks ./.yarn/sdks
+COPY .yarn ./.yarn
 COPY .husky ./.husky
 COPY packages/typescript ./packages/typescript
 COPY packages/typescript-private ./packages/typescript-private

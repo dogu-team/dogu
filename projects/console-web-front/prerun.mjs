@@ -13,8 +13,6 @@ const requiredEnvKeys = [
   'NEXT_PUBLIC_DOGU_API_BASE_URL',
   'NEXT_PUBLIC_DOGU_WS_BASE_URL',
   'NEXT_PUBLIC_ENV',
-  'NEXT_PUBLIC_DOGU_RECAPTCHA_SITE',
-  'NEXT_PUBLIC_DOGU_GA_ID',
   'NEXT_PUBLIC_DOGU_GITLAB_HOST',
   'NEXT_PUBLIC_DOGU_GITLAB_PORT',
   'NEXT_PUBLIC_DOGU_GITLAB_PROTOCOL',
@@ -23,21 +21,40 @@ const requiredEnvKeys = [
   'NEXT_PUBLIC_TURN_SERVER_USERNAME',
   'NEXT_PUBLIC_TURN_SERVER_PASSWORD',
   'NEXT_PUBLIC_TURN_SERVER_CREDENTIAL_TYPE',
+  'NEXT_PUBLIC_DOGU_VERSION',
 ];
 
 async function parseDotenv() {
   const envFilePath = await findUp(`.env`);
+  const envLocalFilePath = await findUp(`.env.local`);
+
   if (envFilePath === undefined) {
     const message = `.env file not found`;
     console.error(`[prerun] ${message}`);
     throw new Error(message);
   }
 
+  if (envLocalFilePath === undefined) {
+    const parsedEnv = Dotenv.config({ path: envFilePath }).parsed || {};
+
+    // compare env keys
+    const existEnvKeys = Object.keys(parsedEnv).filter((x) => !!parsedEnv[x]);
+    const difference = requiredEnvKeys.filter((x) => !existEnvKeys.includes(x));
+
+    if (difference.length > 0) {
+      throw new Error(`[prerun] Env validation failed. ${difference.join()} should exist.`);
+    }
+
+    return parsedEnv;
+  }
+
   const parsedEnv = Dotenv.config({ path: envFilePath }).parsed || {};
+  const parsedEnvLocal = Dotenv.config({ path: envLocalFilePath }).parsed || {};
 
   // compare env keys
-  const existKeys = Object.keys(parsedEnv);
-  const difference = requiredEnvKeys.filter((x) => !existKeys.includes(x));
+  const existEnvKeys = Object.keys(parsedEnv).filter((x) => !!parsedEnv[x]);
+  const existEnvLocalKeys = Object.keys(parsedEnvLocal).filter((x) => !!parsedEnvLocal[x]);
+  const difference = requiredEnvKeys.filter((x) => !existEnvKeys.includes(x) && !existEnvLocalKeys.includes(x));
 
   if (difference.length > 0) {
     throw new Error(`[prerun] Env validation failed. ${difference.join()} should exist.`);

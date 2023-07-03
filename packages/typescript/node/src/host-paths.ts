@@ -14,6 +14,7 @@ export const HostPaths = {
   recordWorkspacePath: (doguHomePath: string): string => path.resolve(doguHomePath, 'records'),
   recordSerialPath: (recordWorkspacePath: string, serial: string): string => path.resolve(recordWorkspacePath, serial),
   externalsPath: (doguHomePath: string): string => path.resolve(doguHomePath, 'externals'),
+  downloadsPath: (doguHomePath: string): string => path.resolve(doguHomePath, 'downloads'),
   organizationWorkspacePath: (doguHomePath: string, organizationId: string): string => path.resolve(doguHomePath, 'organizations', organizationId),
   hostWorkspacePath: (organizationWorkspacePath: string, hostId: string): string => path.resolve(organizationWorkspacePath, 'hosts', hostId),
   hostSharesPath: (hostWorkspacePath: string): string => path.resolve(hostWorkspacePath, 'shares'),
@@ -60,6 +61,11 @@ export const HostPaths = {
       idaDerivedDataPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'ios-device-agent/build'),
       idaDerivedDataClonePath: (): string => path.resolve(HostPaths.external.externalsPath(), 'ios-device-agent/build-clone'),
     },
+
+    /**
+     * @note use to avoid appium xcodebuild process cleanup patterns.
+     */
+    xcodebuildSymlinkPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'xcb'),
   },
 };
 

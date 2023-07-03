@@ -67,15 +67,15 @@ const files: ThirdPartyFile[] = [
   },
   {
     condition: () => process.platform === 'darwin',
-    url: 'https://nodejs.org/dist/v16.20.0/node-v16.20.0-darwin-arm64.tar.gz',
+    url: 'https://github.com/dogu-team/third-party-binaries/releases/download/node-16.20.0/node-darwin-arm64.tar.gz',
     path: 'darwin/arm64/node/v16.20.0',
-    postAction: enableCorepack,
+    // postAction: enableCorepack,
   },
   {
     condition: () => process.platform === 'darwin',
-    url: 'https://nodejs.org/dist/v16.20.0/node-v16.20.0-darwin-x64.tar.gz',
+    url: 'https://github.com/dogu-team/third-party-binaries/releases/download/node-16.20.0/node-darwin-x64.tar.gz',
     path: 'darwin/x64/node/v16.20.0',
-    postAction: enableCorepack,
+    // postAction: enableCorepack,
   },
   {
     condition: () => process.platform === 'darwin',
@@ -128,15 +128,15 @@ function makeDirectories(): void {
 }
 
 async function requestFileSizeRetry(url: string): Promise<number> {
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 20; i++) {
     try {
       return await requestFileSize(url);
     } catch (err) {
-      console.error(`Failed to download ${url}, retrying...`);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      console.error(`Failed to get file size of ${url}, retrying...`);
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     }
   }
-  throw new Error(`Failed to download ${url}`);
+  throw new Error(`Failed to get file size of ${url}`);
 }
 
 async function requestFileSize(url: string): Promise<number> {
@@ -160,14 +160,15 @@ async function requestFileSize(url: string): Promise<number> {
   });
 }
 async function getRetry(url: string, destPath: string): Promise<void> {
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 20; i++) {
     try {
       return await get(url, destPath);
     } catch (err) {
       console.error(`Failed to download ${url}, retrying...`);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
     }
   }
+  throw new Error(`Failed to download ${url}`);
 }
 
 async function get(url: string, destPath: string): Promise<void> {

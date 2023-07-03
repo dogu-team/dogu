@@ -6,8 +6,7 @@ import { RTCPeerDescription, StreamingOfferDto } from '../../validations/types/s
 import { DeviceServerControllerMethodSpec } from '../types';
 import {
   CreateLocalDeviceDetectTokenRequest,
-  GetAppiumChannelInfoQuery,
-  GetAppiumChannelInfoResponse,
+  GetAppiumContextInfoResponse,
   GetDevicePlatformSerialsResponse,
   GetDeviceSerialsResponse,
   GetDeviceSystemInfoResponse,
@@ -109,15 +108,14 @@ export const Device = {
     responseBodyError: DeviceNotFoundErrorDetails,
   }),
 
-  getAppiumChannelInfo: new DeviceServerControllerMethodSpec({
+  getAppiumContextInfo: new DeviceServerControllerMethodSpec({
     controllerSpec: DeviceController,
     method: 'GET',
     path: '/:serial/appium-channel-info',
     pathProvider: class {
       constructor(readonly serial: Serial) {}
     },
-    query: GetAppiumChannelInfoQuery,
     responseBody: DeviceServerResponseDto,
-    responseBodyData: GetAppiumChannelInfoResponse,
+    responseBodyData: GetAppiumContextInfoResponse,
   }),
 };

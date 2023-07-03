@@ -1,14 +1,14 @@
 {
   "name": "console-web-front",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "license": "UNLICENSED",
   "author": "",
   "type": "commonjs",
   "scripts": {
-    "build": "cross-env NODE_ENV=local next build",
+    "build": "node ./prebuild.mjs && cross-env NODE_ENV=local next build",
     "clean": "shx rm -rf generated .next",
-    "dev": "node ./prerun.mjs start && next dev -p 3001",
+    "dev": "node ./prebuild.mjs && node ./prerun.mjs start && next dev -p 3001",
     "lint": "next lint",
     "rebuild": "yarn run clean && yarn run build",
     "start": "node ./prerun.mjs start && next start -p 3001"

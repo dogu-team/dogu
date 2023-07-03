@@ -1,6 +1,6 @@
 import { CheckCircleIcon } from '@chakra-ui/icons';
-import { Badge } from '@chakra-ui/react';
-import { AiFillExclamationCircle } from 'react-icons/ai';
+import { Badge, Spinner } from '@chakra-ui/react';
+import { AiFillExclamationCircle, AiOutlineLoading, AiOutlineStop } from 'react-icons/ai';
 
 import { HostAgentConnectionStatus } from '../../shares/child';
 
@@ -13,7 +13,15 @@ const HostAgentConnectionStatusIcon = ({ status }: Props) => {
     return <CheckCircleIcon style={{ color: '#6bcc64' }} />;
   }
 
-  return <AiFillExclamationCircle style={{ color: '#ff7369' }} />;
+  if (status.status === 'connecting') {
+    return <Spinner size='sm' />
+  }
+
+  if (status.status === 'disconnected') {
+    return <AiFillExclamationCircle style={{ color: '#ff7369' }} />;
+  }
+  
+  return <AiOutlineStop />
 };
 
 export default HostAgentConnectionStatusIcon;

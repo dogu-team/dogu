@@ -1,7 +1,9 @@
 import { instanceKeys } from './electron-ipc';
 
 export interface FeatureTable {
-  apiUrlInsertable: boolean;
+  useApiUrlInput: boolean;
+  useSentry: boolean;
+  useAppUpdate: boolean;
 }
 
 export type FeatureKey = keyof FeatureTable;

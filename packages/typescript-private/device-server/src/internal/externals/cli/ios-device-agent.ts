@@ -103,7 +103,9 @@ export class IosDeviceAgentProcess {
   delete(): void {
     this.isKilled = true;
     ZombieServiceInstance.deleteComponent(this.xctest);
+    ZombieServiceInstance.deleteComponent(this.screenTunnel);
     ZombieServiceInstance.deleteComponent(this.grpcTunnel);
+    ZombieServiceInstance.deleteComponent(this.screenChecker);
   }
 
   get hasKilled(): boolean {
@@ -114,6 +116,7 @@ export class IosDeviceAgentProcess {
 class ZombieXCTest implements Zombieable {
   private xctestrun: XCTestRunContext | null = null;
   public readonly zombieWaiter: ZombieWaiter;
+  public dieTime?: Date;
   constructor(
     public readonly serial: Serial,
     private readonly xctestrunfile: XctestrunFile,
@@ -140,18 +143,18 @@ class ZombieXCTest implements Zombieable {
     return this.logger;
   }
   async revive(): Promise<void> {
-    this.logger.debug?.(`ZombieScreenChecker.revive`);
+    this.logger.debug?.(`ZombieXCTest.revive`);
     if (config.externalIosDeviceAgent.use) {
       return;
     }
 
+    await delay(1000);
+
     const xctestrunPath = this.xctestrunfile.filePath;
-    await MobileDevice.uninstallApp(this.serial, 'com.dogu.IOSDeviceAgentRunner').catch(() => {
-      // ignore
+    await MobileDevice.uninstallApp(this.serial, 'com.dogu.IOSDeviceAgentRunner', this.logger).catch(() => {
       this.logger.warn?.('uninstallApp com.dogu.IOSDeviceAgentRunner failed');
     });
-    await MobileDevice.uninstallApp(this.serial, 'com.dogu.IOSDeviceAgentRunner.xctrunner').catch(() => {
-      // ignore
+    await MobileDevice.uninstallApp(this.serial, 'com.dogu.IOSDeviceAgentRunner.xctrunner', this.logger).catch(() => {
       this.logger.warn?.('uninstallApp com.dogu.IOSDeviceAgentRunner.xctrunner failed');
     });
     await this.xctestrunfile.updateIdaXctestrunFile(this.webDriverPort, this.grpcPort);
@@ -174,6 +177,7 @@ class ZombieXCTest implements Zombieable {
   }
 
   onDie(): void {
+    this.dieTime = new Date();
     this.logger.debug?.(`ZombieXCTest.onDie`);
     this.xctestrun?.kill();
   }
@@ -225,8 +229,19 @@ class ZombieScreenChecker implements Zombieable {
       }
       this.logger.debug?.(`ZombieScreenChecker. hello success. `);
       const onClose = (): void => {
-        this.logger.info(`ZombieScreenChecker. close. `);
-        ZombieServiceInstance.notifyDie(this.xctest, 'screen check failed');
+        this.logger.info(`ZombieScreenChecker.close. `);
+        if (this.xctest.dieTime) {
+          // screenCheck should kill xctest only if xctest is alive and doguscreen is dead.
+          // temporarily prevent xctest die -> screenCheck die -> xctest die loop
+          const diffTime = new Date().getTime() - this.xctest.dieTime.getTime();
+          if (1000 * 10 < diffTime) {
+            this.logger.info(`ZombieScreenChecker. kill xctest`);
+            ZombieServiceInstance.notifyDie(this.xctest, 'screen check failed');
+          }
+        } else {
+          this.logger.info(`ZombieScreenChecker. kill xctest first`);
+          ZombieServiceInstance.notifyDie(this.xctest, 'screen check failed');
+        }
         ZombieServiceInstance.notifyDie(this, 'close');
       };
       socketOrError.on('close', onClose);

@@ -62,7 +62,7 @@ async function checkServerStarted(): Promise<void> {
       clearTimeout(checkTimeout);
       return;
     } catch (error) {
-      console.log('Server did not start yet', error);
+      console.log('Server did not start yet. retry...', error);
       lastError = error instanceof Error ? error : new Error(JSON.stringify(error));
       await delay(CheckStartInterval);
     }

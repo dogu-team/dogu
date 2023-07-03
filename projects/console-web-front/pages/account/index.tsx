@@ -192,11 +192,15 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
           <StyledH5>Gitlab</StyledH5>
           <GitlabState user={user} />
         </Inner>
-        <Divider />
-        <Inner>
-          <StyledH5>{t('account:emailPreferenceTitle')}</StyledH5>
-          <EmailPreferenceModifier user={user} />
-        </Inner>
+        {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
+          <>
+            <Divider />
+            <Inner>
+              <StyledH5>{t('account:emailPreferenceTitle')}</StyledH5>
+              <EmailPreferenceModifier user={user} />
+            </Inner>
+          </>
+        )}
         <Divider />
         <DangerZone>
           <DangerZone.Item

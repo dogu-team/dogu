@@ -1,19 +1,74 @@
 import { Serial } from '@dogu-private/types';
-import { delay, loop, Printable } from '@dogu-tech/common';
-import { ChildProcess, DirectoryRotation, redirectFileToStream } from '@dogu-tech/node';
-import child_process from 'child_process';
+import { delay, errorify, loop, Printable } from '@dogu-tech/common';
+import { ChildProcess, DirectoryRotation, findEndswith, HostPaths, redirectFileToStream } from '@dogu-tech/node';
+import child_process, { exec, execFile } from 'child_process';
 import { randomUUID } from 'crypto';
-import { glob } from 'glob';
+import fs from 'fs';
 import path from 'path';
+import { promisify } from 'util';
 import { logger } from '../../../logger/logger.instance';
 
-const directoryRotation = new DirectoryRotation('xctest', 1440);
+const execAsync = promisify(exec);
+const execFileAsync = promisify(execFile);
 
-const XcodeBuildCommand = 'xcodebuild';
+const directoryRotation = new DirectoryRotation('xctest', 1440);
+const XcodeBuild = 'xcodebuild';
+const ExecTimeout = 5 * 1000;
+let _xcodeBuildSymlinkPath: string | null = null;
+
+export async function getXcodeBuildPath(): Promise<string> {
+  const isXcodeBuildValid = async (symlinkPath: string): Promise<boolean> => {
+    try {
+      const { stdout } = await execFileAsync(symlinkPath, ['-version'], { timeout: ExecTimeout });
+      if (stdout.includes('Xcode')) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  if (_xcodeBuildSymlinkPath) {
+    return _xcodeBuildSymlinkPath;
+  }
+  const symlinkPath = HostPaths.external.xcodebuildSymlinkPath();
+  const stat = await fs.promises.stat(symlinkPath).catch(() => null);
+  if (stat && stat.isSymbolicLink() && (await isXcodeBuildValid(symlinkPath))) {
+    _xcodeBuildSymlinkPath = symlinkPath;
+    return _xcodeBuildSymlinkPath;
+  }
+  try {
+    await fs.promises.mkdir(path.dirname(symlinkPath), { recursive: true });
+    await fs.promises.rm(symlinkPath, { recursive: true, force: true });
+    const { stdout } = await execAsync('xcode-select -p', { timeout: ExecTimeout });
+    const xcodePath = stdout.trim();
+    const xcodebuildPath = path.resolve(xcodePath, 'usr/bin/xcodebuild');
+    if (await isXcodeBuildValid(xcodebuildPath)) {
+      await fs.promises.symlink(xcodebuildPath, symlinkPath);
+      _xcodeBuildSymlinkPath = symlinkPath;
+      return _xcodeBuildSymlinkPath;
+    } else {
+      throw new Error('xcodebuild is not valid');
+    }
+  } catch (error) {
+    _xcodeBuildSymlinkPath = XcodeBuild;
+    logger.error('failed to create xcodebuild symlink. return default xcodebuild path', { error: errorify(error) });
+    return _xcodeBuildSymlinkPath;
+  }
+}
+
+function getXcodeBuildPathSync(): string {
+  if (!_xcodeBuildSymlinkPath) {
+    throw new Error('xcodebuild symlink path is not initialized');
+  }
+  return _xcodeBuildSymlinkPath;
+}
 
 export async function validateXcodeBuild(): Promise<void> {
   try {
-    await ChildProcess.exec(`${XcodeBuildCommand} -version`, {}, logger);
+    const xcodebuildPath = await getXcodeBuildPath();
+    await ChildProcess.exec(`${xcodebuildPath} -version`, {}, logger);
   } catch (error) {
     const message = `
 1. install xcode
@@ -44,12 +99,16 @@ export class XCTestRunContext {
   private async redirectOutput(tempDirPath: string, proc: child_process.ChildProcess, redirectContext: { stop: boolean }): Promise<void> {
     let fileName = '';
     for await (const _ of loop(1000, 10)) {
-      const files = await glob('**/StandardOutputAndStandardError.txt', { cwd: tempDirPath, nocase: true });
+      const files = await findEndswith(tempDirPath, 'StandardOutputAndStandardError.txt');
       if (0 < files.length) {
         fileName = files[0];
         break;
       }
       await delay(1000);
+    }
+    if (fileName === '') {
+      this.logger.error(`StandardOutputAndStandardError.txt not found in ${tempDirPath}, redirect failed. file will not printed to console`);
+      return;
     }
     const outputPath = path.resolve(tempDirPath, fileName);
     this.logger.info(`StandardOutputAndStandardError.txt path: ${outputPath}`);
@@ -65,7 +124,7 @@ export class XCTestRunContext {
       },
     }).catch((err) => {
       proc.kill();
-      this.logger.error(err);
+      this.logger.error(`redirectFileToStream failed outputPath: ${outputPath}, err: ${err}`);
       this.isAlive = false;
       redirectContext.stop = true;
     });
@@ -87,8 +146,9 @@ export async function removeOldWaves(): Promise<void> {
 
 export function testWithoutBuilding(xctestrunPath: string, serial: Serial, printable: Printable): XCTestRunContext {
   const tempDirPath = `${directoryRotation.getCurrentWavePath()}/${randomUUID()}`;
+  const xcodebuildPath = getXcodeBuildPathSync();
   const proc = ChildProcess.spawnSync(
-    XcodeBuildCommand,
+    xcodebuildPath,
     ['test-without-building', '-xctestrun', `${xctestrunPath}`, '-destination', `id=${serial}`, '-resultBundlePath', tempDirPath],
     {},
     printable,

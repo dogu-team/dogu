@@ -75,7 +75,7 @@ icacls "C:\var\lib\dogu\nexus-data" /setowner 200 /T
 GITLAB_ROOT_ACCESS_TOKEN 값은 Dogu 실행 후 아래 [gitlab root Access Token 발급 받기](/self-hosted/get-started#gitlab-root-access-token-발급-받기)에서 token을 발급받은 후 설정 해 주세요.
 :::
 
-### docker-compose.yml 설정
+### docker-compose.yml 생성
 
 1. 빈 docker-compose.yml 파일 생성
 2. [파일](https://github.com/dogu-team/dogu/blob/main/docker-compose.yml) 내용을 docker-compose.yml 파일에 붙여넣기
@@ -183,3 +183,7 @@ dogu console에 연결할 수 있는 dost를 실행합니다.
 
 - [Discord Community](https://discord.com/invite/bVycd6Tu9g)
 - [Github Issues](https://github.com/dogu-team/dogu/issues)
+
+### Known Issues
+
+1. Dogu 콘솔(웹 클라이언트)의 프로토콜이 `http`인 경우, 브라우저에서 클립보드로 복사하는 기능을 사용할 수 없습니다.

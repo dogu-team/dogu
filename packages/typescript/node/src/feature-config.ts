@@ -19,7 +19,9 @@ function createFeatureConfigFileNotFoundError(...paths: string[]): Error {
 function parseConfig<T>(filePath: string, content: string, printable: Printable): FeatureConfig<T> {
   try {
     const data = JSON.parse(content) as T;
-    printable.info(`Feature config load complete. path: ${filePath}`);
+    printable.info(`Feature config load complete. path: ${filePath}`, {
+      data,
+    });
     return new FeatureConfig<T>(filePath, data);
   } catch (error) {
     printable.error(`Feature config load failed. path: ${filePath}`);

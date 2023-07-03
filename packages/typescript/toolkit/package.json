@@ -35,7 +35,7 @@
     "is-port-reachable": "4.0.0",
     "lodash": "4.17.21",
     "reflect-metadata": "0.1.13",
-    "webdriverio": "8.10.5"
+    "webdriverio": "7.32.0"
   },
   "devDependencies": {
     "@dogu-dev-private/publish-package": "workspace:^",
