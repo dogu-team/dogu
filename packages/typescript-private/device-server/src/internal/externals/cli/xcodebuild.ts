@@ -106,6 +106,10 @@ export class XCTestRunContext {
       }
       await delay(1000);
     }
+    if (fileName === '') {
+      this.logger.error(`StandardOutputAndStandardError.txt not found in ${tempDirPath}, redirect failed. file will not printed to console`);
+      return;
+    }
     const outputPath = path.resolve(tempDirPath, fileName);
     this.logger.info(`StandardOutputAndStandardError.txt path: ${outputPath}`);
     redirectFileToStream(outputPath, redirectContext, {
