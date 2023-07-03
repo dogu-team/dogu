@@ -2,10 +2,10 @@ import { Printable, Retry, stringify } from '@dogu-tech/common';
 import { ChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
+import util from 'util';
 import { idcLogger } from '../../../logger/logger.instance';
 import { pathMap } from '../../../path-map';
 import { TunnelContext } from './mobiledevice-tunnel';
-import util from 'util';
 
 const execFileAsync = util.promisify(child_process.execFile);
 const DefaultTimeout = 5 * 1000;
@@ -57,7 +57,7 @@ class MobileDeviceImpl {
         printable.error(newPrintable.prefixMessage(message), details);
       },
       info: function (message: unknown, details?: Record<string, unknown> | undefined): void {
-        printable.info(newPrintable.prefixMessage(message), details);
+        printable.verbose?.(newPrintable.prefixMessage(message), details);
       },
       prefixMessage: function (message: unknown): string {
         return `[Tunnel ${hostPort} -> ${devicePort}] ${stringify(message)}`;
@@ -65,7 +65,7 @@ class MobileDeviceImpl {
     };
 
     const proc = ChildProcess.spawnSync(pathMap().macos.mobiledevice, ['tunnel', '-u', udid, hostPort.toString(), devicePort.toString()], {}, newPrintable);
-    printable.info(`tunneling ${udid} ${hostPort} -> ${devicePort}`);
+    printable.verbose?.(`tunneling ${udid} ${hostPort} -> ${devicePort}`);
     const ret = new TunnelContext(proc, hostPort, devicePort);
     return ret;
   }

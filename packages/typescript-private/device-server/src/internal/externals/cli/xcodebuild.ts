@@ -1,10 +1,9 @@
 import { Serial } from '@dogu-private/types';
 import { delay, errorify, loop, Printable } from '@dogu-tech/common';
-import { ChildProcess, DirectoryRotation, HostPaths, redirectFileToStream } from '@dogu-tech/node';
+import { ChildProcess, DirectoryRotation, findEndswith, HostPaths, redirectFileToStream } from '@dogu-tech/node';
 import child_process, { exec, execFile } from 'child_process';
 import { randomUUID } from 'crypto';
 import fs from 'fs';
-import { glob } from 'glob';
 import path from 'path';
 import { promisify } from 'util';
 import { logger } from '../../../logger/logger.instance';
@@ -100,7 +99,7 @@ export class XCTestRunContext {
   private async redirectOutput(tempDirPath: string, proc: child_process.ChildProcess, redirectContext: { stop: boolean }): Promise<void> {
     let fileName = '';
     for await (const _ of loop(1000, 10)) {
-      const files = await glob('**/StandardOutputAndStandardError.txt', { cwd: tempDirPath, nocase: true });
+      const files = await findEndswith(tempDirPath, 'StandardOutputAndStandardError.txt');
       if (0 < files.length) {
         fileName = files[0];
         break;
@@ -121,7 +120,7 @@ export class XCTestRunContext {
       },
     }).catch((err) => {
       proc.kill();
-      this.logger.error(err);
+      this.logger.error(`redirectFileToStream failed outputPath: ${outputPath}, err: ${err}`);
       this.isAlive = false;
       redirectContext.stop = true;
     });
