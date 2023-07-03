@@ -3,6 +3,22 @@
     "message": "Next",
     "description": "The label for version current"
   },
+  "sidebar.getStarted.category.Installation": {
+    "message": "설치",
+    "description": "The label for category Installation in sidebar getStarted"
+  },
+  "sidebar.getStarted.category.DeviceFarm": {
+    "message": "디바이스 팜",
+    "description": "The label for category DeviceFarm in sidebar getStarted"
+  },
+  "sidebar.getStarted.category.TestScript": {
+    "message": "테스트 스크립트",
+    "description": "The label for category TestScript in sidebar getStarted"
+  },
+  "sidebar.getStarted.category.Routine": {
+    "message": "루틴",
+    "description": "The label for category Routine in sidebar getStarted"
+  },
   "sidebar.dostAndDeviceSidebar.category.Host": {
     "message": "호스트",
     "description": "The label for category Host in sidebar dostAndDeviceSidebar"
@@ -66,5 +82,29 @@
   "sidebar.testautomationSidebar.category.sidebar.testAutomationSidebar.category.Game": {
     "message": "게임",
     "description": "The label for category sidebar.testAutomationSidebar.category.Game in sidebar testautomationSidebar"
+  },
+  "sidebar.testReportSidebar.category.TestUnitFramework": {
+    "message": "테스트 유닛 프레임워크",
+    "description": "The label for category Game in sidebar testAutomation"
+  },
+  "sidebar.testreportSidebar.category.sidebar.testReportSidebar.category.TestUnitFramework": {
+    "message": "sidebar.testReportSidebar.category.TestUnitFramework",
+    "description": "The label for category sidebar.testReportSidebar.category.TestUnitFramework in sidebar testreportSidebar"
+  },
+  "sidebar.getStartedSidebar.category.sidebar.testAutomationSidebar.category.Browser": {
+    "message": "sidebar.testAutomationSidebar.category.Browser",
+    "description": "The label for category sidebar.testAutomationSidebar.category.Browser in sidebar getStartedSidebar"
+  },
+  "sidebar.testreportSidebar.category.sidebar.testAutomationSidebar.category.Browser": {
+    "message": "sidebar.testAutomationSidebar.category.Browser",
+    "description": "The label for category sidebar.testAutomationSidebar.category.Browser in sidebar testreportSidebar"
+  },
+  "sidebar.getStartedSidebar.category.sidebar.getStarted.category.Installation": {
+    "message": "sidebar.getStarted.category.Installation",
+    "description": "The label for category sidebar.getStarted.category.Installation in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.sidebar.getStarted.category.DeviceFarm": {
+    "message": "sidebar.getStarted.category.DeviceFarm",
+    "description": "The label for category sidebar.getStarted.category.DeviceFarm in sidebar getStartedSidebar"
   }
 }

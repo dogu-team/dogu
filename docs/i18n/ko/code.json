@@ -273,31 +273,31 @@
     "description": "The ARIA label and title attribute for expand button of doc sidebar"
   },
   "main.descriptionText": {
-    "message": "Dogu를 이용해 게임 테스트 케이스를 자동화하는 방법을 알아보세요\n해당 문서에서는 예시 코드 및 튜토리얼 등 다양한 정보를 제공합니다."
+    "message": "Dogu는 브라우저, 모바일, 게임 테스트 자동화를 지원하는 통합 테스트 자동화 플랫폼입니다."
   },
   "main.introduction": {
     "message": "소개"
   },
-  "main.getStartedTitle": {
-    "message": "시작하기"
+  "main.getStartedInstallationTitle": {
+    "message": "설치"
+  },
+  "main.getStartedDeviceFarmTitle": {
+    "message": "디바이스 팜"
+  },
+  "main.getStartedTestScriptTitle": {
+    "message": "테스트 스크립트"
+  },
+  "main.getStartedRoutineTitle": {
+    "message": "루틴"
   },
   "main.getStartedLinkTitle": {
     "message": "시작하기"
-  },
-  "main.getStartedAboutLinkTitle": {
-    "message": "Dogu"
-  },
-  "main.getStartedWithCloud": {
-    "message": "Cloud"
-  },
-  "main.getStartedWithSelfHosted": {
-    "message": "Self-Hosted"
   },
   "main.orgAndProjectTitle": {
     "message": "관리"
   },
   "main.orgAndProjectIntroLinkTitle": {
-    "message": "조직과 프로젝트"
+    "message": "관리"
   },
   "main.orgAndProjectOrgLinkTitle": {
     "message": "조직"
@@ -333,7 +333,10 @@
     "message": "루틴"
   },
   "main.scriptAndRoutineIntroLinkTitle": {
-    "message": "소개"
+    "message": "루틴"
+  },
+  "main.scriptAndRoutineActionLinkTitle": {
+    "message": "액션"
   },
   "main.scriptAndRoutineScriptLinkTitle": {
     "message": "테스트 스크립트"

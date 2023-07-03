@@ -12,6 +12,9 @@ import RoutineLogo from '@site/static/img/main/routine.svg';
 import OrgLogo from '@site/static/img/main/organization.svg';
 import CommunityLogo from '@site/static/img/main/community.svg';
 import SelfManagedLogo from '@site/static/img/main/self-managed.svg';
+import AutomationLogo from '@site/static/img/main/automation.svg';
+import ReportLogo from '@site/static/img/main/report.svg';
+import DoguLogo from '@site/static/img/main/dogu.svg';
 
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
@@ -28,7 +31,7 @@ function HomepageHeader() {
           width="160"
           height="30"
           title="GitHub Stars"
-        ></iframe>
+        />
       </div>
     </section>
   );
@@ -49,37 +52,40 @@ export default function Home(): JSX.Element {
             <div className={styles.logoWrapper}>
               <RocketLogo className={styles.svg} />
             </div>
-            <Translate id="main.introduction" />
-          </h2>
-          <ul className={styles.docsSectionListContainer}>
-            <li className={styles.docsSectionListItem}>
-              <Link to="/introduction/dogu">
-                <Translate id="main.getStartedAboutLinkTitle" />
-              </Link>
-            </li>
-          </ul>
-        </div>
-        <div className={styles.docsSection}>
-          <h2 className={styles.docsSectionTitle}>
-            <div className={styles.logoWrapper}>
-              <RocketLogo className={styles.svg} />
-            </div>
-            <Translate id="main.getStartedTitle" />
+            <Translate id="main.getStartedLinkTitle" />
           </h2>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
               <Link to="/get-started/introduction">
-                <Translate id="main.getStartedLinkTitle" />
+                <Translate id="main.introduction" />
               </Link>
             </li>
+          </ul>
+          <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/get-started/dogu-cloud">
-                <Translate id="main.getStartedWithCloud" />
+              <Link to="/get-started/installation">
+                <Translate id="main.getStartedInstallationTitle" />
               </Link>
             </li>
+          </ul>
+          <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/get-started/dogu-self-hosted">
-                <Translate id="main.getStartedWithSelfHosted" />
+              <Link to="/get-started/installation">
+                <Translate id="main.getStartedDeviceFarmTitle" />
+              </Link>
+            </li>
+          </ul>
+          <ul className={styles.docsSectionListContainer}>
+            <li className={styles.docsSectionListItem}>
+              <Link to="/get-started/installation">
+                <Translate id="main.getStartedTestScriptTitle" />
+              </Link>
+            </li>
+          </ul>
+          <ul className={styles.docsSectionListContainer}>
+            <li className={styles.docsSectionListItem}>
+              <Link to="/get-started/installation">
+                <Translate id="main.getStartedRoutineTitle" />
               </Link>
             </li>
           </ul>
@@ -137,7 +143,7 @@ export default function Home(): JSX.Element {
         <div className={styles.docsSection}>
           <h2 className={styles.docsSectionTitle}>
             <div className={styles.logoWrapper}>
-              <CommunityLogo className={styles.svg} />
+              <AutomationLogo className={styles.svg} />
             </div>
             <Translate id="main.testAutomationTitle" />
           </h2>
@@ -173,7 +179,7 @@ export default function Home(): JSX.Element {
         <div className={styles.docsSection}>
           <h2 className={styles.docsSectionTitle}>
             <div className={styles.logoWrapper}>
-              <CommunityLogo className={styles.svg} />
+              <ReportLogo className={styles.svg} />
             </div>
             <Translate id="main.testReportTitle" />
           </h2>
@@ -182,6 +188,15 @@ export default function Home(): JSX.Element {
               <Link to="/test-report/introduction">
                 <Translate id="main.testReportTitle" />
               </Link>
+            </li>
+            <li className={styles.docsSectionListItem}>
+              <Link to="/test-report/introduction">Javascript</Link>
+            </li>
+            <li className={styles.docsSectionListItem}>
+              <Link to="/test-report/introduction">Python</Link>
+            </li>
+            <li className={styles.docsSectionListItem}>
+              <Link to="/test-report/introduction">Java</Link>
             </li>
           </ul>
         </div>
@@ -194,23 +209,13 @@ export default function Home(): JSX.Element {
           </h2>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/script-and-routine/introduction">
-                <Translate id="main.scriptAndRoutineIntroLinkTitle" />
-              </Link>
-            </li>
-            <li className={styles.docsSectionListItem}>
-              <Link to="/script-and-routine/test-script/about">
-                <Translate id="main.scriptAndRoutineScriptLinkTitle" />
-              </Link>
-            </li>
-            <li className={styles.docsSectionListItem}>
               <Link to="/script-and-routine/routine/about">
                 <Translate id="main.scriptAndRoutineRoutineLinkTitle" />
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/script-and-routine/report">
-                <Translate id="main.scriptAndRoutineReportLinkTitle" />
+              <Link to="/script-and-routine/introduction">
+                <Translate id="main.scriptAndRoutineActionLinkTitle" />
               </Link>
             </li>
           </ul>

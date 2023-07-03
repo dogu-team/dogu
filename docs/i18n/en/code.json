@@ -278,26 +278,26 @@
   "main.introduction": {
     "message": "Introduction"
   },
-  "main.getStartedTitle": {
-    "message": "Get started"
+  "main.getStartedInstallationTitle": {
+    "message": "Installation"
+  },
+  "main.getStartedDeviceFarmTitle": {
+    "message": "Device Farm"
+  },
+  "main.getStartedTestScriptTitle": {
+    "message": "Test Script"
+  },
+  "main.getStartedRoutineTitle": {
+    "message": "Routine"
   },
   "main.getStartedLinkTitle": {
     "message": "Get started"
-  },
-  "main.getStartedAboutLinkTitle": {
-    "message": "About Dogu"
-  },
-  "main.getStartedWithCloud": {
-    "message": "Cloud"
-  },
-  "main.getStartedWithSelfHosted": {
-    "message": "Self-Hosted"
   },
   "main.orgAndProjectTitle": {
     "message": "Maganement"
   },
   "main.orgAndProjectIntroLinkTitle": {
-    "message": "Intro"
+    "message": "Maganement"
   },
   "main.orgAndProjectOrgLinkTitle": {
     "message": "Organization"
@@ -309,7 +309,7 @@
     "message": "Device Farm"
   },
   "main.hostAndDeviceIntroLinkTitle": {
-    "message": "Intro"
+    "message": "Device Farm"
   },
   "main.hostAndDeviceHostLinkTitle": {
     "message": "Host"
@@ -333,7 +333,10 @@
     "message": "Routine"
   },
   "main.scriptAndRoutineIntroLinkTitle": {
-    "message": "Intro"
+    "message": "Routine"
+  },
+  "main.scriptAndRoutineActionLinkTitle": {
+    "message": "Action"
   },
   "main.scriptAndRoutineScriptLinkTitle": {
     "message": "Test script"

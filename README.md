@@ -9,8 +9,8 @@ Dogu is a web-based test platform for test automation
 </p>
 
 <p align="center">
-  <a href="https://github.com/dogu-team/dogu/actions/workflows/e2e.yml">
-    <img src="https://github.com/dogu-team/dogu/actions/workflows/e2e.yml/badge.svg" alt="GitHub Actions status">
+  <a href="https://github.com/dogu-team/dogu/actions/workflows/ci-e2e.yml">
+    <img src="https://github.com/dogu-team/dogu/actions/workflows/ci-e2e.yml/badge.svg" alt="GitHub Actions status">
   </a>
   <a href="https://github.com/dogu-team/dogu/releases" alt="Activity">
     <img alt="GitHub tag (latest SemVer pre-release)" src="https://img.shields.io/github/v/tag/dogu-team/dogu?label=release">
@@ -42,7 +42,7 @@ Dogu is a web-based test platform for test automation
 
 ## What is Dogu?
 
-Dogu provides device farm, CI, test report for test automation.  
+Dogu is integrated test automation platform. It provides device farm, CI, test report for test automation.  
 If you use Dogu then you don't need to set up platform like jenkins, device farm, test report for test automation and can focus on your test with Dogu.
 
 ## Why Dogu?
@@ -51,22 +51,13 @@ It needs so many time and effort to build and maintain infrastructure like _Appi
 Dogu provides **integrated platform** for these infrastructure and helps you to focus on test automation.  
 Especially, Dogu is tightly integrated with test script and test framework so that you can focus on test automation without developing infrastructure related works like parallel test execution, data transfer for test report.
 
-## Start With Self-Hosted
-
-You can set up Dogu on your own server.  
-See [Guide setting up Dogu with self-hosted](https://docs.dogutech.io/self-hosted/get-started)
-
-## Start With Cloud
-
-You can start right now with [Cloud Service](https://dogutech.io)
-
-## Architecture
+<!-- ## Architecture
 
 <img src=".github/resources/architecture.png"/>
 
-Some features are not yet supported. But we are working hard to support them.
+Some features are not yet supported. But we are working hard to support them. -->
 
-## Run Test Script Flow
+<!-- ## Run Test Script Flow
 
 ### Uploaded Test Script Execution By Workflow
 
@@ -78,7 +69,7 @@ Dogu Agent helps you to run test script on your device farm. Especially, Dogu Ag
 
 <img src=".github/resources/architecture-test-remote-automation-flow.png"/>
 
-In contrast to uploaded test script execution, you can run test script existing in local through relay hub on device farm
+In contrast to uploaded test script execution, you can run test script existing in local through relay hub on device farm -->
 
 ## Platform Features
 
@@ -182,6 +173,15 @@ You can integrate existing workflow with routine.
 
 - Jenkins (Not yet supported)
 - Github Action (Not yet supported)
+
+## Start With Self-Hosted
+
+You can set up Dogu on your own server.  
+See [Guide setting up Dogu with self-hosted](https://docs.dogutech.io/self-hosted/get-started)
+
+## Start With Cloud
+
+You can start right now with [Cloud Service](https://dogutech.io)
 
 ## Documentation
 
