@@ -1,16 +1,17 @@
 [tool.poetry]
-name = "test-python-playwright"
+name = "pytest-playwright-dogu-report"
 version = "0.1.0"
 description = ""
 authors = ["oneofthezombies <hunhoekim@gmail.com>"]
 readme = "README.md"
-packages = [{include = "test_python_playwright"}]
+packages = [{include = "pytest_playwright_dogu_report"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
 
 
 [tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
 pytest-playwright = "^0.3.3"
 pytest-dogu-report = "^1.0.0"
 

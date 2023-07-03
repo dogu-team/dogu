@@ -14,5 +14,5 @@ poetry install
 ## Run
 
 ```shell
-poetry run pytest tests
+poetry run pytest tests --browser chromium --browser webkit --browser firefox
 ```

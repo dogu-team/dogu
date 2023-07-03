@@ -98,3 +98,12 @@ ida-runspaces/
 third-party/*
 !third-party/README.md
 e2e/third-party/*
+
+# python
+.pytest_cache
+.venv
+build
+dist
+*.egg-info
+__pycache__
+*.pyc
