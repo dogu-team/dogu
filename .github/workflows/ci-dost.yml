@@ -9,9 +9,13 @@ on:
       - '.github/workflows/build-dost.yml'
       - 'prebuilds/protocol-exporter/**.proto'
       - 'packages/typescript-dev-private/build-tools/**'
+      - 'packages/typescript-private/device-server/**'
+      - 'packages/typescript-private/host-agent/**'
       - 'projects/go-device-controller/**'
       - 'projects/ios-device-agent/**'
       - 'projects/android-device-agent/**'
+      - 'projects/device-server/**'
+      - 'projects/host-agent/**'
       - 'nm-space/projects/dost/**'
   pull_request:
     branches: ['main']
