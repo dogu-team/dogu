@@ -6,7 +6,7 @@
   "author": "dogu",
   "scripts": {
     "black": "poetry run black src tests",
-    "build:python": "poetry run python setup.py build",
+    "build:python": "poetry build",
     "clean": "ts-node ./scripts/clean.ts",
     "lint": "yarn black && yarn pylint",
     "newbie:python": "poetry install",

@@ -18,11 +18,11 @@ black = "^23.3.0"
 pylint = "^2.17.4"
 
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [project]
-name = "pytest_dogu_report"
+name = "pytest-dogu-report"
 version = "1.0.0"
 description = "pytest plugin for dogu report"
 license = {text = "MIT License"}

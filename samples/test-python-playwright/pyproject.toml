@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "test-python-playwright"
+version = "0.1.0"
+description = ""
+authors = ["oneofthezombies <hunhoekim@gmail.com>"]
+readme = "README.md"
+packages = [{include = "test_python_playwright"}]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest-playwright = "^0.3.3"
+pytest-dogu-report = "^1.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
