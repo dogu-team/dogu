@@ -83,15 +83,14 @@ Dest.withOptions({
   job('BAT', () => {
     beforeAll(async () => {
       values.value.HOME_URL = `${env.DOGU_E2E_HOST}:${env.DOGU_CONSOLE_WEB_FRONT_PORT}`;
-
       await ProcessManager.killByPorts([Number(env.DOGU_DEVICE_SERVER_PORT)]);
-
       await ProcessManager.killByNames(['IOSDeviceController', 'go-device-controller', 'host-agent']);
     });
 
-    // if (switchConfig.prepareDB) {
-    //   prepareDB();
-    // }
+    test('Print env', () => {
+      console.log('env', process.env);
+    });
+
     test('Run record', () => {
       gdcRecorder = new GdcScreenRecorder(console);
       gdcRecorder.start();
