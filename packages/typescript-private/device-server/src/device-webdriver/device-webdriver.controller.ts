@@ -4,7 +4,7 @@ import { DeviceServerResponseDto, DeviceWebDriver, RelayRequest, RelayResponse }
 import { Body, Controller, Param, Post } from '@nestjs/common';
 import axios from 'axios';
 import { deviceNotFoundError } from '../device/device.utils';
-import { appiumChannelNotFoundError } from '../response-utils';
+import { appiumContextNotFoundError } from '../response-utils';
 import { ScanService } from '../scan/scan.service';
 
 @Controller(DeviceWebDriver.controller)
@@ -17,15 +17,15 @@ export class DeviceWebDriverController {
     if (device === null) {
       return deviceNotFoundError(serial);
     }
-    const channel = await device.getAppiumChannel('automation');
+    const channel = await device.getAppiumContext();
     if (channel === null) {
-      return appiumChannelNotFoundError(serial, 'automation');
+      return appiumContextNotFoundError(serial);
     }
     if (!(request.method in handlers)) {
       return apiNotFoundError(serial, request.method);
     }
 
-    const url = `http://localhost:${channel.info.server.port}/${request.path}`;
+    const url = `http://localhost:${channel.getInfo().server.port}/${request.path}`;
     const res = await handlers[request.method](url, request);
 
     return {
