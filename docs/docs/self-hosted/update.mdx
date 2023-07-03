@@ -19,5 +19,5 @@ This article describes how to update Self-Hosted from running Dogu.
 
 ```
 docker ps -qa | xargs -r docker rm -f
-docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up -d
+docker compose -f ./docker-compose.yml --env-file ./docker-compose.env --verbose up -d
 ```
