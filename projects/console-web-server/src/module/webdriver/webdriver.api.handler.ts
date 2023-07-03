@@ -1,10 +1,12 @@
 import { DeviceConnectionState, DeviceId, Serial } from '@dogu-private/types';
 import { HeaderRecord, Method, transformAndValidate } from '@dogu-tech/common';
-import { RelayRequest } from '@dogu-tech/device-client-common';
+import { RelayRequest, RelayResponse } from '@dogu-tech/device-client-common';
 import { Request } from 'express';
+import { DataSource } from 'typeorm';
 import { DoguWebDriverOptions } from '../../types/webdriver-options';
 import { DeviceStatusService } from '../organization/device/device-status.service';
 import { FindDevicesByOrganizationIdDto } from '../organization/device/dto/device.dto';
+import { DeviceWebDriverService } from './device-webdriver.service';
 
 export interface WebDriverDeviceAPIHandlerResultNotHandlable {
   isHandlable: false;
@@ -29,12 +31,19 @@ export interface WebDriverDeviceAPIHandlerResultOk {
 
 export type WebDriverDeviceAPIHandlerResult = WebDriverDeviceAPIHandlerResultNotHandlable | WebDriverDeviceAPIHandlerResultError | WebDriverDeviceAPIHandlerResultOk;
 
+export interface WebDriverHandleContext {
+  dataSource: DataSource;
+  deviceWebDriverService: DeviceWebDriverService;
+  deviceStatusService: DeviceStatusService;
+}
+
 export abstract class WebDriverAPIHandler {
-  abstract process(deviceStatusService: DeviceStatusService, subpath: string, request: Request): Promise<WebDriverDeviceAPIHandlerResult>;
+  abstract onRequest(context: WebDriverHandleContext, subpath: string, request: Request): Promise<WebDriverDeviceAPIHandlerResult>;
+  abstract onResponse(context: WebDriverHandleContext, handleResult: WebDriverDeviceAPIHandlerResultOk, response: RelayResponse): Promise<void>;
 }
 
 export class WebDriverNewSessionAPIHandler extends WebDriverAPIHandler {
-  async process(deviceStatusService: DeviceStatusService, subpath: string, request: Request): Promise<WebDriverDeviceAPIHandlerResult> {
+  async onRequest(context: WebDriverHandleContext, subpath: string, request: Request): Promise<WebDriverDeviceAPIHandlerResult> {
     if (subpath !== 'session') {
       return { isHandlable: false };
     }
@@ -57,7 +66,7 @@ export class WebDriverNewSessionAPIHandler extends WebDriverAPIHandler {
     dto.connectionStates = [DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED];
     dto.projectIds = options.projectId ? [options.projectId] : [];
 
-    const page = await deviceStatusService.findDevicesByOrganizationId({ userId: doguOptions.userId }, doguOptions.organizationId, dto);
+    const page = await context.deviceStatusService.findDevicesByOrganizationId({ userId: doguOptions.userId }, doguOptions.organizationId, dto);
     if (page.items.length === 0) {
       return { isHandlable: true, status: 400, error: new Error('Device not found'), data: {} };
     }
@@ -66,8 +75,6 @@ export class WebDriverNewSessionAPIHandler extends WebDriverAPIHandler {
       const value = request.headers[key]!;
       if (value instanceof Array) {
         throw new Error('Multiple headers not supported');
-        headers[key] = value[0];
-        continue;
       }
       headers[key] = value;
     }
@@ -86,14 +93,35 @@ export class WebDriverNewSessionAPIHandler extends WebDriverAPIHandler {
       },
     };
   }
+
+  async onResponse(context: WebDriverHandleContext, handleResult: WebDriverDeviceAPIHandlerResultOk, response: RelayResponse): Promise<void> {
+    const sessionId = (response.data as any)?.value?.sessionId as string;
+    if (!sessionId) {
+      throw new Error('Session id not found in response');
+    }
+
+    await context.dataSource.transaction(async (manager) => {
+      await context.deviceWebDriverService.createSessionToDevice(manager, handleResult.deviceId, { sessionId: sessionId });
+    });
+  }
 }
 
 export class WebDriverEachSessionAPIHandler extends WebDriverAPIHandler {
-  async process(deviceStatusService: DeviceStatusService, subpath: string, request: Request): Promise<WebDriverDeviceAPIHandlerResult> {
+  async onRequest(context: WebDriverHandleContext, subpath: string, request: Request): Promise<WebDriverDeviceAPIHandlerResult> {
     if (!subpath.startsWith('session/')) {
       return { isHandlable: false };
     }
-    console.log('a');
+    const splited = subpath.split('/');
+    if (splited.length < 2) {
+      return { isHandlable: true, status: 400, error: new Error('Invalid session path'), data: {} };
+    }
+    const sessionId = splited[1];
+    if (sessionId.length === 0) {
+      return { isHandlable: true, status: 400, error: new Error('empty session path'), data: {} };
+    }
+    const deviceId = await context.dataSource.transaction(async (manager) => {
+      return await context.deviceWebDriverService.findDeviceBySessionId(manager, sessionId);
+    });
 
     return {
       isHandlable: true,
@@ -108,5 +136,10 @@ export class WebDriverEachSessionAPIHandler extends WebDriverAPIHandler {
         data: request.body,
       },
     };
+  }
+
+  onResponse(context: WebDriverHandleContext, handleResult: WebDriverDeviceAPIHandlerResultOk, response: RelayResponse): Promise<void> {
+    console.log('a');
+    return Promise.resolve();
   }
 }

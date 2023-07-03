@@ -2,21 +2,34 @@ import { stringify } from '@dogu-tech/common';
 import { DeviceWebDriver, RelayResponse } from '@dogu-tech/device-client-common';
 import { Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { DataSource } from 'typeorm';
 import { DeviceMessageRelayer } from '../device-message/device-message.relayer';
 import { DoguLogger } from '../logger/logger';
 import { DeviceStatusService } from '../organization/device/device-status.service';
-import { WebDriverAPIHandler, WebDriverNewSessionAPIHandler } from './webdriver.api.handler';
+import { DeviceWebDriverService } from './device-webdriver.service';
+import { WebDriverAPIHandler, WebDriverEachSessionAPIHandler, WebDriverHandleContext, WebDriverNewSessionAPIHandler } from './webdriver.api.handler';
 
 @Injectable()
 export class WebDriverService {
-  private readonly apiHandlers: WebDriverAPIHandler[] = [new WebDriverNewSessionAPIHandler()];
-  constructor(private readonly deviceStatusService: DeviceStatusService, private readonly deviceMessageRelayer: DeviceMessageRelayer, private readonly logger: DoguLogger) {}
+  private readonly apiHandlers: WebDriverAPIHandler[] = [new WebDriverNewSessionAPIHandler(), new WebDriverEachSessionAPIHandler()];
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly deviceStatusService: DeviceStatusService,
+    private readonly deviceWebDriverService: DeviceWebDriverService,
+    private readonly deviceMessageRelayer: DeviceMessageRelayer,
+    private readonly logger: DoguLogger,
+  ) {}
 
   async process(request: Request, response: Response): Promise<RelayResponse> {
     const subpath = request.url.replace('/wd/hub/', '');
 
+    const context: WebDriverHandleContext = {
+      dataSource: this.dataSource,
+      deviceStatusService: this.deviceStatusService,
+      deviceWebDriverService: this.deviceWebDriverService,
+    };
     for (const apiHandler of this.apiHandlers) {
-      const processResult = await apiHandler.process(this.deviceStatusService, subpath, request).catch((e) => {
+      const processResult = await apiHandler.onRequest(context, subpath, request).catch((e) => {
         return { isHandlable: true, error: e as Error, status: 400, data: {} };
       });
       if (!processResult.isHandlable) {
@@ -72,33 +85,10 @@ export class WebDriverService {
             },
           };
         });
+      await apiHandler.onResponse(context, processResult, res);
       return res;
     }
 
     throw new Error('All Handlers failed to process request');
   }
-
-  // private getTargetDeviceId(request: Request): string | null {
-  //   const subpath = request.url.replace('/wd/hub/', '');
-  //   if (!subpath.startsWith('session')) {
-  //     return null;
-  //   }
-  //   this.processNewSession(request);
-  // }
-
-  // private processNewSession(request: Request): string | null {
-  //   const subpath = request.url.replace('/wd/hub/', '');
-  //   const alwaysMatchCaps = request.body?.capabilities?.alwaysMatch;
-  //   if (!alwaysMatchCaps) {
-  //     throw new Error('alwaysMatch capabilities not found');
-  //   }
-  //   const platformName = alwaysMatchCaps['platformName'];
-  //   if (!platformName) {
-  //     throw new Error('platformName not found');
-  //   }
-  //   const doguOptions = alwaysMatchCaps['dogu:options'];
-  //   if (!doguOptions) {
-  //     throw new Error('Dogu options not found');
-  //   }
-  // }
 }

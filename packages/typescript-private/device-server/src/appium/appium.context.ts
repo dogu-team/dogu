@@ -12,17 +12,18 @@ import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 import { setInterval } from 'timers/promises';
+import { remote } from 'webdriverio';
 import { Adb } from '../internal/externals/index';
 import { getFreePort } from '../internal/util/net';
 import { createAppiumLogger } from '../logger/logger.instance';
 import { AppiumService } from './appium.service';
-import { remote } from 'webdriverio';
 
 type Browser = Awaited<ReturnType<typeof remote>>;
 
 const AppiumNewCommandTimeout = 24 * 60 * 60; // unit: seconds
 const AppiumClientCallAsyncTimeout = 10 * 1000; // unit: milliseconds
 const AppiumHealthCheckInterval = 5 * 1000; // unit: milliseconds
+const AppiumHealthCheckMaxNotHealthyCount = 3;
 
 export interface DefaultAppiumContextOptions {
   pnpmPath: string;
@@ -338,6 +339,7 @@ export class AppiumContextImpl implements AppiumContext {
 
   private doHealthCheckLoop(): void {
     (async (): Promise<void> => {
+      let notHealthyCount = 0;
       for await (const _ of setInterval(AppiumHealthCheckInterval)) {
         if (this.closed) {
           this.logger.verbose('Appium impl health check loop stopped');
@@ -353,9 +355,13 @@ export class AppiumContextImpl implements AppiumContext {
         try {
           await client.driver.getWindowSize();
           this._isHealthy = true;
+          notHealthyCount = 0;
         } catch (error) {
           this.logger.error('Appium impl is not healthy', { error: errorify(error) });
-          this._isHealthy = false;
+          notHealthyCount++;
+          if (notHealthyCount >= AppiumHealthCheckMaxNotHealthyCount) {
+            this._isHealthy = false;
+          }
         }
       }
     })().catch((error) => {

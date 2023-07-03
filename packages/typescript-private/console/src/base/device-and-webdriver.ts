@@ -1,7 +1,7 @@
 import { DeviceId, DeviceWebDriverId, WebDriverSessionId } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 
-export interface DeviceWebDriverBaseTraits {
+export interface DeviceAndWebDriverRelationTraits {
   deviceWebDriverId: DeviceWebDriverId;
   sessionId: WebDriverSessionId;
   deviceId: DeviceId;
@@ -10,6 +10,6 @@ export interface DeviceWebDriverBaseTraits {
   deletedAt: Date | null;
 }
 
-export type DeviceWebDriverBase = DeviceWebDriverBaseTraits;
-export const DeviceWebDriverPropCamel = propertiesOf<DeviceWebDriverBase>();
-export const DeviceWebDriverPropSnake = camelToSnakeCasePropertiesOf<DeviceWebDriverBase>();
+export type DeviceAndWebDriverBase = DeviceAndWebDriverRelationTraits;
+export const DeviceAndWebDriverPropCamel = propertiesOf<DeviceAndWebDriverRelationTraits>();
+export const DeviceAndWebDriverPropSnake = camelToSnakeCasePropertiesOf<DeviceAndWebDriverRelationTraits>();
