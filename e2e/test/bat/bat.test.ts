@@ -82,7 +82,7 @@ Dest.withOptions({
 }).describe(() => {
   job('BAT', () => {
     beforeAll(async () => {
-      values.value.HOME_URL = env.DOGU_CONSOLE_WEB_FRONT_URL;
+      values.value.HOME_URL = `${env.DOGU_E2E_HOST}:${env.CONSOLE_WEB_FRONT_PORT}`;
 
       await ProcessManager.killByPorts([Number(env.DOGU_DEVICE_SERVER_PORT)]);
 
