@@ -1,5 +1,5 @@
 import { Button, ButtonProps } from 'antd';
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import useModal from '../../../hooks/useModal';
 import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../../styles/box';
@@ -49,18 +49,30 @@ interface ItemButtonProps {
   modalContent: React.ReactNode;
   buttonProps?: ButtonProps;
   onConfirm: () => Promise<void> | void;
+  onOpenChange?: (isOpen: boolean) => void;
 }
 
-const DangerZoneButton = ({ children, modalTitle, modalButtonTitle, modalContent, buttonProps, onConfirm }: ItemButtonProps) => {
+const DangerZoneButton = ({ children, modalTitle, modalButtonTitle, modalContent, buttonProps, onConfirm, onOpenChange }: ItemButtonProps) => {
   const [isOpen, openModal, closeModal] = useModal();
   const [loading, setLoading] = useState(false);
 
   const handleConfirm = async () => {
     setLoading(true);
-    await onConfirm();
+    try {
+      await onConfirm();
+    } catch (e) {
+      setLoading(false);
+      return;
+    }
     setLoading(false);
     closeModal();
   };
+
+  useEffect(() => {
+    if (onOpenChange) {
+      onOpenChange(isOpen);
+    }
+  }, [isOpen]);
 
   return (
     <>
