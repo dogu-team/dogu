@@ -28,7 +28,6 @@ export const DangerConfirmModal = ({ buttonTitle, children, buttonProps, ...prop
       <ModalContentBox
         onClick={(e) => {
           e.stopPropagation();
-          e.preventDefault();
         }}
       >
         {children}

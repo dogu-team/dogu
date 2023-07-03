@@ -1,11 +1,14 @@
-import { Form, Input, Select } from 'antd';
+import { GithubFilled, GitlabOutlined } from '@ant-design/icons';
+import { Form, Input, Radio, Select } from 'antd';
 import { AxiosError } from 'axios';
+import { useState } from 'react';
 
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import DangerZone from '../common/boxes/DangerZone';
 
 const GitIntegrationDangerButton = () => {
   const [form] = Form.useForm<{ git: string; token: string; repo: string; path: string }>();
+  const [gitService, setGitService] = useState<'github' | 'gitlab'>('github');
 
   const handleConfirm = async () => {
     const values = await form.validateFields();
@@ -23,12 +26,18 @@ const GitIntegrationDangerButton = () => {
     <DangerZone.Button
       modalTitle={'Change Git Integration'}
       modalContent={
-        <Form form={form} layout="vertical">
-          <Form.Item label="Git service" name="git" required rules={[{ required: true, message: 'Select service' }]}>
-            <Select placeholder="Select service">
-              <Select.Option value="github">GitHub</Select.Option>
-              <Select.Option value="gitlab">GitLab</Select.Option>
-            </Select>
+        <Form form={form} layout="vertical" name="git-integration">
+          <Form.Item label="Git service" name="git" required rules={[{ required: true, message: 'Select service' }]} valuePropName="checked">
+            <Radio.Group buttonStyle="solid">
+              <Radio.Button value="github">
+                <GithubFilled />
+                &nbsp;GitHub
+              </Radio.Button>
+              <Radio.Button value="gitlab">
+                <GitlabOutlined />
+                &nbsp;GitLab
+              </Radio.Button>
+            </Radio.Group>
           </Form.Item>
           <Form.Item label="Token" name="token" required rules={[{ required: true, message: 'Input token' }]}>
             <Input placeholder="ghp_1234567890abcd" required />
