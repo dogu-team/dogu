@@ -60,6 +60,10 @@ const handlers: {
     const res = await axios.head(url);
     return convertResponse(res);
   },
+  DELETE: async (url, request) => {
+    const res = await axios.delete(url);
+    return convertResponse(res);
+  },
 };
 
 function convertResponse<T>(res: axios.AxiosResponse<any, any>): RelayResponse {

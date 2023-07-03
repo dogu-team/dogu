@@ -2,6 +2,7 @@ import { DeviceConnectionState, DeviceId, Serial } from '@dogu-private/types';
 import { HeaderRecord, Method, transformAndValidate } from '@dogu-tech/common';
 import { RelayRequest, RelayResponse } from '@dogu-tech/device-client-common';
 import { Request } from 'express';
+import { IncomingHttpHeaders } from 'http';
 import { DataSource } from 'typeorm';
 import { DoguWebDriverOptions } from '../../types/webdriver-options';
 import { DeviceStatusService } from '../organization/device/device-status.service';
@@ -70,14 +71,7 @@ export class WebDriverNewSessionAPIHandler extends WebDriverAPIHandler {
     if (page.items.length === 0) {
       return { isHandlable: true, status: 400, error: new Error('Device not found'), data: {} };
     }
-    const headers: HeaderRecord = {};
-    for (const key of Object.keys(request.headers)) {
-      const value = request.headers[key]!;
-      if (value instanceof Array) {
-        throw new Error('Multiple headers not supported');
-      }
-      headers[key] = value;
-    }
+    const headers = convertHeaders(request.headers);
 
     return {
       isHandlable: true,
@@ -95,6 +89,9 @@ export class WebDriverNewSessionAPIHandler extends WebDriverAPIHandler {
   }
 
   async onResponse(context: WebDriverHandleContext, handleResult: WebDriverDeviceAPIHandlerResultOk, response: RelayResponse): Promise<void> {
+    if (response.status !== 200) {
+      return;
+    }
     const sessionId = (response.data as any)?.value?.sessionId as string;
     if (!sessionId) {
       throw new Error('Session id not found in response');
@@ -119,18 +116,25 @@ export class WebDriverEachSessionAPIHandler extends WebDriverAPIHandler {
     if (sessionId.length === 0) {
       return { isHandlable: true, status: 400, error: new Error('empty session path'), data: {} };
     }
-    const deviceId = await context.dataSource.transaction(async (manager) => {
-      return await context.deviceWebDriverService.findDeviceBySessionId(manager, sessionId);
+    const { organizationId, deviceId, serial } = await context.dataSource.transaction(async (manager) => {
+      const deviceId = await context.deviceWebDriverService.findDeviceBySessionId(manager, sessionId);
+      const device = await context.deviceStatusService.findDevice(deviceId);
+      return {
+        organizationId: device.organizationId,
+        deviceId: device.deviceId,
+        serial: device.serial,
+      };
     });
+    const headers = convertHeaders(request.headers);
 
     return {
       isHandlable: true,
-      organizationId: '',
-      deviceId: '',
-      serial: '',
+      organizationId: organizationId,
+      deviceId: deviceId,
+      serial: serial,
       request: {
         path: subpath,
-        headers: {},
+        headers: headers,
         method: request.method as Method,
         query: request.query,
         data: request.body,
@@ -142,4 +146,16 @@ export class WebDriverEachSessionAPIHandler extends WebDriverAPIHandler {
     console.log('a');
     return Promise.resolve();
   }
+}
+
+function convertHeaders(requestHeaders: IncomingHttpHeaders): HeaderRecord {
+  const headers: HeaderRecord = {};
+  for (const key of Object.keys(requestHeaders)) {
+    const value = requestHeaders[key]!;
+    if (value instanceof Array) {
+      throw new Error('Multiple headers not supported');
+    }
+    headers[key] = value;
+  }
+  return headers;
 }
