@@ -1,14 +1,4 @@
-import {
-  DeviceBase,
-  MemberAndRoleGroupBase,
-  OrganizationPropCamel,
-  ProjectPipelineReportResponse,
-  ProjectPropCamel,
-  ProjectResponse,
-  RepositoryFileMetaTree,
-  RepositoryFileTree,
-  RepositoryRawFile,
-} from '@dogu-private/console';
+import { DeviceBase, MemberAndRoleGroupBase, OrganizationPropCamel, ProjectPipelineReportResponse, ProjectPropCamel, ProjectResponse } from '@dogu-private/console';
 import { OrganizationId, ProjectId, UserPayload } from '@dogu-private/types';
 import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -16,17 +6,8 @@ import { DataSource } from 'typeorm';
 import { ORGANIZATION_ROLE, PROJECT_ROLE } from '../../module/auth/auth.types';
 import { OrganizationPermission, ProjectPermission, User } from '../../module/auth/decorators';
 import { Page } from '../../module/common/dto/pagination/page';
-import { GitlabService } from '../gitlab/gitlab.service';
-import {
-  CreatePipelineReportDto,
-  CreateProjectDto,
-  FindMembersByProjectIdDto,
-  FindProjectDeviceDto,
-  FindProjectDto,
-  GetProjectRepositoryFileDto,
-  GetProjectScriptMetaDto,
-  UpdateProjectDto,
-} from './dto/project.dto';
+// import { GitlabService } from '../gitlab/gitlab.service';
+import { CreatePipelineReportDto, CreateProjectDto, FindMembersByProjectIdDto, FindProjectDeviceDto, FindProjectDto, UpdateProjectDto } from './dto/project.dto';
 import { ProjectService } from './project.service';
 
 @Controller('organizations/:organizationId/projects')
@@ -36,9 +17,7 @@ export class ProjectController {
     private readonly dataSource: DataSource,
 
     @Inject(ProjectService)
-    private projectService: ProjectService,
-    @Inject(GitlabService)
-    private readonly gitlabService: GitlabService,
+    private projectService: ProjectService, // @Inject(GitlabService) // private readonly gitlabService: GitlabService,
   ) {}
 
   // project CRUD Start
@@ -130,31 +109,31 @@ export class ProjectController {
     return await this.projectService.createPipelineReport(userPayload, organizationId, projectId, dto);
   }
 
-  @Get(':projectId/repository/file')
-  @ProjectPermission(PROJECT_ROLE.READ)
-  async getProjectFile(@Param('projectId') projectId: ProjectId, @Query() dto: GetProjectRepositoryFileDto): Promise<RepositoryRawFile> {
-    const file = await this.gitlabService.getProjectFile(dto.path, projectId);
-    return file;
-  }
+  // @Get(':projectId/repository/file')
+  // @ProjectPermission(PROJECT_ROLE.READ)
+  // async getProjectFile(@Param('projectId') projectId: ProjectId, @Query() dto: GetProjectRepositoryFileDto): Promise<RepositoryRawFile> {
+  //   const file = await this.gitlabService.getProjectFile(dto.path, projectId);
+  //   return file;
+  // }
 
-  @Get(':projectId/repository/tree')
-  @ProjectPermission(PROJECT_ROLE.READ)
-  async getProjectFileTree(@Param('projectId') projectId: ProjectId): Promise<RepositoryFileTree> {
-    const tree = await this.gitlabService.getProjectFileTree(projectId);
-    return tree;
-  }
+  // @Get(':projectId/repository/tree')
+  // @ProjectPermission(PROJECT_ROLE.READ)
+  // async getProjectFileTree(@Param('projectId') projectId: ProjectId): Promise<RepositoryFileTree> {
+  //   const tree = await this.gitlabService.getProjectFileTree(projectId);
+  //   return tree;
+  // }
 
-  @Get(':projectId/repository/meta/:path')
-  @ProjectPermission(PROJECT_ROLE.READ)
-  async getProjectFileMetaTree(@Param('projectId') projectId: ProjectId, @Param('path') path: string): Promise<RepositoryFileMetaTree> {
-    const meta = await this.gitlabService.getProjectFileMetaTree(projectId, path);
-    return meta;
-  }
+  // @Get(':projectId/repository/meta/:path')
+  // @ProjectPermission(PROJECT_ROLE.READ)
+  // async getProjectFileMetaTree(@Param('projectId') projectId: ProjectId, @Param('path') path: string): Promise<RepositoryFileMetaTree> {
+  //   const meta = await this.gitlabService.getProjectFileMetaTree(projectId, path);
+  //   return meta;
+  // }
 
-  @Get(':projectId/repository/scripts')
-  @ProjectPermission(PROJECT_ROLE.READ)
-  async getProjectScriptMeta(@Param('projectId') projectId: ProjectId, @Query() dto: GetProjectScriptMetaDto): Promise<RepositoryFileMetaTree> {
-    const scripts = await this.gitlabService.getScriptFileMeta(projectId, dto.type);
-    return scripts;
-  }
+  // @Get(':projectId/repository/scripts')
+  // @ProjectPermission(PROJECT_ROLE.READ)
+  // async getProjectScriptMeta(@Param('projectId') projectId: ProjectId, @Query() dto: GetProjectScriptMetaDto): Promise<RepositoryFileMetaTree> {
+  //   const scripts = await this.gitlabService.getScriptFileMeta(projectId, dto.type);
+  //   return scripts;
+  // }
 }

@@ -27,10 +27,9 @@ import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Brackets, DataSource, EntityManager, Not } from 'typeorm';
 import { Device, Project, RoutinePipeline, User } from '../../db/entity';
-import { OrganizationGitlab } from '../../db/entity/organization-gitlab.entity';
 import { EMPTY_PAGE, Page } from '../../module/common/dto/pagination/page';
 import { checkOrganizationRolePermission, ORGANIZATION_ROLE } from '../auth/auth.types';
-import { GitlabService } from '../gitlab/gitlab.service';
+// import { GitlabService } from '../gitlab/gitlab.service';
 import { DeviceStatusService } from '../organization/device/device-status.service';
 import { CreatePipelineReportDto, CreateProjectDto, FindMembersByProjectIdDto, FindProjectDeviceDto, FindProjectDto, UpdateProjectDto } from './dto/project.dto';
 
@@ -39,8 +38,8 @@ export class ProjectService {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    @Inject(GitlabService)
-    private readonly gitlabService: GitlabService,
+    // @Inject(GitlabService)
+    // private readonly gitlabService: GitlabService,
     @Inject(DeviceStatusService)
     private readonly deviceStatusService: DeviceStatusService,
   ) {}
@@ -55,7 +54,6 @@ export class ProjectService {
       .leftJoinAndSelect(`project.${ProjectPropCamel.projectAndUserAndProjectRoles}`, 'projectUserRole')
       .leftJoinAndSelect(`project.${ProjectPropCamel.projectAndTeamAndProjectRoles}`, 'projectTeamRole')
       .leftJoinAndSelect(`project.${ProjectPropCamel.routines}`, 'routine')
-      .leftJoinAndSelect(`project.${ProjectPropCamel.gitlab}`, 'projectGitlab')
       .leftJoinAndSelect(`routine.${RoutinePropCamel.routinePipelines}`, 'pipeline')
       .leftJoinAndSelect(`pipeline.${RoutinePipelinePropCamel.routineJobs}`, 'job')
       .leftJoinAndSelect(`job.${RoutineJobPropCamel.routineJobEdges}`, 'jobEdge')
@@ -76,7 +74,6 @@ export class ProjectService {
     }
 
     await this.dataSource.transaction(async (manager) => {
-      await this.gitlabService.deleteProject(manager, project.organizationId, projectId);
       await manager.getRepository(Project).softRemove(project);
     });
   }
@@ -261,12 +258,7 @@ export class ProjectService {
     });
 
     const rv = await manager.getRepository(Project).save(result);
-    const organizationGitlab = await manager.getRepository(OrganizationGitlab).findOne({ where: { organizationId } });
-    if (!organizationGitlab) {
-      throw new HttpException(`Organization gitlab not found with organizationId: ${organizationId}`, HttpStatus.NOT_FOUND);
-    }
 
-    await this.gitlabService.createProject(manager, organizationId, rv.projectId, rv.name, description, { language: 'typescript' });
     return rv;
   }
 
@@ -288,7 +280,6 @@ export class ProjectService {
 
     const rv = await this.dataSource.transaction(async (manager) => {
       const project = await manager.getRepository(Project).save(newData);
-      await this.gitlabService.updateProject(manager, organizationId, projectId, newData.name, newData.description);
       return project;
     });
 

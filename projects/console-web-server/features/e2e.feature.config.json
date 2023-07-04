@@ -1,8 +1,6 @@
 {
   "fileService": "nexus",
   "useSampleProject": true,
-  "gitlabInitCheck": true,
-  "useGitlabIdByUserId": true,
   "emailVerification": false,
   "rdbSslConnection": false,
   "cookieSecure": false,

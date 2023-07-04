@@ -69,7 +69,6 @@ export class UserService {
       .innerJoinAndSelect(`user.${UserPropCamel.userAndVerificationToken}`, 'userAndVerificationToken')
       .leftJoinAndSelect(`user.${UserPropCamel.userVisits}`, 'userVisit')
       .leftJoinAndSelect(`user.${UserPropCamel.emailPreference}`, 'userEmailPreference')
-      .leftJoinAndSelect(`user.${UserPropCamel.gitlab}`, 'gitlab')
       .where(`user.${UserPropSnake.user_id} = :${UserPropCamel.userId}`, { userId })
       .orderBy(`userVisit.${UserVisitPropCamel.updatedAt}`, 'DESC')
       .getOne();
@@ -277,7 +276,6 @@ export class UserService {
       .leftJoinAndSelect(`resetPassword.${UserAndResetPasswordTokenPropCamel.token}`, 'resetPasswordToken')
       .leftJoinAndSelect(`user.${UserPropCamel.userVisits}`, 'userVisit')
       .leftJoinAndSelect(`user.${UserPropCamel.emailPreference}`, 'emailPreference')
-      .leftJoinAndSelect(`user.${UserPropCamel.gitlab}`, 'gitlab')
       .where(`user.${UserPropSnake.user_id} = :userId`, { userId })
       .getOne();
 
@@ -373,32 +371,8 @@ export class UserService {
         await entityManager.getRepository(UserAndInvitationToken).softRemove(invitation);
         await entityManager.getRepository(Token).softDelete({ tokenId: invitation.tokenId });
       }
-
-      await this.gitlabService.removeUserFromGroup(entityManager, userId, organizationId);
     });
 
     return;
   }
-
-  // async leaveOrganizationById(userId: UserId, organizationId: OrganizationId): Promise<void> {
-  //   const repo = this.dataSource.getRepository(OrganizationAndUserAndOrganizationRole);
-  //   const result = await repo.findOne({ where: { userId, organizationId } });
-
-  //   if (!result) {
-  //     throw new NotFoundException(`User and organization not found`);
-  //   }
-
-  //   if (result.organizationRoleId === ORGANIZATION_ROLE.OWNER) {
-  //     throw new BadRequestException(`Organization owner cannot leave.`);
-  //   }
-
-  //   await this.dataSource.transaction(async (entityManager) => {
-  //     await entityManager.softRemove(OrganizationAndUserAndOrganizationRole, result);
-  //     const visit = await entityManager.findOne(Visit, { where: { userId, organizationId } });
-  //     if (!visit) {
-  //       throw new NotFoundException(`User not found`);
-  //     }
-  //     await entityManager.softRemove(Visit, visit);
-  //   });
-  // }
 }

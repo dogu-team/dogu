@@ -9,19 +9,16 @@ import { DateTime } from 'luxon';
 import { DataSource, EntityManager } from 'typeorm';
 import { Token, User, UserEmailPreference } from '../../db/entity/index';
 import { UserAndVerificationToken } from '../../db/entity/relations/user-and-verification-token.entity';
-import { UserGitlab } from '../../db/entity/user-gitlab.entity';
 import { UserSns } from '../../db/entity/user-sns.entity';
-import { FeatureConfig } from '../../feature.config';
 import { EmailService } from '../../module/email/email.service';
 import { SendVerifyEmailDto, VerifyEmailDto } from '../../module/registery/dto/registery.dto';
 import { TokenService } from '../../module/token/token.service';
 import { AuthJwtService } from '../auth/service/auth-jwt.service';
 import { AuthUserService } from '../auth/service/auth-user.service';
-import { GitlabService } from '../gitlab/gitlab.service';
 import { UserInvitationService } from '../user-invitation/user-invitation.service';
 import { CreateAdminDto, SignInDto } from '../user/dto/user.dto';
 import { UserCreatedEvent } from '../user/events/create-user.event';
-import { createSNSUser, createUser, createUserAndVerificationToken, createUserEmailPreference, createUserGitlab } from './common';
+import { createSNSUser, createUser, createUserAndVerificationToken, createUserEmailPreference } from './common';
 
 @Injectable()
 export class RegisteryService {
@@ -29,8 +26,6 @@ export class RegisteryService {
     private readonly httpService: HttpService,
     @Inject(EmailService)
     private readonly emailService: EmailService,
-    @Inject(GitlabService)
-    private readonly gitlabService: GitlabService,
     @Inject(UserInvitationService)
     private readonly invitationService: UserInvitationService,
     @Inject(AuthUserService)
@@ -69,17 +64,6 @@ export class RegisteryService {
     const tokenResponse = await this.dataSource.transaction(async (entityManager) => {
       // create user
       const user = await createUser(entityManager, email, password, name);
-
-      // create gitlab user
-      const userEmail = FeatureConfig.get('useGitlabIdByUserId') ? `${user.userId}@dogutech.io` : email;
-
-      const gitlabUser = await this.gitlabService.createUser(user.userId, createUserDto.name, userEmail, createUserDto.password);
-      const createdGitlabUserData = entityManager.getRepository(UserGitlab).create({
-        userId: user.userId,
-        gitlabUserId: gitlabUser.userId,
-        gitlabToken: gitlabUser.impersonationToken,
-      });
-      await entityManager.getRepository(UserGitlab).save(createdGitlabUserData);
 
       // create user email preference
       const userEmailPreference = entityManager.getRepository(UserEmailPreference).create({ userId: user.userId, newsletter: newsletter ? 1 : 0 });
@@ -209,10 +193,6 @@ export class RegisteryService {
 
       const snsUser = await createSNSUser(manager, user.userId, userSnsId, snsType);
 
-      const userEmail = FeatureConfig.get('useGitlabIdByUserId') ? `${user.userId}@dogutech.io` : email;
-      const gitlabUserCreatedData = await this.gitlabService.createUser(user.userId, userName, userEmail, null);
-
-      await createUserGitlab(manager, user.userId, gitlabUserCreatedData);
       await createUserEmailPreference(manager, user.userId, true);
       await createUserAndVerificationToken(manager, user.userId, null, USER_VERIFICATION_STATUS.VERIFIED);
 

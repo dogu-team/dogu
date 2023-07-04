@@ -128,23 +128,6 @@ export class Env {
 
   @IsOptional()
   @IsString()
-  DOGU_GITLAB_ROOT_TOKEN!: string;
-
-  @IsFilledString()
-  DOGU_GITLAB_HOST!: string;
-
-  @IsFilledString()
-  DOGU_GITLAB_PORT!: string;
-
-  @IsFilledString()
-  DOGU_GITLAB_PROTOCOL!: string;
-
-  @IsOptional()
-  @IsString()
-  DOGU_GITLAB_TEMPLATE_GROUP!: string | undefined;
-
-  @IsOptional()
-  @IsString()
   DOGU_WIFI_SSID?: string;
 
   @IsOptional()

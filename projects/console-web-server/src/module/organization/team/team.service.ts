@@ -15,7 +15,7 @@ import {
 } from '@dogu-private/console';
 import { OrganizationId, TeamId, UserId } from '@dogu-private/types';
 import { notEmpty } from '@dogu-tech/common';
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Brackets, DataSource } from 'typeorm';
 import { OrganizationAndUserAndTeam } from '../../../db/entity/relations/organization-and-user-and-team.entity';
@@ -23,7 +23,6 @@ import { ProjectAndTeamAndProjectRole } from '../../../db/entity/relations/proje
 import { Team } from '../../../db/entity/team.entity';
 import { User } from '../../../db/entity/user.entity';
 import { EMPTY_PAGE, Page } from '../../common/dto/pagination/page';
-import { GitlabService } from '../../gitlab/gitlab.service';
 import { FindProjectsByTeamIdDto, FindUsersByTeamIdDto } from '../../user/dto/user.dto';
 import { AddTeamUserDto, CreateTeamDto, FindTeamsDto, UpdateTeamDto } from './dto/team.dto';
 
@@ -32,9 +31,6 @@ export class TeamService {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
-
-    @Inject(GitlabService)
-    private readonly gitlabService: GitlabService,
   ) {}
 
   async findTeamsByOrganizationId(organizationId: OrganizationId, dto: FindTeamsDto): Promise<Page<TeamBase>> {
@@ -131,7 +127,6 @@ export class TeamService {
       } else {
         throw new HttpException(`User is already in team: ${dto.userId}`, HttpStatus.CONFLICT);
       }
-      await this.gitlabService.addUserToTeam(manager, organizationId, teamId, userId);
     });
     return;
   }
@@ -144,7 +139,6 @@ export class TeamService {
     }
 
     await this.dataSource.transaction(async (manager) => {
-      await this.gitlabService.removeUserFromTeam(manager, organizationId, teamId, userId);
       await manager.getRepository(OrganizationAndUserAndTeam).softRemove(userAndTeam);
     });
     return;
@@ -173,15 +167,6 @@ export class TeamService {
     await this.dataSource.transaction(async (manager) => {
       const orgId = team.organizationId;
       const projectIds = team.projectAndTeamAndProjectRoles ? team.projectAndTeamAndProjectRoles.map((projectTeamRole) => projectTeamRole.projectId) : [];
-
-      for (const projectId of projectIds) {
-        await this.gitlabService.removeTeamFromProject(manager, orgId, projectId, teamId);
-      }
-
-      const userIds = team.organizationAndUserAndTeams ? team.organizationAndUserAndTeams.map((orgUserTeam) => orgUserTeam.userId) : [];
-      for (const userId of userIds) {
-        await this.gitlabService.removeUserFromTeam(manager, orgId, teamId, userId);
-      }
 
       await manager.getRepository(Team).softRemove(team);
     });

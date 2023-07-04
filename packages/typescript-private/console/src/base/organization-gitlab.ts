@@ -1,14 +1,14 @@
-import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
+// import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 
-export interface OrganizationGitlabBase {
-  organizationId: string;
-  gitlabGroupId: number;
-  gitlabGroupToken: string;
+// export interface OrganizationGitlabBase {
+//   organizationId: string;
+//   gitlabGroupId: number;
+//   gitlabGroupToken: string;
 
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
-}
+//   createdAt: Date;
+//   updatedAt: Date;
+//   deletedAt: Date | null;
+// }
 
-export const OrganizationGitlabPropCamel = propertiesOf<OrganizationGitlabBase>();
-export const OrganizationGitlabPropSnake = camelToSnakeCasePropertiesOf<OrganizationGitlabBase>();
+// export const OrganizationGitlabPropCamel = propertiesOf<OrganizationGitlabBase>();
+// export const OrganizationGitlabPropSnake = camelToSnakeCasePropertiesOf<OrganizationGitlabBase>();
