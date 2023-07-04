@@ -2,13 +2,12 @@ import 'reflect-metadata';
 
 import { ChildError } from '@dogu-private/dost-children';
 import { Code, DOGU_PROTOCOL_VERSION } from '@dogu-private/types';
-import { errorify, parseAxiosError } from '@dogu-tech/common';
+import { errorify } from '@dogu-tech/common';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { WinstonModule } from 'nest-winston';
 
-import axios from 'axios';
 import { AppModule } from './app/app.module';
 import { env } from './env';
 import { adbLogger, gdcLogger, idcLogger, logger } from './logger/logger.instance';
@@ -31,15 +30,6 @@ export async function bootstrap(): Promise<void> {
   logger.info('dogu protocol version', { DOGU_PROTOCOL_VERSION });
   const pathMap = await openPathMap(env.ANDROID_HOME);
   logger.info('path map', { pathMap });
-
-  axios.interceptors.response.use(
-    (response) => {
-      return response;
-    },
-    (error) => {
-      console.error('Axios error exception', parseAxiosError(error));
-    },
-  );
 
   const app = await NestFactory.create(AppModule, {
     logger: WinstonModule.createLogger({

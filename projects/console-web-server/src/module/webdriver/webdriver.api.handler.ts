@@ -83,7 +83,7 @@ export class WebDriverNewSessionAPIHandler extends WebDriverAPIHandler {
         headers: headers,
         method: request.method as Method,
         query: request.query,
-        data: request.body,
+        reqBody: request.body,
       },
     };
   }
@@ -92,7 +92,7 @@ export class WebDriverNewSessionAPIHandler extends WebDriverAPIHandler {
     if (response.status !== 200) {
       return;
     }
-    const sessionId = (response.data as any)?.value?.sessionId as string;
+    const sessionId = (response.resBody as any)?.value?.sessionId as string;
     if (!sessionId) {
       throw new Error('Session id not found in response');
     }
@@ -137,7 +137,7 @@ export class WebDriverEachSessionAPIHandler extends WebDriverAPIHandler {
         headers: headers,
         method: request.method as Method,
         query: request.query,
-        data: request.body,
+        reqBody: request.body,
       },
     };
   }

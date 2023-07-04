@@ -13,7 +13,7 @@ import {
 import { Closable, Printable, PromiseOrValue } from '@dogu-tech/common';
 import { StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { Observable } from 'rxjs';
-import { AppiumContext } from '../../appium/appium.context';
+import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { DevicePortContext } from '../types/device-port-context';
 
@@ -63,6 +63,7 @@ export interface DeviceChannel {
 
   // appium
   getAppiumContext(): PromiseOrValue<AppiumContext | null>;
+  switchAppiumContext(key: AppiumContextKey): PromiseOrValue<AppiumContext>;
 
   // gamium
   set gamiumContext(context: GamiumContext | null);

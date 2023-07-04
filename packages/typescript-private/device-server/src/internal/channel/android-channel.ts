@@ -21,7 +21,7 @@ import { ChildProcess, execFile } from 'child_process';
 import fs from 'fs';
 import lodash from 'lodash';
 import { Observable } from 'rxjs';
-import { AppiumContext } from '../../appium/appium.context';
+import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
 import { AppiumService } from '../../appium/appium.service';
 import { env } from '../../env';
 import { GamiumContext } from '../../gamium/gamium.context';
@@ -72,6 +72,7 @@ export class AndroidChannel implements DeviceChannel {
     private readonly _deviceAgent: AndroidDeviceAgentService,
     private readonly _profilers: ProfileServices,
     private readonly _streaming: StreamingService,
+    private readonly _appiumService: AppiumService,
     private _appiumContext: AppiumContext,
     private readonly logger: FilledPrintable,
     private isClosed = false,
@@ -97,7 +98,7 @@ export class AndroidChannel implements DeviceChannel {
     await deviceAgent.wakeUp();
     await deviceAgent.install();
 
-    const appiumContext = appiumService.createAppiumContext(platform, serial);
+    const appiumContext = appiumService.createAppiumContext(platform, serial, 'bulitin');
     const onCatchAppiumContextError = (error: Error): void => {
       logger.error('android appium context open failed', { error: errorify(error) });
       appiumContext.open().catch(onCatchAppiumContextError);
@@ -112,6 +113,7 @@ export class AndroidChannel implements DeviceChannel {
       // [new AndroidAdbProfileService(), new AndroidDeviceAgentProfileService(deviceAgent)],
       [new AndroidAdbProfileService()],
       streaming,
+      appiumService,
       appiumContext,
       logger,
     );
@@ -370,6 +372,20 @@ export class AndroidChannel implements DeviceChannel {
 
   getAppiumContext(): AppiumContext {
     return this._appiumContext;
+  }
+
+  async switchAppiumContext(key: AppiumContextKey): Promise<AppiumContext> {
+    await this._appiumContext.close().catch((error) => {
+      this.logger.error('android appium context close failed', { error: errorify(error) });
+    });
+    const appiumContext = this._appiumService.createAppiumContext(this.platform, this.serial, key);
+    const onCatchAppiumContextError = (error: Error): void => {
+      this.logger.error('android appium context open failed', { error: errorify(error) });
+      appiumContext.open().catch(onCatchAppiumContextError);
+    };
+    await appiumContext.open().catch(onCatchAppiumContextError);
+    this._appiumContext = appiumContext;
+    return appiumContext;
   }
 
   set gamiumContext(context: GamiumContext | null) {

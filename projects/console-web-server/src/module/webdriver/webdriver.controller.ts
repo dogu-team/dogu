@@ -18,6 +18,6 @@ export class WebDriverController {
       response.setHeader(headKey, res.headers[headKey]!);
     }
     response.status(res.status);
-    response.send(res.data);
+    response.send(res.resBody);
   }
 }

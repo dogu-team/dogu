@@ -18,7 +18,7 @@ export class RelayRequest {
   query!: Query;
 
   @IsObject()
-  data!: object;
+  reqBody!: object;
 }
 
 export class RelayResponse {
@@ -29,7 +29,7 @@ export class RelayResponse {
   status!: number;
 
   @IsObject()
-  data!: object;
+  resBody!: object;
 }
 
 const DeviceWebDriverController = new ControllerSpec({ path: '/device-wd' });

@@ -16,14 +16,15 @@ import { remote } from 'webdriverio';
 import { Adb } from '../internal/externals/index';
 import { getFreePort } from '../internal/util/net';
 import { createAppiumLogger } from '../logger/logger.instance';
+import { AppiumRemoteContext } from './appium.remote.context';
 import { AppiumService } from './appium.service';
 
 type Browser = Awaited<ReturnType<typeof remote>>;
 
 const AppiumNewCommandTimeout = 24 * 60 * 60; // unit: seconds
 const AppiumClientCallAsyncTimeout = 10 * 1000; // unit: milliseconds
-const AppiumHealthCheckInterval = 5 * 1000; // unit: milliseconds
-const AppiumHealthCheckMaxNotHealthyCount = 3;
+export const AppiumHealthCheckInterval = 5 * 1000; // unit: milliseconds
+export const AppiumHealthCheckMaxNotHealthyCount = 3;
 
 export interface DefaultAppiumContextOptions {
   pnpmPath: string;
@@ -37,6 +38,7 @@ export interface AppiumContextOptions extends DefaultAppiumContextOptions {
   service: AppiumService;
   platform: Platform;
   serial: Serial;
+  key: AppiumContextKey;
 }
 
 function transformId(context: unknown): string {
@@ -55,7 +57,10 @@ function callClientAsyncWithTimeout<T>(callClientAsync: Promise<T>): Promise<T> 
   return callAsyncWithTimeout(callClientAsync, { timeout: AppiumClientCallAsyncTimeout });
 }
 
+export type AppiumContextKey = 'bulitin' | 'remote' | 'null';
+
 export interface AppiumContext {
+  get key(): AppiumContextKey;
   open(): Promise<void>;
   close(): Promise<void>;
   isHealthy(): boolean;
@@ -71,6 +76,10 @@ export interface AppiumContext {
 }
 
 class NullAppiumContext implements AppiumContext {
+  get key(): AppiumContextKey {
+    return 'null';
+  }
+
   open(): Promise<void> {
     return Promise.resolve();
   }
@@ -142,7 +151,21 @@ export class AppiumContextProxy implements AppiumContext {
 
   constructor(private readonly options: AppiumContextOptions) {
     this.logger = createAppiumLogger(options.serial);
-    this.impl = new AppiumContextImpl(options, this.logger);
+    switch (options.key) {
+      case 'bulitin':
+        this.impl = new AppiumContextImpl(options, this.logger);
+        break;
+      case 'remote':
+        this.impl = new AppiumRemoteContext(options, this.logger);
+        break;
+      case 'null':
+        this.impl = new NullAppiumContext();
+        break;
+    }
+  }
+
+  get key(): AppiumContextKey {
+    return this.impl.key;
   }
 
   async open(): Promise<void> {
@@ -249,7 +272,7 @@ export class AppiumContextProxy implements AppiumContext {
   }
 }
 
-interface AppiumData {
+export interface AppiumData {
   server: {
     port: number;
     command: string;
@@ -300,6 +323,10 @@ export class AppiumContextImpl implements AppiumContext {
   }
 
   constructor(private readonly options: AppiumContextOptions, private readonly logger: Logger) {}
+
+  get key(): AppiumContextKey {
+    return 'bulitin';
+  }
 
   async open(): Promise<void> {
     this.openingState = 'opening';

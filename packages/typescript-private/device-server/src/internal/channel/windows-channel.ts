@@ -19,6 +19,7 @@ import { StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { ChildProcess } from '@dogu-tech/node';
 import { Observable } from 'rxjs';
 import systeminformation from 'systeminformation';
+import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { GamiumService } from '../../gamium/gamium.service';
 import { logger } from '../../logger/logger.instance';
@@ -186,6 +187,10 @@ export class WindowsChannel implements DeviceChannel {
 
   getAppiumContext(): null {
     return null;
+  }
+
+  switchAppiumContext(key: AppiumContextKey): PromiseOrValue<AppiumContext> {
+    throw new Error('Method not implemented.');
   }
 
   set gamiumContext(context: GamiumContext | null) {

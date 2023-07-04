@@ -40,7 +40,7 @@ export class WebDriverService {
         return {
           headers: {},
           status: processResult.status,
-          data: {
+          resBody: {
             error: processResult.error.name,
             message: processResult.error.message,
             stacktrace: '',
@@ -66,7 +66,7 @@ export class WebDriverService {
             return {
               headers: {},
               status: 500,
-              data: {
+              resBody: {
                 error: e.name,
                 message: e.message,
                 stacktrace: '',
@@ -77,7 +77,7 @@ export class WebDriverService {
           return {
             headers: {},
             status: 500,
-            data: {
+            resBody: {
               error: stringify(e),
               message: stringify(e),
               stacktrace: '',
