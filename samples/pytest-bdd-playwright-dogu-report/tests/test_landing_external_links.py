@@ -42,7 +42,7 @@ def on_community_page(community_page: Page):
 def click_github_link(page: Page):
     with page.context.expect_page() as new_page_info:
         page.click(
-            'xpath=//*[@id="__next"]/section/section/header/div/div/div[2]/iframe'
+            'xpath=//*[@href="https://github.com/dogu-team/dogu"]'
         )
     return new_page_info.value
 
