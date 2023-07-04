@@ -23,7 +23,7 @@ import { config, pgsqlConnectionOptions } from './config';
 
   await execute('Starting container...', () =>
     exec(
-      `docker run -d --name ${config.containerName} -e POSTGRES_DB=${config.schema} -e POSTGRES_USER=${config.rootUser} -e POSTGRES_PASSWORD=${config.rootPassword} -e TZ=Etc/UTC -p ${config.port}:5432 -m 2g --restart always postgres:15.3`,
+      `docker run -d --name ${config.containerName} -e POSTGRES_DB=${config.schema} -e POSTGRES_USER=${config.rootUser} -e POSTGRES_PASSWORD=${config.rootPassword} -e PGPORT=${config.port} -e TZ=Etc/UTC -p ${config.port}:${config.port} -m 2g --restart always postgres:15.3`,
       {
         errorMessage: 'Error: Docker run failed',
       },
