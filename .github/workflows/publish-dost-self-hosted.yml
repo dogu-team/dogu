@@ -44,6 +44,24 @@ jobs:
           clean: false
           fetch-depth: 0
 
+      - name: Cache Yarn Unplugged
+        uses: actions/cache@v3
+        id: cache_yarn_unplugged
+        env:
+          cache-name: cache-yarn-unplugged
+        with:
+          path: ${{ github.workspace }}/.yarn/unplugged
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
+
+      - name: Cache Third-Party
+        uses: actions/cache@v3
+        id: cache_third_party
+        env:
+          cache-name: cache-third-party
+        with:
+          path: ${{ github.workspace }}/third-party
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('scripts/third-parties/download.ts') }}
+
       - name: Windows - Msys2 - MIGW64 - Setup for cgo
         uses: msys2/setup-msys2@v2
         if: runner.os == 'Windows'
@@ -117,17 +135,6 @@ jobs:
       - name: Common - Setup Android SDK
         uses: android-actions/setup-android@v2.0.10
 
-      - name: Cache Yarn Unplugged
-        uses: actions/cache@v3
-        id: cache_yarn_unplugged
-        env:
-          cache-name: cache-yarn-unplugged
-        with:
-          path: ${{ github.workspace }}/.yarn/unplugged
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}-
-
       - if: steps.cache_yarn_unplugged.outputs.cache-hit != 'true'
         name: Newbie
         run: |
@@ -136,17 +143,6 @@ jobs:
       - name: Build Projects
         run: |
           yarn workspace dogu run build:packages
-
-      - name: Cache Third-Party
-        uses: actions/cache@v3
-        id: cache_third_party
-        env:
-          cache-name: cache-third-party
-        with:
-          path: ${{ github.workspace }}/third-party
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('scripts/third-parties/download.ts') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}-
 
       - if: steps.cache_third_party.outputs.cache-hit != 'true'
         name: Download, Build third-party

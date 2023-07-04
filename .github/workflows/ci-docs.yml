@@ -16,10 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
       - name: Cache Yarn Unplugged
         uses: actions/cache@v3
         id: cache_yarn_unplugged
@@ -28,8 +24,10 @@ jobs:
         with:
           path: ${{ github.workspace }}/.yarn/unplugged
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}-
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '16'
 
       - if: steps.cache_yarn_unplugged.outputs.cache-hit != 'true'
         name: Install Dependencies
