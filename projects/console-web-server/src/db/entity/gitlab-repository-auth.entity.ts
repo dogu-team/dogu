@@ -26,7 +26,7 @@ export class GitlabRepositoryAuth extends BaseEntity implements GitlabRepository
   @ColumnTemplate.DeleteDate(GitlabRepositoryAuthPropSnake.deleted_at)
   deletedAt!: Date | null;
 
-  @OneToOne(() => ProjectRepository, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
+  @OneToOne(() => ProjectRepository, { createForeignKeyConstraints: false })
   @JoinColumn({ name: GitlabRepositoryAuthPropSnake.project_repository_id, referencedColumnName: GitlabRepositoryAuthPropCamel.projectRepositoryId })
   projectRepository?: ProjectRepository;
 }

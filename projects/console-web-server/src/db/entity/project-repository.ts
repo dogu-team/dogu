@@ -27,7 +27,7 @@ export class ProjectRepository extends BaseEntity implements ProjectRepositoryBa
   @ColumnTemplate.DeleteDate(ProjectRepositoryBasePropSnake.deleted_at)
   deletedAt!: Date | null;
 
-  @OneToOne(() => Project, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
+  @OneToOne(() => Project, { createForeignKeyConstraints: false })
   @JoinColumn({ name: ProjectRepositoryBasePropSnake.project_id, referencedColumnName: ProjectRepositoryBasePropCamel.projectId })
   project?: Project;
 }
