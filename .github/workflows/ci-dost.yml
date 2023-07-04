@@ -257,20 +257,20 @@ jobs:
           yarn util:set-version 0.0.1
         working-directory: ./nm-space/projects/dost
 
-      - name: Dost - Build
-        run: |
-          yarn run build && yarn run deploy:notarize
-        working-directory: ./nm-space/projects/dost
-        env:
-          DOGU_BUILD_ARCH: ${{ matrix.arch }}
+      # - name: Dost - Build
+      #   run: |
+      #     yarn run build && yarn run deploy:notarize
+      #   working-directory: ./nm-space/projects/dost
+      #   env:
+      #     DOGU_BUILD_ARCH: ${{ matrix.arch }}
 
-      - name: Upload dost
-        if: ${{ success() }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: 'dost-${{ runner.os }}-${{ matrix.arch }}'
-          path: |
-            ./nm-space/projects/dost/dist/*.${{ matrix.extension }}
+      # - name: Upload dost
+      #   if: ${{ success() }}
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: 'dost-${{ runner.os }}-${{ matrix.arch }}'
+      #     path: |
+      #       ./nm-space/projects/dost/dist/*.${{ matrix.extension }}
 
   send-slack:
     runs-on: ubuntu-latest
