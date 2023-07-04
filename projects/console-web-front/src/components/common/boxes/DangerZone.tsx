@@ -151,6 +151,7 @@ const ItemTitle = styled.p`
 const ItemDescription = styled.p`
   line-height: 1.4;
   white-space: pre-wrap;
+  word-break: keep-all;
 `;
 
 const ItemButtonWrapper = styled.div`

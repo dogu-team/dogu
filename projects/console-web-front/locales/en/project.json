@@ -25,6 +25,13 @@
   "projectDeleteSuccessMsg": "Removed!",
   "projectDeleteFailedMsg": "Failed to remove\n{{reason}}",
 
+  "editGitIntegrationMenuTitle": "Edit git integration",
+  "editGitIntegrationDescriptionText": "Edit git service, token, repository and dogu configuration file path.",
+  "editGitIntegrationButtonText": "Edit integration",
+  "editGitIntegrationConfirmModalTitle": "Edit git integration",
+  "editGitIntegrationConfirmModalButtonText": "Confirm and edit",
+  "settingEditGitIntegrationConfirmContent": "Are you sure to edit git integration for project?",
+
   "projectTableNameColumn": "Name",
   "projectTableMembersColumn": "Members",
   "projectTableLastUpdatedColumn": "Recent Activities",

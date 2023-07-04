@@ -105,7 +105,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, mut
         </Button>
         <Divider />
         <DangerZone>
-          <DangerZone.Item title={'Change Git Integration'} description={'Change Git Integration'} button={<GitIntegrationDangerButton />} />
+          <DangerZone.Item title={t('project:editGitIntegrationMenuTitle')} description={t('project:editGitIntegrationDescriptionText')} button={<GitIntegrationDangerButton />} />
           <DangerZone.Item
             title={t('project:deleteProjectMenuTitle')}
             description={t('project:deleteProjectDescriptionText')}
