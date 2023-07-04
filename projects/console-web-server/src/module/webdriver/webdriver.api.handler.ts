@@ -74,13 +74,15 @@ export class WebDriverNewSessionAPIHandler extends WebDriverAPIHandler {
     if (page.items.length === 0) {
       return { isHandlable: true, status: 400, error: new Error('Device not found'), data: {} };
     }
+    const randIndex = Math.floor(Math.random() * page.items.length);
+    const device = page.items[randIndex];
     const headers = convertHeaders(request.headers);
 
     return {
       isHandlable: true,
       organizationId: doguOptions.organizationId,
-      deviceId: page.items[0].deviceId,
-      serial: page.items[0].serial,
+      deviceId: device.deviceId,
+      serial: device.serial,
       request: {
         path: subpath,
         headers: headers,
