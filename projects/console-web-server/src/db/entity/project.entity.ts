@@ -13,6 +13,7 @@ import {
   PROJECT_AND_USER_AND_PROJECT_ROLE_TABLE_NAME,
   PROJECT_DESC_MAX_LENGTH,
   PROJECT_NAME_MAX_LENGTH,
+  PROJECT_TABLE_NAME,
   UserId,
 } from '@dogu-private/types';
 import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
@@ -27,7 +28,7 @@ import { Team } from './team.entity';
 import { Member } from './type/type';
 import { User } from './user.entity';
 
-@Entity('project')
+@Entity(PROJECT_TABLE_NAME)
 export class Project extends BaseEntity implements ProjectBase {
   @PrimaryGeneratedColumn('uuid', { name: ProjectPropSnake.project_id })
   projectId!: ProjectId;

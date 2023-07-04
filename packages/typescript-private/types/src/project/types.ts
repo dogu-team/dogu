@@ -1,5 +1,6 @@
 import { UUID_LENGTH } from '../constants';
 
+export const PROJECT_TABLE_NAME = 'project';
 export const PROJECT_ID_MAX_LENGTH = UUID_LENGTH;
 
 export const PROJECT_NAME_MIN_LENGTH = 1;
