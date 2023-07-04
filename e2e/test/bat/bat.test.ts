@@ -148,7 +148,7 @@ Dest.withOptions({
 
         await Driver.clickElement(
           {
-            xpath: '/html/body/div[3]/div/div/ul/li[5]/span/div/button',
+            xpath: `//span[text()="${l10n('SIGNOUT')}"]/..`,
           },
           {
             focusWindow: true,
