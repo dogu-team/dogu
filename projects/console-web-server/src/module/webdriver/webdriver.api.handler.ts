@@ -1,4 +1,4 @@
-import { DeviceConnectionState, DeviceId, Serial } from '@dogu-private/types';
+import { DeviceConnectionState, DeviceId, Serial, WebDriverSessionId } from '@dogu-private/types';
 import { HeaderRecord, Method, transformAndValidate } from '@dogu-tech/common';
 import { RelayRequest, RelayResponse } from '@dogu-tech/device-client-common';
 import { Request } from 'express';
@@ -27,6 +27,7 @@ export interface WebDriverDeviceAPIHandlerResultOk {
   organizationId: string;
   deviceId: DeviceId;
   serial: Serial;
+  sessionId?: WebDriverSessionId;
   request: RelayRequest;
 }
 
@@ -103,6 +104,64 @@ export class WebDriverNewSessionAPIHandler extends WebDriverAPIHandler {
   }
 }
 
+export class WebDriverDeleteSessionAPIHandler extends WebDriverAPIHandler {
+  async onRequest(context: WebDriverHandleContext, subpath: string, request: Request): Promise<WebDriverDeviceAPIHandlerResult> {
+    if (!subpath.startsWith('session/')) {
+      return { isHandlable: false };
+    }
+    const splited = subpath.split('/');
+    if (splited.length !== 2) {
+      return { isHandlable: false };
+    }
+    if (request.method !== 'DELETE') {
+      return { isHandlable: false };
+    }
+    const sessionId = splited[1];
+    if (sessionId.length === 0) {
+      return { isHandlable: true, status: 400, error: new Error('empty session path'), data: {} };
+    }
+    const { organizationId, deviceId, serial } = await context.dataSource.transaction(async (manager) => {
+      const deviceId = await context.deviceWebDriverService.findDeviceBySessionIdAndMark(manager, sessionId);
+      const device = await context.deviceStatusService.findDevice(deviceId);
+      return {
+        organizationId: device.organizationId,
+        deviceId: device.deviceId,
+        serial: device.serial,
+      };
+    });
+    const headers = convertHeaders(request.headers);
+
+    return {
+      isHandlable: true,
+      organizationId: organizationId,
+      deviceId: deviceId,
+      serial: serial,
+      sessionId: sessionId,
+      request: {
+        path: subpath,
+        headers: headers,
+        method: request.method as Method,
+        query: request.query,
+        reqBody: request.body,
+      },
+    };
+  }
+
+  async onResponse(context: WebDriverHandleContext, handleResult: WebDriverDeviceAPIHandlerResultOk, response: RelayResponse): Promise<void> {
+    if (response.status !== 200) {
+      return;
+    }
+    const sessionId = handleResult.sessionId;
+    if (!sessionId) {
+      throw new Error('Session id not found when deleting');
+    }
+
+    await context.dataSource.transaction(async (manager) => {
+      await context.deviceWebDriverService.deleteSession(manager, sessionId);
+    });
+  }
+}
+
 export class WebDriverEachSessionAPIHandler extends WebDriverAPIHandler {
   async onRequest(context: WebDriverHandleContext, subpath: string, request: Request): Promise<WebDriverDeviceAPIHandlerResult> {
     if (!subpath.startsWith('session/')) {
@@ -117,7 +176,7 @@ export class WebDriverEachSessionAPIHandler extends WebDriverAPIHandler {
       return { isHandlable: true, status: 400, error: new Error('empty session path'), data: {} };
     }
     const { organizationId, deviceId, serial } = await context.dataSource.transaction(async (manager) => {
-      const deviceId = await context.deviceWebDriverService.findDeviceBySessionId(manager, sessionId);
+      const deviceId = await context.deviceWebDriverService.findDeviceBySessionIdAndMark(manager, sessionId);
       const device = await context.deviceStatusService.findDevice(deviceId);
       return {
         organizationId: device.organizationId,
@@ -143,7 +202,6 @@ export class WebDriverEachSessionAPIHandler extends WebDriverAPIHandler {
   }
 
   onResponse(context: WebDriverHandleContext, handleResult: WebDriverDeviceAPIHandlerResultOk, response: RelayResponse): Promise<void> {
-    console.log('a');
     return Promise.resolve();
   }
 }

@@ -16,6 +16,9 @@ export class DeviceAndWebDriver extends BaseEntity implements DeviceAndWebDriver
   @ColumnTemplate.RelationUuid(DeviceAndWebDriverPropSnake.device_id)
   deviceId!: DeviceId;
 
+  @ColumnTemplate.Date(DeviceAndWebDriverPropSnake.heartbeat, true)
+  heartbeat!: Date | null;
+
   @ColumnTemplate.CreateDate(DeviceAndWebDriverPropSnake.created_at)
   createdAt!: Date;
 

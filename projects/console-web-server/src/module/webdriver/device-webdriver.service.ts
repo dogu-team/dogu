@@ -39,7 +39,7 @@ export class DeviceWebDriverService {
     return;
   }
 
-  async findDeviceBySessionId(manager: EntityManager, sessionId: WebDriverSessionId): Promise<DeviceId> {
+  async findDeviceBySessionIdAndMark(manager: EntityManager, sessionId: WebDriverSessionId): Promise<DeviceId> {
     const sessionAndDevice = await manager.getRepository(DeviceAndWebDriver).findOne({ where: { sessionId }, withDeleted: false });
 
     if (!sessionAndDevice) {
@@ -48,6 +48,8 @@ export class DeviceWebDriverService {
     if (sessionAndDevice.deletedAt !== null) {
       throw new HttpException(`This session deleted. : ${sessionId}`, HttpStatus.BAD_REQUEST);
     }
+    sessionAndDevice.heartbeat = new Date();
+    await manager.getRepository(DeviceAndWebDriver).save(sessionAndDevice);
 
     return sessionAndDevice.deviceId;
   }

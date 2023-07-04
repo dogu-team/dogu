@@ -5,6 +5,7 @@ export interface DeviceAndWebDriverRelationTraits {
   deviceWebDriverId: DeviceWebDriverId;
   sessionId: WebDriverSessionId;
   deviceId: DeviceId;
+  heartbeat: Date | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

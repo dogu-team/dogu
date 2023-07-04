@@ -7,11 +7,17 @@ import { DeviceMessageRelayer } from '../device-message/device-message.relayer';
 import { DoguLogger } from '../logger/logger';
 import { DeviceStatusService } from '../organization/device/device-status.service';
 import { DeviceWebDriverService } from './device-webdriver.service';
-import { WebDriverAPIHandler, WebDriverEachSessionAPIHandler, WebDriverHandleContext, WebDriverNewSessionAPIHandler } from './webdriver.api.handler';
+import {
+  WebDriverAPIHandler,
+  WebDriverDeleteSessionAPIHandler,
+  WebDriverEachSessionAPIHandler,
+  WebDriverHandleContext,
+  WebDriverNewSessionAPIHandler,
+} from './webdriver.api.handler';
 
 @Injectable()
 export class WebDriverService {
-  private readonly apiHandlers: WebDriverAPIHandler[] = [new WebDriverNewSessionAPIHandler(), new WebDriverEachSessionAPIHandler()];
+  private readonly apiHandlers: WebDriverAPIHandler[] = [new WebDriverNewSessionAPIHandler(), new WebDriverDeleteSessionAPIHandler(), new WebDriverEachSessionAPIHandler()];
   constructor(
     private readonly dataSource: DataSource,
     private readonly deviceStatusService: DeviceStatusService,

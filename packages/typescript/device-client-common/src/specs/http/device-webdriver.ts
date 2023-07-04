@@ -1,6 +1,6 @@
 import { ControllerSpec, HeaderRecord, Method, Query } from '@dogu-tech/common';
 import { Serial } from '@dogu-tech/types';
-import { IsIn, IsNumber, IsObject, IsString } from 'class-validator';
+import { IsIn, IsNumber, IsObject, IsOptional, IsString } from 'class-validator';
 import { DeviceServerResponseDto } from '../../validations/types/responses';
 import { DeviceServerControllerMethodSpec } from '../types';
 
@@ -18,7 +18,8 @@ export class RelayRequest {
   query!: Query;
 
   @IsObject()
-  reqBody!: object;
+  @IsOptional()
+  reqBody?: object;
 }
 
 export class RelayResponse {
@@ -29,7 +30,8 @@ export class RelayResponse {
   status!: number;
 
   @IsObject()
-  resBody!: object;
+  @IsOptional()
+  resBody?: object;
 }
 
 const DeviceWebDriverController = new ControllerSpec({ path: '/device-wd' });
