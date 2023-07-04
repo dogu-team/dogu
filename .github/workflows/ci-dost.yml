@@ -125,11 +125,23 @@ jobs:
       - name: Common - Setup Android SDK
         uses: android-actions/setup-android@v2.0.10
 
+      - name: Cache Yarn
+        uses: actions/cache@v2
+        id: cache_yarn
+        env:
+          cache-name: cache-yarn
+        with:
+          path: ${{ github.workspace }}/.yarn
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
+
       - name: Newbie
         run: |
           yarn run newbie:cicd
 
-      - name: Build Projects
+      - if: steps.cache_yarn.outputs.cache-hit != 'true'
+        name: Build Projects
         run: |
           yarn workspace dogu run build:packages
 
@@ -163,7 +175,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
 
-      - if: steps.cache_nm_space_node_modules.outputs.cache-hit != 'true'
+      - name: Cache nm space project node_modules
+        uses: actions/cache@v2
+        id: cache_nm_space_project_node_modules
+        env:
+          cache-name: cache-nm-space-project-node_modules
+        with:
+          path: ${{ github.workspace }}/nm-space/projects/node_modules
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('nm-space/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
+
+      - if: ${{ (steps.cache_nm_space_node_modules.outputs.cache-hit != 'true') || (steps.cache_nm_space_project_node_modules.outputs.cache-hit != 'true') }}
         name: Dost - Newbie nm-space
         run: |
           yarn workspace dogu run newbie:nm-space
