@@ -41,9 +41,7 @@ def on_community_page(community_page: Page):
 @when("I click on the Github link", target_fixture="github_page")
 def click_github_link(page: Page):
     with page.context.expect_page() as new_page_info:
-        page.click(
-            'xpath=//*[@href="https://github.com/dogu-team/dogu"]'
-        )
+        page.click('xpath=//*[@href="https://github.com/dogu-team/dogu"]')
     return new_page_info.value
 
 
