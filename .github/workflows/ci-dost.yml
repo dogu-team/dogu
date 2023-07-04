@@ -82,17 +82,6 @@ jobs:
             C:\hostedtoolcache\windows\go\${{ env.GO_VERSION }}
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.GO_VERSION }}
 
-      - name: Cache Android SDK
-        uses: actions/cache@v3
-        id: cache_android_sdk
-        env:
-          cache-name: cache-android-sdk
-        with:
-          path: |
-            ~/Library/Android/sdk
-            C:\Android\android-sdk
-          key: ${{ runner.os }}-${{ env.cache-name }}
-
       - name: Windows - Msys2 - MIGW64 - Setup for cgo
         uses: msys2/setup-msys2@v2
         if: runner.os == 'Windows'
@@ -164,8 +153,7 @@ jobs:
           java-version: 11
           distribution: 'temurin'
 
-      - if: steps.cache_android_sdk.outputs.cache-hit != 'true'
-        name: Common - Setup Android SDK
+      - name: Common - Setup Android SDK
         uses: android-actions/setup-android@v2.0.10
 
       - if: steps.cache_yarn_unplugged.outputs.cache-hit != 'true'
