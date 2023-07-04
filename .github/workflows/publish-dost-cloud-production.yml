@@ -114,7 +114,7 @@ jobs:
         uses: android-actions/setup-android@v2.0.10
 
       - name: Cache Yarn Unplugged
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache_yarn_unplugged
         env:
           cache-name: cache-yarn-unplugged

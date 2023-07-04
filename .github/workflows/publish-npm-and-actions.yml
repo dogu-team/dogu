@@ -29,7 +29,7 @@ jobs:
           command: pyenv global ${{ env.DOGU_PYTHON_VERSION }} && pip install poetry==${{ env.DOGU_POETRY_VERSION }} && which poetry
 
       - name: Cache Yarn Unplugged
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         id: cache_yarn_unplugged
         env:
           cache-name: cache-yarn-unplugged
