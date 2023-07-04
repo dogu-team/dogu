@@ -10,8 +10,7 @@ export interface ProjectRepositoryBaseTraitsBase {
   projectRepositoryId: ProjectRepositoryId;
   projectId: ProjectId;
   repositoryType: REPOSITORY_TYPE;
-  repositoryUrl: string;
-  configFilePath: string;
+  url: string;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
