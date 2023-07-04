@@ -10,7 +10,7 @@ import { getClockTime } from '../../../src/time';
 import { Timer } from '../../../src/timer';
 import { l10n } from './l10n';
 
-export function runHost(random: number, dost: Dost): void {
+export function runHost(hostName: string, dost: Dost): void {
   job('Create host', () => {
     let token = '';
     test('Go to host page', async () => {
@@ -37,7 +37,7 @@ export function runHost(random: number, dost: Dost): void {
         {
           xpath: '//*[@access-id="add-host-form-name"]',
         },
-        `test host ${random}`,
+        hostName,
         {
           focusWindow: true,
         },
@@ -91,6 +91,26 @@ export function runHost(random: number, dost: Dost): void {
         },
       );
       expect(status).toBe(l10n('CONNECTED'));
+    });
+
+    test('Click "..." before click use as device', async () => {
+      await Driver.clickElement({ xpath: `//span[text()="${hostName}"]/../../../div[5]//button` });
+    });
+
+    test('Click use as device', async () => {
+      await Driver.clickElement({ xpath: `//button[text()="${l10n('START_USING_AS_DEVICE')}"]` });
+    });
+
+    test('Click host menu before expect stop using as device', async () => {
+      await Driver.clickElement({ xpath: '//*[@access-id="side-bar-host"]' });
+    });
+
+    test('Click "..." before expect stop using as device', async () => {
+      await Driver.clickElement({ xpath: `//span[text()="${hostName}"]/../../../div[5]//button` });
+    });
+
+    test('Expect stop using as device', async () => {
+      await Driver.findElement({ xpath: `//button[text()="${l10n('STOP_USING_AS_DEVICE')}"]` });
     });
   });
 }

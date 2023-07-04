@@ -37,6 +37,7 @@ const values = {
     ORG_NAME: `Test Org`,
     PROJECT_NAME: 'Test Project',
     TEAM_NAME: `test team ${randomId}`,
+    HOST_NAME: `test host ${randomId}`,
     HOST_DEVICE_TAG: `test-host-tag`,
     ANDROID_DEVICE_TAG: `test-android-tag`,
     IOS_DEVICE_TAG: `test-ios-tag`,
@@ -304,16 +305,16 @@ Dest.withOptions({
       dost.nextTest();
     });
 
-    runHost(randomId, dost);
+    runHost(values.value.HOST_NAME, dost);
 
     const deviceSettingInfos = [
-      // {
-      //   name: 'Host device setting',
-      //   addTabMenu: '//*[text()="Host"]/../../../div[5]/div/div/button',
-      //   listTabMenu: '//*[text()="Host"]/../../../../div[5]/div/div[2]/button',
-      //   tag: values.value.HOST_DEVICE_TAG,
-      //   isHost: true,
-      // },
+      {
+        name: 'Host device setting',
+        addTabMenu: '//*[text()="Host"]/../../../div[5]/div/div/button',
+        listTabMenu: '//*[text()="Host"]/../../../../div[5]/div/div[2]/button',
+        tag: values.value.HOST_DEVICE_TAG,
+        isHost: true,
+      },
       {
         name: 'Android device setting',
         addTabMenu: '//*[@icon-id="android-icon"]/../../../div[5]/div/div/button',
