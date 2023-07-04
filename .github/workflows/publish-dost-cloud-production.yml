@@ -133,7 +133,19 @@ jobs:
         run: |
           yarn workspace dogu run build:packages
 
-      - name: Download, Build third-party
+      - name: Cache Third-Party
+        uses: actions/cache@v3
+        id: cache_third_party
+        env:
+          cache-name: cache-third-party
+        with:
+          path: ${{ github.workspace }}/third-party
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('scripts/third-parties/download.ts') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
+
+      - if: steps.cache_third_party.outputs.cache-hit != 'true'
+        name: Download, Build third-party
         run: |
           yarn third-party:download:build
         env:
