@@ -133,18 +133,43 @@ jobs:
         run: |
           yarn workspace dogu run build:packages
 
-      - name: Download, Build third-party
+      - name: Cache Third-Party
+        uses: actions/cache@v2
+        id: cache_third_party
+        env:
+          cache-name: cache-third-party
+        with:
+          path: ${{ github.workspace }}/third-party
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('scripts/third-parties/download.ts') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
+
+      - if: steps.cache_third_party.outputs.cache-hit != 'true'
+        name: Download, Build third-party
         run: |
           yarn third-party:download:build
         env:
           DOGU_APPLE_API_KEY_ID: ${{ secrets.DOGU_APPLE_API_KEY_ID }}
           DOGU_APPLE_API_ISSUER_ID: ${{ secrets.DOGU_APPLE_API_ISSUER_ID }}
 
-      - name: Dost - Newbie nm-space
+      - name: Cache nm space node_modules
+        uses: actions/cache@v2
+        id: cache_nm_space_node_modules
+        env:
+          cache-name: cache-nm-space-node_modules
+        with:
+          path: ${{ github.workspace }}/nm-space/node_modules
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('nm-space/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
+
+      - if: steps.cache_nm_space_node_modules.outputs.cache-hit != 'true'
+        name: Dost - Newbie nm-space
         run: |
           yarn workspace dogu run newbie:nm-space
 
-      - name: Dost - Install nm-space
+      - if: steps.cache_nm_space_node_modules.outputs.cache-hit != 'true'
+        name: Dost - Install nm-space
         run: |
           yarn install
         working-directory: ./nm-space
