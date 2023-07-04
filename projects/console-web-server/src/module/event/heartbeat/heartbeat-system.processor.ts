@@ -4,6 +4,7 @@ import Redis from 'ioredis';
 import { config } from '../../../config';
 import { DoguLogger } from '../../logger/logger';
 import { DeviceConnectionUpdater } from './device-connection-updater';
+import { DeviceWebDriverUpdater as DeviceAndWebDriverUpdater } from './device-webdriver-updater';
 import { HostConnectionUpdater } from './host-connection-updater';
 
 @Injectable()
@@ -12,6 +13,7 @@ export class HeartBeatSystemProcessor {
     @InjectRedis() private readonly redis: Redis,
     @Inject(DeviceConnectionUpdater) private readonly deviceConnectionUpdater: DeviceConnectionUpdater,
     @Inject(HostConnectionUpdater) private readonly hostConnectionUpdater: HostConnectionUpdater,
+    @Inject(DeviceAndWebDriverUpdater) private readonly deviceAndWebDriverUpdater: DeviceAndWebDriverUpdater,
     private readonly logger: DoguLogger,
   ) {}
 
@@ -27,5 +29,6 @@ export class HeartBeatSystemProcessor {
     }
     this.deviceConnectionUpdater.update();
     this.hostConnectionUpdater.update();
+    this.deviceAndWebDriverUpdater.update();
   }
 }

@@ -129,6 +129,11 @@ export const config = {
     },
     timeoutMilliseconds: 10 * 1000,
   },
+  deviceAndWebDriver: {
+    heartbeat: {
+      allowedSeconds: 300,
+    },
+  },
 };
 
 export const dataSourceConfig: DataSourceOptions = {
