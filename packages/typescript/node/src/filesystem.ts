@@ -24,6 +24,24 @@ export async function copyDirectoryRecursive(sourceDir: string, destinationDir: 
   }
 }
 
+export async function getDirectorySize(dir: string): Promise<number> {
+  const files = await fs.readdir(dir);
+  let size = 0;
+
+  for (const file of files) {
+    const filePath = path.join(dir, file);
+    const fileStat = await fs.lstat(filePath);
+
+    if (fileStat.isDirectory()) {
+      size += await getDirectorySize(filePath);
+    } else {
+      size += fileStat.size;
+    }
+  }
+
+  return size;
+}
+
 export async function removeItemRecursive(itemPath: string): Promise<void> {
   const itemStat = await fs.lstat(itemPath);
 

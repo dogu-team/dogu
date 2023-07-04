@@ -95,7 +95,7 @@ const ExternaltoolInstaller = ({ externalKeyAndNames, onStart, onFinish }: Props
             <Text
               key={item.log + i}
               color={item.isError ? 'orange.500' : 'inherit'}
-              fontSize="smaller"
+              fontSize="xs"
               fontFamily="monospace"
               dangerouslySetInnerHTML={{ __html: new Convert({ newline: true }).toHtml(item.log) }}
             />
@@ -113,7 +113,7 @@ const ExternaltoolInstaller = ({ externalKeyAndNames, onStart, onFinish }: Props
 export default ExternaltoolInstaller;
 
 const LogBox = styled.div`
-  height: 100px;
+  height: 350px;
   margin: 0.5rem 0;
   padding: 0.5rem;
   border: 1px solid #ccc;

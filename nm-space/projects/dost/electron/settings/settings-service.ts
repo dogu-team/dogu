@@ -2,10 +2,8 @@ import { HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
 import { exec } from 'child_process';
 import { app, desktopCapturer, ipcMain, shell, systemPreferences } from 'electron';
 import isDev from 'electron-is-dev';
-import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
-import shelljs from 'shelljs';
 import { promisify } from 'util';
 import { ILoginItemSettingsOptions, ISettings, MediaType, settingsClientKey } from '../../src/shares/settings';
 import { AppConfigService } from '../app-config/app-config-service';
@@ -107,9 +105,6 @@ export class SettingsService {
   private async openIdaProject(): Promise<void> {
     const idaDestProjectDirectoryPath = HostPaths.external.xcodeProject.idaProjectDirectoryPath();
 
-    if (fs.existsSync(idaDestProjectDirectoryPath)) {
-      shelljs.rm('-rf', idaDestProjectDirectoryPath);
-    }
     await copyiOSDeviceAgentProject(logger);
 
     const idaDestProjectPath = path.resolve(idaDestProjectDirectoryPath, 'IOSDeviceAgent.xcodeproj');
