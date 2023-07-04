@@ -4,6 +4,8 @@ import { RoutineId } from '@dogu-private/types';
 import useSWR from 'swr';
 import { RoutineBase } from '@dogu-private/console';
 import Head from 'next/head';
+import { GetServerSideProps } from 'next';
+import { isAxiosError } from 'axios';
 
 import { NextPageWithLayout } from 'pages/_app';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
@@ -17,6 +19,7 @@ import RunRoutineButton from 'src/components/pipelines/RunRoutineButton';
 import RoutineInfoContainer from 'src/components/routine/RoutineInfoContainer';
 import { swrAuthFetcher } from 'src/api/index';
 import EditRoutineButton from 'src/components/routine/EditRoutineButton';
+import { getProjectGit } from '../../../../../../src/api/project';
 
 const ProjectPipelineListPage: NextPageWithLayout<WithProjectProps> = ({ organization, project }) => {
   const router = useRouter();
@@ -57,7 +60,30 @@ ProjectPipelineListPage.getLayout = (page) => {
   return <ProjectLayout sidebar={<PipelineSideBar />}>{page}</ProjectLayout>;
 };
 
-export const getServerSideProps = getProjectPageServerSideProps;
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const result = await getProjectPageServerSideProps(context);
+
+  if ('redirect' in result || 'notFound' in result) {
+    return result;
+  }
+
+  try {
+    await getProjectGit(context);
+  } catch (e) {
+    if (isAxiosError(e)) {
+      if (e.response?.status === 404) {
+        return {
+          redirect: {
+            destination: `/dashboard/${context.query.orgId}/projects/${context.query.pid}/git`,
+            permanent: false,
+          },
+        };
+      }
+    }
+  }
+
+  return result;
+};
 
 export default withProject(ProjectPipelineListPage);
 

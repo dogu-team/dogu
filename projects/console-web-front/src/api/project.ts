@@ -3,6 +3,7 @@ import {
   AddUserToProjectDtoBase,
   CreateProjectDtoBase,
   ProjectBase,
+  ProjectRepositoryBase,
   UpdateProjectDtoBase,
   UpdateTeamProjectRoleDtoBase,
   UpdateUserProjectRoleDtoBase,
@@ -66,4 +67,21 @@ export const updateTeamInProject = async (organizationId: OrganizationId, projec
 
 export const updateUserInProject = async (organizationId: OrganizationId, projectId: ProjectId, userId: UserId, body: UpdateUserProjectRoleDtoBase) => {
   return await api.patch<void>(`/organizations/${organizationId}/projects/${projectId}/users/${userId}/role`, body);
+};
+
+export const getProjectGit = async (context: GetServerSidePropsContext) => {
+  const { authToken } = getServersideCookies(context.req.cookies);
+
+  if (authToken) {
+    const data = await api.get<ProjectRepositoryBase>(`/organizations/${context.query.orgId}/projects/${context.query.pid}/git`, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+    setCookiesInServerSide(data, context);
+
+    const project = data.data;
+
+    return project;
+  }
+
+  throw new EmptyTokenError();
 };
