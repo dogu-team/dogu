@@ -52,10 +52,9 @@ const AddDeviceTabButton = ({ selected, href }: TabButtonProps) => {
 
 interface Props {
   children: React.ReactNode;
-  isWebview: boolean;
 }
 
-const OrganizationDeviceLayout = ({ children, isWebview }: Props) => {
+const OrganizationDeviceLayout = ({ children }: Props) => {
   const router = useRouter();
   const orgId = router.query.orgId;
   const { t } = useTranslation();
@@ -86,7 +85,7 @@ const OrganizationDeviceLayout = ({ children, isWebview }: Props) => {
   ];
 
   return (
-    <ConsoleLayout isWebview={isWebview} sidebar={<OrganizationSideBar />} titleI18nKey={'organization:devicePageTitle'}>
+    <ConsoleLayout sidebar={<OrganizationSideBar />} titleI18nKey={'organization:devicePageTitle'}>
       <MenuLinkTabs tabs={tabs} />
       <Inner>{children}</Inner>
     </ConsoleLayout>

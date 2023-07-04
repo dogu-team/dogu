@@ -34,7 +34,7 @@ const PipelineDetailPage: NextPageWithLayout<WithProjectProps> = ({ organization
 };
 
 PipelineDetailPage.getLayout = (page) => {
-  return <PipelineJobLayout isWebview={page.props.isWebview}>{page}</PipelineJobLayout>;
+  return <PipelineJobLayout>{page}</PipelineJobLayout>;
 };
 
 export const getServerSideProps: GetServerSideProps = getProjectPageServerSideProps;

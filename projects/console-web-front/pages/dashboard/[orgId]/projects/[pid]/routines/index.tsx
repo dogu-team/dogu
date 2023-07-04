@@ -54,11 +54,7 @@ const ProjectPipelineListPage: NextPageWithLayout<WithProjectProps> = ({ organiz
 };
 
 ProjectPipelineListPage.getLayout = (page) => {
-  return (
-    <ProjectLayout isWebview={page.props.isWebview} sidebar={<PipelineSideBar />}>
-      {page}
-    </ProjectLayout>
-  );
+  return <ProjectLayout sidebar={<PipelineSideBar />}>{page}</ProjectLayout>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

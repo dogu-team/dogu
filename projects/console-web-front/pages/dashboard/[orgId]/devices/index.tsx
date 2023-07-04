@@ -29,7 +29,7 @@ const TeamDevicePage: NextPageWithLayout<WithOrganizationProps> = ({ organizatio
 };
 
 TeamDevicePage.getLayout = (page) => {
-  return <OrganizationDeviceLayout isWebview={page.props.isWebview}>{page}</OrganizationDeviceLayout>;
+  return <OrganizationDeviceLayout>{page}</OrganizationDeviceLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;

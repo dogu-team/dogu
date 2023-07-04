@@ -10,12 +10,11 @@ import ConsoleBasicLayout from './ConsoleBasicLayout';
 interface Props {
   children: React.ReactNode;
   sidebar: React.ReactNode;
-  isWebview: boolean;
   titleI18nKey?: string;
   title?: string;
 }
 
-const ConsoleLayout = ({ titleI18nKey, children, sidebar, title, isWebview }: Props) => {
+const ConsoleLayout = ({ titleI18nKey, children, sidebar, title }: Props) => {
   const { me, isLoading, error } = useAuth();
   const router = useRouter();
   const { t } = useTranslation();

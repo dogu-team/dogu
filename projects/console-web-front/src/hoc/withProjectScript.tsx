@@ -22,7 +22,6 @@ export interface ProjectScriptServerSideProps {
   };
   repositoryFileTree: RepositoryFileMetaTree;
   explorerTree: ExplorerTree;
-  isWebview: boolean;
 }
 
 export interface WithProjectScriptProps {
@@ -32,11 +31,10 @@ export interface WithProjectScriptProps {
   mutateProject: KeyedMutator<ProjectBase>;
   repositoryFileMetaTree: RepositoryFileMetaTree;
   explorerTree: ExplorerTree;
-  isWebview: boolean;
 }
 
 export default function withProjectScript(WrappedComponent: NextPageWithLayout<WithProjectScriptProps>) {
-  const Component: NextPageWithLayout<ProjectScriptServerSideProps> = ({ fallback, isWebview, repositoryFileTree: repositoryTree, explorerTree }) => {
+  const Component: NextPageWithLayout<ProjectScriptServerSideProps> = ({ fallback, repositoryFileTree: repositoryTree, explorerTree }) => {
     const router = useRouter();
     const organizationId = router.query.orgId;
     const projectId = router.query.pid;
@@ -75,7 +73,6 @@ export default function withProjectScript(WrappedComponent: NextPageWithLayout<W
           explorerTree={explorerTree}
           mutateOrganization={mutateOrganization}
           mutateProject={mutateProject}
-          isWebview={isWebview}
         />
       </SWRConfig>
     );

@@ -43,7 +43,7 @@ const DeviceTagsManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ o
 };
 
 DeviceTagsManagementPage.getLayout = (page) => {
-  return <OrganizationDeviceLayout isWebview={page.props.isWebview}>{page}</OrganizationDeviceLayout>;
+  return <OrganizationDeviceLayout>{page}</OrganizationDeviceLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;

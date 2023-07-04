@@ -20,7 +20,7 @@ const ProjectRoutineCreatorPage: NextPageWithLayout<WithProjectProps> = ({ organ
 };
 
 ProjectRoutineCreatorPage.getLayout = (page) => {
-  return <ProjectLayout isWebview={page.props.isWebview}>{page}</ProjectLayout>;
+  return <ProjectLayout>{page}</ProjectLayout>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

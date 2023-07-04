@@ -58,7 +58,7 @@
     "@nestjs/schedule": "2.1.0",
     "@nestjs/typeorm": "9.0.1",
     "@nestjs/websockets": "9.2.1",
-    "@octokit/rest": "19.0.7",
+    "@octokit/rest": "19.0.13",
     "@sentry/node": "7.50.0",
     "@slack/web-api": "6.7.2",
     "adbkit-apkreader": "3.2.0",

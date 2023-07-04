@@ -20,7 +20,6 @@ export interface ProjectRepositoryServerSideProps {
     [key: string]: OrganizationBase | ProjectBase | UserBase;
   };
   user: UserBase;
-  isWebview: boolean;
 }
 
 export interface WithProjectRepositoryProps {
@@ -29,11 +28,10 @@ export interface WithProjectRepositoryProps {
   user: UserBase;
   mutateOrganization: KeyedMutator<OrganizationBase>;
   mutateProject: KeyedMutator<ProjectBase>;
-  isWebview: boolean;
 }
 
 export default function withProjectRepository(WrappedComponent: NextPageWithLayout<WithProjectRepositoryProps>) {
-  const Component: NextPageWithLayout<ProjectRepositoryServerSideProps> = ({ fallback, isWebview, user }) => {
+  const Component: NextPageWithLayout<ProjectRepositoryServerSideProps> = ({ fallback, user }) => {
     const router = useRouter();
     const organizationId = router.query.orgId;
     const projectId = router.query.pid;
@@ -65,7 +63,7 @@ export default function withProjectRepository(WrappedComponent: NextPageWithLayo
 
     return (
       <SWRConfig value={{ fallback }}>
-        <WrappedComponent organization={organization} project={project} user={user} mutateOrganization={mutateOrganization} mutateProject={mutateProject} isWebview={isWebview} />
+        <WrappedComponent organization={organization} project={project} user={user} mutateOrganization={mutateOrganization} mutateProject={mutateProject} />
       </SWRConfig>
     );
   };

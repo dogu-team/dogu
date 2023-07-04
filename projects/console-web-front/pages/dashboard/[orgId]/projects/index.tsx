@@ -32,7 +32,7 @@ const TeamProjectsPage: NextPageWithLayout<WithOrganizationProps> = ({ organizat
 
 TeamProjectsPage.getLayout = (page) => {
   return (
-    <ConsoleLayout isWebview={page.props.isWebview} sidebar={<OrganizationSideBar />} titleI18nKey="organization:projectPageTitle">
+    <ConsoleLayout sidebar={<OrganizationSideBar />} titleI18nKey="organization:projectPageTitle">
       {page}
     </ConsoleLayout>
   );

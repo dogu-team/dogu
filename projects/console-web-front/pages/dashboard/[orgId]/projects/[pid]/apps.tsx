@@ -37,7 +37,7 @@ const ProjectAppPage: NextPageWithLayout<WithProjectProps> = ({ project, organiz
 };
 
 ProjectAppPage.getLayout = (page) => {
-  return <ProjectLayout isWebview={page.props.isWebview}>{page}</ProjectLayout>;
+  return <ProjectLayout>{page}</ProjectLayout>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

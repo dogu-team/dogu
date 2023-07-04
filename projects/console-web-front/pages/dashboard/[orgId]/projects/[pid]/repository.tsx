@@ -58,7 +58,7 @@ const RepositoryPage: NextPageWithLayout<WithProjectRepositoryProps> = ({ organi
 };
 
 RepositoryPage.getLayout = (page) => {
-  return <ProjectLayout isWebview={page.props.isWebview}>{page}</ProjectLayout>;
+  return <ProjectLayout>{page}</ProjectLayout>;
 };
 
 export const getServerSideProps = getProjectRepositoryPageServerSideProps;
