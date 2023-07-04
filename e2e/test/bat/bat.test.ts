@@ -227,7 +227,7 @@ Dest.withOptions({
       });
 
       test('Click create organization button', async () => {
-        await Driver.clickElement({ xpath: '/html/body/div[2]/div/div[2]/div/div[2]/div[3]/div/button[2]' }), { waitTime: 10 * 1000 };
+        await Driver.clickElement({ xpath: '//button[@form="new-org"]' }), { waitTime: 10 * 1000 };
       });
 
       test('Check organization creation', async () => {

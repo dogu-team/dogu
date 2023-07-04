@@ -42,9 +42,10 @@ export function runHost(random: number, dost: Dost): void {
           focusWindow: true,
         },
       );
+
       await Driver.clickElement(
         {
-          xpath: '/html/body/div[2]/div/div[2]/div/div[2]/div[3]/div/button[2]/span',
+          xpath: '//button[@form="new-host"]',
         },
         {
           focusWindow: true,
