@@ -56,7 +56,7 @@ jobs:
           cache-name: cache-third-party
         with:
           path: ${{ github.workspace }}/third-party
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('scripts/third-parties/download.ts') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('scripts/third-parties/download.ts') }}-${{ hashFiles('projects/go-device-controller/**') }}-${{ hashFiles('projects/android-device-agent/**') }}-${{ hashFiles('projects/ios-device-agent/**') }}
 
       - name: Windows - Msys2 - MIGW64 - Setup for cgo
         uses: msys2/setup-msys2@v2

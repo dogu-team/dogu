@@ -69,7 +69,7 @@ jobs:
           cache-name: cache-third-party
         with:
           path: ${{ github.workspace }}/third-party
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('scripts/third-parties/download.ts') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('scripts/third-parties/download.ts') }}-${{ hashFiles('projects/go-device-controller/**') }}-${{ hashFiles('projects/android-device-agent/**') }}-${{ hashFiles('projects/ios-device-agent/**') }}-${{ hashFiles('projects/go-device-controller/**') }}-${{ hashFiles('projects/android-device-agent/**') }}-${{ hashFiles('projects/ios-device-agent/**') }}
 
       - name: Cache Go
         uses: actions/cache@v3
