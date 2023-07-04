@@ -15,8 +15,11 @@ export class ProjectRepository extends BaseEntity implements ProjectRepositoryBa
   @Column({ type: 'smallint', name: ProjectRepositoryBasePropSnake.repository_type, default: REPOSITORY_TYPE.UNSPECIFIED, nullable: false })
   repositoryType!: REPOSITORY_TYPE;
 
-  @Column({ type: 'character varying', name: ProjectRepositoryBasePropSnake.url, nullable: false })
-  url!: string;
+  @Column({ type: 'character varying', name: ProjectRepositoryBasePropSnake.repository_url, nullable: false })
+  repositoryUrl!: string;
+
+  @Column({ type: 'character varying', name: ProjectRepositoryBasePropSnake.config_file_path, nullable: false })
+  configFilePath!: string;
 
   @ColumnTemplate.CreateDate(ProjectRepositoryBasePropSnake.created_at)
   createdAt!: Date;
