@@ -141,7 +141,8 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
-      - name: Common - Setup go
+      - if: steps.cache_go.outputs.cache-hit != 'true'
+        name: Common - Setup go
         uses: actions/setup-go@v3
         with:
           go-version: ${{ env.GO_VERSION }}
