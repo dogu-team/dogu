@@ -13,9 +13,5 @@ export class UpdateProjectGitDto implements UpdateProjectGitDtoBase {
 
   @IsNotEmpty()
   @IsString()
-  repoUrl!: string;
-
-  @IsNotEmpty()
-  @IsString()
-  configUrl!: string;
+  url!: string;
 }

@@ -172,6 +172,7 @@ const Description = styled.p`
 `;
 
 const PageContainer = styled.div`
+  position: relative;
   display: flex;
   width: 100%;
   flex: 1;

@@ -1,8 +1,11 @@
+import { OrganizationId, ProjectId } from '@dogu-private/types';
 import { Form } from 'antd';
-import { AxiosError } from 'axios';
+import { isAxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
+import { useRouter } from 'next/router';
 
-import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
+import { updateProjectGit } from '../../api/project';
+import { sendErrorNotification } from '../../utils/antd';
 import { getErrorMessage } from '../../utils/error';
 import DangerZone from '../common/boxes/DangerZone';
 import GitIntegrationForm, { GitIntegrationFormValues } from './GitIntegrationForm';
@@ -10,15 +13,16 @@ import GitIntegrationForm, { GitIntegrationFormValues } from './GitIntegrationFo
 const GitIntegrationDangerButton = () => {
   const [form] = Form.useForm<GitIntegrationFormValues>();
   const { t } = useTranslation('project');
+  const router = useRouter();
 
-  const handleConfirm = async () => {
+  const saveGitIntegration = async () => {
     const values = await form.validateFields();
 
     try {
-      sendSuccessNotification(t('projectUpdateSuccessMsg'));
+      await updateProjectGit(router.query.orgId as OrganizationId, router.query.pid as ProjectId, { service: values.git, url: values.repo, token: values.token });
     } catch (e) {
-      if (e instanceof AxiosError) {
-        sendErrorNotification(t('projectUpdateFailedMsg', { reason: getErrorMessage(e) }));
+      if (isAxiosError(e)) {
+        sendErrorNotification(`Failed to update: ${getErrorMessage(e)}`);
       }
     }
   };
@@ -32,7 +36,7 @@ const GitIntegrationDangerButton = () => {
           <p style={{ marginTop: '.5rem' }}>{t('settingEditGitIntegrationConfirmContent')}</p>
         </div>
       }
-      onConfirm={handleConfirm}
+      onConfirm={saveGitIntegration}
       modalButtonTitle={'Confirm and Change'}
       onOpenChange={() => {
         form.resetFields();

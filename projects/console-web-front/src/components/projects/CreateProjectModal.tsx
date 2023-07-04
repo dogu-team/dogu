@@ -43,7 +43,7 @@ const CreateProjectModal = ({ isOpen, close }: Props) => {
         sendSuccessNotification(t('organization:newProjectSuccessTitle', { name }));
         form.resetFields();
         handleClose();
-        router.push(`${router.asPath}/${result.projectId}`);
+        router.push(`${router.asPath}/${result.projectId}/git`);
       } catch (e) {
         if (e instanceof AxiosError) {
           sendErrorNotification(t('organization:newProjectFailTitle', { reason: getErrorMessage(e) }));

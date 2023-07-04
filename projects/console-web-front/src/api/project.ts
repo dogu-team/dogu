@@ -5,6 +5,7 @@ import {
   ProjectBase,
   ProjectRepositoryBase,
   UpdateProjectDtoBase,
+  UpdateProjectGitDtoBase,
   UpdateTeamProjectRoleDtoBase,
   UpdateUserProjectRoleDtoBase,
 } from '@dogu-private/console';
@@ -84,4 +85,8 @@ export const getProjectGit = async (context: GetServerSidePropsContext) => {
   }
 
   throw new EmptyTokenError();
+};
+
+export const updateProjectGit = async (orgId: OrganizationId, pid: ProjectId, dto: UpdateProjectGitDtoBase) => {
+  return await api.patch<void>(`/organizations/${orgId}/projects/${pid}/git`, dto);
 };
