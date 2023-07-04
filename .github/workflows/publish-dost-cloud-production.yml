@@ -149,7 +149,7 @@ jobs:
         run: |
           yarn run newbie:cicd
 
-      - name: Build Projects
+      - name: Build Packages
         run: |
           yarn workspace dogu run build:packages
 
