@@ -44,6 +44,7 @@ jobs:
 
     env:
       RUNNER_TOOL_CACHE: ${{ github.workspace }}/runner-tool-cache
+      GO_VERSION: '1.18.4'
 
     steps:
       - name: Checkout
@@ -79,7 +80,7 @@ jobs:
           path: |
             ~/.hostedtoolcache/go
             ~/.hostedtoolcache/windows/go
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('scripts/third-parties/download.ts') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.GO_VERSION }}
 
       - name: Windows - Msys2 - MIGW64 - Setup for cgo
         uses: msys2/setup-msys2@v2
@@ -143,7 +144,7 @@ jobs:
       - name: Common - Setup go
         uses: actions/setup-go@v3
         with:
-          go-version: '1.18.4'
+          go-version: ${{ env.GO_VERSION }}
 
       - name: Common - Set up JDK 11 for android build
         uses: actions/setup-java@v3
