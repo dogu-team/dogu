@@ -17,8 +17,8 @@ export class HeartBeatSystemProcessor {
     private readonly logger: DoguLogger,
   ) {}
 
-  public update(): void {
-    this.updateConnection().catch((error) => {
+  public async update(): Promise<void> {
+    await this.updateConnection().catch((error) => {
       this.logger.error(error);
     });
   }
@@ -29,6 +29,6 @@ export class HeartBeatSystemProcessor {
     }
     this.deviceConnectionUpdater.update();
     this.hostConnectionUpdater.update();
-    this.deviceAndWebDriverUpdater.update();
+    await this.deviceAndWebDriverUpdater.update();
   }
 }

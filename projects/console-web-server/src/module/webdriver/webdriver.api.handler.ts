@@ -1,10 +1,11 @@
 import { DeviceConnectionState, DeviceId, Serial, WebDriverSessionId } from '@dogu-private/types';
 import { HeaderRecord, Method, transformAndValidate } from '@dogu-tech/common';
-import { RelayRequest, RelayResponse } from '@dogu-tech/device-client-common';
+import { DeviceWebDriver, RelayRequest, RelayResponse } from '@dogu-tech/device-client-common';
 import { Request } from 'express';
 import { IncomingHttpHeaders } from 'http';
 import { DataSource } from 'typeorm';
 import { DoguWebDriverOptions } from '../../types/webdriver-options';
+import { DeviceMessageRelayer } from '../device-message/device-message.relayer';
 import { DeviceStatusService } from '../organization/device/device-status.service';
 import { FindDevicesByOrganizationIdDto } from '../organization/device/dto/device.dto';
 import { DeviceWebDriverService } from './device-webdriver.service';
@@ -37,6 +38,7 @@ export interface WebDriverHandleContext {
   dataSource: DataSource;
   deviceWebDriverService: DeviceWebDriverService;
   deviceStatusService: DeviceStatusService;
+  deviceMessageRelayer: DeviceMessageRelayer;
 }
 
 export abstract class WebDriverAPIHandler {
@@ -159,6 +161,19 @@ export class WebDriverDeleteSessionAPIHandler extends WebDriverAPIHandler {
     await context.dataSource.transaction(async (manager) => {
       await context.deviceWebDriverService.deleteSession(manager, sessionId);
     });
+
+    const pathProvider = new DeviceWebDriver.sessionDeleted.pathProvider(handleResult.serial);
+    const path = DeviceWebDriver.sessionDeleted.resolvePath(pathProvider);
+    const res = await context.deviceMessageRelayer.sendHttpRequest(
+      handleResult.organizationId,
+      handleResult.deviceId,
+      DeviceWebDriver.sessionDeleted.method,
+      path,
+      undefined,
+      undefined,
+      { sessionId: sessionId },
+      DeviceWebDriver.sessionDeleted.responseBody,
+    );
   }
 }
 

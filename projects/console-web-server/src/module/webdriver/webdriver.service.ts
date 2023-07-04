@@ -33,6 +33,7 @@ export class WebDriverService {
       dataSource: this.dataSource,
       deviceStatusService: this.deviceStatusService,
       deviceWebDriverService: this.deviceWebDriverService,
+      deviceMessageRelayer: this.deviceMessageRelayer,
     };
     for (const apiHandler of this.apiHandlers) {
       const processResult = await apiHandler.onRequest(context, subpath, request).catch((e) => {

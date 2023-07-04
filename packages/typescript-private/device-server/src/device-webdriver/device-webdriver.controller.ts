@@ -1,7 +1,7 @@
 import { Code, Serial } from '@dogu-private/types';
 import { HeaderRecord, Instance, stringify } from '@dogu-tech/common';
-import { DeviceServerResponseDto, DeviceWebDriver, RelayRequest, RelayResponse } from '@dogu-tech/device-client-common';
-import { Body, Controller, Param, Post } from '@nestjs/common';
+import { DeviceServerResponseDto, DeviceWebDriver, RelayRequest, RelayResponse, SessionDeletedParam } from '@dogu-tech/device-client-common';
+import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
 import axios, { AxiosError } from 'axios';
 import { deviceNotFoundError } from '../device/device.utils';
 import { DoguLogger } from '../logger/logger';
@@ -50,6 +50,27 @@ export class DeviceWebDriverController {
       }
       return unknownError(serial, e);
     }
+  }
+
+  @Delete(DeviceWebDriver.sessionDeleted.path)
+  async sessionDeleted(@Param('serial') serial: Serial, @Body() param: SessionDeletedParam): Promise<Instance<typeof DeviceWebDriver.sessionDeleted.responseBody>> {
+    const device = this.scanService.findChannel(serial);
+    if (device === null) {
+      return deviceNotFoundError(serial);
+    }
+    let context = await device.getAppiumContext();
+    if (context === null) {
+      return appiumContextNotFoundError(serial);
+    }
+    if (context.key !== 'bulitin') {
+      context = await device.switchAppiumContext('bulitin');
+    }
+    return {
+      value: {
+        $case: 'data',
+        data: {},
+      },
+    };
   }
 }
 
