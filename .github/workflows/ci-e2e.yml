@@ -256,7 +256,7 @@ jobs:
 
       - name: create dotEnv
         run: |
-          env-generator gen-all e2e'
+          env-generator gen-all e2e
 
       - if: steps.cache_third_party.outputs.cache-hit != 'true'
         name: Download, Build third-party
