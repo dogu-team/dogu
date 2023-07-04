@@ -70,6 +70,17 @@ jobs:
             C:\hostedtoolcache\windows\go\${{ env.GO_VERSION }}
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.GO_VERSION }}
 
+      - name: Cache Mirror
+        uses: actions/cache@v3
+        id: cache_mirror
+        env:
+          cache-name: cache-mirror
+        with:
+          path: |
+            ${{ github.workspace }}/nm-space/mirror
+            ${{ github.workspace }}/node_modules
+          key: ${{ env.cache-name }}-${{ hashFiles('packages/typescript-*/**') }}-${{ hashFiles('np-space/yarn.lock') }}
+
       - name: Windows - Msys2 - MIGW64 - Setup for cgo
         uses: msys2/setup-msys2@v2
         if: runner.os == 'Windows'
