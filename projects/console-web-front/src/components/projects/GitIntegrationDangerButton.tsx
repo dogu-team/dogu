@@ -1,14 +1,14 @@
-import { GithubFilled, GitlabOutlined } from '@ant-design/icons';
-import { Form, Input, Radio } from 'antd';
+import { Form } from 'antd';
 import { AxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import { getErrorMessage } from '../../utils/error';
 import DangerZone from '../common/boxes/DangerZone';
+import GitIntegrationForm, { GitIntegrationFormValues } from './GitIntegrationForm';
 
 const GitIntegrationDangerButton = () => {
-  const [form] = Form.useForm<{ git: string; token: string; repo: string; path: string }>();
+  const [form] = Form.useForm<GitIntegrationFormValues>();
   const { t } = useTranslation('project');
 
   const handleConfirm = async () => {
@@ -28,30 +28,7 @@ const GitIntegrationDangerButton = () => {
       modalTitle={t('editGitIntegrationConfirmModalTitle')}
       modalContent={
         <div>
-          <Form form={form} layout="vertical" name="git-integration">
-            <Form.Item label="Git service" name="git" required rules={[{ required: true, message: 'Select service' }]} valuePropName="checked">
-              <Radio.Group buttonStyle="solid">
-                <Radio.Button value="github">
-                  <GithubFilled />
-                  &nbsp;GitHub
-                </Radio.Button>
-                <Radio.Button value="gitlab">
-                  <GitlabOutlined />
-                  &nbsp;GitLab
-                </Radio.Button>
-              </Radio.Group>
-            </Form.Item>
-            <Form.Item label="Token" name="token" required rules={[{ required: true, message: 'Input token' }]}>
-              <Input placeholder="ghp_1234567890abcd" required />
-            </Form.Item>
-            <Form.Item label="Repository" name="repo" required rules={[{ required: true, message: 'Input repository' }]}>
-              <Input placeholder="dogu-team/dogu" required />
-            </Form.Item>
-            <Form.Item label="Dogu config file(json) path" name="path" required rules={[{ required: true, message: 'Input config path' }]}>
-              <Input placeholder="e2e/dogu.config.json" required />
-            </Form.Item>
-          </Form>
-
+          <GitIntegrationForm form={form} />
           <p style={{ marginTop: '.5rem' }}>{t('settingEditGitIntegrationConfirmContent')}</p>
         </div>
       }
