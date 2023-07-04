@@ -6,7 +6,7 @@
     "clean": "shx rm -rf build generated .export",
     "dev": "nodemon",
     "export": "tsc -b && ts-node scripts/export",
-    "newbie": "ts-node scripts/newbie"
+    "newbie:localdev": "ts-node scripts/newbie"
   },
   "devDependencies": {
     "@dogu-dev-private/base-build-tools": "workspace:^",

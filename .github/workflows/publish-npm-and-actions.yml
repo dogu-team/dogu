@@ -28,7 +28,19 @@ jobs:
           default: ${{ env.DOGU_PYTHON_VERSION }}
           command: pyenv global ${{ env.DOGU_PYTHON_VERSION }} && pip install poetry==${{ env.DOGU_POETRY_VERSION }} && which poetry
 
-      - name: Run newbie
+      - name: Cache Yarn Unplugged
+        uses: actions/cache@v2
+        id: cache_yarn_unplugged
+        env:
+          cache-name: cache-yarn-unplugged
+        with:
+          path: ${{ github.workspace }}/.yarn/unplugged
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
+
+      - if: steps.cache_yarn_unplugged.outputs.cache-hit != 'true'
+        name: Run newbie
         run: |
           yarn newbie:cicd
 

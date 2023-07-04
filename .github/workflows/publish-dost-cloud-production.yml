@@ -113,7 +113,19 @@ jobs:
       - name: Common - Setup Android SDK
         uses: android-actions/setup-android@v2.0.10
 
-      - name: Newbie
+      - name: Cache Yarn Unplugged
+        uses: actions/cache@v2
+        id: cache_yarn_unplugged
+        env:
+          cache-name: cache-yarn-unplugged
+        with:
+          path: ${{ github.workspace }}/.yarn/unplugged
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
+
+      - if: steps.cache_yarn_unplugged.outputs.cache-hit != 'true'
+        name: Newbie
         run: |
           yarn run newbie:cicd
 
