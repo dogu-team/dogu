@@ -79,7 +79,7 @@ jobs:
           path: |
             ${{ github.workspace }}/nm-space/mirror
             ${{ github.workspace }}/node_modules
-          key: ${{ env.cache-name }}-${{ hashFiles('packages/typescript-*/**') }}-${{ hashFiles('np-space/yarn.lock') }}
+          key: ${{ env.cache-name }}-${{ hashFiles('packages/typescript-*/**') }}-${{ hashFiles('nm-space/yarn.lock') }}
 
       - name: Windows - Msys2 - MIGW64 - Setup for cgo
         uses: msys2/setup-msys2@v2
