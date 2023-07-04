@@ -156,8 +156,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-${{ env.cache-name }}-
 
-      # - if: steps.cache_third_party.outputs.cache-hit != 'true'
-      - name: Download, Build third-party
+      - if: steps.cache_third_party.outputs.cache-hit != 'true'
+        name: Download, Build third-party
         run: |
           yarn third-party:download:build
         env:
