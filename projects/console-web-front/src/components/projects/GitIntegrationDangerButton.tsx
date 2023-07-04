@@ -45,8 +45,8 @@ const GitIntegrationDangerButton = () => {
           <Form.Item label="Repository" name="repo" required rules={[{ required: true, message: 'Input repository' }]}>
             <Input placeholder="dogu-team/dogu" required />
           </Form.Item>
-          <Form.Item label="Dogu config path" name="path" required rules={[{ required: true, message: 'Input config path' }]}>
-            <Input placeholder="./e2e" required />
+          <Form.Item label="Dogu config file(json) path" name="path" required rules={[{ required: true, message: 'Input config path' }]}>
+            <Input placeholder="e2e/dogu.config.json" required />
           </Form.Item>
         </Form>
       }
