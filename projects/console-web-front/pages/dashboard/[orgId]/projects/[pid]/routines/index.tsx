@@ -18,6 +18,7 @@ import RunRoutineButton from 'src/components/pipelines/RunRoutineButton';
 import RoutineInfoContainer from 'src/components/routine/RoutineInfoContainer';
 import { swrAuthFetcher } from 'src/api/index';
 import EditRoutineButton from 'src/components/routine/EditRoutineButton';
+import { getProjectGit } from '../../../../../../src/api/project';
 
 const ProjectRoutinePage: NextPageWithLayout<WithProjectProps> = ({ organization, project }) => {
   const router = useRouter();
