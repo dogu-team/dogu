@@ -79,4 +79,6 @@ export class ProjectGitService {
       }
     });
   }
+
+  async findTestScripts(organizationId: OrganizationId, projectId: ProjectId) {}
 }

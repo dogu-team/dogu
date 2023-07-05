@@ -1,6 +1,7 @@
 import { OrganizationPropCamel, ProjectPropCamel } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Body, Controller, Get, Inject, Param, Patch } from '@nestjs/common';
+import { ProjectRepository } from '../../../db/entity/project-repository';
 
 import { PROJECT_ROLE } from '../../auth/auth.types';
 import { ProjectPermission } from '../../auth/decorators';
@@ -16,20 +17,25 @@ export class ProjectGitController {
 
   @Get()
   @ProjectPermission(PROJECT_ROLE.READ)
-  async getProjectGit(@Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, @Param(ProjectPropCamel.projectId) projectId: string) {
+  async getProjectGit(
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
+    @Param(ProjectPropCamel.projectId) projectId: string,
+  ): Promise<ProjectRepository> {
     return await this.projectGitService.getProjectGit(organizationId, projectId);
   }
 
   @Patch()
   @ProjectPermission(PROJECT_ROLE.ADMIN)
   async updateProjectGit(
-    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, //
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
     @Param(ProjectPropCamel.projectId) projectId: string,
     @Body() updateProjectGitDto: UpdateProjectGitDto,
-  ) {
+  ): Promise<void> {
     return await this.projectGitService.updateProjectGit(organizationId, projectId, updateProjectGitDto);
   }
 
   @Get('scripts')
-  async getTestScripts() {}
+  async getTestScripts(@Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, @Param(ProjectPropCamel.projectId) projectId: string) {
+    return await this.projectGitService.findTestScripts(organizationId, projectId);
+  }
 }
