@@ -56,7 +56,7 @@ export default function Home(): JSX.Element {
           </h2>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/get-started/introduction">
+              <Link to="/get-started">
                 <Translate id="main.introduction" />
               </Link>
             </li>
@@ -70,14 +70,14 @@ export default function Home(): JSX.Element {
           </ul>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/get-started/installation">
+              <Link to="/get-started/device-farm">
                 <Translate id="main.getStartedDeviceFarmTitle" />
               </Link>
             </li>
           </ul>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/get-started/installation">
+              <Link to="/get-started/test-script">
                 <Translate id="main.getStartedTestScriptTitle" />
               </Link>
             </li>
@@ -91,7 +91,7 @@ export default function Home(): JSX.Element {
           </ul>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/get-started/installation">
+              <Link to="/get-started/routine">
                 <Translate id="main.getStartedRoutineTitle" />
               </Link>
             </li>
@@ -141,7 +141,7 @@ export default function Home(): JSX.Element {
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/host-and-device/device/settings">
+              <Link to="/host-and-device/device/setting">
                 <Translate id="main.hostAndDeviceDeviceLinkTitle" />
               </Link>
             </li>
@@ -197,13 +197,13 @@ export default function Home(): JSX.Element {
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/test-report/introduction">Javascript</Link>
+              <Link to="/test-report/javascript">Javascript</Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/test-report/introduction">Python</Link>
+              <Link to="/test-report/python">Python</Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/test-report/introduction">Java</Link>
+              <Link to="/test-report/java">Java</Link>
             </li>
           </ul>
         </div>
