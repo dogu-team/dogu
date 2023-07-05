@@ -39,6 +39,11 @@ If Docker and Docker-compose aren't installed on your system, install them first
 - [Docker Install](https://docs.docker.com/engine/install/)
 - [Docker-compose Install](https://docs.docker.com/compose/install/)
 
+### Network Security Settings
+
+In the Allow In/Outbound Traffic setting, allow additional values specified as DOGU_HOST within docker-compose.env.  
+( The ip to be set above is the same value as the DOGU_HOST value set by [Create docker-compose.env File](/self-hosted/get-started#create-docker-composeenv-file) )
+
 ### Create Mount Path
 
 <Tabs groupId="os" defaultValue="linux">
@@ -85,7 +90,7 @@ Run the following command in the directory where the docker-compose.env and dock
 
 ```
 
-docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up -d
+docker compose -f ./docker-compose.yml --env-file ./docker-compose.env --verbose up -d
 
 ```
 
@@ -143,7 +148,7 @@ Run the following command in the directory where the docker-compose.env and dock
 executed docker-compose.)
 
 ```
-   docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up -d
+   docker compose -f ./docker-compose.yml --env-file ./docker-compose.env --verbose up -d
 ```
 
 ### Browse Web Page
@@ -157,7 +162,7 @@ Download Dost from the [github releases](https://github.com/dogu-team/dogu/relea
 
 After downloading, refer to [Dost Installation](/host-and-device/host/get-started#installation) for installation
 
-### Running Dost
+### Run Dost
 
 Run the dost agent that can connect to the dogu console.
 
@@ -188,3 +193,24 @@ If you have any questions or problems, please contact community.
 
 - [Discord Community](https://discord.com/invite/bVycd6Tu9g)
 - [Github Issues](https://github.com/dogu-team/dogu/issues)
+
+### Known Issues
+
+1. If the protocol of the Dogu console(web client) is `http`, the function to copy to the clipboard from the browser cannot be used.
+
+## FAQ
+
+- decoding 'command': invalid command line string
+
+  When running Dogu, the error `* error decoding 'command': invalid command line string` occurs  
+  write the following values explicitly in the docker-compose.yml file.  
+  ${REDIS_PASSWORD}, ${TURN_SERVER_USERNAME}, ${TURN_SERVER_PASSWORD}, ${DOGU_HOST}
+
+  ```
+  ex.
+  command: redis-server --requirepass ${REDIS_PASSWORD}
+  -> command: redis-server --requirepass dogu-onprem
+
+  user=${TURN_SERVER_USERNAME}:${TURN_SERVER_PASSWORD}, realm=${DOGU_HOST}
+  -> user=admin:dogu-onprem, realm=${DOGU_HOST} <- include the value you set in the env file
+  ```

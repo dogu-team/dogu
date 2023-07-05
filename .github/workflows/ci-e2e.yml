@@ -8,7 +8,7 @@ on:
   push:
     branches: ['main']
     paths:
-      - '.github/workflows/e2e.yml'
+      - '.github/workflows/ci-e2e.yml'
       - 'dogu-actions/**'
       - 'e2e/**'
       - 'nm-space/**'
@@ -41,16 +41,32 @@ on:
       - 'yarn.lock'
   workflow_dispatch:
 
+env:
+  DOGU_PYTHON_VERSION: 3.9.13
+  DOGU_POETRY_VERSION: 1.5.1
+
 jobs:
   build-and-push-dogu-console:
-    runs-on: e2e-dogu-build
+    runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Cache Yarn Unplugged
+        uses: actions/cache@v3
+        id: cache_yarn_unplugged
+        env:
+          cache-name: cache-yarn-unplugged
+        with:
+          path: ${{ github.workspace }}/.yarn/unplugged
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
+
       - name: docker init
         run: docker system prune --volumes -a -f
 
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2
@@ -61,10 +77,9 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
         with:
-          no-cache: true
           context: .
-          file: ./dockerfile
           push: true
+          file: ./dockerfile
           target: dogu-console
           tags: |
             dogutechio/dogu-e2e:latest
@@ -106,7 +121,7 @@ jobs:
         run: |
           docker compose -f ./docker-compose.yml stop console
           docker compose -f docker-compose.yml pull
-          docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up -d
+          docker compose -f ./docker-compose.yml --env-file ./docker-compose.env --verbose up -d
 
   e2e:
     needs: start-e2e-dogu
@@ -132,6 +147,15 @@ jobs:
         with:
           clean: true
 
+      - name: Cache Third-Party
+        uses: actions/cache@v3
+        id: cache_third_party
+        env:
+          cache-name: cache-third-party
+        with:
+          path: ${{ github.workspace }}/third-party
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('scripts/third-parties/download.ts') }}-${{ hashFiles('projects/go-device-controller/**') }}-${{ hashFiles('projects/android-device-agent/**') }}-${{ hashFiles('projects/ios-device-agent/**') }}
+
       - name: Windows - Setup Python & Poetry
         if: runner.os == 'Windows'
         run: |
@@ -156,20 +180,22 @@ jobs:
           go-version: '1.18'
 
       - name: Run newbie
-        run: |
-          yarn run newbie:cicd
+        run: yarn newbie:cicd
+
+      - name: Run newbie:python
+        run: yarn newbie:python
 
       - name: Build Projects
-        run: |
-          yarn workspace dogu run build
+        run: yarn workspace dogu run build
+
+      - name: Run build:python
+        run: yarn build:python
 
       - name: Newbie nm-space
-        run: |
-          yarn workspace dogu run newbie:nm-space
+        run: yarn workspace dogu run newbie:nm-space
 
       - name: Build nm-space
-        run: |
-          yarn workspace nm-space run build
+        run: yarn workspace nm-space run build
         working-directory: ./nm-space
 
       - name: Windows - Powershell - Check
@@ -232,7 +258,8 @@ jobs:
         run: |
           env-generator gen-all e2e
 
-      - name: Download, Build third-party
+      - if: steps.cache_third_party.outputs.cache-hit != 'true'
+        name: Download, Build third-party
         run: |
           yarn third-party:download:build
 
@@ -258,7 +285,7 @@ jobs:
       - name: Send Slack
         uses: dogu-team/slack@v1.0
         with:
-          template: 'e2e'
+          template: 'CI'
           slack-channel-id: 'C03PL9TC44Q'
           result-status: ${{ needs.e2e.result }}
           ignore-notify: ${{ needs.e2e.result == 'success' }}

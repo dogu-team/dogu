@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { DashboardOutlined, InfoCircleOutlined, SettingFilled } from '@ant-design/icons';
-import { Collapse } from 'antd';
-import Image from 'next/image';
 import styled from 'styled-components';
 import { DeviceBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';

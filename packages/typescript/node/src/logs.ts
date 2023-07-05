@@ -4,7 +4,7 @@ import { Format, TransformableInfo } from 'logform';
 import winston, { format, LoggerOptions, transports } from 'winston';
 import 'winston-daily-rotate-file';
 import Transport from 'winston-transport';
-import { HostPaths, appIsPackaged } from '.';
+import { appIsPackaged, HostPaths } from '.';
 
 const logLevels: Record<LogLevel, LogLevelEnum> = {
   error: LogLevelEnum.ERROR,
@@ -165,9 +165,11 @@ export class LoggerOptionsFactory {
     if (withConsoleTransport) {
       transports.push(LogTransportFactory.createConsole());
     }
+    const levelArray = LogLevel as readonly string[];
+    const levelResolved = process.env.DOGU_LOG_LEVEL && levelArray.includes(process.env.DOGU_LOG_LEVEL) ? process.env.DOGU_LOG_LEVEL : level;
     return {
       levels: logLevels,
-      level,
+      level: levelResolved,
       defaultMeta: { category },
       format: format.errors({ stack: true }),
       transports,
@@ -211,10 +213,10 @@ export class Logger implements FilledPrintable {
   }
 }
 
-function newLogMessage(category: string): string {
+function newLogMessage(category: string, level: string): string {
   return `
 
-| Logger created category: ${category} |
+| Logger created category: ${category} | ${level} |
 
 `;
 }
@@ -223,10 +225,11 @@ export class LoggerFactory {
   static create(category: string, options?: LoggerFactoryOptions): Logger {
     const { withFileTransports, logsPath } = fillLoggerFactoryOptions(options);
     const winstonLogger = winston.createLogger(LoggerOptionsFactory.create(category, options));
+
     if (withFileTransports) {
       addFileTransports(winstonLogger, category, logsPath);
     }
-    winstonLogger.info(newLogMessage(category));
+    winstonLogger.info(newLogMessage(category, winstonLogger.level));
     return new Logger(winstonLogger, category);
   }
 

@@ -209,7 +209,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
 
 OrganizationSettingPage.getLayout = (page) => {
   return (
-    <ConsoleLayout isWebview={page.props.isWebview} titleI18nKey="organization:organizationSettingPageTitle" sidebar={<OrganizationSideBar />}>
+    <ConsoleLayout titleI18nKey="organization:organizationSettingPageTitle" sidebar={<OrganizationSideBar />}>
       {page}
     </ConsoleLayout>
   );

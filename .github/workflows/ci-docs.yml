@@ -15,10 +15,39 @@ jobs:
     name: Build
     steps:
       - uses: actions/checkout@v3
+
+      - name: Cache Yarn Unplugged
+        uses: actions/cache@v3
+        id: cache_yarn_unplugged
+        env:
+          cache-name: cache-yarn-unplugged
+        with:
+          path: ${{ github.workspace }}/.yarn/unplugged
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
+
       - uses: actions/setup-node@v3
         with:
           node-version: '16'
 
+      - if: steps.cache_yarn_unplugged.outputs.cache-hit != 'true'
+        name: Install Dependencies
+        run: yarn install
+
       - name: Build
-        run: |
-          yarn workspace docs install && yarn build:docs
+        run: yarn build:docs
+
+  send-slack:
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ always() }}
+
+    steps:
+      - name: Send Slack
+        uses: dogu-team/slack@v1.0
+        with:
+          template: 'CI'
+          slack-channel-id: 'C03PL9TC44Q'
+          result-status: ${{ needs.build.result }}
+          ignore-notify: ${{ needs.build.result == 'success' }}
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

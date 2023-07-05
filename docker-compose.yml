@@ -128,7 +128,7 @@ services:
   
   console:
     container_name: dogu-console
-    image: dogutechio/dogu:latest
+    image: dogutechio/dogu:1.1.0
     restart: always
     depends_on:
       - influxdb
@@ -159,8 +159,6 @@ services:
       - DOGU_REDIS_PASSWORD=${REDIS_PASSWORD}
       - DOGU_CONSOLE_DOMAIN=${DOGU_HOST}
       - DOGU_GITLAB_HOST=${DOGU_HOST}
-      - DOGU_WIFI_SSID=${DEVICE_WIFI_SSID}
-      - DOGU_WIFI_PASSWORD=${DEVICE_WIFI_PASSWORD}
       - DOGU_GITLAB_ROOT_TOKEN=${GITLAB_ROOT_ACCESS_TOKEN}
       - DOGU_SECRET=${DOGU_CONSOLE_JWT_SECRET_KEY}
       - NEXT_PUBLIC_TURN_SERVER_USERNAME=${TURN_SERVER_USERNAME}
@@ -169,6 +167,10 @@ services:
       - NEXT_PUBLIC_DOGU_API_BASE_URL=http://${DOGU_HOST}:4000
       - NEXT_PUBLIC_DOGU_WS_BASE_URL=ws://${DOGU_HOST}:4000
       - NEXT_PUBLIC_TURN_SERVER_HOST=${DOGU_HOST}
+      - NEXT_PUBLIC_DOGU_GITLAB_PORT=8080
+      - NEXT_PUBLIC_DOGU_GITLAB_PROTOCOL=http
+      - NEXT_PUBLIC_ENV=self-hosted
+
     networks:
       - console_network
 

@@ -38,7 +38,7 @@ const ProjectDevicePage: NextPageWithLayout<WithProjectProps> = ({ project, orga
 };
 
 ProjectDevicePage.getLayout = (page) => {
-  return <ProjectLayout isWebview={page.props.isWebview}>{page}</ProjectLayout>;
+  return <ProjectLayout>{page}</ProjectLayout>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

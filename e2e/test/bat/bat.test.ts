@@ -26,7 +26,6 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 const randomId = Utils.random();
 const randomInvitationId = Utils.random();
 let gdcRecorder: GdcScreenRecorder | null = null;
-// let screenRecordStopper: ScreenRecordStopper | null = null;
 
 const values = {
   value: {
@@ -38,6 +37,7 @@ const values = {
     ORG_NAME: `Test Org`,
     PROJECT_NAME: 'Test Project',
     TEAM_NAME: `test team ${randomId}`,
+    HOST_NAME: `test host ${randomId}`,
     HOST_DEVICE_TAG: `test-host-tag`,
     ANDROID_DEVICE_TAG: `test-android-tag`,
     IOS_DEVICE_TAG: `test-ios-tag`,
@@ -59,7 +59,12 @@ jobs:
       group: ${values.value.ANDROID_DEVICE_TAG}
     steps:
       - name: test runs-on.group
-        run: echo test run...`;
+        run: echo test run...
+  test-landing-external-links:
+    runs-on: ${values.value.HOST_DEVICE_TAG}
+    steps:
+      - name: test landing external links
+        run: cd samples/pytest-bdd-playwright-dogu-report && yarn test:python`;
 
 const waitUntilModalClosed = async (): Promise<void> => {
   for (let i = 0; i < 10; i++) {
@@ -83,22 +88,15 @@ Dest.withOptions({
 }).describe(() => {
   job('BAT', () => {
     beforeAll(async () => {
-      values.value.HOME_URL = `http://${env.DOGU_E2E_HOST}:${env.CONSOLE_WEB_FRONT_PORT}`;
-
-      // await ProcessManager.killByPorts([Number(env.DOGU_CONSOLE_WEB_SERVER_PORT), Number(env.CONSOLE_WEB_FRONT_PORT), Number(env.DOGU_DEVICE_SERVER_PORT)]);
-
+      values.value.HOME_URL = `http://${env.DOGU_E2E_HOST}:${env.DOGU_CONSOLE_WEB_FRONT_PORT}`;
       await ProcessManager.killByPorts([Number(env.DOGU_DEVICE_SERVER_PORT)]);
-
       await ProcessManager.killByNames(['IOSDeviceController', 'go-device-controller', 'host-agent']);
-
-      // screenRecordStopper = await new ScreenRecorder().start({
-      //   outputPath: path.resolve('generated', 'record', 'screen.webm'),
-      // });
     });
 
-    // if (switchConfig.prepareDB) {
-    //   prepareDB();
-    // }
+    test('Print env', () => {
+      console.log('env', process.env);
+    });
+
     test('Run record', () => {
       gdcRecorder = new GdcScreenRecorder(console);
       gdcRecorder.start();
@@ -150,7 +148,7 @@ Dest.withOptions({
 
         await Driver.clickElement(
           {
-            xpath: '/html/body/div[3]/div/div/ul/li[5]/span/div/button',
+            xpath: `//span[text()="${l10n('SIGNOUT')}"]/..`,
           },
           {
             focusWindow: true,
@@ -230,7 +228,7 @@ Dest.withOptions({
       });
 
       test('Click create organization button', async () => {
-        await Driver.clickElement({ xpath: '/html/body/div[2]/div/div[2]/div/div[2]/div[3]/div/button[2]' }), { waitTime: 10 * 1000 };
+        await Driver.clickElement({ xpath: '//button[@form="new-org"]' }), { waitTime: 10 * 1000 };
       });
 
       test('Check organization creation', async () => {
@@ -307,20 +305,20 @@ Dest.withOptions({
       dost.nextTest();
     });
 
-    runHost(randomId, dost);
+    runHost(values.value.HOST_NAME, dost);
 
     const deviceSettingInfos = [
-      // {
-      //   name: 'Host device setting',
-      //   addTabMenu: '//*[text()="Host"]/../../../div[5]/div/div/button',
-      //   listTabMenu: '//*[text()="Host"]/../../../../div[5]/div/div[2]/button',
-      //   tag: values.value.HOST_DEVICE_TAG,
-      //   isHost: true,
-      // },
+      {
+        name: 'Host device setting',
+        addTabMenu: '//*[text()="Host"]/../../../div[5]//button',
+        listTabMenu: '//*[text()="Host"]/../../../../div[5]//button',
+        tag: values.value.HOST_DEVICE_TAG,
+        isHost: true,
+      },
       {
         name: 'Android device setting',
-        addTabMenu: '//*[@icon-id="android-icon"]/../../../div[5]/div/div/button',
-        listTabMenu: '//*[@icon-id="android-icon"]/../../../div[5]/div/div[2]/button',
+        addTabMenu: '//*[@icon-id="android-icon"]/../../../div[5]//button',
+        listTabMenu: '//*[@icon-id="android-icon"]/../../../div[5]//button',
         tag: values.value.ANDROID_DEVICE_TAG,
         isHost: false,
       },
@@ -356,46 +354,50 @@ Dest.withOptions({
             await Driver.clickElement({ xpath: `//*[text()="${l10n('START_USING')}"]` });
           });
 
-          test('Add to project', async () => {
-            await Driver.sendKeys({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[2]/div/div[1]/span/span/span[1]/input' }, values.value.PROJECT_NAME);
+          test('Insert project name', async () => {
+            await Driver.sendKeys({ xpath: `//input[@placeholder="${l10n('NAME')}"]` }, values.value.PROJECT_NAME, { focusWindow: true });
+          });
 
-            await Timer.wait(3000, 'wait for editor to load');
-            await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[2]/div/div[1]/div' });
-            await Timer.wait(3000, 'wait for editor to load');
-            await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[2]/div/div[1]/span/span/span[1]/span/span/span' });
-            await Timer.wait(3000, 'wait for editor to load');
+          test('Click project on extended list', async () => {
+            await Timer.wait(3000, 'wait for modal update');
+            await Driver.clickElement({ xpath: `//*[text()="${values.value.PROJECT_NAME}"]` }, { focusWindow: true });
+          });
 
-            // await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[2]/div/div[1]/span/span/span[1]/span/span/span' });
-            // await Timer.wait(3000, 'wait for editor to load');
-
-            await Driver.sendKeys({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[2]/div/div[1]/span/span/span[1]/input' }, values.value.SAMPLE_PROJECT_NAME);
-            await Timer.wait(3000, 'wait for editor to load');
-            await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[2]/div/div[1]/div' });
-            await Timer.wait(3000, 'wait for editor to load');
-            await Driver.clickElement({ xpath: '//button[@aria-label="Close"]' });
-            // await Timer.wait(3000, 'wait for editor to load');
-            // await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/button' });
-
-            await waitUntilModalClosed();
+          test('Close modal', async () => {
+            await Timer.wait(3000, 'wait for modal update');
+            const buttonXPath = '//button[@class="ant-modal-close"]';
+            await Driver.findElement({ xpath: buttonXPath }, { focusWindow: true })
+              .then(async () => {
+                await Driver.clickElement({ xpath: buttonXPath }, { focusWindow: true }).catch(() => {
+                  // do nothing
+                });
+              })
+              .catch(() => {
+                // do nothing
+              });
+            await waitUntilModalClosed().catch(() => {
+              // do nothing
+            });
           });
         });
 
         job('Add tag', () => {
           test('Click tag tab', async () => {
+            await Timer.wait(3000, 'wait for tag tab');
             await Driver.clickElement({ xpath: '//*[@access-id="org-tag-list-tab"]' });
           });
 
           test('Click add tag', async () => {
-            await Driver.clickElement({ xpath: '/html/body/div/div/section/main/div/div[2]/div[2]/div/div[1]/div/div/button' });
+            await Driver.clickElement({ xpath: '/html/body/div/div/section/main/div/div[2]/div[2]/div/div[1]/div/div/button' }, { focusWindow: true });
           });
 
           test('Enter tag', async () => {
-            await Driver.sendKeys({ xpath: '/html/body/div[2]/div/div[2]/div/div[2]/div[2]/form/div/div/div[2]/div/div/input' }, tag);
+            await Timer.wait(3000, 'wait for tag input');
+            await Driver.sendKeys({ xpath: `//input[@id="name"]` }, tag, { focusWindow: true });
           });
 
           test('Click create tag button', async () => {
-            await Driver.clickElement({ xpath: '/html/body/div[2]/div/div[2]/div/div[2]/div[3]/div/button[2]' });
-
+            await Driver.clickElement({ xpath: '//button[@form="new-tag"]' });
             await waitUntilModalClosed();
           });
         });
@@ -457,7 +459,7 @@ Dest.withOptions({
             expect(status).toBe(l10n('INFORMATION'));
           });
 
-          test('Check streaming input ', async () => {
+          test('Check streaming input', async () => {
             const xpath = isHost ? '//*[@alt="volume down"]/..' : '//*[@data-icon="home"]/../..';
             await Driver.clickElement({ xpath });
             await Timer.wait(5000, 'wait for input processing');
@@ -706,8 +708,6 @@ Dest.withOptions({
     });
 
     afterAll(async () => {
-      // await screenRecordStopper?.stop();
-
       if (gdcRecorder) {
         await Timer.wait(2000, 'capture more seconds');
         await gdcRecorder.stop();

@@ -1,0 +1,89 @@
+name: 📤publish-npm-and-actions
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  DOGU_DEPLOY: true
+  DOGU_PYTHON_VERSION: 3.9.13
+  DOGU_POETRY_VERSION: 1.5.1
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: '${{ secrets.DOGU_GITHUB_TOKEN }}'
+
+      - name: Cache Yarn Unplugged
+        uses: actions/cache@v3
+        id: cache_yarn_unplugged
+        env:
+          cache-name: cache-yarn-unplugged
+        with:
+          path: ${{ github.workspace }}/.yarn/unplugged
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
+
+      - name: Setup Python & Poetry
+        uses: gabrielfalcao/pyenv-action@v11
+        with:
+          default: ${{ env.DOGU_PYTHON_VERSION }}
+          command: pyenv global ${{ env.DOGU_PYTHON_VERSION }} && pip install poetry==${{ env.DOGU_POETRY_VERSION }} && which poetry
+
+      - if: steps.cache_yarn_unplugged.outputs.cache-hit != 'true'
+        name: Run newbie
+        run: |
+          yarn newbie:cicd
+
+      - name: Build packages
+        run: |
+          yarn build:packages
+
+      - name: Build dogu-actions
+        run: |
+          yarn build:actions
+
+      - name: Use NPM Token with organization read access
+        uses: dkershner6/use-npm-token-action@v1
+        with:
+          token: '${{ secrets.DOGU_NPM_PUBLISH_TOKEN }}'
+
+      - name: Publish to npm
+        run: |
+          yarn publish:npm:prod
+
+      - uses: oleksiyrudenko/gha-git-credentials@v2.1.1
+        with:
+          global: true
+          name: Dogu Technologies
+          email: admin@dogutech.io
+          token: '${{ secrets.DOGU_ACTIONS_PUBLISH_TOKEN }}'
+
+      - name: Publish to github dogu-actions
+        run: |
+          yarn publish:github:prod
+        env:
+          DOGU_ACTIONS_PUBLISH_TOKEN: '${{ secrets.DOGU_ACTIONS_PUBLISH_TOKEN }}'
+
+  send-slack:
+    runs-on: ubuntu-latest
+    needs: publish
+    if: ${{ always() }}
+
+    steps:
+      - name: Send Slack
+        uses: dogu-team/slack@v1.0
+        with:
+          template: 'CD'
+          slack-channel-id: 'C057ML9UH34'
+          result-status: ${{ needs.publish.result }}
+          ignore-notify: false
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

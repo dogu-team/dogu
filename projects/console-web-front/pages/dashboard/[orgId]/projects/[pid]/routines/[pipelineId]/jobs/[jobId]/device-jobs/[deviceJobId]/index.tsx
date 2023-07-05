@@ -98,7 +98,7 @@ const DeviceJobPage: NextPageWithLayout<PageProps> = ({ organization, project })
 };
 
 DeviceJobPage.getLayout = (page) => {
-  return <PipelineJobLayout isWebview={page.props.isWebview}>{page}</PipelineJobLayout>;
+  return <PipelineJobLayout>{page}</PipelineJobLayout>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

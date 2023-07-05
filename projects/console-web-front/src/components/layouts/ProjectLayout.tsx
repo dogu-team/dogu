@@ -18,11 +18,10 @@ import useGitlabAlert from '../../hooks/useGitlabAlert';
 
 interface Props {
   children: React.ReactNode;
-  isWebview: boolean;
   sidebar?: React.ReactNode;
 }
 
-const ProjectLayout = ({ children, isWebview, sidebar }: Props) => {
+const ProjectLayout = ({ children, sidebar }: Props) => {
   const { me, error, isLoading } = useAuth();
   const router = useRouter();
   const { t } = useTranslation();
@@ -45,24 +44,6 @@ const ProjectLayout = ({ children, isWebview, sidebar }: Props) => {
       title: t('project:tabMenuRoutineTitle'),
       startsWith: true,
       'access-id': 'project-routine-tab',
-    },
-    {
-      href: `/dashboard/${organizationId}/projects/${projectId}/script`,
-      startsWith: true,
-      icon: <FileTextOutlined />,
-      title: t('project:tabMenuRunScriptTitle'),
-      'access-id': 'project-script-tab',
-    },
-    {
-      href: `/dashboard/${organizationId}/projects/${projectId}/repository`,
-      icon: <BookOutlined />,
-      title: t('project:tabMenuRepositoryTitle'),
-      'access-id': 'project-repo-tab',
-      // blank: true,
-      // onClick: () => {
-      //   alertGitlab();
-      //   console.debug('gitlab base url', process.env.NEXT_PUBLIC_DOGU_GITLAB_URL);
-      // },
     },
     {
       href: `/dashboard/${organizationId}/projects/${projectId}/apps`,
@@ -173,6 +154,7 @@ const Description = styled.p`
 `;
 
 const PageContainer = styled.div`
+  position: relative;
   display: flex;
   width: 100%;
   flex: 1;

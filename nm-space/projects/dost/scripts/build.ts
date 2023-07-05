@@ -1,4 +1,4 @@
-import { build, CliOptions } from 'electron-builder';
+import { build, CliOptions, CompressionLevel, Configuration } from 'electron-builder';
 import fs from 'fs';
 import path from 'path';
 import { hideBin } from 'yargs/helpers';
@@ -38,6 +38,13 @@ function getArtifactPrefix(): string {
     return 'dost';
   }
   return `dost-${deviceServerEnv.DOGU_RUN_TYPE}`;
+}
+
+function getCompression(): CompressionLevel {
+  if (deviceServerEnv.DOGU_RUN_TYPE === 'production' || deviceServerEnv.DOGU_RUN_TYPE === 'self-hosted') {
+    return 'normal';
+  }
+  return 'store';
 }
 
 function getOptions(archs: Arch[], extraRess: ExtraResource[]): CliOptions {
@@ -85,13 +92,7 @@ function getOptions(archs: Arch[], extraRess: ExtraResource[]): CliOptions {
           await upload(filePath);
         }
       },
-      publish: {
-        provider: dostEnv.DOGU_APPUPDATE_PROVIDER as 's3',
-        bucket: dostEnv.DOGU_APPUPDATE_URL,
-        acl: null,
-        path: dostEnv.DOGU_APPUPDATE_SUBPATH,
-        region: dostEnv.DOGU_APPUPDATE_REGION,
-      },
+      compression: getCompression(),
     },
   };
   if (argv.publish) {
@@ -102,6 +103,14 @@ function getOptions(archs: Arch[], extraRess: ExtraResource[]): CliOptions {
       throw new Error('AWS_SECRET_ACCESS_KEY is not set');
     }
     options.publish = 'always';
+    const config = options.config! as Configuration;
+    config!.publish = {
+      provider: dostEnv.DOGU_APPUPDATE_PROVIDER as 's3',
+      bucket: dostEnv.DOGU_APPUPDATE_URL,
+      acl: null,
+      path: dostEnv.DOGU_APPUPDATE_SUBPATH,
+      region: dostEnv.DOGU_APPUPDATE_REGION,
+    };
   }
   archs.forEach((arch) => {
     options[arch] = true;

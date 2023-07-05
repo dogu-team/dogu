@@ -18,7 +18,6 @@ export interface ProjectServerSideProps {
   fallback: {
     [key: string]: OrganizationBase | ProjectBase | UserBase;
   };
-  isWebview: boolean;
 }
 
 export interface WithProjectProps {
@@ -26,11 +25,10 @@ export interface WithProjectProps {
   project: ProjectBase;
   mutateOrganization: KeyedMutator<OrganizationBase>;
   mutateProject: KeyedMutator<ProjectBase>;
-  isWebview: boolean;
 }
 
 export default function withProject<P extends WithProjectProps>(WrappedComponent: NextPageWithLayout<P>) {
-  const Component: NextPageWithLayout<ProjectServerSideProps> = ({ fallback, isWebview, ...props }) => {
+  const Component: NextPageWithLayout<ProjectServerSideProps> = ({ fallback, ...props }) => {
     const router = useRouter();
     const organizationId = router.query.orgId;
     const projectId = router.query.pid;
@@ -61,14 +59,7 @@ export default function withProject<P extends WithProjectProps>(WrappedComponent
 
     return (
       <SWRConfig value={{ fallback }}>
-        <WrappedComponent
-          {...(props as P)}
-          organization={organization}
-          project={project}
-          mutateOrganization={mutateOrganization}
-          mutateProject={mutateProject}
-          isWebview={isWebview}
-        />
+        <WrappedComponent {...(props as P)} organization={organization} project={project} mutateOrganization={mutateOrganization} mutateProject={mutateProject} />
       </SWRConfig>
     );
   };
@@ -81,7 +72,6 @@ export default function withProject<P extends WithProjectProps>(WrappedComponent
 export const getProjectPageServerSideProps: GetServerSideProps<ProjectServerSideProps> = async (context) => {
   try {
     const [organization, project, checkResult] = await Promise.all([getOrganizationInServerSide(context), getProjectInServerSide(context), checkUserVerifiedInServerSide(context)]);
-    const isWebview = isWebViewAgent(context);
 
     if (checkResult.redirect) {
       return checkResult;
@@ -94,7 +84,6 @@ export const getProjectPageServerSideProps: GetServerSideProps<ProjectServerSide
           [`/organizations/${context.query.orgId}/projects/${context.query.pid}`]: project,
           ...checkResult.props.fallback,
         },
-        isWebview,
       },
     };
   } catch (e) {

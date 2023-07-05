@@ -1,8 +1,5 @@
-import { LoadingOutlined } from '@ant-design/icons';
 import { DeviceBase } from '@dogu-private/console';
-import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
-import Link from 'next/link';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 

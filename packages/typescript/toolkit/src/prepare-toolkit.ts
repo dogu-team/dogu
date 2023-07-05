@@ -1,10 +1,11 @@
 import { updateProcessEnv } from '@dogu-tech/node';
+import { attach } from 'webdriverio';
 import { tryToQuitGamiumApp } from './gamium-utils';
 import { createDeviceClients, findDevice, Preparer } from './internal/functions';
 import { createGamiumContext, GamiumContext } from './internal/gamium-context';
 import { logger } from './internal/logger-instance';
 import { fillToolkitOptions, ToolkitOptions } from './options';
-import { Toolkit } from './toolkit';
+import { AppiumContext, Toolkit } from './toolkit';
 
 export async function prepareToolkit(options?: ToolkitOptions): Promise<Toolkit> {
   updateProcessEnv();
@@ -108,12 +109,11 @@ export async function prepareToolkit(options?: ToolkitOptions): Promise<Toolkit>
       });
     }
 
-    let appiumContext: WebdriverIO.Browser | null = null;
+    let appiumContext: AppiumContext | null = null;
     if (appium) {
       appiumContext = await step('Create Appium context', async () => {
         const appiumContextInfo = await deviceClient.getAppiumContextInfo(deviceSerial);
-        const webdriverioModule = await import('webdriverio');
-        const browser = await webdriverioModule.attach({
+        const browser = await attach({
           port: appiumContextInfo.server.port,
           sessionId: appiumContextInfo.client.sessionId,
           capabilities: appiumContextInfo.client.capabilities,

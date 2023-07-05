@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dost",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Dost",
   "author": "Dogu Technologies",
   "homepage": ".",
@@ -12,11 +12,9 @@
     "build:react": "cross-env CI=true react-app-rewired build",
     "clean": "shx rm -rf prepare build dist generated",
     "debug": "yarn run build:react && nodemon --debug 60013",
-    "deploy": "ts-node scripts/build --upload=true",
     "deploy:electron": "ts-node scripts/build",
     "deploy:notarize": "ts-node scripts/build --notarize=true",
-    "deploy:notarize:upload": "ts-node scripts/build --notarize=true --upload=true",
-    "deploy:publish": "ts-node scripts/build --notarize=true --upload=true --publish=true",
+    "deploy:publish": "ts-node scripts/build --notarize=true --publish=true",
     "dev": "nodemon",
     "eject": "react-app-rewired eject",
     "rebuild": "yarn run clean && yarn run build",
@@ -43,7 +41,6 @@
     "@emotion/styled": "11.10.6",
     "@sentry/electron": "4.5.0",
     "@sentry/react": "7.50.0",
-    "@types/yargs": "17.0.23",
     "ansi-to-html": "0.7.2",
     "dotenv": "16.0.3",
     "electron-devtools-installer": "3.2.0",
@@ -65,7 +62,6 @@
     "styled-components": "6.0.0-rc.2",
     "styled-reset": "4.4.7",
     "web-vitals": "3.1.1",
-    "yargs": "17.7.1",
     "zustand": "4.3.8"
   },
   "devDependencies": {

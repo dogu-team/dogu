@@ -1,18 +1,23 @@
 import { Dropdown, MenuProps, message } from 'antd';
 import { DataNode } from 'antd/es/tree';
 import useTranslation from 'next-translate/useTranslation';
+import React from 'react';
 import styled from 'styled-components';
 
 interface Props {
   selected?: boolean;
+  hovered?: boolean;
   node: DataNode;
   onClickNode: (key: string) => Promise<void> | void;
   onHoverNode: (key: string) => Promise<void> | void;
   onLeaveNode: () => void;
 }
 
-const InspectorTreeTitle = ({ selected, node, onClickNode, onHoverNode, onLeaveNode }: Props) => {
+const InspectorTreeTitle = ({ selected, hovered, node, onClickNode, onHoverNode, onLeaveNode }: Props) => {
   const { t } = useTranslation();
+  const titleBaseStyle: React.CSSProperties = { height: '100%', whiteSpace: 'nowrap' };
+  const hoveredStyle: React.CSSProperties = { ...titleBaseStyle, backgroundColor: '#87CEEB66' };
+  const selectedStyle: React.CSSProperties = { ...titleBaseStyle, color: 'red', backgroundColor: 'skyblue' };
 
   const menu: MenuProps['items'] = [
     {
@@ -53,7 +58,7 @@ const InspectorTreeTitle = ({ selected, node, onClickNode, onHoverNode, onLeaveN
         }}
         onMouseEnter={() => onHoverNode(`${node.key}`)}
         onMouseLeave={onLeaveNode}
-        style={selected ? { color: 'red', backgroundColor: 'skyblue', height: '100%', whiteSpace: 'nowrap' } : { height: '100%', whiteSpace: 'nowrap' }}
+        style={selected ? selectedStyle : hovered ? hoveredStyle : titleBaseStyle}
       >
         {node.title as React.ReactNode}
       </div>

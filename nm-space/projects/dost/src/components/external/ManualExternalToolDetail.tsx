@@ -1,8 +1,9 @@
-import { Button, ListItem, UnorderedList } from '@chakra-ui/react';
+import { Button, ListItem, Stack, UnorderedList } from '@chakra-ui/react';
 
 import { ExternalKey } from '../../shares/external';
 import { DoguDocsXcodeSettingsUrl } from '../../utils/constants';
 import { ipc } from '../../utils/window';
+import XCodeCheckButton from './XCodeCheckButton';
 import XCodeProjectBuildDescription from './XCodeProjectBuildDescription';
 
 interface Props {
@@ -25,13 +26,17 @@ export const manualExternalToolDetail: { [key in ExternalKey]?: ManualExternalTo
       </div>
     ),
     solution: (
-      <Button
-        onClick={() => {
-          ipc.settingsClient.openExternal(DoguDocsXcodeSettingsUrl);
-        }}
-      >
-        Open XCode settings document
-      </Button>
+      <Stack mt="4">
+        <Button
+          onClick={() => {
+            ipc.settingsClient.openExternal(DoguDocsXcodeSettingsUrl);
+          }}
+          width="max-content"
+        >
+          Open XCode settings document
+        </Button>
+        <XCodeCheckButton />
+      </Stack>
     ),
     docsLink: null,
   },

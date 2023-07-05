@@ -5,12 +5,12 @@ import { ElementHandle, Locator, Page } from 'playwright';
 import { Key } from 'selenium-webdriver';
 import { Driver } from '../../../src/chromedriver';
 import { dostPlaywrightColor, launchDost } from '../../../src/dost';
-import { replaceIosDeviceAgentSigningStyle, replaceWebDriverAgentSigningStyle } from '../../../src/ios-helper';
+import { copyIosDeviceAgentProject, replaceIosDeviceAgentSigningStyle, replaceWebDriverAgentSigningStyle } from '../../../src/ios-helper';
 import { getClockTime } from '../../../src/time';
 import { Timer } from '../../../src/timer';
 import { l10n } from './l10n';
 
-export function runHost(random: number, dost: Dost): void {
+export function runHost(hostName: string, dost: Dost): void {
   job('Create host', () => {
     let token = '';
     test('Go to host page', async () => {
@@ -37,14 +37,15 @@ export function runHost(random: number, dost: Dost): void {
         {
           xpath: '//*[@access-id="add-host-form-name"]',
         },
-        `test host ${random}`,
+        hostName,
         {
           focusWindow: true,
         },
       );
+
       await Driver.clickElement(
         {
-          xpath: '/html/body/div[2]/div/div[2]/div/div[2]/div[3]/div/button[2]/span',
+          xpath: '//button[@form="new-host"]',
         },
         {
           focusWindow: true,
@@ -91,6 +92,26 @@ export function runHost(random: number, dost: Dost): void {
       );
       expect(status).toBe(l10n('CONNECTED'));
     });
+
+    test('Click "..." before click use as device', async () => {
+      await Driver.clickElement({ xpath: `//span[text()="${hostName}"]/../../../div[5]//button` });
+    });
+
+    test('Click use as device', async () => {
+      await Driver.clickElement({ xpath: `//button[text()="${l10n('START_USING_AS_DEVICE')}"]` });
+    });
+
+    test('Click host menu before expect stop using as device', async () => {
+      await Driver.clickElement({ xpath: '//*[@access-id="side-bar-host"]' });
+    });
+
+    test('Click "..." before expect stop using as device', async () => {
+      await Driver.clickElement({ xpath: `//span[text()="${hostName}"]/../../../div[5]//button` });
+    });
+
+    test('Expect stop using as device', async () => {
+      await Driver.findElement({ xpath: `//button[text()="${l10n('STOP_USING_AS_DEVICE')}"]` });
+    });
   });
 }
 
@@ -115,61 +136,82 @@ export class Dost {
     });
     yield;
 
-    test('Dost Install externals', async () => {
-      await (await this.mainPage!.waitForSelector('.chakra-checkbox__control', { timeout: this.longTimeoutMs })).click({ timeout: this.longTimeoutMs });
-      await this.mainPage!.getByText('Install', { exact: true }).first().click({ timeout: this.longTimeoutMs });
-    });
+    if (!process.env.DOGU_SKIP_DOGU_HOME_CLEANUP) {
+      test('Dost Install externals', async () => {
+        await (await this.mainPage!.waitForSelector('.chakra-checkbox__control', { timeout: this.longTimeoutMs })).click({ timeout: this.longTimeoutMs });
+        await this.mainPage!.getByText('Install', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+      });
+    }
     yield;
 
-    test('Dost Install externals wait', async () => {
-      await this.mainPage!.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'visible' });
-      await this.mainPage!.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'hidden' });
-    });
+    if (!process.env.DOGU_SKIP_DOGU_HOME_CLEANUP) {
+      test('Dost Install externals wait', async () => {
+        await this.mainPage!.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'visible' });
+        await this.mainPage!.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'hidden' });
+      });
+    }
     yield;
 
-    test('Dost manual setup install wda', async () => {
-      if (process.platform !== 'darwin') {
-        return;
-      }
-      await this.mainPage!.getByText('Manual Setup', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'visible' });
-      replaceWebDriverAgentSigningStyle();
+    if (!process.env.DOGU_SKIP_DOGU_HOME_CLEANUP) {
+      test('Dost skip manual setup install', async () => {
+        if (process.platform !== 'darwin') {
+          await this.mainPage!.getByText('Continue', { exact: true }).first().click({ timeout: this.InstallTimeoutMs });
+        }
+      });
 
-      await this.mainPage!.getByText('Click here to build', { exact: true }).first().click({ timeout: this.longTimeoutMs });
-    });
+      test('Dost manual setup install wda', async () => {
+        if (process.platform !== 'darwin') {
+          return;
+        }
+        await this.mainPage!.getByText('Manual Setup', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'visible' });
+        replaceWebDriverAgentSigningStyle();
+
+        await this.mainPage!.getByText('Build & Check', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+      });
+    }
     yield;
 
-    test('Dost manual setup install wda wait', async () => {
-      if (process.platform !== 'darwin') {
-        return;
-      }
-      await this.mainPage!.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'hidden' });
-      await this.mainPage!.getByText('Check', { exact: true }).first().click({ timeout: this.longTimeoutMs });
-    });
+    if (!process.env.DOGU_SKIP_DOGU_HOME_CLEANUP) {
+      test('Dost manual setup install wda wait', async () => {
+        if (process.platform !== 'darwin') {
+          return;
+        }
+        await this.mainPage!.getByText('Building project...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'hidden' });
+      });
+    }
     yield;
 
-    test('Dost manual setup install ida', async () => {
-      if (process.platform !== 'darwin') {
-        return;
-      }
+    if (!process.env.DOGU_SKIP_DOGU_HOME_CLEANUP) {
+      test('Dost manual setup install ida', async () => {
+        if (process.platform !== 'darwin') {
+          return;
+        }
 
-      replaceIosDeviceAgentSigningStyle();
-      await delay(3000);
-
-      const buildButtons = await this.mainPage!.getByText('Click here to build', { exact: true }).all();
-      await buildButtons[1].dispatchEvent('click');
-    });
+        await copyIosDeviceAgentProject();
+        replaceIosDeviceAgentSigningStyle();
+        await delay(3000);
+        await this.mainPage!.getByText('Build & Check', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+      });
+    }
     yield;
 
-    test('Dost manual setup install ida wait', async () => {
-      if (process.platform !== 'darwin') {
-        return;
-      }
+    if (!process.env.DOGU_SKIP_DOGU_HOME_CLEANUP) {
+      test('Dost manual setup install ida wait', async () => {
+        if (process.platform !== 'darwin') {
+          return;
+        }
 
-      await this.mainPage!.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'hidden' });
-      await this.mainPage!.getByText('Check', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+        await this.mainPage!.getByText('Building project...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'hidden' });
+        await delay(1000);
 
-      await this.mainPage!.getByText('Finish', { exact: true }).first().click({ timeout: this.InstallTimeoutMs });
-    });
+        await this.mainPage!.getByText('Continue', { exact: true }).first().click({ timeout: this.InstallTimeoutMs });
+      });
+
+      test('Set API url', async () => {
+        await this.mainPage!.getByText('Set', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+        await this.mainPage!.getByText('Finish', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+      });
+    }
   }
 
   testConnect(token: () => string): void {

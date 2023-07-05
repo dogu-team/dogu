@@ -61,6 +61,11 @@ export const HostPaths = {
       idaDerivedDataPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'ios-device-agent/build'),
       idaDerivedDataClonePath: (): string => path.resolve(HostPaths.external.externalsPath(), 'ios-device-agent/build-clone'),
     },
+
+    /**
+     * @note use to avoid appium xcodebuild process cleanup patterns.
+     */
+    xcodebuildSymlinkPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'xcb'),
   },
 };
 

@@ -56,7 +56,7 @@ const HostManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ organiz
 
 HostManagementPage.getLayout = (page) => {
   return (
-    <ConsoleLayout isWebview={page.props.isWebview} sidebar={<OrganizationSideBar />} titleI18nKey="organization:hostPageTitle">
+    <ConsoleLayout sidebar={<OrganizationSideBar />} titleI18nKey="organization:hostPageTitle">
       {page}
     </ConsoleLayout>
   );

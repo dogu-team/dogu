@@ -2,7 +2,7 @@
   "name": "@dogu-user-templates/typescript-template",
   "version": "0.0.0",
   "description": "dogu pipeline action common library",
-  "license": "",
+  "license": "SEE LICENSE IN LICENSE.md",
   "author": "dogu",
   "scripts": {
     "build": "tsc -b",

@@ -1,5 +1,5 @@
 import { DestBase, DestPropSnake } from '@dogu-private/console';
-import { DestId, DEST_NAME_MAX_LENGT, DEST_STATE, DEST_TABLE_NAME, DEST_TYPE, RoutineStepId } from '@dogu-private/types';
+import { DestId, DEST_NAME_MAX_LENGTH, DEST_STATE, DEST_TABLE_NAME, DEST_TYPE, RoutineStepId } from '@dogu-private/types';
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { DestEdge } from './relations/dest-edge.entity';
@@ -13,7 +13,7 @@ export class Dest extends BaseEntity implements DestBase {
   @Column({ name: DestPropSnake.routine_step_id, type: 'int', unsigned: true, nullable: false })
   routineStepId!: RoutineStepId;
 
-  @Column({ type: 'character varying', name: DestPropSnake.name, length: DEST_NAME_MAX_LENGT, nullable: false })
+  @Column({ type: 'character varying', name: DestPropSnake.name, length: DEST_NAME_MAX_LENGTH, nullable: false })
   name!: string;
 
   @Column({ type: 'smallint', name: DestPropSnake.state, default: DEST_STATE.PENDING, unsigned: true, nullable: false })

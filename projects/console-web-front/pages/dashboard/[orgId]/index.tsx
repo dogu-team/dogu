@@ -10,11 +10,7 @@ const OrganizationPage: NextPageWithLayout = () => {
 };
 
 OrganizationPage.getLayout = (page) => {
-  return (
-    <ConsoleLayout isWebview={page.props.isWebview} sidebar={<OrganizationSideBar />}>
-      {page}
-    </ConsoleLayout>
-  );
+  return <ConsoleLayout sidebar={<OrganizationSideBar />}>{page}</ConsoleLayout>;
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

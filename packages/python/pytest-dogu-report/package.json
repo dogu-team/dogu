@@ -2,19 +2,20 @@
   "name": "pytest-dogu-report",
   "version": "0.0.0",
   "description": "",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE.md",
   "author": "dogu",
   "scripts": {
     "black": "poetry run black src tests",
-    "build": "poetry run python setup.py build",
+    "build:python": "poetry build",
     "clean": "ts-node ./scripts/clean.ts",
     "lint": "yarn black && yarn pylint",
-    "newbie": "poetry install",
+    "newbie:python": "poetry install",
     "pylint": "poetry run pylint src tests",
-    "rebuild": "yarn clean && yarn build",
-    "test": "poetry run pytest"
+    "rebuild:python": "yarn clean && yarn build:python",
+    "test:python": "poetry run pytest"
   },
   "devDependencies": {
+    "@types/node": "18.15.11",
     "@types/shelljs": "0.8.11",
     "cross-env": "7.0.3",
     "fast-glob": "3.2.12",

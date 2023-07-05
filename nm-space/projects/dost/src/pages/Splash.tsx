@@ -1,6 +1,6 @@
 import { Center, Image, CircularProgress, Flex, Heading, ScaleFade, Spacer, useToast } from '@chakra-ui/react';
 import { stringify } from '@dogu-tech/common';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
@@ -11,10 +11,36 @@ import { ipc } from '../utils/window';
 const Splash = () => {
   const navigate = useNavigate();
   const toast = useToast();
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkValidationComplete = () => {
+      ipc.externalClient
+        .isSupportedPlatformValidationCompleted()
+        .then((isExternalValidationCompleted) => {
+          ipc.rendererLogger.info(`External client validation status in Splash: ${stringify(isExternalValidationCompleted)}`);
+          if (isExternalValidationCompleted) {
+            setIsLoading(false);
+          } else {
+            setTimeout(checkValidationComplete, 1000);
+          }
+        })
+        .catch((error) => {
+          ipc.rendererLogger.error(`Error while checking external client validation status in Splash: ${stringify(error)}`);
+          setIsLoading(false);
+        });
+    };
+
+    checkValidationComplete();
+  }, []);
 
   useEffect(() => {
     const redirectOnInit = async () => {
       try {
+        if (isLoading) {
+          return;
+        }
+
         const isExternalReady = await ipc.externalClient.isSupportedPlatformValid({ ignoreManual: true });
 
         if (!isExternalReady) {
@@ -47,7 +73,7 @@ const Splash = () => {
     };
 
     redirectOnInit();
-  }, []);
+  }, [isLoading]);
 
   return (
     <Box>

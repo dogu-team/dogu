@@ -8,6 +8,8 @@ import { InfluxDbModule } from '../influxdb/influxdb.module';
 import { DeviceModule } from '../organization/device/device.module';
 import { ApplicationController } from './application/application.controller';
 import { ApplicationService } from './application/application.service';
+import { ProjectGitController } from './git/project-git.controller';
+import { ProjectGitService } from './git/project-git.service';
 import { ProjectController } from './project.controller';
 import { ProjectService } from './project.service';
 import { ProjectTeamController } from './team/project-team.controller';
@@ -17,8 +19,8 @@ import { ProjectUserService } from './user/project-user.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([ProjectAndUserAndProjectRole, ProjectAndTeamAndProjectRole]), InfluxDbModule, DeviceModule, GitlabModule, FileModule],
-  providers: [ProjectService, ProjectTeamService, ProjectUserService, ApplicationService],
-  exports: [ProjectService, ProjectTeamService, ProjectUserService, ApplicationService],
-  controllers: [ProjectController, ApplicationController, ProjectController, ProjectUserController, ProjectTeamController],
+  providers: [ProjectService, ProjectTeamService, ProjectUserService, ProjectGitService, ApplicationService],
+  exports: [ProjectService, ProjectTeamService, ProjectUserService, ProjectGitService, ApplicationService],
+  controllers: [ProjectController, ApplicationController, ProjectController, ProjectUserController, ProjectTeamController, ProjectGitController],
 })
 export class ProjectModule {}

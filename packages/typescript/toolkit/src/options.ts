@@ -1,14 +1,8 @@
-import { errorify, fillOptionsSync, IsFilledString, LogLevel, transformBooleanString } from '@dogu-tech/common';
+import { fillOptionsSync, IsFilledString, LogLevel, transformBooleanString } from '@dogu-tech/common';
 import { FromProcessEnv } from '@dogu-tech/node';
 import { PlatformType, StepContextEnv } from '@dogu-tech/types';
 import { IsBoolean, IsIn, IsNumber, IsString } from 'class-validator';
 import { DefaultGamiumEnginePort } from 'gamium';
-import { logger } from './internal/logger-instance';
-
-import('webdriverio').catch((error) => {
-  logger.error('Failed to import webdriverio', { error: errorify(error) });
-  process.exit(1);
-});
 
 type DoguEnvDependencies = Pick<
   StepContextEnv,

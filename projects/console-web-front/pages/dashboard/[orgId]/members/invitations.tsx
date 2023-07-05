@@ -34,11 +34,7 @@ const InvitationUserPage: NextPageWithLayout<WithOrganizationProps> = ({ organiz
 };
 
 InvitationUserPage.getLayout = (page) => {
-  return (
-    <OrganizationMemberLayout isWebview={page.props.isWebview} titleI18nKey="organization:memberPageTitle">
-      {page}
-    </OrganizationMemberLayout>
-  );
+  return <OrganizationMemberLayout titleI18nKey="organization:memberPageTitle">{page}</OrganizationMemberLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;

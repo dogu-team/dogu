@@ -3,12 +3,13 @@ import chokidar from 'chokidar';
 import fs from 'fs';
 import path from 'path';
 import shelljs from 'shelljs';
-import { PackageJson } from './packagejson';
 import { findRootWorkspace } from '../workspace';
+import { PackageJson } from './packagejson';
 
 interface Watch {
   src: string;
   dest: string;
+  bidirectional?: boolean;
 }
 
 interface WatchOption {
@@ -52,6 +53,7 @@ function copyPacakgeJson(srcPath: string, destPath: string, returningWatchs: Wat
   returningWatchs.push({
     src: path.resolve(srcPath, 'src'),
     dest: path.resolve(destPath, 'src'),
+    bidirectional: true,
   });
   returningWatchs.push({
     src: path.resolve(srcPath, 'tsconfig.json'),
@@ -105,6 +107,19 @@ function copyDependentPackages(outputWorkspace: string, packageJson: PackageJson
   packageJson.write();
 }
 
+function copyIfDiff(src: string, dest: string): void {
+  if (!fs.existsSync(dest)) {
+    fs.copyFileSync(src, dest);
+    return;
+  }
+  const srcSize = fs.statSync(src).size;
+  const destSize = fs.statSync(dest).size;
+
+  if (srcSize !== destSize) {
+    fs.copyFileSync(src, dest);
+  }
+}
+
 export async function mirrorWorkspace(spacePath: string, option: WatchOption = { copyOnly: false }): Promise<string> {
   const workspacePath = findRootWorkspace();
   const packagesPaths = [
@@ -147,7 +162,7 @@ export async function mirrorWorkspace(spacePath: string, option: WatchOption = {
     return outputWorkspace;
   }
 
-  const watchers = returningWatchs.map(({ src, dest }) => {
+  const watchers = returningWatchs.map(({ src, dest, bidirectional }) => {
     console.log(chalk.yellowBright(`[mirror] from: ${src}`));
     console.log(chalk.yellowBright(`         to:   ${dest}\n`));
     const watcher = chokidar.watch(src);
@@ -163,9 +178,9 @@ export async function mirrorWorkspace(spacePath: string, option: WatchOption = {
         } else if (event === 'unlinkDir') {
           fs.rmSync(destPath, { recursive: true, force: true });
         } else if (event === 'add') {
-          fs.copyFileSync(path_, destPath);
+          copyIfDiff(path_, destPath);
         } else if (event === 'change') {
-          fs.copyFileSync(path_, destPath);
+          copyIfDiff(path_, destPath);
         } else if (event === 'unlink') {
           fs.unlinkSync(destPath);
         } else {
@@ -175,6 +190,21 @@ export async function mirrorWorkspace(spacePath: string, option: WatchOption = {
         console.error(`[mirror] ${error}`);
       }
     });
+    if (bidirectional) {
+      const watcher = chokidar.watch(dest, { useFsEvents: true });
+      watcher.on('change', (path_, stat) => {
+        const srcPath = path.resolve(src, path.relative(dest, path_));
+        const date = new Date();
+        console.log(chalk.yellowBright(`[reverse mirror] ${date.toISOString()}`));
+        console.log(chalk.yellowBright(`         from: ${path_}`));
+        console.log(chalk.yellowBright(`         to:   ${srcPath}\n`));
+        try {
+          copyIfDiff(path_, srcPath);
+        } catch (error) {
+          console.error(`[reverse mirror] ${error}`);
+        }
+      });
+    }
     return watcher;
   });
 

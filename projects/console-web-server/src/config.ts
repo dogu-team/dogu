@@ -64,13 +64,6 @@ export const config = {
     bucket: env.DOGU_INFLUX_DB_BUCKET,
     url: `http://${env.DOGU_INFLUX_DB_HOST}:${env.DOGU_INFLUX_DB_PORT}`,
   },
-  gitlab: {
-    host: env.DOGU_GITLAB_HOST,
-    port: env.DOGU_GITLAB_PORT,
-    url: `${env.DOGU_GITLAB_PROTOCOL}://${env.DOGU_GITLAB_HOST}:${env.DOGU_GITLAB_PORT}`,
-    templeteGroupUrl: `${env.DOGU_GITLAB_PROTOCOL}://${env.DOGU_GITLAB_HOST}:${env.DOGU_GITLAB_PORT}/${env.DOGU_GITLAB_TEMPLATE_GROUP}`,
-    rootToken: env.DOGU_GITLAB_ROOT_TOKEN,
-  },
   fileService: {
     s3: {
       accessKeyId: env.DOGU_AWS_KEY_ID,

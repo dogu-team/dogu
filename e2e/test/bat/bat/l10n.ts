@@ -12,6 +12,10 @@ export interface E2eL10nValue {
   PENDING: string;
   STREAMING: string;
   INFORMATION: string;
+  START_USING_AS_DEVICE: string;
+  STOP_USING_AS_DEVICE: string;
+  NAME: string;
+  SIGNOUT: string;
 }
 
 export const l10nMap = createL10nMap<E2eL10nValue>([
@@ -29,6 +33,10 @@ export const l10nMap = createL10nMap<E2eL10nValue>([
       PENDING: 'Pending',
       STREAMING: 'Streaming',
       INFORMATION: 'About device',
+      START_USING_AS_DEVICE: 'Start using as device',
+      STOP_USING_AS_DEVICE: 'Stop using as device',
+      NAME: 'Name',
+      SIGNOUT: 'Sign out',
     },
   },
   {
@@ -45,6 +53,10 @@ export const l10nMap = createL10nMap<E2eL10nValue>([
       PENDING: 'Pending',
       STREAMING: '스트리밍',
       INFORMATION: '디바이스 정보',
+      START_USING_AS_DEVICE: '디바이스로 사용하기',
+      STOP_USING_AS_DEVICE: '디바이스로 사용 중지하기',
+      NAME: '이름',
+      SIGNOUT: '로그아웃',
     },
   },
 ]);

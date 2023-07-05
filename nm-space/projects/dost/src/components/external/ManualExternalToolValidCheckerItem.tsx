@@ -81,14 +81,7 @@ const ManualExternalToolValidCheckerItem = ({ externalKey, name, isValid, onVali
           </Flex>
           <div>
             <div>{manualExternalToolDetail[externalKey]?.description}</div>
-            {!valid && (
-              <>
-                <div>{manualExternalToolDetail[externalKey]?.solution}</div>
-                <Button mt={2} size="sm" onClick={handleValidate} isLoading={loading} colorScheme="blue">
-                  Check
-                </Button>
-              </>
-            )}
+            {!valid && <div>{manualExternalToolDetail[externalKey]?.solution}</div>}
           </div>
         </BorderBox>
       </div>

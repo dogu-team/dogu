@@ -27,6 +27,7 @@ const StreamingVideo = ({ rightSidebar, videoId, children, onResize, inspector }
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [videoSize, setVideoSize] = useState({ width: 0, height: 0 });
 
+  // if ratio > 1, width > height
   const videoRatio = videoSize.height > 0 ? videoSize.width / videoSize.height : 0;
 
   useEffect(() => {
@@ -195,7 +196,7 @@ const InputWrapper = styled.div<{ canDisplay: boolean; ratio: number }>`
   height: auto;
   max-height: 100%;
   background-color: #000;
-  width: ${(props) => (props.ratio > 1 ? `min(100%, calc(100% * ${props.ratio}))` : 'auto')};
+  width: ${(props) => (props.ratio > 1 ? `min(max-content, calc(100% * ${props.ratio}))` : 'auto')};
   overflow: hidden;
 `;
 
@@ -203,7 +204,7 @@ const StyledVideo = styled.video<{ ratio: number; boxHeight: number }>`
   display: block;
   width: 100%;
   height: auto;
-  max-height: ${(props) => (props.ratio > 1 ? '100%' : `${props.boxHeight}px`)};
+  max-height: ${(props) => (props.ratio > 1 ? `${props.boxHeight}px` : `${props.boxHeight}px`)};
 `;
 
 const StyledInput = styled.textarea`

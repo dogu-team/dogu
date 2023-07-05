@@ -10,6 +10,7 @@ import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from 'react';
 import { AxiosError } from 'axios';
 import Trans from 'next-translate/Trans';
+import Head from 'next/head';
 
 import { NextPageWithLayout } from 'pages/_app';
 import { deleteProject, updateProject } from 'src/api/project';
@@ -18,7 +19,7 @@ import ProjectLayout from 'src/components/layouts/ProjectLayout';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
 import { sendErrorNotification, sendSuccessNotification } from '../../../../../src/utils/antd';
 import DangerZone from '../../../../../src/components/common/boxes/DangerZone';
-import Head from 'next/head';
+import GitIntegrationDangerButton from '../../../../../src/components/projects/GitIntegrationDangerButton';
 
 const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, mutateProject }) => {
   const [editingProject, setEditingProject] = useState<ProjectBase>(project);
@@ -104,6 +105,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, mut
         </Button>
         <Divider />
         <DangerZone>
+          <DangerZone.Item title={t('project:editGitIntegrationMenuTitle')} description={t('project:editGitIntegrationDescriptionText')} button={<GitIntegrationDangerButton />} />
           <DangerZone.Item
             title={t('project:deleteProjectMenuTitle')}
             description={t('project:deleteProjectDescriptionText')}
@@ -127,7 +129,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, mut
 };
 
 ProjectSettingPage.getLayout = (page) => {
-  return <ProjectLayout isWebview={page.props.isWebview}>{page}</ProjectLayout>;
+  return <ProjectLayout>{page}</ProjectLayout>;
 };
 
 export const getServerSideProps: GetServerSideProps = getProjectPageServerSideProps;

@@ -44,20 +44,17 @@ import {
   Token,
   User,
 } from '../../db/entity';
-import { OrganizationGitlab } from '../../db/entity/organization-gitlab.entity';
 import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invitation-token.entity';
 import { Routine } from '../../db/entity/routine.entity';
 import { RoutineStep } from '../../db/entity/step.entity';
 import { UserVisit } from '../../db/entity/user-visit.entity';
-import { FeatureConfig } from '../../feature.config';
 import { castEntity } from '../../types/entity-cast';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { EMPTY_PAGE, Page } from '../common/dto/pagination/page';
 import { EmailService } from '../email/email.service';
 import { OrganizationFileService } from '../file/organization-file.service';
-import { GitlabService } from '../gitlab/gitlab.service';
+// import { GitlabService } from '../gitlab/gitlab.service';
 import { ApplicationService } from '../project/application/application.service';
-import { CreateProjectDto } from '../project/dto/project.dto';
 import { ProjectService } from '../project/project.service';
 import { RoutineService } from '../routine/routine.service';
 import { TokenService } from '../token/token.service';
@@ -73,8 +70,8 @@ export class OrganizationService {
     @Inject(EmailService)
     private readonly emailService: EmailService,
     private readonly organizationFileService: OrganizationFileService,
-    @Inject(GitlabService)
-    private readonly gitlabService: GitlabService,
+    // @Inject(GitlabService)
+    // private readonly gitlabService: GitlabService,
     @Inject(UserInvitationService)
     private readonly invitationService: UserInvitationService,
     @Inject(ApplicationService)
@@ -147,30 +144,25 @@ export class OrganizationService {
       const org = await manager.getRepository(Organization).save(orgData);
       const organizationId = org.organizationId;
 
-      const user = await manager.getRepository(User).findOne({ where: { userId }, relations: [UserPropCamel.gitlab] });
+      const user = await manager.getRepository(User).findOne({ where: { userId } });
       if (!user) {
         throw new HttpException(`user not found. userId: ${userId}`, HttpStatus.NOT_FOUND);
       }
-      if (!user.gitlab) {
-        throw new HttpException(`user gitlab not found. userId: ${userId}`, HttpStatus.NOT_FOUND);
-      }
-
       // mapping - organization - user - role
       const userData = manager
         .getRepository(OrganizationAndUserAndOrganizationRole) //
         .create({ organizationId, userId, organizationRoleId: ORGANIZATION_ROLE.OWNER });
       await manager.getRepository(OrganizationAndUserAndOrganizationRole).save(userData);
-      await this.gitlabService.createGroup(manager, user.userId, organizationId, orgData.name);
 
-      if (FeatureConfig.get('useSampleProject')) {
-        const createProjectDto: CreateProjectDto = {
-          name: 'sample project',
-          description: 'sample project',
-        };
-        const project = await this.projectService.createProject(manager, userId, organizationId, createProjectDto);
-        await this.applicationService.uploadSampleApk(manager, userId, organizationId, project.projectId);
-        await this.routineService.createSampleRoutine(manager, organizationId, project.projectId);
-      }
+      // if (FeatureConfig.get('useSampleProject')) {
+      //   const createProjectDto: CreateProjectDto = {
+      //     name: 'sample project',
+      //     description: 'sample project',
+      //   };
+      //   const project = await this.projectService.createProject(manager, userId, organizationId, createProjectDto);
+      //   await this.applicationService.uploadSampleApk(manager, userId, organizationId, project.projectId);
+      //   await this.routineService.createSampleRoutine(manager, organizationId, project.projectId);
+      // }
 
       return org;
     });
@@ -191,7 +183,6 @@ export class OrganizationService {
 
     const rv = await this.dataSource.transaction(async (manager) => {
       const org: OrganizationResponse = await manager.getRepository(Organization).save(newData);
-      await this.gitlabService.updateGroup(manager, newData.organizationId, newData.name);
       return org;
     });
 
@@ -226,7 +217,6 @@ export class OrganizationService {
       .leftJoinAndSelect(`organization.${OrganizationPropCamel.teams}`, 'team')
       .leftJoinAndSelect(`organization.${OrganizationPropCamel.userVisits}`, 'userVisit')
       .leftJoinAndSelect(`organization.${OrganizationPropCamel.userInvitations}`, 'userInvitation')
-      .leftJoinAndSelect(`organization.${OrganizationPropCamel.gitlab}`, 'gitlab')
       .leftJoinAndSelect(`userInvitation.${UserAndInvitationTokenPropCamel.token}`, 'invitationtoken')
       // project
       .leftJoinAndSelect(`organization.${OrganizationPropCamel.projects}`, 'project')
@@ -254,12 +244,9 @@ export class OrganizationService {
         throw new HttpException(`OrganizationId : ${organizationId} is not found.`, HttpStatus.NOT_FOUND);
       }
 
-      // gitlab - team
       const teams = organization.teams ? organization.teams : [];
       for (const team of teams) {
         const projects = organization.projects ? organization.projects : [];
-
-        await this.gitlabService.deleteGroup(manager, organizationId);
 
         for (const project of projects) {
           const { projectId } = project;
@@ -344,7 +331,6 @@ export class OrganizationService {
         const tokenIds = invitations.map((invitation) => invitation.tokenId);
         await manager.getRepository(Token).softDelete({ tokenId: In(tokenIds) });
         await manager.getRepository(OrganizationAndUserAndOrganizationRole).softDelete({ organizationId });
-        await manager.getRepository(OrganizationGitlab).softDelete({ organizationId });
         await manager.getRepository(Organization).softRemove(organization);
       }
     });
@@ -390,7 +376,6 @@ export class OrganizationService {
 
       await manager.save(OrganizationAndUserAndOrganizationRole, Object.assign(originOwner, { organizationRoleId: ORGANIZATION_ROLE.ADMIN }));
       await manager.save(OrganizationAndUserAndOrganizationRole, Object.assign(newOwner, { organizationRoleId: ORGANIZATION_ROLE.OWNER }));
-      await this.gitlabService.updateUserGroupRole(manager, newOwnerId, organizationId, ORGANIZATION_ROLE.OWNER);
     });
   }
 
@@ -583,7 +568,6 @@ export class OrganizationService {
 
     await this.dataSource.transaction(async (manager) => {
       await manager.getRepository(OrganizationAndUserAndOrganizationRole).update({ organizationId, userId }, { organizationRoleId });
-      await this.gitlabService.updateUserGroupRole(manager, userId, organizationId, dto.organizationRoleId);
     });
   }
 }

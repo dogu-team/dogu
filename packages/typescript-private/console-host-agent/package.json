@@ -2,7 +2,7 @@
   "name": "@dogu-private/console-host-agent",
   "version": "0.0.1",
   "description": "",
-  "license": "ISC",
+  "license": "SEE LICENSE IN LICENSE.md",
   "author": "",
   "main": "./build/src/index.js",
   "scripts": {

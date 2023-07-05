@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-type-assertion */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { callAsyncWithTimeout, errorify, NullLogger, Retry, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, Rect, ScreenSize, SystemBar } from '@dogu-tech/device-client-common';
@@ -7,10 +12,13 @@ import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 import { setInterval } from 'timers/promises';
+import { remote } from 'webdriverio';
 import { Adb } from '../internal/externals/index';
 import { getFreePort } from '../internal/util/net';
 import { createAppiumLogger } from '../logger/logger.instance';
 import { AppiumService } from './appium.service';
+
+type Browser = Awaited<ReturnType<typeof remote>>;
 
 const AppiumNewCommandTimeout = 24 * 60 * 60; // unit: seconds
 const AppiumClientCallAsyncTimeout = 10 * 1000; // unit: milliseconds
@@ -250,7 +258,7 @@ interface AppiumData {
   };
   client: {
     remoteOptions: Record<string, unknown>;
-    driver: WebdriverIO.Browser;
+    driver: Browser;
   };
 }
 
@@ -541,9 +549,8 @@ export class AppiumContextImpl implements AppiumContext {
   @Retry({ retryCount: 10, retryInterval: 3000, printable: NullLogger.instance })
   private async restartClient(serverPort: number): Promise<AppiumData['client']> {
     this.logger.info('Appium client starting');
-    const webdriverio = await import('webdriverio');
     const argumentCapabilities = await this.createArgumentCapabilities();
-    const remoteOptions: Parameters<typeof webdriverio.remote>[0] = {
+    const remoteOptions: Parameters<typeof remote>[0] = {
       port: serverPort,
       logLevel: 'trace',
       capabilities: {
@@ -551,7 +558,7 @@ export class AppiumContextImpl implements AppiumContext {
         firstMatch: [argumentCapabilities],
       },
     };
-    const driver = await webdriverio.remote(remoteOptions);
+    const driver = await remote(remoteOptions);
     const filteredRemoteOptions = Object.keys(remoteOptions).reduce((acc, key) => {
       const value = _.get(remoteOptions, key) as unknown;
       if (_.isFunction(value)) {
@@ -573,7 +580,7 @@ export class AppiumContextImpl implements AppiumContext {
    * https://w3c.github.io/webdriver/#delete-session
    * https://webdriver.io/docs/api/webdriver/#deletesession
    */
-  private async stopClient(driver: WebdriverIO.Browser): Promise<void> {
+  private async stopClient(driver: Browser): Promise<void> {
     try {
       await driver.deleteSession();
     } catch (error) {
@@ -597,7 +604,7 @@ export class AppiumContextImpl implements AppiumContext {
    */
   @Retry({ retryCount: 3, retryInterval: 3000, printable: NullLogger.instance })
   async getContexts(): Promise<string[]> {
-    const contexts = await callClientAsyncWithTimeout(this.data.client.driver.getContexts());
+    const contexts = (await callClientAsyncWithTimeout(this.data.client.driver.getContexts())) as unknown[];
     const contextIds = contexts.map(transformId);
     return contextIds;
   }

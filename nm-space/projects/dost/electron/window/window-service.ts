@@ -32,6 +32,8 @@ const template = [
   },
 ] as (Electron.MenuItemConstructorOptions | Electron.MenuItem)[];
 
+let handlerAdded = false;
+
 export class WindowService {
   static instance: WindowService;
   window: BrowserWindow | null;
@@ -74,23 +76,6 @@ export class WindowService {
 
       this.window.webContents.openDevTools({ mode: 'detach' });
     }
-
-    ipcMain.handle(windowClientKey.minimize, () => {
-      this.window?.minimize();
-    });
-
-    ipcMain.handle(windowClientKey.maximize, () => {
-      this.window?.maximize();
-    });
-
-    ipcMain.handle(windowClientKey.unmaximize, () => {
-      this.window?.unmaximize();
-    });
-
-    ipcMain.handle(windowClientKey.close, () => {
-      this.window?.close();
-    });
-
     this.window?.on('maximize', () => {
       this.window?.webContents.send(windowClientKey.onMaximize);
     });
@@ -98,6 +83,25 @@ export class WindowService {
     this.window?.on('unmaximize', () => {
       this.window?.webContents.send(windowClientKey.onUnmaximize);
     });
+
+    if (!handlerAdded) {
+      ipcMain.handle(windowClientKey.minimize, () => {
+        WindowService?.instance?.window?.minimize();
+      });
+
+      ipcMain.handle(windowClientKey.maximize, () => {
+        WindowService?.instance?.window?.maximize();
+      });
+
+      ipcMain.handle(windowClientKey.unmaximize, () => {
+        WindowService?.instance?.window?.unmaximize();
+      });
+
+      ipcMain.handle(windowClientKey.close, () => {
+        WindowService?.instance?.window?.close();
+      });
+      handlerAdded = true;
+    }
   }
 
   static open(): void {

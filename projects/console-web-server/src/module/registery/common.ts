@@ -1,10 +1,9 @@
-import { GitlabUserCreatedData } from '@dogu-private/console';
 import { SNS_TYPE, TokenId, UserId, UserSnsId, USER_VERIFICATION_STATUS } from '@dogu-private/types';
 import * as bcrypt from 'bcrypt';
 import { EntityManager } from 'typeorm';
 import { UserAndVerificationToken } from '../../db/entity/relations/user-and-verification-token.entity';
 import { UserEmailPreference } from '../../db/entity/user-email-preference.entity';
-import { UserGitlab } from '../../db/entity/user-gitlab.entity';
+// import { UserGitlab } from '../../db/entity/user-gitlab.entity';
 import { UserSns } from '../../db/entity/user-sns.entity';
 import { User } from '../../db/entity/user.entity';
 
@@ -35,14 +34,14 @@ export async function createSNSUser(manager: EntityManager, userId: UserId, user
   return user;
 }
 
-export async function createUserGitlab(manager: EntityManager, userId: UserId, gitlabUserCreatedData: GitlabUserCreatedData) {
-  const createdGitlabUserData = manager.getRepository(UserGitlab).create({
-    userId,
-    gitlabUserId: gitlabUserCreatedData.userId,
-    gitlabToken: gitlabUserCreatedData.impersonationToken,
-  });
-  await manager.getRepository(UserGitlab).save(createdGitlabUserData);
-}
+// export async function createUserGitlab(manager: EntityManager, userId: UserId, gitlabUserCreatedData: GitlabUserCreatedData) {
+//   const createdGitlabUserData = manager.getRepository(UserGitlab).create({
+//     userId,
+//     gitlabUserId: gitlabUserCreatedData.userId,
+//     gitlabToken: gitlabUserCreatedData.impersonationToken,
+//   });
+//   await manager.getRepository(UserGitlab).save(createdGitlabUserData);
+// }
 
 export async function createUserEmailPreference(manager: EntityManager, userId: UserId, newsletter: boolean) {
   const userEmailPreference = manager.getRepository(UserEmailPreference).create({ userId, newsletter: newsletter ? 1 : 0 });

@@ -2,7 +2,7 @@
   "name": "@dogu-tech/node",
   "version": "0.0.0",
   "description": "",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE.md",
   "author": "dogu",
   "main": "build/src/index.js",
   "files": [

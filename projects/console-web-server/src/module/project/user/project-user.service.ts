@@ -1,10 +1,9 @@
 import { OrganizationId, ProjectId, UserId } from '@dogu-private/types';
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { ProjectRole } from '../../../db/entity/project-role.entity';
 import { ProjectAndUserAndProjectRole } from '../../../db/entity/relations/project-and-user-and-project-role.entity';
-import { GitlabService } from '../../gitlab/gitlab.service';
 import { AddUserToProjectDto, UpdateUserProjectRoleDto } from './dto/project-user.dto';
 
 @Injectable()
@@ -12,8 +11,6 @@ export class ProjectUserService {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    @Inject(GitlabService)
-    private readonly gitlabService: GitlabService,
   ) {}
 
   async addUserToProject(organizationId: OrganizationId, projectId: ProjectId, dto: AddUserToProjectDto): Promise<void> {
@@ -35,7 +32,6 @@ export class ProjectUserService {
       } else {
         throw new HttpException(`User with ${dto.userId} is already in project.`, HttpStatus.CONFLICT);
       }
-      await this.gitlabService.addUserToProject(manager, userId, projectId, projectRoleId);
     });
   }
 
@@ -53,7 +49,6 @@ export class ProjectUserService {
     const newData = Object.assign(projectUserRole, { projectRoleId: dto.projectRoleId });
     await this.dataSource.transaction(async (manager) => {
       await manager.getRepository(ProjectAndUserAndProjectRole).save(newData);
-      await this.gitlabService.updateUserProjectRole(manager, userId, projectId, dto.projectRoleId);
     });
   }
 
@@ -65,7 +60,6 @@ export class ProjectUserService {
     }
 
     await this.dataSource.transaction(async (manager) => {
-      await this.gitlabService.removeUserFromProject(manager, userId, projectId);
       await manager.getRepository(ProjectAndUserAndProjectRole).softRemove(projectUserRole);
     });
   }

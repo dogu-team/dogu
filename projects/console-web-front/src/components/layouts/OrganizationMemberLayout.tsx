@@ -9,10 +9,9 @@ import OrganizationSideBar from './OrganizationSideBar';
 interface Props {
   titleI18nKey: string;
   children: React.ReactNode;
-  isWebview: boolean;
 }
 
-const OrganizationMemberLayout = ({ titleI18nKey, children, isWebview }: Props) => {
+const OrganizationMemberLayout = ({ titleI18nKey, children }: Props) => {
   const { t } = useTranslation();
   const router = useRouter();
   const orgId = router.query.orgId;
@@ -33,7 +32,7 @@ const OrganizationMemberLayout = ({ titleI18nKey, children, isWebview }: Props) 
   ];
 
   return (
-    <ConsoleLayout isWebview={isWebview} titleI18nKey={titleI18nKey} sidebar={<OrganizationSideBar />}>
+    <ConsoleLayout titleI18nKey={titleI18nKey} sidebar={<OrganizationSideBar />}>
       <div style={{ marginBottom: '1rem' }}>
         <MenuLinkTabs tabs={tabs} />
       </div>

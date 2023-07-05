@@ -24,6 +24,24 @@ export async function copyDirectoryRecursive(sourceDir: string, destinationDir: 
   }
 }
 
+export async function getDirectorySize(dir: string): Promise<number> {
+  const files = await fs.readdir(dir);
+  let size = 0;
+
+  for (const file of files) {
+    const filePath = path.join(dir, file);
+    const fileStat = await fs.lstat(filePath);
+
+    if (fileStat.isDirectory()) {
+      size += await getDirectorySize(filePath);
+    } else {
+      size += fileStat.size;
+    }
+  }
+
+  return size;
+}
+
 export async function removeItemRecursive(itemPath: string): Promise<void> {
   const itemStat = await fs.lstat(itemPath);
 
@@ -57,4 +75,23 @@ async function directoryExists(dir: string): Promise<boolean> {
 export async function isDirectory(file: string): Promise<boolean> {
   const stats = await fs.stat(file);
   return stats.isDirectory();
+}
+
+export async function findEndswith(currentDir: string, ends: string): Promise<string[]> {
+  const files = await fs.readdir(currentDir, { withFileTypes: true });
+  const outPaths: string[] = [];
+  for (const file of files) {
+    if (file.isDirectory()) {
+      const innerRet = await findEndswith(path.posix.join(currentDir, file.name), ends);
+      outPaths.push(...innerRet);
+      continue;
+    } else if (file.isFile()) {
+      if (file.name.endsWith(ends)) {
+        outPaths.push(path.posix.join(currentDir, file.name));
+      }
+    } else {
+      throw new Error(`path is not directory or file. path: ${file.name}`);
+    }
+  }
+  return outPaths;
 }

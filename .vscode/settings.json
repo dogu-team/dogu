@@ -36,9 +36,7 @@
     },
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
-  "apple-swift-format.configSearchPaths": [
-    "./.swift-format"
-  ],
+  "apple-swift-format.configSearchPaths": ["./.swift-format"],
   "apple-swift-format.enable": true,
   "clang-format.language.proto.enable": true,
   "clang-format.language.proto.style": "google",
@@ -58,18 +56,8 @@
   "eslint.lintTask.options": ".ts",
   "eslint.nodePath": ".yarn/sdks",
   "eslint.packageManager": "yarn",
-  "eslint.probe": [
-    "javascript",
-    "javascriptreact",
-    "typescript",
-    "typescriptreact",
-    "html",
-    "vue",
-    "markdown"
-  ],
-  "eslint.workingDirectories": [
-    "."
-  ],
+  "eslint.probe": ["javascript", "javascriptreact", "typescript", "typescriptreact", "html", "vue", "markdown"],
+  "eslint.workingDirectories": ["."],
   "git.rebaseWhenSync": true,
   "go.inlayHints.assignVariableTypes": true,
   "go.inlayHints.compositeLiteralFields": true,
@@ -87,9 +75,7 @@
   },
   "java.compile.nullAnalysis.mode": "automatic",
   "javascript.preferences.importModuleSpecifier": "relative",
-  "prettier.documentSelectors": [
-    "*.ts, *.json"
-  ],
+  "prettier.documentSelectors": ["*.ts, *.json"],
   "prettier.prettierPath": ".yarn/sdks/prettier/index.js",
   "protoc": {
     "options": [
@@ -219,5 +205,9 @@
   "files.saveConflictResolution": "overwriteFileOnDisk",
   "eslint.run": "onSave",
   "cmake.sourceDirectory": "${workspaceFolder}/packages/swift/types/DoguTypes/.build/checkouts/swift-atomics/Tests",
-  "lldb.library": "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB"
+  "lldb.library": "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB",
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  },
+  "python.formatting.provider": "none"
 }
