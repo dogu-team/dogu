@@ -22,7 +22,10 @@ import { OrganizationId, UserId, UserPayload, USER_INVITATION_STATUS } from '@do
 import { notEmpty } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
+import crypto from 'crypto';
 import { DataSource, EntityManager, In } from 'typeorm';
+import { v4 } from 'uuid';
+
 import {
   Dest,
   DestEdge,
@@ -32,6 +35,7 @@ import {
   Organization,
   OrganizationAndUserAndOrganizationRole,
   OrganizationAndUserAndTeam,
+  OrganizationKey,
   Project,
   ProjectAndDevice,
   ProjectAndTeamAndProjectRole,
@@ -153,6 +157,14 @@ export class OrganizationService {
         .getRepository(OrganizationAndUserAndOrganizationRole) //
         .create({ organizationId, userId, organizationRoleId: ORGANIZATION_ROLE.OWNER });
       await manager.getRepository(OrganizationAndUserAndOrganizationRole).save(userData);
+
+      // create organization key
+      const organizationKey = manager.getRepository(OrganizationKey).create({
+        organizationKeyId: v4(),
+        organizationId,
+        key: crypto.createHash('sha256').update(organizationId).digest('base64').substring(0, 32),
+      });
+      await manager.getRepository(OrganizationKey).save(organizationKey);
 
       // if (FeatureConfig.get('useSampleProject')) {
       //   const createProjectDto: CreateProjectDto = {
@@ -331,6 +343,7 @@ export class OrganizationService {
         const tokenIds = invitations.map((invitation) => invitation.tokenId);
         await manager.getRepository(Token).softDelete({ tokenId: In(tokenIds) });
         await manager.getRepository(OrganizationAndUserAndOrganizationRole).softDelete({ organizationId });
+        await manager.getRepository(OrganizationKey).softDelete({ organizationId });
         await manager.getRepository(Organization).softRemove(organization);
       }
     });

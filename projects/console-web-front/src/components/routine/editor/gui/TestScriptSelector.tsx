@@ -13,7 +13,7 @@ interface Props extends Omit<SelectProps, 'options'> {
 }
 
 const TestScriptSelector = ({ organizationId, projectId, ...props }: Props) => {
-  const { data, isLoading, error } = useSWR<RepositoryFileMetaTree>(`/organizations/${organizationId}/projects/${projectId}/repository/scripts?type=blob`, swrAuthFetcher, {
+  const { data, isLoading, error } = useSWR<RepositoryFileMetaTree>(`/organizations/${organizationId}/projects/${projectId}/git/scripts?type=blob`, swrAuthFetcher, {
     revalidateOnFocus: false,
   });
 

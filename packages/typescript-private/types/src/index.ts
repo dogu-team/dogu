@@ -22,6 +22,7 @@ export * from './organization';
 export * from './organization-and-user-and-organization-role';
 export * from './organization-and-user-and-team';
 export * from './organization-gitlab';
+export * from './organization-key';
 export * from './organization-role';
 export * from './platforms';
 export * from './project';

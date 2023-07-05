@@ -19,6 +19,7 @@ export * from './base/member';
 export * from './base/organization';
 export * from './base/organization-and-user-and-organization-role';
 export * from './base/organization-and-user-and-team';
+export * from './base/organization-key';
 export * from './base/organization-role';
 export * from './base/project';
 export * from './base/project-and-device';
