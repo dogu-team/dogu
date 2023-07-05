@@ -2,7 +2,7 @@
   "name": "@dogu-actions/run-test",
   "version": "0.0.0",
   "description": "",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE.md",
   "author": "dogu",
   "main": "./build/src/main.js",
   "scripts": {

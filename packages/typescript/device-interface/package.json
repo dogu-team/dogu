@@ -1,7 +1,7 @@
 {
   "name": "@dogu-tech/device-interface",
   "version": "0.0.1",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE.md",
   "author": "dogu",
   "homepage": "https://github.com/dogu-team/dogu.git",
   "main": "build/src/index.js",

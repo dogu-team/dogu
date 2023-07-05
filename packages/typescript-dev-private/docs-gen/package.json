@@ -2,7 +2,7 @@
   "name": "@dogu-dev-private/docs-gen",
   "version": "0.0.3",
   "description": "",
-  "license": "ISC",
+  "license": "SEE LICENSE IN LICENSE.md",
   "author": "",
   "main": "build/src/index.js",
   "files": [

@@ -2,7 +2,7 @@
   "private": true,
   "name": "dogu",
   "version": "1.1.0",
-  "license": "",
+  "license": "SEE LICENSE IN LICENSE.md",
   "author": "Dogu Team",
   "repository": "https://github.com/dogu-team/dogu.git",
   "scripts": {
