@@ -3,7 +3,7 @@ import {
   AddUserToProjectDtoBase,
   CreateProjectDtoBase,
   ProjectBase,
-  ProjectRepositoryBase,
+  ProjectScmBase,
   UpdateProjectDtoBase,
   UpdateProjectGitDtoBase,
   UpdateTeamProjectRoleDtoBase,
@@ -74,7 +74,7 @@ export const getProjectGit = async (context: GetServerSidePropsContext) => {
   const { authToken } = getServersideCookies(context.req.cookies);
 
   if (authToken) {
-    const data = await api.get<ProjectRepositoryBase>(`/organizations/${context.query.orgId}/projects/${context.query.pid}/git`, {
+    const data = await api.get<ProjectScmBase>(`/organizations/${context.query.orgId}/projects/${context.query.pid}/git`, {
       headers: { Authorization: `Bearer ${authToken}` },
     });
     setCookiesInServerSide(data, context);
