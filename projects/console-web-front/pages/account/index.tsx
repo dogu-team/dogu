@@ -26,7 +26,6 @@ import EmailPreferenceModifier from '../../src/components/users/EmailPreferenceM
 import { redirectWithLocale } from '../../src/ssr/locale';
 import ConsoleBasicLayout from '../../src/components/layouts/ConsoleBasicLayout';
 import { USER_ACCESS_TOKEN_COOKIE_NAME, USER_ID_COOKIE_NAME } from '@dogu-private/types';
-import GitlabState from '../../src/components/users/GitlabState';
 import useEventStore from '../../src/stores/events';
 
 interface Props {
@@ -188,10 +187,6 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
           <ResetPasswordForm needCurrentPassword={true} onFinish={handleResetPassword} />
         </Inner>
         <Divider />
-        <Inner>
-          <StyledH5>Gitlab</StyledH5>
-          <GitlabState user={user} />
-        </Inner>
         {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
           <>
             <Divider />
