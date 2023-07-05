@@ -56,20 +56,14 @@ const ProjectRoutineCreatorPage: NextPageWithLayout<WithProjectProps & { isGitCo
             type="warning"
             style={{ marginBottom: '.5rem' }}
             message={
-              <GitBanner>
-                <div>
-                  <p>
-                    &nbsp;Git doesn&apos;t integrated yet. Cannot checkout test scripts while routine running. For more information, please visit&nbsp;
-                    <Link href="https://docs.dogutech.io" target="_blank">
-                      document
-                    </Link>
-                  </p>
-                </div>
-                <div>
-                  <Button onClick={() => openModal()}>Configure Git</Button>
-                </div>
-              </GitBanner>
+              <p>
+                &nbsp;Git doesn&apos;t integrated yet. Cannot checkout test scripts while routine running. For more information, please visit&nbsp;
+                <Link href="https://docs.dogutech.io" target="_blank">
+                  document
+                </Link>
+              </p>
             }
+            action={<Button onClick={() => openModal()}>Configure Git</Button>}
           />
         )}
         <RoutineCreator organizationId={organization.organizationId} projectId={project.projectId} />
@@ -128,8 +122,4 @@ const Box = styled.div`
   display: flex;
   height: 100%;
   flex-direction: column;
-`;
-
-const GitBanner = styled.div`
-  ${flexRowSpaceBetweenStyle}
 `;
