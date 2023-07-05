@@ -14,7 +14,8 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import axios from 'axios';
 import { DataSource, EntityManager } from 'typeorm';
 import { User } from '../../db/entity/index';
-import { ProjectRepository } from '../../db/entity/project-repository';
+import { ProjectScm } from '../../db/entity/project-scm';
+
 // import { OrganizationGitlab } from '../../db/entity/organization-gitlab.entity';
 // import { ProjectGitlab } from '../../db/entity/project-gitlab.entity';
 // import { UserGitlab } from '../../db/entity/user-gitlab.entity';
@@ -163,7 +164,7 @@ export class GitlabService {
     //   throw new HttpException(`Project is not in gitlab: ${projectId}`, HttpStatus.NOT_FOUND);
     // }
 
-    const repository = await this.dataSource.getRepository(ProjectRepository).findOne({ where: { projectId } });
+    const repository = await this.dataSource.getRepository(ProjectScm).findOne({ where: { projectId } });
 
     const gitUrlWithoutProtocol = 'urlWithoutProtocol';
     // const gitUrlWithAuth = `https://oauth2:${projectGitlab.gitlabProjectToken}@${gitUrlWithoutProtocol}/${organizationId}/${projectId}.git`;
