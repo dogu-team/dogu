@@ -10,6 +10,7 @@ import { ProjectScm } from '../../../db/entity/project-scm';
 import { ProjectScmGithubAuth } from '../../../db/entity/project-scm-github-auth.entity';
 import { ProjectScmGitlabAuth } from '../../../db/entity/project-scm-gitlab-auth.entity';
 import { Github } from '../../../sdk/github';
+import { Gitlab } from '../../../sdk/gitlab';
 import { UpdateProjectGitDto } from './dto/project-scm.dto';
 
 @Injectable()
@@ -92,7 +93,7 @@ export class ProjectScmService {
     }
 
     switch (projectScm.type) {
-      case PROJECT_SCM_TYPE.GITHUB:
+      case PROJECT_SCM_TYPE.GITHUB: {
         const projectScmGithubAuth = await this.dataSource.getRepository(ProjectScmGithubAuth).findOne({
           where: { projectScmId: projectScm.projectScmId },
         });
@@ -102,8 +103,9 @@ export class ProjectScmService {
         }
 
         const githubToken = await this.decryptToken(this.dataSource.manager, organizationId, projectScmGithubAuth.token);
-        const owner = projectScm.url.split('/')[0];
-        const repo = projectScm.url.split('/')[1];
+        const parts: string[] = projectScm.url.split('/');
+        const owner: string = parts[parts.length - 2];
+        const repo: string = parts[parts.length - 1];
 
         const content = await Github.readDoguConfigFile(githubToken, owner, repo);
         const json: DoguScmConfig = JSON.parse(content.replaceAll('\n| ', ''));
@@ -114,7 +116,8 @@ export class ProjectScmService {
           size: r.size ?? 0,
           type: r.type ?? '',
         }));
-      case PROJECT_SCM_TYPE.GITLAB:
+      }
+      case PROJECT_SCM_TYPE.GITLAB: {
         const projectScmGitlabbAuth = await this.dataSource.getRepository(ProjectScmGitlabAuth).findOne({
           where: { projectScmId: projectScm.projectScmId },
         });
@@ -125,8 +128,33 @@ export class ProjectScmService {
 
         const gitlabToken = await this.decryptToken(this.dataSource.manager, organizationId, projectScmGitlabbAuth.token);
 
-        // TODO: implement
-        return [];
+        const parts: string[] = projectScm.url.split('/');
+        const repo: string = parts[parts.length - 2];
+        const projectName: string = parts[parts.length - 1];
+        const hostUrl = parts.slice(0, parts.length - 2).join('/');
+
+        const json = await Gitlab.readDoguConfigFile(hostUrl, gitlabToken, projectName);
+        const metaTrees = await Promise.all(
+          json.scriptFolderPaths.map(async (path) => {
+            return Gitlab.getProjectFileMetaTree(hostUrl, gitlabToken, projectName, path);
+          }),
+        );
+
+        const results: ProjectTestScript[] = metaTrees
+          .flat()
+          .filter((meta) => meta.type === 'blob')
+          .map((meta) => {
+            const rv: ProjectTestScript = {
+              name: meta.name,
+              path: meta.path,
+              size: Number(meta.size),
+              type: meta.type,
+            };
+            return rv;
+          });
+
+        return results;
+      }
       default:
         throw new BadRequestException('Invalid repository type');
     }

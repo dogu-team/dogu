@@ -173,16 +173,19 @@ export class GitlabService {
     return gitUrlWithAuth;
   }
 
-  async resetPassword(manager: EntityManager, userId: UserId, password: string) {
-    throw new Error('Not implemented');
-    // const [userGitlab] = await Promise.all([manager.getRepository(UserGitlab).findOne({ where: { userId } })]);
+  // private async readDoguConfig(projectGitlab: ProjectGitlab): Promise<DoguConfig> {
+  //   const doguConfigFile = await Gitlab.getProjectFile('dogu.config.json', projectGitlab);
+  //   const doguConfigJson = JSON.parse(Buffer.from(doguConfigFile.content, 'base64').toString());
+  //   const existKeys = Object.keys(DoguConfigKeys);
 
-    // if (!userGitlab) {
-    //   throw new HttpException(`User is not in gitlab: ${userId}`, HttpStatus.NOT_FOUND);
-    // }
+  //   for (const key of existKeys) {
+  //     if (doguConfigJson[key] === undefined) {
+  //       throw new Error(`dogu.config.json is not valid. ${key} is not defined.`);
+  //     }
+  //   }
 
-    // await Gitlab.resetPassword(userGitlab, password);
-  }
+  //   return doguConfigJson;
+  // }
 
   // async createUser(userId: UserId, name: string, email: string, password: string | null) {
   //   const user = await Gitlab.createUser(userId, name, email, password);
