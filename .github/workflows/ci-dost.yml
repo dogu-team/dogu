@@ -79,7 +79,7 @@ jobs:
         with:
           path: |
             ~/hostedtoolcache/go/${{ env.GO_VERSION }}
-            ~/hostedtoolcache/windows/go/${{ env.GO_VERSION }}
+            C:\hostedtoolcache\windows\go\${{ env.GO_VERSION }}
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.GO_VERSION }}
 
       - name: Windows - Msys2 - MIGW64 - Setup for cgo

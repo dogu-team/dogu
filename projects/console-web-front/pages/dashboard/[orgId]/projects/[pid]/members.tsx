@@ -2,6 +2,8 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { OrganizationId } from '@dogu-private/types';
 import { ProjectId } from '@dogu-private/types';
+import Head from 'next/head';
+
 import { NextPageWithLayout } from 'pages/_app';
 import AddMemberButton from 'src/components/projects/AddMemberButton';
 import RefreshButton from 'src/components/buttons/RefreshButton';
@@ -11,7 +13,6 @@ import ProjectMemberFilter from 'src/components/projects/ProjectMemberFilter';
 import AddTeamButton from 'src/components/projects/AddTeamButton';
 import ProjectLayout from 'src/components/layouts/ProjectLayout';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
-import Head from 'next/head';
 
 const ProjectMemberPage: NextPageWithLayout<WithProjectProps> = ({ project }) => {
   const router = useRouter();

@@ -4,6 +4,7 @@ import { RoutineId } from '@dogu-private/types';
 import useSWR from 'swr';
 import { RoutineBase } from '@dogu-private/console';
 import Head from 'next/head';
+import { GetServerSideProps } from 'next';
 
 import { NextPageWithLayout } from 'pages/_app';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
@@ -18,7 +19,7 @@ import RoutineInfoContainer from 'src/components/routine/RoutineInfoContainer';
 import { swrAuthFetcher } from 'src/api/index';
 import EditRoutineButton from 'src/components/routine/EditRoutineButton';
 
-const ProjectPipelineListPage: NextPageWithLayout<WithProjectProps> = ({ organization, project }) => {
+const ProjectRoutinePage: NextPageWithLayout<WithProjectProps> = ({ organization, project }) => {
   const router = useRouter();
   const routineId = router.query.routine as RoutineId | undefined;
   const { data } = useSWR<RoutineBase>(routineId && `/organizations/${organization.organizationId}/projects/${project.projectId}/routines/${routineId}`, swrAuthFetcher);
@@ -53,13 +54,13 @@ const ProjectPipelineListPage: NextPageWithLayout<WithProjectProps> = ({ organiz
   );
 };
 
-ProjectPipelineListPage.getLayout = (page) => {
+ProjectRoutinePage.getLayout = (page) => {
   return <ProjectLayout sidebar={<PipelineSideBar />}>{page}</ProjectLayout>;
 };
 
-export const getServerSideProps = getProjectPageServerSideProps;
+export const getServerSideProps: GetServerSideProps = getProjectPageServerSideProps;
 
-export default withProject(ProjectPipelineListPage);
+export default withProject(ProjectRoutinePage);
 
 const Box = styled.div``;
 

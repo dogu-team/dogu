@@ -40,9 +40,13 @@ export async function launchDost(): Promise<Page> {
   if (fs.existsSync(dostGeneratedpath)) {
     fs.rmSync(dostGeneratedpath, { recursive: true });
   }
-  if (fs.existsSync(doguWorkdirPath)) {
-    fs.rmSync(doguWorkdirPath, { recursive: true });
+
+  if (!process.env.DOGU_SKIP_DOGU_HOME_CLEANUP) {
+    if (fs.existsSync(doguWorkdirPath)) {
+      fs.rmSync(doguWorkdirPath, { recursive: true });
+    }
   }
+
   const reactProc = child_process.spawn('yarn', ['workspace', 'dost', 'run', 'start:react'], {
     shell: process.platform === 'win32' ? 'cmd.exe' : undefined,
     windowsVerbatimArguments: true,

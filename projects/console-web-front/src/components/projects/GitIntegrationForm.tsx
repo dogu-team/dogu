@@ -1,11 +1,11 @@
 import { GithubFilled, GitlabOutlined } from '@ant-design/icons';
+import { REPOSITORY_TYPE } from '@dogu-private/types';
 import { Form, FormInstance, Input, Radio } from 'antd';
 
 export type GitIntegrationFormValues = {
-  git: string;
+  git: REPOSITORY_TYPE;
   token: string;
   repo: string;
-  path: string;
 };
 
 interface Props {
@@ -15,13 +15,13 @@ interface Props {
 const GitIntegrationForm = ({ form }: Props) => {
   return (
     <Form form={form} layout="vertical" name="git-integration">
-      <Form.Item label="Git service" name="git" required rules={[{ required: true, message: 'Select service' }]} valuePropName="checked">
+      <Form.Item label="Git service" name="git" required rules={[{ required: true, message: 'Select service' }]}>
         <Radio.Group buttonStyle="solid">
-          <Radio.Button value="github">
+          <Radio.Button value={REPOSITORY_TYPE.GITHUB}>
             <GithubFilled />
             &nbsp;GitHub
           </Radio.Button>
-          <Radio.Button value="gitlab">
+          <Radio.Button value={REPOSITORY_TYPE.GITLAB}>
             <GitlabOutlined />
             &nbsp;GitLab
           </Radio.Button>
@@ -32,9 +32,6 @@ const GitIntegrationForm = ({ form }: Props) => {
       </Form.Item>
       <Form.Item label="Repository" name="repo" required rules={[{ required: true, message: 'Input repository' }]}>
         <Input placeholder="dogu-team/dogu" required />
-      </Form.Item>
-      <Form.Item label="Dogu config file(json) path" name="path" required rules={[{ required: true, message: 'Input config path' }]}>
-        <Input placeholder="e2e/dogu.config.json" required />
       </Form.Item>
     </Form>
   );

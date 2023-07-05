@@ -63,6 +63,7 @@ export * from './dto/pipeline/pipeline-response.dto';
 export * from './dto/pipeline/pipeline.dto';
 export * from './dto/project-application/project-application.dto';
 export * from './dto/project-role/project-role.dto';
+export * from './dto/project/project-git.dto';
 export * from './dto/project/project-response.dto';
 export * from './dto/project/project.dto';
 export * from './dto/registery/registery-response.dto';
