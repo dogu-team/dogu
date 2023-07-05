@@ -2,7 +2,7 @@
   "name": "@dogu-tech/device-client-common",
   "version": "0.0.1",
   "description": "",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE.md",
   "author": "dogu",
   "main": "./build/src/index.js",
   "files": [

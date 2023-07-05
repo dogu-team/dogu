@@ -2,7 +2,7 @@
   "name": "pytest-playwright-dogu-report",
   "version": "0.0.0",
   "description": "",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE.md",
   "author": "dogu",
   "scripts": {
     "black": "poetry run black tests",

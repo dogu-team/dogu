@@ -1,7 +1,7 @@
 {
   "name": "dest-in-step",
   "version": "1.0.0",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE.md",
   "author": "",
   "homepage": "https://github.com/dogu-team/user-testscript.git",
   "main": "./build/src/index.js",

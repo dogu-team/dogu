@@ -2,7 +2,7 @@
   "name": "@dogu-tech/action-kit",
   "version": "0.0.0",
   "description": "dogu pipeline action core library",
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE.md",
   "author": "dogu",
   "main": "./build/src/index.js",
   "files": [
