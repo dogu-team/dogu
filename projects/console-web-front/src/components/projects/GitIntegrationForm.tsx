@@ -30,8 +30,8 @@ const GitIntegrationForm = ({ form }: Props) => {
       <Form.Item label="Token" name="token" required rules={[{ required: true, message: 'Input token' }]}>
         <Input placeholder="ghp_1234567890abcd" required />
       </Form.Item>
-      <Form.Item label="Repository" name="repo" required rules={[{ required: true, message: 'Input repository' }]}>
-        <Input placeholder="dogu-team/dogu" required />
+      <Form.Item label="Repository URL" name="repo" required rules={[{ required: true, message: 'Input repository' }]}>
+        <Input placeholder="https://github.com/dogu-team/dogu" required />
       </Form.Item>
     </Form>
   );
