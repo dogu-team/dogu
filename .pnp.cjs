@@ -144,6 +144,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/typescript/env-tools"\
       },\
       {\
+        "name": "@dogu-tech/jest-environment",\
+        "reference": "workspace:packages/typescript/jest-environment"\
+      },\
+      {\
         "name": "@dogu-tech/node",\
         "reference": "workspace:packages/typescript/node"\
       },\
@@ -244,6 +248,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@dogu-tech/device-client-common", ["workspace:packages/typescript/device-client-common"]],\
       ["@dogu-tech/device-interface", ["workspace:packages/typescript/device-interface"]],\
       ["@dogu-tech/env-tools", ["workspace:packages/typescript/env-tools"]],\
+      ["@dogu-tech/jest-environment", ["workspace:packages/typescript/jest-environment"]],\
       ["@dogu-tech/node", ["workspace:packages/typescript/node"]],\
       ["@dogu-tech/toolkit", ["workspace:packages/typescript/toolkit"]],\
       ["@dogu-tech/types", ["workspace:packages/typescript/types"]],\
@@ -11298,6 +11303,22 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lodash", "npm:4.17.21"],\
             ["nodemon", "npm:2.0.22"],\
             ["reflect-metadata", "npm:0.1.13"],\
+            ["shx", "npm:0.3.4"],\
+            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@dogu-tech/jest-environment", [\
+        ["workspace:packages/typescript/jest-environment", {\
+          "packageLocation": "./packages/typescript/jest-environment/",\
+          "packageDependencies": [\
+            ["@dogu-tech/jest-environment", "workspace:packages/typescript/jest-environment"],\
+            ["@dogu-dev-private/publish-package", "workspace:packages/typescript-dev-private/publish-package"],\
+            ["@types/node", "npm:18.15.11"],\
+            ["cross-env", "npm:7.0.3"],\
+            ["nodemon", "npm:2.0.22"],\
             ["shx", "npm:0.3.4"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
