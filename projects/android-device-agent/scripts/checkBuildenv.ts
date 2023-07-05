@@ -1,6 +1,6 @@
-import shelljs from 'shelljs';
 import fs from 'fs';
 import path from 'path';
+import shelljs from 'shelljs';
 
 function checkAndroidEnv(): boolean {
   console.info(`Checking Android environment...`);

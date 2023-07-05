@@ -6,7 +6,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: 'Dogu documentation',
+  title: 'Dogu Documentation',
   tagline: 'Automate your game QA',
   url: 'https://docs.dogutech.io',
   baseUrl: '/',

@@ -2,9 +2,9 @@ import { AsyncClosable, errorify } from '@dogu-tech/common';
 import { DeviceClient, DeviceHostClient } from '@dogu-tech/device-client';
 import { Logger } from '@dogu-tech/node';
 import { GamiumClient } from 'gamium';
+import { remote } from 'webdriverio';
 import { GamiumContext } from './internal/gamium-context';
 import { FilledToolkitOptions } from './options';
-import { remote } from 'webdriverio';
 
 export type AppiumContext = Awaited<ReturnType<typeof remote>>;
 

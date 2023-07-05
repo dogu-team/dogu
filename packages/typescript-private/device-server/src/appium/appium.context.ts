@@ -12,11 +12,11 @@ import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 import { setInterval } from 'timers/promises';
+import { remote } from 'webdriverio';
 import { Adb } from '../internal/externals/index';
 import { getFreePort } from '../internal/util/net';
 import { createAppiumLogger } from '../logger/logger.instance';
 import { AppiumService } from './appium.service';
-import { remote } from 'webdriverio';
 
 type Browser = Awaited<ReturnType<typeof remote>>;
 

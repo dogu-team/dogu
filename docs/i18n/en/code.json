@@ -275,23 +275,32 @@
   "main.descriptionText": {
     "message": "Explore how to automate game test cases using Dogu.\nThe documentation provides various resources, including example code and tutorials, to guide you through the process."
   },
-  "main.getStartedTitle": {
+  "main.introduction": {
+    "message": "Introduction"
+  },
+  "main.getStartedInstallationTitle": {
+    "message": "Installation"
+  },
+  "main.getStartedDeviceFarmTitle": {
+    "message": "Device Farm"
+  },
+  "main.getStartedTestScriptTitle": {
+    "message": "Test Script"
+  },
+  "main.getStartedTestReportTitle": {
+    "message": "Test Report"
+  },
+  "main.getStartedRoutineTitle": {
+    "message": "Routine"
+  },
+  "main.getStartedLinkTitle": {
     "message": "Get started"
-  },
-  "main.getStartedAboutLinkTitle": {
-    "message": "About Dogu"
-  },
-  "main.getStartedDevicefarmLinkTitle": {
-    "message": "Start device farm"
-  },
-  "main.getStartedGameTestLinkTitle": {
-    "message": "Start game test automation"
   },
   "main.orgAndProjectTitle": {
     "message": "Maganement"
   },
   "main.orgAndProjectIntroLinkTitle": {
-    "message": "Intro"
+    "message": "Maganement"
   },
   "main.orgAndProjectOrgLinkTitle": {
     "message": "Organization"
@@ -303,7 +312,7 @@
     "message": "Device Farm"
   },
   "main.hostAndDeviceIntroLinkTitle": {
-    "message": "Intro"
+    "message": "Device Farm"
   },
   "main.hostAndDeviceHostLinkTitle": {
     "message": "Host"
@@ -311,11 +320,26 @@
   "main.hostAndDeviceDeviceLinkTitle": {
     "message": "Device"
   },
+  "main.testAutomationTitle": {
+    "message": "Test Automation"
+  },
+  "main.testAutomationBrowserLinkTitle": {
+    "message": "Browser"
+  },
+  "main.testAutomationMobileLinkTitle": {
+    "message": "Mobile"
+  },
+  "main.testAutomationGameLinkTitle": {
+    "message": "Game"
+  },
   "main.scriptAndRoutineTitle": {
-    "message": "Script & Routine"
+    "message": "Routine"
   },
   "main.scriptAndRoutineIntroLinkTitle": {
-    "message": "Intro"
+    "message": "Routine"
+  },
+  "main.scriptAndRoutineActionLinkTitle": {
+    "message": "Action"
   },
   "main.scriptAndRoutineScriptLinkTitle": {
     "message": "Test script"
@@ -341,8 +365,8 @@
   "main.selfHostedStartLinkTitle": {
     "message": "Get Started"
   },
-  "main.selfHostedUpdateLinkTitle": {
-    "message": "Update"
+  "main.testReportTitle": {
+    "message": "Test Report"
   },
   "theme.NavBar.navAriaLabel": {
     "message": "Main",
