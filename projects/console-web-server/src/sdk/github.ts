@@ -1,8 +1,8 @@
+import { DOGU_CONFIG_FILE_NAME } from '@dogu-private/types';
 import { Octokit } from '@octokit/rest';
 
 export module Github {
   const GITHUB_API_VERSION = '2022-11-28';
-  const DOGU_CONFIG_FILE_NAME = 'dogu.config.json';
 
   function createSession(token: string) {
     return new Octokit({
@@ -85,7 +85,7 @@ export module Github {
 
     if (rv.status === 200) {
       const tree = rv.data.tree;
-      const scriptFiles = tree.filter((t) => (t.path ? scriptPaths.includes(t.path) : false));
+      const scriptFiles = tree.filter((t) => (t.path ? scriptPaths.some((path) => t.path?.startsWith(path) && t.type === 'blob') : false));
       return scriptFiles;
     }
 

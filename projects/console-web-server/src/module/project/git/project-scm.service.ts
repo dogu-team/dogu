@@ -1,4 +1,4 @@
-import { OrganizationId, ProjectId, PROJECT_SCM_TYPE } from '@dogu-private/types';
+import { DoguScmConfig, OrganizationId, ProjectId, ProjectTestScript, PROJECT_SCM_TYPE } from '@dogu-private/types';
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import crypto from 'crypto';
@@ -82,7 +82,7 @@ export class ProjectScmService {
     });
   }
 
-  async findTestScripts(organizationId: OrganizationId, projectId: ProjectId) {
+  async findTestScripts(organizationId: OrganizationId, projectId: ProjectId): Promise<ProjectTestScript[]> {
     const projectScm = await this.dataSource.getRepository(ProjectScm).findOne({
       where: { projectId },
     });
@@ -106,9 +106,14 @@ export class ProjectScmService {
         const repo = projectScm.url.split('/')[1];
 
         const content = await Github.readDoguConfigFile(githubToken, owner, repo);
-        const json: { scriptFilePath: string[] } = JSON.parse(content.replaceAll('\n| ', ''));
-        const result = await Github.getScriptFiles(githubToken, owner, repo, json.scriptFilePath);
-        return;
+        const json: DoguScmConfig = JSON.parse(content.replaceAll('\n| ', ''));
+        const result = await Github.getScriptFiles(githubToken, owner, repo, json.scriptFolderPaths);
+        return result.map((r) => ({
+          name: r.path?.split('/').pop() ?? '',
+          path: r.path ?? '',
+          size: r.size ?? 0,
+          type: r.type ?? '',
+        }));
       case PROJECT_SCM_TYPE.GITLAB:
         const projectScmGitlabbAuth = await this.dataSource.getRepository(ProjectScmGitlabAuth).findOne({
           where: { projectScmId: projectScm.projectScmId },
@@ -121,7 +126,7 @@ export class ProjectScmService {
         const gitlabToken = await this.decryptToken(this.dataSource.manager, organizationId, projectScmGitlabbAuth.token);
 
         // TODO: implement
-        return;
+        return [];
       default:
         throw new BadRequestException('Invalid repository type');
     }
