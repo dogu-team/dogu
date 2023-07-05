@@ -34,8 +34,42 @@ export class DeviceWebDriverNewSessionEndpointHandler extends DeviceWebDriverEnd
       return { status: 400, error: new Error('App url not specified'), data: {} };
     }
     const url = endpoint.info.capabilities.doguOptions.appUrl;
+    const filename = path.basename(url);
+    const extension = path.extname(url);
+    const appVersion = endpoint.info.capabilities.doguOptions.appVersion;
+    if (!appVersion) {
+      return { status: 400, error: new Error('App version not specified'), data: {} };
+    }
+    const downloadFilename = `${filename}-${appVersion}${extension}`;
+    const filePath = path.resolve(HostPaths.doguTempPath(), downloadFilename);
+    endpoint.info.capabilities.setApp(filePath);
 
-    const tempFileName = `${uuidv4()}.${path.extname(url)}`;
+    const headRes = await axios.head(url, {
+      headers: {},
+      timeout: DefaultHttpOptions.request.timeout,
+    });
+    const expectedFileSize = parseInt(headRes.headers['content-length']);
+
+    const stat = await fs.promises.stat(filePath).catch(() => null);
+    if (stat !== null) {
+      if (stat.isFile()) {
+        logger.info('File already exists', { filePath });
+        logger.info(`File size local: ${stat.size} expected: ${expectedFileSize}`, { filePath });
+        if (stat.size === expectedFileSize) {
+          logger.info('File is same size. Skipping download', { filePath });
+          return { request, ...{ reqBody: endpoint.info.capabilities.origin } };
+        } else {
+          logger.info('File is not same size. Deleting file', { filePath });
+          await fs.promises.unlink(filePath);
+          logger.info('File deleted', { filePath });
+        }
+      } else {
+        logger.error('File is not a file', { filePath });
+        throw new Error('File is not a file');
+      }
+    }
+
+    const tempFileName = `${uuidv4()}.${extension}`;
     const tempFilePath = path.resolve(HostPaths.tempPath, tempFileName);
     if (!fs.existsSync(HostPaths.tempPath)) {
       fs.mkdirSync(HostPaths.tempPath, { recursive: true });
@@ -56,12 +90,12 @@ export class DeviceWebDriverNewSessionEndpointHandler extends DeviceWebDriverEnd
       writer.close();
       throw error;
     }
-    // const dirPath = path.dirname(filePath);
-    // await fs.promises.mkdir(dirPath, { recursive: true });
-    // await fs.promises.rename(tempFilePath, filePath);
+    const dirPath = path.dirname(filePath);
+    await fs.promises.mkdir(dirPath, { recursive: true });
+    await fs.promises.rename(tempFilePath, filePath);
     logger.info('File downloaded', { tempFilePath });
 
-    endpoint.info.capabilities.setApp(tempFilePath);
+    endpoint.info.capabilities.setApp(filePath);
 
     return { request, ...{ reqBody: endpoint.info.capabilities.origin } };
   }
