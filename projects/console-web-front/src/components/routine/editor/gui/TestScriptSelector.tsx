@@ -13,23 +13,23 @@ interface Props extends Omit<SelectProps, 'options'> {
 }
 
 const TestScriptSelector = ({ organizationId, projectId, ...props }: Props) => {
-  const { data, isLoading, error } = useSWR<RepositoryFileMetaTree>(`/organizations/${organizationId}/projects/${projectId}/git/scripts?type=blob`, swrAuthFetcher, {
+  const { data, isLoading, error } = useSWR<void>(`/organizations/${organizationId}/projects/${projectId}/git/scripts?type=blob`, swrAuthFetcher, {
     revalidateOnFocus: false,
   });
 
-  const options: SelectProps['options'] = data?.map((item) => {
-    return {
-      label: (
-        <TestScriptBox>
-          <TestScriptName>{item.name}</TestScriptName>
-          <TestScriptPath>{`(${item.path})`}</TestScriptPath>
-        </TestScriptBox>
-      ),
-      value: item.path,
-    };
-  });
+  // const options: SelectProps['options'] = data?.map((item) => {
+  //   return {
+  //     label: (
+  //       <TestScriptBox>
+  //         <TestScriptName>{item.name}</TestScriptName>
+  //         <TestScriptPath>{`(${item.path})`}</TestScriptPath>
+  //       </TestScriptBox>
+  //     ),
+  //     value: item.path,
+  //   };
+  // });
 
-  return <Select {...props} options={options} loading={isLoading} dropdownMatchSelectWidth={false} />;
+  return <Select {...props} options={[]} loading={isLoading} dropdownMatchSelectWidth={false} />;
 };
 
 export default TestScriptSelector;
