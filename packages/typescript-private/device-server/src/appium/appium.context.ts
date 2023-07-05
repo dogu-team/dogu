@@ -58,9 +58,11 @@ function callClientAsyncWithTimeout<T>(callClientAsync: Promise<T>): Promise<T> 
 }
 
 export type AppiumContextKey = 'bulitin' | 'remote' | 'null';
+export type AppiumOpeningState = 'opening' | 'openingSucceeded' | 'openingFailed';
 
 export interface AppiumContext {
   get key(): AppiumContextKey;
+  get openingState(): AppiumOpeningState;
   open(): Promise<void>;
   close(): Promise<void>;
   isHealthy(): boolean;
@@ -78,6 +80,9 @@ export interface AppiumContext {
 class NullAppiumContext implements AppiumContext {
   get key(): AppiumContextKey {
     return 'null';
+  }
+  get openingState(): AppiumOpeningState {
+    return 'openingSucceeded';
   }
 
   open(): Promise<void> {
@@ -146,26 +151,20 @@ class NullAppiumContext implements AppiumContext {
 export class AppiumContextProxy implements AppiumContext {
   private readonly logger: Logger;
   private impl: AppiumContext;
-  private next: AppiumContextImpl | null = null;
+  private next: AppiumContext | null = null;
   private closed = false;
 
   constructor(private readonly options: AppiumContextOptions) {
     this.logger = createAppiumLogger(options.serial);
-    switch (options.key) {
-      case 'bulitin':
-        this.impl = new AppiumContextImpl(options, this.logger);
-        break;
-      case 'remote':
-        this.impl = new AppiumRemoteContext(options, this.logger);
-        break;
-      case 'null':
-        this.impl = new NullAppiumContext();
-        break;
-    }
+    this.impl = AppiumContextProxy.createAppiumContext(options, this.logger);
   }
 
   get key(): AppiumContextKey {
     return this.impl.key;
+  }
+
+  get openingState(): AppiumOpeningState {
+    return this.impl.openingState;
   }
 
   async open(): Promise<void> {
@@ -213,8 +212,8 @@ export class AppiumContextProxy implements AppiumContext {
 
         this.logger.verbose('Appium context is not found. Creating new context');
         this.impl = new NullAppiumContext();
-        this.next = new AppiumContextImpl(this.options, this.logger);
-        this.next.open().catch((error) => {
+        this.next = AppiumContextProxy.createAppiumContext(this.options, this.logger);
+        this.next?.open().catch((error) => {
           this.logger.error('Appium context open failed', { error: errorify(error) });
         });
       }
@@ -269,6 +268,17 @@ export class AppiumContextProxy implements AppiumContext {
 
   getContextPageSources(): Promise<ContextPageSource[]> {
     return this.impl.getContextPageSources();
+  }
+
+  private static createAppiumContext(options: AppiumContextOptions, logger: Logger): AppiumContext {
+    switch (options.key) {
+      case 'bulitin':
+        return new AppiumContextImpl(options, logger);
+      case 'remote':
+        return new AppiumRemoteContext(options, logger);
+      case 'null':
+        return new NullAppiumContext();
+    }
   }
 }
 

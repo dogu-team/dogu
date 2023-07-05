@@ -108,6 +108,7 @@ export class AppiumRemoteContext implements AppiumContext {
         });
         child.on('close', (code, signal) => {
           this.logger.info('server closed', { code, signal });
+          this._isHealthy = false;
         });
         child.stdout.setEncoding('utf8');
         child.stdout.on('data', (data) => {
