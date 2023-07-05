@@ -1,6 +1,6 @@
 import { ProjectRepositoryBase, ProjectRepositoryBasePropCamel, ProjectRepositoryBasePropSnake } from '@dogu-private/console';
 import { ProjectId, ProjectRepositoryId, PROJECT_REPOSITORY_TABLE_NAME, REPOSITORY_TYPE } from '@dogu-private/types';
-import { BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { Project } from './project.entity';
 
@@ -27,7 +27,7 @@ export class ProjectRepository extends BaseEntity implements ProjectRepositoryBa
   @ColumnTemplate.DeleteDate(ProjectRepositoryBasePropSnake.deleted_at)
   deletedAt!: Date | null;
 
-  @OneToOne(() => Project, { createForeignKeyConstraints: false })
+  @ManyToOne(() => Project, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
   @JoinColumn({ name: ProjectRepositoryBasePropSnake.project_id, referencedColumnName: ProjectRepositoryBasePropCamel.projectId })
   project?: Project;
 }
