@@ -133,7 +133,6 @@ export class ProjectGitService {
 
     const key = organizationKey.key;
 
-    // create 16bytes iv
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
     const encrypted = Buffer.concat([cipher.update(rawToken), cipher.final()]);
