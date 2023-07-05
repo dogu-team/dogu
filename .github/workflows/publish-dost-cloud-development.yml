@@ -78,7 +78,7 @@ jobs:
         with:
           path: |
             ${{ github.workspace }}/nm-space/mirror
-            ${{ github.workspace }}/node_modules
+            ${{ github.workspace }}/nm-space/node_modules
           key: ${{ env.cache-name }}-${{ hashFiles('packages/typescript-*/**') }}-${{ hashFiles('nm-space/yarn.lock') }}
 
       - name: Windows - Msys2 - MIGW64 - Setup for cgo
@@ -172,7 +172,8 @@ jobs:
           DOGU_APPLE_API_KEY_ID: ${{ secrets.DOGU_APPLE_API_KEY_ID }}
           DOGU_APPLE_API_ISSUER_ID: ${{ secrets.DOGU_APPLE_API_ISSUER_ID }}
 
-      - name: Dost - Newbie nm-space
+      - if: steps.cache_mirror.outputs.cache-hit != 'true'
+        name: Dost - Newbie nm-space
         run: |
           yarn workspace dogu run newbie:nm-space
 
