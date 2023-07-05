@@ -8,6 +8,7 @@ export const HostPaths = {
   doguHomePath: process.env.DOGU_HOME || path.resolve(os.homedir(), '.dogu'),
   workingGeneratedPath: path.resolve(process.cwd(), 'generated'),
   tempPath: path.resolve(os.tmpdir(), 'dogu'),
+  doguTempPath: (): string => path.resolve(HostPaths.doguHomePath, 'temp'),
 
   configsPath: (doguHomePath: string): string => path.resolve(doguHomePath, 'configs'),
   logsPath: (doguHomePath: string): string => path.resolve(doguHomePath, 'logs'),

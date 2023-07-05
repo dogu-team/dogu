@@ -59,3 +59,19 @@ export function platformFromPlatformType(platform: PlatformType): Platform {
       return Platform.PLATFORM_UNSPECIFIED;
   }
 }
+
+export function extensionFromPlatform(platform: PlatformType): string {
+  const lower = platform.toLowerCase();
+  switch (lower) {
+    case 'android':
+      return 'apk';
+    case 'ios':
+      return 'ipa';
+    case 'windows':
+      return 'exe';
+    case 'mac':
+      return 'dmg';
+    default:
+      throw new Error(`Invalid platform: ${platform}`);
+  }
+}

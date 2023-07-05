@@ -6,7 +6,6 @@ import { errorify } from '@dogu-tech/common';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { WsAdapter } from '@nestjs/platform-ws';
-
 import { WinstonModule } from 'nest-winston';
 
 import { AppModule } from './app/app.module';
@@ -31,6 +30,7 @@ export async function bootstrap(): Promise<void> {
   logger.info('dogu protocol version', { DOGU_PROTOCOL_VERSION });
   const pathMap = await openPathMap(env.ANDROID_HOME);
   logger.info('path map', { pathMap });
+
   const app = await NestFactory.create(AppModule, {
     logger: WinstonModule.createLogger({
       instance: logger.winstonLogger(),

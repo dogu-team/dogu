@@ -31,6 +31,7 @@ import { PublicModule } from '../public/public.module';
 import { RegisteryModule } from '../registery/registery.module';
 import { RoutineModule } from '../routine/routine.module';
 import { UserModule } from '../user/user.module';
+import { WebDriverModule } from '../webdriver/webdriver.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -69,6 +70,7 @@ const IMPORT_MODULES = [
   FeatureFileModule,
   AuthModule,
   FileModule,
+  WebDriverModule,
 ];
 
 @Module({

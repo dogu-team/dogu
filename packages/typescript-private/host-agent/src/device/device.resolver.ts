@@ -1,6 +1,7 @@
 import { PrivateDevice } from '@dogu-private/console-host-agent';
 import { createConsoleApiAuthHeader, DeviceId, isHostPlatform, OrganizationId, Platform, Serial } from '@dogu-private/types';
 import { DefaultHttpOptions, Instance, parseAxiosError, stringify, transformAndValidate, validateAndEmitEventAsync } from '@dogu-tech/common';
+import { HostPaths } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import axios from 'axios';
@@ -12,7 +13,6 @@ import { OnHostDisconnectedEvent, OnHostResolvedEvent } from '../host/host.event
 import { DoguLogger } from '../logger/logger';
 import { HostResolutionInfo } from '../types';
 import { OnDeviceConnectedEvent, OnDeviceResolvedEvent } from './device.events';
-import { HostPaths } from '@dogu-tech/node';
 
 @Injectable()
 export class DeviceResolver {
@@ -79,7 +79,7 @@ export class DeviceResolver {
         }),
       ).catch((error) => {
         this.logger.error('Failed to find device', {
-          error: stringify(error),
+          error: stringify(parseAxiosError(error)),
         });
         throw error;
       });

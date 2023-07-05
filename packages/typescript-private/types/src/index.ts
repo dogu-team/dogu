@@ -10,6 +10,7 @@ export * from './dest';
 export * from './dest_edge';
 export * from './device';
 export * from './device-and-device-tag/index';
+export * from './device-and-webdriver';
 export * from './device-tag/index';
 export * from './enum';
 export * from './github-repository-auth';

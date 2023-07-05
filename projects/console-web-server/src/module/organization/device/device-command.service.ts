@@ -69,7 +69,7 @@ export class DeviceCommandService {
     const pathProvider = new Device.rebootDevice.pathProvider(serial);
     const path = Device.rebootDevice.resolvePath(pathProvider);
     this.deviceMessageRelayer
-      .sendHttpRequest(organizationId, deviceId, Device.rebootDevice.method, path, undefined, undefined, undefined, Device.rebootDevice.responseBodyData)
+      .sendHttpRequest(organizationId, deviceId, Device.rebootDevice.method, path, undefined, undefined, undefined, Device.rebootDevice.responseBody)
       .catch((error) => {
         this.logger.verbose(`DeviceCommandService.reboot. ignore error: ${stringify(error)}`);
       });

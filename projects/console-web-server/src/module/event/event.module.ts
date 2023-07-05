@@ -11,6 +11,7 @@ import { RoutineStep } from '../../db/entity/step.entity';
 import { DeviceMessageModule } from '../device-message/device-message.module';
 import { PipelineModule } from '../routine/pipeline/pipeline.module';
 import { DeviceConnectionUpdater } from './heartbeat/device-connection-updater';
+import { DeviceWebDriverUpdater } from './heartbeat/device-webdriver-updater';
 import { HeartBeatSystemProcessor } from './heartbeat/heartbeat-system.processor';
 import { HostConnectionUpdater } from './heartbeat/host-connection-updater';
 import { DestUpdater } from './pipeline/dest-updater';
@@ -51,6 +52,7 @@ import { UpdateProducer } from './update-producer';
 
     DeviceConnectionUpdater,
     HostConnectionUpdater,
+    DeviceWebDriverUpdater,
   ],
   exports: [CanclePipelineQueue, UpdateStepStatusQueue, UpdateDeviceJobStatusQueue, UpdateDestStateQueue],
 })
