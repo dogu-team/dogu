@@ -7,13 +7,14 @@ import {
   UserPropCamel,
   UserPropSnake,
 } from '@dogu-private/console';
-import { ProjectId, ProjectRoleId, TeamId, UserId } from '@dogu-private/types';
+import { OrganizationId, ProjectId, ProjectRoleId, TeamId, UserId } from '@dogu-private/types';
 import { delay } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import axios from 'axios';
 import { DataSource, EntityManager } from 'typeorm';
 import { User } from '../../db/entity/index';
+import { ProjectRepository } from '../../db/entity/project-repository';
 // import { OrganizationGitlab } from '../../db/entity/organization-gitlab.entity';
 // import { ProjectGitlab } from '../../db/entity/project-gitlab.entity';
 // import { UserGitlab } from '../../db/entity/user-gitlab.entity';
@@ -156,17 +157,20 @@ export class GitlabService {
     return projectRoles;
   }
 
-  // async getGitUrlWithAuth(organizationId: OrganizationId, projectId: ProjectId, urlWithoutProtocol: string) {
-  //   const projectGitlab = await this.dataSource.getRepository(ProjectGitlab).findOne({ where: { projectId } });
-  //   if (!projectGitlab) {
-  //     throw new HttpException(`Project is not in gitlab: ${projectId}`, HttpStatus.NOT_FOUND);
-  //   }
+  async getGitUrlWithAuth(organizationId: OrganizationId, projectId: ProjectId) {
+    // const projectGitlab = await this.dataSource.getRepository(ProjectGitlab).findOne({ where: { projectId } });
+    // if (!projectGitlab) {
+    //   throw new HttpException(`Project is not in gitlab: ${projectId}`, HttpStatus.NOT_FOUND);
+    // }
 
-  //   const gitUrlWithoutProtocol = urlWithoutProtocol;
-  //   const gitUrlWithAuth = `https://oauth2:${projectGitlab.gitlabProjectToken}@${gitUrlWithoutProtocol}/${organizationId}/${projectId}.git`;
+    const repository = await this.dataSource.getRepository(ProjectRepository).findOne({ where: { projectId } });
 
-  //   return gitUrlWithAuth;
-  // }
+    const gitUrlWithoutProtocol = 'urlWithoutProtocol';
+    // const gitUrlWithAuth = `https://oauth2:${projectGitlab.gitlabProjectToken}@${gitUrlWithoutProtocol}/${organizationId}/${projectId}.git`;
+    const gitUrlWithAuth = '';
+
+    return gitUrlWithAuth;
+  }
 
   async resetPassword(manager: EntityManager, userId: UserId, password: string) {
     throw new Error('Not implemented');
