@@ -273,7 +273,7 @@
     "description": "The ARIA label and title attribute for expand button of doc sidebar"
   },
   "main.descriptionText": {
-    "message": "Dogu는 브라우저, 모바일, 게임 테스트 자동화를 지원하는 통합 테스트 자동화 플랫폼입니다."
+    "message": "웹, 모바일, 게임 애플리케이션 테스트를 자동화하는 통합 테스트 자동화 플랫폼"
   },
   "main.introduction": {
     "message": "소개"
@@ -286,6 +286,9 @@
   },
   "main.getStartedTestScriptTitle": {
     "message": "테스트 스크립트"
+  },
+  "main.getStartedTestReportTitle": {
+    "message": "테스트 리포트"
   },
   "main.getStartedRoutineTitle": {
     "message": "루틴"

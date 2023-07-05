@@ -106,5 +106,9 @@
   "sidebar.getStartedSidebar.category.sidebar.getStarted.category.DeviceFarm": {
     "message": "sidebar.getStarted.category.DeviceFarm",
     "description": "The label for category sidebar.getStarted.category.DeviceFarm in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.sidebar.getStarted.category.TestScript": {
+    "message": "sidebar.getStarted.category.TestScript",
+    "description": "The label for category sidebar.getStarted.category.TestScript in sidebar getStartedSidebar"
   }
 }

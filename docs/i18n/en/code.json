@@ -287,6 +287,9 @@
   "main.getStartedTestScriptTitle": {
     "message": "Test Script"
   },
+  "main.getStartedTestReportTitle": {
+    "message": "Test Report"
+  },
   "main.getStartedRoutineTitle": {
     "message": "Routine"
   },
