@@ -30,3 +30,6 @@ export * from './validations/types/device-configs';
 export * from './validations/types/responses';
 export * from './validations/types/runtime-infos';
 export * from './validations/types/streaming-recordings';
+export * from './webdriver/webdriver-capabilities';
+export * from './webdriver/webdriver-endpoint';
+export * from './webdriver/webdriver-platform';

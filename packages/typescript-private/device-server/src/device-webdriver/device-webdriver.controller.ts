@@ -1,12 +1,13 @@
 import { Code, Serial } from '@dogu-private/types';
 import { HeaderRecord, Instance, stringify } from '@dogu-tech/common';
-import { DeviceServerResponseDto, DeviceWebDriver, RelayRequest, RelayResponse, SessionDeletedParam } from '@dogu-tech/device-client-common';
+import { DeviceServerResponseDto, DeviceWebDriver, RelayRequest, RelayResponse, SessionDeletedParam, WebDriverEndPoint } from '@dogu-tech/device-client-common';
 import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
 import axios, { AxiosError } from 'axios';
 import { deviceNotFoundError } from '../device/device.utils';
 import { DoguLogger } from '../logger/logger';
 import { appiumContextNotFoundError } from '../response-utils';
 import { ScanService } from '../scan/scan.service';
+import { DeviceWebDriverEndpointHandler, DeviceWebDriverNewSessionEndpointHandler } from './device-webdriver.endpoint.handler';
 
 @Controller(DeviceWebDriver.controller)
 export class DeviceWebDriverController {
@@ -26,12 +27,22 @@ export class DeviceWebDriverController {
       if (context.key !== 'remote') {
         context = await device.switchAppiumContext('remote');
       }
-      if (!(request.method in handlers)) {
+      if (!(request.method in methodHandlers)) {
         return apiNotFoundError(serial, request.method);
       }
 
+      const endpoint = await WebDriverEndPoint.create(request);
+      if (endpoint.info.type in endpointHandlers) {
+        const handler = endpointHandlers[endpoint.info.type];
+        const result = await handler.onRequest(endpoint, request, this.logger);
+        if (result.error) {
+          throw result.error;
+        }
+        request = result.request;
+      }
+
       const url = `http://localhost:${context.getInfo().server.port}/${request.path}`;
-      const res = await handlers[request.method](url, request, this.logger);
+      const res = await methodHandlers[request.method](url, request, this.logger);
       return {
         value: {
           $case: 'data',
@@ -40,14 +51,6 @@ export class DeviceWebDriverController {
       };
     } catch (e) {
       this.logger.error(`Error while relaying http request: ${stringify(e)}`);
-      if (axios.isAxiosError(e)) {
-        return {
-          value: {
-            $case: 'data',
-            data: axiosError(e),
-          },
-        };
-      }
       return unknownError(serial, e);
     }
   }
@@ -74,7 +77,13 @@ export class DeviceWebDriverController {
   }
 }
 
-const handlers: {
+const endpointHandlers: {
+  [key: string]: DeviceWebDriverEndpointHandler;
+} = {
+  'new-session': new DeviceWebDriverNewSessionEndpointHandler(),
+};
+
+const methodHandlers: {
   [key: string]: (url: string, request: RelayRequest, logger: DoguLogger) => Promise<RelayResponse>;
 } = {
   GET: async (url, request, logger) => {

@@ -14,7 +14,6 @@ import {
   RoutineStepPropCamel,
 } from '@dogu-private/console';
 import {
-  DeviceConnectionState,
   JobSchema,
   OrganizationId,
   PIPELINE_STATUS,
@@ -35,7 +34,7 @@ import { organizationId } from 'aws-sdk/clients/auditmanager';
 import lodash from 'lodash';
 import { DataSource, EntityManager, In } from 'typeorm';
 import { RoutineDeviceJob } from '../../../db/entity/device-job.entity';
-import { Device, DeviceAndDeviceTag, DeviceTag, ProjectAndDevice, RoutineJob, RoutineJobEdge } from '../../../db/entity/index';
+import { Device, ProjectAndDevice, RoutineJob, RoutineJobEdge } from '../../../db/entity/index';
 import { RoutinePipeline } from '../../../db/entity/pipeline.entity';
 import { Routine } from '../../../db/entity/routine.entity';
 import { RoutineStep } from '../../../db/entity/step.entity';
@@ -43,6 +42,7 @@ import { Page } from '../../common/dto/pagination/page';
 import { ProjectFileService } from '../../file/project-file.service';
 import { YamlLoaderService } from '../../init/yaml-loader/yaml-loader.service';
 import { DoguLogger } from '../../logger/logger';
+import { DeviceStatusService } from '../../organization/device/device-status.service';
 import { validateRoutineSchema } from '../common/validator';
 import { CreateInstantPipelineDto, FindAllPipelinesDto } from './dto/pipeline.dto';
 
@@ -67,6 +67,7 @@ export class PipelineService {
     @Inject(YamlLoaderService)
     private readonly yamlLoaderService: YamlLoaderService,
     private readonly projectFileService: ProjectFileService,
+    private readonly deviceStatusService: DeviceStatusService,
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly logger: DoguLogger,
@@ -195,47 +196,6 @@ export class PipelineService {
     }
 
     return targetDeviceNames;
-  }
-
-  private async findDevicesByDeviceTag(manager: EntityManager, organizationId: OrganizationId, projectId: ProjectId, deviceTagNames: string[]): Promise<Device[]> {
-    if (deviceTagNames.length === 0) {
-      throw new HttpException('TagNames must not be empty', HttpStatus.BAD_REQUEST);
-    }
-
-    const tags = await manager.getRepository(DeviceTag).find({ where: { organizationId, name: In(deviceTagNames) } });
-    const invalids: string[] = [];
-
-    deviceTagNames.forEach((tagName) => {
-      if (tagName === undefined) {
-        throw new HttpException('TagName must not be undefined', HttpStatus.BAD_REQUEST);
-      }
-      if (!tags.find((tag) => tag.name === tagName)) {
-        invalids.push(tagName);
-      }
-    });
-
-    if (invalids.length > 0) {
-      throw new HttpException(`Invalid device tag name: ${invalids.join(', ')}`, HttpStatus.NOT_FOUND);
-    }
-
-    // device by organization and project
-    const globalDevices = await manager.getRepository(Device).find({ where: { organizationId, isGlobal: 1 } });
-    const globalDeviceIds = globalDevices.map((device) => device.deviceId);
-    const deviceAndProject = await manager.getRepository(ProjectAndDevice).find({ where: { projectId } });
-    const deviceIdsByProject = deviceAndProject.map((deviceAndProject) => deviceAndProject.deviceId);
-    const deviceIdsByProjectUniquefied = [...new Set(deviceIdsByProject)];
-    const deviceIdsByOrganizations = [...globalDeviceIds, ...deviceIdsByProjectUniquefied];
-
-    // device by tags
-    const deviceAndDeviceTags = await manager.getRepository(DeviceAndDeviceTag).find({ where: { deviceTagId: In(tags.map((tag) => tag.deviceTagId)) } });
-    const deviceIdsByTags = deviceAndDeviceTags.map((deviceAndDeviceTag) => deviceAndDeviceTag.deviceId);
-
-    // filter org and project
-    const deviceIds = deviceIdsByOrganizations.filter((deviceId) => deviceIdsByTags.includes(deviceId));
-
-    const devices = await manager.getRepository(Device).find({ where: { deviceId: In(deviceIds), connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED } });
-
-    return devices;
   }
 
   private async findDevicesByDeviceName(manager: EntityManager, organizationId: organizationId, projectId: ProjectId, deviceNames: string[]): Promise<Device[]> {
@@ -379,7 +339,7 @@ export class PipelineService {
               }
               break;
             case RUNS_ON_TYPE.DEVICE_TAG:
-              devices = await this.findDevicesByDeviceTag(manager, organizationId, projectId, targetDeviceNames.deviceNames);
+              devices = await this.deviceStatusService.findDevicesByDeviceTag(manager, organizationId, projectId, targetDeviceNames.deviceNames);
               if (devices.length === 0) {
                 throw new HttpException(`This project has no device Tags: [${targetDeviceNames.deviceNames.toString()}]`, HttpStatus.NOT_FOUND);
               }

@@ -27,7 +27,7 @@ import {
 import { notEmpty } from '@dogu-tech/common';
 import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { BaseEntity, Brackets, DataSource, EntityManager, SelectQueryBuilder } from 'typeorm';
+import { BaseEntity, Brackets, DataSource, EntityManager, In, SelectQueryBuilder } from 'typeorm';
 import { Device } from '../../../db/entity/device.entity';
 import { DeviceTag, Project } from '../../../db/entity/index';
 import { DeviceAndDeviceTag } from '../../../db/entity/relations/device-and-device-tag.entity';
@@ -446,5 +446,46 @@ export class DeviceStatusService {
       );
 
     return enabledProjectDeviceSubQuery;
+  }
+
+  async findDevicesByDeviceTag(manager: EntityManager, organizationId: OrganizationId, projectId: ProjectId, deviceTagNames: string[]): Promise<Device[]> {
+    if (deviceTagNames.length === 0) {
+      throw new HttpException('TagNames must not be empty', HttpStatus.BAD_REQUEST);
+    }
+
+    const tags = await manager.getRepository(DeviceTag).find({ where: { organizationId, name: In(deviceTagNames) } });
+    const invalids: string[] = [];
+
+    deviceTagNames.forEach((tagName) => {
+      if (tagName === undefined) {
+        throw new HttpException('TagName must not be undefined', HttpStatus.BAD_REQUEST);
+      }
+      if (!tags.find((tag) => tag.name === tagName)) {
+        invalids.push(tagName);
+      }
+    });
+
+    if (invalids.length > 0) {
+      throw new HttpException(`Invalid device tag name: ${invalids.join(', ')}`, HttpStatus.NOT_FOUND);
+    }
+
+    // device by organization and project
+    const globalDevices = await manager.getRepository(Device).find({ where: { organizationId, isGlobal: 1 } });
+    const globalDeviceIds = globalDevices.map((device) => device.deviceId);
+    const deviceAndProject = await manager.getRepository(ProjectAndDevice).find({ where: { projectId } });
+    const deviceIdsByProject = deviceAndProject.map((deviceAndProject) => deviceAndProject.deviceId);
+    const deviceIdsByProjectUniquefied = [...new Set(deviceIdsByProject)];
+    const deviceIdsByOrganizations = [...globalDeviceIds, ...deviceIdsByProjectUniquefied];
+
+    // device by tags
+    const deviceAndDeviceTags = await manager.getRepository(DeviceAndDeviceTag).find({ where: { deviceTagId: In(tags.map((tag) => tag.deviceTagId)) } });
+    const deviceIdsByTags = deviceAndDeviceTags.map((deviceAndDeviceTag) => deviceAndDeviceTag.deviceId);
+
+    // filter org and project
+    const deviceIds = deviceIdsByOrganizations.filter((deviceId) => deviceIdsByTags.includes(deviceId));
+
+    const devices = await manager.getRepository(Device).find({ where: { deviceId: In(deviceIds), connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED } });
+
+    return devices;
   }
 }
