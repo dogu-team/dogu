@@ -43,7 +43,7 @@ export class WebDriverCapabilities {
 
   setApp(appPath: string): void {
     this._app = appPath;
-    Reflect.set((this._origin as any)['capabilities']['alwaysMatch'], 'app', appPath);
+    Reflect.set((this._origin as any)['capabilities']['alwaysMatch'], 'appium:app', appPath);
   }
 }
 

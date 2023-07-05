@@ -35,7 +35,7 @@ export class DeviceWebDriverNewSessionEndpointHandler extends DeviceWebDriverEnd
     }
     const url = endpoint.info.capabilities.doguOptions.appUrl;
 
-    const tempFileName = `${uuidv4()}.download`;
+    const tempFileName = `${uuidv4()}.${path.extname(url)}`;
     const tempFilePath = path.resolve(HostPaths.tempPath, tempFileName);
     if (!fs.existsSync(HostPaths.tempPath)) {
       fs.mkdirSync(HostPaths.tempPath, { recursive: true });

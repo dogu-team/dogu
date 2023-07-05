@@ -2,7 +2,7 @@ import { Code, Serial } from '@dogu-private/types';
 import { HeaderRecord, Instance, stringify } from '@dogu-tech/common';
 import { DeviceServerResponseDto, DeviceWebDriver, RelayRequest, RelayResponse, SessionDeletedParam, WebDriverEndPoint } from '@dogu-tech/device-client-common';
 import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
-import axios, { AxiosError } from 'axios';
+import axios, { isAxiosError } from 'axios';
 import { deviceNotFoundError } from '../device/device.utils';
 import { DoguLogger } from '../logger/logger';
 import { appiumContextNotFoundError } from '../response-utils';
@@ -145,25 +145,22 @@ export function apiNotFoundError(serial: Serial, method: string): DeviceServerRe
   };
 }
 
-function axiosError(error: AxiosError): RelayResponse {
-  const headers: HeaderRecord = {};
-  if (error.response?.headers) {
-    for (const headKey of Object.keys(error.response?.headers)) {
-      headers[headKey] = stringify(error.response?.headers[headKey]);
-    }
-  }
-  const status = error.response?.status ?? 500;
-  const data = error.response?.data;
-
-  const response: RelayResponse = {
-    headers: headers,
-    status: status,
-    resBody: data as object,
-  };
-  return response;
-}
-
 export function unknownError(serial: Serial, error: unknown): DeviceServerResponseDto {
+  if (isAxiosError(error)) {
+    return {
+      value: {
+        $case: 'error',
+        error: {
+          code: Code.CODE_UNEXPECTED_ERROR,
+          message: `Axios Error: message: ${error.message}, code: ${error.response?.status}, data: ${stringify(error.response?.data, { colors: false })}`,
+          details: {
+            serial,
+            error,
+          },
+        },
+      },
+    };
+  }
   if (error instanceof Error) {
     return {
       value: {
@@ -184,7 +181,7 @@ export function unknownError(serial: Serial, error: unknown): DeviceServerRespon
       $case: 'error',
       error: {
         code: Code.CODE_UNEXPECTED_ERROR,
-        message: `Unknown Error: ${stringify(error)}`,
+        message: `Unknown Error: ${stringify(error, { colors: false })}`,
         details: {
           serial,
           error,
