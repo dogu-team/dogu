@@ -2,7 +2,7 @@ import { errorify, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, ScreenSize } from '@dogu-tech/device-client-common';
 import { Logger } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
-import { getFreePort } from '../internal/util/net';
+import { getFreePort, waitPortOpen } from '../internal/util/net';
 import { AppiumContext, AppiumContextKey, AppiumContextOptions, AppiumData } from './appium.context';
 
 function emptyClientData(): AppiumData['client'] {
@@ -129,6 +129,7 @@ export class AppiumRemoteContext implements AppiumContext {
         resolve(child);
       });
     });
+    await waitPortOpen(port, 60000);
     this.logger.info('server started', { command, cwd: appiumPath });
     return {
       port,

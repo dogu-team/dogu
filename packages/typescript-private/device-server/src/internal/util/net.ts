@@ -43,7 +43,7 @@ export async function waitPortOpen(port: number, timeout = 10000): Promise<void>
     if (!(await isFreePort(port))) {
       return;
     }
-    await delay(100);
+    await delay(300);
   }
   throw Error(`waitPortOpen. port:${port} is not open`);
 }
