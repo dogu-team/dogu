@@ -74,6 +74,17 @@ jobs:
             C:\hostedtoolcache\windows\go\${{ env.GO_VERSION }}
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.GO_VERSION }}
 
+      - name: Cache Mirror
+        uses: actions/cache@v3
+        id: cache_mirror
+        env:
+          cache-name: cache-mirror
+        with:
+          path: |
+            ${{ github.workspace }}/nm-space/mirror
+            ${{ github.workspace }}/nm-space/node_modules
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('packages/typescript-*/**') }}-${{ hashFiles('nm-space/yarn.lock') }}
+
       - name: Windows - Msys2 - MIGW64 - Setup for cgo
         uses: msys2/setup-msys2@v2
         if: runner.os == 'Windows'
@@ -165,7 +176,8 @@ jobs:
           DOGU_APPLE_API_KEY_ID: ${{ secrets.DOGU_APPLE_API_KEY_ID }}
           DOGU_APPLE_API_ISSUER_ID: ${{ secrets.DOGU_APPLE_API_ISSUER_ID }}
 
-      - name: Dost - Newbie nm-space
+      - if: steps.cache_mirror.outputs.cache-hit != 'true'
+        name: Dost - Newbie nm-space
         run: |
           yarn workspace dogu run newbie:nm-space
 
