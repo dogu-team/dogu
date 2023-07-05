@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { isAxiosError } from 'axios';
 import { useState } from 'react';
-import { Button, Form, Modal, Tag } from 'antd';
+import { Alert, Button, Form, Modal, Tag } from 'antd';
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import Link from 'next/link';
 
@@ -51,22 +51,26 @@ const ProjectRoutineCreatorPage: NextPageWithLayout<WithProjectProps & { isGitCo
       </Head>
       <Box>
         {!isConfigured && (
-          <GitBanner>
-            <div>
-              <p>
-                <Tag icon={<ExclamationCircleFilled />} color="warning">
-                  Warning
-                </Tag>
-                &nbsp;Git doesn&apos;t integrated yet. Cannot checkout test scripts while routine running. For more information, please visit&nbsp;
-                <Link href="https://docs.dogutech.io" target="_blank">
-                  document
-                </Link>
-              </p>
-            </div>
-            <div>
-              <Button onClick={() => openModal()}>Configure Git</Button>
-            </div>
-          </GitBanner>
+          <Alert
+            showIcon
+            type="warning"
+            style={{ marginBottom: '.5rem' }}
+            message={
+              <GitBanner>
+                <div>
+                  <p>
+                    &nbsp;Git doesn&apos;t integrated yet. Cannot checkout test scripts while routine running. For more information, please visit&nbsp;
+                    <Link href="https://docs.dogutech.io" target="_blank">
+                      document
+                    </Link>
+                  </p>
+                </div>
+                <div>
+                  <Button onClick={() => openModal()}>Configure Git</Button>
+                </div>
+              </GitBanner>
+            }
+          />
         )}
         <RoutineCreator organizationId={organization.organizationId} projectId={project.projectId} />
       </Box>
@@ -128,9 +132,4 @@ const Box = styled.div`
 
 const GitBanner = styled.div`
   ${flexRowSpaceBetweenStyle}
-  padding: 0.5rem;
-  background-color: #fffbe6;
-  border: 1px solid #ffe58f;
-  border-radius: 0.25rem;
-  margin-bottom: 0.5rem;
 `;
