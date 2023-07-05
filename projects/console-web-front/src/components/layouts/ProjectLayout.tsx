@@ -46,24 +46,6 @@ const ProjectLayout = ({ children, sidebar }: Props) => {
       'access-id': 'project-routine-tab',
     },
     {
-      href: `/dashboard/${organizationId}/projects/${projectId}/script`,
-      startsWith: true,
-      icon: <FileTextOutlined />,
-      title: t('project:tabMenuRunScriptTitle'),
-      'access-id': 'project-script-tab',
-    },
-    {
-      href: `/dashboard/${organizationId}/projects/${projectId}/repository`,
-      icon: <BookOutlined />,
-      title: t('project:tabMenuRepositoryTitle'),
-      'access-id': 'project-repo-tab',
-      // blank: true,
-      // onClick: () => {
-      //   alertGitlab();
-      //   console.debug('gitlab base url', process.env.NEXT_PUBLIC_DOGU_GITLAB_URL);
-      // },
-    },
-    {
       href: `/dashboard/${organizationId}/projects/${projectId}/apps`,
       icon: <AppstoreOutlined />,
       title: t('project:tabMenuAppTitle'),
