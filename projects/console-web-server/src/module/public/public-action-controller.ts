@@ -11,17 +11,20 @@ import { FindProjectApplicationDto } from '../project/application/dto/applicatio
 
 @Controller(PublicAction.controller.path)
 export class PublicActionController {
-  constructor(private readonly gitlabService: GitlabService, private readonly applicationService: ApplicationService) {}
+  constructor(
+    private readonly gitlabService: GitlabService, //
+    private readonly applicationService: ApplicationService,
+  ) {}
 
-  @Get(PublicAction.getGitUrl.path)
-  @HostPermission(HOST_ACTION_TYPE.PROJECT_ACTION_API)
-  async getGitUrl(
-    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, //
-    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
-  ): Promise<Instance<typeof PublicAction.getGitUrl.responseBody>> {
-    const url = await this.gitlabService.getGitUrlWithAuth(organizationId, projectId);
-    return { url };
-  }
+  // @Get(PublicAction.getGitUrl.path)
+  // @HostPermission(HOST_ACTION_TYPE.PROJECT_ACTION_API)
+  // async getGitUrl(
+  //   @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, //
+  //   @Param(ProjectPropCamel.projectId) projectId: ProjectId,
+  // ): Promise<Instance<typeof PublicAction.getGitUrl.responseBody>> {
+  //   const url = await this.gitlabService.getGitUrlWithAuth(organizationId, projectId);
+  //   return { url };
+  // }
 
   @Get(PublicAction.getApplicationList.path)
   @HostPermission(HOST_ACTION_TYPE.PROJECT_ACTION_API)

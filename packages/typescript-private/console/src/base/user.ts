@@ -10,7 +10,6 @@ import { RoutinePipelineBase } from './routine-pipeline';
 import { TeamBase } from './team';
 import { UserAndInvitationTokenBase } from './user-and-invitation-token';
 import { UserAndVerificationTokenBase } from './user-and-verification-token';
-import { UserGitlabBase } from './user-gitlab';
 import { UserVisitBase } from './user-visit';
 
 export interface UserRelationTraits {
@@ -27,7 +26,6 @@ export interface UserRelationTraits {
   userAndInvitationToken?: UserAndInvitationTokenBase;
   userAndResetPasswordToken?: UserAndResetPasswordTokenBase;
   emailPreference?: UserEmailPreferenceBase;
-  gitlab?: UserGitlabBase;
   hosts?: HostBase[];
   userAndRefreshTokens?: UserAndRefreshTokenBase[];
   projectApplications?: ProjectApplicationBase[];

@@ -22,7 +22,6 @@ import { Device } from './device.entity';
 import { ProjectAndDevice, ProjectAndTeamAndProjectRole, ProjectAndUserAndProjectRole } from './index';
 import { Organization } from './organization.entity';
 import { RoutinePipeline } from './pipeline.entity';
-import { ProjectGitlab } from './project-gitlab.entity';
 import { Routine } from './routine.entity';
 import { Team } from './team.entity';
 import { Member } from './type/type';
@@ -105,7 +104,4 @@ export class Project extends BaseEntity implements ProjectBase {
 
   @OneToMany(() => ProjectAndUserAndProjectRole, (projectUserRole) => projectUserRole.project, { cascade: ['soft-remove'] })
   projectAndUserAndProjectRoles?: ProjectAndUserAndProjectRole[];
-
-  @OneToMany(() => ProjectGitlab, (gitlab) => gitlab.project, { cascade: ['soft-remove'] })
-  gitlab?: ProjectGitlab[];
 }

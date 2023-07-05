@@ -38,8 +38,7 @@ export class ProjectGitService {
 
       if (existingProjectRepository) {
         // clear existing auth
-        // await manager.softDelete(ProjectRepository, { projectId });
-        await manager.getRepository(ProjectRepository).softRemove(existingProjectRepository);
+        await manager.softDelete(ProjectRepository, { projectId });
         switch (existingProjectRepository.repositoryType) {
           case REPOSITORY_TYPE.GITHUB:
             await manager.softDelete(GithubRepositoryAuth, { projectRepositoryId: existingProjectRepository.projectRepositoryId });

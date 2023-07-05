@@ -37,12 +37,12 @@ const GitIntegrationDangerButton = () => {
         </div>
       }
       onConfirm={saveGitIntegration}
-      modalButtonTitle={'Confirm and Change'}
+      modalButtonTitle={t('editGitIntegrationConfirmModalButtonText')}
       onOpenChange={() => {
         form.resetFields();
       }}
     >
-      {t('editGitIntegrationConfirmModalButtonText')}
+      {t('editGitIntegrationButtonText')}
     </DangerZone.Button>
   );
 };

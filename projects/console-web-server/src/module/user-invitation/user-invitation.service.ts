@@ -1,13 +1,12 @@
 import { OrganizationAndUserAndOrganizationRolePropCamel, UserAndInvitationTokenPropCamel, UserAndInvitationTokenPropSnake } from '@dogu-private/console';
 import { OrganizationId, UserId, USER_INVITATION_STATUS } from '@dogu-private/types';
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager } from 'typeorm';
 
 import { OrganizationAndUserAndOrganizationRole } from '../../db/entity/index';
 import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invitation-token.entity';
 import { castEntity } from '../../types/entity-cast';
-import { GitlabService } from '../gitlab/gitlab.service';
 import { TokenService } from '../token/token.service';
 import { AcceptUserInvitationDto } from './dto/user-invitation.dto';
 
@@ -16,8 +15,6 @@ export class UserInvitationService {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    @Inject(GitlabService)
-    private readonly gitlabService: GitlabService,
   ) {}
 
   async findInvitationWithAllRelations(manager: EntityManager, organizationId: OrganizationId, email: string, withDeleted: boolean): Promise<UserAndInvitationToken | null> {
@@ -82,8 +79,6 @@ export class UserInvitationService {
       await entityManager
         .getRepository(OrganizationAndUserAndOrganizationRole)
         .upsert(castEntity(createdRelationData), [OrganizationAndUserAndOrganizationRolePropCamel.organizationId, OrganizationAndUserAndOrganizationRolePropCamel.userId]);
-
-      await this.gitlabService.addUserToGroup(entityManager, userId, organizationId, invitation.organizationRoleId);
     });
 
     return;

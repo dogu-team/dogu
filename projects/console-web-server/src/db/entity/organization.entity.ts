@@ -1,4 +1,4 @@
-import { OrganizationBase, OrganizationGitlabPropCamel, OrganizationPropCamel, OrganizationPropSnake, UserPropCamel, UserPropSnake } from '@dogu-private/console';
+import { OrganizationBase, OrganizationPropCamel, OrganizationPropSnake, UserPropCamel, UserPropSnake } from '@dogu-private/console';
 import {
   OrganizationId,
   ORGANIZATION_AND_USER_AND_ORGANIZATION_ROLE_TABLE_NAME,
@@ -6,12 +6,11 @@ import {
   ORGANIZATION_TABLE_NAME,
   USER_PROFILE_IMAGE_URL_MAX_LENGTH,
 } from '@dogu-private/types';
-import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { Device } from './device.entity';
 import { Host } from './host.entity';
 import { DeviceTag, OrganizationAndUserAndOrganizationRole, OrganizationAndUserAndTeam, Team, User } from './index';
-import { OrganizationGitlab } from './organization-gitlab.entity';
 import { Project } from './project.entity';
 import { UserAndInvitationToken } from './relations/user-and-invitation-token.entity';
 import { UserVisit } from './user-visit.entity';
@@ -80,11 +79,4 @@ export class Organization extends BaseEntity implements OrganizationBase {
 
   @OneToMany(() => UserAndInvitationToken, (invitation) => invitation.organization, { cascade: ['soft-remove'] })
   userInvitations?: UserAndInvitationToken[];
-
-  @OneToOne(() => OrganizationGitlab, { cascade: ['soft-remove'], createForeignKeyConstraints: false })
-  @JoinColumn({
-    name: OrganizationPropSnake.organization_id,
-    referencedColumnName: OrganizationGitlabPropCamel.organizationId,
-  })
-  gitlab?: OrganizationGitlab;
 }

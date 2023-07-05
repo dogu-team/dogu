@@ -1,7 +1,7 @@
 import { GithubRepositoryAuthBase, GithubRepositoryAuthPropCamel, GithubRepositoryAuthPropSnake } from '@dogu-private/console';
 import { GithubRepositoryAuthId, GITHUB_REPOSITORY_AUTH_TABLE_NAME, ProjectRepositoryId } from '@dogu-private/types';
 import { Exclude } from 'class-transformer';
-import { BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { ProjectRepository } from './project-repository';
 
@@ -26,7 +26,7 @@ export class GithubRepositoryAuth extends BaseEntity implements GithubRepository
   @ColumnTemplate.DeleteDate(GithubRepositoryAuthPropSnake.deleted_at)
   deletedAt!: Date | null;
 
-  @OneToOne(() => ProjectRepository, { createForeignKeyConstraints: false })
+  @ManyToOne(() => ProjectRepository, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
   @JoinColumn({ name: GithubRepositoryAuthPropSnake.project_repository_id, referencedColumnName: GithubRepositoryAuthPropCamel.projectRepositoryId })
   projectRepository?: ProjectRepository;
 }

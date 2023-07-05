@@ -38,7 +38,6 @@ import { UserAndInvitationToken } from './relations/user-and-invitation-token.en
 import { UserAndResetPasswordToken } from './relations/user-and-reset-password-token.entity';
 import { UserAndVerificationToken } from './relations/user-and-verification-token.entity';
 import { UserEmailPreference } from './user-email-preference.entity';
-import { UserGitlab } from './user-gitlab.entity';
 import { UserSns } from './user-sns.entity';
 import { UserVisit } from './user-visit.entity';
 
@@ -170,13 +169,6 @@ export class User extends BaseEntity implements UserBase {
     referencedColumnName: UserPropCamel.userId,
   })
   emailPreference?: UserEmailPreference;
-
-  @OneToOne(() => UserGitlab, { cascade: ['soft-remove'], createForeignKeyConstraints: false })
-  @JoinColumn({
-    name: UserPropSnake.user_id,
-    referencedColumnName: UserPropCamel.userId,
-  })
-  gitlab?: UserGitlab;
 
   projectApplications?: ProjectApplication[];
 }

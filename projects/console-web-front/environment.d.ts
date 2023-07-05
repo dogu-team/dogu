@@ -9,9 +9,6 @@ declare global {
       NEXT_PUBLIC_DOGU_RECAPTCHA_SITE: string;
       NEXT_PUBLIC_DOGU_GA_ID: string;
       NEXT_PUBLIC_DOGU_GTM_ID: string;
-      NEXT_PUBLIC_DOGU_GITLAB_HOST: string;
-      NEXT_PUBLIC_DOGU_GITLAB_PORT: string;
-      NEXT_PUBLIC_DOGU_GITLAB_PROTOCOL: string;
       NEXT_PUBLIC_SENTRY_DSN: string | undefined;
       NEXT_PUBLIC_DOGU_TURN_HOST: string;
       NEXT_PUBLIC_DOGU_TURN_PORT: string;

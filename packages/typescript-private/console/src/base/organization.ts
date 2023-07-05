@@ -6,7 +6,6 @@ import { DeviceTagBase } from './device-tag';
 import { HostBase } from './host';
 import { OrganizationAndUserAndOrganizationRoleBase } from './organization-and-user-and-organization-role';
 import { OrganizationUserAndTeamBase } from './organization-and-user-and-team';
-import { OrganizationGitlabBase } from './organization-gitlab';
 import { ProjectBase } from './project';
 import { TeamBase } from './team';
 import { UserBase } from './user';
@@ -22,7 +21,6 @@ export interface OrganizationRelationTraits {
   organizationAndUserAndTeams?: OrganizationUserAndTeamBase[];
   deviceTags?: DeviceTagBase[];
   devices?: DeviceBase[];
-  gitlab?: OrganizationGitlabBase;
   userInvitations?: UserAndInvitationTokenBase[];
 }
 
