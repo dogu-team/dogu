@@ -14091,7 +14091,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     react-google-recaptcha: 2.1.0
-    react-icons: 4.8.0
+    react-icons: 4.10.0
     react-is: 18.2.0
     reactflow: 11.4.2
     recharts: 2.1.12
@@ -28245,12 +28245,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-icons@npm:4.8.0":
-  version: 4.8.0
-  resolution: "react-icons@npm:4.8.0"
+"react-icons@npm:4.10.0":
+  version: 4.10.0
+  resolution: "react-icons@npm:4.10.0"
   peerDependencies:
     react: "*"
-  checksum: 4dbba7ad989c295b410e19b2a702722dae44368cb04b6515f9471353552f31ac80bd350f121d5bff79f81504b84039ede44d09e9f035f48bb1032e6eace126c4
+  checksum: 9168db5e2db86b7472498f1e2215f782975c3430dc0676eae504b19d6747dc8c726e113db015fed036ab6dc4838133bde65ac24c4f4df749e85fee78c3bd0085
   languageName: node
   linkType: hard
 
