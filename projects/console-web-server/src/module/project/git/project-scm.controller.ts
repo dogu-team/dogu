@@ -8,7 +8,7 @@ import { UpdateProjectGitDto } from './dto/project-scm.dto';
 // import { ProjectGitService } from './project-git.service';
 import { ProjectScmService } from './project-scm.service';
 
-@Controller('organizations/:organizationId/projects/:projectId/git')
+@Controller('organizations/:organizationId/projects/:projectId/scm')
 export class ProjectScmController {
   constructor(
     @Inject(ProjectScmService)

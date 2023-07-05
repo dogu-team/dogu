@@ -2,6 +2,7 @@ import { Octokit } from '@octokit/rest';
 
 export module Github {
   const GITHUB_API_VERSION = '2022-11-28';
+  const DOGU_CONFIG_FILE_NAME = 'dogu.config.json';
 
   function createSession(token: string) {
     return new Octokit({
@@ -9,12 +10,12 @@ export module Github {
     });
   }
 
-  export async function readDoguConfigFile(token: string, owner: string, repo: string, path: string) {
+  export async function readDoguConfigFile(token: string, owner: string, repo: string) {
     const octokit = createSession(token);
     const rv = await octokit.repos.getContent({
       owner,
       repo,
-      path,
+      path: DOGU_CONFIG_FILE_NAME,
       headers: {
         'X-GitHub-Api-Version': GITHUB_API_VERSION,
       },

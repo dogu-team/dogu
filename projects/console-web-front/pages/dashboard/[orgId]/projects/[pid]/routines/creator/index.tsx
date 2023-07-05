@@ -11,7 +11,7 @@ import { NextPageWithLayout } from 'pages/_app';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
 import ProjectLayout from 'src/components/layouts/ProjectLayout';
 import RoutineCreator from 'src/components/routine/editor/RoutineCreator';
-import { getProjectGit, updateProjectGit } from '../../../../../../../src/api/project';
+import { getProjectScm, updateProjectScm } from '../../../../../../../src/api/project';
 import { flexRowSpaceBetweenStyle } from '../../../../../../../src/styles/box';
 import useModal from '../../../../../../../src/hooks/useModal';
 import GitIntegrationForm, { GitIntegrationFormValues } from '../../../../../../../src/components/projects/GitIntegrationForm';
@@ -23,7 +23,7 @@ const ProjectRoutineCreatorPage: NextPageWithLayout<WithProjectProps & { isGitCo
   const [isConfigured, setIsConfigured] = useState(isGitConfigured);
   const [isOpen, openModal, closeModal] = useModal();
   const [form] = Form.useForm<GitIntegrationFormValues>();
-  const [loading, request] = useRequest(updateProjectGit);
+  const [loading, request] = useRequest(updateProjectScm);
 
   const handleCloseModal = () => {
     form.resetFields();
@@ -90,7 +90,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   try {
-    await getProjectGit(context);
+    await getProjectScm(context);
     return {
       props: {
         ...result.props,

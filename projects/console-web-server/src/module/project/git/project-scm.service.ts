@@ -9,6 +9,7 @@ import { OrganizationKey } from '../../../db/entity/index';
 import { ProjectScm } from '../../../db/entity/project-scm';
 import { ProjectScmGithubAuth } from '../../../db/entity/project-scm-github-auth.entity';
 import { ProjectScmGitlabAuth } from '../../../db/entity/project-scm-gitlab-auth.entity';
+import { Github } from '../../../sdk/github';
 import { UpdateProjectGitDto } from './dto/project-scm.dto';
 
 @Injectable()
@@ -101,8 +102,12 @@ export class ProjectScmService {
         }
 
         const githubToken = await this.decryptToken(this.dataSource.manager, organizationId, projectScmGithubAuth.token);
+        const owner = projectScm.url.split('/')[0];
+        const repo = projectScm.url.split('/')[1];
 
-        // TODO: implement
+        const content = await Github.readDoguConfigFile(githubToken, owner, repo);
+        const json: { scriptFilePath: string[] } = JSON.parse(content.replaceAll('\n| ', ''));
+        const result = await Github.getScriptFiles(githubToken, owner, repo, json.scriptFilePath);
         return;
       case PROJECT_SCM_TYPE.GITLAB:
         const projectScmGitlabbAuth = await this.dataSource.getRepository(ProjectScmGitlabAuth).findOne({
