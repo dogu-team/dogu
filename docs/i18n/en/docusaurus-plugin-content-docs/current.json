@@ -83,6 +83,22 @@
     "message": "Game",
     "description": "The label for category sidebar.testAutomationSidebar.category.Game in sidebar testautomationSidebar"
   },
+  "sidebar.testResportSidebar.category.Java": {
+    "message": "Java",
+    "description": "The label for category Mobile in sidebar testAutomation"
+  },
+  "sidebar.testResportSidebar.category.Javascript": {
+    "message": "Javascript",
+    "description": "The label for category Mobile in sidebar testAutomation"
+  },
+  "sidebar.testResportSidebar.category.Python": {
+    "message": "Python",
+    "description": "The label for category Mobile in sidebar testAutomation"
+  },
+  "sidebar.testResportSidebar.category.testUnitFramework": {
+    "message": "Test Unit Framework",
+    "description": "The label for category Mobile in sidebar testAutomation"
+  },
   "sidebar.testReportSidebar.category.TestUnitFramework": {
     "message": "Test Unit Framework",
     "description": "The label for category Game in sidebar testAutomation"
@@ -110,5 +126,53 @@
   "sidebar.getStartedSidebar.category.sidebar.getStarted.category.TestScript": {
     "message": "sidebar.getStarted.category.TestScript",
     "description": "The label for category sidebar.getStarted.category.TestScript in sidebar getStartedSidebar"
+  },
+  "sidebar.testreportSidebar.category.sidebar.testResportSidebar.category.Javascript": {
+    "message": "sidebar.testResportSidebar.category.Javascript",
+    "description": "The label for category sidebar.testResportSidebar.category.Javascript in sidebar testreportSidebar"
+  },
+  "sidebar.testreportSidebar.category.sidebar.testResportSidebar.category.Python": {
+    "message": "sidebar.testResportSidebar.category.Python",
+    "description": "The label for category sidebar.testResportSidebar.category.Python in sidebar testreportSidebar"
+  },
+  "sidebar.testreportSidebar.category.sidebar.testResportSidebar.category.Java": {
+    "message": "sidebar.testResportSidebar.category.Java",
+    "description": "The label for category sidebar.testResportSidebar.category.Java in sidebar testreportSidebar"
+  },
+  "sidebar.testreportSidebar.category.JavaScript": {
+    "message": "JavaScript",
+    "description": "The label for category JavaScript in sidebar testreportSidebar"
+  },
+  "sidebar.testreportSidebar.category.Python": {
+    "message": "Python",
+    "description": "The label for category Python in sidebar testreportSidebar"
+  },
+  "sidebar.testreportSidebar.category.Java": {
+    "message": "Java",
+    "description": "The label for category Java in sidebar testreportSidebar"
+  },
+  "sidebar.testautomationSidebar.category.Browser": {
+    "message": "Browser",
+    "description": "The label for category Browser in sidebar testautomationSidebar"
+  },
+  "sidebar.testautomationSidebar.category.Mobile": {
+    "message": "Mobile",
+    "description": "The label for category Mobile in sidebar testautomationSidebar"
+  },
+  "sidebar.testautomationSidebar.category.Game": {
+    "message": "Game",
+    "description": "The label for category Game in sidebar testautomationSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Installation": {
+    "message": "Installation",
+    "description": "The label for category Installation in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Device Farm": {
+    "message": "Device Farm",
+    "description": "The label for category Device Farm in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Test Script": {
+    "message": "Test Script",
+    "description": "The label for category Test Script in sidebar getStartedSidebar"
   }
 }
