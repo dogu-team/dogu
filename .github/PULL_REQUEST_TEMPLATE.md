@@ -1,14 +1,9 @@
 # PR Template
 
-## Production Checklist
-
-- [ ] Local & Development environment test finished.
-- [ ] Production env variable checked
-- [ ] **If this is a API deleted or changed**: Check side effects for API deletion or related code change.
-
-## Development Checklist
+## Checklist
 
 - [ ] E2E finished.
-- [ ] Local environment test finished.
-- [ ] Local, Development, E2E env variable checked
+- [ ] Local, Self Hosted and Development environment test finished.
+- [ ] Local, E2E, Self Hosted, Development and Production env variable checked.
+- [ ] (Backend only) DB migration file creation checked.
 - [ ] **If this is a API deleted or changed**: Check side effects for API deletion or related code change.
