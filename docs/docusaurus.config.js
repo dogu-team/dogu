@@ -92,31 +92,31 @@ const config = {
             items: [
               {
                 label: 'getStarted',
-                to: '/get-started/introduction',
+                to: '/get-started',
               },
               {
                 label: 'orgAndProject',
                 to: '/organization-and-project/introduction',
               },
               {
-                label: 'hostAndDevice',
+                label: 'deviceFarm',
                 to: '/host-and-device/introduction',
               },
               {
-                label: 'scriptAndRoutine',
-                to: '/script-and-routine/introduction',
+                label: 'testAutomation',
+                to: '/test-automation/introduction',
               },
               {
-                label: 'GamiumKit',
-                to: '/toolkit/introduction',
+                label: 'testReport',
+                to: '/test-report/introduction',
+              },
+              {
+                label: 'routine',
+                to: '/script-and-routine/routine/about',
               },
               {
                 label: 'community',
                 to: '/community/discord',
-              },
-              {
-                label: 'selfHosted',
-                to: '/self-hosted/get-started',
               },
             ],
           },

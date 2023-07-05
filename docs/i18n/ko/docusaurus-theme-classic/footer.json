@@ -43,21 +43,25 @@
     "message": "관리",
     "description": "The label of footer link with label=orgAndProject linking to /organization-and-project/introduction"
   },
-  "link.item.label.hostAndDevice": {
+  "link.item.label.deviceFarm": {
     "message": "디바이스 팜",
-    "description": "The label of footer link with label=hostAndDevice linking to /host-and-device/introduction"
+    "description": "The label of footer link with label=deviceFarm linking to /host-and-device/introduction"
   },
-  "link.item.label.scriptAndRoutine": {
-    "message": "스크립트 & 루틴",
-    "description": "The label of footer link with label=scriptAndRoutine linking to /script-and-routine/introduction"
+  "link.item.label.testAutomation": {
+    "message": "테스트 자동화",
+    "description": "The label of footer link with label=testAutomation linking to /script-and-routine/introduction"
   },
   "link.item.label.community": {
     "message": "커뮤니티",
     "description": "The label of footer link with label=community linking to /community/discord"
   },
-  "link.item.label.selfHosted": {
-    "message": "Self-Hosted",
-    "description": "The label of footer link with label=selfHosted linking to /self-hosted/get-started"
+  "link.item.label.testReport": {
+    "message": "테스트 리포트",
+    "description": "The label of footer link with label=testReport linking to /self-hosted/get-started"
+  },
+  "link.item.label.routine": {
+    "message": "루틴",
+    "description": "The label of footer link with label=routine linking to /self-hosted/get-started"
   },
   "link.title.Services": {
     "message": "Services",
