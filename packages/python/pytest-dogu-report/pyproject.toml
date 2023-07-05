@@ -32,7 +32,7 @@ classifiers = [
 requires-python = '>=3.9,<4.0'
 
 [project.entry-points.pytest11]
-dogu_report = "pytest_dogu_report"
+pytest_dogu_report = "pytest_dogu_report"
 
 [tool.pylint.'MESSAGES CONTROL']
 max-line-length = 180

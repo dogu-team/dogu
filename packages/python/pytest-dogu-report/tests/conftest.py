@@ -1,1 +1,1 @@
-pytest_plugins = ["dogu_report"]
+pytest_plugins = ["pytest_dogu_report"]
