@@ -108,8 +108,4 @@ export class ProjectController {
   ): Promise<ProjectPipelineReportResponse> {
     return await this.projectService.createPipelineReport(userPayload, organizationId, projectId, dto);
   }
-
-  @Get(':projectId/repository/scripts')
-  @ProjectPermission(PROJECT_ROLE.READ)
-  async getProjectScriptMeta(@Param('projectId') projectId: ProjectId): Promise<void> {}
 }

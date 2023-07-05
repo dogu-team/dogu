@@ -29,4 +29,7 @@ export class ProjectGitController {
   ) {
     return await this.projectGitService.updateProjectGit(organizationId, projectId, updateProjectGitDto);
   }
+
+  @Get('scripts')
+  async getTestScripts() {}
 }
