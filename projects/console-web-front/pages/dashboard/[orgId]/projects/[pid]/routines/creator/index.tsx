@@ -3,8 +3,7 @@ import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { isAxiosError } from 'axios';
 import { useState } from 'react';
-import { Alert, Button, Form, Modal, Tag } from 'antd';
-import { ExclamationCircleFilled } from '@ant-design/icons';
+import { Alert, Button, Form, Modal } from 'antd';
 import Link from 'next/link';
 
 import { NextPageWithLayout } from 'pages/_app';
@@ -12,7 +11,6 @@ import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'sr
 import ProjectLayout from 'src/components/layouts/ProjectLayout';
 import RoutineCreator from 'src/components/routine/editor/RoutineCreator';
 import { getProjectScm, updateProjectScm } from '../../../../../../../src/api/project';
-import { flexRowSpaceBetweenStyle } from '../../../../../../../src/styles/box';
 import useModal from '../../../../../../../src/hooks/useModal';
 import GitIntegrationForm, { GitIntegrationFormValues } from '../../../../../../../src/components/projects/GitIntegrationForm';
 import useRequest from '../../../../../../../src/hooks/useRequest';

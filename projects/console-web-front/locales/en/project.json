@@ -26,7 +26,7 @@
   "projectDeleteFailedMsg": "Failed to remove\n{{reason}}",
 
   "editGitIntegrationMenuTitle": "Edit git integration",
-  "editGitIntegrationDescriptionText": "Edit git service, token, repository and dogu configuration file path.",
+  "editGitIntegrationDescriptionText": "Edit git service, token, repository URL",
   "editGitIntegrationButtonText": "Edit integration",
   "editGitIntegrationConfirmModalTitle": "Edit git integration",
   "editGitIntegrationConfirmModalButtonText": "Confirm and edit",

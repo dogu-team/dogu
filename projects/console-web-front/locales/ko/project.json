@@ -26,7 +26,7 @@
   "projectDeleteFailedMsg": "삭제 실패\n{{reason}}",
 
   "editGitIntegrationMenuTitle": "Git 연동 변경",
-  "editGitIntegrationDescriptionText": "Git 서비스, 토큰, 저장소, Dogu 설정 파일 경로를 변경합니다.",
+  "editGitIntegrationDescriptionText": "Git 서비스, 토큰, 저장소 URL을 변경합니다.",
   "editGitIntegrationButtonText": "Git 연동 변경",
   "editGitIntegrationConfirmModalTitle": "Git 연동 변경하기",
   "editGitIntegrationConfirmModalButtonText": "확인 및 변경",

@@ -31,12 +31,7 @@ const GitIntegrationDangerButton = () => {
   return (
     <DangerZone.Button
       modalTitle={t('editGitIntegrationConfirmModalTitle')}
-      modalContent={
-        <div>
-          <GitIntegrationForm form={form} />
-          <p style={{ marginTop: '.5rem' }}>{t('settingEditGitIntegrationConfirmContent')}</p>
-        </div>
-      }
+      modalContent={<GitIntegrationForm form={form} />}
       onConfirm={saveGitIntegration}
       modalButtonTitle={t('editGitIntegrationConfirmModalButtonText')}
       onOpenChange={() => {
