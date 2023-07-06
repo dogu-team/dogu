@@ -281,6 +281,9 @@
   "main.getStartedInstallationTitle": {
     "message": "Installation"
   },
+  "main.getStartedTutorialTitle": {
+    "message": "Tutorials"
+  },
   "main.getStartedDeviceFarmTitle": {
     "message": "Device Farm"
   },

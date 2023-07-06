@@ -281,6 +281,9 @@
   "main.getStartedInstallationTitle": {
     "message": "설치"
   },
+  "main.getStartedTutorialTitle": {
+    "message": "튜토리얼"
+  },
   "main.getStartedDeviceFarmTitle": {
     "message": "디바이스 팜"
   },

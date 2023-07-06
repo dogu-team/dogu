@@ -81,7 +81,9 @@ export default function Home(): JSX.Element {
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/get-started/tutorials">Tutorials</Link>
+              <Link to="/get-started/tutorials">
+                <Translate id="main.getStartedTutorialTitle" />
+              </Link>
             </li>
           </ul>
         </div>
