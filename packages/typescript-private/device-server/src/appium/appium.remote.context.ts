@@ -14,6 +14,7 @@ function emptyClientData(): AppiumData['client'] {
 
 export class AppiumRemoteContext implements AppiumContext {
   private _data: AppiumData | null = null;
+  public sessionId: string = '';
   private get data(): AppiumData {
     if (!this._data) {
       throw new Error('Appium data is not found');
@@ -179,14 +180,17 @@ export class AppiumRemoteContext implements AppiumContext {
   }
 
   switchContext(contextId: string): Promise<void> {
-    throw new Error('Not implemented');
+    this.logger.error('AppiumRemoteContext.switchContext is not implemented');
+    return Promise.resolve();
   }
 
   switchContextAndGetPageSource(contextId: string): Promise<string> {
-    throw new Error('Not implemented');
+    this.logger.error('AppiumRemoteContext.switchContextAndGetPageSource is not implemented');
+    return Promise.resolve('');
   }
 
   getContextPageSources(): Promise<ContextPageSource[]> {
-    throw new Error('Not implemented');
+    this.logger.error('AppiumRemoteContext.getContextPageSources is not implemented');
+    return Promise.resolve([]);
   }
 }

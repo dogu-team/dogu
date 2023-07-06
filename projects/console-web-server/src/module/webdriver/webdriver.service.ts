@@ -30,33 +30,38 @@ export class WebDriverService {
 
   async process(request: Request, response: Response): Promise<RelayResponse> {
     const relayRequest = convertRequest(request);
-    const endpoint = await WebDriverEndPoint.create(relayRequest);
+    try {
+      const endpoint = await WebDriverEndPoint.create(relayRequest).catch((e) => {
+        return { error: makeWdError(400, e, {}) };
+      });
+      if ('error' in endpoint) {
+        return endpoint.error;
+      }
 
-    if (!(endpoint.info.type in handlers)) {
-      return makeWdError(501, new Error(`Not Implemented to handle ${relayRequest.path}`), {});
-    }
+      if (!(endpoint.info.type in handlers)) {
+        return makeWdError(501, new Error(`Not Implemented to handle ${relayRequest.path}`), {});
+      }
 
-    const context: WebDriverHandleContext = {
-      dataSource: this.dataSource,
-      deviceStatusService: this.deviceStatusService,
-      deviceWebDriverService: this.deviceWebDriverService,
-      deviceMessageRelayer: this.deviceMessageRelayer,
-      applicationService: this.applicationService,
-    };
+      const context: WebDriverHandleContext = {
+        dataSource: this.dataSource,
+        deviceStatusService: this.deviceStatusService,
+        deviceWebDriverService: this.deviceWebDriverService,
+        deviceMessageRelayer: this.deviceMessageRelayer,
+        applicationService: this.applicationService,
+      };
 
-    const handler = handlers[endpoint.info.type];
+      const handler = handlers[endpoint.info.type];
 
-    const processResult = await handler.onRequest(context, endpoint, relayRequest).catch((e) => {
-      return { error: e as Error, status: 400, data: {} };
-    });
-    if (processResult.error) {
-      // https://www.w3.org/TR/webdriver/#errors
-      return makeWdError(processResult.status, processResult.error, processResult.data);
-    }
-    const pathProvider = new DeviceWebDriver.relayHttp.pathProvider(processResult.serial);
-    const path = DeviceWebDriver.relayHttp.resolvePath(pathProvider);
-    const res = await this.deviceMessageRelayer
-      .sendHttpRequest(
+      const processResult = await handler.onRequest(context, endpoint, relayRequest).catch((e) => {
+        return { error: e as Error, status: 400, data: {} };
+      });
+      if (processResult.error) {
+        // https://www.w3.org/TR/webdriver/#errors
+        return makeWdError(processResult.status, processResult.error, processResult.data);
+      }
+      const pathProvider = new DeviceWebDriver.relayHttp.pathProvider(processResult.serial);
+      const path = DeviceWebDriver.relayHttp.resolvePath(pathProvider);
+      const res = await this.deviceMessageRelayer.sendHttpRequest(
         processResult.organizationId,
         processResult.deviceId,
         DeviceWebDriver.relayHttp.method,
@@ -65,12 +70,12 @@ export class WebDriverService {
         undefined,
         processResult.request,
         DeviceWebDriver.relayHttp.responseBodyData,
-      )
-      .catch((e) => {
-        return makeWdError(500, e, {});
-      });
-    await handler.onResponse(context, processResult, res);
-    return res;
+      );
+      await handler.onResponse(context, processResult, res);
+      return res;
+    } catch (e) {
+      return makeWdError(500, e, {});
+    }
   }
 }
 
@@ -123,8 +128,8 @@ function makeWdError(status: number, error: Error | unknown, data: Object): Rela
     headers: {},
     status: 500,
     resBody: {
-      error: stringify(error),
-      message: stringify(error),
+      error: stringify(error, { colors: false }),
+      message: stringify(error, { colors: false }),
       stacktrace: '',
       data: {},
     },

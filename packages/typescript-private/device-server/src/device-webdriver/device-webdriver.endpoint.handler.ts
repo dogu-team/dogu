@@ -7,6 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import stream, { Stream } from 'stream';
 import { v4 as uuidv4 } from 'uuid';
+import { AppiumRemoteContext } from '../appium/appium.remote.context';
 import { DoguLogger } from '../logger/logger';
 
 export interface DeviceWebDriverEndpointHandlerResultError {
@@ -23,13 +24,13 @@ export interface DeviceWebDriverEndpointHandlerResultOk {
 export type DeviceWebDriverEndpointHandlerResult = DeviceWebDriverEndpointHandlerResultError | DeviceWebDriverEndpointHandlerResultOk;
 
 export abstract class DeviceWebDriverEndpointHandler {
-  abstract onRequest(endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): Promise<DeviceWebDriverEndpointHandlerResult>;
+  abstract onRequest(remoteContext: AppiumRemoteContext, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): Promise<DeviceWebDriverEndpointHandlerResult>;
 }
 
 export class DeviceWebDriverNewSessionEndpointHandler extends DeviceWebDriverEndpointHandler {
-  async onRequest(endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): Promise<DeviceWebDriverEndpointHandlerResult> {
+  async onRequest(remoteContext: AppiumRemoteContext, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): Promise<DeviceWebDriverEndpointHandlerResult> {
     if (endpoint.info.type !== 'new-session') {
-      return { status: 400, error: new Error('Internal error. endpoint type is not delete-session'), data: {} };
+      return { status: 400, error: new Error('Internal error. endpoint type is not new-session'), data: {} };
     }
     if (!endpoint.info.capabilities.doguOptions.appUrl) {
       return { status: 400, error: new Error('App url not specified'), data: {} };
@@ -42,6 +43,9 @@ export class DeviceWebDriverNewSessionEndpointHandler extends DeviceWebDriverEnd
     if (!appVersion) {
       return { status: 400, error: new Error('App version not specified'), data: {} };
     }
+
+    remoteContext.sessionId = '';
+
     const downloadFilename = `${filename}-${platform}-${appVersion}.${extension}`;
     const filePath = path.resolve(HostPaths.doguTempPath(), downloadFilename);
     endpoint.info.capabilities.setApp(filePath);
@@ -98,6 +102,16 @@ export class DeviceWebDriverNewSessionEndpointHandler extends DeviceWebDriverEnd
     endpoint.info.capabilities.setApp(filePath);
 
     return { request, ...{ reqBody: endpoint.info.capabilities.origin } };
+  }
+}
+
+export class DeviceWebDriverSessionEndpointHandler extends DeviceWebDriverEndpointHandler {
+  async onRequest(remoteContext: AppiumRemoteContext, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): Promise<DeviceWebDriverEndpointHandlerResult> {
+    if (endpoint.info.type !== 'session') {
+      return { status: 400, error: new Error('Internal error. endpoint type is not session'), data: {} };
+    }
+    remoteContext.sessionId = endpoint.info.sessionId;
+    return { request };
   }
 }
 

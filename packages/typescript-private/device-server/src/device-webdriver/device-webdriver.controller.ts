@@ -3,11 +3,12 @@ import { HeaderRecord, Instance, stringify } from '@dogu-tech/common';
 import { DeviceServerResponseDto, DeviceWebDriver, RelayRequest, RelayResponse, SessionDeletedParam, WebDriverEndPoint } from '@dogu-tech/device-client-common';
 import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
 import axios, { isAxiosError } from 'axios';
+import { AppiumRemoteContext } from '../appium/appium.remote.context';
 import { deviceNotFoundError } from '../device/device.utils';
 import { DoguLogger } from '../logger/logger';
 import { appiumContextNotFoundError } from '../response-utils';
 import { ScanService } from '../scan/scan.service';
-import { DeviceWebDriverEndpointHandler, DeviceWebDriverNewSessionEndpointHandler } from './device-webdriver.endpoint.handler';
+import { DeviceWebDriverEndpointHandler, DeviceWebDriverNewSessionEndpointHandler, DeviceWebDriverSessionEndpointHandler } from './device-webdriver.endpoint.handler';
 
 @Controller(DeviceWebDriver.controller)
 export class DeviceWebDriverController {
@@ -31,10 +32,14 @@ export class DeviceWebDriverController {
         return apiNotFoundError(serial, request.method);
       }
 
+      const remoteContext = context as AppiumRemoteContext;
+      if (!remoteContext) {
+        return unknownError(serial, new Error('remoteContext is null'));
+      }
       const endpoint = await WebDriverEndPoint.create(request);
       if (endpoint.info.type in endpointHandlers) {
         const handler = endpointHandlers[endpoint.info.type];
-        const result = await handler.onRequest(endpoint, request, this.logger);
+        const result = await handler.onRequest(remoteContext, endpoint, request, this.logger);
         if (result.error) {
           throw result.error;
         }
@@ -65,8 +70,25 @@ export class DeviceWebDriverController {
     if (context === null) {
       return appiumContextNotFoundError(serial);
     }
-    if (context.key !== 'bulitin') {
-      context = await device.switchAppiumContext('bulitin');
+    if (context.key !== 'remote') {
+      return {
+        value: {
+          $case: 'data',
+          data: {},
+        },
+      };
+    }
+    const remoteContext = context as AppiumRemoteContext;
+    if (!remoteContext) {
+      return {
+        value: {
+          $case: 'data',
+          data: {},
+        },
+      };
+    }
+    if (remoteContext.sessionId === param.sessionId) {
+      await device.switchAppiumContext('bulitin');
     }
     return {
       value: {
@@ -81,6 +103,7 @@ const endpointHandlers: {
   [key: string]: DeviceWebDriverEndpointHandler;
 } = {
   'new-session': new DeviceWebDriverNewSessionEndpointHandler(),
+  session: new DeviceWebDriverSessionEndpointHandler(),
 };
 
 const methodHandlers: {

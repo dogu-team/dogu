@@ -21,7 +21,8 @@ export class DeviceWebDriverUpdater {
       return;
     }
     const targets = deviceAndWebDrivers.filter((deviceAndWebDriver) => {
-      return deviceAndWebDriver.heartbeat === null || config.deviceAndWebDriver.heartbeat.allowedSeconds * 1000 < Date.now() - deviceAndWebDriver.heartbeat.getTime();
+      const delta = deviceAndWebDriver.heartbeat ? Date.now() - deviceAndWebDriver.heartbeat.getTime() : Date.now() - deviceAndWebDriver.createdAt.getTime();
+      return config.deviceAndWebDriver.heartbeat.allowedSeconds * 1000 < delta;
     });
 
     if (targets.length === 0) {

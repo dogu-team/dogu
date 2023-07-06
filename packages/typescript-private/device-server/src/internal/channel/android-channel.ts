@@ -375,6 +375,7 @@ export class AndroidChannel implements DeviceChannel {
   }
 
   async switchAppiumContext(key: AppiumContextKey): Promise<AppiumContext> {
+    this.logger.info(`switching appium context: from: ${this._appiumContext.key}, to: ${key}`);
     await this._appiumContext.close().catch((error) => {
       this.logger.error('android appium context close failed', { error: errorify(error) });
     });
