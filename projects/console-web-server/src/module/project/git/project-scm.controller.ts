@@ -1,7 +1,7 @@
 import { OrganizationPropCamel, ProjectPropCamel } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Body, Controller, Get, Inject, Param, Patch } from '@nestjs/common';
-import { ProjectScm } from '../../../db/entity/project-scm';
+import { ProjectScm } from '../../../db/entity/project-scm.entity';
 import { PROJECT_ROLE } from '../../auth/auth.types';
 import { ProjectPermission } from '../../auth/decorators';
 import { UpdateProjectGitDto } from './dto/project-scm.dto';

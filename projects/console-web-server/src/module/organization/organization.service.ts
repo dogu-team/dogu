@@ -2,6 +2,8 @@ import {
   DestPropCamel,
   OrganizationAndUserAndOrganizationRolePropCamel,
   OrganizationAndUserAndOrganizationRolePropSnake,
+  OrganizationApiTokenPropCamel,
+  OrganizationApiTokenPropSnake,
   OrganizationBase,
   OrganizationPropCamel,
   OrganizationPropSnake,
@@ -23,7 +25,7 @@ import { notEmpty } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import crypto from 'crypto';
-import { DataSource, EntityManager, In } from 'typeorm';
+import { DataSource, DeepPartial, EntityManager, In } from 'typeorm';
 import { v4 } from 'uuid';
 
 import {
@@ -48,6 +50,7 @@ import {
   Token,
   User,
 } from '../../db/entity';
+import { OrganizatioApiToken } from '../../db/entity/organization-api-token.entity';
 import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invitation-token.entity';
 import { Routine } from '../../db/entity/routine.entity';
 import { RoutineStep } from '../../db/entity/step.entity';
@@ -166,15 +169,7 @@ export class OrganizationService {
       });
       await manager.getRepository(OrganizationKey).save(organizationKey);
 
-      // if (FeatureConfig.get('useSampleProject')) {
-      //   const createProjectDto: CreateProjectDto = {
-      //     name: 'sample project',
-      //     description: 'sample project',
-      //   };
-      //   const project = await this.projectService.createProject(manager, userId, organizationId, createProjectDto);
-      //   await this.applicationService.uploadSampleApk(manager, userId, organizationId, project.projectId);
-      //   await this.routineService.createSampleRoutine(manager, organizationId, project.projectId);
-      // }
+      await this.createApiToken(manager, organizationId);
 
       return org;
     });
@@ -581,6 +576,94 @@ export class OrganizationService {
 
     await this.dataSource.transaction(async (manager) => {
       await manager.getRepository(OrganizationAndUserAndOrganizationRole).update({ organizationId, userId }, { organizationRoleId });
+    });
+  }
+
+  private async createApiToken(manager: EntityManager, organizationId: OrganizationId): Promise<string> {
+    const orgApiToken = await manager.getRepository(OrganizatioApiToken).findOne({
+      where: { organizationId },
+    });
+
+    if (orgApiToken) {
+      throw new HttpException(`Api token already exists. organizationId: ${organizationId}`, HttpStatus.BAD_REQUEST);
+    }
+
+    const newTokenData: DeepPartial<Token> = {
+      token: TokenService.createOrganizationApiToken(),
+      expiredAt: null,
+    };
+    const tokenData = manager.getRepository(Token).create(newTokenData);
+    const token = await manager.getRepository(Token).save(tokenData);
+
+    const newOrgApiData: DeepPartial<OrganizatioApiToken> = {
+      organizationApiTokenId: v4(),
+      organizationId,
+      creatorId: null,
+      revokerId: null,
+      tokenId: token.tokenId,
+    };
+    const orgApiTokenData = manager.getRepository(OrganizatioApiToken).create(newOrgApiData);
+    await manager.getRepository(OrganizatioApiToken).save(orgApiTokenData);
+
+    return token.token;
+  }
+
+  async reissueApiToken(organizationId: OrganizationId, creatorId: UserId): Promise<string> {
+    const orgApiToken = await this.dataSource //
+      .getRepository(OrganizatioApiToken)
+      .createQueryBuilder('orgApiToken')
+      .innerJoinAndSelect(`orgApiToken.${OrganizationApiTokenPropCamel.token}`, 'token')
+      .where(`orgApiToken.${OrganizationApiTokenPropSnake.organization_id} = :organizationId`, { organizationId })
+      .getOne();
+
+    if (!orgApiToken) {
+      throw new HttpException(`Api token not found. organizationId: ${organizationId}`, HttpStatus.NOT_FOUND);
+    }
+
+    const rv = await this.dataSource.transaction(async (manager) => {
+      // revoke
+      await manager.getRepository(Token).softDelete({ tokenId: orgApiToken.tokenId });
+      await manager.getRepository(OrganizatioApiToken).update({ organizationApiTokenId: orgApiToken.organizationApiTokenId }, { revokerId: creatorId });
+      await manager.getRepository(OrganizatioApiToken).softDelete({ organizationApiTokenId: orgApiToken.organizationApiTokenId });
+
+      // reissue
+      const newTokenData: DeepPartial<Token> = {
+        token: TokenService.createOrganizationApiToken(),
+      };
+      const tokenData = manager.getRepository(Token).create(newTokenData);
+      const token = await manager.getRepository(Token).save(tokenData);
+
+      const newOrgApiData: DeepPartial<OrganizatioApiToken> = {
+        organizationApiTokenId: v4(),
+        organizationId,
+        creatorId,
+        tokenId: token.tokenId,
+      };
+      const newOrgApiTokenData = manager.getRepository(OrganizatioApiToken).create(newOrgApiData);
+      const newApiToken = await manager.getRepository(OrganizatioApiToken).save(newOrgApiTokenData);
+
+      return token.token;
+    });
+
+    return rv;
+  }
+
+  async revokeApiToken(organizationId: OrganizationId, revokerId: UserId): Promise<void> {
+    const orgApiToken = await this.dataSource //
+      .getRepository(OrganizatioApiToken)
+      .createQueryBuilder('orgApiToken')
+      .innerJoinAndSelect(`orgApiToken.${OrganizationApiTokenPropCamel.token}`, 'token')
+      .where(`orgApiToken.${OrganizationApiTokenPropSnake.organization_id} = :organizationId`, { organizationId })
+      .getOne();
+
+    if (!orgApiToken) {
+      throw new HttpException(`Api token not found. organizationId: ${organizationId}`, HttpStatus.NOT_FOUND);
+    }
+
+    await this.dataSource.transaction(async (manager) => {
+      await manager.getRepository(Token).softDelete({ tokenId: orgApiToken.tokenId });
+      await manager.getRepository(OrganizatioApiToken).update({ organizationApiTokenId: orgApiToken.organizationApiTokenId }, { revokerId });
+      await manager.getRepository(OrganizatioApiToken).softDelete({ organizationApiTokenId: orgApiToken.organizationApiTokenId });
     });
   }
 }

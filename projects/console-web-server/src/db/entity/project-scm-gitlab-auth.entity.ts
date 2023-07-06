@@ -3,7 +3,7 @@ import { ProjectScmGitlabAuthId, ProjectScmId, PROJECT_SCM_GITLAB_AUTH_TABLE_NAM
 import { Exclude } from 'class-transformer';
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
-import { ProjectScm } from './project-scm';
+import { ProjectScm } from './project-scm.entity';
 
 @Entity(PROJECT_SCM_GITLAB_AUTH_TABLE_NAME)
 export class ProjectScmGitlabAuth extends BaseEntity implements ProjectScmGitlabAuthBase {
