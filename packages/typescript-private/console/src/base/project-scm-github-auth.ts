@@ -9,7 +9,7 @@ export interface ProjectScmGithubAuthRelationTraits {
 export interface ProjectScmGithubAuthBaseTraitsBase {
   projectScmGithubAuthId: ProjectScmGithubAuthId;
   projectScmId: ProjectScmId;
-  token: string | null;
+  token: string;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

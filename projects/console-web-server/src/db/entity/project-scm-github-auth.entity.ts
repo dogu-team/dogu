@@ -14,8 +14,8 @@ export class ProjectScmGithubAuth extends BaseEntity implements ProjectScmGithub
   projectScmId!: ProjectScmId;
 
   @Exclude()
-  @Column({ type: 'character varying', name: ProjectScmGithubAuthPropSnake.token, nullable: true })
-  token!: string | null;
+  @Column({ type: 'character varying', name: ProjectScmGithubAuthPropSnake.token, nullable: false })
+  token!: string;
 
   @ColumnTemplate.CreateDate(ProjectScmGithubAuthPropSnake.created_at)
   createdAt!: Date;

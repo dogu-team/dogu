@@ -7,18 +7,13 @@ import {
   UserPropCamel,
   UserPropSnake,
 } from '@dogu-private/console';
-import { OrganizationId, ProjectId, ProjectRoleId, TeamId, UserId } from '@dogu-private/types';
+import { ProjectId, ProjectRoleId, TeamId, UserId } from '@dogu-private/types';
 import { delay } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import axios from 'axios';
 import { DataSource, EntityManager } from 'typeorm';
 import { User } from '../../db/entity/index';
-import { ProjectScm } from '../../db/entity/project-scm';
-
-// import { OrganizationGitlab } from '../../db/entity/organization-gitlab.entity';
-// import { ProjectGitlab } from '../../db/entity/project-gitlab.entity';
-// import { UserGitlab } from '../../db/entity/user-gitlab.entity';
 import { Gitlab } from '../../sdk/gitlab';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { DoguLogger } from '../logger/logger';
@@ -158,20 +153,44 @@ export class GitlabService {
     return projectRoles;
   }
 
-  async getGitUrlWithAuth(organizationId: OrganizationId, projectId: ProjectId) {
-    // const projectGitlab = await this.dataSource.getRepository(ProjectGitlab).findOne({ where: { projectId } });
-    // if (!projectGitlab) {
-    //   throw new HttpException(`Project is not in gitlab: ${projectId}`, HttpStatus.NOT_FOUND);
-    // }
+  // async getGitUrlWithAuth(organizationId: OrganizationId, projectId: ProjectId) {
+  //   const scm = await this.dataSource.getRepository(ProjectScm).findOne({ where: { projectId } });
+  //   if (!scm) {
+  //     throw new HttpException(`This Project does not have scm: ${projectId}`, HttpStatus.NOT_FOUND);
+  //   }
+  //   const url = scm.url;
+  //   let token = '';
 
-    const repository = await this.dataSource.getRepository(ProjectScm).findOne({ where: { projectId } });
+  //   switch (scm.type) {
+  //     case PROJECT_SCM_TYPE.GITLAB:
+  //       {
+  //         const gitlabAuth = await this.dataSource.getRepository(ProjectScmGitlabAuth).findOne({ where: { projectScmId: scm.projectScmId } });
+  //         if (!gitlabAuth) {
+  //           throw new HttpException(`This Project does not have gitlab auth: ${projectId}`, HttpStatus.NOT_FOUND);
+  //         }
+  //         token = gitlabAuth.token;
+  //       }
+  //       break;
+  //     case PROJECT_SCM_TYPE.GITHUB:
+  //       {
+  //         const githubAuth = await this.dataSource.getRepository(ProjectScmGithubAuth).findOne({ where: { projectScmId: scm.projectScmId } });
+  //         if (!githubAuth) {
+  //           throw new HttpException(`This Project does not have github auth: ${projectId}`, HttpStatus.NOT_FOUND);
+  //         }
+  //         token = githubAuth.token;
+  //       }
+  //       break;
+  //     default:
+  //       throw new HttpException(`This Project does not have scm: ${projectId}`, HttpStatus.NOT_FOUND);
+  //   }
 
-    const gitUrlWithoutProtocol = 'urlWithoutProtocol';
-    // const gitUrlWithAuth = `https://oauth2:${projectGitlab.gitlabProjectToken}@${gitUrlWithoutProtocol}/${organizationId}/${projectId}.git`;
-    const gitUrlWithAuth = '';
+  //   const parts: string[] = url.split('/');
+  //   const hostUrl = parts.slice(0, parts.length - 2).join('/');
 
-    return gitUrlWithAuth;
-  }
+  //   const gitUrlWithAuth = `https://oauth2:${token}@${hostUrl}/${organizationId}/${projectId}.git`;
+
+  //   return gitUrlWithAuth;
+  // }
 
   // private async readDoguConfig(projectGitlab: ProjectGitlab): Promise<DoguConfig> {
   //   const doguConfigFile = await Gitlab.getProjectFile('dogu.config.json', projectGitlab);

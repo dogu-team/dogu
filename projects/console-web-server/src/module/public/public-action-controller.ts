@@ -2,19 +2,18 @@ import { OrganizationPropCamel, ProjectApplicationPropCamel, ProjectPropCamel } 
 import { OrganizationId, ProjectApplicationId, ProjectId } from '@dogu-private/types';
 import { Instance, transform } from '@dogu-tech/common';
 import { Application, GetApplicationListQuery, PublicAction } from '@dogu-tech/console-action';
-import { Controller, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
+import { Controller, Get, Inject, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { HOST_ACTION_TYPE } from '../auth/auth.types';
 import { HostPermission } from '../auth/decorators';
-import { GitlabService } from '../gitlab/gitlab.service';
 import { ApplicationService } from '../project/application/application.service';
 import { FindProjectApplicationDto } from '../project/application/dto/application.dto';
+import { ProjectScmService } from '../project/git/project-scm.service';
 
 @Controller(PublicAction.controller.path)
 export class PublicActionController {
   constructor(
-    private readonly gitlabService: GitlabService, //
-    // @Inject(ProjectGitService)
-    // private readonly projectRepository: ProjectRepositoryService
+    @Inject(ProjectScmService)
+    private readonly projectScmService: ProjectScmService,
     private readonly applicationService: ApplicationService,
   ) {}
 
@@ -24,9 +23,7 @@ export class PublicActionController {
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, //
     @Param(ProjectPropCamel.projectId) projectId: ProjectId,
   ): Promise<Instance<typeof PublicAction.getGitUrl.responseBody>> {
-    // const url = await this.gitlabService.getGitUrl(organizationId, projectId);
-    // //
-    const url = await this.gitlabService.getGitUrlWithAuth(organizationId, projectId);
+    const url = await this.projectScmService.getGitUrlWithAuth(organizationId, projectId);
     return { url };
   }
 

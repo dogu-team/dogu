@@ -14,8 +14,8 @@ export class ProjectScmGitlabAuth extends BaseEntity implements ProjectScmGitlab
   projectScmId!: ProjectScmId;
 
   @Exclude()
-  @Column({ type: 'character varying', name: ProjectScmGitlabAuthPropSnake.token, nullable: true })
-  token!: string | null;
+  @Column({ type: 'character varying', name: ProjectScmGitlabAuthPropSnake.token, nullable: false })
+  token!: string;
 
   @ColumnTemplate.CreateDate(ProjectScmGitlabAuthPropSnake.created_at)
   createdAt!: Date;

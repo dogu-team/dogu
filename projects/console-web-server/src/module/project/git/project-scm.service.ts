@@ -1,10 +1,9 @@
 import { DoguScmConfig, OrganizationId, ProjectId, ProjectTestScript, PROJECT_SCM_TYPE } from '@dogu-private/types';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import crypto from 'crypto';
 import { DataSource, EntityManager } from 'typeorm';
 import { v4 } from 'uuid';
-
 import { OrganizationKey } from '../../../db/entity/index';
 import { ProjectScm } from '../../../db/entity/project-scm';
 import { ProjectScmGithubAuth } from '../../../db/entity/project-scm-github-auth.entity';
@@ -98,7 +97,7 @@ export class ProjectScmService {
           where: { projectScmId: projectScm.projectScmId },
         });
 
-        if (!projectScmGithubAuth || projectScmGithubAuth.token === null) {
+        if (!projectScmGithubAuth) {
           throw new NotFoundException('Github repository auth not configured');
         }
 
@@ -122,7 +121,7 @@ export class ProjectScmService {
           where: { projectScmId: projectScm.projectScmId },
         });
 
-        if (!projectScmGitlabbAuth || projectScmGitlabbAuth.token === null) {
+        if (!projectScmGitlabbAuth) {
           throw new NotFoundException('Gitlab repository auth not configured');
         }
 
@@ -192,5 +191,44 @@ export class ProjectScmService {
     const decipher = crypto.createDecipheriv('aes-256-cbc', key, Buffer.from(iv, 'hex'));
     const decrypted = Buffer.concat([decipher.update(Buffer.from(encrypted, 'hex')), decipher.final()]);
     return decrypted.toString();
+  }
+
+  async getGitUrlWithAuth(organizationId: OrganizationId, projectId: ProjectId) {
+    const scm = await this.dataSource.getRepository(ProjectScm).findOne({ where: { projectId } });
+    if (!scm) {
+      throw new HttpException(`This Project does not have scm: ${projectId}`, HttpStatus.NOT_FOUND);
+    }
+    const url = scm.url;
+    let token = '';
+
+    switch (scm.type) {
+      case PROJECT_SCM_TYPE.GITLAB:
+        {
+          const gitlabAuth = await this.dataSource.getRepository(ProjectScmGitlabAuth).findOne({ where: { projectScmId: scm.projectScmId } });
+          if (!gitlabAuth) {
+            throw new HttpException(`This Project does not have gitlab auth: ${projectId}`, HttpStatus.NOT_FOUND);
+          }
+          token = gitlabAuth.token;
+        }
+        break;
+      case PROJECT_SCM_TYPE.GITHUB:
+        {
+          const githubAuth = await this.dataSource.getRepository(ProjectScmGithubAuth).findOne({ where: { projectScmId: scm.projectScmId } });
+          if (!githubAuth) {
+            throw new HttpException(`This Project does not have github auth: ${projectId}`, HttpStatus.NOT_FOUND);
+          }
+          token = githubAuth.token;
+        }
+        break;
+      default:
+        throw new HttpException(`This Project does not have scm: ${projectId}`, HttpStatus.NOT_FOUND);
+    }
+
+    const parts: string[] = url.split('/');
+    const hostUrl = parts.slice(0, parts.length - 2).join('/');
+
+    const gitUrlWithAuth = `https://oauth2:${token}@${hostUrl}/${organizationId}/${projectId}.git`;
+
+    return gitUrlWithAuth;
   }
 }
