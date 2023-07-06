@@ -72,23 +72,23 @@ export class OrganizationController {
     return rv;
   }
 
-  // @Post(':organizationId/api-token')
-  // @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  // async createApiToken(
-  //   @User() userPayload: UserPayload, //
-  //   @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
-  // ): Promise<string> {
-  //   const rv = await this.organizationService.createApiToken(organizationId);
-  //   return rv;
-  // }
+  @Get(':organizationId/api-token')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async findApiToken(
+    @User() userPayload: UserPayload, //
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
+  ): Promise<string> {
+    const rv = await this.organizationService.findApiToken(organizationId);
+    return rv;
+  }
 
-  @Patch(':organizationId/api-token')
+  @Post(':organizationId/api-token')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
   async reissueApiToken(
     @User() userPayload: UserPayload, //
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
   ): Promise<string> {
-    const rv = await this.organizationService.reissueApiToken(organizationId, userPayload.userId);
+    const rv = await this.organizationService.revokeToken(organizationId, userPayload.userId);
     return rv;
   }
 
@@ -98,7 +98,7 @@ export class OrganizationController {
     @User() userPayload: UserPayload, //
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
   ): Promise<void> {
-    await this.organizationService.revokeApiToken(organizationId, userPayload.userId);
+    await this.organizationService.deleteApiToken(organizationId, userPayload.userId);
   }
 
   @Delete(':organizationId')

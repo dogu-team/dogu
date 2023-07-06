@@ -608,7 +608,22 @@ export class OrganizationService {
     return token.token;
   }
 
-  async reissueApiToken(organizationId: OrganizationId, creatorId: UserId): Promise<string> {
+  async findApiToken(organizationId: OrganizationId): Promise<string> {
+    const orgApiToken = await this.dataSource //
+      .getRepository(OrganizatioApiToken)
+      .createQueryBuilder('orgApiToken')
+      .innerJoinAndSelect(`orgApiToken.${OrganizationApiTokenPropCamel.token}`, 'token')
+      .where(`orgApiToken.${OrganizationApiTokenPropSnake.organization_id} = :organizationId`, { organizationId })
+      .getOne();
+
+    if (!orgApiToken) {
+      throw new HttpException(`Api token not found. organizationId: ${organizationId}`, HttpStatus.NOT_FOUND);
+    }
+
+    return orgApiToken.token.token;
+  }
+
+  async revokeToken(organizationId: OrganizationId, creatorId: UserId): Promise<string> {
     const orgApiToken = await this.dataSource //
       .getRepository(OrganizatioApiToken)
       .createQueryBuilder('orgApiToken')
@@ -648,7 +663,7 @@ export class OrganizationService {
     return rv;
   }
 
-  async revokeApiToken(organizationId: OrganizationId, revokerId: UserId): Promise<void> {
+  async deleteApiToken(organizationId: OrganizationId, revokerId: UserId): Promise<void> {
     const orgApiToken = await this.dataSource //
       .getRepository(OrganizatioApiToken)
       .createQueryBuilder('orgApiToken')
