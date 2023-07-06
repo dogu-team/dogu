@@ -37,7 +37,30 @@
         "panel": "shared"
       }
     },
-
+    {
+      "type": "npm",
+      "script": "rebuild",
+      "label": "Rebuild: typescript/types",
+      "path": "packages/typescript/types",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "exportWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
+      "script": "rebuild",
+      "label": "Rebuild: typescript/gamium-protocol",
+      "path": "packages/typescript/gamium-protocol",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "exportWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
     /*************************************************************************
       dev
      *************************************************************************/
@@ -127,18 +150,6 @@
     },
     {
       "type": "npm",
-      "script": "newbie:nm-space",
-      "label": "Newbie: NM Space",
-      "path": ".",
-      "problemMatcher": [],
-      "presentation": {
-        "group": "devWatchers",
-        "close": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "type": "npm",
       "script": "dev",
       "label": "Dev: Dost",
       "path": "nm-space/projects/dost",
@@ -150,7 +161,27 @@
         "panel": "shared"
       }
     },
-
+    {
+      "label": "Dev: Server All",
+      "type": "shell",
+      "problemMatcher": [],
+      "dependsOrder": "parallel",
+      "dependsOn": ["Dev: CF console-web-front", "Dev: CB console-web-server", "Dev: Dost"]
+    },
+    {
+      "label": "Dev: Local DB All",
+      "type": "shell",
+      "problemMatcher": [],
+      "dependsOrder": "parallel",
+      "dependsOn": ["Dev: pgsql", "Dev: redis"]
+    },
+    {
+      "label": "Dev: Local All",
+      "type": "shell",
+      "problemMatcher": [],
+      "dependsOrder": "sequence",
+      "dependsOn": ["Dev: Server All"]
+    },
     /*************************************************************************
       local db
      *************************************************************************/
@@ -178,46 +209,24 @@
         "panel": "shared"
       }
     },
-
     /*************************************************************************
-      env
+      Newbie
      *************************************************************************/
+
     {
       "type": "npm",
-      "script": "env:intranet",
-      "label": "Dev: Env intranet",
-      "path": "",
+      "script": "newbie:nm-space",
+      "label": "Newbie: NM Space",
+      "path": ".",
       "problemMatcher": [],
       "presentation": {
-        "group": "envWatchers",
+        "group": "devWatchers",
         "close": false,
         "panel": "shared"
       }
     },
-    {
-      "label": "Dev: Server All",
-      "type": "shell",
-      "problemMatcher": [],
-      "dependsOrder": "parallel",
-      "dependsOn": ["Dev: CF console-web-front", "Dev: CB console-web-server", "Dev: Dost"]
-    },
-    {
-      "label": "Dev: Local DB All",
-      "type": "shell",
-      "problemMatcher": [],
-      "dependsOrder": "parallel",
-      "dependsOn": ["Dev: pgsql", "Dev: redis"]
-    },
-    {
-      "label": "Dev: Local All",
-      "type": "shell",
-      "problemMatcher": [],
-      "dependsOrder": "sequence",
-      "dependsOn": ["Dev: Server All"]
-    },
-
     /*************************************************************************
-      watch and mirror to nm-space
+      Watch
      *************************************************************************/
     {
       "type": "npm",
@@ -250,9 +259,8 @@
       "dependsOrder": "parallel",
       "dependsOn": ["Watch: packages", "Watch: mirror to nm-space"]
     },
-
     /*************************************************************************
-      export
+      Export
      *************************************************************************/
     {
       "type": "npm",
@@ -266,18 +274,7 @@
         "panel": "shared"
       }
     },
-    {
-      "type": "npm",
-      "script": "rebuild",
-      "label": "Rebuild: typescript/types",
-      "path": "packages/typescript/types",
-      "problemMatcher": [],
-      "presentation": {
-        "group": "exportWatchers",
-        "close": false,
-        "panel": "shared"
-      }
-    },
+
     {
       "label": "Export: protocol-exporter, reload",
       "type": "shell",
@@ -298,24 +295,15 @@
       }
     },
     {
-      "type": "npm",
-      "script": "rebuild",
-      "label": "Rebuild: typescript/gamium-protocol",
-      "path": "packages/typescript/gamium-protocol",
-      "problemMatcher": [],
-      "presentation": {
-        "group": "exportWatchers",
-        "close": false,
-        "panel": "shared"
-      }
-    },
-    {
       "label": "Export: flatbuffer-exporter, reload",
       "type": "shell",
       "problemMatcher": [],
       "dependsOrder": "sequence",
       "dependsOn": ["Export: FE flatbuffer-exporter", "Rebuild: typescript/gamium-protocol", "workbench.action.reloadWindow"]
     },
+    /*************************************************************************
+      Task
+     *************************************************************************/
     {
       "label": "Terminate task",
       "type": "shell",
@@ -334,6 +322,74 @@
       "command": "${command:workbench.action.tasks.terminate}",
       "type": "shell",
       "problemMatcher": []
+    },
+
+    /*************************************************************************
+      Debug
+     *************************************************************************/
+    {
+      "label": "Debug: CB console-web-server(1)",
+      "command": "${command:extension.js-debug.createDebuggerTerminal}",
+      "problemMatcher": []
+    },
+    {
+      "label": "Debug: CB console-web-server(2)",
+      "command": "${input:console-web-server-dev}",
+      "problemMatcher": []
+    },
+    {
+      "label": "Debug: CB console-web-server",
+      "problemMatcher": [],
+      "dependsOrder": "sequence",
+      "dependsOn": ["Debug: CB console-web-server(1)", "Debug: CB console-web-server(2)"]
+    },
+    {
+      "label": "Debug: Dost(1)",
+      "command": "${command:extension.js-debug.createDebuggerTerminal}",
+      "problemMatcher": []
+    },
+    {
+      "label": "Debug: Dost(2)",
+      "command": "${input:dost-dev}",
+      "problemMatcher": []
+    },
+    {
+      "label": "Debug: Dost",
+      "problemMatcher": [],
+      "dependsOrder": "sequence",
+      "dependsOn": ["Debug: Dost(1)", "Debug: Dost(2)"]
+    },
+    {
+      "label": "Debug: DS device-server(1)",
+      "command": "${command:extension.js-debug.createDebuggerTerminal}",
+      "problemMatcher": []
+    },
+    {
+      "label": "Debug: DS device-server(2)",
+      "command": "${input:device-server-dev}",
+      "problemMatcher": []
+    },
+    {
+      "label": "Debug: DS device-server",
+      "problemMatcher": [],
+      "dependsOrder": "sequence",
+      "dependsOn": ["Debug: DS device-server(1)", "Debug: DS device-server(2)"]
+    },
+    {
+      "label": "Debug: HA host-agent(1)",
+      "command": "${command:extension.js-debug.createDebuggerTerminal}",
+      "problemMatcher": []
+    },
+    {
+      "label": "Debug: HA host-agent(2)",
+      "command": "${input:host-agent-dev}",
+      "problemMatcher": []
+    },
+    {
+      "label": "Debug: HA host-agent",
+      "problemMatcher": [],
+      "dependsOrder": "sequence",
+      "dependsOn": ["Debug: HA host-agent(1)", "Debug: HA host-agent(2)"]
     }
   ],
   "inputs": [
@@ -341,6 +397,38 @@
       "id": "reload",
       "type": "command",
       "command": "workbench.action.reloadWindow"
+    },
+    {
+      "id": "console-web-server-dev",
+      "type": "command",
+      "command": "workbench.action.terminal.sendSequence",
+      "args": {
+        "text": "cd  ${workspaceFolder}/projects/console-web-server && yarn dev\u000a"
+      }
+    },
+    {
+      "id": "dost-dev",
+      "type": "command",
+      "command": "workbench.action.terminal.sendSequence",
+      "args": {
+        "text": "cd  ${workspaceFolder}/nm-space/projects/dost && yarn dev\u000a"
+      }
+    },
+    {
+      "id": "device-server-dev",
+      "type": "command",
+      "command": "workbench.action.terminal.sendSequence",
+      "args": {
+        "text": "cd  ${workspaceFolder}/projects/device-server && yarn dev\u000a"
+      }
+    },
+    {
+      "id": "host-agent-dev",
+      "type": "command",
+      "command": "workbench.action.terminal.sendSequence",
+      "args": {
+        "text": "cd  ${workspaceFolder}/projects/host-agent && yarn dev\u000a"
+      }
     }
   ]
 }
