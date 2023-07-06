@@ -37,7 +37,7 @@
   },
   "link.item.label.getStarted": {
     "message": "시작하기",
-    "description": "The label of footer link with label=getStarted linking to /get-started/introduction"
+    "description": "The label of footer link with label=getStarted linking to /get-started"
   },
   "link.item.label.orgAndProject": {
     "message": "관리",
@@ -49,7 +49,7 @@
   },
   "link.item.label.testAutomation": {
     "message": "테스트 자동화",
-    "description": "The label of footer link with label=testAutomation linking to /script-and-routine/introduction"
+    "description": "The label of footer link with label=testAutomation linking to /test-automation/introduction"
   },
   "link.item.label.community": {
     "message": "커뮤니티",
@@ -57,11 +57,11 @@
   },
   "link.item.label.testReport": {
     "message": "테스트 리포트",
-    "description": "The label of footer link with label=testReport linking to /self-hosted/get-started"
+    "description": "The label of footer link with label=testReport linking to /test-report/introduction"
   },
   "link.item.label.routine": {
     "message": "루틴",
-    "description": "The label of footer link with label=routine linking to /self-hosted/get-started"
+    "description": "The label of footer link with label=routine linking to /script-and-routine/introduction"
   },
   "link.title.Services": {
     "message": "Services",

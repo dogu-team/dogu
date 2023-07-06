@@ -75,40 +75,13 @@ export default function Home(): JSX.Element {
                 <Translate id="main.introduction" />
               </Link>
             </li>
-          </ul>
-          <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
               <Link to="/get-started/installation">
                 <Translate id="main.getStartedInstallationTitle" />
               </Link>
             </li>
-          </ul>
-          <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/get-started/device-farm">
-                <Translate id="main.getStartedDeviceFarmTitle" />
-              </Link>
-            </li>
-          </ul>
-          <ul className={styles.docsSectionListContainer}>
-            <li className={styles.docsSectionListItem}>
-              <Link to="/get-started/test-script">
-                <Translate id="main.getStartedTestScriptTitle" />
-              </Link>
-            </li>
-          </ul>
-          <ul className={styles.docsSectionListContainer}>
-            <li className={styles.docsSectionListItem}>
-              <Link to="/get-started/installation">
-                <Translate id="main.getStartedTestReportTitle" />
-              </Link>
-            </li>
-          </ul>
-          <ul className={styles.docsSectionListContainer}>
-            <li className={styles.docsSectionListItem}>
-              <Link to="/get-started/routine">
-                <Translate id="main.getStartedRoutineTitle" />
-              </Link>
+              <Link to="/get-started/tutorials">Tutorials</Link>
             </li>
           </ul>
         </div>
@@ -175,22 +148,16 @@ export default function Home(): JSX.Element {
                 <Translate id="main.testAutomationTitle" />
               </Link>
             </li>
-          </ul>
-          <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
               <Link to="/test-automation/browser">
                 <Translate id="main.testAutomationBrowserLinkTitle" />
               </Link>
             </li>
-          </ul>
-          <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
               <Link to="/test-automation/mobile">
                 <Translate id="main.testAutomationMobileLinkTitle" />
               </Link>
             </li>
-          </ul>
-          <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
               <Link to="/test-automation/game">
                 <Translate id="main.testAutomationGameLinkTitle" />
@@ -242,46 +209,6 @@ export default function Home(): JSX.Element {
             </li>
           </ul>
         </div>
-        {/* <div className={styles.docsSection}>
-          <h2 className={styles.docsSectionTitle}>
-            <div className={styles.logoWrapper}>
-              <CodeLogo className={styles.svg} />
-            </div>
-            GamiumKit
-          </h2>
-          <ul className={styles.docsSectionListContainer}>
-            <li className={styles.docsSectionListItem}>
-              <Link to="/toolkit/introduction">
-                <Translate id="main.gamiumIntroLinkTitle" />
-              </Link>
-            </li>
-            <li className={styles.docsSectionListItem}>
-              <Link to="/toolkit/quick-start">
-                <Translate id="main.gamiumStartLinkTitle" />
-              </Link>
-            </li>
-          </ul>
-        </div> */}
-        {/* <div className={styles.docsSection}>
-          <h2 className={styles.docsSectionTitle}>
-            <div className={styles.logoWrapper}>
-              <SelfManagedLogo className={styles.svg} />
-            </div>
-            <Translate id="main.selfHostedTitle" />
-          </h2>
-          <ul className={styles.docsSectionListContainer}>
-            <li className={styles.docsSectionListItem}>
-              <Link to="/self-hosted/get-started">
-                <Translate id="main.selfHostedStartLinkTitle" />
-              </Link>
-            </li>
-            <li className={styles.docsSectionListItem}>
-              <Link to="/self-hosted/update">
-                <Translate id="main.selfHostedUpdateLinkTitle" />
-              </Link>
-            </li>
-          </ul>
-        </div> */}
         <div className={styles.docsSection}>
           <h2 className={styles.docsSectionTitle}>
             <div className={styles.logoWrapper}>
@@ -293,8 +220,6 @@ export default function Home(): JSX.Element {
             <li className={styles.docsSectionListItem}>
               <Link to="https://discord.com/invite/bVycd6Tu9g">Discord</Link>
             </li>
-          </ul>
-          <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
               <Link to="https://github.com/dogu-team/dogu/discussions">
                 Github Discussion

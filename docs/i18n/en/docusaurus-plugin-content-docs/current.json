@@ -174,5 +174,9 @@
   "sidebar.getStartedSidebar.category.Test Script": {
     "message": "Test Script",
     "description": "The label for category Test Script in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Tutorials": {
+    "message": "Tutorials",
+    "description": "The label for category Tutorials in sidebar getStartedSidebar"
   }
 }

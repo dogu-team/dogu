@@ -94,5 +94,9 @@
   "sidebar.getStartedSidebar.category.Test Script": {
     "message": "테스트 스크립트",
     "description": "The label for category Test Script in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Tutorials": {
+    "message": "튜토리얼",
+    "description": "The label for category Tutorials in sidebar getStartedSidebar"
   }
 }
