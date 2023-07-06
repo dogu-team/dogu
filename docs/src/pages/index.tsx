@@ -11,7 +11,7 @@ import CodeLogo from '@site/static/img/main/code.svg';
 import RoutineLogo from '@site/static/img/main/routine.svg';
 import OrgLogo from '@site/static/img/main/organization.svg';
 import CommunityLogo from '@site/static/img/main/community.svg';
-import SelfManagedLogo from '@site/static/img/main/self-managed.svg';
+import APILogo from '@site/static/img/main/api.svg';
 import AutomationLogo from '@site/static/img/main/automation.svg';
 import ReportLogo from '@site/static/img/main/report.svg';
 import DoguLogo from '@site/static/img/main/dogu.svg';
@@ -208,6 +208,19 @@ export default function Home(): JSX.Element {
               <Link to="/script-and-routine/actions/about">
                 <Translate id="main.scriptAndRoutineActionLinkTitle" />
               </Link>
+            </li>
+          </ul>
+        </div>
+        <div className={styles.docsSection}>
+          <h2 className={styles.docsSectionTitle}>
+            <div className={styles.logoWrapper}>
+              <APILogo className={styles.svg} />
+            </div>
+            API
+          </h2>
+          <ul className={styles.docsSectionListContainer}>
+            <li className={styles.docsSectionListItem}>
+              <Link to="/api">API</Link>
             </li>
           </ul>
         </div>
