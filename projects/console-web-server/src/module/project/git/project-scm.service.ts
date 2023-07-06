@@ -102,9 +102,10 @@ export class ProjectScmService {
         }
 
         const githubToken = await this.decryptToken(this.dataSource.manager, organizationId, projectScmGithubAuth.token);
-        const parts: string[] = projectScm.url.split('/');
-        const org: string = parts[parts.length - 2];
-        const repo: string = parts[parts.length - 1];
+        const url = new URL(projectScm.url);
+        const parts: string[] = url.pathname.split('/');
+        const org: string = parts[1];
+        const repo: string = parts[2];
 
         const content = await Github.readDoguConfigFile(githubToken, org, repo);
         const json: DoguScmConfig = JSON.parse(content.replaceAll('\n| ', ''));
@@ -127,11 +128,11 @@ export class ProjectScmService {
         }
 
         const gitlabToken = await this.decryptToken(this.dataSource.manager, organizationId, projectScmGitlabbAuth.token);
-
-        const parts: string[] = projectScm.url.split('/');
-        const org: string = parts[parts.length - 2];
-        const repo: string = parts[parts.length - 1];
-        const hostUrl = parts.slice(0, parts.length - 2).join('/');
+        const url = new URL(projectScm.url);
+        const parts: string[] = url.pathname.split('/');
+        const org: string = parts[1];
+        const repo: string = parts[2];
+        const hostUrl = url.origin;
 
         const json = await Gitlab.readDoguConfigFile(hostUrl, gitlabToken, repo);
         const metaTrees = await Promise.all(
@@ -199,16 +200,13 @@ export class ProjectScmService {
     if (!scm) {
       throw new HttpException(`This Project does not have scm: ${projectId}`, HttpStatus.NOT_FOUND);
     }
-    const url = scm.url;
+    const url = new URL(scm.url);
     let token = '';
-    const parts: string[] = url.split('/');
-    const hostUrlWithOutProtocol = parts
-      .slice(0, parts.length - 2)
-      .join('/')
-      .split('://')[1];
-    const org: string = parts[parts.length - 2];
-    const repo: string = parts[parts.length - 1];
-    const protocol: string = parts[0].replace(':', '');
+    const host = url.host;
+    const protocol = url.protocol;
+    const parts: string[] = url.pathname.split('/');
+    const org: string = parts[1];
+    const repo: string = parts[2];
 
     switch (scm.type) {
       case PROJECT_SCM_TYPE.GITLAB:
@@ -233,7 +231,7 @@ export class ProjectScmService {
         throw new HttpException(`This Project does not have scm: ${projectId}`, HttpStatus.NOT_FOUND);
     }
 
-    const gitUrlWithAuth = `${protocol}://oauth2:${token}@${hostUrlWithOutProtocol}/${org}/${repo}.git`;
+    const gitUrlWithAuth = `${protocol}//oauth2:${token}@${host}/${org}/${repo}.git`;
 
     return gitUrlWithAuth;
   }
