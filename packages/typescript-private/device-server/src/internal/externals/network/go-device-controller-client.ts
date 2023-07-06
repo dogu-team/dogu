@@ -165,9 +165,6 @@ export class GoDeviceControllerGrpcClient extends GrpcClientBase implements Zomb
   }
 
   // Zombie
-  get parent(): Zombieable | null {
-    return this.goDeviceController;
-  }
   get name(): string {
     return `GoDeviceControllerGrpcClient`;
   }

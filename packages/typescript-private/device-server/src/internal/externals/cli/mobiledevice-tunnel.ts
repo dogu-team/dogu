@@ -62,9 +62,6 @@ export class ZombieTunnel implements Zombieable {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }
 
-  get parent(): null {
-    return null;
-  }
   get name(): string {
     return `Tunnel`;
   }
