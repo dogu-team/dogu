@@ -12,7 +12,6 @@
     "build:electron": "tsc -p electron",
     "build:react": "cross-env CI=true react-app-rewired build",
     "clean": "shx rm -rf prepare build dist generated",
-    "debug": "yarn run build:react && nodemon --debug 60013",
     "deploy:electron": "ts-node scripts/build",
     "deploy:notarize": "ts-node scripts/build --notarize=true",
     "deploy:publish": "ts-node scripts/build --notarize=true --publish=true",

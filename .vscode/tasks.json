@@ -217,65 +217,6 @@
     },
 
     /*************************************************************************
-      debug
-     *************************************************************************/
-    {
-      "type": "npm",
-      "script": "debug",
-      "label": "Debug:Dev: CB console-web-server",
-      "path": "projects/console-web-server",
-      "problemMatcher": [],
-      "presentation": {
-        "group": "devWatchers",
-        "close": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "type": "npm",
-      "script": "debug",
-      "label": "Debug:Dev: HA host-agent",
-      "path": "projects/host-agent",
-      "problemMatcher": [],
-      "presentation": {
-        "group": "devWatchers",
-        "close": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "type": "npm",
-      "script": "debug",
-      "label": "Debug:Dev: DS device-server",
-      "path": "projects/device-server",
-      "problemMatcher": [],
-      "presentation": {
-        "group": "devWatchers",
-        "close": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "type": "npm",
-      "script": "debug",
-      "label": "Debug:Dev: Dost",
-      "path": "nm-space/projects/dost",
-      "problemMatcher": [],
-      "presentation": {
-        "group": "devWatchers",
-        "close": false,
-        "panel": "shared"
-      }
-    },
-    {
-      "label": "Debug:Dev: CB HA DS",
-      "type": "shell",
-      "problemMatcher": [],
-      "dependsOrder": "parallel",
-      "dependsOn": ["Debug:Dev: CB console-web-server", "Debug:Dev: HA host-agent", "Debug:Dev: DS device-server"]
-    },
-
-    /*************************************************************************
       watch and mirror to nm-space
      *************************************************************************/
     {

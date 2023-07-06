@@ -8,7 +8,6 @@
   "scripts": {
     "build": "tsc -b",
     "clean": "shx rm -rf build generated dist",
-    "debug": "cross-env NODE_ENV=development nodemon --config nodemon.json --inspect=60003",
     "dev": "cross-env NODE_ENV=development nodemon --config nodemon.json",
     "rebuild": "yarn run clean && yarn run build",
     "start": "cross-env NODE_ENV=production node -r tsconfig-paths/register -r ts-node/register build/src/main"

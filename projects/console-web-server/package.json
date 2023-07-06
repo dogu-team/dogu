@@ -6,7 +6,6 @@
   "scripts": {
     "build": "tsc -b && ts-node scripts/post-build/run.ts",
     "clean": "shx rm -rf build generated",
-    "debug": "cross-env TZ=UTC NODE_ENV=development nodemon --config nodemon.json --debug 61233",
     "dev": "cross-env TZ=UTC NODE_ENV=development nodemon --config nodemon.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "rebuild": "yarn run clean && yarn run build",

@@ -6,7 +6,6 @@
     "build": "",
     "build:archive": "tsc -b && cross-env NODE_ENV=development ts-node ./scripts/build",
     "clean": "shx rm -rf build generated",
-    "debug": "yarn run dev",
     "dev": "air",
     "killonport": "lsof -ti:50055,2345 -sTCP:LISTEN | xargs kill",
     "newbie:dev": "go install -v golang.org/x/tools/gopls@v0.11.0 && go install -v github.com/cosmtrek/air@v1.41.0",
