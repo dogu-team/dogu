@@ -98,5 +98,9 @@
   "sidebar.getStartedSidebar.category.Tutorials": {
     "message": "튜토리얼",
     "description": "The label for category Tutorials in sidebar getStartedSidebar"
+  },
+  "sidebar.organizationAndProjectSidebar.category.Git Integration": {
+    "message": "Git 연동하기",
+    "description": "The label for category Git Integration in sidebar organizationAndProjectSidebar"
   }
 }

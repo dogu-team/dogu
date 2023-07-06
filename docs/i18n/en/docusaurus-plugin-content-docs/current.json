@@ -178,5 +178,9 @@
   "sidebar.getStartedSidebar.category.Tutorials": {
     "message": "Tutorials",
     "description": "The label for category Tutorials in sidebar getStartedSidebar"
+  },
+  "sidebar.organizationAndProjectSidebar.category.Git Integration": {
+    "message": "Git Integration",
+    "description": "The label for category Git Integration in sidebar organizationAndProjectSidebar"
   }
 }

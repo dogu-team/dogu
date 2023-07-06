@@ -1,63 +1,10 @@
 ---
-sidebar_position: 3
-title: Git integration
-locale: en
+sidebar_position: 2
+title: GitHub 토큰 발급
+locale: ko
 ---
 
-From `Dogu v1.2.0` onwards, self-hosted GitLab hosting is not supported for the test script repository. You can use GitHub and GitLab services to integrate with projects.
-
-## Prerequisites
-
-:::tip
-
-You can check the repository example at https://github.com/dogu-team/test-script-sample.
-
-:::
-
-1. Create a repository in a Git service.
-2. Create a `dogu.config.json` file in the **root directory** with the following content:
-   ```json
-   {
-     "scriptFolderPaths": ["test"]
-   }
-   ```
-3. Write test scripts in the path specified in `scriptFolderPaths`.
-
-## Integration
-
-:::info
-
-To perform actions such as repository tree browsing, file retrieval, and cloning in Dogu, at least read permission for the repository is required.  
-Please refer to the token generation section for each Git service below for more details.
-
-:::
-
-1. Go to the Dogu project page.
-2. Select the project to integrate and go to the settings page.
-3. Click on the "Change Git Integration" button.
-   <img
-     src="/img/console/project/git-integration-menu.png"
-     style={{ width: 500, display: 'block' }}
-   />
-4. Enter the Git service, token, and repository URL, then save.
-   <img
-     src="/img/console/project/git-integration-form.png"
-     style={{ width: 500, display: 'block' }}
-   />
-
-### Verify Integration
-
-1. Go to the Dogu project page.
-2. Select the routines tab and click the `+` icon.
-3. Choose the GUI editor and check if the test script is loaded in the "Run test" action.
-   <img
-     src="/img/console/project/git-integration-confirm.png"
-     style={{ width: 500, display: 'block' }}
-   />
-
-## Generate GitHub Token
-
-### Fine-grained token (recommended)
+## Fine-grained token (recommended)
 
 1. Log in to [GitHub](https://github.com) or self-hosted GitHub.
 2. Go to Profile > Settings > Developer settings > Personal access tokens in the header.
@@ -86,7 +33,7 @@ Please refer to the token generation section for each Git service below for more
    />
 9. Click on the "Generate token" button.
 
-### Classic token
+## Classic token
 
 1. Log in to [GitHub](https://github.com) or Self-hosted GitHub.
 2. Go to Profile > Settings > Developer settings > Personal access tokens.
@@ -107,5 +54,3 @@ Please refer to the token generation section for each Git service below for more
      style={{ width: 500, display: 'block' }}
    />
 7. Click on the Generate token button.
-
-## Generating GitLab Tokens
