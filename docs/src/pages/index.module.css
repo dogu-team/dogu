@@ -31,6 +31,40 @@
   white-space: pre-wrap;
 }
 
+.headerBannerButtonWrapper {
+  display: flex;
+  align-items: center;
+
+  @media screen and (max-width: 767px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+
+.headerBannerButton {
+  display: flex;
+  padding: .75rem 1rem;
+  margin: 1rem 1rem 1rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  color: var(--ifm-heading-color);
+  cursor: pointer;
+  background-color: var(--ifm-button-background-color);
+  
+  &:hover {
+    background-color: var(--ifm-button-background-color-hover);
+    color: var(--ifm-heading-color);
+    text-decoration: none;
+  }
+
+  @media screen and (max-width: 767px) {  
+    margin: .5rem .5rem 1rem 0;
+  }
+}
+
 .buttons {
   display: flex;
   align-items: center;

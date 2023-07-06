@@ -21,6 +21,8 @@
   --ifm-heading-backogrund-color: #f8fafe;
   --ifm-heading-color: #152353;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --ifm-button-background-color: #789df4;
+  --ifm-button-background-color-hover: #789df4cc;
 }
 
 .footer {
@@ -41,4 +43,6 @@
   --ifm-heading-color: #f8f8f8;
   --ifm-link-color: #aeb5f8;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  --ifm-button-background-color: #789df4;
+  --ifm-button-background-color-hover: #789df4cc;
 }

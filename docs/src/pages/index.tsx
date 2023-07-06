@@ -21,17 +21,32 @@ function HomepageHeader() {
   return (
     <section className={styles.headerBanner}>
       <div className={styles.headerBannerInner}>
+        <DoguLogo width={144} height={144} />
         <h1 className={styles.headerBannerTitle}>{siteConfig.title}</h1>
         <p className={styles.headerBannerDescription}>
           <Translate id="main.descriptionText" />
         </p>
 
-        <iframe
-          src="https://ghbtns.com/github-btn.html?user=dogu-team&amp;repo=dogu&amp;type=star&amp;count=true&amp;size=large"
-          width="160"
-          height="30"
-          title="GitHub Stars"
-        />
+        <div className={styles.headerBannerButtonWrapper}>
+          <div className={styles.headerBannerButtonWrapper}>
+            <a className={styles.headerBannerButton} href="/get-started">
+              Get started
+            </a>
+            <a
+              className={styles.headerBannerButton}
+              href="https://dogutech.io"
+              target="_blank"
+            >
+              Try Dogu for free
+            </a>
+          </div>
+          <iframe
+            src="https://ghbtns.com/github-btn.html?user=dogu-team&amp;repo=dogu&amp;type=star&amp;count=true&amp;size=large"
+            width="160"
+            height="30"
+            title="GitHub Stars"
+          />
+        </div>
       </div>
     </section>
   );
