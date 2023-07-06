@@ -96,11 +96,11 @@ const config = {
               },
               {
                 label: 'orgAndProject',
-                to: '/organization-and-project/introduction',
+                to: '/management/introduction',
               },
               {
                 label: 'deviceFarm',
-                to: '/host-and-device/introduction',
+                to: '/device-farm/introduction',
               },
               {
                 label: 'testAutomation',
@@ -112,7 +112,11 @@ const config = {
               },
               {
                 label: 'routine',
-                to: '/script-and-routine/introduction',
+                to: '/routine/about',
+              },
+              {
+                label: 'API',
+                to: '/api',
               },
               {
                 label: 'community',

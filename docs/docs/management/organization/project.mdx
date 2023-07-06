@@ -1,0 +1,81 @@
+---
+sidebar_position: 3
+title: Managing Projects
+locale: en
+---
+
+import OrganizationAdminPermission from '@site/src/components/console/OrganizationAdminPermissionEng.mdx';
+import ProjectAdminPermission from '@site/src/components/console/ProjectAdminPermissionEng.mdx';
+
+Projects allow you to manage various aspects of **one software project(Mobile app, Web, Game)**, such as test scripts, routines, device management, and project members.
+
+Within an organization, you can create multiple projects.
+
+Projects provide the following features:
+
+- Manage project members or teams.
+- Manage devices used in the project.
+- Create and manage test scripts specific to the game.
+- Create routines for testing and perform automated testing using assigned devices.
+
+:::tip Learn More
+
+For detailed information about project features, refer to the [Project](../project) documentation.
+
+:::
+
+## Create a project
+
+<OrganizationAdminPermission prefix="Creating a project" />
+
+1. Click on the "Projects" menu in the left sidebar of the organization page.
+2. Click on the "Create project" button.
+   <img
+     src="/img/console/organization/add-project-btn.png"
+     style={{ width: 600, display: 'block' }}
+   />
+3. Enter the project name and description, then complete the project creation.
+   <img
+     src="/img/console/organization/add-project-modal.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+:::info Sample Test Script
+
+When you create a project, a sample test script is generated in the project repository. You can refer to the sample test script when creating your actual test projects.
+
+You can learn how to execute tests using the sample test script in the [Quick start - Game testing](/get-started/game-test) tutorial.
+
+:::
+
+## Update project
+
+<ProjectAdminPermission prefix="Updating a project" />
+
+1. Click on the "Projects" menu in the left sidebar of the organization page.
+2. Click on the project you want to modify.
+3. Click on the "Settings" menu.
+4. Update the project name and description, then click the "Save" button to complete the changes.
+   <img
+     src="/img/console/organization/update-project.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+## Remove a project
+
+<OrganizationAdminPermission prefix="Remove a project" />
+
+:::danger Remove project
+
+Projects contain important data such as test results. Be cautious when deleting a project as it will result in data loss.
+
+:::
+
+1. Click on the "Projects" menu in the left sidebar of the organization page.
+2. Click on the project you want to delete.
+3. Click on the "Settings" menu.
+4. Click the "Remove project" button and confirm the deletion by clicking the confirmation button.
+   <img
+     src="/img/console/organization/remove-project.png"
+     style={{ width: 600, display: 'block' }}
+   />

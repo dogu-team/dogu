@@ -3,41 +3,25 @@
     "message": "Next",
     "description": "The label for version current"
   },
-  "sidebar.getStarted.category.Installation": {
+  "sidebar.getStartedSidebar.category.Installation": {
     "message": "Installation",
-    "description": "The label for category Installation in sidebar getStarted"
+    "description": "The label for category Installation in sidebar getStartedSidebar"
   },
-  "sidebar.getStarted.category.DeviceFarm": {
-    "message": "DeviceFarm",
-    "description": "The label for category DeviceFarm in sidebar getStarted"
+  "sidebar.getStartedSidebar.category.Tutorials": {
+    "message": "Tutorials",
+    "description": "The label for category Tutorials in sidebar getStartedSidebar"
   },
-  "sidebar.getStarted.category.TestScript": {
-    "message": "TestScript",
-    "description": "The label for category TestScript in sidebar getStarted"
-  },
-  "sidebar.getStarted.category.Routine": {
-    "message": "Routine",
-    "description": "The label for category Routine in sidebar getStarted"
-  },
-  "sidebar.dostAndDeviceSidebar.category.Host": {
+  "sidebar.deviceFarmSidebar.category.Host": {
     "message": "Host",
-    "description": "The label for category Host in sidebar dostAndDeviceSidebar"
+    "description": "The label for category Host in sidebar deviceFarmSidebar"
   },
-  "sidebar.dostAndDeviceSidebar.category.Device": {
+  "sidebar.deviceFarmSidebar.category.Device": {
     "message": "Device",
-    "description": "The label for category Device in sidebar dostAndDeviceSidebar"
+    "description": "The label for category Device in sidebar deviceFarmSidebar"
   },
-  "sidebar.dostAndDeviceSidebar.category.Streaming & Remote Control": {
+  "sidebar.deviceFarmSidebar.category.Streaming & Remote Control": {
     "message": "Streaming & Remote Control",
-    "description": "The label for category Streaming & Remote Control in sidebar dostAndDeviceSidebar"
-  },
-  "sidebar.routineSidebar.category.Test script": {
-    "message": "Test script",
-    "description": "The label for category Test script in sidebar routineSidebar"
-  },
-  "sidebar.routineSidebar.category.Routine": {
-    "message": "Routine",
-    "description": "The label for category Routine in sidebar routineSidebar"
+    "description": "The label for category Streaming & Remote Control in sidebar deviceFarmSidebar"
   },
   "sidebar.routineSidebar.category.Action": {
     "message": "Action",
@@ -47,140 +31,44 @@
     "message": "Pre-defined Actions",
     "description": "The label for category Pre-defined Actions in sidebar routineSidebar"
   },
-  "sidebar.organizationAndProjectSidebar.category.Organization": {
+  "sidebar.managementSidebar.category.Organization": {
     "message": "Organization",
-    "description": "The label for category Organization in sidebar organizationAndProjectSidebar"
+    "description": "The label for category Organization in sidebar managementSidebar"
   },
-  "sidebar.organizationAndProjectSidebar.category.Device": {
+  "sidebar.managementSidebar.category.Device": {
     "message": "Device",
-    "description": "The label for category Device in sidebar organizationAndProjectSidebar"
+    "description": "The label for category Device in sidebar managementSidebar"
   },
-  "sidebar.organizationAndProjectSidebar.category.Project": {
+  "sidebar.managementSidebar.category.Project": {
     "message": "Project",
-    "description": "The label for category Project in sidebar organizationAndProjectSidebar"
+    "description": "The label for category Project in sidebar managementSidebar"
+  },
+  "sidebar.managementSidebar.category.Git Integration": {
+    "message": "Git Integration",
+    "description": "The label for category Git Integration in sidebar managementSidebar"
   },
   "sidebar.testAutomationSidebar.category.Browser": {
     "message": "Browser",
-    "description": "The label for category Browser in sidebar testAutomation"
+    "description": "The label for category Browser in sidebar testAutomationSidebar"
   },
   "sidebar.testAutomationSidebar.category.Mobile": {
     "message": "Mobile",
-    "description": "The label for category Mobile in sidebar testAutomation"
+    "description": "The label for category Mobile in sidebar testAutomationSidebar"
   },
   "sidebar.testAutomationSidebar.category.Game": {
     "message": "Game",
-    "description": "The label for category Game in sidebar testAutomation"
+    "description": "The label for category Game in sidebar testAutomationSidebar"
   },
-  "sidebar.testautomationSidebar.category.sidebar.testAutomationSidebar.category.Browser": {
-    "message": "Browser",
-    "description": "The label for category sidebar.testAutomationSidebar.category.Browser in sidebar testautomationSidebar"
-  },
-  "sidebar.testautomationSidebar.category.sidebar.testAutomationSidebar.category.Mobile": {
-    "message": "Mobile",
-    "description": "The label for category sidebar.testAutomationSidebar.category.Mobile in sidebar testautomationSidebar"
-  },
-  "sidebar.testautomationSidebar.category.sidebar.testAutomationSidebar.category.Game": {
-    "message": "Game",
-    "description": "The label for category sidebar.testAutomationSidebar.category.Game in sidebar testautomationSidebar"
-  },
-  "sidebar.testResportSidebar.category.Java": {
-    "message": "Java",
-    "description": "The label for category Mobile in sidebar testAutomation"
-  },
-  "sidebar.testResportSidebar.category.Javascript": {
-    "message": "Javascript",
-    "description": "The label for category Mobile in sidebar testAutomation"
-  },
-  "sidebar.testResportSidebar.category.Python": {
-    "message": "Python",
-    "description": "The label for category Mobile in sidebar testAutomation"
-  },
-  "sidebar.testResportSidebar.category.testUnitFramework": {
-    "message": "Test Unit Framework",
-    "description": "The label for category Mobile in sidebar testAutomation"
-  },
-  "sidebar.testReportSidebar.category.TestUnitFramework": {
-    "message": "Test Unit Framework",
-    "description": "The label for category Game in sidebar testAutomation"
-  },
-  "sidebar.testreportSidebar.category.sidebar.testReportSidebar.category.TestUnitFramework": {
-    "message": "sidebar.testReportSidebar.category.TestUnitFramework",
-    "description": "The label for category sidebar.testReportSidebar.category.TestUnitFramework in sidebar testreportSidebar"
-  },
-  "sidebar.getStartedSidebar.category.sidebar.testAutomationSidebar.category.Browser": {
-    "message": "sidebar.testAutomationSidebar.category.Browser",
-    "description": "The label for category sidebar.testAutomationSidebar.category.Browser in sidebar getStartedSidebar"
-  },
-  "sidebar.testreportSidebar.category.sidebar.testAutomationSidebar.category.Browser": {
-    "message": "sidebar.testAutomationSidebar.category.Browser",
-    "description": "The label for category sidebar.testAutomationSidebar.category.Browser in sidebar testreportSidebar"
-  },
-  "sidebar.getStartedSidebar.category.sidebar.getStarted.category.Installation": {
-    "message": "sidebar.getStarted.category.Installation",
-    "description": "The label for category sidebar.getStarted.category.Installation in sidebar getStartedSidebar"
-  },
-  "sidebar.getStartedSidebar.category.sidebar.getStarted.category.DeviceFarm": {
-    "message": "sidebar.getStarted.category.DeviceFarm",
-    "description": "The label for category sidebar.getStarted.category.DeviceFarm in sidebar getStartedSidebar"
-  },
-  "sidebar.getStartedSidebar.category.sidebar.getStarted.category.TestScript": {
-    "message": "sidebar.getStarted.category.TestScript",
-    "description": "The label for category sidebar.getStarted.category.TestScript in sidebar getStartedSidebar"
-  },
-  "sidebar.testreportSidebar.category.sidebar.testResportSidebar.category.Javascript": {
-    "message": "sidebar.testResportSidebar.category.Javascript",
-    "description": "The label for category sidebar.testResportSidebar.category.Javascript in sidebar testreportSidebar"
-  },
-  "sidebar.testreportSidebar.category.sidebar.testResportSidebar.category.Python": {
-    "message": "sidebar.testResportSidebar.category.Python",
-    "description": "The label for category sidebar.testResportSidebar.category.Python in sidebar testreportSidebar"
-  },
-  "sidebar.testreportSidebar.category.sidebar.testResportSidebar.category.Java": {
-    "message": "sidebar.testResportSidebar.category.Java",
-    "description": "The label for category sidebar.testResportSidebar.category.Java in sidebar testreportSidebar"
-  },
-  "sidebar.testreportSidebar.category.JavaScript": {
+  "sidebar.testReportSidebar.category.JavaScript": {
     "message": "JavaScript",
-    "description": "The label for category JavaScript in sidebar testreportSidebar"
+    "description": "The label for category JavaScript in sidebar testReportSidebar"
   },
-  "sidebar.testreportSidebar.category.Python": {
+  "sidebar.testReportSidebar.category.Python": {
     "message": "Python",
-    "description": "The label for category Python in sidebar testreportSidebar"
+    "description": "The label for category Python in sidebar testReportSidebar"
   },
-  "sidebar.testreportSidebar.category.Java": {
+  "sidebar.testReportSidebar.category.Java": {
     "message": "Java",
-    "description": "The label for category Java in sidebar testreportSidebar"
-  },
-  "sidebar.testautomationSidebar.category.Browser": {
-    "message": "Browser",
-    "description": "The label for category Browser in sidebar testautomationSidebar"
-  },
-  "sidebar.testautomationSidebar.category.Mobile": {
-    "message": "Mobile",
-    "description": "The label for category Mobile in sidebar testautomationSidebar"
-  },
-  "sidebar.testautomationSidebar.category.Game": {
-    "message": "Game",
-    "description": "The label for category Game in sidebar testautomationSidebar"
-  },
-  "sidebar.getStartedSidebar.category.Installation": {
-    "message": "Installation",
-    "description": "The label for category Installation in sidebar getStartedSidebar"
-  },
-  "sidebar.getStartedSidebar.category.Device Farm": {
-    "message": "Device Farm",
-    "description": "The label for category Device Farm in sidebar getStartedSidebar"
-  },
-  "sidebar.getStartedSidebar.category.Test Script": {
-    "message": "Test Script",
-    "description": "The label for category Test Script in sidebar getStartedSidebar"
-  },
-  "sidebar.getStartedSidebar.category.Tutorials": {
-    "message": "Tutorials",
-    "description": "The label for category Tutorials in sidebar getStartedSidebar"
-  },
-  "sidebar.organizationAndProjectSidebar.category.Git Integration": {
-    "message": "Git Integration",
-    "description": "The label for category Git Integration in sidebar organizationAndProjectSidebar"
+    "description": "The label for category Java in sidebar testReportSidebar"
   }
 }

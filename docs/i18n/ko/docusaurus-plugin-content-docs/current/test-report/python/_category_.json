@@ -1,6 +1,6 @@
 {
   "position": 2,
-  "label": "sidebar.testreportSidebar.category.Python",
+  "label": "sidebar.testReportSidebar.category.Python",
   "collapsible": true,
-  "collapsed": false
+  "collapsed": true
 }

@@ -1,6 +1,6 @@
 {
   "position": 2,
-  "label": "sidebar.testautomationSidebar.category.Mobile",
+  "label": "sidebar.testAutomationSidebar.category.Mobile",
   "collapsible": true,
-  "collapsed": false
+  "collapsed": true
 }

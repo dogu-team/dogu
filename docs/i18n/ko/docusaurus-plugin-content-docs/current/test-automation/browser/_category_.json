@@ -1,6 +1,6 @@
 {
   "position": 1,
-  "label": "sidebar.testautomationSidebar.category.Browser",
+  "label": "sidebar.testAutomationSidebar.category.Browser",
   "collapsible": true,
-  "collapsed": false
+  "collapsed": true
 }

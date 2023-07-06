@@ -1,0 +1,51 @@
+---
+sidebar_position: 1
+title: About Pre-defined Actions
+locale: en
+---
+
+You can use pre-defined actions using the `uses` keyword.
+
+:::info
+When [Routine](../../about) is executed, the Github repository is downloaded and executed on [Host](../../../../device-farm/introduction#host-and-dost).
+:::
+
+#### Usage
+
+```yaml
+steps:
+  - name: prepare test
+    uses: dogu-actions/prepare
+    with:
+      appVersion:
+        android: 1.2.3
+  - name:
+    uses: dogu-actions/run-test
+    with:
+      script: test/samples/dogurpgsample.test.ts
+```
+
+## dogu-actions/prepare
+
+#### Documentation
+
+[Link](./prepare)
+
+#### Features
+
+- Updating the test project repository
+- Download the app
+- Close the running Gamium app
+- Delete the old app
+- Install the app
+- Run the app
+
+## dogu-actions/run-test
+
+#### Documentation
+
+[Link](./run-test)
+
+#### Features
+
+- Run test script

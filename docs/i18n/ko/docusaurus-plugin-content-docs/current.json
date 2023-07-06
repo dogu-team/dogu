@@ -3,41 +3,25 @@
     "message": "Next",
     "description": "The label for version current"
   },
-  "sidebar.getStarted.category.Installation": {
+  "sidebar.getStartedSidebar.category.Installation": {
     "message": "설치",
-    "description": "The label for category Installation in sidebar getStarted"
+    "description": "The label for category Installation in sidebar getStartedSidebar"
   },
-  "sidebar.getStarted.category.DeviceFarm": {
-    "message": "디바이스 팜",
-    "description": "The label for category DeviceFarm in sidebar getStarted"
+  "sidebar.getStartedSidebar.category.Tutorials": {
+    "message": "튜토리얼",
+    "description": "The label for category Tutorials in sidebar getStartedSidebar"
   },
-  "sidebar.getStarted.category.TestScript": {
-    "message": "테스트 스크립트",
-    "description": "The label for category TestScript in sidebar getStarted"
-  },
-  "sidebar.getStarted.category.Routine": {
-    "message": "루틴",
-    "description": "The label for category Routine in sidebar getStarted"
-  },
-  "sidebar.dostAndDeviceSidebar.category.Host": {
+  "sidebar.deviceFarmSidebar.category.Host": {
     "message": "호스트",
-    "description": "The label for category Host in sidebar dostAndDeviceSidebar"
+    "description": "The label for category Host in sidebar deviceFarmSidebar"
   },
-  "sidebar.dostAndDeviceSidebar.category.Device": {
+  "sidebar.deviceFarmSidebar.category.Device": {
     "message": "디바이스",
-    "description": "The label for category Device in sidebar dostAndDeviceSidebar"
+    "description": "The label for category Device in sidebar deviceFarmSidebar"
   },
-  "sidebar.dostAndDeviceSidebar.category.Streaming & Remote Control": {
-    "message": "스트리밍 & 원격제어",
-    "description": "The label for category Streaming & Remote Control in sidebar dostAndDeviceSidebar"
-  },
-  "sidebar.routineSidebar.category.Test script": {
-    "message": "테스트 스크립트",
-    "description": "The label for category Test script in sidebar routineSidebar"
-  },
-  "sidebar.routineSidebar.category.Routine": {
-    "message": "루틴",
-    "description": "The label for category Routine in sidebar routineSidebar"
+  "sidebar.deviceFarmSidebar.category.Streaming & Remote Control": {
+    "message": "스트리밍 및 원격제어",
+    "description": "The label for category Streaming & Remote Control in sidebar deviceFarmSidebar"
   },
   "sidebar.routineSidebar.category.Action": {
     "message": "액션",
@@ -47,60 +31,44 @@
     "message": "미리 정의된 액션",
     "description": "The label for category Pre-defined Actions in sidebar routineSidebar"
   },
-  "sidebar.organizationAndProjectSidebar.category.Organization": {
+  "sidebar.managementSidebar.category.Organization": {
     "message": "조직",
-    "description": "The label for category Organization in sidebar organizationAndProjectSidebar"
+    "description": "The label for category Organization in sidebar managementSidebar"
   },
-  "sidebar.organizationAndProjectSidebar.category.Device": {
+  "sidebar.managementSidebar.category.Device": {
     "message": "디바이스",
-    "description": "The label for category Device in sidebar organizationAndProjectSidebar"
+    "description": "The label for category Device in sidebar managementSidebar"
   },
-  "sidebar.organizationAndProjectSidebar.category.Project": {
+  "sidebar.managementSidebar.category.Project": {
     "message": "프로젝트",
-    "description": "The label for category Project in sidebar organizationAndProjectSidebar"
+    "description": "The label for category Project in sidebar managementSidebar"
   },
-  "sidebar.testreportSidebar.category.JavaScript": {
-    "message": "JavaScript",
-    "description": "The label for category JavaScript in sidebar testreportSidebar"
-  },
-  "sidebar.testreportSidebar.category.Python": {
-    "message": "Python",
-    "description": "The label for category Python in sidebar testreportSidebar"
-  },
-  "sidebar.testreportSidebar.category.Java": {
-    "message": "Java",
-    "description": "The label for category Java in sidebar testreportSidebar"
-  },
-  "sidebar.testautomationSidebar.category.Browser": {
-    "message": "브라우저",
-    "description": "The label for category Browser in sidebar testautomationSidebar"
-  },
-  "sidebar.testautomationSidebar.category.Mobile": {
-    "message": "모바일",
-    "description": "The label for category Mobile in sidebar testautomationSidebar"
-  },
-  "sidebar.testautomationSidebar.category.Game": {
-    "message": "게임",
-    "description": "The label for category Game in sidebar testautomationSidebar"
-  },
-  "sidebar.getStartedSidebar.category.Installation": {
-    "message": "설치",
-    "description": "The label for category Installation in sidebar getStartedSidebar"
-  },
-  "sidebar.getStartedSidebar.category.Device Farm": {
-    "message": "디바이스 팜",
-    "description": "The label for category Device Farm in sidebar getStartedSidebar"
-  },
-  "sidebar.getStartedSidebar.category.Test Script": {
-    "message": "테스트 스크립트",
-    "description": "The label for category Test Script in sidebar getStartedSidebar"
-  },
-  "sidebar.getStartedSidebar.category.Tutorials": {
-    "message": "튜토리얼",
-    "description": "The label for category Tutorials in sidebar getStartedSidebar"
-  },
-  "sidebar.organizationAndProjectSidebar.category.Git Integration": {
+  "sidebar.managementSidebar.category.Git Integration": {
     "message": "Git 연동하기",
-    "description": "The label for category Git Integration in sidebar organizationAndProjectSidebar"
+    "description": "The label for category Git Integration in sidebar managementSidebar"
+  },
+  "sidebar.testAutomationSidebar.category.Browser": {
+    "message": "브라우저",
+    "description": "The label for category Browser in sidebar testAutomationSidebar"
+  },
+  "sidebar.testAutomationSidebar.category.Mobile": {
+    "message": "모바일",
+    "description": "The label for category Mobile in sidebar testAutomationSidebar"
+  },
+  "sidebar.testAutomationSidebar.category.Game": {
+    "message": "게임",
+    "description": "The label for category Game in sidebar testAutomationSidebar"
+  },
+  "sidebar.testReportSidebar.category.JavaScript": {
+    "message": "JavaScript",
+    "description": "The label for category JavaScript in sidebar testReportSidebar"
+  },
+  "sidebar.testReportSidebar.category.Python": {
+    "message": "Python",
+    "description": "The label for category Python in sidebar testReportSidebar"
+  },
+  "sidebar.testReportSidebar.category.Java": {
+    "message": "Java",
+    "description": "The label for category Java in sidebar testReportSidebar"
   }
 }

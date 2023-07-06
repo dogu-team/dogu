@@ -1,0 +1,52 @@
+---
+sidebar_position: 6
+title: 프로젝트 디바이스 관리
+locale: ko
+---
+
+import ProjectAdminPermission from '/src/components/console/ProjectAdminPermission.mdx';
+import ProjectMemberPermission from '/src/components/console/ProjectMemberPermission.mdx';
+
+프로젝트에 할당된 디바이스는 테스트를 위한 자산입니다.
+
+:::info 디바이스 할당하기
+
+프로젝트에 디바이스를 할당하려면, <a href='../organization/device/device-management#디바이스를-사용할-프로젝트-추가하기'>프로젝트에 디바이스 할당하기</a> 항목을 참고하세요.
+
+:::
+
+## 디바이스 스트리밍 및 원격제어
+
+<ProjectMemberPermission prefix="할당된 디바이스 스트리밍 및 원격제어는" />
+
+:::info
+
+디바이스 스트리밍 및 원격제어는 디바이스의 연결상태가 `Online` 상태인 경우에만 가능합니다.
+
+:::
+
+1. 프로젝트 페이지에서 "디바이스" 탭을 클릭합니다.
+2. 스트리밍 및 원격제어할 디바이스를 목록에서 찾아 메뉴 버튼(`···`)을 클릭합니다.
+3. "스트리밍"버튼을 클릭 후 확인 버튼을 눌러 디바이스 스트리밍 페이지로 이동합니다.
+   <img
+     src="/ko/img/console/project/project-device-streaming-menu.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+:::info 디바이스 원격제어 기능
+
+디바이스 스트리밍 및 원격제어의 기능에 대한 설명은 [디바이스 원격제어](/device-farm/device/streaming-and-remote-control/about) 문서를 참고해주세요.
+
+:::
+
+## 할당된 디바이스 삭제
+
+<ProjectAdminPermission prefix="할당된 디바이스 삭제는" />
+
+1. 프로젝트 페이지에서 "디바이스" 탭을 클릭합니다.
+2. 할당을 삭제할 디바이스를 목록에서 찾아 메뉴 버튼(`···`)을 클릭합니다.
+3. "프로젝트에서 삭제"버튼을 클릭 후 확인 버튼을 눌러 삭제를 완료합니다.
+   <img
+     src="/ko/img/console/project/project-device-dealloc-menu.png"
+     style={{ width: 600, display: 'block' }}
+   />

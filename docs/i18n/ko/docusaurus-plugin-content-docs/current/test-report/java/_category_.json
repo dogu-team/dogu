@@ -1,6 +1,6 @@
 {
   "position": 3,
-  "label": "sidebar.testreportSidebar.category.Java",
+  "label": "sidebar.testReportSidebar.category.Java",
   "collapsible": true,
-  "collapsed": false
+  "collapsed": true
 }

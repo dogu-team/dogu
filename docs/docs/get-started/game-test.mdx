@@ -8,7 +8,7 @@ locale: en
 
 This document explains how to start game testing after setting up the device farm.
 
-If you haven't set up the device farm yet, please refer to the [Quick start - Device farm](/get-started/device-farm) guide to set up your device farm.
+If you haven't set up the device farm yet, please refer to the [Quick start - Device farm](/get-started/tutorials/device-farm) guide to set up your device farm.
 
 :::
 
@@ -50,12 +50,6 @@ The sample game can be downloaded from [Dogu RPG Sample](https://github.com/dogu
 
 If the project provides a sample test script for testing the `Dogu RPG Sample` game, then there is no need to write a test script for this tutorial.
 You can use the provided sample test script to perform the testing tasks.
-
-:::note
-
-To learn how to write a test script, please refer to the [Test Script Guide](/script-and-routine/test-script/about). It provides detailed instructions and guidelines on how to create effective test scripts for your testing needs.
-
-:::
 
 ## Create routine
 
@@ -107,7 +101,7 @@ You can specify whether to record the screen when performing the task on the dev
 
    :::caution Device connection status
 
-   If the routine is not executing, please check the connection status of the device. Ensure that the device is in the "Online" state. If it is in the "Offline" state, please review the device connection process in the [Quick start - Device farm](/get-started/device-farm) guide or refer to the [Device Troubleshooting](/host-and-device/device/trouble-shooting) document for assistance.
+   If the routine is not executing, please check the connection status of the device. Ensure that the device is in the "Online" state. If it is in the "Offline" state, please review the device connection process in the [Quick start - Device farm](/get-started/tutorial/device-farm) guide or refer to the [Device Troubleshooting](/device-farm/device/trouble-shooting) document for assistance.
 
    :::
 
@@ -130,7 +124,7 @@ Once the pipeline is in progress or completed, you can check the results of the 
 
 :::tip
 
-For detailed information about test results, please refer to the [Test Reports](/script-and-routine/report) documentation.
+For detailed information about test results, please refer to the [Test Reports](/test-report/introduction) documentation.
 
 :::
 
@@ -140,5 +134,4 @@ Have the game tests been performed successfully? Try testing games other than th
 
 1. Create a new project in the Dogu console.
 2. Refer to the [Gamium Engine SDK](https://gamium.dogutech.io/docs/engine/unity/project-configuration) to add the Gamium Engine SDK to the game you want to test and build it.
-3. Within the created project, follow the [Test Script Guide](/script-and-routine/test-script/about) to write the test scripts.
-4. Refer to the [Routine Guide](/script-and-routine/routine/about) to create and execute routines, and then check the results.
+3. Refer to the [Routine Guide](/routine/about) to create and execute routines, and then check the results.

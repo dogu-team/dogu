@@ -96,17 +96,17 @@ export default function Home(): JSX.Element {
           </h2>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/organization-and-project/introduction">
+              <Link to="/management/introduction">
                 <Translate id="main.orgAndProjectIntroLinkTitle" />
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/organization-and-project/organization">
+              <Link to="/management/organization">
                 <Translate id="main.orgAndProjectOrgLinkTitle" />
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/organization-and-project/project">
+              <Link to="/management/project">
                 <Translate id="main.orgAndProjectProjectLinkTitle" />
               </Link>
             </li>
@@ -121,17 +121,17 @@ export default function Home(): JSX.Element {
           </h2>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/host-and-device/introduction">
+              <Link to="/device-farm/introduction">
                 <Translate id="main.hostAndDeviceIntroLinkTitle" />
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/host-and-device/host/get-started">
+              <Link to="/device-farm/host/get-started">
                 <Translate id="main.hostAndDeviceHostLinkTitle" />
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/host-and-device/device/setting">
+              <Link to="/device-farm/device/settings">
                 <Translate id="main.hostAndDeviceDeviceLinkTitle" />
               </Link>
             </li>
@@ -200,12 +200,12 @@ export default function Home(): JSX.Element {
           </h2>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/script-and-routine/routine/about">
+              <Link to="/routine/about">
                 <Translate id="main.scriptAndRoutineRoutineLinkTitle" />
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/script-and-routine/actions/about">
+              <Link to="/routine/actions/about">
                 <Translate id="main.scriptAndRoutineActionLinkTitle" />
               </Link>
             </li>

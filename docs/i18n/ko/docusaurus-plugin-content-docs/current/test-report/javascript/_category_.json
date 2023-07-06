@@ -1,6 +1,6 @@
 {
   "position": 1,
-  "label": "sidebar.testreportSidebar.category.JavaScript",
+  "label": "sidebar.testReportSidebar.category.JavaScript",
   "collapsible": true,
-  "collapsed": false
+  "collapsed": true
 }

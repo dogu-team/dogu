@@ -1,0 +1,79 @@
+---
+sidebar_position: 3
+title: Trouble Shooting
+locale: ko
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+## 디바이스 연결 확인하기
+
+### 케이블 확인하기
+
+1. 데이터 전송 가능한 케이블인지 확인해주세요
+2. 케이블을 뽑고 재연결합니다.
+
+### 디바이스 설정 확인하기
+
+1. [디바이스 설정](/device-farm/device/settings) 문서를 따라 디바이스를 설정했는지 확인해주세요.
+
+### 플랫폼 별 문제 해결하기
+
+<Tabs>
+  <TabItem value="android" label="Android" default>
+    <ol>
+      <li>호스트 장비에서 CMD, Terminal 등 쉘을 켜세요.</li>
+      <li>ADB 설치 및 환경변수 설정하기</li>
+      <li>
+        <code>adb devices</code> 명령어를 입력하세요.
+        <ul>
+          <li>
+            <code>offline</code>: 디바이스에서 호스트 PC에 연결할 때 디바이스
+            허용을 선택하거나, 디바이스에서 개발자 옵션을 활설화 한 후,{' '}
+            <code>USB 디버깅</code> 옵션을 활성화합니다.
+            <br />
+            디바이스의 USB 사용 모드를 바꿔보세요.
+          </li>
+          <li>
+            <code>unauthorized</code>: 디바이스에서 호스트 PC에 연결할 때
+            디바이스 허용을 선택하거나, 디바이스에서 개발자 옵션을 활설화 한 후,{' '}
+            <code>USB 디버깅</code> 옵션을 활성화합니다.
+          </li>
+          <li>
+            <code>device</code>: 디바이스가 정상적으로 연결되었습니다. 이 경우
+            Dost를 재실행해보세요.
+          </li>
+        </ul>
+      </li>
+    </ol>
+  </TabItem>
+</Tabs>
+
+## 호스트 확인하기
+
+Dost를 아래 방법을 사용해 확인해주세요.
+
+### Dost 재실행하기
+
+Dost를 완전히 종료 후, 다시 실행합니다. 디바이스가 다시 연결되는지 확인해보세요.
+
+:::caution
+
+Dost를 재실행하면 해당 호스트와 연결된 디바이스들의 연결상태가 `Offline`이 됩니다.
+
+:::
+
+### 최신 Dost인지 확인하기
+
+Dost가 최신 버전인지 확인해주세요. Dost 최신 버전은 [여기](https://dogutech.io/downloads/dost)에서 다운로드 받을 수 있습니다.
+
+### 호스트 토큰 재발급받기
+
+[호스트 관리](/management/organization/host)문서를 통해 호스트 토큰을 재발급받아 호스트를 다시 등록해보세요.
+
+### Dost 재설치하기
+
+---
+
+문제가 해결되었나요? 해결이 되지 않았다면 [문의하기](https://dogutech.io/contact-us)를 통해 문의해주세요.

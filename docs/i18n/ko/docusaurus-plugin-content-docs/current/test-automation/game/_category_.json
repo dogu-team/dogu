@@ -1,6 +1,6 @@
 {
   "position": 3,
-  "label": "sidebar.testautomationSidebar.category.Game",
+  "label": "sidebar.testAutomationSidebar.category.Game",
   "collapsible": true,
-  "collapsed": false
+  "collapsed": true
 }
