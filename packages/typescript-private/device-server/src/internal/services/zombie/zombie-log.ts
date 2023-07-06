@@ -38,15 +38,12 @@ export function makeLogs(checkers: ZombieChecker[]): string {
       platformZombieSerialLog = new ZombieLog(serial);
       platformZombieLog.childs.push(platformZombieSerialLog);
     }
-    const commonProp = [
-      `OK:${checker.component.isAlive() ? '✅' : '❌'}`,
-      ` / Revive:${checker.isReviving ? '🔄' : '-'} ${checker.reviveCount}`,
-      ` / Update:${checker.isUpdating ? '🔄' : '-'} ${checker.updateCount}`,
-    ];
+    const alive = `${checker.component.isAlive() ? '✅' : '❌'}`;
+    const commonProp = [`Revive:${checker.isReviving ? '🔄' : '-'} ${checker.reviveCount}`, ` Update:${checker.isUpdating ? '🔄' : '-'} ${checker.updateCount}`];
     const propDict = {
       ...checker.component.impl.props,
     };
-    let logs = ` ${checker.component.impl.name} [${commonProp}]` + ` ${stringify(propDict, { compact: true, breakLength: 1000 })}`;
+    let logs = `${alive}${checker.component.impl.name} [${commonProp}]` + ` ${stringify(propDict, { compact: true, breakLength: 1000 })}`;
     platformZombieSerialLog.childs.push(new ZombieLog(logs));
   }
 
