@@ -48,11 +48,13 @@ interface ItemButtonProps {
   modalButtonTitle: React.ReactNode;
   modalContent: React.ReactNode;
   buttonProps?: ButtonProps;
+  footer?: React.ReactNode;
+  persistOpen?: boolean;
   onConfirm: () => Promise<void> | void;
   onOpenChange?: (isOpen: boolean) => void;
 }
 
-const DangerZoneButton = ({ children, modalTitle, modalButtonTitle, modalContent, buttonProps, onConfirm, onOpenChange }: ItemButtonProps) => {
+const DangerZoneButton = ({ children, modalTitle, modalButtonTitle, modalContent, buttonProps, footer, persistOpen, onConfirm, onOpenChange }: ItemButtonProps) => {
   const [isOpen, openModal, closeModal] = useModal();
   const [loading, setLoading] = useState(false);
 
@@ -65,7 +67,10 @@ const DangerZoneButton = ({ children, modalTitle, modalButtonTitle, modalContent
       return;
     }
     setLoading(false);
-    closeModal();
+
+    if (!persistOpen) {
+      closeModal();
+    }
   };
 
   useEffect(() => {
@@ -88,6 +93,7 @@ const DangerZoneButton = ({ children, modalTitle, modalButtonTitle, modalContent
         confirmLoading={loading}
         onCancel={closeModal}
         destroyOnClose
+        footer={footer}
         buttonProps={buttonProps}
       >
         {modalContent}

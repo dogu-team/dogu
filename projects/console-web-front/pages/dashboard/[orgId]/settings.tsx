@@ -20,6 +20,7 @@ import { getErrorMessage } from '../../../src/utils/error';
 import OrganizationOwnerSelector from '../../../src/components/organizations/OrganizationOwnerSelector';
 import DangerZone from '../../../src/components/common/boxes/DangerZone';
 import ApiTokenButton from '../../../src/components/organizations/ApiTokenButton';
+import RegenerateApiTokenButton from '../../../src/components/organizations/RegenerateApiTokenButton';
 
 const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ organization, mutateOrganization }) => {
   const [editingOrganization, setEditingOrganization] = useState<OrganizationBase>(organization);
@@ -166,13 +167,9 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
 
         <DangerZone>
           <DangerZone.Item
-            title={'Revoke API Token'}
-            description={'Revoke API Token'}
-            button={
-              <DangerZone.Button modalTitle={'Revoke API Token'} modalButtonTitle={'Confirm and revoke'} modalContent={<div></div>} onConfirm={async () => {}}>
-                Revoke API Token
-              </DangerZone.Button>
-            }
+            title={t('organization:settingRegenerateApiTokenTitle')}
+            description={t('organization:settingRegenerateApiTokenDescriptionText')}
+            button={<RegenerateApiTokenButton organizationId={organization.organizationId} />}
           />
           <DangerZone.Item
             title={t('organization:settingChangeOwnerMenuTitle')}

@@ -84,11 +84,11 @@ export class OrganizationController {
 
   @Post(':organizationId/api-token')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async reissueApiToken(
+  async regenerateApiToken(
     @User() userPayload: UserPayload, //
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
   ): Promise<string> {
-    const rv = await this.organizationService.revokeToken(organizationId, userPayload.userId);
+    const rv = await this.organizationService.regenerateToken(organizationId, userPayload.userId);
     return rv;
   }
 

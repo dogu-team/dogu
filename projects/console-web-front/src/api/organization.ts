@@ -91,3 +91,8 @@ export const inviteUsers = async (orgId: OrganizationId, dto: InviteEmailDtoBase
 export const cancelInvitation = async (orgId: OrganizationId, email: string) => {
   return await api.delete(`/organizations/${orgId}/invitations/emails/${email}`);
 };
+
+export const regenerateApiToken = async (orgId: OrganizationId) => {
+  const { data } = await api.post<string>(`/organizations/${orgId}/api-token`);
+  return data;
+};

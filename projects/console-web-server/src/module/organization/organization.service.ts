@@ -623,7 +623,7 @@ export class OrganizationService {
     return orgApiToken.token.token;
   }
 
-  async revokeToken(organizationId: OrganizationId, creatorId: UserId): Promise<string> {
+  async regenerateToken(organizationId: OrganizationId, creatorId: UserId): Promise<string> {
     const orgApiToken = await this.dataSource //
       .getRepository(OrganizatioApiToken)
       .createQueryBuilder('orgApiToken')
