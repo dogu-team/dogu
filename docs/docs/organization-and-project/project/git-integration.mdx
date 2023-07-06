@@ -1,0 +1,110 @@
+---
+sidebar_position: 3
+title: Git integration
+locale: en
+---
+
+From `Dogu v1.2.0` onwards, self-hosted GitLab hosting is not supported for the test script repository. You can use GitHub and GitLab services to integrate with projects.
+
+## Prerequisites
+
+:::tip
+
+You can check the repository example at https://github.com/dogu-team/test-script-sample.
+
+:::
+
+1. Create a repository in a Git service.
+2. Create a `dogu.config.json` file in the **root directory** with the following content:
+   ```json
+   {
+     "scriptFolderPaths": ["test"]
+   }
+   ```
+3. Write test scripts in the path specified in `scriptFolderPaths`.
+
+## Integration
+
+:::info
+
+Dogu requires at least read permission for the repository. Please refer to the token generation section for each Git service for more details.
+
+:::
+
+1. Go to the Dogu project page.
+2. Select the project to integrate and go to the settings page.
+3. Click on the "Change Git Integration" button.
+   <img
+     src="/img/console/project/git-integration-menu.png"
+     style={{ width: 500, display: 'block' }}
+   />
+4. Enter the Git service, token, and repository URL, then save.
+   <img
+     src="/img/console/project/git-integration-form.png"
+     style={{ width: 500, display: 'block' }}
+   />
+
+### Verify Integration
+
+1. Go to the Dogu project page.
+2. Select the routines tab and click the `+` icon.
+3. Choose the GUI editor and check if the test script is loaded in the "Run test" action.
+   <img
+     src="/img/console/project/git-integration-confirm.png"
+     style={{ width: 500, display: 'block' }}
+   />
+
+## Generate GitHub Token
+
+### Fine-grained token (recommended)
+
+1. Log in to [GitHub](https://github.com) or self-hosted GitHub.
+2. Go to Profile > Settings > Developer settings > Personal access tokens in the header.
+3. Click on the Fine-grained tokens tab.
+4. Click on the "Generate new token" button.
+   <img
+     src="/img/console/project/github-fine-grained-token-gen.png"
+     style={{ width: 500, display: 'block' }}
+   />
+5. Set the token name and expiration date.
+6. In the Resource owner menu, select the organization.
+   <img
+     src="/img/console/project/github-fine-grained-token-name.png"
+     style={{ width: 500, display: 'block' }}
+   />
+7. Enter the appropriate Repository access.
+   - It is recommended to select "Only select repository".
+     <img
+       src="/img/console/project/github-fine-grained-token-repos.png"
+       style={{ width: 500, display: 'block' }}
+     />
+8. In the Repository permissions, set the `Content` item to `read-only` or higher.
+   <img
+     src="/img/console/project/github-fine-grained-token-perm.png"
+     style={{ width: 500, display: 'block' }}
+   />
+9. Click on the "Generate token" button.
+
+### Classic token
+
+1. Log in to [GitHub](https://github.com) or Self-hosted GitHub.
+2. Go to Profile > Settings > Developer settings > Personal access tokens.
+3. Click on the Tokens (classic) tab.
+4. Click on the Generate new token (classic) button.
+   <img
+     src="/img/console/project/github-classic-token-gen.png"
+     style={{ width: 500, display: 'block' }}
+   />
+5. Set the token name and expiration date.
+   <img
+     src="/img/console/project/github-classic-token-name.png"
+     style={{ width: 500, display: 'block' }}
+   />
+6. Set the scope to `repo:status` or higher.
+   <img
+     src="/img/console/project/github-classic-token-perm.png"
+     style={{ width: 500, display: 'block' }}
+   />
+7. Click on the Generate token button.
+
+## Generating GitLab Tokens

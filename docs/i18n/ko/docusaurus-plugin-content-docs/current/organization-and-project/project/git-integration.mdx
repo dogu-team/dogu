@@ -1,0 +1,111 @@
+---
+sidebar_position: 3
+title: Git 연동하기
+locale: ko
+---
+
+`Dogu v1.2.0` 이상부터는 테스트 스크립트 저장소를 위한 자체 GitLab 호스팅을 지원하지 않습니다.  
+프로젝트 별로 GitHub, GitLab 서비스와 연동하여 사용할 수 있습니다.
+
+## 준비사항
+
+:::tip
+
+https://github.com/dogu-team/test-script-sample 에서 레포지토리 예시를 확인할 수 있습니다.
+
+:::
+
+1. Git 서비스에서 레포지토리를 생성합니다.
+2. **루트 경로**에 `dogu.config.json` 파일을 아래의 내용과 같이 생성합니다.
+   ```json
+   {
+     "scriptFolderPaths": ["test"]
+   }
+   ```
+3. `scriptFolderPaths`에 지정한 경로 하위에 테스트 스크립트를 작성합니다.
+
+## 연동하기
+
+:::info
+
+Dogu에서는 최소 레포지토리 읽기 권한이 필요합니다. 자세한 내용은 아래의 Git 서비스별 토큰 생성 항목을 참고해주세요.
+
+:::
+
+1. Dogu의 프로젝트 페이지로 이동합니다.
+2. 연동할 프로젝트를 선택하고 설정 페이지로 이동합니다.
+3. Git 연동 변경하기 버튼을 클릭합니다.
+   <img
+     src="/ko/img/console/project/git-integration-menu.png"
+     style={{ width: 500, display: 'block' }}
+   />
+4. Git 서비스, 토큰, 레포지토리 URL을 입력하고 저장합니다.
+   <img
+     src="/ko/img/console/project/git-integration-form.png"
+     style={{ width: 500, display: 'block' }}
+   />
+
+### 연동 확인하기
+
+1. Dogu의 프로젝트 페이지로 이동합니다.
+2. 루틴 탭을 선택하고 `+` 아이콘을 클릭합니다.
+3. GUI 에디터를 선택하고, `Run test` 액션에서 테스트 스크립트가 불러와지는지 확인합니다.
+   <img
+     src="/ko/img/console/project/git-integration-confirm.png"
+     style={{ width: 500, display: 'block' }}
+   />
+
+## GitHub 토큰 생성하기
+
+### Fine-grained token (권장)
+
+1. [GitHub](https://github.com) 또는 Self-hosted GitHub에 로그인합니다.
+2. 헤더의 프로필 > Settings > Developer settings > Personal access tokens 로 이동합니다.
+3. Fine-grained tokens 탭을 클릭합니다.
+4. Generate new token 버튼을 클릭합니다.
+   <img
+     src="/ko/img/console/project/github-fine-grained-token-gen.png"
+     style={{ width: 500, display: 'block' }}
+   />
+5. 토큰 이름과 만료 기간을 설정합니다.
+6. Resource owner 메뉴에서 organization을 선택합니다.
+   <img
+     src="/ko/img/console/project/github-fine-grained-token-name.png"
+     style={{ width: 500, display: 'block' }}
+   />
+7. 적절한 Repository access를 입력합니다.
+   - Only select repository를 권장합니다.
+     <img
+       src="/ko/img/console/project/github-fine-grained-token-repos.png"
+       style={{ width: 500, display: 'block' }}
+     />
+8. Repository 권한에서 `Content`항목을 `read-only` 또는 그 이상으로 설정합니다.
+   <img
+     src="/ko/img/console/project/github-fine-grained-token-perm.png"
+     style={{ width: 500, display: 'block' }}
+   />
+9. Generate token 버튼을 클릭합니다.
+
+### Classic token
+
+1. [GitHub](https://github.com) 또는 Self-hosted GitHub에 로그인합니다.
+2. 헤더의 프로필 > Settings > Developer settings > Personal access tokens 로 이동합니다.
+3. Tokens (classic) 탭을 클릭합니다.
+4. Generate new token (classic) 버튼을 클릭합니다.
+   <img
+     src="/ko/img/console/project/github-classic-token-gen.png"
+     style={{ width: 500, display: 'block' }}
+   />
+5. 토큰 이름과 만료 기간을 설정합니다.
+   <img
+     src="/ko/img/console/project/github-classic-token-name.png"
+     style={{ width: 500, display: 'block' }}
+   />
+6. `scope`에서 `repo:status`또는 그 이상으로 설정합니다.
+   <img
+     src="/ko/img/console/project/github-classic-token-perm.png"
+     style={{ width: 500, display: 'block' }}
+   />
+7. Generate token 버튼을 클릭합니다.
+
+## GitLab 토큰 생성하기
