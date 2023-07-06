@@ -54,7 +54,7 @@ const Inspector = ({ inspector }: Props) => {
               Select context first for inspecting.
               <br />
               <br />
-              <Link href="https://docs.dogutech.io/host-and-device/device/streaming-and-remote-control/ui-inspector" target="_blank">
+              <Link href="https://docs.dogutech.io/device-farm/device/streaming-and-remote-control/ui-inspector" target="_blank">
                 Click here
               </Link>{' '}
               for more information.

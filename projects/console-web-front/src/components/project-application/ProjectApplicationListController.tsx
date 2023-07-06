@@ -169,7 +169,7 @@ const ProjectApplicationListController = ({ organizationId, projectId }: Props) 
               description={
                 <Trans
                   i18nKey="project-app:appEmptyDescription"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/organization-and-project/project/app" target="_blank" /> }}
+                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/project/app" target="_blank" /> }}
                 />
               }
             />

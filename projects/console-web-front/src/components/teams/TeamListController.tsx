@@ -111,7 +111,7 @@ const TeamListController = () => {
               description={
                 <Trans
                   i18nKey="team:teamEmptyDescription"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/organization-and-project/organization/team" target="_blank" /> }}
+                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/organization/team" target="_blank" /> }}
                 />
               }
             />

@@ -71,7 +71,7 @@ const InspectorUITree = ({ isInspecting, treeData, inspectingNode, selectedNode,
               description={
                 <Trans
                   i18nKey="device-streaming:inspectorEmptyTreeText"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/host-and-device/device/streaming-and-remote-control/ui-inspector" target="_blank" /> }}
+                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/device-farm/device/streaming-and-remote-control/ui-inspector" target="_blank" /> }}
                 />
               }
             />

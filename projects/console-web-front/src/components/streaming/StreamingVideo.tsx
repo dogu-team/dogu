@@ -108,7 +108,7 @@ const StreamingVideo = ({ rightSidebar, videoId, children, onResize, inspector }
           <p style={{ lineHeight: '1.4' }}>
             <Trans
               i18nKey="device-streaming:deviceStreamingLoadingText"
-              components={{ br: <br />, link: <Link href="https://docs.dogutech.io/host-and-device/device/trouble-shooting" target="_blank" /> }}
+              components={{ br: <br />, link: <Link href="https://docs.dogutech.io/device-farm/device/trouble-shooting" target="_blank" /> }}
             />
           </p>
         </LoadingBox>

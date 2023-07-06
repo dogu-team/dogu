@@ -144,10 +144,7 @@ const OrganizationListController = () => {
             <ListEmpty
               image={<BankOutlined style={{ fontSize: '90px' }} />}
               description={
-                <Trans
-                  i18nKey="account:emptyOrganizationDescription"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/get-started/introduction" target="_blank" /> }}
-                />
+                <Trans i18nKey="account:emptyOrganizationDescription" components={{ br: <br />, link: <Link href="https://docs.dogutech.io/get-started" target="_blank" /> }} />
               }
             />
           ),

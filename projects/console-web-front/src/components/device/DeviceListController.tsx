@@ -257,7 +257,7 @@ const DeviceListController = () => {
               description={
                 <Trans
                   i18nKey="device:deviceEmptyDescription"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/organization-and-project/organization/device/device-management" target="_blank" /> }}
+                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/organization/device/device-management" target="_blank" /> }}
                 />
               }
             />

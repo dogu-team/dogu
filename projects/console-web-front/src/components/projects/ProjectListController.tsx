@@ -101,10 +101,7 @@ const ProjectListController = ({ organizationId }: Props) => {
             <ListEmpty
               image={<ProjectOutlined style={{ fontSize: '90px' }} />}
               description={
-                <Trans
-                  i18nKey="project:projectEmptyDescription"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/organization-and-project/project/about" target="_blank" /> }}
-                />
+                <Trans i18nKey="project:projectEmptyDescription" components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/project" target="_blank" /> }} />
               }
             />
           ),

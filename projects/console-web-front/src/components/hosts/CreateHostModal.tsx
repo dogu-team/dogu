@@ -67,7 +67,7 @@ const CreateHostModal = ({ isOpen, close }: Props) => {
                         i18nKey="host:hostCreateModalSuccessHint"
                         components={{
                           link1: <Link href={`/downloads/dost`} target="_blank" />,
-                          link2: <Link href="https://docs.dogutech.io/host-and-device/host/get-started" target="_blank" />,
+                          link2: <Link href="https://docs.dogutech.io/device-farm/host/get-started" target="_blank" />,
                         }}
                       />
                     </p>

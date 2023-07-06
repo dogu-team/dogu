@@ -89,7 +89,7 @@ const DeviceViewer = ({ menu, selectedDevice, isRunning }: Props) => {
           <p>
             <Trans
               i18nKey="project-script:selectDeviceHintText"
-              components={{ br: <br />, link: <Link href="https://docs.dogutech.io/organization-and-project/project/script-test" target="_blank" /> }}
+              components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/project/script-test" target="_blank" /> }}
             />
           </p>
         </DeviceEmptyBox>

@@ -53,7 +53,7 @@ export const manualExternalToolDetail: { [key in ExternalKey]?: ManualExternalTo
       />
     ),
     solution: null,
-    docsLink: 'https://docs.dogutech.io/host-and-device/host/get-started#manual-setup',
+    docsLink: 'https://docs.dogutech.io/device-farm/host/get-started#manual-setup',
   },
   'ios-device-agent-build': {
     description: (
@@ -68,6 +68,6 @@ export const manualExternalToolDetail: { [key in ExternalKey]?: ManualExternalTo
       />
     ),
     solution: null,
-    docsLink: 'https://docs.dogutech.io/host-and-device/host/get-started#manual-setup',
+    docsLink: 'https://docs.dogutech.io/device-farm/host/get-started#manual-setup',
   },
 };

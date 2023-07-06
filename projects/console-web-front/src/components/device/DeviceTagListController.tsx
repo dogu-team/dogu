@@ -151,7 +151,7 @@ const DeviceTagListController = ({ organizationId }: Props) => {
               description={
                 <Trans
                   i18nKey="device:tagEmptyDescription"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/organization-and-project/organization/device/tag-management" target="_blank" /> }}
+                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/organization/device/tag-management" target="_blank" /> }}
                 />
               }
             />

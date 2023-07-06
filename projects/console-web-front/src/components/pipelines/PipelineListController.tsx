@@ -148,7 +148,7 @@ const PipelineListController = ({ organizationId, projectId }: Props) => {
               description={
                 <Trans
                   i18nKey="routine:pipelineEmptyDescription"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/organization-and-project/project/routine" target="_blank" /> }}
+                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/project/routine" target="_blank" /> }}
                 />
               }
             />

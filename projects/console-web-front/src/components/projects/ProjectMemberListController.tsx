@@ -173,7 +173,7 @@ const ProjectMemberListController = ({ project }: Props) => {
               description={
                 <Trans
                   i18nKey="project-member:projectMemberEmptyDescription"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/organization-and-project/project/member" target="_blank" /> }}
+                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/project/member" target="_blank" /> }}
                 />
               }
             />

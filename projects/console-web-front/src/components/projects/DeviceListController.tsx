@@ -180,7 +180,7 @@ const DeviceListController = ({ organizationId, projectId }: Props) => {
               description={
                 <Trans
                   i18nKey="device:projectEmptyDescription"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/organization-and-project/project/device" target="_blank" /> }}
+                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/project/device" target="_blank" /> }}
                 />
               }
             />

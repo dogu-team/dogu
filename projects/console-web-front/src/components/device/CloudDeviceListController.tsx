@@ -140,7 +140,7 @@ const CloudDeviceListController = () => {
                     </EmptyDescriptionList>
                     <Trans
                       i18nKey="device:addableDeviceEmptyLink"
-                      components={{ link: <Link href={'https://docs.dogutech.io/organization-and-project/organization/device/device-management'} target="_blank" /> }}
+                      components={{ link: <Link href={'https://docs.dogutech.io/management/organization/device/device-management'} target="_blank" /> }}
                     />
                   </EmptyDescriptionManualBox>
                   <p></p>

@@ -1,5 +1,5 @@
 export const SlashDefaultTime = 600;
 
-export const DoguDocsErrorUrl = 'https://docs.dogutech.io/host-and-device/host/error-codes';
+export const DoguDocsErrorUrl = 'https://docs.dogutech.io/device-farm/host/error-codes';
 
-export const DoguDocsXcodeSettingsUrl = 'https://docs.dogutech.io/host-and-device/host/xcode-settings';
+export const DoguDocsXcodeSettingsUrl = 'https://docs.dogutech.io/device-farm/host/xcode-settings';

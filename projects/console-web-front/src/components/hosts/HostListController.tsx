@@ -151,7 +151,7 @@ const HostItem = ({ host }: HostItemProps) => {
                   message={
                     <Trans
                       i18nKey="host:hostRevokeAfterDescription"
-                      components={{ br: <br />, link: <Link href="https://docs.dogutech.io/host-and-device/host/get-started" target="_blank" /> }}
+                      components={{ br: <br />, link: <Link href="https://docs.dogutech.io/device-farm/host/get-started" target="_blank" /> }}
                     />
                   }
                 />
@@ -339,10 +339,7 @@ const HostListController = () => {
               description={
                 <Trans
                   i18nKey="host:hostEmptyDescription"
-                  components={[
-                    <Link href="https://docs.dogutech.io/organization-and-project/organization/host" target="_blank" key={'docs-link'} style={{ whiteSpace: 'pre-wrap' }} />,
-                    <br />,
-                  ]}
+                  components={[<Link href="https://docs.dogutech.io/management/organization/host" target="_blank" key={'docs-link'} style={{ whiteSpace: 'pre-wrap' }} />, <br />]}
                 />
               }
             />
