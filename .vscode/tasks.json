@@ -138,6 +138,18 @@
     },
     {
       "type": "npm",
+      "script": "dev:ko",
+      "label": "Dev: Docs:ko",
+      "path": "docs",
+      "problemMatcher": [],
+      "presentation": {
+        "group": "devWatchers",
+        "close": false,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "type": "npm",
       "script": "dev",
       "label": "Dev: DS device-server",
       "path": "projects/device-server",
