@@ -102,13 +102,15 @@ export class ProjectScmService {
         }
 
         const githubToken = await this.decryptToken(this.dataSource.manager, organizationId, projectScmGithubAuth.token);
-        const parts: string[] = projectScm.url.split('/');
-        const owner: string = parts[parts.length - 2];
-        const repo: string = parts[parts.length - 1];
+        const url = new URL(projectScm.url);
+        const parts: string[] = url.pathname.split('/');
+        const org: string = parts[1];
+        const repo: string = parts[2];
 
-        const content = await Github.readDoguConfigFile(githubToken, owner, repo);
+        const content = await Github.readDoguConfigFile(githubToken, org, repo);
         const json: DoguScmConfig = JSON.parse(content.replaceAll('\n| ', ''));
-        const result = await Github.getScriptFiles(githubToken, owner, repo, json.scriptFolderPaths);
+        const result = await Github.getScriptFiles(githubToken, org, repo, json.scriptFolderPaths);
+
         return result.map((r) => ({
           name: r.path?.split('/').pop() ?? '',
           path: r.path ?? '',
@@ -126,16 +128,16 @@ export class ProjectScmService {
         }
 
         const gitlabToken = await this.decryptToken(this.dataSource.manager, organizationId, projectScmGitlabbAuth.token);
+        const url = new URL(projectScm.url);
+        const parts: string[] = url.pathname.split('/');
+        const org: string = parts[1];
+        const repo: string = parts[2];
+        const hostUrl = url.origin;
 
-        const parts: string[] = projectScm.url.split('/');
-        const repo: string = parts[parts.length - 2];
-        const projectName: string = parts[parts.length - 1];
-        const hostUrl = parts.slice(0, parts.length - 2).join('/');
-
-        const json = await Gitlab.readDoguConfigFile(hostUrl, gitlabToken, projectName);
+        const json = await Gitlab.readDoguConfigFile(hostUrl, gitlabToken, repo);
         const metaTrees = await Promise.all(
           json.scriptFolderPaths.map(async (path) => {
-            return Gitlab.getProjectFileMetaTree(hostUrl, gitlabToken, projectName, path);
+            return Gitlab.getProjectFileMetaTree(hostUrl, gitlabToken, repo, path);
           }),
         );
 
@@ -198,8 +200,13 @@ export class ProjectScmService {
     if (!scm) {
       throw new HttpException(`This Project does not have scm: ${projectId}`, HttpStatus.NOT_FOUND);
     }
-    const url = scm.url;
+    const url = new URL(scm.url);
     let token = '';
+    const host = url.host;
+    const protocol = url.protocol;
+    const parts: string[] = url.pathname.split('/');
+    const org: string = parts[1];
+    const repo: string = parts[2];
 
     switch (scm.type) {
       case PROJECT_SCM_TYPE.GITLAB:
@@ -208,7 +215,7 @@ export class ProjectScmService {
           if (!gitlabAuth) {
             throw new HttpException(`This Project does not have gitlab auth: ${projectId}`, HttpStatus.NOT_FOUND);
           }
-          token = gitlabAuth.token;
+          token = await this.decryptToken(this.dataSource.manager, organizationId, gitlabAuth.token);
         }
         break;
       case PROJECT_SCM_TYPE.GITHUB:
@@ -217,17 +224,14 @@ export class ProjectScmService {
           if (!githubAuth) {
             throw new HttpException(`This Project does not have github auth: ${projectId}`, HttpStatus.NOT_FOUND);
           }
-          token = githubAuth.token;
+          token = token = await this.decryptToken(this.dataSource.manager, organizationId, githubAuth.token);
         }
         break;
       default:
         throw new HttpException(`This Project does not have scm: ${projectId}`, HttpStatus.NOT_FOUND);
     }
 
-    const parts: string[] = url.split('/');
-    const hostUrl = parts.slice(0, parts.length - 2).join('/');
-
-    const gitUrlWithAuth = `https://oauth2:${token}@${hostUrl}/${organizationId}/${projectId}.git`;
+    const gitUrlWithAuth = `${protocol}//oauth2:${token}@${host}/${org}/${repo}.git`;
 
     return gitUrlWithAuth;
   }

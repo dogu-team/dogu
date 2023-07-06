@@ -92,7 +92,7 @@ export class CommandProcessRegistry {
           const dataString = String(data);
           Promise.resolve(
             eventHandler.onLog({
-              level: 'error',
+              level: 'warn',
               message: dataString,
               localTimeStamp: new Date().toISOString(),
             }),
