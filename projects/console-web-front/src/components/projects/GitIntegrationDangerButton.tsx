@@ -4,8 +4,8 @@ import { isAxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 
-import { updateProjectGit } from '../../api/project';
-import { sendErrorNotification } from '../../utils/antd';
+import { updateProjectScm } from '../../api/project';
+import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import { getErrorMessage } from '../../utils/error';
 import DangerZone from '../common/boxes/DangerZone';
 import GitIntegrationForm, { GitIntegrationFormValues } from './GitIntegrationForm';
@@ -19,10 +19,11 @@ const GitIntegrationDangerButton = () => {
     const values = await form.validateFields();
 
     try {
-      await updateProjectGit(router.query.orgId as OrganizationId, router.query.pid as ProjectId, { service: values.git, url: values.repo, token: values.token });
+      await updateProjectScm(router.query.orgId as OrganizationId, router.query.pid as ProjectId, { service: values.git, url: values.repo, token: values.token });
+      sendSuccessNotification(t('projectUpdateSuccessMsg'));
     } catch (e) {
       if (isAxiosError(e)) {
-        sendErrorNotification(`Failed to update: ${getErrorMessage(e)}`);
+        sendErrorNotification(t('projectUpdateFailedMsg', { reason: getErrorMessage(e) }));
       }
     }
   };
@@ -30,12 +31,7 @@ const GitIntegrationDangerButton = () => {
   return (
     <DangerZone.Button
       modalTitle={t('editGitIntegrationConfirmModalTitle')}
-      modalContent={
-        <div>
-          <GitIntegrationForm form={form} />
-          <p style={{ marginTop: '.5rem' }}>{t('settingEditGitIntegrationConfirmContent')}</p>
-        </div>
-      }
+      modalContent={<GitIntegrationForm form={form} />}
       onConfirm={saveGitIntegration}
       modalButtonTitle={t('editGitIntegrationConfirmModalButtonText')}
       onOpenChange={() => {

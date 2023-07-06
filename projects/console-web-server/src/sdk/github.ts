@@ -1,3 +1,4 @@
+import { DOGU_CONFIG_FILE_NAME } from '@dogu-private/types';
 import { Octokit } from '@octokit/rest';
 
 export module Github {
@@ -9,12 +10,12 @@ export module Github {
     });
   }
 
-  export async function readDoguConfigFile(token: string, owner: string, repo: string, path: string) {
+  export async function readDoguConfigFile(token: string, owner: string, repo: string) {
     const octokit = createSession(token);
     const rv = await octokit.repos.getContent({
       owner,
       repo,
-      path,
+      path: DOGU_CONFIG_FILE_NAME,
       headers: {
         'X-GitHub-Api-Version': GITHUB_API_VERSION,
       },
@@ -84,7 +85,7 @@ export module Github {
 
     if (rv.status === 200) {
       const tree = rv.data.tree;
-      const scriptFiles = tree.filter((t) => (t.path ? scriptPaths.includes(t.path) : false));
+      const scriptFiles = tree.filter((t) => (t.path ? scriptPaths.some((path) => t.path?.startsWith(path) && t.type === 'blob') : false));
       return scriptFiles;
     }
 

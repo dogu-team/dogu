@@ -3,16 +3,14 @@ import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import { isAxiosError } from 'axios';
 import { useState } from 'react';
-import { Button, Form, Modal, Tag } from 'antd';
-import { ExclamationCircleFilled } from '@ant-design/icons';
+import { Alert, Button, Form, Modal } from 'antd';
 import Link from 'next/link';
 
 import { NextPageWithLayout } from 'pages/_app';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
 import ProjectLayout from 'src/components/layouts/ProjectLayout';
 import RoutineCreator from 'src/components/routine/editor/RoutineCreator';
-import { getProjectGit, updateProjectGit } from '../../../../../../../src/api/project';
-import { flexRowSpaceBetweenStyle } from '../../../../../../../src/styles/box';
+import { getProjectScm, updateProjectScm } from '../../../../../../../src/api/project';
 import useModal from '../../../../../../../src/hooks/useModal';
 import GitIntegrationForm, { GitIntegrationFormValues } from '../../../../../../../src/components/projects/GitIntegrationForm';
 import useRequest from '../../../../../../../src/hooks/useRequest';
@@ -23,7 +21,7 @@ const ProjectRoutineCreatorPage: NextPageWithLayout<WithProjectProps & { isGitCo
   const [isConfigured, setIsConfigured] = useState(isGitConfigured);
   const [isOpen, openModal, closeModal] = useModal();
   const [form] = Form.useForm<GitIntegrationFormValues>();
-  const [loading, request] = useRequest(updateProjectGit);
+  const [loading, request] = useRequest(updateProjectScm);
 
   const handleCloseModal = () => {
     form.resetFields();
@@ -51,22 +49,20 @@ const ProjectRoutineCreatorPage: NextPageWithLayout<WithProjectProps & { isGitCo
       </Head>
       <Box>
         {!isConfigured && (
-          <GitBanner>
-            <div>
+          <Alert
+            showIcon
+            type="warning"
+            style={{ marginBottom: '.5rem' }}
+            message={
               <p>
-                <Tag icon={<ExclamationCircleFilled />} color="warning">
-                  Warning
-                </Tag>
                 &nbsp;Git doesn&apos;t integrated yet. Cannot checkout test scripts while routine running. For more information, please visit&nbsp;
                 <Link href="https://docs.dogutech.io" target="_blank">
                   document
                 </Link>
               </p>
-            </div>
-            <div>
-              <Button onClick={() => openModal()}>Configure Git</Button>
-            </div>
-          </GitBanner>
+            }
+            action={<Button onClick={() => openModal()}>Configure Git</Button>}
+          />
         )}
         <RoutineCreator organizationId={organization.organizationId} projectId={project.projectId} />
       </Box>
@@ -90,7 +86,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   try {
-    await getProjectGit(context);
+    await getProjectScm(context);
     return {
       props: {
         ...result.props,
@@ -124,13 +120,4 @@ const Box = styled.div`
   display: flex;
   height: 100%;
   flex-direction: column;
-`;
-
-const GitBanner = styled.div`
-  ${flexRowSpaceBetweenStyle}
-  padding: 0.5rem;
-  background-color: #fffbe6;
-  border: 1px solid #ffe58f;
-  border-radius: 0.25rem;
-  margin-bottom: 0.5rem;
 `;

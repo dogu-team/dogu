@@ -1,6 +1,7 @@
+import { DoguConfig, DoguConfigKeys, RepositoryRawFile } from '@dogu-private/console';
 import { Gitlab as Gitbeaker } from '@gitbeaker/node';
-// import { OrganizationGitlab } from '../db/entity/organization-gitlab.entity';
 
+// import { OrganizationGitlab } from '../db/entity/organization-gitlab.entity';
 export module Gitlab {
   export enum AccessLevel {
     Guest = 10,
@@ -282,6 +283,35 @@ export module Gitlab {
   //   const metaTree = metaTreePages.flat();
   //   return metaTree;
   // }
+
+  export async function getProjectFileMetaTree(url: string, token: string, projectName: string, path: string) {
+    const api = createSession(url, token);
+    const projectId = (await api.Projects.search(projectName))[0].id;
+    const rv = await api.Repositories.tree(projectId, { path: path, recursive: true, ref: 'main' });
+    return rv;
+  }
+
+  export async function readDoguConfigFile(url: string, token: string, projectName: string): Promise<DoguConfig> {
+    const doguConfigFile = await Gitlab.getProjectFile(url, token, projectName, 'dogu.config.json');
+    const doguConfigJson = JSON.parse(Buffer.from(doguConfigFile.content, 'base64').toString());
+    const existKeys = Object.keys(DoguConfigKeys);
+
+    for (const key of existKeys) {
+      if (doguConfigJson[key] === undefined) {
+        throw new Error(`dogu.config.json is not valid. ${key} is not defined.`);
+      }
+    }
+
+    return doguConfigJson;
+  }
+
+  export async function getProjectFile(url: string, token: string, projectName: string, filePath: string): Promise<RepositoryRawFile> {
+    const project = createSession(url, token);
+    const test = await project.Projects.search(projectName);
+    const data = await project.RepositoryFiles.show(test[0].id, filePath, 'main');
+
+    return data;
+  }
 
   // export async function getProjectFile(filePath: string, projectGitlab: ProjectGitlab): Promise<RepositoryRawFile> {
   //   const project = createSession(projectGitlab.gitlabProjectToken);

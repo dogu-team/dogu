@@ -5,6 +5,7 @@ export * from './device-tag.entity';
 export * from './device.entity';
 export * from './host.entity';
 export * from './job.entity';
+export * from './organization-key.entity';
 export * from './organization.entity';
 export * from './pipeline.entity';
 export * from './project.entity';

@@ -14,9 +14,6 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import axios from 'axios';
 import { DataSource, EntityManager } from 'typeorm';
 import { User } from '../../db/entity/index';
-// import { OrganizationGitlab } from '../../db/entity/organization-gitlab.entity';
-// import { ProjectGitlab } from '../../db/entity/project-gitlab.entity';
-// import { UserGitlab } from '../../db/entity/user-gitlab.entity';
 import { Gitlab } from '../../sdk/gitlab';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { DoguLogger } from '../logger/logger';
@@ -156,28 +153,58 @@ export class GitlabService {
     return projectRoles;
   }
 
-  // async getGitUrlWithAuth(organizationId: OrganizationId, projectId: ProjectId, urlWithoutProtocol: string) {
-  //   const projectGitlab = await this.dataSource.getRepository(ProjectGitlab).findOne({ where: { projectId } });
-  //   if (!projectGitlab) {
-  //     throw new HttpException(`Project is not in gitlab: ${projectId}`, HttpStatus.NOT_FOUND);
+  // async getGitUrlWithAuth(organizationId: OrganizationId, projectId: ProjectId) {
+  //   const scm = await this.dataSource.getRepository(ProjectScm).findOne({ where: { projectId } });
+  //   if (!scm) {
+  //     throw new HttpException(`This Project does not have scm: ${projectId}`, HttpStatus.NOT_FOUND);
+  //   }
+  //   const url = scm.url;
+  //   let token = '';
+
+  //   switch (scm.type) {
+  //     case PROJECT_SCM_TYPE.GITLAB:
+  //       {
+  //         const gitlabAuth = await this.dataSource.getRepository(ProjectScmGitlabAuth).findOne({ where: { projectScmId: scm.projectScmId } });
+  //         if (!gitlabAuth) {
+  //           throw new HttpException(`This Project does not have gitlab auth: ${projectId}`, HttpStatus.NOT_FOUND);
+  //         }
+  //         token = gitlabAuth.token;
+  //       }
+  //       break;
+  //     case PROJECT_SCM_TYPE.GITHUB:
+  //       {
+  //         const githubAuth = await this.dataSource.getRepository(ProjectScmGithubAuth).findOne({ where: { projectScmId: scm.projectScmId } });
+  //         if (!githubAuth) {
+  //           throw new HttpException(`This Project does not have github auth: ${projectId}`, HttpStatus.NOT_FOUND);
+  //         }
+  //         token = githubAuth.token;
+  //       }
+  //       break;
+  //     default:
+  //       throw new HttpException(`This Project does not have scm: ${projectId}`, HttpStatus.NOT_FOUND);
   //   }
 
-  //   const gitUrlWithoutProtocol = urlWithoutProtocol;
-  //   const gitUrlWithAuth = `https://oauth2:${projectGitlab.gitlabProjectToken}@${gitUrlWithoutProtocol}/${organizationId}/${projectId}.git`;
+  //   const parts: string[] = url.split('/');
+  //   const hostUrl = parts.slice(0, parts.length - 2).join('/');
+
+  //   const gitUrlWithAuth = `https://oauth2:${token}@${hostUrl}/${organizationId}/${projectId}.git`;
 
   //   return gitUrlWithAuth;
   // }
 
-  async resetPassword(manager: EntityManager, userId: UserId, password: string) {
-    throw new Error('Not implemented');
-    // const [userGitlab] = await Promise.all([manager.getRepository(UserGitlab).findOne({ where: { userId } })]);
+  // private async readDoguConfig(projectGitlab: ProjectGitlab): Promise<DoguConfig> {
+  //   const doguConfigFile = await Gitlab.getProjectFile('dogu.config.json', projectGitlab);
+  //   const doguConfigJson = JSON.parse(Buffer.from(doguConfigFile.content, 'base64').toString());
+  //   const existKeys = Object.keys(DoguConfigKeys);
 
-    // if (!userGitlab) {
-    //   throw new HttpException(`User is not in gitlab: ${userId}`, HttpStatus.NOT_FOUND);
-    // }
+  //   for (const key of existKeys) {
+  //     if (doguConfigJson[key] === undefined) {
+  //       throw new Error(`dogu.config.json is not valid. ${key} is not defined.`);
+  //     }
+  //   }
 
-    // await Gitlab.resetPassword(userGitlab, password);
-  }
+  //   return doguConfigJson;
+  // }
 
   // async createUser(userId: UserId, name: string, email: string, password: string | null) {
   //   const user = await Gitlab.createUser(userId, name, email, password);

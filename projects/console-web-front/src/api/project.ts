@@ -3,7 +3,7 @@ import {
   AddUserToProjectDtoBase,
   CreateProjectDtoBase,
   ProjectBase,
-  ProjectRepositoryBase,
+  ProjectScmBase,
   UpdateProjectDtoBase,
   UpdateProjectGitDtoBase,
   UpdateTeamProjectRoleDtoBase,
@@ -70,11 +70,11 @@ export const updateUserInProject = async (organizationId: OrganizationId, projec
   return await api.patch<void>(`/organizations/${organizationId}/projects/${projectId}/users/${userId}/role`, body);
 };
 
-export const getProjectGit = async (context: GetServerSidePropsContext) => {
+export const getProjectScm = async (context: GetServerSidePropsContext) => {
   const { authToken } = getServersideCookies(context.req.cookies);
 
   if (authToken) {
-    const data = await api.get<ProjectRepositoryBase>(`/organizations/${context.query.orgId}/projects/${context.query.pid}/git`, {
+    const data = await api.get<ProjectScmBase>(`/organizations/${context.query.orgId}/projects/${context.query.pid}/scm`, {
       headers: { Authorization: `Bearer ${authToken}` },
     });
     setCookiesInServerSide(data, context);
@@ -87,6 +87,6 @@ export const getProjectGit = async (context: GetServerSidePropsContext) => {
   throw new EmptyTokenError();
 };
 
-export const updateProjectGit = async (orgId: OrganizationId, pid: ProjectId, dto: UpdateProjectGitDtoBase) => {
-  return await api.patch<void>(`/organizations/${orgId}/projects/${pid}/git`, dto);
+export const updateProjectScm = async (orgId: OrganizationId, pid: ProjectId, dto: UpdateProjectGitDtoBase) => {
+  return await api.patch<void>(`/organizations/${orgId}/projects/${pid}/scm`, dto);
 };

@@ -12,6 +12,9 @@ const resources = {
     linux: '/resources/icons/linux.svg',
     logoHorizontal: '/resources/icons/logo-horizontal.svg',
     googleLogo: '/resources/icons/g-logo.png',
+    typescript: '/resources/icons/languages/typescript.svg',
+    javascript: '/resources/icons/languages/javascript.svg',
+    python: '/resources/icons/languages/python.svg',
   },
   images: {},
 };

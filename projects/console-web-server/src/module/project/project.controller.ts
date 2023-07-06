@@ -108,32 +108,4 @@ export class ProjectController {
   ): Promise<ProjectPipelineReportResponse> {
     return await this.projectService.createPipelineReport(userPayload, organizationId, projectId, dto);
   }
-
-  // @Get(':projectId/repository/file')
-  // @ProjectPermission(PROJECT_ROLE.READ)
-  // async getProjectFile(@Param('projectId') projectId: ProjectId, @Query() dto: GetProjectRepositoryFileDto): Promise<RepositoryRawFile> {
-  //   const file = await this.gitlabService.getProjectFile(dto.path, projectId);
-  //   return file;
-  // }
-
-  // @Get(':projectId/repository/tree')
-  // @ProjectPermission(PROJECT_ROLE.READ)
-  // async getProjectFileTree(@Param('projectId') projectId: ProjectId): Promise<RepositoryFileTree> {
-  //   const tree = await this.gitlabService.getProjectFileTree(projectId);
-  //   return tree;
-  // }
-
-  // @Get(':projectId/repository/meta/:path')
-  // @ProjectPermission(PROJECT_ROLE.READ)
-  // async getProjectFileMetaTree(@Param('projectId') projectId: ProjectId, @Param('path') path: string): Promise<RepositoryFileMetaTree> {
-  //   const meta = await this.gitlabService.getProjectFileMetaTree(projectId, path);
-  //   return meta;
-  // }
-
-  // @Get(':projectId/repository/scripts')
-  // @ProjectPermission(PROJECT_ROLE.READ)
-  // async getProjectScriptMeta(@Param('projectId') projectId: ProjectId, @Query() dto: GetProjectScriptMetaDto): Promise<RepositoryFileMetaTree> {
-  //   const scripts = await this.gitlabService.getScriptFileMeta(projectId, dto.type);
-  //   return scripts;
-  // }
 }
