@@ -57,7 +57,7 @@
   &:hover {
     background-color: var(--ifm-button-background-color-hover);
     color: var(--ifm-heading-color);
-    text-decoration: none;
+    text-decoration: none !important;
   }
 
   @media screen and (max-width: 767px) {  

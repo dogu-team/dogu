@@ -29,16 +29,16 @@ function HomepageHeader() {
 
         <div className={styles.headerBannerButtonWrapper}>
           <div className={styles.headerBannerButtonWrapper}>
-            <a className={styles.headerBannerButton} href="/get-started">
+            <Link to="/get-started" className={styles.headerBannerButton}>
               Get started
-            </a>
-            <a
-              className={styles.headerBannerButton}
+            </Link>
+            <Link
               href="https://dogutech.io"
               target="_blank"
+              className={styles.headerBannerButton}
             >
               Try Dogu for free
-            </a>
+            </Link>
           </div>
           <iframe
             src="https://ghbtns.com/github-btn.html?user=dogu-team&amp;repo=dogu&amp;type=star&amp;count=true&amp;size=large"
