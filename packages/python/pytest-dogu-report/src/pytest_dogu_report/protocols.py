@@ -9,7 +9,7 @@ from dacite import Config, from_dict
 
 
 T = TypeVar("T")
-DEFAULT_TIMEOUT = 60 # unit: seconds
+DEFAULT_TIMEOUT = 60  # unit: seconds
 
 
 @unique
