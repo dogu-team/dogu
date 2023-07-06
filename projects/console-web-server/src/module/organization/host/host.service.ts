@@ -95,7 +95,7 @@ export class HostService {
     const rv = await this.dataSource.transaction(async (manager) => {
       // token
       const newTokenData: DeepPartial<Token> = {
-        token: TokenService.createToken(),
+        token: TokenService.createHostToken(),
       };
       const tokenData = manager.getRepository(Token).create(newTokenData);
       const token = await manager.getRepository(Token).save(tokenData);
@@ -124,7 +124,7 @@ export class HostService {
     const rv = await this.dataSource.transaction(async (manager) => {
       // token
       const newTokenData: DeepPartial<Token> = {
-        token: TokenService.createToken(),
+        token: TokenService.createHostToken(),
         expiredAt: null,
       };
       const tokenData = manager.getRepository(Token).create(newTokenData);

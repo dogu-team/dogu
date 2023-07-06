@@ -72,6 +72,35 @@ export class OrganizationController {
     return rv;
   }
 
+  @Get(':organizationId/api-token')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async findApiToken(
+    @User() userPayload: UserPayload, //
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
+  ): Promise<string> {
+    const rv = await this.organizationService.findApiToken(organizationId);
+    return rv;
+  }
+
+  @Post(':organizationId/api-token')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async reissueApiToken(
+    @User() userPayload: UserPayload, //
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
+  ): Promise<string> {
+    const rv = await this.organizationService.revokeToken(organizationId, userPayload.userId);
+    return rv;
+  }
+
+  @Delete(':organizationId/api-token')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async softRemoveApiToken(
+    @User() userPayload: UserPayload, //
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
+  ): Promise<void> {
+    await this.organizationService.deleteApiToken(organizationId, userPayload.userId);
+  }
+
   @Delete(':organizationId')
   @OrganizationPermission(ORGANIZATION_ROLE.OWNER)
   async softRemoveOrganization(@User() userPayload: UserPayload, @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId): Promise<void> {

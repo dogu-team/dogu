@@ -20,6 +20,7 @@ export * from './log';
 export * from './organization';
 export * from './organization-and-user-and-organization-role';
 export * from './organization-and-user-and-team';
+export * from './organization-api-token/index';
 export * from './organization-gitlab';
 export * from './organization-key';
 export * from './organization-role';

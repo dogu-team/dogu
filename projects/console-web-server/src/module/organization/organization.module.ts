@@ -1,6 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Organization, OrganizationAndUserAndOrganizationRole, Token, User } from '../../db/entity';
+import { OrganizatioApiToken } from '../../db/entity/organization-api-token.entity';
 import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invitation-token.entity';
 import { EmailModule } from '../email/email.module';
 import { FileModule } from '../file/file.module';
@@ -14,7 +15,7 @@ import { OrganizationService } from './organization.service';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Organization, User, OrganizationAndUserAndOrganizationRole, UserAndInvitationToken, Token]),
+    TypeOrmModule.forFeature([Organization, User, OrganizationAndUserAndOrganizationRole, UserAndInvitationToken, OrganizatioApiToken, Token]),
     forwardRef(() => UserModule),
     EmailModule,
     UserInvitationModule,
