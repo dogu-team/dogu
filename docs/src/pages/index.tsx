@@ -236,7 +236,7 @@ export default function Home(): JSX.Element {
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/script-and-routine/introduction">
+              <Link to="/script-and-routine/actions/about">
                 <Translate id="main.scriptAndRoutineActionLinkTitle" />
               </Link>
             </li>
