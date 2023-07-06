@@ -1,13 +1,17 @@
 import { transformAndValidate } from '@dogu-tech/common';
+import { Serial } from '@dogu-tech/types';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class WebDriverCapabilities {
-  constructor(private _platformName: string, private _app: string, private _doguOptions: DoguWebDriverOptions, private readonly _origin: object) {}
+  constructor(private _platformName: string, private _app: string, private _udid: string, private _doguOptions: DoguWebDriverOptions, private readonly _origin: object) {}
   get platformName(): string {
     return this._platformName;
   }
   get app(): string {
     return this._app;
+  }
+  get udid(): string {
+    return this._udid;
   }
   get doguOptions(): DoguWebDriverOptions {
     return this._doguOptions;
@@ -31,7 +35,7 @@ export class WebDriverCapabilities {
       throw new Error('dogu:options not found in capabilities');
     }
     const options = await transformAndValidate(DoguWebDriverOptions, doguOptions);
-    return new WebDriverCapabilities(platformName, '', options, origin);
+    return new WebDriverCapabilities(platformName, '', '', options, origin);
   }
 
   setDoguAppUrl(appUrl: string): void {
@@ -44,6 +48,10 @@ export class WebDriverCapabilities {
   setApp(appPath: string): void {
     this._app = appPath;
     Reflect.set((this._origin as any)['capabilities']['alwaysMatch'], 'appium:app', appPath);
+  }
+  setUdid(serial: Serial): void {
+    this._udid = serial;
+    Reflect.set((this._origin as any)['capabilities']['alwaysMatch'], 'appium:udid', serial);
   }
 }
 

@@ -328,11 +328,11 @@ export class IosChannel implements DeviceChannel {
 
   async switchAppiumContext(key: AppiumContextKey): Promise<AppiumContext> {
     await this._appiumContext.close().catch((error) => {
-      this.logger.error('android appium context close failed', { error: errorify(error) });
+      this.logger.error('ios appium context close failed', { error: errorify(error) });
     });
     const appiumContext = this._appiumService.createAppiumContext(this.platform, this.serial, key);
     const onCatchAppiumContextError = (error: Error): void => {
-      this.logger.error('android appium context open failed', { error: errorify(error) });
+      this.logger.error('ios appium context open failed', { error: errorify(error) });
       appiumContext.open().catch(onCatchAppiumContextError);
     };
     await appiumContext.open().catch(onCatchAppiumContextError);

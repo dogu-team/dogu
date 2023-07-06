@@ -71,6 +71,7 @@ export class WebDriverNewSessionEndpointHandler extends WebDriverEndpointHandler
     const applicationUrl = await context.applicationService.getApplicationDownladUrl(application.projectApplicationId, options.organizationId, options.projectId);
 
     endpoint.info.capabilities.setDoguAppUrl(applicationUrl);
+    endpoint.info.capabilities.setUdid(device.serial);
 
     return {
       organizationId: options.organizationId,

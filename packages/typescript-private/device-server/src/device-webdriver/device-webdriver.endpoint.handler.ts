@@ -1,5 +1,6 @@
+import { extensionFromPlatform, PlatformType } from '@dogu-private/types';
 import { DefaultHttpOptions } from '@dogu-tech/common';
-import { RelayRequest, WebDriverEndPoint } from '@dogu-tech/device-client-common';
+import { convertWebDriverPlatformToDogu, RelayRequest, WebDriverEndPoint } from '@dogu-tech/device-client-common';
 import { HostPaths } from '@dogu-tech/node';
 import axios from 'axios';
 import fs from 'fs';
@@ -33,14 +34,15 @@ export class DeviceWebDriverNewSessionEndpointHandler extends DeviceWebDriverEnd
     if (!endpoint.info.capabilities.doguOptions.appUrl) {
       return { status: 400, error: new Error('App url not specified'), data: {} };
     }
+    const platform = convertWebDriverPlatformToDogu(endpoint.info.capabilities.platformName);
     const url = endpoint.info.capabilities.doguOptions.appUrl;
     const filename = path.basename(url);
-    const extension = path.extname(url);
+    const extension = getAppExtension(platform);
     const appVersion = endpoint.info.capabilities.doguOptions.appVersion;
     if (!appVersion) {
       return { status: 400, error: new Error('App version not specified'), data: {} };
     }
-    const downloadFilename = `${filename}-${appVersion}${extension}`;
+    const downloadFilename = `${filename}-${platform}-${appVersion}.${extension}`;
     const filePath = path.resolve(HostPaths.doguTempPath(), downloadFilename);
     endpoint.info.capabilities.setApp(filePath);
 
@@ -90,13 +92,24 @@ export class DeviceWebDriverNewSessionEndpointHandler extends DeviceWebDriverEnd
       writer.close();
       throw error;
     }
-    const dirPath = path.dirname(filePath);
-    await fs.promises.mkdir(dirPath, { recursive: true });
-    await fs.promises.rename(tempFilePath, filePath);
+    await postProcessTempFile(platform, tempFilePath, filePath);
     logger.info('File downloaded', { tempFilePath });
 
     endpoint.info.capabilities.setApp(filePath);
 
     return { request, ...{ reqBody: endpoint.info.capabilities.origin } };
   }
+}
+
+function getAppExtension(platform: PlatformType): string {
+  // if (platform === 'ios') {
+  //   return 'zip';
+  // }
+  return extensionFromPlatform(platform);
+}
+
+async function postProcessTempFile(platform: PlatformType, tempFilePath: string, destFilePath: string): Promise<void> {
+  const dirPath = path.dirname(destFilePath);
+  await fs.promises.mkdir(dirPath, { recursive: true });
+  await fs.promises.rename(tempFilePath, destFilePath);
 }
