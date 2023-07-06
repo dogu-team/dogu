@@ -9,7 +9,7 @@ from dacite import Config, from_dict
 
 
 T = TypeVar("T")
-DEFAULT_TIMEOUT = 60
+DEFAULT_TIMEOUT = 60 # unit: seconds
 
 
 @unique
@@ -42,7 +42,7 @@ class DestInfo:
 
 
 @dataclass(frozen=True)
-class UpdateDestStateRequestBody:
+class UpdateDestStatusRequestBody:
     # pylint: disable=invalid-name
     destStatus: DestState
 
@@ -124,7 +124,7 @@ class StepReportClient:
     def update_dest_status(self, dest_id: str, status: DestState, local_time: datetime):
         url = f"{self.options.api_base_url}/public/organizations/{self.options.organization_id}/devices/{self.options.device_id}/dests/{dest_id}/status"
         headers = self._create_headers()
-        request_body = UpdateDestStateRequestBody(
+        request_body = UpdateDestStatusRequestBody(
             destStatus=status, localTimeStamp=local_time.isoformat()
         )
         request_body_raw = self._create_request_body_raw(request_body)

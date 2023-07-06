@@ -22,8 +22,8 @@ PyTestLocation = Tuple[str, Optional[int], str]
 class UnitInfo:
     dest_id: str
     status: DestState = DestState.PENDING
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
+    started_at: Optional[datetime] = None
+    finished_at: Optional[datetime] = None
 
 
 unit_info_key = StashKey()
@@ -33,8 +33,8 @@ unit_info_key = StashKey()
 class JobInfo:
     dest_id: str
     status: DestState = DestState.PENDING
-    start_time: Optional[datetime] = None
-    end_time: Optional[datetime] = None
+    started_at: Optional[datetime] = None
+    finished_at: Optional[datetime] = None
     children: List[UnitInfo] = field(default_factory=list)
 
 
@@ -123,17 +123,17 @@ class StepReporterImpl(StepReporter):
             raise Exception(f"nodeid {nodeid} is not found")
         job_info = _get_job_info(item)
         if job_info.status == DestState.PENDING:
-            job_info.start_time = datetime.now()
+            job_info.started_at = datetime.now()
             job_info.status = DestState.RUNNING
             self._client.update_dest_status(
-                job_info.dest_id, job_info.status, job_info.start_time
+                job_info.dest_id, job_info.status, job_info.started_at
             )
 
         unit_info = _get_unit_info(item)
-        unit_info.start_time = datetime.now()
+        unit_info.started_at = datetime.now()
         unit_info.status = DestState.RUNNING
         self._client.update_dest_status(
-            unit_info.dest_id, unit_info.status, unit_info.start_time
+            unit_info.dest_id, unit_info.status, unit_info.started_at
         )
 
     @hookimpl(trylast=True)
@@ -151,13 +151,13 @@ class StepReporterImpl(StepReporter):
             raise Exception(f"nodeid {nodeid} is not found")
         unit_info = _get_unit_info(item)
         self._client.update_dest_status(
-            unit_info.dest_id, unit_info.status, unit_info.end_time
+            unit_info.dest_id, unit_info.status, unit_info.finished_at
         )
 
         job_info = _get_job_info(item)
         if all(child.status.is_completed() for child in job_info.children):
             self._client.update_dest_status(
-                job_info.dest_id, job_info.status, job_info.end_time
+                job_info.dest_id, job_info.status, job_info.finished_at
             )
 
     @hookimpl(trylast=True)
@@ -174,7 +174,7 @@ class StepReporterImpl(StepReporter):
         if item is None:
             raise Exception(f"nodeid {report.nodeid} is not found")
         unit_info = _get_unit_info(item)
-        unit_info.end_time = datetime.now()
+        unit_info.finished_at = datetime.now()
         if report.passed:
             unit_info.status = DestState.PASSED
         elif report.failed:
@@ -186,7 +186,7 @@ class StepReporterImpl(StepReporter):
 
         job_info = _get_job_info(item)
         if all(child.status.is_completed() for child in job_info.children):
-            job_info.end_time = datetime.now()
+            job_info.finished_at = datetime.now()
             if all(child.status == DestState.PASSED for child in job_info.children):
                 job_info.status = DestState.PASSED
             elif any(child.status == DestState.FAILED for child in job_info.children):
