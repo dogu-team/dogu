@@ -2,9 +2,8 @@
   "private": true,
   "name": "host-agent",
   "version": "1.1.0",
-  "description": "",
-  "license": "SEE LICENSE IN LICENSE.md",
-  "author": "",
+  "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
+  "author": "Dogu Technologies",
   "main": "./build/src/index.js",
   "scripts": {
     "build": "tsc -b",
@@ -34,5 +33,6 @@
   "pkg": {
     "scripts": "build/**/*.js",
     "assets": "node_modules/**/*"
-  }
+  },
+  "url": "https://github.com/dogu-team/dogu"
 }

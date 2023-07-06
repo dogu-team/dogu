@@ -3,6 +3,7 @@
   "name": "dost",
   "version": "1.1.0",
   "description": "Dost",
+  "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
   "author": "Dogu Technologies",
   "homepage": ".",
   "main": "build/electron/main.js",
@@ -113,5 +114,6 @@
       "react-app/jest"
     ]
   },
-  "productName": "Dost"
+  "productName": "Dost",
+  "url": "https://github.com/dogu-team/dogu"
 }

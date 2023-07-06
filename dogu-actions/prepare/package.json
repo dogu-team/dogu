@@ -1,9 +1,8 @@
 {
   "name": "@dogu-actions/prepare",
   "version": "0.0.0",
-  "description": "",
-  "license": "SEE LICENSE IN LICENSE.md",
-  "author": "dogu",
+  "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
+  "author": "Dogu Technologies",
   "main": "./build/src/main.js",
   "scripts": {
     "build": "tsc -b",
@@ -30,5 +29,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "url": "https://github.com/dogu-team/dogu"
 }

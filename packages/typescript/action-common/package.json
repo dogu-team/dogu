@@ -2,8 +2,8 @@
   "name": "@dogu-tech/action-common",
   "version": "0.0.0",
   "description": "dogu pipeline action common library",
-  "license": "SEE LICENSE IN LICENSE.md",
-  "author": "dogu",
+  "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
+  "author": "Dogu Technologies",
   "main": "./build/src/index.js",
   "files": [
     "build"
@@ -36,5 +36,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "url": "https://github.com/dogu-team/dogu"
 }

@@ -1,4 +1,7 @@
 {
   "name": "deviceagent",
-  "displayName": "deviceagent"
+  "displayName": "deviceagent",
+  "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
+  "author": "Dogu Technologies",
+  "url": "https://github.com/dogu-team/dogu"
 }

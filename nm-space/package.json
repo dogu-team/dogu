@@ -3,6 +3,8 @@
   "name": "nm-space",
   "version": "1.0.1",
   "description": "node modules space",
+  "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
+  "author": "Dogu Technologies",
   "type": "commonjs",
   "scripts": {
     "build": "yarn workspaces foreach --exclude '@dogu**/*'  --jobs unlimited -ptvi run build"
@@ -21,5 +23,6 @@
     "prettier-package-json": "2.8.0",
     "ts-node": "10.9.1",
     "typescript": "4.7.4"
-  }
+  },
+  "url": "https://github.com/dogu-team/dogu"
 }

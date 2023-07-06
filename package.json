@@ -2,8 +2,8 @@
   "private": true,
   "name": "dogu",
   "version": "1.1.0",
-  "license": "SEE LICENSE IN LICENSE.md",
-  "author": "Dogu Team",
+  "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
+  "author": "Dogu Technologies",
   "repository": "https://github.com/dogu-team/dogu.git",
   "scripts": {
     "build": "yarn workspaces foreach --exclude 'docs' --exclude 'dogu' --jobs unlimited -ptvi run build",
@@ -106,5 +106,6 @@
     "typescript": "4.7.4",
     "yargs": "17.7.1"
   },
-  "packageManager": "yarn@3.3.1"
+  "packageManager": "yarn@3.3.1",
+  "url": "https://github.com/dogu-team/dogu"
 }

@@ -1,9 +1,8 @@
 {
   "name": "@dogu-tech/env-tools",
   "version": "0.0.0",
-  "description": "",
-  "license": "SEE LICENSE IN LICENSE.md",
-  "author": "dgou",
+  "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
+  "author": "Dogu Technologies",
   "main": "build/src/index.js",
   "files": [
     "build"
@@ -39,5 +38,6 @@
   },
   "publishConfig": {
     "access": "public"
-  }
+  },
+  "url": "https://github.com/dogu-team/dogu"
 }

@@ -1,9 +1,8 @@
 {
   "name": "console-web-server",
   "version": "1.1.0",
-  "description": "",
-  "license": "SEE LICENSE IN LICENSE.md",
-  "author": "",
+  "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
+  "author": "Dogu Technologies",
   "scripts": {
     "build": "tsc -b && ts-node scripts/post-build/run.ts",
     "clean": "shx rm -rf build generated",
@@ -164,5 +163,6 @@
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     }
-  }
+  },
+  "url": "https://github.com/dogu-team/dogu"
 }

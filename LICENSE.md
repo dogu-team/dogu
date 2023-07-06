@@ -1,16 +1,29 @@
 **AGPL-3.0-only**  
-The default license for Dogu is [AGPL-3.0-only](https://spdx.org/licenses/AGPL-3.0-only.html)  
+The default license for Dogu is AGPL-3.0-only
 but following licenses are applied to some directories.
+
+**MIT**  
+All content inside of the following directories are licensed under the MIT
+
+```
+- "/docs/**/*"
+- "/dogu-actions/**/*"
+- "/packages/**/*"
+- "/samples/**/*"
+- "/scripts/**/*"
+```
 
 **Enterprise Edition License**  
 All content that resides under the "ee/" directory of this repository, if that directory exists, is licensed under the license defined in "ee/LICENSE".
 
 **Creative Commons: CC BY-SA 4.0 license**  
-All contents inside of the following directories are licensed under the [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) license as defined below.
+All contents inside of the following directories are licensed under the CC BY-SA 4.0
 
 ```
-- /.github/resources/*
+- /.github/resources/**/*
 ```
+
+</br>
 
 **Third Parties**  
 All third party components incorporated into the Dogu are licensed under the original license provided by the owner of the applicable component.
@@ -200,6 +213,30 @@ Later license versions may give you additional or different permissions. However
     If the disclaimer of warranty and limitation of liability provided above cannot be given local legal effect according to their terms, reviewing courts shall apply local law that most closely approximates an absolute waiver of all civil liability in connection with the Program, unless a warranty or assumption of liability accompanies a copy of the Program in return for a fee.
 
 <br/>
+
+## MIT
+
+MIT License
+
+Copyright (c) 2023 Dogu Technologies
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ## Creative Commons Attribution-ShareAlike 4.0 International Public License
 
