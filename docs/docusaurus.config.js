@@ -112,7 +112,7 @@ const config = {
               },
               {
                 label: 'routine',
-                to: '/script-and-routine/routine/about',
+                to: '/script-and-routine/introduction',
               },
               {
                 label: 'community',
