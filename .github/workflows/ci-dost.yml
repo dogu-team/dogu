@@ -82,6 +82,17 @@ jobs:
             C:\hostedtoolcache\windows\go\${{ env.GO_VERSION }}
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.GO_VERSION }}
 
+      - name: Cache NM Space
+        uses: actions/cache@v3
+        id: cache_nm_space
+        env:
+          cache-name: cache-mirror
+        with:
+          path: |
+            ${{ github.workspace }}/nm-space/mirror
+            ${{ github.workspace }}/nm-space/node_modules
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('packages/typescript-*/**') }}-${{ hashFiles('nm-space/yarn.lock') }}
+
       - name: Windows - Msys2 - MIGW64 - Setup for cgo
         uses: msys2/setup-msys2@v2
         if: runner.os == 'Windows'
@@ -173,26 +184,8 @@ jobs:
           DOGU_APPLE_API_KEY_ID: ${{ secrets.DOGU_APPLE_API_KEY_ID }}
           DOGU_APPLE_API_ISSUER_ID: ${{ secrets.DOGU_APPLE_API_ISSUER_ID }}
 
-      # - name: Cache nm space node_modules
-      #   uses: actions/cache@v3
-      #   id: cache_nm_space_node_modules
-      #   env:
-      #     cache-name: cache-nm-space-node_modules
-      #   with:
-      #     path: ${{ github.workspace }}/nm-space/node_modules
-      #     key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('nm-space/yarn.lock') }}
-
-      # - name: Cache nm space project node_modules
-      #   uses: actions/cache@v3
-      #   id: cache_nm_space_project_node_modules
-      #   env:
-      #     cache-name: cache-nm-space-project-node_modules
-      #   with:
-      #     path: ${{ github.workspace }}/nm-space/projects/node_modules
-      #     key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('nm-space/yarn.lock') }}
-
-      # - if: ${{ (steps.cache_nm_space_node_modules.outputs.cache-hit != 'true') || (steps.cache_nm_space_project_node_modules.outputs.cache-hit != 'true') }}
-      - name: Dost - Newbie nm-space
+      - if: steps.cache_nm_space.outputs.cache-hit != 'true'
+        name: Dost - Newbie nm-space
         run: |
           yarn workspace dogu run newbie:nm-space
 
