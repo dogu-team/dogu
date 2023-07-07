@@ -4,14 +4,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
-import { callAsyncWithTimeout, errorify, NullLogger, Printable, Retry, stringify } from '@dogu-tech/common';
+import { callAsyncWithTimeout, delay, errorify, NullLogger, Printable, Retry, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, Rect, ScreenSize, SystemBar } from '@dogu-tech/device-client-common';
 import { HostPaths, Logger, TaskQueue, TaskQueueTask } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
-import _ from 'lodash';
 import path from 'path';
-import { setInterval } from 'timers/promises';
 import { remote } from 'webdriverio';
 import { Adb } from '../internal/externals/index';
 import { Zombieable, ZombieProps } from '../internal/services/zombie/zombie-component';
@@ -311,6 +309,7 @@ export class AppiumContextImpl implements AppiumContext {
     }
     return this._data;
   }
+  private notHealthyCount = 0;
 
   openingState: 'opening' | 'openingSucceeded' | 'openingFailed' = 'opening';
   constructor(private readonly options: AppiumContextOptions, public readonly printable: Logger) {}
@@ -382,25 +381,23 @@ export class AppiumContextImpl implements AppiumContext {
   }
 
   async update(): Promise<void> {
-    let notHealthyCount = 0;
-    for await (const _ of setInterval(AppiumHealthCheckInterval)) {
-      if (!this._data) {
-        this.printable.verbose('Appium impl is not found. Skipping');
-        continue;
-      }
+    if (!this._data) {
+      this.printable.verbose('Appium impl is not found. Skipping');
+      return;
+    }
 
-      const { client } = this._data;
-      try {
-        await client.driver.getWindowSize();
-        notHealthyCount = 0;
-      } catch (error) {
-        this.printable.error('Appium impl is not healthy', { error: errorify(error) });
-        notHealthyCount++;
-        if (notHealthyCount >= AppiumHealthCheckMaxNotHealthyCount) {
-          ZombieServiceInstance.notifyDie(this, 'windowSize is not available');
-        }
+    const { client } = this._data;
+    try {
+      await client.driver.getWindowSize();
+      this.notHealthyCount = 0;
+    } catch (error) {
+      this.printable.error('Appium impl is not healthy', { error: errorify(error) });
+      this.notHealthyCount++;
+      if (this.notHealthyCount >= AppiumHealthCheckMaxNotHealthyCount) {
+        ZombieServiceInstance.notifyDie(this, 'windowSize is not available');
       }
     }
+    await delay(AppiumHealthCheckInterval);
   }
 
   private async openServer(): Promise<AppiumData['server']> {
