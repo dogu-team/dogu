@@ -2,7 +2,9 @@
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "rootDir": ".",
-    "outDir": "build"
+    "outDir": "build",
+    "noEmit": true,
+    "sourceMap": false
   },
   "include": ["src/**/*.ts"],
   "references": [
