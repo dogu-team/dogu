@@ -385,4 +385,4 @@ export class AndroidChannel implements DeviceChannel {
 /**
  * @todo henry - refactor to AndroidDeviceRunContextRegistry
  */
-const portContextes = new Map<Serial, DevicePortContext>(); // deviceAgent forward 포트는 process lifecycle에서 유지한다. 변경된 port를 go-device-controller와 sync, androidDeviceAgentService를 respawn하는 기능을 유지하기가 힘듦.
+const portContextes = new Map<Serial, DevicePortContext>(); // The deviceAgent forward port is maintained throughout the process lifecycle.. It is difficult to maintain the function of syncing the changed port with go-device-controller and respawning androidDeviceAgentService.
