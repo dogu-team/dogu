@@ -99,7 +99,7 @@ class StepReporterImpl(StepReporter):
         try:
             self._on_pytest_collection_modifyitems(session, config, items)
         except Exception as e:
-            print(f"failed on pytest_collection_modifyitems: {e}")
+            print(f"[dogu] failed on pytest_collection_modifyitems: {e}")
 
     def _on_pytest_collection_modifyitems(
         self, session: Session, config: Config, items: List[Item]
@@ -113,7 +113,7 @@ class StepReporterImpl(StepReporter):
         try:
             self._on_pytest_runtest_logstart(nodeid, location)
         except Exception as e:
-            print(f"failed on pytest_runtest_logstart: {e}")
+            print(f"[dogu] failed on pytest_runtest_logstart: {e}")
 
     def _on_pytest_runtest_logstart(
         self, nodeid: str, location: PyTestLocation
@@ -141,7 +141,7 @@ class StepReporterImpl(StepReporter):
         try:
             self._on_pytest_runtest_logfinish(nodeid, location)
         except Exception as e:
-            print(f"failed on pytest_runtest_logfinish: {e}")
+            print(f"[dogu] failed on pytest_runtest_logfinish: {e}")
 
     def _on_pytest_runtest_logfinish(
         self, nodeid: str, location: PyTestLocation
@@ -165,7 +165,7 @@ class StepReporterImpl(StepReporter):
         try:
             self._on_pytest_runtest_logreport(report)
         except Exception as e:
-            print(f"failed on pytest_runtest_logreport: {e}")
+            print(f"[dogu] failed on pytest_runtest_logreport: {e}")
 
     def _on_pytest_runtest_logreport(self, report: TestReport) -> None:
         if report.when != "call":
@@ -259,6 +259,6 @@ class StepReporterFactory:
 
     def create(self) -> StepReporter:
         if self.options.api_base_url == "":
-            print("dogu api base url is not specified. step reporter is disabled.")
+            print("[dogu] api base url is not specified. step reporter is disabled.")
             return NullStepReporter()
         return StepReporterImpl(self.options)
