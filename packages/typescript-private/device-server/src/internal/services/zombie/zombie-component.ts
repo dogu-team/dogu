@@ -1,12 +1,11 @@
 import { Platform, Serial } from '@dogu-private/types';
-import { loop, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
+import { loop, Printable, stringify } from '@dogu-tech/common';
 
 export interface ZombieProps {
   [key: string]: unknown;
 }
 
 export interface Zombieable {
-  get parent(): Zombieable | null;
   get name(): string;
   get platform(): Platform;
   get serial(): Serial;
@@ -20,27 +19,31 @@ export interface Zombieable {
   update?(): Promise<void>;
   // handle when zombie die. this is called when ZombieServiceInstance.notifyDie, and ZombieServiceInstance.deleteComponent called
   onDie(): Promise<void> | void;
+  onComponentDeleted?(): Promise<void> | void;
 }
 
 export class ZombieComponent {
-  constructor(public readonly zombieable: Zombieable, private isAliveSelf = false, private dieReason = '') {}
+  constructor(public readonly impl: Zombieable, private isAliveSelf = false, private dieReason = '') {}
 
   async tryRevive(): Promise<void> {
     try {
-      await this.zombieable.revive();
+      await this.impl.revive();
       this.isAliveSelf = true;
-      await this.zombieable.afterRevive?.();
+      await this.impl.afterRevive?.();
     } catch (e: unknown) {
-      this.zombieable.printable.error(`${this.zombieable.name}.reviveCheck failed  error:${stringify(e)}`);
+      this.impl.printable.error(`${this.impl.name}.reviveCheck failed  error:${stringify(e)}`);
       this.dieReason = `reviveCheck failed error:${stringify(e)}`;
       this.isAliveSelf = false;
     }
   }
 
   async onDie(dieReason = 'unknown'): Promise<void> {
-    await this.zombieable.onDie();
+    await this.impl.onDie();
     this.isAliveSelf = false;
     this.dieReason = dieReason;
+  }
+  async onComponentDeleted(): Promise<void> {
+    await this.impl.onComponentDeleted?.();
   }
 
   isAlive(): boolean {
@@ -54,20 +57,6 @@ export class ZombieComponent {
       }
     }
   }
-
-  // async shouldReviveRecursive(): Promise<boolean> {
-  //   let parent = this.zombieable;
-  //   while (parent != null) {
-  //     if (!(await parent.shouldRevive())) {
-  //       return false;
-  //     }
-  //     if (parent.parent == null) {
-  //       return true;
-  //     }
-  //     parent = parent.parent;
-  //   }
-  //   return true;
-  // }
 }
 
 export class ZombieWaiter {

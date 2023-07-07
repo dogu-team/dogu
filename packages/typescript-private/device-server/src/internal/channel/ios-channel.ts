@@ -20,7 +20,7 @@ import compressing from 'compressing';
 import fs from 'fs';
 import path from 'path';
 import { Observable } from 'rxjs';
-import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
+import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
 import { AppiumService } from '../../appium/appium.service';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { GamiumService } from '../../gamium/gamium.service';
@@ -59,7 +59,7 @@ export class IosChannel implements DeviceChannel {
     private iosDeviceAgentProcess: IosDeviceAgentProcess,
     private readonly deviceAgent: IosDeviceAgentService,
     private readonly _appiumService: AppiumService,
-    private _appiumContext: AppiumContext,
+    private _appiumContext: AppiumContextProxy,
     private readonly logger: Printable,
   ) {
     this.logger.info(`IosChannel created: ${this.serial}`);
@@ -91,12 +91,8 @@ export class IosChannel implements DeviceChannel {
     logger.verbose('appium wda privisioning check done');
 
     logger.verbose('appium context starting');
-    const appiumContext = appiumService.createAppiumContext(platform, serial, 'bulitin');
-    const onCatchAppiumContextError = (error: Error): void => {
-      logger.error('AppiumContext inspector error.', { error: errorify(error) });
-      appiumContext.open().catch(onCatchAppiumContextError);
-    };
-    await appiumContext.open().catch(onCatchAppiumContextError);
+    const appiumContextProxy = appiumService.createAppiumContext(platform, serial, 'bulitin');
+    ZombieServiceInstance.addComponent(appiumContextProxy);
     logger.verbose('appium context started');
 
     let portContext = portContextes.get(serial);
@@ -136,7 +132,7 @@ export class IosChannel implements DeviceChannel {
     });
     logger.verbose('ios system info service started');
 
-    const deviceChannel = new IosChannel(serial, portContext, systemInfo, streaming, iosDeviceAgentProcess, deviceAgent, appiumService, appiumContext, logger);
+    const deviceChannel = new IosChannel(serial, portContext, systemInfo, streaming, iosDeviceAgentProcess, deviceAgent, appiumService, appiumContextProxy, logger);
 
     logger.verbose('streaming service calling deviceConnected');
     await Promise.resolve(
@@ -173,9 +169,7 @@ export class IosChannel implements DeviceChannel {
     /**
      * @note Does not wait for appium to shutdown
      */
-    this._appiumContext.close().catch((error) => {
-      this.logger.error('ios appium context close failed.', { error: errorify(error) });
-    });
+    ZombieServiceInstance.deleteComponent(this._appiumContext);
     this.iosDeviceAgentProcess.delete();
   }
 
@@ -327,18 +321,8 @@ export class IosChannel implements DeviceChannel {
   }
 
   async switchAppiumContext(key: AppiumContextKey): Promise<AppiumContext> {
-    this.logger.info(`switching appium context: from: ${this._appiumContext.key}, to: ${key}`);
-    await this._appiumContext.close().catch((error) => {
-      this.logger.error('ios appium context close failed', { error: errorify(error) });
-    });
-    const appiumContext = this._appiumService.createAppiumContext(this.platform, this.serial, key);
-    const onCatchAppiumContextError = (error: Error): void => {
-      this.logger.error('ios appium context open failed', { error: errorify(error) });
-      appiumContext.open().catch(onCatchAppiumContextError);
-    };
-    await appiumContext.open().catch(onCatchAppiumContextError);
-    this._appiumContext = appiumContext;
-    return appiumContext;
+    await this._appiumContext.switchAppiumContext(key);
+    return this._appiumContext;
   }
 
   set gamiumContext(context: GamiumContext | null) {

@@ -32,9 +32,6 @@ export class GoDeviceControllerProcess implements Zombieable {
   }
 
   // Zombie
-  get parent(): Zombieable | null {
-    return null;
-  }
   get name(): string {
     return `GoDeviceControllerProcess`;
   }

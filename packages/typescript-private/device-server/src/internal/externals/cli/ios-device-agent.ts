@@ -127,9 +127,6 @@ class ZombieXCTest implements Zombieable {
   ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }
-  get parent(): null {
-    return null;
-  }
   get name(): string {
     return `XCTest`;
   }
@@ -187,9 +184,6 @@ class ZombieScreenChecker implements Zombieable {
   public readonly zombieWaiter: ZombieWaiter;
   constructor(public readonly serial: Serial, private readonly screenForwadPort: number, private readonly xctest: ZombieXCTest, private readonly logger: Printable) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
-  }
-  get parent(): null {
-    return null;
   }
   get name(): string {
     return `ScreenChecker`;

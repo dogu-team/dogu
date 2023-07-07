@@ -21,14 +21,14 @@ export function makeLogs(checkers: ZombieChecker[]): string {
     return Platform[platform].replace('PLATFORM_', '');
   };
   for (const checker of checkers) {
-    const platform = checker.zombie.zombieable.platform;
+    const platform = checker.component.impl.platform;
     let platformZombieLog = zombieLogs.find((zombieLog) => zombieLog.str === toPlatformShortName(platform));
     if (!platformZombieLog) {
       platformZombieLog = new ZombieLog(toPlatformShortName(platform));
       zombieLogs.push(platformZombieLog);
     }
 
-    let serial = checker.zombie.zombieable.serial;
+    let serial = checker.component.impl.serial;
     if (0 === serial.length) {
       serial = 'common';
     }
@@ -38,15 +38,12 @@ export function makeLogs(checkers: ZombieChecker[]): string {
       platformZombieSerialLog = new ZombieLog(serial);
       platformZombieLog.childs.push(platformZombieSerialLog);
     }
-    const commonProp = [
-      `OK:${checker.zombie.isAlive() ? '✅' : '❌'}`,
-      ` / Revive:${checker.isReviving ? '🔄' : '-'} ${checker.reviveCount}`,
-      ` / Update:${checker.isUpdating ? '🔄' : '-'} ${checker.updateCount}`,
-    ];
+    const alive = `${checker.component.isAlive() ? '✅' : '❌'}`;
+    const commonProp = [`Revive:${checker.isReviving ? '🔄' : '-'} ${checker.reviveCount}`, ` Update:${checker.isUpdating ? '🔄' : '-'} ${checker.updateCount}`];
     const propDict = {
-      ...checker.zombie.zombieable.props,
+      ...checker.component.impl.props,
     };
-    let logs = ` ${checker.zombie.zombieable.name} [${commonProp}]` + ` ${stringify(propDict, { compact: true, breakLength: 1000 })}`;
+    let logs = `${alive}${checker.component.impl.name} [${commonProp}]` + ` ${stringify(propDict, { compact: true, breakLength: 1000 })}`;
     platformZombieSerialLog.childs.push(new ZombieLog(logs));
   }
 

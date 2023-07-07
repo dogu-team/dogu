@@ -2,6 +2,7 @@ import 'reflect-metadata';
 
 export * as ChildProcess from './child-process';
 export * from './clean-env';
+export * from './data-structure/task-queue';
 export * from './delete-old-files';
 export * from './download';
 export * from './environment-variables/matchers';

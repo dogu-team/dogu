@@ -1,7 +1,10 @@
+import { Platform } from '@dogu-private/types';
 import { errorify, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, ScreenSize } from '@dogu-tech/device-client-common';
 import { Logger } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
+import { ZombieProps } from '../internal/services/zombie/zombie-component';
+import { ZombieServiceInstance } from '../internal/services/zombie/zombie-service';
 import { getFreePort, waitPortOpen } from '../internal/util/net';
 import { AppiumContext, AppiumContextKey, AppiumContextOptions, AppiumData } from './appium.context';
 
@@ -14,17 +17,31 @@ function emptyClientData(): AppiumData['client'] {
 
 export class AppiumRemoteContext implements AppiumContext {
   private _data: AppiumData | null = null;
-  public sessionId: string = '';
+  public sessionId = '';
   private get data(): AppiumData {
     if (!this._data) {
       throw new Error('Appium data is not found');
     }
     return this._data;
   }
-  private _isHealthy = true;
-  private closed = false;
 
   openingState: 'opening' | 'openingSucceeded' | 'openingFailed' = 'opening';
+
+  constructor(private readonly options: AppiumContextOptions, public readonly printable: Logger) {}
+
+  get name(): string {
+    return 'AppiumRemoteContext';
+  }
+  get platform(): Platform {
+    return this.options.platform;
+  }
+  get serial(): string {
+    return this.options.serial;
+  }
+
+  get props(): ZombieProps {
+    return { srvPort: this._data?.server.port, cliSessId: this.sessionId };
+  }
 
   getInfo(): AppiumContextInfo {
     const { serial, platform } = this.options;
@@ -47,13 +64,11 @@ export class AppiumRemoteContext implements AppiumContext {
     };
   }
 
-  constructor(private readonly options: AppiumContextOptions, private readonly logger: Logger) {}
-
   get key(): AppiumContextKey {
     return 'remote';
   }
 
-  async open(): Promise<void> {
+  async revive(): Promise<void> {
     this.openingState = 'opening';
     try {
       const serverData = await this.openServer();
@@ -61,7 +76,6 @@ export class AppiumRemoteContext implements AppiumContext {
         server: serverData,
         client: emptyClientData(),
       };
-      this._isHealthy = true;
       this.openingState = 'openingSucceeded';
     } catch (error) {
       this.openingState = 'openingFailed';
@@ -69,11 +83,7 @@ export class AppiumRemoteContext implements AppiumContext {
     }
   }
 
-  async close(): Promise<void> {
-    if (this.closed) {
-      return;
-    }
-    this.closed = true;
+  async onDie(): Promise<void> {
     if (!this._data) {
       return;
     }
@@ -82,16 +92,12 @@ export class AppiumRemoteContext implements AppiumContext {
     await this.stopServer(data.server.process);
   }
 
-  isHealthy(): boolean {
-    return this._isHealthy;
-  }
-
   private async openServer(): Promise<AppiumData['server']> {
     const { pnpmPath, appiumPath, serverEnv } = this.options;
     const port = await getFreePort();
     const args = ['appium', '--log-no-colors', '--port', `${port}`, '--session-override', '--log-level', 'debug'];
     const command = `${pnpmPath} ${args.join(' ')}`;
-    this.logger.info('server starting', { command, cwd: appiumPath, env: serverEnv });
+    this.printable.info('server starting', { command, cwd: appiumPath, env: serverEnv });
     const process = await new Promise<ChildProcessWithoutNullStreams>((resolve, reject) => {
       const child = spawn(pnpmPath, args, {
         cwd: appiumPath,
@@ -102,14 +108,14 @@ export class AppiumRemoteContext implements AppiumContext {
       };
       child.on('error', onErrorForReject);
       child.on('spawn', () => {
-        this.logger.info('server spawned');
+        this.printable.info('server spawned');
         child.off('error', onErrorForReject);
         child.on('error', (error) => {
-          this.logger.error('server error', { error: errorify(error) });
+          this.printable.error('server error', { error: errorify(error) });
         });
         child.on('close', (code, signal) => {
-          this.logger.info('server closed', { code, signal });
-          this._isHealthy = false;
+          this.printable.info('server closed', { code, signal });
+          ZombieServiceInstance.notifyDie(this);
         });
         child.stdout.setEncoding('utf8');
         child.stdout.on('data', (data) => {
@@ -117,7 +123,7 @@ export class AppiumRemoteContext implements AppiumContext {
           if (!message) {
             return;
           }
-          this.logger.info(message);
+          this.printable.info(message);
         });
         child.stderr.setEncoding('utf8');
         child.stderr.on('data', (data) => {
@@ -125,13 +131,13 @@ export class AppiumRemoteContext implements AppiumContext {
           if (!message) {
             return;
           }
-          this.logger.warn(message);
+          this.printable.warn(message);
         });
         resolve(child);
       });
     });
     await waitPortOpen(port, 60000);
-    this.logger.info('server started', { command, cwd: appiumPath });
+    this.printable.info('server started', { command, cwd: appiumPath });
     return {
       port,
       command,
@@ -155,42 +161,42 @@ export class AppiumRemoteContext implements AppiumContext {
   }
 
   getAndroid(): Promise<Android | undefined> {
-    this.logger.error('AppiumRemoteContext.getAndroid is not implemented');
+    this.printable.error('AppiumRemoteContext.getAndroid is not implemented');
     return Promise.resolve(undefined);
   }
 
   getScreenSize(): Promise<ScreenSize> {
-    this.logger.error('AppiumRemoteContext.getScreenSize is not implemented');
+    this.printable.error('AppiumRemoteContext.getScreenSize is not implemented');
     return Promise.resolve({ width: 0, height: 0 });
   }
 
   getPageSource(): Promise<string> {
-    this.logger.error('AppiumRemoteContext.getPageSource is not implemented');
+    this.printable.error('AppiumRemoteContext.getPageSource is not implemented');
     return Promise.resolve('');
   }
 
   getContexts(): Promise<string[]> {
-    this.logger.error('AppiumRemoteContext.getContexts is not implemented');
+    this.printable.error('AppiumRemoteContext.getContexts is not implemented');
     return Promise.resolve([]);
   }
 
   getContext(): Promise<string> {
-    this.logger.error('AppiumRemoteContext.getContext is not implemented');
+    this.printable.error('AppiumRemoteContext.getContext is not implemented');
     return Promise.resolve('');
   }
 
   switchContext(contextId: string): Promise<void> {
-    this.logger.error('AppiumRemoteContext.switchContext is not implemented');
+    this.printable.error('AppiumRemoteContext.switchContext is not implemented');
     return Promise.resolve();
   }
 
   switchContextAndGetPageSource(contextId: string): Promise<string> {
-    this.logger.error('AppiumRemoteContext.switchContextAndGetPageSource is not implemented');
+    this.printable.error('AppiumRemoteContext.switchContextAndGetPageSource is not implemented');
     return Promise.resolve('');
   }
 
   getContextPageSources(): Promise<ContextPageSource[]> {
-    this.logger.error('AppiumRemoteContext.getContextPageSources is not implemented');
+    this.printable.error('AppiumRemoteContext.getContextPageSources is not implemented');
     return Promise.resolve([]);
   }
 }

@@ -4,9 +4,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
-import { callAsyncWithTimeout, errorify, NullLogger, Retry, stringify } from '@dogu-tech/common';
+import { callAsyncWithTimeout, errorify, NullLogger, Printable, Retry, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, Rect, ScreenSize, SystemBar } from '@dogu-tech/device-client-common';
-import { HostPaths, Logger } from '@dogu-tech/node';
+import { HostPaths, Logger, TaskQueue, TaskQueueTask } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
 import _ from 'lodash';
@@ -14,6 +14,8 @@ import path from 'path';
 import { setInterval } from 'timers/promises';
 import { remote } from 'webdriverio';
 import { Adb } from '../internal/externals/index';
+import { Zombieable, ZombieProps } from '../internal/services/zombie/zombie-component';
+import { ZombieServiceInstance } from '../internal/services/zombie/zombie-service';
 import { getFreePort } from '../internal/util/net';
 import { createAppiumLogger } from '../logger/logger.instance';
 import { AppiumRemoteContext } from './appium.remote.context';
@@ -60,12 +62,9 @@ function callClientAsyncWithTimeout<T>(callClientAsync: Promise<T>): Promise<T> 
 export type AppiumContextKey = 'bulitin' | 'remote' | 'null';
 export type AppiumOpeningState = 'opening' | 'openingSucceeded' | 'openingFailed';
 
-export interface AppiumContext {
+export interface AppiumContext extends Zombieable {
   get key(): AppiumContextKey;
   get openingState(): AppiumOpeningState;
-  open(): Promise<void>;
-  close(): Promise<void>;
-  isHealthy(): boolean;
   getInfo(): AppiumContextInfo;
   getAndroid(): Promise<Android | undefined>;
   getScreenSize(): Promise<ScreenSize>;
@@ -78,6 +77,17 @@ export interface AppiumContext {
 }
 
 class NullAppiumContext implements AppiumContext {
+  public readonly props: ZombieProps = {};
+  constructor(private readonly options: AppiumContextOptions, public readonly printable: Logger) {}
+  get name(): string {
+    return 'NullAppiumContext';
+  }
+  get platform(): Platform {
+    return this.options.platform;
+  }
+  get serial(): string {
+    return this.options.serial;
+  }
   get key(): AppiumContextKey {
     return 'null';
   }
@@ -85,11 +95,10 @@ class NullAppiumContext implements AppiumContext {
     return 'openingSucceeded';
   }
 
-  open(): Promise<void> {
+  revive(): Promise<void> {
     return Promise.resolve();
   }
-
-  close(): Promise<void> {
+  onDie(): void | Promise<void> {
     return Promise.resolve();
   }
 
@@ -148,15 +157,59 @@ class NullAppiumContext implements AppiumContext {
   }
 }
 
-export class AppiumContextProxy implements AppiumContext {
+export class AppiumContextProxy implements AppiumContext, Zombieable {
   private readonly logger: Logger;
   private impl: AppiumContext;
   private next: AppiumContext | null = null;
-  private closed = false;
+  private nullContext: NullAppiumContext;
+  private taskQueue: TaskQueue<void, void> = new TaskQueue();
 
   constructor(private readonly options: AppiumContextOptions) {
     this.logger = createAppiumLogger(options.serial);
+    this.nullContext = new NullAppiumContext(options, this.logger);
+
     this.impl = AppiumContextProxy.createAppiumContext(options, this.logger);
+    ZombieServiceInstance.addComponent(this.impl);
+  }
+  get name(): string {
+    return 'AppiumContextProxy';
+  }
+  get platform(): Platform {
+    return this.options.platform;
+  }
+  get serial(): string {
+    return this.options.serial;
+  }
+  get printable(): Printable {
+    return this.logger;
+  }
+
+  get props(): ZombieProps {
+    return {};
+  }
+
+  revive(): Promise<void> {
+    return Promise.resolve();
+  }
+  async update(): Promise<void> {
+    if (this.impl.key !== 'null' && false === ZombieServiceInstance.isAlive(this.impl)) {
+      this.next = this.impl;
+      this.impl = this.nullContext;
+      return Promise.resolve();
+    }
+    if (this.impl.key === 'null' && this.next && ZombieServiceInstance.isAlive(this.next)) {
+      this.impl = this.next;
+    }
+    if (this.impl.key !== 'null' && ZombieServiceInstance.isAlive(this.impl)) {
+      await this.taskQueue.consume();
+      return;
+    }
+    return;
+  }
+
+  onDie(): void {}
+  onComponentDeleted(): void {
+    ZombieServiceInstance.deleteComponent(this.impl);
   }
 
   get key(): AppiumContextKey {
@@ -165,73 +218,6 @@ export class AppiumContextProxy implements AppiumContext {
 
   get openingState(): AppiumOpeningState {
     return this.impl.openingState;
-  }
-
-  async open(): Promise<void> {
-    await this.impl.open();
-    this.doHealthCheckLoop();
-  }
-
-  private doHealthCheckLoop(): void {
-    (async (): Promise<void> => {
-      for await (const _ of setInterval(AppiumHealthCheckInterval)) {
-        if (this.closed) {
-          this.logger.verbose('Appium health check loop stopped');
-          return;
-        }
-
-        if (this.impl.isHealthy()) {
-          continue;
-        }
-
-        this.logger.verbose('Appium context is not healthy. Restarting');
-        try {
-          await this.impl.close();
-        } catch (error) {
-          this.logger.error('Appium context close failed', { error: errorify(error) });
-        }
-
-        if (this.next) {
-          if (this.next.openingState === 'opening') {
-            this.logger.verbose('Appium context is opening. Skipping');
-            continue;
-          } else if (this.next.openingState === 'openingSucceeded') {
-            this.logger.verbose('Appium context is opening succeeded. swaping impl');
-            this.impl = this.next as AppiumContext;
-            this.next = null;
-            continue;
-          } else if (this.next.openingState === 'openingFailed') {
-            this.logger.verbose('Appium context is opening failed. swaping next');
-            this.next.close().catch((error) => {
-              this.logger.error('Appium context close failed', { error: errorify(error) });
-            });
-          } else {
-            throw new Error(`unknown openingState: ${stringify(this.next.openingState)}`);
-          }
-        }
-
-        this.logger.verbose('Appium context is not found. Creating new context');
-        this.impl = new NullAppiumContext();
-        this.next = AppiumContextProxy.createAppiumContext(this.options, this.logger);
-        this.next?.open().catch((error) => {
-          this.logger.error('Appium context open failed', { error: errorify(error) });
-        });
-      }
-    })().catch((error) => {
-      this.logger.error('Appium health check loop failed', { error: errorify(error) });
-    });
-  }
-
-  async close(): Promise<void> {
-    if (this.closed) {
-      return;
-    }
-    this.closed = true;
-    return this.impl.close();
-  }
-
-  isHealthy(): boolean {
-    return this.impl.isHealthy();
   }
 
   getInfo(): AppiumContextInfo {
@@ -270,6 +256,23 @@ export class AppiumContextProxy implements AppiumContext {
     return this.impl.getContextPageSources();
   }
 
+  async switchAppiumContext(key: AppiumContextKey): Promise<void> {
+    const task = new TaskQueueTask(async () => {
+      const befImplKey = this.impl.key;
+      this.logger.info(`switching appium context: from: ${befImplKey}, to: ${key} start`);
+      const befImpl = this.impl;
+      this.impl = this.nullContext;
+      ZombieServiceInstance.deleteComponent(befImpl, 'switching appium context');
+
+      const appiumContext = AppiumContextProxy.createAppiumContext({ ...this.options, key: key }, this.logger);
+      const awaiter = ZombieServiceInstance.addComponent(appiumContext);
+      await awaiter.waitUntilAlive();
+      this.impl = appiumContext;
+      this.logger.info(`switching appium context: from: ${befImplKey}, to: ${key} done`);
+    });
+    await this.taskQueue.scheduleAndWait(task);
+  }
+
   private static createAppiumContext(options: AppiumContextOptions, logger: Logger): AppiumContext {
     switch (options.key) {
       case 'bulitin':
@@ -277,7 +280,7 @@ export class AppiumContextProxy implements AppiumContext {
       case 'remote':
         return new AppiumRemoteContext(options, logger);
       case 'null':
-        return new NullAppiumContext();
+        return new NullAppiumContext(options, logger);
     }
   }
 }
@@ -304,10 +307,22 @@ export class AppiumContextImpl implements AppiumContext {
     }
     return this._data;
   }
-  private _isHealthy = true;
-  private closed = false;
 
   openingState: 'opening' | 'openingSucceeded' | 'openingFailed' = 'opening';
+  constructor(private readonly options: AppiumContextOptions, public readonly printable: Logger) {}
+
+  get name(): string {
+    return 'AppiumContextImpl';
+  }
+  get platform(): Platform {
+    return this.options.platform;
+  }
+  get serial(): string {
+    return this.options.serial;
+  }
+  get props(): ZombieProps {
+    return { srvPort: this._data?.server.port, cliSessId: this._data?.client.driver.sessionId };
+  }
 
   getInfo(): AppiumContextInfo {
     const { serial, platform } = this.options;
@@ -332,13 +347,11 @@ export class AppiumContextImpl implements AppiumContext {
     };
   }
 
-  constructor(private readonly options: AppiumContextOptions, private readonly logger: Logger) {}
-
   get key(): AppiumContextKey {
     return 'bulitin';
   }
 
-  async open(): Promise<void> {
+  async revive(): Promise<void> {
     this.openingState = 'opening';
     try {
       const serverData = await this.openServer();
@@ -347,8 +360,6 @@ export class AppiumContextImpl implements AppiumContext {
         server: serverData,
         client: clientData,
       };
-      this._isHealthy = true;
-      this.doHealthCheckLoop();
       this.openingState = 'openingSucceeded';
     } catch (error) {
       this.openingState = 'openingFailed';
@@ -356,11 +367,7 @@ export class AppiumContextImpl implements AppiumContext {
     }
   }
 
-  async close(): Promise<void> {
-    if (this.closed) {
-      return;
-    }
-    this.closed = true;
+  async onDie(): Promise<void> {
     if (!this._data) {
       return;
     }
@@ -370,40 +377,26 @@ export class AppiumContextImpl implements AppiumContext {
     await this.stopServer(data.server.process);
   }
 
-  isHealthy(): boolean {
-    return this._isHealthy;
-  }
+  async update(): Promise<void> {
+    let notHealthyCount = 0;
+    for await (const _ of setInterval(AppiumHealthCheckInterval)) {
+      if (!this._data) {
+        this.printable.verbose('Appium impl is not found. Skipping');
+        continue;
+      }
 
-  private doHealthCheckLoop(): void {
-    (async (): Promise<void> => {
-      let notHealthyCount = 0;
-      for await (const _ of setInterval(AppiumHealthCheckInterval)) {
-        if (this.closed) {
-          this.logger.verbose('Appium impl health check loop stopped');
-          return;
-        }
-
-        if (!this._data) {
-          this.logger.verbose('Appium impl is not found. Skipping');
-          continue;
-        }
-
-        const { client } = this._data;
-        try {
-          await client.driver.getWindowSize();
-          this._isHealthy = true;
-          notHealthyCount = 0;
-        } catch (error) {
-          this.logger.error('Appium impl is not healthy', { error: errorify(error) });
-          notHealthyCount++;
-          if (notHealthyCount >= AppiumHealthCheckMaxNotHealthyCount) {
-            this._isHealthy = false;
-          }
+      const { client } = this._data;
+      try {
+        await client.driver.getWindowSize();
+        notHealthyCount = 0;
+      } catch (error) {
+        this.printable.error('Appium impl is not healthy', { error: errorify(error) });
+        notHealthyCount++;
+        if (notHealthyCount >= AppiumHealthCheckMaxNotHealthyCount) {
+          ZombieServiceInstance.notifyDie(this, 'windowSize is not available');
         }
       }
-    })().catch((error) => {
-      this.logger.error('Appium impl health check loop failed', { error: errorify(error) });
-    });
+    }
   }
 
   private async openServer(): Promise<AppiumData['server']> {
@@ -411,7 +404,7 @@ export class AppiumContextImpl implements AppiumContext {
     const port = await getFreePort();
     const args = ['appium', '--log-no-colors', '--port', `${port}`, '--session-override', '--log-level', 'debug'];
     const command = `${pnpmPath} ${args.join(' ')}`;
-    this.logger.info('server starting', { command, cwd: appiumPath, env: serverEnv });
+    this.printable.info('server starting', { command, cwd: appiumPath, env: serverEnv });
     const process = await new Promise<ChildProcessWithoutNullStreams>((resolve, reject) => {
       const child = spawn(pnpmPath, args, {
         cwd: appiumPath,
@@ -422,13 +415,13 @@ export class AppiumContextImpl implements AppiumContext {
       };
       child.on('error', onErrorForReject);
       child.on('spawn', () => {
-        this.logger.info('server spawned');
+        this.printable.info('server spawned');
         child.off('error', onErrorForReject);
         child.on('error', (error) => {
-          this.logger.error('server error', { error: errorify(error) });
+          this.printable.error('server error', { error: errorify(error) });
         });
         child.on('close', (code, signal) => {
-          this.logger.info('server closed', { code, signal });
+          this.printable.info('server closed', { code, signal });
         });
         child.stdout.setEncoding('utf8');
         child.stdout.on('data', (data) => {
@@ -436,7 +429,7 @@ export class AppiumContextImpl implements AppiumContext {
           if (!message) {
             return;
           }
-          this.logger.info(message);
+          this.printable.info(message);
         });
         child.stderr.setEncoding('utf8');
         child.stderr.on('data', (data) => {
@@ -444,12 +437,12 @@ export class AppiumContextImpl implements AppiumContext {
           if (!message) {
             return;
           }
-          this.logger.warn(message);
+          this.printable.warn(message);
         });
         resolve(child);
       });
     });
-    this.logger.info('server started', { command, cwd: appiumPath });
+    this.printable.info('server started', { command, cwd: appiumPath });
     return {
       port,
       command,
@@ -555,7 +548,7 @@ export class AppiumContextImpl implements AppiumContext {
       statusBar.visible = systemBarVisibility.statusBar;
       navigationBar.visible = systemBarVisibility.navigationBar;
     } catch (error) {
-      this.logger.error('Adb getSystemBarVisibility failed', { error: errorify(error) });
+      this.printable.error('Adb getSystemBarVisibility failed', { error: errorify(error) });
     }
 
     return {
@@ -591,7 +584,7 @@ export class AppiumContextImpl implements AppiumContext {
    */
   @Retry({ retryCount: 10, retryInterval: 3000, printable: NullLogger.instance })
   private async restartClient(serverPort: number): Promise<AppiumData['client']> {
-    this.logger.info('Appium client starting');
+    this.printable.info('Appium client starting');
     const argumentCapabilities = await this.createArgumentCapabilities();
     const remoteOptions: Parameters<typeof remote>[0] = {
       port: serverPort,
@@ -611,7 +604,7 @@ export class AppiumContextImpl implements AppiumContext {
         return acc;
       }
     }, {} as Record<string, unknown>);
-    this.logger.info('Appium client started', { remoteOptions, sessionId: driver.sessionId, capabilities: driver.capabilities });
+    this.printable.info('Appium client started', { remoteOptions, sessionId: driver.sessionId, capabilities: driver.capabilities });
     return {
       remoteOptions: filteredRemoteOptions,
       driver,
@@ -627,7 +620,7 @@ export class AppiumContextImpl implements AppiumContext {
     try {
       await driver.deleteSession();
     } catch (error) {
-      this.logger.error('client delete session failed', { error: errorify(error) });
+      this.printable.error('client delete session failed', { error: errorify(error) });
     }
   }
 
@@ -696,7 +689,7 @@ export class AppiumContextImpl implements AppiumContext {
       try {
         await this.switchContext(currentContext);
       } catch (error) {
-        this.logger.error('Appium context switch failed', { error: errorify(error) });
+        this.printable.error('Appium context switch failed', { error: errorify(error) });
       }
     }
     return contextPageSources;

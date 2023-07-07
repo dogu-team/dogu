@@ -4,7 +4,7 @@ import { Zombieable, ZombieComponent, ZombieWaiter } from './zombie-component';
 import { makeLogs } from './zombie-log';
 
 export interface ZombieChecker {
-  zombie: ZombieComponent;
+  component: ZombieComponent;
   updateGuard: DuplicatedCallGuarder;
   check: () => Promise<void>;
   isReviving: boolean;
@@ -19,7 +19,7 @@ export class ZombieService {
   update(): void {
     for (const checker of this.checkers) {
       checker.check().catch((e: Error) => {
-        logger.error(`ZombieService.update ${checker.zombie.zombieable.name} check failed  error:${stringify(e)}`);
+        logger.error(`ZombieService.update ${checker.component.impl.name} check failed  error:${stringify(e)}`);
       });
     }
 
@@ -34,25 +34,17 @@ export class ZombieService {
 
   addComponent(zombieable: Zombieable): ZombieWaiter {
     const ret: ZombieChecker = {
-      zombie: new ZombieComponent(zombieable),
+      component: new ZombieComponent(zombieable),
       updateGuard: new DuplicatedCallGuarder(),
       check: async (): Promise<void> => {
         await ret.updateGuard.guard(async () => {
-          // if (!(await ret.zombie.shouldReviveRecursive())) {
-          //   const index = this.checkers.indexOf(ret);
-          //   if (index === -1) {
-          //     return;
-          //   }
-          //   this.checkers.splice(index, 1);
-          //   return;
-          // }
-          if (ret.zombie.isAlive()) {
-            if (ret.zombie.zombieable.update) {
+          if (ret.component.isAlive()) {
+            if (ret.component.impl.update) {
               ret.isUpdating = true;
               ret.updateCount++;
-              await Promise.resolve(ret.zombie.zombieable.update?.())
+              await Promise.resolve(ret.component.impl.update?.())
                 .catch((e: Error) => {
-                  logger.error(`ZombieComponent ${ret.zombie.zombieable.name} update failed error:${stringify(e, { compact: true })}`);
+                  logger.error(`ZombieComponent ${ret.component.impl.name} update failed error:${stringify(e, { compact: true })}`);
                 })
                 .finally(() => {
                   ret.isUpdating = false;
@@ -63,10 +55,10 @@ export class ZombieService {
 
           ret.isReviving = true;
           ret.reviveCount++;
-          await ret.zombie
+          await ret.component
             .tryRevive()
             .catch((e: Error) => {
-              logger.error(`ZombieComponent ${ret.zombie.zombieable.name} reviveCheck failed error:${stringify(e, { compact: true })}`);
+              logger.error(`ZombieComponent ${ret.component.impl.name} reviveCheck failed error:${stringify(e, { compact: true })}`);
             })
             .finally(() => {
               ret.isReviving = false;
@@ -79,40 +71,43 @@ export class ZombieService {
       updateCount: 0,
     };
     this.checkers.push(ret);
-    return new ZombieWaiter(ret.zombie);
+    return new ZombieWaiter(ret.component);
   }
 
   // notify die of some zombie. zombie will be revived after a while
   notifyDie(zombie: Zombieable, closeReason?: string): void {
-    const target = this.checkers.find((checker) => checker.zombie.zombieable === zombie);
+    const target = this.checkers.find((checker) => checker.component.impl === zombie);
     if (target == null) {
       return;
     }
-    target.zombie.onDie(closeReason);
+    target.component.onDie(closeReason).catch((e: Error) => {
+      logger.error(`ZombieComponent ${target.component.impl.name} onDie failed error:${stringify(e, { compact: true })}`);
+    });
+  }
+  isAlive(zombie: Zombieable): boolean {
+    const target = this.checkers.find((checker) => checker.component.impl === zombie);
+    if (target == null) {
+      return false;
+    }
+    return target.component.isAlive();
   }
 
   // permanently delete zombie component. zombie will not be revived
   deleteComponent(zombie: Zombieable, closeReason?: string): void {
-    const target = this.checkers.find((checker) => checker.zombie.zombieable === zombie);
-    if (target == null) {
-      return;
-    }
-    target.zombie.onDie(closeReason);
-
-    const index = this.checkers.indexOf(target);
-    if (index === -1) {
-      return;
-    }
-    this.checkers.splice(index, 1);
-    return;
+    this.deleteComponentIfExist((z) => z === zombie, closeReason);
   }
 
   deleteComponentIfExist(comparer: (zombieable: Zombieable) => boolean, closeReason?: string): void {
-    const target = this.checkers.find((checker) => comparer(checker.zombie.zombieable));
+    const target = this.checkers.find((checker) => comparer(checker.component.impl));
     if (target == null) {
       return;
     }
-    target.zombie.onDie(closeReason);
+    target.component.onDie(closeReason).catch((e: Error) => {
+      logger.error(`ZombieComponent ${target.component.impl.name} onDie failed error:${stringify(e, { compact: true })}`);
+    });
+    target.component.onComponentDeleted().catch((e: Error) => {
+      logger.error(`ZombieComponent ${target.component.impl.name} onComponentDeleted failed error:${stringify(e, { compact: true })}`);
+    });
 
     const index = this.checkers.indexOf(target);
     if (index === -1) {
