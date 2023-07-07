@@ -126,6 +126,9 @@ export const config = {
     heartbeat: {
       allowedSeconds: 300,
     },
+    lifetime: {
+      allowedSeconds: 1800,
+    },
   },
 };
 

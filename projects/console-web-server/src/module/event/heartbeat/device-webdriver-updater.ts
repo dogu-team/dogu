@@ -21,8 +21,15 @@ export class DeviceWebDriverUpdater {
       return;
     }
     const targets = deviceAndWebDrivers.filter((deviceAndWebDriver) => {
-      const delta = deviceAndWebDriver.heartbeat ? Date.now() - deviceAndWebDriver.heartbeat.getTime() : Date.now() - deviceAndWebDriver.createdAt.getTime();
-      return config.deviceAndWebDriver.heartbeat.allowedSeconds * 1000 < delta;
+      const heartbeatDelta = deviceAndWebDriver.heartbeat ? Date.now() - deviceAndWebDriver.heartbeat.getTime() : Date.now() - deviceAndWebDriver.createdAt.getTime();
+      if (config.deviceAndWebDriver.heartbeat.allowedSeconds * 1000 < heartbeatDelta) {
+        return true;
+      }
+      const lifeTimeDelta = Date.now() - deviceAndWebDriver.createdAt.getTime();
+      if (config.deviceAndWebDriver.lifetime.allowedSeconds * 1000 < lifeTimeDelta) {
+        return true;
+      }
+      return false;
     });
 
     if (targets.length === 0) {
