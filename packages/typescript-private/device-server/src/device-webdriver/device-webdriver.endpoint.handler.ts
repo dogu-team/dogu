@@ -116,9 +116,6 @@ export class DeviceWebDriverSessionEndpointHandler extends DeviceWebDriverEndpoi
 }
 
 function getAppExtension(platform: PlatformType): string {
-  // if (platform === 'ios') {
-  //   return 'zip';
-  // }
   return extensionFromPlatform(platform);
 }
 

@@ -46,7 +46,7 @@ export class DeviceWebDriverController {
         request = result.request;
       }
 
-      const url = `http://localhost:${context.getInfo().server.port}/${request.path}`;
+      const url = `http://127.0.0.1:${context.getInfo().server.port}/${request.path}`;
       const res = await methodHandlers[request.method](url, request, this.logger);
       return {
         value: {
