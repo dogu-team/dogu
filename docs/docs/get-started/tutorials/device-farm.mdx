@@ -4,15 +4,21 @@ title: Tutorial - Device Farm
 locale: en
 ---
 
-This document explains the process from adding a host to connecting a device.
+This tutorial explains how to set up a device farm.
 
-## Requirements
+## Prerequisites
 
-To execute game testing, you will need the following items:
+The following items are required to run the tests:
 
-1. One desktop or laptop with Windows or Mac operating system.
-2. One or more Android devices.
-3. A USB hub and data transfer cable for Android devices.
+1. A desktop or laptop running Windows or Mac operating system.
+2. An Android or iOS device.
+3. USB hub and data transfer cable.
+
+:::info
+
+iOS devices can only be used with Mac operating systems.
+
+:::
 
 ## Create organization and project
 
@@ -52,16 +58,16 @@ To execute game testing, you will need the following items:
 
 <br />
 
-:::note
-
-When you create a project, a sample test script environment is provided within the project. You will use this environment in the [Quick start - Game testing](../game-test) step.
-
-:::
-
 ## Building Infrastructure
 
-In Dogu, there are **Host** and **Device**.
-A host is a device that acts as a hub to apply tests to multiple devices. A device refers to the actual device used for game testing. To connect hosts and devices, please physically connect the actual devices to the host.
+In Dogu, there are two main components: **Host** and **Device**.
+The Host serves as a hub to apply tests to multiple devices. The Device refers to the actual physical devices where the tests are executed. To connect the Host and the Devices, please physically connect the actual devices to the Host.
+
+:::tip
+
+The Host can also be used as a Device. For more information, refer to the [Host Management](/management/organization/host) documentation.
+
+:::
 
 ```mermaid
 graph RL
@@ -98,23 +104,16 @@ To optimize the use of the device, please read the [Device Configuration](/devic
 
 :::
 
-### Connect android device
+### Connect device
 
 1. Prepare the configured device.
 2. Physically connect the Android device to the host using a data transfer cable or hub that allows data transfer.
-
-:::caution Supported platform
-
-Currently, Dogu only supports game testing on Android devices.
-Support for iOS and Windows devices will be added in future updates.
-
-:::
 
 ## Add host
 
 :::info Prerequisites
 
-1. Please visit the [Dost download](https://dogutech.io/en/downloads/dost) page and select the appropriate platform for your host to install the latest Dost program.
+1. Please visit the [Dost for Cloud](https://dogutech.io/downloads/dost) or [Dost for Self-hosted](https://github.com/dogu-team/dogu/releases) page and select the appropriate platform for your host to install the latest Dost program.
 2. Please refer to the [Get started with Dost](/device-farm/host/get-started) page for the recommended specifications of the host.
 
 :::
@@ -156,7 +155,14 @@ If you are experiencing any issues during the process of adding a host, please r
 
 ## Add device
 
-Add the devices and group them together using tags to create a device farm. The added devices can then be used for tasks such as game testing and remote control operations.
+To build a device farm, add devices and group them using tags. The added devices can perform tasks such as test execution and remote control.
+
+:::info
+
+This document explains how to add Android devices.  
+For iOS devices, additional configuration is required in Dost. Please refer to the [macOS Dost](/device-farm/host/get-started#macos) documentation for more details.
+
+:::
 
 ### Use device
 
@@ -179,7 +185,7 @@ Add the devices and group them together using tags to create a device farm. The 
 
 :::caution Permissions and Public Devices
 
-The Dogu console has the organization-level permission feature. Utilize the permission feature to freely designate members who can access game test results or devices.
+The Dogu console has the organization-level permission feature. Utilize the permission feature to freely designate members who can access test results or devices.
 
 For public devices, all members or all projects have access to the devices (including streaming, remote control, and test execution).
 
