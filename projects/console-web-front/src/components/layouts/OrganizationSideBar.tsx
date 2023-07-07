@@ -49,6 +49,7 @@ const OrganizationSideBar = () => {
           <ProfileImage shape="square" size={28} name={data?.name} profileImageUrl={data?.profileImageUrl} />
         </OrganizationImageWrapper>
       ) : undefined,
+      style: { cursor: 'default' },
       label: collapsed
         ? undefined
         : data && (
