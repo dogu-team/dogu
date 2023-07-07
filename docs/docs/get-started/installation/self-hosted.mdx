@@ -1,0 +1,216 @@
+---
+sidebar_position: 3
+title: Self-Hosted
+locale: en
+---
+
+import {
+  getBrowserPlatform,
+  BrowserPlatform,
+} from '@site/src/platform/platform.ts';
+
+import dost_macos_api_url_input from '@site/static/img/dost/dost_macos_api_url_input.png';
+import dost_windows_api_url_input from '@site/static/img/dost/dost_windows_api_url_input.png';
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import BrowserOnly from '@docusaurus/BrowserOnly';
+
+:::info PREREQUISITES
+This document explains how to start Dogu with self-hosted.
+:::
+
+## Hardware Requirements
+
+|                          | Minimum Requirements                           |
+| :----------------------: | ---------------------------------------------- |
+| <b>Operating System</b>  | Ubuntu(x86_64), macOS(x86_64), Windows(x86_64) |
+|       <b> CPU </b>       | 8 Cores                                        |
+|     <b> Memory </b>      | 16 GB RAM                                      |
+| <b> Free Disk Space </b> | SSD 128GB                                      |
+|  <b> Dependencies </b>   | Docker, Docker-Compose                         |
+
+## Set up Dogu With Docker
+
+### Docker and Docker-compose Install
+
+If Docker and Docker-compose aren't installed on your system, install them first.
+
+- [Docker Install](https://docs.docker.com/engine/install/)
+- [Docker-compose Install](https://docs.docker.com/compose/install/)
+
+### Network Security Settings
+
+In the Allow In/Outbound Traffic setting, allow additional values specified as DOGU_HOST within docker-compose.env.  
+( The ip to be set above is the same value as the DOGU_HOST value set by [Create docker-compose.env File](/self-hosted/get-started#create-docker-composeenv-file) )
+
+### Create Mount Path
+
+<Tabs groupId="os" defaultValue="linux">
+<TabItem value="linux" label="Linux" default>
+
+```
+sudo mkdir /var/lib/dogu
+sudo mkdir /var/lib/dogu/nexus-data
+sudo chown 200 -R /var/lib/dogu/nexus-data
+```
+
+</TabItem>
+
+<TabItem value="windows" label="Windows">
+
+```
+icacls "C:\var\lib\dogu\nexus-data" /setowner 200 /T
+```
+
+</TabItem>
+</Tabs>
+
+:::note
+You can replace the `/var/lib/dogu` path created above with the `VOLUME_PATH` value in the docker-compose.env file to be created in the next step.
+:::
+
+### Create docker-compose.env File
+
+1. Create docker-compose.env file
+2. Paste all of [this file](https://github.com/dogu-team/dogu/blob/main/docker-compose.env) to docker-compose.env file
+
+:::note
+Set the GITLAB_ROOT_ACCESS_TOKEN after running Dogu and getting token from [Issuing the GitLab Root Access Token](/self-hosted/get-started#get-the-gitlab-root-access-token).
+:::
+
+### Create docker-compose.yml
+
+1. Create docker-compose.yml file
+2. Paste all of [this file](https://github.com/dogu-team/dogu/blob/main/docker-compose.yml) to docker-compose.yml file
+
+### Run Dogu
+
+Run the following command in the directory where the docker-compose.env and docker-compose.yml files are located.
+
+```
+
+docker compose -f ./docker-compose.yml --env-file ./docker-compose.env --verbose up -d
+
+```
+
+### Get the GitLab Root Access Token
+
+:::info
+
+The available GitLab version is 15.10.0. (Ignore GitLab security warnings and upgrade recommendations.)
+
+:::
+
+A GitLab root access token is required to run Dogu.
+The following are the steps to get a GitLab root access token.
+
+- Access to GitLab
+
+  - Access it with the DOGU_HOST address specified in docker-compose.env and the 8080 port.
+
+- Log in with the GitLab root account
+
+  - Log in with the GITLAB_ROOT_PASSWORD specified in docker-compose.env.
+    <img
+      src="/img/get-started/gitlab-login.png"
+      style={{ width: 400, display: 'block' }}
+    />
+
+- Get Access Tokens
+  - Click the avatar in the top right corner of GitLab and select Edit Profile.
+  - Click Access Tokens on the left sidebar of the User Settings page.
+  - Set the following values and generate a token.
+    - Write the Token name.
+    - Click the x button on Expiration data to remove the expiration period.
+    - Click all Select Scopes.
+      <img
+        src="/img/get-started/gitlab-issue-access-token.png"
+        style={{ width: 400, display: 'block' }}
+      />
+  - Check the Access Token generated.
+    <img
+      src="/img/get-started/gitlab-check-access-token.png"
+      style={{ width: 400, display: 'block' }}
+    />
+
+### Set the GitLab Access Token
+
+Add the above value to GITLAB_ROOT_ACCESS_TOKEN in docker-compose.env already created.
+
+```
+ e.g. GITLAB_ROOT_ACCESS_TOKEN=glpat-Z5Zq-XkrtKjzq5FiAMAA
+```
+
+### Run Dogu again
+
+Run the following command in the directory where the docker-compose.env and docker-compose.yml files are located. (It is not necessary to stop the previously
+executed docker-compose.)
+
+```
+   docker compose -f ./docker-compose.yml --env-file ./docker-compose.env --verbose up -d
+```
+
+### Browse Web Page
+
+Dogu Console: DOGU_HOST:3001  
+Dogu Gitlab: DOGU_HOST:8080
+
+### Install Dost
+
+Download Dost from the [github releases](https://github.com/dogu-team/dogu/releases?q=dost&expanded=true)
+
+After downloading, refer to [Dost Installation](/device-farm/host/get-started#installation) for installation
+
+### Run Dost
+
+Run the dost agent that can connect to the dogu console.
+
+- Configuring Dost connection environment
+
+  - Set the connection URL using the DOGU_HOST set in the [Create docker-compose.env File](/self-hosted/get-started#create-docker-composeenv-file).
+
+  <BrowserOnly>
+    {() => (
+      <Tabs groupId="os" defaultValue={getBrowserPlatform('windows')}>
+        <TabItem value="windows" label="Windows" default>
+          <img src={dost_windows_api_url_input} style={{ width: 600 }} />
+        </TabItem>
+        <TabItem value="macos" label="macOS">
+          <img src={dost_macos_api_url_input} style={{ width: 600 }} />
+        </TabItem>
+      </Tabs>
+    )}
+  </BrowserOnly>
+
+## Connect Device to Device Farm
+
+See [Quick start - Device farm](/get-started/tutorials/device-farm)
+
+## Issues
+
+If you have any questions or problems, please contact community.
+
+- [Discord Community](https://discord.com/invite/bVycd6Tu9g)
+- [Github Issues](https://github.com/dogu-team/dogu/issues)
+
+### Known Issues
+
+1. If the protocol of the Dogu console(web client) is `http`, the function to copy to the clipboard from the browser cannot be used.
+
+## FAQ
+
+- decoding 'command': invalid command line string
+
+  When running Dogu, the error `* error decoding 'command': invalid command line string` occurs  
+  write the following values explicitly in the docker-compose.yml file.  
+  ${REDIS_PASSWORD}, ${TURN_SERVER_USERNAME}, ${TURN_SERVER_PASSWORD}, ${DOGU_HOST}
+
+  ```
+  ex.
+  command: redis-server --requirepass ${REDIS_PASSWORD}
+  -> command: redis-server --requirepass dogu-onprem
+
+  user=${TURN_SERVER_USERNAME}:${TURN_SERVER_PASSWORD}, realm=${DOGU_HOST}
+  -> user=admin:dogu-onprem, realm=${DOGU_HOST} <- include the value you set in the env file
+  ```
