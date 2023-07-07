@@ -191,11 +191,12 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
   revive(): Promise<void> {
     return Promise.resolve();
   }
+
   async update(): Promise<void> {
     if (this.impl.key !== 'null' && false === ZombieServiceInstance.isAlive(this.impl)) {
       this.next = this.impl;
       this.impl = this.nullContext;
-      return Promise.resolve();
+      return;
     }
     if (this.impl.key === 'null' && this.next && ZombieServiceInstance.isAlive(this.next)) {
       this.impl = this.next;
@@ -207,7 +208,10 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
     return;
   }
 
-  onDie(): void {}
+  onDie(): void {
+    // noop
+  }
+
   onComponentDeleted(): void {
     ZombieServiceInstance.deleteComponent(this.impl);
   }
