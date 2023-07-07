@@ -1,5 +1,5 @@
 import { Code, Serial } from '@dogu-private/types';
-import { HeaderRecord, Instance, stringify } from '@dogu-tech/common';
+import { HeaderRecord, Instance, parseAxiosError, stringify } from '@dogu-tech/common';
 import { DeviceServerResponseDto, DeviceWebDriver, RelayRequest, RelayResponse, SessionDeletedParam, WebDriverEndPoint } from '@dogu-tech/device-client-common';
 import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
 import axios, { isAxiosError } from 'axios';
@@ -55,7 +55,7 @@ export class DeviceWebDriverController {
         },
       };
     } catch (e) {
-      this.logger.error(`Error while relaying http request: ${stringify(e)}`);
+      this.logger.error(`Error while relaying http request: ${stringify(parseAxiosError(e))}`);
       return unknownError(serial, e);
     }
   }
