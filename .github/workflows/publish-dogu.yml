@@ -33,6 +33,7 @@ jobs:
           file: ./dockerfile
           push: true
           target: dogu-console
+          no-cache: true
           tags: |
             dogutechio/dogu:${{ github.event.inputs.version }}
 
