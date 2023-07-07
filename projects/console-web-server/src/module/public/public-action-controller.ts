@@ -7,7 +7,7 @@ import { HOST_ACTION_TYPE } from '../auth/auth.types';
 import { HostPermission } from '../auth/decorators';
 import { ApplicationService } from '../project/application/application.service';
 import { FindProjectApplicationDto } from '../project/application/dto/application.dto';
-import { ProjectScmService } from '../project/git/project-scm.service';
+import { ProjectScmService } from '../project/project-scm/project-scm.service';
 
 @Controller(PublicAction.controller.path)
 export class PublicActionController {
