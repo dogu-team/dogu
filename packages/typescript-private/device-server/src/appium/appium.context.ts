@@ -6,7 +6,7 @@
 import { Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { callAsyncWithTimeout, errorify, NullLogger, Printable, Retry, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, Rect, ScreenSize, SystemBar } from '@dogu-tech/device-client-common';
-import { HostPaths, Logger } from '@dogu-tech/node';
+import { HostPaths, Logger, TaskQueue, TaskQueueTask } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
 import _ from 'lodash';
@@ -162,6 +162,7 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
   private impl: AppiumContext;
   private next: AppiumContext | null = null;
   private nullContext: NullAppiumContext;
+  private taskQueue: TaskQueue<void, void> = new TaskQueue();
 
   constructor(private readonly options: AppiumContextOptions) {
     this.logger = createAppiumLogger(options.serial);
@@ -190,7 +191,7 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
   revive(): Promise<void> {
     return Promise.resolve();
   }
-  update(): Promise<void> {
+  async update(): Promise<void> {
     if (this.impl.key !== 'null' && false === ZombieServiceInstance.isAlive(this.impl)) {
       this.next = this.impl;
       this.impl = this.nullContext;
@@ -199,7 +200,11 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
     if (this.impl.key === 'null' && this.next && ZombieServiceInstance.isAlive(this.next)) {
       this.impl = this.next;
     }
-    return Promise.resolve();
+    if (this.impl.key !== 'null' && ZombieServiceInstance.isAlive(this.impl)) {
+      await this.taskQueue.consume();
+      return;
+    }
+    return;
   }
 
   onDie(): void {}
@@ -252,20 +257,20 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
   }
 
   async switchAppiumContext(key: AppiumContextKey): Promise<void> {
-    this.logger.info(`switching appium context: from: ${this.impl.key}, to: ${key}`);
-    ZombieServiceInstance.deleteComponent(this.impl, 'switching appium context');
-    // ZombieServiceInstance.deleteComponentIfExist((zombieable: Zombieable): boolean => {
-    //   const context = zombieable as AppiumContext;
-    //   if (!context) {
-    //     return false;
-    //   }
-    //   return context.key === this.impl.key && context.serial === this.serial;
-    // }, 'switching appium context');
+    const task = new TaskQueueTask(async () => {
+      const befImplKey = this.impl.key;
+      this.logger.info(`switching appium context: from: ${befImplKey}, to: ${key} start`);
+      const befImpl = this.impl;
+      this.impl = this.nullContext;
+      ZombieServiceInstance.deleteComponent(befImpl, 'switching appium context');
 
-    const appiumContext = AppiumContextProxy.createAppiumContext({ ...this.options, key: key }, this.logger);
-    const awaiter = ZombieServiceInstance.addComponent(appiumContext);
-    await awaiter.waitUntilAlive();
-    this.impl = appiumContext;
+      const appiumContext = AppiumContextProxy.createAppiumContext({ ...this.options, key: key }, this.logger);
+      const awaiter = ZombieServiceInstance.addComponent(appiumContext);
+      await awaiter.waitUntilAlive();
+      this.impl = appiumContext;
+      this.logger.info(`switching appium context: from: ${befImplKey}, to: ${key} done`);
+    });
+    await this.taskQueue.scheduleAndWait(task);
   }
 
   private static createAppiumContext(options: AppiumContextOptions, logger: Logger): AppiumContext {
