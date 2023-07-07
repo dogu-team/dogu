@@ -2,6 +2,8 @@ import { GOOGLE, GoogleOAuthPayload, HostPayload, UserPayload } from '@dogu-priv
 import { applyDecorators, createParamDecorator, ExecutionContext, SetMetadata, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
+  API_TOKEN_KEY,
+  API_TOKEN_TYPE,
   EMAIL_VERIFICATION,
   EMAIL_VERIFICATION_KEY,
   HOST_ACTION_KEY,
@@ -11,12 +13,17 @@ import {
   PROJECT_ROLE,
   PROJECT_ROLE_KEY,
 } from './auth.types';
+import { ApiTokenGuard } from './guard/api-token.guard';
 import { DeviceAcessGuard } from './guard/device.guard';
 import { EmailVerificationGuard } from './guard/email-verification.guard';
 import { HostGuard } from './guard/host.guard';
 import { OrganizationGuard } from './guard/organization.guard';
 import { ProjectGuard } from './guard/project.guard';
 import { UserJwtGuard } from './guard/user-jwt.guard';
+
+export function ApiTokenPermission(apiTokenType: API_TOKEN_TYPE): PropertyDecorator {
+  return applyDecorators(SetMetadata(API_TOKEN_KEY, apiTokenType), UseGuards(ApiTokenGuard));
+}
 
 export function DeviceAccessPermission(): PropertyDecorator {
   return applyDecorators(UseGuards(UserJwtGuard), OrganizationPermission(ORGANIZATION_ROLE.MEMBER), UseGuards(DeviceAcessGuard));
