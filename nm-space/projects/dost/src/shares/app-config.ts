@@ -50,6 +50,10 @@ export type Key = keyof Schema;
 
 export const appConfigClientKey = instanceKeys<IAppConfigClient>('appConfigClient');
 
+export type AppConfigTable = {
+  [K in keyof Schema]?: any;
+};
+
 export interface IAppConfigClient {
   get: <T = any>(key: Key) => Promise<T>;
   set: <T = any>(key: Key, value: T) => Promise<void>;

@@ -30,6 +30,7 @@ import { delay } from '@dogu-tech/common';
 import { logger } from '../utils/logger';
 import { prettifyErrorString } from '../utils/prettify';
 import { ipc, offFocus, onFocus } from '../utils/window';
+import useEnvironmentStore from '../stores/environment';
 
 interface VersionUIProps {
   tooltipLabel: string;
@@ -56,6 +57,7 @@ function Footer() {
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const toast = useToast();
   const cancelRef = React.useRef<HTMLButtonElement>(null);
+  const runType = useEnvironmentStore((state) => state.appConfig.DOGU_RUN_TYPE);
 
   const hasPopOver = versionUIProp.popoverLabel !== '';
 
@@ -153,7 +155,7 @@ function Footer() {
     <Box>
       <Stack direction={['row']} alignItems="center" onClick={versionUIProp.onClick}>
         <Text width="90%" align="right" fontSize="xs">
-          {appVersion}
+          {runType ?? ''} {appVersion}
         </Text>
         {versionUIProp.icon}
       </Stack>

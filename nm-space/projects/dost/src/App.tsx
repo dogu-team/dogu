@@ -31,12 +31,13 @@ function App() {
   useEffect(() => {
     (async () => {
       try {
-        const [platform, isDev, useApiUrlInput, useAppUpdate, useSentry] = await Promise.all([
+        const [platform, isDev, useApiUrlInput, useAppUpdate, useSentry, runType] = await Promise.all([
           ipc.settingsClient.getPlatform(),
           ipc.settingsClient.isDev(),
           ipc.featureConfigClient.get('useApiUrlInput'),
           ipc.featureConfigClient.get('useAppUpdate'),
           ipc.featureConfigClient.get('useSentry'),
+          ipc.appConfigClient.get('DOGU_RUN_TYPE'),
         ]);
         setEnvironment({
           platform,
@@ -45,6 +46,9 @@ function App() {
             useApiUrlInput,
             useAppUpdate,
             useSentry,
+          },
+          appConfig: {
+            DOGU_RUN_TYPE: runType,
           },
         });
 
