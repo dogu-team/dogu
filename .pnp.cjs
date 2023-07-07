@@ -20,6 +20,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:docs"\
       },\
       {\
+        "name": "@dogu-actions/checkout",\
+        "reference": "workspace:dogu-actions/checkout"\
+      },\
+      {\
         "name": "@dogu-actions/prepare",\
         "reference": "workspace:dogu-actions/prepare"\
       },\
@@ -219,6 +223,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     "enableTopLevelFallback": true,\
     "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)|(^(?:nm-space(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)\\\\/|\\\\/|$)(?!\\\\.{1,2}(?:\\\\/|$))(?=.)[^/]*?\\\\/?)$)|(^(?:third-party(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)\\\\/|\\\\/|$)(?!\\\\.{1,2}(?:\\\\/|$))(?=.)[^/]*?\\\\/?)$)",\
     "fallbackExclusionList": [\
+      ["@dogu-actions/checkout", ["workspace:dogu-actions/checkout"]],\
       ["@dogu-actions/prepare", ["workspace:dogu-actions/prepare"]],\
       ["@dogu-actions/run-test", ["workspace:dogu-actions/run-test"]],\
       ["@dogu-dev-private/base-build-tools", ["workspace:packages/typescript-dev-private/base-build-tools"]],\
@@ -10561,6 +10566,23 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["tslib", "npm:2.5.0"]\
           ],\
           "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@dogu-actions/checkout", [\
+        ["workspace:dogu-actions/checkout", {\
+          "packageLocation": "./dogu-actions/checkout/",\
+          "packageDependencies": [\
+            ["@dogu-actions/checkout", "workspace:dogu-actions/checkout"],\
+            ["@dogu-dev-private/publish-package", "workspace:packages/typescript-dev-private/publish-package"],\
+            ["@dogu-tech/action-kit", "workspace:packages/typescript/action-kit"],\
+            ["@types/node", "npm:18.15.11"],\
+            ["cross-env", "npm:7.0.3"],\
+            ["nodemon", "npm:2.0.22"],\
+            ["shx", "npm:0.3.4"],\
+            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
+          ],\
+          "linkType": "SOFT"\
         }]\
       ]],\
       ["@dogu-actions/prepare", [\

@@ -30,7 +30,7 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
     }
 
     if (postCommand) {
-      const shell = process.platform === 'win32' ? 'cmd.exe' : process.env.SHELL || '/bin/bash';
+      const shell = process.platform === 'win32' ? process.env.COMSPEC || 'cmd.exe' : process.env.SHELL || '/bin/bash';
       const firstArg = process.platform === 'win32' ? '/c' : '-c';
       command(shell, [firstArg, postCommand], 'Running post command...', 'Post command failed');
     }
