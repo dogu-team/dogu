@@ -3,3 +3,72 @@ sidebar_position: 2
 title: Pytest
 locale: en
 ---
+
+# Pytest
+
+Dogu provides pytest integration for users who use pytest.  
+The **pytest-dogu-report** plug-in allows you to check the test results of the Dogu Routine.  
+Like this.
+
+![pytest-dogu-report](/img/pytest/pytest-dogu-report.png)
+
+## Requirements
+
+- Python 3.9 or higher
+
+## Configuration
+
+- install `pytest-dogu-report` to your project.
+
+```shell
+# using pip
+pip install pytest-dogu-report
+
+# using poetry
+poetry add -D pytest-dogu-report
+```
+
+- add `pytest-dogu-report` to your root `conftest.py` file.
+
+```python
+pytest_plugins = [
+    "pytest_dogu_report",
+]
+```
+
+## Example
+
+### Requirements
+
+- python 3.9 or higher [[link]](https://www.python.org/downloads/)
+- poetry 1.5 or higher [[link]](https://python-poetry.org/docs/#installation)
+
+### Prepare settings
+
+- **Host Device** setting is required to run the browser. [guide link](/management/organization/host#use-host-as-a-device)
+- **GIthub Integration** setting is required to checkout example repository. [guide link](/management/project/git-integration/github)
+
+### Add tag to Host Device
+
+- add tag `host-runner` to Host Device. [guide link](/management/organization/device/tag-management)
+
+### Create a routine
+
+copy and paste the following configuration to Routine yaml editor.
+
+```yaml
+name: pytest-bdd-playwright
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-tests:
+    runs-on:
+      group: host-runner
+    steps:
+      - name: Checkout and Run tests
+        uses: dogu-actions/checkout
+        with:
+          postCommand: cd python/pytest-bdd-playwright && poetry install && poetry run playwright install && poetry run pytest
+```
