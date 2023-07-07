@@ -6,13 +6,14 @@ import { env } from '../../env';
 import { AuthHostService } from './service/auth-host.service';
 import { AuthJwtService } from './service/auth-jwt.service';
 
+import { FeatureConfig } from '../../feature.config';
+import { AuthApiTokenService } from './service/auth-api-token.service';
 import { AuthUserService } from './service/auth-user.service';
 import { GoogleStrategy } from './strategy/google-strategy';
-import { FeatureConfig } from '../../feature.config';
 
 const PROVIDERS = FeatureConfig.get('thirdPartyLogin')
-  ? [AuthUserService, AuthJwtService, AuthHostService, GoogleStrategy] //
-  : [AuthUserService, AuthJwtService, AuthHostService];
+  ? [AuthUserService, AuthJwtService, AuthHostService, AuthApiTokenService, GoogleStrategy] //
+  : [AuthUserService, AuthJwtService, AuthHostService, AuthApiTokenService];
 
 @Global()
 @Module({
@@ -22,7 +23,7 @@ const PROVIDERS = FeatureConfig.get('thirdPartyLogin')
       secret: env.DOGU_SECRET,
     }),
   ],
-  exports: [AuthUserService, AuthJwtService, AuthHostService],
+  exports: [AuthUserService, AuthJwtService, AuthHostService, AuthApiTokenService],
   providers: PROVIDERS,
   controllers: [],
 })
