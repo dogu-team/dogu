@@ -1,10 +1,11 @@
 ---
 sidebar_position: 8
-title: 조직 관리
+title: 조직 설정
 locale: ko
 ---
 
 import OrgnizationOwnerPermission from '@site/src/components/console/OrgnizationOwnerPermission.mdx';
+import OrganizationAdminPermission from '@site/src/components/console/OrganizationAdminPermission.mdx';
 
 ## 조직 프로필 변경하기
 
@@ -12,6 +13,38 @@ import OrgnizationOwnerPermission from '@site/src/components/console/Orgnization
 
 1. Dogu 콘솔에서 조직 페이지 내 왼쪽 사이드바에서 "설정"을 클릭합니다.
 2. 원하는 프로필 이미지를 업로드하거나, 기존 조직 이름을 변경합니다.
+
+## API 토큰
+
+<OrganizationAdminPermission prefix="API 토큰 조회 및 재발급은" />
+
+:::info
+
+API 토큰은 [Dogu API](/api)에서 사용합니다.
+
+:::
+
+:::danger
+
+API 토큰은 외부에 노출되지 않도록 주의해주세요.
+
+:::
+
+:::danger
+
+API 토큰 재발급 시 기존 API 토큰은 더 이상 사용할 수 없습니다.
+
+:::
+
+1. Dogu 콘솔에서 조직 페이지 내 왼쪽 사이드바에서 "설정"을 클릭합니다.
+2. 기존 API 토큰을 조회하거나, 새로운 API 토큰을 발급받습니다.
+   <img
+     src="/ko/img/console/organization/api-token.png"
+     style={{
+       width: 600,
+       display: 'block',
+     }}
+   />
 
 ## 조직 소유자 변경하기
 

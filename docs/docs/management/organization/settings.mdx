@@ -5,6 +5,7 @@ locale: en
 ---
 
 import OrgnizationOwnerPermission from '@site/src/components/console/OrgnizationOwnerPermissionEng.mdx';
+import OrganizationAdminPermission from '@site/src/components/console/OrganizationAdminPermissionEng.mdx';
 
 ## Update profile
 
@@ -12,6 +13,38 @@ import OrgnizationOwnerPermission from '@site/src/components/console/Orgnization
 
 1. In the Dogu console, click on "Settings" in the left sidebar of the organization page.
 2. Upload a profile image or change the organization name.
+
+## API Token
+
+<OrganizationAdminPermission prefix="Retrieve and regenerate API token" />
+
+:::info
+
+API tokens are used for [Dogu API](/api).
+
+:::
+
+:::danger
+
+Please be cautious not to expose the API token to the public.
+
+:::
+
+:::danger
+
+When regenerating an API token, the previous token will no longer be valid.
+
+:::
+
+1. In the Dogu console, click on "Settings" in the left sidebar of the organization page.
+2. View the existing API tokens or generate a new API token.
+   <img
+     src="/img/console/organization/api-token.png"
+     style={{
+       width: 600,
+       display: 'block',
+     }}
+   />
 
 ## Change owner
 
