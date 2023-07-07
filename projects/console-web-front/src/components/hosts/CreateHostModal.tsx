@@ -13,10 +13,11 @@ import { createHost } from 'src/api/host';
 import useResultAlert from 'src/hooks/useAlert';
 import useEventStore from 'src/stores/events';
 import { getErrorMessage } from 'src/utils/error';
-import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../styles/box';
+import { flexRowBaseStyle } from '../../styles/box';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import FormControlModal from '../modals/FormControlModal';
 import TokenCopyInput from '../common/TokenCopyInput';
+import { getLocaledLink } from '../../utils/locale';
 
 interface Props {
   isOpen: boolean;
@@ -52,6 +53,11 @@ const CreateHostModal = ({ isOpen, close }: Props) => {
     setLoading(false);
   };
 
+  const dostDownloadLink =
+    process.env.NEXT_PUBLIC_ENV === 'self-hosted'
+      ? 'https://github.com/dogu-team/dogu/releases'
+      : `${process.env.NEXT_PUBLIC_LANDING_URL}${getLocaledLink(router.locale, '/downloads/dost')}`;
+
   return (
     <FormControlModal
       form={
@@ -66,7 +72,7 @@ const CreateHostModal = ({ isOpen, close }: Props) => {
                       <Trans
                         i18nKey="host:hostCreateModalSuccessHint"
                         components={{
-                          link1: <Link href={`/downloads/dost`} target="_blank" />,
+                          link1: <Link href={dostDownloadLink} target="_blank" />,
                           link2: <Link href="https://docs.dogutech.io/device-farm/host/get-started" target="_blank" />,
                         }}
                       />
