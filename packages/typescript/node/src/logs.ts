@@ -84,7 +84,7 @@ export class LogTransportFactory {
     return instance;
   }
 
-  static createFile(category: string, logsPath = '', extension = '.log'): Transport {
+  static createFile(category: string, logsPath = '', level: string, extension = '.log'): Transport {
     if (category.length == 0 || category.includes('/')) {
       throw new Error(`Invalid category: ${category}`);
     }
@@ -105,7 +105,7 @@ export class LogTransportFactory {
       maxSize: '20m',
       maxFiles: '7d',
       format: format.combine(LogFormatFactory.createBase(), format.uncolorize()),
-      level: 'verbose',
+      level: level,
     });
     additionalTransportPropertyAccessor.set(instance, category);
     return instance;
@@ -116,7 +116,7 @@ export function addFileTransports(winstonLogger: winston.Logger, category: strin
   if (winstonLogger.transports.findIndex((transport) => additionalTransportPropertyAccessor.get(transport) === category) !== -1) {
     return false;
   }
-  winstonLogger.add(LogTransportFactory.createFile(category, logsPath));
+  winstonLogger.add(LogTransportFactory.createFile(category, logsPath, winstonLogger.level));
   return true;
 }
 
