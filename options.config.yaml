@@ -10,7 +10,7 @@ actionSource:
     - ../../../
 
 localUserProject:
-  use: true
+  use: false
   # note: find ${searchPath}/dogu.config.json
   searchPaths:
     # from host-agent workspace
