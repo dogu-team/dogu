@@ -96,23 +96,23 @@ const config = {
               },
               {
                 label: 'orgAndProject',
-                to: '/management/introduction',
+                to: '/management',
               },
               {
                 label: 'deviceFarm',
-                to: '/device-farm/introduction',
+                to: '/device-farm',
               },
               {
                 label: 'testAutomation',
-                to: '/test-automation/introduction',
+                to: '/test-automation',
               },
               {
                 label: 'testReport',
-                to: '/test-report/introduction',
+                to: '/test-report',
               },
               {
                 label: 'routine',
-                to: '/routine/about',
+                to: '/routine',
               },
               {
                 label: 'API',

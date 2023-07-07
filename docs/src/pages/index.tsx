@@ -96,7 +96,7 @@ export default function Home(): JSX.Element {
           </h2>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/management/introduction">
+              <Link to="/management">
                 <Translate id="main.orgAndProjectIntroLinkTitle" />
               </Link>
             </li>
@@ -121,7 +121,7 @@ export default function Home(): JSX.Element {
           </h2>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/device-farm/introduction">
+              <Link to="/device-farm">
                 <Translate id="main.hostAndDeviceIntroLinkTitle" />
               </Link>
             </li>
@@ -146,7 +146,7 @@ export default function Home(): JSX.Element {
           </h2>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/test-automation/introduction">
+              <Link to="/test-automation">
                 <Translate id="main.testAutomationTitle" />
               </Link>
             </li>
@@ -176,7 +176,7 @@ export default function Home(): JSX.Element {
           </h2>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/test-report/introduction">
+              <Link to="/test-report">
                 <Translate id="main.testReportTitle" />
               </Link>
             </li>
@@ -200,12 +200,12 @@ export default function Home(): JSX.Element {
           </h2>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/routine/about">
+              <Link to="/routine">
                 <Translate id="main.scriptAndRoutineRoutineLinkTitle" />
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/routine/actions/about">
+              <Link to="/routine/actions">
                 <Translate id="main.scriptAndRoutineActionLinkTitle" />
               </Link>
             </li>
