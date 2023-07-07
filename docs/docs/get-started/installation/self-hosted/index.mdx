@@ -40,7 +40,7 @@ If Docker and Docker-compose aren't installed on your system, install them first
 ### Network Security Settings
 
 In the Allow In/Outbound Traffic setting, allow additional values specified as DOGU_HOST within docker-compose.env.  
-( The ip to be set above is the same value as the DOGU_HOST value set by [Create docker-compose.env File](/self-hosted/get-started#create-docker-composeenv-file) )
+( The ip to be set above is the same value as the DOGU_HOST value set by [Create docker-compose.env File](/get-started/installation/self-hosted#create-docker-composeenv-file) )
 
 ### Create Mount Path
 
@@ -74,7 +74,7 @@ You can replace the `/var/lib/dogu` path created above with the `VOLUME_PATH` va
 2. Paste all of [this file](https://github.com/dogu-team/dogu/blob/main/docker-compose.env) to docker-compose.env file
 
 :::note
-Set the GITLAB_ROOT_ACCESS_TOKEN after running Dogu and getting token from [Issuing the GitLab Root Access Token](/self-hosted/get-started#get-the-gitlab-root-access-token).
+Set the GITLAB_ROOT_ACCESS_TOKEN after running Dogu and getting token from [Issuing the GitLab Root Access Token](/get-started/installation/self-hosted#get-the-gitlab-root-access-token).
 :::
 
 ### Create docker-compose.yml
@@ -166,7 +166,7 @@ Run the dost agent that can connect to the dogu console.
 
 - Configuring Dost connection environment
 
-  - Set the connection URL using the DOGU_HOST set in the [Create docker-compose.env File](/self-hosted/get-started#create-docker-composeenv-file).
+  - Set the connection URL using the DOGU_HOST set in the [Create docker-compose.env File](/get-started/installation/self-hosted#create-docker-composeenv-file).
 
   <BrowserOnly>
     {() => (

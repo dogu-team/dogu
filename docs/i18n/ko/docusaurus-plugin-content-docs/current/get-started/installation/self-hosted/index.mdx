@@ -70,7 +70,7 @@ icacls "C:\var\lib\dogu\nexus-data" /setowner 200 /T
 2. [파일](https://github.com/dogu-team/dogu/blob/main/docker-compose.env) 내용을 docker-compose.env 파일에 붙여넣기
 
 :::note
-GITLAB_ROOT_ACCESS_TOKEN 값은 Dogu 실행 후 아래 [gitlab root Access Token 발급 받기](/self-hosted/get-started#gitlab-root-access-token-발급-받기)에서 token을 발급받은 후 설정 해 주세요.
+GITLAB_ROOT_ACCESS_TOKEN 값은 Dogu 실행 후 아래 [gitlab root Access Token 발급 받기](/get-started/installation/self-hosted#gitlab-root-access-token-발급-받기)에서 token을 발급받은 후 설정 해 주세요.
 :::
 
 ### docker-compose.yml 설정
@@ -156,7 +156,7 @@ dogu console에 연결할 수 있는 dost를 실행합니다.
 
 - Dost 접속 환경 설정
 
-  - [docker-compose.env 파일 생성](/self-hosted/get-started#docker-composeenv-파일-생성)에서 설정한 DOGU_HOST값을 사용하여 접속 URL을 설정합니다.
+  - [docker-compose.env 파일 생성](/get-started/installation/self-hosted#docker-composeenv-파일-생성)에서 설정한 DOGU_HOST값을 사용하여 접속 URL을 설정합니다.
 
   <BrowserOnly>
     {() => (
