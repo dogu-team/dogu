@@ -1,4 +1,3 @@
-import { OrganizationId } from '@dogu-private/types';
 import { ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Request, Response } from 'express';
@@ -21,35 +20,34 @@ export class AuthApiTokenService {
     const req = ctx.switchToHttp().getRequest<Request>();
     const res = ctx.switchToHttp().getResponse<Response>();
 
-    const organizationId = req.params.organizationId;
-
-    let apiToken = null;
-
-    const authHeader = req.headers.authorization;
-    if (authHeader) {
-      apiToken = authHeader.split(' ')[1];
-    } else {
-      apiToken = req.body['accessKey'] as string;
-    }
-    if (!apiToken) {
-      throw new HttpException('Api token is required', HttpStatus.UNAUTHORIZED);
-    }
-
     switch (type) {
-      case API_TOKEN_TYPE.ORGANIZATION: {
-        const isValid = await this.validateOrganizationApiToken(organizationId, apiToken);
+      case API_TOKEN_TYPE.CONSOLE: {
+        // const isValid = await this.validateOrganizationApiToken(organizationId, apiToken);
+        // return isValid;
+        throw new HttpException('Not implemented', HttpStatus.NOT_IMPLEMENTED);
+        return false;
+      }
+      case API_TOKEN_TYPE.WEBDRIVER_AGENT: {
+        const isValid = await this.validateWebdriverAgentApiToken(req);
         return isValid;
       }
-      // case API_TOKEN_TYPE.PROJECT: {
-      // const projectId = req.params.projectId;
-      // }
       default:
         const _exhaustiveCheck: never = type;
         return false;
     }
   }
 
-  private async validateOrganizationApiToken(organizationId: OrganizationId, apiToken: string): Promise<boolean> {
+  private async validateWebdriverAgentNewSession(req: Request): Promise<boolean> {
+    const apiToken = this.getApiTokenByWedriverAgentRequest(req);
+    if (!apiToken) {
+      throw new HttpException('Api token is required', HttpStatus.UNAUTHORIZED);
+    }
+
+    const organizationId = this.getOrganizationIdByWedriverAgentRequest(req);
+    if (!organizationId) {
+      throw new HttpException('OrganizationId is required', HttpStatus.UNAUTHORIZED);
+    }
+
     const token = await this.dataSource.getRepository(Token).findOne({ where: { token: apiToken } });
     if (!token) {
       return false;
@@ -69,5 +67,34 @@ export class AuthApiTokenService {
     }
 
     return true;
+  }
+
+  private getApiTokenByWedriverAgentRequest(req: Request): string | null {
+    const apiToken = req.body['capabilities']?.['alwaysMatch']?.['dogu:options']?.['accessKey'];
+    if (!apiToken) return null;
+    return apiToken as string;
+  }
+
+  private getOrganizationIdByWedriverAgentRequest(req: Request): string | null {
+    const orgId = req.body['capabilities']?.['alwaysMatch']?.['dogu:options']?.['organizationId'];
+    if (!orgId) return null;
+    return orgId as string;
+  }
+
+  private async validateWebdriverAgentSession(req: Request): Promise<boolean> {
+    return true;
+  }
+
+  private async validateWebdriverAgentApiToken(req: Request): Promise<boolean> {
+    const url = req.url;
+    const urlParse = url.replace(/\/+$/, '');
+
+    if (urlParse === '/wd/hub/session') {
+      const isValid = await this.validateWebdriverAgentNewSession(req);
+      return isValid;
+    }
+
+    const isValid = await this.validateWebdriverAgentSession(req);
+    return isValid;
   }
 }

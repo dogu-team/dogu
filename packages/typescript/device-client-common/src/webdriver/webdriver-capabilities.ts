@@ -66,10 +66,6 @@ export class DoguWebDriverOptions {
 
   @IsNotEmpty()
   @IsString()
-  userName!: string;
-
-  @IsNotEmpty()
-  @IsString()
   accessKey!: string;
 
   @IsNotEmpty()
