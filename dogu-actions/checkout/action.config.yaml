@@ -1,0 +1,18 @@
+name: dogu-actions/checkout
+description: checkout repository
+author: dogu
+inputs:
+  branchOrTag:
+    description: branch or tag to download
+    default: main
+    required: false
+  clean:
+    description: run git clean -fdx before git pull without git clone
+    default: true
+    required: false
+  postCommand:
+    description: command to run after checkout
+    default: ''
+    required: false
+runs:
+  main: build/src/main.js
