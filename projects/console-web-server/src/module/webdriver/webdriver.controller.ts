@@ -1,13 +1,25 @@
 import { RelayResponse } from '@dogu-tech/device-client-common';
-import { All, Controller, Req, Res } from '@nestjs/common';
+import { All, Controller, Delete, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { WebDriverService } from './webdriver.service';
 
-@Controller('/wd/hub/*')
+@Controller('/wd/hub')
 export class WebDriverController {
   constructor(private readonly webdriverService: WebDriverService) {}
 
-  @All()
+  @Post('session')
+  async newSession(@Req() request: Request, @Res() response: Response): Promise<void> {
+    const relayResponse = await this.webdriverService.process(request, response);
+    this.sendResponse(relayResponse, response);
+  }
+
+  @Delete('session/:sessionId')
+  async deleteSession(@Req() request: Request, @Res() response: Response): Promise<void> {
+    const relayResponse = await this.webdriverService.process(request, response);
+    this.sendResponse(relayResponse, response);
+  }
+
+  @All('session/:sessionId/*')
   async process(@Req() request: Request, @Res() response: Response): Promise<void> {
     const relayResponse = await this.webdriverService.process(request, response);
     this.sendResponse(relayResponse, response);
