@@ -96,11 +96,19 @@ export class ZombieService {
   deleteComponent(zombie: Zombieable, closeReason?: string): void {
     this.deleteComponentIfExist((z) => z === zombie, closeReason);
   }
+  deleteAllComponentsIfExist(comparer: (zombieable: Zombieable) => boolean, closeReason?: string): void {
+    for (let index = 0; index < 100; index++) {
+      const ret = this.deleteComponentIfExist(comparer, closeReason);
+      if (!ret) {
+        break;
+      }
+    }
+  }
 
-  deleteComponentIfExist(comparer: (zombieable: Zombieable) => boolean, closeReason?: string): void {
+  deleteComponentIfExist(comparer: (zombieable: Zombieable) => boolean, closeReason?: string): boolean {
     const target = this.checkers.find((checker) => comparer(checker.component.impl));
     if (target == null) {
-      return;
+      return false;
     }
     target.component.onDie(closeReason).catch((e: Error) => {
       logger.error(`ZombieComponent ${target.component.impl.name} onDie failed error:${stringify(e, { compact: true })}`);
@@ -111,10 +119,10 @@ export class ZombieService {
 
     const index = this.checkers.indexOf(target);
     if (index === -1) {
-      return;
+      return false;
     }
     this.checkers.splice(index, 1);
-    return;
+    return true;
   }
 }
 

@@ -35,6 +35,7 @@ import { AndroidAdbProfileService } from '../services/profile/android-profiler';
 import { ProfileServices } from '../services/profile/profile-service';
 import { StreamingService } from '../services/streaming/streaming-service';
 import { AndroidSystemInfoService } from '../services/system-info/android-system-info-service';
+import { Zombieable } from '../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../services/zombie/zombie-service';
 import { DevicePortContext } from '../types/device-port-context';
 import { createPortContext } from './util';
@@ -81,6 +82,10 @@ export class AndroidChannel implements DeviceChannel {
   }
 
   public static async create(param: DeviceChannelOpenParam, streaming: StreamingService, appiumService: AppiumService, gamiumService: GamiumService): Promise<AndroidChannel> {
+    ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
+      return zombieable.serial === param.serial && zombieable.platform === Platform.PLATFORM_ANDROID;
+    }, 'kill previous zombie');
+
     const { serial, deviceAgentDevicePort } = param;
     const platform = Platform.PLATFORM_ANDROID;
 

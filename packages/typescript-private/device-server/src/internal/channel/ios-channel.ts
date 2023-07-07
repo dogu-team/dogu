@@ -33,6 +33,7 @@ import { DeviceChannel, DeviceChannelOpenParam, LogHandler } from '../public/dev
 import { IosDeviceAgentService } from '../services/device-agent/ios-device-agent-service';
 import { StreamingService } from '../services/streaming/streaming-service';
 import { IosSystemInfoService } from '../services/system-info/ios-system-info-service';
+import { Zombieable } from '../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../services/zombie/zombie-service';
 import { DevicePortContext } from '../types/device-port-context';
 import { createPortContext } from './util';
@@ -82,6 +83,10 @@ export class IosChannel implements DeviceChannel {
   }
 
   static async create(param: DeviceChannelOpenParam, streaming: StreamingService, appiumService: AppiumService, gamiumService: GamiumService): Promise<IosChannel> {
+    ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
+      return zombieable.serial === param.serial && zombieable.platform === Platform.PLATFORM_IOS;
+    }, 'kill previous zombie');
+
     const { serial, deviceAgentDevicePort, deviceAgentDeviceSecondPort, deviceAgentDeviceThirdPort } = param;
     const platform = Platform.PLATFORM_IOS;
 
