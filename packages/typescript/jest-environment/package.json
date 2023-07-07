@@ -1,7 +1,7 @@
 {
   "name": "@dogu-tech/jest-environment",
   "version": "1.0.0",
-  "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
+  "license": "MIT License",
   "author": "Dogu Technologies",
   "main": "build/src/index.js",
   "files": [
