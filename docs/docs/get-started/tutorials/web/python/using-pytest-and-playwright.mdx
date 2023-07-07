@@ -29,11 +29,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  job-sample:
+  run-tests:
     runs-on:
       group: host-runner
     steps:
-      - name: checkout and run tests
+      - name: Checkout and Run tests
         uses: dogu-actions/checkout
         with:
           postCommand: cd python/pytest-bdd-playwright && poetry install && poetry run playwright install && poetry run pytest
