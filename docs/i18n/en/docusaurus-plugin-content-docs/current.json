@@ -70,5 +70,9 @@
   "sidebar.testReportSidebar.category.Java": {
     "message": "Java",
     "description": "The label for category Java in sidebar testReportSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Self-hosted": {
+    "message": "Self-hosted",
+    "description": "The label for category Self-hosted in sidebar getStartedSidebar"
   }
 }

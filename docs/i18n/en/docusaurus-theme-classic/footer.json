@@ -41,15 +41,15 @@
   },
   "link.item.label.orgAndProject": {
     "message": "Maganement",
-    "description": "The label of footer link with label=orgAndProject linking to /management/introduction"
+    "description": "The label of footer link with label=orgAndProject linking to /management"
   },
   "link.item.label.deviceFarm": {
     "message": "Device Farm",
-    "description": "The label of footer link with label=deviceFarm linking to /device-farm/introduction"
+    "description": "The label of footer link with label=deviceFarm linking to /device-farm"
   },
   "link.item.label.testAutomation": {
     "message": "Test Automation",
-    "description": "The label of footer link with label=testAutomation linking to /test-automation/introduction"
+    "description": "The label of footer link with label=testAutomation linking to /test-automation"
   },
   "link.item.label.community": {
     "message": "Community",
@@ -57,11 +57,11 @@
   },
   "link.item.label.testReport": {
     "message": "Test Report",
-    "description": "The label of footer link with label=testReport linking to /test-report/introduction"
+    "description": "The label of footer link with label=testReport linking to /test-report"
   },
   "link.item.label.routine": {
     "message": "Routine",
-    "description": "The label of footer link with label=routine linking to /routine/about"
+    "description": "The label of footer link with label=routine linking to /routine"
   },
   "link.title.Services": {
     "message": "Services",
