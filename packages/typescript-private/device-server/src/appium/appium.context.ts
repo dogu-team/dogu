@@ -9,6 +9,7 @@ import { Android, AppiumContextInfo, ContextPageSource, Rect, ScreenSize, System
 import { HostPaths, Logger, TaskQueue, TaskQueueTask } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
+import _ from 'lodash';
 import path from 'path';
 import { remote } from 'webdriverio';
 import { Adb } from '../internal/externals/index';
