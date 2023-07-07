@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pytest-dogu-report"
-version = "1.0.0"
+version = "1.0.1"
 description = "pytest plugin for dogu report"
 readme = "README.md"
 packages = [{include = "pytest_dogu_report", from = "src"}]
@@ -20,16 +20,6 @@ pylint = "^2.17.4"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[project]
-name = "pytest-dogu-report"
-version = "1.0.0"
-description = "pytest plugin for dogu report"
-license = {text = "MIT License"}
-classifiers = [
-    "Framework :: Pytest",
-]
-requires-python = '>=3.9,<4.0'
 
 [project.entry-points.pytest11]
 pytest_dogu_report = "pytest_dogu_report"
