@@ -273,7 +273,7 @@
     "description": "The ARIA label and title attribute for expand button of doc sidebar"
   },
   "main.descriptionText": {
-    "message": "웹, 모바일, 게임 애플리케이션 테스트를 자동화하는 통합 테스트 자동화 플랫폼"
+    "message": "웹, 모바일, 게임 애플리케이션 통합 테스트 자동화 플랫폼"
   },
   "main.introduction": {
     "message": "소개"
