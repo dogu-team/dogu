@@ -70,9 +70,9 @@ jobs:
             C:\hostedtoolcache\windows\go\${{ env.GO_VERSION }}
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.GO_VERSION }}
 
-      - name: Cache Mirror
+      - name: Cache NM Space
         uses: actions/cache@v3
-        id: cache_mirror
+        id: cache_nm_space
         env:
           cache-name: cache-mirror
         with:
@@ -172,7 +172,7 @@ jobs:
           DOGU_APPLE_API_KEY_ID: ${{ secrets.DOGU_APPLE_API_KEY_ID }}
           DOGU_APPLE_API_ISSUER_ID: ${{ secrets.DOGU_APPLE_API_ISSUER_ID }}
 
-      - if: steps.cache_mirror.outputs.cache-hit != 'true'
+      - if: steps.cache_nm_space.outputs.cache-hit != 'true'
         name: Dost - Newbie nm-space
         run: |
           yarn workspace dogu run newbie:nm-space
