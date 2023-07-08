@@ -3,3 +3,102 @@ sidebar_position: 0
 title: Introduction
 locale: en
 ---
+
+Dogu is an integrated test automation platform that allows you to automate testing for web, mobile, and game applications across various operating systems. By using the integrated test automation platform, you can build an efficient test automation environment without going through the traditional infrastructure setup process.
+
+## Features
+
+Dogu provides the necessary features to establish a systematic test automation environment.
+
+### Management
+
+With the management features, you can create users and groups, grant permissions, and establish a hierarchical permission structure. The access scope varies based on the permission level, and you can assign specific permissions as needed.
+
+- Organization
+  - Project
+    - Users
+    - User groups
+
+#### Organization Management Dashboard
+
+<img src="/img/get-started/management-organization.png" />
+
+#### Member Management Dashboard
+
+<img src="/img/get-started/management-member.png" />
+
+### Device Farm
+
+The device farm is a platform where devices for testing and interaction are available. Supported operating systems for device farm connections include Windows, MacOS, Android, and iOS. You can interact with the devices connected to the device farm.
+
+#### Device Management Dashboard
+
+<img src="/img/get-started/device-dashboard.png" />
+
+#### Android Device Interaction
+
+<img src="/img/get-started/device-android-streaming.gif" />
+
+#### iOS Device Interaction
+
+<img src="/img/get-started/device-ios-streaming.gif" />
+
+### Test Automation
+
+You can use test frameworks to automate browser, mobile app, and game testing with devices connected to the device farm. To learn more about the supported test frameworks, refer to the following sections.
+
+#### Supported Test Frameworks
+
+- [Browser](/test-automation/browser)
+- [Mobile App](/test-automation/mobile)
+- [Game](/test-automation/game)
+
+There are two ways to execute tests on devices connected to the device farm using the test frameworks:
+
+- [Remote](/routine)
+- [Routine](/routine)
+
+#### Remote
+
+The Remote approach refers to running tests on devices connected to the device farm as the target while working on test scripts locally. With Remote, you can automatically allocate available devices for testing, and once the test is completed, the devices are automatically returned.
+
+#### Routine
+
+Routine is a pipeline for testing similar to GitHub Actions or Jenkins Pipelines. When test scripts are uploaded to Git, you can use Routine to select the test script and specify the devices for testing.
+
+<img src="/img/get-started/routine.png" />
+
+### Test Reporting
+
+Test reports allow you to view the results of tests executed through Routine. The test results include:
+
+- Test execution videos
+- Visualized test scripts
+- Device logs and test script logs
+- Device profiling (memory, CPU, FPS)
+
+To generate reports, you need to install plugins compatible with the Test Unit Framework. The list of supported plugins is as follows:
+
+- [Jest](/test-report/javascript/jest)
+- [PyTest](/test-report/python/pytest)
+- TestNG - In progress
+
+After installing the plugin and executing tests, test reports are generated as shown below.
+
+#### Test Execution Videos
+
+<img src="/img/get-started/reporting-video.png" />
+
+#### Visualized Test Scripts and Logs
+
+<img src="/img/get-started/reporting-visualization.png" />
+
+#### Device Profiling
+
+<img src="/img/get-started/reporting-profiling.png" />
+
+### Routine
+
+Routine refers to the systematic execution process of tests. You can select devices based on conditions to execute tests in parallel and support post-processing tasks. After the process is completed, test reports are automatically generated.
+
+<img src="/img/get-started/routine.png" />
