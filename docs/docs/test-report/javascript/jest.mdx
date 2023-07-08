@@ -11,14 +11,14 @@ The **@dogu-tech/jest-environment** package provides a custom jest environment t
 
 ![@dogu-tech/jest-environment](/img/testing-framework-support/jest.png)
 
-please refer to the following link for more information.
+please refer to the following link.
 
 - [npmjs](https://www.npmjs.com/package/@dogu-tech/jest-environment)
 - [github](https://github.com/dogu-team/dogu/tree/main/packages/typescript/jest-environment)
 
 ## Requirements
 
-- Node.js >= 16
+- Node.js 16.0.0 or higher
 
 ## Configuration
 
@@ -35,7 +35,7 @@ yarn add --dev @dogu-tech/jest-environment
 pnpm add --save-dev @dogu-tech/jest-environment
 ```
 
-- add `@dogu-tech/jest-environment` to your jest configuration.
+- register `@dogu-tech/jest-environment` to your jest configuration.
 
 ```javascript
 // jest.config.js
@@ -43,12 +43,12 @@ pnpm add --save-dev @dogu-tech/jest-environment
 /** @type {import('jest').Config} */
 module.exports = {
   testEnvironment: '@dogu-tech/jest-environment',
-  // ... other jest configuration
+  // ... other jest configurations
 };
 ```
 
 :::info jest configuration
 
-see [jest configuration](https://jestjs.io/docs/configuration) for more information.
+see [official document](https://jestjs.io/docs/configuration) for more information.
 
 :::

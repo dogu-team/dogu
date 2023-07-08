@@ -3,3 +3,45 @@ sidebar_position: 2
 title: Pytest
 locale: ko
 ---
+
+# Pytest
+
+Dogu는 pytest 통합을 지원합니다.  
+pytest의 테스트 결과를 **pytest-dogu-report** 플러그인을 사용해 아래 화면처럼 루틴의 테스트 결과를 확인할 수 있습니다.
+
+![pytest-dogu-report](/img/testing-framework-support/pytest.png)
+
+아래 링크를 참고해주세요.
+
+- [pypi](https://pypi.org/project/pytest-dogu-report)
+- [github](https://github.com/dogu-team/dogu/tree/main/packages/python/pytest-dogu-report)
+
+## 요구사항
+
+- Python 3.9 이상
+
+## 설정
+
+- `pytest-dogu-report` 패키지를 프로젝트에 설치합니다.
+
+```shell
+# using pip
+pip install pytest-dogu-report
+
+# using poetry
+poetry add -D pytest-dogu-report
+```
+
+- 루트 `conftest.py` 파일에 `pytest-dogu-report` 플러그인을 등록합니다.
+
+```python
+pytest_plugins = [
+    "pytest_dogu_report",
+]
+```
+
+:::info pytest 플러그인 검색 순서
+
+**플러그인 검색 순서**는 이 공식 문서에서 확인할 수 있습니다. [링크](https://docs.pytest.org/en/7.1.x/how-to/writing_plugins.html#plugin-discovery-order-at-tool-startup)
+
+:::
