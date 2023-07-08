@@ -5,7 +5,7 @@ import { API_TOKEN_TYPE } from '../auth/auth.types';
 import { ApiTokenPermission } from '../auth/decorators';
 import { WebDriverService } from './webdriver.service';
 
-@Controller('/wd/hub')
+@Controller('/remote/wd/hub')
 export class WebDriverController {
   constructor(private readonly webdriverService: WebDriverService) {}
 
