@@ -1,0 +1,60 @@
+---
+sidebar_position: 1
+title: Remote Appium
+locale: ko
+---
+
+## Prerequisites
+
+- 조직 프로필에서 찾을 수 있는 Dogu 액세스 키가 있어야 합니다.
+- Python3 및 Pip3가 컴퓨터에 설치되어 있어야 합니다.
+
+## Run a sample script
+
+### Clone sample repository
+
+```sh
+git clone https://github.com/dogu-team/dogu-examples
+cd dogu-examples/python/appium
+```
+
+### Install the dependencies
+
+```sh
+pip3 install -r requirements.txt
+```
+
+### Upload sample app to dogu
+
+- 테스트 스크립트를 실행하기 위해서는 테스트 대상 앱을 dogu에 업로드 해야 합니다.
+- dogu에 업로드 할 앱은 다음 링크에서 다운로드 받을 수 있습니다. [link](https://github.com/dogu-team/third-party-binaries/releases/download/wikipedia-apps/wikipedia-android.apk)
+  - [앱 관리](/management/project/app) 페이지를 참고하여 해당 앱을 업로드해주세요.
+
+### Configure dogu options
+
+- 테스트 스크립트에서 비어있는 값들을 채워주세요.
+  - accessKey:
+    - [API token](/management/organization/settings#api-token) 문서를 참고하여 API토큰을 획득하고 입력해주세요.
+  - organizationId, projectId:
+    - 프로젝트 설정 페이지에서 쉽게 찾을 수 있습니다. [프로젝트 설정](/management/project/settings) 문서를 참고하세요.
+
+```
+    "accessKey": "",
+    "organizationId": "",
+    "projectId": "",
+
+```
+
+### Run test script
+
+- 테스트 스크립트를 실행해주세요.
+
+```sh
+python3 android/dogu_sample.py
+```
+
+:::note
+
+더 많은 정보는 [Appium](/test-automation/mobile/appium) 문서를 참고해 주세요.
+
+:::

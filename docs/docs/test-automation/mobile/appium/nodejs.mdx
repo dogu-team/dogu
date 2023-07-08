@@ -1,13 +1,13 @@
 ---
 sidebar_position: 2
-title: Appium
+title: Node.js
 locale: en
 ---
 
 ## Prerequisites
 
 - You need to have Dogu Access key, which you can find in your organization profile.
-- Python3 and Pip3 is installed on your machine.
+- Node.js 16 or higher, npm must be installed on your computer.
 
 ## Run a sample script
 
@@ -15,13 +15,13 @@ locale: en
 
 ```sh
 git clone https://github.com/dogu-team/dogu-examples
-cd dogu-examples/python/appium
+cd dogu-examples/javascript/appium
 ```
 
 ### Install the dependencies
 
 ```sh
-pip3 install -r requirements.txt
+npm install
 ```
 
 ### Upload sample app to dogu
@@ -49,19 +49,5 @@ pip3 install -r requirements.txt
 - Run the test script.
 
 ```sh
-python3 android/dogu_sample.py
+npm run test
 ```
-
-:::note
-What if self-hosted?
-
-- Change the url written as https://dogutech.io/wd/hub to the url of the self-hosted dogu.
-
-:::
-
-:::note
-Want to test iOS?
-
-- iOS does not provide a sample app yet because the app needs to be re-signed. However, iOS can also be tested as long as the internal app can be installed on the device. Please test by changing the platformName and tag to ios in capabilities.
-
-:::
