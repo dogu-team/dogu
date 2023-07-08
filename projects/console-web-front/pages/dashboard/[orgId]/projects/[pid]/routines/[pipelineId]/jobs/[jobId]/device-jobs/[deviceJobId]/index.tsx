@@ -98,7 +98,7 @@ const DeviceJobPage: NextPageWithLayout<PageProps> = ({ organization, project })
 };
 
 DeviceJobPage.getLayout = (page) => {
-  return <PipelineJobLayout>{page}</PipelineJobLayout>;
+  return <PipelineJobLayout isGitIntegrated={page.props.isGitIntegrated}>{page}</PipelineJobLayout>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

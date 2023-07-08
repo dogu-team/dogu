@@ -34,7 +34,7 @@ const PipelineDetailPage: NextPageWithLayout<WithProjectProps> = ({ organization
 };
 
 PipelineDetailPage.getLayout = (page) => {
-  return <PipelineJobLayout>{page}</PipelineJobLayout>;
+  return <PipelineJobLayout isGitIntegrated={page.props.isGitIntegrated}>{page}</PipelineJobLayout>;
 };
 
 export const getServerSideProps: GetServerSideProps = getProjectPageServerSideProps;

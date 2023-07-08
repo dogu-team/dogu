@@ -1,5 +1,5 @@
 import { OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
-import { AxiosError } from 'axios';
+import { AxiosError, isAxiosError } from 'axios';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
 import useSWR, { KeyedMutator, SWRConfig } from 'swr';
@@ -7,9 +7,8 @@ import useSWR, { KeyedMutator, SWRConfig } from 'swr';
 import { NextPageWithLayout } from 'pages/_app';
 import { swrAuthFetcher } from 'src/api';
 import { getOrganizationInServerSide } from 'src/api/organization';
-import { getProjectInServerSide } from 'src/api/project';
+import { getProjectInServerSide, getProjectScm } from 'src/api/project';
 import ErrorBox from 'src/components/common/boxes/ErrorBox';
-import { isWebViewAgent } from 'src/utils/server';
 import useRecentOrgFromSession from '../hooks/useRecentOrgFromSession';
 import { checkUserVerifiedInServerSide } from '../utils/auth';
 import { redirectWithLocale } from '../ssr/locale';
@@ -18,6 +17,7 @@ export interface ProjectServerSideProps {
   fallback: {
     [key: string]: OrganizationBase | ProjectBase | UserBase;
   };
+  isGitIntegrated: boolean;
 }
 
 export interface WithProjectProps {
@@ -25,6 +25,7 @@ export interface WithProjectProps {
   project: ProjectBase;
   mutateOrganization: KeyedMutator<OrganizationBase>;
   mutateProject: KeyedMutator<ProjectBase>;
+  isGitIntegrated: boolean;
 }
 
 export default function withProject<P extends WithProjectProps>(WrappedComponent: NextPageWithLayout<P>) {
@@ -73,6 +74,12 @@ export const getProjectPageServerSideProps: GetServerSideProps<ProjectServerSide
   try {
     const [organization, project, checkResult] = await Promise.all([getOrganizationInServerSide(context), getProjectInServerSide(context), checkUserVerifiedInServerSide(context)]);
 
+    let isGitIntegrated = false;
+    try {
+      await getProjectScm(context);
+      isGitIntegrated = true;
+    } catch (e) {}
+
     if (checkResult.redirect) {
       return checkResult;
     }
@@ -84,6 +91,7 @@ export const getProjectPageServerSideProps: GetServerSideProps<ProjectServerSide
           [`/organizations/${context.query.orgId}/projects/${context.query.pid}`]: project,
           ...checkResult.props.fallback,
         },
+        isGitIntegrated,
       },
     };
   } catch (e) {

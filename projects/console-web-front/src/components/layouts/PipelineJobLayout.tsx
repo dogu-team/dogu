@@ -26,9 +26,10 @@ import ProjectLayout from './ProjectLayout';
 
 interface Props {
   children: React.ReactNode;
+  isGitIntegrated: boolean;
 }
 
-const PipelineJobLayout = ({ children }: Props) => {
+const PipelineJobLayout = ({ children, isGitIntegrated }: Props) => {
   const router = useRouter();
   const orgId = router.query.orgId;
   const projectId = router.query.pid;
@@ -79,7 +80,7 @@ const PipelineJobLayout = ({ children }: Props) => {
   }
 
   return (
-    <ProjectLayout sidebar={<JobListSideBar pipeline={pipeline} />}>
+    <ProjectLayout isGitIntegrated={isGitIntegrated} sidebar={<JobListSideBar pipeline={pipeline} />}>
       <PipelineContainer>
         <PipelineHeadContainer>
           <FlexRowBase>

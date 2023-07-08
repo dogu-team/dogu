@@ -42,7 +42,7 @@ const ProjectMemberPage: NextPageWithLayout<WithProjectProps> = ({ project }) =>
 };
 
 ProjectMemberPage.getLayout = (page) => {
-  return <ProjectLayout>{page}</ProjectLayout>;
+  return <ProjectLayout isGitIntegrated={page.props.isGitIntegrated}>{page}</ProjectLayout>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

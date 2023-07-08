@@ -9,7 +9,6 @@ import { NextPageWithLayout } from 'pages/_app';
 import { swrAuthFetcher } from 'src/api';
 import { getOrganizationInServerSide } from 'src/api/organization';
 import ErrorBox from 'src/components/common/boxes/ErrorBox';
-import { isWebViewAgent } from 'src/utils/server';
 import useRecentOrgFromSession from '../hooks/useRecentOrgFromSession';
 import { checkUserVerifiedInServerSide } from '../utils/auth';
 import { redirectWithLocale } from '../ssr/locale';
@@ -55,7 +54,6 @@ export default function withOrganization(WrappedComponents: NextPageWithLayout<W
 export const getOrganizationPageServerSideProps: GetServerSideProps<OrganizationServerSideProps> = async (context) => {
   try {
     const [organization, checkResult] = await Promise.all([getOrganizationInServerSide(context), checkUserVerifiedInServerSide(context)]);
-    const isWebview = isWebViewAgent(context);
 
     if (checkResult.redirect) {
       return checkResult;
@@ -67,7 +65,6 @@ export const getOrganizationPageServerSideProps: GetServerSideProps<Organization
           [`/organizations/${context.query.orgId}`]: organization,
           ...checkResult.props.fallback,
         },
-        isWebview,
       },
     };
   } catch (e) {

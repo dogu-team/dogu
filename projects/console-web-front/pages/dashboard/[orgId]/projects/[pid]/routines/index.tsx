@@ -55,7 +55,11 @@ const ProjectRoutinePage: NextPageWithLayout<WithProjectProps> = ({ organization
 };
 
 ProjectRoutinePage.getLayout = (page) => {
-  return <ProjectLayout sidebar={<PipelineSideBar />}>{page}</ProjectLayout>;
+  return (
+    <ProjectLayout isGitIntegrated={page.props.isGitIntegrated} sidebar={<PipelineSideBar />}>
+      {page}
+    </ProjectLayout>
+  );
 };
 
 export const getServerSideProps: GetServerSideProps = getProjectPageServerSideProps;

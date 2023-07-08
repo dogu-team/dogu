@@ -5,8 +5,7 @@ import styled from 'styled-components';
 import useSWR from 'swr';
 import Link from 'next/link';
 import { OrganizationBase, ProjectBase } from '@dogu-private/console';
-import { AppstoreOutlined, BookOutlined, FileTextOutlined, GatewayOutlined, ProjectOutlined, SettingOutlined, TabletOutlined, TeamOutlined } from '@ant-design/icons';
-import { useRef } from 'react';
+import { AppstoreOutlined, GatewayOutlined, ProjectOutlined, SettingOutlined, TabletOutlined, TeamOutlined } from '@ant-design/icons';
 
 import useAuth from 'src/hooks/useAuth';
 import { swrAuthFetcher } from 'src/api';
@@ -14,23 +13,22 @@ import H4 from '../common/headings/H4';
 import MenuLinkTabs, { MenuLinkTabProps } from '../MenuLinkTabs';
 import ConsoleBasicLayout from './ConsoleBasicLayout';
 import { scrollbarStyle } from '../../styles/common';
-import useGitlabAlert from '../../hooks/useGitlabAlert';
+import GitIntegrationTag from '../projects/GitIntegrationTag';
 
 interface Props {
   children: React.ReactNode;
   sidebar?: React.ReactNode;
+  isGitIntegrated: boolean;
 }
 
-const ProjectLayout = ({ children, sidebar }: Props) => {
+const ProjectLayout = ({ children, sidebar, isGitIntegrated }: Props) => {
   const { me, error, isLoading } = useAuth();
   const router = useRouter();
   const { t } = useTranslation();
-  const { alertGitlab } = useGitlabAlert();
   const organizationId = router.query.orgId;
   const projectId = router.query.pid;
   const { data: organization, error: organizationError } = useSWR<OrganizationBase>(organizationId && `/organizations/${organizationId}`, swrAuthFetcher);
   const { data: project, error: projectError } = useSWR<ProjectBase>(organizationId && projectId && `/organizations/${organizationId}/projects/${projectId}`, swrAuthFetcher);
-  const ref = useRef<HTMLElement>(null);
 
   if (organizationError || projectError) {
     return null;
@@ -87,6 +85,9 @@ const ProjectLayout = ({ children, sidebar }: Props) => {
               >
                 <StyledTitle>{project?.name}</StyledTitle>
               </Link>
+              <div style={{ marginLeft: '.5rem' }}>
+                <GitIntegrationTag isGitIntegrated={isGitIntegrated} />
+              </div>
             </TitleBox>
             <Description>{project?.description}</Description>
           </HeaderBox>
