@@ -18,11 +18,13 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
 
     if (postCommand) {
       logger.info('Running post command...');
-      logger.info('Running command', { command: postCommand });
+      const command = process.platform === 'win32' ? process.env.COMSPEC || 'cmd.exe' : process.env.SHELL || '/bin/sh';
+      const args = process.platform === 'win32' ? ['/d', '/s', '/c'] : ['-c'];
+      args.push(postCommand);
+      logger.info('Running command', { command, args });
       const result = spawnSync(postCommand, {
         stdio: 'inherit',
         cwd: deviceProjectGitPath,
-        shell: true,
         env: newCleanNodeEnv(),
       });
       logger.verbose?.('Command result', { result });
