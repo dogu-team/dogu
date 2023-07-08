@@ -23,7 +23,7 @@ export const projectAppMeta: ProjectAppMeta = {
     mimeTypes: ['application/vnd.android.package-archive', 'application/octet-stream'],
   },
   ipa: {
-    mimeTypes: ['application/octet-stream'],
+    mimeTypes: ['application/octet-stream', 'application/x-itunes-ipa'],
   },
 };
 
