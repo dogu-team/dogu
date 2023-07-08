@@ -53,16 +53,16 @@
   color: var(--ifm-heading-color);
   cursor: pointer;
   background-color: var(--ifm-button-background-color);
-  
-  &:hover {
-    background-color: var(--ifm-button-background-color-hover);
-    color: var(--ifm-heading-color);
-    text-decoration: none !important;
-  }
 
   @media screen and (max-width: 767px) {  
     margin: .5rem .5rem 1rem 0;
   }
+}
+
+.headerBannerButton:hover {
+  background-color: var(--ifm-button-background-color-hover);
+  color: var(--ifm-heading-color);
+  text-decoration: none !important;
 }
 
 .buttons {
