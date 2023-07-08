@@ -32,16 +32,17 @@ npm install
 
 ### Configure dogu options
 
-- Fill in the empty values ​​in the test script.
-  - accessKey:
+- Fill in the values below in the test script.
+  - `accessKey`:
     - Please refer to [API token](/management/organization/settings#api-token) to obtain and enter an API token..
-  - organizationId, projectId:
+  - `organizationId`, `projectId`:
     - You can check IDs in project settings page. Please refer to [Project Settings](/management/project/settings) documentation.
 
-```
-    "accessKey": "",
-    "organizationId": "",
-    "projectId": "",
+```javascript
+const accessKey = process.env.DOGU_ACCESS_KEY || 'INSERT_YOUR_ACCESS_KEY';
+const organizationId =
+  process.env.DOGU_ORGANIZATION_ID || 'INSERT_YOUR_ORGANIZATION_ID';
+const projectId = process.env.DOGU_PROJECT_ID || 'INSERT_YOUR_PROJECT_ID';
 ```
 
 ### Run test script
