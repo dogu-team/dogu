@@ -99,43 +99,17 @@ services:
             cpus: '1'
             memory: 1G
       networks:
-        - console_network  
+        - console_network 
 
-  gitlab:
-    container_name: dogu-gitlab
-    image: 'gitlab/gitlab-ce:15.10.0-ce.0'
-    restart: always
-    environment:
-      GITLAB_ROOT_PASSWORD: ${GITLAB_ROOT_PASSWORD}
-      GITLAB_OMNIBUS_CONFIG: |        
-        gitlab_rails['gitlab_shell_ssh_port'] = 22
-        gitlab_rails['monitoring_whitelist'] = ['0.0.0.0/0']
-    ports:
-      - '8080:80'
-      - '8443:443'
-    volumes:
-      - '${VOLUME_PATH}/gitlab/config:/etc/gitlab'
-      - '${VOLUME_PATH}/gitlab/logs:/var/log/gitlab'
-      - '${VOLUME_PATH}/gitlab/data:/var/opt/gitlab'
-    shm_size: '512m'
-    deploy:
-      resources:
-        reservations:
-          cpus: '1'
-          memory: 2G
-    networks:
-      - console_network
-  
   console:
     container_name: dogu-console
-    image: dogutechio/dogu:1.1.0
+    image: dogutechio/dogu:1.2.0
     restart: always
     depends_on:
       - influxdb
       - redis
       - postgres
       - coturn
-      - gitlab
       - nexus
     ports:
       - '3001:3001'
@@ -158,22 +132,15 @@ services:
       - DOGU_INFLUX_DB_BUCKET=${INFLUX_DB_INIT_BUCKET}
       - DOGU_REDIS_PASSWORD=${REDIS_PASSWORD}
       - DOGU_CONSOLE_DOMAIN=${DOGU_HOST}
-      - DOGU_GITLAB_HOST=${DOGU_HOST}
-      - DOGU_GITLAB_ROOT_TOKEN=${GITLAB_ROOT_ACCESS_TOKEN}
       - DOGU_SECRET=${DOGU_CONSOLE_JWT_SECRET_KEY}
       - NEXT_PUBLIC_TURN_SERVER_USERNAME=${TURN_SERVER_USERNAME}
       - NEXT_PUBLIC_TURN_SERVER_PASSWORD=${TURN_SERVER_PASSWORD}
-      - NEXT_PUBLIC_DOGU_GITLAB_HOST=${DOGU_HOST}
       - NEXT_PUBLIC_DOGU_API_BASE_URL=http://${DOGU_HOST}:4000
       - NEXT_PUBLIC_DOGU_WS_BASE_URL=ws://${DOGU_HOST}:4000
       - NEXT_PUBLIC_TURN_SERVER_HOST=${DOGU_HOST}
-      - NEXT_PUBLIC_DOGU_GITLAB_PORT=8080
-      - NEXT_PUBLIC_DOGU_GITLAB_PROTOCOL=http
       - NEXT_PUBLIC_ENV=self-hosted
-
     networks:
       - console_network
-
     
 networks:
   console_network:
