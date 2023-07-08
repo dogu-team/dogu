@@ -74,5 +74,17 @@
   "sidebar.getStartedSidebar.category.Self-hosted": {
     "message": "Self-hosted",
     "description": "The label for category Self-hosted in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Tutorial - Web Testing": {
+    "message": "튜토리얼 - 웹 테스팅",
+    "description": "The label for category Tutorial - Web Testing in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Python": {
+    "message": "Python",
+    "description": "The label for category Python in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Tutorial - Mobile App Testing": {
+    "message": "튜토리얼 - 모바일 앱 테스팅",
+    "description": "The label for category Tutorial - Mobile App Testing in sidebar getStartedSidebar"
   }
 }
