@@ -21,6 +21,7 @@ const ExternaltoolInstaller = ({ externalKeyAndNames, onStart, onFinish }: Props
   const toast = useToast();
   const [logs, setLogs] = useState<{ log: string; isError: boolean }[]>([]);
   const logRef = useRef<HTMLDivElement>(null);
+  const MAX_LOG_ROW = 30;
 
   useEffect(() => {
     const scrollToBottom = () => {
@@ -31,7 +32,7 @@ const ExternaltoolInstaller = ({ externalKeyAndNames, onStart, onFinish }: Props
 
     ipc.stdLogCallback.onStdout((_, message) => {
       setLogs((prev) => {
-        if (prev.length < 10) {
+        if (prev.length < MAX_LOG_ROW) {
           return [...prev, { log: message, isError: false }];
         }
 
@@ -45,7 +46,7 @@ const ExternaltoolInstaller = ({ externalKeyAndNames, onStart, onFinish }: Props
 
     ipc.stdLogCallback.onStderr((_, message) => {
       setLogs((prev) => {
-        if (prev.length < 10) {
+        if (prev.length < MAX_LOG_ROW) {
           return [...prev, { log: message, isError: true }];
         }
 
