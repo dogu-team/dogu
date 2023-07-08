@@ -1,4 +1,4 @@
-import { ActionKit, checkoutProject, HostPaths, OptionsConfig } from '@dogu-tech/action-kit';
+import { ActionKit, checkoutProject, HostPaths, newCleanNodeEnv, OptionsConfig } from '@dogu-tech/action-kit';
 import { spawnSync } from 'child_process';
 import fs from 'fs';
 
@@ -23,6 +23,7 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
         stdio: 'inherit',
         cwd: deviceProjectGitPath,
         shell: true,
+        env: newCleanNodeEnv(),
       });
       logger.verbose?.('Command result', { result });
       if (result.status !== 0) {
