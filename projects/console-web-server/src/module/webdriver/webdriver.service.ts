@@ -89,7 +89,7 @@ const handlers: {
 
 function convertRequest(request: Request): RelayRequest {
   const headers = convertHeaders(request.headers);
-  const subpath = request.url.replace('/wd/hub/', '');
+  const subpath = request.url.replace('/remote/wd/hub/', '');
   return {
     path: subpath,
     headers: headers,
