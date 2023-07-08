@@ -7,7 +7,7 @@ env:
   DOGU_ACCESS_KEY: insert your access key here
 
 jobs:
-  job-sample:
+  test-ios:
     runs-on:
       group: ios
     steps:
