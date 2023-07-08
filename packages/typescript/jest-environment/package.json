@@ -1,6 +1,6 @@
 {
   "name": "@dogu-tech/jest-environment",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "license": "MIT License",
   "author": "Dogu Technologies",
   "main": "build/src/index.js",

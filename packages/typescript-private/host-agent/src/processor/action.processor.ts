@@ -128,7 +128,12 @@ export class ActionProcessor {
         return { error: fetchResult };
       }
       this.logger.verbose('action git checkout', { actionGitPath });
-      const pullResult = await this.commandProcessRegistry.command(gitPath, [...configArgs, '-C', actionGitPath, 'checkout', tag], {}, context);
+      const checkoutResult = await this.commandProcessRegistry.command(gitPath, [...configArgs, '-C', actionGitPath, 'checkout', tag], {}, context);
+      if (checkoutResult.value.code !== 0) {
+        return { error: checkoutResult };
+      }
+      this.logger.verbose('action git pull', { actionGitPath });
+      const pullResult = await this.commandProcessRegistry.command(gitPath, [...configArgs, '-C', actionGitPath, 'pull'], {}, context);
       if (pullResult.value.code !== 0) {
         return { error: pullResult };
       }

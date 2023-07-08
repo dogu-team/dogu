@@ -1,11 +1,11 @@
 import { Printable } from '@dogu-tech/common';
 import { DeviceHostClient } from '@dogu-tech/device-client';
+import { HostPaths } from '@dogu-tech/node';
 import { ProjectId } from '@dogu-tech/types';
 import { spawnSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { ConsoleActionClient } from '../console-action-client';
-import { HostPaths } from '@dogu-tech/node';
 
 export async function checkoutProject(
   printable: Printable,
@@ -52,5 +52,6 @@ export async function checkoutProject(
     }
     command(git, [...configArgs, '-C', deviceProjectGitPath, 'fetch', 'origin', branchOrTag], 'Fetching Git repository...', 'Git fetch failed');
     command(git, [...configArgs, '-C', deviceProjectGitPath, 'checkout', branchOrTag], 'Checking out Git repository...', 'Git checkout failed');
+    command(git, [...configArgs, '-C', deviceProjectGitPath, 'pull'], 'Pulling Git repository...', 'Git pull failed');
   }
 }

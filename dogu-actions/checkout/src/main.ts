@@ -16,23 +16,18 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
     await fs.promises.mkdir(deviceProjectWorkspacePath, { recursive: true });
     const deviceProjectGitPath = HostPaths.deviceProjectGitPath(deviceProjectWorkspacePath);
 
-    function command(command: string, args: string[], logMessage: string, errorMessage: string): void {
-      logger.info(logMessage);
-      logger.info('Running command', { command: `${command} ${args.join(' ')}` });
-      const result = spawnSync(command, args, {
+    if (postCommand) {
+      logger.info('Running post command...');
+      logger.info('Running command', { command: postCommand });
+      const result = spawnSync(postCommand, {
         stdio: 'inherit',
         cwd: deviceProjectGitPath,
+        shell: true,
       });
       logger.verbose?.('Command result', { result });
       if (result.status !== 0) {
-        throw new Error(errorMessage);
+        throw new Error(`Post command failed with status ${result.status}`);
       }
-    }
-
-    if (postCommand) {
-      const shell = process.platform === 'win32' ? process.env.COMSPEC || 'cmd.exe' : process.env.SHELL || '/bin/bash';
-      const firstArg = process.platform === 'win32' ? '/c' : '-c';
-      command(shell, [firstArg, postCommand], 'Running post command...', 'Post command failed');
     }
   }
 });
