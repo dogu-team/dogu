@@ -1,0 +1,24 @@
+name: run test on ios
+
+on:
+  workflow_dispatch:
+
+env:
+  DOGU_ACCESS_KEY: insert your access key here
+
+jobs:
+  job-sample:
+    runs-on:
+      group: ios
+    steps:
+      - name: print env
+        run: printenv
+      - name: run javascript/appium/android
+        uses: dogu-actions/checkout
+        with:
+          postCommand: cd javascript/appium && npm install & npm run test
+
+      - name: run python/appium/android
+        uses: dogu-actions/checkout
+        with:
+          postCommand: cd python/appium && pip3 install -r requirements.txt && python android/dogu_sample.py
