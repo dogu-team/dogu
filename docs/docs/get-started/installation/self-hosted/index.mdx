@@ -73,10 +73,6 @@ You can replace the `/var/lib/dogu` path created above with the `VOLUME_PATH` va
 1. Create docker-compose.env file
 2. Paste all of [this file](https://github.com/dogu-team/dogu/blob/main/docker-compose.env) to docker-compose.env file
 
-:::note
-Set the GITLAB_ROOT_ACCESS_TOKEN after running Dogu and getting token from [Issuing the GitLab Root Access Token](/get-started/installation/self-hosted#get-the-gitlab-root-access-token).
-:::
-
 ### Create docker-compose.yml
 
 1. Create docker-compose.yml file
@@ -92,67 +88,9 @@ docker compose -f ./docker-compose.yml --env-file ./docker-compose.env --verbose
 
 ```
 
-### Get the GitLab Root Access Token
-
-:::info
-
-The available GitLab version is 15.10.0. (Ignore GitLab security warnings and upgrade recommendations.)
-
-:::
-
-A GitLab root access token is required to run Dogu.
-The following are the steps to get a GitLab root access token.
-
-- Access to GitLab
-
-  - Access it with the DOGU_HOST address specified in docker-compose.env and the 8080 port.
-
-- Log in with the GitLab root account
-
-  - Log in with the GITLAB_ROOT_PASSWORD specified in docker-compose.env.
-    <img
-      src="/img/get-started/gitlab-login.png"
-      style={{ width: 400, display: 'block' }}
-    />
-
-- Get Access Tokens
-  - Click the avatar in the top right corner of GitLab and select Edit Profile.
-  - Click Access Tokens on the left sidebar of the User Settings page.
-  - Set the following values and generate a token.
-    - Write the Token name.
-    - Click the x button on Expiration data to remove the expiration period.
-    - Click all Select Scopes.
-      <img
-        src="/img/get-started/gitlab-issue-access-token.png"
-        style={{ width: 400, display: 'block' }}
-      />
-  - Check the Access Token generated.
-    <img
-      src="/img/get-started/gitlab-check-access-token.png"
-      style={{ width: 400, display: 'block' }}
-    />
-
-### Set the GitLab Access Token
-
-Add the above value to GITLAB_ROOT_ACCESS_TOKEN in docker-compose.env already created.
-
-```
- e.g. GITLAB_ROOT_ACCESS_TOKEN=glpat-Z5Zq-XkrtKjzq5FiAMAA
-```
-
-### Run Dogu again
-
-Run the following command in the directory where the docker-compose.env and docker-compose.yml files are located. (It is not necessary to stop the previously
-executed docker-compose.)
-
-```
-   docker compose -f ./docker-compose.yml --env-file ./docker-compose.env --verbose up -d
-```
-
 ### Browse Web Page
 
-Dogu Console: DOGU_HOST:3001  
-Dogu Gitlab: DOGU_HOST:8080
+Dogu Console: DOGU_HOST:3001
 
 ### Install Dost
 
@@ -167,6 +105,9 @@ Run the dost agent that can connect to the dogu console.
 - Configuring Dost connection environment
 
   - Set the connection URL using the DOGU_HOST set in the [Create docker-compose.env File](/get-started/installation/self-hosted#create-docker-composeenv-file).
+    :::note
+    ex. http://DOGU_HOST:4000
+    :::
 
   <BrowserOnly>
     {() => (

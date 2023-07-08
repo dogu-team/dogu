@@ -37,6 +37,11 @@ Docker 및 Docker-compose가 설치되어 있지 않은 경우 아래 링크를 
 - [Docker 설치](https://docs.docker.com/engine/install/)
 - [Docker-compose 설치](https://docs.docker.com/compose/install/)
 
+### 네트워크 보안 설정
+
+Dogu를 실행하는 장비의 인/아웃바운드 트래픽 허용 설정에서 해당 장비의 ip도 접근 허용 추가해 주세요.  
+( 위에서 설정할 ip는 [docker-compose.env 파일 생성](/self-hosted/get-started#docker-composeenv-파일-생성)에서 설정한 DOGU_HOST값과 동일한 값입니다. )
+
 ### 마운트 경로 생성
 
 <Tabs groupId="os" defaultValue="linux">
@@ -69,10 +74,6 @@ icacls "C:\var\lib\dogu\nexus-data" /setowner 200 /T
 1. 빈 docker-compose.env 파일 생성
 2. [파일](https://github.com/dogu-team/dogu/blob/main/docker-compose.env) 내용을 docker-compose.env 파일에 붙여넣기
 
-:::note
-GITLAB_ROOT_ACCESS_TOKEN 값은 Dogu 실행 후 아래 [gitlab root Access Token 발급 받기](/get-started/installation/self-hosted#gitlab-root-access-token-발급-받기)에서 token을 발급받은 후 설정 해 주세요.
-:::
-
 ### docker-compose.yml 설정
 
 1. 빈 docker-compose.yml 파일 생성
@@ -86,63 +87,9 @@ docker-compose.env, docker-compose.yml 파일이 있는 디렉토리에서 아�
 docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up  -d
 ```
 
-### gitlab root Access Token 발급 받기
-
-:::info
-
-사용 가능한 gitlab 버전은 15.10.0입니다. (gitlab security warning, upgrade 권장 노출은 무시해주세요.)
-
-:::
-
-Dogu를 실행하기 위해서는 gitlab의 root access token이 필요합니다.
-아래는 gitlab의 root access token을 발급하는 방법입니다.
-
-- gitlab 접속하기
-  - docker-compose.env에 지정한 DOGU_HOST의 주소 값과 8080포트로 접속합니다.
-- gitlab root 계정 로그인
-
-  - docker-compose.env에 지정한 GITLAB_ROOT_PASSWORD로 로그인 합니다.
-    <img
-      src="/ko/img/get-started/gitlab-login.png"
-      style={{ width: 400, display: 'block' }}
-    />
-
-- Access token 발급하기
-
-  - GitLab에서 우측 상단에 있는 아바타를 클릭, Edit profile 선택합니다.
-  - User Settings 페이지의 왼쪽 사이드바에서 Access Tokens를 클릭합니다.
-  - 아래 내용을 설정하고 토큰을 생성합니다.
-
-    - Token name을 작성합니다.
-    - Expiration data에서 x버튼을 클릭하여 만료기간을 없앱니다.
-    - Select scopes를 모두 클릭합니다.
-      <img
-        src="/ko/img/get-started/gitlab-issue-access-token.png"
-        style={{ width: 400, display: 'block' }}
-      />
-
-  - 생성된 Access Token을 확인합니다
-    <img
-      src="/ko/img/get-started/gitlab-check-access-token.png"
-      style={{ width: 400, display: 'block' }}
-    />
-
-### gitlab Access Token 설정하기
-
-위 단계에서 생성한 docker-compose.env에 GITLAB_ROOT_ACCESS_TOKEN에 위에 값을 추가로 설정합니다.
-
-### Dogu 재실행
-
-docker-compose.env, docker-compose.yml 파일이 있는 디렉토리에서 아래 명령어를 실행합니다. ( 이전에 실행했던 docker-compose는 중지할 필요 없습니다.)
-
-```
-docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up  -d
-```
-
 ### 웹 페이지
 
-Dogu Console: DOGU_HOST:3001  
-Dogu Gitlab: DOGU_HOST:8080
+Dogu Console: DOGU_HOST:3001
 
 ### Dost 설치
 
@@ -157,6 +104,9 @@ dogu console에 연결할 수 있는 dost를 실행합니다.
 - Dost 접속 환경 설정
 
   - [docker-compose.env 파일 생성](/get-started/installation/self-hosted#docker-composeenv-파일-생성)에서 설정한 DOGU_HOST값을 사용하여 접속 URL을 설정합니다.
+    :::note
+    ex. http://DOGU_HOST:4000
+    :::
 
   <BrowserOnly>
     {() => (
@@ -181,3 +131,24 @@ dogu console에 연결할 수 있는 dost를 실행합니다.
 
 - [Discord Community](https://discord.com/invite/bVycd6Tu9g)
 - [Github Issues](https://github.com/dogu-team/dogu/issues)
+
+### Known Issues
+
+1. Dogu 콘솔(웹 클라이언트)의 프로토콜이 `http`인 경우, 브라우저에서 클립보드로 복사하는 기능을 사용할 수 없습니다.
+
+## FAQ
+
+- decoding 'command': invalid command line string
+
+  Dogu 실행 시, `* error decoding 'command': invalid command line string` 에러가 발생할 경우  
+  docker-compose.yml 파일에 아래 값 들을 명시적으로 작성해 주세요.  
+  ${REDIS_PASSWORD}, ${TURN_SERVER_USERNAME}, ${TURN_SERVER_PASSWORD}, ${DOGU_HOST}
+
+  ```
+  ex.
+  command: redis-server --requirepass ${REDIS_PASSWORD}
+  -> command: redis-server --requirepass dogu-onprem
+
+  user=${TURN_SERVER_USERNAME}:${TURN_SERVER_PASSWORD}, realm=${DOGU_HOST}
+  -> user=admin:dogu-onprem, realm=${DOGU_HOST} <- env 파일에서 설정해주신 값을 넣어주세요
+  ```
