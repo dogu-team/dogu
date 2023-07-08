@@ -22,7 +22,7 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
       const args = process.platform === 'win32' ? ['/d', '/s', '/c'] : ['-c'];
       args.push(postCommand);
       logger.info('Running command', { command, args });
-      const result = spawnSync(postCommand, {
+      const result = spawnSync(command, args, {
         stdio: 'inherit',
         cwd: deviceProjectGitPath,
         env: newCleanNodeEnv(),
