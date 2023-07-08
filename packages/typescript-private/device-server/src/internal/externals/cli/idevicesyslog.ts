@@ -9,7 +9,7 @@ import { LogHandler } from '../../public/device-channel';
 export function logcat(serial: Serial, args: string[], handler: LogHandler, printable?: Printable): child_process.ChildProcess {
   const libPath = [pathMap().macos.libimobiledeviceLibPath, process.env.DYLD_LIBRARY_PATH].join(':');
   const random = Math.random();
-  printable?.verbose?.('adb.logcat begin', { serial, args, random });
+  printable?.verbose?.('ios.logcat begin', { serial, args, random });
   const child = spawn(pathMap().macos.idevicesyslog, ['-u', serial, '-e', 'replayd', '-e', 'DoguScreen', ...args], {
     env: {
       ...process.env,
@@ -24,7 +24,7 @@ export function logcat(serial: Serial, args: string[], handler: LogHandler, prin
   child.stderr.on('data', (data) => {
     handler.error(stringify(data));
   });
-  printable?.verbose?.('adb.logcat end', { serial, args, random });
+  printable?.verbose?.('ios.logcat end', { serial, args, random });
   return child;
 }
 

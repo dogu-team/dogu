@@ -1,11 +1,11 @@
 import { Platform, Serial } from '@dogu-private/types';
-import { Printable } from '@dogu-tech/common';
+import { delay, Printable } from '@dogu-tech/common';
 import { ChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
-import { delay } from 'rxjs';
 import { idcLogger, logger } from '../../../logger/logger.instance';
 import { Zombieable, ZombieProps, ZombieWaiter } from '../../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
+import { killProcessOnPortOnMacos } from '../../util/net';
 import { MobileDevice } from './mobiledevice';
 
 export class TunnelContext {
@@ -75,7 +75,9 @@ export class ZombieTunnel implements Zombieable {
     return this.logger;
   }
 
-  revive(): Promise<void> {
+  async revive(): Promise<void> {
+    await killProcessOnPortOnMacos('mobile', this.hostPort);
+    await delay(1000);
     this.tunnelContext = MobileDevice.tunnel(this.serial, this.hostPort, this.devicePort, this.printable);
     if (!this.tunnelContext) {
       throw new Error('tunnelContext is null');

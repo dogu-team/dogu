@@ -1,4 +1,5 @@
 import { delay, loop } from '@dogu-tech/common';
+import child_process from 'child_process';
 import { findFreePorts } from 'find-free-ports';
 import net from 'net';
 
@@ -66,4 +67,14 @@ export function isFreePort(port: number): Promise<boolean> {
       }
     });
   });
+}
+
+export async function killProcessOnPortOnMacos(includes: string, port: number): Promise<void> {
+  const lsofResult = child_process.execSync(`lsof -i :${port} | grep LISTEN | grep ${includes}`, { timeout: 10000 }).toString();
+  const splited = lsofResult.split(/\s+/);
+  const pid = splited[1];
+  if (!pid) {
+    return;
+  }
+  child_process.execSync(`kill -9 ${pid}`);
 }
