@@ -131,7 +131,7 @@
       "path": "docs",
       "problemMatcher": [],
       "presentation": {
-        "group": "devWatchers",
+        "group": "docsWatchers",
         "close": false,
         "panel": "dedicated"
       }
@@ -143,10 +143,17 @@
       "path": "docs",
       "problemMatcher": [],
       "presentation": {
-        "group": "devWatchers",
+        "group": "docsWatchers",
         "close": false,
         "panel": "dedicated"
       }
+    },
+    {
+      "label": "Dev: Docs All",
+      "type": "shell",
+      "problemMatcher": [],
+      "dependsOrder": "parallel",
+      "dependsOn": ["Dev: Docs", "Dev: Docs:ko"]
     },
     {
       "type": "npm",
