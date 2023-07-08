@@ -21,6 +21,8 @@ import OrganizationOwnerSelector from '../../../src/components/organizations/Org
 import DangerZone from '../../../src/components/common/boxes/DangerZone';
 import ApiTokenButton from '../../../src/components/organizations/ApiTokenButton';
 import RegenerateApiTokenButton from '../../../src/components/organizations/RegenerateApiTokenButton';
+import TokenCopyInput from '../../../src/components/common/TokenCopyInput';
+import { flexRowBaseStyle } from '../../../src/styles/box';
 
 const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ organization, mutateOrganization }) => {
   const [editingOrganization, setEditingOrganization] = useState<OrganizationBase>(organization);
@@ -126,6 +128,13 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
       </Head>
       <Box>
         <Content>
+          <div>
+            <TokenTitle>{t('organization:sidebarSubTitle')} ID</TokenTitle>
+            <TokenCopyInput value={organization.organizationId} />
+          </div>
+
+          <Divider />
+
           <ImageCropUploader
             profileImage={
               <ProfileImage
@@ -245,4 +254,11 @@ const ContentTitle = styled.p`
   font-size: 1.1rem;
   font-weight: 500;
   margin-bottom: 0.5rem;
+`;
+
+const TokenTitle = styled.p`
+  width: 150px;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  font-size: 0.9rem;
 `;

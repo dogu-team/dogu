@@ -2,13 +2,16 @@ import { CheckCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icon
 import { OrganizationId, ProjectId } from '@dogu-private/types';
 import { Form, Modal, Tag, Tooltip } from 'antd';
 import { isAxiosError } from 'axios';
+import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+
 import { updateProjectScm } from '../../api/project';
 import useModal from '../../hooks/useModal';
 import useRequest from '../../hooks/useRequest';
 import useGitIntegrationStore from '../../stores/git-integration';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
+import { getErrorMessage } from '../../utils/error';
 import GitIntegrationForm, { GitIntegrationFormValues } from './GitIntegrationForm';
 
 interface Props {
@@ -21,6 +24,7 @@ const GitIntegrationTag = ({ isGitIntegrated }: Props) => {
   const [form] = Form.useForm<GitIntegrationFormValues>();
   const [loading, request] = useRequest(updateProjectScm);
   const router = useRouter();
+  const { t } = useTranslation('project');
 
   useEffect(() => {
     store.updateGitIntegrationStatus(isGitIntegrated);
@@ -31,12 +35,12 @@ const GitIntegrationTag = ({ isGitIntegrated }: Props) => {
 
     try {
       await request(router.query.orgId as OrganizationId, router.query.pid as ProjectId, { service: values.git, url: values.repo, token: values.token });
-      sendSuccessNotification('Git integration updated successfully');
+      sendSuccessNotification('projectUpdateSuccessMsg');
       store.updateGitIntegrationStatus(true);
       closeModal();
     } catch (e) {
       if (isAxiosError(e)) {
-        sendErrorNotification('Failed to update Git integration');
+        sendErrorNotification(t('projectUpdateFailedMsg', { reason: getErrorMessage(e) }));
       }
     }
   };

@@ -32,6 +32,9 @@
   "editGitIntegrationConfirmModalButtonText": "Confirm and edit",
   "settingEditGitIntegrationConfirmContent": "Are you sure to edit git integration for project?",
 
+  "projectIdLabel": "Project ID",
+  "organizationIdLabel": "Organization ID",
+
   "projectTableNameColumn": "Name",
   "projectTableMembersColumn": "Members",
   "projectTableLastUpdatedColumn": "Recent Activities",

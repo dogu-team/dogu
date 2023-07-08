@@ -32,6 +32,9 @@
   "editGitIntegrationConfirmModalButtonText": "확인 및 변경",
   "settingEditGitIntegrationConfirmContent": "정말 Git 연동을 변경하시겠습니까?",
 
+  "projectIdLabel": "프로젝트 ID",
+  "organizationIdLabel": "조직 ID",
+
   "projectTableNameColumn": "이름",
   "projectTableMembersColumn": "멤버",
   "projectTableLastUpdatedColumn": "최근 활동일",

@@ -1,6 +1,5 @@
 import { ProjectBase } from '@dogu-private/console';
 import { PROJECT_DESC_MAX_LENGTH, PROJECT_DESC_MIN_LENGTH, PROJECT_NAME_MAX_LENGTH, PROJECT_NAME_MIN_LENGTH } from '@dogu-private/types';
-import { OrganizationId } from '@dogu-private/types';
 import { GetServerSideProps } from 'next';
 import { clone } from 'ramda';
 import styled from 'styled-components';
@@ -20,13 +19,14 @@ import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'sr
 import { sendErrorNotification, sendSuccessNotification } from '../../../../../src/utils/antd';
 import DangerZone from '../../../../../src/components/common/boxes/DangerZone';
 import GitIntegrationDangerButton from '../../../../../src/components/projects/GitIntegrationDangerButton';
+import TokenCopyInput from '../../../../../src/components/common/TokenCopyInput';
+import { flexRowBaseStyle } from '../../../../../src/styles/box';
 
-const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, mutateProject }) => {
+const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, organization, mutateProject }) => {
   const [editingProject, setEditingProject] = useState<ProjectBase>(project);
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation('project');
   const router = useRouter();
-  const organizationId = router.query.orgId as OrganizationId;
 
   useEffect(() => {
     if (project) {
@@ -41,7 +41,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, mut
 
     setLoading(true);
     try {
-      const data = await updateProject(organizationId, project.projectId, { name: editingProject?.name, description: editingProject?.description });
+      const data = await updateProject(organization.organizationId, project.projectId, { name: editingProject?.name, description: editingProject?.description });
       mutateProject(data, false);
       sendSuccessNotification(t('project:projectUpdateSuccessMsg'));
     } catch (e) {
@@ -54,15 +54,15 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, mut
 
   const handleDelete = useCallback(async () => {
     try {
-      await deleteProject(organizationId, project.projectId);
+      await deleteProject(organization.organizationId, project.projectId);
       sendSuccessNotification(t('project:projectDeleteSuccessMsg'));
-      router.push(`/dashboard/${organizationId}/projects`);
+      router.push(`/dashboard/${organization.organizationId}/projects`);
     } catch (e) {
       if (e instanceof AxiosError) {
         sendErrorNotification(t('project:projectDeleteFailedMsg', { reason: getErrorMessage(e) }));
       }
     }
-  }, [organizationId, project.projectId, router]);
+  }, [organization.organizationId, project.projectId, router]);
 
   const isChanged = JSON.stringify(project) !== JSON.stringify(editingProject);
 
@@ -72,6 +72,17 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, mut
         <title>Project settings - {project.name} | Dogu</title>
       </Head>
       <Box>
+        <div style={{ marginBottom: '1rem' }}>
+          <TokenTitle>{t('project:organizationIdLabel')}</TokenTitle>
+          <TokenCopyInput value={organization.organizationId} />
+        </div>
+        <div>
+          <TokenTitle>{t('project:projectIdLabel')}</TokenTitle>
+          <TokenCopyInput value={project.projectId} />
+        </div>
+
+        <Divider />
+
         <Content>
           <ContentTitle>{t('project:settingNameInputLabel')}</ContentTitle>
           <Input
@@ -148,4 +159,11 @@ const ContentTitle = styled.p`
   font-size: 1.1rem;
   font-weight: 500;
   margin-bottom: 0.5rem;
+`;
+
+const TokenTitle = styled.p`
+  width: 150px;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
 `;
