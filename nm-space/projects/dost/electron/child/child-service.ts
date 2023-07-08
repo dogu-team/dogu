@@ -1,12 +1,13 @@
 import { Status } from '@dogu-private/dost-children';
 import { Instance, parseAxiosError } from '@dogu-tech/common';
+import { ChildProcess as DoguChildProcess } from '@dogu-tech/node';
 import { Code } from '@dogu-tech/types';
 import * as Sentry from '@sentry/electron/main';
 import axios from 'axios';
 import { ChildProcess, execSync, fork } from 'child_process';
 import { ipcMain } from 'electron';
 import pidtree from 'pidtree';
-import { childClientKey, HostAgentConnectionStatus, IChildClient, Key } from '../../src/shares/child';
+import { childClientKey, ChildTree, HostAgentConnectionStatus, IChildClient, Key } from '../../src/shares/child';
 import { AppConfigService } from '../app-config/app-config-service';
 import { FeatureConfigService } from '../feature-config/feature-config-service';
 import { logger } from '../log/logger.instance';
@@ -26,6 +27,7 @@ export class ChildService implements IChildClient {
     ipcMain.handle(childClientKey.close, (_, key: Key) => instance.close(key));
     ipcMain.handle(childClientKey.isActive, (_, key: Key) => instance.isActive(key));
     ipcMain.handle(childClientKey.getHostAgentConnectionStatus, () => instance.getHostAgentConnectionStatus());
+    ipcMain.handle(childClientKey.getChildTree, () => instance.getChildTree());
   }
 
   static close(): Promise<void> {
@@ -168,6 +170,32 @@ export class ChildService implements IChildClient {
         return response;
       });
     return response;
+  }
+
+  getChildTree(): Promise<ChildTree> {
+    return new Promise((resolve) => {
+      pidtree(process.pid, async (err, pids) => {
+        const psResult = await DoguChildProcess.execIgnoreError('ps -o pid,command', { timeout: 3000 }, logger);
+        const lines = psResult.stdout.split('\n');
+        const pidToCommandMap = lines
+          .map((line) => {
+            const [pid, ...command] = line.trim().split(' ');
+            return { pid, command: command.join(' ') };
+          })
+          .reduce((acc, cur) => {
+            acc[cur.pid] = cur.command;
+            return acc;
+          }, {} as { [key: string]: string });
+
+        if (err) {
+          logger.error('child process close. pidtree error', { error: err });
+          resolve({ childs: [] });
+        } else {
+          logger.info('child process close. pidtree', { pids });
+          resolve({ childs: pids.map((pid) => ({ pid, name: pid in pidToCommandMap ? pidToCommandMap[pid] : 'unknown' })).sort((a, b) => a.pid - b.pid) });
+        }
+      });
+    });
   }
 }
 
