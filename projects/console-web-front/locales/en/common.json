@@ -20,7 +20,7 @@
   "descriptionInputEmptyError": "Please input description",
 
   "copyClipboard": "Copied to clipboard",
-  "copyClipboardFaild": "Failed: please copy manually",
+  "copyClipboardFailed": "Failed: please copy manually",
 
   "doguDocs": "Dogu docs",
 
