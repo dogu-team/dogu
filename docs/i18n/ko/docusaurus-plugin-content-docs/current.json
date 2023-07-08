@@ -86,5 +86,9 @@
   "sidebar.getStartedSidebar.category.Tutorial - Mobile App Testing": {
     "message": "튜토리얼 - 모바일 앱 테스팅",
     "description": "The label for category Tutorial - Mobile App Testing in sidebar getStartedSidebar"
+  },
+  "sidebar.apiSidebar.category.Routine": {
+    "message": "루틴",
+    "description": "The label for category Routine in sidebar apiSidebar"
   }
 }
