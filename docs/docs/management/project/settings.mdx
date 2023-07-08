@@ -1,0 +1,54 @@
+---
+sidebar_position: 8
+title: Project Settings
+locale: en
+---
+
+import OrganizationAdminPermission from '@site/src/components/console/OrganizationAdminPermissionEng.mdx';
+import ProjectAdminPermission from '@site/src/components/console/ProjectAdminPermissionEng.mdx';
+import ProjectMemberPermission from '@site/src/components/console/ProjectMemberPermissionEng.mdx';
+
+## Project ID
+
+<ProjectMemberPermission prefix="Retrieve project ID" />
+
+The project ID is automatically generated when creating a project and cannot be changed.
+
+1. Click on the "Projects" menu in the left sidebar of the organization page.
+2. Check the organization ID and project ID.
+   <img
+     src="/img/console/project/project-id.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+## Update project
+
+<ProjectAdminPermission prefix="Updating a project" />
+
+1. Click on the "Projects" menu in the left sidebar of the organization page.
+2. Click on the project you want to modify.
+3. Click on the "Settings" menu.
+4. Update the project name and description, then click the "Save" button to complete the changes.
+   <img
+     src="/img/console/organization/update-project.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+## Remove a project
+
+<OrganizationAdminPermission prefix="Remove a project" />
+
+:::danger Remove project
+
+Projects contain important data such as test results. Be cautious when deleting a project as it will result in data loss.
+
+:::
+
+1. Click on the "Projects" menu in the left sidebar of the organization page.
+2. Click on the project you want to delete.
+3. Click on the "Settings" menu.
+4. Click the "Remove project" button and confirm the deletion by clicking the confirmation button.
+   <img
+     src="/img/console/organization/remove-project.png"
+     style={{ width: 600, display: 'block' }}
+   />
