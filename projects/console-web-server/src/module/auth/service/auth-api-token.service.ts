@@ -88,8 +88,8 @@ export class AuthApiTokenService {
   private async validateWebdriverAgentApiToken(req: Request): Promise<boolean> {
     const url = req.url;
     const urlParse = url.replace(/\/+$/, '');
-
-    if (urlParse === '/wd/hub/session') {
+    const reqMethod = req.method;
+    if (urlParse === '/remote/wd/hub/session' && reqMethod === 'POST') {
       const isValid = await this.validateWebdriverAgentNewSession(req);
       return isValid;
     }
