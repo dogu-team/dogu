@@ -55,6 +55,7 @@ const ApiUrlInputForm = ({ onFinish }: Props) => {
               setValue(value);
             }}
             isDisabled={loading}
+            placeholder="http://xxx.xxx.xxx.xxx:4000"
           />
           <Button type="submit" form="api-url-form" colorScheme="blue" isDisabled={loading}>
             Set
