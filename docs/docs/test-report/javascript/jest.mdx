@@ -9,9 +9,46 @@ locale: en
 Dogu provides jest integration for users who use jest.  
 The **@dogu-tech/jest-environment** package provides a custom jest environment that allows you to check the test results of the Dogu Routine.
 
-![@dogu-tech/jest-environment](/img/testing-framework/jest-environment.png)
+![@dogu-tech/jest-environment](/img/testing-framework-support/jest.png)
 
 please refer to the following link for more information.
 
 - [npmjs](https://www.npmjs.com/package/@dogu-tech/jest-environment)
 - [github](https://github.com/dogu-team/dogu/tree/main/packages/typescript/jest-environment)
+
+## Requirements
+
+- Node.js >= 16
+
+## Configuration
+
+- install `@dogu-tech/jest-environment` package to your project.
+
+```shell
+# using npm
+npm install --save-dev @dogu-tech/jest-environment
+
+# using yarn
+yarn add --dev @dogu-tech/jest-environment
+
+# using pnpm
+pnpm add --save-dev @dogu-tech/jest-environment
+```
+
+- add `@dogu-tech/jest-environment` to your jest configuration.
+
+```javascript
+// jest.config.js
+
+/** @type {import('jest').Config} */
+module.exports = {
+  testEnvironment: '@dogu-tech/jest-environment',
+  // ... other jest configuration
+};
+```
+
+:::info jest configuration
+
+see [jest configuration](https://jestjs.io/docs/configuration) for more information.
+
+:::
