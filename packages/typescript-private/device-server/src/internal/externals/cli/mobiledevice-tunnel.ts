@@ -5,7 +5,7 @@ import child_process from 'child_process';
 import { idcLogger, logger } from '../../../logger/logger.instance';
 import { Zombieable, ZombieProps, ZombieWaiter } from '../../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
-import { killProcessOnPortOnMacos } from '../../util/net';
+import { killProcessOnPortOnMacos, waitPortOpen } from '../../util/net';
 import { MobileDevice } from './mobiledevice';
 
 export class TunnelContext {
@@ -76,7 +76,9 @@ export class ZombieTunnel implements Zombieable {
   }
 
   async revive(): Promise<void> {
-    await killProcessOnPortOnMacos('mobile', this.hostPort);
+    await killProcessOnPortOnMacos('mobile', this.hostPort, this.logger).catch(() => {
+      // ignore
+    });
     await delay(1000);
     this.tunnelContext = MobileDevice.tunnel(this.serial, this.hostPort, this.devicePort, this.printable);
     if (!this.tunnelContext) {
@@ -85,6 +87,7 @@ export class ZombieTunnel implements Zombieable {
     this.tunnelContext.proc.on('exit', () => {
       ZombieServiceInstance.notifyDie(this);
     });
+    await waitPortOpen(this.hostPort, 60000);
     return Promise.resolve();
   }
 

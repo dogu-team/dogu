@@ -155,6 +155,9 @@ class ZombieXCTest implements Zombieable {
       this.logger.warn?.('uninstallApp com.dogu.IOSDeviceAgentRunner.xctrunner failed');
     });
     await this.xctestrunfile.updateIdaXctestrunFile(this.webDriverPort, this.grpcPort);
+    await XcodeBuild.killPreviousXcodebuild(this.serial, this.printable).catch(() => {
+      this.logger.warn?.('killPreviousXcodebuild failed');
+    });
     this.xctestrun = XcodeBuild.testWithoutBuilding(xctestrunPath, this.serial, this.printable);
     this.xctestrun.proc.on('close', () => {
       this.xctestrun = null;

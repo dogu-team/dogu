@@ -1,4 +1,5 @@
-import { delay, loop } from '@dogu-tech/common';
+import { delay, loop, NullLogger, Printable } from '@dogu-tech/common';
+import { ChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import { findFreePorts } from 'find-free-ports';
 import net from 'net';
@@ -69,9 +70,16 @@ export function isFreePort(port: number): Promise<boolean> {
   });
 }
 
-export async function killProcessOnPortOnMacos(includes: string, port: number): Promise<void> {
-  const lsofResult = child_process.execSync(`lsof -i :${port} | grep LISTEN | grep ${includes}`, { timeout: 10000 }).toString();
-  const splited = lsofResult.split(/\s+/);
+export async function killProcessOnPortOnMacos(includes: string, port: number, printable: Printable): Promise<void> {
+  const lsofResult = await ChildProcess.execIgnoreError(`lsof -i :${port} | grep LISTEN | grep ${includes}`, { timeout: 10000 }, new NullLogger());
+  if (0 === lsofResult.stdout.length) {
+    return;
+  }
+
+  const splited = lsofResult.stdout.split(/\s+/);
+  if (0 === splited.length) {
+    return;
+  }
   const pid = splited[1];
   if (!pid) {
     return;

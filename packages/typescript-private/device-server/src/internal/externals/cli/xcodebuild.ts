@@ -1,5 +1,5 @@
 import { Serial } from '@dogu-private/types';
-import { delay, errorify, loop, Printable } from '@dogu-tech/common';
+import { delay, errorify, loop, PrefixLogger, Printable } from '@dogu-tech/common';
 import { ChildProcess, DirectoryRotation, findEndswith, HostPaths, redirectFileToStream } from '@dogu-tech/node';
 import child_process, { exec, execFile } from 'child_process';
 import { randomUUID } from 'crypto';
@@ -151,8 +151,25 @@ export function testWithoutBuilding(xctestrunPath: string, serial: Serial, print
     xcodebuildPath,
     ['test-without-building', '-xctestrun', `${xctestrunPath}`, '-destination', `id=${serial}`, '-resultBundlePath', tempDirPath],
     {},
-    printable,
+    new PrefixLogger(printable, '[xctest]'),
   );
 
   return new XCTestRunContext(tempDirPath, proc, printable);
+}
+
+export async function killPreviousXcodebuild(serial: Serial, printable: Printable): Promise<void> {
+  const xcodebuildPath = getXcodeBuildPathSync();
+  const lsofResult = await ChildProcess.execIgnoreError(`pgrep -if "${xcodebuildPath}.*${serial}"`, { timeout: 10000 }, printable);
+  if (0 === lsofResult.stdout.length) {
+    return;
+  }
+  const lines = lsofResult.stdout.split('\n');
+  if (0 === lines.length) {
+    return;
+  }
+  const pid = lines[0];
+  if (!pid) {
+    return;
+  }
+  child_process.execSync(`kill -9 ${pid}`);
 }
