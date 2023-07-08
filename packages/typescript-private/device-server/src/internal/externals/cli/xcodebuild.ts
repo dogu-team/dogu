@@ -99,7 +99,7 @@ export class XCTestRunContext {
   private async redirectOutput(tempDirPath: string, proc: child_process.ChildProcess, redirectContext: { stop: boolean }): Promise<void> {
     let fileName = '';
     for await (const _ of loop(1000, 10)) {
-      const files = await findEndswith(tempDirPath, 'StandardOutputAndStandardError.txt');
+      const files = await findEndswith(tempDirPath, 'StandardOutputAndStandardError.txt').catch(() => []);
       if (0 < files.length) {
         fileName = files[0];
         break;
