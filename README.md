@@ -2,10 +2,7 @@
 <img src=".github/resources/logo.png" width="128px" height="128px" title="Gamium_Logo"/>
 </p>
 <p align="center">
-  <a href="https://dogutech.io"><b>Dogu</b></a>
-</p>
-<p align="center">
-Dogu is a web-based test platform for test automation
+Dogu - Integrated test automation platform based on web.
 </p>
 
 <p align="center">
@@ -40,36 +37,13 @@ Dogu is a web-based test platform for test automation
   </div>
 </p>
 
-## What is Dogu?
-
-Dogu is integrated test automation platform. It provides device farm, CI, test report for test automation.  
-If you use Dogu then you don't need to set up platform like jenkins, device farm, test report for test automation and can focus on your test with Dogu.
+Dogu is integrated test automation platform. It provides device farm, CI, test report for test automation. If you use Dogu then you don't need to set up platform like jenkins, device farm, test report for test automation and can focus on your test with Dogu.
 
 ## Why Dogu?
 
-It needs so many time and effort to build and maintain infrastructure like _Appium_, _OpenSTF_, _Jenkins_, _Grafana_ for test automation.
+It needs so many time and effort to build and maintain infrastructure like Appium, OpenSTF, Jenkins, Grafana for test automation.
 Dogu provides **integrated platform** for these infrastructure and helps you to focus on test automation.  
 Especially, Dogu is tightly integrated with test script and test framework so that you can focus on test automation without developing infrastructure related works like parallel test execution, data transfer for test report.
-
-<!-- ## Architecture
-
-<img src=".github/resources/architecture.png"/>
-
-Some features are not yet supported. But we are working hard to support them. -->
-
-<!-- ## Run Test Script Flow
-
-### Uploaded Test Script Execution By Workflow
-
-<img src=".github/resources/architecture-test-automation-flow.png"/>
-
-Dogu Agent helps you to run test script on your device farm. Especially, Dogu Agent is tightly integrated with test script and test framework so that you can focus on test automation without developing infrastructure related works like, target device for test execution, parallel test execution, pulling test script.
-
-### Local Test Script Excution By Relay Hub (Not yet supported)
-
-<img src=".github/resources/architecture-test-remote-automation-flow.png"/>
-
-In contrast to uploaded test script execution, you can run test script existing in local through relay hub on device farm -->
 
 ## Platform Features
 
@@ -144,16 +118,15 @@ You can integrate existing test framework with Dogu.
 
 ### Browser
 
-- Selenium (Not yet supported)
-- Playwright (Not yet supported)
-- Puppeteer (Not yet supported)
-- Cypress (Not yet supported)
-- Webdriverio (Not yet supported)
+- [Selenium](https://docs.dogutech.io/test-automation/browser/selenium)
+- [Playwright](https://docs.dogutech.io/test-automation/browser/playwright)
+- [Puppeteer](https://docs.dogutech.io/test-automation/browser/puppeteer)
+- [Cypress](https://docs.dogutech.io/test-automation/browser/cypress)
+- [Webdriverio](https://docs.dogutech.io/test-automation/browser/webdriverio)
 
 ### Mobile
 
-- Appium (Not yet supported)
-- Webdriverio (Not yet supported)
+- [Appium](https://docs.dogutech.io/test-automation/mobile/appium/)
 
 ### Game
 
@@ -163,9 +136,10 @@ You can integrate existing test framework with Dogu.
 
 You can integrate existing test unit framework with test report.
 
-- Jest (Not yet supported)
-- Pytest (Not yet supported)
-- TestNG (Not yet supported)
+- [Jest](https://docs.dogutech.io/test-report/javascript/jest)
+- [Pytest](https://docs.dogutech.io/test-report/python/pytest)
+- [Mocha](https://docs.dogutech.io/test-report/javascript/mocha)
+- [TestNG](https://docs.dogutech.io/test-report/java/testng)
 
 ## Integrate External Workflow With Routine
 
@@ -185,9 +159,10 @@ You can start right now with [Cloud Service](https://dogutech.io)
 
 ## Documentation
 
-- [Milestones](https://github.com/dogu-team/dogu/milestones)
 - [Documentation](https://docs.dogutech.io)
-- [Quick Start - Device Farm](https://docs.dogutech.io/get-started/device-farm)
+- [Tutorial - Browser Test Automation](https://docs.dogutech.io/get-started/device-farm)
+- [Tutorial - Mobile Test Automation](https://docs.dogutech.io/get-started/device-farm)
+- [Tutorial - Game Test Automation](https://docs.dogutech.io/get-started/device-farm)
 
 ## Community Support
 
@@ -205,7 +180,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 ## License
 
-We provide two editions of Dogu: Community Edition and Enterprise Edition.  
-Community Edition is free under licensed AGPL-3.0.
+We provide two editions of Dogu: Community Edition and Enterprise Edition.
 
 See [LICENSE](LICENSE.md) for more details.
