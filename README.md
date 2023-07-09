@@ -45,36 +45,30 @@ It needs so many time and effort to build and maintain infrastructure like Appiu
 Dogu provides **integrated platform** for these infrastructure and helps you to focus on test automation.  
 Especially, Dogu is tightly integrated with test script and test framework so that you can focus on test automation without developing infrastructure related works like parallel test execution, data transfer for test report.
 
-## Platform Features
-
-### [Management](https://docs.dogutech.io/organization-and-project/introduction)
-
-Manage project, user, device, test script, workflow according to role of organization
-
-- Build systematic organization and project
-- Isolate resource like application, device, test script, workflow according to project
-
-<img src=".github/resources/organization-member.png"/>
-
-### [Device Farm](https://docs.dogutech.io/host-and-device/introduction)
+## Build Device Farm
 
 Build device farm with your own devices
 
-- Manage device farm through dashboard
-- Control host and device remotely
-- Support many platform devices (Android, iOS, Windows, MacOS)
+### Available Devices
+
+- Android
+- iOS
+
+### Remote Control
+
+You can control device remotely on web browser.
 
 <div style="display: flex; flex-direction: row; margin-bottom: 8px">
   <img src=".github/resources/device-android-streaming.gif" width="49%"/>
   <img src=".github/resources/device-ios-streaming.gif" width="49%"/>
 </div>
 
-### [UI Inspector](https://docs.dogutech.io/host-and-device/device/streaming-and-remote-control/game-ui-inspector)
+### UI Inspector
 
-Inspect UI of device in web page
+You can inspect UI on web browser.
 
-- Inspect native UI
-- Inspect UI of game developed by Unity Engine
+- Native UI
+- Game developed by Unity Engine
 
 <div style="display: flex; flex-direction: row; justify-content: center">
   <img src=".github/resources/android-inspecting.gif" width="49%" />
@@ -82,34 +76,6 @@ Inspect UI of device in web page
 </div>
 <div align='center' style="margin-bottom: 8px;">
   <img src=".github/resources/gamium-inspecting.gif" width="49%"/>
-</div>
-
-### [Workflow](https://docs.dogutech.io/script-and-routine/introduction)
-
-Integrate test script with workflow and run it on your own device farm
-
-- Run test script on tartgeted multiple devices
-- Integrate workflow with your CI/CD like Jenkins, Github Action
-- Import test script from Gitlab, Github
-- Parallel test execution
-
-<img src=".github/resources/workflow-inside.png"/>
-
-### [Test Report](https://docs.dogutech.io/script-and-routine/report)
-
-Visualize test result
-
-- Visualized test result (test unit)
-- Recorded video
-- Profiled device (memory, cpu, fps)
-- Log (test script, device, application)
-
-<div style="display: flex; flex-direction: row; justify-content: center">
-  <img src=".github/resources/reporting-video.png" width="49%"/>
-  <img src=".github/resources/reporting-visualization.png" width="49%"/>
-</div>
-<div align='center' style="margin-bottom: 8px;">
-  <img src=".github/resources/reporting-profiling.png" width="49%"/>
 </div>
 
 ## Integrate Test Framework With Dogu
@@ -134,6 +100,15 @@ You can integrate existing test framework with Dogu.
 
 ## Integrate Test Unit Framework With Test Report
 
+Visualize test unit by integrating test unit framework with test report.
+
+<div style="display: flex; flex-direction: row; justify-content: center">
+  <img src=".github/resources/reporting-video.png" width="49%"/>
+  <img src=".github/resources/reporting-visualization.png" width="49%"/>
+</div>
+
+<br/>
+
 You can integrate existing test unit framework with test report.
 
 - [Jest](https://docs.dogutech.io/test-report/javascript/jest)
@@ -143,7 +118,9 @@ You can integrate existing test unit framework with test report.
 
 ## Integrate External Workflow With Routine
 
-You can integrate existing workflow with routine.
+Integrate test script with workflow and run it on your own device farm
+
+<img src=".github/resources/workflow-inside.png"/>
 
 - Jenkins (Not yet supported)
 - Github Action (Not yet supported)
@@ -151,7 +128,7 @@ You can integrate existing workflow with routine.
 ## Start With Self-Hosted
 
 You can set up Dogu on your own server.  
-See [Guide setting up Dogu with self-hosted](https://docs.dogutech.io/self-hosted/get-started)
+See [Guide setting up Dogu with self-hosted](https://docs.dogutech.io/get-started/installation/self-hosted/)
 
 ## Start With Cloud
 
@@ -160,9 +137,9 @@ You can start right now with [Cloud Service](https://dogutech.io)
 ## Documentation
 
 - [Documentation](https://docs.dogutech.io)
-- [Tutorial - Browser Test Automation](https://docs.dogutech.io/get-started/device-farm)
-- [Tutorial - Mobile Test Automation](https://docs.dogutech.io/get-started/device-farm)
-- [Tutorial - Game Test Automation](https://docs.dogutech.io/get-started/device-farm)
+- [Tutorial - Browser Test Automation](https://docs.dogutech.io/get-started/tutorials/web)
+- [Tutorial - Mobile Test Automation](https://docs.dogutech.io/get-started/tutorials/app)
+- [Tutorial - Game Test Automation](https://docs.dogutech.io/get-started/tutorials/game)
 
 ## Community Support
 
