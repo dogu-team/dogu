@@ -326,6 +326,9 @@
   "main.testAutomationTitle": {
     "message": "Test Automation"
   },
+  "main.testAutomationRunLinkTitle": {
+    "message": "Run Test"
+  },
   "main.testAutomationBrowserLinkTitle": {
     "message": "Browser"
   },

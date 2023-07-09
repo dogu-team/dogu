@@ -326,6 +326,9 @@
   "main.testAutomationTitle": {
     "message": "테스트 자동화"
   },
+  "main.testAutomationRunLinkTitle": {
+    "message": "테스트 실행"
+  },
   "main.testAutomationBrowserLinkTitle": {
     "message": "브라우저"
   },

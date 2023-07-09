@@ -151,6 +151,11 @@ export default function Home(): JSX.Element {
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
+              <Link to="/test-automation/run">
+                <Translate id="main.testAutomationRunLinkTitle" />
+              </Link>
+            </li>
+            <li className={styles.docsSectionListItem}>
               <Link to="/test-automation/browser">
                 <Translate id="main.testAutomationBrowserLinkTitle" />
               </Link>
