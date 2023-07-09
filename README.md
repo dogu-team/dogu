@@ -56,7 +56,7 @@ Build device farm with your own devices
 
 ### Remote Control
 
-You can control device remotely on web browser.
+Control device remotely on web browser.
 
 <div style="display: flex; flex-direction: row; margin-bottom: 8px">
   <img src=".github/resources/device-android-streaming.gif" width="49%"/>
@@ -65,7 +65,7 @@ You can control device remotely on web browser.
 
 ### UI Inspector
 
-You can inspect UI on web browser.
+Inspect UI on web browser.
 
 - Native UI
 - Game developed by Unity Engine
@@ -80,7 +80,7 @@ You can inspect UI on web browser.
 
 ## Integrate Test Framework With Dogu
 
-You can integrate existing test framework with Dogu.
+Integrate existing test framework with Dogu.
 
 ### Browser
 
@@ -109,7 +109,7 @@ Visualize test unit by integrating test unit framework with test report.
 
 <br/>
 
-You can integrate existing test unit framework with test report.
+Integrate existing test unit framework with test report.
 
 - [Jest](https://docs.dogutech.io/test-report/javascript/jest)
 - [Pytest](https://docs.dogutech.io/test-report/python/pytest)
@@ -127,12 +127,12 @@ Integrate test script with workflow and run it on your own device farm
 
 ## Start With Self-Hosted
 
-You can set up Dogu on your own server.  
+Set up Dogu on your own server.  
 See [Guide setting up Dogu with self-hosted](https://docs.dogutech.io/get-started/installation/self-hosted/)
 
 ## Start With Cloud
 
-You can start right now with [Cloud Service](https://dogutech.io)
+Start right now with [Cloud Service](https://dogutech.io)
 
 ## Documentation
 
