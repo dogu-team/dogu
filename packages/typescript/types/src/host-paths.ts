@@ -14,9 +14,6 @@ interface CommonPathMap {
 interface MacosPathMap {
   iosDeviceAgentProject: string;
   mobiledevice: string;
-  idevicediagnostics: string;
-  libimobiledeviceLibPath: string;
-  idevicesyslog: string;
 }
 
 interface AndroidPathMap {

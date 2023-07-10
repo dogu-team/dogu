@@ -13,9 +13,10 @@ import { AndroidSdkExternalUnit } from './units/android-sdk-external-unit';
 import { AppiumExternalUnit } from './units/appium-external-unit';
 import { AppiumUiAutomator2DriverExternalUnit } from './units/appium-uiautomator2-driver-external-unit';
 import { AppiumXcUiTestDriverExternalUnit } from './units/appium-xcuitest-driver-external-unit';
-import { IdaBuildExternalUnit } from './units/ida-build-external-command';
+import { IdaBuildExternalUnit } from './units/ida-build-external-unit';
 import { JdkExternalUnit } from './units/jdk-external-unit';
-import { WdaBuildExternalUnit } from './units/wda-build-external-command';
+import { LibimobledeviceExternalUnit } from './units/libimobiledevice-external-unit';
+import { WdaBuildExternalUnit } from './units/wda-build-external-unit';
 import { XcodeExternalUnit } from './units/xcode-external-unit';
 
 export class ExternalService {
@@ -75,6 +76,7 @@ export class ExternalService {
     this.registerUnit('appium-uiautomator2-driver', (unitCallback) => new AppiumUiAutomator2DriverExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, unitCallback));
     this.registerUnit('xcode', () => new XcodeExternalUnit(this.stdLogCallbackService));
     this.registerUnit('appium-xcuitest-driver', (unitCallback) => new AppiumXcUiTestDriverExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, unitCallback));
+    this.registerUnit('libimobiledevice', (unitCallback) => new LibimobledeviceExternalUnit(this.stdLogCallbackService, unitCallback));
     this.registerUnit('web-driver-agent-build', () => new WdaBuildExternalUnit(this.stdLogCallbackService));
     this.registerUnit('ios-device-agent-build', () => new IdaBuildExternalUnit(this.stdLogCallbackService));
   }

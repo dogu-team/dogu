@@ -4624,7 +4624,7 @@ __metadata:
     "@types/glob": 8
     "@types/node": 18.15.11
     chalk: 4.1.2
-    compressing: 1.6.2
+    compressing: 1.9.0
     glob: 10.0.0
     nodemon: 2.0.22
     shx: 0.3.4
@@ -4877,7 +4877,7 @@ __metadata:
     "@dogu-tech/common": "workspace:^"
     "@dogu-tech/node": "workspace:^"
     "@types/node": 18.15.11
-    compressing: 1.6.2
+    compressing: 1.9.0
     nodemon: 2.0.22
     shx: 0.3.4
     ts-node: 10.9.1
@@ -14180,23 +14180,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"compressing@npm:1.6.2":
-  version: 1.6.2
-  resolution: "compressing@npm:1.6.2"
-  dependencies:
-    flushwritable: ^1.0.0
-    get-ready: ^1.0.0
-    iconv-lite: ^0.5.0
-    mkdirp: ^0.5.1
-    pump: ^3.0.0
-    streamifier: ^0.1.1
-    tar-stream: ^1.5.2
-    yauzl: ^2.7.0
-    yazl: ^2.4.2
-  checksum: 1bf175bca1be7afc5da24fa2ea0f316507c8111b50c51d8704459e6d1a917e4847b9acaf18d19353eb3c2c9499bfaa52f6e5f73333467ad6fa6ffe9ea41d664c
-  languageName: node
-  linkType: hard
-
 "compressing@npm:1.9.0":
   version: 1.9.0
   resolution: "compressing@npm:1.9.0"
@@ -20324,7 +20307,7 @@ __metadata:
     "@types/glob": 8
     "@types/node": 18.15.11
     "@types/shelljs": 0.8.11
-    compressing: 1.6.2
+    compressing: 1.9.0
     glob: 10.0.0
     shelljs: 0.8.5
     shx: 0.3.4

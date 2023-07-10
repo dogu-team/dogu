@@ -37,36 +37,6 @@ const files: ThirdPartyFile[] = [
   },
   {
     condition: () => process.platform === 'darwin',
-    url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/idevicediagnostics-arm64',
-    path: 'darwin/arm64/idevicediagnostics',
-  },
-  {
-    condition: () => process.platform === 'darwin',
-    url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/idevicediagnostics-x64',
-    path: 'darwin/x64/idevicediagnostics',
-  },
-  {
-    condition: () => process.platform === 'darwin',
-    url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/idevicesyslog-arm64',
-    path: 'darwin/arm64/idevicesyslog',
-  },
-  {
-    condition: () => process.platform === 'darwin',
-    url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/idevicesyslog-x64',
-    path: 'darwin/x64/idevicesyslog',
-  },
-  {
-    condition: () => process.platform === 'darwin',
-    url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/libimobiledevice-dylib-arm64.zip',
-    path: 'darwin/arm64/lib/libimobiledevice',
-  },
-  {
-    condition: () => process.platform === 'darwin',
-    url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/libimobiledevice-dylib-x64.zip',
-    path: 'darwin/x64/lib/libimobiledevice',
-  },
-  {
-    condition: () => process.platform === 'darwin',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/node-16.20.0/node-darwin-arm64.tar.gz',
     path: 'darwin/arm64/node/v16.20.0',
     // postAction: enableCorepack,

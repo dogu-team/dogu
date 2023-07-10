@@ -1,14 +1,15 @@
 import { Printable, stringify } from '@dogu-tech/common';
-import fs from 'fs/promises';
+import fs from 'fs';
+import fsPromise from 'fs/promises';
 import path from 'path';
 
 export async function copyDirectoryRecursive(sourceDir: string, destinationDir: string, logger: Printable): Promise<void> {
   try {
     if (!(await directoryExists(destinationDir))) {
-      await fs.mkdir(destinationDir, { recursive: true });
+      await fsPromise.mkdir(destinationDir, { recursive: true });
     }
 
-    const files = await fs.readdir(sourceDir);
+    const files = await fsPromise.readdir(sourceDir);
     for (const file of files) {
       const sourcePath = path.join(sourceDir, file);
       const destinationPath = path.join(destinationDir, file);
@@ -16,7 +17,7 @@ export async function copyDirectoryRecursive(sourceDir: string, destinationDir: 
       if (await isDirectory(sourcePath)) {
         await copyDirectoryRecursive(sourcePath, destinationPath, logger);
       } else {
-        await fs.copyFile(sourcePath, destinationPath);
+        await fsPromise.copyFile(sourcePath, destinationPath);
       }
     }
   } catch (error) {
@@ -25,12 +26,12 @@ export async function copyDirectoryRecursive(sourceDir: string, destinationDir: 
 }
 
 export async function getDirectorySize(dir: string): Promise<number> {
-  const files = await fs.readdir(dir);
+  const files = await fsPromise.readdir(dir);
   let size = 0;
 
   for (const file of files) {
     const filePath = path.join(dir, file);
-    const fileStat = await fs.lstat(filePath);
+    const fileStat = await fsPromise.lstat(filePath);
 
     if (fileStat.isDirectory()) {
       size += await getDirectorySize(filePath);
@@ -42,26 +43,48 @@ export async function getDirectorySize(dir: string): Promise<number> {
   return size;
 }
 
+export async function getFileSizeRecursive(destPath: string): Promise<number> {
+  if (fs.existsSync(destPath)) {
+    const stat = await fsPromise.lstat(destPath);
+    if (stat.isSymbolicLink()) {
+      return 0;
+    }
+    if (stat.isFile()) {
+      return stat.size;
+    }
+    if (stat.isDirectory()) {
+      let size = 0;
+      const files = await fsPromise.readdir(destPath);
+      for (const file of files) {
+        const filePath = path.resolve(destPath, file);
+        size += await getFileSizeRecursive(filePath);
+      }
+      return size;
+    }
+  }
+  return 0;
+}
+
 export async function removeItemRecursive(itemPath: string): Promise<void> {
-  const itemStat = await fs.lstat(itemPath);
+  const itemStat = await fsPromise.lstat(itemPath);
 
   if (itemStat.isDirectory()) {
-    const files = await fs.readdir(itemPath);
+    const files = await fsPromise.readdir(itemPath);
 
     for (const file of files) {
       const filePath = path.join(itemPath, file);
       await removeItemRecursive(filePath);
     }
 
-    await fs.rmdir(itemPath);
+    await fsPromise.rmdir(itemPath);
   } else {
-    await fs.unlink(itemPath);
+    await fsPromise.unlink(itemPath);
   }
 }
 
 async function directoryExists(dir: string): Promise<boolean> {
   try {
-    const stats = await fs.stat(dir);
+    const stats = await fsPromise.stat(dir);
     return stats.isDirectory();
   } catch (error: unknown) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
@@ -73,12 +96,12 @@ async function directoryExists(dir: string): Promise<boolean> {
 }
 
 export async function isDirectory(file: string): Promise<boolean> {
-  const stats = await fs.stat(file);
+  const stats = await fsPromise.stat(file);
   return stats.isDirectory();
 }
 
 export async function findEndswith(currentDir: string, ends: string): Promise<string[]> {
-  const files = await fs.readdir(currentDir, { withFileTypes: true });
+  const files = await fsPromise.readdir(currentDir, { withFileTypes: true });
   const outPaths: string[] = [];
   for (const file of files) {
     if (file.isDirectory()) {

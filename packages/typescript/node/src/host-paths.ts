@@ -62,7 +62,11 @@ export const HostPaths = {
       idaDerivedDataPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'ios-device-agent/build'),
       idaDerivedDataClonePath: (): string => path.resolve(HostPaths.external.externalsPath(), 'ios-device-agent/build-clone'),
     },
-
+    libimobiledevice: {
+      libimobiledeviceLibPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice/lib'),
+      idevicediagnostics: (): string => path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice/idevicediagnostics'),
+      idevicesyslog: (): string => path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice/idevicesyslog'),
+    },
     /**
      * @note use to avoid appium xcodebuild process cleanup patterns.
      */
@@ -149,9 +153,6 @@ function createThirdPartyPathMap(options?: ThirdPartyPathMapOptions): ThirdParty
     macos: {
       iosDeviceAgentProject: process.platform === 'darwin' ? path.resolve(thirdPartyPath, platformDir, archCommonDir, 'ios-device-agent') : '',
       mobiledevice: process.platform === 'darwin' ? path.resolve(thirdPartyPath, platformDir, archDir, 'mobiledevice') : '',
-      idevicediagnostics: process.platform === 'darwin' ? path.resolve(thirdPartyPath, platformDir, archDir, 'idevicediagnostics') : '',
-      libimobiledeviceLibPath: process.platform === 'darwin' ? path.resolve(thirdPartyPath, platformDir, archDir, 'lib', 'libimobiledevice') : '',
-      idevicesyslog: process.platform === 'darwin' ? path.resolve(thirdPartyPath, platformDir, archDir, 'idevicesyslog') : '',
     },
   };
 }

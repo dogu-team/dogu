@@ -20,7 +20,7 @@
     "@dogu-private/types": "workspace:^",
     "@dogu-tech/common": "workspace:^",
     "@dogu-tech/node": "workspace:^",
-    "compressing": "1.6.2"
+    "compressing": "1.9.0"
   },
   "devDependencies": {
     "@types/node": "18.15.11",

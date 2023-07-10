@@ -10691,7 +10691,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/glob", "npm:8.1.0"],\
             ["@types/node", "npm:18.15.11"],\
             ["chalk", "npm:4.1.2"],\
-            ["compressing", "npm:1.6.2"],\
+            ["compressing", "npm:1.9.0"],\
             ["glob", "npm:10.0.0"],\
             ["nodemon", "npm:2.0.22"],\
             ["shx", "npm:0.3.4"],\
@@ -10960,7 +10960,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
             ["@types/node", "npm:18.15.11"],\
-            ["compressing", "npm:1.6.2"],\
+            ["compressing", "npm:1.9.0"],\
             ["nodemon", "npm:2.0.22"],\
             ["shx", "npm:0.3.4"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
@@ -23370,22 +23370,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["compressing", [\
-        ["npm:1.6.2", {\
-          "packageLocation": "./.yarn/cache/compressing-npm-1.6.2-79188fd156-1bf175bca1.zip/node_modules/compressing/",\
-          "packageDependencies": [\
-            ["compressing", "npm:1.6.2"],\
-            ["flushwritable", "npm:1.0.0"],\
-            ["get-ready", "npm:1.0.0"],\
-            ["iconv-lite", "npm:0.5.2"],\
-            ["mkdirp", "npm:0.5.6"],\
-            ["pump", "npm:3.0.0"],\
-            ["streamifier", "npm:0.1.1"],\
-            ["tar-stream", "npm:1.6.2"],\
-            ["yauzl", "npm:2.10.0"],\
-            ["yazl", "npm:2.5.1"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:1.9.0", {\
           "packageLocation": "./.yarn/cache/compressing-npm-1.9.0-b52c2b9ca2-e359047104.zip/node_modules/compressing/",\
           "packageDependencies": [\
@@ -30707,7 +30691,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/glob", "npm:8.1.0"],\
             ["@types/node", "npm:18.15.11"],\
             ["@types/shelljs", "npm:0.8.11"],\
-            ["compressing", "npm:1.6.2"],\
+            ["compressing", "npm:1.9.0"],\
             ["glob", "npm:10.0.0"],\
             ["shelljs", "npm:0.8.5"],\
             ["shx", "npm:0.3.4"],\
