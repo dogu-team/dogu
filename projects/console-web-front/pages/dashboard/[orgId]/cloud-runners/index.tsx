@@ -2,12 +2,7 @@ import styled from 'styled-components';
 import Head from 'next/head';
 
 import { NextPageWithLayout } from 'pages/_app';
-import TableListView from 'src/components/common/TableListView';
-import DeviceListController from 'src/components/device/DeviceListController';
-import DeviceFilter from 'src/components/device/DeviceFilter';
-import RefreshButton from 'src/components/buttons/RefreshButton';
 import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
-import OrganizationDeviceLayout from 'src/components/layouts/OrganizationDeviceLayout';
 import OrganizationSideBar from '../../../../src/components/layouts/OrganizationSideBar';
 import ConsoleLayout from '../../../../src/components/layouts/ConsoleLayout';
 

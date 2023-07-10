@@ -36,7 +36,7 @@ const DeviceStreaming = ({ device, children }: Props) => {
     return (
       <>
         <div style={{ flex: 1 }}>
-          <ErrorBox title={t('device-streaming:deviceStreamingStreamingErrorTitle')} desc={t('device-streaming:deviceRTCStreamingDisconnectedErrorMessage')} />
+          <ErrorBox title={t('runner-streaming:deviceStreamingStreamingErrorTitle')} desc={t('runner-streaming:deviceRTCStreamingDisconnectedErrorMessage')} />
         </div>
       </>
     );
@@ -46,7 +46,7 @@ const DeviceStreaming = ({ device, children }: Props) => {
     return (
       <>
         <div style={{ flex: 1 }}>
-          <ErrorBox title={t('device-streaming:deviceStreamingStreamingErrorTitle')} desc={t('device-streaming:deviceRTCStreamingDisconnectedErrorMessage')} />
+          <ErrorBox title={t('runner-streaming:deviceStreamingStreamingErrorTitle')} desc={t('runner-streaming:deviceRTCStreamingDisconnectedErrorMessage')} />
         </div>
       </>
     );
@@ -56,7 +56,7 @@ const DeviceStreaming = ({ device, children }: Props) => {
     return (
       <>
         <div style={{ flex: 1 }}>
-          <ErrorBox title={t('device-streaming:deviceStreamingStreamingErrorTitle')} desc={t('device-streaming:deviceRTCStreamingFailedErrorMessage')} />
+          <ErrorBox title={t('runner-streaming:deviceStreamingStreamingErrorTitle')} desc={t('runner-streaming:deviceRTCStreamingFailedErrorMessage')} />
         </div>
       </>
     );

@@ -38,7 +38,7 @@ const DeviceJobListController = ({ orgId, projectId, pipelineId, jobId }: Props)
     return <ErrorBox title="SomethingWentWrong" desc="" />;
   }
 
-  const deviceJobsData = liveDeviceJobs?.map((item) => ({ ...item, device: data?.find((d) => d.deviceId === item.deviceId)?.device })) || data;
+  const deviceJobsData = liveDeviceJobs?.map((item) => ({ ...item, runner: data?.find((d) => d.deviceId === item.deviceId)?.device })) || data;
 
   return (
     <Box>

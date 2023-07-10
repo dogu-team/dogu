@@ -12,7 +12,7 @@ import { useState } from 'react';
 interface Props {
   organizationId: OrganizationId;
   projectId: ProjectId;
-  onSelectedDeviceChanged: (device: DeviceBase | undefined) => void;
+  onSelectedDeviceChanged: (runner: DeviceBase | undefined) => void;
 }
 
 const ScriptDeviceSeletor = ({ organizationId, projectId, onSelectedDeviceChanged }: Props) => {

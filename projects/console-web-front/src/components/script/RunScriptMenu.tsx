@@ -15,7 +15,7 @@ interface Props {
   selectedApp: ProjectApplicationWithIcon | undefined;
   selectedDevice: DeviceBase | undefined;
   onSelectApp: (app: ProjectApplicationWithIcon | undefined) => void;
-  onSelectDevice: (device: DeviceBase | undefined) => void;
+  onSelectDevice: (runner: DeviceBase | undefined) => void;
   button: React.ReactNode;
 }
 

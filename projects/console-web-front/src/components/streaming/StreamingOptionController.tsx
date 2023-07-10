@@ -40,7 +40,7 @@ const StreamingOptionController = () => {
   return (
     <Box>
       <Content>
-        <ContentTitle>{t('device-streaming:maxFPS')}</ContentTitle>
+        <ContentTitle>{t('runner-streaming:maxFPS')}</ContentTitle>
         <Dropdown menu={{ items: fpsItems }} trigger={['click']}>
           <ResolutionButton>
             {option.fps ?? 30}&nbsp;&nbsp;
@@ -49,7 +49,7 @@ const StreamingOptionController = () => {
         </Dropdown>
       </Content>
       <Content>
-        <ContentTitle>{t('device-streaming:resolution')}</ContentTitle>
+        <ContentTitle>{t('runner-streaming:resolution')}</ContentTitle>
         <Dropdown menu={{ items: resolutionItems }} trigger={['click']}>
           <ResolutionButton>
             {option.resolution ?? 720}p&nbsp;&nbsp;
@@ -58,7 +58,7 @@ const StreamingOptionController = () => {
         </Dropdown>
       </Content>
       <Content>
-        <ContentTitle>{t('device-streaming:scrollSensitivity')}</ContentTitle>
+        <ContentTitle>{t('runner-streaming:scrollSensitivity')}</ContentTitle>
         <Slider min={1} max={100} onChange={(value) => updateOption({ scrollSensitivity: value })} value={option.scrollSensitivity ?? 25} />
       </Content>
     </Box>

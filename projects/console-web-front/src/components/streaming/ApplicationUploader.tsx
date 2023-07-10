@@ -12,7 +12,7 @@ import { getAvailableApplicationExtension } from '../../utils/streaming/streamin
 import { convertByteWithMaxUnit } from '../../utils/unit';
 
 interface Props {
-  // device: DeviceBase;
+  // runner: DeviceBase;
   // deviceClient: DeviceClient;
   // deviceHostClient: DeviceHostClient;
 }
@@ -42,9 +42,9 @@ const ApplicationUploader = ({}: Props) => {
   return (
     <Box>
       <div>
-        <Title style={{ marginBottom: '.5rem' }}>{t('device-streaming:uploadApplicationOptionTitle')}</Title>
+        <Title style={{ marginBottom: '.5rem' }}>{t('runner-streaming:uploadApplicationOptionTitle')}</Title>
         <FlexRow>
-          <p>{t('device-streaming:uploadApplicationRunOptionText')}</p>
+          <p>{t('runner-streaming:uploadApplicationRunOptionText')}</p>
           <Switch onChange={setShouldRun} checked={shouldRun} disabled={loading} />
         </FlexRow>
       </div>
@@ -64,13 +64,13 @@ const ApplicationUploader = ({}: Props) => {
         <p className="ant-upload-drag-icon">
           <InboxOutlined />
         </p>
-        <p className="ant-upload-text">{t('device-streaming:uploadApplicationDescription')}</p>
-        <p className="ant-upload-hint">{t('device-streaming:uploadApplicationHint', { extension: availableExtension })}</p>
+        <p className="ant-upload-text">{t('runner-streaming:uploadApplicationDescription')}</p>
+        <p className="ant-upload-hint">{t('runner-streaming:uploadApplicationHint', { extension: availableExtension })}</p>
       </StyledUpload>
       {app && (
         <ApplicationInfoBox>
           <FlexRow>
-            <Title>{t('device-streaming:uploadApplicationAppInfo')}</Title>
+            <Title>{t('runner-streaming:uploadApplicationAppInfo')}</Title>
             <div>
               <Tooltip title="Cancel">
                 <Button danger icon={<CloseOutlined />} onClick={cancelUpload} />
@@ -78,25 +78,25 @@ const ApplicationUploader = ({}: Props) => {
             </div>
           </FlexRow>
           <InfoContent>
-            <InfoTitle>{t('device-streaming:uploadApplicationName')}</InfoTitle>
+            <InfoTitle>{t('runner-streaming:uploadApplicationName')}</InfoTitle>
             <p>{app.name}</p>
           </InfoContent>
           <InfoContent>
-            <InfoTitle>{t('device-streaming:uploadApplicationSize')}</InfoTitle>
+            <InfoTitle>{t('runner-streaming:uploadApplicationSize')}</InfoTitle>
             <p>{convertByteWithMaxUnit(app.size)}</p>
           </InfoContent>
           <div>
-            <InfoTitle>{t('device-streaming:uploadApplicationStatus')}</InfoTitle>
+            <InfoTitle>{t('runner-streaming:uploadApplicationStatus')}</InfoTitle>
             {result ? (
               result.isSuccess ? (
                 <FlexCentered>
                   <CheckCircleOutlined style={{ fontSize: '3rem', color: 'rgb(21, 168, 3)', marginBottom: '.5rem' }} />
-                  <p>{t('device-streaming:uploadSuccessMessage')}</p>
+                  <p>{t('runner-streaming:uploadSuccessMessage')}</p>
                 </FlexCentered>
               ) : (
                 <FlexCentered>
                   <ExclamationCircleOutlined style={{ fontSize: '3rem', color: '#f78a77', marginBottom: '.5rem' }} />
-                  <p>{t('device-streaming:uploadFailureMessage')}</p>
+                  <p>{t('runner-streaming:uploadFailureMessage')}</p>
                 </FlexCentered>
               )
             ) : (
@@ -106,16 +106,16 @@ const ApplicationUploader = ({}: Props) => {
                   current={progress !== undefined ? 0 : isGathering ? 1 : 2}
                   items={[
                     {
-                      title: t('device-streaming:uploadApplicationUploadStatus'),
+                      title: t('runner-streaming:uploadApplicationUploadStatus'),
                       description: progress !== undefined ? <Progress type="line" percent={progress} /> : undefined,
                       icon: progress !== undefined ? <LoadingOutlined /> : undefined,
                     },
                     {
-                      title: t('device-streaming:uploadApplicationGatheringStatus'),
+                      title: t('runner-streaming:uploadApplicationGatheringStatus'),
                       icon: isGathering ? <LoadingOutlined /> : undefined,
                     },
                     {
-                      title: t('device-streaming:uploadApplicationInstallingStatus'),
+                      title: t('runner-streaming:uploadApplicationInstallingStatus'),
                       icon: isInstalling ? <LoadingOutlined /> : undefined,
                     },
                   ]}

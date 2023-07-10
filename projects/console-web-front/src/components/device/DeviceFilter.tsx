@@ -28,7 +28,7 @@ const DeviceSearchInput = () => {
     debouncedUpdateName(value);
   };
 
-  return <StyledSearchInput value={name} placeholder={t('device:runnerFilterNamePlaceholder')} maxLength={50} onChange={(e) => handleChangeName(e.target.value)} allowClear />;
+  return <StyledSearchInput value={name} placeholder={t('runner:runnerFilterNamePlaceholder')} maxLength={50} onChange={(e) => handleChangeName(e.target.value)} allowClear />;
 };
 
 const DeviceFilter = () => {
@@ -44,12 +44,12 @@ const DeviceFilter = () => {
       <DeviceSearchInput />
 
       <FlexBox>
-        <SelectFilterDropdown title={t('device:runnerFilterTagTitle')} selectedCount={filterValue.tags.length} menu={<DeviceTagSearchBox />} />
-        <SelectFilterDropdown title={t('device:runnerFilterProjectTitle')} selectedCount={filterValue.projects.length} menu={<ProjectSearchBox />} />
-        <SelectFilterDropdown title={t('device:runnerFilterStatusTitle')} selectedCount={filterValue.states.length} menu={<DeviceStatusSelector />} />
+        <SelectFilterDropdown title={t('runner:runnerFilterTagTitle')} selectedCount={filterValue.tags.length} menu={<DeviceTagSearchBox />} />
+        <SelectFilterDropdown title={t('runner:runnerFilterProjectTitle')} selectedCount={filterValue.projects.length} menu={<ProjectSearchBox />} />
+        <SelectFilterDropdown title={t('runner:runnerFilterStatusTitle')} selectedCount={filterValue.states.length} menu={<DeviceStatusSelector />} />
 
         <Button onClick={resetFilter} disabled={JSON.stringify(filterValue) === JSON.stringify(defaultDeviceFilterValue)}>
-          {t('device:runnerFilterClearTitle')}
+          {t('runner:runnerFilterClearTitle')}
         </Button>
       </FlexBox>
     </Box>

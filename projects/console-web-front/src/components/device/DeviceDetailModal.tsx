@@ -18,17 +18,17 @@ const DeviceDetailModal = ({ isOpen, device, close }: Props) => {
   const isGlobal = device.isGlobal === 1;
 
   return (
-    <Modal open={isOpen} closable onCancel={close} title={t('device:runnerDetailModalTitle')} centered destroyOnClose footer={null}>
+    <Modal open={isOpen} closable onCancel={close} title={t('runner:runnerDetailModalTitle')} centered destroyOnClose footer={null}>
       <Box>
         <Content>
-          <StyledH4>{t('device:runnerDetailNameTitle')}</StyledH4>
+          <StyledH4>{t('runner:runnerDetailNameTitle')}</StyledH4>
           <FlexBox>
             <p>{device?.name}</p>
           </FlexBox>
         </Content>
         {!isGlobal && (
           <Content>
-            <StyledH4>{t('device:runnerDetailProjectTitle')}</StyledH4>
+            <StyledH4>{t('runner:runnerDetailProjectTitle')}</StyledH4>
             <div>
               {device?.projects?.map((item) => (
                 <Tag key={item.projectId}>{item.name}</Tag>
@@ -37,7 +37,7 @@ const DeviceDetailModal = ({ isOpen, device, close }: Props) => {
           </Content>
         )}
         <Content>
-          <StyledH4>{t('device:runnerDetailTagTitle')}</StyledH4>
+          <StyledH4>{t('runner:runnerDetailTagTitle')}</StyledH4>
           <div>
             {device?.deviceTags?.map((item) => (
               <Tag key={item.deviceTagId}>{item.name}</Tag>
@@ -45,15 +45,15 @@ const DeviceDetailModal = ({ isOpen, device, close }: Props) => {
           </div>
         </Content>
         <Content>
-          <StyledH4>{t('device:runnerDetailConnectedHostTitle')}</StyledH4>
+          <StyledH4>{t('runner:runnerDetailConnectedHostTitle')}</StyledH4>
           <p>{device?.host?.name}</p>
         </Content>
         <Content>
-          <StyledH4>{t('device:runnerDetailCreatedAtTitle')}</StyledH4>
+          <StyledH4>{t('runner:runnerDetailCreatedAtTitle')}</StyledH4>
           <p>{getLocaleFormattedDate(lang, new Date(device?.createdAt ?? 0))}</p>
         </Content>
         <Content>
-          <StyledH4>{t('device:runnerDetailUpdatedAtTitle')}</StyledH4>
+          <StyledH4>{t('runner:runnerDetailUpdatedAtTitle')}</StyledH4>
           <p>{getLocaleFormattedDate(lang, new Date(device?.updatedAt ?? 0))}</p>
         </Content>
       </Box>

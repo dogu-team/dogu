@@ -56,7 +56,7 @@ const GameObjectDetail = ({ node, hitPoint }: Props) => {
             })}
           </div>
         ) : (
-          <FlexRow style={{ justifyContent: 'center' }}>{t('device-streaming:inspectorSelectObjectText')}</FlexRow>
+          <FlexRow style={{ justifyContent: 'center' }}>{t('runner-streaming:inspectorSelectObjectText')}</FlexRow>
         )}
       </Section>
     </Box>

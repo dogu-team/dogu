@@ -27,7 +27,7 @@ const AddableDeviceFilter = () => {
     [debouncedUpdateKeyword],
   );
 
-  return <StyledSearchInput value={name} onChange={(e) => handleChange(e.target.value)} allowClear placeholder={t('device:runnerFilterNamePlaceholder')} />;
+  return <StyledSearchInput value={name} onChange={(e) => handleChange(e.target.value)} allowClear placeholder={t('runner:runnerFilterNamePlaceholder')} />;
 };
 
 export default AddableDeviceFilter;

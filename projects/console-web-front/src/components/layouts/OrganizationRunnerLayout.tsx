@@ -44,7 +44,7 @@ const AddDeviceTabButton = ({ selected, href }: TabButtonProps) => {
 
   return (
     <RelativeBox>
-      <MenuLinkTabItem selected={selected} title={t('device:runnerAddMenuTitle')} icon={<ApiOutlined />} href={href} access-id={'org-add-device-tab'} />
+      <MenuLinkTabItem selected={selected} title={t('runner:runnerAddMenuTitle')} icon={<ApiOutlined />} href={href} access-id={'org-add-device-tab'} />
       {data && data.totalCount > 0 && <Badge />}
     </RelativeBox>
   );
@@ -54,21 +54,21 @@ interface Props {
   children: React.ReactNode;
 }
 
-const OrganizationDeviceLayout = ({ children }: Props) => {
+const OrganizationRunnerLayout = ({ children }: Props) => {
   const router = useRouter();
   const orgId = router.query.orgId;
   const { t } = useTranslation();
 
   const tabs: MenuLinkTabProps['tabs'] = [
     {
-      href: `/dashboard/${orgId}/devices`,
+      href: `/dashboard/${orgId}/runners`,
       icon: <MobileOutlined />,
-      title: t('device:runnerListMenuTitle'),
+      title: t('runner:runnerListMenuTitle'),
       'access-id': 'org-device-list-tab',
     },
     {
-      tab: (selected) => <AddDeviceTabButton selected={selected} href={`/dashboard/${orgId}/devices/standby`} />,
-      href: `/dashboard/${orgId}/devices/standby`,
+      tab: (selected) => <AddDeviceTabButton selected={selected} href={`/dashboard/${orgId}/runners/standby`} />,
+      href: `/dashboard/${orgId}/runners/standby`,
     },
     // {
     //   href: `/dashboard/${orgId}/devices/cloud`,
@@ -77,9 +77,9 @@ const OrganizationDeviceLayout = ({ children }: Props) => {
     //   'access-id': 'org-add-cloud-device-tab',
     // },
     {
-      href: `/dashboard/${orgId}/devices/tags`,
+      href: `/dashboard/${orgId}/runners/tags`,
       icon: <TagsOutlined />,
-      title: t('device:runnerTagMenuTitle'),
+      title: t('runner:runnerTagMenuTitle'),
       'access-id': 'org-tag-list-tab',
     },
   ];
@@ -92,7 +92,7 @@ const OrganizationDeviceLayout = ({ children }: Props) => {
   );
 };
 
-export default OrganizationDeviceLayout;
+export default OrganizationRunnerLayout;
 
 const RelativeBox = styled.div`
   position: relative;

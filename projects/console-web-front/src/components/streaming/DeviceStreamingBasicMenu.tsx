@@ -20,23 +20,23 @@ const DeviceStreamingBasicMenu = ({}: Props) => {
       {device && (
         <Section>
           <TitleWrapper>
-            <Title>{t('device-streaming:infoTabDeviceInfoTitle')}</Title>
+            <Title>{t('runner-streaming:infoTabDeviceInfoTitle')}</Title>
           </TitleWrapper>
           <div>
             <InfoDescription style={{ alignItems: 'flex-start' }}>
-              <b>{t('device-streaming:deviceName')}:</b>
+              <b>{t('runner-streaming:deviceName')}:</b>
               {device.name}
             </InfoDescription>
             <InfoDescription>
-              <b>{t('device-streaming:devicePlatform')}:</b>
+              <b>{t('runner-streaming:devicePlatform')}:</b>
               <PlatformIcon platform={device.platform} />
             </InfoDescription>
             <InfoDescription>
-              <b>{t('device-streaming:deviceVersion')}:</b>
+              <b>{t('runner-streaming:deviceVersion')}:</b>
               {device.version}
             </InfoDescription>
             <InfoDescription style={{ alignItems: 'flex-start' }}>
-              <b>{t('device-streaming:deviceModel')}:</b>
+              <b>{t('runner-streaming:deviceModel')}:</b>
               {device.modelName ? `${device.modelName} (${device.model})` : device.model}
             </InfoDescription>
           </div>
@@ -44,13 +44,13 @@ const DeviceStreamingBasicMenu = ({}: Props) => {
       )}
       <Section>
         <TitleWrapper>
-          <Title>{t('device-streaming:infoTabVideoPerfomanceTitle')}</Title>
+          <Title>{t('runner-streaming:infoTabVideoPerfomanceTitle')}</Title>
         </TitleWrapper>
         <div>{peerConnection && <PerformanceViewer peerConnection={peerConnection} />}</div>
       </Section>
       <Section>
         <TitleWrapper>
-          <Title>{t('device-streaming:infoTabOptionTitle')}</Title>
+          <Title>{t('runner-streaming:infoTabOptionTitle')}</Title>
         </TitleWrapper>
         <div>
           <StreamingOptionController />
@@ -58,11 +58,11 @@ const DeviceStreamingBasicMenu = ({}: Props) => {
       </Section>
       <Section>
         <TitleWrapper>
-          <Title> {t('device-streaming:infoTabKeyboardTitle')}</Title>
+          <Title> {t('runner-streaming:infoTabKeyboardTitle')}</Title>
         </TitleWrapper>
         <div>
           <KeyContent>
-            <KeyTitle>{t('device-streaming:pasteToClipboard')}</KeyTitle>
+            <KeyTitle>{t('runner-streaming:pasteToClipboard')}</KeyTitle>
             <KeyCapContainer>
               <KeyCap>ctrl</KeyCap>&nbsp;+&nbsp;<KeyCap>shift</KeyCap>&nbsp;+&nbsp;<KeyCap>v</KeyCap>
             </KeyCapContainer>

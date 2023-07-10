@@ -5,7 +5,7 @@ import { NextPageWithLayout } from 'pages/_app';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import TableListView from 'src/components/common/TableListView';
 import AddableDeviceFilter from 'src/components/device/AddableDeviceFilter';
-import OrganizationDeviceLayout from 'src/components/layouts/OrganizationDeviceLayout';
+import OrganizationRunnerLayout from 'src/components/layouts/OrganizationRunnerLayout';
 import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
 import CloudDeviceListController from '../../../../src/components/device/CloudDeviceListController';
 
@@ -29,7 +29,7 @@ const AddCloudDevicePage: NextPageWithLayout<WithOrganizationProps> = ({ organiz
 };
 
 AddCloudDevicePage.getLayout = (page) => {
-  return <OrganizationDeviceLayout>{page}</OrganizationDeviceLayout>;
+  return <OrganizationRunnerLayout>{page}</OrganizationRunnerLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;

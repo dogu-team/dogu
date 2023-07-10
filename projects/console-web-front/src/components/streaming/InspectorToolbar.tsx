@@ -61,7 +61,7 @@ const InspectorToolbar = ({ onRefresh, onReset, selectDisabled }: Props) => {
   return (
     <Box>
       <p>
-        {t('device-streaming:inspectorRefreshedAtText')}: {refreshTime}
+        {t('runner-streaming:inspectorRefreshedAtText')}: {refreshTime}
       </p>
 
       <ButtonWrapper>

@@ -9,7 +9,7 @@ import useModal from 'src/hooks/useModal';
 import CreateTagModal from 'src/components/device/CreateTagModal';
 import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
 import TagFilter from 'src/components/device/TagFilter';
-import OrganizationDeviceLayout from 'src/components/layouts/OrganizationDeviceLayout';
+import OrganizationRunnerLayout from 'src/components/layouts/OrganizationRunnerLayout';
 import TableListView from '../../../../src/components/common/TableListView';
 import DeviceTagListController from '../../../../src/components/device/DeviceTagListController';
 
@@ -27,7 +27,7 @@ const DeviceTagsManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ o
           <FlexBox>
             <TopLeftButtonBox>
               <Button type="primary" onClick={() => openModal()}>
-                {t('device:createTagButtonTitle')}
+                {t('runner:createTagButtonTitle')}
               </Button>
               <TagFilter />
             </TopLeftButtonBox>
@@ -43,7 +43,7 @@ const DeviceTagsManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ o
 };
 
 DeviceTagsManagementPage.getLayout = (page) => {
-  return <OrganizationDeviceLayout>{page}</OrganizationDeviceLayout>;
+  return <OrganizationRunnerLayout>{page}</OrganizationRunnerLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;

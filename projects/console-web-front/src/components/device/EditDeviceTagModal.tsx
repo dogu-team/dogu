@@ -63,7 +63,7 @@ const EditDeviceTagModal = ({ deviceId, isOpen, close }: Props) => {
       fireEvent('onDeviceTagUpdated');
       mutateDeviceTags();
     } catch (e) {
-      if (e instanceof AxiosError) sendErrorNotification(t('device:runnerTagEditFailureMsg', { reason: getErrorMessage(e) }));
+      if (e instanceof AxiosError) sendErrorNotification(t('runner:runnerTagEditFailureMsg', { reason: getErrorMessage(e) }));
     }
   };
 
@@ -73,7 +73,7 @@ const EditDeviceTagModal = ({ deviceId, isOpen, close }: Props) => {
       fireEvent('onDeviceTagUpdated');
       mutateDeviceTags();
     } catch (e) {
-      if (e instanceof AxiosError) sendErrorNotification(t('device:runnerTagEditFailureMsg', { reason: getErrorMessage(e) }));
+      if (e instanceof AxiosError) sendErrorNotification(t('runner:runnerTagEditFailureMsg', { reason: getErrorMessage(e) }));
     }
   };
 
@@ -93,10 +93,10 @@ const EditDeviceTagModal = ({ deviceId, isOpen, close }: Props) => {
       mutateDeviceTags();
       resetFields();
       fireEvent('onDeviceTagUpdated');
-      sendSuccessNotification(t('device:runnerTagCreationSuccessMsg'));
+      sendSuccessNotification(t('runner:runnerTagCreationSuccessMsg'));
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device:runnerTagCreationErrorMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('runner:runnerTagCreationErrorMsg', { reason: getErrorMessage(e) }));
       }
     }
     setIsLoading(false);
@@ -125,9 +125,9 @@ const EditDeviceTagModal = ({ deviceId, isOpen, close }: Props) => {
   };
 
   return (
-    <Modal open={isOpen} closable onCancel={handleClose} title={t('device:runnerEditTagModalTitle')} centered footer={null} destroyOnClose>
+    <Modal open={isOpen} closable onCancel={handleClose} title={t('runner:runnerEditTagModalTitle')} centered footer={null} destroyOnClose>
       <Box>
-        <ContentTitle>{t('device:runnerEditTagSearchTitle')}</ContentTitle>
+        <ContentTitle>{t('runner:runnerEditTagSearchTitle')}</ContentTitle>
         <InputWrapper>
           <Input.Search
             ref={inputRef}
@@ -136,7 +136,7 @@ const EditDeviceTagModal = ({ deviceId, isOpen, close }: Props) => {
             onBlur={() => setShowResult(false)}
             onFocus={() => setShowResult(true)}
             maxLength={DEVICE_TAG_NAME_MAX_LENGTHC}
-            placeholder={t('device:runnerEditTagSearchInputPlaceholder')}
+            placeholder={t('runner:runnerEditTagSearchInputPlaceholder')}
             allowClear
             loading={isLoading}
           />
@@ -152,7 +152,7 @@ const EditDeviceTagModal = ({ deviceId, isOpen, close }: Props) => {
                   <ResultButton onMouseDown={handleCreateNewTag}>
                     <div>
                       <PlusOutlined style={{ marginRight: '.5rem' }} />
-                      <b style={{ fontWeight: 'bold' }}>{t('device:runnerEditTagSearchAddText', { name })}</b>
+                      <b style={{ fontWeight: 'bold' }}>{t('runner:runnerEditTagSearchAddText', { name })}</b>
                     </div>
                   </ResultButton>
                 )
@@ -172,7 +172,7 @@ const EditDeviceTagModal = ({ deviceId, isOpen, close }: Props) => {
                       key={item.deviceTagId}
                     >
                       {item.name}
-                      {hasAttached && <AddedText>{`(${t('device:runnerEditTagAlreadyExistText')})`}</AddedText>}
+                      {hasAttached && <AddedText>{`(${t('runner:runnerEditTagAlreadyExistText')})`}</AddedText>}
                     </ResultButton>
                   );
                 })}
@@ -181,7 +181,7 @@ const EditDeviceTagModal = ({ deviceId, isOpen, close }: Props) => {
         </InputWrapper>
 
         <DeviceTagBox>
-          <ContentTitle>{t('device:runnerEditTagRunnerTagTitle')}</ContentTitle>
+          <ContentTitle>{t('runner:runnerEditTagRunnerTagTitle')}</ContentTitle>
           <TagContainer>
             {deviceTags &&
               (deviceTags.length > 0 ? (
@@ -195,7 +195,7 @@ const EditDeviceTagModal = ({ deviceId, isOpen, close }: Props) => {
                   </StyledTag>
                 ))
               ) : (
-                <p>{t('device:runnerEditTagEmptyTagText')}</p>
+                <p>{t('runner:runnerEditTagEmptyTagText')}</p>
               ))}
           </TagContainer>
         </DeviceTagBox>

@@ -33,18 +33,18 @@ const DeviceStreamingLogContainer = ({ filterValue, deviceLogs, isStopped, onTog
       <MenuBox>
         <div style={{ marginRight: '.5rem', flex: 1 }}>
           <MenuTitle>
-            {t('device-streaming:deviceLogFilterMenuTitle')}{' '}
-            <Tooltip title={t('device-streaming:deviceLogFilterMenuHelp')}>
+            {t('runner-streaming:deviceLogFilterMenuTitle')}{' '}
+            <Tooltip title={t('runner-streaming:deviceLogFilterMenuHelp')}>
               <QuestionCircleFilled />
             </Tooltip>
           </MenuTitle>
           <Input.Search
-            placeholder={t('device-streaming:deviceLogFilterInputPlaceholder')}
+            placeholder={t('runner-streaming:deviceLogFilterInputPlaceholder')}
             value={value}
             onChange={(e) => setValue(e.target.value)}
             enterButton={
               <Button type="primary" disabled={filterValue ? value === filterValue : false}>
-                {t('device-streaming:deviceLogFilterSetButtonText')}
+                {t('runner-streaming:deviceLogFilterSetButtonText')}
               </Button>
             }
             onSearch={onChangeFilterValue}

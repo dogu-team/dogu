@@ -8,7 +8,7 @@ export interface DeviceSelectorProps {
   devices: DeviceBase[];
   filterValue: string;
   onFilterChanged: (value: string) => void;
-  onDeviceSelected: (device: DeviceBase | undefined) => void;
+  onDeviceSelected: (runner: DeviceBase | undefined) => void;
   defaultSelectedDevice?: DeviceBase;
   loading?: boolean;
   className?: string;

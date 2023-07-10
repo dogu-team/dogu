@@ -13,9 +13,9 @@ import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
 import OrganizationSideBar from 'src/components/layouts/OrganizationSideBar';
 import ErrorBox from 'src/components/common/boxes/ErrorBox';
 import useStreamingOptionStore from 'src/stores/streaming-option';
-import { swrAuthFetcher } from '../../../../../src/api';
+import { swrAuthFetcher } from '../../../../../src/api/index';
 import InspectorSelectedNode from '../../../../../src/components/streaming/InspectorSelectedNode';
-import { ResizedObjectInfo, StreamingTabMenuKey } from '../../../../../src/types/streaming';
+import { StreamingTabMenuKey } from '../../../../../src/types/streaming';
 import ResizableLayout from '../../../../../src/components/layouts/ResizableLayout';
 import DeviceStreamingGraphContainer from '../../../../../src/components/streaming/DeviceStreamingGraphContainer';
 import DeviceStreamingLogContainer from '../../../../../src/components/streaming/DeviceStreamingLogContainer';
@@ -31,9 +31,7 @@ const StreamingViewer = () => {
   const router = useRouter();
   const { device, videoRef, deviceService, loading } = useDeviceStreamingContext();
   const tab = (router.query.tab as StreamingTabMenuKey | undefined) ?? StreamingTabMenuKey.INFO;
-  // const inspector = useDeviceInspector(videoRef ?? undefined);
   const inspector = useInspector(deviceService?.deviceInspector, device, videoRef);
-  const [selectedObjectInfos, setSelectedObjectInfos] = useState<ResizedObjectInfo[]>([]);
   const runtimeInfos = useDeviceStreamingProfile(deviceService?.deviceClient, device ?? null);
   const { deviceLogs, isLogStopped, logFilterValue, togglePlay, handleChangeFilterValue, clearLog } = useDeviceLog(deviceService?.deviceClient, device ?? null);
   const { initWidth, saveWidth } = useResizePreference('device-streaming-menu-width', 300);
@@ -45,31 +43,31 @@ const StreamingViewer = () => {
 
     const infoTab: NonNullable<TabsProps['items']>[number] = {
       key: StreamingTabMenuKey.INFO,
-      label: <div>{t('device-streaming:tabMenuInfo')}</div>,
+      label: <div>{t('runner-streaming:tabMenuInfo')}</div>,
       style: { width: '100%', height: '100%' },
       children: <DeviceStreaming.BasicMenu />,
     };
     const inspectorTab: NonNullable<TabsProps['items']>[number] = {
       key: StreamingTabMenuKey.INSPECTOR,
-      label: <div>{t('device-streaming:tabMenuInspector')}</div>,
+      label: <div>{t('runner-streaming:tabMenuInspector')}</div>,
       style: { width: '100%', height: '100%' },
       children: device ? <DeviceStreaming.Inspector inspector={inspector} /> : null,
     };
     const installTab: NonNullable<TabsProps['items']>[number] = {
       key: StreamingTabMenuKey.INSTALL,
-      label: <div>{t('device-streaming:tabMenuAppInstallation')}</div>,
+      label: <div>{t('runner-streaming:tabMenuAppInstallation')}</div>,
       style: { width: '100%', height: '100%' },
       children: device ? <DeviceStreaming.AppInstaller /> : null,
     };
     const profileTab: NonNullable<TabsProps['items']>[number] = {
       key: StreamingTabMenuKey.PROFILE,
-      label: <div>{t('device-streaming:tabMenuProfile')}</div>,
+      label: <div>{t('runner-streaming:tabMenuProfile')}</div>,
       style: { width: '100%', height: '100%' },
       children: <DeviceStreamingGraphContainer infos={runtimeInfos} />,
     };
     const logTab: NonNullable<TabsProps['items']>[number] = {
       key: StreamingTabMenuKey.LOGS,
-      label: <div>{t('device-streaming:tabMenuLog')}</div>,
+      label: <div>{t('runner-streaming:tabMenuLog')}</div>,
       style: { width: '100%', height: '100%' },
       children: (
         <DeviceStreamingLogContainer
@@ -147,7 +145,7 @@ const DeviceStreamingPage: NextPageWithLayout<WithOrganizationProps> = ({ organi
     data: device,
     error: deviceError,
     isLoading: deviceIsLoading,
-  } = useSWR<DeviceBase>(router.query.deviceId && `/organizations/${router.query.orgId}/devices/${router.query.deviceId}`, swrAuthFetcher, { revalidateOnFocus: false });
+  } = useSWR<DeviceBase>(router.query.runnerId && `/organizations/${router.query.orgId}/devices/${router.query.runnerId}`, swrAuthFetcher, { revalidateOnFocus: false });
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -172,7 +170,7 @@ const DeviceStreamingPage: NextPageWithLayout<WithOrganizationProps> = ({ organi
         </Head>
         <Box>
           <div style={{ flex: 1 }}>
-            <ErrorBox title={t('device-streaming:deviceStreamingHAErrorTitle')} desc={t('device-streaming:deviceDisconnectedWithHAErrorMessage')} />
+            <ErrorBox title={t('runner-streaming:deviceStreamingHAErrorTitle')} desc={t('runner-streaming:deviceDisconnectedWithHAErrorMessage')} />
           </div>
         </Box>
       </>
@@ -197,7 +195,7 @@ const DeviceStreamingPage: NextPageWithLayout<WithOrganizationProps> = ({ organi
 
 DeviceStreamingPage.getLayout = (page) => {
   return (
-    <ConsoleLayout sidebar={<OrganizationSideBar />} titleI18nKey="device-streaming:deviceStreamingPageTitle">
+    <ConsoleLayout sidebar={<OrganizationSideBar />} titleI18nKey="runner-streaming:deviceStreamingPageTitle">
       {page}
     </ConsoleLayout>
   );

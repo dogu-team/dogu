@@ -42,7 +42,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
             openAddProjectModal();
           }}
         >
-          {t('device:runnerItemStartUseMenu')}
+          {t('runner:runnerItemStartUseMenu')}
         </MenuItemButton>
       ),
       key: 'add',
@@ -51,7 +51,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
     {
       label: (
         <MenuItemButton danger={false} onClick={() => openEditModal()}>
-          {t('device:runnerItemEditMenu')}
+          {t('runner:runnerItemEditMenu')}
         </MenuItemButton>
       ),
       key: 'edit',
@@ -129,17 +129,17 @@ const CloudDeviceListController = () => {
             <ListEmpty
               description={
                 <div>
-                  <p>{t('device:addableRunnerEmptyDescription')}</p>
+                  <p>{t('runner:addableRunnerEmptyDescription')}</p>
                   <br />
                   <EmptyDescriptionManualBox>
-                    <EmptyDescriptionManualTitle>{t('device:addableRunnerEmptyManualTitle')}</EmptyDescriptionManualTitle>
+                    <EmptyDescriptionManualTitle>{t('runner:addableRunnerEmptyManualTitle')}</EmptyDescriptionManualTitle>
                     <EmptyDescriptionList>
-                      <EmptyDescriptionListItem>{t('device:addableRunnerEmptyManual1')}</EmptyDescriptionListItem>
-                      <EmptyDescriptionListItem>{t('device:addableRunnerEmptyManual2')}</EmptyDescriptionListItem>
-                      <EmptyDescriptionListItem>{t('device:addableRunnerEmptyManual3')}</EmptyDescriptionListItem>
+                      <EmptyDescriptionListItem>{t('runner:addableRunnerEmptyManual1')}</EmptyDescriptionListItem>
+                      <EmptyDescriptionListItem>{t('runner:addableRunnerEmptyManual2')}</EmptyDescriptionListItem>
+                      <EmptyDescriptionListItem>{t('runner:addableRunnerEmptyManual3')}</EmptyDescriptionListItem>
                     </EmptyDescriptionList>
                     <Trans
-                      i18nKey="device:addableRunnerEmptyLink"
+                      i18nKey="runner:addableRunnerEmptyLink"
                       components={{ link: <Link href={'https://docs.dogutech.io/management/organization/device/device-management'} target="_blank" /> }}
                     />
                   </EmptyDescriptionManualBox>

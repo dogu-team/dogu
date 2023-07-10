@@ -6,7 +6,7 @@ import RefreshButton from 'src/components/buttons/RefreshButton';
 import TableListView from 'src/components/common/TableListView';
 import AddableDeviceFilter from 'src/components/device/AddableDeviceFilter';
 import AddableDeviceListController from 'src/components/device/AddableDeviceListController';
-import OrganizationDeviceLayout from 'src/components/layouts/OrganizationDeviceLayout';
+import OrganizationRunnerLayout from 'src/components/layouts/OrganizationRunnerLayout';
 import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
 
 const AddDevicesPage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) => {
@@ -29,7 +29,7 @@ const AddDevicesPage: NextPageWithLayout<WithOrganizationProps> = ({ organizatio
 };
 
 AddDevicesPage.getLayout = (page) => {
-  return <OrganizationDeviceLayout>{page}</OrganizationDeviceLayout>;
+  return <OrganizationRunnerLayout>{page}</OrganizationRunnerLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;

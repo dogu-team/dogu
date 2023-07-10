@@ -106,7 +106,7 @@ const OrganizationSideBar = () => {
     {
       key: 'device',
       icon: collapsed ? (
-        <StyledIconLink selected={router.asPath.startsWith(`/dashboard/${orgId}/devices`)} href={`/dashboard/${orgId}/devices`}>
+        <StyledIconLink selected={router.asPath.startsWith(`/dashboard/${orgId}/runners`)} href={`/dashboard/${orgId}/runners`}>
           <RobotOutlined />
         </StyledIconLink>
       ) : undefined,
@@ -115,9 +115,9 @@ const OrganizationSideBar = () => {
       ) : (
         <SideBarMenu
           icon={<RobotOutlined style={{ fontSize: '1.2rem' }} />}
-          path={`/dashboard/${orgId}/devices`}
+          path={`/dashboard/${orgId}/runners`}
           text={t('organization:runnerPageTitle')}
-          startWith={`/dashboard/${orgId}/devices`}
+          startWith={`/dashboard/${orgId}/runners`}
           accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-device' : undefined}
         />
       ),

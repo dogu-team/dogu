@@ -38,24 +38,24 @@ const CreateTagModal = ({ isOpen, close }: Props) => {
 
     try {
       await createTag(organizationId as OrganizationId, { name });
-      sendSuccessNotification(t('device:tagCreateSuccessMsg'));
+      sendSuccessNotification(t('runner:tagCreateSuccessMsg'));
       fireEvent('onTagCreated');
       form.resetFields();
       close();
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device:tagCreateFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('runner:tagCreateFailMsg', { reason: getErrorMessage(e) }));
       }
     }
   };
 
   return (
     <FormControlModal
-      title={t('device:createTagModalTitle')}
+      title={t('runner:createTagModalTitle')}
       form={
         <Form form={form} id="new-tag" layout="vertical" preserve={false} onFinish={handleSubmit}>
-          <Form.Item name="name" label={t('device:createTagModalNameLabel')} required rules={[{ required: true, message: t('device:createTagModalInputRuleErrorMsg') }]}>
-            <Input placeholder={t('device:createTagModalNamePlaceHolder')} required minLength={DEVICE_TAG_NAME_MIN_LENGTH} maxLength={DEVICE_TAG_NAME_MAX_LENGTHC} />
+          <Form.Item name="name" label={t('runner:createTagModalNameLabel')} required rules={[{ required: true, message: t('runner:createTagModalInputRuleErrorMsg') }]}>
+            <Input placeholder={t('runner:createTagModalNamePlaceHolder')} required minLength={DEVICE_TAG_NAME_MIN_LENGTH} maxLength={DEVICE_TAG_NAME_MAX_LENGTHC} />
           </Form.Item>
         </Form>
       }

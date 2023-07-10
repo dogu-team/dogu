@@ -31,7 +31,7 @@ const StreamingContent = ({ isRunning }: ContentProps) => {
 
   const tabs: TabsProps['items'] = [
     {
-      label: t('device-streaming:tabMenuInspector'),
+      label: t('runner-streaming:tabMenuInspector'),
       key: 'inspector',
       style: { width: '100%', height: '100%' },
       // children: loading ? null : <DeviceStreaming.Inspector inspector={inspector} selectedObjectInfos={selectedObjectInfos} updateSelectedObjectInfos={setSelectedObjectInfos} />,

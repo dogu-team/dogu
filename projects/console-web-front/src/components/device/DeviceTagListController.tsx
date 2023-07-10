@@ -41,10 +41,10 @@ const TagItem = ({ tag, mutateTags }: TagItemProps) => {
     try {
       await deleteTag(orgId, tag.deviceTagId);
       mutateTags();
-      sendSuccessNotification(t('device:tagDeleteSuccessMsg'));
+      sendSuccessNotification(t('runner:tagDeleteSuccessMsg'));
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device:tagDeleteFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('runner:tagDeleteFailMsg', { reason: getErrorMessage(e) }));
       }
     }
   };
@@ -53,7 +53,7 @@ const TagItem = ({ tag, mutateTags }: TagItemProps) => {
     {
       label: (
         <MenuItemButton danger={false} onClick={() => openEditModal()}>
-          {t('device:tagItemEditMenu')}
+          {t('runner:tagItemEditMenu')}
         </MenuItemButton>
       ),
       key: 'edit',
@@ -64,13 +64,13 @@ const TagItem = ({ tag, mutateTags }: TagItemProps) => {
         <MenuItemButton
           danger
           onClick={handleDelete}
-          modalTitle={t('device:tagDeleteModalTitle')}
-          modalButtonTitle={t('device:tagDeleteModalButtonText')}
+          modalTitle={t('runner:tagDeleteModalTitle')}
+          modalButtonTitle={t('runner:tagDeleteModalButtonText')}
           modalContent={
             <p>
-              {t('device:tagDeleteModalContentWaningMsg')}
+              {t('runner:tagDeleteModalContentWaningMsg')}
               <Trans
-                i18nKey={tag.devices!.length < 2 ? 'device:tagDeleteModalContentTextSingular' : 'device:tagDeleteModalContentTextPlurar'}
+                i18nKey={tag.devices!.length < 2 ? 'runner:tagDeleteModalContentTextSingular' : 'runner:tagDeleteModalContentTextPlurar'}
                 components={[<b style={{ fontWeight: '500' }} key="tag-count" />]}
                 values={{ count: tag.devices?.length }}
               />
@@ -78,7 +78,7 @@ const TagItem = ({ tag, mutateTags }: TagItemProps) => {
           }
           onConfirm={handleDelete}
         >
-          {t('device:tagItemDeleteMenu')}
+          {t('runner:tagItemDeleteMenu')}
         </MenuItemButton>
       ),
       key: 'delete',
@@ -133,8 +133,8 @@ const DeviceTagListController = ({ organizationId }: Props) => {
     <>
       <Header>
         <FlexRowBase>
-          <NameCell>{t('device:tagTableNameColumn')}</NameCell>
-          <DeviceCell>{t('device:tagTableTaggedRunnerColumn')}</DeviceCell>
+          <NameCell>{t('runner:tagTableNameColumn')}</NameCell>
+          <DeviceCell>{t('runner:tagTableTaggedRunnerColumn')}</DeviceCell>
           <MenuCell></MenuCell>
         </FlexRowBase>
       </Header>
@@ -150,7 +150,7 @@ const DeviceTagListController = ({ organizationId }: Props) => {
               image={<TagsOutlined style={{ fontSize: '90px' }} />}
               description={
                 <Trans
-                  i18nKey="device:tagEmptyDescription"
+                  i18nKey="runner:tagEmptyDescription"
                   components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/organization/device/tag-management" target="_blank" /> }}
                 />
               }
