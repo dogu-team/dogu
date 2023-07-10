@@ -20,5 +20,6 @@ export * from './ios/plist-parser';
 export * from './logs';
 export * from './options-config';
 export * from './platforms';
+export * from './processes';
 export * from './repositories';
 export * from './stream/redirect';

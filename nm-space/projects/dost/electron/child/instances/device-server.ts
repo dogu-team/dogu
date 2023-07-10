@@ -1,4 +1,4 @@
-import { HostPaths } from '@dogu-tech/node';
+import { HostPaths, killProcessOnPort } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
 import path from 'path';
 import { deviceServerKey } from '../../../src/shares/child';
@@ -18,6 +18,9 @@ export class DeviceServerChild implements Child {
     const DOGU_RUN_TYPE = await appConfigService.get('DOGU_RUN_TYPE');
     const DOGU_DEVICE_SERVER_PORT = await appConfigService.get('DOGU_DEVICE_SERVER_PORT');
     const DOGU_LOG_LEVEL = getLogLevel(DOGU_RUN_TYPE);
+    await killProcessOnPort(DOGU_DEVICE_SERVER_PORT, logger).catch((err) => {
+      logger.error('killProcessOnPort', { err });
+    });
     logger.info(`DeviceServerChild DOGU_LOG_LEVEL: ${DOGU_LOG_LEVEL}`);
     const androidHomePath = process.env.ANDROID_HOME;
     if (!androidHomePath) {

@@ -1,11 +1,11 @@
 import { Platform, Serial } from '@dogu-private/types';
 import { delay, Printable } from '@dogu-tech/common';
-import { ChildProcess } from '@dogu-tech/node';
+import { ChildProcess, killProcessOnPortOnMacos } from '@dogu-tech/node';
 import child_process from 'child_process';
 import { idcLogger, logger } from '../../../logger/logger.instance';
 import { Zombieable, ZombieProps, ZombieWaiter } from '../../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
-import { killProcessOnPortOnMacos, waitPortOpen } from '../../util/net';
+import { waitPortOpen } from '../../util/net';
 import { MobileDevice } from './mobiledevice';
 
 export class TunnelContext {
@@ -41,7 +41,7 @@ export class TunnelContext {
   }
 
   public async ping(hostPort: number): Promise<child_process.ChildProcess> {
-    delay(1000);
+    await delay(1000);
     return await ChildProcess.spawnAndWait('nc', ['-z', 'localhost', `${hostPort}`], {}, idcLogger);
   }
 

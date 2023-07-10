@@ -1,6 +1,7 @@
 import { ChildCode } from '@dogu-private/dost-children';
 import { logger } from '@dogu-private/host-agent';
 import { Code } from '@dogu-private/types';
+import { killProcessOnPort } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
 import { hostAgentKey } from '../../../src/shares/child';
 import { AppConfigService } from '../../app-config/app-config-service';
@@ -22,6 +23,9 @@ export class HostAgentChild implements Child {
     const DOGU_DEVICE_SERVER_HOST_PORT = await appConfigService.get('DOGU_DEVICE_SERVER_HOST_PORT');
     const DOGU_HOST_AGENT_PORT = await appConfigService.get('DOGU_HOST_AGENT_PORT');
     const DOGU_LOG_LEVEL = getLogLevel(DOGU_RUN_TYPE);
+    await killProcessOnPort(DOGU_HOST_AGENT_PORT, logger).catch((err) => {
+      logger.error('killProcessOnPort', { err });
+    });
     logger.info(`HostAgentChild DOGU_LOG_LEVEL: ${DOGU_LOG_LEVEL}`);
     const options = await fillChildOptions({
       forkOptions: {

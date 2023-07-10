@@ -65,7 +65,7 @@ export function execIgnoreError(command: string, options: childProcess.ExecOptio
 }
 
 /**
- * @note cmd 로 실행시 process가 죽어도 childprocess가 같이 죽지 않음.
+ * @note When running with cmd, even if the process dies, the child process does not die together..
  */
 export function spawnSync(command: string, args: string[], options: childProcess.SpawnOptions, printable: Printable): childProcess.ChildProcess {
   printable.verbose?.(`spawn ${command} ${stringify(args)}`);
@@ -141,7 +141,7 @@ export async function spawnAndWait(command: string, args: string[], options: chi
 }
 
 async function _initialize(): Promise<void> {
-  // 윈도우 한글 인코딩 깨지는 문제 대응
+  // Responding to Windows Hangul encoding broken problem
   if (process.platform === 'win32') {
     await exec('chcp 65001', {}, NullLogger.instance);
   }
