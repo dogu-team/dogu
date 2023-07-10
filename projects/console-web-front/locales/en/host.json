@@ -2,7 +2,7 @@
   "hostTableNameColumn": "Name",
   "hostTableOSColumn": "OS",
   "hostTableConnectionStatusColumn": "Connection",
-  "hostTableAgentVersion": "Dost version",
+  "hostTableAgentVersion": "Agent version",
   "hostTableDevciesColumn": "Devices",
 
   "hostItemStartUseMenu": "Start using as device",
@@ -19,9 +19,9 @@
   "hostDeleteModalContentInfo": "Are you sure to delete this host?\nDeleting a host also deletes the devices attached to the host. Devices will lose their tags and projects.",
   "hostDeleteModalContentCountSingular": "Host <0>{{name}}</0> has <0>{{count}}</0> device.",
   "hostDeleteModalContentCountPlural": "Host <0>{{name}}</0> has <0>{{count}}</0> devices.",
-  "dostDownloadTitle": "Download Agent",
+  "agentDownloadTitle": "Download Agent",
 
-  "hostCreateModalSuccessHint": "Host created successfully. <link1>Click here</link1> to install Dost, copy and paste the token to Dost for connecting host. Visit <link2>Host document</link2> for more information.",
+  "hostCreateModalSuccessHint": "Host created successfully. <link1>Click here</link1> to install Dogu Agent, copy and paste the token to Dogu Agent for connecting host. Visit <link2>Host document</link2> for more information.",
   "hostCreateModalCopyTokenButtonTitle": "Copy token",
   "hostCreateModalTokenDescription": "Host token",
   "hostCreateModalTokenCheckDescription": "You can check the token again in host detail",
@@ -41,7 +41,7 @@
   "hostTokenRevokeModalConfirmButtonTitle": "Confirm and revoke",
   "hostRevokeTokenSuccessMsg": "Revoked",
   "hostRevokeTokenFailedMsg": "Failed to revoke.\n{{reason}}",
-  "hostRevokeAfterDescription": "The new token can be used when reconnecting by clicking the 'Troubleshoot' - 'Reconnect' button in Dost.<br></br>Please refer to the <link>host</link> document for more information",
+  "hostRevokeAfterDescription": "The new token can be used when reconnecting by clicking the 'Troubleshoot' - 'Reconnect' button in Dogu Agent.<br></br>Please refer to the <link>host</link> document for more information",
 
   "addNewHost": "Add new host",
   "newHostModalInputName": "Host name",

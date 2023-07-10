@@ -17,7 +17,7 @@ function Permissions(props: PermissionsProps) {
           Required Permissions
         </Heading>
         <Text align="center" m="7" fontSize="md">
-          The following permissions are required to fully use Dost's functions.
+          The following permissions are required to fully use Dogu Agent's functions.
         </Text>
         <Center flex="1" p="1">
           <List>

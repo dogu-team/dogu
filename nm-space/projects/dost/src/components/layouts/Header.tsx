@@ -14,9 +14,9 @@ const Header = ({ right }: Props) => {
 
   return (
     <StyledHeader mode={colorMode}>
-      <DostTitleWrapper style={{ paddingLeft: platform === 'darwin' ? '64px' : '0' }}>
-        <DostTitle>Dost</DostTitle>
-      </DostTitleWrapper>
+      <TitleWrapper style={{ paddingLeft: platform === 'darwin' ? '64px' : '0' }}>
+        <Title>Dogu Agent</Title>
+      </TitleWrapper>
 
       <Flex alignItems="center">
         <div style={{ padding: '0 1rem' }}>{right}</div>
@@ -44,11 +44,11 @@ const StyledHeader = styled.header<{ mode: ColorMode }>`
   }
 `;
 
-const DostTitleWrapper = styled.div`
+const TitleWrapper = styled.div`
   margin-left: 1rem;
 `;
 
-const DostTitle = styled.p`
+const Title = styled.p`
   font-size: 16px;
   font-weight: 700;
   -webkit-user-select: none;

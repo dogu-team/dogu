@@ -53,10 +53,10 @@ const CreateHostModal = ({ isOpen, close }: Props) => {
     setLoading(false);
   };
 
-  const dostDownloadLink =
+  const doguAgentDownloadLink =
     process.env.NEXT_PUBLIC_ENV === 'self-hosted'
       ? 'https://github.com/dogu-team/dogu/releases'
-      : `${process.env.NEXT_PUBLIC_LANDING_URL}${getLocaledLink(router.locale, '/downloads/dost')}`;
+      : `${process.env.NEXT_PUBLIC_LANDING_URL}${getLocaledLink(router.locale, '/downloads/dogu-agent')}`;
 
   return (
     <FormControlModal
@@ -72,7 +72,7 @@ const CreateHostModal = ({ isOpen, close }: Props) => {
                       <Trans
                         i18nKey="host:hostCreateModalSuccessHint"
                         components={{
-                          link1: <Link href={dostDownloadLink} target="_blank" />,
+                          link1: <Link href={doguAgentDownloadLink} target="_blank" />,
                           link2: <Link href="https://docs.dogutech.io/device-farm/host/get-started" target="_blank" />,
                         }}
                       />

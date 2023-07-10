@@ -65,7 +65,7 @@ const Splash = () => {
       } catch (e) {
         ipc.rendererLogger.error(`Error while checking external client status in Splash: ${stringify(e)}`);
         toast({
-          title: 'Failed to check Dost status',
+          title: 'Failed to check Dogu Agent status',
           description: 'Please try again. If this error persists, please contact us.',
           status: 'error',
         });
@@ -83,7 +83,7 @@ const Splash = () => {
         <ScaleFade initialScale={0.9} in={true}>
           <Center flex="1" p="1">
             <Image src={logo} boxSize="70px" align="center" className="App-logo" alt="logo" margin={4} />
-            <Heading size="4xl">Dost</Heading>
+            <Heading size="4xl">Dogu Agent</Heading>
           </Center>
         </ScaleFade>
         <Center flex="1" p="1">

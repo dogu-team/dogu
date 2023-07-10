@@ -61,7 +61,7 @@ const ApiUrlInputForm = ({ onFinish }: Props) => {
             Set
           </Button>
         </Flex>
-        {error ? <FormErrorMessage>{error}</FormErrorMessage> : <FormHelperText>Set API URL for Dost connection on Self-Hosted version</FormHelperText>}
+        {error ? <FormErrorMessage>{error}</FormErrorMessage> : <FormHelperText>Set API URL for Dogu Agent connection on Self-Hosted version</FormHelperText>}
       </FormControl>
     </StyledForm>
   );

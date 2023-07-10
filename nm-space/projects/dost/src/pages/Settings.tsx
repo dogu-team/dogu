@@ -39,7 +39,7 @@ function Settings() {
           <Stack direction={['row']} spacing="4px">
             <Checkbox isChecked={startupAtLogin ?? false} onChange={(e) => setStartupAtLogin(e.target.checked)}>
               <Text width="100%" align="left">
-                Start Dost when you log in
+                Start Dogu Agent when you log in
               </Text>
             </Checkbox>
           </Stack>
@@ -47,7 +47,7 @@ function Settings() {
 
         <ListItem>
           <Stack direction="column" spacing="4px">
-            <MenuTitle>Theme for Dost</MenuTitle>
+            <MenuTitle>Theme for Dogu Agent</MenuTitle>
             <RadioGroup
               value={colorMode}
               onChange={(value) => {

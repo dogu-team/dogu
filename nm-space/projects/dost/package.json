@@ -1,8 +1,8 @@
 {
   "private": true,
-  "name": "dost",
-  "version": "1.2.0",
-  "description": "Dost",
+  "name": "dogu-agent",
+  "version": "1.2.1",
+  "description": "Dogu Agent",
   "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
   "author": "Dogu Technologies",
   "homepage": ".",
@@ -113,6 +113,6 @@
       "react-app/jest"
     ]
   },
-  "productName": "Dost",
+  "productName": "Dogu Agent",
   "url": "https://github.com/dogu-team/dogu"
 }

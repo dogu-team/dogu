@@ -1,4 +1,4 @@
-# Dost
+# Dogu Agent
 
 ## mac build setting
 

@@ -44,7 +44,7 @@ function TroubleShoot() {
             <BorderBox>
               <MenuTitle>Diagnose packages</MenuTitle>
               <Button size="sm" onClick={() => navigate('/doctor')} mt="8px">
-                Dost doctor
+                Dogu Agent doctor
               </Button>
             </BorderBox>
           </ListItem>

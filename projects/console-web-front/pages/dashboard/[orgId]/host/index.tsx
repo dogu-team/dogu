@@ -34,9 +34,9 @@ const HostManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ organiz
                 {t('host:addNewHost')}
               </Button>
               {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
-                <Link href={`${process.env.NEXT_PUBLIC_LANDING_URL}/downloads/dost`} target="_blank">
+                <Link href={`${process.env.NEXT_PUBLIC_LANDING_URL}/downloads/dogu-agent`} target="_blank">
                   <Button>
-                    {t('host:dostDownloadTitle')}
+                    {t('host:agentDownloadTitle')}
                     <Image src={resources.icons.externalLink} width={16} height={16} alt="external link" />
                   </Button>
                 </Link>

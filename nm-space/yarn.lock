@@ -12094,6 +12094,80 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dogu-agent@workspace:projects/dost":
+  version: 0.0.0-use.local
+  resolution: "dogu-agent@workspace:projects/dost"
+  dependencies:
+    "@chakra-ui/checkbox": 2.2.13
+    "@chakra-ui/icons": 2.0.17
+    "@chakra-ui/react": 2.5.2
+    "@chakra-ui/system": 2.5.3
+    "@dogu-private/device-server": "workspace:^"
+    "@dogu-private/dost-children": "workspace:^"
+    "@dogu-private/env-tools": "workspace:^"
+    "@dogu-private/host-agent": "workspace:^"
+    "@dogu-private/installer": "workspace:^"
+    "@dogu-private/types": "workspace:^"
+    "@dogu-tech/common": "workspace:^"
+    "@dogu-tech/device-client-common": "workspace:^"
+    "@emotion/react": 11.10.6
+    "@emotion/styled": 11.10.6
+    "@sentry/electron": 4.5.0
+    "@sentry/react": 7.50.0
+    "@testing-library/dom": 9.0.1
+    "@testing-library/jest-dom": 5.16.5
+    "@testing-library/react": 13.4.0
+    "@testing-library/user-event": 14.4.3
+    "@types/electron-devtools-installer": 2.2.2
+    "@types/jest": 29.4.0
+    "@types/lodash": 4.14.186
+    "@types/node": 18.15.11
+    "@types/react": 18.0.28
+    "@types/react-dom": 18.0.11
+    "@types/shelljs": 0.8.11
+    "@types/styled-components": 5.1.26
+    "@types/yargs": 17.0.23
+    ansi-to-html: 0.7.2
+    class-transformer: 0.5.1
+    class-validator: 0.14.0
+    concurrently: 7.6.0
+    cross-env: 7.0.3
+    dotenv: 16.0.3
+    electron: 23.1.0
+    electron-builder: 23.6.0
+    electron-devtools-installer: 3.2.0
+    electron-dl: ^3.5.0
+    electron-is-dev: 2.0.0
+    electron-log: 4.4.8
+    electron-store: 8.1.0
+    electron-updater: 5.3.0
+    extract-zip: 2.0.1
+    find-free-ports: 3.0.0
+    framer-motion: 10.6.1
+    lodash: 4.17.21
+    node-fetch: 2.6.7
+    nodemon: 2.0.22
+    pidtree: 0.6.0
+    react: 18.2.0
+    react-app-rewired: 2.2.1
+    react-dom: 18.2.0
+    react-icons: 4.8.0
+    react-router-dom: 6.11.2
+    react-scripts: 5.0.1
+    shelljs: 0.8.5
+    shx: 0.3.4
+    strip-ansi: 7.0.1
+    styled-components: 6.0.0-rc.2
+    styled-reset: 4.4.7
+    ts-node: 10.9.1
+    typescript: 4.7.4
+    wait-on: 7.0.1
+    web-vitals: 3.1.1
+    yargs: 17.7.1
+    zustand: 4.3.8
+  languageName: unknown
+  linkType: soft
+
 "dom-accessibility-api@npm:^0.5.6, dom-accessibility-api@npm:^0.5.9":
   version: 0.5.16
   resolution: "dom-accessibility-api@npm:0.5.16"
@@ -12190,80 +12264,6 @@ __metadata:
   checksum: abf7434315283e9aadc2a24bac0e00eab07ae4313b40cc239f89d84d7315ebdfd2fb1b5bf750a96bc1b4403d7237c7b2ebf60459be394d625ead4ca89b934391
   languageName: node
   linkType: hard
-
-"dost@workspace:projects/dost":
-  version: 0.0.0-use.local
-  resolution: "dost@workspace:projects/dost"
-  dependencies:
-    "@chakra-ui/checkbox": 2.2.13
-    "@chakra-ui/icons": 2.0.17
-    "@chakra-ui/react": 2.5.2
-    "@chakra-ui/system": 2.5.3
-    "@dogu-private/device-server": "workspace:^"
-    "@dogu-private/dost-children": "workspace:^"
-    "@dogu-private/env-tools": "workspace:^"
-    "@dogu-private/host-agent": "workspace:^"
-    "@dogu-private/installer": "workspace:^"
-    "@dogu-private/types": "workspace:^"
-    "@dogu-tech/common": "workspace:^"
-    "@dogu-tech/device-client-common": "workspace:^"
-    "@emotion/react": 11.10.6
-    "@emotion/styled": 11.10.6
-    "@sentry/electron": 4.5.0
-    "@sentry/react": 7.50.0
-    "@testing-library/dom": 9.0.1
-    "@testing-library/jest-dom": 5.16.5
-    "@testing-library/react": 13.4.0
-    "@testing-library/user-event": 14.4.3
-    "@types/electron-devtools-installer": 2.2.2
-    "@types/jest": 29.4.0
-    "@types/lodash": 4.14.186
-    "@types/node": 18.15.11
-    "@types/react": 18.0.28
-    "@types/react-dom": 18.0.11
-    "@types/shelljs": 0.8.11
-    "@types/styled-components": 5.1.26
-    "@types/yargs": 17.0.23
-    ansi-to-html: 0.7.2
-    class-transformer: 0.5.1
-    class-validator: 0.14.0
-    concurrently: 7.6.0
-    cross-env: 7.0.3
-    dotenv: 16.0.3
-    electron: 23.1.0
-    electron-builder: 23.6.0
-    electron-devtools-installer: 3.2.0
-    electron-dl: ^3.5.0
-    electron-is-dev: 2.0.0
-    electron-log: 4.4.8
-    electron-store: 8.1.0
-    electron-updater: 5.3.0
-    extract-zip: 2.0.1
-    find-free-ports: 3.0.0
-    framer-motion: 10.6.1
-    lodash: 4.17.21
-    node-fetch: 2.6.7
-    nodemon: 2.0.22
-    pidtree: 0.6.0
-    react: 18.2.0
-    react-app-rewired: 2.2.1
-    react-dom: 18.2.0
-    react-icons: 4.8.0
-    react-router-dom: 6.11.2
-    react-scripts: 5.0.1
-    shelljs: 0.8.5
-    shx: 0.3.4
-    strip-ansi: 7.0.1
-    styled-components: 6.0.0-rc.2
-    styled-reset: 4.4.7
-    ts-node: 10.9.1
-    typescript: 4.7.4
-    wait-on: 7.0.1
-    web-vitals: 3.1.1
-    yargs: 17.7.1
-    zustand: 4.3.8
-  languageName: unknown
-  linkType: soft
 
 "dot-case@npm:^3.0.4":
   version: 3.0.4
