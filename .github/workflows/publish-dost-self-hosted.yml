@@ -1,12 +1,12 @@
-name: 📤publish-dost-self-hosted
-run-name: 📤publish-dost-self-hosted-${{ github.event.inputs.version }}
+name: 📤publish-dogu-agent-self-hosted
+run-name: 📤publish-dogu-agent-self-hosted-${{ github.event.inputs.version }}
 
 on:
   workflow_dispatch:
     inputs:
       version:
         type: string
-        description: 'Dost app version'
+        description: 'Dogu Agent app version'
         default: '0.0.1'
 
 env:
@@ -177,11 +177,11 @@ jobs:
           DOGU_APPLE_API_ISSUER_ID: ${{ secrets.DOGU_APPLE_API_ISSUER_ID }}
 
       - if: steps.cache_nm_space.outputs.cache-hit != 'true'
-        name: Dost - Newbie nm-space
+        name: Dogu Agent - Newbie nm-space
         run: |
           yarn workspace dogu run newbie:nm-space
 
-      - name: Dost - Install nm-space
+      - name: Dogu Agent - Install nm-space
         run: |
           yarn install
         working-directory: ./nm-space
@@ -217,30 +217,30 @@ jobs:
           echo "DOGU_APPUPDATE_REGION=" >> .env.dost
         working-directory: ./nm-space/projects/dost
 
-      - name: Dost - Set productName
+      - name: Dogu Agent - Set productName
         run: |
-          yarn util:set-productname Dost && yarn
+          yarn util:set-productname "Dogu Agent" && yarn
         working-directory: ./nm-space/projects/dost
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
-      - name: Dost - Set version ${{ github.event.inputs.version }}
+      - name: Dogu Agent - Set version ${{ github.event.inputs.version }}
         run: |
           yarn util:set-version ${{ github.event.inputs.version }}
         working-directory: ./nm-space/projects/dost
 
-      - name: Dost - Build
+      - name: Dogu Agent - Build
         run: |
           yarn run build && yarn run deploy:notarize
         working-directory: ./nm-space/projects/dost
         env:
           DOGU_BUILD_ARCH: ${{ matrix.arch }}
 
-      - name: Upload dost
+      - name: Upload dogu-agent
         if: ${{ success() }}
         uses: actions/upload-artifact@v3
         with:
-          name: 'dost-${{ runner.os }}-${{ matrix.arch }}'
+          name: 'dogu-agent-${{ runner.os }}-${{ matrix.arch }}'
           path: |
             ./nm-space/projects/dost/dist/*.${{ matrix.extension }}
 
