@@ -7,7 +7,7 @@ import axios from 'axios';
 import { ChildProcess, execSync, fork } from 'child_process';
 import { ipcMain } from 'electron';
 import pidtree from 'pidtree';
-import { childClientKey, ChildTree, HostAgentConnectionStatus, IChildClient, Key } from '../../src/shares/child';
+import { childClientKey, ChildProcessInfo, ChildTree, HostAgentConnectionStatus, IChildClient, Key } from '../../src/shares/child';
 import { AppConfigService } from '../app-config/app-config-service';
 import { FeatureConfigService } from '../feature-config/feature-config-service';
 import { logger } from '../log/logger.instance';
@@ -175,24 +175,28 @@ export class ChildService implements IChildClient {
   getChildTree(): Promise<ChildTree> {
     return new Promise((resolve) => {
       pidtree(process.pid, async (err, pids) => {
-        const psResult = await DoguChildProcess.execIgnoreError('ps -o pid,command', { timeout: 3000 }, logger);
+        const psResult = await DoguChildProcess.execIgnoreError('ps -e', { timeout: 3000 }, logger);
         const lines = psResult.stdout.split('\n');
         const pidToCommandMap = lines
           .map((line) => {
-            const [pid, ...command] = line.trim().split(' ');
-            return { pid, command: command.join(' ') };
+            const [pid, _, time, ...command] = line.trim().split(/\s{1,}|\t/);
+            return { pid, time: time, command: command.join(' ') };
           })
           .reduce((acc, cur) => {
-            acc[cur.pid] = cur.command;
+            acc[cur.pid] = { pid: parseInt(cur.pid), time: cur.time, name: cur.command };
             return acc;
-          }, {} as { [key: string]: string });
+          }, {} as { [key: string]: ChildProcessInfo });
 
         if (err) {
           logger.error('child process close. pidtree error', { error: err });
           resolve({ childs: [] });
         } else {
           logger.info('child process close. pidtree', { pids });
-          resolve({ childs: pids.map((pid) => ({ pid, name: pid in pidToCommandMap ? pidToCommandMap[pid] : 'unknown' })).sort((a, b) => a.pid - b.pid) });
+          resolve({
+            childs: pids
+              .map((pid) => ({ pid, time: pid in pidToCommandMap ? pidToCommandMap[pid].time : '??', name: pid in pidToCommandMap ? pidToCommandMap[pid].name : 'unknown' }))
+              .sort((a, b) => a.pid - b.pid),
+          });
         }
       });
     });

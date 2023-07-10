@@ -21,7 +21,7 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
-import { ChildTree } from '../../shares/child';
+import { ChildProcessInfo, ChildTree } from '../../shares/child';
 import { ipc } from '../../utils/window';
 import styled from 'styled-components';
 
@@ -39,6 +39,18 @@ function DevChildProcessTree(props: DevChildProcessTreeProps) {
   useEffect(() => {
     const checkState = async () => {
       const childTree = await ipc.childClient.getChildTree();
+      const childs = childTree.childs.map((child: ChildProcessInfo): ChildProcessInfo => {
+        const spaceSplited = child.name.split(' ');
+        const commandName = spaceSplited[0].split('/').slice(-1).join('/');
+        const name = `${commandName} ${spaceSplited.slice(1).join(' ')}`;
+
+        return {
+          pid: child.pid,
+          time: child.time,
+          name: name,
+        };
+      });
+      childTree.childs = childs;
 
       setChildTree(childTree);
       setUpdateDate(new Date());
@@ -66,7 +78,8 @@ function DevChildProcessTree(props: DevChildProcessTreeProps) {
               childTree.childs.map((child) => {
                 return (
                   <Text key={child.pid} fontSize={'xs'}>
-                    <span style={{ backgroundColor: '#d14545', color: '#fff', padding: '.1rem' }}>{child.pid}</span> {child.name.substring(0, 150)}
+                    <span style={{ backgroundColor: '#d14545', color: '#fff', padding: '.1rem' }}>{child.pid}</span>{' '}
+                    <span style={{ backgroundColor: '#d14545', color: '#fff', padding: '.1rem' }}>{child.time}</span> {child.name.substring(0, 150)}
                   </Text>
                 );
               })}
