@@ -134,7 +134,7 @@ const DeviceTagListController = ({ organizationId }: Props) => {
       <Header>
         <FlexRowBase>
           <NameCell>{t('device:tagTableNameColumn')}</NameCell>
-          <DeviceCell>{t('device:tagTableTaggedDeviceColumn')}</DeviceCell>
+          <DeviceCell>{t('device:tagTableTaggedRunnerColumn')}</DeviceCell>
           <MenuCell></MenuCell>
         </FlexRowBase>
       </Header>

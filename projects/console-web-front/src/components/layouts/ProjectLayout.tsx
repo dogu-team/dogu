@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import useSWR from 'swr';
 import Link from 'next/link';
 import { OrganizationBase, ProjectBase } from '@dogu-private/console';
-import { AppstoreOutlined, GatewayOutlined, ProjectOutlined, SettingOutlined, TabletOutlined, TeamOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, GatewayOutlined, ProjectOutlined, RobotOutlined, SettingOutlined, TeamOutlined } from '@ant-design/icons';
 
 import useAuth from 'src/hooks/useAuth';
 import { swrAuthFetcher } from 'src/api';
@@ -49,7 +49,7 @@ const ProjectLayout = ({ children, sidebar, isGitIntegrated }: Props) => {
       title: t('project:tabMenuAppTitle'),
       'access-id': 'project-app-tab',
     },
-    { href: `/dashboard/${organizationId}/projects/${projectId}/devices`, icon: <TabletOutlined />, title: t('project:tabMenuDeviceTitle'), 'access-id': 'project-device-tab' },
+    { href: `/dashboard/${organizationId}/projects/${projectId}/devices`, icon: <RobotOutlined />, title: t('project:tabMenuRunnerTitle'), 'access-id': 'project-device-tab' },
     { href: `/dashboard/${organizationId}/projects/${projectId}/members`, icon: <TeamOutlined />, title: t('project:tabMenuMemberTitle'), 'access-id': 'project-member-tab' },
     { href: `/dashboard/${organizationId}/projects/${projectId}/settings`, icon: <SettingOutlined />, title: t('project:tabMenuSettingTitle'), 'access-id': 'project-setting-tab' },
   ];

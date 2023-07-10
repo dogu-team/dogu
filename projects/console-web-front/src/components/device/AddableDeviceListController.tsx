@@ -42,7 +42,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
             openAddProjectModal();
           }}
         >
-          {t('device:deviceItemStartUseMenu')}
+          {t('device:runnerItemStartUseMenu')}
         </MenuItemButton>
       ),
       key: 'add',
@@ -51,7 +51,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
     {
       label: (
         <MenuItemButton danger={false} onClick={() => openEditModal()}>
-          {t('device:deviceItemEditMenu')}
+          {t('device:runnerItemEditMenu')}
         </MenuItemButton>
       ),
       key: 'edit',
@@ -112,10 +112,10 @@ const AddableDeviceListController = () => {
     <>
       <Header>
         <FlexRowBase>
-          <NameCell>{t('device:deviceTableNameColumn')}</NameCell>
-          <ConnectionStatusCell>{t('device:deviceTableConnectionStatusColumn')}</ConnectionStatusCell>
-          <PlatformCell>{t('device:deviceTablePlatformAndModalColumn')}</PlatformCell>
-          <HostCell>{t('device:deviceTableHostColumn')}</HostCell>
+          <NameCell>{t('device:runnerTableNameColumn')}</NameCell>
+          <ConnectionStatusCell>{t('device:runnerTableConnectionStatusColumn')}</ConnectionStatusCell>
+          <PlatformCell>{t('device:runnerTablePlatformAndModalColumn')}</PlatformCell>
+          <HostCell>{t('device:runnerTableHostColumn')}</HostCell>
           <MenuCell></MenuCell>
         </FlexRowBase>
       </Header>
@@ -130,17 +130,17 @@ const AddableDeviceListController = () => {
             <ListEmpty
               description={
                 <div>
-                  <p>{t('device:addableDeviceEmptyDescription')}</p>
+                  <p>{t('device:addableRunnerEmptyDescription')}</p>
                   <br />
                   <EmptyDescriptionManualBox>
-                    <EmptyDescriptionManualTitle>{t('device:addableDeviceEmptyManualTitle')}</EmptyDescriptionManualTitle>
+                    <EmptyDescriptionManualTitle>{t('device:addableRunnerEmptyManualTitle')}</EmptyDescriptionManualTitle>
                     <EmptyDescriptionList>
-                      <EmptyDescriptionListItem>{t('device:addableDeviceEmptyManual1')}</EmptyDescriptionListItem>
-                      <EmptyDescriptionListItem>{t('device:addableDeviceEmptyManual2')}</EmptyDescriptionListItem>
-                      <EmptyDescriptionListItem>{t('device:addableDeviceEmptyManual3')}</EmptyDescriptionListItem>
+                      <EmptyDescriptionListItem>{t('device:addableRunnerEmptyManual1')}</EmptyDescriptionListItem>
+                      <EmptyDescriptionListItem>{t('device:addableRunnerEmptyManual2')}</EmptyDescriptionListItem>
+                      <EmptyDescriptionListItem>{t('device:addableRunnerEmptyManual3')}</EmptyDescriptionListItem>
                     </EmptyDescriptionList>
                     <Trans
-                      i18nKey="device:addableDeviceEmptyLink"
+                      i18nKey="device:addableRunnerEmptyLink"
                       components={{ link: <Link href={'https://docs.dogutech.io/management/organization/device/device-management'} target="_blank" /> }}
                     />
                   </EmptyDescriptionManualBox>

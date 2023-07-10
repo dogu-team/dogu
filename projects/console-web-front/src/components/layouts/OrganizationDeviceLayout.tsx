@@ -44,7 +44,7 @@ const AddDeviceTabButton = ({ selected, href }: TabButtonProps) => {
 
   return (
     <RelativeBox>
-      <MenuLinkTabItem selected={selected} title={t('device:deviceAddMenuTitle')} icon={<ApiOutlined />} href={href} access-id={'org-add-device-tab'} />
+      <MenuLinkTabItem selected={selected} title={t('device:runnerAddMenuTitle')} icon={<ApiOutlined />} href={href} access-id={'org-add-device-tab'} />
       {data && data.totalCount > 0 && <Badge />}
     </RelativeBox>
   );
@@ -63,7 +63,7 @@ const OrganizationDeviceLayout = ({ children }: Props) => {
     {
       href: `/dashboard/${orgId}/devices`,
       icon: <MobileOutlined />,
-      title: t('device:deviceListMenuTitle'),
+      title: t('device:runnerListMenuTitle'),
       'access-id': 'org-device-list-tab',
     },
     {
@@ -79,13 +79,13 @@ const OrganizationDeviceLayout = ({ children }: Props) => {
     {
       href: `/dashboard/${orgId}/devices/tags`,
       icon: <TagsOutlined />,
-      title: t('device:deviceTagMenuTitle'),
+      title: t('device:runnerTagMenuTitle'),
       'access-id': 'org-tag-list-tab',
     },
   ];
 
   return (
-    <ConsoleLayout sidebar={<OrganizationSideBar />} titleI18nKey={'organization:devicePageTitle'}>
+    <ConsoleLayout sidebar={<OrganizationSideBar />} titleI18nKey={'organization:runnerPageTitle'}>
       <MenuLinkTabs tabs={tabs} />
       <Inner>{children}</Inner>
     </ConsoleLayout>

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import useSWR from 'swr';
 import { OrganizationBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
-import { ClusterOutlined, MobileOutlined, ProjectOutlined, SettingOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons';
+import { ClusterOutlined, ProjectOutlined, RobotOutlined, SettingOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons';
 import { Layout, Menu, MenuProps, Skeleton } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -107,16 +107,16 @@ const OrganizationSideBar = () => {
       key: 'device',
       icon: collapsed ? (
         <StyledIconLink selected={router.asPath.startsWith(`/dashboard/${orgId}/devices`)} href={`/dashboard/${orgId}/devices`}>
-          <MobileOutlined />
+          <RobotOutlined />
         </StyledIconLink>
       ) : undefined,
       label: collapsed ? (
-        t('organization:devicePageTitle')
+        t('organization:runnerPageTitle')
       ) : (
         <SideBarMenu
-          icon={<MobileOutlined style={{ fontSize: '1.2rem' }} />}
+          icon={<RobotOutlined style={{ fontSize: '1.2rem' }} />}
           path={`/dashboard/${orgId}/devices`}
-          text={t('organization:devicePageTitle')}
+          text={t('organization:runnerPageTitle')}
           startWith={`/dashboard/${orgId}/devices`}
           accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-device' : undefined}
         />
@@ -131,12 +131,12 @@ const OrganizationSideBar = () => {
     //     </StyledIconLink>
     //   ) : undefined,
     //   label: collapsed ? (
-    //     t('organization:cloudDevicePageTitle')
+    //     t('organization:cloudRunnerPageTitle')
     //   ) : (
     //     <SideBarMenu
     //       icon={<MobileOutlined style={{ fontSize: '1.2rem' }} />}
     //       path={`/dashboard/${orgId}/cloud-devices`}
-    //       text={t('organization:cloudDevicePageTitle')}
+    //       text={t('organization:cloudRunnerPageTitle')}
     //       startWith={`/dashboard/${orgId}/cloud-devices`}
     //       accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-cloud-device' : undefined}
     //     />

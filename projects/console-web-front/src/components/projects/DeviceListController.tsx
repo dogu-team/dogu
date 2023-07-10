@@ -46,11 +46,11 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
   const handleDelete = async () => {
     try {
       await removeDeviceFromProject(orgId, device.deviceId, projectId);
-      sendSuccessNotification(t('device:deleteDeviceFromProjectSuccessMsg'));
+      sendSuccessNotification(t('device:deleteRunnerFromProjectSuccessMsg'));
       fireEvent('onProjectDeviceDeleted');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device:deleteDeviceFromProjectFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device:deleteRunnerFromProjectFailureMsg', { reason: getErrorMessage(e) }));
       }
     }
   };
@@ -72,7 +72,7 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
             }
           }}
         >
-          {t('device:deviceItemStreamingMenu')}
+          {t('device:runnerItemStreamingMenu')}
         </PrimaryLinkButton>
       ),
       key: 'streaming',
@@ -86,11 +86,11 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
           danger
           onConfirm={handleDelete}
           disabled={device.isGlobal === 1}
-          modalTitle={t('device:deleteDeviceFromProjectModalTitle')}
-          modalButtonTitle={t('device:deleteDeviceFromProjectModalButtonText')}
-          modalContent={t('device:deleteDeviceFromProjectModalContentText', { name: device.name })}
+          modalTitle={t('device:deleteRunnerFromProjectModalTitle')}
+          modalButtonTitle={t('device:deleteRunnerFromProjectModalButtonText')}
+          modalContent={t('device:deleteRunnerFromProjectModalContentText', { name: device.name })}
         >
-          {t('device:deviceItemDeleteFromProjectMenu')}
+          {t('device:runnerItemDeleteFromProjectMenu')}
         </MenuItemButton>
       ),
       key: 'delete',
@@ -159,11 +159,11 @@ const DeviceListController = ({ organizationId, projectId }: Props) => {
     <>
       <Header>
         <FlexRowBase>
-          <NameCell>{t('device:deviceTableNameColumn')}</NameCell>
-          <OneSpanCell>{t('device:deviceTableConnectionStatusColumn')}</OneSpanCell>
-          <OneSpanCell>{t('device:deviceTableRunningStatusColumn')}</OneSpanCell>
-          <PlatformCell>{t('device:deviceTablePlatformAndModalColumn')}</PlatformCell>
-          <OneSpanCell>{t('device:deviceTableTagsAndProjectsColumn')}</OneSpanCell>
+          <NameCell>{t('device:runnerTableNameColumn')}</NameCell>
+          <OneSpanCell>{t('device:runnerTableConnectionStatusColumn')}</OneSpanCell>
+          <OneSpanCell>{t('device:runnerTableRunningStatusColumn')}</OneSpanCell>
+          <PlatformCell>{t('device:runnerTablePlatformAndModalColumn')}</PlatformCell>
+          <OneSpanCell>{t('device:runnerTableTagsAndProjectsColumn')}</OneSpanCell>
           <MenuCell></MenuCell>
         </FlexRowBase>
       </Header>

@@ -58,10 +58,10 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
     try {
       await enableDevice(orgId as OrganizationId, deviceId, { isGlobal: false, projectId });
       mutateDeviceProjects();
-      sendSuccessNotification(t('device:addDeviceToProjectSuccessMsg'));
+      sendSuccessNotification(t('device:addRunnerToProjectSuccessMsg'));
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device:addDeviceToProjectFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device:addRunnerToProjectFailureMsg', { reason: getErrorMessage(e) }));
       }
     }
   };
@@ -70,11 +70,11 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
     setIsGlobal(checked);
     try {
       await enableDevice(orgId as OrganizationId, deviceId, { isGlobal: checked });
-      sendSuccessNotification(t('device:toggleDeviceAsGlobalSuccessMsg'));
+      sendSuccessNotification(t('device:toggleRunnerAsGlobalSuccessMsg'));
       mutateDeviceProjects();
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device:toggleDeviceAsGlobalFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device:toggleRunnerAsGlobalFailureMsg', { reason: getErrorMessage(e) }));
       }
       setIsGlobal(isGlobalProp);
     }
@@ -84,10 +84,10 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
     try {
       await removeDeviceFromProject(orgId as OrganizationId, deviceId, projectId);
       mutateDeviceProjects();
-      sendSuccessNotification(t('device:removeDeviceFromProjectSuccessMsg'));
+      sendSuccessNotification(t('device:removeRunnerFromProjectSuccessMsg'));
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device:removeDeviceFromProjectFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device:removeRunnerFromProjectFailureMsg', { reason: getErrorMessage(e) }));
       }
     }
   };
@@ -98,9 +98,9 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
   };
 
   return (
-    <Modal title={t('device:deviceEditProjectModalTitle')} closable onCancel={handleClose} open={isOpen} centered footer={null}>
+    <Modal title={t('device:runnerEditProjectModalTitle')} closable onCancel={handleClose} open={isOpen} centered footer={null}>
       <Box>
-        <ContentTitle>{t('device:deviceEditProjectSearchTitle')}</ContentTitle>
+        <ContentTitle>{t('device:runnerEditProjectSearchTitle')}</ContentTitle>
         <InputWrapper>
           <Input.Search
             value={inputValue}
@@ -110,7 +110,7 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
             onBlur={() => setShowResult(false)}
             onFocus={() => setShowResult(true)}
             allowClear
-            placeholder={t('device:deviceEditProjectSearchInputPlaceholder')}
+            placeholder={t('device:runnerEditProjectSearchInputPlaceholder')}
             maxLength={PROJECT_NAME_MAX_LENGTH}
           />
 
@@ -128,7 +128,7 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
         </InputWrapper>
 
         <SelectedProjectBox>
-          <ContentTitle>{t('device:deviceEditProjectDeviceProjectTitle')}</ContentTitle>
+          <ContentTitle>{t('device:runnerEditProjectDeviceProjectTitle')}</ContentTitle>
           <TagContainer>
             {deviceProjects?.map((item) => {
               return (
@@ -141,19 +141,19 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
           {!isGlobal && !!deviceProjects && deviceProjects.length === 0 && (
             <div>
               <ExclamationCircleFilled style={{ color: 'red' }} />
-              &nbsp;{t('device:deviceEditProjectEmptyProjectText')}
+              &nbsp;{t('device:runnerEditProjectEmptyProjectText')}
             </div>
           )}
         </SelectedProjectBox>
 
         <GlobalCheckBoxWrapper>
           <Checkbox checked={isGlobal} onChange={(e) => handleToggleGlobal(e.target.checked)}>
-            {t('device:deviceEditProjectGlobalLabelText')}
+            {t('device:runnerEditProjectGlobalLabelText')}
           </Checkbox>
 
           <WarningBox>
             <WarningFilled style={{ color: '#f8b118', fontSize: '1.2rem' }} />
-            <p>{t('device:deviceEditProjectGlobalWarningText')}</p>
+            <p>{t('device:runnerEditProjectGlobalWarningText')}</p>
           </WarningBox>
         </GlobalCheckBoxWrapper>
       </Box>

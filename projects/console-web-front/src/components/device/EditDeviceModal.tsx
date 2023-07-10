@@ -42,12 +42,12 @@ const EditDeviceModal = ({ isOpen, device, close }: Props) => {
     setLoading(true);
     try {
       await updateDevice(organizationId, device.deviceId, { name });
-      sendSuccessNotification(t('device:deviceEditSuccessMsg'));
+      sendSuccessNotification(t('device:runnerEditSuccessMsg'));
       fireEvent('onDeviceUpdated');
       close();
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device:deviceEditFailureMsg', { message: getErrorMessage(e) }));
+        sendErrorNotification(t('device:runnerEditFailureMsg', { message: getErrorMessage(e) }));
       }
     }
     setLoading(false);
@@ -55,14 +55,14 @@ const EditDeviceModal = ({ isOpen, device, close }: Props) => {
 
   return (
     <Modal open={isOpen} centered okText={t('common:save')} cancelText={t('common:cancel')} onCancel={close} confirmLoading={loading} onOk={handleSave} destroyOnClose>
-      <H5>{t('device:deviceEditModalTitle')}</H5>
+      <H5>{t('device:runnerEditModalTitle')}</H5>
       <FormContainer>
         <Form layout="vertical" form={form}>
           <Form.Item
-            label={t('device:deviceEditNameLabelText')}
+            label={t('device:runnerEditNameLabelText')}
             name="name"
             required
-            rules={[{ required: true, message: t('device:deviceEditNameRequiredMsg') }]}
+            rules={[{ required: true, message: t('device:runnerEditNameRequiredMsg') }]}
             initialValue={device?.name}
           >
             <Input type="text" placeholder={t('common:name')} maxLength={DEVICE_NAME_MAX_LENGTH} minLength={DEVICE_NAME_MIN_LENGTH} />

@@ -26,7 +26,7 @@ export const deleteDevice = async (organizationId: OrganizationId, deviceId: Dev
   return data.data;
 };
 
-export const rebootDevice = async (organizationId: OrganizationId, deviceId: DeviceId) => {
+export const rebootRunner = async (organizationId: OrganizationId, deviceId: DeviceId) => {
   await api.post(`/organizations/${organizationId}/devices/${deviceId}/reboot`);
 };
 

@@ -311,7 +311,7 @@ const HostListController = () => {
           <StatusCell>{t('host:hostTableConnectionStatusColumn')}</StatusCell>
           <AgentVersionCell>{t('host:hostTableAgentVersion')}</AgentVersionCell>
           <PlatformCell>{t('host:hostTableOSColumn')}</PlatformCell>
-          <InfoCell>{t('host:hostTableDevciesColumn')}</InfoCell>
+          <InfoCell>{t('host:hostTableRunnerColumn')}</InfoCell>
         </ItemInner>
       </Header>
       <List<HostBase>

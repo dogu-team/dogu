@@ -3,7 +3,7 @@
   "hostTableOSColumn": "OS",
   "hostTableConnectionStatusColumn": "Connection",
   "hostTableAgentVersion": "Agent version",
-  "hostTableDevciesColumn": "Devices",
+  "hostTableRunnerColumn": "Runners",
 
   "hostItemStartUseMenu": "Start using as device",
   "hostItemStreamingMenu": "Streaming",
@@ -16,9 +16,9 @@
   "hostItemDeleteMenu": "Delete host",
   "hostDeleteModalTitle": "Delete host",
   "hostDeleteModalButtonText": "Confirm and delete.",
-  "hostDeleteModalContentInfo": "Are you sure to delete this host?\nDeleting a host also deletes the devices attached to the host. Devices will lose their tags and projects.",
-  "hostDeleteModalContentCountSingular": "Host <0>{{name}}</0> has <0>{{count}}</0> device.",
-  "hostDeleteModalContentCountPlural": "Host <0>{{name}}</0> has <0>{{count}}</0> devices.",
+  "hostDeleteModalContentInfo": "Are you sure to delete this host?\nDeleting a host also deletes runners attached to the host.",
+  "hostDeleteModalContentCountSingular": "Host <0>{{name}}</0> has <0>{{count}}</0> runner.",
+  "hostDeleteModalContentCountPlural": "Host <0>{{name}}</0> has <0>{{count}}</0> runners.",
   "agentDownloadTitle": "Download Agent",
 
   "hostCreateModalSuccessHint": "Host created successfully. <link1>Click here</link1> to install Dogu Agent, copy and paste the token to Dogu Agent for connecting host. Visit <link2>Host document</link2> for more information.",

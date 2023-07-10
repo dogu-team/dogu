@@ -25,7 +25,7 @@ const ProjectDevicePage: NextPageWithLayout<WithProjectProps> = ({ project, orga
           <FlexBetweenBox>
             <div>
               <Link href={`/dashboard/${organization.organizationId}/devices`}>
-                <Button type="primary">{t('device:allocProjectToDeviceButtonText')}</Button>
+                <Button type="primary">{t('device:allocProjectToRunnerButtonText')}</Button>
               </Link>
             </div>
             <RefreshButton />

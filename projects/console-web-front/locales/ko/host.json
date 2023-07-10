@@ -3,7 +3,7 @@
   "hostTableOSColumn": "운영체제",
   "hostTableConnectionStatusColumn": "연결상태",
   "hostTableAgentVersion": "Agent 버전",
-  "hostTableDevciesColumn": "디바이스",
+  "hostTableRunnerColumn": "러너",
 
   "hostItemStartUseMenu": "디바이스로 사용하기",
   "hostItemStreamingMenu": "스트리밍",
@@ -16,9 +16,9 @@
   "hostItemDeleteMenu": "호스트 삭제",
   "hostDeleteModalTitle": "호스트 삭제",
   "hostDeleteModalButtonText": "확인 및 삭제",
-  "hostDeleteModalContentInfo": "이 호스트를 정말 삭제할까요?\n호스트를 삭제하면, 해당 호스트에 연결된 디바이스는 새로운 호스트에 연결해야 합니다. 또한 디바이스는 태그와 프로젝트를 잃게 됩니다.",
-  "hostDeleteModalContentCountSingular": "호스트 <0>{{name}}</0>은/는 디바이스 <0>{{count}}</0> 대를 갖고 있습니다.",
-  "hostDeleteModalContentCountPlural": "호스트 <0>{{name}}</0>은/는 디바이스 <0>{{count}}</0> 대를 갖고 있습니다.",
+  "hostDeleteModalContentInfo": "이 호스트를 정말 삭제할까요?\n호스트를 삭제하면, 해당 호스트에 연결된 러너는 삭제됩니다.",
+  "hostDeleteModalContentCountSingular": "호스트 <0>{{name}}</0>은/는 러너 <0>{{count}}</0> 개를 갖고 있습니다.",
+  "hostDeleteModalContentCountPlural": "호스트 <0>{{name}}</0>은/는 러너 <0>{{count}}</0> 개를 갖고 있습니다.",
   "agentDownloadTitle": "Agent 다운로드",
 
   "hostCreateModalSuccessHint": "호스트가 생성되었습니다. <link1>Agent 다운로드</link1> 페이지에서 Dogu Agent를 설치하고, 토큰을 Dogu Agent에 입력하여 호스트를 등록하세요. 자세한 정보는 <link2>호스트</link2> 문서를 참고하세요.",

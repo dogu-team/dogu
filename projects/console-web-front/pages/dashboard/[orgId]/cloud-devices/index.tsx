@@ -23,7 +23,7 @@ const TeamDevicePage: NextPageWithLayout<WithOrganizationProps> = ({ organizatio
 
 TeamDevicePage.getLayout = (page) => {
   return (
-    <ConsoleLayout titleI18nKey="organization:cloudDevicePageTitle" sidebar={<OrganizationSideBar />}>
+    <ConsoleLayout titleI18nKey="organization:cloudRunnerPageTitle" sidebar={<OrganizationSideBar />}>
       {page}
     </ConsoleLayout>
   );
