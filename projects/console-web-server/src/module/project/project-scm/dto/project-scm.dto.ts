@@ -11,6 +11,7 @@ export class UpdateProjectGitDto implements UpdateProjectGitDtoBase {
 
   @IsNotEmpty()
   @IsString()
+  @Transform(({ value }: { value: string }) => value.trim())
   token!: string;
 
   @IsNotEmpty()
@@ -19,6 +20,10 @@ export class UpdateProjectGitDto implements UpdateProjectGitDtoBase {
     try {
       const inputUrl = value.trim().replace(/\/+$/, '');
       const url = new URL(inputUrl);
+      const pathname = url.pathname;
+      if (pathname === '' || pathname === '/') {
+        throw new HttpException(`Invalid URL. url: ${value}`, HttpStatus.BAD_REQUEST);
+      }
       return `${url.protocol}//${url.host}${url.pathname}`;
     } catch (e) {
       throw new HttpException(`Invalid URL. url: ${value}`, HttpStatus.BAD_REQUEST);
