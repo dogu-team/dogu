@@ -10,7 +10,6 @@ import useSWR from 'swr';
 
 import { swrAuthFetcher } from '../../api';
 import useRefresh from '../../hooks/useRefresh';
-import useRefreshInterval from '../../hooks/useRefreshInterval';
 import usePipelineFilterStore from '../../stores/pipeline-filter';
 import { listItemStyle } from '../../styles/box';
 import { menuItemButtonStyles } from '../../styles/button';
@@ -54,12 +53,7 @@ const PipelineItem = ({ pipeline }: ItemProps) => {
             )}
           </div>
         </Content>
-
-        <Content>
-          <RoutineNameBox>
-            <Tag>{pipeline.routine?.name}</Tag>
-          </RoutineNameBox>
-
+        <Content style={{ justifyContent: 'flex-end' }}>
           <DateContainer>
             <DateBox>
               <CalendarOutlined style={{ fontSize: '1rem', marginRight: '.2rem' }} />
@@ -170,12 +164,12 @@ const ListItem = styled(List.Item)`
 const ListItemInner = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
 `;
 
 const Content = styled.div`
   display: flex;
   align-items: center;
+  flex: 1;
 `;
 
 const IconWrapper = styled.div`
