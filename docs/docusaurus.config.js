@@ -132,7 +132,7 @@ const config = {
                 href: 'https://dogutech.io',
               },
               {
-                label: 'Download Dost',
+                label: 'Download Dogu Agent',
                 href: 'https://dogutech.io/downloads/dost',
               },
             ],

@@ -76,7 +76,11 @@
     "description": "The label of footer link with label=Dogu Console linking to https://dogutech.io"
   },
   "link.item.label.Download Dost": {
-    "message": "Download Dost",
-    "description": "The label of footer link with label=Download Dost linking to https://dogutech.io/downloads/dost"
+    "message": "Download Dogu Agent",
+    "description": "The label of footer link with label=Download Dogu Agent linking to https://dogutech.io/downloads/dost"
+  },
+  "link.item.label.Download Dogu Agent": {
+    "message": "Download Dogu Agent",
+    "description": "The label of footer link with label=Download Dogu Agent linking to https://dogutech.io/downloads/dost"
   }
 }

@@ -13,16 +13,16 @@ import OrganizationMemberPermission from '@site/src/components/console/Organizat
 
 :::info PREREQUISTIES
 
-To use Dost, it needs to be installed on the host machine.
+To use Dogu Agent, it needs to be installed on the host machine.
 
-You can download Dost from the [Dost download](https://dogutech.io/en/downloads/dost).
+You can download Dogu Agent from the [Dogu Agent download](https://dogutech.io/en/downloads/dost).
 
 For instructions on host setup and system requirements, please refer to the [Agent Installation](/device-farm/host/get-started) documentation.
 
 :::
 
-1. Connect the host machine, where Dost is installed, to the network.
-2. Run Dost on the host machine.
+1. Connect the host machine, where Dogu Agent is installed, to the network.
+2. Run Dogu Agent on the host machine.
 3. In the Dogu console, navigate to the "Hosts" menu in the left sidebar of the organization page.
 4. Click on the "Add new host" button.
 5. Enter the host name and click the "Add" button.
@@ -30,7 +30,7 @@ For instructions on host setup and system requirements, please refer to the [Age
      src="/img/console/organization/add-host-modal.png"
      style={{ width: 600, display: 'block' }}
    />
-6. Enter the host token in the Dost token input field and click the "Connect" button.
+6. Enter the host token in the Dogu Agent token input field and click the "Connect" button.
    <img
      src="/img/get-started/dost-token-input.png"
      style={{ width: 600, display: 'block' }}
@@ -194,7 +194,7 @@ For more information about each feature, please refer to the [Device Streaming a
 
 :::danger Revoke token
 
-When the host token is revoked, the previous host token becomes invalid and can no longer be used. Therefore, until the revoked token is entered in Dost, the host's connection status will be 'Disconnected'.
+When the host token is revoked, the previous host token becomes invalid and can no longer be used. Therefore, until the revoked token is entered in Dogu Agent, the host's connection status will be 'Disconnected'.
 
 The devices connected to that host will also have an 'Offline' connection status, which may result in the interruption of ongoing tests or remote control of the devices.
 
@@ -212,7 +212,7 @@ The devices connected to that host will also have an 'Offline' connection status
      src="/img/console/organization/revoke-host-token-confirm.png"
      style={{ width: 600, display: 'block' }}
    />
-5. On the host device where Dost is running, click on the "Troubleshoot" tab.
+5. On the host device where Dogu Agent is running, click on the "Troubleshoot" tab.
    <img
      src="/img/console/organization/dost-troubleshoot-tab.png"
      style={{ width: 600, display: 'block' }}
