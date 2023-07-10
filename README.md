@@ -68,7 +68,7 @@ Control device remotely on web browser.
 Inspect UI on web browser.
 
 - Native UI
-- Game developed by Unity Engine
+- Game UI developed by Unity Engine
 
 <div style="display: flex; flex-direction: row; justify-content: center">
   <img src=".github/resources/android-inspecting.gif" width="49%" />
@@ -118,7 +118,7 @@ Integrate existing test unit framework with test report.
 
 ## Integrate External Workflow With Routine
 
-Integrate test script with workflow and run it on your own device farm
+Run test script on routine and integrate external workflow with routine.
 
 <img src=".github/resources/workflow-inside.png"/>
 
