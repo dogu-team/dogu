@@ -1,6 +1,23 @@
-import { Button, Center, Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, List, ListItem, Stack, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Center,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerHeader,
+  DrawerOverlay,
+  List,
+  ListItem,
+  Stack,
+  Text,
+  useDisclosure,
+} from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
 import { ipc } from '../../utils/window';
+import { ChildTree } from '../../shares/child';
+import DevChildProcessTree from './DevChildProcessTree';
 
 interface DevDrawerProps {
   isOpen: boolean;
@@ -42,12 +59,14 @@ function DevDrawer(props: DevDrawerProps) {
   const [isHAActive, setIsHAActive] = useState<boolean>(false);
   const [isDSActive, setIsDSActive] = useState<boolean>(false);
   const [updateDate, setUpdateDate] = useState<Date>();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   const timer = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => {
     const checkState = async () => {
       const isHAActive = await ipc.childClient.isActive('host-agent');
-      const isDSActive = await ipc.childClient.isActive('device-server');
       setIsHAActive(isHAActive);
+      const isDSActive = await ipc.childClient.isActive('device-server');
       setIsDSActive(isDSActive);
       setUpdateDate(new Date());
     };
@@ -110,10 +129,21 @@ function DevDrawer(props: DevDrawerProps) {
                     </Button>
                   </Stack>
                 </ListItem>
+                <ListItem>
+                  <Stack direction={['row']} spacing="20px">
+                    <Text width="100%" align="left">
+                      Child Processes
+                    </Text>
+                    <Button size="sm" onClick={onOpen}>
+                      Open
+                    </Button>
+                  </Stack>
+                </ListItem>
               </List>
             </Center>
           </DrawerBody>
         </DrawerContent>
+        <DevChildProcessTree isOpen={isOpen} onClose={onClose} />
       </Drawer>
     </>
   );

@@ -13,10 +13,21 @@ export type HostAgentConnectionStatus = Instance<typeof Status.getConnectionStat
 
 export const childClientKey = instanceKeys<IChildClient>('childClient');
 
+export interface ChildProcessInfo {
+  pid: number;
+  time: string;
+  name: string;
+}
+
+export interface ChildTree {
+  childs: ChildProcessInfo[];
+}
+
 export interface IChildClient {
   close: (key: Key) => Promise<void>;
   isActive: (key: Key) => Promise<boolean>;
   getHostAgentConnectionStatus: () => Promise<HostAgentConnectionStatus>;
+  getChildTree: () => Promise<ChildTree>;
 }
 
 export const childFactoryKey = instanceKeys<IChildFactory>('childFactory');
