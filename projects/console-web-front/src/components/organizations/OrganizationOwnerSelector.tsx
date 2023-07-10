@@ -57,7 +57,7 @@ const OrganizationOwnerSelector = ({ organization, onChange }: Props) => {
       onSelect={(value) => {
         setOwner(data?.items.find((item) => item.userId === value));
       }}
-      placeholder={'Colleague'}
+      placeholder="Member"
       autoClearSearchValue
       options={
         inputValue

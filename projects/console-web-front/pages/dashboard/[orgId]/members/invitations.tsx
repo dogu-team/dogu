@@ -13,7 +13,7 @@ const InvitationUserPage: NextPageWithLayout<WithOrganizationProps> = ({ organiz
   return (
     <>
       <Head>
-        <title>Colleague invitations - {organization.name} | Dogu</title>
+        <title>Member invitations - {organization.name} | Dogu</title>
       </Head>
 
       <TableListView

@@ -56,11 +56,11 @@ const AddMemberModal = ({ isOpen, close, organizationId, projectId }: Props) => 
   };
 
   return (
-    <Modal open={isOpen} centered destroyOnClose onCancel={handleClose} footer={null} title={t('project-member:addProjectColleagueModalTitle')}>
+    <Modal open={isOpen} centered destroyOnClose onCancel={handleClose} footer={null} title={t('project-member:addProjectOrgMemberModalTitle')}>
       <PermissionSelectContentBox<UserBase>
         input={
           <Input.Search
-            placeholder={t('project-member:addProjectColleagueInputPlaceholder')}
+            placeholder={t('project-member:addProjectOrgMemberInputPlaceholder')}
             value={inputValue}
             onChange={(e) => handleChangeValues(e.target.value)}
             maxLength={USER_NAME_MAX_LENGTH}

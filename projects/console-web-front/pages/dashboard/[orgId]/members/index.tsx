@@ -15,7 +15,7 @@ const ManageUserPage: NextPageWithLayout<WithOrganizationProps> = ({ organizatio
   return (
     <>
       <Head>
-        <title>Colleagues - {organization.name} | Dogu</title>
+        <title>Members - {organization.name} | Dogu</title>
       </Head>
       <TableListView
         top={

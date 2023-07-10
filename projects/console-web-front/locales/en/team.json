@@ -42,7 +42,7 @@
   "addMemberModalInputPlaceholder": "Search by name or email",
   "addMemberSuccessMsg": "Added!",
   "addMemberFailMsg": "Failed to add.\n{{reason}}",
-  "addMemberEmptyResult": "Cannot find colleague",
+  "addMemberEmptyResult": "Cannot find member",
 
   "memberTableProfileColumn": "Profile",
 

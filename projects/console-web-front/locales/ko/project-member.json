@@ -8,7 +8,7 @@
   "removeMemberModalButtonText": "확인 및 멤버 삭제",
   "removeMemberModalContent": "멤버를 삭제할까요?",
 
-  "colleagueMemberType": "멤버",
+  "orgMemberType": "멤버",
   "teamMemberType": "팀",
 
   "projectMemberFilterPlaceholder": "이름 또는 이메일",
@@ -20,9 +20,9 @@
   "removeMemberSuccessMsg": "삭제됨",
   "removeMemberFailMsg": "삭제 실패.\n{{reason}}",
 
-  "addProjectColleagueMember": "멤버 추가",
-  "addProjectColleagueModalTitle": "멤버 추가하기",
-  "addProjectColleagueInputPlaceholder": "이름 또는 이메일로 검색",
+  "addProjectOrgMemberMember": "멤버 추가",
+  "addProjectOrgMemberModalTitle": "멤버 추가하기",
+  "addProjectOrgMemberInputPlaceholder": "이름 또는 이메일로 검색",
   "addProjectTeamMember": "팀 추가",
   "addProjectTeamModalTitle": "팀 추가하기",
   "addProjectTeamInputPlaceholder": "이름으로 검색",

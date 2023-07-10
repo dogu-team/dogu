@@ -8,7 +8,7 @@
   "removeMemberModalButtonText": "Confirm and remove from project",
   "removeMemberModalContent": "Would you like to remove from project?",
 
-  "colleagueMemberType": "Colleague",
+  "orgMemberType": "Organization member",
   "teamMemberType": "Team",
 
   "projectMemberFilterPlaceholder": "Name or email",
@@ -20,9 +20,9 @@
   "removeMemberSuccessMsg": "Removed!",
   "removeMemberFailMsg": "Failed to remove.\n{{reason}}",
 
-  "addProjectColleagueMember": "Add colleagues",
-  "addProjectColleagueModalTitle": "Add colleagues",
-  "addProjectColleagueInputPlaceholder": "Search by name or email",
+  "addProjectOrgMemberMember": "Add members",
+  "addProjectOrgMemberModalTitle": "Add members",
+  "addProjectOrgMemberInputPlaceholder": "Search by name or email",
   "addProjectTeamMember": "Add teams",
   "addProjectTeamModalTitle": "Add teams",
   "addProjectTeamInputPlaceholder": "Search by name",

@@ -1,7 +1,7 @@
 {
   "sidebarSubTitle": "Organization",
   "projectPageTitle": "Projects",
-  "memberPageTitle": "Colleagues",
+  "memberPageTitle": "Members",
   "hostPageTitle": "Hosts",
   "devicePageTitle": "Devices",
   "cloudDevicePageTitle": "Cloud Devices",
@@ -34,7 +34,7 @@
   "settingRegenerateApiTokenConfirmModalButtonTitle": "Confirm and regenerate",
 
   "settingChangeOwnerMenuTitle": "Change organization owner",
-  "settingChangeOwnerDescriptionText": "Change organization owner to another colleague. Former owner will become Admin.",
+  "settingChangeOwnerDescriptionText": "Change organization owner to another member. Former owner will become Admin.",
   "settingChangeOwnerButtonTitle": "Change owner",
   "settingchangeOwnerConfirmModalTitle": "Change owner",
   "settingchangeOwnerConfirmModalContent": "Former organization owner will become Admin.<br></br>Select new owner.",

@@ -17,7 +17,7 @@ const AddMemberButton = ({ organizationId, projectId }: Props) => {
   return (
     <>
       <Button type="primary" onClick={() => openModal()}>
-        {t('project-member:addProjectColleagueMember')}
+        {t('project-member:addProjectOrgMemberMember')}
       </Button>
 
       <AddMemberModal organizationId={organizationId} projectId={projectId} isOpen={isOpen} close={closeModal} />

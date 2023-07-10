@@ -103,7 +103,7 @@ const MemberItem = ({ item, projectId, mutateMembers }: MemberItemProps) => {
           )}
         </NameCell>
         {/* TODO */}
-        <OneSpanCell>{instanceOfTeamAndRoleGroupBase(item) ? t('project-member:teamMemberType') : t('project-member:colleagueMemberType')}</OneSpanCell>
+        <OneSpanCell>{instanceOfTeamAndRoleGroupBase(item) ? t('project-member:teamMemberType') : t('project-member:orgMemberType')}</OneSpanCell>
         <PermissionCell>
           <PermissionSelector defaultRoleId={item.projectRole?.projectRoleId} organizationId={orgId} onSelectRole={handleSelectRole} />
         </PermissionCell>

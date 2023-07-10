@@ -145,7 +145,7 @@ const OrganizationSideBar = () => {
     // },
     { type: 'divider' },
     {
-      key: 'colleague',
+      key: 'member',
       icon: collapsed ? (
         <StyledIconLink selected={router.asPath.startsWith(`/dashboard/${orgId}/members`)} href={`/dashboard/${orgId}/members`}>
           <UserOutlined />
