@@ -10,8 +10,12 @@ export function isAppVersion(value: unknown): boolean {
       } catch (error) {
         return false;
       }
+    } else if (typeof value === 'string') {
+      return value.length > 0;
+    } else if (value === null || value === undefined) {
+      return true;
     }
-    return typeof value === 'string' && value.length > 0;
+    return false;
   }
   if (typeof value === 'number') {
     return validateValue(value);
