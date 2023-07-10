@@ -157,13 +157,13 @@ const RunnerItem = ({ device }: DeviceItemProps) => {
       <Item key={`device-${device.deviceId}`}>
         <DeviceItemInner>
           <NameCell>
-            <RunnerName device={device} onClick={handleClickDetail} />
+            <RunnerName runner={device} onClick={handleClickDetail} />
           </NameCell>
           <StatusCell>
             <RunnerConnectionStateTag connectionState={device.connectionState} />
           </StatusCell>
           <StatusCell>
-            <RunnerUsageStatusBadge device={device} />
+            <RunnerUsageStatusBadge runner={device} />
           </StatusCell>
           <PlatformCell>
             <DeviceInfo>
@@ -189,10 +189,10 @@ const RunnerItem = ({ device }: DeviceItemProps) => {
         </DeviceItemInner>
       </Item>
 
-      <EditRunnerModal device={device} isOpen={isEditDeviceModalOpen} close={closeEditDeviceModal} />
-      <RunnerDetailModal isOpen={isDetailModlOpen} device={device} close={closeDetailModal} />
-      <EditRunnerTagModal deviceId={device.deviceId} isOpen={isEditDeviceTagModalOpen} close={closeEditDeviceTagModal} />
-      <EditRunnerProjectModal deviceId={device.deviceId} isOpen={isEditDeviceProjectModalOpen} close={closeEditDeviceProjectModal} isGlobal={isGlobalDevice} />
+      <EditRunnerModal runner={device} isOpen={isEditDeviceModalOpen} close={closeEditDeviceModal} />
+      <RunnerDetailModal isOpen={isDetailModlOpen} runner={device} close={closeDetailModal} />
+      <EditRunnerTagModal runnerId={device.deviceId} isOpen={isEditDeviceTagModalOpen} close={closeEditDeviceTagModal} />
+      <EditRunnerProjectModal runnerId={device.deviceId} isOpen={isEditDeviceProjectModalOpen} close={closeEditDeviceProjectModal} isGlobal={isGlobalDevice} />
     </>
   );
 };

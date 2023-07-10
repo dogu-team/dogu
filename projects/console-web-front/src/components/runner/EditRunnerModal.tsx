@@ -16,11 +16,11 @@ import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd
 
 interface Props {
   isOpen: boolean;
-  device: DeviceBase;
+  runner: DeviceBase;
   close: () => void;
 }
 
-const EditRunnerModal = ({ isOpen, device, close }: Props) => {
+const EditRunnerModal = ({ isOpen, runner, close }: Props) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -29,19 +29,19 @@ const EditRunnerModal = ({ isOpen, device, close }: Props) => {
   const fireEvent = useEventStore((state) => state.fireEvent);
 
   useEffect(() => {
-    form.setFieldValue('name', device?.name ?? '');
-  }, [device?.name, form]);
+    form.setFieldValue('name', runner?.name ?? '');
+  }, [runner?.name, form]);
 
   const handleSave = async () => {
     const name: string = form.getFieldValue('name');
 
-    if (!name || !device || device.name === name) {
+    if (!name || !runner || runner.name === name) {
       return;
     }
 
     setLoading(true);
     try {
-      await updateDevice(organizationId, device.deviceId, { name });
+      await updateDevice(organizationId, runner.deviceId, { name });
       sendSuccessNotification(t('runner:runnerEditSuccessMsg'));
       fireEvent('onDeviceUpdated');
       close();
@@ -63,7 +63,7 @@ const EditRunnerModal = ({ isOpen, device, close }: Props) => {
             name="name"
             required
             rules={[{ required: true, message: t('runner:runnerEditNameRequiredMsg') }]}
-            initialValue={device?.name}
+            initialValue={runner?.name}
           >
             <Input type="text" placeholder={t('common:name')} maxLength={DEVICE_NAME_MAX_LENGTH} minLength={DEVICE_NAME_MIN_LENGTH} />
           </Form.Item>

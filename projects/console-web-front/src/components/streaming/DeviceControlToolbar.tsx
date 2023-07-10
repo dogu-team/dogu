@@ -14,7 +14,7 @@ interface ToolbarButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const ToolbarButton = ({ workingPlatforms, ...props }: ToolbarButtonProps) => {
-  const { device } = useDeviceStreamingContext();
+  const { runner: device } = useDeviceStreamingContext();
 
   if (!device || (workingPlatforms && !workingPlatforms.includes(device.platform))) {
     return null;
@@ -24,7 +24,7 @@ const ToolbarButton = ({ workingPlatforms, ...props }: ToolbarButtonProps) => {
 };
 
 const DeviceControlToolbar = () => {
-  const { deviceRTCCaller, device } = useDeviceStreamingContext();
+  const { deviceRTCCaller, runner: device } = useDeviceStreamingContext();
   const { handleToolMenuInput } = useDeviceInput(deviceRTCCaller ?? undefined);
 
   return (

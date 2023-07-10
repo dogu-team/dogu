@@ -18,7 +18,7 @@ interface Props {
 }
 
 const ApplicationUploader = ({}: Props) => {
-  const { device, deviceService, loading } = useDeviceStreamingContext();
+  const { runner: device, deviceService, loading } = useDeviceStreamingContext();
   const { uploadApp, cancelUpload, runApp, isInstalling, progress, isGathering, app, result } = useDeviceAppInstall(
     device?.serial,
     deviceService?.deviceHostClient,

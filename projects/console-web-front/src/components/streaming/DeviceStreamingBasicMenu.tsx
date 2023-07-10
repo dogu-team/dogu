@@ -12,7 +12,7 @@ import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingC
 interface Props {}
 
 const DeviceStreamingBasicMenu = ({}: Props) => {
-  const { device, peerConnection } = useDeviceStreamingContext();
+  const { runner: device, peerConnection } = useDeviceStreamingContext();
   const { t } = useTranslation();
 
   return (

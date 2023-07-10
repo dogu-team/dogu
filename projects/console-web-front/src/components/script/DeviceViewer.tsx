@@ -20,7 +20,7 @@ interface ContentProps {
 }
 
 const StreamingContent = ({ isRunning }: ContentProps) => {
-  const { videoRef, loading, deviceService, device } = useDeviceStreamingContext();
+  const { videoRef, loading, deviceService, runner: device } = useDeviceStreamingContext();
   // const inspector = useDeviceInspector(videoRef ?? undefined);
   const inspector = useInspector(deviceService?.deviceInspector, device, videoRef);
   const [selectedObjectInfos, setSelectedObjectInfos] = useState<ResizedObjectInfo[]>([]);

@@ -29,7 +29,7 @@ import useInspector from '../../../../../src/hooks/streaming/useInspector';
 
 const StreamingViewer = () => {
   const router = useRouter();
-  const { device, videoRef, deviceService, loading } = useDeviceStreamingContext();
+  const { runner: device, videoRef, deviceService, loading } = useDeviceStreamingContext();
   const tab = (router.query.tab as StreamingTabMenuKey | undefined) ?? StreamingTabMenuKey.INFO;
   const inspector = useInspector(deviceService?.deviceInspector, device, videoRef);
   const runtimeInfos = useDeviceStreamingProfile(deviceService?.deviceClient, device ?? null);

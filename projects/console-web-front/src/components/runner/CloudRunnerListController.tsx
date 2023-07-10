@@ -63,7 +63,7 @@ const RunnerItem = ({ device }: DeviceItemProps) => {
       <Item>
         <FlexRowBase>
           <NameCell>
-            <RunnerPrefixTag device={device} />
+            <RunnerPrefixTag runner={device} />
             {device.name}
           </NameCell>
           <ConnectionStatusCell>
@@ -87,8 +87,8 @@ const RunnerItem = ({ device }: DeviceItemProps) => {
         </FlexRowBase>
       </Item>
 
-      <EditRunnerProjectModal deviceId={device.deviceId} isOpen={isAddProjectModalOpen} close={closeAddProjectModal} isGlobal={false} />
-      <EditRunnerModal device={device} isOpen={isEditModalOpen} close={closeEditModal} />
+      <EditRunnerProjectModal runnerId={device.deviceId} isOpen={isAddProjectModalOpen} close={closeAddProjectModal} isGlobal={false} />
+      <EditRunnerModal runner={device} isOpen={isEditModalOpen} close={closeEditModal} />
     </>
   );
 };

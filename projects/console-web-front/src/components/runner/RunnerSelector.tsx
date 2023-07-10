@@ -6,7 +6,7 @@ import PlatformIcon from 'src/components/runner/PlatformIcon';
 import { flexRowBaseStyle } from 'src/styles/box';
 
 export interface RunnerSelectorProps {
-  devices: DeviceBase[];
+  runners: DeviceBase[];
   filterValue: string;
   onFilterChanged: (value: string) => void;
   onDeviceSelected: (runner: DeviceBase | undefined) => void;
@@ -20,7 +20,7 @@ export interface RunnerSelectorProps {
 }
 
 const RunnerSelector = ({
-  devices,
+  runners,
   filterValue,
   defaultSelectedDevice,
   loading,
@@ -32,18 +32,18 @@ const RunnerSelector = ({
   onClick,
   onBlur,
 }: RunnerSelectorProps) => {
-  const options: SelectProps['options'] = devices.map((device) => ({
-    value: device.deviceId,
+  const options: SelectProps['options'] = runners.map((runner) => ({
+    value: runner.deviceId,
     label: (
       <DeviceLabel>
         <DeviceNameWrapper>
-          <DeviceName>{device.name}</DeviceName>
-          <DeviceModel>{device.modelName ? `${device.modelName}(${device.model})` : device.model}</DeviceModel>
+          <DeviceName>{runner.name}</DeviceName>
+          <DeviceModel>{runner.modelName ? `${runner.modelName}(${runner.model})` : runner.model}</DeviceModel>
         </DeviceNameWrapper>
 
         <Flexbox>
-          <PlatformIcon platform={device.platform} />
-          {device.version}
+          <PlatformIcon platform={runner.platform} />
+          {runner.version}
         </Flexbox>
       </DeviceLabel>
     ),
@@ -62,7 +62,7 @@ const RunnerSelector = ({
       optionLabelProp="label"
       loading={loading}
       onChange={(value) => {
-        onDeviceSelected(devices.find((item) => item.deviceId === value));
+        onDeviceSelected(runners.find((item) => item.deviceId === value));
         onFilterChanged('');
       }}
       allowClear

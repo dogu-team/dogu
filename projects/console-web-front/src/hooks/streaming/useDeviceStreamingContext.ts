@@ -8,7 +8,7 @@ import useDeviceClient from './useDeviceClient';
 import useGamiumClient from './useGamiumClient';
 
 export interface StreamingContextValue {
-  device: DeviceBase | null;
+  runner: DeviceBase | null;
   mode: StreamingMode;
   loading: boolean;
   deviceRTCCaller: DeviceRTCCaller | null;
@@ -29,7 +29,7 @@ export const defaultContextValue: StreamingContextValue = {
   error: null,
   gamiumService: null,
   deviceService: null,
-  device: null,
+  runner: null,
   isSelf: false,
   videoRef: null,
   updateMode: () => {},

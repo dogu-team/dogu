@@ -27,7 +27,7 @@ const ScriptDeviceSeletor = ({ organizationId, projectId, onSelectedDeviceChange
 
   return (
     <StyledDeviceSelector
-      devices={data?.items ?? []}
+      runners={data?.items ?? []}
       filterValue={inputValue ?? ''}
       onFilterChanged={handleChangeValues}
       loading={isLoading}

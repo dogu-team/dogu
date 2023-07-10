@@ -2,7 +2,7 @@ import { ExclamationCircleFilled, WarningFilled } from '@ant-design/icons';
 import { PageBase, ProjectBase } from '@dogu-private/console';
 import { ProjectId, PROJECT_NAME_MAX_LENGTH } from '@dogu-private/types';
 import { DeviceId, OrganizationId } from '@dogu-private/types';
-import { Button, Checkbox, Input, Modal, notification, Tag } from 'antd';
+import { Checkbox, Input, Modal, Tag } from 'antd';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -18,23 +18,23 @@ import { getErrorMessage } from '../../utils/error';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 
 interface Props {
-  deviceId: DeviceId;
+  runnerId: DeviceId;
   isGlobal: boolean;
   isOpen: boolean;
   close: () => void;
 }
 
-const EditRunnerProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalProp }: Props) => {
+const EditRunnerProjectModal = ({ runnerId, isOpen, close, isGlobal: isGlobalProp }: Props) => {
   const router = useRouter();
   const orgId = router.query.orgId;
   const [showResult, setShowResult] = useState(false);
   const { inputValue, debouncedValue, handleChangeValues } = useDebouncedInputValues();
   const {
-    data: deviceProjects,
-    error: deviceProjectError,
-    mutate: mutateDeviceProjects,
-    isLoading: isDeviceProjectLoading,
-  } = useSWR<ProjectBase[]>(`/organizations/${orgId}/devices/${deviceId}/projects`, swrAuthFetcher);
+    data: runnerProjects,
+    error: runnerProjectError,
+    mutate: mutateRunnerProjects,
+    isLoading: isRunnerProjectLoading,
+  } = useSWR<ProjectBase[]>(`/organizations/${orgId}/devices/${runnerId}/projects`, swrAuthFetcher);
   const {
     data: projects,
     isLoading: isProjectLoading,
@@ -43,7 +43,6 @@ const EditRunnerProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPro
   } = useSWR<PageBase<ProjectBase>>(orgId && `/organizations/${orgId}/projects?keyword=${debouncedValue}`, swrAuthFetcher, {
     keepPreviousData: true,
   });
-  const [loading, setLoading] = useState(false);
   const [isGlobal, setIsGlobal] = useState(isGlobalProp);
   const fireEvent = useEventStore((state) => state.fireEvent);
   const { t } = useTranslation();
@@ -56,8 +55,8 @@ const EditRunnerProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPro
 
   const handleAddProject = async (projectId: ProjectId) => {
     try {
-      await enableDevice(orgId as OrganizationId, deviceId, { isGlobal: false, projectId });
-      mutateDeviceProjects();
+      await enableDevice(orgId as OrganizationId, runnerId, { isGlobal: false, projectId });
+      mutateRunnerProjects();
       sendSuccessNotification(t('runner:addRunnerToProjectSuccessMsg'));
     } catch (e) {
       if (e instanceof AxiosError) {
@@ -69,9 +68,9 @@ const EditRunnerProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPro
   const handleToggleGlobal = async (checked: boolean) => {
     setIsGlobal(checked);
     try {
-      await enableDevice(orgId as OrganizationId, deviceId, { isGlobal: checked });
+      await enableDevice(orgId as OrganizationId, runnerId, { isGlobal: checked });
       sendSuccessNotification(t('runner:toggleRunnerAsGlobalSuccessMsg'));
-      mutateDeviceProjects();
+      mutateRunnerProjects();
     } catch (e) {
       if (e instanceof AxiosError) {
         sendErrorNotification(t('runner:toggleRunnerAsGlobalFailureMsg', { reason: getErrorMessage(e) }));
@@ -82,8 +81,8 @@ const EditRunnerProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPro
 
   const handleDeleteProject = async (projectId: ProjectId) => {
     try {
-      await removeDeviceFromProject(orgId as OrganizationId, deviceId, projectId);
-      mutateDeviceProjects();
+      await removeDeviceFromProject(orgId as OrganizationId, runnerId, projectId);
+      mutateRunnerProjects();
       sendSuccessNotification(t('runner:removeRunnerFromProjectSuccessMsg'));
     } catch (e) {
       if (e instanceof AxiosError) {
@@ -130,15 +129,15 @@ const EditRunnerProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPro
         <SelectedProjectBox>
           <ContentTitle>{t('runner:runnerEditProjectDeviceProjectTitle')}</ContentTitle>
           <TagContainer>
-            {deviceProjects?.map((item) => {
+            {runnerProjects?.map((item) => {
               return (
-                <Tag key={`device-${deviceId}-${item.projectId}`} closable onClose={() => handleDeleteProject(item.projectId)}>
+                <Tag key={`runner-${runnerId}-${item.projectId}`} closable onClose={() => handleDeleteProject(item.projectId)}>
                   {item.name}
                 </Tag>
               );
             })}
           </TagContainer>
-          {!isGlobal && !!deviceProjects && deviceProjects.length === 0 && (
+          {!isGlobal && !!runnerProjects && runnerProjects.length === 0 && (
             <div>
               <ExclamationCircleFilled style={{ color: 'red' }} />
               &nbsp;{t('runner:runnerEditProjectEmptyProjectText')}

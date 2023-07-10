@@ -9,13 +9,13 @@ import { flexRowBaseStyle } from '../../styles/box';
 
 interface Props {
   isOpen: boolean;
-  device: DeviceBase;
+  runner: DeviceBase;
   close: () => void;
 }
 
-const RunnerDetailModal = ({ isOpen, device, close }: Props) => {
+const RunnerDetailModal = ({ isOpen, runner, close }: Props) => {
   const { t, lang } = useTranslation();
-  const isGlobal = device.isGlobal === 1;
+  const isGlobal = runner.isGlobal === 1;
 
   return (
     <Modal open={isOpen} closable onCancel={close} title={t('runner:runnerDetailModalTitle')} centered destroyOnClose footer={null}>
@@ -23,14 +23,14 @@ const RunnerDetailModal = ({ isOpen, device, close }: Props) => {
         <Content>
           <StyledH4>{t('runner:runnerDetailNameTitle')}</StyledH4>
           <FlexBox>
-            <p>{device?.name}</p>
+            <p>{runner?.name}</p>
           </FlexBox>
         </Content>
         {!isGlobal && (
           <Content>
             <StyledH4>{t('runner:runnerDetailProjectTitle')}</StyledH4>
             <div>
-              {device?.projects?.map((item) => (
+              {runner?.projects?.map((item) => (
                 <Tag key={item.projectId}>{item.name}</Tag>
               ))}
             </div>
@@ -39,22 +39,22 @@ const RunnerDetailModal = ({ isOpen, device, close }: Props) => {
         <Content>
           <StyledH4>{t('runner:runnerDetailTagTitle')}</StyledH4>
           <div>
-            {device?.deviceTags?.map((item) => (
+            {runner?.deviceTags?.map((item) => (
               <Tag key={item.deviceTagId}>{item.name}</Tag>
             ))}
           </div>
         </Content>
         <Content>
           <StyledH4>{t('runner:runnerDetailConnectedHostTitle')}</StyledH4>
-          <p>{device?.host?.name}</p>
+          <p>{runner?.host?.name}</p>
         </Content>
         <Content>
           <StyledH4>{t('runner:runnerDetailCreatedAtTitle')}</StyledH4>
-          <p>{getLocaleFormattedDate(lang, new Date(device?.createdAt ?? 0))}</p>
+          <p>{getLocaleFormattedDate(lang, new Date(runner?.createdAt ?? 0))}</p>
         </Content>
         <Content>
           <StyledH4>{t('runner:runnerDetailUpdatedAtTitle')}</StyledH4>
-          <p>{getLocaleFormattedDate(lang, new Date(device?.updatedAt ?? 0))}</p>
+          <p>{getLocaleFormattedDate(lang, new Date(runner?.updatedAt ?? 0))}</p>
         </Content>
       </Box>
     </Modal>

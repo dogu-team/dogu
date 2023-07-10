@@ -5,14 +5,14 @@ import styled from 'styled-components';
 import { flexRowBaseStyle } from '../../styles/box';
 
 interface Props {
-  device: DeviceBase;
+  runner: DeviceBase;
 }
 
-const RunnerPrefixTag = ({ device }: Props) => {
+const RunnerPrefixTag = ({ runner }: Props) => {
   return (
     <Box>
-      {device.isGlobal === 1 && <Tag style={{ backgroundColor: '#ffcc00', color: '#000', border: 'none' }}>Public</Tag>}
-      {device.isHost === 1 && <Tag style={{ backgroundColor: '#6499f5', color: '#000', border: 'none' }}>Host</Tag>}
+      {runner.isGlobal === 1 && <Tag style={{ backgroundColor: '#ffcc00', color: '#000', border: 'none' }}>Public</Tag>}
+      {runner.isHost === 1 && <Tag style={{ backgroundColor: '#6499f5', color: '#000', border: 'none' }}>Host</Tag>}
     </Box>
   );
 };

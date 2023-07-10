@@ -28,24 +28,24 @@ import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd
 import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from '../runner/PlatformIcon';
 
-interface DeviceItemProps {
-  device: DeviceBase;
+interface RunnerItemProps {
+  runner: DeviceBase;
   projectId: ProjectId;
 }
 
-const RunnerItem = ({ device, projectId }: DeviceItemProps) => {
+const RunnerItem = ({ runner, projectId }: RunnerItemProps) => {
   const router = useRouter();
   const orgId = router.query.orgId as OrganizationId;
   const fireEvent = useEventStore((state) => state.fireEvent);
   const [isDetailModalOpen, openDetailModal, closeDetailModal] = useModal();
   const { t } = useTranslation();
 
-  const streamingable = device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED;
-  const isGlobalDevice = device.isGlobal === 1;
+  const streamingable = runner.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED;
+  const isGlobalDevice = runner.isGlobal === 1;
 
   const handleDelete = async () => {
     try {
-      await removeDeviceFromProject(orgId, device.deviceId, projectId);
+      await removeDeviceFromProject(orgId, runner.deviceId, projectId);
       sendSuccessNotification(t('runner:deleteRunnerFromProjectSuccessMsg'));
       fireEvent('onProjectDeviceDeleted');
     } catch (e) {
@@ -59,7 +59,7 @@ const RunnerItem = ({ device, projectId }: DeviceItemProps) => {
     {
       label: (
         <PrimaryLinkButton
-          href={`/dashboard/${router.query.orgId}/devices/streaming/${device.deviceId}`}
+          href={`/dashboard/${router.query.orgId}/devices/streaming/${runner.deviceId}`}
           disabled={!streamingable}
           onClick={(e) => {
             if (!streamingable) {
@@ -85,10 +85,10 @@ const RunnerItem = ({ device, projectId }: DeviceItemProps) => {
         <MenuItemButton
           danger
           onConfirm={handleDelete}
-          disabled={device.isGlobal === 1}
+          disabled={runner.isGlobal === 1}
           modalTitle={t('runner:deleteRunnerFromProjectModalTitle')}
           modalButtonTitle={t('runner:deleteRunnerFromProjectModalButtonText')}
-          modalContent={t('runner:deleteRunnerFromProjectModalContentText', { name: device.name })}
+          modalContent={t('runner:deleteRunnerFromProjectModalContentText', { name: runner.name })}
         >
           {t('runner:runnerItemDeleteFromProjectMenu')}
         </MenuItemButton>
@@ -104,27 +104,27 @@ const RunnerItem = ({ device, projectId }: DeviceItemProps) => {
       <Item>
         <FlexRowBase>
           <NameCell>
-            <RunnerName device={device} onClick={handleClickDetail} />
+            <RunnerName runner={runner} onClick={handleClickDetail} />
           </NameCell>
           <OneSpanCell>
-            <RunnerConnectionStateTag connectionState={device.connectionState} />
+            <RunnerConnectionStateTag connectionState={runner.connectionState} />
           </OneSpanCell>
           <OneSpanCell>
-            <RunnerConnectionStateTag connectionState={device.connectionState} />
+            <RunnerConnectionStateTag connectionState={runner.connectionState} />
           </OneSpanCell>
           <PlatformCell>
             <FlexRowBase style={{ marginBottom: '.4rem' }}>
-              <PlatformIcon platform={device.platform} />
-              {device.version}
+              <PlatformIcon platform={runner.platform} />
+              {runner.version}
             </FlexRowBase>
             <div>
-              {device.modelName} {`(${device.model})`}
+              {runner.modelName} {`(${runner.model})`}
             </div>
           </PlatformCell>
           <OneSpanCell>
             <RunnerTagAndProject
-              tagCount={device.deviceTags?.length}
-              projectCount={isGlobalDevice ? undefined : device.projects?.length}
+              tagCount={runner.deviceTags?.length}
+              projectCount={isGlobalDevice ? undefined : runner.projects?.length}
               onTagClick={handleClickDetail}
               onProjectClick={handleClickDetail}
             />
@@ -137,7 +137,7 @@ const RunnerItem = ({ device, projectId }: DeviceItemProps) => {
         </FlexRowBase>
       </Item>
 
-      <RunnerDetailModal isOpen={isDetailModalOpen} device={device} close={closeDetailModal} />
+      <RunnerDetailModal isOpen={isDetailModalOpen} runner={runner} close={closeDetailModal} />
     </>
   );
 };
@@ -171,7 +171,7 @@ const RunnerListController = ({ organizationId, projectId }: Props) => {
         dataSource={data?.items}
         loading={isLoading}
         pagination={{ defaultCurrent: 1, current: page, pageSize: 10, total: data?.totalCount, onChange: (page, pageSize) => updatePage(page) }}
-        renderItem={(item) => <RunnerItem device={item} projectId={projectId} />}
+        renderItem={(item) => <RunnerItem runner={item} projectId={projectId} />}
         rowKey={(item) => `project-${projectId}-device-${item.deviceId}`}
         locale={{
           emptyText: (

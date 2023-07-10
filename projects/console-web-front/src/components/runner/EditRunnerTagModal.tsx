@@ -18,12 +18,12 @@ import { getErrorMessage } from 'src/utils/error';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 
 interface Props {
-  deviceId: DeviceId;
+  runnerId: DeviceId;
   isOpen: boolean;
   close: () => void;
 }
 
-const EditRunnerTagModal = ({ deviceId, isOpen, close }: Props) => {
+const EditRunnerTagModal = ({ runnerId, isOpen, close }: Props) => {
   const router = useRouter();
   const organizationId = router.query.orgId as OrganizationId;
   const [isLoading, setIsLoading] = useState(false);
@@ -36,10 +36,10 @@ const EditRunnerTagModal = ({ deviceId, isOpen, close }: Props) => {
     swrAuthFetcher,
   );
   const {
-    data: deviceTags,
-    error: deviceTagsError,
+    data: runnerTags,
+    error: runnerTagsError,
     mutate: mutateDeviceTags,
-  } = useSWR<DeviceTagBase[]>(isOpen && `/organizations/${organizationId}/devices/${deviceId}/tags`, swrAuthFetcher);
+  } = useSWR<DeviceTagBase[]>(isOpen && `/organizations/${organizationId}/devices/${runnerId}/tags`, swrAuthFetcher);
   const fireEvent = useEventStore((state) => state.fireEvent);
   const inputRef = useRef<InputRef>(null);
 
@@ -58,7 +58,7 @@ const EditRunnerTagModal = ({ deviceId, isOpen, close }: Props) => {
 
   const handleClickResult = async (tag: DeviceTagBase) => {
     try {
-      await attachTagToDevice(organizationId, deviceId, { tagId: tag.deviceTagId });
+      await attachTagToDevice(organizationId, runnerId, { tagId: tag.deviceTagId });
       resetFields();
       fireEvent('onDeviceTagUpdated');
       mutateDeviceTags();
@@ -69,7 +69,7 @@ const EditRunnerTagModal = ({ deviceId, isOpen, close }: Props) => {
 
   const handleClickDelete = async (tag: DeviceTagBase) => {
     try {
-      await detachTagFromDevice(organizationId, deviceId, tag.deviceTagId);
+      await detachTagFromDevice(organizationId, runnerId, tag.deviceTagId);
       fireEvent('onDeviceTagUpdated');
       mutateDeviceTags();
     } catch (e) {
@@ -89,7 +89,7 @@ const EditRunnerTagModal = ({ deviceId, isOpen, close }: Props) => {
     setIsLoading(true);
     try {
       const tag = await createTag(organizationId, { name });
-      await attachTagToDevice(organizationId, deviceId, { tagId: tag.deviceTagId });
+      await attachTagToDevice(organizationId, runnerId, { tagId: tag.deviceTagId });
       mutateDeviceTags();
       resetFields();
       fireEvent('onDeviceTagUpdated');
@@ -159,7 +159,7 @@ const EditRunnerTagModal = ({ deviceId, isOpen, close }: Props) => {
               )}
               {data.items.length > 0 &&
                 data.items.map((item) => {
-                  const hasAttached = !!deviceTags?.find((dt) => dt.deviceTagId === item.deviceTagId);
+                  const hasAttached = !!runnerTags?.find((dt) => dt.deviceTagId === item.deviceTagId);
                   return (
                     <ResultButton
                       onMouseDown={() => {
@@ -183,11 +183,11 @@ const EditRunnerTagModal = ({ deviceId, isOpen, close }: Props) => {
         <DeviceTagBox>
           <ContentTitle>{t('runner:runnerEditTagRunnerTagTitle')}</ContentTitle>
           <TagContainer>
-            {deviceTags &&
-              (deviceTags.length > 0 ? (
-                deviceTags.map((item) => (
+            {runnerTags &&
+              (runnerTags.length > 0 ? (
+                runnerTags.map((item) => (
                   <StyledTag
-                    key={`${deviceId}-tag-${item.deviceTagId}`}
+                    key={`${runnerId}-tag-${item.deviceTagId}`}
                     closable={!PlatformType.find((pt) => !!pt.match(new RegExp(item.name, 'i')))}
                     onClose={() => handleClickDelete(item)}
                   >

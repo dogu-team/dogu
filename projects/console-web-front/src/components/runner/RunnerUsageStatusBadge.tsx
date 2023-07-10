@@ -4,11 +4,11 @@ import { PIPELINE_STATUS } from '@dogu-private/types';
 import styled from 'styled-components';
 
 interface Props {
-  device: DeviceBase;
+  runner: DeviceBase;
 }
 
-const RunnerUsageStatusBadge = ({ device }: Props) => {
-  if (device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED || device.connectionState === DeviceConnectionState.UNRECOGNIZED) {
+const RunnerUsageStatusBadge = ({ runner }: Props) => {
+  if (runner.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED || runner.connectionState === DeviceConnectionState.UNRECOGNIZED) {
     return (
       <Box style={{ backgroundColor: '#bbbbbb33' }}>
         <Text style={{ color: '#bbbbbb' }}>Unknown</Text>
@@ -16,7 +16,7 @@ const RunnerUsageStatusBadge = ({ device }: Props) => {
     );
   }
 
-  if (!device.routineDeviceJobs) {
+  if (!runner.routineDeviceJobs) {
     return (
       <Box style={{ backgroundColor: '#bbbbbb33' }}>
         <Text style={{ color: '#bbbbbb' }}>Unknown</Text>
@@ -24,7 +24,7 @@ const RunnerUsageStatusBadge = ({ device }: Props) => {
     );
   }
 
-  if (device.routineDeviceJobs.length === 0) {
+  if (runner.routineDeviceJobs.length === 0) {
     return (
       <Box style={{ backgroundColor: '#cffaca' }}>
         <Text style={{ color: '#15a803' }}>Idle</Text>
@@ -32,7 +32,7 @@ const RunnerUsageStatusBadge = ({ device }: Props) => {
     );
   }
 
-  if (device.routineDeviceJobs.filter((job) => job.status === PIPELINE_STATUS.IN_PROGRESS || job.status === PIPELINE_STATUS.CANCEL_REQUESTED).length > 0) {
+  if (runner.routineDeviceJobs.filter((job) => job.status === PIPELINE_STATUS.IN_PROGRESS || job.status === PIPELINE_STATUS.CANCEL_REQUESTED).length > 0) {
     return (
       <Box style={{ backgroundColor: '#6499f533' }}>
         <Text style={{ color: '#6499f5' }}>Running</Text>
@@ -42,7 +42,7 @@ const RunnerUsageStatusBadge = ({ device }: Props) => {
 
   return (
     <Box style={{ backgroundColor: '#fcba0333' }}>
-      <Text style={{ color: '#fcba03' }}>{`Waiting (${device.routineDeviceJobs.filter((job) => job.status === PIPELINE_STATUS.WAITING).length})`}</Text>
+      <Text style={{ color: '#fcba03' }}>{`Waiting (${runner.routineDeviceJobs.filter((job) => job.status === PIPELINE_STATUS.WAITING).length})`}</Text>
     </Box>
   );
 };

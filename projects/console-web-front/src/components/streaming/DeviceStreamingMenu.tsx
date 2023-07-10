@@ -10,15 +10,15 @@ import { flexRowBaseStyle } from '../../styles/box';
 
 interface Props {
   peerConnection: RTCPeerConnection | undefined;
-  device: DeviceBase | undefined;
+  runner: DeviceBase | undefined;
 }
 
-const DeviceStreamingMenu = ({ peerConnection, device }: Props) => {
+const DeviceStreamingMenu = ({ peerConnection, runner }: Props) => {
   const { t } = useTranslation();
 
   return (
     <Box tabIndex={-1}>
-      {device && (
+      {runner && (
         <Section>
           <TitleWrapper>
             <Title>{t('runner-streaming:infoTabDeviceInfoTitle')}</Title>
@@ -26,15 +26,15 @@ const DeviceStreamingMenu = ({ peerConnection, device }: Props) => {
           <div>
             <InfoDescription>
               <b>{t('runner-streaming:devicePlatform')}:</b>
-              <PlatformIcon platform={device.platform} />
+              <PlatformIcon platform={runner.platform} />
             </InfoDescription>
             <InfoDescription>
               <b>{t('runner-streaming:deviceVersion')}:</b>
-              {device.version}
+              {runner.version}
             </InfoDescription>
             <InfoDescription style={{ alignItems: 'flex-start' }}>
               <b>{t('runner-streaming:deviceModel')}:</b>
-              {device.modelName ? `${device.modelName} (${device.model})` : device.model}
+              {runner.modelName ? `${runner.modelName} (${runner.model})` : runner.model}
             </InfoDescription>
           </div>
         </Section>

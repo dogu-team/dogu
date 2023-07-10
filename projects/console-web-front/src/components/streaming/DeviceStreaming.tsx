@@ -72,7 +72,7 @@ const DeviceStreaming = ({ device, children }: Props) => {
         error: error ?? null,
         gamiumService,
         deviceService,
-        device: device ?? null,
+        runner: device ?? null,
         isSelf,
         videoRef,
         updateMode: setMode,

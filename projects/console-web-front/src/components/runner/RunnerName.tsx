@@ -8,15 +8,15 @@ import { listActiveNameStyle } from '../../styles/text';
 import RunnerPrefixTag from './RunnerPrefixTag';
 
 interface Props {
-  device: DeviceBase;
+  runner: DeviceBase;
   onClick: () => void;
 }
 
-const RunnerName = ({ device, onClick }: Props) => {
+const RunnerName = ({ runner, onClick }: Props) => {
   return (
     <Box onClick={onClick}>
-      <RunnerPrefixTag device={device} />
-      <StyledName>{device.name}</StyledName>
+      <RunnerPrefixTag runner={runner} />
+      <StyledName>{runner.name}</StyledName>
     </Box>
   );
 };
