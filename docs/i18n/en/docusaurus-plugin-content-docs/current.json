@@ -20,7 +20,7 @@
     "description": "The label for category Device in sidebar deviceFarmSidebar"
   },
   "sidebar.deviceFarmSidebar.category.Streaming & Remote Control": {
-    "message": "Streaming & Remote Control",
+    "message": "Device Control",
     "description": "The label for category Streaming & Remote Control in sidebar deviceFarmSidebar"
   },
   "sidebar.routineSidebar.category.Action": {
@@ -90,5 +90,17 @@
   "sidebar.apiSidebar.category.Routine": {
     "message": "Routine",
     "description": "The label for category Routine in sidebar apiSidebar"
+  },
+  "sidebar.testAutomationSidebar.category.Appium": {
+    "message": "Appium",
+    "description": "The label for category Appium in sidebar testAutomationSidebar"
+  },
+  "sidebar.deviceFarmSidebar.category.sidebar.deviceFarmSidebar.category.Host": {
+    "message": "sidebar.deviceFarmSidebar.category.Host",
+    "description": "The label for category sidebar.deviceFarmSidebar.category.Host in sidebar deviceFarmSidebar"
+  },
+  "sidebar.routineSidebar.category.sidebar.routineSidebar.category.Routine": {
+    "message": "sidebar.routineSidebar.category.Routine",
+    "description": "The label for category sidebar.routineSidebar.category.Routine in sidebar routineSidebar"
   }
 }

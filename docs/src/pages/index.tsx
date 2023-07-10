@@ -205,7 +205,7 @@ export default function Home(): JSX.Element {
           </h2>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/routine">
+              <Link to="/routine/routines">
                 <Translate id="main.scriptAndRoutineRoutineLinkTitle" />
               </Link>
             </li>
