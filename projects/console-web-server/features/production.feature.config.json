@@ -1,5 +1,5 @@
 {
-  "fileService": "nexus",
+  "fileService": "s3",
   "useSampleProject": true,
   "emailVerification": true,
   "rdbSslConnection": true,
