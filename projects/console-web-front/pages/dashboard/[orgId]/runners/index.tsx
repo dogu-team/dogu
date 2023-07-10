@@ -3,8 +3,8 @@ import Head from 'next/head';
 
 import { NextPageWithLayout } from 'pages/_app';
 import TableListView from 'src/components/common/TableListView';
-import DeviceListController from 'src/components/device/DeviceListController';
-import DeviceFilter from 'src/components/device/DeviceFilter';
+import RunnerListController from 'src/components/runner/RunnerListController';
+import RunnerFilter from 'src/components/runner/RunnerFilter';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
 import OrganizationRunnerLayout from 'src/components/layouts/OrganizationRunnerLayout';
@@ -18,11 +18,11 @@ const TeamDevicePage: NextPageWithLayout<WithOrganizationProps> = ({ organizatio
       <TableListView
         top={
           <TopWrapper>
-            <DeviceFilter />
+            <RunnerFilter />
             <RefreshButton />
           </TopWrapper>
         }
-        table={<DeviceListController />}
+        table={<RunnerListController />}
       />
     </>
   );

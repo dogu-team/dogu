@@ -13,32 +13,32 @@ import Trans from 'next-translate/Trans';
 import usePaginationSWR from 'src/hooks/usePaginationSWR';
 import useRefresh from 'src/hooks/useRefresh';
 import ErrorBox from '../common/boxes/ErrorBox';
-import DeviceConnectionStateTag from './DeviceConnectionStateTag';
-import DeviceDetailModal from './DeviceDetailModal';
-import useDeviceFilterStore from 'src/stores/device-filter';
+import RunnerConnectionStateTag from './RunnerConnectionStateTag';
+import RunnerDetailModal from './RunnerDetailModal';
+import useRunnerFilterStore from 'src/stores/runner-filter';
 import { getErrorMessage } from 'src/utils/error';
 import { flexRowBaseStyle, flexRowSpaceBetweenStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import { menuItemButtonStyles } from '../../styles/button';
 import useModal from '../../hooks/useModal';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
-import EditDeviceTagModal from './EditDeviceTagModal';
-import EditDeviceModal from './EditDeviceModal';
-import AddDeviceToProjectModal from './EditDeviceProjectModal';
-import DeviceName from './DeviceName';
-import DeviceTagAndProject from './DeviceTagAndProject';
+import EditRunnerTagModal from './EditRunnerTagModal';
+import EditRunnerModal from './EditRunnerModal';
+import EditRunnerProjectModal from './EditRunnerProjectModal';
+import RunnerName from './RunnerName';
+import RunnerTagAndProject from './RunnerTagAndProject';
 import useEventStore from '../../stores/events';
 import { rebootRunner, disableDevice } from '../../api/device';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from './PlatformIcon';
-import DeviceUsageStatusBadge from './DeviceUsageStatusBadge';
+import RunnerUsageStatusBadge from './RunnerUsageStatusBadge';
 
 interface DeviceItemProps {
   device: DeviceBase;
 }
 
-const DeviceItem = ({ device }: DeviceItemProps) => {
+const RunnerItem = ({ device }: DeviceItemProps) => {
   const router = useRouter();
   const orgId = router.query.orgId as OrganizationId;
   const { t } = useTranslation();
@@ -157,13 +157,13 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
       <Item key={`device-${device.deviceId}`}>
         <DeviceItemInner>
           <NameCell>
-            <DeviceName device={device} onClick={handleClickDetail} />
+            <RunnerName device={device} onClick={handleClickDetail} />
           </NameCell>
           <StatusCell>
-            <DeviceConnectionStateTag connectionState={device.connectionState} />
+            <RunnerConnectionStateTag connectionState={device.connectionState} />
           </StatusCell>
           <StatusCell>
-            <DeviceUsageStatusBadge device={device} />
+            <RunnerUsageStatusBadge device={device} />
           </StatusCell>
           <PlatformCell>
             <DeviceInfo>
@@ -177,7 +177,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
           </PlatformCell>
           <InfoCell>
             <FlexSpaceBetweenBox>
-              <DeviceTagAndProject
+              <RunnerTagAndProject
                 tagCount={device.deviceTags?.length}
                 projectCount={isGlobalDevice ? undefined : device.projects?.length}
                 onProjectClick={handleClickDetail}
@@ -189,18 +189,18 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
         </DeviceItemInner>
       </Item>
 
-      <EditDeviceModal device={device} isOpen={isEditDeviceModalOpen} close={closeEditDeviceModal} />
-      <DeviceDetailModal isOpen={isDetailModlOpen} device={device} close={closeDetailModal} />
-      <EditDeviceTagModal deviceId={device.deviceId} isOpen={isEditDeviceTagModalOpen} close={closeEditDeviceTagModal} />
-      <AddDeviceToProjectModal deviceId={device.deviceId} isOpen={isEditDeviceProjectModalOpen} close={closeEditDeviceProjectModal} isGlobal={isGlobalDevice} />
+      <EditRunnerModal device={device} isOpen={isEditDeviceModalOpen} close={closeEditDeviceModal} />
+      <RunnerDetailModal isOpen={isDetailModlOpen} device={device} close={closeDetailModal} />
+      <EditRunnerTagModal deviceId={device.deviceId} isOpen={isEditDeviceTagModalOpen} close={closeEditDeviceTagModal} />
+      <EditRunnerProjectModal deviceId={device.deviceId} isOpen={isEditDeviceProjectModalOpen} close={closeEditDeviceProjectModal} isGlobal={isGlobalDevice} />
     </>
   );
 };
 
-const DeviceListController = () => {
+const RunnerListController = () => {
   const router = useRouter();
   const organizationId = router.query.orgId;
-  const { filterValue } = useDeviceFilterStore();
+  const { filterValue } = useRunnerFilterStore();
   const { data, error, mutate, page, updatePage, isLoading } = usePaginationSWR<DeviceBase>(
     organizationId
       ? `/organizations/${organizationId}/devices?deviceName=${
@@ -236,7 +236,7 @@ const DeviceListController = () => {
         itemLayout="horizontal"
         dataSource={data?.items}
         renderItem={(item) => {
-          return <DeviceItem device={item} />;
+          return <RunnerItem device={item} />;
         }}
         rowKey={(item) => `device-${item.deviceId}`}
         loading={isLoading}
@@ -268,7 +268,7 @@ const DeviceListController = () => {
   );
 };
 
-export default DeviceListController;
+export default RunnerListController;
 
 const Item = styled(List.Item)`
   ${listItemStyle}

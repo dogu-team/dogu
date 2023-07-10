@@ -5,23 +5,23 @@ import styled from 'styled-components';
 
 import { flexRowBaseStyle } from '../../styles/box';
 import { listActiveNameStyle } from '../../styles/text';
-import DevicePrefixTag from './DevicePrefixTag';
+import RunnerPrefixTag from './RunnerPrefixTag';
 
 interface Props {
   device: DeviceBase;
   onClick: () => void;
 }
 
-const DeviceName = ({ device, onClick }: Props) => {
+const RunnerName = ({ device, onClick }: Props) => {
   return (
     <Box onClick={onClick}>
-      <DevicePrefixTag device={device} />
+      <RunnerPrefixTag device={device} />
       <StyledName>{device.name}</StyledName>
     </Box>
   );
 };
 
-export default React.memo(DeviceName);
+export default React.memo(RunnerName);
 
 const StyledName = styled.p`
   ${listActiveNameStyle}
@@ -39,7 +39,7 @@ const Box = styled.button`
   }
 `;
 
-const StyledTag = styled(DevicePrefixTag)`
+const StyledTag = styled(RunnerPrefixTag)`
   margin-right: 0.25rem;
 
   &:hover {

@@ -7,7 +7,7 @@ import { NextPageWithLayout } from 'pages/_app';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import TableListView from 'src/components/common/TableListView';
 import ProjectLayout from 'src/components/layouts/ProjectLayout';
-import DeviceListController from 'src/components/projects/DeviceListController';
+import RunnerListController from 'src/components/projects/RunnerListController';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
 import { flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
 import Head from 'next/head';
@@ -31,7 +31,7 @@ const ProjectDevicePage: NextPageWithLayout<WithProjectProps> = ({ project, orga
             <RefreshButton />
           </FlexBetweenBox>
         }
-        table={<DeviceListController projectId={project.projectId} organizationId={project.organizationId} />}
+        table={<RunnerListController projectId={project.projectId} organizationId={project.organizationId} />}
       />
     </>
   );

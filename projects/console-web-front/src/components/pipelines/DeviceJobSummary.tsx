@@ -1,7 +1,7 @@
 import { RoutineDeviceJobBase } from '@dogu-private/console';
 import styled from 'styled-components';
 
-import PlatformIcon from 'src/components/device/PlatformIcon';
+import PlatformIcon from 'src/components/runner/PlatformIcon';
 import JobStatusIcon from 'src/components/pipelines/JobStatusIcon';
 import PipelineRuntime from 'src/components/pipelines/PipelineRuntime';
 import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from 'src/styles/box';

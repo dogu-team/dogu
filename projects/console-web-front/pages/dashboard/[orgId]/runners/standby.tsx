@@ -4,8 +4,8 @@ import Head from 'next/head';
 import { NextPageWithLayout } from 'pages/_app';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import TableListView from 'src/components/common/TableListView';
-import AddableDeviceFilter from 'src/components/device/AddableDeviceFilter';
-import AddableDeviceListController from 'src/components/device/AddableDeviceListController';
+import AddableDeviceFilter from 'src/components/runner/AddableDeviceFilter';
+import AddableDeviceListController from 'src/components/runner/AddableDeviceListController';
 import OrganizationRunnerLayout from 'src/components/layouts/OrganizationRunnerLayout';
 import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
 

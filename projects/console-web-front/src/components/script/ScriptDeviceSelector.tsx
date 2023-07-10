@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import useSWR from 'swr';
 
 import { swrAuthFetcher } from 'src/api';
-import DeviceSelector from 'src/components/device/DeviceSelector';
+import RunnerSelector from 'src/components/runner/RunnerSelector';
 import useDebouncedInputValues from 'src/hooks/useDebouncedInputValues';
 import { useState } from 'react';
 
@@ -42,7 +42,7 @@ const ScriptDeviceSeletor = ({ organizationId, projectId, onSelectedDeviceChange
 
 export default ScriptDeviceSeletor;
 
-const StyledDeviceSelector = styled(DeviceSelector)`
+const StyledDeviceSelector = styled(RunnerSelector)`
   flex: 1;
   max-width: 20rem;
 `;

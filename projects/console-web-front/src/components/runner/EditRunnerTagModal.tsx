@@ -23,7 +23,7 @@ interface Props {
   close: () => void;
 }
 
-const EditDeviceTagModal = ({ deviceId, isOpen, close }: Props) => {
+const EditRunnerTagModal = ({ deviceId, isOpen, close }: Props) => {
   const router = useRouter();
   const organizationId = router.query.orgId as OrganizationId;
   const [isLoading, setIsLoading] = useState(false);
@@ -204,7 +204,7 @@ const EditDeviceTagModal = ({ deviceId, isOpen, close }: Props) => {
   );
 };
 
-export default EditDeviceTagModal;
+export default EditRunnerTagModal;
 
 const Box = styled.div``;
 

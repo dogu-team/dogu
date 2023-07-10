@@ -120,7 +120,7 @@ interface Props {
   organizationId: OrganizationId;
 }
 
-const DeviceTagListController = ({ organizationId }: Props) => {
+const RunnerTagListController = ({ organizationId }: Props) => {
   const { keyword } = useTagFilterStore((state) => state.filterValue);
   const { data, error, mutate, page, updatePage, isLoading } = usePaginationSWR<DeviceTagBase>(`/organizations/${organizationId}/tags?keyword=${keyword}`, {
     skipQuestionMark: true,
@@ -162,7 +162,7 @@ const DeviceTagListController = ({ organizationId }: Props) => {
   );
 };
 
-export default React.memo(DeviceTagListController);
+export default React.memo(RunnerTagListController);
 
 const TaggedDeviceBox = styled.div`
   display: flex;

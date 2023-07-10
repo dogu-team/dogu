@@ -12,7 +12,7 @@ import resources from '../../resources';
 import useLivePipelineStore from '../../stores/live-pipeline';
 import { flexRowBaseStyle, tableCellStyle } from '../../styles/box';
 import ErrorBox from '../common/boxes/ErrorBox';
-import PlatformIcon from '../device/PlatformIcon';
+import PlatformIcon from '../runner/PlatformIcon';
 import JobStatusIcon from './JobStatusIcon';
 import RuntimeTimer from './RuntimeTimer';
 

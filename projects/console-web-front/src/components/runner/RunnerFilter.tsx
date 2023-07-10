@@ -4,14 +4,14 @@ import useTranslation from 'next-translate/useTranslation';
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 
-import useDeviceFilterStore, { defaultDeviceFilterValue } from 'src/stores/device-filter';
-import DeviceStatusSelector from './DeviceStatusSelector';
-import DeviceTagSearchBox from './DeviceTagSearchBox';
+import useRunnerFilterStore, { defaultRunnerFilterValue } from 'src/stores/runner-filter';
+import RunnerStatusSelector from './RunnerStatusSelector';
+import RunnerTagSearchBox from './RunnerTagSearchBox';
 import ProjectSearchBox from './ProjectSearchBox';
 import SelectFilterDropdown from '../SelectFilterDropdown';
 
-const DeviceSearchInput = () => {
-  const { updateFilter } = useDeviceFilterStore();
+const RunnerSearchInput = () => {
+  const { updateFilter } = useRunnerFilterStore();
   const [name, setName] = useState('');
   const { t } = useTranslation();
 
@@ -31,8 +31,8 @@ const DeviceSearchInput = () => {
   return <StyledSearchInput value={name} placeholder={t('runner:runnerFilterNamePlaceholder')} maxLength={50} onChange={(e) => handleChangeName(e.target.value)} allowClear />;
 };
 
-const DeviceFilter = () => {
-  const { filterValue, resetFilter } = useDeviceFilterStore();
+const RunnerFilter = () => {
+  const { filterValue, resetFilter } = useRunnerFilterStore();
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -41,14 +41,14 @@ const DeviceFilter = () => {
 
   return (
     <Box>
-      <DeviceSearchInput />
+      <RunnerSearchInput />
 
       <FlexBox>
-        <SelectFilterDropdown title={t('runner:runnerFilterTagTitle')} selectedCount={filterValue.tags.length} menu={<DeviceTagSearchBox />} />
+        <SelectFilterDropdown title={t('runner:runnerFilterTagTitle')} selectedCount={filterValue.tags.length} menu={<RunnerTagSearchBox />} />
         <SelectFilterDropdown title={t('runner:runnerFilterProjectTitle')} selectedCount={filterValue.projects.length} menu={<ProjectSearchBox />} />
-        <SelectFilterDropdown title={t('runner:runnerFilterStatusTitle')} selectedCount={filterValue.states.length} menu={<DeviceStatusSelector />} />
+        <SelectFilterDropdown title={t('runner:runnerFilterStatusTitle')} selectedCount={filterValue.states.length} menu={<RunnerStatusSelector />} />
 
-        <Button onClick={resetFilter} disabled={JSON.stringify(filterValue) === JSON.stringify(defaultDeviceFilterValue)}>
+        <Button onClick={resetFilter} disabled={JSON.stringify(filterValue) === JSON.stringify(defaultRunnerFilterValue)}>
           {t('runner:runnerFilterClearTitle')}
         </Button>
       </FlexBox>
@@ -56,7 +56,7 @@ const DeviceFilter = () => {
   );
 };
 
-export default DeviceFilter;
+export default RunnerFilter;
 
 const Box = styled.div`
   display: flex;

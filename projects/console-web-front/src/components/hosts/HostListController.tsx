@@ -26,7 +26,7 @@ import { getErrorMessage } from '../../utils/error';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import ListEmpty from '../common/boxes/ListEmpty';
-import PlatformIcon from '../device/PlatformIcon';
+import PlatformIcon from '../runner/PlatformIcon';
 import TokenCopyInput from '../common/TokenCopyInput';
 import { menuItemButtonStyles } from '../../styles/button';
 import useRequest from '../../hooks/useRequest';

@@ -10,7 +10,7 @@ import { ProjectId } from '@dogu-private/types';
 import useTranslation from 'next-translate/useTranslation';
 
 import useDebouncedInputValues from 'src/hooks/useDebouncedInputValues';
-import useDeviceFilterStore from 'src/stores/device-filter';
+import useRunnerFilterStore from 'src/stores/runner-filter';
 import { FilterSelectedTag, FilterSelectOption, SelectFilterDropdownMenu } from '../SelectFilterDropdown';
 import { sendErrorNotification } from '../../utils/antd';
 
@@ -23,7 +23,7 @@ const ProjectSearchBox = () => {
     swrAuthFetcher,
     { keepPreviousData: true },
   );
-  const [selectedProjects, updateFilter] = useDeviceFilterStore((state) => [state.filterValue.projects, state.updateFilter], shallow);
+  const [selectedProjects, updateFilter] = useRunnerFilterStore((state) => [state.filterValue.projects, state.updateFilter], shallow);
   const { t } = useTranslation();
 
   const handleRemoveFilter = useCallback((name: string) => {

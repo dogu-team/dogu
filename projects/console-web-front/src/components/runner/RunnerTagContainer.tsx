@@ -7,7 +7,7 @@ interface Props {
   tags: DeviceTagBase[];
 }
 
-const DeviceTagContainer = ({ tags }: Props) => {
+const RunnerTagContainer = ({ tags }: Props) => {
   const [seeMore, setSeeMore] = useState(false);
 
   const data = seeMore ? tags : tags.slice(0, 5);
@@ -22,7 +22,7 @@ const DeviceTagContainer = ({ tags }: Props) => {
   );
 };
 
-export default DeviceTagContainer;
+export default RunnerTagContainer;
 
 const StyledTag = styled(Tag)`
   margin: 2px;

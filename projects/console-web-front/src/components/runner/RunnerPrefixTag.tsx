@@ -8,7 +8,7 @@ interface Props {
   device: DeviceBase;
 }
 
-const DevicePrefixTag = ({ device }: Props) => {
+const RunnerPrefixTag = ({ device }: Props) => {
   return (
     <Box>
       {device.isGlobal === 1 && <Tag style={{ backgroundColor: '#ffcc00', color: '#000', border: 'none' }}>Public</Tag>}
@@ -17,7 +17,7 @@ const DevicePrefixTag = ({ device }: Props) => {
   );
 };
 
-export default DevicePrefixTag;
+export default RunnerPrefixTag;
 
 const Box = styled.div`
   ${flexRowBaseStyle}

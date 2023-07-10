@@ -4,7 +4,7 @@ import useTranslation from 'next-translate/useTranslation';
 import styled from 'styled-components';
 
 import { getLocaleFormattedDate } from 'src/utils/locale';
-import DevicePrefixTag from './DevicePrefixTag';
+import RunnerPrefixTag from './RunnerPrefixTag';
 import { flexRowBaseStyle } from '../../styles/box';
 
 interface Props {
@@ -13,7 +13,7 @@ interface Props {
   close: () => void;
 }
 
-const DeviceDetailModal = ({ isOpen, device, close }: Props) => {
+const RunnerDetailModal = ({ isOpen, device, close }: Props) => {
   const { t, lang } = useTranslation();
   const isGlobal = device.isGlobal === 1;
 
@@ -61,7 +61,7 @@ const DeviceDetailModal = ({ isOpen, device, close }: Props) => {
   );
 };
 
-export default DeviceDetailModal;
+export default RunnerDetailModal;
 
 const Box = styled.div``;
 

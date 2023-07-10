@@ -24,7 +24,7 @@ interface Props {
   close: () => void;
 }
 
-const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalProp }: Props) => {
+const EditRunnerProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalProp }: Props) => {
   const router = useRouter();
   const orgId = router.query.orgId;
   const [showResult, setShowResult] = useState(false);
@@ -161,7 +161,7 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
   );
 };
 
-export default AddDeviceToProjectModal;
+export default EditRunnerProjectModal;
 
 const Box = styled.div``;
 

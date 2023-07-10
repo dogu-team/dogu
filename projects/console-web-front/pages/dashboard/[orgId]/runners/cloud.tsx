@@ -4,10 +4,10 @@ import Head from 'next/head';
 import { NextPageWithLayout } from 'pages/_app';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import TableListView from 'src/components/common/TableListView';
-import AddableDeviceFilter from 'src/components/device/AddableDeviceFilter';
+import AddableDeviceFilter from 'src/components/runner/AddableDeviceFilter';
 import OrganizationRunnerLayout from 'src/components/layouts/OrganizationRunnerLayout';
 import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
-import CloudDeviceListController from '../../../../src/components/device/CloudDeviceListController';
+import CloudRunnerListController from '../../../../src/components/runner/CloudRunnerListController';
 
 const AddCloudDevicePage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) => {
   return (
@@ -22,7 +22,7 @@ const AddCloudDevicePage: NextPageWithLayout<WithOrganizationProps> = ({ organiz
             <RefreshButton />
           </TopWrapper>
         }
-        table={<CloudDeviceListController />}
+        table={<CloudRunnerListController />}
       />
     </>
   );

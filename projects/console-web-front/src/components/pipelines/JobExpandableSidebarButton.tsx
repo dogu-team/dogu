@@ -11,7 +11,7 @@ import { swrAuthFetcher } from '../../api';
 import useLivePipelineStore from '../../stores/live-pipeline';
 import { flexRowBaseStyle } from '../../styles/box';
 import { oneLineClampStyle } from '../../styles/text';
-import PlatformIcon from '../device/PlatformIcon';
+import PlatformIcon from '../runner/PlatformIcon';
 import ProjectSidebarItem from '../projects/ProjectSidebarItem';
 import JobStatusIcon from './JobStatusIcon';
 

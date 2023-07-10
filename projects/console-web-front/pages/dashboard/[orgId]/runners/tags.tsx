@@ -6,12 +6,12 @@ import Head from 'next/head';
 
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import useModal from 'src/hooks/useModal';
-import CreateTagModal from 'src/components/device/CreateTagModal';
+import CreateTagModal from 'src/components/runner/CreateTagModal';
 import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
-import TagFilter from 'src/components/device/TagFilter';
+import TagFilter from 'src/components/runner/TagFilter';
 import OrganizationRunnerLayout from 'src/components/layouts/OrganizationRunnerLayout';
 import TableListView from '../../../../src/components/common/TableListView';
-import DeviceTagListController from '../../../../src/components/device/DeviceTagListController';
+import RunnerTagListController from '../../../../src/components/runner/RunnerTagListController';
 
 const DeviceTagsManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) => {
   const [isOpen, openModal, closeModal] = useModal();
@@ -34,7 +34,7 @@ const DeviceTagsManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ o
             <RefreshButton />
           </FlexBox>
         }
-        table={<DeviceTagListController organizationId={organization.organizationId} />}
+        table={<RunnerTagListController organizationId={organization.organizationId} />}
       />
 
       <CreateTagModal isOpen={isOpen} close={closeModal} />

@@ -9,16 +9,16 @@ import Link from 'next/link';
 import usePaginationSWR from 'src/hooks/usePaginationSWR';
 import useRefresh from 'src/hooks/useRefresh';
 import useUnallowedDeviceFilterStore from 'src/stores/unallowed-device-filter';
-import DeviceConnectionStateTag from './DeviceConnectionStateTag';
+import RunnerConnectionStateTag from './RunnerConnectionStateTag';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
-import AddDeviceToProjectModal from './EditDeviceProjectModal';
+import EditRunnerProjectModal from './EditRunnerProjectModal';
 import useModal from '../../hooks/useModal';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
-import EditDeviceModal from './EditDeviceModal';
+import EditRunnerModal from './EditRunnerModal';
 import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from './PlatformIcon';
-import DevicePrefixTag from './DevicePrefixTag';
+import RunnerPrefixTag from './RunnerPrefixTag';
 import useEventStore from '../../stores/events';
 
 interface DeviceItemProps {
@@ -63,11 +63,11 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
       <Item>
         <FlexRowBase>
           <NameCell>
-            <DevicePrefixTag device={device} />
+            <RunnerPrefixTag device={device} />
             {device.name}
           </NameCell>
           <ConnectionStatusCell>
-            <DeviceConnectionStateTag connectionState={device.connectionState} />
+            <RunnerConnectionStateTag connectionState={device.connectionState} />
           </ConnectionStatusCell>
           <PlatformCell>
             <FlexRowBase style={{ marginBottom: '.4rem' }}>
@@ -88,8 +88,8 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
         </FlexRowBase>
       </Item>
 
-      <AddDeviceToProjectModal deviceId={device.deviceId} isOpen={isAddProjectModalOpen} close={closeAddProjectModal} isGlobal={false} />
-      <EditDeviceModal device={device} isOpen={isEditModalOpen} close={closeEditModal} />
+      <EditRunnerProjectModal deviceId={device.deviceId} isOpen={isAddProjectModalOpen} close={closeAddProjectModal} isGlobal={false} />
+      <EditRunnerModal device={device} isOpen={isEditModalOpen} close={closeEditModal} />
     </>
   );
 };

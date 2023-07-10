@@ -20,7 +20,7 @@ interface Props {
   close: () => void;
 }
 
-const EditDeviceModal = ({ isOpen, device, close }: Props) => {
+const EditRunnerModal = ({ isOpen, device, close }: Props) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -73,7 +73,7 @@ const EditDeviceModal = ({ isOpen, device, close }: Props) => {
   );
 };
 
-export default EditDeviceModal;
+export default EditRunnerModal;
 
 const FormContainer = styled.div`
   margin-top: 1.5rem;

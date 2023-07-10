@@ -12,7 +12,7 @@ interface Props {
   onProjectClick?: () => void;
 }
 
-const DeviceTagAndProject = ({ tagCount, projectCount, onTagClick, onProjectClick }: Props) => {
+const RunnerTagAndProject = ({ tagCount, projectCount, onTagClick, onProjectClick }: Props) => {
   return (
     <Box>
       {tagCount !== undefined && (
@@ -31,7 +31,7 @@ const DeviceTagAndProject = ({ tagCount, projectCount, onTagClick, onProjectClic
   );
 };
 
-export default React.memo(DeviceTagAndProject);
+export default React.memo(RunnerTagAndProject);
 
 const Box = styled.div``;
 

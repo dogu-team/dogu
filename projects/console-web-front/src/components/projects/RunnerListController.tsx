@@ -17,23 +17,23 @@ import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } fro
 import { getErrorMessage } from '../../utils/error';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
-import DeviceConnectionStateTag from '../device/DeviceConnectionStateTag';
+import RunnerConnectionStateTag from '../runner/RunnerConnectionStateTag';
 import useEventStore from '../../stores/events';
-import DeviceName from '../device/DeviceName';
+import RunnerName from '../runner/RunnerName';
 import useModal from '../../hooks/useModal';
-import DeviceDetailModal from '../device/DeviceDetailModal';
-import DeviceTagAndProject from '../device/DeviceTagAndProject';
+import RunnerDetailModal from '../runner/RunnerDetailModal';
+import RunnerTagAndProject from '../runner/RunnerTagAndProject';
 import { menuItemButtonStyles } from '../../styles/button';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import ListEmpty from '../common/boxes/ListEmpty';
-import PlatformIcon from '../device/PlatformIcon';
+import PlatformIcon from '../runner/PlatformIcon';
 
 interface DeviceItemProps {
   device: DeviceBase;
   projectId: ProjectId;
 }
 
-const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
+const RunnerItem = ({ device, projectId }: DeviceItemProps) => {
   const router = useRouter();
   const orgId = router.query.orgId as OrganizationId;
   const fireEvent = useEventStore((state) => state.fireEvent);
@@ -104,13 +104,13 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
       <Item>
         <FlexRowBase>
           <NameCell>
-            <DeviceName device={device} onClick={handleClickDetail} />
+            <RunnerName device={device} onClick={handleClickDetail} />
           </NameCell>
           <OneSpanCell>
-            <DeviceConnectionStateTag connectionState={device.connectionState} />
+            <RunnerConnectionStateTag connectionState={device.connectionState} />
           </OneSpanCell>
           <OneSpanCell>
-            <DeviceConnectionStateTag connectionState={device.connectionState} />
+            <RunnerConnectionStateTag connectionState={device.connectionState} />
           </OneSpanCell>
           <PlatformCell>
             <FlexRowBase style={{ marginBottom: '.4rem' }}>
@@ -122,7 +122,7 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
             </div>
           </PlatformCell>
           <OneSpanCell>
-            <DeviceTagAndProject
+            <RunnerTagAndProject
               tagCount={device.deviceTags?.length}
               projectCount={isGlobalDevice ? undefined : device.projects?.length}
               onTagClick={handleClickDetail}
@@ -137,7 +137,7 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
         </FlexRowBase>
       </Item>
 
-      <DeviceDetailModal isOpen={isDetailModalOpen} device={device} close={closeDetailModal} />
+      <RunnerDetailModal isOpen={isDetailModalOpen} device={device} close={closeDetailModal} />
     </>
   );
 };
@@ -147,7 +147,7 @@ interface Props {
   projectId: ProjectId;
 }
 
-const DeviceListController = ({ organizationId, projectId }: Props) => {
+const RunnerListController = ({ organizationId, projectId }: Props) => {
   const { data, isLoading, error, mutate, updatePage, page } = usePaginationSWR<DeviceBase>(`/organizations/${organizationId}/projects/${projectId}/devices`, undefined, {
     keepPreviousData: true,
   });
@@ -171,7 +171,7 @@ const DeviceListController = ({ organizationId, projectId }: Props) => {
         dataSource={data?.items}
         loading={isLoading}
         pagination={{ defaultCurrent: 1, current: page, pageSize: 10, total: data?.totalCount, onChange: (page, pageSize) => updatePage(page) }}
-        renderItem={(item) => <DeviceItem device={item} projectId={projectId} />}
+        renderItem={(item) => <RunnerItem device={item} projectId={projectId} />}
         rowKey={(item) => `project-${projectId}-device-${item.deviceId}`}
         locale={{
           emptyText: (
@@ -191,7 +191,7 @@ const DeviceListController = ({ organizationId, projectId }: Props) => {
   );
 };
 
-export default DeviceListController;
+export default RunnerListController;
 
 const Item = styled(List.Item)`
   ${listItemStyle}

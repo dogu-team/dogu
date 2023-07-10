@@ -9,7 +9,7 @@ interface Props {
   connectionState: DeviceConnectionState;
 }
 
-const DeviceConnectionStateTag = ({ connectionState }: Props) => {
+const RunnerConnectionStateTag = ({ connectionState }: Props) => {
   const text = mapDeviceConnectionStateToString(connectionState);
 
   switch (connectionState) {
@@ -37,7 +37,7 @@ const DeviceConnectionStateTag = ({ connectionState }: Props) => {
   }
 };
 
-export default DeviceConnectionStateTag;
+export default RunnerConnectionStateTag;
 
 const Box = styled.div`
   display: inline-flex;

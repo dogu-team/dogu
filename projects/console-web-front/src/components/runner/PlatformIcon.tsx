@@ -4,7 +4,7 @@ import { Tooltip } from 'antd';
 import Image from 'next/image';
 import styled from 'styled-components';
 
-import resources from '../../resources';
+import resources from '../../resources/index';
 import AndroidIcon from 'public/resources/icons/platforms/android.svg';
 import MacIcon from 'public/resources/icons/platforms/mac.svg';
 import IosIcon from 'public/resources/icons/platforms/ios.svg';

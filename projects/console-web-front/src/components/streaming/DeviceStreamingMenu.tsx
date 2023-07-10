@@ -5,7 +5,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import resources from 'src/resources';
 import StreamingOptionController from './StreamingOptionController';
-import PlatformIcon from '../device/PlatformIcon';
+import PlatformIcon from '../runner/PlatformIcon';
 import { flexRowBaseStyle } from '../../styles/box';
 
 interface Props {

@@ -1,10 +1,11 @@
 import { DeviceBase } from '@dogu-private/console';
 import { Select, SelectProps } from 'antd';
-import PlatformIcon from 'src/components/device/PlatformIcon';
-import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from 'src/styles/box';
 import styled from 'styled-components';
 
-export interface DeviceSelectorProps {
+import PlatformIcon from 'src/components/runner/PlatformIcon';
+import { flexRowBaseStyle } from 'src/styles/box';
+
+export interface RunnerSelectorProps {
   devices: DeviceBase[];
   filterValue: string;
   onFilterChanged: (value: string) => void;
@@ -18,7 +19,7 @@ export interface DeviceSelectorProps {
   onBlur?: () => void;
 }
 
-const DeviceSelector = ({
+const RunnerSelector = ({
   devices,
   filterValue,
   defaultSelectedDevice,
@@ -30,7 +31,7 @@ const DeviceSelector = ({
   open,
   onClick,
   onBlur,
-}: DeviceSelectorProps) => {
+}: RunnerSelectorProps) => {
   const options: SelectProps['options'] = devices.map((device) => ({
     value: device.deviceId,
     label: (
@@ -73,7 +74,7 @@ const DeviceSelector = ({
   );
 };
 
-export default DeviceSelector;
+export default RunnerSelector;
 
 const Flexbox = styled.div`
   ${flexRowBaseStyle}

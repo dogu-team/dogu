@@ -2,13 +2,13 @@ import { DeviceConnectionState } from '@dogu-private/types';
 import { Checkbox } from 'antd';
 import styled from 'styled-components';
 
-import useDeviceFilterStore from 'src/stores/device-filter';
-import DeviceConnectionStateTag from './DeviceConnectionStateTag';
+import useRunnerFilterStore from 'src/stores/runner-filter';
+import RunnerConnectionStateTag from './RunnerConnectionStateTag';
 
 const status = [DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED, DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED, DeviceConnectionState.UNRECOGNIZED];
 
-const DeviceStatusSelector = () => {
-  const { filterValue, updateFilter } = useDeviceFilterStore();
+const RunnerStatusSelector = () => {
+  const { filterValue, updateFilter } = useRunnerFilterStore();
 
   return (
     <Box onClick={(e) => e.stopPropagation()}>
@@ -28,14 +28,14 @@ const DeviceStatusSelector = () => {
             })
           }
         >
-          <DeviceConnectionStateTag connectionState={item} />
+          <RunnerConnectionStateTag connectionState={item} />
         </StyledCheckbox>
       ))}
     </Box>
   );
 };
 
-export default DeviceStatusSelector;
+export default RunnerStatusSelector;
 
 const Box = styled.div`
   display: flex;

@@ -7,7 +7,7 @@ interface Props {
   device: DeviceBase;
 }
 
-const DeviceUsageStatusBadge = ({ device }: Props) => {
+const RunnerUsageStatusBadge = ({ device }: Props) => {
   if (device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED || device.connectionState === DeviceConnectionState.UNRECOGNIZED) {
     return (
       <Box style={{ backgroundColor: '#bbbbbb33' }}>
@@ -47,7 +47,7 @@ const DeviceUsageStatusBadge = ({ device }: Props) => {
   );
 };
 
-export default DeviceUsageStatusBadge;
+export default RunnerUsageStatusBadge;
 
 const Box = styled.div`
   display: inline-flex;

@@ -8,16 +8,16 @@ import { useCallback, useMemo, useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 
 import { swrAuthFetcher } from 'src/api';
-import useDeviceFilterStore from 'src/stores/device-filter';
+import useRunnerFilterStore from 'src/stores/runner-filter';
 import { FilterSelectedTag, FilterSelectOption, SelectFilterDropdownMenu } from '../SelectFilterDropdown';
 import { sendErrorNotification } from '../../utils/antd';
 
-const DeviceTagSearchBox = () => {
+const RunnerTagSearchBox = () => {
   const router = useRouter();
   const organizationId = router.query.orgId;
   const [keyword, setKeyword] = useState('');
   const [name, setName] = useState('');
-  const { filterValue, updateFilter } = useDeviceFilterStore();
+  const { filterValue, updateFilter } = useRunnerFilterStore();
   const { data, error, isLoading } = useSWR<PageBase<DeviceTagBase>>(organizationId && `/organizations/${organizationId}/tags?offset=5&keyword=${keyword}`, swrAuthFetcher, {
     keepPreviousData: true,
   });
@@ -71,7 +71,7 @@ const DeviceTagSearchBox = () => {
   );
 };
 
-export default DeviceTagSearchBox;
+export default RunnerTagSearchBox;
 
 const StyledSelectFilterDropdownMenu = styled(SelectFilterDropdownMenu)`
   width: 250px;
