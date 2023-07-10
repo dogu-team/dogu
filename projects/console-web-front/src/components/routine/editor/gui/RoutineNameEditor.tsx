@@ -1,3 +1,4 @@
+import { ROUTINE_NAME_MAX_LENGTH } from '@dogu-private/types';
 import { Input } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import styled from 'styled-components';
@@ -15,7 +16,13 @@ const RoutineNameEditor = ({ name, onChange }: Props) => {
   return (
     <Box>
       <RoutineName>{t('routine:routineGuiEditorRoutineNameLabel')}</RoutineName>
-      <Input defaultValue={name} value={name} onChange={(e) => onChange(e.target.value)} placeholder={t('routine:routineGuiEditorRoutineNamePlaceholder')} />
+      <Input
+        defaultValue={name}
+        value={name}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={t('routine:routineGuiEditorRoutineNamePlaceholder')}
+        maxLength={ROUTINE_NAME_MAX_LENGTH}
+      />
     </Box>
   );
 };
