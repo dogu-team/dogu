@@ -112,7 +112,7 @@ const config = {
               },
               {
                 label: 'routine',
-                to: '/routine',
+                to: '/routine/routines',
               },
               {
                 label: 'API',

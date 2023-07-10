@@ -102,5 +102,13 @@
   "sidebar.routineSidebar.category.sidebar.routineSidebar.category.Routine": {
     "message": "sidebar.routineSidebar.category.Routine",
     "description": "The label for category sidebar.routineSidebar.category.Routine in sidebar routineSidebar"
+  },
+  "sidebar.deviceFarmSidebar.category.Trouble Shooting": {
+    "message": "Trouble Shooting",
+    "description": "The label for category Trouble Shooting in sidebar deviceFarmSidebar"
+  },
+  "sidebar.routineSidebar.category.Routine": {
+    "message": "Routine",
+    "description": "The label for category Routine in sidebar routineSidebar"
   }
 }
