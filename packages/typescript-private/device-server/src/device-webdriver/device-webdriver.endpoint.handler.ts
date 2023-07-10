@@ -1,5 +1,5 @@
 import { extensionFromPlatform, PlatformType } from '@dogu-private/types';
-import { DefaultHttpOptions } from '@dogu-tech/common';
+import { DefaultHttpOptions, stringify } from '@dogu-tech/common';
 import { convertWebDriverPlatformToDogu, RelayRequest, WebDriverEndPoint } from '@dogu-tech/device-client-common';
 import { HostPaths } from '@dogu-tech/node';
 import axios from 'axios';
@@ -43,65 +43,73 @@ export class DeviceWebDriverNewSessionEndpointHandler extends DeviceWebDriverEnd
     if (!appVersion) {
       return { status: 400, error: new Error('App version not specified'), data: {} };
     }
-
-    remoteContext.sessionId = '';
-
-    const downloadFilename = `${filename}-${platform}-${appVersion}.${extension}`;
-    const filePath = path.resolve(HostPaths.doguTempPath(), downloadFilename);
-    endpoint.info.capabilities.setApp(filePath);
-
-    const headRes = await axios.head(url, {
-      headers: {},
-      timeout: DefaultHttpOptions.request.timeout,
-    });
-    const expectedFileSize = parseInt(headRes.headers['content-length']);
-
-    const stat = await fs.promises.stat(filePath).catch(() => null);
-    if (stat !== null) {
-      if (stat.isFile()) {
-        logger.info('File already exists', { filePath });
-        logger.info(`File size local: ${stat.size} expected: ${expectedFileSize}`, { filePath });
-        if (stat.size === expectedFileSize) {
-          logger.info('File is same size. Skipping download', { filePath });
-          return { request, ...{ reqBody: endpoint.info.capabilities.origin } };
-        } else {
-          logger.info('File is not same size. Deleting file', { filePath });
-          await fs.promises.unlink(filePath);
-          logger.info('File deleted', { filePath });
-        }
-      } else {
-        logger.error('File is not a file', { filePath });
-        throw new Error('File is not a file');
-      }
-    }
-
-    const tempFileName = `${uuidv4()}.${extension}`;
-    const tempFilePath = path.resolve(HostPaths.tempPath, tempFileName);
-    if (!fs.existsSync(HostPaths.tempPath)) {
-      fs.mkdirSync(HostPaths.tempPath, { recursive: true });
-    }
-    const response = await axios.get(url, {
-      responseType: 'stream',
-      headers: {},
-      timeout: DefaultHttpOptions.request.timeout,
-    });
-    if (!(response.data instanceof Stream)) {
-      throw new Error('response.data is not stream');
-    }
-    const writer = fs.createWriteStream(tempFilePath);
-    response.data.pipe(writer);
     try {
-      await stream.promises.finished(writer);
-    } catch (error) {
-      writer.close();
-      throw error;
+      remoteContext.sessionId = '';
+
+      const downloadFilename = `${filename}-${platform}-${appVersion}.${extension}`;
+      const filePath = path.resolve(HostPaths.doguTempPath(), downloadFilename);
+      endpoint.info.capabilities.setApp(filePath);
+
+      const headRes = await axios.head(url, {
+        headers: {},
+        timeout: DefaultHttpOptions.request.timeout,
+      });
+      const expectedFileSize = parseInt(headRes.headers['content-length']);
+
+      const stat = await fs.promises.stat(filePath).catch(() => null);
+      if (stat !== null) {
+        if (stat.isFile()) {
+          logger.info('File already exists', { filePath });
+          logger.info(`File size local: ${stat.size} expected: ${expectedFileSize}`, { filePath });
+          if (stat.size === expectedFileSize) {
+            logger.info('File is same size. Skipping download', { filePath });
+            return { request, ...{ reqBody: endpoint.info.capabilities.origin } };
+          } else {
+            logger.info('File is not same size. Deleting file', { filePath });
+            await fs.promises.unlink(filePath);
+            logger.info('File deleted', { filePath });
+          }
+        } else {
+          logger.error('File is not a file', { filePath });
+          throw new Error('File is not a file');
+        }
+      }
+
+      const tempFileName = `${uuidv4()}.${extension}`;
+      const tempFilePath = path.resolve(HostPaths.tempPath, tempFileName);
+      if (!fs.existsSync(HostPaths.tempPath)) {
+        fs.mkdirSync(HostPaths.tempPath, { recursive: true });
+      }
+      const response = await axios.get(url, {
+        responseType: 'stream',
+        headers: {},
+        timeout: DefaultHttpOptions.request.timeout,
+      });
+      if (!(response.data instanceof Stream)) {
+        throw new Error('response.data is not stream');
+      }
+      const writer = fs.createWriteStream(tempFilePath);
+      response.data.pipe(writer);
+      try {
+        await stream.promises.finished(writer);
+      } catch (error) {
+        writer.close();
+        throw error;
+      }
+      await postProcessTempFile(platform, tempFilePath, filePath);
+      logger.info('File downloaded', { tempFilePath });
+
+      endpoint.info.capabilities.setApp(filePath);
+
+      return { request, ...{ reqBody: endpoint.info.capabilities.origin } };
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        return { status: error.response?.status ?? 500, error, data: {} };
+      } else if (error instanceof Error) {
+        return { status: 500, error, data: {} };
+      }
+      return { status: 500, error: new Error(stringify(error)), data: {} };
     }
-    await postProcessTempFile(platform, tempFilePath, filePath);
-    logger.info('File downloaded', { tempFilePath });
-
-    endpoint.info.capabilities.setApp(filePath);
-
-    return { request, ...{ reqBody: endpoint.info.capabilities.origin } };
   }
 }
 
