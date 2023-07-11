@@ -1,20 +1,24 @@
-import { ChildCode } from '@dogu-private/dost-children';
+import { ChildCode, Status } from '@dogu-private/dost-children';
 import { logger } from '@dogu-private/host-agent';
 import { Code } from '@dogu-private/types';
+import { Instance, parseAxiosError } from '@dogu-tech/common';
 import { killProcessOnPort } from '@dogu-tech/node';
+import axios from 'axios';
 import { ChildProcess } from 'child_process';
-import { hostAgentKey } from '../../../src/shares/child';
+import { HostAgentConnectionStatus, hostAgentKey } from '../../../src/shares/child';
 import { AppConfigService } from '../../app-config/app-config-service';
+import { FeatureConfigService } from '../../feature-config/feature-config-service';
 import { getLogLevel } from '../../log/logger.instance';
 import { HostAgentLogsPath, HostAgentMainScriptPath } from '../../path-map';
-import { ChildFactory } from '../child-factory';
-import { ChildService } from '../child-service';
-import { Child, fillChildOptions } from '../types';
+import { Child, ChildLastError, fillChildOptions } from '../types';
+import { closeChild, openChild } from './lifecycle';
 
 export class HostAgentChild implements Child {
-  constructor(private readonly childFactory: ChildFactory, private readonly appConfigService: AppConfigService, private readonly childService: ChildService) {}
+  constructor(private readonly appConfigService: AppConfigService, private readonly featureConfigService: FeatureConfigService) {}
+  private _child: ChildProcess | undefined;
+  private _lastError: ChildLastError | undefined;
 
-  async open(): Promise<ChildProcess> {
+  async open(): Promise<void> {
     const { appConfigService } = this;
     const DOGU_HOST_TOKEN = await appConfigService.get('DOGU_HOST_TOKEN');
     const NODE_ENV = await appConfigService.get('NODE_ENV');
@@ -43,13 +47,14 @@ export class HostAgentChild implements Child {
       },
     });
 
-    const child = this.childService.open(hostAgentKey, HostAgentMainScriptPath, options);
-    child.on('close', (exitCode, signal) => {
+    this._child = openChild(hostAgentKey, HostAgentMainScriptPath, options, this.featureConfigService);
+    this._child.on('close', (exitCode, signal) => {
+      this._child = undefined;
       const childCode = new ChildCode(Code.CODE_HOST_AGENT_SUCCESS_BEGIN);
       childCode.code(exitCode, signal);
       logger.verbose('Connection. childCallback.onClose', { exitCode, signal, childCode });
     });
-    return child;
+    return;
   }
 
   async openable(): Promise<boolean> {
@@ -58,26 +63,53 @@ export class HostAgentChild implements Child {
     return !!DOGU_API_BASE_URL && !!DOGU_HOST_TOKEN;
   }
 
-  setOnChangeHandler(): void {
-    const { appConfigService } = this;
-    const reopen = async (fromToken: boolean = false) => {
-      const isActive = await this.childService.isActive('host-agent');
-      if (isActive) {
-        await this.childService.close('host-agent');
-      }
-      if (fromToken) {
-        const token = await appConfigService.get<string>('DOGU_HOST_TOKEN');
-        if (!token) {
-          return;
-        }
-      }
-      return this.childFactory.open('host-agent');
-    };
-    appConfigService.client.onDidChange('NODE_ENV', () => reopen(false));
-    appConfigService.client.onDidChange('DOGU_RUN_TYPE', () => reopen(false));
-    appConfigService.client.onDidChange('DOGU_HOST_TOKEN', () => reopen(true));
-    appConfigService.client.onDidChange('DOGU_API_BASE_URL', () => reopen(false));
-    appConfigService.client.onDidChange('DOGU_DEVICE_SERVER_HOST_PORT', () => reopen(false));
-    appConfigService.client.onDidChange('DOGU_HOST_AGENT_PORT', () => reopen(false));
+  async close(): Promise<void> {
+    if (!this._child) {
+      return;
+    }
+    await closeChild(hostAgentKey, this._child);
+    this._child = undefined;
+  }
+
+  isActive(): Promise<boolean> {
+    if (this._child === undefined) {
+      return Promise.resolve(false);
+    }
+    return Promise.resolve(true);
+  }
+
+  async getConnectionStatus(): Promise<HostAgentConnectionStatus> {
+    const DOGU_HOST_TOKEN = await this.appConfigService.get<string>('DOGU_HOST_TOKEN');
+    if (!DOGU_HOST_TOKEN || DOGU_HOST_TOKEN.length === 0) {
+      return {
+        status: 'is-token-empty',
+        code: Code.CODE_HOST_AGENT_NOT_RUNNING,
+        updatedAt: new Date(),
+      };
+    }
+    const doguHostAgentPort = await this.appConfigService.get<number>('DOGU_HOST_AGENT_PORT');
+    const pathProvider = new Status.getConnectionStatus.pathProvider();
+    const path = Status.getConnectionStatus.resolvePath(pathProvider);
+    const response = await axios
+      .get<Instance<typeof Status.getConnectionStatus.responseBody>>(`http://localhost:${doguHostAgentPort}${path}`, { timeout: 5000 })
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => {
+        const parsed = parseAxiosError(error);
+        logger.warn('getHostAgentConnectionStatus failed', { error: parsed });
+        const response: HostAgentConnectionStatus = {
+          status: 'disconnected',
+          code: Code.CODE_HOST_AGENT_REQUEST_FAILED,
+          reason: parsed.message,
+          updatedAt: new Date(),
+        };
+        return response;
+      });
+    return response;
+  }
+
+  lastError(): ChildLastError | undefined {
+    return this._lastError;
   }
 }

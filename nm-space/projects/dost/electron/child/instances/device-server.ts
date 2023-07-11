@@ -1,18 +1,22 @@
+import { delay } from '@dogu-tech/common';
 import { HostPaths, killProcessOnPort } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
 import path from 'path';
 import { deviceServerKey } from '../../../src/shares/child';
 import { AppConfigService } from '../../app-config/app-config-service';
+import { FeatureConfigService } from '../../feature-config/feature-config-service';
 import { getLogLevel, logger } from '../../log/logger.instance';
+import { stripAnsi } from '../../log/stript-ansi';
 import { DeviceServerLogsPath, DeviceServerMainScriptPath } from '../../path-map';
-import { ChildFactory } from '../child-factory';
-import { ChildService } from '../child-service';
-import { Child, fillChildOptions } from '../types';
+import { Child, ChildLastError, fillChildOptions } from '../types';
+import { closeChild, openChild } from './lifecycle';
 
 export class DeviceServerChild implements Child {
-  constructor(private readonly childFactory: ChildFactory, private readonly appConfigService: AppConfigService, private readonly childService: ChildService) {}
+  constructor(private readonly appConfigService: AppConfigService, private readonly featureConfigService: FeatureConfigService) {}
+  private _child: ChildProcess | undefined;
+  private _lastError: ChildLastError | undefined;
 
-  async open(): Promise<ChildProcess> {
+  async open(): Promise<void> {
     const { appConfigService } = this;
     const NODE_ENV = await appConfigService.get('NODE_ENV');
     const DOGU_RUN_TYPE = await appConfigService.get('DOGU_RUN_TYPE');
@@ -41,17 +45,24 @@ export class DeviceServerChild implements Child {
         },
       },
     });
-    const child = this.childService.open(deviceServerKey, DeviceServerMainScriptPath, options);
-    child.on('close', (code, signal) => {
+    this._child = openChild(deviceServerKey, DeviceServerMainScriptPath, options, this.featureConfigService);
+    this._child.stderr?.on('data', (data) => {
+      const dataString = data.toString();
+      const stripped = stripAnsi ? stripAnsi(dataString) : dataString;
+      this.lastError = stripped;
+    });
+    this._child.on('close', (code, signal) => {
       if (code !== null) {
         if (code === 0) {
           return;
         } else {
-          this.childFactory.open('device-server');
+          this._child = undefined;
+          delay(3000).then(() => {
+            this.open();
+          });
         }
       }
     });
-    return child;
   }
 
   async openable(): Promise<boolean> {
@@ -59,22 +70,19 @@ export class DeviceServerChild implements Child {
     return doguIsSupportedPlatformValid;
   }
 
-  setOnChangeHandler(): void {
-    const { appConfigService } = this;
-    const reopen = async () => {
-      const isActive = await this.childService.isActive('device-server');
-      if (isActive) {
-        await this.childService.close('device-server');
-      }
-      return this.childFactory.open('device-server');
-    };
-    appConfigService.client.onDidChange('NODE_ENV', reopen);
-    appConfigService.client.onDidChange('DOGU_RUN_TYPE', reopen);
-    appConfigService.client.onDidChange('DOGU_DEVICE_SERVER_PORT', reopen);
-    appConfigService.client.onDidChange('DOGU_IS_SUPPORTED_PLATFORM_VALID', (newValue) => {
-      if (newValue) {
-        reopen();
-      }
-    });
+  async close(): Promise<void> {
+    if (!this._child) {
+      return;
+    }
+    await closeChild(deviceServerKey, this._child);
+    this._child = undefined;
+  }
+
+  isActive(): Promise<boolean> {
+    return Promise.resolve(this._child !== undefined);
+  }
+
+  lastError(): ChildLastError | undefined {
+    return this._lastError;
   }
 }

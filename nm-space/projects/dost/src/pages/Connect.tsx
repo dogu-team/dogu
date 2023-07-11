@@ -13,7 +13,7 @@ import { ipc } from '../utils/window';
 function Connect() {
   const hostAgentConnectionStatus = useHostAgentConnectionStatusStore((state) => state.status);
 
-  const tokenInputable = hostAgentConnectionStatus?.status === 'is-not-active' || hostAgentConnectionStatus?.status === 'disconnected';
+  const tokenInputable = hostAgentConnectionStatus?.status === 'is-token-empty' || hostAgentConnectionStatus?.status === 'disconnected';
   const isConnecting = hostAgentConnectionStatus?.status === 'connecting';
   const isConnected = hostAgentConnectionStatus?.status === 'connected';
 

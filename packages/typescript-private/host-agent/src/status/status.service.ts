@@ -44,6 +44,7 @@ export class StatusService {
     this.connectionStatus = {
       status: 'disconnected',
       code,
+      reason: error instanceof Error ? error.message : 'unknown',
     };
   }
 

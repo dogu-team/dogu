@@ -24,15 +24,10 @@ export interface ChildTree {
 }
 
 export interface IChildClient {
-  close: (key: Key) => Promise<void>;
   isActive: (key: Key) => Promise<boolean>;
+  connect: (token: string) => Promise<HostAgentConnectionStatus>;
   getHostAgentConnectionStatus: () => Promise<HostAgentConnectionStatus>;
   getChildTree: () => Promise<ChildTree>;
-}
-
-export const childFactoryKey = instanceKeys<IChildFactory>('childFactory');
-export interface IChildFactory {
-  open: (key: Key) => void;
 }
 
 export const childCallbackKey = instanceKeys<IChildCallback>('childCallback');
