@@ -7,7 +7,7 @@ interface Props {
 
 const HostAgentConnectionStatusBadge = ({ status }: Props) => {
   switch (status.status) {
-    case 'is-not-active':
+    case 'is-token-empty':
       return (
         <Tag colorScheme="gray" fontWeight="semibold">
           Need to set

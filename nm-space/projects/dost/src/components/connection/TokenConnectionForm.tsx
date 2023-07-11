@@ -1,7 +1,10 @@
-import { Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, Spacer } from '@chakra-ui/react';
+import { Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, Spacer, useToast } from '@chakra-ui/react';
+import { Code } from '@dogu-private/types';
 import { stringify } from '@dogu-tech/common';
 import { useState } from 'react';
 import styled from 'styled-components';
+import { HostAgentConnectionStatus } from '../../shares/child';
+import useHostAgentConnectionStatusStore from '../../stores/host-agent-connection-status';
 
 import { connect } from '../../utils/connection';
 import { ipc } from '../../utils/window';
@@ -15,6 +18,8 @@ const TokenConnectionForm = (props: Props) => {
   const [value, setValue] = useState('');
   const [error, setError] = useState<string>();
   const [loading, setLoading] = useState(false);
+  const toast = useToast();
+  const setHAConnectionStatus = useHostAgentConnectionStatusStore((state) => state.setStatus);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,7 +33,20 @@ const TokenConnectionForm = (props: Props) => {
     setLoading(true);
 
     try {
-      await connect(value);
+      const result = await connect(value);
+      if (result.status !== 'connected') {
+        const current = toast({
+          title: 'Error',
+          description: connectionStatusToMessage(result),
+          status: 'error',
+          isClosable: true,
+          position: 'bottom',
+        });
+        setTimeout(() => {
+          toast.close(current);
+        }, 3000);
+      }
+      setHAConnectionStatus(result);
     } catch (error) {
       ipc.rendererLogger.error(`Connect host failed: ${stringify(error)}`);
     }
@@ -58,6 +76,13 @@ const TokenConnectionForm = (props: Props) => {
     </StyledForm>
   );
 };
+
+export function connectionStatusToMessage(status: HostAgentConnectionStatus): string {
+  if (status.code === Code.CODE_HOST_AGENT_INVALID_TOKEN) {
+    return 'Invalid token';
+  }
+  return status.reason ?? 'Unknown error';
+}
 
 export default TokenConnectionForm;
 

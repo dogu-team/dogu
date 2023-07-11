@@ -14,7 +14,7 @@ export class AppConfigService implements IAppConfigClient {
   static async open(): Promise<void> {
     Store.initRenderer();
     const client = new Store<Schema>({
-      name: app.name.toLowerCase(),
+      name: app.name.toLowerCase().replaceAll(' ', '-'),
       schema,
       accessPropertiesByDotNotation: false,
       cwd: ConfigsPath,

@@ -2,8 +2,8 @@ export const config = {
   host: {
     connect: {
       retry: {
-        count: 10,
-        intervalMilliseconds: 3000,
+        count: 3,
+        intervalMilliseconds: 2000,
       },
     },
     reconnect: {

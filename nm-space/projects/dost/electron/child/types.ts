@@ -1,14 +1,22 @@
+import { ChildCode } from '@dogu-private/dost-children';
 import { Printable } from '@dogu-tech/common';
-import { ChildProcess, ForkOptions } from 'child_process';
+import { ForkOptions } from 'child_process';
 import isDev from 'electron-is-dev';
 import { findFreePorts } from 'find-free-ports';
 import lodash from 'lodash';
 import { logger } from '../log/logger.instance';
 
+export interface ChildLastError {
+  code: ChildCode;
+  message: string;
+}
+
 export interface Child {
-  open(): Promise<ChildProcess>;
+  open(): Promise<void>;
+  close(): Promise<void>;
   openable(): Promise<boolean>;
-  setOnChangeHandler(): void;
+  lastError(): ChildLastError | undefined;
+  isActive(): Promise<boolean>;
 }
 
 export interface ChildOptions {

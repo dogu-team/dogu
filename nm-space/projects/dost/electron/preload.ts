@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { appConfigClientKey } from '../src/shares/app-config';
-import { childCallbackKey, childClientKey, childFactoryKey, ChildTree, HostAgentConnectionStatus, Key } from '../src/shares/child';
+import { childCallbackKey, childClientKey, ChildTree, HostAgentConnectionStatus, Key } from '../src/shares/child';
 import { dotEnvConfigClientKey, DotEnvConfigKey } from '../src/shares/dot-env-config';
 import { IElectronIpc } from '../src/shares/electron-ipc';
 import { DownloadProgress, externalCallbackKey, ExternalKey, externalKey, ValidationCheckOption } from '../src/shares/external';
@@ -53,14 +53,10 @@ expose('settingsClient', {
 });
 
 expose('childClient', {
-  close: (key: Key): Promise<void> => ipcRenderer.invoke(childClientKey.close, key),
   isActive: (key: Key): Promise<boolean> => ipcRenderer.invoke(childClientKey.isActive, key),
+  connect: (token: string): Promise<HostAgentConnectionStatus> => ipcRenderer.invoke(childClientKey.connect, token),
   getHostAgentConnectionStatus: (): Promise<HostAgentConnectionStatus> => ipcRenderer.invoke(childClientKey.getHostAgentConnectionStatus),
   getChildTree: (): Promise<ChildTree> => ipcRenderer.invoke(childClientKey.getChildTree),
-});
-
-expose('childFactory', {
-  open: (key: Key): void => ipcRenderer.send(childFactoryKey.open, key),
 });
 
 expose('childCallback', {

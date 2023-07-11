@@ -19,7 +19,6 @@ import electronDl from 'electron-dl';
 import isDev from 'electron-is-dev';
 import { SentyDSNUrl } from '../src/shares/constants';
 import { AppConfigService } from './app-config/app-config-service';
-import { ChildFactory } from './child/child-factory';
 import { ChildService } from './child/child-service';
 import { DotEnvConfigService } from './dot-env-config/dot-env-config-service';
 import { ExternalService } from './external/external-service';
@@ -60,7 +59,6 @@ app.whenReady().then(async () => {
   StdLogCallbackService.open(WindowService.instance);
   await ExternalService.open(DotEnvConfigService.instance, StdLogCallbackService.instance, AppConfigService.instance, WindowService.instance);
   ChildService.open(AppConfigService.instance, FeatureConfigService.instance);
-  await ChildFactory.open(ChildService.instance, AppConfigService.instance, WindowService.instance);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {
