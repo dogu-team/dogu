@@ -99,8 +99,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   if (process.env.NEXT_PUBLIC_ENV === 'local' || process.env.NEXT_PUBLIC_ENV === 'test' || process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
+    const cookie = new Cookies(context.req.cookies);
+    const organizationId = cookie.get('newOrgId');
+    context.res.setHeader('Set-Cookie', `newOrgId=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`);
     return {
-      redirect: redirectWithLocale(context, '/account/organizations', false),
+      redirect: redirectWithLocale(context, organizationId ? `/dashboard/${organizationId}` : '/account/organizations', false),
     };
   }
 
