@@ -71,7 +71,7 @@ const Box = styled.div`
 const Content = styled.div``;
 
 const StyledTitle = styled.h3`
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   font-weight: 600;
 `;
 
