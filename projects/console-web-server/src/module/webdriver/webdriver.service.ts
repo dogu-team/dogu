@@ -1,21 +1,32 @@
-import { HeaderRecord, Method, stringify } from '@dogu-tech/common';
-import { DeviceWebDriver, RelayRequest, RelayResponse, WebDriverEndPoint } from '@dogu-tech/device-client-common';
+import { DeviceId, extensionFromPlatform, Serial, WebDriverSessionId } from '@dogu-private/types';
+import { HeaderRecord, Method } from '@dogu-tech/common';
+import {
+  convertWebDriverPlatformToDogu,
+  DeviceWebDriver,
+  RelayRequest,
+  RelayResponse,
+  WebDriverDeleteSessionEndpointInfo,
+  WebDriverNewSessionEndpointInfo,
+  WebDriverSessionEndpointInfo,
+} from '@dogu-tech/device-client-common';
 import { Injectable } from '@nestjs/common';
-import { Request, Response } from 'express';
 import { IncomingHttpHeaders } from 'http';
 import { DataSource } from 'typeorm';
 import { DeviceMessageRelayer } from '../device-message/device-message.relayer';
 import { DoguLogger } from '../logger/logger';
 import { DeviceStatusService } from '../organization/device/device-status.service';
 import { ApplicationService } from '../project/application/application.service';
+import { FindProjectApplicationDto } from '../project/application/dto/application.dto';
 import { DeviceWebDriverService } from './device-webdriver.service';
-import {
-  WebDriverDeleteSessionEndpointHandler,
-  WebDriverEachSessionEndpointHandler,
-  WebDriverEndpointHandler,
-  WebDriverHandleContext,
-  WebDriverNewSessionEndpointHandler,
-} from './webdriver.endpoint.handler';
+import { WebDriverException } from './webdriver.exception';
+export interface WebDriverEndpointHandlerResult {
+  error?: undefined;
+  organizationId: string;
+  deviceId: DeviceId;
+  serial: Serial;
+  sessionId?: WebDriverSessionId;
+  request: RelayRequest;
+}
 
 @Injectable()
 export class WebDriverService {
@@ -28,37 +39,8 @@ export class WebDriverService {
     private readonly logger: DoguLogger,
   ) {}
 
-  async process(request: Request, response: Response): Promise<RelayResponse> {
-    const relayRequest = convertRequest(request);
+  async sendRequest(processResult: WebDriverEndpointHandlerResult): Promise<RelayResponse> {
     try {
-      const endpoint = await WebDriverEndPoint.create(relayRequest).catch((e) => {
-        return { error: makeWdError(400, e, {}) };
-      });
-      if ('error' in endpoint) {
-        return endpoint.error;
-      }
-
-      if (!(endpoint.info.type in handlers)) {
-        return makeWdError(501, new Error(`Not Implemented to handle ${relayRequest.path}`), {});
-      }
-
-      const context: WebDriverHandleContext = {
-        dataSource: this.dataSource,
-        deviceStatusService: this.deviceStatusService,
-        deviceWebDriverService: this.deviceWebDriverService,
-        deviceMessageRelayer: this.deviceMessageRelayer,
-        applicationService: this.applicationService,
-      };
-
-      const handler = handlers[endpoint.info.type];
-
-      const processResult = await handler.onRequest(context, endpoint, relayRequest).catch((e) => {
-        return { error: e as Error, status: 400, data: {} };
-      });
-      if (processResult.error) {
-        // https://www.w3.org/TR/webdriver/#errors
-        return makeWdError(processResult.status, processResult.error, processResult.data);
-      }
       const pathProvider = new DeviceWebDriver.relayHttp.pathProvider(processResult.serial);
       const path = DeviceWebDriver.relayHttp.resolvePath(pathProvider);
       const res = await this.deviceMessageRelayer.sendHttpRequest(
@@ -71,32 +53,156 @@ export class WebDriverService {
         processResult.request,
         DeviceWebDriver.relayHttp.responseBodyData,
       );
-      await handler.onResponse(context, processResult, res);
       return res;
     } catch (e) {
-      return makeWdError(500, e, {});
+      throw new WebDriverException(500, e, {});
     }
   }
-}
 
-const handlers: {
-  [key: string]: WebDriverEndpointHandler;
-} = {
-  'new-session': new WebDriverNewSessionEndpointHandler(),
-  'delete-session': new WebDriverDeleteSessionEndpointHandler(),
-  session: new WebDriverEachSessionEndpointHandler(),
-};
+  async handleNewSessionRequest(endpointInfo: WebDriverNewSessionEndpointInfo, request: RelayRequest): Promise<WebDriverEndpointHandlerResult> {
+    const options = endpointInfo.capabilities.doguOptions;
+    const devices = await this.dataSource.transaction(async (manager) => {
+      return await this.deviceStatusService.findDevicesByDeviceTag(manager, options.organizationId, options.projectId, [options.tag]);
+    });
 
-function convertRequest(request: Request): RelayRequest {
-  const headers = convertHeaders(request.headers);
-  const subpath = request.url.replace('/remote/wd/hub/', '');
-  return {
-    path: subpath,
-    headers: headers,
-    method: request.method as Method,
-    query: request.query,
-    reqBody: request.body,
-  };
+    if (devices.length === 0) {
+      throw new WebDriverException(400, new Error('Device not found'), {});
+    }
+    if (!options.appVersion) {
+      throw new WebDriverException(400, new Error('App version not specified'), {});
+    }
+    const randIndex = Math.floor(Math.random() * devices.length);
+    const device = devices[randIndex];
+    const headers = convertHeaders(request.headers);
+
+    const findAppDto = new FindProjectApplicationDto();
+    findAppDto.version = options.appVersion;
+    findAppDto.extension = extensionFromPlatform(convertWebDriverPlatformToDogu(endpointInfo.capabilities.platformName));
+    const applications = await this.applicationService.getApplicationList(options.organizationId, options.projectId, findAppDto);
+    if (applications.items.length === 0) {
+      throw new WebDriverException(400, new Error('Application not found'), {});
+    }
+    const application = applications.items[0];
+    const applicationUrl = await this.applicationService.getApplicationDownladUrl(application.projectApplicationId, options.organizationId, options.projectId);
+
+    endpointInfo.capabilities.setDoguAppUrl(applicationUrl);
+    endpointInfo.capabilities.setUdid(device.serial);
+
+    return {
+      organizationId: options.organizationId,
+      deviceId: device.deviceId,
+      serial: device.serial,
+      request: {
+        path: request.path,
+        headers: headers,
+        method: request.method as Method,
+        query: request.query,
+        reqBody: endpointInfo.capabilities.origin,
+      },
+    };
+  }
+
+  async handleNewSessionResponse(handleResult: WebDriverEndpointHandlerResult, response: RelayResponse): Promise<void> {
+    if (response.status !== 200) {
+      return;
+    }
+    const sessionId = (response.resBody as any)?.value?.sessionId as string;
+    if (!sessionId) {
+      throw new WebDriverException(400, new Error('Session id not found in response'), {});
+    }
+
+    await this.dataSource.transaction(async (manager) => {
+      await this.deviceWebDriverService.createSessionToDevice(manager, handleResult.deviceId, { sessionId: sessionId });
+    });
+  }
+
+  async handleDeleteSessionRequest(endpointInfo: WebDriverDeleteSessionEndpointInfo, request: RelayRequest): Promise<WebDriverEndpointHandlerResult> {
+    const sessionId = endpointInfo.sessionId;
+    if (!sessionId) {
+      throw new WebDriverException(400, new Error('empty session path'), {});
+    }
+    const { organizationId, deviceId, serial } = await this.dataSource.transaction(async (manager) => {
+      const deviceId = await this.deviceWebDriverService.findDeviceBySessionIdAndMark(manager, sessionId);
+      const device = await this.deviceStatusService.findDevice(deviceId);
+      return {
+        organizationId: device.organizationId,
+        deviceId: device.deviceId,
+        serial: device.serial,
+      };
+    });
+    const headers = convertHeaders(request.headers);
+
+    return {
+      organizationId: organizationId,
+      deviceId: deviceId,
+      serial: serial,
+      sessionId: sessionId,
+      request: {
+        path: request.path,
+        headers: headers,
+        method: request.method as Method,
+        query: request.query,
+        reqBody: request.reqBody,
+      },
+    };
+  }
+
+  async handleDeleteSessionResponse(handleResult: WebDriverEndpointHandlerResult, response: RelayResponse): Promise<void> {
+    if (response.status !== 200) {
+      return;
+    }
+    const sessionId = handleResult.sessionId;
+    if (!sessionId) {
+      throw new WebDriverException(400, new Error('Session id not found when deleting'), {});
+    }
+
+    await this.dataSource.transaction(async (manager) => {
+      await this.deviceWebDriverService.deleteSession(manager, sessionId);
+    });
+
+    const pathProvider = new DeviceWebDriver.sessionDeleted.pathProvider(handleResult.serial);
+    const path = DeviceWebDriver.sessionDeleted.resolvePath(pathProvider);
+    const res = await this.deviceMessageRelayer.sendHttpRequest(
+      handleResult.organizationId,
+      handleResult.deviceId,
+      DeviceWebDriver.sessionDeleted.method,
+      path,
+      undefined,
+      undefined,
+      { sessionId: sessionId },
+      DeviceWebDriver.sessionDeleted.responseBody,
+    );
+  }
+
+  async handleEachSessionRequest(endpointInfo: WebDriverSessionEndpointInfo, request: RelayRequest): Promise<WebDriverEndpointHandlerResult> {
+    const sessionId = endpointInfo.sessionId;
+    if (!sessionId) {
+      throw new WebDriverException(400, new Error('empty session path'), {});
+    }
+    const { organizationId, deviceId, serial } = await this.dataSource.transaction(async (manager) => {
+      const deviceId = await this.deviceWebDriverService.findDeviceBySessionIdAndMark(manager, sessionId);
+      const device = await this.deviceStatusService.findDevice(deviceId);
+      return {
+        organizationId: device.organizationId,
+        deviceId: device.deviceId,
+        serial: device.serial,
+      };
+    });
+    const headers = convertHeaders(request.headers);
+
+    return {
+      organizationId: organizationId,
+      deviceId: deviceId,
+      serial: serial,
+      request: {
+        path: request.path,
+        headers: headers,
+        method: request.method as Method,
+        query: request.query,
+        reqBody: request.reqBody,
+      },
+    };
+  }
 }
 
 function convertHeaders(requestHeaders: IncomingHttpHeaders): HeaderRecord {
@@ -109,29 +215,4 @@ function convertHeaders(requestHeaders: IncomingHttpHeaders): HeaderRecord {
     headers[key] = value;
   }
   return headers;
-}
-
-function makeWdError(status: number, error: Error | unknown, data: Object): RelayResponse {
-  if (error instanceof Error) {
-    return {
-      headers: {},
-      status: status,
-      resBody: {
-        error: error.name,
-        message: error.message,
-        stacktrace: '',
-        data: data ? JSON.stringify(data) : {},
-      },
-    };
-  }
-  return {
-    headers: {},
-    status: 500,
-    resBody: {
-      error: stringify(error, { colors: false }),
-      message: stringify(error, { colors: false }),
-      stacktrace: '',
-      data: {},
-    },
-  };
 }
