@@ -1,8 +1,8 @@
 import { Button } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import DoneStep from './DoneStep';
 
+import DoneStep from './DoneStep';
 import GuideAnchor from './GuideAnchor';
 import GuideLayout from './GuideLayout';
 import GuideStep from './GuideStep';

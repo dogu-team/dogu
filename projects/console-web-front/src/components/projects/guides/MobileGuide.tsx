@@ -17,7 +17,6 @@ import { sendErrorNotification, sendSuccessNotification } from '../../../utils/a
 import { getErrorMessage } from '../../../utils/error';
 import GuideAnchor from './GuideAnchor';
 import GuideBanner from './GuideBanner';
-import DocumentCard from './DocumentCard';
 import GuideLayout from './GuideLayout';
 import GuideStep from './GuideStep';
 import DoneStep from './DoneStep';
@@ -173,18 +172,6 @@ const MobileGuide = () => {
 };
 
 export default MobileGuide;
-
-const Box = styled.div`
-  display: flex;
-`;
-
-const StickyBox = styled.div`
-  position: sticky;
-  width: 20%;
-  min-width: 220px;
-  top: 20px;
-  height: 100%;
-`;
 
 const FlexRow = styled.div`
   ${flexRowBaseStyle}
