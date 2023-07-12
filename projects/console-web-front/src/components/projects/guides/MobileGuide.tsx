@@ -18,6 +18,9 @@ import { getErrorMessage } from '../../../utils/error';
 import GuideAnchor from './GuideAnchor';
 import GuideBanner from './GuideBanner';
 import DocumentCard from './DocumentCard';
+import GuideLayout from './GuideLayout';
+import GuideStep from './GuideStep';
+import DoneStep from './DoneStep';
 
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
@@ -71,118 +74,101 @@ const MobileGuide = () => {
   };
 
   return (
-    <Box>
-      <StickyBox>
-        <div style={{ marginBottom: '1rem' }}>
-          <Select
-            options={languageOptions}
-            value={language}
-            onChange={(value) => {
-              setLanguage(value);
-              router.push({ query: { ...router.query, language: value } }, undefined, { shallow: true, scroll: true });
-            }}
-            dropdownMatchSelectWidth={false}
-            style={{ width: '100%' }}
+    <GuideLayout
+      sidebar={
+        <div>
+          <div style={{ marginBottom: '1rem' }}>
+            <Select
+              options={languageOptions}
+              value={language}
+              onChange={(value) => {
+                setLanguage(value);
+                router.push({ query: { ...router.query, language: value } }, undefined, { shallow: true, scroll: true });
+              }}
+              dropdownMatchSelectWidth={false}
+              style={{ width: '100%' }}
+            />
+          </div>
+
+          <GuideAnchor
+            items={[
+              { id: PROJECT_SETUP_ID, title: 'Sample project setup' },
+              { id: INSTALL_DEPENDENCIES_ID, title: 'Install dependencies' },
+              { id: SET_CAPABILITIES_ID, title: 'Set capabilities' },
+              { id: UPLOAD_SAMPLE_APP_ID, title: 'Upload sample application' },
+              { id: RUN_TEST_ID, title: 'Run remote testign' },
+              { id: DONE_ID, title: 'Done! Next step' },
+            ]}
           />
         </div>
+      }
+      content={
+        <div>
+          <GuideStep
+            id={PROJECT_SETUP_ID}
+            title="Sample project setup"
+            description={<p>Clone example repository and move to execution directory</p>}
+            content={
+              <>
+                <CopyButtonContainer language="bash" code={`git clone ${SAMPLE_GIT_URL}`} />
+                <CopyButtonContainer language="bash" code={selectedLanguageData?.cd ?? ''} />
+              </>
+            }
+          />
+          <GuideStep
+            id={INSTALL_DEPENDENCIES_ID}
+            title="Install dependencies"
+            description={<p>Install external packages</p>}
+            content={<CopyButtonContainer language="bash" code={selectedLanguageData?.installDependencies ?? ''} />}
+          />
+          <GuideStep
+            id={SET_CAPABILITIES_ID}
+            title="Set capabilities"
+            description={
+              <>
+                <p>
+                  Open <StyledCode>{selectedLanguageData?.sampleFilePath}</StyledCode> and configure capabilities for your project
+                </p>
+                <Alert
+                  style={{ marginTop: '.5rem' }}
+                  message="For iOS, please refer to documentation."
+                  type="info"
+                  showIcon
+                  action={
+                    <Link href="https://docs.dogutech.io/test-automation/mobile/appium/qna" target="_blank">
+                      <Button>Visit</Button>
+                    </Link>
+                  }
+                />
+              </>
+            }
+            content={<CopyButtonContainer language={language} code={capabilityCode} />}
+          />
+          <GuideStep
+            id={UPLOAD_SAMPLE_APP_ID}
+            title="Upload sample application"
+            description={<p>Before starting, upload the app that matches the version specified in the script.</p>}
+            content={
+              <Button type="primary" onClick={handleUploadSample} loading={loading} icon={<UploadOutlined />}>
+                Click here for upload
+              </Button>
+            }
+          />
+          <GuideStep
+            id={RUN_TEST_ID}
+            title="Run remote testing"
+            description={<p>Start automated testing using sample app and script</p>}
+            content={<CopyButtonContainer language="bash" code={selectedLanguageData?.runCommand ?? ''} />}
+          />
 
-        <GuideAnchor
-          items={[
-            { id: PROJECT_SETUP_ID, title: 'Sample project setup' },
-            { id: INSTALL_DEPENDENCIES_ID, title: 'Install dependencies' },
-            { id: SET_CAPABILITIES_ID, title: 'Set capabilities' },
-            { id: UPLOAD_SAMPLE_APP_ID, title: 'Upload sample application' },
-            { id: RUN_TEST_ID, title: 'Run remote testign' },
-            { id: DONE_ID, title: 'Done! Next step' },
-          ]}
-        />
-      </StickyBox>
-      <GuideBox>
-        <Step id={PROJECT_SETUP_ID}>
-          <TextWrapper>
-            <StepTitle>Sample project setup</StepTitle>
-            <p>Clone example repository and move to execution directory</p>
-          </TextWrapper>
-          <div>
-            <CopyButtonContainer language="bash" code={`git clone ${SAMPLE_GIT_URL}`} />
-            <CopyButtonContainer language="bash" code={selectedLanguageData?.cd ?? ''} />
+          <div style={{ marginBottom: '2rem' }}>
+            <GuideBanner docsUrl="https://docs.dogutech.io/test-automation/mobile/appium" />
           </div>
-        </Step>
-        <Step id={INSTALL_DEPENDENCIES_ID}>
-          <TextWrapper>
-            <StepTitle>Install dependencies</StepTitle>
-            <p>Install external packages</p>
-          </TextWrapper>
-          <div>
-            <CopyButtonContainer language="bash" code={selectedLanguageData?.installDependencies ?? ''} />
-          </div>
-        </Step>
-        <Step id={SET_CAPABILITIES_ID}>
-          <TextWrapper>
-            <StepTitle>Set capabilities</StepTitle>
-            <p>
-              Open <StyledCode>{selectedLanguageData?.sampleFilePath}</StyledCode> and configure capabilities for your project
-            </p>
-            <Alert
-              style={{ marginTop: '.5rem' }}
-              message="For iOS, please refer to documentation."
-              type="info"
-              showIcon
-              action={
-                <Link href="https://docs.dogutech.io/test-automation/mobile/appium/qna" target="_blank">
-                  <Button>Visit</Button>
-                </Link>
-              }
-            />
-          </TextWrapper>
-          <div>
-            <CopyButtonContainer language={language} code={capabilityCode} />
-          </div>
-        </Step>
-        <Step id={UPLOAD_SAMPLE_APP_ID}>
-          <TextWrapper>
-            <StepTitle>Upload sample APK app</StepTitle>
-            <p>Before starting, upload the app that matches the version specified in the script.</p>
-          </TextWrapper>
-          <div>
-            <Button type="primary" onClick={handleUploadSample} loading={loading} icon={<UploadOutlined />}>
-              Click here for upload
-            </Button>
-          </div>
-        </Step>
-        <Step id={RUN_TEST_ID}>
-          <TextWrapper>
-            <StepTitle>Run remote testing</StepTitle>
-            <p>Start automated testing using sample app and script</p>
-          </TextWrapper>
-          <div>
-            <CopyButtonContainer language="bash" code={selectedLanguageData?.runCommand ?? ''} />
-          </div>
-        </Step>
 
-        <Step>
-          <GuideBanner docsUrl="https://docs.dogutech.io/test-automation/mobile/appium" />
-        </Step>
-
-        <Step id={DONE_ID}>
-          <TextWrapper>
-            <StepTitle>Done! Next step 🚀</StepTitle>
-          </TextWrapper>
-          <div>
-            <div style={{ display: 'flex', flexWrap: 'wrap' }}>
-              <DocumentCard
-                title="📝 About project"
-                description="Explore features for project. ie) Git integration, App management"
-                url="https://docs.dogutech.io/management/project"
-              />
-              <DocumentCard title="📝 About routine" description="Would you like to automate more complicate tests?" url="https://docs.dogutech.io/routine" />
-              <DocumentCard title="📝 Test automation" description="More information about test automation" url="https://docs.dogutech.io/test-automation" />
-              <DocumentCard title="📝 Test report" description="More information about test report" url="https://docs.dogutech.io/test-report" />
-            </div>
-          </div>
-        </Step>
-      </GuideBox>
-    </Box>
+          <DoneStep id={DONE_ID} />
+        </div>
+      }
+    />
   );
 };
 
@@ -198,25 +184,6 @@ const StickyBox = styled.div`
   min-width: 220px;
   top: 20px;
   height: 100%;
-`;
-
-const GuideBox = styled.div`
-  width: 80%;
-  margin-left: 2rem;
-  max-width: 1000px;
-`;
-
-const Step = styled.div`
-  margin-bottom: 2rem;
-`;
-
-const TextWrapper = styled.div`
-  margin-bottom: 0.5rem;
-`;
-
-const StepTitle = styled.h4`
-  font-size: 1.25rem;
-  font-weight: 600;
 `;
 
 const FlexRow = styled.div`

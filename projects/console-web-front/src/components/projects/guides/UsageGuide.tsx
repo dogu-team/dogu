@@ -1,12 +1,12 @@
 import { CloseOutlined, GlobalOutlined, MobileOutlined } from '@ant-design/icons';
-import { Button, Divider, Radio } from 'antd';
+import { Button, Radio } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import styled from 'styled-components';
+
 import { flexRowSpaceBetweenStyle } from '../../../styles/box';
 import GameGuide from './GameGuide';
-
 import MobileGuide from './MobileGuide';
 import WebGuide from './WebGuide';
 
@@ -98,7 +98,6 @@ const FlexRow = styled.div`
 `;
 
 const CloseBox = styled.div`
-  max-width: calc(max(20%, 220px) + 2rem + 1000px);
+  padding-left: calc(max(20%, 220px) + 1.5rem);
   display: flex;
-  justify-content: flex-end;
 `;

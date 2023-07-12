@@ -1,43 +1,45 @@
+import { Button } from 'antd';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
-import styled from 'styled-components';
+import DoneStep from './DoneStep';
+
+import GuideAnchor from './GuideAnchor';
+import GuideLayout from './GuideLayout';
+import GuideStep from './GuideStep';
+
+const TUTORIAL_DOCS_ID = 'tutorial-docs';
+const DONE_ID = 'done';
 
 const WebGuide = () => {
   const router = useRouter();
 
   return (
-    <Box>
-      <Box>
-        <div>We&apos;re working on it!</div>
-        {/* <StickyBox></StickyBox> */}
-        {/* <GuideBox></GuideBox> */}
-      </Box>
-    </Box>
+    <GuideLayout
+      sidebar={
+        <GuideAnchor
+          items={[
+            { id: TUTORIAL_DOCS_ID, title: 'Tutorial document' },
+            { id: DONE_ID, title: 'Done! Next step' },
+          ]}
+        />
+      }
+      content={
+        <div>
+          <GuideStep
+            id={TUTORIAL_DOCS_ID}
+            title="Tutorial document"
+            description={<p>Follow the tutorial document</p>}
+            content={
+              <Link href="https://docs.dogutech.io/get-started/tutorials/web/python/using-pytest-and-playwright" target="blank">
+                <Button>Visit document</Button>
+              </Link>
+            }
+          />
+          <DoneStep id={DONE_ID} />
+        </div>
+      }
+    />
   );
 };
 
 export default WebGuide;
-
-const Box = styled.div`
-  display: flex;
-`;
-
-const StickyBox = styled.div`
-  width: 20%;
-  position: sticky;
-  top: 0;
-`;
-
-const GuideBox = styled.div`
-  width: 80%;
-  margin-left: 1rem;
-  max-width: 1000px;
-`;
-
-const Step = styled.div`
-  margin-bottom: 2rem;
-`;
-
-const StepTitle = styled.h4`
-  font-size: 1.25rem;
-  font-weight: 600;
-`;
