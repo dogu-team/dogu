@@ -1,5 +1,5 @@
+import { isFreePort } from '@dogu-private/device-server';
 import { ChildCode, Status } from '@dogu-private/dost-children';
-import { logger } from '@dogu-private/host-agent';
 import { Code } from '@dogu-private/types';
 import { Instance, parseAxiosError } from '@dogu-tech/common';
 import { killProcessOnPort } from '@dogu-tech/node';
@@ -8,7 +8,7 @@ import { ChildProcess } from 'child_process';
 import { HostAgentConnectionStatus, hostAgentKey } from '../../../src/shares/child';
 import { AppConfigService } from '../../app-config/app-config-service';
 import { FeatureConfigService } from '../../feature-config/feature-config-service';
-import { getLogLevel } from '../../log/logger.instance';
+import { getLogLevel, logger } from '../../log/logger.instance';
 import { HostAgentLogsPath, HostAgentMainScriptPath } from '../../path-map';
 import { Child, ChildLastError, fillChildOptions } from '../types';
 import { closeChild, openChild } from './lifecycle';
@@ -45,6 +45,7 @@ export class HostAgentChild implements Child {
           DOGU_LOG_LEVEL,
         },
       },
+      childLogger: logger,
     });
 
     this._child = openChild(hostAgentKey, HostAgentMainScriptPath, options, this.featureConfigService);
@@ -67,15 +68,23 @@ export class HostAgentChild implements Child {
     if (!this._child) {
       return;
     }
-    await closeChild(hostAgentKey, this._child);
+    await closeChild(hostAgentKey, this._child, logger);
     this._child = undefined;
   }
 
-  isActive(): Promise<boolean> {
-    if (this._child === undefined) {
-      return Promise.resolve(false);
+  async isActive(): Promise<boolean> {
+    if (!this._child) {
+      return false;
     }
-    return Promise.resolve(true);
+    const DOGU_HOST_AGENT_PORT = await this.appConfigService.get('DOGU_HOST_AGENT_PORT');
+    if (!DOGU_HOST_AGENT_PORT) {
+      return false;
+    }
+    const isFree = await isFreePort(DOGU_HOST_AGENT_PORT);
+    if (isFree) {
+      return false;
+    }
+    return true;
   }
 
   async getConnectionStatus(): Promise<HostAgentConnectionStatus> {

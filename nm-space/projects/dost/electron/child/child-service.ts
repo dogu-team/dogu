@@ -1,4 +1,4 @@
-import { delay, loop } from '@dogu-tech/common';
+import { loop } from '@dogu-tech/common';
 import { ChildProcess as DoguChildProcess } from '@dogu-tech/node';
 import { Code } from '@dogu-tech/types';
 import { ipcMain } from 'electron';
@@ -42,6 +42,7 @@ export class ChildService implements IChildClient {
     private readonly appConfigService: AppConfigService,
     public readonly featureConfigService: FeatureConfigService,
     private readonly children: { [key in Key]: Child },
+    private isConnecting = false,
   ) {}
 
   async isActive(key: Key): Promise<boolean> {
@@ -53,19 +54,47 @@ export class ChildService implements IChildClient {
   }
 
   async connect(token: string): Promise<HostAgentConnectionStatus> {
+    this.isConnecting = true;
+    const ret = await this.connectInternal(token).catch((e) => {
+      logger.error('connectInternal error', { error: e });
+      this.isConnecting = false;
+      throw e;
+    });
+    this.isConnecting = false;
+    return ret;
+  }
+
+  private async connectInternal(token: string): Promise<HostAgentConnectionStatus> {
     if (!(await this.deviceServer.isActive())) {
       await this.deviceServer.open();
+      for await (const _ of loop(1000, 60)) {
+        if (await this.deviceServer.isActive()) {
+          break;
+        }
+      }
+      const isActive = await this.deviceServer.isActive();
+      if (!isActive) {
+        return {
+          status: 'disconnected',
+          code: Code.CODE_DEVICE_SERVER_UNEXPECTED_ERROR,
+          reason: 'device-server boot failed.',
+          updatedAt: new Date(),
+        };
+      }
     }
     if (await this.hostAgent.isActive()) {
       await this.hostAgent.close();
     }
     await this.appConfigService.set('DOGU_HOST_TOKEN', token);
     await this.hostAgent.open();
-
-    await delay(3000);
+    for await (const _ of loop(1000, 60)) {
+      if (await this.hostAgent.isActive()) {
+        break;
+      }
+    }
 
     for await (const _ of loop(1000, 999)) {
-      const status = await this.getHostAgentConnectionStatus();
+      const status = await this.hostAgent.getConnectionStatus();
       if (status.status !== 'connecting') {
         return status;
       }
@@ -79,6 +108,13 @@ export class ChildService implements IChildClient {
   }
 
   async getHostAgentConnectionStatus(): Promise<HostAgentConnectionStatus> {
+    if (this.isConnecting) {
+      return {
+        status: 'connecting',
+        code: Code.CODE_SUCCESS_COMMON_BEGIN_UNSPECIFIED,
+        updatedAt: new Date(),
+      };
+    }
     return await this.hostAgent.getConnectionStatus();
   }
 
