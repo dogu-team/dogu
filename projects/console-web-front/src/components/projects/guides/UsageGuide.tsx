@@ -47,7 +47,7 @@ const UsageGuide = () => {
     <Box>
       <Content>
         <FlexRow>
-          <StyledTitle>Get started automation test!</StyledTitle>&nbsp;&nbsp;
+          <StyledTitle>Quick start for automated testing!</StyledTitle>&nbsp;&nbsp;
           <Link href={{ pathname: router.pathname.replace('/get-started', ''), query: router.query }} style={{ fontSize: '.8rem' }}>
             <Button icon={<CloseOutlined />} />
           </Link>
@@ -64,17 +64,15 @@ const UsageGuide = () => {
         />
       </Content>
 
-      <Divider />
-
-      <div>
-        <p>This tutorial is for remote testing. For run routine, please read docs...</p>
-      </div>
-
-      <Divider />
-
       {target === GuideCategory.WEB && <WebGuide />}
       {target === GuideCategory.MOBILE_APP && <MobileGuide />}
       {target === GuideCategory.GAME_APP && <GameGuide />}
+
+      <CloseBox>
+        <Link href={`/dashboard/${router.query.orgId}/projects/${router.query.pid}/routines`}>
+          <Button type="link">Close guide</Button>
+        </Link>
+      </CloseBox>
     </Box>
   );
 };
@@ -85,7 +83,9 @@ const Box = styled.div`
   line-height: 1.5;
 `;
 
-const Content = styled.div``;
+const Content = styled.div`
+  margin-bottom: 2rem;
+`;
 
 const StyledTitle = styled.h3`
   font-size: 1.5rem;
@@ -95,4 +95,10 @@ const StyledTitle = styled.h3`
 const FlexRow = styled.div`
   ${flexRowSpaceBetweenStyle}
   margin-bottom: 1rem;
+`;
+
+const CloseBox = styled.div`
+  max-width: calc(max(20%, 220px) + 2rem + 1000px);
+  display: flex;
+  justify-content: flex-end;
 `;

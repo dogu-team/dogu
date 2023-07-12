@@ -24,14 +24,12 @@ export const mobileGuideData = [
         orgAccessKey = 'INSERT_YOUR_ACCESS_KEY';
       }
 
-      return `// if called from Dogu Routine, the following environment variables will be injected from Dogu Routine.
-// if you want to run this script locally, please set your access key here.
-access_key = os.environ.get("DOGU_ACCESS_KEY", "${orgAccessKey}")
+      return `access_key = os.environ.get("DOGU_ACCESS_KEY", "${orgAccessKey}")
 organization_id = os.environ.get("DOGU_ORGANIZATION_ID", "${orgId}")
 project_id = os.environ.get("DOGU_PROJECT_ID", "${projectId}")
 api_base_url = os.environ.get("DOGU_API_BASE_URL", "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}")
 
-// ...
+# ...
 
 options = UiAutomator2Options().load_capabilities(
   {
@@ -42,6 +40,7 @@ options = UiAutomator2Options().load_capabilities(
       "organizationId": organization_id,
       "projectId": project_id,
       "tag": "android",
+      # Sample app version
       "appVersion": "2.5.194-alpha-2017-05-30",
     },
   }
@@ -49,6 +48,7 @@ options = UiAutomator2Options().load_capabilities(
 `;
     },
     runCommand: `python3 android/dogu_sample.py`,
+    sampleFilePath: 'android/dogu_sample.py',
   },
   {
     language: GuideSupportLanguage.JAVASCRIPT,
@@ -63,9 +63,7 @@ options = UiAutomator2Options().load_capabilities(
         orgAccessKey = 'INSERT_YOUR_ACCESS_KEY';
       }
 
-      return `// if called from Dogu Routine, the following environment variables will be injected from Dogu Routine.
-// if you want to run this script locally, please set your access key here.
-const accessKey = process.env.DOGU_ACCESS_KEY || '${orgAccessKey}';
+      return `const accessKey = process.env.DOGU_ACCESS_KEY || '${orgAccessKey}';
 const organizationId = process.env.DOGU_ORGANIZATION_ID || '${orgId}';
 const projectId = process.env.DOGU_PROJECT_ID || '${projectId}';
 const apiBaseUrl = process.env.DOGU_API_BASE_URL || '${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}';
@@ -85,6 +83,7 @@ const browser = await remote({
       organizationId,
       projectId,
       tag: "android",
+      // Sample app version
       appVersion: "2.5.194-alpha-2017-05-30",
     },
   }
@@ -92,5 +91,6 @@ const browser = await remote({
 `;
     },
     runCommand: `npm run test`,
+    sampleFilePath: 'android/specs/test.js',
   },
 ];
