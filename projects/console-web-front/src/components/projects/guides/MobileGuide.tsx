@@ -1,4 +1,4 @@
-import { Button, Select, SelectProps } from 'antd';
+import { Alert, Button, Select, SelectProps } from 'antd';
 import { useRouter } from 'next/router';
 import { isAxiosError } from 'axios';
 import { OrganizationId, ProjectId } from '@dogu-private/types';
@@ -17,6 +17,7 @@ import { getErrorMessage } from '../../../utils/error';
 import GuideAnchor from './GuideAnchor';
 import GuideBanner from './GuideBanner';
 import DocumentCard from './DocumentCard';
+import Link from 'next/link';
 
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
@@ -122,6 +123,17 @@ const MobileGuide = () => {
             <p>
               Open <StyledCode>{selectedLanguageData?.sampleFilePath}</StyledCode> and configure capabilities for your project
             </p>
+            <Alert
+              style={{ marginTop: '.5rem' }}
+              message="For iOS, please refer to documentation."
+              type="info"
+              showIcon
+              action={
+                <Link href="https://docs.dogutech.io/test-automation/mobile/appium/qna" target="_blank">
+                  <Button>Visit</Button>
+                </Link>
+              }
+            />
           </TextWrapper>
           <div>
             <CopyButtonContainer language={language} code={capabilityCode} />
