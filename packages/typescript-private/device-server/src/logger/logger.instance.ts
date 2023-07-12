@@ -21,3 +21,7 @@ export function createAppiumLogger(serial: Serial): Logger {
 export function createGamiumLogger(serial: Serial): Logger {
   return LoggerFactory.createLazy(`gamium_${serial}`, { withFileTransports: true });
 }
+
+export function createSeleniumLogger(serial: Serial): Logger {
+  return LoggerFactory.createLazy(`selenium_${serial}`, { withFileTransports: true });
+}

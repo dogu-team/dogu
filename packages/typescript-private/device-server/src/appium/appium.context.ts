@@ -499,7 +499,7 @@ export class AppiumContextImpl implements AppiumContext {
         const derivedDataPath = path.resolve(tempPath, 'derived-data', serial);
         await fs.promises.mkdir(derivedDataPath, { recursive: true });
         const wdaLocalPort = await getFreePort();
-        const mjepgServerPort = await getFreePort();
+        const mjpegServerPort = await getFreePort();
         return {
           platformName: 'ios',
           'appium:automationName': 'XCUITest',
@@ -507,7 +507,7 @@ export class AppiumContextImpl implements AppiumContext {
           'appium:udid': serial,
           'appium:wdaLocalPort': wdaLocalPort,
           'appium:derivedDataPath': derivedDataPath,
-          'appium:mjpegServerPort': mjepgServerPort,
+          'appium:mjpegServerPort': mjpegServerPort,
           'appium:newCommandTimeout': AppiumNewCommandTimeout,
           'appium:showXcodeLog': true,
         };

@@ -25,6 +25,7 @@
     "emeraldwalk.runonsave",
     "github.vscode-github-actions",
     "iliazeus.vscode-ansi",
-    "mhutchie.git-graph"
+    "mhutchie.git-graph",
+    "ms-vscode.powershell"
   ]
 }

@@ -3733,6 +3733,7 @@ __metadata:
     "@types/node": 18.15.11
     "@types/plist": 3
     "@types/rimraf": 3
+    "@types/semver": ^7
     "@types/uuid": 9.0.1
     "@types/ws": 8
     adbkit-apkreader: 3.2.0
@@ -3752,6 +3753,7 @@ __metadata:
     plist: 3.0.6
     reflect-metadata: 0.1.13
     rxjs: 7.5.6
+    semver: ^7.5.4
     shx: 0.3.4
     source-map-support: 0.5.21
     systeminformation: 5.17.14
@@ -7927,7 +7929,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/semver@npm:7, @types/semver@npm:^7.1.0, @types/semver@npm:^7.3.12, @types/semver@npm:^7.3.6":
+"@types/semver@npm:7, @types/semver@npm:^7, @types/semver@npm:^7.1.0, @types/semver@npm:^7.3.12, @types/semver@npm:^7.3.6":
   version: 7.5.0
   resolution: "@types/semver@npm:7.5.0"
   checksum: 0a64b9b9c7424d9a467658b18dd70d1d781c2d6f033096a6e05762d20ebbad23c1b69b0083b0484722aabf35640b78ccc3de26368bcae1129c87e9df028a22e2
@@ -22058,7 +22060,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.5.3":
+"semver@npm:^7.5.3, semver@npm:^7.5.4":
   version: 7.5.4
   resolution: "semver@npm:7.5.4"
   dependencies:
