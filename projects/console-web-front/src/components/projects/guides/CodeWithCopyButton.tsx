@@ -3,7 +3,6 @@ import { Button, message, Tooltip } from 'antd';
 import styled from 'styled-components';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { a11yDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
-
 import { useState } from 'react';
 
 export interface CopyButtonContainerProps {
@@ -11,7 +10,7 @@ export interface CopyButtonContainerProps {
   language: string;
 }
 
-const CopyButtonContainer = ({ code, language }: CopyButtonContainerProps) => {
+const CodeWithCopyButton = ({ code, language }: CopyButtonContainerProps) => {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -36,7 +35,7 @@ const CopyButtonContainer = ({ code, language }: CopyButtonContainerProps) => {
   );
 };
 
-export default CopyButtonContainer;
+export default CodeWithCopyButton;
 
 const StyledButton = styled(Button)`
   position: absolute;

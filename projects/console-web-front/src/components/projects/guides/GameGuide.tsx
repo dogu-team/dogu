@@ -9,7 +9,7 @@ import Image from 'next/image';
 
 import { mobileGuideData, SAMPLE_GIT_URL } from '../../../resources/guide';
 import { flexRowBaseStyle } from '../../../styles/box';
-import CopyButtonContainer from './CopyButtonContainer';
+import CopyButtonContainer from './CodeWithCopyButton';
 import useRequest from '../../../hooks/useRequest';
 import { uploadSampleApplication } from '../../../api/project-application';
 import { sendErrorNotification, sendSuccessNotification } from '../../../utils/antd';
