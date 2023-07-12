@@ -92,7 +92,7 @@ const MobileGuide = () => {
             { id: SET_CAPABILITIES_ID, title: 'Set capabilities' },
             { id: UPLOAD_SAMPLE_APP_ID, title: 'Upload sample application' },
             { id: RUN_TEST_ID, title: 'Run remote testign' },
-            { id: DONE_ID, title: 'Done!' },
+            { id: DONE_ID, title: 'Done! Next step' },
           ]}
         />
       </StickyBox>
@@ -103,7 +103,7 @@ const MobileGuide = () => {
             <p>Clone example repository and move to execution directory</p>
           </TextWrapper>
           <div>
-            <CopyButtonContainer language="bash" code={SAMPLE_GIT_URL} />
+            <CopyButtonContainer language="bash" code={`git clone ${SAMPLE_GIT_URL}`} />
             <CopyButtonContainer language="bash" code={selectedLanguageData?.cd ?? ''} />
           </div>
         </Step>
