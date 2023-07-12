@@ -23,6 +23,7 @@ import {
   ProjectId,
   Serial,
   UserPayload,
+  validateMaxParallelJobs,
 } from '@dogu-private/types';
 import { notEmpty } from '@dogu-tech/common';
 import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
@@ -274,18 +275,27 @@ export class DeviceStatusService {
   }
 
   async updateDevice(organizationId: OrganizationId, deviceId: DeviceId, dto: UpdateDeviceDto): Promise<DeviceResponse> {
+    const { name, maxParallelJobs } = dto;
     const [deviceById, deviceByName] = await Promise.all([
       this.dataSource.getRepository(Device).findOne({ where: { deviceId } }),
-      this.dataSource.getRepository(Device).findOne({ where: { organizationId, name: dto.name } }),
+      this.dataSource.getRepository(Device).findOne({ where: { organizationId, name } }),
     ]);
     if (!deviceById) {
       throw new HttpException(`This device does not exists. : ${deviceId}`, HttpStatus.BAD_REQUEST);
     }
     if (deviceByName) {
-      throw new HttpException(`This device name already exists. : ${dto.name}`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(`This device name already exists. : ${name}`, HttpStatus.BAD_REQUEST);
+    }
+    if (maxParallelJobs) {
+      if (!validateMaxParallelJobs(deviceById.platform, maxParallelJobs)) {
+        throw new HttpException(`maxParallelJobs is invalid. : ${maxParallelJobs}, platform: ${platformTypeFromPlatform(deviceById.platform)}`, HttpStatus.BAD_REQUEST);
+      }
     }
 
-    const newData = Object.assign(deviceById, dto);
+    const newData = Object.assign(deviceById, {
+      name: name ? name : deviceById.name,
+      maxParallelJobs: maxParallelJobs ? maxParallelJobs : deviceById.maxParallelJobs,
+    });
     const updateDevice = await this.dataSource.getRepository(Device).save(newData);
     return updateDevice;
   }
