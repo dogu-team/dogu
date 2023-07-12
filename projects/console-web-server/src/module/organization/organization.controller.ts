@@ -10,6 +10,8 @@ import {
 import { OrganizationId, UserId, UserPayload } from '@dogu-private/types';
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Inject, Param, Patch, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 import { FeatureConfig } from '../../feature.config';
 import { EMAIL_VERIFICATION, ORGANIZATION_ROLE } from '../../module/auth/auth.types';
 import { EmailVerification, OrganizationPermission, User } from '../../module/auth/decorators';
@@ -27,12 +29,17 @@ export class OrganizationController {
     private organizationService: OrganizationService,
     @Inject(UserService)
     private readonly userService: UserService,
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
   ) {}
 
   @Post('')
   @EmailVerification(EMAIL_VERIFICATION.VERIFIED)
   async createOrganization(@User() userPayload: UserPayload, @Body() dto: createOrganizationDto): Promise<OrganizationBase> {
-    const rv = await this.organizationService.createOrganization(userPayload.userId, dto);
+    const rv = this.dataSource.manager.transaction(async (manager) => {
+      const org = await this.organizationService.createOrganization(manager, userPayload.userId, dto);
+      return org;
+    });
     return rv;
   }
 

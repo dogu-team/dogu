@@ -145,36 +145,32 @@ export class OrganizationService {
     return orgBase;
   }
 
-  async createOrganization(userId: UserId, dto: createOrganizationDto): Promise<OrganizationResponse> {
-    const rv = await this.dataSource.transaction(async (manager) => {
-      const orgData = manager.getRepository(Organization).create({ name: dto.name });
-      const org = await manager.getRepository(Organization).save(orgData);
-      const organizationId = org.organizationId;
+  async createOrganization(manager: EntityManager, userId: UserId, dto: createOrganizationDto): Promise<OrganizationResponse> {
+    const orgData = manager.getRepository(Organization).create({ name: dto.name });
+    const org = await manager.getRepository(Organization).save(orgData);
+    const organizationId = org.organizationId;
 
-      const user = await manager.getRepository(User).findOne({ where: { userId } });
-      if (!user) {
-        throw new HttpException(`user not found. userId: ${userId}`, HttpStatus.NOT_FOUND);
-      }
-      // mapping - organization - user - role
-      const userData = manager
-        .getRepository(OrganizationAndUserAndOrganizationRole) //
-        .create({ organizationId, userId, organizationRoleId: ORGANIZATION_ROLE.OWNER });
-      await manager.getRepository(OrganizationAndUserAndOrganizationRole).save(userData);
+    const user = await manager.getRepository(User).findOne({ where: { userId } });
+    if (!user) {
+      throw new HttpException(`user not found. userId: ${userId}`, HttpStatus.NOT_FOUND);
+    }
+    // mapping - organization - user - role
+    const userData = manager
+      .getRepository(OrganizationAndUserAndOrganizationRole) //
+      .create({ organizationId, userId, organizationRoleId: ORGANIZATION_ROLE.OWNER });
+    await manager.getRepository(OrganizationAndUserAndOrganizationRole).save(userData);
 
-      // create organization key
-      const organizationKey = manager.getRepository(OrganizationKey).create({
-        organizationKeyId: v4(),
-        organizationId,
-        key: crypto.createHash('sha256').update(organizationId).digest('base64').substring(0, 32),
-      });
-      await manager.getRepository(OrganizationKey).save(organizationKey);
-
-      await this.createApiToken(manager, organizationId);
-
-      return org;
+    // create organization key
+    const organizationKey = manager.getRepository(OrganizationKey).create({
+      organizationKeyId: v4(),
+      organizationId,
+      key: crypto.createHash('sha256').update(organizationId).digest('base64').substring(0, 32),
     });
+    await manager.getRepository(OrganizationKey).save(organizationKey);
 
-    return rv;
+    await this.createApiToken(manager, organizationId);
+
+    return org;
   }
 
   async updateOrganization(userPayload: UserPayload, organizationId: OrganizationId, dto: UpdateOrganizationDto): Promise<OrganizationResponse> {

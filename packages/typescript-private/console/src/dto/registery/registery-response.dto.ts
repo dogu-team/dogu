@@ -11,6 +11,6 @@ export interface LastAccessOrganizationResponse {
   userId: UserId;
 }
 
-export interface InvitationSignUpResponse extends RegisterySignResult {
+export interface RegisteryWithOrganizationIdResult extends RegisterySignResult {
   organizationId: OrganizationId;
 }

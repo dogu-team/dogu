@@ -119,7 +119,7 @@ export module Apk {
       // ex. (mdpi) (file) res/fr.9.png type=PNG
       // ex. (xhdpi) (file) res/dCV.webp
       const splited = line.trim().split(' ');
-      if (splited.length < 2) {
+      if (splited.length < 3) {
         continue;
       }
       const path = splited[2];

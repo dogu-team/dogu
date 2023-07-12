@@ -1,3 +1,4 @@
+import { UploadSampleAppDtoBase } from '@dogu-private/console';
 import { OrganizationId, ProjectId } from '@dogu-private/types';
 import { AxiosProgressEvent } from 'axios';
 
@@ -23,4 +24,8 @@ export const getProjectApplicationDownloadUrl = async (organizationId: Organizat
 
 export const deleteProjectApplication = async (organizationId: OrganizationId, projectId: ProjectId, id: number) => {
   await api.delete<void>(`/organizations/${organizationId}/projects/${projectId}/applications/${id}`);
+};
+
+export const uploadSampleApplication = async (organizationId: OrganizationId, projectId: ProjectId, dto: UploadSampleAppDtoBase) => {
+  await api.put<void>(`/organizations/${organizationId}/projects/${projectId}/applications/samples`, dto);
 };
