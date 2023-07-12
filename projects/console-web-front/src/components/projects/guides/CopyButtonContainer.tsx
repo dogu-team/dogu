@@ -2,7 +2,7 @@ import { CheckCircleFilled, CopyOutlined } from '@ant-design/icons';
 import { Button, message, Tooltip } from 'antd';
 import styled from 'styled-components';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { a11yDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { a11yDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 
 import { useState } from 'react';
 

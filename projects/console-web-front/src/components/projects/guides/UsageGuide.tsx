@@ -5,13 +5,20 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { flexRowSpaceBetweenStyle } from '../../../styles/box';
+import GameGuide from './GameGuide';
 
 import MobileGuide from './MobileGuide';
 import WebGuide from './WebGuide';
 
+enum GuideCategory {
+  WEB = 'web',
+  MOBILE_APP = 'mobile-app',
+  GAME_APP = 'game-app',
+}
+
 const UsageGuide = () => {
   const router = useRouter();
-  const [target, setTarget] = useState('web');
+  const [target, setTarget] = useState(router.query.target || GuideCategory.WEB);
 
   const options = [
     {
@@ -20,7 +27,7 @@ const UsageGuide = () => {
           <GlobalOutlined /> Web Testing
         </span>
       ),
-      value: 'web',
+      value: GuideCategory.WEB,
     },
     {
       label: (
@@ -28,11 +35,11 @@ const UsageGuide = () => {
           <MobileOutlined /> Mobile App Testing
         </span>
       ),
-      value: 'mobile-app',
+      value: GuideCategory.MOBILE_APP,
     },
     {
       label: 'Game App Testing',
-      value: 'game-app',
+      value: GuideCategory.GAME_APP,
     },
   ];
 
@@ -45,7 +52,16 @@ const UsageGuide = () => {
             <Button icon={<CloseOutlined />} />
           </Link>
         </FlexRow>
-        <Radio.Group options={options} buttonStyle="solid" optionType="button" value={target} onChange={(e) => setTarget(e.target.value)} />
+        <Radio.Group
+          options={options}
+          buttonStyle="solid"
+          optionType="button"
+          value={target}
+          onChange={(e) => {
+            setTarget(e.target.value);
+            router.push(`/dashboard/${router.query.orgId}/projects/${router.query.pid}/get-started?target=${e.target.value}`, undefined, { shallow: true });
+          }}
+        />
       </Content>
 
       <Divider />
@@ -56,8 +72,9 @@ const UsageGuide = () => {
 
       <Divider />
 
-      {target === 'web' && <WebGuide />}
-      {target === 'mobile-app' && <MobileGuide />}
+      {target === GuideCategory.WEB && <WebGuide />}
+      {target === GuideCategory.MOBILE_APP && <MobileGuide />}
+      {target === GuideCategory.GAME_APP && <GameGuide />}
     </Box>
   );
 };
