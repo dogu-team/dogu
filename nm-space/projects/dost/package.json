@@ -59,7 +59,6 @@
     "react-icons": "4.8.0",
     "react-router-dom": "6.11.2",
     "shelljs": "0.8.5",
-    "strip-ansi": "7.0.1",
     "styled-components": "6.0.0-rc.2",
     "styled-reset": "4.4.7",
     "web-vitals": "3.1.1",

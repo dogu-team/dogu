@@ -1,3 +1,5 @@
+import { ChildCode } from '@dogu-private/dost-children';
+import { Code } from '@dogu-private/types';
 import { delay } from '@dogu-tech/common';
 import { HostPaths, killProcessOnPort } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
@@ -6,7 +8,7 @@ import { deviceServerKey } from '../../../src/shares/child';
 import { AppConfigService } from '../../app-config/app-config-service';
 import { FeatureConfigService } from '../../feature-config/feature-config-service';
 import { getLogLevel, logger } from '../../log/logger.instance';
-import { stripAnsi } from '../../log/stript-ansi';
+import { stripAnsi } from '../../log/strip-ansi';
 import { DeviceServerLogsPath, DeviceServerMainScriptPath } from '../../path-map';
 import { Child, ChildLastError, fillChildOptions } from '../types';
 import { closeChild, openChild } from './lifecycle';
@@ -14,7 +16,7 @@ import { closeChild, openChild } from './lifecycle';
 export class DeviceServerChild implements Child {
   constructor(private readonly appConfigService: AppConfigService, private readonly featureConfigService: FeatureConfigService) {}
   private _child: ChildProcess | undefined;
-  private _lastError: ChildLastError | undefined;
+  private _lastError: ChildLastError = { code: new ChildCode(Code.CODE_SUCCESS_COMMON_BEGIN_UNSPECIFIED), message: '' };
 
   async open(): Promise<void> {
     const { appConfigService } = this;
@@ -48,8 +50,8 @@ export class DeviceServerChild implements Child {
     this._child = openChild(deviceServerKey, DeviceServerMainScriptPath, options, this.featureConfigService);
     this._child.stderr?.on('data', (data) => {
       const dataString = data.toString();
-      const stripped = stripAnsi ? stripAnsi(dataString) : dataString;
-      this.lastError = stripped;
+      const stripped = stripAnsi(dataString);
+      this._lastError.message = stripped;
     });
     this._child.on('close', (code, signal) => {
       if (code !== null) {

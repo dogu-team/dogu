@@ -4,7 +4,7 @@ import { ChildProcess, execSync, fork } from 'child_process';
 import pidtree from 'pidtree';
 import { Key } from 'react';
 import { FeatureConfigService } from '../../feature-config/feature-config-service';
-import { stripAnsi } from '../../log/stript-ansi';
+import { stripAnsi } from '../../log/strip-ansi';
 import { FilledChildOptions } from '../types';
 
 export function openChild(key: Key, module: string, options: FilledChildOptions, featureConfigService: FeatureConfigService): ChildProcess {
@@ -17,7 +17,7 @@ export function openChild(key: Key, module: string, options: FilledChildOptions,
   });
   child.stdout?.on('data', (data) => {
     const dataString = data.toString();
-    const stripped = stripAnsi ? stripAnsi(dataString) : dataString;
+    const stripped = stripAnsi(dataString);
     logger.info(`[${key}] ${stripped}`);
     if (featureConfigService.get('useSentry')) {
       Sentry.addBreadcrumb({
@@ -30,7 +30,7 @@ export function openChild(key: Key, module: string, options: FilledChildOptions,
   });
   child.stderr?.on('data', (data) => {
     const dataString = data.toString();
-    const stripped = stripAnsi ? stripAnsi(dataString) : dataString;
+    const stripped = stripAnsi(dataString);
     logger.warn(`[${key}] ${stripped}`);
     if (featureConfigService.get('useSentry')) {
       Sentry.addBreadcrumb({
