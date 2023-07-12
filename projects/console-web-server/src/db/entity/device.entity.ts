@@ -67,6 +67,9 @@ export class Device extends BaseEntity implements DeviceBase {
   @Column({ type: 'smallint', name: DevicePropSnake.connection_state, unsigned: true, default: DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED, nullable: false })
   connectionState!: DeviceConnectionState;
 
+  @Column({ type: 'smallint', name: DevicePropSnake.max_parallel_jobs, unsigned: true, default: 1, nullable: false })
+  maxParallelJobs!: number;
+
   @ColumnTemplate.Date(DevicePropSnake.heartbeat, true)
   heartbeat!: Date | null;
 
