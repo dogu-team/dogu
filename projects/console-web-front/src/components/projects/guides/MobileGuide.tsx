@@ -6,6 +6,7 @@ import { UploadOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 import { GuideSupportLanguage, mobileGuideData, SAMPLE_GIT_URL } from '../../../resources/guide';
 import { flexRowBaseStyle } from '../../../styles/box';
@@ -17,7 +18,6 @@ import { getErrorMessage } from '../../../utils/error';
 import GuideAnchor from './GuideAnchor';
 import GuideBanner from './GuideBanner';
 import DocumentCard from './DocumentCard';
-import Link from 'next/link';
 
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
