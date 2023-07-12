@@ -3,7 +3,6 @@ import { OrganizationId, ProjectApplicationId, ProjectId, UserId } from '@dogu-p
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import crypto from 'crypto';
-import path from 'path';
 import { DataSource, EntityManager } from 'typeorm';
 
 import fs from 'fs';
@@ -83,11 +82,9 @@ export class ApplicationService {
 
   async getApplicationMeta(name: string, organizationId: OrganizationId, projectId: ProjectId) {}
 
-  async uploadSampleApk(manager: EntityManager, creatorUserId: UserId, organizationId: OrganizationId, projectId: ProjectId): Promise<void> {
-    const apkPath = path.resolve(__dirname, '../../../../sample/apk/dogurpgsample.apk');
-
-    const buffer = await promisify(fs.readFile)(apkPath);
-    const size = (await promisify(fs.stat)(apkPath)).size;
+  async uploadSampleApk(manager: EntityManager, sampleAppPath: string, creatorUserId: UserId, organizationId: OrganizationId, projectId: ProjectId): Promise<void> {
+    const buffer = await promisify(fs.readFile)(sampleAppPath);
+    const size = (await promisify(fs.stat)(sampleAppPath)).size;
 
     const apkFile: Express.Multer.File = {
       fieldname: 'file',
