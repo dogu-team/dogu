@@ -53,23 +53,31 @@ class ScreenEncoder(
 
     @Throws(IOException::class)
     private fun internalStreamScreen(device: Device, channel: SendChannel<ByteArray>) {
+        Logger.i("ScreenEncoder.internalStreamScreen createFormat")
         val format = createFormat(
             option,
             codecOptions
         )
+        Logger.i("ScreenEncoder.internalStreamScreen setRotationListener")
+
         device.setRotationListener(this)
         var alive: Boolean = true
+        Logger.i("ScreenEncoder.internalStreamScreen getDeviceSize")
         val deviceSize = device.getDeviceSize()
         var sameResTryCount = 0;
+        Logger.i("ScreenEncoder.internalStreamScreen getEncodeOptionCombinations")
         val combinations = getEncodeOptionCombinations(option, deviceSize);
         var combinationIndex = 0;
 
         try {
             do {
+                Logger.i("ScreenEncoder.internalStreamScreen combination")
                 var combination: EncodeOptionCombination = combinations[combinationIndex];
 
                 val codec = createCodec(encoderName)
+                Logger.i("ScreenEncoder.internalStreamScreen createDisplay")
                 val display = createDisplay()
+                Logger.i("ScreenEncoder.internalStreamScreen getScreenInfo")
                 val screenInfo: ScreenInfo = device.getScreenInfo()
                 val contentRect: Rect = screenInfo.contentRect
                 // include the locked video orientation
@@ -78,6 +86,7 @@ class ScreenEncoder(
                 val unlockedVideoRect: Rect = screenInfo.getUnlockedVideoSize().toRect()
                 val videoRotation: Int = screenInfo.videoRotation
                 val layerStack: Int = device.layerStack
+                Logger.i("ScreenEncoder.internalStreamScreen setSize")
                 setSize(format, videoRect.width(), videoRect.height())
 
                 option.maxFps = combination.fps
