@@ -18,7 +18,7 @@
     "dev": "nodemon",
     "eject": "react-app-rewired eject",
     "rebuild": "yarn run clean && yarn run build",
-    "start": "yarn install && yarn build && concurrently \"cross-env BROWSER=none yarn start:react\" \"wait-on http://127.0.0.1:3333 && electron .\"",
+    "start": "yarn install && yarn build:electron && concurrently \"cross-env BROWSER=none yarn start:react\" \"wait-on http://127.0.0.1:3333 && electron .\"",
     "start:react": "cross-env PORT=3333 react-app-rewired start",
     "test": "react-app-rewired test",
     "util:set-productname": "ts-node scripts/util/set-productname.ts name",
