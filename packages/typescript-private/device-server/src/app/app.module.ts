@@ -12,6 +12,7 @@ import { GamiumModule } from '../gamium/gamium.module';
 import { LoggerModule } from '../logger/logger.module';
 import { ProfileModule } from '../profile/profile.module';
 import { ScanModule } from '../scan/scan.module';
+import { SeleniumModule } from '../selenium/selenium.module';
 import { UpdateTriggerModule } from '../update-trigger/update-trigger.module';
 import { WsModule } from '../ws/ws.module';
 import { AppController } from './app.controller';
@@ -34,6 +35,7 @@ import { AppService } from './app.service';
     DeviceInspectorModule,
     GamiumModule,
     DeviceWebDriverModule,
+    SeleniumModule,
   ],
   controllers: [AppController],
   providers: [AppService],

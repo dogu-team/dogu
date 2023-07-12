@@ -91,7 +91,11 @@ export class SeleniumService implements OnModuleInit, OnModuleDestroy {
         if (this.stopGarbageCollection) {
           return;
         }
-        await this.collectGarbage();
+        try {
+          await this.collectGarbage();
+        } catch (error) {
+          this.logger.error('Failed to collect garbage', { error: errorify(error) });
+        }
       }
     })().catch((error) => {
       this.logger.error('Failed to start garbage collection', { error: errorify(error) });

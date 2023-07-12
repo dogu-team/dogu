@@ -2,6 +2,7 @@ import { HostPaths } from '@dogu-tech/node';
 import dotenv from 'dotenv';
 import { ipcMain } from 'electron';
 import fs from 'fs';
+import path from 'path';
 import { dotEnvConfigClientKey, DotEnvConfigKey } from '../../src/shares/dot-env-config';
 import { AppConfigService } from '../app-config/app-config-service';
 import { logger } from '../log/logger.instance';
@@ -59,10 +60,10 @@ export class DotEnvConfigService {
   }
 
   private async writeDefaultExternalEnv(): Promise<void> {
-    const content = `JAVA_HOME=${HostPaths.external.defaultJavaHomePath()}
-ANDROID_HOME=${HostPaths.external.defaultAndroidHomePath()}
-APPIUM_HOME=${HostPaths.external.defaultAppiumHomePath()}
-`;
-    await fs.promises.writeFile(this.dotEnvConfigPath, content);
+    await fs.promises.mkdir(path.dirname(this.dotEnvConfigPath), { recursive: true });
+    await fs.promises.writeFile(this.dotEnvConfigPath, '');
+    await this.write('JAVA_HOME', HostPaths.external.defaultJavaHomePath());
+    await this.write('ANDROID_HOME', HostPaths.external.defaultAndroidHomePath());
+    await this.write('APPIUM_HOME', HostPaths.external.defaultAppiumHomePath());
   }
 }
