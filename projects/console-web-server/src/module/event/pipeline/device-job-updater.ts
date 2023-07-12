@@ -1,6 +1,5 @@
 import { DevicePropCamel, RoutineDeviceJobPropCamel, RoutineDeviceJobPropSnake, RoutineJobPropCamel, RoutinePipelinePropSnake, RoutineStepPropCamel } from '@dogu-private/console';
 import { PIPELINE_STATUS } from '@dogu-private/types';
-import { notEmpty } from '@dogu-tech/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import _ from 'lodash';
@@ -119,23 +118,33 @@ export class DeviceJobUpdater {
       return;
     }
 
-    // highest priority deviceJob for each device
-    const deviceIds = _.uniq(waitingDeviceJobs.map((deviceJob) => deviceJob.device.deviceId));
-    const highestPriorityDeviceJobs = deviceIds
-      .map((deviceId) => {
-        return waitingDeviceJobs.find((deviceJob) => deviceJob.device.deviceId === deviceId);
-      })
-      .filter(notEmpty);
+    // group by deviceId
+    const highestPriorityDeviceJobss: RoutineDeviceJob[] = [];
+    const deviceJobGroups = _.groupBy(waitingDeviceJobs, (deviceJob) => deviceJob.device.deviceId);
+    const deviceIdss = Object.keys(deviceJobGroups);
+    deviceIdss.map((deviceId) => {
+      const deviceJobs = deviceJobGroups[deviceId];
+      const maxParallel = deviceJobs[0].device.maxParallelJobs;
+      if (maxParallel === 1) {
+        const deviceJob = deviceJobs.find((deviceJob) => deviceJob.device.deviceId === deviceId);
+        const inProgressDeviceJobs = deviceJob!.device.routineDeviceJobs ?? [];
+        if (inProgressDeviceJobs.length === 0) highestPriorityDeviceJobss.push(deviceJob!);
+      } else {
+        const inProgressDeviceJobs = deviceJobs[0].device.routineDeviceJobs?.length ?? 0;
+        const addableDeviceJobCount = maxParallel - inProgressDeviceJobs;
+        // sort by priority
+        const sortedDeviceJobs = deviceJobs.sort((a, b) => {
+          return a.routineDeviceJobId - b.routineDeviceJobId;
+        });
+        const addableDeviceJobs = sortedDeviceJobs.slice(0, addableDeviceJobCount);
+        highestPriorityDeviceJobss.push(...addableDeviceJobs);
+      }
+    });
 
-    for (const deviceJob of highestPriorityDeviceJobs) {
+    for (const deviceJob of highestPriorityDeviceJobss) {
       const { device } = deviceJob;
       const { deviceId, organizationId } = device;
-      const inProgressDeviceJobs = deviceJob.device.routineDeviceJobs ?? [];
       const steps = deviceJob.routineSteps;
-
-      if (inProgressDeviceJobs.length > 0) {
-        continue;
-      }
       if (!steps || steps.length === 0) {
         throw new Error(`deviceJob ${deviceJob.routineDeviceJobId} has no steps`);
       }

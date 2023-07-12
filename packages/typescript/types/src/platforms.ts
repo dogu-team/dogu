@@ -6,6 +6,28 @@ export type PlatformType = (typeof PlatformType)[number];
 export const PlatformCategory = ['unspecified', 'desktop', 'mobile', 'console'] as const;
 export type PlatformCategory = (typeof PlatformCategory)[number];
 
+export function validateMaxParallelJobs(platform: Platform, maxParallelJobs: number): boolean {
+  if (maxParallelJobs < 1) {
+    return false;
+  }
+
+  switch (platform) {
+    case Platform.PLATFORM_ANDROID:
+    case Platform.PLATFORM_IOS: {
+      if (maxParallelJobs > 1) {
+        return false;
+      } else {
+        return true;
+      }
+    }
+    case Platform.PLATFORM_MACOS:
+    case Platform.PLATFORM_WINDOWS:
+      return true;
+    default:
+      throw new Error(`Invalid platform: ${platform}`);
+  }
+}
+
 export function categoryFromPlatform(platform: PlatformType): PlatformCategory {
   switch (platform) {
     case 'android':
@@ -37,7 +59,7 @@ export function platformTypeFromPlatform(platform: Platform): PlatformType {
     case Platform.PLATFORM_XBOX:
       return 'xbox';
     default:
-      return 'unspecified';
+      throw new Error(`Invalid platform: ${platform}`);
   }
 }
 

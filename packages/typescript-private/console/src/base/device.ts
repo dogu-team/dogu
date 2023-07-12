@@ -24,6 +24,8 @@ export type DeviceBase = Omit<Required<Device>, 'heartbeat' | 'modelName'> & {
   modelName: string | null;
   deletedAt: Date | null;
   enableHostDevice: number;
+  maxParallelJobs: number;
 } & DeviceRelationTraits;
+
 export const DevicePropCamel = propertiesOf<DeviceBase>();
 export const DevicePropSnake = camelToSnakeCasePropertiesOf<DeviceBase>();
