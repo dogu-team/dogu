@@ -10,6 +10,7 @@ import { Routine } from '../../db/entity/routine.entity';
 import { RoutineStep } from '../../db/entity/step.entity';
 import { DeviceMessageModule } from '../device-message/device-message.module';
 import { PipelineModule } from '../routine/pipeline/pipeline.module';
+import { WebDriverModule } from '../webdriver/webdriver.module';
 import { DeviceConnectionUpdater } from './heartbeat/device-connection-updater';
 import { DeviceWebDriverUpdater } from './heartbeat/device-webdriver-updater';
 import { HeartBeatSystemProcessor } from './heartbeat/heartbeat-system.processor';
@@ -30,6 +31,7 @@ import { UpdateProducer } from './update-producer';
     TypeOrmModule.forFeature([Host, Device, RoutineDeviceJob, RoutinePipeline, RoutineJob, RoutineStep, RoutineJobEdge, Routine, Organization]), //
     DeviceMessageModule,
     forwardRef(() => PipelineModule),
+    WebDriverModule,
   ],
   providers: [
     UpdateProducer,

@@ -3,13 +3,13 @@ import { RelayRequest, RelayResponse, WebDriverEndPoint } from '@dogu-tech/devic
 import { All, Controller, Delete, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { IncomingHttpHeaders } from 'http';
-import { API_TOKEN_TYPE } from '../auth/auth.types';
-import { ApiTokenPermission } from '../auth/decorators';
-import { WebDriverException } from './webdriver.exception';
-import { WebDriverService } from './webdriver.service';
+import { API_TOKEN_TYPE } from '../../auth/auth.types';
+import { ApiTokenPermission } from '../../auth/decorators';
+import { WebDriverException } from '../../webdriver/webdriver.exception';
+import { WebDriverService } from '../../webdriver/webdriver.service';
 
 @Controller('/remote/wd/hub')
-export class WebDriverController {
+export class RemoteWebDriverInfoController {
   constructor(private readonly webdriverService: WebDriverService) {}
 
   @Post('session')
