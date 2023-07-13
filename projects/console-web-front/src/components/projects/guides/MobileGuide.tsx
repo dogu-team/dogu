@@ -21,6 +21,7 @@ import GuideLayout from './GuideLayout';
 import GuideStep from './GuideStep';
 import DoneStep from './DoneStep';
 
+const DEVICE_FARM_ID = 'device-farm';
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
 const SET_CAPABILITIES_ID = 'set-capabilities';
@@ -91,6 +92,7 @@ const MobileGuide = () => {
 
           <GuideAnchor
             items={[
+              { id: DEVICE_FARM_ID, title: 'Setup device farm' },
               { id: PROJECT_SETUP_ID, title: 'Sample project setup' },
               { id: INSTALL_DEPENDENCIES_ID, title: 'Install dependencies' },
               { id: SET_CAPABILITIES_ID, title: 'Set capabilities' },
@@ -103,6 +105,16 @@ const MobileGuide = () => {
       }
       content={
         <div>
+          <GuideStep
+            id={DEVICE_FARM_ID}
+            title="Setup device farm"
+            description={<p>Follow tutorial documentation!</p>}
+            content={
+              <Link href="https://docs.dogutech.io/get-started/tutorials/device-farm" target="_blank">
+                <Button>Device farm tutorial</Button>
+              </Link>
+            }
+          />
           <GuideStep
             id={PROJECT_SETUP_ID}
             title="Sample project setup"
