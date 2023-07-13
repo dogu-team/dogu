@@ -15,7 +15,7 @@ import AddDeviceToProjectModal from './EditDeviceProjectModal';
 import useModal from '../../hooks/useModal';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
-import EditDeviceModal from './EditDeviceModal';
+import DeviceSettingModal from './DeviceSettingModal';
 import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from './PlatformIcon';
 import DevicePrefixTag from './DevicePrefixTag';
@@ -89,7 +89,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
       </Item>
 
       <AddDeviceToProjectModal deviceId={device.deviceId} isOpen={isAddProjectModalOpen} close={closeAddProjectModal} isGlobal={false} />
-      <EditDeviceModal device={device} isOpen={isEditModalOpen} close={closeEditModal} />
+      <DeviceSettingModal device={device} isOpen={isEditModalOpen} close={closeEditModal} />
     </>
   );
 };
