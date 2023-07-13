@@ -4,25 +4,9 @@ import { HttpException } from '@nestjs/common';
 export class WebDriverException extends HttpException {
   constructor(status: number, error: Error | unknown, data: Object) {
     if (error instanceof Error) {
-      super(
-        {
-          error: error.name,
-          message: error.message,
-          stacktrace: '',
-          data: data ? JSON.stringify(data) : {},
-        },
-        status,
-      );
+      super(`${error.name}: ${error.message} ${stringify(data, { colors: false })}`, status);
     } else {
-      super(
-        {
-          error: stringify(error, { colors: false }),
-          message: stringify(error, { colors: false }),
-          stacktrace: '',
-          data: {},
-        },
-        status,
-      );
+      super(`${stringify(error, { colors: false })} ${stringify(data, { colors: false })}`, status);
     }
   }
 }
