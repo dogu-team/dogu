@@ -2,9 +2,11 @@ import { Platform, Serial } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import fs from 'fs';
+import { DeviceWebDriver } from '../../alias';
 import { AppiumService } from '../../appium/appium.service';
-import { AppiumDeviceWebDriverHandlerService } from '../../device-webdriver-handler/appium-device-webdriver-handler.service';
 import { GamiumService } from '../../gamium/gamium.service';
+import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
+import { DoguLogger } from '../../logger/logger';
 import { logger } from '../../logger/logger.instance';
 import { IosChannel } from '../channel/ios-channel';
 import { XcodeBuild, Xctrace } from '../externals';
@@ -19,20 +21,24 @@ export class IosDriver implements DeviceDriver {
     private readonly streaming: PionStreamingService,
     private readonly appiumService: AppiumService,
     private readonly gamiumService: GamiumService,
-    private readonly appiumDeviceWebDriverHandlerService: AppiumDeviceWebDriverHandlerService,
+    private readonly httpRequestRelayService: HttpRequestRelayService,
+    private readonly appiumEndpointHandlerService: DeviceWebDriver.AppiumEndpointHandlerService,
+    private readonly doguLogger: DoguLogger,
   ) {}
 
   static async create(
     deviceServerPort: number,
     appiumService: AppiumService,
     gamiumService: GamiumService,
-    appiumDeviceWebDriverHandlerService: AppiumDeviceWebDriverHandlerService,
+    httpRequestRelayService: HttpRequestRelayService,
+    appiumEndpointHandlerService: DeviceWebDriver.AppiumEndpointHandlerService,
+    doguLogger: DoguLogger,
   ): Promise<IosDriver> {
     await IosDriver.clearIdaClones();
     await XcodeBuild.validateXcodeBuild();
 
     const streaming = await PionStreamingService.create(Platform.PLATFORM_IOS, deviceServerPort);
-    return new IosDriver(streaming, appiumService, gamiumService, appiumDeviceWebDriverHandlerService);
+    return new IosDriver(streaming, appiumService, gamiumService, httpRequestRelayService, appiumEndpointHandlerService, doguLogger);
   }
 
   get platform(): Platform {
@@ -47,7 +53,15 @@ export class IosDriver implements DeviceDriver {
   }
 
   async openChannel(initParam: DeviceChannelOpenParam): Promise<DeviceChannel> {
-    const channel = await IosChannel.create(initParam, this.streaming, this.appiumService, this.gamiumService, this.appiumDeviceWebDriverHandlerService);
+    const channel = await IosChannel.create(
+      initParam,
+      this.streaming,
+      this.appiumService,
+      this.gamiumService,
+      this.httpRequestRelayService,
+      this.appiumEndpointHandlerService,
+      this.doguLogger,
+    );
     this.channelMap.set(initParam.serial, channel);
     return channel;
   }

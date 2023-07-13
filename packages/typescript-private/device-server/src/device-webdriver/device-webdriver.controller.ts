@@ -1,7 +1,7 @@
 import { Code, ErrorResultError, isErrorResultError, Serial } from '@dogu-private/types';
-import { Instance, parseAxiosError, stringify } from '@dogu-tech/common';
+import { HeaderRecord, Instance, parseAxiosError, stringify } from '@dogu-tech/common';
 import { DeviceWebDriver, RelayRequest, SessionDeletedParam } from '@dogu-tech/device-client-common';
-import { Body, Controller, Delete, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Headers, Param, Post } from '@nestjs/common';
 import { isAxiosError } from 'axios';
 import { deviceNotFoundError } from '../device/device.utils';
 import { DoguLogger } from '../logger/logger';
@@ -12,7 +12,11 @@ export class DeviceWebDriverController {
   constructor(private readonly scanService: ScanService, private readonly logger: DoguLogger) {}
 
   @Post(DeviceWebDriver.relayHttp.path)
-  async relayHttp(@Param('serial') serial: Serial, @Body() request: RelayRequest): Promise<Instance<typeof DeviceWebDriver.relayHttp.responseBody>> {
+  async relayHttp(
+    @Headers() headers: HeaderRecord,
+    @Param('serial') serial: Serial,
+    @Body() request: RelayRequest,
+  ): Promise<Instance<typeof DeviceWebDriver.relayHttp.responseBody>> {
     try {
       const device = this.scanService.findChannel(serial);
       if (device === null) {
@@ -24,7 +28,7 @@ export class DeviceWebDriverController {
         throw toErrorResultError(serial, new Error('handler is null'));
       }
 
-      const response = await handler.onRelayHttp(request);
+      const response = await handler.onRelayHttp(headers, request);
       return {
         value: {
           $case: 'data',
@@ -52,7 +56,11 @@ export class DeviceWebDriverController {
   }
 
   @Delete(DeviceWebDriver.sessionDeleted.path)
-  async sessionDeleted(@Param('serial') serial: Serial, @Body() param: SessionDeletedParam): Promise<Instance<typeof DeviceWebDriver.sessionDeleted.responseBody>> {
+  async sessionDeleted(
+    @Headers() headers: HeaderRecord,
+    @Param('serial') serial: Serial,
+    @Body() param: SessionDeletedParam,
+  ): Promise<Instance<typeof DeviceWebDriver.sessionDeleted.responseBody>> {
     try {
       const device = this.scanService.findChannel(serial);
       if (device === null) {
@@ -64,7 +72,7 @@ export class DeviceWebDriverController {
         throw toErrorResultError(serial, new Error('handler is null'));
       }
 
-      await handler.onSessionDeleted(param);
+      await handler.onSessionDeleted(headers, param);
       return {
         value: {
           $case: 'data',

@@ -14,7 +14,7 @@ import { Closable, Printable, PromiseOrValue } from '@dogu-tech/common';
 import { StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { Observable } from 'rxjs';
 import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
-import { DeviceWebDriverHandler } from '../../device-webdriver-handler/device-webdriver-handler.types';
+import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { DevicePortContext } from '../types/device-port-context';
 

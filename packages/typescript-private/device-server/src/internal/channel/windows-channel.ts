@@ -19,13 +19,16 @@ import { StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { ChildProcess } from '@dogu-tech/node';
 import { Observable } from 'rxjs';
 import systeminformation from 'systeminformation';
+import { DeviceWebDriver } from '../../alias';
 import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
-import { DeviceWebDriverHandler } from '../../device-webdriver-handler/device-webdriver-handler.types';
-import { SeleniumDeviceWebDriverHandler } from '../../device-webdriver-handler/selenium-device-webdriver-handler.impl';
-import { SeleniumDeviceWebDriverHandlerService } from '../../device-webdriver-handler/selenium-device-webdriver-handler.service';
+import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
+import { SeleniumDeviceWebDriverHandler } from '../../device-webdriver/selenium.device-webdriver.handler';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { GamiumService } from '../../gamium/gamium.service';
+import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
+import { DoguLogger } from '../../logger/logger';
 import { logger } from '../../logger/logger.instance';
+import { SeleniumService } from '../../selenium/selenium.service';
 import { DeviceChannel, DeviceChannelOpenParam, LogHandler } from '../public/device-channel';
 import { DeviceAgentService } from '../services/device-agent/device-agent-service';
 import { NullDeviceAgentService } from '../services/device-agent/null-device-agent-service';
@@ -72,7 +75,10 @@ export class WindowsChannel implements DeviceChannel {
     param: DeviceChannelOpenParam,
     streaming: StreamingService,
     gamiumService: GamiumService,
-    seleniumDeviceWebDriverHandlerService: SeleniumDeviceWebDriverHandlerService,
+    httpRequestRelayService: HttpRequestRelayService,
+    seleniumEndpointHandler: DeviceWebDriver.SeleniumEndpointHandlerService,
+    seleniumService: SeleniumService,
+    doguLogger: DoguLogger,
   ): Promise<DeviceChannel> {
     const platform = Platform.PLATFORM_WINDOWS;
     const deviceAgent = new NullDeviceAgentService();
@@ -96,7 +102,14 @@ export class WindowsChannel implements DeviceChannel {
       screenHeight: 0 < info.graphics.displays.length ? info.graphics.displays[0].resolutionY : 0,
     });
 
-    const seleniumDeviceWebDriverHandler = seleniumDeviceWebDriverHandlerService.create(platform, param.serial);
+    const seleniumDeviceWebDriverHandler = new SeleniumDeviceWebDriverHandler(
+      platform,
+      param.serial,
+      seleniumService,
+      httpRequestRelayService,
+      seleniumEndpointHandler,
+      doguLogger,
+    );
 
     const deviceChannel = new WindowsChannel(param.serial, info, new DesktopProfileService(), streaming, deviceAgent, seleniumDeviceWebDriverHandler);
 

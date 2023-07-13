@@ -1,11 +1,25 @@
 import { IsFilledString, transformAndValidate } from '@dogu-tech/common';
-import { Platform, Serial } from '@dogu-tech/types';
-import { Type } from 'class-transformer';
-import { IsEnum, IsOptional, IsString, Validate, ValidateNested } from 'class-validator';
+import { Serial } from '@dogu-tech/types';
+import { IsOptional, IsString, Validate } from 'class-validator';
 import _ from 'lodash';
 
+export interface WebDriverCapabilitiesOrigin {
+  capabilities?: {
+    alwaysMatch?: {
+      platformName?: string;
+      'dogu:options'?: DoguWebDriverOptions;
+    };
+  };
+}
+
 export class WebDriverCapabilities {
-  constructor(private _platformName: string, private _app: string, private _udid: string, private _doguOptions: DoguWebDriverOptions, private readonly _origin: object) {}
+  constructor(
+    private _platformName: string,
+    private _app: string,
+    private _udid: string,
+    private _doguOptions: DoguWebDriverOptions,
+    private readonly _origin: WebDriverCapabilitiesOrigin,
+  ) {}
 
   get platformName(): string {
     return this._platformName;
@@ -23,16 +37,16 @@ export class WebDriverCapabilities {
     return this._doguOptions;
   }
 
-  get origin(): object {
+  get origin(): WebDriverCapabilitiesOrigin {
     return this._origin;
   }
 
-  static async create(origin: object): Promise<WebDriverCapabilities> {
-    const platformName = _.get(origin, 'capabilities.alwaysMatch.platformName') as string | undefined;
+  static async create(origin: WebDriverCapabilitiesOrigin): Promise<WebDriverCapabilities> {
+    const platformName = origin.capabilities?.alwaysMatch?.platformName;
     if (!platformName) {
       throw new Error('platformName not found in capabilities');
     }
-    const doguOptions = _.get(origin, 'capabilities.alwaysMatch.dogu:options') as DoguWebDriverOptions | undefined;
+    const doguOptions = origin.capabilities?.alwaysMatch?.['dogu:options'];
     if (!doguOptions) {
       throw new Error('dogu:options not found in capabilities');
     }
@@ -41,8 +55,8 @@ export class WebDriverCapabilities {
   }
 
   setDoguAppUrl(appUrl: string): void {
-    this._doguOptions.internal.appUrl = appUrl;
-    _.set(this._origin, 'capabilities.alwaysMatch.dogu:options.internal.appUrl', appUrl);
+    this._doguOptions.appUrl = appUrl;
+    _.set(this._origin, 'capabilities.alwaysMatch.dogu:options.appUrl', appUrl);
   }
 
   setApp(appPath: string): void {
@@ -54,21 +68,6 @@ export class WebDriverCapabilities {
     this._udid = serial;
     _.set(this._origin, 'capabilities.alwaysMatch.appium:udid', serial);
   }
-}
-
-export class DoguWebDriverOptionsInternal {
-  @IsEnum(Platform)
-  platform!: Platform;
-
-  @IsFilledString()
-  serial!: Serial;
-
-  @IsFilledString()
-  remoteDeviceJobId!: string;
-
-  @IsString()
-  @IsOptional()
-  appUrl?: string;
 }
 
 export class DoguWebDriverOptions {
@@ -112,7 +111,7 @@ export class DoguWebDriverOptions {
   /**
    * @note this is added from console-web-server
    */
-  @ValidateNested()
-  @Type(() => DoguWebDriverOptionsInternal)
-  internal!: DoguWebDriverOptionsInternal;
+  @IsString()
+  @IsOptional()
+  appUrl?: string;
 }

@@ -7,7 +7,7 @@ import path from 'path';
 import { setInterval } from 'timers/promises';
 import { DoguLogger } from '../logger/logger';
 import { pathMap } from '../path-map';
-import { createSeleniumContextKey, DefaultSeleniumContextOptions, SeleniumContext, SeleniumContextInfo, SeleniumContextOptions } from './selenium.context';
+import { DefaultSeleniumContextOptions, SeleniumContext, SeleniumContextInfo, SeleniumContextOpenOptions } from './selenium.context';
 
 const LockKey = 'SeleniumService.map';
 const GarbageCollectionInterval = 60 * 1000;
@@ -52,21 +52,44 @@ export class SeleniumService implements OnModuleInit, OnModuleDestroy {
     await Promise.all(entries.map((entry) => entry.context.close()));
   }
 
-  async get(options: SeleniumContextOptions): Promise<SeleniumContextInfo> {
+  async open(options: SeleniumContextOpenOptions): Promise<SeleniumContextInfo> {
     return this.lock.acquire(LockKey, async () => {
-      const key = createSeleniumContextKey(options);
+      const { key, ...optionsWithoutId } = options;
       const entry = this.map.get(key);
       if (entry) {
         entry.lastAccessedAt = new Date();
         return entry.context.info;
       }
-      const newContext = new SeleniumContext(options, this.logger);
+      const mergedOptions = _.merge(this.defaultSeleniumContextOptions, optionsWithoutId);
+      const newContext = new SeleniumContext(mergedOptions, this.logger);
       await newContext.open();
       this.map.set(key, {
         context: newContext,
         lastAccessedAt: new Date(),
       });
       return newContext.info;
+    });
+  }
+
+  async close(key: string): Promise<void> {
+    return this.lock.acquire(LockKey, async () => {
+      const entry = this.map.get(key);
+      if (!entry) {
+        return;
+      }
+      this.map.delete(key);
+      await entry.context.close();
+    });
+  }
+
+  async getInfo(key: string): Promise<SeleniumContextInfo | null> {
+    return this.lock.acquire(LockKey, (): SeleniumContextInfo | null => {
+      const entry = this.map.get(key);
+      if (!entry) {
+        return null;
+      }
+      entry.lastAccessedAt = new Date();
+      return entry.context.info;
     });
   }
 

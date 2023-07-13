@@ -1,8 +1,10 @@
 import { Platform, Serial } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
+import { DeviceWebDriver } from '../../alias';
 import { AppiumService } from '../../appium/appium.service';
-import { AppiumDeviceWebDriverHandlerService } from '../../device-webdriver-handler/appium-device-webdriver-handler.service';
 import { GamiumService } from '../../gamium/gamium.service';
+import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
+import { DoguLogger } from '../../logger/logger';
 import { logger } from '../../logger/logger.instance';
 import { AndroidChannel } from '../channel/android-channel';
 import { Adb } from '../externals';
@@ -18,17 +20,21 @@ export class AndroidDriver implements DeviceDriver {
     private readonly streamingService: StreamingService,
     private readonly appiumService: AppiumService,
     private readonly gamiumService: GamiumService,
-    private readonly appiumDeviceWebDriverHandlerService: AppiumDeviceWebDriverHandlerService,
+    private readonly httpRequestRelayService: HttpRequestRelayService,
+    private readonly appiumEndpointHandlerService: DeviceWebDriver.AppiumEndpointHandlerService,
+    private readonly doguLogger: DoguLogger,
   ) {}
 
   static async create(
     deviceServerPort: number,
     appiumService: AppiumService,
     gamiumService: GamiumService,
-    appiumDeviceWebDriverHandlerService: AppiumDeviceWebDriverHandlerService,
+    httpRequestRelayService: HttpRequestRelayService,
+    appiumEndpointHandlerService: DeviceWebDriver.AppiumEndpointHandlerService,
+    doguLogger: DoguLogger,
   ): Promise<AndroidDriver> {
     const streaming = await PionStreamingService.create(Platform.PLATFORM_ANDROID, deviceServerPort);
-    return new AndroidDriver(streaming, appiumService, gamiumService, appiumDeviceWebDriverHandlerService);
+    return new AndroidDriver(streaming, appiumService, gamiumService, httpRequestRelayService, appiumEndpointHandlerService, doguLogger);
   }
 
   get platform(): Platform {
@@ -41,7 +47,15 @@ export class AndroidDriver implements DeviceDriver {
   }
 
   async openChannel(initParam: DeviceChannelOpenParam): Promise<DeviceChannel> {
-    const channel = await AndroidChannel.create(initParam, this.streamingService, this.appiumService, this.gamiumService, this.appiumDeviceWebDriverHandlerService);
+    const channel = await AndroidChannel.create(
+      initParam,
+      this.streamingService,
+      this.appiumService,
+      this.gamiumService,
+      this.httpRequestRelayService,
+      this.appiumEndpointHandlerService,
+      this.doguLogger,
+    );
     this.channelMap.set(initParam.serial, channel);
     return channel;
   }

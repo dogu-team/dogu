@@ -3,23 +3,32 @@ import { HostPaths } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { DefaultAppiumContextOptions } from '../appium/appium.context';
 import { getFreePort } from '../internal/util/net';
 
 export const BrowserName = ['chrome', 'firefox', 'safari', 'edge', 'ie'] as const;
 export type BrowserName = (typeof BrowserName)[number];
+
+export function isValidBrowserName(value: unknown): value is BrowserName {
+  return BrowserName.includes(value as BrowserName);
+}
 
 export interface DefaultSeleniumContextOptions {
   pnpmPath: string;
   serverEnv: NodeJS.ProcessEnv;
 }
 
-export interface SeleniumContextOptions extends DefaultAppiumContextOptions {
+export interface SeleniumContextOptions {
   browserName: BrowserName;
   browserVersion: string;
 }
 
-export function createSeleniumContextKey(options: SeleniumContextOptions): string {
+export type SeleniumContextOpenOptions = SeleniumContextOptions & {
+  key: string;
+};
+
+export type SeleniumContextOptionsWithDefault = SeleniumContextOptions & DefaultSeleniumContextOptions;
+
+export function createBrowserKey(options: SeleniumContextOptions): string {
   const { browserName, browserVersion } = options;
   return `${browserName}-${browserVersion}`;
 }
@@ -37,7 +46,7 @@ const WebdriverManagerUpdateRetryCount = 3;
 export class SeleniumContext {
   private _data: SeleniumContextData | null = null;
 
-  constructor(private readonly options: SeleniumContextOptions, private readonly logger: Printable) {}
+  constructor(private readonly options: SeleniumContextOptionsWithDefault, private readonly logger: Printable) {}
 
   get info(): SeleniumContextInfo {
     if (!this._data) {
@@ -73,7 +82,7 @@ export class SeleniumContext {
 
   private async startWebdriverManager(): Promise<SeleniumContextData> {
     const { browserName, browserVersion, pnpmPath, serverEnv } = this.options;
-    const browserKey = createSeleniumContextKey(this.options);
+    const browserKey = createBrowserKey(this.options);
     const clonePath = HostPaths.external.nodePackage.webdriverManager.clonePath(browserKey);
     const seleniumPort = await getFreePort();
     const args = ['webdriver-manager', 'start', `--out_dir=${clonePath}`, `--seleniumPort=${seleniumPort}`];
@@ -138,7 +147,7 @@ export class SeleniumContext {
   private async updateWebdriverManager(): Promise<void> {
     const { browserName, browserVersion, pnpmPath, serverEnv } = this.options;
     const prototypePath = HostPaths.external.nodePackage.webdriverManager.prototypePath();
-    const browserKey = createSeleniumContextKey(this.options);
+    const browserKey = createBrowserKey(this.options);
     const clonePath = HostPaths.external.nodePackage.webdriverManager.clonePath(browserKey);
     const clonePathStat = await fs.promises.stat(clonePath).catch(() => null);
     if (!clonePathStat) {

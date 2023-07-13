@@ -22,10 +22,13 @@ import path from 'path';
 import { Observable } from 'rxjs';
 import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
 import { AppiumService } from '../../appium/appium.service';
-import { AppiumDeviceWebDriverHandlerService } from '../../device-webdriver-handler/appium-device-webdriver-handler.service';
-import { DeviceWebDriverHandler } from '../../device-webdriver-handler/device-webdriver-handler.types';
+import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
+import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
+import { AppiumEndpointHandlerService } from '../../device-webdriver/endpoint-handler/appium.service';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { GamiumService } from '../../gamium/gamium.service';
+import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
+import { DoguLogger } from '../../logger/logger';
 import { createIdaLogger } from '../../logger/logger.instance';
 import { IdeviceDiagnostics, IdeviceSyslog, MobileDevice } from '../externals';
 import { IosDeviceAgentProcess } from '../externals/cli/ios-device-agent';
@@ -62,7 +65,7 @@ export class IosChannel implements DeviceChannel {
     private iosDeviceAgentProcess: IosDeviceAgentProcess,
     private readonly deviceAgent: IosDeviceAgentService,
     private _appiumContext: AppiumContextProxy,
-    private readonly _appiumDeviceWebDriverHandler: DeviceWebDriverHandler,
+    private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
     private readonly logger: Printable,
   ) {
     this.logger.info(`IosChannel created: ${this.serial}`);
@@ -89,7 +92,9 @@ export class IosChannel implements DeviceChannel {
     streaming: StreamingService,
     appiumService: AppiumService,
     gamiumService: GamiumService,
-    appiumDeviceWebDriverHandlerService: AppiumDeviceWebDriverHandlerService,
+    httpRequestRelayService: HttpRequestRelayService,
+    appiumEndpointHandlerService: AppiumEndpointHandlerService,
+    doguLogger: DoguLogger,
   ): Promise<IosChannel> {
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === param.serial && zombieable.platform === Platform.PLATFORM_IOS;
@@ -146,7 +151,7 @@ export class IosChannel implements DeviceChannel {
     logger.verbose('ios system info service started');
 
     logger.verbose('appium device web driver handler service starting');
-    const appiumDeviceWebDriverHandler = appiumDeviceWebDriverHandlerService.create(platform, serial, appiumContextProxy);
+    const appiumDeviceWebDriverHandler = new AppiumDeviceWebDriverHandler(platform, serial, appiumContextProxy, httpRequestRelayService, appiumEndpointHandlerService, doguLogger);
 
     const deviceChannel = new IosChannel(serial, portContext, systemInfo, streaming, iosDeviceAgentProcess, deviceAgent, appiumContextProxy, appiumDeviceWebDriverHandler, logger);
 

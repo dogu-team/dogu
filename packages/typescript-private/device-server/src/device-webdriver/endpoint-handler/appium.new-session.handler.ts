@@ -1,22 +1,34 @@
 import { extensionFromPlatform, PlatformType } from '@dogu-private/types';
 import { DefaultHttpOptions, stringify } from '@dogu-tech/common';
-import { convertWebDriverPlatformToDogu, RelayRequest, WebDriverEndPoint } from '@dogu-tech/device-client-common';
+import { convertWebDriverPlatformToDogu, RelayRequest, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
 import { HostPaths } from '@dogu-tech/node';
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
 import stream, { Stream } from 'stream';
 import { v4 as uuidv4 } from 'uuid';
-import { AppiumRemoteContext } from '../appium/appium.remote.context';
-import { DoguLogger } from '../logger/logger';
-import { DeviceWebDriverEndpointHandlerResult } from './device-webdriver-handler.types';
+import { AppiumRemoteContext } from '../../appium/appium.remote.context';
+import { DoguLogger } from '../../logger/logger';
+import { AppiumEndpointHandler, RegisterAppiumEndpointHandler } from './appium.service';
+import { EndpointHandlerResult } from './common';
 
-export abstract class AppiumDeviceWebDriverEndpointHandler {
-  abstract onRequest(remoteContext: AppiumRemoteContext, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): Promise<DeviceWebDriverEndpointHandlerResult>;
+function getAppExtension(platform: PlatformType): string {
+  return extensionFromPlatform(platform);
 }
 
-export class AppiumDeviceWebDriverNewSessionEndpointHandler extends AppiumDeviceWebDriverEndpointHandler {
-  async onRequest(remoteContext: AppiumRemoteContext, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): Promise<DeviceWebDriverEndpointHandlerResult> {
+async function postProcessTempFile(platform: PlatformType, tempFilePath: string, destFilePath: string): Promise<void> {
+  const dirPath = path.dirname(destFilePath);
+  await fs.promises.mkdir(dirPath, { recursive: true });
+  await fs.promises.rename(tempFilePath, destFilePath);
+}
+
+@RegisterAppiumEndpointHandler()
+export class AppiumNewSessionEndpointHandler extends AppiumEndpointHandler {
+  get endpointType(): WebDriverEndpointType {
+    return 'new-session';
+  }
+
+  async onRequest(remoteContext: AppiumRemoteContext, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): Promise<EndpointHandlerResult> {
     if (endpoint.info.type !== 'new-session') {
       return {
         status: 400,
@@ -24,7 +36,7 @@ export class AppiumDeviceWebDriverNewSessionEndpointHandler extends AppiumDevice
         data: {},
       };
     }
-    if (!endpoint.info.capabilities.doguOptions.internal.appUrl) {
+    if (!endpoint.info.capabilities.doguOptions.appUrl) {
       return {
         status: 400,
         error: new Error('App url not specified'),
@@ -32,7 +44,7 @@ export class AppiumDeviceWebDriverNewSessionEndpointHandler extends AppiumDevice
       };
     }
     const platform = convertWebDriverPlatformToDogu(endpoint.info.capabilities.platformName);
-    const url = endpoint.info.capabilities.doguOptions.internal.appUrl;
+    const url = endpoint.info.capabilities.doguOptions.appUrl;
     const filename = path.basename(url);
     const extension = getAppExtension(platform);
     const appVersion = endpoint.info.capabilities.doguOptions.appVersion;
@@ -115,29 +127,4 @@ export class AppiumDeviceWebDriverNewSessionEndpointHandler extends AppiumDevice
       return { status: 500, error: new Error(stringify(error)), data: {} };
     }
   }
-}
-
-export class AppiumDeviceWebDriverSessionEndpointHandler extends AppiumDeviceWebDriverEndpointHandler {
-  // eslint-disable-next-line @typescript-eslint/require-await
-  async onRequest(remoteContext: AppiumRemoteContext, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): Promise<DeviceWebDriverEndpointHandlerResult> {
-    if (endpoint.info.type !== 'session') {
-      return {
-        status: 400,
-        error: new Error('Internal error. endpoint type is not session'),
-        data: {},
-      };
-    }
-    remoteContext.sessionId = endpoint.info.sessionId;
-    return { request };
-  }
-}
-
-function getAppExtension(platform: PlatformType): string {
-  return extensionFromPlatform(platform);
-}
-
-async function postProcessTempFile(platform: PlatformType, tempFilePath: string, destFilePath: string): Promise<void> {
-  const dirPath = path.dirname(destFilePath);
-  await fs.promises.mkdir(dirPath, { recursive: true });
-  await fs.promises.rename(tempFilePath, destFilePath);
 }

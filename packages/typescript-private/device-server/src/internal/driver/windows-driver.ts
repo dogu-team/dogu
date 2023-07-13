@@ -1,9 +1,12 @@
 import { Platform, Serial } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import systeminformation from 'systeminformation';
-import { SeleniumDeviceWebDriverHandlerService } from '../../device-webdriver-handler/selenium-device-webdriver-handler.service';
+import { DeviceWebDriver } from '../../alias';
 import { GamiumService } from '../../gamium/gamium.service';
+import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
+import { DoguLogger } from '../../logger/logger';
 import { logger } from '../../logger/logger.instance';
+import { SeleniumService } from '../../selenium/selenium.service';
 import { WindowsChannel } from '../channel/windows-channel';
 import { DeviceChannel, DeviceChannelOpenParam } from '../public/device-channel';
 import { DeviceDriver } from '../public/device-driver';
@@ -16,12 +19,22 @@ export class WindowsDriver implements DeviceDriver {
   private constructor(
     private readonly streamingService: StreamingService,
     private readonly gamiumService: GamiumService,
-    private readonly seleniumWebDriverHandlerService: SeleniumDeviceWebDriverHandlerService,
+    private readonly httpRequestRelayService: HttpRequestRelayService,
+    private readonly seleniumEndpointHandlerService: DeviceWebDriver.SeleniumEndpointHandlerService,
+    private readonly seleniumService: SeleniumService,
+    private readonly doguLogger: DoguLogger,
   ) {}
 
-  static async create(deviceServerPort: number, gamiumService: GamiumService, seleniumWebDriverHandlerService: SeleniumDeviceWebDriverHandlerService): Promise<WindowsDriver> {
+  static async create(
+    deviceServerPort: number,
+    gamiumService: GamiumService,
+    httpRequestRelayService: HttpRequestRelayService,
+    seleniumEndpointHandlerService: DeviceWebDriver.SeleniumEndpointHandlerService,
+    seleniumService: SeleniumService,
+    doguLogger: DoguLogger,
+  ): Promise<WindowsDriver> {
     const streaming = await PionStreamingService.create(Platform.PLATFORM_WINDOWS, deviceServerPort);
-    return new WindowsDriver(streaming, gamiumService, seleniumWebDriverHandlerService);
+    return new WindowsDriver(streaming, gamiumService, httpRequestRelayService, seleniumEndpointHandlerService, seleniumService, doguLogger);
   }
 
   get platform(): Platform {
@@ -34,7 +47,15 @@ export class WindowsDriver implements DeviceDriver {
   }
 
   async openChannel(initParam: DeviceChannelOpenParam): Promise<DeviceChannel> {
-    return await WindowsChannel.create(initParam, this.streamingService, this.gamiumService, this.seleniumWebDriverHandlerService);
+    return await WindowsChannel.create(
+      initParam,
+      this.streamingService,
+      this.gamiumService,
+      this.httpRequestRelayService,
+      this.seleniumEndpointHandlerService,
+      this.seleniumService,
+      this.doguLogger,
+    );
   }
 
   async closeChannel(seial: Serial): Promise<void> {

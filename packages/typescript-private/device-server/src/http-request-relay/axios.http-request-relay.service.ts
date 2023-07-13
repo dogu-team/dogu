@@ -1,11 +1,12 @@
 import { HeaderRecord, stringify } from '@dogu-tech/common';
-import { RelayRequest, RelayResponse } from '@dogu-tech/device-client-common';
+import { RelayResponse } from '@dogu-tech/device-client-common';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { DoguLogger } from '../logger/logger';
+import { HttpRequestRelayHandler, HttpRequestRelayService } from './http-request-relay.common';
 
 const methodHandlers: {
-  [key: string]: (url: string, request: RelayRequest, logger: DoguLogger) => Promise<RelayResponse>;
+  [key: string]: HttpRequestRelayHandler;
 } = {
   GET: async (url, request, logger) => {
     const res = await axios.get(url);
@@ -51,14 +52,10 @@ function convertResponse<T>(res: axios.AxiosResponse<any, any>, logger: DoguLogg
 }
 
 @Injectable()
-export class RelayHttpRequestService {
+export class AxiosHttpRequestRelayService extends HttpRequestRelayService {
   private readonly methodHandlers = methodHandlers;
 
-  async relayHttp(url: string, request: RelayRequest, logger: DoguLogger): Promise<RelayResponse> {
-    const handler = this.methodHandlers[request.method];
-    if (!handler) {
-      throw new Error(`Unknown method: ${request.method}`);
-    }
-    return handler(url, request, logger);
+  getHandler(method: string): HttpRequestRelayHandler | null {
+    return this.methodHandlers[method] || null;
   }
 }
