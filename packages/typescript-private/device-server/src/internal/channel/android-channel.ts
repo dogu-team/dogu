@@ -23,9 +23,14 @@ import lodash from 'lodash';
 import { Observable } from 'rxjs';
 import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
 import { AppiumService } from '../../appium/appium.service';
+import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
+import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
+import { AppiumEndpointHandlerService } from '../../device-webdriver/endpoint-handler/appium.service';
 import { env } from '../../env';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { GamiumService } from '../../gamium/gamium.service';
+import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
+import { DoguLogger } from '../../logger/logger';
 import { createAdaLogger } from '../../logger/logger.instance';
 import { pathMap } from '../../path-map';
 import { Adb } from '../externals';
@@ -73,15 +78,23 @@ export class AndroidChannel implements DeviceChannel {
     private readonly _deviceAgent: AndroidDeviceAgentService,
     private readonly _profilers: ProfileServices,
     private readonly _streaming: StreamingService,
-    private readonly _appiumService: AppiumService,
     private _appiumContext: AppiumContextProxy,
+    private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
     private readonly logger: FilledPrintable,
     private isClosed = false,
   ) {
     this.logger.info(`AndroidChannel created: ${this.serial}`);
   }
 
-  public static async create(param: DeviceChannelOpenParam, streaming: StreamingService, appiumService: AppiumService, gamiumService: GamiumService): Promise<AndroidChannel> {
+  public static async create(
+    param: DeviceChannelOpenParam,
+    streaming: StreamingService,
+    appiumService: AppiumService,
+    gamiumService: GamiumService,
+    httpRequestRelayService: HttpRequestRelayService,
+    appiumEndpointHandlerService: AppiumEndpointHandlerService,
+    doguLogger: DoguLogger,
+  ): Promise<AndroidChannel> {
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === param.serial && zombieable.platform === Platform.PLATFORM_ANDROID;
     }, 'kill previous zombie');
@@ -103,8 +116,10 @@ export class AndroidChannel implements DeviceChannel {
     await deviceAgent.wakeUp();
     await deviceAgent.install();
 
-    const appiumContextProxy = appiumService.createAppiumContext(platform, serial, 'bulitin');
+    const appiumContextProxy = appiumService.createAppiumContext(platform, serial, 'builtin');
     ZombieServiceInstance.addComponent(appiumContextProxy);
+
+    const appiumDeviceWebDriverHandler = new AppiumDeviceWebDriverHandler(platform, serial, appiumContextProxy, httpRequestRelayService, appiumEndpointHandlerService, doguLogger);
 
     const deviceChannel = new AndroidChannel(
       serial,
@@ -114,8 +129,8 @@ export class AndroidChannel implements DeviceChannel {
       // [new AndroidAdbProfileService(), new AndroidDeviceAgentProfileService(deviceAgent)],
       [new AndroidAdbProfileService()],
       streaming,
-      appiumService,
       appiumContextProxy,
+      appiumDeviceWebDriverHandler,
       logger,
     );
 
@@ -388,9 +403,14 @@ export class AndroidChannel implements DeviceChannel {
   get gamiumContext(): GamiumContext | null {
     return this._gamiumContext;
   }
+
+  getWebDriverHandler(): DeviceWebDriverHandler | null {
+    return this._appiumDeviceWebDriverHandler;
+  }
 }
 
 /**
- * @todo henry - refactor to AndroidDeviceRunContextRegistry
+ * @note The deviceAgent forward port is maintained throughout the process lifecycle.
+ * It is difficult to maintain the function of syncing the changed port with go-device-controller and respawning androidDeviceAgentService.
  */
-const portContextes = new Map<Serial, DevicePortContext>(); // The deviceAgent forward port is maintained throughout the process lifecycle.. It is difficult to maintain the function of syncing the changed port with go-device-controller and respawning androidDeviceAgentService.
+const portContextes = new Map<Serial, DevicePortContext>();

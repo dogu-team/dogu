@@ -19,10 +19,16 @@ import { StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { ChildProcess } from '@dogu-tech/node';
 import { Observable } from 'rxjs';
 import systeminformation from 'systeminformation';
+import { DeviceWebDriver } from '../../alias';
 import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
+import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
+import { SeleniumDeviceWebDriverHandler } from '../../device-webdriver/selenium.device-webdriver.handler';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { GamiumService } from '../../gamium/gamium.service';
+import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
+import { DoguLogger } from '../../logger/logger';
 import { logger } from '../../logger/logger.instance';
+import { SeleniumService } from '../../selenium/selenium.service';
 import { DeviceChannel, DeviceChannelOpenParam, LogHandler } from '../public/device-channel';
 import { DeviceAgentService } from '../services/device-agent/device-agent-service';
 import { NullDeviceAgentService } from '../services/device-agent/null-device-agent-service';
@@ -44,6 +50,7 @@ export class WindowsChannel implements DeviceChannel {
     private readonly _profile: ProfileService,
     private readonly _streaming: StreamingService,
     private readonly _deviceAgent: DeviceAgentService,
+    private readonly _seleniumDeviceWebDriverHandler: SeleniumDeviceWebDriverHandler,
   ) {}
 
   get serial(): Serial {
@@ -64,7 +71,16 @@ export class WindowsChannel implements DeviceChannel {
       deviceAgentSecondForwardPort: DeviceAgentSecondPort,
     };
   }
-  static async create(param: DeviceChannelOpenParam, streaming: StreamingService, gamiumService: GamiumService): Promise<DeviceChannel> {
+  static async create(
+    param: DeviceChannelOpenParam,
+    streaming: StreamingService,
+    gamiumService: GamiumService,
+    httpRequestRelayService: HttpRequestRelayService,
+    seleniumEndpointHandler: DeviceWebDriver.SeleniumEndpointHandlerService,
+    seleniumService: SeleniumService,
+    doguLogger: DoguLogger,
+  ): Promise<DeviceChannel> {
+    const platform = Platform.PLATFORM_WINDOWS;
     const deviceAgent = new NullDeviceAgentService();
 
     const osInfo = await checkTime('os', systeminformation.osInfo());
@@ -73,20 +89,29 @@ export class WindowsChannel implements DeviceChannel {
       nickname: osInfo.hostname,
       version: osInfo.release,
       system: await checkTime('system', systeminformation.system()),
-      os: { ...osInfo, platform: Platform.PLATFORM_WINDOWS },
+      os: { ...osInfo, platform },
       uuid: await checkTime('uuid', systeminformation.uuid()),
       cpu: await checkTime('cpu', systeminformation.cpu()),
     };
     await streaming.deviceConnected(param.serial, {
       serial: param.serial,
-      platform: Platform.PLATFORM_MACOS,
+      platform,
       screenUrl: deviceAgent.screenUrl,
       inputUrl: deviceAgent.inputUrl,
       screenWidth: 0 < info.graphics.displays.length ? info.graphics.displays[0].resolutionX : 0,
       screenHeight: 0 < info.graphics.displays.length ? info.graphics.displays[0].resolutionY : 0,
     });
 
-    const deviceChannel = new WindowsChannel(param.serial, info, new DesktopProfileService(), streaming, deviceAgent);
+    const seleniumDeviceWebDriverHandler = new SeleniumDeviceWebDriverHandler(
+      platform,
+      param.serial,
+      seleniumService,
+      httpRequestRelayService,
+      seleniumEndpointHandler,
+      doguLogger,
+    );
+
+    const deviceChannel = new WindowsChannel(param.serial, info, new DesktopProfileService(), streaming, deviceAgent, seleniumDeviceWebDriverHandler);
 
     const gamiumContext = gamiumService.openGamiumContext(deviceChannel);
     deviceChannel.gamiumContext = gamiumContext;
@@ -202,5 +227,9 @@ export class WindowsChannel implements DeviceChannel {
 
   get gamiumContext(): GamiumContext | null {
     return this._gamiumContext;
+  }
+
+  getWebDriverHandler(): DeviceWebDriverHandler | null {
+    return this._seleniumDeviceWebDriverHandler;
   }
 }

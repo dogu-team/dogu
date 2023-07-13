@@ -53,6 +53,10 @@ export const HostPaths = {
     nodePackage: {
       nodePackagesPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'node-packages'),
       appiumPath: (): string => path.resolve(HostPaths.external.nodePackage.nodePackagesPath(), 'appium'),
+      webdriverManager: {
+        prototypePath: (): string => path.resolve(HostPaths.external.nodePackage.nodePackagesPath(), 'webdriver-manager', 'prototype'),
+        clonePath: (cloneId: string): string => path.resolve(HostPaths.external.nodePackage.nodePackagesPath(), 'webdriver-manager', 'clones', cloneId),
+      },
     },
     xcodeProject: {
       wdaProjectDirectoryPath: (): string => path.resolve(HostPaths.external.defaultAppiumHomePath(), 'node_modules/appium-xcuitest-driver/node_modules/appium-webdriveragent'),
@@ -66,6 +70,10 @@ export const HostPaths = {
       libimobiledeviceLibPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice/lib'),
       idevicediagnostics: (): string => path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice/idevicediagnostics'),
       idevicesyslog: (): string => path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice/idevicesyslog'),
+    },
+    browser: {
+      chromeInstallPath: (majorVersion: string): string => path.resolve(HostPaths.external.externalsPath(), 'chrome', majorVersion),
+      firefoxInstallPath: (majorVersion: string): string => path.resolve(HostPaths.external.externalsPath(), 'firefox', majorVersion),
     },
     /**
      * @note use to avoid appium xcodebuild process cleanup patterns.
@@ -148,6 +156,8 @@ function createThirdPartyPathMap(options?: ThirdPartyPathMapOptions): ThirdParty
       nodeBin: path.resolve(thirdPartyPath, platformDir, archDir, 'node', 'v16.20.0', nodeBinDir),
       yarn: path.resolve(thirdPartyPath, platformDir, archDir, 'node', 'v16.20.0', nodeBinDir, `yarn${cmdExtension}`),
       pnpm: path.resolve(thirdPartyPath, platformDir, archDir, 'node', 'v16.20.0', nodeBinDir, `pnpm${cmdExtension}`),
+      npm: path.resolve(thirdPartyPath, platformDir, archDir, 'node', 'v16.20.0', nodeBinDir, `npm${cmdExtension}`),
+      npx: path.resolve(thirdPartyPath, platformDir, archDir, 'node', 'v16.20.0', nodeBinDir, `npx${cmdExtension}`),
       ffmpeg: path.resolve(thirdPartyPath, platformDir, archCommonDir, `ffmpeg${exeExtension}`),
     },
     macos: {

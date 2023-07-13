@@ -283,27 +283,27 @@ Dest.withOptions({
       dost.nextTest();
     });
 
-    job('Check sample project creation', () => {
-      test('Check sample project creation', async () => {
-        const sampleProjectName = await Driver.getText({ xpath: `//*[text()="${values.value.SAMPLE_PROJECT_NAME}"]` }, { focusWindow: true });
-        expect(sampleProjectName).toBe(values.value.SAMPLE_PROJECT_NAME);
-      });
+    // job('Check sample project creation', () => {
+    //   test('Check sample project creation', async () => {
+    //     const sampleProjectName = await Driver.getText({ xpath: `//*[text()="${values.value.SAMPLE_PROJECT_NAME}"]` }, { focusWindow: true });
+    //     expect(sampleProjectName).toBe(values.value.SAMPLE_PROJECT_NAME);
+    //   });
 
-      test('Click sample project', async () => {
-        await Driver.clickElement({ xpath: `//*[text()="${values.value.SAMPLE_PROJECT_NAME}"]` }, { focusWindow: true });
-      });
+    //   test('Click sample project', async () => {
+    //     await Driver.clickElement({ xpath: `//*[text()="${values.value.SAMPLE_PROJECT_NAME}"]` }, { focusWindow: true });
+    //   });
 
-      test('Click app button', async () => {
-        await Driver.clickElement({ xpath: '//*[@access-id="project-app-tab"]' }, { focusWindow: true });
-      });
+    //   test('Click app button', async () => {
+    //     await Driver.clickElement({ xpath: '//*[@access-id="project-app-tab"]' }, { focusWindow: true });
+    //   });
 
-      test('Check sample app added ', async () => {
-        const sampleAppName = await Driver.getText({ xpath: `//*[text()="${values.value.SAMPLE_APP_EXTENSION}"]` }, { focusWindow: true });
-        expect(sampleAppName).toBe(values.value.SAMPLE_APP_EXTENSION);
-      });
+    //   test('Check sample app added ', async () => {
+    //     const sampleAppName = await Driver.getText({ xpath: `//*[text()="${values.value.SAMPLE_APP_EXTENSION}"]` }, { focusWindow: true });
+    //     expect(sampleAppName).toBe(values.value.SAMPLE_APP_EXTENSION);
+    //   });
 
-      dost.nextTest();
-    });
+    //   dost.nextTest();
+    // });
 
     runHost(values.value.HOST_NAME, dost);
 

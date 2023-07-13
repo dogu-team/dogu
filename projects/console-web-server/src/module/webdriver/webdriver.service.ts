@@ -1,7 +1,6 @@
-import { DeviceId, extensionFromPlatform, Serial, WebDriverSessionId } from '@dogu-private/types';
+import { DeviceId, Serial, WebDriverSessionId } from '@dogu-private/types';
 import { HeaderRecord, Method } from '@dogu-tech/common';
 import {
-  convertWebDriverPlatformToDogu,
   DeviceWebDriver,
   RelayRequest,
   RelayResponse,
@@ -16,7 +15,6 @@ import { DeviceMessageRelayer } from '../device-message/device-message.relayer';
 import { DoguLogger } from '../logger/logger';
 import { DeviceStatusService } from '../organization/device/device-status.service';
 import { ApplicationService } from '../project/application/application.service';
-import { FindProjectApplicationDto } from '../project/application/dto/application.dto';
 import { RemoteWebDriverInfoService } from '../remote/remote-webdriver/remote-webdriver.service';
 import { WebDriverException } from './webdriver.exception';
 export interface WebDriverEndpointHandlerResult {
@@ -68,25 +66,31 @@ export class WebDriverService {
     if (devices.length === 0) {
       throw new WebDriverException(400, new Error('Device not found'), {});
     }
-    if (!options.appVersion) {
-      throw new WebDriverException(400, new Error('App version not specified'), {});
-    }
+
+    // FIXME: henry - temporary test
+    // if (!options.appVersion) {
+    //   throw new WebDriverException(400, new Error('App version not specified'), {});
+    // }
+
     const randIndex = Math.floor(Math.random() * devices.length);
     const device = devices[randIndex];
     const headers = convertHeaders(request.headers);
 
-    const findAppDto = new FindProjectApplicationDto();
-    findAppDto.version = options.appVersion;
-    findAppDto.extension = extensionFromPlatform(convertWebDriverPlatformToDogu(endpointInfo.capabilities.platformName));
-    const applications = await this.applicationService.getApplicationList(options.organizationId, options.projectId, findAppDto);
-    if (applications.items.length === 0) {
-      throw new WebDriverException(400, new Error('Application not found'), {});
-    }
-    const application = applications.items[0];
-    const applicationUrl = await this.applicationService.getApplicationDownladUrl(application.projectApplicationId, options.organizationId, options.projectId);
+    // FIXME: henry - temporary test
+    // // appium begin
+    // const findAppDto = new FindProjectApplicationDto();
+    // findAppDto.version = options.appVersion;
+    // findAppDto.extension = extensionFromPlatform(convertWebDriverPlatformToDogu(endpointInfo.capabilities.platformName));
+    // const applications = await this.applicationService.getApplicationList(options.organizationId, options.projectId, findAppDto);
+    // if (applications.items.length === 0) {
+    //   throw new WebDriverException(400, new Error('Application not found'), {});
+    // }
+    // const application = applications.items[0];
+    // const applicationUrl = await this.applicationService.getApplicationDownladUrl(application.projectApplicationId, options.organizationId, options.projectId);
 
-    endpointInfo.capabilities.setDoguAppUrl(applicationUrl);
-    endpointInfo.capabilities.setUdid(device.serial);
+    // endpointInfo.capabilities.setDoguAppUrl(applicationUrl);
+    // endpointInfo.capabilities.setUdid(device.serial);
+    // // appium end
 
     return {
       organizationId: options.organizationId,

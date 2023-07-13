@@ -11,12 +11,12 @@ import useEnvironmentStore from '../stores/environment';
 
 const SetupManual = () => {
   const { useApiUrlInput } = useEnvironmentStore((state) => state.features);
-  // const { results, loading, validate } = useManualSetupExternalValidResult();
   const navigate = useNavigate();
 
   useEffect(() => {
     navigate(useApiUrlInput ? '/setup/config' : '/home/connect');
-  }, []);
+  }, [useApiUrlInput]);
+
   return <div></div>;
 
   // if (!loading && !results) {

@@ -10832,6 +10832,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:18.15.11"],\
             ["@types/plist", "npm:3.0.2"],\
             ["@types/rimraf", "npm:3.0.2"],\
+            ["@types/semver", "npm:7.5.0"],\
             ["@types/uuid", "npm:9.0.1"],\
             ["@types/ws", "npm:8.5.4"],\
             ["adbkit-apkreader", "npm:3.2.0"],\
@@ -10851,6 +10852,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["plist", "npm:3.0.6"],\
             ["reflect-metadata", "npm:0.1.13"],\
             ["rxjs", "npm:7.5.6"],\
+            ["semver", "npm:7.5.4"],\
             ["shx", "npm:0.3.4"],\
             ["source-map-support", "npm:0.5.21"],\
             ["systeminformation", "npm:5.17.14"],\
@@ -44061,6 +44063,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/semver-npm-7.5.3-275095dbf3-9d58db1652.zip/node_modules/semver/",\
           "packageDependencies": [\
             ["semver", "npm:7.5.3"],\
+            ["lru-cache", "npm:6.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:7.5.4", {\
+          "packageLocation": "./.yarn/cache/semver-npm-7.5.4-c4ad957fcd-12d8ad952f.zip/node_modules/semver/",\
+          "packageDependencies": [\
+            ["semver", "npm:7.5.4"],\
             ["lru-cache", "npm:6.0.0"]\
           ],\
           "linkType": "HARD"\

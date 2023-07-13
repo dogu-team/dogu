@@ -15,7 +15,7 @@
     "deploy:electron": "ts-node scripts/build",
     "deploy:notarize": "ts-node scripts/build --notarize=true",
     "deploy:publish": "ts-node scripts/build --notarize=true --publish=true",
-    "dev": "nodemon",
+    "dev": "yarn run build:react && nodemon",
     "eject": "react-app-rewired eject",
     "rebuild": "yarn run clean && yarn run build",
     "start": "yarn install && yarn build:electron && concurrently \"cross-env BROWSER=none yarn start:react\" \"wait-on http://127.0.0.1:3333 && electron .\"",

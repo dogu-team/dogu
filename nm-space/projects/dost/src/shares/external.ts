@@ -13,6 +13,7 @@ export const AppiumXcuitestDriverKey = 'appium-xcuitest-driver';
 export const WebDriverAgentBuild = 'web-driver-agent-build';
 export const IosDeviceAgentBuild = 'ios-device-agent-build';
 export const LibiMobileDevice = 'libimobiledevice';
+export const WebdriverManagerKey = 'webdriver-manager';
 
 export const ExternalKey = [
   JdkKey,
@@ -24,6 +25,7 @@ export const ExternalKey = [
   WebDriverAgentBuild,
   IosDeviceAgentBuild,
   LibiMobileDevice,
+  WebdriverManagerKey,
 ] as const;
 export type ExternalKey = (typeof ExternalKey)[number];
 

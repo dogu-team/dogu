@@ -1,4 +1,4 @@
-import { DefaultHttpOptions, DoguRequestTimeoutHeader, HeaderRecord, Method } from '@dogu-tech/common';
+import { DefaultHttpOptions, DoguBrowserNameHeader, DoguRemoteDeviceJobIdHeader, DoguRequestTimeoutHeader, HeaderRecord, Method } from '@dogu-tech/common';
 import { RelayRequest, RelayResponse, WebDriverEndPoint } from '@dogu-tech/device-client-common';
 import { All, Controller, Delete, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
@@ -25,6 +25,11 @@ export class RemoteWebDriverInfoController {
     const processResult = await this.webdriverService.handleNewSessionRequest(endpoint.info, relayRequest);
     const headers: HeaderRecord = {};
     headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout3minutes.toString();
+    /**
+     * FIXME: henry - temporary test
+     */
+    headers[DoguRemoteDeviceJobIdHeader] = 'dogu';
+    headers[DoguBrowserNameHeader] = 'chrome';
 
     const relayResponse = await this.webdriverService.sendRequest(processResult, headers);
     await this.webdriverService.handleNewSessionResponse(processResult, relayResponse);
@@ -43,6 +48,11 @@ export class RemoteWebDriverInfoController {
     const processResult = await this.webdriverService.handleDeleteSessionRequest(endpoint.info, relayRequest);
     const headers: HeaderRecord = {};
     headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout1minutes.toString();
+    /**
+     * FIXME: henry - temporary test
+     */
+    headers[DoguRemoteDeviceJobIdHeader] = 'dogu';
+
     const relayResponse = await this.webdriverService.sendRequest(processResult, headers);
     await this.webdriverService.handleDeleteSessionResponse(processResult, relayResponse);
     this.sendResponse(relayResponse, response);
@@ -61,6 +71,11 @@ export class RemoteWebDriverInfoController {
     const processResult = await this.webdriverService.handleEachSessionRequest(endpoint.info, relayRequest);
     const headers: HeaderRecord = {};
     headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout1minutes.toString();
+    /**
+     * FIXME: henry - test
+     */
+    headers[DoguRemoteDeviceJobIdHeader] = 'dogu';
+
     const relayResponse = await this.webdriverService.sendRequest(processResult, headers);
     this.sendResponse(relayResponse, response);
   }

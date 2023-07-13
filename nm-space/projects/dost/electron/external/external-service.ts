@@ -17,6 +17,7 @@ import { IdaBuildExternalUnit } from './units/ida-build-external-unit';
 import { JdkExternalUnit } from './units/jdk-external-unit';
 import { LibimobledeviceExternalUnit } from './units/libimobiledevice-external-unit';
 import { WdaBuildExternalUnit } from './units/wda-build-external-unit';
+import { WebdriverManagerExternalUnit } from './units/webdriver-manager-external-unit';
 import { XcodeExternalUnit } from './units/xcode-external-unit';
 
 export class ExternalService {
@@ -77,6 +78,7 @@ export class ExternalService {
     this.registerUnit('xcode', () => new XcodeExternalUnit(this.stdLogCallbackService));
     this.registerUnit('appium-xcuitest-driver', (unitCallback) => new AppiumXcUiTestDriverExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, unitCallback));
     this.registerUnit('libimobiledevice', (unitCallback) => new LibimobledeviceExternalUnit(this.stdLogCallbackService, unitCallback));
+    this.registerUnit('webdriver-manager', (unitCallback) => new WebdriverManagerExternalUnit(this.stdLogCallbackService, unitCallback));
     this.registerUnit('web-driver-agent-build', () => new WdaBuildExternalUnit(this.stdLogCallbackService));
     this.registerUnit('ios-device-agent-build', () => new IdaBuildExternalUnit(this.stdLogCallbackService));
   }

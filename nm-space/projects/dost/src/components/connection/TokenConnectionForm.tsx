@@ -1,7 +1,7 @@
 import { Button, Flex, FormControl, FormErrorMessage, FormHelperText, FormLabel, Input, Spacer, useToast } from '@chakra-ui/react';
 import { Code } from '@dogu-private/types';
 import { stringify } from '@dogu-tech/common';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { HostAgentConnectionStatus } from '../../shares/child';
 import useHostAgentConnectionStatusStore from '../../stores/host-agent-connection-status';
@@ -53,6 +53,17 @@ const TokenConnectionForm = (props: Props) => {
 
     setLoading(false);
   };
+
+  useEffect(() => {
+    (async () => {
+      const token = await ipc.appConfigClient.get<string>('DOGU_HOST_TOKEN');
+      if (token) {
+        setValue(token);
+      }
+    })().catch((error) => {
+      ipc.rendererLogger.error(`Get host token failed: ${stringify(error)}`);
+    });
+  }, []);
 
   return (
     <StyledForm id="host-token-form" onSubmit={handleSubmit}>

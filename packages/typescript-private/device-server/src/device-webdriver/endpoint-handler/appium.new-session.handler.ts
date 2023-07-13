@@ -1,39 +1,47 @@
 import { extensionFromPlatform, PlatformType } from '@dogu-private/types';
 import { DefaultHttpOptions, stringify } from '@dogu-tech/common';
-import { convertWebDriverPlatformToDogu, RelayRequest, WebDriverEndPoint } from '@dogu-tech/device-client-common';
+import { convertWebDriverPlatformToDogu, RelayRequest, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
 import { HostPaths } from '@dogu-tech/node';
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
 import stream, { Stream } from 'stream';
 import { v4 as uuidv4 } from 'uuid';
-import { AppiumRemoteContext } from '../appium/appium.remote.context';
-import { DoguLogger } from '../logger/logger';
+import { AppiumRemoteContext } from '../../appium/appium.remote.context';
+import { DoguLogger } from '../../logger/logger';
+import { AppiumEndpointHandler, RegisterAppiumEndpointHandler } from './appium.service';
+import { OnBeforeRequestResult } from './common';
 
-export interface DeviceWebDriverEndpointHandlerResultError {
-  status: number;
-  error: Error;
-  data: Object;
+function getAppExtension(platform: PlatformType): string {
+  return extensionFromPlatform(platform);
 }
 
-export interface DeviceWebDriverEndpointHandlerResultOk {
-  error?: undefined;
-  request: RelayRequest;
+async function postProcessTempFile(platform: PlatformType, tempFilePath: string, destFilePath: string): Promise<void> {
+  const dirPath = path.dirname(destFilePath);
+  await fs.promises.mkdir(dirPath, { recursive: true });
+  await fs.promises.rename(tempFilePath, destFilePath);
 }
 
-export type DeviceWebDriverEndpointHandlerResult = DeviceWebDriverEndpointHandlerResultError | DeviceWebDriverEndpointHandlerResultOk;
+@RegisterAppiumEndpointHandler()
+export class AppiumNewSessionEndpointHandler extends AppiumEndpointHandler {
+  get endpointType(): WebDriverEndpointType {
+    return 'new-session';
+  }
 
-export abstract class DeviceWebDriverEndpointHandler {
-  abstract onRequest(remoteContext: AppiumRemoteContext, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): Promise<DeviceWebDriverEndpointHandlerResult>;
-}
-
-export class DeviceWebDriverNewSessionEndpointHandler extends DeviceWebDriverEndpointHandler {
-  async onRequest(remoteContext: AppiumRemoteContext, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): Promise<DeviceWebDriverEndpointHandlerResult> {
+  async onBeforeRequest(remoteContext: AppiumRemoteContext, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): Promise<OnBeforeRequestResult> {
     if (endpoint.info.type !== 'new-session') {
-      return { status: 400, error: new Error('Internal error. endpoint type is not new-session'), data: {} };
+      return {
+        status: 400,
+        error: new Error('Internal error. endpoint type is not new-session'),
+        data: {},
+      };
     }
     if (!endpoint.info.capabilities.doguOptions.appUrl) {
-      return { status: 400, error: new Error('App url not specified'), data: {} };
+      return {
+        status: 400,
+        error: new Error('App url not specified'),
+        data: {},
+      };
     }
     const platform = convertWebDriverPlatformToDogu(endpoint.info.capabilities.platformName);
     const url = endpoint.info.capabilities.doguOptions.appUrl;
@@ -41,7 +49,11 @@ export class DeviceWebDriverNewSessionEndpointHandler extends DeviceWebDriverEnd
     const extension = getAppExtension(platform);
     const appVersion = endpoint.info.capabilities.doguOptions.appVersion;
     if (!appVersion) {
-      return { status: 400, error: new Error('App version not specified'), data: {} };
+      return {
+        status: 400,
+        error: new Error('App version not specified'),
+        data: {},
+      };
     }
     try {
       remoteContext.sessionId = '';
@@ -54,6 +66,7 @@ export class DeviceWebDriverNewSessionEndpointHandler extends DeviceWebDriverEnd
         headers: {},
         timeout: DefaultHttpOptions.request.timeout,
       });
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       const expectedFileSize = parseInt(headRes.headers['content-length']);
 
       const stat = await fs.promises.stat(filePath).catch(() => null);
@@ -63,7 +76,10 @@ export class DeviceWebDriverNewSessionEndpointHandler extends DeviceWebDriverEnd
           logger.info(`File size local: ${stat.size} expected: ${expectedFileSize}`, { filePath });
           if (stat.size === expectedFileSize) {
             logger.info('File is same size. Skipping download', { filePath });
-            return { request, ...{ reqBody: endpoint.info.capabilities.origin } };
+            return {
+              request,
+              ...{ reqBody: endpoint.info.capabilities.origin },
+            };
           } else {
             logger.info('File is not same size. Deleting file', { filePath });
             await fs.promises.unlink(filePath);
@@ -111,24 +127,4 @@ export class DeviceWebDriverNewSessionEndpointHandler extends DeviceWebDriverEnd
       return { status: 500, error: new Error(stringify(error)), data: {} };
     }
   }
-}
-
-export class DeviceWebDriverSessionEndpointHandler extends DeviceWebDriverEndpointHandler {
-  async onRequest(remoteContext: AppiumRemoteContext, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): Promise<DeviceWebDriverEndpointHandlerResult> {
-    if (endpoint.info.type !== 'session') {
-      return { status: 400, error: new Error('Internal error. endpoint type is not session'), data: {} };
-    }
-    remoteContext.sessionId = endpoint.info.sessionId;
-    return { request };
-  }
-}
-
-function getAppExtension(platform: PlatformType): string {
-  return extensionFromPlatform(platform);
-}
-
-async function postProcessTempFile(platform: PlatformType, tempFilePath: string, destFilePath: string): Promise<void> {
-  const dirPath = path.dirname(destFilePath);
-  await fs.promises.mkdir(dirPath, { recursive: true });
-  await fs.promises.rename(tempFilePath, destFilePath);
 }

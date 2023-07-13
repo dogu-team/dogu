@@ -24,7 +24,7 @@ export class AppiumService implements OnModuleInit {
   private _defaultAppiumContextOptions: DefaultAppiumContextOptions | null = null;
   get defaultAppiumContextOptions(): Readonly<DefaultAppiumContextOptions> {
     if (!this._defaultAppiumContextOptions) {
-      throw new Error('Appium channel options is not initialized');
+      throw new Error('Appium context options is not initialized');
     }
     return this._defaultAppiumContextOptions;
   }
@@ -67,7 +67,7 @@ export class AppiumService implements OnModuleInit {
       javaHomePath,
       serverEnv,
     };
-    this.logger.verbose('Default appium channel options created', {
+    this.logger.verbose('Default appium context options created', {
       defaultAppiumContextOptions: this._defaultAppiumContextOptions,
     });
   }
