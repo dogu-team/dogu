@@ -1,8 +1,9 @@
 import { ProjectApplicationWithIcon } from '@dogu-private/console';
 import { OrganizationId, ProjectId, UserPayload } from '@dogu-private/types';
-import { Controller, Delete, Get, Inject, Param, Put, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Inject, Param, Put, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { InjectDataSource } from '@nestjs/typeorm';
+import path from 'path';
 import { DataSource } from 'typeorm';
 
 import { applicationFileParser } from '../../../utils/file';
@@ -10,7 +11,7 @@ import { PROJECT_ROLE } from '../../auth/auth.types';
 import { ProjectPermission, User } from '../../auth/decorators';
 import { Page } from '../../common/dto/pagination/page';
 import { ApplicationService } from './application.service';
-import { FindProjectApplicationDto } from './dto/application.dto';
+import { FindProjectApplicationDto, UploadSampleAppDto } from './dto/application.dto';
 
 @Controller('organizations/:organizationId/projects')
 export class ApplicationController {
@@ -57,5 +58,30 @@ export class ApplicationController {
   @ProjectPermission(PROJECT_ROLE.WRITE)
   async deleteApplication(@Param('id') id: number, @Param('organizationId') organizationId: string, @Param('projectId') projectId: string) {
     await this.applicationService.deleteApplication(id, organizationId, projectId);
+  }
+
+  @Put(':projectId/applications/samples')
+  @ProjectPermission(PROJECT_ROLE.WRITE)
+  async uploadSampleApp(
+    @User() userPayload: UserPayload,
+    @Param('organizationId') organizationId: OrganizationId,
+    @Param('projectId') projectId: ProjectId,
+    @Body() uploadSmapleAppDto: UploadSampleAppDto,
+  ) {
+    await this.dataSource.transaction(async (manager) => {
+      let appFilePath: string;
+      switch (uploadSmapleAppDto.category) {
+        case 'mobile':
+          appFilePath = path.resolve(__dirname, '../../../../samples/mobile/wikipedia-sample.apk');
+          break;
+        case 'game':
+          appFilePath = path.resolve(__dirname, '../../../../samples/game/dogurpgsample.apk');
+          break;
+        default:
+          throw new BadRequestException('Invalid category');
+      }
+
+      await this.applicationService.uploadSampleApk(manager, appFilePath, userPayload.userId, organizationId, projectId);
+    });
   }
 }

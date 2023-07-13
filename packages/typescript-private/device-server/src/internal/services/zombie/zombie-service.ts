@@ -28,7 +28,7 @@ export class ZombieService {
     }
     this.befTime = Date.now();
     if (0 < this.checkers.length) {
-      logger.verbose(makeLogs(this.checkers));
+      logger.info(makeLogs(this.checkers));
     }
   }
 

@@ -206,7 +206,7 @@ export function parseAndroidShellTop(contents: string): AndroidShellTopInfo {
     for (const f of fields) {
       const splilted = f.trim().split(' ');
       if (2 != splilted.length) {
-        logger.error('parseAndroidShellTop split failed');
+        logger.error(`parseAndroidShellTop split header failed ${l}`);
         continue;
       }
       if (splilted[0] === undefined) continue;
@@ -226,7 +226,7 @@ export function parseAndroidShellTop(contents: string): AndroidShellTopInfo {
     for (const f of fields) {
       const splilted = f.trim().split('%');
       if (2 != splilted.length) {
-        logger.error('parseAndroidShellTop split failed');
+        logger.error(`parseAndroidShellTop split last header failed ${l}`);
         continue;
       }
       if (splilted[0] === undefined) continue;

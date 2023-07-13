@@ -13,7 +13,8 @@ interface Props {
 export interface SignUpBody extends CreateAdminDtoBase {}
 
 export const signUp = async (signupBody: SignUpBody) => {
-  await api.post<void>('/registery/signup', signupBody);
+  const { data } = await api.post<{ organizationId: string }>('/registery/signup', signupBody);
+  return data;
 };
 
 export interface InvitationSignUpBody extends CreateInvitationMemberDtoBase {}

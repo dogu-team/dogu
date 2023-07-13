@@ -1,4 +1,4 @@
-import { LastAccessOrganizationResponse, RegisterySignResult, UserResponse } from '@dogu-private/console';
+import { LastAccessOrganizationResponse, UserResponse } from '@dogu-private/console';
 import { GoogleOAuthPayload, UserPayload } from '@dogu-private/types';
 import { Body, Controller, Get, Head, HttpException, HttpStatus, Inject, NotFoundException, Param, Post, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
@@ -31,8 +31,9 @@ export class RegisteryController {
     @Body() createRootUserDto: CreateAdminDto, //
     @Res({ passthrough: true }) response: Response,
   ): Promise<void> {
-    const { accessToken, refreshToken, userId }: RegisterySignResult = await this.registeryService.signUp(createRootUserDto);
+    const { accessToken, refreshToken, userId, organizationId } = await this.registeryService.signUp(createRootUserDto);
     setSignCookiesInResponse(response, accessToken, refreshToken, userId);
+    response.send({ organizationId });
   }
 
   @Post('signin')
@@ -40,7 +41,7 @@ export class RegisteryController {
     @Body() signInDto: SignInDto, //
     @Res({ passthrough: true }) response: Response<LastAccessOrganizationResponse>,
   ): Promise<void> {
-    const { accessToken, refreshToken, userId }: RegisterySignResult = await this.registeryService.signIn(signInDto);
+    const { accessToken, refreshToken, userId } = await this.registeryService.signIn(signInDto);
     const lastAccessOrganizationId = await this.userService.findLastAccessOrganizationId(signInDto.email);
     const res = setSignCookiesInResponse(response, accessToken, refreshToken, userId);
     res.send({ lastAccessOrganizationId });
@@ -59,9 +60,10 @@ export class RegisteryController {
   @Get('google/callback')
   @GoogleOAuth()
   async googleAuthCallback(@GoogleUser() googleOAuthPayload: GoogleOAuthPayload, @Res() response: Response): Promise<any> {
-    const { accessToken, refreshToken, userId }: RegisterySignResult = await this.registeryService.accessWithThirdParty(googleOAuthPayload);
-    setSignCookiesInResponse(response, accessToken, refreshToken, userId);
-    response.redirect(`${env.DOGU_CONSOLE_URL}`);
+    const result = await this.registeryService.accessWithThirdParty(googleOAuthPayload);
+    setSignCookiesInResponse(response, result.accessToken, result.refreshToken, result.userId);
+    const redirectUrl = 'organizationId' in result ? `${env.DOGU_CONSOLE_URL}/dashboard/${result.organizationId}` : `${env.DOGU_CONSOLE_URL}`;
+    response.redirect(redirectUrl);
   }
 
   @Get('check')

@@ -1,12 +1,12 @@
-import { RegisterySignResult, UserAndVerificationTokenPropCamel, UserAndVerificationTokenPropSnake, UserPropCamel } from '@dogu-private/console';
+import { RegisterySignResult, RegisteryWithOrganizationIdResult, UserAndVerificationTokenPropCamel, UserAndVerificationTokenPropSnake, UserPropCamel } from '@dogu-private/console';
 import { OAuthPayLoad, OrganizationId, SNS_TYPE, USER_INVITATION_STATUS, USER_VERIFICATION_STATUS } from '@dogu-private/types';
-import { HttpService } from '@nestjs/axios';
 import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectDataSource } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { DateTime } from 'luxon';
 import { DataSource, EntityManager } from 'typeorm';
+
 import { Token, User, UserEmailPreference } from '../../db/entity/index';
 import { UserAndVerificationToken } from '../../db/entity/relations/user-and-verification-token.entity';
 import { UserSns } from '../../db/entity/user-sns.entity';
@@ -15,6 +15,7 @@ import { SendVerifyEmailDto, VerifyEmailDto } from '../../module/registery/dto/r
 import { TokenService } from '../../module/token/token.service';
 import { AuthJwtService } from '../auth/service/auth-jwt.service';
 import { AuthUserService } from '../auth/service/auth-user.service';
+import { OrganizationService } from '../organization/organization.service';
 import { UserInvitationService } from '../user-invitation/user-invitation.service';
 import { CreateAdminDto, SignInDto } from '../user/dto/user.dto';
 import { UserCreatedEvent } from '../user/events/create-user.event';
@@ -23,7 +24,8 @@ import { createSNSUser, createUser, createUserAndVerificationToken, createUserEm
 @Injectable()
 export class RegisteryService {
   constructor(
-    private readonly httpService: HttpService,
+    @Inject(OrganizationService)
+    private readonly organizationService: OrganizationService,
     @Inject(EmailService)
     private readonly emailService: EmailService,
     @Inject(UserInvitationService)
@@ -37,7 +39,7 @@ export class RegisteryService {
     private eventEmitter: EventEmitter2,
   ) {}
 
-  async signUp(createUserDto: CreateAdminDto): Promise<RegisterySignResult> {
+  async signUp(createUserDto: CreateAdminDto): Promise<RegisteryWithOrganizationIdResult> {
     // create Org Owner
     const { password, name, newsletter, invitationOrganizationId, invitationToken } = createUserDto;
     const email = createUserDto.email.toLowerCase();
@@ -64,6 +66,9 @@ export class RegisteryService {
     const tokenResponse = await this.dataSource.transaction(async (entityManager) => {
       // create user
       const user = await createUser(entityManager, email, password, name);
+
+      // create organization
+      const organization = await this.organizationService.createOrganization(entityManager, user.userId, { name: `${user.name}'s organization` });
 
       // create user email preference
       const userEmailPreference = entityManager.getRepository(UserEmailPreference).create({ userId: user.userId, newsletter: newsletter ? 1 : 0 });
@@ -102,10 +107,11 @@ export class RegisteryService {
       const accessToken = this.authJwtService.makeUserAccessToken(user.userId);
       const refreshToken = await this.authService.createRefreshToken(entityManager, user.userId);
 
-      const rv: RegisterySignResult = {
+      const rv: RegisteryWithOrganizationIdResult = {
         accessToken: accessToken,
         refreshToken: refreshToken,
         userId: user.userId,
+        organizationId: organization.organizationId,
       };
 
       return rv;
@@ -162,7 +168,7 @@ export class RegisteryService {
     await createSNSUser(manager, userId, userSnsId, snsType);
   }
 
-  async signUpWithThirdParty(oauthPayload: OAuthPayLoad): Promise<RegisterySignResult> {
+  async signUpWithThirdParty(oauthPayload: OAuthPayLoad): Promise<RegisteryWithOrganizationIdResult> {
     const { email, userSnsId, snsType, name } = oauthPayload;
     const user = await this.dataSource.getRepository(User).findOne({ where: { email }, relations: [UserPropCamel.userAndVerificationToken] });
 
@@ -176,10 +182,11 @@ export class RegisteryService {
 
         const accessToken = this.authJwtService.makeUserAccessToken(user.userId);
         const refreshToken = await this.authService.createRefreshToken(manager, user.userId);
-        const rv: RegisterySignResult = {
+        const rv: RegisteryWithOrganizationIdResult = {
           accessToken: accessToken,
           refreshToken: refreshToken,
           userId: user.userId,
+          organizationId: '',
         };
         return rv;
       });
@@ -193,6 +200,9 @@ export class RegisteryService {
 
       const snsUser = await createSNSUser(manager, user.userId, userSnsId, snsType);
 
+      // create organization
+      const organization = await this.organizationService.createOrganization(manager, user.userId, { name: `${user.name}'s organization` });
+
       await createUserEmailPreference(manager, user.userId, true);
       await createUserAndVerificationToken(manager, user.userId, null, USER_VERIFICATION_STATUS.VERIFIED);
 
@@ -201,10 +211,11 @@ export class RegisteryService {
       const accessToken = this.authJwtService.makeUserAccessToken(user.userId);
       const refreshToken = await this.authService.createRefreshToken(manager, user.userId);
 
-      const rv: RegisterySignResult = {
+      const rv: RegisteryWithOrganizationIdResult = {
         accessToken: accessToken,
         refreshToken: refreshToken,
         userId: user.userId,
+        organizationId: organization.organizationId,
       };
 
       return rv;
@@ -234,7 +245,7 @@ export class RegisteryService {
     return rv;
   }
 
-  async accessWithThirdParty(oauthPayload: OAuthPayLoad): Promise<RegisterySignResult> {
+  async accessWithThirdParty(oauthPayload: OAuthPayLoad): Promise<RegisterySignResult | RegisteryWithOrganizationIdResult> {
     const { email, userSnsId, snsType, name } = oauthPayload;
 
     const snsUser = await this.dataSource.getRepository(UserSns).findOne({ where: { userSnsId } });

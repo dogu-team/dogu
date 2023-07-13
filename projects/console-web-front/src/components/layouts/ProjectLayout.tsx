@@ -167,7 +167,7 @@ const Page = styled.div`
   flex: 1;
   flex-direction: column;
   justify-content: space-between;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
 `;
 
 const PageInner = styled.div<{ hasSidebar: boolean }>`

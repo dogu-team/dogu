@@ -17,7 +17,7 @@ import { DoguLogger } from '../logger/logger';
 import { DeviceStatusService } from '../organization/device/device-status.service';
 import { ApplicationService } from '../project/application/application.service';
 import { FindProjectApplicationDto } from '../project/application/dto/application.dto';
-import { DeviceWebDriverService } from './device-webdriver.service';
+import { RemoteWebDriverInfoService } from '../remote/remote-webdriver/remote-webdriver.service';
 import { WebDriverException } from './webdriver.exception';
 export interface WebDriverEndpointHandlerResult {
   error?: undefined;
@@ -33,13 +33,13 @@ export class WebDriverService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly deviceStatusService: DeviceStatusService,
-    private readonly deviceWebDriverService: DeviceWebDriverService,
+    private readonly remoteWebDriverService: RemoteWebDriverInfoService,
     private readonly deviceMessageRelayer: DeviceMessageRelayer,
     private readonly applicationService: ApplicationService,
     private readonly logger: DoguLogger,
   ) {}
 
-  async sendRequest(processResult: WebDriverEndpointHandlerResult): Promise<RelayResponse> {
+  async sendRequest(processResult: WebDriverEndpointHandlerResult, headers: HeaderRecord = {}): Promise<RelayResponse> {
     try {
       const pathProvider = new DeviceWebDriver.relayHttp.pathProvider(processResult.serial);
       const path = DeviceWebDriver.relayHttp.resolvePath(pathProvider);
@@ -48,7 +48,7 @@ export class WebDriverService {
         processResult.deviceId,
         DeviceWebDriver.relayHttp.method,
         path,
-        undefined,
+        headers,
         undefined,
         processResult.request,
         DeviceWebDriver.relayHttp.responseBodyData,
@@ -112,7 +112,7 @@ export class WebDriverService {
     }
 
     await this.dataSource.transaction(async (manager) => {
-      await this.deviceWebDriverService.createSessionToDevice(manager, handleResult.deviceId, { sessionId: sessionId });
+      await this.remoteWebDriverService.createSessionToDevice(manager, handleResult.deviceId, { sessionId: sessionId });
     });
   }
 
@@ -122,7 +122,7 @@ export class WebDriverService {
       throw new WebDriverException(400, new Error('empty session path'), {});
     }
     const { organizationId, deviceId, serial } = await this.dataSource.transaction(async (manager) => {
-      const deviceId = await this.deviceWebDriverService.findDeviceBySessionIdAndMark(manager, sessionId);
+      const deviceId = await this.remoteWebDriverService.findDeviceBySessionIdAndMark(manager, sessionId);
       const device = await this.deviceStatusService.findDevice(deviceId);
       return {
         organizationId: device.organizationId,
@@ -157,7 +157,7 @@ export class WebDriverService {
     }
 
     await this.dataSource.transaction(async (manager) => {
-      await this.deviceWebDriverService.deleteSession(manager, sessionId);
+      await this.remoteWebDriverService.deleteSession(manager, sessionId);
     });
 
     const pathProvider = new DeviceWebDriver.sessionDeleted.pathProvider(handleResult.serial);
@@ -180,7 +180,7 @@ export class WebDriverService {
       throw new WebDriverException(400, new Error('empty session path'), {});
     }
     const { organizationId, deviceId, serial } = await this.dataSource.transaction(async (manager) => {
-      const deviceId = await this.deviceWebDriverService.findDeviceBySessionIdAndMark(manager, sessionId);
+      const deviceId = await this.remoteWebDriverService.findDeviceBySessionIdAndMark(manager, sessionId);
       const device = await this.deviceStatusService.findDevice(deviceId);
       return {
         organizationId: device.organizationId,

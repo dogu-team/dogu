@@ -18,6 +18,7 @@ import { sendErrorNotification } from '../../src/utils/antd';
 import { getErrorMessage } from '../../src/utils/error';
 import SocialSignInForm from '../../src/components/social-signin/SocialSignInForm';
 import { redirectWithLocale } from '../../src/ssr/locale';
+import Cookies from 'universal-cookie';
 
 const SignUpPage: NextPageWithLayout = () => {
   const { t } = useTranslation();
@@ -25,7 +26,9 @@ const SignUpPage: NextPageWithLayout = () => {
 
   const handleSignUp = useCallback(async (email: string, name: string, password: string, newsletter: boolean) => {
     try {
-      await signUp({ email, name, password, newsletter: newsletter ?? false });
+      const { organizationId } = await signUp({ email, name, password, newsletter: newsletter ?? false });
+      const cookies = new Cookies();
+      cookies.set('newOrgId', organizationId, { path: '/' });
       router.push('/auth/entry');
     } catch (e) {
       if (e instanceof AxiosError) {

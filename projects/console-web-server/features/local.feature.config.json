@@ -3,7 +3,7 @@
   "useSampleProject": true,
   "emailVerification": false,
   "rdbSslConnection": false,
-  "cookieSecure": true,
+  "cookieSecure": false,
   "forceInvitation": false,
   "thirdPartyLogin": true
 }

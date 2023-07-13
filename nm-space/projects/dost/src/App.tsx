@@ -64,14 +64,6 @@ function App() {
       } catch (e) {
         ipc.rendererLogger.error(`Error while getting platform in App: ${stringify(e)}`);
       }
-      try {
-        const token = (await ipc.appConfigClient.get('DOGU_HOST_TOKEN')) as string;
-        if (token && token.length > 0) {
-          await ipc.childClient.connect(token);
-        }
-      } catch (e) {
-        ipc.rendererLogger.error(`Error while connecting to host agent in App: ${stringify(e)}`);
-      }
     })();
   }, []);
 

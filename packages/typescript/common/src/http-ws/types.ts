@@ -5,5 +5,6 @@ export type Path = `/${string}`;
 
 // export type Headers = Record<string, string | string[]>;
 export type HeaderRecord = Record<string, string>;
+export const DoguRequestTimeoutHeader = 'dogu-request-timeout';
 
 export type Query = Record<string, unknown>;

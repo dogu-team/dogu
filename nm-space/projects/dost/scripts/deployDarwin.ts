@@ -102,18 +102,7 @@ async function notaryDmg(dmgFilePath: string): Promise<string> {
 export async function signThirdParties(): Promise<void> {
   const { stdout, stderr } = await spawnAndOutputs('dot_clean', [ThirdPartyPath], {});
   const darwinPath = path.resolve(ThirdPartyPath, 'darwin');
-  const files = [
-    path.resolve(darwinPath, 'arm64/lib/libimobiledevice/libcrypto.1.1.dylib'),
-    path.resolve(darwinPath, 'arm64/lib/libimobiledevice/libimobiledevice-1.0.6.dylib'),
-    path.resolve(darwinPath, 'arm64/lib/libimobiledevice/libplist-2.0.3.dylib'),
-    path.resolve(darwinPath, 'arm64/lib/libimobiledevice/libssl.1.1.dylib'),
-    path.resolve(darwinPath, 'arm64/lib/libimobiledevice/libusbmuxd-2.0.6.dylib'),
-    path.resolve(darwinPath, 'x64/lib/libimobiledevice/libcrypto.1.1.dylib'),
-    path.resolve(darwinPath, 'x64/lib/libimobiledevice/libimobiledevice-1.0.6.dylib'),
-    path.resolve(darwinPath, 'x64/lib/libimobiledevice/libplist-2.0.3.dylib'),
-    path.resolve(darwinPath, 'x64/lib/libimobiledevice/libssl.1.1.dylib'),
-    path.resolve(darwinPath, 'x64/lib/libimobiledevice/libusbmuxd-2.0.6.dylib'),
-  ];
+  const files: string[] = [];
   for (const file of files) {
     await sign(file);
   }

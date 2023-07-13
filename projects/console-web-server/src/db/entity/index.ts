@@ -11,7 +11,6 @@ export * from './pipeline.entity';
 export * from './project.entity';
 export * from './relations/dest-edge.entity';
 export * from './relations/device-and-device-tag.entity';
-export * from './relations/device-and-webdriver.entity';
 export * from './relations/job-edge.entity';
 export * from './relations/organization-and-user-and-organization-role.entity';
 export * from './relations/organization-and-user-and-team.entity';

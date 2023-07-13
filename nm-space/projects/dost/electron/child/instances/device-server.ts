@@ -1,3 +1,4 @@
+import { isFreePort } from '@dogu-private/device-server';
 import { ChildCode } from '@dogu-private/dost-children';
 import { Code } from '@dogu-private/types';
 import { delay } from '@dogu-tech/common';
@@ -46,6 +47,7 @@ export class DeviceServerChild implements Child {
           DOGU_LOG_LEVEL,
         },
       },
+      childLogger: logger,
     });
     this._child = openChild(deviceServerKey, DeviceServerMainScriptPath, options, this.featureConfigService);
     this._child.stderr?.on('data', (data) => {
@@ -76,12 +78,23 @@ export class DeviceServerChild implements Child {
     if (!this._child) {
       return;
     }
-    await closeChild(deviceServerKey, this._child);
+    await closeChild(deviceServerKey, this._child, logger);
     this._child = undefined;
   }
 
-  isActive(): Promise<boolean> {
-    return Promise.resolve(this._child !== undefined);
+  async isActive(): Promise<boolean> {
+    if (!this._child) {
+      return false;
+    }
+    const DOGU_DEVICE_SERVER_PORT = await this.appConfigService.get('DOGU_DEVICE_SERVER_PORT');
+    if (!DOGU_DEVICE_SERVER_PORT) {
+      return false;
+    }
+    const isFree = await isFreePort(DOGU_DEVICE_SERVER_PORT);
+    if (isFree) {
+      return false;
+    }
+    return true;
   }
 
   lastError(): ChildLastError | undefined {

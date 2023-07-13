@@ -12,7 +12,7 @@
   "deviceTableHostColumn": "Host",
 
   "deviceItemStreamingMenu": "Streaming",
-  "deviceItemEditMenu": "Edit name",
+  "deviceItemSettingMenu": "Settings",
   "deviceItemEditTagMenu": "Edit tags",
   "deviceItemEditProejctMenu": "Edit projects",
   "deviceItemRebootMenu": "Reboot",
@@ -20,11 +20,13 @@
   "deviceItemStartUseMenu": "Start using",
   "deviceItemDeleteFromProjectMenu": "Delete from project",
 
-  "deviceEditModalTitle": "Edit device",
-  "deviceEditSuccessMsg": "Updated!",
-  "deviceEditFailureMsg": "Failed to update.\n{{message}}",
-  "deviceEditNameLabelText": "Device name",
-  "deviceEditNameRequiredMsg": "Input device name",
+  "deviceSettingModalTitle": "Device settings",
+  "deviceSettingSuccessMsg": "Updated!",
+  "deviceSettingFailureMsg": "Failed to update.\n{{message}}",
+  "deviceSettingNameLabelText": "Device name",
+  "deviceSettingNameRequiredMsg": "Input device name",
+  "deviceSettingMaxParallelJobLabelText": "Max parallel jobs count <span>(Only host device can change this value.)</span>",
+  "deviceSettingMaxParallelJobErrorMsg": "Max parallel jobs count must be a number between 1 and 16",
 
   "deviceEditTagModalTitle": "Edit device tags",
   "deviceEditTagSearchTitle": "Search tags",
