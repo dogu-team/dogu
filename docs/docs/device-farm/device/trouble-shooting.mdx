@@ -55,9 +55,13 @@ import xcode_wda_running from '@site/static/img/dost/xcode_wda_running.png';
 
 1. Please refer to the [Register a single device](https://developer.apple.com/help/account/register-devices/register-a-single-device) document to ensure that the device is registered to your Apple Developer account..
 
+   - Rebuild is required if the device is newly registered.
+
 2. Please check if all iOS Settings items are completed in Dogu Agent.
 
    <img src={dost_ios_settings} style={{ width: 500 }} />
+
+   - If you are using Automatically manage signing, please delete files in $HOME/Library/MobileDevice/Provisioning Profiles folder before rebuild..
 
    - Run `Rebuild & Check` to see if the current build is not being built due to an unexpected error (ex. certificate expiration).
    - Click the `Open WebDriverAgent project` button to open the WebDriverAgent project, set the Target to WebDriverAgentRunner and the Target Device to the device with the problem, run a test build, and check if the app runs normally on the device.
