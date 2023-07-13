@@ -11,84 +11,55 @@ import Admonition from '@theme/Admonition';
 On this page, we cover the configuration process to smoothly register a [`device`](/device-farm#device) in the console.
 
 <Tabs defaultValue="android">
-  <TabItem value="windows" label="Windows" default>
-    <ul>
-      <li>If Dogu Agent is installed and running, there is nothing more to do.</li>
-    </ul>
-  </TabItem>
-  <TabItem value="macos" label="macOS">
-    <ul>
-      <li>
-        If Dogu Agent is installed, please check if you have agreed to all the&nbsp;
-        <a href="/device-farm/host/get-started">Permissions</a>.
-      </li>
-    </ul>
-  </TabItem>
-  <TabItem value="android" label="Android">
-    <h2>Android</h2>
-    <h3>Requirements</h3>
-    <ul>
-      <li>Android 8.0 or higher</li>
-    </ul>
-    <h3>Configuration</h3>
-    <ul>
-      <li>
-        Connect your Android device to your PC using a USB cable and keep it
-        connected
-      </li>
-      <ul>
-        <li>Use a USB cable that supports data transfer.</li>
-      </ul>
-      <li>
-        Enable{' '}
-        <a href="https://developer.android.com/studio/debug/dev-options">
-          Developer options
-        </a>
-      </li>
-      <li>
-        Enable{' '}
-        <a href="https://developer.android.com/studio/run/device#setting-up">
-          USB debugging
-        </a>
-      </li>
-      <li>
-        When a message <code>"Allow USB debugging?"</code> appears on the device
-        screen, check <code>"Always allow from this computer"</code> and click
-        <code>confirm</code> button to grant permission
-      </li>
-      <li>Disable voice recognition features such as Google Assistant</li>
-      <li>Please disable the password assigned to your device.</li>
-    </ul>
-  </TabItem>
-  <TabItem value="ios" label="iOS">
-    <h2>iOS</h2>
-    <h3>Requirements</h3>
-    <ul>
-      <li>iOS 14.0 or higher</li>
-    </ul>
-    <h3>Configuration</h3>
-    <ul>
-      <li>
-        Connect your iOS device to your macOS using a USB cable and keep it
-        connected
-      </li>
-      <li>
-        When a message
-        <code>
-          <a href="https://support.apple.com/en-us/HT202778">
-            Trust This Computer?
-          </a>
-        </code>
-        appears on the device screen, click <code>Trust</code> button to grant
-        permission
-      </li>
-      <li>Please disable the password assigned to your device.</li>
-      <li>
-        Disable screen auto-lock on your device. Brightness if you want to save
-        energy lower it please
-      </li>
-    </ul>
-  </TabItem>
+<TabItem value="windows" label="Windows" default>
+
+- If Dogu Agent is installed and running, there is nothing more to do.
+
+</TabItem>
+<TabItem value="macos" label="macOS">
+
+- If Dogu Agent is installed, please check if you have agreed to all the [Permissions](/device-farm/host/get-started)
+
+</TabItem>
+<TabItem value="android" label="Android">
+
+## Android
+
+### Requirements
+
+- Android 8.0 or higher
+
+### Configuration
+
+- ↔ Connect your Android device to your PC using a USB cable and keep it connected
+  - Use a USB cable that supports data transfer.
+- 🔍 Enable [Developer options](https://developer.android.com/studio/debug/dev-options)
+- 🐛 Enable [USB debugging](https://developer.android.com/studio/run/device#setting-up)
+  - When a message `"Allow USB debugging?"` appears on the device screen, check `"Always allow from this computer"` and click `confirm` button to grant permission
+- 😌 Please disable voice recognition functions such as Google Assistant.
+- 🔓 Please disable your password.
+- 📱 Disable screen auto-lock.
+- 🔅 Lowering the brightness helps save energy.
+
+</TabItem>
+<TabItem value="ios" label="iOS">
+
+## iOS
+
+### Requirements
+
+- iOS 14.0 or higher
+
+### Configuration
+
+- ↔ Connect your iOS device to your macOS using a USB cable and keep it connected
+  - When a message [`Trust This Computer?`](https://support.apple.com/en-us/HT202778) appears on the device screen, click `Trust` button to grant
+    permission
+- 🔓 Please disable your password.
+- 📱 Disable screen auto-lock.
+- 🔅 Lowering the brightness helps save energy.
+
+</TabItem>
 </Tabs>
 
 :::info
