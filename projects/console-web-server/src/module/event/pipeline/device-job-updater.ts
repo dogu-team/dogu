@@ -1,5 +1,13 @@
-import { DevicePropCamel, RoutineDeviceJobPropCamel, RoutineDeviceJobPropSnake, RoutineJobPropCamel, RoutinePipelinePropSnake, RoutineStepPropCamel } from '@dogu-private/console';
-import { PIPELINE_STATUS } from '@dogu-private/types';
+import {
+  DevicePropCamel,
+  RemoteDeviceJobPropSnake,
+  RoutineDeviceJobPropCamel,
+  RoutineDeviceJobPropSnake,
+  RoutineJobPropCamel,
+  RoutinePipelinePropSnake,
+  RoutineStepPropCamel,
+} from '@dogu-private/console';
+import { PIPELINE_STATUS, REMOTE_DEVICE_JOB_STATE } from '@dogu-private/types';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import _ from 'lodash';
@@ -7,6 +15,7 @@ import { Brackets, DataSource } from 'typeorm';
 import util from 'util';
 import { config } from '../../../config';
 import { RoutineDeviceJob } from '../../../db/entity/device-job.entity';
+import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
 import { DoguLogger } from '../../logger/logger';
 import { DeviceJobRunner } from '../../routine/pipeline/processor/runner/device-job-runner';
 import { StepRunner } from '../../routine/pipeline/processor/runner/step-runner';
@@ -108,6 +117,12 @@ export class DeviceJobUpdater {
         `deviceJobs.${RoutineDeviceJobPropSnake.status} =:deviceJobsStatus`,
         { deviceJobsStatus: PIPELINE_STATUS.IN_PROGRESS },
       )
+      .leftJoinAndSelect(
+        `device.${DevicePropCamel.remoteDeviceJobs}`, //
+        'remoteDeviceJobs',
+        `remoteDeviceJobs.${RemoteDeviceJobPropSnake.state} =:remoteDeviceJobsState`,
+        { remoteDeviceJobsState: REMOTE_DEVICE_JOB_STATE.IN_PROGRESS },
+      )
       .innerJoinAndSelect(`job.${RoutineJobPropCamel.routinePipeline}`, 'pipeline')
       .orderBy(`deviceJob.${RoutineDeviceJobPropCamel.routineDeviceJobId}`, 'ASC')
       .orderBy(`step.${RoutineStepPropCamel.routineStepId}`, 'ASC')
@@ -119,29 +134,55 @@ export class DeviceJobUpdater {
     }
 
     // group by deviceId
-    const highestPriorityDeviceJobss: RoutineDeviceJob[] = [];
-    const deviceJobGroups = _.groupBy(waitingDeviceJobs, (deviceJob) => deviceJob.device.deviceId);
-    const deviceIdss = Object.keys(deviceJobGroups);
-    deviceIdss.map((deviceId) => {
-      const deviceJobs = deviceJobGroups[deviceId];
-      const maxParallel = deviceJobs[0].device.maxParallelJobs;
-      if (maxParallel === 1) {
-        const deviceJob = deviceJobs.find((deviceJob) => deviceJob.device.deviceId === deviceId);
-        const inProgressDeviceJobs = deviceJob!.device.routineDeviceJobs ?? [];
-        if (inProgressDeviceJobs.length === 0) highestPriorityDeviceJobss.push(deviceJob!);
-      } else {
-        const inProgressDeviceJobs = deviceJobs[0].device.routineDeviceJobs?.length ?? 0;
-        const addableDeviceJobCount = maxParallel - inProgressDeviceJobs;
-        // sort by priority
-        const sortedDeviceJobs = deviceJobs.sort((a, b) => {
-          return a.routineDeviceJobId - b.routineDeviceJobId;
-        });
-        const addableDeviceJobs = sortedDeviceJobs.slice(0, addableDeviceJobCount);
-        highestPriorityDeviceJobss.push(...addableDeviceJobs);
-      }
-    });
+    const highestPriorityDeviceJobs: RoutineDeviceJob[] = [];
+    const deviceJobGroups = _.groupBy(waitingDeviceJobs, (deviceJob) => deviceJob.deviceId);
+    const deviceIds = Object.keys(deviceJobGroups);
 
-    for (const deviceJob of highestPriorityDeviceJobss) {
+    for (const deviceId of deviceIds) {
+      const waitingRoutineDeviceJobsByDeviceId = deviceJobGroups[deviceId];
+      const waitingRemoteDeviceJobsByDeviceId = await this.dataSource.getRepository(RemoteDeviceJob).find({
+        where: {
+          deviceId,
+          state: REMOTE_DEVICE_JOB_STATE.WAITING,
+        },
+      });
+
+      const maxParallel = waitingRoutineDeviceJobsByDeviceId[0].device.maxParallelJobs;
+      if (maxParallel === 1) {
+        const deviceJob = waitingRoutineDeviceJobsByDeviceId.find((deviceJob) => deviceJob.device.deviceId === deviceId);
+        const inProgressDeviceJobs = deviceJob!.device.routineDeviceJobs ?? [];
+        const inProgressRemoteDeviceJobs = deviceJob!.device.remoteDeviceJobs ?? [];
+        const totalInProgressDeviceJobs = inProgressDeviceJobs.length + inProgressRemoteDeviceJobs.length;
+        if (totalInProgressDeviceJobs === 0) highestPriorityDeviceJobs.push(deviceJob!);
+      } else {
+        const inProgressDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0].device.routineDeviceJobs?.length ?? 0;
+        const inProgressRemoteDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0].device.remoteDeviceJobs?.length ?? 0;
+        const addableDeviceJobCount = maxParallel - inProgressDeviceJobs - inProgressRemoteDeviceJobs;
+
+        const allWaingDeviceJobs = [...waitingRoutineDeviceJobsByDeviceId, ...waitingRemoteDeviceJobsByDeviceId];
+
+        // sort by createdAt
+        const sortedDeviceJobs = allWaingDeviceJobs.sort((a, b) => {
+          return a.createdAt.getTime() - b.createdAt.getTime();
+        });
+
+        let pushCount = 0;
+        for (const deviceJob of sortedDeviceJobs) {
+          if (deviceJob instanceof RemoteDeviceJob) {
+            break;
+          }
+
+          if (pushCount >= addableDeviceJobCount) {
+            break;
+          }
+
+          highestPriorityDeviceJobs.push(deviceJob);
+          pushCount++;
+        }
+      }
+    }
+
+    for (const deviceJob of highestPriorityDeviceJobs) {
       const { device } = deviceJob;
       const { deviceId, organizationId } = device;
       const steps = deviceJob.routineSteps;

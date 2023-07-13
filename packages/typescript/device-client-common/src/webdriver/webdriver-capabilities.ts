@@ -1,6 +1,6 @@
 import { IsFilledString, transformAndValidate } from '@dogu-tech/common';
 import { Serial } from '@dogu-tech/types';
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, Validate } from 'class-validator';
 import _ from 'lodash';
 
 export interface WebDriverCapabilitiesOrigin {
@@ -80,12 +80,27 @@ export class DoguWebDriverOptions {
   @IsFilledString()
   accessKey!: string;
 
-  @IsFilledString()
-  tag!: string;
+  @Validate((value: unknown) => {
+    if (typeof value === 'string') {
+      return true;
+    } else if (Array.isArray(value)) {
+      return value.every((v) => typeof v === 'string');
+    } else {
+      return false;
+    }
+  })
+  'runs-on'!: string | string[];
 
   @IsString()
   @IsOptional()
   appVersion?: string;
+
+  /**
+   * @note this is added from console-web-server
+   */
+  @IsString()
+  @IsOptional()
+  appUrl?: string;
 
   /**
    * @default undefined
@@ -100,11 +115,4 @@ export class DoguWebDriverOptions {
   @IsString()
   @IsOptional()
   browserVersion?: string;
-
-  /**
-   * @note this is added from console-web-server
-   */
-  @IsString()
-  @IsOptional()
-  appUrl?: string;
 }

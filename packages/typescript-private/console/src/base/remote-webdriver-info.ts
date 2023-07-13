@@ -1,4 +1,4 @@
-import { RemoteId, RemoteWebDriverInfoId, WebDriverSessionId } from '@dogu-private/types';
+import { RemoteId, RemoteWebDriverInfoId } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 import { RemoteBase } from './remote';
 
@@ -9,7 +9,6 @@ interface RemoteWebDriverInfoRelationTraits {
 interface RemoteWebDriverInfoBaseTraits {
   remoteWebDriverInfoId: RemoteWebDriverInfoId;
   remoteId: RemoteId;
-  sessionId: WebDriverSessionId;
   browserName: string | null;
   browserVersion: string | null;
   createdAt: Date;

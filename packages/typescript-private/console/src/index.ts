@@ -29,6 +29,8 @@ export * from './base/project-role';
 export * from './base/project-scm';
 export * from './base/project-scm-github-auth';
 export * from './base/project-scm-gitlab-auth';
+export * from './base/remote';
+export * from './base/remote-device-job';
 export * from './base/remote-webdriver-info';
 export * from './base/routine';
 export * from './base/routine-device-job';

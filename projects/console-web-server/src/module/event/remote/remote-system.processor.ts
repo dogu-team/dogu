@@ -3,15 +3,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
 import { config } from '../../../config';
 import { DoguLogger } from '../../logger/logger';
-import { DeviceConnectionUpdater } from './device-connection-updater';
-import { HostConnectionUpdater } from './host-connection-updater';
+import { RemoteDeviceJobUpdater } from './remote-device-job-updater';
 
 @Injectable()
-export class HeartBeatSystemProcessor {
+export class RemoteSystemProcessor {
   constructor(
     @InjectRedis() private readonly redis: Redis,
-    @Inject(DeviceConnectionUpdater) private readonly deviceConnectionUpdater: DeviceConnectionUpdater,
-    @Inject(HostConnectionUpdater) private readonly hostConnectionUpdater: HostConnectionUpdater,
+    @Inject(RemoteDeviceJobUpdater) private readonly remoteDeviceJobUpdater: RemoteDeviceJobUpdater,
     private readonly logger: DoguLogger,
   ) {}
 
@@ -25,7 +23,6 @@ export class HeartBeatSystemProcessor {
     if (value === null) {
       return;
     }
-    this.deviceConnectionUpdater.update();
-    this.hostConnectionUpdater.update();
+    await this.remoteDeviceJobUpdater.update();
   }
 }

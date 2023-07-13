@@ -1,4 +1,4 @@
-import { DeviceId, RemoteId, REMOTE_TYPE } from '@dogu-private/types';
+import { ProjectId, RemoteId, REMOTE_TYPE } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 import { RemoteWebDriverInfoBase } from '..';
 
@@ -8,9 +8,9 @@ interface RemoteRelationTraits {
 
 export interface RemoteBaseTraits {
   remoteId: RemoteId;
-  deviceId: DeviceId;
+  projectId: ProjectId;
+  // runsOn: string;
   type: REMOTE_TYPE;
-  heartbeat: Date | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

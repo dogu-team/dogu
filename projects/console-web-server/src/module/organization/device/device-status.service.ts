@@ -21,6 +21,7 @@ import {
   PlatformType,
   platformTypeFromPlatform,
   ProjectId,
+  REMOTE_DEVICE_JOB_STATE,
   Serial,
   UserPayload,
   validateMaxParallelJobs,
@@ -72,6 +73,9 @@ export class DeviceStatusService {
       .leftJoinAndSelect(`projectAndDevice.${ProjectAndDevicePropCamel.project}`, 'project')
       .leftJoinAndSelect(`device.${DevicePropCamel.routineDeviceJobs}`, 'deviceJob', `deviceJob.status IN (:...status)`, {
         status: [PIPELINE_STATUS.WAITING, PIPELINE_STATUS.IN_PROGRESS, PIPELINE_STATUS.CANCEL_REQUESTED],
+      })
+      .leftJoinAndSelect(`device.${DevicePropCamel.remoteDeviceJobs}`, 'remoteDeviceJob', `remoteDeviceJob.state IN (:...state)`, {
+        state: [REMOTE_DEVICE_JOB_STATE.WAITING, REMOTE_DEVICE_JOB_STATE.IN_PROGRESS],
       })
       .where('organization.organization_id = :organizationId', { organizationId })
       .andWhere('device.name LIKE :name', { name: `%${dto.deviceName}%` })
@@ -499,5 +503,45 @@ export class DeviceStatusService {
     const devices = await manager.getRepository(Device).find({ where: { deviceId: In(deviceIds), connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED } });
 
     return devices;
+  }
+
+  async sortDevicesByRunningRate(deviceIds: DeviceId[]): Promise<Device[]> {
+    const devicesJoinedByDeviceJobs = await this.dataSource //
+      .getRepository(Device)
+      .createQueryBuilder('device')
+      .leftJoinAndSelect(`device.${DevicePropCamel.routineDeviceJobs}`, 'deviceJob', `deviceJob.status IN (:...status)`, {
+        status: [PIPELINE_STATUS.WAITING, PIPELINE_STATUS.IN_PROGRESS, PIPELINE_STATUS.CANCEL_REQUESTED],
+      })
+      .leftJoinAndSelect(`device.${DevicePropCamel.remoteDeviceJobs}`, 'remoteDeviceJob', `remoteDeviceJob.state IN (:...state)`, {
+        state: [REMOTE_DEVICE_JOB_STATE.WAITING, REMOTE_DEVICE_JOB_STATE.IN_PROGRESS],
+      })
+      .where('device.deviceId IN (:...deviceIds)', { deviceIds })
+      .getMany();
+
+    const devicesJoinedByDeviceJobsFiltered = devicesJoinedByDeviceJobs.filter((device) => {
+      const maxParallelJobs = device.maxParallelJobs;
+      const remoteDeviceJobs = device.remoteDeviceJobs ?? [];
+      const routineDeviceJobs = device.routineDeviceJobs ?? [];
+      const totalCurrentRunningJobs = remoteDeviceJobs.length + routineDeviceJobs.length;
+      return totalCurrentRunningJobs < maxParallelJobs;
+    });
+
+    const devicesSortedByCurrentRunningRate = devicesJoinedByDeviceJobsFiltered.sort((a, b) => {
+      const maxParallelJobsA = a.maxParallelJobs;
+      const remoteDeviceJobsA = a.remoteDeviceJobs ?? [];
+      const routineDeviceJobsA = a.routineDeviceJobs ?? [];
+      const totalCurrentRunningJobsA = remoteDeviceJobsA.length + routineDeviceJobsA.length;
+      const currentRunningRateA = totalCurrentRunningJobsA / maxParallelJobsA;
+
+      const maxParallelJobsB = b.maxParallelJobs;
+      const remoteDeviceJobsB = b.remoteDeviceJobs ?? [];
+      const routineDeviceJobsB = b.routineDeviceJobs ?? [];
+      const totalCurrentRunningJobsB = remoteDeviceJobsB.length + routineDeviceJobsB.length;
+      const currentRunningRateB = totalCurrentRunningJobsB / maxParallelJobsB;
+
+      return currentRunningRateA - currentRunningRateB;
+    });
+
+    return devicesSortedByCurrentRunningRate;
   }
 }

@@ -1,6 +1,6 @@
 import { PrivateProtocol } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
-import { DeviceAndDeviceTagBase, OrganizationBase } from '..';
+import { DeviceAndDeviceTagBase, OrganizationBase, RemoteDeviceJobBase } from '..';
 import { DeviceTagBase } from './device-tag';
 import { HostBase } from './host';
 import { ProjectBase } from './project';
@@ -14,6 +14,7 @@ interface DeviceRelationTraits {
   deviceTags?: DeviceTagBase[];
   projects?: ProjectBase[];
   routineDeviceJobs?: RoutineDeviceJobBase[];
+  remoteDeviceJobs?: RemoteDeviceJobBase[];
   projectAndDevices?: ProjectAndDeviceBase[];
   deviceAndDeviceTags?: DeviceAndDeviceTagBase[];
   organization?: OrganizationBase;

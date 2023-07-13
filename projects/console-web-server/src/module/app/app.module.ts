@@ -29,9 +29,9 @@ import { ProjectRoleModule } from '../project-role/project-role.module';
 import { ProjectModule } from '../project/project.module';
 import { PublicModule } from '../public/public.module';
 import { RegisteryModule } from '../registery/registery.module';
+import { RemoteModule } from '../remote/remote.module';
 import { RoutineModule } from '../routine/routine.module';
 import { UserModule } from '../user/user.module';
-import { WebDriverModule } from '../webdriver/webdriver.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
@@ -70,7 +70,7 @@ const IMPORT_MODULES = [
   FeatureFileModule,
   AuthModule,
   FileModule,
-  WebDriverModule,
+  RemoteModule,
 ];
 
 @Module({

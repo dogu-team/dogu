@@ -1,6 +1,6 @@
 import { RemoteWebDriverInfoBase, RemoteWebDriverInfoPropSnake } from '@dogu-private/console';
 import { RemotePropCamel } from '@dogu-private/console/src/base/remote';
-import { RemoteId, RemoteWebDriverInfoId, REMOTE_WEBDRIVER_INFO_TABLE_NAME, WebDriverSessionId } from '@dogu-private/types';
+import { RemoteId, RemoteWebDriverInfoId, REMOTE_WEBDRIVER_INFO_TABLE_NAME } from '@dogu-private/types';
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { Remote } from './remote.entity';
@@ -12,9 +12,6 @@ export class RemoteWebDriverInfo extends BaseEntity implements RemoteWebDriverIn
 
   @ColumnTemplate.RelationUuid(RemoteWebDriverInfoPropSnake.remote_id)
   remoteId!: RemoteId;
-
-  @Column({ type: 'uuid', name: RemoteWebDriverInfoPropSnake.session_id, nullable: false, unique: true })
-  sessionId!: WebDriverSessionId;
 
   @Column({ type: 'character varying', name: `${RemoteWebDriverInfoPropSnake.browser_name}`, nullable: true })
   browserName!: string | null;
