@@ -13,7 +13,9 @@ import ios_devices_simulators_view from '@site/static/img/dost/ios_devices_simul
 import ios_devices_simulators_alert from '@site/static/img/dost/ios_devices_simulators_alert.png';
 
 import xcode_ida_testbuild from '@site/static/img/dost/xcode_ida_testbuild.png';
+import xcode_ida_running from '@site/static/img/dost/xcode_ida_running.png';
 import xcode_wda_testbuild from '@site/static/img/dost/xcode_wda_testbuild.png';
+import xcode_wda_running from '@site/static/img/dost/xcode_wda_running.png';
 
 ## Checking device connection
 
@@ -51,7 +53,9 @@ import xcode_wda_testbuild from '@site/static/img/dost/xcode_wda_testbuild.png';
 </TabItem>
 <TabItem value="ios" label="iOS" default>
 
-1. Please check if all iOS Settings items are completed in Dogu Agent.
+1. Please refer to the [Register a single device](https://developer.apple.com/help/account/register-devices/register-a-single-device) document to ensure that the device is registered to your Apple Developer account..
+
+2. Please check if all iOS Settings items are completed in Dogu Agent.
 
    <img src={dost_ios_settings} style={{ width: 500 }} />
 
@@ -60,10 +64,19 @@ import xcode_wda_testbuild from '@site/static/img/dost/xcode_wda_testbuild.png';
 
      <img src={xcode_wda_testbuild} style={{ width: 450 }} />
 
+   - If you see Testing WebDriverAgentRunner as below, it's OK.
+
+     <img src={xcode_wda_running} style={{ width: 600 }} />
+
    - Click the `Open iOSDeviceAgent project` button, open the iOSDeviceAgent project, set the Target to DoguDevRunner and the Target Device to the device with the problem, run a test build, and check if the app runs normally on the device..
+
      <img src={xcode_ida_testbuild} style={{ width: 450 }} />
 
-2. Click `View Devices and Simulators` in Dogu Agent to launch the Devices window in Xcode..
+     - It's OK if you see Testing DoguDevRunner as below.
+
+     <img src={xcode_ida_running} style={{ width: 600 }} />
+
+3. Click `View Devices and Simulators` in Dogu Agent to launch the Devices window in Xcode..
 
    <img src={dost_ios_view_devices} style={{ width: 450 }} />
 
@@ -75,7 +88,7 @@ import xcode_wda_testbuild from '@site/static/img/dost/xcode_wda_testbuild.png';
 
      <img src={ios_devices_simulators_alert} style={{ width: 500 }} />
 
-3. Make sure Developer is Untrusted on your iOS device.
+4. Make sure Developer is Untrusted on your iOS device.
 
 - Please refer to the [OSXDaily article](https://osxdaily.com/2021/05/07/how-to-trust-an-app-on-iphone-ipad-to-fix-untrusted-developer-message/) to set the current developer to be trusted..
 
