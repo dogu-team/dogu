@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
-import { callAsyncWithTimeout, delay, errorify, NullLogger, Printable, Retry, stringify } from '@dogu-tech/common';
+import { callAsyncWithTimeout, Class, delay, errorify, Instance, NullLogger, Printable, Retry, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, Rect, ScreenSize, SystemBar } from '@dogu-tech/device-client-common';
 import { HostPaths, Logger, TaskQueue, TaskQueueTask } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
@@ -58,7 +58,7 @@ function callClientAsyncWithTimeout<T>(callClientAsync: Promise<T>): Promise<T> 
   return callAsyncWithTimeout(callClientAsync, { timeout: AppiumClientCallAsyncTimeout });
 }
 
-export type AppiumContextKey = 'bulitin' | 'remote' | 'null';
+export type AppiumContextKey = 'builtin' | 'remote' | 'null';
 export type AppiumOpeningState = 'opening' | 'openingSucceeded' | 'openingFailed';
 
 export interface AppiumContext extends Zombieable {
@@ -156,138 +156,6 @@ class NullAppiumContext implements AppiumContext {
   }
 }
 
-export class AppiumContextProxy implements AppiumContext, Zombieable {
-  private readonly logger: Logger;
-  private impl: AppiumContext;
-  private next: AppiumContext | null = null;
-  private nullContext: NullAppiumContext;
-  private taskQueue: TaskQueue<void, void> = new TaskQueue();
-
-  constructor(private readonly options: AppiumContextOptions) {
-    this.logger = createAppiumLogger(options.serial);
-    this.nullContext = new NullAppiumContext(options, this.logger);
-
-    this.impl = AppiumContextProxy.createAppiumContext(options, this.logger);
-    ZombieServiceInstance.addComponent(this.impl);
-  }
-  get name(): string {
-    return 'AppiumContextProxy';
-  }
-  get platform(): Platform {
-    return this.options.platform;
-  }
-  get serial(): string {
-    return this.options.serial;
-  }
-  get printable(): Printable {
-    return this.logger;
-  }
-
-  get props(): ZombieProps {
-    return {};
-  }
-
-  revive(): Promise<void> {
-    return Promise.resolve();
-  }
-
-  async update(): Promise<void> {
-    if (this.impl.key !== 'null' && false === ZombieServiceInstance.isAlive(this.impl)) {
-      this.next = this.impl;
-      this.impl = this.nullContext;
-      return;
-    }
-    if (this.impl.key === 'null' && this.next && ZombieServiceInstance.isAlive(this.next)) {
-      this.impl = this.next;
-    }
-    if (this.impl.key !== 'null' && ZombieServiceInstance.isAlive(this.impl)) {
-      await this.taskQueue.consume();
-      return;
-    }
-    return;
-  }
-
-  onDie(): void {
-    // noop
-  }
-
-  onComponentDeleted(): void {
-    ZombieServiceInstance.deleteComponent(this.impl);
-  }
-
-  get key(): AppiumContextKey {
-    return this.impl.key;
-  }
-
-  get openingState(): AppiumOpeningState {
-    return this.impl.openingState;
-  }
-
-  getInfo(): AppiumContextInfo {
-    return this.impl.getInfo();
-  }
-
-  getAndroid(): Promise<Android | undefined> {
-    return this.impl.getAndroid();
-  }
-
-  getScreenSize(): Promise<ScreenSize> {
-    return this.impl.getScreenSize();
-  }
-
-  switchContext(contextId: string): Promise<void> {
-    return this.impl.switchContext(contextId);
-  }
-
-  getContext(): Promise<string> {
-    return this.impl.getContext();
-  }
-
-  getContexts(): Promise<string[]> {
-    return this.impl.getContexts();
-  }
-
-  getPageSource(): Promise<string> {
-    return this.impl.getPageSource();
-  }
-
-  switchContextAndGetPageSource(contextId: string): Promise<string> {
-    return this.impl.switchContextAndGetPageSource(contextId);
-  }
-
-  getContextPageSources(): Promise<ContextPageSource[]> {
-    return this.impl.getContextPageSources();
-  }
-
-  async switchAppiumContext(key: AppiumContextKey): Promise<void> {
-    const task = new TaskQueueTask(async () => {
-      const befImplKey = this.impl.key;
-      this.logger.info(`switching appium context: from: ${befImplKey}, to: ${key} start`);
-      const befImpl = this.impl;
-      this.impl = this.nullContext;
-      ZombieServiceInstance.deleteComponent(befImpl, 'switching appium context');
-
-      const appiumContext = AppiumContextProxy.createAppiumContext({ ...this.options, key: key }, this.logger);
-      const awaiter = ZombieServiceInstance.addComponent(appiumContext);
-      await awaiter.waitUntilAlive();
-      this.impl = appiumContext;
-      this.logger.info(`switching appium context: from: ${befImplKey}, to: ${key} done`);
-    });
-    await this.taskQueue.scheduleAndWait(task);
-  }
-
-  private static createAppiumContext(options: AppiumContextOptions, logger: Logger): AppiumContext {
-    switch (options.key) {
-      case 'bulitin':
-        return new AppiumContextImpl(options, logger);
-      case 'remote':
-        return new AppiumRemoteContext(options, logger);
-      case 'null':
-        return new NullAppiumContext(options, logger);
-    }
-  }
-}
-
 export interface AppiumData {
   server: {
     port: number;
@@ -352,7 +220,7 @@ export class AppiumContextImpl implements AppiumContext {
   }
 
   get key(): AppiumContextKey {
-    return 'bulitin';
+    return 'builtin';
   }
 
   async revive(): Promise<void> {
@@ -695,5 +563,144 @@ export class AppiumContextImpl implements AppiumContext {
       }
     }
     return contextPageSources;
+  }
+}
+
+const constructorMap = {
+  builtin: AppiumContextImpl,
+  remote: AppiumRemoteContext,
+  null: NullAppiumContext,
+};
+
+export class AppiumContextProxy implements AppiumContext, Zombieable {
+  private readonly logger: Logger;
+  private impl: AppiumContext;
+  private next: AppiumContext | null = null;
+  private nullContext: NullAppiumContext;
+  private taskQueue: TaskQueue<void, void> = new TaskQueue();
+
+  constructor(private readonly options: AppiumContextOptions) {
+    this.logger = createAppiumLogger(options.serial);
+    this.nullContext = new NullAppiumContext(options, this.logger);
+
+    this.impl = AppiumContextProxy.createAppiumContext(options, this.logger);
+    ZombieServiceInstance.addComponent(this.impl);
+  }
+  get name(): string {
+    return 'AppiumContextProxy';
+  }
+  get platform(): Platform {
+    return this.options.platform;
+  }
+  get serial(): string {
+    return this.options.serial;
+  }
+  get printable(): Printable {
+    return this.logger;
+  }
+
+  get props(): ZombieProps {
+    return {};
+  }
+
+  revive(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  async update(): Promise<void> {
+    if (this.impl.key !== 'null' && false === ZombieServiceInstance.isAlive(this.impl)) {
+      this.next = this.impl;
+      this.impl = this.nullContext;
+      return;
+    }
+    if (this.impl.key === 'null' && this.next && ZombieServiceInstance.isAlive(this.next)) {
+      this.impl = this.next;
+    }
+    if (this.impl.key !== 'null' && ZombieServiceInstance.isAlive(this.impl)) {
+      await this.taskQueue.consume();
+      return;
+    }
+    return;
+  }
+
+  onDie(): void {
+    // noop
+  }
+
+  onComponentDeleted(): void {
+    ZombieServiceInstance.deleteComponent(this.impl);
+  }
+
+  get key(): AppiumContextKey {
+    return this.impl.key;
+  }
+
+  get openingState(): AppiumOpeningState {
+    return this.impl.openingState;
+  }
+
+  getInfo(): AppiumContextInfo {
+    return this.impl.getInfo();
+  }
+
+  getAndroid(): Promise<Android | undefined> {
+    return this.impl.getAndroid();
+  }
+
+  getScreenSize(): Promise<ScreenSize> {
+    return this.impl.getScreenSize();
+  }
+
+  switchContext(contextId: string): Promise<void> {
+    return this.impl.switchContext(contextId);
+  }
+
+  getContext(): Promise<string> {
+    return this.impl.getContext();
+  }
+
+  getContexts(): Promise<string[]> {
+    return this.impl.getContexts();
+  }
+
+  getPageSource(): Promise<string> {
+    return this.impl.getPageSource();
+  }
+
+  switchContextAndGetPageSource(contextId: string): Promise<string> {
+    return this.impl.switchContextAndGetPageSource(contextId);
+  }
+
+  getContextPageSources(): Promise<ContextPageSource[]> {
+    return this.impl.getContextPageSources();
+  }
+
+  async switchAppiumContext(key: AppiumContextKey): Promise<void> {
+    const task = new TaskQueueTask(async () => {
+      const befImplKey = this.impl.key;
+      this.logger.info(`switching appium context: from: ${befImplKey}, to: ${key} start`);
+      const befImpl = this.impl;
+      this.impl = this.nullContext;
+      ZombieServiceInstance.deleteComponent(befImpl, 'switching appium context');
+
+      const appiumContext = AppiumContextProxy.createAppiumContext({ ...this.options, key: key }, this.logger);
+      const awaiter = ZombieServiceInstance.addComponent(appiumContext);
+      await awaiter.waitUntilAlive();
+      this.impl = appiumContext;
+      this.logger.info(`switching appium context: from: ${befImplKey}, to: ${key} done`);
+    });
+    await this.taskQueue.scheduleAndWait(task);
+  }
+
+  getImpl<T extends Class<T>>(constructor: T): Instance<T> {
+    if (!(this.impl instanceof constructor)) {
+      throw new Error(`AppiumContextImpl is not instance of ${constructor.name}`);
+    }
+    return this.impl as Instance<T>;
+  }
+
+  private static createAppiumContext(options: AppiumContextOptions, logger: Logger): AppiumContext {
+    const constructor = constructorMap[options.key];
+    return new constructor(options, logger);
   }
 }

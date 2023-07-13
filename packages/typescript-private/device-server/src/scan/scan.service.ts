@@ -5,6 +5,8 @@ import { processPlatform } from '@dogu-tech/node';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { AppiumService } from '../appium/appium.service';
+import { AppiumDeviceWebDriverHandlerService } from '../device-webdriver-handler/appium-device-webdriver-handler.service';
+import { SeleniumDeviceWebDriverHandlerService } from '../device-webdriver-handler/selenium-device-webdriver-handler.service';
 import { env } from '../env';
 import { OnDeviceConnectionSubscriberConnectedEvent, OnDevicesConnectedEvent, OnDevicesDisconnectedEvent, OnUpdateEvent } from '../events';
 import { GamiumService } from '../gamium/gamium.service';
@@ -27,6 +29,8 @@ export class ScanService implements OnModuleInit {
     private readonly logger: DoguLogger,
     private readonly appiumService: AppiumService,
     private readonly gamiumService: GamiumService,
+    private readonly appiumDeviceWebDriverHandlerService: AppiumDeviceWebDriverHandlerService,
+    private readonly seleniumDeviceWebDriverHandlerService: SeleniumDeviceWebDriverHandlerService,
   ) {
     this.deviceDoors = new DeviceDoors({
       onOpen: async (channel: DeviceChannel): Promise<void> => {
@@ -44,7 +48,14 @@ export class ScanService implements OnModuleInit {
 
   async onModuleInit(): Promise<void> {
     const hostPlatform = processPlatform();
-    const factory = createDeviceDriverFactoryByHostPlatform(hostPlatform, env.DOGU_DEVICE_SERVER_PORT, this.appiumService, this.gamiumService);
+    const factory = createDeviceDriverFactoryByHostPlatform(
+      hostPlatform,
+      env.DOGU_DEVICE_SERVER_PORT,
+      this.appiumService,
+      this.gamiumService,
+      this.appiumDeviceWebDriverHandlerService,
+      this.seleniumDeviceWebDriverHandlerService,
+    );
     this.driverMap = await factory.create();
   }
 

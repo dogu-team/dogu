@@ -1,6 +1,7 @@
 import { Platform, Serial } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import systeminformation from 'systeminformation';
+import { SeleniumDeviceWebDriverHandlerService } from '../../device-webdriver-handler/selenium-device-webdriver-handler.service';
 import { GamiumService } from '../../gamium/gamium.service';
 import { logger } from '../../logger/logger.instance';
 import { WindowsChannel } from '../channel/windows-channel';
@@ -12,11 +13,15 @@ import { StreamingService } from '../services/streaming/streaming-service';
 export class WindowsDriver implements DeviceDriver {
   private channelMap = new Map<Serial, WindowsChannel>();
 
-  private constructor(private readonly streamingService: StreamingService, private readonly gamiumService: GamiumService) {}
+  private constructor(
+    private readonly streamingService: StreamingService,
+    private readonly gamiumService: GamiumService,
+    private readonly seleniumWebDriverHandlerService: SeleniumDeviceWebDriverHandlerService,
+  ) {}
 
-  static async create(deviceServerPort: number, gamiumService: GamiumService): Promise<WindowsDriver> {
+  static async create(deviceServerPort: number, gamiumService: GamiumService, seleniumWebDriverHandlerService: SeleniumDeviceWebDriverHandlerService): Promise<WindowsDriver> {
     const streaming = await PionStreamingService.create(Platform.PLATFORM_WINDOWS, deviceServerPort);
-    return new WindowsDriver(streaming, gamiumService);
+    return new WindowsDriver(streaming, gamiumService, seleniumWebDriverHandlerService);
   }
 
   get platform(): Platform {
@@ -29,7 +34,7 @@ export class WindowsDriver implements DeviceDriver {
   }
 
   async openChannel(initParam: DeviceChannelOpenParam): Promise<DeviceChannel> {
-    return await WindowsChannel.create(initParam, this.streamingService, this.gamiumService);
+    return await WindowsChannel.create(initParam, this.streamingService, this.gamiumService, this.seleniumWebDriverHandlerService);
   }
 
   async closeChannel(seial: Serial): Promise<void> {

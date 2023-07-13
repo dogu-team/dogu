@@ -22,6 +22,8 @@ import path from 'path';
 import { Observable } from 'rxjs';
 import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
 import { AppiumService } from '../../appium/appium.service';
+import { AppiumDeviceWebDriverHandlerService } from '../../device-webdriver-handler/appium-device-webdriver-handler.service';
+import { DeviceWebDriverHandler } from '../../device-webdriver-handler/device-webdriver-handler.types';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { GamiumService } from '../../gamium/gamium.service';
 import { createIdaLogger } from '../../logger/logger.instance';
@@ -59,8 +61,8 @@ export class IosChannel implements DeviceChannel {
     private readonly streaming: StreamingService,
     private iosDeviceAgentProcess: IosDeviceAgentProcess,
     private readonly deviceAgent: IosDeviceAgentService,
-    private readonly _appiumService: AppiumService,
     private _appiumContext: AppiumContextProxy,
+    private readonly _appiumDeviceWebDriverHandler: DeviceWebDriverHandler,
     private readonly logger: Printable,
   ) {
     this.logger.info(`IosChannel created: ${this.serial}`);
@@ -82,7 +84,13 @@ export class IosChannel implements DeviceChannel {
     return this._portContext;
   }
 
-  static async create(param: DeviceChannelOpenParam, streaming: StreamingService, appiumService: AppiumService, gamiumService: GamiumService): Promise<IosChannel> {
+  static async create(
+    param: DeviceChannelOpenParam,
+    streaming: StreamingService,
+    appiumService: AppiumService,
+    gamiumService: GamiumService,
+    appiumDeviceWebDriverHandlerService: AppiumDeviceWebDriverHandlerService,
+  ): Promise<IosChannel> {
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === param.serial && zombieable.platform === Platform.PLATFORM_IOS;
     }, 'kill previous zombie');
@@ -96,7 +104,7 @@ export class IosChannel implements DeviceChannel {
     logger.verbose('appium wda privisioning check done');
 
     logger.verbose('appium context starting');
-    const appiumContextProxy = appiumService.createAppiumContext(platform, serial, 'bulitin');
+    const appiumContextProxy = appiumService.createAppiumContext(platform, serial, 'builtin');
     ZombieServiceInstance.addComponent(appiumContextProxy);
     logger.verbose('appium context started');
 
@@ -137,7 +145,10 @@ export class IosChannel implements DeviceChannel {
     });
     logger.verbose('ios system info service started');
 
-    const deviceChannel = new IosChannel(serial, portContext, systemInfo, streaming, iosDeviceAgentProcess, deviceAgent, appiumService, appiumContextProxy, logger);
+    logger.verbose('appium device web driver handler service starting');
+    const appiumDeviceWebDriverHandler = appiumDeviceWebDriverHandlerService.create(platform, serial, appiumContextProxy);
+
+    const deviceChannel = new IosChannel(serial, portContext, systemInfo, streaming, iosDeviceAgentProcess, deviceAgent, appiumContextProxy, appiumDeviceWebDriverHandler, logger);
 
     logger.verbose('streaming service calling deviceConnected');
     await Promise.resolve(
@@ -339,6 +350,10 @@ export class IosChannel implements DeviceChannel {
 
   get gamiumContext(): GamiumContext | null {
     return this._gamiumContext;
+  }
+
+  getWebDriverHandler(): DeviceWebDriverHandler | null {
+    return this._appiumDeviceWebDriverHandler;
   }
 }
 

@@ -20,6 +20,9 @@ import { ChildProcess } from '@dogu-tech/node';
 import { Observable } from 'rxjs';
 import systeminformation from 'systeminformation';
 import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
+import { DeviceWebDriverHandler } from '../../device-webdriver-handler/device-webdriver-handler.types';
+import { SeleniumDeviceWebDriverHandler } from '../../device-webdriver-handler/selenium-device-webdriver-handler.impl';
+import { SeleniumDeviceWebDriverHandlerService } from '../../device-webdriver-handler/selenium-device-webdriver-handler.service';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { logger } from '../../logger/logger.instance';
 import { DeviceChannel, DeviceChannelOpenParam, LogHandler } from '../public/device-channel';
@@ -40,6 +43,7 @@ export class MacosChannel implements DeviceChannel {
     private readonly _profile: ProfileService,
     private readonly _streaming: StreamingService,
     private readonly _deviceAgent: DeviceAgentService,
+    private readonly _seleniumDeviceWebDriverHandler: SeleniumDeviceWebDriverHandler,
   ) {}
 
   get serial(): Serial {
@@ -61,7 +65,12 @@ export class MacosChannel implements DeviceChannel {
     };
   }
 
-  static async create(param: DeviceChannelOpenParam, streaming: StreamingService): Promise<DeviceChannel> {
+  static async create(
+    param: DeviceChannelOpenParam,
+    streaming: StreamingService,
+    seleniumDeviceWebDriverHandlerService: SeleniumDeviceWebDriverHandlerService,
+  ): Promise<DeviceChannel> {
+    const platform = Platform.PLATFORM_MACOS;
     const deviceAgent = new NullDeviceAgentService();
 
     const osInfo = await checkTime('os', systeminformation.osInfo());
@@ -70,19 +79,20 @@ export class MacosChannel implements DeviceChannel {
       nickname: osInfo.hostname,
       version: osInfo.release,
       system: await checkTime('system', systeminformation.system()),
-      os: { ...osInfo, platform: Platform.PLATFORM_MACOS },
+      os: { ...osInfo, platform },
       uuid: await checkTime('uuid', systeminformation.uuid()),
       cpu: await checkTime('cpu', systeminformation.cpu()),
     };
     await streaming.deviceConnected(param.serial, {
       serial: param.serial,
-      platform: Platform.PLATFORM_MACOS,
+      platform,
       screenUrl: deviceAgent.screenUrl,
       inputUrl: deviceAgent.inputUrl,
       screenWidth: 0 < info.graphics.displays.length ? info.graphics.displays[0].resolutionX : 0,
       screenHeight: 0 < info.graphics.displays.length ? info.graphics.displays[0].resolutionY : 0,
     });
-    const deviceChannel = new MacosChannel(param.serial, info, new DesktopProfileService(), streaming, deviceAgent);
+    const seleniumDeviceWebDriverHandler = seleniumDeviceWebDriverHandlerService.create(platform, param.serial);
+    const deviceChannel = new MacosChannel(param.serial, info, new DesktopProfileService(), streaming, deviceAgent, seleniumDeviceWebDriverHandler);
     return Promise.resolve(deviceChannel);
   }
 
@@ -175,6 +185,10 @@ export class MacosChannel implements DeviceChannel {
   }
 
   get gamiumContext(): GamiumContext | null {
+    return null;
+  }
+
+  getWebDriverHandler(): DeviceWebDriverHandler | null {
     return null;
   }
 }

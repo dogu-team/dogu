@@ -23,6 +23,9 @@ import lodash from 'lodash';
 import { Observable } from 'rxjs';
 import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
 import { AppiumService } from '../../appium/appium.service';
+import { AppiumDeviceWebDriverHandler } from '../../device-webdriver-handler/appium-device-webdriver-handler.impl';
+import { AppiumDeviceWebDriverHandlerService } from '../../device-webdriver-handler/appium-device-webdriver-handler.service';
+import { DeviceWebDriverHandler } from '../../device-webdriver-handler/device-webdriver-handler.types';
 import { env } from '../../env';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { GamiumService } from '../../gamium/gamium.service';
@@ -73,15 +76,21 @@ export class AndroidChannel implements DeviceChannel {
     private readonly _deviceAgent: AndroidDeviceAgentService,
     private readonly _profilers: ProfileServices,
     private readonly _streaming: StreamingService,
-    private readonly _appiumService: AppiumService,
     private _appiumContext: AppiumContextProxy,
+    private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
     private readonly logger: FilledPrintable,
     private isClosed = false,
   ) {
     this.logger.info(`AndroidChannel created: ${this.serial}`);
   }
 
-  public static async create(param: DeviceChannelOpenParam, streaming: StreamingService, appiumService: AppiumService, gamiumService: GamiumService): Promise<AndroidChannel> {
+  public static async create(
+    param: DeviceChannelOpenParam,
+    streaming: StreamingService,
+    appiumService: AppiumService,
+    gamiumService: GamiumService,
+    appiumDeviceWebDriverHandlerService: AppiumDeviceWebDriverHandlerService,
+  ): Promise<AndroidChannel> {
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === param.serial && zombieable.platform === Platform.PLATFORM_ANDROID;
     }, 'kill previous zombie');
@@ -103,8 +112,10 @@ export class AndroidChannel implements DeviceChannel {
     await deviceAgent.wakeUp();
     await deviceAgent.install();
 
-    const appiumContextProxy = appiumService.createAppiumContext(platform, serial, 'bulitin');
+    const appiumContextProxy = appiumService.createAppiumContext(platform, serial, 'builtin');
     ZombieServiceInstance.addComponent(appiumContextProxy);
+
+    const appiumDeviceWebDriverHandler = appiumDeviceWebDriverHandlerService.create(platform, serial, appiumContextProxy);
 
     const deviceChannel = new AndroidChannel(
       serial,
@@ -114,8 +125,8 @@ export class AndroidChannel implements DeviceChannel {
       // [new AndroidAdbProfileService(), new AndroidDeviceAgentProfileService(deviceAgent)],
       [new AndroidAdbProfileService()],
       streaming,
-      appiumService,
       appiumContextProxy,
+      appiumDeviceWebDriverHandler,
       logger,
     );
 
@@ -384,6 +395,10 @@ export class AndroidChannel implements DeviceChannel {
 
   get gamiumContext(): GamiumContext | null {
     return this._gamiumContext;
+  }
+
+  getWebDriverHandler(): DeviceWebDriverHandler | null {
+    return this._appiumDeviceWebDriverHandler;
   }
 }
 

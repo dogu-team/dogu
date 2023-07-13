@@ -3,6 +3,7 @@ import { errorify } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import fs from 'fs';
 import { AppiumService } from '../../appium/appium.service';
+import { AppiumDeviceWebDriverHandlerService } from '../../device-webdriver-handler/appium-device-webdriver-handler.service';
 import { GamiumService } from '../../gamium/gamium.service';
 import { logger } from '../../logger/logger.instance';
 import { IosChannel } from '../channel/ios-channel';
@@ -14,14 +15,24 @@ import { PionStreamingService } from '../services/streaming/pion-streaming-servi
 export class IosDriver implements DeviceDriver {
   private channelMap = new Map<Serial, IosChannel>();
 
-  private constructor(private readonly streaming: PionStreamingService, private readonly appiumService: AppiumService, private readonly gamiumService: GamiumService) {}
+  private constructor(
+    private readonly streaming: PionStreamingService,
+    private readonly appiumService: AppiumService,
+    private readonly gamiumService: GamiumService,
+    private readonly appiumDeviceWebDriverHandlerService: AppiumDeviceWebDriverHandlerService,
+  ) {}
 
-  static async create(deviceServerPort: number, appiumService: AppiumService, gamiumService: GamiumService): Promise<IosDriver> {
+  static async create(
+    deviceServerPort: number,
+    appiumService: AppiumService,
+    gamiumService: GamiumService,
+    appiumDeviceWebDriverHandlerService: AppiumDeviceWebDriverHandlerService,
+  ): Promise<IosDriver> {
     await IosDriver.clearIdaClones();
     await XcodeBuild.validateXcodeBuild();
 
     const streaming = await PionStreamingService.create(Platform.PLATFORM_IOS, deviceServerPort);
-    return new IosDriver(streaming, appiumService, gamiumService);
+    return new IosDriver(streaming, appiumService, gamiumService, appiumDeviceWebDriverHandlerService);
   }
 
   get platform(): Platform {
@@ -36,7 +47,7 @@ export class IosDriver implements DeviceDriver {
   }
 
   async openChannel(initParam: DeviceChannelOpenParam): Promise<DeviceChannel> {
-    const channel = await IosChannel.create(initParam, this.streaming, this.appiumService, this.gamiumService);
+    const channel = await IosChannel.create(initParam, this.streaming, this.appiumService, this.gamiumService, this.appiumDeviceWebDriverHandlerService);
     this.channelMap.set(initParam.serial, channel);
     return channel;
   }

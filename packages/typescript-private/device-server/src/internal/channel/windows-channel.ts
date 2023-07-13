@@ -20,6 +20,9 @@ import { ChildProcess } from '@dogu-tech/node';
 import { Observable } from 'rxjs';
 import systeminformation from 'systeminformation';
 import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
+import { DeviceWebDriverHandler } from '../../device-webdriver-handler/device-webdriver-handler.types';
+import { SeleniumDeviceWebDriverHandler } from '../../device-webdriver-handler/selenium-device-webdriver-handler.impl';
+import { SeleniumDeviceWebDriverHandlerService } from '../../device-webdriver-handler/selenium-device-webdriver-handler.service';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { GamiumService } from '../../gamium/gamium.service';
 import { logger } from '../../logger/logger.instance';
@@ -44,6 +47,7 @@ export class WindowsChannel implements DeviceChannel {
     private readonly _profile: ProfileService,
     private readonly _streaming: StreamingService,
     private readonly _deviceAgent: DeviceAgentService,
+    private readonly _seleniumDeviceWebDriverHandler: SeleniumDeviceWebDriverHandler,
   ) {}
 
   get serial(): Serial {
@@ -64,7 +68,13 @@ export class WindowsChannel implements DeviceChannel {
       deviceAgentSecondForwardPort: DeviceAgentSecondPort,
     };
   }
-  static async create(param: DeviceChannelOpenParam, streaming: StreamingService, gamiumService: GamiumService): Promise<DeviceChannel> {
+  static async create(
+    param: DeviceChannelOpenParam,
+    streaming: StreamingService,
+    gamiumService: GamiumService,
+    seleniumDeviceWebDriverHandlerService: SeleniumDeviceWebDriverHandlerService,
+  ): Promise<DeviceChannel> {
+    const platform = Platform.PLATFORM_WINDOWS;
     const deviceAgent = new NullDeviceAgentService();
 
     const osInfo = await checkTime('os', systeminformation.osInfo());
@@ -73,20 +83,22 @@ export class WindowsChannel implements DeviceChannel {
       nickname: osInfo.hostname,
       version: osInfo.release,
       system: await checkTime('system', systeminformation.system()),
-      os: { ...osInfo, platform: Platform.PLATFORM_WINDOWS },
+      os: { ...osInfo, platform },
       uuid: await checkTime('uuid', systeminformation.uuid()),
       cpu: await checkTime('cpu', systeminformation.cpu()),
     };
     await streaming.deviceConnected(param.serial, {
       serial: param.serial,
-      platform: Platform.PLATFORM_MACOS,
+      platform,
       screenUrl: deviceAgent.screenUrl,
       inputUrl: deviceAgent.inputUrl,
       screenWidth: 0 < info.graphics.displays.length ? info.graphics.displays[0].resolutionX : 0,
       screenHeight: 0 < info.graphics.displays.length ? info.graphics.displays[0].resolutionY : 0,
     });
 
-    const deviceChannel = new WindowsChannel(param.serial, info, new DesktopProfileService(), streaming, deviceAgent);
+    const seleniumDeviceWebDriverHandler = seleniumDeviceWebDriverHandlerService.create(platform, param.serial);
+
+    const deviceChannel = new WindowsChannel(param.serial, info, new DesktopProfileService(), streaming, deviceAgent, seleniumDeviceWebDriverHandler);
 
     const gamiumContext = gamiumService.openGamiumContext(deviceChannel);
     deviceChannel.gamiumContext = gamiumContext;
@@ -202,5 +214,9 @@ export class WindowsChannel implements DeviceChannel {
 
   get gamiumContext(): GamiumContext | null {
     return this._gamiumContext;
+  }
+
+  getWebDriverHandler(): DeviceWebDriverHandler | null {
+    return this._seleniumDeviceWebDriverHandler;
   }
 }

@@ -1,6 +1,7 @@
 import { Platform, Serial } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { AppiumService } from '../../appium/appium.service';
+import { AppiumDeviceWebDriverHandlerService } from '../../device-webdriver-handler/appium-device-webdriver-handler.service';
 import { GamiumService } from '../../gamium/gamium.service';
 import { logger } from '../../logger/logger.instance';
 import { AndroidChannel } from '../channel/android-channel';
@@ -13,11 +14,21 @@ import { StreamingService } from '../services/streaming/streaming-service';
 export class AndroidDriver implements DeviceDriver {
   private channelMap = new Map<Serial, AndroidChannel>();
 
-  private constructor(private readonly streamingService: StreamingService, private readonly appiumService: AppiumService, private readonly gamiumService: GamiumService) {}
+  private constructor(
+    private readonly streamingService: StreamingService,
+    private readonly appiumService: AppiumService,
+    private readonly gamiumService: GamiumService,
+    private readonly appiumDeviceWebDriverHandlerService: AppiumDeviceWebDriverHandlerService,
+  ) {}
 
-  static async create(deviceServerPort: number, appiumService: AppiumService, gamiumService: GamiumService): Promise<AndroidDriver> {
+  static async create(
+    deviceServerPort: number,
+    appiumService: AppiumService,
+    gamiumService: GamiumService,
+    appiumDeviceWebDriverHandlerService: AppiumDeviceWebDriverHandlerService,
+  ): Promise<AndroidDriver> {
     const streaming = await PionStreamingService.create(Platform.PLATFORM_ANDROID, deviceServerPort);
-    return new AndroidDriver(streaming, appiumService, gamiumService);
+    return new AndroidDriver(streaming, appiumService, gamiumService, appiumDeviceWebDriverHandlerService);
   }
 
   get platform(): Platform {
@@ -30,7 +41,7 @@ export class AndroidDriver implements DeviceDriver {
   }
 
   async openChannel(initParam: DeviceChannelOpenParam): Promise<DeviceChannel> {
-    const channel = await AndroidChannel.create(initParam, this.streamingService, this.appiumService, this.gamiumService);
+    const channel = await AndroidChannel.create(initParam, this.streamingService, this.appiumService, this.gamiumService, this.appiumDeviceWebDriverHandlerService);
     this.channelMap.set(initParam.serial, channel);
     return channel;
   }
