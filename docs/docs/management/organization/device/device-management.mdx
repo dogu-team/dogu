@@ -190,24 +190,6 @@ For more information about the device streaming and remote control features, ple
      style={{ width: 600, display: 'block' }}
    />
 
-## Rename a device
-
-<OrganizationAdminPermission prefix="Renaming a device" />
-
-1. In the Dogu console, click on the "Devices" menu in the left sidebar of the organization page.
-2. In either the "In-use devices" or "Standby devices" tab, find the device for which you want to change the name and click on the menu button(`···`).
-3. Click on the "Edit name" menu.
-4. Enter the new name for the device and click the "Save" button.
-   <img
-     src="/img/console/organization/rename-device-modal.png"
-     style={{ width: 600, display: 'block' }}
-   />
-5. Confirm the updated device name.
-   <img
-     src="/img/console/organization/rename-device-confirm.png"
-     style={{ width: 600, display: 'block' }}
-   />
-
 ## Update device's tags
 
 <OrganizationAdminPermission prefix="Updating device's tags" />
@@ -338,6 +320,29 @@ You must either use the device in at least one project or set it as a public dev
 5. Check that the device has been removed from the project in the device list.
    <img
      src="/img/console/organization/detach-device-project-confirm.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+## Update device settings
+
+<OrganizationAdminPermission prefix="Updating device settings" />
+
+:::tip
+
+The maximum parallel job count can be modified by the host device only and should be a number between 1 and 16.
+
+:::
+
+1. In the Dogu console, click on the "Devices" menu in the left sidebar of the organization page.
+2. In the "In-use devices" or "Standby devices" tab, find the device for which you want to change the settings, and click on the menu button (`···`).
+3. Click on the "Settings" menu.
+   <img
+     src="/img/console/organization/device-setting-menu.png"
+     style={{ width: 600, display: 'block' }}
+   />
+4. Change the device name or modify the maximum parallel job count, then click the "Save" button.
+   <img
+     src="/img/console/organization/device-setting-modal.png"
      style={{ width: 600, display: 'block' }}
    />
 
