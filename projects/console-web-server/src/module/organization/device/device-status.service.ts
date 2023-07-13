@@ -284,7 +284,9 @@ export class DeviceStatusService {
       throw new HttpException(`This device does not exists. : ${deviceId}`, HttpStatus.BAD_REQUEST);
     }
     if (deviceByName) {
-      throw new HttpException(`This device name already exists. : ${name}`, HttpStatus.BAD_REQUEST);
+      if (deviceById.deviceId !== deviceByName.deviceId) {
+        throw new HttpException(`This device name already exists. : ${name}`, HttpStatus.BAD_REQUEST);
+      }
     }
     if (maxParallelJobs) {
       if (!validateMaxParallelJobs(deviceById.platform, maxParallelJobs)) {
