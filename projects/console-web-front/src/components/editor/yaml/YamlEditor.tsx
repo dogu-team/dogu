@@ -1,7 +1,6 @@
 import * as MonacoType from 'monaco-editor';
 import MonacoEditorComponent from '@monaco-editor/react';
-import { forwardRef, MutableRefObject, useRef } from 'react';
-import styled from 'styled-components';
+import { MutableRefObject, useRef } from 'react';
 import { LoadingOutlined } from '@ant-design/icons';
 
 interface Props {
