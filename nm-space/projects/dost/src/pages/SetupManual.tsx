@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useEnvironmentStore from '../stores/environment';
 // import { Button, Divider, Flex, List, Spinner } from '@chakra-ui/react';
@@ -13,7 +14,9 @@ const SetupManual = () => {
   // const { results, loading, validate } = useManualSetupExternalValidResult();
   const navigate = useNavigate();
 
-  navigate(useApiUrlInput ? '/setup/config' : '/home/connect');
+  useEffect(() => {
+    navigate(useApiUrlInput ? '/setup/config' : '/home/connect');
+  }, []);
   return <div></div>;
 
   // if (!loading && !results) {
