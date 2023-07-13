@@ -95,14 +95,6 @@
     "message": "Appium",
     "description": "The label for category Appium in sidebar testAutomationSidebar"
   },
-  "sidebar.deviceFarmSidebar.category.sidebar.deviceFarmSidebar.category.Host": {
-    "message": "sidebar.deviceFarmSidebar.category.Host",
-    "description": "The label for category sidebar.deviceFarmSidebar.category.Host in sidebar deviceFarmSidebar"
-  },
-  "sidebar.routineSidebar.category.sidebar.routineSidebar.category.Routine": {
-    "message": "sidebar.routineSidebar.category.Routine",
-    "description": "The label for category sidebar.routineSidebar.category.Routine in sidebar routineSidebar"
-  },
   "sidebar.deviceFarmSidebar.category.Trouble Shooting": {
     "message": "트러블 슈팅",
     "description": "The label for category Trouble Shooting in sidebar deviceFarmSidebar"
@@ -120,7 +112,7 @@
     "description": "The label for category MacOS in sidebar deviceFarmSidebar"
   },
   "sidebar.getStartedSidebar.category.Tutorial - Game Testing": {
-    "message": "Tutorial - Game Testing",
+    "message": "튜토리얼 - 게임 테스팅",
     "description": "The label for category Tutorial - Game Testing in sidebar getStartedSidebar"
   }
 }
