@@ -42,7 +42,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
   const router = useRouter();
   const orgId = router.query.orgId as OrganizationId;
   const { t } = useTranslation();
-  const [isEditDeviceModalOpen, openEditDeviceModal, closeEditDeviceModal] = useModal();
+  const [isDeviceSettingModalOpen, openDeviceSettingModal, closeDeviceSettingModal] = useModal();
   const [isEditDeviceTagModalOpen, openEditDeviceTagModal, closeEditDeviceTagModal] = useModal();
   const [isEditDeviceProjectModalOpen, openEditDeviceProjectModal, closeEditDeviceProjectModal] = useModal();
   const [isDetailModlOpen, openDetailModal, closeDetailModal] = useModal();
@@ -103,14 +103,6 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
     { type: 'divider' },
     {
       label: (
-        <MenuItemButton danger={false} onClick={() => openEditDeviceModal()}>
-          {t('device:deviceItemEditMenu')}
-        </MenuItemButton>
-      ),
-      key: 'edit',
-    },
-    {
-      label: (
         <MenuItemButton danger={false} onClick={() => openEditDeviceTagModal()}>
           {t('device:deviceItemEditTagMenu')}
         </MenuItemButton>
@@ -124,6 +116,14 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
         </MenuItemButton>
       ),
       key: 'edit-projects',
+    },
+    {
+      label: (
+        <MenuItemButton danger={false} onClick={() => openDeviceSettingModal()}>
+          {t('device:deviceItemSettingMenu')}
+        </MenuItemButton>
+      ),
+      key: 'edit',
     },
     { type: 'divider' },
     {
@@ -189,7 +189,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
         </DeviceItemInner>
       </Item>
 
-      <EditDeviceModal device={device} isOpen={isEditDeviceModalOpen} close={closeEditDeviceModal} />
+      <EditDeviceModal device={device} isOpen={isDeviceSettingModalOpen} close={closeDeviceSettingModal} />
       <DeviceDetailModal isOpen={isDetailModlOpen} device={device} close={closeDetailModal} />
       <EditDeviceTagModal deviceId={device.deviceId} isOpen={isEditDeviceTagModalOpen} close={closeEditDeviceTagModal} />
       <AddDeviceToProjectModal deviceId={device.deviceId} isOpen={isEditDeviceProjectModalOpen} close={closeEditDeviceProjectModal} isGlobal={isGlobalDevice} />

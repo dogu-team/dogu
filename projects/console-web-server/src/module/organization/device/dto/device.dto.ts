@@ -9,11 +9,20 @@ import {
   MAX_TAG_NAMES_FILTER_LENGTH,
   UpdateDeviceDtoBase,
 } from '@dogu-private/console';
-import { DeviceConnectionState, DeviceTagId, DEVICE_NAME_MAX_LENGTH, DEVICE_NAME_MIN_LENGTH, OrganizationId, ProjectId } from '@dogu-private/types';
+import {
+  DeviceConnectionState,
+  DeviceTagId,
+  DEVICE_MAX_PARALLEL_JOBS_MAX,
+  DEVICE_MAX_PARALLEL_JOBS_MIN,
+  DEVICE_NAME_MAX_LENGTH,
+  DEVICE_NAME_MIN_LENGTH,
+  OrganizationId,
+  ProjectId,
+} from '@dogu-private/types';
 import { TransformByCase } from '@dogu-tech/common';
 import { StreamingOfferValue } from '@dogu-tech/device-client-common';
 import { Transform, Type } from 'class-transformer';
-import { ArrayMaxSize, IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, MaxLength, Min, MinLength, ValidateNested } from 'class-validator';
+import { ArrayMaxSize, IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Max, MaxLength, Min, MinLength, ValidateNested } from 'class-validator';
 import { PageDto } from '../../../common/dto/pagination/page.dto';
 
 // import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
@@ -131,7 +140,8 @@ export class UpdateDeviceDto implements UpdateDeviceDtoBase {
   name?: string;
 
   @IsOptional()
-  @Min(1)
+  @Min(DEVICE_MAX_PARALLEL_JOBS_MIN)
+  @Max(DEVICE_MAX_PARALLEL_JOBS_MAX)
   @IsNumber()
   maxParallelJobs?: number;
 }
