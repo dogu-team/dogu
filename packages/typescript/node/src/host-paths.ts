@@ -57,6 +57,7 @@ export const HostPaths = {
         prototypePath: (): string => path.resolve(HostPaths.external.nodePackage.nodePackagesPath(), 'webdriver-manager', 'prototype'),
         clonePath: (cloneId: string): string => path.resolve(HostPaths.external.nodePackage.nodePackagesPath(), 'webdriver-manager', 'clones', cloneId),
       },
+      puppeteerBrowsersPath: (): string => path.resolve(HostPaths.external.nodePackage.nodePackagesPath(), 'puppeteer-browsers'),
     },
     xcodeProject: {
       wdaProjectDirectoryPath: (): string => path.resolve(HostPaths.external.defaultAppiumHomePath(), 'node_modules/appium-xcuitest-driver/node_modules/appium-webdriveragent'),
@@ -72,9 +73,9 @@ export const HostPaths = {
       idevicesyslog: (): string => path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice/idevicesyslog'),
     },
     browser: {
-      chromeInstallPath: (majorVersion: string): string => path.resolve(HostPaths.external.externalsPath(), 'chrome', majorVersion),
-      firefoxInstallPath: (majorVersion: string): string => path.resolve(HostPaths.external.externalsPath(), 'firefox', majorVersion),
+      browsersPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'browsers'),
     },
+
     /**
      * @note use to avoid appium xcodebuild process cleanup patterns.
      */

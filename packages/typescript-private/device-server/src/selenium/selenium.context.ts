@@ -1,16 +1,12 @@
+import { BrowserName } from '@dogu-private/types';
 import { errorify, Printable, stringify } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
+import _ from 'lodash';
 import path from 'path';
+import { BrowserInstaller } from '../browser-installer';
 import { getFreePort } from '../internal/util/net';
-
-export const BrowserName = ['chrome', 'firefox', 'safari', 'edge', 'ie'] as const;
-export type BrowserName = (typeof BrowserName)[number];
-
-export function isValidBrowserName(value: unknown): value is BrowserName {
-  return BrowserName.includes(value as BrowserName);
-}
 
 export interface DefaultSeleniumContextOptions {
   npxPath: string;
@@ -23,12 +19,7 @@ export interface SeleniumContextOptions {
   key: string;
 }
 
-export type SeleniumContextOptionsWithDefault = SeleniumContextOptions & DefaultSeleniumContextOptions;
-
-export function createBrowserKey(options: SeleniumContextOptions): string {
-  const { browserName, browserVersion } = options;
-  return `${browserName}-${browserVersion}`;
-}
+export type FilledSeleniumContextOptions = SeleniumContextOptions & DefaultSeleniumContextOptions;
 
 export interface SeleniumContextInfo {
   port: number;
@@ -43,8 +34,9 @@ const WebdriverManagerUpdateRetryCount = 3;
 
 export class SeleniumContext {
   private _data: SeleniumContextData | null = null;
+  private browserInstaller = new BrowserInstaller();
 
-  constructor(private readonly options: SeleniumContextOptionsWithDefault, private readonly logger: Printable) {}
+  constructor(private readonly options: FilledSeleniumContextOptions, private readonly logger: Printable) {}
 
   get info(): SeleniumContextInfo {
     if (!this._data) {
@@ -57,14 +49,21 @@ export class SeleniumContext {
     if (this._data) {
       throw new Error('Selenium server is already started.');
     }
-    await this.downloadBrowser();
+    await this.installBrowser();
     await this.updateWebdriverManagerRepeatedly();
     this._data = await this.startWebdriverManager();
   }
 
-  // TODO: henry - implement
-  private async downloadBrowser(): Promise<void> {
-    await Promise.resolve();
+  private async installBrowser(): Promise<void> {
+    const { browserName, browserVersion } = this.options;
+    const isInstalled = await this.browserInstaller.isInstalled(browserName, browserVersion);
+    if (isInstalled) {
+      return;
+    }
+    await this.browserInstaller.install({
+      browserName,
+      browserVersion,
+    });
   }
 
   private async updateWebdriverManagerRepeatedly(): Promise<void> {
@@ -87,11 +86,11 @@ export class SeleniumContext {
     const seleniumPort = await getFreePort();
     const args = ['webdriver-manager', 'start', `--out_dir=${clonePath}`, `--seleniumPort=${seleniumPort}`];
     if (browserName === 'chrome') {
-      // TODO: henry - accept chrome version from options to --versions.chrome={browserVersion}
-      args.push(`--versions.chrome=latest`);
+      const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
+      args.push(`--versions.chrome=${resolvedVersion}`);
     } else if (browserName === 'firefox') {
-      // TODO: henry - accept firefox version from options to --versions.gecko={browserVersion}
-      args.push(`--versions.gecko=latest`);
+      const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
+      args.push(`--versions.gecko=${resolvedVersion}`);
     } else if (browserName === 'safari') {
       // noop
     } else if (browserName === 'edge') {
@@ -101,11 +100,16 @@ export class SeleniumContext {
     } else {
       throw new Error(`Unknown browser name: ${stringify(browserName)}`);
     }
-    // TODO: henry - add browser binary path to PATH
+
+    const browserPath = await this.browserInstaller.getBrowserPath(browserName, browserVersion);
+    const browserDir = path.dirname(browserPath);
+    const env = _.merge(serverEnv, {
+      PATH: `${browserDir}${path.delimiter}${serverEnv.PATH || ''}`,
+    });
     const child = await new Promise<ChildProcessWithoutNullStreams>((resolve, reject) => {
       const child = spawn(npxPath, args, {
         cwd: clonePath,
-        env: serverEnv,
+        env,
       });
       const onErrorForReject = (error: Error): void => {
         reject(error);
@@ -161,12 +165,12 @@ export class SeleniumContext {
     const args = ['webdriver-manager', 'update', `--out_dir=${clonePath}`, '--standalone=true'];
     if (browserName === 'chrome') {
       args.push('--chrome=true');
-      // TODO: henry - accept chrome version from options to --versions.chrome={browserVersion}
-      args.push(`--versions.chrome=latest`);
+      const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
+      args.push(`--versions.chrome=${resolvedVersion}`);
     } else if (browserName === 'firefox') {
       args.push('--gecko=true');
-      // TODO: henry - accept firefox version from options to --versions.gecko={browserVersion}
-      args.push(`--versions.gecko=latest`);
+      const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
+      args.push(`--versions.gecko=${resolvedVersion}`);
     } else if (browserName === 'safari') {
       // noop
     } else if (browserName === 'edge') {

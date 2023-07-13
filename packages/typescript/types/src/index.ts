@@ -1,3 +1,4 @@
+export * from './browsers';
 export * from './dest/types';
 export * as ProfileMethods from './device/profile-methods';
 export * from './device/runtime-infos';

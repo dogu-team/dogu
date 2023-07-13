@@ -4,40 +4,36 @@ import { instanceKeys } from './electron-ipc';
 
 export const externalKey = instanceKeys<IExternalClient>('externalClient');
 
-export const JdkKey = 'jdk';
-export const AndroidSdkKey = 'android-sdk';
-export const AppiumKey = 'appium';
-export const AppiumUiAutomator2DriverKey = 'appium-uiautomator2-driver';
-export const XcodeKey = 'xcode';
-export const AppiumXcuitestDriverKey = 'appium-xcuitest-driver';
+export const Jdk = 'jdk';
+export const AndroidSdk = 'android-sdk';
+export const Appium = 'appium';
+export const AppiumUiAutomator2Driver = 'appium-uiautomator2-driver';
+export const Xcode = 'xcode';
+export const AppiumXcuitestDriver = 'appium-xcuitest-driver';
 export const WebDriverAgentBuild = 'web-driver-agent-build';
 export const IosDeviceAgentBuild = 'ios-device-agent-build';
 export const LibiMobileDevice = 'libimobiledevice';
-export const WebdriverManagerKey = 'webdriver-manager';
+export const WebdriverManager = 'webdriver-manager';
+export const PuppeteerBrowsers = 'puppeteer-browsers';
+export const ChromeBrowserInstall = 'chrome-browser-install';
+export const FirefoxBrowserInstall = 'firefox-browser-install';
 
 export const ExternalKey = [
-  JdkKey,
-  AndroidSdkKey,
-  AppiumKey,
-  AppiumUiAutomator2DriverKey,
-  XcodeKey,
-  AppiumXcuitestDriverKey,
+  Jdk,
+  AndroidSdk,
+  Appium,
+  AppiumUiAutomator2Driver,
+  Xcode,
+  AppiumXcuitestDriver,
   WebDriverAgentBuild,
   IosDeviceAgentBuild,
   LibiMobileDevice,
-  WebdriverManagerKey,
+  WebdriverManager,
+  PuppeteerBrowsers,
+  ChromeBrowserInstall,
+  FirefoxBrowserInstall,
 ] as const;
 export type ExternalKey = (typeof ExternalKey)[number];
-
-export const ExternalKeysProvidedByDost = [JdkKey, AndroidSdkKey, AppiumUiAutomator2DriverKey, AppiumXcuitestDriverKey] as const;
-export type ExternalKeysProvidedByDost = (typeof ExternalKeysProvidedByDost)[number];
-
-export const ExternalKeyAndNames: Record<ExternalKeysProvidedByDost, string> = {
-  jdk: 'OpenJDK',
-  'android-sdk': 'Android SDK',
-  'appium-uiautomator2-driver': 'Appium UiAutomator2 Driver',
-  'appium-xcuitest-driver': 'Appium XCUITest Driver',
-};
 
 export interface ExternalValidationResult {
   valid: boolean;

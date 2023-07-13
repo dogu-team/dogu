@@ -1,10 +1,9 @@
-import { PrefixLogger } from '@dogu-tech/common';
+import { PrefixLogger, stringify } from '@dogu-tech/common';
 import { HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
 import { exec, spawn } from 'child_process';
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
-import { stringify } from 'querystring';
 import util from 'util';
 import { ExternalKey } from '../../../src/shares/external';
 import { logger } from '../../log/logger.instance';
@@ -114,20 +113,24 @@ export class WebdriverManagerExternalUnit extends IExternalUnit {
             reject(new Error(`child process exited with code ${code} and signal ${signal}`));
           }
         });
-        child.stdout.setEncoding('utf8');
-        child.stdout.on('data', (data) => {
-          const message = stringify(data);
-          if (message.length > 0) {
-            this.stdLogCallbackService.stdout(message);
-          }
-        });
-        child.stderr.setEncoding('utf8');
-        child.stderr.on('data', (data) => {
-          const message = stringify(data);
-          if (message.length > 0) {
-            this.stdLogCallbackService.stderr(message);
-          }
-        });
+      });
+      child.stdout.setEncoding('utf8');
+      child.stdout.on('data', (data) => {
+        const message = stringify(data);
+        if (!message) {
+          return;
+        }
+        this.stdLogCallbackService.stdout(message);
+        this.logger.info(message);
+      });
+      child.stderr.setEncoding('utf8');
+      child.stderr.on('data', (data) => {
+        const message = stringify(data);
+        if (!message) {
+          return;
+        }
+        this.stdLogCallbackService.stderr(message);
+        this.logger.warn(message);
       });
     });
     this.unitCallback.onInstallCompleted();

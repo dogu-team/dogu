@@ -1,8 +1,8 @@
+import { isValidBrowserName } from '@dogu-private/types';
 import { DoguBrowserNameHeader, DoguRemoteDeviceJobIdHeader, HeaderRecord } from '@dogu-tech/common';
 import { RelayRequest, RelayResponse, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
 import _ from 'lodash';
 import { DoguLogger } from '../../logger/logger';
-import { isValidBrowserName } from '../../selenium/selenium.context';
 import { SeleniumService } from '../../selenium/selenium.service';
 import { OnAfterRequestResult, OnBeforeRequestResult } from './common';
 import { RegisterSeleniumEndpointHandler, SeleniumEndpointHandler } from './selenium.service';

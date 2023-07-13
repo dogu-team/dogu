@@ -113,24 +113,24 @@ export class AppiumUiAutomator2DriverExternalUnit extends IExternalUnit {
             reject(new Error(`appium-uiautomator2-driver install failed. code: ${code} signal: ${signal}`));
           }
         });
-        child.stdout.setEncoding('utf8');
-        child.stdout.on('data', (data) => {
-          const message = stringify(data);
-          if (!message) {
-            return;
-          }
-          this.stdLogCallbackService.stdout(message);
-          this.logger.info(message);
-        });
-        child.stderr.setEncoding('utf8');
-        child.stderr.on('data', (data) => {
-          const message = stringify(data);
-          if (!message) {
-            return;
-          }
-          this.stdLogCallbackService.stderr(message);
-          this.logger.warn(message);
-        });
+      });
+      child.stdout.setEncoding('utf8');
+      child.stdout.on('data', (data) => {
+        const message = stringify(data);
+        if (!message) {
+          return;
+        }
+        this.stdLogCallbackService.stdout(message);
+        this.logger.info(message);
+      });
+      child.stderr.setEncoding('utf8');
+      child.stderr.on('data', (data) => {
+        const message = stringify(data);
+        if (!message) {
+          return;
+        }
+        this.stdLogCallbackService.stderr(message);
+        this.logger.warn(message);
       });
     });
     this.unitCallback.onInstallCompleted();

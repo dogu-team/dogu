@@ -13,6 +13,8 @@ import { AndroidSdkExternalUnit } from './units/android-sdk-external-unit';
 import { AppiumExternalUnit } from './units/appium-external-unit';
 import { AppiumUiAutomator2DriverExternalUnit } from './units/appium-uiautomator2-driver-external-unit';
 import { AppiumXcUiTestDriverExternalUnit } from './units/appium-xcuitest-driver-external-unit';
+import { ChromeBrowserInstallExternalUnit } from './units/chrome-browser-install-external-unit';
+import { FirefoxBrowserInstallExternalUnit } from './units/firefox-browser-install-external-unit';
 import { IdaBuildExternalUnit } from './units/ida-build-external-unit';
 import { JdkExternalUnit } from './units/jdk-external-unit';
 import { LibimobledeviceExternalUnit } from './units/libimobiledevice-external-unit';
@@ -81,6 +83,9 @@ export class ExternalService {
     this.registerUnit('webdriver-manager', (unitCallback) => new WebdriverManagerExternalUnit(this.stdLogCallbackService, unitCallback));
     this.registerUnit('web-driver-agent-build', () => new WdaBuildExternalUnit(this.stdLogCallbackService));
     this.registerUnit('ios-device-agent-build', () => new IdaBuildExternalUnit(this.stdLogCallbackService));
+    // this.registerUnit('puppeteer-browsers', (unitCallback) => new PuppeteerBrowsersExternalUnit(this.stdLogCallbackService, unitCallback));
+    this.registerUnit('chrome-browser-install', (unitCallback) => new ChromeBrowserInstallExternalUnit(this.stdLogCallbackService, unitCallback));
+    this.registerUnit('firefox-browser-install', (unitCallback) => new FirefoxBrowserInstallExternalUnit(this.stdLogCallbackService, unitCallback));
   }
 
   private registerHandlers(): void {

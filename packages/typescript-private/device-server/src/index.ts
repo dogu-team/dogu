@@ -14,6 +14,7 @@ import { isFreePort } from './internal/util/net';
 import { adbLogger, gdcLogger, idcLogger, logger } from './logger/logger.instance';
 import { openPathMap } from './path-map';
 import { addProcessEventHandler } from './process-event';
+export { BrowserInstaller } from './browser-installer';
 export { onErrorToExit } from './child-utils';
 export { logger };
 export { isFreePort };
