@@ -1,8 +1,10 @@
 import {
   DeviceId,
   DEVICE_TABLE_NAME,
+  extensionFromPlatform,
   OrganizationId,
-  Platform,
+  PlatformType,
+  platformTypeFromPlatform,
   ProjectId,
   RemoteDeviceJobId,
   REMOTE_DEVICE_JOB_STATE,
@@ -13,7 +15,9 @@ import {
 } from '@dogu-private/types';
 import { HeaderRecord, Method } from '@dogu-tech/common';
 import {
+  convertWebDriverPlatformToDogu,
   DeviceWebDriver,
+  DoguWebDriverOptions,
   RelayRequest,
   RelayResponse,
   WebDriverDeleteSessionEndpointInfo,
@@ -33,6 +37,7 @@ import { DeviceMessageRelayer } from '../device-message/device-message.relayer';
 import { DoguLogger } from '../logger/logger';
 import { DeviceStatusService } from '../organization/device/device-status.service';
 import { ApplicationService } from '../project/application/application.service';
+import { FindProjectApplicationDto } from '../project/application/dto/application.dto';
 import { RemoteWebDriverInfoService } from '../remote/remote-webdriver/remote-webdriver.service';
 import { WebDriverException } from './webdriver.exception';
 
@@ -42,10 +47,12 @@ export interface WebDriverEndpointHandlerResult {
   projectId: ProjectId;
   remoteDeviceJobId: RemoteDeviceJobId;
   deviceId: DeviceId;
-  platform: Platform;
-  serial: Serial;
-  browserName: string | null;
-  browserVersion: string | null;
+  devicePlatform: PlatformType;
+  deviceSerial: Serial;
+  browserName?: string;
+  browserVersion?: string;
+  applicationUrl?: string;
+  applicationVersion?: string;
   sessionId?: WebDriverSessionId;
   request: RelayRequest;
 }
@@ -63,7 +70,7 @@ export class WebDriverService {
 
   async sendRequest(processResult: WebDriverEndpointHandlerResult, headers: HeaderRecord = {}): Promise<RelayResponse> {
     try {
-      const pathProvider = new DeviceWebDriver.relayHttp.pathProvider(processResult.serial);
+      const pathProvider = new DeviceWebDriver.relayHttp.pathProvider(processResult.deviceSerial);
       const path = DeviceWebDriver.relayHttp.resolvePath(pathProvider);
       const res = await this.deviceMessageRelayer.sendHttpRequest(
         processResult.organizationId,
@@ -81,8 +88,10 @@ export class WebDriverService {
     }
   }
 
-  async handleNewSessionRequest(endpointInfo: WebDriverNewSessionEndpointInfo, request: RelayRequest): Promise<WebDriverEndpointHandlerResult> {
-    const options = endpointInfo.capabilities.doguOptions;
+  async handleNewSessionRequest(endpointInfo: WebDriverNewSessionEndpointInfo, request: RelayRequest, doguOptions: DoguWebDriverOptions): Promise<WebDriverEndpointHandlerResult> {
+    const options = doguOptions;
+
+    // find device
     const runsOn = options['runs-on'];
     const deviceTagOrNames = Array.isArray(runsOn) ? runsOn : typeof runsOn === 'string' ? [runsOn] : [];
     if (deviceTagOrNames.length === 0) {
@@ -90,7 +99,6 @@ export class WebDriverService {
     }
 
     let device: Device;
-
     if (deviceTagOrNames.length === 1) {
       const deviceByName = await this.dataSource.getRepository(Device).findOne({ where: { organizationId: options.organizationId, name: deviceTagOrNames[0] } });
       if (!deviceByName) {
@@ -107,43 +115,48 @@ export class WebDriverService {
       device = sortDevicesByRunningRate[0];
     }
 
-    if (!options.appVersion) {
-      throw new WebDriverException(400, new Error('App version not specified'), {});
-    }
-
+    const devicePlatformType = platformTypeFromPlatform(device.platform);
     const headers = this.convertHeaders(request.headers);
 
-    // FIXME: henry - temporary test
-    // // appium begin
-    // const findAppDto = new FindProjectApplicationDto();
-    // findAppDto.version = options.appVersion;
-    // findAppDto.extension = extensionFromPlatform(convertWebDriverPlatformToDogu(endpointInfo.capabilities.platformName));
-    // const applications = await this.applicationService.getApplicationList(options.organizationId, options.projectId, findAppDto);
-    // if (applications.items.length === 0) {
-    //   throw new WebDriverException(400, new Error('Application not found'), {});
-    // }
-    // const application = applications.items[0];
-    // const applicationUrl = await this.applicationService.getApplicationDownladUrl(application.projectApplicationId, options.organizationId, options.projectId);
+    const platformType = convertWebDriverPlatformToDogu(doguOptions.platformName);
+    // FIXME: henry - validation device platform and doguOptions.platformName
 
-    // endpointInfo.capabilities.setDoguAppUrl(applicationUrl);
-    // endpointInfo.capabilities.setUdid(device.serial);
-    // // appium end
+    let applicationUrl: string | undefined = undefined;
+    let applicationVersion: string | undefined = undefined;
+    if (platformType === 'android' || platformType === 'ios') {
+      if (!options.appVersion) {
+        throw new WebDriverException(400, new Error('App version not specified'), {});
+      }
+
+      const findAppDto = new FindProjectApplicationDto();
+      findAppDto.version = options.appVersion;
+      findAppDto.extension = extensionFromPlatform(platformType);
+      const applications = await this.applicationService.getApplicationList(options.organizationId, options.projectId, findAppDto);
+      if (applications.items.length === 0) {
+        throw new WebDriverException(400, new Error('Application not found'), {});
+      }
+      const application = applications.items[0];
+      applicationUrl = await this.applicationService.getApplicationDownladUrl(application.projectApplicationId, options.organizationId, options.projectId);
+      applicationVersion = application.version;
+    }
 
     return {
       organizationId: options.organizationId,
       remoteDeviceJobId: v4(),
       projectId: options.projectId,
       deviceId: device.deviceId,
-      platform: device.platform,
-      serial: device.serial,
-      browserName: options.browserName ?? null,
-      browserVersion: options.browserVersion ?? null,
+      devicePlatform: devicePlatformType,
+      deviceSerial: device.serial,
+      browserName: options.browserName,
+      browserVersion: options.browserVersion,
+      applicationUrl,
+      applicationVersion,
       request: {
         path: request.path,
         headers: headers,
         method: request.method as Method,
         query: request.query,
-        reqBody: endpointInfo.capabilities.origin,
+        reqBody: endpointInfo.capabilities,
       },
     };
   }
@@ -231,15 +244,16 @@ export class WebDriverService {
     await this.dataSource.getRepository(RemoteDeviceJob).update(remoteDeviceJob.remoteDeviceJobId, { state: REMOTE_DEVICE_JOB_STATE.COMPLETE });
 
     const headers = this.convertHeaders(request.headers);
+    const devicePlatform = platformTypeFromPlatform(device.platform);
     return {
       organizationId: device.organizationId,
       projectId: remoteDeviceJob.remote!.projectId,
       remoteDeviceJobId: remoteDeviceJob.remoteDeviceJobId,
       deviceId: device.deviceId,
-      platform: device.platform,
-      serial: device.serial,
-      browserName: remoteWdaInfo!.browserName,
-      browserVersion: remoteWdaInfo!.browserVersion,
+      devicePlatform,
+      deviceSerial: device.serial,
+      browserName: remoteWdaInfo!.browserName ?? undefined,
+      browserVersion: remoteWdaInfo!.browserVersion ?? undefined,
       sessionId,
       request: {
         path: request.path,
@@ -262,7 +276,7 @@ export class WebDriverService {
 
     // await this.remoteWebDriverService.deleteSession(this.dataSource.manager, sessionId);
 
-    const pathProvider = new DeviceWebDriver.sessionDeleted.pathProvider(handleResult.serial);
+    const pathProvider = new DeviceWebDriver.sessionDeleted.pathProvider(handleResult.deviceSerial);
     const path = DeviceWebDriver.sessionDeleted.resolvePath(pathProvider);
     const res = await this.deviceMessageRelayer.sendHttpRequest(
       handleResult.organizationId,
@@ -293,16 +307,16 @@ export class WebDriverService {
     const device = remoteDeviceJob.device!;
     await this.dataSource.getRepository(RemoteDeviceJob).update(remoteDeviceJob.remoteDeviceJobId, { lastIntervalTime: new Date() });
     const headers = this.convertHeaders(request.headers);
-
+    const devicePlatform = platformTypeFromPlatform(device.platform);
     return {
       organizationId: device.organizationId,
       projectId: remote!.projectId,
       remoteDeviceJobId: remoteDeviceJob.remoteDeviceJobId,
       deviceId: device.deviceId,
-      platform: device.platform,
-      serial: device.serial,
-      browserName: remoteWdaInfo!.browserName,
-      browserVersion: remoteWdaInfo!.browserVersion,
+      devicePlatform,
+      deviceSerial: device.serial,
+      browserName: remoteWdaInfo!.browserName ?? undefined,
+      browserVersion: remoteWdaInfo!.browserVersion ?? undefined,
       request: {
         path: request.path,
         headers: headers,

@@ -5,11 +5,14 @@ export type Path = `/${string}`;
 
 // export type Headers = Record<string, string | string[]>;
 export type HeaderRecord = Record<string, string>;
+
 export const DoguRequestTimeoutHeader = 'dogu-request-timeout';
 export const DoguRemoteDeviceJobIdHeader = 'dogu-remote-device-job-id';
 export const DoguBrowserNameHeader = 'dogu-browser-name';
 export const DoguBrowserVersionHeader = 'dogu-browser-version';
-export const DoguRemoteSerialHeader = 'dogu-remote-serial';
-export const DoguRemotePlatformHeader = 'dogu-remote-platform';
+export const DoguDevicePlatformHeader = 'dogu-device-platform';
+export const DoguDeviceSerialHeader = 'dogu-device-serial';
+export const DoguApplicationUrlHeader = 'dogu-application-url';
+export const DoguApplicationVersionHeader = 'dogu-application-version';
 
 export type Query = Record<string, unknown>;

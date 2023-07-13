@@ -1,4 +1,5 @@
-import { RelayRequest, WebDriverCapabilities } from '..';
+import { RelayRequest } from '../specs/http/device-webdriver';
+import { NullWebDriverCapabilitiesParser, ThrowableWebDriverCapabilitiesParser, WebDriverCapabilities } from './webdriver-capabilities';
 
 export type WebDriverEndpointType = 'new-session' | 'delete-session' | 'status' | 'session' | 'invalid';
 
@@ -40,12 +41,12 @@ export type WebDriverEndpointInfo =
 export class WebDriverEndPoint {
   private constructor(public readonly info: WebDriverEndpointInfo) {}
 
-  static async create(request: RelayRequest): Promise<WebDriverEndPoint> {
+  static async create(request: RelayRequest, throwableParser: ThrowableWebDriverCapabilitiesParser = new NullWebDriverCapabilitiesParser()): Promise<WebDriverEndPoint> {
     if (request.path === 'session') {
       if (!request.reqBody) {
         throw new Error('request body is undefined');
       }
-      const capabilities = await WebDriverCapabilities.create(request.reqBody);
+      const capabilities = await throwableParser.parse(request.reqBody);
       return new WebDriverEndPoint({
         type: 'new-session',
         capabilities: capabilities,

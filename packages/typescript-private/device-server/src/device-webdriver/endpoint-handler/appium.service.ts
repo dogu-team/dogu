@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { PromiseOrValue } from '@dogu-tech/common';
+import { HeaderRecord, PromiseOrValue } from '@dogu-tech/common';
 import { RelayRequest, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
 import { AppiumRemoteContext } from '../../appium/appium.remote.context';
 import { DoguLogger } from '../../logger/logger';
@@ -8,7 +8,13 @@ import { OnBeforeRequestResult } from './common';
 
 export abstract class AppiumEndpointHandler {
   abstract get endpointType(): WebDriverEndpointType;
-  abstract onBeforeRequest(remoteContext: AppiumRemoteContext, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): PromiseOrValue<OnBeforeRequestResult>;
+  abstract onBeforeRequest(
+    remoteContext: AppiumRemoteContext,
+    headers: HeaderRecord,
+    endpoint: WebDriverEndPoint,
+    request: RelayRequest,
+    logger: DoguLogger,
+  ): PromiseOrValue<OnBeforeRequestResult>;
 }
 
 const appiumEndpointHandlerMap = new Map<string, AppiumEndpointHandler>();
