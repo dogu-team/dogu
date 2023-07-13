@@ -26,7 +26,7 @@ import {
   validateMaxParallelJobs,
 } from '@dogu-private/types';
 import { notEmpty } from '@dogu-tech/common';
-import { BadRequestException, ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { BaseEntity, Brackets, DataSource, EntityManager, In, SelectQueryBuilder } from 'typeorm';
 import { Device } from '../../../db/entity/device.entity';
@@ -291,12 +291,6 @@ export class DeviceStatusService {
     if (maxParallelJobs) {
       if (!validateMaxParallelJobs(deviceById.platform, maxParallelJobs)) {
         throw new HttpException(`maxParallelJobs is invalid. : ${maxParallelJobs}, platform: ${platformTypeFromPlatform(deviceById.platform)}`, HttpStatus.BAD_REQUEST);
-      }
-    }
-
-    if (deviceById.platform === Platform.PLATFORM_ANDROID || deviceById.platform === Platform.PLATFORM_IOS) {
-      if (dto.maxParallelJobs !== undefined && dto.maxParallelJobs !== 1) {
-        throw new BadRequestException(`maxParallelJobs is invalid. : ${maxParallelJobs}, platform: ${platformTypeFromPlatform(deviceById.platform)}`);
       }
     }
 
