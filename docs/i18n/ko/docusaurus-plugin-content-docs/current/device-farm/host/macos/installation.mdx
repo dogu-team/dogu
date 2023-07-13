@@ -1,0 +1,131 @@
+---
+sidebar_position: 1
+title: Agent 설치하기
+locale: ko
+---
+
+import {
+  getBrowserPlatform,
+  BrowserPlatform,
+} from '@site/src/platform/platform.ts';
+
+import dost_macos_setting from '@site/static/img/dost/dost_macos_setting.png';
+import dost_macos_troubleshoot from '@site/static/img/dost/dost_macos_troubleshoot.png';
+import dost_macos_to_application from '@site/static/img/dost/dost_macos_to_application.png';
+import dost_macos_manual_setup from '@site/static/img/dost/dost_macos_manual_setup.png';
+import dost_windows_setting from '@site/static/img/dost/dost_windows_setting.png';
+import dost_windows_troubleshoot from '@site/static/img/dost/dost_windows_troubleshoot.png';
+import xcode_login_0 from '@site/static/img/dost/xcode_login_0.png';
+import xcode_login_1 from '@site/static/img/dost/xcode_login_1.png';
+import xcode_login_2 from '@site/static/img/dost/xcode_login_2.png';
+import xcode_iosdeviceagent from '@site/static/img/dost/xcode_iosdeviceagent.png';
+import xcode_webdriveragent from '@site/static/img/dost/xcode_webdriveragent.png';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
+import BrowserOnly from '@docusaurus/BrowserOnly';
+
+### 요구사항
+
+| OS    | OS Version                              | Architecture |
+| ----- | --------------------------------------- | ------------ |
+| macOS | macOS 11 (Big Sur) or later, Xcode 12.5 | x64, arm64   |
+
+### 설치
+
+[Dogu Agent 다운로드](https://dogutech.io/downloads/dost) 페이지에서 `Dogu Agent`를 다운로드 받을 수 있습니다.  
+원하는 Platform, Architecture에 맞게 다운로드 받아주세요.
+
+<img src={dost_macos_to_application} style={{ width: 400 }} />
+
+- dmg file을 열어 Dogu Agent를 Applications 폴더로 이동해주세요.
+
+### 실행
+
+1. 최초 실행 시 이용약관 및 Third Party License를 확인하고 동의해야 합니다.
+2. Dogu Agent는 필요한 툴들이 설치되었는지 확인하고 설치되지 않았다면 설치창을 표시합니다. 설치되지 않은 툴들이 있다면 설치를 진행해 주세요.
+3. 원활한 Dogu Agent 사용을 위해서는 설치하고자 하는 운영체제에 맞는 권한이 필요합니다. 권한이 허용되지 않았다면 권한을 허용해 주세요.
+
+### Manual Setup
+
+<img src={dost_macos_manual_setup} style={{ width: 600 }} />
+
+iOS는 AppStore에 업로드된 앱이 아니라면 설치가 제한되기 때문에 조직 내부 기기에 설치하려면 특별한 설정이 필요합니다. 이 특별한 설정 중 하나가 Manual Setup입니다. 이 때 iOS 기기에 인증된 앱을 설치하는 방법 중 [Automatic signing](https://developer.apple.com/documentation/xcode/distributing-your-app-to-registered-devices#Register-devices-automatically-in-Xcode)을 기준으로 아래에서 설명하겠습니다. Manual signing을 사용하는 경우 조직 내부 Certificate과 Provisioing Profile을 사용하여 진행하시면 됩니다.
+
+- Xcode
+
+  - macOS에서 연결된 iOS기기를 제어할 때 기본적으로 필요한 도구입니다. [AppStore](https://apps.apple.com/us/app/xcode/id497799835?mt=12)에서 설치 가능합니다.
+  - 설치 후 아래와 같이 로그인 해주세요. 이 때 해당 Apple 계정은 [Apple Developer Program](https://developer.apple.com/programs/)에 가입된 조직내 계정이어야 합니다
+
+    <img src={xcode_login_0} style={{ width: 200 }} /> <br></br>
+    <img src={xcode_login_1} style={{ width: 400 }} /> <br></br>
+    <img src={xcode_login_2} style={{ width: 400 }} /> <br></br>
+
+- WebDriverAgent
+  - iOS 테스트 자동화를 위해 필요한 앱입니다.
+  - `WebDriverAgent Project` 버튼을 눌러 프로젝트를 여세요.
+  - 아래 사진과 같이 좌측부터 빨간박스에 있는 버튼을 눌러 WebDriverAgentRunner의 Signing & Capabilities 설정페이지로 이동해주세요.
+  - Team 을 선택해 주세요. [Apple Developer Program](https://developer.apple.com/programs/)에 가입된 조직이름으로 선택해주세요.
+  - 이후 경고메시지나 에러메시지가 사라졌다면 Dogu Agent로 돌아와 `Click here to build` 버튼을 눌러주세요.
+  - 빌드가 완료되었다면 `Check` 버튼을 눌러 초록색 체크표시가 나오도록 해주세요.
+    <img src={xcode_webdriveragent} style={{ width: 700 }} /> <br></br>
+- iOSDeviceAgent
+  - 실시간 화면전송 및 인풋을 위해 필요한 앱입니다.
+  - `iOSDeviceAgent Project` 버튼을 눌러 프로젝트를 여세요.
+  - 아래 사진과 같이 좌측부터 빨간박스에 있는 버튼을 눌러 DoguDev의 Signing & Capabilities 설정페이지로 이동해주세요.
+  - Team 을 선택해 주세요. [Apple Developer Program](https://developer.apple.com/programs/)에 가입된 조직이름으로 선택해주세요.
+  - 이후 경고메시지나 에러메시지가 사라졌는지 확인해주세요.
+  - DoguDev 뿐만 아니라 DoguDevRunner, DoguRunner, DoguScreen에도 동일한 작업을 진행해주세요.
+  - Dogu Agent로 돌아와 `Click here to build` 버튼을 눌러주세요.
+  - 빌드가 완료되었다면 `Check` 버튼을 눌러 초록색 체크표시가 나오도록 해주세요.
+    <img src={xcode_iosdeviceagent} style={{ width: 700 }} /> <br></br>
+
+:::caution
+[Apple Developer Console](https://developer.apple.com/account/resources/devices/list) 에 등록된 iOS 기기에서만 WebDriverAgent와 iOSDeviceAgent 설치 및 실행이 가능합니다. [Register devices in your developer account](https://developer.apple.com/documentation/xcode/distributing-your-app-to-registered-devices#Register-devices-in-your-developer-account) 항목을 참고하여 조직 관리자에게 기기등록을 요청하세요.
+
+:::
+
+### Console 연결
+
+[호스트 관리](/management/organization/host) 페이지를 확인하여 호스트 토큰을 획득하고, 획득한 토큰을 Dogu Agent에 입력해주세요.
+
+### 설정
+
+연결이 되었다면 Dogu Agent는 설정창으로 이동합니다. 설정창에서는 Dogu Agent의 기본 설정을 변경할 수 있습니다.
+
+#### General
+
+<img src={dost_macos_setting} style={{ width: 600 }} />
+
+- Start Dogu Agent when ayou log in
+  - PC에 로그인시 Dogu Agent가 자동으로 시작합니다.
+- Theme for Dogu Agent
+  - Dogu Agent의 컬러 테마를 설정합니다.
+
+#### TroubleShoot
+
+<img src={dost_macos_troubleshoot} style={{ width: 600 }} />
+
+- macOS Permission
+
+  - macOS일 경우에만 노출되며, 원활한 스트리밍을 위해 필요한 권한의 상태를 보여줍니다.
+
+  :::info
+
+  macOS는 [화면기록](https://support.apple.com/guide/mac-help/mchld6aa7d23/mac), [손쉬운 사용 권한](https://support.apple.com/guide/mac-help/mh43185/mac)이 필요합니다.
+
+  :::
+
+- Diagnose packages
+  - 정상 Dogu Agent 실행을 위해 필요한 패키지들의 설치상태를 확인합니다.
+- Open Docs
+  - Dogu Agent에 대한 문서를 브라우저로 엽니다.
+
+<br></br>
+<br></br>
+
+:::info
+
+Dogu Agent 추가를 완료하셨나요? [디바이스 설정하기](/device-farm/device/settings) 를 통해 디바이스들을 추가해보세요.
+
+:::

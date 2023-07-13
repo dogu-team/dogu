@@ -149,10 +149,7 @@ const HostItem = ({ host }: HostItemProps) => {
                   type="success"
                   showIcon
                   message={
-                    <Trans
-                      i18nKey="host:hostRevokeAfterDescription"
-                      components={{ br: <br />, link: <Link href="https://docs.dogutech.io/device-farm/host/get-started" target="_blank" /> }}
-                    />
+                    <Trans i18nKey="host:hostRevokeAfterDescription" components={{ br: <br />, link: <Link href="https://docs.dogutech.io/device-farm/host" target="_blank" /> }} />
                   }
                 />
 

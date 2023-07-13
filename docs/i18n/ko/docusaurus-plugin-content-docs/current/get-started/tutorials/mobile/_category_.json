@@ -1,6 +1,6 @@
 {
-  "position": 4,
-  "label": "sidebar.getStartedSidebar.category.tutorials.mobile",
+  "position": 2,
+  "label": "sidebar.getStartedSidebar.category.Tutorial - Mobile App Testing",
   "collapsible": true,
   "collapsed": true
 }

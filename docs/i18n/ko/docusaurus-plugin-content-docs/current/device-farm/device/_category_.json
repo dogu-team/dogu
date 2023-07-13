@@ -2,5 +2,5 @@
   "position": 3,
   "label": "sidebar.deviceFarmSidebar.category.Device",
   "collapsible": true,
-  "collapsed": true
+  "collapsed": false
 }

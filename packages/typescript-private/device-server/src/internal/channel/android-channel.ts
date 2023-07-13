@@ -157,6 +157,9 @@ export class AndroidChannel implements DeviceChannel {
     });
     ZombieServiceInstance.deleteComponent(this._appiumContext);
     ZombieServiceInstance.deleteComponent(this._deviceAgent, `AndroidChannel closed: ${this.serial}`);
+    ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
+      return zombieable.serial === this.serial && zombieable.platform === Platform.PLATFORM_ANDROID;
+    }, 'kill serial bound zombies');
     this.isClosed = true;
   }
 

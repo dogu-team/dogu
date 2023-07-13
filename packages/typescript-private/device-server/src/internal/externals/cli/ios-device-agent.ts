@@ -58,6 +58,14 @@ export class IosDeviceAgentProcess {
     this.screenChecker = new ZombieScreenChecker(this.serial, this.screenForwardPort, this.xctest, this.logger);
   }
 
+  static async isReady(serial: Serial): Promise<boolean> {
+    const originDerivedData = await DerivedData.create(HostPaths.external.xcodeProject.idaDerivedDataPath());
+    if (!originDerivedData.hasSerial(serial)) {
+      return false;
+    }
+    return true;
+  }
+
   static async start(
     serial: Serial,
     screenForwardPort: number,

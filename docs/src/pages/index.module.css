@@ -59,6 +59,12 @@
   }
 }
 
+.headerBannerFontColor {
+  display: block;
+  color: white;
+  margin: 0;
+}
+
 .headerBannerButton:hover {
   background-color: var(--ifm-button-background-color-hover);
   color: var(--ifm-heading-color);

@@ -12,17 +12,23 @@ import (
 )
 
 var (
-	tickTime          time.Duration = 1000 * time.Millisecond
+	tickTime          time.Duration = 3000 * time.Millisecond
 	connectionTimeout time.Duration = 10000 * time.Millisecond
-	tryCount          int           = 30
+	bootTime          time.Time
+	checkStartTime    time.Duration = 1 * time.Minute
+	tryCount          int           = 5
 )
 
 func goCheckDeviceServer(port uint32) {
 	// set Timer for check device server
 	ticker := time.NewTicker(tickTime)
 	failCount := 0
+	bootTime = time.Now()
 	go func() {
 		for range ticker.C {
+			if time.Since(bootTime) < checkStartTime {
+				continue
+			}
 			conn, err := net.DialTimeout("tcp", fmt.Sprintf("127.0.0.1:%d", port), connectionTimeout)
 			if err != nil {
 				failCount += 1

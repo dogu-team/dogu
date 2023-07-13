@@ -23,7 +23,7 @@ import useModal from '../../hooks/useModal';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
 import EditDeviceTagModal from './EditDeviceTagModal';
-import EditDeviceModal from './EditDeviceModal';
+import DeviceSettingModal from './DeviceSettingModal';
 import AddDeviceToProjectModal from './EditDeviceProjectModal';
 import DeviceName from './DeviceName';
 import DeviceTagAndProject from './DeviceTagAndProject';
@@ -189,7 +189,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
         </DeviceItemInner>
       </Item>
 
-      <EditDeviceModal device={device} isOpen={isDeviceSettingModalOpen} close={closeDeviceSettingModal} />
+      <DeviceSettingModal device={device} isOpen={isDeviceSettingModalOpen} close={closeDeviceSettingModal} />
       <DeviceDetailModal isOpen={isDetailModlOpen} device={device} close={closeDetailModal} />
       <EditDeviceTagModal deviceId={device.deviceId} isOpen={isEditDeviceTagModalOpen} close={closeEditDeviceTagModal} />
       <AddDeviceToProjectModal deviceId={device.deviceId} isOpen={isEditDeviceProjectModalOpen} close={closeEditDeviceProjectModal} isGlobal={isGlobalDevice} />

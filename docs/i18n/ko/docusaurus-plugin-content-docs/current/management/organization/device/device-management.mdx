@@ -83,9 +83,9 @@ import ProjectAdminPermission from '@site/src/components/console/ProjectAdminPer
 
 :::
 
-:::info Trouble Shooting
+:::info 트러블 슈팅
 
-디바이스 연결에 문제가 생겼나요? [디바이스 트러블슈팅](/device-farm/device/trouble-shooting) 문서를 참고해주세요.
+디바이스 연결에 문제가 생겼나요? [디바이스 트러블 슈팅](/device-farm/device/trouble-shooting) 문서를 참고해주세요.
 
 :::
 
@@ -190,24 +190,6 @@ import ProjectAdminPermission from '@site/src/components/console/ProjectAdminPer
 3. "스트리밍" 메뉴를 클릭해 디바이스 스트리밍 페이지로 이동합니다
    <img
      src="/ko/img/console/organization/streaming-device-menu.png"
-     style={{ width: 600, display: 'block' }}
-   />
-
-## 디바이스 이름 변경하기
-
-<OrganizationAdminPermission prefix="디바이스 이름 변경은" />
-
-1. Dogu 콘솔에서 조직 페이지 내 왼쪽 사이드바에서 "디바이스"를 클릭합니다.
-2. "사용중인 디바이스" 탭 또는 "대기중인 디바이스" 탭에서 이름을 변경하고자 하는 디바이스를 찾고, 메뉴 버튼(`···`)을 클릭합니다.
-3. "이름 수정" 메뉴를 클릭합니다.
-4. 변경할 디바이스 이름을 입력하고, "저장" 버튼을 클릭합니다.
-   <img
-     src="/ko/img/console/organization/rename-device-modal.png"
-     style={{ width: 600, display: 'block' }}
-   />
-5. 변경된 디바이스 이름을 확인합니다.
-   <img
-     src="/ko/img/console/organization/rename-device-confirm.png"
      style={{ width: 600, display: 'block' }}
    />
 
@@ -347,6 +329,29 @@ import ProjectAdminPermission from '@site/src/components/console/ProjectAdminPer
 5. 디바이스 목록에서 디바이스가 프로젝트에서 삭제된 것을 확인합니다.
    <img
      src="/ko/img/console/organization/detach-device-project-confirm.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+## 디바이스 설정 변경하기
+
+<OrganizationAdminPermission prefix="디바이스 설정 변경은" />
+
+:::tip
+
+최대 병렬 작업 수는 1~16 사이의 숫자로, 호스트 디바이스만 수정할 수 있습니다.
+
+:::
+
+1. Dogu 콘솔에서 조직 페이지 내 왼쪽 사이드바에서 "디바이스"를 클릭합니다.
+2. "사용중인 디바이스" 탭 또는 "대기중인 디바이스" 탭에서 설정을 변경하고자 하는 디바이스를 찾고, 메뉴 버튼(`···`)을 클릭합니다.
+3. "설정" 메뉴를 클릭합니다.
+   <img
+     src="/ko/img/console/organization/device-setting-menu.png"
+     style={{ width: 600, display: 'block' }}
+   />
+4. 디바이스 이름을 변경하거나, 최대 병렬 작업 수를 변경 후 "저장" 버튼을 클릭합니다.
+   <img
+     src="/ko/img/console/organization/device-setting-modal.png"
      style={{ width: 600, display: 'block' }}
    />
 

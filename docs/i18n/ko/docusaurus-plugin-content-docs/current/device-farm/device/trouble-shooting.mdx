@@ -1,11 +1,20 @@
 ---
 sidebar_position: 3
-title: Trouble Shooting
+title: 트러블 슈팅
 locale: ko
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import dost_ios_settings from '@site/static/img/dost/dost_ios_settings.png';
+import dost_ios_view_devices from '@site/static/img/dost/dost_ios_view_devices.png';
+import ios_devices_simulators_view from '@site/static/img/dost/ios_devices_simulators_view.png';
+import ios_devices_simulators_alert from '@site/static/img/dost/ios_devices_simulators_alert.png';
+
+import xcode_ida_testbuild from '@site/static/img/dost/xcode_ida_testbuild.png';
+import xcode_ida_running from '@site/static/img/dost/xcode_ida_running.png';
+import xcode_wda_testbuild from '@site/static/img/dost/xcode_wda_testbuild.png';
+import xcode_wda_running from '@site/static/img/dost/xcode_wda_running.png';
 
 ## 디바이스 연결 확인하기
 
@@ -21,33 +30,76 @@ import TabItem from '@theme/TabItem';
 ### 플랫폼 별 문제 해결하기
 
 <Tabs>
-  <TabItem value="android" label="Android" default>
-    <ol>
-      <li>호스트 장비에서 CMD, Terminal 등 쉘을 켜세요.</li>
-      <li>ADB 설치 및 환경변수 설정하기</li>
-      <li>
-        <code>adb devices</code> 명령어를 입력하세요.
-        <ul>
-          <li>
-            <code>offline</code>: 디바이스에서 호스트 PC에 연결할 때 디바이스
-            허용을 선택하거나, 디바이스에서 개발자 옵션을 활설화 한 후,{' '}
-            <code>USB 디버깅</code> 옵션을 활성화합니다.
-            <br />
-            디바이스의 USB 사용 모드를 바꿔보세요.
-          </li>
-          <li>
-            <code>unauthorized</code>: 디바이스에서 호스트 PC에 연결할 때
-            디바이스 허용을 선택하거나, 디바이스에서 개발자 옵션을 활설화 한 후,{' '}
-            <code>USB 디버깅</code> 옵션을 활성화합니다.
-          </li>
-          <li>
-            <code>device</code>: 디바이스가 정상적으로 연결되었습니다. 이 경우
-            Dogu Agent를 재실행해보세요.
-          </li>
-        </ul>
-      </li>
-    </ol>
-  </TabItem>
+<TabItem value="android" label="Android" default>
+
+1. 호스트 장비에서 Terminal, Powershell 등을 통해 쉘을 실행하고 android platform-tools가 설치된 경로로 이동해주세요.
+
+   ```sh
+   $cd $HOME/.dogu/externals/android/platform-tools
+   ```
+
+2. `adb devices` 명령어를 입력하세요.
+
+   ```sh
+   $adb devices
+   ```
+
+   - `offline`: 디바이스에서 호스트 PC에 연결할 때 디바이스 허용을 선택하거나, 디바이스에서 개발자 옵션을 활설화 한 후, `USB 디버깅` 옵션을 활성화합니다.
+     디바이스의 USB 사용 모드를 바꿔보세요.
+   - `unauthorized`: 디바이스에서 호스트 PC에 연결할 때 디바이스 허용을 선택하거나, 디바이스에서 개발자 옵션을 활설화 한 후, `USB 디버깅` 옵션을 활성화합니다.
+   - `device`: 디바이스가 정상적으로 연결되었습니다. 이 경우 Dogu Agent를 재실행해보세요.
+
+3. 위 방법으로도 연결되지 않는다면 Android 기기를 재시작해보세요.
+
+</TabItem>
+<TabItem value="ios" label="iOS" default>
+
+1. [Register a single device](https://developer.apple.com/help/account/register-devices/register-a-single-device) 문서를 참고하여 해당 기기가 Apple Developer 계정에 등록되었는지 확인해주세요.
+
+   - 기기가 새로 등록되었다면 Rebuild가 필요합니다.
+
+2. Dogu Agent에서 iOS Settings 항목이 전부 완료되었는지 확인해주세요.
+
+   <img src={dost_ios_settings} style={{ width: 500 }} />
+
+   - Automatically manage signing을 사용중이라면 Rebuild 전에 $HOME/Library/MobileDevice/Provisioning Profiles 폴더의 파일들을 삭제해주세요.
+
+   - `Rebuild & Check`를 실행해 예기치 못한 에러(ex. 인증서 만료)로 현재 빌드가 되지 않는지 확인해주세요.
+   - `Open WebDriverAgent project`버튼을 클릭해 WebDriverAgent 프로젝트를 열고 Target을 WebDriverAgentRunner로, Target Device를 문제가 있는 Device로 설정 후 Test build를 실행 후 정상적으로 기기에 앱이 실행되는지 확인해주세요.
+
+     <img src={xcode_wda_testbuild} style={{ width: 450 }} />
+
+     - 아래와 같이 Testing WebDriverAgentRunner가 표시되면 정상입니다.
+
+     <img src={xcode_wda_running} style={{ width: 600 }} />
+
+   - `Open iOSDeviceAgent project`버튼을 클릭 iOSDeviceAgent 프로젝트를 열고 Target을 DoguDevRunner로, Target Device를 문제가 있는 Device로 설정 후 Test build를 실행 후 정상적으로 기기에 앱이 실행되는지 확인해주세요.
+
+     <img src={xcode_ida_testbuild} style={{ width: 450 }} />
+
+     - 아래와 같이 Testing DoguDevRunner가 표시되면 정상입니다.
+
+     <img src={xcode_ida_running} style={{ width: 600 }} />
+
+3. Dogu Agent에서 `View Devices and Simulators` 를 클릭하여 Xcode 내에 Devices 창을 실행해주세요.
+
+   <img src={dost_ios_view_devices} style={{ width: 450 }} />
+
+   - 디바이스들이 목록에 표시되는지 확인해주세요.
+
+     <img src={ios_devices_simulators_view} style={{ width: 200 }} />
+
+   - 디바이스 상태에 경고메시지가 있는지 확인해주세요. 경고메시지가 표시된 기기는 경고메시지가 해결되지 않으면 Dogu Agent에서 디바이스를 인식하지 못합니다.
+
+     <img src={ios_devices_simulators_alert} style={{ width: 500 }} />
+
+4. iOS기기에 Developer가 Untrusted인 상태인지 확인해주세요.
+
+- [OSXDaily 글](https://osxdaily.com/2021/05/07/how-to-trust-an-app-on-iphone-ipad-to-fix-untrusted-developer-message/) 을 참고해 현재 개발자를 신뢰할 수 있도록 설정해주세요.
+
+5. 위 방법으로도 연결되지 않는다면 iOS기기를 재시작해보세요.
+
+</TabItem>
 </Tabs>
 
 ## 호스트 확인하기
@@ -77,3 +129,7 @@ Dogu Agent가 최신 버전인지 확인해주세요. Dogu Agent 최신 버전�
 ---
 
 문제가 해결되었나요? 해결이 되지 않았다면 [문의하기](https://dogutech.io/contact-us)를 통해 문의해주세요.
+
+```
+
+```
