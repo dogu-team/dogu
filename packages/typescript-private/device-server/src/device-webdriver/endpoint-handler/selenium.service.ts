@@ -1,20 +1,48 @@
 import { HeaderRecord, PromiseOrValue } from '@dogu-tech/common';
-import { RelayRequest, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
+import { RelayRequest, RelayResponse, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
 import { Injectable } from '@nestjs/common';
 import { DoguLogger } from '../../logger/logger';
 import { SeleniumService } from '../../selenium/selenium.service';
-import { EndpointHandlerResult } from './common';
+import { OnAfterRequestResult, OnBeforeRequestResult } from './common';
 
 export abstract class SeleniumEndpointHandler {
   abstract get endpointType(): string;
 
-  abstract onRequest(
+  onBeforeRequest(
     seleniumService: SeleniumService,
     headers: HeaderRecord,
     endpoint: WebDriverEndPoint,
     request: RelayRequest,
     logger: DoguLogger,
-  ): PromiseOrValue<EndpointHandlerResult>;
+  ): PromiseOrValue<OnBeforeRequestResult> {
+    request.path = this.resolvePath(request.path);
+    return {
+      request,
+    };
+  }
+
+  onAfterRequest(
+    seleniumService: SeleniumService,
+    headers: HeaderRecord,
+    endpoint: WebDriverEndPoint,
+    request: RelayRequest,
+    response: RelayResponse,
+    logger: DoguLogger,
+  ): PromiseOrValue<OnAfterRequestResult> {
+    return {
+      response,
+    };
+  }
+
+  protected resolvePath(path: string): string {
+    if (!path.startsWith('/')) {
+      path = `/${path}`;
+    }
+    if (!path.startsWith('/wd/hub')) {
+      path = `/wd/hub${path}`;
+    }
+    return path;
+  }
 }
 
 const seleniumEndpointHandlerMap = new Map<string, SeleniumEndpointHandler>();

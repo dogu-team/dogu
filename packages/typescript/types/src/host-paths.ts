@@ -8,6 +8,8 @@ interface CommonPathMap {
   nodeBin: string;
   yarn: string;
   pnpm: string;
+  npm: string;
+  npx: string;
   ffmpeg: string;
 }
 

@@ -156,6 +156,8 @@ function createThirdPartyPathMap(options?: ThirdPartyPathMapOptions): ThirdParty
       nodeBin: path.resolve(thirdPartyPath, platformDir, archDir, 'node', 'v16.20.0', nodeBinDir),
       yarn: path.resolve(thirdPartyPath, platformDir, archDir, 'node', 'v16.20.0', nodeBinDir, `yarn${cmdExtension}`),
       pnpm: path.resolve(thirdPartyPath, platformDir, archDir, 'node', 'v16.20.0', nodeBinDir, `pnpm${cmdExtension}`),
+      npm: path.resolve(thirdPartyPath, platformDir, archDir, 'node', 'v16.20.0', nodeBinDir, `npm${cmdExtension}`),
+      npx: path.resolve(thirdPartyPath, platformDir, archDir, 'node', 'v16.20.0', nodeBinDir, `npx${cmdExtension}`),
       ffmpeg: path.resolve(thirdPartyPath, platformDir, archCommonDir, `ffmpeg${exeExtension}`),
     },
     macos: {

@@ -1,26 +1,25 @@
 import { DoguRemoteDeviceJobIdHeader, HeaderRecord } from '@dogu-tech/common';
-import { RelayRequest, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
+import { RelayRequest, RelayResponse, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
 import _ from 'lodash';
 import { DoguLogger } from '../../logger/logger';
 import { SeleniumService } from '../../selenium/selenium.service';
-import { OnBeforeRequestResult } from './common';
+import { OnAfterRequestResult } from './common';
 import { RegisterSeleniumEndpointHandler, SeleniumEndpointHandler } from './selenium.service';
 
 @RegisterSeleniumEndpointHandler()
-export class SeleniumSessionEndpointHandler extends SeleniumEndpointHandler {
+export class SeleniumDeleteSessionEndpointHandler extends SeleniumEndpointHandler {
   get endpointType(): WebDriverEndpointType {
-    return 'session';
+    return 'delete-session';
   }
 
-  override async onBeforeRequest(
+  override async onAfterRequest(
     seleniumService: SeleniumService,
     headers: HeaderRecord,
     endpoint: WebDriverEndPoint,
     request: RelayRequest,
+    response: RelayResponse,
     logger: DoguLogger,
-  ): Promise<OnBeforeRequestResult> {
-    await super.onBeforeRequest(seleniumService, headers, endpoint, request, logger);
-
+  ): Promise<OnAfterRequestResult> {
     const doguRemoteDeviceJobId = _.get(headers, DoguRemoteDeviceJobIdHeader) as string | undefined;
     if (!doguRemoteDeviceJobId) {
       return {
@@ -30,17 +29,8 @@ export class SeleniumSessionEndpointHandler extends SeleniumEndpointHandler {
       };
     }
 
-    const seleniumContextInfo = await seleniumService.getInfo(doguRemoteDeviceJobId);
-    if (!seleniumContextInfo) {
-      return {
-        status: 500,
-        error: new Error('seleniumContextInfo is not found'),
-        data: {},
-      };
-    }
+    await seleniumService.close(doguRemoteDeviceJobId);
 
-    return {
-      request,
-    };
+    return super.onAfterRequest(seleniumService, headers, endpoint, request, response, logger);
   }
 }

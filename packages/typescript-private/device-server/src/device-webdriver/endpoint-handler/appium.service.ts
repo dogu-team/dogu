@@ -4,11 +4,11 @@ import { PromiseOrValue } from '@dogu-tech/common';
 import { RelayRequest, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
 import { AppiumRemoteContext } from '../../appium/appium.remote.context';
 import { DoguLogger } from '../../logger/logger';
-import { EndpointHandlerResult } from './common';
+import { OnBeforeRequestResult } from './common';
 
 export abstract class AppiumEndpointHandler {
   abstract get endpointType(): WebDriverEndpointType;
-  abstract onRequest(remoteContext: AppiumRemoteContext, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): PromiseOrValue<EndpointHandlerResult>;
+  abstract onBeforeRequest(remoteContext: AppiumRemoteContext, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): PromiseOrValue<OnBeforeRequestResult>;
 }
 
 const appiumEndpointHandlerMap = new Map<string, AppiumEndpointHandler>();

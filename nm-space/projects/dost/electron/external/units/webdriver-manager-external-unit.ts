@@ -1,5 +1,5 @@
 import { PrefixLogger } from '@dogu-tech/common';
-import { HostPaths } from '@dogu-tech/node';
+import { HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
 import { exec, spawn } from 'child_process';
 import fs from 'fs';
 import _ from 'lodash';
@@ -13,6 +13,12 @@ import { ThirdPartyPathMap } from '../../path-map';
 import { ExternalUnitCallback, IExternalUnit } from '../external-unit';
 
 const execAsync = util.promisify(exec);
+
+function getEnv(): NodeJS.ProcessEnv {
+  const env = newCleanNodeEnv();
+  env.PATH = `${ThirdPartyPathMap.common.nodeBin}${path.delimiter}${env.PATH}`;
+  return env;
+}
 
 export class WebdriverManagerExternalUnit extends IExternalUnit {
   private readonly logger = new PrefixLogger(logger, '[Webdriver Manager]');
@@ -56,9 +62,11 @@ export class WebdriverManagerExternalUnit extends IExternalUnit {
     if (!_.has(packageJson, 'dependencies.webdriver-manager')) {
       throw new Error('webdriver-manager is not installed');
     }
-    const pnpmPath = ThirdPartyPathMap.common.pnpm;
-    const { stdout, stderr } = await execAsync(`${pnpmPath} webdriver-manager version`, {
+    const npxPath = ThirdPartyPathMap.common.npx;
+    const env = getEnv();
+    const { stdout, stderr } = await execAsync(`${npxPath} webdriver-manager version`, {
       cwd: webdriverManagerPath,
+      env,
     });
     if (stdout.length > 0) {
       this.logger.info(stdout);
@@ -76,9 +84,11 @@ export class WebdriverManagerExternalUnit extends IExternalUnit {
       await fs.promises.rm(webdriverManagerPath, { recursive: true, force: true });
     }
     await fs.promises.mkdir(webdriverManagerPath, { recursive: true });
-    const pnpmPath = ThirdPartyPathMap.common.pnpm;
-    const { stdout, stderr } = await execAsync(`${pnpmPath} init`, {
+    const npmPath = ThirdPartyPathMap.common.npm;
+    const env = getEnv();
+    const { stdout, stderr } = await execAsync(`${npmPath} init -y`, {
       cwd: webdriverManagerPath,
+      env,
     });
     if (stdout.length > 0) {
       this.stdLogCallbackService.stdout(stdout);
@@ -87,8 +97,9 @@ export class WebdriverManagerExternalUnit extends IExternalUnit {
       this.stdLogCallbackService.stderr(stderr);
     }
     await new Promise<void>((resolve, reject) => {
-      const child = spawn(pnpmPath, ['add', 'webdriver-manager'], {
+      const child = spawn(npmPath, ['install', 'webdriver-manager'], {
         cwd: webdriverManagerPath,
+        env,
       });
       const rejectOnError = (error: Error) => {
         reject(error);

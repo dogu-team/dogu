@@ -2,7 +2,7 @@ import { RelayRequest, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-te
 import { AppiumRemoteContext } from '../../appium/appium.remote.context';
 import { DoguLogger } from '../../logger/logger';
 import { AppiumEndpointHandler, RegisterAppiumEndpointHandler } from './appium.service';
-import { EndpointHandlerResult } from './common';
+import { OnBeforeRequestResult } from './common';
 
 @RegisterAppiumEndpointHandler()
 export class AppiumSessionEndpointHandler extends AppiumEndpointHandler {
@@ -10,7 +10,7 @@ export class AppiumSessionEndpointHandler extends AppiumEndpointHandler {
     return 'session';
   }
 
-  onRequest(remoteContext: AppiumRemoteContext, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): EndpointHandlerResult {
+  onBeforeRequest(remoteContext: AppiumRemoteContext, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): OnBeforeRequestResult {
     if (endpoint.info.type !== 'session') {
       return {
         status: 400,

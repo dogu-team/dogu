@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { AppiumRemoteContext } from '../../appium/appium.remote.context';
 import { DoguLogger } from '../../logger/logger';
 import { AppiumEndpointHandler, RegisterAppiumEndpointHandler } from './appium.service';
-import { EndpointHandlerResult } from './common';
+import { OnBeforeRequestResult } from './common';
 
 function getAppExtension(platform: PlatformType): string {
   return extensionFromPlatform(platform);
@@ -28,7 +28,7 @@ export class AppiumNewSessionEndpointHandler extends AppiumEndpointHandler {
     return 'new-session';
   }
 
-  async onRequest(remoteContext: AppiumRemoteContext, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): Promise<EndpointHandlerResult> {
+  async onBeforeRequest(remoteContext: AppiumRemoteContext, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): Promise<OnBeforeRequestResult> {
     if (endpoint.info.type !== 'new-session') {
       return {
         status: 400,

@@ -1,6 +1,6 @@
 import { IsFilledString, transformAndValidate } from '@dogu-tech/common';
 import { Serial } from '@dogu-tech/types';
-import { IsOptional, IsString, Validate } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import _ from 'lodash';
 
 export interface WebDriverCapabilitiesOrigin {
@@ -80,15 +80,8 @@ export class DoguWebDriverOptions {
   @IsFilledString()
   accessKey!: string;
 
-  @Validate((value: unknown) => {
-    if (typeof value === 'string') {
-      return true;
-    } else if (Array.isArray(value)) {
-      return value.every((v) => typeof v === 'string');
-    }
-    return false;
-  })
-  'runs-on'!: string | string[];
+  @IsFilledString()
+  tag!: string;
 
   @IsString()
   @IsOptional()

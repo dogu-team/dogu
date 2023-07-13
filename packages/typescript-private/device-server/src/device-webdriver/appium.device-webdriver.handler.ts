@@ -43,7 +43,7 @@ export class AppiumDeviceWebDriverHandler implements DeviceWebDriverHandler {
     const endpoint = await WebDriverEndPoint.create(request);
     const endpointHandler = this.appiumEndpointHandlerService.getHandler(endpoint.info.type);
     if (endpointHandler) {
-      const result = await endpointHandler.onRequest(appiumRemoteContext, endpoint, request, this.logger);
+      const result = await endpointHandler.onBeforeRequest(appiumRemoteContext, endpoint, request, this.logger);
       if (result.error) {
         throw result.error;
       }

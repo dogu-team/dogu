@@ -13,18 +13,15 @@ export function isValidBrowserName(value: unknown): value is BrowserName {
 }
 
 export interface DefaultSeleniumContextOptions {
-  pnpmPath: string;
+  npxPath: string;
   serverEnv: NodeJS.ProcessEnv;
 }
 
 export interface SeleniumContextOptions {
   browserName: BrowserName;
   browserVersion: string;
-}
-
-export type SeleniumContextOpenOptions = SeleniumContextOptions & {
   key: string;
-};
+}
 
 export type SeleniumContextOptionsWithDefault = SeleniumContextOptions & DefaultSeleniumContextOptions;
 
@@ -35,6 +32,7 @@ export function createBrowserKey(options: SeleniumContextOptions): string {
 
 export interface SeleniumContextInfo {
   port: number;
+  sessionId: string | null;
 }
 
 interface SeleniumContextData extends SeleniumContextInfo {
@@ -70,20 +68,22 @@ export class SeleniumContext {
   }
 
   private async updateWebdriverManagerRepeatedly(): Promise<void> {
+    let lastError: unknown | null = null;
     for (let i = 0; i < WebdriverManagerUpdateRetryCount; i++) {
       try {
         await this.updateWebdriverManager();
         return;
       } catch (error) {
+        lastError = error;
         this.logger.error('Failed to update selenium server.', { error: errorify(error) });
       }
     }
+    throw new Error(`Failed to update selenium server. ${stringify(lastError)}`);
   }
 
   private async startWebdriverManager(): Promise<SeleniumContextData> {
-    const { browserName, browserVersion, pnpmPath, serverEnv } = this.options;
-    const browserKey = createBrowserKey(this.options);
-    const clonePath = HostPaths.external.nodePackage.webdriverManager.clonePath(browserKey);
+    const { browserName, browserVersion, npxPath, serverEnv, key } = this.options;
+    const clonePath = HostPaths.external.nodePackage.webdriverManager.clonePath(key);
     const seleniumPort = await getFreePort();
     const args = ['webdriver-manager', 'start', `--out_dir=${clonePath}`, `--seleniumPort=${seleniumPort}`];
     if (browserName === 'chrome') {
@@ -103,7 +103,7 @@ export class SeleniumContext {
     }
     // TODO: henry - add browser binary path to PATH
     const child = await new Promise<ChildProcessWithoutNullStreams>((resolve, reject) => {
-      const child = spawn(pnpmPath, args, {
+      const child = spawn(npxPath, args, {
         cwd: clonePath,
         env: serverEnv,
       });
@@ -112,6 +112,7 @@ export class SeleniumContext {
       };
       child.once('error', onErrorForReject);
       child.once('spawn', () => {
+        this.logger.info(`${child.spawnargs.join(' ')} is started.`);
         child.off('error', onErrorForReject);
         child.on('error', (error) => {
           this.logger.error('Selenium server error.', { error: errorify(error) });
@@ -141,14 +142,14 @@ export class SeleniumContext {
     return {
       port: seleniumPort,
       process: child,
+      sessionId: null,
     };
   }
 
   private async updateWebdriverManager(): Promise<void> {
-    const { browserName, browserVersion, pnpmPath, serverEnv } = this.options;
+    const { browserName, browserVersion, npxPath, serverEnv, key } = this.options;
     const prototypePath = HostPaths.external.nodePackage.webdriverManager.prototypePath();
-    const browserKey = createBrowserKey(this.options);
-    const clonePath = HostPaths.external.nodePackage.webdriverManager.clonePath(browserKey);
+    const clonePath = HostPaths.external.nodePackage.webdriverManager.clonePath(key);
     const clonePathStat = await fs.promises.stat(clonePath).catch(() => null);
     if (!clonePathStat) {
       await fs.promises.mkdir(path.dirname(clonePath), { recursive: true });
@@ -176,7 +177,7 @@ export class SeleniumContext {
       throw new Error(`Unknown browser name: ${stringify(browserName)}`);
     }
     return new Promise<void>((resolve, reject) => {
-      const child = spawn(pnpmPath, args, {
+      const child = spawn(npxPath, args, {
         cwd: clonePath,
         env: serverEnv,
       });
@@ -185,6 +186,7 @@ export class SeleniumContext {
       };
       child.once('error', onErrorForReject);
       child.once('spawn', () => {
+        this.logger.info(`${child.spawnargs.join(' ')} is started.`);
         child.off('error', onErrorForReject);
         child.on('error', (error) => {
           this.logger.error('Selenium server error.', { error: errorify(error) });
@@ -217,20 +219,38 @@ export class SeleniumContext {
   }
 
   async close(): Promise<void> {
+    const deleteClonePath = async (): Promise<void> => {
+      const { key } = this.options;
+      const clonePath = HostPaths.external.nodePackage.webdriverManager.clonePath(key);
+      await fs.promises
+        .rm(clonePath, {
+          recursive: true,
+          force: true,
+        })
+        .catch((error) => {
+          this.logger.error('Failed to delete webdriver-manager clone path.', { error: errorify(error) });
+        });
+    };
+
     if (!this._data) {
+      await deleteClonePath();
       return;
     }
+
     const { process } = this._data;
     if (process.exitCode !== null || process.signalCode !== null) {
       this._data = null;
+      await deleteClonePath();
       return;
     }
-    return new Promise<void>((resolve) => {
+
+    await new Promise<void>((resolve) => {
       process.once('exit', () => {
         this._data = null;
         resolve();
       });
       process.kill();
     });
+    await deleteClonePath();
   }
 }

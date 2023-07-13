@@ -7,7 +7,7 @@ import path from 'path';
 import { setInterval } from 'timers/promises';
 import { DoguLogger } from '../logger/logger';
 import { pathMap } from '../path-map';
-import { DefaultSeleniumContextOptions, SeleniumContext, SeleniumContextInfo, SeleniumContextOpenOptions } from './selenium.context';
+import { DefaultSeleniumContextOptions, SeleniumContext, SeleniumContextInfo, SeleniumContextOptions } from './selenium.context';
 
 const LockKey = 'SeleniumService.map';
 const GarbageCollectionInterval = 60 * 1000;
@@ -52,15 +52,15 @@ export class SeleniumService implements OnModuleInit, OnModuleDestroy {
     await Promise.all(entries.map((entry) => entry.context.close()));
   }
 
-  async open(options: SeleniumContextOpenOptions): Promise<SeleniumContextInfo> {
+  async open(options: SeleniumContextOptions): Promise<SeleniumContextInfo> {
     return this.lock.acquire(LockKey, async () => {
-      const { key, ...optionsWithoutId } = options;
+      const { key } = options;
       const entry = this.map.get(key);
       if (entry) {
         entry.lastAccessedAt = new Date();
         return entry.context.info;
       }
-      const mergedOptions = _.merge(this.defaultSeleniumContextOptions, optionsWithoutId);
+      const mergedOptions = _.merge(this.defaultSeleniumContextOptions, options);
       const newContext = new SeleniumContext(mergedOptions, this.logger);
       await newContext.open();
       this.map.set(key, {
@@ -93,14 +93,25 @@ export class SeleniumService implements OnModuleInit, OnModuleDestroy {
     });
   }
 
+  async closeBySessionId(sessionId: string): Promise<void> {
+    return this.lock.acquire(LockKey, async () => {
+      for (const [key, entry] of this.map.entries()) {
+        if (entry.context.info.sessionId === sessionId) {
+          this.map.delete(key);
+          await entry.context.close();
+        }
+      }
+    });
+  }
+
   private createDefaultSeleniumContextOptions(): void {
-    const pnpmPath = pathMap().common.pnpm;
+    const npxPath = pathMap().common.npx;
     const cleanEnv = newCleanNodeEnv();
     const serverEnv = _.merge(cleanEnv, {
       PATH: `${pathMap().common.nodeBin}${path.delimiter}${cleanEnv.PATH ?? ''}`,
     });
     this._defaultSeleniumContextOptions = {
-      pnpmPath,
+      npxPath,
       serverEnv,
     };
     this.logger.verbose('Default selenium context options created', {

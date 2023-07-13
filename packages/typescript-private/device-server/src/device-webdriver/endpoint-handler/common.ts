@@ -1,4 +1,4 @@
-import { RelayRequest } from '@dogu-tech/device-client-common';
+import { RelayRequest, RelayResponse } from '@dogu-tech/device-client-common';
 
 export interface EndpointHandlerResultError {
   status: number;
@@ -6,9 +6,16 @@ export interface EndpointHandlerResultError {
   data: object;
 }
 
-export interface EndpointHandlerResultOk {
+export interface OnBeforeRequestResultOk {
   error?: undefined;
   request: RelayRequest;
 }
 
-export type EndpointHandlerResult = EndpointHandlerResultError | EndpointHandlerResultOk;
+export type OnBeforeRequestResult = EndpointHandlerResultError | OnBeforeRequestResultOk;
+
+export interface OnAfterRequestResultOk {
+  error?: undefined;
+  response: RelayResponse;
+}
+
+export type OnAfterRequestResult = EndpointHandlerResultError | OnAfterRequestResultOk;

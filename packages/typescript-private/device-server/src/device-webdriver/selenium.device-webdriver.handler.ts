@@ -31,7 +31,7 @@ export class SeleniumDeviceWebDriverHandler implements DeviceWebDriverHandler {
     const endpoint = await WebDriverEndPoint.create(request);
     const endpointHandler = this.seleniumEndpointHandlerService.getHandler(endpoint.info.type);
     if (endpointHandler) {
-      const result = await endpointHandler.onRequest(this.seleniumService, headers, endpoint, request, this.logger);
+      const result = await endpointHandler.onBeforeRequest(this.seleniumService, headers, endpoint, request, this.logger);
       if (result.error) {
         throw result.error;
       }
@@ -54,11 +54,27 @@ export class SeleniumDeviceWebDriverHandler implements DeviceWebDriverHandler {
       });
     }
 
-    const url = `http://127.0.0.1:${seleniumContextInfo.port}/${request.path}`;
-    return httpRequestRelayHandler(url, request, this.logger);
+    const url = `http://127.0.0.1:${seleniumContextInfo.port}${request.path}`;
+    const response = await httpRequestRelayHandler(url, request, this.logger);
+
+    if (endpointHandler) {
+      const result = await endpointHandler.onAfterRequest(this.seleniumService, headers, endpoint, request, response, this.logger);
+      if (result.error) {
+        throw result.error;
+      }
+      return result.response;
+    }
+
+    return response;
   }
 
   async onSessionDeleted(headers: HeaderRecord, param: SessionDeletedParam): Promise<void> {
-    await Promise.resolve();
+    const doguRemoteDeviceJobId = _.get(headers, DoguRemoteDeviceJobIdHeader) as string | undefined;
+    if (doguRemoteDeviceJobId) {
+      await this.seleniumService.close(doguRemoteDeviceJobId);
+      return;
+    }
+
+    await this.seleniumService.closeBySessionId(param.sessionId);
   }
 }
