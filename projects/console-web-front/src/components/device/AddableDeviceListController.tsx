@@ -51,7 +51,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
     {
       label: (
         <MenuItemButton danger={false} onClick={() => openEditModal()}>
-          {t('device:deviceItemEditMenu')}
+          {t('device:deviceItemSettingMenu')}
         </MenuItemButton>
       ),
       key: 'edit',
