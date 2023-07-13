@@ -1,11 +1,11 @@
-import { Layout } from 'antd';
+import { Button, Layout } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import useSWR from 'swr';
 import Link from 'next/link';
 import { OrganizationBase, ProjectBase } from '@dogu-private/console';
-import { AppstoreOutlined, GatewayOutlined, ProjectOutlined, SettingOutlined, TabletOutlined, TeamOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, ArrowRightOutlined, GatewayOutlined, ProjectOutlined, QuestionCircleOutlined, SettingOutlined, TabletOutlined, TeamOutlined } from '@ant-design/icons';
 
 import useAuth from 'src/hooks/useAuth';
 import { swrAuthFetcher } from 'src/api';
@@ -14,6 +14,7 @@ import MenuLinkTabs, { MenuLinkTabProps } from '../MenuLinkTabs';
 import ConsoleBasicLayout from './ConsoleBasicLayout';
 import { scrollbarStyle } from '../../styles/common';
 import GitIntegrationTag from '../projects/GitIntegrationTag';
+import { flexRowSpaceBetweenStyle } from '../../styles/box';
 
 interface Props {
   children: React.ReactNode;
@@ -73,22 +74,32 @@ const ProjectLayout = ({ children, sidebar, isGitIntegrated }: Props) => {
       <MainLayout offset={56}>
         <Content>
           <HeaderBox>
-            <TitleBox>
-              <ProjectOutlined style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />
-              <Link href={`/dashboard/${organization?.organizationId}/projects`} access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'project-layout-org-name' : undefined}>
-                <StyledTitle>{organization?.name}</StyledTitle>
-              </Link>
-              &nbsp;/&nbsp;
-              <Link
-                href={`/dashboard/${organizationId}/projects/${projectId}`}
-                access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'project-layout-project-name' : undefined}
-              >
-                <StyledTitle>{project?.name}</StyledTitle>
-              </Link>
-              <div style={{ marginLeft: '.5rem' }}>
-                <GitIntegrationTag isGitIntegrated={isGitIntegrated} />
+            <FlexSpaceBetween>
+              <TitleBox>
+                <ProjectOutlined style={{ fontSize: '1.2rem', marginRight: '0.25rem' }} />
+                <Link href={`/dashboard/${organization?.organizationId}/projects`} access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'project-layout-org-name' : undefined}>
+                  <StyledTitle>{organization?.name}</StyledTitle>
+                </Link>
+                &nbsp;/&nbsp;
+                <Link
+                  href={`/dashboard/${organizationId}/projects/${projectId}`}
+                  access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'project-layout-project-name' : undefined}
+                >
+                  <StyledTitle>{project?.name}</StyledTitle>
+                </Link>
+                <div style={{ marginLeft: '.5rem' }}>
+                  <GitIntegrationTag isGitIntegrated={isGitIntegrated} />
+                </div>
+              </TitleBox>
+              <div>
+                <Link href={`/dashboard/${organizationId}/projects/${projectId}/get-started`}>
+                  <StyledButton type="link">
+                    Tutorial
+                    <ArrowRightOutlined />
+                  </StyledButton>
+                </Link>
               </div>
-            </TitleBox>
+            </FlexSpaceBetween>
             <Description>{project?.description}</Description>
           </HeaderBox>
 
@@ -200,4 +211,17 @@ const NavigationBar = styled.nav`
   flex-direction: column;
   padding: 0 32px;
   justify-content: flex-end;
+`;
+
+const FlexSpaceBetween = styled.div`
+  ${flexRowSpaceBetweenStyle}
+`;
+
+const StyledButton = styled(Button)`
+  &:hover {
+    & > span:last-child {
+      transition: all 0.3s ease;
+      transform: translateX(0.25rem);
+    }
+  }
 `;
