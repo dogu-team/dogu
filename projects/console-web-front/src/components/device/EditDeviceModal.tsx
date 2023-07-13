@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import { DeviceBase } from '@dogu-private/console';
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
+import Trans from 'next-translate/Trans';
 
 import H5 from 'src/components/common/headings/H5';
 import { updateDevice } from 'src/api/device';
@@ -14,7 +15,6 @@ import { getErrorMessage } from '../../utils/error';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import { isDesktop } from '../../utils/device';
-import Trans from 'next-translate/Trans';
 
 interface Props {
   isOpen: boolean;
