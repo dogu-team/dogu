@@ -22,7 +22,7 @@ const SetupConfig = () => {
 
           <div style={{ marginTop: '12px' }}>
             <Text mb={1}>Need help?</Text>
-            <Button onClick={() => ipc.settingsClient.openExternal('https://docs.dogutech.io/device-farm/host/get-started')}>Open dogu document</Button>
+            <Button onClick={() => ipc.settingsClient.openExternal('https://docs.dogutech.io/device-farm/host')}>Open dogu document</Button>
           </div>
         </div>
 

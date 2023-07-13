@@ -2,5 +2,5 @@
   "position": 3,
   "label": "sidebar.getStartedSidebar.category.Tutorials",
   "collapsible": true,
-  "collapsed": true
+  "collapsed": false
 }

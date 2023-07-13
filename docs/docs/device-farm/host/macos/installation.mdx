@@ -8,6 +8,7 @@ import {
   getBrowserPlatform,
   BrowserPlatform,
 } from '@site/src/platform/platform.ts';
+
 import dost_macos_setting from '@site/static/img/dost/dost_macos_setting.png';
 import dost_macos_troubleshoot from '@site/static/img/dost/dost_macos_troubleshoot.png';
 import dost_macos_to_application from '@site/static/img/dost/dost_macos_to_application.png';
@@ -24,59 +25,11 @@ import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 
-This page covers how to start the [`Dogu Agent`](/device-farm#host-and-agent) program, which is installed on the [`Host`](/device-farm#host-and-agent) machine.
-
 ### Requirements
 
-| OS      | OS Version                              | Architecture |
-| ------- | --------------------------------------- | ------------ |
-| Windows | Windows 10, Windows 11                  | x64          |
-| macOS   | macOS 11 (Big Sur) or later, Xcode 12.5 | x64, arm64   |
-
-## Windows
-
-### Installation
-
-You can download `Dogu Agent` from the [Dogu Agent Download](https://dogutech.io/downloads/dost) page.
-Please download it according to your desired platform and architecture.
-
-- Please run the exe installation file and agree to allow additional
-  network access.
-
-### Run
-
-1. When you first run Dogu Agent, you need to review and agree to the terms of service and third-party licenses.
-2. Dogu Agent checks if the necessary tools are installed and displays an installation window if any tools are missing. If there are tools that are not installed, please proceed with the installation.
-3. To ensure smooth operation of Dogu Agent, the appropriate permissions for the operating system you are installing on are required. If the permissions are not granted, please allow the permissions.
-
-### Console connection
-
-Please go to the [Managing Hosts](/management/organization/host) page to obtain the host token and enter the obtained token in Dogu Agent.
-
-### Settings
-
-Once connected, Dogu Agent will open the settings window where you can customize Dogu Agent's default settings.
-
-#### General
-
-<img src={dost_windows_setting} style={{ width: 600 }} />
-
-- Start Dogu Agent when you log in
-  - Dogu Agent starts automatically when PC turns on.
-- Theme for Dogu Agent
-  - Sets Dogu Agent's color theme.
-
-#### TroubleShoot
-
-<img src={dost_windows_troubleshoot} style={{ width: 600 }} />
-
-- Diagnose packages
-  - Check the installation status of the packages necessary for normal
-    Dogu Agent execution..
-- Open Docs
-  - Open documents website.
-
-## macOS
+| OS    | OS Version                              | Architecture |
+| ----- | --------------------------------------- | ------------ |
+| macOS | macOS 11 (Big Sur) or later, Xcode 12.5 | x64, arm64   |
 
 ### Installation
 
@@ -172,6 +125,6 @@ Once connected, Dogu Agent will open the settings window where you can customize
 
 :::info
 
-Dogu Agent installation has been completed? Try adding devices through [Device configuration](../device/settings).
+Dogu Agent installation has been completed? Try adding devices through [Device configuration](/device-farm/device/settings).
 
 :::

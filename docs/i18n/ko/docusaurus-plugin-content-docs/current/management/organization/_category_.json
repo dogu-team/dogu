@@ -2,5 +2,5 @@
   "position": 2,
   "label": "sidebar.managementSidebar.category.Organization",
   "collapsible": true,
-  "collapsed": true
+  "collapsed": false
 }

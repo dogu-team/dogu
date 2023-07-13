@@ -96,7 +96,7 @@ Integrate existing test framework with Dogu.
 
 ### Game
 
-- [Gamium](https://github.com/dogu-team/gamium)
+- [Gamium](https://docs.dogutech.io/test-automation/game/gamium)
 
 ## Integrate Test Unit Framework With Test Report
 
@@ -127,12 +127,11 @@ Run test script on routine and integrate external workflow with routine.
 
 ## Start With Self-Hosted
 
-Set up Dogu on your own server.  
-See [Guide setting up Dogu with self-hosted](https://docs.dogutech.io/get-started/installation/self-hosted/)
+Set up Dogu on your own server. See [Guide setting up Dogu with self-hosted](https://docs.dogutech.io/get-started/installation/self-hosted/)
 
 ## Start With Cloud
 
-Start right now with [Cloud Service](https://dogutech.io)
+Start [Cloud Service](https://dogutech.io) right now without any installation.
 
 ## Documentation
 

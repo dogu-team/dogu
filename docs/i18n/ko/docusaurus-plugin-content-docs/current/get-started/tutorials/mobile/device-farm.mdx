@@ -1,18 +1,17 @@
 ---
-sidebar_position: 2
-title: 튜토리얼 - 디바이스 팜
+sidebar_position: 1
+title: 디바이스 팜 구축
 locale: ko
 ---
 
-이 튜토리얼에서는 디바이스 팜을 구축하는 방법을 설명합니다.
+이 튜토리얼에서는 모바일 테스팅을 위한 디바이스 팜을 구축하는 방법을 설명합니다.
 
 ## 준비사항
 
 테스트를 실행하기 위해서는 아래 항목이 필요합니다.
 
-1. Windows 또는 Mac 운영체제의 데스크탑 또는 노트북 1대
-2. 안드로이드 또는 iOS 디바이스 1대
-3. USB 허브 및 데이터 전송 케이블
+1. Windows 또는 Mac 운영체제 장비 1대
+2. 안드로이드 또는 iOS 디바이스 1대와 USB 허브 및 데이터 전송 케이블 (모바일 테스트가 필요한 경우만)
 
 :::info
 
@@ -63,12 +62,6 @@ iOS 디바이스는 Mac 운영체제에서만 사용할 수 있습니다.
 Dogu에서는 **호스트**와 **디바이스**가 존재합니다.
 호스트란, 여러 디바이스에 테스트를 적용하기 위해 허브 역할을 하는 장치입니다. 디바이스는 테스트를 수행하는 실제 기기를 뜻합니다. 호스트와 디바이스를 연결하기 위해서, 실제 디바이스를 호스트에 물리적으로 연결해 주세요.
 
-:::tip
-
-호스트 또한 디바이스로 사용할 수 있습니다. 자세한 내용은 [호스트 관리](/management/organization/host) 문서를 참고하세요.
-
-:::
-
 ```mermaid
 graph RL
   subgraph 조직
@@ -96,7 +89,11 @@ graph RL
   H2 --> Dogu
 ```
 
-이 문서에서는 호스트 1대, 디바이스 1대를 기준으로 설명합니다.
+:::tip
+
+호스트 또한 디바이스로 사용할 수 있습니다. 자세한 내용은 [호스트 관리](/management/organization/host) 문서를 참고하세요.
+
+:::
 
 :::info 디바이스 설정
 
@@ -113,8 +110,8 @@ graph RL
 
 :::info Prerequisites
 
-1. [클라우드용 Dogu Agent](https://dogutech.io/downloads/dost) 또는 [Self-hosted용 Dogu Agent](https://github.com/dogu-team/dogu/releases)페이지 에서 호스트 장비에 맞는 플랫폼을 선택해 Dogu Agent를 설치하세요.
-2. 호스트 장비 권장 사양은 [Agent 설치하기](/device-farm/host/get-started) 문서를 참고하세요.
+1. [클라우드용 Dogu Agent](https://dogutech.io/downloads/dost) 또는 [Self-Hosted용 Dogu Agent](https://github.com/dogu-team/dogu/releases)페이지 에서 호스트 장비에 맞는 플랫폼을 선택해 Dogu Agent를 설치하세요.
+2. 호스트 장비 권장 사양은 [Agent 설치하기](/device-farm/host) 문서를 참고하세요.
 
 :::
 
@@ -143,15 +140,10 @@ graph RL
      style={{ width: 600, display: 'block' }}
    />
 
-:::info 자세히 알아보기
-
-Dogu Agent와 호스트에 대한 자세한 내용은 [호스트](/device-farm/host/get-started) 문서를 참고하세요.
-
-:::
 
 ---
 
-호스트 추가 과정에 문제가 있나요? [호스트 트러블슈팅](/device-farm/host/trouble-shooting) 문서를 참고해 보세요.
+호스트 추가 과정에 문제가 있나요? [호스트 트러블슈팅](/device-farm/host) 문서를 참고해 보세요.
 
 ## 디바이스 추가하기
 
@@ -160,7 +152,7 @@ Dogu Agent와 호스트에 대한 자세한 내용은 [호스트](/device-farm/h
 :::info
 
 이 문서에서는 안드로이드 디바이스를 추가하는 방법에 대해 설명합니다.  
-iOS의 경우 Dogu Agent에서 별도의 설정 후 진행할 수 있습니다. 자세한 내용은 [macOS Agent](/device-farm/host/get-started#macos) 문서를 참고하세요.
+iOS의 경우 Dogu Agent에서 별도의 설정 후 진행할 수 있습니다. 자세한 내용은 [macOS Agent](/device-farm/host#macos) 문서를 참고하세요.
 
 :::
 

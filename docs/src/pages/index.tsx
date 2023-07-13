@@ -30,14 +30,16 @@ function HomepageHeader() {
         <div className={styles.headerBannerButtonWrapper}>
           <div className={styles.headerBannerButtonWrapper}>
             <Link to="/get-started" className={styles.headerBannerButton}>
+              <p className={styles.headerBannerFontColor}>
               Get started
+              </p>
             </Link>
             <Link
               href="https://dogutech.io"
               target="_blank"
               className={styles.headerBannerButton}
             >
-              Try Dogu for free
+              <p className={styles.headerBannerFontColor}>Try Dogu for free</p>
             </Link>
           </div>
           <iframe
@@ -126,7 +128,7 @@ export default function Home(): JSX.Element {
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/device-farm/host/get-started">
+              <Link to="/device-farm/host">
                 <Translate id="main.hostAndDeviceHostLinkTitle" />
               </Link>
             </li>
