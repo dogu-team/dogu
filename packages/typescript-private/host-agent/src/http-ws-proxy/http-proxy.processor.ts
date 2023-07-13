@@ -1,5 +1,5 @@
 import { HttpProxyRequest, HttpProxyResponse } from '@dogu-private/console-host-agent';
-import { DefaultHttpOptions, errorify, transformAndValidate } from '@dogu-tech/common';
+import { DefaultHttpOptions, DoguRequestTimeoutHeader, errorify, transformAndValidate } from '@dogu-tech/common';
 import { DeviceServerResponseDto } from '@dogu-tech/device-client';
 import { Injectable } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
@@ -13,6 +13,7 @@ export class HttpProxyProcessor {
 
   async httpRequest(param: HttpProxyRequest, context: MessageContext): Promise<HttpProxyResponse> {
     const { method, path, headers, query, body } = param;
+    const timeout = headers && DoguRequestTimeoutHeader in headers ? parseInt(headers[DoguRequestTimeoutHeader]) : DefaultHttpOptions.request.timeout;
     try {
       const response = await lastValueFrom(
         this.deviceClientService.service.request<DeviceServerResponseDto>({
@@ -21,7 +22,7 @@ export class HttpProxyProcessor {
           headers: headers,
           params: query,
           data: body,
-          timeout: DefaultHttpOptions.request.timeout,
+          timeout: timeout,
         }),
       );
       const { status, data } = response;

@@ -1,4 +1,4 @@
-import { HeaderRecord, Method } from '@dogu-tech/common';
+import { DefaultHttpOptions, DoguRequestTimeoutHeader, HeaderRecord, Method } from '@dogu-tech/common';
 import { RelayRequest, RelayResponse, WebDriverEndPoint } from '@dogu-tech/device-client-common';
 import { All, Controller, Delete, Post, Req, Res } from '@nestjs/common';
 import { Request, Response } from 'express';
@@ -23,7 +23,10 @@ export class RemoteWebDriverInfoController {
       throw new WebDriverException(400, new Error('Internal error. endpoint type is not new-session'), {});
     }
     const processResult = await this.webdriverService.handleNewSessionRequest(endpoint.info, relayRequest);
-    const relayResponse = await this.webdriverService.sendRequest(processResult);
+    const headers: HeaderRecord = {};
+    headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout3minutes.toString();
+
+    const relayResponse = await this.webdriverService.sendRequest(processResult, headers);
     await this.webdriverService.handleNewSessionResponse(processResult, relayResponse);
     this.sendResponse(relayResponse, response);
   }
@@ -38,7 +41,9 @@ export class RemoteWebDriverInfoController {
       throw new WebDriverException(400, new Error('Internal error. endpoint type is not delete-session'), {});
     }
     const processResult = await this.webdriverService.handleDeleteSessionRequest(endpoint.info, relayRequest);
-    const relayResponse = await this.webdriverService.sendRequest(processResult);
+    const headers: HeaderRecord = {};
+    headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout1minutes.toString();
+    const relayResponse = await this.webdriverService.sendRequest(processResult, headers);
     await this.webdriverService.handleDeleteSessionResponse(processResult, relayResponse);
     this.sendResponse(relayResponse, response);
   }
@@ -54,7 +59,9 @@ export class RemoteWebDriverInfoController {
       throw new WebDriverException(400, new Error('Internal error. endpoint type is not session'), {});
     }
     const processResult = await this.webdriverService.handleEachSessionRequest(endpoint.info, relayRequest);
-    const relayResponse = await this.webdriverService.sendRequest(processResult);
+    const headers: HeaderRecord = {};
+    headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout1minutes.toString();
+    const relayResponse = await this.webdriverService.sendRequest(processResult, headers);
     this.sendResponse(relayResponse, response);
   }
 

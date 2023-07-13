@@ -39,7 +39,7 @@ export class WebDriverService {
     private readonly logger: DoguLogger,
   ) {}
 
-  async sendRequest(processResult: WebDriverEndpointHandlerResult): Promise<RelayResponse> {
+  async sendRequest(processResult: WebDriverEndpointHandlerResult, headers: HeaderRecord = {}): Promise<RelayResponse> {
     try {
       const pathProvider = new DeviceWebDriver.relayHttp.pathProvider(processResult.serial);
       const path = DeviceWebDriver.relayHttp.resolvePath(pathProvider);
@@ -48,7 +48,7 @@ export class WebDriverService {
         processResult.deviceId,
         DeviceWebDriver.relayHttp.method,
         path,
-        undefined,
+        headers,
         undefined,
         processResult.request,
         DeviceWebDriver.relayHttp.responseBodyData,
