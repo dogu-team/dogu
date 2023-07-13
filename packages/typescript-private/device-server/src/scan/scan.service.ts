@@ -91,6 +91,8 @@ export class ScanService implements OnModuleInit {
     if (Date.now() - this.befTime > 3000) {
       this.befTime = Date.now();
       this.logger.info('ScanService.update', { count: this.channels.length, serials: this.channels.map((c) => c.serial) });
+    } else {
+      return;
     }
 
     for (const [platform, driver] of this.driverMap) {

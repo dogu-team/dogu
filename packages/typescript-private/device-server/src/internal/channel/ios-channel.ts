@@ -90,6 +90,10 @@ export class IosChannel implements DeviceChannel {
     const { serial, deviceAgentDevicePort, deviceAgentDeviceSecondPort, deviceAgentDeviceThirdPort } = param;
     const platform = Platform.PLATFORM_IOS;
 
+    if (!(await IosDeviceAgentProcess.isReady(serial))) {
+      throw new Error(`IosDeviceAgentProcess is not ready serial: ${serial}`);
+    }
+
     const logger = createIdaLogger(param.serial);
     logger.verbose('appium wda privisioning check starting');
     const _ = await DerivedData.create(HostPaths.external.xcodeProject.wdaDerivedDataPath());
@@ -176,6 +180,9 @@ export class IosChannel implements DeviceChannel {
      */
     ZombieServiceInstance.deleteComponent(this._appiumContext);
     this.iosDeviceAgentProcess.delete();
+    ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
+      return zombieable.serial === this.serial && zombieable.platform === Platform.PLATFORM_IOS;
+    }, 'kill serial bound zombies');
   }
 
   queryProfile(methods: ProfileMethod[] | ProfileMethod): FilledRuntimeInfo {
