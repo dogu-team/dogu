@@ -27,6 +27,7 @@ const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
 const SET_CAPABILITIES_ID = 'set-capabilities';
 const UPLOAD_SAMPLE_APP_ID = 'upload-sample-app';
 const RUN_TEST_ID = 'run-test';
+const RESULT_ID = 'result';
 const DONE_ID = 'done';
 
 const MobileGuide = () => {
@@ -101,6 +102,7 @@ const MobileGuide = () => {
               { id: SET_CAPABILITIES_ID, title: 'Set capabilities' },
               { id: UPLOAD_SAMPLE_APP_ID, title: 'Upload sample application' },
               { id: RUN_TEST_ID, title: 'Run remote testing' },
+              { id: RESULT_ID, title: 'Check result' },
               { id: DONE_ID, title: 'Done! Next step' },
             ]}
           />
@@ -178,6 +180,17 @@ const MobileGuide = () => {
           <div style={{ marginBottom: '2rem' }}>
             <GuideBanner docsUrl="https://docs.dogutech.io/test-automation/mobile/appium" />
           </div>
+
+          <GuideStep
+            id={RESULT_ID}
+            title="Check result"
+            description={<p>Check remote testing result</p>}
+            content={
+              <Link href={`/dashboard/${organizationId}/projects/${projectId}/remotes`}>
+                <Button>Go to result</Button>
+              </Link>
+            }
+          />
 
           <DoneStep id={DONE_ID} />
         </div>

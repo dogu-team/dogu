@@ -4,7 +4,7 @@ import { RemoteDeviceJobBase, RemoteWebDriverInfoBase } from '..';
 
 interface RemoteRelationTraits {
   remoteInfo?: RemoteWebDriverInfoBase | null;
-  removeDeviceJobs?: RemoteDeviceJobBase[];
+  remoteDeviceJobs?: RemoteDeviceJobBase[];
 }
 
 export interface RemoteBaseTraits {
