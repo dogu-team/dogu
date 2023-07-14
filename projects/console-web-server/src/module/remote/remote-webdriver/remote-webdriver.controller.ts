@@ -50,6 +50,7 @@ export class RemoteWebDriverInfoController {
 
     const relayResponse = await this.webdriverService.sendRequest(processResult, headers);
     await this.webdriverService.handleNewSessionResponse(processResult, relayResponse);
+    await this.webdriverService.waitRemoteDeviceJobToInprogress(processResult.remoteDeviceJobId);
     this.sendResponse(relayResponse, response);
   }
 

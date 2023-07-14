@@ -38,6 +38,12 @@ export class RemoteDeviceJob extends BaseEntity implements RemoteDeviceJobBase {
   @ColumnTemplate.DeleteDate(RemoteDeviceJobPropSnake.deleted_at)
   deletedAt!: Date | null;
 
+  @ColumnTemplate.Date(RemoteDeviceJobPropSnake.in_progress_at, true)
+  inProgressAt!: Date | null;
+
+  @ColumnTemplate.Date(RemoteDeviceJobPropSnake.completed_at, true)
+  completedAt!: Date | null;
+
   @ManyToOne(() => Remote, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
   @JoinColumn({ name: RemoteDeviceJobPropSnake.remote_id, referencedColumnName: RemotePropCamel.remoteId })
   remote?: Remote;
