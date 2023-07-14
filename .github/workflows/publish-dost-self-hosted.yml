@@ -219,7 +219,7 @@ jobs:
 
       - name: Dogu Agent - Set productName
         run: |
-          yarn util:set-productname "Dogu Agent" && yarn
+          yarn util:set-productname "Dogu-Agent" && yarn
         working-directory: ./nm-space/projects/dost
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
