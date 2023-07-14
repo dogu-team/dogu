@@ -97,7 +97,7 @@ export class RemoteWebDriverService {
     let applicationVersion: string | undefined = undefined;
     if (devicePlatformType === 'android' || devicePlatformType === 'ios') {
       if (!options.appVersion) {
-        throw new RemoteException(400, new Error('App version not specified'), {});
+        throw new RemoteException(HttpStatus.BAD_REQUEST, new Error('App version not specified'), {});
       }
 
       const findAppDto = new FindProjectApplicationDto();
@@ -105,7 +105,7 @@ export class RemoteWebDriverService {
       findAppDto.extension = extensionFromPlatform(devicePlatformType);
       const applications = await this.applicationService.getApplicationList(options.organizationId, options.projectId, findAppDto);
       if (applications.items.length === 0) {
-        throw new RemoteException(400, new Error('Application not found'), {});
+        throw new RemoteException(HttpStatus.BAD_REQUEST, new Error('Application not found'), {});
       }
       const application = applications.items[0];
       applicationUrl = await this.applicationService.getApplicationDownladUrl(application.projectApplicationId, options.organizationId, options.projectId);
@@ -139,7 +139,7 @@ export class RemoteWebDriverService {
     }
     const sessionId = (response.resBody as any)?.value?.sessionId as string;
     if (!sessionId) {
-      throw new RemoteException(400, new Error('Session id not found in response'), {});
+      throw new RemoteException(HttpStatus.BAD_REQUEST, new Error('Session id not found in response'), {});
     }
 
     const rv = await this.dataSource.manager.transaction(async (manager) => {
@@ -179,7 +179,7 @@ export class RemoteWebDriverService {
   async handleDeleteSessionRequest(endpointInfo: WebDriverDeleteSessionEndpointInfo, request: RelayRequest): Promise<WebDriverEndpointHandlerResult> {
     const sessionId = endpointInfo.sessionId;
     if (!sessionId) {
-      throw new RemoteException(400, new Error('empty session path'), {});
+      throw new RemoteException(HttpStatus.BAD_REQUEST, new Error('empty session path'), {});
     }
 
     const remoteDeviceJob = await this.dataSource.getRepository(RemoteDeviceJob).findOne({ where: { sessionId }, relations: [DEVICE_TABLE_NAME, REMOTE_TABLE_NAME] });
@@ -221,7 +221,7 @@ export class RemoteWebDriverService {
     }
     const sessionId = handleResult.sessionId;
     if (!sessionId) {
-      throw new RemoteException(400, new Error('Session id not found when deleting'), {});
+      throw new RemoteException(HttpStatus.BAD_REQUEST, new Error('Session id not found when deleting'), {});
     }
     const pathProvider = new DeviceWebDriver.sessionDeleted.pathProvider(handleResult.deviceSerial);
     const path = DeviceWebDriver.sessionDeleted.resolvePath(pathProvider);
@@ -241,7 +241,7 @@ export class RemoteWebDriverService {
   async handleEachSessionRequest(endpointInfo: WebDriverSessionEndpointInfo, request: RelayRequest): Promise<WebDriverEndpointHandlerResult> {
     const sessionId = endpointInfo.sessionId;
     if (!sessionId) {
-      throw new RemoteException(400, new Error('empty session path'), {});
+      throw new RemoteException(HttpStatus.BAD_REQUEST, new Error('empty session path'), {});
     }
 
     const remoteDeviceJob = await this.dataSource.getRepository(RemoteDeviceJob).findOne({ where: { sessionId }, relations: [DEVICE_TABLE_NAME, REMOTE_TABLE_NAME] });
