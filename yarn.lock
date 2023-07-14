@@ -14412,7 +14412,7 @@ __metadata:
     monaco-editor: 0.36.1
     next: 13.4.4
     next-translate: 2.4.4
-    next-translate-plugin: ^2.4.4
+    next-translate-plugin: 2.4.4
     nprogress: 0.2.0
     prettier: 2.8.6
     prop-types: 15.8.1
@@ -25066,7 +25066,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-translate-plugin@npm:^2.4.4":
+"next-translate-plugin@npm:2.4.4":
   version: 2.4.4
   resolution: "next-translate-plugin@npm:2.4.4"
   dependencies:
