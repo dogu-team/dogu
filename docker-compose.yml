@@ -71,7 +71,6 @@ services:
       --fingerprint
       --lt-cred-mech
       --stale-nonce
-      --no-stun
       --no-sslv3
       --no-tlsv1
       --no-multicast-peers
@@ -116,11 +115,6 @@ services:
       - '4000:4000'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    deploy:
-      resources:
-        reservations:
-          cpus: '2'
-          memory: 2G
     environment:
       - DOGU_NEXUS_USERNAME=${FILE_SERVER_USERNAME}
       - DOGU_NEXUS_PASSWORD=${FILE_SERVER_PASSWORD}
