@@ -1,5 +1,5 @@
 import { BrowserName } from '@dogu-private/types';
-import { errorify, Printable, stringify } from '@dogu-tech/common';
+import { delay, errorify, Printable, stringify } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
@@ -50,8 +50,11 @@ export class SeleniumContext {
       throw new Error('Selenium server is already started.');
     }
     await this.installBrowser();
+    await delay(1000);
     await this.updateWebdriverManagerRepeatedly();
+    await delay(1000);
     this._data = await this.startWebdriverManager();
+    await delay(1000);
   }
 
   private async installBrowser(): Promise<void> {
