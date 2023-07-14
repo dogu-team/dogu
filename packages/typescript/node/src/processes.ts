@@ -4,7 +4,7 @@ import { ChildProcess } from '.';
 export async function killProcessOnPort(port: number, printable: Printable): Promise<void> {
   switch (process.platform) {
     case 'darwin':
-      await killProcessOnPortOnMacos('', port, printable);
+      await killProcessOnPortOnMacos('""', port, printable);
       break;
     case 'win32':
       await killProcessOnPortOnWindows(port, printable);
