@@ -38,8 +38,6 @@ export class SeleniumNewSessionEndpointHandler extends SeleniumEndpointHandler {
       };
     }
 
-    const doguBrowserVersion = (_.get(headers, DoguBrowserVersionHeader) as string | undefined) ?? 'latest';
-
     const doguRemoteDeviceJobId = _.get(headers, DoguRemoteDeviceJobIdHeader) as string | undefined;
     if (!doguRemoteDeviceJobId) {
       return {
@@ -48,20 +46,20 @@ export class SeleniumNewSessionEndpointHandler extends SeleniumEndpointHandler {
         data: {},
       };
     }
+
+    const doguBrowserVersion = _.get(headers, DoguBrowserVersionHeader);
     const seleniumContextInfo = await seleniumService.open({
       browserName: doguBrowserName,
-      browserVersion: doguBrowserVersion,
+      browserVersion: doguBrowserVersion ?? 'latest',
       key: doguRemoteDeviceJobId,
     });
 
-    request.reqBody = _.merge(request.reqBody, {
-      capabilities: {
-        alwaysMatch: {
-          browserName: doguBrowserName,
-          browserVersion: doguBrowserVersion,
-        },
-      },
-    });
+    request.reqBody ??= {};
+    _.set(request.reqBody, 'capabilities.alwaysMatch.browserName', doguBrowserName);
+    if (doguBrowserVersion) {
+      _.set(request.reqBody, 'capabilities.alwaysMatch.browserVersion', doguBrowserVersion);
+    }
+
     return {
       request,
     };

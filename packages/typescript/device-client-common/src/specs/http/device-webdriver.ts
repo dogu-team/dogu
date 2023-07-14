@@ -15,7 +15,8 @@ export class RelayRequest {
   method!: Method;
 
   @IsObject()
-  query!: Query;
+  @IsOptional()
+  query?: Query;
 
   @IsObject()
   @IsOptional()
