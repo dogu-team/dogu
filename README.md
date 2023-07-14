@@ -37,11 +37,7 @@ Dogu - Integrated test automation platform based on web.
   </div>
 </p>
 
-Dogu is an integrated test automation platform that simplifies the automation of web, mobile, and game application testing.
-
-## Why Dogu?
-
-Building and maintaining infrastructure components such as Appium, OpenSTF, Jenkins, and Grafana for test automation requires significant time and effort. However, Dogu streamlines this process by providing an integrated platform for these infrastructures, allowing you to concentrate on test automation itself. Moreover, Dogu offers seamless integration with test scripts and frameworks, eliminating the need to develop infrastructure-related tasks such as parallel test execution and data transfer for test reporting.
+Dogu is an integrated test automation platform that simplifies the automation of web, mobile and game application testing.
 
 ## Device Farm
 
@@ -76,6 +72,8 @@ Run test script following test framework on device farm. See [Test Automation](h
 
 ## Test Report
 
+<img src=".github/resources/reporting-testing-profiling.png" width="100%"/>
+
 Visualize test unit by integrating test unit framework with test report. See [Test Report](https://docs.dogutech.io/get-started#test-reporting) for more details.
 
 ### Available Test Unit Framework
@@ -85,7 +83,7 @@ Visualize test unit by integrating test unit framework with test report. See [Te
 - [Mocha](https://docs.dogutech.io/test-report/javascript/mocha)
 - [TestNG](https://docs.dogutech.io/test-report/java/testng)
 
-## Routine
+## Test Routine
 
 Run test script by using Workflow. See [Routine](https://docs.dogutech.io/get-started#routine) for more details.
 
