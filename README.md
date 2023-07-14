@@ -45,32 +45,20 @@ Building and maintaining infrastructure components such as Appium, OpenSTF, Jenk
 
 ## Device Farm
 
+Connect the device to run your tests to Device Farm. See [Device Farm](https://docs.dogutech.io/get-started#device-farm) for more details.
+
 <img src=".github/resources/architecture-device-farm.png" width="100%"/>
 
-### Remote Control
+### Available Features
 
-Control device remotely on web browser.
+- [Remote Interaction](https://docs.dogutech.io/get-started#android-device-interaction)
+- [UI Inspector](https://docs.dogutech.io/get-started#android-native-ui-inspector)
 
-<div style="display: flex; flex-direction: row; margin-bottom: 8px">
-  <img src=".github/resources/device-android-streaming.gif" width="49%"/>
-  <img src=".github/resources/device-ios-streaming.gif" width="49%"/>
-</div>
+## Test Automation
 
-### UI Inspector
+Run test script following test framework on device farm. See [Test Automation](https://docs.dogutech.io/get-started#test-automation) for more details.
 
-Inspect UI on web browser.
-
-- Native UI
-- Game UI developed by Unity Engine
-
-<div style="display: flex; flex-direction: row; justify-content: center">
-  <img src=".github/resources/android-inspecting.gif" width="49%" />
-  <img src=".github/resources/ios-inspecting.gif" width="49%" />  
-</div>
-
-## Test Framework With Dogu
-
-### Browser
+### Available Test Framework for Browser
 
 - [Selenium](https://docs.dogutech.io/test-automation/browser/selenium)
 - [Playwright](https://docs.dogutech.io/test-automation/browser/playwright)
@@ -78,35 +66,32 @@ Inspect UI on web browser.
 - [Cypress](https://docs.dogutech.io/test-automation/browser/cypress)
 - [Webdriverio](https://docs.dogutech.io/test-automation/browser/webdriverio)
 
-### Mobile
+### Available Test Framework for Mobile
 
 - [Appium](https://docs.dogutech.io/test-automation/mobile/appium/)
 
-### Game
+### Available Test Framework for Game
 
 - [Gamium](https://docs.dogutech.io/test-automation/game/gamium)
 
-## Test Unit Framework With Test Report
+## Test Report
 
-Visualize test unit by integrating test unit framework with test report.
+Visualize test unit by integrating test unit framework with test report. See [Test Report](https://docs.dogutech.io/get-started#test-reporting) for more details.
 
-<div style="display: flex; flex-direction: row; justify-content: center">
-  <img src=".github/resources/reporting-video.png" width="49%"/>
-  <img src=".github/resources/reporting-visualization.png" width="49%"/>
-</div>
-
-<br/>
+### Available Test Unit Framework
 
 - [Jest](https://docs.dogutech.io/test-report/javascript/jest)
 - [Pytest](https://docs.dogutech.io/test-report/python/pytest)
 - [Mocha](https://docs.dogutech.io/test-report/javascript/mocha)
 - [TestNG](https://docs.dogutech.io/test-report/java/testng)
 
-## Routine Workflow
+## Routine
 
-Run test script on routine and integrate external workflow with routine.
+Run test script by using Workflow. See [Routine](https://docs.dogutech.io/get-started#routine) for more details.
 
 <img src=".github/resources/workflow-inside.png"/>
+
+### Available Workflow for Integration
 
 - Jenkins (Not yet supported)
 - Github Action (Not yet supported)
