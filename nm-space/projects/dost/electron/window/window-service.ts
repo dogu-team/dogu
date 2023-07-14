@@ -53,7 +53,7 @@ export class WindowService {
       titleBarStyle: 'hiddenInset',
       titleBarOverlay: true,
       trafficLightPosition: { x: 12, y: 14 },
-      title: 'Dost',
+      title: 'Dogu Agent',
       // skipTaskbar: true,
       webPreferences: {
         preload: PreloadScriptPath,
