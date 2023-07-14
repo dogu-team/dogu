@@ -45,7 +45,11 @@ export class RemoteWebDriverInfoController {
     // create headers
     const headers: HeaderRecord = {};
     headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout3minutes.toString();
-    headers[DoguRemoteDeviceJobIdHeader] = processResult.remoteDeviceJobId;
+
+    // FIXME: henry - temporary test
+    // headers[DoguRemoteDeviceJobIdHeader] = processResult.remoteDeviceJobId;
+    headers[DoguRemoteDeviceJobIdHeader] = 'dogu';
+
     headers[DoguDevicePlatformHeader] = processResult.devicePlatform;
     headers[DoguDeviceSerialHeader] = processResult.deviceSerial;
     if (processResult.applicationUrl) headers[DoguApplicationUrlHeader] = processResult.applicationUrl;
