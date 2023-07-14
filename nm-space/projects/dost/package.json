@@ -113,6 +113,6 @@
       "react-app/jest"
     ]
   },
-  "productName": "Dogu Agent",
+  "productName": "Dogu-Agent",
   "url": "https://github.com/dogu-team/dogu"
 }

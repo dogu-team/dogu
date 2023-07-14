@@ -1,7 +1,7 @@
 import { stringify } from '@dogu-tech/common';
 import { HttpException } from '@nestjs/common';
 
-export class WebDriverException extends HttpException {
+export class RemoteException extends HttpException {
   constructor(status: number, error: Error | unknown, data: Object) {
     if (error instanceof Error) {
       super(`${error.name}: ${error.message} ${stringify(data, { colors: false })}`, status);

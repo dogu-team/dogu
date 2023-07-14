@@ -9,3 +9,10 @@ export enum REMOTE_DEVICE_JOB_STATE {
   COMPLETE = 3,
   FAILURE = 4,
 }
+
+export function isRemoteDeviceJobCompleted(state: REMOTE_DEVICE_JOB_STATE): boolean {
+  return (
+    state === REMOTE_DEVICE_JOB_STATE.COMPLETE || //
+    state === REMOTE_DEVICE_JOB_STATE.FAILURE
+  );
+}

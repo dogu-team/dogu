@@ -1,5 +1,5 @@
-name: 📤publish-dogu-agent-cloud-development
-run-name: 📤publish-dogu-agent-cloud-development-${{ github.event.inputs.version }}
+name: 📤publish-dogu-agent-self-hosted
+run-name: 📤publish-dogu-agent-self-hosted-${{ github.event.inputs.version }}
 
 on:
   workflow_dispatch:
@@ -20,11 +20,15 @@ jobs:
       max-parallel: 99
       matrix:
         runner: [windows-2019, macos-latest]
+        arch: [arm64, x64]
         include:
           - runner: windows-2019
             extension: exe
           - runner: macos-latest
             extension: dmg
+        exclude:
+          - runner: windows-2019
+            arch: arm64
     runs-on: ['${{ matrix.runner }}']
 
     env:
@@ -190,32 +194,32 @@ jobs:
           echo "DOGU_APPLE_API_KEY_ID=${{ secrets.DOGU_APPLE_API_KEY_ID }}" >> .env.deploy-secret
           echo "DOGU_APPLE_API_ISSUER_ID=${{ secrets.DOGU_APPLE_API_ISSUER_ID }}" >> .env.deploy-secret
           echo "DOGU_APPLE_API_PRIVATEKEY=${{ secrets.DOGU_APPLE_API_PRIVATEKEY }}" >> .env.deploy-secret
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_DEV_ACCESS_KEY_ID }}" >> .env.deploy-secret
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_DEV_SECRET_ACCESS_KEY }}" >> .env.deploy-secret
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env.deploy-secret
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env.deploy-secret
         working-directory: ./nm-space/projects/dost
 
-      - name: create dotEnv development
+      - name: create dotEnv self-hosted
         run: |
           echo "DOGU_DEVICE_SERVER_PORT=5001" > .env.device-server
-          echo "DOGU_RUN_TYPE=development" >> .env.device-server
-          echo "NODE_ENV=development" >> .env.device-server
+          echo "DOGU_RUN_TYPE=self-hosted" >> .env.device-server
+          echo "NODE_ENV=production" >> .env.device-server
 
-          echo "DOGU_API_BASE_URL=https://api.dev.dogutech.io" > .env.host-agent
+          echo "DOGU_API_BASE_URL=" > .env.host-agent
           echo "DOGU_DEVICE_SERVER_HOST_PORT=localhost:5001" >> .env.host-agent
           echo "DOGU_HOST_TOKEN=" >> .env.host-agent
-          echo "DOGU_RUN_TYPE=development" >> .env.host-agent
-          echo "NODE_ENV=development" >> .env.host-agent
+          echo "DOGU_RUN_TYPE=self-hosted" >> .env.host-agent
+          echo "NODE_ENV=production" >> .env.host-agent
           echo "DOGU_HOST_AGENT_PORT=5100" >> .env.host-agent
 
-          echo "DOGU_APPUPDATE_PROVIDER=s3" > .env.dost
-          echo "DOGU_APPUPDATE_URL=public.dev.dogutech.io" >> .env.dost
-          echo "DOGU_APPUPDATE_SUBPATH=dost" >> .env.dost
-          echo "DOGU_APPUPDATE_REGION=ap-northeast-2" >> .env.dost
+          echo "DOGU_APPUPDATE_PROVIDER=" > .env.dost
+          echo "DOGU_APPUPDATE_URL=" >> .env.dost
+          echo "DOGU_APPUPDATE_SUBPATH=" >> .env.dost
+          echo "DOGU_APPUPDATE_REGION=" >> .env.dost
         working-directory: ./nm-space/projects/dost
 
       - name: Dogu Agent - Set productName
         run: |
-          yarn util:set-productname "Dogu Agent-cloud-development" && yarn
+          yarn util:set-productname "Dogu-Agent" && yarn
         working-directory: ./nm-space/projects/dost
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
@@ -227,8 +231,18 @@ jobs:
 
       - name: Dogu Agent - Build
         run: |
-          yarn run build && yarn run deploy:publish
+          yarn run build && yarn run deploy:notarize
         working-directory: ./nm-space/projects/dost
+        env:
+          DOGU_BUILD_ARCH: ${{ matrix.arch }}
+
+      - name: Upload dogu-agent
+        if: ${{ success() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'dogu-agent-${{ runner.os }}-${{ matrix.arch }}'
+          path: |
+            ./nm-space/projects/dost/dist/*.${{ matrix.extension }}
 
   send-slack:
     runs-on: ubuntu-latest
@@ -239,9 +253,9 @@ jobs:
       - name: Send Slack
         uses: dogu-team/slack@v1.0
         with:
-          template: 'CD'
+          template: 'CI'
           slack-channel-id: 'C03PL9TC44Q'
           result-status: ${{ needs.build.result }}
-          ignore-notify: false
+          ignore-notify: ${{ needs.build.result == 'success' }}
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

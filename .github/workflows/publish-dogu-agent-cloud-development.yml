@@ -1,5 +1,5 @@
-name: 📤publish-dogu-agent-cloud-production
-run-name: 📤publish-dogu-agent-cloud-production-${{ github.event.inputs.version }}
+name: 📤publish-dogu-agent-cloud-development
+run-name: 📤publish-dogu-agent-cloud-development-${{ github.event.inputs.version }}
 
 on:
   workflow_dispatch:
@@ -190,32 +190,32 @@ jobs:
           echo "DOGU_APPLE_API_KEY_ID=${{ secrets.DOGU_APPLE_API_KEY_ID }}" >> .env.deploy-secret
           echo "DOGU_APPLE_API_ISSUER_ID=${{ secrets.DOGU_APPLE_API_ISSUER_ID }}" >> .env.deploy-secret
           echo "DOGU_APPLE_API_PRIVATEKEY=${{ secrets.DOGU_APPLE_API_PRIVATEKEY }}" >> .env.deploy-secret
-          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> .env.deploy-secret
-          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> .env.deploy-secret
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_DEV_ACCESS_KEY_ID }}" >> .env.deploy-secret
+          echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_DEV_SECRET_ACCESS_KEY }}" >> .env.deploy-secret
         working-directory: ./nm-space/projects/dost
 
-      - name: create dotEnv production
+      - name: create dotEnv development
         run: |
           echo "DOGU_DEVICE_SERVER_PORT=5001" > .env.device-server
-          echo "DOGU_RUN_TYPE=production" >> .env.device-server
-          echo "NODE_ENV=production" >> .env.device-server
+          echo "DOGU_RUN_TYPE=development" >> .env.device-server
+          echo "NODE_ENV=development" >> .env.device-server
 
-          echo "DOGU_API_BASE_URL=https://api.dogutech.io" > .env.host-agent
+          echo "DOGU_API_BASE_URL=https://api.dev.dogutech.io" > .env.host-agent
           echo "DOGU_DEVICE_SERVER_HOST_PORT=localhost:5001" >> .env.host-agent
           echo "DOGU_HOST_TOKEN=" >> .env.host-agent
-          echo "DOGU_RUN_TYPE=production" >> .env.host-agent
-          echo "NODE_ENV=production" >> .env.host-agent
+          echo "DOGU_RUN_TYPE=development" >> .env.host-agent
+          echo "NODE_ENV=development" >> .env.host-agent
           echo "DOGU_HOST_AGENT_PORT=5100" >> .env.host-agent
 
           echo "DOGU_APPUPDATE_PROVIDER=s3" > .env.dost
-          echo "DOGU_APPUPDATE_URL=public.dogutech.io" >> .env.dost
+          echo "DOGU_APPUPDATE_URL=public.dev.dogutech.io" >> .env.dost
           echo "DOGU_APPUPDATE_SUBPATH=dost" >> .env.dost
           echo "DOGU_APPUPDATE_REGION=ap-northeast-2" >> .env.dost
         working-directory: ./nm-space/projects/dost
 
       - name: Dogu Agent - Set productName
         run: |
-          yarn util:set-productname "Dogu Agent" && yarn
+          yarn util:set-productname "Dogu-Agent-cloud-development" && yarn
         working-directory: ./nm-space/projects/dost
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false

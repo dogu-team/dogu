@@ -9,6 +9,7 @@ import { RoutineDeviceJob } from '../../../db/entity/index';
 import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
 import { DeviceMessageRelayer } from '../../device-message/device-message.relayer';
 import { DoguLogger } from '../../logger/logger';
+import { RemoteDeviceJobProcessor } from '../../remote/processor/remote-device-job-processor';
 
 @Injectable()
 export class RemoteDeviceJobUpdater {
@@ -19,11 +20,9 @@ export class RemoteDeviceJobUpdater {
   ) {}
 
   public async update(): Promise<void> {
-    // this.checkWaitingRemoteDeviceJobs();
-    // this.checkTimeoutDeviceJobs();
+    this.checkWaitingRemoteDeviceJobs();
+    this.checkTimeoutDeviceJobs();
   }
-
-  // private async checkWaitingRemoteDeviceJob
 
   private async checkWaitingRemoteDeviceJobs(): Promise<void> {
     const waitingRemoteDeviceJobs = await this.dataSource
@@ -71,9 +70,8 @@ export class RemoteDeviceJobUpdater {
         const totalInProgressDeviceJobs = inProgressDeviceJobs.length + inProgressRemoteDeviceJobs.length;
         if (totalInProgressDeviceJobs === 0) highestPriorityDeviceJobs.push(deviceJob!);
       } else {
-        // FIXME:
-        const inProgressDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0].device.routineDeviceJobs?.length ?? 0;
-        const inProgressRemoteDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0].device.remoteDeviceJobs?.length ?? 0;
+        const inProgressDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0]?.device?.routineDeviceJobs?.length ?? 0;
+        const inProgressRemoteDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0]?.device?.remoteDeviceJobs?.length ?? 0;
         const addableDeviceJobCount = maxParallel - inProgressDeviceJobs - inProgressRemoteDeviceJobs;
 
         const allWaingDeviceJobs = [...waitingRoutineDeviceJobsByDeviceId, ...waitingRemoteDeviceJobsByDeviceId];
@@ -100,7 +98,7 @@ export class RemoteDeviceJobUpdater {
     }
 
     for (const remoteDeviceJob of highestPriorityDeviceJobs) {
-      await this.dataSource.getRepository(RemoteDeviceJob).update(remoteDeviceJob.remoteDeviceJobId, { state: REMOTE_DEVICE_JOB_STATE.IN_PROGRESS });
+      await RemoteDeviceJobProcessor.setRemoteDeviceJobState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_STATE.IN_PROGRESS);
     }
   }
 
@@ -131,16 +129,21 @@ export class RemoteDeviceJobUpdater {
       const sessionId = timeoutDeviceJob.sessionId;
       const pathProvider = new DeviceWebDriver.sessionDeleted.pathProvider(device.serial);
       const path = DeviceWebDriver.sessionDeleted.resolvePath(pathProvider);
-      const res = await this.deviceMessageRelayer.sendHttpRequest(
-        device.organizationId,
-        device.deviceId,
-        DeviceWebDriver.sessionDeleted.method,
-        path,
-        undefined,
-        undefined,
-        { sessionId },
-        DeviceWebDriver.sessionDeleted.responseBody,
-      );
+      const res = this.deviceMessageRelayer
+        .sendHttpRequest(
+          device.organizationId,
+          device.deviceId,
+          DeviceWebDriver.sessionDeleted.method,
+          path,
+          undefined,
+          undefined,
+          { sessionId },
+          DeviceWebDriver.sessionDeleted.responseBody,
+        )
+        .catch((error) => {
+          this.logger.error('checkTimeoutDeviceJobs sendHttpRequest error', { error });
+        });
+      await RemoteDeviceJobProcessor.setRemoteDeviceJobState(this.dataSource.manager, timeoutDeviceJob, REMOTE_DEVICE_JOB_STATE.FAILURE);
     }
   }
 }
