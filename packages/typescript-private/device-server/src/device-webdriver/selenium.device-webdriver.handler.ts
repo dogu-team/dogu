@@ -1,5 +1,5 @@
 import { Code, ErrorResultError, Platform, Serial } from '@dogu-private/types';
-import { DoguRemoteDeviceJobIdHeader, HeaderRecord } from '@dogu-tech/common';
+import { DoguRemoteDeviceJobIdHeader, errorify, HeaderRecord } from '@dogu-tech/common';
 import { RelayRequest, RelayResponse, SessionDeletedParam, WebDriverEndPoint } from '@dogu-tech/device-client-common';
 import _ from 'lodash';
 import { HttpRequestRelayService } from '../http-request-relay/http-request-relay.common';
@@ -31,11 +31,16 @@ export class SeleniumDeviceWebDriverHandler implements DeviceWebDriverHandler {
     const endpoint = await WebDriverEndPoint.create(request);
     const endpointHandler = this.seleniumEndpointHandlerService.getHandler(endpoint.info.type);
     if (endpointHandler) {
-      const result = await endpointHandler.onBeforeRequest(this.seleniumService, headers, endpoint, request, this.logger);
-      if (result.error) {
-        throw result.error;
+      try {
+        const result = await endpointHandler.onBeforeRequest(this.seleniumService, headers, endpoint, request, this.logger);
+        if (result.error) {
+          throw result.error;
+        }
+        request = result.request;
+      } catch (error) {
+        this.logger.error('Failed to handle onBeforeRequest', { error: errorify(error) });
+        throw error;
       }
-      request = result.request;
     }
 
     const doguRemoteDeviceJobId = _.get(headers, DoguRemoteDeviceJobIdHeader) as string | undefined;
@@ -58,11 +63,16 @@ export class SeleniumDeviceWebDriverHandler implements DeviceWebDriverHandler {
     const response = await httpRequestRelayHandler(url, request, this.logger);
 
     if (endpointHandler) {
-      const result = await endpointHandler.onAfterRequest(this.seleniumService, headers, endpoint, request, response, this.logger);
-      if (result.error) {
-        throw result.error;
+      try {
+        const result = await endpointHandler.onAfterRequest(this.seleniumService, headers, endpoint, request, response, this.logger);
+        if (result.error) {
+          throw result.error;
+        }
+        return result.response;
+      } catch (error) {
+        this.logger.error('Failed to handle onAfterRequest', { error: errorify(error) });
+        throw error;
       }
-      return result.response;
     }
 
     return response;
