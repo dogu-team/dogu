@@ -1,15 +1,18 @@
-import { BrowserName } from '@dogu-private/types';
-import { delay, errorify, Printable, stringify } from '@dogu-tech/common';
+import { BrowserName, isValidBrowserDriverName } from '@dogu-private/types';
+import { errorify, Printable, stringify } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
-import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 import { BrowserInstaller } from '../browser-installer';
 import { getFreePort } from '../internal/util/net';
 
+const ChromeVersionPattern = /^(\d+)\.\d+\.\d+\.\d+$/;
+const ServerStartPattern = /.*Started Selenium.*/;
+const ServerStartTimeout = 30 * 1000;
+
 export interface DefaultSeleniumContextOptions {
-  npxPath: string;
+  javaPath: string;
   serverEnv: NodeJS.ProcessEnv;
 }
 
@@ -30,8 +33,6 @@ interface SeleniumContextData extends SeleniumContextInfo {
   process: ChildProcessWithoutNullStreams;
 }
 
-const WebdriverManagerUpdateRetryCount = 3;
-
 export class SeleniumContext {
   private _data: SeleniumContextData | null = null;
   private browserInstaller = new BrowserInstaller();
@@ -50,11 +51,8 @@ export class SeleniumContext {
       throw new Error('Selenium server is already started.');
     }
     await this.installBrowser();
-    await delay(1000);
-    await this.updateWebdriverManagerRepeatedly();
-    await delay(1000);
-    this._data = await this.startWebdriverManager();
-    await delay(1000);
+    await this.installBrowserDriver();
+    this._data = await this.startSeleniumServer();
   }
 
   private async installBrowser(): Promise<void> {
@@ -63,65 +61,112 @@ export class SeleniumContext {
     if (isInstalled) {
       return;
     }
+
     await this.browserInstaller.install({
-      browserName,
-      browserVersion,
+      browserOrDriverName: browserName,
+      browserOrDriverVersion: browserVersion,
     });
   }
 
-  private async updateWebdriverManagerRepeatedly(): Promise<void> {
-    let lastError: unknown | null = null;
-    for (let i = 0; i < WebdriverManagerUpdateRetryCount; i++) {
-      try {
-        await this.updateWebdriverManager();
-        return;
-      } catch (error) {
-        lastError = error;
-        this.logger.error('Failed to update selenium server.', { error: errorify(error) });
-      }
+  private async installBrowserDriver(): Promise<void> {
+    const { browserName, browserVersion } = this.options;
+    let browserDriverName = '';
+    const browserDriverVersion = browserVersion;
+    if (browserName === 'chrome') {
+      browserDriverName = 'chromedriver';
+    } else {
+      throw new Error(`Unknown browser name: ${stringify(browserName)}`);
     }
-    throw new Error(`Failed to update selenium server. ${stringify(lastError)}`);
+    if (!isValidBrowserDriverName(browserDriverName)) {
+      throw new Error(`Invalid browser driver name: ${stringify(browserDriverName)}`);
+    }
+
+    const isInstalled = await this.browserInstaller.isInstalled(browserDriverName, browserDriverVersion);
+    if (isInstalled) {
+      return;
+    }
+
+    await this.browserInstaller.install({
+      browserOrDriverName: browserDriverName,
+      browserOrDriverVersion: browserDriverVersion,
+    });
   }
 
-  private async startWebdriverManager(): Promise<SeleniumContextData> {
-    const { browserName, browserVersion, npxPath, serverEnv, key } = this.options;
-    const clonePath = HostPaths.external.nodePackage.webdriverManager.clonePath(key);
-    const seleniumPort = await getFreePort();
-    const args = ['webdriver-manager', 'start', `--out_dir=${clonePath}`, `--seleniumPort=${seleniumPort}`];
+  private async startSeleniumServer(): Promise<SeleniumContextData> {
+    const { browserName, browserVersion, serverEnv, javaPath } = this.options;
+    const seleniumServerPath = HostPaths.external.selenium.seleniumServerPath();
+    const port = await getFreePort();
+    const args: string[] = ['-jar', seleniumServerPath, 'standalone', '--host', '127.0.0.1', '--port', `${port}`, '--allow-cors', 'true', '--detect-drivers', 'false'];
     if (browserName === 'chrome') {
-      // FIXME: henry - need version mapping
-      // const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
-      // args.push(`--versions.chrome=${resolvedVersion}`);
-      args.push('--versions.chrome=latest');
-    } else if (browserName === 'firefox') {
-      // FIXME: henry - need version mapping
-      // const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
-      // args.push(`--versions.gecko=${resolvedVersion}`);
-      args.push('--versions.gecko=latest');
-    } else if (browserName === 'safari') {
-      // noop
-    } else if (browserName === 'edge') {
-      throw new Error('Edge is not supported yet.');
-    } else if (browserName === 'ie') {
-      throw new Error('IE is not supported yet.');
+      const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
+      const browserPath = await this.browserInstaller.getBrowserOrDriverPath(browserName, resolvedVersion);
+      const browserDriverPath = await this.browserInstaller.getBrowserOrDriverPath('chromedriver', resolvedVersion);
+      const stereotype: Record<string, unknown> = {
+        browserName: 'chrome',
+        'goog:chromeOptions': {
+          binary: browserPath,
+        },
+      };
+      const majorVersion = _.get(resolvedVersion.match(ChromeVersionPattern), 1, null);
+      if (majorVersion) {
+        _.set(stereotype, 'browserVersion', majorVersion);
+      }
+      args.push('--driver-configuration', 'display-name="Google Chrome for Testing"', `webdriver-executable="${browserDriverPath}"`, `stereotype='${JSON.stringify(stereotype)}'`);
     } else {
       throw new Error(`Unknown browser name: ${stringify(browserName)}`);
     }
 
-    const browserPath = await this.browserInstaller.getBrowserPath(browserName, browserVersion);
-    const browserDir = path.dirname(browserPath);
-    const env = _.merge(serverEnv, {
-      PATH: `${browserDir}${path.delimiter}${serverEnv.PATH || ''}`,
-    });
+    const seleniumServerDirPath = path.dirname(seleniumServerPath);
+    const fullCommand = `${javaPath} ${args.join(' ')}`;
+    this.logger.info(`Starting selenium server: ${fullCommand}`);
+
     const child = await new Promise<ChildProcessWithoutNullStreams>((resolve, reject) => {
-      const child = spawn(npxPath, args, {
-        cwd: clonePath,
-        env,
-      });
-      const onErrorForReject = (error: Error): void => {
+      let fullfilled = false;
+
+      let timeout: NodeJS.Timeout | null = setTimeout(() => {
+        timeout = null;
+        if (fullfilled) {
+          return;
+        }
+        fullfilled = true;
+        reject(new Error(`Selenium server is not started in ${ServerStartTimeout}ms with command: ${fullCommand}`));
+      }, ServerStartTimeout);
+
+      const _resolve = (child: ChildProcessWithoutNullStreams): void => {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = null;
+        }
+        if (fullfilled) {
+          return;
+        }
+        fullfilled = true;
+        resolve(child);
+      };
+
+      const _reject = (error: Error): void => {
+        if (timeout) {
+          clearTimeout(timeout);
+          timeout = null;
+        }
+        if (fullfilled) {
+          return;
+        }
+        fullfilled = true;
         reject(error);
       };
-      child.once('error', onErrorForReject);
+
+      const child = spawn(javaPath, args, {
+        cwd: seleniumServerDirPath,
+        env: serverEnv,
+        shell: true,
+      });
+
+      const onErrorForReject = (error: Error): void => {
+        _reject(error);
+      };
+      child.on('error', onErrorForReject);
+
       child.once('spawn', () => {
         this.logger.info(`${child.spawnargs.join(' ')} is started.`);
         child.off('error', onErrorForReject);
@@ -129,18 +174,25 @@ export class SeleniumContext {
           this.logger.error('Selenium server error.', { error: errorify(error) });
         });
         child.on('close', (code, signal) => {
-          this.logger.error('Selenium server is closed.', { code, signal });
+          this.logger.info('Selenium server is closed.', { code, signal });
+          _reject(new Error(`Selenium server is closed with code: ${code}, signal: ${signal}`));
         });
-        resolve(child);
       });
+
       child.stdout.setEncoding('utf8');
       child.stdout.on('data', (data) => {
         const message = stringify(data);
         if (message.length === 0) {
           return;
         }
+
         this.logger.info(message);
+        if (ServerStartPattern.test(message)) {
+          _resolve(child);
+          return;
+        }
       });
+
       child.stderr.setEncoding('utf8');
       child.stderr.on('data', (data) => {
         const message = stringify(data);
@@ -151,123 +203,29 @@ export class SeleniumContext {
       });
     });
     return {
-      port: seleniumPort,
+      port,
       process: child,
       sessionId: null,
     };
   }
 
-  private async updateWebdriverManager(): Promise<void> {
-    const { browserName, browserVersion, npxPath, serverEnv, key } = this.options;
-    const prototypePath = HostPaths.external.nodePackage.webdriverManager.prototypePath();
-    const clonePath = HostPaths.external.nodePackage.webdriverManager.clonePath(key);
-    const clonePathStat = await fs.promises.stat(clonePath).catch(() => null);
-    if (!clonePathStat) {
-      await fs.promises.mkdir(path.dirname(clonePath), { recursive: true });
-      await fs.promises.cp(prototypePath, clonePath, {
-        recursive: true,
-        force: true,
-      });
-    }
-    const args = ['webdriver-manager', 'update', `--out_dir=${clonePath}`, '--standalone=true'];
-    if (browserName === 'chrome') {
-      args.push('--gecko=false');
-      args.push('--chrome=true');
-      // FIXME: henry - need version mapping
-      // const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
-      // args.push(`--versions.chrome=${resolvedVersion}`);
-      args.push('--versions.chrome=latest');
-    } else if (browserName === 'firefox') {
-      args.push('--chrome=false');
-      args.push('--gecko=true');
-      // FIXME: henry - need version mapping
-      // const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
-      // args.push(`--versions.gecko=${resolvedVersion}`);
-      args.push('--versions.gecko=latest');
-    } else if (browserName === 'safari') {
-      // noop
-    } else if (browserName === 'edge') {
-      throw new Error('Edge is not supported yet.');
-    } else if (browserName === 'ie') {
-      throw new Error('IE is not supported yet.');
-    } else {
-      throw new Error(`Unknown browser name: ${stringify(browserName)}`);
-    }
-    return new Promise<void>((resolve, reject) => {
-      const child = spawn(npxPath, args, {
-        cwd: clonePath,
-        env: serverEnv,
-      });
-      const onErrorForReject = (error: Error): void => {
-        reject(error);
-      };
-      child.once('error', onErrorForReject);
-      child.once('spawn', () => {
-        this.logger.info(`${child.spawnargs.join(' ')} is started.`);
-        child.off('error', onErrorForReject);
-        child.on('error', (error) => {
-          this.logger.error('Selenium server error.', { error: errorify(error) });
-        });
-        child.on('close', (code, signal) => {
-          if (code === 0) {
-            resolve();
-          } else {
-            reject(new Error(`Selenium server is closed. code=${stringify(code)}, signal=${stringify(signal)}`));
-          }
-        });
-      });
-      child.stdout.setEncoding('utf8');
-      child.stdout.on('data', (data) => {
-        const message = stringify(data);
-        if (message.length === 0) {
-          return;
-        }
-        this.logger.info(message);
-      });
-      child.stderr.setEncoding('utf8');
-      child.stderr.on('data', (data) => {
-        const message = stringify(data);
-        if (message.length === 0) {
-          return;
-        }
-        this.logger.error(message);
-      });
-    });
-  }
-
   async close(): Promise<void> {
-    const deleteClonePath = async (): Promise<void> => {
-      const { key } = this.options;
-      const clonePath = HostPaths.external.nodePackage.webdriverManager.clonePath(key);
-      await fs.promises
-        .rm(clonePath, {
-          recursive: true,
-          force: true,
-        })
-        .catch((error) => {
-          this.logger.error('Failed to delete webdriver-manager clone path.', { error: errorify(error) });
-        });
-    };
-
     if (!this._data) {
-      await deleteClonePath();
       return;
     }
 
     const { process } = this._data;
     if (process.exitCode !== null || process.signalCode !== null) {
       this._data = null;
-      await deleteClonePath();
       return;
     }
 
-    await new Promise<void>((resolve) => {
+    return new Promise<void>((resolve) => {
       process.once('exit', () => {
         this._data = null;
         resolve();
       });
       process.kill();
     });
-    await deleteClonePath();
   }
 }

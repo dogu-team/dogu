@@ -45,6 +45,7 @@ export class DoguWebDriverOptions {
 export type WebDriverCapabilities = object;
 
 const DoguWebDriverOptionsPath = 'capabilities.alwaysMatch.dogu:options';
+const DesiredCapabilitiesDoguOptionsPath = 'desiredCapabilities.dogu:options';
 
 export interface ThrowableWebDriverCapabilitiesParser {
   parse(capabilities: WebDriverCapabilities): PromiseOrValue<WebDriverCapabilities>;
@@ -60,6 +61,7 @@ export class DoguWebDriverCapabilitiesParser implements ThrowableWebDriverCapabi
     }
     _.unset(capabilities, DoguWebDriverOptionsPath);
     this.doguOptions = await transformAndValidate(DoguWebDriverOptions, doguOptionsRaw);
+    _.unset(capabilities, DesiredCapabilitiesDoguOptionsPath);
     return capabilities;
   }
 }

@@ -1,4 +1,4 @@
-import { BrowserName } from '@dogu-private/types';
+import { BrowserOrDriverName } from '@dogu-private/types';
 import { stringify } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import { Browser, computeExecutablePath, detectBrowserPlatform, getInstalledBrowsers, install, resolveBuildId } from '@puppeteer/browsers';
@@ -8,20 +8,20 @@ import fs from 'fs';
 const BrowsersPathLock = new AsyncLock();
 
 export interface BrowserInstallOptions {
-  browserName: BrowserName;
-  browserVersion: string;
+  browserOrDriverName: BrowserOrDriverName;
+  browserOrDriverVersion: string;
   downloadProgressCallback?: (downloadedBytes: number, totalBytes: number) => void;
 }
 
 export class BrowserInstaller {
   async install(options: BrowserInstallOptions): Promise<void> {
-    const { browserName, browserVersion, downloadProgressCallback } = options;
+    const { browserOrDriverName, browserOrDriverVersion, downloadProgressCallback } = options;
     const platform = detectBrowserPlatform();
     if (!platform) {
       throw new Error('Unsupported platform');
     }
-    const browser = this.parseBrowserName(browserName);
-    const buildId = await resolveBuildId(browser, platform, browserVersion);
+    const browser = this.parseBrowserOrDriverName(browserOrDriverName);
+    const buildId = await resolveBuildId(browser, platform, browserOrDriverVersion);
     const browsersPath = HostPaths.external.browser.browsersPath();
     await this.lockBrowsersPath(async () => {
       await fs.promises.mkdir(browsersPath, { recursive: true });
@@ -35,16 +35,16 @@ export class BrowserInstaller {
     });
   }
 
-  isSupported(browserName: BrowserName): boolean {
+  isSupported(browserOrDriverName: BrowserOrDriverName): boolean {
     try {
-      this.parseBrowserName(browserName);
+      this.parseBrowserOrDriverName(browserOrDriverName);
       return true;
     } catch (e) {
       return false;
     }
   }
 
-  async isInstalled(browserName: BrowserName, browserVersion: string): Promise<boolean> {
+  async isInstalled(browserOrDriverName: BrowserOrDriverName, browserOrDriverVersion: string): Promise<boolean> {
     const platform = detectBrowserPlatform();
     if (!platform) {
       throw new Error('Unsupported platform');
@@ -55,18 +55,18 @@ export class BrowserInstaller {
         cacheDir: browsersPath,
       });
     });
-    const browser = this.parseBrowserName(browserName);
-    const buildId = await resolveBuildId(browser, platform, browserVersion);
+    const browser = this.parseBrowserOrDriverName(browserOrDriverName);
+    const buildId = await resolveBuildId(browser, platform, browserOrDriverVersion);
     return installedBrowsers.some((installedBrowser) => installedBrowser.browser === browser && installedBrowser.buildId === buildId);
   }
 
-  async resolveVersion(browserName: BrowserName, browserVersion: string): Promise<string> {
+  async resolveVersion(browserOrDriverName: BrowserOrDriverName, browserOrDriverVersion: string): Promise<string> {
     const platform = detectBrowserPlatform();
     if (!platform) {
       throw new Error('Unsupported platform');
     }
-    const browser = this.parseBrowserName(browserName);
-    return resolveBuildId(browser, platform, browserVersion);
+    const browser = this.parseBrowserOrDriverName(browserOrDriverName);
+    return resolveBuildId(browser, platform, browserOrDriverVersion);
   }
 
   async lockBrowsersPath<T>(callback: () => Promise<T>): Promise<T> {
@@ -74,13 +74,13 @@ export class BrowserInstaller {
     return BrowsersPathLock.acquire(browsersPath, callback);
   }
 
-  async getBrowserPath(browserName: BrowserName, browserVersion: string): Promise<string> {
+  async getBrowserOrDriverPath(browserOrDriverName: BrowserOrDriverName, browserOrDriverVersion: string): Promise<string> {
     const platform = detectBrowserPlatform();
     if (!platform) {
       throw new Error('Unsupported platform');
     }
-    const browser = this.parseBrowserName(browserName);
-    const buildId = await resolveBuildId(browser, platform, browserVersion);
+    const browser = this.parseBrowserOrDriverName(browserOrDriverName);
+    const buildId = await resolveBuildId(browser, platform, browserOrDriverVersion);
     const browsersPath = HostPaths.external.browser.browsersPath();
     return computeExecutablePath({
       cacheDir: browsersPath,
@@ -90,14 +90,18 @@ export class BrowserInstaller {
     });
   }
 
-  private parseBrowserName(browserName: BrowserName): Browser {
-    switch (browserName) {
+  private parseBrowserOrDriverName(browserOrDriverName: BrowserOrDriverName): Browser {
+    switch (browserOrDriverName) {
       case 'chrome':
         return Browser.CHROME;
+      case 'chromium':
+        return Browser.CHROMIUM;
       case 'firefox':
         return Browser.FIREFOX;
+      case 'chromedriver':
+        return Browser.CHROMEDRIVER;
       default:
-        throw new Error(`Unsupported browser: ${stringify(browserName)}`);
+        throw new Error(`Unsupported browser or driver: ${stringify(browserOrDriverName)}`);
     }
   }
 }

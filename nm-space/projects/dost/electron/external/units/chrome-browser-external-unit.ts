@@ -5,11 +5,11 @@ import { logger } from '../../log/logger.instance';
 import { StdLogCallbackService } from '../../log/std-log-callback-service';
 import { ExternalUnitCallback, IExternalUnit } from '../external-unit';
 
-const Name = 'Firefox Browser Install';
-const BrowserName = 'firefox';
+const Name = 'Chrome Browser';
+const BrowserName = 'chrome';
 const DefaultVersion = 'latest';
 
-export class FirefoxBrowserInstallExternalUnit extends IExternalUnit {
+export class ChromeBrowserExternalUnit extends IExternalUnit {
   private readonly logger = new PrefixLogger(logger, `[${Name}]`);
   private readonly browserInstaller = new BrowserInstaller();
 
@@ -36,11 +36,11 @@ export class FirefoxBrowserInstallExternalUnit extends IExternalUnit {
   }
 
   getKey(): ExternalKey {
-    return 'firefox-browser-install';
+    return 'chrome-browser';
   }
 
   getName(): string {
-    return 'Firefox Browser';
+    return Name;
   }
 
   getEnvKeys(): string[] {
@@ -63,8 +63,8 @@ export class FirefoxBrowserInstallExternalUnit extends IExternalUnit {
     this.unitCallback.onDownloadStarted();
     let downloadPercent = 0;
     await this.browserInstaller.install({
-      browserName: BrowserName,
-      browserVersion: DefaultVersion,
+      browserOrDriverName: BrowserName,
+      browserOrDriverVersion: DefaultVersion,
       downloadProgressCallback: (downloadedBytes, totalBytes) => {
         const percent = Math.ceil((downloadedBytes * 100) / totalBytes);
         this.unitCallback.onDownloadInProgress({

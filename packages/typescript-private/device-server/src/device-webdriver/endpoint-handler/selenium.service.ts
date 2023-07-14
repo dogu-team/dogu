@@ -1,6 +1,7 @@
 import { HeaderRecord, PromiseOrValue } from '@dogu-tech/common';
 import { RelayRequest, RelayResponse, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
 import { Injectable } from '@nestjs/common';
+import _ from 'lodash';
 import { DoguLogger } from '../../logger/logger';
 import { SeleniumService } from '../../selenium/selenium.service';
 import { OnAfterRequestResult, OnBeforeRequestResult } from './common';
@@ -16,6 +17,7 @@ export abstract class SeleniumEndpointHandler {
     logger: DoguLogger,
   ): PromiseOrValue<OnBeforeRequestResult> {
     request.path = this.resolvePath(request.path);
+    request.headers = this.resolveHeader(request.headers, logger);
     return {
       request,
     };
@@ -42,6 +44,32 @@ export abstract class SeleniumEndpointHandler {
       path = `/wd/hub${path}`;
     }
     return path;
+  }
+
+  protected resolveHeader(headers: HeaderRecord, logger: DoguLogger): HeaderRecord {
+    _.keys(headers).forEach((key) => {
+      if (key.toString().toLowerCase() === 'content-type') {
+        const value = _.get(headers, key);
+        const newValue = 'application/json; charset=utf-8';
+        if (value.toLowerCase() === newValue.toLowerCase()) {
+          return;
+        }
+
+        delete headers[key];
+        headers[key] = newValue;
+        logger.info('Content-Type is changed.', {
+          key,
+          oldValue: value,
+          newValue,
+        });
+      } else if (key.toString().toLowerCase() === 'content-length') {
+        delete headers[key];
+        logger.info('Content-Length is removed.', {
+          key,
+        });
+      }
+    });
+    return headers;
   }
 }
 

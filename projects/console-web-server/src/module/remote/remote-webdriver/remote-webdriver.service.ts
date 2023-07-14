@@ -1,5 +1,5 @@
 import { DeviceId, DEVICE_TABLE_NAME, extensionFromPlatform, platformTypeFromPlatform, RemoteDeviceJobId, REMOTE_DEVICE_JOB_STATE, REMOTE_TABLE_NAME } from '@dogu-private/types';
-import { HeaderRecord, Method } from '@dogu-tech/common';
+import { HeaderRecord, Method, Query } from '@dogu-tech/common';
 import {
   DeviceWebDriver,
   DoguWebDriverOptions,
@@ -13,6 +13,7 @@ import { forwardRef, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Request } from 'express';
 import { IncomingHttpHeaders } from 'http';
+import _ from 'lodash';
 import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
 import { Device } from '../../../db/entity/device.entity';
@@ -294,14 +295,19 @@ export class RemoteWebDriverService {
     return headers;
   }
 
+  private convertQuery(query: Query): Query | undefined {
+    return _.isEmpty(query) ? undefined : query;
+  }
+
   convertRequest(request: Request): RelayRequest {
     const headers = this.convertHeaders(request.headers);
+    const query = this.convertQuery(request.query);
     const subpath = request.url.replace('/remote/wd/hub/', '');
     return {
       path: subpath,
       headers: headers,
       method: request.method as Method,
-      query: request.query,
+      query,
       reqBody: request.body,
     };
   }

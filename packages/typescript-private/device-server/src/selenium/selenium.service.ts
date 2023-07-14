@@ -1,12 +1,11 @@
 import { errorify, PrefixLogger } from '@dogu-tech/common';
-import { newCleanNodeEnv } from '@dogu-tech/node';
+import { HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import AsyncLock from 'async-lock';
 import _ from 'lodash';
 import path from 'path';
 import { setInterval } from 'timers/promises';
 import { DoguLogger } from '../logger/logger';
-import { pathMap } from '../path-map';
 import { DefaultSeleniumContextOptions, SeleniumContext, SeleniumContextInfo, SeleniumContextOptions } from './selenium.context';
 
 const LockKey = 'SeleniumService.map';
@@ -53,7 +52,7 @@ export class SeleniumService implements OnModuleInit, OnModuleDestroy {
   }
 
   async open(options: SeleniumContextOptions): Promise<SeleniumContextInfo> {
-    return this.lock.acquire(LockKey, async () => {
+    const info = await this.lock.acquire(LockKey, async () => {
       const { key } = options;
       const entry = this.map.get(key);
       if (entry) {
@@ -69,6 +68,8 @@ export class SeleniumService implements OnModuleInit, OnModuleDestroy {
       });
       return newContext.info;
     });
+    this.logger.info('Selenium context opened', { port: info.port });
+    return info;
   }
 
   async close(key: string): Promise<void> {
@@ -105,13 +106,15 @@ export class SeleniumService implements OnModuleInit, OnModuleDestroy {
   }
 
   private createDefaultSeleniumContextOptions(): void {
-    const npxPath = pathMap().common.npx;
+    const javaHomePath = HostPaths.external.defaultJavaHomePath();
+    const javaBinPath = HostPaths.java.binPath(javaHomePath);
+    const javaPath = HostPaths.java.javaPath(javaHomePath);
     const cleanEnv = newCleanNodeEnv();
     const serverEnv = _.merge(cleanEnv, {
-      PATH: `${pathMap().common.nodeBin}${path.delimiter}${cleanEnv.PATH ?? ''}`,
+      PATH: `${javaBinPath}${path.delimiter}${cleanEnv.PATH ?? ''}`,
     });
     this._defaultSeleniumContextOptions = {
-      npxPath,
+      javaPath,
       serverEnv,
     };
     this.logger.verbose('Default selenium context options created', {

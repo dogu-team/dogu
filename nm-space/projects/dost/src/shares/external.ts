@@ -15,8 +15,10 @@ export const IosDeviceAgentBuild = 'ios-device-agent-build';
 export const LibiMobileDevice = 'libimobiledevice';
 export const WebdriverManager = 'webdriver-manager';
 export const PuppeteerBrowsers = 'puppeteer-browsers';
-export const ChromeBrowserInstall = 'chrome-browser-install';
-export const FirefoxBrowserInstall = 'firefox-browser-install';
+export const ChromeBrowser = 'chrome-browser';
+export const FirefoxBrowser = 'firefox-browser';
+export const ChromeDriver = 'chrome-driver';
+export const SeleniumServer = 'selenium-server';
 
 export const ExternalKey = [
   Jdk,
@@ -30,8 +32,10 @@ export const ExternalKey = [
   LibiMobileDevice,
   WebdriverManager,
   PuppeteerBrowsers,
-  ChromeBrowserInstall,
-  FirefoxBrowserInstall,
+  ChromeBrowser,
+  FirefoxBrowser,
+  ChromeDriver,
+  SeleniumServer,
 ] as const;
 export type ExternalKey = (typeof ExternalKey)[number];
 
