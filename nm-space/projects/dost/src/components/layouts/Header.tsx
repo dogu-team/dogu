@@ -11,11 +11,25 @@ interface Props {
 const Header = ({ right }: Props) => {
   const platform = useEnvironmentStore((state) => state.platform);
   const { colorMode } = useColorMode();
+  const runType = useEnvironmentStore((state) => state.appConfig.DOGU_RUN_TYPE);
+
+  const getTitle = () => {
+    switch (runType) {
+      case 'development':
+        return 'Dogu Agent for Cloud (Dev)';
+      case 'production':
+        return 'Dogu Agent for Cloud';
+      case 'self-hosted':
+        return 'Dogu Agent for Self-Hosted';
+      default:
+        return 'Dogu Agent (Dev)';
+    }
+  };
 
   return (
     <StyledHeader mode={colorMode}>
       <TitleWrapper style={{ paddingLeft: platform === 'darwin' ? '64px' : '0' }}>
-        <Title>Dogu Agent</Title>
+        <Title>{getTitle()}</Title>
       </TitleWrapper>
 
       <Flex alignItems="center">
