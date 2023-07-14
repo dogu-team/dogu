@@ -9,36 +9,15 @@ import { ProjectFileService } from '../file/project-file.service';
 import { DeviceTagService } from '../organization/device-tag/device-tag.service';
 import { DeviceStatusService } from '../organization/device/device-status.service';
 import { ApplicationService } from '../project/application/application.service';
-import { WebDriverService } from '../webdriver/webdriver.service';
 import { RemoteWebDriverInfoController } from './remote-webdriver/remote-webdriver.controller';
-import { RemoteWebDriverInfoService } from './remote-webdriver/remote-webdriver.service';
+import { RemoteWebDriverService } from './remote-webdriver/remote-webdriver.service';
 import { RemoteController } from './remote.controller';
 import { RemoteService } from './remote.service';
 
 @Module({
   imports: [FeatureFileModule, TypeOrmModule.forFeature([Remote, RemoteWebDriverInfo])],
-  providers: [
-    WebDriverService,
-    RemoteWebDriverInfoService,
-    DeviceTagService,
-    DeviceStatusService,
-    DeviceMessageRelayer,
-    DeviceMessageQueue,
-    ApplicationService,
-    ProjectFileService,
-    RemoteService,
-  ],
-  exports: [
-    WebDriverService, //
-    RemoteWebDriverInfoService,
-    DeviceTagService,
-    DeviceStatusService,
-    DeviceMessageRelayer,
-    DeviceMessageQueue,
-    ApplicationService,
-    ProjectFileService,
-    RemoteService,
-  ],
+  providers: [RemoteService, RemoteWebDriverService, DeviceTagService, DeviceStatusService, DeviceMessageRelayer, DeviceMessageQueue, ApplicationService, ProjectFileService],
+  exports: [RemoteService, RemoteWebDriverService, DeviceTagService, DeviceStatusService, DeviceMessageRelayer, DeviceMessageQueue, ApplicationService, ProjectFileService],
   controllers: [RemoteWebDriverInfoController, RemoteController],
 })
 export class RemoteModule {}

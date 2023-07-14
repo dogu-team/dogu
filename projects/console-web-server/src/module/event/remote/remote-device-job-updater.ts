@@ -19,11 +19,9 @@ export class RemoteDeviceJobUpdater {
   ) {}
 
   public async update(): Promise<void> {
-    // this.checkWaitingRemoteDeviceJobs();
-    // this.checkTimeoutDeviceJobs();
+    this.checkWaitingRemoteDeviceJobs();
+    this.checkTimeoutDeviceJobs();
   }
-
-  // private async checkWaitingRemoteDeviceJob
 
   private async checkWaitingRemoteDeviceJobs(): Promise<void> {
     const waitingRemoteDeviceJobs = await this.dataSource
@@ -71,9 +69,8 @@ export class RemoteDeviceJobUpdater {
         const totalInProgressDeviceJobs = inProgressDeviceJobs.length + inProgressRemoteDeviceJobs.length;
         if (totalInProgressDeviceJobs === 0) highestPriorityDeviceJobs.push(deviceJob!);
       } else {
-        // FIXME:
-        const inProgressDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0].device.routineDeviceJobs?.length ?? 0;
-        const inProgressRemoteDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0].device.remoteDeviceJobs?.length ?? 0;
+        const inProgressDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0]?.device?.routineDeviceJobs?.length ?? 0;
+        const inProgressRemoteDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0]?.device?.remoteDeviceJobs?.length ?? 0;
         const addableDeviceJobCount = maxParallel - inProgressDeviceJobs - inProgressRemoteDeviceJobs;
 
         const allWaingDeviceJobs = [...waitingRoutineDeviceJobsByDeviceId, ...waitingRemoteDeviceJobsByDeviceId];
@@ -131,16 +128,21 @@ export class RemoteDeviceJobUpdater {
       const sessionId = timeoutDeviceJob.sessionId;
       const pathProvider = new DeviceWebDriver.sessionDeleted.pathProvider(device.serial);
       const path = DeviceWebDriver.sessionDeleted.resolvePath(pathProvider);
-      const res = await this.deviceMessageRelayer.sendHttpRequest(
-        device.organizationId,
-        device.deviceId,
-        DeviceWebDriver.sessionDeleted.method,
-        path,
-        undefined,
-        undefined,
-        { sessionId },
-        DeviceWebDriver.sessionDeleted.responseBody,
-      );
+      const res = this.deviceMessageRelayer
+        .sendHttpRequest(
+          device.organizationId,
+          device.deviceId,
+          DeviceWebDriver.sessionDeleted.method,
+          path,
+          undefined,
+          undefined,
+          { sessionId },
+          DeviceWebDriver.sessionDeleted.responseBody,
+        )
+        .catch((error) => {
+          this.logger.error('checkTimeoutDeviceJobs sendHttpRequest error', { error });
+        });
+      await this.dataSource.getRepository(RemoteDeviceJob).update(timeoutDeviceJob.remoteDeviceJobId, { state: REMOTE_DEVICE_JOB_STATE.FAILURE });
     }
   }
 }
