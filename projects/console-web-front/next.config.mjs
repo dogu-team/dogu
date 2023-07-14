@@ -42,6 +42,7 @@ const nextConfig = {
     locales: ['en', 'ko'],
     defaultLocale: 'en',
   },
+  swcMinify: true,
   headers: async () => {
     return process.env.NEXT_PUBLIC_ENV === 'production' || process.env.NEXT_PUBLIC_ENV === 'development'
       ? [
@@ -56,6 +57,9 @@ const nextConfig = {
           },
         ]
       : [];
+  },
+  compiler: {
+    styledComponents: true,
   },
   sentry: {
     disableServerWebpackPlugin: true,
