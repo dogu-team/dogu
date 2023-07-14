@@ -53,7 +53,8 @@ export class RemoteWebDriverInfoController {
 
     const relayResponse = await this.remoteWebDriverService.sendRequest(processResult, headers);
     await this.remoteWebDriverService.handleNewSessionResponse(processResult, relayResponse);
-    await this.remoteWebDriverService.waitRemoteDeviceJobToInprogress(processResult.remoteDeviceJobId);
+    // FIXME: henry - Cause identification is required, such as code, data, environment, version, platform, etc
+    // await this.remoteWebDriverService.waitRemoteDeviceJobToInprogress(processResult.remoteDeviceJobId);
     this.sendResponse(relayResponse, response);
   }
 
