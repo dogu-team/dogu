@@ -20,6 +20,7 @@ const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
 const SET_CAPABILITIES_ID = 'set-capabilities';
 const RUN_TEST_ID = 'run-test';
+const RESULT_ID = 'result';
 const DONE_ID = 'done';
 
 const WebGuide = () => {
@@ -85,6 +86,7 @@ const WebGuide = () => {
               { id: INSTALL_DEPENDENCIES_ID, title: 'Install dependencies' },
               { id: SET_CAPABILITIES_ID, title: 'Set capabilities' },
               { id: RUN_TEST_ID, title: 'Run remote testing' },
+              { id: RESULT_ID, title: 'Check result' },
               { id: DONE_ID, title: 'Done! Next step' },
             ]}
           />
@@ -139,6 +141,17 @@ const WebGuide = () => {
           <div style={{ marginBottom: '2rem' }}>
             <GuideBanner docsUrl="https://docs.dogutech.io/test-automation/browser" />
           </div>
+
+          <GuideStep
+            id={RESULT_ID}
+            title="Check result"
+            description={<p>Check remote testing result</p>}
+            content={
+              <Link href={`/dashboard/${organizationId}/projects/${projectId}/remotes`}>
+                <Button>Go to result</Button>
+              </Link>
+            }
+          />
 
           <DoneStep id={DONE_ID} />
         </div>

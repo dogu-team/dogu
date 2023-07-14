@@ -1,4 +1,4 @@
-import { DEST_STATE, DeviceConnectionState, PIPELINE_STATUS } from '@dogu-private/types';
+import { DEST_STATE, DeviceConnectionState, PIPELINE_STATUS, REMOTE_DEVICE_JOB_STATE } from '@dogu-private/types';
 import { DeviceLogLevel } from '../types/device';
 import { ORGANIZATION_ROLE } from '../types/organization';
 
@@ -45,6 +45,22 @@ export const pipelineStatusColor: { [key in PIPELINE_STATUS]: string } = {
   [PIPELINE_STATUS.CANCELLED]: '#888888',
   [PIPELINE_STATUS.SKIPPED]: '#bbbbbb',
   [PIPELINE_STATUS.UNSPECIFIED]: '#000',
+};
+
+export const remoteStatusColor: { [key in REMOTE_DEVICE_JOB_STATE]: string } = {
+  [REMOTE_DEVICE_JOB_STATE.WAITING]: '#fcba03',
+  [REMOTE_DEVICE_JOB_STATE.IN_PROGRESS]: '#6499f5',
+  [REMOTE_DEVICE_JOB_STATE.COMPLETE]: '#5cb85c',
+  [REMOTE_DEVICE_JOB_STATE.FAILURE]: '#e34646',
+  [REMOTE_DEVICE_JOB_STATE.UNSPECIFIED]: '#ccc',
+};
+
+export const remoteStatusText: { [key in REMOTE_DEVICE_JOB_STATE]: string } = {
+  [REMOTE_DEVICE_JOB_STATE.WAITING]: 'Waiting',
+  [REMOTE_DEVICE_JOB_STATE.IN_PROGRESS]: 'In progress',
+  [REMOTE_DEVICE_JOB_STATE.COMPLETE]: 'Passed',
+  [REMOTE_DEVICE_JOB_STATE.FAILURE]: 'Failed',
+  [REMOTE_DEVICE_JOB_STATE.UNSPECIFIED]: 'Unknown',
 };
 
 export const pipelineStepEmptyText: { [key in PIPELINE_STATUS]?: string } = {
