@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import RefreshButton from '../../../../../../src/components/buttons/RefreshButton';
 import TableListView from '../../../../../../src/components/common/TableListView';
 import ProjectLayout from '../../../../../../src/components/layouts/ProjectLayout';
+import RemoteListController from '../../../../../../src/components/remote/RemoteListController';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from '../../../../../../src/hoc/withProject';
 import { flexRowSpaceBetweenStyle } from '../../../../../../src/styles/box';
 import { NextPageWithLayout } from '../../../../../_app';
@@ -21,7 +22,7 @@ const RemoteListPage: NextPageWithLayout<WithProjectProps> = ({ organization, pr
             <RefreshButton />
           </FlexBetweenBox>
         }
-        table={<div></div>}
+        table={<RemoteListController organizationId={organization.organizationId} projectId={project.projectId} />}
       />
     </>
   );

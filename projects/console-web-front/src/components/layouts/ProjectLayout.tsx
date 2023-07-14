@@ -39,18 +39,18 @@ const ProjectLayout = ({ children, sidebar, isGitIntegrated }: Props) => {
   const tabs: MenuLinkTabProps['tabs'] = [
     // { href: `/dashboard/${organizationId}/projects/${projectId}`, icon: <HomeOutlined />, title: t('project:tabMenuHomeTitle'), 'access-id': 'project-home-tab' },
     {
-      href: `/dashboard/${organizationId}/projects/${projectId}/remotes`,
-      icon: <RiRemoteControlLine />,
-      title: 'Remotes',
-      startsWith: true,
-      'access-id': 'project-remote-tab',
-    },
-    {
       href: `/dashboard/${organizationId}/projects/${projectId}/routines`,
       icon: <GatewayOutlined />,
       title: t('project:tabMenuRoutineTitle'),
       startsWith: true,
       'access-id': 'project-routine-tab',
+    },
+    {
+      href: `/dashboard/${organizationId}/projects/${projectId}/remotes`,
+      icon: <RiRemoteControlLine />,
+      title: 'Remotes',
+      startsWith: true,
+      'access-id': 'project-remote-tab',
     },
     {
       href: `/dashboard/${organizationId}/projects/${projectId}/apps`,
