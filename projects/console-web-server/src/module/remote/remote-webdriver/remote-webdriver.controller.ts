@@ -26,6 +26,8 @@ export class RemoteWebDriverInfoController {
   @ApiTokenPermission(API_TOKEN_TYPE.WEBDRIVER_AGENT)
   async newSession(@Req() request: Request, @Res() response: Response): Promise<void> {
     const relayRequest = this.webdriverService.convertRequest(request);
+
+    // parse capabilities then create endpoint and doguOptions
     const doguWebDriverCapabilitiesParser = new DoguWebDriverCapabilitiesParser();
     const endpoint = await WebDriverEndPoint.create(relayRequest, doguWebDriverCapabilitiesParser).catch((e) => {
       throw new WebDriverException(400, e, {});
@@ -40,12 +42,12 @@ export class RemoteWebDriverInfoController {
 
     const processResult = await this.webdriverService.handleNewSessionRequest(endpoint.info, relayRequest, doguOptions);
 
+    // create headers
     const headers: HeaderRecord = {};
     headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout3minutes.toString();
     headers[DoguRemoteDeviceJobIdHeader] = processResult.remoteDeviceJobId;
     headers[DoguDevicePlatformHeader] = processResult.devicePlatform;
     headers[DoguDeviceSerialHeader] = processResult.deviceSerial;
-
     if (processResult.applicationUrl) headers[DoguApplicationUrlHeader] = processResult.applicationUrl;
     if (processResult.applicationVersion) headers[DoguApplicationVersionHeader] = processResult.applicationVersion;
     if (processResult.browserName) headers[DoguBrowserNameHeader] = processResult.browserName;
