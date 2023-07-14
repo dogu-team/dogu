@@ -31,7 +31,10 @@ const DONE_ID = 'done';
 
 const MobileGuide = () => {
   const router = useRouter();
-  const [language, setLanguage] = useState<GuideSupportLanguage>((router.query.language as GuideSupportLanguage | undefined) || mobileGuideData[0].language);
+  const languageQuery = router.query.language as GuideSupportLanguage | undefined;
+  const [language, setLanguage] = useState<GuideSupportLanguage>(
+    !!languageQuery && mobileGuideData.map((item) => item.language).includes(languageQuery) ? languageQuery : mobileGuideData[0].language,
+  );
   const [loading, request] = useRequest(uploadSampleApplication);
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 

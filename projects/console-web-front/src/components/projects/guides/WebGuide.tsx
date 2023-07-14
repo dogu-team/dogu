@@ -24,7 +24,10 @@ const DONE_ID = 'done';
 
 const WebGuide = () => {
   const router = useRouter();
-  const [language, setLanguage] = useState<GuideSupportLanguage>((router.query.language as GuideSupportLanguage | undefined) || webGuideData[0].language);
+  const languageQuery = router.query.language as GuideSupportLanguage | undefined;
+  const [language, setLanguage] = useState<GuideSupportLanguage>(
+    !!languageQuery && webGuideData.map((item) => item.language).includes(languageQuery) ? languageQuery : webGuideData[0].language,
+  );
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 
   const selectedLanguageData = webGuideData.find((data) => data.language === language);
