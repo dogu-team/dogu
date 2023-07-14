@@ -46,7 +46,43 @@ import BrowserOnly from '@docusaurus/BrowserOnly';
 2. Dogu Agent는 필요한 툴들이 설치되었는지 확인하고 설치되지 않았다면 설치창을 표시합니다. 설치되지 않은 툴들이 있다면 설치를 진행해 주세요.
 3. 원활한 Dogu Agent 사용을 위해서는 설치하고자 하는 운영체제에 맞는 권한이 필요합니다. 권한이 허용되지 않았다면 권한을 허용해 주세요.
 
-### Manual Setup
+### Console 연결
+
+[호스트 관리](/management/organization/host) 페이지를 확인하여 호스트 토큰을 획득하고, 획득한 토큰을 Dogu Agent에 입력해주세요.
+
+### 설정
+
+연결이 되었다면 Dogu Agent는 설정창으로 이동합니다. 설정창에서는 Dogu Agent의 기본 설정을 변경할 수 있습니다.
+
+#### General
+
+<img src={dost_macos_setting} style={{ width: 600 }} />
+
+- Start Dogu Agent when ayou log in
+  - PC에 로그인시 Dogu Agent가 자동으로 시작합니다.
+- Theme for Dogu Agent
+  - Dogu Agent의 컬러 테마를 설정합니다.
+
+#### TroubleShoot
+
+<img src={dost_macos_troubleshoot} style={{ width: 600 }} />
+
+- macOS Permission
+
+  - macOS일 경우에만 노출되며, 원활한 스트리밍을 위해 필요한 권한의 상태를 보여줍니다.
+
+  :::info
+
+  macOS는 [화면기록](https://support.apple.com/guide/mac-help/mchld6aa7d23/mac), [손쉬운 사용 권한](https://support.apple.com/guide/mac-help/mh43185/mac)이 필요합니다.
+
+  :::
+
+- Diagnose packages
+  - 정상 Dogu Agent 실행을 위해 필요한 패키지들의 설치상태를 확인합니다.
+- Open Docs
+  - Dogu Agent에 대한 문서를 브라우저로 엽니다.
+
+### iOS Settings
 
 <img src={dost_macos_manual_setup} style={{ width: 600 }} />
 
@@ -84,42 +120,6 @@ iOS는 AppStore에 업로드된 앱이 아니라면 설치가 제한되기 때�
 [Apple Developer Console](https://developer.apple.com/account/resources/devices/list) 에 등록된 iOS 기기에서만 WebDriverAgent와 iOSDeviceAgent 설치 및 실행이 가능합니다. [Register devices in your developer account](https://developer.apple.com/documentation/xcode/distributing-your-app-to-registered-devices#Register-devices-in-your-developer-account) 항목을 참고하여 조직 관리자에게 기기등록을 요청하세요.
 
 :::
-
-### Console 연결
-
-[호스트 관리](/management/organization/host) 페이지를 확인하여 호스트 토큰을 획득하고, 획득한 토큰을 Dogu Agent에 입력해주세요.
-
-### 설정
-
-연결이 되었다면 Dogu Agent는 설정창으로 이동합니다. 설정창에서는 Dogu Agent의 기본 설정을 변경할 수 있습니다.
-
-#### General
-
-<img src={dost_macos_setting} style={{ width: 600 }} />
-
-- Start Dogu Agent when ayou log in
-  - PC에 로그인시 Dogu Agent가 자동으로 시작합니다.
-- Theme for Dogu Agent
-  - Dogu Agent의 컬러 테마를 설정합니다.
-
-#### TroubleShoot
-
-<img src={dost_macos_troubleshoot} style={{ width: 600 }} />
-
-- macOS Permission
-
-  - macOS일 경우에만 노출되며, 원활한 스트리밍을 위해 필요한 권한의 상태를 보여줍니다.
-
-  :::info
-
-  macOS는 [화면기록](https://support.apple.com/guide/mac-help/mchld6aa7d23/mac), [손쉬운 사용 권한](https://support.apple.com/guide/mac-help/mh43185/mac)이 필요합니다.
-
-  :::
-
-- Diagnose packages
-  - 정상 Dogu Agent 실행을 위해 필요한 패키지들의 설치상태를 확인합니다.
-- Open Docs
-  - Dogu Agent에 대한 문서를 브라우저로 엽니다.
 
 <br></br>
 <br></br>
