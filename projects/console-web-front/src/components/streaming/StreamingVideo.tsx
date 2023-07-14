@@ -27,6 +27,8 @@ const StreamingVideo = ({ rightSidebar, videoId, children, onResize, inspector }
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [videoSize, setVideoSize] = useState({ width: 0, height: 0 });
 
+  console.log(videoSize);
+
   // if ratio > 1, width > height
   const videoRatio = videoSize.height > 0 ? videoSize.width / videoSize.height : 0;
 
@@ -114,66 +116,64 @@ const StreamingVideo = ({ rightSidebar, videoId, children, onResize, inspector }
         </LoadingBox>
       )}
 
-      <InputWrapper canDisplay={!loading} ratio={videoRatio}>
-        <>
-          <StyledVideo ref={videoRef} id={videoId} playsInline autoPlay muted ratio={videoRatio} boxHeight={boxRef.current?.clientHeight ?? 0} />
-          <StyledInput
-            ref={inputRef}
-            autoFocus
-            onKeyPress={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleKeyDown(e);
-            }}
-            onKeyDown={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleKeyDown(e);
-            }}
-            onKeyUp={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleKeyUp(e);
-            }}
-            value={`\n`.repeat(1000)}
-            onWheel={(e) => {
-              e.currentTarget.scrollTop = 1000;
-              e.stopPropagation();
-              handleWheel(e, videoSize);
-            }}
-            onMouseDown={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleMouseDownVideo?.(e, videoSize);
-            }}
-            onMouseUp={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleMouseUp?.(e, videoSize);
-            }}
-            onMouseMove={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleMouseMoveVideo?.(e, videoSize);
-              focusInputForKeyboardEvent();
-            }}
-            onMouseLeave={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleMouseLeaveVideo?.(e, videoSize);
-              focusInputForKeyboardEvent();
-            }}
-            onDoubleClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              handleDoubleClick?.(e, videoSize);
-              focusInputForKeyboardEvent();
-            }}
-            readOnly
-          />
+      <InputWrapper canDisplay={!loading} ratio={videoRatio} videoWidth={videoRef?.current ? videoSize.width * (videoRef.current.offsetHeight / videoSize.height) : undefined}>
+        <StyledVideo ref={videoRef} id={videoId} playsInline autoPlay muted ratio={videoRatio} boxHeight={boxRef.current?.clientHeight ?? 0} />
+        <StyledInput
+          ref={inputRef}
+          autoFocus
+          onKeyPress={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleKeyDown(e);
+          }}
+          onKeyDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleKeyDown(e);
+          }}
+          onKeyUp={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleKeyUp(e);
+          }}
+          value={`\n`.repeat(1000)}
+          onWheel={(e) => {
+            e.currentTarget.scrollTop = 1000;
+            e.stopPropagation();
+            handleWheel(e, videoSize);
+          }}
+          onMouseDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMouseDownVideo?.(e, videoSize);
+          }}
+          onMouseUp={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMouseUp?.(e, videoSize);
+          }}
+          onMouseMove={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMouseMoveVideo?.(e, videoSize);
+            focusInputForKeyboardEvent();
+          }}
+          onMouseLeave={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleMouseLeaveVideo?.(e, videoSize);
+            focusInputForKeyboardEvent();
+          }}
+          onDoubleClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleDoubleClick?.(e, videoSize);
+            focusInputForKeyboardEvent();
+          }}
+          readOnly
+        />
 
-          {children}
-        </>
+        {children}
       </InputWrapper>
       {rightSidebar}
     </VideoWrapper>
@@ -190,13 +190,13 @@ const VideoWrapper = styled.div`
   flex: 1;
 `;
 
-const InputWrapper = styled.div<{ canDisplay: boolean; ratio: number }>`
+const InputWrapper = styled.div<{ canDisplay: boolean; ratio: number; videoWidth?: number }>`
   display: ${(props) => (props.canDisplay ? 'block' : 'none')};
   position: relative;
   height: auto;
   max-height: 100%;
   background-color: #000;
-  width: ${(props) => (props.ratio > 1 ? `min(max-content, calc(100% * ${props.ratio}))` : 'auto')};
+  width: ${(props) => (props.ratio > 1 ? `min(max-content, calc(100% * ${props.ratio}))` : props.videoWidth ? `${props.videoWidth}px` : 'auto')};
   overflow: hidden;
 `;
 
