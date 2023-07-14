@@ -1,4 +1,5 @@
 import { REMOTE_DEVICE_JOB_STATE } from '@dogu-private/types';
+
 import { getDateDiffAsMilliseconds, stringifyDuration } from '../../utils/date';
 
 interface Props {

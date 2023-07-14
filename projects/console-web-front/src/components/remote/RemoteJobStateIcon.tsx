@@ -1,5 +1,6 @@
 import { CheckCircleFilled, CloseCircleFilled, LoadingOutlined, QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import { REMOTE_DEVICE_JOB_STATE } from '@dogu-private/types';
+
 import { remoteStatusColor } from '../../utils/mapper';
 
 interface Props {

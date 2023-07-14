@@ -2,11 +2,11 @@ import { CalendarOutlined, FieldTimeOutlined } from '@ant-design/icons';
 import { RemoteDeviceJobBase } from '@dogu-private/console';
 import { List } from 'antd';
 import styled from 'styled-components';
+
 import { flexRowBaseStyle } from '../../styles/box';
 import { localizeDate } from '../../utils/date';
 import PlatformIcon from '../device/PlatformIcon';
 import PipelineCreatedTimer from '../pipelines/PipelineCreatedTimer';
-import PipelineRuntime from '../pipelines/PipelineRuntime';
 import RemoteJobStateIcon from './RemoteJobStateIcon';
 import RemoteRuntimeTimer from './RemoteRuntimeTimer';
 
