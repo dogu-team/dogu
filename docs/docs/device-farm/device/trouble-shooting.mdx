@@ -16,6 +16,7 @@ import xcode_ida_testbuild from '@site/static/img/dost/xcode_ida_testbuild.png';
 import xcode_ida_running from '@site/static/img/dost/xcode_ida_running.png';
 import xcode_wda_testbuild from '@site/static/img/dost/xcode_wda_testbuild.png';
 import xcode_wda_running from '@site/static/img/dost/xcode_wda_running.png';
+import xctrace_llist_devices from '@site/static/img/dost/xctrace_llist_devices.png';
 
 ## Checking device connection
 
@@ -36,13 +37,13 @@ import xcode_wda_running from '@site/static/img/dost/xcode_wda_running.png';
 1. Run a shell on the host through Terminal, Powershell, etc., and go to the path where android platform-tools is installed..
 
    ```sh
-   $cd $HOME/.dogu/externals/android/platform-tools
+   cd $HOME/.dogu/externals/android/platform-tools
    ```
 
 2. Enter the command `adb devices`.
 
    ```sh
-   $adb devices
+   adb devices
    ```
 
    - `offline`: When connecting the device to the host PC, choose to allow the device or enable the USB debugging option in the developer options on the device.
@@ -50,16 +51,48 @@ import xcode_wda_running from '@site/static/img/dost/xcode_wda_running.png';
    - `unauthorized`: When connecting the device to the host PC, choose to allow the device or enable the USB debugging option in the developer options on the device.
    - `device`: The device is successfully connected. In this case, try restarting Dogu Agent.
 
-3. If the above method does not connect, try restarting your Android device..
+- If the connection is not successful after the above methods, try restarting the Android device.
 
 </TabItem>
 <TabItem value="ios" label="iOS" default>
+
+#### Device settings
+
+1. Make sure Developer is Untrusted on your iOS device.
+
+- Please refer to the [OSXDaily article](https://osxdaily.com/2021/05/07/how-to-trust-an-app-on-iphone-ipad-to-fix-untrusted-developer-message/) to set the current developer to be trusted..
+- If it is executed by pressing the DoguDev app and WebDriverAgentRunner app installed on the iOS device, it is Trusted..
+
+#### Device lookup
+
+1. Click `View Devices and Simulators` in Dogu Agent to launch the Devices window in Xcode..
+
+   <img src={dost_ios_view_devices} style={{ width: 450 }} />
+
+   - Make sure your devices are displayed in the list.
+
+     <img src={ios_devices_simulators_view} style={{ width: 200 }} />
+
+   - Check if there is a warning message in the device status. A device with a warning message will not be recognized by Dogu Agent unless the warning message is resolved..
+
+     <img src={ios_devices_simulators_alert} style={{ width: 500 }} />
+
+2. Open Terminal on macOS and run the command below.
+   ```sh
+   xctrace list devices
+   ```
+   - Please check if the device is displayed as below.
+     <img src={xctrace_llist_devices} style={{ width: 500 }} />
+
+#### Confirm device registration
 
 1. Please refer to the [Register a single device](https://developer.apple.com/help/account/register-devices/register-a-single-device) document to ensure that the device is registered to your Apple Developer account..
 
    - Rebuild is required if the device is newly registered.
 
-2. Please check if all iOS Settings items are completed in Dogu Agent.
+#### Rebuild
+
+1. Please check if all iOS Settings items are completed in Dogu Agent.
 
    <img src={dost_ios_settings} style={{ width: 500 }} />
 
@@ -82,23 +115,7 @@ import xcode_wda_running from '@site/static/img/dost/xcode_wda_running.png';
 
      <img src={xcode_ida_running} style={{ width: 600 }} />
 
-3. Click `View Devices and Simulators` in Dogu Agent to launch the Devices window in Xcode..
-
-   <img src={dost_ios_view_devices} style={{ width: 450 }} />
-
-   - Make sure your devices are displayed in the list.
-
-     <img src={ios_devices_simulators_view} style={{ width: 200 }} />
-
-   - Check if there is a warning message in the device status. A device with a warning message will not be recognized by Dogu Agent unless the warning message is resolved..
-
-     <img src={ios_devices_simulators_alert} style={{ width: 500 }} />
-
-4. Make sure Developer is Untrusted on your iOS device.
-
-- Please refer to the [OSXDaily article](https://osxdaily.com/2021/05/07/how-to-trust-an-app-on-iphone-ipad-to-fix-untrusted-developer-message/) to set the current developer to be trusted..
-
-5. If the above method does not connect, try restarting the iOS device..
+- If the connection is not successful after the above methods, try restarting the iOS device.
 
 </TabItem>
 </Tabs>
