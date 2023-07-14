@@ -85,7 +85,6 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
     try {
       await updateOrganization(organization.organizationId, {
         name: editingOrganization?.name ?? '',
-        profileImageUrl: editingOrganization?.profileImageUrl ?? null,
       });
       sendSuccessNotification('Updated!');
       mutateOrganization((prev) => {
