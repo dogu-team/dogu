@@ -11,7 +11,15 @@ export class AppiumSessionEndpointHandler extends AppiumEndpointHandler {
     return 'session';
   }
 
-  onBeforeRequest(remoteContext: AppiumRemoteContext, headers: HeaderRecord, endpoint: WebDriverEndPoint, request: RelayRequest, logger: DoguLogger): OnBeforeRequestResult {
+  override async onBeforeRequest(
+    remoteContext: AppiumRemoteContext,
+    headers: HeaderRecord,
+    endpoint: WebDriverEndPoint,
+    request: RelayRequest,
+    logger: DoguLogger,
+  ): Promise<OnBeforeRequestResult> {
+    await super.onBeforeRequest(remoteContext, headers, endpoint, request, logger);
+
     if (endpoint.info.type !== 'session') {
       return {
         status: 400,

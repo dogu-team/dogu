@@ -1,5 +1,5 @@
 import { Code, ErrorResultError, Platform, Serial } from '@dogu-private/types';
-import { HeaderRecord } from '@dogu-tech/common';
+import { errorify, HeaderRecord } from '@dogu-tech/common';
 import { RelayRequest, RelayResponse, SessionDeletedParam, WebDriverEndPoint } from '@dogu-tech/device-client-common';
 import { AppiumContextProxy } from '../appium/appium.context';
 import { AppiumRemoteContext } from '../appium/appium.remote.context';
@@ -58,7 +58,11 @@ export class AppiumDeviceWebDriverHandler implements DeviceWebDriverHandler {
     if (this.appiumContextProxy.key === 'remote') {
       const appiumRemoteContext = this.appiumContextProxy.getImpl(AppiumRemoteContext);
       if (appiumRemoteContext.sessionId === param.sessionId) {
-        await this.appiumContextProxy.switchAppiumContext('builtin');
+        try {
+          await this.appiumContextProxy.switchAppiumContext('builtin');
+        } catch (error) {
+          this.logger.error('Error while switching to builtin context', { error: errorify(error) });
+        }
       }
     }
   }
