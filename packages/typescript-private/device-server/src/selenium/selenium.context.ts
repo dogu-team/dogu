@@ -111,7 +111,14 @@ export class SeleniumContext {
       if (majorVersion) {
         _.set(stereotype, 'browserVersion', majorVersion);
       }
-      args.push('--driver-configuration', 'display-name="Google Chrome for Testing"', `webdriver-executable="${browserDriverPath}"`, `stereotype='${JSON.stringify(stereotype)}'`);
+      args.push('--driver-configuration', 'display-name="Google Chrome for Testing"', `webdriver-executable="${browserDriverPath}"`);
+      let stereotypeString = JSON.stringify(stereotype);
+      if (process.platform === 'win32') {
+        stereotypeString = stereotypeString.replace(/"/g, '\\"');
+        args.push(`stereotype="${stereotypeString}"`);
+      } else {
+        args.push(`stereotype='${stereotypeString}'`);
+      }
     } else {
       throw new Error(`Unknown browser name: ${stringify(browserName)}`);
     }
