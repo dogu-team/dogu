@@ -1,5 +1,5 @@
 import { isValidBrowserName } from '@dogu-private/types';
-import { DoguBrowserNameHeader, DoguRemoteDeviceJobIdHeader, HeaderRecord } from '@dogu-tech/common';
+import { DoguBrowserNameHeader, DoguBrowserVersionHeader, DoguRemoteDeviceJobIdHeader, HeaderRecord } from '@dogu-tech/common';
 import { RelayRequest, RelayResponse, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
 import _ from 'lodash';
 import { DoguLogger } from '../../logger/logger';
@@ -38,7 +38,7 @@ export class SeleniumNewSessionEndpointHandler extends SeleniumEndpointHandler {
       };
     }
 
-    const doguBrowserVersion = (_.get(headers, DoguBrowserNameHeader) as string | undefined) ?? 'latest';
+    const doguBrowserVersion = (_.get(headers, DoguBrowserVersionHeader) as string | undefined) ?? 'latest';
 
     const doguRemoteDeviceJobId = _.get(headers, DoguRemoteDeviceJobIdHeader) as string | undefined;
     if (!doguRemoteDeviceJobId) {
