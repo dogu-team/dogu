@@ -2,7 +2,6 @@ import { OrganizationRoleId, UserId } from '@dogu-private/types';
 
 export interface UpdateOrganizationDtoBase {
   name: string;
-  profileImageUrl: string | null;
 }
 
 export interface CreateOrganizationDtoBase {

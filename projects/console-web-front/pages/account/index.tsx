@@ -86,11 +86,10 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
       return;
     }
     setLoading(true);
-    const { name, profileImageUrl } = editingMe;
-    const imageUrl = profileImageUrl ?? undefined;
+    const { name } = editingMe;
 
     try {
-      const result = await updateUser(user.userId, { name, profileImageUrl: imageUrl });
+      const result = await updateUser(user.userId, { name });
       mutate('/registery/check', result, false);
       updateMe(result);
       fireEvent('onUserUpdated', result);

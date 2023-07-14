@@ -6,7 +6,7 @@ import {
   UpdateOrganizationOwnerDtoBase,
   UpdateOrganizationRoleDtoBase,
 } from '@dogu-private/console';
-import { OrganizationRoleId, ORGANIZATION_NAME_MAX_LENGTH, USER_INVITATION_STATUS, USER_PROFILE_IMAGE_URL_MAX_LENGTH } from '@dogu-private/types';
+import { OrganizationRoleId, ORGANIZATION_NAME_MAX_LENGTH, USER_INVITATION_STATUS } from '@dogu-private/types';
 import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
 import { PageDto } from '../../common/dto/pagination/page.dto';
 
@@ -22,11 +22,6 @@ export class UpdateOrganizationDto implements UpdateOrganizationDtoBase {
   @IsString()
   @MaxLength(ORGANIZATION_NAME_MAX_LENGTH)
   name!: string;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(USER_PROFILE_IMAGE_URL_MAX_LENGTH)
-  profileImageUrl!: string;
 }
 
 export class UpdateOrganizationOwnerDto implements UpdateOrganizationOwnerDtoBase {
