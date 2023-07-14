@@ -9,27 +9,45 @@ const methodHandlers: {
   [key: string]: HttpRequestRelayHandler;
 } = {
   GET: async (url, request, logger) => {
-    const res = await axios.get(url);
+    const res = await axios.get(url, {
+      headers: request.headers,
+      params: request.query,
+    });
     return convertResponse(res, logger);
   },
   POST: async (url, request, logger) => {
-    const res = await axios.post(url, request.reqBody);
+    const res = await axios.post(url, request.reqBody, {
+      headers: request.headers,
+      params: request.query,
+    });
     return convertResponse(res, logger);
   },
   PUT: async (url, request, logger) => {
-    const res = await axios.put(url, request.reqBody);
+    const res = await axios.put(url, request.reqBody, {
+      headers: request.headers,
+      params: request.query,
+    });
     return convertResponse(res, logger);
   },
   PATCH: async (url, request, logger) => {
-    const res = await axios.patch(url, request.reqBody);
+    const res = await axios.patch(url, request.reqBody, {
+      headers: request.headers,
+      params: request.query,
+    });
     return convertResponse(res, logger);
   },
   HEAD: async (url, request, logger) => {
-    const res = await axios.head(url);
+    const res = await axios.head(url, {
+      headers: request.headers,
+      params: request.query,
+    });
     return convertResponse(res, logger);
   },
   DELETE: async (url, request, logger) => {
-    const res = await axios.delete(url);
+    const res = await axios.delete(url, {
+      headers: request.headers,
+      params: request.query,
+    });
     return convertResponse(res, logger);
   },
 };

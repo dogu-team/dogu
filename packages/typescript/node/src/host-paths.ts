@@ -38,6 +38,7 @@ export const HostPaths = {
   },
 
   java: {
+    binPath: (javaHomePath: string): string => path.resolve(javaHomePath, 'bin'),
     javaPath: (javaHomePath: string): string => path.resolve(javaHomePath, 'bin', process.platform === 'win32' ? 'java.exe' : 'java'),
   },
 
@@ -74,6 +75,9 @@ export const HostPaths = {
     },
     browser: {
       browsersPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'browsers'),
+    },
+    selenium: {
+      seleniumServerPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'selenium/selenium-server.jar'),
     },
 
     /**

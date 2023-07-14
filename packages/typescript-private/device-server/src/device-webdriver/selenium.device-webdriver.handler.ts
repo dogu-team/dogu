@@ -60,7 +60,9 @@ export class SeleniumDeviceWebDriverHandler implements DeviceWebDriverHandler {
     }
 
     const url = `http://127.0.0.1:${seleniumContextInfo.port}${request.path}`;
+    this.logger.info('Relay HTTP request', { url, method: request.method });
     let response = await httpRequestRelayHandler(url, request, this.logger);
+    this.logger.info('Relay HTTP response', { url, status: response.status });
 
     if (endpointHandler) {
       try {
