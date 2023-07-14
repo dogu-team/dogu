@@ -22,7 +22,7 @@ const Header = ({ right }: Props) => {
       case 'self-hosted':
         return 'Dogu Agent for Self-Hosted';
       default:
-        return 'Dogu Agent (Dev)';
+        return 'Dogu Agent';
     }
   };
 
