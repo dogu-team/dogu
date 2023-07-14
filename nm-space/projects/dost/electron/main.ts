@@ -73,7 +73,15 @@ app.whenReady().then(async () => {
   app.on('window-all-closed', () => {});
 
   app.on('quit', async (event, exitCode) => {
-    logger.debug('app quit', { exitCode });
+    logger.info('app quit', { exitCode });
+    await ChildService.close();
+  });
+  process.on('beforeExit', async (code) => {
+    logger.info('beforeExit', { code });
+    await ChildService.close();
+  });
+  process.on('exit', async (code) => {
+    logger.info('exit', { code });
     await ChildService.close();
   });
 });

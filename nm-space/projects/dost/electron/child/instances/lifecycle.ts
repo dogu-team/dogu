@@ -90,6 +90,27 @@ export function closeChild(key: Key, child: ChildProcess, childLogger: Printable
   });
 }
 
+export function closeAllChildren(): Promise<void> {
+  logger.info('closeAllChildren called', { err: new Error().stack });
+  return new Promise((resolve) => {
+    if (process.pid) {
+      pidtree(process.pid, (err, pids) => {
+        if (err) {
+          logger.error('closeAllChildren close. pidtree error', { error: err });
+        } else {
+          logger.info('closeAllChildren close. pidtree', { pids });
+          for (const pid of pids) {
+            killPid('closeAllChildren', pid);
+          }
+        }
+        resolve();
+      });
+    } else {
+      logger.warn?.('child process pid is null');
+      resolve();
+    }
+  });
+}
 function killPid(key: string, pid: number) {
   try {
     if (process.platform === 'win32') {

@@ -9,6 +9,7 @@ import { FeatureConfigService } from '../feature-config/feature-config-service';
 import { logger } from '../log/logger.instance';
 import { DeviceServerChild } from './instances/device-server';
 import { HostAgentChild } from './instances/host-agent';
+import { closeAllChildren } from './instances/lifecycle';
 import { Child } from './types';
 
 export class ChildService implements IChildClient {
@@ -50,7 +51,7 @@ export class ChildService implements IChildClient {
   }
 
   async closeAll(): Promise<void> {
-    await Promise.all([this.deviceServer.close, this.hostAgent.close]);
+    await Promise.all([this.deviceServer.close, this.hostAgent.close, closeAllChildren]);
   }
 
   async connect(token: string): Promise<HostAgentConnectionStatus> {
