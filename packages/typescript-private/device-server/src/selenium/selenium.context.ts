@@ -168,12 +168,14 @@ export class SeleniumContext {
     }
     const args = ['webdriver-manager', 'update', `--out_dir=${clonePath}`, '--standalone=true'];
     if (browserName === 'chrome') {
+      args.push('--gecko=false');
       args.push('--chrome=true');
       // FIXME: henry - need version mapping
       // const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
       // args.push(`--versions.chrome=${resolvedVersion}`);
       args.push('--versions.chrome=latest');
     } else if (browserName === 'firefox') {
+      args.push('--chrome=false');
       args.push('--gecko=true');
       // FIXME: henry - need version mapping
       // const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);

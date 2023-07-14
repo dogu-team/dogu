@@ -59,7 +59,7 @@ export class RemoteWebDriverInfoController {
 
     const relayResponse = await this.webdriverService.sendRequest(processResult, headers);
     await this.webdriverService.handleNewSessionResponse(processResult, relayResponse);
-    await this.sendResponse(relayResponse, response);
+    this.sendResponse(relayResponse, response);
   }
 
   @Delete('session/:sessionId')
