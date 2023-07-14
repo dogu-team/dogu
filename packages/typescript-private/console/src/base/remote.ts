@@ -1,9 +1,10 @@
 import { ProjectId, RemoteId, REMOTE_TYPE } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
-import { RemoteWebDriverInfoBase } from '..';
+import { RemoteDeviceJobBase, RemoteWebDriverInfoBase } from '..';
 
 interface RemoteRelationTraits {
   remoteInfo?: RemoteWebDriverInfoBase | null;
+  removeDeviceJobs?: RemoteDeviceJobBase[];
 }
 
 export interface RemoteBaseTraits {

@@ -12,6 +12,8 @@ import { ApplicationService } from '../project/application/application.service';
 import { WebDriverService } from '../webdriver/webdriver.service';
 import { RemoteWebDriverInfoController } from './remote-webdriver/remote-webdriver.controller';
 import { RemoteWebDriverInfoService } from './remote-webdriver/remote-webdriver.service';
+import { RemoteController } from './remote.controller';
+import { RemoteService } from './remote.service';
 
 @Module({
   imports: [FeatureFileModule, TypeOrmModule.forFeature([Remote, RemoteWebDriverInfo])],
@@ -24,6 +26,7 @@ import { RemoteWebDriverInfoService } from './remote-webdriver/remote-webdriver.
     DeviceMessageQueue,
     ApplicationService,
     ProjectFileService,
+    RemoteService,
   ],
   exports: [
     WebDriverService, //
@@ -34,7 +37,8 @@ import { RemoteWebDriverInfoService } from './remote-webdriver/remote-webdriver.
     DeviceMessageQueue,
     ApplicationService,
     ProjectFileService,
+    RemoteService,
   ],
-  controllers: [RemoteWebDriverInfoController],
+  controllers: [RemoteWebDriverInfoController, RemoteController],
 })
 export class RemoteModule {}

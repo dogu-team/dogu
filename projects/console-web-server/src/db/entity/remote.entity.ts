@@ -1,8 +1,9 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
-
 import { RemoteBase, RemotePropSnake } from '@dogu-private/console';
 import { ProjectId, RemoteId, REMOTE_TABLE_NAME, REMOTE_TYPE } from '@dogu-private/types';
+import { BaseEntity, Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+
 import { ColumnTemplate } from './decorators';
+import { RemoteDeviceJob } from './remote-device-job.entity';
 
 @Entity(REMOTE_TABLE_NAME)
 export class Remote extends BaseEntity implements RemoteBase {
@@ -26,4 +27,7 @@ export class Remote extends BaseEntity implements RemoteBase {
 
   @ColumnTemplate.DeleteDate(RemotePropSnake.deleted_at)
   deletedAt!: Date | null;
+
+  @OneToMany(() => RemoteDeviceJob, (remoteDeviceJob) => remoteDeviceJob.remote, { cascade: ['soft-remove'] })
+  remoteDeviceJobs?: RemoteDeviceJob[];
 }
