@@ -1,6 +1,7 @@
 import { PageBase, RemoteBase } from '@dogu-private/console';
 import { OrganizationId, ProjectId } from '@dogu-private/types';
 import { List } from 'antd';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { RiRemoteControlLine } from 'react-icons/ri';
 import useSWR from 'swr';
@@ -50,7 +51,16 @@ const RemoteListController = ({ organizationId, projectId }: Props) => {
           total: data?.totalCount,
         }}
         locale={{
-          emptyText: <ListEmpty image={<RiRemoteControlLine style={{ fontSize: '90px' }} />} description={<p>No remote.</p>} />,
+          emptyText: (
+            <ListEmpty
+              image={<RiRemoteControlLine style={{ fontSize: '90px' }} />}
+              description={
+                <p>
+                  No remote test results. Please refer to <Link href={`/dashboard/${organizationId}/projects/${projectId}/get-started`}>tuturials</Link> for remote testing.
+                </p>
+              }
+            />
+          ),
         }}
       />
     </div>

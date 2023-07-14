@@ -1,9 +1,8 @@
 import { RemoteDeviceJobBase } from '@dogu-private/console';
-import { Pie, PieChart, Tooltip } from 'recharts';
+import { Pie, PieChart } from 'recharts';
 import styled from 'styled-components';
-import { flexRowBaseStyle } from '../../styles/box';
-import { remoteStatusColor, remoteStatusText } from '../../utils/mapper';
-import RemoteJobStateIcon from './RemoteJobStateIcon';
+
+import { remoteStatusColor } from '../../utils/mapper';
 
 interface Props {
   remoteJobs?: RemoteDeviceJobBase[];
@@ -17,8 +16,6 @@ const RemoteStateSummaryGraph = ({ remoteJobs }: Props) => {
     value: job.state,
     fill: remoteStatusColor[job.state],
   }));
-
-  const stateSet = new Set(remoteJobs.map((job) => job.state));
 
   return (
     <PieChart width={20} height={20}>
