@@ -60,7 +60,7 @@ export class SeleniumDeviceWebDriverHandler implements DeviceWebDriverHandler {
     }
 
     const url = `http://127.0.0.1:${seleniumContextInfo.port}${request.path}`;
-    const response = await httpRequestRelayHandler(url, request, this.logger);
+    let response = await httpRequestRelayHandler(url, request, this.logger);
 
     if (endpointHandler) {
       try {
@@ -68,7 +68,7 @@ export class SeleniumDeviceWebDriverHandler implements DeviceWebDriverHandler {
         if (result.error) {
           throw result.error;
         }
-        return result.response;
+        response = result.response;
       } catch (error) {
         this.logger.error('Failed to handle onAfterRequest', { error: errorify(error) });
         throw error;
