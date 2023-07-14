@@ -5399,22 +5399,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@emotion/is-prop-valid@npm:^0.8.2":
-  version: 0.8.8
-  resolution: "@emotion/is-prop-valid@npm:0.8.8"
-  dependencies:
-    "@emotion/memoize": 0.7.4
-  checksum: bb7ec6d48c572c540e24e47cc94fc2f8dec2d6a342ae97bc9c8b6388d9b8d283862672172a1bb62d335c02662afe6291e10c71e9b8642664a8b43416cdceffac
-  languageName: node
-  linkType: hard
-
-"@emotion/memoize@npm:0.7.4":
-  version: 0.7.4
-  resolution: "@emotion/memoize@npm:0.7.4"
-  checksum: 4e3920d4ec95995657a37beb43d3f4b7d89fed6caa2b173a4c04d10482d089d5c3ea50bbc96618d918b020f26ed6e9c4026bbd45433566576c1f7b056c3271dc
-  languageName: node
-  linkType: hard
-
 "@emotion/memoize@npm:^0.8.0":
   version: 0.8.0
   resolution: "@emotion/memoize@npm:0.8.0"
@@ -14409,10 +14393,7 @@ __metadata:
     axios: 1.3.5
     class-transformer: 0.5.1
     class-validator: 0.14.0
-    cookie: 0.5.0
     cross-env: 7.0.3
-    dexie: 3.2.3
-    dexie-react-hooks: 1.1.3
     dotenv: 16.0.3
     env-cmd: 10.1.0
     eslint: 8.23.0
@@ -14424,14 +14405,14 @@ __metadata:
     eslint-plugin-react-hooks: 4.6.0
     find-up: 6.3.0
     flatbuffers: 22.10.26
-    framer-motion: 10.6.1
     gamium: 2.0.2
     hoist-non-react-statics: 3.3.2
     lodash: 4.17.21
     moment: 2.29.4
     monaco-editor: 0.36.1
     next: 13.4.4
-    next-translate: 1.5.0
+    next-translate: 2.4.4
+    next-translate-plugin: ^2.4.4
     nprogress: 0.2.0
     prettier: 2.8.6
     prop-types: 15.8.1
@@ -16259,24 +16240,6 @@ __metadata:
     ua-parser-js: ^1.0.1
     uuid: ^9.0.0
   checksum: 5cd603c441491642c4b81a7d6267e02e4f46bb105fbcd75138db60347d827db1e00f5ea2ef146813fe944ba77d61a72957ba47b82f5fe1df8430a782928cec59
-  languageName: node
-  linkType: hard
-
-"dexie-react-hooks@npm:1.1.3":
-  version: 1.1.3
-  resolution: "dexie-react-hooks@npm:1.1.3"
-  peerDependencies:
-    "@types/react": ">=16"
-    dexie: ">=3.1.0-alpha.1 <5.0.0"
-    react: ">=16"
-  checksum: 77fc500c690f2036072aef3aa1aa1195f38048afcb2bf6e4b101bfd65f1facb112cc0b7e40cac7ba987ee0dca637a97f1fd174b307298df961040768d8c1d6f8
-  languageName: node
-  linkType: hard
-
-"dexie@npm:3.2.3":
-  version: 3.2.3
-  resolution: "dexie@npm:3.2.3"
-  checksum: 54fd7bc94364ed601dc2d53f8b488e49ac61d4ec532f001a68fde9ffccb4bf3c6a8af310b41d8f52c94c1a99c0e165437d7b223b655df582ceda90b9bfcd60e7
   languageName: node
   linkType: hard
 
@@ -18645,27 +18608,6 @@ __metadata:
   dependencies:
     map-cache: ^0.2.2
   checksum: 1cbbd0b0116b67d5790175de0038a11df23c1cd2e8dcdbade58ebba5594c2d641dade6b4f126d82a7b4a6ffc2ea12e3d387dbb64ea2ae97cf02847d436f60fdc
-  languageName: node
-  linkType: hard
-
-"framer-motion@npm:10.6.1":
-  version: 10.6.1
-  resolution: "framer-motion@npm:10.6.1"
-  dependencies:
-    "@emotion/is-prop-valid": ^0.8.2
-    tslib: ^2.4.0
-  peerDependencies:
-    react: ^18.0.0
-    react-dom: ^18.0.0
-  dependenciesMeta:
-    "@emotion/is-prop-valid":
-      optional: true
-  peerDependenciesMeta:
-    react:
-      optional: true
-    react-dom:
-      optional: true
-  checksum: 21b3f16a8449e7cb2a83a384589602b78189c2e95566365addf03444f378959cf0929f2d8ee5a258fe72239dbc78dc10e222c50de1af6346aae6082e3a62b014
   languageName: node
   linkType: hard
 
@@ -25124,13 +25066,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-translate@npm:1.5.0":
-  version: 1.5.0
-  resolution: "next-translate@npm:1.5.0"
+"next-translate-plugin@npm:^2.4.4":
+  version: 2.4.4
+  resolution: "next-translate-plugin@npm:2.4.4"
+  dependencies:
+    typescript: 4.5.2
   peerDependencies:
-    next: ">= 10.0.0"
-    react: ">= 16.8.0"
-  checksum: d78cc4121fc4f05f3c859a021dace4bb5dd52885f45f0f06e6c5ef988b0eb22d75cc464d1151b2ef5747d8fa34a3e75c1bf49b382cdf1c663dd5fc4906f3763b
+    next-translate: ">= 2.4.1"
+  checksum: d6abf56c6ddc0e3371cc14c5722280b6bf4b84efa9742f5c62c96906c0c1ca6a1c1d542a8c864e91e7d72934fc9b06dfef559021018b58696091e93eee5fc135
+  languageName: node
+  linkType: hard
+
+"next-translate@npm:2.4.4":
+  version: 2.4.4
+  resolution: "next-translate@npm:2.4.4"
+  peerDependencies:
+    next: ">= 13.2.5"
+    react: ">= 18.0.0"
+  checksum: 06acd378e31b81cd72b16e5354aaaa2224647986932c7d2c3e494c7f6ba8de7cd81a39f6c188f397c32da8597ed085b92dd73c46bd03d29a3c5586558ce7071e
   languageName: node
   linkType: hard
 
@@ -33194,6 +33147,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:4.5.2":
+  version: 4.5.2
+  resolution: "typescript@npm:4.5.2"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 74f9ce65d532bdf5d0214b3f60cf37992180023388c87a11ee6f838a803067ef0b63c600fa501b0deb07f989257dce1e244c9635ed79feca40bbccf6e0aa1ebc
+  languageName: node
+  linkType: hard
+
 "typescript@npm:4.7.4":
   version: 4.7.4
   resolution: "typescript@npm:4.7.4"
@@ -33211,6 +33174,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 46c842e2cd4797b88b66ef06c9c41dd21da48b95787072ccf39d5f2aa3124361bc4c966aa1c7f709fae0509614d76751455b5231b12dbb72eb97a31369e1ff92
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@4.5.2#~builtin<compat/typescript>":
+  version: 4.5.2
+  resolution: "typescript@patch:typescript@npm%3A4.5.2#~builtin<compat/typescript>::version=4.5.2&hash=bcec9a"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: e25e689eba64f7da7cfc43f8ea76cac7176b56caba42655f0a4cb29c0b7c36e67ca54f33df95902859f56108464245d8b45bcdfe21e3d66d9560feb8db780246
   languageName: node
   linkType: hard
 
