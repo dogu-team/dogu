@@ -1,5 +1,5 @@
 import { app, Menu, nativeImage, shell, Tray } from 'electron';
-import { DoguDocsUrl } from '../../src/shares/constants';
+import { DoguDocsDeviceFarmUrl } from '../../src/shares/constants';
 import { ChildService } from '../child/child-service';
 import { logger } from '../log/logger.instance';
 import { ReactPublicLogo192Path } from '../path-map';
@@ -34,7 +34,7 @@ export class TrayService {
         label: 'Dost Help',
         type: 'normal',
         click: () => {
-          shell.openExternal(DoguDocsUrl);
+          shell.openExternal(DoguDocsDeviceFarmUrl);
         },
       },
       { label: '-', type: 'separator' },

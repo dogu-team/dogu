@@ -40,7 +40,7 @@ export class ChromeBrowserInstallExternalUnit extends IExternalUnit {
   }
 
   getName(): string {
-    return Name;
+    return 'Chrome Browser';
   }
 
   getEnvKeys(): string[] {

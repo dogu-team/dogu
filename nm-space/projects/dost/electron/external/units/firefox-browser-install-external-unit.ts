@@ -40,7 +40,7 @@ export class FirefoxBrowserInstallExternalUnit extends IExternalUnit {
   }
 
   getName(): string {
-    return Name;
+    return 'Firefox Browser';
   }
 
   getEnvKeys(): string[] {

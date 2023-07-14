@@ -77,7 +77,7 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
   }
 
   getEnvKeys(): string[] {
-    return [''];
+    return [];
   }
 
   async validateInternal(): Promise<void> {
