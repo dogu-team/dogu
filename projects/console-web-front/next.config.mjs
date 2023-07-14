@@ -1,4 +1,4 @@
-import nextTranslate from 'next-translate';
+import nextTranslate from 'next-translate-plugin';
 import { withSentryConfig } from '@sentry/nextjs';
 
 /** @type {import('next').NextConfig} */

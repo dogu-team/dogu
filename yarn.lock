@@ -14431,7 +14431,8 @@ __metadata:
     moment: 2.29.4
     monaco-editor: 0.36.1
     next: 13.4.4
-    next-translate: 1.5.0
+    next-translate: 2.4.4
+    next-translate-plugin: ^2.4.4
     nprogress: 0.2.0
     prettier: 2.8.6
     prop-types: 15.8.1
@@ -25124,13 +25125,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-translate@npm:1.5.0":
-  version: 1.5.0
-  resolution: "next-translate@npm:1.5.0"
+"next-translate-plugin@npm:^2.4.4":
+  version: 2.4.4
+  resolution: "next-translate-plugin@npm:2.4.4"
+  dependencies:
+    typescript: 4.5.2
   peerDependencies:
-    next: ">= 10.0.0"
-    react: ">= 16.8.0"
-  checksum: d78cc4121fc4f05f3c859a021dace4bb5dd52885f45f0f06e6c5ef988b0eb22d75cc464d1151b2ef5747d8fa34a3e75c1bf49b382cdf1c663dd5fc4906f3763b
+    next-translate: ">= 2.4.1"
+  checksum: d6abf56c6ddc0e3371cc14c5722280b6bf4b84efa9742f5c62c96906c0c1ca6a1c1d542a8c864e91e7d72934fc9b06dfef559021018b58696091e93eee5fc135
+  languageName: node
+  linkType: hard
+
+"next-translate@npm:2.4.4":
+  version: 2.4.4
+  resolution: "next-translate@npm:2.4.4"
+  peerDependencies:
+    next: ">= 13.2.5"
+    react: ">= 18.0.0"
+  checksum: 06acd378e31b81cd72b16e5354aaaa2224647986932c7d2c3e494c7f6ba8de7cd81a39f6c188f397c32da8597ed085b92dd73c46bd03d29a3c5586558ce7071e
   languageName: node
   linkType: hard
 
@@ -33194,6 +33206,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:4.5.2":
+  version: 4.5.2
+  resolution: "typescript@npm:4.5.2"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 74f9ce65d532bdf5d0214b3f60cf37992180023388c87a11ee6f838a803067ef0b63c600fa501b0deb07f989257dce1e244c9635ed79feca40bbccf6e0aa1ebc
+  languageName: node
+  linkType: hard
+
 "typescript@npm:4.7.4":
   version: 4.7.4
   resolution: "typescript@npm:4.7.4"
@@ -33211,6 +33233,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 46c842e2cd4797b88b66ef06c9c41dd21da48b95787072ccf39d5f2aa3124361bc4c966aa1c7f709fae0509614d76751455b5231b12dbb72eb97a31369e1ff92
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@4.5.2#~builtin<compat/typescript>":
+  version: 4.5.2
+  resolution: "typescript@patch:typescript@npm%3A4.5.2#~builtin<compat/typescript>::version=4.5.2&hash=bcec9a"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: e25e689eba64f7da7cfc43f8ea76cac7176b56caba42655f0a4cb29c0b7c36e67ca54f33df95902859f56108464245d8b45bcdfe21e3d66d9560feb8db780246
   languageName: node
   linkType: hard
 

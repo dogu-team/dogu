@@ -23646,7 +23646,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["moment", "npm:2.29.4"],\
             ["monaco-editor", "npm:0.36.1"],\
             ["next", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:13.4.4"],\
-            ["next-translate", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:1.5.0"],\
+            ["next-translate", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:2.4.4"],\
+            ["next-translate-plugin", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:2.4.4"],\
             ["nprogress", "npm:0.2.0"],\
             ["prettier", "npm:2.8.6"],\
             ["prop-types", "npm:15.8.1"],\
@@ -36240,17 +36241,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["next-translate", [\
-        ["npm:1.5.0", {\
-          "packageLocation": "./.yarn/cache/next-translate-npm-1.5.0-ccc84ee4ca-d78cc4121f.zip/node_modules/next-translate/",\
+        ["npm:2.4.4", {\
+          "packageLocation": "./.yarn/cache/next-translate-npm-2.4.4-18c769b795-06acd378e3.zip/node_modules/next-translate/",\
           "packageDependencies": [\
-            ["next-translate", "npm:1.5.0"]\
+            ["next-translate", "npm:2.4.4"]\
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:1.5.0", {\
-          "packageLocation": "./.yarn/__virtual__/next-translate-virtual-6768ebc8b2/0/cache/next-translate-npm-1.5.0-ccc84ee4ca-d78cc4121f.zip/node_modules/next-translate/",\
+        ["virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:2.4.4", {\
+          "packageLocation": "./.yarn/__virtual__/next-translate-virtual-4b87206be5/0/cache/next-translate-npm-2.4.4-18c769b795-06acd378e3.zip/node_modules/next-translate/",\
           "packageDependencies": [\
-            ["next-translate", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:1.5.0"],\
+            ["next-translate", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:2.4.4"],\
             ["@types/next", null],\
             ["@types/react", "npm:18.0.28"],\
             ["next", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:13.4.4"],\
@@ -36261,6 +36262,29 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             "@types/react",\
             "next",\
             "react"\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["next-translate-plugin", [\
+        ["npm:2.4.4", {\
+          "packageLocation": "./.yarn/unplugged/next-translate-plugin-virtual-e8e79f059f/node_modules/next-translate-plugin/",\
+          "packageDependencies": [\
+            ["next-translate-plugin", "npm:2.4.4"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:2.4.4", {\
+          "packageLocation": "./.yarn/unplugged/next-translate-plugin-virtual-e8e79f059f/node_modules/next-translate-plugin/",\
+          "packageDependencies": [\
+            ["next-translate-plugin", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:2.4.4"],\
+            ["@types/next-translate", null],\
+            ["next-translate", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:2.4.4"],\
+            ["typescript", "patch:typescript@npm%3A4.5.2#~builtin<compat/typescript>::version=4.5.2&hash=bcec9a"]\
+          ],\
+          "packagePeers": [\
+            "@types/next-translate",\
+            "next-translate"\
           ],\
           "linkType": "HARD"\
         }]\
@@ -47322,6 +47346,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/typescript-patch-7ad1c7f5d0-dc7141ab55.zip/node_modules/typescript/",\
           "packageDependencies": [\
             ["typescript", "patch:typescript@npm%3A3.9.10#~builtin<compat/typescript>::version=3.9.10&hash=3bd3d3"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["patch:typescript@npm%3A4.5.2#~builtin<compat/typescript>::version=4.5.2&hash=bcec9a", {\
+          "packageLocation": "./.yarn/cache/typescript-patch-e2f8286ac9-e25e689eba.zip/node_modules/typescript/",\
+          "packageDependencies": [\
+            ["typescript", "patch:typescript@npm%3A4.5.2#~builtin<compat/typescript>::version=4.5.2&hash=bcec9a"]\
           ],\
           "linkType": "HARD"\
         }],\
