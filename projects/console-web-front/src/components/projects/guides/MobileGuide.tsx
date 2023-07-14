@@ -97,7 +97,7 @@ const MobileGuide = () => {
               { id: INSTALL_DEPENDENCIES_ID, title: 'Install dependencies' },
               { id: SET_CAPABILITIES_ID, title: 'Set capabilities' },
               { id: UPLOAD_SAMPLE_APP_ID, title: 'Upload sample application' },
-              { id: RUN_TEST_ID, title: 'Run remote testign' },
+              { id: RUN_TEST_ID, title: 'Run remote testing' },
               { id: DONE_ID, title: 'Done! Next step' },
             ]}
           />

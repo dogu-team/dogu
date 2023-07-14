@@ -70,7 +70,7 @@ const UsageGuide = () => {
 
       <CloseBox>
         <Link href={`/dashboard/${router.query.orgId}/projects/${router.query.pid}/routines`}>
-          <Button type="link">Close guide</Button>
+          <Button type="link">Close tutorial</Button>
         </Link>
       </CloseBox>
     </Box>

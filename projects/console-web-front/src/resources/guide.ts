@@ -8,7 +8,49 @@ export enum GuideSupportLanguage {
   TYPESCRIPT = 'typescript',
 }
 
-export const webGuideData = [];
+export const webGuideData = [
+  {
+    language: GuideSupportLanguage.JAVASCRIPT,
+    cd: 'cd dogu-examples/javascript/selenium',
+    installDependencies: 'npm install',
+    generateCapabilitiesCode: async (orgId: string, projectId: string) => {
+      let orgAccessKey: string;
+
+      try {
+        orgAccessKey = await getApiToken(orgId);
+      } catch (e) {
+        orgAccessKey = 'INSERT_YOUR_ACCESS_KEY';
+      }
+
+      return `const accessKey = process.env.DOGU_ACCESS_KEY || '${orgAccessKey}';
+const organizationId = process.env.DOGU_ORGANIZATION_ID || '${orgId}';
+const projectId = process.env.DOGU_PROJECT_ID || '${projectId}';
+const apiBaseUrl = process.env.DOGU_API_BASE_URL || '${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}';
+
+// ...
+
+const driver = await remote({
+  logLevel: 'debug',
+  protocol,
+  hostname,
+  port,
+  path: '/remote/wd/hub',
+  capabilities: {
+    "dogu:options": {
+      accessKey,
+      organizationId,
+      projectId,
+      'runs-on': INSERT_YOUR_DEVICE_PLATFORM, // one of windows, macos
+      browserName: 'chrome',
+    },
+  },
+});
+`;
+    },
+    runCommand: `npm run test`,
+    sampleFilePath: 'chrome/test.js',
+  },
+];
 
 export const mobileGuideData = [
   {
