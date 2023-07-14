@@ -48,12 +48,6 @@ const Splash = () => {
           return;
         }
 
-        const isManualExternalReady = await ipc.externalClient.isSupportedPlatformValid({ ignoreManual: false });
-        if (!isManualExternalReady) {
-          navigate('/setup/manual');
-          return;
-        }
-
         const [useApiUrlInput, apiUrl] = await Promise.all([ipc.featureConfigClient.get('useApiUrlInput'), ipc.appConfigClient.get<string>('DOGU_API_BASE_URL')]);
 
         if (useApiUrlInput && !apiUrl) {

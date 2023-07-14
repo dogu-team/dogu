@@ -20,7 +20,7 @@ const SetupInstaller = () => {
 
   useEffect(() => {
     if (externalInfosExcludedManual !== undefined && externalInfosExcludedManual.length === 0) {
-      navigate('/setup/manual');
+      navigate('/setup/config');
     }
   }, [externalInfosExcludedManual]);
 
