@@ -37,7 +37,6 @@ import { DoguLogger } from '../logger/logger';
 import { DeviceStatusService } from '../organization/device/device-status.service';
 import { ApplicationService } from '../project/application/application.service';
 import { FindProjectApplicationDto } from '../project/application/dto/application.dto';
-import { RemoteWebDriverInfoService } from '../remote/remote-webdriver/remote-webdriver.service';
 import { WebDriverException } from './webdriver.exception';
 
 export interface WebDriverEndpointHandlerResult {
@@ -48,6 +47,7 @@ export interface WebDriverEndpointHandlerResult {
   deviceId: DeviceId;
   devicePlatform: PlatformType;
   deviceSerial: Serial;
+  // intervalTimeout?: number;
   browserName?: string;
   browserVersion?: string;
   applicationUrl?: string;
@@ -61,7 +61,6 @@ export class WebDriverService {
   constructor(
     private readonly dataSource: DataSource,
     private readonly deviceStatusService: DeviceStatusService,
-    private readonly remoteWebDriverService: RemoteWebDriverInfoService,
     private readonly deviceMessageRelayer: DeviceMessageRelayer,
     private readonly applicationService: ApplicationService,
     private readonly logger: DoguLogger,
@@ -97,22 +96,23 @@ export class WebDriverService {
       throw new WebDriverException(HttpStatus.BAD_REQUEST, new Error('Device tag or name not specified'), {});
     }
 
-    let device: Device;
-    if (deviceTagOrNames.length === 1) {
-      const deviceByName = await this.dataSource.getRepository(Device).findOne({ where: { organizationId: options.organizationId, name: deviceTagOrNames[0] } });
-      if (!deviceByName) {
-        throw new WebDriverException(HttpStatus.NOT_FOUND, new Error(`Device not found. Device Name: ${deviceByName}`), {});
+    const deviceIds: DeviceId[] = [];
+    for (const tagOrName of deviceTagOrNames) {
+      const deviceByName = await this.dataSource.getRepository(Device).findOne({ where: { organizationId: options.organizationId, name: tagOrName } });
+      if (deviceByName) {
+        deviceIds.push(deviceByName.deviceId);
+        continue;
+      } else {
+        const devicesByTag = await this.deviceStatusService.findDevicesByDeviceTag(this.dataSource.manager, options.organizationId, options.projectId, [tagOrName]);
+        if (devicesByTag.length === 0) {
+          throw new WebDriverException(HttpStatus.NOT_FOUND, new Error(`Device not found. Device name: ${tagOrName}, Device tag: ${deviceTagOrNames.join(', ')}`), {});
+        }
+        const deviceIdsByTag = devicesByTag.map((device) => device.deviceId);
+        deviceIds.push(...deviceIdsByTag);
       }
-      device = deviceByName;
-    } else {
-      const devicesByTag = await this.deviceStatusService.findDevicesByDeviceTag(this.dataSource.manager, options.organizationId, options.projectId, []);
-      const deviceIds = devicesByTag.map((device) => device.deviceId);
-      const sortDevicesByRunningRate = await this.deviceStatusService.sortDevicesByRunningRate(deviceIds);
-      if (sortDevicesByRunningRate.length === 0) {
-        throw new WebDriverException(HttpStatus.NOT_FOUND, new Error(`Device not found. Device tag: ${deviceTagOrNames.join(', ')}`), {});
-      }
-      device = sortDevicesByRunningRate[0];
     }
+    const sortDevicesByRunningRate = await this.deviceStatusService.sortDevicesByRunningRate(deviceIds);
+    const device = sortDevicesByRunningRate[0];
 
     const devicePlatformType = platformTypeFromPlatform(device.platform);
     const headers = this.convertHeaders(request.headers);
@@ -199,7 +199,7 @@ export class WebDriverService {
       return remoteDeviceJob;
     });
 
-    await this.waitRemoteDeviceJobToInprogress(rv.remoteDeviceJobId);
+    // await this.waitRemoteDeviceJobToInprogress(rv.remoteDeviceJobId);
   }
 
   async waitRemoteDeviceJobToInprogress(remoteDeviceJobId: RemoteDeviceJobId): Promise<void> {
@@ -269,9 +269,6 @@ export class WebDriverService {
     if (!sessionId) {
       throw new WebDriverException(400, new Error('Session id not found when deleting'), {});
     }
-
-    // await this.remoteWebDriverService.deleteSession(this.dataSource.manager, sessionId);
-
     const pathProvider = new DeviceWebDriver.sessionDeleted.pathProvider(handleResult.deviceSerial);
     const path = DeviceWebDriver.sessionDeleted.resolvePath(pathProvider);
     const res = await this.deviceMessageRelayer.sendHttpRequest(

@@ -19,8 +19,8 @@ export class RemoteDeviceJobUpdater {
   ) {}
 
   public async update(): Promise<void> {
-    this.checkWaitingRemoteDeviceJobs();
-    this.checkTimeoutDeviceJobs();
+    // this.checkWaitingRemoteDeviceJobs();
+    // this.checkTimeoutDeviceJobs();
   }
 
   // private async checkWaitingRemoteDeviceJob
@@ -71,6 +71,7 @@ export class RemoteDeviceJobUpdater {
         const totalInProgressDeviceJobs = inProgressDeviceJobs.length + inProgressRemoteDeviceJobs.length;
         if (totalInProgressDeviceJobs === 0) highestPriorityDeviceJobs.push(deviceJob!);
       } else {
+        // FIXME:
         const inProgressDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0].device.routineDeviceJobs?.length ?? 0;
         const inProgressRemoteDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0].device.remoteDeviceJobs?.length ?? 0;
         const addableDeviceJobCount = maxParallel - inProgressDeviceJobs - inProgressRemoteDeviceJobs;
