@@ -10,6 +10,7 @@ import { WinstonModule } from 'nest-winston';
 
 import { AppModule } from './app/app.module';
 import { env } from './env';
+import { DerivedData } from './internal/externals/xcode/deriveddata';
 import { isFreePort } from './internal/util/net';
 import { adbLogger, gdcLogger, idcLogger, logger } from './logger/logger.instance';
 import { openPathMap } from './path-map';
@@ -18,6 +19,7 @@ export { BrowserInstaller } from './browser-installer';
 export { onErrorToExit } from './child-utils';
 export { logger };
 export { isFreePort };
+export { DerivedData };
 
 export async function bootstrap(): Promise<void> {
   addProcessEventHandler();

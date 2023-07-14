@@ -20,6 +20,7 @@ import isDev from 'electron-is-dev';
 import { SentyDSNUrl } from '../src/shares/constants';
 import { AppConfigService } from './app-config/app-config-service';
 import { ChildService } from './child/child-service';
+import { DeviceLookupService } from './device-lookup/device-lookup-service';
 import { DotEnvConfigService } from './dot-env-config/dot-env-config-service';
 import { ExternalService } from './external/external-service';
 import { FeatureConfigService } from './feature-config/feature-config-service';
@@ -63,6 +64,7 @@ app.whenReady().then(async () => {
   if (token && token.length > 0) {
     ChildService.instance.connect(token).catch((err) => logger.error('main connect error', err));
   }
+  DeviceLookupService.open(ChildService.instance);
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

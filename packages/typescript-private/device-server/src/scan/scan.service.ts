@@ -45,7 +45,7 @@ export class ScanService implements OnModuleInit {
     });
   }
 
-  get channels(): DeviceChannel[] {
+  private get channels(): DeviceChannel[] {
     return this.deviceDoors.channels;
   }
 

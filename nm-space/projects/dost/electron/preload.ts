@@ -1,3 +1,4 @@
+import { PlatformSerial } from '@dogu-private/types';
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { appConfigClientKey } from '../src/shares/app-config';
 import { childCallbackKey, childClientKey, ChildTree, HostAgentConnectionStatus, Key } from '../src/shares/child';
@@ -137,4 +138,5 @@ expose('featureConfigClient', {
 
 expose('deviceLookupClient', {
   getPlatformSerials: () => ipcRenderer.invoke(deviceLookupClientKey.getPlatformSerials),
+  validateDevice: (platformSerial: PlatformSerial) => ipcRenderer.invoke(deviceLookupClientKey.validateDevice, platformSerial),
 });
