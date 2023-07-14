@@ -81,7 +81,7 @@ options = UiAutomator2Options().load_capabilities(
       "accessKey": access_key,
       "organizationId": organization_id,
       "projectId": project_id,
-      "tag": "android",
+      "runs-on": "android",
       # Sample app version
       "appVersion": "2.5.194-alpha-2017-05-30",
     },
@@ -124,7 +124,7 @@ const browser = await remote({
       accessKey,
       organizationId,
       projectId,
-      tag: "android",
+      'runs-on': "android",
       // Sample app version
       appVersion: "2.5.194-alpha-2017-05-30",
     },
