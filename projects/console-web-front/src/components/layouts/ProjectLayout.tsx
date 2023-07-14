@@ -92,12 +92,14 @@ const ProjectLayout = ({ children, sidebar, isGitIntegrated }: Props) => {
                 </div>
               </TitleBox>
               <div>
-                <Link href={`/dashboard/${organizationId}/projects/${projectId}/get-started`}>
-                  <StyledButton type="link">
-                    Tutorial
-                    <ArrowRightOutlined />
-                  </StyledButton>
-                </Link>
+                {!router.asPath.startsWith(`/dashboard/${organizationId}/projects/${projectId}/get-started`) && (
+                  <Link href={`/dashboard/${organizationId}/projects/${projectId}/get-started`}>
+                    <StyledButton type="link">
+                      Tutorial
+                      <ArrowRightOutlined />
+                    </StyledButton>
+                  </Link>
+                )}
               </div>
             </FlexSpaceBetween>
             <Description>{project?.description}</Description>
