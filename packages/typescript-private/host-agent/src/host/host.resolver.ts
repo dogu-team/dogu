@@ -97,15 +97,20 @@ export class HostResolver {
   private async validateAndUpdateRootWorkspace(receivedRootWorkspacePath: string): Promise<{ needUpdateResult: RootWorkspaceNeedUpdate; resolvedWorkspacePath: string }> {
     const defaultRootWorkspacePath = receivedRootWorkspacePath.length === 0 ? '$HOME/.dogu' : receivedRootWorkspacePath;
     this.logger.verbose('Default root workspace path', { defaultRootWorkspacePath });
-    const replacedRootWorkspacePath = path.resolve(await this.envReplacer.replace(defaultRootWorkspacePath));
+    let replacedRootWorkspacePath = path.resolve(await this.envReplacer.replace(defaultRootWorkspacePath));
     this.logger.verbose('Replaced root workspace path', { replacedRootWorkspacePath });
-    if (await this.makeAndValidateDirectory(replacedRootWorkspacePath)) {
-      if (receivedRootWorkspacePath === replacedRootWorkspacePath) {
-        return { needUpdateResult: { needUpdate: 'no' }, resolvedWorkspacePath: replacedRootWorkspacePath };
+    if (!(await this.makeAndValidateDirectory(replacedRootWorkspacePath))) {
+      const fallbackRootWorkspacePath = path.resolve(await this.envReplacer.replace('$HOME/.dogu'));
+      replacedRootWorkspacePath = fallbackRootWorkspacePath;
+      this.logger.verbose('Replaced fallback root workspace path', { replacedRootWorkspacePath });
+      if (!(await this.makeAndValidateDirectory(replacedRootWorkspacePath))) {
+        throw new Error(`rootWorkspace is not accessable. resolved root workspace: ${replacedRootWorkspacePath}`);
       }
-      return { needUpdateResult: { needUpdate: 'yes', rootWorkspacePath: replacedRootWorkspacePath }, resolvedWorkspacePath: replacedRootWorkspacePath };
     }
-    throw new Error(`rootWorkspace is not accessable. console root workspace: ${receivedRootWorkspacePath}`);
+    if (receivedRootWorkspacePath === replacedRootWorkspacePath) {
+      return { needUpdateResult: { needUpdate: 'no' }, resolvedWorkspacePath: replacedRootWorkspacePath };
+    }
+    return { needUpdateResult: { needUpdate: 'yes', rootWorkspacePath: replacedRootWorkspacePath }, resolvedWorkspacePath: replacedRootWorkspacePath };
   }
 
   private validateAndUpdateDeviceServerPort(deviceServerPort: number): DeviceServerPortNeedUpdate {
@@ -127,7 +132,15 @@ export class HostResolver {
 
   private async makeAndValidateDirectory(dirPath: string): Promise<boolean> {
     try {
-      await fs.promises.mkdir(dirPath, { recursive: true });
+      if (fs.existsSync(dirPath)) {
+        const stat = await fs.promises.stat(dirPath);
+        if (!stat.isDirectory()) {
+          await fs.promises.unlink(dirPath);
+        }
+      }
+      if (!fs.existsSync(dirPath)) {
+        await fs.promises.mkdir(dirPath, { recursive: true });
+      }
       const stat = await fs.promises.stat(dirPath);
       if (!stat.isDirectory()) {
         return false;

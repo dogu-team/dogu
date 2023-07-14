@@ -179,10 +179,6 @@ export class UpdateUserDto implements UpdateUserDtoBase {
   @MinLength(USER_NAME_MIN_LENGTH)
   @MaxLength(USER_NAME_MAX_LENGTH)
   name?: string;
-
-  @IsOptional()
-  @IsString()
-  profileImageUrl?: string;
 }
 
 export class UpdateLastOrganizationDto implements UpdateLastOrganizationDtoBase {

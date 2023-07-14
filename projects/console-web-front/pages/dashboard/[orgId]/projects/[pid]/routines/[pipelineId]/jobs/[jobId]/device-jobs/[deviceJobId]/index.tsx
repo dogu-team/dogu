@@ -117,7 +117,7 @@ const HeadBox = styled.div<{ isVerified?: boolean }>`
   padding: 1rem;
   border-bottom: 1px solid ${(props) => props.theme.colors.gray3};
   background-color: inherit;
-  z-index: 1;
+  z-index: 10;
 `;
 
 const Content = styled.div`

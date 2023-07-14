@@ -6,6 +6,7 @@ import useSWR from 'swr';
 import Link from 'next/link';
 import { OrganizationBase, ProjectBase } from '@dogu-private/console';
 import { AppstoreOutlined, ArrowRightOutlined, GatewayOutlined, ProjectOutlined, QuestionCircleOutlined, SettingOutlined, TabletOutlined, TeamOutlined } from '@ant-design/icons';
+import { RiRemoteControlLine } from 'react-icons/ri';
 
 import useAuth from 'src/hooks/useAuth';
 import { swrAuthFetcher } from 'src/api';
@@ -43,6 +44,13 @@ const ProjectLayout = ({ children, sidebar, isGitIntegrated }: Props) => {
       title: t('project:tabMenuRoutineTitle'),
       startsWith: true,
       'access-id': 'project-routine-tab',
+    },
+    {
+      href: `/dashboard/${organizationId}/projects/${projectId}/remotes`,
+      icon: <RiRemoteControlLine />,
+      title: t('project:tabMenuRemoteTitle'),
+      startsWith: true,
+      'access-id': 'project-remote-tab',
     },
     {
       href: `/dashboard/${organizationId}/projects/${projectId}/apps`,
