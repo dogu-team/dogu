@@ -29,7 +29,6 @@
   "infoTabKeyboardTitle": "Keyboard shortcuts",
   "pasteToClipboard": "Paste to clipboard",
   "inspectorInitializingText": "Initializing...",
-  "inspectorLoadingText": "Reading game objects...",
   "inspectorRefreshedAtText": "Refreshed at",
   "inspectorSelectObjectText": "Select object",
   "uploadApplicationDescription": "Click or drag file to this area to install",
@@ -52,5 +51,5 @@
   "deviceLogFilterInputPlaceholder": "Text",
   "deviceLogFilterSetButtonText": "Set",
 
-  "inspectorEmptyTreeText": "No game objects found.<br></br>If you want to see game objects, please refer to <link>document</link>."
+  "inspectorEmptyTreeText": "No element found.<br></br>If you want to see guide for UI inspector, please refer to <link>document</link>."
 }

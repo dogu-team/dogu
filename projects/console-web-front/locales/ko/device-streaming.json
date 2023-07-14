@@ -29,7 +29,6 @@
   "infoTabKeyboardTitle": "단축키",
   "pasteToClipboard": "붙여넣기",
   "inspectorInitializingText": "초기화 중...",
-  "inspectorLoadingText": "게임 오브젝트 읽는 중...",
   "inspectorRefreshedAtText": "새로고침",
   "inspectorSelectObjectText": "오브젝트를 선택하세요",
   "uploadApplicationDescription": "여기를 클릭하거나 설치할 파일을 드래그하세요",
@@ -52,5 +51,5 @@
   "deviceLogFilterInputPlaceholder": "텍스트",
   "deviceLogFilterSetButtonText": "적용",
 
-  "inspectorEmptyTreeText": "발견된 게임 오브젝트가 없습니다.<br></br>게임 오브젝트를 보려면 <link>문서</link>를 참고하세요."
+  "inspectorEmptyTreeText": "발견된 요소가 없습니다.<br></br>UI 인스펙터에 대한 가이드를 보려면 <link>문서</link>를 참고하세요."
 }

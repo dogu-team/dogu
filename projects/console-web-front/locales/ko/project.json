@@ -41,5 +41,5 @@
 
   "createProjectButtonTitle": "프로젝트 생성",
 
-  "projectEmptyDescription": "프로젝트를 만들고 게임 테스트를 시작해보세요.<br></br><br></br><link>여기를 눌러</link> 더 많은 정보 보기"
+  "projectEmptyDescription": "프로젝트를 만들고 자동화 테스트를 시작해보세요.<br></br><br></br><link>여기를 눌러</link> 더 많은 정보 보기"
 }
