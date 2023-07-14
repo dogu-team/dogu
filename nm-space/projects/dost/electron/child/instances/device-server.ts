@@ -19,6 +19,14 @@ export class DeviceServerChild implements Child {
   private _child: ChildProcess | undefined;
   private _lastError: ChildLastError = { code: new ChildCode(Code.CODE_SUCCESS_COMMON_BEGIN_UNSPECIFIED), message: '' };
 
+  async port(): Promise<number> {
+    const DOGU_DEVICE_SERVER_PORT = await this.appConfigService.get('DOGU_DEVICE_SERVER_PORT');
+    if (!DOGU_DEVICE_SERVER_PORT) {
+      throw new Error('DOGU_DEVICE_SERVER_PORT not exist');
+    }
+    return DOGU_DEVICE_SERVER_PORT;
+  }
+
   async open(): Promise<void> {
     const { appConfigService } = this;
     const NODE_ENV = await appConfigService.get('NODE_ENV');

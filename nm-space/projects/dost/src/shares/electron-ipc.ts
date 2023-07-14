@@ -1,5 +1,6 @@
 import { IAppConfigClient } from './app-config';
 import { IChildCallback, IChildClient } from './child';
+import { IDeviceLookupClient } from './device-lookup';
 import { IDotEnvConfigClient } from './dot-env-config';
 import { IExternalCallback, IExternalClient } from './external';
 import { IFeatureConfigClient } from './feature-config';
@@ -23,6 +24,7 @@ export interface IElectronIpc {
   stdLogCallback: IStdLogCallback;
   windowClient: IWindowClient;
   featureConfigClient: IFeatureConfigClient;
+  deviceLookupClient: IDeviceLookupClient;
 }
 
 type PropertiesOfWeek<T> = { [K in Extract<keyof T, string>]: string };
