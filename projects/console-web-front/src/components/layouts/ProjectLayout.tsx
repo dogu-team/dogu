@@ -48,7 +48,7 @@ const ProjectLayout = ({ children, sidebar, isGitIntegrated }: Props) => {
     {
       href: `/dashboard/${organizationId}/projects/${projectId}/remotes`,
       icon: <RiRemoteControlLine />,
-      title: 'Remotes',
+      title: t('project:tabMenuRemoteTitle'),
       startsWith: true,
       'access-id': 'project-remote-tab',
     },
