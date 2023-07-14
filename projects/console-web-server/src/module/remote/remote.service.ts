@@ -1,4 +1,4 @@
-import { RemoteBase } from '@dogu-private/console';
+import { RemoteBase, RemoteDeviceJobPropCamel, RemotePropCamel } from '@dogu-private/console';
 import { OrganizationId, ProjectId, RemoteId } from '@dogu-private/types';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -23,7 +23,7 @@ export class RemoteService {
       order: {
         createdAt: 'DESC',
       },
-      relations: ['remoteDeviceJobs', 'remoteDeviceJobs.device'],
+      relations: [RemotePropCamel.remoteDeviceJobs, `${RemotePropCamel.remoteDeviceJobs}.${RemoteDeviceJobPropCamel.device}`],
       take: dto.getDBLimit(),
       skip: dto.getDBOffset(),
     });
@@ -37,7 +37,7 @@ export class RemoteService {
         projectId,
         remoteId,
       },
-      relations: ['remoteDeviceJobs', 'remoteDeviceJobs.device'],
+      relations: [RemotePropCamel.remoteDeviceJobs, `${RemotePropCamel.remoteDeviceJobs}.${RemoteDeviceJobPropCamel.device}`],
     });
 
     if (!rv) throw new NotFoundException(`Remote with id ${remoteId} not found`);
