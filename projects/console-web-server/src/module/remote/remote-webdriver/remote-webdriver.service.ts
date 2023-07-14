@@ -87,7 +87,8 @@ export class RemoteWebDriverService {
         deviceIds.push(...deviceIdsByTag);
       }
     }
-    const sortDevicesByRunningRate = await this.deviceStatusService.sortDevicesByRunningRate(deviceIds);
+    const uniqueDeviceIds = [...new Set(deviceIds)];
+    const sortDevicesByRunningRate = await this.deviceStatusService.sortDevicesByRunningRate(uniqueDeviceIds);
     const device = sortDevicesByRunningRate[0];
 
     const devicePlatformType = platformTypeFromPlatform(device.platform);
