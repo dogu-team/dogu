@@ -77,18 +77,24 @@ export class RemoteWebDriverService {
       const deviceByName = await this.dataSource.getRepository(Device).findOne({ where: { organizationId: options.organizationId, name: tagOrName } });
       if (deviceByName) {
         deviceIds.push(deviceByName.deviceId);
-        continue;
       } else {
         const devicesByTag = await this.deviceStatusService.findDevicesByDeviceTag(this.dataSource.manager, options.organizationId, options.projectId, [tagOrName]);
         if (devicesByTag.length === 0) {
-          throw new RemoteException(HttpStatus.NOT_FOUND, new Error(`Device not found. Device name: ${tagOrName}, Device tag: ${deviceTagOrNames.join(', ')}`), {});
+          throw new RemoteException(HttpStatus.NOT_FOUND, new Error(`Device not found. runs-on: ${deviceTagOrNames.join(', ')}`), {});
         }
         const deviceIdsByTag = devicesByTag.map((device) => device.deviceId);
         deviceIds.push(...deviceIdsByTag);
       }
     }
+    if (deviceIds.length === 0) {
+      throw new RemoteException(HttpStatus.NOT_FOUND, new Error(`Device not found. runs-on: ${deviceTagOrNames.join(', ')}`), {});
+    }
+
     const uniqueDeviceIds = [...new Set(deviceIds)];
     const sortDevicesByRunningRate = await this.deviceStatusService.sortDevicesByRunningRate(uniqueDeviceIds);
+    if (sortDevicesByRunningRate.length === 0) {
+      throw new RemoteException(HttpStatus.NOT_FOUND, new Error(`Device not found. Device runs-on: ${deviceTagOrNames.join(', ')}`), {});
+    }
     const device = sortDevicesByRunningRate[0];
 
     const devicePlatformType = platformTypeFromPlatform(device.platform);

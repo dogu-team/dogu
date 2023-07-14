@@ -518,15 +518,7 @@ export class DeviceStatusService {
       .where('device.deviceId IN (:...deviceIds)', { deviceIds })
       .getMany();
 
-    const devicesJoinedByDeviceJobsFiltered = devicesJoinedByDeviceJobs.filter((device) => {
-      const maxParallelJobs = device.maxParallelJobs;
-      const remoteDeviceJobs = device.remoteDeviceJobs ?? [];
-      const routineDeviceJobs = device.routineDeviceJobs ?? [];
-      const totalCurrentRunningJobs = remoteDeviceJobs.length + routineDeviceJobs.length;
-      return totalCurrentRunningJobs < maxParallelJobs;
-    });
-
-    const devicesSortedByCurrentRunningRate = devicesJoinedByDeviceJobsFiltered.sort((a, b) => {
+    const devicesSortedByCurrentRunningRate = devicesJoinedByDeviceJobs.sort((a, b) => {
       const maxParallelJobsA = a.maxParallelJobs;
       const remoteDeviceJobsA = a.remoteDeviceJobs ?? [];
       const routineDeviceJobsA = a.routineDeviceJobs ?? [];
