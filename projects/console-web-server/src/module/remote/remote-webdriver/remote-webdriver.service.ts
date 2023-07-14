@@ -104,20 +104,18 @@ export class RemoteWebDriverService {
     let applicationUrl: string | undefined = undefined;
     let applicationVersion: string | undefined = undefined;
     if (devicePlatformType === 'android' || devicePlatformType === 'ios') {
-      if (!options.appVersion) {
-        throw new RemoteException(HttpStatus.BAD_REQUEST, new Error('App version not specified'), {});
+      if (options.appVersion) {
+        const findAppDto = new FindProjectApplicationDto();
+        findAppDto.version = options.appVersion;
+        findAppDto.extension = extensionFromPlatform(devicePlatformType);
+        const applications = await this.applicationService.getApplicationList(options.organizationId, options.projectId, findAppDto);
+        if (applications.items.length === 0) {
+          throw new RemoteException(HttpStatus.BAD_REQUEST, new Error('Application not found'), {});
+        }
+        const application = applications.items[0];
+        applicationUrl = await this.applicationService.getApplicationDownladUrl(application.projectApplicationId, options.organizationId, options.projectId);
+        applicationVersion = application.version;
       }
-
-      const findAppDto = new FindProjectApplicationDto();
-      findAppDto.version = options.appVersion;
-      findAppDto.extension = extensionFromPlatform(devicePlatformType);
-      const applications = await this.applicationService.getApplicationList(options.organizationId, options.projectId, findAppDto);
-      if (applications.items.length === 0) {
-        throw new RemoteException(HttpStatus.BAD_REQUEST, new Error('Application not found'), {});
-      }
-      const application = applications.items[0];
-      applicationUrl = await this.applicationService.getApplicationDownladUrl(application.projectApplicationId, options.organizationId, options.projectId);
-      applicationVersion = application.version;
     }
 
     return {

@@ -2,19 +2,52 @@ import { Injectable } from '@nestjs/common';
 
 import { HeaderRecord, PromiseOrValue } from '@dogu-tech/common';
 import { RelayRequest, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
+import _ from 'lodash';
 import { AppiumRemoteContext } from '../../appium/appium.remote.context';
 import { DoguLogger } from '../../logger/logger';
 import { OnBeforeRequestResult } from './common';
 
 export abstract class AppiumEndpointHandler {
   abstract get endpointType(): WebDriverEndpointType;
-  abstract onBeforeRequest(
+
+  onBeforeRequest(
     remoteContext: AppiumRemoteContext,
     headers: HeaderRecord,
     endpoint: WebDriverEndPoint,
     request: RelayRequest,
     logger: DoguLogger,
-  ): PromiseOrValue<OnBeforeRequestResult>;
+  ): PromiseOrValue<OnBeforeRequestResult> {
+    request.headers = this.resolveHeader(request.headers, logger);
+    return {
+      request,
+    };
+  }
+
+  protected resolveHeader(headers: HeaderRecord, logger: DoguLogger): HeaderRecord {
+    _.keys(headers).forEach((key) => {
+      if (key.toString().toLowerCase() === 'content-type') {
+        const value = _.get(headers, key);
+        const newValue = 'application/json; charset=utf-8';
+        if (value.toLowerCase() === newValue.toLowerCase()) {
+          return;
+        }
+
+        delete headers[key];
+        headers[key] = newValue;
+        logger.info('Content-Type is changed.', {
+          key,
+          oldValue: value,
+          newValue,
+        });
+      } else if (key.toString().toLowerCase() === 'content-length') {
+        delete headers[key];
+        logger.info('Content-Length is removed.', {
+          key,
+        });
+      }
+    });
+    return headers;
+  }
 }
 
 const appiumEndpointHandlerMap = new Map<string, AppiumEndpointHandler>();
