@@ -51,7 +51,11 @@ export class AppiumDeviceWebDriverHandler implements DeviceWebDriverHandler {
     }
 
     const url = `http://127.0.0.1:${appiumRemoteContext.getInfo().server.port}/${request.path}`;
-    return httpRequestRelayHandler(url, request, this.logger);
+    this.logger.info('AppiumDeviceWebDriverHandler.onRelayHttp', { url, method: request.method });
+    const response = await httpRequestRelayHandler(url, request, this.logger);
+    this.logger.info('AppiumDeviceWebDriverHandler.onRelayHttp', { url, status: response.status });
+
+    return response;
   }
 
   async onSessionDeleted(headers: HeaderRecord, param: SessionDeletedParam): Promise<void> {
