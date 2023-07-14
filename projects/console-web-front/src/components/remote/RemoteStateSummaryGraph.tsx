@@ -1,25 +1,46 @@
 import { RemoteDeviceJobBase } from '@dogu-private/console';
-import { Pie, PieChart } from 'recharts';
+import { Pie, PieChart, Tooltip } from 'recharts';
+import styled from 'styled-components';
+import { flexRowBaseStyle } from '../../styles/box';
+import { remoteStatusColor, remoteStatusText } from '../../utils/mapper';
+import RemoteJobStateIcon from './RemoteJobStateIcon';
 
 interface Props {
   remoteJobs?: RemoteDeviceJobBase[];
 }
 
-const data = [
-  { name: 'Group A', value: 1, fill: '#0088FE' },
-  { name: 'Group B', value: 1, fill: '#00C49F' },
-  { name: 'Group C', value: 1, fill: '#FFBB28' },
-  { name: 'Group D', value: 1, fill: '#FF8042' },
-];
-
 const RemoteStateSummaryGraph = ({ remoteJobs }: Props) => {
   if (!remoteJobs) return null;
 
+  const data = remoteJobs.map((job) => ({
+    name: job.device?.name,
+    value: job.state,
+    fill: remoteStatusColor[job.state],
+  }));
+
+  const stateSet = new Set(remoteJobs.map((job) => job.state));
+
   return (
-    <PieChart width={24} height={24}>
-      <Pie data={data} dataKey="value" nameKey="state" cx="50%" cy="50%" innerRadius={6} outerRadius={12} fill="#8884d8" />
+    <PieChart width={20} height={20}>
+      <Pie data={data} dataKey="value" nameKey="state" cx="50%" cy="50%" innerRadius={4} outerRadius={10} fill="#8884d8" />
     </PieChart>
   );
 };
 
 export default RemoteStateSummaryGraph;
+
+const TooltipBox = styled.div`
+  width: 10rem;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  font-size: 0.75rem;
+  z-index: 10;
+`;
+
+const TotalBox = styled.div`
+  margin-bottom: 0.5rem;
+`;
+
+const TooltipItem = styled.p`
+  padding: 0.25rem;
+`;
