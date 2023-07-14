@@ -37,22 +37,15 @@ Dogu - Integrated test automation platform based on web.
   </div>
 </p>
 
-Dogu is integrated test automation platform. It provides device farm, CI, test report for test automation. If you use Dogu then you don't need to set up platform like jenkins, device farm, test report for test automation and can focus on your test with Dogu.
+Dogu is an integrated test automation platform that simplifies the automation of web, mobile, and game application testing.
 
 ## Why Dogu?
 
-It needs so many time and effort to build and maintain infrastructure like Appium, OpenSTF, Jenkins, Grafana for test automation.
-Dogu provides **integrated platform** for these infrastructure and helps you to focus on test automation.  
-Especially, Dogu is tightly integrated with test script and test framework so that you can focus on test automation without developing infrastructure related works like parallel test execution, data transfer for test report.
+Building and maintaining infrastructure components such as Appium, OpenSTF, Jenkins, and Grafana for test automation requires significant time and effort. However, Dogu streamlines this process by providing an integrated platform for these infrastructures, allowing you to concentrate on test automation itself. Moreover, Dogu offers seamless integration with test scripts and frameworks, eliminating the need to develop infrastructure-related tasks such as parallel test execution and data transfer for test reporting.
 
-## Build Device Farm
+## Device Farm
 
-Build device farm with your own devices
-
-### Available Devices
-
-- Android
-- iOS
+<img src=".github/resources/architecture-device-farm.png" width="100%"/>
 
 ### Remote Control
 
@@ -74,13 +67,8 @@ Inspect UI on web browser.
   <img src=".github/resources/android-inspecting.gif" width="49%" />
   <img src=".github/resources/ios-inspecting.gif" width="49%" />  
 </div>
-<div align='center' style="margin-bottom: 8px;">
-  <img src=".github/resources/gamium-inspecting.gif" width="49%"/>
-</div>
 
-## Integrate Test Framework With Dogu
-
-Integrate existing test framework with Dogu.
+## Test Framework With Dogu
 
 ### Browser
 
@@ -98,7 +86,7 @@ Integrate existing test framework with Dogu.
 
 - [Gamium](https://docs.dogutech.io/test-automation/game/gamium)
 
-## Integrate Test Unit Framework With Test Report
+## Test Unit Framework With Test Report
 
 Visualize test unit by integrating test unit framework with test report.
 
@@ -109,14 +97,12 @@ Visualize test unit by integrating test unit framework with test report.
 
 <br/>
 
-Integrate existing test unit framework with test report.
-
 - [Jest](https://docs.dogutech.io/test-report/javascript/jest)
 - [Pytest](https://docs.dogutech.io/test-report/python/pytest)
 - [Mocha](https://docs.dogutech.io/test-report/javascript/mocha)
 - [TestNG](https://docs.dogutech.io/test-report/java/testng)
 
-## Integrate External Workflow With Routine
+## Routine Workflow
 
 Run test script on routine and integrate external workflow with routine.
 
