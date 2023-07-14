@@ -9,6 +9,7 @@ import { RoutineDeviceJob } from '../../../db/entity/index';
 import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
 import { DeviceMessageRelayer } from '../../device-message/device-message.relayer';
 import { DoguLogger } from '../../logger/logger';
+import { RemoteDeviceJobProcessor } from '../../remote/processor/remote-device-job-processor';
 
 @Injectable()
 export class RemoteDeviceJobUpdater {
@@ -97,7 +98,7 @@ export class RemoteDeviceJobUpdater {
     }
 
     for (const remoteDeviceJob of highestPriorityDeviceJobs) {
-      await this.dataSource.getRepository(RemoteDeviceJob).update(remoteDeviceJob.remoteDeviceJobId, { state: REMOTE_DEVICE_JOB_STATE.IN_PROGRESS });
+      await RemoteDeviceJobProcessor.setRemoteDeviceJobState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_STATE.IN_PROGRESS);
     }
   }
 
@@ -142,7 +143,7 @@ export class RemoteDeviceJobUpdater {
         .catch((error) => {
           this.logger.error('checkTimeoutDeviceJobs sendHttpRequest error', { error });
         });
-      await this.dataSource.getRepository(RemoteDeviceJob).update(timeoutDeviceJob.remoteDeviceJobId, { state: REMOTE_DEVICE_JOB_STATE.FAILURE });
+      await RemoteDeviceJobProcessor.setRemoteDeviceJobState(this.dataSource.manager, timeoutDeviceJob, REMOTE_DEVICE_JOB_STATE.FAILURE);
     }
   }
 }

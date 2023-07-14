@@ -19,6 +19,8 @@ export interface RemoteDeviceJobBaseTraits {
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
+  inProgressAt: Date | null;
+  completedAt: Date | null;
 }
 
 export type RemoteDeviceJobBase = RemoteDeviceJobBaseTraits & RemoteDeviceJobRelationTraits;

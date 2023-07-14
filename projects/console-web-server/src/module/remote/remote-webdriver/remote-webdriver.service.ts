@@ -1,13 +1,4 @@
-import {
-  DeviceId,
-  DEVICE_TABLE_NAME,
-  extensionFromPlatform,
-  platformTypeFromPlatform,
-  RemoteDeviceJobId,
-  REMOTE_DEVICE_JOB_STATE,
-  REMOTE_TABLE_NAME,
-  REMOTE_TYPE,
-} from '@dogu-private/types';
+import { DeviceId, DEVICE_TABLE_NAME, extensionFromPlatform, platformTypeFromPlatform, RemoteDeviceJobId, REMOTE_DEVICE_JOB_STATE, REMOTE_TABLE_NAME } from '@dogu-private/types';
 import { HeaderRecord, Method } from '@dogu-tech/common';
 import {
   DeviceWebDriver,
@@ -27,7 +18,6 @@ import { v4 } from 'uuid';
 import { Device } from '../../../db/entity/device.entity';
 import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
 import { RemoteWebDriverInfo } from '../../../db/entity/remote-webdriver-info.entity';
-import { Remote } from '../../../db/entity/remote.entity';
 import { DeviceMessageRelayer } from '../../device-message/device-message.relayer';
 import { DoguLogger } from '../../logger/logger';
 import { DeviceStatusService } from '../../organization/device/device-status.service';
@@ -35,6 +25,7 @@ import { ApplicationService } from '../../project/application/application.servic
 import { FindProjectApplicationDto } from '../../project/application/dto/application.dto';
 import { RemoteException } from '../common/exception';
 import { WebDriverEndpointHandlerResult } from '../common/type';
+import { RemoteDeviceJobProcessor } from '../processor/remote-device-job-processor';
 
 @Injectable()
 export class RemoteWebDriverService {
@@ -152,39 +143,17 @@ export class RemoteWebDriverService {
     }
 
     const rv = await this.dataSource.manager.transaction(async (manager) => {
-      // remote
-      const remoteData = manager.getRepository(Remote).create({
-        remoteId: v4(),
-        projectId: handleResult.projectId,
-        type: REMOTE_TYPE.WEBDRIVER,
-      });
-
-      // remote-webdriver-info
-      const remoteWebDriverInfoData = manager.getRepository(RemoteWebDriverInfo).create({
-        remoteWebDriverInfoId: v4(),
-        remoteId: remoteData.remoteId,
-        browserName: handleResult.browserName,
-        browserVersion: handleResult.browserVersion,
-      });
-
-      // remote-device-job
-      const remoteDeviceJobData = manager.getRepository(RemoteDeviceJob).create({
-        remoteDeviceJobId: handleResult.remoteDeviceJobId,
-        remoteId: remoteData.remoteId,
-        deviceId: handleResult.deviceId,
-        lastIntervalTime: new Date(),
+      const remoteDeviceJob = await RemoteDeviceJobProcessor.createWebdriverRemoteDeviceJob(
+        manager,
+        handleResult.projectId,
+        handleResult.deviceId,
+        handleResult.remoteDeviceJobId,
         sessionId,
-        state: REMOTE_DEVICE_JOB_STATE.WAITING,
-      });
-
-      await manager.getRepository(Remote).save(remoteData);
-      await manager.getRepository(RemoteWebDriverInfo).save(remoteWebDriverInfoData);
-      const remoteDeviceJob = await manager.getRepository(RemoteDeviceJob).save(remoteDeviceJobData);
-
+        handleResult.browserName ?? null,
+        handleResult.browserVersion ?? null,
+      );
       return remoteDeviceJob;
     });
-
-    await this.waitRemoteDeviceJobToInprogress(rv.remoteDeviceJobId);
   }
 
   async waitRemoteDeviceJobToInprogress(remoteDeviceJobId: RemoteDeviceJobId): Promise<void> {
@@ -222,7 +191,7 @@ export class RemoteWebDriverService {
 
     const device = remoteDeviceJob.device!;
 
-    await this.dataSource.getRepository(RemoteDeviceJob).update(remoteDeviceJob.remoteDeviceJobId, { state: REMOTE_DEVICE_JOB_STATE.COMPLETE });
+    await RemoteDeviceJobProcessor.setRemoteDeviceJobState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_STATE.COMPLETE);
 
     const headers = this.convertHeaders(request.headers);
     const devicePlatform = platformTypeFromPlatform(device.platform);
@@ -283,7 +252,8 @@ export class RemoteWebDriverService {
     const remoteWdaInfo = await this.dataSource.getRepository(RemoteWebDriverInfo).findOne({ where: { remoteId: remote.remoteId } });
 
     const device = remoteDeviceJob.device!;
-    await this.dataSource.getRepository(RemoteDeviceJob).update(remoteDeviceJob.remoteDeviceJobId, { lastIntervalTime: new Date() });
+
+    await RemoteDeviceJobProcessor.setRemoteDeviceJobLastIntervalTime(this.dataSource.manager, remoteDeviceJob);
     const headers = this.convertHeaders(request.headers);
     const devicePlatform = platformTypeFromPlatform(device.platform);
     return {
