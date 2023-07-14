@@ -52,7 +52,7 @@ const SetupInstaller = () => {
 
   return (
     <Flex direction="column" style={{ padding: '24px', height: '100%' }}>
-      <PageTitle title="Agreements" />
+      <PageTitle title="Installations & Agreements" />
 
       <Divider mt={6} mb={6} />
 
@@ -60,13 +60,7 @@ const SetupInstaller = () => {
         <>
           <Flex direction="column" justifyContent="space-between" flex={1} height="100%">
             <div>
-              <Text fontSize="large" fontWeight="bold">
-                Third party agreements
-              </Text>
-
-              <div style={{ marginTop: '8px' }}>
-                <ExternalToolAgreementContent externalKeys={externalInfosExcludedManual.map((item) => item.key)} />
-              </div>
+              <ExternalToolAgreementContent externalKeys={externalInfosExcludedManual.map((item) => item.key)} />
             </div>
 
             <div>

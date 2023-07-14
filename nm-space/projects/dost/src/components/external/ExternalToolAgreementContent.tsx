@@ -24,10 +24,6 @@ const ExternalToolAgreementContent = ({ externalKeys }: Props) => {
         for (const key of externalKeys) {
           const [name, url] = await Promise.all([ipc.externalClient.getName(key), ipc.externalClient.getTermUrl(key)]);
 
-          if (url === null || infos.some((item) => item.url === url)) {
-            continue;
-          }
-
           infos.push({ name, url, keys: [key] });
         }
 
@@ -62,17 +58,21 @@ const ExternalToolAgreementContent = ({ externalKeys }: Props) => {
         termInfos.map((item) => {
           return (
             <div key={item.name}>
-              <Text>{item.name}</Text>
-              <Button
-                variant="link"
-                onClick={() => {
-                  if (item.url) {
-                    openTermLink(item.url);
-                  }
-                }}
-              >
-                {item.url}
-              </Button>
+              <Text fontSize="large" fontWeight="bold">
+                {item.name}
+              </Text>
+              {!!item.url && (
+                <Button
+                  variant="link"
+                  onClick={() => {
+                    if (item.url) {
+                      openTermLink(item.url);
+                    }
+                  }}
+                >
+                  {item.url}
+                </Button>
+              )}
             </div>
           );
         })}
