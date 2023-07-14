@@ -86,11 +86,15 @@ export class SeleniumContext {
     const seleniumPort = await getFreePort();
     const args = ['webdriver-manager', 'start', `--out_dir=${clonePath}`, `--seleniumPort=${seleniumPort}`];
     if (browserName === 'chrome') {
-      const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
-      args.push(`--versions.chrome=${resolvedVersion}`);
+      // FIXME: henry - need version mapping
+      // const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
+      // args.push(`--versions.chrome=${resolvedVersion}`);
+      args.push('--versions.chrome=latest');
     } else if (browserName === 'firefox') {
-      const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
-      args.push(`--versions.gecko=${resolvedVersion}`);
+      // FIXME: henry - need version mapping
+      // const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
+      // args.push(`--versions.gecko=${resolvedVersion}`);
+      args.push('--versions.gecko=latest');
     } else if (browserName === 'safari') {
       // noop
     } else if (browserName === 'edge') {
@@ -165,12 +169,16 @@ export class SeleniumContext {
     const args = ['webdriver-manager', 'update', `--out_dir=${clonePath}`, '--standalone=true'];
     if (browserName === 'chrome') {
       args.push('--chrome=true');
-      const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
-      args.push(`--versions.chrome=${resolvedVersion}`);
+      // FIXME: henry - need version mapping
+      // const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
+      // args.push(`--versions.chrome=${resolvedVersion}`);
+      args.push('--versions.chrome=latest');
     } else if (browserName === 'firefox') {
       args.push('--gecko=true');
-      const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
-      args.push(`--versions.gecko=${resolvedVersion}`);
+      // FIXME: henry - need version mapping
+      // const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
+      // args.push(`--versions.gecko=${resolvedVersion}`);
+      args.push('--versions.gecko=latest');
     } else if (browserName === 'safari') {
       // noop
     } else if (browserName === 'edge') {
