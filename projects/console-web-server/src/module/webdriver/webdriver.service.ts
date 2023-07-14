@@ -15,7 +15,6 @@ import {
 } from '@dogu-private/types';
 import { HeaderRecord, Method } from '@dogu-tech/common';
 import {
-  convertWebDriverPlatformToDogu,
   DeviceWebDriver,
   DoguWebDriverOptions,
   RelayRequest,
@@ -118,19 +117,16 @@ export class WebDriverService {
     const devicePlatformType = platformTypeFromPlatform(device.platform);
     const headers = this.convertHeaders(request.headers);
 
-    const platformType = convertWebDriverPlatformToDogu(doguOptions.platformName);
-    // FIXME: henry - validation device platform and doguOptions.platformName
-
     let applicationUrl: string | undefined = undefined;
     let applicationVersion: string | undefined = undefined;
-    if (platformType === 'android' || platformType === 'ios') {
+    if (devicePlatformType === 'android' || devicePlatformType === 'ios') {
       if (!options.appVersion) {
         throw new WebDriverException(400, new Error('App version not specified'), {});
       }
 
       const findAppDto = new FindProjectApplicationDto();
       findAppDto.version = options.appVersion;
-      findAppDto.extension = extensionFromPlatform(platformType);
+      findAppDto.extension = extensionFromPlatform(devicePlatformType);
       const applications = await this.applicationService.getApplicationList(options.organizationId, options.projectId, findAppDto);
       if (applications.items.length === 0) {
         throw new WebDriverException(400, new Error('Application not found'), {});

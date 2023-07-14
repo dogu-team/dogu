@@ -23,9 +23,6 @@ export class DoguWebDriverOptions {
   })
   'runs-on'!: string | string[];
 
-  @IsFilledString()
-  platformName!: string;
-
   @IsString()
   @IsOptional()
   appVersion?: string;
