@@ -11515,14 +11515,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@emotion/is-prop-valid", [\
-        ["npm:0.8.8", {\
-          "packageLocation": "./.yarn/cache/@emotion-is-prop-valid-npm-0.8.8-261a0f2426-bb7ec6d48c.zip/node_modules/@emotion/is-prop-valid/",\
-          "packageDependencies": [\
-            ["@emotion/is-prop-valid", "npm:0.8.8"],\
-            ["@emotion/memoize", "npm:0.7.4"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:1.2.0", {\
           "packageLocation": "./.yarn/cache/@emotion-is-prop-valid-npm-1.2.0-332d343e3d-cc7a19850a.zip/node_modules/@emotion/is-prop-valid/",\
           "packageDependencies": [\
@@ -11533,13 +11525,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@emotion/memoize", [\
-        ["npm:0.7.4", {\
-          "packageLocation": "./.yarn/cache/@emotion-memoize-npm-0.7.4-5648cf11b8-4e3920d4ec.zip/node_modules/@emotion/memoize/",\
-          "packageDependencies": [\
-            ["@emotion/memoize", "npm:0.7.4"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["npm:0.8.0", {\
           "packageLocation": "./.yarn/cache/@emotion-memoize-npm-0.8.0-c5dd451828-c87bb110b8.zip/node_modules/@emotion/memoize/",\
           "packageDependencies": [\
@@ -23624,10 +23609,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["axios", "npm:1.3.5"],\
             ["class-transformer", "npm:0.5.1"],\
             ["class-validator", "npm:0.14.0"],\
-            ["cookie", "npm:0.5.0"],\
             ["cross-env", "npm:7.0.3"],\
-            ["dexie", "npm:3.2.3"],\
-            ["dexie-react-hooks", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:1.1.3"],\
             ["dotenv", "npm:16.0.3"],\
             ["env-cmd", "npm:10.1.0"],\
             ["eslint", "npm:8.23.0"],\
@@ -23639,7 +23621,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-plugin-react-hooks", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:4.6.0"],\
             ["find-up", "npm:6.3.0"],\
             ["flatbuffers", "npm:22.10.26"],\
-            ["framer-motion", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:10.6.1"],\
             ["gamium", "npm:2.0.2"],\
             ["hoist-non-react-statics", "npm:3.3.2"],\
             ["lodash", "npm:4.17.21"],\
@@ -25835,41 +25816,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/devtools-protocol-npm-0.0.981744-4636a91b0c-609901bff5.zip/node_modules/devtools-protocol/",\
           "packageDependencies": [\
             ["devtools-protocol", "npm:0.0.981744"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["dexie", [\
-        ["npm:3.2.3", {\
-          "packageLocation": "./.yarn/cache/dexie-npm-3.2.3-67700a220f-54fd7bc943.zip/node_modules/dexie/",\
-          "packageDependencies": [\
-            ["dexie", "npm:3.2.3"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["dexie-react-hooks", [\
-        ["npm:1.1.3", {\
-          "packageLocation": "./.yarn/cache/dexie-react-hooks-npm-1.1.3-766d7901c1-77fc500c69.zip/node_modules/dexie-react-hooks/",\
-          "packageDependencies": [\
-            ["dexie-react-hooks", "npm:1.1.3"]\
-          ],\
-          "linkType": "SOFT"\
-        }],\
-        ["virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:1.1.3", {\
-          "packageLocation": "./.yarn/__virtual__/dexie-react-hooks-virtual-28338bc11f/0/cache/dexie-react-hooks-npm-1.1.3-766d7901c1-77fc500c69.zip/node_modules/dexie-react-hooks/",\
-          "packageDependencies": [\
-            ["dexie-react-hooks", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:1.1.3"],\
-            ["@types/dexie", null],\
-            ["@types/react", "npm:18.0.28"],\
-            ["dexie", "npm:3.2.3"],\
-            ["react", "npm:18.2.0"]\
-          ],\
-          "packagePeers": [\
-            "@types/dexie",\
-            "@types/react",\
-            "dexie",\
-            "react"\
           ],\
           "linkType": "HARD"\
         }]\
@@ -28849,34 +28795,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["fragment-cache", "npm:0.2.1"],\
             ["map-cache", "npm:0.2.2"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["framer-motion", [\
-        ["npm:10.6.1", {\
-          "packageLocation": "./.yarn/cache/framer-motion-npm-10.6.1-3385cc2417-21b3f16a84.zip/node_modules/framer-motion/",\
-          "packageDependencies": [\
-            ["framer-motion", "npm:10.6.1"]\
-          ],\
-          "linkType": "SOFT"\
-        }],\
-        ["virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:10.6.1", {\
-          "packageLocation": "./.yarn/__virtual__/framer-motion-virtual-2a0330e833/0/cache/framer-motion-npm-10.6.1-3385cc2417-21b3f16a84.zip/node_modules/framer-motion/",\
-          "packageDependencies": [\
-            ["framer-motion", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:10.6.1"],\
-            ["@emotion/is-prop-valid", "npm:0.8.8"],\
-            ["@types/react", "npm:18.0.28"],\
-            ["@types/react-dom", null],\
-            ["react", "npm:18.2.0"],\
-            ["react-dom", "virtual:28b444ca65aca9f6532815a467e94245056189ac01976539aa2f4fb241137b45c9697a2074b54444c9d1c779b8e60e1a1140c79b811d2daaa176852048e428eb#npm:18.2.0"],\
-            ["tslib", "npm:2.5.0"]\
-          ],\
-          "packagePeers": [\
-            "@types/react-dom",\
-            "@types/react",\
-            "react-dom",\
-            "react"\
           ],\
           "linkType": "HARD"\
         }]\
