@@ -1,11 +1,11 @@
 import { Platform } from '@dogu-private/types';
 import { errorify, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, ScreenSize } from '@dogu-tech/device-client-common';
-import { Logger } from '@dogu-tech/node';
+import { killProcessOnPort, Logger } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import { ZombieProps } from '../internal/services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../internal/services/zombie/zombie-service';
-import { getFreePort, waitPortOpen } from '../internal/util/net';
+import { waitPortOpen } from '../internal/util/net';
 import { AppiumContext, AppiumContextKey, AppiumContextOptions, AppiumData } from './appium.context';
 
 function emptyClientData(): AppiumData['client'] {
@@ -94,7 +94,10 @@ export class AppiumRemoteContext implements AppiumContext {
 
   private async openServer(): Promise<AppiumData['server']> {
     const { pnpmPath, appiumPath, serverEnv } = this.options;
-    const port = await getFreePort();
+    await killProcessOnPort(this.options.serverPort, this.printable).catch((e) => {
+      this.printable.error('killProcessOnPort failed', { error: errorify(e) });
+    });
+    const port = this.options.serverPort;
     const args = ['appium', '--log-no-colors', '--port', `${port}`, '--session-override', '--log-level', 'debug'];
     const command = `${pnpmPath} ${args.join(' ')}`;
     this.printable.info('server starting', { command, cwd: appiumPath, env: serverEnv });

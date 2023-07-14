@@ -1,11 +1,13 @@
 export type DevicePortContext = {
-  deviceAgentForwardPort: number;
-  deviceAgentSecondForwardPort: number;
+  freeHostPort1: number;
+  freeHostPort2: number;
+  freeHostPort3: number;
 };
 
 export function DefaultDevicePortContext(): DevicePortContext {
   return {
-    deviceAgentForwardPort: 0,
-    deviceAgentSecondForwardPort: 0,
+    freeHostPort1: 0,
+    freeHostPort2: 0,
+    freeHostPort3: 0,
   };
 }

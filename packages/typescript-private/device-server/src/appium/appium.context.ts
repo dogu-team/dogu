@@ -6,7 +6,7 @@
 import { Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { callAsyncWithTimeout, Class, delay, errorify, Instance, NullLogger, Printable, Retry, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, Rect, ScreenSize, SystemBar } from '@dogu-tech/device-client-common';
-import { HostPaths, Logger, TaskQueue, TaskQueueTask } from '@dogu-tech/node';
+import { HostPaths, killProcessOnPort, Logger, TaskQueue, TaskQueueTask } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
 import _ from 'lodash';
@@ -33,6 +33,7 @@ export interface DefaultAppiumContextOptions {
   androidHomePath: string;
   javaHomePath: string;
   serverEnv: NodeJS.ProcessEnv;
+  serverPort: number;
 }
 
 export interface AppiumContextOptions extends DefaultAppiumContextOptions {
@@ -271,7 +272,10 @@ export class AppiumContextImpl implements AppiumContext {
 
   private async openServer(): Promise<AppiumData['server']> {
     const { pnpmPath, appiumPath, serverEnv } = this.options;
-    const port = await getFreePort();
+    await killProcessOnPort(this.options.serverPort, this.printable).catch((e) => {
+      this.printable.error('killProcessOnPort failed', { error: errorify(e) });
+    });
+    const port = this.options.serverPort;
     const args = ['appium', '--log-no-colors', '--port', `${port}`, '--session-override', '--log-level', 'debug'];
     const command = `${pnpmPath} ${args.join(' ')}`;
     this.printable.info('server starting', { command, cwd: appiumPath, env: serverEnv });

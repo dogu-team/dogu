@@ -2,6 +2,7 @@ import {
   DefaultDeviceSystemInfo,
   DeviceAgentPort,
   DeviceAgentSecondPort,
+  DeviceAgentThirdPort,
   DeviceSystemInfo,
   ErrorResult,
   FilledRuntimeInfo,
@@ -67,8 +68,9 @@ export class WindowsChannel implements DeviceChannel {
 
   get portContext(): DevicePortContext {
     return {
-      deviceAgentForwardPort: DeviceAgentPort,
-      deviceAgentSecondForwardPort: DeviceAgentSecondPort,
+      freeHostPort1: DeviceAgentPort,
+      freeHostPort2: DeviceAgentSecondPort,
+      freeHostPort3: DeviceAgentThirdPort,
     };
   }
   static async create(

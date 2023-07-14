@@ -107,28 +107,28 @@ export class IosChannel implements DeviceChannel {
       throw new Error(`IosDeviceAgentProcess is not ready serial: ${serial}`);
     }
 
-    const logger = createIdaLogger(param.serial);
-    logger.verbose('appium wda privisioning check starting');
-    const _ = await DerivedData.create(HostPaths.external.xcodeProject.wdaDerivedDataPath());
-    logger.verbose('appium wda privisioning check done');
-
-    logger.verbose('appium context starting');
-    const appiumContextProxy = appiumService.createAppiumContext(platform, serial, 'builtin');
-    ZombieServiceInstance.addComponent(appiumContextProxy);
-    logger.verbose('appium context started');
-
     let portContext = portContextes.get(serial);
     if (portContext == null) {
       portContext = await createPortContext(serial);
       portContextes.set(serial, portContext);
     }
 
+    const logger = createIdaLogger(param.serial);
+    logger.verbose('appium wda privisioning check starting');
+    const _ = await DerivedData.create(HostPaths.external.xcodeProject.wdaDerivedDataPath());
+    logger.verbose('appium wda privisioning check done');
+
+    logger.verbose('appium context starting');
+    const appiumContextProxy = appiumService.createAppiumContext(platform, serial, 'builtin', portContext.freeHostPort3);
+    ZombieServiceInstance.addComponent(appiumContextProxy);
+    logger.verbose('appium context started');
+
     logger.verbose('ios device agent process starting');
     const iosDeviceAgentProcess = await IosDeviceAgentProcess.start(
       serial,
-      portContext.deviceAgentForwardPort,
+      portContext.freeHostPort1,
       deviceAgentDevicePort,
-      portContext.deviceAgentSecondForwardPort,
+      portContext.freeHostPort2,
       deviceAgentDeviceSecondPort,
       deviceAgentDeviceThirdPort,
       logger,
@@ -139,7 +139,7 @@ export class IosChannel implements DeviceChannel {
     logger.verbose('ios device agent process started');
 
     logger.verbose('ios device agent service starting');
-    const deviceAgent = new IosDeviceAgentService(portContext.deviceAgentForwardPort, `127.0.0.1:${portContext.deviceAgentSecondForwardPort}`, 60, logger);
+    const deviceAgent = new IosDeviceAgentService(portContext.freeHostPort1, `127.0.0.1:${portContext.freeHostPort2}`, 60, logger);
     await deviceAgent.connect().catch((error) => {
       logger.error('IosDeviceAgentService connect failed.', { error: errorify(error) });
       throw error;

@@ -40,13 +40,14 @@ export class AppiumService implements OnModuleInit {
     await this.validateExternalAppium();
   }
 
-  createAppiumContext(platform: Platform, serial: Serial, key: AppiumContextKey): AppiumContextProxy {
+  createAppiumContext(platform: Platform, serial: Serial, key: AppiumContextKey, serverPort: number): AppiumContextProxy {
     const context = new AppiumContextProxy({
       ...this.defaultAppiumContextOptions,
       service: this,
       platform,
       serial,
       key,
+      serverPort,
     });
     return context;
   }
@@ -66,6 +67,7 @@ export class AppiumService implements OnModuleInit {
       androidHomePath,
       javaHomePath,
       serverEnv,
+      serverPort: 0,
     };
     this.logger.verbose('Default appium context options created', {
       defaultAppiumContextOptions: this._defaultAppiumContextOptions,

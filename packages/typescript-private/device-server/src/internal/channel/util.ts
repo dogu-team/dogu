@@ -6,10 +6,12 @@ export async function createPortContext(serial: Serial): Promise<DevicePortConte
   // string to hash
   const hash = serial.split('').reduce((prevHash, currVal) => ((prevHash << 5) - prevHash + currVal.charCodeAt(0)) | 0, 0);
   const hashModuloed = hash % 100;
-  const deviceAgentForwardPort = await getFreePort([], hashModuloed);
-  const deviceAgentSecondForwardPort = await getFreePort([deviceAgentForwardPort], hashModuloed);
+  const freeHostPort1 = await getFreePort([], hashModuloed);
+  const freeHostPort2 = await getFreePort([freeHostPort1], hashModuloed);
+  const freeHostPort3 = await getFreePort([freeHostPort1, freeHostPort2], hashModuloed);
   return {
-    deviceAgentForwardPort,
-    deviceAgentSecondForwardPort,
+    freeHostPort1,
+    freeHostPort2,
+    freeHostPort3,
   };
 }

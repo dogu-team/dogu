@@ -112,11 +112,11 @@ export class AndroidChannel implements DeviceChannel {
     }
 
     const logger = createAdaLogger(param.serial);
-    const deviceAgent = new AndroidDeviceAgentService(serial, systemInfo, '127.0.0.1', portContext.deviceAgentForwardPort, deviceAgentDevicePort, logger);
+    const deviceAgent = new AndroidDeviceAgentService(serial, systemInfo, '127.0.0.1', portContext.freeHostPort1, deviceAgentDevicePort, logger);
     await deviceAgent.wakeUp();
     await deviceAgent.install();
 
-    const appiumContextProxy = appiumService.createAppiumContext(platform, serial, 'builtin');
+    const appiumContextProxy = appiumService.createAppiumContext(platform, serial, 'builtin', portContext.freeHostPort3);
     ZombieServiceInstance.addComponent(appiumContextProxy);
 
     const appiumDeviceWebDriverHandler = new AppiumDeviceWebDriverHandler(platform, serial, appiumContextProxy, httpRequestRelayService, appiumEndpointHandlerService, doguLogger);
