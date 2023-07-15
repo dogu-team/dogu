@@ -21,10 +21,6 @@
     "message": "This page crashed.",
     "description": "The title of the fallback page when the page crashed"
   },
-  "theme.ErrorPageContent.tryAgain": {
-    "message": "Try again",
-    "description": "The label of the button to try again when the page crashed"
-  },
   "theme.NotFound.title": {
     "message": "Page Not Found",
     "description": "The title of the 404 page"
@@ -284,18 +280,6 @@
   "main.getStartedTutorialTitle": {
     "message": "Tutorials"
   },
-  "main.getStartedDeviceFarmTitle": {
-    "message": "Device Farm"
-  },
-  "main.getStartedTestScriptTitle": {
-    "message": "Test Script"
-  },
-  "main.getStartedTestReportTitle": {
-    "message": "Test Report"
-  },
-  "main.getStartedRoutineTitle": {
-    "message": "Routine"
-  },
   "main.getStartedLinkTitle": {
     "message": "Get started"
   },
@@ -326,50 +310,23 @@
   "main.testAutomationTitle": {
     "message": "Test Automation"
   },
-  "main.testAutomationRunLinkTitle": {
-    "message": "Run Test"
+  "main.testAutomationAppiumLinkTitle": {
+    "message": "Appium"
   },
-  "main.testAutomationBrowserLinkTitle": {
-    "message": "Browser"
-  },
-  "main.testAutomationMobileLinkTitle": {
-    "message": "Mobile"
-  },
-  "main.testAutomationGameLinkTitle": {
-    "message": "Game"
+  "main.testAutomationWebdriverIOLinkTitle": {
+    "message": "WebdriverIO"
   },
   "main.scriptAndRoutineTitle": {
-    "message": "Routine"
-  },
-  "main.scriptAndRoutineIntroLinkTitle": {
     "message": "Routine"
   },
   "main.scriptAndRoutineActionLinkTitle": {
     "message": "Action"
   },
-  "main.scriptAndRoutineScriptLinkTitle": {
-    "message": "Test script"
-  },
   "main.scriptAndRoutineRoutineLinkTitle": {
     "message": "Routine"
   },
-  "main.scriptAndRoutineReportLinkTitle": {
-    "message": "Test report"
-  },
-  "main.gamiumIntroLinkTitle": {
-    "message": "Intro"
-  },
-  "main.gamiumStartLinkTitle": {
-    "message": "Start GamiumKit"
-  },
   "main.communityTitle": {
     "message": "Community"
-  },
-  "main.selfHostedTitle": {
-    "message": "Self-Hosted"
-  },
-  "main.selfHostedStartLinkTitle": {
-    "message": "Get Started"
   },
   "main.testReportTitle": {
     "message": "Test Report"

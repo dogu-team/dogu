@@ -21,10 +21,6 @@
     "message": "페이지에 오류가 발생하였습니다.",
     "description": "The title of the fallback page when the page crashed"
   },
-  "theme.ErrorPageContent.tryAgain": {
-    "message": "다시 시도해 보세요",
-    "description": "The label of the button to try again when the page crashed"
-  },
   "theme.NotFound.title": {
     "message": "페이지를 찾을 수 없습니다.",
     "description": "The title of the 404 page"
@@ -284,18 +280,6 @@
   "main.getStartedTutorialTitle": {
     "message": "튜토리얼"
   },
-  "main.getStartedDeviceFarmTitle": {
-    "message": "디바이스 팜"
-  },
-  "main.getStartedTestScriptTitle": {
-    "message": "테스트 스크립트"
-  },
-  "main.getStartedTestReportTitle": {
-    "message": "테스트 리포트"
-  },
-  "main.getStartedRoutineTitle": {
-    "message": "루틴"
-  },
   "main.getStartedLinkTitle": {
     "message": "시작하기"
   },
@@ -326,50 +310,23 @@
   "main.testAutomationTitle": {
     "message": "테스트 자동화"
   },
-  "main.testAutomationRunLinkTitle": {
-    "message": "테스트 실행"
+  "main.testAutomationAppiumLinkTitle": {
+    "message": "Appium"
   },
-  "main.testAutomationBrowserLinkTitle": {
-    "message": "브라우저"
-  },
-  "main.testAutomationMobileLinkTitle": {
-    "message": "모바일"
-  },
-  "main.testAutomationGameLinkTitle": {
-    "message": "게임"
+  "main.testAutomationWebdriverIOLinkTitle": {
+    "message": "WebdriverIO"
   },
   "main.scriptAndRoutineTitle": {
-    "message": "루틴"
-  },
-  "main.scriptAndRoutineIntroLinkTitle": {
     "message": "루틴"
   },
   "main.scriptAndRoutineActionLinkTitle": {
     "message": "액션"
   },
-  "main.scriptAndRoutineScriptLinkTitle": {
-    "message": "테스트 스크립트"
-  },
   "main.scriptAndRoutineRoutineLinkTitle": {
     "message": "루틴"
   },
-  "main.scriptAndRoutineReportLinkTitle": {
-    "message": "결과 보고서"
-  },
-  "main.gamiumIntroLinkTitle": {
-    "message": "소개"
-  },
-  "main.gamiumStartLinkTitle": {
-    "message": "GamiumKit 시작하기"
-  },
   "main.communityTitle": {
     "message": "커뮤니티"
-  },
-  "main.selfHostedTitle": {
-    "message": "Self-Hosted"
-  },
-  "main.selfHostedStartLinkTitle": {
-    "message": "시작하기"
   },
   "main.testReportTitle": {
     "message": "테스트 리포트"

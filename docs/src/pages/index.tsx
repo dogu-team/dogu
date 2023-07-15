@@ -153,23 +153,13 @@ export default function Home(): JSX.Element {
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/test-automation/run">
-                <Translate id="main.testAutomationRunLinkTitle" />
+              <Link to="/test-automation/appium">
+                <Translate id="main.testAutomationAppiumLinkTitle" />
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/test-automation/browser">
-                <Translate id="main.testAutomationBrowserLinkTitle" />
-              </Link>
-            </li>
-            <li className={styles.docsSectionListItem}>
-              <Link to="/test-automation/mobile">
-                <Translate id="main.testAutomationMobileLinkTitle" />
-              </Link>
-            </li>
-            <li className={styles.docsSectionListItem}>
-              <Link to="/test-automation/game">
-                <Translate id="main.testAutomationGameLinkTitle" />
+              <Link to="/test-automation/webdriverio">
+                <Translate id="main.testAutomationWebdriverIOLinkTitle" />
               </Link>
             </li>
           </ul>
@@ -188,14 +178,17 @@ export default function Home(): JSX.Element {
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/test-report/javascript">Javascript</Link>
+              <Link to="/test-report/jest">Jest</Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/test-report/python">Python</Link>
+              <Link to="/test-report/mocha">Mocha</Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/test-report/java">Java</Link>
+              <Link to="/test-report/pytest">PyTest</Link>
             </li>
+            {/* <li className={styles.docsSectionListItem}>
+              <Link to="/test-report/testng">TestNG</Link>
+            </li> */}
           </ul>
         </div>
         <div className={styles.docsSection}>

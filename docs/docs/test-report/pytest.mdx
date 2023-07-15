@@ -1,0 +1,49 @@
+---
+sidebar_position: 3
+title: Pytest
+locale: en
+---
+
+# Pytest
+
+Dogu provides pytest integration for users who use pytest.  
+The [**pytest-dogu-report**](https://pypi.org/project/pytest-dogu-report) plug-in allows you to check the test results of the Dogu Routine.  
+Like this.
+
+![pytest-dogu-report](/img/testing-framework-support/pytest.png)
+
+## Requirements
+
+- Python 3.9 or higher
+
+:::caution Python environment variable setting
+
+If you are using MacOS, see [Environment variable document](/device-farm/host#environment-variable).
+
+:::
+
+## Configuration
+
+- install `pytest-dogu-report` package to your project.
+
+```shell
+# using pip
+pip install pytest-dogu-report
+
+# using poetry
+poetry add -D pytest-dogu-report
+```
+
+- register `pytest-dogu-report` plugin to your root `conftest.py` file.
+
+```python
+pytest_plugins = [
+    "pytest_dogu_report",
+]
+```
+
+:::info pytest plugin discovery order
+
+The **plugin discovery order** can be found in [this official document](https://docs.pytest.org/en/7.1.x/how-to/writing_plugins.html#plugin-discovery-order-at-tool-startup).
+
+:::

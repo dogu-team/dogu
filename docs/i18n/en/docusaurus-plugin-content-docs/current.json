@@ -47,65 +47,17 @@
     "message": "Git Integration",
     "description": "The label for category Git Integration in sidebar managementSidebar"
   },
-  "sidebar.testAutomationSidebar.category.Browser": {
-    "message": "Browser",
-    "description": "The label for category Browser in sidebar testAutomationSidebar"
-  },
-  "sidebar.testAutomationSidebar.category.Mobile": {
-    "message": "Mobile",
-    "description": "The label for category Mobile in sidebar testAutomationSidebar"
-  },
-  "sidebar.testAutomationSidebar.category.Game": {
-    "message": "Game",
-    "description": "The label for category Game in sidebar testAutomationSidebar"
-  },
-  "sidebar.testReportSidebar.category.JavaScript": {
-    "message": "JavaScript",
-    "description": "The label for category JavaScript in sidebar testReportSidebar"
-  },
-  "sidebar.testReportSidebar.category.Python": {
-    "message": "Python",
-    "description": "The label for category Python in sidebar testReportSidebar"
-  },
-  "sidebar.testReportSidebar.category.Java": {
-    "message": "Java",
-    "description": "The label for category Java in sidebar testReportSidebar"
-  },
   "sidebar.getStartedSidebar.category.Self-Hosted": {
     "message": "Self-Hosted",
     "description": "The label for category Self-Hosted in sidebar getStartedSidebar"
-  },
-  "sidebar.getStartedSidebar.category.Tutorial - Web Testing": {
-    "message": "Tutorial - Web Testing",
-    "description": "The label for category Tutorial - Web Testing in sidebar getStartedSidebar"
   },
   "sidebar.getStartedSidebar.category.Python": {
     "message": "Python",
     "description": "The label for category Python in sidebar getStartedSidebar"
   },
-  "sidebar.getStartedSidebar.category.Tutorial - Mobile App Testing": {
-    "message": "Tutorial - Mobile App Testing",
-    "description": "The label for category Tutorial - Mobile App Testing in sidebar getStartedSidebar"
-  },
   "sidebar.apiSidebar.category.Routine": {
     "message": "Routine",
     "description": "The label for category Routine in sidebar apiSidebar"
-  },
-  "sidebar.testAutomationSidebar.category.Appium": {
-    "message": "Appium",
-    "description": "The label for category Appium in sidebar testAutomationSidebar"
-  },
-  "sidebar.deviceFarmSidebar.category.sidebar.deviceFarmSidebar.category.Host": {
-    "message": "sidebar.deviceFarmSidebar.category.Host",
-    "description": "The label for category sidebar.deviceFarmSidebar.category.Host in sidebar deviceFarmSidebar"
-  },
-  "sidebar.routineSidebar.category.sidebar.routineSidebar.category.Routine": {
-    "message": "sidebar.routineSidebar.category.Routine",
-    "description": "The label for category sidebar.routineSidebar.category.Routine in sidebar routineSidebar"
-  },
-  "sidebar.deviceFarmSidebar.category.Trouble Shooting": {
-    "message": "Trouble Shooting",
-    "description": "The label for category Trouble Shooting in sidebar deviceFarmSidebar"
   },
   "sidebar.routineSidebar.category.Routine": {
     "message": "Routine",
@@ -119,8 +71,16 @@
     "message": "MacOS",
     "description": "The label for category MacOS in sidebar deviceFarmSidebar"
   },
-  "sidebar.getStartedSidebar.category.Tutorial - Game Testing": {
-    "message": "Tutorial - Game Testing",
-    "description": "The label for category Tutorial - Game Testing in sidebar getStartedSidebar"
+  "sidebar.getStartedSidebar.category.Appium": {
+    "message": "Appium",
+    "description": "The label for category Appium in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.WebdriverIO": {
+    "message": "WebdriverIO",
+    "description": "The label for category WebdriverIO in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Javascript": {
+    "message": "Javascript",
+    "description": "The label for category Javascript in sidebar getStartedSidebar"
   }
 }
