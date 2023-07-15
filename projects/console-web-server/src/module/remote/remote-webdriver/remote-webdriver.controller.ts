@@ -1,3 +1,4 @@
+import { REMOTE_DEVICE_JOB_STATE } from '@dogu-private/types';
 import {
   DefaultHttpOptions,
   DoguApplicationUrlHeader,
@@ -11,19 +12,26 @@ import {
   HeaderRecord,
 } from '@dogu-tech/common';
 import { DoguWebDriverCapabilitiesParser, RelayResponse, WebDriverEndPoint } from '@dogu-tech/device-client-common';
-import { All, Controller, Delete, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { All, Controller, Delete, HttpStatus, Inject, Post, Req, Res } from '@nestjs/common';
+import { InjectDataSource } from '@nestjs/typeorm';
 import { Request, Response } from 'express';
+import { DataSource } from 'typeorm';
+import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
 import { API_TOKEN_TYPE } from '../../auth/auth.types';
 import { ApiTokenPermission } from '../../auth/decorators';
 import { DoguLogger } from '../../logger/logger';
 import { RemoteException } from '../common/exception';
 import { WebDriverEndpointHandlerResult } from '../common/type';
+import { RemoteDeviceJobProcessor } from '../processor/remote-device-job-processor';
 import { RemoteWebDriverService } from './remote-webdriver.service';
 
 @Controller('/remote/wd/hub')
 export class RemoteWebDriverInfoController {
   constructor(
+    @Inject(RemoteWebDriverService)
     private readonly remoteWebDriverService: RemoteWebDriverService, //
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
     private readonly logger: DoguLogger,
   ) {}
 
@@ -51,9 +59,22 @@ export class RemoteWebDriverInfoController {
     this.setHeaders(headers, processResult);
     headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout3minutes.toString();
 
-    const relayResponse = await this.remoteWebDriverService.sendRequest(processResult, headers);
-    await this.remoteWebDriverService.handleNewSessionResponse(processResult, relayResponse);
-    this.sendResponse(relayResponse, response);
+    try {
+      const relayResponse = await this.remoteWebDriverService.sendRequest(processResult, headers);
+      await this.remoteWebDriverService.handleNewSessionResponse(processResult, relayResponse);
+      this.sendResponse(relayResponse, response);
+    } catch (e) {
+      const remoteDeviceJob = await this.dataSource.getRepository(RemoteDeviceJob).findOne({ where: { remoteDeviceJobId: processResult.remoteDeviceJobId } });
+      if (!remoteDeviceJob) {
+        throw new RemoteException(
+          HttpStatus.NOT_FOUND,
+          new Error(`newSession:sendRequest. remote-device-job not found. remoteDeviceJobId: ${processResult.remoteDeviceJobId}`),
+          {},
+        );
+      }
+      await RemoteDeviceJobProcessor.setRemoteDeviceJobState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_STATE.FAILURE);
+      throw new RemoteException(HttpStatus.INTERNAL_SERVER_ERROR, e, {});
+    }
   }
 
   @Delete('session/:sessionId')
@@ -70,13 +91,27 @@ export class RemoteWebDriverInfoController {
     this.setHeaders(headers, processResult);
     headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout1minutes.toString();
 
-    const relayResponse = await this.remoteWebDriverService.sendRequest(processResult, headers);
-    await this.remoteWebDriverService.handleDeleteSessionResponse(processResult, relayResponse);
-    this.sendResponse(relayResponse, response);
+    try {
+      const relayResponse = await this.remoteWebDriverService.sendRequest(processResult, headers);
+      await this.remoteWebDriverService.handleDeleteSessionResponse(processResult, relayResponse);
+      this.sendResponse(relayResponse, response);
+    } catch (e) {
+      const remoteDeviceJob = await this.dataSource.getRepository(RemoteDeviceJob).findOne({ where: { remoteDeviceJobId: processResult.remoteDeviceJobId } });
+      if (!remoteDeviceJob) {
+        throw new RemoteException(
+          HttpStatus.NOT_FOUND,
+          new Error(`deleteSession:sendRequest. remote-device-job not found. remoteDeviceJobId: ${processResult.remoteDeviceJobId}`),
+          {},
+        );
+      }
+      if (remoteDeviceJob.state !== REMOTE_DEVICE_JOB_STATE.FAILURE) {
+        await RemoteDeviceJobProcessor.setRemoteDeviceJobState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_STATE.FAILURE);
+      }
+      throw new RemoteException(HttpStatus.INTERNAL_SERVER_ERROR, e, {});
+    }
   }
 
   @All('session/:sessionId/*')
-  // @ApiTokenPermission(API_TOKEN_TYPE.WEBDRIVER_AGENT)
   async process(@Req() request: Request, @Res() response: Response): Promise<void> {
     const relayRequest = this.remoteWebDriverService.convertRequest(request);
     const endpoint = await WebDriverEndPoint.create(relayRequest).catch((e) => {
@@ -90,8 +125,19 @@ export class RemoteWebDriverInfoController {
     this.setHeaders(headers, processResult);
     headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout1minutes.toString();
 
-    const relayResponse = await this.remoteWebDriverService.sendRequest(processResult, headers);
-    this.sendResponse(relayResponse, response);
+    try {
+      const relayResponse = await this.remoteWebDriverService.sendRequest(processResult, headers);
+      this.sendResponse(relayResponse, response);
+    } catch (e) {
+      const remoteDeviceJob = await this.dataSource.getRepository(RemoteDeviceJob).findOne({ where: { remoteDeviceJobId: processResult.remoteDeviceJobId } });
+      if (!remoteDeviceJob) {
+        throw new RemoteException(HttpStatus.NOT_FOUND, new Error(`process:sendRequest. remote-device-job not found. remoteDeviceJobId: ${processResult.remoteDeviceJobId}`), {});
+      }
+      if (remoteDeviceJob.state !== REMOTE_DEVICE_JOB_STATE.FAILURE) {
+        await RemoteDeviceJobProcessor.setRemoteDeviceJobState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_STATE.FAILURE);
+      }
+      throw new RemoteException(HttpStatus.INTERNAL_SERVER_ERROR, e, {});
+    }
   }
 
   private sendResponse<T>(res: RelayResponse, response: Response): void {
