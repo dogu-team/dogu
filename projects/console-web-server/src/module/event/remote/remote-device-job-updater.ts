@@ -72,12 +72,14 @@ export class RemoteDeviceJobUpdater {
         const totalInProgressDeviceJobs = inProgressDeviceJobs.length + inProgressRemoteDeviceJobs.length;
         if (totalInProgressDeviceJobs === 0) highestPriorityDeviceJobs.push(deviceJob!);
       } else {
-        const inProgressDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0]?.device?.routineDeviceJobs?.length ?? 0;
-        const inProgressRemoteDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0]?.device?.remoteDeviceJobs?.length ?? 0;
+        const inProgressDeviceJobs = waitingRemoteDeviceJobsByDeviceId[0]?.device?.routineDeviceJobs?.length ?? 0;
+        const inProgressRemoteDeviceJobs = waitingRemoteDeviceJobsByDeviceId[0]?.device?.remoteDeviceJobs?.length ?? 0;
         const addableDeviceJobCount = maxParallel - inProgressDeviceJobs - inProgressRemoteDeviceJobs;
+        if (addableDeviceJobCount <= 0) {
+          continue;
+        }
 
         const allWaingDeviceJobs = [...waitingRoutineDeviceJobsByDeviceId, ...waitingRemoteDeviceJobsByDeviceId];
-
         // sort by createdAt
         const sortedDeviceJobs = allWaingDeviceJobs.sort((a, b) => {
           return a.createdAt.getTime() - b.createdAt.getTime();

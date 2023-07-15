@@ -16,7 +16,6 @@ import { IncomingHttpHeaders } from 'http';
 import _ from 'lodash';
 import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
-import { Device } from '../../../db/entity/device.entity';
 import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
 import { RemoteWebDriverInfo } from '../../../db/entity/remote-webdriver-info.entity';
 import { DeviceMessageRelayer } from '../../device-message/device-message.relayer';
@@ -75,13 +74,17 @@ export class RemoteWebDriverService {
 
     const deviceIds: DeviceId[] = [];
     for (const tagOrName of deviceTagOrNames) {
-      const deviceByName = await this.dataSource.getRepository(Device).findOne({ where: { organizationId: options.organizationId, name: tagOrName } });
-      if (deviceByName) {
-        deviceIds.push(deviceByName.deviceId);
+      const deviceByName = await this.deviceStatusService.findDevicesByName(this.dataSource.manager, options.organizationId, options.projectId, [tagOrName]);
+      if (deviceByName[0] && deviceByName.length === 1 && deviceByName[0].name === tagOrName) {
+        deviceIds.push(deviceByName[0].deviceId);
       } else {
         const devicesByTag = await this.deviceStatusService.findDevicesByDeviceTag(this.dataSource.manager, options.organizationId, options.projectId, [tagOrName]);
         if (devicesByTag.length === 0) {
-          throw new RemoteException(HttpStatus.NOT_FOUND, new Error(`Device not found. runs-on: ${deviceTagOrNames.join(', ')}`), {});
+          throw new RemoteException(
+            HttpStatus.NOT_FOUND,
+            new Error(`Device not found. runs-on: ${deviceTagOrNames.join(', ')}, organizationId: ${options.organizationId}, projectId: ${options.projectId}`),
+            {},
+          );
         }
         const deviceIdsByTag = devicesByTag.map((device) => device.deviceId);
         deviceIds.push(...deviceIdsByTag);
@@ -118,9 +121,22 @@ export class RemoteWebDriverService {
       }
     }
 
+    const remoteDeviceJobId = v4();
+    const rv = await this.dataSource.manager.transaction(async (manager) => {
+      const remoteDeviceJob = await RemoteDeviceJobProcessor.createWebdriverRemoteDeviceJob(
+        manager,
+        options.projectId,
+        device.deviceId,
+        remoteDeviceJobId,
+        options.browserName ?? null,
+        options.browserVersion ?? null,
+      );
+      return remoteDeviceJob;
+    });
+
     return {
       organizationId: options.organizationId,
-      remoteDeviceJobId: v4(),
+      remoteDeviceJobId: remoteDeviceJobId,
       projectId: options.projectId,
       deviceId: device.deviceId,
       devicePlatform: devicePlatformType,
@@ -148,18 +164,13 @@ export class RemoteWebDriverService {
       throw new RemoteException(HttpStatus.BAD_REQUEST, new Error('Session id not found in response'), {});
     }
 
-    const rv = await this.dataSource.manager.transaction(async (manager) => {
-      const remoteDeviceJob = await RemoteDeviceJobProcessor.createWebdriverRemoteDeviceJob(
-        manager,
-        handleResult.projectId,
-        handleResult.deviceId,
-        handleResult.remoteDeviceJobId,
-        sessionId,
-        handleResult.browserName ?? null,
-        handleResult.browserVersion ?? null,
-      );
-      return remoteDeviceJob;
-    });
+    // update session id
+    const remoteDeviceJob = await this.dataSource.getRepository(RemoteDeviceJob).findOne({ where: { remoteDeviceJobId: handleResult.remoteDeviceJobId } });
+    if (!remoteDeviceJob) {
+      throw new RemoteException(HttpStatus.NOT_FOUND, new Error(`handleNewSessionResponse. remote-device-job not found. remoteDeviceJobId: ${handleResult.remoteDeviceJobId}`), {});
+    }
+
+    await RemoteDeviceJobProcessor.updateRemoteDeviceJobSessionId(this.dataSource.manager, handleResult.remoteDeviceJobId, sessionId);
   }
 
   async waitRemoteDeviceJobToInprogress(remoteDeviceJobId: RemoteDeviceJobId): Promise<void> {

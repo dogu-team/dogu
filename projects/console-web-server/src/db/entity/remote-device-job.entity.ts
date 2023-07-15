@@ -17,8 +17,8 @@ export class RemoteDeviceJob extends BaseEntity implements RemoteDeviceJobBase {
   @ColumnTemplate.RelationUuid(RemoteDeviceJobPropSnake.device_id)
   deviceId!: DeviceId;
 
-  @Column({ type: 'uuid', name: RemoteDeviceJobPropSnake.session_id, nullable: false, unique: true })
-  sessionId!: WebDriverSessionId;
+  @Column({ type: 'uuid', name: RemoteDeviceJobPropSnake.session_id, nullable: true, unique: true })
+  sessionId!: WebDriverSessionId | null;
 
   @Column({ type: 'smallint', name: RemoteDeviceJobPropSnake.state, default: REMOTE_DEVICE_JOB_STATE.WAITING, nullable: false })
   state!: REMOTE_DEVICE_JOB_STATE;

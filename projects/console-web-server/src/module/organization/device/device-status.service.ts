@@ -464,25 +464,68 @@ export class DeviceStatusService {
     return enabledProjectDeviceSubQuery;
   }
 
-  async findDevicesByDeviceTag(manager: EntityManager, organizationId: OrganizationId, projectId: ProjectId, deviceTagNames: string[]): Promise<Device[]> {
+  async findDevicesByName(manager: EntityManager, organizationId: OrganizationId, projectId: ProjectId, names: string[], invalidCheck = false): Promise<Device[]> {
+    if (invalidCheck) {
+      const targetDevices = await manager.getRepository(Device).find({ where: { organizationId, name: In(names) } });
+      if (targetDevices.length === 0) {
+        throw new HttpException(`These devices is not organization devices. ${names.join(', ')}`, HttpStatus.NOT_FOUND);
+      }
+      let inValidDevices: Device[] = [];
+      for (const device of targetDevices) {
+        if (device.isGlobal === 1) {
+          continue;
+        }
+        const deviceAndProject = await manager.getRepository(ProjectAndDevice).findOne({ where: { deviceId: device.deviceId, projectId } });
+        if (!deviceAndProject) {
+          inValidDevices.push(device);
+        }
+      }
+      if (inValidDevices.length > 0) {
+        throw new HttpException(`These devices is not project devices. ${inValidDevices.map((device) => device.name).join(', ')}`, HttpStatus.NOT_FOUND);
+      }
+      return targetDevices;
+    } else {
+      const globalDevices = await manager
+        .getRepository(Device)
+        .find({ where: { organizationId, isGlobal: 1, name: In(names), connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED } });
+      const deviceAndProject = await manager
+        .getRepository(ProjectAndDevice) //
+        .createQueryBuilder('projectAndDevice')
+        .leftJoinAndSelect(
+          `projectAndDevice.${ProjectAndDevicePropCamel.device}`,
+          'device',
+          `device.${DevicePropCamel.name} IN (:...names) AND device.${DevicePropCamel.connectionState}=:connectionState`,
+          { names, connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED },
+        )
+        .where(`projectAndDevice.${ProjectAndDevicePropCamel.projectId} = :projectId`, { projectId })
+        .getMany();
+
+      const devicesByProject = deviceAndProject.map((projectAndDevice) => projectAndDevice.device).filter(notEmpty);
+      const devices = [...globalDevices, ...devicesByProject];
+      return devices;
+    }
+  }
+
+  async findDevicesByDeviceTag(manager: EntityManager, organizationId: OrganizationId, projectId: ProjectId, deviceTagNames: string[], invalidCheck = false): Promise<Device[]> {
     if (deviceTagNames.length === 0) {
       throw new HttpException('TagNames must not be empty', HttpStatus.BAD_REQUEST);
     }
 
     const tags = await manager.getRepository(DeviceTag).find({ where: { organizationId, name: In(deviceTagNames) } });
-    const invalids: string[] = [];
 
-    deviceTagNames.forEach((tagName) => {
-      if (tagName === undefined) {
-        throw new HttpException('TagName must not be undefined', HttpStatus.BAD_REQUEST);
+    if (invalidCheck) {
+      const invalids: string[] = [];
+      deviceTagNames.forEach((tagName) => {
+        if (tagName === undefined) {
+          throw new HttpException('TagName must not be undefined', HttpStatus.BAD_REQUEST);
+        }
+        if (!tags.find((tag) => tag.name === tagName)) {
+          invalids.push(tagName);
+        }
+      });
+      if (invalids.length > 0) {
+        throw new HttpException(`Invalid device tag name: ${invalids.join(', ')}`, HttpStatus.NOT_FOUND);
       }
-      if (!tags.find((tag) => tag.name === tagName)) {
-        invalids.push(tagName);
-      }
-    });
-
-    if (invalids.length > 0) {
-      throw new HttpException(`Invalid device tag name: ${invalids.join(', ')}`, HttpStatus.NOT_FOUND);
     }
 
     // device by organization and project

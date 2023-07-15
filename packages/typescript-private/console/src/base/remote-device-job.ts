@@ -12,7 +12,7 @@ export interface RemoteDeviceJobBaseTraits {
   remoteDeviceJobId: RemoteDeviceJobId;
   remoteId: RemoteId;
   deviceId: DeviceId;
-  sessionId: WebDriverSessionId;
+  sessionId: WebDriverSessionId | null;
   state: REMOTE_DEVICE_JOB_STATE;
   intervalTimeout: number;
   lastIntervalTime: Date;
