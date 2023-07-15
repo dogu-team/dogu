@@ -168,9 +168,6 @@ jobs:
         name: Download, Build third-party
         run: |
           yarn third-party:download:build
-        env:
-          DOGU_APPLE_API_KEY_ID: ${{ secrets.DOGU_APPLE_API_KEY_ID }}
-          DOGU_APPLE_API_ISSUER_ID: ${{ secrets.DOGU_APPLE_API_ISSUER_ID }}
 
       - if: steps.cache_nm_space.outputs.cache-hit != 'true'
         name: Dogu Agent - Newbie nm-space
