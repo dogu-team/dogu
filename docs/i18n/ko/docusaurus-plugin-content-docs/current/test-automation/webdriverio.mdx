@@ -12,21 +12,23 @@ Browser 테스트를 실행할 경우에 옵션을 설명합니다.
 
 Webdriver에 기존 Capabilities를 Dogu에 맞게 확장한 [Extension capabilities](https://www.w3.org/TR/webdriver/#dfn-extension-capability) 입니다. 아래 key들은 `dogu:options` 라는 namespace 안에 설정가능한 필드들 입니다.
 
-| key            | required | description                                                                                                                                               |
-| -------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| token          | true     | [API token](/management/organization/settings#api-token) 문서를 참고하여 API토큰을 획득하고 입력해주세요                                                  |
-| organizationId | true     | 조직의 ID입니다. 프로젝트 설정 페이지에서 쉽게 찾을 수 있습니다. [프로젝트 설정](/management/project/settings) 문서를 참고하세요                          |
-| projectId      | true     | 프로젝트의 ID입니다. 프로젝트 설정 페이지에서 쉽게 찾을 수 있습니다. [프로젝트 설정](/management/project/settings) 문서를 참고하세요                      |
-| runsOn         | true     | 테스트를 실행할 타겟을 설정하는데 사용됩니다. 특정 디바이스의 이름 혹은 태그를 입력해주세요. 여러개를 설정할 경우 조건을 모두 만족하는 타겟이 설정됩니다. |
-| browserName    | true     | 브라우저 이름입니다. (ex. chrome)                                                                                                                         |
+| key              | required | description                                                                                                                                               |
+| ---------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `token`          | true     | [API token](/management/organization/settings#api-token) 문서를 참고하여 API토큰을 획득하고 입력해주세요                                                  |
+| `organizationId` | true     | 조직의 ID입니다. 프로젝트 설정 페이지에서 쉽게 찾을 수 있습니다. [프로젝트 설정](/management/project/settings) 문서를 참고하세요                          |
+| `projectId`      | true     | 프로젝트의 ID입니다. 프로젝트 설정 페이지에서 쉽게 찾을 수 있습니다. [프로젝트 설정](/management/project/settings) 문서를 참고하세요                      |
+| `runsOn`         | true     | 테스트를 실행할 타겟을 설정하는데 사용됩니다. 특정 디바이스의 이름 혹은 태그를 입력해주세요. 여러개를 설정할 경우 조건을 모두 만족하는 타겟이 설정됩니다. |
+| `browserName`    | true     | 브라우저 이름 (ex. chrome)                                                                                                                                |
+| `browserVersion` | false    | 브라우저 버전 (ex. 91.0.4472.114)                                                                                                                         |
 
 ### Overriden Capabilities
 
 Dogu Server에서 자동으로 설정하는 Capabilities입니다.
 
-| key          | description                                                         | default |
-| ------------ | ------------------------------------------------------------------- | ------- |
-| platformName | platformName은 Dogu server가 Device정보를 통해 자동으로 덮어씁니다. | todo    |
+| key            | description                                              | default          |
+| -------------- | -------------------------------------------------------- | ---------------- |
+| browserName    | 만약 `dogu:options.browserName`이 있다면, 덮어씁니다.    | {browserName}    |
+| browserVersion | 만약 `dogu:options.browserVersion`이 있다면, 덮어씁니다. | {browserVersion} |
 
 ## Mobile options
 
