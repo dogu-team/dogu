@@ -45,7 +45,7 @@ export class RemoteWebDriverInfoController {
     }
 
     const processResult = await this.remoteWebDriverService.handleNewSessionRequest(endpoint.info, relayRequest, doguOptions);
-
+    await this.remoteWebDriverService.waitRemoteDeviceJobToInprogress(processResult.remoteDeviceJobId);
     // create headers
     const headers: HeaderRecord = {};
     this.setHeaders(headers, processResult);
@@ -53,7 +53,6 @@ export class RemoteWebDriverInfoController {
 
     const relayResponse = await this.remoteWebDriverService.sendRequest(processResult, headers);
     await this.remoteWebDriverService.handleNewSessionResponse(processResult, relayResponse);
-    await this.remoteWebDriverService.waitRemoteDeviceJobToInprogress(processResult.remoteDeviceJobId);
     this.sendResponse(relayResponse, response);
   }
 

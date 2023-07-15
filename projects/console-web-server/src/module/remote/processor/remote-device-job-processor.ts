@@ -1,10 +1,15 @@
-import { DeviceId, isRemoteDeviceJobCompleted, ProjectId, RemoteDeviceJobId, REMOTE_DEVICE_JOB_STATE, REMOTE_TYPE, WebDriverSessionId } from '@dogu-private/types';
+import { DevicePropCamel, ProjectAndDevicePropCamel } from '@dogu-private/console';
+import { DeviceId, isRemoteDeviceJobCompleted, OrganizationId, ProjectId, RemoteDeviceJobId, REMOTE_DEVICE_JOB_STATE, REMOTE_TYPE, WebDriverSessionId } from '@dogu-private/types';
+import { notEmpty } from '@dogu-tech/common';
+import { HttpStatus } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { v4 } from 'uuid';
+import { Device } from '../../../db/entity/device.entity';
 import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
 import { RemoteWebDriverInfo } from '../../../db/entity/remote-webdriver-info.entity';
 import { Remote } from '../../../db/entity/remote.entity';
 import { logger } from '../../logger/logger.instance';
+import { RemoteException } from '../common/exception';
 
 export module RemoteDeviceJobProcessor {
   export async function createWebdriverRemoteDeviceJob(
@@ -12,13 +17,11 @@ export module RemoteDeviceJobProcessor {
     projectId: ProjectId,
     deviceId: DeviceId,
     remoteDeviceJobId: RemoteDeviceJobId,
-    sessionId: WebDriverSessionId,
     browserName: string | null,
     browserVersion: string | null,
-    // type: REMOTE_TYPE,
   ): Promise<RemoteDeviceJob> {
     logger.info(
-      `createWebdriverRemoteDeviceJob. projectId: ${projectId}, deviceId: ${deviceId}, remoteDeviceJobId: ${remoteDeviceJobId}, sessionId: ${sessionId}, browserName: ${browserName}, browserVersion: ${browserVersion}`,
+      `createWebdriverRemoteDeviceJob. projectId: ${projectId}, deviceId: ${deviceId}, remoteDeviceJobId: ${remoteDeviceJobId},  browserName: ${browserName}, browserVersion: ${browserVersion}`,
     );
 
     // remote
@@ -42,7 +45,7 @@ export module RemoteDeviceJobProcessor {
       remoteId: remoteData.remoteId,
       deviceId: deviceId,
       lastIntervalTime: new Date(),
-      sessionId,
+      sessionId: null,
       state: REMOTE_DEVICE_JOB_STATE.WAITING,
     });
 
@@ -51,6 +54,10 @@ export module RemoteDeviceJobProcessor {
     const remoteDeviceJob = await manager.getRepository(RemoteDeviceJob).save(remoteDeviceJobData);
 
     return remoteDeviceJob;
+  }
+  export async function updateRemoteDeviceJobSessionId(manager: EntityManager, remoteDeviceJobId: RemoteDeviceJobId, sessionId: WebDriverSessionId): Promise<void> {
+    logger.info(`updateRemoteDeviceJobSessionId. remote-device-job[${remoteDeviceJobId}] sessionId: ${sessionId}`);
+    await manager.getRepository(RemoteDeviceJob).update(remoteDeviceJobId, { sessionId: sessionId });
   }
 
   export async function setRemoteDeviceJobState(manager: EntityManager, remoteDeviceJob: RemoteDeviceJob, state: REMOTE_DEVICE_JOB_STATE): Promise<void> {
@@ -76,5 +83,34 @@ export module RemoteDeviceJobProcessor {
   export async function setRemoteDeviceJobLastIntervalTime(manager: EntityManager, remoteDeviceJob: RemoteDeviceJob): Promise<void> {
     remoteDeviceJob.lastIntervalTime = new Date();
     await manager.getRepository(RemoteDeviceJob).save(remoteDeviceJob);
+  }
+
+  export async function validateAvailableDevice(manager: EntityManager, organizationId: OrganizationId, projectId: ProjectId, deviceId: DeviceId): Promise<void> {
+    const device = await manager //
+      .getRepository(Device)
+      .createQueryBuilder('device')
+      .leftJoinAndSelect(`device.${DevicePropCamel.projectAndDevices}`, 'projectAndDevice')
+      .leftJoinAndSelect(`projectAndDevice.${ProjectAndDevicePropCamel.project}`, 'project')
+      .innerJoinAndSelect(`device.${DevicePropCamel.organization}`, 'organization')
+      .where(`device.${DevicePropCamel.deviceId} = :deviceId`, { deviceId })
+      .andWhere(`organization.${DevicePropCamel.organizationId} = :organizationId`, { organizationId })
+      .getOne();
+
+    if (!device) {
+      throw new RemoteException(HttpStatus.NOT_FOUND, `isAvailableDevice. The device is not found. DeviceId: ${deviceId}, OrganizationId: ${organizationId}`, {});
+    }
+
+    if (device.isGlobal === 1) {
+      return;
+    }
+
+    const projectIds = device.projectAndDevices?.map((deviceAndProject) => deviceAndProject.projectId).filter(notEmpty) ?? [];
+    if (projectIds.length === 0) {
+      throw new RemoteException(
+        HttpStatus.BAD_REQUEST,
+        `isAvailableDevice. The device is not active state. DeviceId: ${deviceId}, OrganizationId: ${organizationId}, ProjectId: ${projectId}`,
+        {},
+      );
+    }
   }
 }

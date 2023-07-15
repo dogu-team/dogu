@@ -30,11 +30,10 @@ import {
 import { notEmpty, stringify } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { organizationId } from 'aws-sdk/clients/auditmanager';
 import lodash from 'lodash';
-import { DataSource, EntityManager, In } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { RoutineDeviceJob } from '../../../db/entity/device-job.entity';
-import { Device, ProjectAndDevice, RoutineJob, RoutineJobEdge } from '../../../db/entity/index';
+import { Device, RoutineJob, RoutineJobEdge } from '../../../db/entity/index';
 import { RoutinePipeline } from '../../../db/entity/pipeline.entity';
 import { Routine } from '../../../db/entity/routine.entity';
 import { RoutineStep } from '../../../db/entity/step.entity';
@@ -198,30 +197,6 @@ export class PipelineService {
     return targetDeviceNames;
   }
 
-  private async findDevicesByDeviceName(manager: EntityManager, organizationId: organizationId, projectId: ProjectId, deviceNames: string[]): Promise<Device[]> {
-    const targetDevices = await manager.getRepository(Device).find({ where: { organizationId, name: In(deviceNames) } });
-    if (targetDevices.length === 0) {
-      throw new HttpException(`These devices is not organization devices. ${deviceNames.join(', ')}`, HttpStatus.NOT_FOUND);
-    }
-
-    let inValidDevices: Device[] = [];
-    for (const device of targetDevices) {
-      if (device.isGlobal === 1) {
-        continue;
-      }
-      const deviceAndProject = await manager.getRepository(ProjectAndDevice).findOne({ where: { deviceId: device.deviceId, projectId } });
-      if (!deviceAndProject) {
-        inValidDevices.push(device);
-      }
-    }
-
-    if (inValidDevices.length > 0) {
-      throw new HttpException(`These devices is not project devices. ${inValidDevices.map((device) => device.name).join(', ')}`, HttpStatus.NOT_FOUND);
-    }
-
-    return targetDevices;
-  }
-
   private async createPipeline(manager: EntityManager, projectId: ProjectId, routineId: RoutineId | null, creatorId: UserId): Promise<RoutinePipeline> {
     // create pipeline by instanct routine
     if (!routineId) {
@@ -333,13 +308,13 @@ export class PipelineService {
 
           switch (targetDeviceNames.type) {
             case RUNS_ON_TYPE.DEVICE_NAME:
-              devices = await this.findDevicesByDeviceName(manager, organizationId, projectId, targetDeviceNames.deviceNames);
+              devices = await this.deviceStatusService.findDevicesByName(manager, organizationId, projectId, targetDeviceNames.deviceNames, true);
               if (devices.length === 0) {
                 throw new HttpException(`This project has no devices: [${targetDeviceNames.deviceNames.toString()}]`, HttpStatus.NOT_FOUND);
               }
               break;
             case RUNS_ON_TYPE.DEVICE_TAG:
-              devices = await this.deviceStatusService.findDevicesByDeviceTag(manager, organizationId, projectId, targetDeviceNames.deviceNames);
+              devices = await this.deviceStatusService.findDevicesByDeviceTag(manager, organizationId, projectId, targetDeviceNames.deviceNames, true);
               if (devices.length === 0) {
                 throw new HttpException(`This project has no device Tags: [${targetDeviceNames.deviceNames.toString()}]`, HttpStatus.NOT_FOUND);
               }
