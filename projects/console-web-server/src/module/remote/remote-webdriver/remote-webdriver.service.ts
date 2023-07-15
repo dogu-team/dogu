@@ -66,7 +66,7 @@ export class RemoteWebDriverService {
     const options = doguOptions;
 
     // find device
-    const runsOn = options['runs-on'];
+    const runsOn = options.runsOn;
     const deviceTagOrNames = Array.isArray(runsOn) ? runsOn : typeof runsOn === 'string' ? [runsOn] : [];
     if (deviceTagOrNames.length === 0) {
       throw new RemoteException(HttpStatus.BAD_REQUEST, new Error('Device tag or name not specified'), {});

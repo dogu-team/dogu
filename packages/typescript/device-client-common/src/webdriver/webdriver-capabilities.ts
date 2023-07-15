@@ -21,7 +21,7 @@ export class DoguWebDriverOptions {
       return false;
     }
   })
-  'runs-on'!: string | string[];
+  runsOn!: string | string[];
 
   @IsString()
   @IsOptional()
