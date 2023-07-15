@@ -273,7 +273,7 @@
     "description": "The ARIA label and title attribute for expand button of doc sidebar"
   },
   "main.descriptionText": {
-    "message": "Explore how to automate game test cases using Dogu.\nThe documentation provides various resources, including example code and tutorials, to guide you through the process."
+    "message": "Integrated test automation platform for web, mobile, and game applications"
   },
   "main.introduction": {
     "message": "Introduction"
