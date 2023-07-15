@@ -54,7 +54,7 @@ fi
 if [[ $dost == true ]]; then
   echo "Performing additional operations for dost"
   cd nm-space
-  yarn workspace dost version -i "$version"
+  yarn workspace dogu-agent version -i "$version"
   exit 0
 fi
 
@@ -64,6 +64,6 @@ if [[ $dogu == false && $dost == false ]]; then
   yarn version -i "$version"
   find ./projects -mindepth 1 -maxdepth 1 -type d -exec sh -c "cd {} && yarn version -i $version" \;
   cd nm-space
-  yarn workspace dost version -i "$version"
+  yarn workspace dogu-agent version -i "$version"
   exit 0
 fi
