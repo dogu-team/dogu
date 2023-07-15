@@ -150,7 +150,7 @@ const driver = await remote({
       organizationId,
       projectId,
       runsOn: '${platform}', // or another device tag
-      appVersion: '2.5.194-alpha-2017-05-30',${target === GuideSupportTarget.WEB ? "\n      browserName: 'chrome'," : ''}
+      ${target === GuideSupportTarget.WEB ? "browserName: 'chrome'," : "appVersion: '2.5.194-alpha-2017-05-30',"}
     },
   },
 });
