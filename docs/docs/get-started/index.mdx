@@ -6,6 +6,11 @@ locale: en
 
 Dogu is an integrated test automation platform that allows you to automate testing for web, mobile, and game applications across various operating systems. By using the integrated test automation platform, you can build an efficient test automation environment without going through the traditional infrastructure setup process.
 
+## Why Dogu
+
+Why Dogu?
+Building and maintaining infrastructure components such as Appium, OpenSTF, Jenkins, and Grafana for test automation requires significant time and effort. However, Dogu streamlines this process by providing an integrated platform for these infrastructures, allowing you to concentrate on test automation itself. Moreover, Dogu offers seamless integration with test scripts and frameworks, eliminating the need to develop infrastructure-related tasks such as parallel test execution and data transfer for test reporting.
+
 ## Features
 
 Dogu provides the necessary features to establish a systematic test automation environment.
@@ -39,9 +44,15 @@ The device farm is a platform where devices for testing and interaction are avai
 
 <img src="/img/get-started/device-android-streaming.gif" />
 
+#### Android Native UI Inspector
+<img src="/img/get-started/device-android-inspecting.gif" />
+
 #### iOS Device Interaction
 
 <img src="/img/get-started/device-ios-streaming.gif" />
+
+#### iOS Native UI Inspector
+<img src="/img/get-started/device-ios-inspecting.gif" />
 
 ### Test Automation
 
@@ -49,9 +60,8 @@ You can use test frameworks to automate browser, mobile app, and game testing wi
 
 #### Supported Test Frameworks
 
-- [Browser](/test-automation/browser)
-- [Mobile](/test-automation/mobile)
-- [Game](/test-automation/game)
+- [Appium](/test-automation/appium)
+- [WebdriverIO](/test-automation/webdriverio)
 
 There are two ways to execute tests on devices connected to the device farm using the test frameworks:
 
@@ -79,9 +89,8 @@ Test reports allow you to view the results of tests executed through Routine. Th
 
 To generate reports, you need to install plugins compatible with the Test Unit Framework. The list of supported plugins is as follows:
 
-- [Jest](/test-report/javascript/jest)
-- [PyTest](/test-report/python/pytest)
-- TestNG - In progress
+- [Jest](/test-report/jest)
+- [PyTest](/test-report/pytest)
 
 After installing the plug-in and running the test through Routine, a test report is created as shown below.
 
