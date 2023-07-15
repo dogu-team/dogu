@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 env:
-  DOGU_ACCESS_KEY: insert your access key here
+  DOGU_TOKEN: insert your token here
 
 jobs:
   test-android:
