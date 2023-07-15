@@ -205,7 +205,7 @@ const WebdriverIoGuide = () => {
           />
 
           <div style={{ marginBottom: '2rem' }}>
-            <GuideBanner docsUrl="https://docs.dogutech.io/test-automation/browser" />
+            <GuideBanner docsUrl="https://docs.dogutech.io/test-automation/webdriverio" />
           </div>
 
           <GuideStep
