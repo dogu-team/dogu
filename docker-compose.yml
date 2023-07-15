@@ -92,11 +92,6 @@ services:
         nofile:
           soft: 65536
           hard: 65536
-      deploy:
-        resources:
-          reservations:
-            cpus: '1'
-            memory: 1G
       networks:
         - console_network 
 
