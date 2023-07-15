@@ -22,7 +22,7 @@ export const webGuideData = [
         orgAccessKey = 'INSERT_YOUR_ACCESS_KEY';
       }
 
-      return `const accessKey = process.env.DOGU_ACCESS_KEY || '${orgAccessKey}';
+      return `const token = process.env.DOGU_ACCESS_KEY || '${orgAccessKey}';
 const organizationId = process.env.DOGU_ORGANIZATION_ID || '${orgId}';
 const projectId = process.env.DOGU_PROJECT_ID || '${projectId}';
 const apiBaseUrl = process.env.DOGU_API_BASE_URL || '${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}';
@@ -37,7 +37,7 @@ const driver = await remote({
   path: '/remote/wd/hub',
   capabilities: {
     "dogu:options": {
-      accessKey,
+      token,
       organizationId,
       projectId,
       'runs-on': INSERT_YOUR_DEVICE_TAG, // ie. 'android', 'ios', 'windows', 'macos' ...
@@ -78,7 +78,7 @@ options = UiAutomator2Options().load_capabilities(
     # Specify dogu:options for testing
     "platformName": "android",
     "dogu:options": {
-      "accessKey": access_key,
+      "token": access_key,
       "organizationId": organization_id,
       "projectId": project_id,
       'runs-on': INSERT_YOUR_DEVICE_TAG, # ie. "android", "ios" ...
@@ -105,7 +105,7 @@ options = UiAutomator2Options().load_capabilities(
         orgAccessKey = 'INSERT_YOUR_ACCESS_KEY';
       }
 
-      return `const accessKey = process.env.DOGU_ACCESS_KEY || '${orgAccessKey}';
+      return `const token = process.env.DOGU_ACCESS_KEY || '${orgAccessKey}';
 const organizationId = process.env.DOGU_ORGANIZATION_ID || '${orgId}';
 const projectId = process.env.DOGU_PROJECT_ID || '${projectId}';
 const apiBaseUrl = process.env.DOGU_API_BASE_URL || '${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}';
@@ -121,7 +121,7 @@ const browser = await remote({
     platformName: "android",
     'appium:automationName': "uiautomator2",
     "dogu:options": {
-      accessKey,
+      token,
       organizationId,
       projectId,
       'runs-on': INSERT_YOUR_DEVICE_TAG, // ie. 'android', 'ios' ...

@@ -10,7 +10,7 @@ export class DoguWebDriverOptions {
   projectId!: string;
 
   @IsFilledString()
-  accessKey!: string;
+  token!: string;
 
   @Validate((value: unknown) => {
     if (typeof value === 'string') {
