@@ -1,0 +1,68 @@
+---
+sidebar_position: 4
+title: iOS
+locale: ko
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import BrowserOnly from '@docusaurus/BrowserOnly';
+
+:::info PREREQUISITES
+디바이스 팜에 iOS 디바이스가 추가되어 있어야 합니다. iOS 디바이스 추가는 [디바이스 팜](/get-started/tutorials/device-farm#디바이스-추가하기)을 참고하세요.
+:::
+
+### Example 레포 클론 및 경로 이동
+
+```
+git clone https://github.com/dogu-team/dogu-examples.git
+cd dogu-examples/webdriverio/javascript/ios
+npm install
+```
+
+<Tabs groupId="target" defaultValue="chrome">
+<TabItem value="chrome" label="Chrome">
+
+### 인증 정보
+* API Token
+  * 조직 > 설정 페이지에서 [API Token](/management/organization/settings#api-token)을 확인합니다.
+* Project Id, Organization Id
+  * 조직 > 프로젝트 > 설정 페이지에서 [Project Id, Organization Id](/management/project/settings#project-id)를 확인합니다.
+
+<Tabs groupId="service" defaultValue="cloud">
+<TabItem value="cloud" label="Cloud" default>
+
+확인한 API Token, Project Id, Organization Id를 **dogu-examples/webdriverio/javascript/ios/chrome.js**에 적용합니다.
+
+```javascript
+const token = process.env.DOGU_TOKEN || 'INSERT_YOUR_TOKEN';
+const organizationId = process.env.DOGU_ORGANIZATION_ID || 'INSERT_YOUR_ORGANIZATION_ID';
+const projectId = process.env.DOGU_PROJECT_ID || 'INSERT_YOUR_PROJECT_ID';
+```
+
+</TabItem>
+    
+<TabItem value="self-hosted" label="Self-Hosted">
+
+확인한 API Token, Project Id, Organization Id를 **dogu-examples/webdriverio/javascript/android/chrome.js**에 적용합니다.  
+또한 설정한 Dogu 서버의 `DOGU_HOST` 값을 apiBaseUrl에 적용합니다.
+
+```javascript
+const token = process.env.DOGU_TOKEN || 'INSERT_YOUR_TOKEN';
+const organizationId = process.env.DOGU_ORGANIZATION_ID || 'INSERT_YOUR_ORGANIZATION_ID';
+const projectId = process.env.DOGU_PROJECT_ID || 'INSERT_YOUR_PROJECT_ID';
+const apiBaseUrl = process.env.DOGU_API_BASE_URL || 'localhost:4000';
+```
+
+</TabItem>
+</Tabs>
+
+### 테스트 실행
+
+아래 명령어를 입력해 테스트를 실행합니다.
+```
+npm run test:ios:web
+```
+
+</TabItem>
+</Tabs>
