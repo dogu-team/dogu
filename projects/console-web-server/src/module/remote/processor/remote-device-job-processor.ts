@@ -67,16 +67,16 @@ export module RemoteDeviceJobProcessor {
       }`,
     );
 
-    remoteDeviceJob.state = state;
     remoteDeviceJob.lastIntervalTime = new Date();
-    if (remoteDeviceJob.state === REMOTE_DEVICE_JOB_STATE.IN_PROGRESS) {
+    if (state === REMOTE_DEVICE_JOB_STATE.IN_PROGRESS) {
       remoteDeviceJob.inProgressAt = new Date();
-    } else if (isRemoteDeviceJobCompleted(remoteDeviceJob.state)) {
+    } else if (isRemoteDeviceJobCompleted(state)) {
       remoteDeviceJob.completedAt = new Date();
     } else {
       throw new Error(`Invalid state: ${remoteDeviceJob.state}`);
     }
 
+    remoteDeviceJob.state = state;
     await manager.getRepository(RemoteDeviceJob).save(remoteDeviceJob);
   }
 
