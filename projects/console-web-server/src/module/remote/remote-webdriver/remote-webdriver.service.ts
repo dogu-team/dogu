@@ -1,5 +1,5 @@
 import { DeviceId, DEVICE_TABLE_NAME, extensionFromPlatform, platformTypeFromPlatform, RemoteDeviceJobId, REMOTE_DEVICE_JOB_STATE, REMOTE_TABLE_NAME } from '@dogu-private/types';
-import { HeaderRecord, Method, Query } from '@dogu-tech/common';
+import { delay, HeaderRecord, Method, Query } from '@dogu-tech/common';
 import {
   DeviceWebDriver,
   DoguWebDriverOptions,
@@ -177,7 +177,10 @@ export class RemoteWebDriverService {
         throw new RemoteException(HttpStatus.INTERNAL_SERVER_ERROR, new Error(`Remote device job failed. remoteDeviceJobId: ${remoteDeviceJobId}`), {});
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 3 * 1000));
+      this.logger.info(
+        `waitRemoteDeviceJobToInprogress. waiting remoteDeviceJob to be in_progress state. remoteDeviceJobId: ${remoteDeviceJobId}. state: ${remoteDeviceJob.state}`,
+      );
+      await delay(3 * 1000);
     }
   }
 
@@ -256,10 +259,11 @@ export class RemoteWebDriverService {
     }
     const remote = remoteDeviceJob.remote!;
     const remoteWdaInfo = await this.dataSource.getRepository(RemoteWebDriverInfo).findOne({ where: { remoteId: remote.remoteId } });
-
     const device = remoteDeviceJob.device!;
 
+    this.logger.info(`handleEachSessionRequest. remoteDeviceJobId: ${remoteDeviceJob.remoteDeviceJobId}. sessionId: ${sessionId}`);
     await RemoteDeviceJobProcessor.setRemoteDeviceJobLastIntervalTime(this.dataSource.manager, remoteDeviceJob);
+
     const headers = this.convertHeaders(request.headers);
     const devicePlatform = platformTypeFromPlatform(device.platform);
     return {
