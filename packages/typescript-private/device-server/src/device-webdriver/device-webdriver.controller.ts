@@ -1,4 +1,4 @@
-import { Code, ErrorResultError, isErrorResultError, Serial } from '@dogu-private/types';
+import { Code, ErrorResultDto, isErrorResultError, Serial } from '@dogu-private/types';
 import { HeaderRecord, Instance, parseAxiosError, stringify } from '@dogu-tech/common';
 import { DeviceWebDriver, RelayRequest, SessionDeletedParam } from '@dogu-tech/device-client-common';
 import { Body, Controller, Delete, Headers, Param, Post } from '@nestjs/common';
@@ -25,7 +25,7 @@ export class DeviceWebDriverController {
 
       const handler = device.getWebDriverHandler();
       if (!handler) {
-        throw toErrorResultError(serial, new Error('handler is null'));
+        throw new Error('Internal Error - handler is null');
       }
 
       const response = await handler.onRelayHttp(headers, request);
@@ -37,21 +37,12 @@ export class DeviceWebDriverController {
       };
     } catch (error) {
       this.logger.error(`Error while relaying http request: ${stringify(parseAxiosError(error))}`);
-      if (isErrorResultError(error)) {
-        return {
-          value: {
-            $case: 'error',
-            error,
-          },
-        };
-      } else {
-        return {
-          value: {
-            $case: 'error',
-            error: toErrorResultError(serial, error),
-          },
-        };
-      }
+      return {
+        value: {
+          $case: 'error',
+          error: toErrorResultDto(serial, error),
+        },
+      };
     }
   }
 
@@ -69,7 +60,7 @@ export class DeviceWebDriverController {
 
       const handler = device.getWebDriverHandler();
       if (!handler) {
-        throw toErrorResultError(serial, new Error('handler is null'));
+        throw new Error('Internal Error - handler is null');
       }
 
       await handler.onSessionDeleted(headers, param);
@@ -81,49 +72,51 @@ export class DeviceWebDriverController {
       };
     } catch (error) {
       this.logger.error(`Error while deleting session: ${stringify(parseAxiosError(error))}`);
-      if (isErrorResultError(error)) {
-        return {
-          value: {
-            $case: 'error',
-            error,
-          },
-        };
-      } else {
-        return {
-          value: {
-            $case: 'error',
-            error: toErrorResultError(serial, error),
-          },
-        };
-      }
+      return {
+        value: {
+          $case: 'error',
+          error: toErrorResultDto(serial, error),
+        },
+      };
     }
   }
 }
 
-export function toErrorResultError(serial: Serial, error: unknown): ErrorResultError {
+export function toErrorResultDto(serial: Serial, error: unknown): ErrorResultDto {
   if (isErrorResultError(error)) {
-    return new ErrorResultError(error.code, error.message, {
-      ...error.details,
-      serial,
-    });
+    return {
+      code: error.code,
+      message: error.message,
+      details: error.details,
+    };
   } else if (isAxiosError(error)) {
-    return new ErrorResultError(
-      Code.CODE_UNEXPECTED_ERROR,
-      `Axios Error: message: ${error.message}, code: ${stringify(error.response?.status, { colors: false })}, data: ${stringify(error.response?.data, { colors: false })}`,
-      {
+    return {
+      code: Code.CODE_UNEXPECTED_ERROR,
+      message: `Axios Error: message: ${error.message}, status: ${stringify(error.response?.status, { colors: false })}, data: ${stringify(error.response?.data, {
+        colors: false,
+      })}`,
+      details: {
         serial,
-        error,
+        cause: error.toJSON(),
       },
-    );
+    };
   } else if (error instanceof Error) {
-    return new ErrorResultError(Code.CODE_UNEXPECTED_ERROR, `Unknown Error: ${error.message}`, {
-      serial,
-      error,
-    });
+    return {
+      code: Code.CODE_UNEXPECTED_ERROR,
+      message: 'Unexpected Error',
+      details: {
+        serial,
+        cause: error,
+      },
+    };
   } else {
-    return new ErrorResultError(Code.CODE_UNEXPECTED_ERROR, `Unknown Error: ${stringify(error, { colors: false })}`, {
-      serial,
-      error,
-    });
+    return {
+      code: Code.CODE_UNEXPECTED_ERROR,
+      message: `Unexpected Error`,
+      details: {
+        serial,
+        cause: error,
+      },
+    };
   }
 }

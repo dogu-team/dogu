@@ -18,15 +18,10 @@ export class CodeUtil {
 }
 
 export class ErrorResultError extends Error implements ErrorResult {
-  code: Code;
-  details?: Record<string, unknown>;
-
   static readonly None = new ErrorResultError(Code.CODE_SUCCESS_COMMON_BEGIN_UNSPECIFIED, '');
 
-  constructor(code: Code, message: string, details?: Record<string, unknown>) {
+  constructor(readonly code: Code, message: string, readonly details?: Record<string, unknown>) {
     super(message);
-    this.code = code;
-    this.details = details;
   }
 }
 
