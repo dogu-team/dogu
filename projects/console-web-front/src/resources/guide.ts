@@ -2,71 +2,74 @@ import { getApiToken } from '../api/organization';
 
 export const SAMPLE_GIT_URL = 'https://github.com/dogu-team/dogu-examples.git';
 
+export enum GuideSupportFramework {
+  APPIUM = 'appium',
+  WEBDRIVERIO = 'webdriverio',
+  GAMIUM = 'gamium',
+}
+
 export enum GuideSupportLanguage {
   PYTHON = 'python',
   JAVASCRIPT = 'javascript',
   TYPESCRIPT = 'typescript',
 }
 
-export const webGuideData = [
-  {
-    language: GuideSupportLanguage.JAVASCRIPT,
-    cd: 'cd dogu-examples/web/desktop/selenium/javascript',
-    installDependencies: 'npm install',
-    generateCapabilitiesCode: async (orgId: string, projectId: string) => {
-      let orgAccessKey: string;
+export enum GuideSupportPlatform {
+  ANDROID = 'android',
+  IOS = 'ios',
+  WINDOWS = 'windows',
+  MACOS = 'macos',
+}
 
-      try {
-        orgAccessKey = await getApiToken(orgId);
-      } catch (e) {
-        orgAccessKey = 'INSERT_YOUR_ACCESS_KEY';
-      }
+export enum GuideSupportTarget {
+  WEB = 'web',
+  APP = 'app',
+  GAME = 'game',
+}
 
-      return `const token = process.env.DOGU_ACCESS_KEY || '${orgAccessKey}';
-const organizationId = process.env.DOGU_ORGANIZATION_ID || '${orgId}';
-const projectId = process.env.DOGU_PROJECT_ID || '${projectId}';
-const apiBaseUrl = process.env.DOGU_API_BASE_URL || '${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}';
+export const guideSupportLanguageText: { [key in GuideSupportLanguage]: string } = {
+  [GuideSupportLanguage.PYTHON]: 'Python',
+  [GuideSupportLanguage.JAVASCRIPT]: 'JavaScript',
+  [GuideSupportLanguage.TYPESCRIPT]: 'TypeScript',
+};
 
-// ...
+export const guideSupportPlatformText: { [key in GuideSupportPlatform]: string } = {
+  [GuideSupportPlatform.ANDROID]: 'Android',
+  [GuideSupportPlatform.IOS]: 'iOS',
+  [GuideSupportPlatform.WINDOWS]: 'Windows',
+  [GuideSupportPlatform.MACOS]: 'macOS',
+};
 
-const driver = await remote({
-  logLevel: 'debug',
-  protocol,
-  hostname,
-  port,
-  path: '/remote/wd/hub',
-  capabilities: {
-    "dogu:options": {
-      token,
-      organizationId,
-      projectId,
-      'runs-on': INSERT_YOUR_DEVICE_TAG, // ie. 'android', 'ios', 'windows', 'macos' ...
-      browserName: 'chrome',
-    },
-  },
-});
-`;
-    },
-    runCommand: `npm run test`,
-    sampleFilePath: 'chrome/test.js',
-  },
-];
+export const guideSupportTargetText: { [key in GuideSupportTarget]: string } = {
+  [GuideSupportTarget.WEB]: 'Web',
+  [GuideSupportTarget.APP]: 'App',
+  [GuideSupportTarget.GAME]: 'Game',
+};
 
-export const mobileGuideData = [
-  {
-    language: GuideSupportLanguage.PYTHON,
-    cd: 'cd dogu-examples/application/mobile/appium/python',
-    installDependencies: 'pip install -r requirements.txt',
-    generateCapabilitiesCode: async (orgId: string, projectId: string) => {
-      let orgAccessKey: string;
+export type GenerateCapabilitiesCodeParams = {
+  language: GuideSupportLanguage;
+  target: GuideSupportTarget;
+  platform: GuideSupportPlatform;
+  orgId: string;
+  projectId: string;
+};
 
-      try {
-        orgAccessKey = await getApiToken(orgId);
-      } catch (e) {
-        orgAccessKey = 'INSERT_YOUR_ACCESS_KEY';
-      }
+export const appiumGuideData = {
+  supportLanguages: [GuideSupportLanguage.PYTHON],
+  supportPlatforms: [GuideSupportPlatform.ANDROID, GuideSupportPlatform.IOS],
+  supportTargets: [GuideSupportTarget.APP],
+  generateCapabilitiesCode: async ({ language, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
+    switch (language) {
+      case GuideSupportLanguage.PYTHON:
+        let orgApiToken: string;
 
-      return `access_key = os.environ.get("DOGU_ACCESS_KEY", "${orgAccessKey}")
+        try {
+          orgApiToken = await getApiToken(orgId);
+        } catch (e) {
+          orgApiToken = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
+        }
+
+        return `token = os.environ.get("DOGU_TOKEN", "${orgApiToken}")
 organization_id = os.environ.get("DOGU_ORGANIZATION_ID", "${orgId}")
 project_id = os.environ.get("DOGU_PROJECT_ID", "${projectId}")
 api_base_url = os.environ.get("DOGU_API_BASE_URL", "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}")
@@ -76,63 +79,140 @@ api_base_url = os.environ.get("DOGU_API_BASE_URL", "${process.env.NEXT_PUBLIC_DO
 options = UiAutomator2Options().load_capabilities(
   {
     # Specify dogu:options for testing
-    "platformName": "android",
     "dogu:options": {
-      "token": access_key,
+      "token": token,
       "organizationId": organization_id,
       "projectId": project_id,
-      'runs-on': INSERT_YOUR_DEVICE_TAG, # ie. "android", "ios" ...
-      # Sample app version
-      "appVersion": "2.5.194-alpha-2017-05-30",
+      "runsOn": "${platform}", # or another device tag
+      "appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'YOUR_APP_VERSION'}",
     },
   }
 )
 `;
-    },
-    runCommand: `python3 android/dogu_sample.py`,
-    sampleFilePath: 'android/dogu_sample.py',
+      default:
+        return '';
+    }
   },
-  {
-    language: GuideSupportLanguage.JAVASCRIPT,
-    cd: 'cd dogu-examples/application/mobile/appium/javascript',
-    installDependencies: 'npm install',
-    generateCapabilitiesCode: async (orgId: string, projectId: string) => {
-      let orgAccessKey: string;
+  guides: [
+    {
+      language: GuideSupportLanguage.PYTHON,
+      platform: GuideSupportPlatform.ANDROID,
+      target: GuideSupportTarget.APP,
+      cd: 'cd dogu-examples/appium/python',
+      installDependencies: 'pip install -r requirements.txt',
+      hasSampleApp: true,
+      runCommand: `python3 android/app.py`,
+      sampleFilePath: 'android/app.py',
+    },
+    {
+      language: GuideSupportLanguage.PYTHON,
+      platform: GuideSupportPlatform.IOS,
+      target: GuideSupportTarget.APP,
+      cd: 'cd dogu-examples/appium/python',
+      installDependencies: 'pip install -r requirements.txt',
+      hasSampleApp: false,
+      runCommand: `python3 ios/app.py`,
+      sampleFilePath: 'ios/app.py',
+    },
+  ],
+};
 
-      try {
-        orgAccessKey = await getApiToken(orgId);
-      } catch (e) {
-        orgAccessKey = 'INSERT_YOUR_ACCESS_KEY';
-      }
+export const webdriverioGuideData = {
+  supportLanguages: [GuideSupportLanguage.JAVASCRIPT],
+  supportPlatforms: [GuideSupportPlatform.ANDROID, GuideSupportPlatform.IOS, GuideSupportPlatform.WINDOWS, GuideSupportPlatform.MACOS],
+  supportTargets: [GuideSupportTarget.WEB, GuideSupportTarget.APP],
+  generateCapabilitiesCode: async ({ language, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
+    switch (language) {
+      case GuideSupportLanguage.JAVASCRIPT:
+        let orgApiToken: string;
 
-      return `const token = process.env.DOGU_ACCESS_KEY || '${orgAccessKey}';
+        try {
+          orgApiToken = await getApiToken(orgId);
+        } catch (e) {
+          orgApiToken = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
+        }
+
+        return `const token = process.env.DOGU_TOKEN || '${orgApiToken}';
 const organizationId = process.env.DOGU_ORGANIZATION_ID || '${orgId}';
 const projectId = process.env.DOGU_PROJECT_ID || '${projectId}';
 const apiBaseUrl = process.env.DOGU_API_BASE_URL || '${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}';
 
 // ...
 
-const browser = await remote({
+const driver = await remote({
   protocol,
   hostname,
   port,
   path: '/remote/wd/hub',
   capabilities: {
-    platformName: "android",
-    'appium:automationName': "uiautomator2",
-    "dogu:options": {
+    'dogu:options': {
       token,
       organizationId,
       projectId,
-      'runs-on': INSERT_YOUR_DEVICE_TAG, // ie. 'android', 'ios' ...
-      // Sample app version
-      appVersion: "2.5.194-alpha-2017-05-30",
+      runsOn: '${platform}', // or another device tag
+      appVersion: '2.5.194-alpha-2017-05-30',${target === GuideSupportTarget.WEB ? "\n      browserName: 'chrome'," : ''}
     },
-  }
-})
-`;
-    },
-    runCommand: `npm run test`,
-    sampleFilePath: 'android/specs/test.js',
   },
-];
+});
+`;
+      default:
+        return '';
+    }
+  },
+  guides: [
+    {
+      language: GuideSupportLanguage.JAVASCRIPT,
+      platform: GuideSupportPlatform.ANDROID,
+      target: GuideSupportTarget.WEB,
+      cd: 'cd dogu-examples/webdriverio/javascript',
+      installDependencies: 'npm install',
+      runCommand: `npm run test:android:web`,
+      sampleFilePath: 'android/chrome.js',
+    },
+    {
+      language: GuideSupportLanguage.JAVASCRIPT,
+      platform: GuideSupportPlatform.IOS,
+      target: GuideSupportTarget.WEB,
+      cd: 'cd dogu-examples/webdriverio/javascript',
+      installDependencies: 'npm install',
+      runCommand: `npm run test:ios:web`,
+      sampleFilePath: 'ios/chrome.js',
+    },
+    {
+      language: GuideSupportLanguage.JAVASCRIPT,
+      platform: GuideSupportPlatform.WINDOWS,
+      target: GuideSupportTarget.WEB,
+      cd: 'cd dogu-examples/webdriverio/javascript',
+      installDependencies: 'npm install',
+      runCommand: `npm run test:windows:web`,
+      sampleFilePath: 'windows/chrome.js',
+    },
+    {
+      language: GuideSupportLanguage.JAVASCRIPT,
+      platform: GuideSupportPlatform.MACOS,
+      target: GuideSupportTarget.WEB,
+      cd: 'cd dogu-examples/webdriverio/javascript',
+      installDependencies: 'npm install',
+      runCommand: `npm run test:macos:web`,
+      sampleFilePath: 'macos/chrome.js',
+    },
+    {
+      language: GuideSupportLanguage.JAVASCRIPT,
+      platform: GuideSupportPlatform.ANDROID,
+      target: GuideSupportTarget.APP,
+      cd: 'cd dogu-examples/webdriverio/javascript',
+      installDependencies: 'npm install',
+      runCommand: `npm run test:android:app`,
+      sampleFilePath: 'android/app.js',
+    },
+    {
+      language: GuideSupportLanguage.JAVASCRIPT,
+      platform: GuideSupportPlatform.IOS,
+      target: GuideSupportTarget.APP,
+      cd: 'cd dogu-examples/webdriverio/javascript',
+      installDependencies: 'npm install',
+      runCommand: `npm run test:ios:app`,
+      sampleFilePath: 'ios/app.js',
+    },
+  ],
+};

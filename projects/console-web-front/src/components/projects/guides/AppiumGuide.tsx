@@ -8,7 +8,16 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { GuideSupportLanguage, mobileGuideData, SAMPLE_GIT_URL } from '../../../resources/guide';
+import {
+  appiumGuideData,
+  GuideSupportLanguage,
+  guideSupportLanguageText,
+  GuideSupportPlatform,
+  guideSupportPlatformText,
+  GuideSupportTarget,
+  guideSupportTargetText,
+  SAMPLE_GIT_URL,
+} from '../../../resources/guide';
 import { flexRowBaseStyle } from '../../../styles/box';
 import CopyButtonContainer from './CodeWithCopyButton';
 import useRequest from '../../../hooks/useRequest';
@@ -20,6 +29,9 @@ import GuideBanner from './GuideBanner';
 import GuideLayout from './GuideLayout';
 import GuideStep from './GuideStep';
 import DoneStep from './DoneStep';
+import ProjectApplicationUploadButton from '../../project-application/ProjectApplicationUploadButton';
+import GuidePlatformIcon from './GuidePlatformIcon';
+import GuideTargetIcon from './GuideTargetIcon';
 
 const DEVICE_FARM_ID = 'device-farm';
 const PROJECT_SETUP_ID = 'project-setup';
@@ -30,40 +42,67 @@ const RUN_TEST_ID = 'run-test';
 const RESULT_ID = 'result';
 const DONE_ID = 'done';
 
-const MobileGuide = () => {
+const AppiumGuide = () => {
   const router = useRouter();
-  const languageQuery = router.query.language as GuideSupportLanguage | undefined;
-  const [language, setLanguage] = useState<GuideSupportLanguage>(
-    !!languageQuery && mobileGuideData.map((item) => item.language).includes(languageQuery) ? languageQuery : mobileGuideData[0].language,
-  );
+  const selectedLanguage = (router.query.language as GuideSupportLanguage | undefined) || appiumGuideData.supportLanguages[0];
+  const selectedPlatform = (router.query.platform as GuideSupportPlatform | undefined) || appiumGuideData.supportPlatforms[0];
+  const selectedTarget = (router.query.target as GuideSupportTarget | undefined) || appiumGuideData.supportTargets[0];
   const [loading, request] = useRequest(uploadSampleApplication);
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 
-  const selectedLanguageData = mobileGuideData.find((data) => data.language === language);
+  const selectedGuide = appiumGuideData.guides.find((data) => data.language === selectedLanguage && data.target === selectedTarget && data.platform === selectedPlatform);
   const organizationId = router.query.orgId as OrganizationId;
   const projectId = router.query.pid as ProjectId;
 
   useEffect(() => {
     const updateCapabilityCode = async () => {
-      if (!selectedLanguageData) {
+      if (!selectedGuide) {
         return;
       }
 
-      const code = await selectedLanguageData?.generateCapabilitiesCode(organizationId, projectId);
-      setCapabilityCode(code || '');
+      const code = await appiumGuideData.generateCapabilitiesCode({
+        orgId: organizationId,
+        projectId,
+        language: selectedLanguage,
+        platform: selectedPlatform,
+        target: selectedTarget,
+      });
+      setCapabilityCode(code);
     };
 
     updateCapabilityCode();
-  }, [selectedLanguageData, organizationId, projectId]);
+  }, [selectedGuide, selectedLanguage, selectedTarget, selectedPlatform, organizationId, projectId]);
 
-  const languageOptions: SelectProps['options'] = mobileGuideData.map((data) => ({
+  const languageOptions: SelectProps['options'] = appiumGuideData.supportLanguages.map((language) => ({
     label: (
-      <FlexRow style={{ textTransform: 'capitalize' }}>
-        <Image src={`/resources/icons/languages/${data.language}.svg`} width={24} height={24} unoptimized alt={data.language} style={{ marginRight: '.5rem' }} />
-        {data.language}
+      <FlexRow>
+        <Image src={`/resources/icons/languages/${language}.svg`} width={20} height={20} unoptimized alt={language} style={{ marginRight: '.5rem' }} />
+        {guideSupportLanguageText[language]}
       </FlexRow>
     ),
-    value: data.language,
+    value: language,
+  }));
+
+  const platformOptions: SelectProps['options'] = appiumGuideData.supportPlatforms.map((platform) => ({
+    label: (
+      <FlexRow>
+        <GuidePlatformIcon platform={platform} />
+        &nbsp;&nbsp;
+        {guideSupportPlatformText[platform]}
+      </FlexRow>
+    ),
+    value: platform,
+  }));
+
+  const targetOptions: SelectProps['options'] = appiumGuideData.supportTargets.map((target) => ({
+    label: (
+      <FlexRow>
+        <GuideTargetIcon target={target} />
+        &nbsp;&nbsp;
+        {guideSupportTargetText[target]}
+      </FlexRow>
+    ),
+    value: target,
   }));
 
   const handleUploadSample = async () => {
@@ -84,10 +123,27 @@ const MobileGuide = () => {
           <div style={{ marginBottom: '1rem' }}>
             <Select
               options={languageOptions}
-              value={language}
+              value={selectedLanguage}
               onChange={(value) => {
-                setLanguage(value);
                 router.push({ query: { ...router.query, language: value } }, undefined, { shallow: true, scroll: true });
+              }}
+              dropdownMatchSelectWidth={false}
+              style={{ width: '100%', marginBottom: '.5rem' }}
+            />
+            <Select
+              options={platformOptions}
+              value={selectedPlatform}
+              onChange={(value) => {
+                router.push({ query: { ...router.query, platform: value } }, undefined, { shallow: true, scroll: true });
+              }}
+              dropdownMatchSelectWidth={false}
+              style={{ width: '100%', marginBottom: '.5rem' }}
+            />
+            <Select
+              options={targetOptions}
+              value={selectedTarget}
+              onChange={(value) => {
+                router.push({ query: { ...router.query, target: value } }, undefined, { shallow: true, scroll: true });
               }}
               dropdownMatchSelectWidth={false}
               style={{ width: '100%' }}
@@ -127,7 +183,7 @@ const MobileGuide = () => {
             content={
               <>
                 <CopyButtonContainer language="bash" code={`git clone ${SAMPLE_GIT_URL}`} />
-                <CopyButtonContainer language="bash" code={selectedLanguageData?.cd ?? ''} />
+                <CopyButtonContainer language="bash" code={selectedGuide?.cd ?? ''} />
               </>
             }
           />
@@ -135,7 +191,7 @@ const MobileGuide = () => {
             id={INSTALL_DEPENDENCIES_ID}
             title="Install dependencies"
             description={<p>Install external packages</p>}
-            content={<CopyButtonContainer language="bash" code={selectedLanguageData?.installDependencies ?? ''} />}
+            content={<CopyButtonContainer language="bash" code={selectedGuide?.installDependencies ?? ''} />}
           />
           <GuideStep
             id={SET_CAPABILITIES_ID}
@@ -143,38 +199,54 @@ const MobileGuide = () => {
             description={
               <>
                 <p>
-                  Open <StyledCode>{selectedLanguageData?.sampleFilePath}</StyledCode> and configure capabilities for your project
+                  Open <StyledCode>{selectedGuide?.sampleFilePath}</StyledCode> and configure capabilities for your project
                 </p>
-                <Alert
-                  style={{ marginTop: '.5rem' }}
-                  message="For iOS, please refer to documentation."
-                  type="info"
-                  showIcon
-                  action={
-                    <Link href="https://docs.dogutech.io/test-automation/mobile/appium/qna" target="_blank">
-                      <Button>Visit</Button>
-                    </Link>
-                  }
-                />
+                {selectedPlatform === GuideSupportPlatform.IOS && (
+                  <Alert
+                    style={{ marginTop: '.5rem' }}
+                    message="For iOS, please refer to documentation."
+                    type="info"
+                    showIcon
+                    action={
+                      <Link href="https://docs.dogutech.io/test-automation/mobile/appium/qna" target="_blank">
+                        <Button>Visit</Button>
+                      </Link>
+                    }
+                  />
+                )}
               </>
             }
-            content={<CopyButtonContainer language={language} code={capabilityCode} />}
+            content={<CopyButtonContainer language={selectedLanguage} code={capabilityCode} />}
           />
           <GuideStep
             id={UPLOAD_SAMPLE_APP_ID}
             title="Upload sample application"
             description={<p>Before starting, upload the app that matches the version specified in the script.</p>}
             content={
-              <Button type="primary" onClick={handleUploadSample} loading={loading} icon={<UploadOutlined />}>
-                Click here for upload
-              </Button>
+              selectedGuide?.hasSampleApp ? (
+                <Button type="primary" onClick={handleUploadSample} loading={loading} icon={<UploadOutlined />}>
+                  Click here for upload
+                </Button>
+              ) : (
+                <>
+                  {selectedPlatform === GuideSupportPlatform.IOS && (
+                    <Alert
+                      style={{ marginTop: '.5rem' }}
+                      message="For iOS, we don't provide sample app. Please upload your app manually."
+                      type="warning"
+                      showIcon
+                      action={<ProjectApplicationUploadButton organizationId={organizationId} projectId={projectId} />}
+                    />
+                  )}
+                </>
+              )
             }
           />
           <GuideStep
             id={RUN_TEST_ID}
             title="Run remote testing"
             description={<p>Start automated testing using sample app and script</p>}
-            content={<CopyButtonContainer language="bash" code={selectedLanguageData?.runCommand ?? ''} />}
+            content={<CopyButtonContainer language="bash" code={selectedGuide?.runCommand ?? ''} />}
           />
 
           <div style={{ marginBottom: '2rem' }}>
@@ -199,7 +271,7 @@ const MobileGuide = () => {
   );
 };
 
-export default MobileGuide;
+export default AppiumGuide;
 
 const FlexRow = styled.div`
   ${flexRowBaseStyle}
