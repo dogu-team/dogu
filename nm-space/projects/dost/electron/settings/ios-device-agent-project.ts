@@ -22,3 +22,14 @@ export async function copyiOSDeviceAgentProject(logger: Printable): Promise<void
   await fsPromise.mkdir(idaDestProjectDirectoryPath, { recursive: true });
   await copyDirectoryRecursive(idaOriginProjectDirectoryPath, idaDestProjectDirectoryPath, logger);
 }
+
+export async function removeiOSDeviceAgentProject(logger: Printable): Promise<void> {
+  const idaDestProjectDirectoryPath = HostPaths.external.xcodeProject.idaProjectDirectoryPath();
+  if (fs.existsSync(idaDestProjectDirectoryPath)) {
+    try {
+      await removeItemRecursive(idaDestProjectDirectoryPath);
+    } catch (e) {
+      logger.error(`Error removing directory: ${e}`);
+    }
+  }
+}

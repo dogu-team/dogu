@@ -7,13 +7,14 @@ import path from 'path';
 import { ExternalKey } from '../../../src/shares/external';
 import { logger } from '../../log/logger.instance';
 import { StdLogCallbackService } from '../../log/std-log-callback-service';
-import { copyiOSDeviceAgentProject } from '../../settings/ios-device-agent-project';
+import { copyiOSDeviceAgentProject, removeiOSDeviceAgentProject } from '../../settings/ios-device-agent-project';
 import { IExternalUnit } from '../external-unit';
 import { validateXcode } from '../xcode';
 
 export class IdaBuildExternalUnit extends IExternalUnit {
   private readonly logger = new PrefixLogger(logger, '[IosDeviceAgentBuild]');
   private child: ChildProcessWithoutNullStreams | null = null;
+  private failCount = 0;
 
   constructor(private readonly stdLogCallbackService: StdLogCallbackService) {
     super();
@@ -73,6 +74,22 @@ export class IdaBuildExternalUnit extends IExternalUnit {
       this.child.kill();
       this.child = null;
     }
+    try {
+      if (5 < this.failCount) {
+        logger.info(`iOSDeviceAgent validate`);
+        this.stdLogCallbackService.stdout(`${this.getName()} validate`);
+        await this.validateInternal();
+      } else {
+        this.failCount = 0;
+      }
+      await removeiOSDeviceAgentProject(logger);
+      logger.info(`iOSDeviceAgent clean build`);
+      this.stdLogCallbackService.stdout(`${this.getName()} clean build`);
+    } catch (e) {
+      logger.info(`iOSDeviceAgent dirty build`);
+      this.stdLogCallbackService.stdout(`${this.getName()} dirty build`);
+    }
+
     await copyiOSDeviceAgentProject(logger);
     this.logger.info(`${this.getName()} copy project done.`);
     const idaDerivedDataPath = HostPaths.external.xcodeProject.idaDerivedDataPath();
@@ -135,6 +152,7 @@ export class IdaBuildExternalUnit extends IExternalUnit {
               }
               resolve();
             } else {
+              this.failCount += 1;
               reject(new Error(`${this.getName()} failed. code: ${code} signal: ${signal}`));
             }
           })().catch((error) => {
