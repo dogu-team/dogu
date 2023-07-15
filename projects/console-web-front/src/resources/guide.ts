@@ -11,7 +11,7 @@ export enum GuideSupportLanguage {
 export const webGuideData = [
   {
     language: GuideSupportLanguage.JAVASCRIPT,
-    cd: 'cd dogu-examples/javascript/selenium',
+    cd: 'cd dogu-examples/web/desktop/selenium/javascript',
     installDependencies: 'npm install',
     generateCapabilitiesCode: async (orgId: string, projectId: string) => {
       let orgAccessKey: string;
@@ -40,7 +40,7 @@ const driver = await remote({
       accessKey,
       organizationId,
       projectId,
-      'runs-on': INSERT_YOUR_DEVICE_PLATFORM, // one of windows, macos
+      'runs-on': INSERT_YOUR_DEVICE_TAG, // ie. 'android', 'ios', 'windows', 'macos' ...
       browserName: 'chrome',
     },
   },
@@ -55,7 +55,7 @@ const driver = await remote({
 export const mobileGuideData = [
   {
     language: GuideSupportLanguage.PYTHON,
-    cd: 'cd dogu-examples/python/appium',
+    cd: 'cd dogu-examples/application/mobile/appium/python',
     installDependencies: 'pip install -r requirements.txt',
     generateCapabilitiesCode: async (orgId: string, projectId: string) => {
       let orgAccessKey: string;
@@ -81,7 +81,7 @@ options = UiAutomator2Options().load_capabilities(
       "accessKey": access_key,
       "organizationId": organization_id,
       "projectId": project_id,
-      "runs-on": "android",
+      'runs-on': INSERT_YOUR_DEVICE_TAG, # ie. "android", "ios" ...
       # Sample app version
       "appVersion": "2.5.194-alpha-2017-05-30",
     },
@@ -94,7 +94,7 @@ options = UiAutomator2Options().load_capabilities(
   },
   {
     language: GuideSupportLanguage.JAVASCRIPT,
-    cd: 'cd dogu-examples/javascript/appium',
+    cd: 'cd dogu-examples/application/mobile/appium/javascript',
     installDependencies: 'npm install',
     generateCapabilitiesCode: async (orgId: string, projectId: string) => {
       let orgAccessKey: string;
@@ -124,7 +124,7 @@ const browser = await remote({
       accessKey,
       organizationId,
       projectId,
-      'runs-on': "android",
+      'runs-on': INSERT_YOUR_DEVICE_TAG, // ie. 'android', 'ios' ...
       // Sample app version
       appVersion: "2.5.194-alpha-2017-05-30",
     },
