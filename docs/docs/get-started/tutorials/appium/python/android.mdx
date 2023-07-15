@@ -3,3 +3,113 @@ sidebar_position: 1
 title: Android
 locale: en
 ---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import BrowserOnly from '@docusaurus/BrowserOnly';
+
+:::info PREREQUISITES
+An Android device must be added to the device farm. Refer to Adding Devices for adding an Android device.
+:::
+
+### Example Repo Clone and Navigate to the Path
+
+```
+git clone https://github.com/dogu-team/dogu-examples.git
+cd dogu-examples/appium/python/android
+pip3 install -r ../requirements.txt
+```
+
+<Tabs groupId="target" defaultValue="app">
+<TabItem value="app" label="App" default>
+
+### App Upload
+
+* Download the sample app [Wikipedia](https://github.com/dogu-team/third-party-binaries/releases/download/wikipedia-apps/wikipedia-android.apk).
+* Upload the downloaded **Wikipedia-android.apk** using the [Organization > Project > App > Upload button](/management/project/app).
+
+### Authentication Information
+* API Token
+  * Check the [API Token](/management/organization/settings#api-token) on the Organization > Settings page.
+* Project Id, Organization Id
+  * Check the [Project Id, Organization Id](/management/project/settings#project-id) on the Organization > Project > Settings page.
+
+<Tabs groupId="service" defaultValue="cloud">
+<TabItem value="cloud" label="Cloud" default>
+
+Apply the API Token, Project Id, and Organization Id that you obtained to **dogu-examples/appium/python/android/app.js**
+
+```python
+token = os.environ.get("DOGU_TOKEN", "INSERT_YOUR_TOKEN")
+organization_id = os.environ.get("DOGU_ORGANIZATION_ID", "INSERT_YOUR_ORGANIZATION_ID")
+project_id = os.environ.get("DOGU_PROJECT_ID", "INSERT_YOUR_PROJECT_ID")
+```
+
+</TabItem>
+    
+<TabItem value="self-hosted" label="Self-Hosted">
+
+Apply the API Token, Project Id, and Organization Id that you obtained to **dogu-examples/appium/python/android/app.js**  
+Also, apply the `DOGU_HOST` value of the configured Dogu server to apiBaseUrl.
+
+```python
+token = os.environ.get("DOGU_TOKEN", "INSERT_YOUR_TOKEN")
+organization_id = os.environ.get("DOGU_ORGANIZATION_ID", "INSERT_YOUR_ORGANIZATION_ID")
+project_id = os.environ.get("DOGU_PROJECT_ID", "INSERT_YOUR_PROJECT_ID")
+api_base_url = os.environ.get("DOGU_API_BASE_URL", "localhost:4000")
+```
+
+</TabItem>
+</Tabs>
+
+### 테스트 실행
+Enter the following command to run the test.
+```
+python3 app.py
+```
+
+</TabItem>
+
+<TabItem value="chrome" label="Chrome">
+
+### Authentication Information
+* API Token
+  * Check the [API Token](/management/organization/settings#api-token) on the Organization > Settings page.
+* Project Id, Organization Id
+  * Check the [Project Id, Organization Id](/management/project/settings#project-id) on the Organization > Project > Settings page.
+
+<Tabs groupId="service" defaultValue="cloud">
+<TabItem value="cloud" label="Cloud" default>
+
+Apply the API Token, Project Id, and Organization Id that you obtained to dogu-examples/appium/python/android/chrome.js
+
+```python
+token = os.environ.get("DOGU_TOKEN", "INSERT_YOUR_TOKEN")
+organization_id = os.environ.get("DOGU_ORGANIZATION_ID", "INSERT_YOUR_ORGANIZATION_ID")
+project_id = os.environ.get("DOGU_PROJECT_ID", "INSERT_YOUR_PROJECT_ID")
+```
+
+</TabItem>
+    
+<TabItem value="self-hosted" label="Self-Hosted">
+
+Apply the API Token, Project Id, and Organization Id that you obtained to **dogu-examples/appium/python/android/chrome.js**  
+Also, apply the `DOGU_HOST` value of the configured Dogu server to apiBaseUrl.
+
+```python
+token = os.environ.get("DOGU_TOKEN", "INSERT_YOUR_TOKEN")
+organization_id = os.environ.get("DOGU_ORGANIZATION_ID", "INSERT_YOUR_ORGANIZATION_ID")
+project_id = os.environ.get("DOGU_PROJECT_ID", "INSERT_YOUR_PROJECT_ID")
+api_base_url = os.environ.get("DOGU_API_BASE_URL", "localhost:4000")
+```
+
+</TabItem>
+</Tabs>
+
+### Run the Test
+Enter the following command to run the test.
+```
+python3 chrome.py
+```
+</TabItem>
+</Tabs>
