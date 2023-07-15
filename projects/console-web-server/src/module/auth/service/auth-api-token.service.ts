@@ -70,7 +70,7 @@ export class AuthApiTokenService {
   }
 
   private getApiTokenByWedriverAgentRequest(req: Request): string | null {
-    const apiToken = req.body['capabilities']?.['alwaysMatch']?.['dogu:options']?.['accessKey'];
+    const apiToken = req.body['capabilities']?.['alwaysMatch']?.['dogu:options']?.['token'];
     if (!apiToken) return null;
     return apiToken as string;
   }
