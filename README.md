@@ -94,6 +94,10 @@ Run test script by using Workflow. See [Routine](https://docs.dogutech.io/get-st
 - Jenkins (Not yet supported)
 - Github Action (Not yet supported)
 
+## Why Dogu?
+
+Building and maintaining infrastructure components such as Appium, OpenSTF, Jenkins, and Grafana for test automation requires significant time and effort. However, Dogu streamlines this process by providing an integrated platform for these infrastructures, allowing you to concentrate on test automation itself. Moreover, Dogu offers seamless integration with test scripts and frameworks, eliminating the need to develop infrastructure-related tasks such as parallel test execution and data transfer for test reporting.
+
 ## Start With Self-Hosted
 
 Set up Dogu on your own server. See [Guide setting up Dogu with self-hosted](https://docs.dogutech.io/get-started/installation/self-hosted/)
