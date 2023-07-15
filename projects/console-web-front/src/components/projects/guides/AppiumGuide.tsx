@@ -250,7 +250,7 @@ const AppiumGuide = () => {
           />
 
           <div style={{ marginBottom: '2rem' }}>
-            <GuideBanner docsUrl="https://docs.dogutech.io/test-automation/mobile/appium" />
+            <GuideBanner docsUrl="https://docs.dogutech.io/test-automation/appium" />
           </div>
 
           <GuideStep
