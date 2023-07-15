@@ -53,6 +53,8 @@ export class RemoteDeviceJobUpdater {
     const deviceJobGroups = _.groupBy(waitingRemoteDeviceJobs, (deviceJob) => deviceJob.deviceId);
     const deviceIds = Object.keys(deviceJobGroups);
 
+    this.logger.info(`checkWaitingRemoteDeviceJobs. check waiting remote-device-jobs. deviceIds: ${deviceIds}`);
+
     for (const deviceId of deviceIds) {
       const waitingRemoteDeviceJobsByDeviceId = deviceJobGroups[deviceId];
       const waitingRoutineDeviceJobsByDeviceId = await this.dataSource.getRepository(RoutineDeviceJob).find({
@@ -112,6 +114,8 @@ export class RemoteDeviceJobUpdater {
       return;
     }
 
+    this.logger.info(`checkTimeoutDeviceJobs. check timeout remote-device-jobs. id: [${inprogressRemoteDeviceJobs.map((remoteDeviceJob) => remoteDeviceJob.remoteDeviceJobId)}]`);
+
     const timeoutRemoteDeviceJobs = inprogressRemoteDeviceJobs.filter((remoteDeviceJob) => {
       const intervalTimeoutms = remoteDeviceJob.intervalTimeout;
       const lastIntervalTime = remoteDeviceJob.lastIntervalTime;
@@ -141,8 +145,9 @@ export class RemoteDeviceJobUpdater {
           DeviceWebDriver.sessionDeleted.responseBody,
         )
         .catch((error) => {
-          this.logger.error('checkTimeoutDeviceJobs sendHttpRequest error', { error });
+          this.logger.error(`checkTimeoutDeviceJobs sendHttpRequest error`, { error });
         });
+      this.logger.warn(`checkTimeoutDeviceJobs. remote-device-job is timeout. id: ${timeoutDeviceJob.remoteDeviceJobId}`);
       await RemoteDeviceJobProcessor.setRemoteDeviceJobState(this.dataSource.manager, timeoutDeviceJob, REMOTE_DEVICE_JOB_STATE.FAILURE);
     }
   }

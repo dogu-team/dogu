@@ -4,6 +4,7 @@ import { v4 } from 'uuid';
 import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
 import { RemoteWebDriverInfo } from '../../../db/entity/remote-webdriver-info.entity';
 import { Remote } from '../../../db/entity/remote.entity';
+import { logger } from '../../logger/logger.instance';
 
 export module RemoteDeviceJobProcessor {
   export async function createWebdriverRemoteDeviceJob(
@@ -16,6 +17,10 @@ export module RemoteDeviceJobProcessor {
     browserVersion: string | null,
     // type: REMOTE_TYPE,
   ): Promise<RemoteDeviceJob> {
+    logger.info(
+      `createWebdriverRemoteDeviceJob. projectId: ${projectId}, deviceId: ${deviceId}, remoteDeviceJobId: ${remoteDeviceJobId}, sessionId: ${sessionId}, browserName: ${browserName}, browserVersion: ${browserVersion}`,
+    );
+
     // remote
     const remoteData = manager.getRepository(Remote).create({
       remoteId: v4(),
@@ -49,6 +54,12 @@ export module RemoteDeviceJobProcessor {
   }
 
   export async function setRemoteDeviceJobState(manager: EntityManager, remoteDeviceJob: RemoteDeviceJob, state: REMOTE_DEVICE_JOB_STATE): Promise<void> {
+    logger.info(
+      `setRemoteDeviceJobState. remote-device-job[${remoteDeviceJob.remoteDeviceJobId}] state transition: ${REMOTE_DEVICE_JOB_STATE[remoteDeviceJob.state]} -> ${
+        REMOTE_DEVICE_JOB_STATE[state]
+      }`,
+    );
+
     remoteDeviceJob.state = state;
     remoteDeviceJob.lastIntervalTime = new Date();
     if (remoteDeviceJob.state === REMOTE_DEVICE_JOB_STATE.IN_PROGRESS) {
