@@ -3,3 +3,29 @@ sidebar_position: 1
 title: Appium
 locale: en
 ---
+
+## Remote Appium options
+
+Describes options when running Appium. Please refer to the [Tutorial](<(/get-started/tutorials/appium)>) on how to run Appium tests..
+
+## Dogu options
+
+[Extension capabilities](https://www.w3.org/TR/webdriver/#dfn-extension-capability) that extend the existing capabilities of Webdriver to suit Dogu. The keys below are configurable fields in the `dogu:options` namespace.
+
+| key            | required | description                                                                                                                                                                  |
+| -------------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token          | true     | Please refer to the [API token documentation](/management/organization/settings#api-token) to obtain and enter an API token.                                                 |
+| organizationId | true     | The organization's ID. You can easily find it on the project settings page. See [the project setup documentation](/management/project/settings)                              |
+| projectId      | true     | ID of the project. You can easily find it on the project settings page. See [the project setup documentation](/management/project/settings)                                  |
+| runsOn         | true     | Used to set the target to run tests on. Please enter the name or tag of a specific device. If multiple are set, targets that satisfy all conditions are set..                |
+| appVersion     | true     | This is the version of the app you want to test among the apps uploaded to Project. Refer to [the app management page](/management/project/app) and upload the app you want. |
+| browserName    | false    | Used for browser testing. (ex. chrome)                                                                                                                                       |
+
+## Overriden Capabilities
+
+Capabilities automatically set by Dogu Server.
+
+| key                   | description                                                                                   | default                                          |
+| --------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| platformName          | The platformName is automatically overwritten by the Dogu server through device information.. | android: `android`<br></br> ios: `ios`           |
+| appium:automationName | appium:automationName Dogu server automatically overwrites with device information            | android: `uiautomator2`<br></br> ios: `xcuitest` |

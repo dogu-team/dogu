@@ -1,5 +1,33 @@
 ---
 sidebar_position: 3
 title: WebdriverIO
-locale: ko
+locale: en
 ---
+
+## Browser options
+
+Describes options when running browser tests.
+
+### Dogu options
+
+[Extension capabilities](https://www.w3.org/TR/webdriver/#dfn-extension-capability) that extend the existing capabilities of Webdriver to suit Dogu. The keys below are configurable fields in the `dogu:options` namespace.
+
+| key            | required | description                                                                                                                                                   |
+| -------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| token          | true     | Please refer to the [API token documentation](/management/organization/settings#api-token) to obtain and enter an API token.                                  |
+| organizationId | true     | The organization's ID. You can easily find it on the project settings page. See [the project setup documentation](/management/project/settings)               |
+| projectId      | true     | ID of the project. You can easily find it on the project settings page. See [the project setup documentation](/management/project/settings)                   |
+| runsOn         | true     | Used to set the target to run tests on. Please enter the name or tag of a specific device. If multiple are set, targets that satisfy all conditions are set.. |
+| browserName    | true     | is the browser name. (ex. chrome)                                                                                                                             |
+
+### Overriden Capabilities
+
+Capabilities automatically set by Dogu Server.
+
+| key          | description                                                                                   | default |
+| ------------ | --------------------------------------------------------------------------------------------- | ------- |
+| platformName | The platformName is automatically overwritten by the Dogu server through device information.. | todo    |
+
+## Mobile options
+
+If running on Mobile, please refer to [Appium options](/test-automation/appium).
