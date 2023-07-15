@@ -11,7 +11,7 @@ const DEVICE_FARM_ID = 'device-farm';
 const TUTORIAL_DOCS_ID = 'tutorial-docs';
 const DONE_ID = 'done';
 
-const GameGuide = () => {
+const GamiumGuide = () => {
   const router = useRouter();
 
   return (
@@ -55,4 +55,4 @@ const GameGuide = () => {
   );
 };
 
-export default GameGuide;
+export default GamiumGuide;

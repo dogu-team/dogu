@@ -33,7 +33,7 @@
     "/dashboard/[orgId]/cloud-devices": ["organization", "cloud-device"],
 
     "/dashboard/[orgId]/projects/[pid]": ["project"],
-    "/dashboard/[orgId]/projects/[pid]/get-started": ["project"],
+    "/dashboard/[orgId]/projects/[pid]/get-started": ["project", "project-app"],
     "/dashboard/[orgId]/projects/[pid]/git": ["project"],
     "/dashboard/[orgId]/projects/[pid]/members": ["project", "project-member"],
     "/dashboard/[orgId]/projects/[pid]/script": ["project", "project-script", "device-streaming"],

@@ -1,52 +1,47 @@
-import { CloseOutlined, GlobalOutlined, MobileOutlined } from '@ant-design/icons';
+import { CloseOutlined, MobileOutlined } from '@ant-design/icons';
 import { Button, Radio } from 'antd';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { SiWebdriverio } from 'react-icons/si';
 import styled from 'styled-components';
+import resources from '../../../resources';
 
+import { GuideSupportFramework } from '../../../resources/guide';
 import { flexRowSpaceBetweenStyle } from '../../../styles/box';
-import GameGuide from './GameGuide';
-import MobileGuide from './MobileGuide';
-import WebGuide from './WebGuide';
-
-enum GuideCategory {
-  WEB = 'web',
-  MOBILE_APP = 'mobile-app',
-  GAME_APP = 'game-app',
-}
+import AppiumGuide from './AppiumGuide';
+import GamiumGuide from './GamuimGuide';
+import WebdriverIoGuide from './WebdriverIoGuide';
 
 const UsageGuide = () => {
   const router = useRouter();
-  const [target, setTarget] = useState(router.query.target || GuideCategory.WEB);
+  const selectedFramework = (router.query.framework as GuideSupportFramework | undefined) ?? GuideSupportFramework.WEBDRIVERIO;
 
   const options = [
     {
       label: (
         <span>
-          <GlobalOutlined /> Web Testing
+          <SiWebdriverio />
+          &nbsp;&nbsp;WebdriverIO
         </span>
       ),
-      value: GuideCategory.WEB,
+      value: GuideSupportFramework.WEBDRIVERIO,
     },
     {
       label: (
         <span>
-          <MobileOutlined /> Mobile App Testing
+          <Image src={resources.icons.appium} width={16} height={16} alt="Appium" />
+          &nbsp;&nbsp;Appium
         </span>
       ),
-      value: GuideCategory.MOBILE_APP,
-    },
-    {
-      label: 'Game App Testing',
-      value: GuideCategory.GAME_APP,
+      value: GuideSupportFramework.APPIUM,
     },
   ];
 
   return (
     <Box>
       <Content>
-        <FlexRow>
+        <FlexRow style={{ marginBottom: '1rem' }}>
           <StyledTitle>Quick start for automated testing!</StyledTitle>&nbsp;&nbsp;
           <Link href={{ pathname: router.pathname.replace('/get-started', ''), query: router.query }} style={{ fontSize: '.8rem' }}>
             <Button icon={<CloseOutlined />} />
@@ -56,17 +51,16 @@ const UsageGuide = () => {
           options={options}
           buttonStyle="solid"
           optionType="button"
-          value={target}
+          value={selectedFramework}
           onChange={(e) => {
-            setTarget(e.target.value);
-            router.push(`/dashboard/${router.query.orgId}/projects/${router.query.pid}/get-started?target=${e.target.value}`, undefined, { shallow: true });
+            router.push(`/dashboard/${router.query.orgId}/projects/${router.query.pid}/get-started?framework=${e.target.value}`, undefined, { shallow: true });
           }}
         />
       </Content>
 
-      {target === GuideCategory.WEB && <WebGuide />}
-      {target === GuideCategory.MOBILE_APP && <MobileGuide />}
-      {target === GuideCategory.GAME_APP && <GameGuide />}
+      {selectedFramework === GuideSupportFramework.WEBDRIVERIO && <WebdriverIoGuide />}
+      {selectedFramework === GuideSupportFramework.APPIUM && <AppiumGuide />}
+      {selectedFramework === GuideSupportFramework.GAMIUM && <GamiumGuide />}
 
       <CloseBox>
         <Link href={`/dashboard/${router.query.orgId}/projects/${router.query.pid}/routines`}>
@@ -94,7 +88,6 @@ const StyledTitle = styled.h3`
 
 const FlexRow = styled.div`
   ${flexRowSpaceBetweenStyle}
-  margin-bottom: 1rem;
 `;
 
 const CloseBox = styled.div`
