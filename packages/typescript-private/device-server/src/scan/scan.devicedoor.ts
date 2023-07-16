@@ -1,4 +1,4 @@
-import { DeviceAgentPort, DeviceAgentSecondPort, DeviceAgentThirdPort, PlatformType, Serial } from '@dogu-private/types';
+import { DeviceAgentPort, DeviceAgentSecondPort, DeviceAgentThirdPort, ErrorDevice, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { loop, stringify, stringifyError } from '@dogu-tech/common';
 import { DeviceChannel } from '../internal/public/device-channel';
 import { DeviceDriver } from '../internal/public/device-driver';
@@ -9,19 +9,13 @@ interface DeviceDoorEvent {
   onClose: (serial: Serial) => Promise<void>;
 }
 
-export interface ErrorDevice {
-  platform: PlatformType;
-  serial: Serial;
-  error: Error;
-}
-
 export class DeviceDoor {
   public channel: DeviceChannel | null = null;
-  private isBroken = false;
-  private openFailReason: Error | null = null;
-  private latestOpenTime = 0;
-  private firstCloseTime = 0;
-  private latestCloseTime = 0;
+  private _isLongClosed = false;
+  private _openError: Error | null = null;
+  private _latestOpenTime = 0;
+  private _firstCloseTime = 0;
+  private _latestCloseTime = 0;
 
   constructor(public readonly driver: DeviceDriver, public readonly serial: Serial, private readonly callback: DeviceDoorEvent) {
     this.process().catch((error) => {
@@ -30,34 +24,38 @@ export class DeviceDoor {
   }
 
   openDoorIfNotActive(): void {
-    this.firstCloseTime = 0;
-    this.latestCloseTime = 0;
-    this.latestOpenTime = Date.now();
+    this._firstCloseTime = 0;
+    this._latestCloseTime = 0;
+    this._latestOpenTime = Date.now();
   }
 
   close(): void {
-    this.latestOpenTime = 0;
-    if (0 == this.firstCloseTime) {
-      this.firstCloseTime = Date.now();
+    this._latestOpenTime = 0;
+    if (0 == this._firstCloseTime) {
+      this._firstCloseTime = Date.now();
     }
-    this.latestCloseTime = Date.now();
+    this._latestCloseTime = Date.now();
   }
 
-  isBrokenDoor(): boolean {
-    return this.isBroken;
+  isLongClosed(): boolean {
+    return this._isLongClosed;
+  }
+
+  openError(): Error | null {
+    return this._openError;
   }
 
   private async process(): Promise<void> {
     for await (const _ of loop(1000)) {
       await this.processInternal();
-      if (this.isBroken) {
+      if (this._isLongClosed) {
         return;
       }
     }
   }
 
   private async processInternal(): Promise<void> {
-    if (null == this.channel && this.latestCloseTime < this.latestOpenTime) {
+    if (null == this.channel && this._latestCloseTime < this._latestOpenTime) {
       try {
         this.channel = await this.driver.openChannel({
           serial: this.serial,
@@ -69,22 +67,22 @@ export class DeviceDoor {
       } catch (error) {
         logger.error(`DeviceDoor.processInternal initChannel error serial:${this.serial} ${stringifyError(error)}`);
         this.channel = null;
-        this.firstCloseTime = Date.now();
-        this.latestCloseTime = Date.now();
+        this._firstCloseTime = Date.now();
+        this._latestCloseTime = Date.now();
         if (error instanceof Error) {
-          this.openFailReason = error;
+          this._openError = error;
         } else {
-          this.openFailReason = new Error(stringify(error));
+          this._openError = new Error(stringify(error));
         }
       }
       return;
     }
 
-    if (this.latestOpenTime < this.latestCloseTime && 10000 < this.latestCloseTime - this.firstCloseTime) {
+    if (this._latestOpenTime < this._latestCloseTime && 10000 < this._latestCloseTime - this._firstCloseTime) {
       this.channel = null;
       await this.driver.closeChannel(this.serial);
       await this.callback.onClose(this.serial);
-      this.isBroken = true;
+      this._isLongClosed = true;
       return;
     }
   }
@@ -96,7 +94,7 @@ export class DeviceDoors {
   constructor(private readonly callback: DeviceDoorEvent) {}
 
   openDoorIfNotActive(driver: DeviceDriver, serial: Serial): void {
-    this.cleanupBrokenDoor();
+    this.cleanupClosedDoor();
 
     const platform = driver.platform;
     const door = this._doors.find((door) => door.driver.platform === platform && door.serial === serial);
@@ -110,7 +108,7 @@ export class DeviceDoors {
   }
 
   closeDoor(driver: DeviceDriver, serial: Serial): void {
-    this.cleanupBrokenDoor();
+    this.cleanupClosedDoor();
 
     const platform = driver.platform;
     const door = this._doors.find((door) => door.driver.platform === platform && door.serial === serial);
@@ -125,7 +123,19 @@ export class DeviceDoors {
     return this._doors.map((door) => door.channel).filter((channel) => null != channel) as DeviceChannel[];
   }
 
-  private cleanupBrokenDoor(): void {
-    this._doors = this._doors.filter((door) => !door.isBrokenDoor());
+  get channelsWithOpenError(): ErrorDevice[] {
+    return this._doors
+      .filter((door) => null != door.openError())
+      .map((door) => {
+        return {
+          platform: platformTypeFromPlatform(door.driver.platform),
+          serial: door.serial,
+          error: door.openError() as Error,
+        };
+      });
+  }
+
+  private cleanupClosedDoor(): void {
+    this._doors = this._doors.filter((door) => !door.isLongClosed());
   }
 }
