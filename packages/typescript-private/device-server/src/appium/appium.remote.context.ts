@@ -1,11 +1,10 @@
 import { Platform } from '@dogu-private/types';
 import { errorify, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, ScreenSize } from '@dogu-tech/device-client-common';
-import { killProcessOnPort, Logger } from '@dogu-tech/node';
+import { killProcessOnPort, Logger, waitPortOpen } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import { ZombieProps } from '../internal/services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../internal/services/zombie/zombie-service';
-import { waitPortOpen } from '../internal/util/net';
 import { AppiumContext, AppiumContextKey, AppiumContextOptions, AppiumData } from './appium.context';
 
 function emptyClientData(): AppiumData['client'] {

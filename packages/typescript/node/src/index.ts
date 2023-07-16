@@ -18,6 +18,7 @@ export * from './host-paths';
 export * from './ios/mobile-provisioning-profile';
 export * from './ios/plist-parser';
 export * from './logs';
+export * from './net';
 export * from './options-config';
 export * from './platforms';
 export * from './processes';

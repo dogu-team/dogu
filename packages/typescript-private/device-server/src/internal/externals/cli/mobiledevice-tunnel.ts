@@ -1,11 +1,10 @@
 import { Platform, Serial } from '@dogu-private/types';
 import { delay, Printable } from '@dogu-tech/common';
-import { ChildProcess, killProcessOnPortOnMacos } from '@dogu-tech/node';
+import { ChildProcess, killProcessOnPortOnMacos, waitPortOpen } from '@dogu-tech/node';
 import child_process from 'child_process';
 import { idcLogger, logger } from '../../../logger/logger.instance';
 import { Zombieable, ZombieProps, ZombieWaiter } from '../../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
-import { waitPortOpen } from '../../util/net';
 import { MobileDevice } from './mobiledevice';
 
 export class TunnelContext {
