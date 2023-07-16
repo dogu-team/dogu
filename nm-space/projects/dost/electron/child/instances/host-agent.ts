@@ -1,8 +1,7 @@
-import { isFreePort } from '@dogu-private/device-server';
 import { ChildCode, Status } from '@dogu-private/dost-children';
 import { Code } from '@dogu-private/types';
 import { Instance, parseAxiosError } from '@dogu-tech/common';
-import { killProcessOnPort } from '@dogu-tech/node';
+import { isFreePort, killProcessOnPort } from '@dogu-tech/node';
 import axios from 'axios';
 import { ChildProcess } from 'child_process';
 import { HostAgentConnectionStatus, hostAgentKey } from '../../../src/shares/child';

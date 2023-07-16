@@ -1,13 +1,15 @@
 import { NullLogger, Printable } from '@dogu-tech/common';
-import { ChildProcess } from '.';
+import { ChildProcess, waitPortIdle } from '.';
 
 export async function killProcessOnPort(port: number, printable: Printable): Promise<void> {
   switch (process.platform) {
     case 'darwin':
       await killProcessOnPortOnMacos('""', port, printable);
+      await waitPortIdle(port);
       break;
     case 'win32':
       await killProcessOnPortOnWindows(port, printable);
+      await waitPortIdle(port);
       break;
     default:
       printable.warn?.(`killProcessOnPort. platform:${process.platform} is not supported`);

@@ -1,8 +1,7 @@
-import { isFreePort } from '@dogu-private/device-server';
 import { ChildCode } from '@dogu-private/dost-children';
 import { Code } from '@dogu-private/types';
 import { delay } from '@dogu-tech/common';
-import { HostPaths, killProcessOnPort } from '@dogu-tech/node';
+import { HostPaths, isFreePort, killProcessOnPort } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
 import path from 'path';
 import { deviceServerKey } from '../../../src/shares/child';
