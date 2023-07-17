@@ -56,19 +56,9 @@ Run test script following test framework on device farm. See [Test Automation](h
 
 ### Available Test Framework for Browser
 
-- [Selenium](https://docs.dogutech.io/test-automation/browser/selenium)
-- [Playwright](https://docs.dogutech.io/test-automation/browser/playwright)
-- [Puppeteer](https://docs.dogutech.io/test-automation/browser/puppeteer)
-- [Cypress](https://docs.dogutech.io/test-automation/browser/cypress)
-- [Webdriverio](https://docs.dogutech.io/test-automation/browser/webdriverio)
-
-### Available Test Framework for Mobile
-
-- [Appium](https://docs.dogutech.io/test-automation/mobile/appium/)
-
-### Available Test Framework for Game
-
-- [Gamium](https://docs.dogutech.io/test-automation/game/gamium)
+- [Appium](https://docs.dogutech.io/test-automation/appium)
+- [Webdriverio](https://docs.dogutech.io/test-automation/webdriverio)
+- [Gamium](https://docs.dogutech.io/test-automation/gamium)
 
 ## Test Report
 
@@ -78,10 +68,9 @@ Visualize test unit by integrating test unit framework with test report. See [Te
 
 ### Available Test Unit Framework
 
-- [Jest](https://docs.dogutech.io/test-report/javascript/jest)
-- [Pytest](https://docs.dogutech.io/test-report/python/pytest)
-- [Mocha](https://docs.dogutech.io/test-report/javascript/mocha)
-- [TestNG](https://docs.dogutech.io/test-report/java/testng)
+- [Jest](https://docs.dogutech.io/test-report/jest)
+- [Pytest](https://docs.dogutech.io/test-report/pytest)
+- [TestNG](https://docs.dogutech.io/test-report/testng)
 
 ## Test Routine
 
@@ -100,7 +89,7 @@ Building and maintaining infrastructure components such as Appium, OpenSTF, Jenk
 
 ## Start With Self-Hosted
 
-Set up Dogu on your own server. See [Guide setting up Dogu with self-hosted](https://docs.dogutech.io/get-started/installation/self-hosted/)
+Set up Dogu on your own server. See [Guide setting up Dogu with self-hosted](https://docs.dogutech.io/get-started/installation/self-hosted/installation)
 
 ## Start With Cloud
 
@@ -109,9 +98,7 @@ Start [Cloud Service](https://dogutech.io) right now without any installation.
 ## Documentation
 
 - [Documentation](https://docs.dogutech.io)
-- [Tutorial - Browser Test Automation](https://docs.dogutech.io/get-started/tutorials/web)
-- [Tutorial - Mobile Test Automation](https://docs.dogutech.io/get-started/tutorials/app)
-- [Tutorial - Game Test Automation](https://docs.dogutech.io/get-started/tutorials/game)
+- [Tutorial](https://docs.dogutech.io/get-started/tutorials)
 
 ## Community Support
 
