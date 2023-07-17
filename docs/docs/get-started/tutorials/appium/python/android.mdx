@@ -25,14 +25,15 @@ pip3 install -r ../requirements.txt
 
 ### App Upload
 
-* Download the sample app [Wikipedia](https://github.com/dogu-team/third-party-binaries/releases/download/wikipedia-apps/wikipedia-android.apk).
-* Upload the downloaded **Wikipedia-android.apk** using the [Organization > Project > App > Upload button](/management/project/app).
+- Download the sample app [Wikipedia](https://github.com/dogu-team/third-party-binaries/releases/download/wikipedia-apps/wikipedia-android.apk).
+- Upload the downloaded **Wikipedia-android.apk** using the [Organization > Project > App > Upload button](/management/project/app).
 
 ### Authentication Information
-* API Token
-  * Check the [API Token](/management/organization/settings#api-token) on the Organization > Settings page.
-* Project Id, Organization Id
-  * Check the [Project Id, Organization Id](/management/project/settings#project-id) on the Organization > Project > Settings page.
+
+- API Token
+  - Check the [API Token](/management/organization/settings#api-token) on the Organization > Settings page.
+- Project Id, Organization Id
+  - Check the [Project Id, Organization Id](/management/project/settings#project-id) on the Organization > Project > Settings page.
 
 <Tabs groupId="service" defaultValue="cloud">
 <TabItem value="cloud" label="Cloud" default>
@@ -62,8 +63,10 @@ api_base_url = os.environ.get("DOGU_API_BASE_URL", "localhost:4000")
 </TabItem>
 </Tabs>
 
-### 테스트 실행
+### Run the Test
+
 Enter the following command to run the test.
+
 ```
 python3 app.py
 ```
@@ -73,10 +76,11 @@ python3 app.py
 <TabItem value="chrome" label="Chrome">
 
 ### Authentication Information
-* API Token
-  * Check the [API Token](/management/organization/settings#api-token) on the Organization > Settings page.
-* Project Id, Organization Id
-  * Check the [Project Id, Organization Id](/management/project/settings#project-id) on the Organization > Project > Settings page.
+
+- API Token
+  - Check the [API Token](/management/organization/settings#api-token) on the Organization > Settings page.
+- Project Id, Organization Id
+  - Check the [Project Id, Organization Id](/management/project/settings#project-id) on the Organization > Project > Settings page.
 
 <Tabs groupId="service" defaultValue="cloud">
 <TabItem value="cloud" label="Cloud" default>
@@ -107,9 +111,12 @@ api_base_url = os.environ.get("DOGU_API_BASE_URL", "localhost:4000")
 </Tabs>
 
 ### Run the Test
+
 Enter the following command to run the test.
+
 ```
 python3 chrome.py
 ```
+
 </TabItem>
 </Tabs>

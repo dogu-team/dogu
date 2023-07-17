@@ -3,7 +3,10 @@ import { buildMessage, ValidateBy, ValidationOptions } from 'class-validator';
 
 export function isAppVersion(value: unknown): boolean {
   function validateValue(value: unknown): boolean {
-    if (typeof value === 'number') {
+    if (value === undefined || value === null) {
+      // undefined or null is allowed
+      return true;
+    } else if (typeof value === 'number') {
       try {
         Number(value);
         return true;
@@ -12,8 +15,6 @@ export function isAppVersion(value: unknown): boolean {
       }
     } else if (typeof value === 'string') {
       return value.length > 0;
-    } else if (value === null || value === undefined) {
-      return true;
     }
     return false;
   }

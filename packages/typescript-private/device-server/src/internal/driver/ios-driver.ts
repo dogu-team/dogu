@@ -9,7 +9,7 @@ import { HttpRequestRelayService } from '../../http-request-relay/http-request-r
 import { DoguLogger } from '../../logger/logger';
 import { logger } from '../../logger/logger.instance';
 import { IosChannel } from '../channel/ios-channel';
-import { XcodeBuild, Xctrace } from '../externals';
+import { SystemProfiler, XcodeBuild, Xctrace } from '../externals';
 import { DeviceChannel, DeviceChannelOpenParam } from '../public/device-channel';
 import { DeviceDriver } from '../public/device-driver';
 import { PionStreamingService } from '../services/streaming/pion-streaming-service';
@@ -46,9 +46,9 @@ export class IosDriver implements DeviceDriver {
   }
 
   async scanSerials(): Promise<Serial[]> {
-    // const serialsFromMobileDevice = await MobileDevice.listDevices();
     const serialsXctrace = await Xctrace.listDevices(logger);
-    const serials = new Set([...serialsXctrace]);
+    const serialsSystemProfiler = await SystemProfiler.usbDataTypeToSerials();
+    const serials = serialsXctrace.filter((serial) => serialsSystemProfiler.includes(serial));
     return Array.from(serials.values());
   }
 

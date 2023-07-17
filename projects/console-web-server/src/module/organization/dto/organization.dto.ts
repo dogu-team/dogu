@@ -5,9 +5,10 @@ import {
   UpdateOrganizationDtoBase,
   UpdateOrganizationOwnerDtoBase,
   UpdateOrganizationRoleDtoBase,
+  UpdateTutorialDtoBase,
 } from '@dogu-private/console';
 import { OrganizationRoleId, ORGANIZATION_NAME_MAX_LENGTH, USER_INVITATION_STATUS } from '@dogu-private/types';
-import { IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsEmail, IsEnum, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength } from 'class-validator';
 import { PageDto } from '../../common/dto/pagination/page.dto';
 
 export class createOrganizationDto implements CreateOrganizationDtoBase {
@@ -50,4 +51,11 @@ export class FindInvitationsDto extends PageDto implements FindInvitationsDtoBas
   @IsOptional()
   @IsEnum(USER_INVITATION_STATUS)
   status = USER_INVITATION_STATUS.PENDING;
+}
+
+export class UpdateTutorialDto implements UpdateTutorialDtoBase {
+  @IsNotEmpty()
+  @IsNumber()
+  @IsIn([0, 1])
+  isTutorialCompleted!: number;
 }
