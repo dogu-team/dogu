@@ -1,4 +1,4 @@
-import { DeviceConnectionState, Platform, PlatformSerial, PlatformType, platformTypeFromPlatform, Serial } from '@dogu-private/types';
+import { DeviceConnectionState, ErrorDevice, Platform, PlatformSerial, PlatformType, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { DuplicatedCallGuarder, Instance, stringifyError, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { DeviceConnectionSubscribe } from '@dogu-tech/device-client-common';
 import { processPlatform } from '@dogu-tech/node';
@@ -44,7 +44,7 @@ export class ScanService implements OnModuleInit {
     });
   }
 
-  get channels(): DeviceChannel[] {
+  private get channels(): DeviceChannel[] {
     return this.deviceDoors.channels;
   }
 
@@ -164,6 +164,10 @@ export class ScanService implements OnModuleInit {
 
   getChannels(): Readonly<DeviceChannel[]> {
     return this.channels;
+  }
+
+  getChannelsWithOpenError(): Readonly<ErrorDevice[]> {
+    return this.deviceDoors.channelsWithOpenError;
   }
 
   getChannelsByPlatform(platform: Platform): Readonly<DeviceChannel[]> {

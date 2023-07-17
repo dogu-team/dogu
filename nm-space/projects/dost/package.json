@@ -35,6 +35,7 @@
     "@dogu-private/host-agent": "workspace:^",
     "@dogu-private/types": "workspace:^",
     "@dogu-tech/common": "workspace:^",
+    "@dogu-tech/device-client": "workspace:^",
     "@dogu-tech/device-client-common": "workspace:^",
     "@emotion/react": "11.10.6",
     "@emotion/styled": "11.10.6",

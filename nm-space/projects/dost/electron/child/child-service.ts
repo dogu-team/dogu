@@ -31,7 +31,7 @@ export class ChildService implements IChildClient {
     return ChildService.instance.closeAll();
   }
 
-  private get deviceServer(): DeviceServerChild {
+  get deviceServer(): DeviceServerChild {
     return this.children['device-server'] as DeviceServerChild;
   }
 
