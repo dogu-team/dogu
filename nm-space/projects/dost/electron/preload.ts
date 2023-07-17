@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { appConfigClientKey } from '../src/shares/app-config';
 import { childCallbackKey, childClientKey, ChildTree, HostAgentConnectionStatus, Key } from '../src/shares/child';
+import { deviceLookupClientKey } from '../src/shares/device-lookup';
 import { dotEnvConfigClientKey, DotEnvConfigKey } from '../src/shares/dot-env-config';
 import { IElectronIpc } from '../src/shares/electron-ipc';
 import { DownloadProgress, externalCallbackKey, ExternalKey, externalKey, ValidationCheckOption } from '../src/shares/external';
@@ -132,4 +133,10 @@ expose('windowClient', {
 
 expose('featureConfigClient', {
   get: (key: FeatureKey) => ipcRenderer.invoke(featureConfigClientKey.get, key),
+});
+
+expose('deviceLookupClient', {
+  getPlatformSerials: () => ipcRenderer.invoke(deviceLookupClientKey.getPlatformSerials),
+  getDevicesWithError: () => ipcRenderer.invoke(deviceLookupClientKey.getDevicesWithError),
+  getDeviceSystemInfo: (serial: string) => ipcRenderer.invoke(deviceLookupClientKey.getDeviceSystemInfo, serial),
 });

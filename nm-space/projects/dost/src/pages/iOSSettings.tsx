@@ -1,4 +1,5 @@
 import { Button, Center, Divider, List, Text } from '@chakra-ui/react';
+import { ErrorDevice, PlatformSerial, Serial } from '@dogu-private/types';
 import { stringify } from '@dogu-tech/common';
 import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';

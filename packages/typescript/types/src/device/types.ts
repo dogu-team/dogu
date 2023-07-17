@@ -8,3 +8,9 @@ export interface PlatformSerial {
   platform: PlatformType;
   serial: Serial;
 }
+
+export interface ErrorDevice {
+  platform: PlatformType;
+  serial: Serial;
+  error: Error;
+}
