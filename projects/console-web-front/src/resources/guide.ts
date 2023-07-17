@@ -27,6 +27,12 @@ export enum GuideSupportTarget {
   GAME = 'game',
 }
 
+export const guideSupportSdkText: { [key in GuideSupportSdk]: string } = {
+  [GuideSupportSdk.APPIUM]: 'Appium',
+  [GuideSupportSdk.WEBDRIVERIO]: 'WebdriverIO',
+  [GuideSupportSdk.GAMIUM]: 'Gamium',
+};
+
 export const guideSupportLanguageText: { [key in GuideSupportLanguage]: string } = {
   [GuideSupportLanguage.PYTHON]: 'Python',
   [GuideSupportLanguage.JAVASCRIPT]: 'JavaScript',

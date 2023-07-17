@@ -14,6 +14,7 @@ import { flexRowCenteredStyle, flexRowSpaceBetweenStyle } from '../../styles/box
 import resources from '../../resources';
 import { sendErrorNotification } from '../../utils/antd';
 import GuideBanner from '../projects/guides/GuideBanner';
+import SkipTutorialButton from './SkipTutorialButton';
 
 const SdkSelectBox = () => {
   const router = useRouter();
@@ -40,9 +41,7 @@ const SdkSelectBox = () => {
         </div>
 
         <div>
-          <Button type="link" loading={loading} onClick={handleClickSkip}>
-            Skip tutorial
-          </Button>
+          <SkipTutorialButton orgId={orgId}>Skip tutorial</SkipTutorialButton>
         </div>
       </TitleWrapper>
 

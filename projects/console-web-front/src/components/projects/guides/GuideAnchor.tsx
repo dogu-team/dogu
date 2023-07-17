@@ -34,6 +34,7 @@ const Item = styled.li`
     top: 0.25em;
     width: 2em;
     text-align: right;
+    font-size: .85rem;
     color: ${(props) => props.theme.main.colors.gray3}};
   }
 `;
@@ -42,4 +43,6 @@ const StyledLink = styled(Link)`
   display: block;
   padding: 0.25rem 0;
   color: ${(props) => props.theme.main.colors.gray3};
+  text-decoration: none;
+  font-size: 0.85rem;
 `;
