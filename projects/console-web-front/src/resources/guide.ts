@@ -2,7 +2,7 @@ import { getApiToken } from '../api/organization';
 
 export const SAMPLE_GIT_URL = 'https://github.com/dogu-team/dogu-examples.git';
 
-export enum GuideSupportFramework {
+export enum GuideSupportSdk {
   APPIUM = 'appium',
   WEBDRIVERIO = 'webdriverio',
   GAMIUM = 'gamium',
@@ -215,4 +215,10 @@ const driver = await remote({
       sampleFilePath: 'ios/app.js',
     },
   ],
+};
+
+export const tutorialData: { [key in GuideSupportSdk]: any } = {
+  [GuideSupportSdk.APPIUM]: appiumGuideData,
+  [GuideSupportSdk.WEBDRIVERIO]: webdriverioGuideData,
+  [GuideSupportSdk.GAMIUM]: {},
 };

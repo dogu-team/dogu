@@ -5,6 +5,7 @@ import {
   UpdateOrganizationDtoBase,
   UpdateOrganizationOwnerDtoBase,
   UpdateOrganizationRoleDtoBase,
+  UpdateTutorialDtoBase,
   UserBase,
 } from '@dogu-private/console';
 import { OrganizationId, UserId } from '@dogu-private/types';
@@ -100,4 +101,8 @@ export const getApiToken = async (orgId: OrganizationId) => {
 export const regenerateApiToken = async (orgId: OrganizationId) => {
   const { data } = await api.post<string>(`/organizations/${orgId}/api-token`);
   return data;
+};
+
+export const updateOrganizationTutorial = async (orgId: OrganizationId, dto: UpdateTutorialDtoBase) => {
+  return await api.patch<void>(`/organizations/${orgId}/tutorial`, dto);
 };

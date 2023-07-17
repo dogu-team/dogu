@@ -16,6 +16,7 @@ const resources = {
     javascript: '/resources/icons/languages/javascript.svg',
     python: '/resources/icons/languages/python.svg',
     appium: '/resources/icons/appium.svg',
+    gamium: '/resources/icons/gamium.svg',
   },
   images: {},
 };
