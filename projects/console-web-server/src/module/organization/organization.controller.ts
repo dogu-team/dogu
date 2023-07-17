@@ -19,7 +19,15 @@ import { ImageFileParser } from '../../utils/file';
 import { Page } from '../common/dto/pagination/page';
 import { FindUsersByOrganizationIdDto } from '../user/dto/user.dto';
 import { UserService } from '../user/user.service';
-import { createOrganizationDto, FindInvitationsDto, InviteEmailDto, UpdateOrganizationDto, UpdateOrganizationOwnerDto, UpdateOrganizationRoleDto } from './dto/organization.dto';
+import {
+  createOrganizationDto,
+  FindInvitationsDto,
+  InviteEmailDto,
+  UpdateOrganizationDto,
+  UpdateOrganizationOwnerDto,
+  UpdateOrganizationRoleDto,
+  UpdateTutorialDto,
+} from './dto/organization.dto';
 import { OrganizationService } from './organization.service';
 
 @Controller('organizations')
@@ -200,5 +208,14 @@ export class OrganizationController {
 
     await this.userService.softRemoveUserFromOrganization(organizationId, userId);
     return;
+  }
+
+  @Patch(':organizationId/tutorial')
+  @OrganizationPermission(ORGANIZATION_ROLE.OWNER)
+  async updateTutorialStatus(
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, //
+    @Body() dto: UpdateTutorialDto,
+  ): Promise<void> {
+    return await this.organizationService.updateTutorialStatus(organizationId, dto);
   }
 }

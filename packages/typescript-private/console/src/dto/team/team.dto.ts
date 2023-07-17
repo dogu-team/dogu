@@ -24,3 +24,7 @@ export interface InviteEmailDtoBase {
 export interface FindInvitationsDtoBase {
   status: USER_INVITATION_STATUS;
 }
+
+export interface UpdateTutorialDtoBase {
+  isTutorialCompleted: number;
+}
