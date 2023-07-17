@@ -35,9 +35,9 @@ function getName(): string {
 })();
 function getArtifactPrefix(): string {
   if (deviceServerEnv.DOGU_RUN_TYPE === 'production') {
-    return 'dost';
+    return 'dogu-agent';
   }
-  return `dost-${deviceServerEnv.DOGU_RUN_TYPE}`;
+  return `dogu-agent-${deviceServerEnv.DOGU_RUN_TYPE}`;
 }
 
 function getCompression(): CompressionLevel {
