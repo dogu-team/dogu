@@ -4,7 +4,7 @@ import { buildMessage, ValidateBy, ValidationOptions } from 'class-validator';
 export function isAppVersion(value: unknown): boolean {
   function validateValue(value: unknown): boolean {
     if (value === undefined || value === null) {
-      // henry - undefined or null is allowed
+      // undefined or null is allowed
       return true;
     } else if (typeof value === 'number') {
       try {
