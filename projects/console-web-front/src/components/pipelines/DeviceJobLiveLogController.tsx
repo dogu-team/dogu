@@ -60,20 +60,20 @@ const DeviceJobLiveLogController = ({ deviceJob }: Props) => {
 
   const items: TabsProps['items'] = [
     {
-      key: 'device-logs',
-      label: t('routine:resultTabDeviceLogMenuTitle'),
-      children: (
-        // <LogBox ref={deviceLogRef}>
-        <VirtualizeLogContainer<DeviceJobLogInfo> items={deviecLogData} renderItem={renderDeviceLog} keyExtractor={extractKey} scrollEndOnInit maxHeight={500} scrollEndOnUpdate />
-        // </LogBox>
-      ),
-    },
-    {
       key: 'test-logs',
       label: t('routine:resultTabScriptLogMenuTitle'),
       children: (
         // <LogBox ref={testLogRef}>
         <VirtualizeLogContainer<DeviceJobLogInfo> items={testLogData} renderItem={renderTestLog} keyExtractor={extractKey} scrollEndOnInit maxHeight={500} scrollEndOnUpdate />
+        // </LogBox>
+      ),
+    },
+    {
+      key: 'device-logs',
+      label: t('routine:resultTabDeviceLogMenuTitle'),
+      children: (
+        // <LogBox ref={deviceLogRef}>
+        <VirtualizeLogContainer<DeviceJobLogInfo> items={deviecLogData} renderItem={renderDeviceLog} keyExtractor={extractKey} scrollEndOnInit maxHeight={500} scrollEndOnUpdate />
         // </LogBox>
       ),
     },
