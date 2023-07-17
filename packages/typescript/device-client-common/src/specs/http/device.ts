@@ -40,7 +40,7 @@ export const Device = {
   getDevicesWithError: new DeviceServerControllerMethodSpec({
     controllerSpec: DeviceController,
     method: 'GET',
-    path: '/errors/',
+    path: '/errors',
     pathProvider: DefaultPathProvider,
     responseBody: DeviceServerResponseDto,
     responseBodyData: GetDevicesWithErrorResponse,
