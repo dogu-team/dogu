@@ -97,7 +97,10 @@ export class DeviceJobService {
     }
 
     const interval = deviceJob.completedAt.getTime() - deviceJob.inProgressAt.getTime();
-    const endTime = new Date(deviceJob.localInProgressAt.getTime() + interval);
+    let endTime = new Date(deviceJob.localInProgressAt.getTime() + interval);
+    if (deviceJob.localCompletedAt) {
+      endTime = new Date(deviceJob.localCompletedAt.getTime());
+    }
 
     const dto: FindDeviceRuntimeInfosDto = {
       startTime: deviceJob.localInProgressAt.toISOString(),
@@ -202,7 +205,10 @@ export class DeviceJobService {
     }
 
     const interval = deviceJob.completedAt.getTime() - deviceJob.inProgressAt.getTime();
-    const endTime = new Date(deviceJob.localInProgressAt.getTime() + interval);
+    let endTime = new Date(deviceJob.localInProgressAt.getTime() + interval);
+    if (deviceJob.localCompletedAt) {
+      endTime = new Date(deviceJob.localCompletedAt.getTime());
+    }
 
     const deviceJobLogs = await this.influxDbLogService.readDeviceJobLogs(
       organizationId,
