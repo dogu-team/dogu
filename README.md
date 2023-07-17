@@ -54,7 +54,7 @@ Connect the device to run your tests to Device Farm. See [Device Farm](https://d
 
 Run test script following test framework on device farm. See [Test Automation](https://docs.dogutech.io/get-started#test-automation) for more details.
 
-### Available Test Framework for Browser
+### Available Test Frameworks
 
 - [Appium](https://docs.dogutech.io/get-started/tutorials/appium/)
 - [Webdriverio](https://docs.dogutech.io/get-started/tutorials/webdriverio/)
@@ -65,7 +65,7 @@ Run test script following test framework on device farm. See [Test Automation](h
 
 Visualize test unit by integrating test unit framework with test report. See [Test Report](https://docs.dogutech.io/get-started#test-reporting) for more details.
 
-### Available Test Unit Framework
+### Available Test Unit Frameworks
 
 - [Jest](https://docs.dogutech.io/test-report/jest)
 - [Pytest](https://docs.dogutech.io/test-report/pytest)
@@ -77,7 +77,7 @@ Run test script by using Workflow. See [Routine](https://docs.dogutech.io/get-st
 
 <img src=".github/resources/workflow-inside.png"/>
 
-### Available Workflow for Integration
+### Available CI/CD with Routine
 
 - Jenkins (Not yet supported)
 - Github Action (Not yet supported)
