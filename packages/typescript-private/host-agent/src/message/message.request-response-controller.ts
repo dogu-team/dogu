@@ -20,6 +20,7 @@ import { MessageContext } from '../message/message.types';
 import { ActionProcessor } from '../processor/action.processor';
 import { CommandProcessRegistry } from '../processor/command.process-registry';
 import { DeviceJobStepProcessor } from '../processor/device-job-step.processor';
+import { StepMessageContext } from '../step/step.types';
 import { OnConsoleMessage } from '../types';
 
 @Controller()
@@ -68,7 +69,8 @@ export class MessageRequestResponseController {
   @OnConsoleMessage(Run, ErrorResult)
   onRun(@Payload() param: Run, @Ctx() context: MessageContext): Promise<ErrorResult> {
     const { run } = param;
-    return this.commandProcessRegistry.commandLine(run, {}, context);
+    let cwd = context instanceof StepMessageContext ? context.workingPath : process.cwd();
+    return this.commandProcessRegistry.commandLine(run, { cwd }, context);
   }
 
   @OnConsoleMessage(Action, ErrorResult)

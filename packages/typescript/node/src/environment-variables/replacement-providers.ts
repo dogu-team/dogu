@@ -1,4 +1,5 @@
 import { MutableVariableReplacements, VariableReplacementProvider, VariableReplacements } from '@dogu-tech/common';
+import { newCleanNodeEnv } from '../clean-env';
 
 export class EnvironmentVariableReplacementProvider implements VariableReplacementProvider {
   constructor(private readonly replacements: VariableReplacements) {}
@@ -64,6 +65,11 @@ export class NodeJsProcessEnvironmentVariableReplacementProvider extends Environ
   }
 }
 
+export class CleanNodeJsProcessEnvironmentVariableReplacementProvider extends EnvironmentVariableReplacementProvider {
+  constructor() {
+    super(newCleanNodeEnv());
+  }
+}
 export class WindowsDefaultEnvironmentVariableReplacementProvider extends EnvironmentVariableReplacementProvider {
   constructor() {
     super({
