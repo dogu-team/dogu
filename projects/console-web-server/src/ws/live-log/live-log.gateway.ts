@@ -61,7 +61,7 @@ export class LiveLogGateway implements OnGatewayConnection, OnGatewayDisconnect 
       const currentTime = new Date();
 
       const testLogs = await this.influxDbLogService.readDeviceJobLogs(organizationId, deviceJobId, localStartTime.toISOString(), currentTime.toISOString());
-      if (testLogs.deviceLogs.length === 0 && testLogs.hostAgentLogs.length === 0 && testLogs.hostAgentLogs.length === 0) {
+      if (testLogs.deviceLogs.length === 0 && testLogs.hostAgentLogs.length === 0 && testLogs.userProjectLogs.length === 0) {
         await new Promise((resolve) => setTimeout(resolve, DEVICE_JOB_LOG_LIVE_DELAY_COUNT * 1000));
         continue;
       }

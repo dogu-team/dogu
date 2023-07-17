@@ -82,7 +82,7 @@ const DeviceJobLiveLogController = ({ deviceJob }: Props) => {
   return (
     <Box>
       <Tabs
-        defaultActiveKey="device-logs"
+        defaultActiveKey="test-logs"
         items={items}
         destroyInactiveTabPane
         onChange={(key) => {

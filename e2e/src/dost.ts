@@ -48,7 +48,7 @@ export async function launchDost(): Promise<Page> {
   }
 
   const reactProc = child_process.spawn('yarn', ['workspace', 'dost', 'run', 'start:react'], {
-    shell: process.platform === 'win32' ? 'cmd.exe' : undefined,
+    shell: process.platform === 'win32' ? 'cmd.exe' : true,
     windowsVerbatimArguments: true,
     env: { ...newCleanNodeEnv(), BROWSER: 'none' },
     cwd: path.resolve(pathMap.root, 'nm-space'),
