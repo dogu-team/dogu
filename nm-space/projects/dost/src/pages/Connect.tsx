@@ -1,4 +1,4 @@
-import { Divider, Flex, HStack, List, ListItem, Spinner, Stack, Text, UnorderedList } from '@chakra-ui/react';
+import { CircularProgress, Divider, Flex, HStack, List, ListItem, Spinner, Stack, Text, UnorderedList } from '@chakra-ui/react';
 import { CheckIcon, NotAllowedIcon } from '@chakra-ui/icons';
 import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -27,7 +27,7 @@ function Connect() {
   const tokenInputable = hostAgentConnectionStatus?.status === 'is-token-empty' || hostAgentConnectionStatus?.status === 'disconnected';
   const isConnecting = hostAgentConnectionStatus?.status === 'connecting';
   const isConnected = hostAgentConnectionStatus?.status === 'connected';
-  const getSerial = useCallback(async () => {
+  const getDeviceStatuses = useCallback(async () => {
     try {
       const deviceStatuses: DeviceStatus[] = [];
       const platformSerials = await ipc.deviceLookupClient.getPlatformSerials();
@@ -51,7 +51,6 @@ function Connect() {
       }
       const errorDevices = await ipc.deviceLookupClient.getDevicesWithError();
       for (const errorDevice of errorDevices) {
-        console.log(`error`, errorDevice.error);
         deviceStatuses.push({
           platform: errorDevice.platform,
           serial: errorDevice.serial,
@@ -65,7 +64,10 @@ function Connect() {
     }
   }, []);
   useEffect(() => {
-    getSerial();
+    const timer = setInterval(() => {
+      getDeviceStatuses();
+    }, 3000);
+    return () => clearInterval(timer);
   }, []);
 
   return (
@@ -130,7 +132,12 @@ function Connect() {
             </Item>
           </ListItem>
         )}
-        {isConnected && (
+        {isConnected && <MenuTitle>Devices</MenuTitle>}
+        {isConnected && deviceStatuses.length == 0 ? (
+          <div>
+            <CircularProgress isIndeterminate color="green.300" size="30px" />
+          </div>
+        ) : (
           <BorderBox>
             <List spacing={3}>
               {deviceStatuses &&
@@ -139,11 +146,13 @@ function Connect() {
                     <HStack>
                       {deviceStatus.error ? <NotAllowedIcon color="red.500" /> : <CheckIcon color="green.500" />}
                       <Text>{deviceStatus.platform}</Text>
-                      <Text>{deviceStatus.info?.system.model ?? deviceStatus.serial}</Text>
+                      <Text fontSize="xs">{deviceStatus.info?.system.model ?? deviceStatus.serial}</Text>
                     </HStack>
                     {deviceStatus.error && (
                       <UnorderedList>
-                        <ListItem>{stringify(deviceStatus.error)}</ListItem>
+                        <ListItem>
+                          <Text fontSize="xs">{deviceStatus.error.message}</Text>
+                        </ListItem>
                       </UnorderedList>
                     )}
                   </ListItem>

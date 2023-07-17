@@ -104,7 +104,9 @@ export class IosChannel implements DeviceChannel {
     const platform = Platform.PLATFORM_IOS;
 
     if (!(await IosDeviceAgentProcess.isReady(serial))) {
-      throw new Error(`IosDeviceAgentProcess is not ready serial: ${serial}`);
+      throw new Error(
+        `iOSDeviceAgent can't be executed on this device. Please register your device. reference: https://developer.apple.com/help/account/register-devices/register-a-single-device. `,
+      );
     }
 
     let portContext = portContextes.get(serial);

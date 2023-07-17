@@ -45,7 +45,14 @@ export class DeviceController {
       value: {
         $case: 'data',
         data: {
-          errorDevices,
+          errorDevices: errorDevices.map((errorDevice) => ({
+            serial: errorDevice.serial,
+            platform: errorDevice.platform,
+            error: {
+              name: errorDevice.error.name,
+              message: errorDevice.error.message,
+            },
+          })),
         },
       },
     };
