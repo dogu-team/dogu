@@ -59,6 +59,12 @@ export const getOrganizationPageServerSideProps: GetServerSideProps<Organization
       return checkResult;
     }
 
+    if (organization.isTutorialCompleted === 0) {
+      return {
+        redirect: redirectWithLocale(context, `/dashboard/${context.query.orgId}/get-started`, false),
+      };
+    }
+
     return {
       props: {
         fallback: {
