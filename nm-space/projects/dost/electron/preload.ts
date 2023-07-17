@@ -138,4 +138,5 @@ expose('featureConfigClient', {
 expose('deviceLookupClient', {
   getPlatformSerials: () => ipcRenderer.invoke(deviceLookupClientKey.getPlatformSerials),
   getDevicesWithError: () => ipcRenderer.invoke(deviceLookupClientKey.getDevicesWithError),
+  getDeviceSystemInfo: (serial: string) => ipcRenderer.invoke(deviceLookupClientKey.getDeviceSystemInfo, serial),
 });

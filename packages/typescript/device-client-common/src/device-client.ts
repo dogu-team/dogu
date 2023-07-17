@@ -1,6 +1,6 @@
 import { Class, Closable, errorify, Instance, Log, stringify, transformAndValidate, WebSocketSpec } from '@dogu-tech/common';
 import { DeviceInterface } from '@dogu-tech/device-interface';
-import { ErrorDevice, FilledRuntimeInfo, PlatformSerial, Serial } from '@dogu-tech/types';
+import { DeviceSystemInfo, ErrorDevice, FilledRuntimeInfo, PlatformSerial, Serial } from '@dogu-tech/types';
 import { DeviceClientOptions, DeviceCloser, DeviceService, DeviceWebSocket } from './bases';
 import { DeviceHttpClient } from './device-http-client';
 import { Device } from './specs/http/device';
@@ -59,6 +59,11 @@ export class DeviceClient extends DeviceHttpClient implements DeviceInterface {
     const response = await this.httpRequest(Device.getDevicesWithError, new Device.getDevicesWithError.pathProvider());
     const { errorDevices } = response;
     return errorDevices;
+  }
+
+  async getDeviceSystemInfo(serial: Serial): Promise<DeviceSystemInfo> {
+    const response = await this.httpRequest(Device.getDeviceSystemInfo, new Device.getDeviceSystemInfo.pathProvider(serial));
+    return response;
   }
 
   installApp(serial: Serial, appPath: string): Promise<void> {

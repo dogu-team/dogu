@@ -12,6 +12,7 @@ export class DeviceLookupService {
     const { instance } = DeviceLookupService;
     ipcMain.handle(deviceLookupClientKey.getPlatformSerials, (_) => deviceClient()?.getPlatformSerials() ?? []);
     ipcMain.handle(deviceLookupClientKey.getDevicesWithError, (_) => deviceClient()?.getDevicesWithError() ?? []);
+    ipcMain.handle(deviceLookupClientKey.getDeviceSystemInfo, (_, serial: string) => deviceClient()?.getDeviceSystemInfo(serial) ?? null);
   }
 
   private constructor(private readonly deviceClient: () => DeviceClient | undefined) {}

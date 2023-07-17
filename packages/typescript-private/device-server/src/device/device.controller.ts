@@ -60,9 +60,7 @@ export class DeviceController {
     return {
       value: {
         $case: 'data',
-        data: {
-          info: device.info,
-        },
+        data: device.info,
       },
     };
   }

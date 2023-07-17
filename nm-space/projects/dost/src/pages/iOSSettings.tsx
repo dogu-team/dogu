@@ -14,8 +14,6 @@ import { ipc } from '../utils/window';
 function IosSettings() {
   const { results } = useManualSetupExternalValidResult(['xcode', 'web-driver-agent-build', 'ios-device-agent-build']);
   const [xcodeResult, setXcodeResult] = useState<ExternalValidationResult | null>(null);
-  const [platformSerials, setPlatformSerials] = useState<PlatformSerial[]>([]);
-  const [errorDevices, setErrorDevices] = useState<ErrorDevice[]>([]);
 
   const validateXcode = useCallback(async () => {
     try {
@@ -26,21 +24,8 @@ function IosSettings() {
     }
   }, []);
 
-  const getSerial = useCallback(async () => {
-    try {
-      const result = await ipc.deviceLookupClient.getPlatformSerials();
-      // const iosPlatformSerials = result.filter((PlatformSerial) => PlatformSerial.platform === 'ios');
-      setPlatformSerials(result);
-      const errorDevice = await ipc.deviceLookupClient.getDevicesWithError();
-      setErrorDevices(errorDevice);
-    } catch (e) {
-      ipc.rendererLogger.error(`Get PlatformSerials error: ${stringify(e)}`);
-    }
-  }, []);
-
   useEffect(() => {
     validateXcode();
-    getSerial();
   }, []);
 
   return (
@@ -63,21 +48,6 @@ function IosSettings() {
               >
                 View Devices and Simulators
               </Button>
-              <br></br>
-              OK
-              {platformSerials &&
-                platformSerials.map((PlatformSerial) => (
-                  <Text>
-                    {PlatformSerial.platform}, {PlatformSerial.serial}
-                  </Text>
-                ))}
-              Error
-              {errorDevices &&
-                errorDevices.map((errorDevice) => (
-                  <Text>
-                    {errorDevice.platform}, {errorDevice.serial} {stringify(errorDevice.error)}
-                  </Text>
-                ))}
             </BorderBox>
           )}
           {results?.map((result) => (
