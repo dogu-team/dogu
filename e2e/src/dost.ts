@@ -22,6 +22,8 @@ const dostPlaywrightName = 'dost-playwright';
 const dostPlaywrightHexColor = stc(dostPlaywrightName);
 export const dostPlaywrightColor = chalk.hex(dostPlaywrightHexColor)(`[${dostPlaywrightName}]`);
 
+const dotDoguE2eName = '.dogu-e2e';
+
 export async function launchDost(): Promise<Page> {
   let electronExePath = '';
 
@@ -36,7 +38,7 @@ export async function launchDost(): Promise<Page> {
   const electronMainjsPath = path.resolve(pathMap.root, 'nm-space/projects/dost/build/electron/main.js');
   const dostRootPath = path.resolve(pathMap.root, 'nm-space/projects/dost');
   const dostGeneratedpath = path.resolve(pathMap.root, 'nm-space/projects/dost/generated');
-  const doguWorkdirPath = path.resolve(os.homedir(), '.dogu');
+  const doguWorkdirPath = path.resolve(os.homedir(), dotDoguE2eName);
   if (fs.existsSync(dostGeneratedpath)) {
     fs.rmSync(dostGeneratedpath, { recursive: true });
   }
@@ -47,10 +49,10 @@ export async function launchDost(): Promise<Page> {
     }
   }
 
-  const reactProc = child_process.spawn('yarn', ['workspace', 'dost', 'run', 'start:react'], {
+  const reactProc = child_process.spawn('yarn', ['workspace', 'dogu-agent', 'run', 'start:react'], {
     shell: process.platform === 'win32' ? 'cmd.exe' : true,
     windowsVerbatimArguments: true,
-    env: { ...newCleanNodeEnv(), BROWSER: 'none' },
+    env: { ...newCleanNodeEnv(), BROWSER: 'none', DOGU_HOME: doguWorkdirPath },
     cwd: path.resolve(pathMap.root, 'nm-space'),
   });
 
@@ -80,6 +82,7 @@ export async function launchDost(): Promise<Page> {
     args: [electronMainjsPath],
     executablePath: electronExePath,
     cwd: dostRootPath,
+    env: { ...newCleanNodeEnv(), DOGU_HOME: doguWorkdirPath },
   });
   const electronProc = electronApp.process();
   electronProc.stdout?.on('data', (stdout: string | Buffer) => {

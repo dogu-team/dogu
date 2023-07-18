@@ -6,7 +6,6 @@ import { Key } from 'selenium-webdriver';
 
 import { Driver } from '../../src/chromedriver';
 import { E2eEnv } from '../../src/env';
-import { GdcScreenRecorder } from '../../src/gdc-screen-recorder';
 import { ProcessManager } from '../../src/process-manager';
 import { Timer } from '../../src/timer';
 import { Utils } from '../../src/utils';
@@ -14,18 +13,12 @@ import { runHost } from './bat/host';
 import { currentL10n, l10n } from './bat/l10n';
 import { startDost } from './bat/workspace';
 
-const isCI = process.env.CI === 'true' || undefined !== process.env.GITHUB_ACTION;
-const switchConfig = {
-  prepareDB: isCI ? true : false,
-};
-
 const env = loadEnvLazySync(E2eEnv);
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 
 const randomId = Utils.random();
 const randomInvitationId = Utils.random();
-let gdcRecorder: GdcScreenRecorder | null = null;
 
 const values = {
   value: {
@@ -90,17 +83,12 @@ Dest.withOptions({
     beforeAll(async () => {
       values.value.HOME_URL = `http://${env.DOGU_E2E_HOST}:${env.DOGU_CONSOLE_WEB_FRONT_PORT}`;
       await ProcessManager.killByPorts([Number(env.DOGU_DEVICE_SERVER_PORT)]);
-      await ProcessManager.killByNames(['IOSDeviceController', 'go-device-controller', 'host-agent']);
     });
 
     test('Print env', () => {
       console.log('env', process.env);
     });
 
-    test('Run record', () => {
-      gdcRecorder = new GdcScreenRecorder(console);
-      gdcRecorder.start();
-    });
     const { dost } = startDost();
 
     job('Launch browser', () => {
@@ -172,15 +160,6 @@ Dest.withOptions({
           focusWindow: true,
         };
 
-        // There's no signup button in main page
-        // sign-up
-        // await Driver.clickElement(
-        //   {
-        //     xpath: '/html/body/div[1]/div/section/main/div/div[1]/div/div[1]/div[1]/button',
-        //   },
-        //   firstClickOptions,
-        // );
-
         await Driver.sendKeys({ xpath: '//*[@access-id="sign-up-form-user-name"]' }, values.value.USER_NAME, firstClickOptions);
         await Driver.sendKeys({ xpath: '//*[@access-id="sign-up-form-email"]' }, values.value.USER_EMAIL);
         await Driver.sendKeys({ xpath: '//*[@access-id="sign-up-form-pw"]' }, 'qwer1234!');
@@ -197,27 +176,6 @@ Dest.withOptions({
       dost.nextTest();
     });
 
-    /**
-     * @note When you sign up, you are automatically logged in
-     */
-    // job('Login', () => {
-    //   test('Move to login', async () => {
-    //     await Driver.moveTo(`${values.value.HOME_URL}/signin`);
-    //   });
-
-    //   test('Enter email', async () => {
-    //     await Driver.sendKeys({ xpath: '/html/body/div[1]/div/div/div[1]/div[2]/div[2]/div[1]/form/div[1]/input' }, values.value.USER_EMAIL);
-    //   });
-
-    //   test('Enter password', async () => {
-    //     await Driver.sendKeys({ xpath: '/html/body/div[1]/div/div/div[1]/div[2]/div[2]/div[1]/form/div[2]/span/input' }, 'qwer1234!');
-    //   });
-
-    //   test('Click login', async () => {
-    //     await Driver.clickElement({ xpath: '/html/body/div[1]/div/div/div[1]/div[2]/div[2]/div[1]/form/button' });
-    //   });
-    // });
-
     job('Create organization', () => {
       test('Click create organization button', async () => {
         await Driver.clickElement({ xpath: '//*[@access-id="new-org-btn"]' }, { waitTime: 60 * 1000 });
@@ -232,12 +190,6 @@ Dest.withOptions({
       });
 
       test('Check organization creation', async () => {
-        // const orgName = await Driver.getText({ xpath: '//*[@access-id="sb-title"]/div/div/p' });
-        // /**
-        //  * @note uppercase due to css property: text-transform
-        //  */
-        // expect(orgName).toBe(values.value.ORG_NAME.toUpperCase());
-
         await Driver.getText({ xpath: `//*[text()='${values.value.ORG_NAME}']` }, { waitTime: 20000 });
       });
       dost.nextTest();
@@ -282,29 +234,6 @@ Dest.withOptions({
 
       dost.nextTest();
     });
-
-    // job('Check sample project creation', () => {
-    //   test('Check sample project creation', async () => {
-    //     const sampleProjectName = await Driver.getText({ xpath: `//*[text()="${values.value.SAMPLE_PROJECT_NAME}"]` }, { focusWindow: true });
-    //     expect(sampleProjectName).toBe(values.value.SAMPLE_PROJECT_NAME);
-    //   });
-
-    //   test('Click sample project', async () => {
-    //     await Driver.clickElement({ xpath: `//*[text()="${values.value.SAMPLE_PROJECT_NAME}"]` }, { focusWindow: true });
-    //   });
-
-    //   test('Click app button', async () => {
-    //     await Driver.clickElement({ xpath: '//*[@access-id="project-app-tab"]' }, { focusWindow: true });
-    //   });
-
-    //   test('Check sample app added ', async () => {
-    //     const sampleAppName = await Driver.getText({ xpath: `//*[text()="${values.value.SAMPLE_APP_EXTENSION}"]` }, { focusWindow: true });
-    //     expect(sampleAppName).toBe(values.value.SAMPLE_APP_EXTENSION);
-    //   });
-
-    //   dost.nextTest();
-    // });
-
     runHost(values.value.HOST_NAME, dost);
 
     const deviceSettingInfos = [
@@ -708,11 +637,6 @@ Dest.withOptions({
     });
 
     afterAll(async () => {
-      if (gdcRecorder) {
-        await Timer.wait(2000, 'capture more seconds');
-        await gdcRecorder.stop();
-      }
-
       Timer.close();
 
       await Driver.close();
