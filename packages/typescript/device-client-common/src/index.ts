@@ -1,7 +1,6 @@
 import 'reflect-metadata';
 
 export * from '@dogu-tech/device-interface';
-export * as AndroidSdk from './android-sdk';
 export * from './bases';
 export * from './device-client';
 export * from './device-host-client';

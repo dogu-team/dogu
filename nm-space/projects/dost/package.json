@@ -33,7 +33,6 @@
     "@dogu-private/dost-children": "workspace:^",
     "@dogu-private/env-tools": "workspace:^",
     "@dogu-private/host-agent": "workspace:^",
-    "@dogu-private/installer": "workspace:^",
     "@dogu-private/types": "workspace:^",
     "@dogu-tech/common": "workspace:^",
     "@dogu-tech/device-client-common": "workspace:^",

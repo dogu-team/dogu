@@ -3856,22 +3856,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/installer@workspace:^, @dogu-private/installer@workspace:mirror/packages/@dogu-private-installer":
-  version: 0.0.0-use.local
-  resolution: "@dogu-private/installer@workspace:mirror/packages/@dogu-private-installer"
-  dependencies:
-    "@dogu-private/types": "workspace:^"
-    "@dogu-tech/common": "workspace:^"
-    "@dogu-tech/node": "workspace:^"
-    "@types/node": 18.15.11
-    compressing: 1.9.0
-    nodemon: 2.0.22
-    shx: 0.3.4
-    ts-node: 10.9.1
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
 "@dogu-private/nestjs-common@workspace:^, @dogu-private/nestjs-common@workspace:mirror/packages/@dogu-private-nestjs-common":
   version: 0.0.0-use.local
   resolution: "@dogu-private/nestjs-common@workspace:mirror/packages/@dogu-private-nestjs-common"
@@ -12133,7 +12117,6 @@ __metadata:
     "@dogu-private/dost-children": "workspace:^"
     "@dogu-private/env-tools": "workspace:^"
     "@dogu-private/host-agent": "workspace:^"
-    "@dogu-private/installer": "workspace:^"
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
     "@dogu-tech/device-client-common": "workspace:^"
