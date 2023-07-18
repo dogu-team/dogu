@@ -53,6 +53,7 @@ export class IosDriver implements DeviceDriver {
         deviceInfo.status = 'online';
       } else {
         deviceInfo.status = 'usb-disconnected';
+        deviceInfo.description = `Device usb connection is unstable. Please check the usb connection.`;
       }
       return deviceInfo;
     });

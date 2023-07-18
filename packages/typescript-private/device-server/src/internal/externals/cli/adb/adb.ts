@@ -309,34 +309,48 @@ export async function serials(): Promise<DeviceScanInfo[]> {
   adbLogger.verbose('adb.serials begin', { random });
   const output = (await execIgnoreError(`${pathMap().android.adb} devices`)).stdout;
   adbLogger.verbose('adb.serials', { output });
-  interface SerialAndState {
-    serial: string | undefined;
-    state: string | undefined;
-  }
   const regex = /(\S+)/g;
+
+  const stateToDeviceStatus = (state: string): DeviceScanStatus => {
+    switch (state) {
+      case 'device':
+        return 'online';
+      case 'offline':
+        return 'offline';
+      case 'unauthorized':
+        return 'unauthorized';
+      default:
+        return 'unknown';
+    }
+  };
+
+  const stateToDesciprtion = (state: string): string | undefined => {
+    switch (state) {
+      case 'device':
+        return undefined;
+      case 'offline':
+        return `This device is offline as a result of the adb command. Please check the device status. Rebooting the device may fix it.`;
+      case 'unauthorized':
+        return 'Device is unauthorized. Please allow usb debugging.';
+      default:
+        return `Device status is unknown. ${state}`;
+    }
+  };
+
   const scanInfos = output
     .split('\n')
     .slice(1, -2)
     .map((serialAndStateLine) => {
       const matched = serialAndStateLine.match(regex);
       if (!matched || matched.length < 2) {
-        return {
-          serial: undefined,
-          state: undefined,
-        } as SerialAndState;
+        return undefined;
       }
-      return {
-        serial: matched[0],
-        state: matched[1],
-      } as SerialAndState;
+      const serial = matched[0];
+      const state = matched[1];
+      return { serial: serial, name: state, status: stateToDeviceStatus(state), description: stateToDesciprtion(state) } as DeviceScanInfo;
     })
-    .filter((serialAndState) => {
-      return serialAndState.serial !== undefined && serialAndState.state !== undefined;
-    })
-    .map((serialAndState) => {
-      const deviceStatus = serialAndState.state === 'device' ? 'online' : (serialAndState.state as DeviceScanStatus);
-      return { serial: serialAndState.serial!, name: serialAndState.serial!, status: deviceStatus };
-    });
+    .filter((deviceScanInfo) => deviceScanInfo !== undefined)
+    .map((deviceScanInfo) => deviceScanInfo!);
   adbLogger.verbose('adb.serials end', { serials: scanInfos, random });
   return scanInfos;
 }

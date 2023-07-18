@@ -129,7 +129,8 @@ export class DeviceDoors {
     return this._doors
       .filter((door) => null != door.error() || door.scanInfo.status !== 'online')
       .map((door) => {
-        const error = door.scanInfo.status !== 'online' ? new Error(door.scanInfo.status) : door.error();
+        const scanDescription = door.scanInfo.description ?? door.scanInfo.status;
+        const error = door.scanInfo.status !== 'online' ? new Error(scanDescription) : door.error();
         return {
           platform: platformTypeFromPlatform(door.driver.platform),
           serial: door.scanInfo.serial,
