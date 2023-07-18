@@ -61,6 +61,9 @@ export type GenerateCapabilitiesCodeParams = {
 };
 
 export const appiumGuideData = {
+  supportFrameworks: {
+    [GuideSupportLanguage.PYTHON]: ['Pytest'],
+  },
   supportLanguages: [GuideSupportLanguage.PYTHON],
   supportPlatforms: [GuideSupportPlatform.ANDROID, GuideSupportPlatform.IOS],
   supportTargets: [GuideSupportTarget.APP],
@@ -124,6 +127,9 @@ options = UiAutomator2Options().load_capabilities(
 };
 
 export const webdriverioGuideData = {
+  supportFrameworks: {
+    [GuideSupportLanguage.JAVASCRIPT]: ['Jest'],
+  },
   supportLanguages: [GuideSupportLanguage.JAVASCRIPT],
   supportPlatforms: [GuideSupportPlatform.ANDROID, GuideSupportPlatform.IOS, GuideSupportPlatform.WINDOWS, GuideSupportPlatform.MACOS],
   supportTargets: [GuideSupportTarget.WEB, GuideSupportTarget.APP],
@@ -223,8 +229,14 @@ const driver = await remote({
   ],
 };
 
+export const gamiumGuideData = {
+  supportFrameworks: {
+    [GuideSupportLanguage.TYPESCRIPT]: ['Typescript'],
+  },
+};
+
 export const tutorialData: { [key in GuideSupportSdk]: any } = {
   [GuideSupportSdk.APPIUM]: appiumGuideData,
   [GuideSupportSdk.WEBDRIVERIO]: webdriverioGuideData,
-  [GuideSupportSdk.GAMIUM]: {},
+  [GuideSupportSdk.GAMIUM]: gamiumGuideData,
 };

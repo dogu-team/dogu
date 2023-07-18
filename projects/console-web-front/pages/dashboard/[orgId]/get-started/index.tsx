@@ -19,7 +19,7 @@ interface ServerSideProps {
 
 const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organization, me }) => {
   const router = useRouter();
-  const isSdkSelected = !!router.query.sdk && Object.keys(tutorialData).includes(router.query.sdk as string);
+  const isSdkSelected = !!router.query.sdk && Object.keys(tutorialData).includes(router.query.sdk as string) && (!!router.query.framework || !!router.query.lang);
 
   return (
     <>
@@ -70,4 +70,5 @@ const CenteredBox = styled(Box)`
   flex: 1;
   flex-direction: column;
   justify-content: center;
+  background-color: ${(props) => props.theme.main.colors.blue6};
 `;

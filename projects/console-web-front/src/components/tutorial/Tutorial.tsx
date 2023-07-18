@@ -3,12 +3,13 @@ import { OrganizationId } from '@dogu-private/types';
 import { Button, Divider, Steps } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { GuideSupportSdk, guideSupportSdkText } from '../../resources/guide';
 import AppiumGuide from '../projects/guides/AppiumGuide';
 import WebdriverIoGuide from '../projects/guides/WebdriverIoGuide';
+import DeviceFarmTutorial from './DeviceFarmTutorial';
 import SkipTutorialButton from './SkipTutorialButton';
 
 interface Props {
@@ -19,6 +20,12 @@ const Tutorial = ({ selectedSdk }: Props) => {
   const router = useRouter();
   const step = router.query.step as string;
   const orgId = router.query.orgId as OrganizationId;
+
+  useEffect(() => {
+    if (Number(step) && Number(step) > 1) {
+      router.push({ query: { ...router.query, step: 0 } }, undefined, { shallow: true });
+    }
+  }, [step]);
 
   return (
     <Box>
@@ -59,8 +66,9 @@ const Tutorial = ({ selectedSdk }: Props) => {
 
       {(!step || step === '0') && (
         <GuideWrapper>
+          <DeviceFarmTutorial />
           <LinkBox>
-            <div></div>
+            <div />
             <Link href={{ query: { ...router.query, step: 1 } }} shallow>
               <Button type="link">
                 Next: Setup test environment&nbsp;

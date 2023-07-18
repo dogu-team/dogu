@@ -1,42 +1,33 @@
 import { OrganizationId } from '@dogu-private/types';
-import { Button, Divider, Modal } from 'antd';
-import Link from 'next/link';
+import { Divider } from 'antd';
 import { useRouter } from 'next/router';
-import { SiWebdriverio } from 'react-icons/si';
 import styled from 'styled-components';
-import Image from 'next/image';
-import { isAxiosError } from 'axios';
 
-import { updateOrganizationTutorial } from '../../api/organization';
-import useRequest from '../../hooks/useRequest';
-import { GuideSupportSdk } from '../../resources/guide';
-import { flexRowCenteredStyle, flexRowSpaceBetweenStyle } from '../../styles/box';
-import resources from '../../resources';
-import { sendErrorNotification } from '../../utils/antd';
+import { flexRowSpaceBetweenStyle } from '../../styles/box';
 import GuideBanner from '../projects/guides/GuideBanner';
 import SkipTutorialButton from './SkipTutorialButton';
+import DoguText from '../common/DoguText';
+import FrameworkSelectTable from './FrameworkSelectTable';
+import { useState } from 'react';
+import { GuideSupportSdk } from '../../resources/guide';
 
 const SdkSelectBox = () => {
   const router = useRouter();
-  const [loading, request] = useRequest(updateOrganizationTutorial);
   const orgId = router.query.orgId as OrganizationId;
+  const [selectedSdk, setSelectedSdk] = useState<GuideSupportSdk>(GuideSupportSdk.WEBDRIVERIO);
 
-  const handleClickSkip = async () => {
-    try {
-      await request(orgId, { isTutorialCompleted: 1 });
-      router.push(`/dashboard/${orgId}`);
-    } catch (e) {
-      if (isAxiosError(e)) {
-        sendErrorNotification('Failed to skip tutorial');
-      }
-    }
+  const handleClickFramework = (framework: string) => {
+    if (!selectedSdk) return;
+    router.push({ query: { ...router.query, sdk: selectedSdk, framework } }, undefined, { shallow: true });
   };
 
   return (
     <Box>
       <TitleWrapper>
         <div style={{ marginRight: '.5rem' }}>
-          <StyledH1>Get started with Dogu!</StyledH1>
+          <StyledH1>
+            Get started with <DoguText />!
+          </StyledH1>
           <Description>Run automated testings for your web, app and game!</Description>
         </div>
 
@@ -45,31 +36,12 @@ const SdkSelectBox = () => {
         </div>
       </TitleWrapper>
 
-      <Divider />
+      <Divider style={{ margin: '2rem 0' }} />
 
       <TableWrapper>
-        <StyledH2>Select SDK</StyledH2>
+        <StyledH2>Select test framework!</StyledH2>
 
-        <FlexTable>
-          <TableItem>
-            <StyledLink href={{ query: { orgId, sdk: GuideSupportSdk.WEBDRIVERIO } }} shallow>
-              <SiWebdriverio style={{ fontSize: '32px' }} />
-              WebdriverIO
-            </StyledLink>
-          </TableItem>
-          <TableItem>
-            <StyledLink href={{ query: { orgId, sdk: GuideSupportSdk.APPIUM } }} shallow>
-              <Image src={resources.icons.appium} width={32} height={32} alt="appium" />
-              Appium
-            </StyledLink>
-          </TableItem>
-          <TableItem>
-            <StyledLink href={{ query: { orgId, sdk: GuideSupportSdk.GAMIUM } }} shallow>
-              <Image src={resources.icons.gamium} width={32} height={32} alt="gamium" />
-              Gamium
-            </StyledLink>
-          </TableItem>
-        </FlexTable>
+        <FrameworkSelectTable selectedSdk={selectedSdk} onClickSdk={setSelectedSdk} onClickFramework={handleClickFramework} />
       </TableWrapper>
 
       <Divider />
@@ -84,17 +56,17 @@ const SdkSelectBox = () => {
 export default SdkSelectBox;
 
 const Box = styled.div`
-  padding: 2rem;
+  padding: 3rem;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
   line-height: 1.5;
   box-shadow: ${(props) => props.theme.main.shadows.blackLight};
   border-radius: 6px;
+  background-color: #fff;
 `;
 
 const TitleWrapper = styled.div`
-  margin-bottom: 1rem;
   ${flexRowSpaceBetweenStyle}
 `;
 
@@ -113,50 +85,8 @@ const StyledH2 = styled.h2`
 
 const TableWrapper = styled.div``;
 
-const FlexTable = styled.div`
-  ${flexRowCenteredStyle}
-  margin-top: 1rem;
-  flex-wrap: wrap;
-`;
-
-const TableItem = styled.div`
-  width: 20%;
-  border-radius: 6px;
-  cursor: pointer;
-
-  &:hover {
-    background-color: #f5f5f5;
-  }
-`;
-
-const StyledLink = styled(Link)`
-  padding: 4%;
-  display: flex;
-  flex-direction: column;
-  color: #000;
-  text-decoration: none;
-  align-items: center;
-`;
-
-const StyledButton = styled.button`
-  width: 100%;
-  padding: 4%;
-  display: flex;
-  flex-direction: column;
-  color: #000;
-  text-decoration: none;
-  align-items: center;
-  background-color: inherit;
-`;
-
 const BannerBox = styled.div`
   & > div {
     background-color: #fff;
   }
-`;
-
-const ModalTitle = styled.p`
-  font-size: 1.15rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
 `;
