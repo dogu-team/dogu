@@ -68,6 +68,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/typescript-private/console-host-agent"\
       },\
       {\
+        "name": "@dogu-private/console-open-api",\
+        "reference": "workspace:packages/typescript-private/console-open-api"\
+      },\
+      {\
         "name": "@dogu-private/console-ui",\
         "reference": "workspace:packages/typescript-private/console-ui"\
       },\
@@ -86,10 +90,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {\
         "name": "@dogu-private/host-agent",\
         "reference": "workspace:packages/typescript-private/host-agent"\
-      },\
-      {\
-        "name": "@dogu-private/installer",\
-        "reference": "workspace:packages/typescript-private/installer"\
       },\
       {\
         "name": "@dogu-private/nestjs-common",\
@@ -126,6 +126,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       {\
         "name": "@dogu-tech/console-gamium",\
         "reference": "workspace:packages/typescript/console-gamium"\
+      },\
+      {\
+        "name": "@dogu-tech/console-remote-dest",\
+        "reference": "workspace:packages/typescript/console-remote-dest"\
       },\
       {\
         "name": "@dogu-tech/dest",\
@@ -233,12 +237,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@dogu-dev-private/publish-package", ["workspace:packages/typescript-dev-private/publish-package"]],\
       ["@dogu-private/console", ["workspace:packages/typescript-private/console"]],\
       ["@dogu-private/console-host-agent", ["workspace:packages/typescript-private/console-host-agent"]],\
+      ["@dogu-private/console-open-api", ["workspace:packages/typescript-private/console-open-api"]],\
       ["@dogu-private/console-ui", ["workspace:packages/typescript-private/console-ui"]],\
       ["@dogu-private/device-server", ["workspace:packages/typescript-private/device-server"]],\
       ["@dogu-private/dost-children", ["workspace:packages/typescript-private/dost-children"]],\
       ["@dogu-private/env-tools", ["workspace:packages/typescript-private/env-tools"]],\
       ["@dogu-private/host-agent", ["workspace:packages/typescript-private/host-agent"]],\
-      ["@dogu-private/installer", ["workspace:packages/typescript-private/installer"]],\
       ["@dogu-private/nestjs-common", ["workspace:packages/typescript-private/nestjs-common"]],\
       ["@dogu-private/types", ["workspace:packages/typescript-private/types"]],\
       ["@dogu-private/webrtc", ["workspace:packages/typescript-private/webrtc"]],\
@@ -248,6 +252,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@dogu-tech/console-action", ["workspace:packages/typescript/console-action"]],\
       ["@dogu-tech/console-dest", ["workspace:packages/typescript/console-dest"]],\
       ["@dogu-tech/console-gamium", ["workspace:packages/typescript/console-gamium"]],\
+      ["@dogu-tech/console-remote-dest", ["workspace:packages/typescript/console-remote-dest"]],\
       ["@dogu-tech/dest", ["workspace:packages/typescript/dest"]],\
       ["@dogu-tech/device-client", ["workspace:packages/typescript/device-client"]],\
       ["@dogu-tech/device-client-common", ["workspace:packages/typescript/device-client-common"]],\
@@ -12473,6 +12478,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@dogu-private/console-open-api", [\
+        ["workspace:packages/typescript-private/console-open-api", {\
+          "packageLocation": "./packages/typescript-private/console-open-api/",\
+          "packageDependencies": [\
+            ["@dogu-private/console-open-api", "workspace:packages/typescript-private/console-open-api"],\
+            ["@dogu-private/console", "workspace:packages/typescript-private/console"],\
+            ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
+            ["@dogu-tech/common", "workspace:packages/typescript/common"],\
+            ["@dogu-tech/console-gamium", "workspace:packages/typescript/console-gamium"],\
+            ["@types/js-yaml", "npm:4.0.5"],\
+            ["@types/node", "npm:18.15.11"],\
+            ["class-transformer", "npm:0.5.1"],\
+            ["class-validator", "npm:0.14.0"],\
+            ["nodemon", "npm:2.0.22"],\
+            ["reflect-metadata", "npm:0.1.13"],\
+            ["shx", "npm:0.3.4"],\
+            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@dogu-private/console-ui", [\
         ["workspace:packages/typescript-private/console-ui", {\
           "packageLocation": "./packages/typescript-private/console-ui/",\
@@ -12653,24 +12680,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["winston", "npm:3.8.2"],\
             ["ws", "virtual:549e67a1ca2151a2885dacb53709039b296c8bb335e8c0fffceae875fec0cfdb1972cc0a8fc5ecb2d9fd69d1458b4d163dcaeea7b6fb277d10411e98da07ff5e#npm:8.13.0"],\
             ["yaml", "npm:2.2.1"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["@dogu-private/installer", [\
-        ["workspace:packages/typescript-private/installer", {\
-          "packageLocation": "./packages/typescript-private/installer/",\
-          "packageDependencies": [\
-            ["@dogu-private/installer", "workspace:packages/typescript-private/installer"],\
-            ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
-            ["@dogu-tech/common", "workspace:packages/typescript/common"],\
-            ["@dogu-tech/node", "workspace:packages/typescript/node"],\
-            ["@types/node", "npm:18.15.11"],\
-            ["compressing", "npm:1.9.0"],\
-            ["nodemon", "npm:2.0.22"],\
-            ["shx", "npm:0.3.4"],\
-            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
-            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -12885,6 +12894,26 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
             ["@dogu-tech/types", "workspace:packages/typescript/types"],\
             ["@types/lodash", "npm:4.14.186"],\
+            ["@types/node", "npm:18.15.11"],\
+            ["class-transformer", "npm:0.5.1"],\
+            ["class-validator", "npm:0.14.0"],\
+            ["cross-env", "npm:7.0.3"],\
+            ["nodemon", "npm:2.0.22"],\
+            ["shx", "npm:0.3.4"],\
+            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@dogu-tech/console-remote-dest", [\
+        ["workspace:packages/typescript/console-remote-dest", {\
+          "packageLocation": "./packages/typescript/console-remote-dest/",\
+          "packageDependencies": [\
+            ["@dogu-tech/console-remote-dest", "workspace:packages/typescript/console-remote-dest"],\
+            ["@dogu-dev-private/publish-package", "workspace:packages/typescript-dev-private/publish-package"],\
+            ["@dogu-tech/common", "workspace:packages/typescript/common"],\
+            ["@dogu-tech/types", "workspace:packages/typescript/types"],\
             ["@types/node", "npm:18.15.11"],\
             ["class-transformer", "npm:0.5.1"],\
             ["class-validator", "npm:0.14.0"],\
@@ -25698,12 +25727,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-dev-private/build-tools", "workspace:packages/typescript-dev-private/build-tools"],\
             ["@dogu-private/console", "workspace:packages/typescript-private/console"],\
             ["@dogu-private/console-host-agent", "workspace:packages/typescript-private/console-host-agent"],\
+            ["@dogu-private/console-open-api", "workspace:packages/typescript-private/console-open-api"],\
             ["@dogu-private/env-tools", "workspace:packages/typescript-private/env-tools"],\
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
             ["@dogu-tech/console-action", "workspace:packages/typescript/console-action"],\
             ["@dogu-tech/console-dest", "workspace:packages/typescript/console-dest"],\
             ["@dogu-tech/console-gamium", "workspace:packages/typescript/console-gamium"],\
+            ["@dogu-tech/console-remote-dest", "workspace:packages/typescript/console-remote-dest"],\
             ["@dogu-tech/device-client-common", "workspace:packages/typescript/device-client-common"],\
             ["@dogu-tech/env-tools", "workspace:packages/typescript/env-tools"],\
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\

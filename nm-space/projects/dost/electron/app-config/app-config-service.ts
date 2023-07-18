@@ -29,12 +29,17 @@ export class AppConfigService implements IAppConfigClient {
     AppConfigService.instance = new AppConfigService(client);
     const { instance } = AppConfigService;
     await new DotenvMerger().merge(instance);
+    ipcMain.handle(appConfigClientKey.getOrDefault, (_, key: Key, value: unknown) => instance.getOrDefault(key, value));
     ipcMain.handle(appConfigClientKey.get, (_, key: Key) => instance.get(key));
     ipcMain.handle(appConfigClientKey.set, (_, key: Key, value: any) => instance.set(key, value));
     ipcMain.handle(appConfigClientKey.delete, (_, key: Key) => instance.delete(key));
   }
 
   private constructor(readonly client: Client) {}
+
+  getOrDefault<T = any>(key: Key, value: T): Promise<T> {
+    return Promise.resolve((this.client.get(key) as unknown as T) ?? value);
+  }
 
   get<T = any>(key: Key): Promise<T> {
     return Promise.resolve(this.client.get(key) as unknown as T);

@@ -22,6 +22,7 @@ function expose<Key extends IpcKey>(name: Key, value: IpcValue<Key>) {
 expose('themeClient', { shouldUseDarkColors: () => ipcRenderer.invoke(themeClientKey.shouldUseDarkColors) });
 
 expose('appConfigClient', {
+  getOrDefault: (key: string, value: any): Promise<any> => ipcRenderer.invoke(appConfigClientKey.getOrDefault, key, value),
   get: (key: string): Promise<any> => ipcRenderer.invoke(appConfigClientKey.get, key),
   set: (key: string, value: any): Promise<void> => ipcRenderer.invoke(appConfigClientKey.set, key, value),
   delete: (key: string): Promise<void> => ipcRenderer.invoke(appConfigClientKey.delete, key),

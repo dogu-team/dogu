@@ -5,7 +5,7 @@ import { RoutineJobBase } from './routine-job';
 import { RoutineStepBase } from './routine-step';
 
 interface RoutineDeviceJobRelationTraits {
-  device: DeviceBase;
+  device?: DeviceBase;
   routineJob?: RoutineJobBase;
   routineSteps?: RoutineStepBase[];
 }

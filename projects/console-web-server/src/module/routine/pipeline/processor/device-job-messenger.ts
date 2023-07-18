@@ -13,6 +13,11 @@ export class DeviceJobMessenger {
 
   async sendRunDeviceJob(organizationId: OrganizationId, deviceId: DeviceId, deviceJob: RoutineDeviceJob): Promise<void> {
     const { routineDeviceJobId, record, device, routineSteps: steps, routineJob } = deviceJob;
+
+    if (!device) {
+      throw new Error(`Device not found: ${stringify(deviceJob)}`);
+    }
+
     const { serial } = device;
     if (!routineJob) {
       throw new Error(`Job not found: ${stringify(deviceJob)}`);

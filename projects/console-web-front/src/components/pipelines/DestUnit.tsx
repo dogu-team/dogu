@@ -34,14 +34,14 @@ const DestUnit = ({ destUnit }: Props) => {
 
   const items: TabsProps['items'] = [
     {
-      key: 'device-logs',
-      label: t('routine:resultTabDeviceLogMenuTitle'),
-      children: <DestLogController dest={destUnit} logType="deviceLogs" />,
-    },
-    {
       key: 'test-logs',
       label: t('routine:resultTabScriptLogMenuTitle'),
       children: <DestLogController dest={destUnit} logType="userProjectLogs" />,
+    },
+    {
+      key: 'device-logs',
+      label: t('routine:resultTabDeviceLogMenuTitle'),
+      children: <DestLogController dest={destUnit} logType="deviceLogs" />,
     },
     {
       key: 'profile',

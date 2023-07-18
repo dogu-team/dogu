@@ -1,28 +1,29 @@
 {
-  "name": "@dogu-private/installer",
-  "version": "0.0.3",
+  "name": "@dogu-private/console-open-api",
+  "version": "0.0.1",
   "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
   "author": "Dogu Technologies",
   "main": "build/src/index.js",
-  "files": [
-    "build"
-  ],
   "scripts": {
     "build": "tsc -b",
     "clean": "shx rm -rf build generated",
     "dev": "nodemon",
     "rebuild": "yarn run clean && yarn run build",
     "start": "ts-node src/index.ts",
-    "watch": "clear; echo @dogu-private/installer Watching... && nodemon"
+    "watch": "clear; echo @dogu/console-open-api Watching... && nodemon"
   },
   "types": "build/src/index.d.ts",
   "dependencies": {
+    "@dogu-private/console": "workspace:^",
     "@dogu-private/types": "workspace:^",
     "@dogu-tech/common": "workspace:^",
-    "@dogu-tech/node": "workspace:^",
-    "compressing": "1.9.0"
+    "@dogu-tech/console-gamium": "workspace:^",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.14.0",
+    "reflect-metadata": "0.1.13"
   },
   "devDependencies": {
+    "@types/js-yaml": "4.0.5",
     "@types/node": "18.15.11",
     "nodemon": "2.0.22",
     "shx": "0.3.4",

@@ -46,7 +46,10 @@ export class StepService {
     }
 
     const interval = step.completedAt.getTime() - step.inProgressAt.getTime();
-    const endTime = new Date(step.localInProgressAt.getTime() + interval);
+    let endTime = new Date(step.localInProgressAt.getTime() + interval);
+    if (step.localCompletedAt) {
+      endTime = new Date(step.localCompletedAt.getTime());
+    }
 
     const logs = await this.influxDbLogService.readDeviceJobLogs(organizationId, step.routineDeviceJobId, step.localInProgressAt.toISOString(), endTime.toISOString());
     return logs;
@@ -74,7 +77,10 @@ export class StepService {
     }
 
     const interval = step.completedAt.getTime() - step.inProgressAt.getTime();
-    const endTime = new Date(step.localInProgressAt.getTime() + interval);
+    let endTime = new Date(step.localInProgressAt.getTime() + interval);
+    if (step.localCompletedAt) {
+      endTime = new Date(step.localCompletedAt.getTime());
+    }
 
     const dto: FindDeviceRuntimeInfosDto = {
       startTime: step.localInProgressAt.toISOString(),

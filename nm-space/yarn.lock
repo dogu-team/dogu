@@ -3661,6 +3661,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@dogu-private/console-open-api@workspace:mirror/packages/@dogu-private-console-open-api":
+  version: 0.0.0-use.local
+  resolution: "@dogu-private/console-open-api@workspace:mirror/packages/@dogu-private-console-open-api"
+  dependencies:
+    "@dogu-private/console": "workspace:^"
+    "@dogu-private/types": "workspace:^"
+    "@dogu-tech/common": "workspace:^"
+    "@dogu-tech/console-gamium": "workspace:^"
+    "@types/js-yaml": 4.0.5
+    "@types/node": 18.15.11
+    class-transformer: 0.5.1
+    class-validator: 0.14.0
+    nodemon: 2.0.22
+    reflect-metadata: 0.1.13
+    shx: 0.3.4
+    ts-node: 10.9.1
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
 "@dogu-private/console-ui@workspace:mirror/packages/@dogu-private-console-ui":
   version: 0.0.0-use.local
   resolution: "@dogu-private/console-ui@workspace:mirror/packages/@dogu-private-console-ui"
@@ -3856,22 +3876,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-private/installer@workspace:^, @dogu-private/installer@workspace:mirror/packages/@dogu-private-installer":
-  version: 0.0.0-use.local
-  resolution: "@dogu-private/installer@workspace:mirror/packages/@dogu-private-installer"
-  dependencies:
-    "@dogu-private/types": "workspace:^"
-    "@dogu-tech/common": "workspace:^"
-    "@dogu-tech/node": "workspace:^"
-    "@types/node": 18.15.11
-    compressing: 1.9.0
-    nodemon: 2.0.22
-    shx: 0.3.4
-    ts-node: 10.9.1
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
 "@dogu-private/nestjs-common@workspace:^, @dogu-private/nestjs-common@workspace:mirror/packages/@dogu-private-nestjs-common":
   version: 0.0.0-use.local
   resolution: "@dogu-private/nestjs-common@workspace:mirror/packages/@dogu-private-nestjs-common"
@@ -4050,6 +4054,24 @@ __metadata:
     "@dogu-tech/common": "workspace:^"
     "@dogu-tech/types": "workspace:^"
     "@types/lodash": 4.14.186
+    "@types/node": 18.15.11
+    class-transformer: 0.5.1
+    class-validator: 0.14.0
+    cross-env: 7.0.3
+    nodemon: 2.0.22
+    shx: 0.3.4
+    ts-node: 10.9.1
+    typescript: 4.7.4
+  languageName: unknown
+  linkType: soft
+
+"@dogu-tech/console-remote-dest@workspace:mirror/packages/@dogu-tech-console-remote-dest":
+  version: 0.0.0-use.local
+  resolution: "@dogu-tech/console-remote-dest@workspace:mirror/packages/@dogu-tech-console-remote-dest"
+  dependencies:
+    "@dogu-dev-private/publish-package": "workspace:^"
+    "@dogu-tech/common": "workspace:^"
+    "@dogu-tech/types": "workspace:^"
     "@types/node": 18.15.11
     class-transformer: 0.5.1
     class-validator: 0.14.0
@@ -12133,7 +12155,6 @@ __metadata:
     "@dogu-private/dost-children": "workspace:^"
     "@dogu-private/env-tools": "workspace:^"
     "@dogu-private/host-agent": "workspace:^"
-    "@dogu-private/installer": "workspace:^"
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
     "@dogu-tech/device-client": "workspace:^"

@@ -30,6 +30,8 @@ export * from './base/project-scm';
 export * from './base/project-scm-github-auth';
 export * from './base/project-scm-gitlab-auth';
 export * from './base/remote';
+export * from './base/remote-dest';
+export * from './base/remote-dest-edge';
 export * from './base/remote-device-job';
 export * from './base/remote-webdriver-info';
 export * from './base/routine';

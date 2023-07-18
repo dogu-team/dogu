@@ -9,7 +9,7 @@
     "clean": "shx rm -rf build generated",
     "dev": "nodemon",
     "rebuild": "yarn clean && yarn build",
-    "start:ci": "cross-env NODE_ENV=development pnpify ts-node test/bat/bat.test.ts",
+    "start:ci": "cross-env NODE_ENV=development pnpify ts-node test/bat/bat-routine.test.ts",
     "util:install-chromedriver": "ts-node scripts/install-chromedriver"
   },
   "dependencies": {

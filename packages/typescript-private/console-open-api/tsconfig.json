@@ -10,7 +10,10 @@
       "path": "../../typescript/common"
     },
     {
-      "path": "../../typescript/node"
+      "path": "../types"
+    },
+    {
+      "path": "../../typescript/console-gamium"
     }
   ]
 }
