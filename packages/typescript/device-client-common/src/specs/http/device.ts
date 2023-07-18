@@ -9,6 +9,7 @@ import {
   GetAppiumContextInfoResponse,
   GetDevicePlatformSerialsResponse,
   GetDeviceSerialsResponse,
+  GetDevicesWithErrorResponse,
   GetDeviceSystemInfoResponse,
   GetLocalDeviceDetectResponse,
 } from './device-dtos';
@@ -34,6 +35,15 @@ export const Device = {
     pathProvider: DefaultPathProvider,
     responseBody: DeviceServerResponseDto,
     responseBodyData: GetDevicePlatformSerialsResponse,
+  }),
+
+  getDevicesWithError: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceController,
+    method: 'GET',
+    path: '/errors',
+    pathProvider: DefaultPathProvider,
+    responseBody: DeviceServerResponseDto,
+    responseBodyData: GetDevicesWithErrorResponse,
   }),
 
   getDeviceSystemInfo: new DeviceServerControllerMethodSpec({

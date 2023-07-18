@@ -60,15 +60,6 @@ const DeviceJobLiveLogController = ({ deviceJob }: Props) => {
 
   const items: TabsProps['items'] = [
     {
-      key: 'device-logs',
-      label: t('routine:resultTabDeviceLogMenuTitle'),
-      children: (
-        // <LogBox ref={deviceLogRef}>
-        <VirtualizeLogContainer<DeviceJobLogInfo> items={deviecLogData} renderItem={renderDeviceLog} keyExtractor={extractKey} scrollEndOnInit maxHeight={500} scrollEndOnUpdate />
-        // </LogBox>
-      ),
-    },
-    {
       key: 'test-logs',
       label: t('routine:resultTabScriptLogMenuTitle'),
       children: (
@@ -77,12 +68,21 @@ const DeviceJobLiveLogController = ({ deviceJob }: Props) => {
         // </LogBox>
       ),
     },
+    {
+      key: 'device-logs',
+      label: t('routine:resultTabDeviceLogMenuTitle'),
+      children: (
+        // <LogBox ref={deviceLogRef}>
+        <VirtualizeLogContainer<DeviceJobLogInfo> items={deviecLogData} renderItem={renderDeviceLog} keyExtractor={extractKey} scrollEndOnInit maxHeight={500} scrollEndOnUpdate />
+        // </LogBox>
+      ),
+    },
   ];
 
   return (
     <Box>
       <Tabs
-        defaultActiveKey="device-logs"
+        defaultActiveKey="test-logs"
         items={items}
         destroyInactiveTabPane
         onChange={(key) => {

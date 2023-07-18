@@ -1,6 +1,8 @@
 import { ChildCode } from '@dogu-private/dost-children';
 import { Code } from '@dogu-private/types';
 import { delay } from '@dogu-tech/common';
+import { NodeDeviceService } from '@dogu-tech/device-client';
+import { DeviceClient } from '@dogu-tech/device-client-common';
 import { HostPaths, isFreePort, killProcessOnPort } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
 import path from 'path';
@@ -15,15 +17,21 @@ import { closeChild, openChild } from './lifecycle';
 
 export class DeviceServerChild implements Child {
   constructor(private readonly appConfigService: AppConfigService, private readonly featureConfigService: FeatureConfigService) {}
+  private _client: DeviceClient | undefined;
   private _child: ChildProcess | undefined;
   private _lastError: ChildLastError = { code: new ChildCode(Code.CODE_SUCCESS_COMMON_BEGIN_UNSPECIFIED), message: '' };
+
+  get client(): DeviceClient | undefined {
+    return this._client;
+  }
 
   async open(): Promise<void> {
     const { appConfigService } = this;
     const NODE_ENV = await appConfigService.get('NODE_ENV');
     const DOGU_RUN_TYPE = await appConfigService.get('DOGU_RUN_TYPE');
     const DOGU_DEVICE_SERVER_PORT = await appConfigService.get('DOGU_DEVICE_SERVER_PORT');
-    const DOGU_LOG_LEVEL = getLogLevel(DOGU_RUN_TYPE);
+    const DOGU_DEVICE_PLATFORM_ENABLED = await appConfigService.get('DOGU_DEVICE_PLATFORM_ENABLED');
+    const DOGU_LOG_LEVEL = await getLogLevel(DOGU_RUN_TYPE, appConfigService);
     await killProcessOnPort(DOGU_DEVICE_SERVER_PORT, logger).catch((err) => {
       logger.error('killProcessOnPort', { err });
     });
@@ -44,11 +52,16 @@ export class DeviceServerChild implements Child {
           DOGU_LOGS_PATH: DeviceServerLogsPath,
           PATH,
           DOGU_LOG_LEVEL,
+          DOGU_DEVICE_PLATFORM_ENABLED,
         },
       },
       childLogger: logger,
     });
     this._child = openChild(deviceServerKey, DeviceServerMainScriptPath, options, this.featureConfigService);
+    const deviceService = new NodeDeviceService();
+    this._client = new DeviceClient(deviceService, {
+      port: DOGU_DEVICE_SERVER_PORT,
+    });
     this._child.stderr?.on('data', (data) => {
       const dataString = data.toString();
       const stripped = stripAnsi(dataString);
@@ -56,6 +69,7 @@ export class DeviceServerChild implements Child {
     });
     this._child.on('close', (code, signal) => {
       if (code !== null) {
+        this._client = undefined;
         if (code === 0) {
           return;
         } else {

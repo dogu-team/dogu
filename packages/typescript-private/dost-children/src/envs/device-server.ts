@@ -1,8 +1,8 @@
 import { DoguRunType, NodeEnvType } from '@dogu-private/env-tools';
 import { IsFilledString } from '@dogu-tech/common';
+import { HostPaths } from '@dogu-tech/node';
 import { Type } from 'class-transformer';
 import { IsIn, IsNumber, IsString } from 'class-validator';
-import { HostPaths } from '@dogu-tech/node';
 
 export class PreloadDeviceServerEnv {
   @IsIn(NodeEnvType)
@@ -14,6 +14,9 @@ export class PreloadDeviceServerEnv {
   @IsNumber()
   @Type(() => Number)
   DOGU_DEVICE_SERVER_PORT!: number;
+
+  @IsString()
+  DOGU_DEVICE_PLATFORM_ENABLED!: string;
 }
 
 export class DeviceServerEnv extends PreloadDeviceServerEnv {

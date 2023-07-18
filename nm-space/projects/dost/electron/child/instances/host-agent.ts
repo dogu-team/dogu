@@ -25,7 +25,7 @@ export class HostAgentChild implements Child {
     const DOGU_API_BASE_URL = await appConfigService.get('DOGU_API_BASE_URL');
     const DOGU_DEVICE_SERVER_HOST_PORT = await appConfigService.get('DOGU_DEVICE_SERVER_HOST_PORT');
     const DOGU_HOST_AGENT_PORT = await appConfigService.get('DOGU_HOST_AGENT_PORT');
-    const DOGU_LOG_LEVEL = getLogLevel(DOGU_RUN_TYPE);
+    const DOGU_LOG_LEVEL = await getLogLevel(DOGU_RUN_TYPE, appConfigService);
     await killProcessOnPort(DOGU_HOST_AGENT_PORT, logger).catch((err) => {
       logger.error('killProcessOnPort', { err });
     });

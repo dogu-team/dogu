@@ -1,6 +1,7 @@
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { appConfigClientKey } from '../src/shares/app-config';
 import { childCallbackKey, childClientKey, ChildTree, HostAgentConnectionStatus, Key } from '../src/shares/child';
+import { deviceLookupClientKey } from '../src/shares/device-lookup';
 import { dotEnvConfigClientKey, DotEnvConfigKey } from '../src/shares/dot-env-config';
 import { IElectronIpc } from '../src/shares/electron-ipc';
 import { DownloadProgress, externalCallbackKey, ExternalKey, externalKey, ValidationCheckOption } from '../src/shares/external';
@@ -21,6 +22,7 @@ function expose<Key extends IpcKey>(name: Key, value: IpcValue<Key>) {
 expose('themeClient', { shouldUseDarkColors: () => ipcRenderer.invoke(themeClientKey.shouldUseDarkColors) });
 
 expose('appConfigClient', {
+  getOrDefault: (key: string, value: any): Promise<any> => ipcRenderer.invoke(appConfigClientKey.getOrDefault, key, value),
   get: (key: string): Promise<any> => ipcRenderer.invoke(appConfigClientKey.get, key),
   set: (key: string, value: any): Promise<void> => ipcRenderer.invoke(appConfigClientKey.set, key, value),
   delete: (key: string): Promise<void> => ipcRenderer.invoke(appConfigClientKey.delete, key),
@@ -132,4 +134,10 @@ expose('windowClient', {
 
 expose('featureConfigClient', {
   get: (key: FeatureKey) => ipcRenderer.invoke(featureConfigClientKey.get, key),
+});
+
+expose('deviceLookupClient', {
+  getPlatformSerials: () => ipcRenderer.invoke(deviceLookupClientKey.getPlatformSerials),
+  getDevicesWithError: () => ipcRenderer.invoke(deviceLookupClientKey.getDevicesWithError),
+  getDeviceSystemInfo: (serial: string) => ipcRenderer.invoke(deviceLookupClientKey.getDeviceSystemInfo, serial),
 });

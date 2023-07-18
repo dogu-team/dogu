@@ -1,7 +1,7 @@
 import { replaceVariable, replaceVariableSync, VariableMatcher, VariableReplacementProvider, VariableReplacer } from '@dogu-tech/common';
 import { PosixEnvironmentVariableMatcher, StackEnvironmentVariableMatcher, WindowsEnvironmentVariableMatcher } from './matchers';
 import {
-  NodeJsProcessEnvironmentVariableReplacementProvider,
+  CleanNodeJsProcessEnvironmentVariableReplacementProvider,
   StackEnvironmentVariableReplacementProvider,
   WindowsDefaultEnvironmentVariableReplacementProvider,
 } from './replacement-providers';
@@ -44,7 +44,7 @@ export class PosixEnvironmentVariableReplacer extends StackEnvironmentVariableRe
   constructor() {
     super(
       new StackEnvironmentVariableMatcher([new PosixEnvironmentVariableMatcher()]),
-      new StackEnvironmentVariableReplacementProvider([new NodeJsProcessEnvironmentVariableReplacementProvider()]),
+      new StackEnvironmentVariableReplacementProvider([new CleanNodeJsProcessEnvironmentVariableReplacementProvider()]),
     );
   }
 }
@@ -53,7 +53,7 @@ export class WindowsEnvironmentVariableReplacer extends StackEnvironmentVariable
   constructor() {
     super(
       new StackEnvironmentVariableMatcher([new WindowsEnvironmentVariableMatcher()]),
-      new StackEnvironmentVariableReplacementProvider([new NodeJsProcessEnvironmentVariableReplacementProvider(), new WindowsDefaultEnvironmentVariableReplacementProvider()]),
+      new StackEnvironmentVariableReplacementProvider([new CleanNodeJsProcessEnvironmentVariableReplacementProvider(), new WindowsDefaultEnvironmentVariableReplacementProvider()]),
     );
   }
 }
@@ -62,7 +62,7 @@ export class MultiPlatformEnvironmentVariableReplacer extends StackEnvironmentVa
   constructor() {
     super(
       new StackEnvironmentVariableMatcher([new PosixEnvironmentVariableMatcher(), new WindowsEnvironmentVariableMatcher()]),
-      new StackEnvironmentVariableReplacementProvider([new NodeJsProcessEnvironmentVariableReplacementProvider(), new WindowsDefaultEnvironmentVariableReplacementProvider()]),
+      new StackEnvironmentVariableReplacementProvider([new CleanNodeJsProcessEnvironmentVariableReplacementProvider(), new WindowsDefaultEnvironmentVariableReplacementProvider()]),
     );
   }
 }

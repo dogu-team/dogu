@@ -36,7 +36,7 @@ export class DeviceHeartbeater {
     }
   }
 
-  @Retry({ printable: logger })
+  @Retry({ printable: logger, retryInterval: 1000 })
   private async updateDeviceHeartbeatNow(organizationId: OrganizationId, deviceId: DeviceId, serial: Serial): Promise<void> {
     const pathProvider = new PrivateDevice.updateDeviceHeartbeatNow.pathProvider(organizationId, deviceId);
     const path = PrivateDevice.updateDeviceHeartbeatNow.resolvePath(pathProvider);

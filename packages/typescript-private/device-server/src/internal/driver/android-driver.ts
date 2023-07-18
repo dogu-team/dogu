@@ -2,6 +2,7 @@ import { Platform, Serial } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { DeviceWebDriver } from '../../alias';
 import { AppiumService } from '../../appium/appium.service';
+import { env } from '../../env';
 import { GamiumService } from '../../gamium/gamium.service';
 import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
 import { DoguLogger } from '../../logger/logger';
@@ -26,14 +27,13 @@ export class AndroidDriver implements DeviceDriver {
   ) {}
 
   static async create(
-    deviceServerPort: number,
     appiumService: AppiumService,
     gamiumService: GamiumService,
     httpRequestRelayService: HttpRequestRelayService,
     appiumEndpointHandlerService: DeviceWebDriver.AppiumEndpointHandlerService,
     doguLogger: DoguLogger,
   ): Promise<AndroidDriver> {
-    const streaming = await PionStreamingService.create(Platform.PLATFORM_ANDROID, deviceServerPort);
+    const streaming = await PionStreamingService.create(Platform.PLATFORM_ANDROID, env.DOGU_DEVICE_SERVER_PORT);
     return new AndroidDriver(streaming, appiumService, gamiumService, httpRequestRelayService, appiumEndpointHandlerService, doguLogger);
   }
 

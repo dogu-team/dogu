@@ -1,4 +1,4 @@
-import { DeviceConnectionState, Platform, PlatformSerial, platformTypeFromPlatform, Serial } from '@dogu-private/types';
+import { DeviceConnectionState, ErrorDevice, Platform, PlatformSerial, PlatformType, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { DuplicatedCallGuarder, Instance, stringifyError, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { DeviceConnectionSubscribe } from '@dogu-tech/device-client-common';
 import { processPlatform } from '@dogu-tech/node';
@@ -6,7 +6,6 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { DeviceWebDriver } from '../alias';
 import { AppiumService } from '../appium/appium.service';
-import { env } from '../env';
 import { OnDeviceConnectionSubscriberConnectedEvent, OnDevicesConnectedEvent, OnDevicesDisconnectedEvent, OnUpdateEvent } from '../events';
 import { GamiumService } from '../gamium/gamium.service';
 import { HttpRequestRelayService } from '../http-request-relay/http-request-relay.common';
@@ -45,15 +44,20 @@ export class ScanService implements OnModuleInit {
     });
   }
 
-  get channels(): DeviceChannel[] {
+  private get channels(): DeviceChannel[] {
     return this.deviceDoors.channels;
   }
 
   async onModuleInit(): Promise<void> {
     const hostPlatform = processPlatform();
+    const enabledPlatforms: readonly PlatformType[] =
+      process.env.DOGU_DEVICE_PLATFORM_ENABLED?.split(',')
+        .filter((e) => PlatformType.includes(e as PlatformType))
+        .map((e) => e as PlatformType) ?? PlatformType;
+
     const factory = createDeviceDriverFactoryByHostPlatform(
       hostPlatform,
-      env.DOGU_DEVICE_SERVER_PORT,
+      enabledPlatforms,
       this.appiumService,
       this.gamiumService,
       this.httpRequestRelayService,
@@ -160,6 +164,10 @@ export class ScanService implements OnModuleInit {
 
   getChannels(): Readonly<DeviceChannel[]> {
     return this.channels;
+  }
+
+  getChannelsWithOpenError(): Readonly<ErrorDevice[]> {
+    return this.deviceDoors.channelsWithOpenError;
   }
 
   getChannelsByPlatform(platform: Platform): Readonly<DeviceChannel[]> {

@@ -75,14 +75,14 @@ const StepItem = React.memo(({ step, deviceId }: ItemProps) => {
   const commonItems: ResultTabMenuItemType = isPipelineEndedWithData(step.status)
     ? [
         {
-          key: ResultTabMenuKey.DEVICE_LOGS,
-          label: t('routine:resultTabDeviceLogMenuTitle'),
-          children: <StepLogController step={step} logType="deviceLogs" />,
-        },
-        {
           key: ResultTabMenuKey.TEST_LOGS,
           label: t('routine:resultTabScriptLogMenuTitle'),
           children: <StepLogController step={step} logType="userProjectLogs" />,
+        },
+        {
+          key: ResultTabMenuKey.DEVICE_LOGS,
+          label: t('routine:resultTabDeviceLogMenuTitle'),
+          children: <StepLogController step={step} logType="deviceLogs" />,
         },
         {
           key: ResultTabMenuKey.PROFILE,
