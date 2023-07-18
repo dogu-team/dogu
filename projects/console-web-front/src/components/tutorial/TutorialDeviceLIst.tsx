@@ -39,6 +39,7 @@ const TutorialDeviceList = ({ organizationId, hostId }: Props) => {
     organizationId ? `/organizations/${organizationId}/devices/addable?hostId=${hostId}` : null,
     {
       skipQuestionMark: true,
+      offset: 20,
     },
     {
       revalidateOnFocus: false,
@@ -55,6 +56,7 @@ const TutorialDeviceList = ({ organizationId, hostId }: Props) => {
     organizationId ? `/organizations/${organizationId}/devices?hostId=${hostId}` : null,
     {
       skipQuestionMark: true,
+      offset: 20,
     },
     {
       revalidateOnFocus: false,
