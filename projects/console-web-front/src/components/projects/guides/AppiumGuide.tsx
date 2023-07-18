@@ -32,8 +32,9 @@ import DoneStep from './DoneStep';
 import ProjectApplicationUploadButton from '../../project-application/ProjectApplicationUploadButton';
 import GuidePlatformIcon from './GuidePlatformIcon';
 import GuideTargetIcon from './GuideTargetIcon';
+import GuideSelectors from './GuideSelectors';
+import useTutorialSelector from '../../../hooks/useTutorialSelector';
 
-const DEVICE_FARM_ID = 'device-farm';
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
 const SET_CAPABILITIES_ID = 'set-capabilities';
@@ -44,15 +45,20 @@ const DONE_ID = 'done';
 
 const AppiumGuide = () => {
   const router = useRouter();
-  const selectedLanguage = (router.query.language as GuideSupportLanguage | undefined) || appiumGuideData.supportLanguages[0];
-  const selectedPlatform = (router.query.platform as GuideSupportPlatform | undefined) || appiumGuideData.supportPlatforms[0];
-  const selectedTarget = (router.query.target as GuideSupportTarget | undefined) || appiumGuideData.supportTargets[0];
+  const { framework, platform, target } = useTutorialSelector({
+    defaultFramework: appiumGuideData.supportLanguages[0],
+    defaultPlatform: appiumGuideData.supportPlatforms[0],
+    defaultTarget: appiumGuideData.supportTargets[0],
+  });
   const [loading, request] = useRequest(uploadSampleApplication);
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 
-  const selectedGuide = appiumGuideData.guides.find((data) => data.language === selectedLanguage && data.target === selectedTarget && data.platform === selectedPlatform);
+  const selectedGuide = appiumGuideData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
   const organizationId = router.query.orgId as OrganizationId;
   const projectId = router.query.pid as ProjectId;
+  const frameworkLanguage = Object.keys(appiumGuideData.supportFrameworks).find((language) =>
+    appiumGuideData.supportFrameworks[language as GuideSupportLanguage]?.includes(framework),
+  );
 
   useEffect(() => {
     const updateCapabilityCode = async () => {
@@ -63,47 +69,15 @@ const AppiumGuide = () => {
       const code = await appiumGuideData.generateCapabilitiesCode({
         orgId: organizationId,
         projectId,
-        language: selectedLanguage,
-        platform: selectedPlatform,
-        target: selectedTarget,
+        framework,
+        platform,
+        target,
       });
       setCapabilityCode(code);
     };
 
     updateCapabilityCode();
-  }, [selectedGuide, selectedLanguage, selectedTarget, selectedPlatform, organizationId, projectId]);
-
-  const languageOptions: SelectProps['options'] = appiumGuideData.supportLanguages.map((language) => ({
-    label: (
-      <FlexRow>
-        <Image src={`/resources/icons/languages/${language}.svg`} width={20} height={20} unoptimized alt={language} style={{ marginRight: '.5rem' }} />
-        {guideSupportLanguageText[language]}
-      </FlexRow>
-    ),
-    value: language,
-  }));
-
-  const platformOptions: SelectProps['options'] = appiumGuideData.supportPlatforms.map((platform) => ({
-    label: (
-      <FlexRow>
-        <GuidePlatformIcon platform={platform} />
-        &nbsp;&nbsp;
-        {guideSupportPlatformText[platform]}
-      </FlexRow>
-    ),
-    value: platform,
-  }));
-
-  const targetOptions: SelectProps['options'] = appiumGuideData.supportTargets.map((target) => ({
-    label: (
-      <FlexRow>
-        <GuideTargetIcon target={target} />
-        &nbsp;&nbsp;
-        {guideSupportTargetText[target]}
-      </FlexRow>
-    ),
-    value: target,
-  }));
+  }, [selectedGuide, framework, target, platform, organizationId, projectId]);
 
   const handleUploadSample = async () => {
     try {
@@ -121,38 +95,11 @@ const AppiumGuide = () => {
       sidebar={
         <div>
           <div style={{ marginBottom: '1rem' }}>
-            <Select
-              options={languageOptions}
-              value={selectedLanguage}
-              onChange={(value) => {
-                router.push({ query: { ...router.query, language: value } }, undefined, { shallow: true, scroll: true });
-              }}
-              dropdownMatchSelectWidth={false}
-              style={{ width: '100%', marginBottom: '.5rem' }}
-            />
-            <Select
-              options={platformOptions}
-              value={selectedPlatform}
-              onChange={(value) => {
-                router.push({ query: { ...router.query, platform: value } }, undefined, { shallow: true, scroll: true });
-              }}
-              dropdownMatchSelectWidth={false}
-              style={{ width: '100%', marginBottom: '.5rem' }}
-            />
-            <Select
-              options={targetOptions}
-              value={selectedTarget}
-              onChange={(value) => {
-                router.push({ query: { ...router.query, target: value } }, undefined, { shallow: true, scroll: true });
-              }}
-              dropdownMatchSelectWidth={false}
-              style={{ width: '100%' }}
-            />
+            <GuideSelectors guideData={appiumGuideData} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
           </div>
 
           <GuideAnchor
             items={[
-              { id: DEVICE_FARM_ID, title: 'Setup device farm' },
               { id: PROJECT_SETUP_ID, title: 'Sample project setup' },
               { id: INSTALL_DEPENDENCIES_ID, title: 'Install dependencies' },
               { id: SET_CAPABILITIES_ID, title: 'Set capabilities' },
@@ -166,16 +113,6 @@ const AppiumGuide = () => {
       }
       content={
         <div>
-          <GuideStep
-            id={DEVICE_FARM_ID}
-            title="Setup device farm"
-            description={<p>Follow tutorial documentation!</p>}
-            content={
-              <Link href="https://docs.dogutech.io/get-started/tutorials/device-farm" target="_blank">
-                <Button>Device farm tutorial</Button>
-              </Link>
-            }
-          />
           <GuideStep
             id={PROJECT_SETUP_ID}
             title="Sample project setup"
@@ -201,7 +138,7 @@ const AppiumGuide = () => {
                 <p>
                   Open <StyledCode>{selectedGuide?.sampleFilePath}</StyledCode> and configure capabilities for your project
                 </p>
-                {selectedPlatform === GuideSupportPlatform.IOS && (
+                {platform === GuideSupportPlatform.IOS && (
                   <Alert
                     style={{ marginTop: '.5rem' }}
                     message="For iOS, please refer to documentation."
@@ -216,7 +153,7 @@ const AppiumGuide = () => {
                 )}
               </>
             }
-            content={<CopyButtonContainer language={selectedLanguage} code={capabilityCode} />}
+            content={<CopyButtonContainer language={frameworkLanguage ?? ''} code={capabilityCode} />}
           />
           <GuideStep
             id={UPLOAD_SAMPLE_APP_ID}
@@ -229,7 +166,7 @@ const AppiumGuide = () => {
                 </Button>
               ) : (
                 <>
-                  {selectedPlatform === GuideSupportPlatform.IOS && (
+                  {platform === GuideSupportPlatform.IOS && (
                     <Alert
                       style={{ marginTop: '.5rem' }}
                       message="For iOS, we don't provide sample app. Please upload your app manually."

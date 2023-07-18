@@ -10,7 +10,7 @@ import resources from '../../../resources';
 import { GuideSupportSdk } from '../../../resources/guide';
 import { flexRowSpaceBetweenStyle } from '../../../styles/box';
 import AppiumGuide from './AppiumGuide';
-import GamiumGuide from './GamuimGuide';
+import GamiumGuide from './GamiumGuide';
 import WebdriverIoGuide from './WebdriverIoGuide';
 
 const UsageGuide = () => {

@@ -8,6 +8,7 @@ import styled from 'styled-components';
 
 import { GuideSupportSdk, guideSupportSdkText } from '../../resources/guide';
 import AppiumGuide from '../projects/guides/AppiumGuide';
+import GamiumGuide from '../projects/guides/GamiumGuide';
 import WebdriverIoGuide from '../projects/guides/WebdriverIoGuide';
 import DeviceFarmTutorial from './DeviceFarmTutorial';
 import SkipTutorialButton from './SkipTutorialButton';
@@ -82,6 +83,7 @@ const Tutorial = ({ selectedSdk }: Props) => {
         <GuideWrapper>
           {selectedSdk === GuideSupportSdk.WEBDRIVERIO && <WebdriverIoGuide />}
           {selectedSdk === GuideSupportSdk.APPIUM && <AppiumGuide />}
+          {selectedSdk === GuideSupportSdk.GAMIUM && <GamiumGuide />}
 
           <LinkBox>
             <Link href={{ query: { ...router.query, step: 0 } }} shallow>
