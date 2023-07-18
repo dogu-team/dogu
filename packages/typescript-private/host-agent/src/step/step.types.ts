@@ -17,7 +17,7 @@ export interface StepRegistryInfo extends StepRegistryKeySource {
 export type ResolveStep = Resolve<void>;
 
 export class StepMessageContext extends MessageContext {
-  constructor(info: MessageInfo, router: MessageRouter, replacer: StackEnvironmentVariableReplacer, handler: MessageEventHandler) {
+  constructor(info: MessageInfo, router: MessageRouter, replacer: StackEnvironmentVariableReplacer, handler: MessageEventHandler, readonly workingPath: string) {
     super(info, router, replacer, handler);
   }
 }

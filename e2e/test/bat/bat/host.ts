@@ -153,22 +153,23 @@ export class Dost {
     yield;
 
     if (!process.env.DOGU_SKIP_DOGU_HOME_CLEANUP) {
-      test('Dost skip manual setup install', async () => {
-        if (process.platform !== 'darwin') {
-          await this.mainPage!.getByText('Continue', { exact: true }).first().click({ timeout: this.InstallTimeoutMs });
-        }
-      });
-
-      test('Dost manual setup install wda', async () => {
-        if (process.platform !== 'darwin') {
-          return;
-        }
-        await this.mainPage!.getByText('Manual Setup', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'visible' });
-        replaceWebDriverAgentSigningStyle();
-
-        await this.mainPage!.getByText('Build & Check', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+      test('Set API url', async () => {
+        await this.mainPage!.getByText('Set', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+        await this.mainPage!.getByText('Finish', { exact: true }).first().click({ timeout: this.longTimeoutMs });
       });
     }
+  }
+
+  private *installIosSettings(): Generator<void> {
+    test('Dost manual setup install wda', async () => {
+      if (process.platform !== 'darwin') {
+        return;
+      }
+      await this.mainPage!.getByText('Manual Setup', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'visible' });
+      replaceWebDriverAgentSigningStyle();
+
+      await this.mainPage!.getByText('Build & Check', { exact: true }).first().click({ timeout: this.longTimeoutMs });
+    });
     yield;
 
     if (!process.env.DOGU_SKIP_DOGU_HOME_CLEANUP) {
@@ -205,11 +206,6 @@ export class Dost {
         await delay(1000);
 
         await this.mainPage!.getByText('Continue', { exact: true }).first().click({ timeout: this.InstallTimeoutMs });
-      });
-
-      test('Set API url', async () => {
-        await this.mainPage!.getByText('Set', { exact: true }).first().click({ timeout: this.longTimeoutMs });
-        await this.mainPage!.getByText('Finish', { exact: true }).first().click({ timeout: this.longTimeoutMs });
       });
     }
   }

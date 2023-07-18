@@ -2,6 +2,7 @@ import { Platform, Serial } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import systeminformation from 'systeminformation';
 import { DeviceWebDriver } from '../../alias';
+import { env } from '../../env';
 import { GamiumService } from '../../gamium/gamium.service';
 import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
 import { DoguLogger } from '../../logger/logger';
@@ -26,14 +27,13 @@ export class WindowsDriver implements DeviceDriver {
   ) {}
 
   static async create(
-    deviceServerPort: number,
     gamiumService: GamiumService,
     httpRequestRelayService: HttpRequestRelayService,
     seleniumEndpointHandlerService: DeviceWebDriver.SeleniumEndpointHandlerService,
     seleniumService: SeleniumService,
     doguLogger: DoguLogger,
   ): Promise<WindowsDriver> {
-    const streaming = await PionStreamingService.create(Platform.PLATFORM_WINDOWS, deviceServerPort);
+    const streaming = await PionStreamingService.create(Platform.PLATFORM_WINDOWS, env.DOGU_DEVICE_SERVER_PORT);
     return new WindowsDriver(streaming, gamiumService, httpRequestRelayService, seleniumEndpointHandlerService, seleniumService, doguLogger);
   }
 

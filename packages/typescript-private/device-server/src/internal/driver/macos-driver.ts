@@ -1,6 +1,7 @@
 import { Platform, Serial } from '@dogu-private/types';
 import systeminformation from 'systeminformation';
 import { DeviceWebDriver } from '../../alias';
+import { env } from '../../env';
 import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
 import { DoguLogger } from '../../logger/logger';
 import { idcLogger } from '../../logger/logger.instance';
@@ -21,13 +22,12 @@ export class MacosDriver implements DeviceDriver {
   ) {}
 
   static async create(
-    deviceServerPort: number,
     httpRequestRelayService: HttpRequestRelayService,
     seleniumEndpointHandlerService: DeviceWebDriver.SeleniumEndpointHandlerService,
     seleniumService: SeleniumService,
     doguLogger: DoguLogger,
   ): Promise<MacosDriver> {
-    const streaming = await PionStreamingService.create(Platform.PLATFORM_MACOS, deviceServerPort);
+    const streaming = await PionStreamingService.create(Platform.PLATFORM_MACOS, env.DOGU_DEVICE_SERVER_PORT);
     return new MacosDriver(streaming, httpRequestRelayService, seleniumEndpointHandlerService, seleniumService, doguLogger);
   }
 

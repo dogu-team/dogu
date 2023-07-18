@@ -133,33 +133,34 @@ function Connect() {
           </ListItem>
         )}
         {isConnected && <MenuTitle>Devices</MenuTitle>}
-        {isConnected && deviceStatuses.length == 0 ? (
-          <div>
-            <CircularProgress isIndeterminate color="green.300" size="30px" />
-          </div>
-        ) : (
-          <BorderBox>
-            <List spacing={3}>
-              {deviceStatuses &&
-                deviceStatuses.map((deviceStatus) => (
-                  <ListItem>
-                    <HStack>
-                      {deviceStatus.error ? <NotAllowedIcon color="red.500" /> : <CheckIcon color="green.500" />}
-                      <Text>{deviceStatus.platform}</Text>
-                      <Text fontSize="xs">{deviceStatus.info?.system.model ?? deviceStatus.serial}</Text>
-                    </HStack>
-                    {deviceStatus.error && (
-                      <UnorderedList>
-                        <ListItem>
-                          <Text fontSize="xs">{deviceStatus.error.message}</Text>
-                        </ListItem>
-                      </UnorderedList>
-                    )}
-                  </ListItem>
-                ))}
-            </List>
-          </BorderBox>
-        )}
+        {isConnected &&
+          (deviceStatuses.length == 0 ? (
+            <div>
+              <CircularProgress isIndeterminate color="green.300" size="30px" />
+            </div>
+          ) : (
+            <BorderBox>
+              <List spacing={3}>
+                {deviceStatuses &&
+                  deviceStatuses.map((deviceStatus) => (
+                    <ListItem>
+                      <HStack>
+                        {deviceStatus.error ? <NotAllowedIcon color="red.500" /> : <CheckIcon color="green.500" />}
+                        <Text>{deviceStatus.platform}</Text>
+                        <Text fontSize="xs">{deviceStatus.info?.system.model ?? deviceStatus.serial}</Text>
+                      </HStack>
+                      {deviceStatus.error && (
+                        <UnorderedList>
+                          <ListItem>
+                            <Text fontSize="xs">{deviceStatus.error.message}</Text>
+                          </ListItem>
+                        </UnorderedList>
+                      )}
+                    </ListItem>
+                  ))}
+              </List>
+            </BorderBox>
+          ))}
       </List>
     </div>
   );

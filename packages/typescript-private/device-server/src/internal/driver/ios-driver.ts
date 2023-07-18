@@ -4,6 +4,7 @@ import { HostPaths } from '@dogu-tech/node';
 import fs from 'fs';
 import { DeviceWebDriver } from '../../alias';
 import { AppiumService } from '../../appium/appium.service';
+import { env } from '../../env';
 import { GamiumService } from '../../gamium/gamium.service';
 import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
 import { DoguLogger } from '../../logger/logger';
@@ -27,7 +28,6 @@ export class IosDriver implements DeviceDriver {
   ) {}
 
   static async create(
-    deviceServerPort: number,
     appiumService: AppiumService,
     gamiumService: GamiumService,
     httpRequestRelayService: HttpRequestRelayService,
@@ -37,7 +37,7 @@ export class IosDriver implements DeviceDriver {
     await IosDriver.clearIdaClones();
     await XcodeBuild.validateXcodeBuild();
 
-    const streaming = await PionStreamingService.create(Platform.PLATFORM_IOS, deviceServerPort);
+    const streaming = await PionStreamingService.create(Platform.PLATFORM_IOS, env.DOGU_DEVICE_SERVER_PORT);
     return new IosDriver(streaming, appiumService, gamiumService, httpRequestRelayService, appiumEndpointHandlerService, doguLogger);
   }
 

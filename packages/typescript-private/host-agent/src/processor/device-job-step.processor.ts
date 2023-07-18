@@ -163,48 +163,56 @@ export class DeviceJobStepProcessor {
     };
     const stepContextEnvReplaced = await environmentVariableReplacer.replaceEnv(stepContextEnv);
     environmentVariableReplacer.stackProvider.push(new EnvironmentVariableReplacementProvider(stepContextEnvReplaced));
-    const stepMessageContext = new StepMessageContext(info, router, environmentVariableReplacer, {
-      onLog: (log): void => {
-        const value: Instance<typeof OnDeviceJobLoggedEvent.value> = {
-          organizationId,
-          deviceId,
-          routineDeviceJobId,
-          log: { ...log, type: DEVICE_JOB_LOG_TYPE.USER_PROJECT },
-        };
-        validateAndEmitEventAsync(this.eventEmitter, OnDeviceJobLoggedEvent, value).catch((error) => {
-          this.logger.error('Failed to emit device job logged event', { error: errorify(error) });
-        });
-        const { level, message, details, localTimeStamp } = log;
-        if (level === 'error') {
-          this.logger.error(message, { details, localTimeStamp });
-        } else if (level === 'warn') {
-          this.logger.warn(message, { details, localTimeStamp });
-        } else if (level === 'info') {
-          this.logger.info(message, { details, localTimeStamp });
-        } else if (level === 'debug') {
-          this.logger.debug(message, { details, localTimeStamp });
-        } else if (level === 'verbose') {
-          this.logger.verbose(message, { details, localTimeStamp });
-        } else {
-          this.logger.info(message, { details, localTimeStamp });
-        }
+    const deviceProjectGitPath = HostPaths.deviceProjectGitPath(deviceProjectWorkspacePath);
+    await fs.promises.mkdir(deviceProjectGitPath, { recursive: true });
+    const stepMessageContext = new StepMessageContext(
+      info,
+      router,
+      environmentVariableReplacer,
+      {
+        onLog: (log): void => {
+          const value: Instance<typeof OnDeviceJobLoggedEvent.value> = {
+            organizationId,
+            deviceId,
+            routineDeviceJobId,
+            log: { ...log, type: DEVICE_JOB_LOG_TYPE.USER_PROJECT },
+          };
+          validateAndEmitEventAsync(this.eventEmitter, OnDeviceJobLoggedEvent, value).catch((error) => {
+            this.logger.error('Failed to emit device job logged event', { error: errorify(error) });
+          });
+          const { level, message, details, localTimeStamp } = log;
+          if (level === 'error') {
+            this.logger.error(message, { details, localTimeStamp });
+          } else if (level === 'warn') {
+            this.logger.warn(message, { details, localTimeStamp });
+          } else if (level === 'info') {
+            this.logger.info(message, { details, localTimeStamp });
+          } else if (level === 'debug') {
+            this.logger.debug(message, { details, localTimeStamp });
+          } else if (level === 'verbose') {
+            this.logger.verbose(message, { details, localTimeStamp });
+          } else {
+            this.logger.info(message, { details, localTimeStamp });
+          }
+        },
+        onCancelerCreated: (canceler): void => {
+          const value: Instance<typeof OnStepInProgressEvent.value> = {
+            organizationId,
+            deviceId,
+            routineStepId,
+            routineDeviceJobId,
+            messageCanceler: canceler,
+            messagePostProcessor: NullMessagePostProcessor,
+            stepIndex,
+            localTimeStamp: new Date(),
+          };
+          validateAndEmitEventAsync(this.eventEmitter, OnStepInProgressEvent, value).catch((error) => {
+            this.logger.error('Failed to emit step in progress event', { error: errorify(error) });
+          });
+        },
       },
-      onCancelerCreated: (canceler): void => {
-        const value: Instance<typeof OnStepInProgressEvent.value> = {
-          organizationId,
-          deviceId,
-          routineStepId,
-          routineDeviceJobId,
-          messageCanceler: canceler,
-          messagePostProcessor: NullMessagePostProcessor,
-          stepIndex,
-          localTimeStamp: new Date(),
-        };
-        validateAndEmitEventAsync(this.eventEmitter, OnStepInProgressEvent, value).catch((error) => {
-          this.logger.error('Failed to emit step in progress event', { error: errorify(error) });
-        });
-      },
-    });
+      deviceProjectGitPath,
+    );
     const result = await router.route<RunStepValue, ErrorResult>(value, stepMessageContext).catch((error) => {
       const errorified = errorify(error);
       this.logger.error('Error while routing runStep', { error: errorified });

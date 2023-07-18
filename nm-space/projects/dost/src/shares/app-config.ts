@@ -7,6 +7,9 @@ export const schema = {
   DOGU_RUN_TYPE: {
     type: 'string',
   },
+  DOGU_LOG_LEVEL: {
+    type: 'string',
+  },
   DOGU_HOST_TOKEN: {
     type: 'string',
   },
@@ -43,6 +46,9 @@ export const schema = {
   DOGU_AGENT_VERSION: {
     type: 'string',
   },
+  DOGU_DEVICE_PLATFORM_ENABLED: {
+    type: 'string',
+  },
 } as const;
 
 export type Schema = typeof schema;
@@ -55,6 +61,7 @@ export type AppConfigTable = {
 };
 
 export interface IAppConfigClient {
+  getOrDefault: <T = any>(key: Key, value: T) => Promise<T>;
   get: <T = any>(key: Key) => Promise<T>;
   set: <T = any>(key: Key, value: T) => Promise<void>;
   delete: (key: Key) => Promise<void>;
