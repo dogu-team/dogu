@@ -21,7 +21,7 @@ export interface StreamingContextValue {
   updateMode: (mode: StreamingMode) => void;
 }
 
-export const defaultContextValue: StreamingContextValue = {
+const defaultContextValue: StreamingContextValue = {
   mode: 'input',
   loading: true,
   deviceRTCCaller: null,

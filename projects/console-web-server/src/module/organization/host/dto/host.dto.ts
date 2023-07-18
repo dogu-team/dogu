@@ -22,6 +22,10 @@ export class FindHostsByOrganizationIdDto extends PageDto implements FindHostsBy
   @IsString()
   @Type(() => String)
   keyword = '';
+
+  @IsOptional()
+  @IsString()
+  token?: string;
 }
 
 export class UpdateHostNameDto implements UpdateHostNameDtoBase {

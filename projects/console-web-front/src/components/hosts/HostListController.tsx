@@ -21,7 +21,7 @@ import { listActiveNameStyle } from '../../styles/text';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
 import EditHostModal from './EditHostModal';
-import { deleteHost, reissuesHostConnectionToken, stopUsingHostAsDevice, useHostAsDevice } from '../../api/host';
+import { deleteHost, reissuesHostConnectionToken, stopUsingHostAsDevice, updateUseHostAsDevice } from '../../api/host';
 import { getErrorMessage } from '../../utils/error';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
@@ -43,7 +43,7 @@ const HostItem = ({ host }: HostItemProps) => {
   const orgId = router.query.orgId as OrganizationId;
   const { t } = useTranslation();
   const [token, setToken] = useState<string>();
-  const [loading, request] = useRequest(useHostAsDevice);
+  const [loading, request] = useRequest(updateUseHostAsDevice);
   const fireEvent = useEventStore((state) => state.fireEvent);
 
   const streamingable = host.hostDevice?.deviceId && host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED;

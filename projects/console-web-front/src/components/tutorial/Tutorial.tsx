@@ -1,9 +1,10 @@
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
+import { ProjectBase } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
-import { Button, Divider, Steps } from 'antd';
+import { Button, Steps } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import styled from 'styled-components';
 
 import { GuideSupportSdk, guideSupportSdkText } from '../../resources/guide';
@@ -20,7 +21,6 @@ interface Props {
 const Tutorial = ({ selectedSdk }: Props) => {
   const router = useRouter();
   const step = router.query.step as string;
-  const orgId = router.query.orgId as OrganizationId;
 
   useEffect(() => {
     if (Number(step) && Number(step) > 2) {
@@ -42,7 +42,7 @@ const Tutorial = ({ selectedSdk }: Props) => {
           <StyledTitle>Quick start - {guideSupportSdkText[selectedSdk]}</StyledTitle>
         </div>
         <div>
-          <SkipTutorialButton orgId={orgId}>Skip tutorial</SkipTutorialButton>
+          <SkipTutorialButton>Skip tutorial</SkipTutorialButton>
         </div>
       </HeaderContent>
 
@@ -91,7 +91,7 @@ const Tutorial = ({ selectedSdk }: Props) => {
                 Prev: Setup device farm
               </Button>
             </Link>
-            <SkipTutorialButton orgId={orgId}>Close tutorial</SkipTutorialButton>
+            <SkipTutorialButton>Close tutorial</SkipTutorialButton>
           </LinkBox>
         </GuideWrapper>
       )}

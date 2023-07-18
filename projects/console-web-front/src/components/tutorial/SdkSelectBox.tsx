@@ -32,7 +32,7 @@ const SdkSelectBox = () => {
         </div>
 
         <div>
-          <SkipTutorialButton orgId={orgId}>Skip tutorial</SkipTutorialButton>
+          <SkipTutorialButton>Skip tutorial</SkipTutorialButton>
         </div>
       </TitleWrapper>
 

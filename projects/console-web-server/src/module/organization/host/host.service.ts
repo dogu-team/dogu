@@ -37,8 +37,10 @@ export class HostService {
       .leftJoinAndSelect(`host.${HostPropSnake.creator}`, 'user')
       .leftJoinAndSelect(`host.${HostPropCamel.devices}`, 'device', `device.${DevicePropSnake.device_id} NOT IN (:...disableHostdeviceIds)`, { disableHostdeviceIds })
       .leftJoinAndSelect(`host.${HostPropCamel.hostDevice}`, 'hostDevice', `hostDevice.${DevicePropSnake.is_host} = :isHostDevice`, { isHostDevice: 1 })
+      .leftJoin(`host.${HostPropCamel.token}`, 'token')
       .where(`host.${HostPropSnake.organization_id} = :organizationId`, { organizationId })
       .andWhere(`host.${HostPropSnake.name} LIKE :name`, { name: `%${dto.keyword}%` })
+      .andWhere(`token.token LIKE :token`, { token: `%${dto.token ?? ''}%` })
       .andWhere(
         new Brackets((qb) => {
           qb.where(`device.${DevicePropSnake.organization_id} = :organizationId`, { organizationId }).orWhere('device.device_id IS NULL');

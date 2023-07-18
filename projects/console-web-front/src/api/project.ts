@@ -2,6 +2,7 @@ import {
   AddTeamToProjectDtoBase,
   AddUserToProjectDtoBase,
   CreateProjectDtoBase,
+  PageBase,
   ProjectBase,
   ProjectScmBase,
   UpdateProjectDtoBase,
@@ -14,6 +15,23 @@ import { GetServerSidePropsContext } from 'next';
 
 import api from 'src/api';
 import { EmptyTokenError, getServersideCookies, setCookiesInServerSide } from 'src/utils/auth';
+
+export const getProjectListInServerSide = async (context: GetServerSidePropsContext, pageOptions: { page: number; offset: number }) => {
+  const { authToken } = getServersideCookies(context.req.cookies);
+
+  if (authToken) {
+    const data = await api.get<PageBase<ProjectBase>>(`/organizations/${context.query.orgId}/projects?page=${pageOptions.page}&offset=${pageOptions.offset}`, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
+    setCookiesInServerSide(data, context);
+
+    const project = data.data;
+
+    return project;
+  }
+
+  throw new EmptyTokenError();
+};
 
 export const getProjectInServerSide = async (context: GetServerSidePropsContext) => {
   const { authToken } = getServersideCookies(context.req.cookies);
