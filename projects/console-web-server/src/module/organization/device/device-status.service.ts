@@ -52,6 +52,7 @@ export class DeviceStatusService {
     const projectIdFilterClause = dto.projectIds.length !== 0 ? 'project.project_id IN (:...projectIds)' : '1=1';
     const connectionStateFilterClause = dto.connectionStates.length !== 0 ? 'device.connection_state IN (:...connectionStates)' : '1=1';
     const tagNameFilterCluase = dto.tagNames.length !== 0 ? 'deviceTag.name IN (:...tagNames)' : '1=1';
+    const hostIdFilterClause = !!dto.hostId ? 'host.host_id = :hostId' : '1=1';
 
     const isGlobalFilter =
       dto.projectIds.length === 0 //
@@ -80,6 +81,7 @@ export class DeviceStatusService {
       .where('organization.organization_id = :organizationId', { organizationId })
       .andWhere('device.name LIKE :name', { name: `%${dto.deviceName}%` })
       .andWhere(projectIdFilterClause, { projectIds: dto.projectIds })
+      .andWhere(hostIdFilterClause, { hostId: dto.hostId })
       .andWhere('project.project_id IS NOT NULL')
       .andWhere(connectionStateFilterClause, { connectionStates: dto.connectionStates })
       .andWhere(tagNameFilterCluase, { tagNames: dto.tagNames })
@@ -106,6 +108,7 @@ export class DeviceStatusService {
 
   async findAddableDevicesByOrganizationId(userPayload: UserPayload, organizationId: OrganizationId, dto: FindAddableDevicesByOrganizationIdDto): Promise<Page<DeviceBase>> {
     const qb = this.dataSource.getRepository(Device).createQueryBuilder('device');
+    const hostIdFilterClause = !!dto.hostId ? 'host.host_id = :hostId' : '1=1';
 
     const projectDeviceSubQuery = qb.subQuery().select('dp.device_id').from(ProjectAndDevice, 'dp');
     const hostDeviceSubQuery = qb
@@ -121,6 +124,7 @@ export class DeviceStatusService {
       .andWhere(`device.${DevicePropSnake.is_global} = 0`)
       .andWhere(`device.${DevicePropSnake.name} LIKE :name`, { name: `%${dto.deviceName}%` })
       .innerJoinAndSelect(`device.${DevicePropCamel.host}`, 'host')
+      .andWhere(hostIdFilterClause, { hostId: dto.hostId })
       .orderBy(`device.${DevicePropCamel.updatedAt}`, 'DESC')
       .limit(dto.getDBLimit())
       .offset(dto.getDBOffset());

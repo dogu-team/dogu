@@ -1,5 +1,6 @@
+import { HostBase } from '@dogu-private/console';
 import { HostConnectionState } from '@dogu-private/types';
-import { Button } from 'antd';
+import { Alert, Button } from 'antd';
 import { isAxiosError } from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -15,18 +16,22 @@ import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import { getErrorMessage } from '../../utils/error';
 import { getLocaledLink } from '../../utils/locale';
+import RefreshButton from '../buttons/RefreshButton';
 import TokenCopyInput from '../common/TokenCopyInput';
 import CreateHostModal from '../hosts/CreateHostModal';
 import GuideAnchor from '../projects/guides/GuideAnchor';
+import GuideBanner from '../projects/guides/GuideBanner';
 import GuideLayout from '../projects/guides/GuideLayout';
 import GuideSelectors from '../projects/guides/GuideSelectors';
 import GuideStep from '../projects/guides/GuideStep';
+import TutorialDeviceList from './TutorialDeviceLIst';
 
 const DeviceFarmTutorial = () => {
   const router = useRouter();
   const [isOpen, openModal, closeModal] = useModal();
   const [token, setToken] = useState<string>();
   const [loading, setLoading] = useState(false);
+  const [host, setHost] = useState<HostBase>();
   const { organization } = useOrganizationTutorialContext();
 
   const selectedSdk = (router.query.sdk as GuideSupportSdk | undefined) || GuideSupportSdk.WEBDRIVERIO;
@@ -38,12 +43,21 @@ const DeviceFarmTutorial = () => {
   });
 
   useEffect(() => {
-    useEventStore.subscribe(({ eventName, payload }) => {
+    const unsub = useEventStore.subscribe(({ eventName, payload }) => {
       if (eventName === 'onHostCreated') {
         setToken(payload as string);
+        if (organization?.organizationId) {
+          getHostByToken(organization.organizationId, payload as string).then((host) => {
+            setHost(host);
+          });
+        }
       }
     });
-  }, []);
+
+    return () => {
+      unsub();
+    };
+  }, [organization?.organizationId]);
 
   const handleUseHostAsDevice = async () => {
     if (!organization) {
@@ -59,7 +73,7 @@ const DeviceFarmTutorial = () => {
 
     try {
       const host = await getHostByToken(organization.organizationId, token);
-      if (host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED) {
+      if (host?.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED) {
         await updateUseHostAsDevice(organization.organizationId, host.hostId);
       } else {
         throw new Error('Host is not connected. Please retry after few seconds.');
@@ -68,10 +82,8 @@ const DeviceFarmTutorial = () => {
     } catch (e) {
       if (isAxiosError(e)) {
         sendErrorNotification(`Failed to use host as device: ${getErrorMessage(e)}`);
-        return;
       } else if (e instanceof Error) {
         sendErrorNotification(`Failed to use host as device: ${e.message}`);
-        return;
       }
     }
     setLoading(false);
@@ -126,7 +138,7 @@ const DeviceFarmTutorial = () => {
               <div>
                 <div>
                   <Link href={doguAgentDownloadLink} target="_blank">
-                    <Button type="primary">Download link</Button>
+                    <Button type="primary">Download</Button>
                   </Link>
                 </div>
 
@@ -160,7 +172,7 @@ const DeviceFarmTutorial = () => {
 
           <GuideStep
             id=""
-            title="Option1: use host as a device"
+            title="Option1: Use host as a device"
             description="Host device..."
             content={
               <div>
@@ -173,7 +185,7 @@ const DeviceFarmTutorial = () => {
 
           <GuideStep
             id=""
-            title="Option2: connect mobile devices"
+            title="Option2: Connect mobile devices"
             description="Device....."
             content={
               <div>
@@ -187,6 +199,33 @@ const DeviceFarmTutorial = () => {
               </div>
             }
           />
+
+          <GuideStep
+            id=""
+            title="Use devices"
+            description="Use device....."
+            content={
+              <div>
+                {!!organization && !!host ? (
+                  <>
+                    <FlexEnd>
+                      <RefreshButton />
+                    </FlexEnd>
+
+                    <MarginWrapper>
+                      <TutorialDeviceList organizationId={organization?.organizationId} hostId={host.hostId} />
+                    </MarginWrapper>
+                  </>
+                ) : (
+                  <Alert type="error" message={'For using device, create host and connect with Dogu Agent first'} showIcon />
+                )}
+
+                <MarginWrapper>
+                  <GuideBanner docsUrl="https://docs.dogutech.io/device-farm" />
+                </MarginWrapper>
+              </div>
+            }
+          />
         </div>
       }
     />
@@ -197,4 +236,13 @@ export default DeviceFarmTutorial;
 
 const HostTokenWrapper = styled.div`
   max-width: 500px;
+`;
+
+const FlexEnd = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const MarginWrapper = styled.div`
+  margin-top: 0.5rem;
 `;

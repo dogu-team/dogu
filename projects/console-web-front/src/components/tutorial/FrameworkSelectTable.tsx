@@ -45,7 +45,7 @@ const FrameworkSelectTable = ({ selectedSdk, onClickFramework, onClickSdk }: Pro
               <Divider />
 
               <FlexColCenter>
-                {tutorialData[selectedSdk].supportFrameworks[language].map((framework: string) => {
+                {tutorialData[selectedSdk].supportFrameworks[language]?.map((framework: string) => {
                   return (
                     <FrameworkItem key={framework} onClick={() => onClickFramework(framework)}>
                       {framework}

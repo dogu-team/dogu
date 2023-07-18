@@ -5,8 +5,6 @@ import IosIcon from 'public/resources/icons/platforms/ios.svg';
 import WindowsIcon from 'public/resources/icons/platforms/windows.svg';
 
 const GuidePlatformIcon = ({ platform }: { platform: GuideSupportPlatform }) => {
-  console.log(platform);
-
   switch (platform) {
     case GuideSupportPlatform.ANDROID:
       return <AndroidIcon width={20} height={20} icon-id="android-icon" />;
