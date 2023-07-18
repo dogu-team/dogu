@@ -60,7 +60,7 @@ export class RoutineService {
     const content = `name: sample routine
 
 on:
-  workflow_dispatch: null
+  workflow_dispatch:
 
 jobs:
   sample-job:

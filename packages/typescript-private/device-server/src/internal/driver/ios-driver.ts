@@ -12,7 +12,7 @@ import { logger } from '../../logger/logger.instance';
 import { IosChannel } from '../channel/ios-channel';
 import { SystemProfiler, XcodeBuild, Xctrace } from '../externals';
 import { DeviceChannel, DeviceChannelOpenParam } from '../public/device-channel';
-import { DeviceDriver } from '../public/device-driver';
+import { DeviceDriver, DeviceScanInfo } from '../public/device-driver';
 import { PionStreamingService } from '../services/streaming/pion-streaming-service';
 
 export class IosDriver implements DeviceDriver {
@@ -45,11 +45,18 @@ export class IosDriver implements DeviceDriver {
     return Platform.PLATFORM_IOS;
   }
 
-  async scanSerials(): Promise<Serial[]> {
-    const serialsXctrace = await Xctrace.listDevices(logger);
+  async scanSerials(): Promise<DeviceScanInfo[]> {
+    const deviceInfosFromXctrace = await Xctrace.listDevices(logger);
     const serialsSystemProfiler = await SystemProfiler.usbDataTypeToSerials();
-    const serials = serialsXctrace.filter((serial) => serialsSystemProfiler.includes(serial));
-    return Array.from(serials.values());
+    const deviceInfos = deviceInfosFromXctrace.map((deviceInfo) => {
+      if (serialsSystemProfiler.includes(deviceInfo.serial)) {
+        deviceInfo.status = 'online';
+      } else {
+        deviceInfo.status = 'usb-disconnected';
+      }
+      return deviceInfo;
+    });
+    return deviceInfos;
   }
 
   async openChannel(initParam: DeviceChannelOpenParam): Promise<DeviceChannel> {

@@ -10,7 +10,7 @@ import { OnDeviceConnectionSubscriberConnectedEvent, OnDevicesConnectedEvent, On
 import { GamiumService } from '../gamium/gamium.service';
 import { HttpRequestRelayService } from '../http-request-relay/http-request-relay.common';
 import { DeviceChannel } from '../internal/public/device-channel';
-import { DeviceDriver } from '../internal/public/device-driver';
+import { DeviceDriver, DeviceScanInfo } from '../internal/public/device-driver';
 import { createDeviceDriverFactoryByHostPlatform } from '../internal/public/device-driver-factory';
 import { DoguLogger } from '../logger/logger';
 import { SeleniumService } from '../selenium/selenium.service';
@@ -120,20 +120,20 @@ export class ScanService implements OnModuleInit {
       const befChannels = this.getChannelsByPlatform(platform);
       const befSerials = befChannels.map((channel) => channel.serial);
 
-      const scannedSerials = await Promise.resolve(driver.scanSerials()).catch((e) => {
+      const scannedInfos = await Promise.resolve(driver.scanSerials()).catch((e) => {
         this.logger.error(`ScanService.update scanSerials platform: ${platform}, error: ${stringifyError(e)}`);
-        return [] as string[];
+        return [] as DeviceScanInfo[];
       });
 
-      const removedSerials = befSerials.filter((currentSerial) => !scannedSerials.find((newSerial) => currentSerial == newSerial));
+      const removedSerials = befSerials.filter((currentSerial) => !scannedInfos.find((scanInfo) => currentSerial == scanInfo.serial));
       if (removedSerials.length !== 0) {
         this.logger.info('ScanService.update removed', {
           platform,
           removedSerials,
         });
       }
-      scannedSerials.forEach((serial) => {
-        this.deviceDoors.openDoorIfNotActive(driver, serial);
+      scannedInfos.forEach((scanInfo) => {
+        this.deviceDoors.consumeScanInfo(driver, scanInfo);
       });
 
       removedSerials.forEach((serial) => {
@@ -167,7 +167,7 @@ export class ScanService implements OnModuleInit {
   }
 
   getChannelsWithOpenError(): Readonly<ErrorDevice[]> {
-    return this.deviceDoors.channelsWithOpenError;
+    return this.deviceDoors.channelsWithError;
   }
 
   getChannelsByPlatform(platform: Platform): Readonly<DeviceChannel[]> {

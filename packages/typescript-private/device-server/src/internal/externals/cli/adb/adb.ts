@@ -8,6 +8,7 @@ import { registerBootstrapHandler } from '../../../../bootstrap/bootstrap.servic
 import { adbLogger } from '../../../../logger/logger.instance';
 import { pathMap } from '../../../../path-map';
 import { LogHandler } from '../../../public/device-channel';
+import { DeviceScanInfo, DeviceScanStatus } from '../../../public/device-driver';
 import { parseRecord } from '../../../util/parse';
 import { AndroidDfInfo, AndroidProcCpuInfo, AndroidProcDiskstats, AndroidProcMemInfo, AndroidPropInfo, AndroidShellTopInfo } from './info';
 import { parseAndroidProcCpuInfo, parseAndroidProcDiskstats, parseAndroidProcMemInfo, parseAndroidShellDf, parseAndroidShellProp, parseAndroidShellTop } from './parse';
@@ -303,7 +304,7 @@ export async function runAppProcess(serial: Serial, localPath: string, destPath:
 }
 
 // device info
-export async function serials(): Promise<Serial[]> {
+export async function serials(): Promise<DeviceScanInfo[]> {
   const random = Math.random();
   adbLogger.verbose('adb.serials begin', { random });
   const output = (await execIgnoreError(`${pathMap().android.adb} devices`)).stdout;
@@ -313,7 +314,7 @@ export async function serials(): Promise<Serial[]> {
     state: string | undefined;
   }
   const regex = /(\S+)/g;
-  const serials = output
+  const scanInfos = output
     .split('\n')
     .slice(1, -2)
     .map((serialAndStateLine) => {
@@ -330,13 +331,14 @@ export async function serials(): Promise<Serial[]> {
       } as SerialAndState;
     })
     .filter((serialAndState) => {
-      return serialAndState.serial !== undefined && serialAndState.state !== undefined && serialAndState.state === 'device';
+      return serialAndState.serial !== undefined && serialAndState.state !== undefined;
     })
     .map((serialAndState) => {
-      return serialAndState.serial!;
+      const deviceStatus = serialAndState.state === 'device' ? 'online' : (serialAndState.state as DeviceScanStatus);
+      return { serial: serialAndState.serial!, name: serialAndState.serial!, status: deviceStatus };
     });
-  adbLogger.verbose('adb.serials end', { serials, random });
-  return serials;
+  adbLogger.verbose('adb.serials end', { serials: scanInfos, random });
+  return scanInfos;
 }
 
 export async function getNickname(serial: Serial): Promise<string> {
