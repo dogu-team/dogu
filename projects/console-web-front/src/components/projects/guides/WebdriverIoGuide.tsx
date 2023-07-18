@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Alert, Button } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -10,15 +10,18 @@ import GuideAnchor from './GuideAnchor';
 import GuideLayout from './GuideLayout';
 import GuideStep from './GuideStep';
 import CopyButtonContainer from './CodeWithCopyButton';
-import { GuideSupportFramework, GuideSupportLanguage, GuideSupportPlatform, GuideSupportTarget, SAMPLE_GIT_URL, webdriverioGuideData } from '../../../resources/guide';
+import { GuideSupportLanguage, GuideSupportPlatform, GuideSupportTarget, SAMPLE_GIT_URL, webdriverioGuideData } from '../../../resources/guide';
 import { flexRowBaseStyle } from '../../../styles/box';
 import GuideBanner from './GuideBanner';
 import GuideSelectors from './GuideSelectors';
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
+import ProjectApplicationUploadButton from '../../project-application/ProjectApplicationUploadButton';
+import SampleApplicationUploadButton from './SampleApplicationUploadButton';
 
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
 const SET_CAPABILITIES_ID = 'set-capabilities';
+const UPLOAD_SAMPLE_APP_ID = 'upload-sample-app';
 const RUN_TEST_ID = 'run-test';
 const RESULT_ID = 'result';
 const DONE_ID = 'done';
@@ -70,6 +73,7 @@ const WebdriverIoGuide = () => {
               { id: PROJECT_SETUP_ID, title: 'Sample project setup' },
               { id: INSTALL_DEPENDENCIES_ID, title: 'Install dependencies' },
               { id: SET_CAPABILITIES_ID, title: 'Set capabilities' },
+              ...(target === GuideSupportTarget.APP ? [{ id: UPLOAD_SAMPLE_APP_ID, title: 'Upload sample application' }] : []),
               { id: RUN_TEST_ID, title: 'Run remote testing' },
               { id: RESULT_ID, title: 'Check result' },
               { id: DONE_ID, title: 'Done! Next step' },
@@ -106,6 +110,32 @@ const WebdriverIoGuide = () => {
             }
             content={<CopyButtonContainer language={frameworkLanguage ?? ''} code={capabilityCode} />}
           />
+
+          {target === GuideSupportTarget.APP && (
+            <GuideStep
+              id={UPLOAD_SAMPLE_APP_ID}
+              title="Upload sample application"
+              description={<p>Before starting, upload the app that matches the version specified in the script.</p>}
+              content={
+                selectedGuide?.hasSampleApp ? (
+                  <SampleApplicationUploadButton organizationId={organizationId} projectId={projectId} />
+                ) : (
+                  <>
+                    {platform === GuideSupportPlatform.IOS && (
+                      <Alert
+                        style={{ marginTop: '.5rem' }}
+                        message="For iOS, we don't provide sample app. Please upload your app manually."
+                        type="warning"
+                        showIcon
+                        action={<ProjectApplicationUploadButton organizationId={organizationId} projectId={projectId} />}
+                      />
+                    )}
+                  </>
+                )
+              }
+            />
+          )}
+
           <GuideStep
             id={RUN_TEST_ID}
             title="Run remote testing"

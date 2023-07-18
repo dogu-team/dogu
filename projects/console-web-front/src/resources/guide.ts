@@ -129,7 +129,11 @@ options = UiAutomator2Options().load_capabilities(
       "organizationId": organization_id,
       "projectId": project_id,
       "runsOn": "${platform}", # or another device tag
-      "appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'YOUR_APP_VERSION'}",
+      ${
+        target === GuideSupportTarget.WEB
+          ? `"browserName": "chrome"`
+          : `"appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'YOUR_APP_VERSION'}"`
+      },
     },
   }
 )
@@ -139,6 +143,26 @@ options = UiAutomator2Options().load_capabilities(
     }
   },
   guides: [
+    {
+      framework: GuideSupportFramework.PYTEST,
+      language: GuideSupportLanguage.PYTHON,
+      platform: GuideSupportPlatform.ANDROID,
+      target: GuideSupportTarget.WEB,
+      cd: 'cd dogu-examples/appium/python',
+      installDependencies: 'pip install -r requirements.txt',
+      runCommand: `python3 android/chrome.py`,
+      sampleFilePath: 'android/chrome.py',
+    },
+    {
+      framework: GuideSupportFramework.PYTEST,
+      language: GuideSupportLanguage.PYTHON,
+      platform: GuideSupportPlatform.IOS,
+      target: GuideSupportTarget.WEB,
+      cd: 'cd dogu-examples/appium/python',
+      installDependencies: 'pip install -r requirements.txt',
+      runCommand: `python3 ios/chrome.py`,
+      sampleFilePath: 'ios/chrome.py',
+    },
     {
       framework: GuideSupportFramework.PYTEST,
       language: GuideSupportLanguage.PYTHON,
@@ -265,6 +289,7 @@ const driver = await remote({
       target: GuideSupportTarget.APP,
       cd: 'cd dogu-examples/webdriverio/javascript',
       installDependencies: 'npm install',
+      hasSampleApp: true,
       runCommand: `npm run test:android:app`,
       sampleFilePath: 'android/app.js',
     },
@@ -275,6 +300,7 @@ const driver = await remote({
       target: GuideSupportTarget.APP,
       cd: 'cd dogu-examples/webdriverio/javascript',
       installDependencies: 'npm install',
+      hasSampleApp: false,
       runCommand: `npm run test:ios:app`,
       sampleFilePath: 'ios/app.js',
     },

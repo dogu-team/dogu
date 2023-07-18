@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
+
 import useTutorialSelector from '../../hooks/useTutorialSelector';
-import { GuideSupportLanguage, GuideSupportSdk, tutorialData } from '../../resources/guide';
+import { GuideSupportSdk, tutorialData } from '../../resources/guide';
 import GuideAnchor from '../projects/guides/GuideAnchor';
 import GuideLayout from '../projects/guides/GuideLayout';
 import GuideSelectors from '../projects/guides/GuideSelectors';

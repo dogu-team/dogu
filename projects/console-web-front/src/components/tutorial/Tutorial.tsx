@@ -24,7 +24,7 @@ const Tutorial = ({ selectedSdk }: Props) => {
 
   useEffect(() => {
     if (Number(step) && Number(step) > 2) {
-      router.push({ query: { ...router.query, step: 1 } }, undefined, { shallow: true });
+      router.replace({ query: { ...router.query, step: 1 } }, undefined, { shallow: true });
     }
   }, [step]);
 
@@ -70,7 +70,7 @@ const Tutorial = ({ selectedSdk }: Props) => {
           <DeviceFarmTutorial />
           <LinkBox>
             <div />
-            <Link href={{ query: { ...router.query, step: 1 } }} shallow>
+            <Link href={{ query: { ...router.query, step: 2 } }} shallow>
               <Button type="link">
                 Next: Setup test environment&nbsp;
                 <ArrowRightOutlined />
@@ -86,7 +86,7 @@ const Tutorial = ({ selectedSdk }: Props) => {
           {selectedSdk === GuideSupportSdk.GAMIUM && <GamiumGuide />}
 
           <LinkBox>
-            <Link href={{ query: { ...router.query, step: 0 } }} shallow>
+            <Link href={{ query: { ...router.query, step: 1 } }} shallow>
               <Button type="link" icon={<ArrowLeftOutlined />}>
                 Prev: Setup device farm
               </Button>

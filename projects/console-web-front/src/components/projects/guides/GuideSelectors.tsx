@@ -67,7 +67,7 @@ const GuideSelectors = ({ guideData, selectedFramwork, selectedPlatform, selecte
         options={frameworkOptions}
         value={selectedFramwork}
         onChange={(value: string) => {
-          router.push({ query: { ...router.query, framework: value } }, undefined, { shallow: true, scroll: true });
+          router.replace({ query: { ...router.query, framework: value } }, undefined, { shallow: true, scroll: true });
         }}
         dropdownMatchSelectWidth={false}
         style={{ width: '100%', marginBottom: '.5rem' }}
@@ -76,7 +76,7 @@ const GuideSelectors = ({ guideData, selectedFramwork, selectedPlatform, selecte
         options={platformOptions}
         value={selectedPlatform}
         onChange={(value) => {
-          router.push({ query: { ...router.query, platform: value } }, undefined, { shallow: true, scroll: true });
+          router.replace({ query: { ...router.query, platform: value } }, undefined, { shallow: true, scroll: true });
         }}
         dropdownMatchSelectWidth={false}
         style={{ width: '100%', marginBottom: '.5rem' }}
@@ -85,7 +85,7 @@ const GuideSelectors = ({ guideData, selectedFramwork, selectedPlatform, selecte
         options={targetOptions}
         value={selectedTarget}
         onChange={(value) => {
-          router.push({ query: { ...router.query, target: value } }, undefined, { shallow: true, scroll: true });
+          router.replace({ query: { ...router.query, target: value } }, undefined, { shallow: true, scroll: true });
         }}
         dropdownMatchSelectWidth={false}
         style={{ width: '100%' }}
