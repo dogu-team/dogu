@@ -178,6 +178,9 @@ export class OrganizationService {
 
     await this.createApiToken(manager, organizationId);
 
+    // create default project
+    await this.projectService.createProject(manager, userId, organizationId, { name: 'Sample Project', description: '' });
+
     return org;
   }
 
