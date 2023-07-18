@@ -1,15 +1,15 @@
 import { ProjectId, RoutineId } from '@dogu-private/types';
 import { ControllerMethodSpec, ControllerSpec } from '@dogu-tech/common';
 
-const RoutineController = new ControllerSpec({
+const V1RoutineController = new ControllerSpec({
   path: '/v1/projects/:projectId/routines',
 });
 
-export const RoutineV1 = {
-  controller: RoutineController,
+export const V1Routine = {
+  controller: V1RoutineController,
 
   createPipeline: new ControllerMethodSpec({
-    controllerSpec: RoutineController,
+    controllerSpec: V1RoutineController,
     method: 'POST',
     path: '/:routineId/pipelines',
     pathProvider: class {

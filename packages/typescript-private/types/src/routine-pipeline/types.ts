@@ -17,6 +17,13 @@ export enum PIPELINE_STATUS {
   SKIPPED = 7,
 }
 
+export enum CREATOR_TYPE {
+  UNSPECIFIED = 0,
+  ORGANIZATION = 1,
+  PROJECT = 2,
+  USER = 3,
+}
+
 export function isCompleted(state: PIPELINE_STATUS): boolean {
   return (
     state === PIPELINE_STATUS.SUCCESS || //
@@ -32,7 +39,8 @@ export interface RoutinePipeline {
   routineId: RoutineId | null;
   index: number;
   status: PIPELINE_STATUS;
-  creatorId: UserId;
+  creatorType: CREATOR_TYPE;
+  creatorId: UserId | null;
   cancelerId: UserId | null;
   createdAt: Date;
   updatedAt: Date;

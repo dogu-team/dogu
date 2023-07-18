@@ -1,4 +1,4 @@
-import { GOOGLE, GoogleOAuthPayload, HostPayload, UserPayload } from '@dogu-private/types';
+import { GOOGLE, GoogleOAuthPayload, HostPayload, UserPayload, V1OpenApiPayload } from '@dogu-private/types';
 import { applyDecorators, createParamDecorator, ExecutionContext, SetMetadata, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -61,5 +61,10 @@ export const Host = createParamDecorator((data: unknown, ctx: ExecutionContext):
 
 export const GoogleUser = createParamDecorator((data: unknown, ctx: ExecutionContext): GoogleOAuthPayload => {
   const request = ctx.switchToHttp().getRequest<{ user: GoogleOAuthPayload }>();
+  return request.user;
+});
+
+export const V1OpenApiCaller = createParamDecorator((data: unknown, ctx: ExecutionContext): V1OpenApiPayload => {
+  const request = ctx.switchToHttp().getRequest<{ user: V1OpenApiPayload }>();
   return request.user;
 });

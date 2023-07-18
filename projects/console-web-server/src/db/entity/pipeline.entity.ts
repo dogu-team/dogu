@@ -1,5 +1,5 @@
 import { RoutinePipelineBase, RoutinePipelinePropSnake, UserBase } from '@dogu-private/console';
-import { PIPELINE_STATUS, ProjectId, RoutineId, RoutinePipelineId, ROUTINE_PIPELINE_TABLE_NAME, UserId } from '@dogu-private/types';
+import { CREATOR_TYPE, PIPELINE_STATUS, ProjectId, RoutineId, RoutinePipelineId, ROUTINE_PIPELINE_TABLE_NAME, UserId } from '@dogu-private/types';
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { RoutineJob } from './job.entity';
@@ -24,8 +24,11 @@ export class RoutinePipeline extends BaseEntity implements RoutinePipelineBase {
   @Column({ type: 'int', name: RoutinePipelinePropSnake.index, unsigned: true, nullable: false })
   index!: number;
 
-  @ColumnTemplate.RelationUuid(RoutinePipelinePropSnake.creator_id)
-  creatorId!: UserId;
+  @Column({ type: 'smallint', name: RoutinePipelinePropSnake.status, default: CREATOR_TYPE.UNSPECIFIED, nullable: false })
+  creatorType!: CREATOR_TYPE;
+
+  @ColumnTemplate.RelationUuid(RoutinePipelinePropSnake.creator_id, true)
+  creatorId!: UserId | null;
 
   @ColumnTemplate.RelationUuid(RoutinePipelinePropSnake.canceler_id, true)
   cancelerId!: UserId | null;
