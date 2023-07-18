@@ -29,21 +29,21 @@ const DeviceJobSummary = ({ deviceJob }: Props) => {
           <Statistic>
             <StatisticTitle>{t('routine:deviceJobStatisticPlatformTitle')}</StatisticTitle>
             <div>
-              <PlatformIcon platform={deviceJob.device.platform} />
+              <PlatformIcon platform={deviceJob.device?.platform} />
             </div>
           </Statistic>
           <Statistic>
             <StatisticTitle>{t('routine:deviceJobStatisticVersionTitle')}</StatisticTitle>
-            <div>{deviceJob.device.version}</div>
+            <div>{deviceJob.device?.version}</div>
           </Statistic>
           <Statistic>
             <StatisticTitle>{t('routine:deviceJobStatisticNameTitle')}</StatisticTitle>
-            <div>{deviceJob.device.name}</div>
+            <div>{deviceJob.device?.name}</div>
           </Statistic>
           <Statistic>
             <StatisticTitle>{t('routine:deviceJobStatisticModelTitle')}</StatisticTitle>
             <div>
-              {deviceJob.device.modelName} {`(${deviceJob.device.model})`}
+              {deviceJob.device?.modelName} {`(${deviceJob.device?.model})`}
             </div>
           </Statistic>
           <Statistic>
