@@ -164,6 +164,7 @@ export class DeviceJobStepProcessor {
     const stepContextEnvReplaced = await environmentVariableReplacer.replaceEnv(stepContextEnv);
     environmentVariableReplacer.stackProvider.push(new EnvironmentVariableReplacementProvider(stepContextEnvReplaced));
     const deviceProjectGitPath = HostPaths.deviceProjectGitPath(deviceProjectWorkspacePath);
+    await fs.promises.mkdir(deviceProjectGitPath, { recursive: true });
     const stepMessageContext = new StepMessageContext(
       info,
       router,
