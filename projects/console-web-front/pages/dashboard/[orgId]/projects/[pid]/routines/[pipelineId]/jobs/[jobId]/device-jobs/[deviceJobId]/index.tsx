@@ -52,7 +52,7 @@ const DeviceJobPage: NextPageWithLayout<PageProps> = ({ organization, project })
     <>
       <Head>
         <title>
-          Device job {data.device.name} - {project.name} | Dogu
+          Device job {data.device?.name} - {project.name} | Dogu
         </title>
       </Head>
       <Box>
