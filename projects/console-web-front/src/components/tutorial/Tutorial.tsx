@@ -23,8 +23,8 @@ const Tutorial = ({ selectedSdk }: Props) => {
   const orgId = router.query.orgId as OrganizationId;
 
   useEffect(() => {
-    if (Number(step) && Number(step) > 1) {
-      router.push({ query: { ...router.query, step: 0 } }, undefined, { shallow: true });
+    if (Number(step) && Number(step) > 2) {
+      router.push({ query: { ...router.query, step: 1 } }, undefined, { shallow: true });
     }
   }, [step]);
 
@@ -50,9 +50,9 @@ const Tutorial = ({ selectedSdk }: Props) => {
         <Steps
           type="navigation"
           size="small"
-          current={Number(step) || 0}
+          current={Number(step) - 1 || 0}
           onChange={(current) => {
-            router.push({ query: { ...router.query, step: current } }, undefined, { shallow: true });
+            router.push({ query: { ...router.query, step: current + 1 } }, undefined, { shallow: true });
           }}
           items={[
             {
@@ -65,7 +65,7 @@ const Tutorial = ({ selectedSdk }: Props) => {
         />
       </StepWrapper>
 
-      {(!step || step === '0') && (
+      {(!step || step === '1') && (
         <GuideWrapper>
           <DeviceFarmTutorial />
           <LinkBox>
@@ -79,7 +79,7 @@ const Tutorial = ({ selectedSdk }: Props) => {
           </LinkBox>
         </GuideWrapper>
       )}
-      {step === '1' && (
+      {step === '2' && (
         <GuideWrapper>
           {selectedSdk === GuideSupportSdk.WEBDRIVERIO && <WebdriverIoGuide />}
           {selectedSdk === GuideSupportSdk.APPIUM && <AppiumGuide />}

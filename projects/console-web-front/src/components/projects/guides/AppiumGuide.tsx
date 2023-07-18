@@ -1,23 +1,13 @@
-import { Alert, Button, Select, SelectProps } from 'antd';
+import { Alert, Button } from 'antd';
 import { useRouter } from 'next/router';
 import { isAxiosError } from 'axios';
 import { OrganizationId, ProjectId } from '@dogu-private/types';
 import { UploadOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 
-import {
-  appiumGuideData,
-  GuideSupportLanguage,
-  guideSupportLanguageText,
-  GuideSupportPlatform,
-  guideSupportPlatformText,
-  GuideSupportTarget,
-  guideSupportTargetText,
-  SAMPLE_GIT_URL,
-} from '../../../resources/guide';
+import { appiumGuideData, GuideSupportFramework, GuideSupportLanguage, GuideSupportPlatform, GuideSupportTarget, SAMPLE_GIT_URL } from '../../../resources/guide';
 import { flexRowBaseStyle } from '../../../styles/box';
 import CopyButtonContainer from './CodeWithCopyButton';
 import useRequest from '../../../hooks/useRequest';
@@ -30,8 +20,6 @@ import GuideLayout from './GuideLayout';
 import GuideStep from './GuideStep';
 import DoneStep from './DoneStep';
 import ProjectApplicationUploadButton from '../../project-application/ProjectApplicationUploadButton';
-import GuidePlatformIcon from './GuidePlatformIcon';
-import GuideTargetIcon from './GuideTargetIcon';
 import GuideSelectors from './GuideSelectors';
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
 
@@ -46,9 +34,9 @@ const DONE_ID = 'done';
 const AppiumGuide = () => {
   const router = useRouter();
   const { framework, platform, target } = useTutorialSelector({
-    defaultFramework: appiumGuideData.supportLanguages[0],
-    defaultPlatform: appiumGuideData.supportPlatforms[0],
-    defaultTarget: appiumGuideData.supportTargets[0],
+    defaultFramework: appiumGuideData.defaultOptions.framework,
+    defaultPlatform: appiumGuideData.defaultOptions.platform,
+    defaultTarget: appiumGuideData.defaultOptions.target,
   });
   const [loading, request] = useRequest(uploadSampleApplication);
   const [capabilityCode, setCapabilityCode] = useState<string>('');

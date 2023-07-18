@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import useTutorialSelector from '../../hooks/useTutorialSelector';
-import { GuideSupportSdk, tutorialData } from '../../resources/guide';
+import { GuideSupportLanguage, GuideSupportSdk, tutorialData } from '../../resources/guide';
 import GuideAnchor from '../projects/guides/GuideAnchor';
 import GuideLayout from '../projects/guides/GuideLayout';
 import GuideSelectors from '../projects/guides/GuideSelectors';
@@ -11,9 +11,9 @@ const DeviceFarmTutorial = () => {
   const selectedSdk = (router.query.sdk as GuideSupportSdk | undefined) || GuideSupportSdk.WEBDRIVERIO;
   const guideData = tutorialData[selectedSdk];
   const { framework, platform, target } = useTutorialSelector({
-    defaultFramework: guideData.supportLanguages[0],
-    defaultPlatform: guideData.supportPlatforms[0],
-    defaultTarget: guideData.supportTargets[0],
+    defaultFramework: guideData.defaultOptions.framework,
+    defaultPlatform: guideData.defaultOptions.platform,
+    defaultTarget: guideData.defaultOptions.target,
   });
 
   return (

@@ -1,10 +1,13 @@
 import { Button } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import useTutorialSelector from '../../../hooks/useTutorialSelector';
+import { gamiumGuideData } from '../../../resources/guide';
 
 import DoneStep from './DoneStep';
 import GuideAnchor from './GuideAnchor';
 import GuideLayout from './GuideLayout';
+import GuideSelectors from './GuideSelectors';
 import GuideStep from './GuideStep';
 
 const DEVICE_FARM_ID = 'device-farm';
@@ -13,17 +16,27 @@ const DONE_ID = 'done';
 
 const GamiumGuide = () => {
   const router = useRouter();
+  const { framework, platform, target } = useTutorialSelector({
+    defaultFramework: gamiumGuideData.defaultOptions.framework,
+    defaultPlatform: gamiumGuideData.defaultOptions.platform,
+    defaultTarget: gamiumGuideData.defaultOptions.target,
+  });
 
   return (
     <GuideLayout
       sidebar={
-        <GuideAnchor
-          items={[
-            { id: DEVICE_FARM_ID, title: 'Setup device farm' },
-            { id: TUTORIAL_DOCS_ID, title: 'Tutorial document' },
-            { id: DONE_ID, title: 'Done! Next step' },
-          ]}
-        />
+        <div>
+          <div style={{ marginBottom: '1rem' }}>
+            <GuideSelectors guideData={gamiumGuideData} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
+          </div>
+          <GuideAnchor
+            items={[
+              { id: DEVICE_FARM_ID, title: 'Setup device farm' },
+              { id: TUTORIAL_DOCS_ID, title: 'Tutorial document' },
+              { id: DONE_ID, title: 'Done! Next step' },
+            ]}
+          />
+        </div>
       }
       content={
         <div>

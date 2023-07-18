@@ -1,8 +1,9 @@
 import { useRouter } from 'next/router';
-import { GuideSupportFramework, GuideSupportLanguage, GuideSupportPlatform, GuideSupportTarget } from '../resources/guide';
+
+import { GuideSupportFramework, GuideSupportPlatform, GuideSupportTarget } from '../resources/guide';
 
 type Param = {
-  defaultFramework: GuideSupportLanguage;
+  defaultFramework: GuideSupportFramework;
   defaultPlatform: GuideSupportPlatform;
   defaultTarget: GuideSupportTarget;
 };

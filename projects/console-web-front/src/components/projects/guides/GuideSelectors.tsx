@@ -1,6 +1,5 @@
 import { Select, SelectProps } from 'antd';
 import { useRouter } from 'next/router';
-import Image from 'next/image';
 
 import {
   Guide,
@@ -26,7 +25,8 @@ interface Props {
 
 const GuideSelectors = ({ guideData, selectedFramwork, selectedPlatform, selectedTarget }: Props) => {
   const router = useRouter();
-
+  const availabePlatforms = Object.keys(guideData.platformAndTarget).filter((platform) => guideData.platformAndTarget[platform as GuideSupportPlatform]?.includes(selectedTarget));
+  const availableTargets = guideData.platformAndTarget[selectedPlatform];
   const frameworkOptions: SelectProps['options'] = Object.keys(guideData.supportFrameworks).map((language) => {
     const lang = language as GuideSupportLanguage;
 
@@ -39,18 +39,18 @@ const GuideSelectors = ({ guideData, selectedFramwork, selectedPlatform, selecte
     };
   });
 
-  const platformOptions: SelectProps['options'] = guideData.supportPlatforms.map((platform: GuideSupportPlatform) => ({
+  const platformOptions: SelectProps['options'] = availabePlatforms?.map((platform) => ({
     label: (
       <FlexRow>
-        <GuidePlatformIcon platform={platform} />
+        <GuidePlatformIcon platform={platform as GuideSupportPlatform} />
         &nbsp;&nbsp;
-        {guideSupportPlatformText[platform]}
+        {guideSupportPlatformText[platform as GuideSupportPlatform]}
       </FlexRow>
     ),
     value: platform,
   }));
 
-  const targetOptions: SelectProps['options'] = guideData.supportTargets.map((target: GuideSupportTarget) => ({
+  const targetOptions: SelectProps['options'] = availableTargets?.map((target: GuideSupportTarget) => ({
     label: (
       <FlexRow>
         <GuideTargetIcon target={target} />

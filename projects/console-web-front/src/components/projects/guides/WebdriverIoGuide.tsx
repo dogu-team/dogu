@@ -1,7 +1,6 @@
-import { Button, Select, SelectProps } from 'antd';
+import { Button } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { OrganizationId, ProjectId } from '@dogu-private/types';
@@ -11,20 +10,9 @@ import GuideAnchor from './GuideAnchor';
 import GuideLayout from './GuideLayout';
 import GuideStep from './GuideStep';
 import CopyButtonContainer from './CodeWithCopyButton';
-import {
-  GuideSupportLanguage,
-  guideSupportLanguageText,
-  GuideSupportPlatform,
-  guideSupportPlatformText,
-  GuideSupportTarget,
-  guideSupportTargetText,
-  SAMPLE_GIT_URL,
-  webdriverioGuideData,
-} from '../../../resources/guide';
+import { GuideSupportFramework, GuideSupportLanguage, GuideSupportPlatform, GuideSupportTarget, SAMPLE_GIT_URL, webdriverioGuideData } from '../../../resources/guide';
 import { flexRowBaseStyle } from '../../../styles/box';
 import GuideBanner from './GuideBanner';
-import GuidePlatformIcon from './GuidePlatformIcon';
-import GuideTargetIcon from './GuideTargetIcon';
 import GuideSelectors from './GuideSelectors';
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
 
@@ -38,9 +26,9 @@ const DONE_ID = 'done';
 const WebdriverIoGuide = () => {
   const router = useRouter();
   const { framework, platform, target } = useTutorialSelector({
-    defaultFramework: webdriverioGuideData.supportLanguages[0],
-    defaultPlatform: webdriverioGuideData.supportPlatforms[0],
-    defaultTarget: webdriverioGuideData.supportTargets[0],
+    defaultFramework: webdriverioGuideData.defaultOptions.framework,
+    defaultPlatform: webdriverioGuideData.defaultOptions.platform,
+    defaultTarget: webdriverioGuideData.defaultOptions.target,
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 

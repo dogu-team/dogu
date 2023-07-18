@@ -81,9 +81,11 @@ export interface GuideDetailData {
 export interface Guide {
   supportFrameworks: { [key in GuideSupportLanguage]?: GuideSupportFramework[] };
   platformAndTarget: { [key in GuideSupportPlatform]?: GuideSupportTarget[] };
-  supportLanguages: GuideSupportLanguage[];
-  supportPlatforms: GuideSupportPlatform[];
-  supportTargets: GuideSupportTarget[];
+  defaultOptions: {
+    framework: GuideSupportFramework;
+    platform: GuideSupportPlatform;
+    target: GuideSupportTarget;
+  };
   generateCapabilitiesCode: (params: GenerateCapabilitiesCodeParams) => Promise<string>;
   guides: GuideDetailData[];
 }
@@ -96,9 +98,11 @@ export const appiumGuideData: Guide = {
     [GuideSupportPlatform.ANDROID]: [GuideSupportTarget.WEB, GuideSupportTarget.APP],
     [GuideSupportPlatform.IOS]: [GuideSupportTarget.WEB, GuideSupportTarget.APP],
   },
-  supportLanguages: [GuideSupportLanguage.PYTHON],
-  supportPlatforms: [GuideSupportPlatform.ANDROID, GuideSupportPlatform.IOS],
-  supportTargets: [GuideSupportTarget.APP],
+  defaultOptions: {
+    framework: GuideSupportFramework.PYTEST,
+    platform: GuideSupportPlatform.ANDROID,
+    target: GuideSupportTarget.WEB,
+  },
   generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
     switch (framework) {
       case GuideSupportFramework.PYTEST:
@@ -170,9 +174,11 @@ export const webdriverioGuideData: Guide = {
     [GuideSupportPlatform.WINDOWS]: [GuideSupportTarget.WEB],
     [GuideSupportPlatform.MACOS]: [GuideSupportTarget.WEB],
   },
-  supportLanguages: [GuideSupportLanguage.JAVASCRIPT],
-  supportPlatforms: [GuideSupportPlatform.ANDROID, GuideSupportPlatform.IOS, GuideSupportPlatform.WINDOWS, GuideSupportPlatform.MACOS],
-  supportTargets: [GuideSupportTarget.WEB, GuideSupportTarget.APP],
+  defaultOptions: {
+    framework: GuideSupportFramework.JEST,
+    platform: GuideSupportPlatform.ANDROID,
+    target: GuideSupportTarget.WEB,
+  },
   generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
     switch (framework) {
       case GuideSupportFramework.JEST:
@@ -283,9 +289,11 @@ export const gamiumGuideData: Guide = {
     [GuideSupportPlatform.ANDROID]: [GuideSupportTarget.UNITY],
     [GuideSupportPlatform.IOS]: [GuideSupportTarget.UNITY],
   },
-  supportLanguages: [GuideSupportLanguage.TYPESCRIPT],
-  supportPlatforms: [GuideSupportPlatform.ANDROID, GuideSupportPlatform.IOS],
-  supportTargets: [GuideSupportTarget.UNITY],
+  defaultOptions: {
+    framework: GuideSupportFramework.TYPESCRIPT,
+    platform: GuideSupportPlatform.ANDROID,
+    target: GuideSupportTarget.UNITY,
+  },
   generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
     return '';
   },
