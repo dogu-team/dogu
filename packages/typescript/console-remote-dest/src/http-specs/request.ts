@@ -10,6 +10,16 @@ export class CreateRemoteDestRequestBody {
   remoteDestInfos!: DestInfo[];
 }
 
+export class UpdateRemoteDestStateRequestBody {
+  @IsNotEmpty()
+  @IsEnum(DEST_STATE)
+  remoteDestState!: DEST_STATE;
+
+  @IsDate()
+  @Type(() => Date)
+  localTimeStamp!: Date;
+}
+
 export class DestInfo {
   @IsFilledString()
   name!: string;
@@ -22,14 +32,4 @@ export class DestInfo {
   @Type(() => DestInfo)
   @IsArray()
   children!: DestInfo[];
-}
-
-export class UpdateRemoteDestStateRequestBody {
-  @IsNotEmpty()
-  @IsEnum(DEST_STATE)
-  remoteDestState!: DEST_STATE;
-
-  @IsDate()
-  @Type(() => Date)
-  localTimeStamp!: Date;
 }

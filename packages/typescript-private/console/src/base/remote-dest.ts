@@ -1,7 +1,6 @@
 import { RemoteDestPublic } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
-import { RemoteDeviceJobBase } from '../index';
-import { DestEdgeBase } from './dest-edge';
+import { RemoteDestEdgeBase, RemoteDeviceJobBase } from '../index';
 
 interface RemoteDestPrivateTraits {
   createdAt: Date;
@@ -16,7 +15,7 @@ interface RemoteDestPrivateTraits {
 interface RemoteDestRelationTraits {
   remoteDeviceJob?: RemoteDeviceJobBase;
   children?: RemoteDestBase[];
-  destEdges?: DestEdgeBase[];
+  remoteDestEdges?: RemoteDestEdgeBase[];
 }
 
 export type RemoteDestBase = RemoteDestPublic & RemoteDestPrivateTraits & RemoteDestRelationTraits;

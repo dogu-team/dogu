@@ -54,7 +54,7 @@ export interface RoutineDestPublic {
 
 export type RemoteDestId = string;
 export interface RemoteDestPublic {
-  destId: DestId;
+  remoteDestId: RemoteDestId;
   remoteDeviceJobId: RemoteDeviceJobId;
   name: string;
   index: number;

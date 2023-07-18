@@ -147,16 +147,16 @@ export class DeviceJobUpdater {
         },
       });
 
-      const maxParallel = waitingRoutineDeviceJobsByDeviceId[0].device.maxParallelJobs;
+      const maxParallel = waitingRoutineDeviceJobsByDeviceId[0].device!.maxParallelJobs;
       if (maxParallel === 1) {
-        const deviceJob = waitingRoutineDeviceJobsByDeviceId.find((deviceJob) => deviceJob.device.deviceId === deviceId);
-        const inProgressDeviceJobs = deviceJob!.device.routineDeviceJobs ?? [];
-        const inProgressRemoteDeviceJobs = deviceJob!.device.remoteDeviceJobs ?? [];
+        const deviceJob = waitingRoutineDeviceJobsByDeviceId.find((deviceJob) => deviceJob.device!.deviceId === deviceId);
+        const inProgressDeviceJobs = deviceJob!.device!.routineDeviceJobs ?? [];
+        const inProgressRemoteDeviceJobs = deviceJob!.device!.remoteDeviceJobs ?? [];
         const totalInProgressDeviceJobs = inProgressDeviceJobs.length + inProgressRemoteDeviceJobs.length;
         if (totalInProgressDeviceJobs === 0) highestPriorityDeviceJobs.push(deviceJob!);
       } else {
-        const inProgressDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0].device.routineDeviceJobs?.length ?? 0;
-        const inProgressRemoteDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0].device.remoteDeviceJobs?.length ?? 0;
+        const inProgressDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0].device!.routineDeviceJobs?.length ?? 0;
+        const inProgressRemoteDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0].device!.remoteDeviceJobs?.length ?? 0;
         const addableDeviceJobCount = maxParallel - inProgressDeviceJobs - inProgressRemoteDeviceJobs;
 
         const allWaingDeviceJobs = [...waitingRoutineDeviceJobsByDeviceId, ...waitingRemoteDeviceJobsByDeviceId];
@@ -184,7 +184,7 @@ export class DeviceJobUpdater {
 
     for (const deviceJob of highestPriorityDeviceJobs) {
       const { device } = deviceJob;
-      const { deviceId, organizationId } = device;
+      const { deviceId, organizationId } = device!;
       const steps = deviceJob.routineSteps;
       if (!steps || steps.length === 0) {
         throw new Error(`deviceJob ${deviceJob.routineDeviceJobId} has no steps`);
