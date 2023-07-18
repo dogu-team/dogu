@@ -1,10 +1,10 @@
-import { DestId, DestPublic, DEST_STATE, DEST_TYPE, RoutineStepId } from '@dogu-tech/types';
+import { DestId, DEST_STATE, DEST_TYPE, RoutineDestPublic, RoutineStepId } from '@dogu-tech/types';
 
 export class CreateDestResponse {
   dests!: DestData[];
 }
 
-export class DestData implements Pick<DestPublic, 'destId' | 'routineStepId' | 'name' | 'index' | 'state' | 'type'> {
+export class DestData implements Pick<RoutineDestPublic, 'destId' | 'routineStepId' | 'name' | 'index' | 'state' | 'type'> {
   destId!: DestId;
   routineStepId!: RoutineStepId;
   name!: string;

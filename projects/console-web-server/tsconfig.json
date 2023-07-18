@@ -19,6 +19,9 @@
       "path": "../../packages/typescript-private/console-host-agent"
     },
     {
+      "path": "../../packages/typescript-private/console-open-api"
+    },
+    {
       "path": "../../packages/typescript-private/types"
     },
     {
@@ -29,6 +32,9 @@
     },
     {
       "path": "../../packages/typescript/console-dest"
+    },
+    {
+      "path": "../../packages/typescript/console-remote-dest"
     },
     {
       "path": "../../packages/typescript/console-gamium"
@@ -44,6 +50,6 @@
     },
     {
       "path": "../../packages/typescript-dev-private/build-tools"
-    },
+    }
   ]
 }

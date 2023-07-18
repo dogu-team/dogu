@@ -1,3 +1,4 @@
+import { RemoteDeviceJobId } from '..';
 import { RoutineStepId } from '../step/types';
 
 export enum DEST_STATE {
@@ -42,9 +43,19 @@ export enum DEST_TYPE {
 
 export type DestId = number;
 
-export interface DestPublic {
+export interface RoutineDestPublic {
   destId: DestId;
   routineStepId: RoutineStepId;
+  name: string;
+  index: number;
+  state: DEST_STATE;
+  type: DEST_TYPE;
+}
+
+export type RemoteDestId = string;
+export interface RemoteDestPublic {
+  destId: DestId;
+  remoteDeviceJobId: RemoteDeviceJobId;
   name: string;
   index: number;
   state: DEST_STATE;

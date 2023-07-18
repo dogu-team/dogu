@@ -1,4 +1,4 @@
-import { DestPublic } from '@dogu-private/types';
+import { RoutineDestPublic } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 import { RoutineStepBase } from '..';
 import { DestEdgeBase } from './dest-edge';
@@ -19,6 +19,6 @@ interface DestRelationTraits {
   destEdges?: DestEdgeBase[];
 }
 
-export type DestBase = DestPublic & DestPrivateTraits & DestRelationTraits;
+export type DestBase = RoutineDestPublic & DestPrivateTraits & DestRelationTraits;
 export const DestPropCamel = propertiesOf<DestBase>();
 export const DestPropSnake = camelToSnakeCasePropertiesOf<DestBase>();

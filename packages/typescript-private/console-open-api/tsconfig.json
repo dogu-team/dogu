@@ -1,0 +1,19 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "build"
+  },
+  "include": ["src/**/*.ts"],
+  "references": [
+    {
+      "path": "../../typescript/common"
+    },
+    {
+      "path": "../types"
+    },
+    {
+      "path": "../../typescript/console-gamium"
+    }
+  ]
+}
