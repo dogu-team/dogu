@@ -5,8 +5,10 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { Dest } from '../../../db/entity';
 import { RoutineDeviceJob } from '../../../db/entity/device-job.entity';
+import { RemoteDest } from '../../../db/entity/remote-dest.entity';
 import { RoutineStep } from '../../../db/entity/step.entity';
 import { DoguLogger } from '../../logger/logger';
+import { RemoteDestProcessor } from '../../remote/processor/remote-dest-processor';
 import { DestRunner } from '../../routine/pipeline/processor/runner/dest-runner';
 import { DeviceJobRunner } from '../../routine/pipeline/processor/runner/device-job-runner';
 import { PipelineRunner } from '../../routine/pipeline/processor/runner/pipeline-runner';
@@ -18,6 +20,8 @@ import {
   UpdateDestStateQueue,
   UpdateDeviceJobStatusEvent,
   UpdateDeviceJobStatusQueue,
+  UpdateRemoteDestStateEvent,
+  UpdateRemoteDestStateQueue,
   UpdateStepStatusEvent,
   UpdateStepStatusQueue,
 } from './update-pipeline-queue';
@@ -45,6 +49,8 @@ export class ExternalEventUpdater {
     private readonly updateStepStatusQueue: UpdateStepStatusQueue,
     @Inject(UpdateDestStateQueue)
     private readonly updateDestStateQueue: UpdateDestStateQueue,
+    @Inject(UpdateRemoteDestStateQueue)
+    private readonly updateRemoteDestStateQueue: UpdateRemoteDestStateQueue,
 
     private readonly logger: DoguLogger,
   ) {}
@@ -55,6 +61,7 @@ export class ExternalEventUpdater {
       this.consumeUpdateDestStateQueue.bind(this),
       this.consumeUpdateStepStatusQueue.bind(this),
       this.consumeUpdateDeviceJobStatusQueue.bind(this),
+      this.consumeUpdateRemoteDestStateQueue.bind(this),
     ];
 
     for (const checkFunction of functionsToCheck) {
@@ -120,6 +127,20 @@ export class ExternalEventUpdater {
     }
   }
 
+  private async consumeUpdateRemoteDestStateQueue(): Promise<void> {
+    const updateRemoteDestStateEvents = this.updateRemoteDestStateQueue.drain();
+    if (updateRemoteDestStateEvents.length === 0) {
+      return;
+    }
+
+    // await Promise.all(updateDestStateEvents.map((event) => this.handeUpdateDestStateEvent(event)));
+
+    for (const event of updateRemoteDestStateEvents) {
+      this.logger.info('consumeUpdateRemoteDestStateQueue. Evnet: ', { event });
+      await this.handeUpdateRemoteDestStateEvent(event);
+    }
+  }
+
   private async handelUpdateStepStatusEvent(event: UpdateStepStatusEvent): Promise<void> {
     const step = await this.dataSource.getRepository(RoutineStep).findOne({ where: { routineStepId: event.stepId } });
     if (!step) {
@@ -157,5 +178,15 @@ export class ExternalEventUpdater {
       return;
     }
     await this.destRunner.update(dest, destStatus, localTimeStamp);
+  }
+
+  private async handeUpdateRemoteDestStateEvent(event: UpdateRemoteDestStateEvent): Promise<void> {
+    const { remoteDestState, localTimeStamp } = event.updateRemoteDestStateRequestBody;
+    const remoteDest = await this.dataSource.getRepository(RemoteDest).findOne({ where: { remoteDestId: event.remoteDestId } });
+    if (!remoteDest) {
+      this.logger.error(`remoteDestId ${event.remoteDestId} is not found. EventInfo: ${stringify(event)}`);
+      return;
+    }
+    await RemoteDestProcessor.update(this.dataSource.manager, remoteDest, remoteDestState, localTimeStamp);
   }
 }

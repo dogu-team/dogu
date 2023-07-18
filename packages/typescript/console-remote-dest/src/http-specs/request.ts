@@ -5,9 +5,9 @@ import { IsArray, IsDate, IsEnum, IsNotEmpty, ValidateNested } from 'class-valid
 
 export class CreateRemoteDestRequestBody {
   @ValidateNested({ each: true })
-  @Type(() => DestInfo)
+  @Type(() => RemoteDestInfo)
   @IsArray()
-  remoteDestInfos!: DestInfo[];
+  remoteDestInfos!: RemoteDestInfo[];
 }
 
 export class UpdateRemoteDestStateRequestBody {
@@ -20,7 +20,7 @@ export class UpdateRemoteDestStateRequestBody {
   localTimeStamp!: Date;
 }
 
-export class DestInfo {
+export class RemoteDestInfo {
   @IsFilledString()
   name!: string;
 
@@ -29,7 +29,7 @@ export class DestInfo {
   type!: DEST_TYPE;
 
   @ValidateNested({ each: true })
-  @Type(() => DestInfo)
+  @Type(() => RemoteDestInfo)
   @IsArray()
-  children!: DestInfo[];
+  children!: RemoteDestInfo[];
 }

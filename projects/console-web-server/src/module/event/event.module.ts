@@ -6,6 +6,7 @@ import { Host } from '../../db/entity/host.entity';
 import { Organization, RoutineJobEdge } from '../../db/entity/index';
 import { RoutineJob } from '../../db/entity/job.entity';
 import { RoutinePipeline } from '../../db/entity/pipeline.entity';
+import { RemoteDest } from '../../db/entity/remote-dest.entity';
 import { RemoteDeviceJob } from '../../db/entity/remote-device-job.entity';
 import { Routine } from '../../db/entity/routine.entity';
 import { RoutineStep } from '../../db/entity/step.entity';
@@ -22,7 +23,7 @@ import { JobUpdater } from './pipeline/job-updator';
 import { PipelineSystemProcessor } from './pipeline/pipeline-system.processor';
 import { PipelineUpdater } from './pipeline/pipeline-updater';
 import { StepUpdater } from './pipeline/step-updater';
-import { CanclePipelineQueue, UpdateDestStateQueue, UpdateDeviceJobStatusQueue, UpdateStepStatusQueue } from './pipeline/update-pipeline-queue';
+import { CanclePipelineQueue, UpdateDestStateQueue, UpdateDeviceJobStatusQueue, UpdateRemoteDestStateQueue, UpdateStepStatusQueue } from './pipeline/update-pipeline-queue';
 import { RemoteDeviceJobUpdater } from './remote/remote-device-job-updater';
 import { RemoteSystemProcessor } from './remote/remote-system.processor';
 import { UpdateConsumer } from './update-consumers';
@@ -30,7 +31,7 @@ import { UpdateProducer } from './update-producer';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Host, Device, RoutineDeviceJob, RoutinePipeline, RoutineJob, RoutineStep, RoutineJobEdge, Routine, Organization, RemoteDeviceJob]), //
+    TypeOrmModule.forFeature([Host, Device, RoutineDeviceJob, RoutinePipeline, RoutineJob, RoutineStep, RoutineJobEdge, Routine, Organization, RemoteDeviceJob, RemoteDest]), //
     DeviceMessageModule,
     forwardRef(() => PipelineModule),
     RemoteModule,
@@ -43,6 +44,7 @@ import { UpdateProducer } from './update-producer';
     UpdateStepStatusQueue,
     UpdateDeviceJobStatusQueue,
     UpdateDestStateQueue,
+    UpdateRemoteDestStateQueue,
 
     PipelineSystemProcessor,
     HeartBeatSystemProcessor,
@@ -59,6 +61,6 @@ import { UpdateProducer } from './update-producer';
     HostConnectionUpdater,
     RemoteDeviceJobUpdater,
   ],
-  exports: [CanclePipelineQueue, UpdateStepStatusQueue, UpdateDeviceJobStatusQueue, UpdateDestStateQueue],
+  exports: [CanclePipelineQueue, UpdateStepStatusQueue, UpdateDeviceJobStatusQueue, UpdateDestStateQueue, UpdateRemoteDestStateQueue],
 })
 export class EventModule {}

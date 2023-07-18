@@ -1,9 +1,11 @@
 import { UpdateDeviceJobStatusRequestBody, UpdateStepStatusRequestBody } from '@dogu-private/console-host-agent';
-import { DestId, DeviceId, OrganizationId, ProjectId, RoutineDeviceJobId, RoutinePipelineId, RoutineStepId, UserId } from '@dogu-private/types';
+import { DestId, DeviceId, OrganizationId, ProjectId, RemoteDestId, RoutineDeviceJobId, RoutinePipelineId, RoutineStepId, UserId } from '@dogu-private/types';
 import { UpdateDestStatusRequestBody } from '@dogu-tech/console-dest';
+import { UpdateRemoteDestStateRequestBody } from '@dogu-tech/console-remote-dest';
 import { Injectable } from '@nestjs/common';
 
 export class UpdatePipelineEvent {}
+export class UpdtaeRemoteDeviceJobEvent {}
 
 export class UpdateStepStatusEvent extends UpdatePipelineEvent {
   constructor(
@@ -39,6 +41,12 @@ export class CancelPipelineEvent extends UpdatePipelineEvent {
 
 export class UpdateDestStateEvent extends UpdatePipelineEvent {
   constructor(public readonly destId: DestId, public readonly updateDestStatusRequestBody: UpdateDestStatusRequestBody) {
+    super();
+  }
+}
+
+export class UpdateRemoteDestStateEvent extends UpdtaeRemoteDeviceJobEvent {
+  constructor(public readonly remoteDestId: RemoteDestId, public readonly updateRemoteDestStateRequestBody: UpdateRemoteDestStateRequestBody) {
     super();
   }
 }
@@ -119,6 +127,26 @@ export class UpdateDestStateQueue {
   drain(): UpdateDestStateEvent[] {
     const drained = this.queue;
     this.queue = new Array<UpdateDestStateEvent>();
+    return drained;
+  }
+}
+
+@Injectable()
+export class UpdateRemoteDestStateQueue {
+  private queue = new Array<UpdateRemoteDestStateEvent>();
+
+  enqueue(event: UpdateRemoteDestStateEvent): void {
+    this.queue.push(event);
+    return;
+  }
+
+  dequeue(): UpdateRemoteDestStateEvent | undefined {
+    return this.queue.shift();
+  }
+
+  drain(): UpdateRemoteDestStateEvent[] {
+    const drained = this.queue;
+    this.queue = new Array<UpdateRemoteDestStateEvent>();
     return drained;
   }
 }
