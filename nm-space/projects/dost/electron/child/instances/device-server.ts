@@ -23,7 +23,8 @@ export class DeviceServerChild implements Child {
     const NODE_ENV = await appConfigService.get('NODE_ENV');
     const DOGU_RUN_TYPE = await appConfigService.get('DOGU_RUN_TYPE');
     const DOGU_DEVICE_SERVER_PORT = await appConfigService.get('DOGU_DEVICE_SERVER_PORT');
-    const DOGU_LOG_LEVEL = getLogLevel(DOGU_RUN_TYPE);
+    const DOGU_DEVICE_PLATFORM_ENABLED = await appConfigService.get('DOGU_DEVICE_PLATFORM_ENABLED');
+    const DOGU_LOG_LEVEL = await getLogLevel(DOGU_RUN_TYPE, appConfigService);
     await killProcessOnPort(DOGU_DEVICE_SERVER_PORT, logger).catch((err) => {
       logger.error('killProcessOnPort', { err });
     });
@@ -44,6 +45,7 @@ export class DeviceServerChild implements Child {
           DOGU_LOGS_PATH: DeviceServerLogsPath,
           PATH,
           DOGU_LOG_LEVEL,
+          DOGU_DEVICE_PLATFORM_ENABLED,
         },
       },
       childLogger: logger,

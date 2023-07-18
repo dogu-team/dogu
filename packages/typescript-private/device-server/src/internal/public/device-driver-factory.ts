@@ -1,4 +1,4 @@
-import { Platform } from '@dogu-private/types';
+import { Platform, PlatformType } from '@dogu-private/types';
 import { DeviceWebDriver } from '../../alias';
 import { AppiumService } from '../../appium/appium.service';
 import { GamiumService } from '../../gamium/gamium.service';
@@ -27,7 +27,7 @@ export class NullDeviceDriverFactory implements DeviceDriverFactory {
 
 export class MacOSDeviceDriverFactory implements DeviceDriverFactory {
   constructor(
-    private readonly deviceServerPort: number,
+    private readonly enabledPlatforms: readonly PlatformType[],
     private readonly appiumService: AppiumService,
     private readonly gamiumService: GamiumService,
     private readonly httpRequestRelayService: HttpRequestRelayService,
@@ -38,27 +38,29 @@ export class MacOSDeviceDriverFactory implements DeviceDriverFactory {
   ) {}
 
   async create(): Promise<Map<Platform, DeviceDriver>> {
-    const { deviceServerPort } = this;
     const map = new Map<Platform, DeviceDriver>();
-    map.set(
-      Platform.PLATFORM_MACOS,
-      await MacosDriver.create(deviceServerPort, this.httpRequestRelayService, this.seleniumEndpointHandlerService, this.seleniumService, this.doguLogger),
-    );
-    map.set(
-      Platform.PLATFORM_ANDROID,
-      await AndroidDriver.create(deviceServerPort, this.appiumService, this.gamiumService, this.httpRequestRelayService, this.appiumDeviceWebDriverHandlerService, this.doguLogger),
-    );
-    map.set(
-      Platform.PLATFORM_IOS,
-      await IosDriver.create(deviceServerPort, this.appiumService, this.gamiumService, this.httpRequestRelayService, this.appiumDeviceWebDriverHandlerService, this.doguLogger),
-    );
+    if (this.enabledPlatforms.includes('macos')) {
+      map.set(Platform.PLATFORM_MACOS, await MacosDriver.create(this.httpRequestRelayService, this.seleniumEndpointHandlerService, this.seleniumService, this.doguLogger));
+    }
+    if (this.enabledPlatforms.includes('android')) {
+      map.set(
+        Platform.PLATFORM_ANDROID,
+        await AndroidDriver.create(this.appiumService, this.gamiumService, this.httpRequestRelayService, this.appiumDeviceWebDriverHandlerService, this.doguLogger),
+      );
+    }
+    if (this.enabledPlatforms.includes('ios')) {
+      map.set(
+        Platform.PLATFORM_IOS,
+        await IosDriver.create(this.appiumService, this.gamiumService, this.httpRequestRelayService, this.appiumDeviceWebDriverHandlerService, this.doguLogger),
+      );
+    }
     return map;
   }
 }
 
 export class WindowsDeviceDriverFactory implements DeviceDriverFactory {
   constructor(
-    private readonly deviceServerPort: number,
+    private readonly enabledPlatforms: readonly PlatformType[],
     private readonly appiumService: AppiumService,
     private readonly gamiumService: GamiumService,
     private readonly httpRequestRelayService: HttpRequestRelayService,
@@ -69,23 +71,26 @@ export class WindowsDeviceDriverFactory implements DeviceDriverFactory {
   ) {}
 
   async create(): Promise<Map<Platform, DeviceDriver>> {
-    const { deviceServerPort } = this;
     const map = new Map<Platform, DeviceDriver>();
-    map.set(
-      Platform.PLATFORM_WINDOWS,
-      await WindowsDriver.create(deviceServerPort, this.gamiumService, this.httpRequestRelayService, this.seleniumEndpointHandlerService, this.seleniumService, this.doguLogger),
-    );
-    map.set(
-      Platform.PLATFORM_ANDROID,
-      await AndroidDriver.create(deviceServerPort, this.appiumService, this.gamiumService, this.httpRequestRelayService, this.appiumDeviceWebDriverHandlerService, this.doguLogger),
-    );
+    if (this.enabledPlatforms.includes('windows')) {
+      map.set(
+        Platform.PLATFORM_WINDOWS,
+        await WindowsDriver.create(this.gamiumService, this.httpRequestRelayService, this.seleniumEndpointHandlerService, this.seleniumService, this.doguLogger),
+      );
+    }
+    if (this.enabledPlatforms.includes('android')) {
+      map.set(
+        Platform.PLATFORM_ANDROID,
+        await AndroidDriver.create(this.appiumService, this.gamiumService, this.httpRequestRelayService, this.appiumDeviceWebDriverHandlerService, this.doguLogger),
+      );
+    }
     return map;
   }
 }
 
 export function createDeviceDriverFactoryByHostPlatform(
   platform: Platform,
-  deviceServerPort: number,
+  enabledPlatforms: readonly PlatformType[],
   appiumService: AppiumService,
   gamiumService: GamiumService,
   httpRequestRelayService: HttpRequestRelayService,
@@ -97,7 +102,7 @@ export function createDeviceDriverFactoryByHostPlatform(
   switch (platform) {
     case Platform.PLATFORM_MACOS:
       return new MacOSDeviceDriverFactory(
-        deviceServerPort,
+        enabledPlatforms,
         appiumService,
         gamiumService,
         httpRequestRelayService,
@@ -108,7 +113,7 @@ export function createDeviceDriverFactoryByHostPlatform(
       );
     case Platform.PLATFORM_WINDOWS:
       return new WindowsDeviceDriverFactory(
-        deviceServerPort,
+        enabledPlatforms,
         appiumService,
         gamiumService,
         httpRequestRelayService,
@@ -124,7 +129,6 @@ export function createDeviceDriverFactoryByHostPlatform(
 
 export async function createDeviceDriverByDevicePlatform(
   platform: Platform,
-  deviceServerPort: number,
   appiumService: AppiumService,
   gamiumService: GamiumService,
   httpRequestRelayService: HttpRequestRelayService,
@@ -135,13 +139,13 @@ export async function createDeviceDriverByDevicePlatform(
 ): Promise<DeviceDriver> {
   switch (platform) {
     case Platform.PLATFORM_MACOS:
-      return await MacosDriver.create(deviceServerPort, httpRequestRelayService, seleniumEndpointHandlerService, seleniumService, doguLogger);
+      return await MacosDriver.create(httpRequestRelayService, seleniumEndpointHandlerService, seleniumService, doguLogger);
     case Platform.PLATFORM_WINDOWS:
-      return await WindowsDriver.create(deviceServerPort, gamiumService, httpRequestRelayService, seleniumEndpointHandlerService, seleniumService, doguLogger);
+      return await WindowsDriver.create(gamiumService, httpRequestRelayService, seleniumEndpointHandlerService, seleniumService, doguLogger);
     case Platform.PLATFORM_ANDROID:
-      return await AndroidDriver.create(deviceServerPort, appiumService, gamiumService, httpRequestRelayService, appiumDeviceWebDriverHandlerService, doguLogger);
+      return await AndroidDriver.create(appiumService, gamiumService, httpRequestRelayService, appiumDeviceWebDriverHandlerService, doguLogger);
     case Platform.PLATFORM_IOS:
-      return await IosDriver.create(deviceServerPort, appiumService, gamiumService, httpRequestRelayService, appiumDeviceWebDriverHandlerService, doguLogger);
+      return await IosDriver.create(appiumService, gamiumService, httpRequestRelayService, appiumDeviceWebDriverHandlerService, doguLogger);
     default:
       return new NullDeviceDriver();
   }
