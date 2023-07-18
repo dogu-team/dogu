@@ -1,21 +1,9 @@
-import { CreateInstantPipelineDtoBase, CreatePipelineDtoBase, FindAllPipelinesDtoBase } from '@dogu-private/console';
-import { PIPELINE_STATUS, ROUTINE_CONFIG_URL_MAX_LENGTH } from '@dogu-private/types';
+import { CreateInstantPipelineDtoBase, FindAllPipelinesDtoBase } from '@dogu-private/console';
+import { PIPELINE_STATUS } from '@dogu-private/types';
 import { Transform } from 'class-transformer';
-import { IsArray, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsArray, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 import { PageDto } from '../../../common/dto/pagination/page.dto';
-
-export class CreatePipelineDto implements CreatePipelineDtoBase {
-  @IsNotEmpty()
-  @IsString()
-  @MaxLength(ROUTINE_CONFIG_URL_MAX_LENGTH)
-  configUrl!: string;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(ROUTINE_CONFIG_URL_MAX_LENGTH)
-  description = '';
-}
 
 export class CreateInstantPipelineDto implements CreateInstantPipelineDtoBase {
   @IsNotEmpty()

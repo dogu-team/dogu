@@ -37,6 +37,8 @@ export * as PrivateProtocol from './protocol/generated';
 export * from './protocol/grpc/errors';
 export * as OneofUnionTypes from './protocol/oneof-union-types';
 export * from './remote';
+export * from './remote-dest';
+export * from './remote-dest-edge';
 export * from './remote-device-job';
 export * from './remote-webdriver-info';
 export * from './routine';

@@ -1,10 +1,5 @@
 import { PIPELINE_STATUS, RoutineId } from '@dogu-private/types';
 
-export interface CreatePipelineDtoBase {
-  description?: string;
-  configUrl: string;
-}
-
 export interface CreateInstantPipelineDtoBase {
   scriptPath: string;
   appVersion?: string;

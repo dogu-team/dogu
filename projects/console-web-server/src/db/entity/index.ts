@@ -17,6 +17,7 @@ export * from './relations/organization-and-user-and-team.entity';
 export * from './relations/project-and-device.entity';
 export * from './relations/project-and-team-and-project-role.entity';
 export * from './relations/project-and-user-and-project-role.entity';
+export * from './relations/remote-dest-edge.entity';
 export * from './relations/user-and-invitation-token.entity';
 export * from './relations/user-and-refresh-token.entity';
 export * from './relations/user-and-reset-password-token.entity';

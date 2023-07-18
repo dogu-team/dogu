@@ -2,10 +2,12 @@ import { DeviceId, RemoteDeviceJobId, RemoteId, REMOTE_DEVICE_JOB_STATE, WebDriv
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 import { DeviceBase } from './device';
 import { RemoteBase } from './remote';
+import { RemoteDestBase } from './remote-dest';
 
 interface RemoteDeviceJobRelationTraits {
   remote?: RemoteBase;
   device?: DeviceBase;
+  remoteDests?: RemoteDestBase[];
 }
 
 export interface RemoteDeviceJobBaseTraits {

@@ -23,6 +23,7 @@ import { DoguLogger } from '../../logger/logger';
 import { RemoteException } from '../common/exception';
 import { WebDriverEndpointHandlerResult } from '../common/type';
 import { RemoteDeviceJobProcessor } from '../processor/remote-device-job-processor';
+import { onBeforeNewSessionResponse } from './remote-webdriver.protocols';
 import { RemoteWebDriverService } from './remote-webdriver.service';
 
 @Controller('/remote/wd/hub')
@@ -62,13 +63,14 @@ export class RemoteWebDriverInfoController {
     try {
       const relayResponse = await this.remoteWebDriverService.sendRequest(processResult, headers);
       await this.remoteWebDriverService.handleNewSessionResponse(processResult, relayResponse);
+      onBeforeNewSessionResponse(relayResponse, processResult);
       this.sendResponse(relayResponse, response);
     } catch (e) {
       const remoteDeviceJob = await this.dataSource.getRepository(RemoteDeviceJob).findOne({ where: { remoteDeviceJobId: processResult.remoteDeviceJobId } });
       if (!remoteDeviceJob) {
         throw new RemoteException(
           HttpStatus.NOT_FOUND,
-          new Error(`newSession:sendRequest. remote-device-job not found. remoteDeviceJobId: ${processResult.remoteDeviceJobId}`),
+          new Error(`newSession:sendRequest. remote-device-job not found. remote-device-job-id: ${processResult.remoteDeviceJobId}`),
           {},
         );
       }

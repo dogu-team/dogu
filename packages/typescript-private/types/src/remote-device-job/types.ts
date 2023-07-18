@@ -1,5 +1,3 @@
-export type RemoteDeviceJobId = string;
-
 export const REMOTE_DEVICE_JOB_TABLE_NAME = 'remote_device_job';
 
 export enum REMOTE_DEVICE_JOB_STATE {

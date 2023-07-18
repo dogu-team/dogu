@@ -48,7 +48,7 @@ export class RoutineDeviceJob extends BaseEntity implements RoutineDeviceJobBase
 
   @ManyToOne(() => Device, { createForeignKeyConstraints: false })
   @JoinColumn({ name: RoutineDeviceJobPropSnake.device_id })
-  device!: Device;
+  device?: Device;
 
   @ManyToOne(() => RoutineJob, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
   @JoinColumn({ name: RoutineDeviceJobPropSnake.routine_job_id })

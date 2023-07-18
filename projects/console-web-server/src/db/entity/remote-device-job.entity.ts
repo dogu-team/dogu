@@ -1,9 +1,10 @@
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 
 import { RemoteDeviceJobBase, RemoteDeviceJobPropSnake, RemotePropCamel } from '@dogu-private/console';
 import { DeviceId, RemoteDeviceJobId, RemoteId, REMOTE_DEVICE_JOB_STATE, REMOTE_DEVICE_JOB_TABLE_NAME, WebDriverSessionId } from '@dogu-private/types';
 import { ColumnTemplate } from './decorators';
 import { Device } from './device.entity';
+import { RemoteDest } from './remote-dest.entity';
 import { Remote } from './remote.entity';
 
 @Entity(REMOTE_DEVICE_JOB_TABLE_NAME)
@@ -51,4 +52,7 @@ export class RemoteDeviceJob extends BaseEntity implements RemoteDeviceJobBase {
   @ManyToOne(() => Device, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
   @JoinColumn({ name: RemoteDeviceJobPropSnake.device_id })
   device?: Device;
+
+  @OneToMany(() => RemoteDest, (remoteDest) => remoteDest.remoteDeviceJob, { cascade: ['soft-remove'] })
+  remoteDests?: RemoteDest[];
 }

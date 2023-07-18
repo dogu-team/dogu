@@ -13,4 +13,5 @@ export * from './platforms';
 export * from './project-application/types';
 export * from './project/types';
 export * from './protocol/generated';
+export * from './remote/types';
 export * from './step/types';
