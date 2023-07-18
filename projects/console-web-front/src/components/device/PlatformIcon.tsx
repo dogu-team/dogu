@@ -11,7 +11,7 @@ import IosIcon from 'public/resources/icons/platforms/ios.svg';
 import WindowsIcon from 'public/resources/icons/platforms/windows.svg';
 
 interface Props {
-  platform: Platform | undefined;
+  platform: Platform;
 }
 
 const PlatformIcon = ({ platform }: Props) => {

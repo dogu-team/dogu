@@ -1,6 +1,6 @@
 import { RightOutlined } from '@ant-design/icons';
 import { RoutineDeviceJobBase, RoutineJobBase } from '@dogu-private/console';
-import { OrganizationId, RoutinePipelineId, PIPELINE_STATUS, ProjectId } from '@dogu-private/types';
+import { OrganizationId, RoutinePipelineId, PIPELINE_STATUS, ProjectId, Platform } from '@dogu-private/types';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
@@ -85,7 +85,7 @@ const JobExpandableSidebarButton = ({ job, orgId, pipelineId, projectId, expanda
               >
                 <JobStatusIcon status={deviceJobStatus ?? PIPELINE_STATUS.UNSPECIFIED} />
                 <FlexRowBox>
-                  <PlatformIcon platform={item.device?.platform} />
+                  <PlatformIcon platform={item.device?.platform ?? Platform.UNRECOGNIZED} />
                   <DeviceJobName>
                     {`(${item.device?.version}) `}
                     {item.device?.modelName}
