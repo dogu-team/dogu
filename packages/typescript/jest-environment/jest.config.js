@@ -1,5 +1,7 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
-module.exports = {
-  testEnvironment: './build/src/index.js',
+export default {
+  testEnvironment: './build/esm/src/environment/index.js',
   preset: 'ts-jest',
+  globalSetup: './build/esm/src/setup.js',
+  globalTeardown: './build/esm/src/teardown.js',
 };

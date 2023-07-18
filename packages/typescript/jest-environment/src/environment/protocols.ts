@@ -1,8 +1,8 @@
-import { patch, post } from 'axios';
+import axios from 'axios';
 import { plainToInstance, Type } from 'class-transformer';
 import { IsArray, IsEnum, IsNumber, IsString, ValidateNested, validateOrReject } from 'class-validator';
 
-const defaultTimeout = 60 * 1000; // unit: milliseconds
+const DefaultTimeout = 60 * 1000; // unit: milliseconds
 
 export enum DestType {
   JOB = 0,
@@ -107,7 +107,7 @@ export class StepReportClient {
       stepId: Number(stepId),
       destInfos,
     };
-    const response = await post(url, requestBody, { headers, timeout: defaultTimeout });
+    const response = await axios.post(url, requestBody, { headers, timeout: DefaultTimeout });
     const responseBody = plainToInstance(CreateDestResponse, response.data, {
       enableCircularCheck: true,
     });
@@ -123,7 +123,7 @@ export class StepReportClient {
       destStatus,
       localTimeStamp,
     };
-    await patch(url, requestBody, { headers, timeout: defaultTimeout });
+    await axios.patch(url, requestBody, { headers, timeout: DefaultTimeout });
   }
 
   private createHeaders(): Record<string, string> {

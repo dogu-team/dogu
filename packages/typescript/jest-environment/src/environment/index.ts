@@ -1,12 +1,12 @@
 import { EnvironmentContext, JestEnvironmentConfig } from '@jest/environment';
 import { Circus } from '@jest/types';
-import NodeEnvironment from 'jest-environment-node';
+import { TestEnvironment } from 'jest-environment-node';
 import 'reflect-metadata';
 
-import { StepOptionsFactory } from './protocols';
-import { StepReporter, StepReporterFactory } from './step-reporter';
+import { StepOptionsFactory } from './protocols.js';
+import { StepReporter, StepReporterFactory } from './step-reporter.js';
 
-class DoguEnvironment extends NodeEnvironment {
+class DoguEnvironment extends TestEnvironment {
   private stepReporter: StepReporter | null = null;
 
   constructor(config: JestEnvironmentConfig, _context: EnvironmentContext) {

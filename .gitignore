@@ -108,3 +108,6 @@ dist
 __pycache__
 *.pyc
 test-results
+
+# package export
+build-info

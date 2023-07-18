@@ -1,7 +1,7 @@
 import { Circus } from '@jest/types';
 
-import { DestData, DestInfo, DestState, DestType, StepOptions, StepReportClient } from './protocols';
-import { logger } from './utils';
+import { logger } from '../common/utils.js';
+import { DestData, DestInfo, DestState, DestType, StepOptions, StepReportClient } from './protocols.js';
 
 type TestNode = Pick<Circus.TestEntry, 'name' | 'type' | 'parent'>;
 type DescribeNode = Pick<Circus.DescribeBlock, 'name' | 'type' | 'parent' | 'children'>;
