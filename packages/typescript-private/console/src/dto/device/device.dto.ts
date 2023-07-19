@@ -15,6 +15,7 @@ export interface DeviceStateDtoBase {
 export interface FindAddableDevicesByOrganizationIdDtoBase extends PageDtoBase {
   deviceName?: string;
   connectionStates?: DeviceConnectionState[];
+  hostId?: string;
 }
 
 export interface FindDevicesByOrganizationIdDtoBase extends PageDtoBase, FindAddableDevicesByOrganizationIdDtoBase {

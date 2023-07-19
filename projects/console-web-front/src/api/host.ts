@@ -1,4 +1,4 @@
-import { CreateHostDtoBase, HostBase, UpdateHostNameDtoBase } from '@dogu-private/console';
+import { CreateHostDtoBase, HostBase, PageBase, UpdateHostNameDtoBase } from '@dogu-private/console';
 import { HostId, OrganizationId } from '@dogu-private/types';
 
 import api from 'src/api';
@@ -31,7 +31,7 @@ export const updateHostName = async (organizationId: OrganizationId, hostId: Hos
   return data;
 };
 
-export const useHostAsDevice = async (organizationId: OrganizationId, hostId: HostId) => {
+export const updateUseHostAsDevice = async (organizationId: OrganizationId, hostId: HostId) => {
   const { data } = await api.post<void>(`/organizations/${organizationId}/hosts/${hostId}/usage-device`);
 
   return data;
@@ -41,4 +41,14 @@ export const stopUsingHostAsDevice = async (organizationId: OrganizationId, host
   const { data } = await api.delete<void>(`/organizations/${organizationId}/hosts/${hostId}/usage-device`);
 
   return data;
+};
+
+export const getHostByToken = async (organizationId: OrganizationId, token: string) => {
+  const { data } = await api.get<PageBase<HostBase>>(`/organizations/${organizationId}/hosts?token=${token}`);
+
+  if (data.items.length === 0) {
+    throw new Error('Host not found');
+  }
+
+  return data.items[0];
 };

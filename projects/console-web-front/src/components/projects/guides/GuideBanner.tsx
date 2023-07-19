@@ -15,13 +15,13 @@ const GuideBanner = ({ docsUrl }: Props) => {
     <Box>
       <p style={{ marginRight: '1rem' }}>Need help? Please talk to us to help.</p>
       <ButtonWrapper>
-        <Link href="https://github.com/dogu-team/dogu" target="_blank">
-          <StyledButton icon={<GithubFilled />}>GitHub</StyledButton>
+        <Link href="https://github.com/dogu-team/dogu/discussions" target="_blank" style={{ textDecoration: 'none' }}>
+          <StyledButton icon={<GithubFilled />}>Discussions</StyledButton>
         </Link>
-        <Link href="https://discord.com/invite/bVycd6Tu9g" target="_blank">
+        <Link href="https://discord.com/invite/bVycd6Tu9g" target="_blank" style={{ textDecoration: 'none' }}>
           <StyledButton icon={<SiDiscord />}>&nbsp;&nbsp;Discord</StyledButton>
         </Link>
-        <Link href={docsUrl ?? 'https://docs.dogutech.io'} target="_blank">
+        <Link href={docsUrl ?? 'https://docs.dogutech.io'} target="_blank" style={{ textDecoration: 'none' }}>
           <StyledButton icon={<BookOutlined />}>Documentation</StyledButton>
         </Link>
       </ButtonWrapper>

@@ -67,6 +67,11 @@ export class RegisteryService {
       // create user
       const user = await createUser(entityManager, email, password, name);
 
+      // skip tutorial if user is from invitation
+      if (isFromInvitation) {
+        await entityManager.getRepository(User).update({ userId: user.userId }, { isTutorialCompleted: 1 });
+      }
+
       // create organization
       const organization = await this.organizationService.createOrganization(entityManager, user.userId, { name: `${user.name}'s organization` });
 

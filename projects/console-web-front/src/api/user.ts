@@ -1,4 +1,4 @@
-import { ResetPasswordDtoBase, UpdateLastOrganizationDtoBase, UpdateUserDtoBase, UpdateUserEmailPreferenceDtoBase, UserBase } from '@dogu-private/console';
+import { ResetPasswordDtoBase, UpdateLastOrganizationDtoBase, UpdateTutorialDtoBase, UpdateUserDtoBase, UpdateUserEmailPreferenceDtoBase, UserBase } from '@dogu-private/console';
 import { OrganizationId, UserId } from '@dogu-private/types';
 import { AxiosProgressEvent } from 'axios';
 import { GetServerSidePropsContext } from 'next';
@@ -71,4 +71,8 @@ export const updateUserEmailPreference = async (userId: UserId, dto: UpdateUserE
   const { data } = await api.patch<UserBase>(`/users/${userId}/email-preference`, dto);
 
   return data;
+};
+
+export const updateUserTutorial = async (userId: UserId, dto: UpdateTutorialDtoBase) => {
+  return await api.patch<void>(`/users/${userId}/tutorial`, dto);
 };

@@ -1,8 +1,9 @@
+import { OrganizationId, ProjectId } from '@dogu-private/types';
 import { getApiToken } from '../api/organization';
 
 export const SAMPLE_GIT_URL = 'https://github.com/dogu-team/dogu-examples.git';
 
-export enum GuideSupportFramework {
+export enum GuideSupportSdk {
   APPIUM = 'appium',
   WEBDRIVERIO = 'webdriverio',
   GAMIUM = 'gamium',
@@ -24,8 +25,20 @@ export enum GuideSupportPlatform {
 export enum GuideSupportTarget {
   WEB = 'web',
   APP = 'app',
-  GAME = 'game',
+  UNITY = 'unity',
 }
+
+export enum GuideSupportFramework {
+  PYTEST = 'Pytest',
+  JEST = 'Jest',
+  TYPESCRIPT = 'Typescript',
+}
+
+export const guideSupportSdkText: { [key in GuideSupportSdk]: string } = {
+  [GuideSupportSdk.APPIUM]: 'Appium',
+  [GuideSupportSdk.WEBDRIVERIO]: 'WebdriverIO',
+  [GuideSupportSdk.GAMIUM]: 'Gamium',
+};
 
 export const guideSupportLanguageText: { [key in GuideSupportLanguage]: string } = {
   [GuideSupportLanguage.PYTHON]: 'Python',
@@ -43,24 +56,62 @@ export const guideSupportPlatformText: { [key in GuideSupportPlatform]: string }
 export const guideSupportTargetText: { [key in GuideSupportTarget]: string } = {
   [GuideSupportTarget.WEB]: 'Web',
   [GuideSupportTarget.APP]: 'App',
-  [GuideSupportTarget.GAME]: 'Game',
+  [GuideSupportTarget.UNITY]: 'Unity Engine',
 };
 
 export type GenerateCapabilitiesCodeParams = {
-  language: GuideSupportLanguage;
+  framework: GuideSupportFramework;
   target: GuideSupportTarget;
   platform: GuideSupportPlatform;
   orgId: string;
   projectId: string;
 };
 
-export const appiumGuideData = {
-  supportLanguages: [GuideSupportLanguage.PYTHON],
-  supportPlatforms: [GuideSupportPlatform.ANDROID, GuideSupportPlatform.IOS],
-  supportTargets: [GuideSupportTarget.APP],
-  generateCapabilitiesCode: async ({ language, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
-    switch (language) {
-      case GuideSupportLanguage.PYTHON:
+export interface GuideDetailData {
+  framework: GuideSupportFramework;
+  language: GuideSupportLanguage;
+  platform: GuideSupportPlatform;
+  target: GuideSupportTarget;
+  cd: string;
+  installDependencies: string;
+  hasSampleApp?: boolean;
+  runCommand: string;
+  sampleFilePath: string;
+}
+
+export interface Guide {
+  supportFrameworks: { [key in GuideSupportLanguage]?: GuideSupportFramework[] };
+  platformAndTarget: { [key in GuideSupportPlatform]?: GuideSupportTarget[] };
+  defaultOptions: {
+    framework: GuideSupportFramework;
+    platform: GuideSupportPlatform;
+    target: GuideSupportTarget;
+  };
+  generateCapabilitiesCode: (params: GenerateCapabilitiesCodeParams) => Promise<string>;
+  guides: GuideDetailData[];
+}
+
+export interface GuideProps {
+  organizationId: OrganizationId;
+  projectId: ProjectId;
+}
+
+export const appiumGuideData: Guide = {
+  supportFrameworks: {
+    [GuideSupportLanguage.PYTHON]: [GuideSupportFramework.PYTEST],
+  },
+  platformAndTarget: {
+    [GuideSupportPlatform.ANDROID]: [GuideSupportTarget.WEB, GuideSupportTarget.APP],
+    [GuideSupportPlatform.IOS]: [GuideSupportTarget.WEB, GuideSupportTarget.APP],
+  },
+  defaultOptions: {
+    framework: GuideSupportFramework.PYTEST,
+    platform: GuideSupportPlatform.ANDROID,
+    target: GuideSupportTarget.WEB,
+  },
+  generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
+    switch (framework) {
+      case GuideSupportFramework.PYTEST:
         let orgApiToken: string;
 
         try {
@@ -84,7 +135,11 @@ options = UiAutomator2Options().load_capabilities(
       "organizationId": organization_id,
       "projectId": project_id,
       "runsOn": "${platform}", # or another device tag
-      "appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'YOUR_APP_VERSION'}",
+      ${
+        target === GuideSupportTarget.WEB
+          ? `"browserName": "chrome"`
+          : `"appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'YOUR_APP_VERSION'}"`
+      },
     },
   }
 )
@@ -95,6 +150,27 @@ options = UiAutomator2Options().load_capabilities(
   },
   guides: [
     {
+      framework: GuideSupportFramework.PYTEST,
+      language: GuideSupportLanguage.PYTHON,
+      platform: GuideSupportPlatform.ANDROID,
+      target: GuideSupportTarget.WEB,
+      cd: 'cd dogu-examples/appium/python',
+      installDependencies: 'pip install -r requirements.txt',
+      runCommand: `python3 android/chrome.py`,
+      sampleFilePath: 'android/chrome.py',
+    },
+    {
+      framework: GuideSupportFramework.PYTEST,
+      language: GuideSupportLanguage.PYTHON,
+      platform: GuideSupportPlatform.IOS,
+      target: GuideSupportTarget.WEB,
+      cd: 'cd dogu-examples/appium/python',
+      installDependencies: 'pip install -r requirements.txt',
+      runCommand: `python3 ios/chrome.py`,
+      sampleFilePath: 'ios/chrome.py',
+    },
+    {
+      framework: GuideSupportFramework.PYTEST,
       language: GuideSupportLanguage.PYTHON,
       platform: GuideSupportPlatform.ANDROID,
       target: GuideSupportTarget.APP,
@@ -105,6 +181,7 @@ options = UiAutomator2Options().load_capabilities(
       sampleFilePath: 'android/app.py',
     },
     {
+      framework: GuideSupportFramework.PYTEST,
       language: GuideSupportLanguage.PYTHON,
       platform: GuideSupportPlatform.IOS,
       target: GuideSupportTarget.APP,
@@ -117,13 +194,24 @@ options = UiAutomator2Options().load_capabilities(
   ],
 };
 
-export const webdriverioGuideData = {
-  supportLanguages: [GuideSupportLanguage.JAVASCRIPT],
-  supportPlatforms: [GuideSupportPlatform.ANDROID, GuideSupportPlatform.IOS, GuideSupportPlatform.WINDOWS, GuideSupportPlatform.MACOS],
-  supportTargets: [GuideSupportTarget.WEB, GuideSupportTarget.APP],
-  generateCapabilitiesCode: async ({ language, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
-    switch (language) {
-      case GuideSupportLanguage.JAVASCRIPT:
+export const webdriverioGuideData: Guide = {
+  supportFrameworks: {
+    [GuideSupportLanguage.JAVASCRIPT]: [GuideSupportFramework.JEST],
+  },
+  platformAndTarget: {
+    [GuideSupportPlatform.ANDROID]: [GuideSupportTarget.WEB, GuideSupportTarget.APP],
+    [GuideSupportPlatform.IOS]: [GuideSupportTarget.WEB, GuideSupportTarget.APP],
+    [GuideSupportPlatform.WINDOWS]: [GuideSupportTarget.WEB],
+    [GuideSupportPlatform.MACOS]: [GuideSupportTarget.WEB],
+  },
+  defaultOptions: {
+    framework: GuideSupportFramework.JEST,
+    platform: GuideSupportPlatform.ANDROID,
+    target: GuideSupportTarget.WEB,
+  },
+  generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
+    switch (framework) {
+      case GuideSupportFramework.JEST:
         let orgApiToken: string;
 
         try {
@@ -161,6 +249,7 @@ const driver = await remote({
   },
   guides: [
     {
+      framework: GuideSupportFramework.JEST,
       language: GuideSupportLanguage.JAVASCRIPT,
       platform: GuideSupportPlatform.ANDROID,
       target: GuideSupportTarget.WEB,
@@ -170,6 +259,7 @@ const driver = await remote({
       sampleFilePath: 'android/chrome.js',
     },
     {
+      framework: GuideSupportFramework.JEST,
       language: GuideSupportLanguage.JAVASCRIPT,
       platform: GuideSupportPlatform.IOS,
       target: GuideSupportTarget.WEB,
@@ -179,6 +269,7 @@ const driver = await remote({
       sampleFilePath: 'ios/chrome.js',
     },
     {
+      framework: GuideSupportFramework.JEST,
       language: GuideSupportLanguage.JAVASCRIPT,
       platform: GuideSupportPlatform.WINDOWS,
       target: GuideSupportTarget.WEB,
@@ -188,6 +279,7 @@ const driver = await remote({
       sampleFilePath: 'windows/chrome.js',
     },
     {
+      framework: GuideSupportFramework.JEST,
       language: GuideSupportLanguage.JAVASCRIPT,
       platform: GuideSupportPlatform.MACOS,
       target: GuideSupportTarget.WEB,
@@ -197,22 +289,51 @@ const driver = await remote({
       sampleFilePath: 'macos/chrome.js',
     },
     {
+      framework: GuideSupportFramework.JEST,
       language: GuideSupportLanguage.JAVASCRIPT,
       platform: GuideSupportPlatform.ANDROID,
       target: GuideSupportTarget.APP,
       cd: 'cd dogu-examples/webdriverio/javascript',
       installDependencies: 'npm install',
+      hasSampleApp: true,
       runCommand: `npm run test:android:app`,
       sampleFilePath: 'android/app.js',
     },
     {
+      framework: GuideSupportFramework.JEST,
       language: GuideSupportLanguage.JAVASCRIPT,
       platform: GuideSupportPlatform.IOS,
       target: GuideSupportTarget.APP,
       cd: 'cd dogu-examples/webdriverio/javascript',
       installDependencies: 'npm install',
+      hasSampleApp: false,
       runCommand: `npm run test:ios:app`,
       sampleFilePath: 'ios/app.js',
     },
   ],
+};
+
+export const gamiumGuideData: Guide = {
+  supportFrameworks: {
+    [GuideSupportLanguage.TYPESCRIPT]: [GuideSupportFramework.TYPESCRIPT],
+  },
+  platformAndTarget: {
+    [GuideSupportPlatform.ANDROID]: [GuideSupportTarget.UNITY],
+    [GuideSupportPlatform.IOS]: [GuideSupportTarget.UNITY],
+  },
+  defaultOptions: {
+    framework: GuideSupportFramework.TYPESCRIPT,
+    platform: GuideSupportPlatform.ANDROID,
+    target: GuideSupportTarget.UNITY,
+  },
+  generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
+    return '';
+  },
+  guides: [],
+};
+
+export const tutorialData: { [key in GuideSupportSdk]: Guide } = {
+  [GuideSupportSdk.APPIUM]: appiumGuideData,
+  [GuideSupportSdk.WEBDRIVERIO]: webdriverioGuideData,
+  [GuideSupportSdk.GAMIUM]: gamiumGuideData,
 };

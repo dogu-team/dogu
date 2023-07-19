@@ -7,15 +7,15 @@ import { SiWebdriverio } from 'react-icons/si';
 import styled from 'styled-components';
 import resources from '../../../resources';
 
-import { GuideSupportFramework } from '../../../resources/guide';
+import { GuideSupportSdk } from '../../../resources/guide';
 import { flexRowSpaceBetweenStyle } from '../../../styles/box';
 import AppiumGuide from './AppiumGuide';
-import GamiumGuide from './GamuimGuide';
+import GamiumGuide from './GamiumGuide';
 import WebdriverIoGuide from './WebdriverIoGuide';
 
 const UsageGuide = () => {
   const router = useRouter();
-  const selectedFramework = (router.query.framework as GuideSupportFramework | undefined) ?? GuideSupportFramework.WEBDRIVERIO;
+  const selectedFramework = (router.query.framework as GuideSupportSdk | undefined) ?? GuideSupportSdk.WEBDRIVERIO;
 
   const options = [
     {
@@ -25,7 +25,7 @@ const UsageGuide = () => {
           &nbsp;&nbsp;WebdriverIO
         </span>
       ),
-      value: GuideSupportFramework.WEBDRIVERIO,
+      value: GuideSupportSdk.WEBDRIVERIO,
     },
     {
       label: (
@@ -34,7 +34,7 @@ const UsageGuide = () => {
           &nbsp;&nbsp;Appium
         </span>
       ),
-      value: GuideSupportFramework.APPIUM,
+      value: GuideSupportSdk.APPIUM,
     },
   ];
 
@@ -57,10 +57,10 @@ const UsageGuide = () => {
           }}
         />
       </Content>
-
-      {selectedFramework === GuideSupportFramework.WEBDRIVERIO && <WebdriverIoGuide />}
-      {selectedFramework === GuideSupportFramework.APPIUM && <AppiumGuide />}
-      {selectedFramework === GuideSupportFramework.GAMIUM && <GamiumGuide />}
+      {/* 
+      {selectedFramework === GuideSupportSdk.WEBDRIVERIO && <WebdriverIoGuide />}
+      {selectedFramework === GuideSupportSdk.APPIUM && <AppiumGuide />}
+      {selectedFramework === GuideSupportSdk.GAMIUM && <GamiumGuide />} */}
 
       <CloseBox>
         <Link href={`/dashboard/${router.query.orgId}/projects/${router.query.pid}/routines`}>

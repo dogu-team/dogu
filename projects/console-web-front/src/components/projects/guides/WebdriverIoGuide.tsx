@@ -1,65 +1,41 @@
-import { Button, Select, SelectProps } from 'antd';
+import { Alert, Button } from 'antd';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { OrganizationId, ProjectId } from '@dogu-private/types';
 
 import DoneStep from './DoneStep';
 import GuideAnchor from './GuideAnchor';
 import GuideLayout from './GuideLayout';
 import GuideStep from './GuideStep';
 import CopyButtonContainer from './CodeWithCopyButton';
-import {
-  GuideSupportLanguage,
-  guideSupportLanguageText,
-  GuideSupportPlatform,
-  guideSupportPlatformText,
-  GuideSupportTarget,
-  guideSupportTargetText,
-  SAMPLE_GIT_URL,
-  webdriverioGuideData,
-} from '../../../resources/guide';
+import { GuideProps, GuideSupportLanguage, GuideSupportPlatform, GuideSupportTarget, SAMPLE_GIT_URL, webdriverioGuideData } from '../../../resources/guide';
 import { flexRowBaseStyle } from '../../../styles/box';
 import GuideBanner from './GuideBanner';
-import GuidePlatformIcon from './GuidePlatformIcon';
-import GuideTargetIcon from './GuideTargetIcon';
+import GuideSelectors from './GuideSelectors';
+import useTutorialSelector from '../../../hooks/useTutorialSelector';
+import ProjectApplicationUploadButton from '../../project-application/ProjectApplicationUploadButton';
+import SampleApplicationUploadButton from './SampleApplicationUploadButton';
 
-const DEVICE_FARM_ID = 'device-farm';
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
 const SET_CAPABILITIES_ID = 'set-capabilities';
+const UPLOAD_SAMPLE_APP_ID = 'upload-sample-app';
 const RUN_TEST_ID = 'run-test';
 const RESULT_ID = 'result';
 const DONE_ID = 'done';
 
-const WebdriverIoGuide = () => {
-  const router = useRouter();
-  const selectedLanguage = (router.query.language as GuideSupportLanguage | undefined) || webdriverioGuideData.supportLanguages[0];
-  const selectedPlatform = (router.query.platform as GuideSupportPlatform | undefined) || webdriverioGuideData.supportPlatforms[0];
-  const selectedTarget = (router.query.target as GuideSupportTarget | undefined) || webdriverioGuideData.supportTargets[0];
+const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
+  const { framework, platform, target } = useTutorialSelector({
+    defaultFramework: webdriverioGuideData.defaultOptions.framework,
+    defaultPlatform: webdriverioGuideData.defaultOptions.platform,
+    defaultTarget: webdriverioGuideData.defaultOptions.target,
+  });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 
-  const selectedGuide = webdriverioGuideData.guides.find((data) => data.language === selectedLanguage && data.target === selectedTarget && data.platform === selectedPlatform);
-  const organizationId = router.query.orgId as OrganizationId;
-  const projectId = router.query.pid as ProjectId;
-
-  useEffect(() => {
-    if (!selectedGuide) {
-      const fallbackGuide = webdriverioGuideData.guides.find((guide) => guide.language === selectedLanguage && guide.platform === selectedPlatform);
-
-      router.push({
-        pathname: router.pathname,
-        query: {
-          ...router.query,
-          language: fallbackGuide?.language,
-          platform: fallbackGuide?.platform,
-          target: fallbackGuide?.target,
-        },
-      });
-    }
-  }, [selectedGuide, selectedLanguage, selectedPlatform]);
+  const selectedGuide = webdriverioGuideData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
+  const frameworkLanguage = Object.keys(webdriverioGuideData.supportFrameworks).find((language) =>
+    webdriverioGuideData.supportFrameworks[language as GuideSupportLanguage]?.includes(framework),
+  );
 
   useEffect(() => {
     const updateCapabilityCode = async () => {
@@ -70,87 +46,29 @@ const WebdriverIoGuide = () => {
       const code = await webdriverioGuideData.generateCapabilitiesCode({
         orgId: organizationId,
         projectId,
-        language: selectedLanguage,
-        platform: selectedPlatform,
-        target: selectedTarget,
+        framework,
+        platform,
+        target,
       });
       setCapabilityCode(code);
     };
 
     updateCapabilityCode();
-  }, [selectedGuide, selectedLanguage, selectedTarget, selectedPlatform, organizationId, projectId]);
-
-  const languageOptions: SelectProps['options'] = webdriverioGuideData.supportLanguages.map((language) => ({
-    label: (
-      <FlexRow>
-        <Image src={`/resources/icons/languages/${language}.svg`} width={20} height={20} unoptimized alt={language} style={{ marginRight: '.5rem' }} />
-        {guideSupportLanguageText[language]}
-      </FlexRow>
-    ),
-    value: language,
-  }));
-
-  const platformOptions: SelectProps['options'] = webdriverioGuideData.supportPlatforms.map((platform) => ({
-    label: (
-      <FlexRow>
-        <GuidePlatformIcon platform={platform} />
-        &nbsp;&nbsp;
-        {guideSupportPlatformText[platform]}
-      </FlexRow>
-    ),
-    value: platform,
-  }));
-
-  const targetOptions: SelectProps['options'] = webdriverioGuideData.supportTargets.map((target) => ({
-    label: (
-      <FlexRow>
-        <GuideTargetIcon target={target} />
-        &nbsp;&nbsp;
-        {guideSupportTargetText[target]}
-      </FlexRow>
-    ),
-    value: target,
-  }));
+  }, [selectedGuide, framework, target, platform, organizationId, projectId]);
 
   return (
     <GuideLayout
       sidebar={
         <div>
           <div style={{ marginBottom: '1rem' }}>
-            <Select
-              options={languageOptions}
-              value={selectedLanguage}
-              onChange={(value) => {
-                router.push({ query: { ...router.query, language: value } }, undefined, { shallow: true, scroll: true });
-              }}
-              dropdownMatchSelectWidth={false}
-              style={{ width: '100%', marginBottom: '.5rem' }}
-            />
-            <Select
-              options={platformOptions}
-              value={selectedPlatform}
-              onChange={(value) => {
-                router.push({ query: { ...router.query, platform: value } }, undefined, { shallow: true, scroll: true });
-              }}
-              dropdownMatchSelectWidth={false}
-              style={{ width: '100%', marginBottom: '.5rem' }}
-            />
-            <Select
-              options={targetOptions}
-              value={selectedTarget}
-              onChange={(value) => {
-                router.push({ query: { ...router.query, target: value } }, undefined, { shallow: true, scroll: true });
-              }}
-              dropdownMatchSelectWidth={false}
-              style={{ width: '100%' }}
-            />
+            <GuideSelectors guideData={webdriverioGuideData} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
           </div>
           <GuideAnchor
             items={[
-              { id: DEVICE_FARM_ID, title: 'Setup device farm' },
               { id: PROJECT_SETUP_ID, title: 'Sample project setup' },
               { id: INSTALL_DEPENDENCIES_ID, title: 'Install dependencies' },
               { id: SET_CAPABILITIES_ID, title: 'Set capabilities' },
+              ...(target === GuideSupportTarget.APP ? [{ id: UPLOAD_SAMPLE_APP_ID, title: 'Upload sample application' }] : []),
               { id: RUN_TEST_ID, title: 'Run remote testing' },
               { id: RESULT_ID, title: 'Check result' },
               { id: DONE_ID, title: 'Done! Next step' },
@@ -160,16 +78,6 @@ const WebdriverIoGuide = () => {
       }
       content={
         <div>
-          <GuideStep
-            id={DEVICE_FARM_ID}
-            title="Setup device farm"
-            description={<p>Follow tutorial documentation!</p>}
-            content={
-              <Link href="https://docs.dogutech.io/get-started/tutorials/device-farm" target="_blank">
-                <Button>Device farm tutorial</Button>
-              </Link>
-            }
-          />
           <GuideStep
             id={PROJECT_SETUP_ID}
             title="Sample project setup"
@@ -195,8 +103,34 @@ const WebdriverIoGuide = () => {
                 Open <StyledCode>{selectedGuide?.sampleFilePath}</StyledCode> and configure capabilities for your project
               </p>
             }
-            content={<CopyButtonContainer language={selectedLanguage} code={capabilityCode} />}
+            content={<CopyButtonContainer language={frameworkLanguage ?? ''} code={capabilityCode} />}
           />
+
+          {target === GuideSupportTarget.APP && (
+            <GuideStep
+              id={UPLOAD_SAMPLE_APP_ID}
+              title="Upload sample application"
+              description={<p>Before starting, upload the app that matches the version specified in the script.</p>}
+              content={
+                selectedGuide?.hasSampleApp ? (
+                  <SampleApplicationUploadButton organizationId={organizationId} projectId={projectId} />
+                ) : (
+                  <>
+                    {platform === GuideSupportPlatform.IOS && (
+                      <Alert
+                        style={{ marginTop: '.5rem' }}
+                        message="For iOS, we don't provide sample app. Please upload your app manually."
+                        type="warning"
+                        showIcon
+                        action={<ProjectApplicationUploadButton organizationId={organizationId} projectId={projectId} />}
+                      />
+                    )}
+                  </>
+                )
+              }
+            />
+          )}
+
           <GuideStep
             id={RUN_TEST_ID}
             title="Run remote testing"

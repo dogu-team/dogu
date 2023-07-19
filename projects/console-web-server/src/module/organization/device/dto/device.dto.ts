@@ -112,6 +112,10 @@ export class FindDevicesByOrganizationIdDto extends PageDto implements FindDevic
       .filter(Boolean);
   })
   projectIds: string[] = [];
+
+  @IsOptional()
+  @IsString()
+  hostId?: string;
 }
 
 export class FindAddableDevicesByOrganizationIdDto extends PageDto implements FindAddableDevicesByOrganizationIdDtoBase {
@@ -130,6 +134,10 @@ export class FindAddableDevicesByOrganizationIdDto extends PageDto implements Fi
       .filter(Boolean);
   })
   connectionStates?: DeviceConnectionState[] = [];
+
+  @IsOptional()
+  @IsString()
+  hostId?: string;
 }
 
 export class UpdateDeviceDto implements UpdateDeviceDtoBase {
