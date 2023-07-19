@@ -1,16 +1,14 @@
 import { Alert, Button } from 'antd';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { OrganizationId, ProjectId } from '@dogu-private/types';
 
 import DoneStep from './DoneStep';
 import GuideAnchor from './GuideAnchor';
 import GuideLayout from './GuideLayout';
 import GuideStep from './GuideStep';
 import CopyButtonContainer from './CodeWithCopyButton';
-import { GuideSupportLanguage, GuideSupportPlatform, GuideSupportTarget, SAMPLE_GIT_URL, webdriverioGuideData } from '../../../resources/guide';
+import { GuideProps, GuideSupportLanguage, GuideSupportPlatform, GuideSupportTarget, SAMPLE_GIT_URL, webdriverioGuideData } from '../../../resources/guide';
 import { flexRowBaseStyle } from '../../../styles/box';
 import GuideBanner from './GuideBanner';
 import GuideSelectors from './GuideSelectors';
@@ -26,8 +24,7 @@ const RUN_TEST_ID = 'run-test';
 const RESULT_ID = 'result';
 const DONE_ID = 'done';
 
-const WebdriverIoGuide = () => {
-  const router = useRouter();
+const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
   const { framework, platform, target } = useTutorialSelector({
     defaultFramework: webdriverioGuideData.defaultOptions.framework,
     defaultPlatform: webdriverioGuideData.defaultOptions.platform,
@@ -36,8 +33,6 @@ const WebdriverIoGuide = () => {
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 
   const selectedGuide = webdriverioGuideData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const organizationId = router.query.orgId as OrganizationId;
-  const projectId = router.query.pid as ProjectId;
   const frameworkLanguage = Object.keys(webdriverioGuideData.supportFrameworks).find((language) =>
     webdriverioGuideData.supportFrameworks[language as GuideSupportLanguage]?.includes(framework),
   );

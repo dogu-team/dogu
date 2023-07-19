@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import styled from 'styled-components';
+import useOrganizationTutorialContext from '../../hooks/useOrganizationTutorialContext';
 
 import { GuideSupportSdk, guideSupportSdkText } from '../../resources/guide';
 import AppiumGuide from '../projects/guides/AppiumGuide';
@@ -19,6 +20,7 @@ interface Props {
 }
 
 const Tutorial = ({ selectedSdk }: Props) => {
+  const { organization, projects } = useOrganizationTutorialContext();
   const router = useRouter();
   const step = router.query.step as string;
 
@@ -27,6 +29,10 @@ const Tutorial = ({ selectedSdk }: Props) => {
       router.replace({ query: { ...router.query, step: 1 } }, undefined, { shallow: true });
     }
   }, [step]);
+
+  if (!organization || !projects || projects.length === 0) {
+    return <div>Something went wrong... please contact us</div>;
+  }
 
   return (
     <Box>
@@ -81,9 +87,9 @@ const Tutorial = ({ selectedSdk }: Props) => {
       )}
       {step === '2' && (
         <GuideWrapper>
-          {selectedSdk === GuideSupportSdk.WEBDRIVERIO && <WebdriverIoGuide />}
-          {selectedSdk === GuideSupportSdk.APPIUM && <AppiumGuide />}
-          {selectedSdk === GuideSupportSdk.GAMIUM && <GamiumGuide />}
+          {selectedSdk === GuideSupportSdk.WEBDRIVERIO && <WebdriverIoGuide organizationId={organization?.organizationId} projectId={projects?.[0].projectId} />}
+          {selectedSdk === GuideSupportSdk.APPIUM && <AppiumGuide organizationId={organization?.organizationId} projectId={projects?.[0].projectId} />}
+          {selectedSdk === GuideSupportSdk.GAMIUM && <GamiumGuide organizationId={organization?.organizationId} projectId={projects?.[0].projectId} />}
 
           <LinkBox>
             <Link href={{ query: { ...router.query, step: 1 } }} shallow>

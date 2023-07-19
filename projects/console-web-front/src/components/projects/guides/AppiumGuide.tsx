@@ -1,11 +1,9 @@
 import { Alert, Button } from 'antd';
-import { useRouter } from 'next/router';
-import { OrganizationId, ProjectId } from '@dogu-private/types';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-import { appiumGuideData, GuideSupportLanguage, GuideSupportPlatform, GuideSupportTarget, SAMPLE_GIT_URL } from '../../../resources/guide';
+import { appiumGuideData, GuideProps, GuideSupportLanguage, GuideSupportPlatform, GuideSupportTarget, SAMPLE_GIT_URL } from '../../../resources/guide';
 import { flexRowBaseStyle } from '../../../styles/box';
 import CopyButtonContainer from './CodeWithCopyButton';
 import GuideAnchor from './GuideAnchor';
@@ -26,8 +24,7 @@ const RUN_TEST_ID = 'run-test';
 const RESULT_ID = 'result';
 const DONE_ID = 'done';
 
-const AppiumGuide = () => {
-  const router = useRouter();
+const AppiumGuide = ({ organizationId, projectId }: GuideProps) => {
   const { framework, platform, target } = useTutorialSelector({
     defaultFramework: appiumGuideData.defaultOptions.framework,
     defaultPlatform: appiumGuideData.defaultOptions.platform,
@@ -36,8 +33,6 @@ const AppiumGuide = () => {
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 
   const selectedGuide = appiumGuideData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const organizationId = router.query.orgId as OrganizationId;
-  const projectId = router.query.pid as ProjectId;
   const frameworkLanguage = Object.keys(appiumGuideData.supportFrameworks).find((language) =>
     appiumGuideData.supportFrameworks[language as GuideSupportLanguage]?.includes(framework),
   );

@@ -1,9 +1,8 @@
 import { Button } from 'antd';
 import Link from 'next/link';
-import { useRouter } from 'next/router';
-import useTutorialSelector from '../../../hooks/useTutorialSelector';
-import { gamiumGuideData } from '../../../resources/guide';
 
+import useTutorialSelector from '../../../hooks/useTutorialSelector';
+import { gamiumGuideData, GuideProps } from '../../../resources/guide';
 import DoneStep from './DoneStep';
 import GuideAnchor from './GuideAnchor';
 import GuideLayout from './GuideLayout';
@@ -14,8 +13,7 @@ const DEVICE_FARM_ID = 'device-farm';
 const TUTORIAL_DOCS_ID = 'tutorial-docs';
 const DONE_ID = 'done';
 
-const GamiumGuide = () => {
-  const router = useRouter();
+const GamiumGuide = ({ organizationId, projectId }: GuideProps) => {
   const { framework, platform, target } = useTutorialSelector({
     defaultFramework: gamiumGuideData.defaultOptions.framework,
     defaultPlatform: gamiumGuideData.defaultOptions.platform,

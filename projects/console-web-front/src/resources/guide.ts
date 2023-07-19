@@ -1,3 +1,4 @@
+import { OrganizationId, ProjectId } from '@dogu-private/types';
 import { getApiToken } from '../api/organization';
 
 export const SAMPLE_GIT_URL = 'https://github.com/dogu-team/dogu-examples.git';
@@ -88,6 +89,11 @@ export interface Guide {
   };
   generateCapabilitiesCode: (params: GenerateCapabilitiesCodeParams) => Promise<string>;
   guides: GuideDetailData[];
+}
+
+export interface GuideProps {
+  organizationId: OrganizationId;
+  projectId: ProjectId;
 }
 
 export const appiumGuideData: Guide = {
