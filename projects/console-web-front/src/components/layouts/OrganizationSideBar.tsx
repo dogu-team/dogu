@@ -83,7 +83,7 @@ const OrganizationSideBar = () => {
           accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-project' : undefined}
         />
       ),
-      style: { padding: '0', borderRadius: '6px' },
+      style: { borderRadius: '6px' },
     },
     {
       key: 'host',
@@ -102,7 +102,7 @@ const OrganizationSideBar = () => {
           accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-host' : undefined}
         />
       ),
-      style: { padding: '0', borderRadius: '6px' },
+      style: { borderRadius: '6px' },
     },
     {
       key: 'device',
@@ -122,7 +122,7 @@ const OrganizationSideBar = () => {
           accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-device' : undefined}
         />
       ),
-      style: { padding: '0', borderRadius: '6px' },
+      style: { borderRadius: '6px' },
     },
     // {
     //   key: 'cloud-device',
@@ -142,7 +142,7 @@ const OrganizationSideBar = () => {
     //       accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-cloud-device' : undefined}
     //     />
     //   ),
-    //   style: { padding: '0', borderRadius: '6px' },
+    //   style: {  borderRadius: '6px' },
     // },
     { type: 'divider' },
     {
@@ -163,7 +163,7 @@ const OrganizationSideBar = () => {
           accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-member' : undefined}
         />
       ),
-      style: { padding: '0', borderRadius: '6px' },
+      style: { borderRadius: '6px' },
     },
     {
       key: 'team',
@@ -183,7 +183,7 @@ const OrganizationSideBar = () => {
           accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-team' : undefined}
         />
       ),
-      style: { padding: '0', borderRadius: '6px' },
+      style: { borderRadius: '6px' },
     },
     { type: 'divider' },
     {
@@ -203,7 +203,7 @@ const OrganizationSideBar = () => {
           accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-setting' : undefined}
         />
       ),
-      style: { padding: '0', borderRadius: '6px' },
+      style: { borderRadius: '6px' },
     },
   ];
 
