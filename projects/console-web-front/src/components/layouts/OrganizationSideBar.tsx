@@ -239,7 +239,7 @@ const OrganizationSideBar = () => {
             <Box>
               <Menu style={{ borderInline: 'none' }} items={items} mode="inline" />
 
-              <div style={{ marginTop: '.5rem' }}>
+              <div style={{ marginTop: '3rem' }}>
                 <Menu style={{ borderInline: 'none' }} items={bottomItems} mode="inline" />
               </div>
             </Box>
@@ -257,6 +257,7 @@ const OrganizationSideBar = () => {
 export default OrganizationSideBar;
 
 const StyledSider = styled(Layout.Sider)`
+  position: relative;
   display: flex;
   width: ${(props) => (props.collapsed ? '' : '16rem !important')};
   min-width: ${(props) => (props.collapsed ? '' : '16rem !important')};
@@ -303,8 +304,6 @@ const StyledSider = styled(Layout.Sider)`
 `;
 
 const SidebarInner = styled.div`
-  position: sticky !important;
-  top: 0;
   height: 100%;
 `;
 
@@ -318,7 +317,6 @@ const Box = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   overflow-y: overlay;
-  justify-content: space-between;
 
   /* background-color: ${(props) => props.theme.colors.gray1}; */
   flex-shrink: 0;
@@ -357,5 +355,7 @@ const StyledBox = styled.div`
   position: sticky;
   top: 0;
   width: 100%;
+  height: 100%;
+  max-height: 100vh;
   display: flex;
 `;

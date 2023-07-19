@@ -67,9 +67,11 @@ const Title = styled.div`
   align-items: center;
 
   & > p {
+    width: 9rem;
     margin-left: 12px;
     text-transform: uppercase;
     font-weight: 600;
     text-overflow: ellipsis;
+    overflow: hidden;
   }
 `;
