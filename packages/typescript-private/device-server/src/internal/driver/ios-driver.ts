@@ -12,7 +12,7 @@ import { logger } from '../../logger/logger.instance';
 import { IosChannel } from '../channel/ios-channel';
 import { SystemProfiler, XcodeBuild, Xctrace } from '../externals';
 import { DeviceChannel, DeviceChannelOpenParam } from '../public/device-channel';
-import { DeviceDriver, DeviceScanInfo } from '../public/device-driver';
+import { DeviceDriver, DeviceScanResult } from '../public/device-driver';
 import { PionStreamingService } from '../services/streaming/pion-streaming-service';
 
 export class IosDriver implements DeviceDriver {
@@ -45,18 +45,28 @@ export class IosDriver implements DeviceDriver {
     return Platform.PLATFORM_IOS;
   }
 
-  async scanSerials(): Promise<DeviceScanInfo[]> {
+  async scanSerials(): Promise<DeviceScanResult[]> {
     const deviceInfosFromXctrace = await Xctrace.listDevices(logger);
     const serialsSystemProfiler = await SystemProfiler.usbDataTypeToSerials();
-    const deviceInfos = deviceInfosFromXctrace.map((deviceInfo) => {
-      if (serialsSystemProfiler.includes(deviceInfo.serial)) {
-        deviceInfo.status = 'online';
+    const deviceInfos: DeviceScanResult[] = [];
+
+    for (const deviceInfoFromXctrace of deviceInfosFromXctrace) {
+      if (serialsSystemProfiler.includes(deviceInfoFromXctrace.serial)) {
+        deviceInfos.push({
+          serial: deviceInfoFromXctrace.serial,
+          name: deviceInfoFromXctrace.name,
+          status: 'online',
+        });
       } else {
-        deviceInfo.status = 'usb-disconnected';
-        deviceInfo.description = `Device usb connection is unstable. Please check the usb connection.`;
+        deviceInfos.push({
+          serial: deviceInfoFromXctrace.serial,
+          name: deviceInfoFromXctrace.name,
+          status: 'usb-disconnected',
+          description: `Device usb connection is unstable. Please check the usb connection.`,
+        });
       }
-      return deviceInfo;
-    });
+    }
+
     return deviceInfos;
   }
 

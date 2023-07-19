@@ -1,12 +1,12 @@
 import { Platform } from '@dogu-private/types';
 import { DeviceChannel, DeviceChannelOpenParam } from '../public/device-channel';
-import { DeviceDriver, DeviceScanInfo } from '../public/device-driver';
+import { DeviceDriver, DeviceScanResult } from '../public/device-driver';
 
 export class NullDeviceDriver implements DeviceDriver {
   get platform(): Platform {
     return Platform.PLATFORM_UNSPECIFIED;
   }
-  async scanSerials(): Promise<DeviceScanInfo[]> {
+  async scanSerials(): Promise<DeviceScanResult[]> {
     return Promise.resolve([]);
   }
 

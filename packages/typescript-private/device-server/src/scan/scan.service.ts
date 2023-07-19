@@ -10,7 +10,7 @@ import { OnDeviceConnectionSubscriberConnectedEvent, OnDevicesConnectedEvent, On
 import { GamiumService } from '../gamium/gamium.service';
 import { HttpRequestRelayService } from '../http-request-relay/http-request-relay.common';
 import { DeviceChannel } from '../internal/public/device-channel';
-import { DeviceDriver, DeviceScanInfo } from '../internal/public/device-driver';
+import { DeviceDriver, DeviceScanFailed, DeviceScanResult } from '../internal/public/device-driver';
 import { createDeviceDriverFactoryByHostPlatform } from '../internal/public/device-driver-factory';
 import { DoguLogger } from '../logger/logger';
 import { SeleniumService } from '../selenium/selenium.service';
@@ -23,6 +23,7 @@ export class ScanService implements OnModuleInit {
   private befTime = Date.now();
   private onUpdateGuarder = new DuplicatedCallGuarder();
   private maxRemoveMarkCount = 3;
+  private scanFailedDevices: ErrorDevice[] = [];
 
   constructor(
     private readonly eventEmitter: EventEmitter2,
@@ -120,20 +121,30 @@ export class ScanService implements OnModuleInit {
       const befChannels = this.getChannelsByPlatform(platform);
       const befSerials = befChannels.map((channel) => channel.serial);
 
-      const scannedInfos = await Promise.resolve(driver.scanSerials()).catch((e) => {
+      const scanedSerials = await Promise.resolve(driver.scanSerials()).catch((e) => {
         this.logger.error(`ScanService.update scanSerials platform: ${platform}, error: ${stringifyError(e)}`);
-        return [] as DeviceScanInfo[];
+        return [] as DeviceScanResult[];
+      });
+      const scannedOnlineSerials = scanedSerials.filter((scanInfo) => scanInfo.status === 'online').map((scanInfo) => scanInfo.serial);
+      const scannedOfflineInfos = scanedSerials.filter((scanInfo) => scanInfo.status !== 'online') as DeviceScanFailed[];
+      this.scanFailedDevices = scannedOfflineInfos.map((scanInfo) => {
+        const { serial, description } = scanInfo;
+        return {
+          serial,
+          platform: platformTypeFromPlatform(platform),
+          error: new Error(description),
+        };
       });
 
-      const removedSerials = befSerials.filter((currentSerial) => !scannedInfos.find((scanInfo) => currentSerial == scanInfo.serial));
+      const removedSerials = befSerials.filter((befSerial) => !scannedOnlineSerials.find((serial) => befSerial === serial));
       if (removedSerials.length !== 0) {
         this.logger.info('ScanService.update removed', {
           platform,
           removedSerials,
         });
       }
-      scannedInfos.forEach((scanInfo) => {
-        this.deviceDoors.consumeScanInfo(driver, scanInfo);
+      scannedOnlineSerials.forEach((serial) => {
+        this.deviceDoors.openIfNotActive(driver, serial);
       });
 
       removedSerials.forEach((serial) => {
@@ -166,8 +177,21 @@ export class ScanService implements OnModuleInit {
     return this.channels;
   }
 
+  getChannelsWithError(): Readonly<ErrorDevice[]> {
+    return [...this.getChannelsWithOpenError(), ...this.getChannelsWithScanError()];
+  }
+
   getChannelsWithOpenError(): Readonly<ErrorDevice[]> {
     return this.deviceDoors.channelsWithError;
+  }
+
+  getChannelsWithScanError(): Readonly<ErrorDevice[]> {
+    return this.scanFailedDevices.filter((device) => {
+      const { serial } = device;
+      const channel = this.findChannel(serial);
+      if (channel) return false;
+      return true;
+    });
   }
 
   getChannelsByPlatform(platform: Platform): Readonly<DeviceChannel[]> {

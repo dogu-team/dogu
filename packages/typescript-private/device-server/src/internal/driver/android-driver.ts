@@ -10,7 +10,7 @@ import { logger } from '../../logger/logger.instance';
 import { AndroidChannel } from '../channel/android-channel';
 import { Adb } from '../externals';
 import { DeviceChannel, DeviceChannelOpenParam } from '../public/device-channel';
-import { DeviceDriver, DeviceScanInfo } from '../public/device-driver';
+import { DeviceDriver, DeviceScanResult } from '../public/device-driver';
 import { PionStreamingService } from '../services/streaming/pion-streaming-service';
 import { StreamingService } from '../services/streaming/streaming-service';
 
@@ -41,7 +41,7 @@ export class AndroidDriver implements DeviceDriver {
     return Platform.PLATFORM_ANDROID;
   }
 
-  async scanSerials(): Promise<DeviceScanInfo[]> {
+  async scanSerials(): Promise<DeviceScanResult[]> {
     const serials = await Adb.serials();
     return serials;
   }

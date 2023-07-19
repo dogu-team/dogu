@@ -40,7 +40,7 @@ export class DeviceController {
 
   @Get(Device.getDevicesWithError.path)
   getDevicesWithErrors(): Instance<typeof Device.getDevicesWithError.responseBody> {
-    const errorDevices = this.scanService.getChannelsWithOpenError();
+    const errorDevices = this.scanService.getChannelsWithError();
     return {
       value: {
         $case: 'data',

@@ -8,7 +8,7 @@ import { idcLogger } from '../../logger/logger.instance';
 import { SeleniumService } from '../../selenium/selenium.service';
 import { MacosChannel } from '../channel/macos-channel';
 import { DeviceChannel, DeviceChannelOpenParam } from '../public/device-channel';
-import { DeviceDriver, DeviceScanInfo } from '../public/device-driver';
+import { DeviceDriver, DeviceScanResult } from '../public/device-driver';
 import { PionStreamingService } from '../services/streaming/pion-streaming-service';
 import { StreamingService } from '../services/streaming/streaming-service';
 
@@ -35,7 +35,7 @@ export class MacosDriver implements DeviceDriver {
     return Platform.PLATFORM_MACOS;
   }
 
-  async scanSerials(): Promise<DeviceScanInfo[]> {
+  async scanSerials(): Promise<DeviceScanResult[]> {
     const hostname = (await systeminformation.osInfo()).hostname;
     const uuid = await systeminformation.uuid();
     return [{ serial: uuid.os, status: 'online', name: hostname }];

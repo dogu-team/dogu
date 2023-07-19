@@ -8,7 +8,7 @@ import { registerBootstrapHandler } from '../../../../bootstrap/bootstrap.servic
 import { adbLogger } from '../../../../logger/logger.instance';
 import { pathMap } from '../../../../path-map';
 import { LogHandler } from '../../../public/device-channel';
-import { DeviceScanInfo, DeviceScanStatus } from '../../../public/device-driver';
+import { DeviceScanResult, DeviceScanStatus } from '../../../public/device-driver';
 import { parseRecord } from '../../../util/parse';
 import { AndroidDfInfo, AndroidProcCpuInfo, AndroidProcDiskstats, AndroidProcMemInfo, AndroidPropInfo, AndroidShellTopInfo } from './info';
 import { parseAndroidProcCpuInfo, parseAndroidProcDiskstats, parseAndroidProcMemInfo, parseAndroidShellDf, parseAndroidShellProp, parseAndroidShellTop } from './parse';
@@ -304,7 +304,7 @@ export async function runAppProcess(serial: Serial, localPath: string, destPath:
 }
 
 // device info
-export async function serials(): Promise<DeviceScanInfo[]> {
+export async function serials(): Promise<DeviceScanResult[]> {
   const random = Math.random();
   adbLogger.verbose('adb.serials begin', { random });
   const output = (await execIgnoreError(`${pathMap().android.adb} devices`)).stdout;
@@ -347,7 +347,7 @@ export async function serials(): Promise<DeviceScanInfo[]> {
       }
       const serial = matched[0];
       const state = matched[1];
-      return { serial: serial, name: state, status: stateToDeviceStatus(state), description: stateToDesciprtion(state) } as DeviceScanInfo;
+      return { serial: serial, name: state, status: stateToDeviceStatus(state), description: stateToDesciprtion(state) } as DeviceScanResult;
     })
     .filter((deviceScanInfo) => deviceScanInfo !== undefined)
     .map((deviceScanInfo) => deviceScanInfo!);
