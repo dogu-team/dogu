@@ -6,10 +6,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+
 import { getHostByToken, updateUseHostAsDevice } from '../../api/host';
 import useModal from '../../hooks/useModal';
 import useTutorialContext from '../../hooks/useTutorialContext';
-
 import useTutorialSelector from '../../hooks/useTutorialSelector';
 import { GuideSupportPlatform, GuideSupportSdk, tutorialData } from '../../resources/guide';
 import useEventStore from '../../stores/events';

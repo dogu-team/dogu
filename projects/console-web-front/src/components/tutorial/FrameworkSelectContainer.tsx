@@ -1,19 +1,21 @@
-import { OrganizationId } from '@dogu-private/types';
 import { Divider } from 'antd';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
+import { useState } from 'react';
 
 import { flexRowSpaceBetweenStyle } from '../../styles/box';
 import GuideBanner from '../projects/guides/GuideBanner';
 import SkipTutorialButton from './SkipTutorialButton';
 import DoguText from '../common/DoguText';
 import FrameworkSelectTable from './FrameworkSelectTable';
-import { useState } from 'react';
 import { GuideSupportSdk } from '../../resources/guide';
 
-const SdkSelectBox = () => {
+interface Props {
+  skipButton: React.ReactNode;
+}
+
+const FrameworkSelectContainer = ({ skipButton }: Props) => {
   const router = useRouter();
-  const orgId = router.query.orgId as OrganizationId;
   const [selectedSdk, setSelectedSdk] = useState<GuideSupportSdk>(GuideSupportSdk.WEBDRIVERIO);
 
   const handleClickFramework = (framework: string) => {
@@ -31,9 +33,7 @@ const SdkSelectBox = () => {
           <Description>Run automated testings for your web, app and game!</Description>
         </div>
 
-        <div>
-          <SkipTutorialButton>Skip tutorial</SkipTutorialButton>
-        </div>
+        <div>{skipButton}</div>
       </TitleWrapper>
 
       <Divider style={{ margin: '2rem 0' }} />
@@ -53,7 +53,7 @@ const SdkSelectBox = () => {
   );
 };
 
-export default SdkSelectBox;
+export default FrameworkSelectContainer;
 
 const Box = styled.div`
   padding: 3rem;

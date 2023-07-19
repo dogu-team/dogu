@@ -7,8 +7,9 @@ import styled from 'styled-components';
 import { getOrganizationInServerSide } from '../../../../src/api/organization';
 import { getProjectListInServerSide } from '../../../../src/api/project';
 import ConsoleBasicLayout from '../../../../src/components/layouts/ConsoleBasicLayout';
-import SdkSelectBox from '../../../../src/components/tutorial/SdkSelectBox';
-import Tutorial from '../../../../src/components/tutorial/Tutorial';
+import FrameworkSelectContainer from '../../../../src/components/tutorial/FrameworkSelectContainer';
+import SkipTutorialButton from '../../../../src/components/tutorial/SkipTutorialButton';
+import UserTutorial from '../../../../src/components/tutorial/UserTutorial';
 import { TutorialContext } from '../../../../src/hooks/useTutorialContext';
 import { GuideSupportSdk, tutorialData } from '../../../../src/resources/guide';
 import { redirectWithLocale } from '../../../../src/ssr/locale';
@@ -23,7 +24,7 @@ interface ServerSideProps {
 
 const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organization, projects, me }) => {
   const router = useRouter();
-  const isSdkSelected = !!router.query.sdk && Object.keys(tutorialData).includes(router.query.sdk as string) && !!router.query.framework;
+  const isFrameworkSelected = !!router.query.sdk && Object.keys(tutorialData).includes(router.query.sdk as string) && !!router.query.framework;
 
   return (
     <TutorialContext.Provider
@@ -36,13 +37,13 @@ const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organiz
       <Head>
         <title>Tutorial - {organization.name} | Dogu</title>
       </Head>
-      {isSdkSelected ? (
+      {isFrameworkSelected ? (
         <Box>
-          <Tutorial selectedSdk={router.query.sdk as GuideSupportSdk} />
+          <UserTutorial selectedSdk={router.query.sdk as GuideSupportSdk} />
         </Box>
       ) : (
         <CenteredBox>
-          <SdkSelectBox />
+          <FrameworkSelectContainer skipButton={<SkipTutorialButton>Skip tutorial</SkipTutorialButton>} />
         </CenteredBox>
       )}
     </TutorialContext.Provider>
