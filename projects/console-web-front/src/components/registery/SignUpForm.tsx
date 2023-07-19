@@ -2,10 +2,11 @@ import React, { useState, useRef } from 'react';
 import { Checkbox, Form, Input, InputRef } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { USER_EMAIL_MAX_LENGTH, USER_EMAIL_MIN_LENGTH, USER_NAME_MAX_LENGTH, USER_NAME_MIN_LENGTH, USER_PASSWORD_MAX_LENGTH, USER_PASSWORD_MIN_LENGTH } from '@dogu-private/types';
+import styled from 'styled-components';
+import Trans from 'next-translate/Trans';
 
 import SubmitButton from '../buttons/SubmitButton';
 import { passwordRegex } from 'src/utils/validation';
-import styled from 'styled-components';
 import DoguText from '../common/DoguText';
 
 interface Props {
@@ -87,7 +88,7 @@ const SignUpForm = (props: Props) => {
         <Form.Item name="newsletter" valuePropName="checked">
           <Checkbox>
             <NewsletterText>
-              이메일로 <DoguText />의 최신 소식을 받겠습니다.
+              <Trans i18nKey="registery:signUpNewsletterSubscribeText" components={{ dogu: <DoguText /> }} />
             </NewsletterText>
           </Checkbox>
         </Form.Item>

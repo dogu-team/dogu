@@ -35,6 +35,7 @@
   "signUpFormPasswordPlaceholder": "password (8 ~ 28 characters)",
   "signUpFormConfirmPasswordPlaceholder": "confirm password",
   "signUpFormSubmitButtonTitle": "Create an account",
+  "signUpNewsletterSubscribeText": "I would like to receive the news from <dogu></dogu> via email.",
 
   "signUpAlreadyExistEmailErrorMsg": "This email already exist.",
   "signUpFailedErrorMsg": "Failed to sign up.\n{{reason}}"

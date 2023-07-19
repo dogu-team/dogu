@@ -35,6 +35,7 @@
   "signUpFormPasswordPlaceholder": "비밀번호 (8 ~ 28자)",
   "signUpFormConfirmPasswordPlaceholder": "비밀번호 확인",
   "signUpFormSubmitButtonTitle": "가입하기",
+  "signUpNewsletterSubscribeText": "이메일로 <dogu></dogu>의 최신 소식을 받겠습니다.",
 
   "signUpAlreadyExistEmailErrorMsg": "이미 등록된 이메일입니다.",
   "signUpFailedErrorMsg": "회원가입 실패\n{{reason}}"
