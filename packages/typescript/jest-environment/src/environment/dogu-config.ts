@@ -84,6 +84,10 @@ export class DoguConfig {
     return process.env.DOGU_BROWSER_VERSION || _.get(this.configFileObject, 'browserVersion');
   }
 
+  get appVersion(): string | undefined {
+    return process.env.DOGU_APP_VERSION || _.get(this.configFileObject, 'appVersion');
+  }
+
   get deviceId(): string | undefined {
     return process.env.DOGU_DEVICE_ID;
   }

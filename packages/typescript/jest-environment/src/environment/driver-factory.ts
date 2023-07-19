@@ -21,6 +21,8 @@ export class DriverFactory {
       projectId: doguConfig.projectId,
       runsOn: doguConfig.runsOn,
       browserName: doguConfig.browserName,
+      browserVersion: doguConfig.browserVersion,
+      appVersion: doguConfig.appVersion,
     };
     _.set(options, 'capabilities.dogu:options', doguOptions);
 
