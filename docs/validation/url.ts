@@ -1,30 +1,12 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
+import axios, { AxiosRequestConfig } from 'axios';
 import fs from 'fs/promises';
-import http, { IncomingMessage, RequestOptions } from 'http';
 import path from 'path';
 
 const exceptionUrls: string[] = ['https://DOGU_HOST:3001'];
 const checkedUrls: { [url: string]: boolean } = {};
-
-function fetchHead(options: RequestOptions): Promise<IncomingMessage> {
-  return new Promise((resolve, reject) => {
-    const req = http.request(options, (res) => {
-      res.on('data', () => {});
-
-      res.on('end', () => {
-        resolve(res);
-      });
-    });
-
-    req.on('error', (error) => {
-      reject(error);
-    });
-
-    req.end();
-  });
-}
 
 function searchUrls(content: string): string[] {
   const urlRegex = /https?:\/\/[^)\s`\s"]+/g;
@@ -57,18 +39,21 @@ async function validateUrl(filePath: string): Promise<boolean> {
       continue;
     }
 
-    const urlObject = new URL(url);
-    const options: RequestOptions = {
-      host: urlObject.host,
-      path: urlObject.pathname,
+    checkedUrls[url] = false;
+    const config: AxiosRequestConfig = {
+      url,
       method: 'HEAD',
       timeout: 5000,
     };
 
-    checkedUrls[url] = false;
-    const response = await fetchHead(options);
-    if (response.statusCode !== 404) {
+    try {
+      await axios.request(config);
       checkedUrls[url] = true;
+    } catch (error) {
+      const statusCode = error.response.status;
+      if (statusCode !== 404) {
+        checkedUrls[url] = true;
+      }
     }
   }
 
@@ -104,7 +89,7 @@ const docsPath = path.join(__dirname, '../');
 (async () => {
   await validate([`${docsPath}/docs`, `${docsPath}/src`, `${docsPath}/i18n`]);
 
-  const invalidUrls = [];
+  const invalidUrls: string[] = [];
   for (const checkedUrl of Object.keys(checkedUrls)) {
     if (!checkedUrls[checkedUrl]) {
       invalidUrls.push(checkedUrl);
@@ -112,7 +97,13 @@ const docsPath = path.join(__dirname, '../');
   }
 
   if (invalidUrls.length !== 0) {
-    throw new Error(`Invalid URLs: ${invalidUrls}`);
+    let error = '';
+    for (const invalidUrl of invalidUrls) {
+      error += `\n${invalidUrl}`;
+    }
+
+    console.error(`Invalid URLs: ${error}`);
+    process.exit(1);
   }
 
   console.log('URL validation completed.');

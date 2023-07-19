@@ -16354,6 +16354,7 @@ __metadata:
     "@tsconfig/docusaurus": 1.0.6
     "@types/node": ^20.4.2
     "@types/react": 17.0.2
+    axios: ^1.4.0
     clsx: 1.2.1
     cross-env: 7.0.3
     dotenv: 16.0.3
