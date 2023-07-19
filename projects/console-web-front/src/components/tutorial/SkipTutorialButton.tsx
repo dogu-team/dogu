@@ -2,8 +2,8 @@ import { OrganizationId } from '@dogu-private/types';
 import { Button } from 'antd';
 import { isAxiosError } from 'axios';
 import { useRouter } from 'next/router';
+import { updateUserTutorial } from '../../api/user';
 
-import { updateOrganizationTutorial } from '../../api/organization';
 import useOrganizationTutorialContext from '../../hooks/useOrganizationTutorialContext';
 import useRequest from '../../hooks/useRequest';
 import { sendErrorNotification } from '../../utils/antd';
@@ -13,22 +13,22 @@ interface Props {
 }
 
 const SkipTutorialButton = ({ children }: Props) => {
-  const { organization } = useOrganizationTutorialContext();
+  const { me, organization } = useOrganizationTutorialContext();
   const router = useRouter();
-  const [loading, request] = useRequest(updateOrganizationTutorial);
+  const [loading, request] = useRequest(updateUserTutorial);
 
   const handleClickSkip = async () => {
-    if (!organization) {
+    if (!me || !organization) {
       return;
     }
 
-    if (organization.isTutorialCompleted) {
+    if (me.isTutorialCompleted) {
       router.push(`/dashboard/${organization.organizationId}`);
       return;
     }
 
     try {
-      await request(organization.organizationId, { isTutorialCompleted: 1 });
+      await request(me.userId, { isTutorialCompleted: 1 });
       router.push(`/dashboard/${organization.organizationId}`);
     } catch (e) {
       if (isAxiosError(e)) {

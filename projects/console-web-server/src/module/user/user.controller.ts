@@ -27,7 +27,7 @@ import { ImageFileParser } from '../../utils/file';
 import { Page } from '../common/dto/pagination/page';
 import { PageDto } from '../common/dto/pagination/page.dto';
 import { UpdateUserEmailPreferenceDto } from './dto/user-email-preference.dto';
-import { ResetPasswordDto, UpdateLastOrganizationDto, UpdateUserDto } from './dto/user.dto';
+import { ResetPasswordDto, UpdateLastOrganizationDto, UpdateTutorialDto, UpdateUserDto } from './dto/user.dto';
 import { UserEmailPreferenceService } from './user-email-preference.service';
 
 @Controller('users')
@@ -145,5 +145,11 @@ export class UserController {
     }
 
     await this.userEmailPreferenceService.updateEmailPreference(userId, dto);
+  }
+
+  @Patch(':userId/tutorial')
+  @EmailVerification(EMAIL_VERIFICATION.UNVERIFIED)
+  async updateTutorialStatus(@Param(UserPropCamel.userId) userId: UserId, @Body() dto: UpdateTutorialDto): Promise<void> {
+    return await this.userService.updateTutorialStatus(userId, dto);
   }
 }

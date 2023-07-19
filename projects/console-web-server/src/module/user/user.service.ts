@@ -29,7 +29,7 @@ import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invit
 import { UserVisit } from '../../db/entity/user-visit.entity';
 import { User } from '../../db/entity/user.entity';
 import { EMPTY_PAGE, Page } from '../../module/common/dto/pagination/page';
-import { FindUsersByOrganizationIdDto, ResetPasswordDto, UpdateUserDto } from '../../module/user/dto/user.dto';
+import { FindUsersByOrganizationIdDto, ResetPasswordDto, UpdateTutorialDto, UpdateUserDto } from '../../module/user/dto/user.dto';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { PageDto } from '../common/dto/pagination/page.dto';
 import { UserFileService } from '../file/user-file.service';
@@ -374,5 +374,19 @@ export class UserService {
     });
 
     return;
+  }
+
+  async updateTutorialStatus(userId: UserId, dto: UpdateTutorialDto): Promise<void> {
+    const { isTutorialCompleted } = dto;
+
+    const user = await this.dataSource.getRepository(User).findOne({
+      where: { userId },
+    });
+
+    if (!user) {
+      throw new HttpException(`Organization not found. userId: ${userId}`, HttpStatus.NOT_FOUND);
+    }
+
+    await this.dataSource.getRepository(User).update({ userId }, { isTutorialCompleted });
   }
 }

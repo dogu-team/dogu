@@ -59,6 +59,9 @@ export class User extends BaseEntity implements UserBase {
   @Column({ type: 'character varying', name: UserPropSnake.profile_image_url, length: USER_PROFILE_IMAGE_URL_MAX_LENGTH, nullable: true })
   profileImageUrl!: string | null;
 
+  @Column({ type: 'smallint', name: UserPropSnake.is_tutorial_completed, nullable: false, default: 0 })
+  isTutorialCompleted!: number;
+
   @ColumnTemplate.CreateDate(UserPropSnake.created_at)
   createdAt!: Date;
 

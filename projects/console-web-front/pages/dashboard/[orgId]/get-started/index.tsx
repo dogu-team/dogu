@@ -11,6 +11,7 @@ import SdkSelectBox from '../../../../src/components/tutorial/SdkSelectBox';
 import Tutorial from '../../../../src/components/tutorial/Tutorial';
 import { OrganizationTutorialContext } from '../../../../src/hooks/useOrganizationTutorialContext';
 import { GuideSupportSdk, tutorialData } from '../../../../src/resources/guide';
+import { redirectWithLocale } from '../../../../src/ssr/locale';
 import { checkUserVerifiedInServerSide } from '../../../../src/utils/auth';
 import { NextPageWithLayout } from '../../../_app';
 
@@ -20,7 +21,7 @@ interface ServerSideProps {
   projects: ProjectBase[];
 }
 
-const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organization, projects }) => {
+const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organization, projects, me }) => {
   const router = useRouter();
   const isSdkSelected = !!router.query.sdk && Object.keys(tutorialData).includes(router.query.sdk as string) && !!router.query.framework;
 
@@ -29,6 +30,7 @@ const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organiz
       value={{
         organization,
         projects,
+        me,
       }}
     >
       <Head>
@@ -60,6 +62,12 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (co
 
   if (checkResult.redirect) {
     return checkResult;
+  }
+
+  if (checkResult.props.fallback['/registery/check'].isTutorialCompleted === 1) {
+    return {
+      redirect: redirectWithLocale(context, `/dashboard/${context.query.orgId}/projects`, false),
+    };
   }
 
   return {

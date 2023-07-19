@@ -67,15 +67,7 @@ import { RoutineService } from '../routine/routine.service';
 import { TokenService } from '../token/token.service';
 import { AcceptUserInvitationDto } from '../user-invitation/dto/user-invitation.dto';
 import { UserInvitationService } from '../user-invitation/user-invitation.service';
-import {
-  createOrganizationDto,
-  FindInvitationsDto,
-  InviteEmailDto,
-  UpdateOrganizationDto,
-  UpdateOrganizationOwnerDto,
-  UpdateOrganizationRoleDto,
-  UpdateTutorialDto,
-} from './dto/organization.dto';
+import { createOrganizationDto, FindInvitationsDto, InviteEmailDto, UpdateOrganizationDto, UpdateOrganizationOwnerDto, UpdateOrganizationRoleDto } from './dto/organization.dto';
 
 @Injectable()
 export class OrganizationService {
@@ -178,8 +170,10 @@ export class OrganizationService {
 
     await this.createApiToken(manager, organizationId);
 
-    // create default project
-    await this.projectService.createProject(manager, userId, organizationId, { name: 'Sample Project', description: '' });
+    // create default project if user tutorial is not completed
+    if (user.isTutorialCompleted === 0) {
+      await this.projectService.createProject(manager, userId, organizationId, { name: 'Sample Project', description: '' });
+    }
 
     return org;
   }
@@ -687,19 +681,5 @@ export class OrganizationService {
       await manager.getRepository(OrganizatioApiToken).update({ organizationApiTokenId: orgApiToken.organizationApiTokenId }, { revokerId });
       await manager.getRepository(OrganizatioApiToken).softDelete({ organizationApiTokenId: orgApiToken.organizationApiTokenId });
     });
-  }
-
-  async updateTutorialStatus(organizationId: OrganizationId, dto: UpdateTutorialDto): Promise<void> {
-    const { isTutorialCompleted } = dto;
-
-    const organization = await this.dataSource.getRepository(Organization).findOne({
-      where: { organizationId },
-    });
-
-    if (!organization) {
-      throw new HttpException(`Organization not found. organizationId: ${organizationId}`, HttpStatus.NOT_FOUND);
-    }
-
-    await this.dataSource.getRepository(Organization).update({ organizationId }, { isTutorialCompleted });
   }
 }

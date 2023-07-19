@@ -57,3 +57,7 @@ export interface UpdateUserDtoBase {
 export interface UpdateLastOrganizationDtoBase {
   organizationId: OrganizationId;
 }
+
+export interface UpdateTutorialDtoBase {
+  isTutorialCompleted: number;
+}

@@ -57,10 +57,10 @@ const UsageGuide = () => {
           }}
         />
       </Content>
-
+      {/* 
       {selectedFramework === GuideSupportSdk.WEBDRIVERIO && <WebdriverIoGuide />}
       {selectedFramework === GuideSupportSdk.APPIUM && <AppiumGuide />}
-      {selectedFramework === GuideSupportSdk.GAMIUM && <GamiumGuide />}
+      {selectedFramework === GuideSupportSdk.GAMIUM && <GamiumGuide />} */}
 
       <CloseBox>
         <Link href={`/dashboard/${router.query.orgId}/projects/${router.query.pid}/routines`}>
