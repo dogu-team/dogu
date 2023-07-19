@@ -1,5 +1,5 @@
 import { OrganizationPropCamel, RoutineBase } from '@dogu-private/console';
-import { OrganizationId, ProjectId, RoutineId, UserPayload } from '@dogu-private/types';
+import { CREATOR_TYPE, OrganizationId, ProjectId, RoutineId, UserPayload } from '@dogu-private/types';
 import { Controller, Delete, Get, Inject, Param, Patch, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Routine } from '../../db/entity/routine.entity';
@@ -91,6 +91,6 @@ export class RoutineController {
     @Param('routineId') routineId: RoutineId,
     @User() userPayload: UserPayload,
   ): Promise<void> {
-    await this.pipelineService.createPipelineByRoutineConfig(organizationId, projectId, routineId, userPayload.userId);
+    await this.pipelineService.createPipelineByRoutineConfig(organizationId, projectId, routineId, userPayload.userId, CREATOR_TYPE.USER);
   }
 }
