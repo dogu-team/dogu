@@ -1,7 +1,7 @@
 import { DeviceAgentPort, DeviceAgentSecondPort, DeviceAgentThirdPort, ErrorDevice, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { loop, stringify, stringifyError } from '@dogu-tech/common';
 import { DeviceChannel } from '../internal/public/device-channel';
-import { DeviceDriver, DeviceScanInfo } from '../internal/public/device-driver';
+import { DeviceDriver } from '../internal/public/device-driver';
 import { logger } from '../logger/logger.instance';
 
 interface DeviceDoorEvent {
@@ -17,17 +17,16 @@ export class DeviceDoor {
   private _firstCloseTime = 0;
   private _latestCloseTime = 0;
 
-  constructor(public readonly driver: DeviceDriver, public scanInfo: DeviceScanInfo, private readonly callback: DeviceDoorEvent) {
+  constructor(public readonly driver: DeviceDriver, public serial: Serial, private readonly callback: DeviceDoorEvent) {
     this.process().catch((error) => {
-      logger.error(`DeviceDoor.process. serial: ${scanInfo.serial}, platform:${driver.platform} is error`, { error: stringify(error) });
+      logger.error(`DeviceDoor.process. serial: ${serial}, platform:${driver.platform} is error`, { error: stringify(error) });
     });
   }
 
-  onScanned(scanInfo: DeviceScanInfo): void {
+  openIfNotActive(): void {
     this._firstCloseTime = 0;
     this._latestCloseTime = 0;
     this._latestOpenTime = Date.now();
-    this.scanInfo = scanInfo;
   }
 
   close(): void {
@@ -56,10 +55,10 @@ export class DeviceDoor {
   }
 
   private async processInternal(): Promise<void> {
-    if (null == this.channel && this.scanInfo.status === 'online' && this._latestCloseTime < this._latestOpenTime) {
+    if (null == this.channel && this._latestCloseTime < this._latestOpenTime) {
       try {
         this.channel = await this.driver.openChannel({
-          serial: this.scanInfo.serial,
+          serial: this.serial,
           deviceAgentDevicePort: DeviceAgentPort,
           deviceAgentDeviceSecondPort: DeviceAgentSecondPort,
           deviceAgentDeviceThirdPort: DeviceAgentThirdPort,
@@ -67,7 +66,7 @@ export class DeviceDoor {
         this._error = null;
         await this.callback.onOpen(this.channel);
       } catch (error) {
-        logger.error(`DeviceDoor.processInternal initChannel error serial:${this.scanInfo.serial} ${stringifyError(error)}`);
+        logger.error(`DeviceDoor.processInternal initChannel error serial:${this.serial} ${stringifyError(error)}`);
         this.channel = null;
         this._firstCloseTime = Date.now();
         this._latestCloseTime = Date.now();
@@ -82,8 +81,8 @@ export class DeviceDoor {
 
     if (this._latestOpenTime < this._latestCloseTime && 10000 < this._latestCloseTime - this._firstCloseTime) {
       this.channel = null;
-      await this.driver.closeChannel(this.scanInfo.serial);
-      await this.callback.onClose(this.scanInfo.serial);
+      await this.driver.closeChannel(this.serial);
+      await this.callback.onClose(this.serial);
       this._isLongClosed = true;
       return;
     }
@@ -95,25 +94,25 @@ export class DeviceDoors {
 
   constructor(private readonly callback: DeviceDoorEvent) {}
 
-  consumeScanInfo(driver: DeviceDriver, scanInfo: DeviceScanInfo): void {
+  openIfNotActive(driver: DeviceDriver, serial: Serial): void {
     this.cleanupClosedDoor();
 
     const platform = driver.platform;
-    const door = this._doors.find((door) => door.driver.platform === platform && door.scanInfo.serial === scanInfo.serial);
+    const door = this._doors.find((door) => door.driver.platform === platform && door.serial === serial);
     if (!door) {
-      const newDoor = new DeviceDoor(driver, scanInfo, this.callback);
+      const newDoor = new DeviceDoor(driver, serial, this.callback);
       this._doors.push(newDoor);
-      newDoor.onScanned(scanInfo);
+      newDoor.openIfNotActive();
       return;
     }
-    door.onScanned(scanInfo);
+    door.openIfNotActive();
   }
 
   closeDoor(driver: DeviceDriver, serial: Serial): void {
     this.cleanupClosedDoor();
 
     const platform = driver.platform;
-    const door = this._doors.find((door) => door.driver.platform === platform && door.scanInfo.serial === serial);
+    const door = this._doors.find((door) => door.driver.platform === platform && door.serial === serial);
     if (!door) {
       logger.warn(`DeviceDoors.closeDoor. serial: ${serial}, platform:${platform} is not found`);
       return;
@@ -122,19 +121,17 @@ export class DeviceDoors {
   }
 
   get channels(): DeviceChannel[] {
-    return this._doors.filter((door) => null !== door.channel && null === door.error() && door.scanInfo.status === 'online').map((door) => door.channel!);
+    return this._doors.filter((door) => null !== door.channel && null === door.error()).map((door) => door.channel!);
   }
 
   get channelsWithError(): ErrorDevice[] {
     return this._doors
-      .filter((door) => null != door.error() || door.scanInfo.status !== 'online')
+      .filter((door) => null != door.error())
       .map((door) => {
-        const scanDescription = door.scanInfo.description ?? door.scanInfo.status;
-        const error = door.scanInfo.status !== 'online' ? new Error(scanDescription) : door.error();
         return {
           platform: platformTypeFromPlatform(door.driver.platform),
-          serial: door.scanInfo.serial,
-          error: error ?? new Error('Unknown error'),
+          serial: door.serial,
+          error: door.error() ?? new Error('Unknown error'),
         };
       });
   }

@@ -4,7 +4,7 @@ import { ChildProcess, DirectoryRotation } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
 import { logger } from '../../../logger/logger.instance';
-import { DeviceScanInfo } from '../../public/device-driver';
+import { DeviceScanResult } from '../../public/device-driver';
 
 const directoryRotation = new DirectoryRotation('xctrace', 30);
 
@@ -31,10 +31,10 @@ export async function record(appPath: string, serial: Serial, printable: Printab
 const XctraceListOutputGroup = ['Devices', 'Devices Offline', 'Simulators', 'unknown'];
 type XctraceListOutputGroup = (typeof XctraceListOutputGroup)[number];
 
-export async function listDevices(printable: Printable): Promise<DeviceScanInfo[]> {
+export async function listDevices(printable: Printable): Promise<DeviceScanResult[]> {
   const result = await ChildProcess.exec(`${XcTraceCommand} list devices`, {}, printable);
 
-  const infos: DeviceScanInfo[] = [];
+  const infos: DeviceScanResult[] = [];
   let firstDeviceLine = undefined; // macOs Self Device
   let category: XctraceListOutputGroup = 'unknown';
 
