@@ -6,8 +6,7 @@ This project adheres to the Contributor Covenant [code of conduct](https://githu
 By participating, you are expected to uphold this code. Please report unacceptable
 behavior to community@dogutech.io.
 
-We are currently working on the guide. Until the guide is complete, please use the Issue, Discussion, or Discord community for any questions or support you may need.
+We are currently working on the guide. Until the guide is complete, please use the Issue, Slack community for any questions or support you may need.
 
 **[Issues](https://github.com/dogu-team/dogu/issues)**  
-**[Discussion](https://github.com/dogu-team/dogu/discussions)**  
-**[Discord community](https://discord.gg/bVycd6Tu9g)**
+**[Slack community](https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw)**

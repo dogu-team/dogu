@@ -1,7 +1,7 @@
 import { BookOutlined, GithubFilled } from '@ant-design/icons';
 import { Button } from 'antd';
 import Link from 'next/link';
-import { SiDiscord } from 'react-icons/si';
+import { SiSlack } from 'react-icons/si';
 import styled from 'styled-components';
 
 import { flexRowBaseStyle } from '../../styles/box';
@@ -18,8 +18,8 @@ const GuideBanner = ({ docsUrl }: Props) => {
         <Link href="https://github.com/dogu-team/dogu/discussions" target="_blank" style={{ textDecoration: 'none' }}>
           <StyledButton icon={<GithubFilled />}>Discussions</StyledButton>
         </Link>
-        <Link href="https://discord.com/invite/bVycd6Tu9g" target="_blank" style={{ textDecoration: 'none' }}>
-          <StyledButton icon={<SiDiscord />}>&nbsp;&nbsp;Discord</StyledButton>
+        <Link href="https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw" target="_blank">
+          <StyledButton icon={<SiSlack />}>&nbsp;&nbsp;Slack</StyledButton>
         </Link>
         <Link href={docsUrl ?? 'https://docs.dogutech.io'} target="_blank" style={{ textDecoration: 'none' }}>
           <StyledButton icon={<BookOutlined />}>Documentation</StyledButton>
