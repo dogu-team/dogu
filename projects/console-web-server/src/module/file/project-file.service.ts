@@ -66,6 +66,7 @@ export class ProjectFileService {
 
     let next: boolean | undefined = true;
     let continuationToken: string | undefined;
+
     while (next) {
       const list = await this.featureFileService.list({
         bucketKey: 'organization',
@@ -76,7 +77,7 @@ export class ProjectFileService {
       continuationToken = list.continuationToken;
       next = list.isTruncated;
 
-      if (list.contents) {
+      if (list.contents && list.contents.length > 0) {
         const filteredList = list.contents.filter((item) => {
           if (!item.key) {
             return false;
@@ -86,6 +87,8 @@ export class ProjectFileService {
         });
 
         recordList.push(...filteredList);
+      } else {
+        next = false;
       }
     }
     if (recordList.length === 0) {
