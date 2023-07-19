@@ -1,7 +1,8 @@
 import { Circus } from '@jest/types';
 
-import { logger } from '../common/utils.js';
+import { DoguConfig } from './config.js';
 import { DestData, DestInfo, DestState, DestType, StepOptions, StepReportClient } from './protocols.js';
+import { createLogger } from './utils.js';
 
 type TestNode = Pick<Circus.TestEntry, 'name' | 'type' | 'parent'>;
 type DescribeNode = Pick<Circus.DescribeBlock, 'name' | 'type' | 'parent' | 'children'>;
@@ -50,6 +51,7 @@ export class NullStepReporter implements StepReporter {}
 export class StepReporterImpl implements StepReporter {
   private client: StepReportClient;
   private destDatas: DestData[] = [];
+  private readonly logger = createLogger('StepReporter');
 
   constructor(readonly options: StepOptions) {
     this.client = new StepReportClient(options);
@@ -87,7 +89,7 @@ export class StepReporterImpl implements StepReporter {
     } else if (event.name === 'test_fn_failure') {
       await this.updateDestStatus(event.test, DestState.FAILED);
     } else {
-      logger.error(`unhandled event: ${event.name}`);
+      this.logger.error(`unhandled event: ${event.name}`);
     }
   }
 
@@ -102,7 +104,7 @@ export class StepReporterImpl implements StepReporter {
     if (!destId) {
       return;
     }
-    logger.info(`update dest status`, {
+    this.logger.info(`update dest status`, {
       paths,
       destId,
       status,
@@ -112,13 +114,30 @@ export class StepReporterImpl implements StepReporter {
 }
 
 export class StepReporterFactory {
-  constructor(readonly options: StepOptions) {}
+  private readonly logger = createLogger('StepReporterFactory');
+
+  constructor(readonly doguConfig: DoguConfig) {}
 
   create(): StepReporter {
-    if (!this.options.apiBaseUrl) {
-      logger.warn('apiBaseUrl is not set. StepReporter is disabled.');
+    if (!this.doguConfig.stepId) {
+      this.logger.error('stepId is not set');
       return new NullStepReporter();
     }
-    return new StepReporterImpl(this.options);
+    if (!this.doguConfig.deviceId) {
+      this.logger.error('deviceId is not set');
+      return new NullStepReporter();
+    }
+    if (!this.doguConfig.hostToken) {
+      this.logger.error('hostToken is not set');
+      return new NullStepReporter();
+    }
+    const options: StepOptions = {
+      apiBaseUrl: this.doguConfig.apiBaseUrl,
+      organizationId: this.doguConfig.organizationId,
+      deviceId: this.doguConfig.deviceId,
+      stepId: this.doguConfig.stepId,
+      hostToken: this.doguConfig.hostToken,
+    };
+    return new StepReporterImpl(options);
   }
 }

@@ -1,9 +1,9 @@
 {
   "version": 1,
   "apiBaseUrl": "http://localhost:4000",
-  "organizationId": "",
-  "projectId": "",
-  "token": "",
-  "runsOn": "windows",
+  "organizationId": "fc71b041-817d-4c79-b802-6fc62d038dcf",
+  "projectId": "f43a4bb8-03ab-46bf-b514-17ce603c506b",
+  "token": "dogu-api-pat-r6hvbxftsz2e183yf149bhe83p",
+  "runsOn": "macos",
   "browserName": "chrome"
 }

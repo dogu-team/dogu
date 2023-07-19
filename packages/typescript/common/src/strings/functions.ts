@@ -57,6 +57,7 @@ export function toISOStringWithTimezone(date: Date, timeDelimeter = ':'): string
   const tzOffset = -date.getTimezoneOffset();
   const diff = tzOffset >= 0 ? '+' : '-';
   const pad: (n: number) => string = (n) => `${Math.floor(Math.abs(n))}`.padStart(2, '0');
+  const padMilliseconds: (n: number) => string = (n) => `${Math.floor(Math.abs(n))}`.padEnd(3, '0');
   return (
     String(date.getFullYear()) +
     '-' +
@@ -70,7 +71,7 @@ export function toISOStringWithTimezone(date: Date, timeDelimeter = ':'): string
     timeDelimeter +
     pad(date.getSeconds()) +
     '.' +
-    pad(date.getMilliseconds()) +
+    padMilliseconds(date.getMilliseconds()) +
     diff +
     pad(tzOffset / 60) +
     timeDelimeter +
