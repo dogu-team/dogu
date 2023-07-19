@@ -23,10 +23,10 @@ const FrameworkSelectTable = ({ selectedSdk, onClickFramework, onClickSdk }: Pro
           <SdkIcon sdk={GuideSupportSdk.APPIUM} size={32} />
           <p>Appium</p>
         </SdkItem>
-        <SdkItem onClick={() => onClickSdk(GuideSupportSdk.GAMIUM)} isSelected={selectedSdk === GuideSupportSdk.GAMIUM}>
+        {/* <SdkItem onClick={() => onClickSdk(GuideSupportSdk.GAMIUM)} isSelected={selectedSdk === GuideSupportSdk.GAMIUM}>
           <SdkIcon sdk={GuideSupportSdk.GAMIUM} size={32} />
           <p>Gamium</p>
-        </SdkItem>
+        </SdkItem> */}
       </div>
 
       <ColContainer>
