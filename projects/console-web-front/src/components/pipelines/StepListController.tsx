@@ -245,12 +245,7 @@ const CopyButton = styled.button`
   }
 `;
 
-const Item = styled.div`
-  position: sticky;
-  top: 57px;
-  z-index: 1;
-  border-radius: 8px;
-`;
+const Item = styled.div``;
 
 const StepHeader = styled.button<{ isOpen: boolean; isVerified?: boolean }>`
   position: sticky;
