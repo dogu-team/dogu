@@ -13,23 +13,23 @@
       "type": "integer"
     },
     "apiBaseUrl": {
-      "description": "Base URL of the dogu's API.\nRequired",
+      "description": "Base URL of the Dogu's API.\nRequired",
       "type": "string"
     },
     "token": {
-      "description": "Token to be used for dogu API calls.\nRequired",
+      "description": "Token to be used for the Dogu API calls.\nRequired",
       "type": "string"
     },
     "organizationId": {
-      "description": "Organization ID to be used for dogu API calls.\nRequired",
+      "description": "Organization ID to be used for the Dogu API calls.\nRequired",
       "type": "string"
     },
     "projectId": {
-      "description": "Project ID to be used for dogu API calls.\nRequired",
+      "description": "Project ID to be used for the Dogu API calls.\nRequired",
       "type": "string"
     },
     "runsOn": {
-      "description": "Tag of the environment the dogu is running on.\nRequired",
+      "description": "Tag of the environment the Dogu is running on.\nRequired",
       "anyOf": [
         {
           "type": "string"
