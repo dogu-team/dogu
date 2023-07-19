@@ -53,8 +53,8 @@ export function createLogger(category: string): {
   error: (message: any, ...args: any[]) => void;
 } {
   return {
-    info: (message: any, ...args: any[]): void => console.log(`${toISOStringWithTimezone(new Date())} INFO  ${category}:`, message, ...args),
-    error: (message: any, ...args: any[]): void => console.error(`${toISOStringWithTimezone(new Date())} ERROR ${category}:`, message, ...args),
+    info: (message: any, ...args: any[]): void => console.log(`${toISOStringWithTimezone(new Date())} | info | ${process.pid} | ${category} |`, message, ...args),
+    error: (message: any, ...args: any[]): void => console.error(`${toISOStringWithTimezone(new Date())} | error | ${process.pid} | ${category} |`, message, ...args),
   };
 }
 
@@ -82,7 +82,9 @@ export function createPaths(eventNode: EventNode): string[] {
   let current: EventNode | undefined = eventNode;
   while (current) {
     const { name } = current;
-    paths = [name, ...paths];
+    if (name !== 'ROOT_DESCRIBE_BLOCK') {
+      paths = [name, ...paths];
+    }
     current = current.parent;
   }
   return paths;

@@ -31,6 +31,7 @@ export class RoutineDestReporterImpl implements RoutineDestReporter {
 
   constructor(readonly options: RoutineDestOptions) {
     this.client = new RoutineDestClient(options);
+    this.logger.info('created');
   }
 
   async handleTestEvent(event: Circus.SyncEvent | Circus.AsyncEvent, state: Circus.State): Promise<void> {
@@ -53,7 +54,7 @@ export class RoutineDestReporterImpl implements RoutineDestReporter {
     ) {
       // noop
     } else if (event.name === 'run_start') {
-      await this.createRoutineDest(state.rootDescribeBlock);
+      await this.createRoutineDest(state.rootDescribeBlock.children);
     } else if (event.name === 'run_describe_start') {
       await this.updateRoutineDestState(event.describeBlock, DestState.RUNNING);
     } else if (event.name === 'run_describe_finish') {
@@ -69,9 +70,9 @@ export class RoutineDestReporterImpl implements RoutineDestReporter {
     }
   }
 
-  private async createRoutineDest(eventNode: EventNode): Promise<void> {
-    const routineDestInfo = createDestInfoRecursive(eventNode);
-    this.routineDestDatas = await this.client.createRoutineDest([routineDestInfo]);
+  private async createRoutineDest(eventNodes: EventNode[]): Promise<void> {
+    const routineDestInfos = eventNodes.map((eventNode) => createDestInfoRecursive(eventNode));
+    this.routineDestDatas = await this.client.createRoutineDest(routineDestInfos);
   }
 
   private async updateRoutineDestState(eventNode: EventNode, routineDestState: DestState): Promise<void> {
@@ -96,15 +97,15 @@ export class RoutineDestReporterFactory {
 
   create(): RoutineDestReporter {
     if (!this.doguConfig.stepId) {
-      this.logger.error('stepId is not set');
+      this.logger.error('stepId is not set. skip routine dest reporting');
       return new NullRoutineDestReporter();
     }
     if (!this.doguConfig.deviceId) {
-      this.logger.error('deviceId is not set');
+      this.logger.error('deviceId is not set. skip routine dest reporting');
       return new NullRoutineDestReporter();
     }
     if (!this.doguConfig.hostToken) {
-      this.logger.error('hostToken is not set');
+      this.logger.error('hostToken is not set. skip routine dest reporting');
       return new NullRoutineDestReporter();
     }
     const options: RoutineDestOptions = {

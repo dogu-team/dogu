@@ -1,5 +1,4 @@
 {
   "extends": "./babel.config.base.json",
-  "presets": [["@babel/preset-env", { "modules": "commonjs" }], "@babel/preset-typescript"],
-  "plugins": ["babel-plugin-transform-import-meta"]
+  "plugins": ["@babel/plugin-transform-modules-commonjs", "babel-plugin-transform-import-meta"]
 }

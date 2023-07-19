@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { plainToInstance, Type } from 'class-transformer';
-import { IsArray, IsEnum, IsNumber, IsString, IsUUID, ValidateNested, validateOrReject } from 'class-validator';
-import { DefaultRequestTimeout, DestInfo, DestState, DestType } from './common.js';
+import { z } from 'zod';
+
+import { createLogger, DefaultRequestTimeout, DestInfo, DestState, DestType } from './common.js';
 
 type RemoteDestInfo = DestInfo;
 
@@ -16,38 +16,26 @@ export interface RemoteDestOptions {
   token: string;
 }
 
-export class RemoteDestData {
-  @IsUUID(4)
-  remoteDestId!: string;
+const BaseRemoteDestData = z.object({
+  remoteDestId: z.string(),
+  remoteDeviceJobId: z.string(),
+  name: z.string(),
+  index: z.number(),
+  state: z.nativeEnum(DestState),
+  type: z.nativeEnum(DestType),
+});
 
-  @IsUUID(4)
-  remoteDeviceJobId!: string;
+export type RemoteDestData = z.infer<typeof BaseRemoteDestData> & {
+  children: RemoteDestData[];
+};
 
-  @IsString()
-  name!: string;
+const RemoteDestData: z.ZodType<RemoteDestData> = BaseRemoteDestData.extend({
+  children: z.lazy(() => RemoteDestData.array()),
+});
 
-  @IsNumber()
-  @Type(() => Number)
-  index!: number;
-
-  @IsEnum(DestState)
-  state!: DestState;
-
-  @IsEnum(DestType)
-  type!: DestType;
-
-  @ValidateNested({ each: true })
-  @Type(() => RemoteDestData)
-  @IsArray()
-  children!: RemoteDestData[];
-}
-
-class CreateRemoteDestResponse {
-  @ValidateNested({ each: true })
-  @Type(() => RemoteDestData)
-  @IsArray()
-  dests!: RemoteDestData[];
-}
+const CreateRemoteDestResponse = z.object({
+  dests: RemoteDestData.array(),
+});
 
 interface UpdateRemoteDestStateRequestBody {
   remoteDestState: DestState;
@@ -55,26 +43,25 @@ interface UpdateRemoteDestStateRequestBody {
 }
 
 export class RemoteDestClient {
+  private readonly logger = createLogger('RemoteDestClient');
+
   constructor(private readonly options: RemoteDestOptions) {}
 
   async createRemoteDest(remoteDestInfos: RemoteDestInfo[]): Promise<RemoteDestData[]> {
     const { apiBaseUrl, projectId, remoteDeviceJobId } = this.options;
-    const url = `${apiBaseUrl}/projects/${projectId}/remote-device-jobs/${remoteDeviceJobId}/remote-dest`;
+    const url = `${apiBaseUrl}/public/projects/${projectId}/remote-device-jobs/${remoteDeviceJobId}/remote-dests`;
     const headers = this.createHeaders();
     const requestBody: CreateRemoteDestRequestBody = {
       remoteDestInfos,
     };
     const response = await axios.post(url, requestBody, { headers, timeout: DefaultRequestTimeout });
-    const responseBody = plainToInstance(CreateRemoteDestResponse, response.data, {
-      enableCircularCheck: true,
-    });
-    await validateOrReject(responseBody);
+    const responseBody = CreateRemoteDestResponse.parse(response.data);
     return responseBody.dests;
   }
 
   async updateRemoteDestState(remoteDestId: string, remoteDestState: DestState, localTimeStamp: string): Promise<void> {
     const { apiBaseUrl, projectId, remoteDeviceJobId } = this.options;
-    const url = `${apiBaseUrl}/projects/${projectId}/remote-device-jobs/${remoteDeviceJobId}/remote-dest/${remoteDestId}/state`;
+    const url = `${apiBaseUrl}/public/projects/${projectId}/remote-device-jobs/${remoteDeviceJobId}/remote-dests/${remoteDestId}/state`;
     const headers = this.createHeaders();
     const requestBody: UpdateRemoteDestStateRequestBody = {
       remoteDestState,

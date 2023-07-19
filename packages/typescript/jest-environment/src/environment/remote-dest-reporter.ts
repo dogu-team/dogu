@@ -32,6 +32,7 @@ export class RemoteDestReporterImpl implements RemoteDestReporter {
 
   constructor(readonly options: RemoteDestOptions) {
     this.client = new RemoteDestClient(options);
+    this.logger.info('created');
   }
 
   async handleTestEvent(event: Circus.SyncEvent | Circus.AsyncEvent, state: Circus.State): Promise<void> {
@@ -54,7 +55,7 @@ export class RemoteDestReporterImpl implements RemoteDestReporter {
     ) {
       // noop
     } else if (event.name === 'run_start') {
-      await this.createRemoteDest(state.rootDescribeBlock);
+      await this.createRemoteDest(state.rootDescribeBlock.children);
     } else if (event.name === 'run_describe_start') {
       await this.updateRemoteDestState(event.describeBlock, DestState.RUNNING);
     } else if (event.name === 'run_describe_finish') {
@@ -70,9 +71,9 @@ export class RemoteDestReporterImpl implements RemoteDestReporter {
     }
   }
 
-  private async createRemoteDest(eventNode: EventNode): Promise<void> {
-    const remoteDestInfo = createDestInfoRecursive(eventNode);
-    this.remoteDestDatas = await this.client.createRemoteDest([remoteDestInfo]);
+  private async createRemoteDest(eventNodes: EventNode[]): Promise<void> {
+    const remoteDestInfos = eventNodes.map((eventNode) => createDestInfoRecursive(eventNode));
+    this.remoteDestDatas = await this.client.createRemoteDest(remoteDestInfos);
   }
 
   private async updateRemoteDestState(eventNode: EventNode, remoteDestState: DestState): Promise<void> {

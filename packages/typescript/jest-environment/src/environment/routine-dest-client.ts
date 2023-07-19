@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { plainToInstance, Type } from 'class-transformer';
-import { IsArray, IsEnum, IsNumber, IsString, ValidateNested, validateOrReject } from 'class-validator';
+import { z } from 'zod';
+
 import { DefaultRequestTimeout, DestInfo, DestState, DestType } from './common.js';
 
 export type RoutineDestInfo = DestInfo;
@@ -15,40 +15,26 @@ interface CreateRoutineDestRequestBody {
   destInfos: RoutineDestInfo[];
 }
 
-export class RoutineDestData {
-  @IsNumber()
-  @Type(() => Number)
-  destId!: number;
+const BaseRoutineDestData = z.object({
+  destId: z.number(),
+  routineStepId: z.number(),
+  name: z.string(),
+  index: z.number(),
+  state: z.nativeEnum(DestState),
+  type: z.nativeEnum(DestType),
+});
 
-  @IsNumber()
-  @Type(() => Number)
-  routineStepId!: number;
+export type RoutineDestData = z.infer<typeof BaseRoutineDestData> & {
+  children: RoutineDestData[];
+};
 
-  @IsString()
-  name!: string;
+const RoutineDestData: z.ZodType<RoutineDestData> = BaseRoutineDestData.extend({
+  children: z.lazy(() => RoutineDestData.array()),
+});
 
-  @IsNumber()
-  @Type(() => Number)
-  index!: number;
-
-  @IsEnum(DestState)
-  state!: DestState;
-
-  @IsEnum(DestType)
-  type!: DestType;
-
-  @ValidateNested({ each: true })
-  @Type(() => RoutineDestData)
-  @IsArray()
-  children!: RoutineDestData[];
-}
-
-export class CreateRoutineDestResponse {
-  @ValidateNested({ each: true })
-  @Type(() => RoutineDestData)
-  @IsArray()
-  dests!: RoutineDestData[];
-}
+const CreateRoutineDestResponse = z.object({
+  dests: RoutineDestData.array(),
+});
 
 export interface RoutineDestOptions {
   apiBaseUrl: string;
@@ -70,10 +56,7 @@ export class RoutineDestClient {
       destInfos,
     };
     const response = await axios.post(url, requestBody, { headers, timeout: DefaultRequestTimeout });
-    const responseBody = plainToInstance(CreateRoutineDestResponse, response.data, {
-      enableCircularCheck: true,
-    });
-    await validateOrReject(responseBody);
+    const responseBody = CreateRoutineDestResponse.parse(response.data);
     return responseBody.dests;
   }
 

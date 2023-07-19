@@ -1,7 +1,7 @@
 import { EnvironmentContext, JestEnvironmentConfig } from '@jest/environment';
 import { Circus } from '@jest/types';
+import { isAxiosError } from 'axios';
 import { TestEnvironment } from 'jest-environment-node';
-import 'reflect-metadata';
 
 import { createLogger } from './common.js';
 import { DoguConfig, DoguConfigFactory } from './dogu-config.js';
@@ -41,10 +41,12 @@ export class DoguEnvironment extends TestEnvironment {
 
   async handleTestEvent(event: Circus.SyncEvent | Circus.AsyncEvent, state: Circus.State): Promise<void> {
     await this.routineDestReporter?.handleTestEvent?.(event, state).catch((error) => {
-      this.logger.error('routineDestReporter.handleTestEvent failed', error);
+      const parsedError = isAxiosError(error) ? error.toJSON() : error;
+      this.logger.error('routineDestReporter.handleTestEvent failed', parsedError);
     });
     await this.remoteDestReporter?.handleTestEvent?.(event, state).catch((error) => {
-      this.logger.error('remoteDestReporter.handleTestEvent failed', error);
+      const parsedError = isAxiosError(error) ? error.toJSON() : error;
+      this.logger.error('remoteDestReporter.handleTestEvent failed', parsedError);
     });
   }
 }

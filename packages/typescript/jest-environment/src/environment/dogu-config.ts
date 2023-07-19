@@ -119,10 +119,10 @@ export class DoguConfigFactory {
   async create(): Promise<DoguConfig> {
     if (await isConfigFileExist()) {
       const configFileObject = await loadAndValidateConfigFile();
-      this.logger.info('dogu.config.json is loaded.');
+      this.logger.info('dogu.config.json is loaded');
       return new DoguConfig(configFileObject);
     }
-    this.logger.info('dogu.config.json is not found. use default config.');
+    this.logger.info('dogu.config.json is not found. use default config');
     return new DoguConfig({});
   }
 }

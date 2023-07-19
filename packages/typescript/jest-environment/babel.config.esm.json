@@ -1,5 +1,3 @@
 {
-  "extends": "./babel.config.base.json",
-  "presets": [["@babel/preset-env", { "modules": false }], "@babel/preset-typescript"],
-  "plugins": []
+  "extends": "./babel.config.base.json"
 }
