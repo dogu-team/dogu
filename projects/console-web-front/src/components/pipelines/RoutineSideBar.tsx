@@ -4,10 +4,16 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import H6 from '../common/headings/H6';
-import CreateRoutineButton from '../routine/CreateRoutineButton';
+import GitIntegrationTag from '../projects/GitIntegrationTag';
 import RoutineListController from 'src/components/routine/RoutineListController';
+import CreateRoutineButton from '../routine/CreateRoutineButton';
+import { flexRowBaseStyle } from '../../styles/box';
 
-const PipelineSideBar = () => {
+interface Props {
+  isGitIntegrated: boolean;
+}
+
+const RoutineSideBar = ({ isGitIntegrated }: Props) => {
   const router = useRouter();
   const { t } = useTranslation();
 
@@ -17,7 +23,13 @@ const PipelineSideBar = () => {
   return (
     <Box>
       <TitleWrapper>
-        <H6>{t('routine:routineSidebarTitle')}</H6>
+        <FlexRow>
+          <H6>{t('routine:routineSidebarTitle')}</H6>
+          <div style={{ marginLeft: '.5rem' }}>
+            <GitIntegrationTag isGitIntegrated={isGitIntegrated} />
+          </div>
+        </FlexRow>
+
         <CreateRoutineButton organizationId={orgId} projectId={projectId} />
       </TitleWrapper>
       <RoutineWrapper>
@@ -27,10 +39,14 @@ const PipelineSideBar = () => {
   );
 };
 
-export default PipelineSideBar;
+export default RoutineSideBar;
 
 const Box = styled.div`
   overflow-y: auto;
+`;
+
+const FlexRow = styled.div`
+  ${flexRowBaseStyle}
 `;
 
 const TitleWrapper = styled.div`

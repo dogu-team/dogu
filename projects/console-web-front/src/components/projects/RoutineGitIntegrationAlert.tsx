@@ -1,10 +1,9 @@
-import { CheckCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { OrganizationId, ProjectId } from '@dogu-private/types';
-import { Form, Modal, Tag, Tooltip } from 'antd';
+import { Alert, Button, Form, Modal, Space } from 'antd';
 import { isAxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
 
 import { updateProjectScm } from '../../api/project';
 import useModal from '../../hooks/useModal';
@@ -14,21 +13,13 @@ import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd
 import { getErrorMessage } from '../../utils/error';
 import GitIntegrationForm, { GitIntegrationFormValues } from './GitIntegrationForm';
 
-interface Props {
-  isGitIntegrated: boolean;
-}
-
-const GitIntegrationTag = ({ isGitIntegrated }: Props) => {
+const RoutineGitIntegrationAlert = () => {
   const store = useGitIntegrationStore();
   const [isOpen, openModal, closeModal] = useModal();
   const [form] = Form.useForm<GitIntegrationFormValues>();
-  const [loading, request] = useRequest(updateProjectScm);
   const router = useRouter();
+  const [loading, request] = useRequest(updateProjectScm);
   const { t } = useTranslation('project');
-
-  useEffect(() => {
-    store.updateGitIntegrationStatus(isGitIntegrated);
-  }, [router.query.pid]);
 
   const saveGitIntegration = async () => {
     const values = await form.validateFields();
@@ -52,20 +43,21 @@ const GitIntegrationTag = ({ isGitIntegrated }: Props) => {
 
   return (
     <>
-      <Tooltip title={store.isGitIntegrated ? 'Git integrated' : 'Click for Git integration'}>
-        <Tag
-          color={store.isGitIntegrated ? 'green' : 'warning'}
-          icon={store.isGitIntegrated ? <CheckCircleOutlined /> : <ExclamationCircleOutlined />}
-          onClick={() => {
-            if (!store.isGitIntegrated) {
-              openModal();
-            }
-          }}
-          style={{ cursor: store.isGitIntegrated ? 'default' : 'pointer' }}
-        >
-          Git
-        </Tag>
-      </Tooltip>
+      <Alert
+        type="warning"
+        showIcon
+        message="Your project is not currently integrated with a Git repository. Routine execution is possible after Git integration."
+        action={
+          <Space direction="vertical">
+            <Button type="primary" size="small" style={{ width: '100%' }} onClick={() => openModal()}>
+              Integrate
+            </Button>
+            <Link href="https://docs.dogutech.io/management/project/git-integration/" target="_blank" style={{ textDecoration: 'none' }}>
+              <Button size="small">Documentation</Button>
+            </Link>
+          </Space>
+        }
+      />
 
       <Modal open={isOpen} centered closable onCancel={handleClose} okText={'Save'} onOk={saveGitIntegration} confirmLoading={loading}>
         <GitIntegrationForm form={form} />
@@ -74,4 +66,4 @@ const GitIntegrationTag = ({ isGitIntegrated }: Props) => {
   );
 };
 
-export default GitIntegrationTag;
+export default RoutineGitIntegrationAlert;

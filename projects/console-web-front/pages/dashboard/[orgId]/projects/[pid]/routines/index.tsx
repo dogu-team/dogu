@@ -12,7 +12,7 @@ import ProjectLayout from 'src/components/layouts/ProjectLayout';
 import PipelineListController from 'src/components/pipelines/PipelineListController';
 import TableListView from 'src/components/common/TableListView';
 import RefreshButton from 'src/components/buttons/RefreshButton';
-import PipelineSideBar from 'src/components/pipelines/PipelineSideBar';
+import RoutineSideBar from 'src/components/pipelines/RoutineSideBar';
 import PipelineFilter from 'src/components/pipelines/PipelineFilter';
 import RunRoutineButton from 'src/components/pipelines/RunRoutineButton';
 import RoutineInfoContainer from 'src/components/routine/RoutineInfoContainer';
@@ -55,11 +55,7 @@ const ProjectRoutinePage: NextPageWithLayout<WithProjectProps> = ({ organization
 };
 
 ProjectRoutinePage.getLayout = (page) => {
-  return (
-    <ProjectLayout isGitIntegrated={page.props.isGitIntegrated} sidebar={<PipelineSideBar />}>
-      {page}
-    </ProjectLayout>
-  );
+  return <ProjectLayout sidebar={<RoutineSideBar isGitIntegrated={page.props.isGitIntegrated} />}>{page}</ProjectLayout>;
 };
 
 export const getServerSideProps: GetServerSideProps = getProjectPageServerSideProps;

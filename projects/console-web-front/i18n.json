@@ -35,10 +35,7 @@
 
     "/dashboard/[orgId]/projects/[pid]": ["project"],
     "/dashboard/[orgId]/projects/[pid]/get-started": ["project", "project-app"],
-    "/dashboard/[orgId]/projects/[pid]/git": ["project"],
     "/dashboard/[orgId]/projects/[pid]/members": ["project", "project-member"],
-    "/dashboard/[orgId]/projects/[pid]/script": ["project", "project-script", "device-streaming"],
-    "/dashboard/[orgId]/projects/[pid]/repository": ["project", "project-repository"],
     "/dashboard/[orgId]/projects/[pid]/devices": ["project", "device"],
     "/dashboard/[orgId]/projects/[pid]/apps": ["project", "project-app"],
     "/dashboard/[orgId]/projects/[pid]/remotes": ["project"],
