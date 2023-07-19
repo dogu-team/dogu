@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { SiWebdriverio } from 'react-icons/si';
 import styled from 'styled-components';
-import resources from '../../../resources';
 
+import resources from '../../../resources';
 import { GuideSupportSdk } from '../../../resources/guide';
 import { flexRowSpaceBetweenStyle } from '../../../styles/box';
 import AppiumGuide from './AppiumGuide';

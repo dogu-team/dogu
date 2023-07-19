@@ -1,13 +1,11 @@
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
-import { ProjectBase } from '@dogu-private/console';
-import { OrganizationId } from '@dogu-private/types';
 import { Button, Steps } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import styled from 'styled-components';
-import useOrganizationTutorialContext from '../../hooks/useOrganizationTutorialContext';
 
+import useTutorialContext from '../../hooks/useTutorialContext';
 import { GuideSupportSdk, guideSupportSdkText } from '../../resources/guide';
 import AppiumGuide from '../projects/guides/AppiumGuide';
 import GamiumGuide from '../projects/guides/GamiumGuide';
@@ -20,7 +18,7 @@ interface Props {
 }
 
 const Tutorial = ({ selectedSdk }: Props) => {
-  const { organization, projects } = useOrganizationTutorialContext();
+  const { organization, project } = useTutorialContext();
   const router = useRouter();
   const step = router.query.step as string;
 
@@ -30,7 +28,7 @@ const Tutorial = ({ selectedSdk }: Props) => {
     }
   }, [step]);
 
-  if (!organization || !projects || projects.length === 0) {
+  if (!organization || !project) {
     return <div>Something went wrong... please contact us</div>;
   }
 
@@ -87,9 +85,9 @@ const Tutorial = ({ selectedSdk }: Props) => {
       )}
       {step === '2' && (
         <GuideWrapper>
-          {selectedSdk === GuideSupportSdk.WEBDRIVERIO && <WebdriverIoGuide organizationId={organization?.organizationId} projectId={projects?.[0].projectId} />}
-          {selectedSdk === GuideSupportSdk.APPIUM && <AppiumGuide organizationId={organization?.organizationId} projectId={projects?.[0].projectId} />}
-          {selectedSdk === GuideSupportSdk.GAMIUM && <GamiumGuide organizationId={organization?.organizationId} projectId={projects?.[0].projectId} />}
+          {selectedSdk === GuideSupportSdk.WEBDRIVERIO && <WebdriverIoGuide organizationId={organization.organizationId} projectId={project.projectId} />}
+          {selectedSdk === GuideSupportSdk.APPIUM && <AppiumGuide organizationId={organization.organizationId} projectId={project.projectId} />}
+          {selectedSdk === GuideSupportSdk.GAMIUM && <GamiumGuide organizationId={organization.organizationId} projectId={project.projectId} />}
 
           <LinkBox>
             <Link href={{ query: { ...router.query, step: 1 } }} shallow>

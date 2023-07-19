@@ -9,7 +9,7 @@ import { getProjectListInServerSide } from '../../../../src/api/project';
 import ConsoleBasicLayout from '../../../../src/components/layouts/ConsoleBasicLayout';
 import SdkSelectBox from '../../../../src/components/tutorial/SdkSelectBox';
 import Tutorial from '../../../../src/components/tutorial/Tutorial';
-import { OrganizationTutorialContext } from '../../../../src/hooks/useOrganizationTutorialContext';
+import { TutorialContext } from '../../../../src/hooks/useTutorialContext';
 import { GuideSupportSdk, tutorialData } from '../../../../src/resources/guide';
 import { redirectWithLocale } from '../../../../src/ssr/locale';
 import { checkUserVerifiedInServerSide } from '../../../../src/utils/auth';
@@ -26,10 +26,10 @@ const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organiz
   const isSdkSelected = !!router.query.sdk && Object.keys(tutorialData).includes(router.query.sdk as string) && !!router.query.framework;
 
   return (
-    <OrganizationTutorialContext.Provider
+    <TutorialContext.Provider
       value={{
         organization,
-        projects,
+        project: projects[0] ?? null,
         me,
       }}
     >
@@ -45,7 +45,7 @@ const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organiz
           <SdkSelectBox />
         </CenteredBox>
       )}
-    </OrganizationTutorialContext.Provider>
+    </TutorialContext.Provider>
   );
 };
 
