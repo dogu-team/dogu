@@ -1,20 +1,20 @@
 import { Alert, Button } from 'antd';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
-import DoneStep from './DoneStep';
+import { appiumGuideData, GuideProps, GuideSupportLanguage, GuideSupportPlatform, GuideSupportTarget, SAMPLE_GIT_URL } from '../../resources/guide';
+import { flexRowBaseStyle } from '../../styles/box';
 import GuideAnchor from './GuideAnchor';
+import GuideBanner from './GuideBanner';
 import GuideLayout from './GuideLayout';
 import GuideStep from './GuideStep';
-import CopyButtonContainer from './CodeWithCopyButton';
-import { GuideProps, GuideSupportLanguage, GuideSupportPlatform, GuideSupportTarget, SAMPLE_GIT_URL, webdriverioGuideData } from '../../../resources/guide';
-import { flexRowBaseStyle } from '../../../styles/box';
-import GuideBanner from './GuideBanner';
-import GuideSelectors from './GuideSelectors';
-import useTutorialSelector from '../../../hooks/useTutorialSelector';
-import ProjectApplicationUploadButton from '../../project-application/ProjectApplicationUploadButton';
+import DoneStep from './DoneStep';
 import SampleApplicationUploadButton from './SampleApplicationUploadButton';
+import useTutorialSelector from '../../hooks/useTutorialSelector';
+import RemoteTestOptionSelectors from './RemoteTestOptionSelectors';
+import CodeWithCopyButton from '../common/CodeWithCopyButton';
+import ProjectApplicationUploadButton from '../project-application/ProjectApplicationUploadButton';
 
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
@@ -24,17 +24,17 @@ const RUN_TEST_ID = 'run-test';
 const RESULT_ID = 'result';
 const DONE_ID = 'done';
 
-const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
+const AppiumGuide = ({ organizationId, projectId }: GuideProps) => {
   const { framework, platform, target } = useTutorialSelector({
-    defaultFramework: webdriverioGuideData.defaultOptions.framework,
-    defaultPlatform: webdriverioGuideData.defaultOptions.platform,
-    defaultTarget: webdriverioGuideData.defaultOptions.target,
+    defaultFramework: appiumGuideData.defaultOptions.framework,
+    defaultPlatform: appiumGuideData.defaultOptions.platform,
+    defaultTarget: appiumGuideData.defaultOptions.target,
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 
-  const selectedGuide = webdriverioGuideData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const frameworkLanguage = Object.keys(webdriverioGuideData.supportFrameworks).find((language) =>
-    webdriverioGuideData.supportFrameworks[language as GuideSupportLanguage]?.includes(framework),
+  const selectedGuide = appiumGuideData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
+  const frameworkLanguage = Object.keys(appiumGuideData.supportFrameworks).find((language) =>
+    appiumGuideData.supportFrameworks[language as GuideSupportLanguage]?.includes(framework),
   );
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
         return;
       }
 
-      const code = await webdriverioGuideData.generateCapabilitiesCode({
+      const code = await appiumGuideData.generateCapabilitiesCode({
         orgId: organizationId,
         projectId,
         framework,
@@ -61,8 +61,9 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
       sidebar={
         <div>
           <div style={{ marginBottom: '1rem' }}>
-            <GuideSelectors guideData={webdriverioGuideData} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
+            <RemoteTestOptionSelectors guideData={appiumGuideData} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
           </div>
+
           <GuideAnchor
             items={[
               { id: PROJECT_SETUP_ID, title: 'Sample project setup' },
@@ -84,8 +85,8 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
             description={<p>Clone example repository and move to execution directory</p>}
             content={
               <>
-                <CopyButtonContainer language="bash" code={`git clone ${SAMPLE_GIT_URL}`} />
-                <CopyButtonContainer language="bash" code={selectedGuide?.cd ?? ''} />
+                <CodeWithCopyButton language="bash" code={`git clone ${SAMPLE_GIT_URL}`} />
+                <CodeWithCopyButton language="bash" code={selectedGuide?.cd ?? ''} />
               </>
             }
           />
@@ -93,19 +94,33 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
             id={INSTALL_DEPENDENCIES_ID}
             title="Install dependencies"
             description={<p>Install external packages</p>}
-            content={<CopyButtonContainer language="bash" code={selectedGuide?.installDependencies ?? ''} />}
+            content={<CodeWithCopyButton language="bash" code={selectedGuide?.installDependencies ?? ''} />}
           />
           <GuideStep
             id={SET_CAPABILITIES_ID}
             title="Set capabilities"
             description={
-              <p>
-                Open <StyledCode>{selectedGuide?.sampleFilePath}</StyledCode> and configure capabilities for your project
-              </p>
+              <>
+                <p>
+                  Open <StyledCode>{selectedGuide?.sampleFilePath}</StyledCode> and configure capabilities for your project
+                </p>
+                {platform === GuideSupportPlatform.IOS && (
+                  <Alert
+                    style={{ marginTop: '.5rem' }}
+                    message="For iOS, please refer to documentation."
+                    type="info"
+                    showIcon
+                    action={
+                      <Link href="https://docs.dogutech.io/test-automation/mobile/appium/qna" target="_blank">
+                        <Button>Visit</Button>
+                      </Link>
+                    }
+                  />
+                )}
+              </>
             }
-            content={<CopyButtonContainer language={frameworkLanguage ?? ''} code={capabilityCode} />}
+            content={<CodeWithCopyButton language={frameworkLanguage ?? ''} code={capabilityCode} />}
           />
-
           {target === GuideSupportTarget.APP && (
             <GuideStep
               id={UPLOAD_SAMPLE_APP_ID}
@@ -130,16 +145,15 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
               }
             />
           )}
-
           <GuideStep
             id={RUN_TEST_ID}
             title="Run remote testing"
             description={<p>Start automated testing using sample app and script</p>}
-            content={<CopyButtonContainer language="bash" code={selectedGuide?.runCommand ?? ''} />}
+            content={<CodeWithCopyButton language="bash" code={selectedGuide?.runCommand ?? ''} />}
           />
 
           <div style={{ marginBottom: '2rem' }}>
-            <GuideBanner docsUrl="https://docs.dogutech.io/test-automation/webdriverio" />
+            <GuideBanner docsUrl="https://docs.dogutech.io/test-automation/appium" />
           </div>
 
           <GuideStep
@@ -160,7 +174,7 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
   );
 };
 
-export default WebdriverIoGuide;
+export default AppiumGuide;
 
 const FlexRow = styled.div`
   ${flexRowBaseStyle}

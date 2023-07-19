@@ -1,8 +1,8 @@
 import useTutorialContext from '../../hooks/useTutorialContext';
 import { GuideSupportSdk } from '../../resources/guide';
-import AppiumGuide from '../projects/guides/AppiumGuide';
-import GamiumGuide from '../projects/guides/GamiumGuide';
-import WebdriverIoGuide from '../projects/guides/WebdriverIoGuide';
+import AppiumGuide from './AppiumGuide';
+import GamiumGuide from './GamiumGuide';
+import WebdriverIoGuide from './WebdriverIoGuide';
 
 interface Props {
   selectedSdk: GuideSupportSdk;

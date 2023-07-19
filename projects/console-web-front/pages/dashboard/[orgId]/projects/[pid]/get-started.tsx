@@ -12,8 +12,10 @@ import { getProjectInServerSide } from '../../../../../src/api/project';
 import ConsoleBasicLayout from '../../../../../src/components/layouts/ConsoleBasicLayout';
 import FrameworkSelectContainer from '../../../../../src/components/tutorial/FrameworkSelectContainer';
 import RemoteTestTutorial from '../../../../../src/components/tutorial/RemoteTestTutorial';
+import SdkIcon from '../../../../../src/components/tutorial/SdkIcon';
 import { TutorialContext } from '../../../../../src/hooks/useTutorialContext';
 import { GuideSupportSdk, guideSupportSdkText, tutorialData } from '../../../../../src/resources/guide';
+import { flexRowBaseStyle } from '../../../../../src/styles/box';
 import { checkUserVerifiedInServerSide } from '../../../../../src/utils/auth';
 import { NextPageWithLayout } from '../../../../_app';
 
@@ -44,7 +46,12 @@ const ProjectGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, o
                   </Button>
                 </Link>
               </div>
-              <StyledTitle>Quick start - {guideSupportSdkText[sdk]}</StyledTitle>
+              <StyledTitle>
+                Quick start -&nbsp;
+                <SdkIcon sdk={sdk} size={28} />
+                &nbsp;
+                {guideSupportSdkText[sdk]}
+              </StyledTitle>
             </div>
             <div>
               <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/routines`}>
@@ -114,6 +121,7 @@ const HeaderContent = styled.div`
 `;
 
 const StyledTitle = styled.h1`
+  ${flexRowBaseStyle}
   font-size: 1.5rem;
   font-weight: 600;
 `;

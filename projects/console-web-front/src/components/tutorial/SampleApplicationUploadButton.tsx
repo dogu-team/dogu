@@ -3,10 +3,10 @@ import { OrganizationId, ProjectId } from '@dogu-private/types';
 import { Button } from 'antd';
 import { isAxiosError } from 'axios';
 
-import { uploadSampleApplication } from '../../../api/project-application';
-import useRequest from '../../../hooks/useRequest';
-import { sendErrorNotification, sendSuccessNotification } from '../../../utils/antd';
-import { getErrorMessage } from '../../../utils/error';
+import { uploadSampleApplication } from '../../api/project-application';
+import useRequest from '../../hooks/useRequest';
+import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
+import { getErrorMessage } from '../../utils/error';
 
 interface Props {
   organizationId: OrganizationId;

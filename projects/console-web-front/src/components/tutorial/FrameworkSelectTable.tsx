@@ -1,11 +1,9 @@
 import styled from 'styled-components';
-import Image from 'next/image';
+import { Divider } from 'antd';
 
 import { GuideSupportLanguage, guideSupportLanguageText, GuideSupportSdk, tutorialData } from '../../resources/guide';
-import resources from '../../resources';
-import Link from 'next/link';
-import LanguageImage from './LanguageImage';
-import { Divider } from 'antd';
+import LanguageIcon from './LanguageIcon';
+import SdkIcon from './SdkIcon';
 
 interface Props {
   onClickSdk: (sdk: GuideSupportSdk) => void;
@@ -18,15 +16,15 @@ const FrameworkSelectTable = ({ selectedSdk, onClickFramework, onClickSdk }: Pro
     <FlexTable>
       <div>
         <SdkItem onClick={() => onClickSdk(GuideSupportSdk.WEBDRIVERIO)} isSelected={selectedSdk === GuideSupportSdk.WEBDRIVERIO}>
-          <Image src={resources.icons.webdriverio} width={32} height={32} alt="webdriverio" />
+          <SdkIcon sdk={GuideSupportSdk.WEBDRIVERIO} size={32} />
           <p>WebdriverIO</p>
         </SdkItem>
         <SdkItem onClick={() => onClickSdk(GuideSupportSdk.APPIUM)} isSelected={selectedSdk === GuideSupportSdk.APPIUM}>
-          <Image src={resources.icons.appium} width={32} height={32} alt="appium" />
+          <SdkIcon sdk={GuideSupportSdk.APPIUM} size={32} />
           <p>Appium</p>
         </SdkItem>
         <SdkItem onClick={() => onClickSdk(GuideSupportSdk.GAMIUM)} isSelected={selectedSdk === GuideSupportSdk.GAMIUM}>
-          <Image src={resources.icons.gamium} width={32} height={32} alt="gamium" />
+          <SdkIcon sdk={GuideSupportSdk.GAMIUM} size={32} />
           <p>Gamium</p>
         </SdkItem>
       </div>
@@ -38,7 +36,7 @@ const FrameworkSelectTable = ({ selectedSdk, onClickFramework, onClickSdk }: Pro
           return (
             <Col key={language}>
               <FlexColCenter>
-                <LanguageImage language={language} size={32} />
+                <LanguageIcon language={language} size={32} />
                 <p style={{ marginTop: '.25rem', fontWeight: '500' }}>{guideSupportLanguageText[language]}</p>
               </FlexColCenter>
 

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { SiDiscord } from 'react-icons/si';
 import styled from 'styled-components';
 
-import { flexRowBaseStyle } from '../../../styles/box';
+import { flexRowBaseStyle } from '../../styles/box';
 
 interface Props {
   docsUrl?: string;

@@ -1,13 +1,13 @@
 import { Button } from 'antd';
 import Link from 'next/link';
 
-import useTutorialSelector from '../../../hooks/useTutorialSelector';
-import { gamiumGuideData, GuideProps } from '../../../resources/guide';
+import useTutorialSelector from '../../hooks/useTutorialSelector';
+import { gamiumGuideData, GuideProps } from '../../resources/guide';
 import DoneStep from './DoneStep';
 import GuideAnchor from './GuideAnchor';
 import GuideLayout from './GuideLayout';
-import GuideSelectors from './GuideSelectors';
 import GuideStep from './GuideStep';
+import RemoteTestOptionSelectors from './RemoteTestOptionSelectors';
 
 const DEVICE_FARM_ID = 'device-farm';
 const TUTORIAL_DOCS_ID = 'tutorial-docs';
@@ -25,7 +25,7 @@ const GamiumGuide = ({ organizationId, projectId }: GuideProps) => {
       sidebar={
         <div>
           <div style={{ marginBottom: '1rem' }}>
-            <GuideSelectors guideData={gamiumGuideData} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
+            <RemoteTestOptionSelectors guideData={gamiumGuideData} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
           </div>
           <GuideAnchor
             items={[

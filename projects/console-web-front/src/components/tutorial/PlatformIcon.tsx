@@ -1,10 +1,11 @@
-import { GuideSupportPlatform } from '../../../resources/guide';
+import { GuideSupportPlatform } from '../../resources/guide';
+
 import AndroidIcon from 'public/resources/icons/platforms/android.svg';
 import MacIcon from 'public/resources/icons/platforms/mac.svg';
 import IosIcon from 'public/resources/icons/platforms/ios.svg';
 import WindowsIcon from 'public/resources/icons/platforms/windows.svg';
 
-const GuidePlatformIcon = ({ platform }: { platform: GuideSupportPlatform }) => {
+const PlatformIcon = ({ platform }: { platform: GuideSupportPlatform }) => {
   switch (platform) {
     case GuideSupportPlatform.ANDROID:
       return <AndroidIcon width={20} height={20} icon-id="android-icon" />;
@@ -19,4 +20,4 @@ const GuidePlatformIcon = ({ platform }: { platform: GuideSupportPlatform }) => 
   }
 };
 
-export default GuidePlatformIcon;
+export default PlatformIcon;

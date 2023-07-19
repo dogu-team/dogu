@@ -4,8 +4,7 @@ import styled from 'styled-components';
 import { useState } from 'react';
 
 import { flexRowSpaceBetweenStyle } from '../../styles/box';
-import GuideBanner from '../projects/guides/GuideBanner';
-import SkipTutorialButton from './SkipTutorialButton';
+import GuideBanner from './GuideBanner';
 import DoguText from '../common/DoguText';
 import FrameworkSelectTable from './FrameworkSelectTable';
 import { GuideSupportSdk } from '../../resources/guide';

@@ -1,5 +1,6 @@
 import Image from 'next/image';
-import resources from '../../resources';
+
+import resources from '../../resources/index';
 import { GuideSupportLanguage } from '../../resources/guide';
 
 interface Props {
@@ -7,7 +8,7 @@ interface Props {
   size: number;
 }
 
-const LanguageImage = ({ language, size }: Props) => {
+const LanguageIcon = ({ language, size }: Props) => {
   switch (language) {
     case GuideSupportLanguage.PYTHON:
       return <Image src={resources.icons.python} width={size} height={size} alt={language} />;
@@ -20,4 +21,4 @@ const LanguageImage = ({ language, size }: Props) => {
   }
 };
 
-export default LanguageImage;
+export default LanguageIcon;

@@ -10,11 +10,12 @@ import {
   guideSupportPlatformText,
   GuideSupportTarget,
   guideSupportTargetText,
-} from '../../../resources/guide';
-import GuidePlatformIcon from './GuidePlatformIcon';
-import GuideTargetIcon from './GuideTargetIcon';
+} from '../../resources/guide';
+import PlatformIcon from './PlatformIcon';
+import TargetIcon from './TargetIcon';
 import styled from 'styled-components';
-import { flexRowBaseStyle } from '../../../styles/box';
+import { flexRowBaseStyle } from '../../styles/box';
+import FrameworkIcon from './FrameworkIcon';
 
 interface Props {
   guideData: Guide;
@@ -23,7 +24,7 @@ interface Props {
   selectedTarget: GuideSupportTarget;
 }
 
-const GuideSelectors = ({ guideData, selectedFramwork, selectedPlatform, selectedTarget }: Props) => {
+const RemoteTestOptionSelectors = ({ guideData, selectedFramwork, selectedPlatform, selectedTarget }: Props) => {
   const router = useRouter();
   const availabePlatforms = Object.keys(guideData.platformAndTarget).filter((platform) => guideData.platformAndTarget[platform as GuideSupportPlatform]?.includes(selectedTarget));
   const availableTargets = guideData.platformAndTarget[selectedPlatform];
@@ -33,7 +34,13 @@ const GuideSelectors = ({ guideData, selectedFramwork, selectedPlatform, selecte
     return {
       label: guideSupportLanguageText[lang],
       options: guideData.supportFrameworks[lang]?.map((framework) => ({
-        label: <div>{framework}</div>,
+        label: (
+          <FlexRow>
+            <FrameworkIcon framework={framework} size={16} />
+            &nbsp;&nbsp;
+            {framework}
+          </FlexRow>
+        ),
         value: framework,
       })),
     };
@@ -42,7 +49,7 @@ const GuideSelectors = ({ guideData, selectedFramwork, selectedPlatform, selecte
   const platformOptions: SelectProps['options'] = availabePlatforms?.map((platform) => ({
     label: (
       <FlexRow>
-        <GuidePlatformIcon platform={platform as GuideSupportPlatform} />
+        <PlatformIcon platform={platform as GuideSupportPlatform} />
         &nbsp;&nbsp;
         {guideSupportPlatformText[platform as GuideSupportPlatform]}
       </FlexRow>
@@ -53,7 +60,7 @@ const GuideSelectors = ({ guideData, selectedFramwork, selectedPlatform, selecte
   const targetOptions: SelectProps['options'] = availableTargets?.map((target: GuideSupportTarget) => ({
     label: (
       <FlexRow>
-        <GuideTargetIcon target={target} />
+        <TargetIcon target={target} />
         &nbsp;&nbsp;
         {guideSupportTargetText[target]}
       </FlexRow>
@@ -94,7 +101,7 @@ const GuideSelectors = ({ guideData, selectedFramwork, selectedPlatform, selecte
   );
 };
 
-export default GuideSelectors;
+export default RemoteTestOptionSelectors;
 
 const FlexRow = styled.div`
   ${flexRowBaseStyle}
