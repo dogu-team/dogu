@@ -15,13 +15,6 @@ import { getErrorMessage } from '../../utils/error';
 import DeviceConnectionStateTag from '../device/DeviceConnectionStateTag';
 import PlatformIcon from '../device/PlatformIcon';
 
-interface RecordType {
-  key: string;
-  title: string;
-  description: string;
-  disabled: boolean;
-}
-
 interface Props {
   organizationId: OrganizationId;
   hostId: HostId;

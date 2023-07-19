@@ -11,7 +11,7 @@ import useModal from '../../hooks/useModal';
 import useOrganizationTutorialContext from '../../hooks/useOrganizationTutorialContext';
 
 import useTutorialSelector from '../../hooks/useTutorialSelector';
-import { GuideSupportSdk, tutorialData } from '../../resources/guide';
+import { GuideSupportPlatform, GuideSupportSdk, tutorialData } from '../../resources/guide';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import { getErrorMessage } from '../../utils/error';
@@ -25,6 +25,13 @@ import GuideLayout from '../projects/guides/GuideLayout';
 import GuideSelectors from '../projects/guides/GuideSelectors';
 import GuideStep from '../projects/guides/GuideStep';
 import TutorialDeviceList from './TutorialDeviceLIst';
+
+const INTRODUCTION_ID = 'introduction';
+const INSTALL_DOGU_AGENT_ID = 'install-dogu-agent';
+const CREATE_HOST_ID = 'create-host';
+const USE_HOST_AS_DEVICE_ID = 'use-host-as-device';
+const CONNECT_MOBILE_DEVICE_ID = 'connect-mobile-device';
+const USE_DEVICE_ID = 'use-device';
 
 const DeviceFarmTutorial = () => {
   const router = useRouter();
@@ -41,6 +48,8 @@ const DeviceFarmTutorial = () => {
     defaultPlatform: guideData.defaultOptions.platform,
     defaultTarget: guideData.defaultOptions.target,
   });
+
+  const isMobile = platform === GuideSupportPlatform.ANDROID || platform === GuideSupportPlatform.IOS;
 
   useEffect(() => {
     const unsub = useEventStore.subscribe(({ eventName, payload }) => {
@@ -102,13 +111,21 @@ const DeviceFarmTutorial = () => {
             <GuideSelectors guideData={guideData} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
           </div>
 
-          <GuideAnchor items={[]} />
+          <GuideAnchor
+            items={[
+              { id: INTRODUCTION_ID, title: 'Introduction' },
+              { id: INSTALL_DOGU_AGENT_ID, title: 'Install Dogu Agent' },
+              { id: CREATE_HOST_ID, title: 'Create host' },
+              isMobile ? { id: CONNECT_MOBILE_DEVICE_ID, title: 'Connect mobile device' } : { id: USE_HOST_AS_DEVICE_ID, title: 'Use host as device' },
+              { id: USE_DEVICE_ID, title: 'Use device' },
+            ]}
+          />
         </div>
       }
       content={
         <div>
           <GuideStep
-            id=""
+            id={INTRODUCTION_ID}
             title="Introduction"
             content={
               <div>
@@ -131,9 +148,9 @@ const DeviceFarmTutorial = () => {
             }
           />
           <GuideStep
-            id=""
+            id={INSTALL_DOGU_AGENT_ID}
             title="Install Dogu Agent on the host(macOS, Windows)"
-            description="Dogu agent is ..."
+            description="Dogu Agent is a software that is installed on the Windows, macOS to help manage devices from the Dogu."
             content={
               <div>
                 <div>
@@ -142,16 +159,16 @@ const DeviceFarmTutorial = () => {
                   </Link>
                 </div>
 
-                <div>
+                <div style={{ marginTop: '.5rem' }}>
                   <p>To establish a connection, you will need the host token. Let&apos;s move to the next step for it!</p>
                 </div>
               </div>
             }
           />
           <GuideStep
-            id=""
+            id={CREATE_HOST_ID}
             title="Create a host"
-            description="Host is..."
+            description="Host is a computer that is installed Dogu Agent. You can connect devices to the host and use them or use the host as a device."
             content={
               <div>
                 {token ? (
@@ -170,40 +187,46 @@ const DeviceFarmTutorial = () => {
             }
           />
 
-          <GuideStep
-            id=""
-            title="Option1: Use host as a device"
-            description="Host device..."
-            content={
-              <div>
-                <Button onClick={handleUseHostAsDevice} loading={loading} type="primary">
-                  Use as a device
-                </Button>
-              </div>
-            }
-          />
+          {isMobile ? (
+            <GuideStep
+              id={CONNECT_MOBILE_DEVICE_ID}
+              title="Connect mobile devices"
+              description="Connect Android, iOS devices to the host."
+              content={
+                <div>
+                  <p>
+                    Before connecting, Please follow{' '}
+                    <Link href="https://docs.dogutech.io/device-farm/device/settings" target="_blank">
+                      Device Configuration
+                    </Link>{' '}
+                    document page to connect mobile devices.
+                  </p>
+                </div>
+              }
+            />
+          ) : (
+            <GuideStep
+              id={USE_HOST_AS_DEVICE_ID}
+              title="Use host as a device"
+              description={'After connecting host to the Dogu, you can use the host as a device.'}
+              content={
+                <div>
+                  <Button onClick={handleUseHostAsDevice} loading={loading} type="primary">
+                    Use as a device
+                  </Button>
+                </div>
+              }
+            />
+          )}
 
           <GuideStep
-            id=""
-            title="Option2: Connect mobile devices"
-            description="Device....."
-            content={
-              <div>
-                <p>
-                  Follow{' '}
-                  <Link href="https://docs.dogutech.io/device-farm/device/settings" target="_blank">
-                    Device Configuration
-                  </Link>{' '}
-                  document page to connect mobile devices.
-                </p>
-              </div>
-            }
-          />
-
-          <GuideStep
-            id=""
+            id={USE_DEVICE_ID}
             title="Use devices"
-            description="Use device....."
+            description={
+              isMobile
+                ? 'After connecting device to the host, the device will be marked as standby device. You can use the device by selecting it.'
+                : 'After using host as a device, the host device will be marked as standby device. You can use the device by selecting it.'
+            }
             content={
               <div>
                 {!!organization && !!host ? (

@@ -35,7 +35,7 @@ const Tutorial = ({ selectedSdk }: Props) => {
           <div style={{ marginLeft: '-.5rem' }}>
             <Link href={{ query: { orgId: router.query.orgId } }} shallow>
               <Button icon={<ArrowLeftOutlined />} type="link">
-                Change SDK
+                Back
               </Button>
             </Link>
           </div>
