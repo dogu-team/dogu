@@ -9,6 +9,7 @@ import { ProjectFileService } from '../file/project-file.service';
 import { DeviceTagService } from '../organization/device-tag/device-tag.service';
 import { DeviceStatusService } from '../organization/device/device-status.service';
 import { ApplicationService } from '../project/application/application.service';
+import { RemoteDestController } from './remote-dest/remote-dest.controller';
 import { RemoteDestService } from './remote-dest/remote-dest.service';
 import { RemoteWebDriverInfoController } from './remote-webdriver/remote-webdriver.controller';
 import { RemoteWebDriverService } from './remote-webdriver/remote-webdriver.service';
@@ -39,6 +40,6 @@ import { RemoteService } from './remote.service';
     ProjectFileService,
     RemoteDestService,
   ],
-  controllers: [RemoteWebDriverInfoController, RemoteController],
+  controllers: [RemoteWebDriverInfoController, RemoteController, RemoteDestController],
 })
 export class RemoteModule {}

@@ -1,5 +1,16 @@
 import { DevicePropCamel, ProjectAndDevicePropCamel } from '@dogu-private/console';
-import { DeviceId, isRemoteDeviceJobCompleted, OrganizationId, ProjectId, RemoteDeviceJobId, REMOTE_DEVICE_JOB_STATE, REMOTE_TYPE, WebDriverSessionId } from '@dogu-private/types';
+import {
+  CREATOR_TYPE,
+  DeviceId,
+  isRemoteDeviceJobCompleted,
+  OrganizationId,
+  ProjectId,
+  RemoteDeviceJobId,
+  REMOTE_DEVICE_JOB_STATE,
+  REMOTE_TYPE,
+  UserId,
+  WebDriverSessionId,
+} from '@dogu-private/types';
 import { notEmpty } from '@dogu-tech/common';
 import { HttpStatus } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
@@ -19,6 +30,9 @@ export module RemoteDeviceJobProcessor {
     remoteDeviceJobId: RemoteDeviceJobId,
     browserName: string | null,
     browserVersion: string | null,
+    doguOptions: object,
+    creatorId: UserId | null,
+    creatorType: CREATOR_TYPE,
   ): Promise<RemoteDeviceJob> {
     logger.info(
       `createWebdriverRemoteDeviceJob. projectId: ${projectId}, deviceId: ${deviceId}, remoteDeviceJobId: ${remoteDeviceJobId},  browserName: ${browserName}, browserVersion: ${browserVersion}`,
@@ -29,6 +43,9 @@ export module RemoteDeviceJobProcessor {
       remoteId: v4(),
       projectId: projectId,
       type: REMOTE_TYPE.WEBDRIVER,
+      creatorId,
+      creatorType,
+      doguOptions,
     });
 
     // remote-webdriver-info

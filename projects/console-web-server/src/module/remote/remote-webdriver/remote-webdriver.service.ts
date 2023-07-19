@@ -1,4 +1,13 @@
-import { DeviceId, DEVICE_TABLE_NAME, extensionFromPlatform, platformTypeFromPlatform, RemoteDeviceJobId, REMOTE_DEVICE_JOB_STATE, REMOTE_TABLE_NAME } from '@dogu-private/types';
+import {
+  CREATOR_TYPE,
+  DeviceId,
+  DEVICE_TABLE_NAME,
+  extensionFromPlatform,
+  platformTypeFromPlatform,
+  RemoteDeviceJobId,
+  REMOTE_DEVICE_JOB_STATE,
+  REMOTE_TABLE_NAME,
+} from '@dogu-private/types';
 import { delay, HeaderRecord, Method, Query } from '@dogu-tech/common';
 import {
   DeviceWebDriver,
@@ -130,6 +139,9 @@ export class RemoteWebDriverService {
         remoteDeviceJobId,
         options.browserName ?? null,
         options.browserVersion ?? null,
+        doguOptions,
+        null, //FIXME:(felix) test code
+        CREATOR_TYPE.UNSPECIFIED, //FIXME:(felix) test code
       );
       return remoteDeviceJob;
     });
