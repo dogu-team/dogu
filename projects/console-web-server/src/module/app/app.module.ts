@@ -19,6 +19,7 @@ import { FileModule } from '../file/file.module';
 import { GitlabModule } from '../gitlab/gitlab.module';
 import { InitModule } from '../init/init.module';
 import { LoggerModule } from '../logger/logger.module';
+import { OpenApiMoudule } from '../open-api/open-api.module';
 import { DeviceTagModule } from '../organization/device-tag/device-tag.module';
 import { DeviceModule } from '../organization/device/device.module';
 import { HostModule } from '../organization/host/host.module';
@@ -71,6 +72,7 @@ const IMPORT_MODULES = [
   AuthModule,
   FileModule,
   RemoteModule,
+  OpenApiMoudule,
 ];
 
 @Module({
