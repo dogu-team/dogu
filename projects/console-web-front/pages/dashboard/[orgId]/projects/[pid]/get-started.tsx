@@ -54,7 +54,7 @@ const ProjectGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, o
               </StyledTitle>
             </div>
             <div>
-              <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/routines`}>
+              <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/remotes`}>
                 <Button type="link">Close tutorial</Button>
               </Link>
             </div>
@@ -66,7 +66,7 @@ const ProjectGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, o
 
           <LinkBox>
             <div />
-            <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/routines`}>
+            <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/remotes`}>
               <Button type="link">Close tutorial</Button>
             </Link>
           </LinkBox>
@@ -75,7 +75,7 @@ const ProjectGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, o
         <CenteredBox>
           <FrameworkSelectContainer
             skipButton={
-              <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/routines`}>
+              <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/remotes`}>
                 <Button type="link">Skip tutorial</Button>
               </Link>
             }
