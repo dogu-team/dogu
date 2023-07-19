@@ -51,7 +51,7 @@ export class StepService {
       endTime = new Date(step.localCompletedAt.getTime());
     }
 
-    const logs = await this.influxDbLogService.readDeviceJobLogs(organizationId, step.routineDeviceJobId, step.localInProgressAt.toISOString(), endTime.toISOString());
+    const logs = await this.influxDbLogService.readDeviceJobLogs(organizationId, step.routineDeviceJobId, step.localInProgressAt, endTime);
     return logs;
   }
 

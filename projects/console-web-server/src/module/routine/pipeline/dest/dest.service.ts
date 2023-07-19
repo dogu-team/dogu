@@ -190,9 +190,12 @@ export class DestService {
     }
 
     const interval = dest.completedAt.getTime() - dest.inProgressAt.getTime();
-    const endTime = new Date(dest.localInProgressAt.getTime() + interval);
+    let endTime = new Date(dest.localInProgressAt.getTime() + interval);
+    if (dest.localCompletedAt) {
+      endTime = new Date(dest.localCompletedAt.getTime());
+    }
 
-    const deviceJobLogs = await this.influxDbLogService.readDeviceJobLogs(organizationId, deviceJobId, dest.localInProgressAt.toISOString(), endTime.toISOString());
+    const deviceJobLogs = await this.influxDbLogService.readDeviceJobLogs(organizationId, deviceJobId, dest.localInProgressAt, endTime);
     return deviceJobLogs;
   }
 

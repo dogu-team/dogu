@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 export * from './axios-utils';
 export * as Uint8ArrayUtil from './buffer/uint8-array';
+export * from './date';
 export * from './events';
 export * from './http-ws/constants';
 export * from './http-ws/functions';
