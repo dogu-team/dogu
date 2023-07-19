@@ -3,10 +3,13 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import useEventStore from 'src/stores/events';
+import { RiExternalLinkLine } from 'react-icons/ri';
+import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../styles/box';
 
 interface Props {
   text: string;
   path: string;
+  external?: boolean;
   startWith?: string;
   icon?: React.ReactNode;
   accessId?: string;
@@ -21,10 +24,15 @@ const SideBarMenu = (props: Props) => {
       href={props.path}
       selected={props.startWith ? router.asPath.startsWith(props.startWith) : router.asPath === props.path}
       access-id={props.accessId}
+      target={props.external ? '_blank' : undefined}
       onClick={() => fireEvent('onDrawerItemClicked')}
     >
-      <IconWrapper>{props.icon}</IconWrapper>
-      {props.text}
+      <FlexRow>
+        <IconWrapper>{props.icon}</IconWrapper>
+        {props.text}
+      </FlexRow>
+
+      {props.external && <RiExternalLinkLine />}
     </StyledLink>
   );
 };
@@ -32,8 +40,8 @@ const SideBarMenu = (props: Props) => {
 export default SideBarMenu;
 
 const StyledLink = styled(Link)<{ selected: boolean }>`
+  ${flexRowSpaceBetweenStyle}
   position: relative;
-  display: flex;
   width: 100%;
   height: 35px;
   background-color: ${(props) => (props.selected ? `${props.theme.colorPrimary}66` : 'inherit')};
@@ -43,7 +51,6 @@ const StyledLink = styled(Link)<{ selected: boolean }>`
   border-radius: 4px;
   transition: 0.2s all;
   font-size: 15px;
-  align-items: center;
   color: #000;
 
   &:hover {
@@ -65,4 +72,8 @@ const StyledLink = styled(Link)<{ selected: boolean }>`
 
 const IconWrapper = styled.div`
   margin: 0 8px 0 4px;
+`;
+
+const FlexRow = styled.div`
+  ${flexRowBaseStyle}
 `;

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import useSWR from 'swr';
 import { OrganizationBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
-import { ClusterOutlined, MobileOutlined, ProjectOutlined, SettingOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons';
+import { BookOutlined, ClusterOutlined, MobileOutlined, ProjectOutlined, SettingOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons';
 import { Layout, Menu, MenuProps, Skeleton } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -18,6 +18,7 @@ import ProfileImage from '../ProfileImage';
 import { flexRowCenteredStyle } from '../../styles/box';
 import CollpaseSidebarMenu from './CollapseSidebarMenu';
 import useRefresh from '../../hooks/useRefresh';
+import { RiExternalLinkLine } from 'react-icons/ri';
 
 type MenuItem = Required<MenuProps>['items'];
 
@@ -206,13 +207,41 @@ const OrganizationSideBar = () => {
     },
   ];
 
+  const bottomItems: MenuProps['items'] = [
+    {
+      key: 'tutorial',
+      icon: collapsed ? (
+        <StyledIconLink selected={false} href="https://docs.dogutech.io/get-started/tutorials" target="_blank">
+          <BookOutlined />
+        </StyledIconLink>
+      ) : undefined,
+      label: collapsed ? (
+        <div>
+          {t('organization:tutorialPageTitle')}&nbsp;
+          <RiExternalLinkLine />
+        </div>
+      ) : (
+        <SideBarMenu
+          icon={<BookOutlined style={{ fontSize: '1.2rem' }} />}
+          path={'https://docs.dogutech.io/get-started/tutorials'}
+          text={t('organization:tutorialPageTitle')}
+          external
+        />
+      ),
+    },
+  ];
+
   return (
     <StyledSider collapsible collapsed={collapsed} trigger={null}>
       <StyledBox>
         <div style={{ position: 'relative', width: '100%', flex: 1, maxHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
           <SidebarInner>
             <Box>
-              <Menu style={{ height: '100%', borderInline: 'none' }} items={items} mode="inline" />
+              <Menu style={{ borderInline: 'none' }} items={items} mode="inline" />
+
+              <div style={{ marginTop: '.5rem' }}>
+                <Menu style={{ borderInline: 'none' }} items={bottomItems} mode="inline" />
+              </div>
             </Box>
           </SidebarInner>
         </div>
@@ -276,9 +305,12 @@ const StyledSider = styled(Layout.Sider)`
 const SidebarInner = styled.div`
   position: sticky !important;
   top: 0;
+  height: 100%;
 `;
 
 const Box = styled.div`
+  display: flex;
+  flex-direction: column;
   position: relative;
   width: 100%;
   height: 100%;
@@ -286,6 +318,7 @@ const Box = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   overflow-y: overlay;
+  justify-content: space-between;
 
   /* background-color: ${(props) => props.theme.colors.gray1}; */
   flex-shrink: 0;
