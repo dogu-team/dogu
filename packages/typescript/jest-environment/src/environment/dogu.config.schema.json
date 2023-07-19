@@ -1,35 +1,35 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "dogu-config-schema",
-  "description": "Schema for the dogu.config.json file",
+  "description": "Schema of the dogu.config.json file.",
   "type": "object",
   "properties": {
     "$schema": {
-      "description": "[optional] Schema for the dogu.config.json file",
+      "description": "Schema for the dogu.config.json file.\nOptional",
       "type": "string"
     },
     "version": {
-      "description": "[optional] Version of the dogu.config.json schema",
+      "description": "Version of the dogu.config.json schema.\nOptional",
       "type": "integer"
     },
     "apiBaseUrl": {
-      "description": "[required] Base URL of the dogu's API",
+      "description": "Base URL of the dogu's API.\nRequired",
       "type": "string"
     },
     "token": {
-      "description": "[required] Token to be used for dogu API calls",
+      "description": "Token to be used for dogu API calls.\nRequired",
       "type": "string"
     },
     "organizationId": {
-      "description": "[required] Organization ID to be used for dogu API calls",
+      "description": "Organization ID to be used for dogu API calls.\nRequired",
       "type": "string"
     },
     "projectId": {
-      "description": "[required] Project ID to be used for dogu API calls",
+      "description": "Project ID to be used for dogu API calls.\nRequired",
       "type": "string"
     },
     "runsOn": {
-      "description": "[required] tag of the environment the dogu is running on",
+      "description": "Tag of the environment the dogu is running on.\nRequired",
       "anyOf": [
         {
           "type": "string"
@@ -45,11 +45,11 @@
       ]
     },
     "browserName": {
-      "description": "[optional] Name of the browser to be used for testing",
+      "description": "Name of the browser to be used for testing.\nOptional",
       "type": "string"
     },
     "browserVersion": {
-      "description": "[optional] Version of the browser to be used for testing",
+      "description": "Version of the browser to be used for testing.\nOptional",
       "type": "string"
     }
   },
