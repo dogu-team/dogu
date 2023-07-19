@@ -5,11 +5,10 @@ import axios, { AxiosRequestConfig } from 'axios';
 import fs from 'fs/promises';
 import path from 'path';
 
-const exceptionUrls: string[] = ['https://DOGU_HOST:3001'];
-const checkedUrls: { [url: string]: boolean } = {};
+type CheckedUrls = { [url: string]: boolean };
 
-function searchUrls(content: string): string[] {
-  const urlRegex = /https?:\/\/[^)\s`\s"]+/g;
+function findUrls(content: string): string[] {
+  const urlRegex = /https?:\/\/[^)\s`\s"\']+/g;
   const urls = content.match(urlRegex);
 
   if (urls === null) {
@@ -26,9 +25,9 @@ function searchUrls(content: string): string[] {
   return sanitizedUrls;
 }
 
-async function validateUrl(filePath: string): Promise<boolean> {
+async function fetchUrl(filePath: string, exceptionUrls: string[], checkedUrls: CheckedUrls): Promise<boolean> {
   const content = await fs.readFile(filePath, 'utf-8');
-  const urls = searchUrls(content);
+  const urls = findUrls(content);
 
   for (const url of urls) {
     if (exceptionUrls.includes(url)) {
@@ -46,10 +45,17 @@ async function validateUrl(filePath: string): Promise<boolean> {
       timeout: 5000,
     };
 
+    console.log(url);
+
     try {
       await axios.request(config);
       checkedUrls[url] = true;
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response === undefined) {
+        delete checkedUrls[url];
+        continue;
+      }
+
       const statusCode = error.response.status;
       if (statusCode !== 404) {
         checkedUrls[url] = true;
@@ -60,7 +66,7 @@ async function validateUrl(filePath: string): Promise<boolean> {
   return true;
 }
 
-async function validate(dirPaths: string[]): Promise<void> {
+export async function validateUrlsInFile(dirPaths: string[], option: { exceptionUrls: string[]; checkedUrls: CheckedUrls }): Promise<void> {
   for (const dirPath of dirPaths) {
     const pathNames = await fs.readdir(dirPath);
 
@@ -76,22 +82,20 @@ async function validate(dirPaths: string[]): Promise<void> {
             continue;
         }
 
-        await validateUrl(absolutePath);
+        await fetchUrl(absolutePath, option.exceptionUrls, option.checkedUrls);
       } else {
-        await validate([absolutePath]);
+        await validateUrlsInFile([absolutePath], option);
       }
     }
   }
 }
 
-const docsPath = path.join(__dirname, '../');
-
-(async () => {
-  await validate([`${docsPath}/docs`, `${docsPath}/src`, `${docsPath}/i18n`]);
+export async function validate(dirPaths: string[], option: { exceptionUrls: string[]; checkedUrls: CheckedUrls }) {
+  await validateUrlsInFile(dirPaths, option);
 
   const invalidUrls: string[] = [];
-  for (const checkedUrl of Object.keys(checkedUrls)) {
-    if (!checkedUrls[checkedUrl]) {
+  for (const checkedUrl of Object.keys(option.checkedUrls)) {
+    if (!option.checkedUrls[checkedUrl]) {
       invalidUrls.push(checkedUrl);
     }
   }
@@ -107,4 +111,4 @@ const docsPath = path.join(__dirname, '../');
   }
 
   console.log('URL validation completed.');
-})();
+}
