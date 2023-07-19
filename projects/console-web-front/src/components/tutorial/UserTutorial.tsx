@@ -5,20 +5,16 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import styled from 'styled-components';
 
-import useTutorialContext from '../../hooks/useTutorialContext';
 import { GuideSupportSdk, guideSupportSdkText } from '../../resources/guide';
-import AppiumGuide from '../projects/guides/AppiumGuide';
-import GamiumGuide from '../projects/guides/GamiumGuide';
-import WebdriverIoGuide from '../projects/guides/WebdriverIoGuide';
 import DeviceFarmTutorial from './DeviceFarmTutorial';
+import RemoteTestTutorial from './RemoteTestTutorial';
 import SkipTutorialButton from './SkipTutorialButton';
 
 interface Props {
   selectedSdk: GuideSupportSdk;
 }
 
-const Tutorial = ({ selectedSdk }: Props) => {
-  const { organization, project } = useTutorialContext();
+const UserTutorial = ({ selectedSdk }: Props) => {
   const router = useRouter();
   const step = router.query.step as string;
 
@@ -27,10 +23,6 @@ const Tutorial = ({ selectedSdk }: Props) => {
       router.replace({ query: { ...router.query, step: 1 } }, undefined, { shallow: true });
     }
   }, [step]);
-
-  if (!organization || !project) {
-    return <div>Something went wrong... please contact us</div>;
-  }
 
   return (
     <Box>
@@ -85,9 +77,7 @@ const Tutorial = ({ selectedSdk }: Props) => {
       )}
       {step === '2' && (
         <GuideWrapper>
-          {selectedSdk === GuideSupportSdk.WEBDRIVERIO && <WebdriverIoGuide organizationId={organization.organizationId} projectId={project.projectId} />}
-          {selectedSdk === GuideSupportSdk.APPIUM && <AppiumGuide organizationId={organization.organizationId} projectId={project.projectId} />}
-          {selectedSdk === GuideSupportSdk.GAMIUM && <GamiumGuide organizationId={organization.organizationId} projectId={project.projectId} />}
+          <RemoteTestTutorial selectedSdk={selectedSdk} />
 
           <LinkBox>
             <Link href={{ query: { ...router.query, step: 1 } }} shallow>
@@ -103,7 +93,7 @@ const Tutorial = ({ selectedSdk }: Props) => {
   );
 };
 
-export default Tutorial;
+export default UserTutorial;
 
 const Box = styled.div`
   line-height: 1.5;
