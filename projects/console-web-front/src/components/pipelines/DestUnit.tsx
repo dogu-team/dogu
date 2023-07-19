@@ -84,7 +84,7 @@ const DestUnit = ({ destUnit }: Props) => {
 
       {isOpen && openable && (
         <TabWrapper>
-          <Tabs defaultActiveKey="device-logs" items={items} destroyInactiveTabPane />
+          <Tabs defaultActiveKey="test-logs" items={items} destroyInactiveTabPane />
         </TabWrapper>
       )}
     </>
