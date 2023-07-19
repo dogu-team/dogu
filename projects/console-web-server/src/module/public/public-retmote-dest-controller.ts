@@ -8,7 +8,7 @@ import { UpdateRemoteDestStateEvent, UpdateRemoteDestStateQueue } from '../event
 import { RemoteDestService } from '../remote/remote-dest/remote-dest.service';
 
 @Controller(PublicRemoteDest.controller.path)
-export class PublicDestController {
+export class PublicRemoteDestController {
   constructor(
     @Inject(RemoteDestService)
     private readonly remoteDestService: RemoteDestService,

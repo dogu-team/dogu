@@ -27,7 +27,7 @@
     "publish:npm": "tsc -b && ts-node scripts/publish-npm.ts",
     "rebuild": "yarn run clean && yarn run build",
     "start": "ts-node src/index.ts",
-    "test": "jest tests/multiple-nested-test",
+    "test": "jest tests/single-test-success",
     "watch": "clear; echo @dogu-tech/node Watching... && nodemon"
   },
   "types": "build/cjs/src/environment/index.d.ts",

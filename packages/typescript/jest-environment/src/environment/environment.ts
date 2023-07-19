@@ -3,14 +3,18 @@ import { Circus } from '@jest/types';
 import { TestEnvironment } from 'jest-environment-node';
 import 'reflect-metadata';
 
-import { DoguConfig, DoguConfigFactory } from './config.js';
-import { DriverFactory } from './driver.js';
-import { StepReporter, StepReporterFactory } from './step-reporter.js';
+import { createLogger } from './common.js';
+import { DoguConfig, DoguConfigFactory } from './dogu-config.js';
+import { DriverFactory } from './driver-factory.js';
+import { RemoteDestReporter, RemoteDestReporterFactory } from './remote-dest-reporter.js';
+import { RoutineDestReporter, RoutineDestReporterFactory } from './routine-dest-reporter.js';
 
 export class DoguEnvironment extends TestEnvironment {
   private doguConfig: DoguConfig | null = null;
-  private stepReporter: StepReporter | null = null;
+  private routineDestReporter: RoutineDestReporter | null = null;
   private driver: WebdriverIO.Browser | null = null;
+  private remoteDestReporter: RemoteDestReporter | null = null;
+  private logger = createLogger('DoguEnvironment');
 
   constructor(config: JestEnvironmentConfig, _context: EnvironmentContext) {
     super(config, _context);
@@ -19,19 +23,28 @@ export class DoguEnvironment extends TestEnvironment {
   override async setup(): Promise<void> {
     await super.setup();
     this.doguConfig = await new DoguConfigFactory().create();
-    this.stepReporter = new StepReporterFactory(this.doguConfig).create();
+    this.routineDestReporter = new RoutineDestReporterFactory(this.doguConfig).create();
     this.driver = await new DriverFactory().create(this.doguConfig);
+    this.remoteDestReporter = new RemoteDestReporterFactory(this.doguConfig, this.driver).create();
   }
 
   override async teardown(): Promise<void> {
-    await this.driver?.deleteSession();
+    this.remoteDestReporter = null;
+    await this.driver?.deleteSession().catch((error) => {
+      this.logger.error('deleteSession failed', error);
+    });
     this.driver = null;
-    this.stepReporter = null;
+    this.routineDestReporter = null;
     this.doguConfig = null;
     await super.teardown();
   }
 
   async handleTestEvent(event: Circus.SyncEvent | Circus.AsyncEvent, state: Circus.State): Promise<void> {
-    await this.stepReporter?.handleTestEvent?.(event, state);
+    await this.routineDestReporter?.handleTestEvent?.(event, state).catch((error) => {
+      this.logger.error('routineDestReporter.handleTestEvent failed', error);
+    });
+    await this.remoteDestReporter?.handleTestEvent?.(event, state).catch((error) => {
+      this.logger.error('remoteDestReporter.handleTestEvent failed', error);
+    });
   }
 }

@@ -1,13 +1,9 @@
 import axios from 'axios';
 import { plainToInstance, Type } from 'class-transformer';
 import { IsArray, IsEnum, IsNumber, IsString, ValidateNested, validateOrReject } from 'class-validator';
-import { DefaultRequestTimeout, DestState, DestType } from './protocols.js';
+import { DefaultRequestTimeout, DestInfo, DestState, DestType } from './common.js';
 
-export interface RoutineDestInfo {
-  name: string;
-  type: DestType;
-  children: RoutineDestInfo[];
-}
+export type RoutineDestInfo = DestInfo;
 
 interface UpdateRoutineDestStateRequestBody {
   destStatus: DestState;
@@ -65,7 +61,7 @@ export interface RoutineDestOptions {
 export class RoutineDestClient {
   constructor(readonly options: RoutineDestOptions) {}
 
-  async createDest(destInfos: RoutineDestInfo[]): Promise<RoutineDestData[]> {
+  async createRoutineDest(destInfos: RoutineDestInfo[]): Promise<RoutineDestData[]> {
     const { apiBaseUrl, organizationId, deviceId, stepId } = this.options;
     const url = `${apiBaseUrl}/public/organizations/${organizationId}/devices/${deviceId}/dests`;
     const headers = this.createHeaders();
@@ -81,12 +77,12 @@ export class RoutineDestClient {
     return responseBody.dests;
   }
 
-  async updateDestStatus(destId: number, destStatus: DestState, localTimeStamp: string): Promise<void> {
+  async updateRoutineDestState(routineDestId: number, routineDestState: DestState, localTimeStamp: string): Promise<void> {
     const { apiBaseUrl, organizationId, deviceId } = this.options;
-    const url = `${apiBaseUrl}/public/organizations/${organizationId}/devices/${deviceId}/dests/${destId}/status`;
+    const url = `${apiBaseUrl}/public/organizations/${organizationId}/devices/${deviceId}/dests/${routineDestId}/status`;
     const headers = this.createHeaders();
     const requestBody: UpdateRoutineDestStateRequestBody = {
-      destStatus,
+      destStatus: routineDestState,
       localTimeStamp,
     };
     await axios.patch(url, requestBody, { headers, timeout: DefaultRequestTimeout });

@@ -4,7 +4,7 @@ import JSON5 from 'json5';
 import _ from 'lodash';
 import path from 'path';
 import url from 'url';
-import { createLogger } from './utils.js';
+import { createLogger } from './common.js';
 
 /**
  * @note "tsc" does not support import.meta. The transfile is in babel and the tsc generates only the type.

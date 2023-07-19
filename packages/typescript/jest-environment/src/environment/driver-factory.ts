@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { remote, RemoteOptions } from 'webdriverio';
-import { DoguConfig } from './config.js';
+import { DoguConfig } from './dogu-config.js';
 
 export class DriverFactory {
   async create(doguConfig: DoguConfig): Promise<WebdriverIO.Browser> {
