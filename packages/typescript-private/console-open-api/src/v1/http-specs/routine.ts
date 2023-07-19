@@ -1,5 +1,6 @@
 import { ProjectId, RoutineId } from '@dogu-private/types';
 import { ControllerMethodSpec, ControllerSpec } from '@dogu-tech/common';
+import { V1CreatePipelineResponseBody, V1FindPipelineByPipelineIdResponseBody } from '../dto/routine.dto';
 
 const V1RoutineController = new ControllerSpec({
   path: '/v1/projects/:projectId/routines',
@@ -15,6 +16,16 @@ export const V1Routine = {
     pathProvider: class {
       constructor(readonly projectId: ProjectId, readonly routineId: RoutineId) {}
     },
-    responseBody: class {},
+    responseBody: V1CreatePipelineResponseBody,
+  }),
+
+  findPipelineByPipelineId: new ControllerMethodSpec({
+    controllerSpec: V1RoutineController,
+    method: 'GET',
+    path: '/:routineId/pipelines/:routinePipelineId',
+    pathProvider: class {
+      constructor(readonly projectId: ProjectId, readonly routineId: RoutineId) {}
+    },
+    responseBody: V1FindPipelineByPipelineIdResponseBody,
   }),
 };

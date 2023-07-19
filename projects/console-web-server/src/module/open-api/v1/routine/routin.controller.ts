@@ -1,9 +1,10 @@
-import { RoutinePropCamel } from '@dogu-private/console';
-import { V1CreatePipelineResponseBody, V1Routine } from '@dogu-private/console-open-api';
-import { CREATOR_TYPE, ProjectId, RoutineId, V1OpenApiPayload } from '@dogu-private/types';
-import { Controller, Inject, Param, Post } from '@nestjs/common';
+import { RoutinePipelinePropCamel, RoutinePropCamel } from '@dogu-private/console';
+import { V1CreatePipelineResponseBody, V1FindPipelineByPipelineIdResponseBody, V1Routine } from '@dogu-private/console-open-api';
+import { CREATOR_TYPE, ProjectId, RoutineId, RoutinePipelineId, V1OpenApiPayload } from '@dogu-private/types';
+import { Controller, Get, Inject, Param, Post } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { RoutinePipeline } from '../../../../db/entity/pipeline.entity';
 import { Project } from '../../../../db/entity/project.entity';
 import { User } from '../../../../db/entity/user.entity';
 import { V1OpenApiCaller } from '../../../auth/decorators';
@@ -17,6 +18,30 @@ export class RoutineV1Controller {
     @InjectDataSource()
     private readonly dataSource: DataSource,
   ) {}
+
+  @Get(V1Routine.findPipelineByPipelineId.path)
+  // FIXME:(felix) token validation
+  async findPipelineByPipelineId(
+    @Param(RoutinePipelinePropCamel.routinePipelineId) routinePipelineId: RoutinePipelineId, //
+    @V1OpenApiCaller() openApiCaller: V1OpenApiPayload,
+  ): Promise<V1FindPipelineByPipelineIdResponseBody> {
+    const pipeline = await this.dataSource.getRepository(RoutinePipeline).findOne({ where: { routinePipelineId } });
+
+    const rv: V1FindPipelineByPipelineIdResponseBody = {
+      routinePipelineId: pipeline!.routinePipelineId,
+      projectId: pipeline!.projectId,
+      routineId: pipeline!.routineId!,
+      index: pipeline!.index,
+      status: pipeline!.status,
+      creatorType: pipeline!.creatorType,
+      creatorId: pipeline!.creatorId,
+      cancelerId: pipeline!.cancelerId,
+      createdAt: pipeline!.createdAt,
+      inProgressAt: pipeline!.inProgressAt,
+      completedAt: pipeline!.completedAt,
+    };
+    return rv;
+  }
 
   @Post(V1Routine.createPipeline.path)
   // FIXME:(felix) token validation
