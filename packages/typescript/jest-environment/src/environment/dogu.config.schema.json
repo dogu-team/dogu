@@ -51,6 +51,10 @@
     "browserVersion": {
       "description": "Version of the browser to be used for testing.\nOptional",
       "type": "string"
+    },
+    "appVersion": {
+      "description": "Version of the app to be used for testing.\nOptional",
+      "type": "string"
     }
   },
   "required": ["apiBaseUrl", "token", "organizationId", "projectId", "runsOn"]
