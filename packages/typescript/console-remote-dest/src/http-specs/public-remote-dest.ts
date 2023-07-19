@@ -4,7 +4,7 @@ import { CreateRemoteDestRequestBody, UpdateRemoteDestStateRequestBody } from '.
 import { CreateRemoteDestResponse } from './response';
 
 const RemoteDestController = new ControllerSpec({
-  path: '/projects/:projectId/remote-device-jobs/:remoteDeviceJobId/remote-dest',
+  path: '/public/projects/:projectId/remote-device-jobs/:remoteDeviceJobId/remote-dests',
 });
 
 export const PublicRemoteDest = {
