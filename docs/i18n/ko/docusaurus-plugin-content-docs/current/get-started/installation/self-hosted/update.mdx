@@ -8,12 +8,12 @@ locale: ko
 이 문서는 실행 중인 Dogu를 Self-Hosted를 업데이트하는 방법에 대해 설명합니다.
 :::
 
-### 최신 버전의 docker-compose.yml, docker-compose.env 파일 생성
+### 최신 버전의 docker-compose.yml 및 docker-compose.env 내용 덮어쓰기
 
 기존에 사용하던 docker-compose.env 파일을 [docker-compose.env 최신 버전](https://github.com/dogu-team/dogu/blob/main/docker-compose.env)으로 내용을 업데이트 합니다.  
 기존에 사용하던 docker-compose.yml 파일을 [docker-compose.yml 최신 버전](https://github.com/dogu-team/dogu/blob/main/docker-compose.yml)으로 내용을 업데이트 합니다.
 
-### Dogu 최신 버전으로 재실행
+### Dogu 재실행
 
 ```
 docker ps -qa | xargs -r docker rm -f

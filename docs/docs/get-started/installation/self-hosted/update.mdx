@@ -5,15 +5,15 @@ locale: en
 ---
 
 :::info PREREQUISITES
-This article describes how to update Self-Hosted from a running Dogu.
+This document provides instructions for updating the running Dogu Self-Hosted.
 :::
 
-### Generating the Latest Version of docker-compose.yml and docker-compose.env Files
+### Overwriting docker-compose.yml and docker-compose.env with the Latest Version
 
-Update the existing docker-compose.env file to the [latest version of docker-compose.env](https://github.com/dogu-team/dogu/blob/main/docker-compose.env)  
-Update the existing docker-compose.yml file to the [latest version of docker-compose.yml](https://github.com/dogu-team/dogu/blob/main/docker-compose.yml)
+Update the content of the existing docker-compose.env file to the [latest version of docker-compose.env](https://github.com/dogu-team/dogu/blob/main/docker-compose.env).  
+Update the content of the existing docker-compose.yml file to the [latest version of docker-compose.yml](https://github.com/dogu-team/dogu/blob/main/docker-compose.yml).
 
-### Restarting Dogu with the Latest Version
+### Restart Dogu
 
 ```
 docker ps -qa | xargs -r docker rm -f

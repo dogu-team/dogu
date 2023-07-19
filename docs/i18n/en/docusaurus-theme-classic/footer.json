@@ -37,7 +37,7 @@
   },
   "link.item.label.community": {
     "message": "Community",
-    "description": "The label of footer link with label=community linking to /community/discord"
+    "description": "The label of footer link with label=community linking to /community/slack"
   },
   "link.item.label.testReport": {
     "message": "Test Report",
@@ -57,6 +57,6 @@
   },
   "link.item.label.Download Dogu Agent": {
     "message": "Download Dogu Agent",
-    "description": "The label of footer link with label=Download Dogu Agent linking to https://dogutech.io/downloads/dost"
+    "description": "The label of footer link with label=Download Dogu Agent linking to https://dogutech.io/downloads/dogu-agent"
   }
 }

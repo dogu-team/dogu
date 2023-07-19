@@ -14,9 +14,8 @@ import dost_windows_api_url_input from '@site/static/img/dost/dost_windows_api_u
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import BrowserOnly from '@docusaurus/BrowserOnly';
 
-This document explains how to start Dogu with self-hosted.
+This document explains how to start using Dogu as a self-hosted solution.
 
 ## Hardware Requirements
 
@@ -28,23 +27,18 @@ This document explains how to start Dogu with self-hosted.
 | <b> Free Disk Space </b> | SSD 128GB                                      |
 |  <b> Dependencies </b>   | Docker, Docker-Compose                         |
 
-## Set up Dogu With Docker
+## Dogu Installation using Docker
 
-### Docker and Docker-compose Install
+### Prepare Docker and Docker-compose
 
-If Docker and Docker-compose aren't installed on your system, install them first.
+If Docker and Docker-compose are not installed, refer to the links below for installation instructions.
 
-- [Docker Install](https://docs.docker.com/engine/install/)
-- [Docker-compose Install](https://docs.docker.com/compose/install/)
+- [Docker Installation](https://docs.docker.com/engine/install/)
+- [Docker-compose Installation](https://docs.docker.com/compose/install/)
 
-### Network Security Settings
+### Create Mount Paths
 
-In the Allow In/Outbound Traffic setting, allow additional values specified as DOGU_HOST within docker-compose.env.  
-( The ip to be set above is the same value as the DOGU_HOST value set by [Create docker-compose.env File](/get-started/installation/self-hosted/installation#create-docker-composeenv-file) )
-
-### Create Mount Path
-
-<Tabs groupId="os" defaultValue="linux">
+<Tabs groupId="os" defaultValue="linux" queryString>
 <TabItem value="linux" label="Linux" default>
 
 ```
@@ -65,70 +59,42 @@ icacls "C:\var\lib\dogu\nexus-data" /setowner 200 /T
 </Tabs>
 
 :::note
-You can replace the `/var/lib/dogu` path created above with the `VOLUME_PATH` value in the docker-compose.env file to be created in the next step.
+You can replace the `/var/lib/dogu` path created above with the `VOLUME_PATH` value in the docker-compose.env file you will create in the next step.
 :::
 
-### Create docker-compose.env File
+### Create and Configure docker-compose.env
 
-1. Create docker-compose.env file
-2. Paste all of [this file](https://github.com/dogu-team/dogu/blob/main/docker-compose.env) to docker-compose.env file
+1. Create an empty docker-compose.env file.
+2. Copy the contents from the [file](https://github.com/dogu-team/dogu/blob/main/docker-compose.env) and paste them into the docker-compose.env file.
+3. Change the `DOGU_HOST` value to the IP of the machine where Dogu will be running.
 
 ### Create docker-compose.yml
 
-1. Create docker-compose.yml file
-2. Paste all of [this file](https://github.com/dogu-team/dogu/blob/main/docker-compose.yml) to docker-compose.yml file
+1. Create an empty docker-compose.yml file.
+2. Copy the contents from the [file](https://github.com/dogu-team/dogu/blob/main/docker-compose.yml) and paste them into the docker-compose.yml file.
 
-### Run Dogu
+### Network Security Configuration
 
-Run the following command in the directory where the docker-compose.env and docker-compose.yml files are located.
+Allow inbound/outbound traffic access to the IP of `DOGU_HOST` in the firewall settings of the machine where Dogu is installed.
+
+### Start Dogu
+
+Run the following command in the directory where the docker-compose.env and docker-compose.yml files are located:
 
 ```
-
-docker compose -f ./docker-compose.yml --env-file ./docker-compose.env --verbose up -d
-
+docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up  -d
 ```
 
-### Browse Web Page
+### Verify Dogu Installation
 
-Dogu Console: DOGU_HOST:3001
+Access the `https://DOGU_HOST:3001` address that you set in the [Create docker-compose.env File](/get-started/installation/self-hosted/installation#creating-the-docker-composeenv-file) step to check if Dogu is running properly. If it is running correctly, you should see the following screen:
 
-### Install Dogu Agent
+<img src="/img/get-started/auth-page.png"/>
 
-Download Dogu Agent from the [github releases](https://github.com/dogu-team/dogu/releases?q=dost&expanded=true)
+## Setting up the Device Farm
 
-After downloading, refer to [Agent Installation](/device-farm/host#installation) for installation
+Configure the device farm according to the test environment you want to run. Refer to the [Setting up the Device Farm](/get-started/tutorials/device-farm) document for instructions.
 
-### Run Dogu Agent
+## Troubleshooting
 
-Run the Dogu Agent that can connect to the dogu console.
-
-- Configuring Dogu Agent connection environment
-
-  - Set the connection URL using the DOGU_HOST set in the [Create docker-compose.env File](/get-started/installation/self-hosted/installation/#create-docker-composeenv-file).
-    :::note
-    ex. http://DOGU_HOST:4000
-    :::
-
-  <BrowserOnly>
-    {() => (
-      <Tabs groupId="os" defaultValue={getBrowserPlatform('windows')}>
-        <TabItem value="windows" label="Windows" default>
-          <img src={dost_windows_api_url_input} style={{ width: 600 }} />
-        </TabItem>
-        <TabItem value="macos" label="macOS">
-          <img src={dost_macos_api_url_input} style={{ width: 600 }} />
-        </TabItem>
-      </Tabs>
-    )}
-  </BrowserOnly>
-
-## Connect Device to Device Farm
-
-Depending on the testing environment you want to proceed with, refer to the [Building Device Farm](/get-started/tutorials/device-farm).
-
-## Issues
-
-If you have any questions or problems, please contact community.
-
-- [Discord Community](https://discord.com/invite/bVycd6Tu9g)
-- [Github Issues](https://github.com/dogu-team/dogu/issues)
+If you encounter any issues during the installation process, refer to the [Troubleshooting](/get-started/installation/self-hosted/trouble-shooting) document.

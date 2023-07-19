@@ -1,0 +1,57 @@
+---
+sidebar_position: 1
+title: Host
+locale: en
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+### Host Requirements
+
+| OS      | OS Version             | Architecture |
+| ------- | ---------------------- | ------------ |
+| Windows | Windows 10, Windows 11 | x64          |
+| macOS | macOS 11 (Big Sur) or later, Xcode 12.5 | x64, arm64   |
+
+:::caution
+
+There may be issues with using Dogu Agent if the requirements are not met.
+
+:::
+
+<Tabs groupId="service" defaultValue="cloud" queryString>
+<TabItem value="cloud" label="Cloud" default>
+
+1. Install and run the [Dogu Agent](https://dogutech.io/downloads/dogu-agent).
+
+</TabItem>
+
+<TabItem value="self-hosted" label="Self-Hosted" default>
+
+1. Install the Dogu Agent that matches your Dogu version from the [Release](https://github.com/dogu-team/dogu/releases) page.  
+1-1. Enter `DOGU_HOST:4000` as the API URL.
+<img
+     src="/img/get-started/dost-api-url-input.png"
+     style={{ width: 600, display: 'block' }}
+/>
+
+</TabItem>
+</Tabs>
+
+2. In the console, click on the Host menu in the left sidebar of your organization.
+   <img
+     src="/img/get-started/add-host.png"
+     style={{ width: 600, display: 'block' }}
+   />
+3. Click the Add Host button, enter a host name, and complete the creation.
+4. Copy the generated host token and paste it into the token input field in the Dogu Agent to complete the connection.
+   <img
+     src="/img/get-started/dost-token-input.png"
+     style={{ width: 600, display: 'block' }}
+   />
+5. Once the status of the created host becomes "Connected" in the console, the host registration is complete.
+   <img
+     src="/img/get-started/host-connected-check.png"
+     style={{ width: 600, display: 'block' }}
+   />

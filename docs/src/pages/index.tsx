@@ -30,9 +30,7 @@ function HomepageHeader() {
         <div className={styles.headerBannerButtonWrapper}>
           <div className={styles.headerBannerButtonWrapper}>
             <Link to="/get-started" className={styles.headerBannerButton}>
-              <p className={styles.headerBannerFontColor}>
-              Get started
-              </p>
+              <p className={styles.headerBannerFontColor}>Get started</p>
             </Link>
             <Link
               href="https://dogutech.io"
@@ -181,10 +179,7 @@ export default function Home(): JSX.Element {
               <Link to="/test-report/jest">Jest</Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/test-report/mocha">Mocha</Link>
-            </li>
-            <li className={styles.docsSectionListItem}>
-              <Link to="/test-report/pytest">PyTest</Link>
+              <Link to="/test-report/pytest">Pytest</Link>
             </li>
             {/* <li className={styles.docsSectionListItem}>
               <Link to="/test-report/testng">TestNG</Link>
@@ -233,11 +228,8 @@ export default function Home(): JSX.Element {
           </h2>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="https://discord.com/invite/bVycd6Tu9g">Discord</Link>
-            </li>
-            <li className={styles.docsSectionListItem}>
-              <Link to="https://github.com/dogu-team/dogu/discussions">
-                Github Discussion
+              <Link to="https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw">
+                Slack
               </Link>
             </li>
           </ul>
