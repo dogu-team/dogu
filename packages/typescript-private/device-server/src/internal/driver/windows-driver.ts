@@ -10,7 +10,7 @@ import { logger } from '../../logger/logger.instance';
 import { SeleniumService } from '../../selenium/selenium.service';
 import { WindowsChannel } from '../channel/windows-channel';
 import { DeviceChannel, DeviceChannelOpenParam } from '../public/device-channel';
-import { DeviceDriver } from '../public/device-driver';
+import { DeviceDriver, DeviceScanInfo } from '../public/device-driver';
 import { PionStreamingService } from '../services/streaming/pion-streaming-service';
 import { StreamingService } from '../services/streaming/streaming-service';
 
@@ -41,9 +41,10 @@ export class WindowsDriver implements DeviceDriver {
     return Platform.PLATFORM_WINDOWS;
   }
 
-  async scanSerials(): Promise<Serial[]> {
+  async scanSerials(): Promise<DeviceScanInfo[]> {
+    const hostname = (await systeminformation.osInfo()).hostname;
     const uuid = await systeminformation.uuid();
-    return [uuid.os];
+    return [{ serial: uuid.os, status: 'online', name: hostname }];
   }
 
   async openChannel(initParam: DeviceChannelOpenParam): Promise<DeviceChannel> {

@@ -8,6 +8,7 @@ import { registerBootstrapHandler } from '../../../../bootstrap/bootstrap.servic
 import { adbLogger } from '../../../../logger/logger.instance';
 import { pathMap } from '../../../../path-map';
 import { LogHandler } from '../../../public/device-channel';
+import { DeviceScanInfo, DeviceScanStatus } from '../../../public/device-driver';
 import { parseRecord } from '../../../util/parse';
 import { AndroidDfInfo, AndroidProcCpuInfo, AndroidProcDiskstats, AndroidProcMemInfo, AndroidPropInfo, AndroidShellTopInfo } from './info';
 import { parseAndroidProcCpuInfo, parseAndroidProcDiskstats, parseAndroidProcMemInfo, parseAndroidShellDf, parseAndroidShellProp, parseAndroidShellTop } from './parse';
@@ -303,40 +304,55 @@ export async function runAppProcess(serial: Serial, localPath: string, destPath:
 }
 
 // device info
-export async function serials(): Promise<Serial[]> {
+export async function serials(): Promise<DeviceScanInfo[]> {
   const random = Math.random();
   adbLogger.verbose('adb.serials begin', { random });
   const output = (await execIgnoreError(`${pathMap().android.adb} devices`)).stdout;
   adbLogger.verbose('adb.serials', { output });
-  interface SerialAndState {
-    serial: string | undefined;
-    state: string | undefined;
-  }
   const regex = /(\S+)/g;
-  const serials = output
+
+  const stateToDeviceStatus = (state: string): DeviceScanStatus => {
+    switch (state) {
+      case 'device':
+        return 'online';
+      case 'offline':
+        return 'offline';
+      case 'unauthorized':
+        return 'unauthorized';
+      default:
+        return 'unknown';
+    }
+  };
+
+  const stateToDesciprtion = (state: string): string | undefined => {
+    switch (state) {
+      case 'device':
+        return undefined;
+      case 'offline':
+        return `This device is offline as a result of the adb command. Please check the device status. Rebooting the device may fix it.`;
+      case 'unauthorized':
+        return 'Device is unauthorized. Please allow usb debugging.';
+      default:
+        return `Device status is unknown. ${state}`;
+    }
+  };
+
+  const scanInfos = output
     .split('\n')
     .slice(1, -2)
     .map((serialAndStateLine) => {
       const matched = serialAndStateLine.match(regex);
       if (!matched || matched.length < 2) {
-        return {
-          serial: undefined,
-          state: undefined,
-        } as SerialAndState;
+        return undefined;
       }
-      return {
-        serial: matched[0],
-        state: matched[1],
-      } as SerialAndState;
+      const serial = matched[0];
+      const state = matched[1];
+      return { serial: serial, name: state, status: stateToDeviceStatus(state), description: stateToDesciprtion(state) } as DeviceScanInfo;
     })
-    .filter((serialAndState) => {
-      return serialAndState.serial !== undefined && serialAndState.state !== undefined && serialAndState.state === 'device';
-    })
-    .map((serialAndState) => {
-      return serialAndState.serial!;
-    });
-  adbLogger.verbose('adb.serials end', { serials, random });
-  return serials;
+    .filter((deviceScanInfo) => deviceScanInfo !== undefined)
+    .map((deviceScanInfo) => deviceScanInfo!);
+  adbLogger.verbose('adb.serials end', { serials: scanInfos, random });
+  return scanInfos;
 }
 
 export async function getNickname(serial: Serial): Promise<string> {

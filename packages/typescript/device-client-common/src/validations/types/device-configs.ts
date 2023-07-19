@@ -47,6 +47,15 @@ export class DeviceConfigDto implements DeviceConfig {
 export function DefaultDeviceConfig(platform: Platform): DeviceConfigDto {
   switch (platform) {
     case Platform.PLATFORM_WINDOWS:
+      return {
+        profileMethods: [
+          { profileMethod: ProfileMethods.Desktop.Cpu, periodSec: 3 },
+          { profileMethod: ProfileMethods.Desktop.CpuFreq, periodSec: 3 },
+          { profileMethod: ProfileMethods.Desktop.Mem, periodSec: 3 },
+          { profileMethod: ProfileMethods.Desktop.Fs, periodSec: 3 },
+          { profileMethod: ProfileMethods.Desktop.Net, periodSec: 3 },
+        ],
+      };
     case Platform.PLATFORM_MACOS:
       return {
         profileMethods: [

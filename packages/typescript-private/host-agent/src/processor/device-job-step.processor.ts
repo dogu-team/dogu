@@ -1,6 +1,6 @@
 import { CancelDeviceJob, ErrorResult, RunDeviceJob, RunStep, RunStepValue } from '@dogu-private/console-host-agent';
 import { Code, CodeUtil, DEVICE_JOB_LOG_TYPE, ErrorResultError, PIPELINE_STATUS, platformTypeFromPlatform, StepContextEnv } from '@dogu-private/types';
-import { errorify, Instance, validateAndEmitEventAsync } from '@dogu-tech/common';
+import { delay, errorify, Instance, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { EnvironmentVariableReplacementProvider, HostPaths } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
@@ -232,6 +232,7 @@ export class DeviceJobStepProcessor {
     const { code, message, details } = result.value;
     this.logger.info(`Step ${routineStepId} completed`);
     try {
+      await delay(10); // padding for log missing. (If last log time and step complete time is same )
       await validateAndEmitEventAsync(this.eventEmitter, OnStepCompletedEvent, {
         organizationId,
         deviceId,

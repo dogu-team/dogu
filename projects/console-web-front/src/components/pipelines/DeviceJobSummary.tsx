@@ -6,6 +6,7 @@ import JobStatusIcon from 'src/components/pipelines/JobStatusIcon';
 import PipelineRuntime from 'src/components/pipelines/PipelineRuntime';
 import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from 'src/styles/box';
 import useTranslation from 'next-translate/useTranslation';
+import { Platform } from '@dogu-private/types';
 
 interface Props {
   deviceJob: RoutineDeviceJobBase;
@@ -29,7 +30,7 @@ const DeviceJobSummary = ({ deviceJob }: Props) => {
           <Statistic>
             <StatisticTitle>{t('routine:deviceJobStatisticPlatformTitle')}</StatisticTitle>
             <div>
-              <PlatformIcon platform={deviceJob.device?.platform} />
+              <PlatformIcon platform={deviceJob.device?.platform ?? Platform.UNRECOGNIZED} />
             </div>
           </Statistic>
           <Statistic>

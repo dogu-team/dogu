@@ -4,6 +4,7 @@ import { ChildProcess, DirectoryRotation } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
 import { logger } from '../../../logger/logger.instance';
+import { DeviceScanInfo } from '../../public/device-driver';
 
 const directoryRotation = new DirectoryRotation('xctrace', 30);
 
@@ -27,33 +28,61 @@ export async function record(appPath: string, serial: Serial, printable: Printab
   return proc;
 }
 
-export async function listDevices(printable: Printable, filterIos = true): Promise<Serial[]> {
+const XctraceListOutputGroup = ['Devices', 'Devices Offline', 'Simulators', 'unknown'];
+type XctraceListOutputGroup = (typeof XctraceListOutputGroup)[number];
+
+export async function listDevices(printable: Printable): Promise<DeviceScanInfo[]> {
   const result = await ChildProcess.exec(`${XcTraceCommand} list devices`, {}, printable);
 
-  const serials: Serial[] = [];
-  let firstDeviceLine = undefined;
+  const infos: DeviceScanInfo[] = [];
+  let firstDeviceLine = undefined; // macOs Self Device
+  let category: XctraceListOutputGroup = 'unknown';
 
   for await (const line of result.stdout.split('\n')) {
     if (line.startsWith('==') && line.endsWith('==')) {
-      if (!line.includes('Devices')) {
-        break;
+      const categoryParsed = line.replace(/=+/g, '').trim();
+      if (XctraceListOutputGroup.includes(categoryParsed as XctraceListOutputGroup)) {
+        category = categoryParsed as XctraceListOutputGroup;
+      } else {
+        category = 'unknown';
       }
       continue;
     }
     if (!firstDeviceLine) {
       firstDeviceLine = line;
-      if (filterIos) {
-        continue;
-      }
-    }
-
-    const matches = line.match(/\([^)]+\)/g);
-    if (!matches) {
       continue;
     }
-    const serial = matches[matches.length - 1].slice(1, -1);
-    serials.push(serial);
+    if (category !== 'Devices' && category !== 'Devices Offline') {
+      continue;
+    }
+    const device = parseDeviceLine(line);
+    if (!device) {
+      continue;
+    }
+    infos.push({
+      serial: device.serial,
+      name: device.name,
+      status: 'online',
+    });
   }
 
-  return serials;
+  return infos;
+}
+
+function parseDeviceLine(line: string): { serial: string; osVersion: string; name: string } | null {
+  const splited = line.split('(');
+  if (splited.length < 2) {
+    return null;
+  }
+  const serial = splited[splited.length - 1].replace(')', '').trim();
+  const osVersion = splited[splited.length - 2].replace(')', '').trim();
+  const name = splited
+    .slice(0, splited.length - 2)
+    .join('(')
+    .trim();
+  return {
+    serial,
+    osVersion,
+    name,
+  };
 }

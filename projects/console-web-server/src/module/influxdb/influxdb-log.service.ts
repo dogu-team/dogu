@@ -1,7 +1,7 @@
 import { DeviceJobLogInfo, TestLogResponse } from '@dogu-private/console';
 import { WriteDeviceJobLogsRequestBody } from '@dogu-private/console-host-agent';
 import { DeviceId, DEVICE_JOB_LOG_TYPE, influxDbKeyNames, OrganizationId, RoutineDeviceJobId } from '@dogu-private/types';
-import { transformAndValidate } from '@dogu-tech/common';
+import { addMilliseconds, transformAndValidate } from '@dogu-tech/common';
 import { FluxTableMetaData, Point, WriteApi } from '@influxdata/influxdb-client';
 import { Injectable } from '@nestjs/common';
 import { config } from '../../config';
@@ -51,11 +51,14 @@ export class InfluxDbLogService {
     organizationId: OrganizationId, //
     // deviceId: DeviceId,
     deviceJobId: RoutineDeviceJobId,
-    startTime: string,
-    endTime: string,
+    startTime: Date,
+    endTime: Date,
   ): Promise<TestLogResponse> {
+    const startTimeIso = startTime.toISOString();
+    const endTimeIso = addMilliseconds(endTime, 1).toISOString();
+
     const query = `from(bucket: "${config.influxdb.bucket}")
-  |> range(start: ${startTime}, stop: ${endTime})
+  |> range(start: ${startTimeIso}, stop: ${endTimeIso})
   |> filter(fn: (r) => r["_measurement"] == "${influxDbKeyNames.measurement.deviceJobLog.name}")
   |> filter(fn: (r) => r["_field"] == "${influxDbKeyNames.measurement.deviceJobLog.fields.message}")
   |> filter(fn: (r) => r["${influxDbKeyNames.measurement.deviceJobLog.tags.deviceJobId}"] == "${deviceJobId}")
