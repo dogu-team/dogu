@@ -1,4 +1,4 @@
-import { RoutinePipelineBase, RoutinePipelinePropSnake, UserBase } from '@dogu-private/console';
+import { RoutinePipelineBase, RoutinePipelinePropSnake } from '@dogu-private/console';
 import { CREATOR_TYPE, PIPELINE_STATUS, ProjectId, RoutineId, RoutinePipelineId, ROUTINE_PIPELINE_TABLE_NAME, UserId } from '@dogu-private/types';
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
@@ -50,11 +50,11 @@ export class RoutinePipeline extends BaseEntity implements RoutinePipelineBase {
 
   @ManyToOne(() => User, (user) => user.routinePipelines, { createForeignKeyConstraints: false })
   @JoinColumn({ name: RoutinePipelinePropSnake.creator_id })
-  creator?: UserBase;
+  creator?: User;
 
   @ManyToOne(() => User, { createForeignKeyConstraints: false })
   @JoinColumn({ name: RoutinePipelinePropSnake.canceler_id })
-  canceler?: UserBase;
+  canceler?: User;
 
   @ManyToOne(() => Routine, (routine) => routine, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
   @JoinColumn({ name: RoutinePipelinePropSnake.routine_id })
