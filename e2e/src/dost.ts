@@ -83,12 +83,15 @@ export async function launchDost(): Promise<Page> {
   console.log(`${dostElectronColor} executablePath: ${electronExePath}`);
   console.log(`${dostElectronColor} rootPath : ${dostRootPath}`);
   console.log(`${dostElectronColor} doguWorkdirPath : ${doguWorkdirPath}`);
+  const env = newCleanNodeEnv();
+  delete env.ELECTRON_RUN_AS_NODE;
+  delete env.NODE_OPTIONS;
   const electronApp = await electron
     .launch({
       args: [electronMainjsPath],
       executablePath: electronExePath,
       cwd: dostRootPath,
-      env: { ...newCleanNodeEnv(), DOGU_HOME: doguWorkdirPath, ELECTRON_RUN_AS_NODE: '', NODE_OPTIONS: '' },
+      env: { ...newCleanNodeEnv(), DOGU_HOME: doguWorkdirPath },
     })
     .catch((error) => {
       console.error(`${dostElectronColor} ${getClockTime()}`, error);
