@@ -3,7 +3,7 @@ import { ProjectId, RemoteDestId, RemoteDeviceJobId } from '@dogu-tech/types';
 import { CreateRemoteDestRequestBody, UpdateRemoteDestStateRequestBody } from './request';
 
 const RemoteDestController = new ControllerSpec({
-  path: '/projects/:projectId/remote-device-jobs/:remoteDeviceJobId/remote-dest',
+  path: '/public/projects/:projectId/remote-device-jobs/:remoteDeviceJobId/remote-dests',
 });
 
 export const PublicRemoteDest = {

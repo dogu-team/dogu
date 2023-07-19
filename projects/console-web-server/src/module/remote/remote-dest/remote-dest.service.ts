@@ -6,6 +6,7 @@ import { DataSource, EntityManager } from 'typeorm';
 import { v4 } from 'uuid';
 import { RemoteDestEdge } from '../../../db/entity/relations/remote-dest-edge.entity';
 import { RemoteDest } from '../../../db/entity/remote-dest.entity';
+import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
 import { DoguLogger } from '../../logger/logger';
 
 @Injectable()
@@ -18,7 +19,7 @@ export class RemoteDestService {
 
   async createRemoteDest(remoteDeviceJobId: RemoteDeviceJobId, dto: CreateRemoteDestRequestBody): Promise<CreateRemoteDestResponse> {
     const { remoteDestInfos } = dto;
-    const exist = await this.dataSource.getRepository(RemoteDest).exist({ where: { remoteDeviceJobId } });
+    const exist = await this.dataSource.getRepository(RemoteDeviceJob).exist({ where: { remoteDeviceJobId } });
     if (!exist) {
       throw new HttpException(`RemoteDeviceJobId ${remoteDeviceJobId} not found`, HttpStatus.NOT_FOUND);
     }
