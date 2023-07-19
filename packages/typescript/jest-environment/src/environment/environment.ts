@@ -13,6 +13,7 @@ import { RoutineDestReporter, RoutineDestReporterFactory } from './routine-dest-
 const driver = 'driver';
 
 declare global {
+  /* @ts-ignore */
   const driver: Readonly<WebdriverIO.Browser>;
 }
 
