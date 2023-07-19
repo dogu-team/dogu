@@ -1,6 +1,6 @@
 import fs from 'fs';
-import { JSONSchema7, validate } from 'json-schema';
 import JSON5 from 'json5';
+import { validate } from 'jsonschema';
 import _ from 'lodash';
 import path from 'path';
 import url from 'url';
@@ -15,9 +15,9 @@ const SchemaFilePath = path.resolve(CommonDirPath, 'dogu.config.schema.json');
 const ConfigFileName = 'dogu.config.json';
 const ApiBaseUrlPattern = /^(https?):\/\/([^:\/\s]+)(:([0-9]+))?\/?/i;
 
-async function loadConfigFileSchema(): Promise<JSONSchema7> {
+async function loadConfigFileSchema(): Promise<object> {
   const content = await fs.promises.readFile(SchemaFilePath, 'utf8');
-  const schema = JSON5.parse(content) as JSONSchema7;
+  const schema = JSON5.parse(content) as object;
   return schema;
 }
 
@@ -28,7 +28,7 @@ async function loadConfigFile(): Promise<object> {
   return config;
 }
 
-async function validateConfigFile(config: object, schema: JSONSchema7): Promise<void> {
+async function validateConfigFile(config: object, schema: object): Promise<void> {
   const validationResult = validate(config, schema);
   if (!validationResult.valid) {
     throw new Error(`Invalid config: ${JSON.stringify(validationResult.errors)}`);
