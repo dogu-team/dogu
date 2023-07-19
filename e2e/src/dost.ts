@@ -88,7 +88,7 @@ export async function launchDost(): Promise<Page> {
       args: [electronMainjsPath],
       executablePath: electronExePath,
       cwd: dostRootPath,
-      env: { ...newCleanNodeEnv(), DOGU_HOME: doguWorkdirPath },
+      env: { ...newCleanNodeEnv(), DOGU_HOME: doguWorkdirPath, ELECTRON_RUN_AS_NODE: '', NODE_OPTIONS: '' },
     })
     .catch((error) => {
       console.error(`${dostElectronColor} ${getClockTime()}`, error);
