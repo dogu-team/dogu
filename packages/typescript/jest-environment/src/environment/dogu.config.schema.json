@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "title": "dogu-config-schema",
+  "description": "Schema for the dogu.config.json file",
+  "type": "object",
+  "properties": {
+    "version": {
+      "description": "Version of the dogu.config.json schema",
+      "type": "integer"
+    },
+    "apiBaseUrl": {
+      "description": "Base URL of the dogu's API",
+      "type": "string"
+    },
+    "token": {
+      "description": "Token to be used for dogu API calls",
+      "type": "string"
+    },
+    "organizationId": {
+      "description": "Organization ID to be used for dogu API calls",
+      "type": "string"
+    },
+    "projectId": {
+      "description": "Project ID to be used for dogu API calls",
+      "type": "string"
+    },
+    "runsOn": {
+      "description": "tag of the environment the dogu is running on",
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      ]
+    },
+    "browserName": {
+      "description": "Name of the browser to be used for testing",
+      "type": "string"
+    },
+    "browserVersion": {
+      "description": "Version of the browser to be used for testing",
+      "type": "string"
+    }
+  },
+  "required": ["apiBaseUrl", "token", "organizationId", "projectId", "runsOn"]
+}

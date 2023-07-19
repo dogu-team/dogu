@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "apiBaseUrl": "INSERT_YOUR_API_BASE_URL",
+  "organizationId": "INSERT_YOUR_ORGANIZATION_ID",
+  "projectId": "INSERT_YOUR_PROJECT_ID",
+  "token": "INSERT_YOUR_TOKEN",
+  "runsOn": "INSERT_YOUR_TAG", // available tags: "macos", "windows", "android", "ios" or your custom tag
+  "browserName": "chrome"
+}

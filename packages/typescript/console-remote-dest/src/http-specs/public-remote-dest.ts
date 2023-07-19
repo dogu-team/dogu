@@ -1,6 +1,7 @@
 import { ControllerMethodSpec, ControllerSpec } from '@dogu-tech/common';
 import { ProjectId, RemoteDestId, RemoteDeviceJobId } from '@dogu-tech/types';
 import { CreateRemoteDestRequestBody, UpdateRemoteDestStateRequestBody } from './request';
+import { CreateRemoteDestResponse } from './response';
 
 const RemoteDestController = new ControllerSpec({
   path: '/public/projects/:projectId/remote-device-jobs/:remoteDeviceJobId/remote-dests',
@@ -17,6 +18,7 @@ export const PublicRemoteDest = {
       constructor(readonly projectId: ProjectId, readonly remoteDeviceJobId: RemoteDeviceJobId) {}
     },
     requestBody: CreateRemoteDestRequestBody,
+    responseBody: CreateRemoteDestResponse,
   }),
 
   updateRemoteDestState: new ControllerMethodSpec({
