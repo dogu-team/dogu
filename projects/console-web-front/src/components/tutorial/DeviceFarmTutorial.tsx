@@ -33,6 +33,8 @@ const USE_HOST_AS_DEVICE_ID = 'use-host-as-device';
 const CONNECT_MOBILE_DEVICE_ID = 'connect-mobile-device';
 const USE_DEVICE_ID = 'use-device';
 
+const TUTORIAL_HOST_SESSION_ID = 'tutorialHost';
+
 const DeviceFarmTutorial = () => {
   const router = useRouter();
   const [isOpen, openModal, closeModal] = useModal();
@@ -52,12 +54,28 @@ const DeviceFarmTutorial = () => {
   const isMobile = platform === GuideSupportPlatform.ANDROID || platform === GuideSupportPlatform.IOS;
 
   useEffect(() => {
+    if (organization?.organizationId) {
+      const hostRaw = sessionStorage.getItem(TUTORIAL_HOST_SESSION_ID);
+
+      if (hostRaw) {
+        const host = JSON.parse(hostRaw) as HostBase;
+        if (host.organizationId === organization.organizationId) {
+          setHost(host);
+        } else {
+          sessionStorage.removeItem(TUTORIAL_HOST_SESSION_ID);
+        }
+      }
+    }
+  }, [organization?.organizationId]);
+
+  useEffect(() => {
     const unsub = useEventStore.subscribe(({ eventName, payload }) => {
       if (eventName === 'onHostCreated') {
         setToken(payload as string);
         if (organization?.organizationId) {
           getHostByToken(organization.organizationId, payload as string).then((host) => {
             setHost(host);
+            sessionStorage.setItem(TUTORIAL_HOST_SESSION_ID, JSON.stringify(host));
           });
         }
       }

@@ -100,6 +100,7 @@ const AccountMenu = () => {
                 const cookie = new Cookies();
                 cookie.remove(USER_ACCESS_TOKEN_COOKIE_NAME);
               }
+              sessionStorage.clear();
               router.push('/');
             }}
           >
