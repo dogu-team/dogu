@@ -10,9 +10,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
-    name: Build
+    name: Validate
     steps:
       - uses: actions/checkout@v3
 
@@ -36,9 +36,13 @@ jobs:
       - name: Build
         run: yarn build:docs
 
+      - name: Validate
+        working-directory: ./docs
+        run: yarn run validate
+
   send-slack:
     runs-on: ubuntu-latest
-    needs: build
+    needs: validate
     if: ${{ always() }}
 
     steps:
@@ -47,7 +51,7 @@ jobs:
         with:
           template: 'CI'
           slack-channel-id: 'C03PL9TC44Q'
-          result-status: ${{ needs.build.result }}
-          ignore-notify: ${{ needs.build.result == 'success' }}
+          result-status: ${{ needs.validate.result }}
+          ignore-notify: ${{ needs.validate.result == 'success' }}
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}

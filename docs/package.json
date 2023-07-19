@@ -17,6 +17,7 @@
     "start:prod": "yarn run start:dev",
     "swizzle": "docusaurus swizzle",
     "typecheck": "tsc",
+    "validate": "ts-node validation/url",
     "write-heading-ids": "docusaurus write-heading-ids",
     "write-translations": "docusaurus write-translations --locale ko && docusaurus write-translations --locale en"
   },
