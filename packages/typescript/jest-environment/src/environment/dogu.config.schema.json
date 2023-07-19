@@ -4,6 +4,10 @@
   "description": "Schema for the dogu.config.json file",
   "type": "object",
   "properties": {
+    "$schema": {
+      "description": "Schema of the dogu.config.json file",
+      "type": "string"
+    },
     "version": {
       "description": "Version of the dogu.config.json schema",
       "type": "integer"
