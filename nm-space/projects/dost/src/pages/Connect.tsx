@@ -1,6 +1,4 @@
-import { CircularProgress, Divider, Flex, HStack, List, ListItem, Spinner, Stack, Text, UnorderedList } from '@chakra-ui/react';
-import { CheckIcon, NotAllowedIcon } from '@chakra-ui/icons';
-import { useCallback, useEffect, useState } from 'react';
+import { Divider, Flex, List, ListItem, Spinner, Text } from '@chakra-ui/react';
 import styled from 'styled-components';
 
 import AlertModalButton from '../components/buttons/AlertModalButton';
@@ -8,10 +6,6 @@ import HostAgentConnectionStatusBadge from '../components/connection/HostAgentCo
 import TokenConnectionForm from '../components/connection/TokenConnectionForm';
 import PageTitle from '../components/layouts/PageTitle';
 import useHostAgentConnectionStatusStore from '../stores/host-agent-connection-status';
-import { ipc } from '../utils/window';
-import { stringify } from '@dogu-tech/common';
-import { DeviceSystemInfo, ErrorDevice, PlatformSerial, PlatformType, Serial } from '@dogu-private/types';
-import BorderBox from '../components/layouts/BorderBox';
 import ConnectedDeviceList from '../components/devices/ConnectedDeviceList';
 
 function Connect() {

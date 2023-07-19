@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { DeviceSystemInfo, PlatformType, Serial } from '@dogu-private/types';
 import { CircularProgress, HStack, List, ListItem, Text, Tooltip, UnorderedList } from '@chakra-ui/react';
