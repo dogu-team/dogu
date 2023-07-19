@@ -61,6 +61,7 @@ export class DeviceServerChild implements Child {
     const deviceService = new NodeDeviceService();
     this._client = new DeviceClient(deviceService, {
       port: DOGU_DEVICE_SERVER_PORT,
+      timeout: 5000,
     });
     this._child.stderr?.on('data', (data) => {
       const dataString = data.toString();
