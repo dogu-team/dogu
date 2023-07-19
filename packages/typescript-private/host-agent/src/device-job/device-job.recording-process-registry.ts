@@ -101,7 +101,6 @@ export class DeviceJobRecordingProcessRegistry {
           }
           if (!fs.existsSync(filePath)) {
             throw new Error(`startRecording: file not found. ${filePath}`);
-            return;
           }
 
           this.uploadDeviceRecording(organizationId, deviceId, routineDeviceJobId, filePath).catch((error) => {

@@ -65,6 +65,9 @@ function Connect() {
   }, []);
   useEffect(() => {
     const timer = setInterval(() => {
+      if (!isConnected) {
+        return;
+      }
       getDeviceStatuses();
     }, 3000);
     return () => clearInterval(timer);

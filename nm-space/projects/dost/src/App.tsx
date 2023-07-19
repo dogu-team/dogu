@@ -78,7 +78,8 @@ function App() {
     };
 
     getHAConnectionStatus();
-    setInterval(() => getHAConnectionStatus(), 3000);
+    const interval = setInterval(() => getHAConnectionStatus(), 3000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {

@@ -2,8 +2,9 @@ import { ChildCode, Status } from '@dogu-private/dost-children';
 import { Code } from '@dogu-private/types';
 import { Instance, parseAxiosError } from '@dogu-tech/common';
 import { isFreePort, killProcessOnPort } from '@dogu-tech/node';
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { ChildProcess } from 'child_process';
+import http from 'http';
 import { HostAgentConnectionStatus, hostAgentKey } from '../../../src/shares/child';
 import { AppConfigService } from '../../app-config/app-config-service';
 import { FeatureConfigService } from '../../feature-config/feature-config-service';
@@ -16,6 +17,8 @@ export class HostAgentChild implements Child {
   constructor(private readonly appConfigService: AppConfigService, private readonly featureConfigService: FeatureConfigService) {}
   private _child: ChildProcess | undefined;
   private _lastError: ChildLastError | undefined;
+  private _client: AxiosInstance | undefined;
+  private _lastStatusAndTime: { status: HostAgentConnectionStatus; time: number } | undefined;
 
   async open(): Promise<void> {
     const { appConfigService } = this;
@@ -53,6 +56,13 @@ export class HostAgentChild implements Child {
       const childCode = new ChildCode(Code.CODE_HOST_AGENT_SUCCESS_BEGIN);
       childCode.code(exitCode, signal);
       logger.verbose('Connection. childCallback.onClose', { exitCode, signal, childCode });
+    });
+    this._client = axios.create({
+      baseURL: `http://127.0.0.1:${DOGU_HOST_AGENT_PORT}`,
+      httpAgent: new http.Agent({ keepAlive: true, maxSockets: 1, maxTotalSockets: 1, maxFreeSockets: 0 }),
+      timeout: 5000,
+      maxRedirects: 10,
+      maxContentLength: 50 * 1000 * 1000,
     });
     return;
   }
@@ -95,11 +105,20 @@ export class HostAgentChild implements Child {
         updatedAt: new Date(),
       };
     }
-    const doguHostAgentPort = await this.appConfigService.get<number>('DOGU_HOST_AGENT_PORT');
+    if (!this._client) {
+      return {
+        status: 'disconnected',
+        code: Code.CODE_HOST_AGENT_NOT_RUNNING,
+        updatedAt: new Date(),
+      };
+    }
+    if (this._lastStatusAndTime && this._lastStatusAndTime.time + 3000 > Date.now()) {
+      return this._lastStatusAndTime.status;
+    }
     const pathProvider = new Status.getConnectionStatus.pathProvider();
     const path = Status.getConnectionStatus.resolvePath(pathProvider);
-    const response = await axios
-      .get<Instance<typeof Status.getConnectionStatus.responseBody>>(`http://localhost:${doguHostAgentPort}${path}`, { timeout: 5000 })
+    const response = await this._client
+      .get<Instance<typeof Status.getConnectionStatus.responseBody>>(path)
       .then((response) => {
         return response.data;
       })
@@ -114,6 +133,7 @@ export class HostAgentChild implements Child {
         };
         return response;
       });
+    this._lastStatusAndTime = { status: response, time: Date.now() };
     return response;
   }
 

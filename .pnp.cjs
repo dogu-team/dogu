@@ -11148,6 +11148,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["class-validator", "npm:0.14.0"],\
             ["compressing", "npm:1.9.0"],\
             ["cross-env", "npm:7.0.3"],\
+            ["express", "npm:4.18.2"],\
             ["find-free-ports", "npm:3.0.0"],\
             ["gamium", "npm:2.0.2"],\
             ["glob", "npm:10.0.0"],\
@@ -11248,6 +11249,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["class-validator", "npm:0.14.0"],\
             ["compressing", "npm:1.9.0"],\
             ["cross-env", "npm:7.0.3"],\
+            ["express", "npm:4.18.2"],\
             ["form-data", "npm:4.0.0"],\
             ["logform", "npm:2.5.1"],\
             ["nest-winston", "virtual:d0508fb1c987a55ce593348c3c3508bc662c7271db932ea69a120075a5cf1c1208122c8c0d6b8e79e0a37a88088966bd934935bdae901a07544f17c740a10f2e#npm:1.8.0"],\

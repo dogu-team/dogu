@@ -5,7 +5,10 @@ import { Code, DOGU_PROTOCOL_VERSION } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { ExpressAdapter } from '@nestjs/platform-express';
 import { WsAdapter } from '@nestjs/platform-ws';
+import express from 'express';
+import http from 'http';
 import { WinstonModule } from 'nest-winston';
 
 import { AppModule } from './app/app.module';
@@ -32,7 +35,8 @@ export async function bootstrap(): Promise<void> {
   const pathMap = await openPathMap(env.ANDROID_HOME);
   logger.info('path map', { pathMap });
 
-  const app = await NestFactory.create(AppModule, {
+  const server = express();
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(server), {
     logger: WinstonModule.createLogger({
       instance: logger.winstonLogger(),
     }),
@@ -49,7 +53,11 @@ export async function bootstrap(): Promise<void> {
       allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     });
   try {
-    await app.listen(env.DOGU_DEVICE_SERVER_PORT);
+    await app.init();
+    http.createServer({ noDelay: true, keepAlive: true }, server).listen({
+      port: env.DOGU_DEVICE_SERVER_PORT,
+      backlog: 10,
+    });
   } catch (error) {
     const casted = errorify(error);
     throw new ChildError(Code.CODE_DEVICE_SERVER_PORT_IN_USE, casted.message, undefined, { cause: casted });

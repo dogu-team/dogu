@@ -4,6 +4,9 @@ import { ChildError } from '@dogu-private/dost-children';
 import { Code } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { NestFactory } from '@nestjs/core';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import express from 'express';
+import http from 'http';
 import { WinstonModule } from 'nest-winston';
 import { AppModule } from './app/app.module';
 import { env } from './env';
@@ -23,7 +26,8 @@ export async function bootstrap(): Promise<void> {
   const winstonModuleLogger = WinstonModule.createLogger({
     instance: logger.winstonLogger(),
   });
-  const app = await NestFactory.create(AppModule, {
+  const server = express();
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(server), {
     logger: winstonModuleLogger,
   });
   const messageMicroService = new MessageMicroService();
@@ -37,7 +41,14 @@ export async function bootstrap(): Promise<void> {
   messagePuller.setMessageHandlers(messageMicroService.getHandlers() as MessageHandlers);
   await app.startAllMicroservices();
   try {
-    await app.listen(env.DOGU_HOST_AGENT_PORT);
+    await app.init();
+    const httpServer = http.createServer({ noDelay: true, keepAlive: true }, server);
+    httpServer.headersTimeout = 5000;
+    httpServer.timeout = 10000;
+    httpServer.listen({
+      port: env.DOGU_HOST_AGENT_PORT,
+      backlog: 10,
+    });
   } catch (error) {
     const casted = errorify(error);
     throw new ChildError(Code.CODE_HOST_AGENT_PORT_IN_USE, casted.message, undefined, { cause: casted });
