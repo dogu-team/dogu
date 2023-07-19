@@ -19,48 +19,45 @@ interface DeviceStatus {
 const ConnectedDeviceList = () => {
   const [deviceStatuses, setDeviceStatuses] = useState<DeviceStatus[]>([]);
 
-  const getDeviceStatuses = useCallback(async () => {
-    try {
-      const deviceStatuses: DeviceStatus[] = [];
-      const platformSerials = await ipc.deviceLookupClient.getPlatformSerials();
-      for (const platformSerial of platformSerials) {
-        const info = await ipc.deviceLookupClient.getDeviceSystemInfo(platformSerial.serial);
-        if (!info) {
-          deviceStatuses.push({
-            platform: platformSerial.platform,
-            serial: platformSerial.serial,
-            error: null,
-            info: null,
-          });
-        } else {
-          deviceStatuses.push({
-            platform: platformSerial.platform,
-            serial: platformSerial.serial,
-            error: null,
-            info: info,
-          });
-        }
-      }
-      const errorDevices = await ipc.deviceLookupClient.getDevicesWithError();
-      for (const errorDevice of errorDevices) {
-        deviceStatuses.push({
-          platform: errorDevice.platform,
-          serial: errorDevice.serial,
-          error: errorDevice.error,
-          info: null,
-        });
-      }
-      setDeviceStatuses(deviceStatuses);
-    } catch (e) {
-      ipc.rendererLogger.error(`Get PlatformSerials error: ${stringify(e)}`);
-    }
-  }, []);
-
   useEffect(() => {
     const timer = setInterval(() => {
-      getDeviceStatuses();
+      (async () => {
+        try {
+          const deviceStatuses: DeviceStatus[] = [];
+          const platformSerials = await ipc.deviceLookupClient.getPlatformSerials();
+          for (const platformSerial of platformSerials) {
+            const info = await ipc.deviceLookupClient.getDeviceSystemInfo(platformSerial.serial);
+            if (!info) {
+              deviceStatuses.push({
+                platform: platformSerial.platform,
+                serial: platformSerial.serial,
+                error: null,
+                info: null,
+              });
+            } else {
+              deviceStatuses.push({
+                platform: platformSerial.platform,
+                serial: platformSerial.serial,
+                error: null,
+                info: info,
+              });
+            }
+          }
+          const errorDevices = await ipc.deviceLookupClient.getDevicesWithError();
+          for (const errorDevice of errorDevices) {
+            deviceStatuses.push({
+              platform: errorDevice.platform,
+              serial: errorDevice.serial,
+              error: errorDevice.error,
+              info: null,
+            });
+          }
+          setDeviceStatuses(deviceStatuses);
+        } catch (e) {
+          ipc.rendererLogger.error(`Get PlatformSerials error: ${stringify(e)}`);
+        }
+      })();
     }, 3000);
-
     return () => clearInterval(timer);
   }, []);
 
@@ -77,7 +74,7 @@ const ConnectedDeviceList = () => {
           <List spacing={3}>
             {deviceStatuses &&
               deviceStatuses.map((deviceStatus) => (
-                <ListItem>
+                <ListItem key={deviceStatus.serial}>
                   <HStack>
                     {deviceStatus.error ? <NotAllowedIcon color="red.500" /> : <CheckIcon color="green.500" />}
                     <Tooltip label={deviceStatus.platform} aria-label="platform" placement="top">
