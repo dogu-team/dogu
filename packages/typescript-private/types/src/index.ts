@@ -16,6 +16,7 @@ export * from './host';
 export * from './influxdb';
 export * from './input';
 export * from './log';
+export * from './open-api';
 export * from './organization';
 export * from './organization-and-user-and-organization-role';
 export * from './organization-and-user-and-team';

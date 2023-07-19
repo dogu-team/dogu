@@ -6,7 +6,7 @@ import { RoutineJobBase } from './routine-job';
 import { UserBase } from './user';
 
 export interface RoutinePipelineBaseRelationTraits {
-  creator?: UserBase;
+  creator?: UserBase | null;
   routine?: RoutineBase | null;
   routineJobs?: RoutineJobBase[];
   canceler?: UserBase;

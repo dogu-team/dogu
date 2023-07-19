@@ -14,6 +14,7 @@ import {
   RoutineStepPropCamel,
 } from '@dogu-private/console';
 import {
+  CREATOR_TYPE,
   JobSchema,
   OrganizationId,
   PIPELINE_STATUS,
@@ -197,7 +198,13 @@ export class PipelineService {
     return targetDeviceNames;
   }
 
-  private async createPipeline(manager: EntityManager, projectId: ProjectId, routineId: RoutineId | null, creatorId: UserId): Promise<RoutinePipeline> {
+  private async createPipeline(
+    manager: EntityManager,
+    projectId: ProjectId,
+    routineId: RoutineId | null,
+    creatorId: UserId | null,
+    creatorType: CREATOR_TYPE,
+  ): Promise<RoutinePipeline> {
     // create pipeline by instanct routine
     if (!routineId) {
       const pipeline = manager.getRepository(RoutinePipeline).create({
@@ -205,6 +212,7 @@ export class PipelineService {
         routineId,
         creatorId,
         status: PIPELINE_STATUS.WAITING,
+        creatorType,
         index: 0,
       });
       const rv = await manager.getRepository(RoutinePipeline).save(pipeline);
@@ -222,6 +230,7 @@ export class PipelineService {
         routineId,
         creatorId,
         status: PIPELINE_STATUS.WAITING,
+        creatorType,
         index,
       });
 
@@ -377,10 +386,11 @@ export class PipelineService {
     organizationId: OrganizationId,
     projectId: ProjectId,
     routineId: RoutineId | null,
-    creatorId: UserId,
+    creatorId: UserId | null,
+    creatorType: CREATOR_TYPE,
   ): Promise<RoutinePipeline> {
     const pipeline = await this.dataSource.transaction(async (transactionEntityManager: EntityManager): Promise<RoutinePipeline> => {
-      const pipeline = await this.createPipeline(transactionEntityManager, projectId, routineId, creatorId);
+      const pipeline = await this.createPipeline(transactionEntityManager, projectId, routineId, creatorId, creatorType);
 
       const jobs = await this.createJobs(transactionEntityManager, routineSchema, pipeline);
       if (jobs.length === 0) {
@@ -416,7 +426,13 @@ export class PipelineService {
     return pipeline;
   }
 
-  async createPipelineByRoutineConfig(organizationId: OrganizationId, projectId: ProjectId, routineId: RoutineId, creatorId: UserId): Promise<void> {
+  async createPipelineByRoutineConfig(
+    organizationId: OrganizationId,
+    projectId: ProjectId,
+    routineId: RoutineId,
+    creatorId: UserId | null,
+    creatorType: CREATOR_TYPE,
+  ): Promise<RoutinePipeline> {
     const routine = await this.dataSource.manager.getRepository(Routine).findOne({ where: { routineId } });
     if (!routine) {
       throw new HttpException(`This routine does not exist: ${routineId}`, HttpStatus.NOT_FOUND);
@@ -426,8 +442,8 @@ export class PipelineService {
     const routineSchema: RoutineSchema = this.yamlLoaderService.routineYamlToObject(routineData);
     validateRoutineSchema(routineSchema);
 
-    await this.createPipelineData(routineSchema, organizationId, projectId, routineId, creatorId);
-    return;
+    const rv = await this.createPipelineData(routineSchema, organizationId, projectId, routineId, creatorId, creatorType);
+    return rv;
   }
 
   async createInstantPipelineDatas(organizationId: OrganizationId, projectId: ProjectId, creatorId: UserId, dto: CreateInstantPipelineDto): Promise<RoutinePipelineBase> {
@@ -493,7 +509,7 @@ export class PipelineService {
       },
     };
 
-    const pipeline = await this.createPipelineData(routine, organizationId, projectId, null, creatorId);
+    const pipeline = await this.createPipelineData(routine, organizationId, projectId, null, creatorId, CREATOR_TYPE.USER);
     return pipeline;
   }
 
