@@ -30,7 +30,7 @@ const ProjectItem = ({ project }: ProjectItemProps) => {
     <Item>
       <ItemInner>
         <TwoSpan>
-          <StyledLink href={`/dashboard/${project.organizationId}/projects/${project.projectId}`}>{project.name}</StyledLink>
+          <StyledLink href={`/dashboard/${project.organizationId}/projects/${project.projectId}/remotes`}>{project.name}</StyledLink>
         </TwoSpan>
         <TwoSpan>
           <Avatar.Group>
