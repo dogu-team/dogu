@@ -8,6 +8,7 @@ export interface CreateHostDtoBase extends Pick<HostBase, 'name'> {
 
 export interface FindHostsByOrganizationIdDtoBase extends PageDtoBase {
   keyword?: string;
+  token?: string;
 }
 
 export type UpdateHostNameDtoBase = Pick<HostBase, 'name'>;

@@ -51,4 +51,8 @@ const Box = styled.div`
   &:hover ${StyledButton} {
     display: block;
   }
+
+  code {
+    font-size: 0.85rem;
+  }
 `;

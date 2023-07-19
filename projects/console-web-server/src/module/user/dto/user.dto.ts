@@ -8,6 +8,7 @@ import {
   ResetPasswordDtoBase,
   SignInDtoBase,
   UpdateLastOrganizationDtoBase,
+  UpdateTutorialDtoBase,
   UpdateUserDtoBase,
 } from '@dogu-private/console';
 import {
@@ -21,7 +22,7 @@ import {
   USER_PASSWORD_MIN_LENGTH,
 } from '@dogu-private/types';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsBoolean, IsEmail, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import { PageDto } from '../../../module/common/dto/pagination/page.dto';
 
 export class CreateAdminDto implements CreateAdminDtoBase {
@@ -185,4 +186,11 @@ export class UpdateLastOrganizationDto implements UpdateLastOrganizationDtoBase 
   @IsNotEmpty()
   @IsString()
   organizationId!: string;
+}
+
+export class UpdateTutorialDto implements UpdateTutorialDtoBase {
+  @IsNotEmpty()
+  @IsNumber()
+  @IsIn([0, 1])
+  isTutorialCompleted!: number;
 }

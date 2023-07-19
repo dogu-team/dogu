@@ -32,7 +32,6 @@ export interface OrganizationBaseTraits {
   organizationId: OrganizationId;
   name: string;
   profileImageUrl: string | null;
-  isTutorialCompleted: number;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

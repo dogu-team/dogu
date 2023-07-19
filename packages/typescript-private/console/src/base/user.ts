@@ -38,6 +38,7 @@ export interface UserBaseTraits {
   password?: string | null;
   name: string;
   profileImageUrl: string | null;
+  isTutorialCompleted: number;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
