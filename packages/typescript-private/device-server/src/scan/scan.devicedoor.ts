@@ -56,7 +56,7 @@ export class DeviceDoor {
   }
 
   private async processInternal(): Promise<void> {
-    if (null == this.channel && this._latestCloseTime < this._latestOpenTime) {
+    if (null == this.channel && this.scanInfo.status === 'online' && this._latestCloseTime < this._latestOpenTime) {
       try {
         this.channel = await this.driver.openChannel({
           serial: this.scanInfo.serial,
