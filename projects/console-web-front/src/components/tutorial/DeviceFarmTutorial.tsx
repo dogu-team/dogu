@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { getHostByToken, updateUseHostAsDevice } from '../../api/host';
 import useModal from '../../hooks/useModal';
-import useOrganizationTutorialContext from '../../hooks/useOrganizationTutorialContext';
+import useTutorialContext from '../../hooks/useTutorialContext';
 
 import useTutorialSelector from '../../hooks/useTutorialSelector';
 import { GuideSupportPlatform, GuideSupportSdk, tutorialData } from '../../resources/guide';
@@ -39,7 +39,7 @@ const DeviceFarmTutorial = () => {
   const [token, setToken] = useState<string>();
   const [loading, setLoading] = useState(false);
   const [host, setHost] = useState<HostBase>();
-  const { organization } = useOrganizationTutorialContext();
+  const { organization } = useTutorialContext();
 
   const selectedSdk = (router.query.sdk as GuideSupportSdk | undefined) || GuideSupportSdk.WEBDRIVERIO;
   const guideData = tutorialData[selectedSdk];

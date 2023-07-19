@@ -4,7 +4,7 @@ import { isAxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import { updateUserTutorial } from '../../api/user';
 
-import useOrganizationTutorialContext from '../../hooks/useOrganizationTutorialContext';
+import useTutorialContext from '../../hooks/useTutorialContext';
 import useRequest from '../../hooks/useRequest';
 import { sendErrorNotification } from '../../utils/antd';
 
@@ -13,7 +13,7 @@ interface Props {
 }
 
 const SkipTutorialButton = ({ children }: Props) => {
-  const { me, organization } = useOrganizationTutorialContext();
+  const { me, organization } = useTutorialContext();
   const router = useRouter();
   const [loading, request] = useRequest(updateUserTutorial);
 
