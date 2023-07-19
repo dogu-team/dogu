@@ -220,10 +220,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:samples/pytest-playwright-dogu-report"\
       },\
       {\
-        "name": "@dogu-user-templates/typescript-template",\
-        "reference": "workspace:user-templates/typescript-template"\
-      },\
-      {\
         "name": "validation",\
         "reference": "workspace:validation"\
       }\
@@ -266,7 +262,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@dogu-tech/node", ["workspace:packages/typescript/node"]],\
       ["@dogu-tech/toolkit", ["workspace:packages/typescript/toolkit"]],\
       ["@dogu-tech/types", ["workspace:packages/typescript/types"]],\
-      ["@dogu-user-templates/typescript-template", ["workspace:user-templates/typescript-template"]],\
       ["android-device-agent", ["workspace:projects/android-device-agent"]],\
       ["console-web-front", ["workspace:projects/console-web-front"]],\
       ["console-web-server", ["workspace:projects/console-web-server"]],\
@@ -11502,25 +11497,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["nodemon", "npm:2.0.22"],\
             ["protobufjs", "npm:7.1.2"],\
             ["reflect-metadata", "npm:0.1.13"],\
-            ["shx", "npm:0.3.4"],\
-            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
-            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["@dogu-user-templates/typescript-template", [\
-        ["workspace:user-templates/typescript-template", {\
-          "packageLocation": "./user-templates/typescript-template/",\
-          "packageDependencies": [\
-            ["@dogu-user-templates/typescript-template", "workspace:user-templates/typescript-template"],\
-            ["@dogu-dev-private/publish-package", "workspace:packages/typescript-dev-private/publish-package"],\
-            ["@dogu-tech/toolkit", "workspace:packages/typescript/toolkit"],\
-            ["@types/node", "npm:18.15.11"],\
-            ["@types/shelljs", "npm:0.8.11"],\
-            ["cross-env", "npm:7.0.3"],\
-            ["nodemon", "npm:2.0.22"],\
-            ["shelljs", "npm:0.8.5"],\
             ["shx", "npm:0.3.4"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
