@@ -18,7 +18,7 @@ const GuideBanner = ({ docsUrl }: Props) => {
         <Link href="https://github.com/dogu-team/dogu/discussions" target="_blank" style={{ textDecoration: 'none' }}>
           <StyledButton icon={<GithubFilled />}>Discussions</StyledButton>
         </Link>
-        <Link href="https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw" target="_blank">
+        <Link href="https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw" target="_blank" style={{ textDecoration: 'none' }}>
           <StyledButton icon={<SiSlack />}>&nbsp;&nbsp;Slack</StyledButton>
         </Link>
         <Link href={docsUrl ?? 'https://docs.dogutech.io'} target="_blank" style={{ textDecoration: 'none' }}>

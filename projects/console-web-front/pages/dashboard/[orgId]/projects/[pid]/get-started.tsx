@@ -63,6 +63,13 @@ const ProjectGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, o
           <Divider />
 
           <RemoteTestTutorial selectedSdk={router.query.sdk as GuideSupportSdk} />
+
+          <LinkBox>
+            <div />
+            <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/routines`}>
+              <Button type="link">Close tutorial</Button>
+            </Link>
+          </LinkBox>
         </Box>
       ) : (
         <CenteredBox>
@@ -124,4 +131,11 @@ const StyledTitle = styled.h1`
   ${flexRowBaseStyle}
   font-size: 1.5rem;
   font-weight: 600;
+`;
+
+const LinkBox = styled.div`
+  display: flex;
+  justify-content: space-between;
+  max-width: calc(max(20%, 220px) + 2rem + 1000px);
+  padding-left: calc(max(20%, 220px) + 2rem);
 `;

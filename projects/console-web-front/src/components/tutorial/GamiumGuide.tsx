@@ -9,7 +9,6 @@ import GuideLayout from './GuideLayout';
 import GuideStep from './GuideStep';
 import RemoteTestOptionSelectors from './RemoteTestOptionSelectors';
 
-const DEVICE_FARM_ID = 'device-farm';
 const TUTORIAL_DOCS_ID = 'tutorial-docs';
 const DONE_ID = 'done';
 
@@ -29,7 +28,6 @@ const GamiumGuide = ({ organizationId, projectId }: GuideProps) => {
           </div>
           <GuideAnchor
             items={[
-              { id: DEVICE_FARM_ID, title: 'Setup device farm' },
               { id: TUTORIAL_DOCS_ID, title: 'Tutorial document' },
               { id: DONE_ID, title: 'Done! Next step' },
             ]}
@@ -38,16 +36,6 @@ const GamiumGuide = ({ organizationId, projectId }: GuideProps) => {
       }
       content={
         <div>
-          <GuideStep
-            id={DEVICE_FARM_ID}
-            title="Setup device farm"
-            description={<p>Follow tutorial documentation!</p>}
-            content={
-              <Link href="https://docs.dogutech.io/get-started/tutorials/device-farm" target="_blank">
-                <Button>Device farm tutorial</Button>
-              </Link>
-            }
-          />
           <GuideStep
             id={TUTORIAL_DOCS_ID}
             title="Tutorial document"

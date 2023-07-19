@@ -15,6 +15,7 @@ import useTutorialSelector from '../../hooks/useTutorialSelector';
 import RemoteTestOptionSelectors from './RemoteTestOptionSelectors';
 import CodeWithCopyButton from '../common/CodeWithCopyButton';
 import ProjectApplicationUploadButton from '../project-application/ProjectApplicationUploadButton';
+import RemoteTestResultList from './RemoteTestResultList';
 
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
@@ -156,16 +157,7 @@ const AppiumGuide = ({ organizationId, projectId }: GuideProps) => {
             <GuideBanner docsUrl="https://docs.dogutech.io/test-automation/appium" />
           </div>
 
-          <GuideStep
-            id={RESULT_ID}
-            title="Check result"
-            description={<p>Check remote testing result</p>}
-            content={
-              <Link href={`/dashboard/${organizationId}/projects/${projectId}/remotes`}>
-                <Button>Go to result</Button>
-              </Link>
-            }
-          />
+          <GuideStep id={RESULT_ID} title="Check result" description={<p>Check remote testing result</p>} content={<RemoteTestResultList />} />
 
           <DoneStep id={DONE_ID} />
         </div>

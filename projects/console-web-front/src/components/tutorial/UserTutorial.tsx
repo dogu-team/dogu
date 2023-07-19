@@ -127,5 +127,6 @@ const GuideWrapper = styled.div`
 const LinkBox = styled.div`
   display: flex;
   justify-content: space-between;
-  padding-left: calc(max(20%, 220px) + 1.5rem);
+  max-width: calc(max(20%, 220px) + 2rem + 1000px);
+  padding-left: calc(max(20%, 220px) + 2rem);
 `;

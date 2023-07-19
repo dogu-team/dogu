@@ -6,17 +6,18 @@ import { useRouter } from 'next/router';
 import { RiRemoteControlLine } from 'react-icons/ri';
 import useSWR from 'swr';
 
-import { swrAuthFetcher } from '../../api';
+import { swrAuthFetcher } from '../../api/index';
 import useRefresh from '../../hooks/useRefresh';
 import ListEmpty from '../common/boxes/ListEmpty';
-import RemoteItem from './RemoteItem';
+import SummarizedRemoteItem from './SummarizedRemoteItem';
 
 interface Props {
   organizationId: OrganizationId;
   projectId: ProjectId;
+  emptyText?: React.ReactNode;
 }
 
-const RemoteListController = ({ organizationId, projectId }: Props) => {
+const RemoteListController = ({ organizationId, projectId, emptyText }: Props) => {
   const router = useRouter();
   const { page } = router.query;
   const { data, isLoading, error, mutate } = useSWR<PageBase<RemoteBase>>(
@@ -30,7 +31,7 @@ const RemoteListController = ({ organizationId, projectId }: Props) => {
     <div>
       <List<RemoteBase>
         dataSource={data?.items}
-        renderItem={(item) => <RemoteItem remote={item} />}
+        renderItem={(item) => <SummarizedRemoteItem remote={item} />}
         loading={isLoading}
         rowKey={(item) => `remote-${item.remoteId}`}
         pagination={{
@@ -51,7 +52,7 @@ const RemoteListController = ({ organizationId, projectId }: Props) => {
           total: data?.totalCount,
         }}
         locale={{
-          emptyText: (
+          emptyText: emptyText ?? (
             <ListEmpty
               image={<RiRemoteControlLine style={{ fontSize: '90px' }} />}
               description={

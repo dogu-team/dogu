@@ -12,6 +12,9 @@ export class typeormMigration1689733596855 implements MigrationInterface {
     const pipelines = await queryRunner.manager.getRepository(RoutinePipeline).find();
     const pipelineIds = pipelines.map((pipeline) => pipeline.routinePipelineId);
 
+    if (pipelineIds.length === 0) {
+      return;
+    }
     await queryRunner.manager.getRepository(RoutinePipeline).update(pipelineIds, { creatorType: CREATOR_TYPE.USER });
   }
 

@@ -13,7 +13,7 @@ interface Props {
   remote: RemoteBase;
 }
 
-const RemoteItem = ({ remote }: Props) => {
+const SummarizedRemoteItem = ({ remote }: Props) => {
   return (
     <ItemBox>
       <StyledCollapse ghost>
@@ -50,7 +50,7 @@ const RemoteItem = ({ remote }: Props) => {
   );
 };
 
-export default RemoteItem;
+export default SummarizedRemoteItem;
 
 const ItemBox = styled(List.Item)`
   padding: 0 !important;

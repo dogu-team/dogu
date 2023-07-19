@@ -15,6 +15,7 @@ import RemoteTestOptionSelectors from './RemoteTestOptionSelectors';
 import useTutorialSelector from '../../hooks/useTutorialSelector';
 import ProjectApplicationUploadButton from '../project-application/ProjectApplicationUploadButton';
 import SampleApplicationUploadButton from './SampleApplicationUploadButton';
+import RemoteTestResultList from './RemoteTestResultList';
 
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
@@ -142,16 +143,7 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
             <GuideBanner docsUrl="https://docs.dogutech.io/test-automation/webdriverio" />
           </div>
 
-          <GuideStep
-            id={RESULT_ID}
-            title="Check result"
-            description={<p>Check remote testing result</p>}
-            content={
-              <Link href={`/dashboard/${organizationId}/projects/${projectId}/remotes`}>
-                <Button>Go to result</Button>
-              </Link>
-            }
-          />
+          <GuideStep id={RESULT_ID} title="Check result" description={<p>Check remote testing result</p>} content={<RemoteTestResultList />} />
 
           <DoneStep id={DONE_ID} />
         </div>

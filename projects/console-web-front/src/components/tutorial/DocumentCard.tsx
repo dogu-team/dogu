@@ -24,6 +24,7 @@ const StyledLink = styled(Link)`
   display: inline-flex;
   width: 46%;
   margin: 2%;
+  text-decoration: none;
 `;
 
 const StyledCard = styled(Card)`
