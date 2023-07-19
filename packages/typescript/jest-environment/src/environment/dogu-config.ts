@@ -52,6 +52,10 @@ export class DoguConfig {
 
   constructor(private readonly configFileObject: object) {}
 
+  get version(): string {
+    return _.get(this.configFileObject, 'version') as unknown as string;
+  }
+
   get apiBaseUrl(): string {
     return process.env.DOGU_API_BASE_URL || (_.get(this.configFileObject, 'apiBaseUrl') as unknown as string);
   }
