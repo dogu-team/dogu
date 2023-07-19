@@ -35,7 +35,7 @@ const GitIntegrationTag = ({ isGitIntegrated }: Props) => {
 
     try {
       await request(router.query.orgId as OrganizationId, router.query.pid as ProjectId, { service: values.git, url: values.repo, token: values.token });
-      sendSuccessNotification('projectUpdateSuccessMsg');
+      sendSuccessNotification(t('projectUpdateSuccessMsg'));
       store.updateGitIntegrationStatus(true);
       closeModal();
     } catch (e) {

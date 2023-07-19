@@ -6,8 +6,10 @@ import { useEffect } from 'react';
 import styled from 'styled-components';
 
 import { GuideSupportSdk, guideSupportSdkText } from '../../resources/guide';
+import { flexRowBaseStyle } from '../../styles/box';
 import DeviceFarmTutorial from './DeviceFarmTutorial';
 import RemoteTestTutorial from './RemoteTestTutorial';
+import SdkIcon from './SdkIcon';
 import SkipTutorialButton from './SkipTutorialButton';
 
 interface Props {
@@ -35,7 +37,11 @@ const UserTutorial = ({ selectedSdk }: Props) => {
               </Button>
             </Link>
           </div>
-          <StyledTitle>Quick start - {guideSupportSdkText[selectedSdk]}</StyledTitle>
+          <StyledTitle>
+            Quick start -&nbsp;
+            <SdkIcon sdk={selectedSdk} size={28} />
+            &nbsp;{guideSupportSdkText[selectedSdk]}
+          </StyledTitle>
         </div>
         <div>
           <SkipTutorialButton>Skip tutorial</SkipTutorialButton>
@@ -105,6 +111,7 @@ const HeaderContent = styled.div`
 `;
 
 const StyledTitle = styled.h1`
+  ${flexRowBaseStyle}
   font-size: 1.5rem;
   font-weight: 600;
 `;
@@ -120,5 +127,6 @@ const GuideWrapper = styled.div`
 const LinkBox = styled.div`
   display: flex;
   justify-content: space-between;
-  padding-left: calc(max(20%, 220px) + 1.5rem);
+  max-width: calc(max(20%, 220px) + 2rem + 1000px);
+  padding-left: calc(max(20%, 220px) + 2rem);
 `;

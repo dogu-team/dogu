@@ -14,16 +14,14 @@ import H4 from '../common/headings/H4';
 import MenuLinkTabs, { MenuLinkTabProps } from '../MenuLinkTabs';
 import ConsoleBasicLayout from './ConsoleBasicLayout';
 import { scrollbarStyle } from '../../styles/common';
-import GitIntegrationTag from '../projects/GitIntegrationTag';
 import { flexRowSpaceBetweenStyle } from '../../styles/box';
 
 interface Props {
   children: React.ReactNode;
   sidebar?: React.ReactNode;
-  isGitIntegrated: boolean;
 }
 
-const ProjectLayout = ({ children, sidebar, isGitIntegrated }: Props) => {
+const ProjectLayout = ({ children, sidebar }: Props) => {
   const { me, error, isLoading } = useAuth();
   const router = useRouter();
   const { t } = useTranslation();
@@ -95,9 +93,6 @@ const ProjectLayout = ({ children, sidebar, isGitIntegrated }: Props) => {
                 >
                   <StyledTitle>{project?.name}</StyledTitle>
                 </Link>
-                <div style={{ marginLeft: '.5rem' }}>
-                  <GitIntegrationTag isGitIntegrated={isGitIntegrated} />
-                </div>
               </TitleBox>
               <div>
                 {!router.asPath.startsWith(`/dashboard/${organizationId}/projects/${projectId}/get-started`) && (

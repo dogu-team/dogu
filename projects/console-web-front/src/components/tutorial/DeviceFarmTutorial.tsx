@@ -19,11 +19,11 @@ import { getLocaledLink } from '../../utils/locale';
 import RefreshButton from '../buttons/RefreshButton';
 import TokenCopyInput from '../common/TokenCopyInput';
 import CreateHostModal from '../hosts/CreateHostModal';
-import GuideAnchor from '../projects/guides/GuideAnchor';
-import GuideBanner from '../projects/guides/GuideBanner';
-import GuideLayout from '../projects/guides/GuideLayout';
-import GuideSelectors from '../projects/guides/GuideSelectors';
-import GuideStep from '../projects/guides/GuideStep';
+import GuideAnchor from './GuideAnchor';
+import GuideBanner from './GuideBanner';
+import GuideLayout from './GuideLayout';
+import RemoteTestOptionSelectors from './RemoteTestOptionSelectors';
+import GuideStep from './GuideStep';
 import TutorialDeviceList from './TutorialDeviceLIst';
 
 const INTRODUCTION_ID = 'introduction';
@@ -108,7 +108,7 @@ const DeviceFarmTutorial = () => {
       sidebar={
         <div>
           <div style={{ marginBottom: '1rem' }}>
-            <GuideSelectors guideData={guideData} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
+            <RemoteTestOptionSelectors guideData={guideData} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
           </div>
 
           <GuideAnchor

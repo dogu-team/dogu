@@ -1,1 +1,0 @@
-# @dogu-templates/typescript-template

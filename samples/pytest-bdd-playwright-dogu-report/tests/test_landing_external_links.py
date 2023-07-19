@@ -35,7 +35,7 @@ def click_community_link(page: Page):
 
 @then("I should be on the community page")
 def on_community_page(community_page: Page):
-    expect(community_page).to_have_url("https://docs.dogutech.io/community/discord")
+    expect(community_page).to_have_url("https://docs.dogutech.io/community/slack")
 
 
 @when("I click on the Github link", target_fixture="github_page")

@@ -62,7 +62,9 @@ export class SeleniumServerExternalUnit extends IExternalUnit {
     if (!seleniumServerStat.isFile()) {
       throw new Error(`${seleniumServerPath} is not a file`);
     }
-    const { stdout, stderr } = await execAsync(`java -jar ${seleniumServerPath} standalone --version`);
+    const javaHomePath = HostPaths.external.defaultJavaHomePath();
+    const javaPath = HostPaths.java.javaPath(javaHomePath);
+    const { stdout, stderr } = await execAsync(`${javaPath} -jar ${seleniumServerPath} standalone --version`);
     if (stderr) {
       this.warn(stderr);
     }

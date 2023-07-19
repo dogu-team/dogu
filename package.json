@@ -59,6 +59,7 @@
     "prebuilds/*",
     "samples/*",
     "e2e",
+    "validation",
     "docs",
     "dogu-actions/*",
     "user-templates/*"

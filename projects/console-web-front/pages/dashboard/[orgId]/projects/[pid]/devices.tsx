@@ -38,7 +38,7 @@ const ProjectDevicePage: NextPageWithLayout<WithProjectProps> = ({ project, orga
 };
 
 ProjectDevicePage.getLayout = (page) => {
-  return <ProjectLayout isGitIntegrated={page.props.isGitIntegrated}>{page}</ProjectLayout>;
+  return <ProjectLayout>{page}</ProjectLayout>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

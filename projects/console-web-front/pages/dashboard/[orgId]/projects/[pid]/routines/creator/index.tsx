@@ -1,19 +1,33 @@
 import styled from 'styled-components';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
+import { useEffect } from 'react';
 
 import { NextPageWithLayout } from 'pages/_app';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
 import ProjectLayout from 'src/components/layouts/ProjectLayout';
 import RoutineCreator from 'src/components/routine/editor/RoutineCreator';
+import RoutineGitIntegrationAlert from '../../../../../../../src/components/projects/RoutineGitIntegrationAlert';
+import useGitIntegrationStore from '../../../../../../../src/stores/git-integration';
 
 const ProjectRoutineCreatorPage: NextPageWithLayout<WithProjectProps> = ({ organization, project, isGitIntegrated }) => {
+  const store = useGitIntegrationStore();
+
+  useEffect(() => {
+    store.updateGitIntegrationStatus(isGitIntegrated);
+  }, [isGitIntegrated]);
+
   return (
     <>
       <Head>
         <title>Create routine - {project.name} | Dogu</title>
       </Head>
       <Box>
+        {!store.isGitIntegrated && (
+          <div style={{ marginBottom: '1rem' }}>
+            <RoutineGitIntegrationAlert />
+          </div>
+        )}
         <RoutineCreator organizationId={organization.organizationId} projectId={project.projectId} />
       </Box>
     </>
@@ -21,7 +35,7 @@ const ProjectRoutineCreatorPage: NextPageWithLayout<WithProjectProps> = ({ organ
 };
 
 ProjectRoutineCreatorPage.getLayout = (page) => {
-  return <ProjectLayout isGitIntegrated={page.props.isGitIntegrated}>{page}</ProjectLayout>;
+  return <ProjectLayout>{page}</ProjectLayout>;
 };
 
 export const getServerSideProps: GetServerSideProps = getProjectPageServerSideProps;

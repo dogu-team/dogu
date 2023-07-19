@@ -140,7 +140,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
 };
 
 ProjectSettingPage.getLayout = (page) => {
-  return <ProjectLayout isGitIntegrated={page.props.isGitIntegrated}>{page}</ProjectLayout>;
+  return <ProjectLayout>{page}</ProjectLayout>;
 };
 
 export const getServerSideProps: GetServerSideProps = getProjectPageServerSideProps;

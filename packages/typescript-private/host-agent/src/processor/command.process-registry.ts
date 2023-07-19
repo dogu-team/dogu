@@ -4,6 +4,7 @@ import { errorify, PromiseOrValue } from '@dogu-tech/common';
 import { EnvironmentVariableReplacementProvider } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import { ChildProcess, spawn, SpawnOptions } from 'child_process';
+import fs from 'fs';
 import { DoguLogger } from '../logger/logger';
 import { MessageCanceler, MessageContext } from '../message/message.types';
 
@@ -32,6 +33,11 @@ export class CommandProcessRegistry {
         const commandReplaced = await environmentVariableReplacer.replace(command);
         const argsReplaced = await Promise.all(args.map((arg) => environmentVariableReplacer.replace(arg)));
         const env = environmentVariableReplacer.stackProvider.export();
+        if (rest.cwd) {
+          if (!fs.existsSync(rest.cwd)) {
+            this.logger.error('child process cwd not found.', { cwd: rest.cwd });
+          }
+        }
         const child = spawn(commandReplaced, argsReplaced, {
           ...rest,
           env,
@@ -108,7 +114,7 @@ export class CommandProcessRegistry {
   }
 
   commandLine(commandLine: string, options: SpawnOptions, context: MessageContext): Promise<ErrorResult> {
-    const command = process.platform === 'win32' ? 'cmd.exe' : process.env.SHELL ?? '/bin/sh';
+    const command = process.platform === 'win32' ? process.env.COMSPEC ?? 'cmd.exe' : process.env.SHELL ?? '/bin/sh';
     const args = [process.platform === 'win32' ? '/c' : '-c', commandLine];
     return this.command(command, args, options, context);
   }

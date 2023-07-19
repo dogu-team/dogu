@@ -18,10 +18,10 @@ Dogu - Integrated test automation platform based on web.
   <a href="https://github.com/dogu-team/dogu/pulse" alt="Activity">
     <img src="https://img.shields.io/github/commit-activity/m/dogu-team/dogu" />
   </a>
-  <a href="https://discord.gg/bVycd6Tu9g">
-    <img src="https://dcbadge.vercel.app/api/server/bVycd6Tu9g?style=flat" />
-  </a>
   <div align="center">
+    <a href="https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw">
+      <img src="https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white" alt="Slack" />
+    </a>
   <a href="https://blog.dogutech.io">
     <img src="https://img.shields.io/badge/blog-007396?style=for-the-badge&logo=ghost&logoColor=white" alt="Blog" />
   </a>
@@ -30,9 +30,6 @@ Dogu - Integrated test automation platform based on web.
     </a>
     <a href="https://twitter.com/dogutechio">
       <img src="https://img.shields.io/badge/Twitter-1DA1F2?style=for-the-badge&logo=twitter&logoColor=white" alt="Twitter" />
-    </a>
-    <a href="https://github.com/dogu-team/dogu/discussions">
-      <img src="https://img.shields.io/badge/Discussion-10A1D2?style=for-the-badge&logo=github&logoColor=white" alt="Github" />
     </a>
   </div>
 </p>
@@ -103,8 +100,7 @@ Start [Cloud Service](https://dogutech.io) right now without any installation.
 
 We love stars so make sure you star ⭐ us on GitHub.
 
-- [Github Discussion](https://github.com/dogu-team/dogu/discussions) - Discussion about product and roadmap
-- [Discord](https://discord.gg/bVycd6Tu9g) - Discussion with the community
+- [Slack](https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw) - Discussion with the community
 - [Twitter](https://twitter.com/dogutechio) - Get the latest updates
 - [LinkedIn](https://www.linkedin.com/company/dogu-technologies) - Get the latest team updates
 
@@ -118,3 +114,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 We provide two editions of Dogu: Community Edition and Enterprise Edition.
 
 See [LICENSE](LICENSE.md) for more details.
+
+## Contact
+
+contact@dogutech.io

@@ -308,7 +308,7 @@ export class DeviceJobService {
       throw new HttpException(`Device job with ${deviceJobId} completedAt is not recorded`, HttpStatus.BAD_REQUEST);
     }
 
-    const recordUrl = this.projectFileService.getDeviceJobRecordUrl(organizationId, projectId, pipeline.routineId, pipelineId, deviceJobId);
+    const recordUrl = await this.projectFileService.getDeviceJobRecordUrl(organizationId, projectId, pipeline.routineId, pipelineId, deviceJobId);
     return recordUrl;
   }
 }

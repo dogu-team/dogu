@@ -29,7 +29,7 @@ const RemoteListPage: NextPageWithLayout<WithProjectProps> = ({ organization, pr
 };
 
 RemoteListPage.getLayout = (page) => {
-  return <ProjectLayout isGitIntegrated={page.props.isGitIntegrated}>{page}</ProjectLayout>;
+  return <ProjectLayout>{page}</ProjectLayout>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

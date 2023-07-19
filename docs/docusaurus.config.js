@@ -118,10 +118,10 @@ const config = {
                 label: 'API',
                 to: '/api',
               },
-              {
-                label: 'community',
-                to: '/community/discord',
-              },
+              // {
+              //   label: 'community',
+              //   to: '/community/slack',
+              // },
             ],
           },
           {
@@ -133,7 +133,7 @@ const config = {
               },
               {
                 label: 'Download Dogu Agent',
-                href: 'https://dogutech.io/downloads/dost',
+                href: 'https://dogutech.io/downloads/dogu-agent',
               },
             ],
           },
