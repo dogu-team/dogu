@@ -7,6 +7,7 @@ import { BookOutlined, ClusterOutlined, MobileOutlined, ProjectOutlined, Setting
 import { Layout, Menu, MenuProps, Skeleton } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { RiExternalLinkLine } from 'react-icons/ri';
 
 import { swrAuthFetcher } from 'src/api';
 import useAuthStore from 'src/stores/auth';
@@ -18,7 +19,6 @@ import ProfileImage from '../ProfileImage';
 import { flexRowCenteredStyle } from '../../styles/box';
 import CollpaseSidebarMenu from './CollapseSidebarMenu';
 import useRefresh from '../../hooks/useRefresh';
-import { RiExternalLinkLine } from 'react-icons/ri';
 
 type MenuItem = Required<MenuProps>['items'];
 
@@ -239,7 +239,7 @@ const OrganizationSideBar = () => {
             <Box>
               <Menu style={{ borderInline: 'none' }} items={items} mode="inline" />
 
-              <div style={{ marginTop: '3rem' }}>
+              <div style={{ marginTop: '1rem' }}>
                 <Menu style={{ borderInline: 'none' }} items={bottomItems} mode="inline" />
               </div>
             </Box>
@@ -317,6 +317,7 @@ const Box = styled.div`
   overflow-y: auto;
   overflow-x: hidden;
   overflow-y: overlay;
+  justify-content: space-between;
 
   /* background-color: ${(props) => props.theme.colors.gray1}; */
   flex-shrink: 0;
@@ -358,4 +359,5 @@ const StyledBox = styled.div`
   height: 100%;
   max-height: 100vh;
   display: flex;
+  padding-bottom: 4rem;
 `;
