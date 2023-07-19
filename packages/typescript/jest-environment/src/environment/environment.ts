@@ -2,12 +2,19 @@ import { EnvironmentContext, JestEnvironmentConfig } from '@jest/environment';
 import { Circus } from '@jest/types';
 import { isAxiosError } from 'axios';
 import { TestEnvironment } from 'jest-environment-node';
+import _ from 'lodash';
 
 import { createLogger } from './common.js';
 import { DoguConfig, DoguConfigFactory } from './dogu-config.js';
 import { DriverFactory } from './driver-factory.js';
 import { RemoteDestReporter, RemoteDestReporterFactory } from './remote-dest-reporter.js';
 import { RoutineDestReporter, RoutineDestReporterFactory } from './routine-dest-reporter.js';
+
+const driver = 'driver';
+
+declare global {
+  const driver: Readonly<WebdriverIO.Browser>;
+}
 
 export class DoguEnvironment extends TestEnvironment {
   private doguConfig: DoguConfig | null = null;
@@ -24,16 +31,27 @@ export class DoguEnvironment extends TestEnvironment {
     await super.setup();
     this.doguConfig = await new DoguConfigFactory().create();
     this.routineDestReporter = new RoutineDestReporterFactory(this.doguConfig).create();
+
     this.driver = await new DriverFactory().create(this.doguConfig);
+    if (_.has(this.global, driver)) {
+      throw new Error('globalThis.driver is already defined');
+    }
+    _.set(this.global, driver, this.driver);
+
     this.remoteDestReporter = new RemoteDestReporterFactory(this.doguConfig, this.driver).create();
   }
 
   override async teardown(): Promise<void> {
     this.remoteDestReporter = null;
+
+    if (_.has(this.global, driver)) {
+      _.unset(this.global, driver);
+    }
     await this.driver?.deleteSession().catch((error) => {
       this.logger.error('deleteSession failed', error);
     });
     this.driver = null;
+
     this.routineDestReporter = null;
     this.doguConfig = null;
     await super.teardown();
