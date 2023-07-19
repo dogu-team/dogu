@@ -1,6 +1,6 @@
 import { RoutinePipelinePropCamel, RoutinePropCamel } from '@dogu-private/console';
 import { V1CreatePipelineResponseBody, V1FindPipelineByPipelineIdResponseBody, V1Routine } from '@dogu-private/console-open-api';
-import { CREATOR_TYPE, ProjectId, RoutineId, RoutinePipelineId, V1OpenApiPayload } from '@dogu-private/types';
+import { CREATOR_TYPE, getPipelineStateKey, ProjectId, RoutineId, RoutinePipelineId, V1OpenApiPayload } from '@dogu-private/types';
 import { Controller, Get, Inject, Param, Post } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -32,7 +32,7 @@ export class RoutineV1Controller {
       projectId: pipeline!.projectId,
       routineId: pipeline!.routineId!,
       index: pipeline!.index,
-      status: pipeline!.status,
+      state: getPipelineStateKey(pipeline!.status),
       creatorType: pipeline!.creatorType,
       creatorId: pipeline!.creatorId,
       cancelerId: pipeline!.cancelerId,

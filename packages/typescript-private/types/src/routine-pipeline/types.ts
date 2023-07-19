@@ -17,6 +17,32 @@ export enum PIPELINE_STATUS {
   SKIPPED = 7,
 }
 
+export type PIPELINE_STATE_KEY = keyof typeof PIPELINE_STATUS;
+
+export function getPipelineStateKey(state: PIPELINE_STATUS): PIPELINE_STATE_KEY {
+  switch (state) {
+    case PIPELINE_STATUS.UNSPECIFIED:
+      return 'UNSPECIFIED';
+    case PIPELINE_STATUS.WAITING:
+      return 'WAITING';
+    case PIPELINE_STATUS.IN_PROGRESS:
+      return 'IN_PROGRESS';
+    case PIPELINE_STATUS.CANCEL_REQUESTED:
+      return 'CANCEL_REQUESTED';
+    case PIPELINE_STATUS.SUCCESS:
+      return 'SUCCESS';
+    case PIPELINE_STATUS.FAILURE:
+      return 'FAILURE';
+    case PIPELINE_STATUS.CANCELLED:
+      return 'CANCELLED';
+    case PIPELINE_STATUS.SKIPPED:
+      return 'SKIPPED';
+    default:
+      const _exaustiveCheck: never = state;
+      throw new Error(`Unexpected state: ${_exaustiveCheck}`);
+  }
+}
+
 export enum CREATOR_TYPE {
   UNSPECIFIED = 0,
   ORGANIZATION = 1,
