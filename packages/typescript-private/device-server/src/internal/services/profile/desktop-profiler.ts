@@ -15,7 +15,7 @@ export class CpuProfiler implements DesktopProfiler {
         {
           ...currentLoad,
           name: 'default',
-          currentLoadCpu: 0,
+          currentLoadCpu: 100,
         },
       ],
     };
