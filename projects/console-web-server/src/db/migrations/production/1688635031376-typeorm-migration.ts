@@ -1,7 +1,6 @@
 import { DeepPartial, MigrationInterface, QueryRunner } from 'typeorm';
 import { v4 } from 'uuid';
 import { TokenService } from '../../../module/token/token.service';
-import { OrganizatioApiToken } from '../../entity/organization-api-token.entity';
 import { Organization } from '../../entity/organization.entity';
 import { Token } from '../../entity/token.entity';
 
@@ -28,15 +27,22 @@ export class typeormMigration1688635031376 implements MigrationInterface {
       const tokenData = queryRunner.manager.getRepository(Token).create(newTokenData);
       const token = await queryRunner.manager.getRepository(Token).save(tokenData);
 
-      const newOrgApiData: DeepPartial<OrganizatioApiToken> = {
-        organizationApiTokenId: v4(),
-        organizationId: org.organizationId,
-        creatorId: null,
-        revokerId: null,
-        tokenId: token.tokenId,
+      const newOrgApiData = {
+        organization_api_token_id: v4(),
+        organization_id: org.organizationId,
+        token_id: token.tokenId,
+        creator_id: null,
+        revoker_id: null,
+        created_at: new Date(),
+        updated_at: new Date(),
+        deleted_at: null,
       };
-      const orgApiTokenData = queryRunner.manager.getRepository(OrganizatioApiToken).create(newOrgApiData);
-      await queryRunner.manager.getRepository(OrganizatioApiToken).save(orgApiTokenData);
+
+      await queryRunner.query(
+        `INSERT INTO organization_api_token (organization_api_token_id, organization_id, token_id, creator_id, revoker_id)
+         VALUES ($1, $2, $3, $4, $5)`,
+        [newOrgApiData.organization_api_token_id, newOrgApiData.organization_id, newOrgApiData.token_id, newOrgApiData.creator_id, newOrgApiData.revoker_id],
+      );
     }
   }
 
