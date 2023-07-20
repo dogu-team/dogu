@@ -1,6 +1,6 @@
 import { CalendarOutlined } from '@ant-design/icons';
 import { RemoteBase, isRemoteRunning } from '@dogu-private/console';
-import { OrganizationId, REMOTE_DEVICE_JOB_STATE } from '@dogu-private/types';
+import { CREATOR_TYPE, OrganizationId, REMOTE_DEVICE_JOB_STATE } from '@dogu-private/types';
 import { List, Tag } from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
@@ -11,6 +11,9 @@ import { localizeDate } from '../../utils/date';
 import MenuButton from '../buttons/MenuButton';
 import PipelineCreatedTimer from '../pipelines/PipelineCreatedTimer';
 import RemoteStateSummaryGraph from './RemoteStateSummaryGraph';
+import DoguOptions from './DoguOptions';
+import RoutineCreator from '../routine/editor/RoutineCreator';
+import RemoteCreator from './RemoteCreator';
 
 interface Props {
   remote: RemoteBase;
@@ -44,7 +47,16 @@ const RemoteItem = ({ remote, organizationId }: Props) => {
 
           <div>
             <Name href={`/dashboard/${organizationId}/projects/${remote.projectId}/remotes/${remote.remoteId}`}>{remote.remoteId}</Name>
-            <div style={{ fontSize: '.8rem' }}>Run by dogutechio</div>
+            <FlexRow style={{ fontSize: '.8rem' }}>
+              <FlexRow>
+                Run by&nbsp;
+                <RemoteCreator remote={remote} />
+              </FlexRow>
+
+              <div style={{ marginLeft: '1rem' }}>
+                <DoguOptions doguOptions={remote.doguOptions} />
+              </div>
+            </FlexRow>
           </div>
         </FlexRow>
       </StretchedWrapper>
