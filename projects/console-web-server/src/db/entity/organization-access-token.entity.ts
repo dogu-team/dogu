@@ -1,5 +1,5 @@
-import { OrganizationApiTokenBase, OrganizationApiTokenPropCamel, OrganizationApiTokenPropSnake, TokenPropCamel, TokenPropSnake, UserPropCamel } from '@dogu-private/console';
-import { OrganizationApiTokenId, OrganizationId, ORGANIZATION_API_TOKEN_TABLE_NAME, TokenId, UserId } from '@dogu-private/types';
+import { OrganizationAccessTokenBase, OrganizationApiTokenPropCamel, OrganizationApiTokenPropSnake, TokenPropCamel, TokenPropSnake, UserPropCamel } from '@dogu-private/console';
+import { OrganizationAccessTokenId, OrganizationId, ORGANIZATION_ACCESS_TOKEN_TABLE_NAME, TokenId, UserId } from '@dogu-private/types';
 import { Exclude } from 'class-transformer';
 import { BaseEntity, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
@@ -7,10 +7,10 @@ import { Organization } from './organization.entity';
 import { Token } from './token.entity';
 import { User } from './user.entity';
 
-@Entity(ORGANIZATION_API_TOKEN_TABLE_NAME)
-export class OrganizatioApiToken extends BaseEntity implements OrganizationApiTokenBase {
-  @PrimaryColumn({ type: 'uuid', name: OrganizationApiTokenPropSnake.organization_api_token_id, nullable: false })
-  organizationApiTokenId!: OrganizationApiTokenId;
+@Entity(ORGANIZATION_ACCESS_TOKEN_TABLE_NAME)
+export class OrganizatioAccessToken extends BaseEntity implements OrganizationAccessTokenBase {
+  @PrimaryColumn({ type: 'uuid', name: OrganizationApiTokenPropSnake.organization_access_token_id, nullable: false })
+  organizationAccessTokenId!: OrganizationAccessTokenId;
 
   @ColumnTemplate.RelationUuid(OrganizationApiTokenPropSnake.organization_id)
   organizationId!: OrganizationId;

@@ -50,7 +50,7 @@ import {
   Token,
   User,
 } from '../../db/entity';
-import { OrganizatioApiToken } from '../../db/entity/organization-api-token.entity';
+import { OrganizatioAccessToken } from '../../db/entity/organization-access-token.entity';
 import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invitation-token.entity';
 import { Routine } from '../../db/entity/routine.entity';
 import { RoutineStep } from '../../db/entity/step.entity';
@@ -60,7 +60,6 @@ import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { EMPTY_PAGE, Page } from '../common/dto/pagination/page';
 import { EmailService } from '../email/email.service';
 import { OrganizationFileService } from '../file/organization-file.service';
-// import { GitlabService } from '../gitlab/gitlab.service';
 import { ApplicationService } from '../project/application/application.service';
 import { ProjectService } from '../project/project.service';
 import { RoutineService } from '../routine/routine.service';
@@ -581,7 +580,7 @@ export class OrganizationService {
   }
 
   private async createApiToken(manager: EntityManager, organizationId: OrganizationId): Promise<string> {
-    const orgApiToken = await manager.getRepository(OrganizatioApiToken).findOne({
+    const orgApiToken = await manager.getRepository(OrganizatioAccessToken).findOne({
       where: { organizationId },
     });
 
@@ -596,22 +595,22 @@ export class OrganizationService {
     const tokenData = manager.getRepository(Token).create(newTokenData);
     const token = await manager.getRepository(Token).save(tokenData);
 
-    const newOrgApiData: DeepPartial<OrganizatioApiToken> = {
-      organizationApiTokenId: v4(),
+    const newOrgApiData = {
+      organizationAccessTokenId: v4(),
       organizationId,
       creatorId: null,
       revokerId: null,
       tokenId: token.tokenId,
     };
-    const orgApiTokenData = manager.getRepository(OrganizatioApiToken).create(newOrgApiData);
-    await manager.getRepository(OrganizatioApiToken).save(orgApiTokenData);
+    const orgApiTokenData = manager.getRepository(OrganizatioAccessToken).create(newOrgApiData);
+    await manager.getRepository(OrganizatioAccessToken).save(orgApiTokenData);
 
     return token.token;
   }
 
   async findApiToken(organizationId: OrganizationId): Promise<string> {
     const orgApiToken = await this.dataSource //
-      .getRepository(OrganizatioApiToken)
+      .getRepository(OrganizatioAccessToken)
       .createQueryBuilder('orgApiToken')
       .innerJoinAndSelect(`orgApiToken.${OrganizationApiTokenPropCamel.token}`, 'token')
       .where(`orgApiToken.${OrganizationApiTokenPropSnake.organization_id} = :organizationId`, { organizationId })
@@ -626,7 +625,7 @@ export class OrganizationService {
 
   async regenerateToken(organizationId: OrganizationId, creatorId: UserId): Promise<string> {
     const orgApiToken = await this.dataSource //
-      .getRepository(OrganizatioApiToken)
+      .getRepository(OrganizatioAccessToken)
       .createQueryBuilder('orgApiToken')
       .innerJoinAndSelect(`orgApiToken.${OrganizationApiTokenPropCamel.token}`, 'token')
       .where(`orgApiToken.${OrganizationApiTokenPropSnake.organization_id} = :organizationId`, { organizationId })
@@ -639,8 +638,8 @@ export class OrganizationService {
     const rv = await this.dataSource.transaction(async (manager) => {
       // revoke
       await manager.getRepository(Token).softDelete({ tokenId: orgApiToken.tokenId });
-      await manager.getRepository(OrganizatioApiToken).update({ organizationApiTokenId: orgApiToken.organizationApiTokenId }, { revokerId: creatorId });
-      await manager.getRepository(OrganizatioApiToken).softDelete({ organizationApiTokenId: orgApiToken.organizationApiTokenId });
+      await manager.getRepository(OrganizatioAccessToken).update({ organizationAccessTokenId: orgApiToken.organizationAccessTokenId }, { revokerId: creatorId });
+      await manager.getRepository(OrganizatioAccessToken).softDelete({ organizationAccessTokenId: orgApiToken.organizationAccessTokenId });
 
       // reissue
       const newTokenData: DeepPartial<Token> = {
@@ -649,14 +648,14 @@ export class OrganizationService {
       const tokenData = manager.getRepository(Token).create(newTokenData);
       const token = await manager.getRepository(Token).save(tokenData);
 
-      const newOrgApiData: DeepPartial<OrganizatioApiToken> = {
-        organizationApiTokenId: v4(),
+      const newOrgApiData = {
+        organizationAccessTokenId: v4(),
         organizationId,
         creatorId,
         tokenId: token.tokenId,
       };
-      const newOrgApiTokenData = manager.getRepository(OrganizatioApiToken).create(newOrgApiData);
-      const newApiToken = await manager.getRepository(OrganizatioApiToken).save(newOrgApiTokenData);
+      const newOrgApiTokenData = manager.getRepository(OrganizatioAccessToken).create(newOrgApiData);
+      const newApiToken = await manager.getRepository(OrganizatioAccessToken).save(newOrgApiTokenData);
 
       return token.token;
     });
@@ -666,7 +665,7 @@ export class OrganizationService {
 
   async deleteApiToken(organizationId: OrganizationId, revokerId: UserId): Promise<void> {
     const orgApiToken = await this.dataSource //
-      .getRepository(OrganizatioApiToken)
+      .getRepository(OrganizatioAccessToken)
       .createQueryBuilder('orgApiToken')
       .innerJoinAndSelect(`orgApiToken.${OrganizationApiTokenPropCamel.token}`, 'token')
       .where(`orgApiToken.${OrganizationApiTokenPropSnake.organization_id} = :organizationId`, { organizationId })
@@ -678,8 +677,8 @@ export class OrganizationService {
 
     await this.dataSource.transaction(async (manager) => {
       await manager.getRepository(Token).softDelete({ tokenId: orgApiToken.tokenId });
-      await manager.getRepository(OrganizatioApiToken).update({ organizationApiTokenId: orgApiToken.organizationApiTokenId }, { revokerId });
-      await manager.getRepository(OrganizatioApiToken).softDelete({ organizationApiTokenId: orgApiToken.organizationApiTokenId });
+      await manager.getRepository(OrganizatioAccessToken).update({ organizationAccessTokenId: orgApiToken.organizationAccessTokenId }, { revokerId });
+      await manager.getRepository(OrganizatioAccessToken).softDelete({ organizationAccessTokenId: orgApiToken.organizationAccessTokenId });
     });
   }
 }
