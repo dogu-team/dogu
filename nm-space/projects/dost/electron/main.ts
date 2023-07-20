@@ -39,6 +39,7 @@ app.whenReady().then(async () => {
   logger.addFileTransports(LogsPath);
   rendererLogger.addFileTransports(LogsPath);
   logger.info('bootstrap', { isDev, cwd: process.cwd() });
+  logger.info('env', { env: process.env });
 
   // DevTools
   installExtension(REACT_DEVELOPER_TOOLS)

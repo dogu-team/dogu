@@ -11,6 +11,8 @@ process.on('uncaughtException', (error, origin) => {
   onErrorToExit(error);
 });
 
+logger.info('device-server env', { env: process.env });
+
 bootstrap().catch((error) => {
   logger.error('Unexpected error', { error });
   onErrorToExit(error);
