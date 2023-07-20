@@ -313,8 +313,8 @@
   "main.testAutomationAppiumLinkTitle": {
     "message": "Appium"
   },
-  "main.testAutomationWebdriverIOLinkTitle": {
-    "message": "WebdriverIO"
+  "main.testAutomationSeleniumLinkTitle": {
+    "message": "Selenium"
   },
   "main.scriptAndRoutineTitle": {
     "message": "루틴"

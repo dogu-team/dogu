@@ -151,13 +151,13 @@ export default function Home(): JSX.Element {
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/test-automation/appium">
-                <Translate id="main.testAutomationAppiumLinkTitle" />
+              <Link to="/test-automation/selenium">
+                <Translate id="main.testAutomationSeleniumLinkTitle" />
               </Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/test-automation/webdriverio">
-                <Translate id="main.testAutomationWebdriverIOLinkTitle" />
+              <Link to="/test-automation/appium">
+                <Translate id="main.testAutomationAppiumLinkTitle" />
               </Link>
             </li>
           </ul>
