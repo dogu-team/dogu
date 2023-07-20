@@ -27,12 +27,15 @@ export class CommandProcessRegistry {
         const { processes } = this;
         const { env: childEnv, ...rest } = options;
         const { environmentVariableReplacer, eventHandler } = context;
+        this.logger.verbose(`envvvv 3 `, environmentVariableReplacer.stackProvider.export());
         if (childEnv) {
           const childEnvReplaced = await environmentVariableReplacer.replaceEnv(childEnv);
           environmentVariableReplacer.stackProvider.push(new EnvironmentVariableReplacementProvider(childEnvReplaced));
+          this.logger.verbose(`envvvv 4 `, environmentVariableReplacer.stackProvider.export());
         }
         const commandReplaced = await environmentVariableReplacer.replace(command);
         const argsReplaced = await Promise.all(args.map((arg) => environmentVariableReplacer.replace(arg)));
+        this.logger.verbose(`envvvv 5 `, environmentVariableReplacer.stackProvider.export());
         const env = environmentVariableReplacer.stackProvider.export();
         if (rest.cwd) {
           if (!fs.existsSync(rest.cwd)) {

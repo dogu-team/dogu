@@ -129,8 +129,10 @@ export class DeviceJobStepProcessor {
       this.logger.error('Error while emitting OnStepStartedEvent', { error: errorify(error) });
     }
     this.logger.info(`Step ${routineStepId} started event emitted`);
+    this.logger.verbose(`envvvv -1 `, environmentVariableReplacer.stackProvider.export());
     const stepEnvReplaced = await environmentVariableReplacer.replaceEnv(stepEnv);
     environmentVariableReplacer.stackProvider.push(new EnvironmentVariableReplacementProvider(stepEnvReplaced));
+    this.logger.verbose(`envvvv 0 `, environmentVariableReplacer.stackProvider.export());
     const deviceServerHostPort = env.DOGU_DEVICE_SERVER_HOST_PORT.split(':');
     if (deviceServerHostPort.length !== 2) {
       throw new Error('DOGU_DEVICE_SERVER_HOST_PORT must be in format host:port');
@@ -140,7 +142,9 @@ export class DeviceJobStepProcessor {
     await fs.promises.mkdir(organizationWorkspacePath, { recursive: true });
     const deviceProjectWorkspacePath = HostPaths.deviceProjectWorkspacePath(deviceWorkspacePath, projectId);
     await fs.promises.mkdir(deviceProjectWorkspacePath, { recursive: true });
+    const export1 = environmentVariableReplacer.stackProvider.export();
     const pathOld = environmentVariableReplacer.stackProvider.export().PATH;
+    this.logger.verbose(`envvvv 1 `, export1);
     const stepContextEnv: StepContextEnv = {
       DOGU_DEVICE_PLATFORM: platformTypeFromPlatform(platform),
       DOGU_DEVICE_PROJECT_WORKSPACE_PATH: deviceProjectWorkspacePath,
@@ -164,6 +168,9 @@ export class DeviceJobStepProcessor {
     };
     const stepContextEnvReplaced = await environmentVariableReplacer.replaceEnv(stepContextEnv);
     environmentVariableReplacer.stackProvider.push(new EnvironmentVariableReplacementProvider(stepContextEnvReplaced));
+
+    this.logger.verbose(`envvvv 2 `, environmentVariableReplacer.stackProvider.export());
+
     const deviceProjectGitPath = HostPaths.deviceProjectGitPath(deviceProjectWorkspacePath);
     this.logger.info(`Step ${routineStepId} working path: ${deviceProjectGitPath}`);
     await fs.promises.mkdir(deviceProjectGitPath, { recursive: true });
