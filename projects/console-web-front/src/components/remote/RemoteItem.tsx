@@ -61,6 +61,10 @@ const RemoteItem = ({ remote, organizationId }: Props) => {
         </FlexRow>
       </StretchedWrapper>
 
+      <div style={{ marginLeft: '2rem' }}>
+        <Tag>{`${remote.doguOptions.runsOn}`}</Tag>
+      </div>
+
       <InfoBox>
         <TimerBox>
           <CalendarOutlined style={{ fontSize: '1rem', marginRight: '.2rem' }} />
@@ -77,7 +81,6 @@ export default RemoteItem;
 const Box = styled(List.Item)``;
 
 const StretchedWrapper = styled.div`
-  flex: 1;
   margin-right: 1rem;
 `;
 
