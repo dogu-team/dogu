@@ -8,7 +8,6 @@ import { SWRConfig } from 'swr';
 import NProgress from 'nprogress';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import Script from 'next/script';
 
 import 'antd/dist/reset.css';
 import 'nprogress/nprogress.css';
@@ -17,7 +16,7 @@ import GlobalStyles from 'src/styles/GlobalStyles';
 import { theme, styledComponentsTheme } from 'src/styles/theme';
 
 export type NextPageWithLayout<P = {}> = NextPage<P> & {
-  getLayout?: (page: React.ReactElement<P>) => React.ReactNode;
+  getLayout?: (page: React.ReactElement) => React.ReactNode;
 };
 
 type AppPropsWithLayout = AppProps & {
