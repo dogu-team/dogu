@@ -13,6 +13,7 @@ import {
 } from '@dogu-private/types';
 import { notEmpty } from '@dogu-tech/common';
 import { HttpStatus } from '@nestjs/common';
+import _ from 'lodash';
 import { EntityManager } from 'typeorm';
 import { v4 } from 'uuid';
 import { Device } from '../../../db/entity/device.entity';
@@ -37,6 +38,10 @@ export module RemoteDeviceJobProcessor {
     logger.info(
       `createWebdriverRemoteDeviceJob. projectId: ${projectId}, deviceId: ${deviceId}, remoteDeviceJobId: ${remoteDeviceJobId},  browserName: ${browserName}, browserVersion: ${browserVersion}`,
     );
+
+    if ('token' in doguOptions) {
+      doguOptions = _.omit(doguOptions, 'token');
+    }
 
     // remote
     const remoteData = manager.getRepository(Remote).create({
