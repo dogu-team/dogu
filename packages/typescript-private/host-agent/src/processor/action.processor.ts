@@ -72,10 +72,9 @@ export class ActionProcessor {
   }
 
   private useSource(): boolean {
-    // const useActionSource = optionsConfig.get('actionSource.use', false);
-    // this.logger.debug('action use source', { useSource: useActionSource });
-    return false;
-    // return useActionSource;
+    const useActionSource = optionsConfig.get('actionSource.use', false);
+    this.logger.debug('action use source', { useSource: useActionSource });
+    return useActionSource;
   }
 
   private async findSource(actionId: string): Promise<string | null> {
@@ -212,8 +211,7 @@ export class ActionProcessor {
     this.logger.info('action run - 2');
     const useSource = this.useSource();
     this.logger.info('action run - 3 ');
-    // const shell = useSource ? true : false;
-    const shell = true;
+    const shell = useSource ? true : false;
     this.logger.info('action run - 4');
     this.logger.info('action run', { actionGitPath, runs_main, shell });
     return this.commandProcessRegistry.command(
