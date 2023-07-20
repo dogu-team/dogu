@@ -72,9 +72,10 @@ export class ActionProcessor {
   }
 
   private useSource(): boolean {
-    const useActionSource = optionsConfig.get('actionSource.use', false);
-    this.logger.debug('action use source', { useSource: useActionSource });
-    return useActionSource;
+    // const useActionSource = optionsConfig.get('actionSource.use', false);
+    // this.logger.debug('action use source', { useSource: useActionSource });
+    return false;
+    // return useActionSource;
   }
 
   private async findSource(actionId: string): Promise<string | null> {
