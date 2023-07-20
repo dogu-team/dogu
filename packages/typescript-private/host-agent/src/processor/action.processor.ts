@@ -205,10 +205,15 @@ export class ActionProcessor {
     const loader = new ActionConfigLoader({
       workingDir: actionGitPath,
     });
+    this.logger.info('action run - 1');
     const config = await loader.load();
     const { runs_main } = config;
+    this.logger.info('action run - 2');
     const useSource = this.useSource();
-    const shell = useSource ? true : false;
+    this.logger.info('action run - 3 ');
+    // const shell = useSource ? true : false;
+    const shell = true;
+    this.logger.info('action run - 4');
     this.logger.info('action run', { actionGitPath, runs_main, shell });
     return this.commandProcessRegistry.command(
       useSource ? 'yarn' : yarnPath,
