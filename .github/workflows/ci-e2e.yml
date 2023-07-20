@@ -123,159 +123,171 @@ jobs:
           docker compose -f ./docker-compose.yml stop console
           docker compose -f docker-compose.yml pull
           docker compose -f ./docker-compose.yml --env-file ./docker-compose.env --verbose up -d
-
   e2e:
     needs: start-e2e-dogu
-    strategy:
-      # max-parallel: 3
-      fail-fast: false
-      matrix:
-        platform: [Windows, macOS]
-        arch: [X64, ARM64]
-
-        exclude:
-          - platform: Windows
-            arch: ARM64
-
-    runs-on: [e2e, '${{ matrix.platform }}', '${{ matrix.arch }}']
-
-    env:
-      RUNNER_TOOL_CACHE: ${{ github.workspace }}/runner-tool-cache
-
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - name: Run Routine
+        uses: dogu-team/dogu-github-action@v1.0
         with:
-          clean: true
-
-      - name: Cache Third-Party
-        uses: actions/cache@v3
-        id: cache_third_party
+          project-id: 'fb2b1e15-e828-46f1-894a-9e58aa3313dd'
+          routine-id: 'a22a7b3a-59f7-4a86-b5cf-dac990e322a7'
+          address: https://api.dev.dogutech.io
         env:
-          cache-name: cache-third-party
-        with:
-          path: ${{ github.workspace }}/third-party
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('scripts/third-parties/download.ts') }}-${{ hashFiles('projects/go-device-controller/**') }}-${{ hashFiles('projects/android-device-agent/**') }}-${{ hashFiles('projects/ios-device-agent/**') }}
+          DOGU_TOKEN: ${{ secrets.DOGU_DEV_DOGUDOGU_ORG_TOKEN }}
 
-      - name: Windows - Setup Python & Poetry
-        if: runner.os == 'Windows'
-        run: |
-          Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1" -OutFile "./install-pyenv-win.ps1"; &"./install-pyenv-win.ps1"
-          $env:PATH="$env:USERPROFILE\.pyenv\pyenv-win\bin;$env:USERPROFILE\.pyenv\pyenv-win\shims;$env:PATH"
-          pyenv install ${{ env.DOGU_PYTHON_VERSION }}
-          pyenv global ${{ env.DOGU_PYTHON_VERSION }}
-          pip install poetry==${{ env.DOGU_POETRY_VERSION }}
-          echo "$env:USERPROFILE\.pyenv\pyenv-win\bin" >> $env:GITHUB_PATH
-          echo "$env:USERPROFILE\.pyenv\pyenv-win\shims" >> $env:GITHUB_PATH
-        shell: pwsh
+#   e2e:
+#     needs: start-e2e-dogu
+#     strategy:
+#       # max-parallel: 3
+#       fail-fast: false
+#       matrix:
+#         platform: [Windows, macOS]
+#         arch: [X64, ARM64]
 
-      - name: Macos - Setup Python & Poetry
-        if: runner.os == 'macOS'
-        uses: gabrielfalcao/pyenv-action@v11
-        with:
-          default: ${{ env.DOGU_PYTHON_VERSION }}
-          command: pyenv global ${{ env.DOGU_PYTHON_VERSION }} && pip install poetry==${{ env.DOGU_POETRY_VERSION }} && which poetry
+#         exclude:
+#           - platform: Windows
+#             arch: ARM64
 
-      - uses: actions/setup-go@v3
-        with:
-          go-version: '1.18'
+#     runs-on: [e2e, '${{ matrix.platform }}', '${{ matrix.arch }}']
 
-      - name: Run newbie
-        run: yarn newbie:cicd
+#     env:
+#       RUNNER_TOOL_CACHE: ${{ github.workspace }}/runner-tool-cache
 
-      - name: Run newbie:python
-        run: yarn newbie:python
+#     steps:
+#       - name: Checkout
+#         uses: actions/checkout@v3
+#         with:
+#           clean: true
 
-      - name: Build Projects
-        run: yarn workspace dogu run build
+#       - name: Cache Third-Party
+#         uses: actions/cache@v3
+#         id: cache_third_party
+#         env:
+#           cache-name: cache-third-party
+#         with:
+#           path: ${{ github.workspace }}/third-party
+#           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('scripts/third-parties/download.ts') }}-${{ hashFiles('projects/go-device-controller/**') }}-${{ hashFiles('projects/android-device-agent/**') }}-${{ hashFiles('projects/ios-device-agent/**') }}
 
-      - name: Run build:python
-        run: yarn build:python
+#       - name: Windows - Setup Python & Poetry
+#         if: runner.os == 'Windows'
+#         run: |
+#           Invoke-WebRequest -UseBasicParsing -Uri "https://raw.githubusercontent.com/pyenv-win/pyenv-win/master/pyenv-win/install-pyenv-win.ps1" -OutFile "./install-pyenv-win.ps1"; &"./install-pyenv-win.ps1"
+#           $env:PATH="$env:USERPROFILE\.pyenv\pyenv-win\bin;$env:USERPROFILE\.pyenv\pyenv-win\shims;$env:PATH"
+#           pyenv install ${{ env.DOGU_PYTHON_VERSION }}
+#           pyenv global ${{ env.DOGU_PYTHON_VERSION }}
+#           pip install poetry==${{ env.DOGU_POETRY_VERSION }}
+#           echo "$env:USERPROFILE\.pyenv\pyenv-win\bin" >> $env:GITHUB_PATH
+#           echo "$env:USERPROFILE\.pyenv\pyenv-win\shims" >> $env:GITHUB_PATH
+#         shell: pwsh
 
-      - name: Newbie nm-space
-        run: yarn workspace dogu run newbie:nm-space
+#       - name: Macos - Setup Python & Poetry
+#         if: runner.os == 'macOS'
+#         uses: gabrielfalcao/pyenv-action@v11
+#         with:
+#           default: ${{ env.DOGU_PYTHON_VERSION }}
+#           command: pyenv global ${{ env.DOGU_PYTHON_VERSION }} && pip install poetry==${{ env.DOGU_POETRY_VERSION }} && which poetry
 
-      - name: Build nm-space
-        run: yarn workspace nm-space run build
-        working-directory: ./nm-space
+#       - uses: actions/setup-go@v3
+#         with:
+#           go-version: '1.18'
 
-      - name: Windows - Powershell - Check
-        if: runner.os == 'Windows'
-        id: checkpowershell
-        run: winget list Microsoft.PowerShell --accept-source-agreements
-        continue-on-error: true
+#       - name: Run newbie
+#         run: yarn newbie:cicd
 
-      - name: Windows - Powershell - Upgrade
-        if: runner.os == 'Windows' && steps.checkpowershell.outcome == 'success'
-        run: |
-          winget install --id Microsoft.Powershell --source winget --silent
-        continue-on-error: true
+#       - name: Run newbie:python
+#         run: yarn newbie:python
 
-      - name: Windows - Powershell - Add to Env
-        if: runner.os == 'Windows'
-        run: |
-          "C:\Program Files\PowerShell\7" >> $env:GITHUB_PATH
+#       - name: Build Projects
+#         run: yarn workspace dogu run build
 
-      - name: Windows - Msys2 - MIGW64 - Setup for cgo
-        uses: msys2/setup-msys2@v2
-        if: runner.os == 'Windows'
-        with:
-          msystem: MINGW64
-          location: ${{ github.workspace }}
-          install: >-
-            git
-            base-devel
-            mingw-w64-x86_64-gcc
+#       - name: Run build:python
+#         run: yarn build:python
 
-      - name: Windows - Setup Cmake
-        if: runner.os == 'Windows'
-        uses: lukka/get-cmake@latest
-        with:
-          cmakeVersion: 3.25.1
-          ninjaVersion: 1.11.1
+#       - name: Newbie nm-space
+#         run: yarn workspace dogu run newbie:nm-space
 
-      - name: Macos - Setup Cmake
-        if: runner.os == 'macOS'
-        run: brew install cmake
-        env:
-          HOMEBREW_NO_AUTO_UPDATE: 1
-        continue-on-error: true
+#       - name: Build nm-space
+#         run: yarn workspace nm-space run build
+#         working-directory: ./nm-space
 
-      - name: Common - Setup go
-        uses: actions/setup-go@v3
-        with:
-          go-version: '1.18.4'
+#       - name: Windows - Powershell - Check
+#         if: runner.os == 'Windows'
+#         id: checkpowershell
+#         run: winget list Microsoft.PowerShell --accept-source-agreements
+#         continue-on-error: true
 
-      - name: Common - Set up JDK 11 for android build
-        uses: actions/setup-java@v3
-        with:
-          java-version: 11
-          distribution: 'temurin'
+#       - name: Windows - Powershell - Upgrade
+#         if: runner.os == 'Windows' && steps.checkpowershell.outcome == 'success'
+#         run: |
+#           winget install --id Microsoft.Powershell --source winget --silent
+#         continue-on-error: true
 
-      - name: Common - Setup Android SDK
-        uses: android-actions/setup-android@v2.0.10
+#       - name: Windows - Powershell - Add to Env
+#         if: runner.os == 'Windows'
+#         run: |
+#           "C:\Program Files\PowerShell\7" >> $env:GITHUB_PATH
 
-      - name: create dotEnv
-        run: |
-          env-generator gen-all e2e
+#       - name: Windows - Msys2 - MIGW64 - Setup for cgo
+#         uses: msys2/setup-msys2@v2
+#         if: runner.os == 'Windows'
+#         with:
+#           msystem: MINGW64
+#           location: ${{ github.workspace }}
+#           install: >-
+#             git
+#             base-devel
+#             mingw-w64-x86_64-gcc
 
-      - if: steps.cache_third_party.outputs.cache-hit != 'true'
-        name: Download, Build third-party
-        run: |
-          yarn third-party:download:build
+#       - name: Windows - Setup Cmake
+#         if: runner.os == 'Windows'
+#         uses: lukka/get-cmake@latest
+#         with:
+#           cmakeVersion: 3.25.1
+#           ninjaVersion: 1.11.1
 
-      - name: Run e2e
-        if: ${{ success() }}
-        run: |
-          yarn workspace e2e run util:install-chromedriver && yarn workspace e2e run start:ci
+#       - name: Macos - Setup Cmake
+#         if: runner.os == 'macOS'
+#         run: brew install cmake
+#         env:
+#           HOMEBREW_NO_AUTO_UPDATE: 1
+#         continue-on-error: true
 
-      - name: Upload video
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v3
-        with:
-          name: 'e2e-${{ matrix.platform }}-${{ matrix.arch }}'
-          path: |
-            ./e2e/generated/record/screen-${{ runner.os }}-${{github.sha}}.webm
+#       - name: Common - Setup go
+#         uses: actions/setup-go@v3
+#         with:
+#           go-version: '1.18.4'
+
+#       - name: Common - Set up JDK 11 for android build
+#         uses: actions/setup-java@v3
+#         with:
+#           java-version: 11
+#           distribution: 'temurin'
+
+#       - name: Common - Setup Android SDK
+#         uses: android-actions/setup-android@v2.0.10
+
+#       - name: create dotEnv
+#         run: |
+#           env-generator gen-all e2e
+
+#       - if: steps.cache_third_party.outputs.cache-hit != 'true'
+#         name: Download, Build third-party
+#         run: |
+#           yarn third-party:download:build
+
+#       - name: Run e2e
+#         if: ${{ success() }}
+#         run: |
+#           yarn workspace e2e run util:install-chromedriver && yarn workspace e2e run start:ci
+
+#       - name: Upload video
+#         if: ${{ failure() }}
+#         uses: actions/upload-artifact@v3
+#         with:
+#           name: 'e2e-${{ matrix.platform }}-${{ matrix.arch }}'
+#           path: |
+#             ./e2e/generated/record/screen-${{ runner.os }}-${{github.sha}}.webm
 
   send-slack:
     runs-on: ubuntu-latest
