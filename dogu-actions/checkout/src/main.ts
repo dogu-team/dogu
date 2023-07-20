@@ -3,13 +3,11 @@ import { spawnSync } from 'child_process';
 import fs from 'fs';
 
 ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionClient, deviceClient }) => {
-  logger.info('checkout 1');
   const { DOGU_DEVICE_WORKSPACE_PATH, DOGU_PROJECT_ID } = options;
   const clean = input.get<boolean>('clean');
   const branchOrTag = input.get<string>('branchOrTag');
   const postCommand = input.get<string>('postCommand');
   const optionsConfig = await OptionsConfig.load();
-  logger.info('checkout 2');
   if (optionsConfig.get('localUserProject.use', false)) {
     logger.info('Using local user project...');
   } else {

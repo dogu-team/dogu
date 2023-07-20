@@ -209,7 +209,7 @@ export class ActionProcessor {
     const { runs_main } = config;
     const useSource = this.useSource();
     const shell = useSource ? true : false;
-    this.logger.info('action run', { actionGitPath, runs_main, shell });
+    this.logger.verbose('action run', { actionGitPath, runs_main, shell });
     return this.commandProcessRegistry.command(
       useSource ? 'yarn' : yarnPath,
       ['node', runs_main],
