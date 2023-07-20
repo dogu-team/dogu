@@ -10,14 +10,7 @@
       "request": "launch",
       "module": "pytest",
       "justMyCode": true,
-      "args": ["--capture=no", "tests"],
-      "env": {
-        "DOGU_API_BASE_URL": "",
-        "DOGU_ORGANIZATION_ID": "",
-        "DOGU_DEVICE_ID": "",
-        "DOGU_STEP_ID": "",
-        "DOGU_HOST_TOKEN": ""
-      }
+      "args": [],
     }
   ]
 }

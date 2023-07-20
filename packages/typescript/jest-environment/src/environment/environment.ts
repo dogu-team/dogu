@@ -73,7 +73,11 @@ export class DoguEnvironment extends TestEnvironment {
   }
 
   handleFailFast(event: Circus.SyncEvent | Circus.AsyncEvent, state: Circus.State): void {
-    const failFast = this.doguConfig?.failFast ?? false;
+    if (!this.doguConfig) {
+      throw new Error('Internal error. doguConfig is null');
+    }
+
+    const failFast = this.doguConfig.failFast;
     if (!failFast) {
       return;
     }
