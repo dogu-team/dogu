@@ -100,6 +100,10 @@ export class DoguConfig {
     return process.env.DOGU_HOST_TOKEN;
   }
 
+  get failFast(): boolean | undefined {
+    return _.get(this.configFileObject, 'failFast');
+  }
+
   parseApiBaseUrl(): { protocol: string; hostname: string; port: number } {
     const { apiBaseUrl } = this;
     const matches = apiBaseUrl.match(ApiBaseUrlPattern);

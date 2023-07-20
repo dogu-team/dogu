@@ -18,11 +18,12 @@ declare global {
 }
 
 export class DoguEnvironment extends TestEnvironment {
+  private logger = createLogger('DoguEnvironment');
   private doguConfig: DoguConfig | null = null;
   private routineDestReporter: RoutineDestReporter | null = null;
   private driver: WebdriverIO.Browser | null = null;
   private remoteDestReporter: RemoteDestReporter | null = null;
-  private logger = createLogger('DoguEnvironment');
+  private anyTestFailed = false;
 
   constructor(config: JestEnvironmentConfig, _context: EnvironmentContext) {
     super(config, _context);
@@ -59,6 +60,8 @@ export class DoguEnvironment extends TestEnvironment {
   }
 
   async handleTestEvent(event: Circus.SyncEvent | Circus.AsyncEvent, state: Circus.State): Promise<void> {
+    this.handleFailFast(event, state);
+
     await this.routineDestReporter?.handleTestEvent?.(event, state).catch((error) => {
       const parsedError = isAxiosError(error) ? error.toJSON() : error;
       this.logger.error('routineDestReporter.handleTestEvent failed', parsedError);
@@ -67,5 +70,22 @@ export class DoguEnvironment extends TestEnvironment {
       const parsedError = isAxiosError(error) ? error.toJSON() : error;
       this.logger.error('remoteDestReporter.handleTestEvent failed', parsedError);
     });
+  }
+
+  handleFailFast(event: Circus.SyncEvent | Circus.AsyncEvent, state: Circus.State): void {
+    const failFast = this.doguConfig?.failFast ?? false;
+    if (!failFast) {
+      return;
+    }
+
+    if (!this.anyTestFailed) {
+      if (event.name === 'hook_failure' || event.name === 'test_fn_failure') {
+        this.anyTestFailed = true;
+      }
+    } else {
+      if (event.name === 'test_start') {
+        event.test.mode = 'skip';
+      }
+    }
   }
 }

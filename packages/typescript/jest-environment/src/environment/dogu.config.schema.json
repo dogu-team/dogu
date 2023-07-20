@@ -55,6 +55,10 @@
     "appVersion": {
       "description": "Version of the app to be used for testing.\nOptional",
       "type": "string"
+    },
+    "failFast": {
+      "description": "If true, the test run will fail as soon as a test fails.\nOptional",
+      "type": "boolean"
     }
   },
   "required": ["apiBaseUrl", "token", "organizationId", "projectId", "runsOn"]

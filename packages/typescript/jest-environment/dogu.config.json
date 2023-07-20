@@ -8,5 +8,6 @@
   "runsOn": "INSERT_YOUR_TAG", // required. example: "macos", "windows", "android", "ios"
   "browserName": "chrome", // optional
   "browserVersion": "INSERT_YOUR_BROWSER_VERSION", // optional
-  "appVersion": "INSERT_YOUR_APP_VERSION" // optional
+  "appVersion": "INSERT_YOUR_APP_VERSION", // optional
+  "failFast": false // optional
 }
