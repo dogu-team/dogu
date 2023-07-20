@@ -118,7 +118,7 @@ export function runHost(hostName: string, dost: Dost): void {
 export class Dost {
   private mainPage: PageWrapper | undefined = undefined;
   private installGenerator: Generator<void>;
-  InstallTimeoutMs = 180000;
+  InstallTimeoutMs = 60000 * 10;
   longTimeoutMs = 30000;
 
   constructor() {
