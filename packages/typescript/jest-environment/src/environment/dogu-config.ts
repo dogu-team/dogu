@@ -10,9 +10,9 @@ import { createLogger } from './common.js';
  * @note "tsc" does not support import.meta. The transfile is in babel and the tsc generates only the type.
  */
 /* @ts-ignore */
-const CommonDirPath = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)));
-const SchemaFilePath = path.resolve(CommonDirPath, 'dogu.config.schema.json');
-const ConfigFileName = 'dogu.config.json';
+const ConfigDirPath = path.resolve(path.dirname(url.fileURLToPath(import.meta.url)));
+const SchemaFilePath = path.resolve(ConfigDirPath, 'dogu.config.schema.json');
+const ConfigFilePath = path.resolve(process.cwd(), 'dogu.config.json');
 const ApiBaseUrlPattern = /^(https?):\/\/([^:\/\s]+)(:([0-9]+))?\/?/i;
 
 async function loadConfigFileSchema(): Promise<object> {
@@ -22,8 +22,7 @@ async function loadConfigFileSchema(): Promise<object> {
 }
 
 async function loadConfigFile(): Promise<object> {
-  const configFilePath = path.resolve(process.cwd(), ConfigFileName);
-  const content = await fs.promises.readFile(configFilePath, 'utf8');
+  const content = await fs.promises.readFile(ConfigFilePath, 'utf8');
   const config = JSON5.parse(content) as object;
   return config;
 }
@@ -43,49 +42,49 @@ async function loadAndValidateConfigFile(): Promise<object> {
 }
 
 async function isConfigFileExist(): Promise<boolean> {
-  const isConfigFileExist = await fs.promises.stat(ConfigFileName).catch(() => null);
+  const isConfigFileExist = await fs.promises.stat(ConfigFilePath).catch(() => null);
   return !!isConfigFileExist;
 }
 
 export class DoguConfig {
   private readonly logger = createLogger('DoguConfig');
 
-  constructor(private readonly configFileObject: object) {}
+  constructor(private readonly config: object) {}
 
-  get version(): string {
-    return _.get(this.configFileObject, 'version') as unknown as string;
+  get version(): number {
+    return _.get(this.config, 'version') as unknown as number;
   }
 
   get apiBaseUrl(): string {
-    return process.env.DOGU_API_BASE_URL || (_.get(this.configFileObject, 'apiBaseUrl') as unknown as string);
+    return process.env.DOGU_API_BASE_URL || (_.get(this.config, 'apiBaseUrl') as unknown as string);
   }
 
   get organizationId(): string {
-    return process.env.DOGU_ORGANIZATION_ID || (_.get(this.configFileObject, 'organizationId') as unknown as string);
+    return process.env.DOGU_ORGANIZATION_ID || (_.get(this.config, 'organizationId') as unknown as string);
   }
 
   get projectId(): string {
-    return process.env.DOGU_PROJECT_ID || (_.get(this.configFileObject, 'projectId') as unknown as string);
+    return process.env.DOGU_PROJECT_ID || (_.get(this.config, 'projectId') as unknown as string);
   }
 
   get token(): string {
-    return process.env.DOGU_TOKEN || (_.get(this.configFileObject, 'token') as unknown as string);
+    return process.env.DOGU_TOKEN || (_.get(this.config, 'token') as unknown as string);
   }
 
   get runsOn(): string | string[] {
-    return process.env.DOGU_RUNS_ON || (_.get(this.configFileObject, 'runsOn') as unknown as string | string[]);
+    return process.env.DOGU_RUNS_ON || (_.get(this.config, 'runsOn') as unknown as string | string[]);
   }
 
   get browserName(): string | undefined {
-    return process.env.DOGU_BROWSER_NAME || _.get(this.configFileObject, 'browserName');
+    return process.env.DOGU_BROWSER_NAME || _.get(this.config, 'browserName');
   }
 
   get browserVersion(): string | undefined {
-    return process.env.DOGU_BROWSER_VERSION || _.get(this.configFileObject, 'browserVersion');
+    return process.env.DOGU_BROWSER_VERSION || _.get(this.config, 'browserVersion');
   }
 
   get appVersion(): string | undefined {
-    return process.env.DOGU_APP_VERSION || _.get(this.configFileObject, 'appVersion');
+    return process.env.DOGU_APP_VERSION || _.get(this.config, 'appVersion');
   }
 
   get deviceId(): string | undefined {
@@ -100,8 +99,8 @@ export class DoguConfig {
     return process.env.DOGU_HOST_TOKEN;
   }
 
-  get failFast(): boolean | undefined {
-    return _.get(this.configFileObject, 'failFast');
+  get failFast(): boolean {
+    return _.get(this.config, 'failFast', false);
   }
 
   parseApiBaseUrl(): { protocol: string; hostname: string; port: number } {
@@ -130,9 +129,9 @@ export class DoguConfigFactory {
 
   async create(): Promise<DoguConfig> {
     if (await isConfigFileExist()) {
-      const configFileObject = await loadAndValidateConfigFile();
+      const config = await loadAndValidateConfigFile();
       this.logger.info('dogu.config.json is loaded');
-      return new DoguConfig(configFileObject);
+      return new DoguConfig(config);
     }
     this.logger.info('dogu.config.json is not found. use default config');
     return new DoguConfig({});

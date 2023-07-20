@@ -36,8 +36,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:e2e"\
       },\
       {\
-        "name": "pytest-dogu-report",\
-        "reference": "workspace:packages/python/pytest-dogu-report"\
+        "name": "pytest-dogu-sdk",\
+        "reference": "workspace:packages/python/pytest-dogu-sdk"\
       },\
       {\
         "name": "@dogu-dev-private/base-build-tools",\
@@ -276,7 +276,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["nexus-initializer", ["workspace:projects/nexus-initializer"]],\
       ["protocol-exporter", ["workspace:prebuilds/protocol-exporter"]],\
       ["pytest-bdd-playwright-dogu-report", ["workspace:samples/pytest-bdd-playwright-dogu-report"]],\
-      ["pytest-dogu-report", ["workspace:packages/python/pytest-dogu-report"]],\
+      ["pytest-dogu-sdk", ["workspace:packages/python/pytest-dogu-sdk"]],\
       ["pytest-playwright-dogu-report", ["workspace:samples/pytest-playwright-dogu-report"]],\
       ["routine-interface-exporter", ["workspace:prebuilds/routine-interface-exporter"]],\
       ["validation", ["workspace:validation"]]\
@@ -40608,11 +40608,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
-      ["pytest-dogu-report", [\
-        ["workspace:packages/python/pytest-dogu-report", {\
-          "packageLocation": "./packages/python/pytest-dogu-report/",\
+      ["pytest-dogu-sdk", [\
+        ["workspace:packages/python/pytest-dogu-sdk", {\
+          "packageLocation": "./packages/python/pytest-dogu-sdk/",\
           "packageDependencies": [\
-            ["pytest-dogu-report", "workspace:packages/python/pytest-dogu-report"],\
+            ["pytest-dogu-sdk", "workspace:packages/python/pytest-dogu-sdk"],\
             ["@types/node", "npm:18.15.11"],\
             ["@types/shelljs", "npm:0.8.11"],\
             ["cross-env", "npm:7.0.3"],\

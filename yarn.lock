@@ -28777,9 +28777,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"pytest-dogu-report@workspace:packages/python/pytest-dogu-report":
+"pytest-dogu-sdk@workspace:packages/python/pytest-dogu-sdk":
   version: 0.0.0-use.local
-  resolution: "pytest-dogu-report@workspace:packages/python/pytest-dogu-report"
+  resolution: "pytest-dogu-sdk@workspace:packages/python/pytest-dogu-sdk"
   dependencies:
     "@types/node": 18.15.11
     "@types/shelljs": 0.8.11

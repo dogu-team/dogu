@@ -1,4 +1,4 @@
-# pytest-dogu-report
+# pytest-dogu-sdk
 
 ## initial settings
 
