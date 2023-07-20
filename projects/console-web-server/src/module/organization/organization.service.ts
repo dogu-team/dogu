@@ -167,7 +167,7 @@ export class OrganizationService {
     });
     await manager.getRepository(OrganizationKey).save(organizationKey);
 
-    await this.createApiToken(manager, organizationId);
+    await this.createAccessToken(manager, organizationId);
 
     // create default project if user tutorial is not completed
     if (user.isTutorialCompleted === 0) {
@@ -579,7 +579,7 @@ export class OrganizationService {
     });
   }
 
-  private async createApiToken(manager: EntityManager, organizationId: OrganizationId): Promise<string> {
+  private async createAccessToken(manager: EntityManager, organizationId: OrganizationId): Promise<string> {
     const orgApiToken = await manager.getRepository(OrganizatioAccessToken).findOne({
       where: { organizationId },
     });
@@ -608,7 +608,7 @@ export class OrganizationService {
     return token.token;
   }
 
-  async findApiToken(organizationId: OrganizationId): Promise<string> {
+  async findAccessToken(organizationId: OrganizationId): Promise<string> {
     const orgApiToken = await this.dataSource //
       .getRepository(OrganizatioAccessToken)
       .createQueryBuilder('orgApiToken')
@@ -623,7 +623,7 @@ export class OrganizationService {
     return orgApiToken.token.token;
   }
 
-  async regenerateToken(organizationId: OrganizationId, creatorId: UserId): Promise<string> {
+  async regenerateAccessToken(organizationId: OrganizationId, creatorId: UserId): Promise<string> {
     const orgApiToken = await this.dataSource //
       .getRepository(OrganizatioAccessToken)
       .createQueryBuilder('orgApiToken')
@@ -663,7 +663,7 @@ export class OrganizationService {
     return rv;
   }
 
-  async deleteApiToken(organizationId: OrganizationId, revokerId: UserId): Promise<void> {
+  async deleteAccessToken(organizationId: OrganizationId, revokerId: UserId): Promise<void> {
     const orgApiToken = await this.dataSource //
       .getRepository(OrganizatioAccessToken)
       .createQueryBuilder('orgApiToken')

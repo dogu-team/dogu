@@ -85,7 +85,7 @@ export class OrganizationController {
     @User() userPayload: UserPayload, //
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
   ): Promise<string> {
-    const rv = await this.organizationService.findApiToken(organizationId);
+    const rv = await this.organizationService.findAccessToken(organizationId);
     return rv;
   }
 
@@ -95,7 +95,7 @@ export class OrganizationController {
     @User() userPayload: UserPayload, //
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
   ): Promise<string> {
-    const rv = await this.organizationService.regenerateToken(organizationId, userPayload.userId);
+    const rv = await this.organizationService.regenerateAccessToken(organizationId, userPayload.userId);
     return rv;
   }
 
@@ -105,7 +105,7 @@ export class OrganizationController {
     @User() userPayload: UserPayload, //
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
   ): Promise<void> {
-    await this.organizationService.deleteApiToken(organizationId, userPayload.userId);
+    await this.organizationService.deleteAccessToken(organizationId, userPayload.userId);
   }
 
   @Delete(':organizationId')
