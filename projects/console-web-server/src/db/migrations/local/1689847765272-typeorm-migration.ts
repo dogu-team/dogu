@@ -36,7 +36,7 @@ export class typeormMigration1689847765272 implements MigrationInterface {
 
     for (const project of projects) {
       const newTokenData: DeepPartial<Token> = {
-        token: TokenService.createOrganizationApiToken(),
+        token: TokenService.createOrganizationAccessToken(),
         expiredAt: null,
       };
       const tokenData = queryRunner.manager.getRepository(Token).create(newTokenData);
@@ -62,7 +62,7 @@ export class typeormMigration1689847765272 implements MigrationInterface {
 
     for (const user of users) {
       const newTokenData: DeepPartial<Token> = {
-        token: TokenService.createOrganizationApiToken(),
+        token: TokenService.createOrganizationAccessToken(),
         expiredAt: null,
       };
       const tokenData = queryRunner.manager.getRepository(Token).create(newTokenData);

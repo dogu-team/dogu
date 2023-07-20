@@ -35,6 +35,35 @@ export class ProjectController {
     return rv;
   }
 
+  @Get(':projectId/access-token')
+  @ProjectPermission(PROJECT_ROLE.ADMIN)
+  async findAccessToken(
+    @User() userPayload: UserPayload, //
+    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
+  ): Promise<string> {
+    const rv = await this.projectService.findAccessToken(projectId);
+    return rv;
+  }
+
+  @Post(':projectId/access-token')
+  @ProjectPermission(PROJECT_ROLE.ADMIN)
+  async regenerateAccessToken(
+    @User() userPayload: UserPayload, //
+    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
+  ): Promise<string> {
+    const rv = await this.projectService.regenerateAccessToken(projectId, userPayload.userId);
+    return rv;
+  }
+
+  @Delete(':projectId/access-token')
+  @ProjectPermission(PROJECT_ROLE.ADMIN)
+  async softRemoveAccessToken(
+    @User() userPayload: UserPayload, //
+    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
+  ): Promise<void> {
+    await this.projectService.deleteAccessToken(projectId, userPayload.userId);
+  }
+
   @Get('')
   @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
   async findProjectsByOrganizationId(

@@ -93,11 +93,11 @@ export const cancelInvitation = async (orgId: OrganizationId, email: string) => 
 };
 
 export const getApiToken = async (orgId: OrganizationId) => {
-  const { data } = await api.get<string>(`/organizations/${orgId}/api-token`);
+  const { data } = await api.get<string>(`/organizations/${orgId}/access-token`);
   return data;
 };
 
 export const regenerateApiToken = async (orgId: OrganizationId) => {
-  const { data } = await api.post<string>(`/organizations/${orgId}/api-token`);
+  const { data } = await api.post<string>(`/organizations/${orgId}/access-token`);
   return data;
 };

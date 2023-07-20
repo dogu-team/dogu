@@ -12,7 +12,7 @@ interface Props {
 
 const ApiTokenButton = ({ organizationId }: Props) => {
   const [shouldFetch, setShouldFetch] = useState(false);
-  const { data, isLoading, error } = useSWR<string>(shouldFetch && `/organizations/${organizationId}/api-token`, swrAuthFetcher, { revalidateOnFocus: false });
+  const { data, isLoading, error } = useSWR<string>(shouldFetch && `/organizations/${organizationId}/access-token`, swrAuthFetcher, { revalidateOnFocus: false });
 
   useEffect(() => {
     if (error) {

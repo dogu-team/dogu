@@ -15,7 +15,7 @@ import { Token } from './token.entity';
 import { User } from './user.entity';
 
 @Entity(ORGANIZATION_ACCESS_TOKEN_TABLE_NAME)
-export class OrganizatioAccessToken extends BaseEntity implements OrganizationAccessTokenBase {
+export class OrganizationAccessToken extends BaseEntity implements OrganizationAccessTokenBase {
   @PrimaryColumn({ type: 'uuid', name: OrganizationAccessTokenPropSnake.organization_access_token_id, nullable: false })
   organizationAccessTokenId!: OrganizationAccessTokenId;
 

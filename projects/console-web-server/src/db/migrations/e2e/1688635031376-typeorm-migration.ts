@@ -21,7 +21,7 @@ export class typeormMigration1688635031376 implements MigrationInterface {
 
     for (const org of orgs) {
       const newTokenData: DeepPartial<Token> = {
-        token: TokenService.createOrganizationApiToken(),
+        token: TokenService.createOrganizationAccessToken(),
         expiredAt: null,
       };
       const tokenData = queryRunner.manager.getRepository(Token).create(newTokenData);

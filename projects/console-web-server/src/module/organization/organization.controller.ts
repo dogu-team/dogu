@@ -79,9 +79,9 @@ export class OrganizationController {
     return rv;
   }
 
-  @Get(':organizationId/api-token')
+  @Get(':organizationId/access-token')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async findApiToken(
+  async findAccessToken(
     @User() userPayload: UserPayload, //
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
   ): Promise<string> {
@@ -89,9 +89,9 @@ export class OrganizationController {
     return rv;
   }
 
-  @Post(':organizationId/api-token')
+  @Post(':organizationId/access-token')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async regenerateApiToken(
+  async regenerateAccessToken(
     @User() userPayload: UserPayload, //
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
   ): Promise<string> {
@@ -99,9 +99,9 @@ export class OrganizationController {
     return rv;
   }
 
-  @Delete(':organizationId/api-token')
+  @Delete(':organizationId/access-token')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async softRemoveApiToken(
+  async softRemoveAccessToken(
     @User() userPayload: UserPayload, //
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
   ): Promise<void> {
@@ -114,7 +114,6 @@ export class OrganizationController {
     await this.organizationService.softRemoveOrganization(userPayload, organizationId);
   }
 
-  // Member API
   @Get(':organizationId/users')
   @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
   async findUsersByOrganizationId(

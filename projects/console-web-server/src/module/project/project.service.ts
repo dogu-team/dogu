@@ -5,6 +5,8 @@ import {
   DevicePropSnake,
   MemberAndRoleGroupBase,
   OrganizationUserAndTeamPropCamel,
+  ProjectAccessTokenPropCamel,
+  ProjectAccessTokenPropSnake,
   ProjectAndTeamAndProjectRolePropCamel,
   ProjectAndUserAndProjectRolePropCamel,
   ProjectAndUserAndProjectRolePropSnake,
@@ -25,12 +27,15 @@ import { OrganizationId, PIPELINE_STATUS, ProjectId, UserId, UserPayload } from 
 import { notEmpty } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { Brackets, DataSource, EntityManager, Not } from 'typeorm';
-import { Device, Project, RoutinePipeline, User } from '../../db/entity';
+import { Brackets, DataSource, DeepPartial, EntityManager, Not } from 'typeorm';
+import { v4 } from 'uuid';
+import { Device, Project, RoutinePipeline, Token, User } from '../../db/entity';
+import { ProjectAccessToken } from '../../db/entity/project-access-token.entity';
 import { EMPTY_PAGE, Page } from '../../module/common/dto/pagination/page';
 import { checkOrganizationRolePermission, ORGANIZATION_ROLE } from '../auth/auth.types';
 // import { GitlabService } from '../gitlab/gitlab.service';
 import { DeviceStatusService } from '../organization/device/device-status.service';
+import { TokenService } from '../token/token.service';
 import { CreatePipelineReportDto, CreateProjectDto, FindMembersByProjectIdDto, FindProjectDeviceDto, FindProjectDto, UpdateProjectDto } from './dto/project.dto';
 
 @Injectable()
@@ -258,6 +263,7 @@ export class ProjectService {
     });
 
     const rv = await manager.getRepository(Project).save(result);
+    await this.createAccessToken(manager, rv.projectId);
 
     return rv;
   }
@@ -273,7 +279,7 @@ export class ProjectService {
       where: { projectId: Not(projectId), organizationId, name: updateProjectDto.name },
     });
     if (existingProject) {
-      throw new HttpException(`Project named ${updateProjectDto.name} is already exist`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(`Project name ${updateProjectDto.name} is already exist`, HttpStatus.BAD_REQUEST);
     }
 
     const newData = Object.assign(project, updateProjectDto);
@@ -394,5 +400,108 @@ export class ProjectService {
       successes,
       failures,
     };
+  }
+
+  private async createAccessToken(manager: EntityManager, projectId: ProjectId): Promise<string> {
+    const tokenCheck = await manager.getRepository(ProjectAccessToken).findOne({
+      where: { projectId },
+    });
+
+    if (tokenCheck) {
+      throw new HttpException(`AccessToken already exists. projectId: ${projectId}`, HttpStatus.BAD_REQUEST);
+    }
+
+    const newTokenData: DeepPartial<Token> = {
+      token: TokenService.createProjectAccessToken(),
+      expiredAt: null,
+    };
+    const tokenData = manager.getRepository(Token).create(newTokenData);
+    const token = await manager.getRepository(Token).save(tokenData);
+
+    const newData: DeepPartial<ProjectAccessToken> = {
+      projectAccessTokenId: v4(),
+      projectId,
+      creatorId: null,
+      revokerId: null,
+      tokenId: token.tokenId,
+    };
+    const accessTokenData = manager.getRepository(ProjectAccessToken).create(newData);
+    await manager.getRepository(ProjectAccessToken).save(accessTokenData);
+
+    return token.token;
+  }
+
+  async findAccessToken(projectId: ProjectId): Promise<string> {
+    const accessToken = await this.dataSource //
+      .getRepository(ProjectAccessToken)
+      .createQueryBuilder('projectAccessToken')
+      .innerJoinAndSelect(`projectAccessToken.${ProjectAccessTokenPropCamel.token}`, 'token')
+      .where(`projectAccessToken.${ProjectAccessTokenPropSnake.project_id} = :projectId`, { projectId })
+      .getOne();
+
+    if (!accessToken) {
+      throw new HttpException(`AccessToken not found. projectId: ${projectId}`, HttpStatus.NOT_FOUND);
+    }
+
+    return accessToken.token.token;
+  }
+
+  async regenerateAccessToken(projectId: ProjectId, regeneratorId: UserId): Promise<string> {
+    const accessToken = await this.dataSource //
+      .getRepository(ProjectAccessToken)
+      .createQueryBuilder('projectAccessToken')
+      .innerJoinAndSelect(`projectAccessToken.${ProjectAccessTokenPropCamel.token}`, 'token')
+      .where(`projectAccessToken.${ProjectAccessTokenPropSnake.project_id} = :projectId`, { projectId })
+      .getOne();
+
+    if (!accessToken) {
+      throw new HttpException(`AccessToken not found. projectId: ${projectId}`, HttpStatus.NOT_FOUND);
+    }
+
+    const rv = await this.dataSource.transaction(async (manager) => {
+      // revoke
+      await manager.getRepository(Token).softDelete({ tokenId: accessToken.tokenId });
+      await manager.getRepository(ProjectAccessToken).update({ projectAccessTokenId: accessToken.projectAccessTokenId }, { revokerId: regeneratorId });
+      await manager.getRepository(ProjectAccessToken).softDelete({ projectAccessTokenId: accessToken.projectAccessTokenId });
+
+      // reissue
+      const newTokenData: DeepPartial<Token> = {
+        token: TokenService.createProjectAccessToken(),
+      };
+      const tokenData = manager.getRepository(Token).create(newTokenData);
+      const token = await manager.getRepository(Token).save(tokenData);
+
+      const newData: DeepPartial<ProjectAccessToken> = {
+        projectAccessTokenId: v4(),
+        projectId,
+        creatorId: regeneratorId,
+        tokenId: token.tokenId,
+      };
+      const accessTokenData = manager.getRepository(ProjectAccessToken).create(newData);
+      await manager.getRepository(ProjectAccessToken).save(accessTokenData);
+
+      return token.token;
+    });
+
+    return rv;
+  }
+
+  async deleteAccessToken(projectId: ProjectId, revokerId: UserId): Promise<void> {
+    const accessToken = await this.dataSource //
+      .getRepository(ProjectAccessToken)
+      .createQueryBuilder('projectAccessToken')
+      .innerJoinAndSelect(`projectAccessToken.${ProjectAccessTokenPropCamel.token}`, 'token')
+      .where(`projectAccessToken.${ProjectAccessTokenPropSnake.project_id} = :projectId`, { projectId })
+      .getOne();
+
+    if (!accessToken) {
+      throw new HttpException(`AccessToken not found. projectId: ${projectId}`, HttpStatus.NOT_FOUND);
+    }
+
+    await this.dataSource.transaction(async (manager) => {
+      await manager.getRepository(Token).softDelete({ tokenId: accessToken.tokenId });
+      await manager.getRepository(ProjectAccessToken).update({ projectAccessTokenId: accessToken.projectAccessTokenId }, { revokerId });
+      await manager.getRepository(ProjectAccessToken).softDelete({ projectAccessTokenId: accessToken.projectAccessTokenId });
+    });
   }
 }

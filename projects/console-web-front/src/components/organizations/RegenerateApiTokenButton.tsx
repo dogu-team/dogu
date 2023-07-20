@@ -22,7 +22,7 @@ const RegenerateApiTokenButton = ({ organizationId }: Props) => {
   const handleConfirm = async () => {
     try {
       const data = await regenerateApiToken(organizationId);
-      mutate(`/organizations/${organizationId}/api-token`, data, false);
+      mutate(`/organizations/${organizationId}/access-token`, data, false);
       setToken(data);
       sendSuccessNotification('Regenerated');
     } catch (e) {

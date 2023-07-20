@@ -49,24 +49,59 @@ export class UserController {
   @Get(':userId')
   @EmailVerification(EMAIL_VERIFICATION.UNVERIFIED)
   async findUser(@Param('userId') userId: UserId, @User() user: UserPayload): Promise<UserResponse> {
-    // 토큰 유저와 요청 유저가 같은지 검증
-    if (userId === user.userId) {
-      const rv = await this.userService.findOneByIdWithDetail(userId);
-      return rv;
-    } else {
-      throw new HttpException(`token user is not same with request user. user: ${userId}`, HttpStatus.UNAUTHORIZED);
+    if (userId !== user.userId) {
+      throw new HttpException(`This user is not same with request user. user: ${userId}`, HttpStatus.UNAUTHORIZED);
     }
+    const rv = await this.userService.findOneByIdWithDetail(userId);
+    return rv;
+  }
+
+  @Get(':userId/access-token')
+  @EmailVerification(EMAIL_VERIFICATION.UNVERIFIED)
+  async findAccessToken(
+    @User() userPayload: UserPayload, //
+    @Param(UserPropCamel.userId) userId: UserId,
+  ): Promise<string> {
+    if (userId !== userPayload.userId) {
+      throw new HttpException(`This user is not same with request user. user: ${userId}`, HttpStatus.UNAUTHORIZED);
+    }
+    const rv = await this.userService.findPersonalAccessToken(userPayload.userId);
+    return rv;
+  }
+
+  @Post(':userId/access-token')
+  @EmailVerification(EMAIL_VERIFICATION.UNVERIFIED)
+  async regenerateAccessToken(
+    @User() userPayload: UserPayload, //
+    @Param(UserPropCamel.userId) userId: UserId,
+  ): Promise<string> {
+    if (userId !== userPayload.userId) {
+      throw new HttpException(`This user is not same with request user. user: ${userId}`, HttpStatus.UNAUTHORIZED);
+    }
+    const rv = await this.userService.regeneratePersonalAccessToken(userPayload.userId);
+    return rv;
+  }
+
+  @Delete(':userId/access-token')
+  @EmailVerification(EMAIL_VERIFICATION.UNVERIFIED)
+  async softRemoveAccessToken(
+    @User() userPayload: UserPayload, //
+    @Param(UserPropCamel.userId) userId: UserId,
+  ): Promise<void> {
+    if (userId !== userPayload.userId) {
+      throw new HttpException(`This user is not same with request user. user: ${userId}`, HttpStatus.UNAUTHORIZED);
+    }
+    await this.userService.deletePersonalAccessToken(userPayload.userId);
   }
 
   @Patch(':userId')
   @EmailVerification(EMAIL_VERIFICATION.UNVERIFIED)
   async updateUser(@Param('userId') userId: UserId, @User() user: UserPayload, @Body() updateUserDto: UpdateUserDto): Promise<UserResponse> {
-    if (userId === user.userId) {
-      const rv = await this.userService.updateUser(userId, updateUserDto);
-      return rv;
-    } else {
-      throw new HttpException(`token user is not same with request user. user: ${userId}`, HttpStatus.UNAUTHORIZED);
+    if (userId !== user.userId) {
+      throw new HttpException(`This user is not same with request user. user: ${userId}`, HttpStatus.UNAUTHORIZED);
     }
+    const rv = await this.userService.updateUser(userId, updateUserDto);
+    return rv;
   }
 
   @Post(':userId/image')
@@ -78,23 +113,21 @@ export class UserController {
     @UploadedFile(ImageFileParser)
     image: Express.Multer.File,
   ): Promise<UserResponse> {
-    if (userId === user.userId) {
-      const rv = await this.userService.updateUserProfileImage(userId, image);
-      return rv;
-    } else {
-      throw new HttpException(`token user is not same with request user. user: ${userId}`, HttpStatus.UNAUTHORIZED);
+    if (userId !== user.userId) {
+      throw new HttpException(`This user is not same with request user. user: ${userId}`, HttpStatus.UNAUTHORIZED);
     }
+    const rv = await this.userService.updateUserProfileImage(userId, image);
+    return rv;
   }
 
   @Patch(':userId/password')
   @EmailVerification(EMAIL_VERIFICATION.UNVERIFIED)
   async resetPassword(@Param('userId') userId: UserId, @User() user: UserPayload, @Body() resetPasswordDto: ResetPasswordDto): Promise<boolean> {
-    if (userId === user.userId) {
-      const rv = await this.userService.resetPassword(userId, resetPasswordDto);
-      return rv;
-    } else {
-      throw new HttpException(`token user is not same with request user. user: ${userId}`, HttpStatus.UNAUTHORIZED);
+    if (userId !== user.userId) {
+      throw new HttpException(`This user is not same with request user. user: ${userId}`, HttpStatus.UNAUTHORIZED);
     }
+    const rv = await this.userService.resetPassword(userId, resetPasswordDto);
+    return rv;
   }
 
   @Delete(':userId')

@@ -2,7 +2,7 @@ import { ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Request, Response } from 'express';
 import { DataSource } from 'typeorm';
-import { OrganizatioAccessToken } from '../../../db/entity/organization-access-token.entity';
+import { OrganizationAccessToken } from '../../../db/entity/organization-access-token.entity';
 import { Token } from '../../../db/entity/token.entity';
 import { DoguLogger } from '../../logger/logger';
 import { TokenService } from '../../token/token.service';
@@ -53,7 +53,7 @@ export class AuthApiTokenService {
       return false;
     }
 
-    const organizationApiToken = await this.dataSource.getRepository(OrganizatioAccessToken).findOne({ where: { tokenId: token.tokenId } });
+    const organizationApiToken = await this.dataSource.getRepository(OrganizationAccessToken).findOne({ where: { tokenId: token.tokenId } });
     if (!organizationApiToken) {
       return false;
     }
