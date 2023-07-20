@@ -140,6 +140,7 @@ export class DeviceJobStepProcessor {
     await fs.promises.mkdir(organizationWorkspacePath, { recursive: true });
     const deviceProjectWorkspacePath = HostPaths.deviceProjectWorkspacePath(deviceWorkspacePath, projectId);
     await fs.promises.mkdir(deviceProjectWorkspacePath, { recursive: true });
+    const pathOld = environmentVariableReplacer.stackProvider.export().PATH;
     const stepContextEnv: StepContextEnv = {
       DOGU_DEVICE_PLATFORM: platformTypeFromPlatform(platform),
       DOGU_DEVICE_PROJECT_WORKSPACE_PATH: deviceProjectWorkspacePath,
@@ -159,7 +160,7 @@ export class DeviceJobStepProcessor {
       DOGU_HOST_WORKSPACE_PATH: hostWorkspacePath,
       DOGU_HOST_TOKEN: env.DOGU_HOST_TOKEN,
       DOGU_RUN_TYPE: env.DOGU_RUN_TYPE,
-      PATH: `${gitLibexecGitCore}${delimiter}${nodeBin}${delimiter}$PATH`,
+      PATH: `${gitLibexecGitCore}${delimiter}${nodeBin}${delimiter}${pathOld ?? ''}`,
     };
     const stepContextEnvReplaced = await environmentVariableReplacer.replaceEnv(stepContextEnv);
     environmentVariableReplacer.stackProvider.push(new EnvironmentVariableReplacementProvider(stepContextEnvReplaced));

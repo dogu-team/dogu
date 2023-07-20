@@ -21,6 +21,7 @@ export class CommandProcessRegistry {
   constructor(private readonly logger: DoguLogger) {}
 
   async command(command: string, args: string[], options: SpawnOptions, context: MessageContext): Promise<ErrorResult> {
+    this.logger.verbose('command', { command, args, options });
     return new Promise((resolve, reject) => {
       (async (): Promise<void> => {
         const { processes } = this;
