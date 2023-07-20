@@ -11148,7 +11148,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["class-validator", "npm:0.14.0"],\
             ["compressing", "npm:1.9.0"],\
             ["cross-env", "npm:7.0.3"],\
-            ["express", "npm:4.18.2"],\
             ["find-free-ports", "npm:3.0.0"],\
             ["gamium", "npm:2.0.2"],\
             ["glob", "npm:10.0.0"],\
