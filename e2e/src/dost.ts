@@ -78,7 +78,10 @@ export async function launchDost(): Promise<Page> {
 
   await waiton({ resources: ['http://127.0.0.1:3333'], timeout: 60000 });
 
-  const env = {} as Record<string, string>;
+  // const env = {} as Record<string, string>;
+  const env = newCleanNodeEnv() as Record<string, string>;
+  delete env.ELECTRON_RUN_AS_NODE;
+  delete env.NODE_OPTIONS;
   env.DOGU_HOME = doguWorkdirPath;
   console.log(`${dostElectronColor} ${getClockTime()} launching electron...`);
   console.log(`${dostElectronColor} mainjsPath: ${electronMainjsPath}`);
