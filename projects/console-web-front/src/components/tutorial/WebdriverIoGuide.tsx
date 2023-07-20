@@ -1,5 +1,4 @@
-import { Alert, Button } from 'antd';
-import Link from 'next/link';
+import { Alert } from 'antd';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
@@ -7,7 +6,6 @@ import DoneStep from './DoneStep';
 import GuideAnchor from './GuideAnchor';
 import GuideLayout from './GuideLayout';
 import GuideStep from './GuideStep';
-import CopyButtonContainer from '../common/CodeWithCopyButton';
 import { GuideProps, GuideSupportLanguage, GuideSupportPlatform, GuideSupportTarget, SAMPLE_GIT_URL, webdriverioGuideData } from '../../resources/guide';
 import { flexRowBaseStyle } from '../../styles/box';
 import GuideBanner from './GuideBanner';
@@ -16,6 +14,7 @@ import useTutorialSelector from '../../hooks/useTutorialSelector';
 import ProjectApplicationUploadButton from '../project-application/ProjectApplicationUploadButton';
 import SampleApplicationUploadButton from './SampleApplicationUploadButton';
 import RemoteTestResultList from './RemoteTestResultList';
+import CodeWithCopyButton from '../common/CodeWithCopyButton';
 
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
@@ -85,8 +84,8 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
             description={<p>Clone example repository and move to execution directory</p>}
             content={
               <>
-                <CopyButtonContainer language="bash" code={`git clone ${SAMPLE_GIT_URL}`} />
-                <CopyButtonContainer language="bash" code={selectedGuide?.cd ?? ''} />
+                <CodeWithCopyButton language="bash" code={`git clone ${SAMPLE_GIT_URL}`} />
+                <CodeWithCopyButton language="bash" code={selectedGuide?.cd ?? ''} />
               </>
             }
           />
@@ -94,17 +93,17 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
             id={INSTALL_DEPENDENCIES_ID}
             title="Install dependencies"
             description={<p>Install external packages</p>}
-            content={<CopyButtonContainer language="bash" code={selectedGuide?.installDependencies ?? ''} />}
+            content={<CodeWithCopyButton language="bash" code={selectedGuide?.installDependencies ?? ''} />}
           />
           <GuideStep
             id={SET_CAPABILITIES_ID}
             title="Set capabilities"
             description={
               <p>
-                Open <StyledCode>{selectedGuide?.sampleFilePath}</StyledCode> and configure capabilities for your project
+                Open <StyledCode>dogu.config.json</StyledCode> and configure capabilities for your project
               </p>
             }
-            content={<CopyButtonContainer language={frameworkLanguage ?? ''} code={capabilityCode} />}
+            content={<CodeWithCopyButton language="json" code={capabilityCode} />}
           />
 
           {target === GuideSupportTarget.APP && (
@@ -136,7 +135,13 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
             id={RUN_TEST_ID}
             title="Run remote testing"
             description={<p>Start automated testing using sample app and script</p>}
-            content={<CopyButtonContainer language="bash" code={selectedGuide?.runCommand ?? ''} />}
+            content={
+              target === GuideSupportTarget.APP && platform === GuideSupportPlatform.IOS ? (
+                <Alert message="We don't provide sample test script for iOS. Please run test with your own configuration." showIcon type="warning" />
+              ) : (
+                <CodeWithCopyButton language="bash" code={selectedGuide?.runCommand ?? ''} />
+              )
+            }
           />
 
           <div style={{ marginBottom: '2rem' }}>

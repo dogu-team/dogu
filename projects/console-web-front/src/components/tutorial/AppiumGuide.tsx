@@ -103,7 +103,7 @@ const AppiumGuide = ({ organizationId, projectId }: GuideProps) => {
             description={
               <>
                 <p>
-                  Open <StyledCode>{selectedGuide?.sampleFilePath}</StyledCode> and configure capabilities for your project
+                  Open <StyledCode>dogu.config.json</StyledCode> and configure capabilities for your project
                 </p>
                 {platform === GuideSupportPlatform.IOS && (
                   <Alert
@@ -120,7 +120,7 @@ const AppiumGuide = ({ organizationId, projectId }: GuideProps) => {
                 )}
               </>
             }
-            content={<CodeWithCopyButton language={frameworkLanguage ?? ''} code={capabilityCode} />}
+            content={<CodeWithCopyButton language={'json'} code={capabilityCode} />}
           />
           {target === GuideSupportTarget.APP && (
             <GuideStep
@@ -150,7 +150,13 @@ const AppiumGuide = ({ organizationId, projectId }: GuideProps) => {
             id={RUN_TEST_ID}
             title="Run remote testing"
             description={<p>Start automated testing using sample app and script</p>}
-            content={<CodeWithCopyButton language="bash" code={selectedGuide?.runCommand ?? ''} />}
+            content={
+              target === GuideSupportTarget.APP && platform === GuideSupportPlatform.IOS ? (
+                <Alert message="We don't provide sample test script for iOS. Please run test with your own configuration." showIcon type="warning" />
+              ) : (
+                <CodeWithCopyButton language="bash" code={selectedGuide?.runCommand ?? ''} />
+              )
+            }
           />
 
           <div style={{ marginBottom: '2rem' }}>

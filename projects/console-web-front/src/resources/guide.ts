@@ -110,43 +110,26 @@ export const appiumGuideData: Guide = {
     target: GuideSupportTarget.WEB,
   },
   generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
-    switch (framework) {
-      case GuideSupportFramework.PYTEST:
-        let orgApiToken: string;
+    let orgApiToken: string;
 
-        try {
-          orgApiToken = await getApiToken(orgId);
-        } catch (e) {
-          orgApiToken = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
-        }
-
-        return `token = os.environ.get("DOGU_TOKEN", "${orgApiToken}")
-organization_id = os.environ.get("DOGU_ORGANIZATION_ID", "${orgId}")
-project_id = os.environ.get("DOGU_PROJECT_ID", "${projectId}")
-api_base_url = os.environ.get("DOGU_API_BASE_URL", "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}")
-
-# ...
-
-options = UiAutomator2Options().load_capabilities(
-  {
-    # Specify dogu:options for testing
-    "dogu:options": {
-      "token": token,
-      "organizationId": organization_id,
-      "projectId": project_id,
-      "runsOn": "${platform}", # or another device tag
-      ${
-        target === GuideSupportTarget.WEB
-          ? `"browserName": "chrome"`
-          : `"appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'YOUR_APP_VERSION'}"`
-      },
-    },
-  }
-)
-`;
-      default:
-        return '';
+    try {
+      orgApiToken = await getApiToken(orgId);
+    } catch (e) {
+      orgApiToken = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
     }
+
+    return `"version": 1,
+"apiBaseUrl": "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}",
+"organizationId": "${orgId}",
+"projectId": "${projectId}",
+"token": "${orgApiToken}",
+"runsOn": "${platform}",  // or another device tag
+${
+  target === GuideSupportTarget.WEB
+    ? '"browserName": "chrome",'
+    : `"appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'INSERT_YOUR_APP_VERSION'}",`
+}
+`;
   },
   guides: [
     {
@@ -210,42 +193,26 @@ export const webdriverioGuideData: Guide = {
     target: GuideSupportTarget.WEB,
   },
   generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
-    switch (framework) {
-      case GuideSupportFramework.JEST:
-        let orgApiToken: string;
+    let orgApiToken: string;
 
-        try {
-          orgApiToken = await getApiToken(orgId);
-        } catch (e) {
-          orgApiToken = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
-        }
-
-        return `const token = process.env.DOGU_TOKEN || '${orgApiToken}';
-const organizationId = process.env.DOGU_ORGANIZATION_ID || '${orgId}';
-const projectId = process.env.DOGU_PROJECT_ID || '${projectId}';
-const apiBaseUrl = process.env.DOGU_API_BASE_URL || '${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}';
-
-// ...
-
-const driver = await remote({
-  protocol,
-  hostname,
-  port,
-  path: '/remote/wd/hub',
-  capabilities: {
-    'dogu:options': {
-      token,
-      organizationId,
-      projectId,
-      runsOn: '${platform}', // or another device tag
-      ${target === GuideSupportTarget.WEB ? "browserName: 'chrome'," : "appVersion: '2.5.194-alpha-2017-05-30',"}
-    },
-  },
-});
-`;
-      default:
-        return '';
+    try {
+      orgApiToken = await getApiToken(orgId);
+    } catch (e) {
+      orgApiToken = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
     }
+
+    return `"version": 1,
+"apiBaseUrl": "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}",
+"organizationId": "${orgId}",
+"projectId": "${projectId}",
+"token": "${orgApiToken}",
+"runsOn": "${platform}",  // or another device tag
+${
+  target === GuideSupportTarget.WEB
+    ? '"browserName": "chrome",'
+    : `"appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'INSERT_YOUR_APP_VERSION'}",`
+}
+`;
   },
   guides: [
     {
@@ -253,62 +220,62 @@ const driver = await remote({
       language: GuideSupportLanguage.JAVASCRIPT,
       platform: GuideSupportPlatform.ANDROID,
       target: GuideSupportTarget.WEB,
-      cd: 'cd dogu-examples/webdriverio/javascript',
+      cd: 'cd dogu-examples/webdriverio/javascript/jest',
       installDependencies: 'npm install',
-      runCommand: `npm run test:android:web`,
-      sampleFilePath: 'android/chrome.js',
+      runCommand: `npm run test:web`,
+      sampleFilePath: 'web/chrome.test.js',
     },
     {
       framework: GuideSupportFramework.JEST,
       language: GuideSupportLanguage.JAVASCRIPT,
       platform: GuideSupportPlatform.IOS,
       target: GuideSupportTarget.WEB,
-      cd: 'cd dogu-examples/webdriverio/javascript',
+      cd: 'cd dogu-examples/webdriverio/javascript/jest',
       installDependencies: 'npm install',
-      runCommand: `npm run test:ios:web`,
-      sampleFilePath: 'ios/chrome.js',
+      runCommand: `npm run test:web`,
+      sampleFilePath: 'web/chrome.test.ts',
     },
     {
       framework: GuideSupportFramework.JEST,
       language: GuideSupportLanguage.JAVASCRIPT,
       platform: GuideSupportPlatform.WINDOWS,
       target: GuideSupportTarget.WEB,
-      cd: 'cd dogu-examples/webdriverio/javascript',
+      cd: 'cd dogu-examples/webdriverio/javascript/jest',
       installDependencies: 'npm install',
-      runCommand: `npm run test:windows:web`,
-      sampleFilePath: 'windows/chrome.js',
+      runCommand: `npm run test:web`,
+      sampleFilePath: 'web/chrome.test.ts',
     },
     {
       framework: GuideSupportFramework.JEST,
       language: GuideSupportLanguage.JAVASCRIPT,
       platform: GuideSupportPlatform.MACOS,
       target: GuideSupportTarget.WEB,
-      cd: 'cd dogu-examples/webdriverio/javascript',
+      cd: 'cd dogu-examples/webdriverio/javascript/jest',
       installDependencies: 'npm install',
-      runCommand: `npm run test:macos:web`,
-      sampleFilePath: 'macos/chrome.js',
+      runCommand: `npm run test:web`,
+      sampleFilePath: 'web/chrome.test.ts',
     },
     {
       framework: GuideSupportFramework.JEST,
       language: GuideSupportLanguage.JAVASCRIPT,
       platform: GuideSupportPlatform.ANDROID,
       target: GuideSupportTarget.APP,
-      cd: 'cd dogu-examples/webdriverio/javascript',
+      cd: 'cd dogu-examples/webdriverio/javascript/jest',
       installDependencies: 'npm install',
       hasSampleApp: true,
-      runCommand: `npm run test:android:app`,
-      sampleFilePath: 'android/app.js',
+      runCommand: `npm run test:app:android`,
+      sampleFilePath: 'app/android.test.js',
     },
     {
       framework: GuideSupportFramework.JEST,
       language: GuideSupportLanguage.JAVASCRIPT,
       platform: GuideSupportPlatform.IOS,
       target: GuideSupportTarget.APP,
-      cd: 'cd dogu-examples/webdriverio/javascript',
+      cd: 'cd dogu-examples/webdriverio/javascript/jest',
       installDependencies: 'npm install',
       hasSampleApp: false,
-      runCommand: `npm run test:ios:app`,
-      sampleFilePath: 'ios/app.js',
+      runCommand: 'npm run test:app:ios',
+      sampleFilePath: 'app/ios.test.js',
     },
   ],
 };

@@ -15,9 +15,10 @@ interface Props {
   organizationId: OrganizationId;
   projectId: ProjectId;
   emptyText?: React.ReactNode;
+  disablePagination?: boolean;
 }
 
-const RemoteListController = ({ organizationId, projectId, emptyText }: Props) => {
+const RemoteListController = ({ organizationId, projectId, emptyText, disablePagination }: Props) => {
   const router = useRouter();
   const { page } = router.query;
   const { data, isLoading, error, mutate } = useSWR<PageBase<RemoteBase>>(
@@ -34,23 +35,27 @@ const RemoteListController = ({ organizationId, projectId, emptyText }: Props) =
         renderItem={(item) => <SummarizedRemoteItem remote={item} />}
         loading={isLoading}
         rowKey={(item) => `remote-${item.remoteId}`}
-        pagination={{
-          defaultCurrent: 1,
-          pageSize: 10,
-          current: Number(page) || 1,
-          onChange: (p) => {
-            scrollTo(0, 0);
-            router.push({
-              pathname: router.pathname,
-              query: {
-                orgId: organizationId,
-                pid: projectId,
-                page: p,
-              },
-            });
-          },
-          total: data?.totalCount,
-        }}
+        pagination={
+          disablePagination
+            ? false
+            : {
+                defaultCurrent: 1,
+                pageSize: 10,
+                current: Number(page) || 1,
+                onChange: (p) => {
+                  scrollTo(0, 0);
+                  router.push({
+                    pathname: router.pathname,
+                    query: {
+                      orgId: organizationId,
+                      pid: projectId,
+                      page: p,
+                    },
+                  });
+                },
+                total: data?.totalCount,
+              }
+        }
         locale={{
           emptyText: emptyText ?? (
             <ListEmpty

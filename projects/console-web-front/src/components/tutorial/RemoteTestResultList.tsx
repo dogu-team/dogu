@@ -32,6 +32,7 @@ const RemoteTestResultList = (props: Props) => {
               <p>There&apos;s no remote test result...</p>
             </FlexCentered>
           }
+          disablePagination
         />
       }
     />
