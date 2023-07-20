@@ -4,6 +4,7 @@ import useTutorialContext from '../../hooks/useTutorialContext';
 import { flexRowCenteredStyle } from '../../styles/box';
 import RefreshButton from '../buttons/RefreshButton';
 import TableListView from '../common/TableListView';
+import RemoteItemWithDeviceJob from '../remote/RemoteItemWithDeviceJob';
 import RemoteListController from '../remote/RemoteListController';
 
 interface Props {}
@@ -33,6 +34,9 @@ const RemoteTestResultList = (props: Props) => {
             </FlexCentered>
           }
           disablePagination
+          renderItem={(item) => {
+            return <RemoteItemWithDeviceJob remote={item} />;
+          }}
         />
       }
     />

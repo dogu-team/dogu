@@ -39,6 +39,7 @@
     "/dashboard/[orgId]/projects/[pid]/devices": ["project", "device"],
     "/dashboard/[orgId]/projects/[pid]/apps": ["project", "project-app"],
     "/dashboard/[orgId]/projects/[pid]/remotes": ["project"],
+    "/dashboard/[orgId]/projects/[pid]/remotes/[remoteId]": ["project"],
     "/dashboard/[orgId]/projects/[pid]/routines": ["project", "routine"],
     "/dashboard/[orgId]/projects/[pid]/routines/creator": ["project", "routine"],
     "/dashboard/[orgId]/projects/[pid]/routines/editor": ["project", "routine"],

@@ -9,16 +9,16 @@ import useSWR from 'swr';
 import { swrAuthFetcher } from '../../api/index';
 import useRefresh from '../../hooks/useRefresh';
 import ListEmpty from '../common/boxes/ListEmpty';
-import SummarizedRemoteItem from './SummarizedRemoteItem';
 
 interface Props {
   organizationId: OrganizationId;
   projectId: ProjectId;
+  renderItem: (item: RemoteBase) => React.ReactNode;
   emptyText?: React.ReactNode;
   disablePagination?: boolean;
 }
 
-const RemoteListController = ({ organizationId, projectId, emptyText, disablePagination }: Props) => {
+const RemoteListController = ({ organizationId, projectId, renderItem, emptyText, disablePagination }: Props) => {
   const router = useRouter();
   const { page } = router.query;
   const { data, isLoading, error, mutate } = useSWR<PageBase<RemoteBase>>(
@@ -32,7 +32,7 @@ const RemoteListController = ({ organizationId, projectId, emptyText, disablePag
     <div>
       <List<RemoteBase>
         dataSource={data?.items}
-        renderItem={(item) => <SummarizedRemoteItem remote={item} />}
+        renderItem={renderItem}
         loading={isLoading}
         rowKey={(item) => `remote-${item.remoteId}`}
         pagination={
