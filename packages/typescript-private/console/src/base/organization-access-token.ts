@@ -23,5 +23,5 @@ export interface OrganizationAccessTokenBaseTraits {
 }
 
 export type OrganizationAccessTokenBase = OrganizationAccessTokenBaseTraits & OrganizationAccessTokenRelationTraits;
-export const OrganizationApiTokenPropCamel = propertiesOf<OrganizationAccessTokenBase>();
-export const OrganizationApiTokenPropSnake = camelToSnakeCasePropertiesOf<OrganizationAccessTokenBase>();
+export const OrganizationAccessTokenPropCamel = propertiesOf<OrganizationAccessTokenBase>();
+export const OrganizationAccessTokenPropSnake = camelToSnakeCasePropertiesOf<OrganizationAccessTokenBase>();

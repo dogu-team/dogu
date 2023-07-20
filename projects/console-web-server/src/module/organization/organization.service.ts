@@ -1,9 +1,9 @@
 import {
   DestPropCamel,
+  OrganizationAccessTokenPropCamel,
+  OrganizationAccessTokenPropSnake,
   OrganizationAndUserAndOrganizationRolePropCamel,
   OrganizationAndUserAndOrganizationRolePropSnake,
-  OrganizationApiTokenPropCamel,
-  OrganizationApiTokenPropSnake,
   OrganizationBase,
   OrganizationPropCamel,
   OrganizationPropSnake,
@@ -612,8 +612,8 @@ export class OrganizationService {
     const orgApiToken = await this.dataSource //
       .getRepository(OrganizatioAccessToken)
       .createQueryBuilder('orgApiToken')
-      .innerJoinAndSelect(`orgApiToken.${OrganizationApiTokenPropCamel.token}`, 'token')
-      .where(`orgApiToken.${OrganizationApiTokenPropSnake.organization_id} = :organizationId`, { organizationId })
+      .innerJoinAndSelect(`orgApiToken.${OrganizationAccessTokenPropCamel.token}`, 'token')
+      .where(`orgApiToken.${OrganizationAccessTokenPropSnake.organization_id} = :organizationId`, { organizationId })
       .getOne();
 
     if (!orgApiToken) {
@@ -627,8 +627,8 @@ export class OrganizationService {
     const orgApiToken = await this.dataSource //
       .getRepository(OrganizatioAccessToken)
       .createQueryBuilder('orgApiToken')
-      .innerJoinAndSelect(`orgApiToken.${OrganizationApiTokenPropCamel.token}`, 'token')
-      .where(`orgApiToken.${OrganizationApiTokenPropSnake.organization_id} = :organizationId`, { organizationId })
+      .innerJoinAndSelect(`orgApiToken.${OrganizationAccessTokenPropCamel.token}`, 'token')
+      .where(`orgApiToken.${OrganizationAccessTokenPropSnake.organization_id} = :organizationId`, { organizationId })
       .getOne();
 
     if (!orgApiToken) {
@@ -667,8 +667,8 @@ export class OrganizationService {
     const orgApiToken = await this.dataSource //
       .getRepository(OrganizatioAccessToken)
       .createQueryBuilder('orgApiToken')
-      .innerJoinAndSelect(`orgApiToken.${OrganizationApiTokenPropCamel.token}`, 'token')
-      .where(`orgApiToken.${OrganizationApiTokenPropSnake.organization_id} = :organizationId`, { organizationId })
+      .innerJoinAndSelect(`orgApiToken.${OrganizationAccessTokenPropCamel.token}`, 'token')
+      .where(`orgApiToken.${OrganizationAccessTokenPropSnake.organization_id} = :organizationId`, { organizationId })
       .getOne();
 
     if (!orgApiToken) {

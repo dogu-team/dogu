@@ -1,4 +1,11 @@
-import { OrganizationAccessTokenBase, OrganizationApiTokenPropCamel, OrganizationApiTokenPropSnake, TokenPropCamel, TokenPropSnake, UserPropCamel } from '@dogu-private/console';
+import {
+  OrganizationAccessTokenBase,
+  OrganizationAccessTokenPropCamel,
+  OrganizationAccessTokenPropSnake,
+  TokenPropCamel,
+  TokenPropSnake,
+  UserPropCamel,
+} from '@dogu-private/console';
 import { OrganizationAccessTokenId, OrganizationId, ORGANIZATION_ACCESS_TOKEN_TABLE_NAME, TokenId, UserId } from '@dogu-private/types';
 import { Exclude } from 'class-transformer';
 import { BaseEntity, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryColumn } from 'typeorm';
@@ -9,37 +16,37 @@ import { User } from './user.entity';
 
 @Entity(ORGANIZATION_ACCESS_TOKEN_TABLE_NAME)
 export class OrganizatioAccessToken extends BaseEntity implements OrganizationAccessTokenBase {
-  @PrimaryColumn({ type: 'uuid', name: OrganizationApiTokenPropSnake.organization_access_token_id, nullable: false })
+  @PrimaryColumn({ type: 'uuid', name: OrganizationAccessTokenPropSnake.organization_access_token_id, nullable: false })
   organizationAccessTokenId!: OrganizationAccessTokenId;
 
-  @ColumnTemplate.RelationUuid(OrganizationApiTokenPropSnake.organization_id)
+  @ColumnTemplate.RelationUuid(OrganizationAccessTokenPropSnake.organization_id)
   organizationId!: OrganizationId;
 
   @Exclude()
-  @ColumnTemplate.RelationUuid(OrganizationApiTokenPropSnake.token_id)
+  @ColumnTemplate.RelationUuid(OrganizationAccessTokenPropSnake.token_id)
   tokenId!: TokenId;
 
-  @ColumnTemplate.RelationUuid(OrganizationApiTokenPropSnake.creator_id, true)
+  @ColumnTemplate.RelationUuid(OrganizationAccessTokenPropSnake.creator_id, true)
   creatorId!: UserId | null;
 
-  @ColumnTemplate.RelationUuid(OrganizationApiTokenPropSnake.revoker_id, true)
+  @ColumnTemplate.RelationUuid(OrganizationAccessTokenPropSnake.revoker_id, true)
   revokerId!: UserId | null;
 
-  @ColumnTemplate.CreateDate(OrganizationApiTokenPropSnake.created_at)
+  @ColumnTemplate.CreateDate(OrganizationAccessTokenPropSnake.created_at)
   createdAt!: Date;
 
-  @ColumnTemplate.UpdateDate(OrganizationApiTokenPropSnake.updated_at)
+  @ColumnTemplate.UpdateDate(OrganizationAccessTokenPropSnake.updated_at)
   updatedAt!: Date;
 
-  @ColumnTemplate.DeleteDate(OrganizationApiTokenPropSnake.deleted_at)
+  @ColumnTemplate.DeleteDate(OrganizationAccessTokenPropSnake.deleted_at)
   deletedAt!: Date | null;
 
   @ManyToOne(() => User, { createForeignKeyConstraints: false })
-  @JoinColumn({ name: OrganizationApiTokenPropSnake.creator_id, referencedColumnName: UserPropCamel.userId })
+  @JoinColumn({ name: OrganizationAccessTokenPropSnake.creator_id, referencedColumnName: UserPropCamel.userId })
   creator?: User;
 
   @ManyToOne(() => User, { createForeignKeyConstraints: false })
-  @JoinColumn({ name: OrganizationApiTokenPropSnake.revoker_id, referencedColumnName: UserPropCamel.userId })
+  @JoinColumn({ name: OrganizationAccessTokenPropSnake.revoker_id, referencedColumnName: UserPropCamel.userId })
   revoker?: User;
 
   @Exclude()
@@ -49,8 +56,8 @@ export class OrganizatioAccessToken extends BaseEntity implements OrganizationAc
 
   @OneToOne(() => Organization, { createForeignKeyConstraints: false })
   @JoinColumn({
-    name: OrganizationApiTokenPropSnake.organization_id, //
-    referencedColumnName: OrganizationApiTokenPropCamel.organizationId,
+    name: OrganizationAccessTokenPropSnake.organization_id, //
+    referencedColumnName: OrganizationAccessTokenPropCamel.organizationId,
   })
   organization?: Organization;
 }
