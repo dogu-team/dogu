@@ -13,7 +13,7 @@ class DoguSdk:
     def __init__(self, config: Config) -> None:
         self._config = config
         self._dogu_config = DoguConfigFactory().create()
-        client, = self._config.hook.pytest_dogu_create_client()
+        (client,) = self._config.hook.pytest_dogu_create_client()
         self.client: DoguClient = client
         self.client.on_setup(self._dogu_config)
         self._routine_dest_reporter = RoutineDestReporterFactory(
