@@ -20,6 +20,7 @@ import compressing from 'compressing';
 import fs from 'fs';
 import path from 'path';
 import { Observable } from 'rxjs';
+import semver from 'semver';
 import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
 import { AppiumService } from '../../appium/appium.service';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
@@ -102,6 +103,11 @@ export class IosChannel implements DeviceChannel {
 
     const { serial, deviceAgentDevicePort, deviceAgentDeviceSecondPort, deviceAgentDeviceThirdPort } = param;
     const platform = Platform.PLATFORM_IOS;
+
+    const version = semver.coerce(await IosSystemInfoService.gerVersion(serial));
+    if (version && semver.lt(version, '14.0.0')) {
+      throw new Error(`iOS version must be 14 or higher. current version: ${version}`);
+    }
 
     if (!(await IosDeviceAgentProcess.isReady(serial))) {
       throw new Error(
