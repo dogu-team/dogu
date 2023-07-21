@@ -20,10 +20,16 @@ import { MessageContext, NullMessagePostProcessor } from '../message/message.typ
 import { optionsConfig } from '../options-config.instance';
 import { OnStepCompletedEvent, OnStepInProgressEvent, OnStepStartedEvent } from '../step/step.events';
 import { StepMessageContext } from '../step/step.types';
+import { RoutineWorkspace } from './routine.workspace';
 
 @Injectable()
 export class DeviceJobStepProcessor {
-  constructor(private readonly logger: DoguLogger, private readonly eventEmitter: EventEmitter2, private readonly deviceJobContextRegistry: DeviceJobContextRegistry) {}
+  constructor(
+    private readonly logger: DoguLogger,
+    private readonly eventEmitter: EventEmitter2,
+    private readonly deviceJobContextRegistry: DeviceJobContextRegistry,
+    private readonly rootWorkspace: RoutineWorkspace,
+  ) {}
 
   async onRunDeviceJob(param: RunDeviceJob, context: MessageContext): Promise<void> {
     const { routineDeviceJobId, record, runSteps } = param;
@@ -138,17 +144,20 @@ export class DeviceJobStepProcessor {
     const { nodeBin, gitLibexecGitCore } = pathMap.common;
     const organizationWorkspacePath = HostPaths.organizationWorkspacePath(rootWorkspacePath, organizationId);
     await fs.promises.mkdir(organizationWorkspacePath, { recursive: true });
-    const deviceProjectWorkspacePath = HostPaths.deviceProjectWorkspacePath(deviceWorkspacePath, projectId);
-    await fs.promises.mkdir(deviceProjectWorkspacePath, { recursive: true });
+
+    const doguRoutineWorkspacePath =
+      (await this.rootWorkspace.findRoutineWorkspace(rootWorkspacePath, { projectId, deviceId })) ??
+      (await this.rootWorkspace.createRoutineWorkspacePath(rootWorkspacePath, { projectId, deviceId }));
+
     const pathOld = environmentVariableReplacer.stackProvider.export().PATH;
     const stepContextEnv: StepContextEnv = {
       DOGU_DEVICE_PLATFORM: platformTypeFromPlatform(platform),
-      DOGU_DEVICE_PROJECT_WORKSPACE_PATH: deviceProjectWorkspacePath,
       DOGU_DEVICE_SERIAL: serial,
       DOGU_DEVICE_ID: deviceId,
       DOGU_DEVICE_SERVER_PORT: deviceServerHostPort[1],
       DOGU_DEVICE_JOB_ID: `${routineDeviceJobId}`,
       DOGU_DEVICE_WORKSPACE_PATH: deviceWorkspacePath,
+      DOGU_ROUTINE_WORKSPACE_PATH: doguRoutineWorkspacePath,
       DOGU_ORGANIZATION_ID: organizationId,
       DOGU_ORGANIZATION_WORKSPACE_PATH: organizationWorkspacePath,
       DOGU_PROJECT_ID: projectId,
@@ -164,9 +173,7 @@ export class DeviceJobStepProcessor {
     };
     const stepContextEnvReplaced = await environmentVariableReplacer.replaceEnv(stepContextEnv);
     environmentVariableReplacer.stackProvider.push(new EnvironmentVariableReplacementProvider(stepContextEnvReplaced));
-    const deviceProjectGitPath = HostPaths.deviceProjectGitPath(deviceProjectWorkspacePath);
-    this.logger.info(`Step ${routineStepId} working path: ${deviceProjectGitPath}`);
-    await fs.promises.mkdir(deviceProjectGitPath, { recursive: true });
+    this.logger.info(`Step ${routineStepId} working path: ${doguRoutineWorkspacePath}`);
     const stepMessageContext = new StepMessageContext(
       info,
       router,
@@ -213,7 +220,7 @@ export class DeviceJobStepProcessor {
           });
         },
       },
-      deviceProjectGitPath,
+      doguRoutineWorkspacePath,
     );
     const result = await router.route<RunStepValue, ErrorResult>(value, stepMessageContext).catch((error) => {
       const errorified = errorify(error);

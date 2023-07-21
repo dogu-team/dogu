@@ -11,7 +11,7 @@ export class ActionKitEnv
       | 'DOGU_DEVICE_ID'
       | 'DOGU_DEVICE_PLATFORM'
       | 'DOGU_DEVICE_WORKSPACE_PATH'
-      | 'DOGU_DEVICE_PROJECT_WORKSPACE_PATH'
+      | 'DOGU_ROUTINE_WORKSPACE_PATH'
       | 'DOGU_DEVICE_SERIAL'
       | 'DOGU_DEVICE_SERVER_PORT'
       | 'DOGU_HOST_PLATFORM'
@@ -79,11 +79,11 @@ export class ActionKitEnv
   DOGU_DEVICE_WORKSPACE_PATH!: string;
 
   /**
-   * @requires process.env.DOGU_DEVICE_PROJECT_WORKSPACE_PATH
+   * @requires process.env.DOGU_ROUTINE_WORKSPACE_PATH
    * @default ''
    */
   @IsFilledString()
-  DOGU_DEVICE_PROJECT_WORKSPACE_PATH!: string;
+  DOGU_ROUTINE_WORKSPACE_PATH!: string;
 
   /**
    * @requires process.env.DOGU_HOST_PLATFORM

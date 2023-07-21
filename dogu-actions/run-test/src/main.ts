@@ -1,16 +1,16 @@
-import { ActionKit, HostPaths, OptionsConfig } from '@dogu-tech/action-kit';
+import { ActionKit, OptionsConfig } from '@dogu-tech/action-kit';
 import { spawnSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 
 ActionKit.run(async ({ options, logger, input, deviceHostClient }) => {
-  const { DOGU_LOG_LEVEL, DOGU_DEVICE_PROJECT_WORKSPACE_PATH } = options;
+  const { DOGU_LOG_LEVEL, DOGU_ROUTINE_WORKSPACE_PATH } = options;
   logger.info('log level', { DOGU_LOG_LEVEL });
   const script = input.get<string>('script');
   const pathMap = await deviceHostClient.getPathMap();
   const { yarn } = pathMap.common;
   let yarnPath = yarn;
-  let userProjectPath = path.resolve(HostPaths.deviceProjectGitPath(DOGU_DEVICE_PROJECT_WORKSPACE_PATH));
+  let userProjectPath = DOGU_ROUTINE_WORKSPACE_PATH;
   const optionsConfig = await OptionsConfig.load();
   const useLocalUserProject = optionsConfig.get('localUserProject.use', false);
   if (useLocalUserProject) {
