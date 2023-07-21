@@ -16,7 +16,7 @@ const RemoteDestJob = ({ dest }: Props) => {
 
   return (
     <>
-      <DestJob
+      <StyledDestJob
         state={dest.state}
         name={dest.name}
         startedAt={dest.inProgressAt}
@@ -57,4 +57,10 @@ const ChildrenWrapper = styled.div`
   margin-left: 1rem;
   padding-left: 1rem;
   border-left: 2px solid ${(props) => props.theme.main.colors.gray4};
+`;
+
+const StyledDestJob = styled(DestJob)`
+  &:hover {
+    background-color: ${(props) => props.theme.colorPrimary}15;
+  }
 `;

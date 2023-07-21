@@ -1,14 +1,14 @@
 import { CalendarOutlined } from '@ant-design/icons';
 import { RemoteBase, isRemoteRunning } from '@dogu-private/console';
-import { CREATOR_TYPE, OrganizationId, REMOTE_DEVICE_JOB_STATE } from '@dogu-private/types';
+import { OrganizationId, REMOTE_DEVICE_JOB_STATE } from '@dogu-private/types';
 import { List, Tag } from 'antd';
 import Link from 'next/link';
 import styled from 'styled-components';
 
-import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../styles/box';
+import { flexRowBaseStyle } from '../../styles/box';
 import { listActiveNameStyle } from '../../styles/text';
 import { localizeDate } from '../../utils/date';
-import MenuButton from '../buttons/MenuButton';
+// import MenuButton from '../buttons/MenuButton';
 import PipelineCreatedTimer from '../pipelines/PipelineCreatedTimer';
 import RemoteStateSummaryGraph from './RemoteStateSummaryGraph';
 import DoguOptions from './DoguOptions';
@@ -60,7 +60,7 @@ const RemoteItem = ({ remote, organizationId }: Props) => {
         </FlexRow>
       </StretchedWrapper>
 
-      <div style={{ flex: 1, marginLeft: '2rem' }}>
+      <div style={{ flex: 1, marginRight: '1rem' }}>
         <Tag>{`${remote.doguOptions.runsOn}`}</Tag>
       </div>
 
@@ -69,7 +69,8 @@ const RemoteItem = ({ remote, organizationId }: Props) => {
           <CalendarOutlined style={{ fontSize: '1rem', marginRight: '.2rem' }} />
           <PipelineCreatedTimer createdAt={localizeDate(new Date(remote.createdAt))} />
         </TimerBox>
-        <MenuButton menu={{ items: [] }} />
+        <div />
+        {/* <MenuButton menu={{ items: [] }} /> */}
       </InfoBox>
     </Box>
   );
@@ -104,5 +105,5 @@ const InfoBox = styled.div`
 
 const TimerBox = styled.div`
   color: ${(props) => props.theme.colors.gray6};
-  margin-right: 1.5rem;
+  /* margin-right: 1.5rem; */
 `;

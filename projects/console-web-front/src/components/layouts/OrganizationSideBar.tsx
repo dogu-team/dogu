@@ -359,5 +359,5 @@ const StyledBox = styled.div`
   height: 100%;
   max-height: 100vh;
   display: flex;
-  padding-bottom: 4rem;
+  padding-bottom: 3rem;
 `;
