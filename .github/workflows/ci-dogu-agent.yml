@@ -3,9 +3,9 @@ name: 🔄ci-dogu-agent
 on:
   workflow_dispatch:
     inputs:
-      runners:
+      exclude_runner:
         type: string
-        description: 'exclude_runner (ex. windows-2019 or macos-latest)'
+        description: 'exclude to build (ex. windows-2019 or macos-latest)'
         default: 'macos-latest'
 
   push:
