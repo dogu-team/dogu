@@ -37,11 +37,6 @@ jobs:
       matrix:
         runner: [windows-2019, macos-latest]
         arch: [arm64, x64]
-        include:
-          - runner: windows-2019
-            extension: exe
-          - runner: macos-latest
-            extension: dmg
         exclude:
           - runner: ${{ github.event.inputs.exclude_runner }}
           - runner: windows-2019
@@ -252,13 +247,21 @@ jobs:
         env:
           DOGU_BUILD_ARCH: ${{ matrix.arch }}
 
-      - name: Upload dogu-agent
-        if: ${{ success() }}
+      - name: Upload dogu-agent windows
+        if: ${{ success() }} && runner.os == 'Windows'
         uses: actions/upload-artifact@v3
         with:
           name: 'dogu-agent-${{ runner.os }}-${{ matrix.arch }}'
           path: |
-            ./nm-space/projects/dost/dist/*.${{ matrix.extension }}
+            ./nm-space/projects/dost/dist/*.exe
+
+      - name: Upload dogu-agent mac
+        if: ${{ success() }} && runner.os == 'macOS'
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'dogu-agent-${{ runner.os }}-${{ matrix.arch }}'
+          path: |
+            ./nm-space/projects/dost/dist/*.dmg
 
   send-slack:
     runs-on: ubuntu-latest
