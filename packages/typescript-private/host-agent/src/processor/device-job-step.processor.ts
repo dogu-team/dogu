@@ -142,7 +142,7 @@ export class DeviceJobStepProcessor {
     await fs.promises.mkdir(organizationWorkspacePath, { recursive: true });
     const deviceProjectWorkspacePath = HostPaths.deviceProjectWorkspacePath(deviceWorkspacePath, projectId);
     await fs.promises.mkdir(deviceProjectWorkspacePath, { recursive: true });
-    const export1 = environmentVariableReplacer.stackProvider.export();
+    const export1 = environmentVariableReplacer.stackProvider.export(this.logger);
     const pathOld = environmentVariableReplacer.stackProvider.export().PATH;
     this.logger.verbose(`envvvv 1 `, export1);
     const stepContextEnv: StepContextEnv = {
@@ -169,7 +169,7 @@ export class DeviceJobStepProcessor {
     const stepContextEnvReplaced = await environmentVariableReplacer.replaceEnv(stepContextEnv);
     environmentVariableReplacer.stackProvider.push(new EnvironmentVariableReplacementProvider(stepContextEnvReplaced));
 
-    this.logger.verbose(`envvvv 2 `, environmentVariableReplacer.stackProvider.export());
+    this.logger.verbose(`envvvv 2 `, environmentVariableReplacer.stackProvider.export(this.logger));
 
     const deviceProjectGitPath = HostPaths.deviceProjectGitPath(deviceProjectWorkspacePath);
     this.logger.info(`Step ${routineStepId} working path: ${deviceProjectGitPath}`);
