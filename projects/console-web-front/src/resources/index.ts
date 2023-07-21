@@ -20,6 +20,7 @@ const resources = {
     webdriverio: '/resources/icons/frameworks/webdriverio.svg',
     jest: '/resources/icons/frameworks/jest.svg',
     pytest: '/resources/icons/frameworks/pytest.svg',
+    selenium: '/resources/icons/frameworks/selenium.svg',
   },
   images: {},
 };

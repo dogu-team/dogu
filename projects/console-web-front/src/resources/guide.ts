@@ -6,6 +6,7 @@ export const SAMPLE_GIT_URL = 'https://github.com/dogu-team/dogu-examples.git';
 export enum GuideSupportSdk {
   APPIUM = 'appium',
   WEBDRIVERIO = 'webdriverio',
+  SELENIUM = 'selenium',
   GAMIUM = 'gamium',
 }
 
@@ -37,6 +38,7 @@ export enum GuideSupportFramework {
 export const guideSupportSdkText: { [key in GuideSupportSdk]: string } = {
   [GuideSupportSdk.APPIUM]: 'Appium',
   [GuideSupportSdk.WEBDRIVERIO]: 'WebdriverIO',
+  [GuideSupportSdk.SELENIUM]: 'Selenium',
   [GuideSupportSdk.GAMIUM]: 'Gamium',
 };
 
@@ -137,38 +139,38 @@ ${
       language: GuideSupportLanguage.PYTHON,
       platform: GuideSupportPlatform.ANDROID,
       target: GuideSupportTarget.WEB,
-      cd: 'cd dogu-examples/appium/python',
+      cd: 'cd dogu-examples/appium/python/pytest',
       installDependencies: 'pip install -r requirements.txt',
-      runCommand: `python3 android/chrome.py`,
-      sampleFilePath: 'android/chrome.py',
+      runCommand: `pytest android/test_web.py`,
+      sampleFilePath: 'android/test_web.py',
     },
     {
       framework: GuideSupportFramework.PYTEST,
       language: GuideSupportLanguage.PYTHON,
       platform: GuideSupportPlatform.IOS,
       target: GuideSupportTarget.WEB,
-      cd: 'cd dogu-examples/appium/python',
+      cd: 'cd dogu-examples/appium/python/pytest',
       installDependencies: 'pip install -r requirements.txt',
-      runCommand: `python3 ios/chrome.py`,
-      sampleFilePath: 'ios/chrome.py',
+      runCommand: `pytest ios/test_web.py`,
+      sampleFilePath: 'ios/test_web.py',
     },
     {
       framework: GuideSupportFramework.PYTEST,
       language: GuideSupportLanguage.PYTHON,
       platform: GuideSupportPlatform.ANDROID,
       target: GuideSupportTarget.APP,
-      cd: 'cd dogu-examples/appium/python',
+      cd: 'cd dogu-examples/appium/python/pytest',
       installDependencies: 'pip install -r requirements.txt',
       hasSampleApp: true,
-      runCommand: `python3 android/app.py`,
-      sampleFilePath: 'android/app.py',
+      runCommand: `pytest android/test_app.py`,
+      sampleFilePath: 'android/test_app.py',
     },
     {
       framework: GuideSupportFramework.PYTEST,
       language: GuideSupportLanguage.PYTHON,
       platform: GuideSupportPlatform.IOS,
       target: GuideSupportTarget.APP,
-      cd: 'cd dogu-examples/appium/python',
+      cd: 'cd dogu-examples/appium/python/pytest',
       installDependencies: 'pip install -r requirements.txt',
       hasSampleApp: false,
       runCommand: `python3 ios/app.py`,
@@ -280,6 +282,61 @@ ${
   ],
 };
 
+export const seleniumData: Guide = {
+  supportFrameworks: {
+    [GuideSupportLanguage.PYTHON]: [GuideSupportFramework.PYTEST],
+  },
+  platformAndTarget: {
+    [GuideSupportPlatform.WINDOWS]: [GuideSupportTarget.WEB],
+    [GuideSupportPlatform.MACOS]: [GuideSupportTarget.WEB],
+  },
+  defaultOptions: {
+    framework: GuideSupportFramework.PYTEST,
+    platform: GuideSupportPlatform.WINDOWS,
+    target: GuideSupportTarget.WEB,
+  },
+  generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
+    let orgApiToken: string;
+
+    try {
+      orgApiToken = await getApiToken(orgId);
+    } catch (e) {
+      orgApiToken = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
+    }
+
+    return `"version": 1,
+"apiBaseUrl": "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}",
+"organizationId": "${orgId}",
+"projectId": "${projectId}",
+"token": "${orgApiToken}",
+"runsOn": "${platform}",  // or another device tag
+"browserName": "chrome",
+`;
+  },
+  guides: [
+    {
+      framework: GuideSupportFramework.PYTEST,
+      language: GuideSupportLanguage.PYTHON,
+      platform: GuideSupportPlatform.WINDOWS,
+      target: GuideSupportTarget.WEB,
+      cd: 'cd dogu-examples/selenium/python/pytest',
+      installDependencies: 'pip install -r requirements.txt',
+      runCommand: `pytest desktop/test_web.py`,
+      sampleFilePath: 'desktop/test_web.py',
+    },
+    {
+      framework: GuideSupportFramework.PYTEST,
+      language: GuideSupportLanguage.PYTHON,
+      platform: GuideSupportPlatform.MACOS,
+      target: GuideSupportTarget.WEB,
+      cd: 'cd dogu-examples/selenium/python/pytest',
+      installDependencies: 'pip install -r requirements.txt',
+      runCommand: `pytest desktop/test_web.py`,
+      sampleFilePath: 'desktop/test_web.py',
+    },
+  ],
+};
+
 export const gamiumGuideData: Guide = {
   supportFrameworks: {
     [GuideSupportLanguage.TYPESCRIPT]: [GuideSupportFramework.TYPESCRIPT],
@@ -302,5 +359,6 @@ export const gamiumGuideData: Guide = {
 export const tutorialData: { [key in GuideSupportSdk]: Guide } = {
   [GuideSupportSdk.APPIUM]: appiumGuideData,
   [GuideSupportSdk.WEBDRIVERIO]: webdriverioGuideData,
+  [GuideSupportSdk.SELENIUM]: seleniumData,
   [GuideSupportSdk.GAMIUM]: gamiumGuideData,
 };

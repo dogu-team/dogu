@@ -16,6 +16,8 @@ const SdkIcon = ({ sdk, size }: Props) => {
       return <Image src={resources.icons.appium} width={size} height={size} alt="appium" />;
     case GuideSupportSdk.GAMIUM:
       return <Image src={resources.icons.gamium} width={size} height={size} alt="gamium" />;
+    case GuideSupportSdk.SELENIUM:
+      return <Image src={resources.icons.selenium} width={size} height={size} alt="selenium" />;
     default:
       return null;
   }

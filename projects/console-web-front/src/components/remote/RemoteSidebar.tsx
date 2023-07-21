@@ -61,10 +61,9 @@ const RemoteSidebar = ({ remote }: Props) => {
                     <RemoteJobStateIcon state={item.state} />
                   </div>
                   <div style={{ marginTop: '.25rem' }}>
-                    <FlexRow style={{ fontSize: '.85rem', fontWeight: '500' }}>
+                    <FlexRow style={{ alignItems: 'flex-start' }}>
                       <PlatformIcon platform={item.device.platform} />
-                      &nbsp;
-                      {item.device.name}
+                      <p style={{ fontSize: '.85rem', fontWeight: '500', marginLeft: '.25rem' }}>{item.device.name}</p>
                     </FlexRow>
                     <div style={{ marginTop: '.25rem' }}>
                       <div style={{ fontSize: '.75rem' }}>{`${item.device.modelName} (${item.device.model})`}</div>
