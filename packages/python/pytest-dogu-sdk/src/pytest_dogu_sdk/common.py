@@ -7,6 +7,8 @@ from dacite import Config, from_dict
 from pytest import Item, Session, TestReport
 import requests
 
+from .dogu_config import DoguConfig
+
 
 T = TypeVar("T")
 
@@ -117,4 +119,24 @@ class NullDestReporter(PyTestHandler):
         pass
 
     def on_pytest_runtest_logreport(self, report: TestReport) -> None:
+        pass
+
+
+class DoguClient(ABC):
+    @abstractmethod
+    def on_setup(self, dogu_config: DoguConfig):
+        pass
+
+    @property
+    @abstractmethod
+    def dogu_results(self) -> Dict[str, Any]:
+        pass
+
+    @property
+    @abstractmethod
+    def instance(self) -> T:
+        pass
+
+    @abstractmethod
+    def on_teardown(self):
         pass

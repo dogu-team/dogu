@@ -1,10 +1,11 @@
-from pytest import Config, FixtureRequest, fixture
+from pytest import Config, FixtureRequest, PytestPluginManager, fixture
 
 from .dogu_sdk import DoguSdk
+from . import dogu_hooks
 
 
 def pytest_configure(config: Config):
-    dogu_sdk = DoguSdk()
+    dogu_sdk = DoguSdk(config)
     config.pluginmanager.register(dogu_sdk, DoguSdk.name)
 
 
@@ -12,12 +13,16 @@ def pytest_unconfigure(config: Config):
     dogu_sdk = config.pluginmanager.get_plugin(DoguSdk.name)
     if dogu_sdk:
         if isinstance(dogu_sdk, DoguSdk):
-            dogu_sdk.driver.quit()
+            dogu_sdk.on_teardown()
         config.pluginmanager.unregister(dogu_sdk)
 
 
+def pytest_addhooks(pluginmanager: PytestPluginManager):
+    pluginmanager.add_hookspecs(dogu_hooks)
+
+
 @fixture(scope="session")
-def driver(request: FixtureRequest):
+def dogu_client(request: FixtureRequest):
     dogu_sdk = request.config.pluginmanager.get_plugin(DoguSdk.name)
     if dogu_sdk is None:
         raise Exception(
@@ -27,4 +32,4 @@ def driver(request: FixtureRequest):
     if not isinstance(dogu_sdk, DoguSdk):
         raise Exception("dogu_sdk is not an instance of DoguSdk")
 
-    return dogu_sdk.driver
+    return dogu_sdk.client

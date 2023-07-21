@@ -8,17 +8,17 @@ authors = ["Dogu Technologies"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-requests = "^2.31.0"
-dacite = "^1.8.1"
-pyjson5 = "^1.6.3"
-jsonschema = "^4.18.4"
+requests = "2.31.0"
+dacite = "1.8.1"
+pyjson5 = "1.6.3"
+jsonschema = "4.18.4"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.3.2"
-setuptools = "^68.0.0"
-black = "^23.3.0"
-pylint = "^2.17.4"
-pytest-selenium = "^4.0.1"
+pytest = "7.3.2"
+black = "23.3.0"
+pylint = "2.17.4"
+selenium = "^4.10.0"
+appium-python-client = "^2.11.1"
 
 [build-system]
 requires = ["poetry-core"]
@@ -38,6 +38,3 @@ disable = """
     too-few-public-methods,
     unused-argument,
 """
-
-[tool.pylint.BASIC]
-good-names = "e"

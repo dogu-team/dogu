@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import Dict, List, Optional
 
 from pytest import Config, Item, Session, StashKey, TestReport
-from selenium.webdriver.remote.webdriver import WebDriver
 
 from .dogu_config import DoguConfig
 from .remote_dest_report_client import (
@@ -12,6 +11,7 @@ from .remote_dest_report_client import (
     RemoteDestReportClient,
 )
 from .common import (
+    DoguClient,
     PyTestHandler,
     DestState,
     DestType,
@@ -237,28 +237,23 @@ class RemoteDestReporter(PyTestHandler):
 
 
 class RemoteDestReporterFactory:
-    def __init__(self, dogu_config: DoguConfig, driver: WebDriver):
+    def __init__(self, dogu_config: DoguConfig, client: DoguClient):
         self._dogu_config = dogu_config
-        self._driver = driver
+        self._client = client
 
     def create(self) -> PyTestHandler:
-        dogu_results = self._driver.capabilities.get("dogu:results")
-        if dogu_results is None:
-            print("[dogu] dogu:results is not found")
+        try:
+            dogu_results = self._client.dogu_results
+            remote_device_job_id = dogu_results["remoteDeviceJobId"]
+            options = RemoteDestOptions(
+                api_base_url=self._dogu_config.api_base_url,
+                project_id=self._dogu_config.project_id,
+                token=self._dogu_config.token,
+                remote_device_job_id=remote_device_job_id,
+            )
+            return RemoteDestReporter(options)
+        except Exception as exception:
+            print(
+                f"[dogu] failed to create RemoteDestReporter. fallback to NullDestReporter. error: {exception}"
+            )
             return NullDestReporter()
-        if not isinstance(dogu_results, dict):
-            print("[dogu] dogu:results is not dict")
-            return NullDestReporter()
-
-        remote_device_job_id = dogu_results.get("remoteDeviceJobId")
-        if remote_device_job_id is None:
-            print("[dogu] remoteDeviceJobId is not found")
-            return NullDestReporter()
-
-        options = RemoteDestOptions(
-            api_base_url=self._dogu_config.api_base_url,
-            project_id=self._dogu_config.project_id,
-            token=self._dogu_config.token,
-            remote_device_job_id=remote_device_job_id,
-        )
-        return RemoteDestReporter(options)
