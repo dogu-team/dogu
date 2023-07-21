@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
+import Cookies from 'universal-cookie';
+import { USER_ID_COOKIE_NAME } from '@dogu-private/types';
 
 import { seleniumData, GuideProps, GuideSupportLanguage, SAMPLE_GIT_URL } from '../../resources/guide';
 import { flexRowBaseStyle } from '../../styles/box';
@@ -44,6 +46,7 @@ const SeleniumGuide = ({ organizationId, projectId }: GuideProps) => {
         framework,
         platform,
         target,
+        userId: new Cookies().get(USER_ID_COOKIE_NAME),
       });
       setCapabilityCode(code);
     };

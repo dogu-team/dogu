@@ -1,5 +1,6 @@
 import { OrganizationId, ProjectId } from '@dogu-private/types';
-import { getOrganizationAccessToken } from '../api/organization';
+
+import { getPersonalAccessToken } from '../api/user';
 
 export const SAMPLE_GIT_URL = 'https://github.com/dogu-team/dogu-examples.git';
 
@@ -67,6 +68,7 @@ export type GenerateCapabilitiesCodeParams = {
   platform: GuideSupportPlatform;
   orgId: string;
   projectId: string;
+  userId: string;
 };
 
 export interface GuideDetailData {
@@ -111,13 +113,13 @@ export const appiumGuideData: Guide = {
     platform: GuideSupportPlatform.ANDROID,
     target: GuideSupportTarget.WEB,
   },
-  generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
-    let orgApiToken: string;
+  generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId, userId }: GenerateCapabilitiesCodeParams) => {
+    let pat: string;
 
     try {
-      orgApiToken = await getOrganizationAccessToken(orgId);
+      pat = await getPersonalAccessToken(userId);
     } catch (e) {
-      orgApiToken = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
+      pat = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
     }
 
     return `{
@@ -125,7 +127,7 @@ export const appiumGuideData: Guide = {
   "apiBaseUrl": "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}",
   "organizationId": "${orgId}",
   "projectId": "${projectId}",
-  "token": "${orgApiToken}",
+  "token": "${pat}", // see https://docs.dogutech.io/api...
   "runsOn": "${platform}",  // or another device tag
   ${
     target === GuideSupportTarget.WEB
@@ -196,13 +198,13 @@ export const webdriverioGuideData: Guide = {
     platform: GuideSupportPlatform.ANDROID,
     target: GuideSupportTarget.WEB,
   },
-  generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
-    let orgApiToken: string;
+  generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId, userId }: GenerateCapabilitiesCodeParams) => {
+    let pat: string;
 
     try {
-      orgApiToken = await getOrganizationAccessToken(orgId);
+      pat = await getPersonalAccessToken(userId);
     } catch (e) {
-      orgApiToken = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
+      pat = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
     }
 
     return `{
@@ -210,7 +212,7 @@ export const webdriverioGuideData: Guide = {
   "apiBaseUrl": "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}",
   "organizationId": "${orgId}",
   "projectId": "${projectId}",
-  "token": "${orgApiToken}",
+  "token": "${pat}", // see https://docs.dogutech.io/api...
   "runsOn": "${platform}",  // or another device tag
   ${
     target === GuideSupportTarget.WEB
@@ -299,13 +301,13 @@ export const seleniumData: Guide = {
     platform: GuideSupportPlatform.WINDOWS,
     target: GuideSupportTarget.WEB,
   },
-  generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
-    let orgApiToken: string;
+  generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId, userId }: GenerateCapabilitiesCodeParams) => {
+    let pat: string;
 
     try {
-      orgApiToken = await getOrganizationAccessToken(orgId);
+      pat = await getPersonalAccessToken(userId);
     } catch (e) {
-      orgApiToken = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
+      pat = 'INSERT_YOUR_TOKEN';
     }
 
     return `{
@@ -313,7 +315,7 @@ export const seleniumData: Guide = {
   "apiBaseUrl": "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}",
   "organizationId": "${orgId}",
   "projectId": "${projectId}",
-  "token": "${orgApiToken}",
+  "token": "${pat}", // see https://docs.dogutech.io/api...
   "runsOn": "${platform}",  // or another device tag
   "browserName": "chrome",
 }

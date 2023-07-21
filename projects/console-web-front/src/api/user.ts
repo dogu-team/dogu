@@ -77,6 +77,11 @@ export const updateUserTutorial = async (userId: UserId, dto: UpdateTutorialDtoB
   return await api.patch<void>(`/users/${userId}/tutorial`, dto);
 };
 
+export const getPersonalAccessToken = async (userId: UserId) => {
+  const { data } = await api.get<string>(`/users/${userId}/access-token`);
+  return data;
+};
+
 export const regeneratePersonalAccessToken = async (userId: UserId) => {
   const { data } = await api.post<string>(`/users/${userId}/access-token`);
   return data;

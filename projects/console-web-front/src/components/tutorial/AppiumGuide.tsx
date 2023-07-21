@@ -2,6 +2,8 @@ import { Alert, Button } from 'antd';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Cookies from 'universal-cookie';
+import { USER_ID_COOKIE_NAME } from '@dogu-private/types';
 
 import { appiumGuideData, GuideProps, GuideSupportLanguage, GuideSupportPlatform, GuideSupportTarget, SAMPLE_GIT_URL } from '../../resources/guide';
 import { flexRowBaseStyle } from '../../styles/box';
@@ -51,6 +53,7 @@ const AppiumGuide = ({ organizationId, projectId }: GuideProps) => {
         framework,
         platform,
         target,
+        userId: new Cookies().get(USER_ID_COOKIE_NAME),
       });
       setCapabilityCode(code);
     };

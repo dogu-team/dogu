@@ -1,6 +1,8 @@
 import { Alert } from 'antd';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import Cookies from 'universal-cookie';
+import { USER_ID_COOKIE_NAME } from '@dogu-private/types';
 
 import DoneStep from './DoneStep';
 import GuideAnchor from './GuideAnchor';
@@ -49,6 +51,7 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
         framework,
         platform,
         target,
+        userId: new Cookies().get(USER_ID_COOKIE_NAME),
       });
       setCapabilityCode(code);
     };
