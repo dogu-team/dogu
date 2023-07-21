@@ -14,11 +14,13 @@ interface Props {
   endedAt: Date | null;
   onClick?: () => void;
   icon?: React.ReactNode;
+  style?: React.CSSProperties;
+  className?: string;
 }
 
-const DestJob = ({ state, name, startedAt, endedAt, onClick, icon }: Props) => {
+const DestJob = ({ state, name, startedAt, endedAt, onClick, icon, ...props }: Props) => {
   return (
-    <Box onClick={onClick}>
+    <Box onClick={onClick} {...props}>
       <FlexRowSpaceBetween>
         <FlexRow>
           {icon}

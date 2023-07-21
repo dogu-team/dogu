@@ -32,7 +32,7 @@ const DoguOptions = ({ doguOptions }: Props) => {
 
   return (
     <Flex>
-      {getIcon()}&nbsp;
+      <div style={{ marginRight: '.25rem', flexShrink: 0 }}>{getIcon()}</div>
       {!!browserName ? (
         <p>
           <b style={{ textTransform: 'capitalize' }}>{browserName}</b>,&nbsp;

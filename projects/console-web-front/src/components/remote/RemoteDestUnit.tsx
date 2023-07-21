@@ -1,4 +1,5 @@
 import { RemoteDestBase } from '@dogu-private/console';
+import styled from 'styled-components';
 
 import DestUnit from '../reports/DestUnit';
 
@@ -7,7 +8,12 @@ interface Props {
 }
 
 const RemoteDestUnit = ({ dest }: Props) => {
-  return <DestUnit state={dest.state} name={dest.name} startedAt={dest.inProgressAt} endedAt={dest.completedAt} />;
+  return <StyledDestUnit state={dest.state} name={dest.name} startedAt={dest.inProgressAt} endedAt={dest.completedAt} />;
 };
 
 export default RemoteDestUnit;
+
+const StyledDestUnit = styled(DestUnit)`
+  cursor: default;
+  border: 1px solid ${(props) => props.theme.main.colors.gray6};
+`;

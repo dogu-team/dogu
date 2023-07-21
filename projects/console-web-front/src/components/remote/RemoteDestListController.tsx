@@ -1,9 +1,11 @@
-import { LoadingOutlined } from '@ant-design/icons';
+import { DatabaseOutlined, LoadingOutlined, MehOutlined } from '@ant-design/icons';
 import { RemoteDestBase } from '@dogu-private/console';
 import { DEST_TYPE, OrganizationId, ProjectId, RemoteDeviceJobId } from '@dogu-private/types';
+import styled from 'styled-components';
 import useSWR from 'swr';
 
-import { swrAuthFetcher } from '../../api';
+import { swrAuthFetcher } from '../../api/index';
+import { flexRowCenteredStyle } from '../../styles/box';
 import RemoteDestJob from './RemoteDestJob';
 import RemoteDestUnit from './RemoteDestUnit';
 
@@ -31,6 +33,15 @@ const RemoteDestListController = ({ organizationId, projectId, remoteDeviceJobId
     return <div>Something went wrong</div>;
   }
 
+  if (!data.length) {
+    return (
+      <EmptyBox>
+        <MehOutlined style={{ fontSize: '5rem' }} />
+        <p style={{ marginTop: '.5rem' }}>There&apos;s no test units</p>
+      </EmptyBox>
+    );
+  }
+
   return (
     <div>
       {data.map((item) => {
@@ -48,3 +59,11 @@ const RemoteDestListController = ({ organizationId, projectId, remoteDeviceJobId
 };
 
 export default RemoteDestListController;
+
+const EmptyBox = styled.div`
+  padding: 2rem;
+  ${flexRowCenteredStyle}
+  flex-direction: column;
+  color: #999;
+  line-height: 1.5;
+`;
