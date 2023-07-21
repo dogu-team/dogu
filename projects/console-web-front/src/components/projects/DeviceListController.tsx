@@ -28,6 +28,7 @@ import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd
 import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from '../device/PlatformIcon';
 import DeviceVersionAlertIcon from '../device/DeviceVersionAlertIcon';
+import DeviceUsageStatusBadge from '../device/DeviceUsageStatusBadge';
 
 interface DeviceItemProps {
   device: DeviceBase;
@@ -111,7 +112,7 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
             <DeviceConnectionStateTag connectionState={device.connectionState} />
           </OneSpanCell>
           <OneSpanCell>
-            <DeviceConnectionStateTag connectionState={device.connectionState} />
+            <DeviceUsageStatusBadge device={device} />
           </OneSpanCell>
           <PlatformCell>
             <FlexRowBase style={{ marginBottom: '.4rem' }}>
