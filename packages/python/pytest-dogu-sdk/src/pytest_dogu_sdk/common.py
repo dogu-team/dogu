@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field
 from enum import Enum, IntEnum, unique
-from typing import Any, Dict, List, Optional, Tuple, TypeVar
+from typing import Any, Dict, List, Optional, Tuple, Type, TypeVar
 
 from dacite import Config, from_dict
 from pytest import Item, Session, TestReport
@@ -123,8 +123,12 @@ class NullDestReporter(PyTestHandler):
 
 
 class DoguClient(ABC):
+    def __init__(self) -> None:
+        super().__init__()
+        self.impl: Optional[T] = None
+
     @abstractmethod
-    def on_setup(self, dogu_config: DoguConfig):
+    def on_setup(self, dogu_config: DoguConfig) -> Any:
         pass
 
     @property
@@ -132,11 +136,11 @@ class DoguClient(ABC):
     def dogu_results(self) -> Dict[str, Any]:
         pass
 
-    @property
     @abstractmethod
-    def instance(self) -> T:
+    def on_teardown(self) -> None:
         pass
 
-    @abstractmethod
-    def on_teardown(self):
-        pass
+    def cast(self, cls: Type[T]) -> T:
+        if not isinstance(self.impl, cls):
+            raise Exception(f"impl is not an instance of {cls}")
+        return self.impl

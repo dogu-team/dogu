@@ -13,9 +13,14 @@ class DoguSdk:
     def __init__(self, config: Config) -> None:
         self._config = config
         self._dogu_config = DoguConfigFactory().create()
+
         (client,) = self._config.hook.pytest_dogu_create_client()
         self.client: DoguClient = client
-        self.client.on_setup(self._dogu_config)
+        client_impl = self.client.on_setup(self._dogu_config)
+        if not client_impl:
+            raise Exception("dogu client is not initialized on setup")
+        self.client.impl = client_impl
+
         self._routine_dest_reporter = RoutineDestReporterFactory(
             self._dogu_config
         ).create()
