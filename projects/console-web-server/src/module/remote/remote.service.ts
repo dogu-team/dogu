@@ -23,7 +23,7 @@ export class RemoteService {
       order: {
         createdAt: 'DESC',
       },
-      relations: [RemotePropCamel.remoteDeviceJobs],
+      relations: [RemotePropCamel.remoteDeviceJobs, `${RemotePropCamel.remoteDeviceJobs}.${RemoteDeviceJobPropCamel.device}`],
       take: dto.getDBLimit(),
       skip: dto.getDBOffset(),
     });
