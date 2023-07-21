@@ -23,19 +23,21 @@ npm install
 <TabItem value="chrome" label="Chrome">
 
 ### 인증 정보
-* API Token
-  * 조직 > 설정 페이지에서 [API Token](/management/organization/settings#api-token)을 확인합니다.
-* Project Id, Organization Id
-  * 조직 > 프로젝트 > 설정 페이지에서 [Project Id, Organization Id](/management/project/settings#project-id)를 확인합니다.
+
+- Access Token
+  - [Access Token](/api/access-token)문서에서 확인합니다.
+- Project Id, Organization Id
+  - 조직 > 프로젝트 > 설정 페이지에서 [Project Id, Organization Id](/management/project/settings#project-id)를 확인합니다.
 
 <Tabs groupId="service" defaultValue="cloud" queryString>
 <TabItem value="cloud" label="Cloud" default>
 
-확인한 API Token, Project Id, Organization Id를 **dogu-examples/webdriverio/javascript/macos/chrome.js**에 적용합니다.
+확인한 Access Token, Project Id, Organization Id를 **dogu-examples/webdriverio/javascript/macos/chrome.js**에 적용합니다.
 
 ```javascript
 const token = process.env.DOGU_TOKEN || 'INSERT_YOUR_TOKEN';
-const organizationId = process.env.DOGU_ORGANIZATION_ID || 'INSERT_YOUR_ORGANIZATION_ID';
+const organizationId =
+  process.env.DOGU_ORGANIZATION_ID || 'INSERT_YOUR_ORGANIZATION_ID';
 const projectId = process.env.DOGU_PROJECT_ID || 'INSERT_YOUR_PROJECT_ID';
 ```
 
@@ -43,12 +45,13 @@ const projectId = process.env.DOGU_PROJECT_ID || 'INSERT_YOUR_PROJECT_ID';
     
 <TabItem value="self-hosted" label="Self-Hosted">
 
-확인한 API Token, Project Id, Organization Id를 **dogu-examples/webdriverio/javascript/android/chrome.js**에 적용합니다.  
+확인한 Access Token, Project Id, Organization Id를 **dogu-examples/webdriverio/javascript/android/chrome.js**에 적용합니다.  
 또한 설정한 Dogu 서버의 `DOGU_HOST:4000` 값을 apiBaseUrl에 적용합니다.
 
 ```javascript
 const token = process.env.DOGU_TOKEN || 'INSERT_YOUR_TOKEN';
-const organizationId = process.env.DOGU_ORGANIZATION_ID || 'INSERT_YOUR_ORGANIZATION_ID';
+const organizationId =
+  process.env.DOGU_ORGANIZATION_ID || 'INSERT_YOUR_ORGANIZATION_ID';
 const projectId = process.env.DOGU_PROJECT_ID || 'INSERT_YOUR_PROJECT_ID';
 const apiBaseUrl = process.env.DOGU_API_BASE_URL || 'DOGU_HOST:4000';
 ```
@@ -59,6 +62,7 @@ const apiBaseUrl = process.env.DOGU_API_BASE_URL || 'DOGU_HOST:4000';
 ### 테스트 실행
 
 아래 명령어를 입력해 테스트를 실행합니다.
+
 ```
 npm run test:macos:web
 ```
