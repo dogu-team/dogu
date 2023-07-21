@@ -56,7 +56,7 @@ const RemoteDeviceJobStatitics = ({ organizationId, projectId, remoteDeviceJob, 
         <StatBox>
           <StatTtile>Model</StatTtile>
           <StatBody>
-            <p>{`${remoteDeviceJob.device.modelName} (${remoteDeviceJob.device.model})`}</p>
+            <p>{remoteDeviceJob.device.modelName ? `${remoteDeviceJob.device.modelName} (${remoteDeviceJob.device.model})` : remoteDeviceJob.device.model}</p>
           </StatBody>
         </StatBox>
         <StatBox>
