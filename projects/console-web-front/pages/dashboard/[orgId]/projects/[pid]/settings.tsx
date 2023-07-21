@@ -20,7 +20,7 @@ import { sendErrorNotification, sendSuccessNotification } from '../../../../../s
 import DangerZone from '../../../../../src/components/common/boxes/DangerZone';
 import GitIntegrationDangerButton from '../../../../../src/components/projects/GitIntegrationDangerButton';
 import TokenCopyInput from '../../../../../src/components/common/TokenCopyInput';
-import { flexRowBaseStyle } from '../../../../../src/styles/box';
+import AccessTokenButton from '../../../../../src/components/projects/AcessTokenButton';
 
 const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, organization, mutateProject }) => {
   const [editingProject, setEditingProject] = useState<ProjectBase>(project);
@@ -114,6 +114,13 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
         <Button type="primary" onClick={handleSave} disabled={loading || !isChanged}>
           {t('common:save')}
         </Button>
+        <Divider />
+
+        <Content>
+          <ContentTitle>Project Access Token</ContentTitle>
+          <AccessTokenButton organizationId={organization.organizationId} projectId={project.projectId} />
+        </Content>
+
         <Divider />
         <DangerZone>
           <DangerZone.Item title={t('project:editGitIntegrationMenuTitle')} description={t('project:editGitIntegrationDescriptionText')} button={<GitIntegrationDangerButton />} />

@@ -167,7 +167,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
         <Divider />
 
         <Content>
-          <ContentTitle>API Token</ContentTitle>
+          <ContentTitle>Organization Access Token</ContentTitle>
           <ApiTokenButton organizationId={organization.organizationId} />
         </Content>
 

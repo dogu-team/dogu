@@ -27,6 +27,8 @@ import { redirectWithLocale } from '../../src/ssr/locale';
 import ConsoleBasicLayout from '../../src/components/layouts/ConsoleBasicLayout';
 import { USER_ACCESS_TOKEN_COOKIE_NAME, USER_ID_COOKIE_NAME } from '@dogu-private/types';
 import useEventStore from '../../src/stores/events';
+import AccessTokenButton from '../../src/components/users/AccessTokenButton';
+import { Content } from 'next/font/google';
 
 interface Props {
   user: UserBase;
@@ -150,7 +152,7 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
         <Inner>
           <StyledH5>{t('account:profileContentTitle')}</StyledH5>
           <ImageCropUploader
-            profileImage={<ProfileImage size={120} profileImageUrl={editingMe?.profileImageUrl ?? null} name={editingMe?.name ?? 'Name'} />}
+            profileImage={<ProfileImage size={120} profileImageUrl={editingMe?.profileImageUrl ?? null} name={editingMe?.name ?? 'Name'} style={{ fontSize: '2.5rem' }} />}
             onCropEnd={updateProfileImageToThumbnail}
             progress={progress}
             onUpload={uploadImage}
@@ -183,9 +185,16 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
         <Divider />
         <Inner>
           <StyledH5>{t('account:securityContentTitle')}</StyledH5>
-          <ResetPasswordForm needCurrentPassword={true} onFinish={handleResetPassword} />
+          <div style={{ marginTop: '1rem' }}>
+            <ContentTitle>Personal Access Token</ContentTitle>
+            <AccessTokenButton userId={user.userId} />
+          </div>
+          <div style={{ marginTop: '1rem' }}>
+            <ContentTitle>Update password</ContentTitle>
+            <ResetPasswordForm needCurrentPassword={true} onFinish={handleResetPassword} />
+          </div>
         </Inner>
-        <Divider />
+
         {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
           <>
             <Divider />
