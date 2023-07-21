@@ -21,7 +21,7 @@ import {
   UserPropCamel,
   UserPropSnake,
 } from '@dogu-private/console';
-import { OrganizationId, PIPELINE_STATUS, ProjectId, UserId, UserPayload } from '@dogu-private/types';
+import { OrganizationId, PIPELINE_STATUS, ProjectId, REMOTE_DEVICE_JOB_STATE, UserId, UserPayload } from '@dogu-private/types';
 import { notEmpty } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -352,6 +352,12 @@ export class ProjectService {
         }),
       )
       .leftJoinAndSelect(`device.${DevicePropCamel.deviceTags}`, 'deviceTags')
+      .leftJoinAndSelect(`device.${DevicePropCamel.routineDeviceJobs}`, 'deviceJob', `deviceJob.status IN (:...status)`, {
+        status: [PIPELINE_STATUS.WAITING, PIPELINE_STATUS.IN_PROGRESS, PIPELINE_STATUS.CANCEL_REQUESTED],
+      })
+      .leftJoinAndSelect(`device.${DevicePropCamel.remoteDeviceJobs}`, 'remoteDeviceJob', `remoteDeviceJob.state IN (:...state)`, {
+        state: [REMOTE_DEVICE_JOB_STATE.WAITING, REMOTE_DEVICE_JOB_STATE.IN_PROGRESS],
+      })
       .leftJoinAndSelect(`device.${DevicePropCamel.projects}`, 'project')
       .innerJoinAndSelect(`device.${DevicePropSnake.host}`, 'host')
       .orderBy(`device.${DevicePropCamel.updatedAt}`, 'DESC')
