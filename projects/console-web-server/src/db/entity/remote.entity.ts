@@ -3,6 +3,7 @@ import { CREATOR_TYPE, ProjectId, RemoteId, REMOTE_TABLE_NAME, REMOTE_TYPE, User
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 
 import { ColumnTemplate } from './decorators';
+import { Project } from './project.entity';
 import { RemoteDeviceJob } from './remote-device-job.entity';
 import { User } from './user.entity';
 
@@ -41,4 +42,8 @@ export class Remote extends BaseEntity implements RemoteBase {
 
   @OneToMany(() => RemoteDeviceJob, (remoteDeviceJob) => remoteDeviceJob.remote, { cascade: ['soft-remove'] })
   remoteDeviceJobs?: RemoteDeviceJob[];
+
+  @ManyToOne(() => Project, (project) => project, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
+  @JoinColumn({ name: RemotePropSnake.project_id })
+  project?: Project;
 }

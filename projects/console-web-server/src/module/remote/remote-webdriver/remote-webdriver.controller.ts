@@ -23,7 +23,8 @@ import { DoguLogger } from '../../logger/logger';
 import { RemoteException } from '../common/exception';
 import { WebDriverEndpointHandlerResult } from '../common/type';
 import { RemoteDeviceJobProcessor } from '../processor/remote-device-job-processor';
-import { onBeforeNewSessionResponse } from './remote-webdriver.protocols';
+import { RemoteService } from '../remote.service';
+import { onBeforeDeleteSessionResponse, onBeforeNewSessionResponse } from './remote-webdriver.protocols';
 import { RemoteWebDriverService } from './remote-webdriver.service';
 
 @Controller('/remote/wd/hub')
@@ -31,6 +32,8 @@ export class RemoteWebDriverInfoController {
   constructor(
     @Inject(RemoteWebDriverService)
     private readonly remoteWebDriverService: RemoteWebDriverService, //
+    @Inject(RemoteService)
+    private readonly remoteService: RemoteService,
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly logger: DoguLogger,
@@ -59,7 +62,7 @@ export class RemoteWebDriverInfoController {
       throw new RemoteException(HttpStatus.BAD_REQUEST, new Error('newSession. endpoint type is not new-session'), {});
     }
 
-    const processResult = await this.remoteWebDriverService.handleNewSessionRequest(endpoint.info, relayRequest, doguOptions);
+    const processResult = await this.remoteWebDriverService.handleNewSessionRequest(endpoint.info, relayRequest, doguOptions, remotePayload);
     await this.remoteWebDriverService.waitRemoteDeviceJobToInprogress(processResult.remoteDeviceJobId);
     // create headers
     const headers: HeaderRecord = {};
@@ -102,6 +105,8 @@ export class RemoteWebDriverInfoController {
     try {
       const relayResponse = await this.remoteWebDriverService.sendRequest(processResult, headers);
       await this.remoteWebDriverService.handleDeleteSessionResponse(processResult, relayResponse);
+      const resultUrl = await this.remoteService.getResultUrl(processResult.remoteDeviceJobId);
+      onBeforeDeleteSessionResponse(relayResponse, resultUrl);
       this.sendResponse(relayResponse, response);
     } catch (e) {
       const remoteDeviceJob = await this.dataSource.getRepository(RemoteDeviceJob).findOne({ where: { remoteDeviceJobId: processResult.remoteDeviceJobId } });

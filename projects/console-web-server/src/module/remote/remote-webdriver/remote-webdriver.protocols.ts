@@ -16,3 +16,8 @@ export function onBeforeNewSessionResponse(relayResponse: RelayResponse, process
   _.merge(relayResponse.resBody, { value: { capabilities: { 'dogu:results': { remoteDeviceJobId: processResult.remoteDeviceJobId } } } });
   return relayResponse;
 }
+
+export function onBeforeDeleteSessionResponse(relayResponse: RelayResponse, resultUrl: string): RelayResponse {
+  _.merge(relayResponse.resBody, { value: { capabilities: { 'dogu:results': { resultUrl } } } });
+  return relayResponse;
+}

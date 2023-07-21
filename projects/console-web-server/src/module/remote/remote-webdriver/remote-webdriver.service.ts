@@ -1,10 +1,10 @@
 import {
-  CREATOR_TYPE,
   DeviceId,
   DEVICE_TABLE_NAME,
   extensionFromPlatform,
   platformTypeFromPlatform,
   RemoteDeviceJobId,
+  RemotePayload,
   REMOTE_DEVICE_JOB_STATE,
   REMOTE_TABLE_NAME,
 } from '@dogu-private/types';
@@ -71,7 +71,12 @@ export class RemoteWebDriverService {
     }
   }
 
-  async handleNewSessionRequest(endpointInfo: WebDriverNewSessionEndpointInfo, request: RelayRequest, doguOptions: DoguWebDriverOptions): Promise<WebDriverEndpointHandlerResult> {
+  async handleNewSessionRequest(
+    endpointInfo: WebDriverNewSessionEndpointInfo,
+    request: RelayRequest,
+    doguOptions: DoguWebDriverOptions,
+    remotePayload: RemotePayload,
+  ): Promise<WebDriverEndpointHandlerResult> {
     const options = doguOptions;
 
     // find device
@@ -140,8 +145,8 @@ export class RemoteWebDriverService {
         options.browserName ?? null,
         options.browserVersion ?? null,
         doguOptions,
-        null, //FIXME:(felix) test code
-        CREATOR_TYPE.UNSPECIFIED, //FIXME:(felix) test code
+        remotePayload.userId ?? null,
+        remotePayload.creatorType,
       );
       return remoteDeviceJob;
     });
