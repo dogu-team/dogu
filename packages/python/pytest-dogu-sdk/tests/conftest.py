@@ -9,7 +9,7 @@ from pytest_dogu_sdk.common import DoguClient
 pytest_plugins = ["pytest_dogu_sdk"]
 
 
-def pytest_dogu_create_client():
+def pytest_dogu_create_client() -> DoguClient:
     class SeleniumDoguClient(DoguClient):
         def on_setup(self, dogu_config: DoguConfig) -> WebDriver:
             options = ChromeOptions()
