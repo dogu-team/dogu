@@ -33,6 +33,7 @@ import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd
 import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from './PlatformIcon';
 import DeviceUsageStatusBadge from './DeviceUsageStatusBadge';
+import DeviceVersionAlertIcon from './DeviceVersionAlertIcon';
 
 interface DeviceItemProps {
   device: DeviceBase;
@@ -170,6 +171,8 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
               <PlatformIcon platform={device.platform} />
               &nbsp;
               {device.version}
+              &nbsp;
+              <DeviceVersionAlertIcon device={device} />
             </DeviceInfo>
             <DeviceInfo>
               {device.modelName} {`(${device.model})`}

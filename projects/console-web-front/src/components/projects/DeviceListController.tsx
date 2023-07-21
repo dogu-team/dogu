@@ -27,6 +27,7 @@ import { menuItemButtonStyles } from '../../styles/button';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from '../device/PlatformIcon';
+import DeviceVersionAlertIcon from '../device/DeviceVersionAlertIcon';
 
 interface DeviceItemProps {
   device: DeviceBase;
@@ -115,7 +116,10 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
           <PlatformCell>
             <FlexRowBase style={{ marginBottom: '.4rem' }}>
               <PlatformIcon platform={device.platform} />
+              &nbsp;
               {device.version}
+              &nbsp;
+              <DeviceVersionAlertIcon device={device} />
             </FlexRowBase>
             <div>
               {device.modelName} {`(${device.model})`}
