@@ -1,4 +1,5 @@
 import { RemoteBase } from '@dogu-private/console';
+import { Statistic } from 'antd';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -6,7 +7,8 @@ import styled from 'styled-components';
 
 import { getRemoteInServerSide } from '../../../../../../src/api/remote';
 import ProjectLayout from '../../../../../../src/components/layouts/ProjectLayout';
-import RemoteDestListController from '../../../../../../src/components/remote/RemoteDestList';
+import RemoteDestListController from '../../../../../../src/components/remote/RemoteDestListController';
+import RemoteDeviceJobStatitics from '../../../../../../src/components/remote/RemoteDeviceJobStatitics';
 import RemoteSidebar from '../../../../../../src/components/remote/RemoteSidebar';
 import withProject, { getProjectPageServerSideProps, ProjectServerSideProps, WithProjectProps } from '../../../../../../src/hoc/withProject';
 import { flexRowSpaceBetweenStyle } from '../../../../../../src/styles/box';
@@ -24,7 +26,11 @@ const RemoteItemPage: NextPageWithLayout<WithProjectProps & { remote: RemoteBase
         </title>
       </Head>
       <div>
-        <div></div>
+        {selectedJob && (
+          <div style={{ marginBottom: '2rem' }}>
+            <RemoteDeviceJobStatitics organizationId={organization.organizationId} projectId={project.projectId} remoteDeviceJob={selectedJob} doguOptions={remote.doguOptions} />
+          </div>
+        )}
         <div>
           {!!selectedJob && (
             <RemoteDestListController organizationId={organization.organizationId} projectId={project.projectId} remoteDeviceJobId={selectedJob?.remoteDeviceJobId} />

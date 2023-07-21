@@ -54,6 +54,7 @@ const ButtonIconWrapper = styled.div<{ isOpen: boolean }>`
 `;
 
 const ChildrenWrapper = styled.div`
+  margin-left: 1rem;
   padding-left: 1rem;
   border-left: 2px solid ${(props) => props.theme.main.colors.gray4};
 `;

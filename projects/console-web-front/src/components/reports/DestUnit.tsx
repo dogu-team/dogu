@@ -15,12 +15,14 @@ interface Props {
   onClick?: () => void;
   children?: React.ReactNode;
   icon?: React.ReactNode;
+  style?: React.CSSProperties;
+  className?: string;
 }
 
-const DestUnit = ({ state, name, startedAt, endedAt, onClick, children, icon }: Props) => {
+const DestUnit = ({ state, name, startedAt, endedAt, onClick, children, icon, ...props }: Props) => {
   return (
     <>
-      <Box onClick={onClick}>
+      <Box onClick={onClick} {...props}>
         <FlexRow>
           {icon}
           <IconWrapper>

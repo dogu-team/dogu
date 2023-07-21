@@ -12,7 +12,6 @@ import MenuButton from '../buttons/MenuButton';
 import PipelineCreatedTimer from '../pipelines/PipelineCreatedTimer';
 import RemoteStateSummaryGraph from './RemoteStateSummaryGraph';
 import DoguOptions from './DoguOptions';
-import RoutineCreator from '../routine/editor/RoutineCreator';
 import RemoteCreator from './RemoteCreator';
 
 interface Props {
@@ -61,7 +60,7 @@ const RemoteItem = ({ remote, organizationId }: Props) => {
         </FlexRow>
       </StretchedWrapper>
 
-      <div style={{ marginLeft: '2rem' }}>
+      <div style={{ flex: 1, marginLeft: '2rem' }}>
         <Tag>{`${remote.doguOptions.runsOn}`}</Tag>
       </div>
 
@@ -81,6 +80,7 @@ export default RemoteItem;
 const Box = styled(List.Item)``;
 
 const StretchedWrapper = styled.div`
+  flex: 3;
   margin-right: 1rem;
 `;
 
@@ -95,7 +95,10 @@ const FlexRow = styled.div`
 `;
 
 const InfoBox = styled.div`
-  ${flexRowSpaceBetweenStyle}
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
   font-size: 0.75rem;
 `;
 
