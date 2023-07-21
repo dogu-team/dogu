@@ -19,6 +19,7 @@ import { OrganizationService } from '../organization/organization.service';
 import { UserInvitationService } from '../user-invitation/user-invitation.service';
 import { CreateAdminDto, SignInDto } from '../user/dto/user.dto';
 import { UserCreatedEvent } from '../user/events/create-user.event';
+import { UserService } from '../user/user.service';
 import { createSNSUser, createUser, createUserAndVerificationToken, createUserEmailPreference } from './common';
 
 @Injectable()
@@ -36,6 +37,8 @@ export class RegisteryService {
     private readonly authJwtService: AuthJwtService,
     @InjectDataSource()
     private readonly dataSource: DataSource,
+    @Inject(UserService)
+    private readonly userService: UserService,
     private eventEmitter: EventEmitter2,
   ) {}
 
@@ -66,6 +69,7 @@ export class RegisteryService {
     const tokenResponse = await this.dataSource.transaction(async (entityManager) => {
       // create user
       const user = await createUser(entityManager, email, password, name);
+      await this.userService.createPersonalAccessToken(entityManager, user.userId);
 
       // skip tutorial if user is from invitation
       if (isFromInvitation) {

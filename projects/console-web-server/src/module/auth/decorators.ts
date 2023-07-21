@@ -1,9 +1,16 @@
-import { GOOGLE, GoogleOAuthPayload, HostPayload, UserPayload, V1OpenApiPayload } from '@dogu-private/types';
+import {
+  GOOGLE,
+  GoogleOAuthPayload,
+  HostPayload,
+  RemotePayload,
+  UserPayload,
+  V1OpenApiPayload,
+  V1_OPEN_API_ORGANIZATION_ROLE_KEY,
+  V1_OPEN_API_PROJECT_ROLE_KEY,
+} from '@dogu-private/types';
 import { applyDecorators, createParamDecorator, ExecutionContext, SetMetadata, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
-  API_TOKEN_KEY,
-  API_TOKEN_TYPE,
   EMAIL_VERIFICATION,
   EMAIL_VERIFICATION_KEY,
   HOST_ACTION_KEY,
@@ -12,17 +19,28 @@ import {
   ORGANIZATION_ROLE_KEY,
   PROJECT_ROLE,
   PROJECT_ROLE_KEY,
+  REMOTE_ORGANIZATION_ROLE_KEY,
+  REMOTE_PROJECT_ROLE_KEY,
 } from './auth.types';
-import { ApiTokenGuard } from './guard/api-token.guard';
 import { DeviceAcessGuard } from './guard/device.guard';
 import { EmailVerificationGuard } from './guard/email-verification.guard';
 import { HostGuard } from './guard/host.guard';
+import { V1OpenApiOrganizationGuard } from './guard/open-api/v1/open-api-organization.guard';
+import { V1OpenApiProjectGuard } from './guard/open-api/v1/open-api-project.guard';
+import { V1OpenApiGuard } from './guard/open-api/v1/open-api.guard';
 import { OrganizationGuard } from './guard/organization.guard';
 import { ProjectGuard } from './guard/project.guard';
+import { RemoteOrganizationGuard } from './guard/remote/remote-organization.guard';
+import { RemoteProjectGuard } from './guard/remote/remote-project.guard';
+import { RemoteGuard } from './guard/remote/remote.guard';
 import { UserJwtGuard } from './guard/user-jwt.guard';
 
-export function ApiTokenPermission(apiTokenType: API_TOKEN_TYPE): PropertyDecorator {
-  return applyDecorators(SetMetadata(API_TOKEN_KEY, apiTokenType), UseGuards(ApiTokenGuard));
+export function RemoteOrganizationPermission(roleType: ORGANIZATION_ROLE): PropertyDecorator {
+  return applyDecorators(SetMetadata(REMOTE_ORGANIZATION_ROLE_KEY, roleType), UseGuards(RemoteGuard), UseGuards(RemoteOrganizationGuard));
+}
+
+export function RemoteProjectPermission(roleType: PROJECT_ROLE): PropertyDecorator {
+  return applyDecorators(SetMetadata(REMOTE_PROJECT_ROLE_KEY, roleType), UseGuards(RemoteGuard), UseGuards(RemoteProjectGuard));
 }
 
 export function DeviceAccessPermission(): PropertyDecorator {
@@ -63,6 +81,19 @@ export const GoogleUser = createParamDecorator((data: unknown, ctx: ExecutionCon
   const request = ctx.switchToHttp().getRequest<{ user: GoogleOAuthPayload }>();
   return request.user;
 });
+
+export const RemoteCaller = createParamDecorator((data: unknown, ctx: ExecutionContext): RemotePayload => {
+  const request = ctx.switchToHttp().getRequest<{ user: RemotePayload }>();
+  return request.user;
+});
+
+export function V1OpenApiOrganizationPermission(roleType: ORGANIZATION_ROLE): PropertyDecorator {
+  return applyDecorators(SetMetadata(V1_OPEN_API_ORGANIZATION_ROLE_KEY, roleType), UseGuards(V1OpenApiGuard), UseGuards(V1OpenApiOrganizationGuard));
+}
+
+export function V1OpenApiProjectPermission(roleType: PROJECT_ROLE): PropertyDecorator {
+  return applyDecorators(SetMetadata(V1_OPEN_API_PROJECT_ROLE_KEY, roleType), UseGuards(V1OpenApiGuard), UseGuards(V1OpenApiProjectGuard));
+}
 
 export const V1OpenApiCaller = createParamDecorator((data: unknown, ctx: ExecutionContext): V1OpenApiPayload => {
   const request = ctx.switchToHttp().getRequest<{ user: V1OpenApiPayload }>();

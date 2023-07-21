@@ -1,11 +1,12 @@
+import { UserPayload } from '@dogu-private/types';
 import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { config } from '../../../config';
 import { DoguLogger } from '../../logger/logger';
-import { checkOrganizationRolePermission, ORGANIZATION_ROLE, ORGANIZATION_ROLE_KEY } from '../auth.types';
-import { getOrganizationUserRole, printLog } from './common';
+import { ORGANIZATION_ROLE, ORGANIZATION_ROLE_KEY } from '../auth.types';
+import { getOrganizationIdFromRequest, printLog, UserPermission } from './common';
 
 @Injectable()
 export class OrganizationGuard implements CanActivate {
@@ -21,30 +22,16 @@ export class OrganizationGuard implements CanActivate {
     if (!controllerRoleType) {
       throw new HttpException(`OrganizationGuard. The role is not defined.`, HttpStatus.UNAUTHORIZED);
     }
-
     if (config.gaurd.role.logging) {
       printLog(ctx, 'OrganizationGuard', controllerRoleType);
     }
 
-    const organizationRole = await getOrganizationUserRole(ctx, this.dataSource);
-    const orgRoleId = organizationRole.organizationRoleId;
-    const requiredRoleName = ORGANIZATION_ROLE[controllerRoleType];
+    const userId = ctx.switchToHttp().getRequest<{ user: UserPayload }>().user.userId;
+    const organizationId = getOrganizationIdFromRequest(ctx);
 
-    if (organizationRole.customise === 1) {
-      // custom role type validation
-      this.logger.info(`Customise Organization Role Type: ${orgRoleId}`);
-      this.logger.error(`not implemented. OrganizationGaurd()`);
-      throw new HttpException(`not implemented`, HttpStatus.NOT_IMPLEMENTED);
-    }
-
-    if (controllerRoleType > ORGANIZATION_ROLE.MEMBER || orgRoleId > ORGANIZATION_ROLE.MEMBER) {
-      this.logger.error(`not implemented. OrganizationGaurd()`);
-      throw new HttpException(`not implemented`, HttpStatus.NOT_IMPLEMENTED);
-    }
-
-    const isValid = checkOrganizationRolePermission(orgRoleId, controllerRoleType);
-    if (!isValid) {
-      this.logger.error(`The user is not a ${requiredRoleName} role of the organization.`);
+    const organizationRole = await UserPermission.getOrganizationUserRole(this.dataSource.manager, organizationId, userId);
+    if (!UserPermission.validateOrganizationRolePermission(organizationRole, controllerRoleType)) {
+      const requiredRoleName = ORGANIZATION_ROLE[controllerRoleType];
       throw new HttpException(`The user is not a ${requiredRoleName} role of the organization.`, HttpStatus.UNAUTHORIZED);
     }
     return true;

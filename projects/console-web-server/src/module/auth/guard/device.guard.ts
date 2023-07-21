@@ -9,8 +9,8 @@ import { config } from '../../../config';
 import { Device } from '../../../db/entity/device.entity';
 import { ProjectAndUserAndProjectRole } from '../../../db/entity/index';
 import { DoguLogger } from '../../logger/logger';
-import { checkOrganizationRolePermission, ORGANIZATION_ROLE } from '../auth.types';
-import { getOrganizationUserRole, printLog } from './common';
+import { ORGANIZATION_ROLE } from '../auth.types';
+import { printLog, UserPermission } from './common';
 
 /**
  * @description organization member는 통과했다는 가정하에 device에 대한 접근 권한을 체크한다.
@@ -35,11 +35,10 @@ export class DeviceAcessGuard implements CanActivate {
     const organizationId = ctx.switchToHttp().getRequest<{ organizationId: OrganizationId }>().organizationId;
 
     // is org admin
-
-    const organizationRole = await getOrganizationUserRole(ctx, this.dataSource);
+    const organizationRole = await UserPermission.getOrganizationUserRole(this.dataSource.manager, organizationId, userId);
     const orgRoleId = organizationRole.organizationRoleId;
 
-    const isValid = checkOrganizationRolePermission(orgRoleId, ORGANIZATION_ROLE.ADMIN);
+    const isValid = UserPermission.checkOrganizationRolePermission(orgRoleId, ORGANIZATION_ROLE.ADMIN);
     if (isValid) {
       return true;
     }

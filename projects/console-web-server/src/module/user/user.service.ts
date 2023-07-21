@@ -5,6 +5,8 @@ import {
   OrganizationPropCamel,
   OrganizationPropSnake,
   OrganizationUserAndTeamPropCamel,
+  PersonalAccessTokenPropCamel,
+  PersonalAccessTokenPropSnake,
   ProjectAndUserAndProjectRolePropCamel,
   UserAndInvitationTokenPropCamel,
   UserAndResetPasswordTokenPropCamel,
@@ -20,11 +22,13 @@ import { UserId } from '@dogu-private/types';
 import { HttpException, HttpStatus, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
-import { Brackets, DataSource, In } from 'typeorm';
+import { Brackets, DataSource, DeepPartial, EntityManager, In } from 'typeorm';
 
 import { OrganizationId } from '@dogu-private/types';
 import { notEmpty } from '@dogu-tech/common';
+import { v4 } from 'uuid';
 import { Organization, OrganizationAndUserAndOrganizationRole, OrganizationAndUserAndTeam, Project, ProjectAndUserAndProjectRole, Token } from '../../db/entity/index';
+import { PersonalAccessToken } from '../../db/entity/personal-access-token.entity';
 import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invitation-token.entity';
 import { UserVisit } from '../../db/entity/user-visit.entity';
 import { User } from '../../db/entity/user.entity';
@@ -34,6 +38,7 @@ import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { PageDto } from '../common/dto/pagination/page.dto';
 import { UserFileService } from '../file/user-file.service';
 import { GitlabService } from '../gitlab/gitlab.service';
+import { TokenService } from '../token/token.service';
 
 @Injectable()
 export class UserService {
@@ -388,5 +393,103 @@ export class UserService {
     }
 
     await this.dataSource.getRepository(User).update({ userId }, { isTutorialCompleted });
+  }
+
+  async createPersonalAccessToken(manager: EntityManager, userId: UserId): Promise<string> {
+    const tokenCheck = await manager.getRepository(PersonalAccessToken).findOne({
+      where: { userId },
+    });
+
+    if (tokenCheck) {
+      throw new HttpException(`Personal AccessToken already exists. uesrId: ${userId}`, HttpStatus.BAD_REQUEST);
+    }
+
+    const newTokenData: DeepPartial<Token> = {
+      token: TokenService.createPersonalAccessToken(),
+      expiredAt: null,
+    };
+    const tokenData = manager.getRepository(Token).create(newTokenData);
+    const token = await manager.getRepository(Token).save(tokenData);
+
+    const newData: DeepPartial<PersonalAccessToken> = {
+      personalAccessTokenId: v4(),
+      userId,
+      tokenId: token.tokenId,
+    };
+    const accessTokenData = manager.getRepository(PersonalAccessToken).create(newData);
+    await manager.getRepository(PersonalAccessToken).save(accessTokenData);
+
+    return token.token;
+  }
+
+  async findPersonalAccessToken(userId: UserId): Promise<string> {
+    const accessToken = await this.dataSource //
+      .getRepository(PersonalAccessToken)
+      .createQueryBuilder('personalAccessToken')
+      .innerJoinAndSelect(`personalAccessToken.${PersonalAccessTokenPropCamel.token}`, 'token')
+      .where(`personalAccessToken.${PersonalAccessTokenPropSnake.user_id} = :userId`, { userId })
+      .getOne();
+
+    if (!accessToken) {
+      throw new HttpException(`Personal AccessToken not found. userId: ${userId}`, HttpStatus.NOT_FOUND);
+    }
+
+    return accessToken.token.token;
+  }
+
+  async regeneratePersonalAccessToken(userId: UserId): Promise<string> {
+    const accessToken = await this.dataSource //
+      .getRepository(PersonalAccessToken)
+      .createQueryBuilder('personalAccessToken')
+      .innerJoinAndSelect(`personalAccessToken.${PersonalAccessTokenPropCamel.token}`, 'token')
+      .where(`personalAccessToken.${PersonalAccessTokenPropSnake.user_id} = :userId`, { userId })
+      .getOne();
+
+    if (!accessToken) {
+      throw new HttpException(`Personal AccessToken not found. uesrId: ${userId}`, HttpStatus.NOT_FOUND);
+    }
+
+    const rv = await this.dataSource.transaction(async (manager) => {
+      // revoke
+      await manager.getRepository(Token).softDelete({ tokenId: accessToken.tokenId });
+      await manager.getRepository(PersonalAccessToken).softDelete({ personalAccessTokenId: accessToken.personalAccessTokenId });
+
+      // reissue
+      const newTokenData: DeepPartial<Token> = {
+        token: TokenService.createPersonalAccessToken(),
+      };
+      const tokenData = manager.getRepository(Token).create(newTokenData);
+      const token = await manager.getRepository(Token).save(tokenData);
+
+      const newData: DeepPartial<PersonalAccessToken> = {
+        personalAccessTokenId: v4(),
+        userId,
+        tokenId: token.tokenId,
+      };
+      const accessTokenData = manager.getRepository(PersonalAccessToken).create(newData);
+      await manager.getRepository(PersonalAccessToken).save(accessTokenData);
+
+      return token.token;
+    });
+
+    return rv;
+  }
+
+  async deletePersonalAccessToken(uesrId: UserId): Promise<void> {
+    const accessToken = await this.dataSource //
+      .getRepository(PersonalAccessToken)
+      .createQueryBuilder('personalAccessToken')
+      .innerJoinAndSelect(`personalAccessToken.${PersonalAccessTokenPropCamel.token}`, 'token')
+      .where(`personalAccessToken.${PersonalAccessTokenPropSnake.user_id} = :uesrId`, { uesrId })
+      .getOne();
+
+    if (!accessToken) {
+      throw new HttpException(`Personal AccessToken not found. uesrId: ${uesrId}`, HttpStatus.NOT_FOUND);
+    }
+
+    await this.dataSource.transaction(async (manager) => {
+      await manager.getRepository(Token).softDelete({ tokenId: accessToken.tokenId });
+      await manager.getRepository(PersonalAccessToken).softDelete({ personalAccessTokenId: accessToken.personalAccessTokenId });
+    });
   }
 }

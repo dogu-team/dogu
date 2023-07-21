@@ -522,7 +522,7 @@ export class PipelineService {
       .andWhere(dto.status && dto.status.length > 0 ? `pipeline.status IN (${dto.status.map((item) => `'${item}'`).join(', ')})` : '1=1')
       .orderBy('pipeline.createdAt', 'DESC')
       .addOrderBy('pipeline.index', 'DESC')
-      .innerJoinAndSelect('pipeline.creator', 'user')
+      .leftJoinAndSelect('pipeline.creator', 'user')
       .innerJoinAndSelect('pipeline.routine', 'routine')
       .take(dto.getDBLimit())
       .skip(dto.getDBOffset())
@@ -536,7 +536,7 @@ export class PipelineService {
       .getRepository(RoutinePipeline)
       .createQueryBuilder('pipeline')
       .where({ projectId, routinePipelineId })
-      .innerJoinAndSelect(`pipeline.${RoutinePipelinePropCamel.creator}`, 'user')
+      .leftJoinAndSelect(`pipeline.${RoutinePipelinePropCamel.creator}`, 'user')
       .innerJoinAndSelect(`pipeline.${RoutinePipelinePropCamel.routine}`, 'routine')
       .leftJoinAndSelect(`pipeline.${RoutinePipelinePropCamel.canceler}`, 'user_canceler')
       .getOne();

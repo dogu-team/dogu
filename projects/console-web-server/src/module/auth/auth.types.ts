@@ -8,9 +8,6 @@ export enum ORGANIZATION_ROLE {
   ADMIN = 2,
   MEMBER = 3,
 }
-export function checkOrganizationRolePermission(checkOrgRoleType: ORGANIZATION_ROLE, requiredOrgRoleType: ORGANIZATION_ROLE): boolean {
-  return checkOrgRoleType <= requiredOrgRoleType;
-}
 
 // project role type
 export const PROJECT_ROLE_KEY = 'PROJECT_ROLE';
@@ -18,9 +15,6 @@ export enum PROJECT_ROLE {
   ADMIN = 1,
   WRITE = 2,
   READ = 3,
-}
-export function checkProjectRolePermission(checkProjectRoleType: PROJECT_ROLE, requiredProjectRoleType: PROJECT_ROLE): boolean {
-  return checkProjectRoleType <= requiredProjectRoleType;
 }
 
 // email verification type
@@ -40,9 +34,10 @@ export enum HOST_ACTION_TYPE {
   PROJECT_ACTION_API = 'PROJECT_ACTION_API',
 }
 
-export const API_TOKEN_KEY = 'API_TOKEN';
-export enum API_TOKEN_TYPE {
-  CONSOLE = 'CONSOLE',
-  WEBDRIVER_AGENT = 'WEBDRIVER_AGENT_API',
-  // PROJECT = 'PROJECT',
+export const REMOTE_API_KEY = 'REMOTE_API_GUARD_KEY';
+export enum REMOTE_API_TYPE {
+  WEBDRIVER_AGENT = 'WEBDRIVER_AGENT',
 }
+
+export const REMOTE_ORGANIZATION_ROLE_KEY = 'REMOTE_ORGANIZATION_ROLE';
+export const REMOTE_PROJECT_ROLE_KEY = 'REMOTE_PROJECT_ROLE';

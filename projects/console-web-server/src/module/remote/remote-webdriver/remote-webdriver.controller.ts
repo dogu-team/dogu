@@ -1,4 +1,4 @@
-import { REMOTE_DEVICE_JOB_STATE } from '@dogu-private/types';
+import { RemotePayload, REMOTE_DEVICE_JOB_STATE } from '@dogu-private/types';
 import {
   DefaultHttpOptions,
   DoguApplicationUrlHeader,
@@ -17,8 +17,8 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { Request, Response } from 'express';
 import { DataSource } from 'typeorm';
 import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
-import { API_TOKEN_TYPE } from '../../auth/auth.types';
-import { ApiTokenPermission } from '../../auth/decorators';
+import { PROJECT_ROLE } from '../../auth/auth.types';
+import { RemoteCaller, RemoteProjectPermission } from '../../auth/decorators';
 import { DoguLogger } from '../../logger/logger';
 import { RemoteException } from '../common/exception';
 import { WebDriverEndpointHandlerResult } from '../common/type';
@@ -37,8 +37,14 @@ export class RemoteWebDriverInfoController {
   ) {}
 
   @Post('session')
-  @ApiTokenPermission(API_TOKEN_TYPE.WEBDRIVER_AGENT)
-  async newSession(@Req() request: Request, @Res() response: Response): Promise<void> {
+  @RemoteProjectPermission(PROJECT_ROLE.ADMIN)
+  async newSession(
+    @Req() request: Request, //
+    @Res() response: Response,
+    @RemoteCaller() remotePayload: RemotePayload,
+  ): Promise<void> {
+    this.logger.debug(JSON.stringify(remotePayload));
+
     const relayRequest = this.remoteWebDriverService.convertRequest(request);
 
     const doguWebDriverCapabilitiesParser = new DoguWebDriverCapabilitiesParser();

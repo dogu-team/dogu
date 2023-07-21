@@ -8,6 +8,7 @@ export class V1CreatePipelineResponseBody implements Pick<RoutinePipeline, 'rout
   creatorType!: CREATOR_TYPE;
   creatorId!: UserId | null;
   createdAt!: Date;
+  resultUrl!: string;
 }
 
 export class V1FindPipelineByPipelineIdResponseBody
@@ -25,4 +26,5 @@ export class V1FindPipelineByPipelineIdResponseBody
   createdAt!: Date;
   inProgressAt!: Date | null;
   completedAt!: Date | null;
+  resultUrl!: string;
 }
