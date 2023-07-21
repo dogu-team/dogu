@@ -27,13 +27,6 @@
   "settingChangeImage": "Change image",
   "settingOrgName": "Organization name",
 
-  "settingRegenerateApiTokenTitle": "Regenerate API token",
-  "settingRegenerateApiTokenDescriptionText": "Regenerate Dogu API token. The existing token will be no longer valid.",
-  "settingRegenerateApiTokenButtonTitle": "Regenerate",
-  "settingRegenerateApiTokenConfirmModalTitle": "Regenerate API token",
-  "settingRegenerateApiTokenConfirmModalContent": "The existing API token will be no longer valid.\nWould you like to generate a new API token? Please note that all applications using the existing token will be affected.",
-  "settingRegenerateApiTokenConfirmModalButtonTitle": "Confirm and regenerate",
-
   "settingChangeOwnerMenuTitle": "Change organization owner",
   "settingChangeOwnerDescriptionText": "Change organization owner to another member. Former owner will become Admin.",
   "settingChangeOwnerButtonTitle": "Change owner",

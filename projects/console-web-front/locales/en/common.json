@@ -59,5 +59,12 @@
   "footerCompanyName": "Dogu Technologies, Inc.",
   "footerCompanyAddress": "Address: 2008B, A-dong, Anyang IS Biztower, 27, Deokcheon-ro 152beon-gil, Manan-gu, Anyang-si, Gyeonggi-do, Republic of Korea.",
   "footerRepresentative": "Representative: Juwon Seong",
-  "footerCompanyRegistrationNumber": "Business registration number: 166-86-02618"
+  "footerCompanyRegistrationNumber": "Business registration number: 166-86-02618",
+
+  "regenerateAccessTokenTitle": "Regenerate access token",
+  "regenerateAccessTokenDescriptionText": "Regenerate access token. The existing token will be no longer valid.",
+  "regenerateAccessTokenButtonTitle": "Regenerate",
+  "regenerateAccessTokenConfirmModalTitle": "Regenerate access token",
+  "regenerateAccessTokenConfirmModalContent": "The existing access token will be no longer valid.\nWould you like to generate a new access token? Please note that all applications using the existing token will be affected.",
+  "regenerateAccessTokenConfirmModalButtonTitle": "Confirm and regenerate"
 }

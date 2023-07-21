@@ -108,3 +108,8 @@ export const getProjectScm = async (context: GetServerSidePropsContext) => {
 export const updateProjectScm = async (orgId: OrganizationId, pid: ProjectId, dto: UpdateProjectGitDtoBase) => {
   return await api.patch<void>(`/organizations/${orgId}/projects/${pid}/scm`, dto);
 };
+
+export const regenerateProjectAccessToken = async (orgId: OrganizationId, projectId: ProjectId) => {
+  const { data } = await api.post<string>(`/organizations/${orgId}/projects/${projectId}/access-token`);
+  return data;
+};

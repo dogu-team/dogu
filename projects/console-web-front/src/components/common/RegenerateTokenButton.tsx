@@ -1,29 +1,25 @@
-import { OrganizationId } from '@dogu-private/types';
 import { Alert } from 'antd';
 import { isAxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 import { useState } from 'react';
-import { mutate } from 'swr';
 
-import { regenerateOrganizationAccessToken } from '../../api/organization';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import { getErrorMessage } from '../../utils/error';
 import DangerZone from '../common/boxes/DangerZone';
 import TokenCopyInput from '../common/TokenCopyInput';
 
 interface Props {
-  organizationId: OrganizationId;
+  regenerate: () => Promise<string>;
 }
 
-const RegenerateApiTokenButton = ({ organizationId }: Props) => {
+const RegenerateTokenButton = ({ regenerate }: Props) => {
   const [token, setToken] = useState<string | null>(null);
-  const { t } = useTranslation('organization');
+  const { t } = useTranslation('common');
 
   const handleConfirm = async () => {
     try {
-      const data = await regenerateOrganizationAccessToken(organizationId);
-      mutate(`/organizations/${organizationId}/access-token`, data, false);
-      setToken(data);
+      const token = await regenerate();
+      setToken(token);
       sendSuccessNotification('Regenerated');
     } catch (e) {
       if (isAxiosError(e)) {
@@ -40,8 +36,8 @@ const RegenerateApiTokenButton = ({ organizationId }: Props) => {
 
   return (
     <DangerZone.Button
-      modalTitle={t('settingRegenerateApiTokenButtonTitle')}
-      modalButtonTitle={t('settingRegenerateApiTokenConfirmModalButtonTitle')}
+      modalTitle={t('regenerateAccessTokenConfirmModalTitle')}
+      modalButtonTitle={t('regenerateAccessTokenConfirmModalButtonTitle')}
       modalContent={
         token ? (
           <div>
@@ -49,7 +45,7 @@ const RegenerateApiTokenButton = ({ organizationId }: Props) => {
             <TokenCopyInput value={token} />
           </div>
         ) : (
-          <p>{t('settingRegenerateApiTokenConfirmModalContent')}</p>
+          <p>{t('regenerateAccessTokenConfirmModalContent')}</p>
         )
       }
       onConfirm={handleConfirm}
@@ -57,9 +53,9 @@ const RegenerateApiTokenButton = ({ organizationId }: Props) => {
       footer={token ? null : undefined}
       onOpenChange={handleModalOpenChange}
     >
-      {t('settingRegenerateApiTokenButtonTitle')}
+      {t('regenerateAccessTokenButtonTitle')}
     </DangerZone.Button>
   );
 };
 
-export default RegenerateApiTokenButton;
+export default RegenerateTokenButton;

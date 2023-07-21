@@ -59,5 +59,12 @@
   "footerCompanyName": "도구테크놀로지스(주)",
   "footerCompanyAddress": "주소: 경기도 안양시 만안구 덕천로152번길 27(안양아이에스비즈타워) A동 2008B호",
   "footerRepresentative": "대표: 성주원",
-  "footerCompanyRegistrationNumber": "사업자등록번호: 166-86-02618"
+  "footerCompanyRegistrationNumber": "사업자등록번호: 166-86-02618",
+
+  "regenerateAccessTokenTitle": "엑세스 토큰 재발급",
+  "regenerateAccessTokenDescriptionText": "엑세스 토큰을 재발급합니다. 기존 토큰은 더 이상 사용할 수 없습니다.",
+  "regenerateAccessTokenButtonTitle": "재발급",
+  "regenerateAccessTokenConfirmModalTitle": "엑세스 토큰 재발급",
+  "regenerateAccessTokenConfirmModalContent": "기존 엑세스 토큰은 더 이상 사용할 수 없습니다.\n새 엑세스 토큰을 생성하시겠습니까? 기존 토큰을 사용하고 있는 모든 애플리케이션은 영향을 받게 됩니다.",
+  "regenerateAccessTokenConfirmModalButtonTitle": "확인 및 재발급"
 }

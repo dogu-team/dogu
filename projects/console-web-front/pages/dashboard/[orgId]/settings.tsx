@@ -13,7 +13,7 @@ import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
 import OrganizationSideBar from 'src/components/layouts/OrganizationSideBar';
 import ProfileImage from 'src/components/ProfileImage';
 import ImageCropUploader from 'src/components/images/ImageCropUploader';
-import { removeOrganization, updateOrganization, updateOrganizationOwner, uploadOrganizationImage } from 'src/api/organization';
+import { regenerateOrganizationAccessToken, removeOrganization, updateOrganization, updateOrganizationOwner, uploadOrganizationImage } from 'src/api/organization';
 import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
 import { getErrorMessage } from '../../../src/utils/error';
@@ -22,7 +22,7 @@ import DangerZone from '../../../src/components/common/boxes/DangerZone';
 import ApiTokenButton from '../../../src/components/organizations/ApiTokenButton';
 import RegenerateApiTokenButton from '../../../src/components/organizations/RegenerateApiTokenButton';
 import TokenCopyInput from '../../../src/components/common/TokenCopyInput';
-import { flexRowBaseStyle } from '../../../src/styles/box';
+import RegenerateTokenButton from '../../../src/components/common/RegenerateTokenButton';
 
 const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ organization, mutateOrganization }) => {
   const [editingOrganization, setEditingOrganization] = useState<OrganizationBase>(organization);
@@ -175,9 +175,9 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
 
         <DangerZone>
           <DangerZone.Item
-            title={t('organization:settingRegenerateApiTokenTitle')}
-            description={t('organization:settingRegenerateApiTokenDescriptionText')}
-            button={<RegenerateApiTokenButton organizationId={organization.organizationId} />}
+            title={t('common:regenerateAccessTokenTitle')}
+            description={t('common:regenerateAccessTokenDescriptionText')}
+            button={<RegenerateTokenButton regenerate={async () => regenerateOrganizationAccessToken(organization.organizationId)} />}
           />
           <DangerZone.Item
             title={t('organization:settingChangeOwnerMenuTitle')}

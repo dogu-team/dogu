@@ -12,7 +12,7 @@ import { useRouter } from 'next/router';
 import { NextPageWithLayout } from 'pages/_app';
 import H4 from 'src/components/common/headings/H4';
 import ProfileImage from 'src/components/ProfileImage';
-import { deleteUser, getUserByIdInServerSide, resetPassword, updateProfileImage, updateUser } from 'src/api/user';
+import { deleteUser, getUserByIdInServerSide, regeneratePersonalAccessToken, resetPassword, updateProfileImage, updateUser } from 'src/api/user';
 import ImageCropUploader from 'src/components/images/ImageCropUploader';
 import H5 from 'src/components/common/headings/H5';
 import ResetPasswordForm from 'src/components/registery/ResetPasswordForm';
@@ -28,7 +28,7 @@ import ConsoleBasicLayout from '../../src/components/layouts/ConsoleBasicLayout'
 import { USER_ACCESS_TOKEN_COOKIE_NAME, USER_ID_COOKIE_NAME } from '@dogu-private/types';
 import useEventStore from '../../src/stores/events';
 import AccessTokenButton from '../../src/components/users/AccessTokenButton';
-import { Content } from 'next/font/google';
+import RegenerateTokenButton from '../../src/components/common/RegenerateTokenButton';
 
 interface Props {
   user: UserBase;
@@ -206,6 +206,11 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
         )}
         <Divider />
         <DangerZone>
+          <DangerZone.Item
+            title={t('common:regenerateAccessTokenTitle')}
+            description={t('common:regenerateAccessTokenDescriptionText')}
+            button={<RegenerateTokenButton regenerate={async () => regeneratePersonalAccessToken(user.userId)} />}
+          />
           <DangerZone.Item
             title={t('account:deleteAccountMenuTitle')}
             description={t('account:deleteAccountMenuDescriptionText')}

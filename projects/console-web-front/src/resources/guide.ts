@@ -1,5 +1,5 @@
 import { OrganizationId, ProjectId } from '@dogu-private/types';
-import { getApiToken } from '../api/organization';
+import { getOrganizationAccessToken } from '../api/organization';
 
 export const SAMPLE_GIT_URL = 'https://github.com/dogu-team/dogu-examples.git';
 
@@ -115,7 +115,7 @@ export const appiumGuideData: Guide = {
     let orgApiToken: string;
 
     try {
-      orgApiToken = await getApiToken(orgId);
+      orgApiToken = await getOrganizationAccessToken(orgId);
     } catch (e) {
       orgApiToken = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
     }
@@ -198,7 +198,7 @@ export const webdriverioGuideData: Guide = {
     let orgApiToken: string;
 
     try {
-      orgApiToken = await getApiToken(orgId);
+      orgApiToken = await getOrganizationAccessToken(orgId);
     } catch (e) {
       orgApiToken = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
     }
@@ -299,7 +299,7 @@ export const seleniumData: Guide = {
     let orgApiToken: string;
 
     try {
-      orgApiToken = await getApiToken(orgId);
+      orgApiToken = await getOrganizationAccessToken(orgId);
     } catch (e) {
       orgApiToken = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
     }

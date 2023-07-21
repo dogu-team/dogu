@@ -27,13 +27,6 @@
   "settingChangeImage": "이미지 변경",
   "settingOrgName": "조직 이름",
 
-  "settingRegenerateApiTokenTitle": "API 토큰 재발급",
-  "settingRegenerateApiTokenDescriptionText": "API 토큰을 재발급합니다. 기존 토큰은 더 이상 사용할 수 없습니다.",
-  "settingRegenerateApiTokenButtonTitle": "재발급",
-  "settingRegenerateApiTokenConfirmModalTitle": "API 토큰 재발급",
-  "settingRegenerateApiTokenConfirmModalContent": "기존 API 토큰은 더 이상 사용할 수 없습니다.\n새 API 토큰을 생성하시겠습니까? 기존 토큰을 사용하고 있는 모든 애플리케이션은 영향을 받게 됩니다.",
-  "settingRegenerateApiTokenConfirmModalButtonTitle": "확인 및 재발급",
-
   "settingChangeOwnerMenuTitle": "조직 소유자 변경",
   "settingChangeOwnerDescriptionText": "조직 소유자를 다른 멤버로 변경합니다. 기존 소유자는 Admin 권한을 갖게 됩니다.",
   "settingChangeOwnerButtonTitle": "소유자 변경",
