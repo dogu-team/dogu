@@ -2,6 +2,11 @@ name: 🔄ci-dogu-agent
 
 on:
   workflow_dispatch:
+    inputs:
+      runners:
+        type: string
+        description: 'exclude_runner (ex. windows-2019 or macos-latest)'
+        default: 'macos-latest'
 
   push:
     branches: ['main']
@@ -38,6 +43,7 @@ jobs:
           - runner: macos-latest
             extension: dmg
         exclude:
+          - runner: [github.event.inputs.exclude_runner]
           - runner: windows-2019
             arch: arm64
     runs-on: ['${{ matrix.runner }}']
