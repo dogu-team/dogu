@@ -1,4 +1,4 @@
-name: 📤publish-actions-development
+name: 📤publish-npm-and-actions-development
 
 on:
   workflow_dispatch:
@@ -41,6 +41,15 @@ jobs:
       - name: Build dogu-actions
         run: |
           yarn build:actions
+
+      - name: Use NPM Token with organization read access
+        uses: dkershner6/use-npm-token-action@v1
+        with:
+          token: '${{ secrets.DOGU_NPM_PUBLISH_TOKEN }}'
+
+      - name: Publish to npm
+        run: |
+          yarn publish:npm:dev
 
       - uses: oleksiyrudenko/gha-git-credentials@v2.1.1
         with:

@@ -31,12 +31,6 @@ jobs:
           path: ${{ github.workspace }}/.yarn/unplugged
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
 
-      - name: Setup Python & Poetry
-        uses: gabrielfalcao/pyenv-action@v11
-        with:
-          default: ${{ env.DOGU_PYTHON_VERSION }}
-          command: pyenv global ${{ env.DOGU_PYTHON_VERSION }} && pip install poetry==${{ env.DOGU_POETRY_VERSION }} && which poetry
-
       - if: steps.cache_yarn_unplugged.outputs.cache-hit != 'true'
         name: Run newbie
         run: |
