@@ -1,6 +1,5 @@
-import { MutableVariableReplacements, VariableReplacementProvider, VariableReplacements } from '@dogu-tech/common';
+import { MutableVariableReplacements, Printable, VariableReplacementProvider, VariableReplacements } from '@dogu-tech/common';
 import { delimiter } from 'path';
-import { logger } from '..';
 import { newCleanNodeEnv } from '../clean-env';
 
 export class EnvironmentVariableReplacementProvider implements VariableReplacementProvider {
@@ -45,7 +44,7 @@ export class StackEnvironmentVariableReplacementProvider implements VariableRepl
     return this.providers.pop() ?? null;
   }
 
-  export(): VariableReplacements {
+  export(logger: Printable = console): VariableReplacements {
     let replacements: MutableVariableReplacements = {};
     for (let i = this.providers.length - 1; i >= 0; i--) {
       const provider = this.providers[i];
@@ -59,11 +58,11 @@ export class StackEnvironmentVariableReplacementProvider implements VariableRepl
     }
     const camelPath = replacements['Path'];
     const upperPath = replacements['PATH'];
-    logger.verbose(`envvvv 00 - 1`, { camelPath, upperPath });
+    logger.info(`envvvv 00 - 1`, { camelPath, upperPath });
     if (camelPath && upperPath) {
       replacements['PATH'] = camelPath + delimiter + upperPath;
       delete replacements['Path'];
-      logger.verbose(`envvvv 00 - 2 `, { camelPath: replacements['Path'], upperPath: replacements['PATH'] });
+      logger.info(`envvvv 00 - 2 `, { camelPath: replacements['Path'], upperPath: replacements['PATH'] });
     }
     return replacements;
   }
