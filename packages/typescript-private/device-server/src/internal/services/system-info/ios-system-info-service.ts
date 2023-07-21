@@ -7,6 +7,10 @@ import { SystemInfoService } from './system-info-service-interface';
 export class IosSystemInfoService implements SystemInfoService {
   constructor(private readonly service: IosDeviceAgentService) {}
 
+  static async gerVersion(serial: Serial): Promise<string> {
+    return await MobileDevice.getProductVersion(serial, idcLogger);
+  }
+
   async createSystemInfo(serial: Serial): Promise<DeviceSystemInfo> {
     const udid = serial;
     const info = DefaultDeviceSystemInfo();

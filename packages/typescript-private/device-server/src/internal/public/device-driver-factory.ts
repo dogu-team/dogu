@@ -48,12 +48,12 @@ export class MacOSDeviceDriverFactory implements DeviceDriverFactory {
         await AndroidDriver.create(this.appiumService, this.gamiumService, this.httpRequestRelayService, this.appiumDeviceWebDriverHandlerService, this.doguLogger),
       );
     }
-    // if (this.enabledPlatforms.includes('ios')) {
-    //   map.set(
-    //     Platform.PLATFORM_IOS,
-    //     await IosDriver.create(this.appiumService, this.gamiumService, this.httpRequestRelayService, this.appiumDeviceWebDriverHandlerService, this.doguLogger),
-    //   );
-    // }
+    if (this.enabledPlatforms.includes('ios')) {
+      map.set(
+        Platform.PLATFORM_IOS,
+        await IosDriver.create(this.appiumService, this.gamiumService, this.httpRequestRelayService, this.appiumDeviceWebDriverHandlerService, this.doguLogger),
+      );
+    }
     return map;
   }
 }

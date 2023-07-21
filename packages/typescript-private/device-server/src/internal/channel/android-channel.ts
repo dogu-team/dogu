@@ -21,6 +21,7 @@ import { ChildProcess, execFile } from 'child_process';
 import fs from 'fs';
 import lodash from 'lodash';
 import { Observable } from 'rxjs';
+import semver from 'semver';
 import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
 import { AppiumService } from '../../appium/appium.service';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
@@ -104,6 +105,11 @@ export class AndroidChannel implements DeviceChannel {
 
     const systemInfoService = new AndroidSystemInfoService();
     const systemInfo = await systemInfoService.createSystemInfo(serial);
+
+    const version = semver.coerce(systemInfo.version);
+    if (version && semver.lt(version, '8.0.0')) {
+      throw new Error(`Android version must be 8 or higher. current version: ${version}`);
+    }
 
     let portContext = portContextes.get(serial);
     if (portContext == null) {
