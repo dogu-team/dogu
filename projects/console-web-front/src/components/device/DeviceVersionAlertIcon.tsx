@@ -58,7 +58,7 @@ const DeviceVersionAlertIcon = ({ device }: Props) => {
     }
   };
 
-  if (isLow()) {
+  if (!!majorVersion && isLow()) {
     return (
       <Tooltip
         title={
