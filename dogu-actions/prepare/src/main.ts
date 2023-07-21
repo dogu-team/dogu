@@ -2,7 +2,7 @@ import { ActionKit, AppVersion, checkoutProject, downloadApp, errorify, isAppVer
 import { tryToQuitGamiumApp } from '@dogu-tech/toolkit';
 
 ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionClient, deviceClient }) => {
-  const { DOGU_DEVICE_WORKSPACE_PATH, DOGU_PROJECT_ID, DOGU_DEVICE_PLATFORM, DOGU_HOST_WORKSPACE_PATH, DOGU_DEVICE_SERIAL, DOGU_RUN_TYPE } = options;
+  const { DOGU_ROUTINE_WORKSPACE_PATH, DOGU_DEVICE_PLATFORM, DOGU_HOST_WORKSPACE_PATH, DOGU_DEVICE_SERIAL, DOGU_RUN_TYPE } = options;
   const clean = input.get<boolean>('clean');
   const appVersion = input.get<AppVersion>('appVersion');
   if (!isAppVersion(appVersion)) {
@@ -28,7 +28,7 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
   if (optionsConfig.get('localUserProject.use', false)) {
     logger.info('Using local user project...');
   } else {
-    await checkoutProject(logger, consoleActionClient, deviceHostClient, DOGU_DEVICE_WORKSPACE_PATH, DOGU_PROJECT_ID, branchOrTag, clean);
+    await checkoutProject(logger, consoleActionClient, deviceHostClient, DOGU_ROUTINE_WORKSPACE_PATH, branchOrTag, clean);
   }
   const appPath = await downloadApp(logger, consoleActionClient, deviceHostClient, DOGU_DEVICE_PLATFORM, DOGU_HOST_WORKSPACE_PATH, currentPlatformAppVersion);
   await tryToQuitGamiumApp(logger, deviceClient, deviceHostClient, gamiumEnginePort, DOGU_DEVICE_SERIAL, DOGU_DEVICE_PLATFORM, retryCount, retryInterval, requestTimeout);

@@ -3,10 +3,10 @@ export interface StepContextEnv extends Record<string, string | undefined> {
   DOGU_DEVICE_ID: string;
   DOGU_DEVICE_JOB_ID: string;
   DOGU_DEVICE_PLATFORM: string;
-  DOGU_DEVICE_PROJECT_WORKSPACE_PATH: string;
   DOGU_DEVICE_SERIAL: string;
   DOGU_DEVICE_SERVER_PORT: string;
   DOGU_DEVICE_WORKSPACE_PATH: string;
+  DOGU_ROUTINE_WORKSPACE_PATH: string;
   DOGU_HOST_PLATFORM: string;
   DOGU_HOST_WORKSPACE_PATH: string;
   DOGU_LOG_LEVEL: string;

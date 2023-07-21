@@ -1,7 +1,5 @@
 import { Printable } from '@dogu-tech/common';
 import { DeviceHostClient } from '@dogu-tech/device-client';
-import { HostPaths } from '@dogu-tech/node';
-import { ProjectId } from '@dogu-tech/types';
 import { spawnSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
@@ -11,8 +9,7 @@ export async function checkoutProject(
   printable: Printable,
   consoleActionClient: ConsoleActionClient,
   deviceHostClient: DeviceHostClient,
-  DOGU_DEVICE_WORKSPACE_PATH: string,
-  DOGU_PROJECT_ID: ProjectId,
+  DOGU_ROUTINE_WORKSPACE_PATH: string,
   branchOrTag: string,
   clean: boolean,
 ) {
@@ -36,22 +33,20 @@ export async function checkoutProject(
   }
 
   command(git, [...configArgs, '--version'], 'Check Git...', 'Git not found');
-  const deviceProjectWorkspacePath = HostPaths.deviceProjectWorkspacePath(DOGU_DEVICE_WORKSPACE_PATH, DOGU_PROJECT_ID);
-  await fs.promises.mkdir(deviceProjectWorkspacePath, { recursive: true });
-  const deviceProjectGitPath = HostPaths.deviceProjectGitPath(deviceProjectWorkspacePath);
-  const dotGitPath = path.resolve(deviceProjectGitPath, '.git');
+  const routineWorkspacePath = DOGU_ROUTINE_WORKSPACE_PATH;
+  const dotGitPath = path.resolve(routineWorkspacePath, '.git');
   const stat = await fs.promises.stat(dotGitPath).catch(() => null);
   if (!stat) {
-    printable.info('Git repository not found', { deviceProjectGitPath });
-    command(git, [...configArgs, 'clone', '--depth', '1', '--branch', branchOrTag, url, deviceProjectGitPath], 'Cloning Git repository...', 'Git clone failed');
+    printable.info('Git repository not found', { routineWorkspacePath });
+    command(git, [...configArgs, 'clone', '--depth', '1', '--branch', branchOrTag, url, routineWorkspacePath], 'Cloning Git repository...', 'Git clone failed');
   } else {
-    printable.info('Git repository found', { deviceProjectGitPath });
+    printable.info('Git repository found', { routineWorkspacePath });
     if (clean) {
-      command(git, [...configArgs, '-C', deviceProjectGitPath, 'reset', '--hard'], 'Resetting Git repository...', 'Git reset failed');
-      command(git, [...configArgs, '-C', deviceProjectGitPath, 'clean', '-fdx'], 'Cleaning Git repository...', 'Git clean failed');
+      command(git, [...configArgs, '-C', routineWorkspacePath, 'reset', '--hard'], 'Resetting Git repository...', 'Git reset failed');
+      command(git, [...configArgs, '-C', routineWorkspacePath, 'clean', '-fdx'], 'Cleaning Git repository...', 'Git clean failed');
     }
-    command(git, [...configArgs, '-C', deviceProjectGitPath, 'fetch', 'origin', branchOrTag], 'Fetching Git repository...', 'Git fetch failed');
-    command(git, [...configArgs, '-C', deviceProjectGitPath, 'checkout', branchOrTag], 'Checking out Git repository...', 'Git checkout failed');
-    command(git, [...configArgs, '-C', deviceProjectGitPath, 'pull'], 'Pulling Git repository...', 'Git pull failed');
+    command(git, [...configArgs, '-C', routineWorkspacePath, 'fetch', 'origin', branchOrTag], 'Fetching Git repository...', 'Git fetch failed');
+    command(git, [...configArgs, '-C', routineWorkspacePath, 'checkout', branchOrTag], 'Checking out Git repository...', 'Git checkout failed');
+    command(git, [...configArgs, '-C', routineWorkspacePath, 'pull'], 'Pulling Git repository...', 'Git pull failed');
   }
 }
