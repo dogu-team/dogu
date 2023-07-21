@@ -1,9 +1,9 @@
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver import ChromeOptions, Remote
 from pytest_dogu_sdk.dogu_config import DoguConfig
-from pytest_dogu_sdk.dogu_hooks import DoguClient
+from pytest_dogu_sdk.common import DoguClient
 
 
 pytest_plugins = ["pytest_dogu_sdk"]
@@ -11,10 +11,7 @@ pytest_plugins = ["pytest_dogu_sdk"]
 
 def pytest_dogu_create_client():
     class SeleniumDoguClient(DoguClient):
-        def __init__(self):
-            self._driver: Optional[WebDriver] = None
-
-        def on_setup(self, dogu_config: DoguConfig):
+        def on_setup(self, dogu_config: DoguConfig) -> WebDriver:
             options = ChromeOptions()
             options.set_capability(
                 "dogu:options",
@@ -26,22 +23,17 @@ def pytest_dogu_create_client():
                     "browserName": dogu_config.browser_name,
                 },
             )
-            driver = Remote(
+            return Remote(
                 command_executor=f"{dogu_config.api_base_url}/remote/wd/hub",
                 options=options,
             )
-            self._driver = driver
 
         @property
         def dogu_results(self) -> Dict[str, Any]:
-            return self._driver.capabilities["dogu:results"]
-
-        @property
-        def instance(self) -> WebDriver:
-            return self._driver
+            return self.cast(WebDriver).capabilities["dogu:results"]
 
         def on_teardown(self):
-            if self._driver:
-                self._driver.quit()
+            if self.impl:
+                self.cast(WebDriver).quit()
 
     return SeleniumDoguClient()
