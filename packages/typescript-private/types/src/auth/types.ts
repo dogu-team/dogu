@@ -1,4 +1,4 @@
-import { HostId, OrganizationId, ProjectId, SNS_TYPE, UserSnsId } from '..';
+import { CREATOR_TYPE, HostId, OrganizationId, ProjectId, SNS_TYPE, UserSnsId } from '..';
 import { UserId } from '../user';
 
 export interface UserAuthToken {
@@ -72,24 +72,18 @@ export function isGoogleOAuthPayload(payload: any): payload is GoogleOAuthPayloa
 
 export type AuthPayLoad = UserPayload | HostPayload | GoogleOAuthPayload;
 
-export enum CALLER_TYPE {
-  ORGANIZATION,
-  PROJECT,
-  USER,
-}
-
 export type RemotePayload = {
   userId?: UserId;
   projectId?: ProjectId;
   organizationId?: OrganizationId;
-  callerType: CALLER_TYPE;
+  creatorType: CREATOR_TYPE;
 };
 
 export function isRemotePayloadPayload(payload: any): payload is RemotePayload {
   return (
     typeof payload === 'object' && //
     payload !== null &&
-    'callerType' in payload &&
+    'creatorType' in payload &&
     ('userId' in payload || 'projectId' in payload || 'organizationId' in payload)
   );
 }

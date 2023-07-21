@@ -30,7 +30,10 @@ export class OrganizationGuard implements CanActivate {
     const organizationId = getOrganizationIdFromRequest(ctx);
 
     const organizationRole = await UserPermission.getOrganizationUserRole(this.dataSource.manager, organizationId, userId);
-    UserPermission.validateOrganizationRolePermission(organizationRole, controllerRoleType);
+    if (!UserPermission.validateOrganizationRolePermission(organizationRole, controllerRoleType)) {
+      const requiredRoleName = ORGANIZATION_ROLE[controllerRoleType];
+      throw new HttpException(`The user is not a ${requiredRoleName} role of the organization.`, HttpStatus.UNAUTHORIZED);
+    }
     return true;
   }
 }

@@ -19,7 +19,7 @@ export class RemoteGuard implements CanActivate {
     const req = ctx.switchToHttp().getRequest<Request>();
 
     await this.authRemoteService.validateRequestData(req);
-    const doguOptions = await this.authRemoteService.getDoguOptionsByRequest(req);
+    const doguOptions = await this.authRemoteService.getDoguOptions(req);
 
     req.user = doguOptions;
     return true;

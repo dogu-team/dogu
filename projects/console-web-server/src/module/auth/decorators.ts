@@ -1,4 +1,13 @@
-import { GOOGLE, GoogleOAuthPayload, HostPayload, RemotePayload, UserPayload, V1OpenApiPayload } from '@dogu-private/types';
+import {
+  GOOGLE,
+  GoogleOAuthPayload,
+  HostPayload,
+  RemotePayload,
+  UserPayload,
+  V1OpenApiPayload,
+  V1_OPEN_API_ORGANIZATION_ROLE_KEY,
+  V1_OPEN_API_PROJECT_ROLE_KEY,
+} from '@dogu-private/types';
 import { applyDecorators, createParamDecorator, ExecutionContext, SetMetadata, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import {
@@ -16,6 +25,9 @@ import {
 import { DeviceAcessGuard } from './guard/device.guard';
 import { EmailVerificationGuard } from './guard/email-verification.guard';
 import { HostGuard } from './guard/host.guard';
+import { V1OpenApiOrganizationGuard } from './guard/open-api/v1/open-api-organization.guard';
+import { V1OpenApiProjectGuard } from './guard/open-api/v1/open-api-project.guard';
+import { V1OpenApiGuard } from './guard/open-api/v1/open-api.guard';
 import { OrganizationGuard } from './guard/organization.guard';
 import { ProjectGuard } from './guard/project.guard';
 import { RemoteOrganizationGuard } from './guard/remote/remote-organization.guard';
@@ -70,12 +82,20 @@ export const GoogleUser = createParamDecorator((data: unknown, ctx: ExecutionCon
   return request.user;
 });
 
-export const V1OpenApiCaller = createParamDecorator((data: unknown, ctx: ExecutionContext): V1OpenApiPayload => {
-  const request = ctx.switchToHttp().getRequest<{ user: V1OpenApiPayload }>();
+export const RemoteCaller = createParamDecorator((data: unknown, ctx: ExecutionContext): RemotePayload => {
+  const request = ctx.switchToHttp().getRequest<{ user: RemotePayload }>();
   return request.user;
 });
 
-export const RemoteCaller = createParamDecorator((data: unknown, ctx: ExecutionContext): RemotePayload => {
-  const request = ctx.switchToHttp().getRequest<{ user: RemotePayload }>();
+export function V1OpenApiOrganizationPermission(roleType: ORGANIZATION_ROLE): PropertyDecorator {
+  return applyDecorators(SetMetadata(V1_OPEN_API_ORGANIZATION_ROLE_KEY, roleType), UseGuards(V1OpenApiGuard), UseGuards(V1OpenApiOrganizationGuard));
+}
+
+export function V1OpenApiProjectPermission(roleType: PROJECT_ROLE): PropertyDecorator {
+  return applyDecorators(SetMetadata(V1_OPEN_API_PROJECT_ROLE_KEY, roleType), UseGuards(V1OpenApiGuard), UseGuards(V1OpenApiProjectGuard));
+}
+
+export const V1OpenApiCaller = createParamDecorator((data: unknown, ctx: ExecutionContext): V1OpenApiPayload => {
+  const request = ctx.switchToHttp().getRequest<{ user: V1OpenApiPayload }>();
   return request.user;
 });

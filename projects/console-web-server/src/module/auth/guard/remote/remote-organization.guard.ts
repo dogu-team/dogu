@@ -1,4 +1,4 @@
-import { CALLER_TYPE, RemotePayload } from '@dogu-private/types';
+import { CREATOR_TYPE, RemotePayload } from '@dogu-private/types';
 import { CanActivate, ExecutionContext, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -7,7 +7,6 @@ import { DataSource } from 'typeorm';
 import { config } from '../../../../config';
 import { OrganizationAccessToken } from '../../../../db/entity/organization-access-token.entity';
 import { PersonalAccessToken } from '../../../../db/entity/personal-access-token.entity';
-import { ProjectAccessToken } from '../../../../db/entity/project-access-token.entity';
 import { Token } from '../../../../db/entity/token.entity';
 import { DoguLogger } from '../../../logger/logger';
 import { ORGANIZATION_ROLE, REMOTE_ORGANIZATION_ROLE_KEY } from '../../auth.types';
@@ -36,7 +35,7 @@ export class RemoteOrganizationGuard implements CanActivate {
     }
 
     const req = ctx.switchToHttp().getRequest<Request>();
-    const tokenByRequest = this.authRemoteService.getTokenByWedriverAgentRequest(req);
+    const tokenByRequest = this.authRemoteService.getToken(req);
     if (!tokenByRequest) {
       throw new HttpException(`RemoteOrganizationGuard. The token is not defined.`, HttpStatus.UNAUTHORIZED);
     }
@@ -46,20 +45,15 @@ export class RemoteOrganizationGuard implements CanActivate {
       throw new HttpException(`RemoteOrganizationGuard. The token is invalid.`, HttpStatus.UNAUTHORIZED);
     }
 
-    const projectByToken = await this.dataSource.getRepository(ProjectAccessToken).findOne({ where: { tokenId: token.tokenId } });
-    if (projectByToken) {
-      throw new HttpException(`Unauthorized`, HttpStatus.UNAUTHORIZED);
-    }
-
     // validate by org
     const orgByToken = await this.dataSource.getRepository(OrganizationAccessToken).findOne({ where: { tokenId: token.tokenId } });
-    const orgIdByRequest = this.authRemoteService.getOrganizationIdByRequest(req)!;
+    const orgIdByRequest = this.authRemoteService.getOrganizationId(req)!;
     if (orgByToken) {
       const orgId = orgByToken.organizationId;
       if (orgId === orgIdByRequest) {
         const payload: RemotePayload = {
           organizationId: orgIdByRequest,
-          callerType: CALLER_TYPE.ORGANIZATION,
+          creatorType: CREATOR_TYPE.ORGANIZATION,
         };
         req.user = payload;
         return true;
@@ -74,11 +68,14 @@ export class RemoteOrganizationGuard implements CanActivate {
 
     const userId = userByToken.userId;
     const organizationRole = await UserPermission.getOrganizationUserRole(this.dataSource.manager, orgIdByRequest, userId);
-    UserPermission.validateOrganizationRolePermission(organizationRole, controllerRoleType);
+    if (!UserPermission.validateOrganizationRolePermission(organizationRole, controllerRoleType)) {
+      const requiredRoleName = ORGANIZATION_ROLE[controllerRoleType];
+      throw new HttpException(`The user is not a ${requiredRoleName} role of the organization.`, HttpStatus.UNAUTHORIZED);
+    }
 
     const payload: RemotePayload = {
       userId: userId,
-      callerType: CALLER_TYPE.USER,
+      creatorType: CREATOR_TYPE.USER,
     };
 
     req.user = payload;

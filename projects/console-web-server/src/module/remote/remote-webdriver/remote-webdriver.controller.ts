@@ -41,9 +41,9 @@ export class RemoteWebDriverInfoController {
   async newSession(
     @Req() request: Request, //
     @Res() response: Response,
-    @RemoteCaller() caller: RemotePayload,
+    @RemoteCaller() remotePayload: RemotePayload,
   ): Promise<void> {
-    this.logger.debug(JSON.stringify(caller));
+    this.logger.debug(JSON.stringify(remotePayload));
 
     const relayRequest = this.remoteWebDriverService.convertRequest(request);
 

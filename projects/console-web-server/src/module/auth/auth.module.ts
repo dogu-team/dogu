@@ -9,11 +9,12 @@ import { AuthJwtService } from './service/auth-jwt.service';
 import { FeatureConfig } from '../../feature.config';
 import { AuthRemoteService } from './service/auth-remote.service';
 import { AuthUserService } from './service/auth-user.service';
+import { V1AuthOpenApiService } from './service/open-api/v1/auth-open-api.service';
 import { GoogleStrategy } from './strategy/google-strategy';
 
 const PROVIDERS = FeatureConfig.get('thirdPartyLogin')
-  ? [AuthUserService, AuthJwtService, AuthHostService, AuthRemoteService, GoogleStrategy] //
-  : [AuthUserService, AuthJwtService, AuthHostService, AuthRemoteService];
+  ? [AuthUserService, AuthJwtService, AuthHostService, AuthRemoteService, V1AuthOpenApiService, GoogleStrategy] //
+  : [AuthUserService, AuthJwtService, AuthHostService, AuthRemoteService, V1AuthOpenApiService];
 
 @Global()
 @Module({
@@ -23,7 +24,7 @@ const PROVIDERS = FeatureConfig.get('thirdPartyLogin')
       secret: env.DOGU_SECRET,
     }),
   ],
-  exports: [AuthUserService, AuthJwtService, AuthHostService, AuthRemoteService],
+  exports: [AuthUserService, AuthJwtService, AuthHostService, AuthRemoteService, V1AuthOpenApiService],
   providers: PROVIDERS,
   controllers: [],
 })

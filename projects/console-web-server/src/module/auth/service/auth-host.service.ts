@@ -24,10 +24,6 @@ export class AuthHostService {
     const req = ctx.switchToHttp().getRequest<Request>();
     const res = ctx.switchToHttp().getResponse<Response>();
 
-    // const deviceId = ctx.switchToHttp().getRequest<{ deviceId: DeviceId }>().deviceId;
-    // const hostId = ctx.switchToHttp().getRequest<{ hostId: HostId }>().hostId;
-    // const organizationId = ctx.switchToHttp().getRequest<{ organizationId: OrganizationId }>().organizationId;
-
     const deviceId = req.params.deviceId;
     const hostId = req.params.hostId;
     const organizationId = req.params.organizationId;

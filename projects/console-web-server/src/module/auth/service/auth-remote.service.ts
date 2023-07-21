@@ -22,7 +22,7 @@ export class AuthRemoteService {
     }
     //FIXME:(felix) check doguOptions type
 
-    const token = this.getTokenByWedriverAgentRequest(req);
+    const token = this.getToken(req);
     if (!token) {
       throw new HttpException('Token is required', HttpStatus.UNAUTHORIZED);
     }
@@ -40,7 +40,7 @@ export class AuthRemoteService {
     return doguOptions;
   }
 
-  public getDoguOptionsByRequest(req: Request): object {
+  public getDoguOptions(req: Request): object {
     const doguOptions = req.body['capabilities']?.['alwaysMatch']?.['dogu:options'];
     if (!doguOptions) {
       throw new HttpException('dogu:options is required', HttpStatus.BAD_REQUEST);
@@ -60,70 +60,21 @@ export class AuthRemoteService {
     }
   }
 
-  public getTokenByWedriverAgentRequest(req: Request): string | null {
+  public getToken(req: Request): string | null {
     const apiToken = req.body['capabilities']?.['alwaysMatch']?.['dogu:options']?.['token'];
     if (!apiToken) return null;
     return apiToken as string;
   }
 
-  public getOrganizationIdByRequest(req: Request): string | null {
+  public getOrganizationId(req: Request): string | null {
     const orgId = req.body['capabilities']?.['alwaysMatch']?.['dogu:options']?.['organizationId'];
     if (!orgId) return null;
     return orgId as OrganizationId;
   }
 
-  public getProjectIdByRequest(req: Request): string | null {
+  public getProjectId(req: Request): string | null {
     const projectId = req.body['capabilities']?.['alwaysMatch']?.['dogu:options']?.['projectId'];
     if (!projectId) return null;
     return projectId as ProjectId;
   }
-
-  // private async validateWebdriverAgentNewSession(req: Request): Promise<boolean> {
-  //   const apiToken = this.getTokenByWedriverAgentRequest(req);
-  //   if (!apiToken) {
-  //     throw new HttpException('Api token is required', HttpStatus.UNAUTHORIZED);
-  //   }
-
-  //   const organizationId = this.getOrganizationIdByRequest(req);
-  //   if (!organizationId) {
-  //     throw new HttpException('OrganizationId is required', HttpStatus.UNAUTHORIZED);
-  //   }
-
-  //   const token = await this.dataSource.getRepository(Token).findOne({ where: { token: apiToken } });
-  //   if (!token) {
-  //     return false;
-  //   }
-
-  //   const organizationApiToken = await this.dataSource.getRepository(OrganizationAccessToken).findOne({ where: { tokenId: token.tokenId } });
-  //   if (!organizationApiToken) {
-  //     return false;
-  //   }
-
-  //   if (organizationApiToken.organizationId !== organizationId) {
-  //     return false;
-  //   }
-
-  //   if (TokenService.isExpired(token)) {
-  //     return false;
-  //   }
-
-  //   return true;
-  // }
-
-  // private async validateWebdriverAgentSession(req: Request): Promise<boolean> {
-  //   return true;
-  // }
-
-  // private async validateWebdriverAgentApiToken(req: Request): Promise<boolean> {
-  //   const url = req.url;
-  //   const urlParse = url.replace(/\/+$/, '');
-  //   const reqMethod = req.method;
-  //   if (urlParse === '/remote/wd/hub/session' && reqMethod === 'POST') {
-  //     const isValid = await this.validateWebdriverAgentNewSession(req);
-  //     return isValid;
-  //   }
-
-  //   const isValid = await this.validateWebdriverAgentSession(req);
-  //   return isValid;
-  // }
 }

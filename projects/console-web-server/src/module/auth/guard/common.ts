@@ -150,7 +150,6 @@ export module UserPermission {
 
   export function validateOrganizationRolePermission(organizationRole: OrganizationRole, controllerRoleType: ORGANIZATION_ROLE): boolean {
     const orgRoleId = organizationRole.organizationRoleId;
-    const requiredRoleName = ORGANIZATION_ROLE[controllerRoleType];
 
     if (organizationRole.customise === 1) {
       // custom role type validation
@@ -166,8 +165,9 @@ export module UserPermission {
 
     const isValid = UserPermission.checkOrganizationRolePermission(orgRoleId, controllerRoleType);
     if (!isValid) {
-      logger.error(`The user is not a ${requiredRoleName} role of the organization.`);
-      throw new HttpException(`The user is not a ${requiredRoleName} role of the organization.`, HttpStatus.UNAUTHORIZED);
+      // logger.error(`The user is not a ${requiredRoleName} role of the organization.`);
+      // throw new HttpException(`The user is not a ${requiredRoleName} role of the organization.`, HttpStatus.UNAUTHORIZED);
+      return false;
     }
     return true;
   }

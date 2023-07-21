@@ -14,7 +14,10 @@ export type V1OpenApiPayload = {
   callerType: V1CALLER_TYPE;
 };
 
-export function isOpenApiPayload(payload: any): payload is V1OpenApiPayload {
+export const V1_OPEN_API_ORGANIZATION_ROLE_KEY = 'V1_OPEN_API_ORGANIZATION_ROLE';
+export const V1_OPEN_API_PROJECT_ROLE_KEY = 'V1_OPEN_API_PROJECT_ROLE';
+
+export function isV1OpenApiPayload(payload: any): payload is V1OpenApiPayload {
   return (
     typeof payload === 'object' && //
     payload !== null &&
