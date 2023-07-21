@@ -120,16 +120,18 @@ export const appiumGuideData: Guide = {
       orgApiToken = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
     }
 
-    return `"version": 1,
-"apiBaseUrl": "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}",
-"organizationId": "${orgId}",
-"projectId": "${projectId}",
-"token": "${orgApiToken}",
-"runsOn": "${platform}",  // or another device tag
-${
-  target === GuideSupportTarget.WEB
-    ? '"browserName": "chrome",'
-    : `"appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'INSERT_YOUR_APP_VERSION'}",`
+    return `{
+  "version": 1,
+  "apiBaseUrl": "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}",
+  "organizationId": "${orgId}",
+  "projectId": "${projectId}",
+  "token": "${orgApiToken}",
+  "runsOn": "${platform}",  // or another device tag
+  ${
+    target === GuideSupportTarget.WEB
+      ? '"browserName": "chrome",'
+      : `"appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'INSERT_YOUR_APP_VERSION'}",`
+  }
 }
 `;
   },
@@ -203,16 +205,18 @@ export const webdriverioGuideData: Guide = {
       orgApiToken = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
     }
 
-    return `"version": 1,
-"apiBaseUrl": "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}",
-"organizationId": "${orgId}",
-"projectId": "${projectId}",
-"token": "${orgApiToken}",
-"runsOn": "${platform}",  // or another device tag
-${
-  target === GuideSupportTarget.WEB
-    ? '"browserName": "chrome",'
-    : `"appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'INSERT_YOUR_APP_VERSION'}",`
+    return `{
+  "version": 1,
+  "apiBaseUrl": "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}",
+  "organizationId": "${orgId}",
+  "projectId": "${projectId}",
+  "token": "${orgApiToken}",
+  "runsOn": "${platform}",  // or another device tag
+  ${
+    target === GuideSupportTarget.WEB
+      ? '"browserName": "chrome",'
+      : `"appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'INSERT_YOUR_APP_VERSION'}",`
+  }
 }
 `;
   },
@@ -304,13 +308,15 @@ export const seleniumData: Guide = {
       orgApiToken = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
     }
 
-    return `"version": 1,
-"apiBaseUrl": "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}",
-"organizationId": "${orgId}",
-"projectId": "${projectId}",
-"token": "${orgApiToken}",
-"runsOn": "${platform}",  // or another device tag
-"browserName": "chrome",
+    return `{
+  "version": 1,
+  "apiBaseUrl": "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}",
+  "organizationId": "${orgId}",
+  "projectId": "${projectId}",
+  "token": "${orgApiToken}",
+  "runsOn": "${platform}",  // or another device tag
+  "browserName": "chrome",
+}
 `;
   },
   guides: [
