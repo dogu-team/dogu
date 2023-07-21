@@ -1,4 +1,5 @@
 import { MutableVariableReplacements, VariableReplacementProvider, VariableReplacements } from '@dogu-tech/common';
+import { delimiter } from 'path';
 import { newCleanNodeEnv } from '../clean-env';
 
 export class EnvironmentVariableReplacementProvider implements VariableReplacementProvider {
@@ -54,6 +55,9 @@ export class StackEnvironmentVariableReplacementProvider implements VariableRepl
         }
         replacements[key] = providerReplacements[key];
       }
+    }
+    if (replacements['Path'] && replacements['PATH']) {
+      replacements['PATH'] = replacements['PATH'] + delimiter + replacements['Path'];
     }
     return replacements;
   }
