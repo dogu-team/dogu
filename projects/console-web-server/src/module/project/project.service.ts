@@ -32,7 +32,8 @@ import { v4 } from 'uuid';
 import { Device, Project, RoutinePipeline, Token, User } from '../../db/entity';
 import { ProjectAccessToken } from '../../db/entity/project-access-token.entity';
 import { EMPTY_PAGE, Page } from '../../module/common/dto/pagination/page';
-import { checkOrganizationRolePermission, ORGANIZATION_ROLE } from '../auth/auth.types';
+import { ORGANIZATION_ROLE } from '../auth/auth.types';
+import { UserPermission } from '../auth/guard/common';
 // import { GitlabService } from '../gitlab/gitlab.service';
 import { DeviceStatusService } from '../organization/device/device-status.service';
 import { TokenService } from '../token/token.service';
@@ -213,7 +214,7 @@ export class ProjectService {
       throw new HttpException(`This user is not a member of the organization`, HttpStatus.FORBIDDEN);
     }
 
-    if (checkOrganizationRolePermission(orgRole.organizationRoleId, ORGANIZATION_ROLE.ADMIN)) {
+    if (UserPermission.checkOrganizationRolePermission(orgRole.organizationRoleId, ORGANIZATION_ROLE.ADMIN)) {
       const rv = await this.findProjectsByOrganizationIdByOrganizationAdmin(organizationId, dto);
       return rv;
     } else {

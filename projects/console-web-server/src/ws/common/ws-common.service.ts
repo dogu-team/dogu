@@ -15,7 +15,8 @@ import { IncomingMessage } from 'http';
 import { DataSource } from 'typeorm';
 import { Device, OrganizationAndUserAndOrganizationRole, ProjectAndUserAndProjectRole } from '../../db/entity/index';
 import { User } from '../../db/entity/user.entity';
-import { checkOrganizationRolePermission, checkProjectRolePermission, ORGANIZATION_ROLE, PROJECT_ROLE } from '../../module/auth/auth.types';
+import { ORGANIZATION_ROLE, PROJECT_ROLE } from '../../module/auth/auth.types';
+import { UserPermission } from '../../module/auth/guard/common';
 import { AuthUserService } from '../../module/auth/service/auth-user.service';
 import { DoguLogger } from '../../module/logger/logger';
 
@@ -114,7 +115,7 @@ export class WsCommonService {
     }
 
     const orgRoleId = orgUserRoles[0].organizationRoleId;
-    if (checkOrganizationRolePermission(orgRoleId, ORGANIZATION_ROLE.ADMIN)) {
+    if (UserPermission.checkOrganizationRolePermission(orgRoleId, ORGANIZATION_ROLE.ADMIN)) {
       return true;
     }
 
@@ -143,7 +144,7 @@ export class WsCommonService {
       return false;
     }
 
-    if (checkProjectRolePermission(projectRole.projectRoleId, PROJECT_ROLE.READ)) {
+    if (UserPermission.checkProjectRolePermission(projectRole.projectRoleId, PROJECT_ROLE.READ)) {
       return true;
     }
 
@@ -168,7 +169,7 @@ export class WsCommonService {
       return { result: false, resultCode: 1003, message: `The user is not a member of the organization. UserId: ${userId}, OrganizationId: ${organizationId}` };
     }
 
-    if (checkOrganizationRolePermission(userOrgRole.organizationRoleId, ORGANIZATION_ROLE.ADMIN)) {
+    if (UserPermission.checkOrganizationRolePermission(userOrgRole.organizationRoleId, ORGANIZATION_ROLE.ADMIN)) {
       return { result: true, resultCode: 1000, message: 'success' };
     }
 

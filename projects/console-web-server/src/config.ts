@@ -15,6 +15,7 @@ export const config = {
       projectRole: true,
       hostVerified: true,
       deviceAccess: true,
+      remote: true,
     },
     jwt: {
       logging: false,
