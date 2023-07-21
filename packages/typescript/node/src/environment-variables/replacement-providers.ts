@@ -57,13 +57,32 @@ export class StackEnvironmentVariableReplacementProvider implements VariableRepl
       }
     }
 
+    this.resolvePath(replacements);
+
+    return replacements;
+  }
+
+  private resolvePath(replacements: MutableVariableReplacements): void {
     const camelPath = replacements.Path;
     const upperPath = replacements.PATH;
     if (camelPath && upperPath) {
       replacements.PATH = camelPath + delimiter + upperPath;
       delete replacements.Path;
     }
-    return replacements;
+    if (!replacements.PATH) {
+      return;
+    }
+    const pathEnv = replacements.PATH.replaceAll(`${delimiter}${delimiter}`, delimiter);
+    const pathElems = pathEnv.split(delimiter);
+    const newPathElems: string[] = [];
+    for (const elem of pathElems) {
+      if (newPathElems.includes(elem)) {
+        continue;
+      }
+      newPathElems.push(elem);
+    }
+
+    replacements.PATH = newPathElems.join(delimiter);
   }
 }
 
