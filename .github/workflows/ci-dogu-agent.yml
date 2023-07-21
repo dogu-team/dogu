@@ -43,7 +43,7 @@ jobs:
           - runner: macos-latest
             extension: dmg
         exclude:
-          - runner: [github.event.inputs.exclude_runner]
+          - runner: ${{ github.event.inputs.exclude_runner }}
           - runner: windows-2019
             arch: arm64
     runs-on: ['${{ matrix.runner }}']
