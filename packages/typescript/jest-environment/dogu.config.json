@@ -1,13 +1,30 @@
 {
   "$schema": "https://raw.githubusercontent.com/dogu-team/dogu/main/packages/typescript/jest-environment/src/environment/dogu.config.schema.json",
   "version": 1,
-  "apiBaseUrl": "INSERT_YOUR_API_BASE_URL", // required
-  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // required
-  "projectId": "INSERT_YOUR_PROJECT_ID", // required
-  "token": "INSERT_YOUR_TOKEN", // required
-  "runsOn": "INSERT_YOUR_TAG", // required. example: "macos", "windows", "android", "ios"
-  "browserName": "chrome", // optional
-  "browserVersion": "INSERT_YOUR_BROWSER_VERSION", // optional
-  "appVersion": "INSERT_YOUR_APP_VERSION", // optional
-  "failFast": false // optional
+
+  /*
+   * required
+   * example: "https://console.dogutech.io"
+   */
+  "apiBaseUrl": "INSERT_YOUR_API_BASE_URL",
+
+  // required
+  "organizationId": "INSERT_YOUR_ORGANIZATION_ID",
+
+  // required
+  "projectId": "INSERT_YOUR_PROJECT_ID",
+
+  // required
+  "token": "INSERT_YOUR_TOKEN",
+
+  /*
+   * required
+   * example: "macos", "windows", "android", "ios" or your custom tag on the Dogu
+   */
+  "runsOn": "INSERT_YOUR_TAG"
+
+  // "browserName": "chrome",
+  // "browserVersion": "INSERT_YOUR_BROWSER_VERSION",
+  // "appVersion": "INSERT_YOUR_APP_VERSION",
+  // "failFast": false,
 }
