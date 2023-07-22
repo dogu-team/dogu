@@ -34,6 +34,27 @@ The project ID is automatically generated when creating a project and cannot be 
      style={{ width: 600, display: 'block' }}
    />
 
+## Project access token {#access-token}
+
+Project access token is used for [API](/api/access-token) and [Test Automation](/test-automation).
+
+<ProjectAdminPermission prefix="Retrieve and regenerate project access token" />
+
+:::danger
+
+When regenerating project access token, the previous token will no longer be valid.
+
+:::
+
+1. Click on the "Projects" menu in the left sidebar of the organization page.
+2. Click on the project.
+3. Click on the "Settings" menu.
+4. View the existing project access token or regenerate project access token.
+   <img
+     src="/img/console/project/access-token.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
 ## Remove a project
 
 <OrganizationAdminPermission prefix="Remove a project" />

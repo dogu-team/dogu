@@ -1,29 +1,40 @@
 ---
 sidebar_position: 2
-title: AccessToken
+title: Access Token
 locale: en
 ---
 
-This document lists token used in Dogu.
+This is document for using the Dogu API externally.
 
 :::danger
 
-Please be cautious not to expose the token to the public.
+Please be careful not to expose the access token.
 
 :::
 
 ## Organization Access Token
 
-An token is a key that allows external access to the Dogu API.  
-It is automatically generated when creating an organization in Dogu and can be found in the organization's settings page.  
-Organization Access Token has Organization Administrator Permission.
+The organization access token is automatically generated when creating an organization in Dogu, and can be found on the organization's settings page.
 
 :::info
-
-For more information on token management, please refer to the [Organization Settings](/management/organization/settings) documentation.
-
+The organization access token has `Admin` permissions for the organization.  
+For more information about managing the organization access token, refer to the [Organization Access Token](/management/organization/settings#access-token) document.
 :::
 
 ## Project Access Token
 
-An token is a key that allows external access to the Dogu API. It is automatically generated when creating an organization in Dogu and can be found in the organization's settings page.
+The project access token is automatically generated when creating a project in Dogu, and can be found on the project's settings page.
+
+:::info
+The project access token has `Admin` permissions for the project.  
+For more information about managing the project access token, refer to the [Project Access Token](/management/project/settings#access-token) document.
+:::
+
+## Personal Access Token
+
+The personal access token is automatically generated when creating an account in Dogu and can be found on the account's settings page.
+
+:::info
+The personal access token holds the permissions of the corresponding account.  
+Management of personal access tokens can be done on the account settings page.
+:::

@@ -31,32 +31,22 @@ The organization ID is automatically generated when creating an organization and
 1. In the Dogu console, click on "Settings" in the left sidebar of the organization page.
 2. Upload a profile image or change the organization name.
 
-## Organization Access Token {#access-token}
+## Organization access token {#access-token}
 
-<OrganizationAdminPermission prefix="Retrieve and regenerate Organization Access token" />
+Organization access token is used for [API](/api/access-token) and [Test Automation](/test-automation).
 
-:::info
-
-API tokens are used for [Dogu API](/api).
-
-:::
+<OrganizationAdminPermission prefix="Retrieve and regenerate organization access token" />
 
 :::danger
 
-Please be cautious not to expose the API token to the public.
-
-:::
-
-:::danger
-
-When regenerating an API token, the previous token will no longer be valid.
+When regenerating organization access token, the previous token will no longer be valid.
 
 :::
 
 1. In the Dogu console, click on "Settings" in the left sidebar of the organization page.
-2. View the existing API tokens or generate a new API token.
+2. View the existing organization access token or regenerate organization access token.
    <img
-     src="/img/console/organization/api-token.png"
+     src="/img/console/organization/access-token.png"
      style={{
        width: 600,
        display: 'block',
