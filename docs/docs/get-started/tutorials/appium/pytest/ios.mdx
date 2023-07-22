@@ -11,46 +11,95 @@ import TabItem from '@theme/TabItem';
 You need to have an iOS device added to the Device Farm. Refer to [Adding an iOS Device](/get-started/tutorials/device-farm/device/ios) for instructions.
 :::
 
-### Clone Example Repository and Navigate to the Path
+### Clone Examples and Create Virtual Environment
 
-```
+```shell
 git clone https://github.com/dogu-team/dogu-examples.git
-cd dogu-examples/appium/python/ios
-pip3 install -r ../requirements.txt
+cd dogu-examples/appium/python/ios/pytest
+
+python3 -m venv .venv
+```
+
+### Activate Virtual Environment
+
+<BrowserOnly>
+{() => (
+<Tabs groupId="os" defaultValue={getBrowserPlatform('windows')}>
+<TabItem value="windows" label="Windows Powershell" default>
+
+```shell
+.venv\Scripts\activate.ps1
+```
+
+</TabItem>
+<TabItem value="windows-cmd" label="Windows Cmd">
+
+```shell
+.venv\Scripts\activate.bat
+```
+
+</TabItem>
+<TabItem value="macos" label="MacOS/Linux">
+
+```shell
+source .venv/bin/activate
+```
+
+</TabItem>
+</Tabs>
+)}
+</BrowserOnly>
+
+### Install Dependencies
+
+```shell
+pip3 install -r requirements.txt
 ```
 
 <Tabs groupId="target" defaultValue="chrome" queryString>
 <TabItem value="chrome" label="Chrome">
 
 ### Authentication Information
-* API Token
-  * Obtain the [API Token](/management/organization/settings#api-token) from the Organization > Settings page.
-* Project Id, Organization Id
-  * Obtain the [Project Id, Organization Id](/management/project/settings#project-id) from the Organization > Project > Settings page.
+
+- API Token
+  - Obtain the [API Token](/management/organization/settings#api-token) from the Organization > Settings page.
+- Project Id, Organization Id
+  - Obtain the [Project Id, Organization Id](/management/project/settings#project-id) from the Organization > Project > Settings page.
 
 <Tabs groupId="service" defaultValue="cloud" queryString>
 <TabItem value="cloud" label="Cloud" default>
 
-Apply the obtained API Token, Project Id, and Organization Id to **dogu-examples/appium/python/ios/chrome.js**.
+Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.json**.
 
-```python
-token = os.environ.get("DOGU_TOKEN", "INSERT_YOUR_TOKEN")
-organization_id = os.environ.get("DOGU_ORGANIZATION_ID", "INSERT_YOUR_ORGANIZATION_ID")
-project_id = os.environ.get("DOGU_PROJECT_ID", "INSERT_YOUR_PROJECT_ID")
+```json
+{
+  "version": 1,
+  "apiBaseUrl": "https://console.dogutech.io",
+  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
+  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
+  "token": "INSERT_YOUR_TOKEN", // change to your token
+  "runsOn": "ios",
+  "browserName": "chrome"
+}
 ```
 
 </TabItem>
     
 <TabItem value="self-hosted" label="Self-Hosted">
 
-Apply the obtained API Token, Project Id, and Organization Id to **dogu-examples/appium/python/ios/chrome.js**.  
+Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.json**.  
 Also, apply the `DOGU_HOST:4000` value of the configured Dogu server to apiBaseUrl.
 
-```python
-token = os.environ.get("DOGU_TOKEN", "INSERT_YOUR_TOKEN")
-organization_id = os.environ.get("DOGU_ORGANIZATION_ID", "INSERT_YOUR_ORGANIZATION_ID")
-project_id = os.environ.get("DOGU_PROJECT_ID", "INSERT_YOUR_PROJECT_ID")
-api_base_url = os.environ.get("DOGU_API_BASE_URL", "DOGU_HOST:4000")
+```json
+{
+  "version": 1,
+  "apiBaseUrl": "INSERT_YOUR_API_BASE_URL", // change to your api base url
+  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
+  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
+  "token": "INSERT_YOUR_TOKEN", // change to your token
+  "runsOn": "ios",
+  "browserName": "chrome" // ensure chrome app is installed on the device
+}
 ```
 
 </TabItem>
@@ -59,8 +108,9 @@ api_base_url = os.environ.get("DOGU_API_BASE_URL", "DOGU_HOST:4000")
 ### Running the Tests
 
 Run the following command to execute the tests.
+
 ```
-python3 chrome.py
+pytest ios/test_web.py
 ```
 
 </TabItem>
