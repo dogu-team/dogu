@@ -1,5 +1,6 @@
-import { MutableVariableReplacements, VariableReplacementProvider, VariableReplacements } from '@dogu-tech/common';
+import { MutableVariableReplacements, Printable, VariableReplacementProvider, VariableReplacements } from '@dogu-tech/common';
 import { delimiter } from 'path';
+import { logger } from '..';
 import { newCleanNodeEnv } from '../clean-env';
 
 export class EnvironmentVariableReplacementProvider implements VariableReplacementProvider {
@@ -44,7 +45,7 @@ export class StackEnvironmentVariableReplacementProvider implements VariableRepl
     return this.providers.pop() ?? null;
   }
 
-  export(): VariableReplacements {
+  export(printable: Printable = logger): VariableReplacements {
     let replacements: MutableVariableReplacements = {};
     for (let i = this.providers.length - 1; i >= 0; i--) {
       const provider = this.providers[i];
@@ -57,32 +58,35 @@ export class StackEnvironmentVariableReplacementProvider implements VariableRepl
       }
     }
 
-    this.resolvePath(replacements);
+    replacements = this.resolvePath(replacements);
 
     return replacements;
   }
 
-  private resolvePath(replacements: MutableVariableReplacements): void {
+  private resolvePath(replacements: MutableVariableReplacements, printable: Printable = logger): MutableVariableReplacements {
     const camelPath = replacements.Path;
     const upperPath = replacements.PATH;
     if (camelPath && upperPath) {
       replacements.PATH = camelPath + delimiter + upperPath;
       delete replacements.Path;
+      printable.info('env Path and PATH merged to PATH');
     }
     if (!replacements.PATH) {
-      return;
+      return replacements;
     }
     const pathEnv = replacements.PATH.replaceAll(`${delimiter}${delimiter}`, delimiter);
     const pathElems = pathEnv.split(delimiter);
     const newPathElems: string[] = [];
     for (const elem of pathElems) {
       if (newPathElems.includes(elem)) {
+        printable.info(`env PATH elem: ${elem} already exist. duplication eliminated`);
         continue;
       }
       newPathElems.push(elem);
     }
 
     replacements.PATH = newPathElems.join(delimiter);
+    return replacements;
   }
 }
 
