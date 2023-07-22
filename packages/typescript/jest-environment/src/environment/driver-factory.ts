@@ -12,6 +12,7 @@ export class DriverFactory {
       hostname,
       port,
       path: '/remote/wd/hub',
+      connectionRetryCount: 0,
       capabilities: {},
     };
 
