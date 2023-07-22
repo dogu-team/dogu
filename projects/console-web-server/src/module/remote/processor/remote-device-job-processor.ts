@@ -1,12 +1,11 @@
-import { DevicePropCamel, ProjectAndDevicePropCamel } from '@dogu-private/console';
+import { DevicePropCamel, isRemoteDeviceJobSessionCompleted, ProjectAndDevicePropCamel } from '@dogu-private/console';
 import {
   CREATOR_TYPE,
   DeviceId,
-  isRemoteDeviceJobCompleted,
   OrganizationId,
   ProjectId,
   RemoteDeviceJobId,
-  REMOTE_DEVICE_JOB_STATE,
+  REMOTE_DEVICE_JOB_SESSION_STATE,
   REMOTE_TYPE,
   UserId,
   WebDriverSessionId,
@@ -68,7 +67,7 @@ export module RemoteDeviceJobProcessor {
       deviceId: deviceId,
       lastIntervalTime: new Date(),
       sessionId: null,
-      state: REMOTE_DEVICE_JOB_STATE.WAITING,
+      sessionState: REMOTE_DEVICE_JOB_SESSION_STATE.WAITING,
     });
 
     await manager.getRepository(Remote).save(remoteData);
@@ -82,23 +81,23 @@ export module RemoteDeviceJobProcessor {
     await manager.getRepository(RemoteDeviceJob).update(remoteDeviceJobId, { sessionId: sessionId });
   }
 
-  export async function setRemoteDeviceJobState(manager: EntityManager, remoteDeviceJob: RemoteDeviceJob, state: REMOTE_DEVICE_JOB_STATE): Promise<void> {
+  export async function setRemoteDeviceJobSessionState(manager: EntityManager, remoteDeviceJob: RemoteDeviceJob, state: REMOTE_DEVICE_JOB_SESSION_STATE): Promise<void> {
     logger.info(
-      `setRemoteDeviceJobState. remote-device-job[${remoteDeviceJob.remoteDeviceJobId}] state transition: ${REMOTE_DEVICE_JOB_STATE[remoteDeviceJob.state]} -> ${
-        REMOTE_DEVICE_JOB_STATE[state]
+      `setRemoteDeviceJobState. remote-device-job[${remoteDeviceJob.remoteDeviceJobId}] state transition: ${REMOTE_DEVICE_JOB_SESSION_STATE[remoteDeviceJob.sessionState]} -> ${
+        REMOTE_DEVICE_JOB_SESSION_STATE[state]
       }`,
     );
 
     remoteDeviceJob.lastIntervalTime = new Date();
-    if (state === REMOTE_DEVICE_JOB_STATE.IN_PROGRESS) {
+    if (state === REMOTE_DEVICE_JOB_SESSION_STATE.IN_PROGRESS) {
       remoteDeviceJob.inProgressAt = new Date();
-    } else if (isRemoteDeviceJobCompleted(state)) {
+    } else if (isRemoteDeviceJobSessionCompleted(state)) {
       remoteDeviceJob.completedAt = new Date();
     } else {
-      throw new Error(`Invalid state: ${remoteDeviceJob.state}`);
+      throw new Error(`Invalid state: ${remoteDeviceJob.sessionState}`);
     }
 
-    remoteDeviceJob.state = state;
+    remoteDeviceJob.sessionState = state;
     await manager.getRepository(RemoteDeviceJob).save(remoteDeviceJob);
   }
 

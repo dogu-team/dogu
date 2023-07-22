@@ -25,7 +25,7 @@ const RemoveJobStateIcon = ({ state }: Props) => {
           <Text>IN PROGRESS</Text>
         </StyledTag>
       );
-    case REMOTE_DEVICE_JOB_STATE.COMPLETE:
+    case REMOTE_DEVICE_JOB_STATE.SUCCESS:
       return (
         <StyledTag icon={<CheckCircleFilled style={style} />} color="success">
           <Text>COMPLETED</Text>

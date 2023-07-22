@@ -1,5 +1,5 @@
 import { CalendarOutlined } from '@ant-design/icons';
-import { RemoteBase, isRemoteRunning } from '@dogu-private/console';
+import { RemoteBase, isRemoteRunning, isRemoteDeviceJobState } from '@dogu-private/console';
 import { OrganizationId, REMOTE_DEVICE_JOB_STATE } from '@dogu-private/types';
 import { List, Tag } from 'antd';
 import Link from 'next/link';
@@ -20,8 +20,9 @@ interface Props {
 }
 
 const RemoteItem = ({ remote, organizationId }: Props) => {
-  const passedCount = remote.remoteDeviceJobs?.filter((rdj) => rdj.state === REMOTE_DEVICE_JOB_STATE.COMPLETE).length;
+  const passedCount = remote.remoteDeviceJobs?.filter((rdj) => isRemoteDeviceJobState(rdj, REMOTE_DEVICE_JOB_STATE.SUCCESS)).length;
   const totalCount = remote.remoteDeviceJobs?.length;
+  const isRemoteRunningState = isRemoteRunning(remote);
 
   return (
     <Box>
@@ -33,9 +34,7 @@ const RemoteItem = ({ remote, organizationId }: Props) => {
                 <RemoteStateSummaryGraph remoteJobs={remote.remoteDeviceJobs} />
               </div>
               <div style={{ marginLeft: '.5rem', fontWeight: '500' }}>
-                <Tag
-                  color={isRemoteRunning(remote.remoteDeviceJobs.map((rdj) => rdj.state)) ? 'blue' : passedCount === totalCount ? 'green' : passedCount === 0 ? 'error' : 'warning'}
-                >
+                <Tag color={isRemoteRunningState ? 'blue' : passedCount === totalCount ? 'green' : passedCount === 0 ? 'error' : 'warning'}>
                   {passedCount} / {totalCount} PASSED
                 </Tag>
               </div>

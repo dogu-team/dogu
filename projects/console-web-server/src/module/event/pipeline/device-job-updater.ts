@@ -7,7 +7,7 @@ import {
   RoutinePipelinePropSnake,
   RoutineStepPropCamel,
 } from '@dogu-private/console';
-import { PIPELINE_STATUS, REMOTE_DEVICE_JOB_STATE } from '@dogu-private/types';
+import { PIPELINE_STATUS, REMOTE_DEVICE_JOB_SESSION_STATE } from '@dogu-private/types';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import _ from 'lodash';
@@ -120,8 +120,8 @@ export class DeviceJobUpdater {
       .leftJoinAndSelect(
         `device.${DevicePropCamel.remoteDeviceJobs}`, //
         'remoteDeviceJobs',
-        `remoteDeviceJobs.${RemoteDeviceJobPropSnake.state} =:remoteDeviceJobsState`,
-        { remoteDeviceJobsState: REMOTE_DEVICE_JOB_STATE.IN_PROGRESS },
+        `remoteDeviceJobs.${RemoteDeviceJobPropSnake.session_state} =:remoteDeviceJobsSessionState`,
+        { remoteDeviceJobsSessionState: REMOTE_DEVICE_JOB_SESSION_STATE.IN_PROGRESS },
       )
       .innerJoinAndSelect(`job.${RoutineJobPropCamel.routinePipeline}`, 'pipeline')
       .orderBy(`deviceJob.${RoutineDeviceJobPropCamel.routineDeviceJobId}`, 'ASC')
@@ -143,7 +143,7 @@ export class DeviceJobUpdater {
       const waitingRemoteDeviceJobsByDeviceId = await this.dataSource.getRepository(RemoteDeviceJob).find({
         where: {
           deviceId,
-          state: REMOTE_DEVICE_JOB_STATE.WAITING,
+          sessionState: REMOTE_DEVICE_JOB_SESSION_STATE.WAITING,
         },
       });
 

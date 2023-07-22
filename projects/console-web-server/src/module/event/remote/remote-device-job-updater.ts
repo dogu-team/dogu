@@ -1,5 +1,5 @@
 import { DevicePropCamel, RemoteDeviceJobPropCamel, RemoteDeviceJobPropSnake, RoutineDeviceJobPropSnake } from '@dogu-private/console';
-import { DEVICE_TABLE_NAME, PIPELINE_STATUS, REMOTE_DEVICE_JOB_STATE } from '@dogu-private/types';
+import { DEVICE_TABLE_NAME, PIPELINE_STATUS, REMOTE_DEVICE_JOB_SESSION_STATE } from '@dogu-private/types';
 import { DeviceWebDriver } from '@dogu-tech/device-client-common';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -38,10 +38,10 @@ export class RemoteDeviceJobUpdater {
       .leftJoinAndSelect(
         `device.${DevicePropCamel.remoteDeviceJobs}`, //
         'remoteDeviceJobs',
-        `remoteDeviceJobs.${RemoteDeviceJobPropSnake.state} =:remoteDeviceJobsStatus`,
-        { remoteDeviceJobsStatus: REMOTE_DEVICE_JOB_STATE.IN_PROGRESS },
+        `remoteDeviceJobs.${RemoteDeviceJobPropSnake.session_state} =:remoteDeviceJobsSessionState`,
+        { remoteDeviceJobsSessionState: REMOTE_DEVICE_JOB_SESSION_STATE.IN_PROGRESS },
       )
-      .where({ state: REMOTE_DEVICE_JOB_STATE.WAITING })
+      .where({ sessionState: REMOTE_DEVICE_JOB_SESSION_STATE.WAITING })
       .getMany();
 
     if (waitingRemoteDeviceJobs.length === 0) {
@@ -102,13 +102,13 @@ export class RemoteDeviceJobUpdater {
     }
 
     for (const remoteDeviceJob of highestPriorityDeviceJobs) {
-      await RemoteDeviceJobProcessor.setRemoteDeviceJobState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_STATE.IN_PROGRESS);
+      await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.IN_PROGRESS);
     }
   }
 
   private async checkTimeoutDeviceJobs(): Promise<void> {
     const inprogressRemoteDeviceJobs = await this.dataSource.getRepository(RemoteDeviceJob).find({
-      where: { state: REMOTE_DEVICE_JOB_STATE.IN_PROGRESS },
+      where: { sessionState: REMOTE_DEVICE_JOB_SESSION_STATE.IN_PROGRESS },
       relations: [DEVICE_TABLE_NAME],
     });
 
@@ -150,7 +150,7 @@ export class RemoteDeviceJobUpdater {
           this.logger.error(`checkTimeoutDeviceJobs sendHttpRequest error`, { error });
         });
       this.logger.warn(`checkTimeoutDeviceJobs. remote-device-job is timeout. id: ${timeoutDeviceJob.remoteDeviceJobId}`);
-      await RemoteDeviceJobProcessor.setRemoteDeviceJobState(this.dataSource.manager, timeoutDeviceJob, REMOTE_DEVICE_JOB_STATE.FAILURE);
+      await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, timeoutDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.FAILURE);
     }
   }
 }

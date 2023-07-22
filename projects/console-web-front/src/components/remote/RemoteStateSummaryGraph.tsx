@@ -1,4 +1,4 @@
-import { RemoteDeviceJobBase } from '@dogu-private/console';
+import { getRemoteDeviceJobState, RemoteDeviceJobBase } from '@dogu-private/console';
 import { Pie, PieChart } from 'recharts';
 import styled from 'styled-components';
 
@@ -11,11 +11,14 @@ interface Props {
 const RemoteStateSummaryGraph = ({ remoteJobs }: Props) => {
   if (!remoteJobs) return null;
 
-  const data = remoteJobs.map((job) => ({
-    name: job.device?.name,
-    value: job.state,
-    fill: remoteStatusColor[job.state],
-  }));
+  const data = remoteJobs.map((job) => {
+    const state = getRemoteDeviceJobState(job);
+    return {
+      name: job.device?.name,
+      value: state,
+      fill: remoteStatusColor[state],
+    };
+  });
 
   return (
     <PieChart width={20} height={20}>

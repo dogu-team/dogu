@@ -5,7 +5,7 @@ import {
   platformTypeFromPlatform,
   RemoteDeviceJobId,
   RemotePayload,
-  REMOTE_DEVICE_JOB_STATE,
+  REMOTE_DEVICE_JOB_SESSION_STATE,
   REMOTE_TABLE_NAME,
 } from '@dogu-private/types';
 import { delay, HeaderRecord, Method, Query } from '@dogu-tech/common';
@@ -197,16 +197,16 @@ export class RemoteWebDriverService {
         throw new RemoteException(HttpStatus.NOT_FOUND, new Error(`Remote device job not found. remoteDeviceJobId: ${remoteDeviceJobId}`), {});
       }
 
-      if (remoteDeviceJob.state === REMOTE_DEVICE_JOB_STATE.IN_PROGRESS) {
+      if (remoteDeviceJob.sessionState === REMOTE_DEVICE_JOB_SESSION_STATE.IN_PROGRESS) {
         return;
       }
 
-      if (remoteDeviceJob.state === REMOTE_DEVICE_JOB_STATE.FAILURE) {
+      if (remoteDeviceJob.sessionState === REMOTE_DEVICE_JOB_SESSION_STATE.FAILURE) {
         throw new RemoteException(HttpStatus.INTERNAL_SERVER_ERROR, new Error(`Remote device job failed. remoteDeviceJobId: ${remoteDeviceJobId}`), {});
       }
 
       this.logger.info(
-        `waitRemoteDeviceJobToInprogress. waiting remoteDeviceJob to be in_progress state. remoteDeviceJobId: ${remoteDeviceJobId}. state: ${remoteDeviceJob.state}`,
+        `waitRemoteDeviceJobToInprogress. waiting remoteDeviceJob to be in_progress state. remoteDeviceJobId: ${remoteDeviceJobId}. state: ${remoteDeviceJob.sessionState}`,
       );
       await delay(3 * 1000);
     }
@@ -228,7 +228,7 @@ export class RemoteWebDriverService {
 
     const device = remoteDeviceJob.device!;
 
-    await RemoteDeviceJobProcessor.setRemoteDeviceJobState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_STATE.COMPLETE);
+    await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.COMPLETE);
 
     const headers = this.convertHeaders(request.headers);
     const devicePlatform = platformTypeFromPlatform(device.platform);

@@ -1,4 +1,4 @@
-import { RemotePayload, REMOTE_DEVICE_JOB_STATE } from '@dogu-private/types';
+import { RemotePayload, REMOTE_DEVICE_JOB_SESSION_STATE } from '@dogu-private/types';
 import {
   DefaultHttpOptions,
   DoguApplicationUrlHeader,
@@ -83,7 +83,7 @@ export class RemoteWebDriverInfoController {
           {},
         );
       }
-      await RemoteDeviceJobProcessor.setRemoteDeviceJobState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_STATE.FAILURE);
+      await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.FAILURE);
       throw new RemoteException(HttpStatus.INTERNAL_SERVER_ERROR, e, {});
     }
   }
@@ -117,8 +117,8 @@ export class RemoteWebDriverInfoController {
           {},
         );
       }
-      if (remoteDeviceJob.state !== REMOTE_DEVICE_JOB_STATE.FAILURE) {
-        await RemoteDeviceJobProcessor.setRemoteDeviceJobState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_STATE.FAILURE);
+      if (remoteDeviceJob.sessionState !== REMOTE_DEVICE_JOB_SESSION_STATE.FAILURE) {
+        await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.FAILURE);
       }
       throw new RemoteException(HttpStatus.INTERNAL_SERVER_ERROR, e, {});
     }
@@ -146,8 +146,8 @@ export class RemoteWebDriverInfoController {
       if (!remoteDeviceJob) {
         throw new RemoteException(HttpStatus.NOT_FOUND, new Error(`process:sendRequest. remote-device-job not found. remoteDeviceJobId: ${processResult.remoteDeviceJobId}`), {});
       }
-      if (remoteDeviceJob.state !== REMOTE_DEVICE_JOB_STATE.FAILURE) {
-        await RemoteDeviceJobProcessor.setRemoteDeviceJobState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_STATE.FAILURE);
+      if (remoteDeviceJob.sessionState !== REMOTE_DEVICE_JOB_SESSION_STATE.FAILURE) {
+        await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.FAILURE);
       }
       throw new RemoteException(HttpStatus.INTERNAL_SERVER_ERROR, e, {});
     }

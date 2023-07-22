@@ -1,5 +1,5 @@
 import { LoadingOutlined } from '@ant-design/icons';
-import { RemoteDeviceJobBase } from '@dogu-private/console';
+import { getRemoteDeviceJobState, RemoteDeviceJobBase } from '@dogu-private/console';
 import { OrganizationId, ProjectId } from '@dogu-private/types';
 import styled from 'styled-components';
 import useSWR from 'swr';
@@ -41,10 +41,12 @@ const RemoteDeviceJobStatitics = ({ organizationId, projectId, remoteDeviceJob, 
     return <div>Something went wrong</div>;
   }
 
+  const state = getRemoteDeviceJobState(remoteDeviceJob);
+
   return (
     <Box>
       <div style={{ marginBottom: '.5rem' }}>
-        <RemoteJobStateTag state={remoteDeviceJob.state} />
+        <RemoteJobStateTag state={state} />
       </div>
       <FlexRow style={{ flexWrap: 'wrap', alignItems: 'flex-start' }}>
         <StatBox>
@@ -78,7 +80,7 @@ const RemoteDeviceJobStatitics = ({ organizationId, projectId, remoteDeviceJob, 
         <StatBox>
           <StatTtile>Duration</StatTtile>
           <StatBody>
-            <RemoteRuntimeTimer state={remoteDeviceJob.state} startedAt={remoteDeviceJob.inProgressAt} endedAt={remoteDeviceJob.completedAt} />
+            <RemoteRuntimeTimer state={state} startedAt={remoteDeviceJob.inProgressAt} endedAt={remoteDeviceJob.completedAt} />
           </StatBody>
         </StatBox>
       </FlexRow>

@@ -9,6 +9,7 @@ import {
   ProjectAndDevicePropCamel,
   ProjectAndDevicePropSnake,
   ProjectBase,
+  RemoteDeviceJobPropCamel,
 } from '@dogu-private/console';
 import {
   DeviceConnectionState,
@@ -75,8 +76,8 @@ export class DeviceStatusService {
       .leftJoinAndSelect(`device.${DevicePropCamel.routineDeviceJobs}`, 'deviceJob', `deviceJob.status IN (:...status)`, {
         status: [PIPELINE_STATUS.WAITING, PIPELINE_STATUS.IN_PROGRESS, PIPELINE_STATUS.CANCEL_REQUESTED],
       })
-      .leftJoinAndSelect(`device.${DevicePropCamel.remoteDeviceJobs}`, 'remoteDeviceJob', `remoteDeviceJob.state IN (:...state)`, {
-        state: [REMOTE_DEVICE_JOB_STATE.WAITING, REMOTE_DEVICE_JOB_STATE.IN_PROGRESS],
+      .leftJoinAndSelect(`device.${DevicePropCamel.remoteDeviceJobs}`, 'remoteDeviceJob', `remoteDeviceJob.${RemoteDeviceJobPropCamel.sessionState} IN (:...sessionStates)`, {
+        sessionStates: [REMOTE_DEVICE_JOB_STATE.WAITING, REMOTE_DEVICE_JOB_STATE.IN_PROGRESS],
       })
       .where('organization.organization_id = :organizationId', { organizationId })
       .andWhere('device.name LIKE :name', { name: `%${dto.deviceName}%` })
@@ -559,8 +560,8 @@ export class DeviceStatusService {
       .leftJoinAndSelect(`device.${DevicePropCamel.routineDeviceJobs}`, 'deviceJob', `deviceJob.status IN (:...status)`, {
         status: [PIPELINE_STATUS.WAITING, PIPELINE_STATUS.IN_PROGRESS, PIPELINE_STATUS.CANCEL_REQUESTED],
       })
-      .leftJoinAndSelect(`device.${DevicePropCamel.remoteDeviceJobs}`, 'remoteDeviceJob', `remoteDeviceJob.state IN (:...state)`, {
-        state: [REMOTE_DEVICE_JOB_STATE.WAITING, REMOTE_DEVICE_JOB_STATE.IN_PROGRESS],
+      .leftJoinAndSelect(`device.${DevicePropCamel.remoteDeviceJobs}`, 'remoteDeviceJob', `remoteDeviceJob.${RemoteDeviceJobPropCamel.sessionState} IN (:...sessionStates)`, {
+        sessionStates: [REMOTE_DEVICE_JOB_STATE.WAITING, REMOTE_DEVICE_JOB_STATE.IN_PROGRESS],
       })
       .where('device.deviceId IN (:...deviceIds)', { deviceIds })
       .getMany();

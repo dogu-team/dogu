@@ -1,5 +1,5 @@
 import { CalendarOutlined, FieldTimeOutlined } from '@ant-design/icons';
-import { RemoteDeviceJobBase } from '@dogu-private/console';
+import { getRemoteDeviceJobState, RemoteDeviceJobBase } from '@dogu-private/console';
 import { List } from 'antd';
 import styled from 'styled-components';
 
@@ -17,10 +17,12 @@ interface Props {
 const RemoteDeviceItem = ({ remoteJob }: Props) => {
   if (!remoteJob.device) return null;
 
+  const state = getRemoteDeviceJobState(remoteJob);
+
   return (
     <Item key={remoteJob.remoteDeviceJobId}>
       <FlexRow style={{ flex: 2 }}>
-        <RemoteJobStateIcon state={remoteJob.state} />
+        <RemoteJobStateIcon state={state} />
         <p style={{ marginLeft: '.25rem' }}>{remoteJob.device?.name}</p>
         <div style={{ marginLeft: '1.5rem' }}>
           <FlexRow>
@@ -43,7 +45,7 @@ const RemoteDeviceItem = ({ remoteJob }: Props) => {
         <p style={{ textAlign: 'right' }}>
           <FieldTimeOutlined style={{ fontSize: '1rem', marginRight: '.2rem' }} />
           <RemoteRuntimeTimer
-            state={remoteJob.state}
+            state={state}
             startedAt={remoteJob.inProgressAt && new Date(remoteJob.inProgressAt)}
             endedAt={remoteJob.completedAt && new Date(remoteJob.completedAt)}
           />

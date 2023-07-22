@@ -1,5 +1,5 @@
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { RemoteBase } from '@dogu-private/console';
+import { getRemoteDeviceJobState, RemoteBase } from '@dogu-private/console';
 import { List } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -58,7 +58,7 @@ const RemoteSidebar = ({ remote }: Props) => {
               >
                 <FlexRow style={{ alignItems: 'flex-start' }}>
                   <div style={{ marginRight: '.5rem' }}>
-                    <RemoteJobStateIcon state={item.state} />
+                    <RemoteJobStateIcon state={getRemoteDeviceJobState(item)} />
                   </div>
                   <div style={{ marginTop: '.25rem' }}>
                     <FlexRow style={{ alignItems: 'flex-start' }}>

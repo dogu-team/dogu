@@ -1,4 +1,4 @@
-import { DeviceId, RemoteDeviceJobId, RemoteId, REMOTE_DEVICE_JOB_STATE, WebDriverSessionId } from '@dogu-private/types';
+import { DeviceId, RemoteDeviceJobId, RemoteId, REMOTE_DEVICE_JOB_SESSION_STATE, WebDriverSessionId } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 import { DeviceBase } from './device';
 import { RemoteBase } from './remote';
@@ -15,7 +15,7 @@ export interface RemoteDeviceJobBaseTraits {
   remoteId: RemoteId;
   deviceId: DeviceId;
   sessionId: WebDriverSessionId | null;
-  state: REMOTE_DEVICE_JOB_STATE;
+  sessionState: REMOTE_DEVICE_JOB_SESSION_STATE;
   intervalTimeout: number;
   lastIntervalTime: Date;
   createdAt: Date;

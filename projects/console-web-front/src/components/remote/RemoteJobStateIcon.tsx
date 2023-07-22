@@ -15,7 +15,7 @@ const RemoveJobStateIcon = ({ state }: Props) => {
       return <LoadingOutlined spin style={style} />;
     case REMOTE_DEVICE_JOB_STATE.IN_PROGRESS:
       return <SettingOutlined spin style={style} />;
-    case REMOTE_DEVICE_JOB_STATE.COMPLETE:
+    case REMOTE_DEVICE_JOB_STATE.SUCCESS:
       return <CheckCircleFilled style={style} />;
     case REMOTE_DEVICE_JOB_STATE.FAILURE:
       return <CloseCircleFilled style={style} />;

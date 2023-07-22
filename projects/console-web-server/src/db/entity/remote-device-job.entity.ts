@@ -1,7 +1,7 @@
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 
 import { RemoteDeviceJobBase, RemoteDeviceJobPropSnake, RemotePropCamel } from '@dogu-private/console';
-import { DeviceId, RemoteDeviceJobId, RemoteId, REMOTE_DEVICE_JOB_STATE, REMOTE_DEVICE_JOB_TABLE_NAME, WebDriverSessionId } from '@dogu-private/types';
+import { DeviceId, RemoteDeviceJobId, RemoteId, REMOTE_DEVICE_JOB_SESSION_STATE, REMOTE_DEVICE_JOB_TABLE_NAME, WebDriverSessionId } from '@dogu-private/types';
 import { ColumnTemplate } from './decorators';
 import { Device } from './device.entity';
 import { RemoteDest } from './remote-dest.entity';
@@ -21,8 +21,8 @@ export class RemoteDeviceJob extends BaseEntity implements RemoteDeviceJobBase {
   @Column({ type: 'uuid', name: RemoteDeviceJobPropSnake.session_id, nullable: true, unique: true })
   sessionId!: WebDriverSessionId | null;
 
-  @Column({ type: 'smallint', name: RemoteDeviceJobPropSnake.state, default: REMOTE_DEVICE_JOB_STATE.WAITING, nullable: false })
-  state!: REMOTE_DEVICE_JOB_STATE;
+  @Column({ type: 'smallint', name: RemoteDeviceJobPropSnake.session_state, default: REMOTE_DEVICE_JOB_SESSION_STATE.WAITING, nullable: false })
+  sessionState!: REMOTE_DEVICE_JOB_SESSION_STATE;
 
   @Column({ type: 'int', name: RemoteDeviceJobPropSnake.interval_timeout, default: 300000, nullable: false })
   intervalTimeout!: number;
