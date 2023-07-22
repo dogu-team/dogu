@@ -54,6 +54,7 @@ Run test script following test framework on device farm. See [Test Automation](h
 ### Available Test Frameworks
 
 - [Appium](https://docs.dogutech.io/get-started/tutorials/appium/)
+- [Selenium](https://docs.dogutech.io/get-started/tutorials/selenium/)
 - [Webdriverio](https://docs.dogutech.io/get-started/tutorials/webdriverio/)
 
 ## Test Report
