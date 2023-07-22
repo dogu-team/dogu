@@ -79,12 +79,11 @@ export class StackEnvironmentVariableReplacementProvider implements VariableRepl
     const newPathElems: string[] = [];
     for (const elem of pathElems) {
       if (newPathElems.includes(elem)) {
-        printable.info(`env ${elem} already exist. duplication eliminated`);
+        printable.info(`env PATH elem: ${elem} already exist. duplication eliminated`);
         continue;
       }
       newPathElems.push(elem);
     }
-    printable.verbose?.('envvv path resolved', { pathEnv, newPathElems });
 
     replacements.PATH = newPathElems.join(delimiter);
     return replacements;
