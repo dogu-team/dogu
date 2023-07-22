@@ -1,6 +1,6 @@
 {
-  "position": 3,
-  "label": "Appium",
+  "position": 1,
+  "label": "Pytest",
   "collapsible": true,
   "collapsed": true
 }

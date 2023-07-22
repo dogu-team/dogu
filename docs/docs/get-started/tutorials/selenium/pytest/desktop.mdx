@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-title: iOS
+title: Desktop
 locale: en
 ---
 
@@ -13,14 +13,14 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
 :::info PREREQUISITES
-You need to have an iOS device added to the Device Farm. Refer to [Adding an iOS Device](/get-started/tutorials/device-farm/device/ios) for instructions.
+You need to have an host device added to the Device Farm. Refer to [Use host as a device](/management/organization/host#use-host-as-a-device) for instructions.
 :::
 
 ### Clone Examples and Create Virtual Environment
 
 ```shell
 git clone https://github.com/dogu-team/dogu-examples.git
-cd dogu-examples/appium/python/ios/pytest
+cd dogu-examples/selenium/python/desktop/pytest
 
 python3 -m venv .venv
 ```
@@ -76,6 +76,11 @@ pip3 install -r requirements.txt
 
 Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.json**.
 
+<BrowserOnly>
+{() => (
+<Tabs groupId="os" defaultValue={getBrowserPlatform('windows')}>
+<TabItem value="windows" label="Windows" default>
+
 ```json
 {
   "version": 1,
@@ -83,10 +88,30 @@ Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.j
   "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
   "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
   "token": "INSERT_YOUR_TOKEN", // change to your token
-  "runsOn": "ios",
+  "runsOn": "windows",
   "browserName": "chrome"
 }
 ```
+
+</TabItem>
+<TabItem value="macos" label="MacOS">
+
+```json
+{
+  "version": 1,
+  "apiBaseUrl": "https://console.dogutech.io",
+  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
+  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
+  "token": "INSERT_YOUR_TOKEN", // change to your token
+  "runsOn": "macos",
+  "browserName": "chrome"
+}
+```
+
+</TabItem>
+</Tabs>
+)}
+</BrowserOnly>
 
 </TabItem>
     
@@ -95,6 +120,11 @@ Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.j
 Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.json**.  
 Also, apply the `DOGU_HOST:4000` value of the configured Dogu server to apiBaseUrl.
 
+<BrowserOnly>
+{() => (
+<Tabs groupId="os" defaultValue={getBrowserPlatform('windows')}>
+<TabItem value="windows" label="Windows" default>
+
 ```json
 {
   "version": 1,
@@ -102,10 +132,30 @@ Also, apply the `DOGU_HOST:4000` value of the configured Dogu server to apiBaseU
   "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
   "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
   "token": "INSERT_YOUR_TOKEN", // change to your token
-  "runsOn": "ios",
-  "browserName": "chrome" // ensure chrome app is installed on the device
+  "runsOn": "windows",
+  "browserName": "chrome"
 }
 ```
+
+</TabItem>
+<TabItem value="macos" label="MacOS">
+
+```json
+{
+  "version": 1,
+  "apiBaseUrl": "INSERT_YOUR_API_BASE_URL", // change to your api base url
+  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
+  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
+  "token": "INSERT_YOUR_TOKEN", // change to your token
+  "runsOn": "macos",
+  "browserName": "chrome"
+}
+```
+
+</TabItem>
+</Tabs>
+)}
+</BrowserOnly>
 
 </TabItem>
 </Tabs>
@@ -115,7 +165,7 @@ Also, apply the `DOGU_HOST:4000` value of the configured Dogu server to apiBaseU
 Run the following command to execute the tests.
 
 ```
-pytest ios/test_web.py
+pytest desktop/test_web.py
 ```
 
 </TabItem>
