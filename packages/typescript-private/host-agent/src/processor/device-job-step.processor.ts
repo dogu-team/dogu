@@ -149,7 +149,7 @@ export class DeviceJobStepProcessor {
       (await this.rootWorkspace.findRoutineWorkspace(rootWorkspacePath, { projectId, deviceId })) ??
       (await this.rootWorkspace.createRoutineWorkspacePath(rootWorkspacePath, { projectId, deviceId }));
 
-    const pathOld = environmentVariableReplacer.stackProvider.export().PATH;
+    const pathOld = environmentVariableReplacer.stackProvider.export(this.logger).PATH;
     const stepContextEnv: StepContextEnv = {
       DOGU_DEVICE_PLATFORM: platformTypeFromPlatform(platform),
       DOGU_DEVICE_SERIAL: serial,

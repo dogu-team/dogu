@@ -33,7 +33,7 @@ export class CommandProcessRegistry {
         }
         const commandReplaced = await environmentVariableReplacer.replace(command);
         const argsReplaced = await Promise.all(args.map((arg) => environmentVariableReplacer.replace(arg)));
-        const env = environmentVariableReplacer.stackProvider.export();
+        const env = environmentVariableReplacer.stackProvider.export(this.logger);
         if (rest.cwd) {
           if (!fs.existsSync(rest.cwd)) {
             this.logger.error('child process cwd not found.', { cwd: rest.cwd });
