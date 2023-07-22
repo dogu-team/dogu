@@ -41,7 +41,7 @@ async function fetchUrl(filePath: string, exceptionUrls: string[], checkedUrls: 
     checkedUrls[url] = false;
     const config: AxiosRequestConfig = {
       url,
-      method: 'HEAD',
+      method: 'GET',
       timeout: 5000,
     };
 
