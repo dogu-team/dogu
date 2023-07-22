@@ -40,7 +40,7 @@ export class RemoteWebDriverInfoController {
   ) {}
 
   @Post('session')
-  @RemoteProjectPermission(PROJECT_ROLE.ADMIN)
+  @RemoteProjectPermission(PROJECT_ROLE.WRITE)
   async newSession(
     @Req() request: Request, //
     @Res() response: Response,
