@@ -11,7 +11,7 @@ services:
     command: redis-server --requirepass ${REDIS_PASSWORD}
     networks:
       - console_network
-      
+
   influxdb:
     container_name: dogu-influxdb
     image: influxdb:2.6.1
@@ -20,7 +20,7 @@ services:
     ports:
       - 8086:8086
     volumes:
-      - ${VOLUME_PATH}/influxdb-volume:/var/lib/influxdb2:rw   
+      - ${VOLUME_PATH}/influxdb-volume:/var/lib/influxdb2:rw
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUX_DB_USERNAME}
@@ -37,9 +37,9 @@ services:
     image: postgres:15.3
     restart: always
     ports:
-      - "5432:5432"
+      - '5432:5432'
     environment:
-      POSTGRES_DB: "console_web"
+      POSTGRES_DB: 'console_web'
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
@@ -80,24 +80,24 @@ services:
       - console_network
 
   nexus:
-      container_name: dogu-nexus
-      image: sonatype/nexus3:3.56.0
-      restart: always
-      pull_policy: always
-      ports:
-        - 8081:8081
-      volumes:
-        - ${VOLUME_PATH}/nexus-data:/nexus-data
-      ulimits:
-        nofile:
-          soft: 65536
-          hard: 65536
-      networks:
-        - console_network 
+    container_name: dogu-nexus
+    image: sonatype/nexus3:3.56.0
+    restart: always
+    pull_policy: always
+    ports:
+      - 8081:8081
+    volumes:
+      - ${VOLUME_PATH}/nexus-data:/nexus-data
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    networks:
+      - console_network
 
   console:
     container_name: dogu-console
-    image: dogutechio/dogu:1.3.0
+    image: dogutechio/dogu:1.4.0
     restart: always
     depends_on:
       - influxdb
@@ -130,16 +130,7 @@ services:
       - NEXT_PUBLIC_ENV=self-hosted
     networks:
       - console_network
-    
+
 networks:
   console_network:
     driver: bridge
-
-
-
-
-
-
-
-  
-      
