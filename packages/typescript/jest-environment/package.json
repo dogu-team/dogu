@@ -1,6 +1,6 @@
 {
   "name": "@dogu-tech/jest-environment",
-  "version": "1.1.0-rc.8",
+  "version": "1.1.0",
   "license": "MIT License",
   "author": "Dogu Technologies",
   "type": "module",
