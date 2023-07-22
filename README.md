@@ -38,7 +38,7 @@ Dogu is an integrated test automation platform that simplifies the automation of
 
 ## Device Farm
 
-Connect the device to run your tests to Device Farm. See [Device Farm](https://docs.dogutech.io/get-started#device-farm) for more details.
+Connect the device to run your tests to Device Farm. See [Device Farm](https://docs.dogutech.io/device-farm) for more details.
 
 <img src=".github/resources/architecture-device-farm.png" width="100%"/>
 
@@ -49,7 +49,7 @@ Connect the device to run your tests to Device Farm. See [Device Farm](https://d
 
 ## Test Automation
 
-Run test script following test framework on device farm. See [Test Automation](https://docs.dogutech.io/get-started#test-automation) for more details.
+Run test script following test framework on device farm. See [Test Automation](https://docs.dogutech.io/test-automation/) for more details.
 
 ### Available Test Frameworks
 
@@ -60,17 +60,16 @@ Run test script following test framework on device farm. See [Test Automation](h
 
 <img src=".github/resources/reporting-testing-profiling.png" width="100%"/>
 
-Visualize test unit by integrating test unit framework with test report. See [Test Report](https://docs.dogutech.io/get-started#test-reporting) for more details.
+Visualize test unit by integrating test unit framework with test report. See [Test Report](https://docs.dogutech.io/test-report) for more details.
 
 ### Available Test Unit Frameworks
 
 - [Jest](https://docs.dogutech.io/test-report/jest)
 - [Pytest](https://docs.dogutech.io/test-report/pytest)
-- [TestNG](https://docs.dogutech.io/test-report/testng)
 
 ## Test Routine
 
-Run test script by using Workflow. See [Routine](https://docs.dogutech.io/get-started#routine) for more details.
+Run test script by using Workflow. See [Routine](https://docs.dogutech.io/routine/routines) for more details.
 
 <img src=".github/resources/workflow-inside.png"/>
 
