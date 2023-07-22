@@ -15,7 +15,7 @@ You need to have a Windows device added to your Device Farm. Refer to [Adding Wi
 
 ```
 git clone https://github.com/dogu-team/dogu-examples.git
-cd dogu-examples/webdriverio/javascript/windows
+cd dogu-examples/webdriverio/javascript/jest
 npm install
 ```
 
@@ -23,34 +23,46 @@ npm install
 <TabItem value="chrome" label="Chrome">
 
 ### Authentication Information
-* API Token
-  * Check the [API Token](/management/organization/settings#api-token) on the Organization > Settings page.
-* Project Id, Organization Id
-  * Check the [Project Id, Organization Id](/management/project/settings#project-id) on the Organization > Project > Settings page.
+
+- API Token
+  - Check the [API Token](/management/organization/settings#api-token) on the Organization > Settings page.
+- Project Id, Organization Id
+  - Check the [Project Id, Organization Id](/management/project/settings#project-id) on the Organization > Project > Settings page.
 
 <Tabs groupId="service" defaultValue="cloud" queryString>
 <TabItem value="cloud" label="Cloud" default>
 
-Apply the API Token, Project Id, and Organization Id you obtained to **dogu-examples/webdriverio/javascript/windows/chrome.js**.
+Apply the API Token, Project Id, and Organization Id you obtained to **dogu.config.json**.
 
-```javascript
-const token = process.env.DOGU_TOKEN || 'INSERT_YOUR_TOKEN';
-const organizationId = process.env.DOGU_ORGANIZATION_ID || 'INSERT_YOUR_ORGANIZATION_ID';
-const projectId = process.env.DOGU_PROJECT_ID || 'INSERT_YOUR_PROJECT_ID';
+```json
+{
+  "version": 1,
+  "apiBaseUrl": "https://console.dogutech.io",
+  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
+  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
+  "token": "INSERT_YOUR_TOKEN", // change to your token
+  "runsOn": "windows",
+  "browserName": "chrome"
+}
 ```
 
 </TabItem>
     
 <TabItem value="self-hosted" label="Self-Hosted">
 
-Apply the API Token, Project Id, and Organization Id you obtained to **dogu-examples/webdriverio/javascript/android/chrome.js**.  
+Apply the API Token, Project Id, and Organization Id you obtained to **dogu.config.json**.  
 Also, apply the `DOGU_HOST:4000` value of the configured Dogu server to apiBaseUrl.
 
-```javascript
-const token = process.env.DOGU_TOKEN || 'INSERT_YOUR_TOKEN';
-const organizationId = process.env.DOGU_ORGANIZATION_ID || 'INSERT_YOUR_ORGANIZATION_ID';
-const projectId = process.env.DOGU_PROJECT_ID || 'INSERT_YOUR_PROJECT_ID';
-const apiBaseUrl = process.env.DOGU_API_BASE_URL || 'DOGU_HOST:4000';
+```json
+{
+  "version": 1,
+  "apiBaseUrl": "INSERT_YOUR_API_BASE_URL", // change to your api base url
+  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
+  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
+  "token": "INSERT_YOUR_TOKEN", // change to your token
+  "runsOn": "windows",
+  "browserName": "chrome"
+}
 ```
 
 </TabItem>
@@ -59,8 +71,9 @@ const apiBaseUrl = process.env.DOGU_API_BASE_URL || 'DOGU_HOST:4000';
 ### Running the Tests
 
 Run the following command to execute the tests.
+
 ```
-npm run test:windows:web
+npm run test:web
 ```
 
 </TabItem>
