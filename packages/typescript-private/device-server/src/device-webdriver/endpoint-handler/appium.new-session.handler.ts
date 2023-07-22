@@ -1,6 +1,7 @@
 import { extensionFromPlatform, PlatformType } from '@dogu-private/types';
 import {
   DefaultHttpOptions,
+  DoguApplicationFileSizeHeader,
   DoguApplicationUrlHeader,
   DoguApplicationVersionHeader,
   DoguBrowserNameHeader,
@@ -138,23 +139,26 @@ export class AppiumNewSessionEndpointHandler extends AppiumEndpointHandler {
         request.reqBody ??= {};
         _.set(request.reqBody, 'capabilities.alwaysMatch.appium:app', filePath);
 
-        const headRes = await axios.head(appUrl, {
-          headers: {},
-          timeout: DefaultHttpOptions.request.timeout,
-        });
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        const expectedFileSize = parseInt(headRes.headers['content-length']);
-
         const stat = await fs.promises.stat(filePath).catch(() => null);
         if (stat !== null) {
           if (stat.isFile()) {
             logger.info('File already exists', { filePath });
-            logger.info(`File size local: ${stat.size} expected: ${expectedFileSize}`, { filePath });
-            if (stat.size === expectedFileSize) {
-              logger.info('File is same size. Skipping download', { filePath });
-              return { request };
+
+            const doguApplicationFileSize = _.get(headers, DoguApplicationFileSizeHeader) as string | undefined;
+            if (doguApplicationFileSize) {
+              const expectedFileSize = parseInt(doguApplicationFileSize);
+              logger.info(`File size local: ${stat.size} expected: ${expectedFileSize}`, { filePath });
+
+              if (stat.size === expectedFileSize) {
+                logger.info('File is same size. Skipping download', { filePath });
+                return { request };
+              } else {
+                logger.info('File is not same size. Deleting file', { filePath });
+                await fs.promises.unlink(filePath);
+                logger.info('File deleted', { filePath });
+              }
             } else {
-              logger.info('File is not same size. Deleting file', { filePath });
+              logger.info('File size is not specified. Deleting file', { filePath });
               await fs.promises.unlink(filePath);
               logger.info('File deleted', { filePath });
             }

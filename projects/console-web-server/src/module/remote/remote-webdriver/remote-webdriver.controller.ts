@@ -1,6 +1,7 @@
 import { RemotePayload, REMOTE_DEVICE_JOB_SESSION_STATE } from '@dogu-private/types';
 import {
   DefaultHttpOptions,
+  DoguApplicationFileSizeHeader,
   DoguApplicationUrlHeader,
   DoguApplicationVersionHeader,
   DoguBrowserNameHeader,
@@ -168,6 +169,7 @@ export class RemoteWebDriverInfoController {
     headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout3minutes.toString();
     if (processResult.applicationUrl) headers[DoguApplicationUrlHeader] = processResult.applicationUrl;
     if (processResult.applicationVersion) headers[DoguApplicationVersionHeader] = processResult.applicationVersion;
+    if (processResult.applicationFileSize) headers[DoguApplicationFileSizeHeader] = processResult.applicationFileSize.toString();
     if (processResult.browserName) headers[DoguBrowserNameHeader] = processResult.browserName;
     if (processResult.browserVersion) headers[DoguBrowserVersionHeader] = processResult.browserVersion;
   }

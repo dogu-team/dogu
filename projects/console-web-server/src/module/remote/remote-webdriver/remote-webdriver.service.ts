@@ -120,6 +120,7 @@ export class RemoteWebDriverService {
 
     let applicationUrl: string | undefined = undefined;
     let applicationVersion: string | undefined = undefined;
+    let applicationFileSize: number | undefined = undefined;
     if (devicePlatformType === 'android' || devicePlatformType === 'ios') {
       if (options.appVersion) {
         const findAppDto = new FindProjectApplicationDto();
@@ -132,6 +133,7 @@ export class RemoteWebDriverService {
         const application = applications.items[0];
         applicationUrl = await this.applicationService.getApplicationDownladUrl(application.projectApplicationId, options.organizationId, options.projectId);
         applicationVersion = application.version;
+        applicationFileSize = application.fileSize;
       }
     }
 
@@ -162,6 +164,7 @@ export class RemoteWebDriverService {
       browserVersion: options.browserVersion,
       applicationUrl,
       applicationVersion,
+      applicationFileSize,
       request: {
         path: request.path,
         headers: headers,

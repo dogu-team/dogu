@@ -14,6 +14,7 @@ export interface WebDriverEndpointHandlerResult {
   browserVersion?: string;
   applicationUrl?: string;
   applicationVersion?: string;
+  applicationFileSize?: number;
   sessionId?: WebDriverSessionId;
   request: RelayRequest;
 }

@@ -14,5 +14,6 @@ export const DoguDevicePlatformHeader = 'dogu-device-platform';
 export const DoguDeviceSerialHeader = 'dogu-device-serial';
 export const DoguApplicationUrlHeader = 'dogu-application-url';
 export const DoguApplicationVersionHeader = 'dogu-application-version';
+export const DoguApplicationFileSizeHeader = 'dogu-application-file-size';
 
 export type Query = Record<string, unknown>;
