@@ -1,0 +1,48 @@
+---
+sidebar_position: 3
+title: References
+locale: en
+---
+
+# References
+
+## PyTest Hooks
+
+Dogu hooks are functions that are called by the Dogu sdk at certain points in the dogu lifecycle. They can be used to customize the dogu's behavior.
+
+### `def pytest_dogu_create_client() -> DoguClient`
+
+This hook is called when the dogu is started. It should return a `DoguClient` instance that is used to communicate with the dogu.
+
+## Dogu Interfaces
+
+### `class DoguClient`
+
+#### `impl: Any`
+
+The implementation of the client. `on_setup` return value is stored here.
+
+#### `def on_setup(dogu_config: DoguConfig) -> Any`
+
+`abstract method`
+
+Called after `dogu_config` is parsed and before the test starts.  
+`dogu_config` is the dogu's configuration. `dogu.config.json` is parsed and passed to this method.  
+Return your client implementation here then it will be stored in `self.impl`.
+
+#### `def dogu_results() -> Dict[str, Any]`
+
+Called after the `on_setup` method.  
+Return a dictionary that will be have `remoteDeviceJobId`. This will be used to report the results to the server.
+
+#### `def on_teardown() -> None`
+
+`abstract method`
+
+Called after the test ends.  
+Do cleanup here with `self.impl`.
+
+#### `def cast(self, cls: Type[T]) -> T`
+
+Returns the `self.impl` casted to `cls` type.  
+Use this method to access the client implementation.
