@@ -23,12 +23,12 @@ const language: { [key in keyof Props['shell']]: string } = {
 };
 
 const PlatformSpecifiedShell = ({ shell }: Props) => {
-  const [defaultKey, setDefaultKey] = useState<keyof Props['shell']>(() => {
-    if (navigator.userAgent.match(/macintosh/gi)) {
+  const getDefaultKey = () => {
+    if (navigator.userAgent.match(/macintosh/gi) || navigator.userAgent.match(/linux/gi)) {
       return 'linuxAndMac';
     }
     return 'windowsCmd';
-  });
+  };
 
   const items: TabsProps['items'] = Object.keys(shell).map((key) => ({
     key,
@@ -36,7 +36,7 @@ const PlatformSpecifiedShell = ({ shell }: Props) => {
     children: shell[key as keyof Props['shell']]?.map((cmd) => <CodeWithCopyButton key={cmd} code={cmd} language={language[key as keyof Props['shell']] ?? 'bash'} />),
   }));
 
-  return <Tabs defaultActiveKey={defaultKey} items={items} />;
+  return <Tabs defaultActiveKey={getDefaultKey()} items={items} />;
 };
 
 export default PlatformSpecifiedShell;
