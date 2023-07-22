@@ -33,7 +33,9 @@ const USE_HOST_AS_DEVICE_ID = 'use-host-as-device';
 const CONNECT_MOBILE_DEVICE_ID = 'connect-mobile-device';
 const USE_DEVICE_ID = 'use-device';
 
-const TUTORIAL_HOST_SESSION_ID = 'tutorialHost';
+const TUTORIAL_HOST_SESSION_KEY = 'tutorialHost';
+
+type HostSession = { data: HostBase; token: string };
 
 const DeviceFarmTutorial = () => {
   const router = useRouter();
@@ -55,14 +57,15 @@ const DeviceFarmTutorial = () => {
 
   useEffect(() => {
     if (organization?.organizationId) {
-      const hostRaw = sessionStorage.getItem(TUTORIAL_HOST_SESSION_ID);
+      const hostRaw = sessionStorage.getItem(TUTORIAL_HOST_SESSION_KEY);
 
       if (hostRaw) {
-        const host = JSON.parse(hostRaw) as HostBase;
-        if (host.organizationId === organization.organizationId) {
+        const { data, token } = JSON.parse(hostRaw) as HostSession;
+        if (data.organizationId === organization.organizationId) {
           setHost(host);
+          setToken(token);
         } else {
-          sessionStorage.removeItem(TUTORIAL_HOST_SESSION_ID);
+          sessionStorage.removeItem(TUTORIAL_HOST_SESSION_KEY);
         }
       }
     }
@@ -75,7 +78,8 @@ const DeviceFarmTutorial = () => {
         if (organization?.organizationId) {
           getHostByToken(organization.organizationId, payload as string).then((host) => {
             setHost(host);
-            sessionStorage.setItem(TUTORIAL_HOST_SESSION_ID, JSON.stringify(host));
+            const hostSession: HostSession = { data: host, token: payload as string };
+            sessionStorage.setItem(TUTORIAL_HOST_SESSION_KEY, JSON.stringify(hostSession));
           });
         }
       }
