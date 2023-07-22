@@ -12,7 +12,7 @@ import Trans from 'next-translate/Trans';
 import Head from 'next/head';
 
 import { NextPageWithLayout } from 'pages/_app';
-import { deleteProject, regenerateProjectAccessToken, updateProject } from 'src/api/project';
+import { deleteProject, getProjectAccessToken, regenerateProjectAccessToken, updateProject } from 'src/api/project';
 import { getErrorMessage } from 'src/utils/error';
 import ProjectLayout from 'src/components/layouts/ProjectLayout';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
@@ -20,8 +20,8 @@ import { sendErrorNotification, sendSuccessNotification } from '../../../../../s
 import DangerZone from '../../../../../src/components/common/boxes/DangerZone';
 import GitIntegrationDangerButton from '../../../../../src/components/projects/GitIntegrationDangerButton';
 import TokenCopyInput from '../../../../../src/components/common/TokenCopyInput';
-import AccessTokenButton from '../../../../../src/components/projects/AcessTokenButton';
 import RegenerateTokenButton from '../../../../../src/components/common/RegenerateTokenButton';
+import AccessTokenButton from '../../../../../src/components/common/AccessTokenButton';
 
 const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, organization, mutateProject }) => {
   const [editingProject, setEditingProject] = useState<ProjectBase>(project);
@@ -64,6 +64,17 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
       }
     }
   }, [organization.organizationId, project.projectId, router]);
+
+  const getToken = useCallback(async () => {
+    try {
+      const token = getProjectAccessToken(organization.organizationId, project.projectId);
+      return token;
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        sendErrorNotification(`Failed to get project token.\n${getErrorMessage(e)}`);
+      }
+    }
+  }, [organization.organizationId, project.projectId]);
 
   const isChanged = JSON.stringify(project) !== JSON.stringify(editingProject);
 
@@ -119,7 +130,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
 
         <Content>
           <ContentTitle>Project Access Token</ContentTitle>
-          <AccessTokenButton organizationId={organization.organizationId} projectId={project.projectId} />
+          <AccessTokenButton getToken={getToken} />
         </Content>
 
         <Divider />

@@ -12,7 +12,7 @@ import { useRouter } from 'next/router';
 import { NextPageWithLayout } from 'pages/_app';
 import H4 from 'src/components/common/headings/H4';
 import ProfileImage from 'src/components/ProfileImage';
-import { deleteUser, getUserByIdInServerSide, regeneratePersonalAccessToken, resetPassword, updateProfileImage, updateUser } from 'src/api/user';
+import { deleteUser, getPersonalAccessToken, getUserByIdInServerSide, regeneratePersonalAccessToken, resetPassword, updateProfileImage, updateUser } from 'src/api/user';
 import ImageCropUploader from 'src/components/images/ImageCropUploader';
 import H5 from 'src/components/common/headings/H5';
 import ResetPasswordForm from 'src/components/registery/ResetPasswordForm';
@@ -27,8 +27,8 @@ import { redirectWithLocale } from '../../src/ssr/locale';
 import ConsoleBasicLayout from '../../src/components/layouts/ConsoleBasicLayout';
 import { USER_ACCESS_TOKEN_COOKIE_NAME, USER_ID_COOKIE_NAME } from '@dogu-private/types';
 import useEventStore from '../../src/stores/events';
-import AccessTokenButton from '../../src/components/users/AccessTokenButton';
 import RegenerateTokenButton from '../../src/components/common/RegenerateTokenButton';
+import AccessTokenButton from '../../src/components/common/AccessTokenButton';
 
 interface Props {
   user: UserBase;
@@ -141,6 +141,15 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
     }
   }, [user]);
 
+  const getToken = useCallback(async () => {
+    try {
+      const token = await getPersonalAccessToken(user.userId);
+      return token;
+    } catch (e) {
+      sendErrorNotification('Failed to get access token.');
+    }
+  }, [user.userId]);
+
   return (
     <>
       <Head>
@@ -187,7 +196,7 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
           <StyledH5>{t('account:securityContentTitle')}</StyledH5>
           <div style={{ marginTop: '1rem' }}>
             <ContentTitle>Personal Access Token</ContentTitle>
-            <AccessTokenButton userId={user.userId} />
+            <AccessTokenButton getToken={getToken} />
           </div>
           <div style={{ marginTop: '1rem' }}>
             <ContentTitle>Update password</ContentTitle>

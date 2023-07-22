@@ -13,16 +13,22 @@ import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
 import OrganizationSideBar from 'src/components/layouts/OrganizationSideBar';
 import ProfileImage from 'src/components/ProfileImage';
 import ImageCropUploader from 'src/components/images/ImageCropUploader';
-import { regenerateOrganizationAccessToken, removeOrganization, updateOrganization, updateOrganizationOwner, uploadOrganizationImage } from 'src/api/organization';
+import {
+  getOrganizationAccessToken,
+  regenerateOrganizationAccessToken,
+  removeOrganization,
+  updateOrganization,
+  updateOrganizationOwner,
+  uploadOrganizationImage,
+} from 'src/api/organization';
 import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
 import { getErrorMessage } from '../../../src/utils/error';
 import OrganizationOwnerSelector from '../../../src/components/organizations/OrganizationOwnerSelector';
 import DangerZone from '../../../src/components/common/boxes/DangerZone';
-import ApiTokenButton from '../../../src/components/organizations/ApiTokenButton';
-import RegenerateApiTokenButton from '../../../src/components/organizations/RegenerateApiTokenButton';
 import TokenCopyInput from '../../../src/components/common/TokenCopyInput';
 import RegenerateTokenButton from '../../../src/components/common/RegenerateTokenButton';
+import AccessTokenButton from '../../../src/components/common/AccessTokenButton';
 
 const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ organization, mutateOrganization }) => {
   const [editingOrganization, setEditingOrganization] = useState<OrganizationBase>(organization);
@@ -118,6 +124,17 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
     }
   }, [newOwner, organization.organizationId]);
 
+  const getToken = useCallback(async () => {
+    try {
+      const token = await getOrganizationAccessToken(organization.organizationId);
+      return token;
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        sendErrorNotification(`Failed to get token.\n${getErrorMessage(e)}`);
+      }
+    }
+  }, [organization.organizationId]);
+
   const isChanged = JSON.stringify(organization) !== JSON.stringify(editingOrganization);
 
   return (
@@ -168,7 +185,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
 
         <Content>
           <ContentTitle>Organization Access Token</ContentTitle>
-          <ApiTokenButton organizationId={organization.organizationId} />
+          <AccessTokenButton getToken={getToken} />
         </Content>
 
         <Divider />
