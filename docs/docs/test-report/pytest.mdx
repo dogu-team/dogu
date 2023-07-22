@@ -7,10 +7,10 @@ locale: en
 # Pytest
 
 Dogu provides pytest integration for users who use pytest.  
-The [**pytest-dogu-report**](https://pypi.org/project/pytest-dogu-report) plug-in allows you to check the test results of the Dogu Routine.  
+The [**pytest-dogu-sdk**](https://pypi.org/project/pytest-dogu-sdk) plugin allows you to check the test results of the Dogu Routine.  
 Like this.
 
-![pytest-dogu-report](/img/testing-framework-support/pytest.png)
+![pytest-dogu-sdk](/img/testing-framework-support/pytest.png)
 
 ## Requirements
 
@@ -24,21 +24,21 @@ If you are using MacOS, see [Environment variable document](/device-farm/host#en
 
 ## Configuration
 
-- install `pytest-dogu-report` package to your project.
+- install `pytest-dogu-sdk` package to your project.
 
 ```shell
 # using pip
-pip install pytest-dogu-report
+pip install pytest-dogu-sdk
 
 # using poetry
-poetry add -D pytest-dogu-report
+poetry add -D pytest-dogu-sdk
 ```
 
-- register `pytest-dogu-report` plugin to your root `conftest.py` file.
+- register `pytest-dogu-sdk` plugin to your root `conftest.py` file.
 
 ```python
 pytest_plugins = [
-    "pytest_dogu_report",
+    "pytest_dogu_sdk",
 ]
 ```
 
