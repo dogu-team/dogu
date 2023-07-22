@@ -3,7 +3,7 @@ import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 import { DestBase } from './dest';
 
 interface DestEdgeRelationTraits {
-  dest?: DestBase;
+  dests?: DestBase[];
 }
 
 export type DestEdgeBase = DestEdge & DestEdgeRelationTraits;

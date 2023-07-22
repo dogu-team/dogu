@@ -3,7 +3,7 @@ import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 import { RemoteDestBase } from './remote-dest';
 
 interface RemoteDestEdgeRelationTraits {
-  remoteDest?: RemoteDestBase;
+  remoteDests?: RemoteDestBase[];
 }
 
 export type RemoteDestEdgeBase = RemoteDestEdge & RemoteDestEdgeRelationTraits;

@@ -73,7 +73,7 @@ export const getRemoteDeviceJobStateByRemoteDest = (remoteDeviceJob: RemoteDevic
     throw new Error(`remoteDests is empty. remoteDeviceJobId: ${remoteDeviceJob.remoteDeviceJobId}`);
   }
 
-  const isWaiting = remoteDests.every((remoteDest) => {
+  const isWaiting = remoteDests.some((remoteDest) => {
     return remoteDest.state === DEST_STATE.PENDING;
   });
   if (isWaiting) return REMOTE_DEVICE_JOB_STATE.WAITING;
