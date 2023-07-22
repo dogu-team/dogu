@@ -110,7 +110,7 @@ export class DoguConfig {
       throw new Error(`Invalid apiBaseUrl: ${apiBaseUrl}`);
     }
     const [, protocol, hostname, , port] = matches;
-    if (typeof protocol !== 'string' || typeof hostname !== 'string' || typeof port !== 'string') {
+    if (typeof protocol !== 'string' || typeof hostname !== 'string' || (port && typeof port !== 'string')) {
       throw new Error(`Internal error: ${apiBaseUrl} is not matched`);
     }
     if (port) {
