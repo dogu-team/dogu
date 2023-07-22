@@ -131,7 +131,7 @@ export const appiumGuideData: Guide = {
   "runsOn": "${platform}",  // or another device tag
   ${
     target === GuideSupportTarget.WEB
-      ? '"browserName": "chrome",'
+      ? `"browserName": "${platform === GuideSupportPlatform.IOS ? 'safari' : 'chrome'}",`
       : `"appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'INSERT_YOUR_APP_VERSION'}",`
   }
 }
@@ -216,7 +216,7 @@ export const webdriverioGuideData: Guide = {
   "runsOn": "${platform}",  // or another device tag
   ${
     target === GuideSupportTarget.WEB
-      ? '"browserName": "chrome",'
+      ? `"browserName": "${platform === GuideSupportPlatform.IOS ? 'safari' : 'chrome'}",`
       : `"appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'INSERT_YOUR_APP_VERSION'}",`
   }
 }
