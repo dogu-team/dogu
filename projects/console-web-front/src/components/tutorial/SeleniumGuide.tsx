@@ -15,6 +15,7 @@ import RemoteTestOptionSelectors from './RemoteTestOptionSelectors';
 import CodeWithCopyButton from '../common/CodeWithCopyButton';
 import RemoteTestResultList from './RemoteTestResultList';
 import PythonVirtualEnvShell from './PythonVirtualEnvShell';
+import { Alert } from 'antd';
 
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
@@ -113,7 +114,14 @@ const SeleniumGuide = ({ organizationId, projectId }: GuideProps) => {
             id={RUN_TEST_ID}
             title="Run remote testing"
             description={<p>Start automated testing using sample app and script</p>}
-            content={<CodeWithCopyButton language="bash" code={selectedGuide?.runCommand ?? ''} />}
+            content={
+              <>
+                <CodeWithCopyButton language="bash" code={selectedGuide?.runCommand ?? ''} />
+                {frameworkLanguage === GuideSupportLanguage.PYTHON && (
+                  <Alert message="If test failed with an import error, please activate virtual environment again." type="info" showIcon />
+                )}
+              </>
+            }
           />
 
           <div style={{ marginBottom: '2rem' }}>

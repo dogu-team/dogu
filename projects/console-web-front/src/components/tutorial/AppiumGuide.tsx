@@ -164,7 +164,12 @@ const AppiumGuide = ({ organizationId, projectId }: GuideProps) => {
               target === GuideSupportTarget.APP && platform === GuideSupportPlatform.IOS ? (
                 <Alert message="We don't provide sample test script for iOS. Please run test with your own configuration." showIcon type="warning" />
               ) : (
-                <CodeWithCopyButton language="bash" code={selectedGuide?.runCommand ?? ''} />
+                <>
+                  <CodeWithCopyButton language="bash" code={selectedGuide?.runCommand ?? ''} />
+                  {frameworkLanguage === GuideSupportLanguage.PYTHON && (
+                    <Alert message="If test failed with an import error, please activate virtual environment again." type="info" showIcon />
+                  )}
+                </>
               )
             }
           />
