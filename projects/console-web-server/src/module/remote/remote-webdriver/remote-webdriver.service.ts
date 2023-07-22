@@ -8,7 +8,7 @@ import {
   REMOTE_DEVICE_JOB_SESSION_STATE,
   REMOTE_TABLE_NAME,
 } from '@dogu-private/types';
-import { delay, HeaderRecord, Method, Query } from '@dogu-tech/common';
+import { DefaultHttpOptions, delay, DoguRequestTimeoutHeader, HeaderRecord, Method, Query } from '@dogu-tech/common';
 import {
   DeviceWebDriver,
   DoguWebDriverOptions,
@@ -262,12 +262,14 @@ export class RemoteWebDriverService {
     }
     const pathProvider = new DeviceWebDriver.sessionDeleted.pathProvider(handleResult.deviceSerial);
     const path = DeviceWebDriver.sessionDeleted.resolvePath(pathProvider);
+    const headers: HeaderRecord = {};
+    headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout1minutes.toString();
     const res = await this.deviceMessageRelayer.sendHttpRequest(
       handleResult.organizationId,
       handleResult.deviceId,
       DeviceWebDriver.sessionDeleted.method,
       path,
-      undefined,
+      headers,
       undefined,
       { sessionId: sessionId },
       DeviceWebDriver.sessionDeleted.responseBody,
