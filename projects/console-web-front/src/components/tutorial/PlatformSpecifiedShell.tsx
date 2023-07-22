@@ -1,4 +1,5 @@
 import { Tabs, TabsProps } from 'antd';
+import { useEffect, useState } from 'react';
 import CodeWithCopyButton from '../common/CodeWithCopyButton';
 
 interface Props {
@@ -22,13 +23,20 @@ const language: { [key in keyof Props['shell']]: string } = {
 };
 
 const PlatformSpecifiedShell = ({ shell }: Props) => {
+  const [defaultKey, setDefaultKey] = useState<keyof Props['shell']>(() => {
+    if (navigator.userAgent.match(/macintosh/gi)) {
+      return 'linuxAndMac';
+    }
+    return 'windowsCmd';
+  });
+
   const items: TabsProps['items'] = Object.keys(shell).map((key) => ({
     key,
     label: labelText[key as keyof Props['shell']],
     children: shell[key as keyof Props['shell']]?.map((cmd) => <CodeWithCopyButton key={cmd} code={cmd} language={language[key as keyof Props['shell']] ?? 'bash'} />),
   }));
 
-  return <Tabs items={items} />;
+  return <Tabs defaultActiveKey={defaultKey} items={items} />;
 };
 
 export default PlatformSpecifiedShell;
