@@ -4,6 +4,7 @@ import { Tag } from 'antd';
 import styled from 'styled-components';
 
 import { remoteStatusColor } from '../../utils/mapper';
+import RemoteJobStateIcon from './RemoteJobStateIcon';
 
 interface Props {
   state: REMOTE_DEVICE_JOB_STATE;
@@ -12,29 +13,49 @@ interface Props {
 const RemoveJobStateIcon = ({ state }: Props) => {
   const style = { color: remoteStatusColor[state] };
 
+  const icon = <RemoteJobStateIcon state={state} />;
+
   switch (state) {
     case REMOTE_DEVICE_JOB_STATE.WAITING:
       return (
-        <StyledTag icon={<LoadingOutlined spin style={style} />} color="warning">
+        <StyledTag icon={icon} color="warning">
           <Text>WAITING</Text>
         </StyledTag>
       );
     case REMOTE_DEVICE_JOB_STATE.IN_PROGRESS:
       return (
-        <StyledTag icon={<SettingOutlined spin style={style} />} color="processing">
+        <StyledTag icon={icon} color="processing">
           <Text>IN PROGRESS</Text>
         </StyledTag>
       );
     case REMOTE_DEVICE_JOB_STATE.SUCCESS:
       return (
-        <StyledTag icon={<CheckCircleFilled style={style} />} color="success">
+        <StyledTag icon={icon} color="success">
           <Text>COMPLETED</Text>
         </StyledTag>
       );
     case REMOTE_DEVICE_JOB_STATE.FAILURE:
       return (
-        <StyledTag icon={<CloseCircleFilled style={style} />} color="error">
+        <StyledTag icon={icon} color="error">
           <Text>FAILED</Text>
+        </StyledTag>
+      );
+    case REMOTE_DEVICE_JOB_STATE.CANCELLED:
+      return (
+        <StyledTag icon={icon} color="default">
+          <Text>CANCELLED</Text>
+        </StyledTag>
+      );
+    case REMOTE_DEVICE_JOB_STATE.SKIPPED:
+      return (
+        <StyledTag icon={icon} color="default">
+          <Text>SKIPPED</Text>
+        </StyledTag>
+      );
+    case REMOTE_DEVICE_JOB_STATE.CANCEL_REQUESTED:
+      return (
+        <StyledTag icon={icon} color="default">
+          <Text>CANCEL REQUESTED</Text>
         </StyledTag>
       );
     default:

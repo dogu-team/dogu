@@ -1,13 +1,13 @@
-import { LoadingOutlined } from '@ant-design/icons';
 import { getRemoteDeviceJobState, RemoteDeviceJobBase } from '@dogu-private/console';
 import { OrganizationId, ProjectId } from '@dogu-private/types';
 import styled from 'styled-components';
-import useSWR from 'swr';
 
-import { swrAuthFetcher } from '../../api';
 import { flexRowBaseStyle } from '../../styles/box';
+import { localizeDate } from '../../utils/date';
 import PlatformIcon from '../device/PlatformIcon';
+import PipelineCreatedTimer from '../pipelines/PipelineCreatedTimer';
 import DoguOptions from './DoguOptions';
+import RemoteCreator from './RemoteCreator';
 import RemoteJobStateTag from './RemoteJobStateTag';
 import RemoteRuntimeTimer from './RemoteRuntimeTimer';
 
@@ -15,27 +15,12 @@ interface Props {
   organizationId: OrganizationId;
   projectId: ProjectId;
   remoteDeviceJob: RemoteDeviceJobBase;
+  creator: React.ReactNode;
   doguOptions: Record<string, unknown>;
 }
 
-const RemoteDeviceJobStatitics = ({ organizationId, projectId, remoteDeviceJob, doguOptions }: Props) => {
+const RemoteDeviceJobStatitics = ({ organizationId, projectId, remoteDeviceJob, doguOptions, creator }: Props) => {
   const { browserName } = doguOptions as { browserName: string | undefined; appVersion: string | undefined; browserVersion: string | undefined };
-  // const { data, isLoading, error } = useSWR(
-  //   `/organizations/${organizationId}/projects/${projectId}/remote-device-jobs/${remoteDeviceJob.remoteDeviceJobId}/remote-dests/summary`,
-  //   swrAuthFetcher,
-  // );
-
-  // if (!data && isLoading) {
-  //   return (
-  //     <div>
-  //       <LoadingOutlined /> Loading...
-  //     </div>
-  //   );
-  // }
-
-  // if (!data || error || !remoteDeviceJob.device) {
-  //   return <div>Something went wrong</div>;
-  // }
 
   if (!remoteDeviceJob.device) {
     return <div>Something went wrong</div>;
@@ -82,6 +67,12 @@ const RemoteDeviceJobStatitics = ({ organizationId, projectId, remoteDeviceJob, 
           <StatBody>
             <RemoteRuntimeTimer state={state} startedAt={remoteDeviceJob.inProgressAt} endedAt={remoteDeviceJob.completedAt} />
           </StatBody>
+        </StatBox>
+        <StatBox>
+          <StatTtile>
+            Triggered <PipelineCreatedTimer createdAt={localizeDate(new Date(remoteDeviceJob.createdAt))} />
+          </StatTtile>
+          <StatBody>{creator}</StatBody>
         </StatBox>
       </FlexRow>
     </Box>

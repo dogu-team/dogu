@@ -7,6 +7,7 @@ import styled from 'styled-components';
 
 import { getRemoteInServerSide } from '../../../../../../src/api/remote';
 import ProjectLayout from '../../../../../../src/components/layouts/ProjectLayout';
+import RemoteCreator from '../../../../../../src/components/remote/RemoteCreator';
 import RemoteDestListController from '../../../../../../src/components/remote/RemoteDestListController';
 import RemoteDeviceJobStatitics from '../../../../../../src/components/remote/RemoteDeviceJobStatitics';
 import RemoteSidebar from '../../../../../../src/components/remote/RemoteSidebar';
@@ -28,7 +29,13 @@ const RemoteItemPage: NextPageWithLayout<WithProjectProps & { remote: RemoteBase
       <div>
         {selectedJob && (
           <div style={{ marginBottom: '2rem' }}>
-            <RemoteDeviceJobStatitics organizationId={organization.organizationId} projectId={project.projectId} remoteDeviceJob={selectedJob} doguOptions={remote.doguOptions} />
+            <RemoteDeviceJobStatitics
+              organizationId={organization.organizationId}
+              projectId={project.projectId}
+              remoteDeviceJob={selectedJob}
+              doguOptions={remote.doguOptions}
+              creator={<RemoteCreator remote={remote} />}
+            />
           </div>
         )}
         <div>

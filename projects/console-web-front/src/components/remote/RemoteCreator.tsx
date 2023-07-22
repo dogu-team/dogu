@@ -1,5 +1,7 @@
 import { RemoteBase } from '@dogu-private/console';
 import { CREATOR_TYPE } from '@dogu-private/types';
+import styled from 'styled-components';
+import { flexRowBaseStyle } from '../../styles/box';
 
 import ProfileImage from '../ProfileImage';
 import ProfileImageWithName from '../users/ProfileImageWithName';
@@ -19,7 +21,10 @@ const RemoteCreator = ({ remote }: Props) => {
         return <div>Unknown</div>;
       }
       return (
-        <ProfileImageWithName profileImage={<ProfileImage profileImageUrl={remote.creator.profileImageUrl} name={remote.creator.name} size={14} />} name={remote.creator.name} />
+        <FlexRow>
+          <ProfileImage profileImageUrl={remote.creator.profileImageUrl} name={remote.creator.name} size={20} style={{ fontSize: '.7rem' }} />
+          <p style={{ marginLeft: '.25rem' }}>{remote.creator.name}</p>
+        </FlexRow>
       );
     default:
       return <div>Unknown</div>;
@@ -27,3 +32,7 @@ const RemoteCreator = ({ remote }: Props) => {
 };
 
 export default RemoteCreator;
+
+const FlexRow = styled.div`
+  ${flexRowBaseStyle}
+`;

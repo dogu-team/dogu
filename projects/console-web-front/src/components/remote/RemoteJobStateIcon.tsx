@@ -1,4 +1,4 @@
-import { CheckCircleFilled, CloseCircleFilled, LoadingOutlined, QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
+import { CheckCircleFilled, CloseCircleFilled, LoadingOutlined, MinusCircleFilled, QuestionCircleOutlined, SettingOutlined, StopFilled } from '@ant-design/icons';
 import { REMOTE_DEVICE_JOB_STATE } from '@dogu-private/types';
 
 import { remoteStatusColor } from '../../utils/mapper';
@@ -19,6 +19,11 @@ const RemoveJobStateIcon = ({ state }: Props) => {
       return <CheckCircleFilled style={style} />;
     case REMOTE_DEVICE_JOB_STATE.FAILURE:
       return <CloseCircleFilled style={style} />;
+    case REMOTE_DEVICE_JOB_STATE.CANCELLED:
+    case REMOTE_DEVICE_JOB_STATE.CANCEL_REQUESTED:
+      return <StopFilled style={style} />;
+    case REMOTE_DEVICE_JOB_STATE.SKIPPED:
+      return <MinusCircleFilled style={style} />;
     default:
       return <QuestionCircleOutlined style={style} />;
   }
