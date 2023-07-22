@@ -69,6 +69,7 @@ export class StackEnvironmentVariableReplacementProvider implements VariableRepl
     if (camelPath && upperPath) {
       replacements.PATH = camelPath + delimiter + upperPath;
       delete replacements.Path;
+      printable.info('env Path and PATH merged to PATH');
     }
     if (!replacements.PATH) {
       return replacements;
@@ -78,12 +79,12 @@ export class StackEnvironmentVariableReplacementProvider implements VariableRepl
     const newPathElems: string[] = [];
     for (const elem of pathElems) {
       if (newPathElems.includes(elem)) {
-        printable.info('envvv pass already exist', { elem });
+        printable.info(`env ${elem} already exist. duplication eliminated`);
         continue;
       }
       newPathElems.push(elem);
     }
-    printable.info('envvv path resolved', { pathEnv, newPathElems });
+    printable.verbose?.('envvv path resolved', { pathEnv, newPathElems });
 
     replacements.PATH = newPathElems.join(delimiter);
     return replacements;
