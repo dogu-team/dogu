@@ -175,7 +175,7 @@ jobs:
 
       - name: Build Projects
         run: |
-          yarn workspace dogu run build:packages
+          yarn workspace dogu run rebuild:packages
 
       - if: steps.cache_third_party.outputs.cache-hit != 'true'
         name: Download, Build third-party
