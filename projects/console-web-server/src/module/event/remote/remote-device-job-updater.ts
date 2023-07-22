@@ -1,5 +1,6 @@
 import { DevicePropCamel, RemoteDeviceJobPropCamel, RemoteDeviceJobPropSnake, RoutineDeviceJobPropSnake } from '@dogu-private/console';
 import { DEVICE_TABLE_NAME, PIPELINE_STATUS, REMOTE_DEVICE_JOB_SESSION_STATE } from '@dogu-private/types';
+import { DefaultHttpOptions, DoguRequestTimeoutHeader, HeaderRecord } from '@dogu-tech/common';
 import { DeviceWebDriver } from '@dogu-tech/device-client-common';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -135,6 +136,8 @@ export class RemoteDeviceJobUpdater {
       const sessionId = timeoutDeviceJob.sessionId;
       const pathProvider = new DeviceWebDriver.sessionDeleted.pathProvider(device.serial);
       const path = DeviceWebDriver.sessionDeleted.resolvePath(pathProvider);
+      const headers: HeaderRecord = {};
+      headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout1minutes.toString();
       const res = this.deviceMessageRelayer
         .sendHttpRequest(
           device.organizationId,
