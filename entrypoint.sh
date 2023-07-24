@@ -25,14 +25,38 @@ sed -i "s|NEXT_PUBLIC_SENTRY_DSN=.*$|NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_
 
 echo "Start nextjs build"
 yarn workspace console-web-front run build 
+if [ $? -eq 0 ]; then
+  echo "Nextjs build success"
+else
+  echo "Nextjs build failed"
+  exit 1
+fi
 
 echo "Start db migration"
 yarn workspace console-web-server run typeorm:init
+if [ $? -eq 0 ]; then
+  echo "DB migration success"
+else
+  echo "DB migration failed"
+  exit 1
+fi
 
 echo "Start file server initialization"
 yarn workspace nexus-initializer run start
+if [ $? -eq 0 ]; then
+  echo "File server initialization success"
+else
+  echo "File server initialization failed"
+  exit 1
+fi
 
 echo "Start console"
 yarn run start:console
+if [ $? -eq 0 ]; then
+  echo "Console start success"
+else
+  echo "Console start failed"
+  exit 1
+fi
 
 exec "$@"

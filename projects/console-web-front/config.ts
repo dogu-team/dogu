@@ -1,5 +1,5 @@
 export const config = {
-  turnserver: {
+  turnServer: {
     userName: process.env.NEXT_PUBLIC_TURN_SERVER_USERNAME,
     password: process.env.NEXT_PUBLIC_TURN_SERVER_PASSWORD,
     credentialType: process.env.NEXT_PUBLIC_TURN_SERVER_CREDENTIAL_TYPE,

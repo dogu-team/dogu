@@ -85,10 +85,10 @@ const useRTCConnection = (device: DeviceBase | undefined, sendThrottleMs: number
           ],
         },
         {
-          urls: config.turnserver.url,
-          username: config.turnserver.userName,
-          credential: config.turnserver.password,
-          credentialType: config.turnserver.credentialType,
+          urls: config.turnServer.url,
+          username: config.turnServer.userName,
+          credential: config.turnServer.password,
+          credentialType: config.turnServer.credentialType,
         },
       ],
     });
