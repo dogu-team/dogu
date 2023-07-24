@@ -323,6 +323,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["shelljs", "npm:0.8.5"],\
             ["tar", "npm:6.1.15"],\
             ["timeout-cli", "npm:0.3.2"],\
+            ["tree-kill", "npm:1.2.2"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"],\
             ["ws", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:8.9.0"],\
@@ -11724,6 +11725,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["reflect-metadata", "npm:0.1.13"],\
             ["rxjs", "npm:7.5.6"],\
             ["shx", "npm:0.3.4"],\
+            ["tree-kill", "npm:1.2.2"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
             ["typed-rest-client", "npm:1.8.9"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"],\
@@ -26578,6 +26580,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["shelljs", "npm:0.8.5"],\
             ["tar", "npm:6.1.15"],\
             ["timeout-cli", "npm:0.3.2"],\
+            ["tree-kill", "npm:1.2.2"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"],\
             ["ws", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:8.9.0"],\
@@ -26795,7 +26798,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["dayjs", "npm:1.11.5"],\
             ["death", "npm:1.1.0"],\
             ["dotenv", "npm:16.0.3"],\
-            ["fast-xml-parser", "npm:4.2.2"],\
+            ["fast-xml-parser", "npm:4.2.6"],\
             ["jest", "virtual:da41e68dc71233b9c882eeff9361d8de0e473b61bcdb51151099ca0b04c2002213c7795bcfb970497741a25f92014dde50c5af7549c4b6ae944acaaff53dda6f#npm:29.1.2"],\
             ["lodash", "npm:4.17.21"],\
             ["nodemon", "npm:2.0.22"],\
@@ -28762,10 +28765,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["fast-xml-parser", [\
-        ["npm:4.2.2", {\
-          "packageLocation": "./.yarn/cache/fast-xml-parser-npm-4.2.2-3696e5f2bb-f0e687927d.zip/node_modules/fast-xml-parser/",\
+        ["npm:4.2.6", {\
+          "packageLocation": "./.yarn/cache/fast-xml-parser-npm-4.2.6-507b2f39db-1628e4b2c5.zip/node_modules/fast-xml-parser/",\
           "packageDependencies": [\
-            ["fast-xml-parser", "npm:4.2.2"],\
+            ["fast-xml-parser", "npm:4.2.6"],\
             ["strnum", "npm:1.0.5"]\
           ],\
           "linkType": "HARD"\

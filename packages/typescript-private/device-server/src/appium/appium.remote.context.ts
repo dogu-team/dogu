@@ -1,7 +1,7 @@
 import { Platform } from '@dogu-private/types';
 import { errorify, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, ScreenSize } from '@dogu-tech/device-client-common';
-import { killProcessOnPort, Logger, waitPortOpen } from '@dogu-tech/node';
+import { killChildProcess, killProcessOnPort, Logger, waitPortOpen } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import { ZombieProps } from '../internal/services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../internal/services/zombie/zombie-service';
@@ -150,16 +150,7 @@ export class AppiumRemoteContext implements AppiumContext {
   }
 
   private async stopServer(process: ChildProcessWithoutNullStreams): Promise<void> {
-    await new Promise<void>((resolve) => {
-      if (process.exitCode !== null || process.signalCode !== null) {
-        resolve();
-        return;
-      }
-      process.once('close', () => {
-        resolve();
-      });
-      process.kill();
-    });
+    return killChildProcess(process);
   }
 
   getAndroid(): Promise<Android | undefined> {

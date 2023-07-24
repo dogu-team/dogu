@@ -1,5 +1,5 @@
 import { PrefixLogger, stringify } from '@dogu-tech/common';
-import { HostPaths } from '@dogu-tech/node';
+import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
@@ -64,7 +64,7 @@ export class WdaBuildExternalUnit extends IExternalUnit {
     this.logger.info(`Start ${this.getName()} `);
     if (this.child) {
       this.logger.info(`${this.getName()} is already running. kill it.`);
-      this.child.kill();
+      await killChildProcess(this.child);
       this.child = null;
     }
     const wdaDerivedDataPath = HostPaths.external.xcodeProject.wdaDerivedDataPath();

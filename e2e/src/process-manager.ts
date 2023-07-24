@@ -1,6 +1,7 @@
 import { stringify } from '@dogu-tech/common';
+import { killChildProcess } from '@dogu-tech/node';
 import chalk from 'chalk';
-import { ChildProcess, ChildProcessWithoutNullStreams, exec, execSync, spawn as Spawn, SpawnOptionsWithoutStdio } from 'child_process';
+import { ChildProcess, ChildProcessWithoutNullStreams, exec, spawn as Spawn, SpawnOptionsWithoutStdio } from 'child_process';
 import ON_DEATH from 'death';
 import stc from 'string-to-color';
 import util from 'util';
@@ -201,18 +202,9 @@ export module ProcessManager {
         childProcess.stderr.destroy();
       }
 
-      if (process.platform === 'win32') {
-        const pid = childProcess.pid;
-
-        if (pid) {
-          const output = execSync(`taskkill /F /PID ${pid}`);
-          console.log(output.toString());
-        } else {
-          console.error("Can't find pid");
-        }
-      } else {
-        childProcess.kill();
-      }
+      killChildProcess(childProcess).catch((error) => {
+        console.error(`killChildProcess failed ${util.inspect(error)}`);
+      });
     }
   }
 }

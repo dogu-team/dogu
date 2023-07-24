@@ -3,6 +3,7 @@ import child_process from 'child_process';
 import fs from 'fs';
 import nodemon from 'nodemon';
 import path from 'path';
+import treeKill from 'tree-kill';
 import util from 'util';
 
 interface AnyDict {
@@ -78,7 +79,15 @@ function findPackagepathFromTsFile(tsFile: string): PackageInfo | null {
 function spawnPackageBuild(pf: PackageChanges, buildDesc = '[ Build ] '): BuildProc {
   const beforeProcs = procs.filter((p) => p.package.name === pf.package.name);
   for (const p of beforeProcs) {
-    p.proc.kill();
+    if (p.proc.pid) {
+      treeKill(p.proc.pid, (error) => {
+        if (error) {
+          console.log('Error', error);
+        } else {
+          console.log(`Killed ${p.package.name} pid: ${p.proc.pid ?? 'undefined'}`);
+        }
+      });
+    }
   }
 
   log(chalk.blue(`${buildDesc} ${pf.package.name}`));
@@ -131,7 +140,9 @@ nodemon({
   .on('start', () => {
     console.log('\n');
   })
-  .on('watching', (file) => {})
+  .on('watching', (file) => {
+    // noop
+  })
   .on('quit', () => {
     console.log('quit');
   })

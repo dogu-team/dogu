@@ -6,7 +6,7 @@
 import { Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { callAsyncWithTimeout, Class, delay, errorify, Instance, NullLogger, Printable, Retry, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, Rect, ScreenSize, SystemBar } from '@dogu-tech/device-client-common';
-import { HostPaths, killProcessOnPort, Logger, TaskQueue, TaskQueueTask } from '@dogu-tech/node';
+import { HostPaths, killChildProcess, killProcessOnPort, Logger, TaskQueue, TaskQueueTask } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
 import _ from 'lodash';
@@ -331,16 +331,7 @@ export class AppiumContextImpl implements AppiumContext {
   }
 
   private async stopServer(process: ChildProcessWithoutNullStreams): Promise<void> {
-    await new Promise<void>((resolve) => {
-      if (process.exitCode !== null || process.signalCode !== null) {
-        resolve();
-        return;
-      }
-      process.once('close', () => {
-        resolve();
-      });
-      process.kill();
-    });
+    await killChildProcess(process);
   }
 
   /**

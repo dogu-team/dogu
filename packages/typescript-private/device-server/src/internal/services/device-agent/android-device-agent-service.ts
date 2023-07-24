@@ -1,5 +1,6 @@
 import { DeviceSystemInfo, Platform, PrivateProtocol, Serial } from '@dogu-private/types';
 import { Printable, stringifyError } from '@dogu-tech/common';
+import { killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import { EventEmitter } from 'stream';
 import WebSocket from 'ws';
@@ -192,7 +193,11 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
   }
 
   onDie(): void {
-    this.proc?.kill();
+    if (this.proc) {
+      killChildProcess(this.proc).catch((error) => {
+        this.logger.error('AndroidDeviceAgentService killChildProcess', { error });
+      });
+    }
   }
 }
 

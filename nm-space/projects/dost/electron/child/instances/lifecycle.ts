@@ -1,6 +1,7 @@
 import { Printable } from '@dogu-tech/common';
+import { killChildProcess, treeKill } from '@dogu-tech/node';
 import * as Sentry from '@sentry/electron/main';
-import { ChildProcess, execSync, fork } from 'child_process';
+import { ChildProcess, fork } from 'child_process';
 import pidtree from 'pidtree';
 import { Key } from 'react';
 import { FeatureConfigService } from '../../feature-config/feature-config-service';
@@ -64,30 +65,13 @@ export function openChild(key: Key, module: string, options: FilledChildOptions,
   return child;
 }
 
-export function closeChild(key: Key, child: ChildProcess, childLogger: Printable): Promise<void> {
+export async function closeChild(key: Key, child: ChildProcess, childLogger: Printable): Promise<void> {
   childLogger.info('child process close called', { err: new Error().stack });
-  return new Promise((resolve) => {
-    child.on('close', (code, signal) => {
-      childLogger.info('child process exited', { key, code, signal });
-      resolve();
-    });
-    if (child.pid) {
-      pidtree(child.pid, (err, pids) => {
-        if (err) {
-          childLogger.error('child process close. pidtree error', { key, error: err });
-        } else {
-          childLogger.info('child process close. pidtree', { key, pids });
-          for (const pid of pids) {
-            killPid(key as string, pid);
-          }
-        }
-        killPid(key as string, child.pid!);
-      });
-    } else {
-      childLogger.warn?.('child process pid is null', { key });
-      child.kill();
-    }
-  });
+  try {
+    await killChildProcess(child);
+  } catch (error) {
+    childLogger.error('child process close error', { key, error });
+  }
 }
 
 export function closeAllChildren(): Promise<void> {
@@ -100,7 +84,13 @@ export function closeAllChildren(): Promise<void> {
         } else {
           logger.info('closeAllChildren close. pidtree', { pids });
           for (const pid of pids) {
-            killPid('closeAllChildren', pid);
+            treeKill(pid, (error) => {
+              if (error) {
+                logger.error('closeAllChildren close. treeKill error', { error });
+              } else {
+                logger.info('closeAllChildren close. treeKill success', { pid });
+              }
+            });
           }
         }
         resolve();
@@ -110,16 +100,4 @@ export function closeAllChildren(): Promise<void> {
       resolve();
     }
   });
-}
-function killPid(key: string, pid: number) {
-  try {
-    if (process.platform === 'win32') {
-      execSync(`taskkill /PID ${pid} /F /T`);
-    } else {
-      execSync(`kill -9 ${pid}`);
-    }
-    logger.info(`child process close. killed `, { key, pid });
-  } catch (e) {
-    logger.warn('child process close. kill error', { key, error: e });
-  }
 }

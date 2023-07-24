@@ -14,7 +14,7 @@ import {
 } from '@dogu-private/types';
 import { Closable, errorify, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { StreamingOfferDto } from '@dogu-tech/device-client-common';
-import { HostPaths } from '@dogu-tech/node';
+import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
 import compressing from 'compressing';
 import fs from 'fs';
@@ -47,10 +47,12 @@ import { createPortContext } from './util';
 type DeviceControl = PrivateProtocol.DeviceControl;
 
 export class IosLogClosable implements Closable {
-  constructor(private readonly childProcess: ChildProcess) {}
+  constructor(private readonly childProcess: ChildProcess, private readonly printable?: Printable) {}
 
   close(): void {
-    this.childProcess.kill();
+    killChildProcess(this.childProcess).catch((error) => {
+      this.printable?.error?.('IosLogClosable close failed.', { error: errorify(error) });
+    });
   }
 }
 
@@ -341,7 +343,7 @@ export class IosChannel implements DeviceChannel {
 
   subscribeLog(args: string[], handler: LogHandler, printable?: Printable | undefined): PromiseOrValue<Closable> {
     const child = IdeviceSyslog.logcat(this.serial, args, handler, printable);
-    return new IosLogClosable(child);
+    return new IosLogClosable(child, printable);
   }
 
   reset(): PromiseOrValue<void> {
