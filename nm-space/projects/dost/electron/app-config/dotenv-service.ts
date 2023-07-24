@@ -2,7 +2,8 @@ import { PreloadDeviceServerEnv, PreloadHostAgentEnv } from '@dogu-private/dost-
 import { Class, transformAndValidate } from '@dogu-tech/common';
 import dotenv from 'dotenv';
 import isDev from 'electron-is-dev';
-import fs, { constants } from 'fs';
+import fs from 'fs';
+import _ from 'lodash';
 import path from 'path';
 import { Env } from '../env';
 import { logger } from '../log/logger.instance';
@@ -13,7 +14,19 @@ interface DotenvInfo<T extends Class<T> = any> {
   classConstructor: T;
 }
 
-export class DotenvMerger {
+async function findDotenvFileInSearchPaths(searchPaths: string[], fileName: string): Promise<string | null> {
+  for (const searchPath of searchPaths) {
+    const filePath = path.resolve(searchPath, fileName);
+    const stat = await fs.promises.stat(filePath).catch(() => null);
+    if (stat && stat.isFile()) {
+      return filePath;
+    }
+  }
+  logger.debug('file not found', { searchPaths, fileName });
+  return null;
+}
+
+export class DotenvService {
   private readonly searchPaths: string[] = [];
   private readonly dotenvInfos: DotenvInfo[] = [
     {
@@ -37,25 +50,29 @@ export class DotenvMerger {
     this.searchPaths.push(path.resolve(process.resourcesPath, 'dotenv'));
   }
 
+  async find(key: string): Promise<string | null> {
+    const { searchPaths, dotenvInfos } = this;
+    for (const { fileName } of dotenvInfos) {
+      const found = await findDotenvFileInSearchPaths(searchPaths, fileName);
+      if (found) {
+        const content = await fs.promises.readFile(found, { encoding: 'utf8' });
+        const parsed = dotenv.parse(content);
+        if (_.has(parsed, key)) {
+          return parsed[key];
+        }
+      }
+    }
+    return null;
+  }
+
   async merge(instance: AppConfigService): Promise<void> {
     const { searchPaths, dotenvInfos } = this;
     for (const { fileName, classConstructor } of dotenvInfos) {
-      let found = '';
-      for (const searchPath of searchPaths) {
-        try {
-          const filePath = path.resolve(searchPath, fileName);
-          fs.promises.access(filePath, constants.R_OK);
-          found = filePath;
-          break;
-        } catch (error) {
-          logger.debug('file not found', { searchPath, fileName });
-          continue;
-        }
-      }
+      const found = await findDotenvFileInSearchPaths(searchPaths, fileName);
       if (!found) {
         throw new Error(`file not found: ${fileName}`);
       }
-      const content = await fs.promises.readFile(found);
+      const content = await fs.promises.readFile(found, { encoding: 'utf8' });
       const parsed = dotenv.parse(content);
       const validated = await transformAndValidate(classConstructor, parsed);
       Object.entries(validated).forEach(([key, value]) => {

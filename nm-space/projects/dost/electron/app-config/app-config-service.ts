@@ -1,23 +1,50 @@
 import { app, ipcMain } from 'electron';
 import isDev from 'electron-is-dev';
 import Store from 'electron-store';
+import fs from 'fs';
+import _ from 'lodash';
+import path from 'path';
 import { appConfigClientKey, IAppConfigClient, Key, schema, Schema } from '../../src/shares/app-config';
 import { logger } from '../log/logger.instance';
 import { ConfigsPath } from '../path-map';
-import { DotenvMerger } from './dotenv-merger';
+import { DotenvService } from './dotenv-service';
 
 type Client = Store<Schema>;
+
+const AppConfigFileNameWithoutExtension = app.name.toLowerCase().replaceAll(' ', '-');
+const AppConfigFileExtension = 'json';
+
+async function clearConfigsIfInvalid(dotenvService: DotenvService): Promise<void> {
+  const doguRunTypeKey = 'DOGU_RUN_TYPE';
+  const appConfigFilePath = path.resolve(ConfigsPath, `${AppConfigFileNameWithoutExtension}.${AppConfigFileExtension}`);
+  const stat = await fs.promises.stat(appConfigFilePath).catch(() => null);
+  if (stat && stat.isFile()) {
+    const appConfigContent = await fs.promises.readFile(appConfigFilePath, { encoding: 'utf8' });
+    const appConfigParsed = JSON.parse(appConfigContent);
+    const appConfigDoguRunType = _.get(appConfigParsed, doguRunTypeKey) as string | undefined;
+    const dotenvDoguRunType = await dotenvService.find(doguRunTypeKey);
+    if (appConfigDoguRunType && dotenvDoguRunType && appConfigDoguRunType !== dotenvDoguRunType) {
+      await fs.promises.rm(ConfigsPath, { recursive: true, force: true });
+    }
+  }
+  await fs.promises.mkdir(ConfigsPath, { recursive: true });
+}
 
 export class AppConfigService implements IAppConfigClient {
   static instance: AppConfigService;
 
   static async open(): Promise<void> {
     Store.initRenderer();
+
+    const dotenvService = new DotenvService();
+    await clearConfigsIfInvalid(dotenvService);
+
     const client = new Store<Schema>({
-      name: app.name.toLowerCase().replaceAll(' ', '-'),
+      name: AppConfigFileNameWithoutExtension,
       schema,
       accessPropertiesByDotNotation: false,
       cwd: ConfigsPath,
+      fileExtension: AppConfigFileExtension,
       clearInvalidConfig: true,
       migrations: {
         '0.0.0': (store) => {
@@ -26,9 +53,11 @@ export class AppConfigService implements IAppConfigClient {
       },
     });
     logger.debug('config path', { path: client.path });
+
     AppConfigService.instance = new AppConfigService(client);
     const { instance } = AppConfigService;
-    await new DotenvMerger().merge(instance);
+    await dotenvService.merge(instance);
+
     ipcMain.handle(appConfigClientKey.getOrDefault, (_, key: Key, value: unknown) => instance.getOrDefault(key, value));
     ipcMain.handle(appConfigClientKey.get, (_, key: Key) => instance.get(key));
     ipcMain.handle(appConfigClientKey.set, (_, key: Key, value: any) => instance.set(key, value));
