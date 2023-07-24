@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
+import { DeviceHostDownloadSharedResourceService } from '../device-host/device-host.download-shared-resource';
 import { ScanModule } from '../scan/scan.module';
-import { DeviceHostDownloadSharedResourceService } from './device-host/download-shared-resource';
+import { DeviceHostDownloadSharedResourceWebsocketService } from './device-host/download-shared-resource';
 import { DeviceHostUploadFileService } from './device-host/upload-file.service';
 import { DeviceConnectionSubscribeService } from './device/connection-subscribe.service';
 import { DeviceForwardService } from './device/forward.service';
@@ -29,6 +30,7 @@ import { DeviceUninstallAppService } from './device/uninstall-app.service';
     DeviceResetService,
     DeviceJoinWifiService,
     DeviceHostUploadFileService,
+    DeviceHostDownloadSharedResourceWebsocketService,
     DeviceHostDownloadSharedResourceService,
   ],
 })

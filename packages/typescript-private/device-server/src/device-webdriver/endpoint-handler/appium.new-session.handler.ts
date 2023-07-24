@@ -1,6 +1,5 @@
 import { extensionFromPlatform, PlatformType } from '@dogu-private/types';
 import {
-  DefaultHttpOptions,
   DoguApplicationFileSizeHeader,
   DoguApplicationUrlHeader,
   DoguApplicationVersionHeader,
@@ -16,9 +15,10 @@ import axios from 'axios';
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
-import stream, { Stream } from 'stream';
+import url from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import { AppiumRemoteContext } from '../../appium/appium.remote.context';
+import { DeviceHostDownloadSharedResourceService } from '../../device-host/device-host.download-shared-resource';
 import { getFreePort } from '../../internal/util/net';
 import { DoguLogger } from '../../logger/logger';
 import { AppiumEndpointHandler, RegisterAppiumEndpointHandler } from './appium.service';
@@ -26,12 +26,6 @@ import { OnBeforeRequestResult } from './common';
 
 function getAppExtension(platform: PlatformType): string {
   return extensionFromPlatform(platform);
-}
-
-async function postProcessTempFile(platform: PlatformType, tempFilePath: string, destFilePath: string): Promise<void> {
-  const dirPath = path.dirname(destFilePath);
-  await fs.promises.mkdir(dirPath, { recursive: true });
-  await fs.promises.rename(tempFilePath, destFilePath);
 }
 
 @RegisterAppiumEndpointHandler()
@@ -42,12 +36,13 @@ export class AppiumNewSessionEndpointHandler extends AppiumEndpointHandler {
 
   override async onBeforeRequest(
     remoteContext: AppiumRemoteContext,
+    downloadService: DeviceHostDownloadSharedResourceService,
     headers: HeaderRecord,
     endpoint: WebDriverEndPoint,
     request: RelayRequest,
     logger: DoguLogger,
   ): Promise<OnBeforeRequestResult> {
-    await super.onBeforeRequest(remoteContext, headers, endpoint, request, logger);
+    await super.onBeforeRequest(remoteContext, downloadService, headers, endpoint, request, logger);
 
     if (endpoint.info.type !== 'new-session') {
       return {
@@ -119,7 +114,8 @@ export class AppiumNewSessionEndpointHandler extends AppiumEndpointHandler {
         };
       }
 
-      const filename = path.basename(appUrl);
+      const appUrlParsed = url.parse(appUrl);
+      const filename = path.basename(appUrlParsed.path ?? uuidv4()).substring(0, 30);
       const extension = getAppExtension(platform);
       const appVersion = _.get(headers, DoguApplicationVersionHeader) as string | undefined;
       if (!appVersion) {
@@ -139,58 +135,14 @@ export class AppiumNewSessionEndpointHandler extends AppiumEndpointHandler {
         request.reqBody ??= {};
         _.set(request.reqBody, 'capabilities.alwaysMatch.appium:app', filePath);
 
-        const stat = await fs.promises.stat(filePath).catch(() => null);
-        if (stat !== null) {
-          if (stat.isFile()) {
-            logger.info('File already exists', { filePath });
+        const doguApplicationFileSize = _.get(headers, DoguApplicationFileSizeHeader) ? parseInt(_.get(headers, DoguApplicationFileSizeHeader)) : Number.MAX_SAFE_INTEGER;
 
-            const doguApplicationFileSize = _.get(headers, DoguApplicationFileSizeHeader) as string | undefined;
-            if (doguApplicationFileSize) {
-              const expectedFileSize = parseInt(doguApplicationFileSize);
-              logger.info(`File size local: ${stat.size} expected: ${expectedFileSize}`, { filePath });
-
-              if (stat.size === expectedFileSize) {
-                logger.info('File is same size. Skipping download', { filePath });
-                return { request };
-              } else {
-                logger.info('File is not same size. Deleting file', { filePath });
-                await fs.promises.unlink(filePath);
-                logger.info('File deleted', { filePath });
-              }
-            } else {
-              logger.info('File size is not specified. Deleting file', { filePath });
-              await fs.promises.unlink(filePath);
-              logger.info('File deleted', { filePath });
-            }
-          } else {
-            logger.error('File is not a file', { filePath });
-            throw new Error('File is not a file');
-          }
-        }
-
-        const tempFileName = `${uuidv4()}.${extension}`;
-        const tempFilePath = path.resolve(HostPaths.tempPath, tempFileName);
-        if (!fs.existsSync(HostPaths.tempPath)) {
-          fs.mkdirSync(HostPaths.tempPath, { recursive: true });
-        }
-        const response = await axios.get(appUrl, {
-          responseType: 'stream',
+        await downloadService.queueDownload({
+          filePath,
+          url: appUrl,
           headers: {},
-          timeout: DefaultHttpOptions.request.timeout,
+          expectedFileSize: doguApplicationFileSize,
         });
-        if (!(response.data instanceof Stream)) {
-          throw new Error('response.data is not stream');
-        }
-        const writer = fs.createWriteStream(tempFilePath);
-        response.data.pipe(writer);
-        try {
-          await stream.promises.finished(writer);
-        } catch (error) {
-          writer.close();
-          throw error;
-        }
-        await postProcessTempFile(platform, tempFilePath, filePath);
-        logger.info('File downloaded', { tempFilePath });
 
         return { request };
       } catch (error: unknown) {

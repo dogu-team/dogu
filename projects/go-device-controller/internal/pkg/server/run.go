@@ -60,7 +60,7 @@ func RunDetach() *grpc.Server {
 	goCheckDeviceServer(uint32(deviceServerPort))
 
 	config := &net.ListenConfig{Control: sockopt.ReusePort}
-	listener, err := config.Listen(context.Background(), "tcp", fmt.Sprintf("0.0.0.0:%d", grpcServerPort))
+	listener, err := config.Listen(context.Background(), "tcp4", fmt.Sprintf("0.0.0.0:%d", grpcServerPort))
 	if err != nil {
 		log.Inst.Fatal("listening failed. ", zap.Error(err))
 	}

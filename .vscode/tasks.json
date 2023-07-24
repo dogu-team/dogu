@@ -15,6 +15,20 @@
     },
     {
       "type": "npm",
+      "script": "build:packages",
+      "label": "Build: packages",
+      "group": {
+        "kind": "build"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "group": "buildWatchers",
+        "close": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "type": "npm",
       "script": "build:archive",
       "label": "Build: android-device-agent",
       "path": "projects/android-device-agent",
@@ -168,9 +182,9 @@
       }
     },
     {
+      "label": "Dev: Dost",
       "type": "npm",
       "script": "dev",
-      "label": "Dev: Dost",
       "path": "nm-space/projects/dost",
       "problemMatcher": [],
       "dependsOn": ["Newbie: NM Space"],
@@ -179,6 +193,13 @@
         "close": false,
         "panel": "shared"
       }
+    },
+    {
+      "label": "Dev: Build: Dost",
+      "type": "shell",
+      "problemMatcher": [],
+      "dependsOrder": "sequence",
+      "dependsOn": ["Build: packages", "Dev: Dost"]
     },
     {
       "label": "Dev: Server All",
