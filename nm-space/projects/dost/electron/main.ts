@@ -35,6 +35,16 @@ import { WindowService } from './window/window-service';
 
 electronDl();
 
+const isSingleInstance = app.requestSingleInstanceLock();
+if (!isSingleInstance) {
+  app.quit();
+  process.exit(0);
+}
+
+app.on('second-instance', () => {
+  WindowService.open();
+});
+
 app.whenReady().then(async () => {
   logger.addFileTransports(LogsPath);
   rendererLogger.addFileTransports(LogsPath);

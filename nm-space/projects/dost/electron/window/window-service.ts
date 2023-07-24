@@ -112,21 +112,13 @@ export class WindowService {
       WindowService.instance.window.isEnabled() &&
       WindowService.instance.window.isVisible()
     ) {
+      WindowService.instance.window.show();
       WindowService.instance.window.focus();
       WindowService.instance.window.moveTop();
-      // const befOnTop = WindowService.instance.window?.isAlwaysOnTop();
-      // WindowService.instance.window?.setAlwaysOnTop(true);
-      // setTimeout(() => {
-      //   WindowService.instance.window?.setAlwaysOnTop(befOnTop);
-      // }, 500);
       return;
     }
 
     WindowService.instance = new WindowService();
-
-    // if (process.platform === 'darwin') {
-    //   app.dock.hide();
-    // }
   }
 
   static close(): void {
