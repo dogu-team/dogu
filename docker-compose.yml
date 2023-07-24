@@ -97,7 +97,7 @@ services:
 
   console:
     container_name: dogu-console
-    image: dogutechio/dogu:1.4.0
+    image: dogutechio/dogu:1.4.1
     restart: always
     depends_on:
       - influxdb
