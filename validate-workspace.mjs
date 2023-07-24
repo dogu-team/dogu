@@ -17,5 +17,14 @@ function checkDoguWorkspaceFile() {
   }
 }
 
+function checkThirdPartyReadMe() {
+  const thirdPartyMeadMe = 'third-party/README.md';
+  if (!fs.existsSync(thirdPartyMeadMe)) {
+    console.log(`missing ${thirdPartyMeadMe} file.`);
+    process.exit(1);
+  }
+}
+
 disallowGitSubmodules();
 checkDoguWorkspaceFile();
+checkThirdPartyReadMe();
