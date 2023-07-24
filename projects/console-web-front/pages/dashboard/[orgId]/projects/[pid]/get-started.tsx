@@ -75,7 +75,7 @@ const ProjectGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, o
         <CenteredBox>
           <FrameworkSelectContainer
             skipButton={
-              <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/remotes`}>
+              <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/remotes`} access-id="skip-project-tutorial">
                 <Button type="link">Skip tutorial</Button>
               </Link>
             }

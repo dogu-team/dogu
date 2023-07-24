@@ -1,5 +1,5 @@
 import { loadEnvLazySync } from '@dogu-private/env-tools';
-import { afterAll, beforeAll, Dest, job, test } from '@dogu-tech/dest';
+import { afterAll, beforeAll, Dest, expect, job, test } from '@dogu-tech/dest';
 import dotenv from 'dotenv';
 import path from 'path';
 
@@ -8,6 +8,7 @@ import { E2eEnv } from '../../src/env';
 import { ProcessManager } from '../../src/process-manager';
 import { Timer } from '../../src/timer';
 import { Utils } from '../../src/utils';
+import { runHost } from './bat/host';
 import { currentL10n, l10n } from './bat/l10n';
 import { startDost } from './bat/workspace';
 
@@ -78,7 +79,7 @@ Dest.withOptions({
   timeout: 60 * 60 * 1000,
 }).describe(() => {
   job('BAT', () => {
-    beforeAll(async () => {
+    beforeAll(() => {
       values.value.HOME_URL = `http://${env.DOGU_E2E_HOST}:${env.DOGU_CONSOLE_WEB_FRONT_PORT}`;
       console.log(`DeviceServerPort ${env.DOGU_DEVICE_SERVER_PORT}`);
     });
@@ -105,7 +106,7 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: '//a[@access-id="sign-up-btn"]' });
       });
 
-      test('Make Invitatin user', async () => {
+      test('Make invitee user', async () => {
         const firstClickOptions = {
           focusWindow: true,
         };
@@ -171,8 +172,117 @@ Dest.withOptions({
           },
         );
       });
+
+      test('Skip tutorial', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="skip-tutorial"]' });
+      });
+
       dost.nextTest();
     });
+
+    job('Add member', () => {
+      test('Go to member menu', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="side-bar-member"]' }, { waitTime: 1 * 1000 });
+      });
+
+      test('Click member invite button ', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="invite-user-btn"]' }, { waitTime: 1 * 1000 });
+      });
+
+      test('Enter invite email', async () => {
+        await Driver.sendKeys({ xpath: '//input[@access-id="invite-user-input"]' }, values.value.INVITE_USER_EMAIL);
+        await Driver.clickElement({ xpath: '//button[@access-id="invite-user-add-email-btn"]' });
+      });
+
+      test('Selecte invite permission and send ', async () => {
+        await Driver.clickElement({ xpath: '//*[@id="invite-user-send-btn"]' });
+      });
+
+      test('Go to member page', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="org-member-tab"]' });
+      });
+
+      test('Check invite result', async () => {
+        const invitedUserEmail = await Driver.getText({ xpath: `//*[text()="${values.value.INVITE_USER_NAME}"]` }, { focusWindow: true });
+        expect(invitedUserEmail).toBe(values.value.INVITE_USER_NAME);
+      });
+    });
+
+    job('Create team', () => {
+      test('Click team menu', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="side-bar-team"]' });
+      });
+
+      test('Click create team', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="create-team-btn"]' });
+      });
+
+      test('Create new team', async () => {
+        await Driver.sendKeys({ xpath: '//input[@id="name"]' }, values.value.TEAM_NAME);
+        await Driver.clickElement({ xpath: '//button[@form="new-team"]' });
+      });
+    });
+
+    job('Team setting', () => {
+      test('Go to team page', async () => {
+        const teamXPath = `//p[text()="${values.value.TEAM_NAME}"]`;
+        const teamName = await Driver.getText({ xpath: teamXPath });
+        expect(teamName).toBe(values.value.TEAM_NAME);
+
+        await Driver.clickElement({ xpath: teamXPath });
+      });
+
+      test('Add team member', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="add-team-member-btn"]' });
+        await Driver.sendKeys({ xpath: '//input[@access-id="add-team-member-input"]' }, values.value.INVITE_USER_EMAIL);
+        await Driver.clickElement({ xpath: '//*[@aria-label="plus"]/..' });
+
+        const [userName, userEmail] = await Promise.all([
+          Driver.getText({ xpath: `//*[text()="${values.value.INVITE_USER_NAME}"]` }),
+          Driver.getText({ xpath: `//*[text()="${values.value.INVITE_USER_EMAIL}"]` }),
+        ]);
+        expect(userName).toBe(values.value.INVITE_USER_NAME);
+        expect(userEmail).toBe(values.value.INVITE_USER_EMAIL);
+      });
+    });
+
+    job('Create project', () => {
+      test('Click project menu', async () => {
+        await Driver.clickElement(
+          { xpath: '//*[@access-id="side-bar-project"]' },
+          {
+            focusWindow: true,
+          },
+        );
+      });
+
+      test('Click create new project button', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="add-project-btn"]' });
+      });
+
+      test('Enter project info', async () => {
+        await Driver.sendKeys({ xpath: '//*[@id="name"]' }, values.value.PROJECT_NAME);
+        await Driver.sendKeys({ xpath: '//*[@id="desc"]' }, 'Test Project Description');
+      });
+
+      test('Click create project button', async () => {
+        await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[3]/div/button[2]' });
+      });
+
+      test('Close project tutorial', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="skip-project-tutorial"]' });
+      });
+
+      test('Check project creation', async () => {
+        const createdProjectName = await Driver.getText({ xpath: '//*[@access-id="project-layout-project-name"]' });
+        expect(createdProjectName).toBe(values.value.PROJECT_NAME);
+      });
+
+      dost.nextTest();
+    });
+
+    runHost(values.value.HOST_NAME, dost);
+
     afterAll(async () => {
       Timer.close();
 
