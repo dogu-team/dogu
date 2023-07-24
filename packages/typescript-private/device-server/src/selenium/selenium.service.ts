@@ -5,14 +5,12 @@ import AsyncLock from 'async-lock';
 import _ from 'lodash';
 import path from 'path';
 import { setInterval } from 'timers/promises';
-import { v4 as uuidv4 } from 'uuid';
 import { DoguLogger } from '../logger/logger';
 import { DefaultSeleniumContextOptions, SeleniumContext, SeleniumContextInfo, SeleniumContextOptions } from './selenium.context';
 
 const LockKey = 'SeleniumService.map';
 const GarbageCollectionInterval = 60 * 1000;
-// const GarbageCollectionAccessTimeout = 5 * 60 * 1000;
-const GarbageCollectionAccessTimeout = 10 * 1000;
+const GarbageCollectionAccessTimeout = 5 * 60 * 1000;
 
 interface SeleniumContextEntry {
   context: SeleniumContext;
@@ -41,11 +39,6 @@ export class SeleniumService implements OnModuleInit, OnModuleDestroy {
   onModuleInit(): void {
     this.createDefaultSeleniumContextOptions();
     this.startGarbageCollection();
-    for (let i = 0; i < 10; ++i) {
-      this.open({ browserName: 'chrome', browserVersion: 'latest', key: uuidv4() }).catch((error) => {
-        this.logger.error('Failed to open selenium context', { error: errorify(error) });
-      });
-    }
   }
 
   async onModuleDestroy(): Promise<void> {
