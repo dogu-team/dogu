@@ -281,7 +281,7 @@ Dest.withOptions({
       });
 
       test('Click create project button', async () => {
-        await Driver.clickElement({ xpath: '/html/body/div[3]/div/div[2]/div/div[2]/div[3]/div/button[2]' });
+        await Driver.clickElement({ xpath: '//button[@form="new-project"]' });
       });
 
       test('Close project tutorial', async () => {
