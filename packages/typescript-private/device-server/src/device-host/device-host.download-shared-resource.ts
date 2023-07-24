@@ -47,38 +47,42 @@ export class DeviceHostDownloadSharedResourceService {
 
   @OnEvent(OnUpdateEvent.key)
   async onUpdate(value: Instance<typeof OnUpdateEvent.value>): Promise<void> {
-    await this.onUpdateGuarder.guard(() => {
-      const divideTask = () => {
-        try {
-          const task = this.dividerQueue.pop();
-          if (!task) {
-            return;
-          }
+    await this.onUpdateGuarder
+      .guard(() => {
+        const divideTask = () => {
+          try {
+            const task = this.dividerQueue.pop();
+            if (!task) {
+              return;
+            }
 
-          let targetRunningQueue = this.runningQueues.find((queue) => queue.filePath === task.param.filePath);
-          if (!targetRunningQueue) {
-            targetRunningQueue = {
-              filePath: task.param.filePath,
-              updateGuarder: new DuplicatedCallGuarder(),
-              queue: new TaskQueue(),
-            };
-            this.runningQueues.push(targetRunningQueue);
+            let targetRunningQueue = this.runningQueues.find((queue) => queue.filePath === task.param.filePath);
+            if (!targetRunningQueue) {
+              targetRunningQueue = {
+                filePath: task.param.filePath,
+                updateGuarder: new DuplicatedCallGuarder(),
+                queue: new TaskQueue(),
+              };
+              this.runningQueues.push(targetRunningQueue);
+            }
+            targetRunningQueue.queue.schedule(task);
+          } catch (error) {
+            this.logger.error(`DeviceHostDownloadSharedResourceService.update error: ${stringifyError(error)}`);
           }
-          targetRunningQueue.queue.schedule(task);
-        } catch (error) {
-          this.logger.error(`DeviceHostDownloadSharedResourceService.update error: ${stringifyError(error)}`);
-        }
-      };
+        };
 
-      const cleanupEmptyQueues = () => {
-        const emptyRunningQueues = this.runningQueues.filter((queue) => queue.queue.isEmpty());
-        for (const emptyRunningQueue of emptyRunningQueues) {
-          this.runningQueues.splice(this.runningQueues.indexOf(emptyRunningQueue), 1);
-        }
-      };
-      divideTask();
-      cleanupEmptyQueues();
-    });
+        const cleanupEmptyQueues = () => {
+          const emptyRunningQueues = this.runningQueues.filter((queue) => queue.queue.isEmpty());
+          for (const emptyRunningQueue of emptyRunningQueues) {
+            this.runningQueues.splice(this.runningQueues.indexOf(emptyRunningQueue), 1);
+          }
+        };
+        divideTask();
+        cleanupEmptyQueues();
+      })
+      .catch((error) => {
+        this.logger.error(`DeviceHostDownloadSharedResourceService.update error: ${stringifyError(error)}`);
+      });
 
     for (const runningQueue of this.runningQueues) {
       runningQueue.updateGuarder
@@ -86,11 +90,11 @@ export class DeviceHostDownloadSharedResourceService {
           try {
             await runningQueue.queue.consume();
           } catch (error) {
-            this.logger.error(`DeviceHostDownloadSharedResourceService.update error: ${stringifyError(error)}`);
+            this.logger.error(`DeviceHostDownloadSharedResourceService.update path: ${runningQueue.filePath}, error: ${stringifyError(error)}`);
           }
         })
         .catch((error) => {
-          this.logger.error(`DeviceHostDownloadSharedResourceService.update error: ${stringifyError(error)}`);
+          this.logger.error(`DeviceHostDownloadSharedResourceService.update path: ${runningQueue.filePath}, error: ${stringifyError(error)}`);
         });
     }
   }
