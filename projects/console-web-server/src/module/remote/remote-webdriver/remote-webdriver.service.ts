@@ -67,7 +67,7 @@ export class RemoteWebDriverService {
       );
       return res;
     } catch (e) {
-      throw new RemoteException(500, e, {});
+      throw new RemoteException(HttpStatus.INTERNAL_SERVER_ERROR, e, {});
     }
   }
 
