@@ -48,8 +48,8 @@ export class DeviceRuntimeInfoParser {
         const cpuInfo = item.cpues?.[0];
 
         const cores = Math.trunc(cpuInfo.currentLoadCpu / 100);
-        const sysInfo = (cpuInfo.currentLoadSystem * 100) / cpuInfo.currentLoadCpu;
-        const userInfo = ((cpuInfo.currentLoadUser + cpuInfo.currentLoadNice) * 100) / cpuInfo.currentLoadCpu;
+        const sysInfo = Math.round(((cpuInfo.currentLoadSystem * 100) / cpuInfo.currentLoadCpu) * 1e2) / 1e2;
+        const userInfo = Math.round((((cpuInfo.currentLoadUser + cpuInfo.currentLoadNice) * 100) / cpuInfo.currentLoadCpu) * 1e2) / 1e2;
         const foregroundProc = item.processes.find((item) => item.isForeground);
 
         if (cores === 0) {
