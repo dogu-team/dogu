@@ -16,6 +16,7 @@ export interface E2eL10nValue {
   STOP_USING_AS_DEVICE: string;
   NAME: string;
   SIGNOUT: string;
+  ORGANIZATIONS: string;
 }
 
 export const l10nMap = createL10nMap<E2eL10nValue>([
@@ -37,6 +38,7 @@ export const l10nMap = createL10nMap<E2eL10nValue>([
       STOP_USING_AS_DEVICE: 'Stop using as device',
       NAME: 'Name',
       SIGNOUT: 'Sign out',
+      ORGANIZATIONS: 'Organizations',
     },
   },
   {
@@ -57,6 +59,7 @@ export const l10nMap = createL10nMap<E2eL10nValue>([
       STOP_USING_AS_DEVICE: '디바이스로 사용 중지하기',
       NAME: '이름',
       SIGNOUT: '로그아웃',
+      ORGANIZATIONS: '모든 조직',
     },
   },
 ]);

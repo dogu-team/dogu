@@ -208,6 +208,21 @@ Dest.withOptions({
       });
     });
 
+    job('Update member permission', () => {
+      test('Click permission selector', async () => {
+        await Driver.clickElement({ xpath: '//div[@class="ant-select-selector"]' });
+      });
+
+      test('Click admin permission', async () => {
+        await Driver.clickElement({ xpath: '//div[text()="Admin"]' });
+      });
+
+      test('Check permission update', async () => {
+        const value = await Driver.getText({ xpath: '//span[@class="ant-select-selection-item"]/div' });
+        expect(value).toBe('Admin');
+      });
+    });
+
     job('Create team', () => {
       test('Click team menu', async () => {
         await Driver.clickElement({ xpath: '//*[@access-id="side-bar-team"]' });
@@ -445,6 +460,49 @@ Dest.withOptions({
             expect(hasLog).toBe(true);
           });
         });
+      });
+    });
+
+    job('Create organization', () => {
+      test('Move to my organizations', async () => {
+        await Driver.clickElement(
+          {
+            xpath: '/html/body/div[1]/div/header/div/div/div[2]/div[1]/div/span',
+          },
+          {
+            focusWindow: true,
+          },
+        );
+        await Driver.clickElement(
+          {
+            xpath: `//*[text()="${l10n('ORGANIZATIONS')}"]`,
+          },
+          {
+            focusWindow: true,
+          },
+        );
+      });
+
+      test('Click create organization button', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="new-org-btn"]' }, { waitTime: 60 * 1000 });
+      });
+
+      test('Enter organization name', async () => {
+        await Driver.sendKeys({ xpath: '//*[@id="name"]' }, values.value.ORG_NAME);
+      });
+
+      test('Click create organization button', async () => {
+        await Driver.clickElement({ xpath: '//button[@form="new-org"]' }), { waitTime: 10 * 1000 };
+      });
+
+      test('Check organization creation', async () => {
+        // const orgName = await Driver.getText({ xpath: '//*[@access-id="sb-title"]/div/div/p' });
+        // /**
+        //  * @note uppercase due to css property: text-transform
+        //  */
+        // expect(orgName).toBe(values.value.ORG_NAME.toUpperCase());
+
+        await Driver.getText({ xpath: `//*[text()='${values.value.ORG_NAME}']` }, { waitTime: 20000 });
       });
     });
 
