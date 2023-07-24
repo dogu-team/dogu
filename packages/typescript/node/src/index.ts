@@ -24,3 +24,4 @@ export * from './platforms';
 export * from './processes';
 export * from './repositories';
 export * from './stream/redirect';
+export * from './tree-kill';

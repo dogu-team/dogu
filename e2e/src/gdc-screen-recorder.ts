@@ -1,4 +1,5 @@
 import { Printable } from '@dogu-tech/common';
+import { killChildProcess } from '@dogu-tech/node';
 import { ChildProcess, exec, execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
@@ -33,14 +34,7 @@ export class GdcScreenRecorder {
       return;
     }
     try {
-      this.child.kill('SIGINT');
-      if (process.platform === 'win32') {
-        if (this.child?.pid) {
-          execSync(`taskkill /PID ${this.child.pid} /F /T`);
-        } else {
-          execSync(`taskkill /IM go-device-controller.exe /F /T`);
-        }
-      }
+      await killChildProcess(this.child, 'SIGINT');
     } catch (e) {
       console.log(`GDC screen recorder kill failed: ${e}`);
     }

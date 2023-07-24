@@ -323,6 +323,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["shelljs", "npm:0.8.5"],\
             ["tar", "npm:6.1.15"],\
             ["timeout-cli", "npm:0.3.2"],\
+            ["tree-kill", "npm:1.2.2"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"],\
             ["ws", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:8.9.0"],\
@@ -11138,7 +11139,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:18.15.11"],\
             ["@types/plist", "npm:3.0.2"],\
             ["@types/rimraf", "npm:3.0.2"],\
-            ["@types/semver", "npm:7.5.0"],\
+            ["@types/semver", "npm:7.3.13"],\
             ["@types/uuid", "npm:9.0.1"],\
             ["@types/ws", "npm:8.5.4"],\
             ["adbkit-apkreader", "npm:3.2.0"],\
@@ -11724,6 +11725,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["reflect-metadata", "npm:0.1.13"],\
             ["rxjs", "npm:7.5.6"],\
             ["shx", "npm:0.3.4"],\
+            ["tree-kill", "npm:1.2.2"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
             ["typed-rest-client", "npm:1.8.9"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"],\
@@ -18443,10 +18445,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/pg", [\
-        ["npm:8.10.1", {\
-          "packageLocation": "./.yarn/cache/@types-pg-npm-8.10.1-c751842ad9-fcc8a4454c.zip/node_modules/@types/pg/",\
+        ["npm:8.10.2", {\
+          "packageLocation": "./.yarn/cache/@types-pg-npm-8.10.2-de8ade0e64-49da89f64c.zip/node_modules/@types/pg/",\
           "packageDependencies": [\
-            ["@types/pg", "npm:8.10.1"],\
+            ["@types/pg", "npm:8.10.2"],\
             ["@types/node", "npm:18.15.13"],\
             ["pg-protocol", "npm:1.6.0"],\
             ["pg-types", "npm:4.0.1"]\
@@ -24257,7 +24259,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/passport", "npm:1.0.12"],\
             ["@types/passport-google-oauth20", "npm:2.0.11"],\
             ["@types/passport-jwt", "npm:3.0.7"],\
-            ["@types/pg", "npm:8.10.1"],\
+            ["@types/pg", "npm:8.10.2"],\
             ["@types/plist", "npm:3.0.2"],\
             ["@types/shelljs", "npm:0.8.11"],\
             ["@types/supertest", "npm:2.0.12"],\
@@ -26578,6 +26580,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["shelljs", "npm:0.8.5"],\
             ["tar", "npm:6.1.15"],\
             ["timeout-cli", "npm:0.3.2"],\
+            ["tree-kill", "npm:1.2.2"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"],\
             ["ws", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:8.9.0"],\
@@ -48063,7 +48066,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/mssql", null],\
             ["@types/mysql2", null],\
             ["@types/oracledb", null],\
-            ["@types/pg", "npm:8.10.1"],\
+            ["@types/pg", "npm:8.10.2"],\
             ["@types/pg-native", null],\
             ["@types/pg-query-stream", null],\
             ["@types/redis", null],\

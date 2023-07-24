@@ -1,6 +1,6 @@
 import { BrowserName, isValidBrowserDriverName } from '@dogu-private/types';
 import { errorify, Printable, stringify } from '@dogu-tech/common';
-import { HostPaths } from '@dogu-tech/node';
+import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import _ from 'lodash';
 import path from 'path';
@@ -222,17 +222,16 @@ export class SeleniumContext {
     }
 
     const { process } = this._data;
-    if (process.exitCode !== null || process.signalCode !== null) {
-      this._data = null;
-      return;
-    }
-
-    return new Promise<void>((resolve) => {
-      process.once('exit', () => {
-        this._data = null;
-        resolve();
+    try {
+      await killChildProcess(process);
+      this.logger.info('Selenium server is killed.', {
+        browserName: this.options.browserName,
+        browserVersion: this.options.browserVersion,
+        key: this.options.key,
+        port: this._data.port,
       });
-      process.kill();
-    });
+    } finally {
+      this._data = null;
+    }
   }
 }

@@ -1,6 +1,6 @@
 import { Platform, Serial } from '@dogu-private/types';
 import { delay, Printable } from '@dogu-tech/common';
-import { ChildProcess, killProcessOnPortOnMacos, waitPortOpen } from '@dogu-tech/node';
+import { ChildProcess, killChildProcess, killProcessOnPortOnMacos, waitPortOpen } from '@dogu-tech/node';
 import child_process from 'child_process';
 import { idcLogger, logger } from '../../../logger/logger.instance';
 import { Zombieable, ZombieProps, ZombieWaiter } from '../../services/zombie/zombie-component';
@@ -17,7 +17,9 @@ export class TunnelContext {
       this.logs += str;
       this.checkLog();
       if (!this.isAlive) {
-        proc.kill();
+        killChildProcess(proc).catch((error) => {
+          logger.error('TunnelContext killChildProcess on stdout', { hostPort: this.hostPort, devicePort: this.devicePort, error });
+        });
       }
     });
 
@@ -27,7 +29,9 @@ export class TunnelContext {
       this.logs += str;
       this.checkLog();
       if (!this.isAlive) {
-        proc.kill();
+        killChildProcess(proc).catch((error) => {
+          logger.error('TunnelContext killChildProcess on stderr', { hostPort: this.hostPort, devicePort: this.devicePort, error });
+        });
       }
     });
 
@@ -35,8 +39,11 @@ export class TunnelContext {
       logger.debug('TunnelContext exit', { hostPort: this.hostPort, devicePort: this.devicePort, code, signal });
     });
   }
+
   public kill(): void {
-    this.proc.kill();
+    killChildProcess(this.proc).catch((error) => {
+      logger.error('TunnelContext killChildProcess', { hostPort: this.hostPort, devicePort: this.devicePort, error });
+    });
   }
 
   public async ping(hostPort: number): Promise<child_process.ChildProcess> {

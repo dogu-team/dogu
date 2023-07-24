@@ -1,4 +1,5 @@
 import { retry, stringify } from '@dogu-tech/common';
+import { killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
 import lodash from 'lodash';
@@ -113,8 +114,13 @@ export async function spawnWithFindPattern(command: string, args: string[], patt
         matched = dataString.match(pattern) !== null;
         if (matched) {
           console.log('Matched. Killing child process...');
-          child.kill();
-          resolve();
+          killChildProcess(child)
+            .then(() => {
+              resolve();
+            })
+            .catch((error) => {
+              reject(error);
+            });
         }
       }
     });

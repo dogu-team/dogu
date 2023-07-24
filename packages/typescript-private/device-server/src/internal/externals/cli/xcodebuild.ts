@@ -1,6 +1,6 @@
 import { Serial } from '@dogu-private/types';
 import { delay, errorify, loop, PrefixLogger, Printable } from '@dogu-tech/common';
-import { ChildProcess, DirectoryRotation, findEndswith, HostPaths, redirectFileToStream } from '@dogu-tech/node';
+import { ChildProcess, DirectoryRotation, findEndswith, HostPaths, killChildProcess, redirectFileToStream } from '@dogu-tech/node';
 import child_process, { exec, execFile } from 'child_process';
 import { randomUUID } from 'crypto';
 import fs from 'fs';
@@ -93,7 +93,9 @@ export class XCTestRunContext {
     });
   }
   public kill(): void {
-    this.proc.kill();
+    killChildProcess(this.proc).catch((error) => {
+      this.logger.error('XCTestRunContext killChildProcess', { error });
+    });
   }
 
   private async redirectOutput(tempDirPath: string, proc: child_process.ChildProcess, redirectContext: { stop: boolean }): Promise<void> {
@@ -118,12 +120,16 @@ export class XCTestRunContext {
         this.logs += str;
         this.checkLog();
         if (!this.isAlive) {
-          proc.kill();
+          killChildProcess(proc).catch((error) => {
+            this.logger.error('XCTestRunContext killChildProcess on write', { error });
+          });
         }
         return true;
       },
     }).catch((err) => {
-      proc.kill();
+      killChildProcess(proc).catch((error) => {
+        this.logger.error('XCTestRunContext killChildProcess on redirectFileToStream', { error });
+      });
       this.logger.error(`redirectFileToStream failed outputPath: ${outputPath}, err: ${err}`);
       this.isAlive = false;
       redirectContext.stop = true;

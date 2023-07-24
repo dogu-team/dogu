@@ -1,6 +1,6 @@
 import { Platform } from '@dogu-private/types';
 import { Printable, stringify } from '@dogu-tech/common';
-import { ChildProcess } from '@dogu-tech/node';
+import { ChildProcess, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
 import { registerBootstrapHandler } from '../../../bootstrap/bootstrap.service';
@@ -59,7 +59,11 @@ export class GoDeviceControllerProcess implements Zombieable {
   }
 
   onDie(): void {
-    this.proc?.kill();
+    if (this.proc) {
+      killChildProcess(this.proc).catch((error) => {
+        logger.error('PionStreamingService.onDie killChildProcess error', { error });
+      });
+    }
   }
 }
 

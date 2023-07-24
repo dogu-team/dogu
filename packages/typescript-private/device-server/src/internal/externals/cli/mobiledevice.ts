@@ -97,53 +97,6 @@ class MobileDeviceImpl {
   }
 }
 
-// export async function tunnelCheckForward(udid: string, hostPort: number, devicePort: number, printable: Printable = idcLogger): Promise<child_process.ChildProcess> {
-//   for await (const _ of loop(3000, 30)) {
-//     const proc = await ChildProcess.spawn(mobiledevice, ['tunnel', '-u', udid, hostPort.toString(), devicePort.toString()], {}, idcLogger);
-//     const done = { isDone: false };
-//     const waitPromise = new Promise<boolean>((resolve, reject) => {
-//       let stdoutSum = '';
-//       let stderrSum = '';
-//       proc.stdout?.on('data', (data) => {
-//         const str = String(data);
-//         stdoutSum += str;
-//         if (stdoutSum.includes('Forwarding connection to device')) {
-//           resolve(true);
-//         }
-//       });
-
-//       proc.stderr?.on('data', (data) => {
-//         const str = String(data);
-//         stderrSum += str;
-//         if (stderrSum.includes('Device refused connection')) {
-//           proc.kill();
-//           resolve(false);
-//         }
-//       });
-//     });
-
-//     const portCheckPromise = async (): Promise<void> => {
-//       for await (const _ of loop(1000, 10)) {
-//         try {
-//           if (done.isDone) {
-//             return;
-//           }
-//           await ChildProcess.exec(`nc -z localhost ${hostPort}`, {}, idcLogger);
-//         } catch {
-//           continue;
-//         }
-//       }
-//     };
-
-//     const portForwarded = await Promise.any([waitPromise, portCheckPromise()]);
-//     done.isDone = true;
-//     if (true === portForwarded) {
-//       return proc;
-//     }
-//   }
-//   throw Error(`tunnelCheckForward failed: ${udid} ${hostPort} -> ${devicePort}`);
-// }
-
 function createMobileDevice(): MobileDeviceImpl {
   let instance: MobileDeviceImpl | null = null;
   return new Proxy(

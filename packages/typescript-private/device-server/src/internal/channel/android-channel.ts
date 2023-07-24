@@ -15,7 +15,7 @@ import {
 } from '@dogu-private/types';
 import { Closable, delay, errorify, FilledPrintable, Printable, stringify } from '@dogu-tech/common';
 import { StreamingOfferDto } from '@dogu-tech/device-client-common';
-import { HostPaths } from '@dogu-tech/node';
+import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import { Manifest, open } from 'adbkit-apkreader';
 import { ChildProcess, execFile } from 'child_process';
 import fs from 'fs';
@@ -49,10 +49,12 @@ import { createPortContext } from './util';
 type DeviceControl = PrivateProtocol.DeviceControl;
 
 export class AndroidLogClosable implements Closable {
-  constructor(private readonly childProcess: ChildProcess) {}
+  constructor(private readonly childProcess: ChildProcess, private readonly printable?: Printable) {}
 
   close(): void {
-    this.childProcess.kill();
+    killChildProcess(this.childProcess).catch((error) => {
+      this.printable?.error?.('android logcat close failed', { error: errorify(error) });
+    });
   }
 }
 
@@ -268,7 +270,7 @@ export class AndroidChannel implements DeviceChannel {
       printable?.verbose?.(`adb logcat clear stderr: ${stderr}`);
     }
     const child = Adb.logcat(this.serial, args, handler, printable);
-    return new AndroidLogClosable(child);
+    return new AndroidLogClosable(child, printable);
   }
 
   private async getManifestFromApp(appPath: string): Promise<Manifest> {

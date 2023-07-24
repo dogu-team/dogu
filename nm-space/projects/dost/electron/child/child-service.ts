@@ -135,10 +135,10 @@ export class ChildService implements IChildClient {
           }, {} as { [key: string]: ChildProcessInfo });
 
         if (err) {
-          logger.error('child process close. pidtree error', { error: err });
+          logger.error('child process pidtree error', { error: err });
           resolve({ childs: [] });
         } else {
-          logger.info('child process close. pidtree', { pids });
+          logger.info('child process pidtree', { pids });
           resolve({
             childs: pids
               .map((pid) => ({ pid, time: pid in pidToCommandMap ? pidToCommandMap[pid].time : '??', name: pid in pidToCommandMap ? pidToCommandMap[pid].name : 'unknown' }))
