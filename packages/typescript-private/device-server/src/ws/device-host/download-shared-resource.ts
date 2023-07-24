@@ -1,14 +1,10 @@
 import { OnWebSocketClose, OnWebSocketMessage, WebSocketGatewayBase, WebSocketRegistryValueAccessor, WebSocketService } from '@dogu-private/nestjs-common';
 import { closeWebSocketWithTruncateReason, DefaultHttpOptions, errorify, Instance, Retry } from '@dogu-tech/common';
 import { DeviceHostDownloadSharedResource } from '@dogu-tech/device-client-common';
-import { HostPaths } from '@dogu-tech/node';
 import axios from 'axios';
-import fs from 'fs';
 import { IncomingMessage } from 'http';
-import path from 'path';
-import stream, { Stream } from 'stream';
-import { v4 as uuidv4 } from 'uuid';
 import WebSocket from 'ws';
+import { DeviceHostDownloadSharedResourceService } from '../../device-host/device-host.download-shared-resource';
 import { DoguLogger } from '../../logger/logger';
 
 interface Value {
@@ -16,11 +12,11 @@ interface Value {
 }
 
 @WebSocketService(DeviceHostDownloadSharedResource)
-export class DeviceHostDownloadSharedResourceService
+export class DeviceHostDownloadSharedResourceWebsocketService
   extends WebSocketGatewayBase<Value, typeof DeviceHostDownloadSharedResource.sendMessage, typeof DeviceHostDownloadSharedResource.receiveMessage>
   implements OnWebSocketMessage<Value, typeof DeviceHostDownloadSharedResource.sendMessage, typeof DeviceHostDownloadSharedResource.receiveMessage>, OnWebSocketClose<Value>
 {
-  constructor(private readonly logger: DoguLogger) {
+  constructor(private readonly downloadService: DeviceHostDownloadSharedResourceService, private readonly logger: DoguLogger) {
     super(DeviceHostDownloadSharedResource, logger);
   }
 
@@ -63,84 +59,11 @@ export class DeviceHostDownloadSharedResourceService
     message: Instance<typeof DeviceHostDownloadSharedResource.sendMessage>,
     valueAccessor: WebSocketRegistryValueAccessor<Value>,
   ): Promise<void> {
-    const { filePath, url, expectedFileSize, headers } = message;
-    const stat = await fs.promises.stat(filePath).catch(() => null);
-    if (stat !== null) {
-      if (stat.isFile()) {
-        this.logger.info('File already exists', { filePath });
-        this.logger.info(`File size local: ${stat.size} expected: ${expectedFileSize}`, { filePath });
-        if (stat.size === expectedFileSize) {
-          this.logger.info('File is same size. Skipping download', { filePath });
-          closeWebSocketWithTruncateReason(webSocket, 1000, 'File already exists');
-          return;
-        } else {
-          this.logger.info('File is not same size. Deleting file', { filePath });
-          await fs.promises.unlink(filePath);
-          this.logger.info('File deleted', { filePath });
-        }
-      } else {
-        this.logger.error('File is not a file', { filePath });
-        throw new Error('File is not a file');
-      }
-    }
+    const result = await this.downloadService.queueDownload(message);
 
-    const { listenerss } = valueAccessor.get();
-    const alreadyListeners = listenerss.get(filePath);
-    if (alreadyListeners) {
-      alreadyListeners.push(webSocket);
-      this.logger.info('File is already downloading', { filePath });
-      return;
-    }
-    this.logger.info('File is downloading', { filePath });
-    listenerss.set(filePath, [webSocket]);
-    const tempFileName = `${uuidv4()}.download`;
-    const tempFilePath = path.resolve(HostPaths.tempPath, tempFileName);
-    if (!fs.existsSync(HostPaths.tempPath)) {
-      fs.mkdirSync(HostPaths.tempPath, { recursive: true });
-    }
-    const response = await axios.get(url, {
-      responseType: 'stream',
-      headers,
-      timeout: DefaultHttpOptions.request.timeout,
-    });
-    if (!(response.data instanceof Stream)) {
-      throw new Error('response.data is not stream');
-    }
-    const writer = fs.createWriteStream(tempFilePath);
-    response.data.pipe(writer);
-    try {
-      await stream.promises.finished(writer);
-    } catch (error) {
-      writer.close();
-      throw error;
-    }
-    const dirPath = path.dirname(filePath);
-    await fs.promises.mkdir(dirPath, { recursive: true });
-    await fs.promises.rename(tempFilePath, filePath);
-    this.logger.info('File downloaded', { filePath });
-    const allListeners = listenerss.get(filePath);
-    if (!allListeners) {
-      return;
-    }
-    listenerss.delete(filePath);
-    const responseHeaders = Reflect.ownKeys(response.headers).reduce((acc, key) => {
-      const value = Reflect.get(response.headers, key);
-      if (Array.isArray(value)) {
-        Reflect.set(acc, key, value.join(','));
-      } else {
-        Reflect.set(acc, key, String(value));
-      }
-      return acc;
-    }, {} as Record<string, string>);
-    const receiveMessage: Instance<typeof DeviceHostDownloadSharedResource.receiveMessage> = {
-      responseCode: response.status,
-      responseHeaders,
-    };
-    const receiveMessageSerialized = JSON.stringify(receiveMessage);
-    for (const listener of allListeners) {
-      listener.send(receiveMessageSerialized);
-      closeWebSocketWithTruncateReason(listener, 1000, 'File downloaded');
-    }
+    const receiveMessageSerialized = JSON.stringify(result);
+    webSocket.send(receiveMessageSerialized);
+    closeWebSocketWithTruncateReason(webSocket, 1000, result.message);
   }
 
   onWebSocketClose(webSocket: WebSocket, event: WebSocket.CloseEvent, valueAccessor: WebSocketRegistryValueAccessor<Value>): void {

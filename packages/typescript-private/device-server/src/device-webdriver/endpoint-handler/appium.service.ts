@@ -4,6 +4,7 @@ import { HeaderRecord, PromiseOrValue } from '@dogu-tech/common';
 import { RelayRequest, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
 import _ from 'lodash';
 import { AppiumRemoteContext } from '../../appium/appium.remote.context';
+import { DeviceHostDownloadSharedResourceService } from '../../device-host/device-host.download-shared-resource';
 import { DoguLogger } from '../../logger/logger';
 import { OnBeforeRequestResult } from './common';
 
@@ -12,6 +13,7 @@ export abstract class AppiumEndpointHandler {
 
   onBeforeRequest(
     remoteContext: AppiumRemoteContext,
+    downloadService: DeviceHostDownloadSharedResourceService,
     headers: HeaderRecord,
     endpoint: WebDriverEndPoint,
     request: RelayRequest,
@@ -74,6 +76,7 @@ export function RegisterAppiumEndpointHandler(): ClassDecorator {
 
 @Injectable()
 export class AppiumEndpointHandlerService {
+  constructor(public readonly downloadService: DeviceHostDownloadSharedResourceService) {}
   getHandler(endpointType: WebDriverEndpointType): AppiumEndpointHandler | null {
     return appiumEndpointHandlerMap.get(endpointType) ?? null;
   }

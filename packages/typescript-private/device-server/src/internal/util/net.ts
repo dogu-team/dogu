@@ -1,4 +1,5 @@
 import { loop } from '@dogu-tech/common';
+import { isFreePort } from '@dogu-tech/node';
 import { findFreePorts } from 'find-free-ports';
 
 const startPort = 20000;
@@ -12,7 +13,7 @@ export async function getFreePort(excludes: number[] = [], offset = 0): Promise<
     cleanUpUsedPorts();
     const mergedExcludes = excludes.concat(...usedportToAccessTime.keys());
 
-    const frees = await findFreePorts(mergedExcludes.length + 1, { startPort: startPort + offset, endPort });
+    const frees = await findFreePorts(mergedExcludes.length + 1, { startPort: startPort + offset, endPort, isFree: isFreePort });
     const filteredPorts = frees.filter((port) => !mergedExcludes.includes(port));
     if (filteredPorts.length === 0) {
       throw Error('getFreePort. there is no port available');

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
+import { DeviceHostModule } from '../device-host/device-host.module';
 import { ScanModule } from '../scan/scan.module';
-import { DeviceHostDownloadSharedResourceService } from './device-host/download-shared-resource';
+import { DeviceHostDownloadSharedResourceWebsocketService } from './device-host/download-shared-resource';
 import { DeviceHostUploadFileService } from './device-host/upload-file.service';
 import { DeviceConnectionSubscribeService } from './device/connection-subscribe.service';
 import { DeviceForwardService } from './device/forward.service';
@@ -15,7 +16,7 @@ import { DeviceStreamingService } from './device/streaming.service';
 import { DeviceUninstallAppService } from './device/uninstall-app.service';
 
 @Module({
-  imports: [ScanModule],
+  imports: [ScanModule, DeviceHostModule],
   providers: [
     DeviceInstallAppService,
     DeviceConnectionSubscribeService,
@@ -29,7 +30,7 @@ import { DeviceUninstallAppService } from './device/uninstall-app.service';
     DeviceResetService,
     DeviceJoinWifiService,
     DeviceHostUploadFileService,
-    DeviceHostDownloadSharedResourceService,
+    DeviceHostDownloadSharedResourceWebsocketService,
   ],
 })
 export class WsModule {}

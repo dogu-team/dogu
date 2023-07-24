@@ -567,12 +567,14 @@ const constructorMap = {
   null: NullAppiumContext,
 };
 
+class AppiumContextProxyTask extends TaskQueueTask<void> {}
+
 export class AppiumContextProxy implements AppiumContext, Zombieable {
   private readonly logger: Logger;
   private impl: AppiumContext;
   private next: AppiumContext | null = null;
   private nullContext: NullAppiumContext;
-  private taskQueue: TaskQueue<void, void> = new TaskQueue();
+  private taskQueue: TaskQueue<void, AppiumContextProxyTask> = new TaskQueue();
 
   constructor(private readonly options: AppiumContextOptions) {
     this.logger = createAppiumLogger(options.serial);
@@ -671,7 +673,7 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
   }
 
   async switchAppiumContext(key: AppiumContextKey): Promise<void> {
-    const task = new TaskQueueTask(async () => {
+    const task = new AppiumContextProxyTask(async () => {
       const befImplKey = this.impl.key;
       this.logger.info(`switching appium context: from: ${befImplKey}, to: ${key} start`);
       const befImpl = this.impl;
