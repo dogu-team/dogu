@@ -11139,7 +11139,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:18.15.11"],\
             ["@types/plist", "npm:3.0.2"],\
             ["@types/rimraf", "npm:3.0.2"],\
-            ["@types/semver", "npm:7.5.0"],\
+            ["@types/semver", "npm:7.3.13"],\
             ["@types/uuid", "npm:9.0.1"],\
             ["@types/ws", "npm:8.5.4"],\
             ["adbkit-apkreader", "npm:3.2.0"],\
@@ -18445,10 +18445,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/pg", [\
-        ["npm:8.10.1", {\
-          "packageLocation": "./.yarn/cache/@types-pg-npm-8.10.1-c751842ad9-fcc8a4454c.zip/node_modules/@types/pg/",\
+        ["npm:8.10.2", {\
+          "packageLocation": "./.yarn/cache/@types-pg-npm-8.10.2-de8ade0e64-49da89f64c.zip/node_modules/@types/pg/",\
           "packageDependencies": [\
-            ["@types/pg", "npm:8.10.1"],\
+            ["@types/pg", "npm:8.10.2"],\
             ["@types/node", "npm:18.15.13"],\
             ["pg-protocol", "npm:1.6.0"],\
             ["pg-types", "npm:4.0.1"]\
@@ -24259,7 +24259,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/passport", "npm:1.0.12"],\
             ["@types/passport-google-oauth20", "npm:2.0.11"],\
             ["@types/passport-jwt", "npm:3.0.7"],\
-            ["@types/pg", "npm:8.10.1"],\
+            ["@types/pg", "npm:8.10.2"],\
             ["@types/plist", "npm:3.0.2"],\
             ["@types/shelljs", "npm:0.8.11"],\
             ["@types/supertest", "npm:2.0.12"],\
@@ -26798,7 +26798,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["dayjs", "npm:1.11.5"],\
             ["death", "npm:1.1.0"],\
             ["dotenv", "npm:16.0.3"],\
-            ["fast-xml-parser", "npm:4.2.6"],\
+            ["fast-xml-parser", "npm:4.2.2"],\
             ["jest", "virtual:da41e68dc71233b9c882eeff9361d8de0e473b61bcdb51151099ca0b04c2002213c7795bcfb970497741a25f92014dde50c5af7549c4b6ae944acaaff53dda6f#npm:29.1.2"],\
             ["lodash", "npm:4.17.21"],\
             ["nodemon", "npm:2.0.22"],\
@@ -28765,10 +28765,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["fast-xml-parser", [\
-        ["npm:4.2.6", {\
-          "packageLocation": "./.yarn/cache/fast-xml-parser-npm-4.2.6-507b2f39db-1628e4b2c5.zip/node_modules/fast-xml-parser/",\
+        ["npm:4.2.2", {\
+          "packageLocation": "./.yarn/cache/fast-xml-parser-npm-4.2.2-3696e5f2bb-f0e687927d.zip/node_modules/fast-xml-parser/",\
           "packageDependencies": [\
-            ["fast-xml-parser", "npm:4.2.6"],\
+            ["fast-xml-parser", "npm:4.2.2"],\
             ["strnum", "npm:1.0.5"]\
           ],\
           "linkType": "HARD"\
@@ -48066,7 +48066,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/mssql", null],\
             ["@types/mysql2", null],\
             ["@types/oracledb", null],\
-            ["@types/pg", "npm:8.10.1"],\
+            ["@types/pg", "npm:8.10.2"],\
             ["@types/pg-native", null],\
             ["@types/pg-query-stream", null],\
             ["@types/redis", null],\
