@@ -18,7 +18,7 @@ console.log('config', pgsqlConnectionOptions);
 (async (): Promise<void> => {
   const workspaceDir = node_package.findRootWorkspace();
   process.chdir(workspaceDir);
-
+  let isInitialized = true;
   try {
     await execute('Check initaialized...', async () => {
       await PostgreSql.on(pgsqlConnectionOptions, async (context) => {
@@ -30,7 +30,12 @@ console.log('config', pgsqlConnectionOptions);
     });
 
     console.log('Database need to initaialize...');
+    isInitialized = false;
+  } catch (error) {
+    isInitialized = true;
+  }
 
+  if (!isInitialized) {
     await execute('Create database schema...', async () => await spawnWithFindPattern('yarn', ['run', 'typeorm:schema'], /.*Schema synchronization finished successfully\..*/m));
 
     await execute('Create migration table...', () =>
@@ -51,13 +56,15 @@ console.log('config', pgsqlConnectionOptions);
         );
       });
     });
-  } catch (error) {
+  } else {
     console.log('Database already initaialized');
 
-    await execute('Run migration...', () =>
-      exec(`yarn run typeorm:run`, {
-        errorMessage: 'Error: run typeorm migration failed',
-      }),
+    await execute(
+      'Run migration...',
+      async () =>
+        await exec(`yarn run typeorm:run`, {
+          errorMessage: 'Error: run typeorm migration failed',
+        }),
     );
   }
 

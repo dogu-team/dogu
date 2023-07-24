@@ -17,7 +17,7 @@
     "test": "yarn run env:dev && yarn run start",
     "typeorm": "node --require ts-node/register $(yarn bin typeorm)",
     "typeorm:create": "cross-env TZ=UTC NODE_ENV=development ts-node scripts/typeorm/typeorm-create.ts",
-    "typeorm:fake": "cross-env TZ=UTC yarn typeorm migration:run -f -d ./src/migration.config.ts",
+    "typeorm:fake": "cross-env TZ=UTC NODE_ENV=development yarn typeorm migration:run -f -d ./src/migration.config.ts",
     "typeorm:generate": "cross-env TZ=UTC NODE_ENV=development ts-node scripts/typeorm/typeorm-generate.ts",
     "typeorm:init": "cross-env TZ=UTC NODE_ENV=development ts-node scripts/typeorm/typeorm-init.ts",
     "typeorm:revert": "yarn run rebuild && cross-env TZ=UTC NODE_ENV=development yarn typeorm migration:revert -d ./src/migration.config.ts",

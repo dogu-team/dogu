@@ -23,14 +23,15 @@ sed -i "s|NEXT_PUBLIC_DOGU_GA_ID=.*$|NEXT_PUBLIC_DOGU_GA_ID=$NEXT_PUBLIC_DOGU_GA
 sed -i "s|NEXT_PUBLIC_SENTRY_DSN=.*$|NEXT_PUBLIC_SENTRY_DSN=$NEXT_PUBLIC_SENTRY_DSN|" $envFilePath
 
 
-echo "Start nextjs build"
-yarn workspace console-web-front run build 
+echo "Start file server initialization"
+yarn workspace nexus-initializer run start
 if [ $? -eq 0 ]; then
-  echo "Nextjs build success"
+  echo "File server initialization success"
 else
-  echo "Nextjs build failed"
+  echo "File server initialization failed"
   exit 1
 fi
+
 
 echo "Start db migration"
 yarn workspace console-web-server run typeorm:init
@@ -41,14 +42,17 @@ else
   exit 1
 fi
 
-echo "Start file server initialization"
-yarn workspace nexus-initializer run start
+
+
+echo "Start nextjs build"
+yarn workspace console-web-front run build 
 if [ $? -eq 0 ]; then
-  echo "File server initialization success"
+  echo "Nextjs build success"
 else
-  echo "File server initialization failed"
+  echo "Nextjs build failed"
   exit 1
 fi
+
 
 echo "Start console"
 yarn run start:console

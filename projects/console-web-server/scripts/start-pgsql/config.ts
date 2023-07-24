@@ -2,7 +2,7 @@ import { env } from '../../src/env';
 import { FeatureConfig } from '../../src/feature.config';
 
 export const config = {
-  containerName: 'dogu-pgsql',
+  containerName: 'dogu-pgsql2',
   rootUser: env.DOGU_RDS_USERNAME,
   rootPassword: env.DOGU_RDS_PASSWORD,
   host: env.DOGU_RDS_HOST,
