@@ -174,7 +174,7 @@ Dest.withOptions({
       });
 
       test('Skip tutorial', async () => {
-        await Driver.clickElement({ xpath: '//button[@access-id="skip-tutorial"]' });
+        await Driver.clickElement({ xpath: '//button[@id="skip-tutorial"]' });
       });
 
       dost.nextTest();
@@ -282,6 +282,171 @@ Dest.withOptions({
     });
 
     runHost(values.value.HOST_NAME, dost);
+
+    const deviceSettingInfos = [
+      {
+        name: 'Host device setting',
+        addTabMenu: '//*[text()="Host"]/../../../div[5]//button[@access-id="list-menu-btn"]',
+        listTabMenu: '//*[text()="Host"]/../../../../div[5]//button[@access-id="list-menu-btn"]',
+        tag: values.value.HOST_DEVICE_TAG,
+        isHost: true,
+      },
+      {
+        name: 'Android device setting',
+        addTabMenu: '//*[@icon-id="android-icon"]/../../../div[5]//button[@access-id="list-menu-btn"]',
+        listTabMenu: '//*[@icon-id="android-icon"]/../../../div[5]//button[@access-id="list-menu-btn"]',
+        tag: values.value.ANDROID_DEVICE_TAG,
+        isHost: false,
+      },
+    ];
+    // if (process.platform === 'darwin') {
+    //   deviceSettingInfos.push({
+    //     name: 'iOS device setting',
+    //     addTabMenu: '//*[@data-icon="apple"]/../../../../div[5]/div/div/button',
+    //     listTabMenu: '//*[@data-icon="apple"]/../../../../div[5]/div/div[2]/button',
+    //     tag: values.value.IOS_DEVICE_TAG,
+    //     isHost: false,
+    //   });
+    // }
+
+    deviceSettingInfos.forEach((deviceSettingInfo) => {
+      const { name, addTabMenu, listTabMenu, tag, isHost } = deviceSettingInfo;
+
+      job(name, () => {
+        job('Add device', () => {
+          test('Go to device menu', async () => {
+            await Driver.clickElement({ xpath: '//*[@access-id="side-bar-device"]' });
+          });
+
+          test('Click on add tab', async () => {
+            await Driver.clickElement({ xpath: '//*[@access-id="org-add-device-tab"]' });
+          });
+
+          test('Click menu', async () => {
+            await Driver.clickElement({ xpath: addTabMenu });
+          });
+
+          test('Click to use', async () => {
+            await Driver.clickElement({ xpath: `//*[text()="${l10n('START_USING')}"]` });
+          });
+
+          test('Insert project name', async () => {
+            await Driver.sendKeys({ xpath: `//input[@placeholder="${l10n('NAME')}"]` }, values.value.PROJECT_NAME, { focusWindow: true });
+          });
+
+          test('Click project on extended list', async () => {
+            await Timer.wait(3000, 'wait for modal update');
+            await Driver.clickElement({ xpath: `//*[text()="${values.value.PROJECT_NAME}"]` }, { focusWindow: true });
+          });
+
+          test('Close modal', async () => {
+            await Timer.wait(3000, 'wait for modal update');
+            const buttonXPath = '//button[@class="ant-modal-close"]';
+            await Driver.findElement({ xpath: buttonXPath }, { focusWindow: true })
+              .then(async () => {
+                await Driver.clickElement({ xpath: buttonXPath }, { focusWindow: true }).catch(() => {
+                  // do nothing
+                });
+              })
+              .catch(() => {
+                // do nothing
+              });
+            await waitUntilModalClosed().catch(() => {
+              // do nothing
+            });
+          });
+        });
+
+        job('Add tag', () => {
+          test('Click tag tab', async () => {
+            await Timer.wait(3000, 'wait for tag tab');
+            await Driver.clickElement({ xpath: '//*[@access-id="org-tag-list-tab"]' });
+          });
+
+          test('Click add tag', async () => {
+            await Driver.clickElement({ xpath: '/html/body/div/div/section/main/div/div[2]/div[2]/div/div[1]/div/div/button' }, { focusWindow: true });
+          });
+
+          test('Enter tag', async () => {
+            await Timer.wait(3000, 'wait for tag input');
+            await Driver.sendKeys({ xpath: `//input[@id="name"]` }, tag, { focusWindow: true });
+          });
+
+          test('Click create tag button', async () => {
+            await Driver.clickElement({ xpath: '//button[@form="new-tag"]' });
+            await waitUntilModalClosed();
+          });
+        });
+
+        job('Add tag to device', () => {
+          test('Add list tab', async () => {
+            await Driver.clickElement({ xpath: '//*[@access-id="org-device-list-tab"]' });
+          });
+
+          test('Click menu', async () => {
+            await Driver.clickElement(
+              { xpath: listTabMenu },
+              {
+                focusWindow: true,
+              },
+            );
+          });
+
+          test('Click chagne tag', async () => {
+            await Driver.clickElement({ xpath: `//*[text()="${l10n('EDIT_TAGS')}"]` });
+          });
+
+          test('Enter tag', async () => {
+            await Driver.sendKeys({ xpath: '//input[@access-id="device-edit-tag-search-input"]' }, tag);
+          });
+
+          test('Click tag', async () => {
+            await Driver.clickElement({ xpath: '//*[@id="tag-result-box"]/button' });
+          });
+
+          test('Close tag change window', async () => {
+            await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
+            await waitUntilModalClosed();
+          });
+        });
+
+        job('Device streaming', () => {
+          test('Go to device menu', async () => {
+            await Driver.clickElement({ xpath: '//*[@access-id="side-bar-device"]' });
+          });
+
+          test('Click menu', async () => {
+            await Driver.clickElement({ xpath: listTabMenu });
+          });
+
+          test('Click streaming button', async () => {
+            await Driver.clickElement({ xpath: `//*[text()="${l10n('STREAMING')}"]` });
+          });
+
+          test('Check streaming start', async () => {
+            const status = await Driver.getText(
+              {
+                xpath: `//*[text()="${l10n('INFORMATION')}"]`,
+              },
+              {
+                focusWindow: true,
+              },
+            );
+            expect(status).toBe(l10n('INFORMATION'));
+          });
+
+          test('Check streaming input', async () => {
+            const xpath = isHost ? '//*[@alt="volume down"]/..' : '//*[@data-icon="home"]/../..';
+            await Driver.clickElement({ xpath });
+            await Timer.wait(5000, 'wait for input processing');
+            const logs = await Driver.logs();
+            const pattern = isHost ? /.*e2e.*DEVICE_CONTROL_KEYCODE_VOLUME_DOWN.*(request|success).*/ : /.*e2e.*DEVICE_CONTROL_KEYCODE_HOME.*(request|success).*/;
+            const hasLog = logs.filter((log) => log.message.match(pattern)).length >= 2;
+            expect(hasLog).toBe(true);
+          });
+        });
+      });
+    });
 
     afterAll(async () => {
       Timer.close();

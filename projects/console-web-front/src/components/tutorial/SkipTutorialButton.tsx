@@ -38,7 +38,7 @@ const SkipTutorialButton = ({ children }: Props) => {
   };
 
   return (
-    <Button type="link" loading={loading} onClick={handleClickSkip} access-id="skip-tutorial">
+    <Button type="link" loading={loading} onClick={handleClickSkip} id="skip-tutorial">
       {children}
     </Button>
   );

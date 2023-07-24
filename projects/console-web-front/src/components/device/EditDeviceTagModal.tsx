@@ -16,6 +16,7 @@ import { attachTagToDevice, detachTagFromDevice } from 'src/api/device';
 import useEventStore from 'src/stores/events';
 import { getErrorMessage } from 'src/utils/error';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
+import { access } from 'fs';
 
 interface Props {
   deviceId: DeviceId;
@@ -138,14 +139,13 @@ const EditDeviceTagModal = ({ deviceId, isOpen, close }: Props) => {
             maxLength={DEVICE_TAG_NAME_MAX_LENGTHC}
             placeholder={t('device:deviceEditTagSearchInputPlaceholder')}
             allowClear
+            access-id="device-edit-tag-search-input"
             loading={isLoading}
           />
           {data && showResult && (
-            <ResultBox>
+            <ResultBox id="tag-result-box">
               {isLoading ? (
-                <ResultButton>
-                  <LoadingOutlined />
-                </ResultButton>
+                <LoadingOutlined />
               ) : (
                 name.length >= DEVICE_TAG_NAME_MIN_LENGTH &&
                 !data.items.find((item) => !!item.name.match(new RegExp(name, 'i'))) && (

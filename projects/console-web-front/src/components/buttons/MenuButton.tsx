@@ -13,7 +13,7 @@ const MenuButton = (props: Props) => {
   return (
     <Box>
       <Dropdown {...props} menu={{ ...props.menu, items }} trigger={['click']}>
-        <Button type="text" icon={<EllipsisOutlined style={{ fontSize: '1.1rem' }} />} />
+        <Button type="text" icon={<EllipsisOutlined style={{ fontSize: '1.1rem' }} />} access-id="list-menu-btn" />
       </Dropdown>
     </Box>
   );
