@@ -4,6 +4,6 @@
   "emailVerification": false,
   "rdbSslConnection": false,
   "cookieSecure": false,
-  "forceInvitation": true,
+  "forceInvitation": false,
   "thirdPartyLogin": true
 }
