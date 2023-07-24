@@ -224,8 +224,6 @@ const StepListController = ({ orgId, projectId, pipelineId, deviceJob }: Props) 
 export default StepListController;
 
 const Box = styled.div`
-  min-height: 500px;
-
   scroll-behavior: auto;
 `;
 

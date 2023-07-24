@@ -62,7 +62,15 @@ const DeviceJobPage: NextPageWithLayout<PageProps> = ({ organization, project })
 
         <Content>
           <ContentSection>
+            <ContentSectionTitle>{t('routine:stepInfoContentTitle')}</ContentSectionTitle>
+            <StepListController orgId={organization.organizationId} projectId={project.projectId} pipelineId={Number(pipelineId) as RoutinePipelineId} deviceJob={data} />
+          </ContentSection>
+
+          <Divider />
+
+          <ContentSection>
             <ContentSectionTitle>{t('routine:deviceJobInfoContentTitle')}</ContentSectionTitle>
+
             {isPipelineInProgress((liveDeviceJob || data).status) ? (
               <Collapse bordered={false} defaultActiveKey={['profiles', 'live-logs']} style={{ backgroundColor: 'inherit' }}>
                 <Collapse.Panel header={<PannelHeader>{t('routine:deviceJobInfoProfileTitle')}</PannelHeader>} key="profiles">
@@ -84,12 +92,6 @@ const DeviceJobPage: NextPageWithLayout<PageProps> = ({ organization, project })
                 </Collapse.Panel>
               </Collapse>
             )}
-          </ContentSection>
-          <Divider />
-
-          <ContentSection>
-            <ContentSectionTitle>{t('routine:stepInfoContentTitle')}</ContentSectionTitle>
-            <StepListController orgId={organization.organizationId} projectId={project.projectId} pipelineId={Number(pipelineId) as RoutinePipelineId} deviceJob={data} />
           </ContentSection>
         </Content>
       </Box>
