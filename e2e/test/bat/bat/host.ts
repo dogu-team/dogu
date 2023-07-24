@@ -94,6 +94,7 @@ export function runHost(hostName: string, dost: Dost): void {
     });
 
     test('Click "..." before click use as device', async () => {
+      await Timer.wait(1500, 'wait for host device');
       await Driver.clickElement({ xpath: `//span[text()="${hostName}"]/../../../div[5]//button` });
     });
 
