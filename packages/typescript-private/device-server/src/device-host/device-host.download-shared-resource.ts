@@ -1,102 +1,35 @@
-import { DefaultHttpOptions, DuplicatedCallGuarder, Instance, stringifyError } from '@dogu-tech/common';
+import { DefaultHttpOptions, Instance } from '@dogu-tech/common';
 import { DeviceHostDownloadSharedResource } from '@dogu-tech/device-client-common';
-import { HostPaths, TaskQueue, TaskQueueListener, TaskQueueTask } from '@dogu-tech/node';
+import { HostPaths } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
-import { OnEvent } from '@nestjs/event-emitter';
+import AsyncLock from 'async-lock';
 import axios from 'axios';
 import fs from 'fs';
 import path from 'path';
 import stream, { Stream } from 'stream';
 import { v4 as uuidv4 } from 'uuid';
-import { OnUpdateEvent } from '../events';
 import { DoguLogger } from '../logger/logger';
 
 export type DeviceHostDownloadResult = Instance<typeof DeviceHostDownloadSharedResource.receiveMessage> & { message: string };
 export type DeviceHostDownloadParam = Instance<typeof DeviceHostDownloadSharedResource.sendMessage>;
 
-class DeviceHostDownloadTask extends TaskQueueTask<DeviceHostDownloadResult> {
-  constructor(public readonly param: DeviceHostDownloadParam, task: () => Promise<DeviceHostDownloadResult>, listeners: TaskQueueListener<DeviceHostDownloadResult>[] = []) {
-    super(task, listeners);
-  }
-}
-
-type DeviceHostDownloadTaskQueue = TaskQueue<DeviceHostDownloadResult, DeviceHostDownloadTask>;
-interface DeviceHostDownloadTaskRunningQueue {
-  filePath: string;
-  updateGuarder: DuplicatedCallGuarder;
-  queue: DeviceHostDownloadTaskQueue;
-}
-
 @Injectable()
 export class DeviceHostDownloadSharedResourceService {
   constructor(private readonly logger: DoguLogger) {}
-  private dividerQueue: DeviceHostDownloadTaskQueue = new TaskQueue();
-  private runningQueues: DeviceHostDownloadTaskRunningQueue[] = [];
-  private onUpdateGuarder = new DuplicatedCallGuarder();
+  private downloadLockAndQ = new AsyncLock();
 
   public async queueDownload(message: DeviceHostDownloadParam): Promise<DeviceHostDownloadResult> {
-    const task = new DeviceHostDownloadTask(message, async () => {
-      return await this.download(message);
-    });
-    const result = await this.dividerQueue.scheduleAndWait(task);
-    if (!result.success) {
-      throw result.error;
-    }
-    return result.value;
-  }
-
-  @OnEvent(OnUpdateEvent.key)
-  async onUpdate(value: Instance<typeof OnUpdateEvent.value>): Promise<void> {
-    await this.onUpdateGuarder
-      .guard(() => {
-        const divideTask = () => {
-          try {
-            const task = this.dividerQueue.pop();
-            if (!task) {
-              return;
-            }
-
-            let targetRunningQueue = this.runningQueues.find((queue) => queue.filePath === task.param.filePath);
-            if (!targetRunningQueue) {
-              targetRunningQueue = {
-                filePath: task.param.filePath,
-                updateGuarder: new DuplicatedCallGuarder(),
-                queue: new TaskQueue(),
-              };
-              this.runningQueues.push(targetRunningQueue);
-            }
-            targetRunningQueue.queue.schedule(task);
-          } catch (error) {
-            this.logger.error(`DeviceHostDownloadSharedResourceService.update error: ${stringifyError(error)}`);
-          }
-        };
-
-        const cleanupEmptyQueues = () => {
-          const emptyRunningQueues = this.runningQueues.filter((queue) => queue.queue.isEmpty());
-          for (const emptyRunningQueue of emptyRunningQueues) {
-            this.runningQueues.splice(this.runningQueues.indexOf(emptyRunningQueue), 1);
-          }
-        };
-        divideTask();
-        cleanupEmptyQueues();
-      })
-      .catch((error) => {
-        this.logger.error(`DeviceHostDownloadSharedResourceService.update error: ${stringifyError(error)}`);
-      });
-
-    for (const runningQueue of this.runningQueues) {
-      runningQueue.updateGuarder
-        .guard(async () => {
-          try {
-            await runningQueue.queue.consume();
-          } catch (error) {
-            this.logger.error(`DeviceHostDownloadSharedResourceService.update path: ${runningQueue.filePath}, error: ${stringifyError(error)}`);
-          }
-        })
-        .catch((error) => {
-          this.logger.error(`DeviceHostDownloadSharedResourceService.update path: ${runningQueue.filePath}, error: ${stringifyError(error)}`);
-        });
-    }
+    const result = await this.downloadLockAndQ.acquire(
+      message.filePath,
+      async () => {
+        return await this.download(message);
+      },
+      {
+        timeout: DefaultHttpOptions.request.timeout30minutes,
+        maxOccupationTime: DefaultHttpOptions.request.timeout30minutes,
+      },
+    );
+    return result;
   }
 
   private async download(message: DeviceHostDownloadParam): Promise<DeviceHostDownloadResult> {
