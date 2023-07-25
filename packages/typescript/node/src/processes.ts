@@ -1,4 +1,4 @@
-import { NullLogger, Printable } from '@dogu-tech/common';
+import { NullLogger, Printable, ProcessInfo } from '@dogu-tech/common';
 import { ChildProcess, waitPortIdle } from '.';
 
 export async function killProcessOnPort(port: number, printable: Printable): Promise<void> {
@@ -56,4 +56,39 @@ export async function killProcessOnPortOnWindows(port: number, printable: Printa
     return;
   }
   await ChildProcess.execIgnoreError(`TaskKill /F /PID ${listenings.map((line) => line.pid).join(' /PID ')}`, { timeout: 10000 }, new NullLogger());
+}
+
+type ProcessInfoDict = Map<number, ProcessInfo>;
+
+export async function getProcessesMap(logger: Printable): Promise<ProcessInfoDict> {
+  switch (process.platform) {
+    case 'darwin':
+      return await getProcessesMapMacos(logger);
+    case 'win32':
+      return await getProcessesMapWindows(logger);
+    default:
+      return new Map();
+  }
+}
+
+export async function getProcessesMapMacos(logger: Printable): Promise<ProcessInfoDict> {
+  const psResult = await ChildProcess.execIgnoreError('ps -ef', { timeout: 3000 }, logger);
+  const lines = psResult.stdout.split('\n');
+  const infos = lines.map((line) => {
+    const [uid, pid, ppid, c, stime, tty, time, ...command] = line.trim().split(/\s{1,}|\t/);
+    return { ppid: parseInt(ppid), pid: parseInt(pid), cpuUsedTime: time, mem: 0, commandLine: command.join(' ') } as ProcessInfo;
+  });
+  return new Map(infos.map((info) => [info.pid, info]));
+}
+
+export async function getProcessesMapWindows(logger: Printable): Promise<ProcessInfoDict> {
+  const psResult = await ChildProcess.execIgnoreError('wmic process get CommandLine, ParentProcessId, ProcessId, WorkingSetSize', { timeout: 3000 }, logger);
+  const lines = psResult.stdout.split('\n').filter((line) => line.trim().length > 0);
+  const infos = lines.map((line) => {
+    const splited = line.trim().split(/\s{1,}|\t/);
+    const command = splited.slice(0, splited.length - 3);
+    const [ppid, pid, workmem] = splited.slice(splited.length - 3);
+    return { ppid: parseInt(ppid), pid: parseInt(pid), cpuUsedTime: '', mem: parseInt(workmem), commandLine: command.join(' ') } as ProcessInfo;
+  });
+  return new Map(infos.map((info) => [info.pid, info]));
 }

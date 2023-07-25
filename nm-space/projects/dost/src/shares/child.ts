@@ -1,5 +1,5 @@
 import { Status } from '@dogu-private/dost-children';
-import { Instance } from '@dogu-tech/common';
+import { Instance, ProcessInfo } from '@dogu-tech/common';
 import { IpcRendererEvent } from 'electron';
 import { instanceKeys } from './electron-ipc';
 
@@ -13,14 +13,8 @@ export type HostAgentConnectionStatus = Instance<typeof Status.getConnectionStat
 
 export const childClientKey = instanceKeys<IChildClient>('childClient');
 
-export interface ChildProcessInfo {
-  pid: number;
-  time: string;
-  name: string;
-}
-
 export interface ChildTree {
-  childs: ChildProcessInfo[];
+  childs: ProcessInfo[];
 }
 
 export interface IChildClient {
