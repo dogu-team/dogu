@@ -1,14 +1,15 @@
 import { Client, ClientConfig, QueryResult } from 'pg';
 import { Sql } from './sql';
 
+type PgsqlFn = (context: PostgreSqlContext) => Promise<void | boolean> | void | boolean;
 export class PostgreSql extends Sql<ClientConfig> {
-  override async on(fn: (context: PostgreSqlContext) => Promise<void> | void): Promise<void> {
+  override async on(fn: PgsqlFn): Promise<void> {
     const client = await connect(this.config);
     await fn(new PostgreSqlContext(client));
     await end(client);
   }
 
-  static override async on(config: ClientConfig, fn: (context: PostgreSqlContext) => Promise<void> | void): Promise<void> {
+  static override async on(config: ClientConfig, fn: PgsqlFn): Promise<void> {
     const postgres = new PostgreSql(config);
     await postgres.on(fn);
   }
