@@ -25421,6 +25421,7 @@ export const deviceModels = {
   '5102K': 'TCL L7',
   '5102M': 'TCL L7',
   '5102P': 'TCL L7',
+  '5102O': 'TCL A30',
   '5159A': 'TCL L9',
   '5159J': 'TCL L9',
   '5101A': 'TCL L9 Plus',
