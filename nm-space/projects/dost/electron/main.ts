@@ -49,8 +49,18 @@ app.on('second-instance', () => {
 app.whenReady().then(async () => {
   logger.addFileTransports(LogsPath);
   rendererLogger.addFileTransports(LogsPath);
-  logger.info('bootstrap', { isDev, cwd: process.cwd() });
-  logger.info('env', { env: process.env });
+  const appInfo = {
+    isDev,
+    cwd: process.cwd(),
+    version: app.getVersion(),
+    name: app.getName(),
+    path: app.getAppPath(),
+    isPackaged: app.isPackaged,
+    platform: process.platform,
+    systemVersion: process.getSystemVersion(),
+    env: process.env,
+  };
+  logger.info('bootstrap', { appInfo });
 
   // DevTools
   installExtension(REACT_DEVELOPER_TOOLS)
