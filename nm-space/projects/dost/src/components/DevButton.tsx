@@ -4,10 +4,10 @@ import useEnvironmentStore from '../stores/environment';
 import DevDrawer from './overlays/DevDrawer';
 
 const DevButton = () => {
-  const isDev = useEnvironmentStore((state) => state.isDev);
+  const isShowDevUI = useEnvironmentStore((state) => state.isShowDevUI);
   const { isOpen: isDevDrawerOpen, onOpen: onDevDrawerOpen, onClose: onDevDrawerClose } = useDisclosure();
 
-  if (!isDev) {
+  if (!isShowDevUI) {
     return null;
   }
 
