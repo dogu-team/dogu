@@ -62,6 +62,7 @@ const AddProjectModal = ({ close, isOpen, organizationId, teamId }: Props) => {
             onChange={(e) => handleChangeValues(e.target.value)}
             allowClear
             placeholder={t('team:addProjectModalInputPlaceholder')}
+            access-id="add-project-modal-input"
           />
         }
         searchResultItems={data?.items}

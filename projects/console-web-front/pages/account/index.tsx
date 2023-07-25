@@ -85,6 +85,7 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
 
   const handleClickSave = async () => {
     if (!user || !editingMe || !isChanged) {
+      console.log(!user, !editingMe, !isChanged);
       return;
     }
     setLoading(true);
@@ -92,10 +93,10 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
 
     try {
       const result = await updateUser(user.userId, { name });
+      sendSuccessNotification(t('account:profileUpdateSuccessMsg'));
       mutate('/registery/check', result, false);
       updateMe(result);
       fireEvent('onUserUpdated', result);
-      sendSuccessNotification(t('account:profileUpdateSuccessMsg'));
     } catch (e) {
       if (e instanceof AxiosError) {
         sendErrorNotification(t('account:profileUpdateFailMsg', { reason: getErrorMessage(e) }));
@@ -186,7 +187,7 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
             />
           </ContentBox>
           <ContentBox style={{ display: 'flex' }}>
-            <Button type="primary" disabled={isImageUploading} loading={loading} onClick={handleClickSave}>
+            <Button type="primary" disabled={isImageUploading} loading={loading} onClick={handleClickSave} access-id="update-proifle-btn">
               {t('account:profileContentSubmitButton')}
             </Button>
           </ContentBox>

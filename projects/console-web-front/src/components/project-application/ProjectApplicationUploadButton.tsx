@@ -46,7 +46,7 @@ const ProjectApplicationUploadButton = ({ organizationId, projectId }: Props) =>
 
   return (
     <>
-      <Button onClick={() => openModal()} type="primary">
+      <Button onClick={() => openModal()} type="primary" access-id="project-app-upload-btn">
         {t('project-app:uploadAppButtonTitle')}
       </Button>
 

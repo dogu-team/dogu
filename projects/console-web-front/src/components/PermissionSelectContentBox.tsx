@@ -78,6 +78,7 @@ function PermissionSelectContentBox<T>({
             await onSubmit(selectedItem, selectedPerm);
           }}
           loading={loading}
+          access-id="permission-select-submit-button"
         >
           {submitButtonText}
         </Button>

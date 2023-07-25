@@ -186,6 +186,10 @@ export class ChromeDriver {
     return await this.driver.getPageSource();
   }
 
+  async scrollToBottom(): Promise<void> {
+    return await this.driver.actions().sendKeys(webdriver.Key.END).perform();
+  }
+
   actions(): Actions {
     return this.driver.actions();
   }

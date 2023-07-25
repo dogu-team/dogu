@@ -40,7 +40,7 @@ const RegenerateTokenButton = ({ regenerate }: Props) => {
       modalButtonTitle={t('regenerateAccessTokenConfirmModalButtonTitle')}
       modalContent={
         token ? (
-          <div>
+          <div access-id="regen-token-success">
             <Alert message="API token has been regenerated." type="success" style={{ marginBottom: '1rem' }} />
             <TokenCopyInput value={token} />
           </div>
@@ -52,6 +52,10 @@ const RegenerateTokenButton = ({ regenerate }: Props) => {
       persistOpen
       footer={token ? null : undefined}
       onOpenChange={handleModalOpenChange}
+      buttonProps={{
+        id: 'regen-token-confirm-btn',
+      }}
+      access-id="regen-token-btn"
     >
       {t('regenerateAccessTokenButtonTitle')}
     </DangerZone.Button>

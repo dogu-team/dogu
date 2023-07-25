@@ -16,14 +16,14 @@ const SideBarTitle = ({ href, subTitle, name, profileImageUrl, accessId }: Props
   const fireEvent = useEventStore((state) => state.fireEvent);
 
   return (
-    <Box access-id={accessId}>
+    <Box>
       {/* <SubTitle>{subTitle}</SubTitle> */}
       <StyledLink>
         <Title>
           <ProfileImageWrapper>
             <ProfileImage shape="square" size={28} name={name} profileImageUrl={profileImageUrl} />
           </ProfileImageWrapper>
-          <p>{name}</p>
+          <p access-id={accessId}>{name}</p>
         </Title>
       </StyledLink>
     </Box>

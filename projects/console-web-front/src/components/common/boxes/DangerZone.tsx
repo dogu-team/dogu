@@ -52,9 +52,10 @@ interface ItemButtonProps {
   persistOpen?: boolean;
   onConfirm: () => Promise<void> | void;
   onOpenChange?: (isOpen: boolean) => void;
+  ['access-id']?: string;
 }
 
-const DangerZoneButton = ({ children, modalTitle, modalButtonTitle, modalContent, buttonProps, footer, persistOpen, onConfirm, onOpenChange }: ItemButtonProps) => {
+const DangerZoneButton = ({ children, modalTitle, modalButtonTitle, modalContent, buttonProps, footer, persistOpen, onConfirm, onOpenChange, ...props }: ItemButtonProps) => {
   const [isOpen, openModal, closeModal] = useModal();
   const [loading, setLoading] = useState(false);
 
@@ -81,7 +82,7 @@ const DangerZoneButton = ({ children, modalTitle, modalButtonTitle, modalContent
 
   return (
     <>
-      <Button danger onClick={() => openModal()}>
+      <Button danger onClick={() => openModal()} {...props}>
         {children}
       </Button>
 
