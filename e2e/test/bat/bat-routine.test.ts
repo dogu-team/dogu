@@ -443,6 +443,58 @@ Dest.withOptions({
         const createdProjectName = await Driver.getText({ xpath: '//*[@access-id="project-layout-project-name"]' });
         expect(createdProjectName).toBe(values.value.PROJECT_NAME);
       });
+    });
+
+    job('Project application upload', () => {
+      test('Click app tab', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="project-app-tab"]' });
+      });
+
+      test('Click upload button', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="project-app-upload-btn"]' });
+      });
+
+      test('Upload sample app', async () => {
+        await Driver.uploadFile({ xpath: '//input[@id="project-app-uploader"]' }, values.value.SAMPLE_APP_PATH);
+        await Timer.wait(10000, 'wait for app upload');
+      });
+
+      test('Check app uploaded', async () => {
+        await Driver.findElement({ xpath: '//*[@access-id="list-menu-btn"]' });
+      });
+    });
+
+    job('Project settings', () => {
+      test('Click settings tab', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="project-setting-tab"]' });
+      });
+
+      test('Rename project', async () => {
+        await Driver.sendKeys({ xpath: `//input[@value="${values.value.PROJECT_NAME}"]` }, '1');
+        await Driver.clickElement({ xpath: '//button[@access-id="update-project-profile-btn"]' });
+        await Timer.wait(1000, 'wait for changing project name');
+        const value = await Driver.getText({ xpath: '//a[@access-id="project-layout-project-name"]/h4' });
+        expect(value).toBe(`${values.value.PROJECT_NAME}1`);
+      });
+
+      test('Revert rename project', async () => {
+        await Driver.sendKeys({ xpath: `//input[@value="${values.value.PROJECT_NAME}1"]` }, `\b`);
+        await Driver.clickElement({ xpath: '//button[@access-id="update-project-profile-btn"]' });
+      });
+
+      test('Show access token', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="show-access-token-btn"]' });
+        await Driver.findElement({ xpath: '//input[@access-id="copy-token-input" and contains(@value, "dogu-project-token")]' });
+      });
+
+      test('Revoke access token', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="regen-token-btn"]' });
+        await Driver.clickElement({ xpath: '//button[@id="regen-token-confirm-btn"]' });
+        await Driver.findElement({ xpath: '//div[@access-id="regen-token-success"]' });
+        await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
+      });
+
+      // test removing project after streaming
 
       dost.nextTest();
     });
@@ -611,6 +663,7 @@ Dest.withOptions({
           job('Native inspector', () => {
             test('Click inspector tab menu', async () => {
               await Driver.clickElement({ xpath: '//div[@data-node-key="inspector"]' });
+              await Timer.wait(3000, 'wait for inspector update');
             });
 
             test('Select NATIVE_APP context', async () => {

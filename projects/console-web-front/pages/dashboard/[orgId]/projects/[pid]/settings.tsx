@@ -123,7 +123,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
             maxLength={PROJECT_DESC_MAX_LENGTH}
           />
         </Content>
-        <Button type="primary" onClick={handleSave} disabled={loading || !isChanged}>
+        <Button type="primary" onClick={handleSave} disabled={loading || !isChanged} access-id="update-project-profile-btn">
           {t('common:save')}
         </Button>
         <Divider />
