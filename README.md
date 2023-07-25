@@ -96,13 +96,9 @@ Start [Cloud Service](https://dogutech.io) right now without any installation.
 - [Documentation](https://docs.dogutech.io)
 - [Tutorial](https://docs.dogutech.io/get-started/tutorials)
 
-## Community Support
+## Join Our Community
 
-We love stars so make sure you star ⭐ us on GitHub.
-
-- [Slack](https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw) - Discussion with the community
-- [Twitter](https://twitter.com/dogutechio) - Get the latest updates
-- [LinkedIn](https://www.linkedin.com/company/dogu-technologies) - Get the latest team updates
+Join our [Slack Community](https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw) to engage in discussions about test automation and receive community support.
 
 ## Contributing
 
