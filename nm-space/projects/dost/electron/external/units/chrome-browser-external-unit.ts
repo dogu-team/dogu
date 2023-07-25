@@ -48,23 +48,22 @@ export class ChromeBrowserExternalUnit extends IExternalUnit {
   }
 
   async validateInternal(): Promise<void> {
-    if (!this.browserInstaller.isSupported(BrowserName)) {
-      this.warn(`${BrowserName} not supported`);
-      return;
-    }
-
-    const isInstalled = await this.browserInstaller.isInstalled(BrowserName, DefaultVersion);
-    if (!isInstalled) {
-      throw new Error(`${BrowserName} not installed`);
+    const resolvedBrowserVersion = await this.browserInstaller.resolveLatestVersion(BrowserName, DefaultVersion);
+    const foundBrowserVersion = await this.browserInstaller.findHighestInstalledVersion(BrowserName, resolvedBrowserVersion);
+    if (!foundBrowserVersion) {
+      throw new Error('Chrome browser not found');
     }
   }
 
   async install(): Promise<void> {
     this.unitCallback.onDownloadStarted();
+    const resolvedBrowserVersion = await this.browserInstaller.resolveLatestVersion(BrowserName, DefaultVersion);
+    const toDownloadVersion = await this.browserInstaller.resolveToDownloadVersion(BrowserName, resolvedBrowserVersion);
+
     let downloadPercent = 0;
     await this.browserInstaller.install({
-      browserOrDriverName: BrowserName,
-      browserOrDriverVersion: DefaultVersion,
+      name: BrowserName,
+      version: toDownloadVersion,
       downloadProgressCallback: (downloadedBytes, totalBytes) => {
         const percent = Math.ceil((downloadedBytes * 100) / totalBytes);
         this.unitCallback.onDownloadInProgress({

@@ -6,6 +6,7 @@ import { StdLogCallbackService } from '../../log/std-log-callback-service';
 import { ExternalUnitCallback, IExternalUnit } from '../external-unit';
 
 const Name = 'Chrome Driver';
+const BrowserName = 'chrome';
 const BrowserDriverName = 'chromedriver';
 const DefaultVersion = 'latest';
 
@@ -48,23 +49,30 @@ export class ChromeDriverExternalUnit extends IExternalUnit {
   }
 
   async validateInternal(): Promise<void> {
-    if (!this.browserInstaller.isSupported(BrowserDriverName)) {
-      this.warn(`${BrowserDriverName} not supported`);
+    const resolvedBrowserVersion = await this.browserInstaller.resolveLatestVersion(BrowserName, DefaultVersion);
+    const foundBrowserVersion = await this.browserInstaller.findHighestInstalledVersion(BrowserName, resolvedBrowserVersion);
+    if (!foundBrowserVersion) {
+      /**
+       * @note depends on chrome browser
+       */
       return;
     }
 
-    const isInstalled = await this.browserInstaller.isInstalled(BrowserDriverName, DefaultVersion);
+    const isInstalled = await this.browserInstaller.isInstalled(BrowserDriverName, foundBrowserVersion);
     if (!isInstalled) {
-      throw new Error(`${BrowserDriverName} not installed`);
+      throw new Error('Chrome driver not found');
     }
   }
 
   async install(): Promise<void> {
     this.unitCallback.onDownloadStarted();
+    const resolvedBrowserVersion = await this.browserInstaller.resolveLatestVersion(BrowserName, DefaultVersion);
+    const toDownloadVersion = await this.browserInstaller.resolveToDownloadVersion(BrowserDriverName, resolvedBrowserVersion);
+
     let downloadPercent = 0;
     await this.browserInstaller.install({
-      browserOrDriverName: BrowserDriverName,
-      browserOrDriverVersion: DefaultVersion,
+      name: BrowserDriverName,
+      version: toDownloadVersion,
       downloadProgressCallback: (downloadedBytes, totalBytes) => {
         const percent = Math.ceil((downloadedBytes * 100) / totalBytes);
         this.unitCallback.onDownloadInProgress({

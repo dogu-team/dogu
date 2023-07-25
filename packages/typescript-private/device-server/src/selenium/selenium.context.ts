@@ -7,7 +7,6 @@ import path from 'path';
 import { BrowserInstaller } from '../browser-installer';
 import { getFreePort } from '../internal/util/net';
 
-const ChromeVersionPattern = /^(\d+)\.\d+\.\d+\.\d+$/;
 const ServerStartPattern = /.*Started Selenium.*/;
 const ServerStartTimeout = 30 * 1000;
 
@@ -18,7 +17,7 @@ export interface DefaultSeleniumContextOptions {
 
 export interface SeleniumContextOptions {
   browserName: BrowserName;
-  browserVersion: string;
+  browserVersion?: string;
   key: string;
 }
 
@@ -50,33 +49,39 @@ export class SeleniumContext {
     if (this._data) {
       throw new Error('Selenium server is already started.');
     }
-    await this.installBrowser();
-    await this.installBrowserDriver();
-    this._data = await this.startSeleniumServer();
+    const resolvedBrowserVersion = await this.installBrowser();
+    await this.installBrowserDriver(resolvedBrowserVersion);
+    this._data = await this.startSeleniumServer(resolvedBrowserVersion);
   }
 
-  private async installBrowser(): Promise<void> {
+  private async installBrowser(): Promise<string> {
     const { browserName, browserVersion } = this.options;
-    const isInstalled = await this.browserInstaller.isInstalled(browserName, browserVersion);
-    if (isInstalled) {
-      return;
+    const resolvedBrowserVersion = await this.browserInstaller.resolveLatestVersion(browserName, browserVersion);
+    const foundBrowserVersion = await this.browserInstaller.findHighestInstalledVersion(browserName, resolvedBrowserVersion);
+    if (foundBrowserVersion) {
+      return foundBrowserVersion;
     }
 
+    const toDownloadVersion = await this.browserInstaller.resolveToDownloadVersion(browserName, resolvedBrowserVersion);
     await this.browserInstaller.install({
-      browserOrDriverName: browserName,
-      browserOrDriverVersion: browserVersion,
+      name: browserName,
+      version: toDownloadVersion,
     });
+    return toDownloadVersion;
   }
 
-  private async installBrowserDriver(): Promise<void> {
-    const { browserName, browserVersion } = this.options;
+  private async installBrowserDriver(browserVersion: string): Promise<void> {
+    const { browserName } = this.options;
+
     let browserDriverName = '';
-    const browserDriverVersion = browserVersion;
+    let browserDriverVersion = '';
     if (browserName === 'chrome') {
       browserDriverName = 'chromedriver';
+      browserDriverVersion = browserVersion;
     } else {
-      throw new Error(`Unknown browser name: ${stringify(browserName)}`);
+      throw new Error(`Unsupported browser name: ${stringify(browserName)}`);
     }
+
     if (!isValidBrowserDriverName(browserDriverName)) {
       throw new Error(`Invalid browser driver name: ${stringify(browserDriverName)}`);
     }
@@ -87,29 +92,27 @@ export class SeleniumContext {
     }
 
     await this.browserInstaller.install({
-      browserOrDriverName: browserDriverName,
-      browserOrDriverVersion: browserDriverVersion,
+      name: browserDriverName,
+      version: browserDriverVersion,
     });
   }
 
-  private async startSeleniumServer(): Promise<SeleniumContextData> {
+  private async startSeleniumServer(resolvedBrowserVersion: string): Promise<SeleniumContextData> {
     const { browserName, browserVersion, serverEnv, javaPath } = this.options;
     const seleniumServerPath = HostPaths.external.selenium.seleniumServerPath();
     const port = await getFreePort();
     const args: string[] = ['-jar', seleniumServerPath, 'standalone', '--host', '127.0.0.1', '--port', `${port}`, '--allow-cors', 'true', '--detect-drivers', 'false'];
     if (browserName === 'chrome') {
-      const resolvedVersion = await this.browserInstaller.resolveVersion(browserName, browserVersion);
-      const browserPath = await this.browserInstaller.getBrowserOrDriverPath(browserName, resolvedVersion);
-      const browserDriverPath = await this.browserInstaller.getBrowserOrDriverPath('chromedriver', resolvedVersion);
+      const browserPath = this.browserInstaller.getBrowserOrDriverPath(browserName, resolvedBrowserVersion);
+      const browserDriverPath = this.browserInstaller.getBrowserOrDriverPath('chromedriver', resolvedBrowserVersion);
       const stereotype: Record<string, unknown> = {
         browserName: 'chrome',
         'goog:chromeOptions': {
           binary: browserPath,
         },
       };
-      const majorVersion = _.get(resolvedVersion.match(ChromeVersionPattern), 1, null);
-      if (majorVersion) {
-        _.set(stereotype, 'browserVersion', majorVersion);
+      if (browserVersion) {
+        _.set(stereotype, 'browserVersion', browserVersion);
       }
       args.push('--driver-configuration', 'display-name="Google Chrome for Testing"', `webdriver-executable="${browserDriverPath}"`);
       let stereotypeString = JSON.stringify(stereotype);
@@ -120,7 +123,7 @@ export class SeleniumContext {
         args.push(`stereotype='${stereotypeString}'`);
       }
     } else {
-      throw new Error(`Unknown browser name: ${stringify(browserName)}`);
+      throw new Error(`Unsupported browser name: ${stringify(browserName)}`);
     }
 
     const seleniumServerDirPath = path.dirname(seleniumServerPath);
@@ -182,7 +185,7 @@ export class SeleniumContext {
         });
         child.on('close', (code, signal) => {
           this.logger.info('Selenium server is closed.', { code, signal });
-          _reject(new Error(`Selenium server is closed with code: ${code}, signal: ${signal}`));
+          _reject(new Error(`Selenium server is closed with code: ${stringify(code)}, signal: ${stringify(signal)}`));
         });
       });
 

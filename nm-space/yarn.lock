@@ -4140,6 +4140,7 @@ __metadata:
     "@dogu-tech/env-tools": "workspace:^"
     "@dogu-tech/node": "workspace:^"
     "@grpc/grpc-js": 1.7.3
+    "@jest/globals": 29.6.1
     "@nestjs/cli": 9.1.2
     "@nestjs/common": 9.2.1
     "@nestjs/core": 9.2.1
@@ -4171,6 +4172,7 @@ __metadata:
     find-free-ports: 3.0.0
     gamium: 2.0.2
     glob: 10.0.0
+    jest: 29.6.1
     lodash: 4.17.21
     nest-winston: 1.8.0
     nodemon: 2.0.22
@@ -4182,6 +4184,7 @@ __metadata:
     shx: 0.3.4
     source-map-support: 0.5.21
     systeminformation: 5.17.14
+    ts-jest: 29.1.1
     ts-node: 10.9.1
     tsconfig-paths: 4.0.0
     typescript: 4.7.4
@@ -5465,18 +5468,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@jest/globals@npm:^27.5.1":
-  version: 27.5.1
-  resolution: "@jest/globals@npm:27.5.1"
-  dependencies:
-    "@jest/environment": ^27.5.1
-    "@jest/types": ^27.5.1
-    expect: ^27.5.1
-  checksum: 087f97047e9dcf555f76fe2ce54aee681e005eaa837a0c0c2d251df6b6412c892c9df54cb871b180342114389a5ff895a4e52e6e6d3d0015bf83c02a54f64c3c
-  languageName: node
-  linkType: hard
-
-"@jest/globals@npm:^29.6.1":
+"@jest/globals@npm:29.6.1, @jest/globals@npm:^29.6.1":
   version: 29.6.1
   resolution: "@jest/globals@npm:29.6.1"
   dependencies:
@@ -5485,6 +5477,17 @@ __metadata:
     "@jest/types": ^29.6.1
     jest-mock: ^29.6.1
   checksum: fcca0b970a8b4894a1cdff0f500a86b45609e72c0a4319875e9504237b839df1a46c44d2f1362c6d87fdc7a05928edcc4b5a3751c9e6648dd70a761cdab64c94
+  languageName: node
+  linkType: hard
+
+"@jest/globals@npm:^27.5.1":
+  version: 27.5.1
+  resolution: "@jest/globals@npm:27.5.1"
+  dependencies:
+    "@jest/environment": ^27.5.1
+    "@jest/types": ^27.5.1
+    expect: ^27.5.1
+  checksum: 087f97047e9dcf555f76fe2ce54aee681e005eaa837a0c0c2d251df6b6412c892c9df54cb871b180342114389a5ff895a4e52e6e6d3d0015bf83c02a54f64c3c
   languageName: node
   linkType: hard
 
@@ -16527,7 +16530,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-cli@npm:^29.6.0":
+"jest-cli@npm:^29.6.0, jest-cli@npm:^29.6.1":
   version: 29.6.1
   resolution: "jest-cli@npm:29.6.1"
   dependencies:
@@ -17769,6 +17772,25 @@ __metadata:
   bin:
     jest: bin/jest.js
   checksum: de70a7fba864e6af413092beca6c38cfe1552624207ae849df3a069270c78456b7094a4fcf4335015902bcff275576f0f1d98d958691425503513446dd9891aa
+  languageName: node
+  linkType: hard
+
+"jest@npm:29.6.1":
+  version: 29.6.1
+  resolution: "jest@npm:29.6.1"
+  dependencies:
+    "@jest/core": ^29.6.1
+    "@jest/types": ^29.6.1
+    import-local: ^3.0.2
+    jest-cli: ^29.6.1
+  peerDependencies:
+    node-notifier: ^8.0.1 || ^9.0.0 || ^10.0.0
+  peerDependenciesMeta:
+    node-notifier:
+      optional: true
+  bin:
+    jest: bin/jest.js
+  checksum: 7b8c0ca72f483e00ec19dcf9549f9a9af8ae468ab62925b148d714b58eb52d5fea9a082625193bc833d2d9b64cf65a11f3d37857636c5551af05c10aec4ce71b
   languageName: node
   linkType: hard
 

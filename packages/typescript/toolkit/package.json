@@ -15,7 +15,7 @@
     "publish:npm": "tsc -b && ts-node scripts/publish-npm.ts",
     "rebuild": "yarn run clean && yarn run build",
     "start": "ts-node src/index.ts",
-    "test": "jest",
+    "test:dev": "jest",
     "watch": "clear; echo @dogu-tech/toolkit Watching... && nodemon"
   },
   "types": "build/src/index.d.ts",

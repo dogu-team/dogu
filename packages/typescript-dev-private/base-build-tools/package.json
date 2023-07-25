@@ -10,7 +10,7 @@
     "dev": "nodemon",
     "rebuild": "yarn run clean && yarn run build",
     "start": "ts-node src/index.ts",
-    "test": "ts-node test/unity.test.ts",
+    "test:dev": "ts-node test/unity.test.ts",
     "watch": "clear; echo  @dogu-dev-private/build-tools Watching... && nodemon"
   },
   "types": "./build/src/index.d.ts",
