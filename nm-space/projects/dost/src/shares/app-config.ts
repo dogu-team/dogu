@@ -49,6 +49,9 @@ export const schema = {
   DOGU_DEVICE_PLATFORM_ENABLED: {
     type: 'string',
   },
+  DOGU_IS_SHOW_DEVUI: {
+    type: 'boolean',
+  },
 } as const;
 
 export type Schema = typeof schema;

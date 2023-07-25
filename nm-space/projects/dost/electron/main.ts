@@ -13,6 +13,7 @@ import { logger, rendererLogger } from './log/logger.instance';
   });
 })();
 
+import { errorify } from '@dogu-tech/common';
 import * as Sentry from '@sentry/electron/main';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import electronDl from 'electron-dl';
@@ -89,12 +90,19 @@ app.whenReady().then(async () => {
     logger.info('app quit', { exitCode });
     await ChildService.close();
   });
-  process.on('beforeExit', async (code) => {
-    logger.info('beforeExit', { code });
-    await ChildService.close();
-  });
-  process.on('exit', async (code) => {
-    logger.info('exit', { code });
-    await ChildService.close();
-  });
 });
+
+process.on('uncaughtException', async (error) => {
+  logger.error('uncaughtException', { error: errorify(error) });
+});
+process.on('unhandledRejection', async (reason, promise) => {
+  logger.error('unhandledRejection', { reason, promise });
+});
+
+const quitSignalAndEvents = ['beforeExit', 'exit', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGKILL', 'SIGSTOP', 'SIGABRT'];
+for (const event of quitSignalAndEvents) {
+  process.on(event, async (code) => {
+    logger.info(event, { event, code });
+    await ChildService.close();
+  });
+}

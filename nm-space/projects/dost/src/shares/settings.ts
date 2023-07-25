@@ -33,6 +33,7 @@ export type Platform = 'win32' | 'darwin' | 'linux';
 export interface ISettingsClient {
   //https://www.electronjs.org/docs/latest/api/app#appgetloginitemsettingsoptions-macos-windows
   isDev(): Promise<boolean>;
+  isShowDevUI(): Promise<boolean>;
 
   getLoginItemSettings(option: ILoginItemSettingsOptions): Promise<ILoginItemSettings>;
   setLoginItemSettings(setting: ISettings): Promise<void>;

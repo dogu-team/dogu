@@ -123,32 +123,46 @@ export class ChildService implements IChildClient {
     return new Promise((resolve) => {
       pidtree(process.pid, { advanced: true }, async (err, procs) => {
         const procInfoMap = await getProcessesMap(logger);
+        const myInfo = procInfoMap.get(process.pid) ?? { ...DefaultProcessInfo(), pid: process.pid };
+        const root: ChildTree = { info: myInfo, children: [] };
         if (err) {
           logger.error('child process pidtree error', { error: err });
-          resolve({ childs: [] });
+          resolve(root);
         } else {
-          const tree = {
-            childs: procs
-              .map((proc) => {
-                const elem = procInfoMap.get(proc.pid);
+          const childTrees: ChildTree[] = procs
+            .map((proc) => {
+              const elem = procInfoMap.get(proc.pid);
 
-                if (elem) {
-                  const spaceSplited = elem.commandLine.replaceAll('\\', '/').split(' ');
-                  const commandName = spaceSplited[0].split('/').slice(-1).join('/');
-                  const shortCommandLine = `${commandName} ${spaceSplited.slice(1).join(' ')}`;
-                  return {
+              if (elem) {
+                const spaceSplited = elem.commandLine.replaceAll('\\', '/').split(' ');
+                const commandName = spaceSplited[0].split('/').slice(-1).join('/');
+                const shortCommandLine = `${commandName} ${spaceSplited.slice(1).join(' ')}`;
+                return {
+                  info: {
                     ...elem,
                     commandLine: shortCommandLine,
-                  };
-                }
-                return {
+                  },
+                  children: [],
+                };
+              }
+              return {
+                info: {
                   ...DefaultProcessInfo(),
                   pid: proc.pid,
-                };
-              })
-              .sort((a, b) => a.pid - b.pid),
-          };
-          resolve(tree);
+                },
+                children: [],
+              };
+            })
+            .sort((a, b) => a.info.pid - b.info.pid);
+          for (const child of childTrees) {
+            const parent = childTrees.find((c) => c.info.pid === child.info.ppid);
+            if (parent) {
+              parent.children.push(child);
+            } else {
+              root.children.push(child);
+            }
+          }
+          resolve(root);
         }
       });
     });

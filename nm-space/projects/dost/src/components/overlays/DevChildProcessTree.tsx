@@ -21,7 +21,7 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
-import { ProcessInfo } from '@dogu-tech/common';
+import { DefaultProcessInfo, ProcessInfo } from '@dogu-tech/common';
 import { ChildTree } from '../../shares/child';
 import { ipc } from '../../utils/window';
 import styled from 'styled-components';
@@ -30,6 +30,30 @@ interface DevChildProcessTreeProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+function ChildTreeToComponent(tree: ChildTree, depth: number) {
+  const info = tree.info;
+  return (
+    <div>
+      <Text key={info.pid} fontSize={'xs'}>
+        {depth > 0 ? '-'.repeat(depth) : ''}
+        <span style={{ backgroundColor: '#d14545', color: '#fff', padding: '.1rem' }}>{info.pid}</span>{' '}
+        <span style={{ backgroundColor: '#d14545', color: '#fff', padding: '.1rem' }}>{info.ppid}</span>{' '}
+        <span style={{ backgroundColor: '#d14545', color: '#fff', padding: '.1rem' }}>{info.cpuUsedTime}</span>
+        <span style={{ backgroundColor: '#d14545', color: '#fff', padding: '.1rem' }}>{(info.mem / 1024 / 1024).toFixed(2)}M</span>
+        {info.commandLine.substring(0, 200)}
+      </Text>
+      {tree.children.map((child) => ChildTreeToComponent(child, depth + 1))}
+    </div>
+  );
+}
+
+function sumChlidTreeMem(tree: ChildTree): number {
+  const myMem = tree.info.mem;
+  const childrenMem = tree.children.map((c) => sumChlidTreeMem(c)).reduce((a, b) => a + b, 0);
+  return myMem + childrenMem;
+}
+
 function DevChildProcessTree(props: DevChildProcessTreeProps) {
   const { isOpen, onClose } = props;
   const [childTree, setChildTree] = useState<ChildTree>();
@@ -40,7 +64,6 @@ function DevChildProcessTree(props: DevChildProcessTreeProps) {
   useEffect(() => {
     const checkState = async () => {
       const childTree = await ipc.childClient.getChildTree();
-
       setChildTree(childTree);
       setUpdateDate(new Date());
     };
@@ -61,23 +84,10 @@ function DevChildProcessTree(props: DevChildProcessTreeProps) {
         <ModalBody>
           <div>
             <Text fontSize={'xs'}>
-              Children: {childTree?.childs.length ?? 0}, Mem: {((childTree?.childs.map((c) => c.mem).reduce((a, b) => a + b, 0) ?? 0) / 1024 / 1024).toFixed(2)}M
+              Children: {childTree?.children.length ?? 0}, Mem: {sumChlidTreeMem(childTree ?? { info: DefaultProcessInfo(), children: [] }) / 1024 / 1024}M
             </Text>
           </div>
-          <StyledBox>
-            {childTree &&
-              childTree.childs.map((child) => {
-                return (
-                  <Text key={child.pid} fontSize={'xs'}>
-                    <span style={{ backgroundColor: '#d14545', color: '#fff', padding: '.1rem' }}>{child.pid}</span>{' '}
-                    <span style={{ backgroundColor: '#d14545', color: '#fff', padding: '.1rem' }}>{child.ppid}</span>{' '}
-                    <span style={{ backgroundColor: '#d14545', color: '#fff', padding: '.1rem' }}>{child.cpuUsedTime}</span>
-                    <span style={{ backgroundColor: '#d14545', color: '#fff', padding: '.1rem' }}>{(child.mem / 1024 / 1024).toFixed(2)}M</span>
-                    {child.commandLine.substring(0, 150)}
-                  </Text>
-                );
-              })}
-          </StyledBox>
+          <StyledBox>{childTree && ChildTreeToComponent(childTree, 0)}</StyledBox>
         </ModalBody>
       </ModalContent>
     </Modal>
