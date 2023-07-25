@@ -519,6 +519,10 @@ Dest.withOptions({
               const elements = await Driver.findElements({ xpath: '//div[contains(@class, "ant-tree-treenode-switcher")]' });
               expect(elements.length).toBe(1);
             });
+
+            test('Click Home key', async () => {
+              await Driver.clickElement({ xpath: '//*[@data-icon="home"]/../..' });
+            });
           });
 
           job('Check logs', () => {
