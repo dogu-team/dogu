@@ -59,7 +59,7 @@ const AccountMenu = () => {
               <AccountItem>
                 <ProfileImage name={storedMe?.name} size={48} profileImageUrl={storedMe?.profileImageUrl} />
                 <AccountTextWrapper>
-                  <Name>{storedMe?.name}</Name>
+                  <Name id="account-name">{storedMe?.name}</Name>
                   <Email>{storedMe?.email}</Email>
                 </AccountTextWrapper>
               </AccountItem>

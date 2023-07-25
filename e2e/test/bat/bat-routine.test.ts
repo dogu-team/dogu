@@ -177,74 +177,6 @@ Dest.withOptions({
       test('Skip tutorial', async () => {
         await Driver.clickElement({ xpath: '//button[@id="skip-tutorial"]' });
       });
-
-      dost.nextTest();
-    });
-
-    job('Organization settings', () => {
-      test('Click settings button', async () => {
-        await Driver.clickElement({ xpath: '//a[@access-id="side-bar-setting"]' });
-      });
-
-      test('Rename organization', async () => {
-        await Driver.sendKeys({ xpath: `//input[@value="${values.value.USER_NAME}'s organization"]` }, '1234');
-        await Driver.clickElement({ xpath: '//button[@access-id="submit-org-profile-btn"]' });
-        const value = await Driver.getText({ xpath: '//p[@access-id="sb-title"]' });
-        expect(value).toBe(`${`${values.value.USER_NAME}'s organization`.toUpperCase()}1234`);
-      });
-
-      test('Show access token', async () => {
-        await Driver.clickElement({ xpath: '//button[@access-id="show-access-token-btn"]' });
-        await Driver.findElement({ xpath: '//input[@access-id="copy-token-input" and contains(@value, "dogu-org-token")]' });
-      });
-
-      test('Revoke access token', async () => {
-        await Driver.clickElement({ xpath: '//button[@access-id="regen-token-btn"]' });
-        await Driver.clickElement({ xpath: '//button[@id="regen-token-confirm-btn"]' });
-        await Driver.findElement({ xpath: '//div[@access-id="regen-token-success"]' });
-        await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
-      });
-
-      test('Delete organization', async () => {
-        await Driver.clickElement({ xpath: '//button[@access-id="remove-org-btn"]' });
-        await Driver.clickElement({ xpath: '//button[@id="remove-org-confirm-btn"]' });
-      });
-    });
-
-    // job('Account settings', () => {
-    //   test('Rename username', async () => {});
-
-    //   test('Change password', async () => {});
-
-    //   test('Show access token', async () => {});
-
-    //   test('Revoke access token', async () => {});
-
-    //   test('Delete account', async () => {});
-    // });
-
-    job('Create new organization', () => {
-      test('Click create organization button', async () => {
-        await Driver.clickElement({ xpath: '//*[@access-id="new-org-btn"]' }, { waitTime: 60 * 1000 });
-      });
-
-      test('Enter organization name', async () => {
-        await Driver.sendKeys({ xpath: '//*[@id="name"]' }, values.value.ORG_NAME);
-      });
-
-      test('Click create organization button', async () => {
-        await Driver.clickElement({ xpath: '//button[@form="new-org"]' }), { waitTime: 10 * 1000 };
-      });
-
-      test('Check organization creation', async () => {
-        // const orgName = await Driver.getText({ xpath: '//*[@access-id="sb-title"]/div/div/p' });
-        // /**
-        //  * @note uppercase due to css property: text-transform
-        //  */
-        // expect(orgName).toBe(values.value.ORG_NAME.toUpperCase());
-
-        await Driver.getText({ xpath: `//*[text()='${values.value.ORG_NAME}']` }, { waitTime: 20000 });
-      });
     });
 
     job('Add member', () => {
@@ -329,11 +261,155 @@ Dest.withOptions({
         expect(userEmail).toBe(values.value.INVITE_USER_EMAIL);
       });
 
-      // test('Add project to team', async () => {});
+      test('Click projects tab', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="team-project-tab"]' });
+      });
 
-      // test('Edit team name', async () => {});
+      test('Add project to team', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="add-project-to-team-btn"]' });
+        await Driver.sendKeys({ xpath: '//input[@access-id="add-project-modal-input"]' }, 'Sample');
+        await Driver.clickElement({ xpath: '//div[contains(text(), "Sample")]' });
+        await Driver.clickElement({ xpath: '//button[@access-id="permission-select-submit-button"]' });
+        await Driver.findElement({ xpath: '//p[text()="Sample Project"]' });
+      });
 
-      // test('Delete team', async () => {});
+      test('Click settings tab', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="team-setting-tab"]' });
+      });
+
+      test('Edit team name', async () => {
+        await Driver.sendKeys({ xpath: `//input[@value="${values.value.TEAM_NAME}"]` }, '1');
+        await Driver.clickElement({ xpath: '//button[@access-id="update-team-profile-btn"]' });
+        await Timer.wait(1000, 'wait for changing team name');
+        const value = await Driver.getText({ xpath: '//*[@id="__next"]/div/section/main/div/div[1]/h4' });
+        const endsWith = value.endsWith(`${values.value.TEAM_NAME}1`);
+        expect(endsWith).toBe(true);
+      });
+
+      test('Delete team', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="remove-team-btn"]' });
+        await Driver.clickElement({ xpath: '//button[@id="remove-team-confirm-btn"]' });
+        await Driver.findElement({ xpath: '//*[contains(@class, "ant-empty")]' });
+      });
+    });
+
+    job('Organization settings', () => {
+      test('Click settings button', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="side-bar-setting"]' });
+      });
+
+      test('Rename organization', async () => {
+        await Driver.sendKeys({ xpath: `//input[@value="${values.value.USER_NAME}'s organization"]` }, '1234');
+        await Driver.clickElement({ xpath: '//button[@access-id="submit-org-profile-btn"]' });
+        const value = await Driver.getText({ xpath: '//p[@access-id="sb-title"]' });
+        expect(value).toBe(`${`${values.value.USER_NAME}'s organization`.toUpperCase()}1234`);
+      });
+
+      test('Show access token', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="show-access-token-btn"]' });
+        await Driver.findElement({ xpath: '//input[@access-id="copy-token-input" and contains(@value, "dogu-org-token")]' });
+      });
+
+      test('Revoke access token', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="regen-token-btn"]' });
+        await Driver.clickElement({ xpath: '//button[@id="regen-token-confirm-btn"]' });
+        await Driver.findElement({ xpath: '//div[@access-id="regen-token-success"]' });
+        await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
+      });
+
+      // test('Delete organization', async () => {
+      //   await Driver.clickElement({ xpath: '//button[@access-id="remove-org-btn"]' });
+      //   await Driver.clickElement({ xpath: '//button[@id="remove-org-confirm-btn"]' });
+      //   await Driver.findElement({ xpath: '//*[contains(@class, "ant-empty")]' });
+      // });
+    });
+
+    job('Account settings', () => {
+      test('Move to account page', async () => {
+        await Driver.clickElement(
+          {
+            xpath: '//*[@id="__next"]/div/header/div/div/div[2]/div[1]/div/span',
+          },
+          {
+            focusWindow: true,
+          },
+        );
+        await Driver.clickElement({ xpath: '//li[contains(@data-menu-id, "account")]' });
+      });
+
+      test('Rename username', async () => {
+        await Driver.sendKeys({ xpath: `//input[@value="${values.value.USER_NAME}"]` }, '1');
+        await Driver.clickElement({ xpath: '//button[@access-id="update-proifle-btn"]' });
+
+        await Timer.wait(1000, 'wait for changing username');
+
+        await Driver.clickElement(
+          {
+            xpath: '//*[@id="__next"]/div/header/div/div/div[2]/div[1]/div/span',
+          },
+          {
+            focusWindow: true,
+          },
+        );
+        const value = await Driver.getText({ xpath: '//*[@id="account-name"]' });
+        expect(value).toBe(`${values.value.USER_NAME}1`);
+      });
+
+      test('Revert username', async () => {
+        await Driver.sendKeys({ xpath: `//input[@value="${values.value.USER_NAME}1"]` }, `\b`);
+        await Driver.clickElement({ xpath: '//button[@access-id="update-proifle-btn"]' });
+      });
+
+      test('Show access token', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="show-access-token-btn"]' });
+        await Driver.findElement({ xpath: '//input[@access-id="copy-token-input" and contains(@value, "dogu-personal-token")]' });
+      });
+
+      test('Revoke access token', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="regen-token-btn"]' });
+        await Driver.clickElement({ xpath: '//button[@id="regen-token-confirm-btn"]' });
+        await Driver.findElement({ xpath: '//div[@access-id="regen-token-success"]' });
+        await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
+      });
+    });
+
+    job('Create new organization', () => {
+      test('Move to my orgnaizations page', async () => {
+        await Driver.clickElement(
+          {
+            xpath: '//*[@id="__next"]/div/header/div/div/div[2]/div[1]/div/span',
+          },
+          {
+            focusWindow: true,
+          },
+        );
+
+        await Driver.clickElement({
+          xpath: `//div[text()="${l10n('ORGANIZATIONS')}"]`,
+        });
+      });
+
+      test('Click create organization button', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="new-org-btn"]' }, { waitTime: 60 * 1000 });
+      });
+
+      test('Enter organization name', async () => {
+        await Driver.sendKeys({ xpath: '//*[@id="name"]' }, values.value.ORG_NAME);
+      });
+
+      test('Click create organization button', async () => {
+        await Driver.clickElement({ xpath: '//button[@form="new-org"]' }), { waitTime: 10 * 1000 };
+      });
+
+      test('Check organization creation', async () => {
+        // const orgName = await Driver.getText({ xpath: '//*[@access-id="sb-title"]/div/div/p' });
+        // /**
+        //  * @note uppercase due to css property: text-transform
+        //  */
+        // expect(orgName).toBe(values.value.ORG_NAME.toUpperCase());
+
+        await Driver.getText({ xpath: `//*[text()='${values.value.ORG_NAME}']` }, { waitTime: 20000 });
+      });
     });
 
     job('Create project', () => {

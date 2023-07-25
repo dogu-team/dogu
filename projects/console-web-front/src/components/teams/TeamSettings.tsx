@@ -63,7 +63,7 @@ const TeamSettings = ({ organizationId, team, onDeleteEnd, onUpdateEnd }: Props)
           <Input minLength={TEAM_NAME_MIN_LENGTH} maxLength={TEAM_NAME_MAX_LENGTH} required placeholder={t('team:teamDetailPageSettingNamePlaceholder')} />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" access-id="update-team-profile-btn">
             {t('common:save')}
           </Button>
         </Form.Item>
@@ -79,6 +79,10 @@ const TeamSettings = ({ organizationId, team, onDeleteEnd, onUpdateEnd }: Props)
               modalContent={<Trans i18nKey="team:removeTeamConfirmModalContent" components={{ b: <b style={{ fontWeight: '700' }} />, br: <br /> }} values={{ name: team.name }} />}
               modalButtonTitle={t('team:removeTeamConfirmModalButtonTitle')}
               onConfirm={handleDelete}
+              access-id="remove-team-btn"
+              buttonProps={{
+                id: 'remove-team-confirm-btn',
+              }}
             >
               {t('team:removeTeamButtonText')}
             </DangerZone.Button>

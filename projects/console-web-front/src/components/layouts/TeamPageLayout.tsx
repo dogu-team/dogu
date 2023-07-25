@@ -27,16 +27,19 @@ const TeamPageLayout = ({ children }: Props) => {
       href: `/dashboard/${orgId}/teams/${teamId}/members`,
       icon: <UserOutlined />,
       title: t('team:teamDetailPageMemberTab'),
+      'access-id': 'team-member-tab',
     },
     {
       href: `/dashboard/${orgId}/teams/${teamId}/projects`,
       icon: <AppstoreOutlined />,
       title: t('team:teamDetailPageProjectTab'),
+      'access-id': 'team-project-tab',
     },
     {
       href: `/dashboard/${orgId}/teams/${teamId}/settings`,
       icon: <SettingOutlined />,
       title: t('team:teamDetailPageSettingTab'),
+      'access-id': 'team-setting-tab',
     },
   ];
 
