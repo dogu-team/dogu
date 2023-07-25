@@ -14,7 +14,8 @@ export type HostAgentConnectionStatus = Instance<typeof Status.getConnectionStat
 export const childClientKey = instanceKeys<IChildClient>('childClient');
 
 export interface ChildTree {
-  childs: ProcessInfo[];
+  info: ProcessInfo;
+  children: ChildTree[];
 }
 
 export interface IChildClient {

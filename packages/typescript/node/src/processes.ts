@@ -72,11 +72,11 @@ export async function getProcessesMap(logger: Printable): Promise<ProcessInfoDic
 }
 
 export async function getProcessesMapMacos(logger: Printable): Promise<ProcessInfoDict> {
-  const psResult = await ChildProcess.execIgnoreError('ps -ef', { timeout: 3000 }, logger);
+  const psResult = await ChildProcess.execIgnoreError('ps -axo pid,ppid,rss,time,command', { timeout: 3000 }, logger);
   const lines = psResult.stdout.split('\n');
   const infos = lines.map((line) => {
-    const [uid, pid, ppid, c, stime, tty, time, ...command] = line.trim().split(/\s{1,}|\t/);
-    return { ppid: parseInt(ppid), pid: parseInt(pid), cpuUsedTime: time, mem: 0, commandLine: command.join(' ') } as ProcessInfo;
+    const [pid, ppid, rss, time, ...command] = line.trim().split(/\s{1,}|\t/);
+    return { ppid: parseInt(ppid), pid: parseInt(pid), cpuUsedTime: time, mem: parseInt(rss) * 1024, commandLine: command.join(' ') } as ProcessInfo;
   });
   return new Map(infos.map((info) => [info.pid, info]));
 }

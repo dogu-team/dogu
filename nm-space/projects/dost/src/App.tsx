@@ -31,9 +31,10 @@ function App() {
   useEffect(() => {
     (async () => {
       try {
-        const [platform, isDev, useApiUrlInput, useAppUpdate, useSentry, runType] = await Promise.all([
+        const [platform, isDev, isShowDevUI, useApiUrlInput, useAppUpdate, useSentry, runType] = await Promise.all([
           ipc.settingsClient.getPlatform(),
           ipc.settingsClient.isDev(),
+          ipc.settingsClient.isShowDevUI(),
           ipc.featureConfigClient.get('useApiUrlInput'),
           ipc.featureConfigClient.get('useAppUpdate'),
           ipc.featureConfigClient.get('useSentry'),
@@ -42,6 +43,7 @@ function App() {
         setEnvironment({
           platform,
           isDev,
+          isShowDevUI,
           features: {
             useApiUrlInput,
             useAppUpdate,

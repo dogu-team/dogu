@@ -6,6 +6,7 @@ import { FeatureTable } from '../shares/feature-config';
 export interface EnvironmentStore {
   platform: NodeJS.Platform | null;
   isDev: boolean;
+  isShowDevUI: boolean;
   features: FeatureTable;
   appConfig: AppConfigTable;
   setEnvironment: (updates: Partial<Omit<EnvironmentStore, 'setEnvironment'>>) => void;
@@ -16,6 +17,7 @@ const useEnvironmentStore = create<EnvironmentStore>()(
     (set) => ({
       platform: null,
       isDev: false,
+      isShowDevUI: true,
       features: {
         useApiUrlInput: false,
         useSentry: false,

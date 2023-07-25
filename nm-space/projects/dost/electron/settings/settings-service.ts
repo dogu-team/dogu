@@ -19,6 +19,7 @@ export class SettingsService {
 
   private constructor(private readonly dotEnvConfigService: DotEnvConfigService) {
     ipcMain.handle(settingsClientKey.isDev, () => isDev);
+    ipcMain.handle(settingsClientKey.isShowDevUI, () => this.isShowDevUI());
 
     ipcMain.handle(settingsClientKey.getLoginItemSettings, (_, option: ILoginItemSettingsOptions) => {
       return app.getLoginItemSettings(option);
@@ -52,6 +53,13 @@ export class SettingsService {
 
   static open(dotEnvConfigService: DotEnvConfigService): void {
     SettingsService.instance = new SettingsService(dotEnvConfigService);
+  }
+
+  private async isShowDevUI(): Promise<boolean> {
+    const DOGU_RUN_TYPE = await AppConfigService.instance.get('DOGU_RUN_TYPE');
+    let currentLogLevel = DOGU_RUN_TYPE === 'development' || DOGU_RUN_TYPE === 'local' ? true : false;
+    currentLogLevel = isDev ? true : currentLogLevel;
+    return await AppConfigService.instance.getOrDefault('DOGU_IS_SHOW_DEVUI', currentLogLevel);
   }
 
   private async openWritableDirectory(): Promise<void> {

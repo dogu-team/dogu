@@ -30,6 +30,7 @@ expose('appConfigClient', {
 
 expose('settingsClient', {
   isDev: () => ipcRenderer.invoke(settingsClientKey.isDev),
+  isShowDevUI: () => ipcRenderer.invoke(settingsClientKey.isShowDevUI),
   getLoginItemSettings: (option: ILoginItemSettingsOptions) => ipcRenderer.invoke(settingsClientKey.getLoginItemSettings, option),
   setLoginItemSettings: (setting: ISettings) => ipcRenderer.invoke(settingsClientKey.setLoginItemSettings, setting),
   setSecureKeyboardEntryEnabled: (enabled: boolean) => ipcRenderer.invoke(settingsClientKey.setSecureKeyboardEntryEnabled, enabled),
