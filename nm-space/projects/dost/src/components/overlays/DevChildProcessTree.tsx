@@ -54,6 +54,11 @@ function sumChlidTreeMem(tree: ChildTree): number {
   return myMem + childrenMem;
 }
 
+function sumChlidTreeCount(tree: ChildTree): number {
+  const childrenCount = tree.children.map((c) => sumChlidTreeCount(c)).reduce((a, b) => a + b, 0);
+  return 1 + childrenCount;
+}
+
 function DevChildProcessTree(props: DevChildProcessTreeProps) {
   const { isOpen, onClose } = props;
   const [childTree, setChildTree] = useState<ChildTree>();
@@ -84,7 +89,8 @@ function DevChildProcessTree(props: DevChildProcessTreeProps) {
         <ModalBody>
           <div>
             <Text fontSize={'xs'}>
-              Children: {childTree?.children.length ?? 0}, Mem: {sumChlidTreeMem(childTree ?? { info: DefaultProcessInfo(), children: [] }) / 1024 / 1024}M
+              Children: {sumChlidTreeCount(childTree ?? { info: DefaultProcessInfo(), children: [] })}, Mem:{' '}
+              {sumChlidTreeMem(childTree ?? { info: DefaultProcessInfo(), children: [] }) / 1024 / 1024}M
             </Text>
           </div>
           <StyledBox>{childTree && ChildTreeToComponent(childTree, 0)}</StyledBox>
