@@ -43,17 +43,18 @@ const DeviceStreamingLogContainer = ({ filterValue, deviceLogs, isStopped, onTog
             value={value}
             onChange={(e) => setValue(e.target.value)}
             enterButton={
-              <Button type="primary" disabled={filterValue ? value === filterValue : false}>
+              <Button type="primary" disabled={filterValue ? value === filterValue : false} access-id="log-filter-set-btn">
                 {t('device-streaming:deviceLogFilterSetButtonText')}
               </Button>
             }
             onSearch={onChangeFilterValue}
             maxLength={100}
+            access-id="device-log-filter-input"
           />
         </div>
 
         <ButtonWrapper>
-          <Button icon={isStopped ? <CaretRightFilled /> : <PauseOutlined />} onClick={onTogglePlay} size="small" />
+          <Button icon={isStopped ? <CaretRightFilled /> : <PauseOutlined />} onClick={onTogglePlay} size="small" access-id="toggle-log-btn" />
           <Button icon={<DeleteOutlined />} onClick={clearLog} size="small" />
         </ButtonWrapper>
       </MenuBox>

@@ -37,6 +37,7 @@ const values = {
     SAMPLE_PROJECT_NAME: 'sample project',
     SAMPLE_ROUTINE_NAME: 'sample routine',
     SAMPLE_APP_EXTENSION: 'APK',
+    SAMPLE_APP_PATH: path.resolve('samples/dogurpgsample.apk'),
   },
 };
 
@@ -200,6 +201,8 @@ Dest.withOptions({
 
       test('Go to member page', async () => {
         await Driver.clickElement({ xpath: '//*[@access-id="org-member-tab"]' });
+        await Timer.wait(1000, 'wait for member update');
+        await Driver.clickElement({ xpath: '//button[@access-id="refresh-btn"]' });
       });
 
       test('Check invite result', async () => {
@@ -366,9 +369,6 @@ Dest.withOptions({
               .catch(() => {
                 // do nothing
               });
-            await waitUntilModalClosed().catch(() => {
-              // do nothing
-            });
           });
         });
 
@@ -389,7 +389,6 @@ Dest.withOptions({
 
           test('Click create tag button', async () => {
             await Driver.clickElement({ xpath: '//button[@form="new-tag"]' });
-            await waitUntilModalClosed();
           });
         });
 
@@ -421,7 +420,6 @@ Dest.withOptions({
 
           test('Close tag change window', async () => {
             await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
-            await waitUntilModalClosed();
           });
         });
 
@@ -460,10 +458,92 @@ Dest.withOptions({
             expect(hasLog).toBe(true);
           });
         });
+
+        if (!isHost) {
+          job('Native inspector', () => {
+            test('Click inspector tab menu', async () => {
+              await Driver.clickElement({ xpath: '//div[@data-node-key="inspector"]' });
+            });
+
+            test('Select NATIVE_APP context', async () => {
+              await Driver.clickElement({ xpath: '//div[@access-id="context-select"]' });
+              await Driver.clickElement({ xpath: '//div[text()="NATIVE_APP"]' });
+            });
+
+            test('Expect tree node', async () => {
+              const elements = await Driver.findElements({ xpath: '//div[contains(@class, "ant-tree-treenode-switcher")]' });
+              expect(elements.length).toBe(1);
+            });
+          });
+
+          job('Install app and check profile', () => {
+            test('Click install tab menu', async () => {
+              await Driver.clickElement({ xpath: '//div[@data-node-key="install"]' });
+            });
+
+            test('Enable open option', async () => {
+              await Driver.clickElement({ xpath: '//button[@role="switch"]' });
+            });
+
+            test('Upload DoguRPGSample.apk', async () => {
+              await Driver.uploadFile({ xpath: '//input[@type="file"]' }, values.value.SAMPLE_APP_PATH);
+            });
+
+            test('Check app name', async () => {
+              await Driver.findElement({ xpath: '//*[text()="dogurpgsample.apk"]' });
+            });
+
+            test('Check app install end with profile', async () => {
+              await Driver.findElement({ xpath: '//*[text()="com.dogutech.DoguRpgSample"]' }, { waitTime: 30 * 1000 });
+            });
+          });
+
+          job('Gamium inspector', () => {
+            test('Click inspector tab menu', async () => {
+              await Timer.wait(5000, 'wait for game loading');
+              await Driver.clickElement({ xpath: '//div[@data-node-key="inspector"]' });
+            });
+
+            test('Click reconnect button', async () => {
+              await Driver.clickElement({ xpath: '//*[@data-icon="disconnect"]/../..' });
+              await Driver.clickElement({ xpath: '//*[@data-icon="reload"]/../..' });
+              await Timer.wait(3000, 'wait for reconnect');
+            });
+
+            test('Select GAMIUM context', async () => {
+              await Driver.clickElement({ xpath: '//div[@access-id="context-select"]' });
+              await Driver.clickElement({ xpath: '//div[text()="GAMIUM"]' });
+            });
+
+            test('Expect tree node', async () => {
+              const elements = await Driver.findElements({ xpath: '//div[contains(@class, "ant-tree-treenode-switcher")]' });
+              expect(elements.length).toBe(1);
+            });
+          });
+
+          job('Check logs', () => {
+            test('Click log tab menu', async () => {
+              await Driver.clickElement({ xpath: '//div[@data-node-key="logs"]' });
+            });
+
+            test('Set filter string', async () => {
+              await Driver.sendKeys({ xpath: '//input[@access-id="device-log-filter-input"]' }, 't');
+              await Driver.clickElement({ xpath: '//button[@access-id="log-filter-set-btn"]' });
+            });
+
+            test('Start log streaming', async () => {
+              await Driver.clickElement({ xpath: '//button[@access-id="toggle-log-btn"]' });
+            });
+
+            test('Check log streaming', async () => {
+              await Driver.findElement({ xpath: '//b[text()="1"]' });
+            });
+          });
+        }
       });
     });
 
-    job('Create organization', () => {
+    job('Create new organization', () => {
       test('Move to my organizations', async () => {
         await Driver.clickElement(
           {
