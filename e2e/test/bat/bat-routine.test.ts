@@ -369,9 +369,6 @@ Dest.withOptions({
               .catch(() => {
                 // do nothing
               });
-            await waitUntilModalClosed().catch(() => {
-              // do nothing
-            });
           });
         });
 
@@ -392,7 +389,6 @@ Dest.withOptions({
 
           test('Click create tag button', async () => {
             await Driver.clickElement({ xpath: '//button[@form="new-tag"]' });
-            await waitUntilModalClosed();
           });
         });
 
@@ -424,7 +420,6 @@ Dest.withOptions({
 
           test('Close tag change window', async () => {
             await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
-            await waitUntilModalClosed();
           });
         });
 
@@ -469,17 +464,19 @@ Dest.withOptions({
             test('Click inspector tab menu', async () => {
               await Driver.clickElement({ xpath: '//div[@data-node-key="inspector"]' });
             });
+
             test('Select NATIVE_APP context', async () => {
               await Driver.clickElement({ xpath: '//div[@access-id="context-select"]' });
               await Driver.clickElement({ xpath: '//div[text()="NATIVE_APP"]' });
             });
+
             test('Expect tree node', async () => {
               const elements = await Driver.findElements({ xpath: '//div[contains(@class, "ant-tree-treenode-switcher")]' });
               expect(elements.length).toBe(1);
             });
           });
 
-          job('Install app', () => {
+          job('Install app and check profile', () => {
             test('Click install tab menu', async () => {
               await Driver.clickElement({ xpath: '//div[@data-node-key="install"]' });
             });
@@ -496,16 +493,52 @@ Dest.withOptions({
               await Driver.findElement({ xpath: '//*[text()="dogurpgsample.apk"]' });
             });
 
-            test('Check app install end', async () => {
+            test('Check app install end with profile', async () => {
               await Driver.findElement({ xpath: '//*[text()="com.dogutech.DoguRpgSample"]' }, { waitTime: 30 * 1000 });
             });
           });
 
-          // job('Gamium inspector', () => {});
+          job('Gamium inspector', () => {
+            test('Click inspector tab menu', async () => {
+              await Timer.wait(5000, 'wait for game loading');
+              await Driver.clickElement({ xpath: '//div[@data-node-key="inspector"]' });
+            });
 
-          // job('Check profile', () => {});
+            test('Click reconnect button', async () => {
+              await Driver.clickElement({ xpath: '//*[@data-icon="disconnect"]/../..' });
+              await Driver.clickElement({ xpath: '//*[@data-icon="reload"]/../..' });
+              await Timer.wait(3000, 'wait for reconnect');
+            });
 
-          // job('Check logs', () => {});
+            test('Select GAMIUM context', async () => {
+              await Driver.clickElement({ xpath: '//div[@access-id="context-select"]' });
+              await Driver.clickElement({ xpath: '//div[text()="GAMIUM"]' });
+            });
+
+            test('Expect tree node', async () => {
+              const elements = await Driver.findElements({ xpath: '//div[contains(@class, "ant-tree-treenode-switcher")]' });
+              expect(elements.length).toBe(1);
+            });
+          });
+
+          job('Check logs', () => {
+            test('Click log tab menu', async () => {
+              await Driver.clickElement({ xpath: '//div[@data-node-key="logs"]' });
+            });
+
+            test('Set filter string', async () => {
+              await Driver.sendKeys({ xpath: '//input[@access-id="device-log-filter-input"]' }, 't');
+              await Driver.clickElement({ xpath: '//button[@access-id="log-filter-set-btn"]' });
+            });
+
+            test('Start log streaming', async () => {
+              await Driver.clickElement({ xpath: '//button[@access-id="toggle-log-btn"]' });
+            });
+
+            test('Check log streaming', async () => {
+              await Driver.findElement({ xpath: '//b[text()="1"]' });
+            });
+          });
         }
       });
     });
