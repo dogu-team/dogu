@@ -62,13 +62,13 @@ export class ProjectRoleService {
       .where(
         new Brackets((qb) => {
           qb.where(`projectRole.${ProjectRolePropSnake.organization_id} = :${ProjectRolePropCamel.organizationId}`, { organizationId })
-            .andWhere(`projectRole.${ProjectRolePropSnake.name} LIKE :keyword`, { keyword: `%${dto.keyword}%` })
+            .andWhere(`projectRole.${ProjectRolePropSnake.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
             .andWhere(`projectRole.${ProjectRolePropSnake.customise} = :${ProjectRolePropCamel.customise}`, { customise: 1 });
         }),
       )
       .orWhere(
         new Brackets((qb) => {
-          qb.where(`projectRole.${ProjectRolePropSnake.name} LIKE :keyword`, { keyword: `%${dto.keyword}%` }) //
+          qb.where(`projectRole.${ProjectRolePropSnake.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` }) //
             .andWhere(`projectRole.${ProjectRolePropSnake.customise} = :${ProjectRolePropCamel.customise}`, { customise: 0 });
         }),
       )

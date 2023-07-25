@@ -31,7 +31,7 @@ export class ApplicationService {
       .leftJoinAndSelect(`projectApplication.${ProjectApplicationPropCamel.creator}`, 'creator')
       .where({ organizationId, projectId })
       .andWhere(extension ? 'projectApplication.fileExtension = :extension' : '1=1', { extension: extension })
-      .andWhere(version ? 'projectApplication.version LIKE :version' : '1=1', { version: `%${version}%` })
+      .andWhere(version ? 'projectApplication.version ILIKE :version' : '1=1', { version: `%${version}%` })
       .skip(dto.getDBOffset())
       .take(dto.getDBLimit())
       .getManyAndCount();

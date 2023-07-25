@@ -41,7 +41,7 @@ export class TeamService {
       .leftJoinAndSelect(`team.${TeamPropCamel.organizationAndUserAndTeams}`, 'userAndTeam')
       .leftJoinAndSelect(`userAndTeam.${OrganizationUserAndTeamPropCamel.user}`, 'user')
       .where(`team.${TeamPropSnake.organization_id} = :organizationId`, { organizationId })
-      .andWhere(`team.${TeamPropSnake.name} LIKE :keyword`, { keyword: `%${dto.keyword}%` })
+      .andWhere(`team.${TeamPropSnake.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
       .orderBy(`team.${TeamPropCamel.updatedAt}`, 'DESC')
       .take(dto.getDBLimit())
       .skip(dto.getDBOffset())
@@ -184,9 +184,9 @@ export class TeamService {
       )
       .where(
         new Brackets((qb) => {
-          qb.where(`replace(user.${UserPropSnake.name}, ' ', '') LIKE :keyword`, { keyword: `%${dto.keyword}%` })
-            .orWhere(`user.${UserPropSnake.name} LIKE :keyword`, { keyword: `%${dto.keyword}%` })
-            .orWhere(`user.${UserPropSnake.email} LIKE :keyword`, { keyword: `%${dto.keyword}%` });
+          qb.where(`replace(user.${UserPropSnake.name}, ' ', '') ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
+            .orWhere(`user.${UserPropSnake.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
+            .orWhere(`user.${UserPropSnake.email} ILIKE :keyword`, { keyword: `%${dto.keyword}%` });
         }),
       )
       .orderBy(`user.${UserPropCamel.createdAt}`, 'ASC')
@@ -211,7 +211,7 @@ export class TeamService {
       .createQueryBuilder('projectTeamRole')
       .innerJoinAndSelect(`projectTeamRole.${ProjectAndTeamAndProjectRolePropCamel.project}`, 'project')
       .where(`projectTeamRole.${ProjectAndTeamAndProjectRolePropSnake.team_id} = :${ProjectAndTeamAndProjectRolePropCamel.teamId}`, { teamId })
-      .andWhere(`project.${ProjectPropSnake.name} LIKE :keyword`, { keyword: `%${dto.keyword}%` })
+      .andWhere(`project.${ProjectPropSnake.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
       .orderBy(`projectTeamRole.${ProjectAndTeamAndProjectRolePropCamel.createdAt}`, 'ASC')
       .skip(dto.getDBOffset())
       .take(dto.getDBLimit())

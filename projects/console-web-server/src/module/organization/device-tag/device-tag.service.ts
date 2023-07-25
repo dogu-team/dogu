@@ -35,7 +35,7 @@ export class DeviceTagService {
       )
       .leftJoinAndSelect(`deviceAndDeviceTags.${DeviceAndDeviceTagPropCamel.device}`, 'device')
       .where(`tag.${DeviceTagPropSnake.organization_id} = :${DeviceTagPropCamel.organizationId}`, { organizationId })
-      .andWhere(`tag.${DeviceTagPropSnake.name} LIKE :keyword`, { keyword: `%${dto.keyword}%` })
+      .andWhere(`tag.${DeviceTagPropSnake.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
       .orderBy(`tag.${DeviceTagPropCamel.createdAt}`, 'DESC')
       .take(dto.getDBLimit())
       .skip(dto.getDBOffset())

@@ -112,7 +112,7 @@ jobs:
         .getRepository(Routine)
         .createQueryBuilder('routine')
         .where({ projectId })
-        .andWhere(`routine.name LIKE :name`, { name: `%${name}%` })
+        .andWhere(`routine.name ILIKE :name`, { name: `%${name}%` })
         .orderBy('routine.name', 'ASC')
         .getManyAndCount();
       return routines;
