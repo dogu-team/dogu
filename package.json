@@ -27,8 +27,6 @@
     "newbie:python": "yarn workspaces foreach --jobs unlimited -tvi run newbie:python",
     "publish:github:dev": "cross-env DOGU_RUN_TYPE=development yarn workspaces foreach -ptvi --jobs unlimited run publish:github",
     "publish:github:prod": "cross-env DOGU_RUN_TYPE=production yarn workspaces foreach -ptvi --jobs unlimited run publish:github",
-    "publish:gitlab:dev": "cross-env DOGU_RUN_TYPE=development yarn workspace @dogu-user-templates/typescript-template ts-node .scripts/publish-gitlab.ts",
-    "publish:gitlab:prod": "cross-env DOGU_RUN_TYPE=production yarn workspace @dogu-user-templates/typescript-template ts-node .scripts/publish-gitlab.ts",
     "publish:npm:dev": "cross-env DOGU_RUN_TYPE=development yarn workspaces foreach -tvi --jobs unlimited run publish:npm",
     "publish:npm:prod": "cross-env DOGU_RUN_TYPE=production yarn workspaces foreach -tvi --jobs unlimited run publish:npm",
     "rebuild": "yarn run clean && yarn run build",
