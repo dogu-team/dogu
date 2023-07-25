@@ -27,8 +27,6 @@ const StreamingVideo = ({ rightSidebar, videoId, children, onResize, inspector }
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [videoSize, setVideoSize] = useState({ width: 0, height: 0 });
 
-  console.log(videoSize);
-
   // if ratio > 1, width > height
   const videoRatio = videoSize.height > 0 ? videoSize.width / videoSize.height : 0;
 
