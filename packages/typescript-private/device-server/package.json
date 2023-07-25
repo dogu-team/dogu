@@ -10,8 +10,8 @@
     "clean": "shx rm -rf build generated dist",
     "dev": "nodemon",
     "rebuild": "yarn run clean && yarn run build",
-    "watch": "clear; echo @dogu-private/device-server Watching... && nodemon",
-    "lint": "jest"
+    "test": "jest",
+    "watch": "clear; echo @dogu-private/device-server Watching... && nodemon"
   },
   "types": "./build/src/index.d.ts",
   "dependencies": {

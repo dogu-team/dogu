@@ -13,7 +13,7 @@
     "dev": "nodemon",
     "rebuild": "yarn run clean && yarn run build",
     "start": "ts-node src/index.ts",
-    "test": "ts-node test/test-parse",
+    "test:dev": "ts-node test/test-parse",
     "watch": "clear; echo @dogu-dev-private/docs-gen Watching... && nodemon"
   },
   "types": "build/src/index.d.ts",

@@ -14,7 +14,7 @@
     "start:nexus": "cross-env TZ=UTC NODE_ENV=development ts-node scripts/start-nexus/run.ts",
     "start:pgsql": "yarn run rebuild && cross-env TZ=UTC NODE_ENV=development ts-node scripts/start-pgsql/run.ts",
     "start:redis": "cross-env TZ=UTC NODE_ENV=development ts-node scripts/start-redis/run.ts",
-    "test": "yarn run env:dev && yarn run start",
+    "test:dev": "yarn run env:dev && yarn run start",
     "typeorm": "node --require ts-node/register $(yarn bin typeorm)",
     "typeorm:create": "cross-env TZ=UTC NODE_ENV=development ts-node scripts/typeorm/typeorm-create.ts",
     "typeorm:fake": "cross-env TZ=UTC NODE_ENV=development yarn typeorm migration:run -f -d ./src/migration.config.ts",

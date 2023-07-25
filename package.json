@@ -37,6 +37,7 @@
     "show": "yarn workspaces list",
     "start:console": "yarn workspace console-web-server run start & yarn workspace console-web-front run start",
     "start:debug": "yarn workspaces foreach --jobs unlimited -ptvi run start:debug",
+    "test": "yarn workspaces foreach --jobs unlimited -ptvi run test",
     "third-party:build": "yarn run build:archive",
     "third-party:download": "ts-node scripts/third-parties/download",
     "third-party:download:build": "yarn run third-party:download && yarn run third-party:build",

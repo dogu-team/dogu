@@ -15,4 +15,8 @@ echo [lint-staged] start
 yarn lint-staged --allow-empty --config ./lint-staged.config.mjs
 echo [lint-staged] end
 
+echo [test] start
+yarn test
+echo [test] end
+
 echo [pre-commit] end
