@@ -21,7 +21,8 @@ import {
   Tr,
 } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
-import { ChildProcessInfo, ChildTree } from '../../shares/child';
+import { ProcessInfo } from '@dogu-tech/common';
+import { ChildTree } from '../../shares/child';
 import { ipc } from '../../utils/window';
 import styled from 'styled-components';
 
@@ -39,18 +40,6 @@ function DevChildProcessTree(props: DevChildProcessTreeProps) {
   useEffect(() => {
     const checkState = async () => {
       const childTree = await ipc.childClient.getChildTree();
-      const childs = childTree.childs.map((child: ChildProcessInfo): ChildProcessInfo => {
-        const spaceSplited = child.name.split(' ');
-        const commandName = spaceSplited[0].split('/').slice(-1).join('/');
-        const name = `${commandName} ${spaceSplited.slice(1).join(' ')}`;
-
-        return {
-          pid: child.pid,
-          time: child.time,
-          name: name,
-        };
-      });
-      childTree.childs = childs;
 
       setChildTree(childTree);
       setUpdateDate(new Date());
@@ -71,7 +60,9 @@ function DevChildProcessTree(props: DevChildProcessTreeProps) {
         <ModalCloseButton />
         <ModalBody>
           <div>
-            <Text fontSize={'xs'}>Children: {childTree?.childs.length ?? 0}</Text>
+            <Text fontSize={'xs'}>
+              Children: {childTree?.childs.length ?? 0}, Mem: {((childTree?.childs.map((c) => c.mem).reduce((a, b) => a + b, 0) ?? 0) / 1024 / 1024).toFixed(2)}M
+            </Text>
           </div>
           <StyledBox>
             {childTree &&
@@ -79,7 +70,10 @@ function DevChildProcessTree(props: DevChildProcessTreeProps) {
                 return (
                   <Text key={child.pid} fontSize={'xs'}>
                     <span style={{ backgroundColor: '#d14545', color: '#fff', padding: '.1rem' }}>{child.pid}</span>{' '}
-                    <span style={{ backgroundColor: '#d14545', color: '#fff', padding: '.1rem' }}>{child.time}</span> {child.name.substring(0, 150)}
+                    <span style={{ backgroundColor: '#d14545', color: '#fff', padding: '.1rem' }}>{child.ppid}</span>{' '}
+                    <span style={{ backgroundColor: '#d14545', color: '#fff', padding: '.1rem' }}>{child.cpuUsedTime}</span>
+                    <span style={{ backgroundColor: '#d14545', color: '#fff', padding: '.1rem' }}>{(child.mem / 1024 / 1024).toFixed(2)}M</span>
+                    {child.commandLine.substring(0, 150)}
                   </Text>
                 );
               })}

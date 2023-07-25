@@ -9,6 +9,7 @@ export * from './http-ws/specs';
 export * from './http-ws/types';
 export * from './interfaces';
 export * from './logs';
+export * from './processes';
 export * from './property-proxies';
 export * from './queue/size-prefixed-recv-queue';
 export * from './registry';

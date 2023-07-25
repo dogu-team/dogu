@@ -1,9 +1,9 @@
-import { loop } from '@dogu-tech/common';
-import { ChildProcess as DoguChildProcess } from '@dogu-tech/node';
+import { DefaultProcessInfo, loop } from '@dogu-tech/common';
+import { getProcessesMap } from '@dogu-tech/node';
 import { Code } from '@dogu-tech/types';
 import { ipcMain } from 'electron';
 import pidtree from 'pidtree';
-import { childClientKey, ChildProcessInfo, ChildTree, HostAgentConnectionStatus, IChildClient, Key } from '../../src/shares/child';
+import { childClientKey, ChildTree, HostAgentConnectionStatus, IChildClient, Key } from '../../src/shares/child';
 import { AppConfigService } from '../app-config/app-config-service';
 import { FeatureConfigService } from '../feature-config/feature-config-service';
 import { logger } from '../log/logger.instance';
@@ -121,29 +121,34 @@ export class ChildService implements IChildClient {
 
   getChildTree(): Promise<ChildTree> {
     return new Promise((resolve) => {
-      pidtree(process.pid, async (err, pids) => {
-        const psResult = await DoguChildProcess.execIgnoreError('ps -e', { timeout: 3000 }, logger);
-        const lines = psResult.stdout.split('\n');
-        const pidToCommandMap = lines
-          .map((line) => {
-            const [pid, _, time, ...command] = line.trim().split(/\s{1,}|\t/);
-            return { pid, time: time, command: command.join(' ') };
-          })
-          .reduce((acc, cur) => {
-            acc[cur.pid] = { pid: parseInt(cur.pid), time: cur.time, name: cur.command };
-            return acc;
-          }, {} as { [key: string]: ChildProcessInfo });
-
+      pidtree(process.pid, { advanced: true }, async (err, procs) => {
+        const procInfoMap = await getProcessesMap(logger);
         if (err) {
           logger.error('child process pidtree error', { error: err });
           resolve({ childs: [] });
         } else {
-          logger.info('child process pidtree', { pids });
-          resolve({
-            childs: pids
-              .map((pid) => ({ pid, time: pid in pidToCommandMap ? pidToCommandMap[pid].time : '??', name: pid in pidToCommandMap ? pidToCommandMap[pid].name : 'unknown' }))
+          const tree = {
+            childs: procs
+              .map((proc) => {
+                const elem = procInfoMap.get(proc.pid);
+
+                if (elem) {
+                  const spaceSplited = elem.commandLine.replaceAll('\\', '/').split(' ');
+                  const commandName = spaceSplited[0].split('/').slice(-1).join('/');
+                  const shortCommandLine = `${commandName} ${spaceSplited.slice(1).join(' ')}`;
+                  return {
+                    ...elem,
+                    commandLine: shortCommandLine,
+                  };
+                }
+                return {
+                  ...DefaultProcessInfo(),
+                  pid: proc.pid,
+                };
+              })
               .sort((a, b) => a.pid - b.pid),
-          });
+          };
+          resolve(tree);
         }
       });
     });
