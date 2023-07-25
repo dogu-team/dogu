@@ -99,17 +99,19 @@ export class NexusFeatureFileService extends FeatureFileService {
   }
 
   async list(options: ListOptions): Promise<ListResult> {
-    const { bucketKey, prefix } = options;
+    const { bucketKey, prefix, continuationToken } = options;
     const repository = this.parseBucketKey(bucketKey);
-    const url = `${this.url}/service/rest/v1/components?repository=${repository}`;
+    const url = `${this.url}/service/rest/v1/search?repository=${repository}&group=${prefix}${continuationToken ? `&continuationToken=${continuationToken}` : ''}`;
+
     const response = await axios.get(url, {
       auth: this.createBasicCredentials(),
     });
+
     if (!lodash.has(response.data, 'items') || !lodash.has(response.data, 'continuationToken')) {
       throw new Error('Invalid response');
     }
     const items = response.data.items as any[];
-    const continuationToken = response.data.continuationToken as string | null;
+    const newContinuationToken = response.data.continuationToken as string | null;
 
     if (!Array.isArray(items)) {
       throw new Error('Invalid response');
@@ -127,13 +129,11 @@ export class NexusFeatureFileService extends FeatureFileService {
         lastModified: new Date(lastModified),
       };
     });
-    if (prefix) {
-      lodash.remove(contents, (content) => !content.key.startsWith(prefix));
-    }
+
     return {
       contents,
-      continuationToken: typeof continuationToken === 'string' ? continuationToken : undefined,
-      isTruncated: continuationToken !== null,
+      continuationToken: typeof newContinuationToken === 'string' ? newContinuationToken : undefined,
+      isTruncated: newContinuationToken ? true : false,
     };
   }
 
