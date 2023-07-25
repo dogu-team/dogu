@@ -15,7 +15,7 @@ import ErrorBox from 'src/components/common/boxes/ErrorBox';
 import useStreamingOptionStore from 'src/stores/streaming-option';
 import { swrAuthFetcher } from '../../../../../src/api';
 import InspectorSelectedNode from '../../../../../src/components/streaming/InspectorSelectedNode';
-import { ResizedObjectInfo, StreamingTabMenuKey } from '../../../../../src/types/streaming';
+import { StreamingTabMenuKey } from '../../../../../src/types/streaming';
 import ResizableLayout from '../../../../../src/components/layouts/ResizableLayout';
 import DeviceStreamingGraphContainer from '../../../../../src/components/streaming/DeviceStreamingGraphContainer';
 import DeviceStreamingLogContainer from '../../../../../src/components/streaming/DeviceStreamingLogContainer';
@@ -31,9 +31,7 @@ const StreamingViewer = () => {
   const router = useRouter();
   const { device, videoRef, deviceService, loading } = useDeviceStreamingContext();
   const tab = (router.query.tab as StreamingTabMenuKey | undefined) ?? StreamingTabMenuKey.INFO;
-  // const inspector = useDeviceInspector(videoRef ?? undefined);
   const inspector = useInspector(deviceService?.deviceInspector, device, videoRef);
-  const [selectedObjectInfos, setSelectedObjectInfos] = useState<ResizedObjectInfo[]>([]);
   const runtimeInfos = useDeviceStreamingProfile(deviceService?.deviceClient, device ?? null);
   const { deviceLogs, isLogStopped, logFilterValue, togglePlay, handleChangeFilterValue, clearLog } = useDeviceLog(deviceService?.deviceClient, device ?? null);
   const { initWidth, saveWidth } = useResizePreference('device-streaming-menu-width', 300);

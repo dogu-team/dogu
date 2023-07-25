@@ -37,6 +37,7 @@ const values = {
     SAMPLE_PROJECT_NAME: 'sample project',
     SAMPLE_ROUTINE_NAME: 'sample routine',
     SAMPLE_APP_EXTENSION: 'APK',
+    SAMPLE_APP_PATH: path.resolve('samples/dogurpgsample.apk'),
   },
 };
 
@@ -200,6 +201,8 @@ Dest.withOptions({
 
       test('Go to member page', async () => {
         await Driver.clickElement({ xpath: '//*[@access-id="org-member-tab"]' });
+        await Timer.wait(1000, 'wait for member update');
+        await Driver.clickElement({ xpath: '//button[@access-id="refresh-btn"]' });
       });
 
       test('Check invite result', async () => {
@@ -460,10 +463,54 @@ Dest.withOptions({
             expect(hasLog).toBe(true);
           });
         });
+
+        if (!isHost) {
+          job('Native inspector', () => {
+            test('Click inspector tab menu', async () => {
+              await Driver.clickElement({ xpath: '//div[@data-node-key="inspector"]' });
+            });
+            test('Select NATIVE_APP context', async () => {
+              await Driver.clickElement({ xpath: '//div[@access-id="context-select"]' });
+              await Driver.clickElement({ xpath: '//div[text()="NATIVE_APP"]' });
+            });
+            test('Expect tree node', async () => {
+              const elements = await Driver.findElements({ xpath: '//div[contains(@class, "ant-tree-treenode-switcher")]' });
+              expect(elements.length).toBe(1);
+            });
+          });
+
+          job('Install app', () => {
+            test('Click install tab menu', async () => {
+              await Driver.clickElement({ xpath: '//div[@data-node-key="install"]' });
+            });
+
+            test('Enable open option', async () => {
+              await Driver.clickElement({ xpath: '//button[@role="switch"]' });
+            });
+
+            test('Upload DoguRPGSample.apk', async () => {
+              await Driver.uploadFile({ xpath: '//input[@type="file"]' }, values.value.SAMPLE_APP_PATH);
+            });
+
+            test('Check app name', async () => {
+              await Driver.findElement({ xpath: '//*[text()="dogurpgsample.apk"]' });
+            });
+
+            test('Check app install end', async () => {
+              await Driver.findElement({ xpath: '//*[text()="com.dogutech.DoguRpgSample"]' }, { waitTime: 30 * 1000 });
+            });
+          });
+
+          // job('Gamium inspector', () => {});
+
+          // job('Check profile', () => {});
+
+          // job('Check logs', () => {});
+        }
       });
     });
 
-    job('Create organization', () => {
+    job('Create new organization', () => {
       test('Move to my organizations', async () => {
         await Driver.clickElement(
           {
