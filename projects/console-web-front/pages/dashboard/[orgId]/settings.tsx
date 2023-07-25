@@ -177,7 +177,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
             }
           />
         </Content>
-        <Button type="primary" disabled={isImageUploading || !isChanged} loading={loading} onClick={handleSubmit}>
+        <Button type="primary" disabled={isImageUploading || !isChanged} loading={loading} onClick={handleSubmit} access-id="submit-org-profile-btn">
           {t('common:save')}
         </Button>
 
@@ -215,6 +215,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
                 }
                 onConfirm={handleChangeOwner}
                 buttonProps={{ disabled: !newOwner }}
+                access-id="change-owner-btn"
               >
                 {t('organization:settingChangeOwnerButtonTitle')}
               </DangerZone.Button>
@@ -235,6 +236,10 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
                   />
                 }
                 onConfirm={handleRemove}
+                buttonProps={{
+                  id: 'remove-org-confirm-btn',
+                }}
+                access-id="remove-org-btn"
               >
                 {t('organization:settingRemoveOrgButtonTitle')}
               </DangerZone.Button>

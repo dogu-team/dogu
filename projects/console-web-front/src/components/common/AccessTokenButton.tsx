@@ -23,7 +23,7 @@ const AccessTokenButton = ({ getToken }: Props) => {
   return token ? (
     <TokenCopyInput value={token} />
   ) : (
-    <Button type="primary" loading={isLoading} onClick={handleClick}>
+    <Button type="primary" loading={isLoading} onClick={handleClick} access-id="show-access-token-btn">
       Show token
     </Button>
   );

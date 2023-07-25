@@ -181,6 +181,72 @@ Dest.withOptions({
       dost.nextTest();
     });
 
+    job('Organization settings', () => {
+      test('Click settings button', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="side-bar-setting"]' });
+      });
+
+      test('Rename organization', async () => {
+        await Driver.sendKeys({ xpath: `//input[@value="${values.value.USER_NAME}'s organization"]` }, '1234');
+        await Driver.clickElement({ xpath: '//button[@access-id="submit-org-profile-btn"]' });
+        const value = await Driver.getText({ xpath: '//p[@access-id="sb-title"]' });
+        expect(value).toBe(`${`${values.value.USER_NAME}'s organization`.toUpperCase()}1234`);
+      });
+
+      test('Show access token', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="show-access-token-btn"]' });
+        await Driver.findElement({ xpath: '//input[@access-id="copy-token-input" and contains(@value, "dogu-org-token")]' });
+      });
+
+      test('Revoke access token', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="regen-token-btn"]' });
+        await Driver.clickElement({ xpath: '//button[@id="regen-token-confirm-btn"]' });
+        await Driver.findElement({ xpath: '//div[@access-id="regen-token-success"]' });
+        await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
+      });
+
+      test('Delete organization', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="remove-org-btn"]' });
+        await Driver.clickElement({ xpath: '//button[@id="remove-org-confirm-btn"]' });
+      });
+    });
+
+    // job('Account settings', () => {
+    //   test('Rename username', async () => {});
+
+    //   test('Change password', async () => {});
+
+    //   test('Show access token', async () => {});
+
+    //   test('Revoke access token', async () => {});
+
+    //   test('Delete account', async () => {});
+    // });
+
+    job('Create new organization', () => {
+      test('Click create organization button', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="new-org-btn"]' }, { waitTime: 60 * 1000 });
+      });
+
+      test('Enter organization name', async () => {
+        await Driver.sendKeys({ xpath: '//*[@id="name"]' }, values.value.ORG_NAME);
+      });
+
+      test('Click create organization button', async () => {
+        await Driver.clickElement({ xpath: '//button[@form="new-org"]' }), { waitTime: 10 * 1000 };
+      });
+
+      test('Check organization creation', async () => {
+        // const orgName = await Driver.getText({ xpath: '//*[@access-id="sb-title"]/div/div/p' });
+        // /**
+        //  * @note uppercase due to css property: text-transform
+        //  */
+        // expect(orgName).toBe(values.value.ORG_NAME.toUpperCase());
+
+        await Driver.getText({ xpath: `//*[text()='${values.value.ORG_NAME}']` }, { waitTime: 20000 });
+      });
+    });
+
     job('Add member', () => {
       test('Go to member menu', async () => {
         await Driver.clickElement({ xpath: '//*[@access-id="side-bar-member"]' }, { waitTime: 1 * 1000 });
@@ -262,6 +328,12 @@ Dest.withOptions({
         expect(userName).toBe(values.value.INVITE_USER_NAME);
         expect(userEmail).toBe(values.value.INVITE_USER_EMAIL);
       });
+
+      // test('Add project to team', async () => {});
+
+      // test('Edit team name', async () => {});
+
+      // test('Delete team', async () => {});
     });
 
     job('Create project', () => {
@@ -537,56 +609,15 @@ Dest.withOptions({
 
             test('Start log streaming', async () => {
               await Driver.clickElement({ xpath: '//button[@access-id="toggle-log-btn"]' });
+              await Timer.wait(3000, 'wait for logs');
             });
 
             test('Check log streaming', async () => {
+              await Driver.scrollToBottom();
               await Driver.findElement({ xpath: '//b[text()="1"]' });
             });
           });
         }
-      });
-    });
-
-    job('Create new organization', () => {
-      test('Move to my organizations', async () => {
-        await Driver.clickElement(
-          {
-            xpath: '/html/body/div[1]/div/header/div/div/div[2]/div[1]/div/span',
-          },
-          {
-            focusWindow: true,
-          },
-        );
-        await Driver.clickElement(
-          {
-            xpath: `//*[text()="${l10n('ORGANIZATIONS')}"]`,
-          },
-          {
-            focusWindow: true,
-          },
-        );
-      });
-
-      test('Click create organization button', async () => {
-        await Driver.clickElement({ xpath: '//*[@access-id="new-org-btn"]' }, { waitTime: 60 * 1000 });
-      });
-
-      test('Enter organization name', async () => {
-        await Driver.sendKeys({ xpath: '//*[@id="name"]' }, values.value.ORG_NAME);
-      });
-
-      test('Click create organization button', async () => {
-        await Driver.clickElement({ xpath: '//button[@form="new-org"]' }), { waitTime: 10 * 1000 };
-      });
-
-      test('Check organization creation', async () => {
-        // const orgName = await Driver.getText({ xpath: '//*[@access-id="sb-title"]/div/div/p' });
-        // /**
-        //  * @note uppercase due to css property: text-transform
-        //  */
-        // expect(orgName).toBe(values.value.ORG_NAME.toUpperCase());
-
-        await Driver.getText({ xpath: `//*[text()='${values.value.ORG_NAME}']` }, { waitTime: 20000 });
       });
     });
 
