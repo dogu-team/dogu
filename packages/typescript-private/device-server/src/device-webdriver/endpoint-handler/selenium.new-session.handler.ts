@@ -47,10 +47,10 @@ export class SeleniumNewSessionEndpointHandler extends SeleniumEndpointHandler {
       };
     }
 
-    const doguBrowserVersion = _.get(headers, DoguBrowserVersionHeader);
+    const doguBrowserVersion = _.get(headers, DoguBrowserVersionHeader) as string | undefined;
     const seleniumContextInfo = await seleniumService.open({
       browserName: doguBrowserName,
-      browserVersion: doguBrowserVersion ?? 'latest',
+      browserVersion: doguBrowserVersion,
       key: doguRemoteDeviceJobId,
     });
 

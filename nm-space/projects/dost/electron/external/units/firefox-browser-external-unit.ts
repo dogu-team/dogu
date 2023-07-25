@@ -48,11 +48,6 @@ export class FirefoxBrowserExternalUnit extends IExternalUnit {
   }
 
   async validateInternal(): Promise<void> {
-    if (!this.browserInstaller.isSupported(BrowserName)) {
-      this.warn(`${BrowserName} not supported`);
-      return;
-    }
-
     const isInstalled = await this.browserInstaller.isInstalled(BrowserName, DefaultVersion);
     if (!isInstalled) {
       throw new Error(`${BrowserName} not installed`);
@@ -63,8 +58,8 @@ export class FirefoxBrowserExternalUnit extends IExternalUnit {
     this.unitCallback.onDownloadStarted();
     let downloadPercent = 0;
     await this.browserInstaller.install({
-      browserOrDriverName: BrowserName,
-      browserOrDriverVersion: DefaultVersion,
+      name: BrowserName,
+      version: DefaultVersion,
       downloadProgressCallback: (downloadedBytes, totalBytes) => {
         const percent = Math.ceil((downloadedBytes * 100) / totalBytes);
         this.unitCallback.onDownloadInProgress({
