@@ -32,6 +32,8 @@
   "leaveOrganizationModalDescription": "Are you sure to leave organization <b>{{organizationName}}</b>?\nThis cannot be undone.",
   "leaveOrganizationModalDescription2": "This cannot be undone and may lose your work.",
   "leaveOrganizationConfirmButtonText": "Confirm and leave",
+  "leaveOrganizationSuccessMessage": "Leaved!",
+  "leaveOrganizationFailureMessage": "Failed to leave\n{{reason}}",
 
   "createOrganizationButtonText": "Create organization",
   "createOrganizationModalTitle": "Create new organization",
