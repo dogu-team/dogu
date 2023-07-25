@@ -21,6 +21,11 @@ export interface RetryOptions {
    * @default ConsoleLogger.instance
    */
   printable?: Printable;
+
+  /**
+   * @default () => true (always retry)
+   */
+  resultChecker?: <Result>(result: PromiseOrValue<Result>) => boolean;
 }
 
 type FilledRetryOptions = Required<RetryOptions>;
@@ -30,6 +35,7 @@ function defaultRetryOptions(): FilledRetryOptions {
     retryCount: 3,
     retryInterval: 300,
     printable: ConsoleLogger.instance,
+    resultChecker: () => true,
   };
 }
 
@@ -38,13 +44,18 @@ function fillRetryOptions(options?: RetryOptions): FilledRetryOptions {
 }
 
 export async function retry<Result>(func: () => PromiseOrValue<Result>, options?: RetryOptions): Promise<Result> {
-  const { retryCount, retryInterval, printable } = fillRetryOptions(options);
+  const { retryCount, retryInterval, printable, resultChecker } = fillRetryOptions(options);
   const currentTime = Date.now();
   let lastError: Error | null = null;
   for (let tryCount = 1; tryCount <= retryCount; tryCount++) {
     let isPromiseResult = false;
     try {
       const result = func();
+      const isSuccess = resultChecker(result);
+      if (!isSuccess) {
+        throw new Error('result checker failed');
+      }
+
       isPromiseResult = 'then' in result && typeof result.then === 'function';
       if (isPromiseResult) {
         return await result;

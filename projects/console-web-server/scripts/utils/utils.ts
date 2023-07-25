@@ -1,9 +1,10 @@
-import { retry, stringify } from '@dogu-tech/common';
+import { PromiseOrValue, retry, stringify } from '@dogu-tech/common';
 import { killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
 import lodash from 'lodash';
 import shelljs, { ShellString } from 'shelljs';
+import { logger } from '../../build/src/module/logger/logger.instance';
 
 export interface ShellOptions {
   /**
@@ -38,6 +39,11 @@ export interface ExecOptions extends ShellOptions {
    * @unit milliseconds
    */
   retryInterval?: number;
+
+  /**
+   * @default () => true (always retry)
+   */
+  resultChecker?: <Result>(result: PromiseOrValue<Result>) => boolean;
 }
 
 export function defaultExecOptions(): Required<ExecOptions> {
@@ -45,6 +51,7 @@ export function defaultExecOptions(): Required<ExecOptions> {
     retry: false,
     retryCount: 3,
     retryInterval: 1000,
+    resultChecker: () => true,
   });
 }
 
@@ -64,7 +71,7 @@ export function which(command: string, options?: ShellOptions): ShellString {
 }
 
 export async function exec(command: string, options?: ExecOptions): Promise<ShellString> {
-  const { errorMessage, retry: retry_, retryCount, retryInterval } = fillExecOptions(options);
+  const { errorMessage, retry: retry_, retryCount, retryInterval, resultChecker } = fillExecOptions(options);
 
   let result: ShellString | null = null;
   if (retry_) {
@@ -75,6 +82,8 @@ export async function exec(command: string, options?: ExecOptions): Promise<Shel
       {
         retryCount: retryCount,
         retryInterval: retryInterval,
+        printable: logger,
+        resultChecker,
       },
     );
   } else {
@@ -89,7 +98,16 @@ export async function exec(command: string, options?: ExecOptions): Promise<Shel
 }
 
 export async function spawnWithFindPattern(command: string, args: string[], pattern: RegExp): Promise<void> {
+  const timeout = 1000 * 30;
+
   await new Promise<void>((resolve, reject) => {
+    const timeoutError = setTimeout(() => {
+      if (!matched) {
+        reject(new Error(`Error: timeout exceeded. ${timeout}ms`));
+        killChildProcess(child);
+      }
+    }, timeout);
+
     const options = process.platform === 'win32' ? { shell: 'cmd.exe', windowsVerbatimArguments: true } : undefined;
     const child = child_process.spawn(command, args, options);
     let matched = false;
