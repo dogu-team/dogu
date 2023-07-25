@@ -16711,17 +16711,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dest-in-step@workspace:samples/dest-in-step":
-  version: 0.0.0-use.local
-  resolution: "dest-in-step@workspace:samples/dest-in-step"
-  dependencies:
-    "@dogu-tech/console-dest": "workspace:^"
-    "@types/node": 18.15.11
-    ts-node: 10.9.1
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
 "destroy@npm:1.2.0":
   version: 1.2.0
   resolution: "destroy@npm:1.2.0"
@@ -29412,42 +29401,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pytest-bdd-playwright-dogu-report@workspace:samples/pytest-bdd-playwright-dogu-report":
-  version: 0.0.0-use.local
-  resolution: "pytest-bdd-playwright-dogu-report@workspace:samples/pytest-bdd-playwright-dogu-report"
-  dependencies:
-    "@types/node": 18.15.11
-    "@types/shelljs": 0.8.11
-    cross-env: 7.0.3
-    fast-glob: 3.2.12
-    nodemon: 2.0.22
-    playwright-core: 1.35.1
-    shelljs: 0.8.5
-    shx: 0.3.4
-    ts-node: 10.9.1
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
 "pytest-dogu-sdk@workspace:packages/python/pytest-dogu-sdk":
   version: 0.0.0-use.local
   resolution: "pytest-dogu-sdk@workspace:packages/python/pytest-dogu-sdk"
-  dependencies:
-    "@types/node": 18.15.11
-    "@types/shelljs": 0.8.11
-    cross-env: 7.0.3
-    fast-glob: 3.2.12
-    nodemon: 2.0.22
-    shelljs: 0.8.5
-    shx: 0.3.4
-    ts-node: 10.9.1
-    typescript: 4.7.4
-  languageName: unknown
-  linkType: soft
-
-"pytest-playwright-dogu-report@workspace:samples/pytest-playwright-dogu-report":
-  version: 0.0.0-use.local
-  resolution: "pytest-playwright-dogu-report@workspace:samples/pytest-playwright-dogu-report"
   dependencies:
     "@types/node": 18.15.11
     "@types/shelljs": 0.8.11

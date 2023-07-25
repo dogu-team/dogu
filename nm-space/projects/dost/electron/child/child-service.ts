@@ -67,6 +67,14 @@ export class ChildService implements IChildClient {
 
   private async connectInternal(token: string): Promise<HostAgentConnectionStatus> {
     if (!(await this.deviceServer.isActive())) {
+      if (!(await this.deviceServer.openable())) {
+        return {
+          status: 'disconnected',
+          code: Code.CODE_DEVICE_SERVER_UNEXPECTED_ERROR,
+          reason: 'device-server not openable.',
+          updatedAt: new Date(),
+        };
+      }
       await this.deviceServer.open();
       for await (const _ of loop(1000, 60)) {
         if (await this.deviceServer.isActive()) {
@@ -87,6 +95,14 @@ export class ChildService implements IChildClient {
       await this.hostAgent.close();
     }
     await this.appConfigService.set('DOGU_HOST_TOKEN', token);
+    if (!(await this.hostAgent.openable())) {
+      return {
+        status: 'disconnected',
+        code: Code.CODE_HOST_AGENT_UNEXPECTED_ERROR,
+        reason: 'host-agent not openable.',
+        updatedAt: new Date(),
+      };
+    }
     await this.hostAgent.open();
     for await (const _ of loop(1000, 60)) {
       if (await this.hostAgent.isActive()) {

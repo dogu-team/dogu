@@ -34,6 +34,7 @@ export class ExternalService {
     instance.registerUnits();
     instance.registerHandlers();
     await instance.validateSupportedPlatform();
+    await instance.updateIsSupportedPlatformValid();
     instance.startLoopUpdateIsSupportedPlatformValid();
   }
 

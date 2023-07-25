@@ -85,7 +85,7 @@ export class DeviceServerChild implements Child {
 
   async openable(): Promise<boolean> {
     const doguIsSupportedPlatformValid = await this.appConfigService.get<boolean>('DOGU_IS_SUPPORTED_PLATFORM_VALID');
-    return doguIsSupportedPlatformValid;
+    return !!doguIsSupportedPlatformValid;
   }
 
   async close(): Promise<void> {
