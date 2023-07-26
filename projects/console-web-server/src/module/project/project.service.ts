@@ -45,8 +45,6 @@ export class ProjectService {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    // @Inject(GitlabService)
-    // private readonly gitlabService: GitlabService,
     @Inject(DeviceStatusService)
     private readonly deviceStatusService: DeviceStatusService,
   ) {}
@@ -89,14 +87,12 @@ export class ProjectService {
     const rv = await this.dataSource //
       .getRepository(Project)
       .createQueryBuilder('project')
-      // .leftJoinAndSelect(`project.${ProjectPropCamel.users}`, 'user')
       .leftJoinAndSelect(`project.${ProjectPropCamel.projectAndUserAndProjectRoles}`, 'projectUserRole')
       .leftJoinAndSelect(`projectUserRole.${ProjectAndUserAndProjectRolePropCamel.user}`, 'user')
-      // .leftJoinAndSelect(`project.${ProjectPropCamel.teams}`, 'team')
       .leftJoinAndSelect(`project.${ProjectPropCamel.projectAndTeamAndProjectRoles}`, 'projectTeamRole')
       .leftJoinAndSelect(`projectTeamRole.${ProjectAndTeamAndProjectRolePropCamel.team}`, 'team')
       .where(`project.${ProjectPropSnake.organization_id} = :${ProjectPropCamel.organizationId}`, { organizationId })
-      .andWhere(`project.${ProjectPropSnake.name} LIKE :keyword`, { keyword: `%${dto.keyword}%` })
+      .andWhere(`project.${ProjectPropSnake.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
       .orderBy(`project.${ProjectPropCamel.updatedAt}`, 'DESC')
       .skip(dto.getDBOffset())
       .take(dto.getDBLimit())
@@ -133,7 +129,6 @@ export class ProjectService {
     const rv = await this.dataSource //
       .getRepository(Project)
       .createQueryBuilder('project')
-      // .leftJoinAndSelect(`project.${ProjectPropCamel.users}`, 'user')
       .leftJoinAndSelect(
         `project.${ProjectPropCamel.projectAndUserAndProjectRoles}`,
         'projectUserRole',
@@ -141,22 +136,15 @@ export class ProjectService {
         { userId },
       )
       .leftJoinAndSelect(`projectUserRole.${ProjectAndUserAndProjectRolePropCamel.user}`, 'user')
-      // .leftJoinAndSelect(`project.${ProjectPropCamel.teams}`, 'team')
       .leftJoinAndSelect(`project.${ProjectPropCamel.projectAndTeamAndProjectRoles}`, 'projectTeamRole')
       .leftJoinAndSelect(`projectTeamRole.${ProjectAndTeamAndProjectRolePropCamel.team}`, 'team')
-      // .leftJoinAndSelect(
-      //   `project.${ProjectPropCamel.projectAndUserAndProjectRoles}`, //
-      //   'projectUserRole',
-      //   `projectUserRole.${ProjectAndUserAndProjectRolePropSnake.user_id} = :${UserPropCamel.userId}`,
-      //   { userId },
-      // )
       .leftJoinAndSelect(
         `team.${TeamPropCamel.organizationAndUserAndTeams}`, //
         'userAndTeam',
         `userAndTeam.${OrganizationUserAndTeamPropCamel.userId} = :${UserPropCamel.userId}`,
       )
       .where(`project.${ProjectPropSnake.organization_id} = :${ProjectPropCamel.organizationId}`, { organizationId })
-      .andWhere(`project.${ProjectPropSnake.name} LIKE :keyword`, { keyword: `%${dto.keyword}%` })
+      .andWhere(`project.${ProjectPropSnake.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
       .orderBy(`project.${ProjectPropCamel.updatedAt}`, 'DESC')
       .skip(dto.getDBOffset())
       .take(dto.getDBLimit())
@@ -303,22 +291,27 @@ export class ProjectService {
       .getRepository(Project)
       .createQueryBuilder('project')
       .leftJoinAndSelect(`project.${ProjectPropCamel.projectAndUserAndProjectRoles}`, 'projectUserRole')
-      .leftJoinAndSelect(`projectUserRole.${ProjectAndUserAndProjectRolePropCamel.user}`, 'user')
+      .leftJoinAndSelect(`projectUserRole.${ProjectAndUserAndProjectRolePropCamel.user}`, 'user', `user.${UserPropSnake.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
       .leftJoinAndSelect(`projectUserRole.${ProjectAndUserAndProjectRolePropCamel.projectRole}`, 'userRole')
       .leftJoinAndSelect(`project.${ProjectPropCamel.projectAndTeamAndProjectRoles}`, 'projectTeamRole')
-      .leftJoinAndSelect(`projectTeamRole.${ProjectAndTeamAndProjectRolePropCamel.team}`, 'team')
+      .leftJoinAndSelect(`projectTeamRole.${ProjectAndTeamAndProjectRolePropCamel.team}`, 'team', `team.${TeamPropCamel.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
       .leftJoinAndSelect(`projectTeamRole.${ProjectAndTeamAndProjectRolePropCamel.projectRole}`, 'teamRole')
       .where(`project.${ProjectPropSnake.project_id} = :${ProjectPropCamel.projectId}`, { projectId })
       .andWhere(`project.${ProjectPropSnake.organization_id} = :${ProjectPropCamel.organizationId}`, { organizationId })
-      .andWhere(`project.${ProjectPropSnake.name} LIKE :keyword`, { keyword: `%${dto.keyword}%` })
       .getOne();
 
     if (!project) {
       throw new HttpException(`Project with ${projectId} not found`, HttpStatus.NOT_FOUND);
     }
 
-    const userAndRoleGroups = project.projectAndUserAndProjectRoles ? project.projectAndUserAndProjectRoles : [];
-    const teamAndRoleGroups = project.projectAndTeamAndProjectRoles ? project.projectAndTeamAndProjectRoles : [];
+    const userAndRoleGroups =
+      project.projectAndUserAndProjectRoles?.filter((projectAndUserAndProjectRoles) => {
+        return projectAndUserAndProjectRoles.user;
+      }) ?? [];
+    const teamAndRoleGroups =
+      project.projectAndTeamAndProjectRoles?.filter((projectAndTeamAndProjectRoles) => {
+        return projectAndTeamAndProjectRoles.team;
+      }) ?? [];
 
     const memberAndRoleGroups = [...userAndRoleGroups, ...teamAndRoleGroups].sort((a, b) => {
       if (a.createdAt > b.createdAt) {
@@ -354,13 +347,13 @@ export class ProjectService {
       .andWhere(connectionStateFilterClause, { connectionState: dto.connectionState })
       .andWhere(
         new Brackets((qb) => {
-          qb.where(`device.${DevicePropSnake.name} LIKE :keyword`, { keyword: `%${dto.keyword}%` })
-            .orWhere(`device.${DevicePropSnake.model} LIKE :keyword`, { keyword: `%${dto.keyword}%` })
-            .orWhere(`device.${DevicePropSnake.model_name} LIKE :keyword`, { keyword: `%${dto.keyword}%` });
+          qb.where(`device.${DevicePropSnake.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
+            .orWhere(`device.${DevicePropSnake.model} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
+            .orWhere(`device.${DevicePropSnake.model_name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` });
         }),
       )
       .leftJoinAndSelect(`device.${DevicePropCamel.deviceTags}`, 'deviceTags')
-      .leftJoinAndSelect(`device.${DevicePropCamel.routineDeviceJobs}`, 'deviceJob', `deviceJob.status IN (:...status)`, {
+      .leftJoinAndSelect(`device.${DevicePropCamel.routineDeviceJobs}`, 'deviceJob', `deviceJob.${RoutineDeviceJobPropCamel.status} IN (:...status)`, {
         status: [PIPELINE_STATUS.WAITING, PIPELINE_STATUS.IN_PROGRESS, PIPELINE_STATUS.CANCEL_REQUESTED],
       })
       .leftJoinAndSelect(`device.${DevicePropCamel.remoteDeviceJobs}`, 'remoteDeviceJob', `remoteDeviceJob.${RemoteDeviceJobPropCamel.sessionState} IN (:...sessionStates)`, {

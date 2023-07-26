@@ -157,7 +157,7 @@ const ProjectMemberListController = ({ project }: Props) => {
           defaultCurrent: 1,
           pageSize: 10,
           current: page,
-          total: project.members?.length ?? 0,
+          total: memberData?.totalCount,
           onChange: (p) => updatePage(p),
         }}
         renderItem={(item) => <MemberItem item={item} mutateMembers={mutateMember} projectId={project.projectId} />}
