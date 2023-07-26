@@ -208,18 +208,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:projects/nexus-initializer"\
       },\
       {\
-        "name": "dest-in-step",\
-        "reference": "workspace:samples/dest-in-step"\
-      },\
-      {\
-        "name": "pytest-bdd-playwright-dogu-report",\
-        "reference": "workspace:samples/pytest-bdd-playwright-dogu-report"\
-      },\
-      {\
-        "name": "pytest-playwright-dogu-report",\
-        "reference": "workspace:samples/pytest-playwright-dogu-report"\
-      },\
-      {\
         "name": "validation",\
         "reference": "workspace:validation"\
       }\
@@ -265,7 +253,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["android-device-agent", ["workspace:projects/android-device-agent"]],\
       ["console-web-front", ["workspace:projects/console-web-front"]],\
       ["console-web-server", ["workspace:projects/console-web-server"]],\
-      ["dest-in-step", ["workspace:samples/dest-in-step"]],\
       ["device-server", ["workspace:projects/device-server"]],\
       ["docs", ["workspace:docs"]],\
       ["dogu", ["workspace:."]],\
@@ -275,9 +262,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["ios-device-agent", ["workspace:projects/ios-device-agent"]],\
       ["nexus-initializer", ["workspace:projects/nexus-initializer"]],\
       ["protocol-exporter", ["workspace:prebuilds/protocol-exporter"]],\
-      ["pytest-bdd-playwright-dogu-report", ["workspace:samples/pytest-bdd-playwright-dogu-report"]],\
       ["pytest-dogu-sdk", ["workspace:packages/python/pytest-dogu-sdk"]],\
-      ["pytest-playwright-dogu-report", ["workspace:samples/pytest-playwright-dogu-report"]],\
       ["routine-interface-exporter", ["workspace:prebuilds/routine-interface-exporter"]],\
       ["validation", ["workspace:validation"]]\
     ],\
@@ -26466,19 +26451,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["dest-in-step", [\
-        ["workspace:samples/dest-in-step", {\
-          "packageLocation": "./samples/dest-in-step/",\
-          "packageDependencies": [\
-            ["dest-in-step", "workspace:samples/dest-in-step"],\
-            ["@dogu-tech/console-dest", "workspace:packages/typescript/console-dest"],\
-            ["@types/node", "npm:18.15.11"],\
-            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
-            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
       ["destroy", [\
         ["npm:1.2.0", {\
           "packageLocation": "./.yarn/cache/destroy-npm-1.2.0-6a511802e2-0acb300b74.zip/node_modules/destroy/",\
@@ -41297,48 +41269,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["pytest-bdd-playwright-dogu-report", [\
-        ["workspace:samples/pytest-bdd-playwright-dogu-report", {\
-          "packageLocation": "./samples/pytest-bdd-playwright-dogu-report/",\
-          "packageDependencies": [\
-            ["pytest-bdd-playwright-dogu-report", "workspace:samples/pytest-bdd-playwright-dogu-report"],\
-            ["@types/node", "npm:18.15.11"],\
-            ["@types/shelljs", "npm:0.8.11"],\
-            ["cross-env", "npm:7.0.3"],\
-            ["fast-glob", "npm:3.2.12"],\
-            ["nodemon", "npm:2.0.22"],\
-            ["playwright-core", "npm:1.35.1"],\
-            ["shelljs", "npm:0.8.5"],\
-            ["shx", "npm:0.3.4"],\
-            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
-            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
       ["pytest-dogu-sdk", [\
         ["workspace:packages/python/pytest-dogu-sdk", {\
           "packageLocation": "./packages/python/pytest-dogu-sdk/",\
           "packageDependencies": [\
             ["pytest-dogu-sdk", "workspace:packages/python/pytest-dogu-sdk"],\
-            ["@types/node", "npm:18.15.11"],\
-            ["@types/shelljs", "npm:0.8.11"],\
-            ["cross-env", "npm:7.0.3"],\
-            ["fast-glob", "npm:3.2.12"],\
-            ["nodemon", "npm:2.0.22"],\
-            ["shelljs", "npm:0.8.5"],\
-            ["shx", "npm:0.3.4"],\
-            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
-            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["pytest-playwright-dogu-report", [\
-        ["workspace:samples/pytest-playwright-dogu-report", {\
-          "packageLocation": "./samples/pytest-playwright-dogu-report/",\
-          "packageDependencies": [\
-            ["pytest-playwright-dogu-report", "workspace:samples/pytest-playwright-dogu-report"],\
             ["@types/node", "npm:18.15.11"],\
             ["@types/shelljs", "npm:0.8.11"],\
             ["cross-env", "npm:7.0.3"],\
