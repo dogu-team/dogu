@@ -80,9 +80,10 @@ Dest.withOptions({
   timeout: 60 * 60 * 1000,
 }).describe(() => {
   job('BAT', () => {
-    beforeAll(() => {
+    beforeAll(async () => {
       values.value.HOME_URL = `http://${env.DOGU_E2E_HOST}:${env.DOGU_CONSOLE_WEB_FRONT_PORT}`;
       console.log(`DeviceServerPort ${env.DOGU_DEVICE_SERVER_PORT}`);
+      await ProcessManager.killByNames(['adb']);
     });
 
     test('Print env', () => {
