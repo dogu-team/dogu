@@ -8,6 +8,8 @@ import { AxiosError } from 'axios';
 import { GetServerSideProps, Redirect } from 'next';
 import { mutate } from 'swr';
 import { useRouter } from 'next/router';
+import { USER_ACCESS_TOKEN_COOKIE_NAME, USER_ID_COOKIE_NAME } from '@dogu-private/types';
+import { shallow } from 'zustand/shallow';
 
 import { NextPageWithLayout } from 'pages/_app';
 import H4 from 'src/components/common/headings/H4';
@@ -25,7 +27,6 @@ import useAuthStore from '../../src/stores/auth';
 import EmailPreferenceModifier from '../../src/components/users/EmailPreferenceModifier';
 import { redirectWithLocale } from '../../src/ssr/locale';
 import ConsoleBasicLayout from '../../src/components/layouts/ConsoleBasicLayout';
-import { USER_ACCESS_TOKEN_COOKIE_NAME, USER_ID_COOKIE_NAME } from '@dogu-private/types';
 import useEventStore from '../../src/stores/events';
 import RegenerateTokenButton from '../../src/components/common/RegenerateTokenButton';
 import AccessTokenButton from '../../src/components/common/AccessTokenButton';
@@ -35,21 +36,19 @@ interface Props {
 }
 
 const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
-  const updateMe = useAuthStore((state) => state.updateAuthStore);
+  const [me, updateMe] = useAuthStore((state) => [state.me, state.updateAuthStore]);
   const [editingMe, setEditingMe] = useState<UserBase>();
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState<number | null>(null);
   const [isImageUploading, setIsImageUploading] = useState(false);
   const router = useRouter();
   const { t } = useTranslation();
-  const fireEvent = useEventStore((state) => state.fireEvent<UserBase>);
+  const fireEvent = useEventStore((state) => state.fireEvent<UserBase>, shallow);
 
-  const isChanged = user.profileImageUrl !== editingMe?.profileImageUrl || user.name !== editingMe?.name;
+  const isChanged = me?.profileImageUrl !== editingMe?.profileImageUrl || me?.name !== editingMe?.name;
 
   useEffect(() => {
-    if (user) {
-      setEditingMe(user);
-    }
+    setEditingMe(user);
   }, [user]);
 
   const updateProfileImageToThumbnail = (src: string) => {
@@ -95,8 +94,8 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
       const result = await updateUser(user.userId, { name });
       sendSuccessNotification(t('account:profileUpdateSuccessMsg'));
       mutate('/registery/check', result, false);
-      updateMe(result);
       fireEvent('onUserUpdated', result);
+      updateMe(result);
     } catch (e) {
       if (e instanceof AxiosError) {
         sendErrorNotification(t('account:profileUpdateFailMsg', { reason: getErrorMessage(e) }));
@@ -187,7 +186,7 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
             />
           </ContentBox>
           <ContentBox style={{ display: 'flex' }}>
-            <Button type="primary" disabled={isImageUploading} loading={loading} onClick={handleClickSave} access-id="update-proifle-btn">
+            <Button type="primary" disabled={isImageUploading || !isChanged} loading={loading} onClick={handleClickSave} access-id="update-proifle-btn">
               {t('account:profileContentSubmitButton')}
             </Button>
           </ContentBox>
