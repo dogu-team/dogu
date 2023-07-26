@@ -117,6 +117,7 @@ const CreateHostModal = ({ isOpen, close }: Props) => {
       title={t('host:addNewHost')}
       confirmLoading={loading}
       footer={result.isOpen ? null : undefined}
+      destroyOnClose
     />
   );
 };

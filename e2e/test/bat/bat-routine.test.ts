@@ -495,6 +495,62 @@ Dest.withOptions({
       });
 
       // test removing project after streaming
+    });
+
+    job('Host setting', () => {
+      test('Go to organization page', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="project-layout-org-name"]' });
+      });
+
+      test('Click host menu', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="side-bar-host"]' });
+      });
+
+      test('Create new host', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="add-new-host-btn"]' }, { focusWindow: true });
+        await Driver.sendKeys({ xpath: '//*[@access-id="add-host-form-name"]' }, values.value.HOST_NAME, { focusWindow: true });
+        await Driver.clickElement({ xpath: '//button[@form="new-host"]' }, { focusWindow: true });
+        await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
+      });
+
+      test('Check host', async () => {
+        await Driver.clickElement({ xpath: `//span[text()="${values.value.HOST_NAME}"]` });
+        const hostName = await Driver.getText({ xpath: '//p[@access-id="host-modal-name"]' });
+        expect(hostName).toBe(values.value.HOST_NAME);
+
+        const creatorName = await Driver.getText({ xpath: '//h4[@id="host-creator-title"]/../div/div' });
+        expect(creatorName).toBe(values.value.USER_NAME);
+
+        await Driver.clickElement({ xpath: '//button[@access-id="show-host-token-btn"]' });
+        await Driver.findElement({ xpath: '//*[contains(text(), "dogu-agent-token")]' });
+        await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
+      });
+
+      test('Edit host', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="list-menu-btn"]' });
+        await Driver.clickElement({ xpath: '//li[contains(@data-menu-id, "edit")]/span/button' });
+        await Driver.sendKeys({ xpath: `//input[@value="${values.value.HOST_NAME}"]` }, '1');
+        await Driver.clickElement({ xpath: '//button[@accesskey="save-host-edit-modal"]' });
+        await Timer.wait(1000, 'wait for changing host name');
+        await Driver.findElement({ xpath: `//span[text()="${values.value.HOST_NAME}1"]` });
+      });
+
+      // FIX: checking revoked token not working
+      // test('Revoke host token', async () => {
+      //   await Driver.clickElement({ xpath: '//button[@access-id="list-menu-btn"]' });
+      //   await Driver.clickElement({ xpath: '//li[contains(@data-menu-id, "token")]/span/button' });
+      //   await Driver.clickElement({ xpath: '//button[@id="host-token-revoke-confirm-btn"]' });
+      //   // await Timer.wait(2000, 'wait for modal update');
+      //   await Driver.findElement({ xpath: '//div[@access-id="host-token-revoke-alert"]' });
+      //   await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
+      // });
+
+      test('Delete host', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="list-menu-btn"]' });
+        await Driver.clickElement({ xpath: '//li[contains(@data-menu-id, "delete")]/span/button' });
+        await Driver.clickElement({ xpath: '//button[@id="host-delete-confirm-btn"]' });
+        await Driver.findElement({ xpath: '//*[contains(@class, "ant-empty")]' });
+      });
 
       dost.nextTest();
     });

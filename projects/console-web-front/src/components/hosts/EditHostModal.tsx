@@ -55,6 +55,9 @@ const EditHostModal = ({ host, isOpen, close }: Props) => {
       okText={t('common:save')}
       onOk={handleSave}
       confirmLoading={loading}
+      okButtonProps={{
+        accessKey: 'save-host-edit-modal',
+      }}
     >
       <Input
         value={name ?? ''}
