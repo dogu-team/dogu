@@ -41,7 +41,8 @@
   "uploadApplicationGatheringStatus": "Gathering app fragments",
   "uploadApplicationInstallingStatus": "Installing app",
   "uploadSuccessMessage": "App installation finished",
-  "uploadFailureMessage": "App installation failed. Please retry.",
+  "uploadTransferFailureMessage": "App transfer failed",
+  "uploadInstallFailureMessage": "App installation failed. Please retry.",
 
   "uploadApplicationOptionTitle": "Options",
   "uploadApplicationRunOptionText": "Open app after installation",

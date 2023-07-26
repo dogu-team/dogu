@@ -14,16 +14,16 @@ const useDeviceStreamingProfile = (deviceClient: DeviceClient | undefined, devic
     (async () => {
       if (deviceClient && device) {
         try {
-          const unsub = await deviceClient?.subscribeRuntimeInfo(device.serial, (info) => {
-            setRuntimeInfos((prev) => {
-              if (prev.length < 100) {
-                return [...prev, info];
-              } else {
-                return [...prev.slice(1), info];
-              }
-            });
-          });
-          closer.current = unsub;
+          // const unsub = await deviceClient?.subscribeRuntimeInfo(device.serial, (info) => {
+          //   setRuntimeInfos((prev) => {
+          //     if (prev.length < 100) {
+          //       return [...prev, info];
+          //     } else {
+          //       return [...prev.slice(1), info];
+          //     }
+          //   });
+          // });
+          // closer.current = unsub;
         } catch (e) {}
       }
     })();

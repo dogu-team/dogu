@@ -423,8 +423,10 @@ var index = 0
 
 func newDeviceServerWebSocketLabeledDatachannel(label *types.DataChannelLabel, d *webrtc.DataChannel, deviceServerPort int32) *DeviceServerWebSocketLabeledDatachannel {
 	connection := label.GetDeviceWebSocket().GetConnection()
+	name := label.Name
+	path := connection.GetPath()
 	if connection == nil {
-		log.Inst.Error("DeviceServerWebSocketLabeledDatachannel connection is nil")
+		log.Inst.Error("DeviceServerWebSocketLabeledDatachannel connection is nil", zap.String("name", name), zap.String("path", path))
 		return nil
 	}
 
@@ -433,10 +435,10 @@ func newDeviceServerWebSocketLabeledDatachannel(label *types.DataChannelLabel, d
 		queryMap.Add(k, v.(string))
 	}
 
-	url := url.URL{Scheme: "ws", Host: fmt.Sprintf("localhost:%d", deviceServerPort), Path: connection.GetPath(), RawQuery: queryMap.Encode()}
+	url := url.URL{Scheme: "ws", Host: fmt.Sprintf("127.0.0.1:%d", deviceServerPort), Path: connection.GetPath(), RawQuery: queryMap.Encode()}
 	c, _, err := websocket.DefaultDialer.Dial(url.String(), nil)
 	if err != nil {
-		log.Inst.Error("DeviceServerWebSocketLabeledDatachannel connection error", zap.Error(err))
+		log.Inst.Error("DeviceServerWebSocketLabeledDatachannel connection error", zap.String("name", name), zap.String("path", path), zap.Error(err))
 		return nil
 	}
 
@@ -456,18 +458,18 @@ func newDeviceServerWebSocketLabeledDatachannel(label *types.DataChannelLabel, d
 		}
 		buf, err := proto.Marshal(httpWebSocketResult)
 		if err != nil {
-			log.Inst.Error("DeviceServerWebSocketLabeledDatachannel Marshal error", zap.Error(err))
+			log.Inst.Error("DeviceServerWebSocketLabeledDatachannel Marshal error", zap.String("name", name), zap.String("path", path), zap.Error(err))
 			return err
 		}
 		if err := send(d, buf); err != nil {
-			log.Inst.Error("DeviceServerWebSocketLabeledDatachannel send error", zap.Error(err))
+			log.Inst.Error("DeviceServerWebSocketLabeledDatachannel send error", zap.String("name", name), zap.String("path", path), zap.Error(err))
 			return err
 		}
 		return nil
 	}
 
 	sendErrorAndClose := func(err error) {
-		log.Inst.Error("DeviceServerWebSocketLabeledDatachannel send error", zap.Error(err))
+		log.Inst.Error("DeviceServerWebSocketLabeledDatachannel send error", zap.String("name", name), zap.String("path", path), zap.Error(err))
 		result := &outer.WebSocketResult{
 			Value: &outer.WebSocketResult_Error{
 				Error: &outer.ErrorResult{
@@ -477,7 +479,7 @@ func newDeviceServerWebSocketLabeledDatachannel(label *types.DataChannelLabel, d
 			},
 		}
 		if err := sendResult(result); err != nil {
-			log.Inst.Error("DeviceServerWebSocketLabeledDatachannel send error", zap.Error(err))
+			log.Inst.Error("DeviceServerWebSocketLabeledDatachannel send error", zap.String("name", name), zap.String("path", path), zap.Error(err))
 		}
 	}
 
@@ -490,7 +492,7 @@ func newDeviceServerWebSocketLabeledDatachannel(label *types.DataChannelLabel, d
 		if err := sendResult(result); err != nil {
 			sendErrorAndClose(err)
 		}
-		log.Inst.Info("DeviceServerWebSocketLabeledDatachannel datachannel open")
+		log.Inst.Info("DeviceServerWebSocketLabeledDatachannel datachannel open", zap.String("name", name), zap.String("path", path))
 	})
 
 	d.OnMessage(func(msg webrtc.DataChannelMessage) {
@@ -566,7 +568,7 @@ func newDeviceServerWebSocketLabeledDatachannel(label *types.DataChannelLabel, d
 	})
 
 	d.OnError(func(err error) {
-		log.Inst.Error("DeviceServerWebSocketLabeledDatachannel datachannel error", zap.Error(err))
+		log.Inst.Error("DeviceServerWebSocketLabeledDatachannel datachannel error", zap.String("name", name), zap.String("path", path), zap.Error(err))
 		d.Close()
 	})
 
@@ -592,7 +594,7 @@ func newDeviceServerWebSocketLabeledDatachannel(label *types.DataChannelLabel, d
 			return nil
 		}
 
-		log.Inst.Info("DeviceServerWebSocketLabeledDatachannel datachannel open")
+		log.Inst.Info("DeviceServerWebSocketLabeledDatachannel datachannel close", zap.String("name", name), zap.String("path", path))
 		if !ldc.isDataChannelClosed {
 			d.Close()
 		}
@@ -613,9 +615,9 @@ func newDeviceServerWebSocketLabeledDatachannel(label *types.DataChannelLabel, d
 						},
 					}
 					if err := sendResult(result); err != nil {
-						log.Inst.Error("DeviceServerWebSocketLabeledDatachannel send error", zap.Error(err))
+						log.Inst.Error("DeviceServerWebSocketLabeledDatachannel send error", zap.String("name", name), zap.String("path", path), zap.Error(err))
 					}
-					log.Inst.Error("DeviceServerWebSocketLabeledDatachannel Read error", zap.Error(err))
+					log.Inst.Error("DeviceServerWebSocketLabeledDatachannel Read error", zap.String("name", name), zap.String("path", path), zap.Error(err))
 					d.Close()
 					return
 				}

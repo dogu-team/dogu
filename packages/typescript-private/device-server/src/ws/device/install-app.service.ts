@@ -16,10 +16,12 @@ export class DeviceInstallAppService
   }
 
   override onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): null {
+    this.logger.info('WebSocket opened', { url: incommingMessage.url });
     return null;
   }
 
   async onWebSocketMessage(webSocket: WebSocket, message: Instance<typeof DeviceInstallApp.sendMessage>, valueAccessor: WebSocketRegistryValueAccessor<null>): Promise<void> {
+    this.logger.info('WebSocket message', { message });
     const { serial, appPath } = message;
     const deviceChannel = this.scanService.findChannel(serial);
     if (deviceChannel === null) {

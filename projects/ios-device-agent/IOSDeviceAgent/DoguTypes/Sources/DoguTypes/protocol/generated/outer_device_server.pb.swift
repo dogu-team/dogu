@@ -167,7 +167,19 @@ public struct Outer_DeviceHostUploadFileSendMessage {
   public init() {}
 }
 
-public struct Outer_DeviceHostUploadFileReceiveMessage {
+public struct Outer_DeviceHostUploadFileInProgressReceiveValue {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var offset: UInt32 = 0
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Outer_DeviceHostUploadFileCompleteReceiveValue {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
@@ -175,6 +187,58 @@ public struct Outer_DeviceHostUploadFileReceiveMessage {
   public var filePath: String = String()
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Outer_DeviceHostUploadFileReceiveMessage {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var value: Outer_DeviceHostUploadFileReceiveMessage.OneOf_Value? = nil
+
+  public var inProgress: Outer_DeviceHostUploadFileInProgressReceiveValue {
+    get {
+      if case .inProgress(let v)? = value {return v}
+      return Outer_DeviceHostUploadFileInProgressReceiveValue()
+    }
+    set {value = .inProgress(newValue)}
+  }
+
+  public var complete: Outer_DeviceHostUploadFileCompleteReceiveValue {
+    get {
+      if case .complete(let v)? = value {return v}
+      return Outer_DeviceHostUploadFileCompleteReceiveValue()
+    }
+    set {value = .complete(newValue)}
+  }
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public enum OneOf_Value: Equatable {
+    case inProgress(Outer_DeviceHostUploadFileInProgressReceiveValue)
+    case complete(Outer_DeviceHostUploadFileCompleteReceiveValue)
+
+  #if !swift(>=4.1)
+    public static func ==(lhs: Outer_DeviceHostUploadFileReceiveMessage.OneOf_Value, rhs: Outer_DeviceHostUploadFileReceiveMessage.OneOf_Value) -> Bool {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch (lhs, rhs) {
+      case (.inProgress, .inProgress): return {
+        guard case .inProgress(let l) = lhs, case .inProgress(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.complete, .complete): return {
+        guard case .complete(let l) = lhs, case .complete(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      default: return false
+      }
+    }
+  #endif
+  }
 
   public init() {}
 }
@@ -238,7 +302,10 @@ extension Outer_DeviceHostUploadFileInProgressSendValue: @unchecked Sendable {}
 extension Outer_DeviceHostUploadFileCompleteSendValue: @unchecked Sendable {}
 extension Outer_DeviceHostUploadFileSendMessage: @unchecked Sendable {}
 extension Outer_DeviceHostUploadFileSendMessage.OneOf_Value: @unchecked Sendable {}
+extension Outer_DeviceHostUploadFileInProgressReceiveValue: @unchecked Sendable {}
+extension Outer_DeviceHostUploadFileCompleteReceiveValue: @unchecked Sendable {}
 extension Outer_DeviceHostUploadFileReceiveMessage: @unchecked Sendable {}
+extension Outer_DeviceHostUploadFileReceiveMessage.OneOf_Value: @unchecked Sendable {}
 extension Outer_DeviceServerResponse: @unchecked Sendable {}
 extension Outer_DeviceServerResponse.OneOf_Value: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
@@ -432,8 +499,40 @@ extension Outer_DeviceHostUploadFileSendMessage: SwiftProtobuf.Message, SwiftPro
   }
 }
 
-extension Outer_DeviceHostUploadFileReceiveMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  public static let protoMessageName: String = _protobuf_package + ".DeviceHostUploadFileReceiveMessage"
+extension Outer_DeviceHostUploadFileInProgressReceiveValue: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DeviceHostUploadFileInProgressReceiveValue"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "offset"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularFixed32Field(value: &self.offset) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if self.offset != 0 {
+      try visitor.visitSingularFixed32Field(value: self.offset, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Outer_DeviceHostUploadFileInProgressReceiveValue, rhs: Outer_DeviceHostUploadFileInProgressReceiveValue) -> Bool {
+    if lhs.offset != rhs.offset {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Outer_DeviceHostUploadFileCompleteReceiveValue: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DeviceHostUploadFileCompleteReceiveValue"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .standard(proto: "file_path"),
   ]
@@ -457,8 +556,78 @@ extension Outer_DeviceHostUploadFileReceiveMessage: SwiftProtobuf.Message, Swift
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  public static func ==(lhs: Outer_DeviceHostUploadFileReceiveMessage, rhs: Outer_DeviceHostUploadFileReceiveMessage) -> Bool {
+  public static func ==(lhs: Outer_DeviceHostUploadFileCompleteReceiveValue, rhs: Outer_DeviceHostUploadFileCompleteReceiveValue) -> Bool {
     if lhs.filePath != rhs.filePath {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Outer_DeviceHostUploadFileReceiveMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DeviceHostUploadFileReceiveMessage"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .standard(proto: "in_progress"),
+    2: .same(proto: "complete"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try {
+        var v: Outer_DeviceHostUploadFileInProgressReceiveValue?
+        var hadOneofValue = false
+        if let current = self.value {
+          hadOneofValue = true
+          if case .inProgress(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.value = .inProgress(v)
+        }
+      }()
+      case 2: try {
+        var v: Outer_DeviceHostUploadFileCompleteReceiveValue?
+        var hadOneofValue = false
+        if let current = self.value {
+          hadOneofValue = true
+          if case .complete(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.value = .complete(v)
+        }
+      }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    switch self.value {
+    case .inProgress?: try {
+      guard case .inProgress(let v)? = self.value else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    }()
+    case .complete?: try {
+      guard case .complete(let v)? = self.value else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+    }()
+    case nil: break
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Outer_DeviceHostUploadFileReceiveMessage, rhs: Outer_DeviceHostUploadFileReceiveMessage) -> Bool {
+    if lhs.value != rhs.value {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

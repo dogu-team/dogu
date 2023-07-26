@@ -53,6 +53,7 @@ class ChannelInfo {
         return;
       }
       this.channel.send(buf);
+      console.log(`send: ${buf.length}`);
       lastSendIndex = index;
       this.lastSendTimeMs = Date.now();
     });
@@ -236,13 +237,13 @@ export class BrowserDeviceService implements DeviceService {
 
     // timeout handle
     const openTimeout = setTimeout(() => {
-      console.error(`DeviceServerBrowserService. websocket timeout: ${sequenceId}`);
+      console.error(`DeviceServerBrowserService. websocket timeout: ${name}, ${sequenceId}`);
       this.removeChannel(name);
     }, options.timeout);
 
     // complete handle
     resultEmitter.on(sequenceId.toString(), (result: HttpRequestWebSocketResult) => {
-      console.debug(`DeviceServerBrowserService. result: ${JSON.stringify(result).substring(0, 300)} >> `);
+      console.debug(`DeviceServerBrowserService. ${name}. result: ${JSON.stringify(result).substring(0, 300)} >> `);
       const clearAndRemove = (message: string) => {
         clearTimeout(openTimeout);
         this.removeChannel(name);
@@ -297,6 +298,7 @@ export class BrowserDeviceService implements DeviceService {
       const buffers = Uint8ArrayUtil.prefixSizeAndSplitBuffer(WebSocketMessage.encode(message).finish());
       for (const buffer of buffers) {
         sendBuffer.push(buffer);
+        console.debug(`DeviceServerBrowserService. ${name}. send: ${buffer.length}`);
       }
       this.requestFlushSendBuffer();
     };
