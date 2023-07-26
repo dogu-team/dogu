@@ -188,6 +188,7 @@ Dest.withOptions({
       test('Rename organization', async () => {
         await Driver.sendKeys({ xpath: `//input[@value="${values.value.USER_NAME}'s organization"]` }, '1234');
         await Driver.clickElement({ xpath: '//button[@access-id="submit-org-profile-btn"]' });
+        await Timer.wait(2000, 'wait for changing organization name');
         const value = await Driver.getText({ xpath: '//p[@access-id="sb-title"]' });
         expect(value).toBe(`${`${values.value.USER_NAME}'s organization`.toUpperCase()}1234`);
       });
@@ -867,10 +868,10 @@ Dest.withOptions({
 
     job('Device management', () => {
       // TODO
-    });
-
-    job('Device list in project', () => {
-      // TODO
+      // edit device name & pararell job count
+      // detach tag (check with count)
+      // use global (check with project)
+      // disable device (check in device list, project)
     });
 
     job('Deletion', () => {
