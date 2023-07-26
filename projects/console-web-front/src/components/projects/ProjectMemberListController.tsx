@@ -83,6 +83,8 @@ const MemberItem = ({ item, projectId, mutateMembers }: MemberItemProps) => {
           modalTitle={t('project-member:removeMemberModalTitle')}
           modalButtonTitle={t('project-member:removeMemberModalButtonText')}
           modalContent={t('project-member:removeMemberModalContent')}
+          id="remove-member-menu-btn"
+          confirmButtonId="remove-member-confirm-btn"
         >
           {t('project-member:memberItemDeleteMenu')}
         </MenuItemButton>

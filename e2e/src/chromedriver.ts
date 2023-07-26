@@ -193,6 +193,10 @@ export class ChromeDriver {
   actions(): Actions {
     return this.driver.actions();
   }
+
+  navigate(): webdriver.Navigation {
+    return this.driver.navigate();
+  }
 }
 
 const driver = new ChromeDriver();

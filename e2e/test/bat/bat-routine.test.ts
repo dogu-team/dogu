@@ -180,120 +180,6 @@ Dest.withOptions({
       });
     });
 
-    job('Add member', () => {
-      test('Go to member menu', async () => {
-        await Driver.clickElement({ xpath: '//*[@access-id="side-bar-member"]' }, { waitTime: 1 * 1000 });
-      });
-
-      test('Click member invite button ', async () => {
-        await Driver.clickElement({ xpath: '//*[@access-id="invite-user-btn"]' }, { waitTime: 1 * 1000 });
-      });
-
-      test('Enter invite email', async () => {
-        await Driver.sendKeys({ xpath: '//input[@access-id="invite-user-input"]' }, values.value.INVITE_USER_EMAIL);
-        await Driver.clickElement({ xpath: '//button[@access-id="invite-user-add-email-btn"]' });
-      });
-
-      test('Selecte invite permission and send ', async () => {
-        await Driver.clickElement({ xpath: '//*[@id="invite-user-send-btn"]' });
-      });
-
-      test('Go to member page', async () => {
-        await Driver.clickElement({ xpath: '//*[@access-id="org-member-tab"]' });
-        await Timer.wait(1000, 'wait for member update');
-        await Driver.clickElement({ xpath: '//button[@access-id="refresh-btn"]' });
-      });
-
-      test('Check invite result', async () => {
-        const invitedUserEmail = await Driver.getText({ xpath: `//*[text()="${values.value.INVITE_USER_NAME}"]` }, { focusWindow: true });
-        expect(invitedUserEmail).toBe(values.value.INVITE_USER_NAME);
-      });
-    });
-
-    job('Update member permission', () => {
-      test('Click permission selector', async () => {
-        await Driver.clickElement({ xpath: '//div[@class="ant-select-selector"]' });
-      });
-
-      test('Click admin permission', async () => {
-        await Driver.clickElement({ xpath: '//div[text()="Admin"]' });
-      });
-
-      test('Check permission update', async () => {
-        const value = await Driver.getText({ xpath: '//span[@class="ant-select-selection-item"]/div' });
-        expect(value).toBe('Admin');
-      });
-    });
-
-    job('Create team', () => {
-      test('Click team menu', async () => {
-        await Driver.clickElement({ xpath: '//*[@access-id="side-bar-team"]' });
-      });
-
-      test('Click create team', async () => {
-        await Driver.clickElement({ xpath: '//button[@access-id="create-team-btn"]' });
-      });
-
-      test('Create new team', async () => {
-        await Driver.sendKeys({ xpath: '//input[@id="name"]' }, values.value.TEAM_NAME);
-        await Driver.clickElement({ xpath: '//button[@form="new-team"]' });
-      });
-    });
-
-    job('Team setting', () => {
-      test('Go to team page', async () => {
-        const teamXPath = `//p[text()="${values.value.TEAM_NAME}"]`;
-        const teamName = await Driver.getText({ xpath: teamXPath });
-        expect(teamName).toBe(values.value.TEAM_NAME);
-
-        await Driver.clickElement({ xpath: teamXPath });
-      });
-
-      test('Add team member', async () => {
-        await Driver.clickElement({ xpath: '//*[@access-id="add-team-member-btn"]' });
-        await Driver.sendKeys({ xpath: '//input[@access-id="add-team-member-input"]' }, values.value.INVITE_USER_EMAIL);
-        await Driver.clickElement({ xpath: '//*[@aria-label="plus"]/..' });
-
-        const [userName, userEmail] = await Promise.all([
-          Driver.getText({ xpath: `//*[text()="${values.value.INVITE_USER_NAME}"]` }),
-          Driver.getText({ xpath: `//*[text()="${values.value.INVITE_USER_EMAIL}"]` }),
-        ]);
-        expect(userName).toBe(values.value.INVITE_USER_NAME);
-        expect(userEmail).toBe(values.value.INVITE_USER_EMAIL);
-      });
-
-      test('Click projects tab', async () => {
-        await Driver.clickElement({ xpath: '//a[@access-id="team-project-tab"]' });
-      });
-
-      test('Add project to team', async () => {
-        await Driver.clickElement({ xpath: '//button[@access-id="add-project-to-team-btn"]' });
-        await Driver.sendKeys({ xpath: '//input[@access-id="add-project-modal-input"]' }, 'Sample');
-        await Driver.clickElement({ xpath: '//div[contains(text(), "Sample")]' });
-        await Driver.clickElement({ xpath: '//button[@access-id="permission-select-submit-button"]' });
-        await Driver.findElement({ xpath: '//p[text()="Sample Project"]' });
-      });
-
-      test('Click settings tab', async () => {
-        await Driver.clickElement({ xpath: '//a[@access-id="team-setting-tab"]' });
-      });
-
-      test('Edit team name', async () => {
-        await Driver.sendKeys({ xpath: `//input[@value="${values.value.TEAM_NAME}"]` }, '1');
-        await Driver.clickElement({ xpath: '//button[@access-id="update-team-profile-btn"]' });
-        await Timer.wait(1000, 'wait for changing team name');
-        const value = await Driver.getText({ xpath: '//*[@id="__next"]/div/section/main/div/div[1]/h4' });
-        const endsWith = value.endsWith(`${values.value.TEAM_NAME}1`);
-        expect(endsWith).toBe(true);
-      });
-
-      test('Delete team', async () => {
-        await Driver.clickElement({ xpath: '//button[@access-id="remove-team-btn"]' });
-        await Driver.clickElement({ xpath: '//button[@id="remove-team-confirm-btn"]' });
-        await Driver.findElement({ xpath: '//*[contains(@class, "ant-empty")]' });
-      });
-    });
-
     job('Organization settings', () => {
       test('Click settings button', async () => {
         await Driver.clickElement({ xpath: '//a[@access-id="side-bar-setting"]' });
@@ -409,7 +295,129 @@ Dest.withOptions({
         //  */
         // expect(orgName).toBe(values.value.ORG_NAME.toUpperCase());
 
-        await Driver.getText({ xpath: `//*[text()='${values.value.ORG_NAME}']` }, { waitTime: 20000 });
+        await Driver.findElement({ xpath: `//*[text()='${values.value.ORG_NAME}']` }, { waitTime: 20000 });
+      });
+
+      test('Go back', async () => {
+        await Driver.navigate().back();
+        await Driver.clickElement({ xpath: `//p[text()="${values.value.USER_NAME}'s organization1234"]` });
+      });
+    });
+
+    job('Add member', () => {
+      test('Go to member menu', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="side-bar-member"]' }, { waitTime: 1 * 1000 });
+      });
+
+      test('Click member invite button ', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="invite-user-btn"]' }, { waitTime: 1 * 1000 });
+      });
+
+      test('Enter invite email', async () => {
+        await Driver.sendKeys({ xpath: '//input[@access-id="invite-user-input"]' }, values.value.INVITE_USER_EMAIL);
+        await Driver.clickElement({ xpath: '//button[@access-id="invite-user-add-email-btn"]' });
+      });
+
+      test('Selecte invite permission and send ', async () => {
+        await Driver.clickElement({ xpath: '//*[@id="invite-user-send-btn"]' });
+      });
+
+      test('Go to member page', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="org-member-tab"]' });
+        await Timer.wait(1000, 'wait for member update');
+        await Driver.clickElement({ xpath: '//button[@access-id="refresh-btn"]' });
+      });
+
+      test('Check invite result', async () => {
+        const invitedUserEmail = await Driver.getText({ xpath: `//*[text()="${values.value.INVITE_USER_NAME}"]` }, { focusWindow: true });
+        expect(invitedUserEmail).toBe(values.value.INVITE_USER_NAME);
+      });
+    });
+
+    job('Update member permission', () => {
+      test('Click permission selector', async () => {
+        await Driver.clickElement({ xpath: '//div[@class="ant-select-selector"]' });
+      });
+
+      test('Click admin permission', async () => {
+        await Driver.clickElement({ xpath: '//div[text()="Admin"]' });
+      });
+
+      test('Check permission update', async () => {
+        const value = await Driver.getText({ xpath: '//span[@class="ant-select-selection-item"]/div' });
+        expect(value).toBe('Admin');
+      });
+    });
+
+    job('Create team', () => {
+      test('Click team menu', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="side-bar-team"]' });
+      });
+
+      test('Click create team', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="create-team-btn"]' });
+      });
+
+      test('Create new team', async () => {
+        await Driver.sendKeys({ xpath: '//input[@id="name"]' }, values.value.TEAM_NAME);
+        await Driver.clickElement({ xpath: '//button[@form="new-team"]' });
+      });
+    });
+
+    job('Team setting', () => {
+      test('Go to team page', async () => {
+        const teamXPath = `//p[text()="${values.value.TEAM_NAME}"]`;
+        const teamName = await Driver.getText({ xpath: teamXPath });
+        expect(teamName).toBe(values.value.TEAM_NAME);
+
+        await Driver.clickElement({ xpath: teamXPath });
+      });
+
+      test('Add team member', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="add-team-member-btn"]' });
+        await Driver.sendKeys({ xpath: '//input[@access-id="add-team-member-input"]' }, values.value.INVITE_USER_EMAIL);
+        await Driver.clickElement({ xpath: '//*[@aria-label="plus"]/..' });
+
+        const [userName, userEmail] = await Promise.all([
+          Driver.getText({ xpath: `//*[text()="${values.value.INVITE_USER_NAME}"]` }),
+          Driver.getText({ xpath: `//*[text()="${values.value.INVITE_USER_EMAIL}"]` }),
+        ]);
+        expect(userName).toBe(values.value.INVITE_USER_NAME);
+        expect(userEmail).toBe(values.value.INVITE_USER_EMAIL);
+      });
+
+      test('Click projects tab', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="team-project-tab"]' });
+      });
+
+      test('Add project to team', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="add-project-to-team-btn"]' });
+        await Driver.sendKeys({ xpath: '//input[@access-id="add-project-modal-input"]' }, 'Sample');
+        await Driver.clickElement({ xpath: '//div[contains(text(), "Sample")]' });
+        await Driver.clickElement({ xpath: '//button[@access-id="permission-select-submit-button"]' });
+        await Driver.findElement({ xpath: '//p[text()="Sample Project"]' });
+      });
+
+      test('Click settings tab', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="team-setting-tab"]' });
+      });
+
+      test('Edit team name', async () => {
+        await Driver.sendKeys({ xpath: `//input[@value="${values.value.TEAM_NAME}"]` }, '1');
+        await Driver.clickElement({ xpath: '//button[@access-id="update-team-profile-btn"]' });
+        await Timer.wait(1000, 'wait for changing team name');
+        const value = await Driver.getText({ xpath: '//*[@id="__next"]/div/section/main/div/div[1]/h4' });
+        const endsWith = value.endsWith(`${values.value.TEAM_NAME}1`);
+        expect(endsWith).toBe(true);
+      });
+
+      test('Revert team name', async () => {
+        await Driver.sendKeys({ xpath: `//input[@value="${values.value.TEAM_NAME}1"]` }, '\b');
+        await Driver.clickElement({ xpath: '//button[@access-id="update-team-profile-btn"]' });
+        await Timer.wait(1000, 'wait for changing team name');
+        const value = await Driver.getText({ xpath: '//*[@id="__next"]/div/section/main/div/div[1]/h4' });
+        const endsWith = value.endsWith(`${values.value.TEAM_NAME}`);
+        expect(endsWith).toBe(true);
       });
     });
 
@@ -462,6 +470,56 @@ Dest.withOptions({
 
       test('Check app uploaded', async () => {
         await Driver.findElement({ xpath: '//*[@access-id="list-menu-btn"]' });
+      });
+    });
+
+    job('Project member', () => {
+      test('Click member tab', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="project-member-tab"]' });
+      });
+
+      test('Add organization member with admin permission', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="add-project-org-member-btn"]' });
+        await Driver.sendKeys({ xpath: '//input[@access-id="add-project-member-input"]' }, values.value.INVITE_USER_EMAIL);
+        await Driver.clickElement({ xpath: '//div[@id="permission-select-result-container"]/button' });
+        await Driver.clickElement({ xpath: '//button[@access-id="permission-select-submit-button"]' });
+      });
+
+      test('Check organization member added', async () => {
+        const userName = await Driver.getText({ xpath: `//div[text()="${l10n('PROJECT_ORG_MEMBER_TYPE')}"]/../div[1]/div/div` });
+        expect(userName).toBe(values.value.INVITE_USER_NAME);
+      });
+
+      test('Change permission', async () => {
+        await Driver.clickElement({ xpath: `//div[text()="${l10n('PROJECT_ORG_MEMBER_TYPE')}"]/../div[3]/div/div/span[2]` });
+        await Driver.clickElement({ xpath: '//div[@title="Write"]' });
+        const permission = await Driver.getText({ xpath: '//span[@class="ant-select-selection-item"]' });
+        expect(permission).toBe('Write');
+      });
+
+      test('Add team with read permission', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="add-project-team-btn"]' });
+        await Driver.sendKeys({ xpath: '//input[@access-id="add-project-team-input"]' }, values.value.TEAM_NAME);
+        await Driver.clickElement({ xpath: '//div[@id="permission-select-result-container"]/button' });
+        await Driver.clickElement({ xpath: '//input[@value="3"]/../..' });
+        await Driver.clickElement({ xpath: '//button[@access-id="permission-select-submit-button"]' });
+      });
+
+      test('Check team added', async () => {
+        const teamName = await Driver.getText({ xpath: `//div[text()="${l10n('PROJECT_TEAM_MEMBER_TYPE')}"]/../div[1]/a` });
+        expect(teamName).toBe(values.value.TEAM_NAME);
+        const permission = await Driver.getText({ xpath: `//div[text()="${l10n('PROJECT_TEAM_MEMBER_TYPE')}"]/../div[3]/div/div/span[2]` });
+        expect(permission).toBe('Read');
+      });
+
+      test('Remove project members', async () => {
+        await Driver.clickElement({ xpath: `//div[text()="${l10n('PROJECT_ORG_MEMBER_TYPE')}"]/../div[4]/div/div/button` });
+        await Driver.clickElement({ xpath: '//button[@id="remove-member-menu-btn"]' });
+        await Driver.clickElement({ xpath: '//button[@id="remove-member-confirm-btn"]' });
+        await Driver.clickElement({ xpath: `//div[text()="${l10n('PROJECT_TEAM_MEMBER_TYPE')}"]/../div[4]/div/div/button` });
+        await Driver.clickElement({ xpath: '//button[@id="remove-member-menu-btn"]' });
+        await Driver.clickElement({ xpath: '//button[@id="remove-member-confirm-btn"]' });
+        await Driver.findElement({ xpath: '//*[contains(@class, "ant-empty")]' });
       });
     });
 
@@ -805,6 +863,23 @@ Dest.withOptions({
           });
         }
       });
+    });
+
+    job('Device management', () => {
+      // TODO
+    });
+
+    job('Device list in project', () => {
+      // TODO
+    });
+
+    job('Deletion', () => {
+      // TODO
+      // order
+      // project deletion
+      // team deletion
+      // member deletion
+      // org deletion
     });
 
     afterAll(async () => {

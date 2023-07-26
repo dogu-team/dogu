@@ -66,6 +66,7 @@ const AddMemberModal = ({ isOpen, close, organizationId, projectId }: Props) => 
             maxLength={USER_NAME_MAX_LENGTH}
             allowClear
             loading={isAPILoading}
+            access-id="add-project-member-input"
           />
         }
         searchResultItems={data?.items}

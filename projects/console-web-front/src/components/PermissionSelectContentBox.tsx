@@ -89,7 +89,7 @@ function PermissionSelectContentBox<T>({
       {input}
       {searchResultItems &&
         (searchResultItems.length > 0 ? (
-          <ListContainer>
+          <ListContainer id="permission-select-result-container">
             {searchResultItems.map((item) => (
               <Item
                 key={itemKey(item)}
