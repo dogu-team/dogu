@@ -1,7 +1,7 @@
 ---
 sidebar_position: 2
 title: Desktop
-locale: en
+locale: ko
 ---
 
 import {
@@ -12,12 +12,12 @@ import BrowserOnly from '@docusaurus/BrowserOnly';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-:::info PREREQUISITES
-You need to have Windows or MacOS device added to your Device Farm.  
-Refer to [Adding Windows Devices](/get-started/tutorials/device-farm/device/windows), [Adding MacOS Devices](/get-started/tutorials/device-farm/device/macos) for instructions.
+:::info 필수 조건
+Windows 또는 MacOS 장치를 귀하의 Device Farm에 추가해야 합니다.  
+[Windows 장치 추가](/get-started/tutorials/device-farm/device/windows), [MacOS 장치 추가](/get-started/tutorials/device-farm/device/macos)를 참조하세요.
 :::
 
-### Clone Examples and Create Virtual Environment
+### Example 레포 클론 및 가상 환경 생성
 
 ```shell
 git clone https://github.com/dogu-team/dogu-examples.git
@@ -26,7 +26,7 @@ cd dogu-examples/selenium/python/desktop/pytest
 python3 -m venv .venv
 ```
 
-### Activate Virtual Environment
+### 가상 환경 활성화
 
 <BrowserOnly>
 {() => (
@@ -56,7 +56,7 @@ source .venv/bin/activate
 )}
 </BrowserOnly>
 
-### Install Dependencies
+### 의존성 설치
 
 ```shell
 pip3 install -r requirements.txt
@@ -65,17 +65,17 @@ pip3 install -r requirements.txt
 <Tabs groupId="target" defaultValue="chrome" queryString>
 <TabItem value="chrome" label="Chrome">
 
-### Authentication Information
+### 인증 정보
 
-- API Token
-  - Obtain the [API Token](/management/organization/settings#api-token) from the Organization > Settings page.
-- Project Id, Organization Id
-  - Obtain the [Project Id, Organization Id](/management/project/settings#project-id) from the Organization > Project > Settings page.
+- API 토큰
+  - 조직 > 설정 페이지에서 [API 토큰](/management/organization/settings#api-token)을 얻습니다.
+- 프로젝트 Id, 조직 Id
+  - 조직 > 프로젝트 > 설정 페이지에서 [프로젝트 Id, 조직 Id](/management/project/settings#project-id)을 얻습니다.
 
 <Tabs groupId="service" defaultValue="cloud" queryString>
 <TabItem value="cloud" label="Cloud" default>
 
-Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.json**.
+획득한 API 토큰, 프로젝트 Id, 조직 Id를 **dogu.config.json**에 적용하세요.
 
 <BrowserOnly>
 {() => (
@@ -86,9 +86,9 @@ Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.j
 {
   "version": 1,
   "apiBaseUrl": "https://console.dogutech.io",
-  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
-  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
-  "token": "INSERT_YOUR_TOKEN", // change to your token
+  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // 조직 id로 변경하세요
+  "projectId": "INSERT_YOUR_PROJECT_ID", // 프로젝트 id로 변경하세요
+  "token": "INSERT_YOUR_TOKEN", // 토큰으로 변경하세요
   "runsOn": "windows",
   "browserName": "chrome"
 }
@@ -101,9 +101,9 @@ Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.j
 {
   "version": 1,
   "apiBaseUrl": "https://console.dogutech.io",
-  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
-  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
-  "token": "INSERT_YOUR_TOKEN", // change to your token
+  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // 조직 id로 변경하세요
+  "projectId": "INSERT_YOUR_PROJECT_ID", // 프로젝트 id로 변경하세요
+  "token": "INSERT_YOUR_TOKEN", // 토큰으로 변경하세요
   "runsOn": "macos",
   "browserName": "chrome"
 }
@@ -118,8 +118,8 @@ Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.j
     
 <TabItem value="self-hosted" label="Self-Hosted">
 
-Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.json**.  
-Also, apply the `DOGU_HOST:4000` value of the configured Dogu server to apiBaseUrl.
+획득한 API 토큰, 프로젝트 Id, 조직 Id를 **dogu.config.json**에 적용하세요.  
+또한, 구성된 Dogu 서버의 `DOGU_HOST:4000` 값을 apiBaseUrl에 적용하세요.
 
 <BrowserOnly>
 {() => (
@@ -129,10 +129,10 @@ Also, apply the `DOGU_HOST:4000` value of the configured Dogu server to apiBaseU
 ```json
 {
   "version": 1,
-  "apiBaseUrl": "INSERT_YOUR_API_BASE_URL", // change to your api base url
-  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
-  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
-  "token": "INSERT_YOUR_TOKEN", // change to your token
+  "apiBaseUrl": "INSERT_YOUR_API_BASE_URL", // api base url로 변경하세요
+  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // 조직 id로 변경하세요
+  "projectId": "INSERT_YOUR_PROJECT_ID", // 프로젝트 id로 변경하세요
+  "token": "INSERT_YOUR_TOKEN", // 토큰으로 변경하세요
   "runsOn": "windows",
   "browserName": "chrome"
 }
@@ -144,10 +144,10 @@ Also, apply the `DOGU_HOST:4000` value of the configured Dogu server to apiBaseU
 ```json
 {
   "version": 1,
-  "apiBaseUrl": "INSERT_YOUR_API_BASE_URL", // change to your api base url
-  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
-  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
-  "token": "INSERT_YOUR_TOKEN", // change to your token
+  "apiBaseUrl": "INSERT_YOUR_API_BASE_URL", // api base url로 변경하세요
+  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // 조직 id로 변경하세요
+  "projectId": "INSERT_YOUR_PROJECT_ID", // 프로젝트 id로 변경하세요
+  "token": "INSERT_YOUR_TOKEN", // 토큰으로 변경하세요
   "runsOn": "macos",
   "browserName": "chrome"
 }
@@ -161,9 +161,9 @@ Also, apply the `DOGU_HOST:4000` value of the configured Dogu server to apiBaseU
 </TabItem>
 </Tabs>
 
-### Running the Tests
+### 테스트 실행
 
-Run the following command to execute the tests.
+다음 명령을 실행하여 테스트를 수행하세요.
 
 ```
 pytest desktop/test_web.py
@@ -174,7 +174,7 @@ pytest desktop/test_web.py
 
 :::danger
 
-If you get the following error, please `Activate` the virtual environment again.
+다음 오류가 발생하면 가상 환경을 다시 `활성화`해 주세요.
 
 ```shell
 ImportError while loading conftest '{your directory}/dogu-examples/selenium/python/pytest/desktop/conftest.py'.
