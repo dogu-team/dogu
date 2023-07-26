@@ -208,8 +208,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:projects/nexus-initializer"\
       },\
       {\
-        "name": "validation",\
-        "reference": "workspace:validation"\
+        "name": "validators",\
+        "reference": "workspace:validators"\
       }\
     ],\
     "enableTopLevelFallback": true,\
@@ -264,7 +264,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["protocol-exporter", ["workspace:prebuilds/protocol-exporter"]],\
       ["pytest-dogu-sdk", ["workspace:packages/python/pytest-dogu-sdk"]],\
       ["routine-interface-exporter", ["workspace:prebuilds/routine-interface-exporter"]],\
-      ["validation", ["workspace:validation"]]\
+      ["validators", ["workspace:validators"]]\
     ],\
     "fallbackPool": [\
     ],\
@@ -49655,19 +49655,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["validation", [\
-        ["workspace:validation", {\
-          "packageLocation": "./validation/",\
-          "packageDependencies": [\
-            ["validation", "workspace:validation"],\
-            ["@types/node", "npm:18.15.11"],\
-            ["axios", "npm:1.4.0"],\
-            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
-            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
       ["validator", [\
         ["npm:13.9.0", {\
           "packageLocation": "./.yarn/cache/validator-npm-13.9.0-54b07e9e81-e2c936f041.zip/node_modules/validator/",\
@@ -49675,6 +49662,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["validator", "npm:13.9.0"]\
           ],\
           "linkType": "HARD"\
+        }]\
+      ]],\
+      ["validators", [\
+        ["workspace:validators", {\
+          "packageLocation": "./validators/",\
+          "packageDependencies": [\
+            ["validators", "workspace:validators"],\
+            ["@types/node", "npm:18.15.11"],\
+            ["axios", "npm:1.4.0"],\
+            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
+          ],\
+          "linkType": "SOFT"\
         }]\
       ]],\
       ["value-equal", [\
