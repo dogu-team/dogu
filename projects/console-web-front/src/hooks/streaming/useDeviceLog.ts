@@ -38,7 +38,7 @@ const useDeviceLog = (deviceClient: DeviceClient | undefined, device: DeviceBase
         const unsubscriber = await deviceClient.subscribeLog(device.serial, getArgs(), (log) => {
           const logs: Log[] = log.message
             .split('\n')
-            .map((sl) => ({ level: log.level, localTimeStamp: log.localTimeStamp, message: sl, details: log.details }))
+            .map((sl) => ({ level: log.level, localTimeStampNano: log.localTimeStampNano, message: sl, details: log.details }))
             .filter((item) => item.message.trim() !== '');
           setLogs((prev) => {
             if (prev.length < MAX_LOG_LENGTH) {

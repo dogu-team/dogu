@@ -2,6 +2,7 @@ import { OnWebSocketClose, OnWebSocketMessage, WebSocketGatewayBase, WebSocketRe
 import { Serial } from '@dogu-private/types';
 import { errorify, Instance, LogLevel, stringify } from '@dogu-tech/common';
 import { DeviceForward } from '@dogu-tech/device-client-common';
+import { DateNano } from '@dogu-tech/node';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
 import { DoguLogger } from '../../logger/logger';
@@ -71,7 +72,7 @@ export class DeviceForwardService
           level,
           message,
           details,
-          localTimeStamp: new Date().toISOString(),
+          localTimeStampNano: new DateNano().toRFC3339Nano(),
         },
       },
     };

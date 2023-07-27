@@ -16,6 +16,6 @@ export class InfluxDbWriter implements OnModuleInit {
   constructor(private readonly influxDbApi: InfluxDbApi) {}
 
   onModuleInit(): void {
-    this._client = this.influxDbApi.client.getWriteApi(config.influxdb.org, config.influxdb.bucket, 'ms');
+    this._client = this.influxDbApi.client.getWriteApi(config.influxdb.org, config.influxdb.bucket, 'ns');
   }
 }

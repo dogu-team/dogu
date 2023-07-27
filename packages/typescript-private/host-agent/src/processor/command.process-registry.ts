@@ -1,7 +1,7 @@
 import { ErrorResult } from '@dogu-private/console-host-agent';
 import { Code } from '@dogu-private/types';
 import { errorify, PromiseOrValue } from '@dogu-tech/common';
-import { EnvironmentVariableReplacementProvider, killChildProcess } from '@dogu-tech/node';
+import { DateNano, EnvironmentVariableReplacementProvider, killChildProcess } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import { ChildProcess, spawn, SpawnOptions } from 'child_process';
 import fs from 'fs';
@@ -91,7 +91,7 @@ export class CommandProcessRegistry {
             eventHandler.onLog({
               level: 'info',
               message: dataString,
-              localTimeStamp: new Date().toISOString(),
+              localTimeStampNano: new DateNano().toRFC3339Nano(),
             }),
           ).catch((error) => {
             this.logger.error('Failed to log stdout message', { error: errorify(error), data: dataString });
@@ -103,7 +103,7 @@ export class CommandProcessRegistry {
             eventHandler.onLog({
               level: 'warn',
               message: dataString,
-              localTimeStamp: new Date().toISOString(),
+              localTimeStampNano: new DateNano().toRFC3339Nano(),
             }),
           ).catch((error) => {
             this.logger.error('Failed to log stderr message', { error: errorify(error), data: dataString });
