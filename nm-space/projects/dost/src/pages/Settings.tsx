@@ -1,5 +1,6 @@
-import { Checkbox, List, ListItem, Radio, RadioGroup, Stack, Text, useColorMode } from '@chakra-ui/react';
+import { Button, Checkbox, List, ListItem, Radio, RadioGroup, Stack, Text, useColorMode, useDisclosure } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import ApiUrlInputForm from '../components/connection/ApiUrlInputForm';
 
@@ -13,6 +14,7 @@ function Settings() {
   const { useApiUrlInput } = useEnvironmentStore((state) => state.features);
   const [startupAtLogin, setStartupAtLogin] = useState<boolean | null>(null);
   const { colorMode, toggleColorMode } = useColorMode();
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -72,6 +74,9 @@ function Settings() {
             </Stack>
           </ListItem>
         )}
+        <ListItem>
+          <Button onClick={() => navigate('/open-source-software-notice')}>Open Source Software Notice</Button>
+        </ListItem>
       </List>
     </SinglePageLayout>
   );

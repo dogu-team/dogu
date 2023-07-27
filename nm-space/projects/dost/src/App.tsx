@@ -22,6 +22,7 @@ import SetupManual from './pages/SetupManual';
 import SetupConfig from './pages/SetupConfig';
 import IosSettings from './pages/iOSSettings';
 import { SentyDSNUrl } from './shares/constants';
+import OpenSourceSoftwareNotice from './pages/OpenSourceSoftwareNotice';
 
 function App() {
   const { setEnvironment } = useEnvironmentStore();
@@ -109,6 +110,7 @@ function App() {
       </Route>
       <Route path="/settings" element={<Settings />} />
       <Route path="/doctor" element={<Doctor />} />
+      <Route path="/open-source-software-notice" element={<OpenSourceSoftwareNotice />} />
       <Route
         path="*"
         element={
