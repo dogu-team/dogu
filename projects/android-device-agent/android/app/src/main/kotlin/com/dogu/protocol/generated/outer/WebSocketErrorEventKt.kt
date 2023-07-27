@@ -21,6 +21,23 @@ object WebSocketErrorEventKt {
     @kotlin.jvm.JvmSynthetic
     @kotlin.PublishedApi
     internal fun _build(): com.dogu.protocol.generated.outer.HttpWs.WebSocketErrorEvent = _builder.build()
+
+    /**
+     * <code>string reason = 1;</code>
+     */
+    var reason: kotlin.String
+      @JvmName("getReason")
+      get() = _builder.getReason()
+      @JvmName("setReason")
+      set(value) {
+        _builder.setReason(value)
+      }
+    /**
+     * <code>string reason = 1;</code>
+     */
+    fun clearReason() {
+      _builder.clearReason()
+    }
   }
 }
 @kotlin.jvm.JvmSynthetic

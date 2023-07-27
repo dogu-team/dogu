@@ -66,9 +66,13 @@ export interface WebSocketParam {
       };
 }
 
-export interface WebSocketOpenEvent {}
+export interface WebSocketOpenEvent {
+  dummy: boolean;
+}
 
-export interface WebSocketErrorEvent {}
+export interface WebSocketErrorEvent {
+  reason: string;
+}
 
 export interface WebSocketCloseEvent {
   code: number;
@@ -830,11 +834,14 @@ export const WebSocketParam = {
 };
 
 function createBaseWebSocketOpenEvent(): WebSocketOpenEvent {
-  return {};
+  return { dummy: false };
 }
 
 export const WebSocketOpenEvent = {
-  encode(_: WebSocketOpenEvent, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(message: WebSocketOpenEvent, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.dummy === true) {
+      writer.uint32(8).bool(message.dummy);
+    }
     return writer;
   },
 
@@ -845,6 +852,9 @@ export const WebSocketOpenEvent = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.dummy = reader.bool();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -853,27 +863,32 @@ export const WebSocketOpenEvent = {
     return message;
   },
 
-  fromJSON(_: any): WebSocketOpenEvent {
-    return {};
+  fromJSON(object: any): WebSocketOpenEvent {
+    return { dummy: isSet(object.dummy) ? Boolean(object.dummy) : false };
   },
 
-  toJSON(_: WebSocketOpenEvent): unknown {
+  toJSON(message: WebSocketOpenEvent): unknown {
     const obj: any = {};
+    message.dummy !== undefined && (obj.dummy = message.dummy);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<WebSocketOpenEvent>, I>>(_: I): WebSocketOpenEvent {
+  fromPartial<I extends Exact<DeepPartial<WebSocketOpenEvent>, I>>(object: I): WebSocketOpenEvent {
     const message = createBaseWebSocketOpenEvent();
+    message.dummy = object.dummy ?? false;
     return message;
   },
 };
 
 function createBaseWebSocketErrorEvent(): WebSocketErrorEvent {
-  return {};
+  return { reason: '' };
 }
 
 export const WebSocketErrorEvent = {
-  encode(_: WebSocketErrorEvent, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(message: WebSocketErrorEvent, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.reason !== '') {
+      writer.uint32(10).string(message.reason);
+    }
     return writer;
   },
 
@@ -884,6 +899,9 @@ export const WebSocketErrorEvent = {
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
+        case 1:
+          message.reason = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -892,17 +910,19 @@ export const WebSocketErrorEvent = {
     return message;
   },
 
-  fromJSON(_: any): WebSocketErrorEvent {
-    return {};
+  fromJSON(object: any): WebSocketErrorEvent {
+    return { reason: isSet(object.reason) ? String(object.reason) : '' };
   },
 
-  toJSON(_: WebSocketErrorEvent): unknown {
+  toJSON(message: WebSocketErrorEvent): unknown {
     const obj: any = {};
+    message.reason !== undefined && (obj.reason = message.reason);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<WebSocketErrorEvent>, I>>(_: I): WebSocketErrorEvent {
+  fromPartial<I extends Exact<DeepPartial<WebSocketErrorEvent>, I>>(object: I): WebSocketErrorEvent {
     const message = createBaseWebSocketErrorEvent();
+    message.reason = object.reason ?? '';
     return message;
   },
 };

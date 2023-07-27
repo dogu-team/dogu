@@ -21,6 +21,23 @@ object WebSocketOpenEventKt {
     @kotlin.jvm.JvmSynthetic
     @kotlin.PublishedApi
     internal fun _build(): com.dogu.protocol.generated.outer.HttpWs.WebSocketOpenEvent = _builder.build()
+
+    /**
+     * <code>bool dummy = 1;</code>
+     */
+    var dummy: kotlin.Boolean
+      @JvmName("getDummy")
+      get() = _builder.getDummy()
+      @JvmName("setDummy")
+      set(value) {
+        _builder.setDummy(value)
+      }
+    /**
+     * <code>bool dummy = 1;</code>
+     */
+    fun clearDummy() {
+      _builder.clearDummy()
+    }
   }
 }
 @kotlin.jvm.JvmSynthetic

@@ -38,7 +38,7 @@ const useDeviceClient = (peerConnection: RTCPeerConnection | undefined, sendThro
             },
           },
         };
-        const channel = createDataChannel(peerConnection, deviceWsDcLabel, { ordered: true, maxRetransmits: 0 });
+        const channel = createDataChannel(peerConnection, deviceWsDcLabel, { ordered: true, maxRetransmits: 3 });
         setDeviceChannel(channel);
         channel.bufferedAmountLowThreshold = 65535;
         return { name, channel };

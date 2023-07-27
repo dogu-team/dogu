@@ -121,6 +121,7 @@ export class BrowserDeviceService implements DeviceService {
 
     const { recvQueue, resultEmitter } = channelInfo;
     channel.addEventListener('message', (event) => {
+      console.log(`${name}, recv: ${event.data.byteLength}`);
       recvQueue.pushBuffer(new Uint8Array(event.data as ArrayBuffer));
       if (!recvQueue.has()) {
         return;
@@ -134,11 +135,15 @@ export class BrowserDeviceService implements DeviceService {
   private removeChannel(name: string): void {
     const channelInfo = this.channels.get(name);
     if (!channelInfo) {
+      console.log(`removeChannel: ${name} not found`);
       return;
     }
     const { channel } = channelInfo;
     if (channel.readyState !== 'closed') {
+      console.log(`removeChannel: ${name}`);
       channel.close();
+    } else {
+      console.log(`removeChannel: ${name} is already closed`);
     }
     this.channels.delete(name);
   }
@@ -227,7 +232,9 @@ export class BrowserDeviceService implements DeviceService {
   }
 
   connectWebSocket(connection: WebSocketConnection, options: Required<DeviceClientOptions>, listener?: DeviceWebSocketListener): DeviceWebSocket {
+    console.log('connectWebSocket', connection.path);
     const { name, channel } = this.wsChannelCreator(connection);
+    console.log('connectWebSocket 1', connection.path);
     this.addChannel(name, channel);
     const channelInfo = this.channels.get(name);
     if (!channelInfo) {
@@ -241,10 +248,12 @@ export class BrowserDeviceService implements DeviceService {
       this.removeChannel(name);
     }, options.timeout);
 
+    console.log('connectWebSocket 2', connection.path);
     // complete handle
     resultEmitter.on(sequenceId.toString(), (result: HttpRequestWebSocketResult) => {
       console.debug(`DeviceServerBrowserService. ${name}. result: ${JSON.stringify(result).substring(0, 300)} >> `);
       const clearAndRemove = (message: string) => {
+        console.log(`DeviceServerBrowserService. close ${name}. ${message}`);
         clearTimeout(openTimeout);
         this.removeChannel(name);
       };
