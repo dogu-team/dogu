@@ -133,14 +133,14 @@ export class BrowserDeviceService implements DeviceService {
   private removeChannel(name: string): void {
     const channelInfo = this.channels.get(name);
     if (!channelInfo) {
-      console.log(`removeChannel: ${name} not found`);
+      console.debug(`removeChannel: ${name} not found`);
       return;
     }
     const { channel } = channelInfo;
     if (channel.readyState !== 'closed') {
       channel.close();
     } else {
-      console.log(`removeChannel: ${name} is already closed`);
+      console.debug(`removeChannel: ${name} is already closed`);
     }
     this.channels.delete(name);
   }

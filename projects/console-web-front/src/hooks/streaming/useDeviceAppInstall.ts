@@ -102,7 +102,7 @@ const useDeviceAppInstall = (serial: Serial | undefined, deviceHostClient: Devic
         });
         setTimeout(() => reset(), 2000);
       } catch (e) {
-        console.log('installApp error:', e);
+        console.debug('installApp error:', e);
         if (e instanceof Error) {
           setResult({
             isSuccess: false,
