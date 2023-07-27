@@ -147,7 +147,7 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
         </SelectedProjectBox>
 
         <GlobalCheckBoxWrapper>
-          <Checkbox checked={isGlobal} onChange={(e) => handleToggleGlobal(e.target.checked)}>
+          <Checkbox checked={isGlobal} onChange={(e) => handleToggleGlobal(e.target.checked)} id="use-as-public-device-checkbox">
             {t('device:deviceEditProjectGlobalLabelText')}
           </Checkbox>
 

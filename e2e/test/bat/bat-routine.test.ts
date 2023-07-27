@@ -620,8 +620,8 @@ Dest.withOptions({
     const deviceSettingInfos = [
       {
         name: 'Host device setting',
-        addTabMenu: '//*[text()="Host"]/../../../div[5]//button[@access-id="list-menu-btn"]',
-        listTabMenu: '//*[text()="Host"]/../../../../div[5]//button[@access-id="list-menu-btn"]',
+        addTabMenu: '//span[text()="Host"]/../../../div[5]//button[@access-id="list-menu-btn"]',
+        listTabMenu: '//span[text()="Host"]/../../../../div[5]//button[@access-id="list-menu-btn"]',
         tag: values.value.HOST_DEVICE_TAG,
         isHost: true,
       },
@@ -867,20 +867,73 @@ Dest.withOptions({
     });
 
     job('Device management', () => {
-      // TODO
-      // edit device name & pararell job count
-      // detach tag (check with count)
-      // use global (check with project)
-      // disable device (check in device list, project)
-    });
+      test('Move to device list', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="side-bar-device"]' });
+      });
 
-    job('Deletion', () => {
-      // TODO
-      // order
-      // project deletion
-      // team deletion
-      // member deletion
-      // org deletion
+      // edit device name & pararell job count
+      const hostDeviceSettingConfig = deviceSettingInfos.find((item) => item.name === 'Host device setting');
+      const androidDeviceSettingConfig = deviceSettingInfos.find((item) => item.name === 'Android device setting');
+      test('Update device settings', async () => {
+        expect(!!hostDeviceSettingConfig).toBe(true);
+        await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
+        await Driver.clickElement({ xpath: '//li[contains(@data-menu-id, "setting")]/span/button' });
+        await Driver.sendKeys({ xpath: '//input[@id="name"]' }, 'edit');
+        await Driver.sendKeys({ xpath: '//input[@id="max"]' }, '\b8');
+        await Driver.clickElement({ xpath: '//button[@id="save-device-setting-btn"]' });
+        await Timer.wait(2000, 'wait for changing device setting');
+      });
+
+      test('Check device name', async () => {
+        await Driver.findElement({ xpath: '//span[text()="Host"]/../../p[contains(text(), "edit")]' });
+        await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
+        await Driver.clickElement({ xpath: '//li[contains(@data-menu-id, "setting")]/span/button' });
+        await Driver.findElement({ xpath: '//input[@id="max" and @value="8"]' });
+        await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
+      });
+
+      // detach tag (check with count)
+      test('Detach tag', async () => {
+        await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
+        await Driver.clickElement({ xpath: '//li[contains(@data-menu-id, "edit-tag")]/span/button' });
+        await Driver.clickElement({ xpath: '//p[@access-id="edit-tag-modal-title"]' });
+        await Driver.clickElement({ xpath: `//span[contains(@class, "ant-tag") and text()="${values.value.HOST_DEVICE_TAG}"]/span` });
+        await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
+        await Timer.wait(2000, 'wait for changing device tag');
+        const tagCount = await Driver.getText({ xpath: '//span[text()="Host"]/../../../../div[5]/div[1]/div[1]/button/p' });
+        expect(tagCount).toBe('1');
+      });
+
+      // use global (check with project)
+      test('Use global', async () => {
+        await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
+        await Driver.clickElement({ xpath: '//li[contains(@data-menu-id, "edit-project")]/span/button' });
+        await Driver.clickElement({ xpath: '//input[@id="use-as-public-device-checkbox"]/../..' });
+        await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
+        await Driver.findElement({ xpath: '//span[text()="Host"]/../..//span[text()="Public"]' });
+      });
+
+      test('Check global device', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="side-bar-project"]' });
+        await Driver.clickElement({ xpath: '//a[text()="Sample Project"]' });
+        await Driver.clickElement({ xpath: '//a[@access-id="project-device-tab"]' });
+        await Driver.findElement({ xpath: '//span[text()="Public"]' });
+        await Driver.findElement({ xpath: '//span[text()="Host"]' });
+      });
+
+      // disable all device (check in device list, project)
+      test('Disable device', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="project-layout-org-name"]' });
+        await Driver.clickElement({ xpath: '//a[@access-id="side-bar-device"]' });
+        await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
+        await Driver.clickElement({ xpath: '//li[contains(@data-menu-id, "unuse")]/span/button' });
+        await Driver.clickElement({ xpath: '//button[@id="stop-using-device-confirm-btn"]' });
+        await Timer.wait(2000, 'wait for changing device setting');
+        await Driver.clickElement({ xpath: '//a[@access-id="side-bar-project"]' });
+        await Driver.clickElement({ xpath: '//a[text()="Sample Project"]' });
+        await Driver.clickElement({ xpath: '//a[@access-id="project-device-tab"]' });
+        await Driver.findElement({ xpath: '//*[contains(@class, "ant-empty")]' });
+      });
     });
 
     afterAll(async () => {

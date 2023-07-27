@@ -124,7 +124,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
           {t('device:deviceItemSettingMenu')}
         </MenuItemButton>
       ),
-      key: 'edit',
+      key: 'setting',
     },
     { type: 'divider' },
     {
@@ -143,6 +143,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
           modalTitle={t('device:stopUsingDeviceModalTitle')}
           modalButtonTitle={t('device:stopUsingDeviceModalButtonText')}
           modalContent={<p>{t('device:stopUsingDeviceModalContent')}</p>}
+          confirmButtonId="stop-using-device-confirm-btn"
         >
           {t('device:deviceItemStopUsingMenu')}
         </MenuItemButton>
@@ -186,7 +187,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
                 onProjectClick={handleClickDetail}
                 onTagClick={handleClickDetail}
               />
-              <MenuButton menu={{ items }} />
+              <MenuButton menu={{ items }} destroyPopupOnHide />
             </FlexSpaceBetweenBox>
           </InfoCell>
         </DeviceItemInner>
