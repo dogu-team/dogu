@@ -1,5 +1,4 @@
 import { env } from '../../src/env';
-import { FeatureConfig } from '../../src/feature.config';
 
 export const config = {
   containerName: 'dogu-pgsql',
@@ -17,13 +16,11 @@ console.log('ENV', env.DOGU_RUN_TYPE);
 
 export const tempRunType = process.env.DOGU_RUN_TYPE;
 
-process.env.DOGU_RUN_TYPE = 'local';
-
 export const pgsqlConnectionOptions = {
   host: config.host,
   port: config.port,
   user: config.rootUser,
   password: config.rootPassword,
   database: config.schema,
-  ssl: FeatureConfig.get('rdbSslConnection') ? { rejectUnauthorized: false } : false,
+  ssl: env.DOGU_RDS_SSL_CONNECTION,
 };

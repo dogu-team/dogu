@@ -1,8 +1,8 @@
 import { DoguRunType, NodeEnvType } from '@dogu-private/env-tools';
-import { IsFilledString } from '@dogu-tech/common';
+import { IsFilledString, TransformBooleanString } from '@dogu-tech/common';
 import { loadEnvLazySync } from '@dogu-tech/env-tools';
 import { Type } from 'class-transformer';
-import { IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 import { logger } from './module/logger/logger.instance';
 
 export class Env {
@@ -48,6 +48,10 @@ export class Env {
 
   @IsFilledString()
   DOGU_INFLUX_DB_BUCKET!: string;
+
+  @IsBoolean()
+  @TransformBooleanString()
+  DOGU_RDS_SSL_CONNECTION!: boolean;
 
   @IsFilledString()
   DOGU_RDS_HOST!: string;

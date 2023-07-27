@@ -2,7 +2,6 @@
   "fileService": "nexus",
   "useSampleProject": false,
   "emailVerification": false,
-  "rdbSslConnection": false,
   "cookieSecure": false,
   "forceInvitation": true,
   "thirdPartyLogin": false

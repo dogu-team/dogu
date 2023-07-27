@@ -6,7 +6,6 @@ export interface FeatureTable {
   fileService: 's3' | 'nexus';
   useSampleProject: boolean;
   emailVerification: boolean;
-  rdbSslConnection: boolean;
   cookieSecure: boolean;
   forceInvitation: boolean;
   thirdPartyLogin: boolean;

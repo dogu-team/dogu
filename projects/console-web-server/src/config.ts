@@ -3,7 +3,6 @@ import { DeviceId, OrganizationId } from '@dogu-private/types';
 import { DataSourceOptions } from 'typeorm';
 import { CONSOLE_BACKEND_ENTITIES_PATH } from './db/entity/index';
 import { env } from './env';
-import { FeatureConfig } from './feature.config';
 import { logger } from './module/logger/logger.instance';
 
 export const config = {
@@ -147,7 +146,7 @@ export const dataSourceConfig: DataSourceOptions = {
   migrationsRun: false,
   migrationsTableName: 'migration',
   useUTC: true,
-  ssl: FeatureConfig.get('rdbSslConnection') ? { rejectUnauthorized: false } : false,
+  ssl: env.DOGU_RDS_SSL_CONNECTION,
 };
 
 logger.warn('[DB Config]', {

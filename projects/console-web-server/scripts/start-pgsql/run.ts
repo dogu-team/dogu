@@ -1,7 +1,7 @@
 import { node_package } from '@dogu-dev-private/build-tools';
 import { checkDockerInstalled, clearDokerContainer, createDbSchema, createFakeDbMigrations, createSeedData, pullDockerImage } from '../common/common';
 import { exec, execute } from '../utils/utils';
-import { config, pgsqlConnectionOptions, tempRunType } from './config';
+import { config, pgsqlConnectionOptions } from './config';
 
 async function startDockerContainer() {
   await checkDockerInstalled();
@@ -40,7 +40,6 @@ async function startDockerContainer() {
   /**
    * @note force exit because kill the typeorm:schema process but does not exit
    */
-  process.env.DOGU_RUN_TYPE = tempRunType;
   process.exit(0);
 })().catch((error) => {
   console.error(error);
