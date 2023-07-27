@@ -96,9 +96,7 @@ const useDeviceAppInstall = (serial: Serial | undefined, deviceHostClient: Devic
 
       setIsInstalling(true);
       try {
-        console.log('installApp 1');
         await deviceClient.installApp(serial, uploadedFilePath);
-        console.log('installApp 2');
         setResult({
           isSuccess: true,
         });
@@ -106,7 +104,6 @@ const useDeviceAppInstall = (serial: Serial | undefined, deviceHostClient: Devic
       } catch (e) {
         console.log('installApp error:', e);
         if (e instanceof Error) {
-          console.log('installApp 3');
           setResult({
             isSuccess: false,
             failType: 'install',
