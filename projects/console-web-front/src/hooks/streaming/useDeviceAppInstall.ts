@@ -36,7 +36,7 @@ const useDeviceAppInstall = (serial: Serial | undefined, deviceHostClient: Devic
       setApp(file);
 
       const totalSize = file.size;
-      const chunkSize = 1024 * 1024; // 1 MB
+      const chunkSize = 65535 * 16 - 16; // around 1 MB ( datachannel max byte(65535)  * 16(magic number) - packetheader sizes(16) ). for best throughput
       const fr = new FileReader();
       let writeOffset = 0;
 

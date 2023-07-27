@@ -7,7 +7,6 @@ import (
 	"net"
 	"net/http"
 	"net/url"
-	"time"
 
 	"go-device-controller/types/protocol/generated/proto/inner/types"
 	"go-device-controller/types/protocol/generated/proto/outer"
@@ -25,14 +24,12 @@ import (
 )
 
 func send(d *webrtc.DataChannel, bytes []byte) error {
-	log.Inst.Info("DeviceServerWebSocketLabeledDatachannel sendBytes called", zap.Int("len", len(bytes)))
 	bufs := utils.SpliteBytes(utils.PrefixBytesWithSize(bytes), 65535)
 	for _, buf := range bufs {
 		sendErr := d.Send(buf)
 		if sendErr != nil {
 			return sendErr
 		}
-		log.Inst.Info("DeviceServerWebSocketLabeledDatachannel sendBytes buf", zap.Int("len", len(buf)))
 	}
 	return nil
 }
@@ -481,7 +478,6 @@ func (ldc *DeviceServerWebSocketLabeledDatachannel) label() *types.DataChannelLa
 }
 
 func (ldc *DeviceServerWebSocketLabeledDatachannel) onOpen() {
-	time.Sleep(1 * time.Second)
 	connection := ldc.label().GetDeviceWebSocket().GetConnection()
 	if connection == nil {
 		log.Inst.Error("DeviceServerWebSocketLabeledDatachannel connection is nil", zap.String("name", ldc.label().Name))
@@ -506,9 +502,7 @@ func (ldc *DeviceServerWebSocketLabeledDatachannel) onOpen() {
 
 	result := &outer.WebSocketResult{
 		Value: &outer.WebSocketResult_OpenEvent{
-			OpenEvent: &outer.WebSocketOpenEvent{
-				Dummy: true,
-			},
+			OpenEvent: &outer.WebSocketOpenEvent{},
 		},
 	}
 
@@ -516,7 +510,6 @@ func (ldc *DeviceServerWebSocketLabeledDatachannel) onOpen() {
 	if err := ldc.sendResult(result); err != nil {
 		ldc.sendErrorAndClose(err)
 	}
-	log.Inst.Info("DeviceServerWebSocketLabeledDatachannel send open event done", zap.String("name", name), zap.String("path", path))
 
 	ldc.conn.SetCloseHandler(func(code int, text string) error {
 		log.Inst.Info("DeviceServerWebSocketLabeledDatachannel ws close", zap.String("name", name), zap.String("path", path), zap.Int("code", code), zap.String("text", text))
@@ -706,7 +699,6 @@ func newDeviceServerWebSocketLabeledDatachannel(label *types.DataChannelLabel, d
 		return nil
 	}
 	sendResult := func(result *outer.WebSocketResult) error {
-		log.Inst.Info("DeviceServerWebSocketLabeledDatachannel sendResult", zap.String("name", name), zap.String("path", path), zap.Int("index", index))
 		httpWebSocketResult := &outer.HttpRequestWebSocketResult{
 			SequenceId: 0,
 			Value: &outer.HttpRequestWebSocketResult_WebSocketResult{

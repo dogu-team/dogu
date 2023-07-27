@@ -24,7 +24,7 @@ const useDeviceClient = (peerConnection: RTCPeerConnection | undefined, sendThro
           deviceHttp: {},
         },
       };
-      const deviceHttpDc = createDataChannel(peerConnection, deviceHttpDcLabel, { ordered: false, maxRetransmits: 0 });
+      const deviceHttpDc = createDataChannel(peerConnection, deviceHttpDcLabel, { ordered: false, maxRetransmits: 5 });
       deviceHttpDc.bufferedAmountLowThreshold = 65535;
 
       const deviceServerWsDcCreator = (connection: WebSocketConnection) => {
@@ -38,7 +38,7 @@ const useDeviceClient = (peerConnection: RTCPeerConnection | undefined, sendThro
             },
           },
         };
-        const channel = createDataChannel(peerConnection, deviceWsDcLabel, { ordered: true, maxRetransmits: 3 });
+        const channel = createDataChannel(peerConnection, deviceWsDcLabel, { ordered: true, maxRetransmits: 5 });
         setDeviceChannel(channel);
         channel.bufferedAmountLowThreshold = 65535;
         return { name, channel };

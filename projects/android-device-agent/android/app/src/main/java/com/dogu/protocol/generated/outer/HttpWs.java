@@ -5422,12 +5422,6 @@ public final class HttpWs {
   public interface WebSocketOpenEventOrBuilder extends
       // @@protoc_insertion_point(interface_extends:outer.WebSocketOpenEvent)
       com.google.protobuf.MessageLiteOrBuilder {
-
-    /**
-     * <code>bool dummy = 1;</code>
-     * @return The dummy.
-     */
-    boolean getDummy();
   }
   /**
    * Protobuf type {@code outer.WebSocketOpenEvent}
@@ -5439,32 +5433,6 @@ public final class HttpWs {
       WebSocketOpenEventOrBuilder {
     private WebSocketOpenEvent() {
     }
-    public static final int DUMMY_FIELD_NUMBER = 1;
-    private boolean dummy_;
-    /**
-     * <code>bool dummy = 1;</code>
-     * @return The dummy.
-     */
-    @java.lang.Override
-    public boolean getDummy() {
-      return dummy_;
-    }
-    /**
-     * <code>bool dummy = 1;</code>
-     * @param value The dummy to set.
-     */
-    private void setDummy(boolean value) {
-      
-      dummy_ = value;
-    }
-    /**
-     * <code>bool dummy = 1;</code>
-     */
-    private void clearDummy() {
-      
-      dummy_ = false;
-    }
-
     public static com.dogu.protocol.generated.outer.HttpWs.WebSocketOpenEvent parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -5560,34 +5528,6 @@ public final class HttpWs {
       }
 
 
-      /**
-       * <code>bool dummy = 1;</code>
-       * @return The dummy.
-       */
-      @java.lang.Override
-      public boolean getDummy() {
-        return instance.getDummy();
-      }
-      /**
-       * <code>bool dummy = 1;</code>
-       * @param value The dummy to set.
-       * @return This builder for chaining.
-       */
-      public Builder setDummy(boolean value) {
-        copyOnWrite();
-        instance.setDummy(value);
-        return this;
-      }
-      /**
-       * <code>bool dummy = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearDummy() {
-        copyOnWrite();
-        instance.clearDummy();
-        return this;
-      }
-
       // @@protoc_insertion_point(builder_scope:outer.WebSocketOpenEvent)
     }
     @java.lang.Override
@@ -5603,11 +5543,8 @@ public final class HttpWs {
           return new Builder();
         }
         case BUILD_MESSAGE_INFO: {
-            java.lang.Object[] objects = new java.lang.Object[] {
-              "dummy_",
-            };
-            java.lang.String info =
-                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\u0007";
+            java.lang.Object[] objects = null;java.lang.String info =
+                "\u0000\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

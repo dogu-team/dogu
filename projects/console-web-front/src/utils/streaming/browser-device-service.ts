@@ -53,7 +53,6 @@ class ChannelInfo {
         return;
       }
       this.channel.send(buf);
-      console.log(`send: ${buf.length}`);
       lastSendIndex = index;
       this.lastSendTimeMs = Date.now();
     });
@@ -121,7 +120,6 @@ export class BrowserDeviceService implements DeviceService {
 
     const { recvQueue, resultEmitter } = channelInfo;
     channel.addEventListener('message', (event) => {
-      console.log(`${name}, recv: ${event.data.byteLength}`);
       recvQueue.pushBuffer(new Uint8Array(event.data as ArrayBuffer));
       if (!recvQueue.has()) {
         return;
@@ -140,7 +138,6 @@ export class BrowserDeviceService implements DeviceService {
     }
     const { channel } = channelInfo;
     if (channel.readyState !== 'closed') {
-      console.log(`removeChannel: ${name}`);
       channel.close();
     } else {
       console.log(`removeChannel: ${name} is already closed`);
@@ -182,7 +179,6 @@ export class BrowserDeviceService implements DeviceService {
 
       // complete handle
       resultEmitter.once(sequenceId.toString(), (result: HttpRequestWebSocketResult) => {
-        console.debug(`DeviceServerBrowserService. result: ${JSON.stringify(result).substring(0, 300)} >> `);
         const clearAndReject = (message: string) => {
           clearTimeout(timeout);
           reject(new Error(message));
@@ -234,7 +230,6 @@ export class BrowserDeviceService implements DeviceService {
   connectWebSocket(connection: WebSocketConnection, options: Required<DeviceClientOptions>, listener?: DeviceWebSocketListener): DeviceWebSocket {
     console.log('connectWebSocket', connection.path);
     const { name, channel } = this.wsChannelCreator(connection);
-    console.log('connectWebSocket 1', connection.path);
     this.addChannel(name, channel);
     const channelInfo = this.channels.get(name);
     if (!channelInfo) {
@@ -248,10 +243,8 @@ export class BrowserDeviceService implements DeviceService {
       this.removeChannel(name);
     }, options.timeout);
 
-    console.log('connectWebSocket 2', connection.path);
     // complete handle
     resultEmitter.on(sequenceId.toString(), (result: HttpRequestWebSocketResult) => {
-      console.debug(`DeviceServerBrowserService. ${name}. result: ${JSON.stringify(result).substring(0, 300)} >> `);
       const clearAndRemove = (message: string) => {
         console.log(`DeviceServerBrowserService. close ${name}. ${message}`);
         clearTimeout(openTimeout);
@@ -307,7 +300,6 @@ export class BrowserDeviceService implements DeviceService {
       const buffers = Uint8ArrayUtil.prefixSizeAndSplitBuffer(WebSocketMessage.encode(message).finish());
       for (const buffer of buffers) {
         sendBuffer.push(buffer);
-        console.debug(`DeviceServerBrowserService. ${name}. send: ${buffer.length}`);
       }
       this.requestFlushSendBuffer();
     };

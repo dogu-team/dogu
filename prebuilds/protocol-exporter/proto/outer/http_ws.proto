@@ -79,7 +79,6 @@ message WebSocketParam {
 }
 
 message WebSocketOpenEvent {
-  bool dummy = 1;
 }
 
 message WebSocketErrorEvent {
