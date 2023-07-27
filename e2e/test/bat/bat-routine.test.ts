@@ -10,7 +10,7 @@ import { Timer } from '../../src/timer';
 import { Utils } from '../../src/utils';
 import { runHost } from './bat/host';
 import { currentL10n, l10n } from './bat/l10n';
-import { startDost } from './bat/workspace';
+import { startConsoleAndDost } from './bat/workspace';
 
 const env = loadEnvLazySync(E2eEnv);
 
@@ -90,7 +90,7 @@ Dest.withOptions({
       console.log('env', process.env);
     });
 
-    const { dost } = startDost();
+    const { dost } = startConsoleAndDost(env.DOGU_CONSOLE_WEB_FRONT_PORT);
 
     job('Launch browser', () => {
       test('Launch browser', () => {
