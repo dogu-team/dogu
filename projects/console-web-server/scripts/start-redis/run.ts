@@ -28,6 +28,7 @@ async function startDockerContainer() {
   await clearDokerContainer(config.containerName);
   await pullDockerImage(config.imageName);
   await startDockerContainer();
+  process.exit(0);
 })().catch((error) => {
   console.error(error);
   process.exit(1);
