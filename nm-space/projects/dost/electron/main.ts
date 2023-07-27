@@ -116,3 +116,11 @@ for (const event of quitSignalAndEvents) {
     await ChildService.close();
   });
 }
+
+const quitSignalAndAppEvents = ['before-quit'] as const;
+for (const event of quitSignalAndAppEvents) {
+  app.on(event, async (event: Event) => {
+    logger.info(event, { event });
+    await ChildService.close();
+  });
+}

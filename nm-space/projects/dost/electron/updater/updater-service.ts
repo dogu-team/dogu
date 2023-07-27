@@ -106,12 +106,14 @@ export class UpdaterService {
         });
         autoUpdater.once('update-downloaded', (info) => {
           logger.error(`downloadAndInstallUpdate.update-downloaded ${info}`);
-          setImmediate(() => {
-            app.removeAllListeners('window-all-closed');
-            app.removeAllListeners('before-quit');
+          const timeout = process.platform === 'darwin' ? 10000 : 1000;
+
+          setTimeout(() => {
+            // https://github.com/electron-userland/electron-builder/issues/6058#issuecomment-1130344017
             WindowService.close();
             autoUpdater.quitAndInstall();
-          });
+            app.exit();
+          }, timeout);
         });
         try {
           autoUpdater.downloadUpdate();
