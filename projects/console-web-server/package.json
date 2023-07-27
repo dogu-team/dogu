@@ -10,6 +10,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "rebuild": "yarn run clean && yarn run build",
     "start": "cross-env TZ=UTC NODE_ENV=production node -r tsconfig-paths/register -r ts-node/register build/src/main",
+    "start:e2e-background": "yarn run start:influxdb && yarn run start:redis && yarn run start:pgsql && yarn run start:nexus && yarn run start:turn-server",
     "start:influxdb": "cross-env TZ=UTC NODE_ENV=development ts-node scripts/start-influxdb/run.ts",
     "start:nexus": "cross-env TZ=UTC NODE_ENV=development ts-node scripts/start-nexus/run.ts",
     "start:pgsql": "yarn run rebuild && cross-env TZ=UTC NODE_ENV=development ts-node scripts/start-pgsql/run.ts",
