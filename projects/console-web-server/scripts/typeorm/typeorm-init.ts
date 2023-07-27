@@ -3,10 +3,11 @@ import { PromiseOrValue, retry } from '@dogu-tech/common';
 import process from 'process';
 import { env } from '../../src/env';
 import { FeatureConfig } from '../../src/feature.config';
+import { createDbSchema, createFakeDbMigrations, createSeedData } from '../common/common';
 import { PostgreSql } from '../utils/pgsql';
-import { exec, execute, spawnWithFindPattern } from '../utils/utils';
+import { exec } from '../utils/utils';
 
-export const pgsqlConnectionOptions = {
+const pgsqlConnectionOptions = {
   host: env.DOGU_RDS_HOST,
   port: env.DOGU_RDS_PORT,
   user: env.DOGU_RDS_USERNAME,
@@ -35,50 +36,6 @@ async function checkDbInitialized(): Promise<boolean> {
   return resultValue;
 }
 
-async function createDbSchema(): Promise<void> {
-  console.log('Create tables...');
-  await retry(
-    async () =>
-      await spawnWithFindPattern(
-        'yarn',
-        ['run', 'typeorm:schema'], //
-        /.*Schema synchronization finished successfully\..*/m,
-      ),
-    { retryCount: 3, retryInterval: 3000 },
-  );
-}
-
-async function createFakeDbMigrations(): Promise<void> {
-  console.log('Create migrations...');
-  await execute('Create migration table...', () =>
-    exec(`yarn run typeorm:fake`, {
-      errorMessage: 'Error: typeorm migration table generation failed',
-      retry: true,
-      retryCount: 3,
-      retryInterval: 3000,
-    }),
-  );
-}
-
-async function createSeedData(): Promise<void> {
-  console.log('Create seeds...');
-  await retry(
-    async () => {
-      await PostgreSql.on(pgsqlConnectionOptions, async (context) => {
-        await context.query(
-          'Create role bases...',
-          `INSERT INTO project_role VALUES (1,'Admin',null,0,NOW(),NOW()), (2,'Write',null,0,NOW(),NOW()), (3,'Read',null,0,NOW(),NOW());`,
-        );
-        await context.query(
-          'Create role bases...',
-          `INSERT INTO organization_role VALUES (1,null,'Owner', 0, NOW(),NOW(), null), (2,null,'Admin', 0,NOW(),NOW(), null), (3,null,'Member', 0,NOW(),NOW(), null);`,
-        );
-      });
-    },
-    { retryCount: 3, retryInterval: 3000 },
-  );
-}
-
 async function runDbMigration(): Promise<void> {
   console.log('Run migrations...');
   await exec(`yarn run typeorm:run`, {
@@ -105,7 +62,7 @@ async function runDbMigration(): Promise<void> {
     console.log('Database need to initaialize...');
     await createDbSchema();
     await createFakeDbMigrations();
-    await createSeedData();
+    await createSeedData(pgsqlConnectionOptions);
   } else {
     console.log('Database already initaialized');
     await runDbMigration();

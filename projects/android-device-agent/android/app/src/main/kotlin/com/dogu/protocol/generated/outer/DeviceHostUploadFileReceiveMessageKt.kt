@@ -23,24 +23,68 @@ object DeviceHostUploadFileReceiveMessageKt {
     internal fun _build(): com.dogu.protocol.generated.outer.DeviceServer.DeviceHostUploadFileReceiveMessage = _builder.build()
 
     /**
-     * <code>string file_path = 1;</code>
+     * <code>.outer.DeviceHostUploadFileInProgressReceiveValue in_progress = 1;</code>
      */
-    var filePath: kotlin.String
-      @JvmName("getFilePath")
-      get() = _builder.getFilePath()
-      @JvmName("setFilePath")
+    var inProgress: com.dogu.protocol.generated.outer.DeviceServer.DeviceHostUploadFileInProgressReceiveValue
+      @JvmName("getInProgress")
+      get() = _builder.getInProgress()
+      @JvmName("setInProgress")
       set(value) {
-        _builder.setFilePath(value)
+        _builder.setInProgress(value)
       }
     /**
-     * <code>string file_path = 1;</code>
+     * <code>.outer.DeviceHostUploadFileInProgressReceiveValue in_progress = 1;</code>
      */
-    fun clearFilePath() {
-      _builder.clearFilePath()
+    fun clearInProgress() {
+      _builder.clearInProgress()
+    }
+    /**
+     * <code>.outer.DeviceHostUploadFileInProgressReceiveValue in_progress = 1;</code>
+     * @return Whether the inProgress field is set.
+     */
+    fun hasInProgress(): kotlin.Boolean {
+      return _builder.hasInProgress()
+    }
+
+    /**
+     * <code>.outer.DeviceHostUploadFileCompleteReceiveValue complete = 2;</code>
+     */
+    var complete: com.dogu.protocol.generated.outer.DeviceServer.DeviceHostUploadFileCompleteReceiveValue
+      @JvmName("getComplete")
+      get() = _builder.getComplete()
+      @JvmName("setComplete")
+      set(value) {
+        _builder.setComplete(value)
+      }
+    /**
+     * <code>.outer.DeviceHostUploadFileCompleteReceiveValue complete = 2;</code>
+     */
+    fun clearComplete() {
+      _builder.clearComplete()
+    }
+    /**
+     * <code>.outer.DeviceHostUploadFileCompleteReceiveValue complete = 2;</code>
+     * @return Whether the complete field is set.
+     */
+    fun hasComplete(): kotlin.Boolean {
+      return _builder.hasComplete()
+    }
+    val valueCase: com.dogu.protocol.generated.outer.DeviceServer.DeviceHostUploadFileReceiveMessage.ValueCase
+      @JvmName("getValueCase")
+      get() = _builder.getValueCase()
+
+    fun clearValue() {
+      _builder.clearValue()
     }
   }
 }
 @kotlin.jvm.JvmSynthetic
 inline fun com.dogu.protocol.generated.outer.DeviceServer.DeviceHostUploadFileReceiveMessage.copy(block: com.dogu.protocol.generated.outer.DeviceHostUploadFileReceiveMessageKt.Dsl.() -> kotlin.Unit): com.dogu.protocol.generated.outer.DeviceServer.DeviceHostUploadFileReceiveMessage =
   com.dogu.protocol.generated.outer.DeviceHostUploadFileReceiveMessageKt.Dsl._create(this.toBuilder()).apply { block() }._build()
+
+val com.dogu.protocol.generated.outer.DeviceServer.DeviceHostUploadFileReceiveMessageOrBuilder.inProgressOrNull: com.dogu.protocol.generated.outer.DeviceServer.DeviceHostUploadFileInProgressReceiveValue?
+  get() = if (hasInProgress()) getInProgress() else null
+
+val com.dogu.protocol.generated.outer.DeviceServer.DeviceHostUploadFileReceiveMessageOrBuilder.completeOrNull: com.dogu.protocol.generated.outer.DeviceServer.DeviceHostUploadFileCompleteReceiveValue?
+  get() = if (hasComplete()) getComplete() else null
 

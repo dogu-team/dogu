@@ -45,8 +45,6 @@ async function fetchUrl(filePath: string, exceptionUrls: string[], checkedUrls: 
       timeout: 5000,
     };
 
-    console.log(url);
-
     try {
       await axios.request(config);
       checkedUrls[url] = true;
@@ -61,6 +59,8 @@ async function fetchUrl(filePath: string, exceptionUrls: string[], checkedUrls: 
         checkedUrls[url] = true;
       }
     }
+
+    console.log(url, checkedUrls[url]);
   }
 
   return true;
@@ -90,12 +90,12 @@ export async function validateUrlsInFile(dirPaths: string[], option: { exception
   }
 }
 
-export async function validate(dirPaths: string[], option: { exceptionUrls: string[]; checkedUrls: CheckedUrls }) {
-  await validateUrlsInFile(dirPaths, option);
+export async function validate(dirPaths: string[], args: { exceptionUrls: string[]; checkedUrls: CheckedUrls }) {
+  await validateUrlsInFile(dirPaths, args);
 
   const invalidUrls: string[] = [];
-  for (const checkedUrl of Object.keys(option.checkedUrls)) {
-    if (!option.checkedUrls[checkedUrl]) {
+  for (const checkedUrl of Object.keys(args.checkedUrls)) {
+    if (!args.checkedUrls[checkedUrl]) {
       invalidUrls.push(checkedUrl);
     }
   }

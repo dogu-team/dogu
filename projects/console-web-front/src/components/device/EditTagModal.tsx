@@ -57,13 +57,13 @@ const EditTagModal = ({ tag, isOpen, closeModal }: Props) => {
       closable
       title={t('device:editTagModalTitle')}
       form={
-        <Form id="edit-device" layout="vertical" preserve={false} onFinish={handleSubmit} form={form}>
+        <Form id="edit-device-tag" layout="vertical" preserve={false} onFinish={handleSubmit} form={form}>
           <Form.Item label={t('device:editTagNameLabel')} name="name" required rules={[{ required: true, message: t('device:editTagEmptyNameErrorMsg') }]}>
             <Input placeholder={t('device:editTagNameInputPlaceholer')} minLength={DEVICE_TAG_NAME_MIN_LENGTH} maxLength={DEVICE_TAG_NAME_MAX_LENGTHC} defaultValue={tag.name} />
           </Form.Item>
         </Form>
       }
-      formId="edit-device"
+      formId="edit-device-tag"
       close={closeModal}
       confirmLoading={loading}
       cancelText={t('common:cancel')}

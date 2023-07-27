@@ -68,6 +68,7 @@ const AddTeamModal = ({ isOpen, close, organizationId, projectId }: Props) => {
             maxLength={TEAM_NAME_MAX_LENGTH}
             allowClear
             loading={isAPILoading}
+            access-id="add-project-team-input"
           />
         }
         renderSelectedItem={(item) => {

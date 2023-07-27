@@ -152,6 +152,10 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
                 }
                 onConfirm={handleDelete}
                 modalButtonTitle={t('project:deleteProjectConfirmModalButtonText')}
+                access-id="delete-project-btn"
+                buttonProps={{
+                  id: 'delete-project-confirm-btn',
+                }}
               >
                 {t('project:deleteProjectButtonText')}
               </DangerZone.Button>

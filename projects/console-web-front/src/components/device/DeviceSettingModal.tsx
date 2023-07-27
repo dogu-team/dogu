@@ -65,7 +65,17 @@ const DeviceSettingModal = ({ isOpen, device, close }: Props) => {
   };
 
   return (
-    <Modal open={isOpen} centered okText={t('common:save')} cancelText={t('common:cancel')} onCancel={close} confirmLoading={loading} onOk={handleSave} destroyOnClose>
+    <Modal
+      open={isOpen}
+      centered
+      okText={t('common:save')}
+      cancelText={t('common:cancel')}
+      onCancel={close}
+      confirmLoading={loading}
+      onOk={handleSave}
+      destroyOnClose
+      okButtonProps={{ id: 'save-device-setting-btn' }}
+    >
       <H5>{t('device:deviceSettingModalTitle')}</H5>
       <FormContainer>
         <Form layout="vertical" form={form}>

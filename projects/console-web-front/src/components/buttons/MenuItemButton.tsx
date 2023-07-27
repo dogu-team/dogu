@@ -14,6 +14,7 @@ type DangerItemButtonType = {
   modalButtonTitle: string;
   footer?: React.ReactNode;
   persistOpen?: boolean;
+  confirmButtonId?: string;
   onClose?: () => void;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
@@ -65,6 +66,10 @@ const MenuItemButton = (props: Props) => {
         onCancel={handleClose}
         confirmLoading={loading}
         footer={props.footer}
+        destroyOnClose
+        buttonProps={{
+          id: props.confirmButtonId,
+        }}
       >
         {props.modalContent}
       </DangerConfirmModal>

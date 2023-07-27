@@ -70,11 +70,11 @@ export class DeviceHostUploadFileService
   private onStart(webSocket: WebSocket, value: DeviceHostUploadFileStartSendValueDto, valueAccessor: WebSocketRegistryValueAccessor<Value>): void {
     const { fileName, fileSize } = value;
     const tempFileName = uuidv4();
-    const tempFilePath = path.resolve(HostPaths.tempPath, tempFileName);
-    if (!fs.existsSync(HostPaths.tempPath)) {
-      fs.mkdirSync(HostPaths.tempPath, { recursive: true });
+    const tempFilePath = path.resolve(HostPaths.doguTempPath(), tempFileName);
+    if (!fs.existsSync(HostPaths.doguTempPath())) {
+      fs.mkdirSync(HostPaths.doguTempPath(), { recursive: true });
     }
-    const filePath = path.resolve(HostPaths.tempPath, fileName);
+    const filePath = path.resolve(HostPaths.doguTempPath(), fileName);
     const stream = fs.createWriteStream(tempFilePath);
     stream.on('close', () => {
       this.logger.info('File closed');
@@ -93,7 +93,7 @@ export class DeviceHostUploadFileService
   private onInProgress(webSocket: WebSocket, value: DeviceHostUploadFileInProgressSendValueDto, valueAccessor: WebSocketRegistryValueAccessor<Value>): void {
     const { chunk } = value;
     // this.logger.debug('File chunk', { chunkSize: chunk.length });
-    const { stream } = valueAccessor.get();
+    const { tempFilePath, stream } = valueAccessor.get();
     if (stream === null) {
       throw new Error('Stream is null');
     }
@@ -102,6 +102,30 @@ export class DeviceHostUploadFileService
         this.logger.error('File write error', { error });
         closeWebSocketWithTruncateReason(webSocket, 1001, errorify(error).message);
       }
+      fs.promises
+        .stat(tempFilePath)
+        .then((stats) => {
+          const receiveMessage: Instance<typeof DeviceHostUploadFile.receiveMessage> = {
+            value: {
+              $case: 'inProgress',
+              inProgress: {
+                offset: stats.size,
+              },
+            },
+          };
+          webSocket.send(DeviceHostUploadFileReceiveMessage.encode(receiveMessage).finish(), (error) => {
+            if (error) {
+              const casted = errorify(error);
+              this.logger.error('File inProgressReceive send error', { error: casted });
+              closeWebSocketWithTruncateReason(webSocket, 1001, casted.message);
+            }
+          });
+        })
+        .catch((error) => {
+          const casted = errorify(error);
+          this.logger.error('File stat error', { error: casted });
+          closeWebSocketWithTruncateReason(webSocket, 1001, casted.message);
+        });
     });
   }
 
@@ -112,6 +136,7 @@ export class DeviceHostUploadFileService
     }
     stream.end();
     stream.close((error) => {
+      valueAccessor.update({ tempFilePath, filePath, fileSize, stream: null });
       if (error) {
         this.logger.error('File close error', { error });
         closeWebSocketWithTruncateReason(webSocket, 1001, errorify(error).message);
@@ -134,12 +159,17 @@ export class DeviceHostUploadFileService
           })
           .then(() => {
             const receiveMessage: Instance<typeof DeviceHostUploadFile.receiveMessage> = {
-              filePath,
+              value: {
+                $case: 'complete',
+                complete: {
+                  filePath,
+                },
+              },
             };
             webSocket.send(DeviceHostUploadFileReceiveMessage.encode(receiveMessage).finish(), (error) => {
               if (error) {
                 const casted = errorify(error);
-                this.logger.error('File complete send error', { error: casted });
+                this.logger.error('File completeReceive send error', { error: casted });
                 closeWebSocketWithTruncateReason(webSocket, 1001, casted.message);
               } else {
                 closeWebSocketWithTruncateReason(webSocket, 1000);

@@ -13,14 +13,6 @@ import { l10n } from './l10n';
 export function runHost(hostName: string, dost: Dost): void {
   job('Create host', () => {
     let token = '';
-    test('Go to host page', async () => {
-      await Driver.clickElement({ xpath: '//*[@access-id="project-layout-org-name"]' });
-    });
-
-    test('Click host menu', async () => {
-      // side-bar-host
-      await Driver.clickElement({ xpath: '//*[@access-id="side-bar-host"]' });
-    });
 
     test('Get new host token', async () => {
       // add-new-host

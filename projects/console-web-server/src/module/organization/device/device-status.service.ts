@@ -59,7 +59,7 @@ export class DeviceStatusService {
       dto.projectIds.length === 0 //
         ? `(device.is_global = 1
         AND device.organization_id = '${organizationId}'
-        AND device.name LIKE '%${dto.deviceName}%'
+        AND device.name ILIKE '%${dto.deviceName}%'
         AND ${connectionStateFilterClause}
         AND ${tagNameFilterCluase})`
         : '1=0';
@@ -80,14 +80,15 @@ export class DeviceStatusService {
         sessionStates: [REMOTE_DEVICE_JOB_STATE.WAITING, REMOTE_DEVICE_JOB_STATE.IN_PROGRESS],
       })
       .where('organization.organization_id = :organizationId', { organizationId })
-      .andWhere('device.name LIKE :name', { name: `%${dto.deviceName}%` })
+      .andWhere('device.name ILIKE :name', { name: `%${dto.deviceName}%` })
       .andWhere(projectIdFilterClause, { projectIds: dto.projectIds })
       .andWhere(hostIdFilterClause, { hostId: dto.hostId })
       .andWhere('project.project_id IS NOT NULL')
       .andWhere(connectionStateFilterClause, { connectionStates: dto.connectionStates })
       .andWhere(tagNameFilterCluase, { tagNames: dto.tagNames })
       .orWhere(isGlobalFilter)
-      .orderBy('device.updated_at', 'DESC')
+      .orderBy(`device.${DevicePropSnake.connection_state}`, 'DESC')
+      .addOrderBy(`device.${DevicePropSnake.name}`, 'ASC')
       .getManyAndCount();
     const devices = rv[0];
     const totalCount = rv[1];
@@ -123,10 +124,11 @@ export class DeviceStatusService {
       .andWhere(`device.${DevicePropSnake.device_id} NOT IN ${projectDeviceSubQuery.getQuery()}`)
       .andWhere(`device.${DevicePropSnake.device_id} NOT IN ${hostDeviceSubQuery.getQuery()}`)
       .andWhere(`device.${DevicePropSnake.is_global} = 0`)
-      .andWhere(`device.${DevicePropSnake.name} LIKE :name`, { name: `%${dto.deviceName}%` })
+      .andWhere(`device.${DevicePropSnake.name} ILIKE :name`, { name: `%${dto.deviceName}%` })
       .innerJoinAndSelect(`device.${DevicePropCamel.host}`, 'host')
       .andWhere(hostIdFilterClause, { hostId: dto.hostId })
-      .orderBy(`device.${DevicePropCamel.updatedAt}`, 'DESC')
+      .orderBy(`device.${DevicePropSnake.connection_state}`, 'DESC')
+      .addOrderBy(`device.${DevicePropSnake.name}`, 'ASC')
       .limit(dto.getDBLimit())
       .offset(dto.getDBOffset());
 

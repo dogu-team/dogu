@@ -77,6 +77,7 @@ const TagItem = ({ tag, mutateTags }: TagItemProps) => {
             </p>
           }
           onConfirm={handleDelete}
+          confirmButtonId="tag-delete-confirm-btn"
         >
           {t('device:tagItemDeleteMenu')}
         </MenuItemButton>

@@ -17,7 +17,7 @@ const AddTeamButton = ({ organizationId, projectId }: Props) => {
 
   return (
     <>
-      <Button type="primary" onClick={() => openModal()}>
+      <Button type="primary" onClick={() => openModal()} access-id="add-project-team-btn">
         {t('project-member:addProjectTeamMember')}
       </Button>
 

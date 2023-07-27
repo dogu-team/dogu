@@ -141,7 +141,7 @@ const HostItem = ({ host }: HostItemProps) => {
           modalButtonTitle={t('host:hostTokenRevokeModalConfirmButtonTitle')}
           modalContent={
             token ? (
-              <div>
+              <div access-id="host-token-revoke-alert">
                 <Alert
                   onClick={(e) => {
                     e.stopPropagation();
@@ -167,6 +167,7 @@ const HostItem = ({ host }: HostItemProps) => {
           footer={token ? null : undefined}
           onClose={() => setToken(undefined)}
           persistOpen
+          confirmButtonId="host-token-revoke-confirm-btn"
         >
           {t('host:hostItemRevokeTokenMenu')}
         </MenuItemButton>
@@ -201,6 +202,7 @@ const HostItem = ({ host }: HostItemProps) => {
                 ))}
             </StyledDeleteModalContent>
           }
+          confirmButtonId="host-delete-confirm-btn"
         >
           {t('host:hostItemDeleteMenu')}
         </MenuItemButton>

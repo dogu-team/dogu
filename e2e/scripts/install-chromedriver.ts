@@ -57,11 +57,14 @@ interface ChromeBucketResult {
     return a.LastModified < b.LastModified ? 1 : -1;
   });
 
+  console.log(`install chrome driver version `, version);
+
   for (const f of files) {
     let targetContent = contents.find((c) => c.Key.startsWith(versionPrefix) && c.Key.endsWith(f.postfix))!;
     if ('latest' !== versionPrefix) {
       targetContent = contents.find((c) => c.Key.startsWith(versionPrefix) && c.Key.endsWith(f.postfix))!;
     }
+    console.log(`install chrome driver targetContent`, targetContent);
     const url = `https://chromedriver.storage.googleapis.com/${targetContent.Key}`;
 
     const majorVersion = targetContent.Key.split('.')[0];

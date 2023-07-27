@@ -37,7 +37,7 @@ jobs:
         run: yarn build:docs
 
       - name: Validate
-        run: yarn workspace validation run docs:url
+        run: yarn workspace validators run docs:url
 
   send-slack:
     runs-on: ubuntu-latest

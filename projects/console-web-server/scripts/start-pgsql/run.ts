@@ -1,51 +1,41 @@
 import { node_package } from '@dogu-dev-private/build-tools';
-import { PostgreSql } from '../utils/pgsql';
-import { exec, execute, spawnWithFindPattern, which } from '../utils/utils';
+import { checkDockerInstalled, clearDokerContainer, createDbSchema, createFakeDbMigrations, createSeedData, pullDockerImage } from '../common/common';
+import { exec, execute } from '../utils/utils';
 import { config, pgsqlConnectionOptions } from './config';
 
-(async (): Promise<void> => {
-  const currentDir = process.cwd();
-  const workspaceDir = node_package.findRootWorkspace();
-  process.chdir(workspaceDir);
-
-  await execute('Checking Docker...', () => which('docker', { errorMessage: 'Error: Docker is not installed' }));
-  await execute('Pulling image...', () => exec('docker pull postgres', { errorMessage: 'Error: Docker pull failed', retry: true }));
-  await execute('Stopping container...', async () => {
-    const { stdout } = await exec(`docker ps -a --filter name=${config.containerName} --format "{{.ID}}"`, { errorMessage: 'Error: Docker ps failed' });
-    const containerId = stdout.trim();
-    if (containerId) {
-      console.log(`Container found: ${containerId}`);
-      await execute('Removing container...', () => exec(`docker rm -f ${containerId}`, { errorMessage: 'Error: Docker remove failed' }));
-    } else {
-      console.log('Container not found');
-    }
-  });
-
+async function startDockerContainer() {
+  await checkDockerInstalled();
   await execute('Starting container...', () =>
     exec(
-      `docker run -d --name ${config.containerName} -e POSTGRES_DB=${config.schema} -e POSTGRES_USER=${config.rootUser} -e POSTGRES_PASSWORD=${config.rootPassword} -e PGPORT=${config.port} -e TZ=Etc/UTC -p ${config.port}:${config.port} -m 2g --restart always postgres:15.3`,
+      `docker run -d \
+      --name ${config.containerName} \
+      -e POSTGRES_DB=${config.schema} \
+      -e POSTGRES_USER=${config.rootUser} \
+      -e POSTGRES_PASSWORD=${config.rootPassword} \
+      -e PGPORT=${config.port} \
+      -e TZ=Etc/UTC \
+      -p ${config.port}:${config.port} \
+      --restart always \
+      ${config.imageName}`,
       {
         errorMessage: 'Error: Docker run failed',
       },
     ),
   );
+}
+
+(async (): Promise<void> => {
+  const currentDir = process.cwd();
+  const workspaceDir = node_package.findRootWorkspace();
+  process.chdir(workspaceDir);
+  await clearDokerContainer(config.containerName);
+  await pullDockerImage(config.imageName);
+  await startDockerContainer();
 
   process.chdir(currentDir);
-  await execute(
-    'Create tables...',
-    async () => await spawnWithFindPattern('yarn', ['workspace', 'console-web-server', 'typeorm:schema'], /.*Schema synchronization finished successfully\..*/m),
-  );
-  await execute('Create migrations...', () => exec('yarn workspace console-web-server typeorm:fake'));
-  await execute('Create seeds...', async () => {
-    await PostgreSql.on(pgsqlConnectionOptions, async (context) => {
-      await context.query('Create role bases...', `INSERT INTO project_role VALUES (1,'Admin',null,0,NOW(),NOW()), (2,'Write',null,0,NOW(),NOW()), (3,'Read',null,0,NOW(),NOW());`);
-      await context.query(
-        'Create role bases...',
-        `INSERT INTO organization_role VALUES (1,null,'Owner', 0, NOW(),NOW(), null), (2,null,'Admin', 0,NOW(),NOW(), null), (3,null,'Member', 0,NOW(),NOW(), null);`,
-      );
-    });
-  });
-
+  await createDbSchema();
+  await createFakeDbMigrations();
+  await createSeedData(pgsqlConnectionOptions);
   console.log('Done');
   /**
    * @note force exit because kill the typeorm:schema process but does not exit

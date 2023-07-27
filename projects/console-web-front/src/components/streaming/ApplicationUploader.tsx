@@ -19,7 +19,7 @@ interface Props {
 
 const ApplicationUploader = ({}: Props) => {
   const { device, deviceService, loading } = useDeviceStreamingContext();
-  const { uploadApp, cancelUpload, runApp, isInstalling, progress, isGathering, app, result } = useDeviceAppInstall(
+  const { uploadApp, cancelUpload, runApp, isInstalling, progress, app, result } = useDeviceAppInstall(
     device?.serial,
     deviceService?.deviceHostClient,
     deviceService?.deviceClient,
@@ -96,23 +96,19 @@ const ApplicationUploader = ({}: Props) => {
               ) : (
                 <FlexCentered>
                   <ExclamationCircleOutlined style={{ fontSize: '3rem', color: '#f78a77', marginBottom: '.5rem' }} />
-                  <p>{t('device-streaming:uploadFailureMessage')}</p>
+                  <p>{result.failType === 'upload' ? t('device-streaming:uploadTransferFailureMessage') : t('device-streaming:uploadInstallFailureMessage')}</p>
                 </FlexCentered>
               )
             ) : (
               <div style={{ paddingTop: '.5rem' }}>
                 <Steps
                   direction="vertical"
-                  current={progress !== undefined ? 0 : isGathering ? 1 : 2}
+                  current={progress !== undefined ? 0 : 1}
                   items={[
                     {
                       title: t('device-streaming:uploadApplicationUploadStatus'),
                       description: progress !== undefined ? <Progress type="line" percent={progress} /> : undefined,
                       icon: progress !== undefined ? <LoadingOutlined /> : undefined,
-                    },
-                    {
-                      title: t('device-streaming:uploadApplicationGatheringStatus'),
-                      icon: isGathering ? <LoadingOutlined /> : undefined,
                     },
                     {
                       title: t('device-streaming:uploadApplicationInstallingStatus'),

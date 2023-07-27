@@ -126,7 +126,15 @@ const EditDeviceTagModal = ({ deviceId, isOpen, close }: Props) => {
   };
 
   return (
-    <Modal open={isOpen} closable onCancel={handleClose} title={t('device:deviceEditTagModalTitle')} centered footer={null} destroyOnClose>
+    <Modal
+      open={isOpen}
+      closable
+      onCancel={handleClose}
+      title={<p access-id="edit-tag-modal-title">{t('device:deviceEditTagModalTitle')}</p>}
+      centered
+      footer={null}
+      destroyOnClose
+    >
       <Box>
         <ContentTitle>{t('device:deviceEditTagSearchTitle')}</ContentTitle>
         <InputWrapper>

@@ -1,6 +1,6 @@
 import { closeWebSocketWithTruncateReason, errorify, Instance, stringify, transformAndValidate, WebSocketSpec } from '@dogu-tech/common';
 import { DeviceHostUploadFileReceiveMessage, DeviceHostUploadFileSendMessage, ThirdPartyPathMap } from '@dogu-tech/types';
-import { DeviceCloser, DeviceClientOptions, DeviceService, DeviceWebSocket, HostFileUploader } from './bases';
+import { DeviceClientOptions, DeviceCloser, DeviceService, DeviceWebSocket, HostFileUploader } from './bases';
 import { DeviceHttpClient } from './device-http-client';
 import { DeviceHost } from './specs/http/device-host';
 import { DeviceHostDownloadSharedResource } from './specs/ws/device-host/download-shared-resource';
@@ -72,7 +72,7 @@ export class DeviceHostClient extends DeviceHttpClient {
     });
   }
 
-  async uploadFile(fileName: string, fileSize: number, onComplete: (filePath: string) => void): Promise<HostFileUploader> {
+  async uploadFile(fileName: string, fileSize: number, onProgress: (offset: number) => void, onComplete: (filePath: string, error?: Error) => void): Promise<HostFileUploader> {
     return this.connectWebSocket(
       DeviceHostUploadFile,
       (deviceWebSocket) => {
@@ -89,16 +89,30 @@ export class DeviceHostClient extends DeviceHttpClient {
         return new HostFileUploader(deviceWebSocket);
       },
       (code, reason) => {
-        // noop
+        if (code === 1000) {
+          return;
+        }
+        onComplete('', new Error(`Unexpected close: ${code} ${reason}`));
       },
       (value, deviceWebSocket) => {
         if (!(value instanceof Uint8Array)) {
           throw new Error(`Unexpected data: ${stringify(value)}`);
         }
+
         const receiveMessage = DeviceHostUploadFileReceiveMessage.decode(value);
-        const { filePath } = receiveMessage;
-        onComplete(filePath);
-        deviceWebSocket.close(1000, 'OK');
+        if (!receiveMessage.value) {
+          throw new Error(`Empty data: ${stringify(receiveMessage)}`);
+        }
+        const { $case } = receiveMessage.value;
+        if ($case === 'inProgress') {
+          const { offset } = receiveMessage.value.inProgress;
+          onProgress(offset);
+        } else if ($case === 'complete') {
+          const { filePath } = receiveMessage.value.complete;
+
+          onComplete(filePath);
+          deviceWebSocket.close(1000, 'OK');
+        }
       },
     );
   }

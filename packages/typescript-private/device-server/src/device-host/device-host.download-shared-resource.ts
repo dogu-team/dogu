@@ -59,9 +59,9 @@ export class DeviceHostDownloadSharedResourceService {
 
     this.logger.info('File is downloading', { filePath });
     const tempFileName = `${uuidv4()}.download`;
-    const tempFilePath = path.resolve(HostPaths.tempPath, tempFileName);
-    if (!fs.existsSync(HostPaths.tempPath)) {
-      fs.mkdirSync(HostPaths.tempPath, { recursive: true });
+    const tempFilePath = path.resolve(HostPaths.doguTempPath(), tempFileName);
+    if (!fs.existsSync(HostPaths.doguTempPath())) {
+      fs.mkdirSync(HostPaths.doguTempPath(), { recursive: true });
     }
     const response = await axios.get(url, {
       responseType: 'stream',

@@ -116,6 +116,7 @@ jobs:
       - name: run
         run: |
           docker ps -qa | xargs -r docker rm -f
+          docker pull dogutechio/dogu-e2e:latest
           docker compose -f ./docker-compose.yml --env-file ./docker-compose.env --verbose up -d
   e2e:
     needs: start-e2e-dogu

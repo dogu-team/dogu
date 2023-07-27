@@ -192,9 +192,9 @@ export class UserService {
       .where(`orgUserRole.${orgIdSnake} = :${orgIdCamel}`, { organizationId })
       .andWhere(
         new Brackets((qb) => {
-          qb.where(`replace(user.${UserPropSnake.name}, ' ', '') LIKE :keyword`, { keyword: `%${dto.keyword}%` })
-            .orWhere(`user.${UserPropSnake.name} LIKE :keyword`, { keyword: `%${dto.keyword}%` })
-            .orWhere(`user.${UserPropSnake.email} LIKE :keyword`, { keyword: `%${dto.keyword}%` });
+          qb.where(`replace(user.${UserPropSnake.name}, ' ', '') ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
+            .orWhere(`user.${UserPropSnake.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })
+            .orWhere(`user.${UserPropSnake.email} ILIKE :keyword`, { keyword: `%${dto.keyword}%` });
         }),
       )
       .orderBy(`user.${UserPropCamel.createdAt}`, 'ASC')

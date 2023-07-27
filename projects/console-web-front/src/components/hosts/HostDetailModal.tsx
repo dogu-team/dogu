@@ -46,7 +46,7 @@ const HostDetailModal = ({ isOpen, host, close }: Props) => {
       <Box>
         <Content>
           <StyledH4>{t('host:hostDetilNameTitle')}</StyledH4>
-          <p>{host?.name}</p>
+          <p access-id="host-modal-name">{host?.name}</p>
         </Content>
         <Content>
           <StyledH4>{t('host:hostDetailCreatedDateTitle')}</StyledH4>
@@ -64,7 +64,7 @@ const HostDetailModal = ({ isOpen, host, close }: Props) => {
         </Content>
         {host?.creator && (
           <Content>
-            <StyledH4>{t('host:hostDetailCreatorTitle')}</StyledH4>
+            <StyledH4 id="host-creator-title">{t('host:hostDetailCreatorTitle')}</StyledH4>
             <ProfileImageWithName profileImage={<ProfileImage name={host.creator.name} size={36} profileImageUrl={host.creator.profileImageUrl} />} name={host.creator.name} />
           </Content>
         )}
@@ -84,12 +84,13 @@ const HostDetailModal = ({ isOpen, host, close }: Props) => {
                     message.error(t('common:copyClipboardFailed'));
                   }
                 }}
+                access-id="copy-host-token-btn"
               >
                 {t('common:copy')}
               </Button>
             </div>
           ) : (
-            <Button loading={loading} onClick={handleClickCheckToken}>
+            <Button loading={loading} onClick={handleClickCheckToken} access-id="show-host-token-btn">
               {t('host:hostDetailShowTokenButtonTitle')}
             </Button>
           )}
