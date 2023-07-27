@@ -13,6 +13,8 @@ export const config = {
 
 console.log('config', config);
 
+console.log('ENV', env.DOGU_RUN_TYPE);
+
 export const pgsqlConnectionOptions = {
   host: config.host,
   port: config.port,
