@@ -936,6 +936,48 @@ Dest.withOptions({
       });
     });
 
+    job('Device tag management', () => {
+      const androidDeviceSettingConfig = deviceSettingInfos.find((item) => item.name === 'Android device setting');
+      test('Move to organization page', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="project-layout-org-name"]' });
+      });
+
+      test('Move to device tag menu', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="side-bar-device"]' });
+        await Driver.clickElement({ xpath: '//a[@access-id="org-tag-list-tab"]' });
+      });
+
+      test('Edit tag', async () => {
+        await Driver.clickElement({ xpath: `//div[text()="${values.value.ANDROID_DEVICE_TAG}"]/../div[3]//button[@access-id="list-menu-btn"]` });
+        await Driver.clickElement({ xpath: '//li[contains(@data-menu-id, "edit")]/span/button' });
+        await Driver.sendKeys({ xpath: '//input[@id="name"]' }, 'edit');
+        await Driver.clickElement({ xpath: '//button[@form="edit-device-tag"]' });
+        await Timer.wait(2000, 'wait for changing device tag');
+      });
+
+      test('Edit tag check', async () => {
+        await Driver.findElement({ xpath: `//div[text()="${values.value.ANDROID_DEVICE_TAG}edit"]` });
+        await Driver.clickElement({ xpath: '//a[@access-id="org-device-list-tab"]' });
+        await Driver.clickElement({ xpath: '//*[@icon-id="android-icon"]/../../../div[5]/div/div[1]/button' });
+        await Driver.findElement({ xpath: `//span[contains(@class, "ant-tag") and text()="${values.value.ANDROID_DEVICE_TAG}edit"]` });
+        await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
+      });
+
+      test('Delete tag', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="org-tag-list-tab"]' });
+        await Driver.clickElement({ xpath: `//div[text()="${values.value.ANDROID_DEVICE_TAG}edit"]/../div[3]//button[@access-id="list-menu-btn"]` });
+        await Driver.clickElement({ xpath: '//li[contains(@data-menu-id, "delete")]/span/button' });
+        await Driver.clickElement({ xpath: '//button[@id="tag-delete-confirm-btn"]' });
+        await Timer.wait(2000, 'wait for deleting device tag');
+      });
+
+      test('Delete tag check', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="org-device-list-tab"]' });
+        const tagCount = await Driver.getText({ xpath: '//*[@icon-id="android-icon"]/../../../div[5]/div/div[1]/button/p' });
+        expect(tagCount).toBe('1');
+      });
+    });
+
     afterAll(async () => {
       Timer.close();
 

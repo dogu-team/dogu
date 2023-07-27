@@ -77,6 +77,7 @@ const TagItem = ({ tag, mutateTags }: TagItemProps) => {
             </p>
           }
           onConfirm={handleDelete}
+          confirmButtonId="tag-delete-confirm-btn"
         >
           {t('device:tagItemDeleteMenu')}
         </MenuItemButton>
@@ -104,7 +105,7 @@ const TagItem = ({ tag, mutateTags }: TagItemProps) => {
           <MenuCell>
             {!isPlatformTag && (
               <FlexEndBox>
-                <MenuButton menu={{ items }} />
+                <MenuButton menu={{ items }} destroyPopupOnHide />
               </FlexEndBox>
             )}
           </MenuCell>
