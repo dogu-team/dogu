@@ -127,7 +127,8 @@ export class DeviceStatusService {
       .andWhere(`device.${DevicePropSnake.name} ILIKE :name`, { name: `%${dto.deviceName}%` })
       .innerJoinAndSelect(`device.${DevicePropCamel.host}`, 'host')
       .andWhere(hostIdFilterClause, { hostId: dto.hostId })
-      .orderBy(`device.${DevicePropCamel.updatedAt}`, 'DESC')
+      .orderBy(`device.${DevicePropSnake.connection_state}`, 'DESC')
+      .addOrderBy(`device.${DevicePropSnake.name}`, 'ASC')
       .limit(dto.getDBLimit())
       .offset(dto.getDBOffset());
 
