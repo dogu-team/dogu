@@ -1,13 +1,5 @@
 import { RoutineStepBase, RoutineStepPropSnake } from '@dogu-private/console';
-import {
-  PIPELINE_STATUS,
-  RoutineDeviceJobId,
-  RoutineStepId,
-  ROUTINE_STEP_NAME_MAX_LENGTH,
-  ROUTINE_STEP_RUN_MAX_LENGTH,
-  ROUTINE_STEP_TABLE_NAME,
-  ROUTINE_STEP_USES_MAX_LENGTH,
-} from '@dogu-private/types';
+import { PIPELINE_STATUS, RoutineDeviceJobId, RoutineStepId, ROUTINE_STEP_NAME_MAX_LENGTH, ROUTINE_STEP_TABLE_NAME, ROUTINE_STEP_USES_MAX_LENGTH } from '@dogu-private/types';
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { Dest } from './dest.entity';
@@ -63,7 +55,7 @@ export class RoutineStep extends BaseEntity implements RoutineStepBase {
   @Column({ type: 'character varying', name: RoutineStepPropSnake.uses, length: ROUTINE_STEP_USES_MAX_LENGTH, default: () => 'NULL', nullable: true })
   uses!: string | null;
 
-  @Column({ type: 'character varying', name: RoutineStepPropSnake.run, length: ROUTINE_STEP_RUN_MAX_LENGTH, default: () => 'NULL', nullable: true })
+  @Column({ type: 'character varying', name: RoutineStepPropSnake.run, default: () => 'NULL', nullable: true })
   run!: string | null;
 
   @Column({ type: 'json', name: RoutineStepPropSnake.with, default: () => 'NULL', nullable: true })

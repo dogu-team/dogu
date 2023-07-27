@@ -11,7 +11,6 @@ export const ROUTINE_STEP_DESC_MIN_LENGTH = 1;
 export const ROUTINE_STEP_DESC_MAX_LENGTH = 100;
 
 export const ROUTINE_STEP_USES_MAX_LENGTH = 100;
-export const ROUTINE_STEP_RUN_MAX_LENGTH = 512;
 
 // export const STEP_LOG_ENDTIME_DELAY_COUNT = 5;
 // export const STEP_LOG_LIVE_DELAY_COUNT = 3;
