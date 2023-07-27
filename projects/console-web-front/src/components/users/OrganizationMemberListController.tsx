@@ -65,6 +65,7 @@ const MemberItem = ({ member }: MemberItemProps) => {
           modalTitle={t('org-member:removeModalTitle')}
           modalButtonTitle={t('org-member:removeModalButtonText')}
           modalContent={<p>{t('org-member:removeModalContentText')}</p>}
+          confirmButtonId="remove-member-confirm-btn"
         >
           {t('org-member:memberItemRemoveMenu')}
         </MenuItemButton>

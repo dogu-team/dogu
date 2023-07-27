@@ -633,6 +633,8 @@ Dest.withOptions({
         isHost: false,
       },
     ];
+    let hostDeviceName = '';
+    let androidDeviceName = '';
     // if (process.platform === 'darwin') {
     //   deviceSettingInfos.push({
     //     name: 'iOS device setting',
@@ -741,11 +743,16 @@ Dest.withOptions({
 
         job('Device streaming', () => {
           test('Go to device menu', async () => {
-            await Driver.clickElement({ xpath: '//*[@access-id="side-bar-device"]' });
+            await Driver.clickElement({ xpath: '//a[@access-id="org-device-list-tab"]' });
           });
 
           test('Click menu', async () => {
             await Driver.clickElement({ xpath: listTabMenu });
+            if (name.startsWith('Host')) {
+              hostDeviceName = await Driver.getText({ xpath: '//span[text()="Host"]/../../p' });
+            } else if (name.startsWith('Android')) {
+              androidDeviceName = await Driver.getText({ xpath: '//*[@icon-id="android-icon"]/../../../div[1]/button/p' });
+            }
           });
 
           test('Click streaming button', async () => {
@@ -871,31 +878,31 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: '//*[@access-id="side-bar-device"]' });
       });
 
-      // edit device name & pararell job count
       const hostDeviceSettingConfig = deviceSettingInfos.find((item) => item.name === 'Host device setting');
       const androidDeviceSettingConfig = deviceSettingInfos.find((item) => item.name === 'Android device setting');
+
       test('Update device settings', async () => {
         expect(!!hostDeviceSettingConfig).toBe(true);
         await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
-        await Driver.clickElement({ xpath: '//li[contains(@data-menu-id, "setting")]/span/button' });
+        await Driver.clickElement({ xpath: `//button[@id="${hostDeviceName}-setting-menu-btn"]` });
         await Driver.sendKeys({ xpath: '//input[@id="name"]' }, 'edit');
         await Driver.sendKeys({ xpath: '//input[@id="max"]' }, '\b8');
         await Driver.clickElement({ xpath: '//button[@id="save-device-setting-btn"]' });
         await Timer.wait(2000, 'wait for changing device setting');
+        hostDeviceName += 'edit';
       });
 
       test('Check device name', async () => {
         await Driver.findElement({ xpath: '//span[text()="Host"]/../../p[contains(text(), "edit")]' });
         await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
-        await Driver.clickElement({ xpath: '//li[contains(@data-menu-id, "setting")]/span/button' });
+        await Driver.clickElement({ xpath: `//button[@id="${hostDeviceName}-setting-menu-btn"]` });
         await Driver.findElement({ xpath: '//input[@id="max" and @value="8"]' });
         await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
       });
 
-      // detach tag (check with count)
       test('Detach tag', async () => {
         await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
-        await Driver.clickElement({ xpath: '//li[contains(@data-menu-id, "edit-tag")]/span/button' });
+        await Driver.clickElement({ xpath: `//button[@id="${hostDeviceName}-edit-tag-menu-btn"]` });
         await Driver.clickElement({ xpath: '//p[@access-id="edit-tag-modal-title"]' });
         await Driver.clickElement({ xpath: `//span[contains(@class, "ant-tag") and text()="${values.value.HOST_DEVICE_TAG}"]/span` });
         await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
@@ -904,10 +911,9 @@ Dest.withOptions({
         expect(tagCount).toBe('1');
       });
 
-      // use global (check with project)
       test('Use global', async () => {
         await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
-        await Driver.clickElement({ xpath: '//li[contains(@data-menu-id, "edit-project")]/span/button' });
+        await Driver.clickElement({ xpath: `//button[@id="${hostDeviceName}-edit-project-menu-btn"]` });
         await Driver.clickElement({ xpath: '//input[@id="use-as-public-device-checkbox"]/../..' });
         await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
         await Driver.findElement({ xpath: '//span[text()="Host"]/../..//span[text()="Public"]' });
@@ -921,12 +927,11 @@ Dest.withOptions({
         await Driver.findElement({ xpath: '//span[text()="Host"]' });
       });
 
-      // disable all device (check in device list, project)
       test('Disable device', async () => {
         await Driver.clickElement({ xpath: '//*[@access-id="project-layout-org-name"]' });
         await Driver.clickElement({ xpath: '//a[@access-id="side-bar-device"]' });
         await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
-        await Driver.clickElement({ xpath: '//li[contains(@data-menu-id, "unuse")]/span/button' });
+        await Driver.clickElement({ xpath: `//button[@id="${hostDeviceName}-stop-using-device-menu-btn"]` });
         await Driver.clickElement({ xpath: '//button[@id="stop-using-device-confirm-btn"]' });
         await Timer.wait(2000, 'wait for changing device setting');
         await Driver.clickElement({ xpath: '//a[@access-id="side-bar-project"]' });
@@ -938,6 +943,7 @@ Dest.withOptions({
 
     job('Device tag management', () => {
       const androidDeviceSettingConfig = deviceSettingInfos.find((item) => item.name === 'Android device setting');
+      let androidDeviceName = '';
       test('Move to organization page', async () => {
         await Driver.clickElement({ xpath: '//*[@access-id="project-layout-org-name"]' });
       });
@@ -976,6 +982,62 @@ Dest.withOptions({
         const tagCount = await Driver.getText({ xpath: '//*[@icon-id="android-icon"]/../../../div[5]/div/div[1]/button/p' });
         expect(tagCount).toBe('1');
       });
+    });
+
+    job('Deletion', () => {
+      // project deletion
+      test('Delete project', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="side-bar-project"]' });
+        await Driver.clickElement({ xpath: '//a[text()="Sample Project"]' });
+        await Driver.clickElement({ xpath: '//a[@access-id="project-setting-tab"]' });
+        await Driver.clickElement({ xpath: '//button[@access-id="delete-project-btn"]' });
+        await Driver.clickElement({ xpath: '//button[@id="delete-project-confirm-btn"]' });
+      });
+
+      test('Check project deletion', async () => {
+        await Timer.wait(2000, 'wait for project deletion');
+        const elems = await Driver.findElements({ xpath: '//div[@access-id="project-list"]//li[contains(@class, "ant-list-item")]' });
+        expect(elems.length).toBe(1);
+      });
+
+      // team deletion
+      test('Delete team', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="side-bar-team"]' });
+        await Driver.clickElement({ xpath: `//p[text()="${values.value.TEAM_NAME}"]/..` });
+        await Driver.clickElement({ xpath: '//a[@access-id="team-setting-tab"]' });
+        await Driver.clickElement({ xpath: '//button[@access-id="remove-team-btn"]' });
+        await Driver.clickElement({ xpath: '//button[@id="remove-team-confirm-btn"]' });
+      });
+
+      test('Check team deletion', async () => {
+        await Timer.wait(2000, 'wait for team deletion');
+        await Driver.findElement({ xpath: '//*[contains(@class, "ant-empty")]' });
+      });
+
+      // member deletion
+      test('Delete member', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="side-bar-member"]' });
+        await Driver.clickElement({ xpath: `//p[text()="${values.value.INVITE_USER_NAME}"]/../../../..//button[@access-id="list-menu-btn"]` });
+        await Driver.clickElement({ xpath: '//li[contains(@data-menu-id, "delete")]/span/button' });
+        await Driver.clickElement({ xpath: '//button[@id="remove-member-confirm-btn"]' });
+      });
+
+      test('Check member deletion', async () => {
+        await Timer.wait(2000, 'wait for member deletion');
+        const elems = await Driver.findElements({ xpath: '//button[@access-id="list-menu-btn"]' });
+        expect(elems.length).toBe(1);
+      });
+
+      test('Delete org', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="side-bar-setting"]' });
+        await Driver.clickElement({ xpath: '//button[@access-id="remove-org-btn"]' });
+        await Driver.clickElement({ xpath: '//button[@id="remove-org-confirm-btn"]' });
+      });
+
+      // test('Check org deletion', async () => {
+      //   await Timer.wait(2000, 'wait for org deletion');
+      //   await Driver.findElement({ xpath: '//*[contains(@class, "ant-empty")]' });
+      // });
     });
 
     afterAll(async () => {

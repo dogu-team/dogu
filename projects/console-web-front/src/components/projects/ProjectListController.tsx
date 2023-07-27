@@ -1,13 +1,12 @@
-import { useState } from 'react';
 import useTranslation from 'next-translate/useTranslation';
-import { LoadingOutlined, PlusCircleOutlined, ProjectOutlined } from '@ant-design/icons';
-import { instanceOfUserBase, PageBase, ProjectBase, TeamBase, UserBase } from '@dogu-private/console';
-import { AxiosError } from 'axios';
+import { LoadingOutlined, ProjectOutlined } from '@ant-design/icons';
+import { instanceOfUserBase, ProjectBase, TeamBase, UserBase } from '@dogu-private/console';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { Avatar, List, Tooltip } from 'antd';
 import { OrganizationId } from '@dogu-private/types';
 import Link from 'next/link';
+import Trans from 'next-translate/Trans';
 
 import useRefresh from '../../hooks/useRefresh';
 import usePaginationSWR from '../../hooks/usePaginationSWR';
@@ -15,9 +14,7 @@ import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } fro
 import { listActiveNameStyle } from '../../styles/text';
 import ProfileImage from '../ProfileImage';
 import ListEmpty from '../common/boxes/ListEmpty';
-import Trans from 'next-translate/Trans';
 import { getLocaleFormattedDate } from '../../utils/locale';
-import { localizeDate } from '../../utils/date';
 
 interface ProjectItemProps {
   project: ProjectBase;
@@ -91,6 +88,7 @@ const ProjectListController = ({ organizationId }: Props) => {
         </ItemInner>
       </Header>
       <List<ProjectBase>
+        access-id="project-list"
         dataSource={data?.items}
         renderItem={(item) => <ProjectItem project={item} />}
         loading={isLoading}

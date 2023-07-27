@@ -95,6 +95,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
               e.preventDefault();
             }
           }}
+          id={`${device.name}-streaming-menu-btn`}
         >
           {t('device:deviceItemStreamingMenu')}
         </PrimaryLinkButton>
@@ -104,7 +105,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
     { type: 'divider' },
     {
       label: (
-        <MenuItemButton danger={false} onClick={() => openEditDeviceTagModal()}>
+        <MenuItemButton danger={false} onClick={() => openEditDeviceTagModal()} id={`${device.name}-edit-tag-menu-btn`}>
           {t('device:deviceItemEditTagMenu')}
         </MenuItemButton>
       ),
@@ -112,7 +113,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
     },
     {
       label: (
-        <MenuItemButton danger={false} onClick={() => openEditDeviceProjectModal()}>
+        <MenuItemButton danger={false} onClick={() => openEditDeviceProjectModal()} id={`${device.name}-edit-project-menu-btn`}>
           {t('device:deviceItemEditProejctMenu')}
         </MenuItemButton>
       ),
@@ -120,7 +121,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
     },
     {
       label: (
-        <MenuItemButton danger={false} onClick={() => openDeviceSettingModal()}>
+        <MenuItemButton danger={false} onClick={() => openDeviceSettingModal()} id={`${device.name}-setting-menu-btn`}>
           {t('device:deviceItemSettingMenu')}
         </MenuItemButton>
       ),
@@ -143,6 +144,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
           modalTitle={t('device:stopUsingDeviceModalTitle')}
           modalButtonTitle={t('device:stopUsingDeviceModalButtonText')}
           modalContent={<p>{t('device:stopUsingDeviceModalContent')}</p>}
+          id={`${device.name}-stop-using-device-menu-btn`}
           confirmButtonId="stop-using-device-confirm-btn"
         >
           {t('device:deviceItemStopUsingMenu')}
@@ -187,7 +189,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
                 onProjectClick={handleClickDetail}
                 onTagClick={handleClickDetail}
               />
-              <MenuButton menu={{ items }} destroyPopupOnHide />
+              <MenuButton menu={{ items }} />
             </FlexSpaceBetweenBox>
           </InfoCell>
         </DeviceItemInner>

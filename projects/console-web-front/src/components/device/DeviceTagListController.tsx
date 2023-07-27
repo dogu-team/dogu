@@ -105,7 +105,7 @@ const TagItem = ({ tag, mutateTags }: TagItemProps) => {
           <MenuCell>
             {!isPlatformTag && (
               <FlexEndBox>
-                <MenuButton menu={{ items }} destroyPopupOnHide />
+                <MenuButton menu={{ items }} />
               </FlexEndBox>
             )}
           </MenuCell>
