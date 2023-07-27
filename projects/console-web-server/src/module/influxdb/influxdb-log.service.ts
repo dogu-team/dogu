@@ -2,6 +2,7 @@ import { DeviceJobLogInfo, TestLogResponse } from '@dogu-private/console';
 import { WriteDeviceJobLogsRequestBody } from '@dogu-private/console-host-agent';
 import { DeviceId, DEVICE_JOB_LOG_TYPE, influxDbKeyNames, OrganizationId, RoutineDeviceJobId } from '@dogu-private/types';
 import { addMilliseconds, transformAndValidate } from '@dogu-tech/common';
+import { DateNano } from '@dogu-tech/node';
 import { FluxTableMetaData, Point, WriteApi } from '@influxdata/influxdb-client';
 import { Injectable } from '@nestjs/common';
 import { config } from '../../config';
@@ -23,17 +24,16 @@ export class InfluxDbLogService {
   async writeDeviceJobLogs(organizationId: OrganizationId, deviceId: DeviceId, deviceJobId: RoutineDeviceJobId, dto: WriteDeviceJobLogsRequestBody): Promise<void> {
     const { logs } = dto;
     const points = logs.map((log) => {
-      const { level, message, details, localTimeStamp, type } = log;
-      const localTimeStampNumber = new Date(localTimeStamp).getTime();
+      const { level, message, details, localTimeStampNano, type } = log;
+      const nanoseconds = DateNano.parse(localTimeStampNano).toString();
       const point = new Point(influxDbKeyNames.measurement.deviceJobLog.name)
         .tag(influxDbKeyNames.measurement.deviceJobLog.tags.organizationId, organizationId)
         .tag(influxDbKeyNames.measurement.deviceJobLog.tags.deviceJobId, deviceJobId.toString())
         .tag(influxDbKeyNames.measurement.deviceJobLog.tags.deviceId, deviceId)
         .tag(influxDbKeyNames.measurement.deviceJobLog.tags.type, type)
         .tag(influxDbKeyNames.measurement.deviceJobLog.tags.level, String(level))
-        .intField(influxDbKeyNames.common.field.localTimeStamp, localTimeStampNumber)
         .stringField(influxDbKeyNames.measurement.deviceJobLog.fields.message, message)
-        .timestamp(localTimeStampNumber);
+        .timestamp(nanoseconds);
       if (details !== undefined) {
         point.stringField('details', JSON.stringify(details));
       }
@@ -119,7 +119,7 @@ export class InfluxDbLogService {
     const deviceJobLogInfo: DeviceJobLogInfo = {
       line: lineNumber,
       message: splitMessage,
-      localTimeStamp: deviceJobLogInfoRaw._time,
+      localTimeStampNano: deviceJobLogInfoRaw._time,
       // deviceJobId: Number(deviceJobLogInfoRaw.deviceJobId),
       level: deviceJobLogInfoRaw.level,
       type: deviceJobLogInfoRaw.type,

@@ -81,7 +81,7 @@ export class Log {
   details?: Record<string, unknown>;
 
   @IsDateString()
-  localTimeStamp!: string;
+  localTimeStampNano!: string;
 }
 
 export class NullLogger implements FilledPrintable {

@@ -22,7 +22,7 @@ const DeviceStreamingLogContainer = ({ filterValue, deviceLogs, isStopped, onTog
   const [value, setValue] = useState(filterValue);
   const { t } = useTranslation();
 
-  const extractKey = useCallback((item: Log, index: number) => `${item.localTimeStamp} ${item.message} ${index}`, []);
+  const extractKey = useCallback((item: Log, index: number) => `${item.localTimeStampNano} ${item.message} ${index}`, []);
 
   const renderItem = useCallback((item: Log, index: number) => {
     return <DeviceLogItem lineNumber={index + 1} log={item} />;

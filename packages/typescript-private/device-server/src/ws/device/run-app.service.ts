@@ -1,6 +1,7 @@
 import { OnWebSocketMessage, WebSocketGatewayBase, WebSocketRegistryValueAccessor, WebSocketService } from '@dogu-private/nestjs-common';
 import { closeWebSocketWithTruncateReason, Instance, LogLevel, stringify } from '@dogu-tech/common';
 import { DeviceRunApp } from '@dogu-tech/device-client-common';
+import { DateNano } from '@dogu-tech/node';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
 import { DoguLogger } from '../../logger/logger';
@@ -41,7 +42,7 @@ export class DeviceRunAppService
       level,
       message,
       details,
-      localTimeStamp: new Date().toISOString(),
+      localTimeStampNano: new DateNano().toRFC3339Nano(),
     };
     return result;
   }

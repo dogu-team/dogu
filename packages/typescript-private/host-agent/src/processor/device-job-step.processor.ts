@@ -189,19 +189,19 @@ export class DeviceJobStepProcessor {
           validateAndEmitEventAsync(this.eventEmitter, OnDeviceJobLoggedEvent, value).catch((error) => {
             this.logger.error('Failed to emit device job logged event', { error: errorify(error) });
           });
-          const { level, message, details, localTimeStamp } = log;
+          const { level, message, details, localTimeStampNano } = log;
           if (level === 'error') {
-            this.logger.error(message, { details, localTimeStamp });
+            this.logger.error(message, { details, localTimeStampNano });
           } else if (level === 'warn') {
-            this.logger.warn(message, { details, localTimeStamp });
+            this.logger.warn(message, { details, localTimeStampNano });
           } else if (level === 'info') {
-            this.logger.info(message, { details, localTimeStamp });
+            this.logger.info(message, { details, localTimeStampNano });
           } else if (level === 'debug') {
-            this.logger.debug(message, { details, localTimeStamp });
+            this.logger.debug(message, { details, localTimeStampNano });
           } else if (level === 'verbose') {
-            this.logger.verbose(message, { details, localTimeStamp });
+            this.logger.verbose(message, { details, localTimeStampNano });
           } else {
-            this.logger.info(message, { details, localTimeStamp });
+            this.logger.info(message, { details, localTimeStampNano });
           }
         },
         onCancelerCreated: (canceler): void => {
