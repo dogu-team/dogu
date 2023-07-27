@@ -28,8 +28,19 @@ message DeviceHostUploadFileSendMessage {
   }
 }
 
-message DeviceHostUploadFileReceiveMessage {
+message DeviceHostUploadFileInProgressReceiveValue {
+  fixed32 offset = 1;
+}
+
+message DeviceHostUploadFileCompleteReceiveValue {
   string file_path = 1;
+}
+
+message DeviceHostUploadFileReceiveMessage {
+  oneof value {
+    DeviceHostUploadFileInProgressReceiveValue in_progress = 1;
+    DeviceHostUploadFileCompleteReceiveValue complete = 2;
+  }
 }
 
 message DeviceServerResponse {

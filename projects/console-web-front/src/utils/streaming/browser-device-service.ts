@@ -133,11 +133,14 @@ export class BrowserDeviceService implements DeviceService {
   private removeChannel(name: string): void {
     const channelInfo = this.channels.get(name);
     if (!channelInfo) {
+      console.debug(`removeChannel: ${name} not found`);
       return;
     }
     const { channel } = channelInfo;
     if (channel.readyState !== 'closed') {
       channel.close();
+    } else {
+      console.debug(`removeChannel: ${name} is already closed`);
     }
     this.channels.delete(name);
   }
@@ -176,7 +179,6 @@ export class BrowserDeviceService implements DeviceService {
 
       // complete handle
       resultEmitter.once(sequenceId.toString(), (result: HttpRequestWebSocketResult) => {
-        console.debug(`DeviceServerBrowserService. result: ${JSON.stringify(result).substring(0, 300)} >> `);
         const clearAndReject = (message: string) => {
           clearTimeout(timeout);
           reject(new Error(message));
@@ -226,6 +228,7 @@ export class BrowserDeviceService implements DeviceService {
   }
 
   connectWebSocket(connection: WebSocketConnection, options: Required<DeviceClientOptions>, listener?: DeviceWebSocketListener): DeviceWebSocket {
+    console.log('connectWebSocket', connection.path);
     const { name, channel } = this.wsChannelCreator(connection);
     this.addChannel(name, channel);
     const channelInfo = this.channels.get(name);
@@ -236,14 +239,14 @@ export class BrowserDeviceService implements DeviceService {
 
     // timeout handle
     const openTimeout = setTimeout(() => {
-      console.error(`DeviceServerBrowserService. websocket timeout: ${sequenceId}`);
+      console.error(`DeviceServerBrowserService. websocket timeout: ${name}, ${sequenceId}`);
       this.removeChannel(name);
     }, options.timeout);
 
     // complete handle
     resultEmitter.on(sequenceId.toString(), (result: HttpRequestWebSocketResult) => {
-      console.debug(`DeviceServerBrowserService. result: ${JSON.stringify(result).substring(0, 300)} >> `);
       const clearAndRemove = (message: string) => {
+        console.log(`DeviceServerBrowserService. close ${name}. ${message}`);
         clearTimeout(openTimeout);
         this.removeChannel(name);
       };

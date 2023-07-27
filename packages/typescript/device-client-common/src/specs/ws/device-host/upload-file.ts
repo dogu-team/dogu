@@ -1,6 +1,8 @@
 import { Caseable, Instance, IsFilledString, IsUint8Array, TransformByCase, WebSocketSpec } from '@dogu-tech/common';
 import {
+  DeviceHostUploadFileCompleteReceiveValue,
   DeviceHostUploadFileCompleteSendValue,
+  DeviceHostUploadFileInProgressReceiveValue,
   DeviceHostUploadFileInProgressSendValue,
   DeviceHostUploadFileReceiveMessage,
   DeviceHostUploadFileSendMessage,
@@ -9,6 +11,7 @@ import {
 import { Type } from 'class-transformer';
 import { IsNumber, ValidateNested } from 'class-validator';
 
+// Send
 export class DeviceHostUploadFileStartSendValueDto implements DeviceHostUploadFileStartSendValue {
   @IsFilledString()
   fileName!: string;
@@ -61,9 +64,40 @@ export class DeviceHostUploadFileSendMessageDto implements DeviceHostUploadFileS
   value!: DeviceHostUploadFileSendCaseValue;
 }
 
-export class DeviceHostUploadFileReceiveMessageDto implements DeviceHostUploadFileReceiveMessage {
+// Receive
+export class DeviceHostUploadFileInProgressReceiveValueDto implements DeviceHostUploadFileInProgressReceiveValue {
+  @IsNumber()
+  offset!: number;
+}
+
+export class DeviceHostUploadFileInProgressReceiveCaseValueDto extends Caseable<'inProgress'> {
+  static override $case = 'inProgress';
+
+  @ValidateNested()
+  @Type(() => DeviceHostUploadFileInProgressReceiveValueDto)
+  inProgress!: DeviceHostUploadFileInProgressReceiveValueDto;
+}
+
+export class DeviceHostUploadFileCompleteReceiveValueDto implements DeviceHostUploadFileCompleteReceiveValue {
   @IsFilledString()
   filePath!: string;
+}
+
+export class DeviceHostUploadFileCompleteReceiveCaseValueDto extends Caseable<'complete'> {
+  static override $case = 'complete';
+
+  @ValidateNested()
+  @Type(() => DeviceHostUploadFileCompleteReceiveValueDto)
+  complete!: DeviceHostUploadFileCompleteReceiveValueDto;
+}
+
+export const DeviceHostUploadFileReceiveCaseValue = [DeviceHostUploadFileInProgressReceiveCaseValueDto, DeviceHostUploadFileCompleteReceiveCaseValueDto] as const;
+export type DeviceHostUploadFileReceiveCaseValue = Instance<(typeof DeviceHostUploadFileReceiveCaseValue)[number]>;
+
+export class DeviceHostUploadFileReceiveMessageDto implements DeviceHostUploadFileReceiveMessage {
+  @ValidateNested()
+  @TransformByCase(DeviceHostUploadFileReceiveCaseValue)
+  value!: DeviceHostUploadFileReceiveCaseValue;
 }
 
 export const DeviceHostUploadFile = new WebSocketSpec({

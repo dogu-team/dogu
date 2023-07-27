@@ -113,7 +113,7 @@ export class NodeDeviceService implements DeviceService {
     });
     webSocket.on('error', (error) => {
       logger.verbose('error', { url, error: stringify(error) });
-      listener?.onError?.({});
+      listener?.onError?.({ reason: stringify(error) });
     });
     webSocket.on('close', (code, reason) => {
       const reasonString = reason.toString();

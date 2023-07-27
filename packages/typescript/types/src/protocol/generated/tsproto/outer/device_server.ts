@@ -64,8 +64,21 @@ export interface DeviceHostUploadFileSendMessage {
     | { $case: 'complete'; complete: DeviceHostUploadFileCompleteSendValue };
 }
 
-export interface DeviceHostUploadFileReceiveMessage {
+export interface DeviceHostUploadFileInProgressReceiveValue {
+  offset: number;
+}
+
+export interface DeviceHostUploadFileCompleteReceiveValue {
   filePath: string;
+}
+
+export interface DeviceHostUploadFileReceiveMessage {
+  value?:
+    | { $case: 'inProgress'; inProgress: DeviceHostUploadFileInProgressReceiveValue }
+    | {
+        $case: 'complete';
+        complete: DeviceHostUploadFileCompleteReceiveValue;
+      };
 }
 
 export interface DeviceServerResponse {
@@ -305,22 +318,69 @@ export const DeviceHostUploadFileSendMessage = {
   },
 };
 
-function createBaseDeviceHostUploadFileReceiveMessage(): DeviceHostUploadFileReceiveMessage {
+function createBaseDeviceHostUploadFileInProgressReceiveValue(): DeviceHostUploadFileInProgressReceiveValue {
+  return { offset: 0 };
+}
+
+export const DeviceHostUploadFileInProgressReceiveValue = {
+  encode(message: DeviceHostUploadFileInProgressReceiveValue, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.offset !== 0) {
+      writer.uint32(13).fixed32(message.offset);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): DeviceHostUploadFileInProgressReceiveValue {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeviceHostUploadFileInProgressReceiveValue();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.offset = reader.fixed32();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DeviceHostUploadFileInProgressReceiveValue {
+    return { offset: isSet(object.offset) ? Number(object.offset) : 0 };
+  },
+
+  toJSON(message: DeviceHostUploadFileInProgressReceiveValue): unknown {
+    const obj: any = {};
+    message.offset !== undefined && (obj.offset = Math.round(message.offset));
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<DeviceHostUploadFileInProgressReceiveValue>, I>>(object: I): DeviceHostUploadFileInProgressReceiveValue {
+    const message = createBaseDeviceHostUploadFileInProgressReceiveValue();
+    message.offset = object.offset ?? 0;
+    return message;
+  },
+};
+
+function createBaseDeviceHostUploadFileCompleteReceiveValue(): DeviceHostUploadFileCompleteReceiveValue {
   return { filePath: '' };
 }
 
-export const DeviceHostUploadFileReceiveMessage = {
-  encode(message: DeviceHostUploadFileReceiveMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const DeviceHostUploadFileCompleteReceiveValue = {
+  encode(message: DeviceHostUploadFileCompleteReceiveValue, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.filePath !== '') {
       writer.uint32(10).string(message.filePath);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): DeviceHostUploadFileReceiveMessage {
+  decode(input: _m0.Reader | Uint8Array, length?: number): DeviceHostUploadFileCompleteReceiveValue {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseDeviceHostUploadFileReceiveMessage();
+    const message = createBaseDeviceHostUploadFileCompleteReceiveValue();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -335,19 +395,97 @@ export const DeviceHostUploadFileReceiveMessage = {
     return message;
   },
 
-  fromJSON(object: any): DeviceHostUploadFileReceiveMessage {
+  fromJSON(object: any): DeviceHostUploadFileCompleteReceiveValue {
     return { filePath: isSet(object.filePath) ? String(object.filePath) : '' };
   },
 
-  toJSON(message: DeviceHostUploadFileReceiveMessage): unknown {
+  toJSON(message: DeviceHostUploadFileCompleteReceiveValue): unknown {
     const obj: any = {};
     message.filePath !== undefined && (obj.filePath = message.filePath);
     return obj;
   },
 
+  fromPartial<I extends Exact<DeepPartial<DeviceHostUploadFileCompleteReceiveValue>, I>>(object: I): DeviceHostUploadFileCompleteReceiveValue {
+    const message = createBaseDeviceHostUploadFileCompleteReceiveValue();
+    message.filePath = object.filePath ?? '';
+    return message;
+  },
+};
+
+function createBaseDeviceHostUploadFileReceiveMessage(): DeviceHostUploadFileReceiveMessage {
+  return { value: undefined };
+}
+
+export const DeviceHostUploadFileReceiveMessage = {
+  encode(message: DeviceHostUploadFileReceiveMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.value?.$case === 'inProgress') {
+      DeviceHostUploadFileInProgressReceiveValue.encode(message.value.inProgress, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.value?.$case === 'complete') {
+      DeviceHostUploadFileCompleteReceiveValue.encode(message.value.complete, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): DeviceHostUploadFileReceiveMessage {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeviceHostUploadFileReceiveMessage();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.value = {
+            $case: 'inProgress',
+            inProgress: DeviceHostUploadFileInProgressReceiveValue.decode(reader, reader.uint32()),
+          };
+          break;
+        case 2:
+          message.value = {
+            $case: 'complete',
+            complete: DeviceHostUploadFileCompleteReceiveValue.decode(reader, reader.uint32()),
+          };
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DeviceHostUploadFileReceiveMessage {
+    return {
+      value: isSet(object.inProgress)
+        ? { $case: 'inProgress', inProgress: DeviceHostUploadFileInProgressReceiveValue.fromJSON(object.inProgress) }
+        : isSet(object.complete)
+        ? { $case: 'complete', complete: DeviceHostUploadFileCompleteReceiveValue.fromJSON(object.complete) }
+        : undefined,
+    };
+  },
+
+  toJSON(message: DeviceHostUploadFileReceiveMessage): unknown {
+    const obj: any = {};
+    message.value?.$case === 'inProgress' &&
+      (obj.inProgress = message.value?.inProgress ? DeviceHostUploadFileInProgressReceiveValue.toJSON(message.value?.inProgress) : undefined);
+    message.value?.$case === 'complete' && (obj.complete = message.value?.complete ? DeviceHostUploadFileCompleteReceiveValue.toJSON(message.value?.complete) : undefined);
+    return obj;
+  },
+
   fromPartial<I extends Exact<DeepPartial<DeviceHostUploadFileReceiveMessage>, I>>(object: I): DeviceHostUploadFileReceiveMessage {
     const message = createBaseDeviceHostUploadFileReceiveMessage();
-    message.filePath = object.filePath ?? '';
+    if (object.value?.$case === 'inProgress' && object.value?.inProgress !== undefined && object.value?.inProgress !== null) {
+      message.value = {
+        $case: 'inProgress',
+        inProgress: DeviceHostUploadFileInProgressReceiveValue.fromPartial(object.value.inProgress),
+      };
+    }
+    if (object.value?.$case === 'complete' && object.value?.complete !== undefined && object.value?.complete !== null) {
+      message.value = {
+        $case: 'complete',
+        complete: DeviceHostUploadFileCompleteReceiveValue.fromPartial(object.value.complete),
+      };
+    }
     return message;
   },
 };

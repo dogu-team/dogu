@@ -102,7 +102,6 @@ func (peer *webRTCPeer) start(param *streaming.StreamingOffer_StartStreaming) {
 	peer.peerConn.OnDataChannel(func(d *webrtc.DataChannel) {
 		peer.listener.onDataChannel(d)
 	})
-
 	// Read incoming RTCP packets
 	// Before these packets are returned they are processed by interceptors. For things
 	// like NACK this needs to be called.

@@ -5602,6 +5602,18 @@ public final class HttpWs {
   public interface WebSocketErrorEventOrBuilder extends
       // @@protoc_insertion_point(interface_extends:outer.WebSocketErrorEvent)
       com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>string reason = 1;</code>
+     * @return The reason.
+     */
+    java.lang.String getReason();
+    /**
+     * <code>string reason = 1;</code>
+     * @return The bytes for reason.
+     */
+    com.google.protobuf.ByteString
+        getReasonBytes();
   }
   /**
    * Protobuf type {@code outer.WebSocketErrorEvent}
@@ -5612,7 +5624,55 @@ public final class HttpWs {
       // @@protoc_insertion_point(message_implements:outer.WebSocketErrorEvent)
       WebSocketErrorEventOrBuilder {
     private WebSocketErrorEvent() {
+      reason_ = "";
     }
+    public static final int REASON_FIELD_NUMBER = 1;
+    private java.lang.String reason_;
+    /**
+     * <code>string reason = 1;</code>
+     * @return The reason.
+     */
+    @java.lang.Override
+    public java.lang.String getReason() {
+      return reason_;
+    }
+    /**
+     * <code>string reason = 1;</code>
+     * @return The bytes for reason.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getReasonBytes() {
+      return com.google.protobuf.ByteString.copyFromUtf8(reason_);
+    }
+    /**
+     * <code>string reason = 1;</code>
+     * @param value The reason to set.
+     */
+    private void setReason(
+        java.lang.String value) {
+      java.lang.Class<?> valueClass = value.getClass();
+  
+      reason_ = value;
+    }
+    /**
+     * <code>string reason = 1;</code>
+     */
+    private void clearReason() {
+      
+      reason_ = getDefaultInstance().getReason();
+    }
+    /**
+     * <code>string reason = 1;</code>
+     * @param value The bytes for reason to set.
+     */
+    private void setReasonBytes(
+        com.google.protobuf.ByteString value) {
+      checkByteStringIsUtf8(value);
+      reason_ = value.toStringUtf8();
+      
+    }
+
     public static com.dogu.protocol.generated.outer.HttpWs.WebSocketErrorEvent parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -5708,6 +5768,55 @@ public final class HttpWs {
       }
 
 
+      /**
+       * <code>string reason = 1;</code>
+       * @return The reason.
+       */
+      @java.lang.Override
+      public java.lang.String getReason() {
+        return instance.getReason();
+      }
+      /**
+       * <code>string reason = 1;</code>
+       * @return The bytes for reason.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getReasonBytes() {
+        return instance.getReasonBytes();
+      }
+      /**
+       * <code>string reason = 1;</code>
+       * @param value The reason to set.
+       * @return This builder for chaining.
+       */
+      public Builder setReason(
+          java.lang.String value) {
+        copyOnWrite();
+        instance.setReason(value);
+        return this;
+      }
+      /**
+       * <code>string reason = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearReason() {
+        copyOnWrite();
+        instance.clearReason();
+        return this;
+      }
+      /**
+       * <code>string reason = 1;</code>
+       * @param value The bytes for reason to set.
+       * @return This builder for chaining.
+       */
+      public Builder setReasonBytes(
+          com.google.protobuf.ByteString value) {
+        copyOnWrite();
+        instance.setReasonBytes(value);
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:outer.WebSocketErrorEvent)
     }
     @java.lang.Override
@@ -5723,8 +5832,11 @@ public final class HttpWs {
           return new Builder();
         }
         case BUILD_MESSAGE_INFO: {
-            java.lang.Object[] objects = null;java.lang.String info =
-                "\u0000\u0000";
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "reason_",
+            };
+            java.lang.String info =
+                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\u0208";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

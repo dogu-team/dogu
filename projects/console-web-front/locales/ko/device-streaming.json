@@ -41,7 +41,8 @@
   "uploadApplicationGatheringStatus": "앱 조각 모음",
   "uploadApplicationInstallingStatus": "앱 설치",
   "uploadSuccessMessage": "앱 설치를 완료했습니다",
-  "uploadFailureMessage": "앱 설치에 실패했습니다",
+  "uploadTransferFailureMessage": "앱 전송에 실패했습니다",
+  "uploadInstallFailureMessage": "앱 설치에 실패했습니다",
 
   "uploadApplicationOptionTitle": "옵션",
   "uploadApplicationRunOptionText": "앱 설치 후 실행",

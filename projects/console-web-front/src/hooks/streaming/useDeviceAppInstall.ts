@@ -6,17 +6,16 @@ const useDeviceAppInstall = (serial: Serial | undefined, deviceHostClient: Devic
   const [app, setApp] = useState<File>();
   const [progress, setProgress] = useState<number>();
   const [uploadedFilePath, setUploadedFilePath] = useState('');
-  const [isGathering, setIsGathering] = useState(false);
   const [isInstalling, setIsInstalling] = useState(false);
   const [result, setResult] = useState<{
     isSuccess: boolean;
+    failType?: 'upload' | 'install';
     error?: Error;
   }>();
   const [hostFileUploader, setHostFileUploader] = useState<HostFileUploader | null>(null);
 
   const reset = useCallback(() => {
     setProgress(undefined);
-    setIsGathering(false);
     setIsInstalling(false);
     setResult(undefined);
     setApp(undefined);
@@ -37,12 +36,12 @@ const useDeviceAppInstall = (serial: Serial | undefined, deviceHostClient: Devic
       setApp(file);
 
       const totalSize = file.size;
-      const chunkSize = 16384; // 16KB
+      const chunkSize = 65535 * 16 - 16; // around 1 MB ( datachannel max byte(65535)  * 16(magic number) - packetheader sizes(16) ). for best throughput
       const fr = new FileReader();
-      let offset = 0;
+      let writeOffset = 0;
 
       const readSlice = (o: number) => {
-        const slice = file.slice(offset, o + chunkSize);
+        const slice = file.slice(writeOffset, o + chunkSize);
         fr.readAsArrayBuffer(slice);
       };
 
@@ -51,28 +50,37 @@ const useDeviceAppInstall = (serial: Serial | undefined, deviceHostClient: Devic
       fr.addEventListener('load', (e) => {
         const result = e.target?.result as ArrayBuffer;
         hostFileUploader.write(result);
-        offset += result.byteLength;
-        setProgress((offset / totalSize) * 100);
+        writeOffset += result.byteLength;
 
-        if (offset < file.size) {
-          readSlice(offset);
+        if (writeOffset < file.size) {
+          readSlice(writeOffset);
         } else {
-          // send complete message
-          setProgress(100);
-          setTimeout(() => {
-            setProgress(undefined);
-          }, 500);
-          setIsGathering(true);
           hostFileUploader.end();
         }
       });
 
-      const hostFileUploader = await deviceHostClient.uploadFile(file.name, file.size, (filePath: string) => {
-        // receive complete message
-        console.debug('File uploaded:', filePath);
-        setIsGathering(false);
-        setUploadedFilePath(filePath);
-      });
+      const hostFileUploader = await deviceHostClient.uploadFile(
+        file.name,
+        file.size,
+        (recvOffest: number) => {
+          setProgress((recvOffest / totalSize) * 100);
+        },
+        (filePath: string, error?: Error) => {
+          if (error) {
+            console.debug('File upload error:', error);
+            setResult({
+              isSuccess: false,
+              failType: 'upload',
+              error: error,
+            });
+            return;
+          }
+          // receive complete message
+          console.debug('File uploaded:', filePath);
+          setProgress(100);
+          setUploadedFilePath(filePath);
+        },
+      );
       setHostFileUploader(hostFileUploader);
       setProgress(0);
       readSlice(0);
@@ -94,9 +102,11 @@ const useDeviceAppInstall = (serial: Serial | undefined, deviceHostClient: Devic
         });
         setTimeout(() => reset(), 2000);
       } catch (e) {
+        console.debug('installApp error:', e);
         if (e instanceof Error) {
           setResult({
             isSuccess: false,
+            failType: 'install',
             error: e,
           });
         }
@@ -125,7 +135,7 @@ const useDeviceAppInstall = (serial: Serial | undefined, deviceHostClient: Devic
     await deviceClient.runApp(serial, uploadedFilePath);
   }, [serial, uploadedFilePath, deviceClient]);
 
-  return { isInstalling, progress, isGathering, app, result, uploadApp, cancelUpload, runApp };
+  return { isInstalling, progress, app, result, uploadApp, cancelUpload, runApp };
 };
 
 export default useDeviceAppInstall;

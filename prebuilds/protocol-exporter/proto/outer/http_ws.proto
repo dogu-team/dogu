@@ -82,6 +82,7 @@ message WebSocketOpenEvent {
 }
 
 message WebSocketErrorEvent {
+  string reason = 1;
 }
 
 message WebSocketCloseEvent {
