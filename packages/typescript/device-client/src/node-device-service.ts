@@ -109,7 +109,7 @@ export class NodeDeviceService implements DeviceService {
     const webSocket = new WebSocket(url);
     webSocket.on('open', () => {
       logger.verbose('open', { url });
-      listener?.onOpen?.({ dummy: true });
+      listener?.onOpen?.({});
     });
     webSocket.on('error', (error) => {
       logger.verbose('error', { url, error: stringify(error) });
