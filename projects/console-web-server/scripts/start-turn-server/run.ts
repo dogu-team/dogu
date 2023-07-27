@@ -8,7 +8,7 @@ async function startDockerContainer() {
   await execute('Starting container...', () =>
     exec(
       `docker run -d \
-      --name dogu-coturn \
+      --name ${config.containerName} \
       --restart always \
       -p ${config.port}:${config.port}/tcp \
       -p ${config.port}:${config.port}/udp \
