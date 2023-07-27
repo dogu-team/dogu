@@ -87,7 +87,8 @@ export class DeviceStatusService {
       .andWhere(connectionStateFilterClause, { connectionStates: dto.connectionStates })
       .andWhere(tagNameFilterCluase, { tagNames: dto.tagNames })
       .orWhere(isGlobalFilter)
-      .orderBy('device.updated_at', 'DESC')
+      .orderBy(`device.${DevicePropSnake.connection_state}`, 'DESC')
+      .addOrderBy(`device.${DevicePropSnake.name}`, 'ASC')
       .getManyAndCount();
     const devices = rv[0];
     const totalCount = rv[1];

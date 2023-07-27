@@ -46,8 +46,8 @@ export class HostService {
           qb.where(`device.${DevicePropSnake.organization_id} = :organizationId`, { organizationId }).orWhere('device.device_id IS NULL');
         }),
       )
-
-      .orderBy(`host.${HostPropCamel.updatedAt}`, 'DESC')
+      .orderBy(`host.${HostPropCamel.connectionState}`, 'DESC')
+      .addOrderBy(`host.${HostPropCamel.name}`, 'ASC')
       .take(dto.getDBLimit())
       .skip(dto.getDBOffset())
       .getManyAndCount();
