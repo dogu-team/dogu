@@ -3,7 +3,7 @@ frontEnvFilename='.env'
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 echo "Current Path: $SCRIPT_DIR"
-envFilePath=$SCRIPT_DIR/projects/console-web-front/$frontEnvFilename
+envFilePath=$SCRIPT_DIR/../projects/console-web-front/$frontEnvFilename
 
 # check if .env file exists
 if [ ! -f "$envFilePath" ]; then
