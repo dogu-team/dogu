@@ -41,7 +41,7 @@ RUN cp /usr/bin/aapt2 ./projects/console-web-server/build/src/sdk/binary/linux/a
 RUN yarn run newbie:cicd
 RUN yarn run build
 
-COPY .shells/entrypoint.sh ./entrypoint.sh
+COPY ./shells/entrypoint.sh ./entrypoint.sh
 
 EXPOSE 3001 4000 
 
