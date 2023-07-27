@@ -3,7 +3,7 @@ import 'reflect-metadata';
 import type { AppProps } from 'next/app';
 import { NextPage } from 'next';
 import { ThemeProvider } from 'styled-components';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, notification } from 'antd';
 import { SWRConfig } from 'swr';
 import NProgress from 'nprogress';
 import { useEffect } from 'react';
@@ -26,6 +26,9 @@ type AppPropsWithLayout = AppProps & {
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   const router = useRouter();
   const getLayout = Component.getLayout ?? ((page) => page);
+  notification.config({
+    maxCount: 1,
+  });
 
   useEffect(() => {
     if (!window.navigator.userAgent.match(/electron/gi)) {
