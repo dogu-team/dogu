@@ -206,7 +206,7 @@ export class RegisteryService {
     const userName = name ?? email.split('@')[0];
     const tokenResponse = await this.dataSource.transaction(async (manager) => {
       const user = await createUser(manager, email, password, userName);
-
+      await this.userService.createPersonalAccessToken(manager, user.userId);
       const snsUser = await createSNSUser(manager, user.userId, userSnsId, snsType);
 
       // create organization
