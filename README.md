@@ -36,20 +36,29 @@ Dogu - Integrated test automation platform based on web.
 
 Dogu is an integrated test automation platform that simplifies the automation of web, mobile and game application testing.
 
-## Device Farm
-
-Connect the device to run your tests to Device Farm. See [Device Farm](https://docs.dogutech.io/device-farm) for more details.
+## Test Automation Platform
 
 <img src=".github/resources/architecture-device-farm.png" width="100%"/>
 
-### Available Features
+Build a systematic test automation infrastructure using Windows, MacOS, Android, and iOS devices.
 
-- [Remote Interaction](https://docs.dogutech.io/get-started#android-device-interaction)
-- [UI Inspector](https://docs.dogutech.io/get-started#android-native-ui-inspector)
+## Device Farm
+
+Build device farm with your own devices
+
+<img src=".github/resources/device_farm_dashboard.png" width="75%" />
+
+### Control and inspect UI remotely
+
+<div style="display: flex; flex-direction: row; justify-content: center">
+  <img src=".github/resources/android-inspecting.gif" width="32%" />
+  <img src=".github/resources/ios-inspecting.gif" width="32%" />  
+  <img src=".github/resources/gamium-inspecting.gif" width="32%"/>
+</div>
 
 ## Test Automation
 
-Run test script following test framework on device farm. See [Test Automation](https://docs.dogutech.io/test-automation/) for more details.
+Use a variety of test automation frameworks to easily run tests on the device.
 
 ### Available Test Frameworks
 
@@ -59,9 +68,9 @@ Run test script following test framework on device farm. See [Test Automation](h
 
 ## Test Report
 
-<img src=".github/resources/reporting-testing-profiling.png" width="100%"/>
+Visualize test unit by integrating test unit framework with test report.
 
-Visualize test unit by integrating test unit framework with test report. See [Test Report](https://docs.dogutech.io/test-report) for more details.
+<img src=".github/resources/reporting-testing-profiling.png" width="100%"/>
 
 ### Available Test Unit Frameworks
 
@@ -70,7 +79,7 @@ Visualize test unit by integrating test unit framework with test report. See [Te
 
 ## Test Routine
 
-Run test script by using Workflow. See [Routine](https://docs.dogutech.io/routine/routines) for more details.
+Create routines to run the tests in parallel.
 
 <img src=".github/resources/workflow-inside.png"/>
 
