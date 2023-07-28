@@ -62,7 +62,7 @@ const DeviceFarmTutorial = () => {
       if (hostRaw) {
         const { data, token } = JSON.parse(hostRaw) as HostSession;
         if (data.organizationId === organization.organizationId) {
-          setHost(host);
+          setHost(data);
           setToken(token);
         } else {
           sessionStorage.removeItem(TUTORIAL_HOST_SESSION_KEY);
