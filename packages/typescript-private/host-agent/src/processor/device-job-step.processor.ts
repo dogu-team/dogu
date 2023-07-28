@@ -135,8 +135,7 @@ export class DeviceJobStepProcessor {
       this.logger.error('Error while emitting OnStepStartedEvent', { error: errorify(error) });
     }
     this.logger.info(`Step ${routineStepId} started event emitted`);
-    const stepEnvReplaced = await environmentVariableReplacer.replaceEnv(stepEnv);
-    environmentVariableReplacer.stackProvider.push(new EnvironmentVariableReplacementProvider(stepEnvReplaced));
+
     const deviceServerHostPort = env.DOGU_DEVICE_SERVER_HOST_PORT.split(':');
     if (deviceServerHostPort.length !== 2) {
       throw new Error('DOGU_DEVICE_SERVER_HOST_PORT must be in format host:port');
@@ -173,6 +172,8 @@ export class DeviceJobStepProcessor {
     };
     const stepContextEnvReplaced = await environmentVariableReplacer.replaceEnv(stepContextEnv);
     environmentVariableReplacer.stackProvider.push(new EnvironmentVariableReplacementProvider(stepContextEnvReplaced));
+    const stepEnvReplaced = await environmentVariableReplacer.replaceEnv(stepEnv);
+    environmentVariableReplacer.stackProvider.push(new EnvironmentVariableReplacementProvider(stepEnvReplaced));
     this.logger.info(`Step ${routineStepId} working path: ${doguRoutineWorkspacePath}`);
     const stepMessageContext = new StepMessageContext(
       info,
