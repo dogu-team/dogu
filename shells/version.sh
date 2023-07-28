@@ -63,6 +63,7 @@ fi
 if [[ $dogu == false && $dost == false ]]; then
   echo "Performing additional operations for dogu and dost"
   yarn version -i "$version"
+  sed -i "" "s|dogu:.*$|dogu:$version|" ./docker-compose.yml
   find ./projects -mindepth 1 -maxdepth 1 -type d -exec sh -c "cd {} && yarn version -i $version" \;
   cd nm-space
   yarn workspace dogu-agent version -i "$version"
