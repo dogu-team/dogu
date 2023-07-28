@@ -1,5 +1,9 @@
 name: 🔄ci-e2e
 
+concurrency:
+  group: e2e
+  cancel-in-progress: false
+
 on:
   push:
     branches: ['main']
@@ -36,6 +40,10 @@ on:
       - 'tsconfig.json'
       - 'yarn.lock'
   workflow_dispatch:
+
+env:
+  DOGU_PYTHON_VERSION: 3.9.13
+  DOGU_POETRY_VERSION: 1.5.1
 
 jobs:
   e2e:
