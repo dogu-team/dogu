@@ -6,12 +6,12 @@ import { HttpClient } from 'typed-rest-client/HttpClient';
 import { ChromeVersionFinder } from '../src/chrome-version';
 
 const thirdPartyDir = path.resolve(__dirname, '..', 'third-party');
-// const versionPrefix = '113.';
+const versionPrefix = '114.';
 // const versionPrefix = 'latest';
 const versionFinder = new ChromeVersionFinder();
 const version = versionFinder.findSync();
-const { major } = version;
-const versionPrefix = `${major}.`;
+// const { major } = version;
+// const versionPrefix = `${major}.`;
 const files = [
   {
     postfix: 'mac_arm64.zip',
@@ -61,9 +61,11 @@ interface ChromeBucketResult {
 
   for (const f of files) {
     let targetContent = contents.find((c) => c.Key.startsWith(versionPrefix) && c.Key.endsWith(f.postfix))!;
-    if ('latest' !== versionPrefix) {
-      targetContent = contents.find((c) => c.Key.startsWith(versionPrefix) && c.Key.endsWith(f.postfix))!;
-    }
+
+    // if ('latest' !== versionPrefix) {
+    //   targetContent = contents.find((c) => c.Key.startsWith(versionPrefix) && c.Key.endsWith(f.postfix))!;
+    // }
+
     console.log(`install chrome driver targetContent`, targetContent);
     const url = `https://chromedriver.storage.googleapis.com/${targetContent.Key}`;
 

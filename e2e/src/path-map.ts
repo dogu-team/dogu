@@ -11,7 +11,8 @@ function findChromeDriverPathSync(): string {
   const { platform, arch } = process;
   const versionFinder = new ChromeVersionFinder();
   const version = versionFinder.findSync();
-  const { major } = version;
+  // const { major } = version;
+  const major = '114';
   if (platform === 'win32') {
     return path.resolve(`third-party/${major}/win32/chromedriver.exe`);
   }
