@@ -1,4 +1,4 @@
-import { GithubOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { GithubOutlined, QuestionCircleOutlined, SlackOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -42,6 +42,11 @@ const ConsoleBasicLayout = ({ children }: Props) => {
               <StyledLink href={`https://github.com/dogu-team/dogu`} target="_blank">
                 <GithubOutlined />
               </StyledLink>
+              <Tooltip title="Community" arrow={false} overlayInnerStyle={{ fontSize: '.8rem' }} style={{ minHeight: '0' }}>
+                <StyledLink href={`https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw`} target="_blank">
+                  <SlackOutlined />
+                </StyledLink>
+              </Tooltip>
               <Tooltip title="Docs" arrow={false} overlayInnerStyle={{ fontSize: '.8rem' }} style={{ minHeight: '0' }}>
                 <StyledLink href={`https://docs.dogutech.io${getLocaledLink(router.locale, '')}`} target="_blank">
                   <QuestionCircleOutlined />
