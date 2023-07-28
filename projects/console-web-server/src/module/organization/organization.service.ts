@@ -252,95 +252,94 @@ export class OrganizationService {
       }
 
       const teams = organization.teams ? organization.teams : [];
-      for (const team of teams) {
-        const projects = organization.projects ? organization.projects : [];
 
-        for (const project of projects) {
-          const { projectId } = project;
-          const orgId = project.organizationId;
+      const projects = organization.projects ? organization.projects : [];
 
-          const projectUserRoles = project.projectAndUserAndProjectRoles ? project.projectAndUserAndProjectRoles : [];
-          for (const projectUserRole of projectUserRoles) {
-            await manager.getRepository(ProjectAndUserAndProjectRole).softDelete({ userId: projectUserRole.userId, projectId: projectUserRole.projectId });
-          }
+      for (const project of projects) {
+        const { projectId } = project;
+        const orgId = project.organizationId;
 
-          const projectTeamRoles = project.projectAndTeamAndProjectRoles ? project.projectAndTeamAndProjectRoles : [];
-          for (const projectTeamRole of projectTeamRoles) {
-            await manager.getRepository(ProjectAndTeamAndProjectRole).softDelete({ projectId: projectTeamRole.projectId, teamId: projectTeamRole.teamId });
-          }
-
-          await manager.getRepository(Project).softDelete({ organizationId: orgId, projectId });
-
-          const deviceAndProjects = project.projectAndDevices ? project.projectAndDevices : [];
-          for (const deviceAndProject of deviceAndProjects) {
-            await manager.getRepository(ProjectAndDevice).softDelete({ projectId: deviceAndProject.projectId, deviceId: deviceAndProject.deviceId });
-          }
-
-          const routines = project.routines ? project.routines : [];
-          const routineIds = routines.map((routine) => routine.routineId);
-          await manager.getRepository(Routine).softDelete({ routineId: In(routineIds) });
-
-          const pipelines = routines.map((routine) => routine.routinePipelines).flat();
-          const pipelineIds = pipelines.filter(notEmpty).map((pipeline) => pipeline.routinePipelineId);
-          await manager.getRepository(RoutinePipeline).softDelete({ routinePipelineId: In(pipelineIds) });
-
-          const jobs = pipelines
-            .filter(notEmpty)
-            .map((pipeline) => pipeline.routineJobs)
-            .flat()
-            .filter(notEmpty);
-          const jobIds = jobs.map((job) => job.routineJobId);
-          await manager.getRepository(RoutineJob).softDelete({ routineJobId: In(jobIds) });
-
-          const jobEdges = jobs
-            .map((job) => job.routineJobEdges)
-            .flat()
-            .filter(notEmpty);
-          await manager.getRepository(RoutineJobEdge).softRemove(jobEdges);
-
-          const deviceJobs = jobs
-            .map((job) => job.routineDeviceJobs)
-            .flat()
-            .filter(notEmpty);
-          const deviceJobIds = deviceJobs.map((deviceJob) => deviceJob.routineDeviceJobId);
-          await manager.getRepository(RoutineDeviceJob).softDelete({ routineDeviceJobId: In(deviceJobIds) });
-
-          const steps = deviceJobs
-            .map((deviceJob) => deviceJob.routineSteps)
-            .flat()
-            .filter(notEmpty);
-          const stepIds = steps.map((step) => step.routineStepId);
-          await manager.getRepository(RoutineStep).softDelete({ routineStepId: In(stepIds) });
-
-          const dests = steps
-            .map((step) => step.dests)
-            .flat()
-            .filter(notEmpty);
-          const destIds = dests.map((dest) => dest.destId);
-          await manager.getRepository(Dest).softDelete({ destId: In(destIds) });
-
-          const destEdges = dests
-            .map((dest) => dest.destEdges)
-            .flat()
-            .filter(notEmpty);
-          await manager.getRepository(DestEdge).softRemove(destEdges);
-          await manager.getRepository(Project).softDelete({ organizationId: orgId, projectId });
+        const projectUserRoles = project.projectAndUserAndProjectRoles ? project.projectAndUserAndProjectRoles : [];
+        for (const projectUserRole of projectUserRoles) {
+          await manager.getRepository(ProjectAndUserAndProjectRole).softDelete({ userId: projectUserRole.userId, projectId: projectUserRole.projectId });
         }
 
-        await manager.getRepository(Team).softDelete({ organizationId });
-        await manager.getRepository(Device).softDelete({ organizationId });
-        await manager.getRepository(DeviceTag).softDelete({ organizationId });
-        await manager.getRepository(Host).softDelete({ organizationId });
-        await manager.getRepository(UserVisit).softDelete({ organizationId });
-        await manager.getRepository(UserAndInvitationToken).softDelete({ organizationId });
-        await manager.getRepository(OrganizationAndUserAndTeam).softDelete({ organizationId });
-        const invitations = organization.userInvitations ? organization.userInvitations : [];
-        const tokenIds = invitations.map((invitation) => invitation.tokenId);
-        await manager.getRepository(Token).softDelete({ tokenId: In(tokenIds) });
-        await manager.getRepository(OrganizationAndUserAndOrganizationRole).softDelete({ organizationId });
-        await manager.getRepository(OrganizationKey).softDelete({ organizationId });
-        await manager.getRepository(Organization).softRemove(organization);
+        const projectTeamRoles = project.projectAndTeamAndProjectRoles ? project.projectAndTeamAndProjectRoles : [];
+        for (const projectTeamRole of projectTeamRoles) {
+          await manager.getRepository(ProjectAndTeamAndProjectRole).softDelete({ projectId: projectTeamRole.projectId, teamId: projectTeamRole.teamId });
+        }
+
+        await manager.getRepository(Project).softDelete({ organizationId: orgId, projectId });
+
+        const deviceAndProjects = project.projectAndDevices ? project.projectAndDevices : [];
+        for (const deviceAndProject of deviceAndProjects) {
+          await manager.getRepository(ProjectAndDevice).softDelete({ projectId: deviceAndProject.projectId, deviceId: deviceAndProject.deviceId });
+        }
+
+        const routines = project.routines ? project.routines : [];
+        const routineIds = routines.map((routine) => routine.routineId);
+        await manager.getRepository(Routine).softDelete({ routineId: In(routineIds) });
+
+        const pipelines = routines.map((routine) => routine.routinePipelines).flat();
+        const pipelineIds = pipelines.filter(notEmpty).map((pipeline) => pipeline.routinePipelineId);
+        await manager.getRepository(RoutinePipeline).softDelete({ routinePipelineId: In(pipelineIds) });
+
+        const jobs = pipelines
+          .filter(notEmpty)
+          .map((pipeline) => pipeline.routineJobs)
+          .flat()
+          .filter(notEmpty);
+        const jobIds = jobs.map((job) => job.routineJobId);
+        await manager.getRepository(RoutineJob).softDelete({ routineJobId: In(jobIds) });
+
+        const jobEdges = jobs
+          .map((job) => job.routineJobEdges)
+          .flat()
+          .filter(notEmpty);
+        await manager.getRepository(RoutineJobEdge).softRemove(jobEdges);
+
+        const deviceJobs = jobs
+          .map((job) => job.routineDeviceJobs)
+          .flat()
+          .filter(notEmpty);
+        const deviceJobIds = deviceJobs.map((deviceJob) => deviceJob.routineDeviceJobId);
+        await manager.getRepository(RoutineDeviceJob).softDelete({ routineDeviceJobId: In(deviceJobIds) });
+
+        const steps = deviceJobs
+          .map((deviceJob) => deviceJob.routineSteps)
+          .flat()
+          .filter(notEmpty);
+        const stepIds = steps.map((step) => step.routineStepId);
+        await manager.getRepository(RoutineStep).softDelete({ routineStepId: In(stepIds) });
+
+        const dests = steps
+          .map((step) => step.dests)
+          .flat()
+          .filter(notEmpty);
+        const destIds = dests.map((dest) => dest.destId);
+        await manager.getRepository(Dest).softDelete({ destId: In(destIds) });
+
+        const destEdges = dests
+          .map((dest) => dest.destEdges)
+          .flat()
+          .filter(notEmpty);
+        await manager.getRepository(DestEdge).softRemove(destEdges);
+        await manager.getRepository(Project).softDelete({ organizationId: orgId, projectId });
       }
+
+      await manager.getRepository(Team).softDelete({ organizationId });
+      await manager.getRepository(Device).softDelete({ organizationId });
+      await manager.getRepository(DeviceTag).softDelete({ organizationId });
+      await manager.getRepository(Host).softDelete({ organizationId });
+      await manager.getRepository(UserVisit).softDelete({ organizationId });
+      await manager.getRepository(UserAndInvitationToken).softDelete({ organizationId });
+      await manager.getRepository(OrganizationAndUserAndTeam).softDelete({ organizationId });
+      const invitations = organization.userInvitations ? organization.userInvitations : [];
+      const tokenIds = invitations.map((invitation) => invitation.tokenId);
+      await manager.getRepository(Token).softDelete({ tokenId: In(tokenIds) });
+      await manager.getRepository(OrganizationAndUserAndOrganizationRole).softDelete({ organizationId });
+      await manager.getRepository(OrganizationKey).softDelete({ organizationId });
+      await manager.getRepository(Organization).softRemove(organization);
     });
   }
 
