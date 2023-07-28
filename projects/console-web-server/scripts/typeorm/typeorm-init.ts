@@ -12,7 +12,7 @@ const pgsqlConnectionOptions = {
   user: env.DOGU_RDS_USERNAME,
   password: env.DOGU_RDS_PASSWORD,
   database: env.DOGU_RDS_SCHEMA,
-  ssl: env.DOGU_RDS_SSL_CONNECTION,
+  ssl: env.DOGU_RDS_SSL_CONNECTION ? { rejectUnauthorized: false } : false,
 };
 console.log('config', pgsqlConnectionOptions);
 

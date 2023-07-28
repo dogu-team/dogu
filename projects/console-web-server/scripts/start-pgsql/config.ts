@@ -22,5 +22,5 @@ export const pgsqlConnectionOptions = {
   user: config.rootUser,
   password: config.rootPassword,
   database: config.schema,
-  ssl: env.DOGU_RDS_SSL_CONNECTION,
+  ssl: env.DOGU_RDS_SSL_CONNECTION ? { rejectUnauthorized: false } : false,
 };

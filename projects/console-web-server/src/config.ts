@@ -146,7 +146,7 @@ export const dataSourceConfig: DataSourceOptions = {
   migrationsRun: false,
   migrationsTableName: 'migration',
   useUTC: true,
-  ssl: env.DOGU_RDS_SSL_CONNECTION,
+  ssl: env.DOGU_RDS_SSL_CONNECTION ? { rejectUnauthorized: false } : false,
 };
 
 logger.warn('[DB Config]', {
