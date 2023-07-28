@@ -1,7 +1,7 @@
 {
   "verbose": true,
   "watch": ["./src"],
-  "exec": "yarn run build",
+  "exec": "yarn tsc -p ./tsconfig.dev.json",
   "ext": "ts",
   "delay": 3000
 }

@@ -38,7 +38,7 @@ const StepItem = React.memo(({ step, deviceId }: ItemProps) => {
   );
   const buttonRef = useRef<HTMLButtonElement>(null);
   const {
-    data: destData,
+    data: jestData,
     isLoading: destLoading,
     error: destError,
   } = useSWR<DestBase[]>(
@@ -50,7 +50,7 @@ const StepItem = React.memo(({ step, deviceId }: ItemProps) => {
     },
   );
 
-  const liveDestData = useLivePipelineStore(
+  const liveJestData = useLivePipelineStore(
     (state) =>
       state.pipeline?.routineJobs
         ?.find((j) => j.routineJobId === Number(router.query.jobId))
@@ -59,7 +59,7 @@ const StepItem = React.memo(({ step, deviceId }: ItemProps) => {
   );
   const { t } = useTranslation();
 
-  const data = liveDestData || destData;
+  const data = liveJestData || jestData;
   const hasDest = !!data?.length;
   const openable = hasDest || isPipelineEndedWithData(step.status);
 

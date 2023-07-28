@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "build-temp/dev",
+    "module": "es2022",
+    "tsBuildInfoFile": "build-temp/dev/tsconfig.tsbuildinfo",
+    "sourceMap": true,
+    "declarationMap": true,
+    "emitDeclarationOnly": false
+  },
+  "include": ["src/**/*.ts"]
+}

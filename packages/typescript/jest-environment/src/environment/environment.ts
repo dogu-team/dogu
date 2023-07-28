@@ -4,11 +4,13 @@ import { isAxiosError } from 'axios';
 import { TestEnvironment } from 'jest-environment-node';
 import _ from 'lodash';
 
-import { createLogger } from './common.js';
+import { createLogger, initAxios } from './common-utils.js';
 import { DoguConfig, DoguConfigFactory } from './dogu-config.js';
 import { DriverFactory } from './driver-factory.js';
-import { RemoteDestReporter, RemoteDestReporterFactory } from './remote-dest-reporter.js';
-import { RoutineDestReporter, RoutineDestReporterFactory } from './routine-dest-reporter.js';
+import { JestDescribeNode, JestNode, JestUniqueNode } from './jest-utils.js';
+import { createJestInfoRecursive, DestHandler, DestState } from './protocols/common.js';
+import { RemoteDestHandlerFactory } from './protocols/remote-dest.handler.js';
+import { RoutineDestHandlerFactory } from './protocols/routine-dest.handler.js';
 
 const driver = 'driver';
 
@@ -20,10 +22,10 @@ declare global {
 export class DoguEnvironment extends TestEnvironment {
   private logger = createLogger('DoguEnvironment');
   private doguConfig: DoguConfig | null = null;
-  private routineDestReporter: RoutineDestReporter | null = null;
+  private destHandlers: DestHandler[] = [];
   private driver: WebdriverIO.Browser | null = null;
-  private remoteDestReporter: RemoteDestReporter | null = null;
   private anyTestFailed = false;
+  private scopeNode: JestUniqueNode | undefined = undefined;
 
   constructor(config: JestEnvironmentConfig, _context: EnvironmentContext) {
     super(config, _context);
@@ -31,8 +33,9 @@ export class DoguEnvironment extends TestEnvironment {
 
   override async setup(): Promise<void> {
     await super.setup();
+    initAxios();
+
     this.doguConfig = await new DoguConfigFactory().create();
-    this.routineDestReporter = new RoutineDestReporterFactory(this.doguConfig).create();
 
     this.driver = await new DriverFactory().create(this.doguConfig);
     if (_.has(this.global, driver)) {
@@ -40,11 +43,12 @@ export class DoguEnvironment extends TestEnvironment {
     }
     _.set(this.global, driver, this.driver);
 
-    this.remoteDestReporter = new RemoteDestReporterFactory(this.doguConfig, this.driver).create();
+    this.destHandlers.push(new RemoteDestHandlerFactory(this.doguConfig, this.driver).create());
+    this.destHandlers.push(new RoutineDestHandlerFactory(this.doguConfig).create());
   }
 
   override async teardown(): Promise<void> {
-    this.remoteDestReporter = null;
+    this.destHandlers = [];
 
     if (_.has(this.global, driver)) {
       _.unset(this.global, driver);
@@ -54,25 +58,68 @@ export class DoguEnvironment extends TestEnvironment {
     });
     this.driver = null;
 
-    this.routineDestReporter = null;
     this.doguConfig = null;
     await super.teardown();
   }
 
   async handleTestEvent(event: Circus.SyncEvent | Circus.AsyncEvent, state: Circus.State): Promise<void> {
-    this.handleFailFast(event, state);
-
-    await this.routineDestReporter?.handleTestEvent?.(event, state).catch((error) => {
+    try {
+      await this.onTestEvent(event, state);
+    } catch (error) {
       const parsedError = isAxiosError(error) ? error.toJSON() : error;
-      this.logger.error('routineDestReporter.handleTestEvent failed', parsedError);
-    });
-    await this.remoteDestReporter?.handleTestEvent?.(event, state).catch((error) => {
-      const parsedError = isAxiosError(error) ? error.toJSON() : error;
-      this.logger.error('remoteDestReporter.handleTestEvent failed', parsedError);
-    });
+      this.logger.error('handleTestEvent failed', parsedError);
+    }
   }
 
-  handleFailFast(event: Circus.SyncEvent | Circus.AsyncEvent, state: Circus.State): void {
+  private async onTestEvent(event: Circus.SyncEvent | Circus.AsyncEvent, state: Circus.State): Promise<void> {
+    this.logger.info(`onTestEvent ${event.name}`);
+    this.processFailFast(event, state);
+
+    if (
+      event.name === 'setup' ||
+      event.name === 'teardown' ||
+      event.name === 'add_hook' ||
+      event.name === 'start_describe_definition' ||
+      event.name === 'finish_describe_definition' ||
+      event.name === 'add_test' ||
+      event.name === 'run_finish' ||
+      event.name === 'test_started' ||
+      event.name === 'test_done' ||
+      event.name === 'test_todo'
+    ) {
+      // noop
+    } else if (event.name === 'run_start') {
+      await this.createDest(state.rootDescribeBlock);
+    } else if (event.name === 'run_describe_start') {
+      this.scopeNode = event.describeBlock;
+      await this.updateDest(event.describeBlock, DestState.RUNNING);
+    } else if (event.name === 'run_describe_finish') {
+      await this.updateDest(event.describeBlock, undefined);
+      if (this.scopeNode) {
+        this.scopeNode = this.scopeNode.parent;
+      }
+    } else if (event.name === 'test_start') {
+      this.scopeNode = event.test;
+    } else if (event.name === 'test_fn_start') {
+      await this.updateDest(event.test, DestState.RUNNING);
+    } else if (event.name === 'test_fn_success') {
+      await this.updateDest(event.test, DestState.PASSED);
+    } else if (event.name === 'test_fn_failure') {
+      await this.updateDest(event.test, DestState.FAILED);
+    } else if (event.name === 'test_skip') {
+      await this.updateDest(event.test, DestState.SKIPPED);
+    } else if (event.name === 'hook_start') {
+      await this.updateDest(event.hook, DestState.RUNNING);
+    } else if (event.name === 'hook_success') {
+      await this.updateDest(event.hook, DestState.PASSED);
+    } else if (event.name === 'hook_failure') {
+      await this.updateDest(event.hook, DestState.FAILED);
+    } else {
+      this.logger.error(`unhandled event: ${event.name}`);
+    }
+  }
+
+  private processFailFast(event: Circus.SyncEvent | Circus.AsyncEvent, state: Circus.State): void {
     if (!this.doguConfig) {
       throw new Error('Internal error. doguConfig is null');
     }
@@ -91,5 +138,21 @@ export class DoguEnvironment extends TestEnvironment {
         event.test.mode = 'skip';
       }
     }
+  }
+
+  private async createDest(rootJestNode: JestDescribeNode): Promise<void> {
+    const rootJestInfos = createJestInfoRecursive(rootJestNode);
+    if (rootJestInfos.length !== 1) {
+      throw new Error('Internal error. rootJestInfos.length !== 1');
+    }
+    const rootJestInfo = rootJestInfos[0];
+    if (!rootJestInfo) {
+      throw new Error('Internal error. rootJestInfo is null');
+    }
+    await Promise.all(this.destHandlers.map((destHandler) => destHandler.onCreate(rootJestInfo)));
+  }
+
+  private async updateDest(jestNode: JestNode, destState?: DestState): Promise<void> {
+    await Promise.all(this.destHandlers.map((destHandler) => destHandler.onUpdate(this.scopeNode, jestNode, destState)));
   }
 }

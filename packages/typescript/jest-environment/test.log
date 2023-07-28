@@ -1,0 +1,731 @@
+2023-07-28T10:08:02.610+09:00 | info | 10907 | DoguConfigFactory | dogu.config.json is loaded []
+2023-07-28T10:08:09.773+09:00 | info | 10907 | RemoteDestHandler | created []
+2023-07-28T10:08:24.742+09:00 | info | 10907 | RemoteDestHandler | create dest [
+  {
+    "destInfos": [
+      {
+        "name": "beforeAll",
+        "type": 1,
+        "children": []
+      },
+      {
+        "name": "beforeAll",
+        "type": 1,
+        "children": []
+      },
+      {
+        "name": "beforeEach",
+        "type": 1,
+        "children": []
+      },
+      {
+        "name": "beforeEach",
+        "type": 1,
+        "children": []
+      },
+      {
+        "name": "test 1",
+        "type": 1,
+        "children": []
+      },
+      {
+        "name": "afterEach",
+        "type": 1,
+        "children": []
+      },
+      {
+        "name": "afterEach",
+        "type": 1,
+        "children": []
+      },
+      {
+        "name": "describe 1",
+        "type": 0,
+        "children": [
+          {
+            "name": "beforeAll",
+            "type": 1,
+            "children": []
+          },
+          {
+            "name": "beforeAll",
+            "type": 1,
+            "children": []
+          },
+          {
+            "name": "beforeEach",
+            "type": 1,
+            "children": []
+          },
+          {
+            "name": "beforeEach",
+            "type": 1,
+            "children": []
+          },
+          {
+            "name": "beforeEach",
+            "type": 1,
+            "children": []
+          },
+          {
+            "name": "beforeEach",
+            "type": 1,
+            "children": []
+          },
+          {
+            "name": "test 2",
+            "type": 1,
+            "children": []
+          },
+          {
+            "name": "afterEach",
+            "type": 1,
+            "children": []
+          },
+          {
+            "name": "afterEach",
+            "type": 1,
+            "children": []
+          },
+          {
+            "name": "afterEach",
+            "type": 1,
+            "children": []
+          },
+          {
+            "name": "afterEach",
+            "type": 1,
+            "children": []
+          },
+          {
+            "name": "afterAll",
+            "type": 1,
+            "children": []
+          },
+          {
+            "name": "afterAll",
+            "type": 1,
+            "children": []
+          }
+        ]
+      },
+      {
+        "name": "beforeEach",
+        "type": 1,
+        "children": []
+      },
+      {
+        "name": "beforeEach",
+        "type": 1,
+        "children": []
+      },
+      {
+        "name": "test 3",
+        "type": 1,
+        "children": []
+      },
+      {
+        "name": "afterEach",
+        "type": 1,
+        "children": []
+      },
+      {
+        "name": "afterEach",
+        "type": 1,
+        "children": []
+      },
+      {
+        "name": "afterAll",
+        "type": 1,
+        "children": []
+      },
+      {
+        "name": "afterAll",
+        "type": 1,
+        "children": []
+      }
+    ]
+  }
+]
+2023-07-28T10:08:24.872+09:00 | info | 10907 | RemoteDestClient | create dest [
+  {
+    "dests": [
+      {
+        "remoteDestId": "41d11115-59a0-40f4-94a5-e602d0474831",
+        "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+        "name": "beforeAll",
+        "index": 0,
+        "state": 1,
+        "type": 1,
+        "children": []
+      },
+      {
+        "remoteDestId": "1ecf6d6d-434f-49b0-9f9d-49135ff91e07",
+        "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+        "name": "beforeAll",
+        "index": 1,
+        "state": 1,
+        "type": 1,
+        "children": []
+      },
+      {
+        "remoteDestId": "112e204d-4862-483d-8cb1-84c1d65d9485",
+        "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+        "name": "beforeEach",
+        "index": 2,
+        "state": 1,
+        "type": 1,
+        "children": []
+      },
+      {
+        "remoteDestId": "f812f196-9a17-493d-8c77-007c18baae97",
+        "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+        "name": "beforeEach",
+        "index": 3,
+        "state": 1,
+        "type": 1,
+        "children": []
+      },
+      {
+        "remoteDestId": "1f5dc6d2-d5b5-4373-8db4-d280339fec8f",
+        "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+        "name": "test 1",
+        "index": 4,
+        "state": 1,
+        "type": 1,
+        "children": []
+      },
+      {
+        "remoteDestId": "cd89a1da-d3f2-4709-bd64-b12dcb29ab39",
+        "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+        "name": "afterEach",
+        "index": 5,
+        "state": 1,
+        "type": 1,
+        "children": []
+      },
+      {
+        "remoteDestId": "3a2ac336-066a-4539-84dd-454dee400578",
+        "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+        "name": "afterEach",
+        "index": 6,
+        "state": 1,
+        "type": 1,
+        "children": []
+      },
+      {
+        "remoteDestId": "fd37ce3a-15e6-48e4-9ed6-f293e6179455",
+        "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+        "name": "describe 1",
+        "index": 7,
+        "state": 1,
+        "type": 0,
+        "children": [
+          {
+            "remoteDestId": "133b164a-8ac0-48b2-845f-356807c21eed",
+            "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+            "name": "beforeAll",
+            "index": 0,
+            "state": 1,
+            "type": 1,
+            "children": []
+          },
+          {
+            "remoteDestId": "3b73d1d9-d336-497c-9a3f-19371f671a78",
+            "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+            "name": "beforeAll",
+            "index": 1,
+            "state": 1,
+            "type": 1,
+            "children": []
+          },
+          {
+            "remoteDestId": "01838e87-a75c-4b19-99eb-ce391b3d42ad",
+            "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+            "name": "beforeEach",
+            "index": 2,
+            "state": 1,
+            "type": 1,
+            "children": []
+          },
+          {
+            "remoteDestId": "9ea6cd21-eac2-4430-b0b1-39fd2a83f830",
+            "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+            "name": "beforeEach",
+            "index": 3,
+            "state": 1,
+            "type": 1,
+            "children": []
+          },
+          {
+            "remoteDestId": "04ea77a4-9351-414f-874a-52e6467eb49b",
+            "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+            "name": "beforeEach",
+            "index": 4,
+            "state": 1,
+            "type": 1,
+            "children": []
+          },
+          {
+            "remoteDestId": "16dd6b90-d271-4edc-93d9-75e616109047",
+            "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+            "name": "beforeEach",
+            "index": 5,
+            "state": 1,
+            "type": 1,
+            "children": []
+          },
+          {
+            "remoteDestId": "5cdbcfa0-f5c5-4052-8d53-ef199ee2d91a",
+            "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+            "name": "test 2",
+            "index": 6,
+            "state": 1,
+            "type": 1,
+            "children": []
+          },
+          {
+            "remoteDestId": "5d8a1b5f-e86a-484c-9069-86f1d970a9a6",
+            "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+            "name": "afterEach",
+            "index": 7,
+            "state": 1,
+            "type": 1,
+            "children": []
+          },
+          {
+            "remoteDestId": "c0ee4e2f-81d8-4109-9809-d6a6978d5afa",
+            "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+            "name": "afterEach",
+            "index": 8,
+            "state": 1,
+            "type": 1,
+            "children": []
+          },
+          {
+            "remoteDestId": "370dda7f-9d5a-44b5-b8a4-e2068258ed4c",
+            "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+            "name": "afterEach",
+            "index": 9,
+            "state": 1,
+            "type": 1,
+            "children": []
+          },
+          {
+            "remoteDestId": "3ae9282e-553e-4f74-877c-7fb9733abf7c",
+            "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+            "name": "afterEach",
+            "index": 10,
+            "state": 1,
+            "type": 1,
+            "children": []
+          },
+          {
+            "remoteDestId": "3f4561ad-d306-4d7a-b7dd-f30e596a481d",
+            "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+            "name": "afterAll",
+            "index": 11,
+            "state": 1,
+            "type": 1,
+            "children": []
+          },
+          {
+            "remoteDestId": "aee1e92e-7275-4f69-9135-b0ccc0fc4e67",
+            "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+            "name": "afterAll",
+            "index": 12,
+            "state": 1,
+            "type": 1,
+            "children": []
+          }
+        ]
+      },
+      {
+        "remoteDestId": "6415acb2-fa65-4b09-9b84-efe862507371",
+        "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+        "name": "beforeEach",
+        "index": 8,
+        "state": 1,
+        "type": 1,
+        "children": []
+      },
+      {
+        "remoteDestId": "23ce867f-5a59-40b7-a6bd-84033a4e93ea",
+        "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+        "name": "beforeEach",
+        "index": 9,
+        "state": 1,
+        "type": 1,
+        "children": []
+      },
+      {
+        "remoteDestId": "891e3d4e-b5cc-4d2a-8417-a6e7646882bd",
+        "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+        "name": "test 3",
+        "index": 10,
+        "state": 1,
+        "type": 1,
+        "children": []
+      },
+      {
+        "remoteDestId": "6b604a34-7514-4af9-9154-bf83ad7aa865",
+        "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+        "name": "afterEach",
+        "index": 11,
+        "state": 1,
+        "type": 1,
+        "children": []
+      },
+      {
+        "remoteDestId": "f4d6b063-25fc-4454-9f21-329d5dec8cc7",
+        "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+        "name": "afterEach",
+        "index": 12,
+        "state": 1,
+        "type": 1,
+        "children": []
+      },
+      {
+        "remoteDestId": "17d1da5b-575b-405a-803b-7a7dc12e0cde",
+        "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+        "name": "afterAll",
+        "index": 13,
+        "state": 1,
+        "type": 1,
+        "children": []
+      },
+      {
+        "remoteDestId": "ce1685d9-eef2-438d-95f0-4a34ee7c0b5e",
+        "remoteDeviceJobId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+        "name": "afterAll",
+        "index": 14,
+        "state": 1,
+        "type": 1,
+        "children": []
+      }
+    ]
+  }
+]
+2023-07-28T10:08:24.874+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "41d11115-59a0-40f4-94a5-e602d0474831",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "beforeAll",
+    "type": 1,
+    "index": 0,
+    "state": 2
+  }
+]
+2023-07-28T10:08:24.874+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "41d11115-59a0-40f4-94a5-e602d0474831",
+    "remoteDestState": 2,
+    "localTimeStamp": "2023-07-28T01:08:24.874Z"
+  }
+]
+2023-07-28T10:08:24.901+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "41d11115-59a0-40f4-94a5-e602d0474831",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "beforeAll",
+    "type": 1,
+    "index": 0,
+    "state": 4
+  }
+]
+2023-07-28T10:08:24.902+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "41d11115-59a0-40f4-94a5-e602d0474831",
+    "remoteDestState": 4,
+    "localTimeStamp": "2023-07-28T01:08:24.902Z"
+  }
+]
+2023-07-28T10:08:24.906+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "1ecf6d6d-434f-49b0-9f9d-49135ff91e07",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "beforeAll",
+    "type": 1,
+    "index": 1,
+    "state": 2
+  }
+]
+2023-07-28T10:08:24.907+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "1ecf6d6d-434f-49b0-9f9d-49135ff91e07",
+    "remoteDestState": 2,
+    "localTimeStamp": "2023-07-28T01:08:24.907Z"
+  }
+]
+2023-07-28T10:08:24.912+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "1ecf6d6d-434f-49b0-9f9d-49135ff91e07",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "beforeAll",
+    "type": 1,
+    "index": 1,
+    "state": 4
+  }
+]
+2023-07-28T10:08:24.912+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "1ecf6d6d-434f-49b0-9f9d-49135ff91e07",
+    "remoteDestState": 4,
+    "localTimeStamp": "2023-07-28T01:08:24.912Z"
+  }
+]
+2023-07-28T10:08:24.917+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "112e204d-4862-483d-8cb1-84c1d65d9485",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "beforeEach",
+    "type": 1,
+    "index": 2,
+    "state": 2
+  }
+]
+2023-07-28T10:08:24.917+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "112e204d-4862-483d-8cb1-84c1d65d9485",
+    "remoteDestState": 2,
+    "localTimeStamp": "2023-07-28T01:08:24.917Z"
+  }
+]
+2023-07-28T10:08:24.921+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "112e204d-4862-483d-8cb1-84c1d65d9485",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "beforeEach",
+    "type": 1,
+    "index": 2,
+    "state": 4
+  }
+]
+2023-07-28T10:08:24.922+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "112e204d-4862-483d-8cb1-84c1d65d9485",
+    "remoteDestState": 4,
+    "localTimeStamp": "2023-07-28T01:08:24.922Z"
+  }
+]
+2023-07-28T10:08:24.923+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "f812f196-9a17-493d-8c77-007c18baae97",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "beforeEach",
+    "type": 1,
+    "index": 3,
+    "state": 2
+  }
+]
+2023-07-28T10:08:24.924+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "f812f196-9a17-493d-8c77-007c18baae97",
+    "remoteDestState": 2,
+    "localTimeStamp": "2023-07-28T01:08:24.924Z"
+  }
+]
+2023-07-28T10:08:24.927+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "f812f196-9a17-493d-8c77-007c18baae97",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "beforeEach",
+    "type": 1,
+    "index": 3,
+    "state": 4
+  }
+]
+2023-07-28T10:08:24.927+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "f812f196-9a17-493d-8c77-007c18baae97",
+    "remoteDestState": 4,
+    "localTimeStamp": "2023-07-28T01:08:24.927Z"
+  }
+]
+2023-07-28T10:08:24.929+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "1f5dc6d2-d5b5-4373-8db4-d280339fec8f",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "test 1",
+    "type": 1,
+    "index": 4,
+    "state": 2
+  }
+]
+2023-07-28T10:08:24.929+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "1f5dc6d2-d5b5-4373-8db4-d280339fec8f",
+    "remoteDestState": 2,
+    "localTimeStamp": "2023-07-28T01:08:24.929Z"
+  }
+]
+2023-07-28T10:08:24.932+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "1f5dc6d2-d5b5-4373-8db4-d280339fec8f",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "test 1",
+    "type": 1,
+    "index": 4,
+    "state": 3
+  }
+]
+2023-07-28T10:08:24.932+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "1f5dc6d2-d5b5-4373-8db4-d280339fec8f",
+    "remoteDestState": 3,
+    "localTimeStamp": "2023-07-28T01:08:24.932Z"
+  }
+]
+2023-07-28T10:08:24.934+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "cd89a1da-d3f2-4709-bd64-b12dcb29ab39",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "afterEach",
+    "type": 1,
+    "index": 5,
+    "state": 2
+  }
+]
+2023-07-28T10:08:24.934+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "cd89a1da-d3f2-4709-bd64-b12dcb29ab39",
+    "remoteDestState": 2,
+    "localTimeStamp": "2023-07-28T01:08:24.934Z"
+  }
+]
+2023-07-28T10:08:24.943+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "cd89a1da-d3f2-4709-bd64-b12dcb29ab39",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "afterEach",
+    "type": 1,
+    "index": 5,
+    "state": 4
+  }
+]
+2023-07-28T10:08:24.944+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "cd89a1da-d3f2-4709-bd64-b12dcb29ab39",
+    "remoteDestState": 4,
+    "localTimeStamp": "2023-07-28T01:08:24.944Z"
+  }
+]
+2023-07-28T10:08:24.946+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "3a2ac336-066a-4539-84dd-454dee400578",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "afterEach",
+    "type": 1,
+    "index": 6,
+    "state": 2
+  }
+]
+2023-07-28T10:08:24.946+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "3a2ac336-066a-4539-84dd-454dee400578",
+    "remoteDestState": 2,
+    "localTimeStamp": "2023-07-28T01:08:24.946Z"
+  }
+]
+2023-07-28T10:08:24.948+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "3a2ac336-066a-4539-84dd-454dee400578",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "afterEach",
+    "type": 1,
+    "index": 6,
+    "state": 4
+  }
+]
+2023-07-28T10:08:24.949+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "3a2ac336-066a-4539-84dd-454dee400578",
+    "remoteDestState": 4,
+    "localTimeStamp": "2023-07-28T01:08:24.948Z"
+  }
+]
+2023-07-28T10:08:24.953+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "fd37ce3a-15e6-48e4-9ed6-f293e6179455",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "describe 1",
+    "type": 0,
+    "index": 7,
+    "state": 2
+  }
+]
+2023-07-28T10:08:24.953+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "fd37ce3a-15e6-48e4-9ed6-f293e6179455",
+    "remoteDestState": 2,
+    "localTimeStamp": "2023-07-28T01:08:24.953Z"
+  }
+]
+2023-07-28T10:08:24.958+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "133b164a-8ac0-48b2-845f-356807c21eed",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "beforeAll",
+    "type": 1,
+    "index": 0,
+    "state": 2
+  }
+]
+2023-07-28T10:08:24.958+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "133b164a-8ac0-48b2-845f-356807c21eed",
+    "remoteDestState": 2,
+    "localTimeStamp": "2023-07-28T01:08:24.958Z"
+  }
+]
+2023-07-28T10:08:24.962+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "133b164a-8ac0-48b2-845f-356807c21eed",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "beforeAll",
+    "type": 1,
+    "index": 0,
+    "state": 4
+  }
+]
+2023-07-28T10:08:24.962+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "133b164a-8ac0-48b2-845f-356807c21eed",
+    "remoteDestState": 4,
+    "localTimeStamp": "2023-07-28T01:08:24.962Z"
+  }
+]
+2023-07-28T10:08:24.967+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "3b73d1d9-d336-497c-9a3f-19371f671a78",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "beforeAll",
+    "type": 1,
+    "index": 1,
+    "state": 2
+  }
+]
+2023-07-28T10:08:24.967+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "3b73d1d9-d336-497c-9a3f-19371f671a78",
+    "remoteDestState": 2,
+    "localTimeStamp": "2023-07-28T01:08:24.967Z"
+  }
+]
+2023-07-28T10:08:24.972+09:00 | info | 10907 | DestHandler | update dest [
+  {
+    "id": "3b73d1d9-d336-497c-9a3f-19371f671a78",
+    "ownerId": "2cd99dc5-667b-4113-83d5-98d012ef9036",
+    "name": "beforeAll",
+    "type": 1,
+    "index": 1,
+    "state": 4
+  }
+]
+2023-07-28T10:08:24.972+09:00 | info | 10907 | RemoteDestClient | update dest [
+  {
+    "remoteDestId": "3b73d1d9-d336-497c-9a3f-19371f671a78",
+    "remoteDestState": 4,
+    "localTimeStamp": "2023-07-28T01:08:24.972Z"
+  }
+]

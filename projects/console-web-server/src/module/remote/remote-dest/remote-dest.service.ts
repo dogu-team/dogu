@@ -1,6 +1,6 @@
 import { DestSummaryResponse, RemoteDestBase, RemoteDeviceJobPropCamel } from '@dogu-private/console';
 import { DEST_STATE, DEST_TYPE, RemoteDestId, RemoteDeviceJobId } from '@dogu-private/types';
-import { CreateRemoteDestRequestBody, CreateRemoteDestResponse, RemoteDestData, RemoteDestInfo } from '@dogu-tech/console-remote-dest';
+import { CreateRemoteDestRequestBody, CreateRemoteDestResponse, RemoteDestInfo, RemoteJestData } from '@dogu-tech/console-remote-dest';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager, In } from 'typeorm';
@@ -25,8 +25,8 @@ export class RemoteDestService {
       throw new HttpException(`RemoteDeviceJobId ${remoteDeviceJobId} not found`, HttpStatus.NOT_FOUND);
     }
     const rv = await this.dataSource.transaction(async (entityManager) => {
-      const destDatas = await this.createRemoteDestDatas(entityManager, remoteDestInfos, remoteDeviceJobId, null);
-      return destDatas;
+      const jestDatas = await this.createRemoteJestDatas(entityManager, remoteDestInfos, remoteDeviceJobId, null);
+      return jestDatas;
     });
 
     const response: CreateRemoteDestResponse = {
@@ -41,13 +41,13 @@ export class RemoteDestService {
     await manager.getRepository(RemoteDestEdge).save(newData);
   }
 
-  private async createRemoteDestDatas(
+  private async createRemoteJestDatas(
     manager: EntityManager,
     remoteDestInfos: RemoteDestInfo[],
     remoteDeviceJobId: RemoteDeviceJobId,
     parentRemoteDestId: RemoteDestId | null,
-  ): Promise<RemoteDestData[]> {
-    const destDatas: RemoteDestData[] = [];
+  ): Promise<RemoteJestData[]> {
+    const jestDatas: RemoteJestData[] = [];
     let index = 0;
     for (const remoteDestInfo of remoteDestInfos) {
       const newData = manager.getRepository(RemoteDest).create({ remoteDestId: v4(), index, remoteDeviceJobId, ...remoteDestInfo });
@@ -56,9 +56,9 @@ export class RemoteDestService {
         await this.createRemoteDestEdge(manager, parentRemoteDestId, remoteDest.remoteDestId);
       }
 
-      const children = await this.createRemoteDestDatas(manager, remoteDestInfo.children, remoteDeviceJobId, remoteDest.remoteDestId);
+      const children = await this.createRemoteJestDatas(manager, remoteDestInfo.children, remoteDeviceJobId, remoteDest.remoteDestId);
 
-      const remoteDestData: RemoteDestData = {
+      const remoteJestData: RemoteJestData = {
         remoteDestId: remoteDest.remoteDestId,
         remoteDeviceJobId: remoteDest.remoteDeviceJobId,
         name: remoteDest.name,
@@ -67,10 +67,10 @@ export class RemoteDestService {
         type: remoteDest.type,
         children,
       };
-      destDatas.push(remoteDestData);
+      jestDatas.push(remoteJestData);
       ++index;
     }
-    return destDatas;
+    return jestDatas;
   }
 
   async findRemoteDestsByRemoteDeviceJobId(remoteDeviceJobId: RemoteDeviceJobId): Promise<RemoteDestBase[]> {
@@ -88,27 +88,27 @@ export class RemoteDestService {
 
     const destEdges = await this.dataSource.getRepository(RemoteDestEdge).findBy({ remoteDestId: In(destIds) });
 
-    const destDatas = await this.makeDestData(remoteDests, destEdges, null);
-    return destDatas;
+    const jestDatas = await this.makeJestData(remoteDests, destEdges, null);
+    return jestDatas;
   }
 
-  private async makeDestData(remoteDests: RemoteDest[], remoteDestEdges: RemoteDestEdge[], parentRemoteDestId: RemoteDestId | null): Promise<RemoteDest[]> {
-    let destDatas;
+  private async makeJestData(remoteDests: RemoteDest[], remoteDestEdges: RemoteDestEdge[], parentRemoteDestId: RemoteDestId | null): Promise<RemoteDest[]> {
+    let jestDatas;
     if (parentRemoteDestId === null) {
       // root
-      destDatas = remoteDests.filter((dest) => !remoteDestEdges.some((destEdge) => destEdge.remoteDestId === dest.remoteDestId));
+      jestDatas = remoteDests.filter((dest) => !remoteDestEdges.some((destEdge) => destEdge.remoteDestId === dest.remoteDestId));
     } else {
       // children by parentDestId
-      destDatas = remoteDests.filter((dest) =>
+      jestDatas = remoteDests.filter((dest) =>
         remoteDestEdges.some((destEdge) => destEdge.remoteDestId === dest.remoteDestId && destEdge.parentRemoteDestId === parentRemoteDestId),
       );
     }
 
-    for (const destData of destDatas) {
-      destData.children = await this.makeDestData(remoteDests, remoteDestEdges, destData.remoteDestId);
+    for (const jestData of jestDatas) {
+      jestData.children = await this.makeJestData(remoteDests, remoteDestEdges, jestData.remoteDestId);
     }
 
-    return destDatas;
+    return jestDatas;
   }
 
   async getRemoteDestSummary(remoteDeviceJobId: RemoteDeviceJobId): Promise<DestSummaryResponse> {

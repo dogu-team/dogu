@@ -14,6 +14,7 @@ interface Watch {
 
 interface WatchOption {
   copyOnly?: boolean;
+  excludeDirs?: string[];
 }
 
 function scanPackage(packagesPaths: string[], packageName: string): string {
@@ -133,11 +134,17 @@ export async function mirrorWorkspace(spacePath: string, option: WatchOption = {
   handleShellString(shelljs.rm('-rf', outputPackagesPath));
   handleShellString(shelljs.mkdir('-p', outputPackagesPath));
 
+  const excludeDirs = option.excludeDirs ?? [];
   const returningWatchs: Watch[] = [];
   for (const tsPackageRoot of packagesPaths) {
     const dirs = fs.readdirSync(tsPackageRoot);
     for (const dir of dirs) {
       const srcPackagePath = path.resolve(tsPackageRoot, dir);
+      if (excludeDirs.some((excludeDir) => srcPackagePath.includes(excludeDir))) {
+        console.log(chalk.redBright(`[mirror] exclude: ${srcPackagePath}`));
+        continue;
+      }
+
       const srcPath = path.resolve(tsPackageRoot, dir, 'src');
       if (!fs.existsSync(srcPath)) continue;
 

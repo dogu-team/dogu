@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "build/esm",
     "module": "es2022",
-    "tsBuildInfoFile": "build-info/esm/tsconfig.tsbuildinfo"
+    "tsBuildInfoFile": "build-temp/esm/tsconfig.tsbuildinfo"
   },
   "include": ["src/**/*.ts"]
 }

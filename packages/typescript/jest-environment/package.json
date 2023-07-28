@@ -22,11 +22,11 @@
   ],
   "scripts": {
     "build": "node scripts/build.mjs",
-    "clean": "shx rm -rf build build-info .publish-npm",
+    "clean": "shx rm -rf build build-temp .publish-npm",
     "dev": "nodemon",
     "rebuild": "yarn run clean && yarn run build",
     "start": "ts-node src/index.ts",
-    "test:dev": "jest tests/single-test-success",
+    "test:dev": "cross-env NODE_OPTIONS=\"--experimental-vm-modules --max_old_space_size=4096 $NODE_OPTIONS\" yarn jest --runInBand tests/failure.test.ts",
     "watch": "clear; echo @dogu-tech/node Watching... && nodemon"
   },
   "types": "build/cjs/src/environment/index.d.ts",
@@ -47,7 +47,6 @@
     "@babel/plugin-transform-class-properties": "7.22.5",
     "@babel/plugin-transform-modules-commonjs": "7.22.5",
     "@babel/preset-typescript": "7.22.5",
-    "@dogu-dev-private/publish-package": "workspace:^",
     "@jest/globals": "29.6.0",
     "@jest/types": "29.6.0",
     "@types/async-lock": "1",

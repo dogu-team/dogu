@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "build/cjs",
     "module": "commonjs",
-    "tsBuildInfoFile": "build-info/cjs/tsconfig.tsbuildinfo"
+    "tsBuildInfoFile": "build-temp/cjs/tsconfig.tsbuildinfo"
   },
   "include": ["src/**/*.ts"]
 }

@@ -12,7 +12,7 @@ import {
   RoutinePipelineId,
   RoutineStepId,
 } from '@dogu-private/types';
-import { CreateDestRequestBody, CreateDestResponse, DestData, DestInfo } from '@dogu-tech/console-dest';
+import { CreateDestRequestBody, CreateDestResponse, DestInfo, JestData } from '@dogu-tech/console-dest';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager, In } from 'typeorm';
@@ -87,8 +87,8 @@ export class DestService {
       throw new HttpException(`stepId is not exist. stepId: ${stepId}`, HttpStatus.NOT_FOUND);
     }
     const rv = await this.dataSource.transaction(async (entityManager) => {
-      const destDatas = await this.createDestDatas(entityManager, destInfos, stepId, null);
-      return destDatas;
+      const jestDatas = await this.createJestDatas(entityManager, destInfos, stepId, null);
+      return jestDatas;
     });
 
     const response: CreateDestResponse = {
@@ -98,21 +98,21 @@ export class DestService {
     return response;
   }
 
-  private async makeDestData(dests: Dest[], destEdges: DestEdge[], parentDestId: DestId | null): Promise<Dest[]> {
-    let destDatas;
+  private async makeJestData(dests: Dest[], destEdges: DestEdge[], parentDestId: DestId | null): Promise<Dest[]> {
+    let jestDatas;
     if (parentDestId === null) {
       // root
-      destDatas = dests.filter((dest) => !destEdges.some((destEdge) => destEdge.destId === dest.destId));
+      jestDatas = dests.filter((dest) => !destEdges.some((destEdge) => destEdge.destId === dest.destId));
     } else {
       // children by parentDestId
-      destDatas = dests.filter((dest) => destEdges.some((destEdge) => destEdge.destId === dest.destId && destEdge.parentDestId === parentDestId));
+      jestDatas = dests.filter((dest) => destEdges.some((destEdge) => destEdge.destId === dest.destId && destEdge.parentDestId === parentDestId));
     }
 
-    for (const destData of destDatas) {
-      destData.children = await this.makeDestData(dests, destEdges, destData.destId);
+    for (const jestData of jestDatas) {
+      jestData.children = await this.makeJestData(dests, destEdges, jestData.destId);
     }
 
-    return destDatas;
+    return jestDatas;
   }
 
   async findDestsByStepId(stepId: RoutineStepId): Promise<Dest[]> {
@@ -128,8 +128,8 @@ export class DestService {
     const destIds = dests.map((dest) => dest.destId).sort();
     const destEdges = await this.dataSource.getRepository(DestEdge).findBy({ destId: In(destIds) });
 
-    const destDatas = await this.makeDestData(dests, destEdges, null);
-    return destDatas;
+    const jestDatas = await this.makeJestData(dests, destEdges, null);
+    return jestDatas;
   }
 
   private async createDestEdge(manager: EntityManager, parentDestId: DestId, destId: DestId): Promise<void> {
@@ -137,8 +137,8 @@ export class DestService {
     await manager.getRepository(DestEdge).save(newData);
   }
 
-  private async createDestDatas(manager: EntityManager, destInfos: DestInfo[], stepId: RoutineStepId, parentDestId: DestId | null): Promise<DestData[]> {
-    const destDatas: DestData[] = [];
+  private async createJestDatas(manager: EntityManager, destInfos: DestInfo[], stepId: RoutineStepId, parentDestId: DestId | null): Promise<JestData[]> {
+    const jestDatas: JestData[] = [];
     let index = 0;
     for (const destInfo of destInfos) {
       const newData = manager.getRepository(Dest).create({ index, routineStepId: stepId, ...destInfo });
@@ -147,9 +147,9 @@ export class DestService {
         await this.createDestEdge(manager, parentDestId, dest.destId);
       }
 
-      const children = await this.createDestDatas(manager, destInfo.children, stepId, dest.destId);
+      const children = await this.createJestDatas(manager, destInfo.children, stepId, dest.destId);
 
-      const destData: DestData = {
+      const jestData: JestData = {
         destId: dest.destId,
         routineStepId: dest.routineStepId,
         name: dest.name,
@@ -158,10 +158,10 @@ export class DestService {
         type: dest.type,
         children,
       };
-      destDatas.push(destData);
+      jestDatas.push(jestData);
       ++index;
     }
-    return destDatas;
+    return jestDatas;
   }
 
   async findCompletedDestLogs(
