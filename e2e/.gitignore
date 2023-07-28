@@ -6,6 +6,5 @@ saved-token.json
 service-account-key.json
 
 # env
-.env
 .env.local
 
