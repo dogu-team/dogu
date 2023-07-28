@@ -1,4 +1,4 @@
-import { DevicePropCamel, DevicePropSnake, HostBase, HostPropCamel, HostPropSnake } from '@dogu-private/console';
+import { DevicePropCamel, DevicePropSnake, HostBase, HostPropCamel, HostPropSnake, TokenPropSnake } from '@dogu-private/console';
 import { DeviceConnectionState, HostConnectionState, HostId, OrganizationId, UserId, UserPayload } from '@dogu-private/types';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -40,10 +40,10 @@ export class HostService {
       .leftJoin(`host.${HostPropCamel.token}`, 'token')
       .where(`host.${HostPropSnake.organization_id} = :organizationId`, { organizationId })
       .andWhere(`host.${HostPropSnake.name} ILIKE :name`, { name: `%${dto.keyword}%` })
-      .andWhere(`token.token LIKE :token`, { token: `%${dto.token ?? ''}%` })
+      .andWhere(`token.${TokenPropSnake.token} LIKE :token`, { token: `%${dto.token ?? ''}%` })
       .andWhere(
         new Brackets((qb) => {
-          qb.where(`device.${DevicePropSnake.organization_id} = :organizationId`, { organizationId }).orWhere('device.device_id IS NULL');
+          qb.where(`device.${DevicePropSnake.organization_id} = :organizationId`, { organizationId }).orWhere(`device.${DevicePropSnake.device_id} IS NULL`);
         }),
       )
       .orderBy(`host.${HostPropCamel.connectionState}`, 'DESC')
@@ -103,11 +103,6 @@ export class HostService {
       const token = await manager.getRepository(Token).save(tokenData);
       await manager.getRepository(Token).softDelete({ tokenId: host.tokenId });
       await manager.getRepository(Host).update({ hostId }, { tokenId: token.tokenId });
-
-      // host
-      host.tokenId = token.tokenId;
-      await manager.getRepository(Host).save(host);
-
       return token.token;
     });
 
