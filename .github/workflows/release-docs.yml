@@ -94,6 +94,7 @@ jobs:
           algolia-app-id: ${{ secrets.DOCS_ALGOLIA_APP_ID }}
           algolia-api-key: ${{ secrets.DOCS_ALGOLIA_API_KEY }}
           site-url: 'https://docs.dogutech.io'
+          crawler-name: 'dogutech'
 
   send-slack:
     runs-on: ubuntu-latest
