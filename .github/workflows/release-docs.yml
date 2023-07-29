@@ -91,7 +91,7 @@ jobs:
         with:
           crawler-user-id: ${{ secrets.DOCS_CRAWLER_USER_ID }}
           crawler-api-key: ${{ secrets.DOCS_CRAWLER_API_KEY }}
-          algolia-app-id: ${{ secrets.DOCS.ALGOLIA_APP_ID }}
+          algolia-app-id: ${{ secrets.DOCS_ALGOLIA_APP_ID }}
           algolia-api-key: ${{ secrets.DOCS_ALGOLIA_API_KEY }}
           site-url: 'https://docs.dogutech.io'
 
