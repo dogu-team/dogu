@@ -86,7 +86,7 @@ jobs:
     needs: release
     steps:
       - name: Algolia recrawl
-        uses: algoliasearch-crawler-github-actions@v1.1.9
+        uses: algolia/algoliasearch-crawler-github-actions@v1.1.9
         id: algolia_crawler
         with:
           crawler-user-id: ${{ secrets.DOCS_CRAWLER_USER_ID }}
