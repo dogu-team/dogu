@@ -3,7 +3,6 @@ import { createConsoleApiAuthHeader, DeviceId, OrganizationId, RoutineDeviceJobI
 import { DefaultHttpOptions, errorify, Retry, stringifyError } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
-import { lastValueFrom } from 'rxjs';
 import { config } from '../config';
 import { ConsoleClientService } from '../console-client/console-client.service';
 import { env } from '../env';
@@ -46,12 +45,10 @@ export class DeviceJobHeartbeater {
   private async updateDeviceJobHeartbeatNow(organizationId: OrganizationId, deviceId: DeviceId, routineDeviceJobId: RoutineDeviceJobId): Promise<void> {
     const pathProvider = new PrivateDeviceJob.updateDeviceJobHeartbeatNow.pathProvider(organizationId, deviceId, routineDeviceJobId);
     const path = PrivateDeviceJob.updateDeviceJobHeartbeatNow.resolvePath(pathProvider);
-    await lastValueFrom(
-      this.consoleClientService.service.patch(path, null, {
-        ...createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
-        timeout: DefaultHttpOptions.request.timeout,
-      }),
-    );
+    await this.consoleClientService.client.patch(path, null, {
+      ...createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
+      timeout: DefaultHttpOptions.request.timeout,
+    });
     this.logger.debug('DeviceJob heartbeat updated', { organizationId, deviceId, routineDeviceJobId, timestamp: new Date() });
   }
 }

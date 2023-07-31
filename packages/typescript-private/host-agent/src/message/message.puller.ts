@@ -1,10 +1,9 @@
 import { ErrorResult, Param, ParamValue, PrivateDevice, Result, ResultValue } from '@dogu-private/console-host-agent';
 import { Code, createConsoleApiAuthHeader, DeviceId, OrganizationId } from '@dogu-private/types';
-import { DefaultHttpOptions, DuplicatedCallGuarder, Instance, parseAxiosError, transformAndValidate } from '@dogu-tech/common';
+import { DefaultHttpOptions, DuplicatedCallGuarder, errorify, Instance, transformAndValidate } from '@dogu-tech/common';
 import { MultiPlatformEnvironmentVariableReplacer } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
-import { lastValueFrom } from 'rxjs';
 import { config } from '../config';
 import { ConsoleClientService } from '../console-client/console-client.service';
 import { DeviceRegistry } from '../device/device.registry';
@@ -31,14 +30,14 @@ export class MessagePuller {
           this.pullDeviceParamDatas(deviceResolutionInfo, count).catch((error) => {
             this.logger.error('pull device param datas failed', {
               serial,
-              error: parseAxiosError(error),
+              error: errorify(error),
             });
           });
         });
       });
     } catch (error) {
       this.logger.error('pull message failed', {
-        error: parseAxiosError(error),
+        error: errorify(error),
       });
     }
   }
@@ -52,19 +51,19 @@ export class MessagePuller {
     const pathProvider = new PrivateDevice.pullDeviceParamDatas.pathProvider(organizationId, deviceId);
     const path = PrivateDevice.pullDeviceParamDatas.resolvePath(pathProvider);
     const requestBody: Instance<typeof PrivateDevice.pullDeviceParamDatas.requestBody> = { count };
-    const { data } = await lastValueFrom(
-      this.consoleClientService.service.post<Instance<typeof PrivateDevice.pullDeviceParamDatas.responseBody>>(path, requestBody, {
+    const { data } = await this.consoleClientService.client
+      .post<Instance<typeof PrivateDevice.pullDeviceParamDatas.responseBody>>(path, requestBody, {
         ...createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
         timeout: DefaultHttpOptions.request.timeout,
-      }),
-    ).catch((error) => {
-      this.logger.error('pull device param datas failed', {
-        organizationId,
-        deviceId,
-        error: parseAxiosError(error),
+      })
+      .catch((error) => {
+        this.logger.error('pull device param datas failed', {
+          organizationId,
+          deviceId,
+          error: errorify(error),
+        });
+        throw error;
       });
-      throw error;
-    });
     const response = await transformAndValidate(PrivateDevice.pullDeviceParamDatas.responseBody, data);
     const { datas } = response;
     datas.forEach((data) => {
@@ -72,7 +71,7 @@ export class MessagePuller {
         this.logger.error('process param data failed', {
           deviceResolutionInfo,
           data,
-          error: parseAxiosError(error),
+          error: errorify(error),
         });
       });
     });
@@ -130,16 +129,16 @@ export class MessagePuller {
     const requestBody: Instance<typeof PrivateDevice.pushDeviceResult.requestBody> = {
       result,
     };
-    await lastValueFrom(
-      this.consoleClientService.service.post<Instance<typeof PrivateDevice.pushDeviceResult.requestBody>>(path, requestBody, createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN)),
-    ).catch((error) => {
-      this.logger.error('push device result failed', {
-        organizationId,
-        deviceId,
-        resultId,
-        error: parseAxiosError(error),
+    await this.consoleClientService.client
+      .post<Instance<typeof PrivateDevice.pushDeviceResult.requestBody>>(path, requestBody, createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN))
+      .catch((error) => {
+        this.logger.error('push device result failed', {
+          organizationId,
+          deviceId,
+          resultId,
+          error: errorify(error),
+        });
+        throw error;
       });
-      throw error;
-    });
   }
 }

@@ -1,10 +1,9 @@
 import { PrivateDevice } from '@dogu-private/console-host-agent';
 import { createConsoleApiAuthHeader, DeviceId, OrganizationId, Serial } from '@dogu-private/types';
-import { closeWebSocketWithTruncateReason, DefaultHttpOptions, Instance, parseAxiosError, stringify, transformAndValidate } from '@dogu-tech/common';
+import { closeWebSocketWithTruncateReason, DefaultHttpOptions, errorify, Instance, stringify, transformAndValidate } from '@dogu-tech/common';
 import { DeviceRuntimeInfoSubscribe, RuntimeInfoDto } from '@dogu-tech/device-client';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { lastValueFrom } from 'rxjs';
 import WebSocket from 'ws';
 import { ConsoleClientService } from '../console-client/console-client.service';
 import { env } from '../env';
@@ -81,13 +80,13 @@ export class DeviceRuntimeInfoSubscriber {
     const requestBody: Instance<typeof PrivateDevice.writeDeviceRunTimeInfos.requestBody> = {
       runtimeInfos: [runtimeInfo],
     };
-    await lastValueFrom(
-      this.consoleClientService.service.post(path, requestBody, {
+    await this.consoleClientService.client
+      .post(path, requestBody, {
         ...createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
         timeout: DefaultHttpOptions.request.timeout,
-      }),
-    ).catch((error) => {
-      this.logger.error('writeDeviceRunTimeInfos.error', { error: parseAxiosError(error) });
-    });
+      })
+      .catch((error) => {
+        this.logger.error('writeDeviceRunTimeInfos.error', { error: errorify(error) });
+      });
   }
 }

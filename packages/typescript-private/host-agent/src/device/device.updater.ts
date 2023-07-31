@@ -1,9 +1,8 @@
 import { PrivateDevice } from '@dogu-private/console-host-agent';
 import { createConsoleApiAuthHeader } from '@dogu-private/types';
-import { DefaultHttpOptions, Instance, parseAxiosError, Retry, transformAndValidate } from '@dogu-tech/common';
+import { DefaultHttpOptions, errorify, Instance, Retry, transformAndValidate } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { lastValueFrom } from 'rxjs';
 import { ConsoleClientService } from '../console-client/console-client.service';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
@@ -34,19 +33,19 @@ export class DeviceUpdater {
       platform,
     };
     const bodyValidated = await transformAndValidate(PrivateDevice.updateDevice.requestBody, body);
-    await lastValueFrom(
-      this.consoleClientService.service.patch(path, bodyValidated, {
+    await this.consoleClientService.client
+      .patch(path, bodyValidated, {
         ...createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
         timeout: DefaultHttpOptions.request.timeout,
-      }),
-    ).catch((error) => {
-      this.logger.error('Failed to update device', {
-        organizationId,
-        deviceId,
-        body,
-        error: parseAxiosError(error),
+      })
+      .catch((error) => {
+        this.logger.error('Failed to update device', {
+          organizationId,
+          deviceId,
+          body,
+          error: errorify(error),
+        });
+        throw error;
       });
-      throw error;
-    });
   }
 }

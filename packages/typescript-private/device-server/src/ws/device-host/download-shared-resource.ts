@@ -1,5 +1,5 @@
 import { OnWebSocketClose, OnWebSocketMessage, WebSocketGatewayBase, WebSocketRegistryValueAccessor, WebSocketService } from '@dogu-private/nestjs-common';
-import { closeWebSocketWithTruncateReason, DefaultHttpOptions, errorify, Instance, Retry } from '@dogu-tech/common';
+import { closeWebSocketWithTruncateReason, DefaultHttpOptions, errorify, Instance, Retry, setAxiosErrorFilterToGlobal } from '@dogu-tech/common';
 import { DeviceHostDownloadSharedResource } from '@dogu-tech/device-client-common';
 import axios from 'axios';
 import { IncomingMessage } from 'http';
@@ -39,6 +39,7 @@ export class DeviceHostDownloadSharedResourceWebsocketService
 
   @Retry({ retryCount: 3, retryInterval: 1000 })
   private async getFileSize(url: string, headers: Record<string, string> | undefined): Promise<number> {
+    setAxiosErrorFilterToGlobal();
     const response = await axios
       .head(url, {
         headers,

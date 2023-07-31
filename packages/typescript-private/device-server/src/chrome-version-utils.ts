@@ -1,5 +1,5 @@
-import { stringify } from '@dogu-tech/common';
-import axios, { isAxiosError } from 'axios';
+import { setAxiosErrorFilterToGlobal } from '@dogu-tech/common';
+import axios from 'axios';
 import _ from 'lodash';
 
 export const ChromeVersionPattern = /^(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:\.(\d+))?$/;
@@ -75,9 +75,9 @@ export function findChromeVersionLike(toMatch: ChromeVersionLike, targerts: Requ
 }
 
 export async function downloadKnownGoodChromeVersionLikes(): Promise<Required<ChromeVersionLike>[]> {
+  setAxiosErrorFilterToGlobal();
   const response = await axios.get(ChromeKnownGoodVersionsUrl).catch((error) => {
-    const stringifiedError = isAxiosError(error) ? JSON.stringify(error.toJSON(), undefined, 2) : stringify(error);
-    throw new Error(`Failed to download ${ChromeKnownGoodVersionsUrl}: ${stringifiedError}`);
+    throw new Error(`Failed to download ${ChromeKnownGoodVersionsUrl}: ${error}`);
   });
   const versionObjects = _.get(response.data, 'versions') as { version?: string; revision?: string }[] | undefined;
   const knownGoodVersionLikes = versionObjects
@@ -93,9 +93,9 @@ export async function downloadKnownGoodChromeVersionLikes(): Promise<Required<Ch
 }
 
 export async function downloadLastKnownGoodChromeVersionLike(): Promise<Required<ChromeVersionLike>> {
+  setAxiosErrorFilterToGlobal();
   const response = await axios.get(ChromeLastKnownGoodVersionsUrl).catch((error) => {
-    const stringifiedError = isAxiosError(error) ? JSON.stringify(error.toJSON(), undefined, 2) : stringify(error);
-    throw new Error(`Failed to download ${ChromeKnownGoodVersionsUrl}: ${stringifiedError}`);
+    throw new Error(`Failed to download ${ChromeKnownGoodVersionsUrl}: ${error}`);
   });
   const version = _.get(response.data, 'channels.Stable.version') as string | undefined;
   if (!version) {

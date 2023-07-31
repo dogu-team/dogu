@@ -1,4 +1,4 @@
-import { DefaultHttpOptions, Instance, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
+import { DefaultHttpOptions, Instance, Printable, PromiseOrValue, setAxiosErrorFilterToGlobal, stringify } from '@dogu-tech/common';
 import { PublicDest } from '@dogu-tech/console-dest';
 import { createConsoleApiAuthHeader, DestId, DestState, destStateStringToStatusEnum, DeviceId, OrganizationId } from '@dogu-tech/types';
 import axios from 'axios';
@@ -40,6 +40,7 @@ export class ConsoleReporterUnit implements ReporterUnit {
         localTimeStamp: new Date(),
       };
       printable.verbose?.('dest update state', { ...requestBody, url });
+      setAxiosErrorFilterToGlobal();
       await axios.patch<typeof PublicDest.updateDestState.responseBody>(url, requestBody, {
         ...createConsoleApiAuthHeader(DOGU_HOST_TOKEN),
         timeout: DefaultHttpOptions.request.timeout,

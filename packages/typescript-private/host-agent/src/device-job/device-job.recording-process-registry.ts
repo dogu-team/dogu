@@ -7,7 +7,6 @@ import { OnEvent } from '@nestjs/event-emitter';
 import FormData from 'form-data';
 import fs from 'fs';
 import path from 'path';
-import { lastValueFrom } from 'rxjs';
 import WebSocket from 'ws';
 import { ConsoleClientService } from '../console-client/console-client.service';
 import { OnDeviceJobCancelRequestedEvent, OnDeviceJobPostProcessCompletedEvent, OnDeviceJobStartedEvent } from '../device-job/device-job.events';
@@ -171,15 +170,13 @@ export class DeviceJobRecordingProcessRegistry {
     form.append('record', buffer, fileName);
     const pathProvider = new PrivateDeviceJob.uploadDeviceJobRecord.pathProvider(organizationId, deviceId, routineDeviceJobId);
     const urlPath = PrivateDeviceJob.uploadDeviceJobRecord.resolvePath(pathProvider);
-    await lastValueFrom(
-      this.consoleClientService.service.post(urlPath, form, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          Authorization: createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN).headers.Authorization,
-        },
-        timeout: DefaultHttpOptions.request.timeout1minutes,
-      }),
-    );
+    await this.consoleClientService.client.post(urlPath, form, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN).headers.Authorization,
+      },
+      timeout: DefaultHttpOptions.request.timeout1minutes,
+    });
   }
 }
 

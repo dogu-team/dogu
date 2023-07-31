@@ -1,9 +1,8 @@
 import { DeviceJobStatusInfo, PrivateDeviceJob, StepStatusInfo } from '@dogu-private/console-host-agent';
 import { createConsoleApiAuthHeader, DeviceId, OrganizationId, RoutineDeviceJobId } from '@dogu-private/types';
-import { DefaultHttpOptions, Instance, parseAxiosError, Retry } from '@dogu-tech/common';
+import { DefaultHttpOptions, errorify, Instance, Retry } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { lastValueFrom } from 'rxjs';
 import { ConsoleClientService } from '../console-client/console-client.service';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
@@ -33,21 +32,21 @@ export class DeviceJobUpdater {
     const requestBody: Instance<typeof PrivateDeviceJob.updateDeviceJobLocalStartedAt.requestBody> = {
       localStartedAt,
     };
-    await lastValueFrom(
-      this.consoleClientService.service.patch(path, requestBody, {
+    await this.consoleClientService.client
+      .patch(path, requestBody, {
         ...createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
         timeout: DefaultHttpOptions.request.timeout,
-      }),
-    ).catch((error) => {
-      this.logger.error('Failed to update deviceJob localStartedAt', {
-        organizationId,
-        deviceId,
-        routineDeviceJobId,
-        localStartedAt,
-        error: parseAxiosError(error),
+      })
+      .catch((error) => {
+        this.logger.error('Failed to update deviceJob localStartedAt', {
+          organizationId,
+          deviceId,
+          routineDeviceJobId,
+          localStartedAt,
+          error: errorify(error),
+        });
+        throw error;
       });
-      throw error;
-    });
     this.logger.verbose('DeviceJob localStartedAt updated', { organizationId, deviceId, routineDeviceJobId, localStartedAt });
   }
 
@@ -65,21 +64,21 @@ export class DeviceJobUpdater {
       deviceJobStatusInfo,
       stepStatusInfos,
     };
-    await lastValueFrom(
-      this.consoleClientService.service.patch(path, requestBody, {
+    await this.consoleClientService.client
+      .patch(path, requestBody, {
         ...createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
         timeout: DefaultHttpOptions.request.timeout,
-      }),
-    ).catch((error) => {
-      this.logger.error('Failed to update deviceJob status', {
-        organizationId,
-        deviceId,
-        routineDeviceJobId,
-        deviceJobStatusInfo,
-        error: parseAxiosError(error),
+      })
+      .catch((error) => {
+        this.logger.error('Failed to update deviceJob status', {
+          organizationId,
+          deviceId,
+          routineDeviceJobId,
+          deviceJobStatusInfo,
+          error: errorify(error),
+        });
+        throw error;
       });
-      throw error;
-    });
     this.logger.verbose('DeviceJob status updated', { organizationId, deviceId, routineDeviceJobId, deviceJobStatusInfo });
   }
 }

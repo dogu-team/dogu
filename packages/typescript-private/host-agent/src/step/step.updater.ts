@@ -1,9 +1,8 @@
 import { PrivateStep } from '@dogu-private/console-host-agent';
 import { createConsoleApiAuthHeader, DeviceId, OrganizationId, PIPELINE_STATUS, RoutineStepId } from '@dogu-private/types';
-import { DefaultHttpOptions, Instance, parseAxiosError, Retry } from '@dogu-tech/common';
+import { DefaultHttpOptions, errorify, Instance, Retry } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { lastValueFrom } from 'rxjs';
 import { ConsoleClientService } from '../console-client/console-client.service';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
@@ -35,19 +34,17 @@ export class StepUpdater {
       localTimeStamp,
     };
     try {
-      await lastValueFrom(
-        this.consoleClientService.service.patch(path, requestBody, {
-          ...createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
-          timeout: DefaultHttpOptions.request.timeout,
-        }),
-      );
+      await this.consoleClientService.client.patch(path, requestBody, {
+        ...createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
+        timeout: DefaultHttpOptions.request.timeout,
+      });
     } catch (error) {
       this.logger.error('Failed to update step status', {
         organizationId,
         deviceId,
         routineStepId,
         status,
-        error: parseAxiosError(error),
+        error: errorify(error),
       });
       throw error;
     }

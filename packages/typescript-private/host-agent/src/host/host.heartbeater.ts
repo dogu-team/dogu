@@ -1,10 +1,9 @@
 import { PrivateHost } from '@dogu-private/console-host-agent';
 import { createConsoleApiAuthHeader, HostId, OrganizationId } from '@dogu-private/types';
-import { DefaultHttpOptions, Instance, parseAxiosError, Retry, validateAndEmitEventAsync } from '@dogu-tech/common';
+import { DefaultHttpOptions, errorify, Instance, isFilteredAxiosError, Retry, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { Interval } from '@nestjs/schedule';
-import { lastValueFrom } from 'rxjs';
 import { config } from '../config';
 import { ConsoleClientService } from '../console-client/console-client.service';
 import { env } from '../env';
@@ -39,7 +38,7 @@ export class HostHeartbeater {
       await this.updateHeartbeat(organizationId, hostId);
     } catch (error) {
       this.logger.error('Failed to update host heartbeat', {
-        error: parseAxiosError(error),
+        error: errorify(error),
       });
     }
   }
@@ -48,24 +47,25 @@ export class HostHeartbeater {
   private async updateHeartbeat(organizationId: OrganizationId, hostId: HostId): Promise<void> {
     const pathProvider = new PrivateHost.updateHostHeartbeatNow.pathProvider(organizationId, hostId);
     const path = PrivateHost.updateHostHeartbeatNow.resolvePath(pathProvider);
-    await lastValueFrom(
-      this.consoleClientService.service.patch(path, undefined, {
+    await this.consoleClientService.client
+      .patch(path, undefined, {
         ...createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
         timeout: DefaultHttpOptions.request.timeout,
-      }),
-    ).catch(async (error) => {
-      const parsed = parseAxiosError(error);
-      this.logger.error('Failed to update host heartbeat', {
-        error: parsed,
-      });
-      if (parsed instanceof Error) {
-        throw parsed;
-      }
-      if (parsed.response?.status === 401) {
-        await validateAndEmitEventAsync(this.eventEmitter, OnHostDisconnectedEvent, {
+      })
+      .catch(async (error) => {
+        const parsed = errorify(error);
+        this.logger.error('Failed to update host heartbeat', {
           error: parsed,
         });
-      }
-    });
+        if (isFilteredAxiosError(parsed)) {
+          if (parsed.responseStatus === 401) {
+            await validateAndEmitEventAsync(this.eventEmitter, OnHostDisconnectedEvent, {
+              error: parsed,
+            });
+          }
+        } else {
+          throw parsed;
+        }
+      });
   }
 }

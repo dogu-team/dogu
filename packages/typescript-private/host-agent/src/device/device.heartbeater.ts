@@ -1,9 +1,8 @@
 import { PrivateDevice } from '@dogu-private/console-host-agent';
 import { createConsoleApiAuthHeader, DeviceId, OrganizationId, Serial } from '@dogu-private/types';
-import { DefaultHttpOptions, errorify, parseAxiosError, Retry, stringifyError } from '@dogu-tech/common';
+import { DefaultHttpOptions, errorify, Retry, stringifyError } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
-import { lastValueFrom } from 'rxjs';
 import { config } from '../config';
 import { ConsoleClientService } from '../console-client/console-client.service';
 import { env } from '../env';
@@ -40,19 +39,19 @@ export class DeviceHeartbeater {
   private async updateDeviceHeartbeatNow(organizationId: OrganizationId, deviceId: DeviceId, serial: Serial): Promise<void> {
     const pathProvider = new PrivateDevice.updateDeviceHeartbeatNow.pathProvider(organizationId, deviceId);
     const path = PrivateDevice.updateDeviceHeartbeatNow.resolvePath(pathProvider);
-    await lastValueFrom(
-      this.consoleClientService.service.patch(path, null, {
+    await this.consoleClientService.client
+      .patch(path, null, {
         ...createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
         timeout: DefaultHttpOptions.request.timeout,
-      }),
-    ).catch((error) => {
-      this.logger.error('Device heartbeat failed', {
-        serial,
-        deviceId,
-        organizationId,
-        error: parseAxiosError(error),
+      })
+      .catch((error) => {
+        this.logger.error('Device heartbeat failed', {
+          serial,
+          deviceId,
+          organizationId,
+          error: errorify(error),
+        });
+        throw error;
       });
-      throw error;
-    });
   }
 }

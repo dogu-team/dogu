@@ -6,12 +6,11 @@ import {
   DoguBrowserNameHeader,
   DoguDevicePlatformHeader,
   DoguDeviceSerialHeader,
+  errorify,
   HeaderRecord,
-  stringify,
 } from '@dogu-tech/common';
 import { RelayRequest, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
 import { HostPaths } from '@dogu-tech/node';
-import axios from 'axios';
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
@@ -146,12 +145,12 @@ export class AppiumNewSessionEndpointHandler extends AppiumEndpointHandler {
 
         return { request };
       } catch (error: unknown) {
-        if (axios.isAxiosError(error)) {
-          return { status: error.response?.status ?? 500, error, data: {} };
-        } else if (error instanceof Error) {
-          return { status: 500, error, data: {} };
-        }
-        return { status: 500, error: new Error(stringify(error)), data: {} };
+        const parsedError = errorify(error);
+        return {
+          status: 500,
+          error: parsedError,
+          data: {},
+        };
       }
     }
 

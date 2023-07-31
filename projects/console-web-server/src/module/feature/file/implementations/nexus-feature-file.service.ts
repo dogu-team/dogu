@@ -1,3 +1,4 @@
+import { setAxiosErrorFilterToGlobal } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import lodash from 'lodash';
@@ -30,6 +31,7 @@ export class NexusFeatureFileService extends FeatureFileService {
 
   constructor(private readonly logger: DoguLogger) {
     super('nexus');
+    setAxiosErrorFilterToGlobal();
   }
 
   private createBasicCredentials(): { username: string; password: string } {

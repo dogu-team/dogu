@@ -1,5 +1,4 @@
 import lodash from 'lodash';
-import { parseAxiosError } from '.';
 import { ConsoleLogger, Printable } from './logs';
 import { stringify } from './strings/functions';
 import { delay } from './utilities/functions';
@@ -63,7 +62,7 @@ export async function retry<Result>(func: () => PromiseOrValue<Result>, options?
         return result;
       }
     } catch (error) {
-      lastError = error instanceof Error ? filterError(error) : new Error(stringify(error));
+      lastError = error instanceof Error ? error : new Error(stringify(error));
       printable.error(`Retry failed`, { tryCount, retryCount, retryInterval, error: lastError });
     }
     if (isPromiseResult && tryCount < retryCount) {
@@ -76,7 +75,7 @@ export async function retry<Result>(func: () => PromiseOrValue<Result>, options?
     }
   }
   if (lastError) {
-    throw filterError(lastError);
+    throw lastError;
   } else {
     throw new Error(`Retry failed`);
   }
@@ -94,8 +93,4 @@ export function Retry(options?: RetryOptions): MethodDecorator {
       }, options);
     };
   };
-}
-
-function filterError(error: Error): Error {
-  return parseAxiosError(error);
 }

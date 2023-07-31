@@ -1,6 +1,6 @@
 import { ChildCode, Status } from '@dogu-private/dost-children';
 import { Code } from '@dogu-private/types';
-import { Instance, parseAxiosError } from '@dogu-tech/common';
+import { Instance, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { isFreePort, killProcessOnPort } from '@dogu-tech/node';
 import axios, { AxiosInstance } from 'axios';
 import { ChildProcess } from 'child_process';
@@ -64,7 +64,7 @@ export class HostAgentChild implements Child {
       maxRedirects: 10,
       maxContentLength: 50 * 1000 * 1000,
     });
-    return;
+    setAxiosErrorFilterToIntercepter(this._client);
   }
 
   async openable(): Promise<boolean> {
@@ -123,12 +123,11 @@ export class HostAgentChild implements Child {
         return response.data;
       })
       .catch((error) => {
-        const parsed = parseAxiosError(error);
-        logger.warn('getHostAgentConnectionStatus failed', { error: parsed });
+        logger.warn('getHostAgentConnectionStatus failed', { error });
         const response: HostAgentConnectionStatus = {
           status: 'disconnected',
           code: Code.CODE_HOST_AGENT_REQUEST_FAILED,
-          reason: parsed.message,
+          reason: error.message,
           updatedAt: new Date(),
         };
         return response;

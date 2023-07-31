@@ -1,4 +1,4 @@
-import { DefaultHttpOptions, Instance } from '@dogu-tech/common';
+import { DefaultHttpOptions, Instance, setAxiosErrorFilterToGlobal } from '@dogu-tech/common';
 import { DeviceHostDownloadSharedResource } from '@dogu-tech/device-client-common';
 import { HostPaths } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
@@ -63,6 +63,7 @@ export class DeviceHostDownloadSharedResourceService {
     if (!fs.existsSync(HostPaths.doguTempPath())) {
       fs.mkdirSync(HostPaths.doguTempPath(), { recursive: true });
     }
+    setAxiosErrorFilterToGlobal();
     const response = await axios.get(url, {
       responseType: 'stream',
       headers,

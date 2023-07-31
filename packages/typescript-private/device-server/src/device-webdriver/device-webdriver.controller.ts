@@ -1,8 +1,7 @@
 import { Code, ErrorResultDto, isErrorResultError, Serial } from '@dogu-private/types';
-import { HeaderRecord, Instance, parseAxiosError, stringify } from '@dogu-tech/common';
+import { HeaderRecord, Instance, isFilteredAxiosError, stringify } from '@dogu-tech/common';
 import { DeviceWebDriver, RelayRequest, SessionDeletedParam } from '@dogu-tech/device-client-common';
 import { Body, Controller, Delete, Headers, Param, Post } from '@nestjs/common';
-import { isAxiosError } from 'axios';
 import { deviceNotFoundError } from '../device/device.utils';
 import { DoguLogger } from '../logger/logger';
 import { ScanService } from '../scan/scan.service';
@@ -36,7 +35,7 @@ export class DeviceWebDriverController {
         },
       };
     } catch (error) {
-      this.logger.error(`Error while relaying http request: ${stringify(parseAxiosError(error))}`);
+      this.logger.error(`Error while relaying http request: ${stringify(error)}`);
       return {
         value: {
           $case: 'error',
@@ -71,7 +70,7 @@ export class DeviceWebDriverController {
         },
       };
     } catch (error) {
-      this.logger.error(`Error while deleting session: ${stringify(parseAxiosError(error))}`);
+      this.logger.error(`Error while deleting session: ${stringify(error)}`);
       return {
         value: {
           $case: 'error',
@@ -89,15 +88,12 @@ export function toErrorResultDto(serial: Serial, error: unknown): ErrorResultDto
       message: error.message,
       details: error.details,
     };
-  } else if (isAxiosError(error)) {
+  } else if (isFilteredAxiosError(error)) {
     return {
       code: Code.CODE_UNEXPECTED_ERROR,
-      message: `Axios Error: message: ${error.message}, status: ${stringify(error.response?.status, { colors: false })}, data: ${stringify(error.response?.data, {
-        colors: false,
-      })}`,
+      message: error.message,
       details: {
         serial,
-        cause: error.toJSON(),
       },
     };
   } else if (error instanceof Error) {

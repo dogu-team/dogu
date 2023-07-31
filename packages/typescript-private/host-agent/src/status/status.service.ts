@@ -1,6 +1,6 @@
 import { Status } from '@dogu-private/dost-children';
 import { Code } from '@dogu-private/types';
-import { Instance, parseAxiosError } from '@dogu-tech/common';
+import { Instance, isFilteredAxiosError } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { OnHostConnectingEvent, OnHostDisconnectedEvent, OnHostResolvedEvent } from '../host/host.events';
@@ -49,22 +49,14 @@ export class StatusService {
   }
 
   private disconnectedErrorToCode(error: unknown): Code {
-    const parsed = parseAxiosError(error);
-    if (parsed instanceof Error) {
-      return Code.CODE_HOST_AGENT_UNEXPECTED_ERROR;
-    }
-    const { code, response } = parsed;
-    if (code === 'ECONNREFUSED') {
-      return Code.CODE_HOST_AGENT_CONNECTION_REFUSED;
-    } else if (response !== undefined) {
-      const { status } = response;
-      if (status === 401) {
+    if (isFilteredAxiosError(error)) {
+      if (error.code === 'ECONNREFUSED') {
+        return Code.CODE_HOST_AGENT_CONNECTION_REFUSED;
+      } else if (error.responseStatus === 401) {
         return Code.CODE_HOST_AGENT_INVALID_TOKEN;
-      } else {
-        return Code.CODE_HOST_AGENT_UNEXPECTED_ERROR;
       }
-    } else {
-      return Code.CODE_HOST_AGENT_UNEXPECTED_ERROR;
     }
+
+    return Code.CODE_HOST_AGENT_UNEXPECTED_ERROR;
   }
 }

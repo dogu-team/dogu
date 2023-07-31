@@ -1,4 +1,4 @@
-import { Closable, DefaultHttpOptions, errorify, Instance, Printable } from '@dogu-tech/common';
+import { Closable, DefaultHttpOptions, errorify, Instance, Printable, setAxiosErrorFilterToGlobal } from '@dogu-tech/common';
 import { PublicDevice } from '@dogu-tech/console-gamium';
 import { createConsoleApiAuthHeader, platformFromPlatformType } from '@dogu-tech/types';
 import axios from 'axios';
@@ -73,6 +73,7 @@ export class GameProfileReporterImpl implements GameProfileReporter {
       ],
     };
     const url = `${apiBaseUrl}${path}`;
+    setAxiosErrorFilterToGlobal();
     await axios.post(url, requestBody, {
       ...createConsoleApiAuthHeader(hostToken),
       timeout: DefaultHttpOptions.request.timeout,

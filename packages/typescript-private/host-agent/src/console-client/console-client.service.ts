@@ -1,12 +1,20 @@
-import { HttpService } from '@nestjs/axios';
+import { setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
-import { DoguLogger } from '../logger/logger';
+import axios, { AxiosInstance } from 'axios';
+import { env } from '../env';
 
 @Injectable()
 export class ConsoleClientService {
-  constructor(private readonly httpService: HttpService, private readonly logger: DoguLogger) {}
+  private _client: AxiosInstance;
 
-  get service(): HttpService {
-    return this.httpService;
+  constructor() {
+    this._client = axios.create({
+      baseURL: env.DOGU_API_BASE_URL.endsWith('/') ? env.DOGU_API_BASE_URL.slice(0, -1) : env.DOGU_API_BASE_URL,
+    });
+    setAxiosErrorFilterToIntercepter(this._client);
+  }
+
+  get client(): AxiosInstance {
+    return this._client;
   }
 }

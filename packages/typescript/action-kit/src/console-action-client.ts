@@ -1,4 +1,4 @@
-import { DefaultHttpOptions, FilledPrintable, Instance, Retry, transformAndValidate } from '@dogu-tech/common';
+import { DefaultHttpOptions, FilledPrintable, Instance, Retry, setAxiosErrorFilterToIntercepter, transformAndValidate } from '@dogu-tech/common';
 import { PublicAction } from '@dogu-tech/console-action';
 import { createConsoleApiAuthHeader, OrganizationId, ProjectApplicationId, ProjectId } from '@dogu-tech/types';
 import axios, { AxiosInstance } from 'axios';
@@ -18,6 +18,7 @@ export class ConsoleActionClient {
       baseURL: DOGU_API_BASE_URL,
       timeout: DefaultHttpOptions.request.timeout,
     });
+    setAxiosErrorFilterToIntercepter(this.instance);
   }
 
   @Retry({ printable: ActionLogger })

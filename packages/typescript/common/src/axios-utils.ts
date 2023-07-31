@@ -1,114 +1,48 @@
-import { AxiosError, isAxiosError } from 'axios';
-import _ from 'lodash';
-import { stringify } from '.';
+import axios, { AxiosError, AxiosInstance, isAxiosError } from 'axios';
 import { errorify } from './utilities/functions';
 
-export interface FilteredAxiosRequest {
-  protocol?: string;
-  host?: string;
-  path?: string;
-  method?: string;
-}
-
-export interface FilteredAxiosResponse {
-  status: number;
-  data: unknown;
-  headers: unknown;
-}
-
 export class FilteredAxiosError extends Error {
-  readonly request?: FilteredAxiosRequest = undefined;
-  readonly response?: FilteredAxiosResponse = undefined;
+  readonly code?: string;
+  readonly responseStatus?: number;
+  readonly details?: unknown;
 
   constructor(axiosError: AxiosError) {
-    const { message, name, stack, cause, response } = axiosError;
+    const { message, cause } = axiosError;
     super(message, { cause });
-    this.name = name;
-    this.stack = stack;
-    if (axiosError.request) {
-      const request: FilteredAxiosRequest = {};
-      const protocol = _.get(axiosError.request, 'protocol') as string | undefined;
-      request.protocol = typeof protocol === 'string' ? protocol : String(protocol);
-      const host = _.get(axiosError.request, 'host') as string | undefined;
-      request.host = typeof host === 'string' ? host : String(host);
-      const path = _.get(axiosError.request, 'path') as string | undefined;
-      request.path = typeof path === 'string' ? path : String(path);
-      const method = _.get(axiosError.request, 'method') as string | undefined;
-      request.method = typeof method === 'string' ? method : String(method);
-    }
-    if (response) {
-      const { status, data, headers } = response;
-      this.response = { status, data, headers };
-    }
+    this.name = 'FilteredAxiosError';
+    this.cause = cause;
+    this.code = axiosError.code;
+    this.responseStatus = axiosError.response?.status;
+    this.details = axiosError.toJSON();
   }
 }
 
-export interface PartialAxiosError {
-  name: string;
-  code?: string;
-  message: string;
-  stack: string;
-  request?: {
-    protocol?: string;
-    host?: string;
-    path?: string;
-    method?: string;
-  };
-  response?: {
-    status?: number;
-    data?: unknown;
-    headers?: unknown;
-  };
-}
-
-export function parseAxiosError(value: unknown): Error | PartialAxiosError {
+function parseAxiosError(value: unknown): Error | FilteredAxiosError {
   const error = errorify(value);
   if (!isAxiosError(error)) {
     return error;
   }
-  return {
-    name: error.name,
-    code: error.code,
-    message: error.message,
-    stack: error.stack,
-    request: error.request
-      ? {
-          protocol: ((): string | undefined => {
-            const value = _.get(error.request, 'protocol') as string | undefined;
-            if (typeof value === 'string') {
-              return value;
-            }
-            return stringify(value).substr(0, 100);
-          })(),
-          host: ((): string | undefined => {
-            const value = _.get(error.request, 'host') as string | undefined;
-            if (typeof value === 'string') {
-              return value;
-            }
-            return stringify(value).substr(0, 100);
-          })(),
-          path: ((): string | undefined => {
-            const value = _.get(error.request, 'path') as string | undefined;
-            if (typeof value === 'string') {
-              return value;
-            }
-            return stringify(value).substr(0, 100);
-          })(),
-          method: ((): string | undefined => {
-            const value = _.get(error.request, 'method') as string | undefined;
-            if (typeof value === 'string') {
-              return value;
-            }
-            return stringify(value).substr(0, 100);
-          })(),
-        }
-      : undefined,
-    response: error.response
-      ? {
-          status: error.response.status,
-          data: error.response.data,
-          headers: error.response.headers,
-        }
-      : undefined,
-  };
+  return new FilteredAxiosError(error);
+}
+
+export function isFilteredAxiosError(value: unknown): value is FilteredAxiosError {
+  return value instanceof FilteredAxiosError;
+}
+
+export function setAxiosErrorFilterToIntercepter(axios: AxiosInstance): void {
+  axios.interceptors.response.use(undefined, (error) => {
+    const filteredError = parseAxiosError(error);
+    return Promise.reject(filteredError);
+  });
+}
+
+let axiosErrorFilterSet = false;
+
+export function setAxiosErrorFilterToGlobal(): void {
+  if (axiosErrorFilterSet) {
+    return;
+  }
+
+  setAxiosErrorFilterToIntercepter(axios);
+  axiosErrorFilterSet = true;
 }

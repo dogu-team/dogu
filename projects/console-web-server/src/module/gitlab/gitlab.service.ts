@@ -8,7 +8,7 @@ import {
   UserPropSnake,
 } from '@dogu-private/console';
 import { ProjectId, ProjectRoleId, TeamId, UserId } from '@dogu-private/types';
-import { delay } from '@dogu-tech/common';
+import { delay, setAxiosErrorFilterToGlobal } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import axios from 'axios';
@@ -24,7 +24,9 @@ export class GitlabService {
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly logger: DoguLogger,
-  ) {}
+  ) {
+    setAxiosErrorFilterToGlobal();
+  }
 
   private async healthCheck(url: string) {
     const gitLabUrl = url;

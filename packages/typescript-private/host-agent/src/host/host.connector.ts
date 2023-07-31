@@ -1,10 +1,8 @@
 import { PrivateHostToken } from '@dogu-private/console-host-agent';
 import { createConsoleApiAuthHeader } from '@dogu-private/types';
-import { DefaultHttpOptions, delay, errorify, Instance, parseAxiosError, transformAndValidate, validateAndEmitEventAsync } from '@dogu-tech/common';
+import { DefaultHttpOptions, delay, errorify, Instance, isFilteredAxiosError, transformAndValidate, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { isAxiosError } from 'axios';
-import { lastValueFrom } from 'rxjs';
 import { config } from '../config';
 import { ConsoleClientService } from '../console-client/console-client.service';
 import { env } from '../env';
@@ -35,25 +33,23 @@ export class HostConnector implements OnApplicationBootstrap {
         try {
           const pathProvider = new PrivateHostToken.findHostByToken.pathProvider();
           const path = PrivateHostToken.findHostByToken.resolvePath(pathProvider);
-          const { data } = await lastValueFrom(
-            this.consoleClientService.service.get<Instance<typeof PrivateHostToken.findHostByToken.responseBody>>(path, {
-              ...createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
-              timeout: DefaultHttpOptions.request.timeout,
-            }),
-          );
+          const { data } = await this.consoleClientService.client.get<Instance<typeof PrivateHostToken.findHostByToken.responseBody>>(path, {
+            ...createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
+            timeout: DefaultHttpOptions.request.timeout,
+          });
           const connectionInfo = await transformAndValidate(PrivateHostToken.findHostByToken.responseBody, data);
           await validateAndEmitEventAsync(this.eventEmitter, OnHostConnectedEvent, connectionInfo);
           this.logger.info(`ready - connected server with ${connectionInfo.hostId}`);
           return;
         } catch (error) {
           lastError = error;
-          if (isAxiosError(error)) {
-            if (error.response?.status === 401) {
-              this.logger.error('host connection failed with Unauthorized(401)', { tryCount: i, error: parseAxiosError(error) });
+          if (isFilteredAxiosError(error)) {
+            if (error.responseStatus === 401) {
+              this.logger.error('host connection failed with Unauthorized(401)', { tryCount: i, error });
               break;
             }
           }
-          this.logger.error('host connection failed', { tryCount: i, error: parseAxiosError(error) });
+          this.logger.error('host connection failed', { tryCount: i, error });
           await delay(config.host.connect.retry.intervalMilliseconds);
         }
       }

@@ -1,13 +1,12 @@
 import { PrivateHost } from '@dogu-private/console-host-agent';
 import { createConsoleApiAuthHeader, HostId, OrganizationId, Platform } from '@dogu-private/types';
-import { DefaultHttpOptions, Instance, parseAxiosError, validateAndEmitEventAsync } from '@dogu-tech/common';
+import { DefaultHttpOptions, errorify, Instance, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { DeleteOldFilesCloser, HostPaths, MultiPlatformEnvironmentVariableReplacer, openDeleteOldFiles, processPlatform } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { isNotEmptyObject } from 'class-validator';
 import fs from 'fs';
 import path from 'path';
-import { lastValueFrom } from 'rxjs';
 import { ConsoleClientService } from '../console-client/console-client.service';
 import { DeviceClientService } from '../device-client/device-client.service';
 import { env } from '../env';
@@ -179,21 +178,21 @@ export class HostResolver {
     }
     const pathProvider = new PrivateHost.update.pathProvider(organizationId, hostId);
     const path = PrivateHost.update.resolvePath(pathProvider);
-    await lastValueFrom(
-      this.consoleClientService.service.patch(path, body, {
+    await this.consoleClientService.client
+      .patch(path, body, {
         ...createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
         timeout: DefaultHttpOptions.request.timeout,
-      }),
-    ).catch((error) => {
-      this.logger.error('updatePlatformAndRootWorkspace', {
-        organizationId,
-        hostId,
-        platformNeedUpdate,
-        rootWorkspaceNeedUpdate,
-        error: parseAxiosError(error),
+      })
+      .catch((error) => {
+        this.logger.error('updatePlatformAndRootWorkspace', {
+          organizationId,
+          hostId,
+          platformNeedUpdate,
+          rootWorkspaceNeedUpdate,
+          error: errorify(error),
+        });
+        throw error;
       });
-      throw error;
-    });
   }
 
   private async createHostWorkspace(organizationId: OrganizationId, hostId: HostId, rootWorkspacePath: string): Promise<string> {
