@@ -45,8 +45,7 @@ import xctrace_llist_devices from '@site/static/img/dost/xctrace_llist_devices.p
    adb devices
    ```
 
-   - `offline`: 디바이스에서 호스트 PC에 연결할 때 디바이스 허용을 선택하거나, 디바이스에서 개발자 옵션을 활설화 한 후, `USB 디버깅` 옵션을 활성화합니다.
-     디바이스의 USB 사용 모드를 바꿔보세요.
+   - `offline`: 디바이스에서 실행중인 ADB daemon(adbd)와 연결에 실패했습니다.([참고](https://android.googlesource.com/platform/packages/modules/adb/+/HEAD/OVERVIEW.TXT)) 기기 재부팅으로 임시 조치가 가능합니다.
    - `unauthorized`: 디바이스에서 호스트 PC에 연결할 때 디바이스 허용을 선택하거나, 디바이스에서 개발자 옵션을 활설화 한 후, `USB 디버깅` 옵션을 활성화합니다.
    - `device`: 디바이스가 정상적으로 연결되었습니다. 이 경우 Dogu Agent를 재실행해보세요.
 
