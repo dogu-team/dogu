@@ -177,7 +177,7 @@ export class DeviceJobRecordingProcessRegistry {
           'Content-Type': 'multipart/form-data',
           Authorization: createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN).headers.Authorization,
         },
-        timeout: DefaultHttpOptions.request.timeout,
+        timeout: DefaultHttpOptions.request.timeout1minutes,
       }),
     );
   }
