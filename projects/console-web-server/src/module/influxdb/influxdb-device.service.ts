@@ -26,9 +26,7 @@ export class InfluxDbDeviceService {
     deviceId: DeviceId,
     runtimeInfos: RuntimeInfoDto[],
   ): Promise<void> {
-    // let timestamp = new Date().getTime();
     runtimeInfos.forEach((runtimeInfo) => {
-      // timestamp = timestamp + 1;
       // cpu
       const cpuPoints = runtimeInfo.cpues.map((runtimeInfoCpu) => {
         return this.createCpuesPoint(runtimeInfo.localTimeStamp.getTime(), runtimeInfoCpu, runtimeInfo.localTimeStamp, {
@@ -132,17 +130,14 @@ export class InfluxDbDeviceService {
     deviceId: DeviceId,
     gameRuntimeInfos: GameRuntimeInfo[],
   ): Promise<void> {
-    // let timestamp = new Date().getTime();
     gameRuntimeInfos.forEach((gameRuntimeInfo) => {
       //fps
-      // timestamp = timestamp + 1;
       const fpsPoint = this.createFpsPoint(gameRuntimeInfo.localTimeStamp.getTime(), gameRuntimeInfo.fps, gameRuntimeInfo.localTimeStamp, {
         platform: Platform[gameRuntimeInfo.platform] as keyof typeof Platform,
         organizationId,
         deviceId,
         type: DEVICE_RUNTIME_TYPE.GAME,
       });
-      // fpsPoint.timestamp(gameRuntimeInfo.localTimeStamp);
       this.influxDbWriter.client.writePoint(fpsPoint);
     });
     await this.influxDbWriter.client.flush();
@@ -164,7 +159,6 @@ export class InfluxDbDeviceService {
 
     const influxRowObs = await this.influxDbQuerier.client.collectRows(query, this.deserializeDeviceRuntimeInfo.bind(this));
     const runtimeInfoRaws = await Promise.all(influxRowObs);
-
     const deviceRuntimeInfos = this.parseDeviceRuntimeInfos(runtimeInfoRaws);
     const gameRuntimeInfos = this.parseGameRuntimeInfos(runtimeInfoRaws);
     const rv: RuntimeInfoResponse = {
@@ -392,7 +386,8 @@ export class InfluxDbDeviceService {
       point.tag(key, value);
     }
 
-    point.intField(influxDbKeyNames.common.field.localTimeStamp, localTimeStamp.getTime()).timestamp(timestamp);
+    const timestampNanoseconds = BigInt(timestamp) * 1_000_000n;
+    point.intField(influxDbKeyNames.common.field.localTimeStamp, localTimeStamp.getTime()).timestamp(timestampNanoseconds.toString());
     return point;
   }
 
