@@ -10,7 +10,6 @@ export class FilteredAxiosError extends Error {
     const { message, cause } = axiosError;
     super(message, { cause });
     this.name = 'FilteredAxiosError';
-    this.cause = cause;
     this.code = axiosError.code;
     this.responseStatus = axiosError.response?.status;
     this.details = axiosError.toJSON();
