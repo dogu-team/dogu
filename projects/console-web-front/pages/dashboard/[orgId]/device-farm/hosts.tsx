@@ -6,8 +6,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { NextPageWithLayout } from 'pages/_app';
-import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
-import OrganizationSideBar from 'src/components/layouts/OrganizationSideBar';
 import CreateHostModal from 'src/components/hosts/CreateHostModal';
 import useModal from 'src/hooks/useModal';
 import TableListView from 'src/components/common/TableListView';
@@ -15,7 +13,8 @@ import HostListController from 'src/components/hosts/HostListController';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
 import HostFilter from 'src/components/hosts/HostFilter';
-import resources from '../../../../src/resources';
+import resources from '../../../../src/resources/index';
+import OrganizationDeviceFarmLayout from '../../../../src/components/layouts/OrganizationDeviceFarmLayout';
 
 const HostManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) => {
   const { t } = useTranslation();
@@ -55,11 +54,7 @@ const HostManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ organiz
 };
 
 HostManagementPage.getLayout = (page) => {
-  return (
-    <ConsoleLayout sidebar={<OrganizationSideBar />} titleI18nKey="organization:hostPageTitle">
-      {page}
-    </ConsoleLayout>
-  );
+  return <OrganizationDeviceFarmLayout>{page}</OrganizationDeviceFarmLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;

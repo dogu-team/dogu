@@ -86,64 +86,25 @@ const OrganizationSideBar = () => {
       style: { borderRadius: '6px' },
     },
     {
-      key: 'host',
+      key: 'device-farm',
       icon: collapsed ? (
-        <StyledIconLink selected={router.asPath === `/dashboard/${orgId}/host`} href={`/dashboard/${orgId}/host`}>
-          <ClusterOutlined />
-        </StyledIconLink>
-      ) : undefined,
-      label: collapsed ? (
-        t('organization:hostPageTitle')
-      ) : (
-        <SideBarMenu
-          icon={<ClusterOutlined style={{ fontSize: '1.2rem' }} />}
-          path={`/dashboard/${orgId}/host`}
-          text={t('organization:hostPageTitle')}
-          accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-host' : undefined}
-        />
-      ),
-      style: { borderRadius: '6px' },
-    },
-    {
-      key: 'device',
-      icon: collapsed ? (
-        <StyledIconLink selected={router.asPath.startsWith(`/dashboard/${orgId}/devices`)} href={`/dashboard/${orgId}/devices`}>
+        <StyledIconLink selected={router.asPath.startsWith(`/dashboard/${orgId}/cloud-devices`)} href={`/dashboard/${orgId}/cloud-devices`}>
           <MobileOutlined />
         </StyledIconLink>
       ) : undefined,
       label: collapsed ? (
-        t('organization:devicePageTitle')
+        'Device Farm'
       ) : (
         <SideBarMenu
           icon={<MobileOutlined style={{ fontSize: '1.2rem' }} />}
-          path={`/dashboard/${orgId}/devices`}
-          text={t('organization:devicePageTitle')}
-          startWith={`/dashboard/${orgId}/devices`}
-          accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-device' : undefined}
+          path={`/dashboard/${orgId}/device-farm/devices`}
+          text={'Device Farm'}
+          startWith={`/dashboard/${orgId}/device-farm`}
+          accessId="side-bar-device-farm"
         />
       ),
       style: { borderRadius: '6px' },
     },
-    // {
-    //   key: 'cloud-device',
-    //   icon: collapsed ? (
-    //     <StyledIconLink selected={router.asPath.startsWith(`/dashboard/${orgId}/cloud-devices`)} href={`/dashboard/${orgId}/cloud-devices`}>
-    //       <MobileOutlined />
-    //     </StyledIconLink>
-    //   ) : undefined,
-    //   label: collapsed ? (
-    //     t('organization:cloudDevicePageTitle')
-    //   ) : (
-    //     <SideBarMenu
-    //       icon={<MobileOutlined style={{ fontSize: '1.2rem' }} />}
-    //       path={`/dashboard/${orgId}/cloud-devices`}
-    //       text={t('organization:cloudDevicePageTitle')}
-    //       startWith={`/dashboard/${orgId}/cloud-devices`}
-    //       accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'side-bar-cloud-device' : undefined}
-    //     />
-    //   ),
-    //   style: {  borderRadius: '6px' },
-    // },
     { type: 'divider' },
     {
       key: 'member',
