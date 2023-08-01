@@ -6,4 +6,37 @@ locale: en
 
 You can use the Dogu API externally using an Access token.
 
-Refer to [Access Token](/api/access-token) for a detailed description of the Access Token
+# Access Token
+
+:::danger
+
+Please be careful not to expose the access token.
+
+:::
+
+### Organization Access Token
+
+The organization access token is automatically generated when creating an organization in Dogu, and can be found on the organization's settings page.
+
+:::info
+The organization access token has `Admin` permissions for the organization.  
+For more information about managing the organization access token, refer to the [Organization Access Token](/management/organization/settings#access-token) document.
+:::
+
+### Project Access Token
+
+The project access token is automatically generated when creating a project in Dogu, and can be found on the project's settings page.
+
+:::info
+The project access token has `Admin` permissions for the project.  
+For more information about managing the project access token, refer to the [Project Access Token](/management/project/settings#access-token) document.
+:::
+
+### Personal Access Token
+
+The personal access token is automatically generated when creating an account in Dogu and can be found on the account's settings page.
+
+:::info
+The personal access token holds the permissions of the corresponding account.  
+Management of personal access tokens can be done on the account settings page.
+:::

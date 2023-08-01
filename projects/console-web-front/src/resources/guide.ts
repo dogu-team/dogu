@@ -127,7 +127,7 @@ export const appiumGuideData: Guide = {
   "apiBaseUrl": "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}",
   "organizationId": "${orgId}",
   "projectId": "${projectId}",
-  "token": "${pat}", // see https://docs.dogutech.io/api/access-token
+  "token": "${pat}", // see https://docs.dogutech.io/api
   "runsOn": "${platform}",  // or another device tag
   ${
     target === GuideSupportTarget.WEB
@@ -212,7 +212,7 @@ export const webdriverioGuideData: Guide = {
   "apiBaseUrl": "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}",
   "organizationId": "${orgId}",
   "projectId": "${projectId}",
-  "token": "${pat}", // see https://docs.dogutech.io/api/access-token
+  "token": "${pat}", // see https://docs.dogutech.io/api
   "runsOn": "${platform}",  // or another device tag
   ${
     target === GuideSupportTarget.WEB
@@ -315,7 +315,7 @@ export const seleniumData: Guide = {
   "apiBaseUrl": "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}",
   "organizationId": "${orgId}",
   "projectId": "${projectId}",
-  "token": "${pat}", // see https://docs.dogutech.io/api/access-token
+  "token": "${pat}", // see https://docs.dogutech.io/api
   "runsOn": "${platform}",  // or another device tag
   "browserName": "chrome",
 }
