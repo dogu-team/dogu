@@ -105,7 +105,7 @@ export class V1LivePipelineStatusGateway implements OnGatewayConnection, OnGatew
       const { code, reason } = event;
       this.logger.verbose('close', { code, reason });
 
-      if (code === 1000) {
+      if (code === 4000) {
         this.logger.info(`Client closed. this pipeline to be cancelled. projectId: ${projectIdByRequest}, routinePipelineId: ${routinePipelineId}`);
         await this.cancelPipeline(projectIdByRequest, routinePipelineId);
       }
