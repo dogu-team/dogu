@@ -2,7 +2,6 @@ import { delay } from '@dogu-tech/common';
 import { job, test } from '@dogu-tech/dest';
 import { expect } from '@playwright/test';
 import { ElementHandle, Locator, Page } from 'playwright';
-import { Key } from 'selenium-webdriver';
 import { Driver } from '../../../src/chromedriver';
 import { dostPlaywrightColor, launchDost } from '../../../src/dost';
 import { copyIosDeviceAgentProject, replaceIosDeviceAgentSigningStyle, replaceWebDriverAgentSigningStyle } from '../../../src/ios-helper';
@@ -71,9 +70,12 @@ export function runHost(hostName: string, dost: Dost): void {
         },
       );
 
-      await Driver.sendKeys({ xpath: '/html/body/div[1]/div/section/main/div/div/div/div[1]/div/button' }, Key.RETURN, {
-        focusWindow: true,
-      });
+      await Driver.clickElement(
+        { xpath: '//button[@access-id="refresh-btn"]' },
+        {
+          focusWindow: true,
+        },
+      );
       const status = await Driver.getText(
         {
           xpath: `//*[text()="${l10n('CONNECTED')}"]`,
@@ -95,7 +97,7 @@ export function runHost(hostName: string, dost: Dost): void {
     });
 
     test('Click host menu before expect stop using as device', async () => {
-      await Driver.clickElement({ xpath: '//*[@access-id="side-bar-host"]' });
+      await Driver.clickElement({ xpath: '//*[@access-id="org-host-list-tab"]' });
     });
 
     test('Click "..." before expect stop using as device', async () => {

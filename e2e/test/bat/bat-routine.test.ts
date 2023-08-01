@@ -563,8 +563,8 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: '//*[@access-id="project-layout-org-name"]' });
       });
 
-      test('Click host menu', async () => {
-        await Driver.clickElement({ xpath: '//*[@access-id="side-bar-host"]' });
+      test('Click device farm menu', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="side-bar-device-farm"]' });
       });
 
       test('Create new host', async () => {
@@ -651,11 +651,8 @@ Dest.withOptions({
 
       job(name, () => {
         job('Add device', () => {
-          test('Go to device menu', async () => {
-            await Driver.clickElement({ xpath: '//*[@access-id="side-bar-device"]' });
-          });
-
           test('Click on add tab', async () => {
+            await Driver.clickElement({ xpath: '//*[@access-id="side-bar-device-farm"]' });
             await Driver.clickElement({ xpath: '//*[@access-id="org-add-device-tab"]' });
           });
 
@@ -876,7 +873,8 @@ Dest.withOptions({
 
     job('Device management', () => {
       test('Move to device list', async () => {
-        await Driver.clickElement({ xpath: '//*[@access-id="side-bar-device"]' });
+        await Driver.clickElement({ xpath: '//*[@access-id="side-bar-device-farm"]' });
+        await Driver.clickElement({ xpath: '//*[@access-id="org-device-list-tab"]' });
       });
 
       const hostDeviceSettingConfig = deviceSettingInfos.find((item) => item.name === 'Host device setting');
@@ -930,7 +928,8 @@ Dest.withOptions({
 
       test('Disable device', async () => {
         await Driver.clickElement({ xpath: '//*[@access-id="project-layout-org-name"]' });
-        await Driver.clickElement({ xpath: '//a[@access-id="side-bar-device"]' });
+        await Driver.clickElement({ xpath: '//*[@access-id="side-bar-device-farm"]' });
+        await Driver.clickElement({ xpath: '//a[@access-id="org-device-list-tab"]' });
         await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
         await Driver.clickElement({ xpath: `//button[@id="${hostDeviceName}-stop-using-device-menu-btn"]` });
         await Driver.clickElement({ xpath: '//button[@id="stop-using-device-confirm-btn"]' });
@@ -950,7 +949,7 @@ Dest.withOptions({
       });
 
       test('Move to device tag menu', async () => {
-        await Driver.clickElement({ xpath: '//a[@access-id="side-bar-device"]' });
+        await Driver.clickElement({ xpath: '//a[@access-id="side-bar-device-farm"]' });
         await Driver.clickElement({ xpath: '//a[@access-id="org-tag-list-tab"]' });
       });
 
