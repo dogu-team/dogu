@@ -33,20 +33,3 @@ export const V1Routine = {
     responseBody: V1FindPipelineByPipelineIdResponseBody,
   }),
 };
-
-// const V1PipelineWsController = new ControllerSpec({
-//   path: '/v1/projects/:projectId/routines',
-// });
-
-// export const V1PipelineWs = {
-//   controller: V1PipelineWsController,
-
-//     getPipelineStatePeriodically: {
-//     controllerSpec: V1RoutineController,
-//     path: '/:routineId/pipelines/:routinePipelineId/state',
-//     pathProvider: class {
-//       constructor(readonly projectId: ProjectId, readonly routineId: RoutineId) {}
-//     },
-//     responseBody: V1FindPipelineByPipelineIdResponseBody,
-//   }),
-// }
