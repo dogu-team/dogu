@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import useSWR from 'swr';
 import { ProjectBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
-import { AppstoreOutlined, MobileOutlined, SettingOutlined, TeamOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, CaretDownOutlined, MobileOutlined, SettingOutlined, TeamOutlined } from '@ant-design/icons';
 import { Layout, Menu, MenuProps, Skeleton } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -19,6 +19,8 @@ import ProfileImage from '../ProfileImage';
 import { flexRowCenteredStyle } from '../../styles/box';
 import CollpaseSidebarMenu from './CollapseSidebarMenu';
 import { GoWorkflow } from 'react-icons/go';
+import ProjectSwitch from '../projects/ProjectSwitch';
+import { OrganizationId } from '@dogu-private/types';
 
 type MenuItem = Required<MenuProps>['items'];
 
@@ -55,13 +57,15 @@ const ProjectSideBar = () => {
       label: collapsed
         ? undefined
         : data && (
-            <SideBarTitle
-              href={`/dashboard/${orgId}`}
-              subTitle={t('organization:sidebarSubTitle')}
-              profileImageUrl={null}
-              name={data.name}
-              accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'sb-title' : undefined}
-            />
+            <ProjectSwitch organizationId={orgId as OrganizationId} onChange={(pid) => {}} selectedProject={data}>
+              <SideBarTitle
+                href={`/dashboard/${orgId}`}
+                subTitle={t('organization:sidebarSubTitle')}
+                profileImageUrl={null}
+                name={data.name}
+                accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'sb-title' : undefined}
+              />
+            </ProjectSwitch>
           ),
     },
     {
