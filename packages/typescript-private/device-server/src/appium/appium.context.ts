@@ -12,6 +12,7 @@ import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 import { remote } from 'webdriverio';
+import { DOGU_ADB_SERVER_PORT } from '../internal/externals/cli/adb/adb';
 import { Adb } from '../internal/externals/index';
 import { Zombieable, ZombieProps } from '../internal/services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../internal/services/zombie/zombie-service';
@@ -355,6 +356,7 @@ export class AppiumContextImpl implements AppiumContext {
           'appium:newCommandTimeout': AppiumNewCommandTimeout,
           'appium:systemPort': systemPort,
           'appium:chromedriverPort': chromedriverPort,
+          'appium:adbPort': DOGU_ADB_SERVER_PORT,
         };
       }
       case Platform.PLATFORM_IOS: {
