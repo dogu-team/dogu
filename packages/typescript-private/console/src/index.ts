@@ -59,6 +59,7 @@ export * from './base/user-visit';
 export * from './dto/device-tag/device-tag.dto';
 export * from './dto/device/device-response.dto';
 export * from './dto/device/device.dto';
+export * from './dto/feature/feature.dto';
 export * from './dto/host/host-response.dto';
 export * from './dto/host/host.dto';
 export * from './dto/host/runtime-host.dto';

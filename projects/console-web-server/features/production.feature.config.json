@@ -1,4 +1,5 @@
 {
+  "defaultEdition": "enterprise",
   "fileService": "s3",
   "useSampleProject": true,
   "emailVerification": true,

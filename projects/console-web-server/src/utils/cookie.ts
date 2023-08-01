@@ -1,7 +1,7 @@
 import { UserId, USER_ACCESS_TOKEN_COOKIE_NAME, USER_ID_COOKIE_NAME, USER_REFRESH_TOKEN_COOKIE_NAME } from '@dogu-private/types';
 import { CookieOptions, Response } from 'express';
 import { env } from '../env';
-import { FeatureConfig } from '../feature.config';
+import { FEATURE_CONFIG } from '../feature.config';
 
 export const resetSignAccessTokenCookie = (response: Response, accessToken: string): Response => {
   const expires = new Date(Date.now() + 1000 * 60 * 60 * 24 * 14);
@@ -28,7 +28,7 @@ export const setSignCookiesInResponse = (response: Response, accessToken: string
       httpOnly: true,
       expires,
       domain: env.DOGU_CONSOLE_DOMAIN,
-      secure: FeatureConfig.get('cookieSecure') ? true : false,
+      secure: FEATURE_CONFIG.get('cookieSecure') ? true : false,
       sameSite: 'lax',
     })
     .cookie(USER_ID_COOKIE_NAME, userId, {
@@ -49,7 +49,7 @@ export const clearSignCookiesInResponse = (response: Response): Response => {
       httpOnly: true,
       expires: new Date(),
       domain: env.DOGU_CONSOLE_DOMAIN,
-      secure: FeatureConfig.get('cookieSecure') ? true : false,
+      secure: FEATURE_CONFIG.get('cookieSecure') ? true : false,
       sameSite: 'lax',
     })
     .clearCookie(USER_ID_COOKIE_NAME, {

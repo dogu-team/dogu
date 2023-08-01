@@ -1,4 +1,5 @@
 {
+  "defaultEdition": "community",
   "fileService": "nexus",
   "useSampleProject": false,
   "emailVerification": false,
