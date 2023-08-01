@@ -14,7 +14,6 @@ import Head from 'next/head';
 import { NextPageWithLayout } from 'pages/_app';
 import { deleteProject, getProjectAccessToken, regenerateProjectAccessToken, updateProject } from 'src/api/project';
 import { getErrorMessage } from 'src/utils/error';
-import ProjectLayout from 'src/components/layouts/ProjectLayout';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
 import { sendErrorNotification, sendSuccessNotification } from '../../../../../src/utils/antd';
 import DangerZone from '../../../../../src/components/common/boxes/DangerZone';
@@ -22,6 +21,7 @@ import GitIntegrationDangerButton from '../../../../../src/components/projects/G
 import TokenCopyInput from '../../../../../src/components/common/TokenCopyInput';
 import RegenerateTokenButton from '../../../../../src/components/common/RegenerateTokenButton';
 import AccessTokenButton from '../../../../../src/components/common/AccessTokenButton';
+import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 
 const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, organization, mutateProject }) => {
   const [editingProject, setEditingProject] = useState<ProjectBase>(project);
@@ -168,7 +168,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
 };
 
 ProjectSettingPage.getLayout = (page) => {
-  return <ProjectLayout>{page}</ProjectLayout>;
+  return <ProjectLayoutWithSidebar title="Settings">{page}</ProjectLayoutWithSidebar>;
 };
 
 export const getServerSideProps: GetServerSideProps = getProjectPageServerSideProps;

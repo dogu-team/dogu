@@ -11,8 +11,8 @@ import TableListView from 'src/components/common/TableListView';
 import ProjectMemberListController from 'src/components/projects/ProjectMemberListController';
 import ProjectMemberFilter from 'src/components/projects/ProjectMemberFilter';
 import AddTeamButton from 'src/components/projects/AddTeamButton';
-import ProjectLayout from 'src/components/layouts/ProjectLayout';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
+import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 
 const ProjectMemberPage: NextPageWithLayout<WithProjectProps> = ({ project }) => {
   const router = useRouter();
@@ -42,7 +42,7 @@ const ProjectMemberPage: NextPageWithLayout<WithProjectProps> = ({ project }) =>
 };
 
 ProjectMemberPage.getLayout = (page) => {
-  return <ProjectLayout>{page}</ProjectLayout>;
+  return <ProjectLayoutWithSidebar title="Members">{page}</ProjectLayoutWithSidebar>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

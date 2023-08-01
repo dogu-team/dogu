@@ -5,12 +5,12 @@ import useSWR from 'swr';
 
 import { NextPageWithLayout } from 'pages/_app';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
-import ProjectLayout from 'src/components/layouts/ProjectLayout';
 import RoutineUpdator from 'src/components/routine/editor/RoutineUpdator';
 import { swrAuthFetcher } from 'src/api';
 import useGitIntegrationStore from '../../../../../../../src/stores/git-integration';
 import { useEffect } from 'react';
 import RoutineGitIntegrationAlert from '../../../../../../../src/components/projects/RoutineGitIntegrationAlert';
+import ProjectLayoutWithSidebar from '../../../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 
 const ProjectRoutineEditorPage: NextPageWithLayout<WithProjectProps> = ({ organization, project, isGitIntegrated }) => {
   const store = useGitIntegrationStore();
@@ -46,7 +46,7 @@ const ProjectRoutineEditorPage: NextPageWithLayout<WithProjectProps> = ({ organi
 };
 
 ProjectRoutineEditorPage.getLayout = (page) => {
-  return <ProjectLayout>{page}</ProjectLayout>;
+  return <ProjectLayoutWithSidebar title="Routine">{page}</ProjectLayoutWithSidebar>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

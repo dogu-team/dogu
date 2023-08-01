@@ -22,7 +22,7 @@ import JobListSideBar from '../pipelines/JobListSidebar';
 import PipelineRuntime from '../pipelines/PipelineRuntime';
 import PipelineStatusIcon from '../pipelines/PipelineStatusIcon';
 import ProfileImage from '../ProfileImage';
-import ProjectLayout from './ProjectLayout';
+import ProjectLayoutWithSidebar from './ProjectLayoutWithSidebar';
 
 interface Props {
   children: React.ReactNode;
@@ -80,7 +80,7 @@ const PipelineJobLayout = ({ children, isGitIntegrated }: Props) => {
   }
 
   return (
-    <ProjectLayout sidebar={<JobListSideBar pipeline={pipeline} />}>
+    <ProjectLayoutWithSidebar innerSidebar={<JobListSideBar pipeline={pipeline} />} title="Routine">
       <PipelineContainer>
         <PipelineHeadContainer>
           <FlexRowBase>
@@ -135,7 +135,7 @@ const PipelineJobLayout = ({ children, isGitIntegrated }: Props) => {
       <Divider />
 
       <div>{children}</div>
-    </ProjectLayout>
+    </ProjectLayoutWithSidebar>
   );
 };
 
