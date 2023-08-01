@@ -27,7 +27,7 @@ const DeviceTagsManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ o
           <FlexBox>
             <TopLeftButtonBox>
               <Button type="primary" onClick={() => openModal()}>
-                {t('device:createTagButtonTitle')}
+                {t('device-farm:createTagButtonTitle')}
               </Button>
               <TagFilter />
             </TopLeftButtonBox>

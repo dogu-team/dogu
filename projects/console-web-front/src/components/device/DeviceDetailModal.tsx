@@ -18,17 +18,17 @@ const DeviceDetailModal = ({ isOpen, device, close }: Props) => {
   const isGlobal = device.isGlobal === 1;
 
   return (
-    <Modal open={isOpen} closable onCancel={close} title={t('device:deviceDetailModalTitle')} centered destroyOnClose footer={null}>
+    <Modal open={isOpen} closable onCancel={close} title={t('device-farm:deviceDetailModalTitle')} centered destroyOnClose footer={null}>
       <Box>
         <Content>
-          <StyledH4>{t('device:deviceDetailNameTitle')}</StyledH4>
+          <StyledH4>{t('device-farm:deviceDetailNameTitle')}</StyledH4>
           <FlexBox>
             <p>{device?.name}</p>
           </FlexBox>
         </Content>
         {!isGlobal && (
           <Content>
-            <StyledH4>{t('device:deviceDetailProjectTitle')}</StyledH4>
+            <StyledH4>{t('device-farm:deviceDetailProjectTitle')}</StyledH4>
             <div>
               {device?.projects?.map((item) => (
                 <Tag key={item.projectId}>{item.name}</Tag>
@@ -37,7 +37,7 @@ const DeviceDetailModal = ({ isOpen, device, close }: Props) => {
           </Content>
         )}
         <Content>
-          <StyledH4>{t('device:deviceDetailTagTitle')}</StyledH4>
+          <StyledH4>{t('device-farm:deviceDetailTagTitle')}</StyledH4>
           <div>
             {device?.deviceTags?.map((item) => (
               <Tag key={item.deviceTagId}>{item.name}</Tag>
@@ -45,15 +45,15 @@ const DeviceDetailModal = ({ isOpen, device, close }: Props) => {
           </div>
         </Content>
         <Content>
-          <StyledH4>{t('device:deviceDetailConnectedHostTitle')}</StyledH4>
+          <StyledH4>{t('device-farm:deviceDetailConnectedHostTitle')}</StyledH4>
           <p>{device?.host?.name}</p>
         </Content>
         <Content>
-          <StyledH4>{t('device:deviceDetailCreatedAtTitle')}</StyledH4>
+          <StyledH4>{t('device-farm:deviceDetailCreatedAtTitle')}</StyledH4>
           <p>{getLocaleFormattedDate(lang, new Date(device?.createdAt ?? 0))}</p>
         </Content>
         <Content>
-          <StyledH4>{t('device:deviceDetailUpdatedAtTitle')}</StyledH4>
+          <StyledH4>{t('device-farm:deviceDetailUpdatedAtTitle')}</StyledH4>
           <p>{getLocaleFormattedDate(lang, new Date(device?.updatedAt ?? 0))}</p>
         </Content>
       </Box>

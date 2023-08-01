@@ -2,12 +2,8 @@
   "sidebarSubTitle": "조직",
   "projectPageTitle": "프로젝트",
   "memberPageTitle": "멤버",
-  "hostPageTitle": "호스트",
-  "devicePageTitle": "디바이스",
-  "cloudDevicePageTitle": "클라우드 디바이스",
-  "addDevicePageTitle": "추가 대기중인 디바이스",
+  "deviceFarmPageTitle": "디바이스 팜",
   "organizationSettingPageTitle": "설정",
-  "deviceTagPageTitle": "디바이스 태그",
   "teamPageTitle": "팀",
   "tutorialPageTitle": "튜토리얼",
 

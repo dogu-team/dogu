@@ -33,12 +33,12 @@ const EditHostModal = ({ host, isOpen, close }: Props) => {
     setLoading(true);
     try {
       await updateHostName(organizationId, host.hostId, { name });
-      sendSuccessNotification(t('host:hostEditSuccessMsg'));
+      sendSuccessNotification(t('device-farm:hostEditSuccessMsg'));
       fireEvent('onHostUpdated');
       close();
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('host:hostEditFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:hostEditFailMsg', { reason: getErrorMessage(e) }));
       }
     }
     setLoading(false);
@@ -48,7 +48,7 @@ const EditHostModal = ({ host, isOpen, close }: Props) => {
     <Modal
       open={isOpen}
       centered
-      title={t('host:hostEditModalTitle')}
+      title={t('device-farm:hostEditModalTitle')}
       closable
       onCancel={close}
       cancelText={t('common:cancel')}
@@ -61,7 +61,7 @@ const EditHostModal = ({ host, isOpen, close }: Props) => {
     >
       <Input
         value={name ?? ''}
-        placeholder={t('host:hostEditNameInputPlaceholder')}
+        placeholder={t('device-farm:hostEditNameInputPlaceholder')}
         onChange={(e) => setName(e.target.value)}
         minLength={HOST_NAME_MIN_LENGTH}
         maxLength={HOST_NAME_MAX_LENGTH}

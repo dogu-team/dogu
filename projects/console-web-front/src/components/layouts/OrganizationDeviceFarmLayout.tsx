@@ -1,4 +1,4 @@
-import { ApiOutlined, CloudOutlined, MobileOutlined, TagsOutlined } from '@ant-design/icons';
+import { ApiOutlined, DesktopOutlined, MobileOutlined, TagsOutlined } from '@ant-design/icons';
 import { DeviceBase, PageBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
@@ -44,7 +44,7 @@ const AddDeviceTabButton = ({ selected, href }: TabButtonProps) => {
 
   return (
     <RelativeBox>
-      <MenuLinkTabItem selected={selected} title={t('device:deviceAddMenuTitle')} icon={<ApiOutlined />} href={href} access-id={'org-add-device-tab'} />
+      <MenuLinkTabItem selected={selected} title={t('device-farm:deviceAddMenuTitle')} icon={<ApiOutlined />} href={href} access-id={'org-add-device-tab'} />
       {data && data.totalCount > 0 && <Badge />}
     </RelativeBox>
   );
@@ -61,9 +61,15 @@ const OrganizationDeviceFarmLayout = ({ children }: Props) => {
 
   const tabs: MenuLinkTabProps['tabs'] = [
     {
+      href: `/dashboard/${orgId}/device-farm/hosts`,
+      icon: <DesktopOutlined />,
+      title: t('device-farm:hostMenuTitle'),
+      'access-id': 'org-host-list-tab',
+    },
+    {
       href: `/dashboard/${orgId}/device-farm/devices`,
       icon: <MobileOutlined />,
-      title: t('device:deviceListMenuTitle'),
+      title: t('device-farm:deviceListMenuTitle'),
       'access-id': 'org-device-list-tab',
     },
     {
@@ -74,19 +80,13 @@ const OrganizationDeviceFarmLayout = ({ children }: Props) => {
     {
       href: `/dashboard/${orgId}/device-farm/tags`,
       icon: <TagsOutlined />,
-      title: t('device:deviceTagMenuTitle'),
+      title: t('device-farm:deviceTagMenuTitle'),
       'access-id': 'org-tag-list-tab',
-    },
-    {
-      href: `/dashboard/${orgId}/device-farm/hosts`,
-      icon: <CloudOutlined />,
-      title: 'Hosts',
-      'access-id': 'org-host-list-tab',
     },
   ];
 
   return (
-    <ConsoleLayout sidebar={<OrganizationSideBar />} titleI18nKey={'Device Farm'}>
+    <ConsoleLayout sidebar={<OrganizationSideBar />} titleI18nKey={'organization:deviceFarmPageTitle'}>
       <MenuLinkTabs tabs={tabs} />
       <Inner>{children}</Inner>
     </ConsoleLayout>

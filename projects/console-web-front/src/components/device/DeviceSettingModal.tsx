@@ -53,12 +53,12 @@ const DeviceSettingModal = ({ isOpen, device, close }: Props) => {
     setLoading(true);
     try {
       await updateDevice(organizationId, device.deviceId, { name, maxParallelJobs: max });
-      sendSuccessNotification(t('device:deviceSettingSuccessMsg'));
+      sendSuccessNotification(t('device-farm:deviceSettingSuccessMsg'));
       fireEvent('onDeviceUpdated');
       close();
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device:deviceSettingFailureMsg', { message: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:deviceSettingFailureMsg', { message: getErrorMessage(e) }));
       }
     }
     setLoading(false);
@@ -76,26 +76,26 @@ const DeviceSettingModal = ({ isOpen, device, close }: Props) => {
       destroyOnClose
       okButtonProps={{ id: 'save-device-setting-btn' }}
     >
-      <H5>{t('device:deviceSettingModalTitle')}</H5>
+      <H5>{t('device-farm:deviceSettingModalTitle')}</H5>
       <FormContainer>
         <Form layout="vertical" form={form}>
           <Form.Item
-            label={t('device:deviceSettingNameLabelText')}
+            label={t('device-farm:deviceSettingNameLabelText')}
             name="name"
             required
-            rules={[{ required: true, message: t('device:deviceSettingNameRequiredMsg') }]}
+            rules={[{ required: true, message: t('device-farm:deviceSettingNameRequiredMsg') }]}
             initialValue={device.name}
           >
             <Input type="text" placeholder={t('common:name')} maxLength={DEVICE_NAME_MAX_LENGTH} minLength={DEVICE_NAME_MIN_LENGTH} />
           </Form.Item>
           <Form.Item
-            label={<Trans i18nKey="device:deviceSettingMaxParallelJobLabelText" components={{ span: <span style={{ fontSize: '.8rem', marginLeft: '.3rem' }} /> }} />}
+            label={<Trans i18nKey="device-farm:deviceSettingMaxParallelJobLabelText" components={{ span: <span style={{ fontSize: '.8rem', marginLeft: '.3rem' }} /> }} />}
             name="max"
             required
             rules={[
               {
                 required: true,
-                message: t('device:deviceSettingMaxParallelJobErrorMsg'),
+                message: t('device-farm:deviceSettingMaxParallelJobErrorMsg'),
                 transform(value) {
                   return Number(value);
                 },

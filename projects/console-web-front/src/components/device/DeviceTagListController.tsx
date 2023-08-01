@@ -41,10 +41,10 @@ const TagItem = ({ tag, mutateTags }: TagItemProps) => {
     try {
       await deleteTag(orgId, tag.deviceTagId);
       mutateTags();
-      sendSuccessNotification(t('device:tagDeleteSuccessMsg'));
+      sendSuccessNotification(t('device-farm:tagDeleteSuccessMsg'));
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device:tagDeleteFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:tagDeleteFailMsg', { reason: getErrorMessage(e) }));
       }
     }
   };
@@ -53,7 +53,7 @@ const TagItem = ({ tag, mutateTags }: TagItemProps) => {
     {
       label: (
         <MenuItemButton danger={false} onClick={() => openEditModal()}>
-          {t('device:tagItemEditMenu')}
+          {t('device-farm:tagItemEditMenu')}
         </MenuItemButton>
       ),
       key: 'edit',
@@ -64,13 +64,13 @@ const TagItem = ({ tag, mutateTags }: TagItemProps) => {
         <MenuItemButton
           danger
           onClick={handleDelete}
-          modalTitle={t('device:tagDeleteModalTitle')}
-          modalButtonTitle={t('device:tagDeleteModalButtonText')}
+          modalTitle={t('device-farm:tagDeleteModalTitle')}
+          modalButtonTitle={t('device-farm:tagDeleteModalButtonText')}
           modalContent={
             <p>
-              {t('device:tagDeleteModalContentWaningMsg')}
+              {t('device-farm:tagDeleteModalContentWaningMsg')}
               <Trans
-                i18nKey={tag.devices!.length < 2 ? 'device:tagDeleteModalContentTextSingular' : 'device:tagDeleteModalContentTextPlurar'}
+                i18nKey={tag.devices!.length < 2 ? 'device-farm:tagDeleteModalContentTextSingular' : 'device-farm:tagDeleteModalContentTextPlurar'}
                 components={[<b style={{ fontWeight: '500' }} key="tag-count" />]}
                 values={{ count: tag.devices?.length }}
               />
@@ -79,7 +79,7 @@ const TagItem = ({ tag, mutateTags }: TagItemProps) => {
           onConfirm={handleDelete}
           confirmButtonId="tag-delete-confirm-btn"
         >
-          {t('device:tagItemDeleteMenu')}
+          {t('device-farm:tagItemDeleteMenu')}
         </MenuItemButton>
       ),
       key: 'delete',
@@ -134,8 +134,8 @@ const DeviceTagListController = ({ organizationId }: Props) => {
     <>
       <Header>
         <FlexRowBase>
-          <NameCell>{t('device:tagTableNameColumn')}</NameCell>
-          <DeviceCell>{t('device:tagTableTaggedDeviceColumn')}</DeviceCell>
+          <NameCell>{t('device-farm:tagTableNameColumn')}</NameCell>
+          <DeviceCell>{t('device-farm:tagTableTaggedDeviceColumn')}</DeviceCell>
           <MenuCell></MenuCell>
         </FlexRowBase>
       </Header>
@@ -151,7 +151,7 @@ const DeviceTagListController = ({ organizationId }: Props) => {
               image={<TagsOutlined style={{ fontSize: '90px' }} />}
               description={
                 <Trans
-                  i18nKey="device:tagEmptyDescription"
+                  i18nKey="device-farm:tagEmptyDescription"
                   components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/organization/device/tag-management" target="_blank" /> }}
                 />
               }

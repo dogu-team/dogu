@@ -58,11 +58,11 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
   const handleClickStop = async () => {
     try {
       await disableDevice(orgId, device.deviceId);
-      sendSuccessNotification(t('device:stopUsingDeviceSuccessMsg'));
+      sendSuccessNotification(t('device-farm:stopUsingDeviceSuccessMsg'));
       fireEvent('onDeviceStopped');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device:stopUsingDeviceFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:stopUsingDeviceFailureMsg', { reason: getErrorMessage(e) }));
       }
     }
   };
@@ -70,11 +70,11 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
   const handleClickReboot = async () => {
     try {
       await rebootDevice(orgId, device.deviceId);
-      sendSuccessNotification(t('device:rebootDeviceSuccessMsg'));
+      sendSuccessNotification(t('device-farm:rebootDeviceSuccessMsg'));
       fireEvent('onDeviceReboot');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device:rebootDeviceFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:rebootDeviceFailureMsg', { reason: getErrorMessage(e) }));
       }
     }
   };
@@ -97,7 +97,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
           }}
           id={`${device.name}-streaming-menu-btn`}
         >
-          {t('device:deviceItemStreamingMenu')}
+          {t('device-farm:deviceItemStreamingMenu')}
         </PrimaryLinkButton>
       ),
       key: 'stream',
@@ -106,7 +106,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
     {
       label: (
         <MenuItemButton danger={false} onClick={() => openEditDeviceTagModal()} id={`${device.name}-edit-tag-menu-btn`}>
-          {t('device:deviceItemEditTagMenu')}
+          {t('device-farm:deviceItemEditTagMenu')}
         </MenuItemButton>
       ),
       key: 'edit-tag',
@@ -114,7 +114,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
     {
       label: (
         <MenuItemButton danger={false} onClick={() => openEditDeviceProjectModal()} id={`${device.name}-edit-project-menu-btn`}>
-          {t('device:deviceItemEditProejctMenu')}
+          {t('device-farm:deviceItemEditProejctMenu')}
         </MenuItemButton>
       ),
       key: 'edit-projects',
@@ -122,7 +122,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
     {
       label: (
         <MenuItemButton danger={false} onClick={() => openDeviceSettingModal()} id={`${device.name}-setting-menu-btn`}>
-          {t('device:deviceItemSettingMenu')}
+          {t('device-farm:deviceItemSettingMenu')}
         </MenuItemButton>
       ),
       key: 'setting',
@@ -131,7 +131,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
     {
       label: (
         <MenuItemButton danger={false} disabled={!rebootable} onClick={handleClickReboot}>
-          {t('device:deviceItemRebootMenu')}
+          {t('device-farm:deviceItemRebootMenu')}
         </MenuItemButton>
       ),
       key: 'reboot',
@@ -141,13 +141,13 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
         <MenuItemButton
           danger
           onConfirm={handleClickStop}
-          modalTitle={t('device:stopUsingDeviceModalTitle')}
-          modalButtonTitle={t('device:stopUsingDeviceModalButtonText')}
-          modalContent={<p>{t('device:stopUsingDeviceModalContent')}</p>}
+          modalTitle={t('device-farm:stopUsingDeviceModalTitle')}
+          modalButtonTitle={t('device-farm:stopUsingDeviceModalButtonText')}
+          modalContent={<p>{t('device-farm:stopUsingDeviceModalContent')}</p>}
           id={`${device.name}-stop-using-device-menu-btn`}
           confirmButtonId="stop-using-device-confirm-btn"
         >
-          {t('device:deviceItemStopUsingMenu')}
+          {t('device-farm:deviceItemStopUsingMenu')}
         </MenuItemButton>
       ),
       key: 'unuse',
@@ -231,11 +231,11 @@ const DeviceListController = () => {
     <>
       <Header>
         <DeviceItemInner>
-          <NameCell>{t('device:deviceTableNameColumn')}</NameCell>
-          <StatusCell>{t('device:deviceTableConnectionStatusColumn')}</StatusCell>
-          <StatusCell>{t('device:deviceTableRunningStatusColumn')}</StatusCell>
-          <PlatformCell>{t('device:deviceTablePlatformAndModalColumn')}</PlatformCell>
-          <InfoCell>{t('device:deviceTableTagsAndProjectsColumn')}</InfoCell>
+          <NameCell>{t('device-farm:deviceTableNameColumn')}</NameCell>
+          <StatusCell>{t('device-farm:deviceTableConnectionStatusColumn')}</StatusCell>
+          <StatusCell>{t('device-farm:deviceTableRunningStatusColumn')}</StatusCell>
+          <PlatformCell>{t('device-farm:deviceTablePlatformAndModalColumn')}</PlatformCell>
+          <InfoCell>{t('device-farm:deviceTableTagsAndProjectsColumn')}</InfoCell>
         </DeviceItemInner>
       </Header>
       <List<DeviceBase>
@@ -262,7 +262,7 @@ const DeviceListController = () => {
               image={<MobileOutlined style={{ fontSize: '90px' }} />}
               description={
                 <Trans
-                  i18nKey="device:deviceEmptyDescription"
+                  i18nKey="device-farm:deviceEmptyDescription"
                   components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/organization/device/device-management" target="_blank" /> }}
                 />
               }

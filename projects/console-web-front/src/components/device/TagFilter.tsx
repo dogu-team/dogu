@@ -26,7 +26,7 @@ const TagFilter = () => {
 
   return (
     <Box>
-      <StyledSearchInput placeholder={t('device:tagFilterNamePlaceholder')} onChange={(e) => handleChange(e.target.value)} value={name} allowClear maxLength={50} />
+      <StyledSearchInput placeholder={t('device-farm:tagFilterNamePlaceholder')} onChange={(e) => handleChange(e.target.value)} value={name} allowClear maxLength={50} />
     </Box>
   );
 };

@@ -42,7 +42,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
             openAddProjectModal();
           }}
         >
-          {t('device:deviceItemStartUseMenu')}
+          {t('device-farm:deviceItemStartUseMenu')}
         </MenuItemButton>
       ),
       key: 'add',
@@ -51,7 +51,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
     {
       label: (
         <MenuItemButton danger={false} onClick={() => openEditModal()}>
-          {t('device:deviceItemSettingMenu')}
+          {t('device-farm:deviceItemSettingMenu')}
         </MenuItemButton>
       ),
       key: 'edit',
@@ -129,17 +129,17 @@ const CloudDeviceListController = () => {
             <ListEmpty
               description={
                 <div>
-                  <p>{t('device:addableDeviceEmptyDescription')}</p>
+                  <p>{t('device-farm:addableDeviceEmptyDescription')}</p>
                   <br />
                   <EmptyDescriptionManualBox>
-                    <EmptyDescriptionManualTitle>{t('device:addableDeviceEmptyManualTitle')}</EmptyDescriptionManualTitle>
+                    <EmptyDescriptionManualTitle>{t('device-farm:addableDeviceEmptyManualTitle')}</EmptyDescriptionManualTitle>
                     <EmptyDescriptionList>
-                      <EmptyDescriptionListItem>{t('device:addableDeviceEmptyManual1')}</EmptyDescriptionListItem>
-                      <EmptyDescriptionListItem>{t('device:addableDeviceEmptyManual2')}</EmptyDescriptionListItem>
-                      <EmptyDescriptionListItem>{t('device:addableDeviceEmptyManual3')}</EmptyDescriptionListItem>
+                      <EmptyDescriptionListItem>{t('device-farm:addableDeviceEmptyManual1')}</EmptyDescriptionListItem>
+                      <EmptyDescriptionListItem>{t('device-farm:addableDeviceEmptyManual2')}</EmptyDescriptionListItem>
+                      <EmptyDescriptionListItem>{t('device-farm:addableDeviceEmptyManual3')}</EmptyDescriptionListItem>
                     </EmptyDescriptionList>
                     <Trans
-                      i18nKey="device:addableDeviceEmptyLink"
+                      i18nKey="device-farm:addableDeviceEmptyLink"
                       components={{ link: <Link href={'https://docs.dogutech.io/management/organization/device/device-management'} target="_blank" /> }}
                     />
                   </EmptyDescriptionManualBox>

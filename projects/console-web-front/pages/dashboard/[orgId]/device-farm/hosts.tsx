@@ -30,12 +30,12 @@ const HostManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ organiz
           <ButtonBox>
             <LeftTopBox>
               <Button type="primary" onClick={() => openAddModal()} access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'add-new-host-btn' : undefined}>
-                {t('host:addNewHost')}
+                {t('device-farm:addNewHost')}
               </Button>
               {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
                 <Link href={`${process.env.NEXT_PUBLIC_LANDING_URL}/downloads/dogu-agent`} target="_blank">
                   <Button>
-                    {t('host:agentDownloadTitle')}
+                    {t('device-farm:agentDownloadTitle')}
                     <Image src={resources.icons.externalLink} width={16} height={16} alt="external link" />
                   </Button>
                 </Link>
