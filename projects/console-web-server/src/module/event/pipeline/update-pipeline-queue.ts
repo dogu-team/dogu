@@ -30,10 +30,9 @@ export class UpdateDeviceJobStatusEvent extends UpdatePipelineEvent {
 
 export class CancelPipelineEvent extends UpdatePipelineEvent {
   constructor(
-    public readonly organizationId: OrganizationId, //
-    public readonly projectId: ProjectId,
+    public readonly projectId: ProjectId, //
     public pipelineId: RoutinePipelineId,
-    public readonly userId: UserId,
+    public readonly userId: UserId | null,
   ) {
     super();
   }
@@ -52,7 +51,7 @@ export class UpdateRemoteDestStateEvent extends UpdtaeRemoteDeviceJobEvent {
 }
 
 @Injectable()
-export class CanclePipelineQueue {
+export class CancelPipelineQueue {
   private queue = new Array<CancelPipelineEvent>();
 
   enqueue(event: CancelPipelineEvent): void {

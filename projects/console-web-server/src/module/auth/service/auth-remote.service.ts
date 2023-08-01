@@ -60,21 +60,27 @@ export class AuthRemoteService {
     }
   }
 
-  public getToken(req: Request): string | null {
+  public getToken(req: Request): string {
     const apiToken = req.body['capabilities']?.['alwaysMatch']?.['dogu:options']?.['token'];
-    if (!apiToken) return null;
+    if (!apiToken) {
+      throw new HttpException('Token is required', HttpStatus.UNAUTHORIZED);
+    }
     return apiToken as string;
   }
 
-  public getOrganizationId(req: Request): string | null {
+  public getOrganizationId(req: Request): string {
     const orgId = req.body['capabilities']?.['alwaysMatch']?.['dogu:options']?.['organizationId'];
-    if (!orgId) return null;
+    if (!orgId) {
+      throw new HttpException('OrganizationId is required', HttpStatus.UNAUTHORIZED);
+    }
     return orgId as OrganizationId;
   }
 
-  public getProjectId(req: Request): string | null {
+  public getProjectId(req: Request): string {
     const projectId = req.body['capabilities']?.['alwaysMatch']?.['dogu:options']?.['projectId'];
-    if (!projectId) return null;
+    if (!projectId) {
+      throw new HttpException('ProjectId is required', HttpStatus.UNAUTHORIZED);
+    }
     return projectId as ProjectId;
   }
 }
