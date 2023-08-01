@@ -48,11 +48,11 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
   const handleDelete = async () => {
     try {
       await removeDeviceFromProject(orgId, device.deviceId, projectId);
-      sendSuccessNotification(t('device:deleteDeviceFromProjectSuccessMsg'));
+      sendSuccessNotification(t('device-farm:deleteDeviceFromProjectSuccessMsg'));
       fireEvent('onProjectDeviceDeleted');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device:deleteDeviceFromProjectFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:deleteDeviceFromProjectFailureMsg', { reason: getErrorMessage(e) }));
       }
     }
   };
@@ -74,7 +74,7 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
             }
           }}
         >
-          {t('device:deviceItemStreamingMenu')}
+          {t('device-farm:deviceItemStreamingMenu')}
         </PrimaryLinkButton>
       ),
       key: 'streaming',
@@ -88,11 +88,11 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
           danger
           onConfirm={handleDelete}
           disabled={device.isGlobal === 1}
-          modalTitle={t('device:deleteDeviceFromProjectModalTitle')}
-          modalButtonTitle={t('device:deleteDeviceFromProjectModalButtonText')}
-          modalContent={t('device:deleteDeviceFromProjectModalContentText', { name: device.name })}
+          modalTitle={t('device-farm:deleteDeviceFromProjectModalTitle')}
+          modalButtonTitle={t('device-farm:deleteDeviceFromProjectModalButtonText')}
+          modalContent={t('device-farm:deleteDeviceFromProjectModalContentText', { name: device.name })}
         >
-          {t('device:deviceItemDeleteFromProjectMenu')}
+          {t('device-farm:deviceItemDeleteFromProjectMenu')}
         </MenuItemButton>
       ),
       key: 'delete',
@@ -164,11 +164,11 @@ const DeviceListController = ({ organizationId, projectId }: Props) => {
     <>
       <Header>
         <FlexRowBase>
-          <NameCell>{t('device:deviceTableNameColumn')}</NameCell>
-          <OneSpanCell>{t('device:deviceTableConnectionStatusColumn')}</OneSpanCell>
-          <OneSpanCell>{t('device:deviceTableRunningStatusColumn')}</OneSpanCell>
-          <PlatformCell>{t('device:deviceTablePlatformAndModalColumn')}</PlatformCell>
-          <OneSpanCell>{t('device:deviceTableTagsAndProjectsColumn')}</OneSpanCell>
+          <NameCell>{t('device-farm:deviceTableNameColumn')}</NameCell>
+          <OneSpanCell>{t('device-farm:deviceTableConnectionStatusColumn')}</OneSpanCell>
+          <OneSpanCell>{t('device-farm:deviceTableRunningStatusColumn')}</OneSpanCell>
+          <PlatformCell>{t('device-farm:deviceTablePlatformAndModalColumn')}</PlatformCell>
+          <OneSpanCell>{t('device-farm:deviceTableTagsAndProjectsColumn')}</OneSpanCell>
           <MenuCell></MenuCell>
         </FlexRowBase>
       </Header>
@@ -184,7 +184,7 @@ const DeviceListController = ({ organizationId, projectId }: Props) => {
               image={<MobileOutlined style={{ fontSize: '90px' }} />}
               description={
                 <Trans
-                  i18nKey="device:projectEmptyDescription"
+                  i18nKey="device-farm:projectEmptyDescription"
                   components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/project/device" target="_blank" /> }}
                 />
               }

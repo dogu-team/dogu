@@ -1,7 +1,7 @@
-import { ClusterOutlined, MobileOutlined, WindowsFilled } from '@ant-design/icons';
+import { DesktopOutlined, MobileOutlined } from '@ant-design/icons';
 import { HostBase } from '@dogu-private/console';
 import { HostConnectionState, OrganizationId } from '@dogu-private/types';
-import { Alert, Button, List, MenuProps, message } from 'antd';
+import { Alert, List, MenuProps } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
@@ -53,10 +53,10 @@ const HostItem = ({ host }: HostItemProps) => {
     try {
       const token = await reissuesHostConnectionToken(orgId, host.hostId);
       setToken(token);
-      sendSuccessNotification(t('host:hostRevokeTokenSuccessMsg'));
+      sendSuccessNotification(t('device-farm:hostRevokeTokenSuccessMsg'));
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('host:hostRevokeTokenFailedMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:hostRevokeTokenFailedMsg', { reason: getErrorMessage(e) }));
       }
     }
   };
@@ -64,11 +64,11 @@ const HostItem = ({ host }: HostItemProps) => {
   const handleDeleteHost = async () => {
     try {
       await deleteHost(orgId, host.hostId);
-      sendSuccessNotification(t('host:hostDeleteSuccessMsg'));
+      sendSuccessNotification(t('device-farm:hostDeleteSuccessMsg'));
       fireEvent('onHostDeleted');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('host:hostDeleteFailedMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:hostDeleteFailedMsg', { reason: getErrorMessage(e) }));
       }
     }
   };
@@ -76,11 +76,11 @@ const HostItem = ({ host }: HostItemProps) => {
   const handleUseHostDevice = async () => {
     try {
       await request(orgId, host.hostId);
-      sendSuccessNotification(t('host:hostStartUsingSuccessMsg'));
+      sendSuccessNotification(t('device-farm:hostStartUsingSuccessMsg'));
       fireEvent('onHostDeviceUsed');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('host:hostStartUsingFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:hostStartUsingFailMsg', { reason: getErrorMessage(e) }));
       }
     }
   };
@@ -88,11 +88,11 @@ const HostItem = ({ host }: HostItemProps) => {
   const handleStopUseHostDevice = async () => {
     try {
       await stopUsingHostAsDevice(orgId, host.hostId);
-      sendSuccessNotification(t('host:hostStopUsingSuccessMsg'));
+      sendSuccessNotification(t('device-farm:hostStopUsingSuccessMsg'));
       fireEvent('onHostDeviceStopped');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('host:hostStopUsingFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:hostStopUsingFailMsg', { reason: getErrorMessage(e) }));
       }
     }
   };
@@ -114,7 +114,7 @@ const HostItem = ({ host }: HostItemProps) => {
             }
           }}
         >
-          {t('host:hostItemStreamingMenu')}
+          {t('device-farm:hostItemStreamingMenu')}
         </PrimaryLinkButton>
       ),
       key: 'stream',
@@ -125,7 +125,7 @@ const HostItem = ({ host }: HostItemProps) => {
     {
       label: (
         <MenuItemButton danger={false} onClick={() => openEditModal()}>
-          {t('host:hostItemEditMenu')}
+          {t('device-farm:hostItemEditMenu')}
         </MenuItemButton>
       ),
       key: 'edit',
@@ -137,8 +137,8 @@ const HostItem = ({ host }: HostItemProps) => {
       label: (
         <MenuItemButton
           danger
-          modalTitle={t('host:hostTokenRevokeModalTitle')}
-          modalButtonTitle={t('host:hostTokenRevokeModalConfirmButtonTitle')}
+          modalTitle={t('device-farm:hostTokenRevokeModalTitle')}
+          modalButtonTitle={t('device-farm:hostTokenRevokeModalConfirmButtonTitle')}
           modalContent={
             token ? (
               <div access-id="host-token-revoke-alert">
@@ -149,18 +149,21 @@ const HostItem = ({ host }: HostItemProps) => {
                   type="success"
                   showIcon
                   message={
-                    <Trans i18nKey="host:hostRevokeAfterDescription" components={{ br: <br />, link: <Link href="https://docs.dogutech.io/device-farm/host" target="_blank" /> }} />
+                    <Trans
+                      i18nKey="device-farm:hostRevokeAfterDescription"
+                      components={{ br: <br />, link: <Link href="https://docs.dogutech.io/device-farm/host" target="_blank" /> }}
+                    />
                   }
                 />
 
                 <div style={{ marginTop: '1rem' }}>
-                  <p>{t('host:hostCreateModalTokenDescription')}</p>
+                  <p>{t('device-farm:hostCreateModalTokenDescription')}</p>
                   <TokenCopyInput value={token} />
-                  <p style={{ fontSize: '.8rem', lineHeight: '1.4' }}>* {t('host:hostCreateModalTokenCheckDescription')}</p>
+                  <p style={{ fontSize: '.8rem', lineHeight: '1.4' }}>* {t('device-farm:hostCreateModalTokenCheckDescription')}</p>
                 </div>
               </div>
             ) : (
-              <p style={{ lineHeight: 1.4 }}>{t('host:hostTokenRevokeModalContent')}</p>
+              <p style={{ lineHeight: 1.4 }}>{t('device-farm:hostTokenRevokeModalContent')}</p>
             )
           }
           onConfirm={handleReissueToken}
@@ -169,7 +172,7 @@ const HostItem = ({ host }: HostItemProps) => {
           persistOpen
           confirmButtonId="host-token-revoke-confirm-btn"
         >
-          {t('host:hostItemRevokeTokenMenu')}
+          {t('device-farm:hostItemRevokeTokenMenu')}
         </MenuItemButton>
       ),
       key: 'token',
@@ -179,23 +182,23 @@ const HostItem = ({ host }: HostItemProps) => {
         <MenuItemButton
           danger
           onConfirm={handleDeleteHost}
-          modalTitle={t('host:hostDeleteModalTitle')}
-          modalButtonTitle={t('host:hostDeleteModalButtonText')}
+          modalTitle={t('device-farm:hostDeleteModalTitle')}
+          modalButtonTitle={t('device-farm:hostDeleteModalButtonText')}
           modalContent={
             <StyledDeleteModalContent>
-              {t('host:hostDeleteModalContentInfo')}
+              {t('device-farm:hostDeleteModalContentInfo')}
               <br />
               <br />
               {!!host.devices &&
                 (host.devices.length < 2 ? (
                   <Trans
-                    i18nKey="host:hostDeleteModalContentCountSingular"
+                    i18nKey="device-farm:hostDeleteModalContentCountSingular"
                     components={[<b key={`host-${host.hostId}-ds`} />]}
                     values={{ name: host.name, count: host.devices.length }}
                   />
                 ) : (
                   <Trans
-                    i18nKey="host:hostDeleteModalContentCountPlural"
+                    i18nKey="device-farm:hostDeleteModalContentCountPlural"
                     components={[<b key={`host-${host.hostId}-dp`} />]}
                     values={{ name: host.name, count: host.devices.length }}
                   />
@@ -204,7 +207,7 @@ const HostItem = ({ host }: HostItemProps) => {
           }
           confirmButtonId="host-delete-confirm-btn"
         >
-          {t('host:hostItemDeleteMenu')}
+          {t('device-farm:hostItemDeleteMenu')}
         </MenuItemButton>
       ),
       key: 'delete',
@@ -222,7 +225,7 @@ const HostItem = ({ host }: HostItemProps) => {
             handleUseHostDevice();
           }}
         >
-          {t('host:hostItemStartUseMenu')}
+          {t('device-farm:hostItemStartUseMenu')}
         </MenuItemButton>
       ),
       key: 'startUsing',
@@ -237,11 +240,11 @@ const HostItem = ({ host }: HostItemProps) => {
         <MenuItemButton
           danger
           onConfirm={handleStopUseHostDevice}
-          modalTitle={t('host:hostStopUsingModalTitle')}
-          modalButtonTitle={t('host:hostStopUsingModalButtontText')}
-          modalContent={t('host:hostStopUsingModalContentInfo')}
+          modalTitle={t('device-farm:hostStopUsingModalTitle')}
+          modalButtonTitle={t('device-farm:hostStopUsingModalButtontText')}
+          modalContent={t('device-farm:hostStopUsingModalContentInfo')}
         >
-          {t('host:hostItemStopUseMenu')}
+          {t('device-farm:hostItemStopUseMenu')}
         </MenuItemButton>
       ),
       key: 'stopUsing',
@@ -306,11 +309,11 @@ const HostListController = () => {
     <>
       <Header>
         <ItemInner>
-          <NameCell>{t('host:hostTableNameColumn')}</NameCell>
-          <StatusCell>{t('host:hostTableConnectionStatusColumn')}</StatusCell>
-          <AgentVersionCell>{t('host:hostTableAgentVersion')}</AgentVersionCell>
-          <PlatformCell>{t('host:hostTableOSColumn')}</PlatformCell>
-          <InfoCell>{t('host:hostTableDevciesColumn')}</InfoCell>
+          <NameCell>{t('device-farm:hostTableNameColumn')}</NameCell>
+          <StatusCell>{t('device-farm:hostTableConnectionStatusColumn')}</StatusCell>
+          <AgentVersionCell>{t('device-farm:hostTableAgentVersion')}</AgentVersionCell>
+          <PlatformCell>{t('device-farm:hostTableOSColumn')}</PlatformCell>
+          <InfoCell>{t('device-farm:hostTableDevciesColumn')}</InfoCell>
         </ItemInner>
       </Header>
       <List<HostBase>
@@ -334,10 +337,10 @@ const HostListController = () => {
           emptyText: (
             <ListEmpty
               style={{ whiteSpace: 'pre-wrap' }}
-              image={<ClusterOutlined style={{ fontSize: '90px' }} />}
+              image={<DesktopOutlined style={{ fontSize: '90px' }} />}
               description={
                 <Trans
-                  i18nKey="host:hostEmptyDescription"
+                  i18nKey="device-farm:hostEmptyDescription"
                   components={[<Link href="https://docs.dogutech.io/management/organization/host" target="_blank" key={'docs-link'} style={{ whiteSpace: 'pre-wrap' }} />, <br />]}
                 />
               }

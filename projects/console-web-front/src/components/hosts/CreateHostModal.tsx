@@ -42,12 +42,12 @@ const CreateHostModal = ({ isOpen, close }: Props) => {
     try {
       const hostToken = await createHost(organizationId, createHostBody);
       form.resetFields();
-      sendSuccessNotification(t('host:newHostSuccessTitle', { name }));
+      sendSuccessNotification(t('device-farm:newHostSuccessTitle', { name }));
       showAlert(true, String(hostToken));
       fireEvent('onHostCreated', hostToken);
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('host:newHostFailTitle', { name, reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:newHostFailTitle', { name, reason: getErrorMessage(e) }));
       }
     }
     setLoading(false);
@@ -70,7 +70,7 @@ const CreateHostModal = ({ isOpen, close }: Props) => {
                   <div style={{ lineHeight: '1.4', marginRight: '.25rem' }}>
                     <p>
                       <Trans
-                        i18nKey="host:hostCreateModalSuccessHint"
+                        i18nKey="device-farm:hostCreateModalSuccessHint"
                         components={{
                           link1: <Link href={doguAgentDownloadLink} target="_blank" />,
                           link2: <Link href="https://docs.dogutech.io/device-farm/host" target="_blank" />,
@@ -84,14 +84,14 @@ const CreateHostModal = ({ isOpen, close }: Props) => {
               />
 
               <div style={{ marginTop: '1rem' }}>
-                <p style={{ flexShrink: 0, marginRight: '.25rem' }}>{t('host:hostCreateModalTokenDescription')}</p>
+                <p style={{ flexShrink: 0, marginRight: '.25rem' }}>{t('device-farm:hostCreateModalTokenDescription')}</p>
                 <TokenCopyInput value={result.message} />
-                <p style={{ fontSize: '.8rem', lineHeight: '1.4' }}>* {t('host:hostCreateModalTokenCheckDescription')}</p>
+                <p style={{ fontSize: '.8rem', lineHeight: '1.4' }}>* {t('device-farm:hostCreateModalTokenCheckDescription')}</p>
               </div>
             </div>
           ) : (
             <Form form={form} id="new-host" layout="vertical" onFinish={handleSubmit}>
-              <Form.Item name="name" label={t('host:newHostModalInputName')} rules={[{ required: true, message: t('common:nameInputEmptyError') }]}>
+              <Form.Item name="name" label={t('device-farm:newHostModalInputName')} rules={[{ required: true, message: t('common:nameInputEmptyError') }]}>
                 <Input
                   type="text"
                   placeholder={t('common:name')}
@@ -114,7 +114,7 @@ const CreateHostModal = ({ isOpen, close }: Props) => {
       centered
       okText={t('common:add')}
       cancelText={t('common:cancel')}
-      title={t('host:addNewHost')}
+      title={t('device-farm:addNewHost')}
       confirmLoading={loading}
       footer={result.isOpen ? null : undefined}
       destroyOnClose

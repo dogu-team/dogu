@@ -57,8 +57,10 @@ const DeviceTagSearchBox = () => {
 
   return (
     <StyledSelectFilterDropdownMenu
-      title={t('device:deviceFilterTagSearchTitle')}
-      input={<Input.Search value={name} onChange={(e) => handleChange(e.target.value)} placeholder={t('device:deviceFilterTagSearchPlaceholder')} allowClear loading={isLoading} />}
+      title={t('device-farm:deviceFilterTagSearchTitle')}
+      input={
+        <Input.Search value={name} onChange={(e) => handleChange(e.target.value)} placeholder={t('device-farm:deviceFilterTagSearchPlaceholder')} allowClear loading={isLoading} />
+      }
       selectedItems={filterValue.tags.map((item) => {
         return <FilterSelectedTag key={`tag-filter-${item}`} value={item} onClick={handleRemoveSelected} />;
       })}

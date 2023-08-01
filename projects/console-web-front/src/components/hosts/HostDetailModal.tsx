@@ -42,18 +42,18 @@ const HostDetailModal = ({ isOpen, host, close }: Props) => {
   }, [isOpen]);
 
   return (
-    <Modal open={isOpen} closable onCancel={close} title={t('host:hostDetailModalTitle')} centered destroyOnClose footer={null}>
+    <Modal open={isOpen} closable onCancel={close} title={t('device-farm:hostDetailModalTitle')} centered destroyOnClose footer={null}>
       <Box>
         <Content>
-          <StyledH4>{t('host:hostDetilNameTitle')}</StyledH4>
+          <StyledH4>{t('device-farm:hostDetilNameTitle')}</StyledH4>
           <p access-id="host-modal-name">{host?.name}</p>
         </Content>
         <Content>
-          <StyledH4>{t('host:hostDetailCreatedDateTitle')}</StyledH4>
+          <StyledH4>{t('device-farm:hostDetailCreatedDateTitle')}</StyledH4>
           <p>{getLocaleFormattedDate(lang, new Date(host?.createdAt ?? 0))}</p>
         </Content>
         <Content>
-          <StyledH4>{t('host:hostDetailConnectedDeviceTitle')}</StyledH4>
+          <StyledH4>{t('device-farm:hostDetailConnectedDeviceTitle')}</StyledH4>
           <div>
             {host?.devices?.map((item) => (
               <Tag key={item.deviceId}>{item.name}</Tag>
@@ -64,12 +64,12 @@ const HostDetailModal = ({ isOpen, host, close }: Props) => {
         </Content>
         {host?.creator && (
           <Content>
-            <StyledH4 id="host-creator-title">{t('host:hostDetailCreatorTitle')}</StyledH4>
+            <StyledH4 id="host-creator-title">{t('device-farm:hostDetailCreatorTitle')}</StyledH4>
             <ProfileImageWithName profileImage={<ProfileImage name={host.creator.name} size={36} profileImageUrl={host.creator.profileImageUrl} />} name={host.creator.name} />
           </Content>
         )}
         <Content>
-          <StyledH4>{t('host:hostDetailTokenTitle')}</StyledH4>
+          <StyledH4>{t('device-farm:hostDetailTokenTitle')}</StyledH4>
           {token ? (
             <div>
               <code style={{ fontFamily: 'monospace' }}>{token}</code>
@@ -91,7 +91,7 @@ const HostDetailModal = ({ isOpen, host, close }: Props) => {
             </div>
           ) : (
             <Button loading={loading} onClick={handleClickCheckToken} access-id="show-host-token-btn">
-              {t('host:hostDetailShowTokenButtonTitle')}
+              {t('device-farm:hostDetailShowTokenButtonTitle')}
             </Button>
           )}
         </Content>

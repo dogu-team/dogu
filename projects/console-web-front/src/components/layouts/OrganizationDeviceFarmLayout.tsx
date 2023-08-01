@@ -1,12 +1,12 @@
-import { ApiOutlined, CloudOutlined, MobileOutlined, TagsOutlined } from '@ant-design/icons';
+import { ApiOutlined, DesktopOutlined, MobileOutlined, TagsOutlined } from '@ant-design/icons';
 import { DeviceBase, PageBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { swrAuthFetcher } from 'src/api';
 import styled from 'styled-components';
 import useSWR from 'swr';
 
+import { swrAuthFetcher } from 'src/api';
 import useEventStore from '../../stores/events';
 import MenuLinkTabs, { MenuLinkTabItem, MenuLinkTabProps } from '../MenuLinkTabs';
 import ConsoleLayout from './ConsoleLayout';
@@ -44,7 +44,7 @@ const AddDeviceTabButton = ({ selected, href }: TabButtonProps) => {
 
   return (
     <RelativeBox>
-      <MenuLinkTabItem selected={selected} title={t('device:deviceAddMenuTitle')} icon={<ApiOutlined />} href={href} access-id={'org-add-device-tab'} />
+      <MenuLinkTabItem selected={selected} title={t('device-farm:deviceAddMenuTitle')} icon={<ApiOutlined />} href={href} access-id={'org-add-device-tab'} />
       {data && data.totalCount > 0 && <Badge />}
     </RelativeBox>
   );
@@ -54,45 +54,46 @@ interface Props {
   children: React.ReactNode;
 }
 
-const OrganizationDeviceLayout = ({ children }: Props) => {
+const OrganizationDeviceFarmLayout = ({ children }: Props) => {
   const router = useRouter();
   const orgId = router.query.orgId;
   const { t } = useTranslation();
 
   const tabs: MenuLinkTabProps['tabs'] = [
     {
-      href: `/dashboard/${orgId}/devices`,
+      href: `/dashboard/${orgId}/device-farm/hosts`,
+      icon: <DesktopOutlined />,
+      title: t('device-farm:hostMenuTitle'),
+      'access-id': 'org-host-list-tab',
+    },
+    {
+      href: `/dashboard/${orgId}/device-farm/devices`,
       icon: <MobileOutlined />,
-      title: t('device:deviceListMenuTitle'),
+      title: t('device-farm:deviceListMenuTitle'),
       'access-id': 'org-device-list-tab',
     },
     {
-      tab: (selected) => <AddDeviceTabButton selected={selected} href={`/dashboard/${orgId}/devices/standby`} />,
-      href: `/dashboard/${orgId}/devices/standby`,
+      tab: (selected) => <AddDeviceTabButton selected={selected} href={`/dashboard/${orgId}/device-farm/standby-devices`} />,
+      href: `/dashboard/${orgId}/device-farm/standby-devices`,
+      'access-id': 'org-add-device-tab',
     },
-    // {
-    //   href: `/dashboard/${orgId}/devices/cloud`,
-    //   icon: <CloudOutlined />,
-    //   title: '클라우드 디바이스',
-    //   'access-id': 'org-add-cloud-device-tab',
-    // },
     {
-      href: `/dashboard/${orgId}/devices/tags`,
+      href: `/dashboard/${orgId}/device-farm/tags`,
       icon: <TagsOutlined />,
-      title: t('device:deviceTagMenuTitle'),
+      title: t('device-farm:deviceTagMenuTitle'),
       'access-id': 'org-tag-list-tab',
     },
   ];
 
   return (
-    <ConsoleLayout sidebar={<OrganizationSideBar />} titleI18nKey={'organization:devicePageTitle'}>
+    <ConsoleLayout sidebar={<OrganizationSideBar />} titleI18nKey={'organization:deviceFarmPageTitle'}>
       <MenuLinkTabs tabs={tabs} />
       <Inner>{children}</Inner>
     </ConsoleLayout>
   );
 };
 
-export default OrganizationDeviceLayout;
+export default OrganizationDeviceFarmLayout;
 
 const RelativeBox = styled.div`
   position: relative;

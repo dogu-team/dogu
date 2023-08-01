@@ -38,12 +38,12 @@ const EditTagModal = ({ tag, isOpen, closeModal }: Props) => {
 
     try {
       await updateTag(orgId, tag.deviceTagId, { name });
-      sendSuccessNotification(t('device:editTagSuccessMsg'));
+      sendSuccessNotification(t('device-farm:editTagSuccessMsg'));
       fireEvent('onTagEdited');
       closeModal();
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device:editTagFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:editTagFailureMsg', { reason: getErrorMessage(e) }));
       }
     }
 
@@ -55,11 +55,16 @@ const EditTagModal = ({ tag, isOpen, closeModal }: Props) => {
       centered
       open={isOpen}
       closable
-      title={t('device:editTagModalTitle')}
+      title={t('device-farm:editTagModalTitle')}
       form={
         <Form id="edit-device-tag" layout="vertical" preserve={false} onFinish={handleSubmit} form={form}>
-          <Form.Item label={t('device:editTagNameLabel')} name="name" required rules={[{ required: true, message: t('device:editTagEmptyNameErrorMsg') }]}>
-            <Input placeholder={t('device:editTagNameInputPlaceholer')} minLength={DEVICE_TAG_NAME_MIN_LENGTH} maxLength={DEVICE_TAG_NAME_MAX_LENGTHC} defaultValue={tag.name} />
+          <Form.Item label={t('device-farm:editTagNameLabel')} name="name" required rules={[{ required: true, message: t('device-farm:editTagEmptyNameErrorMsg') }]}>
+            <Input
+              placeholder={t('device-farm:editTagNameInputPlaceholer')}
+              minLength={DEVICE_TAG_NAME_MIN_LENGTH}
+              maxLength={DEVICE_TAG_NAME_MAX_LENGTHC}
+              defaultValue={tag.name}
+            />
           </Form.Item>
         </Form>
       }

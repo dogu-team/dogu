@@ -30,7 +30,7 @@ const HostFilter = () => {
 
   return (
     <Box>
-      <StyledSearchInput value={value} placeholder={t('host:hostFilterNamePlaceholder')} onChange={(e) => handleChange(e.target.value)} allowClear />
+      <StyledSearchInput value={value} placeholder={t('device-farm:hostFilterNamePlaceholder')} onChange={(e) => handleChange(e.target.value)} allowClear />
     </Box>
   );
 };

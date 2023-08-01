@@ -49,14 +49,14 @@ const ProjectSearchBox = () => {
 
   return (
     <StyledSelectFilterDropdownMenu
-      title={t('device:deviceFilterProjectSearchTitle')}
+      title={t('device-farm:deviceFilterProjectSearchTitle')}
       input={
         <Input.Search
           value={inputValue}
           onChange={(e) => handleChangeValues(e.target.value)}
           loading={isLoading}
           allowClear
-          placeholder={t('device:deviceFilterProjectSearchPlaceholder')}
+          placeholder={t('device-farm:deviceFilterProjectSearchPlaceholder')}
         />
       }
       selectedItems={selectedProjects.map((item) => {

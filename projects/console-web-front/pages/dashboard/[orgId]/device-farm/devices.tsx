@@ -7,7 +7,7 @@ import DeviceListController from 'src/components/device/DeviceListController';
 import DeviceFilter from 'src/components/device/DeviceFilter';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
-import OrganizationDeviceLayout from 'src/components/layouts/OrganizationDeviceLayout';
+import OrganizationDeviceFarmLayout from '../../../../src/components/layouts/OrganizationDeviceFarmLayout';
 
 const TeamDevicePage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) => {
   return (
@@ -29,7 +29,7 @@ const TeamDevicePage: NextPageWithLayout<WithOrganizationProps> = ({ organizatio
 };
 
 TeamDevicePage.getLayout = (page) => {
-  return <OrganizationDeviceLayout>{page}</OrganizationDeviceLayout>;
+  return <OrganizationDeviceFarmLayout>{page}</OrganizationDeviceFarmLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;

@@ -5,15 +5,15 @@ import { NextPageWithLayout } from 'pages/_app';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import TableListView from 'src/components/common/TableListView';
 import AddableDeviceFilter from 'src/components/device/AddableDeviceFilter';
-import OrganizationDeviceLayout from 'src/components/layouts/OrganizationDeviceLayout';
+import AddableDeviceListController from 'src/components/device/AddableDeviceListController';
 import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
-import CloudDeviceListController from '../../../../src/components/device/CloudDeviceListController';
+import OrganizationDeviceFarmLayout from '../../../../src/components/layouts/OrganizationDeviceFarmLayout';
 
-const AddCloudDevicePage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) => {
+const AddDevicesPage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) => {
   return (
     <>
       <Head>
-        <title>Cloud devices - {organization.name} | Dogu</title>
+        <title>Standby devices - {organization.name} | Dogu</title>
       </Head>
       <TableListView
         top={
@@ -22,19 +22,19 @@ const AddCloudDevicePage: NextPageWithLayout<WithOrganizationProps> = ({ organiz
             <RefreshButton />
           </TopWrapper>
         }
-        table={<CloudDeviceListController />}
+        table={<AddableDeviceListController />}
       />
     </>
   );
 };
 
-AddCloudDevicePage.getLayout = (page) => {
-  return <OrganizationDeviceLayout>{page}</OrganizationDeviceLayout>;
+AddDevicesPage.getLayout = (page) => {
+  return <OrganizationDeviceFarmLayout>{page}</OrganizationDeviceFarmLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;
 
-export default withOrganization(AddCloudDevicePage);
+export default withOrganization(AddDevicesPage);
 
 const TopWrapper = styled.div`
   display: flex;

@@ -2,12 +2,8 @@
   "sidebarSubTitle": "Organization",
   "projectPageTitle": "Projects",
   "memberPageTitle": "Members",
-  "hostPageTitle": "Hosts",
-  "devicePageTitle": "Devices",
-  "cloudDevicePageTitle": "Cloud Devices",
-  "addDevicePageTitle": "Standby devices",
+  "deviceFarmPageTitle": "Device Farm",
   "organizationSettingPageTitle": "Settings",
-  "deviceTagPageTitle": "Device tags",
   "teamPageTitle": "Teams",
   "tutorialPageTitle": "Tutorial",
 

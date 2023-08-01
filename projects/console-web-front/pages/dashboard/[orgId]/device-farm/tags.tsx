@@ -9,9 +9,9 @@ import useModal from 'src/hooks/useModal';
 import CreateTagModal from 'src/components/device/CreateTagModal';
 import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
 import TagFilter from 'src/components/device/TagFilter';
-import OrganizationDeviceLayout from 'src/components/layouts/OrganizationDeviceLayout';
 import TableListView from '../../../../src/components/common/TableListView';
 import DeviceTagListController from '../../../../src/components/device/DeviceTagListController';
+import OrganizationDeviceFarmLayout from '../../../../src/components/layouts/OrganizationDeviceFarmLayout';
 
 const DeviceTagsManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) => {
   const [isOpen, openModal, closeModal] = useModal();
@@ -27,7 +27,7 @@ const DeviceTagsManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ o
           <FlexBox>
             <TopLeftButtonBox>
               <Button type="primary" onClick={() => openModal()}>
-                {t('device:createTagButtonTitle')}
+                {t('device-farm:createTagButtonTitle')}
               </Button>
               <TagFilter />
             </TopLeftButtonBox>
@@ -43,7 +43,7 @@ const DeviceTagsManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ o
 };
 
 DeviceTagsManagementPage.getLayout = (page) => {
-  return <OrganizationDeviceLayout>{page}</OrganizationDeviceLayout>;
+  return <OrganizationDeviceFarmLayout>{page}</OrganizationDeviceFarmLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;
