@@ -74,4 +74,8 @@ export class FeatureConfig<T> {
   get(key: keyof T): T[keyof T] {
     return this.data[key];
   }
+
+  getAll(): T {
+    return this.data;
+  }
 }

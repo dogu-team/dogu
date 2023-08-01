@@ -14,6 +14,7 @@ import { AuthModule } from '../auth/auth.module';
 import { DeviceMessageModule } from '../device-message/device-message.module';
 import { DownloadModule } from '../download/download.module';
 import { EventModule } from '../event/event.module';
+import { FeatureModule } from '../feature/feature.module';
 import { FeatureFileModule } from '../feature/file/feature-file.module';
 import { FileModule } from '../file/file.module';
 import { GitlabModule } from '../gitlab/gitlab.module';
@@ -68,6 +69,7 @@ const IMPORT_MODULES = [
   LivePipelineStatusModule,
   LiveProfileModule,
   GitlabModule,
+  FeatureModule,
   FeatureFileModule,
   AuthModule,
   FileModule,
