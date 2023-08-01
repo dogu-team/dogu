@@ -18,6 +18,7 @@ import url from 'url';
 import { v4 as uuidv4 } from 'uuid';
 import { AppiumRemoteContext } from '../../appium/appium.remote.context';
 import { DeviceHostDownloadSharedResourceService } from '../../device-host/device-host.download-shared-resource';
+import { DOGU_ADB_SERVER_PORT } from '../../internal/externals/cli/adb/adb';
 import { getFreePort } from '../../internal/util/net';
 import { DoguLogger } from '../../logger/logger';
 import { AppiumEndpointHandler, RegisterAppiumEndpointHandler } from './appium.service';
@@ -64,6 +65,7 @@ export class AppiumNewSessionEndpointHandler extends AppiumEndpointHandler {
         request.reqBody ??= {};
         _.set(request.reqBody, 'capabilities.alwaysMatch.platformName', 'Android');
         _.set(request.reqBody, 'capabilities.alwaysMatch.appium:automationName', 'UiAutomator2');
+        _.set(request.reqBody, 'capabilities.alwaysMatch.appium:adbPort', DOGU_ADB_SERVER_PORT);
 
         const systemPort = await getFreePort();
         const chromedriverPort = await getFreePort();

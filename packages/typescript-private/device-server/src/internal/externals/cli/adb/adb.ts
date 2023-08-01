@@ -13,6 +13,15 @@ import { parseRecord } from '../../../util/parse';
 import { AndroidDfInfo, AndroidProcCpuInfo, AndroidProcDiskstats, AndroidProcMemInfo, AndroidPropInfo, AndroidShellTopInfo } from './info';
 import { parseAndroidProcCpuInfo, parseAndroidProcDiskstats, parseAndroidProcMemInfo, parseAndroidShellDf, parseAndroidShellProp, parseAndroidShellTop } from './parse';
 
+export const DOGU_ADB_SERVER_PORT = 5050;
+
+export function adbBinary(): string {
+  return pathMap().android.adb;
+}
+
+export function adbPrefix(): string {
+  return `${pathMap().android.adb} -P ${DOGU_ADB_SERVER_PORT}`;
+}
 const execFileAsync = util.promisify(execFile);
 
 type DeviceControlKeycode = PrivateProtocol.DeviceControlKeycode;
@@ -32,7 +41,7 @@ function commandIgnoreError(
   options: child_process.ExecOptions = {},
   printable: Printable = adbLogger,
 ): ReturnType<typeof ChildProcess.execIgnoreError> {
-  return execIgnoreError(`${pathMap().android.adb} -s ${serial} ${command}`, options, printable);
+  return execIgnoreError(`${adbPrefix()} -s ${serial} ${command}`, options, printable);
 }
 
 export function shell(
@@ -45,7 +54,7 @@ export function shell(
   printable: Printable = adbLogger,
 ): ReturnType<typeof ChildProcess.exec> {
   return new Promise((resolve, reject) => {
-    execFile(pathMap().android.adb, ['-s', serial, 'shell', command], options, (error, stdout, stderr) => {
+    execFile(adbBinary(), ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'shell', command], options, (error, stdout, stderr) => {
       if (error) {
         reject(error);
       } else {
@@ -61,7 +70,7 @@ function shellIgnoreError(
   options: child_process.ExecOptions = {},
   printable: Printable = adbLogger,
 ): ReturnType<typeof ChildProcess.execIgnoreError> {
-  return execIgnoreError(`${pathMap().android.adb} -s ${serial} shell "${command}"`, options, printable);
+  return execIgnoreError(`${adbPrefix()} -s ${serial} shell "${command}"`, options, printable);
 }
 
 interface PackageInfo {
@@ -80,11 +89,11 @@ function DefaultPackageInfo(): PackageInfo {
 
 // network
 export async function startServer(): Promise<void> {
-  await exec(`${pathMap().android.adb} start-server`);
+  await exec(`${adbPrefix()} start-server`);
 }
 
 export async function killServer(): Promise<void> {
-  await exec(`${pathMap().android.adb} kill-server`);
+  await exec(`${adbPrefix()} kill-server`);
 }
 
 export async function forward(serial: Serial, hostPort: number, devicePort: number, printable: Printable = adbLogger): Promise<void> {
@@ -95,7 +104,7 @@ export async function forward(serial: Serial, hostPort: number, devicePort: numb
     devicePort,
     random,
   });
-  await exec(`${pathMap().android.adb} -s ${serial} forward tcp:${hostPort} tcp:${devicePort}`);
+  await exec(`${adbPrefix()} -s ${serial} forward tcp:${hostPort} tcp:${devicePort}`);
   printable.verbose?.(`${serial} is forwarding from ${hostPort} to ${devicePort}`);
   adbLogger.verbose(`adb.forward end`, {
     serial,
@@ -112,7 +121,7 @@ export async function unforward(serial: Serial, hostPort: number, option?: { ign
   if (option?.ignore) {
     func = execIgnoreError;
   }
-  await func(`${pathMap().android.adb} -s ${serial} forward --remove tcp:${hostPort}`);
+  await func(`${adbPrefix()} -s ${serial} forward --remove tcp:${hostPort}`);
   printable.verbose?.(`${serial} is unforwarding from ${hostPort} to ${hostPort}`);
   adbLogger.verbose('adb.unforward end', { random });
 }
@@ -120,14 +129,14 @@ export async function unforward(serial: Serial, hostPort: number, option?: { ign
 export async function unforwardall(serial: Serial, printable: Printable = adbLogger): Promise<void> {
   const random = Math.random();
   adbLogger.verbose('adb.unforwardall begin', { serial, random });
-  await exec(`${pathMap().android.adb} -s ${serial} forward --remove-all`);
+  await exec(`${adbPrefix()} -s ${serial} forward --remove-all`);
   adbLogger.verbose('adb.unforwardall end', { serial, random });
 }
 
 export async function logcatClear(serial: Serial, printable?: Printable): ReturnType<typeof ChildProcess.exec> {
   const random = Math.random();
   adbLogger.verbose('adb.logcatClear begin', { serial, random });
-  const result = await exec(`${pathMap().android.adb} -s ${serial} logcat -c`);
+  const result = await exec(`${adbPrefix()} -s ${serial} logcat -c`);
   adbLogger.verbose('adb.logcatClear end', { serial, random });
   return result;
 }
@@ -135,7 +144,7 @@ export async function logcatClear(serial: Serial, printable?: Printable): Return
 export function logcat(serial: Serial, args: string[], handler: LogHandler, printable?: Printable): child_process.ChildProcess {
   const random = Math.random();
   adbLogger.verbose('adb.logcat begin', { serial, args, random });
-  const child = spawn(pathMap().android.adb, ['-s', serial, 'logcat', ...args]);
+  const child = spawn(adbBinary(), ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'logcat', ...args]);
   child.stdout.setEncoding('utf8');
   child.stdout.on('data', (data) => {
     handler.info(stringify(data));
@@ -179,12 +188,12 @@ export async function getPackageOnPort(serial: Serial, port: number): Promise<Pa
 export async function uninstallApp(serial: Serial, appName: string, keep = false, printable: Printable = adbLogger): Promise<void> {
   const random = Math.random();
   adbLogger.verbose('adb.uninstallApp begin', { serial, appName, keep, random });
-  const command = ['-s', serial, 'uninstall'];
+  const command = ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'uninstall'];
   if (keep) {
     command.push('-k');
   }
   command.push(appName);
-  await ChildProcess.spawnAndWait(pathMap().android.adb, command, { timeout: 60000 * 5 }, printable).catch((err) => {
+  await ChildProcess.spawnAndWait(adbBinary(), command, { timeout: 60000 * 5 }, printable).catch((err) => {
     printable.error?.(`ChildProcess.uninstallApp failed`, { error: stringify(err) });
     return;
   });
@@ -192,7 +201,7 @@ export async function uninstallApp(serial: Serial, appName: string, keep = false
 }
 
 function installAppArgsInternal(serial: Serial, apkPath: string): { command: string; args: string[] } {
-  return { command: pathMap().android.adb, args: ['-s', serial, 'install', '-r', '-d', '-t', '-g', apkPath] };
+  return { command: adbBinary(), args: ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'install', '-r', '-d', '-t', '-g', apkPath] };
 }
 
 export async function installApp(serial: Serial, apkPath: string, printable: Printable = adbLogger): Promise<child_process.ChildProcess> {
@@ -234,7 +243,7 @@ export async function runApp(serial: Serial, packageName: string, launchableActi
   const random = Math.random();
   adbLogger.verbose('adb.runApp begin', { serial, packageName, launchableActivityName, random });
   const rv = await ChildProcess.spawnAndWait(
-    pathMap().android.adb,
+    adbPrefix(),
     ['-s', serial, 'shell', 'am', 'start', '-e', 'testkey', 'testvalue', '-n', `${packageName}/${launchableActivityName}`],
     {},
     printable,
@@ -296,9 +305,14 @@ export async function killOnPort(serial: Serial, port: number): Promise<boolean>
 export async function runAppProcess(serial: Serial, localPath: string, destPath: string, main: string, printable: Printable): Promise<child_process.ChildProcess> {
   const random = Math.random();
   adbLogger.verbose('adb.runAppProcess begin', { serial, localPath, destPath, main, random });
-  const pushret = await exec(`${pathMap().android.adb} -s ${serial} push ${localPath} ${destPath}`);
-  const chmodRet = await exec(`${pathMap().android.adb} -s ${serial} shell chmod 777 ${destPath}`);
-  const rv = await ChildProcess.spawn(pathMap().android.adb, ['-s', serial, 'shell', `CLASSPATH=${destPath}`, 'app_process', '/', main], {}, printable);
+  const pushret = await exec(`${adbPrefix()} -s ${serial} push ${localPath} ${destPath}`);
+  const chmodRet = await exec(`${adbPrefix()} -s ${serial} shell chmod 777 ${destPath}`);
+  const rv = await ChildProcess.spawn(
+    adbBinary(),
+    ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'shell', `CLASSPATH=${destPath}`, 'app_process', '/', main],
+    {},
+    printable,
+  );
   adbLogger.verbose('adb.runAppProcess end', { serial, localPath, destPath, main, random });
   return rv;
 }
@@ -307,7 +321,7 @@ export async function runAppProcess(serial: Serial, localPath: string, destPath:
 export async function serials(): Promise<DeviceScanResult[]> {
   const random = Math.random();
   adbLogger.verbose('adb.serials begin', { random });
-  const output = (await execIgnoreError(`${pathMap().android.adb} devices`)).stdout;
+  const output = (await execIgnoreError(`${adbPrefix()} devices`)).stdout;
   adbLogger.verbose('adb.serials', { output });
   const regex = /(\S+)/g;
 
@@ -630,7 +644,7 @@ export async function reset(serial: Serial): Promise<void> {
   adbLogger.verbose('adb.reset begin', { serial, random });
   return new Promise((resolve, reject) => {
     execFile(
-      pathMap().android.adb,
+      adbPrefix(),
       ['-s', serial, 'shell', 'cmd', 'testharness', 'enable'],
       {
         encoding: 'utf8',
@@ -712,7 +726,7 @@ export async function getSystemBarVisibility(serial: Serial): Promise<AndroidSys
     },
   ];
 
-  const { stdout, stderr } = await execFileAsync(pathMap().android.adb, ['-s', serial, 'shell', 'dumpsys', 'window', 'windows'], {
+  const { stdout, stderr } = await execFileAsync(adbBinary(), ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'shell', 'dumpsys', 'window', 'windows'], {
     timeout: 10 * 1000,
   });
   adbLogger.warn('adb.getSystemBarVisibilities', { serial, stderr });
@@ -734,7 +748,7 @@ export async function getSystemBarVisibility(serial: Serial): Promise<AndroidSys
 
 registerBootstrapHandler(__filename, async (): Promise<void> => {
   try {
-    await fs.promises.chmod(pathMap().android.adb, 0o777);
+    await fs.promises.chmod(adbBinary(), 0o777);
   } catch (error) {
     const cause = error instanceof Error ? error : new Error(stringify(error));
     throw new Error(`Failed to chmod adb`, { cause });

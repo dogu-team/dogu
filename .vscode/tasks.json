@@ -8,10 +8,20 @@
       "script": "build",
       "label": "Build: all",
       "group": {
-        "kind": "build",
-        "isDefault": true
+        "kind": "build"
       },
       "problemMatcher": []
+    },
+
+    {
+      "label": "Build: all and nm-space",
+      "type": "shell",
+      "dependsOrder": "sequence",
+      "dependsOn": ["Build: all", "Newbie: NM Space"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
     },
     {
       "type": "npm",

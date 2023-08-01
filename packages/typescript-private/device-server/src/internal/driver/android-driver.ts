@@ -34,7 +34,9 @@ export class AndroidDriver implements DeviceDriver {
     doguLogger: DoguLogger,
   ): Promise<AndroidDriver> {
     const streaming = await PionStreamingService.create(Platform.PLATFORM_ANDROID, env.DOGU_DEVICE_SERVER_PORT);
-    return new AndroidDriver(streaming, appiumService, gamiumService, httpRequestRelayService, appiumEndpointHandlerService, doguLogger);
+    const driver = new AndroidDriver(streaming, appiumService, gamiumService, httpRequestRelayService, appiumEndpointHandlerService, doguLogger);
+    await driver.reset();
+    return driver;
   }
 
   get platform(): Platform {
@@ -72,8 +74,8 @@ export class AndroidDriver implements DeviceDriver {
   }
 
   async reset(): Promise<void> {
-    // await Adb.killServer();
-    // await Adb.startServer();
+    await Adb.killServer();
+    await Adb.startServer();
     return await Promise.resolve();
   }
 }
