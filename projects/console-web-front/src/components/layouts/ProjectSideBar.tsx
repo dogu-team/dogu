@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import useSWR from 'swr';
 import { ProjectBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
-import { AppstoreOutlined, MobileOutlined, SettingOutlined, TeamOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, ArrowLeftOutlined, MobileOutlined, SettingOutlined, TeamOutlined } from '@ant-design/icons';
 import { Layout, Menu, MenuProps, Skeleton } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -21,6 +21,7 @@ import ProfileImage from '../ProfileImage';
 import { flexRowCenteredStyle } from '../../styles/box';
 import CollpaseSidebarMenu from './CollapseSidebarMenu';
 import ProjectSwitch from '../projects/ProjectSwitch';
+import useRefresh from '../../hooks/useRefresh';
 
 type MenuItem = Required<MenuProps>['items'];
 
@@ -33,7 +34,7 @@ const ProjectSideBar = () => {
   const { t } = useTranslation();
   const collapsed = useCollapsibleSidebar((state) => state.collapsed);
 
-  // useRefresh([], mutate);
+  useRefresh(['onProjectUpdated'], mutate);
 
   if (isLoading) {
     return (
@@ -69,13 +70,7 @@ const ProjectSideBar = () => {
               onChange={(project) => router.push(`/dashboard/${orgId}/projects/${project.projectId}/remotes`)}
               selectedProject={data}
             >
-              <SideBarTitle
-                href={`/dashboard/${orgId}`}
-                subTitle={t('organization:sidebarSubTitle')}
-                profileImageUrl={null}
-                name={data.name}
-                accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'sb-title' : undefined}
-              />
+              <SideBarTitle href={`/dashboard/${orgId}`} subTitle={t('organization:sidebarSubTitle')} profileImageUrl={null} name={data.name} accessId="sb-title" />
             </ProjectSwitch>
           ),
     },
@@ -209,6 +204,30 @@ const ProjectSideBar = () => {
     },
   ];
 
+  const bottomItems: MenuProps['items'] = [
+    {
+      key: 'back',
+      icon: collapsed ? (
+        <StyledIconLink selected={false} href={`/dashboard/${orgId}/projects`}>
+          <ArrowLeftOutlined />
+        </StyledIconLink>
+      ) : undefined,
+      label: collapsed ? (
+        <div>
+          <ArrowLeftOutlined />
+          {t('project:tabMenuBackOrganizationTitle')}
+        </div>
+      ) : (
+        <SideBarMenu
+          icon={<ArrowLeftOutlined style={{ fontSize: '1.2rem' }} />}
+          path={`/dashboard/${orgId}/projects`}
+          text={t('project:tabMenuBackOrganizationTitle')}
+          accessId="project-side-bar-back"
+        />
+      ),
+    },
+  ];
+
   return (
     <StyledSider collapsible collapsed={collapsed} trigger={null}>
       <StyledBox>
@@ -217,9 +236,9 @@ const ProjectSideBar = () => {
             <Box>
               <Menu style={{ borderInline: 'none' }} items={items} mode="inline" />
 
-              {/* <div style={{ marginTop: '1rem' }}>
+              <div style={{ marginTop: '1rem' }}>
                 <Menu style={{ borderInline: 'none' }} items={bottomItems} mode="inline" />
-              </div> */}
+              </div>
             </Box>
           </SidebarInner>
         </div>

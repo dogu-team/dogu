@@ -8,6 +8,7 @@
   "tabMenuMemberTitle": "Members",
   "tabMenuRepositoryTitle": "Script Repository",
   "tabMenuSettingTitle": "Settings",
+  "tabMenuBackOrganizationTitle": "Back to organization",
 
   "settingNameInputLabel": "Project name",
   "settingNameInputPH": "Name",
