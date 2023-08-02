@@ -53,6 +53,7 @@ export type EventName =
   | 'onAddDeviceToProjectModalOpened'
   | 'onAddDeviceToProjectModalClosed'
   | 'onProjectDeviceDeleted'
+  | 'onProjectUpdated'
 
   // pipeline
   | 'onRoutineCreated'

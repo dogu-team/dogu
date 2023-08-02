@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import RefreshButton from '../../../../../src/components/buttons/RefreshButton';
 
 import TableListView from '../../../../../src/components/common/TableListView';
-import ProjectLayout from '../../../../../src/components/layouts/ProjectLayout';
+import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 import ProjectApplicationListController from '../../../../../src/components/project-application/ProjectApplicationListController';
 import ProjectApplicationUploadButton from '../../../../../src/components/project-application/ProjectApplicationUploadButton';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from '../../../../../src/hoc/withProject';
@@ -37,7 +37,7 @@ const ProjectAppPage: NextPageWithLayout<WithProjectProps> = ({ project, organiz
 };
 
 ProjectAppPage.getLayout = (page) => {
-  return <ProjectLayout>{page}</ProjectLayout>;
+  return <ProjectLayoutWithSidebar title="Application">{page}</ProjectLayoutWithSidebar>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

@@ -6,11 +6,11 @@ import styled from 'styled-components';
 import { NextPageWithLayout } from 'pages/_app';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import TableListView from 'src/components/common/TableListView';
-import ProjectLayout from 'src/components/layouts/ProjectLayout';
 import DeviceListController from 'src/components/projects/DeviceListController';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
 import { flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
 import Head from 'next/head';
+import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 
 const ProjectDevicePage: NextPageWithLayout<WithProjectProps> = ({ project, organization }) => {
   const { t } = useTranslation();
@@ -38,7 +38,7 @@ const ProjectDevicePage: NextPageWithLayout<WithProjectProps> = ({ project, orga
 };
 
 ProjectDevicePage.getLayout = (page) => {
-  return <ProjectLayout>{page}</ProjectLayout>;
+  return <ProjectLayoutWithSidebar title="Devices">{page}</ProjectLayoutWithSidebar>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

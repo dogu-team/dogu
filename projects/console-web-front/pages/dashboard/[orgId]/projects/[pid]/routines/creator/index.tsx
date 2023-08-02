@@ -5,10 +5,10 @@ import { useEffect } from 'react';
 
 import { NextPageWithLayout } from 'pages/_app';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
-import ProjectLayout from 'src/components/layouts/ProjectLayout';
 import RoutineCreator from 'src/components/routine/editor/RoutineCreator';
 import RoutineGitIntegrationAlert from '../../../../../../../src/components/projects/RoutineGitIntegrationAlert';
 import useGitIntegrationStore from '../../../../../../../src/stores/git-integration';
+import ProjectLayoutWithSidebar from '../../../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 
 const ProjectRoutineCreatorPage: NextPageWithLayout<WithProjectProps> = ({ organization, project, isGitIntegrated }) => {
   const store = useGitIntegrationStore();
@@ -35,7 +35,7 @@ const ProjectRoutineCreatorPage: NextPageWithLayout<WithProjectProps> = ({ organ
 };
 
 ProjectRoutineCreatorPage.getLayout = (page) => {
-  return <ProjectLayout>{page}</ProjectLayout>;
+  return <ProjectLayoutWithSidebar title="Routine">{page}</ProjectLayoutWithSidebar>;
 };
 
 export const getServerSideProps: GetServerSideProps = getProjectPageServerSideProps;

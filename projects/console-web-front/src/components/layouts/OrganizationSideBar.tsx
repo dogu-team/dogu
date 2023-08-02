@@ -88,7 +88,7 @@ const OrganizationSideBar = () => {
     {
       key: 'device-farm',
       icon: collapsed ? (
-        <StyledIconLink selected={router.asPath.startsWith(`/dashboard/${orgId}/device-farm`)} href={`/dashboard/${orgId}/device-farm`}>
+        <StyledIconLink selected={router.asPath.startsWith(`/dashboard/${orgId}/device-farm`)} href={`/dashboard/${orgId}/device-farm/hosts`}>
           <ClusterOutlined />
         </StyledIconLink>
       ) : undefined,
