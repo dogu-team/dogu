@@ -5,6 +5,7 @@ import { ipcMain } from 'electron';
 import pidtree from 'pidtree';
 import { childClientKey, ChildTree, HostAgentConnectionStatus, IChildClient, Key } from '../../src/shares/child';
 import { AppConfigService } from '../app-config/app-config-service';
+import { ExternalService } from '../external/external-service';
 import { FeatureConfigService } from '../feature-config/feature-config-service';
 import { logger } from '../log/logger.instance';
 import { DeviceServerChild } from './instances/device-server';
@@ -15,9 +16,9 @@ import { Child } from './types';
 export class ChildService implements IChildClient {
   static instance: ChildService;
 
-  static open(appConfigService: AppConfigService, featureConfigService: FeatureConfigService) {
+  static open(appConfigService: AppConfigService, featureConfigService: FeatureConfigService, externalService: ExternalService) {
     ChildService.instance = new ChildService(appConfigService, featureConfigService, {
-      'device-server': new DeviceServerChild(appConfigService, featureConfigService),
+      'device-server': new DeviceServerChild(appConfigService, featureConfigService, externalService),
       'host-agent': new HostAgentChild(appConfigService, featureConfigService),
     });
     const { instance } = ChildService;

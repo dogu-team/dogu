@@ -8,6 +8,7 @@ import { ChildProcess } from 'child_process';
 import path from 'path';
 import { deviceServerKey } from '../../../src/shares/child';
 import { AppConfigService } from '../../app-config/app-config-service';
+import { ExternalService } from '../../external/external-service';
 import { FeatureConfigService } from '../../feature-config/feature-config-service';
 import { getLogLevel, logger } from '../../log/logger.instance';
 import { stripAnsi } from '../../log/strip-ansi';
@@ -16,7 +17,11 @@ import { Child, ChildLastError, fillChildOptions } from '../types';
 import { closeChild, openChild } from './lifecycle';
 
 export class DeviceServerChild implements Child {
-  constructor(private readonly appConfigService: AppConfigService, private readonly featureConfigService: FeatureConfigService) {}
+  constructor(
+    private readonly appConfigService: AppConfigService,
+    private readonly featureConfigService: FeatureConfigService,
+    private readonly externalService: ExternalService,
+  ) {}
   private _client: DeviceClient | undefined;
   private _child: ChildProcess | undefined;
   private _lastError: ChildLastError = { code: new ChildCode(Code.CODE_SUCCESS_COMMON_BEGIN_UNSPECIFIED), message: '' };
@@ -84,8 +89,8 @@ export class DeviceServerChild implements Child {
   }
 
   async openable(): Promise<boolean> {
-    const doguIsSupportedPlatformValid = await this.appConfigService.get<boolean>('DOGU_IS_SUPPORTED_PLATFORM_VALID');
-    return !!doguIsSupportedPlatformValid;
+    const isSupportedPlatformValid = await this.externalService.updateIsSupportedPlatformValid();
+    return isSupportedPlatformValid;
   }
 
   async close(): Promise<void> {

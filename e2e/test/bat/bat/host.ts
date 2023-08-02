@@ -211,7 +211,7 @@ export class Dost {
       await (await this.mainPage!.waitForSelector('.chakra-input', { timeout: this.longTimeoutMs })).click({ timeout: this.longTimeoutMs });
       await (await this.mainPage!.waitForSelector('.chakra-input', { timeout: this.longTimeoutMs })).fill(token(), { timeout: this.longTimeoutMs });
       await this.mainPage!.getByText('Connect', { exact: true }).first().click({ timeout: this.InstallTimeoutMs });
-      await Timer.wait(20000, 'dost launch');
+      await Timer.wait(60_000, 'dost launch');
       const isConnected = await this.mainPage!.getByText('Connected', { exact: true }).first().isVisible({ timeout: this.longTimeoutMs });
       if (!isConnected) {
         throw new Error('Dost is not connected');

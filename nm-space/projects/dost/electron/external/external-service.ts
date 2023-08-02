@@ -158,12 +158,13 @@ export class ExternalService {
     return Promise.resolve([...this.units.values()].filter((unit) => unit.isPlatformSupported()).every((unit) => unit.isValid()));
   }
 
-  private async updateIsSupportedPlatformValid(): Promise<void> {
-    const doguIsSupportedPlatformValid = await this.appConfigService.get<boolean>('DOGU_IS_SUPPORTED_PLATFORM_VALID');
-    const isSupportedPlatformValid = await this.isSupportedPlatformValid({ ignoreManual: true });
-    if (doguIsSupportedPlatformValid !== isSupportedPlatformValid) {
-      await this.appConfigService.set('DOGU_IS_SUPPORTED_PLATFORM_VALID', isSupportedPlatformValid);
+  async updateIsSupportedPlatformValid(): Promise<boolean> {
+    const oldValue = await this.appConfigService.get<boolean>('DOGU_IS_SUPPORTED_PLATFORM_VALID');
+    const newValue = await this.isSupportedPlatformValid({ ignoreManual: true });
+    if (oldValue !== newValue) {
+      await this.appConfigService.set('DOGU_IS_SUPPORTED_PLATFORM_VALID', newValue);
     }
+    return newValue;
   }
 
   private async loopUpdateIsSupportedPlatformValid(): Promise<void> {
