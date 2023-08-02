@@ -1,8 +1,9 @@
 import { EventParam, HttpProxyRequest, Param, ParamValue, RequestParam, Result, WebSocketProxyConnect, WebSocketProxyId } from '@dogu-private/console-host-agent';
-import { DeviceId, ErrorResultError, OrganizationId } from '@dogu-private/types';
-import { Class, Instance, loop, Method, stringify, transformAndValidate, WebSocketSpec } from '@dogu-tech/common';
+import { Code, DeviceId, ErrorResultDto, ErrorResultError, OrganizationId } from '@dogu-private/types';
+import { Class, errorify, Instance, loop, Method, stringify, transformAndValidate, WebSocketSpec } from '@dogu-tech/common';
 import { DeviceServerResponseDto } from '@dogu-tech/device-client-common';
 import { Injectable } from '@nestjs/common';
+import { ClassConstructor } from 'class-transformer';
 import { v4 as uuidv4 } from 'uuid';
 import { config } from '../../config';
 import { DoguLogger } from '../logger/logger';
@@ -24,6 +25,24 @@ class WebSocketProxy<S extends Class<S>, R extends Class<R>> {
   receive(): AsyncGenerator<Instance<R>> {
     return this.deviceMessageRelayer.receiveWebSocketMessage(this.organizationId, this.deviceId, this.webSocketProxyId, this.spec);
   }
+}
+
+export interface BatchHttpRequestItem extends Omit<HttpProxyRequest, 'kind'> {
+  responseBodyConstructor: ClassConstructor<object>;
+}
+
+export interface BatchHttpRequest {
+  parallel: boolean;
+  items: BatchHttpRequestItem[];
+}
+
+export interface BatchHttpResponseItem {
+  error?: ErrorResultDto;
+  response?: object;
+}
+
+export interface BatchHttpResponse {
+  items: BatchHttpResponseItem[];
 }
 
 @Injectable()
@@ -112,8 +131,11 @@ export class DeviceMessageRelayer {
     const { value } = result;
     const { kind } = value;
     if (kind === 'ResponseResult') {
-      const deviceHttpResponse = value.value;
-      const { body } = deviceHttpResponse;
+      const responseResultValue = value.value;
+      if (responseResultValue.kind !== 'HttpProxyResponse') {
+        throw new Error(`Unexpected kind ${stringify(responseResultValue.kind)}`);
+      }
+      const { body } = responseResultValue;
       const response = await transformAndValidate(DeviceServerResponseDto, body);
       const responseValue = response.value;
       const { $case } = responseValue;
@@ -132,6 +154,116 @@ export class DeviceMessageRelayer {
     } else if (kind === 'ErrorResult') {
       const errorResult = value.value;
       throw new ErrorResultError(errorResult.code, errorResult.message, errorResult.details);
+    }
+    throw new Error(`Unexpected result kind ${kind}`);
+  }
+
+  async sendBatchHttpRequest(organizationId: OrganizationId, deviceId: DeviceId, batchRequest: BatchHttpRequest): Promise<BatchHttpResponse> {
+    const { items, ...rest } = batchRequest;
+    const requests = batchRequest.items.map((item) => {
+      const { responseBodyConstructor, ...rest } = item;
+      const request: HttpProxyRequest = {
+        kind: 'HttpProxyRequest',
+        ...rest,
+      };
+      return request;
+    });
+    const requestParam: RequestParam = {
+      kind: 'RequestParam',
+      value: {
+        kind: 'BatchHttpProxyRequest',
+        ...rest,
+        requests,
+      },
+    };
+    const result = await this.sendParam(organizationId, deviceId, requestParam);
+    const { value } = result;
+    const { kind } = value;
+    if (kind === 'ErrorResult') {
+      const errorResult = value.value;
+      throw new ErrorResultError(errorResult.code, errorResult.message, errorResult.details);
+    } else if (kind === 'ResponseResult') {
+      const batchHttpResponse = value.value;
+      if (batchHttpResponse.kind !== 'BatchHttpProxyResponse') {
+        throw new Error(`Unexpected kind ${stringify(batchHttpResponse.kind)}`);
+      }
+      const values = batchHttpResponse.values;
+      if (values.length !== items.length) {
+        throw new Error(`Unexpected values.length ${stringify(values.length)}`);
+      }
+      const resultItems: BatchHttpResponseItem[] = [];
+      for (let i = 0; i < values.length; ++i) {
+        const value = values[i];
+        if (value.error) {
+          resultItems.push({
+            error: value.error,
+          });
+          continue;
+        } else if (value.response) {
+          try {
+            const { body } = value.response;
+            const response = await transformAndValidate(DeviceServerResponseDto, body);
+            const responseValue = response.value;
+            const { $case } = responseValue;
+            if ($case === 'error') {
+              const errorResult = responseValue.error;
+              resultItems.push({
+                error: errorResult,
+              });
+              continue;
+            } else if ($case === 'data') {
+              const responseBody = responseValue.data;
+              if (responseBody === undefined) {
+                resultItems.push({
+                  error: {
+                    code: Code.CODE_UNEXPECTED_ERROR,
+                    message: 'Unexpected undefined responseBody',
+                  },
+                });
+                continue;
+              }
+              const { responseBodyConstructor } = items[i];
+              const validated = await transformAndValidate(responseBodyConstructor, responseBody);
+              resultItems.push({
+                response: validated,
+              });
+              continue;
+            } else {
+              resultItems.push({
+                error: {
+                  code: Code.CODE_UNEXPECTED_ERROR,
+                  message: `Unexpected $case ${stringify($case)}`,
+                },
+              });
+              continue;
+            }
+          } catch (error) {
+            const errored = errorify(error);
+            resultItems.push({
+              error: {
+                code: Code.CODE_UNEXPECTED_ERROR,
+                message: errored.message,
+                details: {
+                  stack: errored.stack,
+                  cause: errored.cause,
+                },
+              },
+            });
+            continue;
+          }
+        } else {
+          resultItems.push({
+            error: {
+              code: Code.CODE_UNEXPECTED_ERROR,
+              message: `Unexpected value ${stringify(value)}`,
+            },
+          });
+          continue;
+        }
+      }
+      return {
+        items: resultItems,
+      };
     }
     throw new Error(`Unexpected result kind ${kind}`);
   }

@@ -113,7 +113,7 @@ export const config = {
       timeoutMilliseconds: 60 * 1000,
     },
     message: {
-      intervalMilliseconds: 1000,
+      intervalMilliseconds: 300,
     },
   },
   deviceJob: {

@@ -1,5 +1,7 @@
 import {
   Action,
+  BatchHttpProxyRequest,
+  BatchHttpProxyResponse,
   ErrorResult,
   EventParam,
   EventParamValue,
@@ -58,6 +60,12 @@ export class MessageRequestResponseController {
   @OnConsoleMessage(HttpProxyRequest, HttpProxyResponse)
   async onHttpProxyRequest(@Payload() param: HttpProxyRequest, @Ctx() context: MessageContext): Promise<HttpProxyResponse> {
     const result = await this.httpProxyProcessor.httpRequest(param, context);
+    return result;
+  }
+
+  @OnConsoleMessage(BatchHttpProxyRequest, BatchHttpProxyResponse)
+  async onBatchHttpProxyRequest(@Payload() param: BatchHttpProxyRequest, @Ctx() context: MessageContext): Promise<BatchHttpProxyResponse> {
+    const result = await this.httpProxyProcessor.batchHttpRequest(param, context);
     return result;
   }
 

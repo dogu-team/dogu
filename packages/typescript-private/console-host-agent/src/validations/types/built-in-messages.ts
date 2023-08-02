@@ -1,7 +1,7 @@
 import { DeviceId, ErrorResultDto, OrganizationId, ProjectId, RoutineDeviceJob, RoutineDeviceJobId, RoutineStep, RoutineStepId, Serial } from '@dogu-private/types';
 import { Instance, IsFilledString, IsHttpMethod, IsOptionalObject, IsUrlPath, IsUuidV4, Kindable, Method, OneOf, TransformByKind } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
-import { IsArray, IsIn, IsNumber, IsObject, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsIn, IsNumber, IsObject, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 
 @OneOf()
 export class Run extends Kindable<'Run'> {
@@ -58,6 +58,41 @@ export class HttpProxyResponse extends Kindable<'HttpProxyResponse'> {
   @ValidateNested()
   @Type(() => HttpProxyRequest)
   request!: HttpProxyRequest;
+}
+
+@OneOf()
+export class BatchHttpProxyRequest extends Kindable<'BatchHttpProxyRequest'> {
+  static override kind = 'BatchHttpProxyRequest';
+
+  @IsBoolean()
+  parallel!: boolean;
+
+  @ValidateNested({ each: true })
+  @Type(() => HttpProxyRequest)
+  @IsArray()
+  requests!: HttpProxyRequest[];
+}
+
+export class BatchHttpProxyResponseValue {
+  @ValidateNested()
+  @Type(() => HttpProxyResponse)
+  @IsOptional()
+  response?: HttpProxyResponse;
+
+  @ValidateNested()
+  @Type(() => ErrorResultDto)
+  @IsOptional()
+  error?: ErrorResultDto;
+}
+
+@OneOf()
+export class BatchHttpProxyResponse extends Kindable<'BatchHttpProxyResponse'> {
+  static override kind = 'BatchHttpProxyResponse';
+
+  @ValidateNested({ each: true })
+  @Type(() => BatchHttpProxyResponseValue)
+  @IsArray()
+  values!: BatchHttpProxyResponseValue[];
 }
 
 export type WebSocketProxyId = string;
@@ -163,7 +198,7 @@ export class ErrorResult extends Kindable<'ErrorResult'> {
   value!: ErrorResultDto;
 }
 
-const RequestParamValue = [HttpProxyRequest] as const;
+const RequestParamValue = [HttpProxyRequest, BatchHttpProxyRequest] as const;
 export type RequestParamValue = Instance<(typeof RequestParamValue)[number]>;
 
 @OneOf()
@@ -175,7 +210,7 @@ export class RequestParam extends Kindable<'RequestParam'> {
   value!: RequestParamValue;
 }
 
-const ResponseResultValue = [HttpProxyResponse] as const;
+const ResponseResultValue = [HttpProxyResponse, BatchHttpProxyResponse] as const;
 export type ResponseResultValue = Instance<(typeof ResponseResultValue)[number]>;
 
 @OneOf()
