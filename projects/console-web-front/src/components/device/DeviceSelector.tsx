@@ -68,6 +68,7 @@ const DeviceSelector = ({ devices, selectedDevice, loading, onDeviceSelected, on
       onClick={onClick}
       open={open}
       onBlur={onBlur}
+      dropdownStyle={{ maxHeight: '15rem' }}
     />
   );
 };

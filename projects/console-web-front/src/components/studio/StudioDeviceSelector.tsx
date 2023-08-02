@@ -20,7 +20,8 @@ const StudioDeviceSelector = ({ organizationId, projectId, onSelectedDeviceChang
   const [open, setOpen] = useState(false);
   const { debouncedValue, handleChangeValues } = useDebouncedInputValues();
   const { data, isLoading, error } = useSWR<PageBase<DeviceBase>>(
-    open && `/organizations/${organizationId}/projects/${projectId}/devices?keyword=${debouncedValue}&connectionState=${DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED}`,
+    open &&
+      `/organizations/${organizationId}/projects/${projectId}/devices?keyword=${debouncedValue}&connectionState=${DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED}&offset=99`,
     swrAuthFetcher,
     { revalidateOnFocus: false },
   );
