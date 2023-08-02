@@ -25,7 +25,7 @@ function LiveChat(props: Props) {
           //@ts-ignore
           const fcWidget = window.fcWidget;
           if (fcWidget && fcWidget.user) {
-            fcWidget.user.update({ firstName: props.name, lastName: props.organizationId, email: props.email });
+            fcWidget.user.setProperties({ firstName: props.name, lastName: props.organizationId, email: props.email });
             clearInterval(setUserLoop);
             return;
           }
