@@ -58,7 +58,7 @@ const DeviceStreamingLogContainer = ({ filterValue, deviceLogs, isStopped, onTog
           <Button icon={<DeleteOutlined />} onClick={clearLog} size="small" />
         </ButtonWrapper>
       </MenuBox>
-      <VirtualizeLogContainer<Log> keyExtractor={extractKey} items={deviceLogs} renderItem={renderItem} itemsPerBundle={50} maxHeight={500} scrollEndOnUpdate />
+      <VirtualizeLogContainer<Log> keyExtractor={extractKey} items={deviceLogs} renderItem={renderItem} itemsPerBundle={50} scrollEndOnUpdate />
     </Box>
   );
 };

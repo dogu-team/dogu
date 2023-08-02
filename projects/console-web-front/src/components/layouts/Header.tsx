@@ -17,9 +17,10 @@ interface Props {
   right?: React.ReactNode;
   drawerItem?: React.ReactNode;
   limitWidth?: boolean;
+  image?: React.ReactNode;
 }
 
-const Header = ({ links, right, drawerItem, limitWidth = false }: Props) => {
+const Header = ({ links, right, drawerItem, limitWidth = false, image }: Props) => {
   const { me } = useAuthStore();
   const [open, setOpen] = useState(false);
   const router = useRouter();
@@ -39,9 +40,11 @@ const Header = ({ links, right, drawerItem, limitWidth = false }: Props) => {
           <Inner>
             <FlexAlignCenterBox>
               <Name>
-                <StyledLink href={me ? (router.query.orgId ? `/dashboard/${router.query.orgId}` : `/account/organizations`) : '/'}>
-                  <Image src={resources.icons.logoHorizontal} width={110} height={48} alt="Dogu" priority />
-                </StyledLink>
+                {image ?? (
+                  <StyledLink href={me ? (router.query.orgId ? `/dashboard/${router.query.orgId}` : `/account/organizations`) : '/'}>
+                    <Image src={resources.icons.logoHorizontal} width={105} height={48} alt="Dogu" priority />
+                  </StyledLink>
+                )}
               </Name>
               <LinkMenuContainer>{links}</LinkMenuContainer>
             </FlexAlignCenterBox>
@@ -113,9 +116,6 @@ const Name = styled.h1`
   height: 40px;
   align-items: center;
   user-select: none;
-  &:hover {
-    cursor: pointer;
-  }
 `;
 
 const StyledLink = styled(Link)`

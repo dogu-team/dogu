@@ -100,30 +100,6 @@ const HostItem = ({ host }: HostItemProps) => {
   const basicItems: MenuProps['items'] = [
     {
       label: (
-        <PrimaryLinkButton
-          href={`/dashboard/${router.query.orgId}/devices/streaming/${host.hostDevice?.deviceId}`}
-          disabled={!streamingable}
-          onClick={(e) => {
-            if (!streamingable) {
-              e.preventDefault();
-            }
-          }}
-          onAuxClick={(e) => {
-            if (!streamingable) {
-              e.preventDefault();
-            }
-          }}
-        >
-          {t('device-farm:hostItemStreamingMenu')}
-        </PrimaryLinkButton>
-      ),
-      key: 'stream',
-    },
-    {
-      type: 'divider',
-    },
-    {
-      label: (
         <MenuItemButton danger={false} onClick={() => openEditModal()}>
           {t('device-farm:hostItemEditMenu')}
         </MenuItemButton>

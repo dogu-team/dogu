@@ -29,7 +29,6 @@
     "/dashboard/[orgId]/device-farm/standby-devices": ["organization", "device-farm"],
     "/dashboard/[orgId]/device-farm/hosts": ["organization", "device-farm"],
     "/dashboard/[orgId]/device-farm/tags": ["organization", "device-farm"],
-    "/dashboard/[orgId]/devices/streaming/[deviceId]": ["organization", "device-streaming"],
 
     "/dashboard/[orgId]/projects/[pid]": ["project"],
     "/dashboard/[orgId]/projects/[pid]/get-started": ["project", "project-app"],
@@ -45,6 +44,7 @@
     "/dashboard/[orgId]/projects/[pid]/routines/[pipelineId]/jobs/[jobId]": ["project", "routine"],
     "/dashboard/[orgId]/projects/[pid]/routines/[pipelineId]/jobs/[jobId]/device-jobs/[deviceJobId]": ["project", "routine"],
     "/dashboard/[orgId]/projects/[pid]/routines/[pipelineId]/jobs/[jobId]/device-jobs/[deviceJobId]/profiles": ["project", "routine"],
+    "/dashboard/[orgId]/projects/[pid]/studio/manual": ["project", "device-streaming"],
     "/dashboard/[orgId]/projects/[pid]/settings": ["project"]
   }
 }
