@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
@@ -15,6 +15,7 @@ import APILogo from '@site/static/img/main/api.svg';
 import AutomationLogo from '@site/static/img/main/automation.svg';
 import ReportLogo from '@site/static/img/main/report.svg';
 import DoguLogo from '@site/static/img/main/dogu.svg';
+import initLiveChat from '../livechat/livechat';
 
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
@@ -54,6 +55,10 @@ function HomepageHeader() {
 
 export default function Home(): JSX.Element {
   const { siteConfig } = useDocusaurusContext();
+
+  useEffect(() => {
+    initLiveChat();
+  }, []);
 
   return (
     <Layout
@@ -203,6 +208,19 @@ export default function Home(): JSX.Element {
               <Link to="/routine/actions">
                 <Translate id="main.scriptAndRoutineActionLinkTitle" />
               </Link>
+            </li>
+          </ul>
+        </div>
+        <div className={styles.docsSection}>
+          <h2 className={styles.docsSectionTitle}>
+            <div className={styles.logoWrapper}>
+              <APILogo className={styles.svg} />
+            </div>
+            <Translate id="main.integrationService" />
+          </h2>
+          <ul className={styles.docsSectionListContainer}>
+            <li className={styles.docsSectionListItem}>
+              <Link to="/integration">Integration</Link>
             </li>
           </ul>
         </div>
