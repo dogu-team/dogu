@@ -1,8 +1,9 @@
 import { RecordTestScenarioBase, RecordTestScenarioPropSnake } from '@dogu-private/console';
 import { ProjectId, RecordTestScenarioId, RECORD_TEST_SCENARIO_TABLE_NAME, UserId } from '@dogu-private/types';
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { Project } from './project.entity';
+import { RecordTestCase } from './record-test-case.entity';
 import { User } from './user.entity';
 
 @Entity(RECORD_TEST_SCENARIO_TABLE_NAME)
@@ -13,8 +14,8 @@ export class RecordTestScenario extends BaseEntity implements RecordTestScenario
   @ColumnTemplate.RelationUuid(RecordTestScenarioPropSnake.project_id)
   projectId!: ProjectId;
 
-  @ColumnTemplate.RelationUuid(RecordTestScenarioPropSnake.creator_id, true)
-  creatorId!: UserId | null;
+  @ColumnTemplate.RelationUuid(RecordTestScenarioPropSnake.creator_id)
+  creatorId!: UserId;
 
   @Column({ type: 'character varying', name: RecordTestScenarioPropSnake.name, nullable: false })
   name!: string;
@@ -35,4 +36,7 @@ export class RecordTestScenario extends BaseEntity implements RecordTestScenario
   @ManyToOne(() => Project, (project) => project, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
   @JoinColumn({ name: RecordTestScenarioPropSnake.project_id })
   project?: Project;
+
+  @OneToMany(() => RecordTestCase, (recordTestCase) => recordTestCase.recordTestScenario, { cascade: ['soft-remove'] })
+  recordTestCases?: RecordTestCase[];
 }

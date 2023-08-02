@@ -2,6 +2,7 @@ import { RecordTestStepBase, RecordTestStepPropCamel, RecordTestStepPropSnake } 
 import { RecordTestCaseId, RecordTestStepId, RECORD_TEST_STEP_TABLE_NAME, TEST_STEP_TYPE } from '@dogu-private/types';
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
+import { RecordTestCase } from './record-test-case.entity';
 
 @Entity(RECORD_TEST_STEP_TABLE_NAME)
 export class RecordTestStep extends BaseEntity implements RecordTestStepBase {
@@ -30,10 +31,10 @@ export class RecordTestStep extends BaseEntity implements RecordTestStepBase {
   deletedAt!: Date | null;
 
   @ManyToOne(() => RecordTestStep, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
-  @JoinColumn({ name: RecordTestStepPropCamel.prevRecordTestStepId, referencedColumnName: RecordTestStepPropCamel.recordTestStepId })
+  @JoinColumn({ name: RecordTestStepPropSnake.prev_record_test_step_id, referencedColumnName: RecordTestStepPropCamel.recordTestStepId })
   prevRecordTestStep?: RecordTestStepBase | null;
 
-  @ManyToOne(() => RecordTestStep, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
-  @JoinColumn({ name: RecordTestStepPropCamel.recordTestStepId, referencedColumnName: RecordTestStepPropCamel.recordTestStepId })
-  recordTestStep?: RecordTestStep;
+  @ManyToOne(() => RecordTestCase, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
+  @JoinColumn({ name: RecordTestStepPropSnake.record_test_case_id, referencedColumnName: RecordTestStepPropCamel.recordTestCaseId })
+  recordTestCase?: RecordTestCase;
 }

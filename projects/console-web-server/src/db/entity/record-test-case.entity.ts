@@ -1,8 +1,9 @@
 import { RecordTestCaseBase, RecordTestCasePropCamel, RecordTestCasePropSnake } from '@dogu-private/console';
 import { RecordTestCaseId, RecordTestScenarioId, RECORD_TEST_CASE_TABLE_NAME } from '@dogu-private/types';
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { RecordTestScenario } from './record-test-scenario.entity';
+import { RecordTestStep } from './record-test-step.entity';
 
 @Entity(RECORD_TEST_CASE_TABLE_NAME)
 export class RecordTestCase extends BaseEntity implements RecordTestCaseBase {
@@ -28,10 +29,13 @@ export class RecordTestCase extends BaseEntity implements RecordTestCaseBase {
   deletedAt!: Date | null;
 
   @ManyToOne(() => RecordTestCase, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
-  @JoinColumn({ name: RecordTestCasePropCamel.prevRecordTestCaseId, referencedColumnName: RecordTestCasePropCamel.recordTestCaseId })
+  @JoinColumn({ name: RecordTestCasePropSnake.prev_record_test_case_id, referencedColumnName: RecordTestCasePropCamel.recordTestCaseId })
   prevRecordTestCase?: RecordTestCaseBase | null;
 
   @ManyToOne(() => RecordTestScenario, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
-  @JoinColumn({ name: RecordTestCasePropCamel.recordTestScenarioId, referencedColumnName: RecordTestCasePropCamel.recordTestScenarioId })
+  @JoinColumn({ name: RecordTestCasePropSnake.record_test_scenario_id, referencedColumnName: RecordTestCasePropCamel.recordTestScenarioId })
   recordTestScenario?: RecordTestScenario;
+
+  @OneToMany(() => RecordTestStep, (recordTestStep) => recordTestStep.recordTestCase, { cascade: ['soft-remove'] })
+  recordTestSteps?: RecordTestStep[];
 }
