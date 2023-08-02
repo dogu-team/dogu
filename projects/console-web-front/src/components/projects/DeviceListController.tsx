@@ -42,7 +42,7 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
   const [isDetailModalOpen, openDetailModal, closeDetailModal] = useModal();
   const { t } = useTranslation();
 
-  const streamingable = device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED;
+  const isConnected = device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED;
   const isGlobalDevice = device.isGlobal === 1;
 
   const handleDelete = async () => {
@@ -111,7 +111,26 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
             />
           </OneSpanCell>
           <OneSpanCell style={{ display: 'flex', justifyContent: 'center' }}>
-            <StudioLinkButton href={`/dashboard/${orgId}/projects/${projectId}/studio/manual?deviceId=${device.deviceId}`} target="_blank">
+            <StudioLinkButton
+              href={`/dashboard/${orgId}/projects/${projectId}/studio/manual?deviceId=${device.deviceId}`}
+              target="_blank"
+              isDisabled={!isConnected}
+              onClick={(e) => {
+                if (!isConnected) {
+                  e.preventDefault();
+                }
+              }}
+              onAuxClick={(e) => {
+                if (!isConnected) {
+                  e.preventDefault();
+                }
+              }}
+              onContextMenu={(e) => {
+                if (!isConnected) {
+                  e.preventDefault();
+                }
+              }}
+            >
               <PiMonitorPlayBold style={{ marginRight: '.25rem' }} />
               Studio
             </StudioLinkButton>
@@ -216,17 +235,18 @@ const FlexEndBox = styled(FlexRowBase)`
   justify-content: flex-end;
 `;
 
-const StudioLinkButton = styled(Link)`
+const StudioLinkButton = styled(Link)<{ isDisabled: boolean }>`
   display: inline-flex;
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
-  background-color: ${(props) => props.theme.colorPrimary};
+  background-color: ${(props) => (props.isDisabled ? props.theme.main.colors.gray5 : props.theme.colorPrimary)};
   color: #fff;
   text-align: center;
   align-items: center;
+  cursor: ${(props) => (props.isDisabled ? 'not-allowed' : 'pointer')};
 
   &:hover {
     color: #fff;
-    background-color: ${(props) => props.theme.colorPrimary}bb;
+    background-color: ${(props) => (props.isDisabled ? props.theme.main.colors.gray5 : `${props.theme.colorPrimary}bb`)};
   }
 `;
