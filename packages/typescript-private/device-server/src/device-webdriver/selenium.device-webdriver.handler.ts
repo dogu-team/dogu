@@ -28,7 +28,7 @@ export class SeleniumDeviceWebDriverHandler implements DeviceWebDriverHandler {
       });
     }
 
-    const endpoint = await WebDriverEndPoint.create(request);
+    const endpoint = await WebDriverEndPoint.fromRelayRequest(request);
     const endpointHandler = this.seleniumEndpointHandlerService.getHandler(endpoint.info.type);
     if (endpointHandler) {
       try {

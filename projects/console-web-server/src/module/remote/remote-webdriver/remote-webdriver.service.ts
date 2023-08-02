@@ -27,7 +27,7 @@ import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
 import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
 import { RemoteWebDriverInfo } from '../../../db/entity/remote-webdriver-info.entity';
-import { DeviceMessageRelayer } from '../../device-message/device-message.relayer';
+import { BatchHttpRequest, BatchHttpRequestItem, DeviceMessageRelayer } from '../../device-message/device-message.relayer';
 import { DoguLogger } from '../../logger/logger';
 import { DeviceStatusService } from '../../organization/device/device-status.service';
 import { ApplicationService } from '../../project/application/application.service';
@@ -35,6 +35,15 @@ import { FindProjectApplicationDto } from '../../project/application/dto/applica
 import { RemoteException } from '../common/exception';
 import { WebDriverEndpointHandlerResult } from '../common/type';
 import { RemoteDeviceJobProcessor } from '../processor/remote-device-job-processor';
+import { RemoteWebDriverBatchRequestOptions, RemoteWebDriverBatchResponse } from './remote-webdriver.batch-request-executor';
+
+export type RemoteWebDriverRequestCommonOptions = Pick<WebDriverEndpointHandlerResult, 'organizationId' | 'projectId' | 'deviceId' | 'deviceSerial'> & {
+  headers: HeaderRecord;
+};
+
+export type RemoteWebDriverRequestOptions = RemoteWebDriverRequestCommonOptions & {
+  request: RelayRequest;
+};
 
 @Injectable()
 export class RemoteWebDriverService {
@@ -51,23 +60,51 @@ export class RemoteWebDriverService {
     private readonly logger: DoguLogger,
   ) {}
 
-  async sendRequest(processResult: WebDriverEndpointHandlerResult, headers: HeaderRecord = {}): Promise<RelayResponse> {
+  async sendRequest(options: RemoteWebDriverRequestOptions): Promise<RelayResponse> {
+    const { deviceSerial, organizationId, deviceId, request, headers } = options;
     try {
-      const pathProvider = new DeviceWebDriver.relayHttp.pathProvider(processResult.deviceSerial);
+      const pathProvider = new DeviceWebDriver.relayHttp.pathProvider(deviceSerial);
       const path = DeviceWebDriver.relayHttp.resolvePath(pathProvider);
-      const res = await this.deviceMessageRelayer.sendHttpRequest(
-        processResult.organizationId,
-        processResult.deviceId,
+      const response = await this.deviceMessageRelayer.sendHttpRequest(
+        organizationId,
+        deviceId,
         DeviceWebDriver.relayHttp.method,
         path,
         headers,
         undefined,
-        processResult.request,
+        request,
         DeviceWebDriver.relayHttp.responseBodyData,
       );
-      return res;
-    } catch (e) {
-      throw new RemoteException(HttpStatus.INTERNAL_SERVER_ERROR, e, {});
+      return response;
+    } catch (error) {
+      throw new RemoteException(HttpStatus.INTERNAL_SERVER_ERROR, error, {});
+    }
+  }
+
+  async sendBatchRequest(options: RemoteWebDriverBatchRequestOptions): Promise<RemoteWebDriverBatchResponse> {
+    const { deviceSerial, organizationId, deviceId, requests, headers } = options;
+    try {
+      const pathProvider = new DeviceWebDriver.relayHttp.pathProvider(deviceSerial);
+      const path = DeviceWebDriver.relayHttp.resolvePath(pathProvider);
+      const requestItems = requests.map((request) => {
+        const batchHttpRequestItem: BatchHttpRequestItem = {
+          method: DeviceWebDriver.relayHttp.method,
+          path,
+          headers,
+          body: request,
+          responseBodyConstructor: DeviceWebDriver.relayHttp.responseBodyData,
+        };
+        return batchHttpRequestItem;
+      });
+      const batchHttpRequest: BatchHttpRequest = {
+        parallel: options.parallel,
+        items: requestItems,
+      };
+      const batchHttpResponse = await this.deviceMessageRelayer.sendBatchHttpRequest(organizationId, deviceId, batchHttpRequest);
+      const transformeds = batchHttpResponse.items as RemoteWebDriverBatchResponse;
+      return transformeds;
+    } catch (error) {
+      throw new RemoteException(HttpStatus.INTERNAL_SERVER_ERROR, error, {});
     }
   }
 
@@ -337,7 +374,7 @@ export class RemoteWebDriverService {
   convertRequest(request: Request): RelayRequest {
     const headers = this.convertHeaders(request.headers);
     const query = this.convertQuery(request.query);
-    const subpath = request.url.replace('/remote/wd/hub/', '');
+    const subpath = request.url.replace('/remote/wd/hub', '');
     return {
       path: subpath,
       headers: headers,

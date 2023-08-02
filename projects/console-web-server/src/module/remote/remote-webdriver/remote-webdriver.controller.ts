@@ -11,30 +11,38 @@ import {
   DoguRemoteDeviceJobIdHeader,
   DoguRequestTimeoutHeader,
   HeaderRecord,
+  stringify,
+  toISOStringWithTimezone,
 } from '@dogu-tech/common';
-import { DoguWebDriverCapabilitiesParser, RelayResponse, WebDriverEndPoint } from '@dogu-tech/device-client-common';
-import { All, Controller, Delete, HttpStatus, Inject, Post, Req, Res } from '@nestjs/common';
+import { DoguWebDriverCapabilitiesParser, RelayResponse, WebDriverEndPoint, WebDriverSessionEndpointInfo } from '@dogu-tech/device-client-common';
+import { All, Controller, Delete, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Request, Response } from 'express';
 import { DataSource } from 'typeorm';
 import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
 import { PROJECT_ROLE } from '../../auth/auth.types';
 import { RemoteCaller, RemoteProjectPermission } from '../../auth/decorators';
+import { FeatureFileService } from '../../feature/file/feature-file.service';
 import { DoguLogger } from '../../logger/logger';
 import { RemoteException } from '../common/exception';
 import { WebDriverEndpointHandlerResult } from '../common/type';
 import { RemoteDeviceJobProcessor } from '../processor/remote-device-job-processor';
 import { RemoteService } from '../remote.service';
+import { RemoteWebDriverBatchRequestExecutor } from './remote-webdriver.batch-request-executor';
+import {
+  AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem,
+  GetPageSourceRemoteWebDriverBatchRequestItem,
+  TakeScreenshotRemoteWebDriverBatchRequestItem,
+} from './remote-webdriver.batch-request-items';
 import { onBeforeDeleteSessionResponse, onBeforeNewSessionResponse } from './remote-webdriver.protocols';
-import { RemoteWebDriverService } from './remote-webdriver.service';
+import { RemoteWebDriverRequestOptions, RemoteWebDriverService } from './remote-webdriver.service';
 
 @Controller('/remote/wd/hub')
 export class RemoteWebDriverInfoController {
   constructor(
-    @Inject(RemoteWebDriverService)
     private readonly remoteWebDriverService: RemoteWebDriverService, //
-    @Inject(RemoteService)
     private readonly remoteService: RemoteService,
+    private readonly featureFileService: FeatureFileService,
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly logger: DoguLogger,
@@ -52,7 +60,7 @@ export class RemoteWebDriverInfoController {
     const relayRequest = this.remoteWebDriverService.convertRequest(request);
 
     const doguWebDriverCapabilitiesParser = new DoguWebDriverCapabilitiesParser();
-    const endpoint = await WebDriverEndPoint.create(relayRequest, doguWebDriverCapabilitiesParser).catch((e) => {
+    const endpoint = await WebDriverEndPoint.fromRelayRequest(relayRequest, doguWebDriverCapabilitiesParser).catch((e) => {
       throw new RemoteException(HttpStatus.BAD_REQUEST, e, {});
     });
     if (!doguWebDriverCapabilitiesParser.doguOptions) {
@@ -71,7 +79,11 @@ export class RemoteWebDriverInfoController {
     headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout3minutes.toString();
 
     try {
-      const relayResponse = await this.remoteWebDriverService.sendRequest(processResult, headers);
+      const options: RemoteWebDriverRequestOptions = {
+        ...processResult,
+        headers,
+      };
+      const relayResponse = await this.remoteWebDriverService.sendRequest(options);
       await this.remoteWebDriverService.handleNewSessionResponse(processResult, relayResponse);
       onBeforeNewSessionResponse(relayResponse, processResult);
       this.sendResponse(relayResponse, response);
@@ -92,19 +104,24 @@ export class RemoteWebDriverInfoController {
   @Delete('session/:sessionId')
   async deleteSession(@Req() request: Request, @Res() response: Response): Promise<void> {
     const relayRequest = this.remoteWebDriverService.convertRequest(request);
-    const endpoint = await WebDriverEndPoint.create(relayRequest).catch((e) => {
+    const endpoint = await WebDriverEndPoint.fromRelayRequest(relayRequest).catch((e) => {
       throw new RemoteException(HttpStatus.BAD_REQUEST, e, {});
     });
     if (endpoint.info.type !== 'delete-session') {
       throw new RemoteException(HttpStatus.INTERNAL_SERVER_ERROR, new Error('deleteSession. endpoint type is not delete-session'), {});
     }
+
     const processResult = await this.remoteWebDriverService.handleDeleteSessionRequest(endpoint.info, relayRequest);
     const headers: HeaderRecord = {};
     this.setHeaders(headers, processResult);
     headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout1minutes.toString();
 
     try {
-      const relayResponse = await this.remoteWebDriverService.sendRequest(processResult, headers);
+      const options: RemoteWebDriverRequestOptions = {
+        ...processResult,
+        headers,
+      };
+      const relayResponse = await this.remoteWebDriverService.sendRequest(options);
       await this.remoteWebDriverService.handleDeleteSessionResponse(processResult, relayResponse);
       const resultUrl = await this.remoteService.getResultUrl(processResult.remoteDeviceJobId);
       onBeforeDeleteSessionResponse(relayResponse, resultUrl);
@@ -128,7 +145,7 @@ export class RemoteWebDriverInfoController {
   @All('session/:sessionId/*')
   async process(@Req() request: Request, @Res() response: Response): Promise<void> {
     const relayRequest = this.remoteWebDriverService.convertRequest(request);
-    const endpoint = await WebDriverEndPoint.create(relayRequest).catch((e) => {
+    const endpoint = await WebDriverEndPoint.fromRelayRequest(relayRequest).catch((e) => {
       throw new RemoteException(HttpStatus.BAD_REQUEST, e, {});
     });
     if (endpoint.info.type !== 'session') {
@@ -139,8 +156,14 @@ export class RemoteWebDriverInfoController {
     this.setHeaders(headers, processResult);
     headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout1minutes.toString();
 
+    await this.batchTest(processResult, endpoint.info, headers);
+
     try {
-      const relayResponse = await this.remoteWebDriverService.sendRequest(processResult, headers);
+      const options: RemoteWebDriverRequestOptions = {
+        ...processResult,
+        headers,
+      };
+      const relayResponse = await this.remoteWebDriverService.sendRequest(options);
       this.sendResponse(relayResponse, response);
     } catch (e) {
       const remoteDeviceJob = await this.dataSource.getRepository(RemoteDeviceJob).findOne({ where: { remoteDeviceJobId: processResult.remoteDeviceJobId } });
@@ -172,5 +195,68 @@ export class RemoteWebDriverInfoController {
     if (processResult.applicationFileSize) headers[DoguApplicationFileSizeHeader] = processResult.applicationFileSize.toString();
     if (processResult.browserName) headers[DoguBrowserNameHeader] = processResult.browserName;
     if (processResult.browserVersion) headers[DoguBrowserVersionHeader] = processResult.browserVersion;
+  }
+
+  /**
+   * @deprecated
+   * @description FIXME: henry - this is test code.
+   * 1. get page source
+   * 2. take screenshot
+   * 3. save screenshot to file server
+   */
+  private async batchTest(processResult: WebDriverEndpointHandlerResult, endpointInfo: WebDriverSessionEndpointInfo, headers: HeaderRecord): Promise<void> {
+    const start = Date.now();
+    try {
+      const { sessionId } = endpointInfo;
+      const { organizationId, projectId, deviceId, deviceSerial } = processResult;
+      const batchExecutor = new RemoteWebDriverBatchRequestExecutor(this.remoteWebDriverService, {
+        organizationId,
+        projectId,
+        deviceId,
+        deviceSerial,
+        headers,
+        parallel: true,
+      });
+
+      const getPageSource = new GetPageSourceRemoteWebDriverBatchRequestItem(sessionId);
+      const takeScreenshot = new TakeScreenshotRemoteWebDriverBatchRequestItem(sessionId);
+      const appiumIsKeyboardShown = new AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem(sessionId);
+      batchExecutor.add(takeScreenshot).add(getPageSource).add(appiumIsKeyboardShown);
+      await batchExecutor.execute();
+
+      await takeScreenshot
+        .response()
+        .then(async (buffer) => {
+          const putResult = await this.featureFileService.put({
+            bucketKey: 'organization',
+            key: `remote-device-jobs/${processResult.remoteDeviceJobId}/${toISOStringWithTimezone(new Date(), '-')}.png`,
+            body: buffer,
+            contentType: 'image/png',
+          });
+          this.logger.debug(`TEST: screenshot url: ${putResult.location}`);
+        })
+        .catch((error) => {
+          this.logger.error(`TEST: screenshot error: ${stringify(error)}`);
+        });
+      await getPageSource
+        .response()
+        .then((pageSource) => {
+          this.logger.debug(`TEST: pageSource size: ${pageSource.length}`);
+        })
+        .catch((error) => {
+          this.logger.error(`TEST: pageSource error: ${stringify(error)}`);
+        });
+      await appiumIsKeyboardShown
+        .response()
+        .then((isKeyboardShown) => {
+          this.logger.debug(`TEST: isKeyboardShown: ${isKeyboardShown}`);
+        })
+        .catch((error) => {
+          this.logger.error(`TEST: isKeyboardShown error: ${stringify(error)}`);
+        });
+    } finally {
+      const end = Date.now();
+      this.logger.debug(`TEST: batchTest time: ${end - start}ms`);
+    }
   }
 }

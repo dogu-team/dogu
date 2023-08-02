@@ -12,8 +12,11 @@ import { AuthPayLoad, OrganizationId, ProjectId, UserId } from '@dogu-private/ty
 import { notEmpty } from '@dogu-tech/common';
 import { ExecutionContext, HttpException, HttpStatus } from '@nestjs/common';
 import { Brackets, EntityManager } from 'typeorm';
-import { OrganizationAndUserAndOrganizationRole, ProjectAndUserAndProjectRole, User } from '../../../db/entity/index';
+import { OrganizationAndUserAndOrganizationRole, Project, ProjectAndUserAndProjectRole, Token, User } from '../../../db/entity/index';
+import { OrganizationAccessToken } from '../../../db/entity/organization-access-token.entity';
 import { OrganizationRole } from '../../../db/entity/organization-role.entity';
+import { PersonalAccessToken } from '../../../db/entity/personal-access-token.entity';
+import { ProjectAccessToken } from '../../../db/entity/project-access-token.entity';
 import { ProjectRole } from '../../../db/entity/project-role.entity';
 import { logger } from '../../logger/logger.instance';
 import { EMAIL_VERIFICATION, ORGANIZATION_ROLE, PROJECT_ROLE } from '../auth.types';
@@ -259,5 +262,131 @@ export module UserPermission {
     }
 
     return false;
+  }
+}
+
+export interface ApiPermissionResult {
+  organizationId?: OrganizationId;
+  projectId?: ProjectId;
+  userId?: UserId;
+}
+
+export module ApiPermission {
+  export async function validateOrganizationApiPermission(
+    manager: EntityManager,
+    tokenByRequest: string,
+    controllerRoleType: ORGANIZATION_ROLE,
+    orgIdByRequest: OrganizationId,
+    projectIdByRequest: ProjectId,
+  ): Promise<ApiPermissionResult> {
+    const token = await manager.getRepository(Token).findOne({ where: { token: tokenByRequest } });
+    if (!token) {
+      throw new HttpException(`V1OpenApiProjectGuard. The token is invalid.`, HttpStatus.UNAUTHORIZED);
+    }
+
+    const project = await manager.getRepository(Project).findOne({ where: { projectId: projectIdByRequest } });
+    const orgIdByProject = project?.organizationId;
+
+    // validate by org
+    const orgByToken = await manager.getRepository(OrganizationAccessToken).findOne({ where: { tokenId: token.tokenId } });
+    if (orgByToken && orgByToken.organizationId === orgIdByRequest) {
+      const payload: ApiPermissionResult = {
+        organizationId: orgByToken.organizationId,
+      };
+      return payload;
+    } else if (orgIdByProject && orgByToken && orgByToken.organizationId == orgIdByProject) {
+      const payload: ApiPermissionResult = {
+        organizationId: orgByToken.organizationId,
+      };
+      return payload;
+    }
+
+    // validate by user
+    const userByToken = await manager.getRepository(PersonalAccessToken).findOne({ where: { tokenId: token.tokenId } });
+    if (!userByToken) {
+      throw new HttpException(`Unauthorized`, HttpStatus.UNAUTHORIZED);
+    }
+
+    const userId = userByToken.userId;
+    const orgId = orgIdByProject || orgIdByRequest;
+    const organizationRole = await UserPermission.getOrganizationUserRole(manager, orgId, userId);
+    if (!UserPermission.validateOrganizationRolePermission(organizationRole, controllerRoleType)) {
+      const requiredRoleName = ORGANIZATION_ROLE[controllerRoleType];
+      throw new HttpException(`The user is not a ${requiredRoleName} role of the organization.`, HttpStatus.UNAUTHORIZED);
+    }
+
+    const payload: ApiPermissionResult = {
+      userId,
+    };
+    return payload;
+  }
+
+  export async function validateProjectApiPermission(
+    manager: EntityManager,
+    tokenByRequest: string,
+    controllerRoleType: PROJECT_ROLE,
+    orgIdByRequest: OrganizationId,
+    projectIdByRequest: ProjectId,
+  ): Promise<ApiPermissionResult> {
+    const token = await manager.getRepository(Token).findOne({ where: { token: tokenByRequest } });
+    if (!token) {
+      throw new HttpException(`V1OpenApiProjectGuard. The token is invalid.`, HttpStatus.UNAUTHORIZED);
+    }
+    const project = await manager.getRepository(Project).findOne({ where: { projectId: projectIdByRequest } });
+    const orgIdByProject = project?.organizationId;
+
+    // validate by org
+    const orgByToken = await manager.getRepository(OrganizationAccessToken).findOne({ where: { tokenId: token.tokenId } });
+    if (orgByToken && orgByToken.organizationId === orgIdByRequest) {
+      const payload: ApiPermissionResult = {
+        organizationId: orgByToken.organizationId,
+      };
+      return payload;
+    } else if (orgIdByProject && orgByToken && orgByToken.organizationId == orgIdByProject) {
+      const payload: ApiPermissionResult = {
+        organizationId: orgByToken.organizationId,
+      };
+      return payload;
+    }
+
+    // validate by project
+    const projectByToken = await manager.getRepository(ProjectAccessToken).findOne({ where: { tokenId: token.tokenId } });
+    if (projectByToken && projectByToken.projectId === projectIdByRequest) {
+      const payload: ApiPermissionResult = {
+        projectId: projectByToken.projectId,
+      };
+      return payload;
+    }
+
+    // validate by user
+    const userByToken = await manager.getRepository(PersonalAccessToken).findOne({ where: { tokenId: token.tokenId } });
+    if (!userByToken) {
+      throw new HttpException(`Unauthorized`, HttpStatus.UNAUTHORIZED);
+    }
+
+    const userId = userByToken.userId;
+    const orgId = orgIdByProject || orgIdByRequest;
+    const organizationRole = await UserPermission.getOrganizationUserRole(manager, orgId, userId);
+    if (UserPermission.validateOrganizationRolePermission(organizationRole, ORGANIZATION_ROLE.ADMIN)) {
+      const payload: ApiPermissionResult = {
+        userId: userId,
+      };
+      return payload;
+    }
+
+    const userWithOrgProjectRole = await UserPermission.getUserWithOrganizationRoleAndProjectRoleGroup(manager, orgId, projectIdByRequest, userId);
+    if (!userWithOrgProjectRole) {
+      logger.error(`The user is not a member of the organization.`);
+      throw new HttpException(`The user is not a member of the organization.`, HttpStatus.UNAUTHORIZED);
+    }
+
+    if (!UserPermission.checkProjectPermission(userWithOrgProjectRole, controllerRoleType)) {
+      throw new HttpException(`The user does not have permission to access the project.`, HttpStatus.UNAUTHORIZED);
+    }
+
+    const payload: ApiPermissionResult = {
+      userId: userId,
+    };
+    return payload;
   }
 }

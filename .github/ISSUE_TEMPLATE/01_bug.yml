@@ -32,7 +32,7 @@ body:
     id: version
     attributes:
       label: Version
-      placeholder: Dogu x.y.z (semver) or Dost x.y.z
+      placeholder: Dogu x.y.z (semver) or DoguAgent x.y.z
       description: What version are you using?
     validations:
       required: true

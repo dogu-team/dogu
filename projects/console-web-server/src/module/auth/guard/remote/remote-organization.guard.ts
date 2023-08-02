@@ -5,13 +5,10 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { Request } from 'express';
 import { DataSource } from 'typeorm';
 import { config } from '../../../../config';
-import { OrganizationAccessToken } from '../../../../db/entity/organization-access-token.entity';
-import { PersonalAccessToken } from '../../../../db/entity/personal-access-token.entity';
-import { Token } from '../../../../db/entity/token.entity';
 import { DoguLogger } from '../../../logger/logger';
 import { ORGANIZATION_ROLE, REMOTE_ORGANIZATION_ROLE_KEY } from '../../auth.types';
 import { AuthRemoteService } from '../../service/auth-remote.service';
-import { printLog, UserPermission } from '../common';
+import { ApiPermission, printLog } from '../common';
 
 @Injectable()
 export class RemoteOrganizationGuard implements CanActivate {
@@ -35,51 +32,34 @@ export class RemoteOrganizationGuard implements CanActivate {
     }
 
     const req = ctx.switchToHttp().getRequest<Request>();
+    const orgIdByRequest = this.authRemoteService.getOrganizationId(req);
     const tokenByRequest = this.authRemoteService.getToken(req);
-    if (!tokenByRequest) {
-      throw new HttpException(`RemoteOrganizationGuard. The token is not defined.`, HttpStatus.UNAUTHORIZED);
+
+    const rv = await ApiPermission.validateOrganizationApiPermission(this.dataSource.manager, tokenByRequest, controllerRoleType, orgIdByRequest, '');
+
+    if (rv.organizationId) {
+      const payload: RemotePayload = {
+        organizationId: rv.organizationId,
+        creatorType: CREATOR_TYPE.ORGANIZATION,
+      };
+      req.user = payload;
+      return true;
+    } else if (rv.projectId) {
+      const payload: RemotePayload = {
+        projectId: rv.projectId,
+        creatorType: CREATOR_TYPE.PROJECT,
+      };
+      req.user = payload;
+      return true;
+    } else if (rv.userId) {
+      const payload: RemotePayload = {
+        userId: rv.userId,
+        creatorType: CREATOR_TYPE.USER,
+      };
+      req.user = payload;
+      return true;
+    } else {
+      throw new HttpException(`RemoteOrganizationGuard. The role is not defined.`, HttpStatus.UNAUTHORIZED);
     }
-
-    const token = await this.dataSource.getRepository(Token).findOne({ where: { token: tokenByRequest } });
-    if (!token) {
-      throw new HttpException(`RemoteOrganizationGuard. The token is invalid.`, HttpStatus.UNAUTHORIZED);
-    }
-
-    // validate by org
-    const orgByToken = await this.dataSource.getRepository(OrganizationAccessToken).findOne({ where: { tokenId: token.tokenId } });
-    const orgIdByRequest = this.authRemoteService.getOrganizationId(req)!;
-    if (orgByToken) {
-      const orgId = orgByToken.organizationId;
-      if (orgId === orgIdByRequest) {
-        const payload: RemotePayload = {
-          organizationId: orgIdByRequest,
-          creatorType: CREATOR_TYPE.ORGANIZATION,
-        };
-        req.user = payload;
-        return true;
-      }
-    }
-
-    // validate by user
-    const userByToken = await this.dataSource.getRepository(PersonalAccessToken).findOne({ where: { tokenId: token.tokenId } });
-    if (!userByToken) {
-      throw new HttpException(`Unauthorized`, HttpStatus.UNAUTHORIZED);
-    }
-
-    const userId = userByToken.userId;
-    const organizationRole = await UserPermission.getOrganizationUserRole(this.dataSource.manager, orgIdByRequest, userId);
-    if (!UserPermission.validateOrganizationRolePermission(organizationRole, controllerRoleType)) {
-      const requiredRoleName = ORGANIZATION_ROLE[controllerRoleType];
-      throw new HttpException(`The user is not a ${requiredRoleName} role of the organization.`, HttpStatus.UNAUTHORIZED);
-    }
-
-    const payload: RemotePayload = {
-      userId: userId,
-      creatorType: CREATOR_TYPE.USER,
-    };
-
-    req.user = payload;
-
-    return true;
   }
 }

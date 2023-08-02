@@ -1,4 +1,5 @@
 {
+  "defaultEdition": "enterprise",
   "fileService": "nexus",
   "useSampleProject": true,
   "emailVerification": false,

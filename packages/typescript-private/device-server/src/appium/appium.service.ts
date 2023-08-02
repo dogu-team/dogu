@@ -9,7 +9,7 @@ import util from 'util';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
 import { pathMap } from '../path-map';
-import { AppiumContextKey, AppiumContextProxy, DefaultAppiumContextOptions } from './appium.context';
+import { AppiumContextKey, AppiumContextOptions, AppiumContextProxy, DefaultAppiumContextOptions } from './appium.context';
 
 const execAsync = util.promisify(exec);
 
@@ -41,14 +41,16 @@ export class AppiumService implements OnModuleInit {
   }
 
   createAppiumContext(platform: Platform, serial: Serial, key: AppiumContextKey, serverPort: number): AppiumContextProxy {
-    const context = new AppiumContextProxy({
+    const option: AppiumContextOptions = {
       ...this.defaultAppiumContextOptions,
       service: this,
       platform,
       serial,
       key,
       serverPort,
-    });
+    };
+
+    const context = new AppiumContextProxy(option);
     return context;
   }
 

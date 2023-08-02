@@ -12,7 +12,7 @@ import { Body, Controller, Delete, Get, HttpException, HttpStatus, Inject, Param
 import { FileInterceptor } from '@nestjs/platform-express';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { FeatureConfig } from '../../feature.config';
+import { FEATURE_CONFIG } from '../../feature.config';
 import { EMAIL_VERIFICATION, ORGANIZATION_ROLE } from '../../module/auth/auth.types';
 import { EmailVerification, OrganizationPermission, User } from '../../module/auth/decorators';
 import { ImageFileParser } from '../../utils/file';
@@ -167,7 +167,7 @@ export class OrganizationController {
     @User() userPayload: UserPayload,
     @Body() dto: InviteEmailDto,
   ): Promise<void> {
-    if (FeatureConfig.get('forceInvitation')) {
+    if (FEATURE_CONFIG.get('forceInvitation')) {
       await this.organizationService.forceInviteUser(organizationId, userPayload.userId, dto);
     } else {
       await this.organizationService.sendInviteEmail(organizationId, userPayload.userId, dto);

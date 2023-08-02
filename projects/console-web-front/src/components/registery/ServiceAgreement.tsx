@@ -6,7 +6,7 @@ const ServiceAgreement = () => {
   return (
     <Box>
       <StyledText>
-        <Trans i18nKey="registery:signUpServiceAgreement" components={[<StyledLink key="privacy" href="/service/privacy" target="_blank" />]} />
+        <Trans i18nKey="registery:signUpServiceAgreement" components={[<StyledLink key="privacy" href="https://dogutech.io/services/privacy" target="_blank" />]} />
       </StyledText>
     </Box>
   );

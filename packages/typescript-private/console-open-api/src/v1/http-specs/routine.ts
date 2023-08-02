@@ -6,6 +6,10 @@ const V1RoutineController = new ControllerSpec({
   path: '/v1/projects/:projectId/routines',
 });
 
+export const V1RoutinePipelineWsController = new ControllerSpec({
+  path: '/v1/pipeline-state',
+});
+
 export const V1Routine = {
   controller: V1RoutineController,
 

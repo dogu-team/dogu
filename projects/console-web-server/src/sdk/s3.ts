@@ -2,7 +2,7 @@ import { OrganizationId, ProjectId, RoutineDeviceJobId, RoutineId, RoutinePipeli
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { AWSError, Request, S3 as awsS3 } from 'aws-sdk';
 import { config } from '../config';
-import { FeatureConfig } from '../feature.config';
+import { FEATURE_CONFIG } from '../feature.config';
 
 const s3 = new awsS3({
   credentials: {
@@ -12,7 +12,7 @@ const s3 = new awsS3({
   region: 'ap-northeast-2',
 });
 
-if (FeatureConfig.get('fileService') === 's3') {
+if (FEATURE_CONFIG.get('fileService') === 's3') {
   if (config.aws.keyId === undefined) {
     throw new Error('DOGU_AWS_KEY_ID is undefined');
   }
