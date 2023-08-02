@@ -80,7 +80,6 @@ export * from './dto/project/project-response.dto';
 export * from './dto/project/project.dto';
 export * from './dto/registery/registery-response.dto';
 export * from './dto/registery/registery.dto';
-export * from './dto/remote-webdriver/remote-webdriver.dto';
 export * from './dto/routine/routine.dto';
 export * from './dto/subscribe-user/subscribe-user.dto';
 export * from './dto/team/team-response.dto';
