@@ -33,6 +33,7 @@ const SideBarTitle = ({ href, subTitle, name, profileImageUrl, accessId }: Props
 export default SideBarTitle;
 
 const Box = styled.div`
+  width: 100%;
   transition: all 0.2s;
 `;
 
@@ -50,7 +51,6 @@ const StyledLink = styled.div`
   color: #000;
   padding: 4px 16px;
   border-radius: 4px;
-  cursor: default;
 
   &:hover {
     /* background-color: ${(props) => props.theme.colorPrimary}22; */

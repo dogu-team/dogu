@@ -3,11 +3,13 @@ import styled from 'styled-components';
 import useSWR from 'swr';
 import { ProjectBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
-import { AppstoreOutlined, CaretDownOutlined, MobileOutlined, SettingOutlined, TeamOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, MobileOutlined, SettingOutlined, TeamOutlined } from '@ant-design/icons';
 import { Layout, Menu, MenuProps, Skeleton } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { RiRemoteControlLine } from 'react-icons/ri';
+import { GoWorkflow } from 'react-icons/go';
+import { OrganizationId } from '@dogu-private/types';
 
 import { swrAuthFetcher } from 'src/api';
 import useAuthStore from 'src/stores/auth';
@@ -18,9 +20,7 @@ import SideBarTitle from './SideBarTitle';
 import ProfileImage from '../ProfileImage';
 import { flexRowCenteredStyle } from '../../styles/box';
 import CollpaseSidebarMenu from './CollapseSidebarMenu';
-import { GoWorkflow } from 'react-icons/go';
 import ProjectSwitch from '../projects/ProjectSwitch';
-import { OrganizationId } from '@dogu-private/types';
 
 type MenuItem = Required<MenuProps>['items'];
 
@@ -49,15 +49,26 @@ const ProjectSideBar = () => {
     {
       key: 'home',
       icon: collapsed ? (
-        <OrganizationImageWrapper>
-          <ProfileImage shape="square" size={28} name={data?.name} profileImageUrl={null} />
-        </OrganizationImageWrapper>
+        <ProjectSwitch
+          organizationId={orgId as OrganizationId}
+          onChange={(project) => router.push(`/dashboard/${orgId}/projects/${project.projectId}/remotes`)}
+          selectedProject={data}
+          hideIcon
+        >
+          <OrganizationImageWrapper>
+            <ProfileImage shape="square" size={28} name={data?.name} profileImageUrl={null} />
+          </OrganizationImageWrapper>
+        </ProjectSwitch>
       ) : undefined,
       style: { cursor: 'default' },
       label: collapsed
         ? undefined
         : data && (
-            <ProjectSwitch organizationId={orgId as OrganizationId} onChange={(pid) => {}} selectedProject={data}>
+            <ProjectSwitch
+              organizationId={orgId as OrganizationId}
+              onChange={(project) => router.push(`/dashboard/${orgId}/projects/${project.projectId}/remotes`)}
+              selectedProject={data}
+            >
               <SideBarTitle
                 href={`/dashboard/${orgId}`}
                 subTitle={t('organization:sidebarSubTitle')}

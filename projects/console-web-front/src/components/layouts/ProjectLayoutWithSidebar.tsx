@@ -34,6 +34,7 @@ const SideBar = styled.div<{ offset: number }>`
   overflow-y: auto;
   border-right: 1px solid ${(props) => props.theme.colors.gray2};
   padding-bottom: 1rem;
+  z-index: 1;
 `;
 
 const Content = styled.div<{ hasSidebar: boolean }>`
