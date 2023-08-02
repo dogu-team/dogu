@@ -23,7 +23,7 @@ import { JobUpdater } from './pipeline/job-updator';
 import { PipelineSystemProcessor } from './pipeline/pipeline-system.processor';
 import { PipelineUpdater } from './pipeline/pipeline-updater';
 import { StepUpdater } from './pipeline/step-updater';
-import { CanclePipelineQueue, UpdateDestStateQueue, UpdateDeviceJobStatusQueue, UpdateRemoteDestStateQueue, UpdateStepStatusQueue } from './pipeline/update-pipeline-queue';
+import { CancelPipelineQueue, UpdateDestStateQueue, UpdateDeviceJobStatusQueue, UpdateRemoteDestStateQueue, UpdateStepStatusQueue } from './pipeline/update-pipeline-queue';
 import { RemoteDeviceJobUpdater } from './remote/remote-device-job-updater';
 import { RemoteSystemProcessor } from './remote/remote-system.processor';
 import { UpdateConsumer } from './update-consumers';
@@ -40,7 +40,7 @@ import { UpdateProducer } from './update-producer';
     UpdateProducer,
     UpdateConsumer,
 
-    CanclePipelineQueue,
+    CancelPipelineQueue,
     UpdateStepStatusQueue,
     UpdateDeviceJobStatusQueue,
     UpdateDestStateQueue,
@@ -61,6 +61,6 @@ import { UpdateProducer } from './update-producer';
     HostConnectionUpdater,
     RemoteDeviceJobUpdater,
   ],
-  exports: [CanclePipelineQueue, UpdateStepStatusQueue, UpdateDeviceJobStatusQueue, UpdateDestStateQueue, UpdateRemoteDestStateQueue],
+  exports: [CancelPipelineQueue, UpdateStepStatusQueue, UpdateDeviceJobStatusQueue, UpdateDestStateQueue, UpdateRemoteDestStateQueue],
 })
 export class EventModule {}
