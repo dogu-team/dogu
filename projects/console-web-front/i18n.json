@@ -45,6 +45,7 @@
     "/dashboard/[orgId]/projects/[pid]/routines/[pipelineId]/jobs/[jobId]/device-jobs/[deviceJobId]": ["project", "routine"],
     "/dashboard/[orgId]/projects/[pid]/routines/[pipelineId]/jobs/[jobId]/device-jobs/[deviceJobId]/profiles": ["project", "routine"],
     "/dashboard/[orgId]/projects/[pid]/studio/[deviceId]/manual": ["project", "device-streaming"],
+    "/dashboard/[orgId]/projects/[pid]/studio/[deviceId]/visual": ["project", "device-streaming"],
     "/dashboard/[orgId]/projects/[pid]/settings": ["project"]
   }
 }
