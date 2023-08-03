@@ -69,7 +69,6 @@ const Title = styled.div`
   & > p {
     width: 9rem;
     margin-left: 0.5rem;
-    text-transform: uppercase;
     font-weight: 600;
     text-overflow: ellipsis;
     overflow: hidden;
