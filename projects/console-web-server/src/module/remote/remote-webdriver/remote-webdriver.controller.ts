@@ -31,7 +31,12 @@ import { RemoteService } from '../remote.service';
 import { RemoteWebDriverBatchRequestExecutor } from './remote-webdriver.batch-request-executor';
 import {
   AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem,
+  ElementClickRemoteWebDriverBatchRequestItem,
+  ElementSendKeysRemoteWebDriverBatchRequestItem,
+  FindElementRemoteWebDriverBatchRequestItem,
   GetPageSourceRemoteWebDriverBatchRequestItem,
+  GetTimeoutsRemoteWebDriverBatchRequestItem,
+  PerformActionsRemoteWebDriverBatchRequestItem,
   TakeScreenshotRemoteWebDriverBatchRequestItem,
 } from './remote-webdriver.batch-request-items';
 import { onBeforeDeleteSessionResponse, onBeforeNewSessionResponse } from './remote-webdriver.protocols';
@@ -156,8 +161,6 @@ export class RemoteWebDriverInfoController {
     this.setHeaders(headers, processResult);
     headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout1minutes.toString();
 
-    await this.batchTest(processResult, endpoint.info, headers);
-
     try {
       const options: RemoteWebDriverRequestOptions = {
         ...processResult,
@@ -217,11 +220,10 @@ export class RemoteWebDriverInfoController {
         headers,
         parallel: true,
       });
-
-      const getPageSource = new GetPageSourceRemoteWebDriverBatchRequestItem(sessionId);
-      const takeScreenshot = new TakeScreenshotRemoteWebDriverBatchRequestItem(sessionId);
-      const appiumIsKeyboardShown = new AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem(sessionId);
-      batchExecutor.add(takeScreenshot).add(getPageSource).add(appiumIsKeyboardShown);
+      const getPageSource = new GetPageSourceRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
+      const takeScreenshot = new TakeScreenshotRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
+      const appiumIsKeyboardShown = new AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
+      const findElement = new FindElementRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, 'xpath', '//*');
       await batchExecutor.execute();
 
       await takeScreenshot
@@ -254,6 +256,62 @@ export class RemoteWebDriverInfoController {
         .catch((error) => {
           this.logger.error(`TEST: isKeyboardShown error: ${stringify(error)}`);
         });
+      await findElement
+        .response()
+        .then(async (elementId) => {
+          this.logger.debug(`TEST: findElement: ${stringify(elementId)}`);
+          const batchExecutor = new RemoteWebDriverBatchRequestExecutor(this.remoteWebDriverService, {
+            organizationId,
+            projectId,
+            deviceId,
+            deviceSerial,
+            headers,
+            parallel: true,
+          });
+          const click = new ElementClickRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, elementId);
+          const sendKeys = new ElementSendKeysRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, elementId, 'test');
+          const performActions = new PerformActionsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, []);
+          const getTimeouts = new GetTimeoutsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
+          await batchExecutor.execute();
+
+          await click
+            .response()
+            .then(() => {
+              this.logger.debug(`TEST: click`);
+            })
+            .catch((error) => {
+              this.logger.error(`TEST: click error: ${stringify(error)}`);
+            });
+          await sendKeys
+            .response()
+            .then(() => {
+              this.logger.debug(`TEST: sendKeys`);
+            })
+            .catch((error) => {
+              this.logger.error(`TEST: sendKeys error: ${stringify(error)}`);
+            });
+          await performActions
+            .response()
+            .then(() => {
+              this.logger.debug(`TEST: performActions`);
+            })
+            .catch((error) => {
+              this.logger.error(`TEST: performActions error: ${stringify(error)}`);
+            });
+          await getTimeouts
+            .response()
+            .then((timeouts) => {
+              this.logger.debug(`TEST: getTimeouts: ${stringify(timeouts)}`);
+            })
+            .catch((error) => {
+              this.logger.error(`TEST: getTimeouts error: ${stringify(error)}`);
+            });
+        })
+        .catch((error) => {
+          this.logger.error(`TEST: findElement error: ${stringify(error)}`);
+        });
+    } catch (error) {
+      this.logger.debug(`TEST: batchTest error: ${stringify(error)}`);
     } finally {
       const end = Date.now();
       this.logger.debug(`TEST: batchTest time: ${end - start}ms`);

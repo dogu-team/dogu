@@ -1,13 +1,18 @@
 import { ErrorResultError } from '@dogu-private/types';
 import { IsFilledString, transformAndValidate } from '@dogu-tech/common';
 import { RelayResponse, WebDriverEndPoint } from '@dogu-tech/device-client-common';
-import { IsBoolean } from 'class-validator';
-import { RemoteWebDriverBatchResponseItem } from './remote-webdriver.batch-request-executor';
+import { Type } from 'class-transformer';
+import { Equals, IsBoolean, IsNumber, IsOptional, ValidateNested } from 'class-validator';
+import { RemoteWebDriverBatchRequestExecutor, RemoteWebDriverBatchResponseItem } from './remote-webdriver.batch-request-executor';
 
 type GetResponseItem = () => RemoteWebDriverBatchResponseItem;
 
 export abstract class RemoteWebDriverBatchRequestItem<R = any> {
   private getResponseItem?: GetResponseItem;
+
+  constructor(executor: RemoteWebDriverBatchRequestExecutor) {
+    executor.add(this);
+  }
 
   onAdded(getResponseItem: GetResponseItem): void {
     if (this.getResponseItem) {
@@ -16,7 +21,7 @@ export abstract class RemoteWebDriverBatchRequestItem<R = any> {
     this.getResponseItem = getResponseItem;
   }
 
-  response: () => Promise<R> = () => {
+  async response(): Promise<R> {
     if (!this.getResponseItem) {
       throw new Error('Item is not added to batch executor');
     }
@@ -30,10 +35,15 @@ export abstract class RemoteWebDriverBatchRequestItem<R = any> {
     } else {
       throw new Error('Response item must have error or response');
     }
-  };
+  }
 
   abstract onEndPointFactory(): Promise<WebDriverEndPoint>;
   abstract onResponseCalled(relayResponse: RelayResponse): Promise<R>;
+}
+
+class NullValueResponse {
+  @Equals(null)
+  value!: null;
 }
 
 class TakeScreenshotResponse {
@@ -41,9 +51,12 @@ class TakeScreenshotResponse {
   value!: string;
 }
 
+/**
+ * @see https://w3c.github.io/webdriver/#take-screenshot
+ */
 export class TakeScreenshotRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<Buffer> {
-  constructor(private readonly sessionId: string) {
-    super();
+  constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly sessionId: string) {
+    super(executor);
   }
 
   async onEndPointFactory(): Promise<WebDriverEndPoint> {
@@ -69,9 +82,12 @@ class GetPageSourceResponse {
   value!: string;
 }
 
+/**
+ * @see https://w3c.github.io/webdriver/#get-page-source
+ */
 export class GetPageSourceRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<string> {
-  constructor(private readonly sessionId: string) {
-    super();
+  constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly sessionId: string) {
+    super(executor);
   }
 
   async onEndPointFactory(): Promise<WebDriverEndPoint> {
@@ -92,14 +108,17 @@ export class GetPageSourceRemoteWebDriverBatchRequestItem extends RemoteWebDrive
   }
 }
 
+/**
+ * @see https://github.com/appium/appium/blob/master/packages/base-driver/docs/mjsonwp/protocol-methods.md
+ */
 class AppiumIsKeyboardShownResponse {
   @IsBoolean()
   value!: boolean;
 }
 
 export class AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<boolean> {
-  constructor(private readonly sessionId: string) {
-    super();
+  constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly sessionId: string) {
+    super(executor);
   }
 
   async onEndPointFactory(): Promise<WebDriverEndPoint> {
@@ -117,5 +136,185 @@ export class AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem extends Remote
     }
     const validated = await transformAndValidate(AppiumIsKeyboardShownResponse, relayResponse.resBody);
     return validated.value;
+  }
+}
+
+class FindElementResponseValue {
+  @IsFilledString()
+  ELEMENT!: string;
+}
+
+class FindElementResponse {
+  @ValidateNested()
+  @Type(() => FindElementResponseValue)
+  value!: FindElementResponseValue;
+}
+
+/**
+ * @see https://w3c.github.io/webdriver/#find-element
+ */
+export class FindElementRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<string> {
+  constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly sessionId: string, private readonly using: string, private readonly value: string) {
+    super(executor);
+  }
+
+  async onEndPointFactory(): Promise<WebDriverEndPoint> {
+    return new WebDriverEndPoint({
+      type: 'session',
+      method: 'POST',
+      sessionId: this.sessionId,
+      command: '/element',
+      reqBody: {
+        using: this.using,
+        value: this.value,
+      },
+    });
+  }
+
+  async onResponseCalled(relayResponse: RelayResponse): Promise<string> {
+    if (relayResponse.status !== 200) {
+      throw new Error(`Failed to find element. status: ${relayResponse.status}`);
+    }
+    const validated = await transformAndValidate(FindElementResponse, relayResponse.resBody);
+    return validated.value.ELEMENT;
+  }
+}
+
+/**
+ * @see https://w3c.github.io/webdriver/#element-click
+ */
+export class ElementClickRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<void> {
+  constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly sessionId: string, private readonly elementId: string) {
+    super(executor);
+  }
+
+  async onEndPointFactory(): Promise<WebDriverEndPoint> {
+    return new WebDriverEndPoint({
+      type: 'session',
+      method: 'POST',
+      sessionId: this.sessionId,
+      command: `/element/${this.elementId}/click`,
+    });
+  }
+
+  async onResponseCalled(relayResponse: RelayResponse): Promise<void> {
+    if (relayResponse.status !== 200) {
+      throw new Error(`Failed to click element. status: ${relayResponse.status}`);
+    }
+    await transformAndValidate(NullValueResponse, relayResponse.resBody);
+  }
+}
+
+/**
+ * @see https://w3c.github.io/webdriver/#element-send-keys
+ */
+export class ElementSendKeysRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<void> {
+  constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly sessionId: string, private readonly elementId: string, private readonly text: string) {
+    super(executor);
+  }
+
+  async onEndPointFactory(): Promise<WebDriverEndPoint> {
+    return new WebDriverEndPoint({
+      type: 'session',
+      method: 'POST',
+      sessionId: this.sessionId,
+      command: `/element/${this.elementId}/value`,
+      reqBody: {
+        text: this.text,
+      },
+    });
+  }
+
+  async onResponseCalled(relayResponse: RelayResponse): Promise<void> {
+    if (relayResponse.status !== 200) {
+      throw new Error(`Failed to send keys to element. status: ${relayResponse.status}`);
+    }
+    await transformAndValidate(NullValueResponse, relayResponse.resBody);
+  }
+}
+
+/**
+ * @see https://w3c.github.io/webdriver/#perform-actions
+ */
+export class PerformActionsRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<void> {
+  constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly sessionId: string, private readonly actions: object[]) {
+    super(executor);
+  }
+
+  async onEndPointFactory(): Promise<WebDriverEndPoint> {
+    return new WebDriverEndPoint({
+      type: 'session',
+      method: 'POST',
+      sessionId: this.sessionId,
+      command: '/actions',
+      reqBody: {
+        actions: this.actions,
+      },
+    });
+  }
+
+  async onResponseCalled(relayResponse: RelayResponse): Promise<void> {
+    if (relayResponse.status !== 200) {
+      throw new Error(`Failed to perform actions. status: ${relayResponse.status}`);
+    }
+    await transformAndValidate(NullValueResponse, relayResponse.resBody);
+  }
+}
+
+export class GetTimeoutsResponseValue {
+  @IsNumber()
+  implicit!: number;
+
+  /**
+   * @description selenium only
+   */
+  @IsNumber()
+  @IsOptional()
+  pageLoad?: number;
+
+  /**
+   * @description selenium only
+   */
+  @IsNumber()
+  @IsOptional()
+  script?: number;
+
+  /**
+   * @description appium only
+   */
+  @IsNumber()
+  @IsOptional()
+  command?: number;
+}
+
+export class GetTimeoutsResponse {
+  @ValidateNested()
+  @Type(() => GetTimeoutsResponseValue)
+  value!: GetTimeoutsResponseValue;
+}
+
+/**
+ * @see https://w3c.github.io/webdriver/#get-timeouts
+ */
+export class GetTimeoutsRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<GetTimeoutsResponse> {
+  constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly sessionId: string) {
+    super(executor);
+  }
+
+  async onEndPointFactory(): Promise<WebDriverEndPoint> {
+    return new WebDriverEndPoint({
+      type: 'session',
+      method: 'GET',
+      sessionId: this.sessionId,
+      command: '/timeouts',
+    });
+  }
+
+  async onResponseCalled(relayResponse: RelayResponse): Promise<GetTimeoutsResponse> {
+    if (relayResponse.status !== 200) {
+      throw new Error(`Failed to get timeouts. status: ${relayResponse.status}`);
+    }
+    const validated = await transformAndValidate(GetTimeoutsResponse, relayResponse.resBody);
+    return validated;
   }
 }

@@ -27,6 +27,7 @@ export interface WebDriverSessionEndpointInfo {
   method: Method;
   sessionId: string;
   command: string;
+  reqBody?: Record<string, any>;
 }
 
 export interface WebDriverInvalidEndpointInfo {
@@ -77,6 +78,7 @@ export class WebDriverEndPoint {
           method: this.info.method,
           path: `/session/${this.info.sessionId}${this.info.command}`,
           headers,
+          reqBody: this.info.reqBody,
         };
       case 'invalid':
         throw new Error('invalid endpoint');

@@ -32,6 +32,14 @@ export class RemoteWebDriverBatchRequestExecutor {
   private responseItems: RemoteWebDriverBatchResponseItem[] = [];
 
   add(item: RemoteWebDriverBatchRequestItem): this {
+    if (this.responseItems.length > 0) {
+      throw new Error('Batch request is already executed');
+    }
+
+    if (this.requestItems.includes(item)) {
+      throw new Error('Item is already added to batch executor');
+    }
+
     const size = this.requestItems.push(item);
     const index = size - 1;
     item.onAdded(() => {
