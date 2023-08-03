@@ -19,6 +19,7 @@ export const ChromeBrowser = 'chrome-browser';
 export const FirefoxBrowser = 'firefox-browser';
 export const ChromeDriver = 'chrome-driver';
 export const SeleniumServer = 'selenium-server';
+export const GeckoDriver = 'gecko-driver';
 
 export const ExternalKey = [
   Jdk,
@@ -36,6 +37,7 @@ export const ExternalKey = [
   FirefoxBrowser,
   ChromeDriver,
   SeleniumServer,
+  GeckoDriver,
 ] as const;
 export type ExternalKey = (typeof ExternalKey)[number];
 
