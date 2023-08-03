@@ -57,11 +57,8 @@ export class DeviceRelayService
       throw new Error(`Forward to ${port} failed`);
     }
     const client = new Socket();
-
-    client.on('close', (isError: boolean) => {
-      this.logger.verbose('DeviceRelayService. deviceside socket closed', { isError });
-      closeWebSocketWithTruncateReason(webSocket, 1000, `tcp connection to ${port} closed`);
-    });
+    client.setNoDelay(true);
+    client.setKeepAlive(true);
 
     client.on('data', (data: Buffer) => {
       const base64 = data.toString('base64');
@@ -70,21 +67,30 @@ export class DeviceRelayService
       };
       webSocket.send(JSON.stringify(message));
     });
-    client.setNoDelay(true);
-    client.setKeepAlive(true);
 
-    const isConnected = await new Promise<boolean>((resolve, reject) => {
-      client.once('close', (isError: boolean) => {
-        resolve(false);
+    let isConnected = false;
+    for await (const _ of loop(2000, 5)) {
+      isConnected = await new Promise<boolean>((resolve, reject) => {
+        client.once('close', (isError: boolean) => {
+          resolve(false);
+        });
+        client.connect({ host: '127.0.0.1', port: hostPort }, () => {
+          resolve(true);
+        });
       });
-      client.connect({ host: '127.0.0.1', port: hostPort }, () => {
-        resolve(true);
-      });
-    });
 
-    if (!isConnected) {
-      throw new Error(`Connect to ${hostPort} failed`);
+      if (isConnected) {
+        break;
+      }
     }
+    if (!isConnected) {
+      throw new Error(`connect to device:${port} failed`);
+    }
+
+    client.on('close', (isError: boolean) => {
+      this.logger.verbose('DeviceRelayService. deviceside socket closed', { isError });
+      closeWebSocketWithTruncateReason(webSocket, 1000, `tcp connection to ${port} closed`);
+    });
 
     this.logger.info(`DeviceRelayService.onWebSocketOpen success`, { serial, port });
     return { serial, port, hostPort, client };
