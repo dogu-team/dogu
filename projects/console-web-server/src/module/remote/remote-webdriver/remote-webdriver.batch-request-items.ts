@@ -51,6 +51,9 @@ class TakeScreenshotResponse {
   value!: string;
 }
 
+/**
+ * @see https://w3c.github.io/webdriver/#take-screenshot
+ */
 export class TakeScreenshotRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<Buffer> {
   constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly sessionId: string) {
     super(executor);
@@ -79,6 +82,9 @@ class GetPageSourceResponse {
   value!: string;
 }
 
+/**
+ * @see https://w3c.github.io/webdriver/#get-page-source
+ */
 export class GetPageSourceRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<string> {
   constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly sessionId: string) {
     super(executor);
@@ -102,6 +108,9 @@ export class GetPageSourceRemoteWebDriverBatchRequestItem extends RemoteWebDrive
   }
 }
 
+/**
+ * @see https://github.com/appium/appium/blob/master/packages/base-driver/docs/mjsonwp/protocol-methods.md
+ */
 class AppiumIsKeyboardShownResponse {
   @IsBoolean()
   value!: boolean;
@@ -141,6 +150,9 @@ class FindElementResponse {
   value!: FindElementResponseValue;
 }
 
+/**
+ * @see https://w3c.github.io/webdriver/#find-element
+ */
 export class FindElementRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<string> {
   constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly sessionId: string, private readonly using: string, private readonly value: string) {
     super(executor);
@@ -168,6 +180,9 @@ export class FindElementRemoteWebDriverBatchRequestItem extends RemoteWebDriverB
   }
 }
 
+/**
+ * @see https://w3c.github.io/webdriver/#element-click
+ */
 export class ElementClickRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<void> {
   constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly sessionId: string, private readonly elementId: string) {
     super(executor);
@@ -190,6 +205,9 @@ export class ElementClickRemoteWebDriverBatchRequestItem extends RemoteWebDriver
   }
 }
 
+/**
+ * @see https://w3c.github.io/webdriver/#element-send-keys
+ */
 export class ElementSendKeysRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<void> {
   constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly sessionId: string, private readonly elementId: string, private readonly text: string) {
     super(executor);
@@ -215,6 +233,9 @@ export class ElementSendKeysRemoteWebDriverBatchRequestItem extends RemoteWebDri
   }
 }
 
+/**
+ * @see https://w3c.github.io/webdriver/#perform-actions
+ */
 export class PerformActionsRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<void> {
   constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly sessionId: string, private readonly actions: object[]) {
     super(executor);
@@ -272,6 +293,9 @@ export class GetTimeoutsResponse {
   value!: GetTimeoutsResponseValue;
 }
 
+/**
+ * @see https://w3c.github.io/webdriver/#get-timeouts
+ */
 export class GetTimeoutsRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<GetTimeoutsResponse> {
   constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly sessionId: string) {
     super(executor);
