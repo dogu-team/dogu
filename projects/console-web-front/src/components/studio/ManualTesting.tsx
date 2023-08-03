@@ -111,6 +111,7 @@ const ManualTesting = ({ organization, project, deviceId }: Props) => {
           <ManualTestingMenu />
         </MenuBox>
       }
+      title="Manual Testing"
     />
   );
 };

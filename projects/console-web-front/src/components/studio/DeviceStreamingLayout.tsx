@@ -19,10 +19,8 @@ const ScreenViewer = () => {
   const { videoRef, loading, inspector, device } = useDeviceStreamingContext();
   const tab = (router.query.tab as StreamingTabMenuKey | undefined) ?? StreamingTabMenuKey.INFO;
 
-  const isLandscape = videoRef?.current ? videoRef.current.videoWidth > videoRef.current.videoHeight : false;
-
   return (
-    <VideoWrapper isLandscape={isLandscape}>
+    <VideoWrapper>
       <SelectorBox>
         <Tag color="geekblue" icon={<MobileOutlined />}>
           Device
@@ -53,9 +51,10 @@ export interface DeviceStreamingLayoutProps {
   project: ProjectBase;
   deviceId: DeviceId;
   right: React.ReactNode;
+  title: string;
 }
 
-const DeviceStreamingLayout = ({ project, deviceId, right }: DeviceStreamingLayoutProps) => {
+const DeviceStreamingLayout = ({ project, deviceId, right, title }: DeviceStreamingLayoutProps) => {
   const {
     data: device,
     error: deviceError,
@@ -70,6 +69,9 @@ const DeviceStreamingLayout = ({ project, deviceId, right }: DeviceStreamingLayo
     <DeviceStreaming device={device}>
       <Box>
         <ScreenBox>
+          <TitleBox>
+            <h3>{title}</h3>
+          </TitleBox>
           <ScreenViewer />
         </ScreenBox>
         <ToolBox>
@@ -94,6 +96,7 @@ const ScreenBox = styled.div`
   width: 50%;
   padding: 1rem;
   ${flexRowCenteredStyle}
+  flex-direction: column;
   height: 100%;
 
   border-right: 1px solid #e5e5e5;
@@ -104,9 +107,9 @@ const ToolBox = styled.div`
   width: 50%;
 `;
 
-const VideoWrapper = styled.div<{ isLandscape: boolean }>`
+const VideoWrapper = styled.div`
   flex: 1;
-  width: ${(props) => (props.isLandscape ? '100%' : '80%')};
+  width: 100%;
   height: 95%;
 `;
 
@@ -119,4 +122,17 @@ const SelectorBox = styled.div`
   ${flexRowCenteredStyle}
   width: 100%;
   margin-bottom: 0.5rem;
+`;
+
+const TitleBox = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 0.5rem;
+
+  h3 {
+    font-size: 1.35rem;
+    font-weight: 600;
+    line-height: 1.5;
+  }
 `;

@@ -41,6 +41,7 @@ const StudioLayout = ({ children, project, deviceId, editionType }: Props) => {
                 }}
                 style={{ display: 'block' }}
                 isSelected={router.asPath.includes('manual')}
+                shallow
               >
                 <IconWrapper>
                   <FaRegHandPaper style={{ fontSize: '1.5rem' }} />
