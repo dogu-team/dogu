@@ -22,6 +22,7 @@ export interface OrganizationServerSideProps {
 export interface WithOrganizationProps {
   organization: OrganizationBase;
   mutateOrganization: KeyedMutator<OrganizationBase>;
+  user: UserBase;
 }
 
 export default function withOrganization(WrappedComponents: NextPageWithLayout<WithOrganizationProps>) {
@@ -29,19 +30,20 @@ export default function withOrganization(WrappedComponents: NextPageWithLayout<W
     const router = useRouter();
     const organizationId = router.query.orgId;
     const { data, error, mutate, isLoading } = useSWR<OrganizationBase>(`/organizations/${organizationId}`, swrAuthFetcher, { revalidateOnFocus: false });
+    const { data: user, error: userError, isLoading: userLoading } = useSWR<UserBase>('/registery/check', swrAuthFetcher, { revalidateOnFocus: false });
     useRecentOrgFromSession();
 
-    if (isLoading) {
+    if (isLoading || userLoading) {
       return null;
     }
 
-    if (!data || error) {
+    if (!data || error || !user || userError) {
       return <ErrorBox title="Oops..." desc="Failed to load console" />;
     }
 
     return (
       <SWRConfig value={{ fallback }}>
-        <WrappedComponents organization={data} mutateOrganization={mutate} />
+        <WrappedComponents organization={data} mutateOrganization={mutate} user={user} />
       </SWRConfig>
     );
   };

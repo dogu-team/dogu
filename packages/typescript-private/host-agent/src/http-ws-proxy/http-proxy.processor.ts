@@ -1,4 +1,5 @@
-import { HttpProxyRequest, HttpProxyResponse } from '@dogu-private/console-host-agent';
+import { BatchHttpProxyRequest, BatchHttpProxyResponse, BatchHttpProxyResponseValue, HttpProxyRequest, HttpProxyResponse } from '@dogu-private/console-host-agent';
+import { Code } from '@dogu-private/types';
 import { DefaultHttpOptions, DoguRequestTimeoutHeader, errorify, transformAndValidate } from '@dogu-tech/common';
 import { DeviceServerResponseDto } from '@dogu-tech/device-client';
 import { Injectable } from '@nestjs/common';
@@ -42,6 +43,64 @@ export class HttpProxyProcessor {
         error: errorify(error),
       });
       throw error;
+    }
+  }
+
+  async batchHttpRequest(param: BatchHttpProxyRequest, context: MessageContext): Promise<BatchHttpProxyResponse> {
+    const { requests, parallel } = param;
+    if (parallel) {
+      const results = await Promise.allSettled(requests.map((request) => this.httpRequest(request, context)));
+      const values = results.map((result) => {
+        if (result.status === 'fulfilled') {
+          return {
+            response: result.value,
+          };
+        } else {
+          const errored = errorify(result.reason);
+          return {
+            error: {
+              code: Code.CODE_HOST_AGENT_REQUEST_FAILED,
+              message: errored.message,
+              details: {
+                stack: errored.stack,
+                cause: errored.cause,
+              },
+            },
+          };
+        }
+      });
+      const result: BatchHttpProxyResponse = {
+        kind: 'BatchHttpProxyResponse',
+        values,
+      };
+      return result;
+    } else {
+      const values: BatchHttpProxyResponseValue[] = [];
+      for (const request of requests) {
+        try {
+          const response = await this.httpRequest(request, context);
+          values.push({
+            response,
+          });
+        } catch (error) {
+          const errored = errorify(error);
+          values.push({
+            error: {
+              code: Code.CODE_HOST_AGENT_REQUEST_FAILED,
+              message: errored.message,
+              details: {
+                stack: errored.stack,
+                cause: errored.cause,
+              },
+            },
+          });
+        }
+      }
+      const result: BatchHttpProxyResponse = {
+        kind: 'BatchHttpProxyResponse',
+        values,
+      };
+      return result;
     }
   }
 }

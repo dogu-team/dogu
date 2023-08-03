@@ -2,15 +2,15 @@ import styled from 'styled-components';
 import { GetServerSideProps } from 'next';
 
 import { NextPageWithLayout } from 'pages/_app';
-import ProjectLayout from 'src/components/layouts/ProjectLayout';
 import { redirectWithLocale } from '../../../../../src/ssr/locale';
+import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 
 const ProjectPage: NextPageWithLayout = () => {
   return <div></div>;
 };
 
 ProjectPage.getLayout = (page) => {
-  return <ProjectLayout>{page}</ProjectLayout>;
+  return <ProjectLayoutWithSidebar>{page}</ProjectLayoutWithSidebar>;
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

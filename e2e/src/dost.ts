@@ -1,4 +1,4 @@
-import { newCleanNodeEnv } from '@dogu-tech/node';
+import { killProcess, newCleanNodeEnv } from '@dogu-tech/node';
 import chalk from 'chalk';
 import child_process from 'child_process';
 import fs from 'fs';
@@ -56,6 +56,10 @@ export async function launchDost(): Promise<Page> {
     cwd: path.resolve(pathMap.root, 'nm-space'),
   });
 
+  process.on('exit', () => {
+    killProcess(reactProc.pid);
+  });
+
   reactProc.stdout.on('data', (stdout: string | Buffer) => {
     console.log(`${dostReactColor} ${getClockTime()} ${stdout.toString()}`);
   });
@@ -100,7 +104,12 @@ export async function launchDost(): Promise<Page> {
       console.error(`${dostElectronColor} ${getClockTime()}`, error);
       throw error;
     });
+
   const electronProc = electronApp.process();
+  process.on('exit', () => {
+    killProcess(electronProc.pid);
+  });
+
   electronProc.stdout?.on('data', (stdout: string | Buffer) => {
     console.log(`${dostElectronColor} ${getClockTime()} ${stdout.toString()}`);
   });

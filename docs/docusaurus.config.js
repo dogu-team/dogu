@@ -18,6 +18,12 @@ const config = {
   // If you aren't using GitHub pages, you don't need these.
   organizationName: 'dogu-team', // Usually your GitHub org/user name.
   projectName: 'dogu', // Usually your repo name.
+  scripts: [
+    {
+      src: '//fw-cdn.com/10683920/3497107.js',
+      async: false,
+    },
+  ],
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want

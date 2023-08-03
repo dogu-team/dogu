@@ -4,7 +4,7 @@ import { Body, Controller, Get, Inject, Param, Post, Query } from '@nestjs/commo
 import { PROJECT_ROLE } from '../../auth/auth.types';
 import { ProjectPermission, User } from '../../auth/decorators';
 import { Page } from '../../common/dto/pagination/page';
-import { CancelPipelineEvent, CanclePipelineQueue } from '../../event/pipeline/update-pipeline-queue';
+import { CancelPipelineEvent, CancelPipelineQueue } from '../../event/pipeline/update-pipeline-queue';
 import { CreateInstantPipelineDto, FindAllPipelinesDto } from './dto/pipeline.dto';
 import { PipelineService } from './pipeline.service';
 
@@ -13,8 +13,8 @@ export class PipelineController {
   constructor(
     @Inject(PipelineService)
     private pipelineService: PipelineService,
-    @Inject(CanclePipelineQueue)
-    private readonly cancelPipelineQueue: CanclePipelineQueue,
+    @Inject(CancelPipelineQueue)
+    private readonly cancelPipelineQueue: CancelPipelineQueue,
   ) {}
 
   @Get('')
@@ -85,7 +85,7 @@ export class PipelineController {
     @Param('pipelineId') pipelineId: RoutinePipelineId,
     @User() userPayload: UserPayload,
   ): void {
-    const event: CancelPipelineEvent = new CancelPipelineEvent(organizationId, projectId, pipelineId, userPayload.userId);
+    const event: CancelPipelineEvent = new CancelPipelineEvent(projectId, pipelineId, userPayload.userId);
     this.cancelPipelineQueue.enqueue(event);
   }
 

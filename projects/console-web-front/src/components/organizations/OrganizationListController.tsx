@@ -127,6 +127,7 @@ const OrganizationListController = () => {
   return (
     <Box>
       <List<OrganizationBase>
+        access-id="organization-list"
         dataSource={data.items}
         renderItem={(item) => <OrganizationListItem organization={item} />}
         rowKey={(item) => item.organizationId}

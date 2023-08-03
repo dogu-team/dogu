@@ -8,7 +8,6 @@ import { GetServerSideProps } from 'next';
 
 import { NextPageWithLayout } from 'pages/_app';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
-import ProjectLayout from 'src/components/layouts/ProjectLayout';
 import PipelineListController from 'src/components/pipelines/PipelineListController';
 import TableListView from 'src/components/common/TableListView';
 import RefreshButton from 'src/components/buttons/RefreshButton';
@@ -18,6 +17,7 @@ import RunRoutineButton from 'src/components/pipelines/RunRoutineButton';
 import RoutineInfoContainer from 'src/components/routine/RoutineInfoContainer';
 import { swrAuthFetcher } from 'src/api/index';
 import EditRoutineButton from 'src/components/routine/EditRoutineButton';
+import ProjectLayoutWithSidebar from '../../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 
 const ProjectRoutinePage: NextPageWithLayout<WithProjectProps> = ({ organization, project }) => {
   const router = useRouter();
@@ -55,7 +55,11 @@ const ProjectRoutinePage: NextPageWithLayout<WithProjectProps> = ({ organization
 };
 
 ProjectRoutinePage.getLayout = (page) => {
-  return <ProjectLayout sidebar={<RoutineSideBar isGitIntegrated={page.props.isGitIntegrated} />}>{page}</ProjectLayout>;
+  return (
+    <ProjectLayoutWithSidebar innerSidebar={<RoutineSideBar isGitIntegrated={page.props.isGitIntegrated} />} title="Routine">
+      {page}
+    </ProjectLayoutWithSidebar>
+  );
 };
 
 export const getServerSideProps: GetServerSideProps = getProjectPageServerSideProps;

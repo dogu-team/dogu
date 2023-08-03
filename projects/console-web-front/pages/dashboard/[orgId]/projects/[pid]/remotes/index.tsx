@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import RefreshButton from '../../../../../../src/components/buttons/RefreshButton';
 import TableListView from '../../../../../../src/components/common/TableListView';
-import ProjectLayout from '../../../../../../src/components/layouts/ProjectLayout';
+import ProjectLayoutWithSidebar from '../../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 import RemoteItem from '../../../../../../src/components/remote/RemoteItem';
 import RemoteListController from '../../../../../../src/components/remote/RemoteListController';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from '../../../../../../src/hoc/withProject';
@@ -36,7 +36,7 @@ const RemoteListPage: NextPageWithLayout<WithProjectProps> = ({ organization, pr
 };
 
 RemoteListPage.getLayout = (page) => {
-  return <ProjectLayout>{page}</ProjectLayout>;
+  return <ProjectLayoutWithSidebar title="Remote">{page}</ProjectLayoutWithSidebar>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

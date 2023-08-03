@@ -28,7 +28,7 @@ export const config = {
     },
     message: {
       pull: {
-        intervalMilliseconds: 1000,
+        intervalMilliseconds: 500,
         count: 10,
       },
     },

@@ -83,36 +83,42 @@ export class DeviceWebDriverController {
 
 export function toErrorResultDto(serial: Serial, error: unknown): ErrorResultDto {
   if (isErrorResultError(error)) {
-    return {
+    const dto: ErrorResultDto = {
       code: error.code,
       message: error.message,
       details: error.details,
     };
+    return dto;
   } else if (isFilteredAxiosError(error)) {
-    return {
+    const dto: ErrorResultDto = {
       code: Code.CODE_UNEXPECTED_ERROR,
       message: error.message,
       details: {
         serial,
-      },
-    };
-  } else if (error instanceof Error) {
-    return {
-      code: Code.CODE_UNEXPECTED_ERROR,
-      message: 'Unexpected Error',
-      details: {
-        serial,
         cause: error,
       },
     };
+    return dto;
+  } else if (error instanceof Error) {
+    const dto: ErrorResultDto = {
+      code: Code.CODE_UNEXPECTED_ERROR,
+      message: error.message,
+      details: {
+        serial,
+        cause: error.cause,
+        stack: error.stack,
+      },
+    };
+    return dto;
   } else {
-    return {
+    const dto: ErrorResultDto = {
       code: Code.CODE_UNEXPECTED_ERROR,
       message: `Unexpected Error`,
       details: {
         serial,
-        cause: error,
+        cause: JSON.parse(JSON.stringify(error)),
       },
     };
+    return dto;
   }
 }

@@ -1,12 +1,11 @@
 import { RemoteBase } from '@dogu-private/console';
-import { Statistic } from 'antd';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import { getRemoteInServerSide } from '../../../../../../src/api/remote';
-import ProjectLayout from '../../../../../../src/components/layouts/ProjectLayout';
+import ProjectLayoutWithSidebar from '../../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 import RemoteCreator from '../../../../../../src/components/remote/RemoteCreator';
 import RemoteDestListController from '../../../../../../src/components/remote/RemoteDestListController';
 import RemoteDeviceJobStatitics from '../../../../../../src/components/remote/RemoteDeviceJobStatitics';
@@ -49,7 +48,11 @@ const RemoteItemPage: NextPageWithLayout<WithProjectProps & { remote: RemoteBase
 };
 
 RemoteItemPage.getLayout = (page) => {
-  return <ProjectLayout sidebar={<RemoteSidebar remote={page.props.remote} />}>{page}</ProjectLayout>;
+  return (
+    <ProjectLayoutWithSidebar innerSidebar={<RemoteSidebar remote={page.props.remote} />} title="Remote">
+      {page}
+    </ProjectLayoutWithSidebar>
+  );
 };
 
 export const getServerSideProps: GetServerSideProps<ProjectServerSideProps & { remote: RemoteBase }> = async (context) => {

@@ -15,7 +15,7 @@ import { PipelineRunner } from '../../routine/pipeline/processor/runner/pipeline
 import { StepRunner } from '../../routine/pipeline/processor/runner/step-runner';
 import {
   CancelPipelineEvent,
-  CanclePipelineQueue,
+  CancelPipelineQueue,
   UpdateDestStateEvent,
   UpdateDestStateQueue,
   UpdateDeviceJobStatusEvent,
@@ -41,8 +41,8 @@ export class ExternalEventUpdater {
     @Inject(DeviceJobRunner)
     private readonly deviceJobRunner: DeviceJobRunner,
 
-    @Inject(CanclePipelineQueue)
-    private readonly canclePipelineQueue: CanclePipelineQueue,
+    @Inject(CancelPipelineQueue)
+    private readonly cancelPipelineQueue: CancelPipelineQueue,
     @Inject(UpdateDeviceJobStatusQueue)
     private readonly updateDeviceJobStatusQueue: UpdateDeviceJobStatusQueue,
     @Inject(UpdateStepStatusQueue)
@@ -74,7 +74,7 @@ export class ExternalEventUpdater {
   }
 
   private async consumeCancelPipelineQueue(): Promise<void> {
-    const cancelPipelineEvents = this.canclePipelineQueue.drain();
+    const cancelPipelineEvents = this.cancelPipelineQueue.drain();
     if (cancelPipelineEvents.length === 0) {
       return;
     }

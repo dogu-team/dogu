@@ -1,44 +1,27 @@
 import { Layout } from 'antd';
 import styled from 'styled-components';
-import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
 
 import H4 from 'src/components/common/headings/H4';
-import useAuth from 'src/hooks/useAuth';
 import ConsoleBasicLayout from './ConsoleBasicLayout';
 
-interface Props {
+export interface ConsoleLayoutProps {
   children: React.ReactNode;
   sidebar: React.ReactNode;
   titleI18nKey?: string;
   title?: string;
+  padding?: string;
 }
 
-const ConsoleLayout = ({ titleI18nKey, children, sidebar, title }: Props) => {
-  const { me, isLoading, error } = useAuth();
-  const router = useRouter();
+const ConsoleLayout = ({ titleI18nKey, children, sidebar, title, padding }: ConsoleLayoutProps) => {
   const { t } = useTranslation();
-
-  if (isLoading) {
-    return null;
-  }
-
-  if (!me || error) {
-    if (!me) {
-      router.push(`/signin?redirect=${router.asPath}`);
-      return null;
-    }
-
-    router.push(`/account/organizations`);
-    return null;
-  }
 
   return (
     <ConsoleBasicLayout>
       <StyledLayout>
         {sidebar}
         <StyledLayoutContent>
-          <PaddingBox>
+          <PaddingBox style={{ padding }}>
             {(title ?? titleI18nKey) && (
               <TitleBox>
                 <H4>{title ?? (titleI18nKey ? t(titleI18nKey) : '')}</H4>

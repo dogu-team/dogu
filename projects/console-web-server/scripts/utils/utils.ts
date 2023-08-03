@@ -136,7 +136,8 @@ export async function spawnWithFindPattern(command: string, args: string[], patt
               resolve();
             })
             .catch((error) => {
-              reject(error);
+              console.error('killChildProcess error', error);
+              resolve();
             });
         }
       }

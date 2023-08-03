@@ -14,6 +14,7 @@ import { logger, rendererLogger } from './log/logger.instance';
 })();
 
 import { errorify } from '@dogu-tech/common';
+import { killSelfProcess } from '@dogu-tech/node';
 import * as Sentry from '@sentry/electron/main';
 import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import electronDl from 'electron-dl';
@@ -81,7 +82,7 @@ app.whenReady().then(async () => {
   WindowService.open();
   StdLogCallbackService.open(WindowService.instance);
   await ExternalService.open(DotEnvConfigService.instance, StdLogCallbackService.instance, AppConfigService.instance, WindowService.instance);
-  ChildService.open(AppConfigService.instance, FeatureConfigService.instance);
+  ChildService.open(AppConfigService.instance, FeatureConfigService.instance, ExternalService.instance);
   const token = (await AppConfigService.instance.get('DOGU_HOST_TOKEN')) as string;
   if (token && token.length > 0) {
     ChildService.instance.connect(token).catch((err) => logger.error('main connect error', err));
@@ -109,18 +110,22 @@ process.on('unhandledRejection', async (reason, promise) => {
   logger.error('unhandledRejection', { reason, promise });
 });
 
+const cleanup = () => {
+  killSelfProcess();
+};
+
 const quitSignalAndEvents = ['beforeExit', 'exit', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGKILL', 'SIGSTOP', 'SIGABRT'];
 for (const event of quitSignalAndEvents) {
   process.on(event, async (code) => {
-    logger.info(event, { event, code });
-    await ChildService.close();
+    logger.info(`handle ${event}`, { event, code });
+    cleanup();
   });
 }
 
 const quitSignalAndAppEvents = ['before-quit'] as const;
 for (const event of quitSignalAndAppEvents) {
   app.on(event, async (event: Event) => {
-    logger.info(event, { event });
-    await ChildService.close();
+    logger.info(`handle ${event}`, { event });
+    cleanup();
   });
 }

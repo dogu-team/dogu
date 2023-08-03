@@ -8,6 +8,7 @@
   "tabMenuMemberTitle": "멤버",
   "tabMenuRepositoryTitle": "스크립트 저장소",
   "tabMenuSettingTitle": "설정",
+  "tabMenuBackOrganizationTitle": "조직으로 돌아가기",
 
   "settingNameInputLabel": "프로젝트 이름",
   "settingNameInputPH": "이름",

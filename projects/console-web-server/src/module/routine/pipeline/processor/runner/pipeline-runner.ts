@@ -190,7 +190,7 @@ export class PipelineRunner {
     }
   }
 
-  async cancelPipeline(projectId: ProjectId, pipelineId: RoutinePipelineId, cancelerId: UserId): Promise<void> {
+  async cancelPipeline(projectId: ProjectId, pipelineId: RoutinePipelineId, cancelerId: UserId | null): Promise<void> {
     await this.dataSource.transaction(async (manager) => {
       const pipeline = await this.pipelineService.findPipelineAndSubDatasById(manager, pipelineId);
       if (!pipeline) {

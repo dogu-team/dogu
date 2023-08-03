@@ -10,11 +10,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { AxiosError } from 'axios';
 import Trans from 'next-translate/Trans';
 import Head from 'next/head';
+import { shallow } from 'zustand/shallow';
 
 import { NextPageWithLayout } from 'pages/_app';
 import { deleteProject, getProjectAccessToken, regenerateProjectAccessToken, updateProject } from 'src/api/project';
 import { getErrorMessage } from 'src/utils/error';
-import ProjectLayout from 'src/components/layouts/ProjectLayout';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
 import { sendErrorNotification, sendSuccessNotification } from '../../../../../src/utils/antd';
 import DangerZone from '../../../../../src/components/common/boxes/DangerZone';
@@ -22,12 +22,15 @@ import GitIntegrationDangerButton from '../../../../../src/components/projects/G
 import TokenCopyInput from '../../../../../src/components/common/TokenCopyInput';
 import RegenerateTokenButton from '../../../../../src/components/common/RegenerateTokenButton';
 import AccessTokenButton from '../../../../../src/components/common/AccessTokenButton';
+import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/ProjectLayoutWithSidebar';
+import useEventStore from '../../../../../src/stores/events';
 
 const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, organization, mutateProject }) => {
   const [editingProject, setEditingProject] = useState<ProjectBase>(project);
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation('project');
   const router = useRouter();
+  const fireEvent = useEventStore((state) => state.fireEvent, shallow);
 
   useEffect(() => {
     if (project) {
@@ -45,6 +48,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
       const data = await updateProject(organization.organizationId, project.projectId, { name: editingProject?.name, description: editingProject?.description });
       mutateProject(data, false);
       sendSuccessNotification(t('project:projectUpdateSuccessMsg'));
+      fireEvent('onProjectUpdated');
     } catch (e) {
       if (e instanceof AxiosError) {
         sendErrorNotification(t('project:projectUpdateFailedMsg', { reason: getErrorMessage(e) }));
@@ -168,7 +172,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
 };
 
 ProjectSettingPage.getLayout = (page) => {
-  return <ProjectLayout>{page}</ProjectLayout>;
+  return <ProjectLayoutWithSidebar title="Settings">{page}</ProjectLayoutWithSidebar>;
 };
 
 export const getServerSideProps: GetServerSideProps = getProjectPageServerSideProps;

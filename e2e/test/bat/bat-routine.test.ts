@@ -83,7 +83,7 @@ Dest.withOptions({
     beforeAll(async () => {
       values.value.HOME_URL = `http://${env.DOGU_E2E_HOST}:${env.DOGU_CONSOLE_WEB_FRONT_PORT}`;
       console.log(`DeviceServerPort ${env.DOGU_DEVICE_SERVER_PORT}`);
-      await ProcessManager.killByPorts([env.DOGU_CONSOLE_WEB_FRONT_PORT, env.DOGU_CONSOLE_WEB_SERVER_PORT]);
+      await ProcessManager.killByPorts([env.DOGU_CONSOLE_WEB_FRONT_PORT, env.DOGU_CONSOLE_WEB_SERVER_PORT, env.DOGU_DEVICE_SERVER_PORT]);
       await ProcessManager.killByNames(['adb']);
     });
 
@@ -451,14 +451,14 @@ Dest.withOptions({
       });
 
       test('Check project creation', async () => {
-        const createdProjectName = await Driver.getText({ xpath: '//*[@access-id="project-layout-project-name"]' });
-        expect(createdProjectName).toBe(values.value.PROJECT_NAME);
+        const createdProjectName = await Driver.getText({ xpath: '//p[@access-id="sb-title"]' });
+        expect(createdProjectName).toBe(values.value.PROJECT_NAME.toUpperCase());
       });
     });
 
     job('Project application upload', () => {
       test('Click app tab', async () => {
-        await Driver.clickElement({ xpath: '//a[@access-id="project-app-tab"]' });
+        await Driver.clickElement({ xpath: '//a[@access-id="project-side-bar-apps"]' });
       });
 
       test('Click upload button', async () => {
@@ -477,7 +477,7 @@ Dest.withOptions({
 
     job('Project member', () => {
       test('Click member tab', async () => {
-        await Driver.clickElement({ xpath: '//a[@access-id="project-member-tab"]' });
+        await Driver.clickElement({ xpath: '//a[@access-id="project-side-bar-members"]' });
       });
 
       test('Add organization member with admin permission', async () => {
@@ -527,15 +527,15 @@ Dest.withOptions({
 
     job('Project settings', () => {
       test('Click settings tab', async () => {
-        await Driver.clickElement({ xpath: '//a[@access-id="project-setting-tab"]' });
+        await Driver.clickElement({ xpath: '//a[@access-id="project-side-bar-settings"]' });
       });
 
       test('Rename project', async () => {
         await Driver.sendKeys({ xpath: `//input[@value="${values.value.PROJECT_NAME}"]` }, '1');
         await Driver.clickElement({ xpath: '//button[@access-id="update-project-profile-btn"]' });
-        await Timer.wait(1000, 'wait for changing project name');
-        const value = await Driver.getText({ xpath: '//a[@access-id="project-layout-project-name"]/h4' });
-        expect(value).toBe(`${values.value.PROJECT_NAME}1`);
+        await Timer.wait(2000, 'wait for changing project name');
+        const value = await Driver.getText({ xpath: '//p[@access-id="sb-title"]' });
+        expect(value).toBe(`${values.value.PROJECT_NAME}1`.toUpperCase());
       });
 
       test('Revert rename project', async () => {
@@ -560,7 +560,7 @@ Dest.withOptions({
 
     job('Host setting', () => {
       test('Go to organization page', async () => {
-        await Driver.clickElement({ xpath: '//*[@access-id="project-layout-org-name"]' });
+        await Driver.clickElement({ xpath: '//a[@access-id="project-side-bar-back"]' });
       });
 
       test('Click device farm menu', async () => {
@@ -921,13 +921,13 @@ Dest.withOptions({
       test('Check global device', async () => {
         await Driver.clickElement({ xpath: '//a[@access-id="side-bar-project"]' });
         await Driver.clickElement({ xpath: '//a[text()="Sample Project"]' });
-        await Driver.clickElement({ xpath: '//a[@access-id="project-device-tab"]' });
+        await Driver.clickElement({ xpath: '//a[@access-id="project-side-bar-devices"]' });
         await Driver.findElement({ xpath: '//span[text()="Public"]' });
         await Driver.findElement({ xpath: '//span[text()="Host"]' });
       });
 
       test('Disable device', async () => {
-        await Driver.clickElement({ xpath: '//*[@access-id="project-layout-org-name"]' });
+        await Driver.clickElement({ xpath: '//*[@access-id="project-side-bar-back"]' });
         await Driver.clickElement({ xpath: '//*[@access-id="side-bar-device-farm"]' });
         await Driver.clickElement({ xpath: '//a[@access-id="org-device-list-tab"]' });
         await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
@@ -936,7 +936,7 @@ Dest.withOptions({
         await Timer.wait(2000, 'wait for changing device setting');
         await Driver.clickElement({ xpath: '//a[@access-id="side-bar-project"]' });
         await Driver.clickElement({ xpath: '//a[text()="Sample Project"]' });
-        await Driver.clickElement({ xpath: '//a[@access-id="project-device-tab"]' });
+        await Driver.clickElement({ xpath: '//a[@access-id="project-side-bar-devices"]' });
         await Driver.findElement({ xpath: '//*[contains(@class, "ant-empty")]' });
       });
     });
@@ -945,7 +945,7 @@ Dest.withOptions({
       const androidDeviceSettingConfig = deviceSettingInfos.find((item) => item.name === 'Android device setting');
       let androidDeviceName = '';
       test('Move to organization page', async () => {
-        await Driver.clickElement({ xpath: '//*[@access-id="project-layout-org-name"]' });
+        await Driver.clickElement({ xpath: '//a[@access-id="project-side-bar-back"]' });
       });
 
       test('Move to device tag menu', async () => {
@@ -989,7 +989,7 @@ Dest.withOptions({
       test('Delete project', async () => {
         await Driver.clickElement({ xpath: '//a[@access-id="side-bar-project"]' });
         await Driver.clickElement({ xpath: '//a[text()="Sample Project"]' });
-        await Driver.clickElement({ xpath: '//a[@access-id="project-setting-tab"]' });
+        await Driver.clickElement({ xpath: '//a[@access-id="project-side-bar-settings"]' });
         await Driver.clickElement({ xpath: '//button[@access-id="delete-project-btn"]' });
         await Driver.clickElement({ xpath: '//button[@id="delete-project-confirm-btn"]' });
       });
@@ -1034,10 +1034,11 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: '//button[@id="remove-org-confirm-btn"]' });
       });
 
-      // test('Check org deletion', async () => {
-      //   await Timer.wait(2000, 'wait for org deletion');
-      //   await Driver.findElement({ xpath: '//*[contains(@class, "ant-empty")]' });
-      // });
+      test('Check org deletion', async () => {
+        await Timer.wait(2000, 'wait for org deletion');
+        const elems = await Driver.findElements({ xpath: '//div[@access-id="organization-list"]//li[contains(@class, "ant-list-item")]' });
+        expect(elems.length).toBe(1);
+      });
     });
 
     afterAll(async () => {

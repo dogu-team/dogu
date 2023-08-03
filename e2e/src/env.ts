@@ -23,6 +23,7 @@ export class E2eEnv {
   @Type(() => Number)
   DOGU_CONSOLE_WEB_SERVER_PORT!: number;
 
-  @IsFilledString()
-  DOGU_DEVICE_SERVER_PORT!: string;
+  @IsNumber()
+  @Type(() => Number)
+  DOGU_DEVICE_SERVER_PORT!: number;
 }
