@@ -13,7 +13,7 @@ import { parseRecord } from '../../../util/parse';
 import { AndroidDfInfo, AndroidProcCpuInfo, AndroidProcDiskstats, AndroidProcMemInfo, AndroidPropInfo, AndroidShellTopInfo } from './info';
 import { parseAndroidProcCpuInfo, parseAndroidProcDiskstats, parseAndroidProcMemInfo, parseAndroidShellDf, parseAndroidShellProp, parseAndroidShellTop } from './parse';
 
-export const DOGU_ADB_SERVER_PORT = 5050;
+export const DOGU_ADB_SERVER_PORT = 5037;
 
 export function adbBinary(): string {
   return pathMap().android.adb;
