@@ -243,8 +243,8 @@ export async function runApp(serial: Serial, packageName: string, launchableActi
   const random = Math.random();
   adbLogger.verbose('adb.runApp begin', { serial, packageName, launchableActivityName, random });
   const rv = await ChildProcess.spawnAndWait(
-    adbPrefix(),
-    ['-s', serial, 'shell', 'am', 'start', '-e', 'testkey', 'testvalue', '-n', `${packageName}/${launchableActivityName}`],
+    adbBinary(),
+    ['-P', `${DOGU_ADB_SERVER_PORT}`, '-s', serial, 'shell', 'am', 'start', '-e', 'testkey', 'testvalue', '-n', `${packageName}/${launchableActivityName}`],
     {},
     printable,
   );
@@ -644,8 +644,8 @@ export async function reset(serial: Serial): Promise<void> {
   adbLogger.verbose('adb.reset begin', { serial, random });
   return new Promise((resolve, reject) => {
     execFile(
-      adbPrefix(),
-      ['-s', serial, 'shell', 'cmd', 'testharness', 'enable'],
+      adbBinary(),
+      ['-P', DOGU_ADB_SERVER_PORT.toString(), '-s', serial, 'shell', 'cmd', 'testharness', 'enable'],
       {
         encoding: 'utf8',
         timeout: 60 * 1000,

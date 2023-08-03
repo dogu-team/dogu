@@ -197,6 +197,11 @@ export class ChromeDriver {
   navigate(): webdriver.Navigation {
     return this.driver.navigate();
   }
+
+  async switchTab(tabIndex: number): Promise<void> {
+    const handles = await this.driver.getAllWindowHandles();
+    await this.driver.switchTo().window(handles[tabIndex]);
+  }
 }
 
 const driver = new ChromeDriver();

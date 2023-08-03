@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import useDeviceClient from '../../hooks/streaming/useDeviceClient';
 import { DeviceStreamingContext } from '../../hooks/streaming/useDeviceStreamingContext';
 import useGamiumClient from '../../hooks/streaming/useGamiumClient';
+import useInspector from '../../hooks/streaming/useInspector';
 import useLocalDeviceDetect from '../../hooks/streaming/useLocalDeviceDetect';
 import useRTCConnection from '../../hooks/streaming/useRTCConnection';
 import { flexRowCenteredStyle } from '../../styles/box';
@@ -30,6 +31,7 @@ const DeviceStreaming = ({ device, children }: Props) => {
   const { loading, deviceRTCCaller, peerConnection, videoRef, error } = useRTCConnection(device, THROTTLE_MS);
   const deviceService = useDeviceClient(peerConnection, THROTTLE_MS);
   const gamiumService = useGamiumClient(peerConnection, device, deviceService.deviceHostClient, deviceService.deviceClient, THROTTLE_MS);
+  const inspector = useInspector(deviceService?.deviceInspector, device ?? null, videoRef);
   const { t } = useTranslation();
 
   if (error) {
@@ -75,6 +77,7 @@ const DeviceStreaming = ({ device, children }: Props) => {
         device: device ?? null,
         isSelf,
         videoRef,
+        inspector,
         updateMode: setMode,
       }}
     >

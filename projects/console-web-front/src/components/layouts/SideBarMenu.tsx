@@ -4,7 +4,7 @@ import styled from 'styled-components';
 
 import useEventStore from 'src/stores/events';
 import { RiExternalLinkLine } from 'react-icons/ri';
-import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../styles/box';
+import { flexRowBaseStyle, flexRowCenteredStyle, flexRowSpaceBetweenStyle } from '../../styles/box';
 
 interface Props {
   text: string;
@@ -71,6 +71,7 @@ const StyledLink = styled(Link)<{ selected: boolean }>`
 `;
 
 const IconWrapper = styled.div`
+  ${flexRowCenteredStyle}
   margin: 0 8px 0 4px;
 `;
 

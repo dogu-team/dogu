@@ -1,7 +1,9 @@
 import { CreateAdminDtoBase, CreateInvitationMemberDtoBase, ResetPasswordWithTokenDtoBase, SignInDtoBase, UserBase } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
+import { GetServerSidePropsContext } from 'next';
 
 import api from '.';
+import { EmptyTokenError, getServersideCookies } from '../utils/auth';
 
 interface Props {
   className?: string;
@@ -57,4 +59,15 @@ export const checkResetPasswordEmailAndToken = async (email: string, token: stri
 
 export const resetPasswordWithToken = async (resetPasswordWithTokenBody: ResetPasswordWithTokenDtoBase) => {
   return await api.post(`/registery/password`, resetPasswordWithTokenBody);
+};
+
+export const getUserInServerSide = async (context: GetServerSidePropsContext) => {
+  const { authToken } = getServersideCookies(context.req.cookies);
+
+  if (authToken) {
+    const { data } = await getMyData(authToken);
+    return data;
+  }
+
+  throw new EmptyTokenError();
 };

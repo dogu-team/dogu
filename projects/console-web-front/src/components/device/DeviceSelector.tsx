@@ -1,15 +1,35 @@
 import { DeviceBase } from '@dogu-private/console';
 import { Select, SelectProps } from 'antd';
 import PlatformIcon from 'src/components/device/PlatformIcon';
-import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from 'src/styles/box';
 import styled from 'styled-components';
+
+import { flexRowBaseStyle } from 'src/styles/box';
+
+interface LabelProps {
+  device: DeviceBase;
+}
+
+const SelectLabel = ({ device }: LabelProps) => {
+  return (
+    <DeviceLabel>
+      <DeviceNameWrapper>
+        <DeviceName>{device.name}</DeviceName>
+        <DeviceModel>{device.modelName ? `${device.modelName}(${device.model})` : device.model}</DeviceModel>
+      </DeviceNameWrapper>
+
+      <Flexbox>
+        <PlatformIcon platform={device.platform} />
+        {device.version}
+      </Flexbox>
+    </DeviceLabel>
+  );
+};
 
 export interface DeviceSelectorProps {
   devices: DeviceBase[];
-  filterValue: string;
   onFilterChanged: (value: string) => void;
   onDeviceSelected: (device: DeviceBase | undefined) => void;
-  defaultSelectedDevice?: DeviceBase;
+  selectedDevice: DeviceBase | undefined;
   loading?: boolean;
   className?: string;
   placeholder?: string;
@@ -18,35 +38,14 @@ export interface DeviceSelectorProps {
   onBlur?: () => void;
 }
 
-const DeviceSelector = ({
-  devices,
-  filterValue,
-  defaultSelectedDevice,
-  loading,
-  onDeviceSelected,
-  onFilterChanged,
-  className,
-  placeholder,
-  open,
-  onClick,
-  onBlur,
-}: DeviceSelectorProps) => {
-  const options: SelectProps['options'] = devices.map((device) => ({
+const DeviceSelector = ({ devices, selectedDevice, loading, onDeviceSelected, onFilterChanged, className, placeholder, open, onClick, onBlur }: DeviceSelectorProps) => {
+  const listOptions: SelectProps['options'] = devices.map((device) => ({
     value: device.deviceId,
-    label: (
-      <DeviceLabel>
-        <DeviceNameWrapper>
-          <DeviceName>{device.name}</DeviceName>
-          <DeviceModel>{device.modelName ? `${device.modelName}(${device.model})` : device.model}</DeviceModel>
-        </DeviceNameWrapper>
-
-        <Flexbox>
-          <PlatformIcon platform={device.platform} />
-          {device.version}
-        </Flexbox>
-      </DeviceLabel>
-    ),
+    label: <SelectLabel device={device} />,
   }));
+  const options: SelectProps['options'] = selectedDevice
+    ? [{ value: selectedDevice.deviceId, label: <SelectLabel device={selectedDevice} /> }, ...listOptions.filter((item) => item.value !== selectedDevice.deviceId)]
+    : listOptions;
 
   return (
     <Select
@@ -55,10 +54,10 @@ const DeviceSelector = ({
       showSearch
       dropdownMatchSelectWidth={false}
       style={{ width: '100%' }}
+      value={selectedDevice?.deviceId}
       placeholder={placeholder}
       onSearch={onFilterChanged}
       filterOption={false}
-      optionLabelProp="label"
       loading={loading}
       onChange={(value) => {
         onDeviceSelected(devices.find((item) => item.deviceId === value));
@@ -69,6 +68,7 @@ const DeviceSelector = ({
       onClick={onClick}
       open={open}
       onBlur={onBlur}
+      dropdownStyle={{ maxHeight: '15rem' }}
     />
   );
 };
