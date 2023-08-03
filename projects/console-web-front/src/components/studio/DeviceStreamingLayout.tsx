@@ -8,7 +8,6 @@ import { swrAuthFetcher } from '../../api';
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 import { flexRowCenteredStyle } from '../../styles/box';
 import { StreamingTabMenuKey } from '../../types/streaming';
-import DeviceSelector from '../device/DeviceSelector';
 import DeviceStreaming from '../streaming/DeviceStreaming';
 import InspectorSelectedNode from '../streaming/InspectorSelectedNode';
 import StudioDeviceSelector from './StudioDeviceSelector';
