@@ -319,6 +319,9 @@
   "main.scriptAndRoutineTitle": {
     "message": "Routine"
   },
+  "main.integrationService": {
+    "message": "Integration Service"
+  },
   "main.scriptAndRoutineActionLinkTitle": {
     "message": "Action"
   },

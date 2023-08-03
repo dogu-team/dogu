@@ -15,6 +15,7 @@ import APILogo from '@site/static/img/main/api.svg';
 import AutomationLogo from '@site/static/img/main/automation.svg';
 import ReportLogo from '@site/static/img/main/report.svg';
 import DoguLogo from '@site/static/img/main/dogu.svg';
+import IntegrationLogo from '@site/static/img/main/integration.svg';
 import initLiveChat from '../livechat/livechat';
 
 function HomepageHeader() {
@@ -214,13 +215,19 @@ export default function Home(): JSX.Element {
         <div className={styles.docsSection}>
           <h2 className={styles.docsSectionTitle}>
             <div className={styles.logoWrapper}>
-              <APILogo className={styles.svg} />
+              <IntegrationLogo className={styles.svg} />
             </div>
             <Translate id="main.integrationService" />
           </h2>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/integration">Integration</Link>
+              <Link to="/integration/cicd/github">Github</Link>
+            </li>
+            <li className={styles.docsSectionListItem}>
+              <Link to="/integration/cicd/jenkins">Jenkins</Link>
+            </li>
+            <li className={styles.docsSectionListItem}>
+              <Link to="/integration/community/slack">Slack</Link>
             </li>
           </ul>
         </div>

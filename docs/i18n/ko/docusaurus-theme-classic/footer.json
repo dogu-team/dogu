@@ -35,10 +35,6 @@
     "message": "테스트 자동화",
     "description": "The label of footer link with label=testAutomation linking to /test-automation"
   },
-  "link.item.label.community": {
-    "message": "커뮤니티",
-    "description": "The label of footer link with label=community linking to /community/slack"
-  },
   "link.item.label.testReport": {
     "message": "테스트 리포트",
     "description": "The label of footer link with label=testReport linking to /test-report"
@@ -58,5 +54,9 @@
   "link.item.label.Download Dogu Agent": {
     "message": "Download Dogu Agent",
     "description": "The label of footer link with label=Download Dogu Agent linking to https://dogutech.io/downloads/dogu-agent"
+  },
+  "link.item.label.Dogu Cloud": {
+    "message": "Dogu Cloud",
+    "description": "The label of footer link with label=Dogu Cloud linking to https://dogutech.io"
   }
 }

@@ -134,7 +134,7 @@ const config = {
             title: 'Services',
             items: [
               {
-                label: 'Dogu Console',
+                label: 'Dogu Cloud',
                 href: 'https://dogutech.io',
               },
               {
