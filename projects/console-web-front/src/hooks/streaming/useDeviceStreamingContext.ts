@@ -6,6 +6,7 @@ import { StreamingMode } from '../../types/device';
 import { StreamingError } from '../../types/streaming';
 import useDeviceClient from './useDeviceClient';
 import useGamiumClient from './useGamiumClient';
+import useInspector from './useInspector';
 
 export interface StreamingContextValue {
   device: DeviceBase | null;
@@ -18,6 +19,7 @@ export interface StreamingContextValue {
   deviceService: ReturnType<typeof useDeviceClient> | null;
   isSelf: boolean;
   videoRef: React.RefObject<HTMLVideoElement> | null;
+  inspector: ReturnType<typeof useInspector> | null;
   updateMode: (mode: StreamingMode) => void;
 }
 
@@ -32,6 +34,7 @@ const defaultContextValue: StreamingContextValue = {
   device: null,
   isSelf: false,
   videoRef: null,
+  inspector: null,
   updateMode: () => {},
 };
 

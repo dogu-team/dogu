@@ -51,7 +51,7 @@ const DeviceJobListController = ({ orgId, projectId, pipelineId, jobId }: Props)
             <NameCell>
               <JobStatusIcon status={item.status} />
               <Name>{item.device?.name}</Name>
-              {item.status === PIPELINE_STATUS.IN_PROGRESS && (
+              {/* {item.status === PIPELINE_STATUS.IN_PROGRESS && (
                 <StyledLink href={`/dashboard/${orgId}/devices/streaming/${item.deviceId}`} target="_blank" onClick={(e) => e.stopPropagation()}>
                   <StyledButton size="small">
                     <LiveCircle />
@@ -59,7 +59,7 @@ const DeviceJobListController = ({ orgId, projectId, pipelineId, jobId }: Props)
                     <Image src={resources.icons.externalLink} width={14} height={14} alt="streaming" />
                   </StyledButton>
                 </StyledLink>
-              )}
+              )} */}
             </NameCell>
 
             <TwoSpanCell>

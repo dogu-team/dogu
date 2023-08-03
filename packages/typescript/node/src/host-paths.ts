@@ -74,6 +74,7 @@ export const HostPaths = {
     },
     browser: {
       browsersPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'browsers'),
+      geckoDriverPath: (): string => path.resolve(HostPaths.external.browser.browsersPath(), process.platform === 'win32' ? 'geckodriver.exe' : 'geckodriver'),
     },
     selenium: {
       seleniumServerPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'selenium/selenium-server.jar'),

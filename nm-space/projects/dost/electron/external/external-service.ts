@@ -13,6 +13,7 @@ import { AndroidSdkExternalUnit } from './units/android-sdk-external-unit';
 import { AppiumExternalUnit } from './units/appium-external-unit';
 import { AppiumUiAutomator2DriverExternalUnit } from './units/appium-uiautomator2-driver-external-unit';
 import { AppiumXcUiTestDriverExternalUnit } from './units/appium-xcuitest-driver-external-unit';
+import { GeckoDriverExternalUnit } from './units/gecko-driver-external-unit';
 import { IdaBuildExternalUnit } from './units/ida-build-external-unit';
 import { JdkExternalUnit } from './units/jdk-external-unit';
 import { LibimobledeviceExternalUnit } from './units/libimobiledevice-external-unit';
@@ -86,6 +87,7 @@ export class ExternalService {
     // this.registerUnit('chrome-browser', (unitCallback) => new ChromeBrowserExternalUnit(this.stdLogCallbackService, unitCallback));
     // this.registerUnit('firefox-browser', (unitCallback) => new FirefoxBrowserExternalUnit(this.stdLogCallbackService, unitCallback));
     // this.registerUnit('chrome-driver', (unitCallback) => new ChromeDriverExternalUnit(this.stdLogCallbackService, unitCallback));
+    this.registerUnit('gecko-driver', (unitCallback) => new GeckoDriverExternalUnit(this.windowService, this.stdLogCallbackService, unitCallback));
     this.registerUnit('selenium-server', (unitCallback) => new SeleniumServerExternalUnit(this.windowService, this.stdLogCallbackService, unitCallback));
   }
 

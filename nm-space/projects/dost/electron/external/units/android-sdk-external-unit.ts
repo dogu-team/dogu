@@ -1,4 +1,4 @@
-import { errorify, PrefixLogger, stringify } from '@dogu-tech/common';
+import { PrefixLogger, stringify } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import { spawn } from 'child_process';
 import compressing from 'compressing';
@@ -161,54 +161,45 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
   }
 
   async install(): Promise<void> {
-    this.unitCallback.onInstallStarted();
-    await this.createDefaultAndroidHomeDir();
-
-    const commandLineToolsSavePath = await this.downloadCommandLineTools();
-    const commandLineToolsUncompressedPath = await this.uncompressCommandLineTools(commandLineToolsSavePath);
-    const commandLineToolsUncompressedDirPath = await this.validateCommandLineToolsDirInUncompressedPath(commandLineToolsUncompressedPath);
-    await this.moveCommandLineTools(commandLineToolsUncompressedDirPath);
-
-    const platformToolsSavePath = await this.downloadPlatformTools();
-    const platformToolsUncompressedPath = await this.uncompressPlatformTools(platformToolsSavePath);
-    const platformToolsUncompressedDirPath = await this.validatePlatformToolsDirInUncompressedPath(platformToolsUncompressedPath);
-    await this.movePlatformTools(platformToolsUncompressedDirPath);
-
-    const sdkManagerPath = await this.ensureSdkManagerPath(HostPaths.external.defaultAndroidHomePath());
-    await this.acceptSdkManagerLicenses(sdkManagerPath);
-    await this.updateSdkManager(sdkManagerPath);
-    await this.downloadBuildTools(sdkManagerPath);
-
-    await this.writeEnv_ANDROID_HOME();
+    let commandLineToolsSavePath = '';
+    let commandLineToolsUncompressedPath = '';
+    let platformToolsSavePath = '';
+    let platformToolsUncompressedPath = '';
     try {
-      this.logger.info('Deleting commandLineToolsUncompressedPath or commandLineToolsSavePath...', {
-        commandLineToolsUncompressedPath,
-        commandLineToolsSavePath,
-      });
-      await fs.promises.rm(commandLineToolsUncompressedPath, { recursive: true, force: true });
-      await fs.promises.unlink(commandLineToolsSavePath);
-    } catch (error) {
-      this.logger.warn('commandLineToolsUncompressedPath or commandLineToolsSavePath delete failed.', {
-        commandLineToolsUncompressedPath,
-        commandLineToolsSavePath,
-        error: errorify(error),
-      });
+      this.unitCallback.onInstallStarted();
+      await this.createDefaultAndroidHomeDir();
+
+      commandLineToolsSavePath = await this.downloadCommandLineTools();
+      commandLineToolsUncompressedPath = await this.uncompressCommandLineTools(commandLineToolsSavePath);
+      const commandLineToolsUncompressedDirPath = await this.validateCommandLineToolsDirInUncompressedPath(commandLineToolsUncompressedPath);
+      await this.moveCommandLineTools(commandLineToolsUncompressedDirPath);
+
+      platformToolsSavePath = await this.downloadPlatformTools();
+      platformToolsUncompressedPath = await this.uncompressPlatformTools(platformToolsSavePath);
+      const platformToolsUncompressedDirPath = await this.validatePlatformToolsDirInUncompressedPath(platformToolsUncompressedPath);
+      await this.movePlatformTools(platformToolsUncompressedDirPath);
+
+      const sdkManagerPath = await this.ensureSdkManagerPath(HostPaths.external.defaultAndroidHomePath());
+      await this.acceptSdkManagerLicenses(sdkManagerPath);
+      await this.updateSdkManager(sdkManagerPath);
+      await this.downloadBuildTools(sdkManagerPath);
+
+      await this.writeEnv_ANDROID_HOME();
+      this.unitCallback.onInstallCompleted();
+    } finally {
+      if (commandLineToolsSavePath) {
+        await fs.promises.rm(commandLineToolsSavePath, { recursive: true, force: true });
+      }
+      if (commandLineToolsUncompressedPath) {
+        await fs.promises.rm(commandLineToolsUncompressedPath, { recursive: true, force: true });
+      }
+      if (platformToolsSavePath) {
+        await fs.promises.rm(platformToolsSavePath, { recursive: true, force: true });
+      }
+      if (platformToolsUncompressedPath) {
+        await fs.promises.rm(platformToolsUncompressedPath, { recursive: true, force: true });
+      }
     }
-    try {
-      this.logger.info('Deleting platformToolsUncompressedPath or platformToolsSavePath...', {
-        platformToolsUncompressedPath,
-        platformToolsSavePath,
-      });
-      await fs.promises.rm(platformToolsUncompressedPath, { recursive: true, force: true });
-      await fs.promises.unlink(platformToolsSavePath);
-    } catch (error) {
-      this.logger.warn('platformToolsUncompressedPath or platformToolsSavePath delete failed.', {
-        platformToolsUncompressedPath,
-        platformToolsSavePath,
-        error: errorify(error),
-      });
-    }
-    this.unitCallback.onInstallCompleted();
   }
 
   private async writeEnv_ANDROID_HOME(): Promise<void> {
@@ -237,7 +228,7 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
     }
     const platformToolsDownloadUrl = this.getPlatformToolsDownloadUrl();
     const downloadsPath = HostPaths.downloadsPath(HostPaths.doguHomePath);
-    fs.promises.mkdir(downloadsPath, { recursive: true });
+    await fs.promises.mkdir(downloadsPath, { recursive: true });
     const platformToolsItem = await download(window, platformToolsDownloadUrl, {
       directory: downloadsPath,
       onStarted: (item) => {
@@ -312,7 +303,7 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
     }
     const commandLineToolsDownloadUrl = this.getCommandLineToolsDownloadUrl();
     const downloadsPath = HostPaths.downloadsPath(HostPaths.doguHomePath);
-    fs.promises.mkdir(downloadsPath, { recursive: true });
+    await fs.promises.mkdir(downloadsPath, { recursive: true });
     const commandLineToolsItem = await download(window, commandLineToolsDownloadUrl, {
       directory: downloadsPath,
       onStarted: (item) => {

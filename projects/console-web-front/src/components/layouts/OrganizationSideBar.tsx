@@ -172,7 +172,7 @@ const OrganizationSideBar = () => {
     {
       key: 'tutorial',
       icon: collapsed ? (
-        <StyledIconLink selected={false} href="https://docs.dogutech.io/get-started/tutorials" target="_blank">
+        <StyledIconLink selected={false} href="https://docs.dogutech.io" target="_blank">
           <BookOutlined />
         </StyledIconLink>
       ) : undefined,
@@ -182,12 +182,7 @@ const OrganizationSideBar = () => {
           <RiExternalLinkLine />
         </div>
       ) : (
-        <SideBarMenu
-          icon={<BookOutlined style={{ fontSize: '1.2rem' }} />}
-          path={'https://docs.dogutech.io/get-started/tutorials'}
-          text={t('organization:tutorialPageTitle')}
-          external
-        />
+        <SideBarMenu icon={<BookOutlined style={{ fontSize: '1.2rem' }} />} path={'https://docs.dogutech.io'} text={t('organization:tutorialPageTitle')} external />
       ),
     },
   ];

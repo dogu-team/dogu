@@ -155,7 +155,7 @@ export class JdkExternalUnit extends IExternalUnit {
     }
     const downloadUrl = this.getDownloadUrl();
     const downloadsPath = HostPaths.downloadsPath(HostPaths.doguHomePath);
-    fs.promises.mkdir(downloadsPath, { recursive: true });
+    await fs.promises.mkdir(downloadsPath, { recursive: true });
     const item = await download(window, downloadUrl, {
       directory: downloadsPath,
       onStarted: (item) => {

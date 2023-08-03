@@ -46,7 +46,7 @@ const ProjectRoutineEditorPage: NextPageWithLayout<WithProjectProps> = ({ organi
 };
 
 ProjectRoutineEditorPage.getLayout = (page) => {
-  return <ProjectLayoutWithSidebar title="Routine">{page}</ProjectLayoutWithSidebar>;
+  return <ProjectLayoutWithSidebar titleI18nKey="project:tabMenuRoutineTitle">{page}</ProjectLayoutWithSidebar>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

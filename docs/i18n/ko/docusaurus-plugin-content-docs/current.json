@@ -51,10 +51,6 @@
     "message": "Self-Hosted",
     "description": "The label for category Self-Hosted in sidebar getStartedSidebar"
   },
-  "sidebar.getStartedSidebar.category.Python": {
-    "message": "Python",
-    "description": "The label for category Python in sidebar getStartedSidebar"
-  },
   "sidebar.apiSidebar.category.Routine": {
     "message": "루틴",
     "description": "The label for category Routine in sidebar apiSidebar"
@@ -79,8 +75,36 @@
     "message": "WebdriverIO",
     "description": "The label for category WebdriverIO in sidebar getStartedSidebar"
   },
-  "sidebar.getStartedSidebar.category.Javascript": {
-    "message": "Javascript",
-    "description": "The label for category Javascript in sidebar getStartedSidebar"
+  "sidebar.getStartedSidebar.category.Device Farm": {
+    "message": "Device Farm",
+    "description": "The label for category Device Farm in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Device": {
+    "message": "Device",
+    "description": "The label for category Device in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Selenium": {
+    "message": "Selenium",
+    "description": "The label for category Selenium in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Pytest": {
+    "message": "Pytest",
+    "description": "The label for category Pytest in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Jest": {
+    "message": "Jest",
+    "description": "The label for category Jest in sidebar getStartedSidebar"
+  },
+  "sidebar.testReportSidebar.category.Pytest": {
+    "message": "Pytest",
+    "description": "The label for category Pytest in sidebar testReportSidebar"
+  },
+  "sidebar.integrationSidebar.category.CI/CD": {
+    "message": "CI/CD",
+    "description": "The label for category CI/CD in sidebar integrationSidebar"
+  },
+  "sidebar.integrationSidebar.category.Community": {
+    "message": "커뮤니티",
+    "description": "The label for category Community in sidebar integrationSidebar"
   }
 }

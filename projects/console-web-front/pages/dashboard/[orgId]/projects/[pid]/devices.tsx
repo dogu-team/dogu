@@ -24,7 +24,7 @@ const ProjectDevicePage: NextPageWithLayout<WithProjectProps> = ({ project, orga
         top={
           <FlexBetweenBox>
             <div>
-              <Link href={`/dashboard/${organization.organizationId}/devices`}>
+              <Link href={`/dashboard/${organization.organizationId}/device-farm/devices`}>
                 <Button type="primary">{t('device-farm:allocProjectToDeviceButtonText')}</Button>
               </Link>
             </div>
@@ -38,7 +38,7 @@ const ProjectDevicePage: NextPageWithLayout<WithProjectProps> = ({ project, orga
 };
 
 ProjectDevicePage.getLayout = (page) => {
-  return <ProjectLayoutWithSidebar title="Devices">{page}</ProjectLayoutWithSidebar>;
+  return <ProjectLayoutWithSidebar titleI18nKey="project:tabMenuDeviceTitle">{page}</ProjectLayoutWithSidebar>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

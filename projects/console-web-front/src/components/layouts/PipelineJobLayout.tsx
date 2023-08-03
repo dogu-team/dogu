@@ -80,7 +80,7 @@ const PipelineJobLayout = ({ children, isGitIntegrated }: Props) => {
   }
 
   return (
-    <ProjectLayoutWithSidebar innerSidebar={<JobListSideBar pipeline={pipeline} />} title="Routine">
+    <ProjectLayoutWithSidebar innerSidebar={<JobListSideBar pipeline={pipeline} />} titleI18nKey="project:tabMenuRoutineTitle">
       <PipelineContainer>
         <PipelineHeadContainer>
           <FlexRowBase>

@@ -82,29 +82,6 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
   const items: MenuProps['items'] = [
     {
       label: (
-        <PrimaryLinkButton
-          href={`/dashboard/${router.query.orgId}/devices/streaming/${device.deviceId}`}
-          disabled={!streamingable}
-          onClick={(e) => {
-            if (!streamingable) {
-              e.preventDefault();
-            }
-          }}
-          onAuxClick={(e) => {
-            if (!streamingable) {
-              e.preventDefault();
-            }
-          }}
-          id={`${device.name}-streaming-menu-btn`}
-        >
-          {t('device-farm:deviceItemStreamingMenu')}
-        </PrimaryLinkButton>
-      ),
-      key: 'stream',
-    },
-    { type: 'divider' },
-    {
-      label: (
         <MenuItemButton danger={false} onClick={() => openEditDeviceTagModal()} id={`${device.name}-edit-tag-menu-btn`}>
           {t('device-farm:deviceItemEditTagMenu')}
         </MenuItemButton>

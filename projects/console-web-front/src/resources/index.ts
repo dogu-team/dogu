@@ -21,6 +21,7 @@ const resources = {
     jest: '/resources/icons/frameworks/jest.svg',
     pytest: '/resources/icons/frameworks/pytest.svg',
     selenium: '/resources/icons/frameworks/selenium.svg',
+    studioLogo: '/resources/icons/studio-logo.svg',
   },
   images: {},
 };

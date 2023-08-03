@@ -4,6 +4,7 @@ import useSWR from 'swr';
 import { ProjectBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
 import { AppstoreOutlined, ArrowLeftOutlined, MobileOutlined, SettingOutlined, TeamOutlined } from '@ant-design/icons';
+import { PiMonitorPlayBold } from 'react-icons/pi';
 import { Layout, Menu, MenuProps, Skeleton } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -122,6 +123,29 @@ const ProjectSideBar = () => {
       type: 'group',
       label: collapsed ? null : 'Studio',
       children: [
+        {
+          key: 'studio',
+          label: collapsed ? (
+            t('project:tabMenuStudioTitle')
+          ) : (
+            <SideBarMenu
+              path={`/dashboard/${orgId}/projects/${projectId}/studio`}
+              text={t('project:tabMenuStudioTitle')}
+              accessId="project-side-bar-studio"
+              icon={<PiMonitorPlayBold style={{ fontSize: '1.2rem' }} />}
+              external
+            />
+          ),
+          icon: collapsed ? (
+            <StyledIconLink
+              selected={router.asPath.startsWith(`/dashboard/${orgId}/projects/${projectId}/studio`)}
+              href={`/dashboard/${orgId}/projects/${projectId}/studio`}
+              target="_blank"
+            >
+              <PiMonitorPlayBold />
+            </StyledIconLink>
+          ) : undefined,
+        },
         {
           key: 'devices',
           label: collapsed ? (

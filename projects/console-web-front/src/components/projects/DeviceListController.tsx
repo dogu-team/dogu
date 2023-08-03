@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import Link from 'next/link';
 import { MobileOutlined } from '@ant-design/icons';
 import Trans from 'next-translate/Trans';
+import { PiMonitorPlayBold } from 'react-icons/pi';
 
 import usePaginationSWR from 'src/hooks/usePaginationSWR';
 import useRefresh from 'src/hooks/useRefresh';
@@ -23,7 +24,6 @@ import DeviceName from '../device/DeviceName';
 import useModal from '../../hooks/useModal';
 import DeviceDetailModal from '../device/DeviceDetailModal';
 import DeviceTagAndProject from '../device/DeviceTagAndProject';
-import { menuItemButtonStyles } from '../../styles/button';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from '../device/PlatformIcon';
@@ -42,7 +42,7 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
   const [isDetailModalOpen, openDetailModal, closeDetailModal] = useModal();
   const { t } = useTranslation();
 
-  const streamingable = device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED;
+  const isConnected = device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED;
   const isGlobalDevice = device.isGlobal === 1;
 
   const handleDelete = async () => {
@@ -58,30 +58,6 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
   };
 
   const items: MenuProps['items'] = [
-    {
-      label: (
-        <PrimaryLinkButton
-          href={`/dashboard/${router.query.orgId}/devices/streaming/${device.deviceId}`}
-          disabled={!streamingable}
-          onClick={(e) => {
-            if (!streamingable) {
-              e.preventDefault();
-            }
-          }}
-          onAuxClick={(e) => {
-            if (!streamingable) {
-              e.preventDefault();
-            }
-          }}
-        >
-          {t('device-farm:deviceItemStreamingMenu')}
-        </PrimaryLinkButton>
-      ),
-      key: 'streaming',
-    },
-    {
-      type: 'divider',
-    },
     {
       label: (
         <MenuItemButton
@@ -134,6 +110,31 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
               onProjectClick={handleClickDetail}
             />
           </OneSpanCell>
+          <OneSpanCell style={{ display: 'flex', justifyContent: 'center' }}>
+            <StudioLinkButton
+              href={`/dashboard/${orgId}/projects/${projectId}/studio/${device.deviceId}/manual`}
+              target="_blank"
+              isDisabled={!isConnected}
+              onClick={(e) => {
+                if (!isConnected) {
+                  e.preventDefault();
+                }
+              }}
+              onAuxClick={(e) => {
+                if (!isConnected) {
+                  e.preventDefault();
+                }
+              }}
+              onContextMenu={(e) => {
+                if (!isConnected) {
+                  e.preventDefault();
+                }
+              }}
+            >
+              <PiMonitorPlayBold style={{ marginRight: '.25rem' }} />
+              Studio
+            </StudioLinkButton>
+          </OneSpanCell>
           <MenuCell>
             <FlexEndBox>
               <MenuButton menu={{ items }} />
@@ -169,6 +170,7 @@ const DeviceListController = ({ organizationId, projectId }: Props) => {
           <OneSpanCell>{t('device-farm:deviceTableRunningStatusColumn')}</OneSpanCell>
           <PlatformCell>{t('device-farm:deviceTablePlatformAndModalColumn')}</PlatformCell>
           <OneSpanCell>{t('device-farm:deviceTableTagsAndProjectsColumn')}</OneSpanCell>
+          <OneSpanCell></OneSpanCell>
           <MenuCell></MenuCell>
         </FlexRowBase>
       </Header>
@@ -233,16 +235,18 @@ const FlexEndBox = styled(FlexRowBase)`
   justify-content: flex-end;
 `;
 
-const PrimaryLinkButton = styled(Link)<{ disabled: boolean }>`
-  display: block;
-  ${menuItemButtonStyles}
-  width: 100%;
-  color: ${(props) => (props.disabled ? '#00000040' : props.theme.colorPrimary)} !important;
-  background-color: ${(props) => (props.disabled ? '#0000000a' : '#fff')};
-  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
+const StudioLinkButton = styled(Link)<{ isDisabled: boolean }>`
+  display: inline-flex;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  background-color: ${(props) => (props.isDisabled ? props.theme.main.colors.gray5 : props.theme.colorPrimary)};
+  color: #fff;
+  text-align: center;
+  align-items: center;
+  cursor: ${(props) => (props.isDisabled ? 'not-allowed' : 'pointer')};
 
   &:hover {
-    background-color: ${(props) => (props.disabled ? '#0000000a' : props.theme.colorPrimary)};
-    color: ${(props) => (props.disabled ? '#00000040' : '#fff')} !important;
+    color: #fff;
+    background-color: ${(props) => (props.isDisabled ? props.theme.main.colors.gray5 : `${props.theme.colorPrimary}bb`)};
   }
 `;
