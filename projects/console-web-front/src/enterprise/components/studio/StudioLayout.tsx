@@ -5,21 +5,23 @@ import Head from 'next/head';
 import { FaRegHandPaper } from 'react-icons/fa';
 import Link from 'next/link';
 import { Tooltip } from 'antd';
-import { DeviceId } from '@dogu-private/types';
+import { DeviceId, EDITION_TYPE } from '@dogu-private/types';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import { BiVideoRecording } from 'react-icons/bi';
 
-import Header from '../layouts/Header';
-import { flexRowCenteredStyle } from '../../styles/box';
-import resources from '../../resources';
+import Header from '../../../components/layouts/Header';
+import resources from '../../../resources';
+import { flexRowCenteredStyle } from '../../../styles/box';
 
 interface Props {
   children: React.ReactNode;
   project: ProjectBase;
   deviceId: DeviceId | null;
+  editionType: EDITION_TYPE;
 }
 
-const StudioLayout = ({ children, project, deviceId }: Props) => {
+const StudioLayout = ({ children, project, deviceId, editionType }: Props) => {
   const router = useRouter();
 
   return (
@@ -33,7 +35,10 @@ const StudioLayout = ({ children, project, deviceId }: Props) => {
           <Side>
             <Tooltip title="Manual Testing" placement="right">
               <StyledLink
-                href={{ pathname: '/dashboard/[orgId]/projects/[pid]/studio/manual', query: { orgId: router.query.orgId, pid: router.query.pid, deviceId: deviceId ?? undefined } }}
+                href={{
+                  pathname: '/dashboard/[orgId]/projects/[pid]/studio/[deviceId]/manual',
+                  query: { orgId: router.query.orgId, pid: router.query.pid, deviceId: deviceId ?? undefined },
+                }}
                 style={{ display: 'block' }}
                 isSelected={router.asPath.includes('manual')}
               >
@@ -89,6 +94,7 @@ const IconWrapper = styled.div`
 const StyledLink = styled(Link)<{ isSelected: boolean }>`
   display: block;
   padding: 0.5rem;
+  margin-bottom: 0.5rem;
   color: #000;
   border-radius: 0.25rem;
   background-color: ${(props) => (props.isSelected ? `${props.theme.colorPrimary}44` : '#fff')};

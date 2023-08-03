@@ -1,23 +1,11 @@
-import { OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
-import { DeviceId } from '@dogu-private/types';
 import { GetServerSideProps } from 'next';
 import styled from 'styled-components';
 
-import { getOrganizationInServerSide } from 'src/api/organization';
-import { getProjectInServerSide } from 'src/api/project';
-import { getUserInServerSide } from 'src/api/registery';
 import { NextPageWithLayout } from 'pages/_app';
-import StudioLayout from 'src/components/studio/StudioLayout';
 import ManualTesting from 'src/components/studio/ManualTesting';
+import { getStudioTestingLayout, getStudioTestingServerSideProps, StudioTestingPageProps } from 'src/enterprise/pages/studio';
 
-interface StudioToolServerSideProps {
-  organization: OrganizationBase;
-  project: ProjectBase;
-  me: UserBase;
-  deviceId: DeviceId;
-}
-
-const StudioManualPage: NextPageWithLayout<StudioToolServerSideProps> = ({ organization, project, me, deviceId }) => {
+const StudioManualPage: NextPageWithLayout<StudioTestingPageProps> = ({ organization, project, me, deviceId }) => {
   return (
     <Box>
       <ManualTesting organization={organization} project={project} deviceId={deviceId} />
@@ -25,40 +13,9 @@ const StudioManualPage: NextPageWithLayout<StudioToolServerSideProps> = ({ organ
   );
 };
 
-StudioManualPage.getLayout = (page) => {
-  return (
-    <StudioLayout project={page.props.project} deviceId={page.props.deviceId}>
-      {page}
-    </StudioLayout>
-  );
-};
+StudioManualPage.getLayout = getStudioTestingLayout;
 
-export const getServerSideProps: GetServerSideProps<StudioToolServerSideProps> = async (context) => {
-  const deviceId = context.query.deviceId as DeviceId | undefined;
-
-  if (!deviceId) {
-    return {
-      notFound: true,
-    };
-  }
-
-  try {
-    const [organization, project, user] = await Promise.all([getOrganizationInServerSide(context), getProjectInServerSide(context), getUserInServerSide(context)]);
-
-    return {
-      props: {
-        organization,
-        project,
-        me: user,
-        deviceId,
-      },
-    };
-  } catch (e) {
-    return {
-      notFound: true,
-    };
-  }
-};
+export const getServerSideProps: GetServerSideProps<StudioTestingPageProps> = getStudioTestingServerSideProps;
 
 export default StudioManualPage;
 
