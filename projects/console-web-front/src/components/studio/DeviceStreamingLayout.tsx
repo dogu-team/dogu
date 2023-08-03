@@ -28,7 +28,13 @@ const ScreenViewer = () => {
           selectedDevice={device ?? undefined}
           organizationId={router.query.orgId as OrganizationId}
           projectId={router.query.pid as ProjectId}
-          onSelectedDeviceChanged={(device) => router.push({ query: { ...router.query, deviceId: device?.deviceId } })}
+          onSelectedDeviceChanged={(device) => {
+            if (device) {
+              router.push({ query: { orgId: router.query.orgId, pid: router.query.pid, deviceId: device?.deviceId } });
+            } else {
+              router.push(`/dashboard/${router.query.orgId}/projects/${router.query.pid}/studio`);
+            }
+          }}
         />
       </SelectorBox>
       <div style={{ height: 'calc(100% - 2rem)' }}>

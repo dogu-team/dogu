@@ -34,7 +34,7 @@ const StudioDeviceSelector = ({ organizationId, projectId, onSelectedDeviceChang
       loading={isLoading}
       onDeviceSelected={onSelectedDeviceChanged}
       selectedDevice={selectedDevice}
-      placeholder={'deviceName'}
+      placeholder={'Select your device'}
       open={open}
       onClick={() => setOpen((prev) => !prev)}
       onBlur={() => setOpen(false)}

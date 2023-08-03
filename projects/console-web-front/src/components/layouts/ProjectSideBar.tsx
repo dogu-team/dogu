@@ -129,7 +129,7 @@ const ProjectSideBar = () => {
             t('project:tabMenuStudioTitle')
           ) : (
             <SideBarMenu
-              path={`/dashboard/${orgId}/projects/${projectId}/studio/manual`}
+              path={`/dashboard/${orgId}/projects/${projectId}/studio`}
               text={t('project:tabMenuStudioTitle')}
               accessId="project-side-bar-studio"
               icon={<PiMonitorPlayBold style={{ fontSize: '1.2rem' }} />}
@@ -139,7 +139,7 @@ const ProjectSideBar = () => {
           icon: collapsed ? (
             <StyledIconLink
               selected={router.asPath.startsWith(`/dashboard/${orgId}/projects/${projectId}/studio`)}
-              href={`/dashboard/${orgId}/projects/${projectId}/studio/manual`}
+              href={`/dashboard/${orgId}/projects/${projectId}/studio`}
               target="_blank"
             >
               <PiMonitorPlayBold />

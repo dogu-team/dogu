@@ -112,7 +112,7 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
           </OneSpanCell>
           <OneSpanCell style={{ display: 'flex', justifyContent: 'center' }}>
             <StudioLinkButton
-              href={`/dashboard/${orgId}/projects/${projectId}/studio/manual?deviceId=${device.deviceId}`}
+              href={`/dashboard/${orgId}/projects/${projectId}/studio/${device.deviceId}/manual`}
               target="_blank"
               isDisabled={!isConnected}
               onClick={(e) => {

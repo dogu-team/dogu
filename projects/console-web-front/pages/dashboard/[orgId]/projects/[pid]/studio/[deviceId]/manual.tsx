@@ -8,20 +8,16 @@ import { getProjectInServerSide } from 'src/api/project';
 import { getUserInServerSide } from 'src/api/registery';
 import { NextPageWithLayout } from 'pages/_app';
 import StudioLayout from 'src/components/studio/StudioLayout';
-import ManualTesting from '../../../../../../src/components/studio/ManualTesting';
+import ManualTesting from 'src/components/studio/ManualTesting';
 
 interface StudioToolServerSideProps {
   organization: OrganizationBase;
   project: ProjectBase;
   me: UserBase;
-  deviceId: DeviceId | null;
+  deviceId: DeviceId;
 }
 
 const StudioManualPage: NextPageWithLayout<StudioToolServerSideProps> = ({ organization, project, me, deviceId }) => {
-  if (!deviceId) {
-    return <div>Select your device first</div>;
-  }
-
   return (
     <Box>
       <ManualTesting organization={organization} project={project} deviceId={deviceId} />
@@ -38,6 +34,14 @@ StudioManualPage.getLayout = (page) => {
 };
 
 export const getServerSideProps: GetServerSideProps<StudioToolServerSideProps> = async (context) => {
+  const deviceId = context.query.deviceId as DeviceId | undefined;
+
+  if (!deviceId) {
+    return {
+      notFound: true,
+    };
+  }
+
   try {
     const [organization, project, user] = await Promise.all([getOrganizationInServerSide(context), getProjectInServerSide(context), getUserInServerSide(context)]);
 
@@ -46,7 +50,7 @@ export const getServerSideProps: GetServerSideProps<StudioToolServerSideProps> =
         organization,
         project,
         me: user,
-        deviceId: (context.query.deviceId as DeviceId) ?? null,
+        deviceId,
       },
     };
   } catch (e) {
