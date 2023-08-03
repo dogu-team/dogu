@@ -1,23 +1,35 @@
+import { DeviceId, OrganizationId, ProjectId, Serial } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, DefaultHttpOptions, loop, stringify, transformAndValidate } from '@dogu-tech/common';
 import { TcpRelayRequest, TcpRelayResponse } from '@dogu-tech/device-client-common';
 import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway } from '@nestjs/websockets';
 import { IncomingMessage } from 'http';
 import { Server } from 'ws';
 import { WebSocketProxy } from '../../module/device-message/device-message.relayer';
+import { WebsocketCloseError } from '../../module/device-message/error';
 import { DoguLogger } from '../../module/logger/logger';
 import { DeviceCommandService } from '../../module/organization/device/device-command.service';
+import { RemoteWebDriverService } from '../../module/remote/remote-webdriver/remote-webdriver.service';
 import { RemoteGamiumDto } from './remote-gamium.dto';
 import { RemoteGamiumService } from './remote-gamium.service';
 
 type ProxyType = WebSocketProxy<typeof TcpRelayRequest, typeof TcpRelayResponse>;
 interface Context {
-  dto: RemoteGamiumDto | undefined;
-  proxy: ProxyType | undefined;
+  dto: RemoteGamiumDto;
+  proxy: ProxyType;
+  organizationId: OrganizationId;
+  projectId: ProjectId;
+  deviceId: DeviceId;
+  deviceSerial: Serial;
 }
 
 @WebSocketGateway({ path: '/ws/remote/gamium' })
 export class RemoteGamiumGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private readonly deviceCommandService: DeviceCommandService, private readonly remoteGamiumService: RemoteGamiumService, private readonly logger: DoguLogger) {}
+  constructor(
+    private readonly deviceCommandService: DeviceCommandService,
+    private readonly remoteWebDriverService: RemoteWebDriverService,
+    private readonly remoteGamiumService: RemoteGamiumService,
+    private readonly logger: DoguLogger,
+  ) {}
 
   afterInit(server: Server) {
     this.logger.info('Init');
@@ -26,7 +38,7 @@ export class RemoteGamiumGateway implements OnGatewayConnection, OnGatewayDiscon
 
   async handleConnection(webSocket: WebSocket, incomingMessage: IncomingMessage): Promise<void> {
     this.logger.info('RemoteGamiumGateway.handleConnection');
-    const context: Context = { dto: undefined, proxy: undefined };
+    let context: Context | null = null;
 
     webSocket.addEventListener('error', (event) => {
       this.logger.verbose('error');
@@ -35,10 +47,10 @@ export class RemoteGamiumGateway implements OnGatewayConnection, OnGatewayDiscon
       clearTimeout(timerId);
       const { code, reason } = event;
       this.logger.verbose('close', { code, reason });
-      if (!context.proxy) {
+      if (!context) {
         return;
       }
-      context.proxy.close().catch((error) => {
+      context.proxy.close('clientside closed').catch((error) => {
         this.logger.error('close to deviceside error', { error: stringify(error) });
       });
     });
@@ -46,17 +58,22 @@ export class RemoteGamiumGateway implements OnGatewayConnection, OnGatewayDiscon
       this.logger.verbose('message');
       const { data } = event;
       const base64 = Buffer.from(data).toString('base64');
-      if (!context.proxy) {
+      if (!context) {
         for await (const _ of loop(1000, 10)) {
-          if (context.proxy) {
+          if (context) {
             break;
           }
         }
-        if (!context.proxy) {
+        if (!context) {
           closeWebSocketWithTruncateReason(webSocket, 1001, 'proxy to device failed');
           return;
         }
       }
+      this.remoteGamiumService
+        .refreshCommandTimeout(this.remoteWebDriverService, context.organizationId, context.projectId, context.deviceId, context.deviceSerial, context.dto!.sessionId)
+        .catch((error) => {
+          this.logger.error('refreshCommandTimeout error', { error: stringify(error) });
+        });
 
       await context.proxy
         .send({
@@ -77,26 +94,37 @@ export class RemoteGamiumGateway implements OnGatewayConnection, OnGatewayDiscon
       sessionId: sessionIdQuery,
       port: parseInt(portQuery),
     });
-    context.dto = remoteGamiumDto;
 
     const { sessionId, port } = remoteGamiumDto;
-    const device = await this.remoteGamiumService.findDeviceJob(sessionId, port);
+    const { device, remote } = await this.remoteGamiumService.findDeviceJob(sessionId, port);
     const timerId = setTimeout(() => {
       closeWebSocketWithTruncateReason(webSocket, 1000, 'Timeout');
     }, DefaultHttpOptions.request.timeout10minutes);
 
-    context.proxy = await this.deviceCommandService.relayTcp(device.organizationId, device.deviceId, device.serial, port);
+    const proxy = await this.deviceCommandService.relayTcp(device.organizationId, device.deviceId, device.serial, port);
+    context = {
+      dto: remoteGamiumDto,
+      proxy,
+      organizationId: device.organizationId,
+      projectId: remote.projectId,
+      deviceId: device.deviceId,
+      deviceSerial: device.serial,
+    };
     const pullDetach = async () => {
-      if (!context.proxy) {
+      if (!context) {
         return;
       }
       for await (const message of context.proxy.receive()) {
         webSocket.send(Buffer.from(message.encodedData, 'base64'));
       }
-      this.logger.info('socket closed from deviceside');
       closeWebSocketWithTruncateReason(webSocket, 1001, 'socket closed from deviceside');
     };
     pullDetach().catch((error) => {
+      if (error instanceof WebsocketCloseError) {
+        this.logger.info('socket closed from deviceside', { code: error.code, reason: error.reason });
+        closeWebSocketWithTruncateReason(webSocket, error.code, error.reason);
+        return;
+      }
       if (webSocket.readyState !== WebSocket.OPEN) {
         return;
       }

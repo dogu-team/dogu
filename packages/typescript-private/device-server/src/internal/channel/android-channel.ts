@@ -103,6 +103,9 @@ export class AndroidChannel implements DeviceChannel {
     }, 'kill previous zombie');
 
     const { serial, deviceAgentDevicePort } = param;
+    await Adb.unforwardall(serial).catch((error) => {
+      doguLogger.error('Adb.unforwardall failed', { error: errorify(error) });
+    });
     const platform = Platform.PLATFORM_ANDROID;
 
     const systemInfoService = new AndroidSystemInfoService();

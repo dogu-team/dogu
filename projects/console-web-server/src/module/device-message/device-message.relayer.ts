@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { config } from '../../config';
 import { DoguLogger } from '../logger/logger';
 import { DeviceMessageQueue } from './device-message.queue';
+import { WebsocketCloseError } from './error';
 
 export class WebSocketProxy<S extends Class<S>, R extends Class<R>> {
   constructor(
@@ -26,8 +27,8 @@ export class WebSocketProxy<S extends Class<S>, R extends Class<R>> {
     return this.deviceMessageRelayer.receiveWebSocketMessage(this.organizationId, this.deviceId, this.webSocketProxyId, this.spec);
   }
 
-  close(): Promise<void> {
-    return this.deviceMessageRelayer.close(this.organizationId, this.deviceId, this.webSocketProxyId);
+  close(reason: string): Promise<void> {
+    return this.deviceMessageRelayer.close(this.organizationId, this.deviceId, this.webSocketProxyId, reason);
   }
 }
 
@@ -337,7 +338,7 @@ export class DeviceMessageRelayer {
           const { error, message } = value;
           throw new Error(`WebSocketProxyReceiveError error ${stringify(error)} ${message}`);
         } else if (kind === 'WebSocketProxyReceiveClose') {
-          return;
+          throw new WebsocketCloseError(value.code, value.reason);
         } else if (kind === 'WebSocketProxyReceiveMessage') {
           const { data } = value;
           try {
@@ -378,7 +379,7 @@ export class DeviceMessageRelayer {
     throw new Error(`Unexpected result kind ${kind}`);
   }
 
-  async close(organizationId: OrganizationId, deviceId: DeviceId, webSocketProxyId: string): Promise<void> {
+  async close(organizationId: OrganizationId, deviceId: DeviceId, webSocketProxyId: string, reason: string): Promise<void> {
     const eventParam: EventParam = {
       kind: 'EventParam',
       value: {
@@ -386,6 +387,7 @@ export class DeviceMessageRelayer {
         value: {
           kind: 'WebSocketProxySendClose',
           webSocketProxyId,
+          reason,
         },
       },
     };
