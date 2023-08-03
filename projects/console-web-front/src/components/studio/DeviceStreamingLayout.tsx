@@ -1,5 +1,7 @@
+import { MobileOutlined } from '@ant-design/icons';
 import { DeviceBase, ProjectBase } from '@dogu-private/console';
 import { DeviceId, OrganizationId, ProjectId } from '@dogu-private/types';
+import { Tag } from 'antd';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import useSWR from 'swr';
@@ -22,7 +24,9 @@ const ScreenViewer = () => {
   return (
     <VideoWrapper isLandscape={isLandscape}>
       <SelectorBox>
-        <p style={{ marginRight: '.25rem' }}>Device:</p>
+        <Tag color="geekblue" icon={<MobileOutlined />}>
+          Device
+        </Tag>
         <StudioDeviceSelector
           selectedDevice={device ?? undefined}
           organizationId={router.query.orgId as OrganizationId}
@@ -36,7 +40,7 @@ const ScreenViewer = () => {
           }}
         />
       </SelectorBox>
-      <div style={{ height: 'calc(100% - 2rem)' }}>
+      <div style={{ height: 'calc(100% - 2.5rem)' }}>
         <DeviceStreaming.Video inspector={inspector ?? undefined} rightSidebar={loading ? null : <DeviceStreaming.Controlbar />}>
           {tab === StreamingTabMenuKey.INSPECTOR && !!inspector && inspector.inspectingNode && <InspectorSelectedNode nodeInfo={inspector.inspectingNode} />}
         </DeviceStreaming.Video>
