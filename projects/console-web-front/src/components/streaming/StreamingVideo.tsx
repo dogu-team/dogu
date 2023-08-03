@@ -229,6 +229,7 @@ const StyledInput = styled.textarea`
 
 const LoadingBox = styled.div`
   width: 100%;
+  height: 90%;
   ${flexRowCenteredStyle}
   flex-direction: column;
 
