@@ -93,12 +93,14 @@ export class RemoteGamiumGateway implements OnGatewayConnection, OnGatewayDiscon
       for await (const message of context.proxy.receive()) {
         webSocket.send(Buffer.from(message.encodedData, 'base64'));
       }
+      this.logger.info('socket closed from deviceside');
+      closeWebSocketWithTruncateReason(webSocket, 1001, 'socket closed from deviceside');
     };
     pullDetach().catch((error) => {
       if (webSocket.readyState !== WebSocket.OPEN) {
         return;
       }
-      this.logger.error('socket closed from deviceside ', { error: stringify(error) });
+      this.logger.error('socket error from deviceside ', { error: stringify(error) });
       closeWebSocketWithTruncateReason(webSocket, 1001, error);
     });
   }
