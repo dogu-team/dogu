@@ -620,16 +620,20 @@ Dest.withOptions({
 
     const deviceSettingInfos = [
       {
-        name: 'Host device setting',
+        settingJobName: 'Host device setting',
+        studioJobName: "Host device's studio",
         addTabMenu: '//span[text()="Host"]/../../../div[5]//button[@access-id="list-menu-btn"]',
         listTabMenu: '//span[text()="Host"]/../../../../div[5]//button[@access-id="list-menu-btn"]',
+        studio: '//span[text()="Host"]/../../../..//a[@target="_blank"]',
         tag: values.value.HOST_DEVICE_TAG,
         isHost: true,
       },
       {
-        name: 'Android device setting',
+        settingJobName: 'Android device setting',
+        studioJobName: "Android device's studio",
         addTabMenu: '//*[@icon-id="android-icon"]/../../../div[5]//button[@access-id="list-menu-btn"]',
         listTabMenu: '//*[@icon-id="android-icon"]/../../../div[5]//button[@access-id="list-menu-btn"]',
+        studio: '//*[@icon-id="android-icon"]/../../../..//a[@target="_blank"]',
         tag: values.value.ANDROID_DEVICE_TAG,
         isHost: false,
       },
@@ -647,9 +651,9 @@ Dest.withOptions({
     // }
 
     deviceSettingInfos.forEach((deviceSettingInfo) => {
-      const { name, addTabMenu, listTabMenu, tag, isHost } = deviceSettingInfo;
+      const { settingJobName, addTabMenu, listTabMenu, tag, isHost } = deviceSettingInfo;
 
-      job(name, () => {
+      job(settingJobName, () => {
         job('Add device', () => {
           test('Click on add tab', async () => {
             await Driver.clickElement({ xpath: '//*[@access-id="side-bar-device-farm"]' });
@@ -738,23 +742,28 @@ Dest.withOptions({
             await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
           });
         });
+      });
+    });
 
-        job('Device streaming', () => {
-          test('Go to device menu', async () => {
-            await Driver.clickElement({ xpath: '//a[@access-id="org-device-list-tab"]' });
-          });
+    job('Project studio', () => {
+      test('Move to project devices', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="side-bar-project"]' });
+        await Driver.clickElement({ xpath: `//a[text()="${values.value.PROJECT_NAME}"]` });
+        await Driver.clickElement({ xpath: '//a[@access-id="project-side-bar-devices"]' });
+      });
 
-          test('Click menu', async () => {
-            await Driver.clickElement({ xpath: listTabMenu });
-            if (name.startsWith('Host')) {
+      deviceSettingInfos.forEach((deviceSettingInfo) => {
+        const { studioJobName, studio, isHost } = deviceSettingInfo;
+
+        job(studioJobName, () => {
+          test('Click studio button', async () => {
+            await Driver.clickElement({ xpath: studio });
+            if (studioJobName.startsWith('Host')) {
               hostDeviceName = await Driver.getText({ xpath: '//span[text()="Host"]/../../p' });
-            } else if (name.startsWith('Android')) {
+            } else if (studioJobName.startsWith('Android')) {
               androidDeviceName = await Driver.getText({ xpath: '//*[@icon-id="android-icon"]/../../../div[1]/button/p' });
             }
-          });
-
-          test('Click streaming button', async () => {
-            await Driver.clickElement({ xpath: `//*[text()="${l10n('STREAMING')}"]` });
+            await Driver.switchTab(1);
           });
 
           test('Check streaming start', async () => {
@@ -815,8 +824,18 @@ Dest.withOptions({
               await Driver.findElement({ xpath: '//*[text()="dogurpgsample.apk"]' });
             });
 
-            test('Check app install end with profile', async () => {
-              await Driver.findElement({ xpath: '//*[text()="com.dogutech.DoguRpgSample"]' }, { waitTime: 30 * 1000 });
+            test('Wait for install', async () => {
+              await Timer.wait(15000, 'wait for install');
+            });
+          });
+
+          job('Check device profile', () => {
+            test('Click profile tab menu', async () => {
+              await Driver.clickElement({ xpath: '//div[@data-node-key="profile"]' });
+            });
+
+            test('Check current process', async () => {
+              await Driver.findElement({ xpath: '//*[text()="com.dogutech.DoguRpgSample"]' });
             });
           });
 
@@ -859,26 +878,32 @@ Dest.withOptions({
 
             test('Start log streaming', async () => {
               await Driver.clickElement({ xpath: '//button[@access-id="toggle-log-btn"]' });
-              await Timer.wait(3000, 'wait for logs');
+              await Timer.wait(1000, 'wait for logs');
             });
 
             test('Check log streaming', async () => {
-              await Driver.scrollToBottom();
+              // await Driver.scrollToBottom();
               await Driver.findElement({ xpath: '//b[text()="1"]' });
             });
           });
         }
+
+        test('Close tab', async () => {
+          await Driver.close();
+          await Driver.switchTab(0);
+        });
       });
     });
 
     job('Device management', () => {
-      test('Move to device list', async () => {
+      test('Move to organization device list', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="project-side-bar-back"]' });
         await Driver.clickElement({ xpath: '//*[@access-id="side-bar-device-farm"]' });
         await Driver.clickElement({ xpath: '//*[@access-id="org-device-list-tab"]' });
       });
 
-      const hostDeviceSettingConfig = deviceSettingInfos.find((item) => item.name === 'Host device setting');
-      const androidDeviceSettingConfig = deviceSettingInfos.find((item) => item.name === 'Android device setting');
+      const hostDeviceSettingConfig = deviceSettingInfos.find((item) => item.settingJobName === 'Host device setting');
+      const androidDeviceSettingConfig = deviceSettingInfos.find((item) => item.settingJobName === 'Android device setting');
 
       test('Update device settings', async () => {
         expect(!!hostDeviceSettingConfig).toBe(true);
@@ -942,8 +967,8 @@ Dest.withOptions({
     });
 
     job('Device tag management', () => {
-      const androidDeviceSettingConfig = deviceSettingInfos.find((item) => item.name === 'Android device setting');
-      let androidDeviceName = '';
+      const androidDeviceSettingConfig = deviceSettingInfos.find((item) => item.settingJobName === 'Android device setting');
+
       test('Move to organization page', async () => {
         await Driver.clickElement({ xpath: '//a[@access-id="project-side-bar-back"]' });
       });
