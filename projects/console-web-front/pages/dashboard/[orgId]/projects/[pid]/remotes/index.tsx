@@ -36,7 +36,7 @@ const RemoteListPage: NextPageWithLayout<WithProjectProps> = ({ organization, pr
 };
 
 RemoteListPage.getLayout = (page) => {
-  return <ProjectLayoutWithSidebar title="Remote">{page}</ProjectLayoutWithSidebar>;
+  return <ProjectLayoutWithSidebar titleI18nKey="project:tabMenuRemoteTitle">{page}</ProjectLayoutWithSidebar>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

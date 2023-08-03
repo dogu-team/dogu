@@ -42,7 +42,7 @@ const ProjectMemberPage: NextPageWithLayout<WithProjectProps> = ({ project }) =>
 };
 
 ProjectMemberPage.getLayout = (page) => {
-  return <ProjectLayoutWithSidebar title="Members">{page}</ProjectLayoutWithSidebar>;
+  return <ProjectLayoutWithSidebar titleI18nKey="project:tabMenuMemberTitle">{page}</ProjectLayoutWithSidebar>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

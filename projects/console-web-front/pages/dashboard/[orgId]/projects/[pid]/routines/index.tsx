@@ -56,7 +56,7 @@ const ProjectRoutinePage: NextPageWithLayout<WithProjectProps> = ({ organization
 
 ProjectRoutinePage.getLayout = (page) => {
   return (
-    <ProjectLayoutWithSidebar innerSidebar={<RoutineSideBar isGitIntegrated={page.props.isGitIntegrated} />} title="Routine">
+    <ProjectLayoutWithSidebar innerSidebar={<RoutineSideBar isGitIntegrated={page.props.isGitIntegrated} />} titleI18nKey="project:tabMenuRoutineTitle">
       {page}
     </ProjectLayoutWithSidebar>
   );

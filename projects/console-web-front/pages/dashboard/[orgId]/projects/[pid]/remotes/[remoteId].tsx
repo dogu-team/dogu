@@ -49,7 +49,7 @@ const RemoteItemPage: NextPageWithLayout<WithProjectProps & { remote: RemoteBase
 
 RemoteItemPage.getLayout = (page) => {
   return (
-    <ProjectLayoutWithSidebar innerSidebar={<RemoteSidebar remote={page.props.remote} />} title="Remote">
+    <ProjectLayoutWithSidebar innerSidebar={<RemoteSidebar remote={page.props.remote} />} titleI18nKey="project:tabMenuRemoteTitle">
       {page}
     </ProjectLayoutWithSidebar>
   );

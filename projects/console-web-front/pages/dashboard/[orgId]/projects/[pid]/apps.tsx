@@ -37,7 +37,7 @@ const ProjectAppPage: NextPageWithLayout<WithProjectProps> = ({ project, organiz
 };
 
 ProjectAppPage.getLayout = (page) => {
-  return <ProjectLayoutWithSidebar title="Application">{page}</ProjectLayoutWithSidebar>;
+  return <ProjectLayoutWithSidebar titleI18nKey="project:tabMenuAppTitle">{page}</ProjectLayoutWithSidebar>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;

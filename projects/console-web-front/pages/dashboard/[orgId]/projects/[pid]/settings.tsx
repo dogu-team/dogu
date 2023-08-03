@@ -172,7 +172,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
 };
 
 ProjectSettingPage.getLayout = (page) => {
-  return <ProjectLayoutWithSidebar title="Settings">{page}</ProjectLayoutWithSidebar>;
+  return <ProjectLayoutWithSidebar titleI18nKey="project:tabMenuSettingTitle">{page}</ProjectLayoutWithSidebar>;
 };
 
 export const getServerSideProps: GetServerSideProps = getProjectPageServerSideProps;
