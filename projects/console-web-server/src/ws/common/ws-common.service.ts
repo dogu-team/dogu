@@ -36,8 +36,8 @@ export class WsCommonService {
       this.logger.error(`vlidateUserAuthToken. The userAuthToken is not found.`);
       return null;
     }
-    // refresh token으로만 검증한다.
-    // access token 검증 실패 시, token 재발급 방법이 없다.
+    // Validate only with refresh token.
+    // If the access token verification fails, there is no way to reissue the token.
     const refreshToken = userAuthToken.refreshToken;
 
     let userId;

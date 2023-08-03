@@ -1,6 +1,6 @@
 import { EventParam, HttpProxyRequest, Param, ParamValue, RequestParam, Result, WebSocketProxyConnect, WebSocketProxyId } from '@dogu-private/console-host-agent';
 import { DeviceId, ErrorResultError, OrganizationId } from '@dogu-private/types';
-import { Class, Instance, loop, Method, stringify, transformAndValidate, WebSocketSpec } from '@dogu-tech/common';
+import { Class, HeaderRecord, Instance, loop, Method, stringify, transformAndValidate, WebSocketSpec } from '@dogu-tech/common';
 import { DeviceServerResponseDto } from '@dogu-tech/device-client-common';
 import { Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
@@ -8,7 +8,7 @@ import { config } from '../../config';
 import { DoguLogger } from '../logger/logger';
 import { DeviceMessageQueue } from './device-message.queue';
 
-class WebSocketProxy<S extends Class<S>, R extends Class<R>> {
+export class WebSocketProxy<S extends Class<S>, R extends Class<R>> {
   constructor(
     private readonly deviceMessageRelayer: DeviceMessageRelayer,
     private readonly organizationId: OrganizationId,
@@ -23,6 +23,10 @@ class WebSocketProxy<S extends Class<S>, R extends Class<R>> {
 
   receive(): AsyncGenerator<Instance<R>> {
     return this.deviceMessageRelayer.receiveWebSocketMessage(this.organizationId, this.deviceId, this.webSocketProxyId, this.spec);
+  }
+
+  close(): Promise<void> {
+    return this.deviceMessageRelayer.close(this.organizationId, this.deviceId, this.webSocketProxyId);
   }
 }
 
@@ -136,13 +140,19 @@ export class DeviceMessageRelayer {
     throw new Error(`Unexpected result kind ${kind}`);
   }
 
-  async connectWebSocket<S extends Class<S>, R extends Class<R>>(organizationId: OrganizationId, deviceId: DeviceId, spec: WebSocketSpec<S, R>): Promise<WebSocketProxy<S, R>> {
+  async connectWebSocket<S extends Class<S>, R extends Class<R>>(
+    organizationId: OrganizationId,
+    deviceId: DeviceId,
+    spec: WebSocketSpec<S, R>,
+    headers: HeaderRecord = {},
+  ): Promise<WebSocketProxy<S, R>> {
     const { path } = spec;
     const webSocketProxyId = uuidv4();
     const WebSocketProxyConnect: WebSocketProxyConnect = {
       kind: 'WebSocketProxyConnect',
       webSocketProxyId,
       path,
+      headers,
     };
     const eventParam: EventParam = {
       kind: 'EventParam',
@@ -203,6 +213,29 @@ export class DeviceMessageRelayer {
           kind: 'WebSocketProxySendMessage',
           webSocketProxyId,
           data,
+        },
+      },
+    };
+    const result = await this.sendParam(organizationId, deviceId, eventParam);
+    const { value } = result;
+    const { kind } = value;
+    if (kind === 'EventResult') {
+      return;
+    } else if (kind === 'ErrorResult') {
+      const errorResult = value.value;
+      throw new ErrorResultError(errorResult.code, errorResult.message, errorResult.details);
+    }
+    throw new Error(`Unexpected result kind ${kind}`);
+  }
+
+  async close(organizationId: OrganizationId, deviceId: DeviceId, webSocketProxyId: string): Promise<void> {
+    const eventParam: EventParam = {
+      kind: 'EventParam',
+      value: {
+        kind: 'WebSocketProxySend',
+        value: {
+          kind: 'WebSocketProxySendClose',
+          webSocketProxyId,
         },
       },
     };

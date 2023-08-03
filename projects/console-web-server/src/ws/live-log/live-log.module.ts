@@ -7,11 +7,11 @@ import { RoutinePipeline } from '../../db/entity/pipeline.entity';
 import { Project } from '../../db/entity/project.entity';
 import { RoutineStep } from '../../db/entity/step.entity';
 import { InfluxDbModule } from '../../module/influxdb/influxdb.module';
-import { WsCommonService } from '../common/ws-common.service';
+import { WsCommonModule } from '../common/ws-common.module';
 import { LiveLogGateway } from './live-log.gateway';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Device, Project, RoutinePipeline, RoutineJob, RoutineDeviceJob, RoutineStep]), InfluxDbModule],
-  providers: [LiveLogGateway, WsCommonService],
+  imports: [TypeOrmModule.forFeature([Device, Project, RoutinePipeline, RoutineJob, RoutineDeviceJob, RoutineStep]), InfluxDbModule, WsCommonModule],
+  providers: [LiveLogGateway],
 })
 export class LiveLogModule {}

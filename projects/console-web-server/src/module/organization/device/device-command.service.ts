@@ -1,9 +1,22 @@
 import { DeviceId, LocalDeviceDetectToken, OrganizationId, Serial } from '@dogu-private/types';
-import { Instance, stringify } from '@dogu-tech/common';
-import { Device, DeviceInstallApp, DeviceJoinWifi, DeviceReset, DeviceRunApp, DeviceStreaming, StreamingAnswerDto } from '@dogu-tech/device-client-common';
+import { HeaderRecord, Instance, stringify } from '@dogu-tech/common';
+import {
+  Device,
+  DeviceInstallApp,
+  DeviceJoinWifi,
+  DeviceRelay,
+  DeviceReset,
+  DeviceRunApp,
+  DeviceStreaming,
+  DoguDeviceRelayPortHeaderKey,
+  DoguDeviceRelaySerialHeaderKey,
+  StreamingAnswerDto,
+  TcpRelayRequest,
+  TcpRelayResponse,
+} from '@dogu-tech/device-client-common';
 import { Injectable } from '@nestjs/common';
 import { env } from '../../../env';
-import { DeviceMessageRelayer } from '../../device-message/device-message.relayer';
+import { DeviceMessageRelayer, WebSocketProxy } from '../../device-message/device-message.relayer';
 import { DoguLogger } from '../../logger/logger';
 import { DeviceStreamingOfferDto } from './dto/device.dto';
 
@@ -118,5 +131,12 @@ export class DeviceCommandService {
     for await (const _ of joinWifiProxy.receive()) {
     }
     this.logger.info(`DeviceCommandService.resetAndJoinWifi. joinWifi done`);
+  }
+
+  async relayTcp(organizationId: OrganizationId, deviceId: DeviceId, serial: Serial, port: number): Promise<WebSocketProxy<typeof TcpRelayRequest, typeof TcpRelayResponse>> {
+    const headers: HeaderRecord = {};
+    headers[DoguDeviceRelaySerialHeaderKey] = serial;
+    headers[DoguDeviceRelayPortHeaderKey] = port.toString();
+    return await this.deviceMessageRelayer.connectWebSocket(organizationId, deviceId, DeviceRelay, headers);
   }
 }
