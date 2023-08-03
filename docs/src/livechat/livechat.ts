@@ -1,7 +1,9 @@
 function initLiveChat() {
+  const MAX_RETRY_COUNT = 100;
   let retryCount = 0;
+
   const setUserLoop = setInterval(() => {
-    if (retryCount > 10) {
+    if (retryCount > MAX_RETRY_COUNT) {
       clearInterval(setUserLoop);
       return;
     }
