@@ -18,7 +18,6 @@ import { getErrorMessage } from 'src/utils/error';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
 import { sendErrorNotification, sendSuccessNotification } from '../../../../../src/utils/antd';
 import DangerZone from '../../../../../src/components/common/boxes/DangerZone';
-import GitIntegrationDangerButton from '../../../../../src/components/projects/GitIntegrationDangerButton';
 import TokenCopyInput from '../../../../../src/components/common/TokenCopyInput';
 import RegenerateTokenButton from '../../../../../src/components/common/RegenerateTokenButton';
 import AccessTokenButton from '../../../../../src/components/common/AccessTokenButton';
@@ -27,6 +26,7 @@ import useEventStore from '../../../../../src/stores/events';
 import GithubButton from '../../../../../src/components/integration/GithubButton';
 import GitlabButton from '../../../../../src/components/integration/GitlabButton';
 import useRefresh from '../../../../../src/hooks/useRefresh';
+import SettingTitleDivider from '../../../../../src/components/common/SettingTitleDivider';
 
 const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, organization, mutateProject }) => {
   const [editingProject, setEditingProject] = useState<ProjectBase>(project);
@@ -93,8 +93,20 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
         <title>Project settings - {project.name} | Dogu</title>
       </Head>
       <Box>
+        <SettingTitleDivider title="General" style={{ marginTop: '1rem' }} />
         <Content>
-          <ContentTitle>{t('project:settingNameInputLabel')}</ContentTitle>
+          <div style={{ marginBottom: '1rem' }}>
+            <Label>{t('project:organizationIdLabel')}</Label>
+            <TokenCopyInput value={organization.organizationId} />
+          </div>
+          <div style={{ marginBottom: '1rem' }}>
+            <Label>{t('project:projectIdLabel')}</Label>
+            <TokenCopyInput value={project.projectId} />
+          </div>
+        </Content>
+        <Divider />
+        <Content>
+          <Label>{t('project:settingNameInputLabel')}</Label>
           <Input
             value={editingProject?.name}
             onChange={(e) =>
@@ -108,7 +120,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
           />
         </Content>
         <Content>
-          <ContentTitle>{t('project:settingDescInputLabel')}</ContentTitle>
+          <Label>{t('project:settingDescInputLabel')}</Label>
           <Input
             value={editingProject?.description}
             onChange={(e) =>
@@ -124,25 +136,14 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
         <Button type="primary" onClick={handleSave} disabled={loading || !isChanged} access-id="update-project-profile-btn">
           {t('common:save')}
         </Button>
-        <Divider />
 
+        <SettingTitleDivider title="Token" />
         <Content>
-          <div style={{ marginBottom: '1rem' }}>
-            <ContentSubTitle>{t('project:organizationIdLabel')}</ContentSubTitle>
-            <TokenCopyInput value={organization.organizationId} />
-          </div>
-          <div style={{ marginBottom: '1rem' }}>
-            <ContentSubTitle>{t('project:projectIdLabel')}</ContentSubTitle>
-            <TokenCopyInput value={project.projectId} />
-          </div>
-          <div>
-            <ContentSubTitle>Project Access Token</ContentSubTitle>
-            <AccessTokenButton getToken={getToken} />
-          </div>
+          <Label>Project Access Token</Label>
+          <AccessTokenButton getToken={getToken} />
         </Content>
 
-        <Divider />
-
+        <SettingTitleDivider title="Integrations" />
         <Content>
           <div>
             <GithubButton
@@ -162,36 +163,40 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
           </div>
         </Content>
 
-        <Divider />
-
-        <DangerZone>
-          {/* <DangerZone.Item title={t('project:editGitIntegrationMenuTitle')} description={t('project:editGitIntegrationDescriptionText')} button={<GitIntegrationDangerButton />} /> */}
-          <DangerZone.Item
-            title={t('common:regenerateAccessTokenTitle')}
-            description={t('common:regenerateAccessTokenDescriptionText')}
-            button={<RegenerateTokenButton regenerate={async () => regenerateProjectAccessToken(organization.organizationId, project.projectId)} />}
-          />
-          <DangerZone.Item
-            title={t('project:deleteProjectMenuTitle')}
-            description={t('project:deleteProjectDescriptionText')}
-            button={
-              <DangerZone.Button
-                modalTitle={t('project:deleteProjectConfirmModalTitle')}
-                modalContent={
-                  <Trans i18nKey="project:settingDeleteProjectConfirmContent" components={{ b: <b style={{ fontWeight: '700' }} />, br: <br /> }} values={{ name: project.name }} />
-                }
-                onConfirm={handleDelete}
-                modalButtonTitle={t('project:deleteProjectConfirmModalButtonText')}
-                access-id="delete-project-btn"
-                buttonProps={{
-                  id: 'delete-project-confirm-btn',
-                }}
-              >
-                {t('project:deleteProjectButtonText')}
-              </DangerZone.Button>
-            }
-          />
-        </DangerZone>
+        <div style={{ marginTop: '3rem' }}>
+          <DangerZone>
+            {/* <DangerZone.Item title={t('project:editGitIntegrationMenuTitle')} description={t('project:editGitIntegrationDescriptionText')} button={<GitIntegrationDangerButton />} /> */}
+            <DangerZone.Item
+              title={t('common:regenerateAccessTokenTitle')}
+              description={t('common:regenerateAccessTokenDescriptionText')}
+              button={<RegenerateTokenButton regenerate={async () => regenerateProjectAccessToken(organization.organizationId, project.projectId)} />}
+            />
+            <DangerZone.Item
+              title={t('project:deleteProjectMenuTitle')}
+              description={t('project:deleteProjectDescriptionText')}
+              button={
+                <DangerZone.Button
+                  modalTitle={t('project:deleteProjectConfirmModalTitle')}
+                  modalContent={
+                    <Trans
+                      i18nKey="project:settingDeleteProjectConfirmContent"
+                      components={{ b: <b style={{ fontWeight: '700' }} />, br: <br /> }}
+                      values={{ name: project.name }}
+                    />
+                  }
+                  onConfirm={handleDelete}
+                  modalButtonTitle={t('project:deleteProjectConfirmModalButtonText')}
+                  access-id="delete-project-btn"
+                  buttonProps={{
+                    id: 'delete-project-confirm-btn',
+                  }}
+                >
+                  {t('project:deleteProjectButtonText')}
+                </DangerZone.Button>
+              }
+            />
+          </DangerZone>
+        </div>
       </Box>
     </>
   );
@@ -210,16 +215,10 @@ const Box = styled.div`
 `;
 
 const Content = styled.div`
-  margin-bottom: 24px;
+  margin-bottom: 1rem;
 `;
 
-const ContentTitle = styled.p`
-  font-size: 1.1rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-`;
-
-const ContentSubTitle = styled.p`
+const Label = styled.p`
   font-weight: 500;
   margin-bottom: 0.5rem;
   font-size: 0.9rem;

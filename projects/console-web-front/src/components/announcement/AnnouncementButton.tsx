@@ -1,9 +1,9 @@
 import { TfiAnnouncement } from 'react-icons/tfi';
 import styled from 'styled-components';
-
-import { flexRowCenteredStyle } from '../../styles/box';
 import { useState } from 'react';
 import { Drawer, Empty } from 'antd';
+
+import { flexRowCenteredStyle } from '../../styles/box';
 
 const AnnouncementButton = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,7 +46,7 @@ const StyledButton = styled.button`
 
 const StyledDrawer = styled(Drawer)`
   .ant-drawer-body {
-    background-color: ${(props) => props.theme.colorPrimary}11;
+    background-color: ${(props) => props.theme.colorPrimary}18;
   }
 `;
 
