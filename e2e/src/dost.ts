@@ -134,6 +134,7 @@ export async function launchDost(): Promise<Page> {
       if (page.url().includes('127.0.0.1:3333')) {
         resolve(page);
       } else {
+        console.log(`electronApp Window closed: ${page.url()}`);
         return;
       }
 
