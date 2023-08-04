@@ -112,6 +112,7 @@ export module ProcessManager {
   }
 
   export async function killByPorts(ports: number[]): Promise<void> {
+    console.log(`Killing processes using ports ${stringify(ports)}`);
     if (process.platform === 'win32') {
       await killByPortsOnWindows(ports);
     } else {
