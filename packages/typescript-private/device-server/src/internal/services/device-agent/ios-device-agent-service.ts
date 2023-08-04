@@ -3,6 +3,7 @@ import { IosDeviceAgentServiceService } from '@dogu-private/types/protocol/gener
 import { GrpcClientBase } from '@dogu-private/types/protocol/grpc/base';
 import { Printable } from '@dogu-tech/common';
 import { credentials, makeClientConstructor, ServiceError } from '@grpc/grpc-js';
+import { DcIdaIsPortListeningParam, DcIdaIsPortListeningResult } from '../../../../../types/src/protocol/generated';
 import { DeviceAgentService } from '../../services/device-agent/device-agent-service';
 
 type DcIdaParam = PrivateProtocol.DcIdaParam;
@@ -118,6 +119,49 @@ export class IosDeviceAgentService extends GrpcClientBase implements DeviceAgent
           }
 
           resolve(value.value.dcIdaRunappResult);
+        },
+      );
+    });
+  }
+  async isPortListening(param: DcIdaIsPortListeningParam): Promise<DcIdaIsPortListeningResult> {
+    return new Promise((resolve, reject) => {
+      if (!this.client) {
+        throw GRPC_CLIENT_NOT_FOUND_ERROR;
+      }
+
+      const dcIdaParam: DcIdaParam = {
+        value: {
+          $case: 'dcIdaIsPortListeningParam',
+          dcIdaIsPortListeningParam: param,
+        },
+      };
+      this.client.makeUnaryRequest<DcIdaParam, DcIdaResult>(
+        ServiceDefenition.call.path,
+        ServiceDefenition.call.requestSerialize,
+        ServiceDefenition.call.responseDeserialize,
+        dcIdaParam,
+        this.createMetadata(),
+        (error?: ServiceError | null, value?: DcIdaResult) => {
+          if (error) {
+            reject(error);
+            return;
+          }
+
+          if (value == null) {
+            reject(GRPC_ACTION_NOT_FOUND_ERROR);
+            return;
+          }
+
+          if (value.value == null) {
+            reject(GRPC_RETURN_NOT_FOUND_ERROR);
+            return;
+          }
+          if (value.value.$case !== 'dcIdaIsPortListeningResult') {
+            reject(GRPC_RETURN_NOT_FOUND_ERROR);
+            return;
+          }
+
+          resolve(value.value.dcIdaIsPortListeningResult);
         },
       );
     });

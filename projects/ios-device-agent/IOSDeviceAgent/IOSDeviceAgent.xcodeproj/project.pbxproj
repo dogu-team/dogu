@@ -154,6 +154,7 @@
 		71F5BE25252E576C00EE9EBA /* XCUIElement+FBSwiping.m in Sources */ = {isa = PBXBuildFile; fileRef = 71F5BE22252E576C00EE9EBA /* XCUIElement+FBSwiping.m */; };
 		71F5BE4F252F14EB00EE9EBA /* FBExceptions.h in Headers */ = {isa = PBXBuildFile; fileRef = 71F5BE4D252F14EB00EE9EBA /* FBExceptions.h */; };
 		71F5BE51252F14EB00EE9EBA /* FBExceptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 71F5BE4E252F14EB00EE9EBA /* FBExceptions.m */; };
+		A61FD12B2A7CA530008AFCBB /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = A61FD12A2A7CA530008AFCBB /* Network.swift */; };
 		A6278B122A30C58100F48325 /* UnknownSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6278B112A30C58100F48325 /* UnknownSession.swift */; };
 		A64995C0299CC11300238E2A /* RelayResponser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64995BF299CC11300238E2A /* RelayResponser.swift */; };
 		A64995C2299CCAEF00238E2A /* ControlResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = A64995C1299CCAEF00238E2A /* ControlResult.swift */; };
@@ -684,6 +685,7 @@
 		71F5BE33252E5B2200EE9EBA /* FBElementSwipingTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FBElementSwipingTests.m; sourceTree = "<group>"; };
 		71F5BE4D252F14EB00EE9EBA /* FBExceptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FBExceptions.h; sourceTree = "<group>"; };
 		71F5BE4E252F14EB00EE9EBA /* FBExceptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FBExceptions.m; sourceTree = "<group>"; };
+		A61FD12A2A7CA530008AFCBB /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		A6278B112A30C58100F48325 /* UnknownSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnknownSession.swift; sourceTree = "<group>"; };
 		A64995BF299CC11300238E2A /* RelayResponser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RelayResponser.swift; sourceTree = "<group>"; };
 		A64995C1299CCAEF00238E2A /* ControlResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlResult.swift; sourceTree = "<group>"; };
@@ -1078,6 +1080,7 @@
 				A64995C1299CCAEF00238E2A /* ControlResult.swift */,
 				A69289652A284C640026DC33 /* RecordUtils.swift */,
 				A69289672A2855260026DC33 /* XCTestUtils.swift */,
+				A61FD12A2A7CA530008AFCBB /* Network.swift */,
 			);
 			path = IOSDeviceAgentLib;
 			sourceTree = "<group>";
@@ -2345,6 +2348,7 @@
 				2867CE71999818D5FD6A92EB /* KeyControlStructures.swift in Sources */,
 				2867C14D44798270408E7D56 /* ControlStructures.swift in Sources */,
 				A64995C2299CCAEF00238E2A /* ControlResult.swift in Sources */,
+				A61FD12B2A7CA530008AFCBB /* Network.swift in Sources */,
 				A69289662A284C640026DC33 /* RecordUtils.swift in Sources */,
 				2867C0D9EE325D5D389BB1DB /* TouchControlBroker.swift in Sources */,
 				2867C63FD8EB673D1F084A22 /* KeyControlBroker.swift in Sources */,

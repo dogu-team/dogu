@@ -34,6 +34,17 @@ public final class DcIda {
      */
     com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoParam getDcIdaGetSystemInfoParam();
 
+    /**
+     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+     * @return Whether the dcIdaIsPortListeningParam field is set.
+     */
+    boolean hasDcIdaIsPortListeningParam();
+    /**
+     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+     * @return The dcIdaIsPortListeningParam.
+     */
+    com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam getDcIdaIsPortListeningParam();
+
     public com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam.ValueCase getValueCase();
   }
   /**
@@ -51,6 +62,7 @@ public final class DcIda {
     public enum ValueCase {
       DC_IDA_RUNAPP_PARAM(1),
       DC_IDA_GET_SYSTEM_INFO_PARAM(2),
+      DC_IDA_IS_PORT_LISTENING_PARAM(3),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -68,6 +80,7 @@ public final class DcIda {
         switch (value) {
           case 1: return DC_IDA_RUNAPP_PARAM;
           case 2: return DC_IDA_GET_SYSTEM_INFO_PARAM;
+          case 3: return DC_IDA_IS_PORT_LISTENING_PARAM;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -184,6 +197,56 @@ public final class DcIda {
      */
     private void clearDcIdaGetSystemInfoParam() {
       if (valueCase_ == 2) {
+        valueCase_ = 0;
+        value_ = null;
+      }
+    }
+
+    public static final int DC_IDA_IS_PORT_LISTENING_PARAM_FIELD_NUMBER = 3;
+    /**
+     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+     */
+    @java.lang.Override
+    public boolean hasDcIdaIsPortListeningParam() {
+      return valueCase_ == 3;
+    }
+    /**
+     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam getDcIdaIsPortListeningParam() {
+      if (valueCase_ == 3) {
+         return (com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam) value_;
+      }
+      return com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam.getDefaultInstance();
+    }
+    /**
+     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+     */
+    private void setDcIdaIsPortListeningParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam value) {
+      value.getClass();
+  value_ = value;
+      valueCase_ = 3;
+    }
+    /**
+     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+     */
+    private void mergeDcIdaIsPortListeningParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam value) {
+      value.getClass();
+  if (valueCase_ == 3 &&
+          value_ != com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam.newBuilder((com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam) value_)
+            .mergeFrom(value).buildPartial();
+      } else {
+        value_ = value;
+      }
+      valueCase_ = 3;
+    }
+    /**
+     * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+     */
+    private void clearDcIdaIsPortListeningParam() {
+      if (valueCase_ == 3) {
         valueCase_ = 0;
         value_ = null;
       }
@@ -392,6 +455,54 @@ public final class DcIda {
         return this;
       }
 
+      /**
+       * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+       */
+      @java.lang.Override
+      public boolean hasDcIdaIsPortListeningParam() {
+        return instance.hasDcIdaIsPortListeningParam();
+      }
+      /**
+       * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam getDcIdaIsPortListeningParam() {
+        return instance.getDcIdaIsPortListeningParam();
+      }
+      /**
+       * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+       */
+      public Builder setDcIdaIsPortListeningParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam value) {
+        copyOnWrite();
+        instance.setDcIdaIsPortListeningParam(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+       */
+      public Builder setDcIdaIsPortListeningParam(
+          com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam.Builder builderForValue) {
+        copyOnWrite();
+        instance.setDcIdaIsPortListeningParam(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+       */
+      public Builder mergeDcIdaIsPortListeningParam(com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam value) {
+        copyOnWrite();
+        instance.mergeDcIdaIsPortListeningParam(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;</code>
+       */
+      public Builder clearDcIdaIsPortListeningParam() {
+        copyOnWrite();
+        instance.clearDcIdaIsPortListeningParam();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:inner.params.DcIdaParam)
     }
     @java.lang.Override
@@ -412,10 +523,11 @@ public final class DcIda {
               "valueCase_",
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppParam.class,
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoParam.class,
+              com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam.class,
             };
             java.lang.String info =
-                "\u0000\u0002\u0001\u0000\u0001\u0002\u0002\u0000\u0000\u0000\u0001<\u0000\u0002<" +
-                "\u0000";
+                "\u0000\u0003\u0001\u0000\u0001\u0003\u0003\u0000\u0000\u0000\u0001<\u0000\u0002<" +
+                "\u0000\u0003<\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
@@ -496,6 +608,17 @@ public final class DcIda {
      */
     com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoResult getDcIdaGetSystemInfoResult();
 
+    /**
+     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+     * @return Whether the dcIdaIsPortListeningResult field is set.
+     */
+    boolean hasDcIdaIsPortListeningResult();
+    /**
+     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+     * @return The dcIdaIsPortListeningResult.
+     */
+    com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult getDcIdaIsPortListeningResult();
+
     public com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult.ValueCase getValueCase();
   }
   /**
@@ -513,6 +636,7 @@ public final class DcIda {
     public enum ValueCase {
       DC_IDA_RUNAPP_RESULT(1),
       DC_IDA_GET_SYSTEM_INFO_RESULT(2),
+      DC_IDA_IS_PORT_LISTENING_RESULT(3),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -530,6 +654,7 @@ public final class DcIda {
         switch (value) {
           case 1: return DC_IDA_RUNAPP_RESULT;
           case 2: return DC_IDA_GET_SYSTEM_INFO_RESULT;
+          case 3: return DC_IDA_IS_PORT_LISTENING_RESULT;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -646,6 +771,56 @@ public final class DcIda {
      */
     private void clearDcIdaGetSystemInfoResult() {
       if (valueCase_ == 2) {
+        valueCase_ = 0;
+        value_ = null;
+      }
+    }
+
+    public static final int DC_IDA_IS_PORT_LISTENING_RESULT_FIELD_NUMBER = 3;
+    /**
+     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+     */
+    @java.lang.Override
+    public boolean hasDcIdaIsPortListeningResult() {
+      return valueCase_ == 3;
+    }
+    /**
+     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult getDcIdaIsPortListeningResult() {
+      if (valueCase_ == 3) {
+         return (com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult) value_;
+      }
+      return com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult.getDefaultInstance();
+    }
+    /**
+     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+     */
+    private void setDcIdaIsPortListeningResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult value) {
+      value.getClass();
+  value_ = value;
+      valueCase_ = 3;
+    }
+    /**
+     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+     */
+    private void mergeDcIdaIsPortListeningResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult value) {
+      value.getClass();
+  if (valueCase_ == 3 &&
+          value_ != com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult.newBuilder((com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult) value_)
+            .mergeFrom(value).buildPartial();
+      } else {
+        value_ = value;
+      }
+      valueCase_ = 3;
+    }
+    /**
+     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+     */
+    private void clearDcIdaIsPortListeningResult() {
+      if (valueCase_ == 3) {
         valueCase_ = 0;
         value_ = null;
       }
@@ -854,6 +1029,54 @@ public final class DcIda {
         return this;
       }
 
+      /**
+       * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+       */
+      @java.lang.Override
+      public boolean hasDcIdaIsPortListeningResult() {
+        return instance.hasDcIdaIsPortListeningResult();
+      }
+      /**
+       * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult getDcIdaIsPortListeningResult() {
+        return instance.getDcIdaIsPortListeningResult();
+      }
+      /**
+       * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+       */
+      public Builder setDcIdaIsPortListeningResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult value) {
+        copyOnWrite();
+        instance.setDcIdaIsPortListeningResult(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+       */
+      public Builder setDcIdaIsPortListeningResult(
+          com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult.Builder builderForValue) {
+        copyOnWrite();
+        instance.setDcIdaIsPortListeningResult(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+       */
+      public Builder mergeDcIdaIsPortListeningResult(com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult value) {
+        copyOnWrite();
+        instance.mergeDcIdaIsPortListeningResult(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+       */
+      public Builder clearDcIdaIsPortListeningResult() {
+        copyOnWrite();
+        instance.clearDcIdaIsPortListeningResult();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:inner.params.DcIdaResult)
     }
     @java.lang.Override
@@ -874,10 +1097,11 @@ public final class DcIda {
               "valueCase_",
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppResult.class,
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoResult.class,
+              com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult.class,
             };
             java.lang.String info =
-                "\u0000\u0002\u0001\u0000\u0001\u0002\u0002\u0000\u0000\u0000\u0001<\u0000\u0002<" +
-                "\u0000";
+                "\u0000\u0003\u0001\u0000\u0001\u0003\u0003\u0000\u0000\u0000\u0001<\u0000\u0002<" +
+                "\u0000\u0003<\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

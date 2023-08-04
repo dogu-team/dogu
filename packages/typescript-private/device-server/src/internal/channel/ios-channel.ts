@@ -294,8 +294,9 @@ export class IosChannel implements DeviceChannel {
     }
   }
 
-  isPortListening(port: number): Promise<boolean> {
-    throw new Error('Method not implemented.');
+  async isPortListening(port: number): Promise<boolean> {
+    const res = await this.deviceAgent.isPortListening({ port });
+    return res.isListening;
   }
 
   private async findDotAppPath(appPath: string): Promise<string> {

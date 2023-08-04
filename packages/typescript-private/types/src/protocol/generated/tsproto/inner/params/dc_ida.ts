@@ -1,6 +1,6 @@
 /* eslint-disable */
 import _m0 from 'protobufjs/minimal';
-import { DcIdaGetSystemInfoParam, DcIdaGetSystemInfoResult, DcIdaRunAppParam, DcIdaRunAppResult } from '../types/dc_ida';
+import { DcIdaGetSystemInfoParam, DcIdaGetSystemInfoResult, DcIdaIsPortListeningParam, DcIdaIsPortListeningResult, DcIdaRunAppParam, DcIdaRunAppResult } from '../types/dc_ida';
 
 export interface DcIdaParam {
   value?:
@@ -8,7 +8,8 @@ export interface DcIdaParam {
     | {
         $case: 'dcIdaGetSystemInfoParam';
         dcIdaGetSystemInfoParam: DcIdaGetSystemInfoParam;
-      };
+      }
+    | { $case: 'dcIdaIsPortListeningParam'; dcIdaIsPortListeningParam: DcIdaIsPortListeningParam };
 }
 
 export interface DcIdaResult {
@@ -17,7 +18,8 @@ export interface DcIdaResult {
     | {
         $case: 'dcIdaGetSystemInfoResult';
         dcIdaGetSystemInfoResult: DcIdaGetSystemInfoResult;
-      };
+      }
+    | { $case: 'dcIdaIsPortListeningResult'; dcIdaIsPortListeningResult: DcIdaIsPortListeningResult };
 }
 
 function createBaseDcIdaParam(): DcIdaParam {
@@ -31,6 +33,9 @@ export const DcIdaParam = {
     }
     if (message.value?.$case === 'dcIdaGetSystemInfoParam') {
       DcIdaGetSystemInfoParam.encode(message.value.dcIdaGetSystemInfoParam, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.value?.$case === 'dcIdaIsPortListeningParam') {
+      DcIdaIsPortListeningParam.encode(message.value.dcIdaIsPortListeningParam, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -54,6 +59,12 @@ export const DcIdaParam = {
             dcIdaGetSystemInfoParam: DcIdaGetSystemInfoParam.decode(reader, reader.uint32()),
           };
           break;
+        case 3:
+          message.value = {
+            $case: 'dcIdaIsPortListeningParam',
+            dcIdaIsPortListeningParam: DcIdaIsPortListeningParam.decode(reader, reader.uint32()),
+          };
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -71,6 +82,11 @@ export const DcIdaParam = {
             $case: 'dcIdaGetSystemInfoParam',
             dcIdaGetSystemInfoParam: DcIdaGetSystemInfoParam.fromJSON(object.dcIdaGetSystemInfoParam),
           }
+        : isSet(object.dcIdaIsPortListeningParam)
+        ? {
+            $case: 'dcIdaIsPortListeningParam',
+            dcIdaIsPortListeningParam: DcIdaIsPortListeningParam.fromJSON(object.dcIdaIsPortListeningParam),
+          }
         : undefined,
     };
   },
@@ -80,6 +96,8 @@ export const DcIdaParam = {
     message.value?.$case === 'dcIdaRunappParam' && (obj.dcIdaRunappParam = message.value?.dcIdaRunappParam ? DcIdaRunAppParam.toJSON(message.value?.dcIdaRunappParam) : undefined);
     message.value?.$case === 'dcIdaGetSystemInfoParam' &&
       (obj.dcIdaGetSystemInfoParam = message.value?.dcIdaGetSystemInfoParam ? DcIdaGetSystemInfoParam.toJSON(message.value?.dcIdaGetSystemInfoParam) : undefined);
+    message.value?.$case === 'dcIdaIsPortListeningParam' &&
+      (obj.dcIdaIsPortListeningParam = message.value?.dcIdaIsPortListeningParam ? DcIdaIsPortListeningParam.toJSON(message.value?.dcIdaIsPortListeningParam) : undefined);
     return obj;
   },
 
@@ -97,6 +115,12 @@ export const DcIdaParam = {
         dcIdaGetSystemInfoParam: DcIdaGetSystemInfoParam.fromPartial(object.value.dcIdaGetSystemInfoParam),
       };
     }
+    if (object.value?.$case === 'dcIdaIsPortListeningParam' && object.value?.dcIdaIsPortListeningParam !== undefined && object.value?.dcIdaIsPortListeningParam !== null) {
+      message.value = {
+        $case: 'dcIdaIsPortListeningParam',
+        dcIdaIsPortListeningParam: DcIdaIsPortListeningParam.fromPartial(object.value.dcIdaIsPortListeningParam),
+      };
+    }
     return message;
   },
 };
@@ -112,6 +136,9 @@ export const DcIdaResult = {
     }
     if (message.value?.$case === 'dcIdaGetSystemInfoResult') {
       DcIdaGetSystemInfoResult.encode(message.value.dcIdaGetSystemInfoResult, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.value?.$case === 'dcIdaIsPortListeningResult') {
+      DcIdaIsPortListeningResult.encode(message.value.dcIdaIsPortListeningResult, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -135,6 +162,12 @@ export const DcIdaResult = {
             dcIdaGetSystemInfoResult: DcIdaGetSystemInfoResult.decode(reader, reader.uint32()),
           };
           break;
+        case 3:
+          message.value = {
+            $case: 'dcIdaIsPortListeningResult',
+            dcIdaIsPortListeningResult: DcIdaIsPortListeningResult.decode(reader, reader.uint32()),
+          };
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -152,6 +185,11 @@ export const DcIdaResult = {
             $case: 'dcIdaGetSystemInfoResult',
             dcIdaGetSystemInfoResult: DcIdaGetSystemInfoResult.fromJSON(object.dcIdaGetSystemInfoResult),
           }
+        : isSet(object.dcIdaIsPortListeningResult)
+        ? {
+            $case: 'dcIdaIsPortListeningResult',
+            dcIdaIsPortListeningResult: DcIdaIsPortListeningResult.fromJSON(object.dcIdaIsPortListeningResult),
+          }
         : undefined,
     };
   },
@@ -162,6 +200,8 @@ export const DcIdaResult = {
       (obj.dcIdaRunappResult = message.value?.dcIdaRunappResult ? DcIdaRunAppResult.toJSON(message.value?.dcIdaRunappResult) : undefined);
     message.value?.$case === 'dcIdaGetSystemInfoResult' &&
       (obj.dcIdaGetSystemInfoResult = message.value?.dcIdaGetSystemInfoResult ? DcIdaGetSystemInfoResult.toJSON(message.value?.dcIdaGetSystemInfoResult) : undefined);
+    message.value?.$case === 'dcIdaIsPortListeningResult' &&
+      (obj.dcIdaIsPortListeningResult = message.value?.dcIdaIsPortListeningResult ? DcIdaIsPortListeningResult.toJSON(message.value?.dcIdaIsPortListeningResult) : undefined);
     return obj;
   },
 
@@ -177,6 +217,12 @@ export const DcIdaResult = {
       message.value = {
         $case: 'dcIdaGetSystemInfoResult',
         dcIdaGetSystemInfoResult: DcIdaGetSystemInfoResult.fromPartial(object.value.dcIdaGetSystemInfoResult),
+      };
+    }
+    if (object.value?.$case === 'dcIdaIsPortListeningResult' && object.value?.dcIdaIsPortListeningResult !== undefined && object.value?.dcIdaIsPortListeningResult !== null) {
+      message.value = {
+        $case: 'dcIdaIsPortListeningResult',
+        dcIdaIsPortListeningResult: DcIdaIsPortListeningResult.fromPartial(object.value.dcIdaIsPortListeningResult),
       };
     }
     return message;
