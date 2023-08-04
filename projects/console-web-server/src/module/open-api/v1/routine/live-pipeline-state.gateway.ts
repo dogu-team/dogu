@@ -101,11 +101,12 @@ export class V1LivePipelineStatusGateway implements OnGatewayConnection, OnGatew
     client.addEventListener('error', (event) => {
       this.logger.verbose('error');
     });
+
     client.addEventListener('close', async (event) => {
       const { code, reason } = event;
       this.logger.verbose('close', { code, reason });
 
-      if (code === 1000) {
+      if (code === 1006) {
         const curPipeline = await this.v1RoutineService.getRoutinePipeline(routinePipelineId)!;
         client.send(JSON.stringify(curPipeline));
 
