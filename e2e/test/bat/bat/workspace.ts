@@ -39,7 +39,7 @@ class ConsoleWebFront {
   }
 
   start(): void {
-    this.proc = ProcessManager.spawn('yarn', ['workspace', 'console-web-front', 'run', 'start', '-H', '127.0.0.1', '-p', `${this.consoleWebFrontPort}`], {
+    this.proc = ProcessManager.spawn('yarn', ['workspace', 'console-web-front', 'run', 'start', '-p', `${this.consoleWebFrontPort}`], {
       name: 'console-web-front',
       printLog: true,
       cwd: pathMap.root,
