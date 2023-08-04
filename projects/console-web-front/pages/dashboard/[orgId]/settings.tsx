@@ -191,7 +191,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
         <Divider />
 
         <Content>
-          <SlackIntegrationButton />
+          <SlackIntegrationButton isConnected={false} organizationId={organization.organizationId} />
         </Content>
 
         <Divider />

@@ -62,7 +62,10 @@ export type EventName =
 
   // project-application
   | 'onProjectApplicationUploaded'
-  | 'onProjectApplicationDeleted';
+  | 'onProjectApplicationDeleted'
+
+  // project-scm
+  | 'onProjectScmUpdated';
 
 interface EventStore {
   eventName: EventName | null;

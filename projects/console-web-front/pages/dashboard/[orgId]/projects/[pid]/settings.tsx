@@ -1,5 +1,5 @@
 import { ProjectBase } from '@dogu-private/console';
-import { PROJECT_DESC_MAX_LENGTH, PROJECT_DESC_MIN_LENGTH, PROJECT_NAME_MAX_LENGTH, PROJECT_NAME_MIN_LENGTH } from '@dogu-private/types';
+import { PROJECT_DESC_MAX_LENGTH, PROJECT_DESC_MIN_LENGTH, PROJECT_NAME_MAX_LENGTH, PROJECT_NAME_MIN_LENGTH, PROJECT_SCM_TYPE } from '@dogu-private/types';
 import { GetServerSideProps } from 'next';
 import { clone } from 'ramda';
 import styled from 'styled-components';
@@ -26,6 +26,7 @@ import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/Proj
 import useEventStore from '../../../../../src/stores/events';
 import GithubButton from '../../../../../src/components/integration/GithubButton';
 import GitlabButton from '../../../../../src/components/integration/GitlabButton';
+import useRefresh from '../../../../../src/hooks/useRefresh';
 
 const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, organization, mutateProject }) => {
   const [editingProject, setEditingProject] = useState<ProjectBase>(project);
@@ -39,6 +40,8 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
       setEditingProject(clone(project));
     }
   }, [project]);
+
+  useRefresh(['onProjectScmUpdated'], mutateProject);
 
   const handleSave = async () => {
     if (!editingProject) {
@@ -141,15 +144,28 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
         <Divider />
 
         <Content>
-          <GithubButton />
-          <div style={{ marginBottom: '1rem' }} />
-          <GitlabButton />
+          <div>
+            <GithubButton
+              isConnected={project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITHUB}
+              disabled={!!project.projectScms && project.projectScms.length > 0 && project.projectScms[0].type !== PROJECT_SCM_TYPE.GITHUB}
+              organizationId={organization.organizationId}
+              projectId={project.projectId}
+            />
+          </div>
+          <div style={{ marginTop: '1rem' }}>
+            <GitlabButton
+              isConnected={project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITLAB}
+              disabled={!!project.projectScms && project.projectScms.length > 0 && project.projectScms[0].type !== PROJECT_SCM_TYPE.GITLAB}
+              organizationId={organization.organizationId}
+              projectId={project.projectId}
+            />
+          </div>
         </Content>
 
         <Divider />
 
         <DangerZone>
-          <DangerZone.Item title={t('project:editGitIntegrationMenuTitle')} description={t('project:editGitIntegrationDescriptionText')} button={<GitIntegrationDangerButton />} />
+          {/* <DangerZone.Item title={t('project:editGitIntegrationMenuTitle')} description={t('project:editGitIntegrationDescriptionText')} button={<GitIntegrationDangerButton />} /> */}
           <DangerZone.Item
             title={t('common:regenerateAccessTokenTitle')}
             description={t('common:regenerateAccessTokenDescriptionText')}

@@ -1,6 +1,6 @@
 import { OrganizationPropCamel, ProjectPropCamel } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
-import { Body, Controller, Get, Inject, Param, Patch } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Patch } from '@nestjs/common';
 import { ProjectScm } from '../../../db/entity/project-scm.entity';
 import { PROJECT_ROLE } from '../../auth/auth.types';
 import { ProjectPermission } from '../../auth/decorators';
@@ -29,6 +29,12 @@ export class ProjectScmController {
     @Body() updateProjectGitDto: UpdateProjectGitDto,
   ): Promise<void> {
     return await this.projectScmService.updateProjectGit(organizationId, projectId, updateProjectGitDto);
+  }
+
+  @Delete()
+  @ProjectPermission(PROJECT_ROLE.ADMIN)
+  async deleteProjectGit(@Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, @Param(ProjectPropCamel.projectId) projectId: string): Promise<void> {
+    return await this.projectScmService.deleteProjectGit(organizationId, projectId);
   }
 
   @Get('scripts')

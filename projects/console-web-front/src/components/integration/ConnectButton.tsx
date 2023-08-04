@@ -1,25 +1,26 @@
-import Link from 'next/link';
-import { props } from 'ramda';
+import { CheckOutlined } from '@ant-design/icons';
+import { Button, ButtonProps } from 'antd';
 import styled from 'styled-components';
 
-interface Props {
-  isConnected?: boolean;
-  href: string;
+interface Props extends ButtonProps {
+  isConnected: boolean;
 }
 
-function ConnectButton(props: Props) {
+function IntegrationConnectButton({ isConnected, children, ...props }: Props) {
   return (
-    <Link href={props.href} target="_blank">
-      <p
-        style={{
-          fontSize: '14px',
-          marginRight: '8px',
-        }}
-      >
-        Connect
-      </p>
-    </Link>
+    <StyledButton type="ghost" {...props}>
+      {children ?? isConnected ? <CheckOutlined style={{ color: 'green' }} /> : 'Connect'}
+    </StyledButton>
   );
 }
 
-export default ConnectButton;
+export default IntegrationConnectButton;
+
+const StyledButton = styled(Button)`
+  color: ${(props) => props.theme.colorPrimary};
+
+  &:disabled {
+    color: ${(props) => props.theme.colors.gray5};
+    cursor: not-allowed;
+  }
+`;

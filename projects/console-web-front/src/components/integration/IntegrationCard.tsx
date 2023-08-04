@@ -1,24 +1,24 @@
+import { Button } from 'antd';
 import styled from 'styled-components';
-import SlackIcon from 'public/resources/icons/slack.svg';
-import ConnectButton from './ConnectButton';
 
 interface Props {
-  icon: JSX.Element;
+  icon: React.ReactNode;
   name: string;
   description: string;
-  href: string;
+  connectButton: React.ReactNode;
 }
 
-function IntegrationButton(props: Props) {
+function IntegrationButton({ icon, name, description, connectButton }: Props) {
   return (
     <Container>
-      <IconContainer>{props.icon}</IconContainer>
+      <IconContainer>{icon}</IconContainer>
       <TextContainer>
-        <p style={{ fontSize: '16px', fontWeight: 'bold' }}>{props.name}</p>
+        <p style={{ fontSize: '1rem', fontWeight: '600' }}>{name}</p>
         <div style={{ marginTop: '6px' }} />
-        <p style={{ fontSize: '12px' }}>{props.description}</p>
+        <p style={{ fontSize: '.8rem' }}>{description}</p>
       </TextContainer>
-      <ConnectButton href={props.href} />
+
+      {connectButton}
     </Container>
   );
 }
@@ -42,12 +42,14 @@ const IconContainer = styled.div`
   border-radius: 6px;
   background-color: #f5f5f5;
   margin-right: 16px;
+  flex-shrink: 0;
 `;
 
 const TextContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 75%;
+  margin-right: 0.5rem;
 `;
 
 export default IntegrationButton;

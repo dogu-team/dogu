@@ -10,23 +10,26 @@ export type GitIntegrationFormValues = {
 
 interface Props {
   form: FormInstance<GitIntegrationFormValues>;
+  hideType?: boolean;
 }
 
-const GitIntegrationForm = ({ form }: Props) => {
+const GitIntegrationForm = ({ form, hideType }: Props) => {
   return (
     <Form form={form} layout="vertical" name="git-integration">
-      <Form.Item label="Git service" name="git" required rules={[{ required: true, message: 'Select service' }]}>
-        <Radio.Group buttonStyle="solid">
-          <Radio.Button value={PROJECT_SCM_TYPE.GITHUB}>
-            <GithubFilled />
-            &nbsp;GitHub
-          </Radio.Button>
-          <Radio.Button value={PROJECT_SCM_TYPE.GITLAB}>
-            <GitlabOutlined />
-            &nbsp;GitLab
-          </Radio.Button>
-        </Radio.Group>
-      </Form.Item>
+      {!hideType && (
+        <Form.Item label="Git service" name="git" required rules={[{ required: true, message: 'Select service' }]}>
+          <Radio.Group buttonStyle="solid">
+            <Radio.Button value={PROJECT_SCM_TYPE.GITHUB}>
+              <GithubFilled />
+              &nbsp;GitHub
+            </Radio.Button>
+            <Radio.Button value={PROJECT_SCM_TYPE.GITLAB}>
+              <GitlabOutlined />
+              &nbsp;GitLab
+            </Radio.Button>
+          </Radio.Group>
+        </Form.Item>
+      )}
       <Form.Item label="Token" name="token" required rules={[{ required: true, message: 'Input token' }]}>
         <Input placeholder="ghp_1234567890abcd" required />
       </Form.Item>
