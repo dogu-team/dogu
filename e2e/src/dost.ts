@@ -99,6 +99,7 @@ export async function launchDost(): Promise<Page> {
       executablePath: electronExePath,
       cwd: dostRootPath,
       env,
+      timeout: 60_000,
     })
     .catch((error) => {
       console.error(`${dostElectronColor} ${getClockTime()}`, error);
@@ -130,7 +131,7 @@ export async function launchDost(): Promise<Page> {
     electronApp.on('window', (page) => {
       const filename = page.url()?.split('/').pop();
       console.log(`electronApp Window opened: ${filename ?? 'unknown'}`);
-      if (page.url().includes('localhost:3333')) {
+      if (page.url().includes('127.0.0.1:3333')) {
         resolve(page);
       } else {
         return;

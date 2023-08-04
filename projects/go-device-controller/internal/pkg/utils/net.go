@@ -8,7 +8,7 @@ import (
 var freePortMutex = sync.Mutex{}
 
 func ListenUDPFreePort() (*net.UDPConn, int, error) {
-	addr, err := net.ResolveUDPAddr("udp", "localhost:0")
+	addr, err := net.ResolveUDPAddr("udp", "127.0.0.1:0")
 	if err != nil {
 		return nil, 0, err
 	}
@@ -21,7 +21,7 @@ func ListenUDPFreePort() (*net.UDPConn, int, error) {
 
 func ListenTCPFreePort() (*net.TCPListener, int, error, *sync.Mutex) {
 	freePortMutex.Lock()
-	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
+	addr, err := net.ResolveTCPAddr("tcp", "127.0.0.1:0")
 	if err != nil {
 		return nil, 0, err, &freePortMutex
 	}

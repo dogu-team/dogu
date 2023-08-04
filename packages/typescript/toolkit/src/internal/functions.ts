@@ -1,12 +1,7 @@
 import { Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { DeviceClient, DeviceClientOptions, DeviceClients, DeviceClientsFactory } from '@dogu-tech/device-client';
-import { Logger, LoggerFactory, updateProcessEnv } from '@dogu-tech/node';
+import { Logger, LoggerFactory } from '@dogu-tech/node';
 import { PlatformType } from '@dogu-tech/types';
-import { tryToQuitGamiumApp } from '../gamium-utils';
-import { fillToolkitOptions, ToolkitOptions } from '../options';
-import { Toolkit } from '../toolkit';
-import { createGamiumContext, GamiumContext } from './gamium-context';
-import { logger } from './logger-instance';
 
 export function createLogger(category: string): Logger {
   return LoggerFactory.createLazy(category, { withFileTransports: true });
@@ -17,7 +12,7 @@ export async function createDeviceClients(options: DeviceClientOptions): Promise
   const { port, printable } = factory.options;
   const isPortReachableModule = await import('is-port-reachable');
   const isPortReachable = isPortReachableModule.default;
-  const isPortReachableResult = await isPortReachable(port, { host: 'localhost' });
+  const isPortReachableResult = await isPortReachable(port, { host: '127.0.0.1' });
   if (!isPortReachableResult) {
     throw new Error(`Device server is not reachable at port ${port}. Please check DOGU_DEVICE_SERVER_PORT and Device Server is running.`);
   }

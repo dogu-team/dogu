@@ -1020,6 +1020,7 @@ Dest.withOptions({
       });
 
       test('Check project deletion', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="refresh-btn"]' });
         await Timer.wait(2000, 'wait for project deletion');
         const elems = await Driver.findElements({ xpath: '//div[@access-id="project-list"]//li[contains(@class, "ant-list-item")]' });
         expect(elems.length).toBe(1);

@@ -14,7 +14,7 @@ async function sendLocalDeviceDetectToken(device: DeviceBase | undefined) {
     return;
   }
   const uuid = uuidv4();
-  const url = `http://localhost:${device.host.deviceServerPort}`;
+  const url = `http://127.0.0.1:${device.host.deviceServerPort}`;
 
   const deviceServerApi = axios.create({
     baseURL: url,

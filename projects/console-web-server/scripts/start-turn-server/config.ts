@@ -4,7 +4,7 @@ export const config = {
   userName: 'admin',
   password: 'dogutech',
   port: 3478,
-  realm: 'localhost',
+  realm: '127.0.0.1',
 };
 
 console.log('config', config);
