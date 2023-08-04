@@ -110,5 +110,9 @@
   "sidebar.managementSidebar.category.Device Farm": {
     "message": "디바이스 팜",
     "description": "The label for category Device Farm in sidebar managementSidebar"
+  },
+  "sidebar.apiSidebar.category.Project": {
+    "message": "프로젝트",
+    "description": "The label for category Project in sidebar apiSidebar"
   }
 }
