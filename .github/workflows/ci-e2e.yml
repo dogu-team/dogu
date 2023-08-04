@@ -46,7 +46,7 @@ jobs:
         with:
           project-id: 'fb2b1e15-e828-46f1-894a-9e58aa3313dd'
           routine-id: 'a22a7b3a-59f7-4a86-b5cf-dac990e322a7'
-          address: api.dev.dogutech.io
+          api-url: https://api.dev.dogutech.io
         env:
           DOGU_TOKEN: ${{ secrets.DOGU_DEV_DOGUDOGU_ORG_TOKEN }}
 
