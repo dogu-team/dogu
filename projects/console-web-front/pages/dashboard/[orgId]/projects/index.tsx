@@ -27,7 +27,13 @@ const TeamProjectsPage: NextPageWithLayout<WithOrganizationProps> = ({ user, org
         }
         table={<ProjectListController organizationId={organization.organizationId} />}
       />
-      <LiveChat name={user.name} email={user.email} organizationId={organization.organizationId} />
+      <LiveChat
+        user={{
+          name: user.name,
+          email: user.email,
+          organizationId: organization.organizationId,
+        }}
+      />
     </>
   );
 };

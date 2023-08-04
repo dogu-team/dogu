@@ -1,9 +1,11 @@
 import Script from 'next/script';
 
 interface Props {
-  name: string;
-  email: string;
-  organizationId: string;
+  user?: {
+    name: string;
+    email: string;
+    organizationId: string;
+  };
 }
 
 function LiveChat(props: Props) {
@@ -27,7 +29,10 @@ function LiveChat(props: Props) {
           //@ts-ignore
           const fcWidget = window.fcWidget;
           if (fcWidget && fcWidget.user) {
-            fcWidget.user.setProperties({ firstName: props.name, lastName: props.organizationId, email: props.email });
+            if (props.user) {
+              fcWidget.user.setProperties({ firstName: props.user.name, lastName: props.user.organizationId, email: props.user.email });
+            }
+
             clearInterval(setUserLoop);
             return;
           }
