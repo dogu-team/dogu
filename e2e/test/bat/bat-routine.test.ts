@@ -191,7 +191,7 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: '//button[@access-id="submit-org-profile-btn"]' });
         await Timer.wait(2000, 'wait for changing organization name');
         const value = await Driver.getText({ xpath: '//p[@access-id="sb-title"]' });
-        expect(value).toBe(`${`${values.value.USER_NAME}'s organization`.toUpperCase()}1234`);
+        expect(value).toBe(`${`${values.value.USER_NAME}'s organization`}1234`);
       });
 
       test('Show access token', async () => {
@@ -452,7 +452,7 @@ Dest.withOptions({
 
       test('Check project creation', async () => {
         const createdProjectName = await Driver.getText({ xpath: '//p[@access-id="sb-title"]' });
-        expect(createdProjectName).toBe(values.value.PROJECT_NAME.toUpperCase());
+        expect(createdProjectName).toBe(values.value.PROJECT_NAME);
       });
     });
 
@@ -535,7 +535,7 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: '//button[@access-id="update-project-profile-btn"]' });
         await Timer.wait(2000, 'wait for changing project name');
         const value = await Driver.getText({ xpath: '//p[@access-id="sb-title"]' });
-        expect(value).toBe(`${values.value.PROJECT_NAME}1`.toUpperCase());
+        expect(value).toBe(`${values.value.PROJECT_NAME}1`);
       });
 
       test('Revert rename project', async () => {
