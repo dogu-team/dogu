@@ -36,6 +36,7 @@ def dogu_client(request: FixtureRequest) -> DoguClient:
 
     return dogu_sdk.client
 
+
 @fixture(scope="session")
 def dogu_config(request: FixtureRequest) -> DoguConfig:
     dogu_sdk = request.config.pluginmanager.get_plugin(DoguSdk.name)

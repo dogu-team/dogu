@@ -21,9 +21,7 @@ class DoguSdk:
             raise Exception("dogu client is not initialized on setup")
         self.client.impl = client_impl
 
-        self._routine_dest_reporter = RoutineDestReporterFactory(
-            self.config
-        ).create()
+        self._routine_dest_reporter = RoutineDestReporterFactory(self.config).create()
         self._remote_dest_reporter = RemoteDestReporterFactory(
             self.config,
             self.client,
