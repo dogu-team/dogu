@@ -159,7 +159,7 @@ export abstract class DestHandler<DestInfoLike = any, DestDataLike = any> {
     };
   }
 
-  async onUpdate(scopeNode: JestUniqueNode, currentNode: JestNode, destState?: DestState): Promise<void> {
+  async onUpdate(scopeNode: JestUniqueNode | undefined, currentNode: JestNode, destState?: DestState): Promise<void> {
     if (!this.rootJestData) {
       throw new Error('Internal error. rootJestData is null');
     }
@@ -169,6 +169,10 @@ export abstract class DestHandler<DestInfoLike = any, DestDataLike = any> {
       const jestData = this.findByPaths(paths, this.rootJestData);
       if (!jestData) {
         throw new Error('Internal error. jestData is null');
+      }
+
+      if (!destState) {
+      } else {
       }
     } else if (currentNode.type === 'test') {
       const paths = this.createPaths(currentNode);

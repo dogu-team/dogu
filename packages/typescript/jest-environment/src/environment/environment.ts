@@ -83,23 +83,23 @@ export class DoguEnvironment extends TestEnvironment {
       event.name === 'finish_describe_definition' ||
       event.name === 'add_test' ||
       event.name === 'run_finish' ||
-      event.name === 'test_started' ||
-      event.name === 'test_done' ||
-      event.name === 'test_todo'
+      event.name === 'test_started'
     ) {
       // noop
     } else if (event.name === 'run_start') {
       await this.createDest(state.rootDescribeBlock);
     } else if (event.name === 'run_describe_start') {
-      this.scopeNode = event.describeBlock;
+      this.pushScopeNode(event.describeBlock);
       await this.updateDest(event.describeBlock, DestState.RUNNING);
     } else if (event.name === 'run_describe_finish') {
-      await this.updateDest(event.describeBlock, undefined);
-      if (this.scopeNode) {
-        this.scopeNode = this.scopeNode.parent;
+      try {
+        await this.updateDest(event.describeBlock, undefined);
+      } catch (error) {
+        this.logger.error('run_describe_finish failed', error);
       }
+      this.popScopeNode();
     } else if (event.name === 'test_start') {
-      this.scopeNode = event.test;
+      this.pushScopeNode(event.test);
     } else if (event.name === 'test_fn_start') {
       await this.updateDest(event.test, DestState.RUNNING);
     } else if (event.name === 'test_fn_success') {
@@ -107,7 +107,16 @@ export class DoguEnvironment extends TestEnvironment {
     } else if (event.name === 'test_fn_failure') {
       await this.updateDest(event.test, DestState.FAILED);
     } else if (event.name === 'test_skip') {
-      await this.updateDest(event.test, DestState.SKIPPED);
+      try {
+        await this.updateDest(event.test, DestState.SKIPPED);
+      } catch (error) {
+        this.logger.error('test_skip failed', error);
+      }
+      this.popScopeNode();
+    } else if (event.name === 'test_todo') {
+      this.popScopeNode();
+    } else if (event.name === 'test_done') {
+      this.popScopeNode();
     } else if (event.name === 'hook_start') {
       await this.updateDest(event.hook, DestState.RUNNING);
     } else if (event.name === 'hook_success') {
@@ -137,6 +146,16 @@ export class DoguEnvironment extends TestEnvironment {
       if (event.name === 'test_start') {
         event.test.mode = 'skip';
       }
+    }
+  }
+
+  private pushScopeNode(jestUniqueNode: JestUniqueNode): void {
+    this.scopeNode = jestUniqueNode;
+  }
+
+  private popScopeNode(): void {
+    if (this.scopeNode) {
+      this.scopeNode = this.scopeNode.parent;
     }
   }
 
