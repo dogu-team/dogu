@@ -80,7 +80,7 @@ const GenericSessionCommandEndPointFactory: SessionCommandEndPointFactory = asyn
   return next();
 };
 
-const SessionCommandPattern = /^\/session\/([0-9a-f-]+)(\/.*)?$/;
+const SessionCommandPattern = /^\/session\/([0-9a-zA-Z-]+)(\/.*)?$/;
 const SessionCommandFactories: SessionCommandEndPointFactory[] = [
   DeleteSessionSessionCommandEndPointFactory, //
   GenericSessionCommandEndPointFactory,
