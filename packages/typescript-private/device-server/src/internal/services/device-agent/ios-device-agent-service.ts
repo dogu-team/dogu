@@ -3,13 +3,14 @@ import { IosDeviceAgentServiceService } from '@dogu-private/types/protocol/gener
 import { GrpcClientBase } from '@dogu-private/types/protocol/grpc/base';
 import { Printable } from '@dogu-tech/common';
 import { credentials, makeClientConstructor, ServiceError } from '@grpc/grpc-js';
-import { DcIdaIsPortListeningParam, DcIdaIsPortListeningResult } from '../../../../../types/src/protocol/generated';
 import { DeviceAgentService } from '../../services/device-agent/device-agent-service';
 
 type DcIdaParam = PrivateProtocol.DcIdaParam;
 type DcIdaResult = PrivateProtocol.DcIdaResult;
 type DcIdaRunAppParam = PrivateProtocol.DcIdaRunAppParam;
 type DcIdaRunAppResult = PrivateProtocol.DcIdaRunAppResult;
+type DcIdaIsPortListeningParam = PrivateProtocol.DcIdaIsPortListeningParam;
+type DcIdaIsPortListeningResult = PrivateProtocol.DcIdaIsPortListeningResult;
 
 export type DcIdaParamKeys = OneofUnionTypes.UnionValueKeys<DcIdaParam>;
 export type DcIdaParamUnionPick<Key> = OneofUnionTypes.UnionValuePick<DcIdaParam, Key>;

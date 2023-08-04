@@ -50,24 +50,6 @@ export interface BatchHttpResponse {
   items: BatchHttpResponseItem[];
 }
 
-export interface BatchHttpRequestItem extends Omit<HttpProxyRequest, 'kind'> {
-  responseBodyConstructor: ClassConstructor<object>;
-}
-
-export interface BatchHttpRequest {
-  parallel: boolean;
-  items: BatchHttpRequestItem[];
-}
-
-export interface BatchHttpResponseItem {
-  error?: ErrorResultDto;
-  response?: object;
-}
-
-export interface BatchHttpResponse {
-  items: BatchHttpResponseItem[];
-}
-
 @Injectable()
 export class DeviceMessageRelayer {
   constructor(private readonly deviceMessageQueue: DeviceMessageQueue, private readonly logger: DoguLogger) {}
