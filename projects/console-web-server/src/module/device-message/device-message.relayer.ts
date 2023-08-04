@@ -329,7 +329,8 @@ export class DeviceMessageRelayer {
           const { error, message } = value;
           throw new Error(`WebSocketProxyReceiveError error ${stringify(error)} ${message}`);
         } else if (kind === 'WebSocketProxyReceiveClose') {
-          return value;
+          const validated = await transformAndValidate(WebSocketProxyReceiveClose, value);
+          return validated;
         } else if (kind === 'WebSocketProxyReceiveMessage') {
           const { data } = value;
           try {
