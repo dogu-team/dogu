@@ -138,6 +138,12 @@ export class SeleniumContext {
         },
       };
       args.push('--driver-configuration', 'display-name="Mozilla Firefox"', `webdriver-executable="${browserDriverPath}"`);
+    } else if (browserName === 'safari') {
+      const browserDriverPath = this.browserInstaller.getBrowserOrDriverPath('safaridriver', resolvedBrowserVersion);
+      stereotype = {
+        browserName: 'safari',
+      };
+      args.push('--driver-configuration', 'display-name="Safari"', `webdriver-executable="${browserDriverPath}"`);
     } else {
       throw new Error(`Unsupported browser name: ${stringify(browserName)}`);
     }

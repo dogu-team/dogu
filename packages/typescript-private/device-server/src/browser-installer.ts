@@ -83,7 +83,11 @@ export class BrowserInstaller {
       const stat = await fs.promises.stat(geckoDriverPath).catch(() => null);
       return (stat && stat.isFile()) || false;
     } else if (name === 'safari') {
+      const stat = await fs.promises.stat(HostPaths.external.browser.safariBrowserPath()).catch(() => null);
+      return (stat && stat.isFile()) || false;
     } else if (name === 'safaridriver') {
+      const stat = await fs.promises.stat(HostPaths.external.browser.safariDriverPath()).catch(() => null);
+      return (stat && stat.isFile()) || false;
     } else {
       throw new Error(`Unsupported browser or driver: ${stringify(name)}`);
     }
@@ -110,6 +114,10 @@ export class BrowserInstaller {
       });
     } else if (name === 'geckodriver') {
       return HostPaths.external.browser.geckoDriverPath();
+    } else if (name === 'safari') {
+      return HostPaths.external.browser.safariBrowserPath();
+    } else if (name === 'safaridriver') {
+      return HostPaths.external.browser.safariDriverPath();
     } else {
       throw new Error(`Unsupported browser or driver: ${stringify(name)}`);
     }
