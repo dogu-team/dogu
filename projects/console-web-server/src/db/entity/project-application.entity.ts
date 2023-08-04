@@ -1,5 +1,5 @@
 import { ProjectApplicationBase, ProjectApplicationPropSnake } from '@dogu-private/console';
-import { ProjectApplicationId, ProjectId, PROJECT_APPLICATION_TABLE_NAME, UserId } from '@dogu-private/types';
+import { CREATOR_TYPE, OrganizationId, ProjectApplicationId, ProjectId, PROJECT_APPLICATION_TABLE_NAME, UserId } from '@dogu-private/types';
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { Organization } from './organization.entity';
@@ -12,13 +12,16 @@ export class ProjectApplication implements ProjectApplicationBase {
   projectApplicationId!: ProjectApplicationId;
 
   @ColumnTemplate.RelationUuid(ProjectApplicationPropSnake.organization_id)
-  organizationId!: ProjectId;
+  organizationId!: OrganizationId;
 
   @ColumnTemplate.RelationUuid(ProjectApplicationPropSnake.project_id)
   projectId!: ProjectId;
 
-  @ColumnTemplate.RelationUuid(ProjectApplicationPropSnake.creator_id)
-  creatorId!: UserId;
+  @ColumnTemplate.RelationUuid(ProjectApplicationPropSnake.creator_id, true)
+  creatorId!: UserId | null;
+
+  @Column({ type: 'smallint', name: ProjectApplicationPropSnake.creator_type, default: CREATOR_TYPE.UNSPECIFIED, nullable: false })
+  creatorType!: CREATOR_TYPE;
 
   @Column({ type: 'character varying', name: ProjectApplicationPropSnake.name, nullable: false })
   name!: string;

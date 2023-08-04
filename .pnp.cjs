@@ -11056,10 +11056,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
             ["@dogu-tech/console-gamium", "workspace:packages/typescript/console-gamium"],\
+            ["@types/express", "npm:4.17.13"],\
             ["@types/js-yaml", "npm:4.0.5"],\
+            ["@types/multer", "npm:1.4.7"],\
             ["@types/node", "npm:18.15.11"],\
             ["class-transformer", "npm:0.5.1"],\
             ["class-validator", "npm:0.14.0"],\
+            ["express", "npm:4.18.2"],\
             ["nodemon", "npm:2.0.22"],\
             ["reflect-metadata", "npm:0.1.13"],\
             ["shx", "npm:0.3.4"],\

@@ -1,5 +1,5 @@
 import { ProjectApplicationPropCamel, ProjectApplicationWithIcon } from '@dogu-private/console';
-import { OrganizationId, ProjectApplicationId, ProjectId, UserId } from '@dogu-private/types';
+import { CREATOR_TYPE, OrganizationId, ProjectApplicationId, ProjectId, UserId } from '@dogu-private/types';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import crypto from 'crypto';
@@ -95,11 +95,18 @@ export class ApplicationService {
       size: size,
     } as Express.Multer.File;
 
-    await this.uploadApplication(manager, apkFile, creatorUserId, organizationId, projectId);
+    await this.uploadApplication(manager, apkFile, creatorUserId, CREATOR_TYPE.USER, organizationId, projectId);
     return;
   }
 
-  async uploadApplication(manager: EntityManager, file: Express.Multer.File, creatorUserId: UserId, organizationId: OrganizationId, projectId: ProjectId) {
+  async uploadApplication(
+    manager: EntityManager,
+    file: Express.Multer.File,
+    creatorUserId: UserId | null,
+    creatorType: CREATOR_TYPE,
+    organizationId: OrganizationId,
+    projectId: ProjectId,
+  ) {
     const extension = file.originalname.split('.').pop();
     if (!extension) {
       throw new Error('extension is null');
@@ -147,6 +154,8 @@ export class ApplicationService {
           name: appName,
           fileSize: file.size,
           package: appInfo.package,
+          creatorId: creatorUserId,
+          creatorType,
         },
       );
 
@@ -159,6 +168,7 @@ export class ApplicationService {
         organizationId: organizationId,
         projectId: projectId,
         creatorId: creatorUserId,
+        creatorType,
         name: appName,
         iconFileName: iconFileName,
         fileName: appFileName,
