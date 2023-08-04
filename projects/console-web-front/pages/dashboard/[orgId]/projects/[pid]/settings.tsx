@@ -24,6 +24,8 @@ import RegenerateTokenButton from '../../../../../src/components/common/Regenera
 import AccessTokenButton from '../../../../../src/components/common/AccessTokenButton';
 import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 import useEventStore from '../../../../../src/stores/events';
+import GithubButton from '../../../../../src/components/integration/GithubButton';
+import GitlabButton from '../../../../../src/components/integration/GitlabButton';
 
 const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, organization, mutateProject }) => {
   const [editingProject, setEditingProject] = useState<ProjectBase>(project);
@@ -88,17 +90,6 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
         <title>Project settings - {project.name} | Dogu</title>
       </Head>
       <Box>
-        <div style={{ marginBottom: '1rem' }}>
-          <TokenTitle>{t('project:organizationIdLabel')}</TokenTitle>
-          <TokenCopyInput value={organization.organizationId} />
-        </div>
-        <div>
-          <TokenTitle>{t('project:projectIdLabel')}</TokenTitle>
-          <TokenCopyInput value={project.projectId} />
-        </div>
-
-        <Divider />
-
         <Content>
           <ContentTitle>{t('project:settingNameInputLabel')}</ContentTitle>
           <Input
@@ -133,11 +124,30 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
         <Divider />
 
         <Content>
-          <ContentTitle>Project Access Token</ContentTitle>
-          <AccessTokenButton getToken={getToken} />
+          <div style={{ marginBottom: '1rem' }}>
+            <ContentSubTitle>{t('project:organizationIdLabel')}</ContentSubTitle>
+            <TokenCopyInput value={organization.organizationId} />
+          </div>
+          <div style={{ marginBottom: '1rem' }}>
+            <ContentSubTitle>{t('project:projectIdLabel')}</ContentSubTitle>
+            <TokenCopyInput value={project.projectId} />
+          </div>
+          <div>
+            <ContentSubTitle>Project Access Token</ContentSubTitle>
+            <AccessTokenButton getToken={getToken} />
+          </div>
         </Content>
 
         <Divider />
+
+        <Content>
+          <GithubButton />
+          <div style={{ marginBottom: '1rem' }} />
+          <GitlabButton />
+        </Content>
+
+        <Divider />
+
         <DangerZone>
           <DangerZone.Item title={t('project:editGitIntegrationMenuTitle')} description={t('project:editGitIntegrationDescriptionText')} button={<GitIntegrationDangerButton />} />
           <DangerZone.Item
@@ -193,8 +203,7 @@ const ContentTitle = styled.p`
   margin-bottom: 0.5rem;
 `;
 
-const TokenTitle = styled.p`
-  width: 150px;
+const ContentSubTitle = styled.p`
   font-weight: 500;
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
