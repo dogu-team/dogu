@@ -4,6 +4,8 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { config, dataSourceConfig } from '../../config';
+import { RecordModule } from '../../enterprise/module/record/record.module';
+import { FEATURE_CONFIG } from '../../feature.config';
 import { LoggerMiddleware } from '../../middleware/logger.middleware';
 import { TokenModule } from '../../module/token/token.module';
 import { DeviceStreamingModule } from '../../ws/device-streaming/device-streaming.module';
@@ -37,7 +39,7 @@ import { UserModule } from '../user/user.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-const IMPORT_MODULES = [
+const BASE_MODULES = [
   TypeOrmModule.forRoot(dataSourceConfig),
   RedisModule.forRoot({
     config: config.redis.options,
@@ -77,8 +79,13 @@ const IMPORT_MODULES = [
   OpenApiMoudule,
 ];
 
+const MODULES =
+  FEATURE_CONFIG.get('defaultEdition') === 'enterprise' //
+    ? [...BASE_MODULES, RecordModule]
+    : BASE_MODULES;
+
 @Module({
-  imports: IMPORT_MODULES,
+  imports: MODULES,
   controllers: [AppController],
   providers: [AppService],
 })
