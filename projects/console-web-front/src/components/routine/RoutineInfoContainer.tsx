@@ -47,12 +47,6 @@ const RoutineInfoContainer = ({ orgId, projectId, routine }: Props) => {
 
   const items: MenuProps['items'] = [
     {
-      label: <MenuLink href={`/dashboard/${orgId}/projects/${projectId}/routines/${routine?.routineId}/logs`}>{t('routine:routineHistoryMenuTitle')}</MenuLink>,
-      key: 'history',
-      style: { padding: '0' },
-    },
-    { type: 'divider' },
-    {
       label: (
         <MenuItemButton
           danger
