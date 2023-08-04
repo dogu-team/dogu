@@ -3,7 +3,6 @@ import { closeWebSocketWithTruncateReason, DefaultHttpOptions, loop, stringify, 
 import { TcpRelayRequest, TcpRelayResponse } from '@dogu-tech/device-client-common';
 import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway } from '@nestjs/websockets';
 import { IncomingMessage } from 'http';
-import { Server } from 'ws';
 import { WebSocketProxy } from '../../module/device-message/device-message.relayer';
 import { WebsocketCloseError } from '../../module/device-message/error';
 import { DoguLogger } from '../../module/logger/logger';
@@ -31,11 +30,6 @@ export class RemoteGamiumGateway implements OnGatewayConnection, OnGatewayDiscon
     private readonly remoteGamiumService: RemoteGamiumService,
     private readonly logger: DoguLogger,
   ) {}
-
-  afterInit(server: Server) {
-    this.logger.info('Init');
-    server.on('connection', (webSocket, request) => {});
-  }
 
   async handleConnection(webSocket: WebSocket, incomingMessage: IncomingMessage): Promise<void> {
     this.logger.info('RemoteGamiumGateway.handleConnection');
