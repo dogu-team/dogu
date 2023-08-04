@@ -102,8 +102,8 @@ const ProjectApplicationItem = ({ application }: ItemProps) => {
         <OneSpan>{convertByteWithMaxUnit(application.fileSize)}</OneSpan>
         <OneSpan>
           <ProfileImageWithName
-            profileImage={<ProfileImage profileImageUrl={application.creator.profileImageUrl} name={application.creator.name} />}
-            name={application.creator.name}
+            profileImage={<ProfileImage profileImageUrl={application.creator?.profileImageUrl} name={application.creator?.name} />}
+            name={application.creator?.name}
           />
         </OneSpan>
         <OneSpan>
