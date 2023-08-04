@@ -294,6 +294,11 @@ export class IosChannel implements DeviceChannel {
     }
   }
 
+  async isPortListening(port: number): Promise<boolean> {
+    const res = await this.deviceAgent.isPortListening({ port });
+    return res.isListening;
+  }
+
   private async findDotAppPath(appPath: string): Promise<string> {
     if (!appPath.endsWith('.ipa')) {
       throw new Error('appPath must be ipa');

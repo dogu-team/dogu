@@ -15,7 +15,7 @@ export class Registry<Key, Value> {
 
   unregister(key: Key): void {
     if (!this.map.has(key)) {
-      throw new Error(`${this.name} Key ${stringify(key)} not registered`);
+      return;
     }
 
     this.map.delete(key);

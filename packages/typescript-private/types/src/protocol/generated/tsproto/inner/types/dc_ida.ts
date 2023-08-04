@@ -19,6 +19,14 @@ export interface DcIdaGetSystemInfoResult {
   screenHeight: number;
 }
 
+export interface DcIdaIsPortListeningParam {
+  port: number;
+}
+
+export interface DcIdaIsPortListeningResult {
+  isListening: boolean;
+}
+
 function createBaseDcIdaRunAppParam(): DcIdaRunAppParam {
   return { appPath: '', installedAppNames: [], bundleId: '' };
 }
@@ -230,6 +238,100 @@ export const DcIdaGetSystemInfoResult = {
     const message = createBaseDcIdaGetSystemInfoResult();
     message.screenWidth = object.screenWidth ?? 0;
     message.screenHeight = object.screenHeight ?? 0;
+    return message;
+  },
+};
+
+function createBaseDcIdaIsPortListeningParam(): DcIdaIsPortListeningParam {
+  return { port: 0 };
+}
+
+export const DcIdaIsPortListeningParam = {
+  encode(message: DcIdaIsPortListeningParam, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.port !== 0) {
+      writer.uint32(8).uint32(message.port);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): DcIdaIsPortListeningParam {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDcIdaIsPortListeningParam();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.port = reader.uint32();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DcIdaIsPortListeningParam {
+    return { port: isSet(object.port) ? Number(object.port) : 0 };
+  },
+
+  toJSON(message: DcIdaIsPortListeningParam): unknown {
+    const obj: any = {};
+    message.port !== undefined && (obj.port = Math.round(message.port));
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<DcIdaIsPortListeningParam>, I>>(object: I): DcIdaIsPortListeningParam {
+    const message = createBaseDcIdaIsPortListeningParam();
+    message.port = object.port ?? 0;
+    return message;
+  },
+};
+
+function createBaseDcIdaIsPortListeningResult(): DcIdaIsPortListeningResult {
+  return { isListening: false };
+}
+
+export const DcIdaIsPortListeningResult = {
+  encode(message: DcIdaIsPortListeningResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.isListening === true) {
+      writer.uint32(8).bool(message.isListening);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): DcIdaIsPortListeningResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDcIdaIsPortListeningResult();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.isListening = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DcIdaIsPortListeningResult {
+    return { isListening: isSet(object.isListening) ? Boolean(object.isListening) : false };
+  },
+
+  toJSON(message: DcIdaIsPortListeningResult): unknown {
+    const obj: any = {};
+    message.isListening !== undefined && (obj.isListening = message.isListening);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<DcIdaIsPortListeningResult>, I>>(object: I): DcIdaIsPortListeningResult {
+    const message = createBaseDcIdaIsPortListeningResult();
+    message.isListening = object.isListening ?? false;
     return message;
   },
 };

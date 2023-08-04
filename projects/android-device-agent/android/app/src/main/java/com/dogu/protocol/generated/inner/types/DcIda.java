@@ -1395,6 +1395,492 @@ public final class DcIda {
     }
   }
 
+  public interface DcIdaIsPortListeningParamOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:inner.types.DcIdaIsPortListeningParam)
+      com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>uint32 port = 1;</code>
+     * @return The port.
+     */
+    int getPort();
+  }
+  /**
+   * Protobuf type {@code inner.types.DcIdaIsPortListeningParam}
+   */
+  public  static final class DcIdaIsPortListeningParam extends
+      com.google.protobuf.GeneratedMessageLite<
+          DcIdaIsPortListeningParam, DcIdaIsPortListeningParam.Builder> implements
+      // @@protoc_insertion_point(message_implements:inner.types.DcIdaIsPortListeningParam)
+      DcIdaIsPortListeningParamOrBuilder {
+    private DcIdaIsPortListeningParam() {
+    }
+    public static final int PORT_FIELD_NUMBER = 1;
+    private int port_;
+    /**
+     * <code>uint32 port = 1;</code>
+     * @return The port.
+     */
+    @java.lang.Override
+    public int getPort() {
+      return port_;
+    }
+    /**
+     * <code>uint32 port = 1;</code>
+     * @param value The port to set.
+     */
+    private void setPort(int value) {
+      
+      port_ = value;
+    }
+    /**
+     * <code>uint32 port = 1;</code>
+     */
+    private void clearPort() {
+      
+      port_ = 0;
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code inner.types.DcIdaIsPortListeningParam}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam, Builder> implements
+        // @@protoc_insertion_point(builder_implements:inner.types.DcIdaIsPortListeningParam)
+        com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParamOrBuilder {
+      // Construct using com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      /**
+       * <code>uint32 port = 1;</code>
+       * @return The port.
+       */
+      @java.lang.Override
+      public int getPort() {
+        return instance.getPort();
+      }
+      /**
+       * <code>uint32 port = 1;</code>
+       * @param value The port to set.
+       * @return This builder for chaining.
+       */
+      public Builder setPort(int value) {
+        copyOnWrite();
+        instance.setPort(value);
+        return this;
+      }
+      /**
+       * <code>uint32 port = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearPort() {
+        copyOnWrite();
+        instance.clearPort();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:inner.types.DcIdaIsPortListeningParam)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "port_",
+            };
+            java.lang.String info =
+                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\u000b";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam> parser = PARSER;
+          if (parser == null) {
+            synchronized (com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:inner.types.DcIdaIsPortListeningParam)
+    private static final com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam DEFAULT_INSTANCE;
+    static {
+      DcIdaIsPortListeningParam defaultInstance = new DcIdaIsPortListeningParam();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        DcIdaIsPortListeningParam.class, defaultInstance);
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<DcIdaIsPortListeningParam> PARSER;
+
+    public static com.google.protobuf.Parser<DcIdaIsPortListeningParam> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
+  public interface DcIdaIsPortListeningResultOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:inner.types.DcIdaIsPortListeningResult)
+      com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>bool is_listening = 1;</code>
+     * @return The isListening.
+     */
+    boolean getIsListening();
+  }
+  /**
+   * Protobuf type {@code inner.types.DcIdaIsPortListeningResult}
+   */
+  public  static final class DcIdaIsPortListeningResult extends
+      com.google.protobuf.GeneratedMessageLite<
+          DcIdaIsPortListeningResult, DcIdaIsPortListeningResult.Builder> implements
+      // @@protoc_insertion_point(message_implements:inner.types.DcIdaIsPortListeningResult)
+      DcIdaIsPortListeningResultOrBuilder {
+    private DcIdaIsPortListeningResult() {
+    }
+    public static final int IS_LISTENING_FIELD_NUMBER = 1;
+    private boolean isListening_;
+    /**
+     * <code>bool is_listening = 1;</code>
+     * @return The isListening.
+     */
+    @java.lang.Override
+    public boolean getIsListening() {
+      return isListening_;
+    }
+    /**
+     * <code>bool is_listening = 1;</code>
+     * @param value The isListening to set.
+     */
+    private void setIsListening(boolean value) {
+      
+      isListening_ = value;
+    }
+    /**
+     * <code>bool is_listening = 1;</code>
+     */
+    private void clearIsListening() {
+      
+      isListening_ = false;
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code inner.types.DcIdaIsPortListeningResult}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult, Builder> implements
+        // @@protoc_insertion_point(builder_implements:inner.types.DcIdaIsPortListeningResult)
+        com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResultOrBuilder {
+      // Construct using com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      /**
+       * <code>bool is_listening = 1;</code>
+       * @return The isListening.
+       */
+      @java.lang.Override
+      public boolean getIsListening() {
+        return instance.getIsListening();
+      }
+      /**
+       * <code>bool is_listening = 1;</code>
+       * @param value The isListening to set.
+       * @return This builder for chaining.
+       */
+      public Builder setIsListening(boolean value) {
+        copyOnWrite();
+        instance.setIsListening(value);
+        return this;
+      }
+      /**
+       * <code>bool is_listening = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearIsListening() {
+        copyOnWrite();
+        instance.clearIsListening();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:inner.types.DcIdaIsPortListeningResult)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "isListening_",
+            };
+            java.lang.String info =
+                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\u0007";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult> parser = PARSER;
+          if (parser == null) {
+            synchronized (com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:inner.types.DcIdaIsPortListeningResult)
+    private static final com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult DEFAULT_INSTANCE;
+    static {
+      DcIdaIsPortListeningResult defaultInstance = new DcIdaIsPortListeningResult();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        DcIdaIsPortListeningResult.class, defaultInstance);
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<DcIdaIsPortListeningResult> PARSER;
+
+    public static com.google.protobuf.Parser<DcIdaIsPortListeningResult> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
 
   static {
   }

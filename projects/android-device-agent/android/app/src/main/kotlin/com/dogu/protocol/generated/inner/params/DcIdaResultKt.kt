@@ -69,6 +69,30 @@ object DcIdaResultKt {
     fun hasDcIdaGetSystemInfoResult(): kotlin.Boolean {
       return _builder.hasDcIdaGetSystemInfoResult()
     }
+
+    /**
+     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+     */
+    var dcIdaIsPortListeningResult: com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult
+      @JvmName("getDcIdaIsPortListeningResult")
+      get() = _builder.getDcIdaIsPortListeningResult()
+      @JvmName("setDcIdaIsPortListeningResult")
+      set(value) {
+        _builder.setDcIdaIsPortListeningResult(value)
+      }
+    /**
+     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+     */
+    fun clearDcIdaIsPortListeningResult() {
+      _builder.clearDcIdaIsPortListeningResult()
+    }
+    /**
+     * <code>.inner.types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;</code>
+     * @return Whether the dcIdaIsPortListeningResult field is set.
+     */
+    fun hasDcIdaIsPortListeningResult(): kotlin.Boolean {
+      return _builder.hasDcIdaIsPortListeningResult()
+    }
     val valueCase: com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult.ValueCase
       @JvmName("getValueCase")
       get() = _builder.getValueCase()
@@ -87,4 +111,7 @@ val com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultOrBuilder.dcIdaRun
 
 val com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultOrBuilder.dcIdaGetSystemInfoResultOrNull: com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoResult?
   get() = if (hasDcIdaGetSystemInfoResult()) getDcIdaGetSystemInfoResult() else null
+
+val com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultOrBuilder.dcIdaIsPortListeningResultOrNull: com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult?
+  get() = if (hasDcIdaIsPortListeningResult()) getDcIdaIsPortListeningResult() else null
 

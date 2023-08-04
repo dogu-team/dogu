@@ -8,11 +8,11 @@ import { RoutinePipeline } from '../../db/entity/pipeline.entity';
 import { Project } from '../../db/entity/project.entity';
 import { RoutineStep } from '../../db/entity/step.entity';
 import { PipelineModule } from '../../module/routine/pipeline/pipeline.module';
-import { WsCommonService } from '../common/ws-common.service';
+import { WsCommonModule } from '../common/ws-common.module';
 import { LivePipelineStatusGateway } from './live-pipeline-status.gateway';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Device, Project, RoutinePipeline, RoutineJob, RoutineDeviceJob, RoutineStep, Dest]), PipelineModule],
-  providers: [LivePipelineStatusGateway, WsCommonService],
+  imports: [TypeOrmModule.forFeature([Device, Project, RoutinePipeline, RoutineJob, RoutineDeviceJob, RoutineStep, Dest]), PipelineModule, WsCommonModule],
+  providers: [LivePipelineStatusGateway],
 })
 export class LivePipelineStatusModule {}

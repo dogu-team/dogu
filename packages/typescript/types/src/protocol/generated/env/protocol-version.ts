@@ -1,1 +1,1 @@
-export const DOGU_PROTOCOL_VERSION = 'fcbdbd034ab2b6d1d1aa829b4d292ccb';
+export const DOGU_PROTOCOL_VERSION = '7648c54a96b028dfb5ff2847d076b28a';
