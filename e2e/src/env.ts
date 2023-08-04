@@ -25,5 +25,5 @@ export class E2eEnv {
 
   @IsNumber()
   @Type(() => Number)
-  DOGU_DEVICE_SERVER_PORT!: number;
+  DOGU_E2E_DEVICE_SERVER_PORT!: number;
 }
