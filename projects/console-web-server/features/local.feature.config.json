@@ -4,6 +4,6 @@
   "useSampleProject": true,
   "emailVerification": false,
   "cookieSecure": false,
-  "forceInvitation": true,
+  "forceInvitation": false,
   "thirdPartyLogin": true
 }
