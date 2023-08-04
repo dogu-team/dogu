@@ -1,32 +1,35 @@
-import { Button } from 'antd';
 import { TfiAnnouncement } from 'react-icons/tfi';
 import styled from 'styled-components';
-import Link from 'next/link';
 
-import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
+import { flexRowCenteredStyle } from '../../styles/box';
+import { useState } from 'react';
+import { Drawer, Empty } from 'antd';
 
 const AnnouncementButton = () => {
-  return (
-    <div>
-      <StyledLink
-        href="/"
-        onClick={(e) => {
-          e.preventDefault();
+  const [isOpen, setIsOpen] = useState(false);
 
-          //@ts-ignore
-          const beamer = globalThis.Beamer;
-          if (beamer) {
-            beamer.show();
-          }
-        }}
-      >
+  const handleOpen = () => {
+    setIsOpen(true);
+  };
+
+  return (
+    <>
+      <StyledButton onClick={handleOpen}>
         <TfiAnnouncement />
-      </StyledLink>
-    </div>
+      </StyledButton>
+
+      <StyledDrawer placement="right" title="What's new" onClose={() => setIsOpen(false)} open={isOpen}>
+        <Centered>
+          <Empty description="No announcements" />
+        </Centered>
+      </StyledDrawer>
+    </>
   );
 };
 
-const StyledLink = styled(Link)`
+export default AnnouncementButton;
+
+const StyledButton = styled.button`
   ${flexRowCenteredStyle}
   width: 2rem;
   height: 2rem;
@@ -34,10 +37,20 @@ const StyledLink = styled(Link)`
   border-radius: 50%;
   color: #000;
   font-size: 1.2rem;
+  background-color: #fff;
 
   &:hover {
     background-color: #f5f5f5;
   }
 `;
 
-export default AnnouncementButton;
+const StyledDrawer = styled(Drawer)`
+  .ant-drawer-body {
+    background-color: ${(props) => props.theme.colorPrimary}11;
+  }
+`;
+
+const Centered = styled.div`
+  ${flexRowCenteredStyle}
+  height: 100%;
+`;
