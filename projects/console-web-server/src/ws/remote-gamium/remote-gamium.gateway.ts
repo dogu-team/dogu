@@ -20,6 +20,7 @@ interface Context {
   projectId: ProjectId;
   deviceId: DeviceId;
   deviceSerial: Serial;
+  lastWdSendTime: number;
 }
 
 @WebSocketGateway({ path: '/ws/remote/gamium' })
@@ -69,11 +70,14 @@ export class RemoteGamiumGateway implements OnGatewayConnection, OnGatewayDiscon
           return;
         }
       }
-      this.remoteGamiumService
-        .refreshCommandTimeout(this.remoteWebDriverService, context.organizationId, context.projectId, context.deviceId, context.deviceSerial, context.dto!.sessionId)
-        .catch((error) => {
-          this.logger.error('refreshCommandTimeout error', { error: stringify(error) });
-        });
+      if (Date.now() - context.lastWdSendTime > 1000 * 5) {
+        this.remoteGamiumService
+          .refreshCommandTimeout(this.remoteWebDriverService, context.organizationId, context.projectId, context.deviceId, context.deviceSerial, context.dto!.sessionId)
+          .catch((error) => {
+            this.logger.error('refreshCommandTimeout error', { error: stringify(error) });
+          });
+        context.lastWdSendTime = Date.now();
+      }
 
       await context.proxy
         .send({
@@ -109,6 +113,7 @@ export class RemoteGamiumGateway implements OnGatewayConnection, OnGatewayDiscon
       projectId: remote.projectId,
       deviceId: device.deviceId,
       deviceSerial: device.serial,
+      lastWdSendTime: 0,
     };
     const pullDetach = async () => {
       if (!context) {
