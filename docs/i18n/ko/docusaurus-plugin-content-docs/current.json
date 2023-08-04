@@ -106,5 +106,9 @@
   "sidebar.integrationSidebar.category.Community": {
     "message": "커뮤니티",
     "description": "The label for category Community in sidebar integrationSidebar"
+  },
+  "sidebar.managementSidebar.category.Device Farm": {
+    "message": "디바이스 팜",
+    "description": "The label for category Device Farm in sidebar managementSidebar"
   }
 }
