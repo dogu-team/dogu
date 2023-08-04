@@ -9,7 +9,7 @@ interface Props {
 }
 
 function LiveChat(props: Props) {
-  if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
+  if (process.env.NEXT_PUBLIC_ENV === 'self-hosted' || process.env.NEXT_PUBLIC_ENV === 'e2e') {
     return null;
   }
 
