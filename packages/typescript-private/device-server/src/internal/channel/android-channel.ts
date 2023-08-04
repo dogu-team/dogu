@@ -264,6 +264,10 @@ export class AndroidChannel implements DeviceChannel {
     await Adb.unforward(this.serial, hostPort);
   }
 
+  async isPortListening(port: number): Promise<boolean> {
+    return Adb.isPortOpen(this.serial, port);
+  }
+
   async subscribeLog(args: string[], handler: LogHandler, printable?: Printable): Promise<Closable> {
     const { stdout, stderr } = await Adb.logcatClear(this.serial, printable);
     if (stdout) {

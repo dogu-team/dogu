@@ -17,7 +17,7 @@ import {
 } from '@dogu-private/types';
 import { Closable, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { StreamingOfferDto } from '@dogu-tech/device-client-common';
-import { ChildProcess } from '@dogu-tech/node';
+import { ChildProcess, isFreePort } from '@dogu-tech/node';
 import { Observable } from 'rxjs';
 import systeminformation from 'systeminformation';
 import { DeviceWebDriver } from '../../alias';
@@ -184,6 +184,10 @@ export class WindowsChannel implements DeviceChannel {
 
   unforward(hostPort: number): void {
     // noop
+  }
+
+  isPortListening(port: number): Promise<boolean> {
+    return isFreePort(port);
   }
 
   uninstallApp(appPath: string): void {

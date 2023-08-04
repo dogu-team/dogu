@@ -1,10 +1,11 @@
 import { OnWebSocketClose, OnWebSocketMessage, WebSocketGatewayBase, WebSocketRegistryValueAccessor, WebSocketService } from '@dogu-private/nestjs-common';
-import { Serial } from '@dogu-private/types';
+import { categoryFromPlatform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, errorify, Instance, loop } from '@dogu-tech/common';
 import { DeviceRelay, DoguDeviceRelayPortHeaderKey, DoguDeviceRelaySerialHeaderKey, TcpRelayResponse } from '@dogu-tech/device-client-common';
-import { IncomingMessage } from 'http';
+import { IncomingHttpHeaders, IncomingMessage } from 'http';
 import { Socket } from 'net';
 import WebSocket from 'ws';
+import { DeviceChannel } from '../../internal/public/device-channel';
 import { getFreePort } from '../../internal/util/net';
 import { DoguLogger } from '../../logger/logger';
 import { ScanService } from '../../scan/scan.service';
@@ -28,6 +29,53 @@ export class DeviceRelayService
   override async onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): Promise<Value> {
     const { headers } = incommingMessage;
     this.logger.info(`DeviceRelayService.onWebSocketOpen`, { headers });
+    const { serial, port } = this.parseHeader(headers);
+
+    this.logger.info(`DeviceRelayService.onWebSocketOpen`, { serial, port });
+
+    const deviceChannel = this.scanService.findChannel(serial);
+    if (deviceChannel === null) {
+      throw new Error(`Not found ${serial}`);
+    }
+
+    await this.waitDevicePortListening(deviceChannel, port);
+    const hostPort = await this.forwardDevicePort(deviceChannel, port);
+
+    const client = new Socket();
+    client.setNoDelay(true);
+    client.setKeepAlive(true);
+
+    client.on('data', (data: Buffer) => {
+      const base64 = data.toString('base64');
+      const message: TcpRelayResponse = {
+        encodedData: base64,
+      };
+      webSocket.send(JSON.stringify(message));
+    });
+
+    const isConnected = await new Promise<boolean>((resolve, reject) => {
+      client.once('close', (isError: boolean) => {
+        resolve(false);
+      });
+      client.connect({ host: '127.0.0.1', port: hostPort }, () => {
+        resolve(true);
+      });
+    });
+
+    if (!isConnected) {
+      throw new Error(`connect to device:${port} failed`);
+    }
+
+    client.on('close', (isError: boolean) => {
+      this.logger.verbose('DeviceRelayService. deviceside socket closed', { isError });
+      closeWebSocketWithTruncateReason(webSocket, 1000, `tcp connection to ${port} closed`);
+    });
+
+    this.logger.info(`DeviceRelayService.onWebSocketOpen success`, { serial, port });
+    return { serial, port, hostPort, client };
+  }
+
+  private parseHeader(headers: IncomingHttpHeaders): { serial: Serial; port: number } {
     const serial = headers[DoguDeviceRelaySerialHeaderKey] as Serial;
     if (!serial) {
       throw new Error(`serial not found`);
@@ -43,57 +91,7 @@ export class DeviceRelayService
     if (isNaN(port)) {
       throw new Error(`port isn't number`);
     }
-
-    this.logger.info(`DeviceRelayService.onWebSocketOpen`, { serial, port });
-
-    const deviceChannel = this.scanService.findChannel(serial);
-    if (deviceChannel === null) {
-      throw new Error(`Not found ${serial}`);
-    }
-    const hostPort = await getFreePort();
-    try {
-      await deviceChannel.forward(hostPort, port);
-    } catch (e) {
-      throw new Error(`Forward to ${port} failed`);
-    }
-    const client = new Socket();
-    client.setNoDelay(true);
-    client.setKeepAlive(true);
-
-    client.on('data', (data: Buffer) => {
-      const base64 = data.toString('base64');
-      const message: TcpRelayResponse = {
-        encodedData: base64,
-      };
-      webSocket.send(JSON.stringify(message));
-    });
-
-    let isConnected = false;
-    for await (const _ of loop(2000, 5)) {
-      isConnected = await new Promise<boolean>((resolve, reject) => {
-        client.once('close', (isError: boolean) => {
-          resolve(false);
-        });
-        client.connect({ host: '127.0.0.1', port: hostPort }, () => {
-          resolve(true);
-        });
-      });
-
-      if (isConnected) {
-        break;
-      }
-    }
-    if (!isConnected) {
-      throw new Error(`connect to device:${port} failed`);
-    }
-
-    client.on('close', (isError: boolean) => {
-      this.logger.verbose('DeviceRelayService. deviceside socket closed', { isError });
-      closeWebSocketWithTruncateReason(webSocket, 1000, `tcp connection to ${port} closed`);
-    });
-
-    this.logger.info(`DeviceRelayService.onWebSocketOpen success`, { serial, port });
-    return { serial, port, hostPort, client };
+    return { serial, port };
   }
 
   onWebSocketClose(webSocket: WebSocket, event: WebSocket.CloseEvent, valueAccessor: WebSocketRegistryValueAccessor<Value>): void {
@@ -124,5 +122,30 @@ export class DeviceRelayService
       this.logger.error(`DeviceRelayService.onWebSocketMessage. get error`, { error: errorify(e) });
       closeWebSocketWithTruncateReason(webSocket, 1001, 'send failed by open error');
     }
+  }
+
+  private async waitDevicePortListening(deviceChannel: DeviceChannel, port: number): Promise<void> {
+    for await (const _ of loop(1000, 10)) {
+      if (await deviceChannel.isPortListening(port)) {
+        break;
+      }
+    }
+    if (!(await deviceChannel.isPortListening(port))) {
+      throw new Error(`port:${port} is not listening`);
+    }
+  }
+
+  private async forwardDevicePort(deviceChannel: Readonly<DeviceChannel>, port: number): Promise<number> {
+    const platformCategory = categoryFromPlatform(platformTypeFromPlatform(deviceChannel.platform));
+    let hostPort = port;
+    if (platformCategory === 'mobile') {
+      hostPort = await getFreePort();
+      try {
+        await deviceChannel.forward(hostPort, port);
+      } catch (e) {
+        throw new Error(`Forward to ${port} failed`);
+      }
+    }
+    return hostPort;
   }
 }
