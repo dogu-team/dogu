@@ -12,6 +12,7 @@ import { getUserInServerSide } from '../../../../../../src/api/registery';
 import Header from '../../../../../../src/components/layouts/Header';
 import resources from '../../../../../../src/resources';
 import { flexRowCenteredStyle } from '../../../../../../src/styles/box';
+import Link from 'next/link';
 
 const chakraPetch = Chakra_Petch({ subsets: ['latin'], weight: ['700'] });
 
@@ -34,9 +35,9 @@ const StudioEntryPage: NextPage<StudioEntryServerSideProps> = ({ organization, p
         <StyledH2 className={chakraPetch.className}>Dogu Studio</StyledH2>
         <FlexColCenter>
           <Description style={{ marginBottom: '1rem', fontWeight: '500' }}>
-            Dogu studio is for manaul testing, UI inspector, device real-time streaming and remote controls.
+            Dogu studio is for manaul testing, UI inspector, device real-time streaming and remote controls
           </Description>
-          <Description style={{ fontWeight: '300', fontSize: '.9rem' }}>Select your device to continue.</Description>
+          <Description style={{ fontWeight: '300', fontSize: '.9rem', marginBottom: '1rem' }}>Select your device to continue</Description>
           <SelectWrapper>
             <StudioDeviceSelector
               selectedDevice={undefined}
@@ -51,6 +52,9 @@ const StudioEntryPage: NextPage<StudioEntryServerSideProps> = ({ organization, p
               }}
             />
           </SelectWrapper>
+          <Link style={{ fontWeight: '300', fontSize: '.9rem', marginTop: '2rem' }} href={`/dashboard/${organization.organizationId}/device-farm/hosts`} target={'_blank'}>
+            {`Isn't there a device available to select? Please assign a device`}
+          </Link>
         </FlexColCenter>
       </Centered>
     </Box>

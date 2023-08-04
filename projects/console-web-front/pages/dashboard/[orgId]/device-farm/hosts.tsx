@@ -4,6 +4,7 @@ import { Button } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { FcDownload } from 'react-icons/fc';
 
 import { NextPageWithLayout } from 'pages/_app';
 import CreateHostModal from 'src/components/hosts/CreateHostModal';
@@ -34,9 +35,9 @@ const HostManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ organiz
               </Button>
               {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
                 <Link href={`${process.env.NEXT_PUBLIC_LANDING_URL}/downloads/dogu-agent`} target="_blank">
-                  <Button>
+                  <Button style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', border: '' }}>
+                    <FcDownload style={{ marginRight: '4px' }} width={24} height={24} />
                     {t('device-farm:agentDownloadTitle')}
-                    <Image src={resources.icons.externalLink} width={16} height={16} alt="external link" />
                   </Button>
                 </Link>
               )}

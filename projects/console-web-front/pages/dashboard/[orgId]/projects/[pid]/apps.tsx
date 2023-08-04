@@ -5,6 +5,7 @@ import RefreshButton from '../../../../../src/components/buttons/RefreshButton';
 
 import TableListView from '../../../../../src/components/common/TableListView';
 import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/ProjectLayoutWithSidebar';
+import ProjectApplicationAPIButton from '../../../../../src/components/project-application/ProjectApplicationAPI';
 import ProjectApplicationListController from '../../../../../src/components/project-application/ProjectApplicationListController';
 import ProjectApplicationUploadButton from '../../../../../src/components/project-application/ProjectApplicationUploadButton';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from '../../../../../src/hoc/withProject';
@@ -22,9 +23,10 @@ const ProjectAppPage: NextPageWithLayout<WithProjectProps> = ({ project, organiz
       <TableListView
         top={
           <Header>
-            <div>
+            <MenuList>
               <ProjectApplicationUploadButton organizationId={organization.organizationId} projectId={project.projectId} />
-            </div>
+              <ProjectApplicationAPIButton />
+            </MenuList>
             <div>
               <RefreshButton />
             </div>
@@ -46,4 +48,9 @@ export default withProject(ProjectAppPage);
 
 const Header = styled.div`
   ${flexRowSpaceBetweenStyle}
+`;
+
+const MenuList = styled.div`
+  display: flex;
+  flex-direction: row;
 `;

@@ -9,6 +9,7 @@ import useAuth from '../../hooks/useAuth';
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
 import { getLocaledLink } from '../../utils/locale';
 import AccountMenu from '../AccountMenu';
+import AnnouncementButton from '../announcement/AnnouncementButton';
 import Header from './Header';
 
 interface Props {
@@ -47,6 +48,7 @@ const ConsoleBasicLayout = ({ children }: Props) => {
                   <SlackOutlined />
                 </StyledLink>
               </Tooltip>
+              <AnnouncementButton />
               <AccountMenu />
             </FlexRow>
           }

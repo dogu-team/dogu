@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { props } from 'ramda';
 import styled from 'styled-components';
 
@@ -8,7 +9,7 @@ interface Props {
 
 function ConnectButton(props: Props) {
   return (
-    <a href={props.href} target="_blank">
+    <Link href={props.href} target="_blank">
       <p
         style={{
           fontSize: '14px',
@@ -17,7 +18,7 @@ function ConnectButton(props: Props) {
       >
         Connect
       </p>
-    </a>
+    </Link>
   );
 }
 

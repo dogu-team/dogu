@@ -6,14 +6,10 @@ interface Props {
   routine?: RoutineBase;
 }
 
-const GithubActionButton = ({ routine }: Props) => {
-  if (routine) {
-    return null;
-  }
-
+const ProjectApplicationAPIButton = ({ routine }: Props) => {
   return (
     <Button
-      href={'https://docs.dogutech.io/integration/cicd/github'}
+      href="https://docs.dogutech.io/api/project/application#upload-application"
       target="_blank"
       style={{
         display: 'flex',
@@ -22,11 +18,11 @@ const GithubActionButton = ({ routine }: Props) => {
         justifyContent: 'center',
         marginLeft: '.5rem',
       }}
-      icon={<Image src="/resources/icons/github-action-logo.svg" alt="Github Action" width={16} height={16} />}
+      icon={<Image src="/resources/icons/api-logo.svg" alt="API" width={16} height={16} />}
     >
-      <p style={{ marginLeft: '8px' }}>Github Action</p>
+      <p style={{ marginLeft: '8px' }}>API</p>
     </Button>
   );
 };
 
-export default GithubActionButton;
+export default ProjectApplicationAPIButton;

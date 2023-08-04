@@ -4,7 +4,9 @@ import useTranslation from 'next-translate/useTranslation';
 
 import H4 from 'src/components/common/headings/H4';
 import ConsoleBasicLayout from './ConsoleBasicLayout';
-import LiveChat from '../livechat/livechat';
+import LiveChat from '../external/livechat';
+import Script from 'next/script';
+import Beamer from '../external/beamer';
 
 export interface ConsoleLayoutProps {
   children: React.ReactNode;
@@ -34,6 +36,7 @@ const ConsoleLayout = ({ titleI18nKey, children, sidebar, title, padding }: Cons
         </StyledLayoutContent>
       </StyledLayout>
       <LiveChat />
+      <Beamer />
     </ConsoleBasicLayout>
   );
 };

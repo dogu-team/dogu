@@ -7,12 +7,14 @@ interface Props {
 }
 
 const JenkinsButton = ({ routine }: Props) => {
-  if (!routine) {
+  if (routine) {
     return null;
   }
 
   return (
     <Button
+      href={'https://docs.dogutech.io/integration/cicd/jenkins'}
+      target="_blank"
       style={{
         display: 'flex',
         flexDirection: 'row',
