@@ -10,22 +10,22 @@ from .common import PyTestHandler, PyTestLocation, DoguClient
 class DoguSdk:
     name = "dogu_sdk"
 
-    def __init__(self, config: Config) -> None:
-        self._config = config
-        self._dogu_config = DoguConfigFactory().create()
+    def __init__(self, pytest_config: Config) -> None:
+        self._pytest_config = pytest_config
+        self.config = DoguConfigFactory().create()
 
-        (client,) = self._config.hook.pytest_dogu_create_client()
+        (client,) = self._pytest_config.hook.pytest_dogu_create_client()
         self.client: DoguClient = client
-        client_impl = self.client.on_setup(self._dogu_config)
+        client_impl = self.client.on_setup(self.config)
         if not client_impl:
             raise Exception("dogu client is not initialized on setup")
         self.client.impl = client_impl
 
         self._routine_dest_reporter = RoutineDestReporterFactory(
-            self._dogu_config
+            self.config
         ).create()
         self._remote_dest_reporter = RemoteDestReporterFactory(
-            self._dogu_config,
+            self.config,
             self.client,
         ).create()
         self._handlers: List[PyTestHandler] = [
