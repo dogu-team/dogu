@@ -116,7 +116,7 @@ export function getWelcomeEmailTemplate(user: UserBase): string {
                             color: #888888;
                             text-decoration: none;
                           "
-                          href="${process.env.DOGU_CONSOLE_URL as string}/services/privacy"
+                          href="${process.env.DOGU_CONSOLE_URL as string}/notices/privacy"
                           >Privacy Policy</a
                         >
                       </div>

@@ -61,7 +61,7 @@ const Footer = ({ showCompanyInfo = false, className }: Props) => {
               {t('common:footerTermsOfUse')}
             </StyledLink>
           )} */}
-            <StyledLink href={`${process.env.NEXT_PUBLIC_LANDING_URL}/services/privacy`} target="_blank">
+            <StyledLink href={`${process.env.NEXT_PUBLIC_LANDING_URL}/notices/privacy`} target="_blank">
               {t('common:footerPrivacyPolicy')}
             </StyledLink>
           </LinkBox>
