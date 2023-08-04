@@ -47,11 +47,6 @@ const ConsoleBasicLayout = ({ children }: Props) => {
                   <SlackOutlined />
                 </StyledLink>
               </Tooltip>
-              <Tooltip title="Docs" arrow={false} overlayInnerStyle={{ fontSize: '.8rem' }} style={{ minHeight: '0' }}>
-                <StyledLink href={`https://docs.dogutech.io${getLocaledLink(router.locale, '')}`} target="_blank">
-                  <QuestionCircleOutlined />
-                </StyledLink>
-              </Tooltip>
               <AccountMenu />
             </FlexRow>
           }

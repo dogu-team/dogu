@@ -178,11 +178,11 @@ const OrganizationSideBar = () => {
       ) : undefined,
       label: collapsed ? (
         <div>
-          {t('organization:tutorialPageTitle')}&nbsp;
+          {t('organization:docs')}&nbsp;
           <RiExternalLinkLine />
         </div>
       ) : (
-        <SideBarMenu icon={<BookOutlined style={{ fontSize: '1.2rem' }} />} path={'https://docs.dogutech.io'} text={t('organization:tutorialPageTitle')} external />
+        <SideBarMenu icon={<BookOutlined style={{ fontSize: '1.2rem' }} />} path={'https://docs.dogutech.io'} text={t('organization:docs')} external />
       ),
     },
   ];

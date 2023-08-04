@@ -18,6 +18,8 @@ import RoutineInfoContainer from 'src/components/routine/RoutineInfoContainer';
 import { swrAuthFetcher } from 'src/api/index';
 import EditRoutineButton from 'src/components/routine/EditRoutineButton';
 import ProjectLayoutWithSidebar from '../../../../../../src/components/layouts/ProjectLayoutWithSidebar';
+import GithubActionButton from '../../../../../../src/components/pipelines/GithubActionButton';
+import JenkinsButton from '../../../../../../src/components/pipelines/JenkinsButton';
 
 const ProjectRoutinePage: NextPageWithLayout<WithProjectProps> = ({ organization, project }) => {
   const router = useRouter();
@@ -41,6 +43,8 @@ const ProjectRoutinePage: NextPageWithLayout<WithProjectProps> = ({ organization
                     <RunRoutineButton orgId={organization.organizationId} projectId={project.projectId} routine={data} />
                     <EditRoutineButton orgId={organization.organizationId} projectId={project.projectId} routine={data} />
                     <PipelineFilter />
+                    <GithubActionButton routine={data} />
+                    <JenkinsButton routine={data} />
                   </RowFlexBox>
                   <RefreshButton />
                 </PipelineTopButtonWrapper>

@@ -4,6 +4,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import H4 from 'src/components/common/headings/H4';
 import ConsoleBasicLayout from './ConsoleBasicLayout';
+import LiveChat from '../livechat/livechat';
 
 export interface ConsoleLayoutProps {
   children: React.ReactNode;
@@ -32,6 +33,7 @@ const ConsoleLayout = ({ titleI18nKey, children, sidebar, title, padding }: Cons
           </PaddingBox>
         </StyledLayoutContent>
       </StyledLayout>
+      <LiveChat />
     </ConsoleBasicLayout>
   );
 };

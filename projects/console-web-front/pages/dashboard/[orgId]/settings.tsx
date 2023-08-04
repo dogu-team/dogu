@@ -29,6 +29,7 @@ import DangerZone from '../../../src/components/common/boxes/DangerZone';
 import TokenCopyInput from '../../../src/components/common/TokenCopyInput';
 import RegenerateTokenButton from '../../../src/components/common/RegenerateTokenButton';
 import AccessTokenButton from '../../../src/components/common/AccessTokenButton';
+import SlackIntegrationButton from '../../../src/components/integration/SlackButton';
 
 const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ organization, mutateOrganization }) => {
   const [editingOrganization, setEditingOrganization] = useState<OrganizationBase>(organization);
@@ -144,13 +145,6 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
       </Head>
       <Box>
         <Content>
-          <div>
-            <TokenTitle>{t('organization:sidebarSubTitle')} ID</TokenTitle>
-            <TokenCopyInput value={organization.organizationId} />
-          </div>
-
-          <Divider />
-
           <ImageCropUploader
             profileImage={
               <ProfileImage
@@ -167,7 +161,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
           />
         </Content>
         <Content>
-          <ContentTitle>{t('organization:settingOrgName')}</ContentTitle>
+          <SubContentTitle>{t('organization:settingOrgName')}</SubContentTitle>
           <Input
             value={editingOrganization?.name}
             onChange={(e) =>
@@ -184,8 +178,20 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
         <Divider />
 
         <Content>
-          <ContentTitle>Organization Access Token</ContentTitle>
-          <AccessTokenButton getToken={getToken} />
+          <div style={{ marginBottom: '1rem' }}>
+            <SubContentTitle>{t('organization:sidebarSubTitle')} ID</SubContentTitle>
+            <TokenCopyInput value={organization.organizationId} />
+          </div>
+          <div style={{ marginBottom: '1rem' }}>
+            <SubContentTitle>{t('organization:sidebarSubTitle')} Access Token</SubContentTitle>
+            <AccessTokenButton getToken={getToken} />
+          </div>
+        </Content>
+
+        <Divider />
+
+        <Content>
+          <SlackIntegrationButton />
         </Content>
 
         <Divider />
@@ -274,11 +280,9 @@ const Content = styled.div`
 const ContentTitle = styled.p`
   font-size: 1.1rem;
   font-weight: 500;
-  margin-bottom: 0.5rem;
 `;
 
-const TokenTitle = styled.p`
-  width: 150px;
+const SubContentTitle = styled.p`
   margin-bottom: 0.5rem;
   font-weight: 500;
   font-size: 0.9rem;

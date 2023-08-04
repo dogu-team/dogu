@@ -1,9 +1,11 @@
 import Script from 'next/script';
 
 interface Props {
-  name: string;
-  email: string;
-  organizationId: string;
+  user?: {
+    name: string;
+    email: string;
+    organizationId: string;
+  };
 }
 
 function LiveChat(props: Props) {
@@ -15,9 +17,11 @@ function LiveChat(props: Props) {
     <Script
       src="//fw-cdn.com/10683920/3497107.js"
       onReady={() => {
+        const MAX_RETRY_COUNT = 100;
         let retryCount = 0;
+
         const setUserLoop = setInterval(() => {
-          if (retryCount > 10) {
+          if (retryCount > MAX_RETRY_COUNT) {
             clearInterval(setUserLoop);
             return;
           }
@@ -25,7 +29,10 @@ function LiveChat(props: Props) {
           //@ts-ignore
           const fcWidget = window.fcWidget;
           if (fcWidget && fcWidget.user) {
-            fcWidget.user.setProperties({ firstName: props.name, lastName: props.organizationId, email: props.email });
+            if (props.user) {
+              fcWidget.user.setProperties({ firstName: props.user.name, lastName: props.user.organizationId, email: props.user.email });
+            }
+
             clearInterval(setUserLoop);
             return;
           }

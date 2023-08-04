@@ -5,6 +5,7 @@ import { isAxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import GitIcon from 'public/resources/icons/git-logo.svg';
 
 import { updateProjectScm } from '../../api/project';
 import useModal from '../../hooks/useModal';
@@ -52,7 +53,7 @@ const GitIntegrationTag = ({ isGitIntegrated }: Props) => {
 
   return (
     <>
-      <Tooltip title={store.isGitIntegrated ? 'Git integrated' : 'Click for Git integration'}>
+      <Tooltip title={store.isGitIntegrated ? 'Git is integrated' : 'Click for integrating with Git'}>
         <Tag
           color={store.isGitIntegrated ? 'green' : 'warning'}
           icon={store.isGitIntegrated ? <CheckCircleOutlined /> : <ExclamationCircleOutlined />}
@@ -61,9 +62,16 @@ const GitIntegrationTag = ({ isGitIntegrated }: Props) => {
               openModal();
             }
           }}
-          style={{ cursor: store.isGitIntegrated ? 'default' : 'pointer' }}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: store.isGitIntegrated ? 'default' : 'pointer',
+            minWidth: '36px',
+            minHeight: '24px',
+          }}
         >
-          Git
+          <GitIcon style={{ display: 'flex', width: '16px', height: '16px' }} />
         </Tag>
       </Tooltip>
 

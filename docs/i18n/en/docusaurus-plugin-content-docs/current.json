@@ -106,5 +106,9 @@
   "sidebar.integrationSidebar.category.Community": {
     "message": "Community",
     "description": "The label for category Community in sidebar integrationSidebar"
+  },
+  "sidebar.managementSidebar.category.Device Farm": {
+    "message": "Device Farm",
+    "description": "The label for category Device Farm in sidebar managementSidebar"
   }
 }
