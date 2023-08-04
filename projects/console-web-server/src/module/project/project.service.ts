@@ -217,6 +217,7 @@ export class ProjectService {
       .getRepository(Project)
       .findOne({
         where: { organizationId, projectId },
+        relations: ['projectScms'],
       });
     if (!project) {
       throw new NotFoundException(`Cannot find project id ${projectId}`);
