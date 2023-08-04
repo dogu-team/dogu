@@ -2,6 +2,7 @@ import { isValidBrowserName } from '@dogu-private/types';
 import { DoguBrowserNameHeader, DoguBrowserVersionHeader, DoguRemoteDeviceJobIdHeader, HeaderRecord } from '@dogu-tech/common';
 import { RelayRequest, RelayResponse, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
 import _ from 'lodash';
+import { BrowserInstaller } from '../../browser-installer';
 import { DoguLogger } from '../../logger/logger';
 import { SeleniumService } from '../../selenium/selenium.service';
 import { OnAfterRequestResult, OnBeforeRequestResult } from './common';
@@ -47,7 +48,30 @@ export class SeleniumNewSessionEndpointHandler extends SeleniumEndpointHandler {
       };
     }
 
-    const doguBrowserVersion = _.get(headers, DoguBrowserVersionHeader) as string | undefined;
+    let doguBrowserVersion = _.get(headers, DoguBrowserVersionHeader) as string | undefined;
+    if (doguBrowserName === 'firefox') {
+      doguBrowserVersion ??= 'latest';
+      if (doguBrowserVersion === 'latest') {
+        function parseFirefoxMajorVersion(version: string): number | undefined {
+          const match = version.match(/^(\d+).*$/);
+          if (match) {
+            return Number(match[1]);
+          }
+          return undefined;
+        }
+        const resolvedVersion = await new BrowserInstaller().resolveLatestVersion('firefox', doguBrowserVersion);
+        const resolvedMajorVersion = parseFirefoxMajorVersion(resolvedVersion);
+        if (!resolvedMajorVersion) {
+          return {
+            status: 401,
+            error: new Error(`Failed to resolve firefox version: ${resolvedVersion}`),
+            data: {},
+          };
+        }
+        doguBrowserVersion = `${resolvedMajorVersion}`;
+      }
+    }
+
     const seleniumContextInfo = await seleniumService.open({
       browserName: doguBrowserName,
       browserVersion: doguBrowserVersion,
