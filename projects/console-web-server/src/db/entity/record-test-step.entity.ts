@@ -1,19 +1,16 @@
-import { RecordTestStepBase, RecordTestStepPropCamel, RecordTestStepPropSnake } from '@dogu-private/console';
-import { RecordTestCaseId, RecordTestStepId, RECORD_TEST_STEP_TABLE_NAME, TEST_STEP_TYPE } from '@dogu-private/types';
+import { RecordTestStepBase, RecordTestStepPropSnake } from '@dogu-private/console';
+import { ProjectId, RecordTestStepId, RECORD_TEST_STEP_TABLE_NAME, TEST_STEP_TYPE } from '@dogu-private/types';
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
-import { RecordTestCase } from './record-test-case.entity';
+import { Project } from './project.entity';
 
 @Entity(RECORD_TEST_STEP_TABLE_NAME)
 export class RecordTestStep extends BaseEntity implements RecordTestStepBase {
   @PrimaryColumn({ type: 'uuid', name: RecordTestStepPropSnake.record_test_step_id })
   recordTestStepId!: RecordTestStepId;
 
-  @ColumnTemplate.RelationUuid(RecordTestStepPropSnake.prev_record_test_step_id)
-  prevRecordTestStepId!: RecordTestStepId | null;
-
-  @ColumnTemplate.RelationUuid(RecordTestStepPropSnake.record_test_case_id)
-  recordTestCaseId!: RecordTestCaseId;
+  @ColumnTemplate.RelationUuid(RecordTestStepPropSnake.project_id)
+  projectId!: ProjectId;
 
   @Column({ type: 'character varying', name: RecordTestStepPropSnake.name, nullable: false })
   name!: string;
@@ -30,11 +27,7 @@ export class RecordTestStep extends BaseEntity implements RecordTestStepBase {
   @ColumnTemplate.DeleteDate(RecordTestStepPropSnake.deleted_at)
   deletedAt!: Date | null;
 
-  @ManyToOne(() => RecordTestStep, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
-  @JoinColumn({ name: RecordTestStepPropSnake.prev_record_test_step_id, referencedColumnName: RecordTestStepPropCamel.recordTestStepId })
-  prevRecordTestStep?: RecordTestStepBase | null;
-
-  @ManyToOne(() => RecordTestCase, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
-  @JoinColumn({ name: RecordTestStepPropSnake.record_test_case_id, referencedColumnName: RecordTestStepPropCamel.recordTestCaseId })
-  recordTestCase?: RecordTestCase;
+  @ManyToOne(() => Project, (project) => project, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
+  @JoinColumn({ name: RecordTestStepPropSnake.project_id })
+  project?: Project;
 }

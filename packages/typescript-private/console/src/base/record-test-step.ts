@@ -1,16 +1,14 @@
-import { RecordTestCaseId, RecordTestStepId, TEST_STEP_TYPE } from '@dogu-private/types';
+import { ProjectId, RecordTestStepId, TEST_STEP_TYPE } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
-import { RecordTestCaseBase } from './record-test-case';
+import { ProjectBase } from './project';
 
 interface RecordTestStepRelationTraits {
-  prevRecordTestStep?: RecordTestStepBase | null;
-  recordTestCase?: RecordTestCaseBase;
+  project?: ProjectBase;
 }
 
 export interface RecordTestStepBaseTraits {
   recordTestStepId: RecordTestStepId;
-  prevRecordTestStepId: RecordTestStepId | null;
-  recordTestCaseId: RecordTestCaseId;
+  projectId: ProjectId;
   name: string;
   type: TEST_STEP_TYPE;
   createdAt: Date;

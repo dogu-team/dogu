@@ -1,20 +1,17 @@
-import { RecordTestCaseBase, RecordTestCasePropCamel, RecordTestCasePropSnake } from '@dogu-private/console';
-import { RecordTestCaseId, RecordTestScenarioId, RECORD_TEST_CASE_TABLE_NAME } from '@dogu-private/types';
+import { RecordTestCaseBase, RecordTestCasePropSnake } from '@dogu-private/console';
+import { ProjectId, RecordTestCaseId, RECORD_TEST_CASE_TABLE_NAME } from '@dogu-private/types';
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
-import { RecordTestScenario } from './record-test-scenario.entity';
-import { RecordTestStep } from './record-test-step.entity';
+import { Project } from './project.entity';
+import { RecordTestCaseAndRecordTestStep } from './relations/record-test-case-and-record-test-step.entity';
 
 @Entity(RECORD_TEST_CASE_TABLE_NAME)
 export class RecordTestCase extends BaseEntity implements RecordTestCaseBase {
   @PrimaryColumn({ type: 'uuid', name: RecordTestCasePropSnake.record_test_case_id })
   recordTestCaseId!: RecordTestCaseId;
 
-  @ColumnTemplate.RelationUuid(RecordTestCasePropSnake.prev_record_test_case_id)
-  prevRecordTestCaseId!: RecordTestCaseId | null;
-
-  @ColumnTemplate.RelationUuid(RecordTestCasePropSnake.record_test_scenario_id)
-  recordTestScenarioId!: RecordTestScenarioId;
+  @ColumnTemplate.RelationUuid(RecordTestCasePropSnake.project_id)
+  projectId!: ProjectId;
 
   @Column({ type: 'character varying', name: RecordTestCasePropSnake.name, nullable: false })
   name!: string;
@@ -28,14 +25,12 @@ export class RecordTestCase extends BaseEntity implements RecordTestCaseBase {
   @ColumnTemplate.DeleteDate(RecordTestCasePropSnake.deleted_at)
   deletedAt!: Date | null;
 
-  @ManyToOne(() => RecordTestCase, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
-  @JoinColumn({ name: RecordTestCasePropSnake.prev_record_test_case_id, referencedColumnName: RecordTestCasePropCamel.recordTestCaseId })
-  prevRecordTestCase?: RecordTestCaseBase | null;
+  @ManyToOne(() => Project, (project) => project, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
+  @JoinColumn({ name: RecordTestCasePropSnake.project_id })
+  project?: Project;
 
-  @ManyToOne(() => RecordTestScenario, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
-  @JoinColumn({ name: RecordTestCasePropSnake.record_test_scenario_id, referencedColumnName: RecordTestCasePropCamel.recordTestScenarioId })
-  recordTestScenario?: RecordTestScenario;
-
-  @OneToMany(() => RecordTestStep, (recordTestStep) => recordTestStep.recordTestCase, { cascade: ['soft-remove'] })
-  recordTestSteps?: RecordTestStep[];
+  @OneToMany(() => RecordTestCaseAndRecordTestStep, (recordTestCaseAndRecordTestStep) => recordTestCaseAndRecordTestStep.recordTestCase, {
+    cascade: ['soft-remove'],
+  })
+  recordTestCaseAndRecordTestSteps?: RecordTestCaseAndRecordTestStep[];
 }
