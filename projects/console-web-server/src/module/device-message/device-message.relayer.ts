@@ -1,4 +1,14 @@
-import { EventParam, HttpProxyRequest, Param, ParamValue, RequestParam, Result, WebSocketProxyConnect, WebSocketProxyId } from '@dogu-private/console-host-agent';
+import {
+  EventParam,
+  HttpProxyRequest,
+  Param,
+  ParamValue,
+  RequestParam,
+  Result,
+  WebSocketProxyConnect,
+  WebSocketProxyId,
+  WebSocketProxyReceiveClose,
+} from '@dogu-private/console-host-agent';
 import { Code, DeviceId, ErrorResultDto, ErrorResultError, OrganizationId } from '@dogu-private/types';
 import { Class, errorify, HeaderRecord, Instance, loop, Method, stringify, transformAndValidate, WebSocketSpec } from '@dogu-tech/common';
 import { DeviceServerResponseDto } from '@dogu-tech/device-client-common';
@@ -8,7 +18,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { config } from '../../config';
 import { DoguLogger } from '../logger/logger';
 import { DeviceMessageQueue } from './device-message.queue';
-import { WebsocketCloseError } from './error';
 
 export class WebSocketProxy<S extends Class<S>, R extends Class<R>> {
   constructor(
@@ -23,7 +32,7 @@ export class WebSocketProxy<S extends Class<S>, R extends Class<R>> {
     return this.deviceMessageRelayer.sendWebSocketMessage(this.organizationId, this.deviceId, this.webSocketProxyId, JSON.stringify(message));
   }
 
-  receive(): AsyncGenerator<Instance<R>> {
+  receive(): AsyncGenerator<Instance<R> | WebSocketProxyReceiveClose> {
     return this.deviceMessageRelayer.receiveWebSocketMessage(this.organizationId, this.deviceId, this.webSocketProxyId, this.spec);
   }
 
@@ -308,7 +317,7 @@ export class DeviceMessageRelayer {
     deviceId: DeviceId,
     webSocketProxyId: string,
     spec: WebSocketSpec<S, R>,
-  ): AsyncGenerator<Instance<R>> {
+  ): AsyncGenerator<Instance<R> | WebSocketProxyReceiveClose> {
     for await (const _ of loop(config.virtualWebSocket.pop.intervalMilliseconds)) {
       const receives = await this.deviceMessageQueue.popWebSocketProxyReceives(organizationId, deviceId, webSocketProxyId, config.virtualWebSocket.pop.count);
       for (const receive of receives) {
@@ -320,7 +329,7 @@ export class DeviceMessageRelayer {
           const { error, message } = value;
           throw new Error(`WebSocketProxyReceiveError error ${stringify(error)} ${message}`);
         } else if (kind === 'WebSocketProxyReceiveClose') {
-          throw new WebsocketCloseError(value.code, value.reason);
+          return value;
         } else if (kind === 'WebSocketProxyReceiveMessage') {
           const { data } = value;
           try {

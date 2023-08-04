@@ -1,10 +1,10 @@
+import { WebSocketProxyReceiveClose } from '@dogu-private/console-host-agent';
 import { DeviceId, OrganizationId, ProjectId, Serial } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, DefaultHttpOptions, loop, stringify, transformAndValidate } from '@dogu-tech/common';
 import { TcpRelayRequest, TcpRelayResponse } from '@dogu-tech/device-client-common';
 import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway } from '@nestjs/websockets';
 import { IncomingMessage } from 'http';
 import { WebSocketProxy } from '../../module/device-message/device-message.relayer';
-import { WebsocketCloseError } from '../../module/device-message/error';
 import { DoguLogger } from '../../module/logger/logger';
 import { DeviceCommandService } from '../../module/organization/device/device-command.service';
 import { RemoteWebDriverService } from '../../module/remote/remote-webdriver/remote-webdriver.service';
@@ -114,16 +114,15 @@ export class RemoteGamiumGateway implements OnGatewayConnection, OnGatewayDiscon
         return;
       }
       for await (const message of context.proxy.receive()) {
+        if (message instanceof WebSocketProxyReceiveClose) {
+          this.logger.info('socket closed from deviceside', { code: message.code, reason: message.reason });
+          closeWebSocketWithTruncateReason(webSocket, message.code, message.reason);
+          break;
+        }
         webSocket.send(Buffer.from(message.encodedData, 'base64'));
       }
-      closeWebSocketWithTruncateReason(webSocket, 1001, 'socket closed from deviceside');
     };
     pullDetach().catch((error) => {
-      if (error instanceof WebsocketCloseError) {
-        this.logger.info('socket closed from deviceside', { code: error.code, reason: error.reason });
-        closeWebSocketWithTruncateReason(webSocket, error.code, error.reason);
-        return;
-      }
       if (webSocket.readyState !== WebSocket.OPEN) {
         return;
       }

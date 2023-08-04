@@ -1,3 +1,4 @@
+import { WebSocketProxyReceiveClose } from '@dogu-private/console-host-agent';
 import { DeviceId, LocalDeviceDetectToken, OrganizationId, Serial } from '@dogu-private/types';
 import { HeaderRecord, Instance, stringify } from '@dogu-tech/common';
 import {
@@ -50,7 +51,7 @@ export class DeviceCommandService {
     return responseBody;
   }
 
-  async *startDeviceStreamingWithTrickle(offer: DeviceStreamingOfferDto): AsyncGenerator<StreamingAnswerDto> {
+  async *startDeviceStreamingWithTrickle(offer: DeviceStreamingOfferDto): AsyncGenerator<StreamingAnswerDto | WebSocketProxyReceiveClose> {
     const { organizationId, deviceId, serial, ...rest } = offer;
     const proxy = await this.deviceMessageRelayer.connectWebSocket(organizationId, deviceId, DeviceStreaming);
     await proxy.send({
