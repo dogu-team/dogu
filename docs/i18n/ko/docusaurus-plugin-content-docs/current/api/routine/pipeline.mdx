@@ -10,14 +10,14 @@ locale: ko
 POST /v1/projects/:projectId/routines/:routineId/pipelines
 ```
 
-### Query Parameters
+### Query Parameter
 
 | Attribute   | type   | required | description                                                                                                                            |
 | ----------- | ------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------- |
 | `projectId` | string | true     | 프로젝트의 ID입니다. 프로젝트 설정 페이지에서 쉽게 찾을 수 있습니다. [프로젝트 설정](/management/project/settings) 문서를 참고해주세요 |
 | `routineId` | string | true     | 루틴 ID입니다. [루틴 ID 확인](/management/project/routine#check-routine-id)을 참고해주세요.                                            |
 
-### Headers
+### Header
 
 | Attribute       | type   | required | description                                                                                    |
 | --------------- | ------ | -------- | ---------------------------------------------------------------------------------------------- |
@@ -26,7 +26,7 @@ POST /v1/projects/:projectId/routines/:routineId/pipelines
 ### Example
 
 ```
-curl -v -X POST "http://localhost:4000/v1/projects/${projectId}/routines/${routineId}/pipelines" \
+curl -v -X POST "https://api.dogutech.io/v1/projects/${projectId}/routines/${routineId}/pipelines" \
 -H "Authorization: Bearer ${ACCESS_TOKEN}" \
 -H "Content-Type: application/json"
 ```
@@ -42,9 +42,11 @@ curl -v -X POST "http://localhost:4000/v1/projects/${projectId}/routines/${routi
     "creatorType": 2,
     "creatorId": null,
     "createdAt": "2023-07-22T07:04:33.466Z",
-    "resultUrl": "http://localhost:3001/dashboard/e6183782-4740-4a44-988c-9be2456083ad/projects/5c0d027e-1738-4849-bca4-d5b3eb776d3b/routines/92"
+    "resultUrl": "https://console.dogutech.io/dashboard/e6183782-4740-4a44-988c-9be2456083ad/projects/5c0d027e-1738-4849-bca4-d5b3eb776d3b/routines/92"
 }
 ```
+
+---
 
 ## Get Pipeline
 
@@ -52,12 +54,12 @@ curl -v -X POST "http://localhost:4000/v1/projects/${projectId}/routines/${routi
 GET /v1/projects/:projectId/routines/:routineId/:routineId/pipelines/:routinePipelineId
 ```
 
-### Query Parameters
+### Query Parameter
 
-| Attribute           | type   | required | description                                                                                                                                                                                                                   |
-| ------------------- | ------ | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `projectId`         | string | true     | 프로젝트의 ID입니다. 프로젝트 설정 페이지에서 쉽게 찾을 수 있습니다. [프로젝트 설정](/management/project/settings) 문서를 참고해주세요                                                                                        |
-| `routineId`         | string | true     | 루틴 ID입니다. [루틴 ID 확인](/management/project/routine#check-routine-id)을 참고해주세요.                                                                                                                                   |
+| Attribute           | type   | required | description                                                                                                                                                                                                            |
+| ------------------- | ------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `projectId`         | string | true     | 프로젝트의 ID입니다. 프로젝트 설정 페이지에서 쉽게 찾을 수 있습니다. [프로젝트 설정](/management/project/settings) 문서를 참고해주세요                                                                                 |
+| `routineId`         | string | true     | 루틴 ID입니다. [루틴 ID 확인](/management/project/routine#check-routine-id)을 참고해주세요.                                                                                                                            |
 | `routinePipelineId` | string | true     | 파이프라인 ID입니다. [CreatePipeline Response](/api/routine/pipeline#create-pipeline-response)에서 확인하거나 <br/> [루틴 ID 확인](/management/project/routine#check-routine-id)과 비슷한 방법으로 확인할 수 있습니다. |
 
 ### Headers
@@ -69,7 +71,7 @@ GET /v1/projects/:projectId/routines/:routineId/:routineId/pipelines/:routinePip
 ### Example
 
 ```
-curl -v -X GET "http://localhost:4000/v1/projects/${projectId}/routines/${routineId}/pipelines/${routinePipelineId}" \
+curl -v -X GET "https://api.dogutech.io/v1/projects/${projectId}/routines/${routineId}/pipelines/${routinePipelineId}" \
 -H "Authorization: Bearer ${ACCESS_TOKEN}" \
 -H "Content-Type: application/json"
 ```
@@ -89,6 +91,6 @@ curl -v -X GET "http://localhost:4000/v1/projects/${projectId}/routines/${routin
     "createdAt": "2023-07-19T03:51:22.210Z",
     "inProgressAt": "2023-07-19T03:51:28.734Z",
     "completedAt": "2023-07-19T03:52:02.394Z",
-    "resultUrl": "http://localhost:3001/dashboard/e6183782-4740-4a44-988c-9be2456083ad/projects/5c0d027e-1738-4849-bca4-d5b3eb776d3b/routines/71"
+    "resultUrl": "https://console.dogutech.io/dashboard/e6183782-4740-4a44-988c-9be2456083ad/projects/5c0d027e-1738-4849-bca4-d5b3eb776d3b/routines/71"
 }
 ```

@@ -7,41 +7,38 @@ locale: ko
 ## Upload Application
 
 ```
-POST /v1/projects/:projectId/routines/:routineId/pipelines
+PUT /v1/projects/:projectId/applications
 ```
 
-### Query Parameters
+### Query Parameterß
 
-| Attribute   | type   | required | description                                                                                                                                 |
-| ----------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `projectId` | string | true     | ID of the project. You can easily find it on the project settings page. See [the project setup documentation](/management/project/settings) |
-| `routineId` | string | true     | ID of the Routine. Refer to [Check Routine ID](/management/project/routine#check-routine-id)                                                |
+| Attribute   | type   | required | description                                                                                                                             |
+| ----------- | ------ | -------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `projectId` | string | true     | I프로젝트의 ID입니다. 프로젝트 설정 페이지에서 쉽게 찾을 수 있습니다. [프로젝트 설정](/management/project/settings) 문서를 참고해주세요 |
 
-### Headers
+### Header
 
-| Attribute       | type   | required | description                                                                                      |
-| --------------- | ------ | -------- | ------------------------------------------------------------------------------------------------ |
-| `Authorization` | string | true     | Authorization: Bearer ${ACCESS_TOKEN}.<br /> For ACCESS_TOKEN, refer to the [ACCESS TOKEN](/api) |
+| Attribute       | type   | required | description                                                                                    |
+| --------------- | ------ | -------- | ---------------------------------------------------------------------------------------------- |
+| `Authorization` | string | true     | Authorization: Bearer ${ACCESS_TOKEN}.<br />ACCESS_TOKEN은 [엑세스 토큰](/api)을 참고해주세요. |
+
+### Body
+
+| Attribute | type   | required | description                                 |
+| --------- | ------ | -------- | ------------------------------------------- |
+| `file`    | binary | true     | 업로드할 파일 바이너리 (`.apk` 또는 `.ipa`) |
 
 ### Example
 
 ```
-curl -v -X POST "http://localhost:4000/v1/projects/${projectId}/routines/${routineId}/pipelines" \
+curl -v -X PUT "https://api.dogutech.io/v1/projects/${projectId}/applications" \
 -H "Authorization: Bearer ${ACCESS_TOKEN}" \
--H "Content-Type: application/json"
+-H "Content-Type: multipart/form-data" \
+-F "file=@${FilePath}"
 ```
 
-### Response Example {#create-pipeline-response}
+### Response Example {#upload-application-response}
 
 ```
-{
-    "routinePipelineId": 92,
-    "projectId": "5c0d027e-1738-4849-bca4-d5b3eb776d3b",
-    "routineId": "bbd281bf-76c4-4d07-92c1-66ffc8caa65d",
-    "index": 33,
-    "creatorType": 2,
-    "creatorId": null,
-    "createdAt": "2023-07-22T07:04:33.466Z",
-    "resultUrl": "http://localhost:3001/dashboard/e6183782-4740-4a44-988c-9be2456083ad/projects/5c0d027e-1738-4849-bca4-d5b3eb776d3b/routines/92"
-}
+HTTP/1.1 200 OK
 ```
