@@ -89,6 +89,9 @@ export class SeleniumContext {
     } else if (browserName === 'firefox') {
       browserDriverName = 'geckodriver';
       browserDriverVersion = browserVersion;
+    } else if (browserName === 'safari') {
+      browserDriverName = 'safaridriver';
+      browserDriverVersion = browserVersion;
     } else {
       throw new Error(`Unsupported browser name: ${stringify(browserName)}`);
     }
