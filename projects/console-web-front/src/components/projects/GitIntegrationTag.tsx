@@ -75,7 +75,7 @@ const GitIntegrationTag = ({ isGitIntegrated }: Props) => {
         </Tag>
       </Tooltip>
 
-      <Modal open={isOpen} centered closable onCancel={handleClose} okText={'Save'} onOk={saveGitIntegration} confirmLoading={loading}>
+      <Modal open={isOpen} centered closable onCancel={handleClose} okText={'Save'} onOk={saveGitIntegration} confirmLoading={loading} title="Git Integration">
         <GitIntegrationForm form={form} />
       </Modal>
     </>

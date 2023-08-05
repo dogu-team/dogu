@@ -75,7 +75,7 @@ function GitlabButton({ isConnected, disabled, organizationId, projectId }: Prop
         }
       />
 
-      <Modal open={isOpen} centered closable onCancel={handleClose} okText={'Save'} onOk={saveGitLabIntegration} confirmLoading={saveLoading}>
+      <Modal open={isOpen} centered closable onCancel={handleClose} okText={'Save'} onOk={saveGitLabIntegration} confirmLoading={saveLoading} title="GitLab Integration">
         <GitIntegrationForm form={form} hideType />
       </Modal>
     </>

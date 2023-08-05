@@ -147,7 +147,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
       <Box>
         <SettingTitleDivider title="General" />
         <Content>
-          <ContentTitle>{t('organization:sidebarSubTitle')} ID</ContentTitle>
+          <Label>{t('organization:sidebarSubTitle')} ID</Label>
           <TokenCopyInput value={organization.organizationId} />
         </Content>
         <Divider />
@@ -168,7 +168,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
           />
         </Content>
         <Content>
-          <ContentTitle>{t('organization:settingOrgName')}</ContentTitle>
+          <Label>{t('organization:settingOrgName')}</Label>
           <Input
             value={editingOrganization?.name}
             onChange={(e) =>
@@ -187,7 +187,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
         <Content>
           <div style={{ marginBottom: '1rem' }}></div>
           <div style={{ marginBottom: '1rem' }}>
-            <ContentTitle>{t('organization:sidebarSubTitle')} Access Token</ContentTitle>
+            <Label>{t('organization:sidebarSubTitle')} Access Token</Label>
             <AccessTokenButton getToken={getToken} />
           </div>
         </Content>
@@ -281,7 +281,7 @@ const Content = styled.div`
   margin-bottom: 1rem;
 `;
 
-const ContentTitle = styled.p`
+const Label = styled.p`
   margin-bottom: 0.5rem;
   font-weight: 500;
   font-size: 0.9rem;

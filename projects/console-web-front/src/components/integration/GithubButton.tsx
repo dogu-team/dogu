@@ -75,7 +75,7 @@ function GithubButton({ isConnected, disabled, organizationId, projectId }: Prop
         }
       />
 
-      <Modal open={isOpen} centered closable onCancel={handleClose} okText={'Save'} onOk={saveGitHubIntegration} confirmLoading={saveLoading}>
+      <Modal open={isOpen} centered closable onCancel={handleClose} okText={'Save'} onOk={saveGitHubIntegration} confirmLoading={saveLoading} title="GitHub Integration">
         <GitIntegrationForm form={form} hideType />
       </Modal>
     </>
