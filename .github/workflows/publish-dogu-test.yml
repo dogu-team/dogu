@@ -4,6 +4,9 @@ run-name: 📤publish-dogu-test-${{ github.event.inputs.version }}
 on:
   workflow_dispatch:
     inputs:
+      rc_check:
+        type: boolean
+        description: RC
       version:
         type: string
         description: 'dogu image version'
