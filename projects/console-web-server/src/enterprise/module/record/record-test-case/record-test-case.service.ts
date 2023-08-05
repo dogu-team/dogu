@@ -15,6 +15,7 @@ import { RecordTestCaseAndRecordTestStep } from '../../../../db/entity/index';
 import { RecordTestCase } from '../../../../db/entity/record-test-case.entity';
 import { RecordTestStep } from '../../../../db/entity/record-test-step.entity';
 import { EMPTY_PAGE, Page } from '../../../../module/common/dto/pagination/page';
+import { castEntity } from '../../../../types/entity-cast';
 import { getSortedRecordTestSteps } from '../common';
 import { AddRecordTestStepToRecordTestCaseDto, CreateRecordTestCaseDto, FindRecordTestCaseByProjectIdDto, UpdateRecordTestCaseDto } from '../dto/record-test-case.dto';
 
@@ -260,7 +261,7 @@ export class RecordTestCaseService {
       });
       await manager
         .getRepository(RecordTestCaseAndRecordTestStep)
-        .upsert(newTail, [`${RecordTestCaseAndRecordTestStepPropCamel.recordTestCaseId}`, `${RecordTestCaseAndRecordTestStepPropCamel.recordTestStepId}`]);
+        .upsert(castEntity(newTail), [`${RecordTestCaseAndRecordTestStepPropCamel.recordTestCaseId}`, `${RecordTestCaseAndRecordTestStepPropCamel.recordTestStepId}`]);
       return;
     } else {
       // middle
@@ -272,7 +273,7 @@ export class RecordTestCaseService {
       });
       await manager
         .getRepository(RecordTestCaseAndRecordTestStep)
-        .upsert(newMiddle, [`${RecordTestCaseAndRecordTestStepPropCamel.recordTestCaseId}`, `${RecordTestCaseAndRecordTestStepPropCamel.recordTestStepId}`]);
+        .upsert(castEntity(newMiddle), [`${RecordTestCaseAndRecordTestStepPropCamel.recordTestCaseId}`, `${RecordTestCaseAndRecordTestStepPropCamel.recordTestStepId}`]);
       oldNext.prevRecordTestStepId = recordTestStep.recordTestStepId;
       await manager.getRepository(RecordTestCaseAndRecordTestStep).save(oldNext);
       return;
