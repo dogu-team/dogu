@@ -3,6 +3,10 @@ import { Instance, IsFilledString, IsHttpMethod, IsOptionalObject, IsUrlPath, Is
 import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsIn, IsNumber, IsObject, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 
+interface TimeStamped {
+  timeStamps: string[];
+}
+
 @OneOf()
 export class Run extends Kindable<'Run'> {
   static override kind = 'Run';
@@ -123,7 +127,7 @@ export class WebSocketProxySendClose extends Kindable<'WebSocketProxySendClose'>
 }
 
 @OneOf()
-export class WebSocketProxySendMessage extends Kindable<'WebSocketProxySendMessage'> {
+export class WebSocketProxySendMessage extends Kindable<'WebSocketProxySendMessage'> implements TimeStamped {
   static override kind = 'WebSocketProxySendMessage';
 
   @IsUuidV4()
@@ -131,18 +135,26 @@ export class WebSocketProxySendMessage extends Kindable<'WebSocketProxySendMessa
 
   @IsString()
   data!: string;
+
+  @IsOptional()
+  @IsArray()
+  timeStamps!: string[];
 }
 
 const WebSocketProxySendValue = [WebSocketProxySendClose, WebSocketProxySendMessage] as const;
 export type WebSocketProxySendValue = Instance<(typeof WebSocketProxySendValue)[number]>;
 
 @OneOf()
-export class WebSocketProxySend extends Kindable<'WebSocketProxySend'> {
+export class WebSocketProxySend extends Kindable<'WebSocketProxySend'> implements TimeStamped {
   static override kind = 'WebSocketProxySend';
 
   @ValidateNested()
   @TransformByKind(WebSocketProxySendValue)
   value!: WebSocketProxySendValue;
+
+  @IsOptional()
+  @IsArray()
+  timeStamps!: string[];
 }
 
 @OneOf()
@@ -162,11 +174,15 @@ export class WebSocketProxyReceiveClose extends Kindable<'WebSocketProxyReceiveC
 }
 
 @OneOf()
-export class WebSocketProxyReceiveMessage extends Kindable<'WebSocketProxyReceiveMessage'> {
+export class WebSocketProxyReceiveMessage extends Kindable<'WebSocketProxyReceiveMessage'> implements TimeStamped {
   static override kind = 'WebSocketProxyReceiveMessage';
 
   @IsString()
   data!: string;
+
+  @IsOptional()
+  @IsArray()
+  timeStamps!: string[];
 }
 
 @OneOf()
@@ -184,12 +200,16 @@ const WebSocketProxyReceiveValue = [WebSocketProxyReceiveOpen, WebSocketProxyRec
 export type WebSocketProxyReceiveValue = Instance<(typeof WebSocketProxyReceiveValue)[number]>;
 
 @OneOf()
-export class WebSocketProxyReceive extends Kindable<'WebSocketProxyReceive'> {
+export class WebSocketProxyReceive extends Kindable<'WebSocketProxyReceive'> implements TimeStamped {
   static override kind = 'WebSocketProxyReceive';
 
   @ValidateNested()
   @TransformByKind(WebSocketProxyReceiveValue)
   value!: WebSocketProxyReceiveValue;
+
+  @IsOptional()
+  @IsArray()
+  timeStamps!: string[];
 }
 
 @OneOf()
@@ -308,20 +328,68 @@ export class EventResult extends Kindable<'EventResult'> {
 const ParamValue = [RequestParam, EventParam] as const;
 export type ParamValue = Instance<(typeof ParamValue)[number]>;
 
-export class Param {
+export class Param implements TimeStamped {
   @IsUuidV4()
   resultId!: string;
 
   @ValidateNested()
   @TransformByKind(ParamValue)
   value!: ParamValue;
+
+  @IsOptional()
+  @IsArray()
+  timeStamps!: string[];
 }
 
 const ResultValue = [ResponseResult, EventResult, ErrorResult] as const;
 export type ResultValue = Instance<(typeof ResultValue)[number]>;
 
-export class Result {
+export class Result implements TimeStamped {
   @ValidateNested()
   @TransformByKind(ResultValue)
   value!: ResultValue;
+
+  @IsOptional()
+  @IsArray()
+  timeStamps!: string[];
+}
+
+export function findTimeStampsFieldRecursive(data: any): string[] {
+  if (data === null || typeof data !== 'object') {
+    return [];
+  }
+  if (Array.isArray(data)) {
+    return data.flatMap(findTimeStampsFieldRecursive);
+  }
+  if ('timeStamps' in data) {
+    return data.timeStamps;
+  }
+  return Object.values(data).flatMap(findTimeStampsFieldRecursive);
+}
+
+export function toTimeStampObject(name: string, data: string[]): object {
+  const times = data.map((timeStamp) => {
+    const [name, time] = timeStamp.split('-');
+    return {
+      name,
+      time: Number(time),
+    };
+  });
+  const diffs = times.map((time, index) => {
+    if (index === 0) {
+      return {
+        name: time.name,
+        time: 0,
+      };
+    }
+    return {
+      name: time.name,
+      time: time.time - times[index - 1].time,
+    };
+  });
+  const timeStampObj = {
+    name: name,
+    diffs: diffs,
+  };
+  return timeStampObj;
 }

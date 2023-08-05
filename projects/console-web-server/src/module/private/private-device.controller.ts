@@ -139,9 +139,11 @@ export class PrivateDeviceController {
     @Body() body: PullDeviceParamDatasRequestBody,
   ): Promise<Instance<typeof PrivateDevice.pullDeviceParamDatas.responseBody>> {
     const { count } = body;
+    const befPopTime = Date.now();
     const datas = await this.deviceMessageQueue.popParamDatas(organizationId, deviceId, count);
     const response: Instance<typeof PrivateDevice.pullDeviceParamDatas.responseBody> = {
       datas,
+      timeStamps: [`cb_befPopTime-${befPopTime}`, `cb_aftPopTime-${Date.now()}`],
     };
     return response;
   }
@@ -156,6 +158,7 @@ export class PrivateDeviceController {
   ): Promise<void> {
     const validated = await transformAndValidate(PushDeviceResultRequestBody, body);
     const { result } = validated;
+    result.timeStamps.push(`cb_pushDeviceResult-${Date.now()}`);
     await this.deviceMessageQueue.pushResult(organizationId, deviceId, resultId, result);
   }
 
@@ -167,6 +170,7 @@ export class PrivateDeviceController {
     @Param('WebSocketProxyId') WebSocketProxyId: WebSocketProxyId,
     @Body() body: WebSocketProxyReceive,
   ): Promise<void> {
+    body.timeStamps.push(`cb_pushWebSocketProxyReceive-${Date.now()}`);
     await this.deviceMessageQueue.pushWebSocketProxyReceive(organizationId, deviceId, WebSocketProxyId, body);
   }
 

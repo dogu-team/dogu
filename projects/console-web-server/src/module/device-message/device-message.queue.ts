@@ -1,4 +1,4 @@
-import { Param, Result, WebSocketProxyId, WebSocketProxyReceive } from '@dogu-private/console-host-agent';
+import { Param, Result, toTimeStampObject, WebSocketProxyId, WebSocketProxyReceive } from '@dogu-private/console-host-agent';
 import { DeviceId, OrganizationId } from '@dogu-private/types';
 import { transformAndValidate } from '@dogu-tech/common';
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
@@ -6,10 +6,11 @@ import { Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
 import { config } from '../../config';
 import { DoguLogger } from '../logger/logger';
+import { DoguTimestampLogger } from '../logger/timestamp-logger';
 
 @Injectable()
 export class DeviceMessageQueue {
-  constructor(@InjectRedis() private readonly redis: Redis, private readonly logger: DoguLogger) {}
+  constructor(@InjectRedis() private readonly redis: Redis, private readonly logger: DoguLogger, private readonly timestamplogger: DoguTimestampLogger) {}
 
   async pushParam(organizationId: OrganizationId, deviceId: DeviceId, param: Param): Promise<void> {
     const key = config.redis.key.deviceParam(organizationId, deviceId);
@@ -50,9 +51,16 @@ export class DeviceMessageQueue {
     const popsOrNull = await this.redis.lpop(key, count);
     const pops = popsOrNull ?? [];
     const validateds: WebSocketProxyReceive[] = [];
+    const befValidate = Date.now();
     for (const pop of pops) {
       try {
         const validated = await transformAndValidate(WebSocketProxyReceive, JSON.parse(pop));
+        validated.timeStamps.push(`cb_popWebSocketProxyReceivesBefValidate-${befValidate}`);
+        validated.timeStamps.push(`cb_popWebSocketProxyReceives-${Date.now()}`);
+
+        const timeStampObj = toTimeStampObject('popWebSocketProxyReceives', validated.timeStamps);
+        this.timestamplogger.info(`TIMESTAMPSSSS: ${JSON.stringify(timeStampObj, null, 2)}`);
+
         validateds.push(validated);
       } catch (error) {
         this.logger.error(error);

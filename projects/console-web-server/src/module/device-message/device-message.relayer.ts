@@ -1,10 +1,12 @@
 import {
   EventParam,
+  findTimeStampsFieldRecursive,
   HttpProxyRequest,
   Param,
   ParamValue,
   RequestParam,
   Result,
+  toTimeStampObject,
   WebSocketProxyConnect,
   WebSocketProxyId,
   WebSocketProxyReceiveClose,
@@ -17,6 +19,7 @@ import { ClassConstructor } from 'class-transformer';
 import { v4 as uuidv4 } from 'uuid';
 import { config } from '../../config';
 import { DoguLogger } from '../logger/logger';
+import { DoguTimestampLogger } from '../logger/timestamp-logger';
 import { DeviceMessageQueue } from './device-message.queue';
 
 export class WebSocketProxy<S extends Class<S>, R extends Class<R>> {
@@ -61,7 +64,7 @@ export interface BatchHttpResponse {
 
 @Injectable()
 export class DeviceMessageRelayer {
-  constructor(private readonly deviceMessageQueue: DeviceMessageQueue, private readonly logger: DoguLogger) {}
+  constructor(private readonly deviceMessageQueue: DeviceMessageQueue, private readonly logger: DoguLogger, private readonly timestamplogger: DoguTimestampLogger) {}
 
   async sendParam(organizationId: OrganizationId, deviceId: DeviceId, paramValue: ParamValue): Promise<Result> {
     return new Promise<Result>((resolve, reject): void => {
@@ -95,6 +98,7 @@ export class DeviceMessageRelayer {
           const param: Param = {
             resultId,
             value: paramValue,
+            timeStamps: [...findTimeStampsFieldRecursive(paramValue), `cb_sendParam-${Date.now()}`],
           };
           const transformed = await transformAndValidate(Param, param);
           await this.deviceMessageQueue.pushParam(organizationId, deviceId, transformed);
@@ -104,6 +108,8 @@ export class DeviceMessageRelayer {
               continue;
             }
             const result = await transformAndValidate(Result, JSON.parse(resultData));
+            const timeStampObj = toTimeStampObject('sendParam', result.timeStamps);
+            this.timestamplogger.info(`TIMESTAMPSSSS: ${JSON.stringify(timeStampObj, null, 2)}`);
             resolve(result);
           }
         } catch (error) {
@@ -356,7 +362,9 @@ export class DeviceMessageRelayer {
           kind: 'WebSocketProxySendMessage',
           webSocketProxyId,
           data,
+          timeStamps: [],
         },
+        timeStamps: [`cb_sendWebSocketMessage-${Date.now()}`],
       },
     };
     const result = await this.sendParam(organizationId, deviceId, eventParam);
@@ -381,6 +389,7 @@ export class DeviceMessageRelayer {
           webSocketProxyId,
           reason,
         },
+        timeStamps: [`cb_closeWebSocket-${Date.now()}`],
       },
     };
     const result = await this.sendParam(organizationId, deviceId, eventParam);

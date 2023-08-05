@@ -65,9 +65,9 @@ export class MessagePuller {
         throw error;
       });
     const response = await transformAndValidate(PrivateDevice.pullDeviceParamDatas.responseBody, data);
-    const { datas } = response;
+    const { datas, timeStamps } = response;
     datas.forEach((data) => {
-      this.processParamData(deviceResolutionInfo, data).catch((error) => {
+      this.processParamData(deviceResolutionInfo, data, timeStamps).catch((error) => {
         this.logger.error('process param data failed', {
           deviceResolutionInfo,
           data,
@@ -77,7 +77,7 @@ export class MessagePuller {
     });
   }
 
-  private async processParamData(deviceResolutionInfo: DeviceResolutionInfo, paramData: string): Promise<void> {
+  private async processParamData(deviceResolutionInfo: DeviceResolutionInfo, paramData: string, pulledTimeStamps: string[]): Promise<void> {
     this.logger.verbose('process param data', {
       deviceResolutionInfo,
       paramData,
@@ -85,7 +85,7 @@ export class MessagePuller {
 
     const { deviceId, organizationId } = deviceResolutionInfo;
     const param = await transformAndValidate(Param, JSON.parse(paramData));
-    const { resultId, value } = param;
+    const { resultId, value, timeStamps } = param;
 
     const messageInfo: MessageInfo = {
       ...deviceResolutionInfo,
@@ -98,6 +98,7 @@ export class MessagePuller {
     const resultValue = await this.processParam(messageInfo, value, this.messageHandlers);
     const result: Result = {
       value: resultValue,
+      timeStamps: [...timeStamps, ...pulledTimeStamps, `ha_processParam-${Date.now()}`],
     };
     await this.sendResult(organizationId, deviceId, resultId, result);
   }
