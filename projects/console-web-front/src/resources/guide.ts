@@ -231,7 +231,7 @@ export const webdriverioGuideData: Guide = {
       cd: 'cd dogu-examples/webdriverio/javascript/jest',
       installDependencies: 'npm install',
       runCommand: `npm run test:web`,
-      sampleFilePath: 'web/chrome.test.js',
+      sampleFilePath: 'web/web.test.js',
     },
     {
       framework: GuideSupportFramework.JEST,
@@ -241,7 +241,7 @@ export const webdriverioGuideData: Guide = {
       cd: 'cd dogu-examples/webdriverio/javascript/jest',
       installDependencies: 'npm install',
       runCommand: `npm run test:web`,
-      sampleFilePath: 'web/chrome.test.ts',
+      sampleFilePath: 'web/web.test.ts',
     },
     {
       framework: GuideSupportFramework.JEST,
@@ -251,7 +251,7 @@ export const webdriverioGuideData: Guide = {
       cd: 'cd dogu-examples/webdriverio/javascript/jest',
       installDependencies: 'npm install',
       runCommand: `npm run test:web`,
-      sampleFilePath: 'web/chrome.test.ts',
+      sampleFilePath: 'web/web.test.ts',
     },
     {
       framework: GuideSupportFramework.JEST,
@@ -261,7 +261,7 @@ export const webdriverioGuideData: Guide = {
       cd: 'cd dogu-examples/webdriverio/javascript/jest',
       installDependencies: 'npm install',
       runCommand: `npm run test:web`,
-      sampleFilePath: 'web/chrome.test.ts',
+      sampleFilePath: 'web/web.test.ts',
     },
     {
       framework: GuideSupportFramework.JEST,
