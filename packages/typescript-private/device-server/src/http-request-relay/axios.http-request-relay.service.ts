@@ -1,56 +1,53 @@
-import { HeaderRecord, setAxiosErrorFilterToGlobal, stringify } from '@dogu-tech/common';
+import { HeaderRecord, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
 import { RelayResponse } from '@dogu-tech/device-client-common';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { DoguLogger } from '../logger/logger';
 import { HttpRequestRelayHandler, HttpRequestRelayService } from './http-request-relay.common';
 
+const client = axios.create();
+setAxiosErrorFilterToIntercepter(client);
+
 const methodHandlers: {
   [key: string]: HttpRequestRelayHandler;
 } = {
   GET: async (url, request, logger) => {
-    setAxiosErrorFilterToGlobal();
-    const res = await axios.get(url, {
+    const res = await client.get(url, {
       headers: request.headers,
       params: request.query,
     });
     return convertResponse(res, logger);
   },
   POST: async (url, request, logger) => {
-    setAxiosErrorFilterToGlobal();
-    const res = await axios.post(url, request.reqBody, {
+    const res = await client.post(url, request.reqBody, {
       headers: request.headers,
       params: request.query,
     });
     return convertResponse(res, logger);
   },
   PUT: async (url, request, logger) => {
-    setAxiosErrorFilterToGlobal();
-    const res = await axios.put(url, request.reqBody, {
+    const res = await client.put(url, request.reqBody, {
       headers: request.headers,
       params: request.query,
     });
     return convertResponse(res, logger);
   },
   PATCH: async (url, request, logger) => {
-    setAxiosErrorFilterToGlobal();
-    const res = await axios.patch(url, request.reqBody, {
+    const res = await client.patch(url, request.reqBody, {
       headers: request.headers,
       params: request.query,
     });
     return convertResponse(res, logger);
   },
   HEAD: async (url, request, logger) => {
-    setAxiosErrorFilterToGlobal();
-    const res = await axios.head(url, {
+    const res = await client.head(url, {
       headers: request.headers,
       params: request.query,
     });
     return convertResponse(res, logger);
   },
   DELETE: async (url, request, logger) => {
-    setAxiosErrorFilterToGlobal();
-    const res = await axios.delete(url, {
+    const res = await client.delete(url, {
       headers: request.headers,
       params: request.query,
     });
