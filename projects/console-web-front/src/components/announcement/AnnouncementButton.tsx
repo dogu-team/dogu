@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Drawer, Empty } from 'antd';
 
 import { flexRowCenteredStyle } from '../../styles/box';
+import AnnouncementCard from './AnnouncementCard';
 
 const AnnouncementButton = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,9 +20,10 @@ const AnnouncementButton = () => {
       </StyledButton>
 
       <StyledDrawer placement="right" title="What's new" onClose={() => setIsOpen(false)} open={isOpen}>
-        <Centered>
+        {/* <Centered>
           <Empty description="No announcements" />
-        </Centered>
+        </Centered> */}
+        <AnnouncementCard title="Dogu Studio is now available!" tags={['announcement', 'release', 'feature']} article={<div>hello...</div>} />
       </StyledDrawer>
     </>
   );
@@ -46,6 +48,7 @@ const StyledButton = styled.button`
 
 const StyledDrawer = styled(Drawer)`
   .ant-drawer-body {
+    padding: 1rem;
     background-color: ${(props) => props.theme.colorPrimary}18;
   }
 `;

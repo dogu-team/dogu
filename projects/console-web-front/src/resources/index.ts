@@ -22,6 +22,9 @@ const resources = {
     pytest: '/resources/icons/frameworks/pytest.svg',
     selenium: '/resources/icons/frameworks/selenium.svg',
     studioLogo: '/resources/icons/studio-logo.svg',
+    smilingFace: '/resources/icons/smiling-face.svg',
+    neutralFace: '/resources/icons/neutral-face.svg',
+    pensiveFace: '/resources/icons/pensive-face.svg',
   },
   images: {},
 };
