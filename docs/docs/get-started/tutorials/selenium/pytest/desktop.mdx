@@ -11,176 +11,41 @@ import {
 import BrowserOnly from '@docusaurus/BrowserOnly';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import DevicePrerequisites from '@site/src/components/tutorial/desktop/DevicePrerequisites.mdx';
+import ActivateVirtualEnv from '@site/src/components/tutorial/python/ActivateVirtualEnv.mdx';
+import InstallDependencies from '@site/src/components/tutorial/python/InstallDependencies.mdx';
+import CloneExampleAndVenv from '@site/src/components/tutorial/python/CloneExampleAndVenv.mdx';
+import UploadAndRunChromeTabItem from '@site/src/components/tutorial/python/UploadAndRunChromeTabItem.mdx';
+import VenvImportError from '@site/src/components/tutorial/python/VenvImportError.mdx';
 
-:::info PREREQUISITES
-You need to have Windows or MacOS device added to your Device Farm.  
-Refer to [Adding Windows Devices](/get-started/tutorials/device-farm/device/windows), [Adding MacOS Devices](/get-started/tutorials/device-farm/device/macos) for instructions.
-:::
+<DevicePrerequisites />
 
-### Clone Examples and Create Virtual Environment
+<CloneExampleAndVenv
+  title="Clone Examples and Create Virtual Environment"
+  path="selenium/python/desktop/pytest"
+/>
 
-```shell
-git clone https://github.com/dogu-team/dogu-examples.git
-cd dogu-examples/selenium/python/desktop/pytest
+<ActivateVirtualEnv title="Activate Virtual Environment" />
 
-python3 -m venv .venv
-```
+<InstallDependencies title="Install Dependencies" />
 
-### Activate Virtual Environment
+<Tabs groupId="target" defaultValue={`chrome-${getBrowserPlatform('windows')}`} queryString>
+<TabItem value="chrome-windows" label="Chrome-Windows">
 
-<BrowserOnly>
-{() => (
-<Tabs groupId="os" defaultValue={getBrowserPlatform('windows')}>
-<TabItem value="windows" label="Windows Powershell" default>
-
-```shell
-.venv\Scripts\activate.ps1
-```
-
-</TabItem>
-<TabItem value="windows-cmd" label="Windows Cmd">
-
-```shell
-.venv\Scripts\activate.bat
-```
+<UploadAndRunChromeTabItem
+  platform="windows"
+  run_script="pytest desktop/test_web.py"
+/>
 
 </TabItem>
-<TabItem value="macos" label="MacOS/Linux">
+<TabItem value="chrome-macos" label="Chrome-macOS">
 
-```shell
-source .venv/bin/activate
-```
-
-</TabItem>
-</Tabs>
-)}
-</BrowserOnly>
-
-### Install Dependencies
-
-```shell
-pip3 install -r requirements.txt
-```
-
-<Tabs groupId="target" defaultValue="chrome" queryString>
-<TabItem value="chrome" label="Chrome">
-
-### Authentication Information
-
-- API Token
-  - Obtain the [API Token](/management/organization/settings#api-token) from the Organization > Settings page.
-- Project Id, Organization Id
-  - Obtain the [Project Id, Organization Id](/management/project/settings#project-id) from the Organization > Project > Settings page.
-
-<Tabs groupId="service" defaultValue="cloud" queryString>
-<TabItem value="cloud" label="Cloud" default>
-
-Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.json**.
-
-<BrowserOnly>
-{() => (
-<Tabs groupId="os" defaultValue={getBrowserPlatform('windows')}>
-<TabItem value="windows" label="Windows" default>
-
-```json
-{
-  "version": 1,
-  "apiBaseUrl": "https://console.dogutech.io",
-  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
-  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
-  "token": "INSERT_YOUR_TOKEN", // change to your token
-  "runsOn": "windows",
-  "browserName": "chrome"
-}
-```
-
-</TabItem>
-<TabItem value="macos" label="MacOS">
-
-```json
-{
-  "version": 1,
-  "apiBaseUrl": "https://console.dogutech.io",
-  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
-  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
-  "token": "INSERT_YOUR_TOKEN", // change to your token
-  "runsOn": "macos",
-  "browserName": "chrome"
-}
-```
-
-</TabItem>
-</Tabs>
-)}
-</BrowserOnly>
-
-</TabItem>
-    
-<TabItem value="self-hosted" label="Self-Hosted">
-
-Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.json**.  
-Also, apply the `DOGU_HOST:4000` value of the configured Dogu server to apiBaseUrl.
-
-<BrowserOnly>
-{() => (
-<Tabs groupId="os" defaultValue={getBrowserPlatform('windows')}>
-<TabItem value="windows" label="Windows" default>
-
-```json
-{
-  "version": 1,
-  "apiBaseUrl": "INSERT_YOUR_API_BASE_URL", // change to your api base url
-  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
-  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
-  "token": "INSERT_YOUR_TOKEN", // change to your token
-  "runsOn": "windows",
-  "browserName": "chrome"
-}
-```
-
-</TabItem>
-<TabItem value="macos" label="MacOS">
-
-```json
-{
-  "version": 1,
-  "apiBaseUrl": "INSERT_YOUR_API_BASE_URL", // change to your api base url
-  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
-  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
-  "token": "INSERT_YOUR_TOKEN", // change to your token
-  "runsOn": "macos",
-  "browserName": "chrome"
-}
-```
-
-</TabItem>
-</Tabs>
-)}
-</BrowserOnly>
+<UploadAndRunChromeTabItem
+  platform="macos"
+  run_script="pytest desktop/test_web.py"
+/>
 
 </TabItem>
 </Tabs>
 
-### Running the Tests
-
-Run the following command to execute the tests.
-
-```
-pytest desktop/test_web.py
-```
-
-</TabItem>
-</Tabs>
-
-:::danger
-
-If you get the following error, please `Activate` the virtual environment again.
-
-```shell
-ImportError while loading conftest '{your directory}/dogu-examples/selenium/python/pytest/desktop/conftest.py'.
-desktop/conftest.py:5: in <module>
-    from pytest_dogu_sdk.dogu_config import DoguConfig
-E   ModuleNotFoundError: No module named 'pytest_dogu_sdk'
-```
-
-:::
+<VenvImportError />

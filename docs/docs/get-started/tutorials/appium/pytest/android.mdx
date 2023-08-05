@@ -37,12 +37,16 @@ import VenvImportError from '@site/src/components/tutorial/python/VenvImportErro
   app_name="Wikipedia-android.apk"
   app_url="https://github.com/dogu-team/third-party-binaries/releases/download/wikipedia-apps/wikipedia-android.apk"
   app_version="2.5.194-alpha-2017-05-30"
+  run_script="pytest android/test_app.py"
 />
 
 </TabItem>
 <TabItem value="chrome" label="Chrome">
 
-<UploadAndRunChromeTabItem />
+<UploadAndRunChromeTabItem
+  platform="android"
+  run_script="pytest android/test_web.py"
+/>
 
 </TabItem>
 </Tabs>
