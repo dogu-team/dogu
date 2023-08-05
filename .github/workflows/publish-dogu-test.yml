@@ -67,8 +67,6 @@ jobs:
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v3
-        env:
-          TAG: ${{needs.input_validation.outputs.tag}}
         with:
           context: .
           file: ./dockerfile
@@ -76,7 +74,7 @@ jobs:
           target: dogu-console
           no-cache: true
           tags: |
-            ${TAG}
+            ${{needs.input_validation.outputs.tag}}
 
   send-slack:
     runs-on: ubuntu-latest
