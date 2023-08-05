@@ -15,7 +15,8 @@ import DevicePrerequisites from '@site/src/components/tutorial/desktop/DevicePre
 import ActivateVirtualEnv from '@site/src/components/tutorial/python/ActivateVirtualEnv.mdx';
 import InstallDependencies from '@site/src/components/tutorial/python/InstallDependencies.mdx';
 import CloneExampleAndVenv from '@site/src/components/tutorial/python/CloneExampleAndVenv.mdx';
-import UploadAndRunChromeTabItem from '@site/src/components/tutorial/python/UploadAndRunChromeTabItem.mdx';
+import UploadAndConfigChromeTabItem from '@site/src/components/tutorial/common/UploadAndConfigChromeTabItem.mdx';
+import RunCommand from '@site/src/components/tutorial/common/RunCommand.mdx';
 import VenvImportError from '@site/src/components/tutorial/python/VenvImportError.mdx';
 
 <DevicePrerequisites />
@@ -29,23 +30,23 @@ import VenvImportError from '@site/src/components/tutorial/python/VenvImportErro
 
 <InstallDependencies title="Install Dependencies" />
 
+<BrowserOnly>
+{() => (
 <Tabs groupId="target" defaultValue={`chrome-${getBrowserPlatform('windows')}`} queryString>
 <TabItem value="chrome-windows" label="Chrome-Windows">
 
-<UploadAndRunChromeTabItem
-  platform="windows"
-  run_script="pytest desktop/test_web.py"
-/>
+<UploadAndConfigChromeTabItem platform="windows" browser_name="chrome" />
+<RunCommand run_script="pytest desktop/test_web.py" />
 
 </TabItem>
 <TabItem value="chrome-macos" label="Chrome-macOS">
 
-<UploadAndRunChromeTabItem
-  platform="macos"
-  run_script="pytest desktop/test_web.py"
-/>
+<UploadAndConfigChromeTabItem platform="macos" browser_name="chrome" />
+<RunCommand run_script="pytest desktop/test_web.py" />
 
 </TabItem>
 </Tabs>
+)}
+</BrowserOnly>
 
 <VenvImportError />

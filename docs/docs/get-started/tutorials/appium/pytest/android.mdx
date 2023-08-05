@@ -15,8 +15,9 @@ import DevicePrerequisites from '@site/src/components/tutorial/android/DevicePre
 import CloneExampleAndVenv from '@site/src/components/tutorial/python/CloneExampleAndVenv.mdx';
 import ActivateVirtualEnv from '@site/src/components/tutorial/python/ActivateVirtualEnv.mdx';
 import InstallDependencies from '@site/src/components/tutorial/python/InstallDependencies.mdx';
-import UploadAndRunAppTabItem from '@site/src/components/tutorial/python/UploadAndRunAppTabItem.mdx';
-import UploadAndRunChromeTabItem from '@site/src/components/tutorial/python/UploadAndRunChromeTabItem.mdx';
+import UploadAndConfigAppTabItem from '@site/src/components/tutorial/common/UploadAndConfigAppTabItem.mdx';
+import UploadAndConfigChromeTabItem from '@site/src/components/tutorial/common/UploadAndConfigChromeTabItem.mdx';
+import RunCommand from '@site/src/components/tutorial/common/RunCommand.mdx';
 import VenvImportError from '@site/src/components/tutorial/python/VenvImportError.mdx';
 
 <DevicePrerequisites />
@@ -33,20 +34,18 @@ import VenvImportError from '@site/src/components/tutorial/python/VenvImportErro
 <Tabs groupId="target" defaultValue="app" queryString>
 <TabItem value="app" label="App">
 
-<UploadAndRunAppTabItem
+<UploadAndConfigAppTabItem
   app_name="Wikipedia-android.apk"
   app_url="https://github.com/dogu-team/third-party-binaries/releases/download/wikipedia-apps/wikipedia-android.apk"
   app_version="2.5.194-alpha-2017-05-30"
-  run_script="pytest android/test_app.py"
 />
+<RunCommand run_script="pytest android/test_app.py" />
 
 </TabItem>
 <TabItem value="chrome" label="Chrome">
 
-<UploadAndRunChromeTabItem
-  platform="android"
-  run_script="pytest android/test_web.py"
-/>
+<UploadAndConfigChromeTabItem platform="android" browser_name="chrome" />
+<RunCommand run_script="pytest android/test_web.py" />
 
 </TabItem>
 </Tabs>
