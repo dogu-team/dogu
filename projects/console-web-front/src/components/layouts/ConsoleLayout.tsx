@@ -36,7 +36,6 @@ const ConsoleLayout = ({ titleI18nKey, children, sidebar, title, padding }: Cons
         </StyledLayoutContent>
       </StyledLayout>
       <LiveChat />
-      <Beamer />
     </ConsoleBasicLayout>
   );
 };
