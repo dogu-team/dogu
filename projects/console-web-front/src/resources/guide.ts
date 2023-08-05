@@ -329,8 +329,8 @@ export const seleniumData: Guide = {
       target: GuideSupportTarget.WEB,
       cd: 'cd dogu-examples/selenium/python/pytest',
       installDependencies: 'pip install -r requirements.txt',
-      runCommand: `pytest desktop/test_web.py`,
-      sampleFilePath: 'desktop/test_web.py',
+      runCommand: `pytest web/test_web.py`,
+      sampleFilePath: 'web/test_web.py',
     },
     {
       framework: GuideSupportFramework.PYTEST,
@@ -339,8 +339,8 @@ export const seleniumData: Guide = {
       target: GuideSupportTarget.WEB,
       cd: 'cd dogu-examples/selenium/python/pytest',
       installDependencies: 'pip install -r requirements.txt',
-      runCommand: `pytest desktop/test_web.py`,
-      sampleFilePath: 'desktop/test_web.py',
+      runCommand: `pytest web/test_web.py`,
+      sampleFilePath: 'web/test_web.py',
     },
   ],
 };
