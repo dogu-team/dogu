@@ -143,6 +143,15 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
                 <Alert message="We don't provide sample test script for iOS. Please run test with your own configuration." showIcon type="warning" />
               ) : (
                 <>
+                  {platform === GuideSupportPlatform.MACOS && (
+                    <Alert
+                      message={
+                        <p>
+                          For Safari in macOS, please run <CodeWithCopyButton language="bash" code="/usr/bin/safaridriver --enable" /> for testing.
+                        </p>
+                      }
+                    />
+                  )}
                   <CodeWithCopyButton language="bash" code={selectedGuide?.runCommand ?? ''} />
                   {frameworkLanguage === GuideSupportLanguage.PYTHON && (
                     <Alert message="If test failed with an import error, please activate virtual environment again." type="info" showIcon />

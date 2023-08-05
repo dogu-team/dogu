@@ -131,7 +131,7 @@ export const appiumGuideData: Guide = {
   "runsOn": "${platform}",  // or another device tag
   ${
     target === GuideSupportTarget.WEB
-      ? `"browserName": "${platform === GuideSupportPlatform.IOS ? 'safari' : 'chrome'}",`
+      ? `"browserName": "${platform === GuideSupportPlatform.IOS ? 'safari' : 'chrome'}", // available: "safari", "chrome", "firefox"`
       : `"appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'INSERT_YOUR_APP_VERSION'}",`
   }
 }
@@ -216,7 +216,7 @@ export const webdriverioGuideData: Guide = {
   "runsOn": "${platform}",  // or another device tag
   ${
     target === GuideSupportTarget.WEB
-      ? `"browserName": "${platform === GuideSupportPlatform.IOS ? 'safari' : 'chrome'}",`
+      ? `"browserName": "${platform === GuideSupportPlatform.IOS ? 'safari' : 'chrome'}", // available: "safari", "chrome", "firefox"`
       : `"appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'INSERT_YOUR_APP_VERSION'}",`
   }
 }
@@ -317,7 +317,7 @@ export const seleniumData: Guide = {
   "projectId": "${projectId}",
   "token": "${pat}", // see https://docs.dogutech.io/api
   "runsOn": "${platform}",  // or another device tag
-  "browserName": "chrome",
+  "browserName": "chrome", // available: "safari", "chrome", "firefox"
 }
 `;
   },
