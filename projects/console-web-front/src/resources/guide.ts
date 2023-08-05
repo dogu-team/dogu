@@ -145,8 +145,8 @@ export const appiumGuideData: Guide = {
       target: GuideSupportTarget.WEB,
       cd: 'cd dogu-examples/appium/python/pytest',
       installDependencies: 'pip install -r requirements.txt',
-      runCommand: `pytest android/test_web.py`,
-      sampleFilePath: 'android/test_web.py',
+      runCommand: `pytest web/test_web.py`,
+      sampleFilePath: 'web/test_web.py',
     },
     {
       framework: GuideSupportFramework.PYTEST,
@@ -155,8 +155,8 @@ export const appiumGuideData: Guide = {
       target: GuideSupportTarget.WEB,
       cd: 'cd dogu-examples/appium/python/pytest',
       installDependencies: 'pip install -r requirements.txt',
-      runCommand: `pytest ios/test_web.py`,
-      sampleFilePath: 'ios/test_web.py',
+      runCommand: `pytest web/test_web.py`,
+      sampleFilePath: 'web/test_web.py',
     },
     {
       framework: GuideSupportFramework.PYTEST,
@@ -166,8 +166,8 @@ export const appiumGuideData: Guide = {
       cd: 'cd dogu-examples/appium/python/pytest',
       installDependencies: 'pip install -r requirements.txt',
       hasSampleApp: true,
-      runCommand: `pytest android/test_app.py`,
-      sampleFilePath: 'android/test_app.py',
+      runCommand: `pytest app/android.py`,
+      sampleFilePath: 'app/test_android.py',
     },
     {
       framework: GuideSupportFramework.PYTEST,
