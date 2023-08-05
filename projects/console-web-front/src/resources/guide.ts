@@ -166,7 +166,7 @@ export const appiumGuideData: Guide = {
       cd: 'cd dogu-examples/appium/python/pytest',
       installDependencies: 'pip install -r requirements.txt',
       hasSampleApp: true,
-      runCommand: `pytest app/android.py`,
+      runCommand: `pytest app/test_android.py`,
       sampleFilePath: 'app/test_android.py',
     },
     {
