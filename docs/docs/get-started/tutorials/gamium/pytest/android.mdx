@@ -23,28 +23,17 @@ import VenvImportError from '@site/src/components/tutorial/python/VenvImportErro
 
 <CloneExampleAndVenv
   title="Clone Examples and Create Virtual Environment"
-  path="appium/python/android/pytest"
+  path="gamium/python/pytest"
 />
 
 <ActivateVirtualEnv title="Activate Virtual Environment" />
 
 <InstallDependencies title="Install Dependencies" />
 
-<Tabs groupId="target" defaultValue="app" queryString>
-<TabItem value="app" label="App">
-
 <UploadAndRunAppTabItem
-  app_name="Wikipedia-android.apk"
-  app_url="https://github.com/dogu-team/third-party-binaries/releases/download/wikipedia-apps/wikipedia-android.apk"
-  app_version="2.5.194-alpha-2017-05-30"
+  app_name="DoguRpgSample.apk"
+  app_url="https://github.com/dogu-team/gamium-unity-samples/releases/download/DoguRpgSample-2.0.5/android.zip"
+  app_version="2.0.5"
 />
-
-</TabItem>
-<TabItem value="chrome" label="Chrome">
-
-<UploadAndRunChromeTabItem />
-
-</TabItem>
-</Tabs>
 
 <VenvImportError />
