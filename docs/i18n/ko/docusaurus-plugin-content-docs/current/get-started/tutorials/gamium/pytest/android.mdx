@@ -4,6 +4,11 @@ title: Android
 locale: ko
 ---
 
+import {
+  getBrowserPlatform,
+  BrowserPlatform,
+} from '@site/src/platform/platform.ts';
+import BrowserOnly from '@docusaurus/BrowserOnly';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import DevicePrerequisites from '@site/src/components/tutorial/android/DevicePrerequisitesKor.mdx';
@@ -11,7 +16,6 @@ import CloneExampleAndVenv from '@site/src/components/tutorial/python/CloneExamp
 import ActivateVirtualEnv from '@site/src/components/tutorial/python/ActivateVirtualEnv.mdx';
 import InstallDependencies from '@site/src/components/tutorial/python/InstallDependencies.mdx';
 import UploadAndConfigAppTabItem from '@site/src/components/tutorial/common/UploadAndConfigAppTabItemKor.mdx';
-import UploadAndConfigChromeTabItem from '@site/src/components/tutorial/common/UploadAndConfigChromeTabItemKor.mdx';
 import RunCommand from '@site/src/components/tutorial/common/RunCommandKor.mdx';
 import VenvImportError from '@site/src/components/tutorial/python/VenvImportErrorKor.mdx';
 
@@ -19,30 +23,18 @@ import VenvImportError from '@site/src/components/tutorial/python/VenvImportErro
 
 <CloneExampleAndVenv
   title="Example 레포 클론 및 가상 환경 생성"
-  path="appium/python/android/pytest"
+  path="gamium/python/pytest"
 />
 
 <ActivateVirtualEnv title="가상 환경 활성화" />
 
 <InstallDependencies title="의존성 설치" />
 
-<Tabs groupId="target" defaultValue="app" queryString>
-<TabItem value="app" label="App">
-
 <UploadAndConfigAppTabItem
-  app_name="Wikipedia-android.apk"
-  app_url="https://github.com/dogu-team/third-party-binaries/releases/download/wikipedia-apps/wikipedia-android.apk"
-  app_version="2.5.194-alpha-2017-05-30"
+  app_name="DoguRpgSample.apk"
+  app_url="https://github.com/dogu-team/gamium-unity-samples/releases/download/DoguRpgSample-2.0.5/android.zip"
+  app_version="2.0.5"
 />
-<RunCommand run_script="pytest android/test_app.py" />
-
-</TabItem>
-<TabItem value="chrome" label="Chrome">
-
-<UploadAndConfigChromeTabItem platform="android" browser_name="chrome" />
-<RunCommand run_script="pytest android/test_web.py" />
-
-</TabItem>
-</Tabs>
+<RunCommand run_script="pytest pytest app/test_dogurpgsample.py" />
 
 <VenvImportError />
