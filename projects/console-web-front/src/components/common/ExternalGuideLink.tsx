@@ -6,7 +6,7 @@ interface Props extends Omit<ButtonProps, 'type' | 'target'> {}
 
 const ExternalGuideLink = ({ children, ...props }: Props) => {
   return (
-    <StyledButton type="link" target="_blank" {...props}>
+    <StyledButton target="_blank" {...props}>
       <p style={{ marginLeft: '.5rem' }}>{children}</p>
       &nbsp;
       <BiLinkExternal />
@@ -17,7 +17,6 @@ const ExternalGuideLink = ({ children, ...props }: Props) => {
 export default ExternalGuideLink;
 
 const StyledButton = styled(Button)`
-  color: ${(props) => props.theme.colorPrimary};
   display: flex;
   flex-direction: row;
   align-items: center;
