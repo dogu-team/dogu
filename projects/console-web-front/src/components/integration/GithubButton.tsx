@@ -17,9 +17,10 @@ import IntegrationButton from './IntegrationCard';
 
 interface Props extends ProjectIntegrationButtonProps {
   disabled: boolean;
+  description?: React.ReactNode;
 }
 
-function GithubButton({ isConnected, disabled, organizationId, projectId }: Props) {
+function GithubButton({ isConnected, disabled, organizationId, projectId, description }: Props) {
   const [deleteLoading, deleteScm] = useRequest(deleteProjectScm);
   const [saveLoading, saveScm] = useRequest(updateProjectScm);
   const [isOpen, openModal, closeModal] = useModal();
@@ -63,7 +64,7 @@ function GithubButton({ isConnected, disabled, organizationId, projectId }: Prop
       <IntegrationButton
         icon={<GithubIcon style={{ width: '24px', height: '24px' }} />}
         name="GitHub"
-        description="Integrate routine with GitHub"
+        description={description ?? 'Integrate routine with GitHub'}
         connectButton={
           isConnected ? (
             <DisconnectButton onClick={disconnect} loading={deleteLoading}>

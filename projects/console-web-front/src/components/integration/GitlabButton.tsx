@@ -17,9 +17,10 @@ import IntegrationButton from './IntegrationCard';
 
 interface Props extends ProjectIntegrationButtonProps {
   disabled: boolean;
+  description?: React.ReactNode;
 }
 
-function GitlabButton({ isConnected, disabled, organizationId, projectId }: Props) {
+function GitlabButton({ isConnected, disabled, organizationId, projectId, description }: Props) {
   const [deleteLoading, deleteScm] = useRequest(deleteProjectScm);
   const [saveLoading, saveScm] = useRequest(updateProjectScm);
   const [isOpen, openModal, closeModal] = useModal();
@@ -63,7 +64,7 @@ function GitlabButton({ isConnected, disabled, organizationId, projectId }: Prop
       <IntegrationButton
         icon={<GitlabIcon style={{ width: '24px', height: '24px' }} />}
         name="GitLab"
-        description="Integrate routine with GitLab"
+        description={description ?? 'Integrate routine with GitLab'}
         connectButton={
           isConnected ? (
             <DisconnectButton onClick={disconnect} loading={deleteLoading}>
