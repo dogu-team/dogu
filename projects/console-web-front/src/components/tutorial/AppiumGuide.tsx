@@ -111,24 +111,9 @@ const AppiumGuide = ({ organizationId, projectId }: GuideProps) => {
             id={SET_CAPABILITIES_ID}
             title="Set capabilities"
             description={
-              <>
-                <p>
-                  Open <StyledCode>dogu.config.json</StyledCode> and configure capabilities for your project
-                </p>
-                {platform === GuideSupportPlatform.IOS && (
-                  <Alert
-                    style={{ marginTop: '.5rem' }}
-                    message="For iOS, please refer to documentation."
-                    type="info"
-                    showIcon
-                    action={
-                      <Link href="https://docs.dogutech.io/test-automation/mobile/appium/qna" target="_blank">
-                        <Button>Visit</Button>
-                      </Link>
-                    }
-                  />
-                )}
-              </>
+              <p>
+                Open <StyledCode>dogu.config.json</StyledCode> and configure capabilities for your project
+              </p>
             }
             content={<CodeWithCopyButton language={'json'} code={capabilityCode} />}
           />
@@ -139,7 +124,7 @@ const AppiumGuide = ({ organizationId, projectId }: GuideProps) => {
               description={<p>Before starting, upload the app that matches the version specified in the script.</p>}
               content={
                 selectedGuide?.hasSampleApp ? (
-                  <SampleApplicationUploadButton organizationId={organizationId} projectId={projectId} />
+                  <SampleApplicationUploadButton organizationId={organizationId} projectId={projectId} category="mobile" />
                 ) : (
                   <>
                     {platform === GuideSupportPlatform.IOS && (

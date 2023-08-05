@@ -116,7 +116,7 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
               description={<p>Before starting, upload the app that matches the version specified in the script.</p>}
               content={
                 selectedGuide?.hasSampleApp ? (
-                  <SampleApplicationUploadButton organizationId={organizationId} projectId={projectId} />
+                  <SampleApplicationUploadButton organizationId={organizationId} projectId={projectId} category="mobile" />
                 ) : (
                   <>
                     {platform === GuideSupportPlatform.IOS && (

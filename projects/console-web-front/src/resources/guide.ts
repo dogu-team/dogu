@@ -347,21 +347,62 @@ export const seleniumData: Guide = {
 
 export const gamiumGuideData: Guide = {
   supportFrameworks: {
-    [GuideSupportLanguage.TYPESCRIPT]: [GuideSupportFramework.TYPESCRIPT],
+    [GuideSupportLanguage.JAVASCRIPT]: [GuideSupportFramework.JEST],
+    [GuideSupportLanguage.PYTHON]: [GuideSupportFramework.PYTEST],
   },
   platformAndTarget: {
     [GuideSupportPlatform.ANDROID]: [GuideSupportTarget.UNITY],
-    [GuideSupportPlatform.IOS]: [GuideSupportTarget.UNITY],
+    // [GuideSupportPlatform.IOS]: [GuideSupportTarget.UNITY],
   },
   defaultOptions: {
-    framework: GuideSupportFramework.TYPESCRIPT,
+    framework: GuideSupportFramework.JEST,
     platform: GuideSupportPlatform.ANDROID,
     target: GuideSupportTarget.UNITY,
   },
-  generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
-    return '';
+  generateCapabilitiesCode: async ({ framework, userId, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
+    let pat: string;
+
+    try {
+      pat = await getPersonalAccessToken(userId);
+    } catch (e) {
+      pat = 'INSERT_YOUR_ORGANIZATION_API_TOKEN';
+    }
+
+    return `{
+  "version": 1,
+  "apiBaseUrl": "${process.env.NEXT_PUBLIC_DOGU_API_BASE_URL}",
+  "organizationId": "${orgId}",
+  "projectId": "${projectId}",
+  "token": "${pat}", // see https://docs.dogutech.io/api
+  "runsOn": "${platform}",  // or another device tag
+  "appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.0.5' : 'INSERT_YOUR_APP_VERSION'}",
+}
+`;
   },
-  guides: [],
+  guides: [
+    {
+      framework: GuideSupportFramework.JEST,
+      language: GuideSupportLanguage.JAVASCRIPT,
+      platform: GuideSupportPlatform.ANDROID,
+      target: GuideSupportTarget.UNITY,
+      cd: 'cd dogu-examples/gamium/javascript/jest',
+      installDependencies: 'npm install',
+      runCommand: `npm run test:app:android`,
+      hasSampleApp: true,
+      sampleFilePath: 'app/android.dogurpgsample.test.js',
+    },
+    {
+      framework: GuideSupportFramework.PYTEST,
+      language: GuideSupportLanguage.PYTHON,
+      platform: GuideSupportPlatform.ANDROID,
+      target: GuideSupportTarget.UNITY,
+      cd: 'cd dogu-examples/gamium/python/pytest',
+      installDependencies: 'pip install -r requirements.txt',
+      runCommand: `pytest app/test_dogurpgsample.py`,
+      hasSampleApp: true,
+      sampleFilePath: 'app/test_dogurpgsample.py',
+    },
+  ],
 };
 
 export const tutorialData: { [key in GuideSupportSdk]: Guide } = {
