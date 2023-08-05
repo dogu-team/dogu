@@ -41,7 +41,7 @@ jobs:
               echo "tag=${image_path}" >> "$GITHUB_OUTPUT"
               echo -e "${GREEN} dogu image tag is ${image_path}${NC}"
             else
-              image_path="dogutechio/$version"
+              image_path="dogutechio/dogu:$version"
               echo "tag=${image_path}" >> "$GITHUB_OUTPUT"
               echo -e "${GREEN} dogu image tag is ${image_path}${NC}"
             fi
