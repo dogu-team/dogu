@@ -47,7 +47,7 @@ function GitlabButton({ isConnected, disabled, organizationId, projectId }: Prop
     const values = await form.validateFields();
 
     try {
-      await saveScm(organizationId, projectId, { service: PROJECT_SCM_TYPE.GITLAB, token: values.token, url: values.repo });
+      await saveScm(organizationId, projectId, { service: PROJECT_SCM_TYPE.GITLAB, token: values.token, url: values.repo.replace('.git', '') });
       sendSuccessNotification('Gitlab integration saved');
       fireEvent('onProjectScmUpdated');
       handleClose();
