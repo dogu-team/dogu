@@ -8,6 +8,7 @@ import ManualExternalToolValidCheckerItem from '../components/external/ManualExt
 import BorderBox from '../components/layouts/BorderBox';
 import PageTitle from '../components/layouts/PageTitle';
 import useManualSetupExternalValidResult from '../hooks/manaul-setup-external-valid-result';
+import { DoguDocsDeviceFarmIosSettingsUrl } from '../shares/constants';
 import { ExternalValidationResult } from '../shares/external';
 import { ipc } from '../utils/window';
 
@@ -31,7 +32,7 @@ function IosSettings() {
   return (
     <div>
       <div style={{ paddingBottom: '16px' }}>
-        <PageTitle title="iOS Settings" docsLink="https://docs.dogutech.io/device-farm/host/macos/installation#ios-settings" />
+        <PageTitle title="iOS Settings" docsLink={DoguDocsDeviceFarmIosSettingsUrl} />
       </div>
 
       <Divider mb={4} />

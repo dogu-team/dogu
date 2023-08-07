@@ -10,7 +10,7 @@ import { AppConfigService } from '../app-config/app-config-service';
 import { DotEnvConfigService } from '../dot-env-config/dot-env-config-service';
 import { logger } from '../log/logger.instance';
 import { ThirdPartyPathMap, WritablePath } from '../path-map';
-import { copyiOSDeviceAgentProject } from './ios-device-agent-project';
+import { copyiOSDeviceAgentProject, validateiOSDeviceAgentProjectExist } from './ios-device-agent-project';
 
 const execAsync = promisify(exec);
 
@@ -113,7 +113,9 @@ export class SettingsService {
   private async openIdaProject(): Promise<void> {
     const idaDestProjectDirectoryPath = HostPaths.external.xcodeProject.idaProjectDirectoryPath();
 
-    await copyiOSDeviceAgentProject(logger);
+    if (!(await validateiOSDeviceAgentProjectExist(logger))) {
+      await copyiOSDeviceAgentProject(logger);
+    }
 
     const idaDestProjectPath = path.resolve(idaDestProjectDirectoryPath, 'IOSDeviceAgent.xcodeproj');
     const { stdout, stderr } = await execAsync(`open ${idaDestProjectPath}`, {});
