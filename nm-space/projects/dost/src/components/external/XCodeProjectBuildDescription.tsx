@@ -13,6 +13,7 @@ interface Props {
 
 const XCodeProjectBuildDescription = ({ projectName, externalKeyAndNames, onOpenProject }: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isUninstallOpen, onOpen: onUninstallOpen, onClose: onUninstallClose } = useDisclosure();
   const [loading, setLoading] = useState(false);
   const { isValid, validate } = useContext(ValidContext);
 
@@ -28,17 +29,30 @@ const XCodeProjectBuildDescription = ({ projectName, externalKeyAndNames, onOpen
           </Stack>
         </ListItem>
         <ListItem mt="8px">
-          <Button
-            size="sm"
-            onClick={() => {
-              onOpen();
-              setLoading(true);
-            }}
-            isLoading={loading}
-            colorScheme="blue"
-          >
-            {isValid ? 'Rebuild & Check' : 'Build & Check'}
-          </Button>
+          <Stack spacing={1} direction="row" alignItems="center">
+            <Button
+              size="sm"
+              onClick={() => {
+                onOpen();
+                setLoading(true);
+              }}
+              isLoading={loading}
+              colorScheme="blue"
+            >
+              Build & Check
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => {
+                onUninstallOpen();
+                setLoading(true);
+              }}
+              isLoading={loading}
+              colorScheme="red"
+            >
+              Clean
+            </Button>
+          </Stack>
         </ListItem>
       </UnorderedList>
       <ExternalToolInstallerModal
@@ -48,6 +62,17 @@ const XCodeProjectBuildDescription = ({ projectName, externalKeyAndNames, onOpen
         onFinish={() => {
           setLoading(false);
           validate();
+        }}
+        externalKeyAndNames={externalKeyAndNames}
+      />
+      <ExternalToolInstallerModal
+        title={<Text>Uninstalling...</Text>}
+        isUninstall={true}
+        isOpen={isUninstallOpen}
+        onClose={onUninstallClose}
+        onFinish={() => {
+          setLoading(false);
+          validate(true).catch(() => {});
         }}
         externalKeyAndNames={externalKeyAndNames}
       />

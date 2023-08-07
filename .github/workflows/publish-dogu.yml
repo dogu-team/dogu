@@ -4,13 +4,52 @@ run-name: 📤publish-dogu-${{ github.event.inputs.version }}
 on:
   workflow_dispatch:
     inputs:
+      rc_check:
+        type: boolean
+        description: RC
       version:
         type: string
-        description: 'dogu version'
+        description: 'dogu image version'
         default: ''
 
 jobs:
+  input_validation:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.input_validation.outputs.tag }}
+
+    steps:
+      - id: input_validation
+        name: input validation
+        run: |
+          RED='\033[0;31m'
+          GREEN='\033[0;32m'
+          NC='\033[0m' 
+          echo "rc_check is ${{ github.event.inputs.rc_check }}"
+          echo "version is ${{ github.event.inputs.version }}"
+          rc_check=${{ github.event.inputs.rc_check }}
+          version=${{ github.event.inputs.version }}
+          if [ "$rc_check" = "true" ] && [ -n "$version" ]; then
+            echo -e "${RED}Skipping because rc_check is true and version is not empty${NC}"
+            exit 1
+          elif [ "$rc_check" = "false" ] && [ -z "$version" ]; then
+            echo -e "${RED}Skipping because rc_check is false and version is empty${NC}"
+            exit 1
+          else
+            if [ "$rc_check" = "true" ]; then
+              image_path="dogutechio/dogu-rc:rc"
+              echo "tag=${image_path}" >> "$GITHUB_OUTPUT"
+              echo -e "${GREEN} dogu image tag is ${image_path}${NC}"
+            else
+              image_path="dogutechio/dogu:$version"
+              echo "tag=${image_path}" >> "$GITHUB_OUTPUT"
+              echo -e "${GREEN} dogu image tag is ${image_path}${NC}"
+            fi
+            echo -e "${GREEN} input validation successful${NC}"
+          fi
+
   publish:
+    needs: input_validation
     runs-on: ubuntu-latest
 
     steps:
@@ -35,7 +74,7 @@ jobs:
           target: dogu-console
           no-cache: true
           tags: |
-            dogutechio/dogu:${{ github.event.inputs.version }}
+            ${{needs.input_validation.outputs.tag}}
 
   send-slack:
     runs-on: ubuntu-latest

@@ -1,4 +1,4 @@
-import { setAxiosErrorFilterToGlobal } from '@dogu-tech/common';
+import { setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import lodash from 'lodash';
@@ -28,10 +28,11 @@ export class NexusFeatureFileService extends FeatureFileService {
   private readonly url = config.fileService.nexus.url;
   private readonly userName = config.fileService.nexus.username;
   private readonly password = config.fileService.nexus.password;
+  private readonly client = axios.create();
 
   constructor(private readonly logger: DoguLogger) {
     super('nexus');
-    setAxiosErrorFilterToGlobal();
+    setAxiosErrorFilterToIntercepter(this.client);
   }
 
   private createBasicCredentials(): { username: string; password: string } {
@@ -49,17 +50,20 @@ export class NexusFeatureFileService extends FeatureFileService {
     const { bucketKey, key, body } = options;
     const repository = this.parseBucketKey(bucketKey);
     const url = `${this.url}/repository/${repository}/${key}`;
-    const response = await axios
-      .put(url, body, {
-        auth: this.createBasicCredentials(),
-        headers: {
-          'Content-Type': 'application/octet-stream',
-        },
-      })
-      .catch((error) => {
-        this.logger.error(error);
-        throw error;
-      });
+    for (let i = 0; i < 3; i++) {
+      const response = await this.client
+        .put(url, body, {
+          auth: this.createBasicCredentials(),
+          headers: {
+            'Content-Type': 'application/octet-stream',
+          },
+        })
+        .catch((error) => {
+          this.logger.error(error);
+          throw error;
+        });
+      break;
+    }
     return {
       location: url,
     };
@@ -69,7 +73,7 @@ export class NexusFeatureFileService extends FeatureFileService {
     const { bucketKey, key } = options;
     const repository = this.parseBucketKey(bucketKey);
     const url = `${this.url}/repository/${repository}/${key}`;
-    const response = await axios.get(url, {
+    const response = await this.client.get(url, {
       auth: this.createBasicCredentials(),
     });
     return {
@@ -81,7 +85,7 @@ export class NexusFeatureFileService extends FeatureFileService {
     const { bucketKey, key } = options;
     const repository = this.parseBucketKey(bucketKey);
     const url = `${this.url}/repository/${repository}/${key}`;
-    const response = await axios.head(url, {
+    const response = await this.client.head(url, {
       auth: this.createBasicCredentials(),
     });
     return {
@@ -94,7 +98,7 @@ export class NexusFeatureFileService extends FeatureFileService {
     const { bucketKey, key } = options;
     const repository = this.parseBucketKey(bucketKey);
     const url = `${this.url}/repository/${repository}/${key}`;
-    const response = await axios.delete(url, {
+    const response = await this.client.delete(url, {
       auth: this.createBasicCredentials(),
     });
     return {};
@@ -105,7 +109,7 @@ export class NexusFeatureFileService extends FeatureFileService {
     const repository = this.parseBucketKey(bucketKey);
     const url = `${this.url}/service/rest/v1/search?repository=${repository}&group=${prefix}${continuationToken ? `&continuationToken=${continuationToken}` : ''}`;
 
-    const response = await axios.get(url, {
+    const response = await this.client.get(url, {
       auth: this.createBasicCredentials(),
     });
 
@@ -143,7 +147,7 @@ export class NexusFeatureFileService extends FeatureFileService {
     const { bucketKey, key, range } = options;
     const repository = this.parseBucketKey(bucketKey);
     const url = `${this.url}/repository/${repository}/${key}`;
-    const response = await axios.get(url, {
+    const response = await this.client.get(url, {
       responseType: 'stream',
       auth: this.createBasicCredentials(),
       headers: {

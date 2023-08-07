@@ -25,7 +25,7 @@ class MobileDeviceImpl {
       .filter((line) => line.length !== 0);
   }
 
-  @Retry()
+  @Retry({ retryCount: 3, retryInterval: 1000 })
   async getDeviceProp(udid: string, property: string, printable?: Printable): Promise<string> {
     const { stdout, stderr } = await execFileAsync(pathMap().macos.mobiledevice, ['get_device_prop', '-u', udid, property], {
       timeout: DefaultTimeout,

@@ -106,9 +106,12 @@ export class IosChannel implements DeviceChannel {
     const { serial, deviceAgentDevicePort, deviceAgentDeviceSecondPort, deviceAgentDeviceThirdPort } = param;
     const platform = Platform.PLATFORM_IOS;
 
-    const version = semver.coerce(await IosSystemInfoService.gerVersion(serial));
-    if (version && semver.lt(version, '14.0.0')) {
-      throw new Error(`iOS version must be 14 or higher. current version: ${version}`);
+    const productVersion = await IosSystemInfoService.getVersion(serial);
+    if (productVersion) {
+      const version = semver.coerce(productVersion);
+      if (version && semver.lt(version, '14.0.0')) {
+        throw new Error(`iOS version must be 14 or higher. current version: ${productVersion}`);
+      }
     }
 
     if (!(await IosDeviceAgentProcess.isReady(serial))) {

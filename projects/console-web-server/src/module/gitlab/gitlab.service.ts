@@ -8,7 +8,7 @@ import {
   UserPropSnake,
 } from '@dogu-private/console';
 import { ProjectId, ProjectRoleId, TeamId, UserId } from '@dogu-private/types';
-import { delay, setAxiosErrorFilterToGlobal } from '@dogu-tech/common';
+import { delay, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import axios from 'axios';
@@ -20,12 +20,14 @@ import { DoguLogger } from '../logger/logger';
 
 @Injectable()
 export class GitlabService {
+  private readonly client = axios.create();
+
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly logger: DoguLogger,
   ) {
-    setAxiosErrorFilterToGlobal();
+    setAxiosErrorFilterToIntercepter(this.client);
   }
 
   private async healthCheck(url: string) {
@@ -41,7 +43,7 @@ export class GitlabService {
       try {
         this.logger.info('healthCheck. Checking GitLab health check...');
         this.logger.info(`healthCheck. gitLabUrl: ${gitLabUrl}`);
-        const responses = await Promise.all([axios.get(readinessUrl), axios.get(livenessUrl), axios.get(healthUrl)]);
+        const responses = await Promise.all([this.client.get(readinessUrl), this.client.get(livenessUrl), this.client.get(healthUrl)]);
 
         gitLabIsReady = responses.every((response) => {
           return response.status === 200;

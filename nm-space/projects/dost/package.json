@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "dogu-agent",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "Dogu Agent",
   "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
   "author": "Dogu Technologies",
@@ -18,7 +18,7 @@
     "dev": "yarn run build:react && nodemon",
     "eject": "react-app-rewired eject",
     "rebuild": "yarn run clean && yarn run build",
-    "start": "concurrently \"cross-env BROWSER=none yarn start:react\" \"yarn build:electron && wait-on http://127.0.0.1:3333 && electron .\"",
+    "start": "concurrently \"yarn build:electron && wait-on http://127.0.0.1:3333 && electron .\" \"cross-env BROWSER=none yarn start:react\" ",
     "start:react": "cross-env PORT=3333 react-app-rewired start",
     "test:dev": "react-app-rewired test",
     "util:set-productname": "ts-node scripts/util/set-productname.ts name",

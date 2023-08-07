@@ -104,6 +104,7 @@ export class ExternalService {
     ipcMain.handle(externalKey.isInstallNeeded, (_, key: ExternalKey) => this.getUnit(key).isInstallNeeded());
     ipcMain.handle(externalKey.isManualInstallNeeded, (_, key: ExternalKey) => this.getUnit(key).isManualInstallNeeded());
     ipcMain.handle(externalKey.install, (_, key: ExternalKey) => this.getUnit(key).install());
+    ipcMain.handle(externalKey.uninstall, (_, key: ExternalKey) => this.getUnit(key).uninstall());
     ipcMain.handle(externalKey.cancelInstall, (_, key: ExternalKey) => this.getUnit(key).cancelInstall());
     ipcMain.handle(externalKey.validate, (_, key: ExternalKey) => this.getUnit(key).validate());
     ipcMain.handle(externalKey.isValid, (_, key: ExternalKey) => this.getUnit(key).isValid());

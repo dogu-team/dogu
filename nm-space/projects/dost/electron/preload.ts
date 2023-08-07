@@ -106,6 +106,7 @@ expose('externalClient', {
   isInstallNeeded: (key: ExternalKey) => ipcRenderer.invoke(externalKey.isInstallNeeded, key),
   isManualInstallNeeded: (key: ExternalKey) => ipcRenderer.invoke(externalKey.isManualInstallNeeded, key),
   install: (key: ExternalKey) => ipcRenderer.invoke(externalKey.install, key),
+  uninstall: (key: ExternalKey) => ipcRenderer.invoke(externalKey.uninstall, key),
   cancelInstall: (key: ExternalKey) => ipcRenderer.invoke(externalKey.cancelInstall, key),
   validate: (key: ExternalKey) => ipcRenderer.invoke(externalKey.validate, key),
   isValid: (key: ExternalKey) => ipcRenderer.invoke(externalKey.isValid, key),
