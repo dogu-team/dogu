@@ -41,12 +41,6 @@ export const getStudioTestingServerSideProps: GetServerSideProps<StudioTestingPa
       getFeatureConfigInServerSide(context),
     ]);
 
-    if (featureConfig.defaultEdition !== EDITION_TYPE.ENTERPRISE) {
-      return {
-        notFound: true,
-      };
-    }
-
     return {
       props: {
         organization,

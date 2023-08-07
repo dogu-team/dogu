@@ -63,6 +63,7 @@ export interface IExternalClient {
   isInstallNeeded(key: ExternalKey): Promise<boolean>;
   isManualInstallNeeded(key: ExternalKey): Promise<boolean>;
   install(key: ExternalKey): Promise<void>;
+  uninstall(key: ExternalKey): Promise<void>;
   cancelInstall(key: ExternalKey): Promise<void>;
   validate(key: ExternalKey): Promise<ExternalValidationResult>;
   isValid(key: ExternalKey): Promise<boolean>;

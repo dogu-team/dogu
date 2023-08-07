@@ -7,7 +7,7 @@ import path from 'path';
 import { ExternalKey } from '../../../src/shares/external';
 import { logger } from '../../log/logger.instance';
 import { StdLogCallbackService } from '../../log/std-log-callback-service';
-import { copyiOSDeviceAgentProject, removeiOSDeviceAgentProject } from '../../settings/ios-device-agent-project';
+import { copyiOSDeviceAgentProject, removeiOSDeviceAgent, validateiOSDeviceAgentProjectExist } from '../../settings/ios-device-agent-project';
 import { IExternalUnit } from '../external-unit';
 import { validateXcode } from '../xcode';
 
@@ -74,23 +74,11 @@ export class IdaBuildExternalUnit extends IExternalUnit {
       await killChildProcess(this.child);
       this.child = null;
     }
-    try {
-      if (5 < this.failCount) {
-        logger.info(`iOSDeviceAgent validate`);
-        this.stdLogCallbackService.stdout(`${this.getName()} validate`);
-        await this.validateInternal();
-      } else {
-        this.failCount = 0;
-      }
-      await removeiOSDeviceAgentProject(logger);
-      logger.info(`iOSDeviceAgent clean build`);
-      this.stdLogCallbackService.stdout(`${this.getName()} clean build`);
-    } catch (e) {
-      logger.info(`iOSDeviceAgent dirty build`);
-      this.stdLogCallbackService.stdout(`${this.getName()} dirty build`);
+    if (!(await validateiOSDeviceAgentProjectExist(logger))) {
+      this.stdLogCallbackService.stdout(`${this.getName()} copy project start.`);
+      await copyiOSDeviceAgentProject(logger);
+      this.stdLogCallbackService.stdout(`${this.getName()} copy project done.`);
     }
-
-    await copyiOSDeviceAgentProject(logger);
     this.logger.info(`${this.getName()} copy project done.`);
     const idaDerivedDataPath = HostPaths.external.xcodeProject.idaDerivedDataPath();
     const idaProjectPath = path.resolve(HostPaths.external.xcodeProject.idaProjectDirectoryPath(), 'IOSDeviceAgent.xcodeproj');
@@ -194,8 +182,8 @@ export class IdaBuildExternalUnit extends IExternalUnit {
     this.logger.warn('cancel install not supported');
   }
 
-  uninstall(): void {
-    this.logger.warn('uninstall not supported');
+  async uninstall(): Promise<void> {
+    await removeiOSDeviceAgent(this.stdLogCallbackService.createPrintable());
   }
 
   getTermUrl(): string | null {

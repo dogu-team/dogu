@@ -66,6 +66,7 @@ const TitleBox = styled.div`
 
 const PaddingBox = styled.div`
   padding: 2rem;
+  padding-bottom: 6rem;
 
   @media only screen and (max-width: 767px) {
     padding: 0;

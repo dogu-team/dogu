@@ -1,4 +1,5 @@
 import { Button, ListItem, Stack, UnorderedList } from '@chakra-ui/react';
+import { DoguDocsDeviceFarmIosSettingsUrl } from '../../shares/constants';
 
 import { ExternalKey } from '../../shares/external';
 import { DoguDocsXcodeSettingsUrl } from '../../utils/constants';
@@ -53,7 +54,7 @@ export const manualExternalToolDetail: { [key in ExternalKey]?: ManualExternalTo
       />
     ),
     solution: null,
-    docsLink: 'https://docs.dogutech.io/device-farm/host/macos/installation#manual-setup',
+    docsLink: DoguDocsDeviceFarmIosSettingsUrl,
   },
   'ios-device-agent-build': {
     description: (
@@ -68,6 +69,6 @@ export const manualExternalToolDetail: { [key in ExternalKey]?: ManualExternalTo
       />
     ),
     solution: null,
-    docsLink: 'https://docs.dogutech.io/device-farm/host/macos/installation#manual-setup',
+    docsLink: DoguDocsDeviceFarmIosSettingsUrl,
   },
 };

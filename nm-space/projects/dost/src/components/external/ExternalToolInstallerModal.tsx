@@ -6,13 +6,14 @@ import ExternaltoolInstaller, { ExternalKeyAndName } from './ExternalToolInstall
 
 interface Props {
   title?: React.ReactNode;
+  isUninstall?: boolean;
   externalKeyAndNames: ExternalKeyAndName[];
   isOpen: boolean;
   onClose: () => void;
   onFinish?: () => void;
 }
 
-const ExternalToolInstallerModal = ({ title, externalKeyAndNames, isOpen, onClose, onFinish }: Props) => {
+const ExternalToolInstallerModal = ({ title, isUninstall, externalKeyAndNames, isOpen, onClose, onFinish }: Props) => {
   const [isOpenCloseBtn, setIsOpenCloseBtn] = useState(false);
   const handleFinsish = useCallback(
     (isOk: boolean) => {
@@ -49,7 +50,7 @@ const ExternalToolInstallerModal = ({ title, externalKeyAndNames, isOpen, onClos
           </Flex>
         </ModalHeader>
         <ModalBody>
-          <ExternaltoolInstaller externalKeyAndNames={externalKeyAndNames} onStart={() => {}} onFinish={handleFinsish} />
+          <ExternaltoolInstaller isUninstall={isUninstall} externalKeyAndNames={externalKeyAndNames} onStart={() => {}} onFinish={handleFinsish} />
         </ModalBody>
       </ModalContent>
     </Modal>
