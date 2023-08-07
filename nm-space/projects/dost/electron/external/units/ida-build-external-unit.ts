@@ -75,7 +75,9 @@ export class IdaBuildExternalUnit extends IExternalUnit {
       this.child = null;
     }
     if (!(await validateiOSDeviceAgentProjectExist(logger))) {
+      this.stdLogCallbackService.stdout(`${this.getName()} copy project start.`);
       await copyiOSDeviceAgentProject(logger);
+      this.stdLogCallbackService.stdout(`${this.getName()} copy project done.`);
     }
     this.logger.info(`${this.getName()} copy project done.`);
     const idaDerivedDataPath = HostPaths.external.xcodeProject.idaDerivedDataPath();
