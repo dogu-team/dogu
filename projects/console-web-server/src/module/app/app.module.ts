@@ -4,12 +4,15 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { config, dataSourceConfig } from '../../config';
+import { RecordModule } from '../../enterprise/module/record/record.module';
+import { FEATURE_CONFIG } from '../../feature.config';
 import { LoggerMiddleware } from '../../middleware/logger.middleware';
 import { TokenModule } from '../../module/token/token.module';
 import { DeviceStreamingModule } from '../../ws/device-streaming/device-streaming.module';
 import { LiveLogModule } from '../../ws/live-log/live-log.module';
 import { LivePipelineStatusModule } from '../../ws/live-pipeline-status/live-pipeline-status.module';
 import { LiveProfileModule } from '../../ws/live-profile/live-profile.module';
+import { RemoteGamiumModule } from '../../ws/remote-gamium/remote-gamium.module';
 import { AuthModule } from '../auth/auth.module';
 import { DeviceMessageModule } from '../device-message/device-message.module';
 import { DownloadModule } from '../download/download.module';
@@ -37,7 +40,7 @@ import { UserModule } from '../user/user.module';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
-const IMPORT_MODULES = [
+const BASE_MODULES = [
   TypeOrmModule.forRoot(dataSourceConfig),
   RedisModule.forRoot({
     config: config.redis.options,
@@ -74,11 +77,17 @@ const IMPORT_MODULES = [
   AuthModule,
   FileModule,
   RemoteModule,
+  RemoteGamiumModule,
   OpenApiMoudule,
 ];
 
+const MODULES =
+  FEATURE_CONFIG.get('defaultEdition') === 'enterprise' //
+    ? [...BASE_MODULES, RecordModule]
+    : BASE_MODULES;
+
 @Module({
-  imports: IMPORT_MODULES,
+  imports: MODULES,
   controllers: [AppController],
   providers: [AppService],
 })

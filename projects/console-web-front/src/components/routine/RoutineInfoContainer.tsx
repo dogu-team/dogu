@@ -47,12 +47,6 @@ const RoutineInfoContainer = ({ orgId, projectId, routine }: Props) => {
 
   const items: MenuProps['items'] = [
     {
-      label: <MenuLink href={`/dashboard/${orgId}/projects/${projectId}/routines/${routine?.routineId}/logs`}>{t('routine:routineHistoryMenuTitle')}</MenuLink>,
-      key: 'history',
-      style: { padding: '0' },
-    },
-    { type: 'divider' },
-    {
       label: (
         <MenuItemButton
           danger
@@ -72,15 +66,15 @@ const RoutineInfoContainer = ({ orgId, projectId, routine }: Props) => {
   return (
     <RoutineInfoBox>
       <FlexRowBox>
-        <div>
-          <H6>{!!routine ? routine?.name : t('routine:routineSidebarAllMenuTitle')}</H6>
-        </div>
+        <H6>{!!routine ? routine?.name : t('routine:routineSidebarAllMenuTitle')}</H6>
       </FlexRowBox>
 
       {!!routine && (
-        <Dropdown trigger={['click']} menu={{ items }}>
-          <Button icon={<EllipsisOutlined style={{ fontSize: '1.1rem' }} />} />
-        </Dropdown>
+        <RoutineMenuButtonBox>
+          <Dropdown trigger={['click']} menu={{ items }}>
+            <Button icon={<EllipsisOutlined style={{ fontSize: '1.1rem' }} />} />
+          </Dropdown>
+        </RoutineMenuButtonBox>
       )}
     </RoutineInfoBox>
   );
@@ -90,6 +84,11 @@ export default RoutineInfoContainer;
 
 const FlexRowBox = styled.div`
   ${flexRowBaseStyle}
+`;
+
+const RoutineMenuButtonBox = styled.div`
+  display: flex;
+  flex-direction: row;
 `;
 
 const RoutineInfoBox = styled(FlexRowBox)`

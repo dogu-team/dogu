@@ -1,4 +1,4 @@
-import { ChildProcess, fork } from 'child_process';
+import { ChildProcess, execFileSync, fork } from 'child_process';
 import path from 'path';
 import treeKill from 'tree-kill';
 
@@ -21,6 +21,36 @@ export function killChildProcess(childProcess: ChildProcess, signal: string | nu
 }
 
 export function killProcess(pid?: string | number): void {
+  if (pid === undefined) {
+    return;
+  }
+
+  if (process.platform === 'win32') {
+    killProcessUsingTaskkillOnWindows(pid);
+  } else {
+    killProcessUsingFork(pid);
+  }
+}
+
+export function killProcessUsingTaskkillOnWindows(pid?: string | number): void {
+  if (pid === undefined) {
+    return;
+  }
+
+  if (process.platform !== 'win32') {
+    throw new Error('killProcessUsingTaskkillOnWindows is only available on Windows');
+  }
+
+  try {
+    execFileSync('taskkill', ['/T', '/F', '/PID', pid.toString()], {
+      stdio: 'ignore',
+    });
+  } catch (error) {
+    // ignore
+  }
+}
+
+export function killProcessUsingFork(pid?: string | number): void {
   if (pid === undefined) {
     return;
   }

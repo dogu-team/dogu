@@ -38,23 +38,7 @@ function DevDrawer(props: DevDrawerProps) {
   };
 
   const onRespawnClicked = () => {
-    (async () => {
-      try {
-        const befHAPort = await ipc.appConfigClient.get('DOGU_DEVICE_SERVER_HOST_PORT');
-        await ipc.appConfigClient.set('DOGU_DEVICE_SERVER_HOST_PORT', 'localhost:54321');
-        await ipc.appConfigClient.set('DOGU_DEVICE_SERVER_HOST_PORT', befHAPort);
-      } catch (e) {
-        console.log(e);
-      }
-
-      try {
-        const befDSPort = await ipc.appConfigClient.get('DOGU_DEVICE_SERVER_PORT');
-        await ipc.appConfigClient.set('DOGU_DEVICE_SERVER_PORT', 54321);
-        await ipc.appConfigClient.set('DOGU_DEVICE_SERVER_PORT', befDSPort);
-      } catch (e) {
-        console.log(e);
-      }
-    })();
+    console.log('onRespawnClicked');
   };
   const [isHAActive, setIsHAActive] = useState<boolean>(false);
   const [isDSActive, setIsDSActive] = useState<boolean>(false);

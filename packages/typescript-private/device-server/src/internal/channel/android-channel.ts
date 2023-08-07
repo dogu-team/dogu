@@ -103,6 +103,9 @@ export class AndroidChannel implements DeviceChannel {
     }, 'kill previous zombie');
 
     const { serial, deviceAgentDevicePort } = param;
+    await Adb.unforwardall(serial).catch((error) => {
+      doguLogger.error('Adb.unforwardall failed', { error: errorify(error) });
+    });
     const platform = Platform.PLATFORM_ANDROID;
 
     const systemInfoService = new AndroidSystemInfoService();
@@ -259,6 +262,10 @@ export class AndroidChannel implements DeviceChannel {
 
   async unforward(hostPort: number): Promise<void> {
     await Adb.unforward(this.serial, hostPort);
+  }
+
+  async isPortListening(port: number): Promise<boolean> {
+    return Adb.isPortOpen(this.serial, port);
   }
 
   async subscribeLog(args: string[], handler: LogHandler, printable?: Printable): Promise<Closable> {

@@ -109,6 +109,10 @@ export const updateProjectScm = async (orgId: OrganizationId, pid: ProjectId, dt
   return await api.patch<void>(`/organizations/${orgId}/projects/${pid}/scm`, dto);
 };
 
+export const deleteProjectScm = async (orgId: OrganizationId, pid: ProjectId) => {
+  return await api.delete<void>(`/organizations/${orgId}/projects/${pid}/scm`);
+};
+
 export const getProjectAccessToken = async (orgId: OrganizationId, projectId: ProjectId) => {
   const { data } = await api.get<string>(`/organizations/${orgId}/projects/${projectId}/access-token`);
   return data;

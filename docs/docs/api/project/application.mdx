@@ -1,0 +1,44 @@
+---
+sidebar_position: 1
+title: Application
+locale: en
+---
+
+## Upload Application
+
+```
+PUT /v1/projects/:projectId/applications
+```
+
+### Query Parameter
+
+| Attribute   | type   | required | description                                                                                                                                 |
+| ----------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `projectId` | string | true     | ID of the project. You can easily find it on the project settings page. See [the project setup documentation](/management/project/settings) |
+
+### Header
+
+| Attribute       | type   | required | description                                                                                      |
+| --------------- | ------ | -------- | ------------------------------------------------------------------------------------------------ |
+| `Authorization` | string | true     | Authorization: Bearer ${ACCESS_TOKEN}.<br /> For ACCESS_TOKEN, refer to the [ACCESS TOKEN](/api) |
+
+### Body
+
+| Attribute | type   | required | description                              |
+| --------- | ------ | -------- | ---------------------------------------- |
+| `file`    | binary | true     | File binary to upload (`.apk` or `.ipa`) |
+
+### Example
+
+```
+curl -v -X PUT "https://api.dogutech.io/v1/projects/${projectId}/applications" \
+-H "Authorization: Bearer ${ACCESS_TOKEN}" \
+-H "Content-Type: multipart/form-data" \
+-F "file=@${FilePath}"
+```
+
+### Response Example {#upload-application-response}
+
+```
+HTTP/1.1 200 OK
+```

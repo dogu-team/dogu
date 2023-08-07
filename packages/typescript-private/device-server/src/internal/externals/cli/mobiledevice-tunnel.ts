@@ -48,7 +48,7 @@ export class TunnelContext {
 
   public async ping(hostPort: number): Promise<child_process.ChildProcess> {
     await delay(1000);
-    return await ChildProcess.spawnAndWait('nc', ['-z', 'localhost', `${hostPort}`], {}, idcLogger);
+    return await ChildProcess.spawnAndWait('nc', ['-z', '127.0.0.1', `${hostPort}`], {}, idcLogger);
   }
 
   private checkLog(): void {

@@ -6,75 +6,23 @@ locale: en
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import DevicePrerequisites from '@site/src/components/tutorial/ios/DevicePrerequisites.mdx';
+import CloneExampleAndInit from '@site/src/components/tutorial/javascript/CloneExampleAndInit.mdx';
+import UploadAndConfigChromeTabItem from '@site/src/components/tutorial/common/UploadAndConfigChromeTabItem.mdx';
+import RunCommand from '@site/src/components/tutorial/common/RunCommand.mdx';
 
-:::info PREREQUISITES
-You need to have an iOS device added to the Device Farm. Refer to [Adding an iOS Device](/get-started/tutorials/device-farm/device/ios) for instructions.
-:::
+<DevicePrerequisites />
 
-### Clone Example Repository and Navigate to the Path
-
-```
-git clone https://github.com/dogu-team/dogu-examples.git
-cd dogu-examples/webdriverio/javascript/jest
-npm install
-```
+<CloneExampleAndInit
+  title="Clone Example Repository and Initialize"
+  path="webdriverio/javascript/jest"
+/>
 
 <Tabs groupId="target" defaultValue="safari" queryString>
 <TabItem value="safari" label="Safari">
 
-### Authentication Information
-
-- API Token
-  - Obtain the [API Token](/management/organization/settings#api-token) from the Organization > Settings page.
-- Project Id, Organization Id
-  - Obtain the [Project Id, Organization Id](/management/project/settings#project-id) from the Organization > Project > Settings page.
-
-<Tabs groupId="service" defaultValue="cloud" queryString>
-<TabItem value="cloud" label="Cloud" default>
-
-Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.json**.
-
-```json
-{
-  "version": 1,
-  "apiBaseUrl": "https://console.dogutech.io",
-  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
-  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
-  "token": "INSERT_YOUR_TOKEN", // change to your token
-  "runsOn": "ios",
-  "browserName": "safari"
-}
-```
-
-</TabItem>
-    
-<TabItem value="self-hosted" label="Self-Hosted">
-
-Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.json**.  
-Also, apply the `DOGU_HOST:4000` value of the configured Dogu server to apiBaseUrl.
-
-```json
-{
-  "version": 1,
-  "apiBaseUrl": "INSERT_YOUR_API_BASE_URL", // change to your api base url
-  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
-  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
-  "token": "INSERT_YOUR_TOKEN", // change to your token
-  "runsOn": "ios",
-  "browserName": "safari" // ensure safari app is installed on the device
-}
-```
-
-</TabItem>
-</Tabs>
-
-### Running the Tests
-
-Run the following command to execute the tests.
-
-```
-npm run test:web
-```
+<UploadAndConfigChromeTabItem platform="ios" browser_name="safari" />
+<RunCommand run_script="npm run test:web" />
 
 </TabItem>
 </Tabs>

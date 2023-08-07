@@ -1,4 +1,4 @@
-import { Closable, DefaultHttpOptions, errorify, Instance, Printable, setAxiosErrorFilterToGlobal } from '@dogu-tech/common';
+import { Closable, DefaultHttpOptions, errorify, Instance, Printable, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { PublicDevice } from '@dogu-tech/console-gamium';
 import { createConsoleApiAuthHeader, platformFromPlatformType } from '@dogu-tech/types';
 import axios from 'axios';
@@ -37,7 +37,11 @@ export class GameProfileReportCloser implements Closable {
 }
 
 export class GameProfileReporterImpl implements GameProfileReporter {
-  constructor(private readonly gamiumClient: GamiumClient, private readonly options: Required<GameProfileReporterOptions>, private readonly printable: Printable) {}
+  private readonly client = axios.create();
+
+  constructor(private readonly gamiumClient: GamiumClient, private readonly options: Required<GameProfileReporterOptions>, private readonly printable: Printable) {
+    setAxiosErrorFilterToIntercepter(this.client);
+  }
 
   open(): Closable {
     const { options, printable } = this;
@@ -73,8 +77,7 @@ export class GameProfileReporterImpl implements GameProfileReporter {
       ],
     };
     const url = `${apiBaseUrl}${path}`;
-    setAxiosErrorFilterToGlobal();
-    await axios.post(url, requestBody, {
+    await this.client.post(url, requestBody, {
       ...createConsoleApiAuthHeader(hostToken),
       timeout: DefaultHttpOptions.request.timeout,
     });

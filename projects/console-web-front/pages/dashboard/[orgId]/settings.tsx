@@ -29,6 +29,8 @@ import DangerZone from '../../../src/components/common/boxes/DangerZone';
 import TokenCopyInput from '../../../src/components/common/TokenCopyInput';
 import RegenerateTokenButton from '../../../src/components/common/RegenerateTokenButton';
 import AccessTokenButton from '../../../src/components/common/AccessTokenButton';
+import SlackIntegrationButton from '../../../src/components/integration/SlackButton';
+import SettingTitleDivider from '../../../src/components/common/SettingTitleDivider';
 
 const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ organization, mutateOrganization }) => {
   const [editingOrganization, setEditingOrganization] = useState<OrganizationBase>(organization);
@@ -143,14 +145,13 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
         <title>Setting - {organization.name} | Dogu</title>
       </Head>
       <Box>
+        <SettingTitleDivider title="General" />
         <Content>
-          <div>
-            <TokenTitle>{t('organization:sidebarSubTitle')} ID</TokenTitle>
-            <TokenCopyInput value={organization.organizationId} />
-          </div>
-
-          <Divider />
-
+          <Label>{t('organization:sidebarSubTitle')} ID</Label>
+          <TokenCopyInput value={organization.organizationId} />
+        </Content>
+        <Divider />
+        <Content>
           <ImageCropUploader
             profileImage={
               <ProfileImage
@@ -167,7 +168,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
           />
         </Content>
         <Content>
-          <ContentTitle>{t('organization:settingOrgName')}</ContentTitle>
+          <Label>{t('organization:settingOrgName')}</Label>
           <Input
             value={editingOrganization?.name}
             onChange={(e) =>
@@ -181,71 +182,80 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
           {t('common:save')}
         </Button>
 
-        <Divider />
+        <SettingTitleDivider title="Token" />
 
         <Content>
-          <ContentTitle>Organization Access Token</ContentTitle>
-          <AccessTokenButton getToken={getToken} />
+          <div style={{ marginBottom: '1rem' }}></div>
+          <div style={{ marginBottom: '1rem' }}>
+            <Label>{t('organization:sidebarSubTitle')} Access Token</Label>
+            <AccessTokenButton getToken={getToken} />
+          </div>
         </Content>
 
-        <Divider />
+        <SettingTitleDivider title="Integrations" />
 
-        <DangerZone>
-          <DangerZone.Item
-            title={t('common:regenerateAccessTokenTitle')}
-            description={t('common:regenerateAccessTokenDescriptionText')}
-            button={<RegenerateTokenButton regenerate={async () => regenerateOrganizationAccessToken(organization.organizationId)} />}
-          />
-          <DangerZone.Item
-            title={t('organization:settingChangeOwnerMenuTitle')}
-            description={t('organization:settingChangeOwnerDescriptionText')}
-            button={
-              <DangerZone.Button
-                modalTitle={t('organization:settingchangeOwnerConfirmModalTitle')}
-                modalButtonTitle={t('organization:settingchangeOwnerConfirmModalButtonTitle')}
-                modalContent={
-                  <div>
-                    <p style={{ marginBottom: '.5rem' }}>
-                      <Trans i18nKey="organization:settingchangeOwnerConfirmModalContent" components={{ br: <br /> }} />
-                    </p>
-                    <div style={{ width: '100% ' }}>
-                      <OrganizationOwnerSelector organization={organization} onChange={setNewOwner} />
+        <Content>
+          <SlackIntegrationButton isConnected={false} organizationId={organization.organizationId} />
+        </Content>
+
+        <div style={{ marginTop: '3rem' }}>
+          <DangerZone>
+            <DangerZone.Item
+              title={t('common:regenerateAccessTokenTitle')}
+              description={t('common:regenerateAccessTokenDescriptionText')}
+              button={<RegenerateTokenButton regenerate={async () => regenerateOrganizationAccessToken(organization.organizationId)} />}
+            />
+            <DangerZone.Item
+              title={t('organization:settingChangeOwnerMenuTitle')}
+              description={t('organization:settingChangeOwnerDescriptionText')}
+              button={
+                <DangerZone.Button
+                  modalTitle={t('organization:settingchangeOwnerConfirmModalTitle')}
+                  modalButtonTitle={t('organization:settingchangeOwnerConfirmModalButtonTitle')}
+                  modalContent={
+                    <div>
+                      <p style={{ marginBottom: '.5rem' }}>
+                        <Trans i18nKey="organization:settingchangeOwnerConfirmModalContent" components={{ br: <br /> }} />
+                      </p>
+                      <div style={{ width: '100% ' }}>
+                        <OrganizationOwnerSelector organization={organization} onChange={setNewOwner} />
+                      </div>
                     </div>
-                  </div>
-                }
-                onConfirm={handleChangeOwner}
-                buttonProps={{ disabled: !newOwner }}
-                access-id="change-owner-btn"
-              >
-                {t('organization:settingChangeOwnerButtonTitle')}
-              </DangerZone.Button>
-            }
-          />
-          <DangerZone.Item
-            title={t('organization:settingRemoveOrgMenuTitle')}
-            description={t('organization:settingRemoveOrgDescriptionText')}
-            button={
-              <DangerZone.Button
-                modalTitle={t('organization:settingRemoveOrgConfirmModalTitle')}
-                modalButtonTitle={t('organization:settingRemoveOrgConfirmModalButtonTitle')}
-                modalContent={
-                  <Trans
-                    i18nKey="organization:settingRemoveOrgConfirmModalContent"
-                    components={{ b: <b style={{ fontWeight: '700' }} />, br: <br /> }}
-                    values={{ name: organization.name }}
-                  />
-                }
-                onConfirm={handleRemove}
-                buttonProps={{
-                  id: 'remove-org-confirm-btn',
-                }}
-                access-id="remove-org-btn"
-              >
-                {t('organization:settingRemoveOrgButtonTitle')}
-              </DangerZone.Button>
-            }
-          />
-        </DangerZone>
+                  }
+                  onConfirm={handleChangeOwner}
+                  buttonProps={{ disabled: !newOwner }}
+                  access-id="change-owner-btn"
+                >
+                  {t('organization:settingChangeOwnerButtonTitle')}
+                </DangerZone.Button>
+              }
+            />
+            <DangerZone.Item
+              title={t('organization:settingRemoveOrgMenuTitle')}
+              description={t('organization:settingRemoveOrgDescriptionText')}
+              button={
+                <DangerZone.Button
+                  modalTitle={t('organization:settingRemoveOrgConfirmModalTitle')}
+                  modalButtonTitle={t('organization:settingRemoveOrgConfirmModalButtonTitle')}
+                  modalContent={
+                    <Trans
+                      i18nKey="organization:settingRemoveOrgConfirmModalContent"
+                      components={{ b: <b style={{ fontWeight: '700' }} />, br: <br /> }}
+                      values={{ name: organization.name }}
+                    />
+                  }
+                  onConfirm={handleRemove}
+                  buttonProps={{
+                    id: 'remove-org-confirm-btn',
+                  }}
+                  access-id="remove-org-btn"
+                >
+                  {t('organization:settingRemoveOrgButtonTitle')}
+                </DangerZone.Button>
+              }
+            />
+          </DangerZone>
+        </div>
       </Box>
     </>
   );
@@ -268,17 +278,10 @@ const Box = styled.div`
 `;
 
 const Content = styled.div`
-  margin-bottom: 24px;
+  margin-bottom: 1rem;
 `;
 
-const ContentTitle = styled.p`
-  font-size: 1.1rem;
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-`;
-
-const TokenTitle = styled.p`
-  width: 150px;
+const Label = styled.p`
   margin-bottom: 0.5rem;
   font-weight: 500;
   font-size: 0.9rem;

@@ -2,20 +2,15 @@ import { RoutinePipelinePropCamel, RoutinePropCamel } from '@dogu-private/consol
 import { V1CreatePipelineResponseBody, V1FindPipelineByPipelineIdResponseBody, V1Routine } from '@dogu-private/console-open-api';
 import { CREATOR_TYPE, ProjectId, RoutineId, RoutinePipelineId, V1CALLER_TYPE, V1OpenApiPayload } from '@dogu-private/types';
 import { Controller, Get, Inject, Param, Post } from '@nestjs/common';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
 import { PROJECT_ROLE } from '../../../auth/auth.types';
 import { V1OpenApiCaller, V1OpenApiProjectPermission } from '../../../auth/decorators';
 import { V1RoutineService } from './routine.service';
 
 @Controller(V1Routine.controller.path)
-export class RoutineV1Controller {
+export class V1RoutineController {
   constructor(
     @Inject(V1RoutineService)
     private readonly v1RoutineService: V1RoutineService,
-
-    @InjectDataSource()
-    private readonly dataSource: DataSource,
   ) {}
 
   @Get(V1Routine.findPipelineByPipelineId.path)

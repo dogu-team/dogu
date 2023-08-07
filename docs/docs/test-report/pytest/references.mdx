@@ -6,6 +6,8 @@ locale: en
 
 # References
 
+Version: `1.0.3`
+
 ## Pytest Hooks
 
 Dogu hooks are functions that are called by the Dogu sdk at certain points in the Dogu lifecycle. They can be used to customize the Dogu's behavior.
@@ -13,6 +15,19 @@ Dogu hooks are functions that are called by the Dogu sdk at certain points in th
 ### `def pytest_dogu_create_client() -> DoguClient`
 
 This hook is called when the Dogu is started. It should return a `DoguClient` instance that is used to communicate with the Dogu.
+
+## Pytest Fixtures
+
+Dogu fixtures are available to use in your tests. They can be used to customize the test's behavior.
+
+### `dogu_config`
+
+The Dogu's configuration. `dogu.config.json` is parsed and passed to this fixture.  
+type is `DoguConfig`.
+
+### `dogu_client`
+
+The `DoguClient` instance that is returned by the `pytest_dogu_create_client` hook.
 
 ## Dogu Interfaces
 

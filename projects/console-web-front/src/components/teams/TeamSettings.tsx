@@ -11,6 +11,7 @@ import { getErrorMessage } from 'src/utils/error';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import DangerZone from '../common/boxes/DangerZone';
 import Trans from 'next-translate/Trans';
+import SettingTitleDivider from '../common/SettingTitleDivider';
 
 interface Props {
   organizationId: OrganizationId;
@@ -58,6 +59,7 @@ const TeamSettings = ({ organizationId, team, onDeleteEnd, onUpdateEnd }: Props)
 
   return (
     <Box>
+      <SettingTitleDivider title="General" style={{ marginTop: '0' }} />
       <Form layout="vertical" form={form} initialValues={{ name: team.name }} onFinish={handleFinish} autoComplete="off">
         <Form.Item label={t('team:teamDetailPageSettingNameLabel')} name="name" required rules={[{ required: true, message: t('team:teamDetailPageSettingNameEmptyMsg') }]}>
           <Input minLength={TEAM_NAME_MIN_LENGTH} maxLength={TEAM_NAME_MAX_LENGTH} required placeholder={t('team:teamDetailPageSettingNamePlaceholder')} />
@@ -68,27 +70,31 @@ const TeamSettings = ({ organizationId, team, onDeleteEnd, onUpdateEnd }: Props)
           </Button>
         </Form.Item>
       </Form>
-      <Divider />
-      <DangerZone>
-        <DangerZone.Item
-          title={t('team:removeTeamMenuTitle')}
-          description={t('team:removeTeamMenuDescriptionText')}
-          button={
-            <DangerZone.Button
-              modalTitle={t('team:removeTeamConfirmModalTitle')}
-              modalContent={<Trans i18nKey="team:removeTeamConfirmModalContent" components={{ b: <b style={{ fontWeight: '700' }} />, br: <br /> }} values={{ name: team.name }} />}
-              modalButtonTitle={t('team:removeTeamConfirmModalButtonTitle')}
-              onConfirm={handleDelete}
-              access-id="remove-team-btn"
-              buttonProps={{
-                id: 'remove-team-confirm-btn',
-              }}
-            >
-              {t('team:removeTeamButtonText')}
-            </DangerZone.Button>
-          }
-        />
-      </DangerZone>
+
+      <div style={{ marginTop: '3rem' }}>
+        <DangerZone>
+          <DangerZone.Item
+            title={t('team:removeTeamMenuTitle')}
+            description={t('team:removeTeamMenuDescriptionText')}
+            button={
+              <DangerZone.Button
+                modalTitle={t('team:removeTeamConfirmModalTitle')}
+                modalContent={
+                  <Trans i18nKey="team:removeTeamConfirmModalContent" components={{ b: <b style={{ fontWeight: '700' }} />, br: <br /> }} values={{ name: team.name }} />
+                }
+                modalButtonTitle={t('team:removeTeamConfirmModalButtonTitle')}
+                onConfirm={handleDelete}
+                access-id="remove-team-btn"
+                buttonProps={{
+                  id: 'remove-team-confirm-btn',
+                }}
+              >
+                {t('team:removeTeamButtonText')}
+              </DangerZone.Button>
+            }
+          />
+        </DangerZone>
+      </div>
     </Box>
   );
 };

@@ -11,10 +11,14 @@ import { RemoteDestReporter, RemoteDestReporterFactory } from './remote-dest-rep
 import { RoutineDestReporter, RoutineDestReporterFactory } from './routine-dest-reporter.js';
 
 const driver = 'driver';
+const doguConfig = 'doguConfig';
 
 declare global {
   /* @ts-ignore */
   const driver: Readonly<WebdriverIO.Browser>;
+
+  /* @ts-ignore */
+  const doguConfig: Readonly<DoguConfig>;
 }
 
 export class DoguEnvironment extends TestEnvironment {
@@ -32,6 +36,11 @@ export class DoguEnvironment extends TestEnvironment {
   override async setup(): Promise<void> {
     await super.setup();
     this.doguConfig = await new DoguConfigFactory().create();
+    if (_.has(this.global, doguConfig)) {
+      throw new Error('globalThis.doguConfig is already defined');
+    }
+    _.set(this.global, doguConfig, this.doguConfig);
+
     this.routineDestReporter = new RoutineDestReporterFactory(this.doguConfig).create();
 
     this.driver = await new DriverFactory().create(this.doguConfig);
@@ -55,7 +64,12 @@ export class DoguEnvironment extends TestEnvironment {
     this.driver = null;
 
     this.routineDestReporter = null;
+
+    if (_.has(this.global, doguConfig)) {
+      _.unset(this.global, doguConfig);
+    }
     this.doguConfig = null;
+
     await super.teardown();
   }
 

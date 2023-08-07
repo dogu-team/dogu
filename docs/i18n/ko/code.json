@@ -313,6 +313,9 @@
   "main.testAutomationAppiumLinkTitle": {
     "message": "Appium"
   },
+  "main.testAutomationGamiumLinkTitle": {
+    "message": "Gamium"
+  },
   "main.testAutomationSeleniumLinkTitle": {
     "message": "Selenium"
   },

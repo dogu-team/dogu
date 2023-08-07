@@ -1,0 +1,44 @@
+---
+sidebar_position: 1
+title: Application
+locale: ko
+---
+
+## Upload Application
+
+```
+PUT /v1/projects/:projectId/applications
+```
+
+### Query Parameterß
+
+| Attribute   | type   | required | description                                                                                                                             |
+| ----------- | ------ | -------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `projectId` | string | true     | I프로젝트의 ID입니다. 프로젝트 설정 페이지에서 쉽게 찾을 수 있습니다. [프로젝트 설정](/management/project/settings) 문서를 참고해주세요 |
+
+### Header
+
+| Attribute       | type   | required | description                                                                                    |
+| --------------- | ------ | -------- | ---------------------------------------------------------------------------------------------- |
+| `Authorization` | string | true     | Authorization: Bearer ${ACCESS_TOKEN}.<br />ACCESS_TOKEN은 [엑세스 토큰](/api)을 참고해주세요. |
+
+### Body
+
+| Attribute | type   | required | description                                 |
+| --------- | ------ | -------- | ------------------------------------------- |
+| `file`    | binary | true     | 업로드할 파일 바이너리 (`.apk` 또는 `.ipa`) |
+
+### Example
+
+```
+curl -v -X PUT "https://api.dogutech.io/v1/projects/${projectId}/applications" \
+-H "Authorization: Bearer ${ACCESS_TOKEN}" \
+-H "Content-Type: multipart/form-data" \
+-F "file=@${FilePath}"
+```
+
+### Response Example {#upload-application-response}
+
+```
+HTTP/1.1 200 OK
+```

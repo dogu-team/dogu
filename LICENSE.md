@@ -14,7 +14,7 @@ All content inside of the following directories are licensed under the MIT
 ```
 
 **Enterprise Edition License**  
-All content that resides under the "ee/" directory of this repository, if that directory exists, is licensed under the license defined in "ee/LICENSE".
+All content that resides under the "enterprise" directory of this repository, if that directory exists, is licensed under the license defined in "https://dogutech.io/notices/license".
 
 **Creative Commons: CC BY-SA 4.0 license**  
 All contents inside of the following directories are licensed under the CC BY-SA 4.0

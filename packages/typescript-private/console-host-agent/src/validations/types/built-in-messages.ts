@@ -117,6 +117,9 @@ export class WebSocketProxySendClose extends Kindable<'WebSocketProxySendClose'>
 
   @IsUuidV4()
   webSocketProxyId!: WebSocketProxyId;
+
+  @IsFilledString()
+  reason!: string;
 }
 
 @OneOf()

@@ -82,8 +82,7 @@ Dest.withOptions({
   job('BAT', () => {
     beforeAll(async () => {
       values.value.HOME_URL = `http://${env.DOGU_E2E_HOST}:${env.DOGU_CONSOLE_WEB_FRONT_PORT}`;
-      console.log(`DeviceServerPort ${env.DOGU_DEVICE_SERVER_PORT}`);
-      await ProcessManager.killByPorts([env.DOGU_CONSOLE_WEB_FRONT_PORT, env.DOGU_CONSOLE_WEB_SERVER_PORT, env.DOGU_DEVICE_SERVER_PORT]);
+      await ProcessManager.killByPorts([env.DOGU_CONSOLE_WEB_FRONT_PORT, env.DOGU_CONSOLE_WEB_SERVER_PORT, env.DOGU_E2E_DEVICE_SERVER_PORT]);
       await ProcessManager.killByNames(['adb']);
     });
 
@@ -191,7 +190,7 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: '//button[@access-id="submit-org-profile-btn"]' });
         await Timer.wait(2000, 'wait for changing organization name');
         const value = await Driver.getText({ xpath: '//p[@access-id="sb-title"]' });
-        expect(value).toBe(`${`${values.value.USER_NAME}'s organization`.toUpperCase()}1234`);
+        expect(value).toBe(`${`${values.value.USER_NAME}'s organization`}1234`);
       });
 
       test('Show access token', async () => {
@@ -452,7 +451,7 @@ Dest.withOptions({
 
       test('Check project creation', async () => {
         const createdProjectName = await Driver.getText({ xpath: '//p[@access-id="sb-title"]' });
-        expect(createdProjectName).toBe(values.value.PROJECT_NAME.toUpperCase());
+        expect(createdProjectName).toBe(values.value.PROJECT_NAME);
       });
     });
 
@@ -535,7 +534,7 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: '//button[@access-id="update-project-profile-btn"]' });
         await Timer.wait(2000, 'wait for changing project name');
         const value = await Driver.getText({ xpath: '//p[@access-id="sb-title"]' });
-        expect(value).toBe(`${values.value.PROJECT_NAME}1`.toUpperCase());
+        expect(value).toBe(`${values.value.PROJECT_NAME}1`);
       });
 
       test('Revert rename project', async () => {
@@ -1020,6 +1019,7 @@ Dest.withOptions({
       });
 
       test('Check project deletion', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="refresh-btn"]' });
         await Timer.wait(2000, 'wait for project deletion');
         const elems = await Driver.findElements({ xpath: '//div[@access-id="project-list"]//li[contains(@class, "ant-list-item")]' });
         expect(elems.length).toBe(1);

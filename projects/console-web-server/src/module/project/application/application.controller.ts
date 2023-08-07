@@ -1,5 +1,5 @@
 import { ProjectApplicationWithIcon } from '@dogu-private/console';
-import { OrganizationId, ProjectId, UserPayload } from '@dogu-private/types';
+import { CREATOR_TYPE, OrganizationId, ProjectId, UserPayload } from '@dogu-private/types';
 import { BadRequestException, Body, Controller, Delete, Get, Inject, Param, Put, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -50,7 +50,7 @@ export class ApplicationController {
     @Param('projectId') projectId: ProjectId,
   ) {
     await this.dataSource.transaction(async (manager) => {
-      await this.applicationService.uploadApplication(manager, file, userPayload.userId, organizationId, projectId);
+      await this.applicationService.uploadApplication(manager, file, userPayload.userId, CREATOR_TYPE.USER, organizationId, projectId);
     });
   }
 

@@ -56,6 +56,11 @@ const GlobalStyles = createGlobalStyle<{ locale?: string }>`
     background-color: #ffffff !important;
   }
 
+  a {
+    text-decoration: none;
+    color: ${(props) => props.theme.colorPrimary};
+  }
+
   #nprogress .bar {
     background: ${(props) => props.theme.colorPrimary} !important;
   }

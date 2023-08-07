@@ -141,7 +141,7 @@ const AddableDeviceListController = () => {
                     </EmptyDescriptionList>
                     <Trans
                       i18nKey="device-farm:addableDeviceEmptyLink"
-                      components={{ link: <Link href={'https://docs.dogutech.io/management/organization/device/device-management'} target="_blank" /> }}
+                      components={{ link: <Link href={'https://docs.dogutech.io/management/organization/device-farm/device-management'} target="_blank" /> }}
                     />
                   </EmptyDescriptionManualBox>
                   <p></p>

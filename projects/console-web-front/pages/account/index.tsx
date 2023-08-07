@@ -30,6 +30,7 @@ import ConsoleBasicLayout from '../../src/components/layouts/ConsoleBasicLayout'
 import useEventStore from '../../src/stores/events';
 import RegenerateTokenButton from '../../src/components/common/RegenerateTokenButton';
 import AccessTokenButton from '../../src/components/common/AccessTokenButton';
+import SettingTitleDivider from '../../src/components/common/SettingTitleDivider';
 
 interface Props {
   user: UserBase;
@@ -159,7 +160,7 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
         <H4>{t('account:accountPageTitle')}</H4>
         <Divider />
         <Inner>
-          <StyledH5>{t('account:profileContentTitle')}</StyledH5>
+          <SettingTitleDivider title="General" />
           <ImageCropUploader
             profileImage={<ProfileImage size={120} profileImageUrl={editingMe?.profileImageUrl ?? null} name={editingMe?.name ?? 'Name'} style={{ fontSize: '2.5rem' }} />}
             onCropEnd={updateProfileImageToThumbnail}
@@ -167,11 +168,11 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
             onUpload={uploadImage}
           />
           <ContentBox>
-            <ContentTitle>{t('common:email')}</ContentTitle>
+            <Label>{t('common:email')}</Label>
             <Input disabled value={user.email} />
           </ContentBox>
           <ContentBox>
-            <ContentTitle>{t('common:name')}</ContentTitle>
+            <Label>{t('common:name')}</Label>
             <Input
               type="text"
               maxLength={20}
@@ -191,50 +192,51 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
             </Button>
           </ContentBox>
         </Inner>
-        <Divider />
+
+        <SettingTitleDivider title="Security" />
         <Inner>
-          <StyledH5>{t('account:securityContentTitle')}</StyledH5>
           <div style={{ marginTop: '1rem' }}>
-            <ContentTitle>Personal Access Token</ContentTitle>
+            <Label>Personal Access Token</Label>
             <AccessTokenButton getToken={getToken} />
           </div>
           <div style={{ marginTop: '1rem' }}>
-            <ContentTitle>Update password</ContentTitle>
+            <Label>Update password</Label>
             <ResetPasswordForm needCurrentPassword={true} onFinish={handleResetPassword} />
           </div>
         </Inner>
 
         {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
           <>
-            <Divider />
+            <SettingTitleDivider title="Email" />
             <Inner>
-              <StyledH5>{t('account:emailPreferenceTitle')}</StyledH5>
               <EmailPreferenceModifier user={user} />
             </Inner>
           </>
         )}
-        <Divider />
-        <DangerZone>
-          <DangerZone.Item
-            title={t('common:regenerateAccessTokenTitle')}
-            description={t('common:regenerateAccessTokenDescriptionText')}
-            button={<RegenerateTokenButton regenerate={async () => regeneratePersonalAccessToken(user.userId)} />}
-          />
-          <DangerZone.Item
-            title={t('account:deleteAccountMenuTitle')}
-            description={t('account:deleteAccountMenuDescriptionText')}
-            button={
-              <DangerZone.Button
-                modalTitle={t('account:deleteAccountConfirmModalTitle')}
-                modalContent={t('account:deleteAccountConfirmModalContent')}
-                modalButtonTitle={t('account:deleteAccountConfirmModalButtonTitle')}
-                onConfirm={handleDeleteAccount}
-              >
-                {t('account:deleteAccountButtonTitle')}
-              </DangerZone.Button>
-            }
-          />
-        </DangerZone>
+
+        <div style={{ marginTop: '3rem' }}>
+          <DangerZone>
+            <DangerZone.Item
+              title={t('common:regenerateAccessTokenTitle')}
+              description={t('common:regenerateAccessTokenDescriptionText')}
+              button={<RegenerateTokenButton regenerate={async () => regeneratePersonalAccessToken(user.userId)} />}
+            />
+            <DangerZone.Item
+              title={t('account:deleteAccountMenuTitle')}
+              description={t('account:deleteAccountMenuDescriptionText')}
+              button={
+                <DangerZone.Button
+                  modalTitle={t('account:deleteAccountConfirmModalTitle')}
+                  modalContent={t('account:deleteAccountConfirmModalContent')}
+                  modalButtonTitle={t('account:deleteAccountConfirmModalButtonTitle')}
+                  onConfirm={handleDeleteAccount}
+                >
+                  {t('account:deleteAccountButtonTitle')}
+                </DangerZone.Button>
+              }
+            />
+          </DangerZone>
+        </div>
       </Box>
     </>
   );
@@ -294,6 +296,7 @@ const Box = styled.div`
   max-width: 500px;
   margin: 0 auto;
   flex: 1;
+  font-size: 0.9rem;
 `;
 
 const Inner = styled.div``;
@@ -306,8 +309,8 @@ const ContentBox = styled.div`
   margin-bottom: 1.25rem;
 `;
 
-const ContentTitle = styled.p`
-  font-size: 1.1rem;
-  font-weight: 500;
+const Label = styled.p`
   margin-bottom: 0.5rem;
+  font-weight: 500;
+  font-size: 0.9rem;
 `;

@@ -72,7 +72,7 @@ export class WindowService {
       // 'build/index.html'
       this.window.loadURL(`file://${ReactPublicIndexPath}`);
     } else {
-      this.window.loadURL('http://localhost:3333/index.html');
+      this.window.loadURL('http://127.0.0.1:3333/index.html');
 
       this.window.webContents.openDevTools({ mode: 'detach' });
     }

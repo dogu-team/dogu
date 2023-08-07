@@ -1,0 +1,228 @@
+---
+sidebar_position: 1
+title: Managing Hosts
+locale: en
+---
+
+import OrganizationAdminPermission from '@site/src/components/console/OrganizationAdminPermissionEng.mdx';
+import OrganizationMemberPermission from '@site/src/components/console/OrganizationMemberPermissionEng.mdx';
+
+## Create a host
+
+<OrganizationAdminPermission prefix="Creating a host" />
+
+:::info PREREQUISTIES
+
+To use Dogu Agent, it needs to be installed on the host machine.
+
+You can download Dogu Agent from the [Dogu Agent download](https://dogutech.io/downloads/dogu-agent).
+
+For instructions on host setup and system requirements, please refer to the [Agent Installation](/device-farm/host) documentation.
+
+:::
+
+1. Connect the host machine, where Dogu Agent is installed, to the network.
+2. Run Dogu Agent on the host machine.
+3. In the Dogu console, navigate to the "Device Farm" menu in the left sidebar of the organization page and click "Host" tab menu.
+4. Click on the "Add new host" button.
+5. Enter the host name and click the "Add" button.
+   <img
+     src="/img/console/organization/add-host-modal.png"
+     style={{ width: 600, display: 'block' }}
+   />
+6. Enter the host token in the Dogu Agent token input field and click the "Connect" button.
+   <img
+     src="/img/get-started/dost-token-input.png"
+     style={{ width: 600, display: 'block' }}
+   />
+7. Verify in the Dogu console that the host has been successfully added.
+   <img
+     src="/img/console/organization/host-connected.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+## Host information
+
+<OrganizationMemberPermission prefix="Viewing host list" />
+
+### Host list
+
+1. In the Dogu console, click on the "Device Farm" menu in the left sidebar of the organization page and click "Host" tab menu.
+2. The host list contains the following information in each column:
+   <img
+     src="/img/console/organization/host-list.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+| Field       | Name      | Connection Status             | OS                           | Number of Devices                       |
+| ----------- | --------- | ----------------------------- | ---------------------------- | --------------------------------------- |
+| Description | Host Name | Connection status of the host | Operating system of the host | Number of devices connected to the host |
+
+:::info OS Icons
+
+The icons represent the operating system of the host:
+
+- Windows
+- macOS
+
+If the host has never been connected or if the operating system is neither Windows nor macOS, a different icon will be displayed.
+
+:::
+
+### Host connection status
+
+The connection status of a host can be described as follows:
+
+- `Connected`: The host is successfully connected to the console.
+- `Disconnected`: The host is not connected to the console.
+- `Unknown`: The host is not connected to the console and its connection status cannot be determined due to an issue or failure.
+
+### Detail information
+
+1. In the Dogu console, click on the "Device Farm" menu in the left sidebar of the organization page and click "Host" tab menu.
+2. Click on the name of the host from the list to view its details.
+   <img
+     src="/img/console/organization/host-detail-modal.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+| Field             | Description                                                                                         |
+| ----------------- | --------------------------------------------------------------------------------------------------- |
+| Name              | The name of the host                                                                                |
+| Connection date   | The date when the host was added                                                                    |
+| Connected devices | The list of devices connected to the host and the number of devices                                 |
+| Connected member  | The member who added the host                                                                       |
+| Host token        | The current host token. Only organization owners and members with `Admin` role can view this field. |
+
+## Use host as a device
+
+<OrganizationAdminPermission prefix="The use of host devices" />
+
+The host can also be used as a device. By using it as a device, you can perform routines and script testing on the host device.
+
+:::info
+
+The devices connected to the host will not be affected.
+
+:::
+
+1. In the Dogu console, click on the "Device Farm" menu in the left sidebar of the organization page and click "Host" tab menu.
+2. Find the host you want to use as a device in the host list and click on the menu button(`···`).
+3. Click on the "Start using as device" menu.
+   <img
+     src="/img/console/organization/host-use-as-device.png"
+     style={{ width: 500, display: 'block' }}
+   />
+4. Click on the "Devices" menu in the left sidebar of the organization page in the Dogu console.
+5. Check if the device with the `Host` tag appears in the "Standby devices" list.
+   <img
+     src="/img/console/organization/chekc-host-use-as-device.png"
+     style={{ width: 500, display: 'block' }}
+   />
+
+## Stop using host as a device
+
+<OrganizationAdminPermission prefix="Stopping the use of host devices" />
+
+:::danger
+
+Stopping the use of the host as a device may result in the failure of ongoing routines and script tests.
+
+Make sure there are no active uses of the host device before stopping its use.
+
+:::
+
+:::info
+
+The devices connected to the host will not be affected.
+
+:::
+
+The host can also be used as a device. By using it as a device, you can perform routines and script testing on the host device.
+
+1. In the Dogu console, click on the "Device Farm" menu in the left sidebar of the organization page and click "Host" tab menu.
+2. Find the host for which you want to stop using it as a device and click on the menu button(`···`).
+3. Click on the "Stop using as device" menu.
+   <img
+     src="/img/console/organization/host-stop-use-as-device.png"
+     style={{ width: 500, display: 'block' }}
+   />
+
+## Rename a host
+
+<OrganizationAdminPermission prefix="Rename a host" />
+
+1. In the Dogu console, click on the "Device Farm" menu in the left sidebar of the organization page and click "Host" tab menu.
+2. Locate the host for which you want to change the name in the host list, and click on the menu button(`···`).
+3. Click on the "Edit host" option in the menu.
+   <img
+     src="/img/console/organization/host-edit-menu.png"
+     style={{ width: 600, display: 'block' }}
+   />
+4. Enter the new host name and click the "Save" button to apply the changes.
+   <img
+     src="/img/console/organization/edit-host-modal.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+## Revoke host token
+
+<OrganizationAdminPermission prefix="Revoking host token" />
+
+:::danger Revoke token
+
+When the host token is revoked, the previous host token becomes invalid and can no longer be used. Therefore, until the revoked token is entered in Dogu Agent, the host's connection status will be 'Disconnected'.
+
+The devices connected to that host will also have an 'Offline' connection status, which may result in the interruption of ongoing tests or remote control of the devices.
+
+:::
+
+1. In the Dogu console, click on the "Device Farm" menu in the left sidebar of the organization page and click "Host" tab menu.
+2. Find the host for which you want to regenerate the token in the host list, and click on the menu button(`···`).
+3. Click on the "Revoke token" menu.
+   <img
+     src="/img/console/organization/revoke-host-token.png"
+     style={{ width: 600, display: 'block' }}
+   />
+4. Click the confirmation button, and then copy the regenerated token.
+   <img
+     src="/img/console/organization/revoke-host-token-confirm.png"
+     style={{ width: 600, display: 'block' }}
+   />
+5. On the host device where Dogu Agent is running, click on the "Troubleshoot" tab.
+   <img
+     src="/img/console/organization/dost-troubleshoot-tab.png"
+     style={{ width: 600, display: 'block' }}
+   />
+6. Click the "Reconnect" button.
+   <img
+     src="/img/console/organization/dost-reconnect.png"
+     style={{ width: 600, display: 'block' }}
+   />
+7. Enter the regenerated token and click the "Connect" button.
+   <img
+     src="/img/get-started/dost-token-input.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+## Remove a host
+
+<OrganizationAdminPermission prefix="Removing a host" />
+
+:::danger Connected Devices
+
+When you delete a host, all devices connected to that host will be deleted as well. Please check if there are any devices running tests and delete them.
+
+Deleting a device is different from "Stop Device Usage" as it completely removes all information associated with the device.<br />
+If you wish to preserve the information of a particular device, please connect it to another host within the organization and then delete that host.
+
+:::
+
+1. In the Dogu console, click on the "Device Farm" menu in the left sidebar of the organization page and click "Host" tab menu.
+2. Find the host you want to delete from the list and click on the menu button(`···`).
+3. Click on the "Delete host" menu.
+   <img
+     src="/img/console/organization/host-delete-menu.png"
+     style={{ width: 600, display: 'block' }}
+   />
+4. Confirm the deletion by clicking the confirmation button.

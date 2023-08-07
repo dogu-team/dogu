@@ -329,6 +329,9 @@ export class RemoteWebDriverService {
     }
     const remote = remoteDeviceJob.remote!;
     const remoteWdaInfo = await this.dataSource.getRepository(RemoteWebDriverInfo).findOne({ where: { remoteId: remote.remoteId } });
+    if (!remoteWdaInfo) {
+      throw new RemoteException(HttpStatus.NOT_FOUND, new Error(`Remote web driver info not found. remoteId: ${remote.remoteId}`), {});
+    }
     const device = remoteDeviceJob.device!;
 
     this.logger.info(`handleEachSessionRequest. remoteDeviceJobId: ${remoteDeviceJob.remoteDeviceJobId}. sessionId: ${sessionId}`);

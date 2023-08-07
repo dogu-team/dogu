@@ -58,6 +58,7 @@ export class HostResolver {
     const { organizationId, hostId, platform, rootWorkspace, deviceServerPort } = value;
     const receivedRootWorkspacePath = rootWorkspace;
     const platformNeedUpdate = this.validateAndUpdatePlatform(platform);
+    const resolvedPlatform = platformNeedUpdate.needUpdate === 'yes' ? platformNeedUpdate.platform : platform;
     const { needUpdateResult: rootWorkspaceNeedUpdate, resolvedWorkspacePath } = await this.validateAndUpdateRootWorkspace(receivedRootWorkspacePath);
     const localDeviceServerPortNeedUpdate = this.validateAndUpdateDeviceServerPort(deviceServerPort);
     await this.updatePlatformAndRootWorkspaceAndDFPort(organizationId, hostId, platformNeedUpdate, rootWorkspaceNeedUpdate, localDeviceServerPortNeedUpdate);
@@ -71,6 +72,7 @@ export class HostResolver {
       hostWorkspacePath,
       recordWorkspacePath,
       pathMap,
+      platform: resolvedPlatform,
     };
     this.logger.info('Host resolved', { hostResolutionInfo });
     await validateAndEmitEventAsync(this.eventEmitter, OnHostResolvedEvent, hostResolutionInfo);

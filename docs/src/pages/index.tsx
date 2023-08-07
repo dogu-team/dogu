@@ -166,6 +166,11 @@ export default function Home(): JSX.Element {
                 <Translate id="main.testAutomationAppiumLinkTitle" />
               </Link>
             </li>
+            <li className={styles.docsSectionListItem}>
+              <Link to="/test-automation/gamium">
+                <Translate id="main.testAutomationGamiumLinkTitle" />
+              </Link>
+            </li>
           </ul>
         </div>
         <div className={styles.docsSection}>

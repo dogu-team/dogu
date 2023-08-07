@@ -10,7 +10,7 @@ import TableListView from '../../../../src/components/common/TableListView';
 import CreateProjectButton from '../../../../src/components/projects/CreateProjectButton';
 import RefreshButton from '../../../../src/components/buttons/RefreshButton';
 import { flexRowSpaceBetweenStyle } from '../../../../src/styles/box';
-import LiveChat from '../../../../src/components/livechat/livechat';
+import LiveChat from '../../../../src/components/external/livechat';
 
 const TeamProjectsPage: NextPageWithLayout<WithOrganizationProps> = ({ user, organization }) => {
   return (
@@ -27,7 +27,13 @@ const TeamProjectsPage: NextPageWithLayout<WithOrganizationProps> = ({ user, org
         }
         table={<ProjectListController organizationId={organization.organizationId} />}
       />
-      <LiveChat name={user.name} email={user.email} organizationId={organization.organizationId} />
+      <LiveChat
+        user={{
+          name: user.name,
+          email: user.email,
+          organizationId: organization.organizationId,
+        }}
+      />
     </>
   );
 };

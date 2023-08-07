@@ -5,6 +5,7 @@ import useSWR from 'swr';
 import { RoutineBase } from '@dogu-private/console';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
+import Image from 'next/image';
 
 import { NextPageWithLayout } from 'pages/_app';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
@@ -18,6 +19,7 @@ import RoutineInfoContainer from 'src/components/routine/RoutineInfoContainer';
 import { swrAuthFetcher } from 'src/api/index';
 import EditRoutineButton from 'src/components/routine/EditRoutineButton';
 import ProjectLayoutWithSidebar from '../../../../../../src/components/layouts/ProjectLayoutWithSidebar';
+import ExternalGuideLink from '../../../../../../src/components/common/ExternalGuideLink';
 
 const ProjectRoutinePage: NextPageWithLayout<WithProjectProps> = ({ organization, project }) => {
   const router = useRouter();
@@ -41,6 +43,22 @@ const ProjectRoutinePage: NextPageWithLayout<WithProjectProps> = ({ organization
                     <RunRoutineButton orgId={organization.organizationId} projectId={project.projectId} routine={data} />
                     <EditRoutineButton orgId={organization.organizationId} projectId={project.projectId} routine={data} />
                     <PipelineFilter />
+                    {!data && (
+                      <>
+                        <ExternalGuideLink
+                          href="https://docs.dogutech.io/integration/cicd/github"
+                          icon={<Image src="/resources/icons/github-action-logo.svg" alt="Github Action" width={16} height={16} />}
+                        >
+                          GitHub Action
+                        </ExternalGuideLink>
+                        <ExternalGuideLink
+                          href="https://docs.dogutech.io/integration/cicd/jenkins"
+                          icon={<Image src="/resources/icons/jenkins-logo.svg" alt="Jenkins" width={16} height={16} />}
+                        >
+                          Jenkins
+                        </ExternalGuideLink>
+                      </>
+                    )}
                   </RowFlexBox>
                   <RefreshButton />
                 </PipelineTopButtonWrapper>

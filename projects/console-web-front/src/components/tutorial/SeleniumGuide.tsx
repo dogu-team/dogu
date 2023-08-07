@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import Cookies from 'universal-cookie';
 import { USER_ID_COOKIE_NAME } from '@dogu-private/types';
 
-import { seleniumData, GuideProps, GuideSupportLanguage, SAMPLE_GIT_URL } from '../../resources/guide';
+import { seleniumData, GuideProps, GuideSupportLanguage, SAMPLE_GIT_URL, GuideSupportPlatform } from '../../resources/guide';
 import { flexRowBaseStyle } from '../../styles/box';
 import GuideAnchor from './GuideAnchor';
 import GuideBanner from './GuideBanner';
@@ -116,6 +116,15 @@ const SeleniumGuide = ({ organizationId, projectId }: GuideProps) => {
             description={<p>Start automated testing using sample app and script</p>}
             content={
               <>
+                {platform === GuideSupportPlatform.MACOS && (
+                  <Alert
+                    message={
+                      <p>
+                        For Safari in macOS, please run <CodeWithCopyButton language="bash" code="/usr/bin/safaridriver --enable" /> for testing.
+                      </p>
+                    }
+                  />
+                )}
                 <CodeWithCopyButton language="bash" code={selectedGuide?.runCommand ?? ''} />
                 {frameworkLanguage === GuideSupportLanguage.PYTHON && (
                   <Alert message="If test failed with an import error, please activate virtual environment again." type="info" showIcon />

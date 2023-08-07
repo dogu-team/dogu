@@ -56,13 +56,21 @@ export class SeleniumContext {
 
   private async installBrowser(): Promise<string> {
     const { browserName, browserVersion } = this.options;
+    this.logger.info(`Installing browser: ${stringify(browserName)} ${stringify(browserVersion)}`);
+
     const resolvedBrowserVersion = await this.browserInstaller.resolveLatestVersion(browserName, browserVersion);
+    this.logger.info(`Resolved browser version: ${stringify(resolvedBrowserVersion)}`);
+
     const foundBrowserVersion = await this.browserInstaller.findHighestInstalledVersion(browserName, resolvedBrowserVersion);
+    this.logger.info(`Found browser version: ${stringify(foundBrowserVersion)}`);
+
     if (foundBrowserVersion) {
       return foundBrowserVersion;
     }
 
     const toDownloadVersion = await this.browserInstaller.resolveToDownloadVersion(browserName, resolvedBrowserVersion);
+    this.logger.info(`To download browser version: ${stringify(toDownloadVersion)}`);
+
     await this.browserInstaller.install({
       name: browserName,
       version: toDownloadVersion,
@@ -77,6 +85,12 @@ export class SeleniumContext {
     let browserDriverVersion = '';
     if (browserName === 'chrome') {
       browserDriverName = 'chromedriver';
+      browserDriverVersion = browserVersion;
+    } else if (browserName === 'firefox') {
+      browserDriverName = 'geckodriver';
+      browserDriverVersion = browserVersion;
+    } else if (browserName === 'safari') {
+      browserDriverName = 'safaridriver';
       browserDriverVersion = browserVersion;
     } else {
       throw new Error(`Unsupported browser name: ${stringify(browserName)}`);
@@ -102,28 +116,50 @@ export class SeleniumContext {
     const seleniumServerPath = HostPaths.external.selenium.seleniumServerPath();
     const port = await getFreePort();
     const args: string[] = ['-jar', seleniumServerPath, 'standalone', '--host', '127.0.0.1', '--port', `${port}`, '--allow-cors', 'true', '--detect-drivers', 'false'];
+
+    let stereotype: Record<string, unknown> = {};
     if (browserName === 'chrome') {
       const browserPath = this.browserInstaller.getBrowserOrDriverPath(browserName, resolvedBrowserVersion);
       const browserDriverPath = this.browserInstaller.getBrowserOrDriverPath('chromedriver', resolvedBrowserVersion);
-      const stereotype: Record<string, unknown> = {
+      stereotype = {
         browserName: 'chrome',
         'goog:chromeOptions': {
           binary: browserPath,
         },
       };
-      if (browserVersion) {
-        _.set(stereotype, 'browserVersion', browserVersion);
-      }
       args.push('--driver-configuration', 'display-name="Google Chrome for Testing"', `webdriver-executable="${browserDriverPath}"`);
-      let stereotypeString = JSON.stringify(stereotype);
-      if (process.platform === 'win32') {
-        stereotypeString = stereotypeString.replace(/"/g, '\\"');
-        args.push(`stereotype="${stereotypeString}"`);
-      } else {
-        args.push(`stereotype='${stereotypeString}'`);
-      }
+    } else if (browserName === 'firefox') {
+      const browserPath = this.browserInstaller.getBrowserOrDriverPath(browserName, resolvedBrowserVersion);
+      const browserDriverPath = this.browserInstaller.getBrowserOrDriverPath('geckodriver', resolvedBrowserVersion);
+      stereotype = {
+        browserName: 'firefox',
+        'moz:firefoxOptions': {
+          binary: browserPath,
+        },
+      };
+      args.push('--driver-configuration', 'display-name="Mozilla Firefox"', `webdriver-executable="${browserDriverPath}"`);
+    } else if (browserName === 'safari') {
+      const browserDriverPath = this.browserInstaller.getBrowserOrDriverPath('safaridriver', resolvedBrowserVersion);
+      stereotype = {
+        browserName: 'safari',
+      };
+      args.push('--driver-configuration', 'display-name="Safari"', `webdriver-executable="${browserDriverPath}"`);
     } else {
       throw new Error(`Unsupported browser name: ${stringify(browserName)}`);
+    }
+
+    if (_.isEmpty(stereotype)) {
+      throw new Error(`Stereotype is empty for ${stringify(browserName)} ${stringify(resolvedBrowserVersion)}`);
+    }
+    if (browserVersion) {
+      _.set(stereotype, 'browserVersion', browserVersion);
+    }
+    let stereotypeString = JSON.stringify(stereotype);
+    if (process.platform === 'win32') {
+      stereotypeString = stereotypeString.replace(/"/g, '\\"');
+      args.push(`stereotype="${stereotypeString}"`);
+    } else {
+      args.push(`stereotype='${stereotypeString}'`);
     }
 
     const seleniumServerDirPath = path.dirname(seleniumServerPath);

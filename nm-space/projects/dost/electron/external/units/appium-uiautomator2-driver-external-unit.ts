@@ -62,6 +62,13 @@ export class AppiumUiAutomator2DriverExternalUnit extends IExternalUnit {
     if (!version) {
       throw new Error('appium-uiautomator2-driver not found in package.json');
     }
+
+    // TODO: henry - move to gui
+    await this.update();
+  }
+
+  private async update(): Promise<void> {
+    await this.execute('update');
   }
 
   isAgreementNeeded(): boolean {
@@ -72,8 +79,7 @@ export class AppiumUiAutomator2DriverExternalUnit extends IExternalUnit {
     this.logger.warn('do not need agreement');
   }
 
-  async install(): Promise<void> {
-    this.unitCallback.onInstallStarted();
+  private async execute(command: 'install' | 'update'): Promise<void> {
     const appiumHome = this.dotEnvConfigService.get('APPIUM_HOME');
     if (!appiumHome) {
       throw new Error('APPIUM_HOME not exist in env');
@@ -91,7 +97,7 @@ export class AppiumUiAutomator2DriverExternalUnit extends IExternalUnit {
       });
       logger.verbose('merged env', { env });
       const appiumPath = HostPaths.external.nodePackage.appiumPath();
-      const child = spawn(pnpm, ['appium', 'driver', 'install', 'uiautomator2'], {
+      const child = spawn(pnpm, ['appium', 'driver', command, 'uiautomator2'], {
         cwd: appiumPath,
         env,
       });
@@ -104,13 +110,13 @@ export class AppiumUiAutomator2DriverExternalUnit extends IExternalUnit {
         child.on('error', (error) => {
           this.stdLogCallbackService.stderr(stringify(error));
         });
-        this.stdLogCallbackService.stdout(`Installing appium-uiautomator2-driver...`);
+        this.stdLogCallbackService.stdout(`appium-uiautomator2-driver ${command}...`);
         child.on('close', (code, signal) => {
-          this.stdLogCallbackService.stdout(`appium-uiautomator2-driver install completed. code: ${code} signal: ${signal}`);
+          this.stdLogCallbackService.stdout(`appium-uiautomator2-driver ${command} completed. code: ${code} signal: ${signal}`);
           if (code === 0) {
             resolve();
           } else {
-            reject(new Error(`appium-uiautomator2-driver install failed. code: ${code} signal: ${signal}`));
+            reject(new Error(`appium-uiautomator2-driver ${command} failed. code: ${code} signal: ${signal}`));
           }
         });
       });
@@ -133,6 +139,11 @@ export class AppiumUiAutomator2DriverExternalUnit extends IExternalUnit {
         this.logger.warn(message);
       });
     });
+  }
+
+  async install(): Promise<void> {
+    this.unitCallback.onInstallStarted();
+    await this.execute('install');
     this.unitCallback.onInstallCompleted();
   }
 

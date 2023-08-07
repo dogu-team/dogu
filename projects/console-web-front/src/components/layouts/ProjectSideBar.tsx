@@ -164,6 +164,12 @@ const ProjectSideBar = () => {
             </StyledIconLink>
           ) : undefined,
         },
+      ],
+    },
+    {
+      type: 'group',
+      label: collapsed ? null : 'General',
+      children: [
         {
           key: 'app',
           label: collapsed ? (
@@ -182,12 +188,6 @@ const ProjectSideBar = () => {
             </StyledIconLink>
           ) : undefined,
         },
-      ],
-    },
-    {
-      type: 'group',
-      label: collapsed ? null : 'General',
-      children: [
         {
           key: 'members',
           label: collapsed ? (

@@ -1,10 +1,9 @@
 import { PromiseOrValue, retry, stringify } from '@dogu-tech/common';
-import { killChildProcess } from '@dogu-tech/node';
+import { killChildProcess, logger } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
 import lodash from 'lodash';
 import shelljs, { ShellString } from 'shelljs';
-import { logger } from '../../build/src/module/logger/logger.instance';
 
 export interface ShellOptions {
   /**

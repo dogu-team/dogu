@@ -1,0 +1,94 @@
+---
+sidebar_position: 3
+title: Managing Device Tags
+locale: en
+---
+
+import OrganizationAdminPermission from '@site/src/components/console/OrganizationAdminPermissionEng.mdx';
+
+Device tags are pieces of information used to categorize and manage devices. They can be useful for organizing and managing devices based on different criteria. For example, device tags can be used to classify devices by region or group them into specific categories.
+
+Device tags can be divided into two types: platform tags and custom tags. Platform tags are automatically added to devices based on their platform or operating system. Custom tags are user-defined and can be used to further categorize devices based on specific requirements or criteria.
+
+:::tip
+
+When conducting tests, device tags can be used to run tests specifically on devices belonging to a certain group or category.
+
+:::
+
+## Platform tags
+
+The platform tag is a tag that is automatically added based on the platform of the device when it is used.
+
+**Platform tags cannot be modified or deleted.**
+
+<img
+  src="/img/console/organization/platform-tag.png"
+  style={{ width: 600, display: 'block' }}
+/>
+
+## Creating a tag
+
+<OrganizationAdminPermission prefix="Creating a tag" />
+
+1. In the Dogu console, click on the "Device Farm" menu in the left sidebar of the organization page.
+2. Click on the "Device tags" tab.
+3. Click on the "Create new tag" button.
+   <img
+     src="/img/console/organization/create-new-device-tag.png"
+     style={{ width: 600, display: 'block' }}
+   />
+4. Enter the tag name and click the "Add" button to create the tag.
+   <img
+     src="/img/console/organization/create-new-device-tag-modal.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+## Edit a tag
+
+<OrganizationAdminPermission prefix="Editing a tag" />
+
+:::danger Caution
+
+Modifying a tag can have unexpected side effects. Before editing a tag, please ensure the following:
+
+- Check if there are any routines that use the tag.
+
+:::
+
+1. In the Dogu console, click on the "Device Farm" menu in the left sidebar of the organization page.
+2. Click on the "Device tags" tab.
+3. Find the tag you want to update in the list and click on the menu button(`···`).
+4. Click on the "Edit" button.
+   <img
+     src="/img/console/organization/edit-device-tag-menu.png"
+     style={{ width: 600, display: 'block' }}
+   />
+5. Modify the tag name and click the "Save" button to update the tag.
+   <img
+     src="/img/console/organization/edit-device-tag-modal.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+## Remove a tag
+
+<OrganizationAdminPermission prefix="Removing a tag" />
+
+:::danger Caution
+
+Removing a tag can have unexpected side effects.
+Before removing a tag, please ensure the following:
+
+- Check if there are any routines that use the tag.
+
+:::
+
+1. In the Dogu console, click on the "Device Farm" menu in the left sidebar of the organization page.
+2. Click on the "Device tags" tab.
+3. Find the tag you want to delete in the list and click the menu button(`···`).
+4. Click the "Delete" button.
+   <img
+     src="/img/console/organization/delete-device-tag-menu.png"
+     style={{ width: 600, display: 'block' }}
+   />
+5. Click the confirmation button in the modal to delete the tag.

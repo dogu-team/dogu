@@ -20,6 +20,7 @@ export * from './specs/ws/device/install-app';
 export * from './specs/ws/device/join-wifi';
 export * from './specs/ws/device/log-subscribe';
 export * from './specs/ws/device/recording';
+export * from './specs/ws/device/relay';
 export * from './specs/ws/device/reset';
 export * from './specs/ws/device/run-app';
 export * from './specs/ws/device/runtime-info-subscribe';

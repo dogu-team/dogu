@@ -1,3 +1,4 @@
+import { WebSocketProxyReceiveClose } from '@dogu-private/console-host-agent';
 import { closeWebSocketWithTruncateReason, stringify, transformAndValidate } from '@dogu-tech/common';
 import { Inject } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -72,6 +73,10 @@ export class DeviceStreamingGateway implements OnGatewayConnection, OnGatewayDis
   async onMessage(webSocket: WebSocket, data: string): Promise<void> {
     const param = await transformAndValidate(DeviceStreamingOfferDto, JSON.parse(data));
     for await (const answer of this.deviceCommandService.startDeviceStreamingWithTrickle(param)) {
+      if (answer instanceof WebSocketProxyReceiveClose) {
+        closeWebSocketWithTruncateReason(webSocket, answer.code, answer.reason);
+        break;
+      }
       this.logger.info('message', { answer });
       webSocket.send(JSON.stringify(answer));
     }

@@ -1,7 +1,7 @@
 import { CalendarOutlined, FieldTimeOutlined, GatewayOutlined, LoadingOutlined, UserOutlined } from '@ant-design/icons';
 import { PageBase, RoutinePipelineBase } from '@dogu-private/console';
 import { OrganizationId, ProjectId } from '@dogu-private/types';
-import { List, MenuProps, Tag } from 'antd';
+import { List } from 'antd';
 import Trans from 'next-translate/Trans';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -15,7 +15,6 @@ import { listItemStyle } from '../../styles/box';
 import { menuItemButtonStyles } from '../../styles/button';
 import { listActiveNameStyle } from '../../styles/text';
 import { localizeDate } from '../../utils/date';
-import MenuButton from '../buttons/MenuButton';
 import ErrorBox from '../common/boxes/ErrorBox';
 import ListEmpty from '../common/boxes/ListEmpty';
 import PipelineCreatedTimer from './PipelineCreatedTimer';
@@ -28,8 +27,6 @@ interface ItemProps {
 
 const PipelineItem = ({ pipeline }: ItemProps) => {
   const router = useRouter();
-
-  const items: MenuProps['items'] = [{ label: <MenuItemButton>View routine config</MenuItemButton>, key: 'config' }];
 
   return (
     <ListItem key={`pipeline-${pipeline.routinePipelineId}`}>
@@ -68,7 +65,6 @@ const PipelineItem = ({ pipeline }: ItemProps) => {
               />
             </DateBox>
           </DateContainer>
-          <MenuButton menu={{ items }} />
         </Content>
       </ListItemInner>
     </ListItem>
@@ -90,7 +86,6 @@ const PipelineListController = ({ organizationId, projectId }: Props) => {
     swrAuthFetcher,
   );
 
-  // useRefreshInterval(!!data, 1000);
   useRefresh(['onRefreshClicked', 'onPipelineCreated'], mutate);
 
   if (!data && isLoading) {
@@ -204,6 +199,7 @@ const DateBox = styled.div`
   margin: 0.25rem 0;
   font-size: 0.75rem;
   align-items: center;
+  justify-content: flex-end;
 `;
 
 const LoadingBox = styled.div`

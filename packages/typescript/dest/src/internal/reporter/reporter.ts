@@ -1,4 +1,4 @@
-import { DefaultHttpOptions, Instance, Printable, PromiseOrValue, setAxiosErrorFilterToGlobal, transformAndValidate } from '@dogu-tech/common';
+import { DefaultHttpOptions, Instance, Printable, PromiseOrValue, setAxiosErrorFilterToIntercepter, transformAndValidate } from '@dogu-tech/common';
 import { DestData, DestInfo, PublicDest } from '@dogu-tech/console-dest';
 import { createConsoleApiAuthHeader, DEST_TYPE } from '@dogu-tech/types';
 import axios from 'axios';
@@ -18,7 +18,11 @@ export class NullReporter implements Reporter {
 }
 
 export class ConsoleReporter implements Reporter {
-  constructor(private readonly options: FilledReportOptions, private readonly printable: Printable) {}
+  private readonly client = axios.create();
+
+  constructor(private readonly options: FilledReportOptions, private readonly printable: Printable) {
+    setAxiosErrorFilterToIntercepter(this.client);
+  }
 
   async create(rootJobs: Job[]): Promise<void> {
     const { printable } = this;
@@ -32,8 +36,7 @@ export class ConsoleReporter implements Reporter {
       const path = PublicDest.createDest.resolvePath(pathProvider);
       const url = `${DOGU_API_BASE_URL}${path}`;
       printable.debug?.('dest create', { url, requestBody });
-      setAxiosErrorFilterToGlobal();
-      const response = await axios.post<typeof PublicDest.createDest.responseBody>(url, requestBody, {
+      const response = await this.client.post<typeof PublicDest.createDest.responseBody>(url, requestBody, {
         ...createConsoleApiAuthHeader(DOGU_HOST_TOKEN),
         timeout: DefaultHttpOptions.request.timeout,
       });

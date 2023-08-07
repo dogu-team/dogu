@@ -56,6 +56,7 @@ export interface DeviceChannel {
   unforward(hostPort: number): PromiseOrValue<void>;
   subscribeLog(args: string[], handler: LogHandler, printable?: Printable): PromiseOrValue<Closable>;
   joinWifi(ssid: string, password: string): PromiseOrValue<void>;
+  isPortListening(port: number): PromiseOrValue<boolean>;
 
   // app
   uninstallApp(appPath: string, printable?: Printable): PromiseOrValue<void>;

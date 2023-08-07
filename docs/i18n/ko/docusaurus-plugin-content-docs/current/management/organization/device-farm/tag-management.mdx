@@ -1,0 +1,97 @@
+---
+sidebar_position: 3
+title: 디바이스 태그 관리
+locale: ko
+---
+
+import OrganizationAdminPermission from '@site/src/components/console/OrganizationAdminPermission.mdx';
+
+# 디바이스 태그 관리
+
+디바이스 태그는 디바이스를 분류하기 위한 정보입니다. 디바이스 태그는 디바이스를 관리하는데 유용하게 사용할 수 있습니다. 예를 들어, 디바이스 태그를 사용하여 디바이스를 지역별로 분류하거나, 디바이스를 특정 그룹에 속하도록 할 수 있습니다.
+
+디바이스 태그는 플랫폼 태그와, 사용자 정의 태그로 구분됩니다.
+
+:::tip
+
+테스트를 실행할 때 디바이스 태그를 사용하면, 특정 그룹의 디바이스에만 테스트를 실행할 수 있습니다.
+
+:::
+
+## 플랫폼 태그
+
+디바이스를 사용할 때, 디바이스의 플랫폼에 따라 자동으로 추가되는 태그입니다.
+
+**플랫폼 태그는 수정, 삭제가 불가능합니다.**
+
+<img
+  src="/ko/img/console/organization/platform-tag.png"
+  style={{ width: 600, display: 'block' }}
+/>
+
+## 태그 만들기
+
+<OrganizationAdminPermission prefix="디바이스 태그 생성은" />
+
+1. Dogu 콘솔에서 조직 페이지 내 왼쪽 사이드바에서 "디바이스 팜" 메뉴를 클릭합니다.
+2. "디바이스 태그" 탭을 클릭합니다.
+3. "새 태그 만들기" 버튼을 클릭합니다.
+   <img
+     src="/ko/img/console/organization/create-new-device-tag.png"
+     style={{ width: 600, display: 'block' }}
+   />
+4. 태그 이름을 입력하고, "생성" 버튼을 클릭해 태그를 만듭니다.
+   <img
+     src="/ko/img/console/organization/create-new-device-tag-modal.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+## 태그 수정하기
+
+<OrganizationAdminPermission prefix="디바이스 태그 수정은" />
+
+:::danger 주의사항
+
+태그 수정은 예기치 못한 사이드 이펙트가 발생할 수 있습니다.
+태그 수정 전에 다음과 같은 사항을 사전에 확인해주세요.
+
+- 해당 태그를 사용하는 루틴이 있는지 확인합니다.
+
+:::
+
+1. Dogu 콘솔에서 조직 페이지 내 왼쪽 사이드바에서 "디바이스 팜" 메뉴를 클릭합니다.
+2. "디바이스 태그" 탭을 클릭합니다.
+3. 수정하고자 하는 태그를 목록에서 찾아 메뉴 버튼(`···`)을 클릭합니다.
+4. "수정" 버튼을 클릭합니다.
+   <img
+     src="/ko/img/console/organization/edit-device-tag-menu.png"
+     style={{ width: 600, display: 'block' }}
+   />
+5. 태그 이름을 수정하고, "저장" 버튼을 클릭해 태그를 수정합니다.
+   <img
+     src="/ko/img/console/organization/edit-device-tag-modal.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
+## 디바이스 태그 삭제하기
+
+<OrganizationAdminPermission prefix="디바이스 태그 삭제는" />
+
+:::danger 주의사항
+
+태그 삭제은 예기치 못한 사이드 이펙트가 발생할 수 있습니다.
+태그 삭제 전에 다음과 같은 사항을 사전에 확인해주세요.
+
+- 해당 태그를 사용하는 루틴이 있는지 확인합니다.
+
+:::
+
+1. Dogu 콘솔에서 조직 페이지 내 왼쪽 사이드바에서 "디바이스 팜" 메뉴를 클릭합니다.
+2. "디바이스 태그" 탭을 클릭합니다.
+3. 삭제하고자 하는 태그를 목록에서 찾아 메뉴 버튼(`···`)을 클릭합니다.
+4. "삭제" 버튼을 클릭합니다.
+   <img
+     src="/ko/img/console/organization/delete-device-tag-menu.png"
+     style={{ width: 600, display: 'block' }}
+   />
+5. 확인 모달에서 확인 버튼을 클릭해 태그를 삭제합니다.

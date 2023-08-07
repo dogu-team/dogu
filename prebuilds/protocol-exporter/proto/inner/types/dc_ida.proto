@@ -24,3 +24,11 @@ message DcIdaGetSystemInfoResult {
   uint32 screen_width = 1;
   uint32 screen_height = 2;
 }
+
+message DcIdaIsPortListeningParam {
+  uint32 port = 1;
+}
+
+message DcIdaIsPortListeningResult {
+  bool is_listening = 1;
+}

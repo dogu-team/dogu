@@ -1,5 +1,5 @@
 {
-  "routineSidebarTitle": "Routines",
+  "routineSidebarTitle": "Routine List",
 
   "createRoutineModalTitle": "Add new routine",
   "uploadRoutineNudgeDescription": "Click here or drag file for upload.",
@@ -12,7 +12,6 @@
   "routineSidebarAllMenuTitle": "All routines",
 
   "editRoutineMenuTitle": "Edit routine",
-  "routineHistoryMenuTitle": "History",
   "deleteRoutineMenuTitle": "Delete routine",
 
   "editRoutineModalTitle": "Edit routine",

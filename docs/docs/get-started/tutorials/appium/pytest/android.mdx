@@ -11,188 +11,43 @@ import {
 import BrowserOnly from '@docusaurus/BrowserOnly';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import DevicePrerequisites from '@site/src/components/tutorial/android/DevicePrerequisites.mdx';
+import CloneExampleAndVenv from '@site/src/components/tutorial/python/CloneExampleAndVenv.mdx';
+import ActivateVirtualEnv from '@site/src/components/tutorial/python/ActivateVirtualEnv.mdx';
+import InstallDependencies from '@site/src/components/tutorial/python/InstallDependencies.mdx';
+import UploadAndConfigAppTabItem from '@site/src/components/tutorial/common/UploadAndConfigAppTabItem.mdx';
+import UploadAndConfigChromeTabItem from '@site/src/components/tutorial/common/UploadAndConfigChromeTabItem.mdx';
+import RunCommand from '@site/src/components/tutorial/common/RunCommand.mdx';
+import VenvImportError from '@site/src/components/tutorial/python/VenvImportError.mdx';
 
-:::info PREREQUISITES
-You need to have an Android device added to the Device Farm. Refer to [Adding an Android Device](/get-started/tutorials/device-farm/device/android) for instructions.
-:::
+<DevicePrerequisites />
 
-### Clone Examples and Create Virtual Environment
+<CloneExampleAndVenv
+  title="Clone Examples and Create Virtual Environment"
+  path="appium/python/android/pytest"
+/>
 
-```shell
-git clone https://github.com/dogu-team/dogu-examples.git
-cd dogu-examples/appium/python/android/pytest
+<ActivateVirtualEnv title="Activate Virtual Environment" />
 
-python3 -m venv .venv
-```
-
-### Activate Virtual Environment
-
-<BrowserOnly>
-{() => (
-<Tabs groupId="os" defaultValue={getBrowserPlatform('windows')}>
-<TabItem value="windows" label="Windows Powershell" default>
-
-```shell
-.venv\Scripts\activate.ps1
-```
-
-</TabItem>
-<TabItem value="windows-cmd" label="Windows Cmd">
-
-```shell
-.venv\Scripts\activate.bat
-```
-
-</TabItem>
-<TabItem value="macos" label="MacOS/Linux">
-
-```shell
-source .venv/bin/activate
-```
-
-</TabItem>
-</Tabs>
-)}
-</BrowserOnly>
-
-### Install Dependencies
-
-```shell
-pip3 install -r requirements.txt
-```
+<InstallDependencies title="Install Dependencies" />
 
 <Tabs groupId="target" defaultValue="app" queryString>
-<TabItem value="app" label="App" default>
+<TabItem value="app" label="App">
 
-### App Upload
-
-- Download the sample app [Wikipedia](https://github.com/dogu-team/third-party-binaries/releases/download/wikipedia-apps/wikipedia-android.apk).
-- Upload the downloaded **Wikipedia-android.apk** using the [Upload button](/management/project/app) on the Organization > Project > App page.
-
-### Authentication Information
-
-- API Token
-  - Obtain the [API Token](/management/organization/settings#api-token) from the Organization > Settings page.
-- Project Id, Organization Id
-  - Obtain the [Project Id, Organization Id](/management/project/settings#project-id) from the Organization > Project > Settings page.
-
-<Tabs groupId="service" defaultValue="cloud" queryString>
-<TabItem value="cloud" label="Cloud" default>
-
-Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.json**.
-
-```json
-{
-  "version": 1,
-  "apiBaseUrl": "https://console.dogutech.io",
-  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
-  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
-  "token": "INSERT_YOUR_TOKEN", // change to your token
-  "runsOn": "android",
-  "appVersion": "2.5.194-alpha-2017-05-30"
-}
-```
+<UploadAndConfigAppTabItem
+  app_name="Wikipedia-android.apk"
+  app_url="https://github.com/dogu-team/third-party-binaries/releases/download/wikipedia-apps/wikipedia-android.apk"
+  app_version="2.5.194-alpha-2017-05-30"
+/>
+<RunCommand run_script="pytest android/test_app.py" />
 
 </TabItem>
-    
-<TabItem value="self-hosted" label="Self-Hosted">
-
-Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.json**.  
-Also, apply the `DOGU_HOST:4000` value of the configured Dogu server to apiBaseUrl.
-
-```json
-{
-  "version": 1,
-  "apiBaseUrl": "INSERT_YOUR_API_BASE_URL", // change to your api base url
-  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
-  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
-  "token": "INSERT_YOUR_TOKEN", // change to your token
-  "runsOn": "android",
-  "appVersion": "2.5.194-alpha-2017-05-30"
-}
-```
-
-</TabItem>
-</Tabs>
-
-### Running the Tests
-
-Run the following command to execute the tests.
-
-```
-pytest android/test_app.py
-```
-
-</TabItem>
-
 <TabItem value="chrome" label="Chrome">
 
-### Authentication Information
-
-- API Token
-  - Obtain the [API Token](/management/organization/settings#api-token) from the Organization > Settings page.
-- Project Id, Organization Id
-  - Obtain the [Project Id, Organization Id](/management/project/settings#project-id) from the Organization > Project > Settings page.
-
-<Tabs groupId="service" defaultValue="cloud" queryString>
-<TabItem value="cloud" label="Cloud" default>
-
-Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.json**.
-
-```json
-{
-  "version": 1,
-  "apiBaseUrl": "https://console.dogutech.io",
-  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
-  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
-  "token": "INSERT_YOUR_TOKEN", // change to your token
-  "runsOn": "android",
-  "browserName": "chrome"
-}
-```
-
-</TabItem>
-    
-<TabItem value="self-hosted" label="Self-Hosted">
-
-Apply the obtained API Token, Project Id, and Organization Id to **dogu-examples/appium/python/android/chrome.js**.  
-Also, apply the `DOGU_HOST` value of the configured Dogu server to apiBaseUrl.
-
-```json
-{
-  "version": 1,
-  "apiBaseUrl": "INSERT_YOUR_API_BASE_URL", // change to your api base url
-  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
-  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
-  "token": "INSERT_YOUR_TOKEN", // change to your token
-  "runsOn": "android",
-  "browserName": "chrome" // ensure chrome app is installed on the device
-}
-```
+<UploadAndConfigChromeTabItem platform="android" browser_name="chrome" />
+<RunCommand run_script="pytest android/test_web.py" />
 
 </TabItem>
 </Tabs>
 
-### Running the Tests
-
-Run the following command to execute the tests.
-
-```
-pytest android/test_web.py
-```
-
-</TabItem>
-</Tabs>
-
-:::danger
-
-If you get the following error, please `Activate` the virtual environment again.
-
-```shell
-ImportError while loading conftest '{your directory}/dogu-examples/appium/python/pytest/android/conftest.py'.
-android/conftest.py:5: in <module>
-    from pytest_dogu_sdk.dogu_config import DoguConfig
-E   ModuleNotFoundError: No module named 'pytest_dogu_sdk'
-```
-
-:::
+<VenvImportError />

@@ -1,0 +1,11 @@
+import CodeBlock from '@theme/CodeBlock';
+
+<h3>{props.title}</h3>
+
+<CodeBlock language="shell">
+  {`git clone https://github.com/dogu-team/dogu-examples.git
+cd dogu-examples/${props.path}
+  
+npm install
+`}
+</CodeBlock>

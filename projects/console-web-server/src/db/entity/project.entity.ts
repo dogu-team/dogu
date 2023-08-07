@@ -22,6 +22,7 @@ import { Device } from './device.entity';
 import { ProjectAndDevice, ProjectAndTeamAndProjectRole, ProjectAndUserAndProjectRole } from './index';
 import { Organization } from './organization.entity';
 import { RoutinePipeline } from './pipeline.entity';
+import { ProjectScm } from './project-scm.entity';
 import { Routine } from './routine.entity';
 import { Team } from './team.entity';
 import { Member } from './type/type';
@@ -104,4 +105,7 @@ export class Project extends BaseEntity implements ProjectBase {
 
   @OneToMany(() => ProjectAndUserAndProjectRole, (projectUserRole) => projectUserRole.project, { cascade: ['soft-remove'] })
   projectAndUserAndProjectRoles?: ProjectAndUserAndProjectRole[];
+
+  @OneToMany(() => ProjectScm, (projectScm) => projectScm.project, { cascade: ['soft-remove'] })
+  projectScms?: ProjectScm[];
 }

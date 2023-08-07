@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { OpenApiV1Moudule } from './v1/open-api-v1.module';
+import { V1OpenApiMoudule } from './v1/open-api.module';
 
 @Module({
-  imports: [OpenApiV1Moudule],
+  imports: [V1OpenApiMoudule],
   exports: [],
 })
 export class OpenApiMoudule {}

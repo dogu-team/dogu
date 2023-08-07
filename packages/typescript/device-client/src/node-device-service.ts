@@ -1,4 +1,4 @@
-import { closeWebSocketWithTruncateReason, FilledPrintable, PrefixLogger, Printable, setAxiosErrorFilterToGlobal, stringify } from '@dogu-tech/common';
+import { closeWebSocketWithTruncateReason, FilledPrintable, PrefixLogger, Printable, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
 import { DeviceClientOptions, DeviceServerResponseDto, DeviceService, DeviceWebSocket, DeviceWebSocketListener } from '@dogu-tech/device-client-common';
 import { Headers, HeaderValue, HttpRequest, HttpResponse, WebSocketConnection } from '@dogu-tech/types';
 import axios from 'axios';
@@ -28,6 +28,12 @@ export class NodeDeviceWebSocket implements DeviceWebSocket {
 }
 
 export class NodeDeviceService implements DeviceService {
+  private readonly client = axios.create();
+
+  constructor() {
+    setAxiosErrorFilterToIntercepter(this.client);
+  }
+
   async httpRequest(request: HttpRequest, options: Required<DeviceClientOptions>): Promise<HttpResponse> {
     const { port, timeout, printable } = options;
     const logger = new PrefixLogger(printable, '[NodeDeviceService.httpRequest]');
@@ -63,8 +69,7 @@ export class NodeDeviceService implements DeviceService {
     const data = bodyParsed;
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     logger.verbose(`httpRequest`, { method, url, headers, params, data, timeout });
-    setAxiosErrorFilterToGlobal();
-    const response = await axios.request<DeviceServerResponseDto>({
+    const response = await this.client.request<DeviceServerResponseDto>({
       method,
       url,
       headers,

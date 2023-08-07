@@ -82,6 +82,26 @@ export class ProjectScmService {
     });
   }
 
+  async deleteProjectGit(organizationId: OrganizationId, projectId: ProjectId): Promise<void> {
+    return await this.dataSource.transaction(async (manager) => {
+      const existingProjectScm = await manager.getRepository(ProjectScm).findOne({ where: { projectId } });
+
+      if (!existingProjectScm) {
+        throw new NotFoundException('Project scm not configured');
+      }
+
+      await manager.softDelete(ProjectScm, { projectId });
+      switch (existingProjectScm.type) {
+        case PROJECT_SCM_TYPE.GITHUB:
+          await manager.softDelete(ProjectScmGithubAuth, { projectScmId: existingProjectScm.projectScmId });
+          break;
+        case PROJECT_SCM_TYPE.GITLAB:
+          await manager.softDelete(ProjectScmGitlabAuth, { projectScmId: existingProjectScm.projectScmId });
+          break;
+      }
+    });
+  }
+
   async findTestScripts(organizationId: OrganizationId, projectId: ProjectId): Promise<ProjectTestScript[]> {
     const projectScm = await this.dataSource.getRepository(ProjectScm).findOne({
       where: { projectId },

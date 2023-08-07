@@ -14,6 +14,8 @@ The project permissions are structured as follows:
 - `Write`: Has all permissions within the project but cannot modify project members or settings.
 - `Read`: Can view test results.
 
+#
+
 ## Compare permissions
 
 ### Project management
@@ -43,15 +45,13 @@ Refer to the topic <a href="../organization/project#remove-a-project">Remove a p
 | Run routine           | ✅    | ✅    | ❌   |
 | View pipeline results | ✅    | ✅    | ✅   |
 
-### Test script
+### Remote
 
-| Features            | Admin | Write | Read |
-| ------------------- | ----- | ----- | ---- |
-| Create test scripts | ✅    | ✅    | ❌   |
-| Remove test scripts | ✅    | ✅    | ❌   |
-| Update test scripts | ✅    | ✅    | ❌   |
-| View test scripts   | ✅    | ✅    | ✅   |
-| Run test scripts    | ✅    | ✅    | ❌   |
+| Features           | Admin | Write | Read |
+| ------------------ | ----- | ----- | ---- |
+| Run remote         | ✅    | ✅    | ❌   |
+| View remote list   | ✅    | ✅    | ✅   |
+| View remote result | ✅    | ✅    | ✅   |
 
 ### App management
 
@@ -73,16 +73,16 @@ Refer to the topic <a href="../organization/project#remove-a-project">Remove a p
 
 ### Project device management
 
-| Features                                             | Admin | Write | Read |
-| ---------------------------------------------------- | ----- | ----- | ---- |
-| Remove assigned device                               | ✅    | ❌    | ❌   |
-| Stream and remote control assigned or public devices | ✅    | ✅    | ✅   |
-| View assigned or public device list                  | ✅    | ✅    | ✅   |
+| Features                              | Admin | Write | Read |
+| ------------------------------------- | ----- | ----- | ---- |
+| Remove assigned device                | ✅    | ❌    | ❌   |
+| Studio for assigned or public devices | ✅    | ✅    | ✅   |
+| View assigned or public device list   | ✅    | ✅    | ✅   |
 
 :::info Assigning devices
 
 Assigning devices to a project is possible only for the organization owner or members with "Admin" or higher permissions, regardless of project permissions.
 
-Refer to the topic <a href="../organization/device/device-management#adding-projects-to-a-device">Add projects to a device</a> for more information.
+Refer to the topic <a href="../organization/device-farm/device-management#adding-projects-to-a-device">Add projects to a device</a> for more information.
 
 :::

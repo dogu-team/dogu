@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosInstance, isAxiosError } from 'axios';
+import { AxiosError, AxiosInstance, isAxiosError } from 'axios';
 import { errorify } from './utilities/functions';
 
 export class FilteredAxiosError extends Error {
@@ -33,15 +33,4 @@ export function setAxiosErrorFilterToIntercepter(axios: AxiosInstance): void {
     const filteredError = parseAxiosError(error);
     return Promise.reject(filteredError);
   });
-}
-
-let axiosErrorFilterSet = false;
-
-export function setAxiosErrorFilterToGlobal(): void {
-  if (axiosErrorFilterSet) {
-    return;
-  }
-
-  setAxiosErrorFilterToIntercepter(axios);
-  axiosErrorFilterSet = true;
 }

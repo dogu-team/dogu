@@ -314,7 +314,7 @@ func (ldc *DeviceServerHttpLabeledDatachannel) onMessage(msg webrtc.DataChannelM
 		rawQuery = queryMap.Encode()
 	}
 
-	url := url.URL{Scheme: "http", Host: fmt.Sprintf("localhost:%d", ldc.deviceServerPort), Path: request.GetPath(), RawQuery: rawQuery}
+	url := url.URL{Scheme: "http", Host: fmt.Sprintf("127.0.0.1:%d", ldc.deviceServerPort), Path: request.GetPath(), RawQuery: rawQuery}
 
 	var rawBody *bytes.Buffer = nil
 	if body := request.GetBody(); body != nil {

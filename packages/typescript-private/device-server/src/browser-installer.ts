@@ -1,7 +1,7 @@
 import { BrowserName, BrowserOrDriverName } from '@dogu-private/types';
 import { stringify } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
-import { Browser, computeExecutablePath, detectBrowserPlatform, getInstalledBrowsers, install } from '@puppeteer/browsers';
+import { Browser, computeExecutablePath, detectBrowserPlatform, getInstalledBrowsers, install, resolveBuildId } from '@puppeteer/browsers';
 import AsyncLock from 'async-lock';
 import fs from 'fs';
 import {
@@ -13,6 +13,7 @@ import {
   parseChromeVersionLike,
 } from './chrome-version-utils';
 
+const FirefoxVersionPattern = /^(\d+).*$/;
 const BrowsersPathLock = new AsyncLock();
 
 function resolveBrowserOrDriverName(browserOrDriverName: BrowserOrDriverName): Browser {
@@ -39,37 +40,57 @@ export interface BrowserInstallOptions {
 export class BrowserInstaller {
   async install(options: BrowserInstallOptions): Promise<void> {
     const { name, version, downloadProgressCallback } = options;
-    const platform = detectBrowserPlatform();
-    if (!platform) {
-      throw new Error('Unsupported platform');
-    }
-    const browser = resolveBrowserOrDriverName(name);
-    const browsersPath = HostPaths.external.browser.browsersPath();
-    await this.lockBrowsersPath(async () => {
-      await fs.promises.mkdir(browsersPath, { recursive: true });
-      await install({
-        cacheDir: browsersPath,
-        browser,
-        buildId: version,
-        platform,
-        downloadProgressCallback,
+    if (name === 'chrome' || name === 'chromedriver' || name === 'firefox') {
+      const platform = detectBrowserPlatform();
+      if (!platform) {
+        throw new Error('Unsupported platform');
+      }
+      const browser = resolveBrowserOrDriverName(name);
+      const browsersPath = HostPaths.external.browser.browsersPath();
+      await this.lockBrowsersPath(async () => {
+        await fs.promises.mkdir(browsersPath, { recursive: true });
+        await install({
+          cacheDir: browsersPath,
+          browser,
+          buildId: version,
+          platform,
+          downloadProgressCallback,
+        });
       });
-    });
+    } else if (name === 'geckodriver') {
+      throw new Error('Gecko driver is installed by external unit. Do not install it here.');
+    } else {
+      throw new Error(`Unsupported browser or driver: ${stringify(name)}`);
+    }
   }
 
   async isInstalled(name: BrowserOrDriverName, version: string): Promise<boolean> {
-    const platform = detectBrowserPlatform();
-    if (!platform) {
-      throw new Error('Unsupported platform');
-    }
-    const browsersPath = HostPaths.external.browser.browsersPath();
-    const installedBrowsers = await this.lockBrowsersPath(async () => {
-      return getInstalledBrowsers({
-        cacheDir: browsersPath,
+    if (name === 'chrome' || name === 'chromedriver' || name === 'firefox') {
+      const platform = detectBrowserPlatform();
+      if (!platform) {
+        throw new Error('Unsupported platform');
+      }
+      const browsersPath = HostPaths.external.browser.browsersPath();
+      const installedBrowsers = await this.lockBrowsersPath(async () => {
+        return getInstalledBrowsers({
+          cacheDir: browsersPath,
+        });
       });
-    });
-    const browser = resolveBrowserOrDriverName(name);
-    return installedBrowsers.some((installedBrowser) => installedBrowser.browser === browser && installedBrowser.buildId === version);
+      const browser = resolveBrowserOrDriverName(name);
+      return installedBrowsers.some((installedBrowser) => installedBrowser.browser === browser && installedBrowser.buildId === version);
+    } else if (name === 'geckodriver') {
+      const geckoDriverPath = HostPaths.external.browser.geckoDriverPath();
+      const stat = await fs.promises.stat(geckoDriverPath).catch(() => null);
+      return (stat && stat.isFile()) || false;
+    } else if (name === 'safari') {
+      const stat = await fs.promises.stat(HostPaths.external.browser.safariBrowserPath()).catch(() => null);
+      return (stat && stat.isFile()) || false;
+    } else if (name === 'safaridriver') {
+      const stat = await fs.promises.stat(HostPaths.external.browser.safariDriverPath()).catch(() => null);
+      return (stat && stat.isFile()) || false;
+    } else {
+      throw new Error(`Unsupported browser or driver: ${stringify(name)}`);
+    }
   }
 
   async lockBrowsersPath<T>(callback: () => Promise<T>): Promise<T> {
@@ -78,48 +99,75 @@ export class BrowserInstaller {
   }
 
   getBrowserOrDriverPath(name: BrowserOrDriverName, version: string): string {
-    const platform = detectBrowserPlatform();
-    if (!platform) {
-      throw new Error('Unsupported platform');
+    if (name === 'chrome' || name === 'chromedriver' || name === 'firefox') {
+      const platform = detectBrowserPlatform();
+      if (!platform) {
+        throw new Error('Unsupported platform');
+      }
+      const browser = resolveBrowserOrDriverName(name);
+      const browsersPath = HostPaths.external.browser.browsersPath();
+      return computeExecutablePath({
+        cacheDir: browsersPath,
+        platform,
+        browser,
+        buildId: version,
+      });
+    } else if (name === 'geckodriver') {
+      return HostPaths.external.browser.geckoDriverPath();
+    } else if (name === 'safari') {
+      return HostPaths.external.browser.safariBrowserPath();
+    } else if (name === 'safaridriver') {
+      return HostPaths.external.browser.safariDriverPath();
+    } else {
+      throw new Error(`Unsupported browser or driver: ${stringify(name)}`);
     }
-    const browser = resolveBrowserOrDriverName(name);
-    const browsersPath = HostPaths.external.browser.browsersPath();
-    return computeExecutablePath({
-      cacheDir: browsersPath,
-      platform,
-      browser,
-      buildId: version,
-    });
   }
 
   async resolveLatestVersion(browserName: BrowserName, version?: string): Promise<string> {
-    const resolved = version || 'latest';
-    if (resolved === 'latest') {
-      if (browserName === 'chrome') {
+    if (browserName === 'chrome') {
+      const resolved = version || 'latest';
+      if (resolved === 'latest') {
         const versionLike = await downloadLastKnownGoodChromeVersionLike();
         return `${versionLike.major}`;
+      } else {
+        return resolved;
       }
-    } else {
+    } else if (browserName === 'firefox') {
+      const browserPlatform = detectBrowserPlatform();
+      if (!browserPlatform) {
+        throw new Error('Unsupported platform');
+      }
+      const resolved = await resolveBuildId(Browser.FIREFOX, browserPlatform, 'latest');
       return resolved;
+    } else if (browserName === 'safari') {
+      const resolved = version || 'latest';
+      return resolved;
+    } else {
+      throw new Error(`Unsupported browser: ${stringify(browserName)}`);
     }
-
-    throw new Error(`Unsupported browser: ${stringify(browserName)}`);
   }
 
   async findHighestInstalledVersion(browserOrDriverName: BrowserOrDriverName, browserOrDriverVersion: string): Promise<string | undefined> {
-    const platform = detectBrowserPlatform();
-    if (!platform) {
-      throw new Error('Unsupported platform');
-    }
-    const browsersPath = HostPaths.external.browser.browsersPath();
-    const installedBrowsers = await this.lockBrowsersPath(async () => {
-      return getInstalledBrowsers({
-        cacheDir: browsersPath,
+    if (browserOrDriverName === 'chrome' || browserOrDriverName === 'chromedriver' || browserOrDriverName === 'firefox') {
+      const platform = detectBrowserPlatform();
+      if (!platform) {
+        throw new Error('Unsupported platform');
+      }
+
+      const browsersPath = HostPaths.external.browser.browsersPath();
+      const installedBrowsers = await this.lockBrowsersPath(async () => {
+        return getInstalledBrowsers({
+          cacheDir: browsersPath,
+        });
       });
-    });
-    const browser = resolveBrowserOrDriverName(browserOrDriverName);
-    const matchedInstalledVersions = installedBrowsers.filter((installedBrowser) => installedBrowser.browser === browser).map((installedBrowser) => installedBrowser.buildId);
-    return this.findHighestInstalledBrowserVersionInternal(browserOrDriverName, browserOrDriverVersion, matchedInstalledVersions);
+      const browser = resolveBrowserOrDriverName(browserOrDriverName);
+      const matchedInstalledVersions = installedBrowsers.filter((installedBrowser) => installedBrowser.browser === browser).map((installedBrowser) => installedBrowser.buildId);
+      return this.findHighestInstalledBrowserVersionInternal(browserOrDriverName, browserOrDriverVersion, matchedInstalledVersions);
+    } else if (browserOrDriverName === 'safari' || browserOrDriverName === 'safaridriver') {
+      return browserOrDriverVersion;
+    } else {
+      throw new Error(`Unsupported browser or driver: ${stringify(browserOrDriverName)}`);
+    }
   }
 
   private findHighestInstalledBrowserVersionInternal(name: BrowserOrDriverName, version: string, installedVersions: string[]): string | undefined {
@@ -137,9 +185,44 @@ export class BrowserInstaller {
       } else {
         return undefined;
       }
+    } else if (name === 'firefox') {
+      const installedMajorVersions = installedVersions.map((installedVersion) => {
+        const match = installedVersion.match(FirefoxVersionPattern);
+        if (match) {
+          const major = parseInt(match[1], 10);
+          if (!isNaN(major)) {
+            return major;
+          } else {
+            return undefined;
+          }
+        } else {
+          return undefined;
+        }
+      });
+      if (installedVersions.length !== installedMajorVersions.length) {
+        throw new Error('Invalid installed versions');
+      }
+      const browserMajorVersion = parseInt(version, 10);
+      if (!isNaN(browserMajorVersion)) {
+        const index = installedMajorVersions.findIndex((installedMajorVersion) => installedMajorVersion === browserMajorVersion);
+        if (index >= 0) {
+          const found = installedVersions[index];
+          if (found) {
+            return found;
+          } else {
+            return undefined;
+          }
+        } else {
+          return undefined;
+        }
+      } else {
+        return undefined;
+      }
+    } else if (name === 'safari' || name === 'safaridriver') {
+      return version;
+    } else {
+      throw new Error(`Unsupported browser or driver: ${stringify(name)}`);
     }
-
-    throw new Error(`Unsupported browser or driver: ${stringify(name)}`);
   }
 
   async resolveToDownloadVersion(name: BrowserOrDriverName, version: string): Promise<string> {
@@ -155,6 +238,8 @@ export class BrowserInstaller {
       } else {
         throw new Error(`Cannot find known good version for ${stringify(browserVersionLike)}`);
       }
+    } else if (name === 'firefox') {
+      return version;
     }
 
     throw new Error(`Unsupported browser or driver: ${stringify(name)}`);

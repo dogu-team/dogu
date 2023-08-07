@@ -1,7 +1,9 @@
+import { ApiOutlined } from '@ant-design/icons';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import RefreshButton from '../../../../../src/components/buttons/RefreshButton';
+import ExternalGuideLink from '../../../../../src/components/common/ExternalGuideLink';
 
 import TableListView from '../../../../../src/components/common/TableListView';
 import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/ProjectLayoutWithSidebar';
@@ -22,9 +24,12 @@ const ProjectAppPage: NextPageWithLayout<WithProjectProps> = ({ project, organiz
       <TableListView
         top={
           <Header>
-            <div>
+            <MenuList>
               <ProjectApplicationUploadButton organizationId={organization.organizationId} projectId={project.projectId} />
-            </div>
+              <ExternalGuideLink href="https://docs.dogutech.io/api/project/application#upload-application" icon={<ApiOutlined style={{ fontSize: '1rem', color: '#000' }} />}>
+                API
+              </ExternalGuideLink>
+            </MenuList>
             <div>
               <RefreshButton />
             </div>
@@ -46,4 +51,9 @@ export default withProject(ProjectAppPage);
 
 const Header = styled.div`
   ${flexRowSpaceBetweenStyle}
+`;
+
+const MenuList = styled.div`
+  display: flex;
+  flex-direction: row;
 `;

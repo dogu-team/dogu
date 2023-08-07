@@ -9,6 +9,7 @@ import useAuth from '../../hooks/useAuth';
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
 import { getLocaledLink } from '../../utils/locale';
 import AccountMenu from '../AccountMenu';
+import AnnouncementButton from '../announcement/AnnouncementButton';
 import Header from './Header';
 
 interface Props {
@@ -47,11 +48,7 @@ const ConsoleBasicLayout = ({ children }: Props) => {
                   <SlackOutlined />
                 </StyledLink>
               </Tooltip>
-              <Tooltip title="Docs" arrow={false} overlayInnerStyle={{ fontSize: '.8rem' }} style={{ minHeight: '0' }}>
-                <StyledLink href={`https://docs.dogutech.io${getLocaledLink(router.locale, '')}`} target="_blank">
-                  <QuestionCircleOutlined />
-                </StyledLink>
-              </Tooltip>
+              <AnnouncementButton />
               <AccountMenu />
             </FlexRow>
           }
