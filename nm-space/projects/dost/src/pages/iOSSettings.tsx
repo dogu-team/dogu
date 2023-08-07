@@ -31,7 +31,7 @@ function IosSettings() {
   return (
     <div>
       <div style={{ paddingBottom: '16px' }}>
-        <PageTitle title="iOS Settings" />
+        <PageTitle title="iOS Settings" docsLink="https://docs.dogutech.io/device-farm/host/macos/installation#ios-settings" />
       </div>
 
       <Divider mb={4} />
