@@ -71,6 +71,13 @@ export class RecordTestCaseService {
 
   async createRecordTestCase(projectId: ProjectId, dto: CreateRecordTestCaseDto): Promise<RecordTestCaseBase> {
     const { name } = dto;
+
+    const data = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, name } });
+
+    if (data) {
+      throw new HttpException(`Name: ${name} already exist.`, HttpStatus.BAD_REQUEST);
+    }
+
     const newData = this.dataSource.getRepository(RecordTestCase).create({
       recordTestCaseId: v4(),
       projectId,
@@ -83,6 +90,13 @@ export class RecordTestCaseService {
 
   async updateRecordTestCase(projectId: ProjectId, recordTestCaseId: RecordTestCaseId, dto: UpdateRecordTestCaseDto): Promise<RecordTestCaseBase> {
     const { name } = dto;
+
+    const existingCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, name } });
+
+    if (existingCase) {
+      throw new HttpException(`Name: ${name} already exist.`, HttpStatus.BAD_REQUEST);
+    }
+
     const data = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId } });
     if (!data) {
       throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
