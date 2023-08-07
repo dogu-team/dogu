@@ -53,6 +53,7 @@ export class PrivateDeviceWsGateway implements OnGatewayConnection, OnGatewayDis
 
     const hostPayload = await this.wsCommonService.validateHostWithWebsocket(
       connectionDto.organizationId,
+      '',
       connectionDto.hostId,
       connectionDto.deviceId,
       incomingMessage,

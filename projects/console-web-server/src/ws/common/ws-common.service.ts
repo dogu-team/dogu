@@ -215,6 +215,7 @@ export class WsCommonService {
 
   public async validateHostWithWebsocket(
     organizationId: OrganizationId,
+    projectId: ProjectId,
     hostId: HostId,
     deviceId: DeviceId,
     incomingMessage: IncomingMessage,
@@ -224,6 +225,6 @@ export class WsCommonService {
     if (!authHeader) {
       throw new DoguWsException(1003, 'Unauthorized');
     }
-    return this.authHostService.validateHost(organizationId, '', hostId, deviceId, authHeader, type);
+    return this.authHostService.validateHost(organizationId, projectId, hostId, deviceId, authHeader, type);
   }
 }
