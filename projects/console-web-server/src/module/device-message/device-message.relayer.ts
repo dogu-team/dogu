@@ -1,12 +1,10 @@
 import {
   EventParam,
-  findTimeStampsFieldRecursive,
   HttpProxyRequest,
   Param,
   ParamValue,
   RequestParam,
   Result,
-  toTimeStampObject,
   WebSocketProxyConnect,
   WebSocketProxyId,
   WebSocketProxyReceiveClose,
@@ -98,7 +96,6 @@ export class DeviceMessageRelayer {
           const param: Param = {
             resultId,
             value: paramValue,
-            timeStamps: [...findTimeStampsFieldRecursive(paramValue), `cb_sendParam-${Date.now()}`],
           };
           const transformed = await transformAndValidate(Param, param);
           await this.deviceMessageQueue.pushParam(organizationId, deviceId, transformed);
@@ -108,8 +105,6 @@ export class DeviceMessageRelayer {
               continue;
             }
             const result = await transformAndValidate(Result, JSON.parse(resultData));
-            const timeStampObj = toTimeStampObject('sendParam', result.timeStamps);
-            this.timestamplogger.info(`TIMESTAMPSSSS: ${JSON.stringify(timeStampObj, null, 2)}`);
             resolve(result);
           }
         } catch (error) {
@@ -362,9 +357,7 @@ export class DeviceMessageRelayer {
           kind: 'WebSocketProxySendMessage',
           webSocketProxyId,
           data,
-          timeStamps: [],
         },
-        timeStamps: [`cb_sendWebSocketMessage-${Date.now()}`],
       },
     };
     const result = await this.sendParam(organizationId, deviceId, eventParam);
@@ -389,7 +382,6 @@ export class DeviceMessageRelayer {
           webSocketProxyId,
           reason,
         },
-        timeStamps: [`cb_closeWebSocket-${Date.now()}`],
       },
     };
     const result = await this.sendParam(organizationId, deviceId, eventParam);

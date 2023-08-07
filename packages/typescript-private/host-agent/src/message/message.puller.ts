@@ -79,9 +79,9 @@ export class MessagePuller {
     webSocket.on('message', (data, isBinary) => {
       (async (): Promise<void> => {
         const response = await transformAndValidate(PrivateDeviceWs.pullDeviceParamDatas.receiveMessage, JSON.parse(data.toString()));
-        const { datas, timeStamps } = response;
+        const { datas } = response;
         datas.forEach((data) => {
-          this.processParamData(value, data, timeStamps).catch((error) => {
+          this.processParamData(value, data).catch((error) => {
             this.logger.error('MessagePuller.process param data failed', {
               deviceResolutionInfo: value,
               data,
@@ -96,7 +96,7 @@ export class MessagePuller {
     return webSocket;
   }
 
-  private async processParamData(deviceResolutionInfo: DeviceResolutionInfo, paramData: string, pulledTimeStamps: string[]): Promise<void> {
+  private async processParamData(deviceResolutionInfo: DeviceResolutionInfo, paramData: string): Promise<void> {
     this.logger.verbose('process param data', {
       deviceResolutionInfo,
       paramData,
@@ -104,7 +104,7 @@ export class MessagePuller {
 
     const { deviceId, organizationId } = deviceResolutionInfo;
     const param = await transformAndValidate(Param, JSON.parse(paramData));
-    const { resultId, value, timeStamps } = param;
+    const { resultId, value } = param;
 
     const messageInfo: MessageInfo = {
       ...deviceResolutionInfo,
@@ -117,7 +117,6 @@ export class MessagePuller {
     const resultValue = await this.processParam(messageInfo, value, this.messageHandlers);
     const result: Result = {
       value: resultValue,
-      timeStamps: [...timeStamps, ...pulledTimeStamps, `ha_processParam-${Date.now()}`],
     };
     await this.sendResult(organizationId, deviceId, resultId, result);
   }

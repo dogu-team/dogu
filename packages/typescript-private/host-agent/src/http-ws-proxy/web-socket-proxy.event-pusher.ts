@@ -46,7 +46,6 @@ export class WebSocketProxyEventPusher {
     await this.sendWebSocketProxyReceive(organizationId, deviceId, webSocketProxyId, {
       kind: 'WebSocketProxyReceiveMessage',
       data,
-      timeStamps: [`cb_onWebSocketProxyMessage-${Date.now()}`],
     });
   }
 
@@ -61,7 +60,6 @@ export class WebSocketProxyEventPusher {
     const requestBody: Instance<typeof PrivateDevice.pushWebSocketProxyReceive.requestBody> = {
       kind: 'WebSocketProxyReceive',
       value,
-      timeStamps: [`ha_sendWebSocketProxyReceive-${Date.now()}`],
     };
     await this.consoleClientService.client
       .post<Instance<typeof PrivateDevice.pushWebSocketProxyReceive.requestBody>>(path, requestBody, {

@@ -1,6 +1,6 @@
 import { DeviceId, HostId, OrganizationId } from '@dogu-private/types';
 import { WebSocketSpec } from '@dogu-tech/common';
-import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 
 export class PrivateDeviceWsConnectionDto {
   @IsNotEmpty()
@@ -20,10 +20,6 @@ export class WsPullDeviceParamDatasRequestBody {}
 export class WsPullDeviceParamDatasResponseBody {
   @IsArray()
   datas!: string[];
-
-  @IsOptional()
-  @IsArray()
-  timeStamps!: string[];
 }
 
 export const PrivateDeviceWs = {

@@ -1,4 +1,4 @@
-import { Param, Result, toTimeStampObject, WebSocketProxyId, WebSocketProxyReceive } from '@dogu-private/console-host-agent';
+import { Param, Result, WebSocketProxyId, WebSocketProxyReceive } from '@dogu-private/console-host-agent';
 import { DeviceId, OrganizationId } from '@dogu-private/types';
 import { transformAndValidate } from '@dogu-tech/common';
 import { InjectRedis } from '@liaoliaots/nestjs-redis';
@@ -55,12 +55,6 @@ export class DeviceMessageQueue {
     for (const pop of pops) {
       try {
         const validated = await transformAndValidate(WebSocketProxyReceive, JSON.parse(pop));
-        validated.timeStamps.push(`cb_popWebSocketProxyReceivesBefValidate-${befValidate}`);
-        validated.timeStamps.push(`cb_popWebSocketProxyReceives-${Date.now()}`);
-
-        const timeStampObj = toTimeStampObject('popWebSocketProxyReceives', validated.timeStamps);
-        this.timestamplogger.info(`TIMESTAMPSSSS: ${JSON.stringify(timeStampObj, null, 2)}`);
-
         validateds.push(validated);
       } catch (error) {
         this.logger.error(error);

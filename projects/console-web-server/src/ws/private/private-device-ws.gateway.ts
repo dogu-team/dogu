@@ -66,14 +66,12 @@ export class PrivateDeviceWsGateway implements OnGatewayConnection, OnGatewayDis
       if (webSocket.readyState !== WebSocket.OPEN) {
         break;
       }
-      const befPopTime = Date.now();
       const datas = await this.deviceMessageQueue.popParamDatas(connectionDto.organizationId, connectionDto.deviceId, config.virtualWebSocket.pop.count);
       if (0 === datas.length) {
         continue;
       }
       const response: Instance<typeof PrivateDeviceWs.pullDeviceParamDatas.receiveMessage> = {
         datas,
-        timeStamps: [`cb_befPopTime-${befPopTime}`, `cb_aftPopTime-${Date.now()}`],
       };
       webSocket.send(JSON.stringify(response));
     }

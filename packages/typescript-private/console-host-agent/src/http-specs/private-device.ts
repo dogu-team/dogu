@@ -2,7 +2,7 @@ import { DeviceId, HostId, OrganizationId, Platform, PrivateProtocol, Serial } f
 import { ControllerMethodSpec, ControllerSpec, IsFilledString, Log } from '@dogu-tech/common';
 import { RuntimeInfoDto } from '@dogu-tech/device-client-common';
 import { Type } from 'class-transformer';
-import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Max, Min, ValidateNested } from 'class-validator';
+import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, Max, Min, ValidateNested } from 'class-validator';
 import { Result, WebSocketProxyId, WebSocketProxyReceive } from '../validations/types/built-in-messages';
 
 type Device = PrivateProtocol.Device;
@@ -53,10 +53,6 @@ export class PullDeviceParamDatasRequestBody {
 export class PullDeviceParamDatasResponseBody {
   @IsArray()
   datas!: string[];
-
-  @IsOptional()
-  @IsArray()
-  timeStamps!: string[];
 }
 
 export class PushDeviceResultRequestBody {
