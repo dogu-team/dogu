@@ -17,7 +17,6 @@ import { ClassConstructor } from 'class-transformer';
 import { v4 as uuidv4 } from 'uuid';
 import { config } from '../../config';
 import { DoguLogger } from '../logger/logger';
-import { DoguTimestampLogger } from '../logger/timestamp-logger';
 import { DeviceMessageQueue } from './device-message.queue';
 
 export class WebSocketProxy<S extends Class<S>, R extends Class<R>> {
@@ -62,7 +61,7 @@ export interface BatchHttpResponse {
 
 @Injectable()
 export class DeviceMessageRelayer {
-  constructor(private readonly deviceMessageQueue: DeviceMessageQueue, private readonly logger: DoguLogger, private readonly timestamplogger: DoguTimestampLogger) {}
+  constructor(private readonly deviceMessageQueue: DeviceMessageQueue, private readonly logger: DoguLogger) {}
 
   async sendParam(organizationId: OrganizationId, deviceId: DeviceId, paramValue: ParamValue): Promise<Result> {
     return new Promise<Result>((resolve, reject): void => {

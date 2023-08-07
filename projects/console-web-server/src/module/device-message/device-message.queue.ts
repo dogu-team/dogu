@@ -6,11 +6,10 @@ import { Injectable } from '@nestjs/common';
 import Redis from 'ioredis';
 import { config } from '../../config';
 import { DoguLogger } from '../logger/logger';
-import { DoguTimestampLogger } from '../logger/timestamp-logger';
 
 @Injectable()
 export class DeviceMessageQueue {
-  constructor(@InjectRedis() private readonly redis: Redis, private readonly logger: DoguLogger, private readonly timestamplogger: DoguTimestampLogger) {}
+  constructor(@InjectRedis() private readonly redis: Redis, private readonly logger: DoguLogger) {}
 
   async pushParam(organizationId: OrganizationId, deviceId: DeviceId, param: Param): Promise<void> {
     const key = config.redis.key.deviceParam(organizationId, deviceId);
