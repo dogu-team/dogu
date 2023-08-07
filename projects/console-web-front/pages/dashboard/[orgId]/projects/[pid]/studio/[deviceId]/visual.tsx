@@ -1,7 +1,6 @@
 import { GetServerSideProps } from 'next';
 
 import VisualTesting from '../../../../../../../src/enterprise/components/studio/VisualTesting';
-
 import { getStudioTestingLayout, getStudioTestingServerSideProps, StudioTestingPageProps } from '../../../../../../../src/enterprise/pages/studio';
 import { NextPageWithLayout } from '../../../../../../_app';
 

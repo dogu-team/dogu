@@ -9,23 +9,47 @@ import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingC
 import useInspector from '../../hooks/streaming/useInspector';
 import { flexRowCenteredStyle } from '../../styles/box';
 
+export type VideoSize = { width: number; height: number };
+
 interface Props {
   videoId?: string;
   rightSidebar?: React.ReactNode;
   children?: React.ReactNode;
   onResize?: (e: UIEvent) => void;
-  inspector?: ReturnType<typeof useInspector>;
+  onKeyPress?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+  onKeyUp?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+  onWheel?: (e: React.WheelEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void;
+  onMouseDown?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void;
+  onMouseUp?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void;
+  onMouseMove?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void;
+  onMouseLeave?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void;
+  onDoubleClick?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void;
 }
 
-const StreamingVideo = ({ rightSidebar, videoId, children, onResize, inspector }: Props) => {
+const StreamingVideo = ({
+  rightSidebar,
+  videoId,
+  children,
+  onResize,
+  onKeyPress,
+  onKeyDown,
+  onKeyUp,
+  onWheel,
+  onMouseDown,
+  onMouseUp,
+  onMouseMove,
+  onMouseLeave,
+  onDoubleClick,
+}: Props) => {
   const { mode, videoRef, deviceRTCCaller, loading, updateMode } = useDeviceStreamingContext();
-  const { handleDoubleClick, handleKeyDown, handleKeyUp, handleMouseDown, handleMouseLeave, handleMouseMove, handleMouseUp, handleWheel } = useDeviceInput(
-    deviceRTCCaller ?? undefined,
-  );
+  // const { handleDoubleClick, handleKeyDown, handleKeyUp, handleMouseDown, handleMouseLeave, handleMouseMove, handleMouseUp, handleWheel } = useDeviceInput(
+  //   deviceRTCCaller ?? undefined,
+  // );
   const boxRef = useRef<HTMLDivElement>(null);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const [videoSize, setVideoSize] = useState({ width: 0, height: 0 });
+  const [videoSize, setVideoSize] = useState<VideoSize>({ width: 0, height: 0 });
 
   // if ratio > 1, width > height
   const videoRatio = videoSize.height > 0 ? videoSize.width / videoSize.height : 0;
@@ -65,38 +89,38 @@ const StreamingVideo = ({ rightSidebar, videoId, children, onResize, inspector }
     };
   }, []);
 
-  const handleMouseDownVideo = useCallback(
-    (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
-      if (mode === 'inspect') {
-        inspector?.updateInspectingNodeByPos(e);
-        inspector?.updateSelectedNodeFromInspectingNode();
-        inspector?.updateHitPoint(e);
-        updateMode('input');
-        inspector?.clearInspectingNode();
-      } else {
-        handleMouseDown(e, videoSize);
-      }
-    },
-    [handleMouseDown, mode, inspector, updateMode],
-  );
+  // const handleMouseDownVideo = useCallback(
+  //   (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
+  //     if (mode === 'inspect') {
+  //       inspector?.updateInspectingNodeByPos(e);
+  //       inspector?.updateSelectedNodeFromInspectingNode();
+  //       inspector?.updateHitPoint(e);
+  //       updateMode('input');
+  //       inspector?.clearInspectingNode();
+  //     } else {
+  //       handleMouseDown(e, videoSize);
+  //     }
+  //   },
+  //   [handleMouseDown, mode, inspector, updateMode],
+  // );
 
-  const handleMouseMoveVideo = useCallback(
-    (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
-      if (mode === 'inspect') {
-        inspector?.updateInspectingNodeByPos(e);
-      }
-      handleMouseMove(e, videoSize);
-    },
-    [handleMouseMove, mode, inspector],
-  );
+  // const handleMouseMoveVideo = useCallback(
+  //   (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
+  //     if (mode === 'inspect') {
+  //       inspector?.updateInspectingNodeByPos(e);
+  //     }
+  //     handleMouseMove(e, videoSize);
+  //   },
+  //   [handleMouseMove, mode, inspector],
+  // );
 
-  const handleMouseLeaveVideo = useCallback(
-    (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
-      inspector?.clearInspectingNode();
-      handleMouseLeave(e, videoSize);
-    },
-    [handleMouseLeave, inspector],
-  );
+  // const handleMouseLeaveVideo = useCallback(
+  //   (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
+  //     inspector?.clearInspectingNode();
+  //     handleMouseLeave(e, videoSize);
+  //   },
+  //   [handleMouseLeave, inspector],
+  // );
 
   const focusInputForKeyboardEvent = () => inputRef.current?.focus({ preventScroll: true });
 
@@ -122,50 +146,50 @@ const StreamingVideo = ({ rightSidebar, videoId, children, onResize, inspector }
           onKeyPress={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleKeyDown(e);
+            onKeyDown?.(e);
           }}
           onKeyDown={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleKeyDown(e);
+            onKeyPress?.(e);
           }}
           onKeyUp={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleKeyUp(e);
+            onKeyUp?.(e);
           }}
           value={`\n`.repeat(1000)}
           onWheel={(e) => {
             e.currentTarget.scrollTop = 1000;
             e.stopPropagation();
-            handleWheel(e, videoSize);
+            onWheel?.(e, videoSize);
           }}
           onMouseDown={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleMouseDownVideo?.(e, videoSize);
+            onMouseDown?.(e, videoSize);
           }}
           onMouseUp={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleMouseUp?.(e, videoSize);
+            onMouseUp?.(e, videoSize);
           }}
           onMouseMove={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleMouseMoveVideo?.(e, videoSize);
+            onMouseMove?.(e, videoSize);
             focusInputForKeyboardEvent();
           }}
           onMouseLeave={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleMouseLeaveVideo?.(e, videoSize);
+            onMouseLeave?.(e, videoSize);
             focusInputForKeyboardEvent();
           }}
           onDoubleClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleDoubleClick?.(e, videoSize);
+            onDoubleClick?.(e, videoSize);
             focusInputForKeyboardEvent();
           }}
           readOnly
