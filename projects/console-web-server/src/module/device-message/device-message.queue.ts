@@ -50,6 +50,7 @@ export class DeviceMessageQueue {
     const popsOrNull = await this.redis.lpop(key, count);
     const pops = popsOrNull ?? [];
     const validateds: WebSocketProxyReceive[] = [];
+    const befValidate = Date.now();
     for (const pop of pops) {
       try {
         const validated = await transformAndValidate(WebSocketProxyReceive, JSON.parse(pop));
