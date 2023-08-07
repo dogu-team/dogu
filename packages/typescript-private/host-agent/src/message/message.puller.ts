@@ -1,11 +1,13 @@
-import { ErrorResult, Param, ParamValue, PrivateDevice, Result, ResultValue } from '@dogu-private/console-host-agent';
-import { Code, createConsoleApiAuthHeader, DeviceId, OrganizationId } from '@dogu-private/types';
-import { DefaultHttpOptions, DuplicatedCallGuarder, errorify, Instance, transformAndValidate } from '@dogu-tech/common';
+import { ErrorResult, Param, ParamValue, PrivateDevice, PrivateDeviceWs, Result, ResultValue } from '@dogu-private/console-host-agent';
+import { Code, createConsoleApiAuthHeader, DeviceId, OrganizationId, Serial } from '@dogu-private/types';
+import { closeWebSocketWithTruncateReason, DuplicatedCallGuarder, errorify, Instance, stringify, transformAndValidate } from '@dogu-tech/common';
 import { MultiPlatformEnvironmentVariableReplacer } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
-import { Interval } from '@nestjs/schedule';
-import { config } from '../config';
+import { OnEvent } from '@nestjs/event-emitter';
+import WebSocket from 'ws';
 import { ConsoleClientService } from '../console-client/console-client.service';
+import { getConsoleBaseUrlWs } from '../console-client/console-url';
+import { OnDeviceDisconnectedEvent, OnDeviceResolvedEvent } from '../device/device.events';
 import { DeviceRegistry } from '../device/device.registry';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
@@ -13,68 +15,85 @@ import { DeviceResolutionInfo, MessageHandlers, MessageInfo } from '../types';
 import { MessageRouter } from './message.router';
 import { MessageContext, NullMessageEventHandler } from './message.types';
 
+type Value = DeviceResolutionInfo & { webSocket: WebSocket };
 @Injectable()
 export class MessagePuller {
   private readonly pullDuplicatedCallGuader = new DuplicatedCallGuarder();
   private messageHandlers: MessageHandlers | null = null;
+  private readonly _devices = new Map<Serial, Value>();
 
   constructor(private readonly consoleClientService: ConsoleClientService, private readonly deviceRegistry: DeviceRegistry, private readonly logger: DoguLogger) {}
 
-  @Interval(config.device.message.pull.intervalMilliseconds)
-  async onPull(): Promise<void> {
-    try {
-      await this.pullDuplicatedCallGuader.guard(() => {
-        const { devices } = this.deviceRegistry;
-        const count = config.device.message.pull.count;
-        devices.forEach((deviceResolutionInfo, serial) => {
-          this.pullDeviceParamDatas(deviceResolutionInfo, count).catch((error) => {
-            this.logger.error('pull device param datas failed', {
-              serial,
-              error: errorify(error),
-            });
-          });
-        });
-      });
-    } catch (error) {
-      this.logger.error('pull message failed', {
-        error: errorify(error),
-      });
+  @OnEvent(OnDeviceResolvedEvent.key)
+  onDeviceResolved(value: Instance<typeof OnDeviceResolvedEvent.value>): void {
+    const { serial } = value;
+    if (this._devices.has(serial)) {
+      throw new Error(`MessagePuller.device ${serial} already exists`);
     }
+    this.subscribeDevice(value);
+  }
+
+  subscribeDevice(value: Instance<typeof OnDeviceResolvedEvent.value>): void {
+    const webSocket = this.subscribeParamDatas(value);
+    this._devices.set(value.serial, { ...value, webSocket });
+  }
+
+  @OnEvent(OnDeviceDisconnectedEvent.key)
+  onDeviceDisconnected(value: Instance<typeof OnDeviceDisconnectedEvent.value>): void {
+    const { serial } = value;
+    const device = this._devices.get(serial);
+    if (!device) {
+      throw new Error(`MessagePuller.device ${serial} not exists`);
+    }
+    const { webSocket } = device;
+    this._devices.delete(serial);
+    closeWebSocketWithTruncateReason(webSocket, 1000, 'Device disconnected');
   }
 
   setMessageHandlers(handlers: MessageHandlers): void {
     this.messageHandlers = handlers;
   }
 
-  private async pullDeviceParamDatas(deviceResolutionInfo: DeviceResolutionInfo, count: number): Promise<void> {
-    const { deviceId, organizationId } = deviceResolutionInfo;
-    const pathProvider = new PrivateDevice.pullDeviceParamDatas.pathProvider(organizationId, deviceId);
-    const path = PrivateDevice.pullDeviceParamDatas.resolvePath(pathProvider);
-    const requestBody: Instance<typeof PrivateDevice.pullDeviceParamDatas.requestBody> = { count };
-    const { data } = await this.consoleClientService.client
-      .post<Instance<typeof PrivateDevice.pullDeviceParamDatas.responseBody>>(path, requestBody, {
-        ...createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
-        timeout: DefaultHttpOptions.request.timeout,
-      })
-      .catch((error) => {
-        this.logger.error('pull device param datas failed', {
-          organizationId,
-          deviceId,
-          error: errorify(error),
+  private subscribeParamDatas(value: Instance<typeof OnDeviceResolvedEvent.value>): WebSocket {
+    const { organizationId, hostId, deviceId } = value;
+
+    const webSocket = new WebSocket(
+      `${getConsoleBaseUrlWs()}${PrivateDeviceWs.pullDeviceParamDatas.path}?organizationId=${organizationId}&hostId=${hostId}&deviceId=${deviceId}`,
+      createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
+    );
+    webSocket.on('open', () => {
+      this.logger.debug('MessagePuller.subscribeParamDatas.open');
+    });
+    webSocket.on('error', (error) => {
+      this.logger.error('MessagePuller.subscribeParamDatas.error', { error });
+    });
+    webSocket.on('close', (code, reason) => {
+      this.logger.info('MemssagePuller.subscribeParaDatas.close', { code, reason: reason.toString() });
+      if (this._devices.has(value.serial)) {
+        setTimeout(() => {
+          this.logger.info('MemssagePuller.subscribeParaDatas.reconnect', { serial: value.serial });
+          this.subscribeDevice(value);
+        }, 1000);
+      }
+    });
+    webSocket.on('message', (data, isBinary) => {
+      (async (): Promise<void> => {
+        const response = await transformAndValidate(PrivateDeviceWs.pullDeviceParamDatas.receiveMessage, JSON.parse(data.toString()));
+        const { datas, timeStamps } = response;
+        datas.forEach((data) => {
+          this.processParamData(value, data, timeStamps).catch((error) => {
+            this.logger.error('MessagePuller.process param data failed', {
+              deviceResolutionInfo: value,
+              data,
+              error: errorify(error),
+            });
+          });
         });
-        throw error;
-      });
-    const response = await transformAndValidate(PrivateDevice.pullDeviceParamDatas.responseBody, data);
-    const { datas, timeStamps } = response;
-    datas.forEach((data) => {
-      this.processParamData(deviceResolutionInfo, data, timeStamps).catch((error) => {
-        this.logger.error('process param data failed', {
-          deviceResolutionInfo,
-          data,
-          error: errorify(error),
-        });
+      })().catch((error) => {
+        this.logger.error('MessagePuller.subscribeParamDatas.message.error', { error: stringify(error) });
       });
     });
+    return webSocket;
   }
 
   private async processParamData(deviceResolutionInfo: DeviceResolutionInfo, paramData: string, pulledTimeStamps: string[]): Promise<void> {

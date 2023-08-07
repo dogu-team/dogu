@@ -1,8 +1,8 @@
 import { DevicePropCamel, HostPropCamel, ProjectPropCamel, ProjectPropSnake } from '@dogu-private/console';
-import { DeviceId, HostPayload, OrganizationId, ProjectId } from '@dogu-private/types';
+import { DeviceId, HostId, HostPayload, OrganizationId, ProjectId } from '@dogu-private/types';
 import { ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { DataSource } from 'typeorm';
 import { Device } from '../../../db/entity/device.entity';
 import { Host } from '../../../db/entity/host.entity';
@@ -20,10 +20,12 @@ export class AuthHostService {
     private readonly logger: DoguLogger,
   ) {}
 
-  public async validateHost(ctx: ExecutionContext, type: HOST_ACTION_TYPE): Promise<HostPayload | null> {
+  public async validateHostWithCtx(ctx: ExecutionContext, type: HOST_ACTION_TYPE): Promise<HostPayload | null> {
     const req = ctx.switchToHttp().getRequest<Request>();
-    const res = ctx.switchToHttp().getResponse<Response>();
+    return this.validateHostWithRequest(req, type);
+  }
 
+  public async validateHostWithRequest(req: Request, type: HOST_ACTION_TYPE): Promise<HostPayload | null> {
     const deviceId = req.params.deviceId;
     const hostId = req.params.hostId;
     const organizationId = req.params.organizationId;
@@ -33,6 +35,17 @@ export class AuthHostService {
     if (!authHeader) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
+    return this.validateHost(organizationId, projectId, hostId, deviceId, authHeader, type);
+  }
+
+  public async validateHost(
+    organizationId: OrganizationId,
+    projectId: ProjectId,
+    hostId: HostId,
+    deviceId: DeviceId,
+    authHeader: string,
+    type: HOST_ACTION_TYPE,
+  ): Promise<HostPayload | null> {
     const hostToken = authHeader.split(' ')[1];
 
     switch (type) {

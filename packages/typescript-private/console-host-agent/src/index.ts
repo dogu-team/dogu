@@ -8,3 +8,4 @@ export * from './http-specs/private-step';
 export * from './validations/functions';
 export * from './validations/types/built-in-messages';
 export * from './variables/routines';
+export * from './ws-specs/private-device-ws';
