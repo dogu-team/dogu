@@ -18,7 +18,7 @@ interface Props {
 
 export const ValidContext = createContext<{
   isValid: boolean;
-  validate: () => Promise<void>;
+  validate: (hideToast?: boolean) => Promise<void>;
 }>({ isValid: false, validate: async () => {} });
 
 const ManualExternalToolValidCheckerItem = ({ externalKey, name, isValid, onValidateEnd }: Props) => {
@@ -26,13 +26,13 @@ const ManualExternalToolValidCheckerItem = ({ externalKey, name, isValid, onVali
   const [loading, setLoading] = useState(false);
   const toast = useToast();
 
-  const handleValidate = async () => {
+  const handleValidate = async (hideToast?: boolean) => {
     setLoading(true);
     try {
       console.log(`validate ${externalKey}`);
       const result = await ipc.externalClient.validate(externalKey);
       console.log(`validate result`, result);
-      if (!result.valid) {
+      if (!result.valid && !hideToast) {
         toast({
           title: `Failed to validate ${externalKey}`,
           description: result.error?.message ?? 'Unknown error',

@@ -11,11 +11,12 @@ export type ExternalKeyAndName = { key: ExternalKey; name: string };
 
 interface Props {
   externalKeyAndNames: ExternalKeyAndName[];
+  isUninstall?: boolean;
   onStart: () => void | Promise<void>;
   onFinish: (isOk: boolean) => void | Promise<void>;
 }
 
-const ExternaltoolInstaller = ({ externalKeyAndNames, onStart, onFinish }: Props) => {
+const ExternaltoolInstaller = ({ isUninstall, externalKeyAndNames, onStart, onFinish }: Props) => {
   const totalCount = externalKeyAndNames.length;
   const [currentCount, setCurrentCount] = useState(0);
   const toast = useToast();
@@ -69,7 +70,11 @@ const ExternaltoolInstaller = ({ externalKeyAndNames, onStart, onFinish }: Props
       let isOk = true;
       for (const { key, name } of externalKeyAndNames) {
         try {
-          await ipc.externalClient.install(key);
+          if (!isUninstall) {
+            await ipc.externalClient.install(key);
+          } else {
+            await ipc.externalClient.uninstall(key);
+          }
         } catch (e) {
           ipc.rendererLogger.error(`Error occurred while installing: ${key} | ${stringify(e)}`);
           toast({
