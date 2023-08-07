@@ -7,7 +7,7 @@ import { isAxiosError } from 'axios';
 import { uploadSampleApplication } from '../../api/project-application';
 import useRequest from '../../hooks/useRequest';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 
 interface Props {
   organizationId: OrganizationId;
@@ -24,7 +24,7 @@ const SampleApplicationUploadButton = ({ organizationId, projectId, category }: 
       sendSuccessNotification('Successfully uploaded sample application');
     } catch (e) {
       if (isAxiosError(e)) {
-        sendErrorNotification(`Failed to upload sample application\n${getErrorMessage(e)}`);
+        sendErrorNotification(`Failed to upload sample application\n${getErrorMessageFromAxios(e)}`);
       }
     }
   };

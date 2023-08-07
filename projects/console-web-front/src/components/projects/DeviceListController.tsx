@@ -15,7 +15,7 @@ import usePaginationSWR from 'src/hooks/usePaginationSWR';
 import useRefresh from 'src/hooks/useRefresh';
 import { removeDeviceFromProject } from '../../api/device';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
 import DeviceConnectionStateTag from '../device/DeviceConnectionStateTag';
@@ -52,7 +52,7 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
       fireEvent('onProjectDeviceDeleted');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:deleteDeviceFromProjectFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:deleteDeviceFromProjectFailureMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };

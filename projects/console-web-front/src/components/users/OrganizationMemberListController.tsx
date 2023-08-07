@@ -10,7 +10,7 @@ import usePaginationSWR from 'src/hooks/usePaginationSWR';
 import useRefresh from 'src/hooks/useRefresh';
 import useAuthStore from 'src/stores/auth';
 import useOrganizationMemberFilterStore from 'src/stores/organization-member-filter';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import { flexRowBaseStyle, listItemStyle, tableHeaderStyle } from '../../styles/box';
 import Profile from '../Profile';
 import useEventStore from '../../stores/events';
@@ -38,7 +38,7 @@ const MemberItem = ({ member }: MemberItemProps) => {
       fireEvent('onOrgMemberUpdated');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('org-member:permissionUpdateFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('org-member:permissionUpdateFailureMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };
@@ -50,7 +50,7 @@ const MemberItem = ({ member }: MemberItemProps) => {
       fireEvent('onOrgMemberDeleted');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('org-member:removeMemberFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('org-member:removeMemberFailureMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };

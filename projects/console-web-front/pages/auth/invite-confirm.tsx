@@ -15,7 +15,7 @@ import ProfileImage from '../../src/components/ProfileImage';
 import useRequest from '../../src/hooks/useRequest';
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../src/styles/box';
 import { sendErrorNotification, sendSuccessNotification } from '../../src/utils/antd';
-import { getErrorMessage } from '../../src/utils/error';
+import { getErrorMessageFromAxios } from '../../src/utils/error';
 import Head from 'next/head';
 
 interface Props {
@@ -36,7 +36,7 @@ const InviteConfirmPage: NextPageWithLayout<Props> = ({ email, token, invitation
       sendSuccessNotification('You have successfully joined the organization');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(`Failed to join the organization\n${getErrorMessage(e)}`);
+        sendErrorNotification(`Failed to join the organization\n${getErrorMessageFromAxios(e)}`);
       }
     }
   };

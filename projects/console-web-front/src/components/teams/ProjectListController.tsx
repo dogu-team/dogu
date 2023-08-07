@@ -11,7 +11,7 @@ import { removeTeamFromProject, updateTeamInProject } from 'src/api/project';
 import usePaginationSWR from 'src/hooks/usePaginationSWR';
 import useRefresh from 'src/hooks/useRefresh';
 import useTeamProjectFilterStore from 'src/stores/team-project-filter';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import PermissionSelector from '../PermissionSelector';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import { useRouter } from 'next/router';
@@ -41,7 +41,7 @@ const ProjectItem = ({ item }: ProjectItemProps) => {
         fireEvent('onTeamProjectPermissionUpdated');
       } catch (e) {
         if (e instanceof AxiosError) {
-          sendErrorNotification(t('team:projectPermissionUpdateFailMsg', { reason: getErrorMessage(e) }));
+          sendErrorNotification(t('team:projectPermissionUpdateFailMsg', { reason: getErrorMessageFromAxios(e) }));
         }
         onError();
       }
@@ -56,7 +56,7 @@ const ProjectItem = ({ item }: ProjectItemProps) => {
       fireEvent('onTeamProjectDeleted');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('team:projectRemoveFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('team:projectRemoveFailMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   }, [orgId, item.teamId, item.projectId]);

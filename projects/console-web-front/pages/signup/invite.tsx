@@ -18,7 +18,7 @@ import { flexRowCenteredStyle } from '../../src/styles/box';
 import SignUpForm from '../../src/components/registery/SignUpForm';
 import { signUp } from '../../src/api/registery';
 import { sendErrorNotification } from '../../src/utils/antd';
-import { getErrorMessage } from '../../src/utils/error';
+import { getErrorMessageFromAxios } from '../../src/utils/error';
 import { getInvitationServerSideProps } from '../../src/ssr/invitation';
 import SocialSignInForm from '../../src/components/social-signin/SocialSignInForm';
 import Cookies from 'universal-cookie';
@@ -50,7 +50,7 @@ const InviteSignupPage: NextPageWithLayout<Props> = ({ email, token, invitation 
           if (e.response?.status === 409) {
             sendErrorNotification(t('registery:signUpAlreadyExistEmailErrorMsg'));
           } else {
-            sendErrorNotification(t('registery:signUpFailedErrorMsg', { reason: getErrorMessage(e) }));
+            sendErrorNotification(t('registery:signUpFailedErrorMsg', { reason: getErrorMessageFromAxios(e) }));
           }
         }
       }

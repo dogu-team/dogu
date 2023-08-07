@@ -9,7 +9,7 @@ import { swrAuthFetcher } from 'src/api';
 import { addTeamToProject } from 'src/api/project';
 import useDebouncedInputValues from 'src/hooks/useDebouncedInputValues';
 import useEventStore from 'src/stores/events';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import PermissionSelectContentBox from '../PermissionSelectContentBox';
 import useRequest from '../../hooks/useRequest';
@@ -47,7 +47,7 @@ const AddProjectModal = ({ close, isOpen, organizationId, teamId }: Props) => {
       handleClose();
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('team:projectAddFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('team:projectAddFailMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };

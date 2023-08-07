@@ -5,6 +5,7 @@ import { isAxiosError } from 'axios';
 import useModal from '../../../hooks/useModal';
 import useRequest from '../../../hooks/useRequest';
 import { sendErrorNotification, sendSuccessNotification } from '../../../utils/antd';
+import { getErrorMessageFromAxios } from '../../../utils/error';
 import { createVisualCase } from '../../api/visual';
 
 interface Props extends Omit<ButtonProps, 'onClick'> {
@@ -36,7 +37,7 @@ const CreateCaseButton = ({ project, onCreate, ...props }: Props) => {
       sendSuccessNotification('Created');
     } catch (e) {
       if (isAxiosError(e)) {
-        sendErrorNotification('Failed to create case');
+        sendErrorNotification(`Failed to create case.\n${getErrorMessageFromAxios(e)}`);
       }
     }
   };

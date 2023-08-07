@@ -23,7 +23,7 @@ import {
 } from 'src/api/organization';
 import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
-import { getErrorMessage } from '../../../src/utils/error';
+import { getErrorMessageFromAxios } from '../../../src/utils/error';
 import OrganizationOwnerSelector from '../../../src/components/organizations/OrganizationOwnerSelector';
 import DangerZone from '../../../src/components/common/boxes/DangerZone';
 import TokenCopyInput from '../../../src/components/common/TokenCopyInput';
@@ -52,7 +52,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
       router.push(`/account/organizations`);
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(`Failed to remove.\n${getErrorMessage(e)}`);
+        sendErrorNotification(`Failed to remove.\n${getErrorMessageFromAxios(e)}`);
       }
     }
   };
@@ -77,7 +77,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
       sendSuccessNotification('Image uploaded successfully');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(`Failed to upload image.\n${getErrorMessage(e)}`);
+        sendErrorNotification(`Failed to upload image.\n${getErrorMessageFromAxios(e)}`);
       }
     }
     setIsImageUploading(false);
@@ -106,7 +106,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
       });
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(`Failed to update.\n${getErrorMessage(e)}`);
+        sendErrorNotification(`Failed to update.\n${getErrorMessageFromAxios(e)}`);
       }
     }
     setLoading(false);
@@ -120,7 +120,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
       } catch (e) {
         if (e instanceof AxiosError) {
           setNewOwner(undefined);
-          sendErrorNotification(`Failed to update.\n${getErrorMessage(e)}`);
+          sendErrorNotification(`Failed to update.\n${getErrorMessageFromAxios(e)}`);
         }
       }
     }
@@ -132,7 +132,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
       return token;
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(`Failed to get token.\n${getErrorMessage(e)}`);
+        sendErrorNotification(`Failed to get token.\n${getErrorMessageFromAxios(e)}`);
       }
     }
   }, [organization.organizationId]);

@@ -13,7 +13,7 @@ import useExitBlocker from '../../../hooks/useExitBlocker';
 import RoutineEditor from './RoutineEditor';
 import RoutineEditorMenu from './RoutineEditorMenu';
 import useRoutineEditMode from '../../../hooks/useRoutineEditMode';
-import { getErrorMessage } from '../../../utils/error';
+import { getErrorMessageFromAxios } from '../../../utils/error';
 import useRoutineEditorStore from '../../../stores/routine-editor';
 import RoutineGUIEditor from './RoutineGUIEditor';
 import RoutineFlow from './RoutineFlow';
@@ -83,7 +83,7 @@ const RoutineCreator = (props: Props) => {
     } catch (error) {
       if (error instanceof AxiosError) {
         setChanged(true);
-        sendErrorNotification(t('routine:createRoutineFailureMessage', { reason: getErrorMessage(error) }));
+        sendErrorNotification(t('routine:createRoutineFailureMessage', { reason: getErrorMessageFromAxios(error) }));
         return;
       }
     }

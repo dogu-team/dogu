@@ -14,7 +14,7 @@ import useTutorialSelector from '../../hooks/useTutorialSelector';
 import { GuideSupportPlatform, GuideSupportSdk, tutorialData } from '../../resources/guide';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import { getLocaledLink } from '../../utils/locale';
 import RefreshButton from '../buttons/RefreshButton';
 import TokenCopyInput from '../common/TokenCopyInput';
@@ -112,7 +112,7 @@ const DeviceFarmTutorial = () => {
       sendSuccessNotification('Successfully used host as device.');
     } catch (e) {
       if (isAxiosError(e)) {
-        sendErrorNotification(`Failed to use host as device: ${getErrorMessage(e)}`);
+        sendErrorNotification(`Failed to use host as device: ${getErrorMessageFromAxios(e)}`);
       } else if (e instanceof Error) {
         sendErrorNotification(`Failed to use host as device: ${e.message}`);
       }

@@ -12,7 +12,7 @@ import useModal from '../../hooks/useModal';
 import useRequest from '../../hooks/useRequest';
 import useGitIntegrationStore from '../../stores/git-integration';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import GitIntegrationForm, { GitIntegrationFormValues } from './GitIntegrationForm';
 
 interface Props {
@@ -41,7 +41,7 @@ const GitIntegrationTag = ({ isGitIntegrated }: Props) => {
       closeModal();
     } catch (e) {
       if (isAxiosError(e)) {
-        sendErrorNotification(t('projectUpdateFailedMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('projectUpdateFailedMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };

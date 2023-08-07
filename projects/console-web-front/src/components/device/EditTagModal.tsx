@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { updateTag } from '../../api/tag';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import FormControlModal from '../modals/FormControlModal';
 
 interface Props {
@@ -43,7 +43,7 @@ const EditTagModal = ({ tag, isOpen, closeModal }: Props) => {
       closeModal();
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:editTagFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:editTagFailureMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
 

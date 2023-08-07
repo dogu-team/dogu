@@ -16,7 +16,7 @@ import useAuthStore from '../../stores/auth';
 import useEventStore from '../../stores/events';
 import { flexRowBaseStyle, listItemStyle } from '../../styles/box';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
 import ErrorBox from '../common/boxes/ErrorBox';
@@ -43,7 +43,7 @@ const OrganizationListItem = ({ organization }: Props) => {
       fireEvent('onOrganizationLeft');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('account:leaveOrganizationFailureMessage', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('account:leaveOrganizationFailureMessage', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };

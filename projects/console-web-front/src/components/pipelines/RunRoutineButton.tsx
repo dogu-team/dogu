@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { createPipeline } from '../../api/routine';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import RoutineSelector from 'src/components/routine/RoutineSelector';
 
 interface Props {
@@ -34,7 +34,7 @@ const RunRoutineButton = ({ orgId, projectId, routine }: Props) => {
       fireEvent('onPipelineCreated');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('routine:runRoutineFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('routine:runRoutineFailureMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
     setLoading(false);

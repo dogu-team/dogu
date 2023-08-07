@@ -6,7 +6,7 @@ import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 
 import { createTag } from 'src/api/tag';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import FormControlModal from '../modals/FormControlModal';
@@ -44,7 +44,7 @@ const CreateTagModal = ({ isOpen, close }: Props) => {
       close();
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:tagCreateFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:tagCreateFailMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };

@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 import { cancelPipeline } from '../../api/routine';
 import useRequest from '../../hooks/useRequest';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 
 interface Props {
   pipeline: RoutinePipelineBase;
@@ -25,7 +25,7 @@ const CancelPipelineButton = ({ pipeline }: Props) => {
       sendSuccessNotification('Cancelled!');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(`Failed to cancel\n${getErrorMessage(e)}`);
+        sendErrorNotification(`Failed to cancel\n${getErrorMessageFromAxios(e)}`);
       }
     }
   };

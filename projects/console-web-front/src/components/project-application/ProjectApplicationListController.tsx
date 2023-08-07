@@ -17,7 +17,7 @@ import useRefresh from '../../hooks/useRefresh';
 import useEventStore from '../../stores/events';
 import { flexRowBaseStyle, listItemStyle, tableHeaderStyle } from '../../styles/box';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import { convertByteWithMaxUnit } from '../../utils/unit';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
@@ -41,7 +41,7 @@ const ProjectApplicationItem = ({ application }: ItemProps) => {
       window.open(url, '_blank');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('project-app:appItemDownloadFailureMessage', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('project-app:appItemDownloadFailureMessage', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };
@@ -53,7 +53,7 @@ const ProjectApplicationItem = ({ application }: ItemProps) => {
       fireEvent('onProjectApplicationDeleted');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('project-app:appItemDeleteFailureMessage', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('project-app:appItemDeleteFailureMessage', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };

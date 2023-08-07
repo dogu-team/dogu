@@ -4,7 +4,7 @@ import useTranslation from 'next-translate/useTranslation';
 import { useState } from 'react';
 
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import DangerZone from '../common/boxes/DangerZone';
 import TokenCopyInput from '../common/TokenCopyInput';
 
@@ -23,7 +23,7 @@ const RegenerateTokenButton = ({ regenerate }: Props) => {
       sendSuccessNotification('Regenerated');
     } catch (e) {
       if (isAxiosError(e)) {
-        sendErrorNotification(`Failed to regenerate.\n${getErrorMessage(e)}`);
+        sendErrorNotification(`Failed to regenerate.\n${getErrorMessageFromAxios(e)}`);
       }
     }
   };
