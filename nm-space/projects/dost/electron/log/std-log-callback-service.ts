@@ -1,6 +1,7 @@
 import { Printable, stringify } from '@dogu-tech/common';
 import { stdLogCallbackKey } from '../../src/shares/log';
 import { WindowService } from '../window/window-service';
+import { logger } from './logger.instance';
 
 export class StdLogCallbackService {
   static instance: StdLogCallbackService;
@@ -13,11 +14,13 @@ export class StdLogCallbackService {
 
   stdout(message: string): void {
     const { windowService } = this;
+    logger.info(message);
     windowService.window?.webContents.send(stdLogCallbackKey.onStdout, message);
   }
 
   stderr(message: string): void {
     const { windowService } = this;
+    logger.error(message);
     windowService.window?.webContents.send(stdLogCallbackKey.onStderr, message);
   }
 

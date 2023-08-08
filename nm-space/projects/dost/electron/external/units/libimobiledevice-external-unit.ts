@@ -1,4 +1,4 @@
-import { PrefixLogger, stringify } from '@dogu-tech/common';
+import { errorify, PrefixLogger, stringify } from '@dogu-tech/common';
 import { getFileSizeRecursive, HostPaths } from '@dogu-tech/node';
 import compressing from 'compressing';
 import fs from 'fs';
@@ -164,7 +164,8 @@ async function getRetry(url: string, destPath: string, stdLogCallbackService: St
     try {
       return await get(url, destPath);
     } catch (err) {
-      stdLogCallbackService.stderr(`Failed to download ${url}, retrying...`);
+      stdLogCallbackService.stderr(errorify(err).message);
+      stdLogCallbackService.stderr(`Failed to download ${url}, ${err} retrying...`);
       await new Promise((resolve) => setTimeout(resolve, 2000));
     }
   }
@@ -181,7 +182,7 @@ async function get(url: string, destPath: string): Promise<void> {
           return;
         }
         if (res.statusCode !== 200) {
-          reject(new Error(`Failed to download ${url} with status code ${res.statusCode!}`));
+          reject(new Error(`Failed to download ${url} with status code ${res.statusCode ?? 'unknown'}`));
           return;
         }
         res.pipe(file);
