@@ -53,8 +53,8 @@ export function NetworkSetupModal(props: Props) {
                     <UnorderedList width="100%">
                       <ListItem>
                         <Text>
-                          Are you using a Proxy or VPN? This can cause TLS authentication to fail. In that case, you can turn off TLS authentication, but you can download unsafe
-                          data.
+                          Are you using a Proxy or VPN? This can cause TLS authentication to fail. In that case, you can turn off TLS authentication, but you may end up downloading
+                          unsafe data.
                         </Text>
                         <Checkbox mt="2" colorScheme="red" isChecked={isTLSAuthRej} onChange={onTLSAuthChanged}>
                           I understand the risks and want to turn off TLS authentication.
