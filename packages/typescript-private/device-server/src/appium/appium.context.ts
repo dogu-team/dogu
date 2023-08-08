@@ -6,7 +6,8 @@
 import { Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { callAsyncWithTimeout, Class, delay, errorify, Instance, NullLogger, Printable, Retry, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, Rect, ScreenSize, SystemBar } from '@dogu-tech/device-client-common';
-import { HostPaths, killChildProcess, killProcessOnPort, Logger, TaskQueue, TaskQueueTask } from '@dogu-tech/node';
+import { HostPaths, killChildProcess, killProcessOnPort, Logger, TaskQueueTask } from '@dogu-tech/node';
+import AsyncLock from 'async-lock';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
 import _ from 'lodash';
@@ -374,6 +375,11 @@ export class AppiumContextImpl implements AppiumContext {
           'appium:derivedDataPath': derivedDataPath,
           'appium:mjpegServerPort': mjpegServerPort,
           'appium:newCommandTimeout': AppiumNewCommandTimeout,
+          'appium:wdaLaunchTimeout': 300 * 1000,
+          'appium:wdaConnectionTimeout': 300 * 1000,
+          'appium:wdaStartupRetries': 1,
+          'appium:waitForIdleTimeout': 300 * 1000,
+          'appium:shouldUseSingletonTestManager': false,
           'appium:showXcodeLog': true,
         };
       }
@@ -576,7 +582,7 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
   private impl: AppiumContext;
   private next: AppiumContext | null = null;
   private nullContext: NullAppiumContext;
-  private taskQueue: TaskQueue<void, AppiumContextProxyTask> = new TaskQueue();
+  private contextLock = new AsyncLock();
 
   constructor(private readonly options: AppiumContextOptions) {
     this.logger = createAppiumLogger(options.serial);
@@ -615,11 +621,6 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
     if (this.impl.key === 'null' && this.next && ZombieServiceInstance.isAlive(this.next)) {
       this.impl = this.next;
     }
-    if (this.impl.key !== 'null' && ZombieServiceInstance.isAlive(this.impl)) {
-      await this.taskQueue.consume();
-      return;
-    }
-    return;
   }
 
   onDie(): void {
@@ -675,7 +676,7 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
   }
 
   async switchAppiumContext(key: AppiumContextKey): Promise<void> {
-    const task = new AppiumContextProxyTask(async () => {
+    await this.contextLock.acquire('switchAppiumContext', async () => {
       const befImplKey = this.impl.key;
       this.logger.info(`switching appium context: from: ${befImplKey}, to: ${key} start`);
       const befImpl = this.impl;
@@ -688,7 +689,6 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
       this.impl = appiumContext;
       this.logger.info(`switching appium context: from: ${befImplKey}, to: ${key} done`);
     });
-    await this.taskQueue.scheduleAndWait(task);
   }
 
   getImpl<T extends Class<T>>(constructor: T): Instance<T> {

@@ -62,13 +62,13 @@ export class MessagePuller {
       createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
     );
     webSocket.on('open', () => {
-      this.logger.debug('MessagePuller.subscribeParamDatas.open');
+      this.logger.debug('MessagePuller.subscribeParamDatas.open', { serial: value.serial });
     });
     webSocket.on('error', (error) => {
-      this.logger.error('MessagePuller.subscribeParamDatas.error', { error });
+      this.logger.error('MessagePuller.subscribeParamDatas.error', { serial: value.serial, error });
     });
     webSocket.on('close', (code, reason) => {
-      this.logger.info('MemssagePuller.subscribeParaDatas.close', { code, reason: reason.toString() });
+      this.logger.info('MemssagePuller.subscribeParaDatas.close', { serial: value.serial, code, reason: reason.toString() });
       if (this._devices.has(value.serial)) {
         setTimeout(() => {
           this.logger.info('MemssagePuller.subscribeParaDatas.reconnect', { serial: value.serial });
@@ -90,7 +90,7 @@ export class MessagePuller {
           });
         });
       })().catch((error) => {
-        this.logger.error('MessagePuller.subscribeParamDatas.message.error', { error: stringify(error) });
+        this.logger.error('MessagePuller.subscribeParamDatas.message.error', { serial: value.serial, error: stringify(error) });
       });
     });
     return webSocket;

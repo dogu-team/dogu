@@ -1,5 +1,5 @@
 import { Platform, Serial } from '@dogu-private/types';
-import { delay, Printable, stringifyError } from '@dogu-tech/common';
+import { delay, loop, Printable, stringifyError } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import { Socket } from 'net';
 import { config } from '../../config';
@@ -15,7 +15,6 @@ export class IosDeviceAgentProcess {
   private readonly xctest: ZombieXCTest;
   private readonly screenTunnel: ZombieTunnel;
   private readonly grpcTunnel: ZombieTunnel;
-  private readonly screenChecker: ZombieScreenChecker;
   constructor(
     private readonly serial: Serial,
     private readonly xctestrunFile: XctestrunFile,
@@ -46,16 +45,9 @@ export class IosDeviceAgentProcess {
       }
       return false;
     }, 'kill previous tunnel');
-    ZombieServiceInstance.deleteComponentIfExist((zombieable: Zombieable): boolean => {
-      if (zombieable instanceof ZombieScreenChecker) {
-        return zombieable.serial === this.serial;
-      }
-      return false;
-    }, 'kill previous screenchecker');
-    this.xctest = new ZombieXCTest(this.serial, xctestrunFile, this.webDriverPort, this.grpcDevicePort, this.logger);
+    this.xctest = new ZombieXCTest(this.serial, xctestrunFile, this.screenForwardPort, this.webDriverPort, this.grpcDevicePort, this.logger);
     this.screenTunnel = new ZombieTunnel(this.serial, this.screenForwardPort, this.screenDevicePort, this.logger);
     this.grpcTunnel = new ZombieTunnel(this.serial, this.grpcForwardPort, this.grpcDevicePort, this.logger);
-    this.screenChecker = new ZombieScreenChecker(this.serial, this.screenForwardPort, this.xctest, this.logger);
   }
 
   static async isReady(serial: Serial): Promise<boolean> {
@@ -103,7 +95,6 @@ export class IosDeviceAgentProcess {
     await ret.xctest.zombieWaiter.waitUntilAlive();
     await ret.screenTunnel.zombieWaiter.waitUntilAlive();
     await ret.grpcTunnel.zombieWaiter.waitUntilAlive();
-    await ret.screenChecker.zombieWaiter.waitUntilAlive();
 
     return ret;
   }
@@ -113,7 +104,6 @@ export class IosDeviceAgentProcess {
     ZombieServiceInstance.deleteComponent(this.xctest);
     ZombieServiceInstance.deleteComponent(this.screenTunnel);
     ZombieServiceInstance.deleteComponent(this.grpcTunnel);
-    ZombieServiceInstance.deleteComponent(this.screenChecker);
   }
 
   get hasKilled(): boolean {
@@ -128,6 +118,7 @@ class ZombieXCTest implements Zombieable {
   constructor(
     public readonly serial: Serial,
     private readonly xctestrunfile: XctestrunFile,
+    private readonly screenForwadPort: number,
     private readonly webDriverPort: number,
     private readonly grpcPort: number,
     // private readonly iosDeviceControllerGrpcClient: IosDeviceControllerGrpcClient,
@@ -171,6 +162,15 @@ class ZombieXCTest implements Zombieable {
       this.xctestrun = null;
       ZombieServiceInstance.notifyDie(this);
     });
+
+    for await (const _ of loop(5000, 100)) {
+      if (await this.isHealth()) {
+        break;
+      }
+    }
+    if (!(await this.isHealth())) {
+      throw new Error(`xctest is not alive. ${this.serial}`);
+    }
   }
 
   async update(): Promise<void> {
@@ -181,7 +181,11 @@ class ZombieXCTest implements Zombieable {
       ZombieServiceInstance.notifyDie(this);
       return;
     }
-    await delay(0);
+    if (!(await this.isHealth())) {
+      ZombieServiceInstance.notifyDie(this);
+      return;
+    }
+    await delay(3000);
   }
 
   onDie(): void {
@@ -189,81 +193,28 @@ class ZombieXCTest implements Zombieable {
     this.logger.debug?.(`ZombieXCTest.onDie`);
     this.xctestrun?.kill();
   }
-}
 
-class ZombieScreenChecker implements Zombieable {
-  public readonly zombieWaiter: ZombieWaiter;
-  constructor(public readonly serial: Serial, private readonly screenForwadPort: number, private readonly xctest: ZombieXCTest, private readonly logger: Printable) {
-    this.zombieWaiter = ZombieServiceInstance.addComponent(this);
-  }
-  get name(): string {
-    return `ScreenChecker`;
-  }
-  get platform(): Platform {
-    return Platform.PLATFORM_IOS;
-  }
-  get props(): ZombieProps {
-    return {};
-  }
-  get printable(): Printable {
-    return this.logger;
-  }
-  async revive(): Promise<void> {
-    if (config.externalIosDeviceAgent.use) {
-      return;
+  private async isHealth(): Promise<boolean> {
+    const socketOrError = await this.connectSocket().catch((e: Error) => {
+      return e;
+    });
+    if (socketOrError instanceof Error) {
+      this.logger.debug?.(`ZombieXCTest. connect failed. error:${stringifyError(socketOrError)}`);
+      return false;
     }
-    const tryCount = 60;
-    let isConnected = false;
-    for (let i = 0; i < tryCount; i++) {
-      await delay(3000);
-      const socketOrError = await this.connectSocket().catch((e: Error) => {
-        return e;
-      });
-      if (socketOrError instanceof Error) {
-        this.logger.debug?.(`ZombieScreenChecker. connect failed. count: ${i}, error:${stringifyError(socketOrError)}`);
-        continue;
-      }
-      this.logger.debug?.(`ZombieScreenChecker.connect done`);
+    this.logger.debug?.(`ZombieXCTest.connect done`);
 
-      const sendErr = await this.sendHello(socketOrError).catch((e: Error) => {
-        return e;
-      });
-      if (sendErr instanceof Error) {
-        this.logger.debug?.(`ZombieScreenChecker. hello failed. count: ${i}, error:${stringifyError(sendErr)}`);
-        continue;
-      }
-      this.logger.debug?.(`ZombieScreenChecker. hello success. `);
-      const onClose = (): void => {
-        this.logger.info(`ZombieScreenChecker.close. `);
-        if (this.xctest.dieTime) {
-          // screenCheck should kill xctest only if xctest is alive and doguscreen is dead.
-          // temporarily prevent xctest die -> screenCheck die -> xctest die loop
-          const diffTime = new Date().getTime() - this.xctest.dieTime.getTime();
-          if (1000 * 10 < diffTime) {
-            this.logger.info(`ZombieScreenChecker. kill xctest`);
-            ZombieServiceInstance.notifyDie(this.xctest, 'screen check failed');
-          }
-        } else {
-          this.logger.info(`ZombieScreenChecker. kill xctest first`);
-          ZombieServiceInstance.notifyDie(this.xctest, 'screen check failed');
-        }
-        ZombieServiceInstance.notifyDie(this, 'close');
-      };
-      socketOrError.on('close', onClose);
-      isConnected = true;
-      break;
+    const sendErr = await this.sendHello(socketOrError).catch((e: Error) => {
+      return e;
+    });
+    if (sendErr instanceof Error) {
+      this.logger.debug?.(`ZombieXCTest. hello failed. error:${stringifyError(sendErr)}`);
+      socketOrError.resetAndDestroy();
+      return false;
     }
-    if (!isConnected) {
-      throw new Error('ZombieScreenChecker notconnected');
-    }
-  }
-
-  async update(): Promise<void> {
-    // noop
-  }
-
-  onDie(): void {
-    // noop
+    this.logger.debug?.(`ZombieXCTest. hello success. `);
+    socketOrError.resetAndDestroy();
+    return true;
   }
 
   private async connectSocket(): Promise<Socket> {
@@ -305,7 +256,7 @@ class ZombieScreenChecker implements Zombieable {
           resolve();
         })
         .catch((e: Error) => {
-          this.logger.error(`ZombieScreenChecker.sendHello. delay error:${stringifyError(e)}`);
+          this.logger.error(`ZombieXCTest.sendHello. delay error:${stringifyError(e)}`);
           resolve();
         });
     });

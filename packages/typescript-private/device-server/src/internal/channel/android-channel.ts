@@ -194,7 +194,6 @@ export class AndroidChannel implements DeviceChannel {
         return acc;
       }
     }, RuntimeInfo.fromPartial({}));
-    this.logger.verbose('android profile result', { result });
     return {
       ...result,
       platform: Platform.PLATFORM_ANDROID,
