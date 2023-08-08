@@ -39,7 +39,7 @@ export function NetworkSetupModal(props: Props) {
           <ModalHeader>Network</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            {features.useTLSAuthReject && (
+            {features.showTLSAuthReject && (
               <BorderBox
                 children={
                   <div>

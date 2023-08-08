@@ -61,7 +61,7 @@ const SetupInstaller = () => {
     <Flex direction="column" style={{ padding: '24px', height: '100%' }}>
       <PageTitle
         title="Installations & Agreements"
-        sideContent={features.useTLSAuthReject && <HeaderIconMenuButon icon={<MdTroubleshoot style={{ fontSize: '18px' }} />} onClick={onNetworkOpen} />}
+        sideContent={features.showTLSAuthReject && <HeaderIconMenuButon icon={<MdTroubleshoot style={{ fontSize: '18px' }} />} onClick={onNetworkOpen} />}
       />
 
       <Divider mt={6} mb={6} />

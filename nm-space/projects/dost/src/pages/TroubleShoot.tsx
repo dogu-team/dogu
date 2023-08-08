@@ -72,7 +72,7 @@ function TroubleShoot() {
               </Stack>
             </BorderBox>
           </ListItem>
-          {features.useTLSAuthReject ? (
+          {features.showTLSAuthReject ? (
             <ListItem>
               <BorderBox>
                 <Stack spacing="8px">
