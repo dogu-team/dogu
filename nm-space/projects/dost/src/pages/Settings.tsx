@@ -11,7 +11,7 @@ import { logger } from '../utils/logger';
 import { ipc } from '../utils/window';
 
 function Settings() {
-  const { useApiUrlInput } = useEnvironmentStore((state) => state.features);
+  const { showApiUrlInput } = useEnvironmentStore((state) => state.features);
   const [startupAtLogin, setStartupAtLogin] = useState<boolean | null>(null);
   const { colorMode, toggleColorMode } = useColorMode();
   const navigate = useNavigate();
@@ -66,7 +66,7 @@ function Settings() {
           </Stack>
         </ListItem>
 
-        {useApiUrlInput && (
+        {showApiUrlInput && (
           <ListItem>
             <Stack direction="column" spacing="4px">
               <MenuTitle>Custom API URL</MenuTitle>
