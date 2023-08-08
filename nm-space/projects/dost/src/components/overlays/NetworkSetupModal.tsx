@@ -30,7 +30,7 @@ export function NetworkSetupModal(props: Props) {
       const isRejected = (await ipc.dotEnvConfigClient.get('NODE_TLS_REJECT_UNAUTHORIZED')) === '0' ? true : false;
       setTLSAuthRej(isRejected);
     })();
-  }, [onTLSAuthChanged]);
+  }, []);
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} size="xl">
