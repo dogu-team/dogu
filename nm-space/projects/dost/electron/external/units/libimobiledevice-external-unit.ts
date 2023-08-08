@@ -1,10 +1,9 @@
-import { errorify, PrefixLogger, stringify } from '@dogu-tech/common';
+import { PrefixLogger, stringify } from '@dogu-tech/common';
 import { getFileSizeRecursive, HostPaths, removeItemRecursive } from '@dogu-tech/node';
 import compressing from 'compressing';
 import { download } from 'electron-dl';
 import fs from 'fs';
 import fsPromise from 'fs/promises';
-import https from 'https';
 import path from 'path';
 import shelljs from 'shelljs';
 import { ExternalKey } from '../../../src/shares/external';
@@ -136,12 +135,11 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
       if (isZip) {
         this.stdLogCallbackService.stdout(`${savedPath} unzipping`);
         await compressing.zip.uncompress(savedPath, path.dirname(destPath));
+        fs.unlinkSync(savedPath);
         removeMacosxFiles(destPath);
         if (file.unzipDirName) {
           await renameUnzipedDir(file.unzipDirName, destPath, this.stdLogCallbackService);
         }
-
-        fs.unlinkSync(savedPath);
       } else {
         await fs.promises.mkdir(path.dirname(destPath), { recursive: true });
         await fs.promises.copyFile(savedPath, destPath);
@@ -166,59 +164,17 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
   }
 }
 
-async function getRetry(url: string, destPath: string, stdLogCallbackService: StdLogCallbackService): Promise<void> {
-  for (let i = 0; i < 20; i++) {
-    try {
-      return await get(url, destPath);
-    } catch (err) {
-      stdLogCallbackService.stderr(errorify(err).message);
-      stdLogCallbackService.stderr(`Failed to download ${url}, ${err} retrying...`);
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-    }
-  }
-  throw new Error(`Failed to download ${url}`);
-}
-
-async function get(url: string, destPath: string): Promise<void> {
-  return new Promise((resolve, reject): void => {
-    const file = fs.createWriteStream(destPath);
-    https
-      .get(url, (res) => {
-        if (res.statusCode === 301 || res.statusCode === 302) {
-          get(res.headers.location!, destPath).then(resolve).catch(reject);
-          return;
-        }
-        if (res.statusCode !== 200) {
-          reject(new Error(`Failed to download ${url} with status code ${res.statusCode ?? 'unknown'}`));
-          return;
-        }
-        res.pipe(file);
-        file.on('finish', () => {
-          fs.chmodSync(destPath, 0o777);
-          file.close();
-          resolve();
-        });
-      })
-      .on('error', (err) => {
-        console.error(`Failed to download ${url}`);
-        fs.unlink(destPath, () => {
-          reject(err);
-        });
-      });
-  });
-}
-
 function removeMacosxFiles(destPath: string): void {
   const macosxPath = path.resolve(path.dirname(destPath), '__MACOSX');
   shelljs.rm('-rf', macosxPath);
 }
 
-async function renameUnzipedDir(fileUrl: string, destPath: string, stdLogCallbackService: StdLogCallbackService): Promise<void> {
-  const uncompressedDirPath = path.resolve(path.dirname(destPath), path.basename(fileUrl));
+async function renameUnzipedDir(dirname: string, destPath: string, stdLogCallbackService: StdLogCallbackService): Promise<void> {
+  const uncompressedDirPath = path.resolve(path.dirname(destPath), dirname);
   if (fs.existsSync(uncompressedDirPath) && !fs.existsSync(destPath)) {
     for (let i = 0; i < 10; i++) {
       try {
-        fs.renameSync(uncompressedDirPath, destPath);
+        await fs.promises.rename(uncompressedDirPath, destPath);
         break;
       } catch (e) {
         stdLogCallbackService.stderr(`rename failed ${i} times. ${stringify(e)}`);
@@ -227,7 +183,9 @@ async function renameUnzipedDir(fileUrl: string, destPath: string, stdLogCallbac
       }
     }
   }
-  await removeItemRecursive(uncompressedDirPath);
+  if (fs.existsSync(uncompressedDirPath)) {
+    await removeItemRecursive(uncompressedDirPath);
+  }
 }
 
 async function makeDirectories(): Promise<void> {
