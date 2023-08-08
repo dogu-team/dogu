@@ -1,6 +1,8 @@
 import styled from 'styled-components';
+
 import DeviceStreaming from '../../../components/streaming/DeviceStreaming';
 import useDeviceStreamingContext from '../../../hooks/streaming/useDeviceStreamingContext';
+import KeyboardInput from './KeyboardInput';
 import VisualScreenActionBar from './VisualScreenActionBar';
 
 const VisualTestingScreenViewer = () => {
@@ -20,6 +22,8 @@ const VisualTestingScreenViewer = () => {
         // onMouseLeave={handleMouseLeaveVideo}
         // onDoubleClick={handleDoubleClick}
       />
+
+      <KeyboardInput />
     </VideoWrapper>
   );
 };
@@ -27,6 +31,7 @@ const VisualTestingScreenViewer = () => {
 export default VisualTestingScreenViewer;
 
 const VideoWrapper = styled.div`
+  position: relative;
   flex: 1;
   width: 100%;
   height: 95%;
