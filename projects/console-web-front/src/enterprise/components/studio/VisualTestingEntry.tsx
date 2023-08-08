@@ -4,8 +4,9 @@ import { Button } from 'antd';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
-import { flexRowCenteredStyle } from '../../../styles/box';
+import { flexRowBaseStyle, flexRowCenteredStyle } from '../../../styles/box';
 import CreateCaseButton from '../visual/CreateCaseButton';
+import OpenCaseButton from '../visual/OpenCaseButton';
 
 interface Props {
   project: ProjectBase;
@@ -30,7 +31,13 @@ const VisualTestingEntry = ({ project }: Props) => {
         >
           Create new
         </CreateCaseButton>
-        <Button icon={<FolderOpenOutlined />}>Open existing case</Button>
+        <Divider style={{ margin: '0 .5rem' }}>or</Divider>
+        <OpenCaseButton
+          project={project}
+          onSelect={(rv) => {
+            router.push({ query: { ...router.query, caseId: rv.recordTestCaseId } }, undefined, { shallow: true });
+          }}
+        />
       </ButtonWrapper>
     </Box>
   );
@@ -56,7 +63,11 @@ const Title = styled.h2`
 `;
 
 const ButtonWrapper = styled.div`
-  & > button:last-child {
-    margin-left: 1rem;
-  }
+  ${flexRowBaseStyle}
+`;
+
+const Divider = styled.div`
+  margin: 0 0.5rem;
+  color: ${(props) => props.theme.colors.gray5};
+  font-size: 0.85rem;
 `;

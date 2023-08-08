@@ -1,9 +1,14 @@
 import { OrganizationBase, ProjectBase } from '@dogu-private/console';
 import { DeviceId } from '@dogu-private/types';
+import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import DeviceStreamingLayout from '../../../components/studio/DeviceStreamingLayout';
+
+import { DeviceStreamingLayoutProps } from '../../../components/studio/DeviceStreamingLayout';
+import VisualTestingEditor from '../visual/VisualTestingEditor';
 import VisualTestingEntry from './VisualTestingEntry';
 import VisualTestingScreenViewer from './VisualTestingScreenViewer';
+// @ts-ignore
+const DeviceStreamingLayout = dynamic<DeviceStreamingLayoutProps>(() => import('../../../components/studio/DeviceStreamingLayout'), { ssr: false });
 
 interface Props {
   organization: OrganizationBase;
@@ -19,7 +24,7 @@ const VisualTesting = ({ organization, project, deviceId }: Props) => {
     <DeviceStreamingLayout
       project={project}
       deviceId={deviceId}
-      right={caseId ? <div>Editor</div> : <VisualTestingEntry project={project} />}
+      right={caseId ? <VisualTestingEditor /> : <VisualTestingEntry project={project} />}
       title="Visual Testing"
       screenViewer={<VisualTestingScreenViewer />}
     />
