@@ -9,9 +9,10 @@ interface Props {
   subTitle?: string;
   closable?: boolean;
   docsLink?: string;
+  sideContent?: React.ReactNode;
 }
 
-const PageTitle = ({ title, subTitle, closable, docsLink }: Props) => {
+const PageTitle = ({ title, subTitle, closable, docsLink, sideContent }: Props) => {
   const navigate = useNavigate();
   const openDocs = async () => {
     if (!docsLink) return;
@@ -26,9 +27,9 @@ const PageTitle = ({ title, subTitle, closable, docsLink }: Props) => {
         </Text>
         {!!subTitle && <Text mt="2">{subTitle}</Text>}
       </div>
-
-      {closable && <CloseButton onClick={() => navigate(-1)} />}
+      {!!sideContent && <div>{sideContent}</div>}
       {docsLink && <HeaderIconMenuButon icon={<IoMdHelpCircle style={{ fontSize: '18px' }} />} onClick={openDocs} />}
+      {closable && <CloseButton onClick={() => navigate(-1)} />}
     </Flex>
   );
 };

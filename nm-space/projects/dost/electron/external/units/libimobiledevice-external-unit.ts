@@ -1,6 +1,7 @@
 import { errorify, PrefixLogger, stringify } from '@dogu-tech/common';
-import { getFileSizeRecursive, HostPaths } from '@dogu-tech/node';
+import { getFileSizeRecursive, HostPaths, removeItemRecursive } from '@dogu-tech/node';
 import compressing from 'compressing';
+import { download } from 'electron-dl';
 import fs from 'fs';
 import fsPromise from 'fs/promises';
 import https from 'https';
@@ -9,6 +10,7 @@ import shelljs from 'shelljs';
 import { ExternalKey } from '../../../src/shares/external';
 import { logger } from '../../log/logger.instance';
 import { StdLogCallbackService } from '../../log/std-log-callback-service';
+import { WindowService } from '../../window/window-service';
 import { ExternalUnitCallback, IExternalUnit } from '../external-unit';
 
 interface File {
@@ -56,7 +58,7 @@ const files: File[] = [
 export class LibimobledeviceExternalUnit extends IExternalUnit {
   private readonly logger = new PrefixLogger(logger, '[libimobiledevice]');
 
-  constructor(private readonly stdLogCallbackService: StdLogCallbackService, private readonly unitCallback: ExternalUnitCallback) {
+  constructor(private readonly stdLogCallbackService: StdLogCallbackService, private readonly windowService: WindowService, private readonly unitCallback: ExternalUnitCallback) {
     super();
   }
 
@@ -105,12 +107,47 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
     this.unitCallback.onInstallStarted();
     await makeDirectories();
 
+    const window = this.windowService.window;
+    if (!window) {
+      throw new Error('window not exist');
+    }
+
     for (const file of files) {
-      const name = path.basename(file.url);
-      await download(file, this.stdLogCallbackService).catch((err) => {
+      const downloadsPath = HostPaths.downloadsPath(HostPaths.doguHomePath);
+      await fs.promises.mkdir(downloadsPath, { recursive: true });
+      const downloadItem = await download(window, file.url, {
+        directory: downloadsPath,
+        onStarted: (item) => {
+          this.unitCallback.onDownloadStarted();
+          this.stdLogCallbackService.stdout(`Download started. url: ${item.getURL()}`);
+        },
+        onProgress: (progress) => {
+          this.unitCallback.onDownloadInProgress(progress);
+        },
+      }).catch((err) => {
         this.stdLogCallbackService.stderr(`Failed to download ${file.url}: ${err}`);
         throw err;
       });
+      const savedPath = downloadItem.getSavePath();
+      this.stdLogCallbackService.stdout(`Download completed. path: ${savedPath}`);
+
+      const destPath = file.path();
+      const isZip = savedPath.endsWith('.zip');
+      if (isZip) {
+        this.stdLogCallbackService.stdout(`${savedPath} unzipping`);
+        await compressing.zip.uncompress(savedPath, path.dirname(destPath));
+        removeMacosxFiles(destPath);
+        if (file.unzipDirName) {
+          await renameUnzipedDir(file.unzipDirName, destPath, this.stdLogCallbackService);
+        }
+
+        fs.unlinkSync(savedPath);
+      } else {
+        await fs.promises.mkdir(path.dirname(destPath), { recursive: true });
+        await fs.promises.copyFile(savedPath, destPath);
+        await fs.promises.unlink(savedPath);
+        this.stdLogCallbackService.stdout(`Download move completed. path: ${destPath}`);
+      }
     }
 
     this.unitCallback.onInstallCompleted();
@@ -127,36 +164,6 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
   getTermUrl(): string | null {
     return null;
   }
-}
-
-async function download(file: File, stdLogCallbackService: StdLogCallbackService): Promise<void> {
-  const shouldDownload = file.condition?.() ?? true;
-  if (!shouldDownload) {
-    return;
-  }
-  const fileUrl = file.url;
-  const destinationPath = file.path();
-
-  shelljs.rm('-rf', destinationPath);
-  const isZip = fileUrl.endsWith('.zip');
-
-  stdLogCallbackService.stdout(`downloading ${file.url}`);
-  await getRetry(fileUrl, destinationPath, stdLogCallbackService);
-
-  stdLogCallbackService.stdout(`${destinationPath} downloaded`);
-  if (isZip) {
-    stdLogCallbackService.stdout(`${destinationPath} unzipping`);
-    fs.renameSync(destinationPath, destinationPath + '.zip');
-    await compressing.zip.uncompress(destinationPath + '.zip', path.dirname(destinationPath));
-    removeMacosxFiles(destinationPath);
-    if (file.unzipDirName) {
-      await renameUnzipedDir(file.unzipDirName, destinationPath, '.zip', stdLogCallbackService);
-    }
-
-    fs.unlinkSync(destinationPath + '.zip');
-  }
-
-  stdLogCallbackService.stdout(`${destinationPath} done`);
 }
 
 async function getRetry(url: string, destPath: string, stdLogCallbackService: StdLogCallbackService): Promise<void> {
@@ -206,8 +213,8 @@ function removeMacosxFiles(destPath: string): void {
   shelljs.rm('-rf', macosxPath);
 }
 
-async function renameUnzipedDir(fileUrl: string, destPath: string, ext: string, stdLogCallbackService: StdLogCallbackService): Promise<void> {
-  const uncompressedDirPath = path.resolve(path.dirname(destPath), path.basename(fileUrl).replace(ext, ''));
+async function renameUnzipedDir(fileUrl: string, destPath: string, stdLogCallbackService: StdLogCallbackService): Promise<void> {
+  const uncompressedDirPath = path.resolve(path.dirname(destPath), path.basename(fileUrl));
   if (fs.existsSync(uncompressedDirPath) && !fs.existsSync(destPath)) {
     for (let i = 0; i < 10; i++) {
       try {
@@ -220,14 +227,15 @@ async function renameUnzipedDir(fileUrl: string, destPath: string, ext: string, 
       }
     }
   }
+  await removeItemRecursive(uncompressedDirPath);
 }
 
 async function makeDirectories(): Promise<void> {
   for (const file of files) {
-    const dirPath = file.path();
-    if (fs.existsSync(dirPath)) {
+    const destPath = file.path();
+    if (fs.existsSync(destPath)) {
       continue;
     }
-    await fsPromise.mkdir(dirPath, { recursive: true });
+    await fsPromise.mkdir(path.dirname(destPath), { recursive: true });
   }
 }
