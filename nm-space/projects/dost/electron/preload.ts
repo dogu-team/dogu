@@ -53,6 +53,8 @@ expose('settingsClient', {
 
   openWdaProject: () => ipcRenderer.invoke(settingsClientKey.openWdaProject),
   openIdaProject: () => ipcRenderer.invoke(settingsClientKey.openIdaProject),
+
+  changeStrictSSLOnNPMLikes: (strictSSL: boolean) => ipcRenderer.invoke(settingsClientKey.changeStrictSSLOnNPMLikes, strictSSL),
 });
 
 expose('childClient', {

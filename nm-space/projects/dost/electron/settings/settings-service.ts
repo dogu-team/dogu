@@ -2,6 +2,7 @@ import { HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
 import { exec } from 'child_process';
 import { app, desktopCapturer, ipcMain, shell, systemPreferences } from 'electron';
 import isDev from 'electron-is-dev';
+import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 import { promisify } from 'util';
@@ -49,6 +50,8 @@ export class SettingsService {
 
     ipcMain.handle(settingsClientKey.openWdaProject, (_) => this.openWdaProject());
     ipcMain.handle(settingsClientKey.openIdaProject, (_) => this.openIdaProject());
+
+    ipcMain.handle(settingsClientKey.changeStrictSSLOnNPMLikes, (_, enabled: boolean) => this.changeStrictSSLOnNPMLikes(enabled));
   }
 
   static open(dotEnvConfigService: DotEnvConfigService): void {
@@ -124,6 +127,22 @@ export class SettingsService {
     }
     if (stdout) {
       logger.info('openIdaProject', { stdout });
+    }
+  }
+
+  private async changeStrictSSLOnNPMLikes(enabled: boolean): Promise<void> {
+    const npmLikes = [HostPaths.thirdParty.pathMap().common.npm, HostPaths.thirdParty.pathMap().common.pnpm, HostPaths.thirdParty.pathMap().common.yarn];
+    await fs.promises.mkdir(HostPaths.tempPath, { recursive: true });
+    for (const npmLike of npmLikes) {
+      const { stdout, stderr } = enabled
+        ? await execAsync(`${npmLike} config delete strict-ssl`, { env: newCleanNodeEnv(), cwd: HostPaths.tempPath })
+        : await execAsync(`${npmLike} config set strict-ssl false`, { env: newCleanNodeEnv(), cwd: HostPaths.tempPath });
+      if (stderr) {
+        logger.warn('changeStrictSSlOnNPMLikes', { stderr });
+      }
+      if (stdout) {
+        logger.info('changeStrictSSlOnNPMLikes', { stdout });
+      }
     }
   }
 }

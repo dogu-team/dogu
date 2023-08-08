@@ -60,6 +60,7 @@ export interface ISettingsClient {
 
   // appium
   openWdaProject(): Promise<void>;
-
   openIdaProject(): Promise<void>;
+
+  changeStrictSSLOnNPMLikes(value: boolean): Promise<void>;
 }
