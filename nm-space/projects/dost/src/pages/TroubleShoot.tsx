@@ -1,4 +1,4 @@
-import { Box, Button, Center, Divider, List, ListItem, Stack, Text } from '@chakra-ui/react';
+import { Box, Button, Center, Divider, List, ListItem, Stack, Text, useDisclosure } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
@@ -6,13 +6,15 @@ import BorderBox from '../components/layouts/BorderBox';
 import PageTitle from '../components/layouts/PageTitle';
 
 import MacOsPermissions from '../components/MacOSPermissions';
+import { NetworkSetupModal } from '../components/overlays/NetworkSetupModal';
 import { DoguDocsDeviceConfigurationUrl, DoguDocsDeviceTroubleShootingUrl } from '../shares/constants';
 import useEnvironmentStore from '../stores/environment';
 import { ipc } from '../utils/window';
 
 function TroubleShoot() {
-  const platform = useEnvironmentStore((state) => state.platform);
+  const { features, platform } = useEnvironmentStore();
   const navigate = useNavigate();
+  const { isOpen: isNetworkOpen, onOpen: onNetworkOpen, onClose: onNetworkClose } = useDisclosure();
 
   const onClickDoguDocsDeviceConfiguration = async () => {
     await ipc.settingsClient.openExternal(DoguDocsDeviceConfigurationUrl);
@@ -32,15 +34,17 @@ function TroubleShoot() {
       <Center>
         <List spacing={4} width="100%">
           {platform && platform === 'darwin' ? (
-            <BorderBox>
-              <Stack spacing="8px">
-                <div>
-                  <MenuTitle>macOS Permissions</MenuTitle>
-                  <Text fontSize=".9rem">Following permissions are required to control macOS.</Text>
-                </div>
-                <MacOsPermissions />
-              </Stack>
-            </BorderBox>
+            <ListItem>
+              <BorderBox>
+                <Stack spacing="8px">
+                  <div>
+                    <MenuTitle>macOS Permissions</MenuTitle>
+                    <Text fontSize=".9rem">Following permissions are required to control macOS.</Text>
+                  </div>
+                  <MacOsPermissions />
+                </Stack>
+              </BorderBox>
+            </ListItem>
           ) : null}
 
           <ListItem>
@@ -68,7 +72,23 @@ function TroubleShoot() {
               </Stack>
             </BorderBox>
           </ListItem>
+          {features.useTLSAuthReject ? (
+            <ListItem>
+              <BorderBox>
+                <Stack spacing="8px">
+                  <div>
+                    <MenuTitle>Network</MenuTitle>
+                    <Text fontSize=".9rem">This is a setting to change when there is a network-related problem.</Text>
+                    <Button size="sm" onClick={onNetworkOpen} mt="8px">
+                      Configuration
+                    </Button>
+                  </div>
+                </Stack>
+              </BorderBox>
+            </ListItem>
+          ) : null}
         </List>
+        <NetworkSetupModal isOpen={isNetworkOpen} onClose={onNetworkClose} />
       </Center>
     </div>
   );

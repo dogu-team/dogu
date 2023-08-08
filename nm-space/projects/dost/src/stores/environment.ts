@@ -22,6 +22,7 @@ const useEnvironmentStore = create<EnvironmentStore>()(
         useApiUrlInput: false,
         useSentry: false,
         useAppUpdate: false,
+        useTLSAuthReject: false,
       },
       appConfig: {},
       setEnvironment: (updates) => set({ ...updates }),

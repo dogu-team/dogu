@@ -4,6 +4,7 @@ export interface FeatureTable {
   useApiUrlInput: boolean;
   useSentry: boolean;
   useAppUpdate: boolean;
+  useTLSAuthReject: boolean;
 }
 
 export type FeatureKey = keyof FeatureTable;

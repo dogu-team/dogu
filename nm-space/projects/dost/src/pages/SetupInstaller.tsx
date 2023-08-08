@@ -10,9 +10,11 @@ import usePlatformSupportedExternalInfo from '../hooks/platform-supported-extern
 import { ipc } from '../utils/window';
 import HeaderIconMenuButon from '../components/layouts/HeaderIconMenuButon';
 import { NetworkSetupModal } from '../components/overlays/NetworkSetupModal';
+import useEnvironmentStore from '../stores/environment';
 
 const SetupInstaller = () => {
   const { externalInfos } = usePlatformSupportedExternalInfo();
+  const { features } = useEnvironmentStore();
   const [isAgreed, setIsAgreed] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isNetworkOpen, onOpen: onNetworkOpen, onClose: onNetworkClose } = useDisclosure();
@@ -57,7 +59,10 @@ const SetupInstaller = () => {
 
   return (
     <Flex direction="column" style={{ padding: '24px', height: '100%' }}>
-      <PageTitle title="Installations & Agreements" sideContent={<HeaderIconMenuButon icon={<MdTroubleshoot style={{ fontSize: '18px' }} />} onClick={onNetworkOpen} />} />
+      <PageTitle
+        title="Installations & Agreements"
+        sideContent={features.useTLSAuthReject && <HeaderIconMenuButon icon={<MdTroubleshoot style={{ fontSize: '18px' }} />} onClick={onNetworkOpen} />}
+      />
 
       <Divider mt={6} mb={6} />
 

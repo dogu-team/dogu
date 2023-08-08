@@ -1,5 +1,6 @@
 {
   "useApiUrlInput": true,
   "useAppUpdate": false,
-  "useSentry": false
+  "useSentry": false,
+  "useTLSAuthReject": true
 }
