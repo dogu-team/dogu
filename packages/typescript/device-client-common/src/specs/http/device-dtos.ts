@@ -252,3 +252,11 @@ export class GetAppiumContextInfoResponse {
   @IsObject()
   info!: AppiumContextInfo;
 }
+
+export class GetSystemBarVisibility {
+  @IsBoolean()
+  statusBar!: boolean;
+
+  @IsBoolean()
+  navigationBar!: boolean;
+}

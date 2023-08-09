@@ -55,6 +55,7 @@ async function bootstrap(): Promise<void> {
     .useGlobalFilters(new AllExceptionsFilter(httpAdapterHost))
     .useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
     .useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
+    // .useWebSocketAdapter(new CustomWsAdapter(app))
     .useWebSocketAdapter(new WsAdapter(app))
     .enableCors({
       origin: true,
