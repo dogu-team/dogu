@@ -11,6 +11,8 @@ import Foundation
 
 func queryProfile(param: Inner_Types_DcIdaQueryProfileParam) async throws -> Inner_Types_DcIdaQueryProfileResult {
   var info = Outer_Profile_RuntimeInfo()
+  info.cpues = try await getCpuUsages()
+  info.mems = try await getMemUsages()
   return Inner_Types_DcIdaQueryProfileResult.with {
     $0.info = info
   }
@@ -20,6 +22,7 @@ var previousCpuLoadInfo = host_cpu_load_info()
 
 func getCpuUsages() async throws -> [Outer_Profile_RuntimeInfoCpu] {
   guard let cpuLoadInfo = hostCPULoadInfo() else {
+    Log.shared.error("Error  - \(#file): \(#function) - hostCPULoadInfo() is nil")
     return []
   }
   let userDiff = cpuLoadInfo.cpu_ticks.0 - previousCpuLoadInfo.cpu_ticks.0
@@ -51,9 +54,11 @@ func getMemUsages() async throws -> [Outer_Profile_RuntimeInfoMem] {
     pageSize = UInt64(getVMPageSize())
   }
   guard let pageSize = pageSize else {
+    Log.shared.error("Error  - \(#file): \(#function) - pageSize is nil")
     return []
   }
   guard let vmstat = getVMStatistics() as vm_statistics? else {
+    Log.shared.error("Error  - \(#file): \(#function) - vmstat is nil")
     return []
   }
   return [
@@ -85,7 +90,7 @@ func hostCPULoadInfo() -> host_cpu_load_info? {
     }
   }
   if result != KERN_SUCCESS {
-    print("Error  - \(#file): \(#function) - kern_result_t = \(result)")
+    Log.shared.debug("Error  - \(#file): \(#function) - kern_result_t = \(result)")
     return nil
   }
   return cpuLoadInfo
