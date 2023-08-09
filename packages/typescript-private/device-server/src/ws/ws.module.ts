@@ -9,11 +9,11 @@ import { DeviceInstallAppService } from './device/install-app.service';
 import { DeviceJoinWifiService } from './device/join-wifi.service';
 import { DeviceLogSubscribeService } from './device/log-subscribe.service';
 import { DeviceRecordingService } from './device/recording.service';
-import { DeviceRelayService } from './device/relay.service';
 import { DeviceResetService } from './device/reset.service';
 import { DeviceRunAppService } from './device/run-app.service';
 import { DeviceRuntimeInfoSubscribeService } from './device/runtime-info-subscribe.service';
 import { DeviceStreamingService } from './device/streaming.service';
+import { DeviceTcpRelayService } from './device/tcp-relay.service';
 import { DeviceUninstallAppService } from './device/uninstall-app.service';
 
 @Module({
@@ -32,7 +32,7 @@ import { DeviceUninstallAppService } from './device/uninstall-app.service';
     DeviceJoinWifiService,
     DeviceHostUploadFileService,
     DeviceHostDownloadSharedResourceWebsocketService,
-    DeviceRelayService,
+    DeviceTcpRelayService,
   ],
 })
 export class WsModule {}

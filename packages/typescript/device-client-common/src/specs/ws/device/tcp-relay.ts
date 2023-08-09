@@ -10,10 +10,10 @@ export class TcpRelayResponse {
   encodedData!: string; // base64 encoded
 }
 
-export const DoguDeviceRelaySerialHeaderKey = 'dogu-device-relay-serial';
-export const DoguDeviceRelayPortHeaderKey = 'dogu-device-relay-port';
+export const DoguDeviceTcpRelaySerialHeaderKey = 'dogu-device-relay-serial';
+export const DoguDeviceTcpRelayPortHeaderKey = 'dogu-device-relay-port';
 
-export const DeviceRelay = new WebSocketSpec({
+export const DeviceTcpRelay = new WebSocketSpec({
   path: '/ws/devices/relay/tcp',
   sendMessage: TcpRelayRequest,
   receiveMessage: TcpRelayResponse,
