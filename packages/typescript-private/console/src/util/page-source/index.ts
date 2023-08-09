@@ -4,7 +4,18 @@ import { DOMParser } from 'xmldom';
 import { AndroidNodeUtilizer, AndroidPageSourceParser } from './android';
 import { GamiumNodeUtilizer, GamiumPageSourceParser } from './gamium';
 import { IosNodeUtilizer, IosPageSourceParser } from './ios';
-import { AndroidNode, AndroidNodeAttributes, ContextNode, GamiumNode, GamiumNodeAttributes, IosNode, IosNodeAttributes, NodeAttributes, ParsedNode } from './types';
+import {
+  AndroidNode,
+  AndroidNodeAttributes,
+  ContextNode,
+  GamiumNode,
+  GamiumNodeAttributes,
+  GAMIUM_CONTEXT_KEY,
+  IosNode,
+  IosNodeAttributes,
+  NodeAttributes,
+  ParsedNode,
+} from './types';
 
 function webviewToElement<A>(element: HTMLElement, parentKey: string, index: number): ParsedNode<A> {
   const json: ParsedNode<A> = {
@@ -89,7 +100,7 @@ export class PageSourceParserFacade {
 
 export class NodeUtilizerFactory {
   static create(platform: Platform, contextAndNode: ContextNode<NodeAttributes>): GamiumNodeUtilizer | AndroidNodeUtilizer | IosNodeUtilizer {
-    if (contextAndNode.context === 'GAMIUM') {
+    if (contextAndNode.context === GAMIUM_CONTEXT_KEY) {
       return new GamiumNodeUtilizer(contextAndNode as ContextNode<GamiumNodeAttributes>);
     }
 
