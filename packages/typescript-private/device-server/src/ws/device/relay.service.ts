@@ -107,7 +107,7 @@ export class DeviceRelayService
   }
 
   async onWebSocketMessage(webSocket: WebSocket, message: Instance<typeof DeviceRelay.sendMessage>, valueAccessor: WebSocketRegistryValueAccessor<Value>): Promise<void> {
-    for await (const _ of loop(1000, 10)) {
+    for await (const _ of loop(1000, 60)) {
       try {
         valueAccessor.get();
         break;

@@ -54,7 +54,7 @@ export class RemoteGamiumGateway implements OnGatewayConnection, OnGatewayDiscon
       const { data } = event;
       const base64 = Buffer.from(data).toString('base64');
       if (!context) {
-        for await (const _ of loop(1000, 10)) {
+        for await (const _ of loop(1000, 60)) {
           if (context) {
             break;
           }

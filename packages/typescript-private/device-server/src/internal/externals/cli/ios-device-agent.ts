@@ -185,7 +185,7 @@ class ZombieXCTest implements Zombieable {
       ZombieServiceInstance.notifyDie(this);
       return;
     }
-    await delay(3000);
+    await delay(5000);
   }
 
   onDie(): void {
