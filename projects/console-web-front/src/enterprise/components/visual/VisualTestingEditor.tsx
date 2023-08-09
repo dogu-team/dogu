@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 import StepEditor from './StepEditor';
 import StepNavigator from './StepNavigator';
-import StepThumbnailBar from './StepThumbnailBar';
+import StepPreviewBar from './StepPreviewBar';
 
 const VisualTestingEditor = () => {
   return (
@@ -15,9 +15,9 @@ const VisualTestingEditor = () => {
           <StepNavigator />
         </NavigatorWrapper>
       </EditorWrapper>
-      <ThumbnailWrapper>
-        <StepThumbnailBar />
-      </ThumbnailWrapper>
+      <PreviewSidebar>
+        <StepPreviewBar />
+      </PreviewSidebar>
     </Box>
   );
 };
@@ -39,8 +39,9 @@ const EditorWrapper = styled(Wrapper)`
   flex-direction: column;
 `;
 
-const ThumbnailWrapper = styled(Wrapper)`
-  min-width: 200px;
+const PreviewSidebar = styled(Wrapper)`
+  width: 20%;
+  min-width: 250px;
   border-left: 1px solid #e5e5e5;
   height: 100%;
   flex-shrink: 0;
@@ -52,5 +53,6 @@ const StepWrapper = styled.div`
 `;
 
 const NavigatorWrapper = styled.div`
+  margin-top: 0.5rem;
   height: 2rem;
 `;

@@ -21,6 +21,12 @@ const VisualTestingScreenViewer = () => {
         // onMouseMove={handleMouseMoveVideo}
         // onMouseLeave={handleMouseLeaveVideo}
         // onDoubleClick={handleDoubleClick}
+        onMouseMove={() => {
+          console.log('move');
+        }}
+        onMouseDown={() => {
+          console.log('down');
+        }}
       />
 
       <KeyboardInput />

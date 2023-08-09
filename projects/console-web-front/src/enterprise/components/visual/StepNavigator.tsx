@@ -1,5 +1,5 @@
-import { CaretLeftOutlined, LeftOutlined, RightOutlined } from '@ant-design/icons';
-import { Button, Input, InputNumber } from 'antd';
+import { LeftOutlined, RightOutlined } from '@ant-design/icons';
+import { Button, InputNumber } from 'antd';
 import styled from 'styled-components';
 
 import { flexRowCenteredStyle } from '../../../styles/box';

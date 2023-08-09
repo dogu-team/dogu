@@ -1,17 +1,23 @@
 import styled from 'styled-components';
 
-const StepThumbnailBar = () => {
+import StepPreview from './StepPreview';
+
+const StepPreviewBar = () => {
   return (
     <div>
       <TitleWrapper>
         <Title>Steps</Title>
       </TitleWrapper>
-      <div></div>
+      <div>
+        <StepPreview />
+        <StepPreview />
+        <StepPreview />
+      </div>
     </div>
   );
 };
 
-export default StepThumbnailBar;
+export default StepPreviewBar;
 
 const TitleWrapper = styled.div`
   margin-bottom: 1rem;
