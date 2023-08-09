@@ -1,6 +1,8 @@
 /* eslint-disable */
 import _m0 from 'protobufjs/minimal';
 import { ErrorResult } from '../../outer/errors';
+import { ProfileMethod } from '../../outer/profile/profile_method';
+import { RuntimeInfo } from '../../outer/profile/runtime_info';
 
 export interface DcIdaRunAppParam {
   appPath: string;
@@ -25,6 +27,14 @@ export interface DcIdaIsPortListeningParam {
 
 export interface DcIdaIsPortListeningResult {
   isListening: boolean;
+}
+
+export interface DcIdaQueryProfileParam {
+  profileMethods: ProfileMethod[];
+}
+
+export interface DcIdaQueryProfileResult {
+  info: RuntimeInfo | undefined;
 }
 
 function createBaseDcIdaRunAppParam(): DcIdaRunAppParam {
@@ -332,6 +342,106 @@ export const DcIdaIsPortListeningResult = {
   fromPartial<I extends Exact<DeepPartial<DcIdaIsPortListeningResult>, I>>(object: I): DcIdaIsPortListeningResult {
     const message = createBaseDcIdaIsPortListeningResult();
     message.isListening = object.isListening ?? false;
+    return message;
+  },
+};
+
+function createBaseDcIdaQueryProfileParam(): DcIdaQueryProfileParam {
+  return { profileMethods: [] };
+}
+
+export const DcIdaQueryProfileParam = {
+  encode(message: DcIdaQueryProfileParam, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.profileMethods) {
+      ProfileMethod.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): DcIdaQueryProfileParam {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDcIdaQueryProfileParam();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.profileMethods.push(ProfileMethod.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DcIdaQueryProfileParam {
+    return {
+      profileMethods: Array.isArray(object?.profileMethods) ? object.profileMethods.map((e: any) => ProfileMethod.fromJSON(e)) : [],
+    };
+  },
+
+  toJSON(message: DcIdaQueryProfileParam): unknown {
+    const obj: any = {};
+    if (message.profileMethods) {
+      obj.profileMethods = message.profileMethods.map((e) => (e ? ProfileMethod.toJSON(e) : undefined));
+    } else {
+      obj.profileMethods = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<DcIdaQueryProfileParam>, I>>(object: I): DcIdaQueryProfileParam {
+    const message = createBaseDcIdaQueryProfileParam();
+    message.profileMethods = object.profileMethods?.map((e) => ProfileMethod.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseDcIdaQueryProfileResult(): DcIdaQueryProfileResult {
+  return { info: undefined };
+}
+
+export const DcIdaQueryProfileResult = {
+  encode(message: DcIdaQueryProfileResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.info !== undefined) {
+      RuntimeInfo.encode(message.info, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): DcIdaQueryProfileResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDcIdaQueryProfileResult();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.info = RuntimeInfo.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DcIdaQueryProfileResult {
+    return { info: isSet(object.info) ? RuntimeInfo.fromJSON(object.info) : undefined };
+  },
+
+  toJSON(message: DcIdaQueryProfileResult): unknown {
+    const obj: any = {};
+    message.info !== undefined && (obj.info = message.info ? RuntimeInfo.toJSON(message.info) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<DcIdaQueryProfileResult>, I>>(object: I): DcIdaQueryProfileResult {
+    const message = createBaseDcIdaQueryProfileResult();
+    message.info = object.info !== undefined && object.info !== null ? RuntimeInfo.fromPartial(object.info) : undefined;
     return message;
   },
 };

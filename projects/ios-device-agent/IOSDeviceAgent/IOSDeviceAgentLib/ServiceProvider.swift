@@ -77,6 +77,12 @@ actor ServiceProvider: Inner_Grpc_Services_IosDeviceAgentServiceAsyncProvider {
       return Inner_Params_DcIdaResult.with {
         $0.dcIdaIsPortListeningResult = result
       }
+    case .dcIdaQueryProfileParam(let param):
+      let result = try await queryProfile(param: param)
+      return Inner_Params_DcIdaResult.with {
+        $0.dcIdaQueryProfileResult = result
+      }
+
     case .none:
       throw GRPCStatus(code: .invalidArgument, message: "unknown param: \(request.value)")
 

@@ -1881,6 +1881,688 @@ public final class DcIda {
     }
   }
 
+  public interface DcIdaQueryProfileParamOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:inner.types.DcIdaQueryProfileParam)
+      com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+     */
+    java.util.List<com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod> 
+        getProfileMethodsList();
+    /**
+     * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+     */
+    com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod getProfileMethods(int index);
+    /**
+     * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+     */
+    int getProfileMethodsCount();
+  }
+  /**
+   * Protobuf type {@code inner.types.DcIdaQueryProfileParam}
+   */
+  public  static final class DcIdaQueryProfileParam extends
+      com.google.protobuf.GeneratedMessageLite<
+          DcIdaQueryProfileParam, DcIdaQueryProfileParam.Builder> implements
+      // @@protoc_insertion_point(message_implements:inner.types.DcIdaQueryProfileParam)
+      DcIdaQueryProfileParamOrBuilder {
+    private DcIdaQueryProfileParam() {
+      profileMethods_ = emptyProtobufList();
+    }
+    public static final int PROFILE_METHODS_FIELD_NUMBER = 1;
+    private com.google.protobuf.Internal.ProtobufList<com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod> profileMethods_;
+    /**
+     * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod> getProfileMethodsList() {
+      return profileMethods_;
+    }
+    /**
+     * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+     */
+    public java.util.List<? extends com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethodOrBuilder> 
+        getProfileMethodsOrBuilderList() {
+      return profileMethods_;
+    }
+    /**
+     * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+     */
+    @java.lang.Override
+    public int getProfileMethodsCount() {
+      return profileMethods_.size();
+    }
+    /**
+     * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod getProfileMethods(int index) {
+      return profileMethods_.get(index);
+    }
+    /**
+     * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+     */
+    public com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethodOrBuilder getProfileMethodsOrBuilder(
+        int index) {
+      return profileMethods_.get(index);
+    }
+    private void ensureProfileMethodsIsMutable() {
+      com.google.protobuf.Internal.ProtobufList<com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod> tmp = profileMethods_;
+      if (!tmp.isModifiable()) {
+        profileMethods_ =
+            com.google.protobuf.GeneratedMessageLite.mutableCopy(tmp);
+       }
+    }
+
+    /**
+     * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+     */
+    private void setProfileMethods(
+        int index, com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod value) {
+      value.getClass();
+  ensureProfileMethodsIsMutable();
+      profileMethods_.set(index, value);
+    }
+    /**
+     * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+     */
+    private void addProfileMethods(com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod value) {
+      value.getClass();
+  ensureProfileMethodsIsMutable();
+      profileMethods_.add(value);
+    }
+    /**
+     * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+     */
+    private void addProfileMethods(
+        int index, com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod value) {
+      value.getClass();
+  ensureProfileMethodsIsMutable();
+      profileMethods_.add(index, value);
+    }
+    /**
+     * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+     */
+    private void addAllProfileMethods(
+        java.lang.Iterable<? extends com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod> values) {
+      ensureProfileMethodsIsMutable();
+      com.google.protobuf.AbstractMessageLite.addAll(
+          values, profileMethods_);
+    }
+    /**
+     * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+     */
+    private void clearProfileMethods() {
+      profileMethods_ = emptyProtobufList();
+    }
+    /**
+     * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+     */
+    private void removeProfileMethods(int index) {
+      ensureProfileMethodsIsMutable();
+      profileMethods_.remove(index);
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code inner.types.DcIdaQueryProfileParam}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam, Builder> implements
+        // @@protoc_insertion_point(builder_implements:inner.types.DcIdaQueryProfileParam)
+        com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParamOrBuilder {
+      // Construct using com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      /**
+       * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+       */
+      @java.lang.Override
+      public java.util.List<com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod> getProfileMethodsList() {
+        return java.util.Collections.unmodifiableList(
+            instance.getProfileMethodsList());
+      }
+      /**
+       * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+       */
+      @java.lang.Override
+      public int getProfileMethodsCount() {
+        return instance.getProfileMethodsCount();
+      }/**
+       * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod getProfileMethods(int index) {
+        return instance.getProfileMethods(index);
+      }
+      /**
+       * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+       */
+      public Builder setProfileMethods(
+          int index, com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod value) {
+        copyOnWrite();
+        instance.setProfileMethods(index, value);
+        return this;
+      }
+      /**
+       * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+       */
+      public Builder setProfileMethods(
+          int index, com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod.Builder builderForValue) {
+        copyOnWrite();
+        instance.setProfileMethods(index,
+            builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+       */
+      public Builder addProfileMethods(com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod value) {
+        copyOnWrite();
+        instance.addProfileMethods(value);
+        return this;
+      }
+      /**
+       * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+       */
+      public Builder addProfileMethods(
+          int index, com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod value) {
+        copyOnWrite();
+        instance.addProfileMethods(index, value);
+        return this;
+      }
+      /**
+       * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+       */
+      public Builder addProfileMethods(
+          com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod.Builder builderForValue) {
+        copyOnWrite();
+        instance.addProfileMethods(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+       */
+      public Builder addProfileMethods(
+          int index, com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod.Builder builderForValue) {
+        copyOnWrite();
+        instance.addProfileMethods(index,
+            builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+       */
+      public Builder addAllProfileMethods(
+          java.lang.Iterable<? extends com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod> values) {
+        copyOnWrite();
+        instance.addAllProfileMethods(values);
+        return this;
+      }
+      /**
+       * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+       */
+      public Builder clearProfileMethods() {
+        copyOnWrite();
+        instance.clearProfileMethods();
+        return this;
+      }
+      /**
+       * <code>repeated .outer.profile.ProfileMethod profile_methods = 1;</code>
+       */
+      public Builder removeProfileMethods(int index) {
+        copyOnWrite();
+        instance.removeProfileMethods(index);
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:inner.types.DcIdaQueryProfileParam)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "profileMethods_",
+              com.dogu.protocol.generated.outer.profile.ProfileMethodOuterClass.ProfileMethod.class,
+            };
+            java.lang.String info =
+                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0001\u0000\u0001\u001b";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam> parser = PARSER;
+          if (parser == null) {
+            synchronized (com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:inner.types.DcIdaQueryProfileParam)
+    private static final com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam DEFAULT_INSTANCE;
+    static {
+      DcIdaQueryProfileParam defaultInstance = new DcIdaQueryProfileParam();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        DcIdaQueryProfileParam.class, defaultInstance);
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<DcIdaQueryProfileParam> PARSER;
+
+    public static com.google.protobuf.Parser<DcIdaQueryProfileParam> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
+  public interface DcIdaQueryProfileResultOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:inner.types.DcIdaQueryProfileResult)
+      com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>.outer.profile.RuntimeInfo info = 1;</code>
+     * @return Whether the info field is set.
+     */
+    boolean hasInfo();
+    /**
+     * <code>.outer.profile.RuntimeInfo info = 1;</code>
+     * @return The info.
+     */
+    com.dogu.protocol.generated.outer.profile.RuntimeInfoOuterClass.RuntimeInfo getInfo();
+  }
+  /**
+   * Protobuf type {@code inner.types.DcIdaQueryProfileResult}
+   */
+  public  static final class DcIdaQueryProfileResult extends
+      com.google.protobuf.GeneratedMessageLite<
+          DcIdaQueryProfileResult, DcIdaQueryProfileResult.Builder> implements
+      // @@protoc_insertion_point(message_implements:inner.types.DcIdaQueryProfileResult)
+      DcIdaQueryProfileResultOrBuilder {
+    private DcIdaQueryProfileResult() {
+    }
+    public static final int INFO_FIELD_NUMBER = 1;
+    private com.dogu.protocol.generated.outer.profile.RuntimeInfoOuterClass.RuntimeInfo info_;
+    /**
+     * <code>.outer.profile.RuntimeInfo info = 1;</code>
+     */
+    @java.lang.Override
+    public boolean hasInfo() {
+      return info_ != null;
+    }
+    /**
+     * <code>.outer.profile.RuntimeInfo info = 1;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.outer.profile.RuntimeInfoOuterClass.RuntimeInfo getInfo() {
+      return info_ == null ? com.dogu.protocol.generated.outer.profile.RuntimeInfoOuterClass.RuntimeInfo.getDefaultInstance() : info_;
+    }
+    /**
+     * <code>.outer.profile.RuntimeInfo info = 1;</code>
+     */
+    private void setInfo(com.dogu.protocol.generated.outer.profile.RuntimeInfoOuterClass.RuntimeInfo value) {
+      value.getClass();
+  info_ = value;
+      
+      }
+    /**
+     * <code>.outer.profile.RuntimeInfo info = 1;</code>
+     */
+    @java.lang.SuppressWarnings({"ReferenceEquality"})
+    private void mergeInfo(com.dogu.protocol.generated.outer.profile.RuntimeInfoOuterClass.RuntimeInfo value) {
+      value.getClass();
+  if (info_ != null &&
+          info_ != com.dogu.protocol.generated.outer.profile.RuntimeInfoOuterClass.RuntimeInfo.getDefaultInstance()) {
+        info_ =
+          com.dogu.protocol.generated.outer.profile.RuntimeInfoOuterClass.RuntimeInfo.newBuilder(info_).mergeFrom(value).buildPartial();
+      } else {
+        info_ = value;
+      }
+      
+    }
+    /**
+     * <code>.outer.profile.RuntimeInfo info = 1;</code>
+     */
+    private void clearInfo() {  info_ = null;
+      
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code inner.types.DcIdaQueryProfileResult}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult, Builder> implements
+        // @@protoc_insertion_point(builder_implements:inner.types.DcIdaQueryProfileResult)
+        com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResultOrBuilder {
+      // Construct using com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      /**
+       * <code>.outer.profile.RuntimeInfo info = 1;</code>
+       */
+      @java.lang.Override
+      public boolean hasInfo() {
+        return instance.hasInfo();
+      }
+      /**
+       * <code>.outer.profile.RuntimeInfo info = 1;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.outer.profile.RuntimeInfoOuterClass.RuntimeInfo getInfo() {
+        return instance.getInfo();
+      }
+      /**
+       * <code>.outer.profile.RuntimeInfo info = 1;</code>
+       */
+      public Builder setInfo(com.dogu.protocol.generated.outer.profile.RuntimeInfoOuterClass.RuntimeInfo value) {
+        copyOnWrite();
+        instance.setInfo(value);
+        return this;
+        }
+      /**
+       * <code>.outer.profile.RuntimeInfo info = 1;</code>
+       */
+      public Builder setInfo(
+          com.dogu.protocol.generated.outer.profile.RuntimeInfoOuterClass.RuntimeInfo.Builder builderForValue) {
+        copyOnWrite();
+        instance.setInfo(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.outer.profile.RuntimeInfo info = 1;</code>
+       */
+      public Builder mergeInfo(com.dogu.protocol.generated.outer.profile.RuntimeInfoOuterClass.RuntimeInfo value) {
+        copyOnWrite();
+        instance.mergeInfo(value);
+        return this;
+      }
+      /**
+       * <code>.outer.profile.RuntimeInfo info = 1;</code>
+       */
+      public Builder clearInfo() {  copyOnWrite();
+        instance.clearInfo();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:inner.types.DcIdaQueryProfileResult)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "info_",
+            };
+            java.lang.String info =
+                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\t";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult> parser = PARSER;
+          if (parser == null) {
+            synchronized (com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:inner.types.DcIdaQueryProfileResult)
+    private static final com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult DEFAULT_INSTANCE;
+    static {
+      DcIdaQueryProfileResult defaultInstance = new DcIdaQueryProfileResult();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        DcIdaQueryProfileResult.class, defaultInstance);
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<DcIdaQueryProfileResult> PARSER;
+
+    public static com.google.protobuf.Parser<DcIdaQueryProfileResult> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
 
   static {
   }
