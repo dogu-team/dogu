@@ -13,8 +13,8 @@ import {
 import { HitPoint, ScreenSize } from '@dogu-tech/device-client-common';
 import { throttle } from 'lodash';
 import React, { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { InspectorWorkerMessage, InspectorWorkerResponse } from '../../types/inspector';
 
+import { InspectorWorkerMessage, InspectorWorkerResponse } from '../../types/inspector';
 import { BrowserDeviceInspector } from '../../utils/streaming/browser-device-inspector';
 
 const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, device: DeviceBase | null, videoRef: RefObject<HTMLVideoElement> | null) => {

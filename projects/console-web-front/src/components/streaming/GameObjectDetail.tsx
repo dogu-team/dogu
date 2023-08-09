@@ -1,13 +1,13 @@
+import { GamiumNodeAttributes, ParsedNode } from '@dogu-private/console';
 import { HitPoint } from '@dogu-tech/device-client-common';
 import useTranslation from 'next-translate/useTranslation';
 import styled from 'styled-components';
 
 import { flexRowBaseStyle } from '../../styles/box';
-import { GamiumNodeAttributes, InspectNode } from '../../types/inspector';
 import InspectObjectAttribute from './InspectObjectAttribute';
 
 interface Props {
-  node: InspectNode<GamiumNodeAttributes> | undefined;
+  node: ParsedNode<GamiumNodeAttributes> | undefined;
   hitPoint: HitPoint | undefined;
 }
 
