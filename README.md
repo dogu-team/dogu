@@ -44,8 +44,6 @@ Build a systematic test automation infrastructure using Windows, MacOS, Android,
 
 ## Device Farm
 
-Build device farm with your own devices
-
 <img src=".github/resources/device_farm_dashboard.png" width="75%" />
 
 ### Control and inspect UI remotely
@@ -56,6 +54,8 @@ Build device farm with your own devices
   <img src=".github/resources/gamium-inspecting.gif" width="32%"/>
 </div>
 
+Build device farm with your own devices and control them in web-page
+
 ## Test Automation
 
 Use a variety of test automation frameworks to easily run tests on the device.
@@ -65,6 +65,7 @@ Use a variety of test automation frameworks to easily run tests on the device.
 - [Appium](https://docs.dogutech.io/get-started/tutorials/appium/)
 - [Selenium](https://docs.dogutech.io/get-started/tutorials/selenium/)
 - [Webdriverio](https://docs.dogutech.io/get-started/tutorials/webdriverio/)
+- [Gamium](https://docs.dogutech.io/get-started/tutorials/gamium/)
 
 ## Test Report
 
@@ -79,26 +80,26 @@ Visualize test unit by integrating test unit framework with test report.
 
 ## Test Routine
 
-Create routines to run the tests in parallel.
-
 <img src=".github/resources/workflow-inside.png"/>
 
 ### Available CI/CD with Routine
 
-- Jenkins (Not yet supported)
-- Github Action (Not yet supported)
+- [Github Action](https://docs.dogutech.io/integration/cicd/github)
+- [Jenkins](https://docs.dogutech.io/integration/cicd/jenkins)
+
+Create routines to run the tests in parallel.
 
 ## Why Dogu?
 
 Building and maintaining infrastructure components such as Appium, OpenSTF, Jenkins, and Grafana for test automation requires significant time and effort. However, Dogu streamlines this process by providing an integrated platform for these infrastructures, allowing you to concentrate on test automation itself. Moreover, Dogu offers seamless integration with test scripts and frameworks, eliminating the need to develop infrastructure-related tasks such as parallel test execution and data transfer for test reporting.
 
-## Start With Self-Hosted
-
-Set up Dogu on your own server. See [Guide setting up Dogu with self-hosted](https://docs.dogutech.io/get-started/installation/self-hosted/installation)
-
 ## Start With Cloud
 
-Start [Cloud Service](https://dogutech.io) right now without any installation.
+Start [cloud service](https://dogutech.io) right now without any installation.
+
+## Start With Self-Hosted
+
+Set up Dogu on your own server. See [guide setting up Dogu with self-hosted](https://docs.dogutech.io/get-started/installation/self-hosted/installation)
 
 ## Documentation
 
@@ -111,14 +112,11 @@ Join our [Slack Community](https://join.slack.com/t/dogu-community/shared_invite
 
 ## Contributing
 
-Do you want to contribute to Dogu? We'd love your help. Dogu is an open source project, built one contribution at a time by users like you.
-See [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+Do you want to contribute to Dogu? We'd love your help. Dogu is an open source project, built one contribution at a time by users like you. Read [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 ## License
 
-We provide two editions of Dogu: Community Edition and Enterprise Edition.
-
-See [LICENSE](LICENSE.md) for more details.
+We provide two editions, community edition and enterprise edition. See [LICENSE](LICENSE.md) for more details.
 
 ## Contact
 

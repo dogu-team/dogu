@@ -32,7 +32,7 @@ export class HostGuard implements CanActivate {
 
     const req = ctx.switchToHttp().getRequest<Request>();
 
-    const payload = await this.authHostService.validateHost(ctx, controllerRoleType);
+    const payload = await this.authHostService.validateHostWithCtx(ctx, controllerRoleType);
     if (!payload) {
       return false;
     }
