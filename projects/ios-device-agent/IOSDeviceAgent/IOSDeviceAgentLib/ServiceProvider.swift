@@ -129,7 +129,7 @@ actor ServiceProvider: Inner_Grpc_Services_IosDeviceAgentServiceAsyncProvider {
   }
   
   func isPortListening(param: Inner_Types_DcIdaIsPortListeningParam) async throws -> Inner_Types_DcIdaIsPortListeningResult{
-    let isOpen = isTCPPortOpen(host: "127.0.0.1", port: Int(param.port))
+    let isOpen = await isTCPPortOpen(host: "127.0.0.1", port: UInt16(param.port))
     return Inner_Types_DcIdaIsPortListeningResult.with {
       $0.isListening = isOpen
     }

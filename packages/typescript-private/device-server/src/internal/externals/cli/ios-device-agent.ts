@@ -1,5 +1,5 @@
 import { Platform, Serial } from '@dogu-private/types';
-import { delay, loop, Printable, stringifyError } from '@dogu-tech/common';
+import { delay, loopTime, Milisecond, Printable, stringifyError } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import { Socket } from 'net';
 import { config } from '../../config';
@@ -114,7 +114,8 @@ export class IosDeviceAgentProcess {
 class ZombieXCTest implements Zombieable {
   private xctestrun: XCTestRunContext | null = null;
   public readonly zombieWaiter: ZombieWaiter;
-  public dieTime?: Date;
+  private error: 'not-alive' | 'connect-failed' | 'hello-failed' | 'none' = 'none';
+
   constructor(
     public readonly serial: Serial,
     private readonly xctestrunfile: XctestrunFile,
@@ -133,7 +134,7 @@ class ZombieXCTest implements Zombieable {
     return Platform.PLATFORM_IOS;
   }
   get props(): ZombieProps {
-    return { webDriverPort: this.webDriverPort, grpcPort: this.grpcPort };
+    return { webDriverPort: this.webDriverPort, grpcPort: this.grpcPort, elapsed: this.xctestrun ? Date.now() - this.xctestrun?.startTime : 0, error: this.error };
   }
   get printable(): Printable {
     return this.logger;
@@ -157,13 +158,13 @@ class ZombieXCTest implements Zombieable {
     await XcodeBuild.killPreviousXcodebuild(this.serial, this.printable).catch(() => {
       this.logger.warn?.('killPreviousXcodebuild failed');
     });
-    this.xctestrun = XcodeBuild.testWithoutBuilding(xctestrunPath, this.serial, this.printable);
+    this.xctestrun = XcodeBuild.testWithoutBuilding(xctestrunPath, this.serial, { waitForLog: { str: 'ServerURLHere', timeout: Milisecond.t1Minute } }, this.printable);
     this.xctestrun.proc.on('close', () => {
       this.xctestrun = null;
       ZombieServiceInstance.notifyDie(this);
     });
 
-    for await (const _ of loop(5000, 100)) {
+    for await (const _ of loopTime(Milisecond.t5Seconds, Milisecond.t2Minutes)) {
       if (await this.isHealth()) {
         break;
       }
@@ -177,10 +178,6 @@ class ZombieXCTest implements Zombieable {
     if (config.externalIosDeviceAgent.use) {
       return;
     }
-    if (!this.xctestrun?.isAlive) {
-      ZombieServiceInstance.notifyDie(this);
-      return;
-    }
     if (!(await this.isHealth())) {
       ZombieServiceInstance.notifyDie(this);
       return;
@@ -189,30 +186,33 @@ class ZombieXCTest implements Zombieable {
   }
 
   onDie(): void {
-    this.dieTime = new Date();
     this.logger.debug?.(`ZombieXCTest.onDie`);
     this.xctestrun?.kill();
   }
 
   private async isHealth(): Promise<boolean> {
+    if (!this.xctestrun?.isAlive) {
+      this.error = 'not-alive';
+      return false;
+    }
+    this.xctestrun.update();
     const socketOrError = await this.connectSocket().catch((e: Error) => {
       return e;
     });
     if (socketOrError instanceof Error) {
-      this.logger.debug?.(`ZombieXCTest. connect failed. error:${stringifyError(socketOrError)}`);
+      this.error = 'connect-failed';
       return false;
     }
-    this.logger.debug?.(`ZombieXCTest.connect done`);
 
     const sendErr = await this.sendHello(socketOrError).catch((e: Error) => {
       return e;
     });
     if (sendErr instanceof Error) {
-      this.logger.debug?.(`ZombieXCTest. hello failed. error:${stringifyError(sendErr)}`);
+      this.error = 'hello-failed';
       socketOrError.resetAndDestroy();
       return false;
     }
-    this.logger.debug?.(`ZombieXCTest. hello success. `);
+    this.error = 'none';
     socketOrError.resetAndDestroy();
     return true;
   }

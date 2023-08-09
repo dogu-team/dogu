@@ -162,7 +162,7 @@ func (s *SurfaceConnector) startRoutine() error {
 
 			if err != nil {
 				s.notifySurfaceClose()
-				err = s.notifySurfaceReconnect(s.serial, 9999, 1)
+				err = s.notifySurfaceReconnect(s.serial, 9999, 3)
 				if err != nil {
 					log.Inst.Error("surfaceConnector.startRoutine reconnect error", zap.Error(err))
 				}
@@ -196,7 +196,7 @@ func (s *SurfaceConnector) notifySurfaceReconnect(serial string, retryCount int,
 	log.Inst.Info("surfaceConnector.notifySurfaceReconnect", zap.String("serial", s.serial))
 	err := s.surface.Reconnect(serial, retryCount, sleepSec, s.option)
 	if err != nil {
-		time.Sleep(time.Second * 1)
+		time.Sleep(time.Second * time.Duration(sleepSec))
 		return err
 	}
 
