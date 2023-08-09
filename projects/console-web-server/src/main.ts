@@ -3,7 +3,6 @@ import 'reflect-metadata';
 import { stringify } from '@dogu-tech/common';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
-import { WsAdapter } from '@nestjs/platform-ws';
 import * as Sentry from '@sentry/node';
 import { json } from 'body-parser';
 import cookieParser from 'cookie-parser';
@@ -14,6 +13,7 @@ import { AppModule } from './module/app/app.module';
 import { setupSwagger } from './module/common/swagger/swagger';
 import { logger } from './module/logger/logger.instance';
 import { isSentryEnabled, SentryBreadCrumbTrasponrt } from './utils/sentry';
+import { PatternRoutableWsAdapter } from './ws/common/pattern-routable-ws-adaptor';
 
 process.on('unhandledRejection', (reason, promise) => {
   logger.error('Unhandled Rejection at:', { promise: stringify(promise), reason: stringify(reason) });
@@ -55,8 +55,7 @@ async function bootstrap(): Promise<void> {
     .useGlobalFilters(new AllExceptionsFilter(httpAdapterHost))
     .useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
     .useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
-    // .useWebSocketAdapter(new CustomWsAdapter(app))
-    .useWebSocketAdapter(new WsAdapter(app))
+    .useWebSocketAdapter(new PatternRoutableWsAdapter(app, logger))
     .enableCors({
       origin: true,
       preflightContinue: false,

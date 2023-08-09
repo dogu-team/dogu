@@ -1,7 +1,8 @@
-import { OnGatewayConnection, WebSocketGateway } from '@nestjs/websockets';
+import { OnGatewayConnection } from '@nestjs/websockets';
 import { IncomingMessage } from 'http';
+import { PatternRoutableWebSocketGateway } from '../common/pattern-routable-ws-adaptor';
 
-@WebSocketGateway({ path: '/session' })
+@PatternRoutableWebSocketGateway('/session/:sessionId/se/cdp')
 export class RemoteWebDriverBiDiCdpGateway implements OnGatewayConnection {
   async handleConnection(webSocket: WebSocket, incomingMessage: IncomingMessage): Promise<void> {
     console.log('RemoteWebDriverBiDiCdpGateway.handleConnection');
