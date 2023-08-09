@@ -1,5 +1,5 @@
 import { RecordTestStepBase, RecordTestStepPropSnake } from '@dogu-private/console';
-import { ProjectId, RecordTestStepId, RECORD_TEST_STEP_TABLE_NAME, TEST_STEP_TYPE } from '@dogu-private/types';
+import { ProjectId, RecordTestStepId, RECORD_TEST_STEP_TABLE_NAME } from '@dogu-private/types';
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { Project } from './project.entity';
@@ -15,9 +15,6 @@ export class RecordTestStep extends BaseEntity implements RecordTestStepBase {
   @Column({ type: 'character varying', name: RecordTestStepPropSnake.name, nullable: false })
   name!: string;
 
-  @Column({ type: 'smallint', name: RecordTestStepPropSnake.type, default: TEST_STEP_TYPE.UNSPECIFIED, nullable: false })
-  type!: TEST_STEP_TYPE;
-
   @ColumnTemplate.CreateDate(RecordTestStepPropSnake.created_at)
   createdAt!: Date;
 
@@ -27,7 +24,7 @@ export class RecordTestStep extends BaseEntity implements RecordTestStepBase {
   @ColumnTemplate.DeleteDate(RecordTestStepPropSnake.deleted_at)
   deletedAt!: Date | null;
 
-  @ManyToOne(() => Project, (project) => project, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
+  @ManyToOne(() => Project, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
   @JoinColumn({ name: RecordTestStepPropSnake.project_id })
   project?: Project;
 }

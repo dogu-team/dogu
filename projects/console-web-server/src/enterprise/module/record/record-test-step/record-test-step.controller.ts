@@ -57,4 +57,10 @@ export class RecordTestStepController {
   ): Promise<void> {
     await this.recordTestStepService.deleteRecordTestStep(projectId, recordTestStepId);
   }
+
+  //FIXME:(felix) test code
+  @Get(':test/test')
+  async test() {
+    await this.recordTestStepService.screenshotRecordTestStep_Test();
+  }
 }

@@ -1,7 +1,7 @@
 import { IsFilledString, transformAndValidate } from '@dogu-tech/common';
-import { RelayResponse, WebDriverEndPoint } from '@dogu-tech/device-client-common';
+import { RelayResponse, WebDriverCapabilities, WebDriverEndPoint } from '@dogu-tech/device-client-common';
 import { Type } from 'class-transformer';
-import { IsNumber, IsOptional, ValidateNested } from 'class-validator';
+import { IsNumber, IsObject, IsOptional, ValidateNested } from 'class-validator';
 import { RemoteWebDriverBatchRequestExecutor } from './remote-webdriver.batch-request-executor';
 import { NullValueResponse, RemoteWebDriverBatchRequestItem } from './remote-webdriver.batch-request-item';
 
@@ -33,6 +33,69 @@ export class W3CTakeScreenshotRemoteWebDriverBatchRequestItem extends RemoteWebD
     }
     const validated = await transformAndValidate(TakeScreenshotResponse, relayResponse.resBody);
     return Buffer.from(validated.value, 'base64');
+  }
+}
+
+class NewSessionResponseValue {
+  @IsObject()
+  capabilities!: WebDriverCapabilities;
+
+  @IsFilledString()
+  sessionId!: string;
+}
+
+class NewSessionResponse {
+  @ValidateNested()
+  @Type(() => NewSessionResponseValue)
+  value!: NewSessionResponseValue;
+}
+
+/**
+ * @see https://w3c.github.io/webdriver/#new-session
+ */
+export class NewSessionRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<string> {
+  constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly capabilities: WebDriverCapabilities) {
+    super(executor);
+  }
+
+  async onEndPointFactory(): Promise<WebDriverEndPoint> {
+    return new WebDriverEndPoint({
+      type: 'new-session',
+      method: 'POST',
+      capabilities: this.capabilities,
+    });
+  }
+
+  async onResponseCalled(relayResponse: RelayResponse): Promise<string> {
+    if (relayResponse.status !== 200) {
+      throw new Error(`Failed to new session. status: ${relayResponse.status}`);
+    }
+    const validated = await transformAndValidate(NewSessionResponse, relayResponse.resBody);
+    return validated.value.sessionId;
+  }
+}
+
+/**
+ * @see https://w3c.github.io/webdriver/#delete-session
+ */
+export class DeleteSessionRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<void> {
+  constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly sessionId: string) {
+    super(executor);
+  }
+
+  async onEndPointFactory(): Promise<WebDriverEndPoint> {
+    return new WebDriverEndPoint({
+      type: 'delete-session',
+      method: 'DELETE',
+      sessionId: this.sessionId,
+    });
+  }
+
+  async onResponseCalled(relayResponse: RelayResponse): Promise<void> {
+    if (relayResponse.status !== 200) {
+      throw new Error(`Failed to delete session. status: ${relayResponse.status}`);
+    }
+    await transformAndValidate(NullValueResponse, relayResponse.resBody);
   }
 }
 
