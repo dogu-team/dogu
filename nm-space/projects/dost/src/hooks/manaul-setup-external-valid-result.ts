@@ -7,9 +7,10 @@ export type ManaulSetupExteranlValidResult = {
   key: ExternalKey;
   name: string;
   isValid: boolean;
+  error: Error | null;
 };
 
-const useManualSetupExternalValidResult = (filterKeys: string[] = []) => {
+const useManualSetupExternalValidResult = (filterKeys: readonly string[] = []) => {
   const [infos, setInfos] = useState<ManaulSetupExteranlValidResult[]>();
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -25,10 +26,10 @@ const useManualSetupExternalValidResult = (filterKeys: string[] = []) => {
         }
         const isManualInstallNeeded = await ipc.externalClient.isManualInstallNeeded(key);
         const name = await ipc.externalClient.getName(key);
-        const isValid = await ipc.externalClient.isValid(key);
+        const result = await ipc.externalClient.isValid(key);
 
         if (isManualInstallNeeded) {
-          neededKeys.push({ key, name, isValid });
+          neededKeys.push({ key, name, isValid: result.valid, error: result.error });
         }
       }
 

@@ -47,7 +47,7 @@ export default function Doctor() {
         </Text>
         <List spacing={2} width="100%">
           {results?.map((result) => (
-            <ManualExternalToolValidCheckerItem key={result.key} isValid={result.isValid} externalKey={result.key} name={result.name} />
+            <ManualExternalToolValidCheckerItem key={result.key} isValid={result.isValid} error={result.error} externalKey={result.key} name={result.name} />
           ))}
         </List>
       </StyledContent>

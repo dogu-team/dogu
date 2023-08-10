@@ -1,10 +1,10 @@
 import { CheckCircleIcon, QuestionIcon, QuestionOutlineIcon } from '@chakra-ui/icons';
-import { Button, Flex, Icon, Text, Tooltip, useToast } from '@chakra-ui/react';
+import { Button, Flex, Icon, Popover, PopoverArrow, PopoverBody, PopoverContent, Text, Tooltip, useToast } from '@chakra-ui/react';
 import { stringify } from '@dogu-tech/common';
 import { useState, createContext } from 'react';
 import styled from 'styled-components';
 
-import { ExternalKey } from '../../shares/external';
+import { ExternalKey, ExternalValidationResult } from '../../shares/external';
 import { ipc } from '../../utils/window';
 import BorderBox from '../layouts/BorderBox';
 import { manualExternalToolDetail } from './ManualExternalToolDetail';
@@ -13,7 +13,8 @@ interface Props {
   externalKey: ExternalKey;
   name: string;
   isValid: boolean;
-  onValidateEnd?: (isValid: boolean) => Promise<void> | void;
+  error: Error | null;
+  onValidateEnd?: (result: ExternalValidationResult) => Promise<void> | void;
 }
 
 export const ValidContext = createContext<{
@@ -21,8 +22,8 @@ export const ValidContext = createContext<{
   validate: (hideToast?: boolean) => Promise<void>;
 }>({ isValid: false, validate: async () => {} });
 
-const ManualExternalToolValidCheckerItem = ({ externalKey, name, isValid, onValidateEnd }: Props) => {
-  const [valid, setValid] = useState<boolean>(isValid);
+const ManualExternalToolValidCheckerItem = ({ externalKey, name, isValid, error, onValidateEnd }: Props) => {
+  const [validResult, setValidResult] = useState<ExternalValidationResult>({ valid: isValid, error: error });
   const [loading, setLoading] = useState(false);
   const toast = useToast();
 
@@ -39,8 +40,8 @@ const ManualExternalToolValidCheckerItem = ({ externalKey, name, isValid, onVali
           status: 'error',
         });
       }
-      setValid(result.valid);
-      onValidateEnd?.(isValid);
+      setValidResult(result);
+      onValidateEnd?.(result);
     } catch (e) {
       ipc.rendererLogger.error(`Failed to validate ${externalKey}: ${stringify(e)}`);
     }
@@ -52,7 +53,7 @@ const ManualExternalToolValidCheckerItem = ({ externalKey, name, isValid, onVali
   return (
     <ValidContext.Provider
       value={{
-        isValid: valid,
+        isValid: validResult.valid,
         validate: handleValidate,
       }}
     >
@@ -77,11 +78,15 @@ const ManualExternalToolValidCheckerItem = ({ externalKey, name, isValid, onVali
                 </Tooltip>
               )}
             </Flex>
-            {valid ? <Icon as={CheckCircleIcon} color="green.500" /> : <Icon as={QuestionIcon} color="red.500" />}
+            {validResult.valid ? (
+              <Icon as={CheckCircleIcon} color="green.500" />
+            ) : (
+              <ConditionalToolTip message={validResult.error?.message ?? ''} children={<Icon as={QuestionIcon} color="red.500" />} />
+            )}
           </Flex>
           <div>
             <div>{manualExternalToolDetail[externalKey]?.description}</div>
-            {!valid && <div>{manualExternalToolDetail[externalKey]?.solution}</div>}
+            {!validResult.valid && <div>{manualExternalToolDetail[externalKey]?.solution}</div>}
           </div>
         </BorderBox>
       </div>
@@ -95,3 +100,14 @@ const StyledButton = styled.button`
   margin-left: 0.5rem;
   padding: 0.1rem;
 `;
+
+const ConditionalToolTip = ({ children, message, ...props }: { children: React.ReactNode; message: string }) => {
+  if (0 == message.length) {
+    return <>{children}</>;
+  }
+  return (
+    <Tooltip label={message} fontSize="xs" width="500px" placement="left" closeOnClick={true}>
+      {children}
+    </Tooltip>
+  );
+};

@@ -112,9 +112,31 @@ export async function findEndswith(currentDir: string, ends: string): Promise<st
       if (file.name.endsWith(ends)) {
         outPaths.push(path.posix.join(currentDir, file.name));
       }
-    } else {
-      throw new Error(`path is not directory or file. path: ${file.name}`);
     }
   }
   return outPaths;
+}
+
+export async function checkDirectoryEqual(srcDirPath: string, destDirPath: string, ext: string): Promise<{ isEqual: boolean; reason: string }> {
+  const srcFiles = await findEndswith(srcDirPath, ext);
+  const destFiles = await findEndswith(destDirPath, ext);
+  if (srcFiles.length !== destFiles.length) {
+    return { isEqual: false, reason: `file count is different src:${srcFiles.length}, dest:${destFiles.length}` };
+  }
+  for (const srcFile of srcFiles) {
+    const destFile = srcFile.replace(srcDirPath, destDirPath);
+    if (!destFiles.includes(destFile)) {
+      return { isEqual: false, reason: `file not found in dest. src:${srcFile}, dest:${destFile}` };
+    }
+    const srcFileContents = await fs.promises.readFile(srcFile, { encoding: 'utf-8' });
+    const destFileContens = await fs.promises.readFile(destFile, { encoding: 'utf-8' });
+    if (srcFileContents.length !== destFileContens.length) {
+      return { isEqual: false, reason: `file size is different. src:${srcFileContents.length}, dest:${destFileContens.length}` };
+    }
+    if (srcFileContents !== destFileContens) {
+      return { isEqual: false, reason: `file contents is different. file: ${destFile}` };
+    }
+  }
+
+  return { isEqual: true, reason: '' };
 }

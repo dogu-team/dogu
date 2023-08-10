@@ -40,6 +40,7 @@ export const ExternalKey = [
   GeckoDriver,
 ] as const;
 export type ExternalKey = (typeof ExternalKey)[number];
+export const IosSettingsExternalKey = [Xcode, WebDriverAgentBuild, IosDeviceAgentBuild] as const;
 
 export interface ExternalValidationResult {
   valid: boolean;
@@ -66,7 +67,7 @@ export interface IExternalClient {
   uninstall(key: ExternalKey): Promise<void>;
   cancelInstall(key: ExternalKey): Promise<void>;
   validate(key: ExternalKey): Promise<ExternalValidationResult>;
-  isValid(key: ExternalKey): Promise<boolean>;
+  isValid(key: ExternalKey): Promise<ExternalValidationResult>;
   isSupportedPlatformValidationCompleted(): Promise<boolean>;
   isSupportedPlatformValid(option: ValidationCheckOption): Promise<boolean>;
   getSupportedPlatformKeys(): Promise<ExternalKey[]>;
