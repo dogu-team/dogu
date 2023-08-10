@@ -1,7 +1,76 @@
-import { IosNodeAttributes } from 'src/types/inspector';
-import { DeviceRotationDirection, GetDeviceRotationFunc, GetDeviceScreenSizeFunc, GetInspectingAreaFunc, GetNodeBoundFunc, InspectorModule } from '.';
+import { plainToInstance } from 'class-transformer';
 
-class IosInspectorModule extends InspectorModule<IosNodeAttributes> {
+import {
+  ConvertElementToNodeFunc,
+  DeviceRotationDirection,
+  GetDeviceRotationFunc,
+  GetDeviceScreenSizeFunc,
+  GetInspectingAreaFunc,
+  GetNodeBoundFunc,
+  IosNode,
+  IosNodeAttributeFields,
+  IosNodeAttributes,
+  NodeUtilizer,
+  PageSourceParser,
+  ParseToNodeFunc,
+} from './types';
+
+export class IosPageSourceParser extends PageSourceParser<IosNodeAttributes> {
+  public convertElementToNode: ConvertElementToNodeFunc<IosNodeAttributes> = (element, parentNode, index) => {
+    const json: IosNode = {
+      tag: element.nodeName,
+      key: '',
+      title: '',
+      attributes: {
+        index: index ?? 1,
+      },
+    };
+
+    const rawAttributes: { [key in IosNodeAttributeFields]?: IosNodeAttributes[key] } = {};
+
+    // Convert element attributes to JSON properties
+    for (let i = 0; i < element.attributes.length; i++) {
+      const attr = element.attributes[i];
+      const attrName = attr.name as keyof IosNodeAttributes;
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      rawAttributes[attrName] = attr.value;
+    }
+
+    json.attributes = plainToInstance(IosNodeAttributes, rawAttributes);
+
+    const path = this.getXpath(element, parentNode?.key || '/', index);
+    json.key = path;
+    json.attributes.path = path;
+    json.title = `${element.tagName}` || 'No title';
+
+    const childIndexes = this.getChildIndexes(element);
+
+    // Convert child elements recursively
+    if (element.childNodes.length > 0) {
+      json.children = [];
+      for (let i = 0; i < element.childNodes.length; i++) {
+        const child = element.childNodes[i];
+
+        // Ignore empty text nodes
+        if (child.nodeValue) {
+          continue;
+        }
+
+        json.children.push(this.convertElementToNode(child as HTMLElement, json, childIndexes[i]));
+      }
+    }
+
+    return json;
+  };
+
+  public parseToNode: ParseToNodeFunc<IosNodeAttributes> = () => {
+    const result = this.convertElementToNode(this.rootElement);
+    return result;
+  };
+}
+
+export class IosNodeUtilizer extends NodeUtilizer<IosNodeAttributes> {
   public getNodeBound: GetNodeBoundFunc<IosNodeAttributes> = (node) => {
     const { x, y, width, height } = node.attributes;
 
@@ -77,5 +146,3 @@ class IosInspectorModule extends InspectorModule<IosNodeAttributes> {
     return this.contextAndNode.screenSize;
   };
 }
-
-export default IosInspectorModule;

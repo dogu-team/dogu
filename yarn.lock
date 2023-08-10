@@ -4882,9 +4882,11 @@ __metadata:
     "@dogu-private/types": "workspace:^"
     "@dogu-tech/common": "workspace:^"
     "@dogu-tech/console-gamium": "workspace:^"
+    "@dogu-tech/device-client-common": "workspace:^"
     "@types/js-yaml": 4.0.5
     "@types/lodash": 4.14.186
     "@types/node": 18.15.11
+    "@types/xmldom": 0
     class-transformer: 0.5.1
     class-validator: 0.14.0
     js-yaml: 4.1.0
@@ -4893,6 +4895,7 @@ __metadata:
     shx: 0.3.4
     ts-node: 10.9.1
     typescript: 4.7.4
+    xmldom: 0.6.0
   languageName: unknown
   linkType: soft
 

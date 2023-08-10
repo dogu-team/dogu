@@ -4,16 +4,16 @@ import { Key, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Trans from 'next-translate/Trans';
 import Link from 'next/link';
+import { NodeAttributes, NodeWithPosition } from '@dogu-private/console';
 
 import { flexRowCenteredStyle } from '../../styles/box';
-import { InspectNodeAttributes, InspectNodeWithPosition } from '../../types/inspector';
 import InspectorTreeTitle from './InspectorTreeTitle';
 
 interface Props {
   isInspecting: boolean;
   treeData: DataNode[];
-  inspectingNode: InspectNodeWithPosition<InspectNodeAttributes> | undefined;
-  selectedNode: InspectNodeWithPosition<InspectNodeAttributes> | undefined;
+  inspectingNode: NodeWithPosition<NodeAttributes> | undefined;
+  selectedNode: NodeWithPosition<NodeAttributes> | undefined;
   onClickNode: (key: string) => Promise<void> | void;
   onHoverNode: (key: string) => Promise<void> | void;
   onLeaveNode: () => void;

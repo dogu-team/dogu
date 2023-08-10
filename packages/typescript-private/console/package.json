@@ -17,15 +17,18 @@
     "@dogu-private/types": "workspace:^",
     "@dogu-tech/common": "workspace:^",
     "@dogu-tech/console-gamium": "workspace:^",
+    "@dogu-tech/device-client-common": "workspace:^",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.0",
     "js-yaml": "4.1.0",
-    "reflect-metadata": "0.1.13"
+    "reflect-metadata": "0.1.13",
+    "xmldom": "0.6.0"
   },
   "devDependencies": {
     "@types/js-yaml": "4.0.5",
     "@types/lodash": "4.14.186",
     "@types/node": "18.15.11",
+    "@types/xmldom": "0",
     "nodemon": "2.0.22",
     "shx": "0.3.4",
     "ts-node": "10.9.1",

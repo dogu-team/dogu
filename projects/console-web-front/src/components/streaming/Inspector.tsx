@@ -2,16 +2,16 @@ import { DataNode } from 'antd/es/tree';
 import styled from 'styled-components';
 import { useCallback, useEffect } from 'react';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import Link from 'next/link';
+import { GamiumNodeAttributes, GAMIUM_CONTEXT_KEY, ParsedNode } from '@dogu-private/console';
 
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
 import GameObjectDetail from './GameObjectDetail';
 import InspectorUITree from './InspectorUITree';
 import InspectorToolbar from './InspectorToolbar';
 import InspectorContextMenu from './InspectorContextMenu';
-import useInspector, { GAMIUM_CONTEXT_KEY } from '../../hooks/streaming/useInspector';
+import useInspector from '../../hooks/streaming/useInspector';
 import NativeObjectDetail from './NativeObjectDetail';
-import { GamiumNodeAttributes, InspectNode } from '../../types/inspector';
-import Link from 'next/link';
 
 interface Props {
   inspector: ReturnType<typeof useInspector>;
@@ -26,6 +26,7 @@ const Inspector = ({ inspector }: Props) => {
     if (peerConnection?.connectionState === 'connected' && !loading) {
       inspector.connectGamium();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inspector.connectGamium, peerConnection?.connectionState, loading]);
 
   const handleClickNode = useCallback(
@@ -33,6 +34,7 @@ const Inspector = ({ inspector }: Props) => {
       inspector.updateSelectedNode(key);
       updateMode('input');
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [inspector.updateSelectedNode, updateMode],
   );
 
@@ -89,7 +91,7 @@ const Inspector = ({ inspector }: Props) => {
         </Inner>
         <Inner h={45} style={{ overflow: 'auto' }}>
           {inspector.selectedContextKey === GAMIUM_CONTEXT_KEY ? (
-            <GameObjectDetail node={inspector.selectedNode?.node as InspectNode<GamiumNodeAttributes> | undefined} hitPoint={inspector.hitPoint} />
+            <GameObjectDetail node={inspector.selectedNode?.node as ParsedNode<GamiumNodeAttributes> | undefined} hitPoint={inspector.hitPoint} />
           ) : (
             <NativeObjectDetail node={inspector.selectedNode?.node} />
           )}

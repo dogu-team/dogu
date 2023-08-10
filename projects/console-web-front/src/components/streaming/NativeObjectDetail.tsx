@@ -1,10 +1,10 @@
+import { AndroidNodeAttributeFields, NodeAttributes, ParsedNode, ScreenPosition } from '@dogu-private/console';
 import styled from 'styled-components';
 
-import { AndroidAttributeFields, InspectNode, InspectNodeAttributes, ScreenPosition } from '../../types/inspector';
 import InspectObjectAttribute from './InspectObjectAttribute';
 
 interface Props {
-  node: InspectNode<InspectNodeAttributes> | undefined;
+  node: ParsedNode<NodeAttributes> | undefined;
 }
 
 const NativeObjectDetail = ({ node }: Props) => {
@@ -22,7 +22,7 @@ const NativeObjectDetail = ({ node }: Props) => {
 
               const value = node.attributes[key as keyof typeof node.attributes];
 
-              if ((key as AndroidAttributeFields) === 'bounds') {
+              if ((key as AndroidNodeAttributeFields) === 'bounds') {
                 const pos = value as ScreenPosition | undefined;
                 if (!pos) {
                   return null;

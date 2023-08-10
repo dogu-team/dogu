@@ -1,7 +1,8 @@
 import { DeviceId, ErrorResultDto, OrganizationId, ProjectId } from '@dogu-private/types';
 import { HeaderRecord } from '@dogu-tech/common';
 import { RelayRequest, RelayResponse } from '@dogu-tech/device-client-common';
-import { RemoteWebDriverBatchRequestItem } from './remote-webdriver.batch-request-items';
+import _ from 'lodash';
+import { RemoteWebDriverBatchRequestItem } from './remote-webdriver.batch-request-item';
 import { RemoteWebDriverRequestCommonOptions, RemoteWebDriverService } from './remote-webdriver.service';
 
 export interface RemoteWebDriverBatchRequestExecutorOptions {
@@ -50,6 +51,11 @@ export class RemoteWebDriverBatchRequestExecutor {
       return responseItem;
     });
     return this;
+  }
+
+  new(options?: Partial<RemoteWebDriverBatchRequestExecutorOptions>): RemoteWebDriverBatchRequestExecutor {
+    const newOptions = _.merge(this.options, options);
+    return new RemoteWebDriverBatchRequestExecutor(this.remoteWebDriverService, newOptions);
   }
 
   async execute(): Promise<void> {

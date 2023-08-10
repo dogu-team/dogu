@@ -23,8 +23,14 @@ export async function checkoutProject(
   function command(command: string, args: string[], logMessage: string, errorMessage: string): void {
     printable.info(logMessage);
     printable.info('Running command', { command: `${command} ${args.join(' ')}` });
+    const env = {
+      ...process.env,
+      GIT_TERMINAL_PROMPT: 'false',
+      GIT_ASK_YESNO: 'false',
+    };
     const result = spawnSync(command, args, {
       stdio: 'inherit',
+      env,
     });
     printable.verbose?.('Command result', { result });
     if (result.status !== 0) {
