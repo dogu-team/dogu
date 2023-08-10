@@ -79,7 +79,7 @@ export class ExternalService {
     this.registerUnit('appium-uiautomator2-driver', (unitCallback) => new AppiumUiAutomator2DriverExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, unitCallback));
     this.registerUnit('xcode', () => new XcodeExternalUnit(this.stdLogCallbackService));
     this.registerUnit('appium-xcuitest-driver', (unitCallback) => new AppiumXcUiTestDriverExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, unitCallback));
-    this.registerUnit('libimobiledevice', (unitCallback) => new LibimobledeviceExternalUnit(this.stdLogCallbackService, unitCallback));
+    this.registerUnit('libimobiledevice', (unitCallback) => new LibimobledeviceExternalUnit(this.stdLogCallbackService, this.windowService, unitCallback));
     // this.registerUnit('webdriver-manager', (unitCallback) => new WebdriverManagerExternalUnit(this.stdLogCallbackService, unitCallback));
     this.registerUnit('web-driver-agent-build', () => new WdaBuildExternalUnit(this.stdLogCallbackService));
     this.registerUnit('ios-device-agent-build', () => new IdaBuildExternalUnit(this.stdLogCallbackService));
@@ -104,6 +104,7 @@ export class ExternalService {
     ipcMain.handle(externalKey.isInstallNeeded, (_, key: ExternalKey) => this.getUnit(key).isInstallNeeded());
     ipcMain.handle(externalKey.isManualInstallNeeded, (_, key: ExternalKey) => this.getUnit(key).isManualInstallNeeded());
     ipcMain.handle(externalKey.install, (_, key: ExternalKey) => this.getUnit(key).install());
+    ipcMain.handle(externalKey.uninstall, (_, key: ExternalKey) => this.getUnit(key).uninstall());
     ipcMain.handle(externalKey.cancelInstall, (_, key: ExternalKey) => this.getUnit(key).cancelInstall());
     ipcMain.handle(externalKey.validate, (_, key: ExternalKey) => this.getUnit(key).validate());
     ipcMain.handle(externalKey.isValid, (_, key: ExternalKey) => this.getUnit(key).isValid());

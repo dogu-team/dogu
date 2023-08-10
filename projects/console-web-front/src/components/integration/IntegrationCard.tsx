@@ -4,7 +4,7 @@ import styled from 'styled-components';
 interface Props {
   icon: React.ReactNode;
   name: string;
-  description: string;
+  description: React.ReactNode;
   connectButton: React.ReactNode;
 }
 

@@ -53,6 +53,8 @@ expose('settingsClient', {
 
   openWdaProject: () => ipcRenderer.invoke(settingsClientKey.openWdaProject),
   openIdaProject: () => ipcRenderer.invoke(settingsClientKey.openIdaProject),
+
+  changeStrictSSLOnNPMLikes: (strictSSL: boolean) => ipcRenderer.invoke(settingsClientKey.changeStrictSSLOnNPMLikes, strictSSL),
 });
 
 expose('childClient', {
@@ -89,7 +91,8 @@ expose('updaterClient', {
 
 expose('dotEnvConfigClient', {
   load: () => ipcRenderer.invoke(dotEnvConfigClientKey.load),
-  get: (key: string) => ipcRenderer.invoke(dotEnvConfigClientKey.get, key),
+  set: (key: DotEnvConfigKey, value: string) => ipcRenderer.invoke(dotEnvConfigClientKey.set, key, value),
+  get: (key: DotEnvConfigKey) => ipcRenderer.invoke(dotEnvConfigClientKey.get, key),
   getDotEnvConfigPath: () => ipcRenderer.invoke(dotEnvConfigClientKey.getDotEnvConfigPath),
 });
 
@@ -106,6 +109,7 @@ expose('externalClient', {
   isInstallNeeded: (key: ExternalKey) => ipcRenderer.invoke(externalKey.isInstallNeeded, key),
   isManualInstallNeeded: (key: ExternalKey) => ipcRenderer.invoke(externalKey.isManualInstallNeeded, key),
   install: (key: ExternalKey) => ipcRenderer.invoke(externalKey.install, key),
+  uninstall: (key: ExternalKey) => ipcRenderer.invoke(externalKey.uninstall, key),
   cancelInstall: (key: ExternalKey) => ipcRenderer.invoke(externalKey.cancelInstall, key),
   validate: (key: ExternalKey) => ipcRenderer.invoke(externalKey.validate, key),
   isValid: (key: ExternalKey) => ipcRenderer.invoke(externalKey.isValid, key),

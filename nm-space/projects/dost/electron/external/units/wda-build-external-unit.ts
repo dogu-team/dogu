@@ -7,6 +7,7 @@ import path from 'path';
 import { ExternalKey } from '../../../src/shares/external';
 import { logger } from '../../log/logger.instance';
 import { StdLogCallbackService } from '../../log/std-log-callback-service';
+import { removeWdaDeviceAgent } from '../../settings/webdriver-agent-project';
 import { IExternalUnit } from '../external-unit';
 import { validateXcode } from '../xcode';
 
@@ -135,8 +136,8 @@ export class WdaBuildExternalUnit extends IExternalUnit {
     this.logger.warn('cancel install not supported');
   }
 
-  uninstall(): void {
-    this.logger.warn('uninstall not supported');
+  async uninstall(): Promise<void> {
+    await removeWdaDeviceAgent(this.stdLogCallbackService.createPrintable());
   }
 
   getTermUrl(): string | null {

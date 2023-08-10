@@ -25,7 +25,7 @@ const RoutineGitIntegrationAlert = () => {
     const values = await form.validateFields();
 
     try {
-      await request(router.query.orgId as OrganizationId, router.query.pid as ProjectId, { service: values.git, url: values.repo, token: values.token });
+      await request(router.query.orgId as OrganizationId, router.query.pid as ProjectId, { service: values.git, url: values.repo.replace('.git', ''), token: values.token });
       sendSuccessNotification(t('projectUpdateSuccessMsg'));
       store.updateGitIntegrationStatus(true);
       closeModal();

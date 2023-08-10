@@ -1,7 +1,7 @@
 import { ErrorResult } from '@dogu-private/console-host-agent';
 import { Code } from '@dogu-private/types';
 import { errorify, PromiseOrValue } from '@dogu-tech/common';
-import { DateNano, EnvironmentVariableReplacementProvider, killChildProcess } from '@dogu-tech/node';
+import { DateNano, EnvironmentVariableReplacementProvider, killProcess } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import { ChildProcess, spawn, SpawnOptions } from 'child_process';
 import fs from 'fs';
@@ -48,9 +48,7 @@ export class CommandProcessRegistry {
         const canceler: MessageCanceler = {
           cancel: () => {
             cancelRequested = true;
-            killChildProcess(child).catch((error) => {
-              this.logger.error('Failed to kill child process', { error: errorify(error), command: commandReplaced, args: argsReplaced });
-            });
+            killProcess(child.pid);
           },
         };
         child.on('spawn', () => {

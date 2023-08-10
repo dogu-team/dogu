@@ -17,6 +17,7 @@ import { RecordTestScenarioAndRecordTestCase } from '../../../../db/entity/index
 import { RecordTestCase } from '../../../../db/entity/record-test-case.entity';
 import { RecordTestScenario } from '../../../../db/entity/record-test-scenario.entity';
 import { EMPTY_PAGE, Page } from '../../../../module/common/dto/pagination/page';
+import { castEntity } from '../../../../types/entity-cast';
 import { getSortedRecordTestCases } from '../common';
 import {
   AddRecordTestCaseToRecordTestScenarioDto,
@@ -274,7 +275,7 @@ export class RecordTestScenarioService {
       });
       await manager
         .getRepository(RecordTestScenarioAndRecordTestCase)
-        .upsert(newTail, [`${RecordTestScenarioAndRecordTestCasePropCamel.recordTestScenarioId}`, `${RecordTestScenarioAndRecordTestCasePropCamel.recordTestCaseId}`]);
+        .upsert(castEntity(newTail), [`${RecordTestScenarioAndRecordTestCasePropCamel.recordTestScenarioId}`, `${RecordTestScenarioAndRecordTestCasePropCamel.recordTestCaseId}`]);
       return;
     } else {
       // middle
@@ -286,7 +287,10 @@ export class RecordTestScenarioService {
       });
       await manager
         .getRepository(RecordTestScenarioAndRecordTestCase)
-        .upsert(newMiddle, [`${RecordTestScenarioAndRecordTestCasePropCamel.recordTestScenarioId}`, `${RecordTestScenarioAndRecordTestCasePropCamel.recordTestCaseId}`]);
+        .upsert(castEntity(newMiddle), [
+          `${RecordTestScenarioAndRecordTestCasePropCamel.recordTestScenarioId}`,
+          `${RecordTestScenarioAndRecordTestCasePropCamel.recordTestCaseId}`,
+        ]);
       oldNext.prevRecordTestCaseId = recordTestCase.recordTestCaseId;
       await manager.getRepository(RecordTestScenarioAndRecordTestCase).save(oldNext);
       return;

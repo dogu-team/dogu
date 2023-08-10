@@ -19,7 +19,11 @@ export class DotEnvConfigService {
     const { instance } = DotEnvConfigService;
     await instance.load();
     ipcMain.handle(dotEnvConfigClientKey.load, () => instance.load());
-    ipcMain.handle(dotEnvConfigClientKey.get, (_, key: string) => {
+    ipcMain.handle(dotEnvConfigClientKey.set, async (_, key: DotEnvConfigKey, value: string) => {
+      await instance.write(key, value);
+      await instance.load();
+    });
+    ipcMain.handle(dotEnvConfigClientKey.get, (_, key: DotEnvConfigKey) => {
       return process.env[key];
     });
     ipcMain.handle(dotEnvConfigClientKey.getDotEnvConfigPath, () => instance.dotEnvConfigPath);

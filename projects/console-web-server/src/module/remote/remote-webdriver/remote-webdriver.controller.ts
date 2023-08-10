@@ -11,10 +11,8 @@ import {
   DoguRemoteDeviceJobIdHeader,
   DoguRequestTimeoutHeader,
   HeaderRecord,
-  stringify,
-  toISOStringWithTimezone,
 } from '@dogu-tech/common';
-import { DoguWebDriverCapabilitiesParser, RelayResponse, WebDriverEndPoint, WebDriverSessionEndpointInfo } from '@dogu-tech/device-client-common';
+import { Device, DoguWebDriverCapabilitiesParser, RelayResponse, WebDriverEndPoint, WebDriverSessionEndpointInfo } from '@dogu-tech/device-client-common';
 import { All, Controller, Delete, HttpStatus, Post, Req, Res } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Request, Response } from 'express';
@@ -22,25 +20,22 @@ import { DataSource } from 'typeorm';
 import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
 import { PROJECT_ROLE } from '../../auth/auth.types';
 import { RemoteCaller, RemoteProjectPermission } from '../../auth/decorators';
+import { DeviceMessageRelayer } from '../../device-message/device-message.relayer';
 import { FeatureFileService } from '../../feature/file/feature-file.service';
 import { DoguLogger } from '../../logger/logger';
 import { RemoteException } from '../common/exception';
 import { WebDriverEndpointHandlerResult } from '../common/type';
 import { RemoteDeviceJobProcessor } from '../processor/remote-device-job-processor';
 import { RemoteService } from '../remote.service';
-import { RemoteWebDriverBatchRequestExecutor } from './remote-webdriver.batch-request-executor';
 import {
-  AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem,
-  ElementClickRemoteWebDriverBatchRequestItem,
-  ElementSendKeysRemoteWebDriverBatchRequestItem,
-  FindElementRemoteWebDriverBatchRequestItem,
-  GetPageSourceRemoteWebDriverBatchRequestItem,
-  GetTimeoutsRemoteWebDriverBatchRequestItem,
-  PerformActionsRemoteWebDriverBatchRequestItem,
-  TakeScreenshotRemoteWebDriverBatchRequestItem,
-} from './remote-webdriver.batch-request-items';
+  AppiumGetContextsRemoteWebDriverBatchRequestItem,
+  AppiumGetSystemBarsRemoteWebDriverBatchRequestItem,
+  AppiumSetContextRemoteWebDriverBatchRequestItem,
+} from './remote-webdriver.appium-batch-request-items';
+import { RemoteWebDriverBatchRequestExecutor } from './remote-webdriver.batch-request-executor';
 import { onBeforeDeleteSessionResponse, onBeforeNewSessionResponse } from './remote-webdriver.protocols';
 import { RemoteWebDriverRequestOptions, RemoteWebDriverService } from './remote-webdriver.service';
+import { W3CGetPageSourceRemoteWebDriverBatchRequestItem, W3CNavigateToRemoteWebDriverBatchRequestItem } from './remote-webdriver.w3c-batch-request-items';
 
 @Controller('/remote/wd/hub')
 export class RemoteWebDriverInfoController {
@@ -51,6 +46,7 @@ export class RemoteWebDriverInfoController {
     @InjectDataSource()
     private readonly dataSource: DataSource,
     private readonly logger: DoguLogger,
+    private readonly deviceMessageRelayer: DeviceMessageRelayer,
   ) {}
 
   @Post('session')
@@ -162,6 +158,8 @@ export class RemoteWebDriverInfoController {
     headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout1minutes.toString();
 
     try {
+      await this.test(processResult, endpoint.info, headers);
+
       const options: RemoteWebDriverRequestOptions = {
         ...processResult,
         headers,
@@ -200,15 +198,7 @@ export class RemoteWebDriverInfoController {
     if (processResult.browserVersion) headers[DoguBrowserVersionHeader] = processResult.browserVersion;
   }
 
-  /**
-   * @deprecated
-   * @description FIXME: henry - this is test code.
-   * 1. get page source
-   * 2. take screenshot
-   * 3. save screenshot to file server
-   */
-  private async batchTest(processResult: WebDriverEndpointHandlerResult, endpointInfo: WebDriverSessionEndpointInfo, headers: HeaderRecord): Promise<void> {
-    const start = Date.now();
+  private async test(processResult: WebDriverEndpointHandlerResult, endpointInfo: WebDriverSessionEndpointInfo, headers: HeaderRecord): Promise<void> {
     try {
       const { sessionId } = endpointInfo;
       const { organizationId, projectId, deviceId, deviceSerial } = processResult;
@@ -220,101 +210,35 @@ export class RemoteWebDriverInfoController {
         headers,
         parallel: true,
       });
-      const getPageSource = new GetPageSourceRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
-      const takeScreenshot = new TakeScreenshotRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
-      const appiumIsKeyboardShown = new AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
-      const findElement = new FindElementRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, 'xpath', '//*');
+      const w3cNavigateTo = new W3CNavigateToRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, 'https://dogutech.io');
+      const appiumGetContexts = new AppiumGetContextsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
+      const appiumGetSystemBars = new AppiumGetSystemBarsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
       await batchExecutor.execute();
+      const contexts = await appiumGetContexts.response();
+      const systemBars = await appiumGetSystemBars.response();
 
-      await takeScreenshot
-        .response()
-        .then(async (buffer) => {
-          const putResult = await this.featureFileService.put({
-            bucketKey: 'organization',
-            key: `remote-device-jobs/${processResult.remoteDeviceJobId}/${toISOStringWithTimezone(new Date(), '-')}.png`,
-            body: buffer,
-            contentType: 'image/png',
-          });
-          this.logger.debug(`TEST: screenshot url: ${putResult.location}`);
-        })
-        .catch((error) => {
-          this.logger.error(`TEST: screenshot error: ${stringify(error)}`);
-        });
-      await getPageSource
-        .response()
-        .then((pageSource) => {
-          this.logger.debug(`TEST: pageSource size: ${pageSource.length}`);
-        })
-        .catch((error) => {
-          this.logger.error(`TEST: pageSource error: ${stringify(error)}`);
-        });
-      await appiumIsKeyboardShown
-        .response()
-        .then((isKeyboardShown) => {
-          this.logger.debug(`TEST: isKeyboardShown: ${isKeyboardShown}`);
-        })
-        .catch((error) => {
-          this.logger.error(`TEST: isKeyboardShown error: ${stringify(error)}`);
-        });
-      await findElement
-        .response()
-        .then(async (elementId) => {
-          this.logger.debug(`TEST: findElement: ${stringify(elementId)}`);
-          const batchExecutor = new RemoteWebDriverBatchRequestExecutor(this.remoteWebDriverService, {
-            organizationId,
-            projectId,
-            deviceId,
-            deviceSerial,
-            headers,
-            parallel: true,
-          });
-          const click = new ElementClickRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, elementId);
-          const sendKeys = new ElementSendKeysRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, elementId, 'test');
-          const performActions = new PerformActionsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, []);
-          const getTimeouts = new GetTimeoutsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
-          await batchExecutor.execute();
+      const systemBarVisibility = await this.deviceMessageRelayer.sendHttpRequest(
+        organizationId,
+        deviceId,
+        'GET',
+        Device.getSystemBarVisibility.resolvePath(new Device.getSystemBarVisibility.pathProvider(deviceSerial)),
+        undefined,
+        undefined,
+        undefined,
+        Device.getSystemBarVisibility.responseBodyData,
+      );
 
-          await click
-            .response()
-            .then(() => {
-              this.logger.debug(`TEST: click`);
-            })
-            .catch((error) => {
-              this.logger.error(`TEST: click error: ${stringify(error)}`);
-            });
-          await sendKeys
-            .response()
-            .then(() => {
-              this.logger.debug(`TEST: sendKeys`);
-            })
-            .catch((error) => {
-              this.logger.error(`TEST: sendKeys error: ${stringify(error)}`);
-            });
-          await performActions
-            .response()
-            .then(() => {
-              this.logger.debug(`TEST: performActions`);
-            })
-            .catch((error) => {
-              this.logger.error(`TEST: performActions error: ${stringify(error)}`);
-            });
-          await getTimeouts
-            .response()
-            .then((timeouts) => {
-              this.logger.debug(`TEST: getTimeouts: ${stringify(timeouts)}`);
-            })
-            .catch((error) => {
-              this.logger.error(`TEST: getTimeouts error: ${stringify(error)}`);
-            });
-        })
-        .catch((error) => {
-          this.logger.error(`TEST: findElement error: ${stringify(error)}`);
-        });
+      for (const context of contexts) {
+        const subExecutor = batchExecutor.new({ parallel: false });
+        const appiumSetContext = new AppiumSetContextRemoteWebDriverBatchRequestItem(subExecutor, sessionId, context);
+        const w3cGetPageSource = new W3CGetPageSourceRemoteWebDriverBatchRequestItem(subExecutor, sessionId);
+        await subExecutor.execute();
+        await appiumSetContext.response();
+        const pageSource = await w3cGetPageSource.response();
+        this.logger.debug(`TEST: ${context} ${pageSource.length}`);
+      }
     } catch (error) {
-      this.logger.debug(`TEST: batchTest error: ${stringify(error)}`);
-    } finally {
-      const end = Date.now();
-      this.logger.debug(`TEST: batchTest time: ${end - start}ms`);
+      this.logger.debug(`TEST ERROR: ${error}`);
     }
   }
 }

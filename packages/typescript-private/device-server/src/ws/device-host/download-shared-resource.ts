@@ -1,5 +1,5 @@
 import { OnWebSocketClose, OnWebSocketMessage, WebSocketGatewayBase, WebSocketRegistryValueAccessor, WebSocketService } from '@dogu-private/nestjs-common';
-import { closeWebSocketWithTruncateReason, DefaultHttpOptions, errorify, Instance, Retry, setAxiosErrorFilterToGlobal } from '@dogu-tech/common';
+import { closeWebSocketWithTruncateReason, DefaultHttpOptions, errorify, Instance, Retry, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { DeviceHostDownloadSharedResource } from '@dogu-tech/device-client-common';
 import axios from 'axios';
 import { IncomingMessage } from 'http';
@@ -16,8 +16,11 @@ export class DeviceHostDownloadSharedResourceWebsocketService
   extends WebSocketGatewayBase<Value, typeof DeviceHostDownloadSharedResource.sendMessage, typeof DeviceHostDownloadSharedResource.receiveMessage>
   implements OnWebSocketMessage<Value, typeof DeviceHostDownloadSharedResource.sendMessage, typeof DeviceHostDownloadSharedResource.receiveMessage>, OnWebSocketClose<Value>
 {
+  private readonly client = axios.create();
+
   constructor(private readonly downloadService: DeviceHostDownloadSharedResourceService, private readonly logger: DoguLogger) {
     super(DeviceHostDownloadSharedResource, logger);
+    setAxiosErrorFilterToIntercepter(this.client);
   }
 
   override onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): Value {
@@ -39,8 +42,7 @@ export class DeviceHostDownloadSharedResourceWebsocketService
 
   @Retry({ retryCount: 3, retryInterval: 1000 })
   private async getFileSize(url: string, headers: Record<string, string> | undefined): Promise<number> {
-    setAxiosErrorFilterToGlobal();
-    const response = await axios
+    const response = await this.client
       .head(url, {
         headers,
         timeout: DefaultHttpOptions.request.timeout,

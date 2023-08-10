@@ -1,11 +1,12 @@
+import { ApiOutlined } from '@ant-design/icons';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import RefreshButton from '../../../../../src/components/buttons/RefreshButton';
+import ExternalGuideLink from '../../../../../src/components/common/ExternalGuideLink';
 
 import TableListView from '../../../../../src/components/common/TableListView';
 import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/ProjectLayoutWithSidebar';
-import ProjectApplicationAPIButton from '../../../../../src/components/project-application/ProjectApplicationAPI';
 import ProjectApplicationListController from '../../../../../src/components/project-application/ProjectApplicationListController';
 import ProjectApplicationUploadButton from '../../../../../src/components/project-application/ProjectApplicationUploadButton';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from '../../../../../src/hoc/withProject';
@@ -25,7 +26,9 @@ const ProjectAppPage: NextPageWithLayout<WithProjectProps> = ({ project, organiz
           <Header>
             <MenuList>
               <ProjectApplicationUploadButton organizationId={organization.organizationId} projectId={project.projectId} />
-              <ProjectApplicationAPIButton />
+              <ExternalGuideLink href="https://docs.dogutech.io/api/project/application#upload-application" icon={<ApiOutlined style={{ fontSize: '1rem', color: '#000' }} />}>
+                API
+              </ExternalGuideLink>
             </MenuList>
             <div>
               <RefreshButton />

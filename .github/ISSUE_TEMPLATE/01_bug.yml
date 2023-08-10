@@ -1,8 +1,19 @@
 name: 🐛 Bug Report
-title: "[Bug]: "
-labels: ["type: bug", "bug: needs investigation", "status: needs triage"]
+title: '[Bug]: '
+labels: ['type: bug', 'bug: needs investigation', 'status: needs triage']
 description: Please explain something that's not working in proper way.
 body:
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Environment
+      description: Where did you encounter the bug?
+      options:
+        - Cloud
+        - Self-Hosted
+        - Development (for Dogu developers)
+    validations:
+      required: true
   - type: textarea
     id: reproduce
     attributes:

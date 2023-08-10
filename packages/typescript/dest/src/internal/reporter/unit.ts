@@ -1,4 +1,4 @@
-import { DefaultHttpOptions, Instance, Printable, PromiseOrValue, setAxiosErrorFilterToGlobal, stringify } from '@dogu-tech/common';
+import { DefaultHttpOptions, Instance, Printable, PromiseOrValue, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
 import { PublicDest } from '@dogu-tech/console-dest';
 import { createConsoleApiAuthHeader, DestId, DestState, destStateStringToStatusEnum, DeviceId, OrganizationId } from '@dogu-tech/types';
 import axios from 'axios';
@@ -19,6 +19,8 @@ export class NullReporterUnit implements ReporterUnit {
 }
 
 export class ConsoleReporterUnit implements ReporterUnit {
+  private readonly client = axios.create();
+
   constructor(
     private readonly reporter: Reporter,
     private readonly printable: Printable,
@@ -27,7 +29,9 @@ export class ConsoleReporterUnit implements ReporterUnit {
     private readonly deviceId: DeviceId,
     private readonly destId: DestId,
     private readonly DOGU_HOST_TOKEN: string,
-  ) {}
+  ) {
+    setAxiosErrorFilterToIntercepter(this.client);
+  }
 
   async updateState(state: DestState): Promise<void> {
     const { printable, apiBaseUrl, organizationid, deviceId, destId, DOGU_HOST_TOKEN } = this;
@@ -40,8 +44,7 @@ export class ConsoleReporterUnit implements ReporterUnit {
         localTimeStamp: new Date(),
       };
       printable.verbose?.('dest update state', { ...requestBody, url });
-      setAxiosErrorFilterToGlobal();
-      await axios.patch<typeof PublicDest.updateDestState.responseBody>(url, requestBody, {
+      await this.client.patch<typeof PublicDest.updateDestState.responseBody>(url, requestBody, {
         ...createConsoleApiAuthHeader(DOGU_HOST_TOKEN),
         timeout: DefaultHttpOptions.request.timeout,
       });

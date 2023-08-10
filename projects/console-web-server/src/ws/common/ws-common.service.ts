@@ -8,17 +8,19 @@ import {
   UserPropCamel,
   UserPropSnake,
 } from '@dogu-private/console';
-import { DeviceId, OrganizationId, ProjectId, UserId } from '@dogu-private/types';
+import { DeviceId, HostId, HostPayload, OrganizationId, ProjectId, UserId } from '@dogu-private/types';
 import { notEmpty } from '@dogu-tech/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { IncomingMessage } from 'http';
 import { DataSource } from 'typeorm';
 import { Device, OrganizationAndUserAndOrganizationRole, ProjectAndUserAndProjectRole } from '../../db/entity/index';
 import { User } from '../../db/entity/user.entity';
-import { ORGANIZATION_ROLE, PROJECT_ROLE } from '../../module/auth/auth.types';
+import { HOST_ACTION_TYPE, ORGANIZATION_ROLE, PROJECT_ROLE } from '../../module/auth/auth.types';
 import { UserPermission } from '../../module/auth/guard/common';
+import { AuthHostService } from '../../module/auth/service/auth-host.service';
 import { AuthUserService } from '../../module/auth/service/auth-user.service';
 import { DoguLogger } from '../../module/logger/logger';
+import { DoguWsException } from './ws-exception';
 
 export type ValidationResult = { result: boolean; resultCode: number; message: string };
 
@@ -28,9 +30,10 @@ export class WsCommonService {
     private readonly logger: DoguLogger, //
     @Inject(AuthUserService)
     private readonly authUserService: AuthUserService,
+    private readonly authHostService: AuthHostService,
   ) {}
 
-  private async vlidateUserAuthToken(incomingMessage: IncomingMessage): Promise<UserId | null> {
+  private async validateUserAuthToken(incomingMessage: IncomingMessage): Promise<UserId | null> {
     const userAuthToken = this.authUserService.getUserAuthTokenByWsConnection(incomingMessage);
     if (!userAuthToken) {
       this.logger.error(`vlidateUserAuthToken. The userAuthToken is not found.`);
@@ -62,7 +65,7 @@ export class WsCommonService {
     organizationId: OrganizationId,
     projectId: ProjectId,
   ): Promise<ValidationResult> {
-    const userId = await this.vlidateUserAuthToken(incomingMessage);
+    const userId = await this.validateUserAuthToken(incomingMessage);
     if (!userId) {
       return { result: true, resultCode: 1003, message: 'Unauthorized' };
     }
@@ -159,7 +162,7 @@ export class WsCommonService {
     logger: DoguLogger,
   ): Promise<ValidationResult> {
     // get jwt token from header
-    const userId = await this.vlidateUserAuthToken(incomingMessage);
+    const userId = await this.validateUserAuthToken(incomingMessage);
     if (!userId) {
       return { result: true, resultCode: 1003, message: 'Unauthorized' };
     }
@@ -208,5 +211,20 @@ export class WsCommonService {
     }
 
     return { result: true, resultCode: 1000, message: 'success' };
+  }
+
+  public async validateHostWithWebsocket(
+    organizationId: OrganizationId,
+    projectId: ProjectId,
+    hostId: HostId,
+    deviceId: DeviceId,
+    incomingMessage: IncomingMessage,
+    type: HOST_ACTION_TYPE,
+  ): Promise<HostPayload | null> {
+    const authHeader = incomingMessage.headers.authorization;
+    if (!authHeader) {
+      throw new DoguWsException(1003, 'Unauthorized');
+    }
+    return this.authHostService.validateHost(organizationId, projectId, hostId, deviceId, authHeader, type);
   }
 }

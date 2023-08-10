@@ -85,6 +85,15 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
     }
   }, [organization.organizationId, project.projectId]);
 
+  const getRepositoyUrl = (gitUrl: string) => {
+    const matches = gitUrl.match(/\/([^/]+\/[^/]+)$/);
+    if (matches) {
+      return matches[matches.length - 1];
+    }
+
+    return gitUrl;
+  };
+
   const isChanged = JSON.stringify(project) !== JSON.stringify(editingProject);
 
   return (
@@ -151,6 +160,16 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
               disabled={!!project.projectScms && project.projectScms.length > 0 && project.projectScms[0].type !== PROJECT_SCM_TYPE.GITHUB}
               organizationId={organization.organizationId}
               projectId={project.projectId}
+              description={
+                project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITHUB ? (
+                  <>
+                    Integrated with{' '}
+                    <a href={project.projectScms[0].url} target="_blank">
+                      {getRepositoyUrl(project.projectScms[0].url)}
+                    </a>
+                  </>
+                ) : undefined
+              }
             />
           </div>
           <div style={{ marginTop: '1rem' }}>
@@ -159,6 +178,16 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
               disabled={!!project.projectScms && project.projectScms.length > 0 && project.projectScms[0].type !== PROJECT_SCM_TYPE.GITLAB}
               organizationId={organization.organizationId}
               projectId={project.projectId}
+              description={
+                project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITLAB ? (
+                  <>
+                    Integrated with{' '}
+                    <a href={project.projectScms[0].url} target="_blank">
+                      {getRepositoyUrl(project.projectScms[0].url)}
+                    </a>
+                  </>
+                ) : undefined
+              }
             />
           </div>
         </Content>

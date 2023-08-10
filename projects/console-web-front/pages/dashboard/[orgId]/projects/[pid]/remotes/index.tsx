@@ -24,7 +24,7 @@ const RemoteListPage: NextPageWithLayout<WithProjectProps> = ({ organization, pr
           <FlexBetweenBox>
             <div>
               <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/get-started`}>
-                <StyledButton type="link">
+                <StyledButton>
                   Tutorial <ArrowRightOutlined />
                 </StyledButton>
               </Link>
@@ -57,8 +57,7 @@ const FlexBetweenBox = styled.div`
 `;
 
 const StyledButton = styled(Button)`
-  color: ${(props) => props.theme.colorPrimary};
-  padding-left: 0.2rem;
+  padding: 4px 8px;
 
   &:hover .anticon {
     transition: transform 0.2s;

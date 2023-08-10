@@ -1,10 +1,9 @@
+import { NodeAttributes, NodeWithPosition } from '@dogu-private/console';
 import { Tooltip } from 'antd';
 import styled from 'styled-components';
 
-import { InspectNodeAttributes, InspectNodeWithPosition } from '../../types/inspector';
-
 interface Props {
-  nodeInfo: InspectNodeWithPosition<InspectNodeAttributes>;
+  nodeInfo: NodeWithPosition<NodeAttributes>;
 }
 
 const InspectorSelectedNode = ({ nodeInfo }: Props) => {

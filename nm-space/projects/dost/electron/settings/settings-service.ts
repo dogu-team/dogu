@@ -2,6 +2,7 @@ import { HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
 import { exec } from 'child_process';
 import { app, desktopCapturer, ipcMain, shell, systemPreferences } from 'electron';
 import isDev from 'electron-is-dev';
+import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 import { promisify } from 'util';
@@ -10,7 +11,7 @@ import { AppConfigService } from '../app-config/app-config-service';
 import { DotEnvConfigService } from '../dot-env-config/dot-env-config-service';
 import { logger } from '../log/logger.instance';
 import { ThirdPartyPathMap, WritablePath } from '../path-map';
-import { copyiOSDeviceAgentProject } from './ios-device-agent-project';
+import { copyiOSDeviceAgentProject, validateiOSDeviceAgentProjectExist } from './ios-device-agent-project';
 
 const execAsync = promisify(exec);
 
@@ -49,6 +50,8 @@ export class SettingsService {
 
     ipcMain.handle(settingsClientKey.openWdaProject, (_) => this.openWdaProject());
     ipcMain.handle(settingsClientKey.openIdaProject, (_) => this.openIdaProject());
+
+    ipcMain.handle(settingsClientKey.changeStrictSSLOnNPMLikes, (_, enabled: boolean) => this.changeStrictSSLOnNPMLikes(enabled));
   }
 
   static open(dotEnvConfigService: DotEnvConfigService): void {
@@ -113,7 +116,9 @@ export class SettingsService {
   private async openIdaProject(): Promise<void> {
     const idaDestProjectDirectoryPath = HostPaths.external.xcodeProject.idaProjectDirectoryPath();
 
-    await copyiOSDeviceAgentProject(logger);
+    if (!(await validateiOSDeviceAgentProjectExist(logger))) {
+      await copyiOSDeviceAgentProject(logger);
+    }
 
     const idaDestProjectPath = path.resolve(idaDestProjectDirectoryPath, 'IOSDeviceAgent.xcodeproj');
     const { stdout, stderr } = await execAsync(`open ${idaDestProjectPath}`, {});
@@ -122,6 +127,22 @@ export class SettingsService {
     }
     if (stdout) {
       logger.info('openIdaProject', { stdout });
+    }
+  }
+
+  private async changeStrictSSLOnNPMLikes(enabled: boolean): Promise<void> {
+    const npmLikes = [HostPaths.thirdParty.pathMap().common.npm, HostPaths.thirdParty.pathMap().common.pnpm, HostPaths.thirdParty.pathMap().common.yarn];
+    await fs.promises.mkdir(HostPaths.tempPath, { recursive: true });
+    for (const npmLike of npmLikes) {
+      const { stdout, stderr } = enabled
+        ? await execAsync(`${npmLike} config delete strict-ssl`, { env: newCleanNodeEnv(), cwd: HostPaths.tempPath })
+        : await execAsync(`${npmLike} config set strict-ssl false`, { env: newCleanNodeEnv(), cwd: HostPaths.tempPath });
+      if (stderr) {
+        logger.warn('changeStrictSSlOnNPMLikes', { stderr });
+      }
+      if (stdout) {
+        logger.info('changeStrictSSlOnNPMLikes', { stdout });
+      }
     }
   }
 }

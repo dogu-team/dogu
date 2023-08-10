@@ -1,4 +1,4 @@
-import { DefaultHttpOptions, Instance, setAxiosErrorFilterToGlobal } from '@dogu-tech/common';
+import { DefaultHttpOptions, Instance, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { DeviceHostDownloadSharedResource } from '@dogu-tech/device-client-common';
 import { HostPaths } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
@@ -15,8 +15,12 @@ export type DeviceHostDownloadParam = Instance<typeof DeviceHostDownloadSharedRe
 
 @Injectable()
 export class DeviceHostDownloadSharedResourceService {
-  constructor(private readonly logger: DoguLogger) {}
   private downloadLockAndQ = new AsyncLock();
+  private readonly client = axios.create();
+
+  constructor(private readonly logger: DoguLogger) {
+    setAxiosErrorFilterToIntercepter(this.client);
+  }
 
   public async queueDownload(message: DeviceHostDownloadParam): Promise<DeviceHostDownloadResult> {
     const result = await this.downloadLockAndQ.acquire(
@@ -63,8 +67,7 @@ export class DeviceHostDownloadSharedResourceService {
     if (!fs.existsSync(HostPaths.doguTempPath())) {
       fs.mkdirSync(HostPaths.doguTempPath(), { recursive: true });
     }
-    setAxiosErrorFilterToGlobal();
-    const response = await axios.get(url, {
+    const response = await this.client.get(url, {
       responseType: 'stream',
       headers,
       timeout: DefaultHttpOptions.request.timeout,

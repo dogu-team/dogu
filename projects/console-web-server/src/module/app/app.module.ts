@@ -12,7 +12,9 @@ import { DeviceStreamingModule } from '../../ws/device-streaming/device-streamin
 import { LiveLogModule } from '../../ws/live-log/live-log.module';
 import { LivePipelineStatusModule } from '../../ws/live-pipeline-status/live-pipeline-status.module';
 import { LiveProfileModule } from '../../ws/live-profile/live-profile.module';
+import { PrivateDeviceWsModule } from '../../ws/private/private-device-ws.module';
 import { RemoteGamiumModule } from '../../ws/remote-gamium/remote-gamium.module';
+import { RemoteWebDriverBiDiModule } from '../../ws/remote-webdriver-bidi/remote-webdriver-bidi.module';
 import { AuthModule } from '../auth/auth.module';
 import { DeviceMessageModule } from '../device-message/device-message.module';
 import { DownloadModule } from '../download/download.module';
@@ -79,6 +81,8 @@ const BASE_MODULES = [
   RemoteModule,
   RemoteGamiumModule,
   OpenApiMoudule,
+  PrivateDeviceWsModule,
+  RemoteWebDriverBiDiModule,
 ];
 
 const MODULES =
