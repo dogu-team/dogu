@@ -73,6 +73,14 @@ public final class ProfileMethodOuterClass {
      * <code>PROFILE_METHOD_KIND_ANDROID_PROCESS_SHELLTOP = 370;</code>
      */
     PROFILE_METHOD_KIND_ANDROID_PROCESS_SHELLTOP(370),
+    /**
+     * <code>PROFILE_METHOD_KIND_IOS_CPU_LOAD_INFO = 400;</code>
+     */
+    PROFILE_METHOD_KIND_IOS_CPU_LOAD_INFO(400),
+    /**
+     * <code>PROFILE_METHOD_KIND_IOS_MEM_VM_STATISTICS = 430;</code>
+     */
+    PROFILE_METHOD_KIND_IOS_MEM_VM_STATISTICS(430),
     UNRECOGNIZED(-1),
     ;
 
@@ -136,6 +144,14 @@ public final class ProfileMethodOuterClass {
      * <code>PROFILE_METHOD_KIND_ANDROID_PROCESS_SHELLTOP = 370;</code>
      */
     public static final int PROFILE_METHOD_KIND_ANDROID_PROCESS_SHELLTOP_VALUE = 370;
+    /**
+     * <code>PROFILE_METHOD_KIND_IOS_CPU_LOAD_INFO = 400;</code>
+     */
+    public static final int PROFILE_METHOD_KIND_IOS_CPU_LOAD_INFO_VALUE = 400;
+    /**
+     * <code>PROFILE_METHOD_KIND_IOS_MEM_VM_STATISTICS = 430;</code>
+     */
+    public static final int PROFILE_METHOD_KIND_IOS_MEM_VM_STATISTICS_VALUE = 430;
 
 
     @java.lang.Override
@@ -174,6 +190,8 @@ public final class ProfileMethodOuterClass {
         case 350: return PROFILE_METHOD_KIND_ANDROID_FS_PROCDISKSTATS;
         case 360: return PROFILE_METHOD_KIND_ANDROID_NET_TRAFFICSTATS;
         case 370: return PROFILE_METHOD_KIND_ANDROID_PROCESS_SHELLTOP;
+        case 400: return PROFILE_METHOD_KIND_IOS_CPU_LOAD_INFO;
+        case 430: return PROFILE_METHOD_KIND_IOS_MEM_VM_STATISTICS;
         default: return null;
       }
     }

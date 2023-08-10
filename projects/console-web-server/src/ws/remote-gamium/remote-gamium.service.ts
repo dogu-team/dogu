@@ -14,7 +14,7 @@ import { RemoteException } from '../../module/remote/common/exception';
 import { RemoteDeviceJobProcessor } from '../../module/remote/processor/remote-device-job-processor';
 import { RemoteWebDriverBatchRequestExecutor } from '../../module/remote/remote-webdriver/remote-webdriver.batch-request-executor';
 import { RemoteWebDriverService } from '../../module/remote/remote-webdriver/remote-webdriver.service';
-import { W3CGetTimeoutsRemoteWebDriverBatchRequestItem } from '../../module/remote/remote-webdriver/remote-webdriver.w3c-batch-request-items';
+import { W3CGetWindowRectRemoteWebDriverBatchRequestItem } from '../../module/remote/remote-webdriver/remote-webdriver.w3c-batch-request-items';
 
 @Injectable()
 export class RemoteGamiumService {
@@ -64,10 +64,10 @@ export class RemoteGamiumService {
         headers,
         parallel: true,
       });
-      const getTimeouts = new W3CGetTimeoutsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
+      const item = new W3CGetWindowRectRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
       await batchExecutor.execute();
 
-      await getTimeouts.response().catch((error) => {
+      await item.response().catch((error) => {
         this.logger.error(`RemoteGamiumService.refreshCommandTimeout: ${stringify(error)}`);
       });
     } catch (error) {

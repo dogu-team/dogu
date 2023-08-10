@@ -9,8 +9,6 @@ type DcIdaParam = PrivateProtocol.DcIdaParam;
 type DcIdaResult = PrivateProtocol.DcIdaResult;
 type DcIdaRunAppParam = PrivateProtocol.DcIdaRunAppParam;
 type DcIdaRunAppResult = PrivateProtocol.DcIdaRunAppResult;
-type DcIdaIsPortListeningParam = PrivateProtocol.DcIdaIsPortListeningParam;
-type DcIdaIsPortListeningResult = PrivateProtocol.DcIdaIsPortListeningResult;
 
 export type DcIdaParamKeys = OneofUnionTypes.UnionValueKeys<DcIdaParam>;
 export type DcIdaParamUnionPick<Key> = OneofUnionTypes.UnionValuePick<DcIdaParam, Key>;
@@ -124,50 +122,6 @@ export class IosDeviceAgentService extends GrpcClientBase implements DeviceAgent
       );
     });
   }
-  async isPortListening(param: DcIdaIsPortListeningParam): Promise<DcIdaIsPortListeningResult> {
-    return new Promise((resolve, reject) => {
-      if (!this.client) {
-        throw GRPC_CLIENT_NOT_FOUND_ERROR;
-      }
-
-      const dcIdaParam: DcIdaParam = {
-        value: {
-          $case: 'dcIdaIsPortListeningParam',
-          dcIdaIsPortListeningParam: param,
-        },
-      };
-      this.client.makeUnaryRequest<DcIdaParam, DcIdaResult>(
-        ServiceDefenition.call.path,
-        ServiceDefenition.call.requestSerialize,
-        ServiceDefenition.call.responseDeserialize,
-        dcIdaParam,
-        this.createMetadata(),
-        (error?: ServiceError | null, value?: DcIdaResult) => {
-          if (error) {
-            reject(error);
-            return;
-          }
-
-          if (value == null) {
-            reject(GRPC_ACTION_NOT_FOUND_ERROR);
-            return;
-          }
-
-          if (value.value == null) {
-            reject(GRPC_RETURN_NOT_FOUND_ERROR);
-            return;
-          }
-          if (value.value.$case !== 'dcIdaIsPortListeningResult') {
-            reject(GRPC_RETURN_NOT_FOUND_ERROR);
-            return;
-          }
-
-          resolve(value.value.dcIdaIsPortListeningResult);
-        },
-      );
-    });
-  }
-
   async call<
     ParamKey extends DcIdaParamKeys & keyof DcIdaParamUnionPick<ParamKey>,
     ResultKey extends DcIdaResultKeys & keyof DcIdaResultUnionPick<ResultKey>,
@@ -195,7 +149,7 @@ export class IosDeviceAgentService extends GrpcClientBase implements DeviceAgent
         param,
         this.createMetadata(),
         // TODO(henry): 개발 중 타임아웃 발생해서 주석처리함
-        // this.createCallOptions(),
+        // this.createCallOptions({ deadline: Date.now() + 1000 * 60 }),
         (error?: ServiceError | null, value?: DcIdaResult) => {
           if (error) {
             reject(error);

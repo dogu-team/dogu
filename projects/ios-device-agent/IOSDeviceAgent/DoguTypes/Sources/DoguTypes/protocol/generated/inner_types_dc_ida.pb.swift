@@ -105,6 +105,39 @@ public struct Inner_Types_DcIdaIsPortListeningResult {
   public init() {}
 }
 
+public struct Inner_Types_DcIdaQueryProfileParam {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var profileMethods: [Outer_Profile_ProfileMethod] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Inner_Types_DcIdaQueryProfileResult {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var info: Outer_Profile_RuntimeInfo {
+    get {return _info ?? Outer_Profile_RuntimeInfo()}
+    set {_info = newValue}
+  }
+  /// Returns true if `info` has been explicitly set.
+  public var hasInfo: Bool {return self._info != nil}
+  /// Clears the value of `info`. Subsequent reads from it will return its default value.
+  public mutating func clearInfo() {self._info = nil}
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+
+  fileprivate var _info: Outer_Profile_RuntimeInfo? = nil
+}
+
 #if swift(>=5.5) && canImport(_Concurrency)
 extension Inner_Types_DcIdaRunAppParam: @unchecked Sendable {}
 extension Inner_Types_DcIdaRunAppResult: @unchecked Sendable {}
@@ -112,6 +145,8 @@ extension Inner_Types_DcIdaGetSystemInfoParam: @unchecked Sendable {}
 extension Inner_Types_DcIdaGetSystemInfoResult: @unchecked Sendable {}
 extension Inner_Types_DcIdaIsPortListeningParam: @unchecked Sendable {}
 extension Inner_Types_DcIdaIsPortListeningResult: @unchecked Sendable {}
+extension Inner_Types_DcIdaQueryProfileParam: @unchecked Sendable {}
+extension Inner_Types_DcIdaQueryProfileResult: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -314,6 +349,74 @@ extension Inner_Types_DcIdaIsPortListeningResult: SwiftProtobuf.Message, SwiftPr
 
   public static func ==(lhs: Inner_Types_DcIdaIsPortListeningResult, rhs: Inner_Types_DcIdaIsPortListeningResult) -> Bool {
     if lhs.isListening != rhs.isListening {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Inner_Types_DcIdaQueryProfileParam: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DcIdaQueryProfileParam"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .standard(proto: "profile_methods"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.profileMethods) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.profileMethods.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.profileMethods, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Inner_Types_DcIdaQueryProfileParam, rhs: Inner_Types_DcIdaQueryProfileParam) -> Bool {
+    if lhs.profileMethods != rhs.profileMethods {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Inner_Types_DcIdaQueryProfileResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DcIdaQueryProfileResult"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "info"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeSingularMessageField(value: &self._info) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
+    try { if let v = self._info {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 1)
+    } }()
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Inner_Types_DcIdaQueryProfileResult, rhs: Inner_Types_DcIdaQueryProfileResult) -> Bool {
+    if lhs._info != rhs._info {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

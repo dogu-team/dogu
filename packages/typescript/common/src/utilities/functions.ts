@@ -16,6 +16,20 @@ export async function* loop(delayMilliseconds: number, count = Infinity): AsyncG
   }
 }
 
+export async function* loopTime(periodMilisec: number, expireTimeMilisec: number): AsyncGenerator<void> {
+  const startTime = Date.now();
+  for (let _ = 0; ; ) {
+    const curTime = Date.now();
+    if (curTime - startTime > expireTimeMilisec) {
+      break;
+    }
+
+    yield;
+    const remainTime = periodMilisec - (Date.now() - curTime);
+    await delay(remainTime);
+  }
+}
+
 export async function delay(milliseconds: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }

@@ -274,3 +274,43 @@ export class W3CNavigateToRemoteWebDriverBatchRequestItem extends RemoteWebDrive
     await transformAndValidate(NullValueResponse, relayResponse.resBody);
   }
 }
+
+export class GetWindowRectResponseValue {
+  @IsNumber()
+  width!: number;
+
+  @IsNumber()
+  height!: number;
+}
+
+export class GetWindowRectResponse {
+  @ValidateNested()
+  @Type(() => GetTimeoutsResponseValue)
+  value!: GetWindowRectResponseValue;
+}
+
+/**
+ * @see https://w3c.github.io/webdriver/#get-window-rect
+ */
+export class W3CGetWindowRectRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<GetWindowRectResponse> {
+  constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly sessionId: string) {
+    super(executor);
+  }
+
+  async onEndPointFactory(): Promise<WebDriverEndPoint> {
+    return new WebDriverEndPoint({
+      type: 'session',
+      method: 'GET',
+      sessionId: this.sessionId,
+      command: '/window/rect',
+    });
+  }
+
+  async onResponseCalled(relayResponse: RelayResponse): Promise<GetWindowRectResponse> {
+    if (relayResponse.status !== 200) {
+      throw new Error(`Failed to get window rect. status: ${relayResponse.status}`);
+    }
+    const validated = await transformAndValidate(GetWindowRectResponse, relayResponse.resBody);
+    return validated;
+  }
+}

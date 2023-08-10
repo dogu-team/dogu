@@ -1,11 +1,18 @@
 import { IsFilledString, WebSocketSpec } from '@dogu-tech/common';
+import { IsNumber } from 'class-validator';
 
 export class TcpRelayRequest {
+  @IsNumber()
+  seq!: number;
+
   @IsFilledString()
   encodedData!: string; // base64 encoded
 }
 
 export class TcpRelayResponse {
+  @IsNumber()
+  seq!: number;
+
   @IsFilledString()
   encodedData!: string; // base64 encoded
 }
