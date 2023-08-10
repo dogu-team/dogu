@@ -6,7 +6,7 @@ import WebSocket from 'ws';
 import { DoguLogger } from '../../logger/logger';
 
 interface Value {
-  targetWebSocket: WebSocket | null;
+  toWebSocket: WebSocket | null;
 }
 
 @WebSocketService(DeviceHostWebSocketRelay)
@@ -18,7 +18,7 @@ export class DeviceHostWebSocketRelayWebsocketService
     super(DeviceHostWebSocketRelay, logger);
   }
 
-  override async onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): Promise<Value> {
+  override async onWebSocketOpen(fromWebSocket: WebSocket, incommingMessage: IncomingMessage): Promise<Value> {
     const url = incommingMessage.headers[DoguDeviceHostWebSocketRelayUrlHeader];
     if (!url) {
       throw new Error('dogu-websocket-relay-url header is required');
@@ -28,74 +28,75 @@ export class DeviceHostWebSocketRelayWebsocketService
       throw new Error('dogu-websocket-relay-url header must be single value');
     }
 
-    const targetWebSocket = await new Promise<WebSocket>((resolve, reject) => {
-      const targetWebSocket = new WebSocket(url);
+    const toWebSocket = await new Promise<WebSocket>((resolve, reject) => {
+      const toWebSocket = new WebSocket(url);
 
-      const onErrorForReject = (error: Error) => {
-        this.logger.verbose('targetWebSocket open error', { url, error: errorify(error) });
+      const onErrorForReject = (error: Error): void => {
+        this.logger.verbose('toWebSocket open error', { url, error: errorify(error) });
         reject(error);
       };
-      targetWebSocket.on('error', onErrorForReject);
+      toWebSocket.on('error', onErrorForReject);
 
-      targetWebSocket.on('open', () => {
-        targetWebSocket.off('error', onErrorForReject);
-        targetWebSocket.on('error', (error) => {
-          this.logger.verbose('targetWebSocket error', { url, error: errorify(error) });
+      toWebSocket.on('open', () => {
+        toWebSocket.off('error', onErrorForReject);
+        toWebSocket.on('error', (error) => {
+          this.logger.verbose('toWebSocket error', { url, error: errorify(error) });
         });
 
-        this.logger.verbose('targetWebSocket open', { url });
-        resolve(targetWebSocket);
+        this.logger.verbose('toWebSocket open', { url });
+        resolve(toWebSocket);
       });
 
-      targetWebSocket.on('close', (code, reason) => {
-        this.logger.verbose('targetWebSocket close', { url, code, reason });
-        closeWebSocketWithTruncateReason(webSocket, code, reason);
+      toWebSocket.on('close', (code, reason) => {
+        this.logger.verbose('toWebSocket close', { url, code, reason: reason.toString() });
+        try {
+          closeWebSocketWithTruncateReason(fromWebSocket, code, reason);
+        } catch (error) {
+          this.logger.error('closeWebSocketWithTruncateReason error', { error: errorify(error) });
+        }
       });
-      targetWebSocket.on('message', (data) => {
-        this.logger.verbose('targetWebSocket message', { url, data });
+      toWebSocket.on('message', (data) => {
+        const stringified = data.toString();
+        this.logger.verbose('toWebSocket message', { url, data: stringified });
         const message: Instance<typeof DeviceHostWebSocketRelay.receiveMessage> = {
-          data: data.toString(),
+          data: stringified,
         };
-        webSocket.send(JSON.stringify(message));
+        fromWebSocket.send(JSON.stringify(message));
       });
     });
 
     return {
-      targetWebSocket,
+      toWebSocket,
     };
   }
 
-  async onWebSocketMessage(
-    webSocket: WebSocket,
-    message: Instance<typeof DeviceHostWebSocketRelay.sendMessage>,
-    valueAccessor: WebSocketRegistryValueAccessor<Value>,
-  ): Promise<void> {
+  onWebSocketMessage(fromWebSocket: WebSocket, message: Instance<typeof DeviceHostWebSocketRelay.sendMessage>, valueAccessor: WebSocketRegistryValueAccessor<Value>): void {
     try {
-      await this.onWebSocketMessageInternal(webSocket, message, valueAccessor);
+      this.onWebSocketMessageInternal(fromWebSocket, message, valueAccessor);
     } catch (error) {
       this.logger.error('onWebSocketMessageInternal error', { error: errorify(error) });
     }
   }
 
-  private async onWebSocketMessageInternal(
-    webSocket: WebSocket,
+  private onWebSocketMessageInternal(
+    fromWebSocket: WebSocket,
     message: Instance<typeof DeviceHostWebSocketRelay.sendMessage>,
     valueAccessor: WebSocketRegistryValueAccessor<Value>,
-  ): Promise<void> {
-    const { targetWebSocket } = valueAccessor.get();
-    if (targetWebSocket) {
-      targetWebSocket.send(message.data);
+  ): void {
+    const { toWebSocket } = valueAccessor.get();
+    if (toWebSocket) {
+      toWebSocket.send(message.data);
     }
   }
 
-  onWebSocketClose(webSocket: WebSocket, event: WebSocket.CloseEvent, valueAccessor: WebSocketRegistryValueAccessor<Value>): void {
+  onWebSocketClose(fromWebSocket: WebSocket, event: WebSocket.CloseEvent, valueAccessor: WebSocketRegistryValueAccessor<Value>): void {
     const { code, reason } = event;
-    const { targetWebSocket } = valueAccessor.get();
-    if (targetWebSocket) {
-      closeWebSocketWithTruncateReason(targetWebSocket, code, reason);
+    const { toWebSocket } = valueAccessor.get();
+    if (toWebSocket) {
+      closeWebSocketWithTruncateReason(toWebSocket, code, reason);
     }
     valueAccessor.update({
-      targetWebSocket: null,
+      toWebSocket: null,
     });
   }
 }

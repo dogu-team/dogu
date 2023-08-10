@@ -325,7 +325,7 @@ export class DeviceMessageRelayer {
         const { kind } = value;
         this.logger.verbose('receiveWebSocketMessage', { organizationId, deviceId, webSocketProxyId, value });
         if (kind === 'WebSocketProxyReceiveOpen') {
-          // noop
+          this.logger.verbose('receiveWebSocketMessage WebSocketProxyReceiveOpen', { organizationId, deviceId, webSocketProxyId });
         } else if (kind === 'WebSocketProxyReceiveError') {
           const { error, message } = value;
           throw new Error(`WebSocketProxyReceiveError error ${stringify(error)} ${message}`);

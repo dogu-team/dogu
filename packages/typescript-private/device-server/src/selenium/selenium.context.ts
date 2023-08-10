@@ -117,6 +117,10 @@ export class SeleniumContext {
     const port = await getFreePort();
     const args: string[] = ['-jar', seleniumServerPath, 'standalone', '--host', '127.0.0.1', '--port', `${port}`, '--allow-cors', 'true', '--detect-drivers', 'false'];
 
+    if (process.env.DOGU_LOG_LEVEL === 'verbose') {
+      args.push('--log-level', 'ALL');
+    }
+
     let stereotype: Record<string, unknown> = {};
     if (browserName === 'chrome') {
       const browserPath = this.browserInstaller.getBrowserOrDriverPath(browserName, resolvedBrowserVersion);
@@ -125,6 +129,7 @@ export class SeleniumContext {
         browserName: 'chrome',
         'goog:chromeOptions': {
           binary: browserPath,
+          args: ['remote-allow-origins=*'],
         },
       };
       args.push('--driver-configuration', 'display-name="Google Chrome for Testing"', `webdriver-executable="${browserDriverPath}"`);
