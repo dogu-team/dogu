@@ -13,7 +13,7 @@ import { DeviceStatusService } from '../../module/organization/device/device-sta
 import { RemoteException } from '../../module/remote/common/exception';
 import { RemoteDeviceJobProcessor } from '../../module/remote/processor/remote-device-job-processor';
 import { RemoteWebDriverBatchRequestExecutor } from '../../module/remote/remote-webdriver/remote-webdriver.batch-request-executor';
-import { GetTimeoutsRemoteWebDriverBatchRequestItem } from '../../module/remote/remote-webdriver/remote-webdriver.batch-request-items';
+import { GetWindowRectRemoteWebDriverBatchRequestItem } from '../../module/remote/remote-webdriver/remote-webdriver.batch-request-items';
 import { RemoteWebDriverService } from '../../module/remote/remote-webdriver/remote-webdriver.service';
 
 @Injectable()
@@ -64,10 +64,10 @@ export class RemoteGamiumService {
         headers,
         parallel: true,
       });
-      const getTimeouts = new GetTimeoutsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
+      const item = new GetWindowRectRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
       await batchExecutor.execute();
 
-      await getTimeouts.response().catch((error) => {
+      await item.response().catch((error) => {
         this.logger.error(`RemoteGamiumService.refreshCommandTimeout: ${stringify(error)}`);
       });
     } catch (error) {

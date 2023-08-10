@@ -1,7 +1,7 @@
 import { OnWebSocketClose, OnWebSocketMessage, WebSocketGatewayBase, WebSocketRegistryValueAccessor, WebSocketService } from '@dogu-private/nestjs-common';
 import { categoryFromPlatform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, errorify, Instance, loop } from '@dogu-tech/common';
-import { DeviceRelay, DoguDeviceRelayPortHeaderKey, DoguDeviceRelaySerialHeaderKey, TcpRelayResponse } from '@dogu-tech/device-client-common';
+import { DeviceRelay, DoguDeviceRelayPortHeaderKey, DoguDeviceRelaySerialHeaderKey, TcpRelayRequest, TcpRelayResponse } from '@dogu-tech/device-client-common';
 import { IncomingHttpHeaders, IncomingMessage } from 'http';
 import { Socket } from 'net';
 import WebSocket from 'ws';
@@ -15,6 +15,10 @@ interface Value {
   port: number;
   hostPort: number;
   client: Socket;
+  recvContext: {
+    expectedSeq: number;
+    buffer: TcpRelayRequest[];
+  };
 }
 
 @WebSocketService(DeviceRelay)
@@ -45,9 +49,14 @@ export class DeviceRelayService
     client.setNoDelay(true);
     client.setKeepAlive(true);
 
+    let seq = 0;
+
     client.on('data', (data: Buffer) => {
       const base64 = data.toString('base64');
+      seq = seq + 1;
+      this.logger.info(`TcpRelayResponse ds - seq: ${seq}, ds: ${base64.length}`);
       const message: TcpRelayResponse = {
+        seq,
         encodedData: base64,
       };
       webSocket.send(JSON.stringify(message));
@@ -72,7 +81,7 @@ export class DeviceRelayService
     });
 
     this.logger.info(`DeviceRelayService.onWebSocketOpen success`, { serial, port });
-    return { serial, port, hostPort, client };
+    return { serial, port, hostPort, client, recvContext: { expectedSeq: 1, buffer: [] } };
   }
 
   private parseHeader(headers: IncomingHttpHeaders): { serial: Serial; port: number } {
@@ -116,12 +125,31 @@ export class DeviceRelayService
       }
     }
     try {
-      const { client } = valueAccessor.get();
-      client.write(Buffer.from(message.encodedData, 'base64'));
+      const { client, recvContext } = valueAccessor.get();
+      this.logger.info(`TcpRelayRequest ds - seq: ${message.seq}, ds: ${message.encodedData.length}`);
+
+      recvContext.buffer.push(message);
+      this.flushBuffer(recvContext, client);
     } catch (e) {
       this.logger.error(`DeviceRelayService.onWebSocketMessage. get error`, { error: errorify(e) });
       closeWebSocketWithTruncateReason(webSocket, 1001, 'send failed by open error');
     }
+  }
+
+  private flushBuffer(recvContext: { expectedSeq: number; buffer: TcpRelayRequest[] }, client: Socket): void {
+    const target = recvContext.buffer.find((message) => {
+      if (message.seq !== recvContext.expectedSeq) {
+        return false;
+      }
+      return true;
+    });
+    if (!target) {
+      return;
+    }
+
+    recvContext.expectedSeq = recvContext.expectedSeq + 1;
+    client.write(Buffer.from(target.encodedData, 'base64'));
+    this.flushBuffer(recvContext, client);
   }
 
   private async waitDevicePortListening(deviceChannel: DeviceChannel, port: number): Promise<void> {

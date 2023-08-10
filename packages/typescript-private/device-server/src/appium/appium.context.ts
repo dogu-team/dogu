@@ -18,7 +18,7 @@ import { Adb } from '../internal/externals/index';
 import { Zombieable, ZombieProps } from '../internal/services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../internal/services/zombie/zombie-service';
 import { getFreePort } from '../internal/util/net';
-import { createAppiumLogger } from '../logger/logger.instance';
+import { createAppiumLogger, logger } from '../logger/logger.instance';
 import { AppiumRemoteContext } from './appium.remote.context';
 import { AppiumService } from './appium.service';
 
@@ -375,11 +375,11 @@ export class AppiumContextImpl implements AppiumContext {
           'appium:derivedDataPath': derivedDataPath,
           'appium:mjpegServerPort': mjpegServerPort,
           'appium:newCommandTimeout': AppiumNewCommandTimeout,
-          'appium:wdaLaunchTimeout': 300 * 1000,
-          'appium:wdaConnectionTimeout': 300 * 1000,
-          'appium:wdaStartupRetries': 1,
-          'appium:waitForIdleTimeout': 300 * 1000,
-          'appium:shouldUseSingletonTestManager': false,
+          // 'appium:wdaLaunchTimeout': 300 * 1000,
+          // 'appium:wdaConnectionTimeout': 300 * 1000,
+          // 'appium:wdaStartupRetries': 1,
+          // 'appium:waitForIdleTimeout': 300 * 1000,
+          // 'appium:shouldUseSingletonTestManager': false,
           'appium:showXcodeLog': true,
         };
       }
@@ -455,7 +455,7 @@ export class AppiumContextImpl implements AppiumContext {
    * https://webdriver.io/docs/api/webdriver#newsession
    * https://webdriver.io/docs/api/modules#webdriverio
    */
-  @Retry({ retryCount: 10, retryInterval: 3000, printable: NullLogger.instance })
+  @Retry({ retryCount: 10, retryInterval: 3000, printable: logger })
   private async restartClient(serverPort: number): Promise<AppiumData['client']> {
     this.printable.info('Appium client starting');
     const argumentCapabilities = await this.createArgumentCapabilities();
