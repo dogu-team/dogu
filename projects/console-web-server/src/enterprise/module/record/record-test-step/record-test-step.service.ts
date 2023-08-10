@@ -24,20 +24,20 @@ import { EMPTY_PAGE, Page } from '../../../../module/common/dto/pagination/page'
 import { FeatureFileService } from '../../../../module/feature/file/feature-file.service';
 import { DoguLogger } from '../../../../module/logger/logger';
 import { WebDriverEndpointHandlerResult } from '../../../../module/remote/common/type';
+import { AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem } from '../../../../module/remote/remote-webdriver/remote-webdriver.appium-batch-request-items';
 import { RemoteWebDriverBatchRequestExecutor } from '../../../../module/remote/remote-webdriver/remote-webdriver.batch-request-executor';
-import {
-  AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem,
-  DeleteSessionRemoteWebDriverBatchRequestItem,
-  ElementClickRemoteWebDriverBatchRequestItem,
-  ElementSendKeysRemoteWebDriverBatchRequestItem,
-  FindElementRemoteWebDriverBatchRequestItem,
-  GetPageSourceRemoteWebDriverBatchRequestItem,
-  GetTimeoutsRemoteWebDriverBatchRequestItem,
-  NewSessionRemoteWebDriverBatchRequestItem,
-  PerformActionsRemoteWebDriverBatchRequestItem,
-  TakeScreenshotRemoteWebDriverBatchRequestItem,
-} from '../../../../module/remote/remote-webdriver/remote-webdriver.batch-request-items';
 import { RemoteWebDriverRequestOptions, RemoteWebDriverService } from '../../../../module/remote/remote-webdriver/remote-webdriver.service';
+import {
+  DeleteSessionRemoteWebDriverBatchRequestItem,
+  NewSessionRemoteWebDriverBatchRequestItem,
+  W3CElementClickRemoteWebDriverBatchRequestItem,
+  W3CElementSendKeysRemoteWebDriverBatchRequestItem,
+  W3CFindElementRemoteWebDriverBatchRequestItem,
+  W3CGetPageSourceRemoteWebDriverBatchRequestItem,
+  W3CGetTimeoutsRemoteWebDriverBatchRequestItem,
+  W3CPerformActionsRemoteWebDriverBatchRequestItem,
+  W3CTakeScreenshotRemoteWebDriverBatchRequestItem,
+} from '../../../../module/remote/remote-webdriver/remote-webdriver.w3c-batch-request-items';
 import { CreateRecordTestStepDto, FindRecordTestStepsByProjectIdDto, UpdateRecordTestStepDto } from '../dto/record-test-step.dto';
 
 @Injectable()
@@ -288,10 +288,10 @@ export class RecordTestStepService {
       parallel: true,
     });
 
-    const getPageSource = new GetPageSourceRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
-    const takeScreenshot = new TakeScreenshotRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
+    const getPageSource = new W3CGetPageSourceRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
+    const takeScreenshot = new W3CTakeScreenshotRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
     const appiumIsKeyboardShown = new AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
-    const findElement = new FindElementRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, 'xpath', '//*');
+    const findElement = new W3CFindElementRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, 'xpath', '//*');
     await batchExecutor.execute();
     await takeScreenshot
       .response()
@@ -336,10 +336,10 @@ export class RecordTestStepService {
           headers,
           parallel: true,
         });
-        const click = new ElementClickRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, elementId);
-        const sendKeys = new ElementSendKeysRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, elementId, 'test');
-        const performActions = new PerformActionsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, []);
-        const getTimeouts = new GetTimeoutsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
+        const click = new W3CElementClickRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, elementId);
+        const sendKeys = new W3CElementSendKeysRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, elementId, 'test');
+        const performActions = new W3CPerformActionsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, []);
+        const getTimeouts = new W3CGetTimeoutsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
         await batchExecutor.execute();
 
         await click
@@ -429,10 +429,10 @@ export class RecordTestStepService {
       parallel: true,
     });
 
-    const getPageSource = new GetPageSourceRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
-    const takeScreenshot = new TakeScreenshotRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
+    const getPageSource = new W3CGetPageSourceRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
+    const takeScreenshot = new W3CTakeScreenshotRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
     const appiumIsKeyboardShown = new AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
-    const findElement = new FindElementRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, 'xpath', '//*');
+    const findElement = new W3CFindElementRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, 'xpath', '//*');
     await batchExecutor.execute();
     await takeScreenshot
       .response()
@@ -477,10 +477,10 @@ export class RecordTestStepService {
           headers,
           parallel: true,
         });
-        const click = new ElementClickRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, elementId);
-        const sendKeys = new ElementSendKeysRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, elementId, 'test');
-        const performActions = new PerformActionsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, []);
-        const getTimeouts = new GetTimeoutsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
+        const click = new W3CElementClickRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, elementId);
+        const sendKeys = new W3CElementSendKeysRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, elementId, 'test');
+        const performActions = new W3CPerformActionsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, []);
+        const getTimeouts = new W3CGetTimeoutsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
         await batchExecutor.execute();
 
         await click
@@ -570,10 +570,10 @@ export class RecordTestStepService {
       parallel: true,
     });
 
-    const getPageSource = new GetPageSourceRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
-    const takeScreenshot = new TakeScreenshotRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
+    const getPageSource = new W3CGetPageSourceRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
+    const takeScreenshot = new W3CTakeScreenshotRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
     // const appiumIsKeyboardShown = new AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
-    const findElement = new FindElementRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, 'xpath', '/html/body/div[2]/header/div[4]/div/div/div[1]/a');
+    const findElement = new W3CFindElementRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, 'xpath', '/html/body/div[2]/header/div[4]/div/div/div[1]/a');
     await batchExecutor.execute();
     await takeScreenshot
       .response()
@@ -618,10 +618,10 @@ export class RecordTestStepService {
           headers,
           parallel: true,
         });
-        const click = new ElementClickRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, elementId);
-        const sendKeys = new ElementSendKeysRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, elementId, 'test');
-        const performActions = new PerformActionsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, []);
-        const getTimeouts = new GetTimeoutsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
+        const click = new W3CElementClickRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, elementId);
+        const sendKeys = new W3CElementSendKeysRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, elementId, 'test');
+        const performActions = new W3CPerformActionsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId, []);
+        const getTimeouts = new W3CGetTimeoutsRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
         await batchExecutor.execute();
 
         await click
