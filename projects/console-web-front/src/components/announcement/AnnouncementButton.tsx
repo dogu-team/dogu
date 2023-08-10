@@ -8,28 +8,62 @@ import { swrAuthFetcher } from '../../api';
 import { flexRowCenteredStyle } from '../../styles/box';
 import AnnouncementCard from './AnnouncementCard';
 import { updateLastSeen } from '../../api/change-log';
+import { LoadingOutlined } from '@ant-design/icons';
+import { ChangeLogBase } from '@dogu-private/console';
+import useRefresh from '../../hooks/useRefresh';
+import useAuth from '../../hooks/useAuth';
 
 const AnnouncementButton = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { data, isLoading, error } = useSWR(`/change-logs`, swrAuthFetcher);
+  const [hasNewLogs, setHasNewLogs] = useState(false);
+  const { me } = useAuth();
+  const { data, isLoading, error, mutate } = useSWR<ChangeLogBase[]>(`/change-logs`, swrAuthFetcher, { revalidateOnFocus: false });
+
+  useRefresh(['onChangeLogReactionUpdated'], mutate);
+
+  useEffect(() => {
+    if (data && me) {
+      if (data.length === 0) {
+        return;
+      }
+
+      if (!me.lastChangeLogSeenAt) {
+        setHasNewLogs(true);
+        return;
+      }
+
+      if (new Date(data[0].createdAt).getTime() > new Date(me.lastChangeLogSeenAt).getTime()) {
+        setHasNewLogs(true);
+      }
+    }
+  }, [data, me]);
 
   const handleOpen = async () => {
     setIsOpen(true);
-    // TODO: update last seen when only exist new change logs
-    updateLastSeen().catch((e) => {});
+    if (hasNewLogs) {
+      updateLastSeen().catch((e) => {});
+    }
   };
 
   return (
     <>
-      <StyledButton onClick={handleOpen}>
+      <StyledButton onClick={handleOpen} disabled={!me && !data}>
         <TfiAnnouncement />
+        {hasNewLogs && <Dot />}
       </StyledButton>
 
-      <StyledDrawer placement="right" title="What's new" onClose={() => setIsOpen(false)} open={isOpen}>
-        {/* <Centered>
-          <Empty description="No announcements" />
-        </Centered> */}
-        <AnnouncementCard title="Dogu Studio is now available!" tags={['announcement', 'release', 'feature']} article={<div>hello...</div>} />
+      <StyledDrawer placement="right" title="What's new" onClose={() => setIsOpen(false)} open={isOpen} destroyOnClose>
+        {error && <div>error</div>}
+        {isLoading && (
+          <div>
+            loading...
+            <LoadingOutlined />
+          </div>
+        )}
+        {!!data &&
+          data.map((changeLog) => {
+            return <AnnouncementCard key={changeLog.changeLogId} changeLog={changeLog} tags={['announcement', 'release', 'feature']} />;
+          })}
       </StyledDrawer>
     </>
   );
@@ -38,6 +72,7 @@ const AnnouncementButton = () => {
 export default AnnouncementButton;
 
 const StyledButton = styled.button`
+  position: relative;
   ${flexRowCenteredStyle}
   width: 2rem;
   height: 2rem;
@@ -59,7 +94,12 @@ const StyledDrawer = styled(Drawer)`
   }
 `;
 
-const Centered = styled.div`
-  ${flexRowCenteredStyle}
-  height: 100%;
+const Dot = styled.div`
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  background-color: #f0595b;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
 `;

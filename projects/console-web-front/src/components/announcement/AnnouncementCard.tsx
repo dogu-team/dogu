@@ -1,16 +1,17 @@
+import { ChangeLogBase } from '@dogu-private/console';
 import { Card, Divider } from 'antd';
 import styled from 'styled-components';
-import ActionBar from './ActionBar';
 
+import { flexRowCenteredStyle } from '../../styles/box';
+import ActionBar from './ActionBar';
 import AnnouncementTag, { AnnouncementType } from './AnnouncementTag';
 
 interface Props {
   tags: AnnouncementType[];
-  title: string;
-  article: React.ReactNode;
+  changeLog: ChangeLogBase;
 }
 
-const AnnouncementCard = ({ tags, title, article }: Props) => {
+const AnnouncementCard = ({ tags, changeLog }: Props) => {
   return (
     <StyledCard bordered={false}>
       <TitleWrapper>
@@ -20,12 +21,14 @@ const AnnouncementCard = ({ tags, title, article }: Props) => {
           ))}
         </TagWrapper>
         <div>
-          <Title>{title}</Title>
+          <Title>{changeLog.title}</Title>
         </div>
       </TitleWrapper>
-      <Article>{article}</Article>
+      <Article>{changeLog.content}</Article>
       <Divider />
-      <ActionBar />
+      <BarWrapper>
+        <ActionBar changeLogId={changeLog.changeLogId} selectedReaction={changeLog.userReactions?.[0]?.reactionType} />
+      </BarWrapper>
     </StyledCard>
   );
 };
@@ -58,4 +61,8 @@ const Title = styled.h5`
 
 const Article = styled.article`
   font-size: 0.875rem;
+`;
+
+const BarWrapper = styled.div`
+  ${flexRowCenteredStyle}
 `;

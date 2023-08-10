@@ -25,6 +25,9 @@ const resources = {
     smilingFace: '/resources/icons/smiling-face.svg',
     neutralFace: '/resources/icons/neutral-face.svg',
     pensiveFace: '/resources/icons/pensive-face.svg',
+    inactiveSmilingFace: '/resources/icons/inactive-smiling-face.svg',
+    inactiveNeutralFace: '/resources/icons/inactive-neutral-face.svg',
+    inactivePensiveFace: '/resources/icons/inactive-pensive-face.svg',
   },
   images: {},
 };
