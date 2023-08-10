@@ -1,6 +1,8 @@
 import { ChangeLogBase } from '@dogu-private/console';
 import { Card, Divider } from 'antd';
 import styled from 'styled-components';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 import { flexRowCenteredStyle } from '../../styles/box';
 import ActionBar from './ActionBar';
@@ -24,7 +26,11 @@ const AnnouncementCard = ({ tags, changeLog }: Props) => {
           <Title>{changeLog.title}</Title>
         </div>
       </TitleWrapper>
-      <Article>{changeLog.content}</Article>
+      <Article>
+        <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ a: (props) => <a {...props} target="_blank" /> }}>
+          {changeLog.content}
+        </ReactMarkdown>
+      </Article>
       <Divider />
       <BarWrapper>
         <ActionBar changeLogId={changeLog.changeLogId} selectedReaction={changeLog.userReactions?.[0]?.reactionType} />
@@ -55,12 +61,47 @@ const TagWrapper = styled.div`
 `;
 
 const Title = styled.h5`
-  font-size: 1rem;
+  font-size: 1.1rem;
   font-weight: 600;
 `;
 
 const Article = styled.article`
   font-size: 0.875rem;
+
+  /* style for markdown */
+  h1 {
+    font-size: 1.2rem;
+    font-weight: 600;
+  }
+
+  h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  h4 {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  p {
+    font-size: 0.875rem;
+  }
+
+  /* list with style */
+  ul {
+    padding-left: 1rem;
+  }
+
+  li {
+    font-size: 0.875rem;
+    list-style: disc;
+  }
 `;
 
 const BarWrapper = styled.div`
