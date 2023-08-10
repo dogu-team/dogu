@@ -254,7 +254,7 @@ export class RecordTestScenarioService {
       });
       await manager
         .getRepository(RecordTestScenarioAndRecordTestCase)
-        .upsert(newRoot, [`${RecordTestScenarioAndRecordTestCasePropCamel.recordTestScenarioId}`, `${RecordTestScenarioAndRecordTestCasePropCamel.recordTestCaseId}`]);
+        .upsert(castEntity(newRoot), [`${RecordTestScenarioAndRecordTestCasePropCamel.recordTestScenarioId}`, `${RecordTestScenarioAndRecordTestCasePropCamel.recordTestCaseId}`]);
       return;
     }
 

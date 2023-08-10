@@ -3,6 +3,7 @@ import { DeviceHostModule } from '../device-host/device-host.module';
 import { ScanModule } from '../scan/scan.module';
 import { DeviceHostDownloadSharedResourceWebsocketService } from './device-host/download-shared-resource';
 import { DeviceHostUploadFileService } from './device-host/upload-file.service';
+import { DeviceHostWebSocketRelayWebsocketService } from './device-host/websocket-relay.service';
 import { DeviceConnectionSubscribeService } from './device/connection-subscribe.service';
 import { DeviceForwardService } from './device/forward.service';
 import { DeviceInstallAppService } from './device/install-app.service';
@@ -32,6 +33,7 @@ import { DeviceUninstallAppService } from './device/uninstall-app.service';
     DeviceJoinWifiService,
     DeviceHostUploadFileService,
     DeviceHostDownloadSharedResourceWebsocketService,
+    DeviceHostWebSocketRelayWebsocketService,
     DeviceTcpRelayService,
   ],
 })

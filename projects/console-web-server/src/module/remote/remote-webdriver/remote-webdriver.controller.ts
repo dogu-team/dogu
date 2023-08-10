@@ -158,8 +158,6 @@ export class RemoteWebDriverInfoController {
     headers[DoguRequestTimeoutHeader] = DefaultHttpOptions.request.timeout1minutes.toString();
 
     try {
-      await this.test(processResult, endpoint.info, headers);
-
       const options: RemoteWebDriverRequestOptions = {
         ...processResult,
         headers,

@@ -76,9 +76,14 @@ export module RemoteDeviceJobProcessor {
 
     return remoteDeviceJob;
   }
-  export async function updateRemoteDeviceJobSessionId(manager: EntityManager, remoteDeviceJobId: RemoteDeviceJobId, sessionId: WebDriverSessionId): Promise<void> {
+  export async function updateRemoteDeviceJobByCapabilities(
+    manager: EntityManager,
+    remoteDeviceJobId: RemoteDeviceJobId,
+    sessionId: WebDriverSessionId,
+    seCdp: string | null,
+  ): Promise<void> {
     logger.info(`updateRemoteDeviceJobSessionId. remote-device-job[${remoteDeviceJobId}] sessionId: ${sessionId}`);
-    await manager.getRepository(RemoteDeviceJob).update(remoteDeviceJobId, { sessionId: sessionId });
+    await manager.getRepository(RemoteDeviceJob).update(remoteDeviceJobId, { sessionId, seCdp });
   }
 
   export async function setRemoteDeviceJobSessionState(manager: EntityManager, remoteDeviceJob: RemoteDeviceJob, state: REMOTE_DEVICE_JOB_SESSION_STATE): Promise<void> {

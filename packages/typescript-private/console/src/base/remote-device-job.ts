@@ -18,6 +18,7 @@ export interface RemoteDeviceJobBaseTraits {
   sessionState: REMOTE_DEVICE_JOB_SESSION_STATE;
   intervalTimeout: number;
   lastIntervalTime: Date;
+  seCdp: string | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

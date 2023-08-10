@@ -2,15 +2,15 @@ import { IsFilledString, WebSocketSpec } from '@dogu-tech/common';
 
 export class WebSocketRelayRequest {
   @IsFilledString()
-  encodedData!: string; // base64 encoded
+  data!: string;
 }
 
 export class WebSocketRelayResponse {
   @IsFilledString()
-  encodedData!: string; // base64 encoded
+  data!: string;
 }
 
-export const DoguDeviceTcpRelayPortHeaderKey = 'dogu-device-relay-port';
+export const DoguDeviceHostWebSocketRelayUrlHeader = 'dogu-device-host-web-socket-relay-url';
 
 export const DeviceHostWebSocketRelay = new WebSocketSpec({
   path: '/ws/device-host/relay/web-socket',

@@ -24543,6 +24543,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["passport", "npm:0.6.0"],\
             ["passport-google-oauth20", "npm:2.0.0"],\
             ["passport-jwt", "npm:4.0.0"],\
+            ["path-to-regexp", "npm:6.2.1"],\
             ["pg", "virtual:af52db50ce1e17ae30d2a127ee5eb203e2459595ebbd4aaffd83a5dbfc8ae6774ee976f28c80a96cee2a1b783ba84770e425442edbbe56c55f18094f55940734#npm:8.11.0"],\
             ["plist", "npm:3.0.6"],\
             ["reflect-metadata", "npm:0.1.13"],\
@@ -39246,6 +39247,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/path-to-regexp-npm-3.2.0-daf7bbd038-c3d35cda3b.zip/node_modules/path-to-regexp/",\
           "packageDependencies": [\
             ["path-to-regexp", "npm:3.2.0"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:6.2.1", {\
+          "packageLocation": "./.yarn/cache/path-to-regexp-npm-6.2.1-8ebfe03654-f0227af828.zip/node_modules/path-to-regexp/",\
+          "packageDependencies": [\
+            ["path-to-regexp", "npm:6.2.1"]\
           ],\
           "linkType": "HARD"\
         }]\

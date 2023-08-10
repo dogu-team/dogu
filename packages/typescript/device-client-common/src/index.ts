@@ -14,6 +14,7 @@ export * from './specs/types';
 export * from './specs/ws/device-host/download-shared-resource';
 export * from './specs/ws/device-host/record-postprocess';
 export * from './specs/ws/device-host/upload-file';
+export * from './specs/ws/device-host/websocket-relay';
 export * from './specs/ws/device/connection-subscribe';
 export * from './specs/ws/device/forward';
 export * from './specs/ws/device/install-app';

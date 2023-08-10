@@ -202,9 +202,10 @@ export class SeleniumContext {
         reject(error);
       };
 
+      const env = { ...serverEnv, SE_NODE_GRID_URL: `http://localhost:${port}` };
       const child = spawn(javaPath, args, {
         cwd: seleniumServerDirPath,
-        env: serverEnv,
+        env,
         shell: true,
       });
 
