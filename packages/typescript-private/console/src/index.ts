@@ -1,5 +1,7 @@
 import 'reflect-metadata';
 
+export * from './base/change-log';
+export * from './base/change-log-user-reaction';
 export * from './base/cloud-device';
 export * from './base/cloud-device-rental';
 export * from './base/controller-handler';
