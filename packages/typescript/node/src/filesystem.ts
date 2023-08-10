@@ -130,6 +130,9 @@ export async function checkDirectoryEqual(srcDirPath: string, destDirPath: strin
     }
     const srcFileContents = await fs.promises.readFile(srcFile, { encoding: 'utf-8' });
     const destFileContens = await fs.promises.readFile(destFile, { encoding: 'utf-8' });
+    if (srcFileContents.length !== destFileContens.length) {
+      return { isEqual: false, reason: `file size is different. src:${srcFileContents.length}, dest:${destFileContens.length}` };
+    }
     if (srcFileContents !== destFileContens) {
       return { isEqual: false, reason: `file contents is different. file: ${destFile}` };
     }
