@@ -156,9 +156,9 @@ export class ExternalService {
 
   private async isSupportedPlatformValid(option: ValidationCheckOption): Promise<boolean> {
     if (option.ignoreManual) {
-      return Promise.resolve([...this.units.values()].filter((unit) => unit.isPlatformSupported() && !unit.isManualInstallNeeded()).every((unit) => unit.isValid()));
+      return Promise.resolve([...this.units.values()].filter((unit) => unit.isPlatformSupported() && !unit.isManualInstallNeeded()).every((unit) => unit.isValid().valid));
     }
-    return Promise.resolve([...this.units.values()].filter((unit) => unit.isPlatformSupported()).every((unit) => unit.isValid()));
+    return Promise.resolve([...this.units.values()].filter((unit) => unit.isPlatformSupported()).every((unit) => unit.isValid().valid));
   }
 
   async updateIsSupportedPlatformValid(): Promise<boolean> {

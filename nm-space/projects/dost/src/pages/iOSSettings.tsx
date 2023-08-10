@@ -9,12 +9,30 @@ import BorderBox from '../components/layouts/BorderBox';
 import PageTitle from '../components/layouts/PageTitle';
 import useManualSetupExternalValidResult from '../hooks/manaul-setup-external-valid-result';
 import { DoguDocsDeviceFarmIosSettingsUrl } from '../shares/constants';
-import { ExternalValidationResult } from '../shares/external';
+import { ExternalKey, ExternalValidationResult, IosSettingsExternalKey } from '../shares/external';
+import useIosSettingsStatus from '../stores/ios-settings-status';
 import { ipc } from '../utils/window';
 
 function IosSettings() {
-  const { results } = useManualSetupExternalValidResult(['xcode', 'web-driver-agent-build', 'ios-device-agent-build']);
   const [xcodeResult, setXcodeResult] = useState<ExternalValidationResult | null>(null);
+  const { iosStatus, setIosStatus } = useIosSettingsStatus();
+
+  const onValidateEnd = useCallback(
+    (key: ExternalKey, validateResult: ExternalValidationResult) => {
+      const newStatus = iosStatus?.map((status) => {
+        if (status.key === key) {
+          return {
+            ...status,
+            isValid: validateResult.valid,
+            error: validateResult.error,
+          };
+        }
+        return status;
+      });
+      setIosStatus(newStatus);
+    },
+    [iosStatus],
+  );
 
   const validateXcode = useCallback(async () => {
     try {
@@ -51,8 +69,15 @@ function IosSettings() {
               </Button>
             </BorderBox>
           )}
-          {results?.map((result) => (
-            <ManualExternalToolValidCheckerItem key={result.key} isValid={result.isValid} externalKey={result.key} name={result.name} />
+          {iosStatus?.map((result) => (
+            <ManualExternalToolValidCheckerItem
+              key={result.key}
+              isValid={result.isValid}
+              error={result.error}
+              externalKey={result.key}
+              name={result.name}
+              onValidateEnd={(validateResult) => onValidateEnd(result.key, validateResult)}
+            />
           ))}
         </List>
       </Center>
