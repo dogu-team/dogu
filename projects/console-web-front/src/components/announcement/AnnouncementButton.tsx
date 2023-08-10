@@ -40,6 +40,7 @@ const AnnouncementButton = () => {
 
   const handleOpen = async () => {
     setIsOpen(true);
+    setHasNewLogs(false);
     if (hasNewLogs) {
       updateLastSeen().catch((e) => {});
     }
