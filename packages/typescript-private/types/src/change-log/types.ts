@@ -9,3 +9,15 @@ export enum ChangeLogReactionType {
   NEUTRAL,
   DISLIKE,
 }
+
+export enum ChangeLogType {
+  ANNOUNCEMENT = 'announcement',
+  FEATURE = 'feature',
+  EVENT = 'event',
+  RELEASE = 'release',
+  WEB = 'web',
+  MOBILE = 'mobile',
+  GAME = 'game',
+  AUTOMATION = 'automation',
+  INTEGRATION = 'integration',
+}

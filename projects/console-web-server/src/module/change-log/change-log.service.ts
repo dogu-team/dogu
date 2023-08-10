@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { ChangeLog } from '../../db/entity/change-log.entity';
+import { User } from '../../db/entity/user.entity';
 
 @Injectable()
 export class ChangeLogService {
@@ -11,7 +12,7 @@ export class ChangeLogService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async findChangeLogs(userId: UserId) {
+  async findChangeLogs(userId: UserId): Promise<ChangeLog[]> {
     const repository = this.dataSource.getRepository(ChangeLog);
     const changeLogs = await repository
       .createQueryBuilder('changeLog')
@@ -20,5 +21,10 @@ export class ChangeLogService {
       .getMany();
 
     return changeLogs;
+  }
+
+  async updateLastSeenChangeLog(userId: UserId): Promise<void> {
+    const repository = this.dataSource.getRepository(User);
+    await repository.update({ userId }, { lastChangeLogSeenAt: new Date() });
   }
 }

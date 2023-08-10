@@ -1,19 +1,22 @@
 import { TfiAnnouncement } from 'react-icons/tfi';
 import styled from 'styled-components';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Drawer } from 'antd';
 import useSWR from 'swr';
 
 import { swrAuthFetcher } from '../../api';
 import { flexRowCenteredStyle } from '../../styles/box';
 import AnnouncementCard from './AnnouncementCard';
+import { updateLastSeen } from '../../api/change-log';
 
 const AnnouncementButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { data, isLoading, error } = useSWR(`/change-logs`, swrAuthFetcher);
 
-  const handleOpen = () => {
+  const handleOpen = async () => {
     setIsOpen(true);
+    // TODO: update last seen when only exist new change logs
+    updateLastSeen().catch((e) => {});
   };
 
   return (
