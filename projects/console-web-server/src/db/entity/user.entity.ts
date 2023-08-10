@@ -1,4 +1,5 @@
 import {
+  ChangeLogUserReactionTraitsBase,
   OrganizationAndUserAndOrganizationRolePropCamel,
   OrganizationAndUserAndOrganizationRolePropSnake,
   OrganizationUserAndTeamPropCamel,
@@ -23,6 +24,7 @@ import { Exclude } from 'class-transformer';
 import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import {
+  ChangeLogUserReaction,
   Host,
   Organization,
   OrganizationAndUserAndOrganizationRole,
@@ -61,6 +63,9 @@ export class User extends BaseEntity implements UserBase {
 
   @Column({ type: 'smallint', name: UserPropSnake.is_tutorial_completed, nullable: false, default: 0 })
   isTutorialCompleted!: number;
+
+  @Column({ type: 'timestamptz', name: UserPropSnake.last_change_log_seen_at, precision: 3, nullable: true })
+  lastChangeLogSeenAt!: Date | null;
 
   @ColumnTemplate.CreateDate(UserPropSnake.created_at)
   createdAt!: Date;
@@ -174,4 +179,7 @@ export class User extends BaseEntity implements UserBase {
   emailPreference?: UserEmailPreference;
 
   projectApplications?: ProjectApplication[];
+
+  @OneToMany(() => ChangeLogUserReaction, (reaction) => reaction.user, { cascade: ['soft-remove'] })
+  changeLogReactions?: ChangeLogUserReactionTraitsBase[];
 }

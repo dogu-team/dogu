@@ -1,13 +1,16 @@
 import { TfiAnnouncement } from 'react-icons/tfi';
 import styled from 'styled-components';
 import { useState } from 'react';
-import { Drawer, Empty } from 'antd';
+import { Drawer } from 'antd';
+import useSWR from 'swr';
 
+import { swrAuthFetcher } from '../../api';
 import { flexRowCenteredStyle } from '../../styles/box';
 import AnnouncementCard from './AnnouncementCard';
 
 const AnnouncementButton = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { data, isLoading, error } = useSWR(`/change-logs`, swrAuthFetcher);
 
   const handleOpen = () => {
     setIsOpen(true);

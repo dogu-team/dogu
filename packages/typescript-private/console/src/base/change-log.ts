@@ -1,7 +1,13 @@
+import { ChangeLogId } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
+import { ChangeLogUserReactionBase } from '..';
+
+export interface ChangeLogRelationTraits {
+  userReactions?: ChangeLogUserReactionBase[];
+}
 
 export interface ChangeLogTraitsBase {
-  changeLogId: string;
+  changeLogId: ChangeLogId;
   title: string;
   content: string;
   createdAt: Date;
@@ -9,6 +15,6 @@ export interface ChangeLogTraitsBase {
   deletedAt: Date | null;
 }
 
-export type ChangeLogBase = ChangeLogTraitsBase;
+export type ChangeLogBase = ChangeLogTraitsBase & ChangeLogRelationTraits;
 export const ChangeLogBasePropCamel = propertiesOf<ChangeLogBase>();
 export const ChangeLogBasePropSnake = camelToSnakeCasePropertiesOf<ChangeLogBase>();

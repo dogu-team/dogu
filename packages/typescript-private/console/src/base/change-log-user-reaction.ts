@@ -1,9 +1,15 @@
-import { ChangeLogReactionType, UserId } from '@dogu-private/types';
+import { ChangeLogId, ChangeLogReactionType, ChangeLogUserReactionId, UserId } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
+import { ChangeLogBase, UserBase } from '..';
+
+export interface ChangeLogUserReactionRelationTraits {
+  changeLog?: ChangeLogBase;
+  user?: UserBase;
+}
 
 export interface ChangeLogUserReactionTraitsBase {
-  changeLogUserReactionId: string;
-  changeLogId: string;
+  changeLogUserReactionId: ChangeLogUserReactionId;
+  changeLogId: ChangeLogId;
   userId: UserId;
   reactionType: ChangeLogReactionType;
   createdAt: Date;
@@ -11,6 +17,6 @@ export interface ChangeLogUserReactionTraitsBase {
   deletedAt: Date | null;
 }
 
-export type ChangeLogUserReactionBase = ChangeLogUserReactionTraitsBase;
+export type ChangeLogUserReactionBase = ChangeLogUserReactionTraitsBase & ChangeLogUserReactionRelationTraits;
 export const ChangeLogUserReactionBasePropCamel = propertiesOf<ChangeLogUserReactionBase>();
 export const ChangeLogUserReactionBasePropSnake = camelToSnakeCasePropertiesOf<ChangeLogUserReactionBase>();
