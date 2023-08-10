@@ -8,6 +8,7 @@ export interface ChangeLogRelationTraits {
 
 export interface ChangeLogTraitsBase {
   changeLogId: ChangeLogId;
+  tags: string;
   title: string;
   content: string;
   createdAt: Date;

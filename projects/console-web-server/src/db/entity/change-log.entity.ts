@@ -1,6 +1,6 @@
 import { ChangeLogBase, ChangeLogBasePropSnake } from '@dogu-private/console';
-import { ChangeLogId, CHANGE_LOG_TABLE_NAME } from '@dogu-private/types';
-import { BaseEntity, Column, Entity, ManyToMany, OneToMany, PrimaryColumn } from 'typeorm';
+import { ChangeLogId, ChangeLogType, CHANGE_LOG_TABLE_NAME } from '@dogu-private/types';
+import { BaseEntity, Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 
 import { ColumnTemplate } from './decorators';
 import { ChangeLogUserReaction } from './index';
@@ -9,6 +9,9 @@ import { ChangeLogUserReaction } from './index';
 export class ChangeLog extends BaseEntity implements ChangeLogBase {
   @PrimaryColumn({ type: 'uuid', name: ChangeLogBasePropSnake.change_log_id, nullable: false })
   changeLogId!: ChangeLogId;
+
+  @Column({ type: 'character varying', name: ChangeLogBasePropSnake.tags, default: `${ChangeLogType.ANNOUNCEMENT}`, nullable: false })
+  tags!: string;
 
   @Column({ type: 'character varying', name: ChangeLogBasePropSnake.title, nullable: false })
   title!: string;

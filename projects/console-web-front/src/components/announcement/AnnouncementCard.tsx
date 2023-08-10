@@ -7,19 +7,19 @@ import remarkGfm from 'remark-gfm';
 import { flexRowCenteredStyle } from '../../styles/box';
 import ActionBar from './ActionBar';
 import AnnouncementTag, { AnnouncementType } from './AnnouncementTag';
+import { ChangeLogType } from '@dogu-private/types';
 
 interface Props {
-  tags: AnnouncementType[];
   changeLog: ChangeLogBase;
 }
 
-const AnnouncementCard = ({ tags, changeLog }: Props) => {
+const AnnouncementCard = ({ changeLog }: Props) => {
   return (
     <StyledCard bordered={false}>
       <TitleWrapper>
         <TagWrapper>
-          {tags.map((tag) => (
-            <AnnouncementTag key={tag} type={tag} />
+          {changeLog.tags.split(',').map((tag) => (
+            <AnnouncementTag key={tag} type={tag as ChangeLogType} />
           ))}
         </TagWrapper>
         <div>
@@ -31,10 +31,14 @@ const AnnouncementCard = ({ tags, changeLog }: Props) => {
           {changeLog.content}
         </ReactMarkdown>
       </Article>
-      <Divider />
-      <BarWrapper>
-        <ActionBar changeLogId={changeLog.changeLogId} selectedReaction={changeLog.userReactions?.[0]?.reactionType} />
-      </BarWrapper>
+      {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
+        <>
+          <Divider />
+          <BarWrapper>
+            <ActionBar changeLogId={changeLog.changeLogId} selectedReaction={changeLog.userReactions?.[0]?.reactionType} />
+          </BarWrapper>
+        </>
+      )}
     </StyledCard>
   );
 };
@@ -43,6 +47,7 @@ export default AnnouncementCard;
 
 const StyledCard = styled(Card)`
   padding: 1rem;
+  margin-bottom: 1rem;
   line-height: 1.5;
 
   .ant-card-body {
