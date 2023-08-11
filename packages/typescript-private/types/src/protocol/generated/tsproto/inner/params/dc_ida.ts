@@ -1,25 +1,30 @@
 /* eslint-disable */
 import _m0 from 'protobufjs/minimal';
-import { DcIdaGetSystemInfoParam, DcIdaGetSystemInfoResult, DcIdaIsPortListeningParam, DcIdaIsPortListeningResult, DcIdaRunAppParam, DcIdaRunAppResult } from '../types/dc_ida';
+import {
+  DcIdaGetSystemInfoParam,
+  DcIdaGetSystemInfoResult,
+  DcIdaIsPortListeningParam,
+  DcIdaIsPortListeningResult,
+  DcIdaQueryProfileParam,
+  DcIdaQueryProfileResult,
+  DcIdaRunAppParam,
+  DcIdaRunAppResult,
+} from '../types/dc_ida';
 
 export interface DcIdaParam {
   value?:
     | { $case: 'dcIdaRunappParam'; dcIdaRunappParam: DcIdaRunAppParam }
-    | {
-        $case: 'dcIdaGetSystemInfoParam';
-        dcIdaGetSystemInfoParam: DcIdaGetSystemInfoParam;
-      }
-    | { $case: 'dcIdaIsPortListeningParam'; dcIdaIsPortListeningParam: DcIdaIsPortListeningParam };
+    | { $case: 'dcIdaGetSystemInfoParam'; dcIdaGetSystemInfoParam: DcIdaGetSystemInfoParam }
+    | { $case: 'dcIdaIsPortListeningParam'; dcIdaIsPortListeningParam: DcIdaIsPortListeningParam }
+    | { $case: 'dcIdaQueryProfileParam'; dcIdaQueryProfileParam: DcIdaQueryProfileParam };
 }
 
 export interface DcIdaResult {
   value?:
     | { $case: 'dcIdaRunappResult'; dcIdaRunappResult: DcIdaRunAppResult }
-    | {
-        $case: 'dcIdaGetSystemInfoResult';
-        dcIdaGetSystemInfoResult: DcIdaGetSystemInfoResult;
-      }
-    | { $case: 'dcIdaIsPortListeningResult'; dcIdaIsPortListeningResult: DcIdaIsPortListeningResult };
+    | { $case: 'dcIdaGetSystemInfoResult'; dcIdaGetSystemInfoResult: DcIdaGetSystemInfoResult }
+    | { $case: 'dcIdaIsPortListeningResult'; dcIdaIsPortListeningResult: DcIdaIsPortListeningResult }
+    | { $case: 'dcIdaQueryProfileResult'; dcIdaQueryProfileResult: DcIdaQueryProfileResult };
 }
 
 function createBaseDcIdaParam(): DcIdaParam {
@@ -36,6 +41,9 @@ export const DcIdaParam = {
     }
     if (message.value?.$case === 'dcIdaIsPortListeningParam') {
       DcIdaIsPortListeningParam.encode(message.value.dcIdaIsPortListeningParam, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.value?.$case === 'dcIdaQueryProfileParam') {
+      DcIdaQueryProfileParam.encode(message.value.dcIdaQueryProfileParam, writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -65,6 +73,12 @@ export const DcIdaParam = {
             dcIdaIsPortListeningParam: DcIdaIsPortListeningParam.decode(reader, reader.uint32()),
           };
           break;
+        case 4:
+          message.value = {
+            $case: 'dcIdaQueryProfileParam',
+            dcIdaQueryProfileParam: DcIdaQueryProfileParam.decode(reader, reader.uint32()),
+          };
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -87,6 +101,11 @@ export const DcIdaParam = {
             $case: 'dcIdaIsPortListeningParam',
             dcIdaIsPortListeningParam: DcIdaIsPortListeningParam.fromJSON(object.dcIdaIsPortListeningParam),
           }
+        : isSet(object.dcIdaQueryProfileParam)
+        ? {
+            $case: 'dcIdaQueryProfileParam',
+            dcIdaQueryProfileParam: DcIdaQueryProfileParam.fromJSON(object.dcIdaQueryProfileParam),
+          }
         : undefined,
     };
   },
@@ -98,6 +117,8 @@ export const DcIdaParam = {
       (obj.dcIdaGetSystemInfoParam = message.value?.dcIdaGetSystemInfoParam ? DcIdaGetSystemInfoParam.toJSON(message.value?.dcIdaGetSystemInfoParam) : undefined);
     message.value?.$case === 'dcIdaIsPortListeningParam' &&
       (obj.dcIdaIsPortListeningParam = message.value?.dcIdaIsPortListeningParam ? DcIdaIsPortListeningParam.toJSON(message.value?.dcIdaIsPortListeningParam) : undefined);
+    message.value?.$case === 'dcIdaQueryProfileParam' &&
+      (obj.dcIdaQueryProfileParam = message.value?.dcIdaQueryProfileParam ? DcIdaQueryProfileParam.toJSON(message.value?.dcIdaQueryProfileParam) : undefined);
     return obj;
   },
 
@@ -121,6 +142,12 @@ export const DcIdaParam = {
         dcIdaIsPortListeningParam: DcIdaIsPortListeningParam.fromPartial(object.value.dcIdaIsPortListeningParam),
       };
     }
+    if (object.value?.$case === 'dcIdaQueryProfileParam' && object.value?.dcIdaQueryProfileParam !== undefined && object.value?.dcIdaQueryProfileParam !== null) {
+      message.value = {
+        $case: 'dcIdaQueryProfileParam',
+        dcIdaQueryProfileParam: DcIdaQueryProfileParam.fromPartial(object.value.dcIdaQueryProfileParam),
+      };
+    }
     return message;
   },
 };
@@ -139,6 +166,9 @@ export const DcIdaResult = {
     }
     if (message.value?.$case === 'dcIdaIsPortListeningResult') {
       DcIdaIsPortListeningResult.encode(message.value.dcIdaIsPortListeningResult, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.value?.$case === 'dcIdaQueryProfileResult') {
+      DcIdaQueryProfileResult.encode(message.value.dcIdaQueryProfileResult, writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -168,6 +198,12 @@ export const DcIdaResult = {
             dcIdaIsPortListeningResult: DcIdaIsPortListeningResult.decode(reader, reader.uint32()),
           };
           break;
+        case 4:
+          message.value = {
+            $case: 'dcIdaQueryProfileResult',
+            dcIdaQueryProfileResult: DcIdaQueryProfileResult.decode(reader, reader.uint32()),
+          };
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -190,6 +226,11 @@ export const DcIdaResult = {
             $case: 'dcIdaIsPortListeningResult',
             dcIdaIsPortListeningResult: DcIdaIsPortListeningResult.fromJSON(object.dcIdaIsPortListeningResult),
           }
+        : isSet(object.dcIdaQueryProfileResult)
+        ? {
+            $case: 'dcIdaQueryProfileResult',
+            dcIdaQueryProfileResult: DcIdaQueryProfileResult.fromJSON(object.dcIdaQueryProfileResult),
+          }
         : undefined,
     };
   },
@@ -202,6 +243,8 @@ export const DcIdaResult = {
       (obj.dcIdaGetSystemInfoResult = message.value?.dcIdaGetSystemInfoResult ? DcIdaGetSystemInfoResult.toJSON(message.value?.dcIdaGetSystemInfoResult) : undefined);
     message.value?.$case === 'dcIdaIsPortListeningResult' &&
       (obj.dcIdaIsPortListeningResult = message.value?.dcIdaIsPortListeningResult ? DcIdaIsPortListeningResult.toJSON(message.value?.dcIdaIsPortListeningResult) : undefined);
+    message.value?.$case === 'dcIdaQueryProfileResult' &&
+      (obj.dcIdaQueryProfileResult = message.value?.dcIdaQueryProfileResult ? DcIdaQueryProfileResult.toJSON(message.value?.dcIdaQueryProfileResult) : undefined);
     return obj;
   },
 
@@ -223,6 +266,12 @@ export const DcIdaResult = {
       message.value = {
         $case: 'dcIdaIsPortListeningResult',
         dcIdaIsPortListeningResult: DcIdaIsPortListeningResult.fromPartial(object.value.dcIdaIsPortListeningResult),
+      };
+    }
+    if (object.value?.$case === 'dcIdaQueryProfileResult' && object.value?.dcIdaQueryProfileResult !== undefined && object.value?.dcIdaQueryProfileResult !== null) {
+      message.value = {
+        $case: 'dcIdaQueryProfileResult',
+        dcIdaQueryProfileResult: DcIdaQueryProfileResult.fromPartial(object.value.dcIdaQueryProfileResult),
       };
     }
     return message;

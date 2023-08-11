@@ -1,5 +1,9 @@
 import { stringifier, StringifyOptions } from './stringifier';
 
+export function stringifyShort(value: unknown, options?: StringifyOptions): string {
+  return stringifier.stringify(value, options).substring(0, 50);
+}
+
 export function stringify(value: unknown, options?: StringifyOptions): string {
   return stringifier.stringify(value, options);
 }

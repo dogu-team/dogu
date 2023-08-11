@@ -12,6 +12,7 @@ import {
   GetDevicesWithErrorResponse,
   GetDeviceSystemInfoResponse,
   GetLocalDeviceDetectResponse,
+  GetSystemBarVisibility,
 } from './device-dtos';
 
 const DeviceController = new ControllerSpec({ path: '/devices' });
@@ -127,5 +128,16 @@ export const Device = {
     },
     responseBody: DeviceServerResponseDto,
     responseBodyData: GetAppiumContextInfoResponse,
+  }),
+
+  getSystemBarVisibility: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceController,
+    method: 'GET',
+    path: '/:serial/system-bar-visibility',
+    pathProvider: class {
+      constructor(readonly serial: Serial) {}
+    },
+    responseBody: DeviceServerResponseDto,
+    responseBodyData: GetSystemBarVisibility,
   }),
 };

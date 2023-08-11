@@ -72,13 +72,12 @@ export default function withProject<P extends WithProjectProps>(WrappedComponent
 
 export const getProjectPageServerSideProps: GetServerSideProps<ProjectServerSideProps> = async (context) => {
   try {
-    const [organization, project, checkResult] = await Promise.all([getOrganizationInServerSide(context), getProjectInServerSide(context), checkUserVerifiedInServerSide(context)]);
-
-    let isGitIntegrated = false;
-    try {
-      await getProjectScm(context);
-      isGitIntegrated = true;
-    } catch (e) {}
+    const [organization, project, checkResult, scm] = await Promise.all([
+      getOrganizationInServerSide(context),
+      getProjectInServerSide(context),
+      checkUserVerifiedInServerSide(context),
+      getProjectScm(context),
+    ]);
 
     if (checkResult.redirect) {
       return checkResult;
@@ -97,7 +96,7 @@ export const getProjectPageServerSideProps: GetServerSideProps<ProjectServerSide
           [`/organizations/${context.query.orgId}/projects/${context.query.pid}`]: project,
           ...checkResult.props.fallback,
         },
-        isGitIntegrated,
+        isGitIntegrated: !!scm,
       },
     };
   } catch (e) {

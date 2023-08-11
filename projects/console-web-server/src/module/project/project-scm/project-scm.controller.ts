@@ -17,7 +17,10 @@ export class ProjectScmController {
 
   @Get()
   @ProjectPermission(PROJECT_ROLE.READ)
-  async getProjectGit(@Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, @Param(ProjectPropCamel.projectId) projectId: string): Promise<ProjectScm> {
+  async getProjectGit(
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
+    @Param(ProjectPropCamel.projectId) projectId: string,
+  ): Promise<ProjectScm | null> {
     return await this.projectScmService.getProjectGit(organizationId, projectId);
   }
 

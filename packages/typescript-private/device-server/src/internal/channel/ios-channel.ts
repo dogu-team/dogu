@@ -37,6 +37,8 @@ import { ZombieTunnel } from '../externals/cli/mobiledevice-tunnel';
 import { DerivedData } from '../externals/xcode/deriveddata';
 import { DeviceChannel, DeviceChannelOpenParam, LogHandler } from '../public/device-channel';
 import { IosDeviceAgentService } from '../services/device-agent/ios-device-agent-service';
+import { IosProfileService } from '../services/profile/ios-profiler';
+import { ProfileServices } from '../services/profile/profile-service';
 import { StreamingService } from '../services/streaming/streaming-service';
 import { IosSystemInfoService } from '../services/system-info/ios-system-info-service';
 import { Zombieable } from '../services/zombie/zombie-component';
@@ -64,6 +66,7 @@ export class IosChannel implements DeviceChannel {
     private readonly _serial: Serial,
     private readonly _portContext: DevicePortContext,
     private readonly _info: DeviceSystemInfo,
+    private readonly _profilers: ProfileServices,
     private readonly streaming: StreamingService,
     private iosDeviceAgentProcess: IosDeviceAgentProcess,
     private readonly deviceAgent: IosDeviceAgentService,
@@ -170,7 +173,18 @@ export class IosChannel implements DeviceChannel {
     logger.verbose('appium device web driver handler service starting');
     const appiumDeviceWebDriverHandler = new AppiumDeviceWebDriverHandler(platform, serial, appiumContextProxy, httpRequestRelayService, appiumEndpointHandlerService, doguLogger);
 
-    const deviceChannel = new IosChannel(serial, portContext, systemInfo, streaming, iosDeviceAgentProcess, deviceAgent, appiumContextProxy, appiumDeviceWebDriverHandler, logger);
+    const deviceChannel = new IosChannel(
+      serial,
+      portContext,
+      systemInfo,
+      [new IosProfileService(deviceAgent)],
+      streaming,
+      iosDeviceAgentProcess,
+      deviceAgent,
+      appiumContextProxy,
+      appiumDeviceWebDriverHandler,
+      logger,
+    );
 
     logger.verbose('streaming service calling deviceConnected');
     await Promise.resolve(
@@ -214,11 +228,29 @@ export class IosChannel implements DeviceChannel {
     }, 'kill serial bound zombies');
   }
 
-  queryProfile(methods: ProfileMethod[] | ProfileMethod): FilledRuntimeInfo {
-    this.logger.warn?.('IosChannel.queryProfile is not implemented yet');
+  async queryProfile(methods: ProfileMethod[] | ProfileMethod): Promise<FilledRuntimeInfo> {
+    const methodList = Array.isArray(methods) ? methods : [methods];
+    const results = await Promise.allSettled(this._profilers.map((profiler) => profiler.profile(this.serial, methodList)));
+    const result = results.reduce((acc, result) => {
+      if (result.status === 'fulfilled') {
+        Object.keys(acc).forEach((key) => {
+          const accDesc = Object.getOwnPropertyDescriptor(acc, key);
+          const resultDesc = Object.getOwnPropertyDescriptor(result.value, key);
+          if (!accDesc || !Array.isArray(accDesc?.value) || accDesc.value.length !== 0 || !resultDesc || !Array.isArray(resultDesc?.value)) {
+            return;
+          }
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+          accDesc.value.push(...resultDesc.value);
+        });
+        return acc;
+      } else {
+        this.logger.error('profile failed.', { serial: this.serial, reason: result.reason });
+        return acc;
+      }
+    }, RuntimeInfo.fromPartial({}));
     return {
-      ...RuntimeInfo.fromPartial({}),
-      platform: Platform.PLATFORM_IOS,
+      ...result,
+      platform: Platform.PLATFORM_ANDROID,
       localTimeStamp: new Date(),
     };
   }
@@ -298,7 +330,7 @@ export class IosChannel implements DeviceChannel {
   }
 
   async isPortListening(port: number): Promise<boolean> {
-    const res = await this.deviceAgent.isPortListening({ port });
+    const res = await this.deviceAgent.call('dcIdaIsPortListeningParam', 'dcIdaIsPortListeningResult', { port });
     return res.isListening;
   }
 

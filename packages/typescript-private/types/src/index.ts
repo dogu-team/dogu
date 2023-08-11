@@ -2,6 +2,7 @@ import 'reflect-metadata';
 
 export * from '@dogu-tech/types';
 export * from './auth';
+export * from './change-log';
 export * from './cloud-device';
 export * from './cloud-device-rental';
 export * from './constants';
@@ -45,6 +46,8 @@ export * from './record-test-case-and-record-test-step';
 export * from './record-test-scenario';
 export * from './record-test-scenario-and-record-test-case';
 export * from './record-test-step';
+export * from './record-test-step-action';
+export * from './record-test-step-action-webdrive-click';
 export * from './remote';
 export * from './remote-dest';
 export * from './remote-dest-edge';

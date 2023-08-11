@@ -12,6 +12,9 @@ export interface RecordTestCaseBaseTraits {
   recordTestCaseId: RecordTestCaseId;
   projectId: ProjectId;
   name: string;
+  activeDeviceScreenSize: string;
+  activeSessionId: string | null;
+  activeSessionKey: string | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

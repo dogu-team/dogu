@@ -1,4 +1,4 @@
-import { GithubOutlined, QuestionCircleOutlined, SlackOutlined } from '@ant-design/icons';
+import { GithubOutlined, SlackOutlined } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -7,9 +7,9 @@ import styled from 'styled-components';
 
 import useAuth from '../../hooks/useAuth';
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
-import { getLocaledLink } from '../../utils/locale';
 import AccountMenu from '../AccountMenu';
-import AnnouncementButton from '../announcement/AnnouncementButton';
+import ChangeLogButton from '../change-logs/ChangeLogButton';
+
 import Header from './Header';
 
 interface Props {
@@ -17,7 +17,7 @@ interface Props {
 }
 
 const ConsoleBasicLayout = ({ children }: Props) => {
-  const { me, isLoading, error } = useAuth();
+  const { me, isLoading, error, mutate } = useAuth();
   const router = useRouter();
 
   if (isLoading) {
@@ -48,7 +48,7 @@ const ConsoleBasicLayout = ({ children }: Props) => {
                   <SlackOutlined />
                 </StyledLink>
               </Tooltip>
-              <AnnouncementButton />
+              <ChangeLogButton me={me} mutateMe={mutate} />
               <AccountMenu />
             </FlexRow>
           }

@@ -3,6 +3,8 @@ syntax = "proto3";
 package inner.types;
 
 import "outer/errors.proto";
+import "outer/profile/profile_method.proto";
+import "outer/profile/runtime_info.proto";
 
 option go_package = "go-device-controller/types/protocol/generated/proto/inner/types";
 option java_package = "com.dogu.protocol.generated.inner.types";
@@ -31,4 +33,12 @@ message DcIdaIsPortListeningParam {
 
 message DcIdaIsPortListeningResult {
   bool is_listening = 1;
+}
+
+message DcIdaQueryProfileParam {
+  repeated outer.profile.ProfileMethod profile_methods = 1;
+}
+
+message DcIdaQueryProfileResult {
+  outer.profile.RuntimeInfo info = 1;
 }

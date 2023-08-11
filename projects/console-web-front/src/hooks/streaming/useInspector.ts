@@ -1,58 +1,37 @@
-import { DeviceBase } from '@dogu-private/console';
-import { Platform } from '@dogu-private/types';
+import {
+  ContextNode,
+  DeviceBase,
+  DeviceRotationDirection,
+  GAMIUM_CONTEXT_KEY,
+  NodeAttributes,
+  NodePosition,
+  NodeUtilizer,
+  NodeUtilizerFactory,
+  NodeWithPosition,
+  ParsedNode,
+} from '@dogu-private/console';
 import { HitPoint, ScreenSize } from '@dogu-tech/device-client-common';
 import { throttle } from 'lodash';
 import React, { RefObject, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import {
-  AndroidNodeAttributes,
-  ContextAndNode,
-  GamiumNodeAttributes,
-  InspectNode,
-  InspectNodeAttributes,
-  InspectNodeWithPosition,
-  InspectorWorkerMessage,
-  InspectorWorkerResponse,
-  IosNodeAttributes,
-  NodePosition,
-  SelectedNodePosition,
-} from '../../types/inspector';
+import { InspectorWorkerMessage, InspectorWorkerResponse } from '../../types/inspector';
 import { BrowserDeviceInspector } from '../../utils/streaming/browser-device-inspector';
-import { DeviceRotationDirection, InspectorModule } from '../../utils/streaming/inspector';
-import AndroidInspectorModule from '../../utils/streaming/inspector/android';
-import GamiumInspectorModule from '../../utils/streaming/inspector/gamium';
-import IosInspectorModule from '../../utils/streaming/inspector/ios';
-
-export const GAMIUM_CONTEXT_KEY = 'GAMIUM';
 
 const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, device: DeviceBase | null, videoRef: RefObject<HTMLVideoElement> | null) => {
-  const [contextAndNodes, setContextAndNodes] = useState<ContextAndNode<InspectNodeAttributes>[]>();
+  const [contextAndNodes, setContextAndNodes] = useState<ContextNode<NodeAttributes>[]>();
   const [selectedContextKey, setSelectedContextKey] = useState<string>();
   const [hitPoint, setHitPoint] = useState<HitPoint>();
-  const [selectedNode, setSelectedNode] = useState<InspectNodeWithPosition<InspectNodeAttributes>>();
-  const [inspectingNode, setInspectingNode] = useState<InspectNodeWithPosition<InspectNodeAttributes>>();
-  const inspectorModule = useRef<InspectorModule<any>>();
+  const [selectedNode, setSelectedNode] = useState<NodeWithPosition<NodeAttributes>>();
+  const [inspectingNode, setInspectingNode] = useState<NodeWithPosition<NodeAttributes>>();
+  const inspectorModule = useRef<NodeUtilizer<NodeAttributes>>();
 
   const worker = useMemo(() => new Worker(new URL('../../workers/native-ui-tree.ts', import.meta.url)), []);
   const selectedContextAndNode = contextAndNodes?.find((c) => c.context === selectedContextKey);
   const isGamium = selectedContextKey === GAMIUM_CONTEXT_KEY;
 
   useEffect(() => {
-    if (selectedContextAndNode) {
-      if (isGamium) {
-        inspectorModule.current = new GamiumInspectorModule(selectedContextAndNode as ContextAndNode<GamiumNodeAttributes>);
-      } else {
-        if (device?.platform) {
-          switch (device.platform) {
-            case Platform.PLATFORM_ANDROID:
-              inspectorModule.current = new AndroidInspectorModule(selectedContextAndNode as ContextAndNode<AndroidNodeAttributes>);
-              break;
-            case Platform.PLATFORM_IOS:
-              inspectorModule.current = new IosInspectorModule(selectedContextAndNode as ContextAndNode<IosNodeAttributes>);
-              break;
-          }
-        }
-      }
+    if (selectedContextAndNode && device?.platform) {
+      inspectorModule.current = NodeUtilizerFactory.create(device?.platform, selectedContextAndNode) as NodeUtilizer<NodeAttributes>;
     }
   }, [selectedContextAndNode, isGamium, device?.platform]);
 
@@ -79,14 +58,14 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
       };
       worker.postMessage(message);
       const results = (await new Promise((resolve) => {
-        worker.onmessage = (e: MessageEvent<InspectorWorkerResponse<InspectNodeAttributes>[]>) => {
+        worker.onmessage = (e: MessageEvent<InspectorWorkerResponse<NodeAttributes>[]>) => {
           resolve(e.data);
         };
       }).catch((e) => {
         console.debug('error while update sources', e);
-      })) as { context: string; node: InspectNode<InspectNodeAttributes> }[];
+      })) as { context: string; node: ParsedNode<NodeAttributes> }[];
 
-      const mappedResults: ContextAndNode<InspectNodeAttributes>[] = results.map((result) => {
+      const mappedResults: ContextNode<NodeAttributes>[] = results.map((result) => {
         const r = rawResult.find((r) => r.context === result.context)!;
 
         return {
@@ -112,7 +91,7 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
       screenSize: ScreenSize;
       inspectArea: NodePosition;
       nodePos: NodePosition;
-    }): SelectedNodePosition | undefined => {
+    }): NodePosition | undefined => {
       if (!videoRef?.current) {
         return;
       }
@@ -131,14 +110,14 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
   );
 
   const getNodeByKey = useCallback(
-    (key: string): InspectNodeWithPosition<InspectNodeAttributes> | undefined => {
+    (key: string): NodeWithPosition<NodeAttributes> | undefined => {
       if (!selectedContextAndNode || !inspectorModule.current) {
         return;
       }
 
       const { node } = selectedContextAndNode;
 
-      const findNode = (node: InspectNode<InspectNodeAttributes>): InspectNode<InspectNodeAttributes> | undefined => {
+      const findNode = (node: ParsedNode<NodeAttributes>): ParsedNode<NodeAttributes> | undefined => {
         if (node.key === key) {
           return node;
         }
@@ -176,7 +155,7 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
   );
 
   const getNodeByPos = useCallback(
-    (e: React.MouseEvent): InspectNodeWithPosition<InspectNodeAttributes> | undefined => {
+    (e: React.MouseEvent): NodeWithPosition<NodeAttributes> | undefined => {
       if (!selectedContextAndNode || !videoRef?.current || !device || !inspectorModule.current) {
         return;
       }
@@ -205,8 +184,8 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
         return;
       }
 
-      const findNodesIncludePoint = (node: InspectNode<InspectNodeAttributes>): InspectNode<InspectNodeAttributes>[] => {
-        const result: InspectNode<InspectNodeAttributes>[] = [];
+      const findNodesIncludePoint = (node: ParsedNode<NodeAttributes>): ParsedNode<NodeAttributes>[] => {
+        const result: ParsedNode<NodeAttributes>[] = [];
         const nodePos = inspectorModule.current?.getNodeBound(node);
 
         if (nodePos) {

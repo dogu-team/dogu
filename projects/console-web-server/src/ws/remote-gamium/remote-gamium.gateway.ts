@@ -49,39 +49,7 @@ export class RemoteGamiumGateway implements OnGatewayConnection, OnGatewayDiscon
         this.logger.error('close to deviceside error', { error: stringify(error) });
       });
     });
-    webSocket.addEventListener('message', async (event: MessageEvent<ArrayBuffer>) => {
-      this.logger.verbose('message');
-      const { data } = event;
-      const base64 = Buffer.from(data).toString('base64');
-      if (!context) {
-        for await (const _ of loop(1000, 10)) {
-          if (context) {
-            break;
-          }
-        }
-        if (!context) {
-          closeWebSocketWithTruncateReason(webSocket, 1001, 'proxy to device failed');
-          return;
-        }
-      }
-      if (Date.now() - context.lastWdSendTime > 1000 * 5) {
-        this.remoteGamiumService
-          .refreshCommandTimeout(this.remoteWebDriverService, context.organizationId, context.projectId, context.deviceId, context.deviceSerial, context.dto!.sessionId)
-          .catch((error) => {
-            this.logger.error('refreshCommandTimeout error', { error: stringify(error) });
-          });
-        context.lastWdSendTime = Date.now();
-      }
-
-      await context.proxy
-        .send({
-          encodedData: base64,
-        })
-        .catch((error) => {
-          this.logger.error('send to deviceside error', { error: stringify(error) });
-          closeWebSocketWithTruncateReason(webSocket, 1001, error);
-        });
-    });
+    this.addSendListener(webSocket, () => context);
 
     // validate url query
     const url = new URL(`http:${incomingMessage.url ?? ''}`);
@@ -109,20 +77,7 @@ export class RemoteGamiumGateway implements OnGatewayConnection, OnGatewayDiscon
       deviceSerial: device.serial,
       lastWdSendTime: 0,
     };
-    const pullDetach = async () => {
-      if (!context) {
-        return;
-      }
-      for await (const message of context.proxy.receive()) {
-        if (message instanceof WebSocketProxyReceiveClose) {
-          this.logger.info('socket closed from deviceside', { code: message.code, reason: message.reason });
-          closeWebSocketWithTruncateReason(webSocket, message.code, message.reason);
-          break;
-        }
-        webSocket.send(Buffer.from(message.encodedData, 'base64'));
-      }
-    };
-    pullDetach().catch((error) => {
+    this.pullDetach(context, webSocket).catch((error) => {
       if (webSocket.readyState !== WebSocket.OPEN) {
         return;
       }
@@ -131,7 +86,84 @@ export class RemoteGamiumGateway implements OnGatewayConnection, OnGatewayDiscon
     });
   }
 
+  private addSendListener(webSocket: WebSocket, getContext: () => Context | null) {
+    let sendSeq = 0;
+    webSocket.addEventListener('message', async (event: MessageEvent<ArrayBuffer>) => {
+      this.logger.verbose('message');
+      const { data } = event;
+      const base64 = Buffer.from(data).toString('base64');
+      const context = getContext();
+      if (!context) {
+        for await (const _ of loop(1000, 60)) {
+          if (context) {
+            break;
+          }
+        }
+        if (!context) {
+          closeWebSocketWithTruncateReason(webSocket, 1001, 'proxy to device failed');
+          return;
+        }
+      }
+      if (Date.now() - context.lastWdSendTime > 1000 * 5) {
+        this.remoteGamiumService
+          .refreshCommandTimeout(this.remoteWebDriverService, context.organizationId, context.projectId, context.deviceId, context.deviceSerial, context.dto!.sessionId)
+          .catch((error) => {
+            this.logger.error('refreshCommandTimeout error', { error: stringify(error) });
+          });
+        context.lastWdSendTime = Date.now();
+      }
+
+      sendSeq = sendSeq + 1;
+      this.logger.info(`TcpRelayRequest cb - seq: ${sendSeq}, ds: ${base64.length}`);
+
+      await context.proxy
+        .send({
+          seq: sendSeq,
+          encodedData: base64,
+        })
+        .catch((error) => {
+          this.logger.error('send to deviceside error', { error: stringify(error) });
+          closeWebSocketWithTruncateReason(webSocket, 1001, error);
+        });
+    });
+  }
+
   handleDisconnect(webSocket: WebSocket): void {
     this.logger.info('RemoteGamiumGateway.handleDisconnect');
+  }
+
+  async pullDetach(context: Context, webSocket: WebSocket): Promise<void> {
+    if (!context) {
+      return;
+    }
+    let expectedSeq = 1;
+    const buffer: TcpRelayResponse[] = [];
+
+    const flushBuffer = () => {
+      const target = buffer.find((message) => {
+        if (message.seq !== expectedSeq) {
+          return false;
+        }
+        return true;
+      });
+      if (!target) {
+        return;
+      }
+
+      expectedSeq = expectedSeq + 1;
+      const base64 = Buffer.from(target.encodedData, 'base64');
+      webSocket.send(base64);
+      flushBuffer();
+    };
+    for await (const message of context.proxy.receive()) {
+      if (message instanceof WebSocketProxyReceiveClose) {
+        this.logger.info('socket closed from deviceside', { code: message.code, reason: message.reason });
+        closeWebSocketWithTruncateReason(webSocket, message.code, message.reason);
+        break;
+      }
+      this.logger.info(`TcpRelayResponse cb - seq: ${message.seq}, ds: ${message.encodedData.length}`);
+      buffer.push(message);
+      flushBuffer();
+    }
   }
 }

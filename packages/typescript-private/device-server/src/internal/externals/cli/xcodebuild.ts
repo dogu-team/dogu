@@ -1,5 +1,5 @@
 import { Serial } from '@dogu-private/types';
-import { delay, errorify, loop, PrefixLogger, Printable } from '@dogu-tech/common';
+import { delay, errorify, loopTime, Milisecond, PrefixLogger, Printable, stringify } from '@dogu-tech/common';
 import { ChildProcess, DirectoryRotation, findEndswith, HostPaths, killChildProcess, redirectFileToStream } from '@dogu-tech/node';
 import child_process, { exec, execFile } from 'child_process';
 import { randomUUID } from 'crypto';
@@ -79,10 +79,22 @@ export async function validateXcodeBuild(): Promise<void> {
   }
 }
 
+export interface XCTestRunOption {
+  waitForLog?: { str: string; timeout: number };
+}
+
 export class XCTestRunContext {
   public isAlive = true;
   private logs = '';
-  constructor(private readonly tempDirPath: string, public readonly proc: child_process.ChildProcess, private readonly logger: Printable) {
+  public readonly startTime: number;
+  private isWaitLogPrinted = false;
+  constructor(
+    private readonly tempDirPath: string,
+    public readonly proc: child_process.ChildProcess,
+    private readonly option: XCTestRunOption,
+    private readonly logger: Printable,
+  ) {
+    this.startTime = Date.now();
     const redirectContext = { stop: false };
     proc.on('close', (code, signal) => {
       this.isAlive = false;
@@ -94,13 +106,23 @@ export class XCTestRunContext {
   }
   public kill(): void {
     killChildProcess(this.proc).catch((error) => {
-      this.logger.error('XCTestRunContext killChildProcess', { error });
+      this.logger.error('XCTestRunContext killChildProcess', { error: errorify(error) });
     });
+  }
+
+  public update(): void {
+    if (!this.isAlive) {
+      return;
+    }
+    if (this.option.waitForLog && !this.isWaitLogPrinted && this.option.waitForLog.timeout < Date.now() - this.startTime) {
+      this.logger.error(`waitForLog timeout expired. ${this.option.waitForLog.str}`);
+      this.kill();
+    }
   }
 
   private async redirectOutput(tempDirPath: string, proc: child_process.ChildProcess, redirectContext: { stop: boolean }): Promise<void> {
     let fileName = '';
-    for await (const _ of loop(1000, 10)) {
+    for await (const _ of loopTime(Milisecond.t1Second, Milisecond.t30Seconds)) {
       const files = await findEndswith(tempDirPath, 'StandardOutputAndStandardError.txt').catch(() => []);
       if (0 < files.length) {
         fileName = files[0];
@@ -119,26 +141,20 @@ export class XCTestRunContext {
         this.logger.verbose?.(str);
         this.logs += str;
         this.checkLog();
-        if (!this.isAlive) {
-          killChildProcess(proc).catch((error) => {
-            this.logger.error('XCTestRunContext killChildProcess on write', { error });
-          });
-        }
         return true;
       },
     }).catch((err) => {
-      killChildProcess(proc).catch((error) => {
-        this.logger.error('XCTestRunContext killChildProcess on redirectFileToStream', { error });
-      });
-      this.logger.error(`redirectFileToStream failed outputPath: ${outputPath}, err: ${err}`);
-      this.isAlive = false;
-      redirectContext.stop = true;
+      this.logger.error(`redirectFileToStream failed outputPath: ${outputPath}, err: ${stringify(errorify(err))}`);
+      this.kill();
     });
   }
 
   private checkLog(): void {
     if (this.logs.includes('TEST EXECUTE FAILED') || this.logs.includes('BUILD INTERRUPTED')) {
-      this.isAlive = false;
+      this.kill();
+    }
+    if (this.option.waitForLog && !this.isWaitLogPrinted && this.logs.includes(this.option.waitForLog.str)) {
+      this.isWaitLogPrinted = true;
     }
     if (this.logs.length > 10000) {
       this.logs = this.logs.slice(1000);
@@ -150,17 +166,18 @@ export async function removeOldWaves(): Promise<void> {
   await directoryRotation.removeOldWaves();
 }
 
-export function testWithoutBuilding(xctestrunPath: string, serial: Serial, printable: Printable): XCTestRunContext {
+export function testWithoutBuilding(xctestrunPath: string, serial: Serial, option: XCTestRunOption, printable: Printable): XCTestRunContext {
   const tempDirPath = `${directoryRotation.getCurrentWavePath()}/${randomUUID()}`;
   const xcodebuildPath = getXcodeBuildPathSync();
+  const prefixLogger = new PrefixLogger(printable, '[xctest]');
   const proc = ChildProcess.spawnSync(
     xcodebuildPath,
     ['test-without-building', '-xctestrun', `${xctestrunPath}`, '-destination', `id=${serial}`, '-resultBundlePath', tempDirPath],
     {},
-    new PrefixLogger(printable, '[xctest]'),
+    prefixLogger,
   );
 
-  return new XCTestRunContext(tempDirPath, proc, printable);
+  return new XCTestRunContext(tempDirPath, proc, option, prefixLogger);
 }
 
 export async function killPreviousXcodebuild(serial: Serial, printable: Printable): Promise<void> {

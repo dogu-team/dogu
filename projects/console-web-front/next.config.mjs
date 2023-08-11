@@ -6,6 +6,7 @@ const nextConfig = {
   reactStrictMode: false,
   webpack: (config) => {
     config.resolve.fallback = { fs: false, child_process: false };
+    config.experiments = { ...config.experiments, topLevelAwait: true };
 
     // Grab the existing rule that handles SVG imports
     const fileLoaderRule = config.module.rules.find((rule) => rule.test?.test?.('.svg'));

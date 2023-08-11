@@ -93,6 +93,30 @@ object DcIdaParamKt {
     fun hasDcIdaIsPortListeningParam(): kotlin.Boolean {
       return _builder.hasDcIdaIsPortListeningParam()
     }
+
+    /**
+     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+     */
+    var dcIdaQueryProfileParam: com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam
+      @JvmName("getDcIdaQueryProfileParam")
+      get() = _builder.getDcIdaQueryProfileParam()
+      @JvmName("setDcIdaQueryProfileParam")
+      set(value) {
+        _builder.setDcIdaQueryProfileParam(value)
+      }
+    /**
+     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+     */
+    fun clearDcIdaQueryProfileParam() {
+      _builder.clearDcIdaQueryProfileParam()
+    }
+    /**
+     * <code>.inner.types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;</code>
+     * @return Whether the dcIdaQueryProfileParam field is set.
+     */
+    fun hasDcIdaQueryProfileParam(): kotlin.Boolean {
+      return _builder.hasDcIdaQueryProfileParam()
+    }
     val valueCase: com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam.ValueCase
       @JvmName("getValueCase")
       get() = _builder.getValueCase()
@@ -114,4 +138,7 @@ val com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamOrBuilder.dcIdaGetS
 
 val com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamOrBuilder.dcIdaIsPortListeningParamOrNull: com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam?
   get() = if (hasDcIdaIsPortListeningParam()) getDcIdaIsPortListeningParam() else null
+
+val com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamOrBuilder.dcIdaQueryProfileParamOrNull: com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam?
+  get() = if (hasDcIdaQueryProfileParam()) getDcIdaQueryProfileParam() else null
 

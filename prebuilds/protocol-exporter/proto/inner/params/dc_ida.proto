@@ -12,6 +12,7 @@ message DcIdaParam {
     types.DcIdaRunAppParam dc_ida_runapp_param = 1;
     types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;
     types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;
+    types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;
   }
 }
 
@@ -20,5 +21,6 @@ message DcIdaResult {
     types.DcIdaRunAppResult dc_ida_runapp_result = 1;
     types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 2;
     types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;
+    types.DcIdaQueryProfileResult dc_ida_query_profile_result = 4;
   }
 }

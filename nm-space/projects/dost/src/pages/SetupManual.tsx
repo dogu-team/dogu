@@ -10,12 +10,12 @@ import useEnvironmentStore from '../stores/environment';
 // import { ipc } from '../utils/window';
 
 const SetupManual = () => {
-  const { useApiUrlInput } = useEnvironmentStore((state) => state.features);
+  const { showApiUrlInput } = useEnvironmentStore((state) => state.features);
   const navigate = useNavigate();
 
   useEffect(() => {
-    navigate(useApiUrlInput ? '/setup/config' : '/home/connect');
-  }, [useApiUrlInput]);
+    navigate(showApiUrlInput ? '/setup/config' : '/home/connect');
+  }, [showApiUrlInput]);
 
   return <div></div>;
 
@@ -47,8 +47,8 @@ const SetupManual = () => {
   //       )}
 
   //       <Flex justifyContent="flex-end">
-  //         <Button onClick={() => navigate(useApiUrlInput ? '/setup/config' : '/home/connect')} isDisabled={!results?.every((item) => item.isValid)} colorScheme="blue">
-  //           {useApiUrlInput ? 'Continue' : 'Finish'}
+  //         <Button onClick={() => navigate(showApiUrlInput ? '/setup/config' : '/home/connect')} isDisabled={!results?.every((item) => item.isValid)} colorScheme="blue">
+  //           {showApiUrlInput ? 'Continue' : 'Finish'}
   //         </Button>
   //       </Flex>
   //     </Flex>

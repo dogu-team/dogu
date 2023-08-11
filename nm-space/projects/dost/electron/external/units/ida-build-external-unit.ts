@@ -7,7 +7,7 @@ import path from 'path';
 import { ExternalKey } from '../../../src/shares/external';
 import { logger } from '../../log/logger.instance';
 import { StdLogCallbackService } from '../../log/std-log-callback-service';
-import { copyiOSDeviceAgentProject, removeiOSDeviceAgent, validateiOSDeviceAgentProjectExist } from '../../settings/ios-device-agent-project';
+import { checkProjectEqual, copyiOSDeviceAgentProject, removeiOSDeviceAgent, validateiOSDeviceAgentProjectExist } from '../../settings/ios-device-agent-project';
 import { IExternalUnit } from '../external-unit';
 import { validateXcode } from '../xcode';
 
@@ -42,6 +42,10 @@ export class IdaBuildExternalUnit extends IExternalUnit {
 
   async validateInternal(): Promise<void> {
     await validateXcode(this.stdLogCallbackService);
+    const isEqual = await checkProjectEqual(this.stdLogCallbackService.createPrintable());
+    if (!isEqual) {
+      throw Error('iOSDeviceAgent project is not equal. It could be an outdated version of the iOSDeviceAgnet project. Please build again after cleaning.');
+    }
     const idaProductsPath = path.resolve(HostPaths.external.xcodeProject.idaDerivedDataPath(), 'Build/Products');
     const idaExePaths = [
       path.resolve(idaProductsPath, 'Debug-iphoneos/DoguRunner-Runner.app/DoguRunner-Runner'),
