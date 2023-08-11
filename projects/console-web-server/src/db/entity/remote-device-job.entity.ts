@@ -30,8 +30,8 @@ export class RemoteDeviceJob extends BaseEntity implements RemoteDeviceJobBase {
   @ColumnTemplate.Date(RemoteDeviceJobPropSnake.last_interval_time, true)
   lastIntervalTime!: Date;
 
-  @Column({ type: 'character varying', name: RemoteDeviceJobPropSnake.se_cdp, nullable: true })
-  seCdp!: string | null;
+  @Column({ type: 'character varying', name: RemoteDeviceJobPropSnake.web_driver_se_cdp, nullable: true })
+  webDriverSeCdp!: string | null;
 
   @ColumnTemplate.CreateDate(RemoteDeviceJobPropSnake.created_at)
   createdAt!: Date;

@@ -1,31 +1,33 @@
 import { OnWebSocketClose, OnWebSocketMessage, WebSocketGatewayBase, WebSocketRegistryValueAccessor, WebSocketService } from '@dogu-private/nestjs-common';
-import { closeWebSocketWithTruncateReason, errorify, Instance } from '@dogu-tech/common';
-import { DeviceHostWebSocketRelay, DoguDeviceHostWebSocketRelayUrlHeader } from '@dogu-tech/device-client-common';
-import { IncomingMessage } from 'http';
+import { closeWebSocketWithTruncateReason, errorify, Instance, loop } from '@dogu-tech/common';
+import { DeviceWebSocketRelay, DoguDeviceWebSocketRelaySerialHeader, DoguDeviceWebSocketRelayUrlHeader } from '@dogu-tech/device-client-common';
+import { IncomingHttpHeaders, IncomingMessage } from 'http';
 import WebSocket from 'ws';
+import { DeviceChannel } from '../../internal/public/device-channel';
 import { DoguLogger } from '../../logger/logger';
+import { ScanService } from '../../scan/scan.service';
 
 interface Value {
   toWebSocket: WebSocket | null;
 }
 
-@WebSocketService(DeviceHostWebSocketRelay)
-export class DeviceHostWebSocketRelayWebsocketService
-  extends WebSocketGatewayBase<Value, typeof DeviceHostWebSocketRelay.sendMessage, typeof DeviceHostWebSocketRelay.receiveMessage>
-  implements OnWebSocketMessage<Value, typeof DeviceHostWebSocketRelay.sendMessage, typeof DeviceHostWebSocketRelay.receiveMessage>, OnWebSocketClose<Value>
+@WebSocketService(DeviceWebSocketRelay)
+export class DeviceWebSocketRelayService
+  extends WebSocketGatewayBase<Value, typeof DeviceWebSocketRelay.sendMessage, typeof DeviceWebSocketRelay.receiveMessage>
+  implements OnWebSocketMessage<Value, typeof DeviceWebSocketRelay.sendMessage, typeof DeviceWebSocketRelay.receiveMessage>, OnWebSocketClose<Value>
 {
-  constructor(private readonly logger: DoguLogger) {
-    super(DeviceHostWebSocketRelay, logger);
+  constructor(private readonly logger: DoguLogger, private readonly scanService: ScanService) {
+    super(DeviceWebSocketRelay, logger);
   }
 
   override async onWebSocketOpen(fromWebSocket: WebSocket, incommingMessage: IncomingMessage): Promise<Value> {
-    const url = incommingMessage.headers[DoguDeviceHostWebSocketRelayUrlHeader];
-    if (!url) {
-      throw new Error('dogu-websocket-relay-url header is required');
-    }
+    const { headers } = incommingMessage;
+    this.logger.info(`DeviceWebSocketRelayWebsocketService.onWebSocketOpen`, { headers });
+    const { serial, url } = this.parseHeaders(headers);
 
-    if (Array.isArray(url)) {
-      throw new Error('dogu-websocket-relay-url header must be single value');
+    const deviceChannel = this.scanService.findChannel(serial);
+    if (!deviceChannel) {
+      throw new Error('device channel not found');
     }
 
     const toWebSocket = await new Promise<WebSocket>((resolve, reject) => {
@@ -58,7 +60,7 @@ export class DeviceHostWebSocketRelayWebsocketService
       toWebSocket.on('message', (data) => {
         const stringified = data.toString();
         this.logger.verbose('toWebSocket message', { url, data: stringified });
-        const message: Instance<typeof DeviceHostWebSocketRelay.receiveMessage> = {
+        const message: Instance<typeof DeviceWebSocketRelay.receiveMessage> = {
           data: stringified,
         };
         fromWebSocket.send(JSON.stringify(message));
@@ -70,7 +72,32 @@ export class DeviceHostWebSocketRelayWebsocketService
     };
   }
 
-  onWebSocketMessage(fromWebSocket: WebSocket, message: Instance<typeof DeviceHostWebSocketRelay.sendMessage>, valueAccessor: WebSocketRegistryValueAccessor<Value>): void {
+  private parseHeaders(headers: IncomingHttpHeaders): { serial: string; url: string } {
+    const serial = headers[DoguDeviceWebSocketRelaySerialHeader];
+    if (!serial) {
+      throw new Error('dogu-websocket-relay-serial header is required');
+    }
+
+    if (Array.isArray(serial)) {
+      throw new Error('dogu-websocket-relay-serial header must be single value');
+    }
+
+    const url = headers[DoguDeviceWebSocketRelayUrlHeader];
+    if (!url) {
+      throw new Error('dogu-websocket-relay-url header is required');
+    }
+
+    if (Array.isArray(url)) {
+      throw new Error('dogu-websocket-relay-url header must be single value');
+    }
+
+    return {
+      serial,
+      url,
+    };
+  }
+
+  onWebSocketMessage(fromWebSocket: WebSocket, message: Instance<typeof DeviceWebSocketRelay.sendMessage>, valueAccessor: WebSocketRegistryValueAccessor<Value>): void {
     try {
       this.onWebSocketMessageInternal(fromWebSocket, message, valueAccessor);
     } catch (error) {
@@ -80,7 +107,7 @@ export class DeviceHostWebSocketRelayWebsocketService
 
   private onWebSocketMessageInternal(
     fromWebSocket: WebSocket,
-    message: Instance<typeof DeviceHostWebSocketRelay.sendMessage>,
+    message: Instance<typeof DeviceWebSocketRelay.sendMessage>,
     valueAccessor: WebSocketRegistryValueAccessor<Value>,
   ): void {
     const { toWebSocket } = valueAccessor.get();
@@ -98,5 +125,16 @@ export class DeviceHostWebSocketRelayWebsocketService
     valueAccessor.update({
       toWebSocket: null,
     });
+  }
+
+  private async waitDevicePortListening(deviceChannel: DeviceChannel, port: number): Promise<void> {
+    for await (const _ of loop(1000, 10)) {
+      if (await deviceChannel.isPortListening(port)) {
+        break;
+      }
+    }
+    if (!(await deviceChannel.isPortListening(port))) {
+      throw new Error(`port:${port} is not listening`);
+    }
   }
 }

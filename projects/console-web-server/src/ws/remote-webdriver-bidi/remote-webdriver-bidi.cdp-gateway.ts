@@ -1,7 +1,7 @@
 import { WebSocketProxyReceiveClose } from '@dogu-private/console-host-agent';
 import { DEVICE_TABLE_NAME } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, errorify, HeaderRecord, PrefixLogger } from '@dogu-tech/common';
-import { DeviceHostWebSocketRelay, DoguDeviceHostWebSocketRelayUrlHeader } from '@dogu-tech/device-client-common';
+import { DeviceWebSocketRelay, DoguDeviceWebSocketRelaySerialHeader, DoguDeviceWebSocketRelayUrlHeader } from '@dogu-tech/device-client-common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { OnGatewayConnection } from '@nestjs/websockets';
 import { IncomingMessage } from 'http';
@@ -11,7 +11,7 @@ import { DeviceMessageRelayer, WebSocketProxy } from '../../module/device-messag
 import { logger } from '../../module/logger/logger.instance';
 import { PatternBasedWebSocketGateway, PatternBasedWebSocketInfo } from '../common/pattern-based-ws-adaptor';
 
-type ToWebSocket = WebSocketProxy<typeof DeviceHostWebSocketRelay.sendMessage, typeof DeviceHostWebSocketRelay.receiveMessage>;
+type ToWebSocket = WebSocketProxy<typeof DeviceWebSocketRelay.sendMessage, typeof DeviceWebSocketRelay.receiveMessage>;
 
 interface ToWebSocketInfo {
   toWebSocket: ToWebSocket | null;
@@ -83,22 +83,23 @@ export class RemoteWebDriverBiDiCdpGateway implements OnGatewayConnection {
       return null;
     }
 
-    const { device, deviceId, seCdp } = remoteDeviceJob;
+    const { device, deviceId, webDriverSeCdp } = remoteDeviceJob;
     if (!device) {
       this.closeWebSocket(fromWebSocket, 1011, 'device not found', { remoteDeviceJob });
       return null;
     }
 
-    if (!seCdp) {
+    if (!webDriverSeCdp) {
       this.closeWebSocket(fromWebSocket, 1011, 'seCdp not found', { remoteDeviceJob });
       return null;
     }
 
-    const { organizationId } = device;
+    const { organizationId, serial } = device;
     const headers: HeaderRecord = {
-      [DoguDeviceHostWebSocketRelayUrlHeader]: seCdp,
+      [DoguDeviceWebSocketRelaySerialHeader]: serial,
+      [DoguDeviceWebSocketRelayUrlHeader]: webDriverSeCdp,
     };
-    const toWebSocket = await this.deviceMessageRelayer.connectWebSocket(organizationId, deviceId, DeviceHostWebSocketRelay, headers);
+    const toWebSocket = await this.deviceMessageRelayer.connectWebSocket(organizationId, deviceId, DeviceWebSocketRelay, headers);
 
     this.logger.verbose('connected', { sessionId });
     return toWebSocket;
@@ -110,8 +111,7 @@ export class RemoteWebDriverBiDiCdpGateway implements OnGatewayConnection {
         if (message instanceof WebSocketProxyReceiveClose) {
           this.closeWebSocket(fromWebSocket, message.code, message.reason);
         } else {
-          const data = message.data;
-          fromWebSocket.send(data);
+          fromWebSocket.send(message.data);
         }
       }
     })().catch((error) => {

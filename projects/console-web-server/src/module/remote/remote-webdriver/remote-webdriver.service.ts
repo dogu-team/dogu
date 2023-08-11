@@ -222,13 +222,13 @@ export class RemoteWebDriverService {
       throw new RemoteException(HttpStatus.BAD_REQUEST, new Error('Session id not found in response'), {});
     }
 
-    const seCdp = _.get(response.resBody, 'value.capabilities.se:cdp', null) as string | null;
+    const webDriverSeCdp = _.get(response.resBody, 'value.capabilities.se:cdp', null) as string | null;
     const remoteDeviceJob = await this.dataSource.getRepository(RemoteDeviceJob).findOne({ where: { remoteDeviceJobId: handleResult.remoteDeviceJobId } });
     if (!remoteDeviceJob) {
       throw new RemoteException(HttpStatus.NOT_FOUND, new Error(`handleNewSessionResponse. remote-device-job not found. remoteDeviceJobId: ${handleResult.remoteDeviceJobId}`), {});
     }
 
-    await RemoteDeviceJobProcessor.updateRemoteDeviceJobByCapabilities(this.dataSource.manager, handleResult.remoteDeviceJobId, sessionId, seCdp);
+    await RemoteDeviceJobProcessor.updateRemoteDeviceJobByCapabilities(this.dataSource.manager, handleResult.remoteDeviceJobId, sessionId, webDriverSeCdp);
   }
 
   async waitRemoteDeviceJobToInprogress(remoteDeviceJobId: RemoteDeviceJobId): Promise<void> {
