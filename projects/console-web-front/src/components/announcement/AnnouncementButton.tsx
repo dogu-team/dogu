@@ -63,7 +63,7 @@ const AnnouncementButton = () => {
         )}
         {!!data &&
           data.map((changeLog) => {
-            return <AnnouncementCard key={changeLog.changeLogId} changeLog={changeLog} tags={['announcement', 'release', 'feature']} />;
+            return <AnnouncementCard key={changeLog.changeLogId} changeLog={changeLog} />;
           })}
       </StyledDrawer>
     </>

@@ -1,13 +1,15 @@
 import { ChangeLogBase } from '@dogu-private/console';
 import { Card, Divider } from 'antd';
 import styled from 'styled-components';
+// @ts-ignore
 import ReactMarkdown from 'react-markdown';
+// @ts-ignore
 import remarkGfm from 'remark-gfm';
+import { ChangeLogType } from '@dogu-private/types';
 
 import { flexRowCenteredStyle } from '../../styles/box';
 import ActionBar from './ActionBar';
-import AnnouncementTag, { AnnouncementType } from './AnnouncementTag';
-import { ChangeLogType } from '@dogu-private/types';
+import AnnouncementTag from './AnnouncementTag';
 
 interface Props {
   changeLog: ChangeLogBase;
