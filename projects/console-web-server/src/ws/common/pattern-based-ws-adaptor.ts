@@ -3,22 +3,29 @@ import { INestApplicationContext } from '@nestjs/common';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { WebSocketGateway } from '@nestjs/websockets';
 import http, { IncomingMessage } from 'http';
+import { match } from 'path-to-regexp';
 import * as ws from 'ws';
 
-const PatternRoutableWebSocketPathSet = new Set<string>();
+export interface PatternBasedWebSocketInfo {
+  path: string;
+  params: Map<string, string>;
+  query: Map<string, string>;
+}
 
-export function PatternRoutableWebSocketGateway(path: string): ClassDecorator {
-  if (PatternRoutableWebSocketPathSet.has(path)) {
+const PatternSet = new Set<string>();
+
+export function PatternBasedWebSocketGateway(path: string): ClassDecorator {
+  if (PatternSet.has(path)) {
     throw new Error(`path ${path} is already registered`);
   }
 
-  PatternRoutableWebSocketPathSet.add(path);
+  PatternSet.add(path);
   return WebSocketGateway({ path });
 }
 
 type CreateOptions = Parameters<WsAdapter['create']>[1] & { path?: string };
 
-class PatternRoutableWebSocketServer extends ws.Server {
+class PatternBasedWebSocketServer extends ws.Server {
   constructor(options: ws.ServerOptions) {
     super(options);
   }
@@ -28,7 +35,7 @@ class PatternRoutableWebSocketServer extends ws.Server {
   }
 }
 
-export class PatternRoutableWsAdapter extends WsAdapter {
+export class PatternBasedWsAdapter extends WsAdapter {
   constructor(app: INestApplicationContext, logger: Logger) {
     super(app);
   }
@@ -60,7 +67,8 @@ export class PatternRoutableWsAdapter extends WsAdapter {
         return;
       }
 
-      const pathname = new URL(request.url, baseUrl).pathname;
+      const urlObj = new URL(request.url, baseUrl);
+      const { pathname } = urlObj;
       const wsServersCollection = this.wsServersRegistry.get(port);
       if (!wsServersCollection) {
         this.logger.error('websocket server is not found', { port });
@@ -69,11 +77,20 @@ export class PatternRoutableWsAdapter extends WsAdapter {
       }
 
       let isRequestDelegated = false;
-      for (const wsServer of wsServersCollection) {
-        const casted = wsServer as ws.Server;
-        if (this.matchPath(pathname, casted.path)) {
-          casted.handleUpgrade(request, socket, head, (ws) => {
-            casted.emit('connection', ws, request);
+      for (const wsServerAny of wsServersCollection) {
+        const wsServer = wsServerAny as ws.Server;
+        const matcher = match(wsServer.path, { decode: decodeURIComponent });
+        const matchResult = matcher(pathname);
+        if (matchResult) {
+          const params = new Map(Object.entries(matchResult.params).map(([key, value]) => [key, value as string]));
+          const query = new Map(urlObj.searchParams.entries());
+          const info: PatternBasedWebSocketInfo = {
+            path: wsServer.path,
+            params,
+            query,
+          };
+          wsServer.handleUpgrade(request, socket, head, (ws) => {
+            wsServer.emit('connection', ws, request, info);
           });
           isRequestDelegated = true;
           break;
@@ -89,36 +106,14 @@ export class PatternRoutableWsAdapter extends WsAdapter {
     return httpServer;
   }
 
-  private matchPath(path: string, pathPattern: string): boolean {
-    const pathPatternParts = pathPattern.split('/');
-    const pathParts = path.split('/');
-    if (pathPatternParts.length !== pathParts.length) {
-      return false;
-    }
-
-    for (let i = 0; i < pathPatternParts.length; i++) {
-      const pathPatternPart = pathPatternParts[i];
-      const pathPart = pathParts[i];
-      if (pathPatternPart.startsWith(':')) {
-        continue;
-      }
-
-      if (pathPatternPart !== pathPart) {
-        return false;
-      }
-    }
-
-    return true;
-  }
-
   override create(port: number, options?: CreateOptions): any {
-    if (options?.path && PatternRoutableWebSocketPathSet.has(options.path)) {
-      return this.createPatternRoutableWebSocketServer(port, options);
+    if (options?.path && PatternSet.has(options.path)) {
+      return this.createPatternBasedWebSocketServer(port, options);
     }
     return super.create(port, options);
   }
 
-  private createPatternRoutableWebSocketServer(port: number, options: CreateOptions): PatternRoutableWebSocketServer {
+  private createPatternBasedWebSocketServer(port: number, options: CreateOptions): PatternBasedWebSocketServer {
     if (!options?.path || typeof options.path !== 'string') {
       throw new Error('path is required and must be a string');
     }
@@ -130,11 +125,11 @@ export class PatternRoutableWsAdapter extends WsAdapter {
     this.ensureHttpServerExists(port, this.httpServer);
 
     const wsServer = this.bindErrorHandler(
-      new PatternRoutableWebSocketServer({
+      new PatternBasedWebSocketServer({
         noServer: true,
         ...wsOptions,
       }),
-    ) as PatternRoutableWebSocketServer;
+    ) as PatternBasedWebSocketServer;
 
     this.addWsServerToRegistry(wsServer, port, path);
     return wsServer;

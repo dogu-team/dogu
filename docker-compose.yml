@@ -112,6 +112,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
+      - DOGU_API_BASE_URL=http://${DOGU_HOST}:4000
       - DOGU_NEXUS_USERNAME=${FILE_SERVER_USERNAME}
       - DOGU_NEXUS_PASSWORD=${FILE_SERVER_PASSWORD}
       - DOGU_NEXUS_HOST=${DOGU_HOST}

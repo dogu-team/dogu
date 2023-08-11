@@ -13,7 +13,7 @@ import { AppModule } from './module/app/app.module';
 import { setupSwagger } from './module/common/swagger/swagger';
 import { logger } from './module/logger/logger.instance';
 import { isSentryEnabled, SentryBreadCrumbTrasponrt } from './utils/sentry';
-import { PatternRoutableWsAdapter } from './ws/common/pattern-routable-ws-adaptor';
+import { PatternBasedWsAdapter } from './ws/common/pattern-based-ws-adaptor';
 
 process.on('unhandledRejection', (reason, promise) => {
   logger.error('Unhandled Rejection at:', { promise: stringify(promise), reason: stringify(reason) });
@@ -55,7 +55,7 @@ async function bootstrap(): Promise<void> {
     .useGlobalFilters(new AllExceptionsFilter(httpAdapterHost))
     .useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
     .useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))
-    .useWebSocketAdapter(new PatternRoutableWsAdapter(app, logger))
+    .useWebSocketAdapter(new PatternBasedWsAdapter(app, logger))
     .enableCors({
       origin: true,
       preflightContinue: false,

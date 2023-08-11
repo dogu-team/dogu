@@ -1,7 +1,7 @@
 import { OnWebSocketClose, OnWebSocketMessage, WebSocketGatewayBase, WebSocketRegistryValueAccessor, WebSocketService } from '@dogu-private/nestjs-common';
 import { categoryFromPlatform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, errorify, Instance, loop } from '@dogu-tech/common';
-import { DeviceRelay, DoguDeviceRelayPortHeaderKey, DoguDeviceRelaySerialHeaderKey, TcpRelayRequest, TcpRelayResponse } from '@dogu-tech/device-client-common';
+import { DeviceTcpRelay, DoguDeviceTcpRelayPortHeaderKey, DoguDeviceTcpRelaySerialHeaderKey, TcpRelayRequest, TcpRelayResponse } from '@dogu-tech/device-client-common';
 import { IncomingHttpHeaders, IncomingMessage } from 'http';
 import { Socket } from 'net';
 import WebSocket from 'ws';
@@ -21,21 +21,21 @@ interface Value {
   };
 }
 
-@WebSocketService(DeviceRelay)
-export class DeviceRelayService
-  extends WebSocketGatewayBase<Value, typeof DeviceRelay.sendMessage, typeof DeviceRelay.receiveMessage>
-  implements OnWebSocketMessage<Value, typeof DeviceRelay.sendMessage, typeof DeviceRelay.receiveMessage>, OnWebSocketClose<Value>
+@WebSocketService(DeviceTcpRelay)
+export class DeviceTcpRelayService
+  extends WebSocketGatewayBase<Value, typeof DeviceTcpRelay.sendMessage, typeof DeviceTcpRelay.receiveMessage>
+  implements OnWebSocketMessage<Value, typeof DeviceTcpRelay.sendMessage, typeof DeviceTcpRelay.receiveMessage>, OnWebSocketClose<Value>
 {
   constructor(private readonly scanService: ScanService, private readonly logger: DoguLogger) {
-    super(DeviceRelay, logger);
+    super(DeviceTcpRelay, logger);
   }
 
   override async onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): Promise<Value> {
     const { headers } = incommingMessage;
-    this.logger.info(`DeviceRelayService.onWebSocketOpen`, { headers });
+    this.logger.info(`DeviceTcpRelayService.onWebSocketOpen`, { headers });
     const { serial, port } = this.parseHeader(headers);
 
-    this.logger.info(`DeviceRelayService.onWebSocketOpen`, { serial, port });
+    this.logger.info(`DeviceTcpRelayService.onWebSocketOpen`, { serial, port });
 
     const deviceChannel = this.scanService.findChannel(serial);
     if (deviceChannel === null) {
@@ -76,23 +76,23 @@ export class DeviceRelayService
     }
 
     client.on('close', (isError: boolean) => {
-      this.logger.verbose('DeviceRelayService. deviceside socket closed', { isError });
+      this.logger.verbose('DeviceTcpRelayService. deviceside socket closed', { isError });
       closeWebSocketWithTruncateReason(webSocket, 1000, `tcp connection to ${port} closed`);
     });
 
-    this.logger.info(`DeviceRelayService.onWebSocketOpen success`, { serial, port });
+    this.logger.info(`DeviceTcpRelayService.onWebSocketOpen success`, { serial, port });
     return { serial, port, hostPort, client, recvContext: { expectedSeq: 1, buffer: [] } };
   }
 
   private parseHeader(headers: IncomingHttpHeaders): { serial: Serial; port: number } {
-    const serial = headers[DoguDeviceRelaySerialHeaderKey] as Serial;
+    const serial = headers[DoguDeviceTcpRelaySerialHeaderKey] as Serial;
     if (!serial) {
       throw new Error(`serial not found`);
     }
     if (typeof serial !== 'string') {
       throw new Error(`serial isn't string`);
     }
-    const portHeader = headers[DoguDeviceRelayPortHeaderKey];
+    const portHeader = headers[DoguDeviceTcpRelayPortHeaderKey];
     if (!portHeader) {
       throw new Error(`port not found`);
     }
@@ -105,23 +105,23 @@ export class DeviceRelayService
 
   onWebSocketClose(webSocket: WebSocket, event: WebSocket.CloseEvent, valueAccessor: WebSocketRegistryValueAccessor<Value>): void {
     const { serial, port, hostPort, client } = valueAccessor.get();
-    this.logger.info(`DeviceRelayService.onWebSocketClose`, { serial, port });
+    this.logger.info(`DeviceTcpRelayService.onWebSocketClose`, { serial, port });
     client.resetAndDestroy();
     const deviceChannel = this.scanService.findChannel(serial);
     if (deviceChannel) {
       Promise.resolve(deviceChannel.unforward(hostPort)).catch((error) => {
-        this.logger.error(`DeviceRelayService.onWebSocketClose. unforward error`, { error: errorify(error) });
+        this.logger.error(`DeviceTcpRelayService.onWebSocketClose. unforward error`, { error: errorify(error) });
       });
     }
   }
 
-  async onWebSocketMessage(webSocket: WebSocket, message: Instance<typeof DeviceRelay.sendMessage>, valueAccessor: WebSocketRegistryValueAccessor<Value>): Promise<void> {
+  async onWebSocketMessage(webSocket: WebSocket, message: Instance<typeof DeviceTcpRelay.sendMessage>, valueAccessor: WebSocketRegistryValueAccessor<Value>): Promise<void> {
     for await (const _ of loop(1000, 60)) {
       try {
         valueAccessor.get();
         break;
       } catch (e) {
-        this.logger.error(`DeviceRelayService.onWebSocketMessage`, { error: errorify(e) });
+        this.logger.error(`DeviceTcpRelayService.onWebSocketMessage`, { error: errorify(e) });
       }
     }
     try {
@@ -131,7 +131,7 @@ export class DeviceRelayService
       recvContext.buffer.push(message);
       this.flushBuffer(recvContext, client);
     } catch (e) {
-      this.logger.error(`DeviceRelayService.onWebSocketMessage. get error`, { error: errorify(e) });
+      this.logger.error(`DeviceTcpRelayService.onWebSocketMessage. get error`, { error: errorify(e) });
       closeWebSocketWithTruncateReason(webSocket, 1001, 'send failed by open error');
     }
   }
