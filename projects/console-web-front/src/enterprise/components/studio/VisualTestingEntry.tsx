@@ -3,6 +3,7 @@ import { ProjectBase } from '@dogu-private/console';
 import { Button } from 'antd';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
+import useDeviceStreamingContext from '../../../hooks/streaming/useDeviceStreamingContext';
 
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../../styles/box';
 import CreateCaseButton from '../visual/CreateCaseButton';
@@ -14,6 +15,7 @@ interface Props {
 
 const VisualTestingEntry = ({ project }: Props) => {
   const router = useRouter();
+  const { device } = useDeviceStreamingContext();
 
   return (
     <Box>
@@ -28,6 +30,7 @@ const VisualTestingEntry = ({ project }: Props) => {
           onCreate={(rv) => {
             router.push({ query: { ...router.query, caseId: rv.recordTestCaseId } }, undefined, { shallow: true });
           }}
+          devicePlatform={device?.platform}
         >
           Create new
         </CreateCaseButton>
