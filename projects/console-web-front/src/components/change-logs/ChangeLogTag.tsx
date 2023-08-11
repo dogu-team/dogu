@@ -1,5 +1,6 @@
 import { ChangeLogType } from '@dogu-private/types';
 import styled from 'styled-components';
+
 import { flexRowCenteredStyle } from '../../styles/box';
 
 export type AnnouncementType = 'announcement' | 'feature' | 'event' | 'release' | 'web' | 'mobile' | 'game' | 'automation' | 'integration';
@@ -8,7 +9,7 @@ interface Props {
   type: ChangeLogType;
 }
 
-const AnnouncementTag = ({ type }: Props) => {
+const ChnageLogTag = ({ type }: Props) => {
   switch (type) {
     case ChangeLogType.ANNOUNCEMENT:
       return <Tag tagColor="#6f95ed">Announcement</Tag>;
@@ -33,7 +34,7 @@ const AnnouncementTag = ({ type }: Props) => {
   }
 };
 
-export default AnnouncementTag;
+export default ChnageLogTag;
 
 const Tag = styled.div<{ tagColor: string }>`
   position: relative;

@@ -1,28 +1,31 @@
 import { TfiAnnouncement } from 'react-icons/tfi';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
-import { Drawer } from 'antd';
+import { Drawer, Empty } from 'antd';
 import useSWR from 'swr';
-
-import { swrAuthFetcher } from '../../api';
-import { flexRowCenteredStyle } from '../../styles/box';
-import AnnouncementCard from './AnnouncementCard';
-import { updateLastSeen } from '../../api/change-log';
 import { LoadingOutlined } from '@ant-design/icons';
-import { ChangeLogBase } from '@dogu-private/console';
+import { ChangeLogBase, UserBase } from '@dogu-private/console';
+
+import { swrAuthFetcher } from '../../api/index';
+import { flexRowCenteredStyle } from '../../styles/box';
+import ChangeLogCard from './ChangeLogCard';
+import { updateLastSeen } from '../../api/change-log';
 import useRefresh from '../../hooks/useRefresh';
 import useAuth from '../../hooks/useAuth';
 
-const AnnouncementButton = () => {
+interface Props {
+  me: UserBase;
+}
+
+const ChangeLogButton = ({ me }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [hasNewLogs, setHasNewLogs] = useState(false);
-  const { me } = useAuth();
   const { data, isLoading, error, mutate } = useSWR<ChangeLogBase[]>(`/change-logs`, swrAuthFetcher, { revalidateOnFocus: false });
 
   useRefresh(['onChangeLogReactionUpdated'], mutate);
 
   useEffect(() => {
-    if (data && me) {
+    if (data) {
       if (data.length === 0) {
         return;
       }
@@ -61,16 +64,21 @@ const AnnouncementButton = () => {
             <LoadingOutlined />
           </div>
         )}
-        {!!data &&
+        {!!data && data.length > 0 ? (
           data.map((changeLog) => {
-            return <AnnouncementCard key={changeLog.changeLogId} changeLog={changeLog} />;
-          })}
+            return <ChangeLogCard key={changeLog.changeLogId} changeLog={changeLog} />;
+          })
+        ) : (
+          <Centered>
+            <Empty description="No announcements" />
+          </Centered>
+        )}
       </StyledDrawer>
     </>
   );
 };
 
-export default AnnouncementButton;
+export default ChangeLogButton;
 
 const StyledButton = styled.button`
   position: relative;
@@ -103,4 +111,9 @@ const Dot = styled.div`
   width: 12px;
   height: 12px;
   border-radius: 50%;
+`;
+
+const Centered = styled.div`
+  ${flexRowCenteredStyle}
+  height: 100%;
 `;

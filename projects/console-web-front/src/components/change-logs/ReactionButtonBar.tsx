@@ -1,23 +1,22 @@
 import styled from 'styled-components';
-import Image from 'next/image';
 import { isAxiosError } from 'axios';
 import { ChangeLogId, ChangeLogReactionType } from '@dogu-private/types';
+import { shallow } from 'zustand/shallow';
 
-import resources from '../../resources';
+import resources from '../../resources/index';
 import { deleteReaction, updateReaction } from '../../api/change-log';
 import useRequest from '../../hooks/useRequest';
 import { sendErrorNotification } from '../../utils/antd';
 import { getErrorMessage } from '../../utils/error';
 import useEventStore from '../../stores/events';
-import { shallow } from 'zustand/shallow';
-import ActionButton from './ActionButton';
+import ReactionButton from './ReactionButton';
 
 interface Props {
   selectedReaction: ChangeLogReactionType | undefined;
   changeLogId: ChangeLogId;
 }
 
-const ActionBar = ({ selectedReaction, changeLogId }: Props) => {
+const ReactionButtonBar = ({ selectedReaction, changeLogId }: Props) => {
   const [patchLoading, requestPatch] = useRequest(updateReaction);
   const [deleteLoading, requestDelete] = useRequest(deleteReaction);
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
@@ -48,7 +47,7 @@ const ActionBar = ({ selectedReaction, changeLogId }: Props) => {
 
   return (
     <Box>
-      <ActionButton
+      <ReactionButton
         activeSrc={resources.icons.smilingFace}
         inactiveSrc={resources.icons.inactiveSmilingFace}
         isSelected={selectedReaction === ChangeLogReactionType.LIKE}
@@ -57,7 +56,7 @@ const ActionBar = ({ selectedReaction, changeLogId }: Props) => {
         imageAlt="smile"
         inactive={selectedReaction !== undefined && selectedReaction !== ChangeLogReactionType.LIKE}
       />
-      <ActionButton
+      <ReactionButton
         activeSrc={resources.icons.neutralFace}
         inactiveSrc={resources.icons.inactiveNeutralFace}
         isSelected={selectedReaction === ChangeLogReactionType.NEUTRAL}
@@ -66,7 +65,7 @@ const ActionBar = ({ selectedReaction, changeLogId }: Props) => {
         imageAlt="neutral"
         inactive={selectedReaction !== undefined && selectedReaction !== ChangeLogReactionType.NEUTRAL}
       />
-      <ActionButton
+      <ReactionButton
         activeSrc={resources.icons.pensiveFace}
         inactiveSrc={resources.icons.inactivePensiveFace}
         isSelected={selectedReaction === ChangeLogReactionType.DISLIKE}
@@ -79,7 +78,7 @@ const ActionBar = ({ selectedReaction, changeLogId }: Props) => {
   );
 };
 
-export default ActionBar;
+export default ReactionButtonBar;
 
 const Box = styled.div`
   width: 160px;

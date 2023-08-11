@@ -9,7 +9,7 @@ interface Props extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'chi
   imageAlt: string;
 }
 
-const ActionButton = ({ activeSrc, inactiveSrc, isSelected, inactive, imageAlt, ...props }: Props) => {
+const ReactionButton = ({ activeSrc, inactiveSrc, isSelected, inactive, imageAlt, ...props }: Props) => {
   return (
     <Button isSelected={isSelected} {...props}>
       <Image src={inactive ? inactiveSrc : activeSrc} fill alt={imageAlt} />
@@ -17,7 +17,7 @@ const ActionButton = ({ activeSrc, inactiveSrc, isSelected, inactive, imageAlt, 
   );
 };
 
-export default ActionButton;
+export default ReactionButton;
 
 const Button = styled.button<{ isSelected: boolean }>`
   position: relative;

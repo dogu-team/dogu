@@ -8,20 +8,20 @@ import remarkGfm from 'remark-gfm';
 import { ChangeLogType } from '@dogu-private/types';
 
 import { flexRowCenteredStyle } from '../../styles/box';
-import ActionBar from './ActionBar';
-import AnnouncementTag from './AnnouncementTag';
+import ReactionButtonBar from './ReactionButtonBar';
+import ChnageLogTag from './ChangeLogTag';
 
 interface Props {
   changeLog: ChangeLogBase;
 }
 
-const AnnouncementCard = ({ changeLog }: Props) => {
+const ChangeLogCard = ({ changeLog }: Props) => {
   return (
     <StyledCard bordered={false}>
       <TitleWrapper>
         <TagWrapper>
           {changeLog.tags.split(',').map((tag) => (
-            <AnnouncementTag key={tag} type={tag as ChangeLogType} />
+            <ChnageLogTag key={tag} type={tag as ChangeLogType} />
           ))}
         </TagWrapper>
         <div>
@@ -37,7 +37,7 @@ const AnnouncementCard = ({ changeLog }: Props) => {
         <>
           <Divider />
           <BarWrapper>
-            <ActionBar changeLogId={changeLog.changeLogId} selectedReaction={changeLog.userReactions?.[0]?.reactionType} />
+            <ReactionButtonBar changeLogId={changeLog.changeLogId} selectedReaction={changeLog.userReactions?.[0]?.reactionType} />
           </BarWrapper>
         </>
       )}
@@ -45,7 +45,7 @@ const AnnouncementCard = ({ changeLog }: Props) => {
   );
 };
 
-export default AnnouncementCard;
+export default ChangeLogCard;
 
 const StyledCard = styled(Card)`
   padding: 1rem;
