@@ -40,6 +40,17 @@ export class ApplicationController {
     return applicationDownloadUrl;
   }
 
+  @Get(':projectId/applications/packages')
+  @ProjectPermission(PROJECT_ROLE.READ)
+  async getApplicationWithUniquePackage(
+    @Param('organizationId') organizationId: string,
+    @Param('projectId') projectId: string,
+    @Query() dto: FindProjectApplicationDto,
+  ): Promise<ProjectApplicationWithIcon[]> {
+    const applications = await this.applicationService.getApplicationWithUniquePackage(organizationId, projectId, dto);
+    return applications;
+  }
+
   @Put(':projectId/applications')
   @ProjectPermission(PROJECT_ROLE.WRITE)
   @UseInterceptors(FileInterceptor('file'))
