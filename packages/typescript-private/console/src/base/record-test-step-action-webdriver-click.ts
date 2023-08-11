@@ -9,6 +9,10 @@ interface RecordTestStepActionWebdriverClickRelationTraits {
 export interface RecordTestStepActionWebdriverClickBaseTraits {
   recordTestStepActionWebdriverClickId: RecordTestStepActionWebdriverClickId;
   recordTestStepActionId: RecordTestStepActionId;
+  screenSizeX: number;
+  screenSizeY: number;
+  screenPositionX: number;
+  screenPositionY: number;
   xpath: string;
   createdAt: Date;
   updatedAt: Date;

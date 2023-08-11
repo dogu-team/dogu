@@ -1,8 +1,9 @@
 import { RecordTestStepBase, RecordTestStepPropSnake } from '@dogu-private/console';
 import { ProjectId, RecordTestStepId, RECORD_TEST_STEP_TABLE_NAME } from '@dogu-private/types';
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { Project } from './project.entity';
+import { RecordTestStepAction } from './record-test-step-action.entity';
 
 @Entity(RECORD_TEST_STEP_TABLE_NAME)
 export class RecordTestStep extends BaseEntity implements RecordTestStepBase {
@@ -27,4 +28,7 @@ export class RecordTestStep extends BaseEntity implements RecordTestStepBase {
   @ManyToOne(() => Project, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
   @JoinColumn({ name: RecordTestStepPropSnake.project_id })
   project?: Project;
+
+  @OneToMany(() => RecordTestStepAction, (recordTestStepAction) => recordTestStepAction.recordTestStep, { cascade: ['soft-remove'] })
+  recordTestStepActions?: RecordTestStepAction[];
 }

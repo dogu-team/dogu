@@ -6,7 +6,7 @@ import { RecordTestStep } from './record-test-step.entity';
 
 @Entity(RECORD_TEST_STEP_ACTION_TABLE_NAME)
 export class RecordTestStepAction extends BaseEntity implements RecordTestStepActionBase {
-  @PrimaryColumn({ type: 'uuid', name: RecordTestStepActionPropSnake.record_test_step_id })
+  @PrimaryColumn({ type: 'uuid', name: RecordTestStepActionPropSnake.record_test_step_action_id })
   recordTestStepActionId!: RecordTestStepActionId;
 
   @ColumnTemplate.RelationUuid(RecordTestStepActionPropSnake.record_test_step_id)
@@ -14,6 +14,9 @@ export class RecordTestStepAction extends BaseEntity implements RecordTestStepAc
 
   @Column({ type: 'smallint', name: RecordTestStepActionPropSnake.type, default: RECORD_TEST_STEP_ACTION_TYPE.UNSPECIFIED, nullable: false })
   type!: RECORD_TEST_STEP_ACTION_TYPE;
+
+  @Column({ type: 'character varying', name: RecordTestStepActionPropSnake.screenshot_url, nullable: false })
+  screenshotUrl!: string;
 
   @ColumnTemplate.CreateDate(RecordTestStepActionPropSnake.created_at)
   createdAt!: Date;

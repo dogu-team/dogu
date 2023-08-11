@@ -10,11 +10,7 @@ export interface RecordTestStepActionBaseTraits {
   recordTestStepActionId: RecordTestStepActionId;
   recordTestStepId: RecordTestStepId;
   type: RECORD_TEST_STEP_ACTION_TYPE;
-  // screenSize: string;
-  // screenPositionX: number;
-  // screenPositionY: number;
-  // screenShotUrl: string;
-  // deviceInfo: string;
+  screenshotUrl: string;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

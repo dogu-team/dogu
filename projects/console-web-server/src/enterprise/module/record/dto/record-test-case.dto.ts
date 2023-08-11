@@ -1,4 +1,10 @@
-import { AddRecordTestStepToRecordTestCaseDtoBase, CreateRecordTestCaseDtoBase, FindRecordTestCasesByProjectIdDtoBase, UpdateRecordTestCaseDtoBase } from '@dogu-private/console';
+import {
+  AddRecordTestStepToRecordTestCaseDtoBase,
+  CreateRecordTestCaseDtoBase,
+  FindRecordTestCasesByProjectIdDtoBase,
+  NewSessionDtoBase,
+  UpdateRecordTestCaseDtoBase,
+} from '@dogu-private/console';
 import { RecordTestStepId } from '@dogu-private/types';
 import { IsFilledString } from '@dogu-tech/common';
 import { IsOptional, IsString } from 'class-validator';
@@ -26,4 +32,21 @@ export class AddRecordTestStepToRecordTestCaseDto implements AddRecordTestStepTo
 
   @IsOptional()
   prevRecordTestStepId!: RecordTestStepId | null;
+}
+
+export class NewSessionDto implements NewSessionDtoBase {
+  @IsString()
+  @IsOptional()
+  appVersion?: string;
+
+  @IsString()
+  @IsOptional()
+  browserName?: string;
+
+  @IsString()
+  @IsOptional()
+  browserVersion?: string;
+
+  @IsFilledString()
+  deviceId!: string;
 }

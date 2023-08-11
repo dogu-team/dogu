@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { RecordTestCaseAndRecordTestStep, RecordTestScenarioAndRecordTestCase } from '../../../db/entity/index';
+import { Device, RecordTestCaseAndRecordTestStep, RecordTestScenarioAndRecordTestCase } from '../../../db/entity/index';
 import { RecordTestCase } from '../../../db/entity/record-test-case.entity';
 import { RecordTestScenario } from '../../../db/entity/record-test-scenario.entity';
 import { RecordTestStep } from '../../../db/entity/record-test-step.entity';
 import { FeatureFileModule } from '../../../module/feature/file/feature-file.module';
+import { ProjectModule } from '../../../module/project/project.module';
 import { RemoteModule } from '../../../module/remote/remote.module';
 import { RecordTestCaseController } from './record-test-case/record-test-case.controller';
 import { RecordTestCaseService } from './record-test-case/record-test-case.service';
@@ -15,9 +16,10 @@ import { RecordTestStepService } from './record-test-step/record-test-step.servi
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([RecordTestScenario, RecordTestCase, RecordTestStep, RecordTestScenarioAndRecordTestCase, RecordTestCaseAndRecordTestStep]),
+    TypeOrmModule.forFeature([RecordTestScenario, RecordTestCase, RecordTestStep, RecordTestScenarioAndRecordTestCase, RecordTestCaseAndRecordTestStep, Device]),
     RemoteModule,
     FeatureFileModule,
+    ProjectModule,
   ],
   providers: [RecordTestScenarioService, RecordTestCaseService, RecordTestStepService],
   exports: [],

@@ -53,7 +53,7 @@ class NewSessionResponse {
 /**
  * @see https://w3c.github.io/webdriver/#new-session
  */
-export class NewSessionRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<string> {
+export class NewSessionRemoteWebDriverBatchRequestItem extends RemoteWebDriverBatchRequestItem<NewSessionResponse> {
   constructor(executor: RemoteWebDriverBatchRequestExecutor, private readonly capabilities: WebDriverCapabilities) {
     super(executor);
   }
@@ -66,12 +66,12 @@ export class NewSessionRemoteWebDriverBatchRequestItem extends RemoteWebDriverBa
     });
   }
 
-  async onResponseCalled(relayResponse: RelayResponse): Promise<string> {
+  async onResponseCalled(relayResponse: RelayResponse): Promise<NewSessionResponse> {
     if (relayResponse.status !== 200) {
       throw new Error(`Failed to new session. status: ${relayResponse.status}`);
     }
     const validated = await transformAndValidate(NewSessionResponse, relayResponse.resBody);
-    return validated.value.sessionId;
+    return validated;
   }
 }
 
