@@ -19,14 +19,10 @@ export class ProjectScmService {
     private readonly dataSource: DataSource,
   ) {}
 
-  async getProjectGit(organizationId: OrganizationId, projectId: ProjectId) {
+  async getProjectGit(organizationId: OrganizationId, projectId: ProjectId): Promise<ProjectScm | null> {
     const projectScm = await this.dataSource.getRepository(ProjectScm).findOne({
       where: { projectId },
     });
-
-    if (!projectScm) {
-      throw new NotFoundException('Project repository not configured');
-    }
 
     return projectScm;
   }
