@@ -39,6 +39,8 @@ export * from './base/record-test-case-and-record-test-step';
 export * from './base/record-test-scenario';
 export * from './base/record-test-scenario-and-record-test-case';
 export * from './base/record-test-step';
+export * from './base/record-test-step-action';
+export * from './base/record-test-step-action-webdriver-click';
 export * from './base/remote';
 export * from './base/remote-dest';
 export * from './base/remote-dest-edge';
