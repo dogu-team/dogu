@@ -288,6 +288,6 @@ const CustomPointer = styled.div`
   height: 20px;
   border-radius: 50%;
   background-color: transparent;
-  border: 1px solid ${(props) => props.theme.colors.gray5};
+  border: 1px solid #efefef;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
 `;
