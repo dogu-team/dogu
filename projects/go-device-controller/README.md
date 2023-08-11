@@ -9,6 +9,7 @@
 - go 1.18.4
 - cmake 3.25
   macos: add /Applications/CMake.app/Contents/bin to PATH
+- see 🛠️ build environment settings [link](./docs/BUILD.md)
 
 #### windows
 
