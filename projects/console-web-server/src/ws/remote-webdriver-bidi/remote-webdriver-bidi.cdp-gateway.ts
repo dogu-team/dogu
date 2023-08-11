@@ -1,6 +1,6 @@
 import { WebSocketProxyReceiveClose } from '@dogu-private/console-host-agent';
 import { DEVICE_TABLE_NAME } from '@dogu-private/types';
-import { closeWebSocketWithTruncateReason, errorify, HeaderRecord } from '@dogu-tech/common';
+import { closeWebSocketWithTruncateReason, errorify, HeaderRecord, PrefixLogger } from '@dogu-tech/common';
 import { DeviceHostWebSocketRelay, DoguDeviceHostWebSocketRelayUrlHeader } from '@dogu-tech/device-client-common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { OnGatewayConnection } from '@nestjs/websockets';
@@ -8,35 +8,43 @@ import { IncomingMessage } from 'http';
 import { DataSource } from 'typeorm';
 import { RemoteDeviceJob } from '../../db/entity/remote-device-job.entity';
 import { DeviceMessageRelayer, WebSocketProxy } from '../../module/device-message/device-message.relayer';
-import { DoguLogger } from '../../module/logger/logger';
+import { logger } from '../../module/logger/logger.instance';
 import { PatternBasedWebSocketGateway, PatternBasedWebSocketInfo } from '../common/pattern-based-ws-adaptor';
 
-type WebSocketProxyType = WebSocketProxy<typeof DeviceHostWebSocketRelay.sendMessage, typeof DeviceHostWebSocketRelay.receiveMessage>;
+type ToWebSocket = WebSocketProxy<typeof DeviceHostWebSocketRelay.sendMessage, typeof DeviceHostWebSocketRelay.receiveMessage>;
 
 interface ToWebSocketInfo {
-  toWebSocket: WebSocketProxyType | null;
+  toWebSocket: ToWebSocket | null;
   messageBuffer: string[];
 }
 
 @PatternBasedWebSocketGateway('/session/:sessionId/se/cdp')
 export class RemoteWebDriverBiDiCdpGateway implements OnGatewayConnection {
+  private readonly logger = new PrefixLogger(logger, RemoteWebDriverBiDiCdpGateway.name);
   private toWebSocketInfos = new Map<string, ToWebSocketInfo>();
 
   constructor(
-    private readonly logger: DoguLogger,
     private readonly deviceMessageRelayer: DeviceMessageRelayer,
     @InjectDataSource()
     private readonly dataSource: DataSource,
   ) {}
 
-  async handleConnection(fromWebSocket: WebSocket, incomingMessage: IncomingMessage, info: PatternBasedWebSocketInfo): Promise<void> {
+  async handleConnection(fromWebSocket: WebSocket, incomingMessage: IncomingMessage, patternBasedWebSocketInfo: PatternBasedWebSocketInfo): Promise<void> {
     try {
-      const sessionId = this.handleConnectionSyncPart(fromWebSocket, incomingMessage, info);
+      const sessionId = this.parseSessionId(fromWebSocket, patternBasedWebSocketInfo);
       if (!sessionId) {
-        throw new Error('sessionId is required');
+        throw new Error('Internal error: sessionId is required');
       }
 
-      await this.handleConnectionAsyncPart(fromWebSocket, incomingMessage, info, sessionId);
+      this.setHandlers(fromWebSocket, sessionId);
+
+      const toWebSocket = await this.createToWebSocket(fromWebSocket, sessionId);
+      if (!toWebSocket) {
+        throw new Error('Internal error: toWebSocket is required');
+      }
+
+      this.relayMessage(fromWebSocket, toWebSocket);
+      this.flushMessageBuffer(fromWebSocket, sessionId, toWebSocket);
     } catch (error) {
       const errorified = errorify(error);
       this.closeWebSocket(fromWebSocket, 1011, errorified.message, { error: errorified });
@@ -48,30 +56,7 @@ export class RemoteWebDriverBiDiCdpGateway implements OnGatewayConnection {
     this.logger.info('closed websocket', { code, reason, details });
   }
 
-  private async handleConnectionAsyncPart(fromWebSocket: WebSocket, incomingMessage: IncomingMessage, info: PatternBasedWebSocketInfo, sessionId: string): Promise<void> {
-    const remoteDeviceJob = await this.dataSource.getRepository(RemoteDeviceJob).findOne({ where: { sessionId }, relations: [DEVICE_TABLE_NAME] });
-    if (!remoteDeviceJob) {
-      this.closeWebSocket(fromWebSocket, 1008, 'remoteDeviceJob not found', { sessionId });
-      return;
-    }
-
-    const { device, deviceId, seCdp } = remoteDeviceJob;
-    if (!device) {
-      this.closeWebSocket(fromWebSocket, 1011, 'device not found', { remoteDeviceJob });
-      return;
-    }
-
-    if (!seCdp) {
-      this.closeWebSocket(fromWebSocket, 1011, 'seCdp not found', { remoteDeviceJob });
-      return;
-    }
-
-    const { organizationId } = device;
-    const headers: HeaderRecord = {
-      [DoguDeviceHostWebSocketRelayUrlHeader]: seCdp,
-    };
-    const toWebSocket = await this.deviceMessageRelayer.connectWebSocket(organizationId, deviceId, DeviceHostWebSocketRelay, headers);
-
+  private flushMessageBuffer(fromWebSocket: WebSocket, sessionId: string, toWebSocket: ToWebSocket): void {
     const registeredToWebSocketInfo = this.toWebSocketInfos.get(sessionId);
     if (!registeredToWebSocketInfo) {
       this.closeWebSocket(fromWebSocket, 1011, 'toWebSocketInfo not found', { sessionId });
@@ -89,7 +74,37 @@ export class RemoteWebDriverBiDiCdpGateway implements OnGatewayConnection {
     }
     registeredToWebSocketInfo.messageBuffer = [];
     registeredToWebSocketInfo.toWebSocket = toWebSocket;
+  }
 
+  private async createToWebSocket(fromWebSocket: WebSocket, sessionId: string): Promise<ToWebSocket | null> {
+    const remoteDeviceJob = await this.dataSource.getRepository(RemoteDeviceJob).findOne({ where: { sessionId }, relations: [DEVICE_TABLE_NAME] });
+    if (!remoteDeviceJob) {
+      this.closeWebSocket(fromWebSocket, 1008, 'remoteDeviceJob not found', { sessionId });
+      return null;
+    }
+
+    const { device, deviceId, seCdp } = remoteDeviceJob;
+    if (!device) {
+      this.closeWebSocket(fromWebSocket, 1011, 'device not found', { remoteDeviceJob });
+      return null;
+    }
+
+    if (!seCdp) {
+      this.closeWebSocket(fromWebSocket, 1011, 'seCdp not found', { remoteDeviceJob });
+      return null;
+    }
+
+    const { organizationId } = device;
+    const headers: HeaderRecord = {
+      [DoguDeviceHostWebSocketRelayUrlHeader]: seCdp,
+    };
+    const toWebSocket = await this.deviceMessageRelayer.connectWebSocket(organizationId, deviceId, DeviceHostWebSocketRelay, headers);
+
+    this.logger.verbose('connected', { sessionId });
+    return toWebSocket;
+  }
+
+  private relayMessage(fromWebSocket: WebSocket, toWebSocket: ToWebSocket): void {
     (async (): Promise<void> => {
       for await (const message of toWebSocket.receive()) {
         if (message instanceof WebSocketProxyReceiveClose) {
@@ -102,14 +117,12 @@ export class RemoteWebDriverBiDiCdpGateway implements OnGatewayConnection {
     })().catch((error) => {
       this.logger.error('error in websocket relayer', { error: errorify(error) });
     });
-
-    this.logger.verbose('connected', { sessionId });
   }
 
-  private handleConnectionSyncPart(fromWebSocket: WebSocket, incomingMessage: IncomingMessage, info: PatternBasedWebSocketInfo): string | null {
-    const sessionId = info.params.get('sessionId');
+  private parseSessionId(fromWebSocket: WebSocket, patternBasedWebSocketInfo: PatternBasedWebSocketInfo): string | null {
+    const sessionId = patternBasedWebSocketInfo.params.get('sessionId');
     if (!sessionId) {
-      this.closeWebSocket(fromWebSocket, 1008, 'sessionId is required', { info });
+      this.closeWebSocket(fromWebSocket, 1008, 'sessionId is required', { patternBasedWebSocketInfo });
       return null;
     }
 
@@ -118,6 +131,10 @@ export class RemoteWebDriverBiDiCdpGateway implements OnGatewayConnection {
       return null;
     }
 
+    return sessionId;
+  }
+
+  private setHandlers(fromWebSocket: WebSocket, sessionId: string): void {
     const toWebSocketInfo: ToWebSocketInfo = {
       toWebSocket: null,
       messageBuffer: [],
@@ -155,7 +172,5 @@ export class RemoteWebDriverBiDiCdpGateway implements OnGatewayConnection {
 
       this.logger.verbose('received message from fromWebSocket', { data: stringified });
     });
-
-    return sessionId;
   }
 }
