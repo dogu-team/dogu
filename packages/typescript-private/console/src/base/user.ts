@@ -1,6 +1,15 @@
 import { UserId } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
-import { HostBase, ProjectApplicationBase, ProjectRoleBase, UserAndRefreshTokenBase, UserAndResetPasswordTokenBase, UserEmailPreferenceBase, UserSnsBase } from '..';
+import {
+  ChangeLogUserReactionBase,
+  HostBase,
+  ProjectApplicationBase,
+  ProjectRoleBase,
+  UserAndRefreshTokenBase,
+  UserAndResetPasswordTokenBase,
+  UserEmailPreferenceBase,
+  UserSnsBase,
+} from '..';
 import { OrganizationBase } from './organization';
 import { OrganizationAndUserAndOrganizationRoleBase } from './organization-and-user-and-organization-role';
 import { OrganizationUserAndTeamBase } from './organization-and-user-and-team';
@@ -30,6 +39,7 @@ export interface UserRelationTraits {
   userAndRefreshTokens?: UserAndRefreshTokenBase[];
   projectApplications?: ProjectApplicationBase[];
   userSns?: UserSnsBase;
+  changeLogReactions?: ChangeLogUserReactionBase[];
 }
 
 export interface UserBaseTraits {
@@ -39,6 +49,7 @@ export interface UserBaseTraits {
   name: string;
   profileImageUrl: string | null;
   isTutorialCompleted: number;
+  lastChangeLogSeenAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

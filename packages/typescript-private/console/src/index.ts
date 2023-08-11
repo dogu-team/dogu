@@ -1,5 +1,7 @@
 import 'reflect-metadata';
 
+export * from './base/change-log';
+export * from './base/change-log-user-reaction';
 export * from './base/cloud-device';
 export * from './base/cloud-device-rental';
 export * from './base/controller-handler';
@@ -61,6 +63,7 @@ export * from './base/user-email-preference';
 export * from './base/user-key';
 export * from './base/user-sns';
 export * from './base/user-visit';
+export * from './dto/change-log/change-log.dto';
 export * from './dto/device-tag/device-tag.dto';
 export * from './dto/device/device-response.dto';
 export * from './dto/device/device.dto';

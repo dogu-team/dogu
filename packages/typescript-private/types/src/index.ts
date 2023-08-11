@@ -2,6 +2,7 @@ import 'reflect-metadata';
 
 export * from '@dogu-tech/types';
 export * from './auth';
+export * from './change-log';
 export * from './cloud-device';
 export * from './cloud-device-rental';
 export * from './constants';
