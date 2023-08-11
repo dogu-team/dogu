@@ -38,8 +38,9 @@ const CreateCaseButton = ({ project, onCreate, devicePlatform, ...props }: Props
 
   const handleSave = async () => {
     const name = form.getFieldValue('name');
+    const app = form.getFieldValue('app');
 
-    if (!name) {
+    if (!name || !app) {
       return;
     }
 
@@ -75,7 +76,7 @@ const CreateCaseButton = ({ project, onCreate, devicePlatform, ...props }: Props
           <Form.Item name="name" label="Name" required rules={[{ required: true, message: 'Input case name' }]}>
             <Input placeholder="Name" minLength={1} required />
           </Form.Item>
-          <Form.Item name="app" label="Application">
+          <Form.Item name="app" label="Application" required rules={[{ required: true, message: 'Select application' }]}>
             <Select placeholder="Select application" dropdownMatchSelectWidth={false}>
               {data?.map((app) => (
                 <Select.Option key={app.projectApplicationId} value={app.package}>
