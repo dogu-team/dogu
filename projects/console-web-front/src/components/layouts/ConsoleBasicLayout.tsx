@@ -17,7 +17,7 @@ interface Props {
 }
 
 const ConsoleBasicLayout = ({ children }: Props) => {
-  const { me, isLoading, error } = useAuth();
+  const { me, isLoading, error, mutate } = useAuth();
   const router = useRouter();
 
   if (isLoading) {
@@ -48,7 +48,7 @@ const ConsoleBasicLayout = ({ children }: Props) => {
                   <SlackOutlined />
                 </StyledLink>
               </Tooltip>
-              <ChangeLogButton me={me} />
+              <ChangeLogButton me={me} mutateMe={mutate} />
               <AccountMenu />
             </FlexRow>
           }

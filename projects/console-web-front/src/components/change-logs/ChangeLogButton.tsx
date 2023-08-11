@@ -2,7 +2,7 @@ import { TfiAnnouncement } from 'react-icons/tfi';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import { Drawer, Empty } from 'antd';
-import useSWR from 'swr';
+import useSWR, { KeyedMutator } from 'swr';
 import { LoadingOutlined } from '@ant-design/icons';
 import { ChangeLogBase, UserBase } from '@dogu-private/console';
 
@@ -11,13 +11,13 @@ import { flexRowCenteredStyle } from '../../styles/box';
 import ChangeLogCard from './ChangeLogCard';
 import { updateLastSeen } from '../../api/change-log';
 import useRefresh from '../../hooks/useRefresh';
-import useAuth from '../../hooks/useAuth';
 
 interface Props {
   me: UserBase;
+  mutateMe: KeyedMutator<UserBase>;
 }
 
-const ChangeLogButton = ({ me }: Props) => {
+const ChangeLogButton = ({ me, mutateMe }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [hasNewLogs, setHasNewLogs] = useState(false);
   const { data, isLoading, error, mutate } = useSWR<ChangeLogBase[]>(`/change-logs`, swrAuthFetcher, { revalidateOnFocus: false });
@@ -44,6 +44,7 @@ const ChangeLogButton = ({ me }: Props) => {
   const handleOpen = async () => {
     setIsOpen(true);
     setHasNewLogs(false);
+    mutateMe({ ...me, lastChangeLogSeenAt: new Date() }, false);
     if (hasNewLogs) {
       updateLastSeen().catch((e) => {});
     }

@@ -16,6 +16,8 @@ interface Props {
 }
 
 const ChangeLogCard = ({ changeLog }: Props) => {
+  const replacedContent = changeLog.content.replace(/\\n/g, '\n');
+
   return (
     <StyledCard bordered={false}>
       <TitleWrapper>
@@ -30,7 +32,7 @@ const ChangeLogCard = ({ changeLog }: Props) => {
       </TitleWrapper>
       <Article>
         <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ a: (props) => <a {...props} target="_blank" /> }}>
-          {changeLog.content}
+          {replacedContent}
         </ReactMarkdown>
       </Article>
       {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
