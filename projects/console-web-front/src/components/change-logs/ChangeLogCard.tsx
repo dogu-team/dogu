@@ -1,11 +1,9 @@
 import { ChangeLogBase } from '@dogu-private/console';
 import { Card, Divider } from 'antd';
 import styled from 'styled-components';
-// @ts-ignore
-import ReactMarkdown from 'react-markdown';
-// @ts-ignore
-import remarkGfm from 'remark-gfm';
 import { ChangeLogType } from '@dogu-private/types';
+const ReactMarkdown = await import('react-markdown').then((m) => m.default);
+const remarkGfm = await import('remark-gfm').then((m) => m.default);
 
 import { flexRowCenteredStyle } from '../../styles/box';
 import ReactionButtonBar from './ReactionButtonBar';
