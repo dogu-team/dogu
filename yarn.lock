@@ -15201,6 +15201,7 @@ __metadata:
     passport: 0.6.0
     passport-google-oauth20: 2.0.0
     passport-jwt: 4.0.0
+    path-to-regexp: 6.2.1
     pg: 8.11.0
     plist: 3.0.6
     reflect-metadata: 0.1.13
@@ -28564,6 +28565,13 @@ __metadata:
   version: 3.2.0
   resolution: "path-to-regexp@npm:3.2.0"
   checksum: c3d35cda3b26d9e604d789b9a1764bb9845f53ca8009d5809356b4677a3c064b0f01117a05a5b4b77bafd5ae002a82592e3f3495e885c22961f8b1dab8bd6ae7
+  languageName: node
+  linkType: hard
+
+"path-to-regexp@npm:6.2.1":
+  version: 6.2.1
+  resolution: "path-to-regexp@npm:6.2.1"
+  checksum: f0227af8284ea13300f4293ba111e3635142f976d4197f14d5ad1f124aebd9118783dd2e5f1fe16f7273743cc3dbeddfb7493f237bb27c10fdae07020cc9b698
   languageName: node
   linkType: hard
 

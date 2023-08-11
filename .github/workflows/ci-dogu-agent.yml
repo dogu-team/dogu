@@ -261,7 +261,7 @@ jobs:
         with:
           name: 'dogu-agent-${{ runner.os }}-${{ matrix.arch }}'
           path: |
-            ./nm-space/projects/dost/dist/*.dmg
+            ./nm-space/projects/dost/dist/*.zip
 
   send-slack:
     runs-on: ubuntu-latest

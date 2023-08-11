@@ -12,7 +12,7 @@ interface Value {
 }
 
 @WebSocketService(DeviceHostDownloadSharedResource)
-export class DeviceHostDownloadSharedResourceWebsocketService
+export class DeviceHostDownloadSharedResourceWebSocketService
   extends WebSocketGatewayBase<Value, typeof DeviceHostDownloadSharedResource.sendMessage, typeof DeviceHostDownloadSharedResource.receiveMessage>
   implements OnWebSocketMessage<Value, typeof DeviceHostDownloadSharedResource.sendMessage, typeof DeviceHostDownloadSharedResource.receiveMessage>, OnWebSocketClose<Value>
 {

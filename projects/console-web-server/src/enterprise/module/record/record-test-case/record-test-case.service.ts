@@ -293,7 +293,7 @@ export class RecordTestCaseService {
       });
       await manager
         .getRepository(RecordTestCaseAndRecordTestStep)
-        .upsert(newRoot, [`${RecordTestCaseAndRecordTestStepPropCamel.recordTestCaseId}`, `${RecordTestCaseAndRecordTestStepPropCamel.recordTestStepId}`]);
+        .upsert(castEntity(newRoot), [`${RecordTestCaseAndRecordTestStepPropCamel.recordTestCaseId}`, `${RecordTestCaseAndRecordTestStepPropCamel.recordTestStepId}`]);
       return;
     }
 

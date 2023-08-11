@@ -570,6 +570,7 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: '//*[@access-id="add-new-host-btn"]' }, { focusWindow: true });
         await Driver.sendKeys({ xpath: '//*[@access-id="add-host-form-name"]' }, values.value.HOST_NAME, { focusWindow: true });
         await Driver.clickElement({ xpath: '//button[@form="new-host"]' }, { focusWindow: true });
+        await Driver.findElement({ xpath: '//input[@access-id="copy-token-input"]' });
         await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
       });
 

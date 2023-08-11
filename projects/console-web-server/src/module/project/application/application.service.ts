@@ -36,26 +36,7 @@ export class ApplicationService {
       .take(dto.getDBLimit())
       .getManyAndCount();
 
-    const requestsAppIconUrl: Promise<string>[] = [];
-    for (const application of applications) {
-      const appFileType = convertExtToProjectAppType(application.fileExtension);
-      if (application.iconFileName === null || !appFileType) {
-        requestsAppIconUrl.push(Promise.resolve(`assets/images/apk_default_icon.png`));
-      } else {
-        requestsAppIconUrl.push(this.projectFileService.getAppDirectory(organizationId, projectId, appFileType).getSignedUrl(application.iconFileName));
-      }
-    }
-
-    const iconUrls = await Promise.all(requestsAppIconUrl);
-
-    const projectApplicationList: ProjectApplicationWithIcon[] = applications.map((application, id) => {
-      const iconUrl: string = iconUrls[id];
-
-      return {
-        ...application,
-        iconUrl: iconUrl,
-      };
-    });
+    const projectApplicationList = await this.getAppIcons(organizationId, projectId, applications);
 
     return new Page(page, offset, count, projectApplicationList);
   }
@@ -81,6 +62,38 @@ export class ApplicationService {
   }
 
   async getApplicationMeta(name: string, organizationId: OrganizationId, projectId: ProjectId) {}
+
+  async getApplicationWithUniquePackage(organizationId: OrganizationId, projectId: ProjectId, dto: FindProjectApplicationDto): Promise<ProjectApplicationWithIcon[]> {
+    const { version, extension } = dto;
+
+    const applications = await await this.dataSource
+      .getRepository(ProjectApplication)
+      .createQueryBuilder('projectApplication')
+      .leftJoinAndSelect(`projectApplication.${ProjectApplicationPropCamel.creator}`, 'creator')
+      .where({ organizationId, projectId })
+      .andWhere(extension ? 'projectApplication.fileExtension = :extension' : '1=1', { extension: extension })
+      .andWhere(version ? 'projectApplication.version LIKE :version' : '1=1', { version: `%${version}%` })
+      .orderBy('projectApplication.createdAt', 'DESC')
+      .getMany();
+
+    const uniquePackageApplications: ProjectApplication[] = [];
+    const uniquePackageSet = new Set(applications.map((application) => application.package));
+
+    for (const application of applications) {
+      if (uniquePackageSet.size === 0) {
+        break;
+      }
+
+      if (uniquePackageSet.has(application.package)) {
+        uniquePackageApplications.push(application);
+        uniquePackageSet.delete(application.package);
+      }
+    }
+
+    const projectApplicationList = await this.getAppIcons(organizationId, projectId, uniquePackageApplications);
+
+    return projectApplicationList;
+  }
 
   async uploadSampleApk(manager: EntityManager, sampleAppPath: string, creatorUserId: UserId, organizationId: OrganizationId, projectId: ProjectId): Promise<void> {
     const buffer = await promisify(fs.readFile)(sampleAppPath);
@@ -216,6 +229,31 @@ export class ApplicationService {
         await appFileDirectory.delete(application.iconFileName);
       }
     });
+  }
+
+  private async getAppIcons(organizationId: OrganizationId, projectId: ProjectId, applications: ProjectApplication[]): Promise<ProjectApplicationWithIcon[]> {
+    const requestsAppIconUrl: Promise<string>[] = [];
+    for (const application of applications) {
+      const appFileType = convertExtToProjectAppType(application.fileExtension);
+      if (application.iconFileName === null || !appFileType) {
+        requestsAppIconUrl.push(Promise.resolve(`assets/images/apk_default_icon.png`));
+      } else {
+        requestsAppIconUrl.push(this.projectFileService.getAppDirectory(organizationId, projectId, appFileType).getSignedUrl(application.iconFileName));
+      }
+    }
+
+    const iconUrls = await Promise.all(requestsAppIconUrl);
+
+    const projectApplicationList: ProjectApplicationWithIcon[] = applications.map((application, id) => {
+      const iconUrl: string = iconUrls[id];
+
+      return {
+        ...application,
+        iconUrl: iconUrl,
+      };
+    });
+
+    return projectApplicationList;
   }
 }
 
