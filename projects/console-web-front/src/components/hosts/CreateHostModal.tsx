@@ -6,7 +6,7 @@ import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import styled from 'styled-components';
 
 import { createHost } from 'src/api/host';
@@ -33,12 +33,6 @@ const CreateHostModal = ({ isOpen, close }: Props) => {
   const router = useRouter();
 
   const organizationId = router.query.orgId as OrganizationId;
-
-  useEffect(() => {
-    if (!isOpen) {
-      closeAlert();
-    }
-  }, [isOpen, closeAlert]);
 
   const handleSubmit = async () => {
     const name = form.getFieldValue('name');
