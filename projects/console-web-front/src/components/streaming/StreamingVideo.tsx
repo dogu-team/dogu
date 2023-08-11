@@ -42,14 +42,11 @@ const StreamingVideo = ({
   onMouseLeave,
   onDoubleClick,
 }: Props) => {
-  const { mode, videoRef, deviceRTCCaller, loading, updateMode } = useDeviceStreamingContext();
-  // const { handleDoubleClick, handleKeyDown, handleKeyUp, handleMouseDown, handleMouseLeave, handleMouseMove, handleMouseUp, handleWheel } = useDeviceInput(
-  //   deviceRTCCaller ?? undefined,
-  // );
-  const boxRef = useRef<HTMLDivElement>(null);
-
-  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const { videoRef, loading } = useDeviceStreamingContext();
   const [videoSize, setVideoSize] = useState<VideoSize>({ width: 0, height: 0 });
+  const boxRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
 
   // if ratio > 1, width > height
   const videoRatio = videoSize.height > 0 ? videoSize.width / videoSize.height : 0;
@@ -75,16 +72,35 @@ const StreamingVideo = ({
 
   useEffect(() => {
     const preventContext = (e: Event) => e.preventDefault();
+    const moveCursor = (e: MouseEvent) => {
+      const mouseY = e.offsetY;
+      const mouseX = e.offsetX;
+
+      if (cursorRef.current) {
+        cursorRef.current.style.display = 'block';
+        cursorRef.current.style.top = `${mouseY - 10}px`;
+        cursorRef.current.style.left = `${mouseX - 10}px`;
+      }
+    };
+    const hideCursor = () => {
+      if (cursorRef.current) {
+        cursorRef.current.style.display = 'none';
+      }
+    };
 
     const target = inputRef.current;
 
     if (target) {
       target.addEventListener('contextmenu', preventContext);
+      target.addEventListener('mousemove', moveCursor);
+      target.addEventListener('mouseleave', hideCursor);
     }
 
     return () => {
       if (target) {
         target.removeEventListener('contextmenu', preventContext);
+        target.removeEventListener('mousemove', moveCursor);
+        target.removeEventListener('mouseleave', hideCursor);
       }
     };
   }, []);
@@ -194,8 +210,8 @@ const StreamingVideo = ({
           }}
           readOnly
         />
-
         {children}
+        <CustomPointer ref={cursorRef} />
       </InputWrapper>
       {rightSidebar}
     </VideoWrapper>
@@ -243,7 +259,7 @@ const StyledInput = styled.textarea`
   overflow-y: scroll;
   resize: none;
   z-index: 30;
-  cursor: default;
+  cursor: none;
   user-select: none;
 
   &::-webkit-scrollbar {
@@ -263,4 +279,15 @@ const LoadingBox = styled.div`
     text-align: center;
     line-height: 1.4;
   }
+`;
+
+const CustomPointer = styled.div`
+  position: absolute;
+  display: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: transparent;
+  border: 1px solid ${(props) => props.theme.colors.gray5};
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
 `;
