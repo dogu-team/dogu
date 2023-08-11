@@ -37,7 +37,7 @@ export class ChromeVersionFinder implements IChromeVersionFinder {
 
 class WindowsChromeVersionFinder implements IChromeVersionFinder {
   findSync(): ChromeVersion {
-    const { error, stdout, stderr } = spawnSync('reg', ['query', 'HKEY_CURRENT_USER\\Software\\Google\\Chrome\\BLBeacon', '/v', 'version']);
+    const { error, stdout, stderr } = spawnSync('reg', ['query', 'HKEY_CURRENT_USER\\Software\\Google\\Chrome\\BLBeacon', '/v', 'version'], { encoding: 'utf8' });
     if (error) {
       throw error;
     }
@@ -79,7 +79,7 @@ class WindowsChromeVersionFinder implements IChromeVersionFinder {
 
 class MacChromeVersionFinder implements IChromeVersionFinder {
   findSync(): ChromeVersion {
-    const { error, stdout, stderr } = spawnSync('defaults', ['read', '/Applications/Google Chrome.app/Contents/Info', 'CFBundleShortVersionString']);
+    const { error, stdout, stderr } = spawnSync('defaults', ['read', '/Applications/Google Chrome.app/Contents/Info', 'CFBundleShortVersionString'], { encoding: 'utf8' });
     if (error) {
       throw error;
     }
