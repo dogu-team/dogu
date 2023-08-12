@@ -6,9 +6,7 @@ on:
     inputs:
       rc_check:
         type: boolean
-        description: |
-          RC
-          if checked, version must be empty.
+        description: RC <br> 💬 if checked, version must be empty.
       version:
         type: string
         description: |
