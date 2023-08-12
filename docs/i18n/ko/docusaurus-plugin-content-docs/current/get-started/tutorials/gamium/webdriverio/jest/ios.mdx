@@ -1,14 +1,14 @@
 ---
 sidebar_position: 1
-title: Android
+title: iOS
 locale: en
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import DevicePrerequisites from '@site/src/components/tutorial/android/DevicePrerequisitesKor.mdx';
+import DevicePrerequisites from '@site/src/components/tutorial/ios/DevicePrerequisitesKor.mdx';
 import CloneExampleAndInit from '@site/src/components/tutorial/javascript/CloneExampleAndInit.mdx';
-import AppUpload from '@site/src/components/tutorial/common/AppUploadKor.mdx';
+import AppUploadiOSGamium from '@site/src/components/tutorial/common/AppUploadiOSGamiumKor.mdx';
 import AppConfigTabItem from '@site/src/components/tutorial/common/AppConfigTabItemKor.mdx';
 import UploadAndConfigChromeTabItem from '@site/src/components/tutorial/common/UploadAndConfigChromeTabItemKor.mdx';
 import RunCommand from '@site/src/components/tutorial/common/RunCommandKor.mdx';
@@ -23,12 +23,9 @@ import RunCommand from '@site/src/components/tutorial/common/RunCommandKor.mdx';
 <Tabs groupId="target" defaultValue="app" queryString>
 <TabItem value="app" label="App">
 
-<AppUpload
-  app_name="DoguRpgSample.apk"
-  app_url="https://github.com/dogu-team/gamium-unity-samples/releases/download/DoguRpgSample-2.0.5/android.zip"
-/>
-<AppConfigTabItem runs_on="android" app_version="2.0.5" />
-<RunCommand run_script="npm run test:app:android" />
+<AppUploadiOSGamium />
+<AppConfigTabItem runs_on="ios" app_version="2.0.5" />
+<RunCommand run_script="npm run test:app" />;
 
 </TabItem>
 </Tabs>

@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-title: Android
+title: iOS
 locale: en
 ---
 
@@ -11,11 +11,11 @@ import {
 import BrowserOnly from '@docusaurus/BrowserOnly';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
-import DevicePrerequisites from '@site/src/components/tutorial/android/DevicePrerequisites.mdx';
+import DevicePrerequisites from '@site/src/components/tutorial/ios/DevicePrerequisites.mdx';
 import CloneExampleAndVenv from '@site/src/components/tutorial/python/CloneExampleAndVenv.mdx';
 import ActivateVirtualEnv from '@site/src/components/tutorial/python/ActivateVirtualEnv.mdx';
 import InstallDependencies from '@site/src/components/tutorial/python/InstallDependencies.mdx';
-import AppUpload from '@site/src/components/tutorial/common/AppUpload.mdx';
+import AppUploadiOSGamium from '@site/src/components/tutorial/common/AppUploadiOSGamium.mdx';
 import AppConfigTabItem from '@site/src/components/tutorial/common/AppConfigTabItem.mdx';
 import RunCommand from '@site/src/components/tutorial/common/RunCommand.mdx';
 import VenvImportError from '@site/src/components/tutorial/python/VenvImportError.mdx';
@@ -31,11 +31,8 @@ import VenvImportError from '@site/src/components/tutorial/python/VenvImportErro
 
 <InstallDependencies title="Install Dependencies" />
 
-<AppUpload
-  app_name="DoguRpgSample.apk"
-  app_url="https://github.com/dogu-team/gamium-unity-samples/releases/download/DoguRpgSample-2.0.5/android.zip"
-/>
-<AppConfigTabItem runs_on="android" app_version="2.0.5" />
+<AppUploadiOSGamium />
+<AppConfigTabItem runs_on="ios" app_version="2.0.5" />
 
 <RunCommand run_script="pytest pytest app/test_dogurpgsample.py" />
 
