@@ -20,6 +20,9 @@ export class Env {
   DOGU_CONSOLE_WEB_SERVER_PORT!: number;
 
   @IsFilledString()
+  DOGU_API_BASE_URL!: string;
+
+  @IsFilledString()
   DOGU_CONSOLE_DOMAIN!: string;
 
   @IsOptional()

@@ -10,7 +10,10 @@ export function logcat(serial: Serial, args: string[], handler: LogHandler, prin
   const libPath = [HostPaths.external.libimobiledevice.libimobiledeviceLibPath(), process.env.DYLD_LIBRARY_PATH].join(':');
   const random = Math.random();
   printable?.verbose?.('ios.logcat begin', { serial, args, random });
-  const child = spawn(HostPaths.external.libimobiledevice.idevicesyslog(), ['-u', serial, '-e', 'replayd', '-e', 'DoguScreen', ...args], {
+  const bin = HostPaths.external.libimobiledevice.idevicesyslog();
+  tryAccessAndFix();
+
+  const child = spawn(bin, ['-u', serial, '-e', 'replayd', '-e', 'DoguScreen', ...args], {
     env: {
       ...process.env,
       DYLD_LIBRARY_PATH: libPath,
@@ -24,9 +27,30 @@ export function logcat(serial: Serial, args: string[], handler: LogHandler, prin
   child.stderr.on('data', (data) => {
     handler.error(stringify(data));
   });
+  child.on('error', (error) => {
+    handler.error(stringify(error));
+  });
   printable?.verbose?.('ios.logcat end', { serial, args, random });
   return child;
 }
+
+const tryAccessAndFix = (): void => {
+  const bin = HostPaths.external.libimobiledevice.idevicesyslog();
+  try {
+    fs.accessSync(bin, fs.constants.X_OK);
+  } catch (error) {
+    makeAccessableSync();
+  }
+};
+
+const makeAccessableSync = (): void => {
+  try {
+    fs.chmodSync(HostPaths.external.libimobiledevice.idevicesyslog(), 0o777);
+  } catch (error) {
+    const cause = error instanceof Error ? error : new Error(stringify(error));
+    throw new Error(`Failed to chmod idevicesyslog`, { cause });
+  }
+};
 
 registerBootstrapHandler(__filename, async () => {
   if (process.platform !== 'darwin') {

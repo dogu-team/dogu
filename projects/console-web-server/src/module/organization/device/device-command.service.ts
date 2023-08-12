@@ -5,12 +5,12 @@ import {
   Device,
   DeviceInstallApp,
   DeviceJoinWifi,
-  DeviceRelay,
   DeviceReset,
   DeviceRunApp,
   DeviceStreaming,
-  DoguDeviceRelayPortHeaderKey,
-  DoguDeviceRelaySerialHeaderKey,
+  DeviceTcpRelay,
+  DoguDeviceTcpRelayPortHeaderKey,
+  DoguDeviceTcpRelaySerialHeaderKey,
   StreamingAnswerDto,
   TcpRelayRequest,
   TcpRelayResponse,
@@ -136,8 +136,8 @@ export class DeviceCommandService {
 
   async relayTcp(organizationId: OrganizationId, deviceId: DeviceId, serial: Serial, port: number): Promise<WebSocketProxy<typeof TcpRelayRequest, typeof TcpRelayResponse>> {
     const headers: HeaderRecord = {};
-    headers[DoguDeviceRelaySerialHeaderKey] = serial;
-    headers[DoguDeviceRelayPortHeaderKey] = port.toString();
-    return await this.deviceMessageRelayer.connectWebSocket(organizationId, deviceId, DeviceRelay, headers);
+    headers[DoguDeviceTcpRelaySerialHeaderKey] = serial;
+    headers[DoguDeviceTcpRelayPortHeaderKey] = port.toString();
+    return await this.deviceMessageRelayer.connectWebSocket(organizationId, deviceId, DeviceTcpRelay, headers);
   }
 }

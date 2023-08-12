@@ -34,12 +34,12 @@ export abstract class IExternalUnit {
     return this._lastValidationResult;
   }
 
-  isValid(): boolean {
-    return this._lastValidationResult?.valid ?? false;
+  isValid(): ExternalValidationResult {
+    return this._lastValidationResult ?? { valid: false, error: null };
   }
 
   isInstallNeeded(): boolean {
-    return !this.isValid();
+    return !this.isValid().valid;
   }
 
   abstract getKey(): ExternalKey;

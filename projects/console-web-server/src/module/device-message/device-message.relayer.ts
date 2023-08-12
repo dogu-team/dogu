@@ -127,7 +127,7 @@ export class DeviceMessageRelayer {
     headers: Record<string, string> | undefined,
     query: Record<string, unknown> | undefined,
     body: object | undefined,
-    responseBodyConstructor: ResponseBodyConstructor,
+    responseBodyDataConstructor: ResponseBodyConstructor,
   ): Promise<Instance<ResponseBodyConstructor>> {
     const HttpProxyRequest: HttpProxyRequest = {
       kind: 'HttpProxyRequest',
@@ -161,7 +161,7 @@ export class DeviceMessageRelayer {
         if (responseBody === undefined) {
           throw new Error('Unexpected undefined responseBody');
         }
-        return transformAndValidate(responseBodyConstructor, responseBody);
+        return transformAndValidate(responseBodyDataConstructor, responseBody);
       } else {
         throw new Error(`Unexpected $case ${stringify($case)}`);
       }
@@ -325,6 +325,7 @@ export class DeviceMessageRelayer {
         const { kind } = value;
         this.logger.verbose('receiveWebSocketMessage', { organizationId, deviceId, webSocketProxyId, value });
         if (kind === 'WebSocketProxyReceiveOpen') {
+          this.logger.verbose('receiveWebSocketMessage WebSocketProxyReceiveOpen', { organizationId, deviceId, webSocketProxyId });
         } else if (kind === 'WebSocketProxyReceiveError') {
           const { error, message } = value;
           throw new Error(`WebSocketProxyReceiveError error ${stringify(error)} ${message}`);

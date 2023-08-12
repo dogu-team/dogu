@@ -77,6 +77,13 @@ export function DefaultDeviceConfig(platform: Platform): DeviceConfigDto {
           { profileMethod: ProfileMethods.Android.ProcessShellTop, periodSec: 3 },
         ],
       };
+    case Platform.PLATFORM_IOS:
+      return {
+        profileMethods: [
+          { profileMethod: ProfileMethods.Ios.CpuLoadInfo, periodSec: 3 },
+          { profileMethod: ProfileMethods.Ios.MemVmStatistics, periodSec: 3 },
+        ],
+      };
     default:
       break;
   }

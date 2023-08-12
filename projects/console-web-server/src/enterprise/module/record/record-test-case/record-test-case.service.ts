@@ -6,24 +6,63 @@ import {
   RecordTestCasePropSnake,
   RecordTestCaseResponse,
 } from '@dogu-private/console';
-import { ProjectId, RecordTestCaseId, RecordTestScenarioId, RecordTestStepId } from '@dogu-private/types';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  extensionFromPlatform,
+  OrganizationId,
+  platformTypeFromPlatform,
+  ProjectId,
+  RecordTestCaseId,
+  RecordTestScenarioId,
+  RecordTestStepId,
+  RECORD_TEST_STEP_ACTION_TYPE,
+} from '@dogu-private/types';
+import {
+  DoguApplicationFileSizeHeader,
+  DoguApplicationUrlHeader,
+  DoguApplicationVersionHeader,
+  DoguBrowserNameHeader,
+  DoguBrowserVersionHeader,
+  DoguDevicePlatformHeader,
+  DoguDeviceSerialHeader,
+  DoguRemoteDeviceJobIdHeader,
+  DoguRequestTimeoutHeader,
+  HeaderRecord,
+} from '@dogu-tech/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager, IsNull } from 'typeorm';
 import { v4 } from 'uuid';
-import { RecordTestCaseAndRecordTestStep } from '../../../../db/entity/index';
+import { Device, RecordTestCaseAndRecordTestStep } from '../../../../db/entity/index';
 import { RecordTestCase } from '../../../../db/entity/record-test-case.entity';
 import { RecordTestStep } from '../../../../db/entity/record-test-step.entity';
 import { EMPTY_PAGE, Page } from '../../../../module/common/dto/pagination/page';
+import { ApplicationService } from '../../../../module/project/application/application.service';
+import { FindProjectApplicationDto } from '../../../../module/project/application/dto/application.dto';
+import { RemoteWebDriverBatchRequestExecutor } from '../../../../module/remote/remote-webdriver/remote-webdriver.batch-request-executor';
+import { RemoteWebDriverService } from '../../../../module/remote/remote-webdriver/remote-webdriver.service';
+import { NewSessionRemoteWebDriverBatchRequestItem } from '../../../../module/remote/remote-webdriver/remote-webdriver.w3c-batch-request-items';
 import { castEntity } from '../../../../types/entity-cast';
 import { getSortedRecordTestSteps } from '../common';
-import { AddRecordTestStepToRecordTestCaseDto, CreateRecordTestCaseDto, FindRecordTestCaseByProjectIdDto, UpdateRecordTestCaseDto } from '../dto/record-test-case.dto';
+import {
+  AddRecordTestStepToRecordTestCaseDto,
+  CreateRecordTestCaseDto,
+  FindRecordTestCaseByProjectIdDto,
+  NewSessionDto,
+  UpdateRecordTestCaseDto,
+} from '../dto/record-test-case.dto';
+import { RecordTestStepService } from '../record-test-step/record-test-step.service';
 
 @Injectable()
 export class RecordTestCaseService {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
+    @Inject(RemoteWebDriverService)
+    private readonly remoteWebDriverService: RemoteWebDriverService,
+    @Inject(ApplicationService)
+    private readonly applicationService: ApplicationService,
+    @Inject(RecordTestStepService)
+    private readonly recordTestStepService: RecordTestStepService,
   ) {}
 
   async findRecordTestCasesByProjectId(projectId: ProjectId, dto: FindRecordTestCaseByProjectIdDto): Promise<Page<RecordTestCaseBase>> {
@@ -240,7 +279,7 @@ export class RecordTestCaseService {
       });
       await manager
         .getRepository(RecordTestCaseAndRecordTestStep)
-        .upsert(newRoot, [`${RecordTestCaseAndRecordTestStepPropCamel.recordTestCaseId}`, `${RecordTestCaseAndRecordTestStepPropCamel.recordTestStepId}`]);
+        .upsert(castEntity(newRoot), [`${RecordTestCaseAndRecordTestStepPropCamel.recordTestCaseId}`, `${RecordTestCaseAndRecordTestStepPropCamel.recordTestStepId}`]);
       return;
     }
 
@@ -318,5 +357,107 @@ export class RecordTestCaseService {
 
     const prev = current?.prevRecordTestStep;
     return prev ?? null;
+  }
+
+  public async newSession(organizationId: OrganizationId, projectId: ProjectId, recordTestCaseId: RecordTestCaseId, dto: NewSessionDto): Promise<string> {
+    const recordTestCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId } });
+    if (!recordTestCase) {
+      throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
+    }
+
+    const { deviceId, appVersion, browserName, browserVersion } = dto;
+    const device = await this.dataSource.getRepository(Device).findOne({ where: { deviceId } });
+    if (!device) {
+      throw new HttpException(`Device not found. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
+    }
+    const platformType = platformTypeFromPlatform(device.platform);
+    const activeSessionKey = v4();
+
+    const headers: HeaderRecord = {
+      [DoguRemoteDeviceJobIdHeader]: activeSessionKey,
+      [DoguDevicePlatformHeader]: platformType,
+      [DoguDeviceSerialHeader]: device.serial,
+      [DoguRequestTimeoutHeader]: '180000',
+    };
+
+    if (appVersion && browserName) {
+      throw new HttpException(`appVersion and browserName are exclusive.`, HttpStatus.BAD_REQUEST);
+    } else if (browserName) {
+      headers[DoguBrowserNameHeader] = browserName;
+      if (browserVersion) headers[DoguBrowserVersionHeader] = browserVersion;
+    } else if (appVersion) {
+      let applicationUrl: string | undefined = undefined;
+      let applicationVersion: string | undefined = undefined;
+      let applicationFileSize: number | undefined = undefined;
+      if (platformType === 'android' || platformType === 'ios') {
+        const findAppDto = new FindProjectApplicationDto();
+        findAppDto.version = appVersion;
+        findAppDto.extension = extensionFromPlatform(platformType);
+        const applications = await this.applicationService.getApplicationList(organizationId, projectId, findAppDto);
+        if (applications.items.length === 0) {
+          throw new HttpException(`Application not found. appVersion: ${appVersion}`, HttpStatus.NOT_FOUND);
+        }
+        const application = applications.items[0];
+        applicationUrl = await this.applicationService.getApplicationDownladUrl(application.projectApplicationId, organizationId, projectId);
+        applicationVersion = application.version;
+        applicationFileSize = application.fileSize;
+        headers[DoguApplicationUrlHeader] = applicationUrl;
+        headers[DoguApplicationVersionHeader] = applicationVersion;
+        headers[DoguApplicationFileSizeHeader] = applicationFileSize.toString();
+      }
+    } else {
+      throw new HttpException(`appVersion or browserName is required.`, HttpStatus.BAD_REQUEST);
+    }
+
+    const batchExecutor = new RemoteWebDriverBatchRequestExecutor(this.remoteWebDriverService, {
+      organizationId,
+      projectId,
+      deviceId,
+      deviceSerial: device.serial,
+      headers: headers,
+      parallel: true,
+    });
+
+    const newSessionResponse = new NewSessionRemoteWebDriverBatchRequestItem(batchExecutor, {});
+    await batchExecutor.execute();
+
+    const res = await newSessionResponse.response();
+    const capabilities = res.value.capabilities as Record<string, unknown>;
+    const deviceScreenSize = capabilities['deviceScreenSize'] as string;
+
+    recordTestCase.activeDeviceScreenSize = deviceScreenSize;
+    recordTestCase.activeSessionId = res.value.sessionId;
+    recordTestCase.activeSessionKey = activeSessionKey;
+    await this.dataSource.getRepository(RecordTestCase).save(recordTestCase);
+
+    return res.value.sessionId;
+  }
+
+  async test(): Promise<void> {
+    const organizationId = '664790a4-df0a-4043-b61a-7ea371f354f8';
+    const projectId = '287ad1bf-0e17-4c97-bbda-50a2cc0ac49b';
+    const deviceId = '01be2acc-5a5f-4bda-93e5-a591996d475b';
+    const createTestCaseDto: CreateRecordTestCaseDto = {
+      name: 'test',
+    };
+    const testCase = await this.createRecordTestCase(projectId, createTestCaseDto);
+
+    const dto: NewSessionDto = {
+      deviceId,
+      browserName: 'chrome',
+    };
+
+    const sessionId = await this.newSession(organizationId, projectId, testCase.recordTestCaseId, dto);
+    const testStep = await this.recordTestStepService.createRecordTestStep(projectId, { name: 'test' });
+    await this.recordTestStepService.addAction(organizationId, projectId, testStep.recordTestStepId, {
+      recordTestCaseId: testCase.recordTestCaseId,
+      deviceId,
+      type: RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_CLICK,
+      screenPositionX: 0,
+      screenPositionY: 0,
+    });
+
+    const testStepResult = await this.recordTestStepService.findRecordTestStepById(projectId, testStep.recordTestStepId);
+    return;
   }
 }

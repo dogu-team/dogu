@@ -1,10 +1,16 @@
-import { ProjectPropCamel, RecordTestCaseBase, RecordTestCasePropCamel, RecordTestCaseResponse, RecordTestStepPropCamel } from '@dogu-private/console';
-import { ProjectId, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
+import { OrganizationPropCamel, ProjectPropCamel, RecordTestCaseBase, RecordTestCasePropCamel, RecordTestCaseResponse, RecordTestStepPropCamel } from '@dogu-private/console';
+import { OrganizationId, ProjectId, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
 import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query } from '@nestjs/common';
 import { PROJECT_ROLE } from '../../../../module/auth/auth.types';
 import { ProjectPermission } from '../../../../module/auth/decorators';
 import { Page } from '../../../../module/common/dto/pagination/page';
-import { AddRecordTestStepToRecordTestCaseDto, CreateRecordTestCaseDto, FindRecordTestCaseByProjectIdDto, UpdateRecordTestCaseDto } from '../dto/record-test-case.dto';
+import {
+  AddRecordTestStepToRecordTestCaseDto,
+  CreateRecordTestCaseDto,
+  FindRecordTestCaseByProjectIdDto,
+  NewSessionDto,
+  UpdateRecordTestCaseDto,
+} from '../dto/record-test-case.dto';
 import { RecordTestCaseService } from './record-test-case.service';
 
 @Controller('organizations/:organizationId/projects/:projectId/record-test-cases')
@@ -76,5 +82,21 @@ export class RecordTestCaseController {
     @Param(RecordTestStepPropCamel.recordTestStepId) recordTestStepId: RecordTestStepId,
   ): Promise<void> {
     await this.recordTestCaseService.removeRecordTestStepFromRecordTestCase(projectId, recordTestCaseId, recordTestStepId);
+  }
+
+  @Post(`:${RecordTestCasePropCamel.recordTestCaseId}/new-session`)
+  @ProjectPermission(PROJECT_ROLE.WRITE)
+  async newSession(
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
+    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
+    @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
+    @Body() dto: NewSessionDto,
+  ): Promise<void> {
+    await this.recordTestCaseService.newSession(organizationId, projectId, recordTestCaseId, dto);
+  }
+
+  @Get(':test/test')
+  async test() {
+    await this.recordTestCaseService.test();
   }
 }

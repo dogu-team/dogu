@@ -47,6 +47,7 @@ export class WebSocketProxyProcessRegistry {
     };
 
     webSocket.on('open', (event: WebSocket.Event) => {
+      this.logger.verbose('WebSocketProxyProcessRegistry.connect', { webSocketProxyId });
       validateAndEmitEventAsync(this.eventEmitter, OnWebSocketProxyOpenEvent, {
         organizationId,
         deviceId,

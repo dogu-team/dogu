@@ -186,8 +186,9 @@ export class WindowsChannel implements DeviceChannel {
     // noop
   }
 
-  isPortListening(port: number): Promise<boolean> {
-    return isFreePort(port);
+  async isPortListening(port: number): Promise<boolean> {
+    const isFree = await isFreePort(port);
+    return !isFree;
   }
 
   uninstallApp(appPath: string): void {

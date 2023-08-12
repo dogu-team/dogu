@@ -16,6 +16,15 @@ export class RecordTestCase extends BaseEntity implements RecordTestCaseBase {
   @Column({ type: 'character varying', name: RecordTestCasePropSnake.name, nullable: false })
   name!: string;
 
+  @Column({ type: 'character varying', name: RecordTestCasePropSnake.active_device_screen_size, nullable: true })
+  activeDeviceScreenSize!: string;
+
+  @Column({ type: 'uuid', name: RecordTestCasePropSnake.active_session_id, nullable: true })
+  activeSessionId!: string | null;
+
+  @Column({ type: 'uuid', name: RecordTestCasePropSnake.active_session_key, nullable: true })
+  activeSessionKey!: string | null;
+
   @ColumnTemplate.CreateDate(RecordTestCasePropSnake.created_at)
   createdAt!: Date;
 

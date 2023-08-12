@@ -9,6 +9,7 @@ export * from './organization-key.entity';
 export * from './organization.entity';
 export * from './pipeline.entity';
 export * from './project.entity';
+export * from './relations/change-log-user-reaction.entity';
 export * from './relations/dest-edge.entity';
 export * from './relations/device-and-device-tag.entity';
 export * from './relations/job-edge.entity';

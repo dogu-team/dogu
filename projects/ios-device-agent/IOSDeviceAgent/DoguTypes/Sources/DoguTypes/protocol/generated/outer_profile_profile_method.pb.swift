@@ -37,6 +37,8 @@ public enum Outer_Profile_ProfileMethodKind: SwiftProtobuf.Enum {
   case androidFsProcdiskstats // = 350
   case androidNetTrafficstats // = 360
   case androidProcessShelltop // = 370
+  case iosCpuLoadInfo // = 400
+  case iosMemVmStatistics // = 430
   case UNRECOGNIZED(Int)
 
   public init() {
@@ -60,6 +62,8 @@ public enum Outer_Profile_ProfileMethodKind: SwiftProtobuf.Enum {
     case 350: self = .androidFsProcdiskstats
     case 360: self = .androidNetTrafficstats
     case 370: self = .androidProcessShelltop
+    case 400: self = .iosCpuLoadInfo
+    case 430: self = .iosMemVmStatistics
     default: self = .UNRECOGNIZED(rawValue)
     }
   }
@@ -81,6 +85,8 @@ public enum Outer_Profile_ProfileMethodKind: SwiftProtobuf.Enum {
     case .androidFsProcdiskstats: return 350
     case .androidNetTrafficstats: return 360
     case .androidProcessShelltop: return 370
+    case .iosCpuLoadInfo: return 400
+    case .iosMemVmStatistics: return 430
     case .UNRECOGNIZED(let i): return i
     }
   }
@@ -107,6 +113,8 @@ extension Outer_Profile_ProfileMethodKind: CaseIterable {
     .androidFsProcdiskstats,
     .androidNetTrafficstats,
     .androidProcessShelltop,
+    .iosCpuLoadInfo,
+    .iosMemVmStatistics,
   ]
 }
 
@@ -189,6 +197,8 @@ extension Outer_Profile_ProfileMethodKind: SwiftProtobuf._ProtoNameProviding {
     350: .same(proto: "PROFILE_METHOD_KIND_ANDROID_FS_PROCDISKSTATS"),
     360: .same(proto: "PROFILE_METHOD_KIND_ANDROID_NET_TRAFFICSTATS"),
     370: .same(proto: "PROFILE_METHOD_KIND_ANDROID_PROCESS_SHELLTOP"),
+    400: .same(proto: "PROFILE_METHOD_KIND_IOS_CPU_LOAD_INFO"),
+    430: .same(proto: "PROFILE_METHOD_KIND_IOS_MEM_VM_STATISTICS"),
   ]
 }
 

@@ -1,8 +1,10 @@
-import { Code, Serial } from '@dogu-private/types';
+import { Code, Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { Instance } from '@dogu-tech/common';
 import { CreateLocalDeviceDetectTokenRequest, Device, DeviceConfigDto, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ConfigService } from '../config/config.service';
+import { toErrorResultDto } from '../device-webdriver/device-webdriver.controller';
+import { Adb } from '../internal/externals/index';
 import { LocalDeviceService } from '../local-device/local-device.service';
 import { appiumContextNotFoundError } from '../response-utils';
 import { ScanService } from '../scan/scan.service';
@@ -175,6 +177,53 @@ export class DeviceController {
             message: 'Appium context get info failed',
             details: {
               serial,
+            },
+          },
+        },
+      };
+    }
+  }
+
+  @Get(Device.getSystemBarVisibility.path)
+  async getSystemBarVisibility(@Param('serial') serial: Serial): Promise<Instance<typeof Device.getSystemBarVisibility.responseBody>> {
+    const channel = this.scanService.findChannel(serial);
+    if (channel === null) {
+      return deviceNotFoundError(serial);
+    }
+
+    if (channel.platform !== Platform.PLATFORM_ANDROID) {
+      return {
+        value: {
+          $case: 'error',
+          error: {
+            code: Code.CODE_DEVICE_SERVER_UNEXPECTED_ERROR,
+            message: 'Not supported platform',
+            details: {
+              serial,
+              platform: platformTypeFromPlatform(channel.platform),
+            },
+          },
+        },
+      };
+    }
+
+    try {
+      const systemBarVisibility = await Adb.getSystemBarVisibility(channel.serial);
+      return {
+        value: {
+          $case: 'data',
+          data: systemBarVisibility,
+        },
+      };
+    } catch (error) {
+      return {
+        value: {
+          $case: 'error',
+          error: {
+            code: Code.CODE_DEVICE_SERVER_UNEXPECTED_ERROR,
+            message: 'Get system bar visibility failed',
+            details: {
+              cause: toErrorResultDto(serial, error),
             },
           },
         },

@@ -51,12 +51,21 @@ public struct Inner_Params_DcIdaParam {
     set {value = .dcIdaIsPortListeningParam(newValue)}
   }
 
+  public var dcIdaQueryProfileParam: Inner_Types_DcIdaQueryProfileParam {
+    get {
+      if case .dcIdaQueryProfileParam(let v)? = value {return v}
+      return Inner_Types_DcIdaQueryProfileParam()
+    }
+    set {value = .dcIdaQueryProfileParam(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_Value: Equatable {
     case dcIdaRunappParam(Inner_Types_DcIdaRunAppParam)
     case dcIdaGetSystemInfoParam(Inner_Types_DcIdaGetSystemInfoParam)
     case dcIdaIsPortListeningParam(Inner_Types_DcIdaIsPortListeningParam)
+    case dcIdaQueryProfileParam(Inner_Types_DcIdaQueryProfileParam)
 
   #if !swift(>=4.1)
     public static func ==(lhs: Inner_Params_DcIdaParam.OneOf_Value, rhs: Inner_Params_DcIdaParam.OneOf_Value) -> Bool {
@@ -74,6 +83,10 @@ public struct Inner_Params_DcIdaParam {
       }()
       case (.dcIdaIsPortListeningParam, .dcIdaIsPortListeningParam): return {
         guard case .dcIdaIsPortListeningParam(let l) = lhs, case .dcIdaIsPortListeningParam(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.dcIdaQueryProfileParam, .dcIdaQueryProfileParam): return {
+        guard case .dcIdaQueryProfileParam(let l) = lhs, case .dcIdaQueryProfileParam(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -116,12 +129,21 @@ public struct Inner_Params_DcIdaResult {
     set {value = .dcIdaIsPortListeningResult(newValue)}
   }
 
+  public var dcIdaQueryProfileResult: Inner_Types_DcIdaQueryProfileResult {
+    get {
+      if case .dcIdaQueryProfileResult(let v)? = value {return v}
+      return Inner_Types_DcIdaQueryProfileResult()
+    }
+    set {value = .dcIdaQueryProfileResult(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_Value: Equatable {
     case dcIdaRunappResult(Inner_Types_DcIdaRunAppResult)
     case dcIdaGetSystemInfoResult(Inner_Types_DcIdaGetSystemInfoResult)
     case dcIdaIsPortListeningResult(Inner_Types_DcIdaIsPortListeningResult)
+    case dcIdaQueryProfileResult(Inner_Types_DcIdaQueryProfileResult)
 
   #if !swift(>=4.1)
     public static func ==(lhs: Inner_Params_DcIdaResult.OneOf_Value, rhs: Inner_Params_DcIdaResult.OneOf_Value) -> Bool {
@@ -139,6 +161,10 @@ public struct Inner_Params_DcIdaResult {
       }()
       case (.dcIdaIsPortListeningResult, .dcIdaIsPortListeningResult): return {
         guard case .dcIdaIsPortListeningResult(let l) = lhs, case .dcIdaIsPortListeningResult(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.dcIdaQueryProfileResult, .dcIdaQueryProfileResult): return {
+        guard case .dcIdaQueryProfileResult(let l) = lhs, case .dcIdaQueryProfileResult(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -167,6 +193,7 @@ extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._Message
     1: .standard(proto: "dc_ida_runapp_param"),
     2: .standard(proto: "dc_ida_get_system_info_param"),
     3: .standard(proto: "dc_ida_is_port_listening_param"),
+    4: .standard(proto: "dc_ida_query_profile_param"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -214,6 +241,19 @@ extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._Message
           self.value = .dcIdaIsPortListeningParam(v)
         }
       }()
+      case 4: try {
+        var v: Inner_Types_DcIdaQueryProfileParam?
+        var hadOneofValue = false
+        if let current = self.value {
+          hadOneofValue = true
+          if case .dcIdaQueryProfileParam(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.value = .dcIdaQueryProfileParam(v)
+        }
+      }()
       default: break
       }
     }
@@ -237,6 +277,10 @@ extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._Message
       guard case .dcIdaIsPortListeningParam(let v)? = self.value else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
     }()
+    case .dcIdaQueryProfileParam?: try {
+      guard case .dcIdaQueryProfileParam(let v)? = self.value else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
+    }()
     case nil: break
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -255,6 +299,7 @@ extension Inner_Params_DcIdaResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
     1: .standard(proto: "dc_ida_runapp_result"),
     2: .standard(proto: "dc_ida_get_system_info_result"),
     3: .standard(proto: "dc_ida_is_port_listening_result"),
+    4: .standard(proto: "dc_ida_query_profile_result"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -302,6 +347,19 @@ extension Inner_Params_DcIdaResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
           self.value = .dcIdaIsPortListeningResult(v)
         }
       }()
+      case 4: try {
+        var v: Inner_Types_DcIdaQueryProfileResult?
+        var hadOneofValue = false
+        if let current = self.value {
+          hadOneofValue = true
+          if case .dcIdaQueryProfileResult(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.value = .dcIdaQueryProfileResult(v)
+        }
+      }()
       default: break
       }
     }
@@ -324,6 +382,10 @@ extension Inner_Params_DcIdaResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
     case .dcIdaIsPortListeningResult?: try {
       guard case .dcIdaIsPortListeningResult(let v)? = self.value else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+    }()
+    case .dcIdaQueryProfileResult?: try {
+      guard case .dcIdaQueryProfileResult(let v)? = self.value else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
     }()
     case nil: break
     }

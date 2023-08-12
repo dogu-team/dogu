@@ -92,14 +92,14 @@ export const getProjectScm = async (context: GetServerSidePropsContext) => {
   const { authToken } = getServersideCookies(context.req.cookies);
 
   if (authToken) {
-    const data = await api.get<ProjectScmBase>(`/organizations/${context.query.orgId}/projects/${context.query.pid}/scm`, {
+    const data = await api.get<ProjectScmBase | null>(`/organizations/${context.query.orgId}/projects/${context.query.pid}/scm`, {
       headers: { Authorization: `Bearer ${authToken}` },
     });
     setCookiesInServerSide(data, context);
 
-    const project = data.data;
+    const rv = data.data;
 
-    return project;
+    return rv;
   }
 
   throw new EmptyTokenError();

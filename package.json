@@ -13,7 +13,7 @@
     "build:packages": "yarn workspaces foreach --include '@dogu{-tech,-private,-dev-private}/*' --jobs unlimited -ptvi run build",
     "build:projects": "yarn workspaces foreach --exclude '@dogu{,-private,-actions}/*' --exclude 'dogu' --jobs unlimited -ptvi run build",
     "build:python": "yarn workspaces foreach --jobs unlimited -ptvi run build:python",
-    "clean": "yarn workspaces foreach --jobs unlimited -ptvi run clean",
+    "clean": "yarn workspaces foreach --jobs unlimited -ptvi run clean && ts-node scripts/nm-space/run run 'yarn clean'",
     "clean:packages": "yarn workspaces foreach --include '@dogu/*' --jobs unlimited -ptvi run clean",
     "clean-lock": "rm $(find . | grep yarn.lock) && rm -rf .yarn/cache",
     "format": "yarn workspaces foreach --jobs unlimited -ptvi run format",

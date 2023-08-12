@@ -79,6 +79,6 @@ export class PrivateDeviceWsGateway implements OnGatewayConnection, OnGatewayDis
   }
 
   handleDisconnect(webSocket: WebSocket): void {
-    this.logger.info('RemoteGamiumGateway.handleDisconnect');
+    this.logger.info('PrivateDeviceWsGateway.handleDisconnect');
   }
 }

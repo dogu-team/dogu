@@ -105,6 +105,7 @@ export class ZombieTunnel implements Zombieable {
     if (this.tunnelContext && !this.tunnelContext.isAlive) {
       ZombieServiceInstance.notifyDie(this);
     }
+    await delay(3000);
     return Promise.resolve();
   }
 
