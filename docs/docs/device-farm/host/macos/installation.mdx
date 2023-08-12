@@ -12,6 +12,7 @@ import {
 import dost_macos_setting from '@site/static/img/dost/dost_macos_setting.png';
 import dost_macos_troubleshoot from '@site/static/img/dost/dost_macos_troubleshoot.png';
 import dost_macos_to_application from '@site/static/img/dost/dost_macos_to_application.png';
+import dost_macos_to_application_dmg from '@site/static/img/dost/dost_macos_to_application_dmg.png';
 import dost_macos_manual_setup from '@site/static/img/dost/dost_macos_manual_setup.png';
 import dost_windows_setting from '@site/static/img/dost/dost_windows_setting.png';
 import dost_windows_troubleshoot from '@site/static/img/dost/dost_windows_troubleshoot.png';
@@ -32,12 +33,22 @@ import Admonition from '@theme/Admonition';
 
 ### Installation
 
+<Tabs groupId="service" defaultValue="cloud" queryString>
+<TabItem value="cloud" label="Cloud" default>
+
 - You can download `Dogu Agent` from the [Dogu Agent download page](https://dogutech.io/downloads/dogu-agent). Please download according to the platform and architecture you want.
+  - <img src={dost_macos_to_application_dmg} style={{ width: 400 }} />
+  - Please open the dmg file and move Dogu Agent to the Applications folder.
+
+</TabItem>
+<TabItem value="self-hosted" label="Self-Hosted">
+
 - For self-hosted builds, please download from [Github Release](https://github.com/dogu-team/dogu/releases).
+  - <img src={dost_macos_to_application} style={{ width: 400 }} />
+  - Please pick the Dogu-Agent.app file and move Dogu Agent to the Applications folder.
 
-<img src={dost_macos_to_application} style={{ width: 400 }} />
-
-- Please pick the Dogu-Agent.app file and move Dogu Agent to the Applications folder.
+</TabItem>
+</Tabs>
 
 ### Run
 
