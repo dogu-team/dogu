@@ -9,7 +9,7 @@ import { Dest, Device, Project, RoutineJob, RoutinePipeline, User } from '../../
 import { ProjectSlackRoutine } from '../../../../../db/entity/project-slack-routine.entity';
 import { Routine } from '../../../../../db/entity/routine.entity';
 import { RoutineStep } from '../../../../../db/entity/step.entity';
-import { SlackMessageService } from '../../../../../enterprise/module/integration/slack/slack-message.service';
+import { RoutineDeviceForSlack, SlackMessageService } from '../../../../../enterprise/module/integration/slack/slack-message.service';
 import { DoguLogger } from '../../../../logger/logger';
 import { everyCompleted, everyInStatus, someInStatus } from '../../../common/runner';
 import { PipelineService } from '../../pipeline.service';
@@ -240,7 +240,7 @@ export class PipelineRunner {
       const pipelineUrl = `${process.env.DOGU_CONSOLE_URL}/dashboard/${organizationId}/projects/${projectId}/routines/${pipeline.routinePipelineId}`;
       const pipelineIndex = pipeline.index;
       const durationSeconds = dayjs(pipeline.completedAt).diff(dayjs(pipeline.inProgressAt), 'seconds');
-      const routineDevices: { routineName: string; devices: { deviecJobUrl: string; device: Device }[] }[] = [];
+      const routineDevices: RoutineDeviceForSlack[] = [];
 
       if (pipeline.status !== PIPELINE_STATUS.SUCCESS) {
         const routineJobs = pipeline.routineJobs ?? [];
@@ -248,24 +248,26 @@ export class PipelineRunner {
         for (const routineJob of routineJobs) {
           const routineDeviceJobs = routineJob.routineDeviceJobs ?? [];
 
+          const routineDevice: RoutineDeviceForSlack = {
+            routineName: routineJob.name,
+            devices: [],
+          };
+
           for (const routineDeviceJob of routineDeviceJobs) {
             const device = await manager.getRepository(Device).findOne({ where: { deviceId: routineDeviceJob.deviceId } });
             if (device === null) {
               throw new Error(`Device [${routineDeviceJob.deviceId}] not found.`);
             }
 
-            const routineDevice = {
-              routineName: routineJob.name,
-              devices: routineDeviceJobs.map((routineDeviceJob) => {
-                return {
-                  deviecJobUrl: `${pipelineUrl}/jobs/${routineJob.routineJobId}/device-jobs/${routineDeviceJob.routineDeviceJobId}`,
-                  device: device,
-                };
-              }),
+            const routineDeviceInfo = {
+              device: device,
+              deviecJobUrl: `${pipelineUrl}/jobs/${routineJob.routineJobId}/device-jobs/${routineDeviceJob.routineDeviceJobId}`,
             };
 
-            routineDevices.push(routineDevice);
+            routineDevice.devices.push(routineDeviceInfo);
           }
+
+          routineDevices.push(routineDevice);
         }
       }
 

@@ -7,6 +7,11 @@ import { Device } from '../../../../db/entity/device.entity';
 import { OrganizationSlack } from '../../../../db/entity/organization-slack.entity';
 import { EncryptService } from '../../../../module/encrypt/encrypt.service';
 
+export interface RoutineDeviceForSlack {
+  routineName: string;
+  devices: { device: Device; deviecJobUrl: string }[];
+}
+
 @Injectable()
 export class SlackMessageService {
   static SUCCESS_COLOR = '#2eb886';
@@ -65,7 +70,7 @@ export class SlackMessageService {
       routineName: string;
       pipelineIndex: number;
       pipelineUrl: string;
-      routineDevices: { routineName: string; devices: { deviecJobUrl: string; device: Device }[] }[];
+      routineDevices: RoutineDeviceForSlack[];
     },
   ) {
     const client = await this.getWebClient(manager, organizationId);
