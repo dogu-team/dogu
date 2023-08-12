@@ -30,7 +30,7 @@ const SlackChannelForm = (props: Props) => {
     return (
       <>
         <p>
-          {`You don't have any connected slack.`}
+          {`You don't have a connected slack.`}
           <Link href={`/dashboard/${props.organizationId}/settings#slack`}> Please connect slack first.</Link>
         </p>
       </>

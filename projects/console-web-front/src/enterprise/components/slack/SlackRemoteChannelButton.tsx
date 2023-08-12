@@ -98,7 +98,18 @@ const SlackRemoteChannelButton = (props: Props) => {
         <p style={{ marginLeft: '.5rem' }}>Slack</p>
       </StyledButton>
 
-      <Modal open={isOpen} centered closable onCancel={handleClose} okText={'Save'} onOk={handleSave} title="Slack" destroyOnClose>
+      <Modal
+        open={isOpen}
+        onCancel={handleClose}
+        okText={'Save'}
+        onOk={handleSave}
+        title="Slack"
+        okButtonProps={{ hidden: channelItems?.length === 0 }}
+        cancelButtonProps={{ hidden: channelItems?.length === 0 }}
+        centered
+        closable
+        destroyOnClose
+      >
         <SlackChannelForm organizationId={props.organizationId} form={form} channelItems={channelItems ? channelItems : []} />
       </Modal>
     </>
