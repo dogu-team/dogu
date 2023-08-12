@@ -1,5 +1,5 @@
 name: 📤publish-dogu
-run-name: 📤publish-dogu-${{ github.event.inputs.version && github.event.inputs.version || 'rc' }}-${{ github.ref_name }}
+run-name: 📤publish-dogu-${{ github.event.inputs.version && github.event.inputs.version || 'rc' }}@${{ github.ref_name }}
 
 on:
   workflow_dispatch:
