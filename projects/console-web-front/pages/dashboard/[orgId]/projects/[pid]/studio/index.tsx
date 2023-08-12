@@ -53,7 +53,7 @@ const StudioEntryPage: NextPage<StudioEntryServerSideProps> = ({ organization, p
             />
           </SelectWrapper>
           <Link style={{ fontWeight: '300', fontSize: '.9rem', marginTop: '2rem' }} href={`/dashboard/${organization.organizationId}/device-farm/hosts`} target={'_blank'}>
-            {`Isn't there a device available to select? Please assign a device`}
+            {`Isn't there a device available to select? Please assign a device to this project.`}
           </Link>
         </FlexColCenter>
       </Centered>

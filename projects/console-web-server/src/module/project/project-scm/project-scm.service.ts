@@ -1,15 +1,15 @@
 import { DoguScmConfig, OrganizationId, ProjectId, ProjectTestScript, PROJECT_SCM_TYPE } from '@dogu-private/types';
 import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import crypto from 'crypto';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
-import { OrganizationKey } from '../../../db/entity/index';
+
 import { ProjectScmGithubAuth } from '../../../db/entity/project-scm-github-auth.entity';
 import { ProjectScmGitlabAuth } from '../../../db/entity/project-scm-gitlab-auth.entity';
 import { ProjectScm } from '../../../db/entity/project-scm.entity';
 import { Github } from '../../../sdk/github';
 import { Gitlab } from '../../../sdk/gitlab';
+import { EncryptService } from '../../encrypt/encrypt.service';
 import { UpdateProjectGitDto } from './dto/project-scm.dto';
 
 @Injectable()
@@ -36,7 +36,7 @@ export class ProjectScmService {
 
     return await this.dataSource.transaction(async (manager) => {
       const existingProjectScm = await manager.getRepository(ProjectScm).findOne({ where: { projectId } });
-      const encryptedToken = await this.encryptToken(manager, organizationId, token);
+      const encryptedToken = await EncryptService.encryptToken(manager, organizationId, token);
 
       if (existingProjectScm) {
         // clear existing auth
@@ -121,7 +121,7 @@ export class ProjectScmService {
           throw new NotFoundException('Github repository auth not configured');
         }
 
-        const githubToken = await this.decryptToken(this.dataSource.manager, organizationId, projectScmGithubAuth.token);
+        const githubToken = await EncryptService.decryptToken(this.dataSource.manager, organizationId, projectScmGithubAuth.token);
         const url = new URL(projectScm.url);
         const parts: string[] = url.pathname.split('/');
         const org: string = parts[1];
@@ -147,7 +147,7 @@ export class ProjectScmService {
           throw new NotFoundException('Gitlab repository auth not configured');
         }
 
-        const gitlabToken = await this.decryptToken(this.dataSource.manager, organizationId, projectScmGitlabbAuth.token);
+        const gitlabToken = await EncryptService.decryptToken(this.dataSource.manager, organizationId, projectScmGitlabbAuth.token);
         const url = new URL(projectScm.url);
         const parts: string[] = url.pathname.split('/');
         const org: string = parts[1];
@@ -181,40 +181,6 @@ export class ProjectScmService {
     }
   }
 
-  private async encryptToken(transactionManager: EntityManager, organizationId: OrganizationId, rawToken: string) {
-    const organizationKey = await transactionManager.getRepository(OrganizationKey).findOne({
-      where: { organizationId },
-    });
-
-    if (!organizationKey) {
-      throw new NotFoundException('Organization key not found');
-    }
-
-    const key = organizationKey.key;
-
-    const iv = crypto.randomBytes(16);
-    const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
-    const encrypted = Buffer.concat([cipher.update(rawToken), cipher.final()]);
-    return iv.toString('hex') + ':' + encrypted.toString('hex');
-  }
-
-  private async decryptToken(transactionManager: EntityManager, organizationId: OrganizationId, encryptedToken: string) {
-    const organizationKey = await transactionManager.getRepository(OrganizationKey).findOne({
-      where: { organizationId },
-    });
-
-    if (!organizationKey) {
-      throw new NotFoundException('Organization key not found');
-    }
-
-    const key = organizationKey.key;
-
-    const [iv, encrypted] = encryptedToken.split(':');
-    const decipher = crypto.createDecipheriv('aes-256-cbc', key, Buffer.from(iv, 'hex'));
-    const decrypted = Buffer.concat([decipher.update(Buffer.from(encrypted, 'hex')), decipher.final()]);
-    return decrypted.toString();
-  }
-
   async getGitUrlWithAuth(organizationId: OrganizationId, projectId: ProjectId) {
     const scm = await this.dataSource.getRepository(ProjectScm).findOne({ where: { projectId } });
     if (!scm) {
@@ -235,7 +201,7 @@ export class ProjectScmService {
           if (!gitlabAuth) {
             throw new HttpException(`This Project does not have gitlab auth: ${projectId}`, HttpStatus.NOT_FOUND);
           }
-          token = await this.decryptToken(this.dataSource.manager, organizationId, gitlabAuth.token);
+          token = await EncryptService.decryptToken(this.dataSource.manager, organizationId, gitlabAuth.token);
         }
         break;
       case PROJECT_SCM_TYPE.GITHUB:
@@ -244,7 +210,7 @@ export class ProjectScmService {
           if (!githubAuth) {
             throw new HttpException(`This Project does not have github auth: ${projectId}`, HttpStatus.NOT_FOUND);
           }
-          token = token = await this.decryptToken(this.dataSource.manager, organizationId, githubAuth.token);
+          token = token = await EncryptService.decryptToken(this.dataSource.manager, organizationId, githubAuth.token);
         }
         break;
       default:

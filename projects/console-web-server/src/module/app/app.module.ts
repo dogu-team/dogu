@@ -4,6 +4,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { config, dataSourceConfig } from '../../config';
+import { SlackModule } from '../../enterprise/module/integration/slack/slack.module';
 import { RecordModule } from '../../enterprise/module/record/record.module';
 import { FEATURE_CONFIG } from '../../feature.config';
 import { LoggerMiddleware } from '../../middleware/logger.middleware';
@@ -81,6 +82,7 @@ const BASE_MODULES = [
   RemoteGamiumModule,
   OpenApiMoudule,
   PrivateDeviceWsModule,
+  SlackModule,
 ];
 
 const MODULES =
