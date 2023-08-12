@@ -27,6 +27,7 @@ import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
 import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
 import { RemoteWebDriverInfo } from '../../../db/entity/remote-webdriver-info.entity';
+import { SlackMessageService } from '../../../enterprise/module/integration/slack/slack-message.service';
 import { BatchHttpRequest, BatchHttpRequestItem, DeviceMessageRelayer } from '../../device-message/device-message.relayer';
 import { DoguLogger } from '../../logger/logger';
 import { DeviceStatusService } from '../../organization/device/device-status.service';
@@ -56,6 +57,8 @@ export class RemoteWebDriverService {
     private readonly deviceMessageRelayer: DeviceMessageRelayer,
     @Inject(ApplicationService)
     private readonly applicationService: ApplicationService,
+    @Inject(SlackMessageService)
+    private readonly slackMessageService: SlackMessageService,
 
     private readonly logger: DoguLogger,
   ) {}
@@ -269,7 +272,7 @@ export class RemoteWebDriverService {
 
     const device = remoteDeviceJob.device!;
 
-    await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.COMPLETE);
+    await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.COMPLETE, this.slackMessageService);
 
     const headers = this.convertHeaders(request.headers);
     const devicePlatform = platformTypeFromPlatform(device.platform);

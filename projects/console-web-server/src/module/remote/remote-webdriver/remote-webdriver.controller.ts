@@ -13,11 +13,12 @@ import {
   HeaderRecord,
 } from '@dogu-tech/common';
 import { Device, DoguWebDriverCapabilitiesParser, RelayResponse, WebDriverEndPoint, WebDriverSessionEndpointInfo } from '@dogu-tech/device-client-common';
-import { All, Controller, Delete, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { All, Controller, Delete, HttpStatus, Inject, Post, Req, Res } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Request, Response } from 'express';
 import { DataSource } from 'typeorm';
 import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
+import { SlackMessageService } from '../../../enterprise/module/integration/slack/slack-message.service';
 import { PROJECT_ROLE } from '../../auth/auth.types';
 import { RemoteCaller, RemoteProjectPermission } from '../../auth/decorators';
 import { DeviceMessageRelayer } from '../../device-message/device-message.relayer';
@@ -40,6 +41,9 @@ import { W3CGetPageSourceRemoteWebDriverBatchRequestItem, W3CNavigateToRemoteWeb
 @Controller('/remote/wd/hub')
 export class RemoteWebDriverInfoController {
   constructor(
+    @Inject(SlackMessageService)
+    private readonly slackMessageService: SlackMessageService,
+
     private readonly remoteWebDriverService: RemoteWebDriverService, //
     private readonly remoteService: RemoteService,
     private readonly featureFileService: FeatureFileService,
@@ -97,7 +101,7 @@ export class RemoteWebDriverInfoController {
           {},
         );
       }
-      await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.FAILURE);
+      await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.FAILURE, this.slackMessageService);
       throw new RemoteException(HttpStatus.INTERNAL_SERVER_ERROR, e, {});
     }
   }
@@ -137,7 +141,7 @@ export class RemoteWebDriverInfoController {
         );
       }
       if (remoteDeviceJob.sessionState !== REMOTE_DEVICE_JOB_SESSION_STATE.FAILURE) {
-        await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.FAILURE);
+        await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.FAILURE, this.slackMessageService);
       }
       throw new RemoteException(HttpStatus.INTERNAL_SERVER_ERROR, e, {});
     }
@@ -170,7 +174,7 @@ export class RemoteWebDriverInfoController {
         throw new RemoteException(HttpStatus.NOT_FOUND, new Error(`process:sendRequest. remote-device-job not found. remoteDeviceJobId: ${processResult.remoteDeviceJobId}`), {});
       }
       if (remoteDeviceJob.sessionState !== REMOTE_DEVICE_JOB_SESSION_STATE.FAILURE) {
-        await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.FAILURE);
+        await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.FAILURE, this.slackMessageService);
       }
       throw new RemoteException(HttpStatus.INTERNAL_SERVER_ERROR, e, {});
     }

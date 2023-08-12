@@ -11,6 +11,7 @@ import { ColumnTemplate } from './decorators';
 import { Device } from './device.entity';
 import { Host } from './host.entity';
 import { DeviceTag, OrganizationAndUserAndOrganizationRole, OrganizationAndUserAndTeam, Team, User } from './index';
+import { OrganizationSlack } from './organization-slack.entity';
 import { Project } from './project.entity';
 import { UserAndInvitationToken } from './relations/user-and-invitation-token.entity';
 import { UserVisit } from './user-visit.entity';
@@ -79,4 +80,7 @@ export class Organization extends BaseEntity implements OrganizationBase {
 
   @OneToMany(() => UserAndInvitationToken, (invitation) => invitation.organization, { cascade: ['soft-remove'] })
   userInvitations?: UserAndInvitationToken[];
+
+  @OneToMany(() => OrganizationSlack, (slack) => slack.organization, { cascade: ['soft-remove'] })
+  organizationSlack?: OrganizationSlack[];
 }

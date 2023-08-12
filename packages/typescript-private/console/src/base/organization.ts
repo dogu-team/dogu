@@ -6,6 +6,7 @@ import { DeviceTagBase } from './device-tag';
 import { HostBase } from './host';
 import { OrganizationAndUserAndOrganizationRoleBase } from './organization-and-user-and-organization-role';
 import { OrganizationUserAndTeamBase } from './organization-and-user-and-team';
+import { OrganizationSlackBase } from './organization-slack';
 import { ProjectBase } from './project';
 import { TeamBase } from './team';
 import { UserBase } from './user';
@@ -22,6 +23,7 @@ export interface OrganizationRelationTraits {
   deviceTags?: DeviceTagBase[];
   devices?: DeviceBase[];
   userInvitations?: UserAndInvitationTokenBase[];
+  organizationSlack?: OrganizationSlackBase[];
 }
 
 export interface OrganizationResponseTraits {

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RemoteWebDriverInfo } from '../../db/entity/remote-webdriver-info.entity';
 import { Remote } from '../../db/entity/remote.entity';
+import { SlackModule } from '../../enterprise/module/integration/slack/slack.module';
 import { DeviceMessageModule } from '../device-message/device-message.module';
 import { FeatureFileModule } from '../feature/file/feature-file.module';
 import { DeviceTagModule } from '../organization/device-tag/device-tag.module';
@@ -15,7 +16,7 @@ import { RemoteController } from './remote.controller';
 import { RemoteService } from './remote.service';
 
 @Module({
-  imports: [FeatureFileModule, TypeOrmModule.forFeature([Remote, RemoteWebDriverInfo]), DeviceMessageModule, ProjectModule, DeviceModule, DeviceTagModule],
+  imports: [FeatureFileModule, TypeOrmModule.forFeature([Remote, RemoteWebDriverInfo]), DeviceMessageModule, ProjectModule, DeviceModule, DeviceTagModule, SlackModule],
   providers: [RemoteService, RemoteWebDriverService, RemoteDestService],
   exports: [RemoteService, RemoteWebDriverService, RemoteDestService],
   controllers: [RemoteWebDriverInfoController, RemoteController, RemoteDestController],

@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { useRouter } from 'next/router';
 import { RoutineId } from '@dogu-private/types';
 import useSWR from 'swr';
-import { RoutineBase } from '@dogu-private/console';
+import { ProjectSlackRoutineBase, RoutineBase } from '@dogu-private/console';
 import Head from 'next/head';
 import { GetServerSideProps } from 'next';
 import Image from 'next/image';
@@ -18,13 +18,18 @@ import RunRoutineButton from 'src/components/pipelines/RunRoutineButton';
 import RoutineInfoContainer from 'src/components/routine/RoutineInfoContainer';
 import { swrAuthFetcher } from 'src/api/index';
 import EditRoutineButton from 'src/components/routine/EditRoutineButton';
-import ProjectLayoutWithSidebar from '../../../../../../src/components/layouts/ProjectLayoutWithSidebar';
-import ExternalGuideLink from '../../../../../../src/components/common/ExternalGuideLink';
+import ProjectLayoutWithSidebar from 'src/components/layouts/ProjectLayoutWithSidebar';
+import ExternalGuideLink from 'src/components/common/ExternalGuideLink';
+import SlackRoutineChannelButton from 'src/enterprise/components/slack/SlackRoutineChannelButton';
 
 const ProjectRoutinePage: NextPageWithLayout<WithProjectProps> = ({ organization, project }) => {
   const router = useRouter();
-  const routineId = router.query.routine as RoutineId | undefined;
-  const { data } = useSWR<RoutineBase>(routineId && `/organizations/${organization.organizationId}/projects/${project.projectId}/routines/${routineId}`, swrAuthFetcher);
+  const routineId = router.query.routine as RoutineId;
+  const { data: routine } = useSWR<RoutineBase>(routineId && `/organizations/${organization.organizationId}/projects/${project.projectId}/routines/${routineId}`, swrAuthFetcher);
+  const { data: routineSlack } = useSWR<ProjectSlackRoutineBase>(
+    `/organizations/${organization.organizationId}/projects/${project.projectId}/slack/routine/${routineId}`,
+    swrAuthFetcher,
+  );
 
   return (
     <>
@@ -36,14 +41,21 @@ const ProjectRoutinePage: NextPageWithLayout<WithProjectProps> = ({ organization
           <TableListView
             top={
               <PipelineTopBox>
-                <RoutineInfoContainer orgId={organization.organizationId} projectId={project.projectId} routine={data} />
+                <RoutineInfoContainer orgId={organization.organizationId} projectId={project.projectId} routine={routine} />
 
                 <PipelineTopButtonWrapper>
                   <RowFlexBox>
-                    <RunRoutineButton orgId={organization.organizationId} projectId={project.projectId} routine={data} />
-                    <EditRoutineButton orgId={organization.organizationId} projectId={project.projectId} routine={data} />
+                    <RunRoutineButton orgId={organization.organizationId} projectId={project.projectId} routine={routine} />
+                    <EditRoutineButton orgId={organization.organizationId} projectId={project.projectId} routine={routine} />
                     <PipelineFilter />
-                    {!data && (
+                    <SlackRoutineChannelButton
+                      organizationId={organization.organizationId}
+                      projectId={project.projectId}
+                      routineId={routineId}
+                      hide={routine === undefined}
+                      routineSlack={routineSlack}
+                    />
+                    {!routine && (
                       <>
                         <ExternalGuideLink
                           href="https://docs.dogutech.io/integration/cicd/github"
