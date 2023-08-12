@@ -100,14 +100,15 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
       if (!fs.existsSync(path)) {
         throw new Error(`${path} not found`);
       }
-      if (file.fileMode) {
-        await fs.promises.chmod(path, 0o777);
-      }
       if (file.archName) {
         const { stdout, stderr } = await ChildProcess.execIgnoreError(`lipo -info ${path}`, {}, this.logger);
         if (!stdout.includes(`architecture: ${file.archName}`)) {
           throw new Error(`${path} should be ${file.archName} file`);
         }
+        await ChildProcess.execIgnoreError(`xattr -dr com.apple.quarantine ${path}`, {}, this.logger);
+      }
+      if (file.fileMode) {
+        await fs.promises.chmod(path, 0o777);
       }
 
       const size = await getFileSizeRecursive(path);
