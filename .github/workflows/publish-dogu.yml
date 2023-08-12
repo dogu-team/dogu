@@ -6,13 +6,10 @@ on:
     inputs:
       rc_check:
         type: boolean
-        description: RC <br> 💬 if checked, version must be empty.
+        description: RC version. ❗ if checked, version must be empty.
       version:
         type: string
-        description: |
-          Dogu image version
-          example - 1.0.0
-          if not empty, RC must be unchecked.
+        description: 'Dogu image version. example: 1.0.0 ❗ if not empty, RC must be unchecked.'
         default: ''
 
 jobs:
