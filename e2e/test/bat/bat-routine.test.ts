@@ -10,6 +10,7 @@ import { Timer } from '../../src/timer';
 import { Utils } from '../../src/utils';
 import { runHost } from './bat/host';
 import { currentL10n, l10n } from './bat/l10n';
+import testRemote from './bat/remote-test';
 import { startConsoleAndDost } from './bat/workspace';
 
 const env = loadEnvLazySync(E2eEnv);
@@ -1065,6 +1066,10 @@ Dest.withOptions({
         const elems = await Driver.findElements({ xpath: '//div[@access-id="organization-list"]//li[contains(@class, "ant-list-item")]' });
         expect(elems.length).toBe(1);
       });
+    });
+
+    testRemote({
+      consoleFrontDriver: Driver,
     });
 
     afterAll(async () => {
