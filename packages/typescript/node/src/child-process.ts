@@ -83,6 +83,9 @@ export function spawnSync(command: string, args: string[], options: childProcess
   proc.stderr?.on('data', (data) => {
     printable.error(String(data));
   });
+  proc.on('error', (err) => {
+    printable.error?.(`error: ${stringify(err)}`);
+  });
 
   return proc;
 }

@@ -16,6 +16,7 @@ interface File {
   condition?: () => boolean;
   url: string;
   path: () => string;
+  fileMode?: number;
   unzipDirName?: string;
 }
 
@@ -24,21 +25,25 @@ const files: File[] = [
     condition: () => process.platform === 'darwin',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/idevicediagnostics-arm64',
     path: () => HostPaths.external.libimobiledevice.idevicediagnostics(),
+    fileMode: 0o777,
   },
   {
     condition: () => process.platform === 'darwin',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/idevicediagnostics-x64',
     path: () => HostPaths.external.libimobiledevice.idevicediagnostics(),
+    fileMode: 0o777,
   },
   {
     condition: () => process.platform === 'darwin',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/idevicesyslog-arm64',
     path: () => HostPaths.external.libimobiledevice.idevicesyslog(),
+    fileMode: 0o777,
   },
   {
     condition: () => process.platform === 'darwin',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/idevicesyslog-x64',
     path: () => HostPaths.external.libimobiledevice.idevicesyslog(),
+    fileMode: 0o777,
   },
   {
     condition: () => process.platform === 'darwin',
@@ -86,6 +91,9 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
       const path = file.path();
       if (!fs.existsSync(path)) {
         throw new Error(`${path} not found`);
+      }
+      if (file.fileMode) {
+        await fs.promises.chmod(path, 0o777);
       }
       const size = await getFileSizeRecursive(path);
       if (size === 0) {
