@@ -7,7 +7,7 @@ export async function validateXcode(logger: { stdout: (message: string) => void;
   const command = 'xcodebuild -version';
   logger.stdout(command);
   const { stdout, stderr } = await execAsync(command, {
-    timeout: 5 * 1000,
+    timeout: 30 * 1000,
   });
   if (stdout) {
     logger.stdout(stdout);
