@@ -69,7 +69,7 @@ app.whenReady().then(async () => {
     .then((name) => logger.info(`Added Extension:  ${name}`))
     .catch((err) => logger.error('An error occurred: ', err));
 
-  ServicesOpenStatusService.instance.openServices(async () => {
+  await ServicesOpenStatusService.instance.openServices(async () => {
     RendererLogService.open();
     ThemeService.open();
     await AppConfigService.open();
