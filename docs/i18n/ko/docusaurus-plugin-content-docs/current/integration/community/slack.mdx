@@ -1,7 +1,99 @@
 ---
-sidebar_position: 3
+sidebar_position: 1
 title: Slack
 locale: ko
 ---
 
-## Slack 통합
+import slack_integration from '@site/static/img/integration/slack/slack_integration.png';
+import slack_integration_2 from '@site/static/img/integration/slack/slack_integration_2.png';
+import slack_channel from '@site/static/img/integration/slack/slack_channel.png';
+import slack_event from '@site/static/img/integration/slack/slack_event.png';
+import slack_call_bot_in_private from '@site/static/img/integration/slack/slack_call_bot_in_private.png';
+import slack_bot_in_channel from '@site/static/img/integration/slack/slack_bot_in_channel.png';
+import slack_private_channel from '@site/static/img/integration/slack/slack_private_channel.png';
+import slack_bot_in_app from '@site/static/img/integration/slack/slack_bot_in_app.png';
+import slack_message_example from '@site/static/img/integration/slack/slack_message_example.png';
+
+## 소개
+
+Dogu와 Slack Workspace를 연동하여, Dogu에서 발생하는 이벤트를 Slack으로 전송할 수 있습니다:
+
+- Remote 성공 및 실패 이벤트
+- Routine 성공 및 실패 이벤트
+
+## 연동
+
+조직 > 설정 > 연동 메뉴에서 Slack의 Connect 버튼을 클릭합니다.
+
+<img src={slack_integration} />
+
+<br />
+<br />
+
+Slack 연동 페이지에서 "Allow" 버튼을 클릭합니다.
+
+<img src={slack_integration_2} />
+
+<br />
+<br />
+
+Slack Workspace의 App에서 정상적으로 Dogu가 추가된 것을 확인할 수 있습니다.
+
+<img src={slack_bot_in_app} />
+
+## 채널 설정
+
+Remote, Routine 페이지에서 Slack 버튼을 클릭하면, Slack Channel 설정을 할 수 있습니다.
+
+<img src={slack_channel} />
+
+<br />
+<br />
+
+:::info
+Private Channel을 설정하고 싶다면, Dogu 봇을 Slack Channel에 초대해야 합니다.  
+자세한 내용은 [Private Channel](#private-channel)을 참고하세요.
+:::
+
+## 이벤트 설정
+
+Slack Channel 설정 후 모든 이벤트 또는 특정 이벤트만 Slack으로 전송할 수 있습니다.
+
+- On Success: 이벤트가 성공했을 때 Slack으로 전송합니다.
+- On Failure: 이벤트가 실패했을 때 Slack으로 전송합니다.
+
+<img src={slack_event} />
+
+## 메시지 예시
+
+Slack 연동이 완료되면 아래와 같이 특정 이벤트에 대해 Slack Channel에 메시지가 전송됩니다.
+
+<img src={slack_message_example} />
+
+<br />
+<br />
+
+:::info
+Executor 멘션은 Dogu 유저의 Email과 Slack 유저의 Email이 동일할 경우에만 작동합니다.
+:::
+
+## Private Channel
+
+Private Channel을 설정하고 싶다면, Dogu 봇을 Slack Channel에 초대해야 합니다.  
+초대를 위해 @Dogu를 Private Channel에서 멘션합니다.
+
+<img src={slack_call_bot_in_private} />
+
+<br />
+<br />
+
+"Invite" 버튼을 클릭해 Dogu 봇을 Slack Channel에 초대합니다.
+
+<img src={slack_bot_in_channel} />
+
+<br />
+<br />
+
+다시 Dogu 페이지로 돌아오면 정상적으로 Private Channel을 선택할 수 있는 것을 확인할 수 있습니다.
+
+<img src={slack_private_channel} />
