@@ -1,9 +1,8 @@
 import { OrganizationId, SlackChannelItem } from '@dogu-private/types';
 import { Form, FormInstance, Select } from 'antd';
+import Link from 'next/link';
 import styled from 'styled-components';
-import useSWR from 'swr';
 
-import { swrAuthFetcher } from '../../../api';
 import SlackChannelList from './SlackChannelList';
 import SlackEventList from './SlackEventList';
 
@@ -26,6 +25,17 @@ const SlackChannelForm = (props: Props) => {
   const onSelectEvent = (events: string[]) => {
     props.form.setFieldsValue({ events });
   };
+
+  if (props.channelItems.length === 0) {
+    return (
+      <>
+        <p>
+          {`You don't have any connected slack.`}
+          <Link href={`/dashboard/${props.organizationId}/settings#slack`}> Please connect slack first.</Link>
+        </p>
+      </>
+    );
+  }
 
   return (
     <Form form={props.form} layout="vertical" name="slack-channel">

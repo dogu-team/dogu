@@ -29,7 +29,7 @@ import DangerZone from '../../../src/components/common/boxes/DangerZone';
 import TokenCopyInput from '../../../src/components/common/TokenCopyInput';
 import RegenerateTokenButton from '../../../src/components/common/RegenerateTokenButton';
 import AccessTokenButton from '../../../src/components/common/AccessTokenButton';
-import SlackButton from '../../../src/enterprise/components/integration/SlackButton';
+import SlackButton from '../../../src/enterprise/components/integration/SlackConnectButton';
 import SettingTitleDivider from '../../../src/components/common/SettingTitleDivider';
 
 const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ organization, mutateOrganization }) => {

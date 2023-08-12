@@ -1,7 +1,6 @@
 import { OrganizationId, SlackChannelItem } from '@dogu-private/types';
-import { Select, SelectProps } from 'antd';
+import { Select } from 'antd';
 import { LockOutlined } from '@ant-design/icons';
-import Link from 'next/link';
 
 interface Props {
   channelItems: SlackChannelItem[];
@@ -29,18 +28,6 @@ const SlackChannelList = (props: Props) => {
         };
       })
     : [];
-
-  const isConnectedSlack = channelItems?.length === 0;
-  if (isConnectedSlack) {
-    return (
-      <>
-        <p>
-          {`You don't have any connected slack.`}
-          <Link href={`/dashboard/${props.organizationId}/settings#slack`}> Please connect slack first.</Link>
-        </p>
-      </>
-    );
-  }
 
   return <Select defaultValue={props.defaultChannelId} showSearch placeholder="Select a channel" optionFilterProp="children" options={channels} onSelect={props.onSelect} />;
 };

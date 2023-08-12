@@ -28,7 +28,7 @@ const SlackRemoteChannelButton = (props: Props) => {
   const pureFormValues = useRef<FormFields>({ channelId: '', events: [] });
   const [form] = Form.useForm<FormFields>();
   const [isOpen, setIsOpen] = useState(false);
-  const { data, error, mutate, isLoading } = useSWR<SlackChannelItem[]>(`/organizations/${props.organizationId}/slack/channels`, swrAuthFetcher);
+  const { data: channelItems, error, mutate, isLoading } = useSWR<SlackChannelItem[]>(`/organizations/${props.organizationId}/slack/channels`, swrAuthFetcher);
 
   const initFormValues = useCallback(() => {
     if (props.remoteSlack) {
@@ -99,7 +99,7 @@ const SlackRemoteChannelButton = (props: Props) => {
       </StyledButton>
 
       <Modal open={isOpen} centered closable onCancel={handleClose} okText={'Save'} onOk={handleSave} title="Slack" destroyOnClose>
-        <SlackChannelForm organizationId={props.organizationId} form={form} channelItems={data ? data : []} />
+        <SlackChannelForm organizationId={props.organizationId} form={form} channelItems={channelItems ? channelItems : []} />
       </Modal>
     </>
   );
