@@ -9,7 +9,7 @@ on:
         description: RC (if checked, version must be empty)
       version:
         type: string
-        description: dogu image version. example - '1.0.0' (if not empty, RC must be unchecked)
+        description: dogu image version. example - 1.0.0 (if not empty, RC must be unchecked)
         default: ''
 
 jobs:
