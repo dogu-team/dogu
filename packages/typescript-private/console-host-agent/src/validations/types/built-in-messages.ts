@@ -333,6 +333,9 @@ export class UpdateAgent extends Kindable<'UpdateAgent'> {
   @IsFilledString()
   url!: string;
 
+  @IsNumber()
+  fileSize!: number;
+
   @IsFilledString()
   appname!: string;
 }
