@@ -14,7 +14,6 @@ import { sendSuccessNotification } from '../../../utils/antd';
 interface Props {
   organizationId: OrganizationId;
   projectId: ProjectId;
-  hide: boolean;
   remoteSlack?: ProjectSlackRemoteBase;
 }
 
@@ -87,10 +86,6 @@ const SlackRemoteChannelButton = (props: Props) => {
   useEffect(() => {
     initFormValues();
   }, [initFormValues]);
-
-  if (props.hide) {
-    return null;
-  }
 
   return (
     <>

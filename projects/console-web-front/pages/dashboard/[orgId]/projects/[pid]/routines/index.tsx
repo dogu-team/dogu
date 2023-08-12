@@ -24,10 +24,10 @@ import SlackRoutineChannelButton from 'src/enterprise/components/slack/SlackRout
 
 const ProjectRoutinePage: NextPageWithLayout<WithProjectProps> = ({ organization, project }) => {
   const router = useRouter();
-  const routineId = router.query.routine as RoutineId;
+  const routineId = router.query.routine as RoutineId | undefined;
   const { data: routine } = useSWR<RoutineBase>(routineId && `/organizations/${organization.organizationId}/projects/${project.projectId}/routines/${routineId}`, swrAuthFetcher);
   const { data: routineSlack } = useSWR<ProjectSlackRoutineBase>(
-    `/organizations/${organization.organizationId}/projects/${project.projectId}/slack/routine/${routineId}`,
+    routineId && `/organizations/${organization.organizationId}/projects/${project.projectId}/slack/routine/${routineId}`,
     swrAuthFetcher,
   );
 
@@ -48,13 +48,9 @@ const ProjectRoutinePage: NextPageWithLayout<WithProjectProps> = ({ organization
                     <RunRoutineButton orgId={organization.organizationId} projectId={project.projectId} routine={routine} />
                     <EditRoutineButton orgId={organization.organizationId} projectId={project.projectId} routine={routine} />
                     <PipelineFilter />
-                    <SlackRoutineChannelButton
-                      organizationId={organization.organizationId}
-                      projectId={project.projectId}
-                      routineId={routineId}
-                      hide={routine === undefined}
-                      routineSlack={routineSlack}
-                    />
+                    {routineId !== undefined && (
+                      <SlackRoutineChannelButton organizationId={organization.organizationId} projectId={project.projectId} routineId={routineId} routineSlack={routineSlack} />
+                    )}
                     {!routine && (
                       <>
                         <ExternalGuideLink

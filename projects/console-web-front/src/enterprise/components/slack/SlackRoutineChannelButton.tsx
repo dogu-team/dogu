@@ -15,7 +15,6 @@ interface Props {
   organizationId: OrganizationId;
   projectId: ProjectId;
   routineId: RoutineId;
-  hide: boolean;
   routineSlack?: ProjectSlackRoutineBase;
 }
 
@@ -89,10 +88,6 @@ const SlackRoutineChannelButton = (props: Props) => {
   useEffect(() => {
     initFormValues();
   }, [initFormValues]);
-
-  if (props.hide) {
-    return null;
-  }
 
   return (
     <>

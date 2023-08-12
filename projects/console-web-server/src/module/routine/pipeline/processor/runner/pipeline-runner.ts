@@ -254,6 +254,10 @@ export class PipelineRunner {
           };
 
           for (const routineDeviceJob of routineDeviceJobs) {
+            if (routineDeviceJob.status === PIPELINE_STATUS.SUCCESS) {
+              continue;
+            }
+
             const device = await manager.getRepository(Device).findOne({ where: { deviceId: routineDeviceJob.deviceId } });
             if (device === null) {
               throw new Error(`Device [${routineDeviceJob.deviceId}] not found.`);

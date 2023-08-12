@@ -34,7 +34,7 @@ const RemoteListPage: NextPageWithLayout<WithProjectProps> = ({ organization, pr
                   Tutorial <ArrowRightOutlined />
                 </StyledButton>
               </Link>
-              <SlackRemoteChannelButton organizationId={organization.organizationId} projectId={project.projectId} remoteSlack={remoteSlack} hide={false} />
+              <SlackRemoteChannelButton organizationId={organization.organizationId} projectId={project.projectId} remoteSlack={remoteSlack} />
             </LeftMenuButtonList>
             <RefreshButton />
           </FlexBetweenBox>
