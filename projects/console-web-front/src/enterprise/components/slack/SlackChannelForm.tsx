@@ -43,7 +43,7 @@ const SlackChannelForm = (props: Props) => {
         label={
           <div style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-evenly', alignItems: 'center' }}>
             <p>Channel</p>
-            <PrivateChannelGuideText href="" target="_blank">
+            <PrivateChannelGuideText href="https://docs.dogutech.io/integration/community/slack#private-channel" target="_blank">
               {`Private channel isn't visible?`}
             </PrivateChannelGuideText>
           </div>
