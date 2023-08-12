@@ -1,5 +1,10 @@
 name: 📤publish-dogu
-run-name: 📤publish-dogu-${{ github.event.inputs.version }} using ${{ github.ref }}
+run-name: |
+  ${{ if github.event.inputs.version }}
+    📤publish-dogu-${{ github.event.inputs.version }} using ${{ github.ref }}
+  ${{ else }}
+    📤publish-dogu-rc using ${{ github.ref }}
+  ${{ endif }}
 
 on:
   workflow_dispatch:
