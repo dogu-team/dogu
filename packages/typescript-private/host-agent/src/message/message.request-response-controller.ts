@@ -14,6 +14,7 @@ import {
   ResponseResultValue,
   Run,
   RunStep,
+  UpdateAgent,
 } from '@dogu-private/console-host-agent';
 import { Controller } from '@nestjs/common';
 import { Ctx, Payload } from '@nestjs/microservices';
@@ -22,6 +23,7 @@ import { MessageContext } from '../message/message.types';
 import { ActionProcessor } from '../processor/action.processor';
 import { CommandProcessRegistry } from '../processor/command.process-registry';
 import { DeviceJobStepProcessor } from '../processor/device-job-step.processor';
+import { UpdateProcessor } from '../processor/update.processor';
 import { StepMessageContext } from '../step/step.types';
 import { OnConsoleMessage } from '../types';
 
@@ -32,6 +34,7 @@ export class MessageRequestResponseController {
     private readonly httpProxyProcessor: HttpProxyProcessor,
     private readonly commandProcessRegistry: CommandProcessRegistry,
     private readonly actionProcessor: ActionProcessor,
+    private readonly updateProcessor: UpdateProcessor,
   ) {}
 
   @OnConsoleMessage(RequestParam, ResponseResult)
@@ -84,5 +87,10 @@ export class MessageRequestResponseController {
   @OnConsoleMessage(Action, ErrorResult)
   onAction(@Payload() param: Action, @Ctx() context: MessageContext): Promise<ErrorResult> {
     return this.actionProcessor.action(param, context);
+  }
+
+  @OnConsoleMessage(UpdateAgent, ErrorResult)
+  onUpdateAgent(@Payload() param: UpdateAgent, @Ctx() context: MessageContext): Promise<ErrorResult> {
+    return this.updateProcessor.update(param);
   }
 }

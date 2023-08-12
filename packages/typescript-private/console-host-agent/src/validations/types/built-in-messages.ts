@@ -325,3 +325,14 @@ export class Result {
   @TransformByKind(ResultValue)
   value!: ResultValue;
 }
+
+@OneOf()
+export class UpdateAgent extends Kindable<'UpdateAgent'> {
+  static override kind = 'UpdateAgent';
+
+  @IsFilledString()
+  url!: string;
+
+  @IsFilledString()
+  appname!: string;
+}
