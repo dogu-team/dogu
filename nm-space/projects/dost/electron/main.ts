@@ -29,6 +29,7 @@ import { FeatureConfigService } from './feature-config/feature-config-service';
 import { RendererLogService } from './log/renderer-log-service';
 import { StdLogCallbackService } from './log/std-log-callback-service';
 import { LogsPath } from './path-map';
+import { ServicesOpenStatusService } from './services-open-status/services-open-status-service';
 import { SettingsService } from './settings/settings-service';
 import { ThemeService } from './theme/theme-service';
 import { TrayService } from './tray/tray-service';
@@ -68,26 +69,28 @@ app.whenReady().then(async () => {
     .then((name) => logger.info(`Added Extension:  ${name}`))
     .catch((err) => logger.error('An error occurred: ', err));
 
-  RendererLogService.open();
-  ThemeService.open();
-  await AppConfigService.open();
-  await FeatureConfigService.open(AppConfigService.instance);
-  if (FeatureConfigService.instance.get('useSentry')) {
-    Sentry.init({ dsn: SentyDSNUrl, maxBreadcrumbs: 10000, environment: isDev ? 'development' : 'production' });
-  }
-  await DotEnvConfigService.open(AppConfigService.instance);
-  await UpdaterService.open(AppConfigService.instance, FeatureConfigService.instance);
-  SettingsService.open(DotEnvConfigService.instance);
-  TrayService.open();
-  WindowService.open();
-  StdLogCallbackService.open(WindowService.instance);
-  await ExternalService.open(DotEnvConfigService.instance, StdLogCallbackService.instance, AppConfigService.instance, WindowService.instance);
-  ChildService.open(AppConfigService.instance, FeatureConfigService.instance, ExternalService.instance);
-  const token = (await AppConfigService.instance.get('DOGU_HOST_TOKEN')) as string;
-  if (token && token.length > 0) {
-    ChildService.instance.connect(token).catch((err) => logger.error('main connect error', err));
-  }
-  DeviceLookupService.open(ChildService.instance);
+  ServicesOpenStatusService.instance.openServices(async () => {
+    RendererLogService.open();
+    ThemeService.open();
+    await AppConfigService.open();
+    await FeatureConfigService.open(AppConfigService.instance);
+    if (FeatureConfigService.instance.get('useSentry')) {
+      Sentry.init({ dsn: SentyDSNUrl, maxBreadcrumbs: 10000, environment: isDev ? 'development' : 'production' });
+    }
+    await DotEnvConfigService.open(AppConfigService.instance);
+    await UpdaterService.open(AppConfigService.instance, FeatureConfigService.instance);
+    SettingsService.open(DotEnvConfigService.instance);
+    TrayService.open();
+    WindowService.open();
+    StdLogCallbackService.open(WindowService.instance);
+    await ExternalService.open(DotEnvConfigService.instance, StdLogCallbackService.instance, AppConfigService.instance, WindowService.instance);
+    ChildService.open(AppConfigService.instance, FeatureConfigService.instance, ExternalService.instance);
+    const token = (await AppConfigService.instance.get('DOGU_HOST_TOKEN')) as string;
+    if (token && token.length > 0) {
+      ChildService.instance.connect(token).catch((err) => logger.error('main connect error', err));
+    }
+    await DeviceLookupService.open(ChildService.instance);
+  });
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) {

@@ -7,6 +7,7 @@ import { IElectronIpc } from '../src/shares/electron-ipc';
 import { DownloadProgress, externalCallbackKey, ExternalKey, externalKey, ValidationCheckOption } from '../src/shares/external';
 import { featureConfigClientKey, FeatureKey } from '../src/shares/feature-config';
 import { rendererLoggerKey, stdLogCallbackKey } from '../src/shares/log';
+import { servicesOpenStatusClientKey } from '../src/shares/services-open-status';
 import { ILoginItemSettingsOptions, ISettings, MediaType, settingsClientKey } from '../src/shares/settings';
 import { themeClientKey } from '../src/shares/theme';
 import { updaterClientKey } from '../src/shares/updater';
@@ -145,4 +146,8 @@ expose('deviceLookupClient', {
   getPlatformSerials: () => ipcRenderer.invoke(deviceLookupClientKey.getPlatformSerials),
   getDevicesWithError: () => ipcRenderer.invoke(deviceLookupClientKey.getDevicesWithError),
   getDeviceSystemInfo: (serial: string) => ipcRenderer.invoke(deviceLookupClientKey.getDeviceSystemInfo, serial),
+});
+
+expose('servicesOpenStatusClient', {
+  isServicesOpened: () => ipcRenderer.invoke(servicesOpenStatusClientKey.isServicesOpened),
 });
