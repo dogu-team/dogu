@@ -1,11 +1,10 @@
 import { RecordTestCaseBase, RecordTestCasePropCamel, RecordTestCasePropSnake, RecordTestCaseResponse } from '@dogu-private/console';
-import { extensionFromPlatform, OrganizationId, platformTypeFromPlatform, ProjectId, RecordTestCaseId, RECORD_TEST_STEP_ACTION_TYPE } from '@dogu-private/types';
+import { extensionFromPlatform, OrganizationId, platformTypeFromPlatform, ProjectId, RecordTestCaseId } from '@dogu-private/types';
 import {
   DoguApplicationFileSizeHeader,
   DoguApplicationUrlHeader,
   DoguApplicationVersionHeader,
   DoguBrowserNameHeader,
-  DoguBrowserVersionHeader,
   DoguDevicePlatformHeader,
   DoguDeviceSerialHeader,
   DoguRemoteDeviceJobIdHeader,
@@ -29,8 +28,8 @@ import {
   NewSessionRemoteWebDriverBatchRequestItem,
 } from '../../../../module/remote/remote-webdriver/remote-webdriver.w3c-batch-request-items';
 import { getSortedRecordTestSteps } from '../common';
-import { CreateRecordTestCaseDto, FindRecordTestCaseByProjectIdDto, LoadRecordTestCaseDto, NewSessionDto, UpdateRecordTestCaseDto } from '../dto/record-test-case.dto';
-import { CreateRecordTestStepDto } from '../dto/record-test-step.dto';
+import { CreateRecordTestCaseDto, FindRecordTestCaseByProjectIdDto, NewSessionRecordTestCaseDto, UpdateRecordTestCaseDto } from '../dto/record-test-case.dto';
+import { CreateRecordTestActionWebdriverClickDto, CreateRecordTestStepDto } from '../dto/record-test-step.dto';
 import { RecordTestStepService } from '../record-test-step/record-test-step.service';
 
 @Injectable()
@@ -89,7 +88,7 @@ export class RecordTestCaseService {
   }
 
   async createRecordTestCase(organizationId: OrganizationId, projectId: ProjectId, dto: CreateRecordTestCaseDto): Promise<RecordTestCaseBase> {
-    const { name, deviceId, browserName, packageName, activeDeviceScreenSizeX, activeDeviceScreenSizeY } = dto;
+    const { name, browserName, packageName } = dto;
 
     if (!packageName && !browserName) {
       throw new HttpException(`packageName or browserName is required`, HttpStatus.BAD_REQUEST);
@@ -102,73 +101,86 @@ export class RecordTestCaseService {
       throw new HttpException(`RecordTestCase name is duplicated. name: ${name}`, HttpStatus.BAD_REQUEST);
     }
 
-    const device = await this.dataSource.getRepository(Device).findOne({ where: { deviceId } });
-    if (!device) {
-      throw new HttpException(`Device not found. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
-    }
-
-    const rv = await this.dataSource.manager.transaction(async (manager) => {
-      const newSessionDto: NewSessionDto = { deviceId };
-      const newData = manager.getRepository(RecordTestCase).create({
-        recordTestCaseId: v4(),
-        projectId,
-        name,
-        activeDeviceSerial: device.serial,
-        activeDeviceScreenSizeX,
-        activeDeviceScreenSizeY,
-        packageName,
-        browserName,
-      });
-
-      if (packageName) {
-        const app = await manager.getRepository(ProjectApplication).findOne({ where: { projectId, package: packageName }, order: { createdAt: 'DESC' } });
-        if (!app) {
-          throw new HttpException(`ProjectApplication not found. packageName: ${packageName}`, HttpStatus.NOT_FOUND);
-        }
-        newSessionDto.appVersion = app.version;
-      }
-
-      if (browserName) {
-        newSessionDto.browserName = browserName;
-      }
-
-      const recordTestCase = await manager.getRepository(RecordTestCase).save(newData);
-      const sessionId = await this.newSession(manager, organizationId, projectId, recordTestCase, newSessionDto);
-
-      return recordTestCase;
+    // const device = await this.dataSource.getRepository(Device).findOne({ where: { deviceId } });
+    // if (!device) {
+    //   throw new HttpException(`Device not found. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
+    // }
+    const newData = this.dataSource.getRepository(RecordTestCase).create({
+      recordTestCaseId: v4(),
+      projectId,
+      name,
+      activeDeviceSerial: null,
+      activeDeviceScreenSizeX: null,
+      activeDeviceScreenSizeY: null,
+      activeSessionId: null,
+      activeSessionKey: null,
+      packageName,
+      browserName,
     });
-    return rv;
+
+    const recordTestCase = await this.dataSource.getRepository(RecordTestCase).save(newData);
+
+    // const rv = await this.dataSource.manager.transaction(async (manager) => {
+    //   const newSessionDto: NewSessionDto = { deviceId };
+    //   const newData = manager.getRepository(RecordTestCase).create({
+    //     recordTestCaseId: v4(),
+    //     projectId,
+    //     name,
+    //     activeDeviceSerial: device.serial,
+    //     activeDeviceScreenSizeX,
+    //     activeDeviceScreenSizeY,
+    //     packageName,
+    //     browserName,
+    //   });
+
+    //   if (packageName) {
+    //     const app = await manager.getRepository(ProjectApplication).findOne({ where: { projectId, package: packageName }, order: { createdAt: 'DESC' } });
+    //     if (!app) {
+    //       throw new HttpException(`ProjectApplication not found. packageName: ${packageName}`, HttpStatus.NOT_FOUND);
+    //     }
+    //     newSessionDto.appVersion = app.version;
+    //   }
+
+    //   if (browserName) {
+    //     newSessionDto.browserName = browserName;
+    //   }
+
+    //   const sessionId = await this.newSession(manager, organizationId, projectId, recordTestCase, newSessionDto);
+
+    //   return recordTestCase;
+    // });
+    return recordTestCase;
   }
 
-  async loadRecordTestCase(organizationId: OrganizationId, projectId: ProjectId, recordTestCaseId: RecordTestCaseId, dto: LoadRecordTestCaseDto): Promise<RecordTestCaseResponse> {
-    const { deviceId, activeDeviceScreenSizeX, activeDeviceScreenSizeY } = dto;
-    const testCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId }, relations: [RecordTestCasePropCamel.recordTestSteps] });
-    if (!testCase) {
-      throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
-    }
+  // async loadRecordTestCase(organizationId: OrganizationId, projectId: ProjectId, recordTestCaseId: RecordTestCaseId, dto: LoadRecordTestCaseDto): Promise<RecordTestCaseResponse> {
+  //   const { deviceId, activeDeviceScreenSizeX, activeDeviceScreenSizeY } = dto;
+  //   const testCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId }, relations: [RecordTestCasePropCamel.recordTestSteps] });
+  //   if (!testCase) {
+  //     throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
+  //   }
 
-    const newSessionDto: NewSessionDto = {
-      deviceId,
-    };
+  //   const newSessionDto: NewSessionDto = {
+  //     deviceId,
+  //   };
 
-    if (testCase.packageName) {
-      const app = await this.dataSource.getRepository(ProjectApplication).findOne({ where: { projectId, package: testCase.packageName }, order: { createdAt: 'DESC' } });
-      if (!app) {
-        throw new HttpException(`ProjectApplication not found. packageName: ${testCase.packageName}`, HttpStatus.NOT_FOUND);
-      }
-      newSessionDto.appVersion = app.version;
-    } else if (testCase.browserName) {
-      newSessionDto.browserName = testCase.browserName;
-    } else {
-      throw new HttpException(`packageName or browserName is required`, HttpStatus.BAD_REQUEST);
-    }
+  //   if (testCase.packageName) {
+  //     const app = await this.dataSource.getRepository(ProjectApplication).findOne({ where: { projectId, package: testCase.packageName }, order: { createdAt: 'DESC' } });
+  //     if (!app) {
+  //       throw new HttpException(`ProjectApplication not found. packageName: ${testCase.packageName}`, HttpStatus.NOT_FOUND);
+  //     }
+  //     newSessionDto.appVersion = app.version;
+  //   } else if (testCase.browserName) {
+  //     newSessionDto.browserName = testCase.browserName;
+  //   } else {
+  //     throw new HttpException(`packageName or browserName is required`, HttpStatus.BAD_REQUEST);
+  //   }
 
-    const sessionId = await this.newSession(this.dataSource.manager, organizationId, projectId, testCase, newSessionDto);
+  //   const sessionId = await this.newSession(this.dataSource.manager, organizationId, projectId, testCase, newSessionDto);
 
-    testCase.recordTestSteps = getSortedRecordTestSteps(testCase);
+  //   testCase.recordTestSteps = getSortedRecordTestSteps(testCase);
 
-    return testCase;
-  }
+  //   return testCase;
+  // }
 
   async updateRecordTestCase(projectId: ProjectId, recordTestCaseId: RecordTestCaseId, dto: UpdateRecordTestCaseDto): Promise<RecordTestCaseBase> {
     const { name } = dto;
@@ -197,12 +209,24 @@ export class RecordTestCaseService {
     // await this.dataSource.getRepository(RecordTestCase).softRemove(testCase);
   }
 
-  public async newSession(manager: EntityManager, organizationId: OrganizationId, projectId: ProjectId, recordTestCase: RecordTestCase, dto: NewSessionDto): Promise<string> {
-    const { deviceId, appVersion, browserName, browserVersion } = dto;
+  public async newSession(
+    manager: EntityManager,
+    organizationId: OrganizationId,
+    projectId: ProjectId,
+    recordTestCaseId: RecordTestCaseId,
+    dto: NewSessionRecordTestCaseDto,
+  ): Promise<RecordTestCaseBase> {
+    const { deviceId } = dto;
     const device = await manager.getRepository(Device).findOne({ where: { deviceId } });
     if (!device) {
       throw new HttpException(`Device not found. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
     }
+    const testCase = await manager.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId } });
+    if (!testCase) {
+      throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
+    }
+    const { browserName, packageName } = testCase;
+
     const platformType = platformTypeFromPlatform(device.platform);
     const activeSessionKey = v4();
 
@@ -213,22 +237,26 @@ export class RecordTestCaseService {
       [DoguRequestTimeoutHeader]: '180000',
     };
 
-    if (appVersion && browserName) {
+    if (packageName && browserName) {
       throw new HttpException(`appVersion and browserName are exclusive.`, HttpStatus.BAD_REQUEST);
     } else if (browserName) {
       headers[DoguBrowserNameHeader] = browserName;
-      if (browserVersion) headers[DoguBrowserVersionHeader] = browserVersion;
-    } else if (appVersion) {
+      // if (browserVersion) headers[DoguBrowserVersionHeader] = browserVersion;
+    } else if (packageName) {
+      const app = await manager.getRepository(ProjectApplication).findOne({ where: { projectId, package: packageName }, order: { createdAt: 'DESC' } });
+      if (!app) {
+        throw new HttpException(`ProjectApplication not found. packageName: ${packageName}`, HttpStatus.NOT_FOUND);
+      }
       let applicationUrl: string | undefined = undefined;
       let applicationVersion: string | undefined = undefined;
       let applicationFileSize: number | undefined = undefined;
       if (platformType === 'android' || platformType === 'ios') {
         const findAppDto = new FindProjectApplicationDto();
-        findAppDto.version = appVersion;
+        findAppDto.version = app.version;
         findAppDto.extension = extensionFromPlatform(platformType);
         const applications = await this.applicationService.getApplicationList(organizationId, projectId, findAppDto);
         if (applications.items.length === 0) {
-          throw new HttpException(`Application not found. appVersion: ${appVersion}`, HttpStatus.NOT_FOUND);
+          throw new HttpException(`Application not found. appVersion: ${app.version}`, HttpStatus.NOT_FOUND);
         }
         const application = applications.items[0];
         applicationUrl = await this.applicationService.getApplicationDownladUrl(application.projectApplicationId, organizationId, projectId);
@@ -258,13 +286,14 @@ export class RecordTestCaseService {
     const capabilities = res.value.capabilities as Record<string, unknown>;
     const deviceScreenSize = capabilities['deviceScreenSize'] as string;
 
-    recordTestCase.activeDeviceScreenSizeX = Number(deviceScreenSize.split('x')[0]);
-    recordTestCase.activeDeviceScreenSizeY = Number(deviceScreenSize.split('x')[1]);
-    recordTestCase.activeSessionId = res.value.sessionId;
-    recordTestCase.activeSessionKey = activeSessionKey;
-    await manager.getRepository(RecordTestCase).save(recordTestCase);
+    testCase.activeDeviceScreenSizeX = Number(deviceScreenSize.split('x')[0]);
+    testCase.activeDeviceScreenSizeY = Number(deviceScreenSize.split('x')[1]);
+    testCase.activeSessionId = res.value.sessionId;
+    testCase.activeSessionKey = activeSessionKey;
+    testCase.activeDeviceSerial = device.serial;
+    await manager.getRepository(RecordTestCase).save(testCase);
 
-    return res.value.sessionId;
+    return testCase;
   }
 
   async deleteSession(organizationId: OrganizationId, projectId: ProjectId, recordTestCaseId: RecordTestCaseId) {
@@ -272,12 +301,12 @@ export class RecordTestCaseService {
     if (!testCase) {
       throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
     }
-    const { activeSessionId, activeSessionKey } = testCase;
-    if (!activeSessionId || !activeSessionKey) {
+    const { activeSessionId, activeSessionKey, activeDeviceSerial } = testCase;
+    if (!activeSessionId || !activeSessionKey || !activeDeviceSerial) {
       throw new HttpException(`Session not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
     }
 
-    const device = await this.dataSource.getRepository(Device).findOne({ where: { serial: testCase.activeDeviceSerial } });
+    const device = await this.dataSource.getRepository(Device).findOne({ where: { serial: activeDeviceSerial } });
     if (!device) {
       throw new HttpException(`Device not found. serial: ${testCase.activeDeviceSerial}`, HttpStatus.NOT_FOUND);
     }
@@ -286,11 +315,11 @@ export class RecordTestCaseService {
       organizationId,
       projectId: testCase.projectId,
       deviceId: device.deviceId,
-      deviceSerial: testCase.activeDeviceSerial,
+      deviceSerial: activeDeviceSerial,
       headers: {
         [DoguRemoteDeviceJobIdHeader]: activeSessionKey,
         [DoguDevicePlatformHeader]: platformType,
-        [DoguDeviceSerialHeader]: testCase.activeDeviceSerial,
+        [DoguDeviceSerialHeader]: activeDeviceSerial,
         [DoguRequestTimeoutHeader]: '10000',
       },
       parallel: true,
@@ -311,20 +340,27 @@ export class RecordTestCaseService {
       name: 'test',
       browserName: null,
       packageName: 'org.wikipedia.alpha',
-      activeDeviceScreenSizeX: 0,
-      activeDeviceScreenSizeY: 0,
-      deviceId,
     };
     const testCase = await this.createRecordTestCase(organizationId, projectId, createTestCaseDto);
 
+    const newSessionDto: NewSessionRecordTestCaseDto = {
+      deviceId,
+    };
+
+    const sessionId = await this.newSession(this.dataSource.manager, organizationId, projectId, testCase.recordTestCaseId, newSessionDto);
+
+    const actionData: CreateRecordTestActionWebdriverClickDto = {
+      type: 'WEBDRIVER_CLICK',
+      videoScreenPositionX: 0,
+      videoScreenPositionY: 0,
+      videoScreenSizeX: 0,
+      videoScreenSizeY: 0,
+    };
+
     const stepDto: CreateRecordTestStepDto = {
       prevRecordTestStepId: null,
-      deviceId,
-      type: RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_CLICK,
-      screenPositionX: 0,
-      screenPositionY: 0,
-      screenSizeX: 0,
-      screenSizeY: 0,
+      // deviceId,
+      actionInfo: actionData,
     };
 
     const testStep = await this.recordTestStepService.createRecordTestStep(organizationId, projectId, testCase.recordTestCaseId, stepDto);
@@ -343,22 +379,42 @@ export class RecordTestCaseService {
       throw new HttpException(`RecordTestCase not found.`, HttpStatus.NOT_FOUND);
     }
 
-    const loadCaseDto: LoadRecordTestCaseDto = {
+    // const loadCaseDto: LoadRecordTestCaseDto = {
+    //   deviceId,
+    //   activeDeviceScreenSizeX: 0,
+    //   activeDeviceScreenSizeY: 0,
+    // };
+
+    // const sessionId = await this.loadRecordTestCase(organizationId, projectId, testCase.recordTestCaseId, loadCaseDto);
+
+    // const stepDto: CreateRecordTestStepDto = {
+    //   prevRecordTestStepId: null,
+    //   deviceId,
+    //   type: RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_CLICK,
+    //   screenPositionX: 0,
+    //   screenPositionY: 0,
+    //   screenSizeX: 0,
+    //   screenSizeY: 0,
+    // };
+
+    const newSessionDto: NewSessionRecordTestCaseDto = {
       deviceId,
-      activeDeviceScreenSizeX: 0,
-      activeDeviceScreenSizeY: 0,
     };
 
-    const sessionId = await this.loadRecordTestCase(organizationId, projectId, testCase.recordTestCaseId, loadCaseDto);
+    // const sessionId = await this.newSession(this.dataSource.manager, organizationId, projectId, testCase.recordTestCaseId, newSessionDto);
+
+    const actionData: CreateRecordTestActionWebdriverClickDto = {
+      type: 'WEBDRIVER_CLICK',
+      videoScreenPositionX: 0,
+      videoScreenPositionY: 0,
+      videoScreenSizeX: 0,
+      videoScreenSizeY: 0,
+    };
 
     const stepDto: CreateRecordTestStepDto = {
       prevRecordTestStepId: null,
-      deviceId,
-      type: RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_CLICK,
-      screenPositionX: 0,
-      screenPositionY: 0,
-      screenSizeX: 0,
-      screenSizeY: 0,
+      // deviceId,
+      actionInfo: actionData,
     };
 
     const testStep = await this.recordTestStepService.createRecordTestStep(organizationId, projectId, testCase.recordTestCaseId, stepDto);

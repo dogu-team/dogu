@@ -12,9 +12,9 @@ export interface RecordTestCaseBaseTraits {
   recordTestCaseId: RecordTestCaseId;
   projectId: ProjectId;
   name: string;
-  activeDeviceSerial: string;
-  activeDeviceScreenSizeX: number;
-  activeDeviceScreenSizeY: number;
+  activeDeviceSerial: string | null;
+  activeDeviceScreenSizeX: number | null;
+  activeDeviceScreenSizeY: number | null;
   activeSessionId: string | null;
   activeSessionKey: string | null;
   packageName: string | null;
