@@ -11,6 +11,14 @@ const useDeviceLog = (deviceClient: DeviceClient | undefined, device: DeviceBase
   const MAX_LOG_LENGTH = 2000;
 
   useEffect(() => {
+    if (device?.serial) {
+      setLogs([]);
+      setFilterValue('');
+      setIsStopped(true);
+    }
+  }, [device?.serial]);
+
+  useEffect(() => {
     let closer: Closable | undefined;
     (async () => {
       if (deviceClient && device && !isStopped) {

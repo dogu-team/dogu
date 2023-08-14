@@ -31,7 +31,7 @@ const ScreenViewer = () => {
           projectId={router.query.pid as ProjectId}
           onSelectedDeviceChanged={(device) => {
             if (device) {
-              router.push({ query: { orgId: router.query.orgId, pid: router.query.pid, deviceId: device?.deviceId } });
+              router.push({ query: { orgId: router.query.orgId, pid: router.query.pid, deviceId: device?.deviceId, tab } });
             } else {
               router.push(`/dashboard/${router.query.orgId}/projects/${router.query.pid}/studio`);
             }
