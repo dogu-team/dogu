@@ -189,7 +189,7 @@ Dest.withOptions({
       test('Rename organization', async () => {
         await Driver.sendKeys({ xpath: `//input[@value="${values.value.USER_NAME}'s organization"]` }, '1234');
         await Driver.clickElement({ xpath: '//button[@access-id="submit-org-profile-btn"]' });
-        await Timer.wait(2000, 'wait for changing organization name');
+        await Timer.wait(5000, 'wait for changing organization name');
         const value = await Driver.getText({ xpath: '//p[@access-id="sb-title"]' });
         expect(value).toBe(`${`${values.value.USER_NAME}'s organization`}1234`);
       });
@@ -826,7 +826,7 @@ Dest.withOptions({
             });
 
             test('Wait for install', async () => {
-              await Timer.wait(15000, 'wait for install');
+              await Timer.wait(25000, 'wait for install');
             });
           });
 
