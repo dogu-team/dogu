@@ -1,6 +1,6 @@
 import { OrganizationPropCamel, ProjectPropCamel, RecordTestCaseBase, RecordTestCasePropCamel, RecordTestCaseResponse } from '@dogu-private/console';
 import { OrganizationId, ProjectId, RecordTestCaseId } from '@dogu-private/types';
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { PROJECT_ROLE } from '../../../../module/auth/auth.types';
@@ -47,7 +47,7 @@ export class RecordTestCaseController {
     return rv;
   }
 
-  @Put(`:${RecordTestCasePropCamel.recordTestCaseId}`)
+  @Patch(`:${RecordTestCasePropCamel.recordTestCaseId}`)
   @ProjectPermission(PROJECT_ROLE.WRITE)
   async updateRecordTestCase(
     @Param(ProjectPropCamel.projectId) projectId: ProjectId,
@@ -55,6 +55,17 @@ export class RecordTestCaseController {
     @Body() dto: UpdateRecordTestCaseDto,
   ): Promise<RecordTestCaseBase> {
     const rv = await this.recordTestCaseService.updateRecordTestCase(projectId, recordTestCaseId, dto);
+    return rv;
+  }
+
+  @Get(`:${RecordTestCasePropCamel.recordTestCaseId}/keyboard`)
+  @ProjectPermission(PROJECT_ROLE.WRITE)
+  async getKeboardState(
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
+    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
+    @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
+  ): Promise<boolean> {
+    const rv = await this.recordTestCaseService.getKeyboardShown(organizationId, projectId, recordTestCaseId);
     return rv;
   }
 

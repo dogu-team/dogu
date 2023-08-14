@@ -1,14 +1,6 @@
 import { RecordTestStepBase, RecordTestStepPropCamel, RecordTestStepPropSnake } from '@dogu-private/console';
-import { OrganizationId, platformTypeFromPlatform, ProjectId, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
-import {
-  DoguDevicePlatformHeader,
-  DoguDeviceSerialHeader,
-  DoguRemoteDeviceJobIdHeader,
-  DoguRequestTimeoutHeader,
-  HeaderRecord,
-  stringify,
-  toISOStringWithTimezone,
-} from '@dogu-tech/common';
+import { OrganizationId, ProjectId, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
+import { stringify, toISOStringWithTimezone } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager, IsNull } from 'typeorm';
@@ -33,6 +25,7 @@ import {
   W3CPerformActionsRemoteWebDriverBatchRequestItem,
   W3CTakeScreenshotRemoteWebDriverBatchRequestItem,
 } from '../../../../module/remote/remote-webdriver/remote-webdriver.w3c-batch-request-items';
+import { makeActionBatchExcutor } from '../common';
 // import { AddRecordTestStepToRecordTestCaseDto } from '../dto/record-test-case.dto';
 import { CreateRecordTestStepDto } from '../dto/record-test-step.dto';
 
@@ -214,40 +207,22 @@ export class RecordTestStepService {
     if (!recordTestCase) {
       throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
     }
-
-    const sessionId = recordTestCase.activeSessionId;
-    const sessionKey = recordTestCase.activeSessionKey;
-    if (!sessionId || !sessionKey) {
-      throw new HttpException(`Session not found. sessionId: ${sessionId}`, HttpStatus.NOT_FOUND);
-    }
     const activeDeviceSerial = recordTestCase.activeDeviceSerial;
     if (!activeDeviceSerial) {
       throw new HttpException(`Device does not have activeDeviceSerial. RecordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
     }
+
     const device = await manager.getRepository(Device).findOne({ where: { organizationId, serial: activeDeviceSerial } });
     if (!device) {
       throw new HttpException(`Device not found. deviceSerial: ${recordTestCase.activeDeviceSerial}`, HttpStatus.NOT_FOUND);
     }
 
-    const headers: HeaderRecord = {
-      [DoguRemoteDeviceJobIdHeader]: sessionKey,
-      [DoguDevicePlatformHeader]: platformTypeFromPlatform(device.platform),
-      [DoguDeviceSerialHeader]: device.serial,
-      [DoguRequestTimeoutHeader]: '60000',
-    };
+    const batchExecutor: RemoteWebDriverBatchRequestExecutor = makeActionBatchExcutor(this.remoteWebDriverService, organizationId, projectId, recordTestCase, device);
 
-    const batchExecutor = new RemoteWebDriverBatchRequestExecutor(this.remoteWebDriverService, {
-      organizationId,
-      projectId,
-      deviceId: device.deviceId,
-      deviceSerial: device.serial,
-      headers,
-      parallel: true,
-    });
-
+    // FIXME: (felix)
     const screenShotUrlKey = `test-record-test-step-action/${recordTestCase.activeSessionId}/${toISOStringWithTimezone(new Date(), '-')}.png`;
 
-    const takeScreenshot = new W3CTakeScreenshotRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
+    const takeScreenshot = new W3CTakeScreenshotRemoteWebDriverBatchRequestItem(batchExecutor, recordTestCase.activeSessionId!);
     await batchExecutor.execute();
 
     const screenshotBuffer = await takeScreenshot.response();

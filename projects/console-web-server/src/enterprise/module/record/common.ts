@@ -1,7 +1,12 @@
+import { OrganizationId, platformTypeFromPlatform, ProjectId } from '@dogu-private/types';
+import { DoguDevicePlatformHeader, DoguDeviceSerialHeader, DoguRemoteDeviceJobIdHeader, DoguRequestTimeoutHeader, HeaderRecord } from '@dogu-tech/common';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { Device } from '../../../db/entity/device.entity';
 import { RecordTestCase } from '../../../db/entity/record-test-case.entity';
 import { RecordTestScenario } from '../../../db/entity/record-test-scenario.entity';
 import { RecordTestStep } from '../../../db/entity/record-test-step.entity';
+import { RemoteWebDriverBatchRequestExecutor } from '../../../module/remote/remote-webdriver/remote-webdriver.batch-request-executor';
+import { RemoteWebDriverService } from '../../../module/remote/remote-webdriver/remote-webdriver.service';
 
 export function getSortedRecordTestCases(recordTestScenario: RecordTestScenario): RecordTestCase[] {
   const mappingData = recordTestScenario.recordTestScenarioAndRecordTestCases ?? [];
@@ -69,4 +74,39 @@ export function getSortedRecordTestSteps(recordTestCase: RecordTestCase): Record
   }
 
   return sortedTestStep;
+}
+
+export function makeActionBatchExcutor(
+  remoteWebDriverService: RemoteWebDriverService,
+  organizationId: OrganizationId,
+  projectId: ProjectId,
+  recordTestCase: RecordTestCase,
+  device: Device,
+): RemoteWebDriverBatchRequestExecutor {
+  const sessionId = recordTestCase.activeSessionId;
+  const sessionKey = recordTestCase.activeSessionKey;
+  if (!sessionId || !sessionKey) {
+    throw new HttpException(`Session not found. sessionId: ${sessionId}`, HttpStatus.NOT_FOUND);
+  }
+  const activeDeviceSerial = recordTestCase.activeDeviceSerial;
+  if (!activeDeviceSerial) {
+    throw new HttpException(`Device does not have activeDeviceSerial. RecordTestCaseId: ${recordTestCase.recordTestCaseId}`, HttpStatus.NOT_FOUND);
+  }
+
+  const headers: HeaderRecord = {
+    [DoguRemoteDeviceJobIdHeader]: sessionKey,
+    [DoguDevicePlatformHeader]: platformTypeFromPlatform(device.platform),
+    [DoguDeviceSerialHeader]: device.serial,
+    [DoguRequestTimeoutHeader]: '60000',
+  };
+
+  const batchExecutor = new RemoteWebDriverBatchRequestExecutor(remoteWebDriverService, {
+    organizationId,
+    projectId,
+    deviceId: device.deviceId,
+    deviceSerial: device.serial,
+    headers,
+    parallel: true,
+  });
+  return batchExecutor;
 }
