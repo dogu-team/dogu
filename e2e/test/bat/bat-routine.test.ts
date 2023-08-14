@@ -3,14 +3,13 @@ import { afterAll, beforeAll, Dest, expect, job, test } from '@dogu-tech/dest';
 import dotenv from 'dotenv';
 import path from 'path';
 
-import { Driver } from '../../src/chromedriver';
 import { E2eEnv } from '../../src/env';
+import { Driver } from '../../src/playwright-driver';
 import { ProcessManager } from '../../src/process-manager';
 import { Timer } from '../../src/timer';
 import { Utils } from '../../src/utils';
 import { runHost } from './bat/host';
 import { currentL10n, l10n } from './bat/l10n';
-import testRemote from './bat/remote-test';
 import { startConsoleAndDost } from './bat/workspace';
 
 const env = loadEnvLazySync(E2eEnv);
@@ -60,23 +59,6 @@ jobs:
       - name: test landing external links
         run: cd samples/pytest-bdd-playwright-dogu-report && yarn test:python`;
 
-const waitUntilModalClosed = async (): Promise<void> => {
-  for (let i = 0; i < 10; i++) {
-    const modals = await Driver.findElements({ xpath: '//*[contains(@class, "ant-modal-wrap")]' }, { waitTime: 1000 });
-
-    if (modals && modals.length > 0) {
-      const isClosed = modals.every((item) => item.getAttribute('style').then((style) => style.includes('display: none')));
-      if (!isClosed) {
-        await Timer.wait(1000, 'wait until modal closed');
-      } else {
-        break;
-      }
-    }
-
-    break;
-  }
-};
-
 Dest.withOptions({
   timeout: 60 * 60 * 1000,
 }).describe(() => {
@@ -94,8 +76,8 @@ Dest.withOptions({
     const { dost } = startConsoleAndDost(env.DOGU_CONSOLE_WEB_FRONT_PORT);
 
     job('Launch browser', () => {
-      test('Launch browser', () => {
-        Driver.open({ l10n: currentL10n });
+      test('Launch browser', async () => {
+        await Driver.open({ l10n: currentL10n });
       });
     });
 
@@ -301,7 +283,7 @@ Dest.withOptions({
       });
 
       test('Go back', async () => {
-        await Driver.navigate().back();
+        await Driver.goBack();
         await Driver.clickElement({ xpath: `//p[text()="${values.value.USER_NAME}'s organization1234"]` });
       });
     });
@@ -826,7 +808,7 @@ Dest.withOptions({
             });
 
             test('Wait for install', async () => {
-              await Timer.wait(25000, 'wait for install');
+              await Timer.wait(30000, 'wait for install');
             });
           });
 
@@ -929,7 +911,9 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
         await Driver.clickElement({ xpath: `//button[@id="${hostDeviceName}-edit-tag-menu-btn"]` });
         await Driver.clickElement({ xpath: '//p[@access-id="edit-tag-modal-title"]' });
-        await Driver.clickElement({ xpath: `//span[contains(@class, "ant-tag") and text()="${values.value.HOST_DEVICE_TAG}"]/span` });
+        await Driver.clickElement({ xpath: '//*[@access-id="device-edit-tag-search-input"]' });
+        await Timer.wait(2000, 'wait for tag list show up');
+        await Driver.clickElementLazy({ xpath: `//span[contains(@class, "ant-tag") and text()="${values.value.HOST_DEVICE_TAG}"]/span` }, {}, { force: true });
         await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
         await Timer.wait(2000, 'wait for changing device tag');
         const tagCount = await Driver.getText({ xpath: '//span[text()="Host"]/../../../../div[5]/div[1]/div[1]/button/p' });
@@ -991,7 +975,7 @@ Dest.withOptions({
         await Driver.findElement({ xpath: `//div[text()="${values.value.ANDROID_DEVICE_TAG}edit"]` });
         await Driver.clickElement({ xpath: '//a[@access-id="org-device-list-tab"]' });
         await Driver.clickElement({ xpath: '//*[@icon-id="android-icon"]/../../../div[5]/div/div[1]/button' });
-        await Driver.findElement({ xpath: `//span[contains(@class, "ant-tag") and text()="${values.value.ANDROID_DEVICE_TAG}edit"]` });
+        await Driver.focusElement({ xpath: `//span[contains(@class, "ant-tag") and text()="${values.value.ANDROID_DEVICE_TAG}edit"]` });
         await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
       });
 
@@ -1006,6 +990,7 @@ Dest.withOptions({
       test('Delete tag check', async () => {
         await Driver.clickElement({ xpath: '//a[@access-id="org-device-list-tab"]' });
         const tagCount = await Driver.getText({ xpath: '//*[@icon-id="android-icon"]/../../../div[5]/div/div[1]/button/p' });
+        await Timer.wait(2000, 'wait for deleting device tag refresh');
         expect(tagCount).toBe('1');
       });
     });
@@ -1068,14 +1053,11 @@ Dest.withOptions({
       });
     });
 
-    testRemote({
-      consoleFrontDriver: Driver,
-    });
-
     afterAll(async () => {
       Timer.close();
 
       await Driver.close();
+      await Driver.closeBrowser();
       ProcessManager.close();
     });
   });
