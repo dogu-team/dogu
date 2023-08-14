@@ -153,6 +153,10 @@ export function logcat(serial: Serial, args: string[], handler: LogHandler, prin
   child.stderr.on('data', (data) => {
     handler.error(stringify(data));
   });
+
+  child.on('error', (err) => {
+    handler.error(stringify(err));
+  });
   adbLogger.verbose('adb.logcat end', { serial, args, random });
   return child;
 }

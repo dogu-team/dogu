@@ -27,7 +27,7 @@ const ProjectAppPage: NextPageWithLayout<WithProjectProps> = ({ project, organiz
             <MenuList>
               <ProjectApplicationUploadButton organizationId={organization.organizationId} projectId={project.projectId} />
               <ExternalGuideLink href="https://docs.dogutech.io/api/project/application#upload-application" icon={<ApiOutlined style={{ fontSize: '1rem', color: '#000' }} />}>
-                API
+                Upload API
               </ExternalGuideLink>
             </MenuList>
             <div>

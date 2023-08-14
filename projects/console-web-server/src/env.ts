@@ -155,6 +155,14 @@ export class Env {
 
   @IsFilledString()
   DOGU_NEXUS_PASSWORD!: string;
+
+  @IsOptional()
+  @IsString()
+  DOGU_SLACK_CLIENT_ID!: string;
+
+  @IsOptional()
+  @IsString()
+  DOGU_SLACK_CLIENT_SECRET!: string;
 }
 
 export const env = loadEnvLazySync(Env, { printable: logger });

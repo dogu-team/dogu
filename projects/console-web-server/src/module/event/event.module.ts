@@ -10,6 +10,7 @@ import { RemoteDest } from '../../db/entity/remote-dest.entity';
 import { RemoteDeviceJob } from '../../db/entity/remote-device-job.entity';
 import { Routine } from '../../db/entity/routine.entity';
 import { RoutineStep } from '../../db/entity/step.entity';
+import { SlackModule } from '../../enterprise/module/integration/slack/slack.module';
 import { DeviceMessageModule } from '../device-message/device-message.module';
 import { RemoteModule } from '../remote/remote.module';
 import { PipelineModule } from '../routine/pipeline/pipeline.module';
@@ -35,6 +36,7 @@ import { UpdateProducer } from './update-producer';
     DeviceMessageModule,
     forwardRef(() => PipelineModule),
     RemoteModule,
+    SlackModule,
   ],
   providers: [
     UpdateProducer,

@@ -121,6 +121,7 @@ export class OrganizationService {
         },
       )
       .innerJoinAndSelect(`orgUserRole.${OrganizationAndUserAndOrganizationRolePropCamel.user}`, 'user')
+      .leftJoinAndSelect(`organization.${OrganizationPropCamel.organizationSlack}`, 'organizationSlack')
       .where(`orgUserRole.${organizationRoleIdPropSnake} = :${organizationRoleIdPropCamel}`, {
         [organizationRoleIdPropCamel]: ORGANIZATION_ROLE.OWNER,
       })

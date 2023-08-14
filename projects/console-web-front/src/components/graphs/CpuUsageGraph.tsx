@@ -13,7 +13,7 @@ const CpuUsageGraph = ({ data, empty, durationTicks, durationTicksFormatter }: P
     const filtered = payload?.filter((item) => ['system', 'user'].includes(`${item.dataKey}`));
 
     if (!!filtered?.length) {
-      return `${filtered.reduce((acc, cur) => acc + Number(cur.value), 0)}`;
+      return `${Math.round(filtered.reduce((acc, cur) => acc + Number(cur.value), 0) * 1e2) / 1e2}`;
     }
 
     return '0';

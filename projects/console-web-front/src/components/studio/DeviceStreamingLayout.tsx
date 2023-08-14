@@ -48,7 +48,7 @@ const DeviceStreamingLayout = ({ project, deviceId, right, title, screenViewer }
               projectId={router.query.pid as ProjectId}
               onSelectedDeviceChanged={(device) => {
                 if (device) {
-                  router.push({ query: { orgId: router.query.orgId, pid: router.query.pid, deviceId: device?.deviceId } });
+                  router.push({ query: { orgId: router.query.orgId, pid: router.query.pid, deviceId: device?.deviceId, tab: router.query.tab } });
                 } else {
                   router.push(`/dashboard/${router.query.orgId}/projects/${router.query.pid}/studio`);
                 }

@@ -1,0 +1,31 @@
+---
+sidebar_position: 1
+title: iOS
+locale: en
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import DevicePrerequisites from '@site/src/components/tutorial/ios/DevicePrerequisitesKor.mdx';
+import CloneExampleAndInit from '@site/src/components/tutorial/javascript/CloneExampleAndInit.mdx';
+import AppUploadiOSGamium from '@site/src/components/tutorial/common/AppUploadiOSGamiumKor.mdx';
+import AppConfigTabItem from '@site/src/components/tutorial/common/AppConfigTabItemKor.mdx';
+import UploadAndConfigChromeTabItem from '@site/src/components/tutorial/common/UploadAndConfigChromeTabItemKor.mdx';
+import RunCommand from '@site/src/components/tutorial/common/RunCommandKor.mdx';
+
+<DevicePrerequisites />
+
+<CloneExampleAndInit
+  title="Example 레포 클론 및 초기화"
+  path="gamium/javascript/jest"
+/>
+
+<Tabs groupId="target" defaultValue="app" queryString>
+<TabItem value="app" label="App">
+
+<AppUploadiOSGamium />
+<AppConfigTabItem runs_on="ios" app_version="2.0.5" />
+<RunCommand run_script="npm run test:app" />;
+
+</TabItem>
+</Tabs>

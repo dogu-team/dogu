@@ -14,8 +14,6 @@ interface Props {
 }
 
 const ChangeLogCard = ({ changeLog }: Props) => {
-  const replacedContent = changeLog.content.replace(/\\n/g, '\n');
-
   return (
     <StyledCard bordered={false}>
       <TitleWrapper>
@@ -29,8 +27,8 @@ const ChangeLogCard = ({ changeLog }: Props) => {
         </div>
       </TitleWrapper>
       <Article>
-        <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ a: (props) => <a {...props} target="_blank" /> }}>
-          {replacedContent}
+        <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ a: (props) => <a {...props} target="_blank" /> }} remarkRehypeOptions={{ allowDangerousHtml: true }}>
+          {changeLog.content}
         </ReactMarkdown>
       </Article>
       {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
@@ -74,6 +72,7 @@ const Title = styled.h5`
 
 const Article = styled.article`
   font-size: 0.875rem;
+  white-space: pre-wrap;
 
   /* style for markdown */
   h1 {
@@ -102,12 +101,29 @@ const Article = styled.article`
 
   /* list with style */
   ul {
+    white-space: normal;
     padding-left: 1rem;
   }
 
-  li {
+  ul > li {
     font-size: 0.875rem;
     list-style: disc;
+    margin-bottom: 0.25rem;
+  }
+
+  ol {
+    white-space: normal;
+    padding-left: 1rem;
+  }
+
+  ol > li {
+    font-size: 0.875rem;
+    list-style: decimal;
+    margin-bottom: 0.25rem;
+  }
+
+  strong {
+    font-weight: 600;
   }
 `;
 

@@ -13,6 +13,7 @@ const useDeviceStreamingProfile = (deviceClient: DeviceClient | undefined, devic
   useEffect(() => {
     (async () => {
       if (deviceClient && device) {
+        setRuntimeInfos([]);
         try {
           const unsub = await deviceClient?.subscribeRuntimeInfo(device.serial, (info) => {
             setRuntimeInfos((prev) => {

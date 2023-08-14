@@ -4,6 +4,7 @@ import { RoutineDeviceJob } from '../../../db/entity/device-job.entity';
 import { Dest, Device, DeviceAndDeviceTag, DeviceTag, Project, ProjectAndDevice, RoutineJob, RoutineJobEdge, RoutinePipeline } from '../../../db/entity/index';
 import { Routine } from '../../../db/entity/routine.entity';
 import { RoutineStep } from '../../../db/entity/step.entity';
+import { SlackModule } from '../../../enterprise/module/integration/slack/slack.module';
 import { DeviceMessageModule } from '../../device-message/device-message.module';
 import { EventModule } from '../../event/event.module';
 import { FileModule } from '../../file/file.module';
@@ -47,6 +48,7 @@ import { StepService } from './step/step.service';
     DeviceMessageModule,
     InfluxDbModule,
     FileModule,
+    SlackModule,
     forwardRef(() => EventModule),
   ],
   providers: [

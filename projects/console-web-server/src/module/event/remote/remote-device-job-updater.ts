@@ -2,12 +2,13 @@ import { DevicePropCamel, RemoteDeviceJobPropCamel, RemoteDeviceJobPropSnake, Ro
 import { DEVICE_TABLE_NAME, PIPELINE_STATUS, REMOTE_DEVICE_JOB_SESSION_STATE } from '@dogu-private/types';
 import { DefaultHttpOptions, DoguRequestTimeoutHeader, HeaderRecord } from '@dogu-tech/common';
 import { DeviceWebDriver } from '@dogu-tech/device-client-common';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import _ from 'lodash';
 import { DataSource } from 'typeorm';
 import { RoutineDeviceJob } from '../../../db/entity/index';
 import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
+import { SlackMessageService } from '../../../enterprise/module/integration/slack/slack-message.service';
 import { DeviceMessageRelayer } from '../../device-message/device-message.relayer';
 import { DoguLogger } from '../../logger/logger';
 import { RemoteDeviceJobProcessor } from '../../remote/processor/remote-device-job-processor';
@@ -15,6 +16,9 @@ import { RemoteDeviceJobProcessor } from '../../remote/processor/remote-device-j
 @Injectable()
 export class RemoteDeviceJobUpdater {
   constructor(
+    @Inject(SlackMessageService)
+    private readonly slackMessageService: SlackMessageService,
+
     @InjectDataSource() private readonly dataSource: DataSource, //
     private readonly deviceMessageRelayer: DeviceMessageRelayer,
     private readonly logger: DoguLogger,
@@ -103,7 +107,12 @@ export class RemoteDeviceJobUpdater {
     }
 
     for (const remoteDeviceJob of highestPriorityDeviceJobs) {
-      await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.IN_PROGRESS);
+      await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(
+        this.dataSource.manager,
+        remoteDeviceJob,
+        REMOTE_DEVICE_JOB_SESSION_STATE.IN_PROGRESS,
+        this.slackMessageService,
+      );
     }
   }
 
@@ -153,7 +162,7 @@ export class RemoteDeviceJobUpdater {
           this.logger.error(`checkTimeoutDeviceJobs sendHttpRequest error`, { error });
         });
       this.logger.warn(`checkTimeoutDeviceJobs. remote-device-job is timeout. id: ${timeoutDeviceJob.remoteDeviceJobId}`);
-      await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, timeoutDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.FAILURE);
+      await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, timeoutDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.FAILURE, this.slackMessageService);
     }
   }
 }

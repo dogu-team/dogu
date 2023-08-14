@@ -24575,6 +24575,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["cookie-parser", "npm:1.4.6"],\
             ["copyfiles", "npm:2.4.1"],\
             ["cross-env", "npm:7.0.3"],\
+            ["dayjs", "npm:1.11.9"],\
             ["env-cmd", "npm:10.1.0"],\
             ["eventemitter2", "npm:6.4.9"],\
             ["express", "npm:4.18.2"],\
@@ -26003,6 +26004,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/dayjs-npm-1.11.8-61b7db17a0-4fe04b6df9.zip/node_modules/dayjs/",\
           "packageDependencies": [\
             ["dayjs", "npm:1.11.8"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:1.11.9", {\
+          "packageLocation": "./.yarn/cache/dayjs-npm-1.11.9-c47d327b7c-a4844d83dc.zip/node_modules/dayjs/",\
+          "packageDependencies": [\
+            ["dayjs", "npm:1.11.9"]\
           ],\
           "linkType": "HARD"\
         }]\

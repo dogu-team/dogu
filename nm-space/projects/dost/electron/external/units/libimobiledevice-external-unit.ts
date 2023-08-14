@@ -1,5 +1,5 @@
 import { PrefixLogger, stringify } from '@dogu-tech/common';
-import { getFileSizeRecursive, HostPaths, removeItemRecursive } from '@dogu-tech/node';
+import { ChildProcess, getFileSizeRecursive, HostPaths, removeItemRecursive } from '@dogu-tech/node';
 import compressing from 'compressing';
 import { download } from 'electron-dl';
 import fs from 'fs';
@@ -16,38 +16,48 @@ interface File {
   condition?: () => boolean;
   url: string;
   path: () => string;
+  fileMode?: number;
+  archName?: string;
   unzipDirName?: string;
 }
 
 const files: File[] = [
   {
-    condition: () => process.platform === 'darwin',
+    condition: () => process.platform === 'darwin' && process.arch === 'arm64',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/idevicediagnostics-arm64',
     path: () => HostPaths.external.libimobiledevice.idevicediagnostics(),
+    fileMode: 0o777,
+    archName: 'arm64',
   },
   {
-    condition: () => process.platform === 'darwin',
+    condition: () => process.platform === 'darwin' && process.arch === 'x64',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/idevicediagnostics-x64',
     path: () => HostPaths.external.libimobiledevice.idevicediagnostics(),
+    fileMode: 0o777,
+    archName: 'x86_64',
   },
   {
-    condition: () => process.platform === 'darwin',
+    condition: () => process.platform === 'darwin' && process.arch === 'arm64',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/idevicesyslog-arm64',
     path: () => HostPaths.external.libimobiledevice.idevicesyslog(),
+    fileMode: 0o777,
+    archName: 'arm64',
   },
   {
-    condition: () => process.platform === 'darwin',
+    condition: () => process.platform === 'darwin' && process.arch === 'x64',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/idevicesyslog-x64',
     path: () => HostPaths.external.libimobiledevice.idevicesyslog(),
+    fileMode: 0o777,
+    archName: 'x86_64',
   },
   {
-    condition: () => process.platform === 'darwin',
+    condition: () => process.platform === 'darwin' && process.arch === 'arm64',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/libimobiledevice-dylib-arm64.zip',
     path: () => HostPaths.external.libimobiledevice.libimobiledeviceLibPath(),
     unzipDirName: 'libimobiledevice',
   },
   {
-    condition: () => process.platform === 'darwin',
+    condition: () => process.platform === 'darwin' && process.arch === 'x64',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/libimobiledevice-dylib-x64.zip',
     path: () => HostPaths.external.libimobiledevice.libimobiledeviceLibPath(),
     unzipDirName: 'libimobiledevice',
@@ -83,10 +93,24 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
 
   async validateInternal(): Promise<void> {
     for (const file of files) {
+      if (file.condition && !file.condition()) {
+        continue;
+      }
       const path = file.path();
       if (!fs.existsSync(path)) {
         throw new Error(`${path} not found`);
       }
+      if (file.archName) {
+        const { stdout, stderr } = await ChildProcess.execIgnoreError(`lipo -info ${path}`, {}, this.logger);
+        if (!stdout.includes(`architecture: ${file.archName}`)) {
+          throw new Error(`${path} should be ${file.archName} file`);
+        }
+        await ChildProcess.execIgnoreError(`xattr -dr com.apple.quarantine ${path}`, {}, this.logger);
+      }
+      if (file.fileMode) {
+        await fs.promises.chmod(path, 0o777);
+      }
+
       const size = await getFileSizeRecursive(path);
       if (size === 0) {
         throw new Error(`${path} is empty`);
@@ -112,6 +136,9 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
     }
 
     for (const file of files) {
+      if (file.condition && !file.condition()) {
+        continue;
+      }
       const downloadsPath = HostPaths.downloadsPath(HostPaths.doguHomePath);
       await fs.promises.mkdir(downloadsPath, { recursive: true });
       const downloadItem = await download(window, file.url, {
@@ -190,6 +217,9 @@ async function renameUnzipedDir(dirname: string, destPath: string, stdLogCallbac
 
 async function makeDirectories(): Promise<void> {
   for (const file of files) {
+    if (file.condition && !file.condition()) {
+      continue;
+    }
     const destPath = file.path();
     if (fs.existsSync(destPath)) {
       continue;

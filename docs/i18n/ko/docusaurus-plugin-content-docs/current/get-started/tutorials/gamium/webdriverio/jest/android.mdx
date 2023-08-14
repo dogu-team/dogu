@@ -8,7 +8,8 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import DevicePrerequisites from '@site/src/components/tutorial/android/DevicePrerequisitesKor.mdx';
 import CloneExampleAndInit from '@site/src/components/tutorial/javascript/CloneExampleAndInit.mdx';
-import UploadAndConfigAppTabItem from '@site/src/components/tutorial/common/UploadAndConfigAppTabItemKor.mdx';
+import AppUpload from '@site/src/components/tutorial/common/AppUploadKor.mdx';
+import AppConfigTabItem from '@site/src/components/tutorial/common/AppConfigTabItemKor.mdx';
 import UploadAndConfigChromeTabItem from '@site/src/components/tutorial/common/UploadAndConfigChromeTabItemKor.mdx';
 import RunCommand from '@site/src/components/tutorial/common/RunCommandKor.mdx';
 
@@ -22,18 +23,12 @@ import RunCommand from '@site/src/components/tutorial/common/RunCommandKor.mdx';
 <Tabs groupId="target" defaultValue="app" queryString>
 <TabItem value="app" label="App">
 
-<UploadAndConfigAppTabItem
+<AppUpload
   app_name="DoguRpgSample.apk"
   app_url="https://github.com/dogu-team/gamium-unity-samples/releases/download/DoguRpgSample-2.0.5/android.zip"
-  app_version="2.0.5"
 />
+<AppConfigTabItem runs_on="android" app_version="2.0.5" />
 <RunCommand run_script="npm run test:app:android" />
-
-</TabItem>
-<TabItem value="chrome" label="Chrome">
-
-<UploadAndConfigChromeTabItem platform="android" browser_name="chrome" />
-<RunCommand run_script="npm run test:web" />
 
 </TabItem>
 </Tabs>

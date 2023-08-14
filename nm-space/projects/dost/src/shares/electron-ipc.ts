@@ -5,6 +5,7 @@ import { IDotEnvConfigClient } from './dot-env-config';
 import { IExternalCallback, IExternalClient } from './external';
 import { IFeatureConfigClient } from './feature-config';
 import { ILogger, IStdLogCallback } from './log';
+import { IServicesOpenStatusClient } from './services-open-status';
 import { ISettingsClient } from './settings';
 import { IThemeClient } from './theme';
 import { IUpdaterClient } from './updater';
@@ -25,6 +26,7 @@ export interface IElectronIpc {
   windowClient: IWindowClient;
   featureConfigClient: IFeatureConfigClient;
   deviceLookupClient: IDeviceLookupClient;
+  servicesOpenStatusClient: IServicesOpenStatusClient;
 }
 
 type PropertiesOfWeek<T> = { [K in Extract<keyof T, string>]: string };
