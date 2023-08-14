@@ -987,9 +987,9 @@ Dest.withOptions({
       });
 
       test('Delete tag check', async () => {
+        await Timer.wait(4000, 'wait for deleting device tag refresh');
         await Driver.clickElement({ xpath: '//a[@access-id="org-device-list-tab"]' });
         const tagCount = await Driver.getText({ xpath: '//*[@icon-id="android-icon"]/../../../div[5]/div/div[1]/button/p' });
-        await Timer.wait(2000, 'wait for deleting device tag refresh');
         expect(tagCount).toBe('1');
       });
     });
