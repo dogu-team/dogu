@@ -2,6 +2,7 @@ import { LeftOutlined, RightOutlined } from '@ant-design/icons';
 import { Button, InputNumber } from 'antd';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import useEventStore from '../../../stores/events';
 
 import { flexRowCenteredStyle } from '../../../styles/box';
 

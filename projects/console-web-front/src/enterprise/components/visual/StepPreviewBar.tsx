@@ -41,8 +41,8 @@ const StepPreviewBar = ({ steps, currentStepIndex }: Props) => {
         <Title>Steps</Title>
       </TitleWrapper>
       <PreviewWrapper ref={wrapperRef}>
-        {steps.map((item) => (
-          <StepPreview key={item.recordTestStepId} step={item} />
+        {steps.map((item, i) => (
+          <StepPreview key={item.recordTestStepId} step={item} index={i} />
         ))}
       </PreviewWrapper>
     </div>

@@ -22,13 +22,15 @@ const VisualTestingEditor = () => {
   });
 
   const steps = reverse(data?.recordTestSteps ?? []);
-  const currentStep = stepId ? steps.find((step) => step.recordTestStepId === stepId) : undefined;
+  const currentStep = steps.length ? (stepId ? steps.find((step) => step.recordTestStepId === stepId) : steps[0]) : undefined;
   const currentStepPageNumber = currentStep ? steps.indexOf(currentStep) + 1 ?? 0 : 0;
 
   useRefresh(['onRecordStepCreated'], (payload) => {
     const rv = payload as RecordTestStepBase;
     if (rv.recordTestCaseId === caseId) {
-      mutate();
+      mutate().then(() => {
+        router.push({ query: { ...router.query, step: rv.recordTestStepId } }, undefined, { shallow: true });
+      });
     }
   });
 

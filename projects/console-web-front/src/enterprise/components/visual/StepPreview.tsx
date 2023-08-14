@@ -7,12 +7,13 @@ import styled from 'styled-components';
 import { flexRowCenteredStyle } from '../../../styles/box';
 
 interface Props {
+  index: number;
   step: RecordTestStepBase;
 }
 
-const StepPreview = ({ step }: Props) => {
+const StepPreview = ({ step, index }: Props) => {
   const router = useRouter();
-  const isSelected = router.query.step === step.recordTestStepId;
+  const isSelected = (index === 0 && !router.query.step) || router.query.step === step.recordTestStepId;
 
   return (
     <Button
