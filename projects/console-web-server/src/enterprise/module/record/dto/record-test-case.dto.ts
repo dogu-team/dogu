@@ -1,18 +1,35 @@
 import {
-  AddRecordTestStepToRecordTestCaseDtoBase,
   CreateRecordTestCaseDtoBase,
   FindRecordTestCasesByProjectIdDtoBase,
+  LoadRecordTestCaseDtoBase,
   NewSessionDtoBase,
   UpdateRecordTestCaseDtoBase,
 } from '@dogu-private/console';
-import { RecordTestStepId } from '@dogu-private/types';
+import { DeviceId } from '@dogu-private/types';
 import { IsFilledString } from '@dogu-tech/common';
-import { IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString, IsUUID, ValidateIf } from 'class-validator';
 import { PageDto } from '../../../../module/common/dto/pagination/page.dto';
 
 export class CreateRecordTestCaseDto implements CreateRecordTestCaseDtoBase {
   @IsFilledString()
   name!: string;
+
+  @IsString()
+  @ValidateIf((object, value) => value !== null)
+  browserName!: string | null;
+
+  @IsString()
+  @ValidateIf((object, value) => value !== null)
+  packageName!: string | null;
+
+  @IsUUID()
+  deviceId!: DeviceId;
+
+  @IsNumber()
+  activeDeviceScreenSizeX!: number;
+
+  @IsNumber()
+  activeDeviceScreenSizeY!: number;
 }
 export class FindRecordTestCaseByProjectIdDto extends PageDto implements FindRecordTestCasesByProjectIdDtoBase {
   @IsString()
@@ -20,24 +37,26 @@ export class FindRecordTestCaseByProjectIdDto extends PageDto implements FindRec
   keyword = '';
 }
 
-export class UpdateRecordTestCaseDto implements UpdateRecordTestCaseDtoBase {
-  @IsString()
-  @IsOptional()
-  name!: string;
+export class LoadRecordTestCaseDto implements LoadRecordTestCaseDtoBase {
+  @IsUUID()
+  deviceId!: DeviceId;
+
+  @IsNumber()
+  activeDeviceScreenSizeX!: number;
+
+  @IsNumber()
+  activeDeviceScreenSizeY!: number;
 }
 
-export class AddRecordTestStepToRecordTestCaseDto implements AddRecordTestStepToRecordTestCaseDtoBase {
+export class UpdateRecordTestCaseDto implements UpdateRecordTestCaseDtoBase {
   @IsFilledString()
-  recordTestStepId!: RecordTestStepId;
-
-  @IsOptional()
-  prevRecordTestStepId!: RecordTestStepId | null;
+  name!: string;
 }
 
 export class NewSessionDto implements NewSessionDtoBase {
   @IsString()
   @IsOptional()
-  appVersion?: string;
+  appVersion?: string; //
 
   @IsString()
   @IsOptional()

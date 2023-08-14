@@ -1,5 +1,4 @@
 import {
-  RecordTestCaseAndRecordTestStepPropCamel,
   RecordTestCasePropCamel,
   RecordTestScenarioAndRecordTestCasePropCamel,
   RecordTestScenarioAndRecordTestCasePropSnake,
@@ -50,8 +49,7 @@ export class RecordTestScenarioService {
       .createQueryBuilder('recordTestScenario')
       .leftJoinAndSelect(`recordTestScenario.${RecordTestScenarioPropCamel.recordTestScenarioAndRecordTestCases}`, 'recordTestScenarioAndRecordTestCases')
       .leftJoinAndSelect(`recordTestScenarioAndRecordTestCases.${RecordTestScenarioAndRecordTestCasePropCamel.recordTestCase}`, 'recordTestCase')
-      .leftJoinAndSelect(`recordTestCase.${RecordTestCasePropCamel.recordTestCaseAndRecordTestSteps}`, 'recordTestCaseAndRecordTestSteps')
-      .leftJoinAndSelect(`recordTestCaseAndRecordTestSteps.${RecordTestCaseAndRecordTestStepPropCamel.recordTestStep}`, 'recordTestStep')
+      .leftJoinAndSelect(`recordTestCase.${RecordTestCasePropCamel.recordTestSteps}`, 'recordTestStep')
       .where(`recordTestScenario.${RecordTestScenarioPropSnake.project_id} = :${RecordTestScenarioPropCamel.projectId}`, { projectId })
       .andWhere(`recordTestScenario.${RecordTestScenarioPropSnake.record_test_scenario_id} = :${RecordTestScenarioPropCamel.recordTestScenarioId}`, { recordTestScenarioId })
       .getOne();

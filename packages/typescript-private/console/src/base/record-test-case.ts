@@ -1,20 +1,24 @@
 import { ProjectId, RecordTestCaseId } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
-import { RecordTestCaseAndRecordTestStepBase } from '..';
 import { ProjectBase } from './project';
+import { RecordTestStepBase } from './record-test-step';
 
 interface RecordTestCaseRelationTraits {
   project?: ProjectBase;
-  recordTestCaseAndRecordTestSteps?: RecordTestCaseAndRecordTestStepBase[];
+  recordTestSteps?: RecordTestStepBase[];
 }
 
 export interface RecordTestCaseBaseTraits {
   recordTestCaseId: RecordTestCaseId;
   projectId: ProjectId;
   name: string;
-  activeDeviceScreenSize: string;
+  activeDeviceSerial: string;
+  activeDeviceScreenSizeX: number;
+  activeDeviceScreenSizeY: number;
   activeSessionId: string | null;
   activeSessionKey: string | null;
+  packageName: string | null;
+  browserName: string | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

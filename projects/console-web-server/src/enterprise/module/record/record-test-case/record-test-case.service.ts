@@ -1,21 +1,5 @@
-import {
-  RecordTestCaseAndRecordTestStepPropCamel,
-  RecordTestCaseAndRecordTestStepPropSnake,
-  RecordTestCaseBase,
-  RecordTestCasePropCamel,
-  RecordTestCasePropSnake,
-  RecordTestCaseResponse,
-} from '@dogu-private/console';
-import {
-  extensionFromPlatform,
-  OrganizationId,
-  platformTypeFromPlatform,
-  ProjectId,
-  RecordTestCaseId,
-  RecordTestScenarioId,
-  RecordTestStepId,
-  RECORD_TEST_STEP_ACTION_TYPE,
-} from '@dogu-private/types';
+import { RecordTestCaseBase, RecordTestCasePropCamel, RecordTestCasePropSnake, RecordTestCaseResponse } from '@dogu-private/console';
+import { extensionFromPlatform, OrganizationId, platformTypeFromPlatform, ProjectId, RecordTestCaseId, RECORD_TEST_STEP_ACTION_TYPE } from '@dogu-private/types';
 import {
   DoguApplicationFileSizeHeader,
   DoguApplicationUrlHeader,
@@ -30,26 +14,23 @@ import {
 } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource, EntityManager, IsNull } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { v4 } from 'uuid';
-import { Device, RecordTestCaseAndRecordTestStep } from '../../../../db/entity/index';
+import { Device } from '../../../../db/entity/index';
+import { ProjectApplication } from '../../../../db/entity/project-application.entity';
 import { RecordTestCase } from '../../../../db/entity/record-test-case.entity';
-import { RecordTestStep } from '../../../../db/entity/record-test-step.entity';
 import { EMPTY_PAGE, Page } from '../../../../module/common/dto/pagination/page';
 import { ApplicationService } from '../../../../module/project/application/application.service';
 import { FindProjectApplicationDto } from '../../../../module/project/application/dto/application.dto';
 import { RemoteWebDriverBatchRequestExecutor } from '../../../../module/remote/remote-webdriver/remote-webdriver.batch-request-executor';
 import { RemoteWebDriverService } from '../../../../module/remote/remote-webdriver/remote-webdriver.service';
-import { NewSessionRemoteWebDriverBatchRequestItem } from '../../../../module/remote/remote-webdriver/remote-webdriver.w3c-batch-request-items';
-import { castEntity } from '../../../../types/entity-cast';
-import { getSortedRecordTestSteps } from '../common';
 import {
-  AddRecordTestStepToRecordTestCaseDto,
-  CreateRecordTestCaseDto,
-  FindRecordTestCaseByProjectIdDto,
-  NewSessionDto,
-  UpdateRecordTestCaseDto,
-} from '../dto/record-test-case.dto';
+  DeleteSessionRemoteWebDriverBatchRequestItem,
+  NewSessionRemoteWebDriverBatchRequestItem,
+} from '../../../../module/remote/remote-webdriver/remote-webdriver.w3c-batch-request-items';
+import { getSortedRecordTestSteps } from '../common';
+import { CreateRecordTestCaseDto, FindRecordTestCaseByProjectIdDto, LoadRecordTestCaseDto, NewSessionDto, UpdateRecordTestCaseDto } from '../dto/record-test-case.dto';
+import { CreateRecordTestStepDto } from '../dto/record-test-step.dto';
 import { RecordTestStepService } from '../record-test-step/record-test-step.service';
 
 @Injectable()
@@ -91,8 +72,7 @@ export class RecordTestCaseService {
     const recordTestCase = await this.dataSource
       .getRepository(RecordTestCase) //
       .createQueryBuilder('recordTestCase')
-      .leftJoinAndSelect(`recordTestCase.${RecordTestCasePropCamel.recordTestCaseAndRecordTestSteps}`, `recordTestCaseAndRecordTestSteps`)
-      .leftJoinAndSelect(`recordTestCaseAndRecordTestSteps.${RecordTestCaseAndRecordTestStepPropCamel.recordTestStep}`, `recordTestStep`)
+      .leftJoinAndSelect(`recordTestCase.${RecordTestCasePropCamel.recordTestSteps}`, `recordTestStep`)
       .where(`recordTestCase.${RecordTestCasePropSnake.project_id} = :${RecordTestCasePropCamel.projectId}`, { projectId })
       .andWhere(`recordTestCase.${RecordTestCasePropSnake.record_test_case_id} = :recordTestCaseId`, { recordTestCaseId })
       .getOne();
@@ -108,279 +88,118 @@ export class RecordTestCaseService {
     return rv;
   }
 
-  async createRecordTestCase(projectId: ProjectId, dto: CreateRecordTestCaseDto): Promise<RecordTestCaseBase> {
-    const { name } = dto;
+  async createRecordTestCase(organizationId: OrganizationId, projectId: ProjectId, dto: CreateRecordTestCaseDto): Promise<RecordTestCaseBase> {
+    const { name, deviceId, browserName, packageName, activeDeviceScreenSizeX, activeDeviceScreenSizeY } = dto;
 
-    const data = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, name } });
-
-    if (data) {
-      throw new HttpException(`Name: ${name} already exist.`, HttpStatus.BAD_REQUEST);
+    if (!packageName && !browserName) {
+      throw new HttpException(`packageName or browserName is required`, HttpStatus.BAD_REQUEST);
+    } else if (packageName && browserName) {
+      throw new HttpException(`packageName and browserName is exclusive`, HttpStatus.BAD_REQUEST);
     }
 
-    const newData = this.dataSource.getRepository(RecordTestCase).create({
-      recordTestCaseId: v4(),
-      projectId,
-      name,
-    });
+    const testCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, name } });
+    if (testCase) {
+      throw new HttpException(`RecordTestCase name is duplicated. name: ${name}`, HttpStatus.BAD_REQUEST);
+    }
 
-    const recordTestCase = await this.dataSource.getRepository(RecordTestCase).save(newData);
-    return recordTestCase;
+    const device = await this.dataSource.getRepository(Device).findOne({ where: { deviceId } });
+    if (!device) {
+      throw new HttpException(`Device not found. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
+    }
+
+    const rv = await this.dataSource.manager.transaction(async (manager) => {
+      const newSessionDto: NewSessionDto = { deviceId };
+      const newData = manager.getRepository(RecordTestCase).create({
+        recordTestCaseId: v4(),
+        projectId,
+        name,
+        activeDeviceSerial: device.serial,
+        activeDeviceScreenSizeX,
+        activeDeviceScreenSizeY,
+        packageName,
+        browserName,
+      });
+
+      if (packageName) {
+        const app = await manager.getRepository(ProjectApplication).findOne({ where: { projectId, package: packageName }, order: { createdAt: 'DESC' } });
+        if (!app) {
+          throw new HttpException(`ProjectApplication not found. packageName: ${packageName}`, HttpStatus.NOT_FOUND);
+        }
+        newSessionDto.appVersion = app.version;
+      }
+
+      if (browserName) {
+        newSessionDto.browserName = browserName;
+      }
+
+      const recordTestCase = await manager.getRepository(RecordTestCase).save(newData);
+      const sessionId = await this.newSession(manager, organizationId, projectId, recordTestCase, newSessionDto);
+
+      return recordTestCase;
+    });
+    return rv;
+  }
+
+  async loadRecordTestCase(organizationId: OrganizationId, projectId: ProjectId, recordTestCaseId: RecordTestCaseId, dto: LoadRecordTestCaseDto): Promise<RecordTestCaseResponse> {
+    const { deviceId, activeDeviceScreenSizeX, activeDeviceScreenSizeY } = dto;
+    const testCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId }, relations: [RecordTestCasePropCamel.recordTestSteps] });
+    if (!testCase) {
+      throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
+    }
+
+    const newSessionDto: NewSessionDto = {
+      deviceId,
+    };
+
+    if (testCase.packageName) {
+      const app = await this.dataSource.getRepository(ProjectApplication).findOne({ where: { projectId, package: testCase.packageName }, order: { createdAt: 'DESC' } });
+      if (!app) {
+        throw new HttpException(`ProjectApplication not found. packageName: ${testCase.packageName}`, HttpStatus.NOT_FOUND);
+      }
+      newSessionDto.appVersion = app.version;
+    } else if (testCase.browserName) {
+      newSessionDto.browserName = testCase.browserName;
+    } else {
+      throw new HttpException(`packageName or browserName is required`, HttpStatus.BAD_REQUEST);
+    }
+
+    const sessionId = await this.newSession(this.dataSource.manager, organizationId, projectId, testCase, newSessionDto);
+
+    testCase.recordTestSteps = getSortedRecordTestSteps(testCase);
+
+    return testCase;
   }
 
   async updateRecordTestCase(projectId: ProjectId, recordTestCaseId: RecordTestCaseId, dto: UpdateRecordTestCaseDto): Promise<RecordTestCaseBase> {
     const { name } = dto;
-
-    const existingCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, name } });
-
-    if (existingCase) {
-      throw new HttpException(`Name: ${name} already exist.`, HttpStatus.BAD_REQUEST);
-    }
-
-    const data = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId } });
-    if (!data) {
+    const testCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId } });
+    if (!testCase) {
       throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
     }
 
-    if (data.name === name) {
-      throw new HttpException(`RecordTestCase name is same. name: ${name}`, HttpStatus.BAD_REQUEST);
+    const isDuplicated = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, name } });
+    if (isDuplicated) {
+      throw new HttpException(`RecordTestCase name is duplicated. name: ${name}`, HttpStatus.BAD_REQUEST);
     }
 
-    data.name = name;
-    const rv = await this.dataSource.getRepository(RecordTestCase).save(data);
-    return rv;
+    testCase.name = name;
+    await this.dataSource.getRepository(RecordTestCase).save(testCase);
+
+    return testCase;
   }
 
   async deleteRecordTestCase(projectId: ProjectId, recordTestCaseId: RecordTestCaseId): Promise<void> {
-    const testCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId } });
-    if (!testCase) {
-      throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
-    }
-
-    // FIXME: join data
-    await this.dataSource.getRepository(RecordTestCase).softRemove(testCase);
+    // const testCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId } });
+    // if (!testCase) {
+    //   throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
+    // }
+    // // FIXME: join data
+    // await this.dataSource.getRepository(RecordTestCase).softRemove(testCase);
   }
 
-  async addRecordTestStepToRecordTestCase(
-    projectId: ProjectId, //
-    recordTestCaseId: RecordTestCaseId,
-    dto: AddRecordTestStepToRecordTestCaseDto,
-  ): Promise<void> {
-    const { recordTestStepId, prevRecordTestStepId } = dto;
-    const testCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId } });
-    if (!testCase) {
-      throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
-    }
-    const testStep = await this.dataSource.getRepository(RecordTestStep).findOne({ where: { projectId, recordTestStepId } });
-    if (!testStep) {
-      throw new HttpException(`RecordTestStep not found. recordTestStepId: ${recordTestStepId}`, HttpStatus.NOT_FOUND);
-    }
-
-    if (prevRecordTestStepId) {
-      const prevTestStep = await this.dataSource.getRepository(RecordTestStep).findOne({ where: { projectId, recordTestStepId: prevRecordTestStepId } });
-      if (!prevTestStep) {
-        throw new HttpException(`RecordTestStep not found. prevRecordTestStepId: ${prevRecordTestStepId}`, HttpStatus.NOT_FOUND);
-      }
-    }
-
-    const mappingData = await this.dataSource
-      .getRepository(RecordTestCaseAndRecordTestStep) //
-      .createQueryBuilder('recordTestCaseAndRecordTestStep')
-      .innerJoinAndSelect(`recordTestCaseAndRecordTestStep.${RecordTestCaseAndRecordTestStepPropCamel.recordTestStep}`, 'recordTestStep')
-      .leftJoinAndSelect(`recordTestCaseAndRecordTestStep.${RecordTestCaseAndRecordTestStepPropCamel.prevRecordTestStep}`, 'prevRecordTestStep')
-      .where(`recordTestCaseAndRecordTestStep.${RecordTestCaseAndRecordTestStepPropSnake.record_test_case_id} = :${RecordTestCaseAndRecordTestStepPropCamel.recordTestCaseId}`, {
-        recordTestCaseId,
-      })
-      .andWhere(`recordTestCaseAndRecordTestStep.${RecordTestCaseAndRecordTestStepPropSnake.record_test_step_id} = :${RecordTestCaseAndRecordTestStepPropCamel.recordTestStepId}`, {
-        recordTestStepId,
-      })
-      .getOne();
-
-    if (mappingData?.prevRecordTestStepId === prevRecordTestStepId) {
-      throw new HttpException(`RecordTestCase is already attached. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.BAD_REQUEST);
-    }
-
-    await this.dataSource.manager.transaction(async (manager) => {
-      if (mappingData) {
-        await this.removeRecordTestStepFromMappingTable(manager, recordTestCaseId, mappingData.recordTestStep!);
-        await this.addRecordTestStepToMappingTable(manager, recordTestCaseId, mappingData.recordTestStep!, prevRecordTestStepId);
-      } else {
-        await this.addRecordTestStepToMappingTable(manager, recordTestCaseId, testStep, prevRecordTestStepId);
-      }
-    });
-  }
-
-  async removeRecordTestStepFromRecordTestCase(
-    projectId: ProjectId, //
-    recordTestCaseId: RecordTestScenarioId,
-    recordTestStepId: RecordTestCaseId,
-  ): Promise<void> {
-    const testCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId } });
-    if (!testCase) {
-      throw new HttpException(`RecordTestCase not found. recordTestScenarioId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
-    }
-    const testStep = await this.dataSource.getRepository(RecordTestStep).findOne({ where: { projectId, recordTestStepId } });
-    if (!testStep) {
-      throw new HttpException(`RecordTestStep not found. recordTestCaseId: ${recordTestStepId}`, HttpStatus.NOT_FOUND);
-    }
-
-    const mappingData = await this.dataSource
-      .getRepository(RecordTestCaseAndRecordTestStep) //
-      .createQueryBuilder('recordTestCaseAndRecordTestStep')
-      .innerJoinAndSelect(`recordTestCaseAndRecordTestStep.${RecordTestCaseAndRecordTestStepPropCamel.recordTestStep}`, 'recordTestStep')
-      .where(`recordTestCaseAndRecordTestStep.${RecordTestCaseAndRecordTestStepPropSnake.record_test_case_id} = :${RecordTestCaseAndRecordTestStepPropCamel.recordTestCaseId}`, {
-        recordTestCaseId,
-      })
-      .andWhere(`recordTestCaseAndRecordTestStep.${RecordTestCaseAndRecordTestStepPropSnake.record_test_step_id} = :${RecordTestCaseAndRecordTestStepPropCamel.recordTestStepId}`, {
-        recordTestStepId,
-      })
-      .getOne();
-
-    if (!mappingData) {
-      throw new HttpException(`RecordTestCaseAndRecordTestStep not found. recordTestCaseId: ${recordTestCaseId}, recordTestStepId: ${recordTestStepId}`, HttpStatus.NOT_FOUND);
-    }
-
-    await this.dataSource.manager.transaction(async (manager) => {
-      await this.removeRecordTestStepFromMappingTable(manager, recordTestCaseId, testStep);
-    });
-  }
-
-  private async removeRecordTestStepFromMappingTable(
-    manager: EntityManager, //
-    recordTestCaseId: RecordTestCaseId,
-    recordTestStep: RecordTestStep,
-  ): Promise<void> {
-    const next = await this.getNextRecordTestStep(manager, recordTestCaseId, recordTestStep);
-    if (!next) {
-      await manager.getRepository(RecordTestCaseAndRecordTestStep).softDelete({ recordTestCaseId, recordTestStepId: recordTestStep.recordTestStepId });
-      return;
-    }
-    const prev = await this.getPrevRecordTestStep(manager, recordTestCaseId, recordTestStep);
-    if (prev) {
-      await manager
-        .getRepository(RecordTestCaseAndRecordTestStep)
-        .update({ recordTestCaseId, recordTestStepId: next.recordTestStepId }, { prevRecordTestStepId: prev.recordTestStepId });
-    } else {
-      await manager.getRepository(RecordTestCaseAndRecordTestStep).update({ recordTestCaseId, recordTestStepId: next.recordTestStepId }, { prevRecordTestStepId: null });
-    }
-    await manager.getRepository(RecordTestCaseAndRecordTestStep).softDelete({ recordTestCaseId, recordTestStepId: recordTestStep.recordTestStepId });
-  }
-
-  private async addRecordTestStepToMappingTable(
-    manager: EntityManager, //
-    recordTestCaseId: RecordTestCaseId,
-    recordTestStep: RecordTestStep,
-    prevRecordTestStepId: RecordTestStepId | null,
-  ): Promise<void> {
-    // root
-    if (!prevRecordTestStepId) {
-      const originRoot = await manager.getRepository(RecordTestCaseAndRecordTestStep).findOne({
-        where: {
-          recordTestCaseId,
-          recordTestStepId: IsNull(),
-        },
-      });
-      if (!originRoot) {
-        throw new HttpException(`First RecordTestCase not found. recordTestScenarioId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
-      }
-      originRoot.prevRecordTestStepId = recordTestStep.recordTestStepId;
-      await manager.getRepository(RecordTestCaseAndRecordTestStep).save(originRoot);
-
-      const newRoot = manager.getRepository(RecordTestCaseAndRecordTestStep).create({
-        recordTestCaseId,
-        recordTestStepId: recordTestStep.recordTestStepId,
-        prevRecordTestStepId: null,
-        deletedAt: null,
-      });
-      await manager
-        .getRepository(RecordTestCaseAndRecordTestStep)
-        .upsert(castEntity(newRoot), [`${RecordTestCaseAndRecordTestStepPropCamel.recordTestCaseId}`, `${RecordTestCaseAndRecordTestStepPropCamel.recordTestStepId}`]);
-      return;
-    }
-
-    const oldNext = await manager.getRepository(RecordTestCaseAndRecordTestStep).findOne({
-      where: {
-        recordTestCaseId,
-        prevRecordTestStepId,
-      },
-    });
-
-    // tail
-    if (!oldNext) {
-      const newTail = manager.getRepository(RecordTestCaseAndRecordTestStep).create({
-        recordTestCaseId,
-        recordTestStepId: recordTestStep.recordTestStepId,
-        prevRecordTestStepId: prevRecordTestStepId,
-        deletedAt: null,
-      });
-      await manager
-        .getRepository(RecordTestCaseAndRecordTestStep)
-        .upsert(castEntity(newTail), [`${RecordTestCaseAndRecordTestStepPropCamel.recordTestCaseId}`, `${RecordTestCaseAndRecordTestStepPropCamel.recordTestStepId}`]);
-      return;
-    } else {
-      // middle
-      const newMiddle = manager.getRepository(RecordTestCaseAndRecordTestStep).create({
-        recordTestCaseId,
-        recordTestStepId: recordTestStep.recordTestStepId,
-        prevRecordTestStepId,
-        deletedAt: null,
-      });
-      await manager
-        .getRepository(RecordTestCaseAndRecordTestStep)
-        .upsert(castEntity(newMiddle), [`${RecordTestCaseAndRecordTestStepPropCamel.recordTestCaseId}`, `${RecordTestCaseAndRecordTestStepPropCamel.recordTestStepId}`]);
-      oldNext.prevRecordTestStepId = recordTestStep.recordTestStepId;
-      await manager.getRepository(RecordTestCaseAndRecordTestStep).save(oldNext);
-      return;
-    }
-  }
-
-  private async getNextRecordTestStep(
-    manager: EntityManager, //
-    recordTestCaseId: RecordTestCaseId,
-    recordTestStep: RecordTestStep,
-  ): Promise<RecordTestStep | null> {
-    const next = await manager
-      .getRepository(RecordTestCaseAndRecordTestStep) //
-      .createQueryBuilder('caseAndStep')
-      .leftJoinAndSelect(`caseAndStep.${RecordTestCaseAndRecordTestStepPropCamel.recordTestStep}`, 'recordTestStep')
-      .where(`caseAndStep.${RecordTestCaseAndRecordTestStepPropSnake.record_test_case_id} = :${RecordTestCaseAndRecordTestStepPropCamel.recordTestCaseId}`, {
-        recordTestCaseId,
-      })
-      .andWhere(`caseAndStep.${RecordTestCaseAndRecordTestStepPropSnake.prev_record_test_step_id} = :${RecordTestCaseAndRecordTestStepPropCamel.recordTestStepId}`, {
-        prevRecordTestStepId: recordTestStep.recordTestStepId,
-      })
-      .getOne();
-    return next?.recordTestStep ?? null;
-  }
-
-  private async getPrevRecordTestStep(
-    manager: EntityManager, //
-    recordTestCaseId: RecordTestCaseId,
-    recordTestStep: RecordTestStep,
-  ): Promise<RecordTestStep | null> {
-    const current = await manager
-      .getRepository(RecordTestCaseAndRecordTestStep)
-      .createQueryBuilder('caseAndStep')
-      .leftJoinAndSelect(`caseAndStep.${RecordTestCaseAndRecordTestStepPropCamel.prevRecordTestStep}`, 'recordTestStep')
-      .where(`caseAndStep.${RecordTestCaseAndRecordTestStepPropSnake.record_test_case_id} = :${RecordTestCaseAndRecordTestStepPropCamel.recordTestCaseId}`, {
-        recordTestCaseId,
-      })
-      .andWhere(`caseAndStep.${RecordTestCaseAndRecordTestStepPropSnake.record_test_step_id} = :${RecordTestCaseAndRecordTestStepPropCamel.recordTestStepId}`, {
-        recordTestStepId: recordTestStep.recordTestStepId,
-      })
-      .getOne();
-
-    const prev = current?.prevRecordTestStep;
-    return prev ?? null;
-  }
-
-  public async newSession(organizationId: OrganizationId, projectId: ProjectId, recordTestCaseId: RecordTestCaseId, dto: NewSessionDto): Promise<string> {
-    const recordTestCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId } });
-    if (!recordTestCase) {
-      throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
-    }
-
+  public async newSession(manager: EntityManager, organizationId: OrganizationId, projectId: ProjectId, recordTestCase: RecordTestCase, dto: NewSessionDto): Promise<string> {
     const { deviceId, appVersion, browserName, browserVersion } = dto;
-    const device = await this.dataSource.getRepository(Device).findOne({ where: { deviceId } });
+    const device = await manager.getRepository(Device).findOne({ where: { deviceId } });
     if (!device) {
       throw new HttpException(`Device not found. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
     }
@@ -439,12 +258,49 @@ export class RecordTestCaseService {
     const capabilities = res.value.capabilities as Record<string, unknown>;
     const deviceScreenSize = capabilities['deviceScreenSize'] as string;
 
-    recordTestCase.activeDeviceScreenSize = deviceScreenSize;
+    recordTestCase.activeDeviceScreenSizeX = Number(deviceScreenSize.split('x')[0]);
+    recordTestCase.activeDeviceScreenSizeY = Number(deviceScreenSize.split('x')[1]);
     recordTestCase.activeSessionId = res.value.sessionId;
     recordTestCase.activeSessionKey = activeSessionKey;
-    await this.dataSource.getRepository(RecordTestCase).save(recordTestCase);
+    await manager.getRepository(RecordTestCase).save(recordTestCase);
 
     return res.value.sessionId;
+  }
+
+  async deleteSession(organizationId: OrganizationId, projectId: ProjectId, recordTestCaseId: RecordTestCaseId) {
+    const testCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { recordTestCaseId } });
+    if (!testCase) {
+      throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
+    }
+    const { activeSessionId, activeSessionKey } = testCase;
+    if (!activeSessionId || !activeSessionKey) {
+      throw new HttpException(`Session not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
+    }
+
+    const device = await this.dataSource.getRepository(Device).findOne({ where: { serial: testCase.activeDeviceSerial } });
+    if (!device) {
+      throw new HttpException(`Device not found. serial: ${testCase.activeDeviceSerial}`, HttpStatus.NOT_FOUND);
+    }
+    const platformType = platformTypeFromPlatform(device.platform);
+    const batchExecutor = new RemoteWebDriverBatchRequestExecutor(this.remoteWebDriverService, {
+      organizationId,
+      projectId: testCase.projectId,
+      deviceId: device.deviceId,
+      deviceSerial: testCase.activeDeviceSerial,
+      headers: {
+        [DoguRemoteDeviceJobIdHeader]: activeSessionKey,
+        [DoguDevicePlatformHeader]: platformType,
+        [DoguDeviceSerialHeader]: testCase.activeDeviceSerial,
+        [DoguRequestTimeoutHeader]: '10000',
+      },
+      parallel: true,
+    });
+
+    const deleteSessionResponse = new DeleteSessionRemoteWebDriverBatchRequestItem(batchExecutor, activeSessionId);
+    await batchExecutor.execute();
+
+    await deleteSessionResponse.response();
+    return;
   }
 
   async test(): Promise<void> {
@@ -453,25 +309,62 @@ export class RecordTestCaseService {
     const deviceId = '01be2acc-5a5f-4bda-93e5-a591996d475b';
     const createTestCaseDto: CreateRecordTestCaseDto = {
       name: 'test',
-    };
-    const testCase = await this.createRecordTestCase(projectId, createTestCaseDto);
-
-    const dto: NewSessionDto = {
+      browserName: null,
+      packageName: 'org.wikipedia.alpha',
+      activeDeviceScreenSizeX: 0,
+      activeDeviceScreenSizeY: 0,
       deviceId,
-      browserName: 'chrome',
     };
+    const testCase = await this.createRecordTestCase(organizationId, projectId, createTestCaseDto);
 
-    const sessionId = await this.newSession(organizationId, projectId, testCase.recordTestCaseId, dto);
-    const testStep = await this.recordTestStepService.createRecordTestStep(projectId, { name: 'test' });
-    await this.recordTestStepService.addAction(organizationId, projectId, testStep.recordTestStepId, {
-      recordTestCaseId: testCase.recordTestCaseId,
+    const stepDto: CreateRecordTestStepDto = {
+      prevRecordTestStepId: null,
       deviceId,
       type: RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_CLICK,
       screenPositionX: 0,
       screenPositionY: 0,
-    });
+      screenSizeX: 0,
+      screenSizeY: 0,
+    };
 
-    const testStepResult = await this.recordTestStepService.findRecordTestStepById(projectId, testStep.recordTestStepId);
+    const testStep = await this.recordTestStepService.createRecordTestStep(organizationId, projectId, testCase.recordTestCaseId, stepDto);
+
+    const testStepResult = await this.recordTestStepService.findRecordTestStepById(projectId, testStep.recordTestCaseId, testStep.recordTestStepId);
+    return;
+  }
+
+  async test2(): Promise<void> {
+    const organizationId = '664790a4-df0a-4043-b61a-7ea371f354f8';
+    const projectId = '287ad1bf-0e17-4c97-bbda-50a2cc0ac49b';
+    const deviceId = '01be2acc-5a5f-4bda-93e5-a591996d475b';
+
+    const testCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, name: 'test' } });
+    if (!testCase) {
+      throw new HttpException(`RecordTestCase not found.`, HttpStatus.NOT_FOUND);
+    }
+
+    const loadCaseDto: LoadRecordTestCaseDto = {
+      deviceId,
+      activeDeviceScreenSizeX: 0,
+      activeDeviceScreenSizeY: 0,
+    };
+
+    const sessionId = await this.loadRecordTestCase(organizationId, projectId, testCase.recordTestCaseId, loadCaseDto);
+
+    const stepDto: CreateRecordTestStepDto = {
+      prevRecordTestStepId: null,
+      deviceId,
+      type: RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_CLICK,
+      screenPositionX: 0,
+      screenPositionY: 0,
+      screenSizeX: 0,
+      screenSizeY: 0,
+    };
+
+    const testStep = await this.recordTestStepService.createRecordTestStep(organizationId, projectId, testCase.recordTestCaseId, stepDto);
+
+    await this.deleteSession(organizationId, projectId, testCase.recordTestCaseId);
+    const testStepResult = await this.recordTestStepService.findRecordTestStepById(projectId, testStep.recordTestCaseId, testStep.recordTestStepId);
     return;
   }
 }
