@@ -3,7 +3,7 @@ import { ProjectId, RecordTestCaseId, RECORD_TEST_CASE_TABLE_NAME } from '@dogu-
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { Project } from './project.entity';
-import { RecordTestCaseAndRecordTestStep } from './relations/record-test-case-and-record-test-step.entity';
+import { RecordTestStep } from './record-test-step.entity';
 
 @Entity(RECORD_TEST_CASE_TABLE_NAME)
 export class RecordTestCase extends BaseEntity implements RecordTestCaseBase {
@@ -16,14 +16,26 @@ export class RecordTestCase extends BaseEntity implements RecordTestCaseBase {
   @Column({ type: 'character varying', name: RecordTestCasePropSnake.name, nullable: false })
   name!: string;
 
-  @Column({ type: 'character varying', name: RecordTestCasePropSnake.active_device_screen_size, nullable: true })
-  activeDeviceScreenSize!: string;
+  @Column({ type: 'character varying', name: RecordTestCasePropSnake.active_device_serial, nullable: true })
+  activeDeviceSerial!: string;
+
+  @Column({ type: 'smallint', name: RecordTestCasePropSnake.active_device_screen_size_x, nullable: false })
+  activeDeviceScreenSizeX!: number;
+
+  @Column({ type: 'smallint', name: RecordTestCasePropSnake.active_device_screen_size_y, nullable: false })
+  activeDeviceScreenSizeY!: number;
 
   @Column({ type: 'uuid', name: RecordTestCasePropSnake.active_session_id, nullable: true })
   activeSessionId!: string | null;
 
   @Column({ type: 'uuid', name: RecordTestCasePropSnake.active_session_key, nullable: true })
   activeSessionKey!: string | null;
+
+  @Column({ type: 'character varying', name: RecordTestCasePropSnake.package_name, nullable: true })
+  packageName!: string | null;
+
+  @Column({ type: 'character varying', name: RecordTestCasePropSnake.browser_name, nullable: true })
+  browserName!: string | null;
 
   @ColumnTemplate.CreateDate(RecordTestCasePropSnake.created_at)
   createdAt!: Date;
@@ -38,8 +50,6 @@ export class RecordTestCase extends BaseEntity implements RecordTestCaseBase {
   @JoinColumn({ name: RecordTestCasePropSnake.project_id })
   project?: Project;
 
-  @OneToMany(() => RecordTestCaseAndRecordTestStep, (recordTestCaseAndRecordTestStep) => recordTestCaseAndRecordTestStep.recordTestCase, {
-    cascade: ['soft-remove'],
-  })
-  recordTestCaseAndRecordTestSteps?: RecordTestCaseAndRecordTestStep[];
+  @OneToMany(() => RecordTestStep, (recordTestStep) => recordTestStep.recordTestCase, { cascade: ['soft-remove'] })
+  recordTestSteps?: RecordTestStep[];
 }

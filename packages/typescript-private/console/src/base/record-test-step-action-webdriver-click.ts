@@ -1,14 +1,14 @@
-import { RecordTestStepActionId, RecordTestStepActionWebdriverClickId } from '@dogu-private/types';
+import { RecordTestStepActionWebdriverClickId, RecordTestStepId } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
-import { RecordTestStepActionBase } from './record-test-step-action';
+import { RecordTestStepBase } from './record-test-step';
 
 interface RecordTestStepActionWebdriverClickRelationTraits {
-  recordTestStepAction?: RecordTestStepActionBase;
+  recordTestStep?: RecordTestStepBase;
 }
 
 export interface RecordTestStepActionWebdriverClickBaseTraits {
   recordTestStepActionWebdriverClickId: RecordTestStepActionWebdriverClickId;
-  recordTestStepActionId: RecordTestStepActionId;
+  recordTestStepId: RecordTestStepId;
   screenSizeX: number;
   screenSizeY: number;
   screenPositionX: number;

@@ -1,26 +1,23 @@
-import { RecordTestCaseResponse } from '@dogu-private/console';
-import { RecordTestStepResponse } from '@dogu-private/console/src/dto/record/record-test-step.dto';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { RecordTestCase } from '../../../db/entity/record-test-case.entity';
 import { RecordTestScenario } from '../../../db/entity/record-test-scenario.entity';
+import { RecordTestStep } from '../../../db/entity/record-test-step.entity';
 
-export function getSortedRecordTestCases(recordTestScenario: RecordTestScenario): RecordTestCaseResponse[] {
+export function getSortedRecordTestCases(recordTestScenario: RecordTestScenario): RecordTestCase[] {
   const mappingData = recordTestScenario.recordTestScenarioAndRecordTestCases ?? [];
   if (mappingData.length === 0) {
     return [];
   }
 
-  const sortedTestCase: RecordTestCaseResponse[] = [];
+  const sortedTestCase: RecordTestCase[] = [];
 
   const first = mappingData.find((data) => data.recordTestCase?.recordTestCaseId === null);
   if (!first) {
     throw new HttpException(`Firt RecordTestCase not found. recordTestScenarioId: ${recordTestScenario.recordTestScenarioId}`, HttpStatus.NOT_FOUND);
   }
   const sortedSteps = getSortedRecordTestSteps(first.recordTestCase!);
-  sortedTestCase.push({
-    ...first.recordTestCase!,
-    recordTestSteps: sortedSteps,
-  });
+  first.recordTestCase!.recordTestSteps = sortedSteps;
+  sortedTestCase.push(first.recordTestCase!);
 
   let nextId = first.recordTestCaseId;
   while (true) {
@@ -34,32 +31,30 @@ export function getSortedRecordTestCases(recordTestScenario: RecordTestScenario)
     }
 
     const sortedSteps = getSortedRecordTestSteps(next.recordTestCase!);
-    sortedTestCase.push({
-      ...next.recordTestCase!,
-      recordTestSteps: sortedSteps,
-    });
+    next.recordTestCase!.recordTestSteps = sortedSteps;
+    sortedTestCase.push(next.recordTestCase!);
     nextId = next.recordTestCaseId;
   }
 
   return sortedTestCase;
 }
 
-export function getSortedRecordTestSteps(recordTestCase: RecordTestCase): RecordTestStepResponse[] {
-  const mappingData = recordTestCase.recordTestCaseAndRecordTestSteps ?? [];
-  if (mappingData.length === 0) {
+export function getSortedRecordTestSteps(recordTestCase: RecordTestCase): RecordTestStep[] {
+  const recordTestSteps = recordTestCase.recordTestSteps ?? [];
+  if (recordTestSteps.length === 0) {
     return [];
   }
 
-  const sortedTestStep: RecordTestStepResponse[] = [];
-  const first = mappingData.find((data) => data.recordTestStep?.recordTestStepId === null);
+  const sortedTestStep: RecordTestStep[] = [];
+  const first = recordTestSteps.find((data) => data.prevRecordTestStepId === null);
   if (!first) {
     throw new HttpException(`Firt RecordTestStep not found. recordTestCaseId: ${recordTestCase.recordTestCaseId}`, HttpStatus.NOT_FOUND);
   }
-  sortedTestStep.push(first.recordTestStep!);
+  sortedTestStep.push(first);
 
   let nextId = first.recordTestStepId;
   while (true) {
-    const next = mappingData.find((data) => data.prevRecordTestStepId === nextId);
+    const next = recordTestSteps.find((data) => data.prevRecordTestStepId === nextId);
     if (!next) {
       break;
     }
@@ -69,7 +64,7 @@ export function getSortedRecordTestSteps(recordTestCase: RecordTestCase): Record
       throw new HttpException(`Duplicate RecordTestStep. recordTestStepId: ${next.recordTestStepId}`, HttpStatus.BAD_REQUEST);
     }
 
-    sortedTestStep.push(next.recordTestStep!);
+    sortedTestStep.push(next);
     nextId = next.recordTestStepId;
   }
 

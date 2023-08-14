@@ -1,16 +1,16 @@
-import { RecordTestStepActionPropCamel, RecordTestStepActionWebdriverClickBase, RecordTestStepActionWebdriverClickPropSnake } from '@dogu-private/console';
-import { RecordTestStepActionId, RecordTestStepActionWebdriverClickId, RECORD_TEST_STEP_ACTION_WEBDRIVER_CLICK_TABLE_NAME } from '@dogu-private/types';
+import { RecordTestStepActionWebdriverClickBase, RecordTestStepActionWebdriverClickPropSnake, RecordTestStepPropCamel } from '@dogu-private/console';
+import { RecordTestStepActionWebdriverClickId, RecordTestStepId, RECORD_TEST_STEP_ACTION_WEBDRIVER_CLICK_TABLE_NAME } from '@dogu-private/types';
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
-import { RecordTestStepAction } from './record-test-step-action.entity';
+import { RecordTestStep } from './record-test-step.entity';
 
 @Entity(RECORD_TEST_STEP_ACTION_WEBDRIVER_CLICK_TABLE_NAME)
 export class RecordTestStepActionWebdriverClick extends BaseEntity implements RecordTestStepActionWebdriverClickBase {
   @PrimaryColumn({ type: 'uuid', name: RecordTestStepActionWebdriverClickPropSnake.record_test_step_action_webdriver_click_id })
   recordTestStepActionWebdriverClickId!: RecordTestStepActionWebdriverClickId;
 
-  @ColumnTemplate.RelationUuid(RecordTestStepActionWebdriverClickPropSnake.record_test_step_action_id)
-  recordTestStepActionId!: RecordTestStepActionId;
+  @ColumnTemplate.RelationUuid(RecordTestStepActionWebdriverClickPropSnake.record_test_step_id)
+  recordTestStepId!: RecordTestStepId;
 
   @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.screen_size_x, nullable: false })
   screenSizeX!: number;
@@ -36,7 +36,7 @@ export class RecordTestStepActionWebdriverClick extends BaseEntity implements Re
   @ColumnTemplate.DeleteDate(RecordTestStepActionWebdriverClickPropSnake.deleted_at)
   deletedAt!: Date | null;
 
-  @ManyToOne(() => RecordTestStepAction, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
-  @JoinColumn({ name: RecordTestStepActionWebdriverClickPropSnake.record_test_step_action_id, referencedColumnName: RecordTestStepActionPropCamel.recordTestStepActionId })
-  recordTestStepAction?: RecordTestStepAction;
+  @ManyToOne(() => RecordTestStep, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
+  @JoinColumn({ name: RecordTestStepActionWebdriverClickPropSnake.record_test_step_id, referencedColumnName: RecordTestStepPropCamel.recordTestStepId })
+  recordTestStep?: RecordTestStep;
 }

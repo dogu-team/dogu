@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Device, RecordTestCaseAndRecordTestStep, RecordTestScenarioAndRecordTestCase } from '../../../db/entity/index';
+import { Device, RecordTestScenarioAndRecordTestCase } from '../../../db/entity/index';
 import { RecordTestCase } from '../../../db/entity/record-test-case.entity';
 import { RecordTestScenario } from '../../../db/entity/record-test-scenario.entity';
 import { RecordTestStep } from '../../../db/entity/record-test-step.entity';
@@ -16,7 +16,7 @@ import { RecordTestStepService } from './record-test-step/record-test-step.servi
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([RecordTestScenario, RecordTestCase, RecordTestStep, RecordTestScenarioAndRecordTestCase, RecordTestCaseAndRecordTestStep, Device]),
+    TypeOrmModule.forFeature([RecordTestScenario, RecordTestCase, RecordTestStep, RecordTestScenarioAndRecordTestCase, Device]),
     RemoteModule,
     FeatureFileModule,
     ProjectModule,
