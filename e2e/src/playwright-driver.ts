@@ -92,6 +92,7 @@ export class PlaywrightDriver {
 
   async moveTo(url: string): Promise<void> {
     await this.page.goto(url);
+    await this.page.waitForLoadState();
   }
 
   async findElement(locator: Locator, options?: FindElementOptions): Promise<ElementHandle<SVGElement | HTMLElement>> {
@@ -192,6 +193,7 @@ export class PlaywrightDriver {
     this.page.on('console', (msg) => {
       this.logEntries.push({ level: msg.type(), message: msg.text() });
     });
+    await this.page.waitForLoadState();
   }
 
   async goBack(): Promise<void> {
