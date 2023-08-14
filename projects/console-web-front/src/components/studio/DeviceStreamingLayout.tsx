@@ -17,9 +17,10 @@ export interface DeviceStreamingLayoutProps {
   right: React.ReactNode;
   title: string;
   screenViewer: React.ReactNode;
+  hideDeviceSelector?: boolean;
 }
 
-const DeviceStreamingLayout = ({ project, deviceId, right, title, screenViewer }: DeviceStreamingLayoutProps) => {
+const DeviceStreamingLayout = ({ project, deviceId, right, title, screenViewer, hideDeviceSelector }: DeviceStreamingLayoutProps) => {
   const router = useRouter();
   const {
     data: device,
@@ -38,23 +39,25 @@ const DeviceStreamingLayout = ({ project, deviceId, right, title, screenViewer }
           <TitleBox>
             <h3>{title}</h3>
           </TitleBox>
-          <SelectorBox>
-            <Tag color="geekblue" icon={<MobileOutlined />}>
-              Device
-            </Tag>
-            <StudioDeviceSelector
-              selectedDevice={device ?? undefined}
-              organizationId={router.query.orgId as OrganizationId}
-              projectId={router.query.pid as ProjectId}
-              onSelectedDeviceChanged={(device) => {
-                if (device) {
-                  router.push({ query: { orgId: router.query.orgId, pid: router.query.pid, deviceId: device?.deviceId, tab: router.query.tab } });
-                } else {
-                  router.push(`/dashboard/${router.query.orgId}/projects/${router.query.pid}/studio`);
-                }
-              }}
-            />
-          </SelectorBox>
+          {!hideDeviceSelector && (
+            <SelectorBox>
+              <Tag color="geekblue" icon={<MobileOutlined />}>
+                Device
+              </Tag>
+              <StudioDeviceSelector
+                selectedDevice={device ?? undefined}
+                organizationId={router.query.orgId as OrganizationId}
+                projectId={router.query.pid as ProjectId}
+                onSelectedDeviceChanged={(device) => {
+                  if (device) {
+                    router.push({ query: { orgId: router.query.orgId, pid: router.query.pid, deviceId: device?.deviceId, tab: router.query.tab } });
+                  } else {
+                    router.push(`/dashboard/${router.query.orgId}/projects/${router.query.pid}/studio`);
+                  }
+                }}
+              />
+            </SelectorBox>
+          )}
           {screenViewer}
         </ScreenBox>
         <ToolBox>

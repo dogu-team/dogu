@@ -27,6 +27,7 @@ const VisualTesting = ({ organization, project, deviceId }: Props) => {
       right={caseId ? <VisualTestingEditor /> : <VisualTestingEntry project={project} />}
       title="Visual Testing"
       screenViewer={<VisualTestingScreenViewer />}
+      hideDeviceSelector
     />
   );
 };

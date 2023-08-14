@@ -1,6 +1,7 @@
 import { FolderOpenOutlined, PlusOutlined } from '@ant-design/icons';
 import { ProjectBase } from '@dogu-private/console';
 import { Button } from 'antd';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import useDeviceStreamingContext from '../../../hooks/streaming/useDeviceStreamingContext';
@@ -17,10 +18,18 @@ const VisualTestingEntry = ({ project }: Props) => {
   const router = useRouter();
   const { device } = useDeviceStreamingContext();
 
+  if (!device) {
+    return (
+      <div>
+        No device selected... <Link href={`/dashboard/${project.organizationId}/projects/${project.projectId}/studio`}>Move studio</Link>
+      </div>
+    );
+  }
+
   return (
     <Box>
       <Head>
-        <Title>Start visual testing!</Title>
+        <Title>Create or open test case and make your tests easily!</Title>
       </Head>
       <ButtonWrapper>
         <CreateCaseButton
@@ -30,7 +39,7 @@ const VisualTestingEntry = ({ project }: Props) => {
           onCreate={(rv) => {
             router.push({ query: { ...router.query, caseId: rv.recordTestCaseId } }, undefined, { shallow: true });
           }}
-          devicePlatform={device?.platform}
+          device={device}
         >
           Create new
         </CreateCaseButton>
