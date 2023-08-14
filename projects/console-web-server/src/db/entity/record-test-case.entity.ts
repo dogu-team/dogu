@@ -17,13 +17,13 @@ export class RecordTestCase extends BaseEntity implements RecordTestCaseBase {
   name!: string;
 
   @Column({ type: 'character varying', name: RecordTestCasePropSnake.active_device_serial, nullable: true })
-  activeDeviceSerial!: string;
+  activeDeviceSerial!: string | null;
 
-  @Column({ type: 'smallint', name: RecordTestCasePropSnake.active_device_screen_size_x, nullable: false })
-  activeDeviceScreenSizeX!: number;
+  @Column({ type: 'smallint', name: RecordTestCasePropSnake.active_device_screen_size_x, nullable: true })
+  activeDeviceScreenSizeX!: number | null;
 
-  @Column({ type: 'smallint', name: RecordTestCasePropSnake.active_device_screen_size_y, nullable: false })
-  activeDeviceScreenSizeY!: number;
+  @Column({ type: 'smallint', name: RecordTestCasePropSnake.active_device_screen_size_y, nullable: true })
+  activeDeviceScreenSizeY!: number | null;
 
   @Column({ type: 'uuid', name: RecordTestCasePropSnake.active_session_id, nullable: true })
   activeSessionId!: string | null;

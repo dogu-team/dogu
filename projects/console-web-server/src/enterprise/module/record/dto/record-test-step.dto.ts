@@ -1,56 +1,48 @@
-import { CreateRecordTestStepDtoBase } from '@dogu-private/console';
-import { RecordTestStepId, RECORD_TEST_STEP_ACTION_TYPE } from '@dogu-private/types';
-import { IsIn, IsNumber, IsOptional, IsUUID, ValidateIf } from 'class-validator';
+import { CreateRecordTestActionWebdriverClickDtoBase, CreateRecordTestActionWebdriverInputDtoBase, CreateRecordTestStepDtoBase, RecordTestActionBase } from '@dogu-private/console';
+import { RecordTestActionType, RecordTestActionTypes, RecordTestStepId } from '@dogu-private/types';
+import { Type } from 'class-transformer';
+import { Equals, IsIn, IsNumber, IsString, IsUUID, ValidateIf, ValidateNested } from 'class-validator';
+
+export class RecordTestAction implements RecordTestActionBase {
+  @IsIn(RecordTestActionTypes)
+  type!: RecordTestActionType;
+}
+
+export class CreateRecordTestActionWebdriverClickDto extends RecordTestAction implements CreateRecordTestActionWebdriverClickDtoBase {
+  @Equals('WEBDRIVER_CLICK')
+  declare type: 'WEBDRIVER_CLICK';
+  @IsNumber()
+  videoScreenPositionX!: number;
+  @IsNumber()
+  videoScreenPositionY!: number;
+  @IsNumber()
+  videoScreenSizeX!: number;
+  @IsNumber()
+  videoScreenSizeY!: number;
+}
+
+export class CreateRecordTestActionWebdriverInputDto extends RecordTestAction implements CreateRecordTestActionWebdriverInputDtoBase {
+  @Equals('WEBDRIVER_INPUT')
+  declare type: 'WEBDRIVER_INPUT';
+  @IsString()
+  value!: string;
+}
 
 export class CreateRecordTestStepDto implements CreateRecordTestStepDtoBase {
   @IsUUID()
   @ValidateIf((object, value) => value !== null)
   prevRecordTestStepId!: RecordTestStepId | null;
 
-  @IsIn(Object.values(RECORD_TEST_STEP_ACTION_TYPE))
-  type!: RECORD_TEST_STEP_ACTION_TYPE;
-
-  @IsUUID()
-  deviceId!: string;
-
-  @IsNumber()
-  @IsOptional()
-  screenPositionX!: number;
-
-  @IsNumber()
-  @IsOptional()
-  screenPositionY!: number;
-
-  @IsNumber()
-  @IsOptional()
-  screenSizeX!: number;
-
-  @IsNumber()
-  @IsOptional()
-  screenSizeY!: number;
+  @ValidateNested()
+  @Type(() => RecordTestAction, {
+    discriminator: {
+      property: 'type',
+      subTypes: [
+        { value: CreateRecordTestActionWebdriverClickDto, name: 'WEBDRIVER_CLICK' },
+        { value: CreateRecordTestActionWebdriverInputDto, name: 'WEBDRIVER_INPUT' },
+      ],
+    },
+    keepDiscriminatorProperty: true,
+  })
+  actionInfo!: CreateRecordTestActionWebdriverClickDto | CreateRecordTestActionWebdriverInputDto;
 }
-
-// export class UpdateRecordTestStepDto implements UpdateRecordTestStepDtoBase {
-//   @IsString()
-//   @IsOptional()
-//   name!: string;
-// }
-
-// export class AddActionDto implements AddActionDtoBase {
-//   @IsIn(Object.values(RECORD_TEST_STEP_ACTION_TYPE))
-//   type!: RECORD_TEST_STEP_ACTION_TYPE;
-
-//   @IsUUID()
-//   deviceId!: string;
-
-//   @IsUUID()
-//   recordTestCaseId!: RecordTestStepId;
-
-//   @IsNumber()
-//   @IsOptional()
-//   screenPositionX!: number;
-
-//   @IsNumber()
-//   @IsOptional()
-//   screenPositionY!: number;
-// }

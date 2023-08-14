@@ -1,5 +1,5 @@
 import { RecordTestStepBase, RecordTestStepPropCamel, RecordTestStepPropSnake } from '@dogu-private/console';
-import { OrganizationId, platformTypeFromPlatform, ProjectId, RecordTestCaseId, RecordTestStepId, RECORD_TEST_STEP_ACTION_TYPE } from '@dogu-private/types';
+import { OrganizationId, platformTypeFromPlatform, ProjectId, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
 import {
   DoguDevicePlatformHeader,
   DoguDeviceSerialHeader,
@@ -71,22 +71,6 @@ export class RecordTestStepService {
     return recordTestStep;
   }
 
-  // async updateRecordTestStep(projectId: ProjectId, recordTestStepId: RecordTestStepId, dto: UpdateRecordTestStepDto): Promise<RecordTestStepBase> {
-  //   const { name } = dto;
-  //   const data = await this.dataSource.getRepository(RecordTestStep).findOne({ where: { projectId, recordTestStepId } });
-  //   if (!data) {
-  //     throw new HttpException(`RecordTestStep not found. recordTestStepId: ${recordTestStepId}`, HttpStatus.NOT_FOUND);
-  //   }
-
-  //   if (data.name === name) {
-  //     throw new HttpException(`RecordTestStep name is same. name: ${name}`, HttpStatus.BAD_REQUEST);
-  //   }
-
-  //   data.name = name;
-  //   const rv = await this.dataSource.getRepository(RecordTestStep).save(data);
-  //   return rv;
-  // }
-
   async deleteRecordTestStep(projectId: ProjectId, recordTestCaseId: RecordTestCaseId, recordTestStepId: RecordTestStepId): Promise<void> {
     // const testStep = await this.dataSource.getRepository(RecordTestStep).findOne({ where: { projectId, recordTestCaseId, recordTestStepId } });
     // if (!testStep) {
@@ -96,80 +80,6 @@ export class RecordTestStepService {
     // await this.dataSource.getRepository(RecordTestStep).softRemove(testStep);
   }
 
-  // async takeScreenShot(
-  //   organizationId: OrganizationId,
-  //   projectId: ProjectId,
-  //   recordTestCaseId: RecordTestStepActionId,
-  //   recordTestStepId: RecordTestStepId,
-  //   deviceId: DeviceId,
-  // ): Promise<void> {
-  //   // const recordTestStepAction = await this.dataSource.getRepository(RecordTestStepAction).findOne({ where: { recordTestStepId } });
-  //   // if (!recordTestStepAction) {
-  //   //   throw new HttpException(`RecordTestStep not found. recordTestStepId: ${recordTestStepId}`, HttpStatus.NOT_FOUND);
-  //   // }
-
-  //   const recordTestCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { recordTestCaseId } });
-  //   if (!recordTestCase) {
-  //     throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
-  //   }
-
-  //   const sessionId = recordTestCase.activeSessionId;
-  //   const sessionKey = recordTestCase.activeSessionKey;
-  //   if (!sessionId || !sessionKey) {
-  //     throw new HttpException(`Session not found. sessionId: ${sessionId}`, HttpStatus.NOT_FOUND);
-  //   }
-
-  //   const device = await this.dataSource.getRepository(Device).findOne({ where: { deviceId } });
-  //   if (!device) {
-  //     throw new HttpException(`Device not found. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
-  //   }
-
-  //   const headers: HeaderRecord = {
-  //     [DoguRemoteDeviceJobIdHeader]: sessionKey,
-  //     [DoguDevicePlatformHeader]: platformTypeFromPlatform(device.platform),
-  //     [DoguDeviceSerialHeader]: device.serial,
-  //     [DoguRequestTimeoutHeader]: '60000',
-  //   };
-
-  //   const batchExecutor = new RemoteWebDriverBatchRequestExecutor(this.remoteWebDriverService, {
-  //     organizationId,
-  //     projectId,
-  //     deviceId,
-  //     deviceSerial: device.serial,
-  //     headers,
-  //     parallel: true,
-  //   });
-
-  //   const screenShotUrlKey = `test-record-test-step-action/${recordTestCase.activeSessionId}/${toISOStringWithTimezone(new Date(), '-')}.png`;
-
-  //   const takeScreenshot = new W3CTakeScreenshotRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
-  //   await batchExecutor.execute();
-  //   const screenshotBuffer = await takeScreenshot.response();
-  //   const putResult = await this.featureFileService.put({
-  //     bucketKey: 'organization',
-  //     key: screenShotUrlKey,
-  //     body: screenshotBuffer,
-  //     contentType: 'image/png',
-  //   });
-  //   const url = putResult.location;
-
-  //   await await takeScreenshot
-  //     .response()
-  //     .then(async (buffer) => {
-  //       const putResult = await this.featureFileService.put({
-  //         bucketKey: 'organization',
-  //         key: screenShotUrlKey,
-  //         body: buffer,
-  //         contentType: 'image/png',
-  //       });
-  //       const url = putResult.location;
-  //       this.logger.debug(`TEST: screenshot url: ${putResult.location}`);
-  //     })
-  //     .catch((error) => {
-  //       this.logger.error(`TEST: screenshot error: ${stringify(error)}`);
-  //     });
-  // }
-
   public async createRecordTestStep(
     organizationId: OrganizationId,
     projectId: ProjectId, //
@@ -177,10 +87,16 @@ export class RecordTestStepService {
     dto: CreateRecordTestStepDto,
   ): Promise<RecordTestStep> {
     const rv = await this.dataSource.manager.transaction(async (manager) => {
-      const { prevRecordTestStepId, type, deviceId, screenPositionX, screenPositionY, screenSizeX, screenSizeY } = dto;
+      const { prevRecordTestStepId } = dto;
+      const actionData = dto.actionInfo;
+
+      actionData.type;
 
       const testCase = await manager.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId } });
       if (!testCase) {
+        throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
+      }
+      if (!testCase.activeDeviceSerial) {
         throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
       }
 
@@ -191,7 +107,7 @@ export class RecordTestStepService {
         recordTestCaseId,
         projectId,
         prevRecordTestStepId,
-        type,
+        deviceSerial: testCase.activeDeviceSerial,
         screenshotUrl: '', //
       });
 
@@ -289,7 +205,9 @@ export class RecordTestStepService {
   }
 
   async addAction(manager: EntityManager, organizationId: OrganizationId, projectId: ProjectId, recordTestStep: RecordTestStep, dto: CreateRecordTestStepDto): Promise<void> {
-    const { screenPositionX, screenPositionY, deviceId, type } = dto;
+    // const { deviceId } = dto;
+    const actionData = dto.actionInfo;
+    const { type } = actionData;
     const { recordTestCaseId } = recordTestStep;
 
     const recordTestCase = await manager.getRepository(RecordTestCase).findOne({ where: { recordTestCaseId } });
@@ -302,10 +220,13 @@ export class RecordTestStepService {
     if (!sessionId || !sessionKey) {
       throw new HttpException(`Session not found. sessionId: ${sessionId}`, HttpStatus.NOT_FOUND);
     }
-
-    const device = await manager.getRepository(Device).findOne({ where: { deviceId } });
+    const activeDeviceSerial = recordTestCase.activeDeviceSerial;
+    if (!activeDeviceSerial) {
+      throw new HttpException(`Device does not have activeDeviceSerial. RecordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
+    }
+    const device = await manager.getRepository(Device).findOne({ where: { organizationId, serial: activeDeviceSerial } });
     if (!device) {
-      throw new HttpException(`Device not found. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Device not found. deviceSerial: ${recordTestCase.activeDeviceSerial}`, HttpStatus.NOT_FOUND);
     }
 
     const headers: HeaderRecord = {
@@ -318,7 +239,7 @@ export class RecordTestStepService {
     const batchExecutor = new RemoteWebDriverBatchRequestExecutor(this.remoteWebDriverService, {
       organizationId,
       projectId,
-      deviceId,
+      deviceId: device.deviceId,
       deviceSerial: device.serial,
       headers,
       parallel: true,
@@ -342,15 +263,15 @@ export class RecordTestStepService {
     manager.getRepository(RecordTestStep).save(recordTestStep);
 
     switch (type) {
-      case RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_CLICK:
+      case 'WEBDRIVER_CLICK':
         break;
-      case RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_INPUT:
+      case 'WEBDRIVER_INPUT':
         break;
-      case RECORD_TEST_STEP_ACTION_TYPE.UNSPECIFIED:
-        break;
+      // case RECORD_TEST_STEP_ACTION_TYPE.UNSPECIFIED:
+      //   break;
       default:
         const _exhaustiveCheck: never = type;
-        throw new Error(`Unknown action type: ${_exhaustiveCheck}`);
+        throw new HttpException(`Unknown action type: ${type}`, HttpStatus.BAD_REQUEST);
     }
 
     // screenShot = takeScreenshot()

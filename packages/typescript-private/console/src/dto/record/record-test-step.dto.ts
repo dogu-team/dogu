@@ -1,16 +1,20 @@
-import { RecordTestStepId, RECORD_TEST_STEP_ACTION_TYPE } from '@dogu-private/types';
-import { RecordTestStepBase } from '../../index';
+import { RecordTestActionType } from '@dogu-private/types';
+import { RecordTestStepActionWebdriverClickBase, RecordTestStepBase } from '../../index';
 
-export interface CreateRecordTestStepDtoBase extends Pick<RecordTestStepBase, 'prevRecordTestStepId' | 'type'> {
-  prevRecordTestStepId: RecordTestStepId | null;
-  deviceId: string;
-  type: RECORD_TEST_STEP_ACTION_TYPE;
-  screenPositionX?: number;
-  screenPositionY?: number;
-  screenSizeX?: number;
-  screenSizeY?: number;
+export interface RecordTestActionBase {
+  type: RecordTestActionType;
 }
 
-// export interface UpdateRecordTestStepDtoBase extends Pick<RecordTestStepBase, 'prevRecordTestStepId'> {
-//   name: string;
-// }
+export interface CreateRecordTestActionWebdriverClickDtoBase
+  extends Pick<RecordTestStepActionWebdriverClickBase, 'videoScreenSizeX' | 'videoScreenSizeY' | 'videoScreenPositionX' | 'videoScreenPositionY'> {
+  type: 'WEBDRIVER_CLICK';
+}
+
+export interface CreateRecordTestActionWebdriverInputDtoBase extends RecordTestActionBase {
+  type: 'WEBDRIVER_INPUT';
+  value: string;
+}
+
+export interface CreateRecordTestStepDtoBase extends Pick<RecordTestStepBase, 'prevRecordTestStepId'> {
+  actionInfo: CreateRecordTestActionWebdriverClickDtoBase | CreateRecordTestActionWebdriverInputDtoBase;
+}

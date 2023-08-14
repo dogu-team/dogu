@@ -12,17 +12,17 @@ export class RecordTestStepActionWebdriverClick extends BaseEntity implements Re
   @ColumnTemplate.RelationUuid(RecordTestStepActionWebdriverClickPropSnake.record_test_step_id)
   recordTestStepId!: RecordTestStepId;
 
-  @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.screen_size_x, nullable: false })
-  screenSizeX!: number;
+  @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.video_screen_size_x, nullable: false })
+  videoScreenSizeX!: number;
 
-  @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.screen_size_y, nullable: false })
-  screenSizeY!: number;
+  @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.video_screen_size_y, nullable: false })
+  videoScreenSizeY!: number;
 
-  @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.screen_position_x, nullable: false })
-  screenPositionX!: number;
+  @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.video_screen_position_x, nullable: false })
+  videoScreenPositionX!: number;
 
-  @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.screen_position_y, nullable: false })
-  screenPositionY!: number;
+  @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.video_screen_position_y, nullable: false })
+  videoScreenPositionY!: number;
 
   @Column({ type: 'character varying', name: RecordTestStepActionWebdriverClickPropSnake.xpath, nullable: false })
   xpath!: string;
