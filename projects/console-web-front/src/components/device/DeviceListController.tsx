@@ -196,7 +196,9 @@ const DeviceListController = () => {
   );
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onDeviceTagUpdated', 'onDeviceAdded', 'onDeviceUpdated', 'onAddDeviceToProjectModalClosed', 'onDeviceStopped', 'onDeviceReboot'], mutate);
+  useRefresh(['onRefreshClicked', 'onDeviceTagUpdated', 'onDeviceAdded', 'onDeviceUpdated', 'onAddDeviceToProjectModalClosed', 'onDeviceStopped', 'onDeviceReboot'], () =>
+    mutate(),
+  );
 
   if (error) {
     if (error instanceof AxiosError) {

@@ -18,25 +18,22 @@ import { createNewSession, createVisualCase } from '../../api/visual';
 
 interface Props extends Omit<ButtonProps, 'onClick'> {
   project: ProjectBase;
-  onCreate?: (rv: RecordTestCaseBase) => void;
+  onCreate?: (rv: RecordTestCaseBase) => void | Promise<void>;
   device: DeviceBase;
+  isSessionCreating?: boolean;
 }
 
-const CreateCaseButton = ({ project, onCreate, device, ...props }: Props) => {
+const CreateCaseButton = ({ project, onCreate, device, isSessionCreating, ...props }: Props) => {
   const [isOpen, openModal, closeModal] = useModal();
   const [form] = Form.useForm();
-  const [loading, request] = useRequest(async (dto: CreateRecordTestCaseDtoBase & NewSessionRecordTestCaseDtoBase) => {
-    const { deviceId, browserName, packageName, name } = dto;
-    const testCase = await createVisualCase(project.organizationId, project.projectId, { name, browserName, packageName });
-    const testCaseWithSession = await createNewSession(project.organizationId, project.projectId, testCase.recordTestCaseId, { deviceId });
-    return testCaseWithSession;
-  });
+  const [loading, request] = useRequest(createVisualCase);
   const extension = device.platform === Platform.PLATFORM_IOS ? 'ipa' : Platform.PLATFORM_ANDROID ? 'apk' : '';
   const { data, isLoading, error } = useSWR<ProjectApplicationWithIcon[]>(
     isOpen && `/organizations/${project.organizationId}/projects/${project.projectId}/applications/packages?extension=${extension}`,
     swrAuthFetcher,
   );
   const FORM_ID = 'create-case-form';
+  const formDisabled = loading || isSessionCreating;
 
   const handleClose = () => {
     closeModal();
@@ -52,9 +49,9 @@ const CreateCaseButton = ({ project, onCreate, device, ...props }: Props) => {
     }
 
     try {
-      const rv = await request({ name, browserName: null, packageName: app, deviceId: device.deviceId });
+      const rv = await request(project.organizationId, project.projectId, { name, browserName: null, packageName: app });
+      await onCreate?.(rv);
       handleClose();
-      onCreate?.(rv);
       sendSuccessNotification('Created');
     } catch (e) {
       if (isAxiosError(e)) {
@@ -74,17 +71,17 @@ const CreateCaseButton = ({ project, onCreate, device, ...props }: Props) => {
         title="Create new case"
         destroyOnClose
         centered
-        okText={loading ? 'Opening your app...' : 'Save'}
+        okText={loading ? 'Creating test case...' : isSessionCreating ? 'Opening your app...' : 'Save'}
         okButtonProps={{ htmlType: 'submit', form: FORM_ID }}
         onOk={handleSave}
-        confirmLoading={loading}
+        confirmLoading={formDisabled}
       >
         <Form form={form} layout="vertical" id={FORM_ID}>
           <Form.Item name="name" label="Name" required rules={[{ required: true, message: 'Input case name' }]}>
-            <Input placeholder="Name" minLength={1} required />
+            <Input placeholder="Name" minLength={1} required disabled={formDisabled} />
           </Form.Item>
           <Form.Item name="app" label="Application" required rules={[{ required: true, message: 'Select application' }]}>
-            <Select placeholder="Select application" dropdownMatchSelectWidth={false}>
+            <Select placeholder="Select application" dropdownMatchSelectWidth={false} disabled={formDisabled}>
               {data?.map((app) => (
                 <Select.Option key={app.projectApplicationId} value={app.package}>
                   <FlexRowSpaceBetween>

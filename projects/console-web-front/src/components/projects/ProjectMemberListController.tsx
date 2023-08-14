@@ -138,7 +138,7 @@ const ProjectMemberListController = ({ project }: Props) => {
   const { me } = useAuthStore();
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onProjectMemberAdded'], mutateMember);
+  useRefresh(['onRefreshClicked', 'onProjectMemberAdded'], () => mutateMember());
 
   return (
     <>

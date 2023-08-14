@@ -279,7 +279,7 @@ const HostListController = () => {
   );
   const { t } = useTranslation();
 
-  useRefresh(['onHostCreated', 'onRefreshClicked', 'onHostUpdated', 'onHostDeleted', 'onHostDeviceStopped', 'onHostDeviceUsed'], mutate);
+  useRefresh(['onHostCreated', 'onRefreshClicked', 'onHostUpdated', 'onHostDeleted', 'onHostDeviceStopped', 'onHostDeviceUsed'], () => mutate());
 
   return (
     <>

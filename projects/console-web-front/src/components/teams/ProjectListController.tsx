@@ -114,7 +114,7 @@ const ProjectListController = ({ teamId, organizationId }: Props) => {
   );
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onTeamProjectAdded', 'onTeamProjectPermissionUpdated', 'onTeamProjectDeleted'], mutate);
+  useRefresh(['onRefreshClicked', 'onTeamProjectAdded', 'onTeamProjectPermissionUpdated', 'onTeamProjectDeleted'], () => mutate());
 
   return (
     <>

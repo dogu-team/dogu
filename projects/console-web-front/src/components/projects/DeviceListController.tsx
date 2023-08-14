@@ -159,7 +159,7 @@ const DeviceListController = ({ organizationId, projectId }: Props) => {
   });
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onProjectDeviceDeleted'], mutate);
+  useRefresh(['onRefreshClicked', 'onProjectDeviceDeleted'], () => mutate());
 
   return (
     <>

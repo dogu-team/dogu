@@ -35,7 +35,7 @@ const ProjectSideBar = () => {
   const { t } = useTranslation();
   const collapsed = useCollapsibleSidebar((state) => state.collapsed);
 
-  useRefresh(['onProjectUpdated'], mutate);
+  useRefresh(['onProjectUpdated'], () => mutate());
 
   if (isLoading) {
     return (

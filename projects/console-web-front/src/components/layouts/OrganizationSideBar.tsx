@@ -30,7 +30,7 @@ const OrganizationSideBar = () => {
   const { t } = useTranslation();
   const collapsed = useCollapsibleSidebar((state) => state.collapsed);
 
-  useRefresh(['onOrganizationUpdated'], mutate);
+  useRefresh(['onOrganizationUpdated'], () => mutate());
 
   if (isLoading) {
     return (

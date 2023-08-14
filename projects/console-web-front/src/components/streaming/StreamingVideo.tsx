@@ -15,16 +15,17 @@ interface Props {
   videoId?: string;
   rightSidebar?: React.ReactNode;
   children?: React.ReactNode;
-  onResize?: (e: UIEvent) => void;
-  onKeyPress?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
-  onKeyUp?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
-  onWheel?: (e: React.WheelEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void;
-  onMouseDown?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void;
-  onMouseUp?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void;
-  onMouseMove?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void;
-  onMouseLeave?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void;
-  onDoubleClick?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void;
+  onResize?: (e: UIEvent) => void | Promise<void>;
+  onKeyPress?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void | Promise<void>;
+  onKeyUp?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void | Promise<void>;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void | Promise<void>;
+  onWheel?: (e: React.WheelEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
+  onMouseDown?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
+  onMouseUp?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
+  onMouseMove?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
+  onMouseLeave?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
+  onDoubleClick?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
+  onClick?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
 }
 
 const StreamingVideo = ({
@@ -41,6 +42,7 @@ const StreamingVideo = ({
   onMouseMove,
   onMouseLeave,
   onDoubleClick,
+  onClick,
 }: Props) => {
   const { videoRef, loading } = useDeviceStreamingContext();
   const [videoSize, setVideoSize] = useState<VideoSize>({ width: 0, height: 0 });
@@ -206,6 +208,12 @@ const StreamingVideo = ({
             e.preventDefault();
             e.stopPropagation();
             onDoubleClick?.(e, videoSize);
+            focusInputForKeyboardEvent();
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onClick?.(e, videoSize);
             focusInputForKeyboardEvent();
           }}
           readOnly

@@ -116,7 +116,7 @@ const OrganizationInvitationMemberListController = ({ organizationId }: Props) =
   const { data, isLoading, error, page, updatePage, mutate } = usePaginationSWR<UserAndInvitationTokenBase>(`/organizations/${organizationId}/invitations`);
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onInvitationSent', 'onInvitationCanceled'], mutate);
+  useRefresh(['onRefreshClicked', 'onInvitationSent', 'onInvitationCanceled'], () => mutate());
 
   return (
     <>

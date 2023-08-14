@@ -110,7 +110,7 @@ const OrganizationListController = () => {
   const { data, isLoading, isValidating, error, page, updatePage, mutate } = usePaginationSWR<OrganizationBase>(me && `/users/${me.userId}/organizations`);
   const router = useRouter();
 
-  useRefresh(['onRefreshClicked', 'onOrganizationCreated', 'onOrganizationLeft'], mutate);
+  useRefresh(['onRefreshClicked', 'onOrganizationCreated', 'onOrganizationLeft'], () => mutate());
 
   if (isLoading) {
     return null;

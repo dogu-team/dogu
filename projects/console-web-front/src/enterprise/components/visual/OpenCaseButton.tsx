@@ -1,16 +1,19 @@
-import { FolderOpenOutlined } from '@ant-design/icons';
+import { FolderOpenOutlined, LoadingOutlined } from '@ant-design/icons';
 import { ProjectBase, RecordTestCaseBase } from '@dogu-private/console';
 import { Button, Modal } from 'antd';
+import styled from 'styled-components';
 
 import useModal from '../../../hooks/useModal';
+import { flexRowBaseStyle } from '../../../styles/box';
 import CaseSelector from './CaseSelector';
 
 interface Props {
   project: ProjectBase;
-  onSelect: (testCase: RecordTestCaseBase) => void;
+  onSelect: (testCase: RecordTestCaseBase) => void | Promise<void>;
+  isSessionCreating?: boolean;
 }
 
-const OpenCaseButton = ({ project, onSelect }: Props) => {
+const OpenCaseButton = ({ project, onSelect, isSessionCreating }: Props) => {
   const [isOpen, openModal, closeModal] = useModal();
 
   return (
@@ -21,11 +24,21 @@ const OpenCaseButton = ({ project, onSelect }: Props) => {
 
       <Modal open={isOpen} centered title="Select case" footer={null} closable onCancel={closeModal} destroyOnClose>
         <div>
-          <CaseSelector organizationId={project.organizationId} projectId={project.projectId} onSelect={onSelect} />
+          <CaseSelector organizationId={project.organizationId} projectId={project.projectId} onSelect={onSelect} disabled={isSessionCreating} />
         </div>
+
+        {isSessionCreating && (
+          <FlexRow>
+            <LoadingOutlined /> Opening app...
+          </FlexRow>
+        )}
       </Modal>
     </>
   );
 };
 
 export default OpenCaseButton;
+
+const FlexRow = styled.div`
+  ${flexRowBaseStyle}
+`;

@@ -85,7 +85,7 @@ const TeamListController = () => {
   });
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onTeamCreated', 'onTeamUpdated', 'onTeamDeleted', 'onTeamMemberAdded'], mutate);
+  useRefresh(['onRefreshClicked', 'onTeamCreated', 'onTeamUpdated', 'onTeamDeleted', 'onTeamMemberAdded'], () => mutate());
 
   return (
     <>

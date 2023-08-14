@@ -88,7 +88,7 @@ const MemberListController = ({ organizationId, teamId }: Props) => {
   });
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onTeamMemberAdded', 'onTeamMemberDeleted'], mutate);
+  useRefresh(['onRefreshClicked', 'onTeamMemberAdded', 'onTeamMemberDeleted'], () => mutate());
 
   return (
     <>

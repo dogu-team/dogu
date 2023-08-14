@@ -10,9 +10,10 @@ interface Props {
   organizationId: OrganizationId;
   projectId: ProjectId;
   onSelect: (testCase: RecordTestCaseBase) => void;
+  disabled?: boolean;
 }
 
-const CaseSelector = ({ organizationId, projectId, onSelect }: Props) => {
+const CaseSelector = ({ organizationId, projectId, onSelect, disabled }: Props) => {
   const { debouncedValue, handleChangeValues } = useDebouncedInputValues();
   const { data, isLoading, error } = useSWR<PageBase<RecordTestCaseBase>>(
     `/organizations/${organizationId}/projects/${projectId}/record-test-cases?keyword=${debouncedValue}`,
@@ -40,6 +41,7 @@ const CaseSelector = ({ organizationId, projectId, onSelect }: Props) => {
       onSearch={(value) => handleChangeValues(value)}
       loading={isLoading}
       filterOption={false}
+      disabled={disabled}
     />
   );
 };

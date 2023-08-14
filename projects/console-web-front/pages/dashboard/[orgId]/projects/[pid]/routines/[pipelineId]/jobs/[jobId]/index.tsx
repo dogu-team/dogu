@@ -16,7 +16,6 @@ import JobStatusIcon from '../../../../../../../../../src/components/pipelines/J
 import PipelineEmptyLog from '../../../../../../../../../src/components/pipelines/PipelineEmptyLog';
 import PipelineRuntime from '../../../../../../../../../src/components/pipelines/PipelineRuntime';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from '../../../../../../../../../src/hoc/withProject';
-import useRefresh from '../../../../../../../../../src/hooks/useRefresh';
 import useLivePipelineStore from '../../../../../../../../../src/stores/live-pipeline';
 import { pipelineJobEmptyText } from '../../../../../../../../../src/utils/mapper';
 import { isPipelineEmptyLogStatus } from '../../../../../../../../../src/utils/pipeline';

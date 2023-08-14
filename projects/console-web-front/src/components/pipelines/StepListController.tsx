@@ -9,10 +9,8 @@ import styled from 'styled-components';
 import useSWR from 'swr';
 
 import { swrAuthFetcher } from '../../api';
-import useRefresh from '../../hooks/useRefresh';
 import useAuthStore from '../../stores/auth';
 import useLivePipelineStore from '../../stores/live-pipeline';
-import useStepLogsStore from '../../stores/step-logs';
 import { ResultTabMenuItemType, ResultTabMenuKey } from '../../types/routine';
 import { isPipelineEndedWithData, isPipelineInProgress } from '../../utils/pipeline';
 import ErrorBox from '../common/boxes/ErrorBox';

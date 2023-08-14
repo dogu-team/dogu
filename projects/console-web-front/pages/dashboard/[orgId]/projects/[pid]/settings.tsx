@@ -41,7 +41,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
     }
   }, [project]);
 
-  useRefresh(['onProjectScmUpdated'], mutateProject);
+  useRefresh(['onProjectScmUpdated'], () => mutateProject());
 
   const handleSave = async () => {
     if (!editingProject) {

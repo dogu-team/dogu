@@ -132,7 +132,7 @@ const ProjectApplicationListController = ({ organizationId, projectId }: Props) 
   );
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onProjectApplicationUploaded', 'onProjectApplicationDeleted'], mutate);
+  useRefresh(['onRefreshClicked', 'onProjectApplicationUploaded', 'onProjectApplicationDeleted'], () => mutate());
 
   return (
     <>

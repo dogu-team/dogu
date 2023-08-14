@@ -1,7 +1,8 @@
 import { OrganizationBase, ProjectBase } from '@dogu-private/console';
-import { DeviceId } from '@dogu-private/types';
+import { DeviceId, RecordTestCaseId } from '@dogu-private/types';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 
 import { DeviceStreamingLayoutProps } from '../../../components/studio/DeviceStreamingLayout';
 import VisualTestingEditor from '../visual/VisualTestingEditor';
@@ -18,7 +19,7 @@ interface Props {
 
 const VisualTesting = ({ organization, project, deviceId }: Props) => {
   const router = useRouter();
-  const caseId = router.query.caseId as string | undefined;
+  const caseId = router.query.caseId as RecordTestCaseId | undefined;
 
   return (
     <DeviceStreamingLayout
@@ -26,7 +27,7 @@ const VisualTesting = ({ organization, project, deviceId }: Props) => {
       deviceId={deviceId}
       right={caseId ? <VisualTestingEditor /> : <VisualTestingEntry project={project} />}
       title="Visual Testing"
-      screenViewer={<VisualTestingScreenViewer />}
+      screenViewer={<VisualTestingScreenViewer project={project} caseId={caseId} />}
       hideDeviceSelector
     />
   );

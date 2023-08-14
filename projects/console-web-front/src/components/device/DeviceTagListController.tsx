@@ -128,7 +128,7 @@ const DeviceTagListController = ({ organizationId }: Props) => {
   });
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onTagCreated', 'onTagEdited'], mutate);
+  useRefresh(['onRefreshClicked', 'onTagCreated', 'onTagEdited'], () => mutate());
 
   return (
     <>

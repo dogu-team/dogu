@@ -119,7 +119,7 @@ const OrganizationMemberListController = () => {
   });
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onOrgMemberDeleted', 'onOrgMemberUpdated'], mutate);
+  useRefresh(['onRefreshClicked', 'onOrgMemberDeleted', 'onOrgMemberUpdated'], () => mutate());
 
   return (
     <>
