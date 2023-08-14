@@ -21,13 +21,14 @@ import { RecordTestCase } from '../../../../db/entity/record-test-case.entity';
 import { EMPTY_PAGE, Page } from '../../../../module/common/dto/pagination/page';
 import { ApplicationService } from '../../../../module/project/application/application.service';
 import { FindProjectApplicationDto } from '../../../../module/project/application/dto/application.dto';
+import { AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem } from '../../../../module/remote/remote-webdriver/remote-webdriver.appium-batch-request-items';
 import { RemoteWebDriverBatchRequestExecutor } from '../../../../module/remote/remote-webdriver/remote-webdriver.batch-request-executor';
 import { RemoteWebDriverService } from '../../../../module/remote/remote-webdriver/remote-webdriver.service';
 import {
   DeleteSessionRemoteWebDriverBatchRequestItem,
   NewSessionRemoteWebDriverBatchRequestItem,
 } from '../../../../module/remote/remote-webdriver/remote-webdriver.w3c-batch-request-items';
-import { getSortedRecordTestSteps } from '../common';
+import { getSortedRecordTestSteps, makeActionBatchExcutor } from '../common';
 import { CreateRecordTestCaseDto, FindRecordTestCaseByProjectIdDto, NewSessionRecordTestCaseDto, UpdateRecordTestCaseDto } from '../dto/record-test-case.dto';
 import { CreateRecordTestActionWebdriverClickDto, CreateRecordTestStepDto } from '../dto/record-test-step.dto';
 import { RecordTestStepService } from '../record-test-step/record-test-step.service';
@@ -65,6 +66,35 @@ export class RecordTestCaseService {
 
     const page = new Page<RecordTestCaseBase>(dto.page, dto.offset, totalCount, data);
     return page;
+  }
+
+  async getKeyboardShown(organizationId: OrganizationId, projectId: ProjectId, recordTestCaseId: string): Promise<boolean> {
+    const recordTestCase = await this.dataSource
+      .getRepository(RecordTestCase) //
+      .createQueryBuilder('recordTestCase')
+      .leftJoinAndSelect(`recordTestCase.${RecordTestCasePropCamel.recordTestSteps}`, `recordTestStep`)
+      .where(`recordTestCase.${RecordTestCasePropSnake.project_id} = :${RecordTestCasePropCamel.projectId}`, { projectId })
+      .andWhere(`recordTestCase.${RecordTestCasePropSnake.record_test_case_id} = :recordTestCaseId`, { recordTestCaseId })
+      .getOne();
+
+    if (!recordTestCase) {
+      throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
+    }
+    const activeDeviceSerial = recordTestCase.activeDeviceSerial;
+    if (!activeDeviceSerial) {
+      throw new HttpException(`Device does not have activeDeviceSerial. RecordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
+    }
+
+    const device = await this.dataSource.getRepository(Device).findOne({ where: { organizationId, serial: activeDeviceSerial } });
+    if (!device) {
+      throw new HttpException(`Device not found. deviceSerial: ${recordTestCase.activeDeviceSerial}`, HttpStatus.NOT_FOUND);
+    }
+
+    const batchExecutor: RemoteWebDriverBatchRequestExecutor = makeActionBatchExcutor(this.remoteWebDriverService, organizationId, projectId, recordTestCase, device);
+    const appiumIsKeyboardShown = new AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem(batchExecutor, recordTestCase.activeSessionId!);
+    await batchExecutor.execute();
+    const isKeyboardShown = await appiumIsKeyboardShown.response();
+    return isKeyboardShown;
   }
 
   async findRecordTestCaseById(projectId: ProjectId, recordTestCaseId: string): Promise<RecordTestCaseResponse> {
@@ -310,21 +340,8 @@ export class RecordTestCaseService {
     if (!device) {
       throw new HttpException(`Device not found. serial: ${testCase.activeDeviceSerial}`, HttpStatus.NOT_FOUND);
     }
-    const platformType = platformTypeFromPlatform(device.platform);
-    const batchExecutor = new RemoteWebDriverBatchRequestExecutor(this.remoteWebDriverService, {
-      organizationId,
-      projectId: testCase.projectId,
-      deviceId: device.deviceId,
-      deviceSerial: activeDeviceSerial,
-      headers: {
-        [DoguRemoteDeviceJobIdHeader]: activeSessionKey,
-        [DoguDevicePlatformHeader]: platformType,
-        [DoguDeviceSerialHeader]: activeDeviceSerial,
-        [DoguRequestTimeoutHeader]: '10000',
-      },
-      parallel: true,
-    });
 
+    const batchExecutor: RemoteWebDriverBatchRequestExecutor = makeActionBatchExcutor(this.remoteWebDriverService, organizationId, projectId, testCase, device);
     const deleteSessionResponse = new DeleteSessionRemoteWebDriverBatchRequestItem(batchExecutor, activeSessionId);
     await batchExecutor.execute();
 
@@ -378,24 +395,6 @@ export class RecordTestCaseService {
     if (!testCase) {
       throw new HttpException(`RecordTestCase not found.`, HttpStatus.NOT_FOUND);
     }
-
-    // const loadCaseDto: LoadRecordTestCaseDto = {
-    //   deviceId,
-    //   activeDeviceScreenSizeX: 0,
-    //   activeDeviceScreenSizeY: 0,
-    // };
-
-    // const sessionId = await this.loadRecordTestCase(organizationId, projectId, testCase.recordTestCaseId, loadCaseDto);
-
-    // const stepDto: CreateRecordTestStepDto = {
-    //   prevRecordTestStepId: null,
-    //   deviceId,
-    //   type: RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_CLICK,
-    //   screenPositionX: 0,
-    //   screenPositionY: 0,
-    //   screenSizeX: 0,
-    //   screenSizeY: 0,
-    // };
 
     const newSessionDto: NewSessionRecordTestCaseDto = {
       deviceId,
