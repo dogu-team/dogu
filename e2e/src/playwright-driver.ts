@@ -1,6 +1,6 @@
 import { loop } from '@dogu-tech/common';
 import lodash from 'lodash';
-import { Browser, chromium, ElementHandle, Page } from 'playwright';
+import { Browser, chromium, ElementHandle, Locator as _Locator, Page } from 'playwright';
 import { L10n } from './l10n';
 import { Timer } from './timer';
 
@@ -149,6 +149,10 @@ export class PlaywrightDriver {
     const element = await this.findElement(locator, options);
     const text = (await element.textContent()) ?? (await element.inputValue()) ?? (await element.innerText()).valueOf() ?? '';
     return text;
+  }
+
+  locator(locator: Locator): _Locator {
+    return this.page.locator(`xpath=${locator.xpath}`);
   }
 
   async uploadFile(locator: Locator, filePath: string, options?: FindElementOptions): Promise<void> {

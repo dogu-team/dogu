@@ -212,7 +212,7 @@ Dest.withOptions({
         await Driver.sendKeys({ xpath: `//input[@value="${values.value.USER_NAME}"]` }, '1');
         await Driver.clickElement({ xpath: '//button[@access-id="update-proifle-btn"]' });
 
-        await Timer.wait(1000, 'wait for changing username');
+        await Timer.wait(5000, 'wait for changing username');
 
         await Driver.clickElement(
           {
@@ -861,7 +861,7 @@ Dest.withOptions({
 
             test('Start log streaming', async () => {
               await Driver.clickElement({ xpath: '//button[@access-id="toggle-log-btn"]' });
-              await Timer.wait(1000, 'wait for logs');
+              await Timer.wait(5000, 'wait for logs');
             });
 
             test('Check log streaming', async () => {
@@ -911,7 +911,6 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
         await Driver.clickElement({ xpath: `//button[@id="${hostDeviceName}-edit-tag-menu-btn"]` });
         await Driver.clickElement({ xpath: '//p[@access-id="edit-tag-modal-title"]' });
-        await Driver.clickElement({ xpath: '//*[@access-id="device-edit-tag-search-input"]' });
         await Timer.wait(2000, 'wait for tag list show up');
         await Driver.clickElementLazy({ xpath: `//span[contains(@class, "ant-tag") and text()="${values.value.HOST_DEVICE_TAG}"]/span` }, {}, { force: true });
         await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
