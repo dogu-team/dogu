@@ -1,10 +1,10 @@
-import { delay } from '@dogu-tech/common';
+import { delay, loop } from '@dogu-tech/common';
 import { job, test } from '@dogu-tech/dest';
 import { expect } from '@playwright/test';
 import { ElementHandle, Locator, Page } from 'playwright';
-import { Driver } from '../../../src/chromedriver';
 import { dostPlaywrightColor, launchDost } from '../../../src/dost';
 import { copyIosDeviceAgentProject, replaceIosDeviceAgentSigningStyle, replaceWebDriverAgentSigningStyle } from '../../../src/ios-helper';
+import { Driver } from '../../../src/playwright-driver';
 import { getClockTime } from '../../../src/time';
 import { Timer } from '../../../src/timer';
 import { l10n } from './l10n';
@@ -52,7 +52,7 @@ export function runHost(hostName: string, dost: Dost): void {
         },
       );
 
-      token = await tokenText.getAttribute('value');
+      token = (await tokenText.getAttribute('value'))?.valueOf() ?? '';
       console.log(`Token@@@@:${token}`);
     });
 
@@ -211,8 +211,14 @@ export class Dost {
       await (await this.mainPage!.waitForSelector('.chakra-input', { timeout: this.longTimeoutMs })).click({ timeout: this.longTimeoutMs });
       await (await this.mainPage!.waitForSelector('.chakra-input', { timeout: this.longTimeoutMs })).fill(token(), { timeout: this.longTimeoutMs });
       await this.mainPage!.getByText('Connect', { exact: true }).first().click({ timeout: this.InstallTimeoutMs });
-      await Timer.wait(60_000, 'dost launch');
-      const isConnected = await this.mainPage!.getByText('Connected', { exact: true }).first().isVisible({ timeout: this.longTimeoutMs });
+
+      let isConnected = false;
+      for await (const _ of loop(3000, 60)) {
+        isConnected = await this.mainPage!.getByText('Connected', { exact: true }).first().isVisible({ timeout: this.longTimeoutMs });
+        if (isConnected) {
+          break;
+        }
+      }
       if (!isConnected) {
         throw new Error('Dost is not connected');
       }

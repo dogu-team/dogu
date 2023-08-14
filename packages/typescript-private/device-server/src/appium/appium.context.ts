@@ -677,6 +677,9 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
 
   async switchAppiumContext(key: AppiumContextKey): Promise<void> {
     await this.contextLock.acquire('switchAppiumContext', async () => {
+      if (key === this.impl.key) {
+        return;
+      }
       const befImplKey = this.impl.key;
       this.logger.info(`switching appium context: from: ${befImplKey}, to: ${key} start`);
       const befImpl = this.impl;

@@ -1,6 +1,6 @@
 import { OrganizationId, ProjectId, UserId } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
-import { ProjectAndDeviceBase, ProjectScmBase, RoutineBase } from '..';
+import { ProjectAndDeviceBase, ProjectScmBase, ProjectSlackRemoteBase, ProjectSlackRoutineBase, RoutineBase } from '..';
 import { DeviceBase } from './device';
 import { MemberAndRoleGroupBase, MemberBase } from './member';
 import { OrganizationBase } from './organization';
@@ -19,6 +19,8 @@ export interface ProjectRelationTraits {
   projectAndDevices?: ProjectAndDeviceBase[];
   routines?: RoutineBase[];
   projectScms?: ProjectScmBase[];
+  projectSlackRemote?: ProjectSlackRemoteBase[];
+  projectSlackRoutine?: ProjectSlackRoutineBase[];
 }
 interface ProjectResponseTraits {
   members?: MemberBase[];

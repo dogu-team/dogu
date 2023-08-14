@@ -1,9 +1,9 @@
-import { DeviceId, RecordTestStepId } from '@dogu-private/types';
-import { PageDtoBase, RecordTestCaseAndRecordTestStepBase, RecordTestCaseBase } from '../../index';
-import { RecordTestStepResponse } from './record-test-step.dto';
+import { DeviceId } from '@dogu-private/types';
+import { PageDtoBase, RecordTestCaseBase } from '../../index';
 
-export interface CreateRecordTestCaseDtoBase extends Pick<RecordTestCaseBase, 'name'> {
-  name: string;
+export interface CreateRecordTestCaseDtoBase extends Pick<RecordTestCaseBase, 'name' | 'browserName' | 'packageName'> {}
+export interface NewSessionRecordTestCaseDtoBase {
+  deviceId: DeviceId;
 }
 
 export interface FindRecordTestCasesByProjectIdDtoBase extends PageDtoBase {
@@ -14,18 +14,4 @@ export interface UpdateRecordTestCaseDtoBase extends Pick<RecordTestCaseBase, 'n
   name: string;
 }
 
-export interface RecordTestCaseResponse extends RecordTestCaseBase {
-  recordTestSteps: RecordTestStepResponse[];
-}
-
-export interface AddRecordTestStepToRecordTestCaseDtoBase extends Pick<RecordTestCaseAndRecordTestStepBase, 'recordTestStepId' | 'prevRecordTestStepId'> {
-  recordTestStepId: RecordTestStepId;
-  prevRecordTestStepId: RecordTestStepId | null;
-}
-
-export interface NewSessionDtoBase {
-  appVersion?: string;
-  browerName?: string;
-  browserVersion?: string;
-  deviceId: DeviceId;
-}
+export type RecordTestCaseResponse = RecordTestCaseBase;

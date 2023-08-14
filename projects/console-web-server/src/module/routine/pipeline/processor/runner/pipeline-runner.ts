@@ -2,9 +2,14 @@ import { DEST_STATE, isCompleted, isDestCompleted, PIPELINE_STATUS, ProjectId, R
 import { notEmpty } from '@dogu-tech/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
+import dayjs from 'dayjs';
 import { DataSource, EntityManager } from 'typeorm';
-import { Dest, RoutineJob, RoutinePipeline } from '../../../../../db/entity/index';
+
+import { Dest, Device, Project, RoutineJob, RoutinePipeline, User } from '../../../../../db/entity/index';
+import { ProjectSlackRoutine } from '../../../../../db/entity/project-slack-routine.entity';
+import { Routine } from '../../../../../db/entity/routine.entity';
 import { RoutineStep } from '../../../../../db/entity/step.entity';
+import { RoutineDeviceForSlack, SlackMessageService } from '../../../../../enterprise/module/integration/slack/slack-message.service';
 import { DoguLogger } from '../../../../logger/logger';
 import { everyCompleted, everyInStatus, someInStatus } from '../../../common/runner';
 import { PipelineService } from '../../pipeline.service';
@@ -24,6 +29,9 @@ export class PipelineRunner {
     @Inject(JobRunner)
     private readonly jobRunner: JobRunner,
 
+    @Inject(SlackMessageService)
+    private readonly slackMessageService: SlackMessageService,
+
     @Inject(PipelineService)
     private readonly pipelineService: PipelineService,
     private readonly logger: DoguLogger,
@@ -35,6 +43,8 @@ export class PipelineRunner {
       pipeline.inProgressAt = new Date();
     } else if (isCompleted(pipeline.status)) {
       pipeline.completedAt = new Date();
+
+      await this.handleSendingSlackMessage(manager, pipeline, status);
     }
 
     await manager.getRepository(pipeline.constructor.name).save(pipeline);
@@ -187,6 +197,95 @@ export class PipelineRunner {
 
       this.logger.error(`Pipeline [${pipelineId}] has unknown state job ${jobsStatusStr}`);
       return PIPELINE_STATUS.FAILURE;
+    }
+  }
+
+  private async handleSendingSlackMessage(manager: EntityManager, pipeline: RoutinePipeline, status: PIPELINE_STATUS): Promise<void> {
+    try {
+      const project = await manager.getRepository(Project).findOne({ where: { projectId: pipeline.projectId } });
+      if (project === null) {
+        throw new Error(`Project [${pipeline.projectId}] not found.`);
+      }
+      const routine = await manager.getRepository(Routine).findOne({ where: { routineId: pipeline.routineId! } });
+      if (routine === null) {
+        throw new Error(`Routine [${pipeline.routineId}] not found.`);
+      }
+      const routineSlack = await manager.getRepository(ProjectSlackRoutine).findOne({ where: { projectId: project.projectId, routineId: routine.routineId } });
+      if (!routineSlack) {
+        return;
+      }
+
+      const onSuccess = routineSlack.onSuccess && status === PIPELINE_STATUS.SUCCESS;
+      const onFailure = routineSlack.onFailure === 1;
+      if (!onSuccess && !onFailure) {
+        return;
+      }
+
+      const organizationId = project.organizationId;
+      const projectId = pipeline.projectId;
+
+      let executorName = 'API';
+      if (pipeline.creatorId) {
+        const user = await manager.getRepository(User).findOne({ where: { userId: pipeline.creatorId! } });
+        if (user === null) {
+          throw new Error(`User [${pipeline.creatorId}] not found.`);
+        }
+
+        const slackUserId = await this.slackMessageService.getUserId(manager, organizationId, user.email);
+        executorName = slackUserId === undefined ? `${user.name}` : `<@${slackUserId}>`;
+      }
+
+      const isSucceeded = pipeline.status === PIPELINE_STATUS.SUCCESS;
+      const routineName = routine.name;
+      const pipelineUrl = `${process.env.DOGU_CONSOLE_URL}/dashboard/${organizationId}/projects/${projectId}/routines/${pipeline.routinePipelineId}`;
+      const pipelineIndex = pipeline.index;
+      const durationSeconds = dayjs(pipeline.completedAt).diff(dayjs(pipeline.inProgressAt), 'seconds');
+      const routineDevices: RoutineDeviceForSlack[] = [];
+
+      if (pipeline.status !== PIPELINE_STATUS.SUCCESS) {
+        const routineJobs = pipeline.routineJobs ?? [];
+
+        for (const routineJob of routineJobs) {
+          const routineDeviceJobs = routineJob.routineDeviceJobs ?? [];
+
+          const routineDevice: RoutineDeviceForSlack = {
+            routineName: routineJob.name,
+            devices: [],
+          };
+
+          for (const routineDeviceJob of routineDeviceJobs) {
+            if (routineDeviceJob.status === PIPELINE_STATUS.SUCCESS) {
+              continue;
+            }
+
+            const device = await manager.getRepository(Device).findOne({ where: { deviceId: routineDeviceJob.deviceId } });
+            if (device === null) {
+              throw new Error(`Device [${routineDeviceJob.deviceId}] not found.`);
+            }
+
+            const routineDeviceInfo = {
+              device: device,
+              deviecJobUrl: `${pipelineUrl}/jobs/${routineJob.routineJobId}/device-jobs/${routineDeviceJob.routineDeviceJobId}`,
+            };
+
+            routineDevice.devices.push(routineDeviceInfo);
+          }
+
+          routineDevices.push(routineDevice);
+        }
+      }
+
+      await this.slackMessageService.sendRoutineMessage(manager, organizationId, routineSlack.channelId, {
+        isSucceeded,
+        executorName,
+        durationSeconds,
+        routineName,
+        pipelineIndex,
+        pipelineUrl,
+        routineDevices,
+      });
+    } catch (e) {
+      this.logger.error(e);
     }
   }
 

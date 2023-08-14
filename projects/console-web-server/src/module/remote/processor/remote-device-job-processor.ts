@@ -12,13 +12,19 @@ import {
 } from '@dogu-private/types';
 import { notEmpty } from '@dogu-tech/common';
 import { HttpStatus } from '@nestjs/common';
+import dayjs from 'dayjs';
 import _ from 'lodash';
 import { EntityManager } from 'typeorm';
 import { v4 } from 'uuid';
+
 import { Device } from '../../../db/entity/device.entity';
+import { ProjectSlackRemote } from '../../../db/entity/project-slack-remote.entity';
+import { Project } from '../../../db/entity/project.entity';
 import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
 import { RemoteWebDriverInfo } from '../../../db/entity/remote-webdriver-info.entity';
 import { Remote } from '../../../db/entity/remote.entity';
+import { User } from '../../../db/entity/user.entity';
+import { SlackMessageService } from '../../../enterprise/module/integration/slack/slack-message.service';
 import { logger } from '../../logger/logger.instance';
 import { RemoteException } from '../common/exception';
 
@@ -76,12 +82,22 @@ export module RemoteDeviceJobProcessor {
 
     return remoteDeviceJob;
   }
-  export async function updateRemoteDeviceJobSessionId(manager: EntityManager, remoteDeviceJobId: RemoteDeviceJobId, sessionId: WebDriverSessionId): Promise<void> {
-    logger.info(`updateRemoteDeviceJobSessionId. remote-device-job[${remoteDeviceJobId}] sessionId: ${sessionId}`);
-    await manager.getRepository(RemoteDeviceJob).update(remoteDeviceJobId, { sessionId: sessionId });
+  export async function updateRemoteDeviceJobByCapabilities(
+    manager: EntityManager,
+    remoteDeviceJobId: RemoteDeviceJobId,
+    sessionId: WebDriverSessionId,
+    webDriverSeCdp: string | null,
+  ): Promise<void> {
+    logger.info(`updateRemoteDeviceJobByCapabilities. remote-device-job[${remoteDeviceJobId}]`, { sessionId, webDriverSeCdp });
+    await manager.getRepository(RemoteDeviceJob).update(remoteDeviceJobId, { sessionId, webDriverSeCdp });
   }
 
-  export async function setRemoteDeviceJobSessionState(manager: EntityManager, remoteDeviceJob: RemoteDeviceJob, state: REMOTE_DEVICE_JOB_SESSION_STATE): Promise<void> {
+  export async function setRemoteDeviceJobSessionState(
+    manager: EntityManager,
+    remoteDeviceJob: RemoteDeviceJob,
+    state: REMOTE_DEVICE_JOB_SESSION_STATE,
+    slackMessageService: SlackMessageService,
+  ): Promise<void> {
     logger.info(
       `setRemoteDeviceJobState. remote-device-job[${remoteDeviceJob.remoteDeviceJobId}] state transition: ${REMOTE_DEVICE_JOB_SESSION_STATE[remoteDeviceJob.sessionState]} -> ${
         REMOTE_DEVICE_JOB_SESSION_STATE[state]
@@ -93,6 +109,8 @@ export module RemoteDeviceJobProcessor {
       remoteDeviceJob.inProgressAt = new Date();
     } else if (isRemoteDeviceJobSessionCompleted(state)) {
       remoteDeviceJob.completedAt = new Date();
+
+      await handleSendingSlackMessage(manager, slackMessageService, remoteDeviceJob);
     } else {
       throw new Error(`Invalid state: ${remoteDeviceJob.sessionState}`);
     }
@@ -132,6 +150,57 @@ export module RemoteDeviceJobProcessor {
         `isAvailableDevice. The device is not active state. DeviceId: ${deviceId}, OrganizationId: ${organizationId}, ProjectId: ${projectId}`,
         {},
       );
+    }
+  }
+
+  async function handleSendingSlackMessage(manager: EntityManager, slackMessageService: SlackMessageService, remoteDeviceJob: RemoteDeviceJob): Promise<void> {
+    try {
+      const remote = await manager.getRepository(Remote).findOne({ where: { remoteId: remoteDeviceJob.remoteId } });
+      if (remote === null) {
+        throw new Error(`Remote not found.`);
+      }
+      const project = await manager.getRepository(Project).findOne({ where: { projectId: remote.projectId } });
+      if (project === null) {
+        throw new Error(`Project not found.`);
+      }
+      const remoteSlack = await manager.getRepository(ProjectSlackRemote).findOne({ where: { projectId: project.projectId } });
+      if (remoteSlack === null) {
+        throw new Error(`RemoteSlack not found.`);
+      }
+
+      const onSuccess = remoteSlack.onSuccess && remoteDeviceJob.sessionState === REMOTE_DEVICE_JOB_SESSION_STATE.COMPLETE;
+      const onFailure = remoteSlack.onFailure === 1;
+      if (!onSuccess && !onFailure) {
+        return;
+      }
+
+      const organizationId = project.organizationId;
+      const projectId = project.projectId;
+      const isSucceeded = remoteDeviceJob.sessionState === REMOTE_DEVICE_JOB_SESSION_STATE.COMPLETE;
+      const remoteName = remote.remoteId;
+      const remoteUrl = `${process.env.DOGU_CONSOLE_URL}/dashboard/${organizationId}/projects/${projectId}/remotes/${remoteName}`;
+      const durationSeconds = dayjs(remoteDeviceJob.completedAt!).diff(dayjs(remoteDeviceJob.inProgressAt!), 'second');
+      let executorName = '';
+
+      if (remote.creatorId) {
+        const user = await manager.getRepository(User).findOne({ where: { userId: remote.creatorId! } });
+        if (user === null) {
+          throw new Error(`User [${remote.creatorId}] not found.`);
+        }
+
+        const slackUserId = await slackMessageService.getUserId(manager, organizationId, user.email);
+        executorName = slackUserId === undefined ? `${user.name}` : `<@${slackUserId}>`;
+      }
+
+      await slackMessageService.sendRemoteMessage(manager, organizationId, remoteSlack.channelId, {
+        isSucceeded,
+        executorName,
+        remoteName,
+        remoteUrl,
+        durationSeconds,
+      });
+    } catch (e: any) {
+      logger.error(`Error occurred while sending slack message.`, e);
     }
   }
 }

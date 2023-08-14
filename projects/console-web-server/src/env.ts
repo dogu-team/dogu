@@ -20,6 +20,9 @@ export class Env {
   DOGU_CONSOLE_WEB_SERVER_PORT!: number;
 
   @IsFilledString()
+  DOGU_API_BASE_URL!: string;
+
+  @IsFilledString()
   DOGU_CONSOLE_DOMAIN!: string;
 
   @IsOptional()
@@ -152,6 +155,14 @@ export class Env {
 
   @IsFilledString()
   DOGU_NEXUS_PASSWORD!: string;
+
+  @IsOptional()
+  @IsString()
+  DOGU_SLACK_CLIENT_ID!: string;
+
+  @IsOptional()
+  @IsString()
+  DOGU_SLACK_CLIENT_SECRET!: string;
 }
 
 export const env = loadEnvLazySync(Env, { printable: logger });

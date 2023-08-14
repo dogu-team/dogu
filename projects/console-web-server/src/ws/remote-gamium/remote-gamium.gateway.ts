@@ -92,17 +92,15 @@ export class RemoteGamiumGateway implements OnGatewayConnection, OnGatewayDiscon
       this.logger.verbose('message');
       const { data } = event;
       const base64 = Buffer.from(data).toString('base64');
+      for await (const _ of loop(1000, 60)) {
+        if (getContext()) {
+          break;
+        }
+      }
       const context = getContext();
       if (!context) {
-        for await (const _ of loop(1000, 60)) {
-          if (context) {
-            break;
-          }
-        }
-        if (!context) {
-          closeWebSocketWithTruncateReason(webSocket, 1001, 'proxy to device failed');
-          return;
-        }
+        closeWebSocketWithTruncateReason(webSocket, 1001, 'proxy to device failed');
+        return;
       }
       if (Date.now() - context.lastWdSendTime > 1000 * 5) {
         this.remoteGamiumService

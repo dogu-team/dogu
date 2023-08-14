@@ -33,10 +33,7 @@ export const config = {
       login: {
         clientId: env.DOGU_CONSOLE_GOOGLE_OAUTH_LOGIN_CLIENT_ID,
         clientSecret: env.DOGU_CONSOLE_GOOGLE_OAUTH_LOGIN_CLIENT_SECRET,
-        callbackUrl:
-          env.DOGU_RUN_TYPE === 'local'
-            ? `http://${env.DOGU_CONSOLE_DOMAIN}:${env.DOGU_CONSOLE_WEB_SERVER_PORT}/registery/google/callback` //
-            : `https://api.${env.DOGU_CONSOLE_DOMAIN}/registery/google/callback`,
+        callbackUrl: `${env.DOGU_API_BASE_URL}/registery/google/callback`,
       },
     },
   },

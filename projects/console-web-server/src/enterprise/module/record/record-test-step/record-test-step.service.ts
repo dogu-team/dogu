@@ -1,23 +1,13 @@
-import { RecordTestStepActionBase, RecordTestStepBase, RecordTestStepPropCamel, RecordTestStepPropSnake } from '@dogu-private/console';
-import { DeviceId, OrganizationId, platformTypeFromPlatform, ProjectId, RecordTestStepActionId, RecordTestStepId, RECORD_TEST_STEP_ACTION_TYPE } from '@dogu-private/types';
-import {
-  DoguDevicePlatformHeader,
-  DoguDeviceSerialHeader,
-  DoguRemoteDeviceJobIdHeader,
-  DoguRequestTimeoutHeader,
-  HeaderRecord,
-  stringify,
-  toISOStringWithTimezone,
-} from '@dogu-tech/common';
+import { RecordTestStepBase, RecordTestStepPropCamel, RecordTestStepPropSnake } from '@dogu-private/console';
+import { OrganizationId, ProjectId, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
+import { stringify, toISOStringWithTimezone } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource, EntityManager } from 'typeorm';
+import { DataSource, EntityManager, IsNull } from 'typeorm';
 import { v4 } from 'uuid';
 import { Device } from '../../../../db/entity/device.entity';
 import { RecordTestCase } from '../../../../db/entity/record-test-case.entity';
-import { RecordTestStepAction } from '../../../../db/entity/record-test-step-action.entity';
 import { RecordTestStep } from '../../../../db/entity/record-test-step.entity';
-import { EMPTY_PAGE, Page } from '../../../../module/common/dto/pagination/page';
 import { FeatureFileService } from '../../../../module/feature/file/feature-file.service';
 import { DoguLogger } from '../../../../module/logger/logger';
 import { AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem } from '../../../../module/remote/remote-webdriver/remote-webdriver.appium-batch-request-items';
@@ -35,7 +25,9 @@ import {
   W3CPerformActionsRemoteWebDriverBatchRequestItem,
   W3CTakeScreenshotRemoteWebDriverBatchRequestItem,
 } from '../../../../module/remote/remote-webdriver/remote-webdriver.w3c-batch-request-items';
-import { AddActionDto, CreateRecordTestStepDto, FindRecordTestStepsByProjectIdDto, UpdateRecordTestStepDto } from '../dto/record-test-step.dto';
+import { makeActionBatchExcutor } from '../common';
+// import { AddRecordTestStepToRecordTestCaseDto } from '../dto/record-test-case.dto';
+import { CreateRecordTestStepDto } from '../dto/record-test-step.dto';
 
 @Injectable()
 export class RecordTestStepService {
@@ -55,35 +47,14 @@ export class RecordTestStepService {
     private readonly logger: DoguLogger,
   ) {}
 
-  async findRecordTestStepsByProjectId(projectId: ProjectId, dto: FindRecordTestStepsByProjectIdDto): Promise<Page<RecordTestStepBase>> {
-    const rv = await this.dataSource
-      .getRepository(RecordTestStep) //
-      .createQueryBuilder('recordTestStep')
-      .where(`recordTestStep.${RecordTestStepPropCamel.projectId} = :${RecordTestStepPropCamel.projectId}`, { projectId })
-      .andWhere(`recordTestStep.${RecordTestStepPropCamel.name} ILIKE :${RecordTestStepPropCamel.name}`, { name: `%${dto.keyword}%` })
-      .orderBy(`recordTestStep.${RecordTestStepPropCamel.updatedAt}`, 'DESC')
-      .limit(dto.getDBLimit())
-      .offset(dto.getDBOffset())
-      .getManyAndCount();
-
-    const data = rv[0];
-    const totalCount = rv[1];
-
-    if (data.length === 0) {
-      return EMPTY_PAGE;
-    }
-
-    const page = new Page<RecordTestStepBase>(dto.page, dto.offset, totalCount, data);
-    return page;
-  }
-
-  async findRecordTestStepById(projectId: ProjectId, recordTestStepId: RecordTestStepId): Promise<RecordTestStepBase> {
+  async findRecordTestStepById(projectId: ProjectId, recordTestCaseId: RecordTestStepId, recordTestStepId: RecordTestStepId): Promise<RecordTestStepBase> {
     const recordTestStep = await this.dataSource
       .getRepository(RecordTestStep) //
       .createQueryBuilder('recordTestStep')
-      .leftJoinAndSelect(`recordTestStep.${RecordTestStepPropCamel.recordTestStepActions}`, 'recordTestStepAction')
-      .where(`recordTestStep.${RecordTestStepPropSnake.project_id} = :${RecordTestStepPropCamel.projectId}`, { projectId })
-      .andWhere(`recordTestStep.${RecordTestStepPropSnake.record_test_step_id} = :recordTestStepId`, { recordTestStepId })
+      // .leftJoinAndSelect(`recordTestStep.${RecordTestStepPropCamel.recordTestStepActions}`, 'recordTestStepAction')
+      .where(`recordTestStep.${RecordTestStepPropSnake.record_test_step_id} = :${RecordTestStepPropCamel.recordTestStepId}`, { recordTestStepId })
+      .andWhere(`recordTestStep.${RecordTestStepPropSnake.record_test_case_id} = :${RecordTestStepPropCamel.recordTestCaseId}`, { recordTestCaseId })
+      .andWhere(`recordTestStep.${RecordTestStepPropSnake.project_id} = :${RecordTestStepPropCamel.projectId}`, { projectId })
       .getOne();
 
     if (!recordTestStep) {
@@ -93,168 +64,165 @@ export class RecordTestStepService {
     return recordTestStep;
   }
 
-  async createRecordTestStep(projectId: ProjectId, dto: CreateRecordTestStepDto): Promise<RecordTestStepBase> {
-    const { name } = dto;
-    const newData = this.dataSource.getRepository(RecordTestStep).create({
-      recordTestStepId: v4(),
-      projectId,
-      name,
-    });
-
-    const recordTestStep = await this.dataSource.getRepository(RecordTestStep).save(newData);
-    return recordTestStep;
+  async deleteRecordTestStep(projectId: ProjectId, recordTestCaseId: RecordTestCaseId, recordTestStepId: RecordTestStepId): Promise<void> {
+    // const testStep = await this.dataSource.getRepository(RecordTestStep).findOne({ where: { projectId, recordTestCaseId, recordTestStepId } });
+    // if (!testStep) {
+    //   throw new HttpException(`RecordTestStep not found. recordTestStepId: ${recordTestStepId}`, HttpStatus.NOT_FOUND);
+    // }
+    // // FIXME: join data
+    // await this.dataSource.getRepository(RecordTestStep).softRemove(testStep);
   }
 
-  async updateRecordTestStep(projectId: ProjectId, recordTestStepId: RecordTestStepId, dto: UpdateRecordTestStepDto): Promise<RecordTestStepBase> {
-    const { name } = dto;
-    const data = await this.dataSource.getRepository(RecordTestStep).findOne({ where: { projectId, recordTestStepId } });
-    if (!data) {
-      throw new HttpException(`RecordTestStep not found. recordTestStepId: ${recordTestStepId}`, HttpStatus.NOT_FOUND);
-    }
+  public async createRecordTestStep(
+    organizationId: OrganizationId,
+    projectId: ProjectId, //
+    recordTestCaseId: RecordTestCaseId,
+    dto: CreateRecordTestStepDto,
+  ): Promise<RecordTestStep> {
+    const rv = await this.dataSource.manager.transaction(async (manager) => {
+      const { prevRecordTestStepId } = dto;
+      const actionData = dto.actionInfo;
 
-    if (data.name === name) {
-      throw new HttpException(`RecordTestStep name is same. name: ${name}`, HttpStatus.BAD_REQUEST);
-    }
+      actionData.type;
 
-    data.name = name;
-    const rv = await this.dataSource.getRepository(RecordTestStep).save(data);
+      const testCase = await manager.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId } });
+      if (!testCase) {
+        throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
+      }
+      if (!testCase.activeDeviceSerial) {
+        throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
+      }
+
+      // create recordTestStep
+      const recordTestStepId = v4();
+      const newData = manager.getRepository(RecordTestStep).create({
+        recordTestStepId,
+        recordTestCaseId,
+        projectId,
+        prevRecordTestStepId,
+        deviceSerial: testCase.activeDeviceSerial,
+        screenshotUrl: '', //
+      });
+
+      let testStep: RecordTestStep;
+      if (prevRecordTestStepId) {
+        const prev = await manager.getRepository(RecordTestStep).findOne({ where: { projectId, recordTestStepId: prevRecordTestStepId } });
+        if (!prev) {
+          throw new HttpException(`RecordTestStep not found. prevRecordTestStepId: ${prevRecordTestStepId}`, HttpStatus.NOT_FOUND);
+        }
+        // attech prevRecordTestStep
+        const next = await this.getNextRecordTestStep(manager, projectId, recordTestCaseId, prev);
+        testStep = await manager.getRepository(RecordTestStep).save(newData);
+        if (next) {
+          next.prevRecordTestStepId = recordTestStepId;
+          await manager.getRepository(RecordTestStep).save(next);
+        }
+      } else {
+        // root test step
+        const root = await manager.getRepository(RecordTestStep).findOne({ where: { projectId, recordTestCaseId, prevRecordTestStepId: IsNull() } });
+        testStep = await manager.getRepository(RecordTestStep).save(newData);
+        if (root) {
+          root.prevRecordTestStepId = recordTestStepId;
+          await manager.getRepository(RecordTestStep).save(root);
+        }
+      }
+
+      // add action
+      await this.addAction(manager, organizationId, projectId, testStep, dto);
+
+      return testStep;
+    });
     return rv;
   }
 
-  async deleteRecordTestStep(projectId: ProjectId, recordTestStepId: RecordTestStepId): Promise<void> {
-    const testStep = await this.dataSource.getRepository(RecordTestStep).findOne({ where: { projectId, recordTestStepId } });
+  async removeRecordTestStepFromRecordTestCase(
+    manager: EntityManager,
+    projectId: ProjectId,
+    recordTestCaseId: RecordTestCaseId,
+    recordTestStepId: RecordTestCaseId,
+  ): Promise<void> {
+    const testStep = await manager.getRepository(RecordTestStep).findOne({ where: { projectId, recordTestCaseId, recordTestStepId } });
     if (!testStep) {
       throw new HttpException(`RecordTestStep not found. recordTestStepId: ${recordTestStepId}`, HttpStatus.NOT_FOUND);
     }
+    const next = await this.getNextRecordTestStep(manager, projectId, recordTestCaseId, testStep);
+    if (!next) {
+      // FIXME: (felix) remove join table
+      // await manager.getRepository(RecordTestStep).softDelete({ recordTestCaseId, recordTestStepId });
+      // deleteRecordTestStep
+      return;
+    }
 
-    // FIXME: join data
-    await this.dataSource.getRepository(RecordTestStep).softRemove(testStep);
+    const prev = await this.getPrevRecordTestStep(manager, projectId, recordTestCaseId, testStep);
+    if (prev) {
+      await manager.getRepository(RecordTestStep).update({ projectId, recordTestCaseId, recordTestStepId: next.recordTestStepId }, { prevRecordTestStepId: prev.recordTestStepId });
+    } else {
+      await manager.getRepository(RecordTestStep).update({ projectId, recordTestCaseId, recordTestStepId: next.recordTestStepId }, { prevRecordTestStepId: null });
+    }
+
+    // FIXME: (felix) remove join table
+    // await manager.getRepository(RecordTestStep).softDelete({ projectId, recordTestCaseId, recordTestStepId });
+    return;
   }
 
-  async takeScreenShot(
-    organizationId: OrganizationId,
+  private async getNextRecordTestStep(
+    manager: EntityManager, //
     projectId: ProjectId,
-    recordTestCaseId: RecordTestStepActionId,
-    recordTestStepId: RecordTestStepId,
-    deviceId: DeviceId,
-  ): Promise<void> {
-    // const recordTestStepAction = await this.dataSource.getRepository(RecordTestStepAction).findOne({ where: { recordTestStepId } });
-    // if (!recordTestStepAction) {
-    //   throw new HttpException(`RecordTestStep not found. recordTestStepId: ${recordTestStepId}`, HttpStatus.NOT_FOUND);
-    // }
+    recordTestCaseId: RecordTestCaseId,
+    recordTestStep: RecordTestStep,
+  ): Promise<RecordTestStep | null> {
+    const next = await manager.getRepository(RecordTestStep).findOne({ where: { projectId, recordTestCaseId, prevRecordTestStepId: recordTestStep.recordTestStepId } });
+    if (!next) {
+      return null;
+    }
+    return next;
+  }
 
-    const recordTestCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { recordTestCaseId } });
+  private async getPrevRecordTestStep(
+    manager: EntityManager, //
+    projectId: ProjectId,
+    recordTestCaseId: RecordTestCaseId,
+    recordTestStep: RecordTestStep,
+  ): Promise<RecordTestStep | null> {
+    if (!recordTestStep.prevRecordTestStepId) {
+      return null;
+    }
+    const prev = await manager.getRepository(RecordTestStep).findOne({ where: { projectId, recordTestCaseId, recordTestStepId: recordTestStep.prevRecordTestStepId } });
+    if (!prev) {
+      throw new HttpException(
+        `PrevRecordTestStep not found. recordTestStepId: ${recordTestStep.recordTestStepId}, prevRecordTestStepId: ${recordTestStep.prevRecordTestStepId}`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return prev;
+  }
+
+  async addAction(manager: EntityManager, organizationId: OrganizationId, projectId: ProjectId, recordTestStep: RecordTestStep, dto: CreateRecordTestStepDto): Promise<void> {
+    // const { deviceId } = dto;
+    const actionData = dto.actionInfo;
+    const { type } = actionData;
+    const { recordTestCaseId } = recordTestStep;
+
+    const recordTestCase = await manager.getRepository(RecordTestCase).findOne({ where: { recordTestCaseId } });
     if (!recordTestCase) {
       throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
     }
-
-    const sessionId = recordTestCase.activeSessionId;
-    const sessionKey = recordTestCase.activeSessionKey;
-    if (!sessionId || !sessionKey) {
-      throw new HttpException(`Session not found. sessionId: ${sessionId}`, HttpStatus.NOT_FOUND);
+    const activeDeviceSerial = recordTestCase.activeDeviceSerial;
+    if (!activeDeviceSerial) {
+      throw new HttpException(`Device does not have activeDeviceSerial. RecordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
     }
 
-    const device = await this.dataSource.getRepository(Device).findOne({ where: { deviceId } });
+    const device = await manager.getRepository(Device).findOne({ where: { organizationId, serial: activeDeviceSerial } });
     if (!device) {
-      throw new HttpException(`Device not found. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Device not found. deviceSerial: ${recordTestCase.activeDeviceSerial}`, HttpStatus.NOT_FOUND);
     }
 
-    const headers: HeaderRecord = {
-      [DoguRemoteDeviceJobIdHeader]: sessionKey,
-      [DoguDevicePlatformHeader]: platformTypeFromPlatform(device.platform),
-      [DoguDeviceSerialHeader]: device.serial,
-      [DoguRequestTimeoutHeader]: '60000',
-    };
+    const batchExecutor: RemoteWebDriverBatchRequestExecutor = makeActionBatchExcutor(this.remoteWebDriverService, organizationId, projectId, recordTestCase, device);
 
-    const batchExecutor = new RemoteWebDriverBatchRequestExecutor(this.remoteWebDriverService, {
-      organizationId,
-      projectId,
-      deviceId,
-      deviceSerial: device.serial,
-      headers,
-      parallel: true,
-    });
-
+    // FIXME: (felix)
     const screenShotUrlKey = `test-record-test-step-action/${recordTestCase.activeSessionId}/${toISOStringWithTimezone(new Date(), '-')}.png`;
 
-    const takeScreenshot = new W3CTakeScreenshotRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
-    await batchExecutor.execute();
-    const screenshotBuffer = await takeScreenshot.response();
-    const putResult = await this.featureFileService.put({
-      bucketKey: 'organization',
-      key: screenShotUrlKey,
-      body: screenshotBuffer,
-      contentType: 'image/png',
-    });
-    const url = putResult.location;
-
-    await await takeScreenshot
-      .response()
-      .then(async (buffer) => {
-        const putResult = await this.featureFileService.put({
-          bucketKey: 'organization',
-          key: screenShotUrlKey,
-          body: buffer,
-          contentType: 'image/png',
-        });
-        const url = putResult.location;
-        this.logger.debug(`TEST: screenshot url: ${putResult.location}`);
-      })
-      .catch((error) => {
-        this.logger.error(`TEST: screenshot error: ${stringify(error)}`);
-      });
-  }
-
-  async createAction(manager: EntityManager, recordTestStepId: RecordTestStepId, type: RECORD_TEST_STEP_ACTION_TYPE, screenshotUrl: string): Promise<RecordTestStepActionBase> {
-    const newData = manager.getRepository(RecordTestStepAction).create({
-      recordTestStepActionId: v4(),
-      recordTestStepId,
-      type,
-      screenshotUrl,
-    });
-
-    const recordTestStepAction = await manager.getRepository(RecordTestStepAction).save(newData);
-    return recordTestStepAction;
-  }
-
-  async addAction(organizationId: OrganizationId, projectId: ProjectId, recordTestStepId: RecordTestStepId, dto: AddActionDto): Promise<RecordTestStepActionBase> {
-    const { screenPositionX, screenPositionY, recordTestCaseId, deviceId, type } = dto;
-
-    const recordTestCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { recordTestCaseId } });
-    if (!recordTestCase) {
-      throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
-    }
-
-    const sessionId = recordTestCase.activeSessionId;
-    const sessionKey = recordTestCase.activeSessionKey;
-    if (!sessionId || !sessionKey) {
-      throw new HttpException(`Session not found. sessionId: ${sessionId}`, HttpStatus.NOT_FOUND);
-    }
-
-    const device = await this.dataSource.getRepository(Device).findOne({ where: { deviceId } });
-    if (!device) {
-      throw new HttpException(`Device not found. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
-    }
-
-    const headers: HeaderRecord = {
-      [DoguRemoteDeviceJobIdHeader]: sessionKey,
-      [DoguDevicePlatformHeader]: platformTypeFromPlatform(device.platform),
-      [DoguDeviceSerialHeader]: device.serial,
-      [DoguRequestTimeoutHeader]: '60000',
-    };
-
-    const batchExecutor = new RemoteWebDriverBatchRequestExecutor(this.remoteWebDriverService, {
-      organizationId,
-      projectId,
-      deviceId,
-      deviceSerial: device.serial,
-      headers,
-      parallel: true,
-    });
-
-    const screenShotUrlKey = `test-record-test-step-action/${recordTestCase.activeSessionId}/${toISOStringWithTimezone(new Date(), '-')}.png`;
-
-    const takeScreenshot = new W3CTakeScreenshotRemoteWebDriverBatchRequestItem(batchExecutor, sessionId);
+    const takeScreenshot = new W3CTakeScreenshotRemoteWebDriverBatchRequestItem(batchExecutor, recordTestCase.activeSessionId!);
     await batchExecutor.execute();
 
     const screenshotBuffer = await takeScreenshot.response();
@@ -266,18 +234,19 @@ export class RecordTestStepService {
     });
     const url = putResult.location;
 
-    const action = await this.createAction(this.dataSource.manager, recordTestStepId, type, url);
+    recordTestStep.screenshotUrl = url;
+    manager.getRepository(RecordTestStep).save(recordTestStep);
 
     switch (type) {
-      case RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_CLICK:
+      case 'WEBDRIVER_CLICK':
         break;
-      case RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_INPUT:
+      case 'WEBDRIVER_INPUT':
         break;
-      case RECORD_TEST_STEP_ACTION_TYPE.UNSPECIFIED:
-        break;
+      // case RECORD_TEST_STEP_ACTION_TYPE.UNSPECIFIED:
+      //   break;
       default:
         const _exhaustiveCheck: never = type;
-        throw new Error(`Unknown action type: ${_exhaustiveCheck}`);
+        throw new HttpException(`Unknown action type: ${type}`, HttpStatus.BAD_REQUEST);
     }
 
     // screenShot = takeScreenshot()
@@ -292,7 +261,7 @@ export class RecordTestStepService {
     // action
     // elementId = findElement(element -> xpath)
     // elementClick(elementId)
-    return action;
+    // return action;
   }
 
   //FIXME:(felix) test code

@@ -1,0 +1,49 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeBlock from '@theme/CodeBlock';
+
+### 인증 정보
+
+- Access Token
+  - [Access Token](/api)문서에서 확인합니다.
+- Project Id, Organization Id
+  - 조직 > 프로젝트 > 설정 페이지에서 [Project Id, Organization Id](/management/project/settings#project-id)를 확인합니다.
+
+<Tabs groupId="service" defaultValue="cloud" queryString>
+<TabItem value="cloud" label="Cloud" default>
+
+획득한 Access Token, 프로젝트 Id, 조직 Id를 **dogu.config.json**에 적용하세요.
+
+<CodeBlock language="json">
+  {`{
+  "version": 1,
+  "apiBaseUrl": "https://console.dogutech.io", // change to your api base url
+  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
+  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
+  "token": "INSERT_YOUR_TOKEN", // change to your token
+  "runsOn": "${props.runs_on}",
+  "appVersion": "${props.app_version}"
+}`}
+</CodeBlock>
+
+</TabItem>
+    
+<TabItem value="self-hosted" label="Self-Hosted">
+
+획득한 Access Token, 프로젝트 Id, 조직 Id를 **dogu.config.json**에 적용하세요.
+또한 설정한 Dogu 서버의 `DOGU_HOST:4000` 값을 apiBaseUrl에 적용합니다.
+
+<CodeBlock language="json">
+  {`{
+  "version": 1,
+  "apiBaseUrl": "INSERT_YOUR_API_BASE_URL", // change to your api base url
+  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
+  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
+  "token": "INSERT_YOUR_TOKEN", // change to your token
+  "runsOn": "${props.runs_on}",
+  "appVersion": "${props.app_version}"
+}`}
+</CodeBlock>
+
+</TabItem>
+</Tabs>

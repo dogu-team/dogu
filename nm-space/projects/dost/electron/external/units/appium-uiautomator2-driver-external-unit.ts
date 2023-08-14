@@ -63,12 +63,36 @@ export class AppiumUiAutomator2DriverExternalUnit extends IExternalUnit {
       throw new Error('appium-uiautomator2-driver not found in package.json');
     }
 
-    // TODO: henry - move to gui
-    await this.update();
+    const upToDate = await this.checkUpToDate();
+    if (!upToDate) {
+      throw new Error('appium-uiautomator2-driver is not up to date');
+    }
+  }
+
+  private async checkUpToDate(): Promise<boolean> {
+    const messages: string[] = [];
+    await this.execute(['appium', 'driver', 'list', '--json', '--installed', '--updates'], (message) => {
+      messages.push(message);
+    });
+    const message = messages.join('');
+    const packageJson = JSON.parse(message);
+    const upToDate = _.get(packageJson, `uiautomator2.upToDate`, false) as boolean;
+    return upToDate;
+  }
+
+  private async checkInstalled(): Promise<boolean> {
+    const messages: string[] = [];
+    await this.execute(['appium', 'driver', 'list', '--json', '--installed'], (message) => {
+      messages.push(message);
+    });
+    const message = messages.join('');
+    const packageJson = JSON.parse(message);
+    const installed = _.get(packageJson, `uiautomator2.installed`, false) as boolean;
+    return installed;
   }
 
   private async update(): Promise<void> {
-    await this.execute('update');
+    await this.execute(['appium', 'driver', 'update', 'uiautomator2']);
   }
 
   isAgreementNeeded(): boolean {
@@ -79,7 +103,8 @@ export class AppiumUiAutomator2DriverExternalUnit extends IExternalUnit {
     this.logger.warn('do not need agreement');
   }
 
-  private async execute(command: 'install' | 'update'): Promise<void> {
+  private async execute(args: string[], onStdout?: (message: string) => void): Promise<void> {
+    const command = args.join(' ');
     const appiumHome = this.dotEnvConfigService.get('APPIUM_HOME');
     if (!appiumHome) {
       throw new Error('APPIUM_HOME not exist in env');
@@ -97,7 +122,7 @@ export class AppiumUiAutomator2DriverExternalUnit extends IExternalUnit {
       });
       logger.verbose('merged env', { env });
       const appiumPath = HostPaths.external.nodePackage.appiumPath();
-      const child = spawn(pnpm, ['appium', 'driver', command, 'uiautomator2'], {
+      const child = spawn(pnpm, args, {
         cwd: appiumPath,
         env,
       });
@@ -126,6 +151,7 @@ export class AppiumUiAutomator2DriverExternalUnit extends IExternalUnit {
         if (!message) {
           return;
         }
+        onStdout?.(message);
         this.stdLogCallbackService.stdout(message);
         this.logger.info(message);
       });
@@ -143,7 +169,13 @@ export class AppiumUiAutomator2DriverExternalUnit extends IExternalUnit {
 
   async install(): Promise<void> {
     this.unitCallback.onInstallStarted();
-    await this.execute('install');
+    const installed = await this.checkInstalled();
+    if (installed) {
+      this.logger.info('already installed');
+      await this.update();
+    } else {
+      await this.execute(['appium', 'driver', 'install', 'uiautomator2']);
+    }
     this.unitCallback.onInstallCompleted();
   }
 

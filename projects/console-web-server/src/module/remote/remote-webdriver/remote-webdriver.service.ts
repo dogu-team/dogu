@@ -27,6 +27,7 @@ import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
 import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
 import { RemoteWebDriverInfo } from '../../../db/entity/remote-webdriver-info.entity';
+import { SlackMessageService } from '../../../enterprise/module/integration/slack/slack-message.service';
 import { BatchHttpRequest, BatchHttpRequestItem, DeviceMessageRelayer } from '../../device-message/device-message.relayer';
 import { DoguLogger } from '../../logger/logger';
 import { DeviceStatusService } from '../../organization/device/device-status.service';
@@ -56,6 +57,8 @@ export class RemoteWebDriverService {
     private readonly deviceMessageRelayer: DeviceMessageRelayer,
     @Inject(ApplicationService)
     private readonly applicationService: ApplicationService,
+    @Inject(SlackMessageService)
+    private readonly slackMessageService: SlackMessageService,
 
     private readonly logger: DoguLogger,
   ) {}
@@ -216,18 +219,19 @@ export class RemoteWebDriverService {
     if (response.status !== 200) {
       return;
     }
-    const sessionId = (response.resBody as any)?.value?.sessionId as string;
+
+    const sessionId = _.get(response.resBody, 'value.sessionId') as string | undefined;
     if (!sessionId) {
       throw new RemoteException(HttpStatus.BAD_REQUEST, new Error('Session id not found in response'), {});
     }
 
-    // update session id
+    const webDriverSeCdp = _.get(response.resBody, 'value.capabilities.se:cdp', null) as string | null;
     const remoteDeviceJob = await this.dataSource.getRepository(RemoteDeviceJob).findOne({ where: { remoteDeviceJobId: handleResult.remoteDeviceJobId } });
     if (!remoteDeviceJob) {
       throw new RemoteException(HttpStatus.NOT_FOUND, new Error(`handleNewSessionResponse. remote-device-job not found. remoteDeviceJobId: ${handleResult.remoteDeviceJobId}`), {});
     }
 
-    await RemoteDeviceJobProcessor.updateRemoteDeviceJobSessionId(this.dataSource.manager, handleResult.remoteDeviceJobId, sessionId);
+    await RemoteDeviceJobProcessor.updateRemoteDeviceJobByCapabilities(this.dataSource.manager, handleResult.remoteDeviceJobId, sessionId, webDriverSeCdp);
   }
 
   async waitRemoteDeviceJobToInprogress(remoteDeviceJobId: RemoteDeviceJobId): Promise<void> {
@@ -268,7 +272,7 @@ export class RemoteWebDriverService {
 
     const device = remoteDeviceJob.device!;
 
-    await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.COMPLETE);
+    await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(this.dataSource.manager, remoteDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.COMPLETE, this.slackMessageService);
 
     const headers = this.convertHeaders(request.headers);
     const devicePlatform = platformTypeFromPlatform(device.platform);

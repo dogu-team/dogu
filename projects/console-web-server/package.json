@@ -1,6 +1,6 @@
 {
   "name": "console-web-server",
-  "version": "1.6.1",
+  "version": "1.7.0",
   "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
   "author": "Dogu Technologies",
   "scripts": {
@@ -76,6 +76,7 @@
     "class-validator": "0.14.0",
     "cookie-parser": "1.4.6",
     "cross-env": "7.0.3",
+    "dayjs": "^1.11.9",
     "env-cmd": "10.1.0",
     "eventemitter2": "6.4.9",
     "express": "4.18.2",
@@ -90,6 +91,7 @@
     "passport": "0.6.0",
     "passport-google-oauth20": "2.0.0",
     "passport-jwt": "4.0.0",
+    "path-to-regexp": "6.2.1",
     "pg": "8.11.0",
     "plist": "3.0.6",
     "reflect-metadata": "0.1.13",

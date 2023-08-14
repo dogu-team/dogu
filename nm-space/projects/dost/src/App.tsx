@@ -75,6 +75,10 @@ function App() {
   useEffect(() => {
     const getHAConnectionStatus = async () => {
       try {
+        if (!(await ipc.servicesOpenStatusClient.isServicesOpened())) {
+          return;
+        }
+
         const status = await ipc.childClient.getHostAgentConnectionStatus();
         setHAConnectionStatus(status);
       } catch (e) {

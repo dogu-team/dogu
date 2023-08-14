@@ -1,16 +1,12 @@
-import { OrganizationPropCamel, ProjectPropCamel, RecordTestCaseBase, RecordTestCasePropCamel, RecordTestCaseResponse, RecordTestStepPropCamel } from '@dogu-private/console';
-import { OrganizationId, ProjectId, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
+import { OrganizationPropCamel, ProjectPropCamel, RecordTestCaseBase, RecordTestCasePropCamel, RecordTestCaseResponse } from '@dogu-private/console';
+import { OrganizationId, ProjectId, RecordTestCaseId } from '@dogu-private/types';
 import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query } from '@nestjs/common';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 import { PROJECT_ROLE } from '../../../../module/auth/auth.types';
 import { ProjectPermission } from '../../../../module/auth/decorators';
 import { Page } from '../../../../module/common/dto/pagination/page';
-import {
-  AddRecordTestStepToRecordTestCaseDto,
-  CreateRecordTestCaseDto,
-  FindRecordTestCaseByProjectIdDto,
-  NewSessionDto,
-  UpdateRecordTestCaseDto,
-} from '../dto/record-test-case.dto';
+import { CreateRecordTestCaseDto, FindRecordTestCaseByProjectIdDto, NewSessionRecordTestCaseDto, UpdateRecordTestCaseDto } from '../dto/record-test-case.dto';
 import { RecordTestCaseService } from './record-test-case.service';
 
 @Controller('organizations/:organizationId/projects/:projectId/record-test-cases')
@@ -18,6 +14,8 @@ export class RecordTestCaseController {
   constructor(
     @Inject(RecordTestCaseService)
     private readonly recordTestCaseService: RecordTestCaseService,
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
   ) {}
 
   @Get()
@@ -37,6 +35,18 @@ export class RecordTestCaseController {
     return rv;
   }
 
+  @Post(`:${RecordTestCasePropCamel.recordTestCaseId}/new-session`)
+  @ProjectPermission(PROJECT_ROLE.WRITE)
+  async newSessionRecordTestCase(
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
+    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
+    @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
+    @Body() dto: NewSessionRecordTestCaseDto,
+  ): Promise<RecordTestCaseBase> {
+    const rv = await this.recordTestCaseService.newSession(this.dataSource.manager, organizationId, projectId, recordTestCaseId, dto);
+    return rv;
+  }
+
   @Patch(`:${RecordTestCasePropCamel.recordTestCaseId}`)
   @ProjectPermission(PROJECT_ROLE.WRITE)
   async updateRecordTestCase(
@@ -48,10 +58,25 @@ export class RecordTestCaseController {
     return rv;
   }
 
+  @Get(`:${RecordTestCasePropCamel.recordTestCaseId}/keyboard`)
+  @ProjectPermission(PROJECT_ROLE.WRITE)
+  async getKeboardState(
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
+    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
+    @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
+  ): Promise<boolean> {
+    const rv = await this.recordTestCaseService.getKeyboardShown(organizationId, projectId, recordTestCaseId);
+    return rv;
+  }
+
   @Post()
   @ProjectPermission(PROJECT_ROLE.WRITE)
-  async createRecordTestCase(@Param(ProjectPropCamel.projectId) projectId: ProjectId, @Body() dto: CreateRecordTestCaseDto): Promise<RecordTestCaseBase> {
-    const rv = await this.recordTestCaseService.createRecordTestCase(projectId, dto);
+  async createRecordTestCase(
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
+    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
+    @Body() dto: CreateRecordTestCaseDto,
+  ): Promise<RecordTestCaseBase> {
+    const rv = await this.recordTestCaseService.createRecordTestCase(organizationId, projectId, dto);
     return rv;
   }
 
@@ -64,39 +89,12 @@ export class RecordTestCaseController {
     await this.recordTestCaseService.deleteRecordTestCase(projectId, recordTestCaseId);
   }
 
-  @Post(`:${RecordTestCasePropCamel.recordTestCaseId}/record-test-steps`)
-  @ProjectPermission(PROJECT_ROLE.WRITE)
-  async addRecordTestStepToRecordTestCase(
-    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
-    @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
-    @Body() dto: AddRecordTestStepToRecordTestCaseDto,
-  ): Promise<void> {
-    await this.recordTestCaseService.addRecordTestStepToRecordTestCase(projectId, recordTestCaseId, dto);
-  }
-
-  @Delete(`:${RecordTestCasePropCamel.recordTestCaseId}/record-test-steps/:recordTestStepId`)
-  @ProjectPermission(PROJECT_ROLE.WRITE)
-  async removeRecordTestStepFromRecordTestCase(
-    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
-    @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
-    @Param(RecordTestStepPropCamel.recordTestStepId) recordTestStepId: RecordTestStepId,
-  ): Promise<void> {
-    await this.recordTestCaseService.removeRecordTestStepFromRecordTestCase(projectId, recordTestCaseId, recordTestStepId);
-  }
-
-  @Post(`:${RecordTestCasePropCamel.recordTestCaseId}/new-session`)
-  @ProjectPermission(PROJECT_ROLE.WRITE)
-  async newSession(
-    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
-    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
-    @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
-    @Body() dto: NewSessionDto,
-  ): Promise<void> {
-    await this.recordTestCaseService.newSession(organizationId, projectId, recordTestCaseId, dto);
-  }
-
   @Get(':test/test')
   async test() {
     await this.recordTestCaseService.test();
+  }
+  @Get(':test/test2')
+  async test2() {
+    await this.recordTestCaseService.test2();
   }
 }

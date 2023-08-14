@@ -3,3 +3,97 @@ sidebar_position: 1
 title: Slack
 locale: en
 ---
+
+import slack_integration from '@site/static/img/integration/slack/slack_integration.png';
+import slack_integration_2 from '@site/static/img/integration/slack/slack_integration_2.png';
+import slack_channel from '@site/static/img/integration/slack/slack_channel.png';
+import slack_event from '@site/static/img/integration/slack/slack_event.png';
+import slack_call_bot_in_private from '@site/static/img/integration/slack/slack_call_bot_in_private.png';
+import slack_bot_in_channel from '@site/static/img/integration/slack/slack_bot_in_channel.png';
+import slack_private_channel from '@site/static/img/integration/slack/slack_private_channel.png';
+import slack_bot_in_app from '@site/static/img/integration/slack/slack_bot_in_app.png';
+import slack_message_example from '@site/static/img/integration/slack/slack_message_example.png';
+
+## Introduction
+
+You can integrate Dogu with Slack Workspace to send events from Dogu to Slack:
+
+- Remote success and failure events
+- Routine success and failure events
+
+## Integration With Workspace
+
+Go to Organization > Settings > Integration and click the Connect button for Slack.
+
+<img src={slack_integration} />
+
+<br />
+<br />
+
+On the Slack integration page, click the "Allow" button.
+
+<img src={slack_integration_2} />
+
+<br />
+<br />
+
+You can verify that Dogu has been successfully added in the Slack Workspace's App.
+
+<img src={slack_bot_in_app} />
+
+## Channel Settings
+
+On the Remote and Routine pages, you can set up the Slack Channel by clicking on the Slack button.
+
+<img src={slack_channel} />
+
+<br />
+<br />
+
+:::info
+If you wish to set up a Private Channel, you need to invite the Dogu bot to the Slack Channel.
+For more information, please refer to [Private Channel](#private-channel).
+:::
+
+## Event Settings
+
+After configuring the Slack Channel, you can either send all events or just specific events to Slack.
+
+- On Success: Sends to Slack when the event succeeds.
+- On Failure: Sends to Slack when the event fails.
+
+<img src={slack_event} />
+
+## Message Example
+
+Upon successful Slack integration, messages will be sent to the Slack Channel for specific events as shown below.
+
+<img src={slack_message_example} />
+
+<br />
+<br />
+
+:::info
+The Executor mention will only work if the Dogu user's Email and the Slack user's Email are the same.
+:::
+
+## Private Channel
+
+If you want to set up a Private Channel, you need to invite the Dogu bot to the Slack Channel.
+For the invitation, mention @Dogu in the Private Channel.
+
+<img src={slack_call_bot_in_private} />
+
+<br />
+<br />
+
+Click the "Invite" button to invite the Dogu bot to the Slack Channel.
+
+<img src={slack_bot_in_channel} />
+
+<br />
+<br />
+
+When you return to the Dogu page, you can verify that you can properly select the Private Channel.
+
+<img src={slack_private_channel} />

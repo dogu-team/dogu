@@ -6,11 +6,12 @@ interface Props {
   name: string;
   description: React.ReactNode;
   connectButton: React.ReactNode;
+  id?: string;
 }
 
-function IntegrationButton({ icon, name, description, connectButton }: Props) {
+function IntegrationButton({ icon, name, description, connectButton, id }: Props) {
   return (
-    <Container>
+    <Container id={id}>
       <IconContainer>{icon}</IconContainer>
       <TextContainer>
         <p style={{ fontSize: '1rem', fontWeight: '600' }}>{name}</p>

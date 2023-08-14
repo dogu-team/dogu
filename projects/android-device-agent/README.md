@@ -24,3 +24,5 @@ install android sdk
 - build-tools 31.0.0
   cmdline-tools latest
   platform-tools latest
+
+- install jdk 11 with JAVA_HOME

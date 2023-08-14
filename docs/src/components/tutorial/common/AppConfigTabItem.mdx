@@ -1,0 +1,49 @@
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import CodeBlock from '@theme/CodeBlock';
+
+### Authentication Information
+
+- Access Token
+  - Obtain the [Access Token](/api) from the Organization > Settings page.
+- Project Id, Organization Id
+  - Obtain the [Project Id, Organization Id](/management/project/settings#project-id) from the Organization > Project > Settings page.
+
+<Tabs groupId="service" defaultValue="cloud" queryString>
+<TabItem value="cloud" label="Cloud" default>
+
+Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.json**.
+
+<CodeBlock language="json">
+  {`{
+  "version": 1,
+  "apiBaseUrl": "https://console.dogutech.io", // change to your api base url
+  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
+  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
+  "token": "INSERT_YOUR_TOKEN", // change to your token
+  "runsOn": "${props.runs_on}",
+  "appVersion": "${props.app_version}"
+}`}
+</CodeBlock>
+
+</TabItem>
+    
+<TabItem value="self-hosted" label="Self-Hosted">
+
+Apply the obtained API Token, Project Id, and Organization Id to **dogu.config.json**.  
+Also, apply the `DOGU_HOST:4000` value of the configured Dogu server to apiBaseUrl.
+
+<CodeBlock language="json">
+  {`{
+  "version": 1,
+  "apiBaseUrl": "INSERT_YOUR_API_BASE_URL", // change to your api base url
+  "organizationId": "INSERT_YOUR_ORGANIZATION_ID", // change to your organization id
+  "projectId": "INSERT_YOUR_PROJECT_ID", // change to your project id
+  "token": "INSERT_YOUR_TOKEN", // change to your token
+  "runsOn": "${props.runs_on}",
+  "appVersion": "${props.app_version}"
+}`}
+</CodeBlock>
+
+</TabItem>
+</Tabs>

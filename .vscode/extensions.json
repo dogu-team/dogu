@@ -1,7 +1,6 @@
 {
   "recommendations": [
     "arcanis.vscode-zipfs",
-    "bungcip.better-toml",
     "dbaeumer.vscode-eslint",
     "eamodio.gitlens",
     "editorconfig.editorconfig",
@@ -26,6 +25,7 @@
     "github.vscode-github-actions",
     "iliazeus.vscode-ansi",
     "mhutchie.git-graph",
-    "ms-vscode.powershell"
+    "ms-vscode.powershell",
+    "tamasfe.even-better-toml"
   ]
 }

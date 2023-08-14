@@ -15,7 +15,8 @@ import DevicePrerequisites from '@site/src/components/tutorial/android/DevicePre
 import CloneExampleAndVenv from '@site/src/components/tutorial/python/CloneExampleAndVenv.mdx';
 import ActivateVirtualEnv from '@site/src/components/tutorial/python/ActivateVirtualEnv.mdx';
 import InstallDependencies from '@site/src/components/tutorial/python/InstallDependencies.mdx';
-import UploadAndConfigAppTabItem from '@site/src/components/tutorial/common/UploadAndConfigAppTabItemKor.mdx';
+import AppUpload from '@site/src/components/tutorial/common/AppUploadKor.mdx';
+import AppConfigTabItem from '@site/src/components/tutorial/common/AppConfigTabItemKor.mdx';
 import RunCommand from '@site/src/components/tutorial/common/RunCommandKor.mdx';
 import VenvImportError from '@site/src/components/tutorial/python/VenvImportErrorKor.mdx';
 
@@ -30,11 +31,11 @@ import VenvImportError from '@site/src/components/tutorial/python/VenvImportErro
 
 <InstallDependencies title="의존성 설치" />
 
-<UploadAndConfigAppTabItem
+<AppUpload
   app_name="DoguRpgSample.apk"
   app_url="https://github.com/dogu-team/gamium-unity-samples/releases/download/DoguRpgSample-2.0.5/android.zip"
-  app_version="2.0.5"
 />
+<AppConfigTabItem runs_on="android" app_version="2.0.5" />
 <RunCommand run_script="pytest pytest app/test_dogurpgsample.py" />
 
 <VenvImportError />

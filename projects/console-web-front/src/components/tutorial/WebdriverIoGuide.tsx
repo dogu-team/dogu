@@ -147,7 +147,7 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
                     <Alert
                       message={
                         <p>
-                          For Safari in macOS, please run <CodeWithCopyButton language="bash" code="/usr/bin/safaridriver --enable" /> for testing.
+                          For Safari in macOS, please run <CodeWithCopyButton language="bash" code="sudo /usr/bin/safaridriver --enable" /> for testing.
                         </p>
                       }
                     />
