@@ -136,7 +136,7 @@ export async function unforwardall(serial: Serial, printable: Printable = adbLog
 export async function logcatClear(serial: Serial, printable?: Printable): ReturnType<typeof ChildProcess.exec> {
   const random = Math.random();
   adbLogger.verbose('adb.logcatClear begin', { serial, random });
-  const result = await exec(`${adbPrefix()} -s ${serial} logcat -c`, { timeout: 3 * 1000 }, printable);
+  const result = await execIgnoreError(`${adbPrefix()} -s ${serial} logcat -c`, { timeout: 3 * 1000 }, printable);
   adbLogger.verbose('adb.logcatClear end', { serial, random });
   return result;
 }
