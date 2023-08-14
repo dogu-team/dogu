@@ -861,7 +861,7 @@ Dest.withOptions({
 
             test('Start log streaming', async () => {
               await Driver.clickElement({ xpath: '//button[@access-id="toggle-log-btn"]' });
-              await Timer.wait(5000, 'wait for logs');
+              await Timer.wait(8000, 'wait for logs');
             });
 
             test('Check log streaming', async () => {

@@ -117,12 +117,14 @@ export class PlaywrightDriver {
 
   async clickElement(locator: Locator, options?: FindElementOptions, clickOptions?: ClickElementOptions): Promise<void> {
     await this.page.click(`xpath=${locator.xpath}`, { timeout: options?.waitTime ?? 10000, ...clickOptions });
+    await Timer.wait(100, 'clickElement');
   }
   async clickElementLazy(locator: Locator, options?: FindElementOptions, clickOptions?: ClickElementOptions): Promise<void> {
     const elem = this.page.locator(`xpath=${locator.xpath}`);
     await elem.focus();
     await Timer.wait(3000, 'clickElementLazy');
     await elem.click({ timeout: options?.waitTime ?? 10000, ...clickOptions });
+    await Timer.wait(100, 'clickElement');
   }
 
   async focusElement(locator: Locator, options?: FindElementOptions, clickOptions?: ClickElementOptions): Promise<void> {
