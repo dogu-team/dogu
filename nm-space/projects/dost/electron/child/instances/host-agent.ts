@@ -29,6 +29,7 @@ export class HostAgentChild implements Child {
     const DOGU_DEVICE_SERVER_HOST_PORT = await appConfigService.get('DOGU_DEVICE_SERVER_HOST_PORT');
     const DOGU_HOST_AGENT_PORT = await appConfigService.get('DOGU_HOST_AGENT_PORT');
     const DOGU_LOG_LEVEL = await getLogLevel(DOGU_RUN_TYPE, appConfigService);
+    const DOGU_ROOT_PID = process.pid.toString();
     await killProcessOnPort(DOGU_HOST_AGENT_PORT, logger).catch((err) => {
       logger.error('killProcessOnPort', { err });
     });
@@ -45,6 +46,7 @@ export class HostAgentChild implements Child {
           DOGU_LOGS_PATH: HostAgentLogsPath,
           DOGU_HOST_AGENT_PORT,
           DOGU_LOG_LEVEL,
+          DOGU_ROOT_PID,
         },
       },
       childLogger: logger,

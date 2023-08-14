@@ -1,7 +1,7 @@
 import { DoguRunType, NodeEnvType } from '@dogu-private/env-tools';
 import { IsFilledString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
-import { IsIn, IsNumber } from 'class-validator';
+import { IsIn, IsNumber, IsOptional } from 'class-validator';
 
 export class PreloadHostAgentEnv {
   @IsIn(NodeEnvType)
@@ -27,4 +27,8 @@ export class HostAgentEnv extends PreloadHostAgentEnv {
 
   @IsFilledString()
   DOGU_AGENT_VERSION = '0.0.0';
+
+  @IsOptional()
+  @IsNumber()
+  DOGU_ROOT_PID?: number;
 }

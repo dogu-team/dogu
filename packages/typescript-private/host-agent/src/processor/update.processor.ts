@@ -1,13 +1,14 @@
 import { ErrorResult, UpdateAgent } from '@dogu-private/console-host-agent';
 import { Code } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
-import { getFilenameFromUrl, HostPaths } from '@dogu-tech/node';
+import { getFilenameFromUrl, HostPaths, killProcess } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import AdmZip, { IZipEntry } from 'adm-zip';
 import child_process from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { DeviceClientService } from '../device-client/device-client.service';
+import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
 import { UpdateMacTemplatePath } from '../res-map';
 import { CommandProcessRegistry } from './command.process-registry';
@@ -24,8 +25,10 @@ export class UpdateProcessor {
       await this.deviceClientService.deviceHostClient.downloadSharedResource(downloadPath, msg.url, msg.fileSize, {});
 
       // detach shell
+      await this.detachShell(downloadPath);
 
       // quit app
+      killProcess((env.DOGU_ROOT_PID as number) ?? process.pid);
 
       return {
         kind: 'ErrorResult',
@@ -71,6 +74,9 @@ export class UpdateProcessor {
     contents.replace('{{zip_file}}', filename);
 
     const shellPath = path.resolve(HostPaths.doguTempPath(), 'update-mac.sh');
+    if (fs.existsSync(shellPath)) {
+      await fs.promises.unlink(shellPath);
+    }
     await fs.promises.writeFile(shellPath, contents, { encoding: 'utf-8' });
     await fs.promises.chmod(shellPath, 0o755);
     const child = child_process.spawn('sh', [shellPath], { cwd: dirname, detached: true, stdio: 'ignore' });

@@ -2,6 +2,8 @@ app_name="{{app_name}}"
 app_bundle="{{app_bundle}}"
 zip_file="{{zip_file}}"
 
+sleep 10
+
 # Unzip the ZIP file
 osascript -e "display notification \"1. Unzipping ZIP file...\" with title \"Dogu-Agent\""
 echo "1. Unzipping ZIP file..."
