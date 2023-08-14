@@ -1,5 +1,6 @@
 import { RecordTestStepBase } from '@dogu-private/console';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { MdOutlineTouchApp } from 'react-icons/md';
 import styled from 'styled-components';
 
@@ -10,13 +11,20 @@ interface Props {
 }
 
 const StepPreview = ({ step }: Props) => {
+  const router = useRouter();
+  const isSelected = router.query.step === step.recordTestStepId;
+
   return (
-    <Button>
+    <Button
+      onClick={() => {
+        router.replace({ query: { ...router.query, step: step.recordTestStepId } }, undefined, { shallow: true });
+      }}
+    >
       <IconWrapper>
         <MdOutlineTouchApp />
       </IconWrapper>
-      <ImageWrapper>
-        <Image src={step.screenshotUrl} fill alt={step.recordTestStepId} style={{ objectFit: 'contain' }} />
+      <ImageWrapper isSelected={isSelected}>
+        <Image src={step.screenshotUrl} fill sizes="256px" quality={10} alt={step.recordTestStepId} style={{ objectFit: 'contain' }} />
       </ImageWrapper>
     </Button>
   );
@@ -26,7 +34,7 @@ export default StepPreview;
 
 const Button = styled.button`
   width: 100%;
-  margin: 0.5rem 0;
+  margin: 8px 0;
   display: flex;
   background-color: #fff;
 `;
@@ -42,11 +50,11 @@ const IconWrapper = styled.div`
   flex-shrink: 0;
 `;
 
-const ImageWrapper = styled.div`
+const ImageWrapper = styled.div<{ isSelected: boolean }>`
   position: relative;
   margin-left: 0.5rem;
   flex: 1;
   padding-top: 100%;
-  border: 1px solid #e5e5e5;
-  border-radius: 0.25rem;
+  border: 3px solid ${(props) => (props.isSelected ? props.theme.colorPrimary : 'transparent')};
+  border-radius: 0.35rem;
 `;

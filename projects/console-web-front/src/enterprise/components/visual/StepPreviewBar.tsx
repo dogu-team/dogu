@@ -1,32 +1,39 @@
-import { RecordTestCaseBase, RecordTestStepBase } from '@dogu-private/console';
+import { RecordTestStepBase } from '@dogu-private/console';
 import { useRouter } from 'next/router';
-import { reverse } from 'ramda';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import useSWR from 'swr';
+import useEventStore from '../../../stores/events';
 
-import { swrAuthFetcher } from '../../../api';
-import useRefresh from '../../../hooks/useRefresh';
 import StepPreview from './StepPreview';
 
-const StepPreviewBar = () => {
+interface Props {
+  steps: RecordTestStepBase[];
+  currentStepIndex: number;
+}
+
+const StepPreviewBar = ({ steps, currentStepIndex }: Props) => {
   const router = useRouter();
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const orgId = router.query.orgId;
-  const projectId = router.query.pid;
-  const caseId = router.query.caseId;
-  const { data, isLoading, error, mutate } = useSWR<RecordTestCaseBase>(`/organizations/${orgId}/projects/${projectId}/record-test-cases/${caseId}`, swrAuthFetcher, {
-    revalidateOnFocus: false,
-  });
 
-  useRefresh(['onRecordStepCreated'], (payload) => {
-    const rv = payload as RecordTestStepBase;
-    if (rv.recordTestCaseId === caseId) {
-      mutate().then(() => {
-        wrapperRef.current?.scrollTo({ top: wrapperRef.current.scrollHeight, behavior: 'smooth' });
-      });
+  useEffect(() => {
+    const unsub = useEventStore.subscribe(({ eventName }) => {
+      if (eventName === 'onRecordStepCreated') {
+        if (wrapperRef.current) {
+          wrapperRef.current.scrollTo({ top: wrapperRef.current.scrollHeight, behavior: 'smooth' });
+        }
+      }
+    });
+
+    return () => {
+      unsub();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (router.query.step && currentStepIndex > -1 && wrapperRef.current) {
+      wrapperRef.current.scrollTo({ top: currentStepIndex * 215, behavior: 'smooth' });
     }
-  });
+  }, [router.query.step, currentStepIndex]);
 
   return (
     <div style={{ height: '100%' }}>
@@ -34,9 +41,9 @@ const StepPreviewBar = () => {
         <Title>Steps</Title>
       </TitleWrapper>
       <PreviewWrapper ref={wrapperRef}>
-        {isLoading && <div>Loading...</div>}
-        {error && <div>Something went wrong...</div>}
-        {data && data.recordTestSteps && reverse(data.recordTestSteps).map((item) => <StepPreview key={item.recordTestStepId} step={item} />)}
+        {steps.map((item) => (
+          <StepPreview key={item.recordTestStepId} step={item} />
+        ))}
       </PreviewWrapper>
     </div>
   );

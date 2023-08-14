@@ -1,22 +1,69 @@
+import { RecordTestCaseBase, RecordTestStepBase } from '@dogu-private/console';
+import { OrganizationId, ProjectId, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
+import { useRouter } from 'next/router';
+import { reverse } from 'ramda';
 import styled from 'styled-components';
+import useSWR from 'swr';
 
+import { swrAuthFetcher } from '../../../api';
+import useRefresh from '../../../hooks/useRefresh';
 import StepEditor from './StepEditor';
 import StepNavigator from './StepNavigator';
 import StepPreviewBar from './StepPreviewBar';
 
 const VisualTestingEditor = () => {
+  const router = useRouter();
+  const orgId = router.query.orgId as OrganizationId;
+  const projectId = router.query.pid as ProjectId;
+  const caseId = router.query.caseId as RecordTestCaseId | undefined;
+  const stepId = router.query.step as RecordTestStepId | undefined;
+  const { data, isLoading, error, mutate } = useSWR<RecordTestCaseBase>(caseId && `/organizations/${orgId}/projects/${projectId}/record-test-cases/${caseId}`, swrAuthFetcher, {
+    revalidateOnFocus: false,
+  });
+
+  const steps = reverse(data?.recordTestSteps ?? []);
+  const currentStep = stepId ? steps.find((step) => step.recordTestStepId === stepId) : undefined;
+  const currentStepPageNumber = currentStep ? steps.indexOf(currentStep) + 1 ?? 0 : 0;
+
+  useRefresh(['onRecordStepCreated'], (payload) => {
+    const rv = payload as RecordTestStepBase;
+    if (rv.recordTestCaseId === caseId) {
+      mutate();
+    }
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!data || error) {
+    return <div>Something went wrong...</div>;
+  }
+
   return (
     <Box>
       <EditorWrapper>
         <StepWrapper>
-          <StepEditor />
+          <StepEditor step={currentStep} />
         </StepWrapper>
         <NavigatorWrapper>
-          <StepNavigator />
+          <StepNavigator
+            currentStepIndex={currentStepPageNumber}
+            totalStepCount={steps.length}
+            onCurrentStepIndexChanged={(value) => {
+              router.push({ query: { ...router.query, step: steps[value - 1]?.recordTestStepId } }, undefined, { shallow: true });
+            }}
+            onNextStep={() => {
+              router.push({ query: { ...router.query, step: steps[currentStepPageNumber]?.recordTestStepId } }, undefined, { shallow: true });
+            }}
+            onPrevStep={() => {
+              router.push({ query: { ...router.query, step: steps[currentStepPageNumber - 2]?.recordTestStepId } }, undefined, { shallow: true });
+            }}
+          />
         </NavigatorWrapper>
       </EditorWrapper>
       <PreviewSidebar>
-        <StepPreviewBar />
+        <StepPreviewBar currentStepIndex={currentStepPageNumber - 1} steps={steps} />
       </PreviewSidebar>
     </Box>
   );

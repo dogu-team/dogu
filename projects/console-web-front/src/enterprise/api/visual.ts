@@ -25,3 +25,8 @@ export const createStep = async (dto: { organizationId: OrganizationId; projectI
   );
   return data;
 };
+
+export const getDeviceKeyboardShown = async (organizationId: OrganizationId, projectId: ProjectId, recordTestCaseId: RecordTestCaseId) => {
+  const { data } = await api.get<boolean>(`/organizations/${organizationId}/projects/${projectId}/record-test-cases/${recordTestCaseId}/keyboard`);
+  return data;
+};
