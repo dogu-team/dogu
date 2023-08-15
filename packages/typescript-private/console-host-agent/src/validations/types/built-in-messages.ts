@@ -201,7 +201,33 @@ export class ErrorResult extends Kindable<'ErrorResult'> {
   value!: ErrorResultDto;
 }
 
-const RequestParamValue = [HttpProxyRequest, BatchHttpProxyRequest] as const;
+@OneOf()
+export class UpdateAgentRequest extends Kindable<'UpdateAgentRequest'> {
+  static override kind = 'UpdateAgentRequest';
+
+  @IsFilledString()
+  url!: string;
+
+  @IsNumber()
+  fileSize!: number;
+
+  @IsFilledString()
+  appname!: string;
+}
+
+@OneOf()
+export class UpdateAgentResponse extends Kindable<'UpdateAgentResponse'> {
+  static override kind = 'UpdateAgentResponse';
+
+  @IsBoolean()
+  success!: boolean;
+
+  @IsOptional()
+  @IsString()
+  message?: string;
+}
+
+const RequestParamValue = [HttpProxyRequest, BatchHttpProxyRequest, UpdateAgentRequest] as const;
 export type RequestParamValue = Instance<(typeof RequestParamValue)[number]>;
 
 @OneOf()
@@ -213,7 +239,7 @@ export class RequestParam extends Kindable<'RequestParam'> {
   value!: RequestParamValue;
 }
 
-const ResponseResultValue = [HttpProxyResponse, BatchHttpProxyResponse] as const;
+const ResponseResultValue = [HttpProxyResponse, BatchHttpProxyResponse, UpdateAgentResponse] as const;
 export type ResponseResultValue = Instance<(typeof ResponseResultValue)[number]>;
 
 @OneOf()
@@ -324,18 +350,4 @@ export class Result {
   @ValidateNested()
   @TransformByKind(ResultValue)
   value!: ResultValue;
-}
-
-@OneOf()
-export class UpdateAgent extends Kindable<'UpdateAgent'> {
-  static override kind = 'UpdateAgent';
-
-  @IsFilledString()
-  url!: string;
-
-  @IsNumber()
-  fileSize!: number;
-
-  @IsFilledString()
-  appname!: string;
 }
