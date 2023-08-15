@@ -86,7 +86,7 @@ const PipelineListController = ({ organizationId, projectId }: Props) => {
     swrAuthFetcher,
   );
 
-  useRefresh(['onRefreshClicked', 'onPipelineCreated'], mutate);
+  useRefresh(['onRefreshClicked', 'onPipelineCreated'], () => mutate());
 
   if (!data && isLoading) {
     <LoadingBox>

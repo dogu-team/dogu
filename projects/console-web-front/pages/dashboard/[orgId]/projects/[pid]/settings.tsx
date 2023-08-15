@@ -14,7 +14,7 @@ import { shallow } from 'zustand/shallow';
 
 import { NextPageWithLayout } from 'pages/_app';
 import { deleteProject, getProjectAccessToken, regenerateProjectAccessToken, updateProject } from 'src/api/project';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
 import { sendErrorNotification, sendSuccessNotification } from '../../../../../src/utils/antd';
 import DangerZone from '../../../../../src/components/common/boxes/DangerZone';
@@ -41,7 +41,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
     }
   }, [project]);
 
-  useRefresh(['onProjectScmUpdated'], mutateProject);
+  useRefresh(['onProjectScmUpdated'], () => mutateProject());
 
   const handleSave = async () => {
     if (!editingProject) {
@@ -56,7 +56,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
       fireEvent('onProjectUpdated');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('project:projectUpdateFailedMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('project:projectUpdateFailedMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
     setLoading(false);
@@ -69,7 +69,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
       router.push(`/dashboard/${organization.organizationId}/projects`);
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('project:projectDeleteFailedMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('project:projectDeleteFailedMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   }, [organization.organizationId, project.projectId, router]);
@@ -80,7 +80,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
       return token;
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(`Failed to get project token.\n${getErrorMessage(e)}`);
+        sendErrorNotification(`Failed to get project token.\n${getErrorMessageFromAxios(e)}`);
       }
     }
   }, [organization.organizationId, project.projectId]);

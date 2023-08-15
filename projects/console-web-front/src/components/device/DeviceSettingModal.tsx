@@ -11,7 +11,7 @@ import Trans from 'next-translate/Trans';
 
 import H5 from 'src/components/common/headings/H5';
 import { updateDevice } from 'src/api/device';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import { isDesktop } from '../../utils/device';
@@ -58,7 +58,7 @@ const DeviceSettingModal = ({ isOpen, device, close }: Props) => {
       close();
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:deviceSettingFailureMsg', { message: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:deviceSettingFailureMsg', { message: getErrorMessageFromAxios(e) }));
       }
     }
     setLoading(false);

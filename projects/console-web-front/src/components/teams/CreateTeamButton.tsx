@@ -8,7 +8,7 @@ import { AxiosError } from 'axios';
 
 import useModal from 'src/hooks/useModal';
 import useEventStore from 'src/stores/events';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import FormControlModal from '../modals/FormControlModal';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 
@@ -36,7 +36,7 @@ const CreateTeamButton = () => {
       closeModal();
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('team:createNewTeamFailedMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('team:createNewTeamFailedMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };

@@ -8,7 +8,7 @@ import { USER_EMAIL_MAX_LENGTH, USER_EMAIL_MIN_LENGTH, USER_PASSWORD_MAX_LENGTH,
 import { signIn } from 'src/api/registery';
 import { useRouter } from 'next/router';
 import SubmitButton from '../buttons/SubmitButton';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import InputItem from '../forms/InputItem';
 import { sendErrorNotification } from '../../utils/antd';
 
@@ -41,7 +41,7 @@ const SignInForm = (props: Props) => {
           if (e.response?.status === 400 || e.response?.status === 401 || e.response?.status === 404) {
             setError(t('registery:signInValidationFailErrorMsg'));
           } else {
-            sendErrorNotification(t('registery:signInErrorMsg', { reason: getErrorMessage(e) }));
+            sendErrorNotification(t('registery:signInErrorMsg', { reason: getErrorMessageFromAxios(e) }));
           }
         }
       }

@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { createOrganization } from '../../api/organization';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import FormControlModal from '../modals/FormControlModal';
 
 interface Props {
@@ -44,7 +44,7 @@ const CreateOrganizationModal = ({ open, close }: Props) => {
       router.push(`/dashboard/${organization.organizationId}`);
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('account:createOrganizationFailureMessage', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('account:createOrganizationFailureMessage', { reason: getErrorMessageFromAxios(e) }));
       }
     }
     setLoading(false);

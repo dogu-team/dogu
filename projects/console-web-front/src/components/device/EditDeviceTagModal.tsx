@@ -14,7 +14,7 @@ import { swrAuthFetcher } from 'src/api';
 import { createTag } from 'src/api/tag';
 import { attachTagToDevice, detachTagFromDevice } from 'src/api/device';
 import useEventStore from 'src/stores/events';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import { access } from 'fs';
 
@@ -64,7 +64,7 @@ const EditDeviceTagModal = ({ deviceId, isOpen, close }: Props) => {
       fireEvent('onDeviceTagUpdated');
       mutateDeviceTags();
     } catch (e) {
-      if (e instanceof AxiosError) sendErrorNotification(t('device-farm:deviceTagEditFailureMsg', { reason: getErrorMessage(e) }));
+      if (e instanceof AxiosError) sendErrorNotification(t('device-farm:deviceTagEditFailureMsg', { reason: getErrorMessageFromAxios(e) }));
     }
   };
 
@@ -74,7 +74,7 @@ const EditDeviceTagModal = ({ deviceId, isOpen, close }: Props) => {
       fireEvent('onDeviceTagUpdated');
       mutateDeviceTags();
     } catch (e) {
-      if (e instanceof AxiosError) sendErrorNotification(t('device-farm:deviceTagEditFailureMsg', { reason: getErrorMessage(e) }));
+      if (e instanceof AxiosError) sendErrorNotification(t('device-farm:deviceTagEditFailureMsg', { reason: getErrorMessageFromAxios(e) }));
     }
   };
 
@@ -97,7 +97,7 @@ const EditDeviceTagModal = ({ deviceId, isOpen, close }: Props) => {
       sendSuccessNotification(t('device-farm:deviceTagCreationSuccessMsg'));
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:deviceTagCreationErrorMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:deviceTagCreationErrorMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
     setIsLoading(false);

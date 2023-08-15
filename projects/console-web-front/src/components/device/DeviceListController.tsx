@@ -16,7 +16,7 @@ import ErrorBox from '../common/boxes/ErrorBox';
 import DeviceConnectionStateTag from './DeviceConnectionStateTag';
 import DeviceDetailModal from './DeviceDetailModal';
 import useDeviceFilterStore from 'src/stores/device-filter';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import { flexRowBaseStyle, flexRowSpaceBetweenStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import { menuItemButtonStyles } from '../../styles/button';
 import useModal from '../../hooks/useModal';
@@ -62,7 +62,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
       fireEvent('onDeviceStopped');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:stopUsingDeviceFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:stopUsingDeviceFailureMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };
@@ -74,7 +74,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
       fireEvent('onDeviceReboot');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:rebootDeviceFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:rebootDeviceFailureMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };
@@ -196,11 +196,13 @@ const DeviceListController = () => {
   );
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onDeviceTagUpdated', 'onDeviceAdded', 'onDeviceUpdated', 'onAddDeviceToProjectModalClosed', 'onDeviceStopped', 'onDeviceReboot'], mutate);
+  useRefresh(['onRefreshClicked', 'onDeviceTagUpdated', 'onDeviceAdded', 'onDeviceUpdated', 'onAddDeviceToProjectModalClosed', 'onDeviceStopped', 'onDeviceReboot'], () =>
+    mutate(),
+  );
 
   if (error) {
     if (error instanceof AxiosError) {
-      return <ErrorBox title="Oops..." desc={getErrorMessage(error)} />;
+      return <ErrorBox title="Oops..." desc={getErrorMessageFromAxios(error)} />;
     }
   }
 

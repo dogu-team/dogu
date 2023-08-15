@@ -10,7 +10,7 @@ import { useState } from 'react';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import useEventStore from '../../stores/events';
 import { AxiosError } from 'axios';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 
 interface Props {
   isOpen: boolean;
@@ -46,7 +46,7 @@ const CreateProjectModal = ({ isOpen, close }: Props) => {
         router.push(`${router.asPath}/${result.projectId}/get-started`);
       } catch (e) {
         if (e instanceof AxiosError) {
-          sendErrorNotification(t('organization:newProjectFailTitle', { reason: getErrorMessage(e) }));
+          sendErrorNotification(t('organization:newProjectFailTitle', { reason: getErrorMessageFromAxios(e) }));
         }
       }
     }

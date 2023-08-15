@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 import { updateProjectScm } from '../../api/project';
 import useGitIntegrationStore from '../../stores/git-integration';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import DangerZone from '../common/boxes/DangerZone';
 import GitIntegrationForm, { GitIntegrationFormValues } from './GitIntegrationForm';
 
@@ -26,7 +26,7 @@ const GitIntegrationDangerButton = () => {
       updateStatus(true);
     } catch (e) {
       if (isAxiosError(e)) {
-        sendErrorNotification(t('projectUpdateFailedMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('projectUpdateFailedMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };

@@ -14,7 +14,7 @@ import { swrAuthFetcher } from '../../api/index';
 import { enableDevice, removeDeviceFromProject } from '../../api/device';
 import useDebouncedInputValues from '../../hooks/useDebouncedInputValues';
 import useEventStore from '../../stores/events';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 
 interface Props {
@@ -61,7 +61,7 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
       sendSuccessNotification(t('device-farm:addDeviceToProjectSuccessMsg'));
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:addDeviceToProjectFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:addDeviceToProjectFailureMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };
@@ -74,7 +74,7 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
       mutateDeviceProjects();
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:toggleDeviceAsGlobalFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:toggleDeviceAsGlobalFailureMsg', { reason: getErrorMessageFromAxios(e) }));
       }
       setIsGlobal(isGlobalProp);
     }
@@ -87,7 +87,7 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
       sendSuccessNotification(t('device-farm:removeDeviceFromProjectSuccessMsg'));
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:removeDeviceFromProjectFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:removeDeviceFromProjectFailureMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };

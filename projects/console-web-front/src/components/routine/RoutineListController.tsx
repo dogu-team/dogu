@@ -20,7 +20,7 @@ const RoutineListController = ({ organizationId, projectId }: Props) => {
   const { data, isLoading, error, mutate } = useSWR<RoutineBase[]>(`/organizations/${organizationId}/projects/${projectId}/routines?name=`, swrAuthFetcher);
   const { t } = useTranslation();
 
-  useRefresh(['onRoutineCreated', 'onRoutineDeleted'], mutate);
+  useRefresh(['onRoutineCreated', 'onRoutineDeleted'], () => mutate());
 
   if (isLoading) {
     return <LoadingOutlined />;

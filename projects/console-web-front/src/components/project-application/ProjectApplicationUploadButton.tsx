@@ -11,7 +11,7 @@ import { uploadProjectApplication } from '../../api/project-application';
 import useModal from '../../hooks/useModal';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 
 interface Props {
   organizationId: OrganizationId;
@@ -39,7 +39,7 @@ const ProjectApplicationUploadButton = ({ organizationId, projectId }: Props) =>
       handleCloseModal();
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('project-app:uploadAppFailureMessage', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('project-app:uploadAppFailureMessage', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };

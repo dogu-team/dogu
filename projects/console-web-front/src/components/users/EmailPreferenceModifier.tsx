@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import { updateUserEmailPreference } from '../../api/user';
 import useRequest from '../../hooks/useRequest';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 
 interface Props {
   user: UserBase;
@@ -36,7 +36,7 @@ const EmailPreferenceModifier = ({ user }: Props) => {
       sendSuccessNotification(t('account:updateEmailPreferenceSuccessMessage'));
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('account:updateEmailPreferenceFailureMessage', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('account:updateEmailPreferenceFailureMessage', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };

@@ -7,7 +7,7 @@ import resources from '../../resources/index';
 import { deleteReaction, updateReaction } from '../../api/change-log';
 import useRequest from '../../hooks/useRequest';
 import { sendErrorNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import useEventStore from '../../stores/events';
 import ReactionButton from './ReactionButton';
 
@@ -28,7 +28,7 @@ const ReactionButtonBar = ({ selectedReaction, changeLogId }: Props) => {
         fireEvent('onChangeLogReactionUpdated');
       } catch (e) {
         if (isAxiosError(e)) {
-          sendErrorNotification(`Failed to delete.\n${getErrorMessage(e)}`);
+          sendErrorNotification(`Failed to delete.\n${getErrorMessageFromAxios(e)}`);
         }
       }
 
@@ -40,7 +40,7 @@ const ReactionButtonBar = ({ selectedReaction, changeLogId }: Props) => {
       fireEvent('onChangeLogReactionUpdated');
     } catch (e) {
       if (isAxiosError(e)) {
-        sendErrorNotification(`Failed to react.\n${getErrorMessage(e)}`);
+        sendErrorNotification(`Failed to react.\n${getErrorMessageFromAxios(e)}`);
       }
     }
   };

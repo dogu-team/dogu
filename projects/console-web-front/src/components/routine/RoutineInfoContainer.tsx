@@ -13,7 +13,7 @@ import useEventStore from '../../stores/events';
 import { flexRowBaseStyle } from '../../styles/box';
 import { menuItemButtonStyles } from '../../styles/button';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import MenuItemButton from '../buttons/MenuItemButton';
 import H6 from '../common/headings/H6';
 
@@ -40,7 +40,7 @@ const RoutineInfoContainer = ({ orgId, projectId, routine }: Props) => {
       router.push(`/dashboard/${orgId}/projects/${projectId}/routines`);
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('routine:deleteRoutineFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('routine:deleteRoutineFailureMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };

@@ -15,7 +15,7 @@ import usePaginationSWR from 'src/hooks/usePaginationSWR';
 import useRefresh from 'src/hooks/useRefresh';
 import useAuthStore from 'src/stores/auth';
 import useProjectMemberFilterStore from 'src/stores/project-member-filter';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import PermissionSelector from '../PermissionSelector';
 import ProfileImageWithName from '../users/ProfileImageWithName';
 import ProfileImage from '../ProfileImage';
@@ -50,7 +50,7 @@ const MemberItem = ({ item, projectId, mutateMembers }: MemberItemProps) => {
         mutateMembers();
       } catch (e) {
         if (e instanceof AxiosError) {
-          sendErrorNotification(t('project-member:updateMemberPermissionFailureMsg', { reason: getErrorMessage(e) }));
+          sendErrorNotification(t('project-member:updateMemberPermissionFailureMsg', { reason: getErrorMessageFromAxios(e) }));
         }
         onError();
       }
@@ -69,7 +69,7 @@ const MemberItem = ({ item, projectId, mutateMembers }: MemberItemProps) => {
       sendSuccessNotification(t('project-member:removeMemberSuccessMsg'));
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('project-member:removeMemberFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('project-member:removeMemberFailMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };
@@ -138,7 +138,7 @@ const ProjectMemberListController = ({ project }: Props) => {
   const { me } = useAuthStore();
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onProjectMemberAdded'], mutateMember);
+  useRefresh(['onRefreshClicked', 'onProjectMemberAdded'], () => mutateMember());
 
   return (
     <>

@@ -9,7 +9,7 @@ import useTranslation from 'next-translate/useTranslation';
 import { swrAuthFetcher } from 'src/api';
 import useEventStore from 'src/stores/events';
 import useDebouncedInputValues from 'src/hooks/useDebouncedInputValues';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import { addTeamToProject } from 'src/api/project';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import useRequest from '../../hooks/useRequest';
@@ -50,7 +50,7 @@ const AddTeamModal = ({ isOpen, close, organizationId, projectId }: Props) => {
         resetAndClose();
       } catch (e) {
         if (e instanceof AxiosError) {
-          sendErrorNotification(t('project-member:addProjectMemberFailMsg', { reason: getErrorMessage(e) }));
+          sendErrorNotification(t('project-member:addProjectMemberFailMsg', { reason: getErrorMessageFromAxios(e) }));
         }
       }
     },

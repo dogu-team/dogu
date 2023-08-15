@@ -18,7 +18,7 @@ import { deleteUser, getPersonalAccessToken, getUserByIdInServerSide, regenerate
 import ImageCropUploader from 'src/components/images/ImageCropUploader';
 import H5 from 'src/components/common/headings/H5';
 import ResetPasswordForm from 'src/components/registery/ResetPasswordForm';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import Footer from 'src/components/layouts/Footer';
 import { sendErrorNotification, sendSuccessNotification } from '../../src/utils/antd';
 import { checkUserVerifiedInServerSide } from '../../src/utils/auth';
@@ -76,7 +76,7 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
       updateMe(result);
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('account:profileImageUploadFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('account:profileImageUploadFailMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
     setIsImageUploading(false);
@@ -99,7 +99,7 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
       updateMe(result);
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('account:profileUpdateFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('account:profileUpdateFailMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
     setLoading(false);
@@ -120,7 +120,7 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
             sendErrorNotification(t('account:resetPasswordValidationFailMsg'));
             return;
           }
-          sendErrorNotification(t('account:resetPasswordFailedMsg', { reason: getErrorMessage(e) }));
+          sendErrorNotification(t('account:resetPasswordFailedMsg', { reason: getErrorMessageFromAxios(e) }));
         }
       }
     },
@@ -137,7 +137,7 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
       router.push('/');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('account:deleteAccountConfirmFailureMessage', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('account:deleteAccountConfirmFailureMessage', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   }, [user]);

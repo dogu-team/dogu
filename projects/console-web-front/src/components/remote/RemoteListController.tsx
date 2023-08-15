@@ -26,7 +26,7 @@ const RemoteListController = ({ organizationId, projectId, renderItem, emptyText
     swrAuthFetcher,
   );
 
-  useRefresh(['onRefreshClicked'], mutate);
+  useRefresh(['onRefreshClicked'], () => mutate());
 
   return (
     <div>

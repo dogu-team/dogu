@@ -68,7 +68,10 @@ export type EventName =
   | 'onProjectScmUpdated'
 
   // change-log
-  | 'onChangeLogReactionUpdated';
+  | 'onChangeLogReactionUpdated'
+
+  // record
+  | 'onRecordStepCreated';
 
 interface EventStore {
   eventName: EventName | null;
