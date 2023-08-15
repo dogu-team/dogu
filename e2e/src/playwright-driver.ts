@@ -62,7 +62,7 @@ function fillDriverOptions(options?: DriverOptions): Required<DriverOptions> {
 
 export class PlaywrightDriver {
   private browser!: Browser;
-  private page!: Page;
+  public page!: Page;
   private logEntries: LogEntry[] = [];
 
   async open(options?: DriverOptions): Promise<void> {
@@ -102,6 +102,13 @@ export class PlaywrightDriver {
     }
     const elem = await this.page.waitForSelector(`xpath=${locator.xpath}`, { timeout: waitTime });
     return elem;
+  }
+  async waitTextElement(text: string, options?: FindElementOptions): Promise<void> {
+    const { waitTime, focusWindow } = fillFindElementOptions(options);
+    if (focusWindow) {
+      await this.focusWindow();
+    }
+    await this.page.getByText(text, { exact: true }).first().waitFor({ timeout: waitTime, state: 'visible' });
   }
 
   async findElements(locator: Locator, options?: FindElementOptions): Promise<(SVGElement | HTMLElement)[]> {
