@@ -19,6 +19,11 @@
   "hostDeleteModalContentInfo": "이 호스트를 정말 삭제할까요?\n호스트를 삭제하면, 해당 호스트에 연결된 디바이스는 새로운 호스트에 연결해야 합니다. 또한 디바이스는 태그와 프로젝트를 잃게 됩니다.",
   "hostDeleteModalContentCountSingular": "호스트 <0>{{name}}</0>은/는 디바이스 <0>{{count}}</0> 대를 갖고 있습니다.",
   "hostDeleteModalContentCountPlural": "호스트 <0>{{name}}</0>은/는 디바이스 <0>{{count}}</0> 대를 갖고 있습니다.",
+  "hostItemUpdateMenu": "호스트 업데이트",
+  "hostUpdateModalButtonText": "확인 및 삭제",
+  "hostUpdateModalContentInfo": "이 호스트를 정말 업데이트할까요?\n호스트를 업데이트하면, 해당 호스트에 연결된 디바이스들은 연결이 잠시동안 중단됩니다.",
+  "hostUpdateSuccessMsg": "업데이트가 요청되었습니다.",
+  "hostUpdateFailMsg": "업데이트 요청이 실패했습니다.\n{{reason}}",
   "agentDownloadTitle": "Agent 다운로드",
 
   "hostCreateModalSuccessHint": "호스트가 생성되었습니다. <link1>Agent 다운로드</link1> 페이지에서 Dogu Agent를 설치하고, 토큰을 Dogu Agent에 입력하여 호스트를 등록하세요. 자세한 정보는 <link2>호스트</link2> 문서를 참고하세요.",

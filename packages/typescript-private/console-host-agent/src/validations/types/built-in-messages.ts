@@ -202,32 +202,17 @@ export class ErrorResult extends Kindable<'ErrorResult'> {
 }
 
 @OneOf()
-export class UpdateAgentRequest extends Kindable<'UpdateAgentRequest'> {
-  static override kind = 'UpdateAgentRequest';
+export class UpdateHostAppRequest extends Kindable<'UpdateHostAppRequest'> {
+  static override kind = 'UpdateHostAppRequest';
 
   @IsFilledString()
   url!: string;
 
   @IsNumber()
   fileSize!: number;
-
-  @IsFilledString()
-  appname!: string;
 }
 
-@OneOf()
-export class UpdateAgentResponse extends Kindable<'UpdateAgentResponse'> {
-  static override kind = 'UpdateAgentResponse';
-
-  @IsBoolean()
-  success!: boolean;
-
-  @IsOptional()
-  @IsString()
-  message?: string;
-}
-
-const RequestParamValue = [HttpProxyRequest, BatchHttpProxyRequest, UpdateAgentRequest] as const;
+const RequestParamValue = [HttpProxyRequest, BatchHttpProxyRequest, UpdateHostAppRequest] as const;
 export type RequestParamValue = Instance<(typeof RequestParamValue)[number]>;
 
 @OneOf()
@@ -239,7 +224,7 @@ export class RequestParam extends Kindable<'RequestParam'> {
   value!: RequestParamValue;
 }
 
-const ResponseResultValue = [HttpProxyResponse, BatchHttpProxyResponse, UpdateAgentResponse] as const;
+const ResponseResultValue = [HttpProxyResponse, BatchHttpProxyResponse] as const;
 export type ResponseResultValue = Instance<(typeof ResponseResultValue)[number]>;
 
 @OneOf()

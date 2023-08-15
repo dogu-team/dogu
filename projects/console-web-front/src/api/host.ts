@@ -52,3 +52,9 @@ export const getHostByToken = async (organizationId: OrganizationId, token: stri
 
   return data.items[0];
 };
+
+export const updateHostApp = async (organizationId: OrganizationId, hostId: HostId) => {
+  const { data } = await api.patch<void>(`/organizations/${organizationId}/hosts/${hostId}/app`, { url: 'aa' });
+
+  return data;
+};

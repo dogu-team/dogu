@@ -1,4 +1,4 @@
-import { ErrorResult, UpdateAgent } from '@dogu-private/console-host-agent';
+import { ErrorResult, UpdateHostAppRequest } from '@dogu-private/console-host-agent';
 import { Code } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { getFilenameFromUrl, HostPaths, killProcess } from '@dogu-tech/node';
@@ -17,7 +17,7 @@ import { CommandProcessRegistry } from './command.process-registry';
 export class UpdateProcessor {
   constructor(private readonly commandProcessRegistry: CommandProcessRegistry, private readonly deviceClientService: DeviceClientService, private readonly logger: DoguLogger) {}
 
-  async update(msg: UpdateAgent): Promise<ErrorResult> {
+  async update(msg: UpdateHostAppRequest): Promise<ErrorResult> {
     try {
       // download app
       const filename = getFilenameFromUrl(msg.url);
@@ -34,7 +34,7 @@ export class UpdateProcessor {
         kind: 'ErrorResult',
         value: {
           code: Code.CODE_SUCCESS_COMMON_BEGIN_UNSPECIFIED,
-          message: '',
+          message: 'ok',
           details: {
             stack: '',
             cause: '',
@@ -68,10 +68,10 @@ export class UpdateProcessor {
     const appName = appBundleName.replace('.app', '');
 
     const shPath = UpdateMacTemplatePath;
-    const contents = await fs.promises.readFile(shPath, { encoding: 'utf-8' });
-    contents.replace('{{app_name}}', appName);
-    contents.replace('{{app_bundle}}', appBundleName);
-    contents.replace('{{zip_file}}', filename);
+    let contents = await fs.promises.readFile(shPath, { encoding: 'utf-8' });
+    contents = contents.replace('{{app_name}}', appName);
+    contents = contents.replace('{{app_bundle}}', appBundleName);
+    contents = contents.replace('{{zip_file}}', filename);
 
     const shellPath = path.resolve(HostPaths.doguTempPath(), 'update-mac.sh');
     if (fs.existsSync(shellPath)) {

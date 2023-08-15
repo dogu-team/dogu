@@ -1,5 +1,5 @@
 import { DevicePropCamel, DevicePropSnake, HostBase, HostPropCamel, HostPropSnake, TokenPropSnake } from '@dogu-private/console';
-import { DeviceConnectionState, HostConnectionState, HostId, OrganizationId, UserId, UserPayload } from '@dogu-private/types';
+import { DeviceConnectionState, DeviceId, HostConnectionState, HostId, OrganizationId, UserId, UserPayload } from '@dogu-private/types';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Brackets, DataSource, DeepPartial, In } from 'typeorm';
@@ -260,5 +260,24 @@ export class HostService {
     }
 
     return host;
+  }
+
+  async findHostDeviceId(hostId: HostId): Promise<DeviceId> {
+    const host = await this.dataSource //
+      .getRepository(Host)
+      .createQueryBuilder('host')
+      .leftJoinAndSelect(`host.${HostPropCamel.hostDevice}`, 'hostDevice', `hostDevice.${DevicePropSnake.is_host} = :isHostDevice`, { isHostDevice: 1 })
+      .where(`host.${HostPropSnake.host_id} = :hostId`, { hostId })
+      .getOne();
+    if (!host) {
+      throw new HttpException(`This host id does not exists. : ${hostId}`, HttpStatus.BAD_REQUEST);
+    }
+    if (!host.hostDevice) {
+      throw new HttpException(`This host does not have host device. : ${hostId}`, HttpStatus.BAD_REQUEST);
+    }
+    if (host.hostDevice.connectionState !== DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED) {
+      throw new HttpException(`This host device is not connected. : ${hostId}`, HttpStatus.BAD_REQUEST);
+    }
+    return host.hostDevice.deviceId;
   }
 }

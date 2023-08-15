@@ -14,7 +14,7 @@ import {
   ResponseResultValue,
   Run,
   RunStep,
-  UpdateAgent,
+  UpdateHostAppRequest,
 } from '@dogu-private/console-host-agent';
 import { Controller } from '@nestjs/common';
 import { Ctx, Payload } from '@nestjs/microservices';
@@ -89,8 +89,8 @@ export class MessageRequestResponseController {
     return this.actionProcessor.action(param, context);
   }
 
-  @OnConsoleMessage(UpdateAgent, ErrorResult)
-  onUpdateAgent(@Payload() param: UpdateAgent, @Ctx() context: MessageContext): Promise<ErrorResult> {
+  @OnConsoleMessage(UpdateHostAppRequest, ErrorResult)
+  onUpdateHost(@Payload() param: UpdateHostAppRequest, @Ctx() context: MessageContext): Promise<ErrorResult> {
     return this.updateProcessor.update(param);
   }
 }

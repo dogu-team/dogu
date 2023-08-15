@@ -21,7 +21,7 @@ import { listActiveNameStyle } from '../../styles/text';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
 import EditHostModal from './EditHostModal';
-import { deleteHost, reissuesHostConnectionToken, stopUsingHostAsDevice, updateUseHostAsDevice } from '../../api/host';
+import { deleteHost, reissuesHostConnectionToken, stopUsingHostAsDevice, updateUseHostAsDevice, updateHostApp } from '../../api/host';
 import { getErrorMessage } from '../../utils/error';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
@@ -44,6 +44,8 @@ const HostItem = ({ host }: HostItemProps) => {
   const { t } = useTranslation();
   const [token, setToken] = useState<string>();
   const [loading, request] = useRequest(updateUseHostAsDevice);
+  const [updateLoading, updateRequest] = useRequest(updateHostApp);
+
   const fireEvent = useEventStore((state) => state.fireEvent);
 
   const streamingable = host.hostDevice?.deviceId && host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED;
@@ -93,6 +95,17 @@ const HostItem = ({ host }: HostItemProps) => {
     } catch (e) {
       if (e instanceof AxiosError) {
         sendErrorNotification(t('device-farm:hostStopUsingFailMsg', { reason: getErrorMessage(e) }));
+      }
+    }
+  };
+
+  const handleHostAppUpdate = async () => {
+    try {
+      await updateRequest(orgId, host.hostId);
+      sendSuccessNotification(t('device-farm:hostUpdateSuccessMsg'));
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        sendErrorNotification(t('device-farm:hostUpdateFailMsg', { reason: getErrorMessage(e) }));
       }
     }
   };
@@ -152,6 +165,21 @@ const HostItem = ({ host }: HostItemProps) => {
         </MenuItemButton>
       ),
       key: 'token',
+    },
+    {
+      label: (
+        <MenuItemButton
+          danger
+          onConfirm={handleHostAppUpdate}
+          modalTitle={t('device-farm:hostItemUpdateMenu')}
+          modalButtonTitle={t('device-farm:hostUpdateModalButtonText')}
+          modalContent={<StyledDeleteModalContent>{t('device-farm:hostUpdateModalContentInfo')}</StyledDeleteModalContent>}
+          confirmButtonId="host-update-confirm-btn"
+        >
+          {t('device-farm:hostItemUpdateMenu')}
+        </MenuItemButton>
+      ),
+      key: 'update',
     },
     {
       label: (
