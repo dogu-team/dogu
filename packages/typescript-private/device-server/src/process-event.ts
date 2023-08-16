@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { killProcess } from '@dogu-tech/node';
 import pidtree from 'pidtree';
 import { logger } from './logger/logger.instance';
 
@@ -10,23 +10,10 @@ export function addProcessEventHandler(): void {
       } else {
         logger.info('child process close. pidtree', { pids });
         for (const pid of pids) {
-          killPid(pid);
+          killProcess(pid);
         }
       }
-      killPid(process.pid);
+      killProcess(process.pid);
     });
   });
-}
-
-function killPid(pid: number): void {
-  try {
-    if (process.platform === 'win32') {
-      execSync(`taskkill /PID ${pid} /F /T`);
-    } else {
-      execSync(`kill -9 ${pid}`);
-    }
-    logger.info(`child process close. killed `, { pid });
-  } catch (e) {
-    logger.warn('child process close. kill error', { error: e });
-  }
 }

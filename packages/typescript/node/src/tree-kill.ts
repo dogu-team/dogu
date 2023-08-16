@@ -1,8 +1,12 @@
-import { ChildProcess, execFileSync, fork } from 'child_process';
+import { Printable } from '@dogu-tech/common';
+import { ChildProcess, execFileSync, execSync, fork } from 'child_process';
 import path from 'path';
+import pidtree from 'pidtree';
 import treeKill from 'tree-kill';
 
 export { treeKill };
+
+export type Pid = string | number;
 
 export function killChildProcess(childProcess: ChildProcess, signal: string | number = 'SIGTERM'): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -20,7 +24,7 @@ export function killChildProcess(childProcess: ChildProcess, signal: string | nu
   });
 }
 
-export function killProcess(pid?: string | number): void {
+export function killProcess(pid?: Pid): void {
   if (pid === undefined) {
     return;
   }
@@ -32,7 +36,7 @@ export function killProcess(pid?: string | number): void {
   }
 }
 
-export function killProcessUsingTaskkillOnWindows(pid?: string | number): void {
+export function killProcessUsingTaskkillOnWindows(pid?: Pid): void {
   if (pid === undefined) {
     return;
   }
@@ -50,7 +54,7 @@ export function killProcessUsingTaskkillOnWindows(pid?: string | number): void {
   }
 }
 
-export function killProcessUsingFork(pid?: string | number): void {
+export function killProcessUsingFork(pid?: Pid): void {
   if (pid === undefined) {
     return;
   }
@@ -64,4 +68,41 @@ export function killProcessUsingFork(pid?: string | number): void {
 
 export function killSelfProcess(): void {
   killProcess(process.pid);
+}
+
+export function killProcessIgnore(pid: Pid, ignorePids: Pid[], printable: Printable): void {
+  if (pid === undefined) {
+    return;
+  }
+
+  pidtree(pid, (err, pids) => {
+    if (err) {
+      printable.error('child process close. pidtree error', { error: err });
+    } else {
+      printable.info('child process close. pidtree', { pids });
+      for (const childPid of pids) {
+        if (ignorePids.includes(childPid)) {
+          continue;
+        }
+        killPid(childPid, printable);
+      }
+    }
+    if (ignorePids.includes(pid)) {
+      return;
+    }
+    killPid(pid, printable);
+  });
+}
+
+function killPid(pid: Pid, printable: Printable): void {
+  try {
+    if (process.platform === 'win32') {
+      execSync(`taskkill /PID ${pid} /F`, { timeout: 10000 });
+    } else {
+      execSync(`kill -9 ${pid}`, { timeout: 10000 });
+    }
+    printable.info(`child process close. killed `, { pid });
+  } catch (e) {
+    printable.warn?.('child process close. kill error', { error: e });
+  }
 }

@@ -11719,6 +11719,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["logform", "npm:2.5.1"],\
             ["nodemon", "npm:2.0.22"],\
             ["octokit", "npm:2.0.7"],\
+            ["pidtree", "npm:0.6.0"],\
             ["plist", "npm:3.0.6"],\
             ["reflect-metadata", "npm:0.1.13"],\
             ["rxjs", "npm:7.5.6"],\

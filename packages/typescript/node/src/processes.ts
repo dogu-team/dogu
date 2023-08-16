@@ -1,5 +1,5 @@
 import { NullLogger, Printable, ProcessInfo } from '@dogu-tech/common';
-import { ChildProcess, waitPortIdle } from '.';
+import { ChildProcess, killProcess, waitPortIdle } from '.';
 
 export async function killProcessOnPort(port: number, printable: Printable): Promise<void> {
   switch (process.platform) {
@@ -31,7 +31,7 @@ export async function killProcessOnPortOnMacos(includes: string, port: number, p
   if (!pid) {
     return;
   }
-  await ChildProcess.execIgnoreError(`kill -9 ${pid}`, { timeout: 10000 }, new NullLogger());
+  killProcess(pid);
 }
 
 export async function killProcessOnPortOnWindows(port: number, printable: Printable): Promise<void> {
@@ -55,7 +55,9 @@ export async function killProcessOnPortOnWindows(port: number, printable: Printa
   if (0 === listenings.length) {
     return;
   }
-  await ChildProcess.execIgnoreError(`TaskKill /F /PID ${listenings.map((line) => line.pid).join(' /PID ')}`, { timeout: 10000 }, new NullLogger());
+  for (const line of listenings) {
+    killProcess(line.pid);
+  }
 }
 
 type ProcessInfoDict = Map<number, ProcessInfo>;

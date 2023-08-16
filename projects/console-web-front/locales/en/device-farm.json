@@ -20,7 +20,7 @@
   "hostDeleteModalContentCountSingular": "Host <0>{{name}}</0> has <0>{{count}}</0> device.",
   "hostDeleteModalContentCountPlural": "Host <0>{{name}}</0> has <0>{{count}}</0> devices.",
   "hostItemUpdateMenu": "Update host",
-  "hostUpdateModalButtonText": "Confirm and delete",
+  "hostUpdateModalButtonText": "Confirm",
   "hostUpdateModalContentInfo": "Are you sure to update this host?\nIf you update a host, all devices connected to that host will be disconnected for a while.",
   "hostUpdateSuccessMsg": "Update has been requested.",
   "hostUpdateFailMsg": "Update request failed.\n{{reason}}",

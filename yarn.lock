@@ -5480,6 +5480,7 @@ __metadata:
     logform: 2.5.1
     nodemon: 2.0.22
     octokit: 2.0.7
+    pidtree: 0.6.0
     plist: 3.0.6
     reflect-metadata: 0.1.13
     rxjs: 7.5.6

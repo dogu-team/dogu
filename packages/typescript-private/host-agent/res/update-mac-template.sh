@@ -1,3 +1,5 @@
+osascript -e "display notification \"Start update\" with title \"Dogu-Agent\""
+
 app_name="{{app_name}}"
 app_bundle="{{app_bundle}}"
 zip_file="{{zip_file}}"

@@ -1,10 +1,10 @@
 import { ErrorResult, UpdateHostAppRequest } from '@dogu-private/console-host-agent';
 import { Code } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
-import { getFilenameFromUrl, HostPaths, killProcess } from '@dogu-tech/node';
+import { getFilenameFromUrl, HostPaths, killProcessIgnore } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import AdmZip, { IZipEntry } from 'adm-zip';
-import child_process from 'child_process';
+import child_process, { ChildProcess } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { DeviceClientService } from '../device-client/device-client.service';
@@ -25,10 +25,10 @@ export class UpdateProcessor {
       await this.deviceClientService.deviceHostClient.downloadSharedResource(downloadPath, msg.url, msg.fileSize, {});
 
       // detach shell
-      await this.detachShell(downloadPath);
+      const child = await this.detachShell(downloadPath);
 
       // quit app
-      killProcess((env.DOGU_ROOT_PID as number) ?? process.pid);
+      killProcessIgnore((env.DOGU_ROOT_PID as number) ?? process.pid, child.pid ? [child.pid] : [], this.logger);
 
       return {
         kind: 'ErrorResult',
@@ -57,14 +57,14 @@ export class UpdateProcessor {
     }
   }
 
-  async detachShell(downloadPath: string): Promise<void> {
+  async detachShell(downloadPath: string): Promise<ChildProcess> {
     const dirname = path.dirname(downloadPath);
     const filename = path.basename(downloadPath);
-    const entries = await this.getZipEntries(downloadPath);
+    const entries = this.getZipEntries(downloadPath);
     if (entries.length === 0) {
       throw new Error('zip file is empty');
     }
-    const appBundleName = entries[0].entryName;
+    const appBundleName = entries[0].entryName.replace('/', '');
     const appName = appBundleName.replace('.app', '');
 
     const shPath = UpdateMacTemplatePath;
@@ -81,9 +81,19 @@ export class UpdateProcessor {
     await fs.promises.chmod(shellPath, 0o755);
     const child = child_process.spawn('sh', [shellPath], { cwd: dirname, detached: true, stdio: 'ignore' });
     child.unref();
+    const onSpawnPromise = new Promise<void>((resolve, reject) => {
+      child.on('spawn', () => {
+        resolve();
+      });
+      child.on('error', (err) => {
+        reject(err);
+      });
+    });
+    await onSpawnPromise;
+    return child;
   }
 
-  async getZipEntries(filename: string): Promise<IZipEntry[]> {
+  getZipEntries(filename: string): IZipEntry[] {
     const zip = new AdmZip(filename);
     return zip.getEntries();
   }

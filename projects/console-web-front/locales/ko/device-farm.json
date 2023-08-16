@@ -20,7 +20,7 @@
   "hostDeleteModalContentCountSingular": "호스트 <0>{{name}}</0>은/는 디바이스 <0>{{count}}</0> 대를 갖고 있습니다.",
   "hostDeleteModalContentCountPlural": "호스트 <0>{{name}}</0>은/는 디바이스 <0>{{count}}</0> 대를 갖고 있습니다.",
   "hostItemUpdateMenu": "호스트 업데이트",
-  "hostUpdateModalButtonText": "확인 및 삭제",
+  "hostUpdateModalButtonText": "확인",
   "hostUpdateModalContentInfo": "이 호스트를 정말 업데이트할까요?\n호스트를 업데이트하면, 해당 호스트에 연결된 디바이스들은 연결이 잠시동안 중단됩니다.",
   "hostUpdateSuccessMsg": "업데이트가 요청되었습니다.",
   "hostUpdateFailMsg": "업데이트 요청이 실패했습니다.\n{{reason}}",
