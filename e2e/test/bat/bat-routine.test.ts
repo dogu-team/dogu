@@ -693,6 +693,10 @@ Dest.withOptions({
           test('Click create tag button', async () => {
             await Driver.clickElement({ xpath: '//button[@form="new-tag"]' });
           });
+
+          test('Create tag check', async () => {
+            await Driver.waitTextElement(tag);
+          });
         });
 
         job('Add tag to device', () => {
@@ -987,9 +991,10 @@ Dest.withOptions({
       });
 
       test('Delete tag check', async () => {
+        await Timer.wait(1000, 'wait for deleting device tag refresh');
         await Driver.clickElement({ xpath: '//a[@access-id="org-device-list-tab"]' });
+        await Timer.wait(3000, 'wait for deleting device tag refresh');
         const tagCount = await Driver.getText({ xpath: '//*[@icon-id="android-icon"]/../../../div[5]/div/div[1]/button/p' });
-        await Timer.wait(2000, 'wait for deleting device tag refresh');
         expect(tagCount).toBe('1');
       });
     });

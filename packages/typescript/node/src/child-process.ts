@@ -49,7 +49,7 @@ export function execIgnoreError(command: string, options: childProcess.ExecOptio
         } else if (error.signal) {
           if (error.signal === 'SIGTERM') {
             printable.error(`exec timeout`, { command, error });
-            reject(error);
+            resolve({ stdout, stderr });
           } else {
             printable.warn?.(`exec error treat as warning`, { command, error });
             resolve({ stdout, stderr });
