@@ -1,6 +1,7 @@
 import { DownloadablePackageResult, DOWNLOAD_PLATFORMS } from '@dogu-private/console';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 
+import { Octokit } from '@octokit/rest';
 import yaml from 'js-yaml';
 import { env } from '../../env';
 import { LatestYamlDownloadParseResult } from '../../types/download';
@@ -109,6 +110,102 @@ export class DownloadService {
 
   //   return objects;
   // }
+
+  async getDoguAgentSelfHostedPackageList(dto: PageDto): Promise<Page<DownloadablePackageResult>> {
+    const { page, offset } = dto;
+
+    const applications = await this.getDoguAgentSelfHostedPackagesSorted();
+    const sliced = applications.slice((page - 1) * offset, page * offset);
+
+    return new Page(page, offset, applications.length, sliced);
+  }
+
+  async getDoguAgentSelfHostedLatest(): Promise<DownloadablePackageResult[]> {
+    const applications = await this.getDoguAgentSelfHostedPackagesSorted();
+    // loop DOWNLOAD_PLATFORMS and get latest version
+    const result: DownloadablePackageResult[] = [];
+    for (const platform of Object.values(DOWNLOAD_PLATFORMS)) {
+      const filtered = applications.filter((item) => item.platform === platform);
+      if (filtered.length > 0) {
+        result.push(filtered[0]);
+      }
+    }
+
+    return result;
+  }
+
+  async getDoguAgentSelfHostedPackagesSorted(): Promise<DownloadablePackageResult[]> {
+    const applications = await this.getDoguAgentSelfHostedPackages();
+
+    applications.sort((a, b) => {
+      const av: RegExpMatchArray | null | undefined = a.name?.match(/[0-9]*\.[0-9]*\.[0-9]*/);
+      const bv: RegExpMatchArray | null | undefined = b.name?.match(/[0-9]*\.[0-9]*\.[0-9]*/);
+
+      if (av && bv) {
+        const arr: string[] = av[0].split('.');
+        const brr: string[] = bv[0].split('.');
+
+        const len = Math.min(arr.length, brr.length);
+
+        for (let i = 0; i < len; i++) {
+          const a2 = +arr[i] || 0;
+          const b2 = +brr[i] || 0;
+
+          if (a2 !== b2) {
+            return a2 > b2 ? -1 : 1;
+          }
+        }
+
+        return arr.length - brr.length;
+      }
+
+      return -1;
+    });
+    return applications;
+  }
+
+  async getDoguAgentSelfHostedPackages(): Promise<DownloadablePackageResult[]> {
+    // list all release that has dogu-agent asset at https://github.com/dogu-team/dogu/releases
+    const octokit = new Octokit();
+    const response = await octokit.repos.listReleases({
+      owner: 'dogu-team',
+      repo: 'dogu',
+    });
+    const releases = response.data.filter((item) => item.assets.length > 0);
+    const result: DownloadablePackageResult[] = [];
+    for (const release of releases) {
+      for (const asset of release.assets) {
+        if (!asset.name.startsWith('dogu-agent-self-hosted')) {
+          continue;
+        }
+        let platform = DOWNLOAD_PLATFORMS.UNDEFINED;
+        if (asset.name.includes('mac-arm64')) {
+          platform = DOWNLOAD_PLATFORMS.APPLE_ARM64;
+        } else if (asset.name.includes('mac-x64')) {
+          platform = DOWNLOAD_PLATFORMS.APPLE_X86;
+        } else if (asset.name.includes('win-x64')) {
+          platform = DOWNLOAD_PLATFORMS.WINDOWS;
+        }
+
+        let version = release.tag_name.replace('v', '').split('-')[0];
+        const match: RegExpMatchArray | null | undefined = asset.name.match(/[0-9]*\.[0-9]*\.[0-9]*/);
+        if (match) {
+          version = match[0];
+        }
+
+        result.push({
+          platform: platform,
+          name: asset.name,
+          url: asset.browser_download_url,
+          releasedAt: release.published_at ?? '',
+          version: version ?? version,
+          size: asset.size,
+        });
+      }
+    }
+
+    return result;
+  }
 
   private async parseLatestYaml(): Promise<{ mac: LatestYamlDownloadParseResult; windows: LatestYamlDownloadParseResult }> {
     try {
