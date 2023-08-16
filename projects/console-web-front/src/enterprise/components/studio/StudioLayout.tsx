@@ -48,14 +48,14 @@ const StudioLayout = ({ children, project, deviceId, editionType }: Props) => {
                 </IconWrapper>
               </StyledLink>
             </Tooltip>
-            <Tooltip title="Visual Testing" placement="right">
+            <Tooltip title="Record Testing" placement="right">
               <StyledLink
                 href={{
-                  pathname: '/dashboard/[orgId]/projects/[pid]/studio/[deviceId]/visual',
+                  pathname: '/dashboard/[orgId]/projects/[pid]/studio/[deviceId]/record',
                   query: { orgId: router.query.orgId, pid: router.query.pid, deviceId: deviceId ?? undefined },
                 }}
                 style={{ display: 'block' }}
-                isSelected={router.asPath.includes('visual')}
+                isSelected={router.asPath.includes('record')}
                 shallow
               >
                 <IconWrapper>

@@ -71,7 +71,8 @@ export type EventName =
   | 'onChangeLogReactionUpdated'
 
   // record
-  | 'onRecordStepCreated';
+  | 'onRecordStepCreated'
+  | 'onRecordStepDeleted';
 
 interface EventStore {
   eventName: EventName | null;
