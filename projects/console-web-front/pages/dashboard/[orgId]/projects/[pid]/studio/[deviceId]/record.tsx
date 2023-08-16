@@ -1,15 +1,15 @@
 import { GetServerSideProps } from 'next';
 
-import VisualTesting from '../../../../../../../src/enterprise/components/studio/RecordTesting';
+import RecordTesting from '../../../../../../../src/enterprise/components/studio/RecordTesting';
 import { getStudioTestingLayout, getStudioTestingServerSideProps, StudioTestingPageProps } from '../../../../../../../src/enterprise/pages/studio';
 import { NextPageWithLayout } from '../../../../../../_app';
 
-const VisualTestingPage: NextPageWithLayout<StudioTestingPageProps> = ({ organization, project, me, deviceId }) => {
-  return <VisualTesting organization={organization} project={project} deviceId={deviceId} />;
+const RecordTestingPage: NextPageWithLayout<StudioTestingPageProps> = ({ organization, project, me, deviceId }) => {
+  return <RecordTesting organization={organization} project={project} deviceId={deviceId} />;
 };
 
-VisualTestingPage.getLayout = getStudioTestingLayout;
+RecordTestingPage.getLayout = getStudioTestingLayout;
 
 export const getServerSideProps: GetServerSideProps<StudioTestingPageProps> = getStudioTestingServerSideProps;
 
-export default VisualTestingPage;
+export default RecordTestingPage;

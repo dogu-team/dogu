@@ -2,7 +2,6 @@ import { OrganizationBase, ProjectBase } from '@dogu-private/console';
 import { DeviceId, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
 
 import { DeviceStreamingLayoutProps } from '../../../components/studio/DeviceStreamingLayout';
 import RecordTestingEditor from '../record/RecordTestingEditor';
