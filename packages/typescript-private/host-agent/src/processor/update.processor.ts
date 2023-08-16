@@ -25,7 +25,7 @@ export class UpdateProcessor {
       if (this.lock.isBusy('update')) {
         throw new Error('already updating');
       }
-      this.lock.acquire('update', async () => {
+      await this.lock.acquire('update', async () => {
         // download app
         const filename = getFilenameFromUrl(msg.url);
         const downloadPath = path.resolve(HostPaths.doguTempPath(), filename);
