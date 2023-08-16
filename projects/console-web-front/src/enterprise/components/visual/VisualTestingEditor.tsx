@@ -30,7 +30,11 @@ const VisualTestingEditor = () => {
   useRefresh(['onRecordStepCreated'], (payload) => {
     const rv = payload as RecordTestStepBase;
     if (rv.recordTestCaseId === caseId) {
-      mutate().then(() => {
+      mutate((prev) => {
+        if (prev) {
+          return { ...prev, recordTestSteps: prev?.recordTestSteps?.concat(rv) };
+        }
+      }).then(() => {
         router.push({ query: { ...router.query, step: rv.recordTestStepId } }, undefined, { shallow: true });
       });
     }
@@ -39,8 +43,12 @@ const VisualTestingEditor = () => {
   useEffect(() => {
     const unsub = useEventStore.subscribe(({ eventName, payload }) => {
       if (eventName === 'onRecordStepDeleted') {
-        mutate();
         const deletedStep = payload as RecordTestStepBase;
+        mutate((prev) => {
+          if (prev) {
+            return { ...prev, recordTestSteps: prev?.recordTestSteps?.filter((item) => item.recordTestStepId !== deletedStep.recordTestStepId) };
+          }
+        });
         if (deletedStep.recordTestCaseId === caseId) {
           if (steps.length === 1) {
             router.push({ query: { ...router.query, step: undefined } }, undefined, { shallow: true });
