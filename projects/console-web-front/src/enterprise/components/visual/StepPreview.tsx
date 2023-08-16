@@ -34,6 +34,8 @@ const StepPreview = ({ step, index }: Props) => {
       <StepButtonWrapper>
         <DeleteStepButton step={step} />
       </StepButtonWrapper>
+
+      {isSelected && <NextStepBox>Next step</NextStepBox>}
     </Box>
   );
 };
@@ -75,4 +77,14 @@ const ImageWrapper = styled.div<{ isSelected: boolean }>`
   padding-top: 100%;
   border: 3px solid ${(props) => (props.isSelected ? props.theme.colorPrimary : 'transparent')};
   border-radius: 0.35rem;
+`;
+
+const NextStepBox = styled.div`
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  border-radius: 0.35rem;
+  border: 1px dashed ${(props) => props.theme.colors.gray5};
+  text-align: center;
+  font-size: 0.8rem;
+  color: ${(props) => props.theme.colors.gray5};
 `;

@@ -1,5 +1,5 @@
 import { ProjectBase } from '@dogu-private/console';
-import { RecordTestCaseId } from '@dogu-private/types';
+import { RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
 import { Spin } from 'antd';
 import { useCallback } from 'react';
 import styled from 'styled-components';
@@ -18,9 +18,10 @@ import VisualScreenActionBar from './VisualScreenActionBar';
 interface Props {
   project: ProjectBase;
   caseId: RecordTestCaseId | undefined;
+  stepId: RecordTestStepId | undefined;
 }
 
-const VisualTestingScreenViewer = ({ project, caseId }: Props) => {
+const VisualTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
   const { loading, device, deviceRTCCaller, videoRef } = useDeviceStreamingContext();
   const [requestLoading, request] = useRequest(createStep);
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
@@ -33,7 +34,7 @@ const VisualTestingScreenViewer = ({ project, caseId }: Props) => {
 
       try {
         const rv = await request({
-          prevRecordTestStepId: null,
+          prevRecordTestStepId: stepId ?? null,
           organizationId: project.organizationId,
           projectId: project.projectId,
           recordTestCaseId: caseId,
