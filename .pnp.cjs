@@ -160,6 +160,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/typescript/node"\
       },\
       {\
+        "name": "@dogu-tech/sdk-core",\
+        "reference": "workspace:packages/typescript/sdk-core"\
+      },\
+      {\
         "name": "@dogu-tech/toolkit",\
         "reference": "workspace:packages/typescript/toolkit"\
       },\
@@ -248,6 +252,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@dogu-tech/env-tools", ["workspace:packages/typescript/env-tools"]],\
       ["@dogu-tech/jest-environment", ["workspace:packages/typescript/jest-environment"]],\
       ["@dogu-tech/node", ["workspace:packages/typescript/node"]],\
+      ["@dogu-tech/sdk-core", ["workspace:packages/typescript/sdk-core"]],\
       ["@dogu-tech/toolkit", ["workspace:packages/typescript/toolkit"]],\
       ["@dogu-tech/types", ["workspace:packages/typescript/types"]],\
       ["android-device-agent", ["workspace:projects/android-device-agent"]],\
@@ -11731,6 +11736,36 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["winston-transport", "npm:4.5.0"],\
             ["ws", "virtual:549e67a1ca2151a2885dacb53709039b296c8bb335e8c0fffceae875fec0cfdb1972cc0a8fc5ecb2d9fd69d1458b4d163dcaeea7b6fb277d10411e98da07ff5e#npm:8.13.0"],\
             ["yaml", "npm:2.2.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@dogu-tech/sdk-core", [\
+        ["workspace:packages/typescript/sdk-core", {\
+          "packageLocation": "./packages/typescript/sdk-core/",\
+          "packageDependencies": [\
+            ["@dogu-tech/sdk-core", "workspace:packages/typescript/sdk-core"],\
+            ["@babel/cli", "virtual:8703e180889f9ab57ad3385c23939d5f27b45dbd51c39fc780cea2c0afc6c5525aff02e7edc37234635ce5cb60b97d537191a2d3c8ff11dc68b06b3a06a4a1a5#npm:7.22.9"],\
+            ["@babel/core", "npm:7.22.9"],\
+            ["@babel/plugin-transform-modules-commonjs", "virtual:8703e180889f9ab57ad3385c23939d5f27b45dbd51c39fc780cea2c0afc6c5525aff02e7edc37234635ce5cb60b97d537191a2d3c8ff11dc68b06b3a06a4a1a5#npm:7.22.5"],\
+            ["@babel/preset-typescript", "virtual:8703e180889f9ab57ad3385c23939d5f27b45dbd51c39fc780cea2c0afc6c5525aff02e7edc37234635ce5cb60b97d537191a2d3c8ff11dc68b06b3a06a4a1a5#npm:7.22.5"],\
+            ["@jest/globals", "npm:29.6.0"],\
+            ["@jest/types", "npm:29.6.0"],\
+            ["@types/babel__core", "npm:7.20.0"],\
+            ["@types/babel__preset-env", "npm:7.9.2"],\
+            ["@types/lodash", "npm:4.14.195"],\
+            ["@types/node", "npm:18.15.11"],\
+            ["babel-plugin-transform-import-meta", "virtual:8703e180889f9ab57ad3385c23939d5f27b45dbd51c39fc780cea2c0afc6c5525aff02e7edc37234635ce5cb60b97d537191a2d3c8ff11dc68b06b3a06a4a1a5#npm:2.2.0"],\
+            ["cross-env", "npm:7.0.3"],\
+            ["fast-glob", "npm:3.3.1"],\
+            ["jest", "virtual:8703e180889f9ab57ad3385c23939d5f27b45dbd51c39fc780cea2c0afc6c5525aff02e7edc37234635ce5cb60b97d537191a2d3c8ff11dc68b06b3a06a4a1a5#npm:29.6.0"],\
+            ["jsonschema", "npm:1.4.1"],\
+            ["lodash", "npm:4.17.21"],\
+            ["nodemon", "npm:2.0.22"],\
+            ["shx", "npm:0.3.4"],\
+            ["ts-jest", "virtual:8703e180889f9ab57ad3385c23939d5f27b45dbd51c39fc780cea2c0afc6c5525aff02e7edc37234635ce5cb60b97d537191a2d3c8ff11dc68b06b3a06a4a1a5#npm:29.1.1"],\
+            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -29038,6 +29073,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/fast-glob-npm-3.3.0-e5a806a3c2-20df62be28.zip/node_modules/fast-glob/",\
           "packageDependencies": [\
             ["fast-glob", "npm:3.3.0"],\
+            ["@nodelib/fs.stat", "npm:2.0.5"],\
+            ["@nodelib/fs.walk", "npm:1.2.8"],\
+            ["glob-parent", "npm:5.1.2"],\
+            ["merge2", "npm:1.4.1"],\
+            ["micromatch", "npm:4.0.5"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:3.3.1", {\
+          "packageLocation": "./.yarn/cache/fast-glob-npm-3.3.1-8045ff8f4d-b6f3add640.zip/node_modules/fast-glob/",\
+          "packageDependencies": [\
+            ["fast-glob", "npm:3.3.1"],\
             ["@nodelib/fs.stat", "npm:2.0.5"],\
             ["@nodelib/fs.walk", "npm:1.2.8"],\
             ["glob-parent", "npm:5.1.2"],\
