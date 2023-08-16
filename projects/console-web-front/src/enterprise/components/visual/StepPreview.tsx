@@ -1,11 +1,10 @@
 import { RecordTestStepBase } from '@dogu-private/console';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import { MdOutlineTouchApp } from 'react-icons/md';
 import styled from 'styled-components';
 
-import { flexRowCenteredStyle } from '../../../styles/box';
 import DeleteStepButton from './DeleteStepButton';
+import StepTypeIcon from './StepTypeIcon';
 
 interface Props {
   index: number;
@@ -25,9 +24,7 @@ const StepPreview = ({ step, index }: Props) => {
       >
         <div>
           <PageNumber>{index + 1}</PageNumber>
-          <IconWrapper>
-            <MdOutlineTouchApp />
-          </IconWrapper>
+          <StepTypeIcon type={step.type} />
         </div>
         <ImageWrapper isSelected={isSelected}>
           <Image src={step.screenshotUrl} fill sizes="256px" quality={10} alt={step.recordTestStepId} style={{ objectFit: 'contain' }} />
@@ -69,17 +66,6 @@ const PageNumber = styled.p`
   font-size: 0.8rem;
   color: ${(props) => props.theme.colors.gray5};
   margin-bottom: 0.5rem;
-`;
-
-const IconWrapper = styled.div`
-  ${flexRowCenteredStyle}
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  background-color: #7bde80;
-  color: #fff;
-  font-size: 1rem;
-  flex-shrink: 0;
 `;
 
 const ImageWrapper = styled.div<{ isSelected: boolean }>`
