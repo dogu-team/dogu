@@ -49,11 +49,24 @@ const StepButtonWrapper = styled.div`
   display: none;
 `;
 
+const ImageWrapper = styled.div<{ isSelected: boolean }>`
+  position: relative;
+  margin-left: 0.5rem;
+  flex: 1;
+  padding-top: 100%;
+  border: 3px solid ${(props) => (props.isSelected ? `${props.theme.colorPrimary} !important` : 'transparent')};
+  border-radius: 0.35rem;
+`;
+
 const Box = styled.div`
   position: relative;
 
   &:hover ${StepButtonWrapper} {
     display: block;
+  }
+
+  &:hover ${ImageWrapper} {
+    border: 3px solid ${(props) => props.theme.colors.gray3};
   }
 `;
 
@@ -68,15 +81,6 @@ const PageNumber = styled.p`
   font-size: 0.8rem;
   color: ${(props) => props.theme.colors.gray5};
   margin-bottom: 0.5rem;
-`;
-
-const ImageWrapper = styled.div<{ isSelected: boolean }>`
-  position: relative;
-  margin-left: 0.5rem;
-  flex: 1;
-  padding-top: 100%;
-  border: 3px solid ${(props) => (props.isSelected ? props.theme.colorPrimary : 'transparent')};
-  border-radius: 0.35rem;
 `;
 
 const NextStepBox = styled.div`
