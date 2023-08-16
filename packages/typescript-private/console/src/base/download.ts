@@ -1,3 +1,5 @@
+import { Architecture, Platform } from '@dogu-private/types';
+
 export enum DOWNLOAD_PLATFORMS {
   UNDEFINED = '',
   WINDOWS = 'windows',
@@ -12,4 +14,17 @@ export interface DownloadablePackageResult {
   releasedAt: string;
   version: string;
   size: number;
+}
+
+export function platformArchitectureFromDownloadablePackageResult(result: DownloadablePackageResult): { platform: Platform; architecture: Architecture } {
+  switch (result.platform) {
+    case DOWNLOAD_PLATFORMS.APPLE_ARM64:
+      return { platform: Platform.PLATFORM_MACOS, architecture: Architecture.ARCHITECTURE_ARM64 };
+    case DOWNLOAD_PLATFORMS.APPLE_X86:
+      return { platform: Platform.PLATFORM_MACOS, architecture: Architecture.ARCHITECTURE_X64 };
+    case DOWNLOAD_PLATFORMS.WINDOWS:
+      return { platform: Platform.PLATFORM_WINDOWS, architecture: Architecture.ARCHITECTURE_X64 };
+    default:
+      throw new Error(`Unknown platform: ${result.platform}`);
+  }
 }

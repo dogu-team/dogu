@@ -44,6 +44,7 @@ export class PrivateHostController {
     if (body.platform) {
       update.platform = body.platform;
     }
+
     if (body.architecture) {
       update.architecture = body.architecture;
     }

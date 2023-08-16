@@ -1,3 +1,4 @@
+import { platformArchitectureFromDownloadablePackageResult } from '@dogu-private/console';
 import { HostId, OrganizationId } from '@dogu-private/types';
 import { Injectable } from '@nestjs/common';
 import { DeviceMessageRelayer } from '../../../module/device-message/device-message.relayer';
@@ -16,14 +17,23 @@ export class HostAppService {
     }
     const deviceId = hostDevice?.deviceId;
     const latestApp = await this.downloadService.getDoguAgentLatest();
-    // const app = latestApp.find((item) => item.platform === host.platform);
+    const app = latestApp.find((item) => {
+      const { platform, architecture } = platformArchitectureFromDownloadablePackageResult(item);
+      return platform === host.platform && architecture === host.architecture;
+    });
+    if (!app) {
+      throw new Error('updatable app not found');
+    }
     const result = await this.deviceMessageRelayer.sendParam(organizationId, deviceId, {
       kind: 'RequestParam',
       value: {
         kind: 'UpdateHostAppRequest',
-        url: 'https://github.com/dogu-team/dogu/releases/download/v1.7.0/dogu-agent-self-hosted-mac-arm64-1.7.0.zip',
-        fileSize: 202_822_396,
+        url: app.url,
+        fileSize: app.size,
       },
     });
+    if (result.value.kind === 'ErrorResult') {
+      throw new Error(`update host app failed: ${result.value.value.message}`);
+    }
   }
 }
