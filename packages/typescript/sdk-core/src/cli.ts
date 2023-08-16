@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 
-import { SdkCore } from './index.js';
+import { DoguSdkCore } from './index.js';
 
 async function main() {
-  let sdk: SdkCore | null = null;
+  let doguSdkCore: DoguSdkCore | null = null;
   try {
-    sdk = new SdkCore();
-    await sdk.open();
+    doguSdkCore = new DoguSdkCore();
+    await doguSdkCore.open();
   } finally {
-    await sdk?.close();
+    await doguSdkCore?.close();
   }
 }
 
