@@ -44,6 +44,10 @@ export class PrivateHostController {
     if (body.platform) {
       update.platform = body.platform;
     }
+    if (body.architecture) {
+      update.architecture = body.architecture;
+    }
+
     if (body.rootWorkspace) {
       update.rootWorkspace = body.rootWorkspace;
     }

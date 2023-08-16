@@ -21,6 +21,7 @@ export * from './ios/plist-parser';
 export * from './logs';
 export * from './net';
 export * from './options-config';
+export * from './package-json';
 export * from './platforms';
 export * from './processes';
 export * from './repositories';

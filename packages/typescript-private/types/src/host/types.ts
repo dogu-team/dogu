@@ -1,4 +1,4 @@
-import { HostId, OrganizationId } from '@dogu-tech/types';
+import { Architecture, HostId, OrganizationId } from '@dogu-tech/types';
 import { TokenId } from '..';
 import { PATH_MAX_LENGTH, PATH_MIN_LENGTH } from '../constants';
 import { Platform } from '../protocol/generated/tsproto/outer/platform';
@@ -10,6 +10,7 @@ export interface Host {
   hostId: HostId;
   name: string;
   platform: Platform;
+  architecture: Architecture;
   rootWorkspace: string;
   connectionState: HostConnectionState;
   deviceServerPort: number;

@@ -1,12 +1,16 @@
 import { WebSocketProxyId } from '@dogu-private/console-host-agent';
 import { DeviceId, OrganizationId } from '@dogu-private/types';
+import { findParentPackageJson, PackageJson } from '@dogu-tech/node';
 import { DataSourceOptions } from 'typeorm';
 import { CONSOLE_BACKEND_ENTITIES_PATH } from './db/entity/index';
 import { env } from './env';
 import { logger } from './module/logger/logger.instance';
 
+const packageJson = new PackageJson(findParentPackageJson());
+
 export const config = {
   pipeline: {},
+  version: packageJson.doc.version as string,
   gaurd: {
     validation: {
       emailVerified: true,

@@ -10,23 +10,22 @@ export class DownloadController {
 
   @Get('dost')
   async getDostAllPackages(@Query() dto: PageDto): Promise<Page<DownloadablePackageResult>> {
-    const result = await this.downloadService.getDostPackageList(dto);
+    const result = await this.downloadService.getDoguAgentS3PackageList(dto);
     return result;
   }
 
   @Get('dost/latest')
   async getDostLatestList(): Promise<DownloadablePackageResult[]> {
-    return await this.downloadService.getDostLatest();
+    return await this.downloadService.getDoguAgentS3Latest();
   }
 
-  @Get('dogu-agent/self-hosted')
-  async getDoguAgentSelfHostedAllPackages(@Query() dto: PageDto): Promise<Page<DownloadablePackageResult>> {
-    const result = await this.downloadService.getDoguAgentSelfHostedPackageList(dto);
-    return result;
+  @Get('dogu-agent')
+  async getDoguAgentAllPackages(@Query() dto: PageDto): Promise<Page<DownloadablePackageResult>> {
+    return await this.downloadService.getDoguAgentPackageList(dto);
   }
 
-  @Get('dogu-agent/self-hosted/latest')
-  async getDoguAgentSelfHostedLatest(): Promise<DownloadablePackageResult[]> {
-    return await this.downloadService.getDoguAgentSelfHostedLatest();
+  @Get('dogu-agent/latest')
+  async getDoguAgentLatest(): Promise<DownloadablePackageResult[]> {
+    return await this.downloadService.getDoguAgentLatest();
   }
 }

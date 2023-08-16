@@ -1,5 +1,16 @@
 import { HostBase, HostPropCamel, HostPropSnake } from '@dogu-private/console';
-import { HostConnectionState, HostId, HOST_NAME_MAX_LENGTH, HOST_TABLE_NAME, HOST_WORKSPACE_PATH_MAX_LENGTH, OrganizationId, Platform, TokenId, UserId } from '@dogu-private/types';
+import {
+  Architecture,
+  HostConnectionState,
+  HostId,
+  HOST_NAME_MAX_LENGTH,
+  HOST_TABLE_NAME,
+  HOST_WORKSPACE_PATH_MAX_LENGTH,
+  OrganizationId,
+  Platform,
+  TokenId,
+  UserId,
+} from '@dogu-private/types';
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { Device } from './device.entity';
@@ -23,6 +34,9 @@ export class Host extends BaseEntity implements HostBase {
 
   @Column({ type: 'smallint', name: HostPropSnake.platform, default: Platform.PLATFORM_UNSPECIFIED, nullable: false })
   platform!: Platform;
+
+  @Column({ type: 'smallint', name: HostPropSnake.architecture, default: Architecture.ARCHITECTURE_UNSPECIFIED, nullable: false })
+  architecture!: Architecture;
 
   @Column({ type: 'character varying', name: HostPropSnake.root_workspace, length: HOST_WORKSPACE_PATH_MAX_LENGTH, unique: false, default: '', nullable: false })
   rootWorkspace!: string;

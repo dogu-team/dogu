@@ -1,9 +1,12 @@
 import { DownloadablePackageResult, DOWNLOAD_PLATFORMS } from '@dogu-private/console';
+import { isMajorMinorMatch } from '@dogu-tech/node';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 
 import { Octokit } from '@octokit/rest';
 import yaml from 'js-yaml';
+import { config } from '../../config';
 import { env } from '../../env';
+import { FEATURE_CONFIG } from '../../feature.config';
 import { LatestYamlDownloadParseResult } from '../../types/download';
 import { Page } from '../common/dto/pagination/page';
 import { PageDto } from '../common/dto/pagination/page.dto';
@@ -13,7 +16,7 @@ import { PublicFileService } from '../file/public-file.service';
 export class DownloadService {
   constructor(private readonly publicFileService: PublicFileService) {}
 
-  async getDostLatest(): Promise<DownloadablePackageResult[]> {
+  async getDoguAgentS3Latest(): Promise<DownloadablePackageResult[]> {
     const { mac, windows } = await this.parseLatestYaml();
 
     const macFiles = mac.files.filter((item) => item.url.endsWith('dmg'));
@@ -40,7 +43,7 @@ export class DownloadService {
     return response;
   }
 
-  async getDostPackageList(dto: PageDto): Promise<Page<DownloadablePackageResult>> {
+  async getDoguAgentS3PackageList(dto: PageDto): Promise<Page<DownloadablePackageResult>> {
     const { page, offset } = dto;
 
     const applications = await this.publicFileService.getApplicationList();
@@ -111,21 +114,29 @@ export class DownloadService {
   //   return objects;
   // }
 
-  async getDoguAgentSelfHostedPackageList(dto: PageDto): Promise<Page<DownloadablePackageResult>> {
+  async getDoguAgentPackageList(dto: PageDto): Promise<Page<DownloadablePackageResult>> {
+    return FEATURE_CONFIG.get('doguAgentAppLocation') === 's3' ? await this.getDoguAgentS3PackageList(dto) : await this.getDoguAgentGithubPackageList(dto);
+  }
+
+  async getDoguAgentLatest(): Promise<DownloadablePackageResult[]> {
+    return FEATURE_CONFIG.get('doguAgentAppLocation') === 's3' ? await this.getDoguAgentS3Latest() : await this.getDoguAgentGithubLatest();
+  }
+
+  private async getDoguAgentGithubPackageList(dto: PageDto): Promise<Page<DownloadablePackageResult>> {
     const { page, offset } = dto;
 
-    const applications = await this.getDoguAgentSelfHostedPackagesSorted();
+    const applications = await this.getDoguAgentGithubPackagesSorted();
     const sliced = applications.slice((page - 1) * offset, page * offset);
 
     return new Page(page, offset, applications.length, sliced);
   }
 
-  async getDoguAgentSelfHostedLatest(): Promise<DownloadablePackageResult[]> {
-    const applications = await this.getDoguAgentSelfHostedPackagesSorted();
+  private async getDoguAgentGithubLatest(): Promise<DownloadablePackageResult[]> {
+    const applications = await this.getDoguAgentGithubPackagesSorted();
     // loop DOWNLOAD_PLATFORMS and get latest version
     const result: DownloadablePackageResult[] = [];
     for (const platform of Object.values(DOWNLOAD_PLATFORMS)) {
-      const filtered = applications.filter((item) => item.platform === platform);
+      const filtered = applications.filter((item) => item.platform === platform && isMajorMinorMatch(item.version, config.version));
       if (filtered.length > 0) {
         result.push(filtered[0]);
       }
@@ -134,8 +145,8 @@ export class DownloadService {
     return result;
   }
 
-  async getDoguAgentSelfHostedPackagesSorted(): Promise<DownloadablePackageResult[]> {
-    const applications = await this.getDoguAgentSelfHostedPackages();
+  private async getDoguAgentGithubPackagesSorted(): Promise<DownloadablePackageResult[]> {
+    const applications = await this.getDoguAgentGithubPackages();
 
     applications.sort((a, b) => {
       const av: RegExpMatchArray | null | undefined = a.name?.match(/[0-9]*\.[0-9]*\.[0-9]*/);
@@ -164,7 +175,7 @@ export class DownloadService {
     return applications;
   }
 
-  async getDoguAgentSelfHostedPackages(): Promise<DownloadablePackageResult[]> {
+  private async getDoguAgentGithubPackages(): Promise<DownloadablePackageResult[]> {
     // list all release that has dogu-agent asset at https://github.com/dogu-team/dogu/releases
     const octokit = new Octokit();
     const response = await octokit.repos.listReleases({
@@ -175,7 +186,7 @@ export class DownloadService {
     const result: DownloadablePackageResult[] = [];
     for (const release of releases) {
       for (const asset of release.assets) {
-        if (!asset.name.startsWith('dogu-agent-self-hosted')) {
+        if (!asset.name.startsWith('dogu-agent')) {
           continue;
         }
         let platform = DOWNLOAD_PLATFORMS.UNDEFINED;

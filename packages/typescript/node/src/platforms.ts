@@ -1,4 +1,4 @@
-import { Platform } from '@dogu-tech/types';
+import { Architecture, Platform } from '@dogu-tech/types';
 
 export function nodeJsPlatformToPlatform(platform: NodeJS.Platform): Platform {
   switch (platform) {
@@ -26,4 +26,26 @@ export function processPlatform(): Platform {
   }
 
   return nodeJsPlatformToPlatform(platform);
+}
+
+export function processArchitecture(): Architecture {
+  if (typeof process === 'undefined') {
+    return Architecture.ARCHITECTURE_UNSPECIFIED;
+  }
+
+  const { arch } = process;
+  if (arch == null) {
+    return Architecture.ARCHITECTURE_UNSPECIFIED;
+  }
+
+  switch (arch) {
+    case 'x64':
+      return Architecture.ARCHITECTURE_X64;
+    case 'arm':
+      return Architecture.ARCHITECTURE_ARM;
+    case 'arm64':
+      return Architecture.ARCHITECTURE_ARM64;
+    default:
+      return Architecture.ARCHITECTURE_UNSPECIFIED;
+  }
 }
