@@ -26,8 +26,10 @@ fi
 # Clean up downloaded ZIP file
 echo "Cleaning up..."
 rm "$zip_file"
+xattr -dr com.apple.quarantine "/Applications/$app_bundle"
+
+sleep 3
 
 osascript -e "display notification \"Launch $app_name\" with title \"Dogu-Agent\""
 echo "3. Launch $app_name"
-xattr -dr com.apple.quarantine "/Applications/$app_bundle"
 open /Applications/$app_bundle
