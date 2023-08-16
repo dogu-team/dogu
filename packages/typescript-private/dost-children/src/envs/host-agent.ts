@@ -30,5 +30,6 @@ export class HostAgentEnv extends PreloadHostAgentEnv {
 
   @IsOptional()
   @IsNumber()
+  @Type(() => Number)
   DOGU_ROOT_PID?: number;
 }
