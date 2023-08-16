@@ -11,15 +11,15 @@ import useRequest from '../../../hooks/useRequest';
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../../styles/box';
 import { sendErrorNotification } from '../../../utils/antd';
 import { getErrorMessageFromAxios } from '../../../utils/error';
-import { createNewSession } from '../../api/visual';
-import CreateCaseButton from '../visual/CreateCaseButton';
-import OpenCaseButton from '../visual/OpenCaseButton';
+import { createNewSession } from '../../api/record';
+import CreateCaseButton from '../record/CreateCaseButton';
+import OpenCaseButton from '../record/OpenCaseButton';
 
 interface Props {
   project: ProjectBase;
 }
 
-const VisualTestingEntry = ({ project }: Props) => {
+const RecordTestingEntry = ({ project }: Props) => {
   const router = useRouter();
   const { device } = useDeviceStreamingContext();
   const [loading, request] = useRequest(createNewSession);
@@ -63,7 +63,7 @@ const VisualTestingEntry = ({ project }: Props) => {
   );
 };
 
-export default VisualTestingEntry;
+export default RecordTestingEntry;
 
 const Box = styled.div`
   ${flexRowCenteredStyle}

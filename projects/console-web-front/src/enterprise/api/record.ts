@@ -1,8 +1,8 @@
 import { CreateRecordTestCaseDtoBase, CreateRecordTestStepDtoBase, NewSessionRecordTestCaseDtoBase, RecordTestCaseBase, RecordTestStepBase } from '@dogu-private/console';
 import { OrganizationId, ProjectId, RecordTestCaseId } from '@dogu-private/types';
-import api from '../../api';
+import api from '../../api/index';
 
-export const createVisualCase = async (organizaitonId: OrganizationId, projectId: ProjectId, dto: CreateRecordTestCaseDtoBase): Promise<RecordTestCaseBase> => {
+export const createRecordTestCase = async (organizaitonId: OrganizationId, projectId: ProjectId, dto: CreateRecordTestCaseDtoBase): Promise<RecordTestCaseBase> => {
   const { data } = await api.post<RecordTestCaseBase>(`/organizations/${organizaitonId}/projects/${projectId}/record-test-cases`, dto);
   return data;
 };
@@ -17,7 +17,7 @@ export const createNewSession = async (
   return data;
 };
 
-export const createStep = async (dto: { organizationId: OrganizationId; projectId: ProjectId; recordTestCaseId: RecordTestCaseId } & CreateRecordTestStepDtoBase) => {
+export const createRecordTestStep = async (dto: { organizationId: OrganizationId; projectId: ProjectId; recordTestCaseId: RecordTestCaseId } & CreateRecordTestStepDtoBase) => {
   const { organizationId, projectId, recordTestCaseId, ...rest } = dto;
   const { data } = await api.post<RecordTestStepBase>(
     `/organizations/${dto.organizationId}/projects/${dto.projectId}/record-test-cases/${dto.recordTestCaseId}/record-test-steps`,
@@ -31,7 +31,7 @@ export const getDeviceKeyboardShown = async (organizationId: OrganizationId, pro
   return data;
 };
 
-export const deleteStep = async (dto: { organizationId: OrganizationId; projectId: ProjectId; recordTestCaseId: RecordTestCaseId; recordTestStepId: string }) => {
+export const deleteRecordTestStep = async (dto: { organizationId: OrganizationId; projectId: ProjectId; recordTestCaseId: RecordTestCaseId; recordTestStepId: string }) => {
   const { organizationId, projectId, recordTestCaseId, recordTestStepId } = dto;
   await api.delete<void>(`/organizations/${organizationId}/projects/${projectId}/record-test-cases/${recordTestCaseId}/record-test-steps/${recordTestStepId}`);
 };

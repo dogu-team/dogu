@@ -9,7 +9,7 @@ interface Props {
   updateIsRecording: (isRecording: boolean) => void;
 }
 
-const VisualScreenActionBar = ({ isRecording, updateIsRecording }: Props) => {
+const RecordScreenActionBar = ({ isRecording, updateIsRecording }: Props) => {
   return (
     <Box>
       <Tooltip title="Record mode">
@@ -27,7 +27,7 @@ const VisualScreenActionBar = ({ isRecording, updateIsRecording }: Props) => {
   );
 };
 
-export default VisualScreenActionBar;
+export default RecordScreenActionBar;
 
 const Box = styled.div`
   margin-left: 0.5rem;

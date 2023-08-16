@@ -48,7 +48,7 @@ const StudioLayout = ({ children, project, deviceId, editionType }: Props) => {
                 </IconWrapper>
               </StyledLink>
             </Tooltip>
-            <Tooltip title="Visual Testing" placement="right">
+            <Tooltip title="Record Testing" placement="right">
               <StyledLink
                 href={{
                   pathname: '/dashboard/[orgId]/projects/[pid]/studio/[deviceId]/visual',

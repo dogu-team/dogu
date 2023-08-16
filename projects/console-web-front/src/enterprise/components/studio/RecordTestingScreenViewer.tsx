@@ -12,9 +12,9 @@ import useDeviceStreamingContext from '../../../hooks/streaming/useDeviceStreami
 import useRequest from '../../../hooks/useRequest';
 import useEventStore from '../../../stores/events';
 import { sendErrorNotification } from '../../../utils/antd';
-import { createStep } from '../../api/visual';
+import { createRecordTestStep } from '../../api/record';
 import KeyboardInput from './KeyboardInput';
-import VisualScreenActionBar from './VisualScreenActionBar';
+import RecordScreenActionBar from './RecordScreenActionBar';
 
 interface Props {
   project: ProjectBase;
@@ -22,10 +22,11 @@ interface Props {
   stepId: RecordTestStepId | undefined;
 }
 
-const VisualTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
+const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
   const { loading, deviceRTCCaller } = useDeviceStreamingContext();
-  const [requestLoading, request] = useRequest(createStep);
+  const [requestLoading, request] = useRequest(createRecordTestStep);
   const [isRecording, setIsRecording] = useState(false);
+  const [isDeviceKeyboardShown, setIsDeviceKeyboardShown] = useState(false);
   const { handleDoubleClick, handleKeyDown, handleKeyUp, handleMouseDown, handleMouseLeave, handleMouseMove, handleMouseUp, handleWheel } = useDeviceInput(
     deviceRTCCaller ?? undefined,
   );
@@ -62,7 +63,7 @@ const VisualTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
   return (
     <VideoWrapper>
       <DeviceStreaming.Video
-        rightSidebar={loading ? null : <VisualScreenActionBar isRecording={isRecording} updateIsRecording={setIsRecording} />}
+        rightSidebar={loading ? null : <RecordScreenActionBar isRecording={isRecording} updateIsRecording={setIsRecording} />}
         onKeyPress={(e) => {
           if (isRecording) {
             return;
@@ -131,12 +132,12 @@ const VisualTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
         )}
       </DeviceStreaming.Video>
 
-      <KeyboardInput />
+      {isDeviceKeyboardShown && isRecording && <KeyboardInput />}
     </VideoWrapper>
   );
 };
 
-export default VisualTestingScreenViewer;
+export default RecordTestingScreenViewer;
 
 const VideoWrapper = styled.div`
   position: relative;

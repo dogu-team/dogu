@@ -10,7 +10,7 @@ import useRequest from '../../../hooks/useRequest';
 import useEventStore from '../../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../../utils/antd';
 import { getErrorMessageFromAxios } from '../../../utils/error';
-import { deleteStep } from '../../api/visual';
+import { deleteRecordTestStep } from '../../api/record';
 
 interface Props {
   step: RecordTestStepBase;
@@ -18,7 +18,7 @@ interface Props {
 
 const DeleteStepButton = ({ step }: Props) => {
   const router = useRouter();
-  const [loading, request] = useRequest(deleteStep);
+  const [loading, request] = useRequest(deleteRecordTestStep);
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
   const organizationId = router.query.orgId as OrganizationId;
   const projectId = router.query.pid as ProjectId;

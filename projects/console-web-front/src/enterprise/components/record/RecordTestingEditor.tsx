@@ -6,14 +6,14 @@ import { useEffect } from 'react';
 import styled from 'styled-components';
 import useSWR from 'swr';
 
-import { swrAuthFetcher } from '../../../api';
+import { swrAuthFetcher } from '../../../api/index';
 import useRefresh from '../../../hooks/useRefresh';
 import useEventStore from '../../../stores/events';
 import StepEditor from './StepEditor';
 import StepNavigator from './StepNavigator';
 import StepPreviewBar from './StepPreviewBar';
 
-const VisualTestingEditor = () => {
+const RecordTestingEditor = () => {
   const router = useRouter();
   const orgId = router.query.orgId as OrganizationId;
   const projectId = router.query.pid as ProjectId;
@@ -107,7 +107,7 @@ const VisualTestingEditor = () => {
   );
 };
 
-export default VisualTestingEditor;
+export default RecordTestingEditor;
 
 const Box = styled.div`
   display: flex;

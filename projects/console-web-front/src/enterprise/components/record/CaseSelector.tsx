@@ -3,7 +3,7 @@ import { OrganizationId, ProjectId } from '@dogu-private/types';
 import { Select } from 'antd';
 import useSWR from 'swr';
 
-import { swrAuthFetcher } from '../../../api';
+import { swrAuthFetcher } from '../../../api/index';
 import useDebouncedInputValues from '../../../hooks/useDebouncedInputValues';
 
 interface Props {

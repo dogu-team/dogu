@@ -7,14 +7,14 @@ import Link from 'next/link';
 import styled from 'styled-components';
 import useSWR from 'swr';
 
-import { swrAuthFetcher } from '../../../api';
+import { swrAuthFetcher } from '../../../api/index';
 import ProjectApplicationExtensionTag from '../../../components/project-application/ProjectApplicationExtensionTag';
 import useModal from '../../../hooks/useModal';
 import useRequest from '../../../hooks/useRequest';
 import { flexRowBaseStyle } from '../../../styles/box';
 import { sendErrorNotification, sendSuccessNotification } from '../../../utils/antd';
 import { getErrorMessageFromAxios } from '../../../utils/error';
-import { createNewSession, createVisualCase } from '../../api/visual';
+import { createNewSession, createRecordTestCase } from '../../api/record';
 
 interface Props extends Omit<ButtonProps, 'onClick'> {
   project: ProjectBase;
@@ -26,7 +26,7 @@ interface Props extends Omit<ButtonProps, 'onClick'> {
 const CreateCaseButton = ({ project, onCreate, device, isSessionCreating, ...props }: Props) => {
   const [isOpen, openModal, closeModal] = useModal();
   const [form] = Form.useForm();
-  const [loading, request] = useRequest(createVisualCase);
+  const [loading, request] = useRequest(createRecordTestCase);
   const extension = device.platform === Platform.PLATFORM_IOS ? 'ipa' : Platform.PLATFORM_ANDROID ? 'apk' : '';
   const { data, isLoading, error } = useSWR<ProjectApplicationWithIcon[]>(
     isOpen && `/organizations/${project.organizationId}/projects/${project.projectId}/applications/packages?extension=${extension}`,

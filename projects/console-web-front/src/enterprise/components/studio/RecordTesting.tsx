@@ -5,9 +5,9 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
 import { DeviceStreamingLayoutProps } from '../../../components/studio/DeviceStreamingLayout';
-import VisualTestingEditor from '../visual/VisualTestingEditor';
-import VisualTestingEntry from './VisualTestingEntry';
-import VisualTestingScreenViewer from './VisualTestingScreenViewer';
+import RecordTestingEditor from '../record/RecordTestingEditor';
+import RecordTestingEntry from './RecordTestingEntry';
+import RecordTestingScreenViewer from './RecordTestingScreenViewer';
 // @ts-ignore
 const DeviceStreamingLayout = dynamic<DeviceStreamingLayoutProps>(() => import('../../../components/studio/DeviceStreamingLayout'), { ssr: false });
 
@@ -17,7 +17,7 @@ interface Props {
   deviceId: DeviceId;
 }
 
-const VisualTesting = ({ organization, project, deviceId }: Props) => {
+const RecordTesting = ({ organization, project, deviceId }: Props) => {
   const router = useRouter();
   const caseId = router.query.caseId as RecordTestCaseId | undefined;
   const stepId = router.query.step as RecordTestStepId | undefined;
@@ -26,12 +26,12 @@ const VisualTesting = ({ organization, project, deviceId }: Props) => {
     <DeviceStreamingLayout
       project={project}
       deviceId={deviceId}
-      right={caseId ? <VisualTestingEditor /> : <VisualTestingEntry project={project} />}
-      title="Visual Testing"
-      screenViewer={<VisualTestingScreenViewer project={project} caseId={caseId} stepId={stepId} />}
+      right={caseId ? <RecordTestingEditor /> : <RecordTestingEntry project={project} />}
+      title="Record Testing"
+      screenViewer={<RecordTestingScreenViewer project={project} caseId={caseId} stepId={stepId} />}
       hideDeviceSelector
     />
   );
 };
 
-export default VisualTesting;
+export default RecordTesting;
