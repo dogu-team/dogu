@@ -23,7 +23,7 @@ const StepTypeIcon = ({ type }: Props) => {
         </IconWrapper>
       );
     default:
-      return null;
+      return <IconWrapper />;
   }
 };
 
