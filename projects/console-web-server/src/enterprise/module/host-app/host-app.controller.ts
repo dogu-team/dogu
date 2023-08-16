@@ -13,11 +13,11 @@ export class HostAppController {
 
   @Patch('/:hostId/app')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
-  async test(
+  async update(
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, //
     @Param(HostPropCamel.hostId, IsHostExist) hostId: HostId,
     @Body() dto: HostAppDto,
   ): Promise<void> {
-    await this.service.test(organizationId, hostId);
+    await this.service.update(organizationId, hostId);
   }
 }

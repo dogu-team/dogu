@@ -7,7 +7,7 @@ import { HostService } from '../../../module/organization/host/host.service';
 export class HostAppService {
   constructor(private readonly hostService: HostService, private readonly deviceMessageRelayer: DeviceMessageRelayer) {}
 
-  async test(organizationId: OrganizationId, hostId: HostId): Promise<void> {
+  async update(organizationId: OrganizationId, hostId: HostId): Promise<void> {
     const deviceId = await this.hostService.findHostDeviceId(hostId);
     const result = await this.deviceMessageRelayer.sendParam(organizationId, deviceId, {
       kind: 'RequestParam',

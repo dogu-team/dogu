@@ -76,12 +76,17 @@ export function killProcessIgnore(pid: Pid, ignorePids: Pid[], printable: Printa
   }
 
   pidtree(pid, (err, pids) => {
+    let isKillMySelf = false;
     if (err) {
       printable.error('child process close. pidtree error', { error: err });
     } else {
       printable.info('child process close. pidtree', { pids });
       for (const childPid of pids) {
         if (ignorePids.includes(childPid)) {
+          continue;
+        }
+        if (childPid === process.pid) {
+          isKillMySelf = true;
           continue;
         }
         killPid(childPid, printable);
@@ -91,6 +96,9 @@ export function killProcessIgnore(pid: Pid, ignorePids: Pid[], printable: Printa
       return;
     }
     killPid(pid, printable);
+    if (isKillMySelf) {
+      killPid(pid, printable);
+    }
   });
 }
 
