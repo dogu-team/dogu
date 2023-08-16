@@ -5,6 +5,7 @@ import { ProjectBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
 import { AppstoreOutlined, ArrowLeftOutlined, MobileOutlined, SettingOutlined, TeamOutlined } from '@ant-design/icons';
 import { PiMonitorPlayBold } from 'react-icons/pi';
+import { BiVideoRecording } from 'react-icons/bi';
 import { Layout, Menu, MenuProps, Skeleton } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -114,6 +115,28 @@ const ProjectSideBar = () => {
           icon: collapsed ? (
             <StyledIconLink selected={router.asPath.startsWith(`/dashboard/${orgId}/projects/${projectId}/routines`)} href={`/dashboard/${orgId}/projects/${projectId}/routines`}>
               <GoWorkflow />
+            </StyledIconLink>
+          ) : undefined,
+        },
+        {
+          key: 'record',
+          label: collapsed ? (
+            'Record testing'
+          ) : (
+            <SideBarMenu
+              path={`/dashboard/${orgId}/projects/${projectId}/records/cases`}
+              text={'Record testing'}
+              accessId="project-side-bar-routine"
+              icon={<BiVideoRecording style={{ fontSize: '1.2rem' }} />}
+              startWith={`/dashboard/${orgId}/projects/${projectId}/records`}
+            />
+          ),
+          icon: collapsed ? (
+            <StyledIconLink
+              selected={router.asPath.startsWith(`/dashboard/${orgId}/projects/${projectId}/records`)}
+              href={`/dashboard/${orgId}/projects/${projectId}/records/cases`}
+            >
+              <BiVideoRecording />
             </StyledIconLink>
           ) : undefined,
         },
