@@ -1,5 +1,7 @@
+import { TransformBooleanString } from '@dogu-tech/common';
 import { ContextPageSource, ScreenSize } from '@dogu-tech/device-client-common';
 import { Transform, Type } from 'class-transformer';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export const GAMIUM_CONTEXT_KEY = 'GAMIUM';
 
@@ -49,48 +51,58 @@ export class AndroidNodeAttributes {
   @Type(() => Number)
   index = 0;
 
-  @Type(() => Boolean)
-  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  @TransformBooleanString()
+  @IsOptional()
   checkable?: boolean;
 
-  @Type(() => Boolean)
-  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  @TransformBooleanString()
+  @IsOptional()
   checked?: boolean;
 
-  @Type(() => Boolean)
-  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  @TransformBooleanString()
+  @IsOptional()
   clickable?: boolean;
 
-  @Type(() => Boolean)
-  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  @TransformBooleanString()
+  @IsOptional()
   enabled?: boolean;
 
-  @Type(() => Boolean)
-  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  @TransformBooleanString()
+  @IsOptional()
   focusable?: boolean;
 
-  @Type(() => Boolean)
-  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  @TransformBooleanString()
+  @IsOptional()
   focused?: boolean;
 
-  @Type(() => Boolean)
-  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  @TransformBooleanString()
+  @IsOptional()
   'long-clickable'?: boolean;
 
-  @Type(() => Boolean)
-  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  @TransformBooleanString()
+  @IsOptional()
   scrollable?: boolean;
 
-  @Type(() => Boolean)
-  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  @TransformBooleanString()
+  @IsOptional()
   selected?: boolean;
 
-  @Type(() => Boolean)
-  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  @TransformBooleanString()
+  @IsOptional()
   displayed?: boolean;
 
-  @Type(() => Boolean)
-  @Transform(({ value }) => value === 'true')
+  @IsString()
+  @IsOptional()
   password?: string;
 
   @Type(() => ScreenPosition)
@@ -205,16 +217,19 @@ export class IosNodeAttributes {
   @Type(() => Number)
   index = 0;
 
-  @Type(() => Boolean)
-  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  @TransformBooleanString()
+  @IsOptional()
   accessible?: boolean;
 
-  @Type(() => Boolean)
-  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  @TransformBooleanString()
+  @IsOptional()
   enabled?: boolean;
 
-  @Type(() => Boolean)
-  @Transform(({ value }) => value === 'true')
+  @IsBoolean()
+  @TransformBooleanString()
+  @IsOptional()
   visible?: boolean;
 
   @Type(() => Number)
