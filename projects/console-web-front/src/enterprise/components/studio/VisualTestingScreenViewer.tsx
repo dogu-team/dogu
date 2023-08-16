@@ -1,12 +1,13 @@
 import { ProjectBase } from '@dogu-private/console';
 import { RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
 import { Spin } from 'antd';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { shallow } from 'zustand/shallow';
 
 import DeviceStreaming from '../../../components/streaming/DeviceStreaming';
 import { VideoSize } from '../../../components/streaming/StreamingVideo';
+import useDeviceInput from '../../../hooks/streaming/useDeviceInput';
 import useDeviceStreamingContext from '../../../hooks/streaming/useDeviceStreamingContext';
 import useRequest from '../../../hooks/useRequest';
 import useEventStore from '../../../stores/events';
@@ -22,8 +23,12 @@ interface Props {
 }
 
 const VisualTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
-  const { loading, device, deviceRTCCaller, videoRef } = useDeviceStreamingContext();
+  const { loading, deviceRTCCaller } = useDeviceStreamingContext();
   const [requestLoading, request] = useRequest(createStep);
+  const [isRecording, setIsRecording] = useState(false);
+  const { handleDoubleClick, handleKeyDown, handleKeyUp, handleMouseDown, handleMouseLeave, handleMouseMove, handleMouseUp, handleWheel } = useDeviceInput(
+    deviceRTCCaller ?? undefined,
+  );
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
 
   const handleClick = useCallback(
@@ -57,23 +62,67 @@ const VisualTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
   return (
     <VideoWrapper>
       <DeviceStreaming.Video
-        rightSidebar={loading ? null : <VisualScreenActionBar />}
-        // onKeyPress={handleKeyDown}
-        // onKeyDown={handleKeyDown}
-        // onKeyUp={handleKeyUp}
-        // onWheel={handleWheel}
-        // onMouseDown={handleMouseDownVideo}
-        // onMouseUp={handleMouseUp}
-        // onMouseMove={handleMouseMoveVideo}
-        // onMouseLeave={handleMouseLeaveVideo}
-        // onDoubleClick={handleDoubleClick}
-        onMouseMove={() => {
-          console.log('move');
+        rightSidebar={loading ? null : <VisualScreenActionBar isRecording={isRecording} updateIsRecording={setIsRecording} />}
+        onKeyPress={(e) => {
+          if (isRecording) {
+            return;
+          }
+          handleKeyDown(e);
         }}
-        onMouseDown={() => {
-          console.log('down');
+        onKeyDown={(e) => {
+          if (isRecording) {
+            return;
+          }
+          handleKeyDown(e);
         }}
-        onClick={handleClick}
+        onKeyUp={(e) => {
+          if (isRecording) {
+            return;
+          }
+          handleKeyUp(e);
+        }}
+        onWheel={(e, videoSize) => {
+          if (isRecording) {
+            return;
+          }
+          handleWheel(e, videoSize);
+        }}
+        onMouseDown={(e, videoSize) => {
+          if (isRecording) {
+            return;
+          }
+          handleMouseDown(e, videoSize);
+        }}
+        onMouseUp={(e, videoSize) => {
+          if (isRecording) {
+            return;
+          }
+          handleMouseUp(e, videoSize);
+        }}
+        onMouseMove={(e, videoSize) => {
+          if (isRecording) {
+            return;
+          }
+          handleMouseMove(e, videoSize);
+        }}
+        onMouseLeave={(e, videoSize) => {
+          if (isRecording) {
+            return;
+          }
+          handleMouseLeave(e, videoSize);
+        }}
+        onDoubleClick={(e, videoSize) => {
+          if (isRecording) {
+            return;
+          }
+          handleDoubleClick(e, videoSize);
+        }}
+        onClick={(e, videoSize) => {
+          if (isRecording) {
+            handleClick(e, videoSize);
+            return;
+          }
+        }}
       >
         {requestLoading && (
           <ScreenLoadingWrapper>
