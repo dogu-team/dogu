@@ -2,11 +2,13 @@ import { RecordTestCaseBase, RecordTestStepBase } from '@dogu-private/console';
 import { OrganizationId, ProjectId, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
 import { useRouter } from 'next/router';
 import { reverse } from 'ramda';
+import { useEffect } from 'react';
 import styled from 'styled-components';
 import useSWR from 'swr';
 
 import { swrAuthFetcher } from '../../../api';
 import useRefresh from '../../../hooks/useRefresh';
+import useEventStore from '../../../stores/events';
 import StepEditor from './StepEditor';
 import StepNavigator from './StepNavigator';
 import StepPreviewBar from './StepPreviewBar';
@@ -33,6 +35,32 @@ const VisualTestingEditor = () => {
       });
     }
   });
+
+  useEffect(() => {
+    const unsub = useEventStore.subscribe(({ eventName, payload }) => {
+      if (eventName === 'onRecordStepDeleted') {
+        mutate();
+        const deletedStep = payload as RecordTestStepBase;
+        if (deletedStep.recordTestCaseId === caseId) {
+          if (steps.length === 1) {
+            router.push({ query: { ...router.query, step: undefined } }, undefined, { shallow: true });
+            return;
+          }
+
+          if (currentStepPageNumber === 1) {
+            router.push({ query: { ...router.query, step: steps[1]?.recordTestStepId } }, undefined, { shallow: true });
+            return;
+          }
+
+          router.replace({ query: { ...router.query, step: currentStep?.prevRecordTestStepId } }, undefined, { shallow: true });
+        }
+      }
+    });
+
+    return () => {
+      unsub();
+    };
+  }, [caseId, currentStepPageNumber, currentStep?.prevRecordTestStepId, steps]);
 
   if (isLoading) {
     return <div>Loading...</div>;

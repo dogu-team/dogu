@@ -30,3 +30,8 @@ export const getDeviceKeyboardShown = async (organizationId: OrganizationId, pro
   const { data } = await api.get<boolean>(`/organizations/${organizationId}/projects/${projectId}/record-test-cases/${recordTestCaseId}/keyboard`);
   return data;
 };
+
+export const deleteStep = async (dto: { organizationId: OrganizationId; projectId: ProjectId; recordTestCaseId: RecordTestCaseId; recordTestStepId: string }) => {
+  const { organizationId, projectId, recordTestCaseId, recordTestStepId } = dto;
+  await api.delete<void>(`/organizations/${organizationId}/projects/${projectId}/record-test-cases/${recordTestCaseId}/record-test-steps/${recordTestStepId}`);
+};
