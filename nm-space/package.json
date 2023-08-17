@@ -13,7 +13,8 @@
   "workspaces": [
     "projects/*",
     "mirror/packages/*",
-    "samples/*"
+    "samples/*",
+    "packages/*"
   ],
   "devDependencies": {
     "@types/node": "18.15.5",
