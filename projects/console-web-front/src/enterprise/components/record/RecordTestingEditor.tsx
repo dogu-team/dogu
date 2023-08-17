@@ -1,7 +1,6 @@
 import { RecordTestCaseBase, RecordTestStepBase } from '@dogu-private/console';
 import { OrganizationId, ProjectId, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
 import { useRouter } from 'next/router';
-import { reverse } from 'ramda';
 import { useEffect } from 'react';
 import styled from 'styled-components';
 import useSWR from 'swr';
@@ -23,7 +22,7 @@ const RecordTestingEditor = () => {
     revalidateOnFocus: false,
   });
 
-  const steps = reverse(data?.recordTestSteps ?? []);
+  const steps = data?.recordTestSteps ?? [];
   const currentStep = steps.length ? (stepId ? steps.find((step) => step.recordTestStepId === stepId) : steps[0]) : undefined;
   const currentStepPageNumber = currentStep ? steps.indexOf(currentStep) + 1 ?? 0 : 0;
 

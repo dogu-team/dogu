@@ -1,6 +1,6 @@
 import { ProjectBase } from '@dogu-private/console';
 import { RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
-import { Spin } from 'antd';
+import { Empty, Spin } from 'antd';
 import { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { shallow } from 'zustand/shallow';
@@ -57,83 +57,95 @@ const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
         sendErrorNotification('Failed to take screenshot.');
       }
     },
-    [caseId, project.projectId, project.organizationId, request],
+    [caseId, project.projectId, project.organizationId, stepId, request],
   );
 
   return (
-    <VideoWrapper>
-      <DeviceStreaming.Video
-        rightSidebar={loading ? null : <RecordScreenActionBar isRecording={isRecording} updateIsRecording={setIsRecording} />}
-        onKeyPress={(e) => {
-          if (isRecording) {
-            return;
-          }
-          handleKeyDown(e);
-        }}
-        onKeyDown={(e) => {
-          if (isRecording) {
-            return;
-          }
-          handleKeyDown(e);
-        }}
-        onKeyUp={(e) => {
-          if (isRecording) {
-            return;
-          }
-          handleKeyUp(e);
-        }}
-        onWheel={(e, videoSize) => {
-          if (isRecording) {
-            return;
-          }
-          handleWheel(e, videoSize);
-        }}
-        onMouseDown={(e, videoSize) => {
-          if (isRecording) {
-            return;
-          }
-          handleMouseDown(e, videoSize);
-        }}
-        onMouseUp={(e, videoSize) => {
-          if (isRecording) {
-            return;
-          }
-          handleMouseUp(e, videoSize);
-        }}
-        onMouseMove={(e, videoSize) => {
-          if (isRecording) {
-            return;
-          }
-          handleMouseMove(e, videoSize);
-        }}
-        onMouseLeave={(e, videoSize) => {
-          if (isRecording) {
-            return;
-          }
-          handleMouseLeave(e, videoSize);
-        }}
-        onDoubleClick={(e, videoSize) => {
-          if (isRecording) {
-            return;
-          }
-          handleDoubleClick(e, videoSize);
-        }}
-        onClick={(e, videoSize) => {
-          if (isRecording) {
-            handleClick(e, videoSize);
-            return;
-          }
-        }}
-      >
-        {requestLoading && (
-          <ScreenLoadingWrapper>
-            <Spin size="large" />
-          </ScreenLoadingWrapper>
-        )}
-      </DeviceStreaming.Video>
+    <>
+      <div style={{ marginBottom: '.5rem' }}>
+        <RecordScreenActionBar isRecording={isRecording} updateIsRecording={setIsRecording} />
+      </div>
+      <VideoWrapper>
+        <DeviceStreaming.Video
+          rightSidebar={null}
+          onKeyPress={(e) => {
+            if (isRecording) {
+              return;
+            }
+            handleKeyDown(e);
+          }}
+          onKeyDown={(e) => {
+            if (isRecording) {
+              return;
+            }
+            handleKeyDown(e);
+          }}
+          onKeyUp={(e) => {
+            if (isRecording) {
+              return;
+            }
+            handleKeyUp(e);
+          }}
+          onWheel={(e, videoSize) => {
+            if (isRecording) {
+              return;
+            }
+            handleWheel(e, videoSize);
+          }}
+          onMouseDown={(e, videoSize) => {
+            if (isRecording) {
+              return;
+            }
+            handleMouseDown(e, videoSize);
+          }}
+          onMouseUp={(e, videoSize) => {
+            if (isRecording) {
+              return;
+            }
+            handleMouseUp(e, videoSize);
+          }}
+          onMouseMove={(e, videoSize) => {
+            if (isRecording) {
+              return;
+            }
+            handleMouseMove(e, videoSize);
+          }}
+          onMouseLeave={(e, videoSize) => {
+            if (isRecording) {
+              return;
+            }
+            handleMouseLeave(e, videoSize);
+          }}
+          onDoubleClick={(e, videoSize) => {
+            if (isRecording) {
+              return;
+            }
+            handleDoubleClick(e, videoSize);
+          }}
+          onClick={(e, videoSize) => {
+            if (isRecording) {
+              handleClick(e, videoSize);
+              return;
+            }
+          }}
+        >
+          {requestLoading && (
+            <ScreenLoadingWrapper>
+              <Spin size="large" />
+            </ScreenLoadingWrapper>
+          )}
+          {!caseId && (
+            <ScreenLoadingWrapper>
+              <div>
+                <Description>Select or create case first!</Description>
+              </div>
+            </ScreenLoadingWrapper>
+          )}
+        </DeviceStreaming.Video>
 
-      {isDeviceKeyboardShown && isRecording && <KeyboardInput />}
-    </VideoWrapper>
+        {isDeviceKeyboardShown && isRecording && <KeyboardInput />}
+      </VideoWrapper>
+    </>
   );
 };
 
@@ -157,4 +169,8 @@ const ScreenLoadingWrapper = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 100;
+`;
+
+const Description = styled.p`
+  color: #fff;
 `;

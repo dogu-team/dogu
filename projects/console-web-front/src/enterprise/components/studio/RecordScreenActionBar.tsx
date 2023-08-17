@@ -30,10 +30,14 @@ const RecordScreenActionBar = ({ isRecording, updateIsRecording }: Props) => {
 export default RecordScreenActionBar;
 
 const Box = styled.div`
-  margin-left: 0.5rem;
+  ${flexRowCenteredStyle}
+
+  button:last-child {
+    margin-right: 0;
+  }
 `;
 
 const StyledButton = styled(Button)`
   ${flexRowCenteredStyle}
-  margin-bottom: 0.5rem;
+  margin-right: 0.5rem;
 `;
