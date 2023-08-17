@@ -11,7 +11,7 @@ import path from 'path';
 import { DeviceClientService } from '../device-client/device-client.service';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
-import { UpdateMacTemplatePath } from '../res-map';
+import { UpdateMacTemplatePath, UpdateWindowsTemplatePath } from '../res-map';
 import { CommandProcessRegistry } from './command.process-registry';
 
 @Injectable()
@@ -125,7 +125,7 @@ export class UpdateProcessor {
       throw new Error('Update failed. not exe file');
     }
 
-    const shPath = UpdateMacTemplatePath;
+    const shPath = UpdateWindowsTemplatePath;
     let contents = await fs.promises.readFile(shPath, { encoding: 'utf-8' });
     contents = contents.replace('{{installer}}', filename);
 
