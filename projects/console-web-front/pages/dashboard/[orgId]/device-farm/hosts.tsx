@@ -28,8 +28,6 @@ const HostManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ organiz
   const [isAddModalOpen, openAddModal, closeAddModal] = useModal();
   const { data } = useSWR<DownloadablePackageResult[]>(`/downloads/dogu-agent/latest`, swrAuthFetcher, { revalidateOnFocus: false });
 
-  console.log(data);
-
   return (
     <DoguAgentLatestContext.Provider value={{ latestInfo: data ?? [] }}>
       <Head>
