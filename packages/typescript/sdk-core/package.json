@@ -1,6 +1,6 @@
 {
   "name": "@dogu-tech/sdk-core",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT License",
   "author": "Dogu Technologies",
   "type": "module",
@@ -33,6 +33,11 @@
   },
   "types": "build/cjs/src/index.d.ts",
   "dependencies": {
+    "@nestjs/common": "10.1.3",
+    "@nestjs/core": "10.1.3",
+    "@nestjs/platform-express": "10.1.3",
+    "@nestjs/platform-ws": "10.1.3",
+    "@nestjs/websockets": "10.1.3",
     "jsonschema": "1.4.1",
     "lodash": "4.17.21"
   },

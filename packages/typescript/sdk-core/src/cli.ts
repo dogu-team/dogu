@@ -2,17 +2,17 @@
 
 import { DoguSdkCore } from './index.js';
 
-async function main() {
+async function run() {
   let doguSdkCore: DoguSdkCore | null = null;
   try {
     doguSdkCore = new DoguSdkCore();
-    await doguSdkCore.open();
+    await doguSdkCore.open({});
   } finally {
     await doguSdkCore?.close();
   }
 }
 
-main().catch((error) => {
+run().catch((error) => {
   console.error(error);
   process.exit(1);
 });
