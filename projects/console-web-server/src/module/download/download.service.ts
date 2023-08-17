@@ -1,9 +1,9 @@
-import { DownloadablePackageResult, DOWNLOAD_PLATFORMS } from '@dogu-private/console';
-import { isMajorMinorMatch } from '@dogu-tech/node';
+import { DownloadablePackageResult, downloadPlatformsFromFilename, DOWNLOAD_PLATFORMS } from '@dogu-private/console';
+import { compareSemverDesc, isMajorMinorMatch, parseSemver } from '@dogu-tech/common';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-
 import { Octokit } from '@octokit/rest';
 import yaml from 'js-yaml';
+import path from 'path';
 import { config } from '../../config';
 import { env } from '../../env';
 import { FEATURE_CONFIG } from '../../feature.config';
@@ -11,10 +11,11 @@ import { LatestYamlDownloadParseResult } from '../../types/download';
 import { Page } from '../common/dto/pagination/page';
 import { PageDto } from '../common/dto/pagination/page.dto';
 import { PublicFileService } from '../file/public-file.service';
+import { DoguLogger } from '../logger/logger';
 
 @Injectable()
 export class DownloadService {
-  constructor(private readonly publicFileService: PublicFileService) {}
+  constructor(private readonly publicFileService: PublicFileService, private readonly logger: DoguLogger) {}
 
   async getDoguAgentS3Latest(): Promise<DownloadablePackageResult[]> {
     const { mac, windows } = await this.parseLatestYaml();
@@ -43,50 +44,66 @@ export class DownloadService {
     return response;
   }
 
+  async getDoguAgentS3LatestWithBeta(): Promise<DownloadablePackageResult[]> {
+    const applications = await this.getDoguAgentS3PackageListSorted();
+
+    const result: DownloadablePackageResult[] = [];
+    for (const platform of Object.values(DOWNLOAD_PLATFORMS)) {
+      const filtered = applications.filter((item) => item.platform === platform && isMajorMinorMatch(item.version, config.version));
+      if (filtered.length > 0) {
+        result.push(filtered[0]);
+      }
+    }
+
+    return result;
+  }
+
   async getDoguAgentS3PackageList(dto: PageDto): Promise<Page<DownloadablePackageResult>> {
     const { page, offset } = dto;
 
+    // filter size, endsWith,
+    const sorted = await this.getDoguAgentS3PackageListSorted();
+    const sliced = sorted.slice((page - 1) * offset, page * offset);
+
+    return new Page(page, offset, sorted.length, sliced);
+  }
+
+  async getDoguAgentS3PackageListSorted(): Promise<DownloadablePackageResult[]> {
     const applications = await this.publicFileService.getApplicationList();
     // filter size, endsWith,
     const filtered = applications.filter((item) => item.size && item.size > 0 && (item.key?.endsWith('dmg') || item.key?.endsWith('exe')));
 
-    // sort by version, desc
-    filtered.sort((a, b) => {
-      const av: RegExpMatchArray | null | undefined = a.key?.match(/[0-9]*\.[0-9]*\.[0-9]*/);
-      const bv: RegExpMatchArray | null | undefined = b.key?.match(/[0-9]*\.[0-9]*\.[0-9]*/);
-
-      if (av && bv) {
-        const arr: string[] = av[0].split('.');
-        const brr: string[] = bv[0].split('.');
-
-        const len = Math.min(arr.length, brr.length);
-
-        for (let i = 0; i < len; i++) {
-          const a2 = +arr[i] || 0;
-          const b2 = +brr[i] || 0;
-
-          if (a2 !== b2) {
-            return a2 > b2 ? -1 : 1;
-          }
-        }
-
-        return arr.length - brr.length;
+    const packages: DownloadablePackageResult[] = [];
+    for (const item of filtered) {
+      if (!item.key) {
+        this.logger.warn('DownloadService file key is undefined');
+        continue;
       }
+      const platform = downloadPlatformsFromFilename(item.key);
+      const version = parseSemver(path.parse(item.key).name);
 
-      return -1;
+      packages.push({
+        platform: platform,
+        name: item.key.replace('dost/', ''),
+        url: env.DOGU_DOST_DOWNLOAD_BASE_URL + item.key,
+        releasedAt: item.lastModified?.toString() ?? '',
+        version: version ?? version,
+        size: item.size ?? 0,
+      });
+    }
+
+    // sort by version, desc
+    packages.sort((a, b) => {
+      const versionCompare = compareSemverDesc(a.version, b.version);
+      if (0 === versionCompare) {
+        const adate = new Date(a.releasedAt);
+        const bdate = new Date(b.releasedAt);
+        return bdate.getTime() - adate.getTime();
+      }
+      return versionCompare;
     });
 
-    const sliced = filtered.slice((page - 1) * offset, page * offset);
-    const mapped: DownloadablePackageResult[] = sliced.map((item) => ({
-      platform: DOWNLOAD_PLATFORMS.UNDEFINED,
-      name: item.key?.replace('dost/', '') ?? 'Unknown',
-      url: env.DOGU_DOST_DOWNLOAD_BASE_URL + item.key,
-      releasedAt: item.lastModified?.toString() ?? '',
-      version: '',
-      size: item.size ?? 0,
-    }));
-
-    return new Page(page, offset, filtered.length, mapped);
+    return packages;
   }
 
   // private async getAllS3Objects(param: ListObjectsV2Request): Promise<Object[]> {
@@ -119,7 +136,7 @@ export class DownloadService {
   }
 
   async getDoguAgentLatest(): Promise<DownloadablePackageResult[]> {
-    return FEATURE_CONFIG.get('doguAgentAppLocation') === 's3' ? await this.getDoguAgentS3Latest() : await this.getDoguAgentGithubLatest();
+    return FEATURE_CONFIG.get('doguAgentAppLocation') === 's3' ? await this.getDoguAgentS3LatestWithBeta() : await this.getDoguAgentGithubLatest();
   }
 
   private async getDoguAgentGithubPackageList(dto: PageDto): Promise<Page<DownloadablePackageResult>> {
@@ -133,7 +150,7 @@ export class DownloadService {
 
   private async getDoguAgentGithubLatest(): Promise<DownloadablePackageResult[]> {
     const applications = await this.getDoguAgentGithubPackagesSorted();
-    // loop DOWNLOAD_PLATFORMS and get latest version
+
     const result: DownloadablePackageResult[] = [];
     for (const platform of Object.values(DOWNLOAD_PLATFORMS)) {
       const filtered = applications.filter((item) => item.platform === platform && isMajorMinorMatch(item.version, config.version));
@@ -148,30 +165,7 @@ export class DownloadService {
   private async getDoguAgentGithubPackagesSorted(): Promise<DownloadablePackageResult[]> {
     const applications = await this.getDoguAgentGithubPackages();
 
-    applications.sort((a, b) => {
-      const av: RegExpMatchArray | null | undefined = a.name?.match(/[0-9]*\.[0-9]*\.[0-9]*/);
-      const bv: RegExpMatchArray | null | undefined = b.name?.match(/[0-9]*\.[0-9]*\.[0-9]*/);
-
-      if (av && bv) {
-        const arr: string[] = av[0].split('.');
-        const brr: string[] = bv[0].split('.');
-
-        const len = Math.min(arr.length, brr.length);
-
-        for (let i = 0; i < len; i++) {
-          const a2 = +arr[i] || 0;
-          const b2 = +brr[i] || 0;
-
-          if (a2 !== b2) {
-            return a2 > b2 ? -1 : 1;
-          }
-        }
-
-        return arr.length - brr.length;
-      }
-
-      return -1;
-    });
+    applications.sort((a, b) => compareSemverDesc(a.version, b.version));
     return applications;
   }
 
@@ -189,20 +183,8 @@ export class DownloadService {
         if (!asset.name.startsWith('dogu-agent')) {
           continue;
         }
-        let platform = DOWNLOAD_PLATFORMS.UNDEFINED;
-        if (asset.name.includes('mac-arm64')) {
-          platform = DOWNLOAD_PLATFORMS.APPLE_ARM64;
-        } else if (asset.name.includes('mac-x64')) {
-          platform = DOWNLOAD_PLATFORMS.APPLE_X86;
-        } else if (asset.name.includes('win-x64')) {
-          platform = DOWNLOAD_PLATFORMS.WINDOWS;
-        }
-
-        let version = release.tag_name.replace('v', '').split('-')[0];
-        const match: RegExpMatchArray | null | undefined = asset.name.match(/[0-9]*\.[0-9]*\.[0-9]*/);
-        if (match) {
-          version = match[0];
-        }
+        let platform = downloadPlatformsFromFilename(asset.name);
+        const version = parseSemver(path.parse(asset.name).name);
 
         result.push({
           platform: platform,

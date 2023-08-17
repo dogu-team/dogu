@@ -24,3 +24,4 @@ export * from './validations/functions';
 export * from './validations/types';
 export * from './variables/functions';
 export * from './variables/types';
+export * from './version';

@@ -19,15 +19,6 @@ export function findParentPackageJson(): string {
   throw new Error('Cannot find package.json');
 }
 
-export function isMajorMinorMatch(a: string, b: string): boolean {
-  const aArr = a.split('.');
-  const bArr = b.split('.');
-  if (aArr.length < 3 || bArr.length < 3) {
-    return false;
-  }
-  return aArr[0] === bArr[0] && aArr[1] === bArr[1];
-}
-
 export class PackageJson {
   public readonly doc: Record<string, unknown>;
 

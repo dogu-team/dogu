@@ -28,3 +28,15 @@ export function platformArchitectureFromDownloadablePackageResult(result: Downlo
       throw new Error(`Unknown platform: ${result.platform}`);
   }
 }
+
+export function downloadPlatformsFromFilename(filename: string): DOWNLOAD_PLATFORMS {
+  let platform = DOWNLOAD_PLATFORMS.UNDEFINED;
+  if (filename.includes('mac-arm64')) {
+    platform = DOWNLOAD_PLATFORMS.APPLE_ARM64;
+  } else if (filename.includes('mac-x64')) {
+    platform = DOWNLOAD_PLATFORMS.APPLE_X86;
+  } else if (filename.includes('win-x64')) {
+    platform = DOWNLOAD_PLATFORMS.WINDOWS;
+  }
+  return platform;
+}
