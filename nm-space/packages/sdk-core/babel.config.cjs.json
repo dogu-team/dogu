@@ -1,0 +1,4 @@
+{
+  "extends": "./babel.config.base.json",
+  "plugins": ["@babel/plugin-transform-modules-commonjs", "babel-plugin-transform-import-meta"]
+}
