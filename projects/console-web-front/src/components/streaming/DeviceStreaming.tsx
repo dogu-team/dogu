@@ -9,7 +9,6 @@ import useGamiumClient from '../../hooks/streaming/useGamiumClient';
 import useInspector from '../../hooks/streaming/useInspector';
 import useLocalDeviceDetect from '../../hooks/streaming/useLocalDeviceDetect';
 import useRTCConnection from '../../hooks/streaming/useRTCConnection';
-import { flexRowCenteredStyle } from '../../styles/box';
 import { StreamingMode } from '../../types/device';
 import ErrorBox from '../common/boxes/ErrorBox';
 import ApplicationUploader from './ApplicationUploader';
@@ -97,17 +96,4 @@ export default DeviceStreaming;
 const Box = styled.div<{ visible: boolean }>`
   display: ${(props) => (props.visible ? 'block' : 'none')};
   ${(props) => (!props.visible ? 'height: 0; width: 0;' : 'width: 100%; height: 100%;')}
-`;
-
-const LoadingBox = styled.div`
-  width: 100%;
-  ${flexRowCenteredStyle}
-  flex-direction: column;
-
-  p {
-    margin-top: 1rem;
-    white-space: pre-wrap;
-    text-align: center;
-    line-height: 1.4;
-  }
 `;

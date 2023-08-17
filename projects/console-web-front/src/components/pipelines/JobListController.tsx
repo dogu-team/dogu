@@ -1,10 +1,11 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { RoutineJobBase, JobDisplayQuery } from '@dogu-private/console';
-import { OrganizationId, RoutinePipelineId, ProjectId } from '@dogu-private/types';
+import { OrganizationId, RoutinePipelineId, ProjectId, PIPELINE_STATUS } from '@dogu-private/types';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import useSWR from 'swr';
+import { BsRecord2Fill } from 'react-icons/bs';
 
 import { swrAuthFetcher } from '../../api';
 import useLivePipelineStore from '../../stores/live-pipeline';
@@ -24,7 +25,8 @@ const JobListController = ({ orgId, projectId, pipelineId }: Props) => {
     `/organizations/${orgId}/projects/${projectId}/pipelines/${pipelineId}/jobs?display=${JobDisplayQuery.LIST}`,
     swrAuthFetcher,
   );
-  const liveJobs = useLivePipelineStore((state) => state.pipeline?.routineJobs);
+  const livePipeline = useLivePipelineStore((state) => state.pipeline);
+  const liveJobs = livePipeline?.routineJobs;
   const { t } = useTranslation();
 
   if (isLoading) {
@@ -37,7 +39,20 @@ const JobListController = ({ orgId, projectId, pipelineId }: Props) => {
 
   return (
     <Box>
-      <ProjectSidebarItem href={`/dashboard/${orgId}/projects/${projectId}/routines/${pipelineId}`} selected={router.query.jobId === undefined}>
+      {livePipeline && livePipeline.status === PIPELINE_STATUS.IN_PROGRESS && (
+        <ProjectSidebarItem
+          href={`/dashboard/${orgId}/projects/${projectId}/routines/${pipelineId}/devices`}
+          selected={router.query.jobId === undefined && router.pathname.includes('devices')}
+        >
+          <BsRecord2Fill style={{ color: 'red' }} />
+          &nbsp;
+          {t('routine:jobLiveStreaming')}
+        </ProjectSidebarItem>
+      )}
+      <ProjectSidebarItem
+        href={`/dashboard/${orgId}/projects/${projectId}/routines/${pipelineId}`}
+        selected={router.query.jobId === undefined && !router.pathname.includes('devices')}
+      >
         {t('routine:jobSummaryText')}
       </ProjectSidebarItem>
       <Divider />

@@ -1,10 +1,11 @@
 import { CalendarOutlined, FieldTimeOutlined, GatewayOutlined, LoadingOutlined, UserOutlined } from '@ant-design/icons';
 import { PageBase, RoutinePipelineBase } from '@dogu-private/console';
-import { OrganizationId, ProjectId } from '@dogu-private/types';
-import { List } from 'antd';
+import { OrganizationId, PIPELINE_STATUS, ProjectId } from '@dogu-private/types';
+import { Button, List } from 'antd';
 import Trans from 'next-translate/Trans';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { BsRecord2Fill } from 'react-icons/bs';
 import styled from 'styled-components';
 import useSWR from 'swr';
 
@@ -51,6 +52,15 @@ const PipelineItem = ({ pipeline }: ItemProps) => {
           </div>
         </Content>
         <Content style={{ justifyContent: 'flex-end' }}>
+          {pipeline.status === PIPELINE_STATUS.IN_PROGRESS && (
+            <div style={{ marginRight: '1rem' }}>
+              <Link href={`/dashboard/${router.query.orgId}/projects/${router.query.pid}/routines/${pipeline.routinePipelineId}/devices`}>
+                <Button style={{ display: 'flex', alignItems: 'center' }} size="small" icon={<BsRecord2Fill style={{ color: 'red' }} />} type="primary">
+                  &nbsp;Live
+                </Button>
+              </Link>
+            </div>
+          )}
           <DateContainer>
             <DateBox>
               <CalendarOutlined style={{ fontSize: '1rem', marginRight: '.2rem' }} />
