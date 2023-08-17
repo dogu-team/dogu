@@ -2,9 +2,9 @@
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
     "composite": false,
-    "emitDecoratorMetadata": false,
+    "emitDecoratorMetadata": true,
     "esModuleInterop": true,
-    "experimentalDecorators": false,
+    "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "Node16",
     "newLine": "lf",
