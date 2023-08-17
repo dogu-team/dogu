@@ -1,6 +1,6 @@
 import { ProjectBase } from '@dogu-private/console';
 import { RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
-import { Empty, Spin } from 'antd';
+import { Spin } from 'antd';
 import { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { shallow } from 'zustand/shallow';
