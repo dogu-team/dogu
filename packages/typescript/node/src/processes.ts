@@ -1,5 +1,8 @@
 import { NullLogger, Printable, ProcessInfo } from '@dogu-tech/common';
+import pidtree from 'pidtree';
 import { ChildProcess, killProcess, waitPortIdle } from '.';
+
+export type Pid = string | number;
 
 export async function killProcessOnPort(port: number, printable: Printable): Promise<void> {
   switch (process.platform) {
@@ -93,4 +96,18 @@ export async function getProcessesMapWindows(logger: Printable): Promise<Process
     return { ppid: parseInt(ppid), pid: parseInt(pid), cpuUsedTime: '', mem: parseInt(workmem), commandLine: command.join(' ') } as ProcessInfo;
   });
   return new Map(infos.map((info) => [info.pid, info]));
+}
+
+export async function getChildProcessIds(pid: Pid, printable: Printable): Promise<Pid[]> {
+  return new Promise((resolve) => {
+    pidtree(pid, (err, pids) => {
+      if (err) {
+        printable.error('child process close. pidtree error', { error: err });
+        resolve([]);
+      } else {
+        printable.info('child process close. pidtree', { pids });
+        resolve(pids);
+      }
+    });
+  });
 }

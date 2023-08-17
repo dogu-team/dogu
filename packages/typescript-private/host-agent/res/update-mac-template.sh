@@ -1,20 +1,21 @@
-osascript -e "display notification \"Start update\" with title \"Dogu-Agent\""
-
+work_dir="{{work_dir}}"
 app_name="{{app_name}}"
 app_bundle="{{app_bundle}}"
 zip_file="{{zip_file}}"
 
+cd $work_dir
+
+echo Start update $app_name
+
 sleep 10
 
 # Unzip the ZIP file
-osascript -e "display notification \"Unzipping ZIP file...\" with title \"Dogu-Agent\""
 echo "Unzipping ZIP file..."
 unzip "$zip_file"
 
 # Check if the app bundle exists
 if [ -d "$app_bundle" ]; then
     # Move the app bundle to the Applications folder
-    osascript -e "display notification \"Moving app bundle to the Applications folder...\" with title \"Dogu-Agent\""
     echo "Moving app bundle to the Applications folder..."
     rm -rf "/Applications/$app_bundle"
     mv "$app_bundle" "/Applications/"
@@ -28,10 +29,12 @@ echo "Cleaning up..."
 rm "$zip_file"
 
 
-osascript -e "display notification \"Launch $app_name\" with title \"Dogu-Agent\""
 echo "Launch $app_name"
 xattr -dr com.apple.quarantine "/Applications/$app_bundle"
 open -a Finder /Applications/Dogu-Agent.app
+
 sleep 10
+
 open -a Finder /Applications/Dogu-Agent.app
-osascript -e "display notification \"Launch $app_name done\" with title \"Dogu-Agent\""
+echo "Launch $app_name Done"
+kill -9 $(ps -p $(ps -p $PPID -o ppid=) -o ppid=) 

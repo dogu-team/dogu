@@ -3,10 +3,9 @@ import { ChildProcess, execFileSync, execSync, fork } from 'child_process';
 import path from 'path';
 import pidtree from 'pidtree';
 import treeKill from 'tree-kill';
+import { Pid } from './processes';
 
 export { treeKill };
-
-export type Pid = string | number;
 
 export function killChildProcess(childProcess: ChildProcess, signal: string | number = 'SIGTERM'): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -97,7 +96,7 @@ export function killProcessIgnore(pid: Pid, ignorePids: Pid[], printable: Printa
     }
     killPid(pid, printable);
     if (isKillMySelf) {
-      killPid(pid, printable);
+      killPid(process.pid, printable);
     }
   });
 }

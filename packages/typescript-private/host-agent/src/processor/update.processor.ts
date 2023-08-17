@@ -1,7 +1,7 @@
 import { ErrorResult, UpdateHostAppRequest } from '@dogu-private/console-host-agent';
 import { Code } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
-import { getFilenameFromUrl, HostPaths, killProcessIgnore } from '@dogu-tech/node';
+import { getChildProcessIds, getFilenameFromUrl, HostPaths, killProcessIgnore } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import AdmZip, { IZipEntry } from 'adm-zip';
 import AsyncLock from 'async-lock';
@@ -35,11 +35,12 @@ export class UpdateProcessor {
         // detach shell
         this.logger.info(`UpdateProcessor.update. detach shell ${downloadPath}`);
         const child = await this.detachShell(downloadPath);
+        const pids = child.pid ? [...(await getChildProcessIds(child.pid, this.logger)), child.pid] : [];
 
         // quit app
         const pid = env.DOGU_ROOT_PID ?? process.pid;
         this.logger.info(`UpdateProcessor.update. quit app pid: ${pid}`);
-        killProcessIgnore(pid, child.pid ? [child.pid] : [], this.logger);
+        killProcessIgnore(pid, pids, this.logger);
       });
 
       return {
@@ -94,6 +95,7 @@ export class UpdateProcessor {
 
     const shPath = UpdateMacTemplatePath;
     let contents = await fs.promises.readFile(shPath, { encoding: 'utf-8' });
+    contents = contents.replace('{{work_dir}}', dirname);
     contents = contents.replace('{{app_name}}', appName);
     contents = contents.replace('{{app_bundle}}', appBundleName);
     contents = contents.replace('{{zip_file}}', filename);
@@ -104,7 +106,7 @@ export class UpdateProcessor {
     }
     await fs.promises.writeFile(shellPath, contents, { encoding: 'utf-8' });
     await fs.promises.chmod(shellPath, 0o755);
-    const child = child_process.spawn('sh', [shellPath], { cwd: dirname, detached: true, stdio: 'ignore' });
+    const child = child_process.spawn('/System/Applications/Utilities/Terminal.app/Contents/MacOS/Terminal', [shellPath], { cwd: dirname, detached: true, stdio: 'ignore' });
     child.unref();
     const onSpawnPromise = new Promise<void>((resolve, reject) => {
       child.on('spawn', () => {
