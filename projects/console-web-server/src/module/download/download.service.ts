@@ -1,4 +1,4 @@
-import { DownloadablePackageResult, downloadPlatformsFromFilename, DOWNLOAD_PLATFORMS } from '@dogu-private/console';
+import { DownloadablePackageResult, downloadPlatformsFromFilename, DOWNLOAD_PLATFORMS } from '@dogu-private/types';
 import { compareSemverDesc, isMajorMinorMatch, parseSemver } from '@dogu-tech/common';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { Octokit } from '@octokit/rest';

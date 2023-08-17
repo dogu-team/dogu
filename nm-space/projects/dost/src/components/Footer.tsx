@@ -119,7 +119,7 @@ function Footer() {
     setIsUpdating(true);
     const updateRet = await ipc.updaterClient.downloadAndInstallUpdate();
     setIsUpdating(false);
-    logger.verbose(`updateRet ${updateRet}`);
+    logger.verbose('updateRet', { updateRet });
     if (0 < updateRet.error.length) {
       const current = toast({
         title: 'Error',

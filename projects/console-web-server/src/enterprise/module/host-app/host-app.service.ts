@@ -1,5 +1,4 @@
-import { platformArchitectureFromDownloadablePackageResult } from '@dogu-private/console';
-import { HostId, OrganizationId } from '@dogu-private/types';
+import { HostId, OrganizationId, platformArchitectureFromDownloadablePackageResult } from '@dogu-private/types';
 import { Injectable } from '@nestjs/common';
 import { DeviceMessageRelayer } from '../../../module/device-message/device-message.relayer';
 import { DownloadService } from '../../../module/download/download.service';

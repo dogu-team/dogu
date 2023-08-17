@@ -36,7 +36,7 @@ export class ChildService implements IChildClient {
     return this.children['device-server'] as DeviceServerChild;
   }
 
-  private get hostAgent(): HostAgentChild {
+  get hostAgent(): HostAgentChild {
     return this.children['host-agent'] as HostAgentChild;
   }
 

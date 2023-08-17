@@ -1,4 +1,4 @@
-import { ErrorResult, UpdateHostAppRequest } from '@dogu-private/console-host-agent';
+import { ErrorResult } from '@dogu-private/console-host-agent';
 import { Code } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { getChildProcessIds, getFilenameFromUrl, HostPaths, killProcessIgnore } from '@dogu-tech/node';
@@ -20,7 +20,7 @@ export class UpdateProcessor {
 
   constructor(private readonly commandProcessRegistry: CommandProcessRegistry, private readonly deviceClientService: DeviceClientService, private readonly logger: DoguLogger) {}
 
-  async update(msg: UpdateHostAppRequest): Promise<ErrorResult> {
+  async update(msg: { url: string; fileSize: number }): Promise<ErrorResult> {
     try {
       if (this.lock.isBusy('update')) {
         throw new Error('already updating');

@@ -1,6 +1,6 @@
-import { ChildCode, Status } from '@dogu-private/dost-children';
+import { ChildCode, GetLatestVersionResponse, Status, UpdateLatestVersionRequest } from '@dogu-private/dost-children';
 import { Code } from '@dogu-private/types';
-import { Instance, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
+import { DefaultHttpOptions, Instance, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { isFreePort, killProcessOnPort } from '@dogu-tech/node';
 import axios, { AxiosInstance } from 'axios';
 import { ChildProcess } from 'child_process';
@@ -120,7 +120,7 @@ export class HostAgentChild implements Child {
     const pathProvider = new Status.getConnectionStatus.pathProvider();
     const path = Status.getConnectionStatus.resolvePath(pathProvider);
     const response = await this._client
-      .get<Instance<typeof Status.getConnectionStatus.responseBody>>(path)
+      .get<Instance<typeof Status.getConnectionStatus.responseBody>>(path, { timeout: DefaultHttpOptions.request.timeout })
       .then((response) => {
         return response.data;
       })
@@ -136,6 +136,33 @@ export class HostAgentChild implements Child {
       });
     this._lastStatusAndTime = { status: response, time: Date.now() };
     return response;
+  }
+
+  async getLatestVersion(): Promise<GetLatestVersionResponse> {
+    if (!this._client) {
+      throw new Error('Not connected');
+    }
+    const pathProvider = new Status.getLatestVersion.pathProvider();
+    const path = Status.getLatestVersion.resolvePath(pathProvider);
+    const response = await this._client
+      .get<Instance<typeof Status.getLatestVersion.responseBody>>(path, { timeout: DefaultHttpOptions.request.timeout1minutes })
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => {
+        logger.warn('getLatestVersion failed', { error });
+        throw error;
+      });
+    return response;
+  }
+
+  async updateLatestVersion(req: UpdateLatestVersionRequest): Promise<void> {
+    if (!this._client) {
+      throw new Error('Not connected');
+    }
+    const pathProvider = new Status.updateLatestVersion.pathProvider();
+    const path = Status.updateLatestVersion.resolvePath(pathProvider);
+    await this._client.post<Instance<typeof Status.updateLatestVersion.responseBody>>(path, req, { timeout: DefaultHttpOptions.request.timeout30minutes });
   }
 
   lastError(): ChildLastError | undefined {

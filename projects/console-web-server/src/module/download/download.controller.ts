@@ -1,4 +1,4 @@
-import { DownloadablePackageResult } from '@dogu-private/console';
+import { DownloadablePackageResult } from '@dogu-private/types';
 import { Controller, Get, Query } from '@nestjs/common';
 import { Page } from '../common/dto/pagination/page';
 import { PageDto } from '../common/dto/pagination/page.dto';

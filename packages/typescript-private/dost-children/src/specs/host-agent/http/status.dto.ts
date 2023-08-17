@@ -1,5 +1,6 @@
 import { Code } from '@dogu-private/types';
-import { IsDate, IsEnum, IsIn, IsOptional, IsString } from 'class-validator';
+import { IsFilledString } from '@dogu-tech/common';
+import { IsBoolean, IsDate, IsEnum, IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 
 const ConnectionStatus = ['is-token-empty', 'connecting', 'connected', 'disconnected'] as const;
 export type ConnectionStatus = (typeof ConnectionStatus)[number];
@@ -18,4 +19,31 @@ export class GetConnectionStatusResponse {
 
   @IsDate()
   updatedAt!: Date;
+}
+
+export class GetLatestVersionResponse {
+  @IsFilledString()
+  version!: string;
+
+  @IsFilledString()
+  url!: string;
+
+  @IsNumber()
+  fileSize!: number;
+}
+
+export class UpdateLatestVersionRequest {
+  @IsFilledString()
+  url!: string;
+
+  @IsNumber()
+  fileSize!: number;
+}
+
+export class UpdateLatestVersionResponse {
+  @IsBoolean()
+  isOk!: boolean;
+
+  @IsFilledString()
+  reason!: string;
 }

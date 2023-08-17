@@ -1,10 +1,10 @@
 {
   "defaultEdition": "enterprise",
-  "fileService": "nexus",
+  "fileService": "s3",
   "useSampleProject": true,
   "emailVerification": false,
   "cookieSecure": false,
   "forceInvitation": false,
   "thirdPartyLogin": true,
-  "doguAgentAppLocation": "github"
+  "doguAgentAppLocation": "s3"
 }
