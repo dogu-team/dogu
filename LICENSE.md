@@ -2,6 +2,9 @@
 The default license for Dogu is AGPL-3.0-only
 but following licenses are applied to some directories.
 
+**Enterprise Edition License**  
+All content that resides under the "enterprise" directory of this repository, if that directory exists, is licensed under the license defined in "https://dogutech.io/notices/license".
+
 **MIT**  
 All content inside of the following directories are licensed under the MIT
 
@@ -12,9 +15,6 @@ All content inside of the following directories are licensed under the MIT
 - "/samples/**/*"
 - "/scripts/**/*"
 ```
-
-**Enterprise Edition License**  
-All content that resides under the "enterprise" directory of this repository, if that directory exists, is licensed under the license defined in "https://dogutech.io/notices/license".
 
 **Creative Commons: CC BY-SA 4.0 license**  
 All contents inside of the following directories are licensed under the CC BY-SA 4.0
@@ -29,6 +29,10 @@ All contents inside of the following directories are licensed under the CC BY-SA
 All third party components incorporated into the Dogu are licensed under the original license provided by the owner of the applicable component.
 
 </br>
+
+## Enterprise Edition License
+
+https://dogutech.io/notices/license
 
 ## AGPL-3.0-only
 
