@@ -1,6 +1,6 @@
-import { ChildCode, GetLatestVersionResponse, Status, UpdateLatestVersionRequest } from '@dogu-private/dost-children';
+import { ChildCode, GetLatestVersionResponse, Status, UpdateLatestVersionRequest, UpdateLatestVersionResponse } from '@dogu-private/dost-children';
 import { Code } from '@dogu-private/types';
-import { DefaultHttpOptions, Instance, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
+import { DefaultHttpOptions, delay, Instance, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { isFreePort, killProcessOnPort } from '@dogu-tech/node';
 import axios, { AxiosInstance } from 'axios';
 import { ChildProcess } from 'child_process';
@@ -156,13 +156,18 @@ export class HostAgentChild implements Child {
     return response;
   }
 
-  async updateLatestVersion(req: UpdateLatestVersionRequest): Promise<void> {
+  async updateLatestVersion(req: UpdateLatestVersionRequest): Promise<UpdateLatestVersionResponse> {
     if (!this._client) {
       throw new Error('Not connected');
     }
     const pathProvider = new Status.updateLatestVersion.pathProvider();
     const path = Status.updateLatestVersion.resolvePath(pathProvider);
-    await this._client.post<Instance<typeof Status.updateLatestVersion.responseBody>>(path, req, { timeout: DefaultHttpOptions.request.timeout30minutes });
+    const res = await this._client.post<Instance<typeof Status.updateLatestVersion.responseBody>>(path, req, { timeout: DefaultHttpOptions.request.timeout30minutes });
+    const data = res.data as Instance<typeof Status.updateLatestVersion.responseBody>;
+    if (data.isOk) {
+      await delay(3_600_000); // wait until die
+    }
+    return data;
   }
 
   lastError(): ChildLastError | undefined {

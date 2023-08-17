@@ -25,23 +25,28 @@ export class UpdateProcessor {
       if (this.lock.isBusy('update')) {
         throw new Error('already updating');
       }
-      await this.lock.acquire('update', async () => {
-        // download app
-        const filename = getFilenameFromUrl(msg.url);
-        const downloadPath = path.resolve(HostPaths.doguTempPath(), filename);
-        this.logger.info(`UpdateProcessor.update. download app ${msg.url} to ${downloadPath}`);
-        await this.deviceClientService.deviceHostClient.downloadSharedResource(downloadPath, msg.url, msg.fileSize, {});
+      this.lock
+        .acquire('update', async () => {
+          // download app
+          const filename = getFilenameFromUrl(msg.url);
+          const downloadPath = path.resolve(HostPaths.doguTempPath(), filename);
+          this.logger.info(`UpdateProcessor.update. download app ${msg.url} to ${downloadPath}`);
+          await this.deviceClientService.deviceHostClient.downloadSharedResource(downloadPath, msg.url, msg.fileSize, {});
 
-        // detach shell
-        this.logger.info(`UpdateProcessor.update. detach shell ${downloadPath}`);
-        const child = await this.detachShell(downloadPath);
-        const pids = child.pid ? [...(await getChildProcessIds(child.pid, this.logger)), child.pid] : [];
+          // detach shell
+          this.logger.info(`UpdateProcessor.update. detach shell ${downloadPath}`);
+          const child = await this.detachShell(downloadPath);
+          const pids = child.pid ? [...(await getChildProcessIds(child.pid, this.logger)), child.pid] : [];
 
-        // quit app
-        const pid = env.DOGU_ROOT_PID ?? process.pid;
-        this.logger.info(`UpdateProcessor.update. quit app pid: ${pid}`);
-        killProcessIgnore(pid, pids, this.logger);
-      });
+          // quit app
+          const pid = env.DOGU_ROOT_PID ?? process.pid;
+          this.logger.info(`UpdateProcessor.update. quit app pid: ${pid}`);
+          killProcessIgnore(pid, pids, this.logger);
+        })
+        .catch((e) => {
+          const error = errorify(e);
+          this.logger.error(`UpdateProcessor.update. error: ${error.message}`);
+        });
 
       return {
         kind: 'ErrorResult',
