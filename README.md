@@ -34,7 +34,7 @@ Dogu - Integrated test automation platform based on web.
   </div>
 </p>
 
-Dogu is an integrated test automation platform that simplifies the automation of web, mobile and game application testing.
+Dogu is an cross E2E test automation platform for web, mobile and game application. You can integrate various tools such as Appium, Selenium and Playwright that you have previously used with Dogu, allowing you to perform parallel processing and check test results more easy. Experience more efficient test automation with Dogu.
 
 ## Test Automation Platform
 
@@ -58,9 +58,9 @@ Build device farm with your own devices and control them in web-page
 
 ## Test Automation
 
-Use a variety of test automation frameworks to easily run tests on the device.
+Use a variety of test automation frameworks to easily run tests on the device farm.
 
-### Available Test Frameworks
+### Use Dogu With Test Frameworks
 
 - [Appium](https://docs.dogutech.io/get-started/tutorials/appium/)
 - [Selenium](https://docs.dogutech.io/get-started/tutorials/selenium/)
@@ -73,16 +73,18 @@ Visualize test unit by integrating test unit framework with test report.
 
 <img src=".github/resources/reporting-testing-profiling.png" width="100%"/>
 
-### Available Test Unit Frameworks
+### Integrate report with test unit frameworks
 
 - [Jest](https://docs.dogutech.io/test-report/jest)
 - [Pytest](https://docs.dogutech.io/test-report/pytest)
 
-## Test Routine
+## Routine
+
+Use a pipeline to process tests in parallel.
 
 <img src=".github/resources/workflow-inside.png"/>
 
-### Available CI/CD with Routine
+### Integrate routine With CI/CD
 
 - [Github Action](https://docs.dogutech.io/integration/cicd/github)
 - [Jenkins](https://docs.dogutech.io/integration/cicd/jenkins)
@@ -91,7 +93,7 @@ Create routines to run the tests in parallel.
 
 ## Why Dogu?
 
-Building and maintaining infrastructure components such as Appium, OpenSTF, Jenkins, and Grafana for test automation requires significant time and effort. However, Dogu streamlines this process by providing an integrated platform for these infrastructures, allowing you to concentrate on test automation itself. Moreover, Dogu offers seamless integration with test scripts and frameworks, eliminating the need to develop infrastructure-related tasks such as parallel test execution and data transfer for test reporting.
+Building and maintaining infrastructure components such as OpenSTF, Jenkins, and Grafana for test automation requires significant time and effort. However, Dogu streamlines this process by providing an integrated platform for these infrastructures, allowing you to concentrate on test automation itself. Moreover, Dogu offers seamless integration with test scripts and frameworks, eliminating the need to develop infrastructure-related tasks such as parallel test execution and data transfer for test reporting.
 
 ## Start With Cloud
 
@@ -99,12 +101,19 @@ Start [cloud service](https://dogutech.io) right now without any installation.
 
 ## Start With Self-Hosted
 
-Set up Dogu on your own server. See [guide setting up Dogu with self-hosted](https://docs.dogutech.io/get-started/installation/self-hosted/installation)
+Use Dogu on a self-hosted. See [guide setting up Dogu with self-hosted](https://docs.dogutech.io/get-started/installation/self-hosted/installation) for more details.
 
 ## Documentation
 
 - [Documentation](https://docs.dogutech.io)
-- [Tutorial](https://docs.dogutech.io/get-started/tutorials)
+- [Device Farm](https://docs.dogutech.io/get-started/tutorials/device-farm/)
+
+### Remote
+
+- [Selenium](https://docs.dogutech.io/get-started/tutorials/selenium/)
+- [Appium](https://docs.dogutech.io/get-started/tutorials/appium/)
+- [WebdriverIO](https://docs.dogutech.io/get-started/tutorials/webdriverio/)
+- [Gamium](https://docs.dogutech.io/get-started/tutorials/gamium/)
 
 ## Join Our Community
 
@@ -116,7 +125,7 @@ Do you want to contribute to Dogu? We'd love your help. Dogu is an open source p
 
 ## License
 
-We provide two editions, community edition and enterprise edition. See [LICENSE](LICENSE.md) for more details.
+We provide community edition and enterprise edition. See [LICENSE](LICENSE.md) for more details.
 
 ## Contact
 
