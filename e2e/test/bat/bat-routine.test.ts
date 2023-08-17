@@ -566,7 +566,7 @@ Dest.withOptions({
         expect(creatorName).toBe(values.value.USER_NAME);
 
         await Driver.clickElement({ xpath: '//button[@access-id="show-host-token-btn"]' });
-        await Driver.findElement({ xpath: '//input[contains(value, "dogu-agent-token")]' });
+        await Driver.findElement({ xpath: '//input[contains(@value, "dogu-agent-token")]' });
         await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
       });
 
