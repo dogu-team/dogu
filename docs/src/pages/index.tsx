@@ -222,7 +222,7 @@ export default function Home(): JSX.Element {
             <div className={styles.logoWrapper}>
               <IntegrationLogo className={styles.svg} />
             </div>
-            <Translate id="main.integrationService" />
+            <Translate id="main.integration" />
           </h2>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>

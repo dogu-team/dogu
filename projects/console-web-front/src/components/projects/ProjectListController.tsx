@@ -72,7 +72,7 @@ const ProjectListController = ({ organizationId }: Props) => {
   const { data, isLoading, error, mutate, page, updatePage } = usePaginationSWR<ProjectBase>(`/organizations/${organizationId}/projects`);
   const { t } = useTranslation();
 
-  useRefresh(['onProjectCreated', 'onRefreshClicked'], mutate);
+  useRefresh(['onProjectCreated', 'onRefreshClicked'], () => mutate());
 
   if (isLoading) {
     return <LoadingOutlined style={{ fontSize: '2rem' }} />;

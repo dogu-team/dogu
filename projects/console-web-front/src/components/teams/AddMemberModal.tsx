@@ -12,7 +12,7 @@ import { swrAuthFetcher } from 'src/api';
 import AddMemberItem from '../AddMemberItem';
 import { addUserToTeam } from 'src/api/team';
 import Profile from '../Profile';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import useEventStore from 'src/stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 
@@ -44,7 +44,7 @@ const AddMemberModal = ({ isOpen, close, organizationId, teamId }: Props) => {
         close();
       } catch (e) {
         if (e instanceof AxiosError) {
-          sendErrorNotification(t('team:addMemberFailMsg', { reason: getErrorMessage(e) }));
+          sendErrorNotification(t('team:addMemberFailMsg', { reason: getErrorMessageFromAxios(e) }));
         }
       }
     },

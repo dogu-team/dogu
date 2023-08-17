@@ -1,5 +1,5 @@
 import { RecordTestStepBase, RecordTestStepPropCamel, RecordTestStepPropSnake } from '@dogu-private/console';
-import { OrganizationId, ProjectId, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
+import { OrganizationId, ProjectId, RecordTestCaseId, RecordTestStepId, RECORD_TEST_STEP_ACTION_TYPE } from '@dogu-private/types';
 import { stringify, toISOStringWithTimezone } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -8,9 +8,13 @@ import { v4 } from 'uuid';
 import { Device } from '../../../../db/entity/device.entity';
 import { RecordTestCase } from '../../../../db/entity/record-test-case.entity';
 import { RecordTestStep } from '../../../../db/entity/record-test-step.entity';
+import { DeviceMessageRelayer } from '../../../../module/device-message/device-message.relayer';
 import { FeatureFileService } from '../../../../module/feature/file/feature-file.service';
 import { DoguLogger } from '../../../../module/logger/logger';
-import { AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem } from '../../../../module/remote/remote-webdriver/remote-webdriver.appium-batch-request-items';
+import {
+  AppiumGetContextsRemoteWebDriverBatchRequestItem,
+  AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem,
+} from '../../../../module/remote/remote-webdriver/remote-webdriver.appium-batch-request-items';
 import { RemoteWebDriverBatchRequestExecutor } from '../../../../module/remote/remote-webdriver/remote-webdriver.batch-request-executor';
 import { RemoteWebDriverRequestOptions, RemoteWebDriverService } from '../../../../module/remote/remote-webdriver/remote-webdriver.service';
 import {
@@ -26,7 +30,6 @@ import {
   W3CTakeScreenshotRemoteWebDriverBatchRequestItem,
 } from '../../../../module/remote/remote-webdriver/remote-webdriver.w3c-batch-request-items';
 import { makeActionBatchExcutor } from '../common';
-// import { AddRecordTestStepToRecordTestCaseDto } from '../dto/record-test-case.dto';
 import { CreateRecordTestStepDto } from '../dto/record-test-step.dto';
 
 @Injectable()
@@ -43,6 +46,9 @@ export class RecordTestStepService {
 
     @Inject(FeatureFileService)
     private readonly featureFileService: FeatureFileService,
+
+    @Inject(DeviceMessageRelayer)
+    private readonly deviceMessageRelayer: DeviceMessageRelayer,
 
     private readonly logger: DoguLogger,
   ) {}
@@ -85,7 +91,10 @@ export class RecordTestStepService {
 
       actionData.type;
 
-      const testCase = await manager.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId } });
+      const testCase = await manager.getRepository(RecordTestCase).findOne({
+        where: { projectId, recordTestCaseId }, //
+        // relations: [RecordTestCasePropCamel.recordTestSteps],
+      });
       if (!testCase) {
         throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
       }
@@ -219,12 +228,46 @@ export class RecordTestStepService {
 
     const batchExecutor: RemoteWebDriverBatchRequestExecutor = makeActionBatchExcutor(this.remoteWebDriverService, organizationId, projectId, recordTestCase, device);
 
-    // FIXME: (felix)
-    const screenShotUrlKey = `test-record-test-step-action/${recordTestCase.activeSessionId}/${toISOStringWithTimezone(new Date(), '-')}.png`;
+    const activeSessionId = recordTestCase.activeSessionId;
+    if (!activeSessionId) {
+      throw new HttpException(`Device does not have activeSessionId. RecordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
+    }
 
-    const takeScreenshot = new W3CTakeScreenshotRemoteWebDriverBatchRequestItem(batchExecutor, recordTestCase.activeSessionId!);
+    const takeScreenshot = new W3CTakeScreenshotRemoteWebDriverBatchRequestItem(batchExecutor, activeSessionId);
+    const appiumGetContexts = new AppiumGetContextsRemoteWebDriverBatchRequestItem(batchExecutor, activeSessionId);
+    const getPageSource = new W3CGetPageSourceRemoteWebDriverBatchRequestItem(batchExecutor, activeSessionId);
+    // const appiumGetSystemBars = new AppiumGetSystemBarsRemoteWebDriverBatchRequestItem(batchExecutor, activeSessionId);
     await batchExecutor.execute();
 
+    const contexts = await appiumGetContexts.response();
+    const pageSource = await getPageSource.response();
+
+    // const systemBars = await appiumGetSystemBars.response();
+
+    // const systemBarVisibility = await this.deviceMessageRelayer.sendHttpRequest(
+    //   organizationId,
+    //   device.deviceId,
+    //   'GET',
+    //   DeviceHttpSpec.getSystemBarVisibility.resolvePath(new DeviceHttpSpec.getSystemBarVisibility.pathProvider(activeDeviceSerial)),
+    //   undefined,
+    //   undefined,
+    //   undefined,
+    //   DeviceHttpSpec.getSystemBarVisibility.responseBodyData,
+    // );
+
+    // for (const context of contexts) {
+    //   const subExecutor = batchExecutor.new({ parallel: false });
+    //   const appiumSetContext = new AppiumSetContextRemoteWebDriverBatchRequestItem(subExecutor, activeSessionId, context);
+    //   const w3cGetPageSource = new W3CGetPageSourceRemoteWebDriverBatchRequestItem(subExecutor, activeSessionId);
+    //   await subExecutor.execute();
+    //   await appiumSetContext.response();
+    //   const pageSource = await w3cGetPageSource.response();
+    //   const parseXml = await xml2js.parseStringPromise(pageSource);
+    //   this.logger.debug(`TEST: ${context} ${pageSource.length}`);
+    // }
+
+    // FIXME: (felix)
+    const screenShotUrlKey = `test-record-test-step-action/${activeSessionId}/${toISOStringWithTimezone(new Date(), '-')}.png`;
     const screenshotBuffer = await takeScreenshot.response();
     const putResult = await this.featureFileService.put({
       bucketKey: 'organization',
@@ -233,14 +276,14 @@ export class RecordTestStepService {
       contentType: 'image/png',
     });
     const url = putResult.location;
-
     recordTestStep.screenshotUrl = url;
-    manager.getRepository(RecordTestStep).save(recordTestStep);
 
     switch (type) {
       case 'WEBDRIVER_CLICK':
+        recordTestStep.type = RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_CLICK;
         break;
       case 'WEBDRIVER_INPUT':
+        recordTestStep.type = RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_INPUT;
         break;
       // case RECORD_TEST_STEP_ACTION_TYPE.UNSPECIFIED:
       //   break;
@@ -248,6 +291,7 @@ export class RecordTestStepService {
         const _exhaustiveCheck: never = type;
         throw new HttpException(`Unknown action type: ${type}`, HttpStatus.BAD_REQUEST);
     }
+    await manager.getRepository(RecordTestStep).save(recordTestStep);
 
     // screenShot = takeScreenshot()
 

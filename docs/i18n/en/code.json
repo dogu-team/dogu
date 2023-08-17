@@ -322,8 +322,8 @@
   "main.scriptAndRoutineTitle": {
     "message": "Routine"
   },
-  "main.integrationService": {
-    "message": "Integration Service"
+  "main.integration": {
+    "message": "Integration"
   },
   "main.scriptAndRoutineActionLinkTitle": {
     "message": "Action"

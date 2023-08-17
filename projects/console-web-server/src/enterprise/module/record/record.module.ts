@@ -4,6 +4,7 @@ import { Device, RecordTestScenarioAndRecordTestCase } from '../../../db/entity/
 import { RecordTestCase } from '../../../db/entity/record-test-case.entity';
 import { RecordTestScenario } from '../../../db/entity/record-test-scenario.entity';
 import { RecordTestStep } from '../../../db/entity/record-test-step.entity';
+import { DeviceMessageModule } from '../../../module/device-message/device-message.module';
 import { FeatureFileModule } from '../../../module/feature/file/feature-file.module';
 import { ProjectModule } from '../../../module/project/project.module';
 import { RemoteModule } from '../../../module/remote/remote.module';
@@ -20,6 +21,7 @@ import { RecordTestStepService } from './record-test-step/record-test-step.servi
     RemoteModule,
     FeatureFileModule,
     ProjectModule,
+    DeviceMessageModule,
   ],
   providers: [RecordTestScenarioService, RecordTestCaseService, RecordTestStepService],
   exports: [],

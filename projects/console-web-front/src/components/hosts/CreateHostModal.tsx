@@ -12,7 +12,7 @@ import styled from 'styled-components';
 import { createHost } from 'src/api/host';
 import useResultAlert from 'src/hooks/useAlert';
 import useEventStore from 'src/stores/events';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import { flexRowBaseStyle } from '../../styles/box';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import FormControlModal from '../modals/FormControlModal';
@@ -47,7 +47,7 @@ const CreateHostModal = ({ isOpen, close }: Props) => {
       fireEvent('onHostCreated', hostToken);
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:newHostFailTitle', { name, reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:newHostFailTitle', { name, reason: getErrorMessageFromAxios(e) }));
       }
     }
     setLoading(false);

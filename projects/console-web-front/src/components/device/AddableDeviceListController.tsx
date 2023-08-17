@@ -106,7 +106,7 @@ const AddableDeviceListController = () => {
   );
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onAddDeviceToProjectModalClosed', 'onDeviceUpdated'], mutate);
+  useRefresh(['onRefreshClicked', 'onAddDeviceToProjectModalClosed', 'onDeviceUpdated'], () => mutate());
 
   return (
     <>

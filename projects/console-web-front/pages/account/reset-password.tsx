@@ -10,7 +10,7 @@ import { NextPageWithLayout } from 'pages/_app';
 import { checkResetPasswordEmailAndToken, resetPasswordWithToken } from 'src/api/registery';
 import ResetPasswordForm from 'src/components/registery/ResetPasswordForm';
 import SmallBoxCenteredLayout from 'src/components/layouts/SmallBoxCenterLayout';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import { sendErrorNotification, sendSuccessNotification } from '../../src/utils/antd';
 import { redirectWithLocale } from '../../src/ssr/locale';
 
@@ -42,7 +42,7 @@ const ResetPasswordPage: NextPageWithLayout<Props> = ({ token, email, error }) =
       router.push('/signin');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('account:resetPasswordWithTokenFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('account:resetPasswordWithTokenFailMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   }, []);

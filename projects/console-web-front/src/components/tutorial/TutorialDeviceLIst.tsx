@@ -11,7 +11,7 @@ import usePaginationSWR from '../../hooks/usePaginationSWR';
 import useRefresh from '../../hooks/useRefresh';
 import { flexRowBaseStyle } from '../../styles/box';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import DeviceConnectionStateTag from '../device/DeviceConnectionStateTag';
 import PlatformIcon from '../device/PlatformIcon';
 
@@ -75,7 +75,7 @@ const TutorialDeviceList = ({ organizationId, hostId }: Props) => {
       sendSuccessNotification('Successfully use devices!');
     } catch (e) {
       if (isAxiosError(e)) {
-        sendErrorNotification(`Failed to use devices\b${getErrorMessage(e)}`);
+        sendErrorNotification(`Failed to use devices\b${getErrorMessageFromAxios(e)}`);
       }
     }
     setLoading(false);

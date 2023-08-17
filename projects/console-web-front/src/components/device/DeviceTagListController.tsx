@@ -18,7 +18,7 @@ import useRefresh from '../../hooks/useRefresh';
 import useTagFilterStore from '../../stores/tag-filter';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
 import ListEmpty from '../common/boxes/ListEmpty';
@@ -44,7 +44,7 @@ const TagItem = ({ tag, mutateTags }: TagItemProps) => {
       sendSuccessNotification(t('device-farm:tagDeleteSuccessMsg'));
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:tagDeleteFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:tagDeleteFailMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };
@@ -128,7 +128,7 @@ const DeviceTagListController = ({ organizationId }: Props) => {
   });
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onTagCreated', 'onTagEdited'], mutate);
+  useRefresh(['onRefreshClicked', 'onTagCreated', 'onTagEdited'], () => mutate());
 
   return (
     <>

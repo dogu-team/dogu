@@ -1,6 +1,6 @@
 import { AxiosError } from 'axios';
 
-export const getErrorMessage = (e: AxiosError<{ message: string }>): string => {
+export const getErrorMessageFromAxios = (e: AxiosError<{ message: string }>): string => {
   if (e.response?.status === 500) {
     return 'Please retry later. If the problem persists, please send feedback or contact us.';
   }

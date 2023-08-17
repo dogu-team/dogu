@@ -10,6 +10,7 @@ import ProfileImageWithName from '../users/ProfileImageWithName';
 import useRequest from '../../hooks/useRequest';
 import { getHostConnectionToken } from '../../api/host';
 import { sendErrorNotification } from '../../utils/antd';
+import TokenCopyInput from '../common/TokenCopyInput';
 
 interface Props {
   isOpen: boolean;
@@ -71,24 +72,7 @@ const HostDetailModal = ({ isOpen, host, close }: Props) => {
         <Content>
           <StyledH4>{t('device-farm:hostDetailTokenTitle')}</StyledH4>
           {token ? (
-            <div>
-              <code style={{ fontFamily: 'monospace' }}>{token}</code>
-              <Button
-                size="small"
-                style={{ marginLeft: '.25rem' }}
-                onClick={async () => {
-                  try {
-                    await navigator.clipboard.writeText(token);
-                    message.success(t('common:copyClipboard'));
-                  } catch (e) {
-                    message.error(t('common:copyClipboardFailed'));
-                  }
-                }}
-                access-id="copy-host-token-btn"
-              >
-                {t('common:copy')}
-              </Button>
-            </div>
+            <TokenCopyInput value={token} />
           ) : (
             <Button loading={loading} onClick={handleClickCheckToken} access-id="show-host-token-btn">
               {t('device-farm:hostDetailShowTokenButtonTitle')}

@@ -11,7 +11,7 @@ import { removeUserFromTeam } from 'src/api/team';
 import usePaginationSWR from 'src/hooks/usePaginationSWR';
 import useRefresh from 'src/hooks/useRefresh';
 import useTeamMemberFilterStore from 'src/stores/team-member-filter';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
@@ -38,7 +38,7 @@ const MemberItem = ({ member, teamId }: MemberProps) => {
       fireEvent('onTeamMemberDeleted');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('team:memberRemoveFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('team:memberRemoveFailMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };
@@ -88,7 +88,7 @@ const MemberListController = ({ organizationId, teamId }: Props) => {
   });
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onTeamMemberAdded', 'onTeamMemberDeleted'], mutate);
+  useRefresh(['onRefreshClicked', 'onTeamMemberAdded', 'onTeamMemberDeleted'], () => mutate());
 
   return (
     <>

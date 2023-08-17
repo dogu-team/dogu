@@ -7,7 +7,7 @@ import useTranslation from 'next-translate/useTranslation';
 
 import { deleteTeam, updateTeam } from 'src/api/team';
 import useEventStore from 'src/stores/events';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import DangerZone from '../common/boxes/DangerZone';
 import Trans from 'next-translate/Trans';
@@ -39,7 +39,7 @@ const TeamSettings = ({ organizationId, team, onDeleteEnd, onUpdateEnd }: Props)
       onUpdateEnd?.(result);
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('team:teamUpdateFailureMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('team:teamUpdateFailureMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };
@@ -52,7 +52,7 @@ const TeamSettings = ({ organizationId, team, onDeleteEnd, onUpdateEnd }: Props)
       onDeleteEnd?.();
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('team:removeTeamFailureMessage', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('team:removeTeamFailureMessage', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };

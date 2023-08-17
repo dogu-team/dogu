@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 
 import { updateHostName } from 'src/api/host';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 
@@ -38,7 +38,7 @@ const EditHostModal = ({ host, isOpen, close }: Props) => {
       close();
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:hostEditFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:hostEditFailMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
     setLoading(false);

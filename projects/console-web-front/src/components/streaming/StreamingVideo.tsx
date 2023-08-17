@@ -9,23 +9,46 @@ import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingC
 import useInspector from '../../hooks/streaming/useInspector';
 import { flexRowCenteredStyle } from '../../styles/box';
 
+export type VideoSize = { width: number; height: number };
+
 interface Props {
   videoId?: string;
   rightSidebar?: React.ReactNode;
   children?: React.ReactNode;
-  onResize?: (e: UIEvent) => void;
-  inspector?: ReturnType<typeof useInspector>;
+  onResize?: (e: UIEvent) => void | Promise<void>;
+  onKeyPress?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void | Promise<void>;
+  onKeyUp?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void | Promise<void>;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void | Promise<void>;
+  onWheel?: (e: React.WheelEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
+  onMouseDown?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
+  onMouseUp?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
+  onMouseMove?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
+  onMouseLeave?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
+  onDoubleClick?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
+  onClick?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
 }
 
-const StreamingVideo = ({ rightSidebar, videoId, children, onResize, inspector }: Props) => {
-  const { mode, videoRef, deviceRTCCaller, loading, updateMode } = useDeviceStreamingContext();
-  const { handleDoubleClick, handleKeyDown, handleKeyUp, handleMouseDown, handleMouseLeave, handleMouseMove, handleMouseUp, handleWheel } = useDeviceInput(
-    deviceRTCCaller ?? undefined,
-  );
+const StreamingVideo = ({
+  rightSidebar,
+  videoId,
+  children,
+  onResize,
+  onKeyPress,
+  onKeyDown,
+  onKeyUp,
+  onWheel,
+  onMouseDown,
+  onMouseUp,
+  onMouseMove,
+  onMouseLeave,
+  onDoubleClick,
+  onClick,
+}: Props) => {
+  const { videoRef, loading } = useDeviceStreamingContext();
+  const [videoSize, setVideoSize] = useState<VideoSize>({ width: 0, height: 0 });
   const boxRef = useRef<HTMLDivElement>(null);
-
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const [videoSize, setVideoSize] = useState({ width: 0, height: 0 });
+  const cursorRef = useRef<HTMLDivElement>(null);
 
   // if ratio > 1, width > height
   const videoRatio = videoSize.height > 0 ? videoSize.width / videoSize.height : 0;
@@ -51,52 +74,71 @@ const StreamingVideo = ({ rightSidebar, videoId, children, onResize, inspector }
 
   useEffect(() => {
     const preventContext = (e: Event) => e.preventDefault();
+    const moveCursor = (e: MouseEvent) => {
+      const mouseY = e.offsetY;
+      const mouseX = e.offsetX;
+
+      if (cursorRef.current) {
+        cursorRef.current.style.display = 'block';
+        cursorRef.current.style.top = `${mouseY - 10}px`;
+        cursorRef.current.style.left = `${mouseX - 10}px`;
+      }
+    };
+    const hideCursor = () => {
+      if (cursorRef.current) {
+        cursorRef.current.style.display = 'none';
+      }
+    };
 
     const target = inputRef.current;
 
     if (target) {
       target.addEventListener('contextmenu', preventContext);
+      target.addEventListener('mousemove', moveCursor);
+      target.addEventListener('mouseleave', hideCursor);
     }
 
     return () => {
       if (target) {
         target.removeEventListener('contextmenu', preventContext);
+        target.removeEventListener('mousemove', moveCursor);
+        target.removeEventListener('mouseleave', hideCursor);
       }
     };
   }, []);
 
-  const handleMouseDownVideo = useCallback(
-    (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
-      if (mode === 'inspect') {
-        inspector?.updateInspectingNodeByPos(e);
-        inspector?.updateSelectedNodeFromInspectingNode();
-        inspector?.updateHitPoint(e);
-        updateMode('input');
-        inspector?.clearInspectingNode();
-      } else {
-        handleMouseDown(e, videoSize);
-      }
-    },
-    [handleMouseDown, mode, inspector, updateMode],
-  );
+  // const handleMouseDownVideo = useCallback(
+  //   (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
+  //     if (mode === 'inspect') {
+  //       inspector?.updateInspectingNodeByPos(e);
+  //       inspector?.updateSelectedNodeFromInspectingNode();
+  //       inspector?.updateHitPoint(e);
+  //       updateMode('input');
+  //       inspector?.clearInspectingNode();
+  //     } else {
+  //       handleMouseDown(e, videoSize);
+  //     }
+  //   },
+  //   [handleMouseDown, mode, inspector, updateMode],
+  // );
 
-  const handleMouseMoveVideo = useCallback(
-    (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
-      if (mode === 'inspect') {
-        inspector?.updateInspectingNodeByPos(e);
-      }
-      handleMouseMove(e, videoSize);
-    },
-    [handleMouseMove, mode, inspector],
-  );
+  // const handleMouseMoveVideo = useCallback(
+  //   (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
+  //     if (mode === 'inspect') {
+  //       inspector?.updateInspectingNodeByPos(e);
+  //     }
+  //     handleMouseMove(e, videoSize);
+  //   },
+  //   [handleMouseMove, mode, inspector],
+  // );
 
-  const handleMouseLeaveVideo = useCallback(
-    (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
-      inspector?.clearInspectingNode();
-      handleMouseLeave(e, videoSize);
-    },
-    [handleMouseLeave, inspector],
-  );
+  // const handleMouseLeaveVideo = useCallback(
+  //   (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: { width: number; height: number }) => {
+  //     inspector?.clearInspectingNode();
+  //     handleMouseLeave(e, videoSize);
+  //   },
+  //   [handleMouseLeave, inspector],
+  // );
 
   const focusInputForKeyboardEvent = () => inputRef.current?.focus({ preventScroll: true });
 
@@ -122,56 +164,62 @@ const StreamingVideo = ({ rightSidebar, videoId, children, onResize, inspector }
           onKeyPress={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleKeyDown(e);
+            onKeyDown?.(e);
           }}
           onKeyDown={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleKeyDown(e);
+            onKeyPress?.(e);
           }}
           onKeyUp={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleKeyUp(e);
+            onKeyUp?.(e);
           }}
           value={`\n`.repeat(1000)}
           onWheel={(e) => {
             e.currentTarget.scrollTop = 1000;
             e.stopPropagation();
-            handleWheel(e, videoSize);
+            onWheel?.(e, videoSize);
           }}
           onMouseDown={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleMouseDownVideo?.(e, videoSize);
+            onMouseDown?.(e, videoSize);
           }}
           onMouseUp={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleMouseUp?.(e, videoSize);
+            onMouseUp?.(e, videoSize);
           }}
           onMouseMove={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleMouseMoveVideo?.(e, videoSize);
+            onMouseMove?.(e, videoSize);
             focusInputForKeyboardEvent();
           }}
           onMouseLeave={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleMouseLeaveVideo?.(e, videoSize);
+            onMouseLeave?.(e, videoSize);
             focusInputForKeyboardEvent();
           }}
           onDoubleClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            handleDoubleClick?.(e, videoSize);
+            onDoubleClick?.(e, videoSize);
+            focusInputForKeyboardEvent();
+          }}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onClick?.(e, videoSize);
             focusInputForKeyboardEvent();
           }}
           readOnly
         />
-
         {children}
+        <CustomPointer ref={cursorRef} />
       </InputWrapper>
       {rightSidebar}
     </VideoWrapper>
@@ -219,7 +267,7 @@ const StyledInput = styled.textarea`
   overflow-y: scroll;
   resize: none;
   z-index: 30;
-  cursor: default;
+  cursor: none;
   user-select: none;
 
   &::-webkit-scrollbar {
@@ -239,4 +287,15 @@ const LoadingBox = styled.div`
     text-align: center;
     line-height: 1.4;
   }
+`;
+
+const CustomPointer = styled.div`
+  position: absolute;
+  display: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: transparent;
+  border: 1px solid #efefef;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
 `;

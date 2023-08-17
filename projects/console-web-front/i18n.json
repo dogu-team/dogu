@@ -16,7 +16,7 @@
     "/auth/invite-confirm": ["auth"],
 
     "/dashboard/[orgId]": ["organization"],
-    "/dashboard/[orgId]/get-started": ["organization", "host", "project-app"],
+    "/dashboard/[orgId]/get-started": ["organization", "project-app", "device-farm"],
     "/dashboard/[orgId]/projects": ["organization", "project"],
     "/dashboard/[orgId]/members": ["organization", "org-member"],
     "/dashboard/[orgId]/members/invitations": ["organization", "org-member"],
@@ -45,6 +45,7 @@
     "/dashboard/[orgId]/projects/[pid]/routines/[pipelineId]/jobs/[jobId]/device-jobs/[deviceJobId]": ["project", "routine"],
     "/dashboard/[orgId]/projects/[pid]/routines/[pipelineId]/jobs/[jobId]/device-jobs/[deviceJobId]/profiles": ["project", "routine"],
     "/dashboard/[orgId]/projects/[pid]/studio/[deviceId]/manual": ["project", "device-streaming"],
+    "/dashboard/[orgId]/projects/[pid]/studio/[deviceId]/record": ["project", "device-streaming"],
     "/dashboard/[orgId]/projects/[pid]/settings": ["project"]
   }
 }

@@ -1,6 +1,6 @@
 import { loop } from '@dogu-tech/common';
 import lodash from 'lodash';
-import { Browser, chromium, ElementHandle, Page } from 'playwright';
+import { Browser, chromium, ElementHandle, Locator as _Locator, Page } from 'playwright';
 import { L10n } from './l10n';
 import { Timer } from './timer';
 
@@ -14,7 +14,7 @@ interface LogEntry {
 
 export interface FindElementOptions {
   /**
-   * @default 5000
+   * @default 30_000
    */
   waitTime?: number;
 
@@ -30,7 +30,7 @@ export interface ClickElementOptions {
 
 function defaultFindElementOptions(): Required<FindElementOptions> {
   return {
-    waitTime: 10 * 1000,
+    waitTime: 30 * 1000,
     focusWindow: false,
   };
 }
@@ -62,7 +62,7 @@ function fillDriverOptions(options?: DriverOptions): Required<DriverOptions> {
 
 export class PlaywrightDriver {
   private browser!: Browser;
-  private page!: Page;
+  public page!: Page;
   private logEntries: LogEntry[] = [];
 
   async open(options?: DriverOptions): Promise<void> {
@@ -92,6 +92,7 @@ export class PlaywrightDriver {
 
   async moveTo(url: string): Promise<void> {
     await this.page.goto(url);
+    await this.page.waitForLoadState();
   }
 
   async findElement(locator: Locator, options?: FindElementOptions): Promise<ElementHandle<SVGElement | HTMLElement>> {
@@ -101,6 +102,13 @@ export class PlaywrightDriver {
     }
     const elem = await this.page.waitForSelector(`xpath=${locator.xpath}`, { timeout: waitTime });
     return elem;
+  }
+  async waitTextElement(text: string, options?: FindElementOptions): Promise<void> {
+    const { waitTime, focusWindow } = fillFindElementOptions(options);
+    if (focusWindow) {
+      await this.focusWindow();
+    }
+    await this.page.getByText(text, { exact: true }).first().waitFor({ timeout: waitTime, state: 'visible' });
   }
 
   async findElements(locator: Locator, options?: FindElementOptions): Promise<(SVGElement | HTMLElement)[]> {
@@ -116,13 +124,15 @@ export class PlaywrightDriver {
   }
 
   async clickElement(locator: Locator, options?: FindElementOptions, clickOptions?: ClickElementOptions): Promise<void> {
-    await this.page.click(`xpath=${locator.xpath}`, { timeout: options?.waitTime ?? 10000, ...clickOptions });
+    await this.page.click(`xpath=${locator.xpath}`, { timeout: options?.waitTime ?? 60_000, ...clickOptions });
+    await Timer.wait(100, 'clickElement');
   }
   async clickElementLazy(locator: Locator, options?: FindElementOptions, clickOptions?: ClickElementOptions): Promise<void> {
     const elem = this.page.locator(`xpath=${locator.xpath}`);
     await elem.focus();
     await Timer.wait(3000, 'clickElementLazy');
-    await elem.click({ timeout: options?.waitTime ?? 10000, ...clickOptions });
+    await elem.click({ timeout: options?.waitTime ?? 60_000, ...clickOptions });
+    await Timer.wait(100, 'clickElement');
   }
 
   async focusElement(locator: Locator, options?: FindElementOptions, clickOptions?: ClickElementOptions): Promise<void> {
@@ -149,6 +159,10 @@ export class PlaywrightDriver {
     const element = await this.findElement(locator, options);
     const text = (await element.textContent()) ?? (await element.inputValue()) ?? (await element.innerText()).valueOf() ?? '';
     return text;
+  }
+
+  locator(locator: Locator): _Locator {
+    return this.page.locator(`xpath=${locator.xpath}`);
   }
 
   async uploadFile(locator: Locator, filePath: string, options?: FindElementOptions): Promise<void> {
@@ -186,6 +200,7 @@ export class PlaywrightDriver {
     this.page.on('console', (msg) => {
       this.logEntries.push({ level: msg.type(), message: msg.text() });
     });
+    await this.page.waitForLoadState();
   }
 
   async goBack(): Promise<void> {

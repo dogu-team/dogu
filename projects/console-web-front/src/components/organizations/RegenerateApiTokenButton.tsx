@@ -7,7 +7,7 @@ import { mutate } from 'swr';
 
 import { regenerateOrganizationAccessToken } from '../../api/organization';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import DangerZone from '../common/boxes/DangerZone';
 import TokenCopyInput from '../common/TokenCopyInput';
 
@@ -27,7 +27,7 @@ const RegenerateApiTokenButton = ({ organizationId }: Props) => {
       sendSuccessNotification('Regenerated');
     } catch (e) {
       if (isAxiosError(e)) {
-        sendErrorNotification(`Failed to regenerate.\n${getErrorMessage(e)}`);
+        sendErrorNotification(`Failed to regenerate.\n${getErrorMessageFromAxios(e)}`);
       }
     }
   };

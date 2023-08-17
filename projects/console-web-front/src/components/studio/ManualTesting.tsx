@@ -14,6 +14,7 @@ import DeviceStreamingGraphContainer from '../streaming/DeviceStreamingGraphCont
 import useDeviceStreamingProfile from '../../hooks/streaming/useDeviceStreamingProfile';
 import DeviceStreamingLogContainer from '../streaming/DeviceStreamingLogContainer';
 import useDeviceLog from '../../hooks/streaming/useDeviceLog';
+import ManualTestingScreenViewer from './ManualTestingScreenViewer';
 // @ts-ignore
 const DeviceStreamingLayout = dynamic<DeviceStreamingLayoutProps>(() => import('./DeviceStreamingLayout'), { ssr: false });
 
@@ -112,6 +113,7 @@ const ManualTesting = ({ organization, project, deviceId }: Props) => {
         </MenuBox>
       }
       title="Manual Testing"
+      screenViewer={<ManualTestingScreenViewer />}
     />
   );
 };

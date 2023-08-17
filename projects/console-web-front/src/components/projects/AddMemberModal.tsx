@@ -10,7 +10,7 @@ import { swrAuthFetcher } from 'src/api';
 import useDebouncedInputValues from 'src/hooks/useDebouncedInputValues';
 import { addUserToProject } from 'src/api/project';
 import Profile from '../Profile';
-import { getErrorMessage } from 'src/utils/error';
+import { getErrorMessageFromAxios } from 'src/utils/error';
 import useEventStore from 'src/stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import PermissionSelectContentBox from '../PermissionSelectContentBox';
@@ -50,7 +50,7 @@ const AddMemberModal = ({ isOpen, close, organizationId, projectId }: Props) => 
       close();
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('project-member:addProjectMemberFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('project-member:addProjectMemberFailMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };

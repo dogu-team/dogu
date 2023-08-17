@@ -16,7 +16,7 @@ import RoutineGUIEditor from './RoutineGUIEditor';
 import useRoutineEditorStore from '../../../stores/routine-editor';
 import useRoutineEditMode from '../../../hooks/useRoutineEditMode';
 import RoutineFlow from './RoutineFlow';
-import { getErrorMessage } from '../../../utils/error';
+import { getErrorMessageFromAxios } from '../../../utils/error';
 
 interface Props {
   organizationId: OrganizationId;
@@ -63,7 +63,7 @@ const RoutineUpdator = (props: Props) => {
     } catch (error) {
       if (error instanceof AxiosError) {
         setChanged(true);
-        sendErrorNotification(t('routine:updateRoutineFailureMessage', { reason: getErrorMessage(error) }));
+        sendErrorNotification(t('routine:updateRoutineFailureMessage', { reason: getErrorMessageFromAxios(error) }));
       }
     }
   }

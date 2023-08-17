@@ -61,6 +61,7 @@ export class CommandProcessRegistry {
         });
         child.on('close', (code, signal) => {
           processes.delete(child);
+          killProcess(child.pid);
           const errorResult: ErrorResult = {
             kind: 'ErrorResult',
             value: {

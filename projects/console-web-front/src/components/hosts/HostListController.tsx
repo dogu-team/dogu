@@ -22,7 +22,7 @@ import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
 import EditHostModal from './EditHostModal';
 import { deleteHost, reissuesHostConnectionToken, stopUsingHostAsDevice, updateUseHostAsDevice, updateHostApp } from '../../api/host';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import ListEmpty from '../common/boxes/ListEmpty';
@@ -58,7 +58,7 @@ const HostItem = ({ host }: HostItemProps) => {
       sendSuccessNotification(t('device-farm:hostRevokeTokenSuccessMsg'));
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:hostRevokeTokenFailedMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:hostRevokeTokenFailedMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };
@@ -70,7 +70,7 @@ const HostItem = ({ host }: HostItemProps) => {
       fireEvent('onHostDeleted');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:hostDeleteFailedMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:hostDeleteFailedMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };
@@ -82,7 +82,7 @@ const HostItem = ({ host }: HostItemProps) => {
       fireEvent('onHostDeviceUsed');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:hostStartUsingFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:hostStartUsingFailMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };
@@ -94,7 +94,7 @@ const HostItem = ({ host }: HostItemProps) => {
       fireEvent('onHostDeviceStopped');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:hostStopUsingFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:hostStopUsingFailMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };
@@ -105,7 +105,7 @@ const HostItem = ({ host }: HostItemProps) => {
       sendSuccessNotification(t('device-farm:hostUpdateSuccessMsg'));
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:hostUpdateFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('device-farm:hostUpdateFailMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };
@@ -307,7 +307,7 @@ const HostListController = () => {
   );
   const { t } = useTranslation();
 
-  useRefresh(['onHostCreated', 'onRefreshClicked', 'onHostUpdated', 'onHostDeleted', 'onHostDeviceStopped', 'onHostDeviceUsed'], mutate);
+  useRefresh(['onHostCreated', 'onRefreshClicked', 'onHostUpdated', 'onHostDeleted', 'onHostDeviceStopped', 'onHostDeviceUsed'], () => mutate());
 
   return (
     <>

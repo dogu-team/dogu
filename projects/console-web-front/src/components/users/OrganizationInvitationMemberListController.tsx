@@ -14,7 +14,7 @@ import MenuItemButton from '../buttons/MenuItemButton';
 import { organizationRoleText } from '../../utils/mapper';
 import { flexRowBaseStyle, listItemStyle, tableHeaderStyle } from '../../styles/box';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import { checkExpiredInvitation } from '../../utils/user';
 import { cancelInvitation, inviteUsers } from '../../api/organization';
 import useRefresh from '../../hooks/useRefresh';
@@ -42,7 +42,7 @@ const InvitationMemberItem = ({ invitation }: ItemProps) => {
       fireEvent('onInvitationSent');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(`Failed to send.\n${getErrorMessage(e)}`);
+        sendErrorNotification(`Failed to send.\n${getErrorMessageFromAxios(e)}`);
       }
     }
   };
@@ -54,7 +54,7 @@ const InvitationMemberItem = ({ invitation }: ItemProps) => {
       fireEvent('onInvitationCanceled');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(`Failed to cancel.\n${getErrorMessage(e)}`);
+        sendErrorNotification(`Failed to cancel.\n${getErrorMessageFromAxios(e)}`);
       }
     }
   };
@@ -116,7 +116,7 @@ const OrganizationInvitationMemberListController = ({ organizationId }: Props) =
   const { data, isLoading, error, page, updatePage, mutate } = usePaginationSWR<UserAndInvitationTokenBase>(`/organizations/${organizationId}/invitations`);
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onInvitationSent', 'onInvitationCanceled'], mutate);
+  useRefresh(['onRefreshClicked', 'onInvitationSent', 'onInvitationCanceled'], () => mutate());
 
   return (
     <>

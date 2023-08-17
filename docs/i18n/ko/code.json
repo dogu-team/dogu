@@ -322,8 +322,8 @@
   "main.scriptAndRoutineTitle": {
     "message": "루틴"
   },
-  "main.integrationService": {
-    "message": "통합 서비스"
+  "main.integration": {
+    "message": "통합"
   },
   "main.scriptAndRoutineActionLinkTitle": {
     "message": "액션"

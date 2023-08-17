@@ -14,7 +14,7 @@ import { inviteUsers } from 'src/api/organization';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import useDebouncedInputValues from '../../hooks/useDebouncedInputValues';
 import useEventStore from '../../stores/events';
-import { getErrorMessage } from '../../utils/error';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import { ORGANIZATION_ROLE } from '../../types/organization';
 
 const InviteUserButton = () => {
@@ -49,7 +49,7 @@ const InviteUserButton = () => {
       closeModal();
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('org-member:inviteMemberFailMsg', { reason: getErrorMessage(e) }));
+        sendErrorNotification(t('org-member:inviteMemberFailMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
 

@@ -15,7 +15,7 @@ import SmallBoxCenteredLayout from 'src/components/layouts/SmallBoxCenterLayout'
 import ServiceAgreement from 'src/components/registery/ServiceAgreement';
 import { signUp } from '../../src/api/registery';
 import { sendErrorNotification } from '../../src/utils/antd';
-import { getErrorMessage } from '../../src/utils/error';
+import { getErrorMessageFromAxios } from '../../src/utils/error';
 import SocialSignInForm from '../../src/components/social-signin/SocialSignInForm';
 import { redirectWithLocale } from '../../src/ssr/locale';
 import Cookies from 'universal-cookie';
@@ -35,7 +35,7 @@ const SignUpPage: NextPageWithLayout = () => {
         if (e.response?.status === 409) {
           sendErrorNotification(t('registery:signUpAlreadyExistEmailErrorMsg'));
         } else {
-          sendErrorNotification(t('registery:signUpFailedErrorMsg', { reason: getErrorMessage(e) }));
+          sendErrorNotification(t('registery:signUpFailedErrorMsg', { reason: getErrorMessageFromAxios(e) }));
         }
       }
     }

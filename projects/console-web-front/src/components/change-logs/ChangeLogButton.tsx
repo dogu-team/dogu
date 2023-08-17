@@ -22,7 +22,7 @@ const ChangeLogButton = ({ me, mutateMe }: Props) => {
   const [hasNewLogs, setHasNewLogs] = useState(false);
   const { data, isLoading, error, mutate } = useSWR<ChangeLogBase[]>(`/change-logs`, swrAuthFetcher, { revalidateOnFocus: false });
 
-  useRefresh(['onChangeLogReactionUpdated'], mutate);
+  useRefresh(['onChangeLogReactionUpdated'], () => mutate());
 
   useEffect(() => {
     if (data) {
