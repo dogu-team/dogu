@@ -22,7 +22,7 @@ export function findParentPackageJson(): string {
 export function isMajorMinorMatch(a: string, b: string): boolean {
   const aArr = a.split('.');
   const bArr = b.split('.');
-  if (aArr.length !== 2 || bArr.length !== 2) {
+  if (aArr.length < 3 || bArr.length < 3) {
     return false;
   }
   return aArr[0] === bArr[0] && aArr[1] === bArr[1];
