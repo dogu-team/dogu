@@ -1,5 +1,5 @@
-import { DownloadablePackageResult, DOWNLOAD_PLATFORMS, HostBase } from '@dogu-private/console';
-import { Architecture, Platform } from '@dogu-private/types';
+import { HostBase } from '@dogu-private/console';
+import { Architecture, DownloadablePackageResult, DOWNLOAD_PLATFORMS, Platform } from '@dogu-private/types';
 
 export const isAgentUpdatable = (latestInfo: DownloadablePackageResult[], host: HostBase): boolean => {
   let info: DownloadablePackageResult | undefined;

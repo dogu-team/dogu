@@ -5,7 +5,7 @@ import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
 import { FcDownload } from 'react-icons/fc';
 import useSWR from 'swr';
-import { DownloadablePackageResult } from '@dogu-private/console';
+import { DownloadablePackageResult } from '@dogu-private/types';
 import { createContext } from 'react';
 
 import { NextPageWithLayout } from 'pages/_app';
