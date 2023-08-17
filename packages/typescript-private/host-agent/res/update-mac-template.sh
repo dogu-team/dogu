@@ -1,53 +1,70 @@
 work_dir="{{work_dir}}"
-file_url="{file_url}}"
-file_name="{file_name}}"
-file_size="{file_size}}"
-app_name="{{app_name}}"
-app_bundle="{{app_bundle}}"
-zip_file="{{zip_file}}"
+file_url="{{file_url}}"
+file_size="{{file_size}}"
+dir_name="{{dir_name}}"
+zip_file="{{dir_name}}.zip"
 
 cd $work_dir
 
-echo Start update $app_name
 
-curl -o $file_name -L $file_url
+echo Start update Dogu-Agent
+
+
+echo Download app...
+curl -o $zip_file -L $file_url
 
 sleep 5
 
-local_file_size=$(stat -f "%z" "$file_name")
+
+echo Check File Size...
+local_file_size=$(stat -f "%z" "$zip_file")
 if [ "$local_file_size" -eq "$file_size" ]; then
-    echo "File size is equal to $file_size bytes."
+    echo "- File size is equal to $file_size bytes."
 else
-    echo "File size is not equal to $file_size bytes."
+    echo "- File size is not equal to $file_size bytes."
     exit 1
 fi
 
-# Unzip the ZIP file
+
 echo "Unzipping ZIP file..."
-unzip "$zip_file"
+rm -r "$dir_name"
+unzip "$zip_file" -d $dir_name
 
-# Check if the app bundle exists
-if [ -d "$app_bundle" ]; then
-    # Move the app bundle to the Applications folder
-    echo "Moving app bundle to the Applications folder..."
-    rm -rf "/Applications/$app_bundle"
-    mv "$app_bundle" "/Applications/"
-else
-    echo "Failed to find the app bundle."
+cd $work_dir/$dir_name
+app_bundle=$(ls | grep .app)
+app_bundle_src_path=$work_dir/$dir_name/$app_bundle
+app_bundle_dest_path=/Applications/$app_bundle
+cd $work_dir
+
+if [ "$app_bundle_dest_path" -eq "/Applications/" ]; then
+    echo "Fatal error: $app_bundle not found."
     exit 1
 fi
 
-# Clean up downloaded ZIP file
+if [ -d "$app_bundle_src_path" ]; then
+    echo "Moving app $app_bundle to $app_bundle_dest_path"
+    if [ -d "$app_bundle_dest_path" ]; then
+        echo "- Remove previous $app_bundle_dest_path"
+        rm -r "$app_bundle_dest_path"
+    fi
+    mv "$app_bundle_src_path" "/Applications/"
+else
+    echo "- Failed to find the app bundle."
+    exit 1
+fi
+
+
 echo "Cleaning up..."
 rm "$zip_file"
+rm -rf "$dir_name"
 
 
-echo "Launch $app_name"
-xattr -dr com.apple.quarantine "/Applications/$app_bundle"
-open -a Finder /Applications/Dogu-Agent.app
+echo "Launch $app_bundle"...
+xattr -dr com.apple.quarantine "$app_bundle_dest_path"
+open -a Finder $app_bundle_dest_path
+sleep 5
+open -a Finder $app_bundle_dest_path
 
-sleep 10
 
-open -a Finder /Applications/Dogu-Agent.app
-echo "Launch $app_name Done"
+echo "Launch $app_bundle Done"
 kill -9 $(ps -p $(ps -p $PPID -o ppid=) -o ppid=) 

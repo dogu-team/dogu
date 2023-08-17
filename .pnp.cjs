@@ -11240,7 +11240,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:18.15.11"],\
             ["@types/uuid", "npm:9.0.1"],\
             ["@types/ws", "npm:8.5.4"],\
-            ["adm-zip", "npm:0.5.10"],\
             ["async-lock", "npm:1.4.0"],\
             ["axios", "npm:1.3.5"],\
             ["class-transformer", "npm:0.5.1"],\

@@ -3,7 +3,6 @@ import { Code } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { getChildProcessIds, getFilenameFromUrl, HostPaths, killProcessIgnore } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
-import AdmZip, { IZipEntry } from 'adm-zip';
 import AsyncLock from 'async-lock';
 import child_process, { ChildProcess } from 'child_process';
 import fs from 'fs';
@@ -92,22 +91,13 @@ export class UpdateProcessor {
     if (!downloadPath.endsWith('.zip')) {
       throw new Error('Update failed. not zip file');
     }
-    const entries = this.getZipEntries(downloadPath);
-    if (entries.length === 0) {
-      throw new Error('Update failed. zip file is empty');
-    }
-    const appBundleName = entries[0].entryName.replace('/', '');
-    const appName = appBundleName.replace('.app', '');
 
     const shPath = UpdateMacTemplatePath;
     let contents = await fs.promises.readFile(shPath, { encoding: 'utf-8' });
-    contents = contents.replace('{{work_dir}}', dirname);
-    contents = contents.replace('{{file_url}}', url);
-    contents = contents.replace('{{file_name}}', filename);
-    contents = contents.replace('{{file_size}}', fileSize.toString());
-    contents = contents.replace('{{app_name}}', appName);
-    contents = contents.replace('{{app_bundle}}', appBundleName);
-    contents = contents.replace('{{zip_file}}', filename);
+    contents = contents.replaceAll('{{work_dir}}', dirname);
+    contents = contents.replaceAll('{{file_url}}', url);
+    contents = contents.replaceAll('{{dir_name}}', filename.replace('.zip', ''));
+    contents = contents.replaceAll('{{file_size}}', fileSize.toString());
 
     const shellPath = path.resolve(HostPaths.doguTempPath(), 'update-mac.sh');
     if (fs.existsSync(shellPath)) {
@@ -158,10 +148,5 @@ export class UpdateProcessor {
     });
     await onSpawnPromise;
     return child;
-  }
-
-  getZipEntries(filename: string): IZipEntry[] {
-    const zip = new AdmZip(filename);
-    return zip.getEntries();
   }
 }

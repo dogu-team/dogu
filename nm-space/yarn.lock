@@ -4313,7 +4313,6 @@ __metadata:
     "@types/node": 18.15.11
     "@types/uuid": 9.0.1
     "@types/ws": 8
-    adm-zip: 0.5.10
     async-lock: 1.4.0
     axios: 1.3.5
     class-transformer: 0.5.1
@@ -9968,13 +9967,6 @@ __metadata:
     loader-utils: ^2.0.0
     regex-parser: ^2.2.11
   checksum: d524ae23582f41e2275af5d88faab7a9dc09770ed588244e0a76d3196d0d6a90bf02760c71bc6213dbfef3aef4a86232ac9521bfd629752c32b7af37bc74c660
-  languageName: node
-  linkType: hard
-
-"adm-zip@npm:0.5.10":
-  version: 0.5.10
-  resolution: "adm-zip@npm:0.5.10"
-  checksum: 07ed91cf6423bf5dca4ee63977bc7635e91b8d21829c00829d48dce4c6932e1b19e6cfcbe44f1931c956e68795ae97183fc775913883fa48ce88a1ac11fb2034
   languageName: node
   linkType: hard
 
