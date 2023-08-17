@@ -71,7 +71,7 @@ export class DownloadService {
   async getDoguAgentS3PackageListSorted(): Promise<DownloadablePackageResult[]> {
     const applications = await this.publicFileService.getApplicationList();
     // filter size, endsWith,
-    const filtered = applications.filter((item) => item.size && item.size > 0 && (item.key?.endsWith('dmg') || item.key?.endsWith('exe')));
+    const filtered = applications.filter((item) => item.size && item.size > 0 && (item.key?.endsWith('zip') || item.key?.endsWith('exe')));
 
     const packages: DownloadablePackageResult[] = [];
     for (const item of filtered) {
