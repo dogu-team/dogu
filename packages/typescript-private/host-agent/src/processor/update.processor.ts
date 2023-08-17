@@ -27,15 +27,16 @@ export class UpdateProcessor {
       }
       this.lock
         .acquire('update', async () => {
-          // download app
-          const filename = getFilenameFromUrl(msg.url);
-          const downloadPath = path.resolve(HostPaths.doguTempPath(), filename);
-          this.logger.info(`UpdateProcessor.update. download app ${msg.url} to ${downloadPath}`);
-          await this.deviceClientService.deviceHostClient.downloadSharedResource(downloadPath, msg.url, msg.fileSize, {});
+          // // download app
+          // this.logger.info(`UpdateProcessor.update. download app ${msg.url} to ${downloadPath}`);
+          // await this.deviceClientService.deviceHostClient.downloadSharedResource(downloadPath, msg.url, msg.fileSize, {});
 
           // detach shell
+          const filename = getFilenameFromUrl(msg.url);
+          const downloadPath = path.resolve(HostPaths.doguTempPath(), filename);
+
           this.logger.info(`UpdateProcessor.update. detach shell ${downloadPath}`);
-          const child = await this.detachShell(downloadPath);
+          const child = await this.detachShell(msg.url, msg.fileSize, downloadPath);
           const pids = child.pid ? [...(await getChildProcessIds(child.pid, this.logger)), child.pid] : [];
 
           // quit app
@@ -75,17 +76,17 @@ export class UpdateProcessor {
     }
   }
 
-  async detachShell(downloadPath: string): Promise<ChildProcess> {
+  async detachShell(url: string, fileSize: number, downloadPath: string): Promise<ChildProcess> {
     if (process.platform === 'darwin') {
-      return this.detachShellMacos(downloadPath);
+      return this.detachShellMacos(url, fileSize, downloadPath);
     }
     if (process.platform === 'win32') {
-      return this.detachShellWindows(downloadPath);
+      return this.detachShellWindows(url, fileSize, downloadPath);
     }
     throw new Error(`Update failed. not supported platform ${process.platform}`);
   }
 
-  async detachShellMacos(downloadPath: string): Promise<ChildProcess> {
+  async detachShellMacos(url: string, fileSize: number, downloadPath: string): Promise<ChildProcess> {
     const dirname = path.dirname(downloadPath);
     const filename = path.basename(downloadPath);
     if (!downloadPath.endsWith('.zip')) {
@@ -101,6 +102,9 @@ export class UpdateProcessor {
     const shPath = UpdateMacTemplatePath;
     let contents = await fs.promises.readFile(shPath, { encoding: 'utf-8' });
     contents = contents.replace('{{work_dir}}', dirname);
+    contents = contents.replace('{{file_url}}', url);
+    contents = contents.replace('{{file_name}}', filename);
+    contents = contents.replace('{{file_size}}', fileSize.toString());
     contents = contents.replace('{{app_name}}', appName);
     contents = contents.replace('{{app_bundle}}', appBundleName);
     contents = contents.replace('{{zip_file}}', filename);
@@ -125,7 +129,7 @@ export class UpdateProcessor {
     return child;
   }
 
-  async detachShellWindows(downloadPath: string): Promise<ChildProcess> {
+  async detachShellWindows(url: string, fileSize: number, downloadPath: string): Promise<ChildProcess> {
     const dirname = path.dirname(downloadPath);
     const filename = path.basename(downloadPath);
     if (!downloadPath.endsWith('.exe')) {
