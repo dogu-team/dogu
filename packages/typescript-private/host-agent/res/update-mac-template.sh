@@ -58,7 +58,7 @@ rm -rf "$dir_name"
 
 
 echo "Launch $app_bundle"...
-xattr -dr com.apple.quarantine "$app_bundle_dest_path"
+/usr/bin/xattr -dr com.apple.quarantine "$app_bundle_dest_path"
 open -a Finder $app_bundle_dest_path
 sleep 5
 open -a Finder $app_bundle_dest_path
