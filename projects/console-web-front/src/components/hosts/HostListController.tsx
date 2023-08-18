@@ -1,7 +1,7 @@
-import { DesktopOutlined, MobileOutlined } from '@ant-design/icons';
+import { DesktopOutlined, MobileOutlined, QuestionCircleFilled } from '@ant-design/icons';
 import { HostBase } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
-import { Alert, List, MenuProps, Tag } from 'antd';
+import { Alert, List, MenuProps, Tag, Tooltip } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
@@ -31,7 +31,7 @@ import TokenCopyInput from '../common/TokenCopyInput';
 import { menuItemButtonStyles } from '../../styles/button';
 import HostVesrsionBadge from './HostVersionBadge';
 import { DoguAgentLatestContext } from '../../../pages/dashboard/[orgId]/device-farm/hosts';
-import { isAgentUpdatable } from '../../utils/download';
+import { getAgentUpdatableInfo } from '../../utils/download';
 
 interface HostItemProps {
   host: HostBase;
@@ -41,6 +41,7 @@ const HostItem = ({ host }: HostItemProps) => {
   const router = useRouter();
   const [isDetailOpen, openDetailModal, closeDetailModal] = useModal();
   const [isEditModalOpen, openEditModal, closeEditModal] = useModal();
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const orgId = router.query.orgId as OrganizationId;
   const { t } = useTranslation();
   const [token, setToken] = useState<string>();
@@ -48,7 +49,7 @@ const HostItem = ({ host }: HostItemProps) => {
 
   const fireEvent = useEventStore((state) => state.fireEvent);
 
-  const updatable = isAgentUpdatable(context.latestInfo, host);
+  const updatableInfo = getAgentUpdatableInfo(context.latestInfo, host);
   const isUsing = host.hostDevice && host.hostDevice.enableHostDevice === 1;
 
   const handleReissueToken = async () => {
@@ -168,25 +169,35 @@ const HostItem = ({ host }: HostItemProps) => {
     },
     {
       label: (
-        <MenuItemButton
-          danger
-          onConfirm={handleHostAppUpdate}
-          modalTitle={t('device-farm:hostItemUpdateMenu')}
-          modalButtonTitle={t('device-farm:hostUpdateModalButtonText')}
-          modalContent={<StyledDeleteModalContent>{t('device-farm:hostUpdateModalContentInfo')}</StyledDeleteModalContent>}
-          confirmButtonId="host-update-confirm-btn"
-          disabled={!updatable}
-        >
-          {t('device-farm:hostItemUpdateMenu')}
+        <Tooltip title={updatableInfo.reason} placement="left" open={isTooltipVisible}>
+          <MenuItemButton
+            danger
+            onConfirm={handleHostAppUpdate}
+            modalTitle={t('device-farm:hostItemUpdateMenu')}
+            modalButtonTitle={t('device-farm:hostUpdateModalButtonText')}
+            modalContent={<StyledDeleteModalContent>{t('device-farm:hostUpdateModalContentInfo')}</StyledDeleteModalContent>}
+            confirmButtonId="host-update-confirm-btn"
+            disabled={!updatableInfo.isUpdatable}
+          >
+            {t('device-farm:hostItemUpdateMenu')}
 
-          {!updatable && (
-            <Tag color="green" style={{ marginLeft: '.5rem' }}>
-              Latest
-            </Tag>
-          )}
-        </MenuItemButton>
+            {updatableInfo.isLatest && (
+              <Tag color="green" style={{ marginLeft: '.5rem' }}>
+                Latest
+              </Tag>
+            )}
+          </MenuItemButton>
+        </Tooltip>
       ),
       key: 'update',
+      onMouseEnter: () => {
+        if (!updatableInfo.isUpdatable && updatableInfo.reason) {
+          setIsTooltipVisible(true);
+        }
+      },
+      onMouseLeave: () => {
+        setIsTooltipVisible(false);
+      },
     },
     {
       label: (
