@@ -21,12 +21,12 @@ const DeviceLiveCell = ({ device }: Props) => {
   return (
     <DeviceStreaming device={device}>
       <ContentWrapper>
+        <DeviceName>{device.name}</DeviceName>
         <FlexRow>
           <PlatformIcon platform={device.platform} />
-          <DeviceVersion>{device.version}</DeviceVersion>
+          <DeviceVersion>{`(${device.version})`}</DeviceVersion>
+          <Model>{device.modelName ? `${device.modelName} (${device.model})` : device.model}</Model>
         </FlexRow>
-        <DeviceName>{device.name}</DeviceName>
-        <Model>{device.modelName ? `${device.modelName} (${device.model})` : device.model}</Model>
       </ContentWrapper>
       <VideoWrapper>
         <DeviceStreaming.Video style={{ alignItems: 'center' }} />
@@ -47,15 +47,18 @@ const FlexRow = styled.div`
 `;
 
 const DeviceVersion = styled.p`
-  margin-left: 0.25rem;
+  margin-left: 0.15rem;
   font-size: 0.85rem;
 `;
 
 const DeviceName = styled.b`
+  display: block;
   font-weight: 600;
+  margin-bottom: 0.25rem;
 `;
 
 const Model = styled.p`
+  margin-left: 0.5rem;
   font-size: 0.8rem;
   color: ${(props) => props.theme.colors.gray6};
 `;
