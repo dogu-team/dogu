@@ -1,7 +1,7 @@
 import { FindHostByTokenResponse } from '@dogu-private/console-host-agent';
 import { ThirdPartyPathMap } from '@dogu-private/types';
 import { createEventDefinition, IsFilledString } from '@dogu-tech/common';
-import { IsNotEmptyObject } from 'class-validator';
+import { IsNotEmpty, IsNotEmptyObject, IsString } from 'class-validator';
 import { HostConnectionInfo, HostResolutionInfo } from '../types';
 
 export class OnHostConnectingEventValue {
@@ -25,8 +25,14 @@ export class OnHostResolvedEventValue extends OnHostConnectedEventValue implemen
 }
 export const OnHostResolvedEvent = createEventDefinition('OnHostResolved', OnHostResolvedEventValue);
 
+export type HostDisconnectedReason = 'invalid-token' | 'connection-failed';
+
 export class OnHostDisconnectedEventValue {
   @IsNotEmptyObject()
   error: unknown;
+
+  @IsString()
+  @IsNotEmpty()
+  reason!: HostDisconnectedReason;
 }
 export const OnHostDisconnectedEvent = createEventDefinition('OnHostDisconnected', OnHostDisconnectedEventValue);
