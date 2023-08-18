@@ -1,6 +1,6 @@
 import { DefaultHttpOptions, Instance, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { DeviceHostDownloadSharedResource } from '@dogu-tech/device-client-common';
-import { HostPaths } from '@dogu-tech/node';
+import { HostPaths, renameRetry } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import AsyncLock from 'async-lock';
 import axios from 'axios';
@@ -85,7 +85,7 @@ export class DeviceHostDownloadSharedResourceService {
     }
     const dirPath = path.dirname(filePath);
     await fs.promises.mkdir(dirPath, { recursive: true });
-    await fs.promises.rename(tempFilePath, filePath);
+    await renameRetry(tempFilePath, filePath, this.logger);
     this.logger.info('File downloaded', { filePath });
     const responseHeaders = Reflect.ownKeys(response.headers).reduce((acc, key) => {
       const value = Reflect.get(response.headers, key);

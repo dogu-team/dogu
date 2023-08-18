@@ -1,5 +1,5 @@
 import { errorify, PrefixLogger, stringify } from '@dogu-tech/common';
-import { HostPaths } from '@dogu-tech/node';
+import { HostPaths, renameRetry } from '@dogu-tech/node';
 import { spawn } from 'child_process';
 import compressing from 'compressing';
 import { download } from 'electron-dl';
@@ -192,7 +192,7 @@ export class JdkExternalUnit extends IExternalUnit {
     const defaultJavaHomeParentPath = path.dirname(defaultJavaHomePath);
     await fs.promises.mkdir(defaultJavaHomeParentPath, { recursive: true });
     this.stdLogCallbackService.stdout(`Moving... ${uncompressedHomePath} to ${defaultJavaHomePath}`);
-    await fs.promises.rename(uncompressedHomePath, defaultJavaHomePath);
+    await renameRetry(uncompressedHomePath, defaultJavaHomePath, this.stdLogCallbackService.createPrintable());
     this.stdLogCallbackService.stdout(`Move complete. ${uncompressedPath} to ${defaultJavaHomePath}`);
     this.stdLogCallbackService.stdout('Writing JAVA_HOME to env file...');
     await this.dotEnvConfigService.write('JAVA_HOME', defaultJavaHomePath);

@@ -1,5 +1,5 @@
 import { PrefixLogger, stringify } from '@dogu-tech/common';
-import { HostPaths } from '@dogu-tech/node';
+import { HostPaths, renameRetry } from '@dogu-tech/node';
 import { spawn } from 'child_process';
 import compressing from 'compressing';
 import { download } from 'electron-dl';
@@ -362,7 +362,7 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
     this.stdLogCallbackService.stdout(`Create complete. ${defaultPlatformToolsParentPath}`);
 
     this.stdLogCallbackService.stdout(`Moving... ${platformToolsUncompressedDirPath} -> ${defaultPlatformToolsPath}`);
-    await fs.promises.rename(platformToolsUncompressedDirPath, defaultPlatformToolsPath);
+    await renameRetry(platformToolsUncompressedDirPath, defaultPlatformToolsPath, this.stdLogCallbackService.createPrintable());
     this.stdLogCallbackService.stdout(`Move complete. ${platformToolsUncompressedDirPath} -> ${defaultPlatformToolsPath}`);
   }
 
@@ -489,7 +489,7 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
     this.stdLogCallbackService.stdout(`Create complete. ${defaultCommandLineToolsParentPath}`);
 
     this.stdLogCallbackService.stdout(`Moving... ${commandLineToolsUncompressedDirPath} -> ${defaultCommandLineToolsPath}`);
-    await fs.promises.rename(commandLineToolsUncompressedDirPath, defaultCommandLineToolsPath);
+    await renameRetry(commandLineToolsUncompressedDirPath, defaultCommandLineToolsPath, this.stdLogCallbackService.createPrintable());
     this.stdLogCallbackService.stdout(`Move complete. ${commandLineToolsUncompressedDirPath} -> ${defaultCommandLineToolsPath}`);
   }
 

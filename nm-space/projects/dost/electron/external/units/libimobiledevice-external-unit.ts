@@ -1,5 +1,5 @@
 import { PrefixLogger, stringify } from '@dogu-tech/common';
-import { ChildProcess, getFileSizeRecursive, HostPaths, removeItemRecursive } from '@dogu-tech/node';
+import { ChildProcess, getFileSizeRecursive, HostPaths, removeItemRecursive, renameRetry } from '@dogu-tech/node';
 import compressing from 'compressing';
 import { download } from 'electron-dl';
 import fs from 'fs';
@@ -201,7 +201,7 @@ async function renameUnzipedDir(dirname: string, destPath: string, stdLogCallbac
   if (fs.existsSync(uncompressedDirPath) && !fs.existsSync(destPath)) {
     for (let i = 0; i < 10; i++) {
       try {
-        await fs.promises.rename(uncompressedDirPath, destPath);
+        await renameRetry(uncompressedDirPath, destPath, stdLogCallbackService.createPrintable());
         break;
       } catch (e) {
         stdLogCallbackService.stderr(`rename failed ${i} times. ${stringify(e)}`);

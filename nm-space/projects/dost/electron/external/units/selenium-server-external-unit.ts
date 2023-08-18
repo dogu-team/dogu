@@ -1,5 +1,5 @@
 import { PrefixLogger } from '@dogu-tech/common';
-import { HostPaths } from '@dogu-tech/node';
+import { HostPaths, renameRetry } from '@dogu-tech/node';
 import { exec } from 'child_process';
 import { download } from 'electron-dl';
 import fs from 'fs';
@@ -95,7 +95,7 @@ export class SeleniumServerExternalUnit extends IExternalUnit {
     this.info(`Download complete. path: ${savePath}`);
     this.unitCallback.onDownloadCompleted();
     this.unitCallback.onInstallStarted();
-    await fs.promises.rename(savePath, seleniumServerPath);
+    await renameRetry(savePath, seleniumServerPath, this.stdLogCallbackService.createPrintable());
     this.info(`Install complete. path: ${seleniumServerPath}`);
     this.unitCallback.onInstallCompleted();
   }

@@ -1,4 +1,4 @@
-import { Printable, stringify } from '@dogu-tech/common';
+import { errorify, loop, Printable, stringify } from '@dogu-tech/common';
 import fs from 'fs';
 import fsPromise from 'fs/promises';
 import path from 'path';
@@ -139,4 +139,18 @@ export async function checkDirectoryEqual(srcDirPath: string, destDirPath: strin
   }
 
   return { isEqual: true, reason: '' };
+}
+
+export async function renameRetry(srcPath: string, destPath: string, printable: Printable): Promise<void> {
+  let lastError;
+  for await (const _ of loop(3000, 30)) {
+    try {
+      await fs.promises.rename(srcPath, destPath);
+      break;
+    } catch (e) {
+      lastError = errorify(e);
+      printable.warn?.(`rename failed. try again src:${srcPath}, dest:${destPath}, error:${lastError}`);
+    }
+  }
+  throw lastError;
 }
