@@ -9,6 +9,7 @@
 
 #if defined(_WIN32)
 #include <chrono>
+#include <iostream>
 #include <cstdio>
 #include <cstdlib>
 #include <thread>
