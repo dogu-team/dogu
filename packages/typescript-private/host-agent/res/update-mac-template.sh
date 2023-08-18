@@ -4,10 +4,8 @@ file_size="{{file_size}}"
 dir_name="{{dir_name}}"
 zip_file="{{dir_name}}.zip"
 
-cd $work_dir
-
-
 echo Start update Dogu-Agent
+cd $work_dir
 
 
 echo Download app...

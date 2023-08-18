@@ -26,10 +26,6 @@ export class UpdateProcessor {
       }
       this.lock
         .acquire('update', async () => {
-          // // download app
-          // this.logger.info(`UpdateProcessor.update. download app ${msg.url} to ${downloadPath}`);
-          // await this.deviceClientService.deviceHostClient.downloadSharedResource(downloadPath, msg.url, msg.fileSize, {});
-
           // detach shell
           const filename = getFilenameFromUrl(msg.url);
           const downloadPath = path.resolve(HostPaths.doguTempPath(), filename);
@@ -128,7 +124,10 @@ export class UpdateProcessor {
 
     const shPath = UpdateWindowsTemplatePath;
     let contents = await fs.promises.readFile(shPath, { encoding: 'utf-8' });
-    contents = contents.replace('{{installer}}', filename);
+    contents = contents.replaceAll('{{work_dir}}', dirname);
+    contents = contents.replaceAll('{{file_url}}', url);
+    contents = contents.replaceAll('{{file_size}}', fileSize.toString());
+    contents = contents.replaceAll('{{installer}}', filename);
 
     const shellPath = path.resolve(HostPaths.doguTempPath(), 'update-windows.cmd');
     if (fs.existsSync(shellPath)) {
