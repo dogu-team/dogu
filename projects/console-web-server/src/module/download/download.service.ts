@@ -49,7 +49,7 @@ export class DownloadService {
 
     const result: DownloadablePackageResult[] = [];
     for (const platform of Object.values(DOWNLOAD_PLATFORMS)) {
-      const filtered = applications.filter((item) => item.platform === platform && isMajorMinorMatch(item.version, config.version));
+      const filtered = applications.filter((item) => item.platform === platform);
       if (filtered.length > 0) {
         result.push(filtered[0]);
       }
