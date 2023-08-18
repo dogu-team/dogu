@@ -86,11 +86,16 @@ export class CommandProcessRegistry {
         });
         child.stdout?.on('data', (data) => {
           const dataString = String(data);
+          const localTimeStampOnData = new Date().toISOString();
           Promise.resolve(
             eventHandler.onLog({
               level: 'info',
               message: dataString,
               localTimeStampNano: new DateNano().toRFC3339Nano(),
+              details: {
+                localTimeStamp: new Date().toISOString(),
+                localTimeStampOnData,
+              },
             }),
           ).catch((error) => {
             this.logger.error('Failed to log stdout message', { error: errorify(error), data: dataString });
@@ -98,11 +103,16 @@ export class CommandProcessRegistry {
         });
         child.stderr?.on('data', (data) => {
           const dataString = String(data);
+          const localTimeStampOnData = new Date().toISOString();
           Promise.resolve(
             eventHandler.onLog({
               level: 'warn',
               message: dataString,
               localTimeStampNano: new DateNano().toRFC3339Nano(),
+              details: {
+                localTimeStamp: new Date().toISOString(),
+                localTimeStampOnData,
+              },
             }),
           ).catch((error) => {
             this.logger.error('Failed to log stderr message', { error: errorify(error), data: dataString });
