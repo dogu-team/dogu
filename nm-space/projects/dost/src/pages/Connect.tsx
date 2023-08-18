@@ -1,9 +1,9 @@
-import { Divider, Flex, List, ListItem, Spinner, Text } from '@chakra-ui/react';
+import { Divider, Flex, List, ListItem, Spinner, Text, Code } from '@chakra-ui/react';
 import styled from 'styled-components';
 
 import AlertModalButton from '../components/buttons/AlertModalButton';
 import HostAgentConnectionStatusBadge from '../components/connection/HostAgentConnectionStatusBadge';
-import TokenConnectionForm from '../components/connection/TokenConnectionForm';
+import TokenConnectionForm, { connectionStatusToMessage } from '../components/connection/TokenConnectionForm';
 import PageTitle from '../components/layouts/PageTitle';
 import useHostAgentConnectionStatusStore from '../stores/host-agent-connection-status';
 import ConnectedDeviceList from '../components/devices/ConnectedDeviceList';
@@ -35,6 +35,12 @@ function Connect() {
             <MenuTitle style={{ marginRight: '.25rem' }}>Dogu connection status:</MenuTitle>
             {hostAgentConnectionStatus === null ? <div>loading...</div> : <HostAgentConnectionStatusBadge status={hostAgentConnectionStatus} />}
           </Flex>
+          {!isConnected && hostAgentConnectionStatus?.reason && (
+            <Flex direction="row" alignItems="center">
+              <MenuTitle style={{ marginRight: '.25rem' }}>Error:</MenuTitle>
+              <Code colorScheme="red">{connectionStatusToMessage(hostAgentConnectionStatus)}</Code>
+            </Flex>
+          )}
 
           {isConnecting && (
             <Item>

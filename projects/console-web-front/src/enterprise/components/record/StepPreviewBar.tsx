@@ -1,4 +1,4 @@
-import { RecordTestStepBase } from '@dogu-private/console';
+import { RecordTestStepResponse } from '@dogu-private/console';
 import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
@@ -7,7 +7,7 @@ import useEventStore from '../../../stores/events';
 import StepPreview from './StepPreview';
 
 interface Props {
-  steps: RecordTestStepBase[];
+  steps: RecordTestStepResponse[];
   currentStepIndex: number;
 }
 

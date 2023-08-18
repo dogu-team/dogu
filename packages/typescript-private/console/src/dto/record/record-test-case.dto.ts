@@ -1,5 +1,5 @@
 import { DeviceId } from '@dogu-private/types';
-import { PageDtoBase, RecordTestCaseBase } from '../../index';
+import { PageDtoBase, RecordTestCaseBase, RecordTestStepResponse } from '../../index';
 
 export interface CreateRecordTestCaseDtoBase extends Pick<RecordTestCaseBase, 'name' | 'browserName' | 'packageName'> {}
 export interface NewSessionRecordTestCaseDtoBase {
@@ -14,4 +14,6 @@ export interface UpdateRecordTestCaseDtoBase extends Pick<RecordTestCaseBase, 'n
   name: string;
 }
 
-export type RecordTestCaseResponse = RecordTestCaseBase;
+export interface RecordTestCaseResponse extends RecordTestCaseBase {
+  recordTestSteps: RecordTestStepResponse[];
+}

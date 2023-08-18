@@ -1,6 +1,6 @@
 import { BrowserInstaller } from '@dogu-private/device-server';
 import { PrefixLogger } from '@dogu-tech/common';
-import { HostPaths } from '@dogu-tech/node';
+import { HostPaths, renameRetry } from '@dogu-tech/node';
 import { exec } from 'child_process';
 import compressing from 'compressing';
 import { download } from 'electron-dl';
@@ -129,7 +129,7 @@ export class GeckoDriverExternalUnit extends IExternalUnit {
       if (stat) {
         await fs.promises.rm(geckoDriverPath, { recursive: true, force: true });
       }
-      await fs.promises.rename(source, geckoDriverPath);
+      await renameRetry(source, geckoDriverPath, this.stdLogCallbackService.createPrintable());
     });
   }
 

@@ -1,4 +1,4 @@
-import { RecordTestCaseBase, RecordTestStepBase } from '@dogu-private/console';
+import { RecordTestCaseResponse, RecordTestStepResponse } from '@dogu-private/console';
 import { OrganizationId, ProjectId, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
@@ -18,7 +18,7 @@ const RecordTestingEditor = () => {
   const projectId = router.query.pid as ProjectId;
   const caseId = router.query.caseId as RecordTestCaseId | undefined;
   const stepId = router.query.step as RecordTestStepId | undefined;
-  const { data, isLoading, error, mutate } = useSWR<RecordTestCaseBase>(caseId && `/organizations/${orgId}/projects/${projectId}/record-test-cases/${caseId}`, swrAuthFetcher, {
+  const { data, isLoading, error, mutate } = useSWR<RecordTestCaseResponse>(caseId && `/organizations/${orgId}/projects/${projectId}/record-test-cases/${caseId}`, swrAuthFetcher, {
     revalidateOnFocus: false,
   });
 
@@ -27,7 +27,7 @@ const RecordTestingEditor = () => {
   const currentStepPageNumber = currentStep ? steps.indexOf(currentStep) + 1 ?? 0 : 0;
 
   useRefresh(['onRecordStepCreated'], (payload) => {
-    const rv = payload as RecordTestStepBase;
+    const rv = payload as RecordTestStepResponse;
     if (rv.recordTestCaseId === caseId) {
       mutate((prev) => {
         if (prev) {
@@ -42,7 +42,7 @@ const RecordTestingEditor = () => {
   useEffect(() => {
     const unsub = useEventStore.subscribe(({ eventName, payload }) => {
       if (eventName === 'onRecordStepDeleted') {
-        const deletedStep = payload as RecordTestStepBase;
+        const deletedStep = payload as RecordTestStepResponse;
         mutate((prev) => {
           if (prev) {
             return { ...prev, recordTestSteps: prev?.recordTestSteps?.filter((item) => item.recordTestStepId !== deletedStep.recordTestStepId) };

@@ -13,6 +13,7 @@ import {
 } from '@dogu-private/types';
 import { stringify, stringifyError } from '@dogu-tech/common';
 import { StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { renameRetry } from '@dogu-tech/node';
 import fs from 'fs';
 import lodash from 'lodash';
 import path from 'path';
@@ -142,7 +143,7 @@ export class PionStreamingService implements StreamingService {
       throw new ErrorResultError(Code.CODE_STRING_EMPTY, 'startRecord response is null');
     }
     await postProcessRecord(result.filePath);
-    await fs.promises.rename(result.filePath, getOriginFilePathFromTmp(result.filePath));
+    await renameRetry(result.filePath, getOriginFilePathFromTmp(result.filePath), gdcLogger);
 
     return result.error;
   }
@@ -166,7 +167,7 @@ async function postProcessRecord(filePath: string) {
   await makeWebmSeekable(filePath, convertedFilePath, gdcLogger);
   gdcLogger.info('startRecording postProcessRecord completed', { filePath, convertedFilePath });
   const fileTmpPath = `${filePath}.tmp`;
-  await fs.promises.rename(filePath, fileTmpPath);
-  await fs.promises.rename(convertedFilePath, filePath);
+  await renameRetry(filePath, fileTmpPath, gdcLogger);
+  await renameRetry(convertedFilePath, filePath, gdcLogger);
   await fs.promises.rm(fileTmpPath, { force: true });
 }

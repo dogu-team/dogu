@@ -1,6 +1,6 @@
 import { PrivateHost } from '@dogu-private/console-host-agent';
 import { createConsoleApiAuthHeader, HostId, OrganizationId } from '@dogu-private/types';
-import { DefaultHttpOptions, errorify, Instance, isFilteredAxiosError, Retry, validateAndEmitEventAsync } from '@dogu-tech/common';
+import { DefaultHttpOptions, delay, errorify, Instance, isFilteredAxiosError, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { Interval } from '@nestjs/schedule';
@@ -8,9 +8,8 @@ import { config } from '../config';
 import { ConsoleClientService } from '../console-client/console-client.service';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
-import { logger } from '../logger/logger.instance';
 import { HostConnectionInfo } from '../types';
-import { OnHostDisconnectedEvent, OnHostResolvedEvent } from './host.events';
+import { HostDisconnectedReason, OnHostDisconnectedEvent, OnHostResolvedEvent } from './host.events';
 
 @Injectable()
 export class HostHeartbeater {
@@ -43,29 +42,43 @@ export class HostHeartbeater {
     }
   }
 
-  @Retry({ retryCount: config.host.heartbeat.retry.count, retryInterval: config.host.heartbeat.retry.intervalMilliseconds, printable: logger })
   private async updateHeartbeat(organizationId: OrganizationId, hostId: HostId): Promise<void> {
-    const pathProvider = new PrivateHost.updateHostHeartbeatNow.pathProvider(organizationId, hostId);
-    const path = PrivateHost.updateHostHeartbeatNow.resolvePath(pathProvider);
-    await this.consoleClientService.client
-      .patch(path, undefined, {
-        ...createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
-        timeout: DefaultHttpOptions.request.timeout,
-      })
-      .catch(async (error) => {
-        const parsed = errorify(error);
-        this.logger.error('Failed to update host heartbeat', {
-          error: parsed,
+    let lastError: Error | null = null;
+    let reason: HostDisconnectedReason = 'connection-failed';
+
+    for (let i = 0; i < config.host.heartbeat.retry.count; i++) {
+      try {
+        const pathProvider = new PrivateHost.updateHostHeartbeatNow.pathProvider(organizationId, hostId);
+        const path = PrivateHost.updateHostHeartbeatNow.resolvePath(pathProvider);
+        await this.consoleClientService.client.patch(path, undefined, {
+          ...createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN),
+          timeout: DefaultHttpOptions.request.timeout,
         });
-        if (isFilteredAxiosError(parsed)) {
-          if (parsed.responseStatus === 401) {
-            await validateAndEmitEventAsync(this.eventEmitter, OnHostDisconnectedEvent, {
-              error: parsed,
-            });
+        return;
+      } catch (error) {
+        lastError = errorify(error);
+        this.logger.error('Failed to update host heartbeat', {
+          error: lastError,
+        });
+
+        if (isFilteredAxiosError(lastError)) {
+          if (lastError.responseStatus === 401) {
+            reason = 'invalid-token';
+            break;
           }
-        } else {
-          throw parsed;
         }
-      });
+
+        await delay(config.host.heartbeat.retry.intervalMilliseconds);
+      }
+    }
+
+    if (!lastError) {
+      throw new Error('Internal error: must lastError be defined');
+    }
+
+    await validateAndEmitEventAsync(this.eventEmitter, OnHostDisconnectedEvent, {
+      error: lastError,
+      reason,
+    });
   }
 }

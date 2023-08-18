@@ -1,13 +1,16 @@
 import { RecordTestActionType } from '@dogu-private/types';
-import { RecordTestStepActionWebdriverClickBase, RecordTestStepBase } from '../../index';
+import { RecordTestStepBase } from '../../index';
 
 export interface RecordTestActionBase {
   type: RecordTestActionType;
 }
 
-export interface CreateRecordTestActionWebdriverClickDtoBase
-  extends Pick<RecordTestStepActionWebdriverClickBase, 'videoScreenSizeX' | 'videoScreenSizeY' | 'videoScreenPositionX' | 'videoScreenPositionY'> {
+export interface CreateRecordTestActionWebdriverClickDtoBase {
   type: 'WEBDRIVER_CLICK';
+  videoScreenPositionX: number;
+  videoScreenPositionY: number;
+  videoScreenSizeX: number;
+  videoScreenSizeY: number;
 }
 
 export interface CreateRecordTestActionWebdriverInputDtoBase extends RecordTestActionBase {
@@ -17,4 +20,9 @@ export interface CreateRecordTestActionWebdriverInputDtoBase extends RecordTestA
 
 export interface CreateRecordTestStepDtoBase extends Pick<RecordTestStepBase, 'prevRecordTestStepId'> {
   actionInfo: CreateRecordTestActionWebdriverClickDtoBase | CreateRecordTestActionWebdriverInputDtoBase;
+}
+
+export interface RecordTestStepResponse extends RecordTestStepBase {
+  screenshotUrl: string;
+  pageSourceUrl: string;
 }

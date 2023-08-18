@@ -13,6 +13,7 @@ import {
   GetNodeBoundFunc,
   NodeUtilizer,
   PageSourceParser,
+  ParsedNode,
   ParseToNodeFunc,
 } from './types';
 
@@ -132,6 +133,11 @@ export class GamiumNodeUtilizer extends NodeUtilizer<GamiumNodeAttributes> {
       width: screenRectSize.width,
       height: screenRectSize.height,
     };
+  };
+
+  public getNodesByPosition: (x: number, y: number) => ParsedNode<GamiumNodeAttributes>[] = (x, y) => {
+    throw new Error('Method not implemented.');
+    return [];
   };
 
   public getInspectingArea: GetInspectingAreaFunc = () => {

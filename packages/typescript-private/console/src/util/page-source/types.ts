@@ -292,6 +292,7 @@ export abstract class NodeUtilizer<A> {
   abstract getNodeBound: GetNodeBoundFunc<A>;
   abstract getDeviceRotation: GetDeviceRotationFunc;
   abstract getDeviceScreenSize: GetDeviceScreenSizeFunc;
+  abstract getNodesByPosition: GetNodesByPositionFunc<A>;
 }
 
 // index is same tagName index
@@ -299,6 +300,7 @@ export type GetXPathFunc = (element: Element, parentPath: string, index?: number
 export type ConvertElementToNodeFunc<A> = (element: Element, parentNode?: ParsedNode<A>, index?: number) => ParsedNode<A>;
 export type ParseToNodeFunc<A> = () => ParsedNode<A>;
 export type ParseToContextNodeFunc<A> = () => ContextNode<A>;
+export type GetNodesByPositionFunc<A> = (x: number, y: number) => ParsedNode<A>[];
 
 export abstract class PageSourceParser<A> {
   protected rootElement: Element;

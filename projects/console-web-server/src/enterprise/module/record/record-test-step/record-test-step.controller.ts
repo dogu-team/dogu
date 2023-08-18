@@ -1,4 +1,4 @@
-import { OrganizationPropCamel, ProjectPropCamel, RecordTestCasePropCamel, RecordTestStepBase, RecordTestStepPropCamel } from '@dogu-private/console';
+import { OrganizationPropCamel, ProjectPropCamel, RecordTestCasePropCamel, RecordTestStepPropCamel, RecordTestStepResponse } from '@dogu-private/console';
 import { OrganizationId, ProjectId, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
 import { Body, Controller, Delete, Get, Inject, Param, Post } from '@nestjs/common';
 import { PROJECT_ROLE } from '../../../../module/auth/auth.types';
@@ -16,11 +16,36 @@ export class RecordTestStepController {
   @Get(`:${RecordTestStepPropCamel.recordTestStepId}`)
   @ProjectPermission(PROJECT_ROLE.READ)
   async findRecordTestStepById(
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
     @Param(ProjectPropCamel.projectId) projectId: ProjectId,
     @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
     @Param(RecordTestStepPropCamel.recordTestStepId) recordTestStepId: RecordTestStepId,
-  ): Promise<RecordTestStepBase> {
-    const rv = await this.recordTestStepService.findRecordTestStepById(projectId, recordTestCaseId, recordTestStepId);
+  ): Promise<RecordTestStepResponse> {
+    const rv = await this.recordTestStepService.findRecordTestStepById(organizationId, projectId, recordTestCaseId, recordTestStepId);
+    return rv;
+  }
+
+  @Get(`:${RecordTestStepPropCamel.recordTestStepId}/screenshot`)
+  @ProjectPermission(PROJECT_ROLE.READ)
+  async getRecordTestStepScreenshotUrl(
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
+    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
+    @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
+    @Param(RecordTestStepPropCamel.recordTestStepId) recordTestStepId: RecordTestStepId,
+  ): Promise<string> {
+    const rv = await this.recordTestStepService.getRecordTestStepScreenshotUrl(organizationId, projectId, recordTestCaseId, recordTestStepId);
+    return rv;
+  }
+
+  @Get(`:${RecordTestStepPropCamel.recordTestStepId}/page-source`)
+  @ProjectPermission(PROJECT_ROLE.READ)
+  async getRecordTestStepPageSourceUrl(
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
+    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
+    @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
+    @Param(RecordTestStepPropCamel.recordTestStepId) recordTestStepId: RecordTestStepId,
+  ): Promise<string> {
+    const rv = await this.recordTestStepService.getRecordTestStepPageSourceUrl(organizationId, projectId, recordTestCaseId, recordTestStepId);
     return rv;
   }
 
@@ -42,7 +67,7 @@ export class RecordTestStepController {
     @Param(ProjectPropCamel.projectId) projectId: ProjectId,
     @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
     @Body() dto: CreateRecordTestStepDto,
-  ): Promise<RecordTestStepBase> {
+  ): Promise<RecordTestStepResponse> {
     const rv = await this.recordTestStepService.createRecordTestStep(organizationId, projectId, recordTestCaseId, dto);
     return rv;
   }
@@ -55,11 +80,5 @@ export class RecordTestStepController {
     @Param(RecordTestStepPropCamel.recordTestStepId) recordTestStepId: RecordTestCaseId,
   ): Promise<void> {
     await this.recordTestStepService.deleteRecordTestStep(projectId, recordTestCaseId, recordTestStepId);
-  }
-
-  //FIXME:(felix) test code
-  @Get(':test/test')
-  async test() {
-    await this.recordTestStepService.screenshotRecordTestStep_Test();
   }
 }

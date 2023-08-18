@@ -7,7 +7,7 @@ import {
   DeviceHostUploadFileInProgressSendValueDto,
   DeviceHostUploadFileStartSendValueDto,
 } from '@dogu-tech/device-client-common';
-import { HostPaths } from '@dogu-tech/node';
+import { HostPaths, renameRetry } from '@dogu-tech/node';
 import fs from 'fs';
 import { IncomingMessage } from 'http';
 import path from 'path';
@@ -154,7 +154,7 @@ export class DeviceHostUploadFileService
             }
           })
           .then(async () => {
-            await fs.promises.rename(tempFilePath, filePath);
+            await renameRetry(tempFilePath, filePath, this.logger);
             this.logger.info('File renamed', { tempFilePath, filePath });
           })
           .then(() => {

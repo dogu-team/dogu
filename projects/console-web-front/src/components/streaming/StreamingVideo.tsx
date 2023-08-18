@@ -157,7 +157,7 @@ const StreamingVideo = ({
       )}
 
       <InputWrapper canDisplay={!loading} ratio={videoRatio} videoWidth={videoRef?.current ? videoSize.width * (videoRef.current.offsetHeight / videoSize.height) : undefined}>
-        <StyledVideo ref={videoRef} id={videoId} playsInline autoPlay muted ratio={videoRatio} boxHeight={boxRef.current?.clientHeight ?? 0} />
+        <StyledVideo ref={videoRef} id={videoId} playsInline autoPlay muted boxHeight={boxRef.current?.clientHeight ?? 0} />
         <StyledInput
           ref={inputRef}
           autoFocus
@@ -242,15 +242,15 @@ const InputWrapper = styled.div<{ canDisplay: boolean; ratio: number; videoWidth
   height: auto;
   max-height: 100%;
   background-color: #000;
-  width: ${(props) => (props.ratio > 1 ? `min(max-content, calc(100% * ${props.ratio}))` : props.videoWidth ? `${props.videoWidth}px` : 'auto')};
+  width: ${(props) => (props.ratio > 1 ? `max-content` : props.videoWidth ? `${props.videoWidth}px` : 'auto')};
   overflow: hidden;
 `;
 
-const StyledVideo = styled.video<{ ratio: number; boxHeight: number }>`
+const StyledVideo = styled.video<{ boxHeight: number }>`
   display: block;
   width: 100%;
   height: auto;
-  max-height: ${(props) => (props.ratio > 1 ? `${props.boxHeight}px` : `${props.boxHeight}px`)};
+  max-height: ${(props) => `${props.boxHeight}px`};
 `;
 
 const StyledInput = styled.textarea`

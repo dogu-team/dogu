@@ -11,6 +11,19 @@ export enum RECORD_TEST_STEP_ACTION_TYPE {
   // ...
 }
 
+export function recordTestStepActionTypeFromString(type: RecordTestActionType): RECORD_TEST_STEP_ACTION_TYPE {
+  switch (type) {
+    case 'UNSPECIFIED':
+      return RECORD_TEST_STEP_ACTION_TYPE.UNSPECIFIED;
+    case 'WEBDRIVER_CLICK':
+      return RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_CLICK;
+    case 'WEBDRIVER_INPUT':
+      return RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_INPUT;
+    default:
+      throw new Error(`Unknown RECORD_TEST_STEP_ACTION_TYPE: ${type}`);
+  }
+}
+
 // export enum RECORD_TEST_STEP_TYPE_STRING {
 //   UNSPECIFIED = 'UNSPECIFIED',
 //   WEBDRIVER_CLICK = 'WEBDRIVER_CLICK',

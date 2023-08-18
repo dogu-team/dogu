@@ -252,6 +252,8 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
         return;
       }
 
+      console.log(smallestNode, position);
+
       return { node: smallestNode, position };
     },
     [getScreenPosition, selectedContextAndNode, videoRef, device],

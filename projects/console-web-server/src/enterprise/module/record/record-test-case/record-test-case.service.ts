@@ -1,4 +1,4 @@
-import { RecordTestCaseBase, RecordTestCasePropCamel, RecordTestCasePropSnake, RecordTestCaseResponse } from '@dogu-private/console';
+import { RecordTestCaseBase, RecordTestCasePropCamel, RecordTestCasePropSnake, RecordTestCaseResponse, RecordTestStepResponse } from '@dogu-private/console';
 import { extensionFromPlatform, OrganizationId, platformTypeFromPlatform, ProjectId, RecordTestCaseId } from '@dogu-private/types';
 import {
   DoguApplicationFileSizeHeader,
@@ -28,9 +28,8 @@ import {
   DeleteSessionRemoteWebDriverBatchRequestItem,
   NewSessionRemoteWebDriverBatchRequestItem,
 } from '../../../../module/remote/remote-webdriver/remote-webdriver.w3c-batch-request-items';
-import { getSortedRecordTestSteps, makeActionBatchExcutor } from '../common';
+import { makeActionBatchExcutor } from '../common';
 import { CreateRecordTestCaseDto, FindRecordTestCaseByProjectIdDto, NewSessionRecordTestCaseDto, UpdateRecordTestCaseDto } from '../dto/record-test-case.dto';
-import { CreateRecordTestActionWebdriverClickDto, CreateRecordTestStepDto } from '../dto/record-test-step.dto';
 import { RecordTestStepService } from '../record-test-step/record-test-step.service';
 
 @Injectable()
@@ -97,7 +96,7 @@ export class RecordTestCaseService {
     return isKeyboardShown;
   }
 
-  async findRecordTestCaseById(projectId: ProjectId, recordTestCaseId: string): Promise<RecordTestCaseResponse> {
+  async findRecordTestCaseById(organizationId: OrganizationId, projectId: ProjectId, recordTestCaseId: string): Promise<RecordTestCaseResponse> {
     const recordTestCase = await this.dataSource
       .getRepository(RecordTestCase) //
       .createQueryBuilder('recordTestCase')
@@ -109,10 +108,15 @@ export class RecordTestCaseService {
     if (!recordTestCase) {
       throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
     }
-
+    const stepResponses: RecordTestStepResponse[] = [];
+    const recordTestSteps = recordTestCase.recordTestSteps ?? [];
+    for (const step of recordTestSteps) {
+      const stepResponse = await this.recordTestStepService.findRecordTestStepById(organizationId, projectId, recordTestCaseId, step.recordTestStepId);
+      stepResponses.push(stepResponse);
+    }
     const rv: RecordTestCaseResponse = {
       ...recordTestCase,
-      recordTestSteps: getSortedRecordTestSteps(recordTestCase),
+      recordTestSteps: stepResponses,
     };
     return rv;
   }
@@ -346,80 +350,6 @@ export class RecordTestCaseService {
     await batchExecutor.execute();
 
     await deleteSessionResponse.response();
-    return;
-  }
-
-  async test(): Promise<void> {
-    const organizationId = '664790a4-df0a-4043-b61a-7ea371f354f8';
-    const projectId = '287ad1bf-0e17-4c97-bbda-50a2cc0ac49b';
-    const deviceId = '01be2acc-5a5f-4bda-93e5-a591996d475b';
-    const createTestCaseDto: CreateRecordTestCaseDto = {
-      name: 'test',
-      browserName: null,
-      packageName: 'org.wikipedia.alpha',
-    };
-    const testCase = await this.createRecordTestCase(organizationId, projectId, createTestCaseDto);
-
-    const newSessionDto: NewSessionRecordTestCaseDto = {
-      deviceId,
-    };
-
-    const sessionId = await this.newSession(this.dataSource.manager, organizationId, projectId, testCase.recordTestCaseId, newSessionDto);
-
-    const actionData: CreateRecordTestActionWebdriverClickDto = {
-      type: 'WEBDRIVER_CLICK',
-      videoScreenPositionX: 0,
-      videoScreenPositionY: 0,
-      videoScreenSizeX: 0,
-      videoScreenSizeY: 0,
-    };
-
-    const stepDto: CreateRecordTestStepDto = {
-      prevRecordTestStepId: null,
-      // deviceId,
-      actionInfo: actionData,
-    };
-
-    const testStep = await this.recordTestStepService.createRecordTestStep(organizationId, projectId, testCase.recordTestCaseId, stepDto);
-
-    const testStepResult = await this.recordTestStepService.findRecordTestStepById(projectId, testStep.recordTestCaseId, testStep.recordTestStepId);
-    return;
-  }
-
-  async test2(): Promise<void> {
-    const organizationId = '664790a4-df0a-4043-b61a-7ea371f354f8';
-    const projectId = '287ad1bf-0e17-4c97-bbda-50a2cc0ac49b';
-    const deviceId = '01be2acc-5a5f-4bda-93e5-a591996d475b';
-
-    const testCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, name: 'test' } });
-    if (!testCase) {
-      throw new HttpException(`RecordTestCase not found.`, HttpStatus.NOT_FOUND);
-    }
-
-    const newSessionDto: NewSessionRecordTestCaseDto = {
-      deviceId,
-    };
-
-    // const sessionId = await this.newSession(this.dataSource.manager, organizationId, projectId, testCase.recordTestCaseId, newSessionDto);
-
-    const actionData: CreateRecordTestActionWebdriverClickDto = {
-      type: 'WEBDRIVER_CLICK',
-      videoScreenPositionX: 0,
-      videoScreenPositionY: 0,
-      videoScreenSizeX: 0,
-      videoScreenSizeY: 0,
-    };
-
-    const stepDto: CreateRecordTestStepDto = {
-      prevRecordTestStepId: null,
-      // deviceId,
-      actionInfo: actionData,
-    };
-
-    const testStep = await this.recordTestStepService.createRecordTestStep(organizationId, projectId, testCase.recordTestCaseId, stepDto);
-
-    await this.deleteSession(organizationId, projectId, testCase.recordTestCaseId);
-    const testStepResult = await this.recordTestStepService.findRecordTestStepById(projectId, testStep.recordTestCaseId, testStep.recordTestStepId);
     return;
   }
 }

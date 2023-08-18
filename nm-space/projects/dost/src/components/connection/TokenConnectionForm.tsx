@@ -34,18 +34,6 @@ const TokenConnectionForm = (props: Props) => {
 
     try {
       const result = await connect(value);
-      if (result.status !== 'connected') {
-        const current = toast({
-          title: 'Error',
-          description: connectionStatusToMessage(result),
-          status: 'error',
-          isClosable: true,
-          position: 'bottom',
-        });
-        setTimeout(() => {
-          toast.close(current);
-        }, 3000);
-      }
       setHAConnectionStatus(result);
     } catch (error) {
       ipc.rendererLogger.error(`Connect host failed: ${stringify(error)}`);

@@ -12,6 +12,7 @@ import {
   IosNodeAttributes,
   NodeUtilizer,
   PageSourceParser,
+  ParsedNode,
   ParseToNodeFunc,
 } from './types';
 
@@ -80,6 +81,11 @@ export class IosNodeUtilizer extends NodeUtilizer<IosNodeAttributes> {
       width: width || 0,
       height: height || 0,
     };
+  };
+
+  public getNodesByPosition: (x: number, y: number) => ParsedNode<IosNodeAttributes>[] = (x, y) => {
+    throw new Error('Method not implemented.');
+    return [];
   };
 
   public getInspectingArea: GetInspectingAreaFunc = () => {

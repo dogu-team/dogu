@@ -12,20 +12,26 @@ export class RecordTestStepActionWebdriverClick extends BaseEntity implements Re
   @ColumnTemplate.RelationUuid(RecordTestStepActionWebdriverClickPropSnake.record_test_step_id)
   recordTestStepId!: RecordTestStepId;
 
-  @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.video_screen_size_x, nullable: false })
-  videoScreenSizeX!: number;
+  @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.device_screen_size_x, nullable: false })
+  deviceScreenSizeX!: number;
 
-  @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.video_screen_size_y, nullable: false })
-  videoScreenSizeY!: number;
-
-  @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.video_screen_position_x, nullable: false })
-  videoScreenPositionX!: number;
-
-  @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.video_screen_position_y, nullable: false })
-  videoScreenPositionY!: number;
+  @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.device_screen_size_y, nullable: false })
+  deviceScreenSizeY!: number;
 
   @Column({ type: 'character varying', name: RecordTestStepActionWebdriverClickPropSnake.xpath, nullable: false })
   xpath!: string;
+
+  @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.bound_x, nullable: false })
+  boundX!: number;
+
+  @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.bound_y, nullable: false })
+  boundY!: number;
+
+  @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.bound_width, nullable: false })
+  boundWidth!: number;
+
+  @Column({ type: 'smallint', name: RecordTestStepActionWebdriverClickPropSnake.bound_height, nullable: false })
+  boundHeight!: number;
 
   @ColumnTemplate.CreateDate(RecordTestStepActionWebdriverClickPropSnake.created_at)
   createdAt!: Date;

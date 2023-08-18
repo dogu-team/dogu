@@ -7,7 +7,7 @@ export const config = {
       },
     },
     reconnect: {
-      intervalMilliseconds: 3000,
+      intervalMilliseconds: 5000,
     },
     heartbeat: {
       retry: {

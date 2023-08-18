@@ -106,6 +106,7 @@ export * from './dto/user/user-response.dto';
 export * from './dto/user/user.dto';
 export * from './dto/ws/ws.dto';
 export * from './http-specs/cloud-device';
+export * from './util/common';
 export * from './util/page-source';
 export * from './util/page-source/types';
 export * from './util/remote';

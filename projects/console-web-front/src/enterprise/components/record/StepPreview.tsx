@@ -1,4 +1,4 @@
-import { RecordTestStepBase } from '@dogu-private/console';
+import { RecordTestStepResponse } from '@dogu-private/console';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
@@ -8,7 +8,7 @@ import StepTypeIcon from './StepTypeIcon';
 
 interface Props {
   index: number;
-  step: RecordTestStepBase;
+  step: RecordTestStepResponse;
 }
 
 const StepPreview = ({ step, index }: Props) => {
