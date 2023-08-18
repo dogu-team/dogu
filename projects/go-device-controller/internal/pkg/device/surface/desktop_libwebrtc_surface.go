@@ -133,7 +133,7 @@ func (s *desktopLibwebrtcSurface) Close() {
 	s.reader = nil
 	if nil != s.cmd {
 		if closeEr := s.cmd.Process.Kill(); closeEr != nil {
-			log.Inst.Error("desktopLibwebrtcSurface.Close", zap.Error(closeEr))
+			log.Inst.Warn("desktopLibwebrtcSurface.Close", zap.Error(closeEr))
 		}
 		utils.Execute("taskkill", "/PID", fmt.Sprintf("%v", s.cmd.Process.Pid), "/F", "/T")
 		s.cmd = nil

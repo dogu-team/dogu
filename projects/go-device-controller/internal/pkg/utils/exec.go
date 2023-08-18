@@ -2,7 +2,6 @@ package utils
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -10,6 +9,7 @@ import (
 	log "go-device-controller/internal/pkg/log"
 
 	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
 func Execute(name string, arg ...string) (*exec.Cmd, error) {
@@ -36,31 +36,30 @@ func Execute(name string, arg ...string) (*exec.Cmd, error) {
 		return nil, err
 	}
 
-	go handleReader(stdoutReader)
-	go handleReader(stderrReader)
+	go handleReader(name, zapcore.InfoLevel, stdoutReader)
+	go handleReader(name, zapcore.ErrorLevel, stderrReader)
 
 	return command, nil
 }
 
-func handleReader(reader *bufio.Reader) error {
+func handleReader(name string, level zapcore.Level, reader *bufio.Reader) {
 	for {
 		str, err := reader.ReadString('\n')
 		if len(str) == 0 && err != nil {
 			if err == io.EOF {
 				break
 			}
-			return err
+			return
 		}
-
-		fmt.Print(str)
+		log.Inst.Log(level, str)
 
 		if err != nil {
 			if err == io.EOF {
 				break
 			}
-			return err
+			return
 		}
 	}
 
-	return nil
+	return
 }
