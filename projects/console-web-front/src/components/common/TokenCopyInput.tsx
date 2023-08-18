@@ -14,7 +14,6 @@ const TokenCopyInput = ({ value }: Props) => {
 
   const handleCopy = async () => {
     try {
-      throw new Error('!');
       await navigator.clipboard.writeText(value);
       message.success(t('common:copyClipboard'));
     } catch (e) {
