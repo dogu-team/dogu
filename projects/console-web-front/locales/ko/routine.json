@@ -39,6 +39,7 @@
 
   "jobSidebarTitle": "작업",
   "jobSummaryText": "요약",
+  "jobLiveStreaming": "라이브 스트리밍",
 
   "pipelineSummaryRunByTitle": "실행자",
   "pipelineSummaryRuntimeTitle": "실행 시간",

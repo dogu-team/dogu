@@ -80,6 +80,7 @@ export class PipelineService {
       .innerJoinAndSelect(`pipeline.${RoutinePipelinePropCamel.routineJobs}`, 'job')
       .innerJoinAndSelect(`job.${RoutineJobPropCamel.routineDeviceJobs}`, 'deviceJob')
       .innerJoinAndSelect(`deviceJob.${RoutineDeviceJobPropCamel.routineSteps}`, 'step')
+      .innerJoinAndSelect(`deviceJob.${RoutineDeviceJobPropCamel.device}`, 'device')
       .leftJoinAndSelect(`step.${RoutineStepPropCamel.dests}`, 'dest')
       .where(`pipeline.${RoutinePipelinePropSnake.routine_pipeline_id} = :pipelineId`, { pipelineId })
       .orderBy(`step.${RoutineStepPropCamel.routineStepId}`, 'ASC')

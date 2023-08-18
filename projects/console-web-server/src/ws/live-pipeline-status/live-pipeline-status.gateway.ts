@@ -108,6 +108,7 @@ export class LivePipelineStatusGateway implements OnGatewayConnection, OnGateway
     }
 
     try {
+      client.send(JSON.stringify(lastPipeline));
       await this.sendPipelineStatus(client, lastPipeline, pipelineId);
       closeWebSocketWithTruncateReason(client, 1000, `LivePipelineStatusGateway. Pipeline is completed`);
       return;

@@ -1,12 +1,10 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import Trans from 'next-translate/Trans';
 import Link from 'next/link';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import useDeviceInput from '../../hooks/streaming/useDeviceInput';
 import useDeviceStreamingContext from '../../hooks/streaming/useDeviceStreamingContext';
-import useInspector from '../../hooks/streaming/useInspector';
 import { flexRowCenteredStyle } from '../../styles/box';
 
 export type VideoSize = { width: number; height: number };
@@ -15,6 +13,7 @@ interface Props {
   videoId?: string;
   rightSidebar?: React.ReactNode;
   children?: React.ReactNode;
+  style?: React.CSSProperties;
   onResize?: (e: UIEvent) => void | Promise<void>;
   onKeyPress?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void | Promise<void>;
   onKeyUp?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void | Promise<void>;
@@ -32,6 +31,7 @@ const StreamingVideo = ({
   rightSidebar,
   videoId,
   children,
+  style,
   onResize,
   onKeyPress,
   onKeyDown,
@@ -143,7 +143,7 @@ const StreamingVideo = ({
   const focusInputForKeyboardEvent = () => inputRef.current?.focus({ preventScroll: true });
 
   return (
-    <VideoWrapper ref={boxRef}>
+    <VideoWrapper ref={boxRef} style={style}>
       {loading && (
         <LoadingBox>
           <LoadingOutlined style={{ fontSize: '2rem' }} />
