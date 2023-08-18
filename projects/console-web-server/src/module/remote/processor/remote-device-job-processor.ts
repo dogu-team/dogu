@@ -168,15 +168,19 @@ export module RemoteDeviceJobProcessor {
         throw new Error(`RemoteSlack not found.`);
       }
 
-      const onSuccess = remoteSlack.onSuccess && remoteDeviceJob.sessionState === REMOTE_DEVICE_JOB_SESSION_STATE.COMPLETE;
-      const onFailure = remoteSlack.onFailure === 1;
-      if (!onSuccess && !onFailure) {
+      const isSucceeded = remoteDeviceJob.sessionState === REMOTE_DEVICE_JOB_SESSION_STATE.COMPLETE;
+      const subscribeSuccess = remoteSlack.onSuccess === 1;
+      const subscribeFailure = remoteSlack.onFailure === 1;
+
+      if (isSucceeded && !subscribeSuccess) {
+        return;
+      }
+      if (!isSucceeded && !subscribeFailure) {
         return;
       }
 
       const organizationId = project.organizationId;
       const projectId = project.projectId;
-      const isSucceeded = remoteDeviceJob.sessionState === REMOTE_DEVICE_JOB_SESSION_STATE.COMPLETE;
       const remoteName = remote.remoteId;
       const remoteUrl = `${process.env.DOGU_CONSOLE_URL}/dashboard/${organizationId}/projects/${projectId}/remotes/${remoteName}`;
       const durationSeconds = dayjs(remoteDeviceJob.completedAt!).diff(dayjs(remoteDeviceJob.inProgressAt!), 'second');
