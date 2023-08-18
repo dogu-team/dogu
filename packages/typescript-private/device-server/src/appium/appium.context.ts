@@ -425,7 +425,7 @@ export class AppiumContextImpl implements AppiumContext {
     }
 
     return {
-      viewport,
+      // viewport,
       statusBar,
       navigationBar,
     };

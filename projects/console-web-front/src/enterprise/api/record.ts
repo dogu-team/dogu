@@ -1,4 +1,4 @@
-import { CreateRecordTestCaseDtoBase, CreateRecordTestStepDtoBase, NewSessionRecordTestCaseDtoBase, RecordTestCaseBase, RecordTestStepBase } from '@dogu-private/console';
+import { CreateRecordTestCaseDtoBase, CreateRecordTestStepDtoBase, NewSessionRecordTestCaseDtoBase, RecordTestCaseBase, RecordTestStepResponse } from '@dogu-private/console';
 import { OrganizationId, ProjectId, RecordTestCaseId } from '@dogu-private/types';
 import api from '../../api/index';
 
@@ -19,7 +19,7 @@ export const createNewSession = async (
 
 export const createRecordTestStep = async (dto: { organizationId: OrganizationId; projectId: ProjectId; recordTestCaseId: RecordTestCaseId } & CreateRecordTestStepDtoBase) => {
   const { organizationId, projectId, recordTestCaseId, ...rest } = dto;
-  const { data } = await api.post<RecordTestStepBase>(
+  const { data } = await api.post<RecordTestStepResponse>(
     `/organizations/${dto.organizationId}/projects/${dto.projectId}/record-test-cases/${dto.recordTestCaseId}/record-test-steps`,
     rest,
   );

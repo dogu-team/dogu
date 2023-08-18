@@ -17,7 +17,6 @@ import { RecordTestCase } from '../../../../db/entity/record-test-case.entity';
 import { RecordTestScenario } from '../../../../db/entity/record-test-scenario.entity';
 import { EMPTY_PAGE, Page } from '../../../../module/common/dto/pagination/page';
 import { castEntity } from '../../../../types/entity-cast';
-import { getSortedRecordTestCases } from '../common';
 import {
   AddRecordTestCaseToRecordTestScenarioDto,
   CreateRecordTestScenarioDto,
@@ -60,7 +59,8 @@ export class RecordTestScenarioService {
 
     const rv: RecordTestScenarioResponse = {
       ...scenario,
-      recordTestCases: getSortedRecordTestCases(scenario),
+      recordTestCases: [],
+      // recordTestCases: getSortedRecordTestCases(scenario),
     };
     return rv;
   }

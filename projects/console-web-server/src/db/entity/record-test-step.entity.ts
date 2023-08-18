@@ -4,6 +4,7 @@ import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from
 import { ColumnTemplate } from './decorators';
 import { Project } from './project.entity';
 import { RecordTestCase } from './record-test-case.entity';
+import { RecordTestStepActionWebdriverClick } from './record-test-step-action-webdriver-click.entity';
 
 @Entity(RECORD_TEST_STEP_TABLE_NAME)
 export class RecordTestStep extends BaseEntity implements RecordTestStepBase {
@@ -25,9 +26,6 @@ export class RecordTestStep extends BaseEntity implements RecordTestStepBase {
   @Column({ type: 'smallint', name: RecordTestStepPropSnake.type, default: RECORD_TEST_STEP_ACTION_TYPE.UNSPECIFIED, nullable: false })
   type!: RECORD_TEST_STEP_ACTION_TYPE;
 
-  @Column({ type: 'character varying', name: RecordTestStepPropSnake.screenshot_url, nullable: false })
-  screenshotUrl!: string;
-
   @ColumnTemplate.CreateDate(RecordTestStepPropSnake.created_at)
   createdAt!: Date;
 
@@ -48,4 +46,6 @@ export class RecordTestStep extends BaseEntity implements RecordTestStepBase {
   @ManyToOne(() => RecordTestStep, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
   @JoinColumn({ name: RecordTestStepPropSnake.prev_record_test_step_id, referencedColumnName: RecordTestStepPropCamel.recordTestStepId })
   prevRecordTestStep?: RecordTestStep | null;
+
+  recordTestStepAction?: RecordTestStepActionWebdriverClick;
 }

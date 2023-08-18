@@ -1,4 +1,4 @@
-import { OrganizationId, ProjectId, RoutineDeviceJobId, RoutineId, RoutinePipelineId } from '@dogu-private/types';
+import { OrganizationId, ProjectId, RecordTestCaseId, RecordTestStepId, RoutineDeviceJobId, RoutineId, RoutinePipelineId } from '@dogu-private/types';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import path from 'path';
 import { FEATURE_CONFIG } from '../../feature.config';
@@ -8,6 +8,78 @@ import { ProjectAppDirectory, ProjectAppType } from './project-app-file';
 @Injectable()
 export class ProjectFileService {
   constructor(private readonly featureFileService: FeatureFileService) {}
+
+  private makeRecordTestStepScreenshotPath(organizationId: OrganizationId, projectId: ProjectId, recordTestCaseId: RecordTestCaseId, recordTestStepId: RecordTestStepId) {
+    return `organizations/${organizationId}/projects/${projectId}/record-test-cases/${recordTestCaseId}/record-test-steps/${recordTestStepId}/screenshot.png`;
+  }
+
+  async uploadRecordTestScreenshot(
+    buffer: Buffer,
+    organizationId: OrganizationId,
+    projectId: ProjectId,
+    recordTestCaseId: RecordTestCaseId,
+    recordTestStepId: RecordTestStepId, //
+  ) {
+    const path = this.makeRecordTestStepScreenshotPath(organizationId, projectId, recordTestCaseId, recordTestStepId);
+    const putResult = await this.featureFileService.put({
+      bucketKey: 'organization',
+      key: path,
+      body: buffer,
+      contentType: 'image/png',
+    });
+    return putResult.location;
+  }
+
+  async getRecordTestScreenshotUrl(
+    organizationId: OrganizationId, //
+    projectId: ProjectId,
+    recordTestCaseId: RecordTestCaseId,
+    recordTestStepId: RecordTestStepId,
+  ) {
+    const path = await this.makeRecordTestStepScreenshotPath(organizationId, projectId, recordTestCaseId, recordTestStepId);
+    const getSignedUrlResult = await this.featureFileService.getSignedUrl({
+      bucketKey: 'organization',
+      key: path,
+      expires: 60 * 60 * 1,
+    });
+    return getSignedUrlResult.url;
+  }
+
+  private makeRecordTestStepPageSourcePath(organizationId: OrganizationId, projectId: ProjectId, recordTestCaseId: RecordTestCaseId, recordTestStepId: RecordTestStepId) {
+    return `organizations/${organizationId}/projects/${projectId}/record-test-cases/${recordTestCaseId}/record-test-steps/${recordTestStepId}/page-source.xml`;
+  }
+
+  async uploadRecordTestPageSource(
+    pageSource: string,
+    organizationId: OrganizationId,
+    projectId: ProjectId,
+    recordTestCaseId: RecordTestCaseId,
+    recordTestStepId: RecordTestStepId, //
+  ) {
+    const path = this.makeRecordTestStepPageSourcePath(organizationId, projectId, recordTestCaseId, recordTestStepId);
+    const putResult = await this.featureFileService.put({
+      bucketKey: 'organization',
+      key: path,
+      body: pageSource,
+      contentType: 'application/xml',
+    });
+    return putResult.location;
+  }
+
+  async getRecordTestPageSourceUrl(
+    organizationId: OrganizationId, //
+    projectId: ProjectId,
+    recordTestCaseId: RecordTestCaseId,
+    recordTestStepId: RecordTestStepId,
+  ) {
+    const path = await this.makeRecordTestStepPageSourcePath(organizationId, projectId, recordTestCaseId, recordTestStepId);
+    const getSignedUrlResult = await this.featureFileService.getSignedUrl({
+      bucketKey: 'organization',
+      key: path,
+      expires: 60 * 60 * 1,
+    });
+    return getSignedUrlResult.url;
+  }
 
   private makeRoutinePath(organizationId: OrganizationId, projectId: ProjectId, routineId: RoutineId, fileName: string) {
     return `organizations/${organizationId}/projects/${projectId}/routines/${routineId}/config/${fileName}.yaml`;

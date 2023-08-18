@@ -193,7 +193,7 @@ export class ApplicationService {
     }
 
     if (appInfo.icon && iconFileName) {
-      await appFileDirectory.uploadBuffer(appInfo.icon, iconFileName, ['.png', '.jpg', '.jpeg', 'webp']);
+      await appFileDirectory.uploadBuffer(appInfo.icon, iconFileName, ['.png', '.jpg', '.jpeg', 'webp'], file.mimetype);
     }
     await appFileDirectory.uploadFile(file, appFileName, projectAppMeta[appFileType].mimeTypes);
   }

@@ -1,5 +1,5 @@
 import { DeleteOutlined } from '@ant-design/icons';
-import { RecordTestStepBase } from '@dogu-private/console';
+import { RecordTestStepResponse } from '@dogu-private/console';
 import { OrganizationId, ProjectId } from '@dogu-private/types';
 import { Button } from 'antd';
 import { isAxiosError } from 'axios';
@@ -13,7 +13,7 @@ import { getErrorMessageFromAxios } from '../../../utils/error';
 import { deleteRecordTestStep } from '../../api/record';
 
 interface Props {
-  step: RecordTestStepBase;
+  step: RecordTestStepResponse;
 }
 
 const DeleteStepButton = ({ step }: Props) => {

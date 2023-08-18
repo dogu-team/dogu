@@ -1,11 +1,11 @@
-import { RecordTestStepBase } from '@dogu-private/console';
+import { RecordTestStepResponse } from '@dogu-private/console';
 import Image from 'next/image';
 import styled from 'styled-components';
 import { flexRowCenteredStyle } from '../../../styles/box';
 import DeleteStepButton from './DeleteStepButton';
 
 interface Props {
-  step: RecordTestStepBase | undefined;
+  step: RecordTestStepResponse | undefined;
 }
 
 const StepEditor = ({ step }: Props) => {

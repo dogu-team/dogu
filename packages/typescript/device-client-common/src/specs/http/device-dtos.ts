@@ -142,9 +142,9 @@ export class SystemBar extends Rect {
 }
 
 export class Android {
-  @ValidateNested()
-  @Type(() => Rect)
-  viewport!: Rect;
+  // @ValidateNested()
+  // @Type(() => Rect)
+  // viewport!: Rect;
 
   @ValidateNested()
   @Type(() => SystemBar)

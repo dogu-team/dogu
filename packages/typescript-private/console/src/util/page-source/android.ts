@@ -14,6 +14,7 @@ import {
   GetNodeBoundFunc,
   NodeUtilizer,
   PageSourceParser,
+  ParsedNode,
   ParseToNodeFunc,
 } from './types';
 
@@ -91,6 +92,74 @@ export class AndroidNodeUtilizer extends NodeUtilizer<AndroidNodeAttributes> {
       width: 0,
       height: 0,
     };
+  };
+
+  public getNodesByPosition: (x: number, y: number) => ParsedNode<AndroidNodeAttributes>[] = (x, y) => {
+    type DepthNode = {
+      depth: number;
+      node: ParsedNode<AndroidNodeAttributes>[];
+    };
+
+    function getElementDepth(node: ParsedNode<AndroidNodeAttributes>, depth: number): DepthNode[] {
+      const currentElement: DepthNode[] = [
+        {
+          depth: depth,
+          node: [node],
+        },
+      ];
+      if (!node.children || node.children.length === 0) {
+        return currentElement;
+      }
+      const childElements = node.children.flatMap((childNode) => {
+        return getElementDepth(childNode, depth + 1);
+      });
+      return currentElement.concat(childElements);
+    }
+
+    function depthwiseNodeList(rootNode: ParsedNode<AndroidNodeAttributes>): DepthNode[] {
+      if (!rootNode.children || rootNode.children.length === 0) {
+        return [];
+      }
+
+      const elementsDepthGrouped: DepthNode[] = rootNode.children?.flatMap((child) => getElementDepth(child, 0));
+
+      const depthwiseList: DepthNode[] = [];
+      for (const element of elementsDepthGrouped) {
+        const existingDepth = depthwiseList.findIndex((e) => e.depth === element.depth);
+
+        if (existingDepth > -1) {
+          depthwiseList[existingDepth].node.push(...element.node);
+        } else {
+          depthwiseList.push(element);
+        }
+      }
+      return depthwiseList;
+    }
+
+    function getTargetNodes(depthwiseList: DepthNode[], x: number, y: number): ParsedNode<AndroidNodeAttributes>[] {
+      const reverse = depthwiseList.reverse();
+
+      const candidates: ParsedNode<AndroidNodeAttributes>[] = [];
+      for (const node of reverse) {
+        for (const child of node.node) {
+          if (child.attributes && child.attributes.bounds) {
+            const left = child.attributes.bounds.start[0];
+            const top = child.attributes.bounds.start[1];
+            const right = child.attributes.bounds.end[0];
+            const bottom = child.attributes.bounds.end[1];
+
+            if (x >= left && x <= right && y >= top && y <= bottom) {
+              candidates.push(child);
+            }
+          }
+        }
+      }
+      return candidates;
+    }
+
+    const depthwiseList = depthwiseNodeList(this.contextAndNode.node);
+    const targetNodes = getTargetNodes(depthwiseList, x, y);
+    return targetNodes;
   };
 
   public getInspectingArea: GetInspectingAreaFunc = () => {

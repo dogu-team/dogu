@@ -69,7 +69,7 @@ export class ProjectAppDirectory {
     return putResult.location;
   }
 
-  async uploadBuffer(data: Buffer, fileName: string, supportedExts: string[]): Promise<string> {
+  async uploadBuffer(data: Buffer, fileName: string, supportedExts: string[], contentType: string): Promise<string> {
     const isExtMatch = fileName && supportedExts.some((fileType) => fileName.toLowerCase().endsWith(fileType));
     if (!isExtMatch) {
       throw new Error(`File type ${fileName} is not supported`);
@@ -80,6 +80,7 @@ export class ProjectAppDirectory {
       bucketKey: 'organization',
       key: iconPath,
       body: data,
+      contentType: contentType,
     });
     return putResult.location;
   }

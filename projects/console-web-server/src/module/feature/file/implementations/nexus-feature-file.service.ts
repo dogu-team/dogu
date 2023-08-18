@@ -47,7 +47,7 @@ export class NexusFeatureFileService extends FeatureFileService {
   }
 
   async put(options: PutOptions): Promise<PutResult> {
-    const { bucketKey, key, body } = options;
+    const { bucketKey, key, body, contentType } = options;
     const repository = this.parseBucketKey(bucketKey);
     const url = `${this.url}/repository/${repository}/${key}`;
     for (let i = 0; i < 3; i++) {
@@ -55,7 +55,7 @@ export class NexusFeatureFileService extends FeatureFileService {
         .put(url, body, {
           auth: this.createBasicCredentials(),
           headers: {
-            'Content-Type': 'application/octet-stream',
+            'Content-Type': contentType,
           },
         })
         .catch((error) => {

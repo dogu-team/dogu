@@ -28,10 +28,11 @@ export class RecordTestCaseController {
   @Get(`:${RecordTestCasePropCamel.recordTestCaseId}`)
   @ProjectPermission(PROJECT_ROLE.READ)
   async findRecordTestCaseById(
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
     @Param(ProjectPropCamel.projectId) projectId: ProjectId,
     @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
   ): Promise<RecordTestCaseResponse> {
-    const rv = await this.recordTestCaseService.findRecordTestCaseById(projectId, recordTestCaseId);
+    const rv = await this.recordTestCaseService.findRecordTestCaseById(organizationId, projectId, recordTestCaseId);
     return rv;
   }
 
@@ -87,14 +88,5 @@ export class RecordTestCaseController {
     @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
   ): Promise<void> {
     await this.recordTestCaseService.deleteRecordTestCase(projectId, recordTestCaseId);
-  }
-
-  @Get(':test/test')
-  async test() {
-    await this.recordTestCaseService.test();
-  }
-  @Get(':test/test2')
-  async test2() {
-    await this.recordTestCaseService.test2();
   }
 }
