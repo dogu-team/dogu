@@ -1,9 +1,11 @@
 import styled from 'styled-components';
-import { NextPage } from 'next';
 import Link from 'next/link';
 import Head from 'next/head';
 
-const CustomNotFoundPage: NextPage = () => {
+import { NextPageWithLayout } from './_app';
+import ConsoleBasicLayout from '../src/components/layouts/ConsoleBasicLayout';
+
+const CustomNotFoundPage: NextPageWithLayout = () => {
   return (
     <>
       <Head>
@@ -19,12 +21,16 @@ const CustomNotFoundPage: NextPage = () => {
   );
 };
 
+CustomNotFoundPage.getLayout = (page) => {
+  return <ConsoleBasicLayout>{page}</ConsoleBasicLayout>;
+};
+
 export default CustomNotFoundPage;
 
 const Box = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: calc(100dvh - 57px);
   align-items: center;
   justify-content: center;
 `;
