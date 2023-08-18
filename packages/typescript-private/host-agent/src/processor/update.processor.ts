@@ -29,6 +29,9 @@ export class UpdateProcessor {
           // detach shell
           const filename = getFilenameFromUrl(msg.url);
           const downloadPath = path.resolve(HostPaths.doguTempPath(), filename);
+          if (!fs.existsSync(HostPaths.doguTempPath())) {
+            await fs.promises.mkdir(HostPaths.doguTempPath(), { recursive: true });
+          }
 
           this.logger.info(`UpdateProcessor.update. detach shell ${downloadPath}`);
           const child = await this.detachShell(msg.url, msg.fileSize, downloadPath);
