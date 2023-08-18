@@ -1,4 +1,4 @@
-import { HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
+import { HostPaths, newCleanNodeEnv, removeItemRecursive } from '@dogu-tech/node';
 import { exec } from 'child_process';
 import { app, desktopCapturer, ipcMain, shell, systemPreferences } from 'electron';
 import isDev from 'electron-is-dev';
@@ -56,6 +56,9 @@ export class SettingsService {
 
   static open(dotEnvConfigService: DotEnvConfigService): void {
     SettingsService.instance = new SettingsService(dotEnvConfigService);
+    SettingsService.cleanupDoguTemp().catch((err) => {
+      logger.error('cleanupDoguTemp error', { err });
+    });
   }
 
   private async isShowDevUI(): Promise<boolean> {
@@ -142,6 +145,20 @@ export class SettingsService {
       }
       if (stdout) {
         logger.info('changeStrictSSlOnNPMLikes', { stdout });
+      }
+    }
+  }
+
+  private static async cleanupDoguTemp(): Promise<void> {
+    const tempPath = HostPaths.doguTempPath();
+    if (fs.existsSync(tempPath)) {
+      const files = fs.readdirSync(tempPath);
+      logger.info('cleanupDoguTemp', { files });
+      for (const file of files) {
+        const filePath = path.join(tempPath, file);
+        await removeItemRecursive(filePath).catch((err) => {
+          logger.error('cleanupDoguTemp error', { file, err });
+        });
       }
     }
   }

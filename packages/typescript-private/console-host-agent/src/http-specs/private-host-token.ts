@@ -1,4 +1,4 @@
-import { Host, HostId, OrganizationId, Platform } from '@dogu-private/types';
+import { Architecture, Host, HostId, OrganizationId, Platform } from '@dogu-private/types';
 import { ControllerMethodSpec, ControllerSpec, DefaultPathProvider } from '@dogu-tech/common';
 import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
@@ -13,6 +13,9 @@ export class FindHostByTokenResponse implements Pick<Required<Host>, 'hostId' | 
 
   @IsEnum(Platform)
   platform!: Platform;
+
+  @IsEnum(Architecture)
+  architecture!: Architecture;
 
   @IsString()
   rootWorkspace!: string;

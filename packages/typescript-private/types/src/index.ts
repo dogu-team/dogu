@@ -12,6 +12,7 @@ export * from './dest_edge';
 export * from './device';
 export * from './device-and-device-tag/index';
 export * from './device-tag/index';
+export * from './download';
 export * from './enum';
 export * from './host';
 export * from './influxdb';

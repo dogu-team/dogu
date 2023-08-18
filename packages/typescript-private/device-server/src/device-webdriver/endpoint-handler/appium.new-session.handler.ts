@@ -10,12 +10,10 @@ import {
   HeaderRecord,
 } from '@dogu-tech/common';
 import { RelayRequest, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
-import { HostPaths } from '@dogu-tech/node';
+import { getFilenameFromUrl, HostPaths } from '@dogu-tech/node';
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
-import url from 'url';
-import { v4 as uuidv4 } from 'uuid';
 import { AppiumRemoteContext } from '../../appium/appium.remote.context';
 import { DeviceHostDownloadSharedResourceService } from '../../device-host/device-host.download-shared-resource';
 import { DOGU_ADB_SERVER_PORT } from '../../internal/externals/cli/adb/adb';
@@ -115,8 +113,7 @@ export class AppiumNewSessionEndpointHandler extends AppiumEndpointHandler {
         };
       }
 
-      const appUrlParsed = url.parse(appUrl);
-      const filename = path.basename(appUrlParsed.path ?? uuidv4()).substring(0, 30);
+      const filename = getFilenameFromUrl(appUrl);
       const extension = getAppExtension(platform);
       const appVersion = _.get(headers, DoguApplicationVersionHeader) as string | undefined;
       if (!appVersion) {

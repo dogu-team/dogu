@@ -26,6 +26,7 @@ export class PrivateHostTokenController {
       hostId: found.hostId,
       organizationId: found.organizationId,
       platform: found.platform,
+      architecture: found.architecture,
       rootWorkspace: found.rootWorkspace,
       deviceServerPort: found.deviceServerPort,
     };

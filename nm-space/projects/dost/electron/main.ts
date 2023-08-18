@@ -78,7 +78,6 @@ app.whenReady().then(async () => {
       Sentry.init({ dsn: SentyDSNUrl, maxBreadcrumbs: 10000, environment: isDev ? 'development' : 'production' });
     }
     await DotEnvConfigService.open(AppConfigService.instance);
-    await UpdaterService.open(AppConfigService.instance, FeatureConfigService.instance);
     SettingsService.open(DotEnvConfigService.instance);
     TrayService.open();
     WindowService.open();
@@ -89,6 +88,7 @@ app.whenReady().then(async () => {
     if (token && token.length > 0) {
       ChildService.instance.connect(token).catch((err) => logger.error('main connect error', err));
     }
+    await UpdaterService.open(AppConfigService.instance, FeatureConfigService.instance, ChildService.instance);
     await DeviceLookupService.open(ChildService.instance);
   });
 

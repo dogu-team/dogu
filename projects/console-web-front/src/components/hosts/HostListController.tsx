@@ -1,14 +1,14 @@
 import { DesktopOutlined, MobileOutlined } from '@ant-design/icons';
 import { HostBase } from '@dogu-private/console';
-import { HostConnectionState, OrganizationId } from '@dogu-private/types';
-import { Alert, List, MenuProps } from 'antd';
+import { OrganizationId } from '@dogu-private/types';
+import { Alert, List, MenuProps, Tag } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { AxiosError } from 'axios';
 import Trans from 'next-translate/Trans';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 
 import usePaginationSWR from 'src/hooks/usePaginationSWR';
 import HostStateTag from './HostStateTag';
@@ -21,7 +21,7 @@ import { listActiveNameStyle } from '../../styles/text';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
 import EditHostModal from './EditHostModal';
-import { deleteHost, reissuesHostConnectionToken, stopUsingHostAsDevice, updateUseHostAsDevice } from '../../api/host';
+import { deleteHost, reissuesHostConnectionToken, stopUsingHostAsDevice, updateUseHostAsDevice, updateHostApp } from '../../api/host';
 import { getErrorMessageFromAxios } from '../../utils/error';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
@@ -29,8 +29,9 @@ import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from '../device/PlatformIcon';
 import TokenCopyInput from '../common/TokenCopyInput';
 import { menuItemButtonStyles } from '../../styles/button';
-import useRequest from '../../hooks/useRequest';
 import HostVesrsionBadge from './HostVersionBadge';
+import { DoguAgentLatestContext } from '../../../pages/dashboard/[orgId]/device-farm/hosts';
+import { isAgentUpdatable } from '../../utils/download';
 
 interface HostItemProps {
   host: HostBase;
@@ -43,10 +44,11 @@ const HostItem = ({ host }: HostItemProps) => {
   const orgId = router.query.orgId as OrganizationId;
   const { t } = useTranslation();
   const [token, setToken] = useState<string>();
-  const [loading, request] = useRequest(updateUseHostAsDevice);
+  const context = useContext(DoguAgentLatestContext);
+
   const fireEvent = useEventStore((state) => state.fireEvent);
 
-  const streamingable = host.hostDevice?.deviceId && host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED;
+  const updatable = isAgentUpdatable(context.latestInfo, host);
   const isUsing = host.hostDevice && host.hostDevice.enableHostDevice === 1;
 
   const handleReissueToken = async () => {
@@ -75,7 +77,7 @@ const HostItem = ({ host }: HostItemProps) => {
 
   const handleUseHostDevice = async () => {
     try {
-      await request(orgId, host.hostId);
+      await updateUseHostAsDevice(orgId, host.hostId);
       sendSuccessNotification(t('device-farm:hostStartUsingSuccessMsg'));
       fireEvent('onHostDeviceUsed');
     } catch (e) {
@@ -93,6 +95,17 @@ const HostItem = ({ host }: HostItemProps) => {
     } catch (e) {
       if (e instanceof AxiosError) {
         sendErrorNotification(t('device-farm:hostStopUsingFailMsg', { reason: getErrorMessageFromAxios(e) }));
+      }
+    }
+  };
+
+  const handleHostAppUpdate = async () => {
+    try {
+      await updateHostApp(orgId, host.hostId);
+      sendSuccessNotification(t('device-farm:hostUpdateSuccessMsg'));
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        sendErrorNotification(t('device-farm:hostUpdateFailMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };
@@ -157,6 +170,28 @@ const HostItem = ({ host }: HostItemProps) => {
       label: (
         <MenuItemButton
           danger
+          onConfirm={handleHostAppUpdate}
+          modalTitle={t('device-farm:hostItemUpdateMenu')}
+          modalButtonTitle={t('device-farm:hostUpdateModalButtonText')}
+          modalContent={<StyledDeleteModalContent>{t('device-farm:hostUpdateModalContentInfo')}</StyledDeleteModalContent>}
+          confirmButtonId="host-update-confirm-btn"
+          disabled={!updatable}
+        >
+          {t('device-farm:hostItemUpdateMenu')}
+
+          {!updatable && (
+            <Tag color="green" style={{ marginLeft: '.5rem' }}>
+              Latest
+            </Tag>
+          )}
+        </MenuItemButton>
+      ),
+      key: 'update',
+    },
+    {
+      label: (
+        <MenuItemButton
+          danger
           onConfirm={handleDeleteHost}
           modalTitle={t('device-farm:hostDeleteModalTitle')}
           modalButtonTitle={t('device-farm:hostDeleteModalButtonText')}
@@ -196,7 +231,6 @@ const HostItem = ({ host }: HostItemProps) => {
         <MenuItemButton
           danger={false}
           primary
-          disabled={loading}
           onClick={() => {
             handleUseHostDevice();
           }}

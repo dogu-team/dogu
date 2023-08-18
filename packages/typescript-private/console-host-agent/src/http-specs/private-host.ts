@@ -1,11 +1,15 @@
-import { Host, HostId, OrganizationId, Platform } from '@dogu-private/types';
+import { Architecture, Host, HostId, OrganizationId, Platform } from '@dogu-private/types';
 import { ControllerMethodSpec, ControllerSpec } from '@dogu-tech/common';
 import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 
-export class UpdateHostRequestBody implements Pick<Partial<Host>, 'platform' | 'rootWorkspace' | 'agentVersion'> {
+export class UpdateHostRequestBody implements Pick<Partial<Host>, 'platform' | 'architecture' | 'rootWorkspace' | 'agentVersion'> {
   @IsEnum(Platform)
   @IsOptional()
   platform?: Platform;
+
+  @IsEnum(Architecture)
+  @IsOptional()
+  architecture?: Architecture;
 
   @IsString()
   @IsOptional()

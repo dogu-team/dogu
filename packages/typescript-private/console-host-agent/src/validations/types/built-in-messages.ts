@@ -201,7 +201,18 @@ export class ErrorResult extends Kindable<'ErrorResult'> {
   value!: ErrorResultDto;
 }
 
-const RequestParamValue = [HttpProxyRequest, BatchHttpProxyRequest] as const;
+@OneOf()
+export class UpdateHostAppRequest extends Kindable<'UpdateHostAppRequest'> {
+  static override kind = 'UpdateHostAppRequest';
+
+  @IsFilledString()
+  url!: string;
+
+  @IsNumber()
+  fileSize!: number;
+}
+
+const RequestParamValue = [HttpProxyRequest, BatchHttpProxyRequest, UpdateHostAppRequest] as const;
 export type RequestParamValue = Instance<(typeof RequestParamValue)[number]>;
 
 @OneOf()

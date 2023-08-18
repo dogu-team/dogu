@@ -2,9 +2,11 @@ import Head from 'next/head';
 import styled from 'styled-components';
 import { Button } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
-import Image from 'next/image';
 import Link from 'next/link';
 import { FcDownload } from 'react-icons/fc';
+import useSWR from 'swr';
+import { DownloadablePackageResult } from '@dogu-private/types';
+import { createContext } from 'react';
 
 import { NextPageWithLayout } from 'pages/_app';
 import CreateHostModal from 'src/components/hosts/CreateHostModal';
@@ -14,15 +16,20 @@ import HostListController from 'src/components/hosts/HostListController';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
 import HostFilter from 'src/components/hosts/HostFilter';
-import resources from '../../../../src/resources/index';
 import OrganizationDeviceFarmLayout from '../../../../src/components/layouts/OrganizationDeviceFarmLayout';
+import { swrAuthFetcher } from '../../../../src/api';
+
+export const DoguAgentLatestContext = createContext<{ latestInfo: DownloadablePackageResult[] }>({
+  latestInfo: [],
+});
 
 const HostManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) => {
   const { t } = useTranslation();
   const [isAddModalOpen, openAddModal, closeAddModal] = useModal();
+  const { data } = useSWR<DownloadablePackageResult[]>(`/downloads/dogu-agent/latest`, swrAuthFetcher, { revalidateOnFocus: false });
 
   return (
-    <>
+    <DoguAgentLatestContext.Provider value={{ latestInfo: data ?? [] }}>
       <Head>
         <title>Hosts - {organization.name} | Dogu</title>
       </Head>
@@ -50,7 +57,7 @@ const HostManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ organiz
       />
 
       <CreateHostModal close={closeAddModal} isOpen={isAddModalOpen} />
-    </>
+    </DoguAgentLatestContext.Provider>
   );
 };
 

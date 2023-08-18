@@ -1,7 +1,7 @@
 import { PrivateHost } from '@dogu-private/console-host-agent';
-import { createConsoleApiAuthHeader, HostId, OrganizationId, Platform } from '@dogu-private/types';
+import { Architecture, createConsoleApiAuthHeader, HostId, OrganizationId, Platform } from '@dogu-private/types';
 import { DefaultHttpOptions, errorify, Instance, validateAndEmitEventAsync } from '@dogu-tech/common';
-import { DeleteOldFilesCloser, HostPaths, MultiPlatformEnvironmentVariableReplacer, openDeleteOldFiles, processPlatform } from '@dogu-tech/node';
+import { DeleteOldFilesCloser, HostPaths, MultiPlatformEnvironmentVariableReplacer, openDeleteOldFiles, processArchitecture, processPlatform } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { isNotEmptyObject } from 'class-validator';
@@ -31,6 +31,10 @@ interface PlatformYesNeedUpdate extends NeedUpdate {
   platform: Platform;
 }
 
+interface ArchitectureNeedUpdate extends NeedUpdate {
+  architecture: Architecture;
+}
+
 interface DeviceServerPortYesNeedUpdate extends NeedUpdate {
   needUpdate: 'yes';
   deviceServerPort: number;
@@ -55,13 +59,21 @@ export class HostResolver {
   @OnEvent(OnHostConnectedEvent.key)
   async onHostConnected(value: Instance<typeof OnHostConnectedEvent.value>): Promise<void> {
     this.logger.verbose('Host connected', { value });
-    const { organizationId, hostId, platform, rootWorkspace, deviceServerPort } = value;
+    const { organizationId, hostId, platform, architecture, rootWorkspace, deviceServerPort } = value;
     const receivedRootWorkspacePath = rootWorkspace;
     const platformNeedUpdate = this.validateAndUpdatePlatform(platform);
+    const architectureNeedUpdate = this.validateAndUpdateArchitecture(architecture);
     const resolvedPlatform = platformNeedUpdate.needUpdate === 'yes' ? platformNeedUpdate.platform : platform;
     const { needUpdateResult: rootWorkspaceNeedUpdate, resolvedWorkspacePath } = await this.validateAndUpdateRootWorkspace(receivedRootWorkspacePath);
     const localDeviceServerPortNeedUpdate = this.validateAndUpdateDeviceServerPort(deviceServerPort);
-    await this.updatePlatformAndRootWorkspaceAndDFPort(organizationId, hostId, platformNeedUpdate, rootWorkspaceNeedUpdate, localDeviceServerPortNeedUpdate);
+    await this.updatePlatformAndRootWorkspaceAndDFPort(
+      organizationId,
+      hostId,
+      platformNeedUpdate,
+      architectureNeedUpdate,
+      rootWorkspaceNeedUpdate,
+      localDeviceServerPortNeedUpdate,
+    );
     const hostWorkspacePath = await this.createHostWorkspace(organizationId, hostId, resolvedWorkspacePath);
     const recordWorkspacePath = HostPaths.recordWorkspacePath(resolvedWorkspacePath);
     await fs.promises.mkdir(recordWorkspacePath, { recursive: true });
@@ -73,6 +85,7 @@ export class HostResolver {
       recordWorkspacePath,
       pathMap,
       platform: resolvedPlatform,
+      architecture: architectureNeedUpdate.architecture,
     };
     this.logger.info('Host resolved', { hostResolutionInfo });
     await validateAndEmitEventAsync(this.eventEmitter, OnHostResolvedEvent, hostResolutionInfo);
@@ -95,6 +108,13 @@ export class HostResolver {
     return { needUpdate: 'yes', platform: currentPlatform };
   }
 
+  private validateAndUpdateArchitecture(architecture: Architecture): ArchitectureNeedUpdate {
+    const currentArchitecture = processArchitecture();
+    if (architecture === currentArchitecture) {
+      return { needUpdate: 'no', architecture: currentArchitecture };
+    }
+    return { needUpdate: 'yes', architecture: currentArchitecture };
+  }
   private async validateAndUpdateRootWorkspace(receivedRootWorkspacePath: string): Promise<{ needUpdateResult: RootWorkspaceNeedUpdate; resolvedWorkspacePath: string }> {
     const defaultRootWorkspacePath = receivedRootWorkspacePath.length === 0 ? '$HOME/.dogu' : receivedRootWorkspacePath;
     this.logger.verbose('Default root workspace path', { defaultRootWorkspacePath });
@@ -156,12 +176,16 @@ export class HostResolver {
     organizationId: OrganizationId,
     hostId: HostId,
     platformNeedUpdate: PlatformNeedUpdate,
+    architectureNeedUpdate: ArchitectureNeedUpdate,
     rootWorkspaceNeedUpdate: RootWorkspaceNeedUpdate,
     localDeviceServerPortNeedUpdate: DeviceServerPortNeedUpdate,
   ): Promise<void> {
     const body: Instance<typeof PrivateHost.update.requestBody> = {};
     if (platformNeedUpdate.needUpdate === 'yes') {
       body.platform = platformNeedUpdate.platform;
+    }
+    if (architectureNeedUpdate.needUpdate === 'yes') {
+      body.architecture = architectureNeedUpdate.architecture;
     }
     if (rootWorkspaceNeedUpdate.needUpdate === 'yes') {
       /**

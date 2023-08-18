@@ -6,6 +6,7 @@ import { ActionProcessor } from './action.processor';
 import { CommandProcessRegistry } from './command.process-registry';
 import { DeviceJobStepProcessor } from './device-job-step.processor';
 import { RoutineWorkspace } from './routine.workspace';
+import { UpdateProcessor } from './update.processor';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { RoutineWorkspace } from './routine.workspace';
     forwardRef(() => DeviceJobModule),
     DeviceClientModule,
   ],
-  providers: [ActionProcessor, CommandProcessRegistry, DeviceJobStepProcessor, RoutineWorkspace],
-  exports: [ActionProcessor, CommandProcessRegistry, DeviceJobStepProcessor, RoutineWorkspace],
+  providers: [ActionProcessor, CommandProcessRegistry, DeviceJobStepProcessor, RoutineWorkspace, UpdateProcessor],
+  exports: [ActionProcessor, CommandProcessRegistry, DeviceJobStepProcessor, RoutineWorkspace, UpdateProcessor],
 })
 export class ProcessorModule {}

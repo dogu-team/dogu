@@ -11233,11 +11233,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@nestjs/schedule", "virtual:1ae6b474126e89d3636f18f2418aaff88fb348a2306e5c88923f916708f4f90d8a8bf5e384e9e98eb49dbd8bbb1632f24f064059dda43a555d1af42418b834f6#npm:2.1.0"],\
             ["@nestjs/schematics", "virtual:d0508fb1c987a55ce593348c3c3508bc662c7271db932ea69a120075a5cf1c1208122c8c0d6b8e79e0a37a88088966bd934935bdae901a07544f17c740a10f2e#npm:8.0.0"],\
             ["@octokit/rest", "npm:19.0.7"],\
+            ["@types/adm-zip", "npm:0.5.0"],\
+            ["@types/async-lock", "npm:1.4.0"],\
             ["@types/cron", "npm:2.0.0"],\
             ["@types/express", "npm:4.17.13"],\
             ["@types/node", "npm:18.15.11"],\
             ["@types/uuid", "npm:9.0.1"],\
             ["@types/ws", "npm:8.5.4"],\
+            ["async-lock", "npm:1.4.0"],\
             ["axios", "npm:1.3.5"],\
             ["class-transformer", "npm:0.5.1"],\
             ["class-validator", "npm:0.14.0"],\
@@ -11717,6 +11720,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["logform", "npm:2.5.1"],\
             ["nodemon", "npm:2.0.22"],\
             ["octokit", "npm:2.0.7"],\
+            ["pidtree", "npm:0.6.0"],\
             ["plist", "npm:3.0.6"],\
             ["reflect-metadata", "npm:0.1.13"],\
             ["rxjs", "npm:7.5.6"],\

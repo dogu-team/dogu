@@ -1,6 +1,6 @@
-import { ChildCode, Status } from '@dogu-private/dost-children';
+import { ChildCode, GetLatestVersionResponse, Status, UpdateLatestVersionRequest, UpdateLatestVersionResponse } from '@dogu-private/dost-children';
 import { Code } from '@dogu-private/types';
-import { Instance, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
+import { DefaultHttpOptions, delay, Instance, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { isFreePort, killProcessOnPort } from '@dogu-tech/node';
 import axios, { AxiosInstance } from 'axios';
 import { ChildProcess } from 'child_process';
@@ -29,6 +29,7 @@ export class HostAgentChild implements Child {
     const DOGU_DEVICE_SERVER_HOST_PORT = await appConfigService.get('DOGU_DEVICE_SERVER_HOST_PORT');
     const DOGU_HOST_AGENT_PORT = await appConfigService.get('DOGU_HOST_AGENT_PORT');
     const DOGU_LOG_LEVEL = await getLogLevel(DOGU_RUN_TYPE, appConfigService);
+    const DOGU_ROOT_PID = process.pid.toString();
     await killProcessOnPort(DOGU_HOST_AGENT_PORT, logger).catch((err) => {
       logger.error('killProcessOnPort', { err });
     });
@@ -45,6 +46,7 @@ export class HostAgentChild implements Child {
           DOGU_LOGS_PATH: HostAgentLogsPath,
           DOGU_HOST_AGENT_PORT,
           DOGU_LOG_LEVEL,
+          DOGU_ROOT_PID,
         },
       },
       childLogger: logger,
@@ -118,7 +120,7 @@ export class HostAgentChild implements Child {
     const pathProvider = new Status.getConnectionStatus.pathProvider();
     const path = Status.getConnectionStatus.resolvePath(pathProvider);
     const response = await this._client
-      .get<Instance<typeof Status.getConnectionStatus.responseBody>>(path)
+      .get<Instance<typeof Status.getConnectionStatus.responseBody>>(path, { timeout: DefaultHttpOptions.request.timeout })
       .then((response) => {
         return response.data;
       })
@@ -134,6 +136,38 @@ export class HostAgentChild implements Child {
       });
     this._lastStatusAndTime = { status: response, time: Date.now() };
     return response;
+  }
+
+  async getLatestVersion(): Promise<GetLatestVersionResponse> {
+    if (!this._client) {
+      throw new Error('Not connected');
+    }
+    const pathProvider = new Status.getLatestVersion.pathProvider();
+    const path = Status.getLatestVersion.resolvePath(pathProvider);
+    const response = await this._client
+      .get<Instance<typeof Status.getLatestVersion.responseBody>>(path, { timeout: DefaultHttpOptions.request.timeout1minutes })
+      .then((response) => {
+        return response.data;
+      })
+      .catch((error) => {
+        logger.warn('getLatestVersion failed', { error });
+        throw error;
+      });
+    return response;
+  }
+
+  async updateLatestVersion(req: UpdateLatestVersionRequest): Promise<UpdateLatestVersionResponse> {
+    if (!this._client) {
+      throw new Error('Not connected');
+    }
+    const pathProvider = new Status.updateLatestVersion.pathProvider();
+    const path = Status.updateLatestVersion.resolvePath(pathProvider);
+    const res = await this._client.post<Instance<typeof Status.updateLatestVersion.responseBody>>(path, req, { timeout: DefaultHttpOptions.request.timeout30minutes });
+    const data = res.data as Instance<typeof Status.updateLatestVersion.responseBody>;
+    if (data.isOk) {
+      await delay(3_600_000); // wait until die
+    }
+    return data;
   }
 
   lastError(): ChildLastError | undefined {

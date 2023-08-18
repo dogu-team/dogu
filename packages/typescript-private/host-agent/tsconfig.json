@@ -40,6 +40,6 @@
     },
     {
       "path": "../../typescript-dev-private/build-tools"
-    },
+    }
   ]
 }

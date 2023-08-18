@@ -5,5 +5,6 @@
   "emailVerification": false,
   "cookieSecure": false,
   "forceInvitation": false,
-  "thirdPartyLogin": true
+  "thirdPartyLogin": true,
+  "doguAgentAppLocation": "github"
 }

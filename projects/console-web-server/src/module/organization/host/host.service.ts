@@ -250,10 +250,14 @@ export class HostService {
   }
 
   async findHost(hostId: HostId): Promise<HostBase> {
-    const host = await this.dataSource.getRepository(Host).findOne({
-      where: { hostId },
-      relations: ['creator', 'devices'],
-    });
+    const host = await this.dataSource //
+      .getRepository(Host)
+      .createQueryBuilder('host')
+      .leftJoinAndSelect(`host.${HostPropCamel.hostDevice}`, 'hostDevice', `hostDevice.${DevicePropSnake.is_host} = :isHostDevice`, { isHostDevice: 1 })
+      .leftJoinAndSelect(`host.${HostPropCamel.devices}`, 'device')
+      .leftJoinAndSelect(`host.${HostPropCamel.creator}`, 'user')
+      .where(`host.${HostPropSnake.host_id} = :hostId`, { hostId })
+      .getOne();
 
     if (!host) {
       throw new HttpException(`This host id is not exists. : ${hostId}`, HttpStatus.NOT_FOUND);

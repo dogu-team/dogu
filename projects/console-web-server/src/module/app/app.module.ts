@@ -4,6 +4,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { config, dataSourceConfig } from '../../config';
+import { HostAppModule } from '../../enterprise/module/host-app/host-app.module';
 import { SlackModule } from '../../enterprise/module/integration/slack/slack.module';
 import { RecordModule } from '../../enterprise/module/record/record.module';
 import { FEATURE_CONFIG } from '../../feature.config';
@@ -87,6 +88,7 @@ const BASE_MODULES = [
   SlackModule,
   RemoteWebDriverBiDiModule,
   ChangeLogModule,
+  HostAppModule,
 ];
 
 const MODULES =
