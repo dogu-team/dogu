@@ -7,6 +7,7 @@ import fsPromise from 'fs/promises';
 import path from 'path';
 import shelljs from 'shelljs';
 import { ExternalKey } from '../../../src/shares/external';
+import { AppConfigService } from '../../app-config/app-config-service';
 import { logger } from '../../log/logger.instance';
 import { StdLogCallbackService } from '../../log/std-log-callback-service';
 import { WindowService } from '../../window/window-service';
@@ -67,7 +68,12 @@ const files: File[] = [
 export class LibimobledeviceExternalUnit extends IExternalUnit {
   private readonly logger = new PrefixLogger(logger, '[libimobiledevice]');
 
-  constructor(private readonly stdLogCallbackService: StdLogCallbackService, private readonly windowService: WindowService, private readonly unitCallback: ExternalUnitCallback) {
+  constructor(
+    private readonly stdLogCallbackService: StdLogCallbackService,
+    private readonly windowService: WindowService,
+    private readonly appConfigService: AppConfigService,
+    private readonly unitCallback: ExternalUnitCallback,
+  ) {
     super();
   }
 
@@ -118,12 +124,13 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
     }
   }
 
-  isAgreementNeeded(): boolean {
-    return false;
+  async isAgreementNeeded(): Promise<boolean> {
+    const value = (await this.appConfigService.getAgreement('libimobiledevice')) ?? false;
+    return !value;
   }
 
-  writeAgreement(): void {
-    this.logger.warn('do not need agreement');
+  writeAgreement(value: boolean): Promise<void> {
+    return this.appConfigService.setAgreement('libimobiledevice', value);
   }
 
   async install(): Promise<void> {

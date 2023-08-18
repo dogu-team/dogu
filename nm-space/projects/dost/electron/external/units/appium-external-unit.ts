@@ -5,6 +5,7 @@ import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 import { ExternalKey } from '../../../src/shares/external';
+import { AppConfigService } from '../../app-config/app-config-service';
 import { DotEnvConfigService } from '../../dot-env-config/dot-env-config-service';
 import { logger } from '../../log/logger.instance';
 import { StdLogCallbackService } from '../../log/std-log-callback-service';
@@ -19,6 +20,7 @@ export class AppiumExternalUnit extends IExternalUnit {
   constructor(
     private readonly dotEnvConfigService: DotEnvConfigService,
     private readonly stdLogCallbackService: StdLogCallbackService,
+    private readonly appConfigService: AppConfigService,
     private readonly unitCallback: ExternalUnitCallback,
   ) {
     super();
@@ -63,12 +65,13 @@ export class AppiumExternalUnit extends IExternalUnit {
     }
   }
 
-  isAgreementNeeded(): boolean {
-    return false;
+  async isAgreementNeeded(): Promise<boolean> {
+    const value = (await this.appConfigService.getAgreement('appium')) ?? false;
+    return !value;
   }
 
-  writeAgreement(): void {
-    this.logger.warn('do not need agreement');
+  writeAgreement(value: boolean): Promise<void> {
+    return this.appConfigService.setAgreement('appium', value);
   }
 
   private async createAppiumPath(): Promise<void> {

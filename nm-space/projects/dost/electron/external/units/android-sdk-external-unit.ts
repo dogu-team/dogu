@@ -536,12 +536,12 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
   }
 
   async isAgreementNeeded(): Promise<boolean> {
-    const value = (await this.appConfigService.get<boolean>('DOGU_IS_ANDROID_TERMS_AGREED')) ?? false;
+    const value = (await this.appConfigService.getAgreement('android_sdk')) ?? false;
     return !value;
   }
 
   writeAgreement(value: boolean): Promise<void> {
-    return this.appConfigService.set('DOGU_IS_ANDROID_TERMS_AGREED', value);
+    return this.appConfigService.setAgreement('android_sdk', value);
   }
 
   getTermUrl(): string | null {

@@ -70,16 +70,22 @@ export class ExternalService {
   }
 
   private registerUnits(): void {
-    this.registerUnit('jdk', (unitCallback) => new JdkExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, this.windowService, unitCallback));
+    this.registerUnit('jdk', (unitCallback) => new JdkExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, this.appConfigService, this.windowService, unitCallback));
     this.registerUnit(
       'android-sdk',
       (unitCallback) => new AndroidSdkExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, this.appConfigService, this.windowService, unitCallback),
     );
-    this.registerUnit('appium', (unitCallback) => new AppiumExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, unitCallback));
-    this.registerUnit('appium-uiautomator2-driver', (unitCallback) => new AppiumUiAutomator2DriverExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, unitCallback));
+    this.registerUnit('appium', (unitCallback) => new AppiumExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, this.appConfigService, unitCallback));
+    this.registerUnit(
+      'appium-uiautomator2-driver',
+      (unitCallback) => new AppiumUiAutomator2DriverExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, this.appConfigService, unitCallback),
+    );
     this.registerUnit('xcode', () => new XcodeExternalUnit(this.stdLogCallbackService));
-    this.registerUnit('appium-xcuitest-driver', (unitCallback) => new AppiumXcUiTestDriverExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, unitCallback));
-    this.registerUnit('libimobiledevice', (unitCallback) => new LibimobledeviceExternalUnit(this.stdLogCallbackService, this.windowService, unitCallback));
+    this.registerUnit(
+      'appium-xcuitest-driver',
+      (unitCallback) => new AppiumXcUiTestDriverExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, this.appConfigService, unitCallback),
+    );
+    this.registerUnit('libimobiledevice', (unitCallback) => new LibimobledeviceExternalUnit(this.stdLogCallbackService, this.windowService, this.appConfigService, unitCallback));
     // this.registerUnit('webdriver-manager', (unitCallback) => new WebdriverManagerExternalUnit(this.stdLogCallbackService, unitCallback));
     this.registerUnit('web-driver-agent-build', () => new WdaBuildExternalUnit(this.stdLogCallbackService));
     this.registerUnit('ios-device-agent-build', () => new IdaBuildExternalUnit(this.stdLogCallbackService));
@@ -87,8 +93,8 @@ export class ExternalService {
     // this.registerUnit('chrome-browser', (unitCallback) => new ChromeBrowserExternalUnit(this.stdLogCallbackService, unitCallback));
     // this.registerUnit('firefox-browser', (unitCallback) => new FirefoxBrowserExternalUnit(this.stdLogCallbackService, unitCallback));
     // this.registerUnit('chrome-driver', (unitCallback) => new ChromeDriverExternalUnit(this.stdLogCallbackService, unitCallback));
-    this.registerUnit('gecko-driver', (unitCallback) => new GeckoDriverExternalUnit(this.windowService, this.stdLogCallbackService, unitCallback));
-    this.registerUnit('selenium-server', (unitCallback) => new SeleniumServerExternalUnit(this.windowService, this.stdLogCallbackService, unitCallback));
+    this.registerUnit('gecko-driver', (unitCallback) => new GeckoDriverExternalUnit(this.windowService, this.stdLogCallbackService, this.appConfigService, unitCallback));
+    this.registerUnit('selenium-server', (unitCallback) => new SeleniumServerExternalUnit(this.windowService, this.stdLogCallbackService, this.appConfigService, unitCallback));
   }
 
   private registerHandlers(): void {

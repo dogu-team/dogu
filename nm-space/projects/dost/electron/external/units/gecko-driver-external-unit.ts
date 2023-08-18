@@ -8,6 +8,7 @@ import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
 import { ExternalKey } from '../../../src/shares/external';
+import { AppConfigService } from '../../app-config/app-config-service';
 import { logger } from '../../log/logger.instance';
 import { StdLogCallbackService } from '../../log/std-log-callback-service';
 import { WindowService } from '../../window/window-service';
@@ -39,7 +40,12 @@ export class GeckoDriverExternalUnit extends IExternalUnit {
   private readonly logger = new PrefixLogger(logger, `[${Name}]`);
   private readonly browserInstaller = new BrowserInstaller();
 
-  constructor(private readonly windowService: WindowService, private readonly stdLogCallbackService: StdLogCallbackService, private readonly unitCallback: ExternalUnitCallback) {
+  constructor(
+    private readonly windowService: WindowService,
+    private readonly stdLogCallbackService: StdLogCallbackService,
+    private readonly appConfigService: AppConfigService,
+    private readonly unitCallback: ExternalUnitCallback,
+  ) {
     super();
   }
 
@@ -216,12 +222,13 @@ export class GeckoDriverExternalUnit extends IExternalUnit {
     this.logger.warn('uninstall not supported');
   }
 
-  isAgreementNeeded(): boolean {
-    return false;
+  async isAgreementNeeded(): Promise<boolean> {
+    const value = (await this.appConfigService.getAgreement('gecko_driver')) ?? false;
+    return !value;
   }
 
-  writeAgreement(): void {
-    this.logger.warn('do not need agreement');
+  writeAgreement(value: boolean): Promise<void> {
+    return this.appConfigService.setAgreement('gecko_driver', value);
   }
 
   getTermUrl(): string | null {

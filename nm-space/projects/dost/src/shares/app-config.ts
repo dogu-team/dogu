@@ -34,9 +34,6 @@ export const schema = {
   DOGU_APPUPDATE_REGION: {
     type: 'string',
   },
-  DOGU_IS_ANDROID_TERMS_AGREED: {
-    type: 'boolean',
-  },
   DOGU_IS_SUPPORTED_PLATFORM_VALID: {
     type: 'boolean',
   },
@@ -52,10 +49,22 @@ export const schema = {
   DOGU_IS_SHOW_DEVUI: {
     type: 'boolean',
   },
+  DOGU_EXTERNAL_AGREEMENTS_STATUS: {
+    type: 'object',
+    properties: {
+      jdk: { type: 'boolean' },
+      android_sdk: { type: 'boolean' },
+      appium: { type: 'boolean' },
+      libimobiledevice: { type: 'boolean' },
+      gecko_driver: { type: 'boolean' },
+      selenium_driver: { type: 'boolean' },
+    },
+  },
 } as const;
 
 export type Schema = typeof schema;
 export type Key = keyof Schema;
+export type AgreementKey = keyof Schema['DOGU_EXTERNAL_AGREEMENTS_STATUS']['properties'];
 
 export const appConfigClientKey = instanceKeys<IAppConfigClient>('appConfigClient');
 

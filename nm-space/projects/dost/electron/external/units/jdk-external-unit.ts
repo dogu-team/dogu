@@ -6,6 +6,7 @@ import { download } from 'electron-dl';
 import fs from 'fs';
 import path from 'path';
 import { ExternalKey } from '../../../src/shares/external';
+import { AppConfigService } from '../../app-config/app-config-service';
 import { DotEnvConfigService } from '../../dot-env-config/dot-env-config-service';
 import { logger } from '../../log/logger.instance';
 import { StdLogCallbackService } from '../../log/std-log-callback-service';
@@ -38,6 +39,7 @@ export class JdkExternalUnit extends IExternalUnit {
   constructor(
     private readonly dotEnvConfigService: DotEnvConfigService,
     private readonly stdLogCallbackService: StdLogCallbackService,
+    private readonly appConfigService: AppConfigService,
     private readonly windowService: WindowService,
     private readonly unitCallback: ExternalUnitCallback,
   ) {
@@ -256,12 +258,13 @@ export class JdkExternalUnit extends IExternalUnit {
     this.logger.warn('uninstall not supported');
   }
 
-  isAgreementNeeded(): boolean {
-    return false;
+  async isAgreementNeeded(): Promise<boolean> {
+    const value = (await this.appConfigService.getAgreement('jdk')) ?? false;
+    return !value;
   }
 
-  writeAgreement(): void {
-    this.logger.warn('do not need agreement');
+  writeAgreement(value: boolean): Promise<void> {
+    return this.appConfigService.setAgreement('jdk', value);
   }
 
   getTermUrl(): string | null {
