@@ -11,41 +11,32 @@ export class StatusService {
     status: 'connecting',
     updatedAt: new Date(),
   };
-  set connectionStatus(value: Omit<Readonly<Instance<typeof Status.getConnectionStatus.responseBody>>, 'updatedAt'>) {
-    this._connectionStatus = {
-      ...value,
-      updatedAt: new Date(),
-    };
-  }
-  get connectionStatus(): Readonly<Instance<typeof Status.getConnectionStatus.responseBody>> {
+
+  get connectionStatus(): Instance<typeof Status.getConnectionStatus.responseBody> {
     return this._connectionStatus;
   }
 
   @OnEvent(OnHostConnectingEvent.key)
   onHostConnecting(): void {
-    this.connectionStatus = {
-      status: 'connecting',
-      code: undefined,
-    };
+    this._connectionStatus.status = 'connecting';
   }
 
   @OnEvent(OnHostResolvedEvent.key)
   onHostResolved(): void {
-    this.connectionStatus = {
-      status: 'connected',
-      code: undefined,
-    };
+    this._connectionStatus.status = 'connected';
+    this._connectionStatus.code = undefined;
+    this._connectionStatus.reason = undefined;
+    this._connectionStatus.updatedAt = new Date();
   }
 
   @OnEvent(OnHostDisconnectedEvent.key)
   onHostDisconnected(value: Instance<typeof OnHostDisconnectedEvent.value>): void {
     const { error } = value;
     const code = this.disconnectedErrorToCode(error);
-    this.connectionStatus = {
-      status: 'disconnected',
-      code,
-      reason: error instanceof Error ? error.message : 'unknown',
-    };
+    this._connectionStatus.status = 'disconnected';
+    this._connectionStatus.code = code;
+    this._connectionStatus.reason = error instanceof Error ? error.message : 'unknown';
+    this._connectionStatus.updatedAt = new Date();
   }
 
   private disconnectedErrorToCode(error: unknown): Code {

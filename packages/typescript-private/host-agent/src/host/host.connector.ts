@@ -14,15 +14,15 @@ export class HostConnector implements OnApplicationBootstrap {
   constructor(private readonly consoleClientService: ConsoleClientService, private readonly eventEmitter: EventEmitter2, private readonly logger: DoguLogger) {}
 
   onApplicationBootstrap(): void {
-    this.connectNextTick();
+    this.connectAfterTimeout();
   }
 
-  private connectNextTick(): void {
+  private connectAfterTimeout(timeout = 0): void {
     setTimeout(() => {
       this.connect().catch((error) => {
         this.logger.error('Failed to connect host', { error: errorify(error) });
       });
-    });
+    }, timeout);
   }
 
   @OnEvent(OnHostDisconnectedEvent.key)
@@ -31,7 +31,7 @@ export class HostConnector implements OnApplicationBootstrap {
     this.logger.warn('host disconnected', { reason });
 
     if (reason === 'connection-failed') {
-      this.connectNextTick();
+      this.connectAfterTimeout(config.host.reconnect.intervalMilliseconds);
     }
   }
 
