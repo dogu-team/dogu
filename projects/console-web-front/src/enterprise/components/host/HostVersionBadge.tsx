@@ -61,7 +61,7 @@ const HostVesrsionBadge = ({ host }: Props) => {
     <>
       <Tooltip
         title={
-          updatableInfo.reason
+          host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED && updatableInfo.reason
             ? updatableInfo.reason
             : host.connectionState !== HostConnectionState.HOST_CONNECTION_STATE_CONNECTED
             ? `Updatable when connected`
