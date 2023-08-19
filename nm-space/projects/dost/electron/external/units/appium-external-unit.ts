@@ -66,12 +66,12 @@ export class AppiumExternalUnit extends IExternalUnit {
   }
 
   async isAgreementNeeded(): Promise<boolean> {
-    const value = (await this.appConfigService.getAgreement('appium')) ?? false;
+    const value = await this.appConfigService.getOrDefault('DOGU_EXTERNAL_IS_AGREED_appium', false);
     return !value;
   }
 
   writeAgreement(value: boolean): Promise<void> {
-    return this.appConfigService.setAgreement('appium', value);
+    return this.appConfigService.set('DOGU_EXTERNAL_IS_AGREED_appium', value);
   }
 
   private async createAppiumPath(): Promise<void> {

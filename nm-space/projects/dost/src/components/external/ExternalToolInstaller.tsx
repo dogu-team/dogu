@@ -67,7 +67,9 @@ const ExternaltoolInstaller = ({ isUninstall, externalKeyAndNames, onStart, onFi
         await delay(1000);
         await onFinish(true);
       };
-      done();
+      done().catch((error) => {
+        ipc.rendererLogger.error(`Error occurred while installing: ${stringify(error)}`);
+      });
       return;
     }
 

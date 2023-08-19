@@ -4,7 +4,7 @@ import Store from 'electron-store';
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
-import { AgreementKey, appConfigClientKey, IAppConfigClient, Key, schema, Schema } from '../../src/shares/app-config';
+import { appConfigClientKey, IAppConfigClient, Key, schema, Schema } from '../../src/shares/app-config';
 import { logger } from '../log/logger.instance';
 import { ConfigsPath } from '../path-map';
 import { DotenvService } from './dotenv-service';
@@ -86,19 +86,5 @@ export class AppConfigService implements IAppConfigClient {
     if (isDev) {
       AppConfigService.instance.client.openInEditor();
     }
-  }
-
-  async getAgreement(key: AgreementKey): Promise<boolean> {
-    const agreements = (await this.client.get('DOGU_EXTERNAL_AGREEMENTS_STATUS')) as unknown as Record<AgreementKey, boolean>;
-    return agreements[key] ?? false;
-  }
-
-  async setAgreement(key: AgreementKey, value: boolean): Promise<void> {
-    let agreements = (await this.client.get('DOGU_EXTERNAL_AGREEMENTS_STATUS')) as unknown as Record<AgreementKey, boolean>;
-    if (!agreements) {
-      agreements = {} as Record<AgreementKey, boolean>;
-    }
-    agreements[key] = value;
-    await this.client.set('DOGU_EXTERNAL_AGREEMENTS_STATUS', agreements);
   }
 }

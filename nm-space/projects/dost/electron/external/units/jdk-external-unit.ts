@@ -259,12 +259,12 @@ export class JdkExternalUnit extends IExternalUnit {
   }
 
   async isAgreementNeeded(): Promise<boolean> {
-    const value = (await this.appConfigService.getAgreement('jdk')) ?? false;
+    const value = await this.appConfigService.getOrDefault('DOGU_EXTERNAL_IS_AGREED_jdk', false);
     return !value;
   }
 
   writeAgreement(value: boolean): Promise<void> {
-    return this.appConfigService.setAgreement('jdk', value);
+    return this.appConfigService.set('DOGU_EXTERNAL_IS_AGREED_jdk', value);
   }
 
   getTermUrl(): string | null {
