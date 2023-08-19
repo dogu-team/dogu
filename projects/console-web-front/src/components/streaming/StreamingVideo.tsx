@@ -242,7 +242,7 @@ const InputWrapper = styled.div<{ canDisplay: boolean; ratio: number; videoWidth
   height: auto;
   max-height: 100%;
   background-color: #000;
-  width: ${(props) => (props.ratio > 1 ? `max-content` : props.videoWidth ? `${props.videoWidth}px` : 'auto')};
+  ${(props) => (props.ratio > 1 ? `` : props.videoWidth ? `width: ${props.videoWidth}px;` : 'width: auto;')}
   overflow: hidden;
 `;
 
