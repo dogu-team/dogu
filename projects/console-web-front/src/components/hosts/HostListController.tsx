@@ -29,8 +29,7 @@ import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from '../device/PlatformIcon';
 import TokenCopyInput from '../common/TokenCopyInput';
 import { menuItemButtonStyles } from '../../styles/button';
-import HostVesrsionBadge from './HostVersionBadge';
-import HostUpdateMenuButton from '../../enterprise/components/host/HostUpdateMenuButton';
+import HostVesrsionBadge from '../../enterprise/components/host/HostVersionBadge';
 
 interface HostItemProps {
   host: HostBase;
@@ -40,7 +39,6 @@ const HostItem = ({ host }: HostItemProps) => {
   const router = useRouter();
   const [isDetailOpen, openDetailModal, closeDetailModal] = useModal();
   const [isEditModalOpen, openEditModal, closeEditModal] = useModal();
-  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const orgId = router.query.orgId as OrganizationId;
   const { t } = useTranslation();
   const [token, setToken] = useState<string>();
@@ -154,16 +152,6 @@ const HostItem = ({ host }: HostItemProps) => {
       key: 'token',
     },
     {
-      label: <HostUpdateMenuButton host={host} organizationId={orgId} isTooltipVisible={isTooltipVisible} />,
-      key: 'update',
-      onMouseEnter: (e) => {
-        setIsTooltipVisible(true);
-      },
-      onMouseLeave: () => {
-        setIsTooltipVisible(false);
-      },
-    },
-    {
       label: (
         <MenuItemButton
           danger
@@ -250,7 +238,7 @@ const HostItem = ({ host }: HostItemProps) => {
             <HostStateTag state={host.connectionState} />
           </StatusCell>
           <AgentVersionCell>
-            <HostVesrsionBadge version={host.agentVersion} />
+            <HostVesrsionBadge host={host} />
           </AgentVersionCell>
           <PlatformCell>
             <HostPlatformBox>
@@ -365,23 +353,23 @@ const Cell = styled.div`
 `;
 
 const NameCell = styled(Cell)`
-  flex: 3.5;
+  flex: 2;
 `;
 
 const StatusCell = styled(Cell)`
-  flex: 2.5;
+  flex: 1;
 `;
 
 const AgentVersionCell = styled(Cell)`
-  flex: 1.5;
+  flex: 2;
 `;
 
 const PlatformCell = styled(Cell)`
-  flex: 2.5;
+  flex: 1;
 `;
 
 const InfoCell = styled(Cell)`
-  flex: 1.5;
+  flex: 1;
   margin-right: 0;
 `;
 

@@ -15,14 +15,6 @@ export const getAgentUpdatableInfo = (latestInfo: DownloadablePackageResult[], h
   let info: DownloadablePackageResult | undefined;
   const agentVersion = parseSemver(host.agentVersion);
 
-  if (agentVersion.major === 1 && agentVersion.minor < 8) {
-    return {
-      isLatest: false,
-      isUpdatable: false,
-      reason: 'Available over agent version: 1.8.0',
-    };
-  }
-
   switch (host.platform) {
     case Platform.PLATFORM_MACOS:
       if (host.architecture === Architecture.ARCHITECTURE_ARM64) {
@@ -36,6 +28,13 @@ export const getAgentUpdatableInfo = (latestInfo: DownloadablePackageResult[], h
       break;
   }
 
+  if (info?.version === host.agentVersion) {
+    return {
+      isLatest: true,
+      isUpdatable: false,
+    };
+  }
+
   if (info && info.version !== host.agentVersion) {
     return {
       isLatest: false,
@@ -43,10 +42,11 @@ export const getAgentUpdatableInfo = (latestInfo: DownloadablePackageResult[], h
     };
   }
 
-  if (info?.version === host.agentVersion) {
+  if (agentVersion.major === 1 && agentVersion.minor < 8) {
     return {
-      isLatest: true,
+      isLatest: false,
       isUpdatable: false,
+      reason: 'Available over agent version 1.8.0',
     };
   }
 
