@@ -30,23 +30,46 @@ const PipelineDeviceGrid = ({ routineJobs }: Props) => {
     );
   }
 
-  return (
-    <Box>
-      {sort((a, b) => Number(isDesktop(a.device)) - Number(isDesktop(b.device)), jobs).map((deviceJob) => {
-        if (deviceJob?.status === PIPELINE_STATUS.IN_PROGRESS) {
-          const desktop = isDesktop(deviceJob.device);
-          return (
-            <CellWrapper key={deviceJob.routineDeviceJobId} isDesktop={desktop}>
-              <div>
-                <DeviceLiveCell device={deviceJob.device} />
-              </div>
-            </CellWrapper>
-          );
-        }
+  const mobileJobs = jobs.filter((job) => !isDesktop(job.device));
+  const desktopJobs = jobs.filter((job) => isDesktop(job.device));
 
-        return null;
-      })}
-    </Box>
+  return (
+    <>
+      {mobileJob.length > 0 && (
+        <Box>
+          {mobileJobs.map((deviceJob) => {
+            if (deviceJob?.status === PIPELINE_STATUS.IN_PROGRESS) {
+              return (
+                <CellWrapper key={deviceJob.routineDeviceJobId} isDesktop={false}>
+                  <div>
+                    <DeviceLiveCell device={deviceJob.device} />
+                  </div>
+                </CellWrapper>
+              );
+            }
+
+            return null;
+          })}
+        </Box>
+      )}
+      {desktopJobs.length > 0 && (
+        <DesktopBox>
+          {desktopJobs.map((deviceJob) => {
+            if (deviceJob?.status === PIPELINE_STATUS.IN_PROGRESS) {
+              return (
+                <CellWrapper key={deviceJob.routineDeviceJobId} isDesktop={true}>
+                  <div>
+                    <DeviceLiveCell device={deviceJob.device} />
+                  </div>
+                </CellWrapper>
+              );
+            }
+
+            return null;
+          })}
+        </DesktopBox>
+      )}
+    </>
   );
 };
 
@@ -60,6 +83,19 @@ const Box = styled.div`
 
   @media only screen and (max-width: 1520px) {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media only screen and (max-width: 1079px) {
+    grid-template-columns: repeat(1, 1fr);
+  }
+`;
+
+const DesktopBox = styled(Box)`
+  margin-top: 1rem;
+  grid-template-columns: repeat(2, 1fr);
+
+  @media only screen and (max-width: 1279px) {
+    grid-template-columns: repeat(1, 1fr);
   }
 `;
 
@@ -76,5 +112,4 @@ const CellWrapper = styled.div<{ isDesktop: boolean }>`
   border: 1px solid #e8e8e8;
   border-radius: 8px;
   padding: 0.5rem;
-  ${(props) => (props.isDesktop ? 'grid-column: 1 / span 3;' : '')}
 `;

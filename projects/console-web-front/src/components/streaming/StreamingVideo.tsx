@@ -25,6 +25,7 @@ interface Props {
   onMouseLeave?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
   onDoubleClick?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
   onClick?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
+  readonly?: boolean;
 }
 
 const StreamingVideo = ({
@@ -43,6 +44,7 @@ const StreamingVideo = ({
   onMouseLeave,
   onDoubleClick,
   onClick,
+  readonly,
 }: Props) => {
   const { videoRef, loading } = useDeviceStreamingContext();
   const [videoSize, setVideoSize] = useState<VideoSize>({ width: 0, height: 0 });
@@ -158,66 +160,68 @@ const StreamingVideo = ({
 
       <InputWrapper canDisplay={!loading} ratio={videoRatio} videoWidth={videoRef?.current ? videoSize.width * (videoRef.current.offsetHeight / videoSize.height) : undefined}>
         <StyledVideo ref={videoRef} id={videoId} playsInline autoPlay muted boxHeight={boxRef.current?.clientHeight ?? 0} />
-        <StyledInput
-          ref={inputRef}
-          autoFocus
-          onKeyPress={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onKeyDown?.(e);
-          }}
-          onKeyDown={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onKeyPress?.(e);
-          }}
-          onKeyUp={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onKeyUp?.(e);
-          }}
-          value={`\n`.repeat(1000)}
-          onWheel={(e) => {
-            e.currentTarget.scrollTop = 1000;
-            e.stopPropagation();
-            onWheel?.(e, videoSize);
-          }}
-          onMouseDown={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onMouseDown?.(e, videoSize);
-          }}
-          onMouseUp={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onMouseUp?.(e, videoSize);
-          }}
-          onMouseMove={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onMouseMove?.(e, videoSize);
-            focusInputForKeyboardEvent();
-          }}
-          onMouseLeave={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onMouseLeave?.(e, videoSize);
-            focusInputForKeyboardEvent();
-          }}
-          onDoubleClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onDoubleClick?.(e, videoSize);
-            focusInputForKeyboardEvent();
-          }}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onClick?.(e, videoSize);
-            focusInputForKeyboardEvent();
-          }}
-          readOnly
-        />
+        {!readonly && (
+          <StyledInput
+            ref={inputRef}
+            autoFocus
+            onKeyPress={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onKeyDown?.(e);
+            }}
+            onKeyDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onKeyPress?.(e);
+            }}
+            onKeyUp={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onKeyUp?.(e);
+            }}
+            value={`\n`.repeat(1000)}
+            onWheel={(e) => {
+              e.currentTarget.scrollTop = 1000;
+              e.stopPropagation();
+              onWheel?.(e, videoSize);
+            }}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onMouseDown?.(e, videoSize);
+            }}
+            onMouseUp={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onMouseUp?.(e, videoSize);
+            }}
+            onMouseMove={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onMouseMove?.(e, videoSize);
+              focusInputForKeyboardEvent();
+            }}
+            onMouseLeave={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onMouseLeave?.(e, videoSize);
+              focusInputForKeyboardEvent();
+            }}
+            onDoubleClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onDoubleClick?.(e, videoSize);
+              focusInputForKeyboardEvent();
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onClick?.(e, videoSize);
+              focusInputForKeyboardEvent();
+            }}
+            readOnly
+          />
+        )}
         {children}
         <CustomPointer ref={cursorRef} />
       </InputWrapper>

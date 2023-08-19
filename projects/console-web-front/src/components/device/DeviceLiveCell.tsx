@@ -49,7 +49,7 @@ const DeviceLiveCell = ({ device }: Props) => {
         </FlexRow>
       </ContentWrapper>
       <VideoWrapper style={{ height: isDesktop(device) ? '550px' : '400px' }}>
-        <DeviceStreaming.Video style={{ alignItems: 'center' }} />
+        <DeviceStreaming.Video style={{ alignItems: 'center' }} readonly />
       </VideoWrapper>
     </DeviceStreaming>
   );
