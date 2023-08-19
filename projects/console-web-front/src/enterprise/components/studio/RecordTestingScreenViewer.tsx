@@ -12,7 +12,7 @@ import useDeviceStreamingContext from '../../../hooks/streaming/useDeviceStreami
 import useRequest from '../../../hooks/useRequest';
 import useEventStore from '../../../stores/events';
 import { sendErrorNotification } from '../../../utils/antd';
-import { createRecordTestStep } from '../../api/record';
+import { createRecordTestStep, getDeviceKeyboardShown } from '../../api/record';
 import KeyboardInput from './KeyboardInput';
 import RecordScreenActionBar from './RecordScreenActionBar';
 
@@ -25,6 +25,7 @@ interface Props {
 const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
   const { loading, deviceRTCCaller, videoRef } = useDeviceStreamingContext();
   const [requestLoading, request] = useRequest(createRecordTestStep);
+  const [keyboardLoading, requestKeyboard] = useRequest(getDeviceKeyboardShown);
   const [isRecording, setIsRecording] = useState(false);
   const [isDeviceKeyboardShown, setIsDeviceKeyboardShown] = useState(false);
   const { handleDoubleClick, handleKeyDown, handleKeyUp, handleMouseDown, handleMouseLeave, handleMouseMove, handleMouseUp, handleWheel } = useDeviceInput(
@@ -53,6 +54,8 @@ const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
           },
         });
         fireEvent('onRecordStepCreated', rv);
+        const hasKeyboardOnScreen = await requestKeyboard(project.organizationId, project.projectId, caseId);
+        setIsDeviceKeyboardShown(hasKeyboardOnScreen);
       } catch (e) {
         sendErrorNotification('Failed to take screenshot.');
       }
@@ -129,7 +132,7 @@ const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
             }
           }}
         >
-          {requestLoading && (
+          {(requestLoading || keyboardLoading) && (
             <ScreenLoadingWrapper>
               <Spin size="large" />
             </ScreenLoadingWrapper>
