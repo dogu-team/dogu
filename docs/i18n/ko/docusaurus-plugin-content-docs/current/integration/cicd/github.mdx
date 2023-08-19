@@ -4,8 +4,165 @@ title: Github
 locale: ko
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 import AllBadge from '@site/src/components/badge/AllBadge.tsx';
+import github_move_dogu_project_settings from '@site/static/img/integration/github/github_move_dogu_project_settings.png';
+import github_create_dogu_project_token from '@site/static/img/integration/github/github_create_dogu_project_token.png';
+
+import github_move_settings from '@site/static/img/integration/github/github_move_settings.png';
+import github_move_secret_settings from '@site/static/img/integration/github/github_move_secret_settings.png';
+import github_create_new_repository_secret from '@site/static/img/integration/github/github_create_new_repository_secret.png';
+import github_create_repository_secret from '@site/static/img/integration/github/github_create_repository_secret.png';
+
+import github_move_actions from '@site/static/img/integration/github/github_move_actions.png';
+import github_create_workflow from '@site/static/img/integration/github/github_create_workflow.png';
+import github_simple_workflow from '@site/static/img/integration/github/github_simple_workflow.png';
+import github_edit_workflow from '@site/static/img/integration/github/github_edit_workflow.png';
+import github_copy_dogu_project_id from '@site/static/img/integration/github/github_copy_dogu_project_id.png';
+import github_copy_dogu_routine_id from '@site/static/img/integration/github/github_copy_dogu_routine_id.png';
+import github_action_running from '@site/static/img/integration/github/github_action_running.png';
+import github_dogu_routine_running from '@site/static/img/integration/github/github_dogu_routine_running.png';
+import github_action_result from '@site/static/img/integration/github/github_action_result.png';
 
 <AllBadge />
 
-## Github Action 통합
+## 소개
+
+Routine과 Github Action을 연동하여 테스트 CI/CD 환경을 구축할 수 있습니다.
+
+## Token 발급
+
+#### 1. Dogu 프로젝트 페이지로 이동하여 `Seetings` 탭으로 이동합니다.
+
+<img src={github_move_dogu_project_settings} />
+
+#### 2. `Show Token`버튼을 클릭한 후 `Project Access Toekn`을 복사합니다.
+
+<img src={github_create_dogu_project_token} />
+
+## Github Secret 추가
+
+#### 1. Github Repository의 `Settings` 탭으로 이동합니다.
+
+<img src={github_move_settings} />
+
+#### 2. `Secrets` 탭으로 이동합니다.
+
+<img src={github_move_secret_settings} />
+
+#### 3. `New repository secret` 버튼을 클릭합니다.
+
+<img src={github_create_new_repository_secret} />
+
+#### 4. `Name`에 "DOGU_PROJECT_TOKEN"을 입력하고, `Secret`에 복사한 Token을 입력한 다음 `Add secret` 버튼을 클릭합니다.
+
+<img src={github_create_repository_secret} />
+
+## Github Workflow 추가
+
+#### 1. Github Repository의 `Actions` 탭으로 이동합니다.
+
+<img src={github_move_actions} />
+
+#### 2. `New workflow` 버튼을 클릭합니다.
+
+<img src={github_create_workflow} />
+
+#### 3. `Simple workflow`를 선택합니다.
+
+- Simple Workflow가 보이지 않는 경우 "Simple workflow"를 검색하여 선택합니다.
+
+<img src={github_simple_workflow} />
+
+#### 4. YAML 내용을 아래와 같이 준비합니다.
+
+<Tabs groupId="edition" defaultValue="cloud" queryString>
+<TabItem value="cloud" label="Cloud" default>
+
+```yaml
+name: CI
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run Routine
+        uses: dogu-team/dogu-github-action@v1.0
+        with:
+          project-id: <your project id>
+          routine-id: <your routine id>
+        env:
+          DOGU_TOKEN: ${{ secrets.DOGU_PROJECT_TOKEN }}
+```
+
+</TabItem>
+
+<TabItem value="self-hosted" label="Self-Hosted">
+
+```yaml
+name: CI
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run Routine
+        uses: dogu-team/dogu-github-action@v1.0
+        with:
+          project-id: <your project id>
+          routine-id: <your routine id>
+          api-url: <your api server url>
+        env:
+          DOGU_TOKEN: ${{ secrets.DOGU_PROJECT_TOKEN }}
+```
+
+</TabItem>
+</Tabs>
+
+- `project-id`는 Dogu 프로젝트 페이지에서 확인할 수 있습니다.
+
+<img src={github_copy_dogu_project_id} />
+
+- `routine-id`는 Routine 페이지에서 확인할 수 있습니다.
+
+<img src={github_copy_dogu_routine_id} />
+
+#### 5. YAML 파일을 아래와 같이 수정합니다.
+
+<img src={github_edit_workflow} />
+
+#### 6. Github Action을 실행한 후 Dogu Routine에서 정상적으로 실행되는지 확인합니다.
+
+<img src={github_action_running} />
+
+<img src={github_dogu_routine_running} />
+
+:::info
+Github Action을 취소하면 Dogu Routine도 취소됩니다.
+:::
+
+#### 7. Dogu Routine 실행 결과에 대한 URL은 Github Action에서도 확인할 수 있습니다.
+
+<img src={github_action_result} />
+
+## 참고
+
+- [Dogu Github Action](https://github.com/dogu-team/dogu-github-action)

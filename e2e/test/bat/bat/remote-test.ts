@@ -1,9 +1,14 @@
-import { ChromeDriver } from '../../../src/chromedriver';
+import { job, test } from '@dogu-tech/dest';
+import { PlaywrightDriver } from '../../../src/playwright-driver';
 
 export interface TestRemoteOptions {
-  consoleFrontDriver: ChromeDriver;
+  consoleFrontDriver: PlaywrightDriver;
 }
 
 export default function testRemote(options: TestRemoteOptions): void {
-  // noop
+  job('Remote test', () => {
+    test('Checkout dogu-examples', () => {
+      console.log('Checkout dogu-examples');
+    });
+  });
 }

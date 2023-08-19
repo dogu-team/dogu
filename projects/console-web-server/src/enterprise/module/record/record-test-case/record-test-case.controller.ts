@@ -87,6 +87,8 @@ export class RecordTestCaseController {
     @Param(ProjectPropCamel.projectId) projectId: ProjectId,
     @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
   ): Promise<void> {
-    await this.recordTestCaseService.deleteRecordTestCase(projectId, recordTestCaseId);
+    await this.dataSource.manager.transaction(async (manager) => {
+      await this.recordTestCaseService.softRemoveRecordTestCase(manager, projectId, recordTestCaseId);
+    });
   }
 }

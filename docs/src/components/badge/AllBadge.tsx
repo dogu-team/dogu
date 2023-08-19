@@ -5,9 +5,12 @@ const AllBadge = () => {
   return (
     <Badge
       label={'ALL Support'}
-      overlayText={'Available in the community, enterprise, cloud'}
-      backgroundColor={'#48aad4'}
-    ></Badge>
+      overlayText={
+        'Available in the cloud, self-hosted community, self-hosted professional, self-hosted enterprise'
+      }
+      fontColor={'white'}
+      backgroundColor={'#ffc655'}
+    />
   );
 };
 

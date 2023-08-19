@@ -6,6 +6,7 @@ import { AxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import { deleteRoutine } from '../../api/routine';
@@ -67,6 +68,11 @@ const RoutineInfoContainer = ({ orgId, projectId, routine }: Props) => {
     <RoutineInfoBox>
       <FlexRowBox>
         <H6>{!!routine ? routine?.name : t('routine:routineSidebarAllMenuTitle')}</H6>
+        {!!routine && (
+          <div style={{ marginLeft: '.15rem' }}>
+            <p style={{ fontSize: '.8rem', fontFamily: 'monospace', lineHeight: '1.5' }}>{`(${routine.routineId})`}</p>
+          </div>
+        )}
       </FlexRowBox>
 
       {!!routine && (

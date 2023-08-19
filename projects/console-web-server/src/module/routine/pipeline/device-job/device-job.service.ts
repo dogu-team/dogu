@@ -210,7 +210,10 @@ export class DeviceJobService {
       endTime = new Date(deviceJob.localCompletedAt.getTime());
     }
 
-    const deviceJobLogs = await this.influxDbLogService.readDeviceJobLogs(organizationId, deviceJob.routineDeviceJobId, deviceJob.localInProgressAt, endTime);
+    const deviceJobLogs = await this.influxDbLogService.readDeviceJobLogs(organizationId, deviceJob.routineDeviceJobId, {
+      type: 'routineDeviceJobId',
+      routineDeviceJobId: deviceJob.routineDeviceJobId,
+    });
     return deviceJobLogs;
   }
 

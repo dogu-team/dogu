@@ -5,7 +5,7 @@ const CommunityBadge = () => {
   return (
     <Badge
       label={'Community Support'}
-      overlayText={'Available in the community'}
+      overlayText={'Available in the self-hosted community'}
       backgroundColor={''}
     ></Badge>
   );

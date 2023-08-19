@@ -1,17 +1,25 @@
 import { ActionKit, checkoutProject, newCleanNodeEnv, OptionsConfig } from '@dogu-tech/action-kit';
 import { spawnSync } from 'child_process';
+import path from 'path';
 
 ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionClient, deviceClient }) => {
   const { DOGU_ROUTINE_WORKSPACE_PATH, DOGU_PROJECT_ID } = options;
   const clean = input.get<boolean>('clean');
   const branchOrTag = input.get<string>('branchOrTag');
   const postCommand = input.get<string>('postCommand');
+  const checkoutPath = input.get<string>('checkoutPath');
+  const checkoutUrl = input.get<string>('checkoutUrl');
+
+  logger.info('resolve checkout path... from', { DOGU_ROUTINE_WORKSPACE_PATH, checkoutPath });
+  const resolvedCheckoutPath = path.resolve(DOGU_ROUTINE_WORKSPACE_PATH, checkoutPath);
+  logger.info('resolved checkout path', { resolvedCheckoutPath });
+
   const optionsConfig = await OptionsConfig.load();
   if (optionsConfig.get('localUserProject.use', false)) {
     logger.info('Using local user project...');
   } else {
-    await checkoutProject(logger, consoleActionClient, deviceHostClient, DOGU_ROUTINE_WORKSPACE_PATH, branchOrTag, clean);
-    const workspacePath = DOGU_ROUTINE_WORKSPACE_PATH;
+    await checkoutProject(logger, consoleActionClient, deviceHostClient, resolvedCheckoutPath, branchOrTag, clean, checkoutUrl);
+    const workspacePath = resolvedCheckoutPath;
 
     if (postCommand) {
       logger.info('Running post command...');

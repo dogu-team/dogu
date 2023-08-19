@@ -10,6 +10,7 @@ import { Timer } from '../../src/timer';
 import { Utils } from '../../src/utils';
 import { runHost } from './bat/host';
 import { currentL10n, l10n } from './bat/l10n';
+import testRemote from './bat/remote-test';
 import { startConsoleAndDost } from './bat/workspace';
 
 const env = loadEnvLazySync(E2eEnv);
@@ -67,6 +68,13 @@ Dest.withOptions({
       values.value.HOME_URL = `http://${env.DOGU_E2E_HOST}:${env.DOGU_CONSOLE_WEB_FRONT_PORT}`;
       await ProcessManager.killByPorts([env.DOGU_CONSOLE_WEB_FRONT_PORT, env.DOGU_CONSOLE_WEB_SERVER_PORT, env.DOGU_E2E_DEVICE_SERVER_PORT]);
       await ProcessManager.killByNames(['adb']);
+    });
+
+    afterAll(async () => {
+      Timer.close();
+      await Driver.close();
+      await Driver.closeBrowser();
+      ProcessManager.close();
     });
 
     test('Print env', () => {
@@ -999,6 +1007,10 @@ Dest.withOptions({
       });
     });
 
+    testRemote({
+      consoleFrontDriver: Driver,
+    });
+
     job('Deletion', () => {
       // project deletion
       test('Delete project', async () => {
@@ -1055,14 +1067,6 @@ Dest.withOptions({
         const elems = await Driver.findElements({ xpath: '//div[@access-id="organization-list"]//li[contains(@class, "ant-list-item")]' });
         expect(elems.length).toBe(1);
       });
-    });
-
-    afterAll(async () => {
-      Timer.close();
-
-      await Driver.close();
-      await Driver.closeBrowser();
-      ProcessManager.close();
     });
   });
 });

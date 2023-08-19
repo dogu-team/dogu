@@ -14,5 +14,13 @@ inputs:
     description: command to run after checkout
     default: ''
     required: false
+  checkoutPath:
+    description: relative path of Dogu routine workspace path or absolute path to checkout
+    default: ''
+    required: false
+  checkoutUrl:
+    description: checkout url. if not set, use repository url from Dogu project settings. recommended to use repository url from Dogu project settings.
+    default: ''
+    required: false
 runs:
   main: build/src/main.js

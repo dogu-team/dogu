@@ -31,6 +31,7 @@ import { logger } from '../utils/logger';
 import { prettifyErrorString } from '../utils/prettify';
 import { ipc, offFocus, onFocus } from '../utils/window';
 import useEnvironmentStore from '../stores/environment';
+import useHostAgentConnectionStatusStore from '../stores/host-agent-connection-status';
 
 interface VersionUIProps {
   tooltipLabel: string;
@@ -58,6 +59,8 @@ function Footer() {
   const toast = useToast();
   const cancelRef = React.useRef<HTMLButtonElement>(null);
   const runType = useEnvironmentStore((state) => state.appConfig.DOGU_RUN_TYPE);
+  const hostAgentConnectionStatus = useHostAgentConnectionStatusStore((state) => state.status);
+  const isConnected = hostAgentConnectionStatus?.status === 'connected';
 
   const hasPopOver = versionUIProp.popoverLabel !== '';
 
@@ -81,7 +84,7 @@ function Footer() {
       updateVersionUIProp({
         tooltipLabel: `Check for updates failed: ${prettifyErrorString(checkUpdateRet.error)}...`,
         popoverLabel: '',
-        icon: <WarningTwoIcon w={3} h={3} />,
+        icon: <div></div>,
         onClick: () => {
           onCheckForUpdatesClicked();
         },
@@ -142,7 +145,7 @@ function Footer() {
 
       await onCheckForUpdatesClicked();
     })();
-  }, [onCheckForUpdatesClicked]);
+  }, [onCheckForUpdatesClicked, isConnected]);
 
   useEffect(() => {
     onFocus(onCheckForUpdatesClicked);

@@ -1,4 +1,4 @@
-import { OrganizationBase, UserBase } from '@dogu-private/console';
+import { FeatureTableBase, OrganizationBase, UserBase } from '@dogu-private/console';
 import { AxiosError } from 'axios';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
@@ -12,11 +12,14 @@ import ErrorBox from 'src/components/common/boxes/ErrorBox';
 import useRecentOrgFromSession from '../hooks/useRecentOrgFromSession';
 import { checkUserVerifiedInServerSide } from '../utils/auth';
 import { redirectWithLocale } from '../ssr/locale';
+import { getFeatureConfigInServerSide } from '../enterprise/api/feature';
+import { FeatureContext } from '../enterprise/contexts/feature';
 
 export interface OrganizationServerSideProps {
   fallback: {
     [key: string]: OrganizationBase | UserBase;
   };
+  featureConfig: FeatureTableBase;
 }
 
 export interface WithOrganizationProps {
@@ -26,7 +29,7 @@ export interface WithOrganizationProps {
 }
 
 export default function withOrganization(WrappedComponents: NextPageWithLayout<WithOrganizationProps>) {
-  const Component: NextPageWithLayout<OrganizationServerSideProps> = ({ fallback }) => {
+  const Component: NextPageWithLayout<OrganizationServerSideProps> = ({ fallback, featureConfig }) => {
     const router = useRouter();
     const organizationId = router.query.orgId;
     const { data, error, mutate, isLoading } = useSWR<OrganizationBase>(`/organizations/${organizationId}`, swrAuthFetcher, { revalidateOnFocus: false });
@@ -43,7 +46,9 @@ export default function withOrganization(WrappedComponents: NextPageWithLayout<W
 
     return (
       <SWRConfig value={{ fallback }}>
-        <WrappedComponents organization={data} mutateOrganization={mutate} user={user} />
+        <FeatureContext.Provider value={featureConfig}>
+          <WrappedComponents organization={data} mutateOrganization={mutate} user={user} />
+        </FeatureContext.Provider>
       </SWRConfig>
     );
   };
@@ -55,7 +60,11 @@ export default function withOrganization(WrappedComponents: NextPageWithLayout<W
 
 export const getOrganizationPageServerSideProps: GetServerSideProps<OrganizationServerSideProps> = async (context) => {
   try {
-    const [organization, checkResult] = await Promise.all([getOrganizationInServerSide(context), checkUserVerifiedInServerSide(context)]);
+    const [organization, checkResult, featureConfig] = await Promise.all([
+      getOrganizationInServerSide(context),
+      checkUserVerifiedInServerSide(context),
+      getFeatureConfigInServerSide(context),
+    ]);
 
     if (checkResult.redirect) {
       return checkResult;
@@ -73,6 +82,7 @@ export const getOrganizationPageServerSideProps: GetServerSideProps<Organization
           [`/organizations/${context.query.orgId}`]: organization,
           ...checkResult.props.fallback,
         },
+        featureConfig,
       },
     };
   } catch (e) {

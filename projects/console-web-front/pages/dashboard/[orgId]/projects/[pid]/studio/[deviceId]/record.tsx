@@ -10,6 +10,11 @@ const RecordTestingPage: NextPageWithLayout<StudioTestingPageProps> = ({ organiz
 
 RecordTestingPage.getLayout = getStudioTestingLayout;
 
-export const getServerSideProps: GetServerSideProps<StudioTestingPageProps> = getStudioTestingServerSideProps;
+// export const getServerSideProps: GetServerSideProps<StudioTestingPageProps> = getStudioTestingServerSideProps;
+export const getServerSideProps: GetServerSideProps<StudioTestingPageProps> = async (context) => {
+  return {
+    notFound: true,
+  };
+};
 
 export default RecordTestingPage;

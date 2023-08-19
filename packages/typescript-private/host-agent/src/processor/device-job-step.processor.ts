@@ -185,7 +185,7 @@ export class DeviceJobStepProcessor {
             organizationId,
             deviceId,
             routineDeviceJobId,
-            log: { ...log, type: DEVICE_JOB_LOG_TYPE.USER_PROJECT },
+            log: { ...log, type: DEVICE_JOB_LOG_TYPE.USER_PROJECT, routineStepId },
           };
           validateAndEmitEventAsync(this.eventEmitter, OnDeviceJobLoggedEvent, value).catch((error) => {
             this.logger.error('Failed to emit device job logged event', { error: errorify(error) });

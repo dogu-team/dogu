@@ -1,14 +1,14 @@
 import { ProjectId, RecordTestCaseId, RecordTestStepId, RECORD_TEST_STEP_ACTION_TYPE } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
-import { RecordTestStepActionWebdriverClickBase } from '..';
 import { ProjectBase } from './project';
+import { RecordTestStepAction } from './record-test-action';
 import { RecordTestCaseBase } from './record-test-case';
 
 interface RecordTestStepRelationTraits {
   recordTestCase?: RecordTestCaseBase;
   project?: ProjectBase;
   prevRecordTestStep?: RecordTestStepBase | null;
-  recordTestStepAction?: RecordTestStepActionWebdriverClickBase;
+  recordTestStepAction?: RecordTestStepAction;
 }
 
 export interface RecordTestStepBaseTraits {

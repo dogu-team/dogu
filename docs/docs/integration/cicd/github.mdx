@@ -4,4 +4,165 @@ title: Github
 locale: en
 ---
 
-## Integration with Github Action
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+import AllBadge from '@site/src/components/badge/AllBadge.tsx';
+import github_move_dogu_project_settings from '@site/static/img/integration/github/github_move_dogu_project_settings.png';
+import github_create_dogu_project_token from '@site/static/img/integration/github/github_create_dogu_project_token.png';
+
+import github_move_settings from '@site/static/img/integration/github/github_move_settings.png';
+import github_move_secret_settings from '@site/static/img/integration/github/github_move_secret_settings.png';
+import github_create_new_repository_secret from '@site/static/img/integration/github/github_create_new_repository_secret.png';
+import github_create_repository_secret from '@site/static/img/integration/github/github_create_repository_secret.png';
+
+import github_move_actions from '@site/static/img/integration/github/github_move_actions.png';
+import github_create_workflow from '@site/static/img/integration/github/github_create_workflow.png';
+import github_simple_workflow from '@site/static/img/integration/github/github_simple_workflow.png';
+import github_edit_workflow from '@site/static/img/integration/github/github_edit_workflow.png';
+import github_copy_dogu_project_id from '@site/static/img/integration/github/github_copy_dogu_project_id.png';
+import github_copy_dogu_routine_id from '@site/static/img/integration/github/github_copy_dogu_routine_id.png';
+import github_action_running from '@site/static/img/integration/github/github_action_running.png';
+import github_dogu_routine_running from '@site/static/img/integration/github/github_dogu_routine_running.png';
+import github_action_result from '@site/static/img/integration/github/github_action_result.png';
+
+<AllBadge />
+
+## Introduction
+
+You can build a test CI/CD environment by integrating Routine with Github Actions.
+
+## Token Issue
+
+#### 1. Navigate to the Dogu project page and move to the `Settings` tab.
+
+<img src={github_move_dogu_project_settings} />
+
+#### 2. Click the `Show Token` button and copy the `Project Access Token`.
+
+<img src={github_create_dogu_project_token} />
+
+## Adding Github Secret
+
+#### 1. Navigate to the `Settings` tab of your Github Repository.
+
+<img src={github_move_settings} />
+
+#### 2. Move to the `Secrets` tab.
+
+<img src={github_move_secret_settings} />
+
+#### 3. Click the `New repository secret` button.
+
+<img src={github_create_new_repository_secret} />
+
+#### 4. Enter "DOGU_PROJECT_TOKEN" in the `Name` field, paste the copied Token in the `Secret` field, and then click the `Add secret` button.
+
+<img src={github_create_repository_secret} />
+
+## Adding Github Workflow
+
+#### 1. Navigate to the `Actions` tab of your Github Repository.
+
+<img src={github_move_actions} />
+
+#### 2. Click the `New workflow` button.
+
+<img src={github_create_workflow} />
+
+#### 3. Select `Simple workflow`.
+
+- If you cannot see Simple Workflow, search for "Simple workflow" and select it.
+
+<img src={github_simple_workflow} />
+
+#### 4. Prepare the YAML content as follows:
+
+<Tabs groupId="edition" defaultValue="cloud" queryString>
+<TabItem value="cloud" label="Cloud" default>
+
+```yaml
+name: CI
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run Routine
+        uses: dogu-team/dogu-github-action@v1.0
+        with:
+          project-id: <your project id>
+          routine-id: <your routine id>
+        env:
+          DOGU_TOKEN: ${{ secrets.DOGU_PROJECT_TOKEN }}
+```
+
+</TabItem>
+
+<TabItem value="self-hosted" label="Self-Hosted">
+
+```yaml
+name: CI
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Run Routine
+        uses: dogu-team/dogu-github-action@v1.0
+        with:
+          project-id: <your project id>
+          routine-id: <your routine id>
+          api-url: <your api server url>
+        env:
+          DOGU_TOKEN: ${{ secrets.DOGU_PROJECT_TOKEN }}
+```
+
+</TabItem>
+</Tabs>
+
+- You can check the `project-id` on the Dogu project page.
+
+<img src={github_copy_dogu_project_id} />
+
+- You can check the `routine-id` on the Routine page.
+
+<img src={github_copy_dogu_routine_id} />
+
+#### 5. Modify the YAML file as shown below.
+
+<img src={github_edit_workflow} />
+
+#### 6. Run the Github Action and check if the Dogu Routine runs successfully.
+
+<img src={github_action_running} />
+
+<img src={github_dogu_routine_running} />
+
+:::info
+Cancelling the Github Action will also cancel the Dogu Routine.
+:::
+
+#### 7. You can check the URL for the result of the Dogu Routine run in Github Actions as well.
+
+<img src={github_action_result} />
+
+## Reference
+
+- [Dogu Github Action](https://github.com/dogu-team/dogu-github-action)
