@@ -1007,6 +1007,10 @@ Dest.withOptions({
       });
     });
 
+    testRemote({
+      consoleFrontDriver: Driver,
+    });
+
     job('Deletion', () => {
       // project deletion
       test('Delete project', async () => {
@@ -1063,10 +1067,6 @@ Dest.withOptions({
         const elems = await Driver.findElements({ xpath: '//div[@access-id="organization-list"]//li[contains(@class, "ant-list-item")]' });
         expect(elems.length).toBe(1);
       });
-    });
-
-    testRemote({
-      consoleFrontDriver: Driver,
     });
   });
 });
