@@ -30,7 +30,7 @@ const StepPreviewBar = ({ steps, currentStepIndex }: Props) => {
   }, []);
 
   useEffect(() => {
-    if (router.query.step && currentStepIndex > -1 && wrapperRef.current) {
+    if (currentStepIndex > -1 && wrapperRef.current) {
       wrapperRef.current.scrollTo({ top: currentStepIndex * 215, behavior: 'smooth' });
     }
   }, [router.query.step, currentStepIndex]);
@@ -42,7 +42,12 @@ const StepPreviewBar = ({ steps, currentStepIndex }: Props) => {
       </TitleWrapper>
       <PreviewWrapper ref={wrapperRef}>
         {steps.map((item, i) => (
-          <StepPreview key={item.recordTestStepId} step={item} index={i} />
+          <StepPreview
+            key={item.recordTestStepId}
+            step={item}
+            index={i}
+            isSelected={(i === steps.length - 1 && !router.query.step) || router.query.step === item.recordTestStepId}
+          />
         ))}
       </PreviewWrapper>
     </div>

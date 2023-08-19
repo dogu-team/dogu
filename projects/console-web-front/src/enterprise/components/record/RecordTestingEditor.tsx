@@ -23,7 +23,7 @@ const RecordTestingEditor = () => {
   });
 
   const steps = data?.recordTestSteps ?? [];
-  const currentStep = steps.length ? (stepId ? steps.find((step) => step.recordTestStepId === stepId) : steps[0]) : undefined;
+  const currentStep = steps.length ? (stepId ? steps.find((step) => step.recordTestStepId === stepId) : steps[steps.length - 1]) : undefined;
   const currentStepPageNumber = currentStep ? steps.indexOf(currentStep) + 1 ?? 0 : 0;
 
   useRefresh(['onRecordStepCreated'], (payload) => {

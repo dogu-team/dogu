@@ -9,11 +9,11 @@ import StepTypeIcon from './StepTypeIcon';
 interface Props {
   index: number;
   step: RecordTestStepResponse;
+  isSelected: boolean;
 }
 
-const StepPreview = ({ step, index }: Props) => {
+const StepPreview = ({ step, index, isSelected }: Props) => {
   const router = useRouter();
-  const isSelected = (index === 0 && !router.query.step) || router.query.step === step.recordTestStepId;
 
   return (
     <Box>
