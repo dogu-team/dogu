@@ -1,7 +1,6 @@
 import { MobileOutlined } from '@ant-design/icons';
 import { RoutineDeviceJobBase, RoutineJobBase } from '@dogu-private/console';
 import { PIPELINE_STATUS } from '@dogu-private/types';
-import { sort } from 'ramda';
 import styled from 'styled-components';
 
 import { isDesktop } from '../../utils/device';
@@ -35,7 +34,7 @@ const PipelineDeviceGrid = ({ routineJobs }: Props) => {
 
   return (
     <>
-      {mobileJob.length > 0 && (
+      {mobileJobs.length > 0 && (
         <Box>
           {mobileJobs.map((deviceJob) => {
             if (deviceJob?.status === PIPELINE_STATUS.IN_PROGRESS) {
