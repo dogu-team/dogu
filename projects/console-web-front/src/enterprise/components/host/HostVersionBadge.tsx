@@ -55,7 +55,7 @@ const HostVesrsionBadge = ({ host }: Props) => {
   const updatableInfo = getAgentUpdatableInfo(latestContext.latestInfo, host);
   const updatable =
     host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED && featureContext?.defaultEdition === EDITION_TYPE.ENTERPRISE && updatableInfo.isUpdatable;
-  const shouldShowUpdateButton = updatableInfo.reason || updatableInfo.isUpdatable;
+  const shouldShowUpdateButton = host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED && (updatableInfo.reason || updatableInfo.isUpdatable);
 
   return (
     <>

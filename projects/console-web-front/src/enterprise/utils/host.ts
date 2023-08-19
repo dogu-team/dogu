@@ -35,18 +35,18 @@ export const getAgentUpdatableInfo = (latestInfo: DownloadablePackageResult[], h
     };
   }
 
-  if (info && info.version !== host.agentVersion) {
-    return {
-      isLatest: false,
-      isUpdatable: true,
-    };
-  }
-
   if (agentVersion.major === 1 && agentVersion.minor < 8) {
     return {
       isLatest: false,
       isUpdatable: false,
       reason: 'Available over agent version 1.8.0',
+    };
+  }
+
+  if (info && info.version !== host.agentVersion) {
+    return {
+      isLatest: false,
+      isUpdatable: true,
     };
   }
 
