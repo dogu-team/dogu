@@ -145,7 +145,7 @@ function Footer() {
 
       await onCheckForUpdatesClicked();
     })();
-  }, [onCheckForUpdatesClicked]);
+  }, [onCheckForUpdatesClicked, isConnected]);
 
   useEffect(() => {
     onFocus(onCheckForUpdatesClicked);
@@ -153,10 +153,6 @@ function Footer() {
       offFocus(onCheckForUpdatesClicked);
     };
   }, []);
-
-  useEffect(() => {
-    onCheckForUpdatesClicked();
-  }, [isConnected]);
 
   const updateBox = (
     <Box>
