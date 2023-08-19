@@ -215,9 +215,14 @@ export class PipelineRunner {
         return;
       }
 
-      const onSuccess = routineSlack.onSuccess && status === PIPELINE_STATUS.SUCCESS;
-      const onFailure = routineSlack.onFailure === 1;
-      if (!onSuccess && !onFailure) {
+      const isSucceeded = pipeline.status === PIPELINE_STATUS.SUCCESS;
+      const subscribeSuccess = routineSlack.onSuccess === 1;
+      const subscribeFailure = routineSlack.onFailure === 1;
+
+      if (isSucceeded && !subscribeSuccess) {
+        return;
+      }
+      if (!isSucceeded && !subscribeFailure) {
         return;
       }
 
@@ -235,7 +240,6 @@ export class PipelineRunner {
         executorName = slackUserId === undefined ? `${user.name}` : `<@${slackUserId}>`;
       }
 
-      const isSucceeded = pipeline.status === PIPELINE_STATUS.SUCCESS;
       const routineName = routine.name;
       const pipelineUrl = `${process.env.DOGU_CONSOLE_URL}/dashboard/${organizationId}/projects/${projectId}/routines/${pipeline.routinePipelineId}`;
       const pipelineIndex = pipeline.index;

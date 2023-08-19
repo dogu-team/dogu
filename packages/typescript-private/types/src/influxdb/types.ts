@@ -1,5 +1,6 @@
 import { Log } from '@dogu-tech/common';
-import { IsEnum } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsEnum, IsNumber, IsOptional } from 'class-validator';
 import { DeviceId, OrganizationId, Platform } from '..';
 
 export enum DEVICE_RUNTIME_TYPE {
@@ -25,6 +26,11 @@ export interface DeviceRunTimeTag {
 export class DeviceJobLog extends Log {
   @IsEnum(DEVICE_JOB_LOG_TYPE)
   type!: DEVICE_JOB_LOG_TYPE;
+
+  @IsNumber()
+  @IsOptional()
+  @Type(() => Number)
+  routineStepId?: number;
 }
 
 export const influxDbKeyNames = {
@@ -96,6 +102,7 @@ export const influxDbKeyNames = {
         organizationId: 'organizationId',
         type: 'type',
         level: 'level',
+        routineStepId: 'routineStepId',
       },
       fields: {
         message: 'message',

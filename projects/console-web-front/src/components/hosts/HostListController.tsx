@@ -1,14 +1,14 @@
 import { DesktopOutlined, MobileOutlined } from '@ant-design/icons';
 import { HostBase } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
-import { Alert, List, MenuProps, Tag } from 'antd';
+import { Alert, List, MenuProps } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { AxiosError } from 'axios';
 import Trans from 'next-translate/Trans';
 import Link from 'next/link';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 
 import usePaginationSWR from 'src/hooks/usePaginationSWR';
 import HostStateTag from './HostStateTag';
@@ -21,7 +21,7 @@ import { listActiveNameStyle } from '../../styles/text';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
 import EditHostModal from './EditHostModal';
-import { deleteHost, reissuesHostConnectionToken, stopUsingHostAsDevice, updateUseHostAsDevice, updateHostApp } from '../../api/host';
+import { deleteHost, reissuesHostConnectionToken, stopUsingHostAsDevice, updateUseHostAsDevice } from '../../api/host';
 import { getErrorMessageFromAxios } from '../../utils/error';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
@@ -30,8 +30,7 @@ import PlatformIcon from '../device/PlatformIcon';
 import TokenCopyInput from '../common/TokenCopyInput';
 import { menuItemButtonStyles } from '../../styles/button';
 import HostVesrsionBadge from './HostVersionBadge';
-import { DoguAgentLatestContext } from '../../../pages/dashboard/[orgId]/device-farm/hosts';
-import { isAgentUpdatable } from '../../utils/download';
+import HostUpdateMenuButton from '../../enterprise/components/host/HostUpdateMenuButton';
 
 interface HostItemProps {
   host: HostBase;
@@ -41,14 +40,13 @@ const HostItem = ({ host }: HostItemProps) => {
   const router = useRouter();
   const [isDetailOpen, openDetailModal, closeDetailModal] = useModal();
   const [isEditModalOpen, openEditModal, closeEditModal] = useModal();
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
   const orgId = router.query.orgId as OrganizationId;
   const { t } = useTranslation();
   const [token, setToken] = useState<string>();
-  const context = useContext(DoguAgentLatestContext);
 
   const fireEvent = useEventStore((state) => state.fireEvent);
 
-  const updatable = isAgentUpdatable(context.latestInfo, host);
   const isUsing = host.hostDevice && host.hostDevice.enableHostDevice === 1;
 
   const handleReissueToken = async () => {
@@ -95,17 +93,6 @@ const HostItem = ({ host }: HostItemProps) => {
     } catch (e) {
       if (e instanceof AxiosError) {
         sendErrorNotification(t('device-farm:hostStopUsingFailMsg', { reason: getErrorMessageFromAxios(e) }));
-      }
-    }
-  };
-
-  const handleHostAppUpdate = async () => {
-    try {
-      await updateHostApp(orgId, host.hostId);
-      sendSuccessNotification(t('device-farm:hostUpdateSuccessMsg'));
-    } catch (e) {
-      if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:hostUpdateFailMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
   };
@@ -167,26 +154,14 @@ const HostItem = ({ host }: HostItemProps) => {
       key: 'token',
     },
     {
-      label: (
-        <MenuItemButton
-          danger
-          onConfirm={handleHostAppUpdate}
-          modalTitle={t('device-farm:hostItemUpdateMenu')}
-          modalButtonTitle={t('device-farm:hostUpdateModalButtonText')}
-          modalContent={<StyledDeleteModalContent>{t('device-farm:hostUpdateModalContentInfo')}</StyledDeleteModalContent>}
-          confirmButtonId="host-update-confirm-btn"
-          disabled={!updatable}
-        >
-          {t('device-farm:hostItemUpdateMenu')}
-
-          {!updatable && (
-            <Tag color="green" style={{ marginLeft: '.5rem' }}>
-              Latest
-            </Tag>
-          )}
-        </MenuItemButton>
-      ),
+      label: <HostUpdateMenuButton host={host} organizationId={orgId} isTooltipVisible={isTooltipVisible} />,
       key: 'update',
+      onMouseEnter: (e) => {
+        setIsTooltipVisible(true);
+      },
+      onMouseLeave: () => {
+        setIsTooltipVisible(false);
+      },
     },
     {
       label: (

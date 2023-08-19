@@ -146,7 +146,7 @@ export async function renameRetry(srcPath: string, destPath: string, printable: 
   for await (const _ of loop(3000, 30)) {
     try {
       await fs.promises.rename(srcPath, destPath);
-      break;
+      return;
     } catch (e) {
       lastError = errorify(e);
       printable.warn?.(`rename failed. try again src:${srcPath}, dest:${destPath}, error:${lastError}`);
