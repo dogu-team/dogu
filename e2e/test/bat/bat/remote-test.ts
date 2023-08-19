@@ -7,6 +7,8 @@ export interface TestRemoteOptions {
 
 export default function testRemote(options: TestRemoteOptions): void {
   job('Remote test', () => {
-    test('Checkout dogu-examples', async () => {});
+    test('Checkout dogu-examples', () => {
+      console.log('Checkout dogu-examples');
+    });
   });
 }
