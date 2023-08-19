@@ -1,4 +1,11 @@
-import { RecordTestCaseBase, RecordTestCasePropCamel, RecordTestCasePropSnake, RecordTestCaseResponse, RecordTestStepResponse } from '@dogu-private/console';
+import {
+  RecordTestCaseBase,
+  RecordTestCasePropCamel,
+  RecordTestCasePropSnake,
+  RecordTestCaseResponse,
+  RecordTestScenarioAndRecordTestCasePropCamel,
+  RecordTestStepResponse,
+} from '@dogu-private/console';
 import { extensionFromPlatform, OrganizationId, platformTypeFromPlatform, ProjectId, RecordTestCaseId } from '@dogu-private/types';
 import {
   DoguApplicationFileSizeHeader,
@@ -15,7 +22,7 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager } from 'typeorm';
 import { v4 } from 'uuid';
-import { Device } from '../../../../db/entity/index';
+import { Device, RecordTestScenarioAndRecordTestCase } from '../../../../db/entity/index';
 import { ProjectApplication } from '../../../../db/entity/project-application.entity';
 import { RecordTestCase } from '../../../../db/entity/record-test-case.entity';
 import { EMPTY_PAGE, Page } from '../../../../module/common/dto/pagination/page';
@@ -28,7 +35,7 @@ import {
   DeleteSessionRemoteWebDriverBatchRequestItem,
   NewSessionRemoteWebDriverBatchRequestItem,
 } from '../../../../module/remote/remote-webdriver/remote-webdriver.w3c-batch-request-items';
-import { makeActionBatchExcutor } from '../common';
+import { detachRecordTestCaseFromScenario, makeActionBatchExcutor } from '../common';
 import { CreateRecordTestCaseDto, FindRecordTestCaseByProjectIdDto, NewSessionRecordTestCaseDto, UpdateRecordTestCaseDto } from '../dto/record-test-case.dto';
 import { RecordTestStepService } from '../record-test-step/record-test-step.service';
 
@@ -123,22 +130,15 @@ export class RecordTestCaseService {
 
   async createRecordTestCase(organizationId: OrganizationId, projectId: ProjectId, dto: CreateRecordTestCaseDto): Promise<RecordTestCaseBase> {
     const { name, browserName, packageName } = dto;
-
     if (!packageName && !browserName) {
       throw new HttpException(`packageName or browserName is required`, HttpStatus.BAD_REQUEST);
     } else if (packageName && browserName) {
       throw new HttpException(`packageName and browserName is exclusive`, HttpStatus.BAD_REQUEST);
     }
-
     const testCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, name } });
     if (testCase) {
       throw new HttpException(`RecordTestCase name is duplicated. name: ${name}`, HttpStatus.BAD_REQUEST);
     }
-
-    // const device = await this.dataSource.getRepository(Device).findOne({ where: { deviceId } });
-    // if (!device) {
-    //   throw new HttpException(`Device not found. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
-    // }
     const newData = this.dataSource.getRepository(RecordTestCase).create({
       recordTestCaseId: v4(),
       projectId,
@@ -153,68 +153,8 @@ export class RecordTestCaseService {
     });
 
     const recordTestCase = await this.dataSource.getRepository(RecordTestCase).save(newData);
-
-    // const rv = await this.dataSource.manager.transaction(async (manager) => {
-    //   const newSessionDto: NewSessionDto = { deviceId };
-    //   const newData = manager.getRepository(RecordTestCase).create({
-    //     recordTestCaseId: v4(),
-    //     projectId,
-    //     name,
-    //     activeDeviceSerial: device.serial,
-    //     activeDeviceScreenSizeX,
-    //     activeDeviceScreenSizeY,
-    //     packageName,
-    //     browserName,
-    //   });
-
-    //   if (packageName) {
-    //     const app = await manager.getRepository(ProjectApplication).findOne({ where: { projectId, package: packageName }, order: { createdAt: 'DESC' } });
-    //     if (!app) {
-    //       throw new HttpException(`ProjectApplication not found. packageName: ${packageName}`, HttpStatus.NOT_FOUND);
-    //     }
-    //     newSessionDto.appVersion = app.version;
-    //   }
-
-    //   if (browserName) {
-    //     newSessionDto.browserName = browserName;
-    //   }
-
-    //   const sessionId = await this.newSession(manager, organizationId, projectId, recordTestCase, newSessionDto);
-
-    //   return recordTestCase;
-    // });
     return recordTestCase;
   }
-
-  // async loadRecordTestCase(organizationId: OrganizationId, projectId: ProjectId, recordTestCaseId: RecordTestCaseId, dto: LoadRecordTestCaseDto): Promise<RecordTestCaseResponse> {
-  //   const { deviceId, activeDeviceScreenSizeX, activeDeviceScreenSizeY } = dto;
-  //   const testCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId }, relations: [RecordTestCasePropCamel.recordTestSteps] });
-  //   if (!testCase) {
-  //     throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
-  //   }
-
-  //   const newSessionDto: NewSessionDto = {
-  //     deviceId,
-  //   };
-
-  //   if (testCase.packageName) {
-  //     const app = await this.dataSource.getRepository(ProjectApplication).findOne({ where: { projectId, package: testCase.packageName }, order: { createdAt: 'DESC' } });
-  //     if (!app) {
-  //       throw new HttpException(`ProjectApplication not found. packageName: ${testCase.packageName}`, HttpStatus.NOT_FOUND);
-  //     }
-  //     newSessionDto.appVersion = app.version;
-  //   } else if (testCase.browserName) {
-  //     newSessionDto.browserName = testCase.browserName;
-  //   } else {
-  //     throw new HttpException(`packageName or browserName is required`, HttpStatus.BAD_REQUEST);
-  //   }
-
-  //   const sessionId = await this.newSession(this.dataSource.manager, organizationId, projectId, testCase, newSessionDto);
-
-  //   testCase.recordTestSteps = getSortedRecordTestSteps(testCase);
-
-  //   return testCase;
-  // }
 
   async updateRecordTestCase(projectId: ProjectId, recordTestCaseId: RecordTestCaseId, dto: UpdateRecordTestCaseDto): Promise<RecordTestCaseBase> {
     const { name } = dto;
@@ -234,13 +174,30 @@ export class RecordTestCaseService {
     return testCase;
   }
 
-  async deleteRecordTestCase(projectId: ProjectId, recordTestCaseId: RecordTestCaseId): Promise<void> {
-    // const testCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId } });
-    // if (!testCase) {
-    //   throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
-    // }
-    // // FIXME: join data
-    // await this.dataSource.getRepository(RecordTestCase).softRemove(testCase);
+  async softRemoveRecordTestCase(manager: EntityManager, projectId: ProjectId, recordTestCaseId: RecordTestCaseId): Promise<void> {
+    const testCase = await this.dataSource.getRepository(RecordTestCase).findOne({ where: { projectId, recordTestCaseId }, relations: [RecordTestCasePropCamel.recordTestSteps] });
+    if (!testCase) {
+      throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
+    }
+
+    // steps
+    const recordTestSteps = testCase.recordTestSteps ?? [];
+    for (const step of recordTestSteps) {
+      await this.recordTestStepService.softDeleteRecordTestStep(manager, projectId, recordTestCaseId, step.recordTestStepId);
+    }
+
+    // case & scenario mapping
+    const mappingDatas =
+      (await manager
+        .getRepository(RecordTestScenarioAndRecordTestCase)
+        .find({ where: { recordTestCaseId }, relations: [RecordTestScenarioAndRecordTestCasePropCamel.recordTestScenario] })) ?? [];
+
+    for (const mappingData of mappingDatas) {
+      const recordTestScenario = mappingData.recordTestScenario!;
+      await detachRecordTestCaseFromScenario(manager, recordTestScenario, testCase);
+    }
+
+    await manager.getRepository(RecordTestCase).softDelete(testCase.recordTestCaseId);
   }
 
   public async newSession(
@@ -313,7 +270,13 @@ export class RecordTestCaseService {
       parallel: true,
     });
 
-    const newSessionResponse = new NewSessionRemoteWebDriverBatchRequestItem(batchExecutor, {});
+    const newSessionResponse = new NewSessionRemoteWebDriverBatchRequestItem(batchExecutor, {
+      capabilities: {
+        alwaysMatch: {
+          'appium:newCommandTimeout': 60 * 60 * 24,
+        },
+      },
+    });
     await batchExecutor.execute();
 
     const res = await newSessionResponse.response();

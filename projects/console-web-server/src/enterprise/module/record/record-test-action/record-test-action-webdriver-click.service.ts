@@ -107,5 +107,15 @@ export class RecordTestStepActionWebdriverClickService {
     await click.response();
   }
 
+  async softDeleteRecordTestStepWebdriverClickAction(manager: EntityManager, recordTestStep: RecordTestStep): Promise<void> {
+    const action = await manager.getRepository(RecordTestStepActionWebdriverClick).findOne({
+      where: { recordTestStepId: recordTestStep.recordTestStepId },
+    });
+    if (!action) {
+      throw new HttpException(`Action not found`, HttpStatus.NOT_FOUND);
+    }
+    await manager.getRepository(RecordTestStepActionWebdriverClick).softDelete(action.recordTestStepActionWebdriverClickId);
+  }
+
   public async runWebdriverClickAction() {}
 }

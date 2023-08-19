@@ -1,6 +1,8 @@
 import { OrganizationPropCamel, ProjectPropCamel, RecordTestCasePropCamel, RecordTestStepPropCamel, RecordTestStepResponse } from '@dogu-private/console';
 import { OrganizationId, ProjectId, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
 import { Body, Controller, Delete, Get, Inject, Param, Post } from '@nestjs/common';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 import { PROJECT_ROLE } from '../../../../module/auth/auth.types';
 import { ProjectPermission } from '../../../../module/auth/decorators';
 import { CreateRecordTestStepDto } from '../dto/record-test-step.dto';
@@ -11,6 +13,9 @@ export class RecordTestStepController {
   constructor(
     @Inject(RecordTestStepService)
     private readonly recordTestStepService: RecordTestStepService,
+
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
   ) {}
 
   @Get(`:${RecordTestStepPropCamel.recordTestStepId}`)
@@ -79,6 +84,8 @@ export class RecordTestStepController {
     @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
     @Param(RecordTestStepPropCamel.recordTestStepId) recordTestStepId: RecordTestCaseId,
   ): Promise<void> {
-    await this.recordTestStepService.deleteRecordTestStep(projectId, recordTestCaseId, recordTestStepId);
+    await this.dataSource.manager.transaction(async (manager) => {
+      await this.recordTestStepService.softDeleteRecordTestStep(manager, projectId, recordTestCaseId, recordTestStepId);
+    });
   }
 }

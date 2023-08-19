@@ -1,6 +1,8 @@
 import { ProjectPropCamel, RecordTestCasePropCamel, RecordTestScenarioBase, RecordTestScenarioPropCamel, RecordTestScenarioResponse } from '@dogu-private/console';
 import { ProjectId, RecordTestCaseId, RecordTestScenarioId } from '@dogu-private/types';
 import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query } from '@nestjs/common';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 import { PROJECT_ROLE } from '../../../../module/auth/auth.types';
 import { ProjectPermission } from '../../../../module/auth/decorators';
 import { Page } from '../../../../module/common/dto/pagination/page';
@@ -12,6 +14,8 @@ export class RecordTestScenarioController {
   constructor(
     @Inject(RecordTestScenarioService)
     private readonly recordTestScenarioService: RecordTestScenarioService,
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
   ) {}
 
   @Get()
@@ -47,24 +51,23 @@ export class RecordTestScenarioController {
 
   @Post(`:${RecordTestScenarioPropCamel.recordTestScenarioId}/record-test-cases`)
   @ProjectPermission(PROJECT_ROLE.WRITE)
-  async AddRecordTestCaseToScenario(
+  async attachRecordTestCaseToScenario(
     @Param(ProjectPropCamel.projectId) projectId: ProjectId,
     @Param(RecordTestScenarioPropCamel.recordTestScenarioId) recordTestScenarioId: RecordTestScenarioId,
     @Body() dto: AddRecordTestCaseToRecordTestScenarioDto,
   ): Promise<void> {
-    const rv = await this.recordTestScenarioService.addRecordTestCaseToRecordTestScenario(projectId, recordTestScenarioId, dto);
+    const rv = await this.recordTestScenarioService.attachRecordTestCaseToScenario(projectId, recordTestScenarioId, dto);
     return rv;
   }
 
   @Delete(`:${RecordTestScenarioPropCamel.recordTestScenarioId}/record-test-cases/:recordTestCaseId`)
   @ProjectPermission(PROJECT_ROLE.WRITE)
-  async removeRecordTestCaseFromScenario(
+  async detachRecordTestCaseFromScenario(
     @Param(ProjectPropCamel.projectId) projectId: ProjectId,
     @Param(RecordTestScenarioPropCamel.recordTestScenarioId) recordTestScenarioId: RecordTestScenarioId,
     @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
   ): Promise<void> {
-    const rv = await this.recordTestScenarioService.removeRecordTestCaseFromRecordTestScenario(projectId, recordTestScenarioId, recordTestCaseId);
-    return rv;
+    await this.recordTestScenarioService.detachRecordTestCaseFromScenario(projectId, recordTestScenarioId, recordTestCaseId);
   }
 
   @Post()

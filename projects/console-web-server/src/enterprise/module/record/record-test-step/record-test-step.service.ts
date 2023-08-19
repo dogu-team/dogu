@@ -8,6 +8,7 @@ import { RecordTestCase } from '../../../../db/entity/record-test-case.entity';
 import { RecordTestStepActionWebdriverClick } from '../../../../db/entity/record-test-step-action-webdriver-click.entity';
 import { RecordTestStep } from '../../../../db/entity/record-test-step.entity';
 import { ProjectFileService } from '../../../../module/file/project-file.service';
+import { detechRecordTestStepFromCase, getNextRecordTestStepInCase } from '../common';
 import { CreateRecordTestStepDto } from '../dto/record-test-step.dto';
 import { RecordTestStepActionService } from '../record-test-action/record-test-step-action.service';
 
@@ -31,7 +32,6 @@ export class RecordTestStepService {
     const recordTestStep = await this.dataSource
       .getRepository(RecordTestStep) //
       .createQueryBuilder('recordTestStep')
-      // .leftJoinAndSelect(`recordTestStep.${RecordTestStepPropCamel.recordTestStepActions}`, 'recordTestStepAction')
       .where(`recordTestStep.${RecordTestStepPropSnake.record_test_step_id} = :${RecordTestStepPropCamel.recordTestStepId}`, { recordTestStepId })
       .andWhere(`recordTestStep.${RecordTestStepPropSnake.record_test_case_id} = :${RecordTestStepPropCamel.recordTestCaseId}`, { recordTestCaseId })
       .andWhere(`recordTestStep.${RecordTestStepPropSnake.project_id} = :${RecordTestStepPropCamel.projectId}`, { projectId })
@@ -72,13 +72,38 @@ export class RecordTestStepService {
     return res;
   }
 
-  async deleteRecordTestStep(projectId: ProjectId, recordTestCaseId: RecordTestCaseId, recordTestStepId: RecordTestStepId): Promise<void> {
-    // const testStep = await this.dataSource.getRepository(RecordTestStep).findOne({ where: { projectId, recordTestCaseId, recordTestStepId } });
-    // if (!testStep) {
-    //   throw new HttpException(`RecordTestStep not found. recordTestStepId: ${recordTestStepId}`, HttpStatus.NOT_FOUND);
-    // }
-    // // FIXME: join data
-    // await this.dataSource.getRepository(RecordTestStep).softRemove(testStep);
+  async getRecordStepAction(recordTestStep: RecordTestStep): Promise<RecordTestStep> {
+    let action = null;
+    switch (recordTestStep.type) {
+      case RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_CLICK:
+        action = await this.dataSource.getRepository(RecordTestStepActionWebdriverClick).findOne({
+          where: { recordTestStepId: recordTestStep.recordTestStepId },
+        });
+        break;
+      case RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_INPUT:
+        break;
+      case RECORD_TEST_STEP_ACTION_TYPE.UNSPECIFIED:
+        break;
+      default:
+        const _exhaustiveCheck: never = recordTestStep.type;
+        throw new HttpException(`RecordTestStep type is invalid. type: ${recordTestStep.type}`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    if (!action) {
+      throw new HttpException(`RecordTestStepAction not found. recordTestStepId: ${recordTestStep.recordTestStepId}`, HttpStatus.NOT_FOUND);
+    }
+    recordTestStep.recordTestStepAction = action;
+    return recordTestStep;
+  }
+
+  async softDeleteRecordTestStep(manager: EntityManager, projectId: ProjectId, recordTestCaseId: RecordTestCaseId, recordTestStepId: RecordTestStepId): Promise<void> {
+    const recordTestStep = await manager.getRepository(RecordTestStep).findOne({ where: { projectId, recordTestCaseId, recordTestStepId } });
+    if (!recordTestStep) {
+      throw new HttpException(`RecordTestStep not found. recordTestStepId: ${recordTestStepId}`, HttpStatus.NOT_FOUND);
+    }
+
+    await detechRecordTestStepFromCase(manager, projectId, recordTestCaseId, recordTestStepId);
+    await this.recordTestStepActionService.softDeleteRecordTestStepAction(manager, recordTestStep);
+    await manager.getRepository(RecordTestStep).softDelete({ projectId, recordTestCaseId, recordTestStepId });
   }
 
   public async createRecordTestStep(
@@ -117,7 +142,7 @@ export class RecordTestStepService {
           throw new HttpException(`RecordTestStep not found. prevRecordTestStepId: ${prevRecordTestStepId}`, HttpStatus.NOT_FOUND);
         }
         // attech prevRecordTestStep
-        const next = await this.getNextRecordTestStep(manager, projectId, recordTestCaseId, prev);
+        const next = await getNextRecordTestStepInCase(manager, projectId, recordTestCaseId, prev);
         testStep = await manager.getRepository(RecordTestStep).save(newData);
         if (next) {
           next.prevRecordTestStepId = recordTestStepId;
@@ -139,68 +164,6 @@ export class RecordTestStepService {
 
     const res = await this.findRecordTestStepById(organizationId, projectId, recordTestCaseId, rv.recordTestStepId);
     return res;
-  }
-
-  async removeRecordTestStepFromRecordTestCase(
-    manager: EntityManager,
-    projectId: ProjectId,
-    recordTestCaseId: RecordTestCaseId,
-    recordTestStepId: RecordTestCaseId,
-  ): Promise<void> {
-    const testStep = await manager.getRepository(RecordTestStep).findOne({ where: { projectId, recordTestCaseId, recordTestStepId } });
-    if (!testStep) {
-      throw new HttpException(`RecordTestStep not found. recordTestStepId: ${recordTestStepId}`, HttpStatus.NOT_FOUND);
-    }
-    const next = await this.getNextRecordTestStep(manager, projectId, recordTestCaseId, testStep);
-    if (!next) {
-      // FIXME: (felix) remove join table
-      // await manager.getRepository(RecordTestStep).softDelete({ recordTestCaseId, recordTestStepId });
-      // deleteRecordTestStep
-      return;
-    }
-
-    const prev = await this.getPrevRecordTestStep(manager, projectId, recordTestCaseId, testStep);
-    if (prev) {
-      await manager.getRepository(RecordTestStep).update({ projectId, recordTestCaseId, recordTestStepId: next.recordTestStepId }, { prevRecordTestStepId: prev.recordTestStepId });
-    } else {
-      await manager.getRepository(RecordTestStep).update({ projectId, recordTestCaseId, recordTestStepId: next.recordTestStepId }, { prevRecordTestStepId: null });
-    }
-
-    // FIXME: (felix) remove join table
-    // await manager.getRepository(RecordTestStep).softDelete({ projectId, recordTestCaseId, recordTestStepId });
-    return;
-  }
-
-  private async getNextRecordTestStep(
-    manager: EntityManager, //
-    projectId: ProjectId,
-    recordTestCaseId: RecordTestCaseId,
-    recordTestStep: RecordTestStep,
-  ): Promise<RecordTestStep | null> {
-    const next = await manager.getRepository(RecordTestStep).findOne({ where: { projectId, recordTestCaseId, prevRecordTestStepId: recordTestStep.recordTestStepId } });
-    if (!next) {
-      return null;
-    }
-    return next;
-  }
-
-  private async getPrevRecordTestStep(
-    manager: EntityManager, //
-    projectId: ProjectId,
-    recordTestCaseId: RecordTestCaseId,
-    recordTestStep: RecordTestStep,
-  ): Promise<RecordTestStep | null> {
-    if (!recordTestStep.prevRecordTestStepId) {
-      return null;
-    }
-    const prev = await manager.getRepository(RecordTestStep).findOne({ where: { projectId, recordTestCaseId, recordTestStepId: recordTestStep.prevRecordTestStepId } });
-    if (!prev) {
-      throw new HttpException(
-        `PrevRecordTestStep not found. recordTestStepId: ${recordTestStep.recordTestStepId}, prevRecordTestStepId: ${recordTestStep.prevRecordTestStepId}`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    return prev;
   }
 
   public async getRecordTestStepScreenshotUrl(
