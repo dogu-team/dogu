@@ -4,6 +4,9 @@ title: 트러블 슈팅
 locale: ko
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 ### decoding 'command': invalid command line string
 
 `error decoding 'command': invalid command line string` 에러가 발생할 경우  
@@ -18,6 +21,54 @@ command: redis-server --requirepass ${REDIS_PASSWORD}
 user=${TURN_SERVER_USERNAME}:${TURN_SERVER_PASSWORD}, realm=${DOGU_HOST}
 -> user=admin:dogu-onprem, realm=${DOGU_HOST} <- env 파일에서 설정해주신 값을 넣어주세요
 ```
+
+### docker 실행 후, dogu-console 접속이 안될 경우
+
+dogu 실행 환경, 로그에 대한 정보를 수집하기 위해 아래 명령어를 실행해주세요.
+
+<Tabs groupId="os" defaultValue="linux" queryString>
+<TabItem value="linux" label="Linux" default>
+docker-compose.yml, env 파일을 생성한 경로로 이동 후 아래 명령어를 실행해주세요.<br />
+실행 후, 생성된 dogu_info.tar.gz 파일을 dogu-team에 전달해주세요.
+
+```
+# Architecture of the system
+echo "Architecture: $(uname -m)" > arch.txt
+
+# docker log
+docker ps -a > dogu_docker_ps.txt
+
+# dogu-console log
+docker logs dogu-console > dogu_console_logs.txt
+
+# make zip file
+tar -czvf dogu_info.tar.gz docker-compose.yml docker-compose.env arch.txt dogu_docker_ps.txt dogu_console_logs.txt
+```
+
+</TabItem>
+
+<TabItem value="windows" label="Windows">
+
+docker-compose.yml, env 파일을 생성한 경로로 이동 후 아래 명령어를 실행해주세요.<br />
+실행 후, 생성된 dogu_info.zip 파일을 dogu-team에 전달해주세요.
+
+```
+rem Architecture of the system
+echo Architecture: %PROCESSOR_ARCHITECTURE% > arch.txt
+
+rem docker log
+docker ps -a > dogu_docker_ps.txt
+
+rem dogu-console log
+docker logs dogu-console > dogu_console_logs.txt
+
+rem make zip file
+powershell -Command "Compress-Archive -LiteralPath docker-compose.yml,docker-compose.env,arch.txt,dogu_docker_ps.txt,dogu_console_logs.txt -DestinationPath dogu_info.zip"
+
+```
+
+</TabItem>
+</Tabs>
 
 ## 커뮤니티
 

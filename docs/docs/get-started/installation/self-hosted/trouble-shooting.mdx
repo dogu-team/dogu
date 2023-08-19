@@ -4,6 +4,9 @@ title: Troubleshooting
 locale: en
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 ### decoding 'command': invalid command line string
 
 If you encounter the `error decoding 'command': invalid command line string` error, please explicitly specify the following values in the docker-compose.yml file: ${REDIS_PASSWORD}, ${TURN_SERVER_USERNAME}, ${TURN_SERVER_PASSWORD}, ${DOGU_HOST}
@@ -16,6 +19,54 @@ command: redis-server --requirepass ${REDIS_PASSWORD}
 user=${TURN_SERVER_USERNAME}:${TURN_SERVER_PASSWORD}, realm=${DOGU_HOST}
 -> user=admin:dogu-onprem, realm=${DOGU_HOST} <- Replace it with the value you set in the environment file
 ```
+
+### dogu-console connection is not available after the run docker
+
+run the command below to collect information about the dogu execution environment and logs
+
+<Tabs groupId="os" defaultValue="linux" queryString>
+<TabItem value="linux" label="Linux" default>
+Go to the directory where you created the docker-compose.yml, env file and run the command below.<br />
+After running, deliver the generated dogu_info.tar.gz file to dogu-team.
+
+```
+# Architecture of the system
+echo "Architecture: $(uname -m)" > arch.txt
+
+# docker log
+docker ps -a > dogu_docker_ps.txt
+
+# dogu-console log
+docker logs dogu-console > dogu_console_logs.txt
+
+# make zip file
+tar -czvf dogu_info.tar.gz docker-compose.yml docker-compose.env arch.txt dogu_docker_ps.txt dogu_console_logs.txt
+```
+
+</TabItem>
+
+<TabItem value="windows" label="Windows">
+
+Go to the directory where you created the docker-compose.yml, env file and run the command below.<br />
+After running, deliver the generated dogu_info.zip file to dogu-team.
+
+```
+rem Architecture of the system
+echo Architecture: %PROCESSOR_ARCHITECTURE% > arch.txt
+
+rem docker log
+docker ps -a > dogu_docker_ps.txt
+
+rem dogu-console log
+docker logs dogu-console > dogu_console_logs.txt
+
+rem make zip file
+powershell -Command "Compress-Archive -LiteralPath docker-compose.yml,docker-compose.env,arch.txt,dogu_docker_ps.txt,dogu_console_logs.txt -DestinationPath dogu_info.zip"
+
+```
+
+</TabItem>
+</Tabs>
 
 ## Community
 
