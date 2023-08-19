@@ -136,6 +136,10 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
 
   async install(): Promise<void> {
     this.unitCallback.onInstallStarted();
+    const destDirPath = path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice');
+    if (fs.existsSync(destDirPath)) {
+      await removeItemRecursive(path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice'));
+    }
     await makeDirectories();
 
     const window = this.windowService.window;
