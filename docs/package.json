@@ -58,5 +58,6 @@
       "last 1 safari version"
     ]
   },
+  "packageManager": "yarn@3.3.1",
   "url": "https://github.com/dogu-team/dogu"
 }
