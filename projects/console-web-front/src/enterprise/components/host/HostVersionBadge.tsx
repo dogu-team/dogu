@@ -61,8 +61,11 @@ const HostVesrsionBadge = ({ host }: Props) => {
     <>
       <Tooltip
         title={
-          updatableInfo.reason ??
-          `Dogu and Agent version not matched!\nThis can result in unexpected behavior.\nDogu: ${process.env.NEXT_PUBLIC_DOGU_VERSION}, Agent: ${host.agentVersion}`
+          updatableInfo.reason
+            ? updatableInfo.reason
+            : host.connectionState !== HostConnectionState.HOST_CONNECTION_STATE_CONNECTED
+            ? `Updatable when connected`
+            : `Dogu and Agent version not matched!\nThis can result in unexpected behavior.\nDogu: ${process.env.NEXT_PUBLIC_DOGU_VERSION}, Agent: ${host.agentVersion}`
         }
         open={!updatableInfo.reason && isMatched ? false : undefined}
         overlayInnerStyle={{ fontSize: '.8rem', textAlign: 'center', whiteSpace: 'pre-wrap' }}
