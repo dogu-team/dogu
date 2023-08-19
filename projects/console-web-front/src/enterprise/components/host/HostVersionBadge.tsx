@@ -1,6 +1,6 @@
 import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined, QuestionCircleFilled } from '@ant-design/icons';
 import { HostBase } from '@dogu-private/console';
-import { EDITION_TYPE } from '@dogu-private/types';
+import { EDITION_TYPE, HostConnectionState } from '@dogu-private/types';
 import { Button, Tag, Tooltip } from 'antd';
 import { useContext } from 'react';
 import styled from 'styled-components';
@@ -53,7 +53,8 @@ const HostVesrsionBadge = ({ host }: Props) => {
   const isMatched = isMajorMatched && currentVersion.minor === agentVersion.minor;
 
   const updatableInfo = getAgentUpdatableInfo(latestContext.latestInfo, host);
-  const updatable = featureContext?.defaultEdition === EDITION_TYPE.ENTERPRISE && updatableInfo.isUpdatable;
+  const updatable =
+    host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED && featureContext?.defaultEdition === EDITION_TYPE.ENTERPRISE && updatableInfo.isUpdatable;
   const shouldShowUpdateButton = updatableInfo.reason || updatableInfo.isUpdatable;
 
   return (
