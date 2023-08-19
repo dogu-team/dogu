@@ -8,13 +8,11 @@ export class FilteredAxiosError extends Error {
 
   constructor(axiosError: AxiosError) {
     const { message, cause } = axiosError;
-    const details = axiosError.toJSON();
-    const newMessage = `${message} ${JSON.stringify(details, null, 2)}`;
-    super(newMessage, { cause });
+    super(message, { cause });
     this.name = 'FilteredAxiosError';
-    this.stack = axiosError.stack;
     this.code = axiosError.code;
     this.responseStatus = axiosError.response?.status;
+    this.details = axiosError.toJSON();
   }
 }
 
