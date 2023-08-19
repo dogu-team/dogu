@@ -17,7 +17,8 @@ interface File {
   url: string;
   path: () => string;
   fileMode?: number;
-  archName?: string;
+  archCheckPath: () => string;
+  archName: 'arm64' | 'x86_64';
   unzipDirName?: string;
 }
 
@@ -26,6 +27,7 @@ const files: File[] = [
     condition: () => process.platform === 'darwin' && process.arch === 'arm64',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/idevicediagnostics-arm64',
     path: () => HostPaths.external.libimobiledevice.idevicediagnostics(),
+    archCheckPath: () => HostPaths.external.libimobiledevice.idevicediagnostics(),
     fileMode: 0o777,
     archName: 'arm64',
   },
@@ -33,6 +35,7 @@ const files: File[] = [
     condition: () => process.platform === 'darwin' && process.arch === 'x64',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/idevicediagnostics-x64',
     path: () => HostPaths.external.libimobiledevice.idevicediagnostics(),
+    archCheckPath: () => HostPaths.external.libimobiledevice.idevicediagnostics(),
     fileMode: 0o777,
     archName: 'x86_64',
   },
@@ -40,6 +43,7 @@ const files: File[] = [
     condition: () => process.platform === 'darwin' && process.arch === 'arm64',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/idevicesyslog-arm64',
     path: () => HostPaths.external.libimobiledevice.idevicesyslog(),
+    archCheckPath: () => HostPaths.external.libimobiledevice.idevicesyslog(),
     fileMode: 0o777,
     archName: 'arm64',
   },
@@ -47,6 +51,7 @@ const files: File[] = [
     condition: () => process.platform === 'darwin' && process.arch === 'x64',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/idevicesyslog-x64',
     path: () => HostPaths.external.libimobiledevice.idevicesyslog(),
+    archCheckPath: () => HostPaths.external.libimobiledevice.idevicesyslog(),
     fileMode: 0o777,
     archName: 'x86_64',
   },
@@ -54,12 +59,16 @@ const files: File[] = [
     condition: () => process.platform === 'darwin' && process.arch === 'arm64',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/libimobiledevice-dylib-arm64.zip',
     path: () => HostPaths.external.libimobiledevice.libimobiledeviceLibPath(),
+    archCheckPath: () => path.resolve(HostPaths.external.libimobiledevice.libimobiledeviceLibPath(), 'libimobiledevice-1.0.6.dylib'),
+    archName: 'arm64',
     unzipDirName: 'libimobiledevice',
   },
   {
     condition: () => process.platform === 'darwin' && process.arch === 'x64',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/libimobiledevice-1.0.6/libimobiledevice-dylib-x64.zip',
     path: () => HostPaths.external.libimobiledevice.libimobiledeviceLibPath(),
+    archCheckPath: () => path.resolve(HostPaths.external.libimobiledevice.libimobiledeviceLibPath(), 'libimobiledevice-1.0.6.dylib'),
+    archName: 'x86_64',
     unzipDirName: 'libimobiledevice',
   },
 ];
@@ -100,13 +109,12 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
       if (!fs.existsSync(path)) {
         throw new Error(`${path} not found`);
       }
-      if (file.archName) {
-        const { stdout, stderr } = await ChildProcess.execIgnoreError(`lipo -info ${path}`, {}, this.logger);
-        if (!stdout.includes(`architecture: ${file.archName}`)) {
-          throw new Error(`${path} should be ${file.archName} file`);
-        }
-        await ChildProcess.execIgnoreError(`xattr -dr com.apple.quarantine ${path}`, {}, this.logger);
+      const archCheckPath = file.archCheckPath();
+      const { stdout, stderr } = await ChildProcess.execIgnoreError(`lipo -info ${archCheckPath}`, {}, this.logger);
+      if (!stdout.includes(`architecture: ${file.archName}`)) {
+        throw new Error(`${archCheckPath} should be ${file.archName} file`);
       }
+      await ChildProcess.execIgnoreError(`xattr -dr com.apple.quarantine ${archCheckPath}`, {}, this.logger);
       if (file.fileMode) {
         await fs.promises.chmod(path, 0o777);
       }
