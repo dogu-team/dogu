@@ -38,9 +38,11 @@ export class UpdateProcessor {
           const pids = child.pid ? [...(await getChildProcessIds(child.pid, this.logger)), child.pid] : [];
 
           // quit app
-          const pid = env.DOGU_ROOT_PID ?? process.pid;
-          this.logger.info(`UpdateProcessor.update. quit app pid: ${pid}`);
-          killProcessIgnore(pid, pids, this.logger);
+          setTimeout(() => {
+            const pid = env.DOGU_ROOT_PID ?? process.pid;
+            this.logger.info(`UpdateProcessor.update. quit app pid: ${pid}`);
+            killProcessIgnore(pid, pids, this.logger);
+          }, 2000);
         })
         .catch((e) => {
           const error = errorify(e);
