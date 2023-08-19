@@ -10,13 +10,13 @@ import {
 import { ProjectId, RecordTestCaseId, RecordTestScenarioId } from '@dogu-private/types';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource, EntityManager, IsNull } from 'typeorm';
+import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
 import { RecordTestScenarioAndRecordTestCase } from '../../../../db/entity/index';
 import { RecordTestCase } from '../../../../db/entity/record-test-case.entity';
 import { RecordTestScenario } from '../../../../db/entity/record-test-scenario.entity';
 import { EMPTY_PAGE, Page } from '../../../../module/common/dto/pagination/page';
-import { castEntity } from '../../../../types/entity-cast';
+import { addRecordTestCaseToMappingTable, detachRecordTestCaseFromScenario, softDeleteRecordTestCaseFromMappingTable } from '../common';
 import {
   AddRecordTestCaseToRecordTestScenarioDto,
   CreateRecordTestScenarioDto,
@@ -112,7 +112,7 @@ export class RecordTestScenarioService {
     await this.dataSource.getRepository(RecordTestScenario).softRemove(data);
   }
 
-  async removeRecordTestCaseFromRecordTestScenario(
+  async detachRecordTestCaseFromScenario(
     projectId: ProjectId, //
     recordTestScenarioId: RecordTestScenarioId,
     recordTestCaseId: RecordTestCaseId,
@@ -126,33 +126,12 @@ export class RecordTestScenarioService {
       throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
     }
 
-    const mappingData = await this.dataSource
-      .getRepository(RecordTestScenarioAndRecordTestCase) //
-      .createQueryBuilder('recordTestScenarioAndRecordTestCase')
-      .innerJoinAndSelect(`recordTestScenarioAndRecordTestCase.${RecordTestScenarioAndRecordTestCasePropCamel.recordTestCase}`, 'recordTestCase')
-      .where(
-        `recordTestScenarioAndRecordTestCase.${RecordTestScenarioAndRecordTestCasePropSnake.record_test_scenario_id} = :${RecordTestScenarioAndRecordTestCasePropCamel.recordTestScenarioId}`,
-        { recordTestScenarioId },
-      )
-      .andWhere(
-        `recordTestScenarioAndRecordTestCase.${RecordTestScenarioAndRecordTestCasePropSnake.record_test_case_id} = :${RecordTestScenarioAndRecordTestCasePropCamel.recordTestCaseId}`,
-        { recordTestCaseId },
-      )
-      .getOne();
-
-    if (!mappingData) {
-      throw new HttpException(
-        `RecordTestScenarioAndRecordTestCase not found. recordTestScenarioId: ${recordTestScenarioId}, recordTestCaseId: ${recordTestCaseId}`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
-
     await this.dataSource.manager.transaction(async (manager) => {
-      await this.removeRecordTestCaseFromMappingTable(manager, recordTestScenarioId, testCase);
+      await detachRecordTestCaseFromScenario(manager, scenario, testCase);
     });
   }
 
-  async addRecordTestCaseToRecordTestScenario(
+  async attachRecordTestCaseToScenario(
     projectId: ProjectId, //
     recordTestScenarioId: RecordTestScenarioId,
     dto: AddRecordTestCaseToRecordTestScenarioDto,
@@ -195,146 +174,11 @@ export class RecordTestScenarioService {
 
     await this.dataSource.manager.transaction(async (manager) => {
       if (mappingData) {
-        await this.removeRecordTestCaseFromMappingTable(manager, recordTestScenarioId, mappingData.recordTestCase!);
-        await this.addRecordTestCaseToMappingTable(manager, recordTestScenarioId, mappingData.recordTestCase!, prevRecordTestCaseId);
+        await softDeleteRecordTestCaseFromMappingTable(manager, recordTestScenarioId, mappingData.recordTestCase!);
+        await addRecordTestCaseToMappingTable(manager, recordTestScenarioId, mappingData.recordTestCase!, prevRecordTestCaseId);
       } else {
-        await this.addRecordTestCaseToMappingTable(manager, recordTestScenarioId, testCase, prevRecordTestCaseId);
+        await addRecordTestCaseToMappingTable(manager, recordTestScenarioId, testCase, prevRecordTestCaseId);
       }
     });
-  }
-
-  private async removeRecordTestCaseFromMappingTable(
-    manager: EntityManager, //
-    recordTestScenarioId: RecordTestScenarioId,
-    recordTestCase: RecordTestCase,
-  ): Promise<void> {
-    const next = await this.getNextRecordTestCase(manager, recordTestScenarioId, recordTestCase);
-    if (!next) {
-      await manager.getRepository(RecordTestScenarioAndRecordTestCase).softDelete({ recordTestScenarioId, recordTestCaseId: recordTestCase.recordTestCaseId });
-      return;
-    }
-    const prev = await this.getPrevRecordTestCase(manager, recordTestScenarioId, recordTestCase);
-    if (prev) {
-      await manager
-        .getRepository(RecordTestScenarioAndRecordTestCase)
-        .update({ recordTestScenarioId, recordTestCaseId: next.recordTestCaseId }, { prevRecordTestCaseId: prev.recordTestCaseId });
-    } else {
-      await manager.getRepository(RecordTestScenarioAndRecordTestCase).update({ recordTestScenarioId, recordTestCaseId: next.recordTestCaseId }, { prevRecordTestCaseId: null });
-    }
-    await manager.getRepository(RecordTestScenarioAndRecordTestCase).softDelete({ recordTestScenarioId, recordTestCaseId: recordTestCase.recordTestCaseId });
-  }
-
-  private async addRecordTestCaseToMappingTable(
-    manager: EntityManager, //
-    recordTestScenarioId: RecordTestScenarioId,
-    recordTestCase: RecordTestCase,
-    prevRecordTestCaseId: RecordTestCaseId | null,
-  ): Promise<void> {
-    // root
-    if (!prevRecordTestCaseId) {
-      const originRoot = await manager.getRepository(RecordTestScenarioAndRecordTestCase).findOne({
-        where: {
-          recordTestScenarioId,
-          recordTestCaseId: IsNull(),
-        },
-      });
-      if (!originRoot) {
-        throw new HttpException(`First RecordTestCase not found. recordTestScenarioId: ${recordTestScenarioId}`, HttpStatus.NOT_FOUND);
-      }
-      originRoot.prevRecordTestCaseId = recordTestCase.recordTestCaseId;
-      await manager.getRepository(RecordTestScenarioAndRecordTestCase).save(originRoot);
-
-      const newRoot = manager.getRepository(RecordTestScenarioAndRecordTestCase).create({
-        recordTestScenarioId,
-        recordTestCaseId: recordTestCase.recordTestCaseId,
-        prevRecordTestCaseId: null,
-        deletedAt: null,
-      });
-      await manager
-        .getRepository(RecordTestScenarioAndRecordTestCase)
-        .upsert(castEntity(newRoot), [`${RecordTestScenarioAndRecordTestCasePropCamel.recordTestScenarioId}`, `${RecordTestScenarioAndRecordTestCasePropCamel.recordTestCaseId}`]);
-      return;
-    }
-
-    const oldNext = await manager.getRepository(RecordTestScenarioAndRecordTestCase).findOne({
-      where: {
-        recordTestScenarioId,
-        prevRecordTestCaseId,
-      },
-    });
-
-    // tail
-    if (!oldNext) {
-      const newTail = manager.getRepository(RecordTestScenarioAndRecordTestCase).create({
-        recordTestScenarioId,
-        recordTestCaseId: recordTestCase.recordTestCaseId,
-        prevRecordTestCaseId,
-        deletedAt: null,
-      });
-      await manager
-        .getRepository(RecordTestScenarioAndRecordTestCase)
-        .upsert(castEntity(newTail), [`${RecordTestScenarioAndRecordTestCasePropCamel.recordTestScenarioId}`, `${RecordTestScenarioAndRecordTestCasePropCamel.recordTestCaseId}`]);
-      return;
-    } else {
-      // middle
-      const newMiddle = manager.getRepository(RecordTestScenarioAndRecordTestCase).create({
-        recordTestScenarioId,
-        recordTestCaseId: recordTestCase.recordTestCaseId,
-        prevRecordTestCaseId,
-        deletedAt: null,
-      });
-      await manager
-        .getRepository(RecordTestScenarioAndRecordTestCase)
-        .upsert(castEntity(newMiddle), [
-          `${RecordTestScenarioAndRecordTestCasePropCamel.recordTestScenarioId}`,
-          `${RecordTestScenarioAndRecordTestCasePropCamel.recordTestCaseId}`,
-        ]);
-      oldNext.prevRecordTestCaseId = recordTestCase.recordTestCaseId;
-      await manager.getRepository(RecordTestScenarioAndRecordTestCase).save(oldNext);
-      return;
-    }
-  }
-
-  private async getNextRecordTestCase(
-    manager: EntityManager, //
-    recordTestScenarioId: RecordTestScenarioId,
-    recordTestCase: RecordTestCase,
-  ): Promise<RecordTestCase | null> {
-    const next = await manager
-      .getRepository(RecordTestScenarioAndRecordTestCase) //
-      .createQueryBuilder('scenarioAndCase')
-      .leftJoinAndSelect(`scenarioAndCase.${RecordTestScenarioAndRecordTestCasePropCamel.recordTestCase}`, 'recordTestCase')
-      .where(`scenarioAndCase.${RecordTestScenarioAndRecordTestCasePropSnake.record_test_scenario_id} = :${RecordTestScenarioAndRecordTestCasePropCamel.recordTestScenarioId}`, {
-        recordTestScenarioId,
-      })
-      .andWhere(
-        `scenarioAndCase.${RecordTestScenarioAndRecordTestCasePropSnake.prev_record_test_case_id} = :${RecordTestScenarioAndRecordTestCasePropCamel.prevRecordTestCaseId}`,
-        {
-          prevRecordTestCaseId: recordTestCase.recordTestCaseId,
-        },
-      )
-      .getOne();
-    return next?.recordTestCase ?? null;
-  }
-
-  private async getPrevRecordTestCase(
-    manager: EntityManager, //
-    recordTestScenarioId: RecordTestScenarioId,
-    recordTestCase: RecordTestCase,
-  ): Promise<RecordTestCase | null> {
-    const current = await manager
-      .getRepository(RecordTestScenarioAndRecordTestCase)
-      .createQueryBuilder('scenarioAndCase')
-      .leftJoinAndSelect(`scenarioAndCase.${RecordTestScenarioAndRecordTestCasePropCamel.prevRecordTestCase}`, 'prevRecordTestCase')
-      .where(`scenarioAndCase.${RecordTestScenarioAndRecordTestCasePropSnake.record_test_scenario_id} = :${RecordTestScenarioAndRecordTestCasePropCamel.recordTestScenarioId}`, {
-        recordTestScenarioId,
-      })
-      .andWhere(`scenarioAndCase.${RecordTestScenarioAndRecordTestCasePropSnake.record_test_case_id} = :${RecordTestScenarioAndRecordTestCasePropCamel.recordTestCaseId}`, {
-        recordTestCaseId: recordTestCase.recordTestCaseId,
-      })
-      .getOne();
-
-    const prev = current?.prevRecordTestCase;
-    return prev ?? null;
   }
 }
