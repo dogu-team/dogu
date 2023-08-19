@@ -23,7 +23,7 @@ interface Props {
 }
 
 const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
-  const { loading, deviceRTCCaller } = useDeviceStreamingContext();
+  const { loading, deviceRTCCaller, videoRef } = useDeviceStreamingContext();
   const [requestLoading, request] = useRequest(createRecordTestStep);
   const [isRecording, setIsRecording] = useState(false);
   const [isDeviceKeyboardShown, setIsDeviceKeyboardShown] = useState(false);
@@ -46,8 +46,8 @@ const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
           recordTestCaseId: caseId,
           actionInfo: {
             type: 'WEBDRIVER_CLICK',
-            videoScreenSizeX: videoSize.width,
-            videoScreenSizeY: videoSize.height,
+            videoScreenSizeX: e.currentTarget.clientWidth,
+            videoScreenSizeY: e.currentTarget.clientHeight,
             videoScreenPositionX: e.nativeEvent.offsetX,
             videoScreenPositionY: e.nativeEvent.offsetY,
           },
