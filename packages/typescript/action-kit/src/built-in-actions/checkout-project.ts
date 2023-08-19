@@ -12,9 +12,15 @@ export async function checkoutProject(
   DOGU_ROUTINE_WORKSPACE_PATH: string,
   branchOrTag: string,
   clean: boolean,
+  checkoutUrl?: string,
 ) {
-  const { url } = await consoleActionClient.getGitlabUrl();
-  printable.info('Gitlab URL', { url });
+  if (!checkoutUrl) {
+    printable.info('Getting Git url from console...');
+    const { url } = await consoleActionClient.getGitlabUrl();
+    checkoutUrl = url;
+  }
+  printable.info('Git url', { checkoutUrl });
+
   const pathMap = await deviceHostClient.getPathMap();
   const { git } = pathMap.common;
   printable.info('Git path', { git });
@@ -44,7 +50,7 @@ export async function checkoutProject(
   const stat = await fs.promises.stat(dotGitPath).catch(() => null);
   if (!stat) {
     printable.info('Git repository not found', { routineWorkspacePath });
-    command(git, [...configArgs, 'clone', '--depth', '1', '--branch', branchOrTag, url, routineWorkspacePath], 'Cloning Git repository...', 'Git clone failed');
+    command(git, [...configArgs, 'clone', '--depth', '1', '--branch', branchOrTag, checkoutUrl, routineWorkspacePath], 'Cloning Git repository...', 'Git clone failed');
   } else {
     printable.info('Git repository found', { routineWorkspacePath });
     if (clean) {

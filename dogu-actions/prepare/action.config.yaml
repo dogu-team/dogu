@@ -17,6 +17,10 @@ inputs:
     description: relative path of Dogu routine workspace path or absolute path to checkout
     default: ''
     required: false
+  checkoutUrl:
+    description: checkout url. if not set, use repository url from Dogu project settings. recommended to use repository url from Dogu project settings.
+    default: ''
+    required: false
   uninstallApp:
     description: uninstall app before install
     default: false

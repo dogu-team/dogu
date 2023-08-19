@@ -8,6 +8,7 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
   const branchOrTag = input.get<string>('branchOrTag');
   const postCommand = input.get<string>('postCommand');
   const checkoutPath = input.get<string>('checkoutPath');
+  const checkoutUrl = input.get<string>('checkoutUrl');
 
   logger.info('resolve checkout path... from', { DOGU_ROUTINE_WORKSPACE_PATH, checkoutPath });
   const resolvedCheckoutPath = path.resolve(DOGU_ROUTINE_WORKSPACE_PATH, checkoutPath);
@@ -17,7 +18,7 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
   if (optionsConfig.get('localUserProject.use', false)) {
     logger.info('Using local user project...');
   } else {
-    await checkoutProject(logger, consoleActionClient, deviceHostClient, resolvedCheckoutPath, branchOrTag, clean);
+    await checkoutProject(logger, consoleActionClient, deviceHostClient, resolvedCheckoutPath, branchOrTag, clean, checkoutUrl);
     const workspacePath = resolvedCheckoutPath;
 
     if (postCommand) {
