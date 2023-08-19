@@ -11,6 +11,7 @@ import { ipc } from '../utils/window';
 import HeaderIconMenuButon from '../components/layouts/HeaderIconMenuButon';
 import { NetworkSetupModal } from '../components/overlays/NetworkSetupModal';
 import useEnvironmentStore from '../stores/environment';
+import { delay } from '@dogu-tech/common';
 
 const SetupInstaller = () => {
   const { externalInfos } = usePlatformSupportedExternalInfo();
@@ -21,7 +22,19 @@ const SetupInstaller = () => {
 
   const navigate = useNavigate();
   const [isInstalling, setIsInstalling] = useState(false);
-  const toast = useToast();
+  const [isAutoUpdateStarted, setIsAutoUpdateStarted] = useState(false);
+  const failToast = useToast({
+    title: 'Failed to install external tools',
+    description: 'Please try again. If this error persists, please contact us.',
+    status: 'error',
+  });
+  const autoUpdateToast = useToast({
+    id: 'update',
+    title: 'Proceed update',
+    description: 'The app already has a record of consent, so we proceed with the update right away.',
+    duration: 10000,
+    isClosable: false,
+  });
 
   const externalInfosExcludedManual = externalInfos?.filter((item) => !item.isManualInstallNeeded).filter((item) => !item.result?.valid);
 
@@ -30,6 +43,39 @@ const SetupInstaller = () => {
       navigate('/setup/config');
     }
   }, [externalInfosExcludedManual]);
+
+  useEffect(() => {
+    (async () => {
+      if (!externalInfosExcludedManual || 0 === externalInfosExcludedManual.length || isAutoUpdateStarted) {
+        return;
+      }
+      let isAllAgreed = true;
+      for (const externalInfo of externalInfosExcludedManual) {
+        if (await ipc.externalClient.isAgreementNeeded(externalInfo.key)) {
+          isAllAgreed = false;
+        }
+      }
+      if (!isAllAgreed) {
+        return;
+      }
+      setIsAgreed(true);
+      setIsAutoUpdateStarted(true);
+      autoUpdateToast();
+
+      await delay(1000);
+      onInstallClick();
+    })();
+  }, [externalInfosExcludedManual]);
+
+  const onInstallClick = async () => {
+    if (!externalInfosExcludedManual) {
+      throw new Error('externalInfosExcludedManual is undefined');
+    }
+    for (const externalInfo of externalInfosExcludedManual) {
+      await ipc.externalClient.writeAgreement(externalInfo.key, true);
+    }
+    onOpen();
+  };
 
   const handleFinish = async () => {
     setIsAgreed(false);
@@ -43,11 +89,7 @@ const SetupInstaller = () => {
     const isValid = await ipc.externalClient.isSupportedPlatformValid({ ignoreManual: true });
 
     if (!isValid) {
-      toast({
-        title: 'Failed to install external tools',
-        description: 'Please try again. If this error persists, please contact us.',
-        status: 'error',
-      });
+      failToast();
 
       setIsInstalling(false);
       return;
@@ -80,7 +122,7 @@ const SetupInstaller = () => {
                 </Checkbox>
               </div>
               <Flex justifyContent="flex-end" mt={2}>
-                <Button colorScheme="blue" isDisabled={!isAgreed || isInstalling} isLoading={isInstalling} onClick={onOpen}>
+                <Button colorScheme="blue" isDisabled={!isAgreed || isInstalling} isLoading={isInstalling} onClick={onInstallClick}>
                   Install
                 </Button>
               </Flex>

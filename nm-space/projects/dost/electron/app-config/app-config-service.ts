@@ -94,7 +94,10 @@ export class AppConfigService implements IAppConfigClient {
   }
 
   async setAgreement(key: AgreementKey, value: boolean): Promise<void> {
-    const agreements = (await this.client.get('DOGU_EXTERNAL_AGREEMENTS_STATUS')) as unknown as Record<AgreementKey, boolean>;
+    let agreements = (await this.client.get('DOGU_EXTERNAL_AGREEMENTS_STATUS')) as unknown as Record<AgreementKey, boolean>;
+    if (!agreements) {
+      agreements = {} as Record<AgreementKey, boolean>;
+    }
     agreements[key] = value;
     await this.client.set('DOGU_EXTERNAL_AGREEMENTS_STATUS', agreements);
   }
