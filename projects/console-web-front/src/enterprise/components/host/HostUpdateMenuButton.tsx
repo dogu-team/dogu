@@ -53,8 +53,8 @@ const HostUpdateMenuButton = ({ host, organizationId, isTooltipVisible }: Props)
         {t('device-farm:hostItemUpdateMenu')}
 
         {featureContext?.defaultEdition === EDITION_TYPE.COMUINITIY && (
-          <Tag color="yellow" style={{ marginLeft: '.5rem' }}>
-            Enterprise ✨
+          <Tag color="cyan-inverse" style={{ marginLeft: '.5rem' }}>
+            Pro ✨
           </Tag>
         )}
 
