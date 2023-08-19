@@ -19,7 +19,7 @@ const HostVesrsionBadge = ({ version }: Props) => {
 
   return (
     <Tooltip
-      title={`Dogu and Agent version not matched!\nThis can result in unexpected behavior.\nDogu: ${currentVersion}, Agent: ${version}`}
+      title={`Dogu and Agent version not matched!\nThis can result in unexpected behavior.\nDogu: ${process.env.NEXT_PUBLIC_DOGU_VERSION}, Agent: ${version}`}
       open={isMatched ? false : undefined}
       overlayInnerStyle={{ fontSize: '.8rem', textAlign: 'center', whiteSpace: 'pre-wrap' }}
     >
