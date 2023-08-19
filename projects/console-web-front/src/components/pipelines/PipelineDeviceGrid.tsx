@@ -1,9 +1,10 @@
 import { MobileOutlined } from '@ant-design/icons';
 import { RoutineDeviceJobBase, RoutineJobBase } from '@dogu-private/console';
 import { PIPELINE_STATUS } from '@dogu-private/types';
-import { Col, Row } from 'antd';
+import { sort } from 'ramda';
 import styled from 'styled-components';
 
+import { isDesktop } from '../../utils/device';
 import DeviceLiveCell from '../device/DeviceLiveCell';
 
 interface Props {
@@ -31,10 +32,11 @@ const PipelineDeviceGrid = ({ routineJobs }: Props) => {
 
   return (
     <Box>
-      {jobs.map((deviceJob) => {
+      {sort((a, b) => Number(isDesktop(a.device)) - Number(isDesktop(b.device)), jobs).map((deviceJob) => {
         if (deviceJob?.status === PIPELINE_STATUS.IN_PROGRESS) {
+          const desktop = isDesktop(deviceJob.device);
           return (
-            <CellWrapper key={deviceJob.routineDeviceJobId}>
+            <CellWrapper key={deviceJob.routineDeviceJobId} isDesktop={desktop}>
               <div>
                 <DeviceLiveCell device={deviceJob.device} />
               </div>
@@ -70,8 +72,9 @@ const EmptyBox = styled.div`
   justify-content: center;
 `;
 
-const CellWrapper = styled.div`
+const CellWrapper = styled.div<{ isDesktop: boolean }>`
   border: 1px solid #e8e8e8;
   border-radius: 8px;
   padding: 0.5rem;
+  ${(props) => (props.isDesktop ? 'grid-column: 1 / span 3;' : '')}
 `;
