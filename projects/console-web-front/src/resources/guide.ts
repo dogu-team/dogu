@@ -83,6 +83,8 @@ export interface GuideDetailData {
   sampleFilePath: string;
 }
 
+const isMobile = (platform: GuideSupportPlatform) => [GuideSupportPlatform.ANDROID, GuideSupportPlatform.IOS].includes(platform);
+
 export interface Guide {
   supportFrameworks: { [key in GuideSupportLanguage]?: GuideSupportFramework[] };
   platformAndTarget: { [key in GuideSupportPlatform]?: GuideSupportTarget[] };
@@ -131,7 +133,7 @@ export const appiumGuideData: Guide = {
   "runsOn": "${platform}",  // or another device tag
   ${
     target === GuideSupportTarget.WEB
-      ? `"browserName": "${platform === GuideSupportPlatform.IOS ? 'safari' : 'chrome'}", // available: "safari", "chrome", "firefox"`
+      ? `"browserName": "${platform === GuideSupportPlatform.IOS ? 'safari' : 'chrome'}", ${isMobile(platform) ? '' : '// available: "safari", "chrome", "firefox"'}`
       : `"appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'INSERT_YOUR_APP_VERSION'}",`
   }
 }
@@ -216,7 +218,7 @@ export const webdriverioGuideData: Guide = {
   "runsOn": "${platform}",  // or another device tag
   ${
     target === GuideSupportTarget.WEB
-      ? `"browserName": "${platform === GuideSupportPlatform.IOS ? 'safari' : 'chrome'}", // available: "safari", "chrome", "firefox"`
+      ? `"browserName": "${platform === GuideSupportPlatform.IOS ? 'safari' : 'chrome'}", ${isMobile(platform) ? '' : '// available: "safari", "chrome", "firefox"'}`
       : `"appVersion": "${platform === GuideSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'INSERT_YOUR_APP_VERSION'}",`
   }
 }
