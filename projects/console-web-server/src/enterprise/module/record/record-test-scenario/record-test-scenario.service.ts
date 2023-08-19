@@ -8,7 +8,7 @@ import {
   RecordTestScenarioResponse,
 } from '@dogu-private/console';
 import { ProjectId, RecordTestCaseId, RecordTestScenarioId } from '@dogu-private/types';
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager } from 'typeorm';
 import { v4 } from 'uuid';
@@ -23,16 +23,12 @@ import {
   FindRecordTestScenariosByProjectIdDto,
   UpdateRecordTestScenarioDto,
 } from '../dto/record-test-scenario.dto';
-import { RecordTestCaseService } from '../record-test-case/record-test-case.service';
 
 @Injectable()
 export class RecordTestScenarioService {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
-
-    @Inject()
-    private readonly recordTestCaseService: RecordTestCaseService,
   ) {}
 
   async createRecordTestScenario(projectId: ProjectId, dto: CreateRecordTestScenarioDto): Promise<RecordTestScenarioBase> {
