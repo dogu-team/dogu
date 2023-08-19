@@ -48,7 +48,7 @@ const StudioLayout = ({ children, project, deviceId, editionType }: Props) => {
                 </IconWrapper>
               </StyledLink>
             </Tooltip>
-            <Tooltip title="Record Testing" placement="right">
+            {/* <Tooltip title="Record Testing" placement="right">
               <StyledLink
                 href={{
                   pathname: '/dashboard/[orgId]/projects/[pid]/studio/[deviceId]/record',
@@ -62,7 +62,7 @@ const StudioLayout = ({ children, project, deviceId, editionType }: Props) => {
                   <BiVideoRecording style={{ fontSize: '1.5rem' }} />
                 </IconWrapper>
               </StyledLink>
-            </Tooltip>
+            </Tooltip> */}
           </Side>
           <Main>{children}</Main>
         </FlexRow>
