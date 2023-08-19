@@ -34,7 +34,7 @@ Routine과 Github Action을 연동하여 테스트 CI/CD 환경을 구축할 수
 
 ## Token 발급
 
-#### 1. Dogu 프로젝트 페이지로 이동하여 `Seetings` 탭으로 이동합니다.
+#### 1. Dogu 프로젝트 페이지로 이동하여 `Settings` 탭으로 이동합니다.
 
 <img src={github_move_dogu_project_settings} />
 
@@ -133,6 +133,10 @@ jobs:
         env:
           DOGU_TOKEN: ${{ secrets.DOGU_PROJECT_TOKEN }}
 ```
+
+:::info
+api-url은 Self-Hosted Dogu API 서버의 URL을 입력합니다.
+:::
 
 </TabItem>
 </Tabs>
