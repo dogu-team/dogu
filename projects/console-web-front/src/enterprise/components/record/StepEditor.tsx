@@ -12,9 +12,10 @@ interface Props {
 const StepEditor = ({ step }: Props) => {
   const itemRef = useRef<HTMLDivElement>(null);
   const imageWrapperRef = useRef<HTMLDivElement>(null);
+  const boundRef = useRef<HTMLDivElement>(null);
 
   const resizeImageAndAddBound = (img: HTMLImageElement) => {
-    if (itemRef.current && imageWrapperRef.current) {
+    if (itemRef.current && imageWrapperRef.current && boundRef.current) {
       const parentWidth = itemRef.current.clientWidth;
       const parentHeight = itemRef.current.clientHeight;
       const imageWidth = img.naturalWidth;
@@ -30,6 +31,31 @@ const StepEditor = ({ step }: Props) => {
         imageWrapperRef.current.style.width = `${(imageWidth * parentHeight) / imageHeight}px`;
         imageWrapperRef.current.style.height = '100%';
       }
+
+      if (step?.recordTestStepAction) {
+        const ratio = imageWrapperRef.current.clientWidth / step.recordTestStepAction.deviceScreenSizeX;
+
+        console.log(ratio, imageWrapperRef.current.clientWidth, imageWidth);
+
+        const originX = step.recordTestStepAction.boundX;
+        const originY = step.recordTestStepAction.boundY;
+        const originWidth = step.recordTestStepAction.boundWidth;
+        const originHeight = step.recordTestStepAction.boundHeight;
+
+        console.log(originX, originY, originWidth, originHeight);
+
+        const boundX = originX * ratio;
+        const boundY = originY * ratio;
+        const boundWidth = originWidth * ratio;
+        const boundHeight = originHeight * ratio;
+
+        console.log(boundX, boundY, boundWidth, boundHeight);
+
+        boundRef.current.style.left = `${boundX}px`;
+        boundRef.current.style.top = `${boundY}px`;
+        boundRef.current.style.width = `${boundWidth}px`;
+        boundRef.current.style.height = `${boundHeight}px`;
+      }
     }
   };
 
@@ -44,10 +70,12 @@ const StepEditor = ({ step }: Props) => {
                 fill
                 sizes="(max-width: 767px) 100vw, 33vw"
                 quality={90}
-                style={{ objectFit: 'contain' }}
+                style={{ objectFit: 'contain', zIndex: 1 }}
                 alt={step.recordTestStepId}
                 onLoadingComplete={resizeImageAndAddBound}
               />
+
+              <BoundBox ref={boundRef} />
             </RelativeBox>
           </FlexItem>
           <MenuWrapper>
@@ -86,4 +114,11 @@ const FlexItem = styled.div`
 
 const RelativeBox = styled.div`
   position: relative;
+`;
+
+const BoundBox = styled.div`
+  position: absolute;
+  border: 3px solid red;
+  background-color: transparent;
+  z-index: 2;
 `;
