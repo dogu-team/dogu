@@ -82,10 +82,12 @@ export class RecordTestScenarioController {
 
   @Delete(`:${RecordTestScenarioPropCamel.recordTestScenarioId}`)
   @ProjectPermission(PROJECT_ROLE.WRITE)
-  async deleteRecordTestScenario(
+  async softDeleteRecordTestScenario(
     @Param(ProjectPropCamel.projectId) projectId: ProjectId, //
     @Param(RecordTestScenarioPropCamel.recordTestScenarioId) recordTestScenarioId: RecordTestScenarioId,
   ): Promise<void> {
-    await this.recordTestScenarioService.deleteRecordTestScenario(projectId, recordTestScenarioId);
+    await this.dataSource.manager.transaction(async (manager) => {
+      await this.recordTestScenarioService.softDeleteRecordTestScenario(manager, projectId, recordTestScenarioId);
+    });
   }
 }

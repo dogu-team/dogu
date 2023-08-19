@@ -8,9 +8,9 @@ import {
   RecordTestScenarioResponse,
 } from '@dogu-private/console';
 import { ProjectId, RecordTestCaseId, RecordTestScenarioId } from '@dogu-private/types';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 import { v4 } from 'uuid';
 import { RecordTestScenarioAndRecordTestCase } from '../../../../db/entity/index';
 import { RecordTestCase } from '../../../../db/entity/record-test-case.entity';
@@ -23,12 +23,16 @@ import {
   FindRecordTestScenariosByProjectIdDto,
   UpdateRecordTestScenarioDto,
 } from '../dto/record-test-scenario.dto';
+import { RecordTestCaseService } from '../record-test-case/record-test-case.service';
 
 @Injectable()
 export class RecordTestScenarioService {
   constructor(
     @InjectDataSource()
     private readonly dataSource: DataSource,
+
+    @Inject()
+    private readonly recordTestCaseService: RecordTestCaseService,
   ) {}
 
   async createRecordTestScenario(projectId: ProjectId, dto: CreateRecordTestScenarioDto): Promise<RecordTestScenarioBase> {
@@ -102,14 +106,22 @@ export class RecordTestScenarioService {
     return rv;
   }
 
-  async deleteRecordTestScenario(projectId: ProjectId, recordTestScenarioId: RecordTestScenarioId): Promise<void> {
-    const data = await this.dataSource.getRepository(RecordTestScenario).findOne({ where: { projectId, recordTestScenarioId } });
-    if (!data) {
+  async softDeleteRecordTestScenario(manager: EntityManager, projectId: ProjectId, recordTestScenarioId: RecordTestScenarioId): Promise<void> {
+    const scenario = await manager.getRepository(RecordTestScenario).findOne({ where: { projectId, recordTestScenarioId } });
+    if (!scenario) {
       throw new HttpException(`RecordTestScenario not found. recordTestScenarioId: ${recordTestScenarioId}`, HttpStatus.NOT_FOUND);
     }
+    const mappingDatas =
+      (await this.dataSource
+        .getRepository(RecordTestScenarioAndRecordTestCase)
+        .find({ where: { recordTestScenarioId }, relations: [RecordTestScenarioAndRecordTestCasePropCamel.recordTestCase] })) ?? [];
 
-    // FIXME: join data
-    await this.dataSource.getRepository(RecordTestScenario).softRemove(data);
+    for (const mappingData of mappingDatas) {
+      const testCase = mappingData.recordTestCase!;
+      await detachRecordTestCaseFromScenario(manager, scenario, testCase);
+    }
+
+    await manager.getRepository(RecordTestScenario).softDelete({ projectId, recordTestScenarioId });
   }
 
   async detachRecordTestCaseFromScenario(
