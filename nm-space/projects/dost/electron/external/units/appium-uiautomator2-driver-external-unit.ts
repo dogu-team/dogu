@@ -1,4 +1,4 @@
-import { PrefixLogger, stringify } from '@dogu-tech/common';
+import { delay, errorify, PrefixLogger, stringify } from '@dogu-tech/common';
 import { HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
 import { spawn } from 'child_process';
 import fs from 'fs';
@@ -10,6 +10,9 @@ import { logger } from '../../log/logger.instance';
 import { StdLogCallbackService } from '../../log/std-log-callback-service';
 import { ThirdPartyPathMap } from '../../path-map';
 import { ExternalUnitCallback, IExternalUnit } from '../external-unit';
+
+const installRetryCount = 2;
+const installRetryInterval = 3000;
 
 export class AppiumUiAutomator2DriverExternalUnit extends IExternalUnit {
   private readonly logger = new PrefixLogger(logger, '[Appium UiAutomator2 Driver]');
@@ -167,6 +170,23 @@ export class AppiumUiAutomator2DriverExternalUnit extends IExternalUnit {
     });
   }
 
+  private async installDriver(): Promise<void> {
+    for (let i = 1; i <= installRetryCount; i++) {
+      try {
+        await this.execute(['appium', 'driver', 'install', 'uiautomator2']);
+        return;
+      } catch (error) {
+        let casted = errorify(error);
+        if (i === installRetryCount) {
+          throw casted;
+        } else {
+          this.logger.warn(`appium-uiautomator2-driver install failed. retrying... ${i}/${installRetryCount}`, { error: casted });
+          await delay(installRetryInterval);
+        }
+      }
+    }
+  }
+
   async install(): Promise<void> {
     this.unitCallback.onInstallStarted();
     const installed = await this.checkInstalled();
@@ -174,7 +194,8 @@ export class AppiumUiAutomator2DriverExternalUnit extends IExternalUnit {
       this.logger.info('already installed');
       await this.update();
     } else {
-      await this.execute(['appium', 'driver', 'install', 'uiautomator2']);
+      this.logger.info('not installed');
+      await this.installDriver();
     }
     this.unitCallback.onInstallCompleted();
   }
