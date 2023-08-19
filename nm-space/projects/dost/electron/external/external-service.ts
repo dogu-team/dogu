@@ -116,6 +116,7 @@ export class ExternalService {
     ipcMain.handle(externalKey.isValid, (_, key: ExternalKey) => this.getUnit(key).isValid());
     ipcMain.handle(externalKey.isSupportedPlatformValidationCompleted, () => this.isSupportedPlatformValidationCompleted());
     ipcMain.handle(externalKey.isSupportedPlatformValid, (_, option: ValidationCheckOption) => this.isSupportedPlatformValid(option));
+    ipcMain.handle(externalKey.isSupportedPlatformAgreementNeeded, (_, option: ValidationCheckOption) => this.isSupportedPlatformAgreementNeeded(option));
     ipcMain.handle(externalKey.getSupportedPlatformKeys, () => this.getSupportedPlatformKeys());
     ipcMain.handle(externalKey.getTermUrl, (_, key: ExternalKey) => this.getUnit(key).getTermUrl());
   }
@@ -165,6 +166,21 @@ export class ExternalService {
       return Promise.resolve([...this.units.values()].filter((unit) => unit.isPlatformSupported() && !unit.isManualInstallNeeded()).every((unit) => unit.isValid().valid));
     }
     return Promise.resolve([...this.units.values()].filter((unit) => unit.isPlatformSupported()).every((unit) => unit.isValid().valid));
+  }
+
+  private async isSupportedPlatformAgreementNeeded(option: ValidationCheckOption): Promise<boolean> {
+    let targets: IExternalUnit[] = [];
+    if (option.ignoreManual) {
+      targets = [...this.units.values()].filter((unit) => unit.isPlatformSupported() && !unit.isManualInstallNeeded());
+    } else {
+      targets = [...this.units.values()].filter((unit) => unit.isPlatformSupported());
+    }
+    for (const unit of targets) {
+      if (await unit.isAgreementNeeded()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   async updateIsSupportedPlatformValid(): Promise<boolean> {

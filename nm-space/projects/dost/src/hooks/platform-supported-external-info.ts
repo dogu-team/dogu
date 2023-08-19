@@ -11,6 +11,7 @@ export type ExternalToolInfo = {
   envs: { key: DotEnvConfigKey; value: string }[];
   result: ExternalValidationResult | null;
   isManualInstallNeeded: boolean;
+  isAgreementNeeded: boolean;
 };
 
 const usePlatformSupportedExternalInfo = () => {
@@ -27,6 +28,7 @@ const usePlatformSupportedExternalInfo = () => {
         const [name, envKeys] = await Promise.all([ipc.externalClient.getName(key), ipc.externalClient.getEnvKeys(key)]);
         const envValues = await Promise.all(envKeys.map((envKey) => ipc.externalClient.getEnvValue(key, envKey)));
         const validationResult = await ipc.externalClient.getLastValidationResult(key);
+        const isAgreementNeeded = await ipc.externalClient.isAgreementNeeded(key);
         const isManualInstallNeeded = await ipc.externalClient.isManualInstallNeeded(key);
         const externalToolInfo: ExternalToolInfo = {
           key,
@@ -34,6 +36,7 @@ const usePlatformSupportedExternalInfo = () => {
           envs: envKeys.map((envKey, i) => ({ key: envKey, value: envValues[i] })),
           result: validationResult,
           isManualInstallNeeded,
+          isAgreementNeeded,
         };
         externalToolInfos.push(externalToolInfo);
       }

@@ -70,6 +70,7 @@ export interface IExternalClient {
   isValid(key: ExternalKey): Promise<ExternalValidationResult>;
   isSupportedPlatformValidationCompleted(): Promise<boolean>;
   isSupportedPlatformValid(option: ValidationCheckOption): Promise<boolean>;
+  isSupportedPlatformAgreementNeeded(option: ValidationCheckOption): Promise<boolean>;
   getSupportedPlatformKeys(): Promise<ExternalKey[]>;
   getTermUrl(key: ExternalKey): Promise<string | null>;
 }

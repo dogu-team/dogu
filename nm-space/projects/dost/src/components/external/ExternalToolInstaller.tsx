@@ -1,4 +1,4 @@
-import { stringify } from '@dogu-tech/common';
+import { delay, stringify } from '@dogu-tech/common';
 import { useEffect, useRef, useState } from 'react';
 import { Text, Textarea, useToast } from '@chakra-ui/react';
 import Convert from 'ansi-to-html';
@@ -62,6 +62,12 @@ const ExternaltoolInstaller = ({ isUninstall, externalKeyAndNames, onStart, onFi
 
   useEffect(() => {
     if (externalKeyAndNames.length === 0) {
+      const done = async () => {
+        await onStart();
+        await delay(1000);
+        await onFinish(true);
+      };
+      done();
       return;
     }
 

@@ -36,26 +36,22 @@ const SetupInstaller = () => {
     isClosable: false,
   });
 
-  const externalInfosExcludedManual = externalInfos?.filter((item) => !item.isManualInstallNeeded).filter((item) => !item.result?.valid);
+  const externalInfosToInstallOrAgree = externalInfos?.filter((item) => !item.isManualInstallNeeded).filter((item) => !item.result?.valid || item.isAgreementNeeded);
+  const externalInfosToInstall = externalInfos?.filter((item) => !item.isManualInstallNeeded).filter((item) => !item.result?.valid);
+  const externalInfosToAgree = externalInfos?.filter((item) => !item.isManualInstallNeeded).filter((item) => item.isAgreementNeeded);
 
   useEffect(() => {
-    if (externalInfosExcludedManual !== undefined && externalInfosExcludedManual.length === 0) {
+    if (externalInfosToInstallOrAgree !== undefined && externalInfosToInstallOrAgree.length === 0) {
       navigate('/setup/config');
     }
-  }, [externalInfosExcludedManual]);
+  }, [externalInfosToInstallOrAgree]);
 
   useEffect(() => {
     (async () => {
-      if (!externalInfosExcludedManual || 0 === externalInfosExcludedManual.length || isAutoUpdateStarted) {
+      if (!externalInfosToAgree || isAutoUpdateStarted) {
         return;
       }
-      let isAllAgreed = true;
-      for (const externalInfo of externalInfosExcludedManual) {
-        if (await ipc.externalClient.isAgreementNeeded(externalInfo.key)) {
-          isAllAgreed = false;
-        }
-      }
-      if (!isAllAgreed) {
+      if (0 < externalInfosToAgree.length) {
         return;
       }
       setIsAgreed(true);
@@ -65,13 +61,13 @@ const SetupInstaller = () => {
       await delay(1000);
       onInstallClick();
     })();
-  }, [externalInfosExcludedManual]);
+  }, [externalInfosToAgree]);
 
   const onInstallClick = async () => {
-    if (!externalInfosExcludedManual) {
-      throw new Error('externalInfosExcludedManual is undefined');
+    if (!externalInfosToAgree) {
+      throw new Error('externalInfosToAgree is undefined');
     }
-    for (const externalInfo of externalInfosExcludedManual) {
+    for (const externalInfo of externalInfosToAgree) {
       await ipc.externalClient.writeAgreement(externalInfo.key, true);
     }
     onOpen();
@@ -108,11 +104,11 @@ const SetupInstaller = () => {
 
       <Divider mt={6} mb={6} />
 
-      {!!externalInfosExcludedManual ? (
+      {!!externalInfosToInstallOrAgree ? (
         <>
           <Flex direction="column" justifyContent="space-between" flex={1} height="100%">
             <div>
-              <ExternalToolAgreementContent externalKeys={externalInfosExcludedManual.map((item) => item.key)} />
+              <ExternalToolAgreementContent externalKeys={externalInfosToInstallOrAgree.map((item) => item.key)} />
             </div>
 
             <div>
@@ -129,7 +125,7 @@ const SetupInstaller = () => {
             </div>
           </Flex>
 
-          <ExternalToolInstallerModal isOpen={isOpen} onClose={onClose} onFinish={handleFinish} externalKeyAndNames={externalInfosExcludedManual} />
+          <ExternalToolInstallerModal isOpen={isOpen} onClose={onClose} onFinish={handleFinish} externalKeyAndNames={externalInfosToInstall ?? []} />
         </>
       ) : (
         <Spinner />
