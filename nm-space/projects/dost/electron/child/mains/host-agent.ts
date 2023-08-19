@@ -3,7 +3,6 @@ import { logger } from '../../log/logger.instance';
 
 process.on('unhandledRejection', (reason, promise) => {
   logger.error('Unhandled rejection', { reason, promise });
-  onErrorToExit(reason);
 });
 
 process.on('uncaughtException', (error, origin) => {

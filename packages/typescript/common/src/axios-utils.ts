@@ -8,15 +8,17 @@ export class FilteredAxiosError extends Error {
 
   constructor(axiosError: AxiosError) {
     const { message, cause } = axiosError;
-    super(message, { cause });
+    const details = axiosError.toJSON();
+    const newMessage = `${message} ${JSON.stringify(details, null, 2)}`;
+    super(newMessage, { cause });
     this.name = 'FilteredAxiosError';
+    this.stack = axiosError.stack;
     this.code = axiosError.code;
     this.responseStatus = axiosError.response?.status;
-    this.details = axiosError.toJSON();
   }
 }
 
-function parseAxiosError(value: unknown): Error | FilteredAxiosError {
+export function parseAxiosError(value: unknown): Error | FilteredAxiosError {
   const error = errorify(value);
   if (!isAxiosError(error)) {
     return error;

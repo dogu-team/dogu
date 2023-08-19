@@ -36,6 +36,9 @@ module.exports = {
     '@typescript-eslint/prefer-namespace-keyword': 'off',
     '@typescript-eslint/no-namespace': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/no-misused-promises': 'error',
+    '@typescript-eslint/no-floating-promises': 'error',
+    '@typescript-eslint/promise-function-async': 'error',
     'no-inner-declarations': 'off',
   },
 };
