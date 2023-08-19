@@ -24,7 +24,7 @@ export class UpdateProcessor {
       if (this.lock.isBusy('update')) {
         throw new Error('already updating');
       }
-      this.lock
+      await this.lock
         .acquire('update', async () => {
           // detach shell
           const filename = getFilenameFromUrl(msg.url);
