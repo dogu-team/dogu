@@ -6,7 +6,7 @@ const CloudBadge = () => {
     <Badge
       label={'Cloud Support'}
       overlayText={'Available in the cloud'}
-      backgroundColor={'#4595e7'}
+      backgroundColor={'#6fabe8'}
     />
   );
 };

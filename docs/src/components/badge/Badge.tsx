@@ -4,7 +4,6 @@ const badgeStyle: CSSProperties = {
   position: 'relative',
   display: 'inline-block',
   padding: '0.25rem 0.35rem',
-  color: 'white',
   fontSize: '0.9rem',
 };
 
@@ -12,8 +11,8 @@ const overlayTextStyle: CSSProperties = {
   display: 'none',
   justifyContent: 'center',
   position: 'absolute',
-  width: '200%',
-  height: '170%',
+  width: '350%',
+  height: '160%',
   left: '50%',
   top: '100%',
   transform: 'translate(-50%)',
@@ -49,7 +48,12 @@ const linkStyle = {
   },
 };
 
-const Badge = ({ label, overlayText, backgroundColor = 'black' }) => {
+const Badge = ({
+  label,
+  overlayText,
+  fontColor = 'white',
+  backgroundColor = 'black',
+}) => {
   const [isHovered, setIsHovered] = React.useState(false);
 
   return (
@@ -57,6 +61,7 @@ const Badge = ({ label, overlayText, backgroundColor = 'black' }) => {
       <span
         style={{
           ...badgeStyle,
+          color: fontColor,
           backgroundColor: backgroundColor,
         }}
         onMouseEnter={() => setIsHovered(true)}
