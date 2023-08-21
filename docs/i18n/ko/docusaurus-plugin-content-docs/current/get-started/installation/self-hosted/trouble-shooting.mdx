@@ -31,6 +31,14 @@ dogu 실행 환경, 로그에 대한 정보를 수집하기 위해 아래 명령
 docker-compose.yml, env 파일을 생성한 경로로 이동 후 아래 명령어를 실행해주세요.<br />
 실행 후, 생성된 dogu_info.tar.gz 파일을 dogu-team에 전달해주세요.
 
+:::caution 주의
+
+해당 파일은 이슈 확인에 필요한 정보만 확인 후 삭제합니다.
+
+dogu-team에 전달하기 전, dogu_info.tar.gz 파일에 민감한 정보가 포함되어 있지 않은지 확인해주세요.
+
+:::
+
 ```
 # Architecture of the system
 echo "Architecture: $(uname -m)" > arch.txt
@@ -48,9 +56,16 @@ tar -czvf dogu_info.tar.gz docker-compose.yml docker-compose.env arch.txt dogu_d
 </TabItem>
 
 <TabItem value="windows" label="Windows">
-
 docker-compose.yml, env 파일을 생성한 경로로 이동 후 아래 명령어를 실행해주세요.<br />
 실행 후, 생성된 dogu_info.zip 파일을 dogu-team에 전달해주세요.
+
+:::caution 주의
+
+해당 파일은 이슈 확인에 필요한 정보만 확인 후 삭제합니다.
+
+dogu-team에 전달하기 전, dogu_info.tar.gz 파일에 민감한 정보가 포함되어 있지 않은지 확인해주세요.
+
+:::
 
 ```
 rem Architecture of the system

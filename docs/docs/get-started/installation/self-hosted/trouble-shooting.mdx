@@ -29,6 +29,13 @@ run the command below to collect information about the dogu execution environmen
 Go to the directory where you created the docker-compose.yml, env file and run the command below.<br />
 After running, deliver the generated dogu_info.tar.gz file to dogu-team.
 
+:::caution
+
+The file is deleted after checking only the information needed to check the issue.
+
+Make sure that the dogu_info.tar.gz file does not contain sensitive information before delivering it to dogu-team.
+:::
+
 ```
 # Architecture of the system
 echo "Architecture: $(uname -m)" > arch.txt
@@ -46,9 +53,15 @@ tar -czvf dogu_info.tar.gz docker-compose.yml docker-compose.env arch.txt dogu_d
 </TabItem>
 
 <TabItem value="windows" label="Windows">
-
 Go to the directory where you created the docker-compose.yml, env file and run the command below.<br />
 After running, deliver the generated dogu_info.zip file to dogu-team.
+
+:::caution
+
+The file is deleted after checking only the information needed to check the issue.
+
+Make sure that the dogu_info.tar.gz file does not contain sensitive information before delivering it to dogu-team.
+:::
 
 ```
 rem Architecture of the system
@@ -74,3 +87,7 @@ If you cannot find the solution you are looking for in this document, please rea
 
 - [Github Issues](https://github.com/dogu-team/dogu/issues)
 - [Slack Community](https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw)
+
+```
+
+```
