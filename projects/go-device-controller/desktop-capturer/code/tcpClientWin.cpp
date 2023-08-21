@@ -9,9 +9,9 @@
 
 #if defined(_WIN32)
 #include <chrono>
-#include <iostream>
 #include <cstdio>
 #include <cstdlib>
+#include <iostream>
 #include <thread>
 #include <winsock2.h>
 #include <ws2tcpip.h>
