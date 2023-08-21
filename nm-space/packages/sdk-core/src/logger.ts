@@ -1,42 +1,50 @@
 import winston, { format } from 'winston';
 
-export interface CreateOptions {
+export interface LoggerCreateOptions {
   label: string;
 }
 
-export class Logger extends winston.Logger {
-  static instance = winston.createLogger({
-    level: 'verbose',
-    format: format.combine(
-      format.errors({ stack: true }), //
-      format.timestamp(),
-      format.json(),
-    ),
-    transports: [
-      new winston.transports.Console({
-        format: format.combine(
-          format.errors({ stack: true }), //
-          format.timestamp(),
-          format.simple(),
-          format.colorize({ all: true }),
-        ),
-      }),
-    ],
-  });
+export type LoggerCreateArgs = string | Function | LoggerCreateOptions;
 
-  static create(label: string): winston.Logger;
-  static create(func: Function): winston.Logger;
-  static create(options: CreateOptions): winston.Logger;
-  static create(labelOrOptions: string | Function | CreateOptions): winston.Logger {
-    if (typeof labelOrOptions === 'string') {
-      const label = labelOrOptions;
-      return Logger.instance.child({ label });
-    } else if (typeof labelOrOptions === 'function') {
-      const func = labelOrOptions;
-      return Logger.instance.child({ label: func.name });
-    }
+export type Logger = winston.Logger;
 
-    const options = labelOrOptions;
-    return Logger.instance.child({ label: options.label });
+export const LogLevel = ['error', 'warn', 'info', 'verbose'] as const;
+export type LogLevel = (typeof LogLevel)[number];
+
+const logLevels: Record<string, number> = {
+  error: 0,
+  warn: 10,
+  info: 20,
+  verbose: 30,
+};
+
+export const instance = winston.createLogger({
+  level: 'verbose',
+  levels: logLevels,
+  format: format.errors({ stack: true, cause: true }),
+  transports: [
+    new winston.transports.Console({
+      format: format.combine(
+        format.timestamp(), //
+        format.prettyPrint({ colorize: true, depth: 8 }),
+        format.colorize({ all: true }),
+      ),
+    }),
+  ],
+});
+
+function getLabel(args: LoggerCreateArgs): string {
+  switch (typeof args) {
+    case 'string':
+      return args;
+    case 'function':
+      return args.name;
+    default:
+      return args.label;
   }
+}
+
+export function createLogger(args: LoggerCreateArgs): Logger {
+  const label = getLabel(args);
+  return instance.child({ label });
 }

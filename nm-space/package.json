@@ -5,7 +5,7 @@
   "description": "node modules space",
   "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
   "author": "Dogu Technologies",
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "build": "yarn workspaces foreach --exclude '@dogu**/*'  --jobs unlimited -ptvi run build",
     "clean": "yarn workspaces foreach --exclude '@dogu**/*'  --jobs unlimited -ptvi run clean"
