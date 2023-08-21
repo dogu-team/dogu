@@ -49,10 +49,3 @@ message DeviceServerResponse {
     google.protobuf.Struct data = 2;
   }
 }
-
-enum DeviceConnectionState {
-  // Not used. must be initialized to a different value.
-  DEVICE_CONNECTION_STATE_UNSPECIFIED = 0;
-  DEVICE_CONNECTION_STATE_DISCONNECTED = 1;
-  DEVICE_CONNECTION_STATE_CONNECTED = 2;
-}

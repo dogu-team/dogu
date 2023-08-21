@@ -1,11 +1,9 @@
-import { DeviceId, HostId, OrganizationId, Platform, PrivateProtocol, Serial } from '@dogu-private/types';
+import { Device, DeviceId, HostId, OrganizationId, Platform, Serial } from '@dogu-private/types';
 import { ControllerMethodSpec, ControllerSpec, IsFilledString, Log } from '@dogu-tech/common';
 import { RuntimeInfoDto } from '@dogu-tech/device-client-common';
 import { Type } from 'class-transformer';
 import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, Max, Min, ValidateNested } from 'class-validator';
 import { Result, WebSocketProxyId, WebSocketProxyReceive } from '../validations/types/built-in-messages';
-
-type Device = PrivateProtocol.Device;
 
 export class CreateDeviceRequestBody implements Pick<Required<Device>, 'serial' | 'model' | 'platform' | 'hostId' | 'isHost' | 'isVirtual'> {
   @IsString()

@@ -1,11 +1,9 @@
 import { PrivateHostToken } from '@dogu-private/console-host-agent';
-import { Platform, PrivateProtocol, ThirdPartyPathMap } from '@dogu-private/types';
+import { Device, Platform, ThirdPartyPathMap } from '@dogu-private/types';
 import { Class, Instance, KindHavable } from '@dogu-tech/common';
 import { MessageHandler, MessagePattern } from '@nestjs/microservices';
 import { MessageTransportId } from './message/message.microservice';
 import { MessageContext } from './message/message.types';
-
-type Device = PrivateProtocol.Device;
 
 export interface HostConnectionStatus {
   status: 'connected' | 'disconnected';
