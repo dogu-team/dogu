@@ -7,11 +7,11 @@
   "exports": {
     ".": {
       "import": {
-        "types": "./build/esm/src/index.d.ts",
+        "types": "./build/types/src/index.d.ts",
         "default": "./build/esm/src/index.js"
       },
       "require": {
-        "types": "./build/cjs/src/index.d.ts",
+        "types": "./build/types/src/index.d.ts",
         "default": "./build/cjs/src/index.js"
       }
     }
@@ -32,7 +32,7 @@
     "test": "cross-env NODE_OPTIONS=\"--experimental-vm-modules $NODE_OPTIONS\" jest",
     "watch": "clear; echo @dogu-tech/sdk-core Watching... && nodemon"
   },
-  "types": "build/cjs/src/index.d.ts",
+  "types": "build/types/src/index.d.ts",
   "dependencies": {
     "js-yaml": "4.1.0",
     "jsonschema": "1.4.1",
