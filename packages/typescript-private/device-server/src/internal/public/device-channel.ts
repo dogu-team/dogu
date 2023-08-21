@@ -34,6 +34,7 @@ export interface DeviceChannel {
   get platform(): Platform;
   get info(): DeviceSystemInfo;
   get portContext(): DevicePortContext;
+  get isVirtual(): boolean;
 
   // screen
   startStreamingWebRTC(offer: StreamingOfferDto): PromiseOrValue<ProtoRTCPeerDescription>;

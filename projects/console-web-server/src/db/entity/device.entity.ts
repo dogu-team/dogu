@@ -62,6 +62,9 @@ export class Device extends BaseEntity implements DeviceBase {
   @Column({ type: 'smallint', name: DevicePropSnake.is_host, unsigned: true, default: 0, nullable: false })
   isHost!: number;
 
+  @Column({ type: 'smallint', name: DevicePropSnake.is_virtual, unsigned: true, default: 0, nullable: false })
+  isVirtual!: number;
+
   @Column({ type: 'smallint', name: DevicePropSnake.enable_host_device, unsigned: true, default: 0, nullable: false })
   enableHostDevice!: number;
 

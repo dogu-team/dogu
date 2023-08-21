@@ -93,6 +93,10 @@ export class IosChannel implements DeviceChannel {
     return this._portContext;
   }
 
+  get isVirtual(): boolean {
+    return this._info.isVirtual;
+  }
+
   static async create(
     param: DeviceChannelOpenParam,
     streaming: StreamingService,

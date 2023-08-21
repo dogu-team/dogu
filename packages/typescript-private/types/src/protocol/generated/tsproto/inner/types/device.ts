@@ -14,6 +14,7 @@ export interface Device {
   version: string;
   isGlobal: number;
   isHost: number;
+  isVirtual: number;
   connectionState: DeviceConnectionState;
   heartbeat: Date | undefined;
   /** relations */
@@ -38,6 +39,7 @@ function createBaseDevice(): Device {
     version: '',
     isGlobal: 0,
     isHost: 0,
+    isVirtual: 0,
     connectionState: 0,
     heartbeat: undefined,
     organizationId: '',
@@ -78,6 +80,9 @@ export const Device = {
     }
     if (message.isHost !== 0) {
       writer.uint32(77).sfixed32(message.isHost);
+    }
+    if (message.isVirtual !== 0) {
+      writer.uint32(157).sfixed32(message.isVirtual);
     }
     if (message.connectionState !== 0) {
       writer.uint32(80).int32(message.connectionState);
@@ -143,6 +148,9 @@ export const Device = {
         case 9:
           message.isHost = reader.sfixed32();
           break;
+        case 19:
+          message.isVirtual = reader.sfixed32();
+          break;
         case 10:
           message.connectionState = reader.int32() as any;
           break;
@@ -189,6 +197,7 @@ export const Device = {
       version: isSet(object.version) ? String(object.version) : '',
       isGlobal: isSet(object.isGlobal) ? Number(object.isGlobal) : 0,
       isHost: isSet(object.isHost) ? Number(object.isHost) : 0,
+      isVirtual: isSet(object.isVirtual) ? Number(object.isVirtual) : 0,
       connectionState: isSet(object.connectionState) ? deviceConnectionStateFromJSON(object.connectionState) : 0,
       heartbeat: isSet(object.heartbeat) ? fromJsonTimestamp(object.heartbeat) : undefined,
       organizationId: isSet(object.organizationId) ? String(object.organizationId) : '',
@@ -212,6 +221,7 @@ export const Device = {
     message.version !== undefined && (obj.version = message.version);
     message.isGlobal !== undefined && (obj.isGlobal = Math.round(message.isGlobal));
     message.isHost !== undefined && (obj.isHost = Math.round(message.isHost));
+    message.isVirtual !== undefined && (obj.isVirtual = Math.round(message.isVirtual));
     message.connectionState !== undefined && (obj.connectionState = deviceConnectionStateToJSON(message.connectionState));
     message.heartbeat !== undefined && (obj.heartbeat = message.heartbeat.toISOString());
     message.organizationId !== undefined && (obj.organizationId = message.organizationId);
@@ -235,6 +245,7 @@ export const Device = {
     message.version = object.version ?? '';
     message.isGlobal = object.isGlobal ?? 0;
     message.isHost = object.isHost ?? 0;
+    message.isVirtual = object.isVirtual ?? 0;
     message.connectionState = object.connectionState ?? 0;
     message.heartbeat = object.heartbeat ?? undefined;
     message.organizationId = object.organizationId ?? '';

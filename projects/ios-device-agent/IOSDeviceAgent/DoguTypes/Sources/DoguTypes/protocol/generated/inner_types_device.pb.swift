@@ -74,6 +74,11 @@ public struct Inner_Types_Device {
     set {_uniqueStorage()._isHost = newValue}
   }
 
+  public var isVirtual: Int32 {
+    get {return _storage._isVirtual}
+    set {_uniqueStorage()._isVirtual = newValue}
+  }
+
   public var connectionState: Outer_DeviceConnectionState {
     get {return _storage._connectionState}
     set {_uniqueStorage()._connectionState = newValue}
@@ -160,6 +165,7 @@ extension Inner_Types_Device: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     7: .same(proto: "version"),
     8: .standard(proto: "is_global"),
     9: .standard(proto: "is_host"),
+    19: .standard(proto: "is_virtual"),
     10: .standard(proto: "connection_state"),
     11: .same(proto: "heartbeat"),
     12: .standard(proto: "organization_id"),
@@ -181,6 +187,7 @@ extension Inner_Types_Device: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     var _version: String = String()
     var _isGlobal: Int32 = 0
     var _isHost: Int32 = 0
+    var _isVirtual: Int32 = 0
     var _connectionState: Outer_DeviceConnectionState = .unspecified
     var _heartbeat: SwiftProtobuf.Google_Protobuf_Timestamp? = nil
     var _organizationID: String = String()
@@ -205,6 +212,7 @@ extension Inner_Types_Device: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
       _version = source._version
       _isGlobal = source._isGlobal
       _isHost = source._isHost
+      _isVirtual = source._isVirtual
       _connectionState = source._connectionState
       _heartbeat = source._heartbeat
       _organizationID = source._organizationID
@@ -250,6 +258,7 @@ extension Inner_Types_Device: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
         case 16: try { try decoder.decodeSingularStringField(value: &_storage._manufacturer) }()
         case 17: try { try decoder.decodeSingularFixed32Field(value: &_storage._resolutionWidth) }()
         case 18: try { try decoder.decodeSingularFixed32Field(value: &_storage._resolutionHeight) }()
+        case 19: try { try decoder.decodeSingularSFixed32Field(value: &_storage._isVirtual) }()
         default: break
         }
       }
@@ -316,6 +325,9 @@ extension Inner_Types_Device: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
       if _storage._resolutionHeight != 0 {
         try visitor.visitSingularFixed32Field(value: _storage._resolutionHeight, fieldNumber: 18)
       }
+      if _storage._isVirtual != 0 {
+        try visitor.visitSingularSFixed32Field(value: _storage._isVirtual, fieldNumber: 19)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -334,6 +346,7 @@ extension Inner_Types_Device: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
         if _storage._version != rhs_storage._version {return false}
         if _storage._isGlobal != rhs_storage._isGlobal {return false}
         if _storage._isHost != rhs_storage._isHost {return false}
+        if _storage._isVirtual != rhs_storage._isVirtual {return false}
         if _storage._connectionState != rhs_storage._connectionState {return false}
         if _storage._heartbeat != rhs_storage._heartbeat {return false}
         if _storage._organizationID != rhs_storage._organizationID {return false}

@@ -20,7 +20,7 @@ export class DeviceConnectionSubscribeService
   @OnEvent(OnDevicesConnectedEvent.key)
   onDevicesConnected(value: Instance<typeof OnDevicesConnectedEvent.value>): void {
     const messages = value.channels.map((channel) => {
-      const { serial, platform, info } = channel;
+      const { serial, platform, info, isVirtual } = channel;
       const { system, version, graphics } = info;
       const { model, manufacturer } = system;
       const display = graphics.displays.at(0);
@@ -33,6 +33,7 @@ export class DeviceConnectionSubscribeService
         version,
         state: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED,
         manufacturer,
+        isVirtual: isVirtual ? 1 : 0,
         resolutionWidth,
         resolutionHeight,
       };
@@ -51,6 +52,7 @@ export class DeviceConnectionSubscribeService
         version: '',
         state: DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED,
         manufacturer: '',
+        isVirtual: 0,
         resolutionWidth: 0,
         resolutionHeight: 0,
       };

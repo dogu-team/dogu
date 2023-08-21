@@ -73,6 +73,10 @@ export class WindowsChannel implements DeviceChannel {
       freeHostPort3: DeviceAgentThirdPort,
     };
   }
+
+  get isVirtual(): boolean {
+    return this._info.isVirtual;
+  }
   static async create(
     param: DeviceChannelOpenParam,
     streaming: StreamingService,

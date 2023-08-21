@@ -113,6 +113,12 @@ public final class DeviceOuterClass {
     int getIsHost();
 
     /**
+     * <code>sfixed32 is_virtual = 19;</code>
+     * @return The isVirtual.
+     */
+    int getIsVirtual();
+
+    /**
      * <code>.outer.DeviceConnectionState connection_state = 10;</code>
      * @return The enum numeric value on the wire for connectionState.
      */
@@ -622,6 +628,32 @@ public final class DeviceOuterClass {
     private void clearIsHost() {
       
       isHost_ = 0;
+    }
+
+    public static final int IS_VIRTUAL_FIELD_NUMBER = 19;
+    private int isVirtual_;
+    /**
+     * <code>sfixed32 is_virtual = 19;</code>
+     * @return The isVirtual.
+     */
+    @java.lang.Override
+    public int getIsVirtual() {
+      return isVirtual_;
+    }
+    /**
+     * <code>sfixed32 is_virtual = 19;</code>
+     * @param value The isVirtual to set.
+     */
+    private void setIsVirtual(int value) {
+      
+      isVirtual_ = value;
+    }
+    /**
+     * <code>sfixed32 is_virtual = 19;</code>
+     */
+    private void clearIsVirtual() {
+      
+      isVirtual_ = 0;
     }
 
     public static final int CONNECTION_STATE_FIELD_NUMBER = 10;
@@ -1537,6 +1569,34 @@ public final class DeviceOuterClass {
       }
 
       /**
+       * <code>sfixed32 is_virtual = 19;</code>
+       * @return The isVirtual.
+       */
+      @java.lang.Override
+      public int getIsVirtual() {
+        return instance.getIsVirtual();
+      }
+      /**
+       * <code>sfixed32 is_virtual = 19;</code>
+       * @param value The isVirtual to set.
+       * @return This builder for chaining.
+       */
+      public Builder setIsVirtual(int value) {
+        copyOnWrite();
+        instance.setIsVirtual(value);
+        return this;
+      }
+      /**
+       * <code>sfixed32 is_virtual = 19;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearIsVirtual() {
+        copyOnWrite();
+        instance.clearIsVirtual();
+        return this;
+      }
+
+      /**
        * <code>.outer.DeviceConnectionState connection_state = 10;</code>
        * @return The enum numeric value on the wire for connectionState.
        */
@@ -2005,11 +2065,12 @@ public final class DeviceOuterClass {
               "manufacturer_",
               "resolutionWidth_",
               "resolutionHeight_",
+              "isVirtual_",
             };
             java.lang.String info =
-                "\u0000\u0012\u0000\u0001\u0001\u0012\u0012\u0000\u0000\u0000\u0001\u0208\u0002\u0208" +
+                "\u0000\u0013\u0000\u0001\u0001\u0013\u0013\u0000\u0000\u0000\u0001\u0208\u0002\u0208" +
                 "\u0003\u0208\u0004\f\u0005\u0208\u0006\u1208\u0000\u0007\u0208\b\r\t\r\n\f\u000b" +
-                "\t\f\u0208\r\u0208\u000e\t\u000f\t\u0010\u0208\u0011\u0006\u0012\u0006";
+                "\t\f\u0208\r\u0208\u000e\t\u000f\t\u0010\u0208\u0011\u0006\u0012\u0006\u0013\r";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

@@ -8,8 +8,8 @@ import {
   WebSocketProxyReceive,
   WriteDeviceRunTimeInfosRequestBody,
 } from '@dogu-private/console-host-agent';
-import { UpdateDeviceRequestBody } from '@dogu-private/console-host-agent/src/http-specs/private-device';
-import { DeviceId, OrganizationId, Serial } from '@dogu-private/types';
+import { FindDeviceBySerialQuery, UpdateDeviceRequestBody } from '@dogu-private/console-host-agent/src/http-specs/private-device';
+import { DeviceId, OrganizationId } from '@dogu-private/types';
 import { Instance, transformAndValidate } from '@dogu-tech/common';
 import { Body, ConflictException, Controller, Get, Inject, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
@@ -41,10 +41,12 @@ export class PrivateDeviceController {
   @HostPermission(HOST_ACTION_TYPE.CREATE_DEVICE_API)
   async findDeviceBySerial(
     @Param(OrganizationPropCamel.organizationId, IsOrganizationExist) organizationId: OrganizationId,
-    @Query() query: { serial: Serial },
+    @Query() query: FindDeviceBySerialQuery,
   ): Promise<Instance<typeof PrivateDevice.findDeviceBySerial.responseBody>> {
-    const { serial } = query;
-    const device = await this.deviceRepository.findOne({ where: { serial, organizationId } });
+    const { serial, hostId, isVirtual } = query;
+    const device = isVirtual
+      ? await this.deviceRepository.findOne({ where: { hostId, serial, isVirtual, organizationId } })
+      : await this.deviceRepository.findOne({ where: { serial, isVirtual, organizationId } });
     if (device === null) {
       throw new NotFoundException({
         message: 'Device not found',
@@ -66,9 +68,11 @@ export class PrivateDeviceController {
     @Param(OrganizationPropCamel.organizationId, IsOrganizationExist) organizationId: OrganizationId,
     @Body() body: CreateDeviceRequestBody,
   ): Promise<Instance<typeof PrivateDevice.createDevice.responseBody>> {
-    const { serial } = body;
+    const { serial, hostId, isVirtual } = body;
 
-    const exist = await this.deviceRepository.exist({ where: { serial, organizationId } });
+    const exist = isVirtual
+      ? await this.deviceRepository.exist({ where: { hostId, serial, isVirtual, organizationId } })
+      : await this.deviceRepository.exist({ where: { serial, isVirtual, organizationId } });
     if (exist) {
       throw new ConflictException({
         message: 'Device already exists',
@@ -110,8 +114,8 @@ export class PrivateDeviceController {
         deviceId,
       });
     }
-    const { hostId, version, model, manufacturer, resolutionWidth, resolutionHeight } = body;
-    await this.deviceRepository.update({ deviceId }, { hostId, version, model, manufacturer, resolutionWidth, resolutionHeight });
+    const { hostId, version, model, manufacturer, isVirtual, resolutionWidth, resolutionHeight } = body;
+    await this.deviceRepository.update({ deviceId }, { hostId, version, model, manufacturer, isVirtual, resolutionWidth, resolutionHeight });
   }
 
   @Patch(PrivateDevice.updateDeviceHeartbeatNow.path)

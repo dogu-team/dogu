@@ -19,6 +19,7 @@ message Device {
   string version = 7;
   sfixed32 is_global = 8;
   sfixed32 is_host = 9;
+  sfixed32 is_virtual = 19;
   outer.DeviceConnectionState connection_state = 10;
   google.protobuf.Timestamp heartbeat = 11;
 

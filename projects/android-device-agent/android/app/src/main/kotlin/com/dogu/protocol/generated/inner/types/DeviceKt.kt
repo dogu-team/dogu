@@ -183,6 +183,23 @@ object DeviceKt {
     }
 
     /**
+     * <code>sfixed32 is_virtual = 19;</code>
+     */
+    var isVirtual: kotlin.Int
+      @JvmName("getIsVirtual")
+      get() = _builder.getIsVirtual()
+      @JvmName("setIsVirtual")
+      set(value) {
+        _builder.setIsVirtual(value)
+      }
+    /**
+     * <code>sfixed32 is_virtual = 19;</code>
+     */
+    fun clearIsVirtual() {
+      _builder.clearIsVirtual()
+    }
+
+    /**
      * <code>.outer.DeviceConnectionState connection_state = 10;</code>
      */
      var connectionState: com.dogu.protocol.generated.outer.DeviceServer.DeviceConnectionState

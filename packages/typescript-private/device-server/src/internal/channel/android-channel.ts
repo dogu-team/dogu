@@ -73,6 +73,9 @@ export class AndroidChannel implements DeviceChannel {
   get portContext(): DevicePortContext {
     return this._portContext;
   }
+  get isVirtual(): boolean {
+    return this._info.isVirtual;
+  }
 
   protected constructor(
     private readonly _serial: Serial,

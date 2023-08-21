@@ -7,7 +7,7 @@ import { Result, WebSocketProxyId, WebSocketProxyReceive } from '../validations/
 
 type Device = PrivateProtocol.Device;
 
-export class CreateDeviceRequestBody implements Pick<Required<Device>, 'serial' | 'model' | 'platform'> {
+export class CreateDeviceRequestBody implements Pick<Required<Device>, 'serial' | 'model' | 'platform' | 'hostId' | 'isHost' | 'isVirtual'> {
   @IsString()
   @IsNotEmpty()
   serial!: Serial;
@@ -27,6 +27,12 @@ export class CreateDeviceRequestBody implements Pick<Required<Device>, 'serial' 
 
   @IsUUID()
   hostId!: HostId;
+
+  @Min(0)
+  @Max(1)
+  @IsNumber()
+  @IsNotEmpty()
+  isVirtual!: number;
 }
 
 export class CreateDeviceResponseBody implements Pick<Required<Device>, 'deviceId'> {
@@ -34,10 +40,20 @@ export class CreateDeviceResponseBody implements Pick<Required<Device>, 'deviceI
   deviceId!: DeviceId;
 }
 
-export class FindDeviceBySerialQuery implements Pick<Required<Device>, 'serial'> {
+export class FindDeviceBySerialQuery implements Pick<Required<Device>, 'serial' | 'hostId' | 'isVirtual'> {
   @IsString()
   @IsNotEmpty()
   serial!: Serial;
+
+  @IsUUID()
+  hostId!: HostId;
+
+  @Min(0)
+  @Max(1)
+  @IsNumber()
+  @IsNotEmpty()
+  @Type(() => Number)
+  isVirtual!: number;
 }
 
 export class FindDeviceBySerialResponseBody implements Pick<Required<Device>, 'deviceId'> {
@@ -61,7 +77,9 @@ export class PushDeviceResultRequestBody {
   result!: Result;
 }
 
-export class UpdateDeviceRequestBody implements Pick<Required<Device>, 'hostId' | 'platform' | 'model' | 'version' | 'manufacturer' | 'resolutionWidth' | 'resolutionHeight'> {
+export class UpdateDeviceRequestBody
+  implements Pick<Required<Device>, 'hostId' | 'platform' | 'model' | 'version' | 'manufacturer' | 'isVirtual' | 'resolutionWidth' | 'resolutionHeight'>
+{
   @IsFilledString()
   hostId!: HostId;
 
@@ -76,6 +94,12 @@ export class UpdateDeviceRequestBody implements Pick<Required<Device>, 'hostId' 
 
   @IsString()
   manufacturer!: string;
+
+  @Min(0)
+  @Max(1)
+  @IsNumber()
+  @IsNotEmpty()
+  isVirtual!: number;
 
   @IsNumber()
   @Type(() => Number)
