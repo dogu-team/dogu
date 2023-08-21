@@ -33,7 +33,7 @@ const ExternalToolCheckboxItem = ({ isChecked, toolKey, name, envs, isValid, onC
               <Text>{env.key}</Text>
             </Td>
             <Td>
-              <Tooltip hasArrow label={env.value} bg="white">
+              <Tooltip hasArrow label={env.value} bg="white" color="gray.500">
                 <Input minWidth="100px" value={env.value} color={isValid ? 'gray.500' : 'white.500'} readOnly={isValid} onChange={() => {}} />
               </Tooltip>
             </Td>

@@ -38,9 +38,13 @@ const DoctorExternalToolInspector = ({ externalTools, onFinishInstall }: Props) 
     if (isValid) {
       return;
     }
-
-    // open installer if checkedEnvKeys has only 'appium', 'appium-ios' elements
-    if (checkedEnvKeys.length === 2 && checkedEnvKeys.includes('appium-xcuitest-driver') && checkedEnvKeys.includes('appium-uiautomator2-driver')) {
+    let isAllAgreed = true;
+    for (const key of checkedEnvKeys) {
+      if (await ipc.externalClient.isAgreementNeeded(key)) {
+        isAllAgreed = false;
+      }
+    }
+    if (isAllAgreed) {
       onInstallerOpen();
       return;
     }
@@ -63,7 +67,10 @@ const DoctorExternalToolInspector = ({ externalTools, onFinishInstall }: Props) 
         externalKeys={checkedEnvKeys}
         isOpen={isAgreementOpen}
         onClose={onAgreementClose}
-        onAccept={() => {
+        onAccept={async () => {
+          for (const key of checkedEnvKeys) {
+            await ipc.externalClient.writeAgreement(key, true);
+          }
           onAgreementClose();
           onInstallerOpen();
         }}

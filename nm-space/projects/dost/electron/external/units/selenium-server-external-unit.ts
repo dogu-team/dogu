@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import util from 'util';
 import { ExternalKey } from '../../../src/shares/external';
+import { AppConfigService } from '../../app-config/app-config-service';
 import { logger } from '../../log/logger.instance';
 import { StdLogCallbackService } from '../../log/std-log-callback-service';
 import { WindowService } from '../../window/window-service';
@@ -19,7 +20,12 @@ const DownloadUrl = 'https://github.com/SeleniumHQ/selenium/releases/download/se
 export class SeleniumServerExternalUnit extends IExternalUnit {
   private readonly logger = new PrefixLogger(logger, `[${Name}]`);
 
-  constructor(private readonly windowService: WindowService, private readonly stdLogCallbackService: StdLogCallbackService, private readonly unitCallback: ExternalUnitCallback) {
+  constructor(
+    private readonly windowService: WindowService,
+    private readonly stdLogCallbackService: StdLogCallbackService,
+    private readonly appConfigService: AppConfigService,
+    private readonly unitCallback: ExternalUnitCallback,
+  ) {
     super();
   }
 
@@ -108,12 +114,13 @@ export class SeleniumServerExternalUnit extends IExternalUnit {
     this.logger.warn('uninstall not supported');
   }
 
-  isAgreementNeeded(): boolean {
-    return false;
+  async isAgreementNeeded(): Promise<boolean> {
+    const value = await this.appConfigService.getOrDefault('external_is_agreed_selenium_driver', false);
+    return !value;
   }
 
-  writeAgreement(): void {
-    this.logger.warn('do not need agreement');
+  writeAgreement(value: boolean): Promise<void> {
+    return this.appConfigService.set('external_is_agreed_selenium_driver', value);
   }
 
   getTermUrl(): string | null {

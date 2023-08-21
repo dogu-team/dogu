@@ -116,6 +116,7 @@ expose('externalClient', {
   isValid: (key: ExternalKey) => ipcRenderer.invoke(externalKey.isValid, key),
   isSupportedPlatformValidationCompleted: () => ipcRenderer.invoke(externalKey.isSupportedPlatformValidationCompleted),
   isSupportedPlatformValid: (option: ValidationCheckOption) => ipcRenderer.invoke(externalKey.isSupportedPlatformValid, option),
+  isSupportedPlatformAgreementNeeded: (option: ValidationCheckOption) => ipcRenderer.invoke(externalKey.isSupportedPlatformAgreementNeeded, option),
   getSupportedPlatformKeys: () => ipcRenderer.invoke(externalKey.getSupportedPlatformKeys),
   getTermUrl: (key: ExternalKey) => ipcRenderer.invoke(externalKey.getTermUrl, key),
 });
