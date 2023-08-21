@@ -181,7 +181,11 @@
     "valarray": "cpp",
     "variant": "cpp",
     "vector": "cpp",
-    "algorithm": "cpp"
+    "algorithm": "cpp",
+    "cjs": "javascript",
+    "mjs": "javascript",
+    "cts": "typescript",
+    "mts": "typescript"
   },
   "todohighlight.isEnable": true,
   "emeraldwalk.runonsave": {

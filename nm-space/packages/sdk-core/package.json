@@ -6,13 +6,13 @@
   "type": "module",
   "exports": {
     ".": {
-      "require": {
-        "types": "./build/cjs/src/index.d.ts",
-        "default": "./build/cjs/src/index.js"
-      },
       "import": {
         "types": "./build/esm/src/index.d.ts",
         "default": "./build/esm/src/index.js"
+      },
+      "require": {
+        "types": "./build/cjs/src/index.d.ts",
+        "default": "./build/cjs/src/index.js"
       }
     }
   },
@@ -24,7 +24,7 @@
     "build"
   ],
   "scripts": {
-    "build": "node scripts/build.mjs",
+    "build": "ts-node --esm --project configs/tsconfig.dev.json scripts/build.ts",
     "clean": "shx rm -rf build build-temp",
     "dev": "nodemon",
     "rebuild": "yarn run clean && yarn run build",
@@ -34,20 +34,10 @@
   },
   "types": "build/cjs/src/index.d.ts",
   "dependencies": {
-    "@nestjs/common": "9.2.1",
-    "@nestjs/core": "9.2.1",
-    "@nestjs/platform-express": "9.2.1",
-    "@nestjs/platform-socket.io": "9.2.1",
-    "@nestjs/platform-ws": "9.2.1",
-    "@nestjs/websockets": "9.2.1",
-    "find-free-ports": "3.1.1",
+    "js-yaml": "4.1.0",
     "jsonschema": "1.4.1",
     "lodash": "4.17.21",
-    "nest-winston": "1.9.3",
-    "reflect-metadata": "0.1.13",
-    "rxjs": "7.8.1",
-    "winston": "3.10.0",
-    "ws": "8.13.0"
+    "winston": "3.10.0"
   },
   "devDependencies": {
     "@babel/cli": "7.22.9",
@@ -58,13 +48,12 @@
     "@babel/preset-typescript": "7.22.5",
     "@jest/globals": "29.6.0",
     "@jest/types": "29.6.0",
-    "@swc/core": "1.3.77",
     "@types/babel__core": "7",
     "@types/babel__preset-env": "7",
+    "@types/js-yaml": "4",
     "@types/lodash": "4",
     "@types/node": "18.15.11",
-    "@types/ws": "8",
-    "babel-plugin-transform-commonjs": "^1.1.6",
+    "babel-plugin-transform-commonjs": "1.1.6",
     "babel-plugin-transform-import-meta": "2.2.0",
     "cross-env": "7.0.3",
     "fast-glob": "3.3.1",
@@ -83,7 +72,7 @@
     "watch": [
       "./src"
     ],
-    "exec": "yarn ts-node --project tsconfig.esm.json --esm src/cli.ts",
+    "exec": "yarn ts-node --project ./configs/tsconfig.dev.json --esm src/cli.ts",
     "ext": "ts"
   },
   "url": "https://github.com/dogu-team/dogu"
