@@ -1,10 +1,12 @@
 import { DeviceSystemInfo, Platform, Serial } from '@dogu-private/types';
+import { getEmulatorName } from '../../externals/cli/adb/adb';
 import { Adb } from '../../externals/index';
 import { SystemInfoService } from './system-info-service-interface';
 
 export class AndroidSystemInfoService implements SystemInfoService {
   async createSystemInfo(serial: Serial): Promise<DeviceSystemInfo> {
     const deviceProp = await Adb.getProps(serial);
+    const isVirtual = deviceProp.ro_build_characteristics === 'emulator';
     const procCpuInfos = await Adb.getProcCpuInfo(serial);
     const procMemInfo = await Adb.getProcMemInfo(serial);
     const displaySize = await Adb.getDisplaySize(serial);
@@ -13,14 +15,19 @@ export class AndroidSystemInfoService implements SystemInfoService {
       .map((x) => {
         return { name: x.Mounted, size: x._1K_blocks };
       });
+    let modelName = deviceProp.ro_product_model;
+    if (isVirtual) {
+      modelName = await getEmulatorName(serial);
+    }
     const info: DeviceSystemInfo = {
       version: deviceProp.ro_build_version_release,
       timeMs: Date.now(),
-      nickname: await Adb.getNickname(serial),
+      nickname: modelName,
       marketName: '',
+      isVirtual,
       system: {
         manufacturer: deviceProp.ro_product_manufacturer,
-        model: deviceProp.ro_product_model,
+        model: modelName,
         version: '',
         serial: deviceProp.ro_serialno,
         uuid: '',

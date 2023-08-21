@@ -244,6 +244,7 @@ export interface AndroidPropInfo {
   ro_product_brand: string; // baseboard manufacturer
   ro_product_cpu_abi: string; // os arch
   ro_product_name: string; // os hostname
+  ro_build_characteristics: 'emulator' | 'phone' | string; // emulator or phone
   debug_hwui_profile: string; // Profile GPU Rendering (https://stackoverflow.com/questions/42492191/how-to-show-hide-profile-gpu-rendering-as-bars-using-adb-command)
 }
 
@@ -257,6 +258,7 @@ export function DefaultAndroidPropInfo(): AndroidPropInfo {
     ro_product_brand: '',
     ro_product_cpu_abi: '',
     ro_product_name: '',
+    ro_build_characteristics: 'phone',
     debug_hwui_profile: '',
   };
 }

@@ -5,6 +5,7 @@ export interface DeviceSystemInfo {
   marketName: string;
   version: string;
   timeMs: number;
+  isVirtual: boolean;
   system: {
     manufacturer: string;
     model: string;
@@ -110,6 +111,7 @@ export function DefaultDeviceSystemInfo(): DeviceSystemInfo {
     marketName: '',
     version: '',
     timeMs: 0,
+    isVirtual: false,
     system: {
       manufacturer: '',
       model: '',

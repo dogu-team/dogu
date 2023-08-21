@@ -373,19 +373,6 @@ export async function serials(): Promise<DeviceScanResult[]> {
   return scanInfos;
 }
 
-export async function getNickname(serial: Serial): Promise<string> {
-  const random = Math.random();
-  adbLogger.verbose('adb.getNickname begin', { serial, random });
-  const { stdout } = await shellIgnoreError(serial, 'getprop ro.product.model');
-  const nicknameRaw = stdout.trim().split('\n')[0];
-  if (nicknameRaw === undefined) {
-    throw new Error(`Fail to get nickname of ${serial}`);
-  }
-  const nickname = nicknameRaw.substring(0, 50);
-  adbLogger.verbose('adb.getNickname end', { serial, nickname, random });
-  return nickname;
-}
-
 export async function getProps(serial: Serial): Promise<AndroidPropInfo> {
   const random = Math.random();
   adbLogger.verbose('adb.getProps begin', { serial, random });
@@ -636,6 +623,24 @@ export async function reconnect(serial: Serial): Promise<void> {
   await commandIgnoreError(serial, 'reconnect');
   await commandIgnoreError(serial, 'usb');
   adbLogger.verbose('adb.reconnect end', { serial, random });
+}
+
+/**
+ *  emulator
+ *
+ */
+
+export async function getEmulatorName(serial: Serial): Promise<string> {
+  const random = Math.random();
+  adbLogger.verbose('adb.getEmulatorName begin', { serial, random });
+  const result = await execIgnoreError(`${adbPrefix()} -s ${serial} emu avd name`);
+  const lines = result.stdout.split('\n');
+  if (lines.length < 1) {
+    throw new Error(`Failed to get emulator name. ${result.stderr}`);
+  }
+  const rv = lines[0].trim();
+  adbLogger.verbose('adb.getEmulatorName end', { serial, random, rv });
+  return rv;
 }
 
 /**
