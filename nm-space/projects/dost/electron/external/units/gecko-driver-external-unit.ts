@@ -223,12 +223,12 @@ export class GeckoDriverExternalUnit extends IExternalUnit {
   }
 
   async isAgreementNeeded(): Promise<boolean> {
-    const value = await this.appConfigService.getOrDefault('DOGU_EXTERNAL_IS_AGREED_gecko_driver', false);
+    const value = await this.appConfigService.getOrDefault('external_is_agreed_gecko_driver', false);
     return !value;
   }
 
   writeAgreement(value: boolean): Promise<void> {
-    return this.appConfigService.set('DOGU_EXTERNAL_IS_AGREED_gecko_driver', value);
+    return this.appConfigService.set('external_is_agreed_gecko_driver', value);
   }
 
   getTermUrl(): string | null {

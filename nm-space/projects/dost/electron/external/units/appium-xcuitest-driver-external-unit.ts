@@ -67,7 +67,7 @@ export class AppiumXcUiTestDriverExternalUnit extends IExternalUnit {
   }
 
   async isAgreementNeeded(): Promise<boolean> {
-    const value = await this.appConfigService.getOrDefault('DOGU_EXTERNAL_IS_AGREED_appium', false);
+    const value = await this.appConfigService.getOrDefault('external_is_agreed_appium', false);
     return !value;
   }
 

@@ -22,18 +22,6 @@ export const schema = {
   DOGU_DEVICE_SERVER_PORT: {
     type: 'number',
   },
-  DOGU_APPUPDATE_PROVIDER: {
-    type: 'string',
-  },
-  DOGU_APPUPDATE_URL: {
-    type: 'string',
-  },
-  DOGU_APPUPDATE_SUBPATH: {
-    type: 'string',
-  },
-  DOGU_APPUPDATE_REGION: {
-    type: 'string',
-  },
   DOGU_IS_SUPPORTED_PLATFORM_VALID: {
     type: 'boolean',
   },
@@ -46,25 +34,25 @@ export const schema = {
   DOGU_DEVICE_PLATFORM_ENABLED: {
     type: 'string',
   },
-  DOGU_IS_SHOW_DEVUI: {
+  is_show_devui: {
     type: 'boolean',
   },
-  DOGU_EXTERNAL_IS_AGREED_jdk: {
+  external_is_agreed_jdk: {
     type: 'boolean',
   },
-  DOGU_EXTERNAL_IS_AGREED_android_sdk: {
+  external_is_agreed_android_sdk: {
     type: 'boolean',
   },
-  DOGU_EXTERNAL_IS_AGREED_appium: {
+  external_is_agreed_appium: {
     type: 'boolean',
   },
-  DOGU_EXTERNAL_IS_AGREED_libimobiledevice: {
+  external_is_agreed_libimobiledevice: {
     type: 'boolean',
   },
-  DOGU_EXTERNAL_IS_AGREED_gecko_driver: {
+  external_is_agreed_gecko_driver: {
     type: 'boolean',
   },
-  DOGU_EXTERNAL_IS_AGREED_selenium_driver: {
+  external_is_agreed_selenium_driver: {
     type: 'boolean',
   },
 } as const;

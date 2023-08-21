@@ -65,7 +65,7 @@ export class SettingsService {
     const DOGU_RUN_TYPE = await AppConfigService.instance.get('DOGU_RUN_TYPE');
     let currentLogLevel = DOGU_RUN_TYPE === 'development' || DOGU_RUN_TYPE === 'local' ? true : false;
     currentLogLevel = isDev ? true : currentLogLevel;
-    return await AppConfigService.instance.getOrDefault('DOGU_IS_SHOW_DEVUI', currentLogLevel);
+    return await AppConfigService.instance.getOrDefault('is_show_devui', currentLogLevel);
   }
 
   private async openWritableDirectory(): Promise<void> {

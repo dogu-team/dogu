@@ -125,12 +125,12 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
   }
 
   async isAgreementNeeded(): Promise<boolean> {
-    const value = await this.appConfigService.getOrDefault('DOGU_EXTERNAL_IS_AGREED_libimobiledevice', false);
+    const value = await this.appConfigService.getOrDefault('external_is_agreed_libimobiledevice', false);
     return !value;
   }
 
   writeAgreement(value: boolean): Promise<void> {
-    return this.appConfigService.set('DOGU_EXTERNAL_IS_AGREED_libimobiledevice', value);
+    return this.appConfigService.set('external_is_agreed_libimobiledevice', value);
   }
 
   async install(): Promise<void> {
