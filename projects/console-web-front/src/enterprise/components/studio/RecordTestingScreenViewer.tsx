@@ -63,10 +63,27 @@ const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
     [caseId, project.projectId, project.organizationId, stepId, request],
   );
 
+  const handleToggleRecording = useCallback(
+    async (isRecord: boolean) => {
+      if (!caseId) {
+        return;
+      }
+
+      try {
+        setIsRecording(isRecord);
+        if (isRecord) {
+          const hasKeyboardOnScreen = await requestKeyboard(project.organizationId, project.projectId, caseId);
+          setIsDeviceKeyboardShown(hasKeyboardOnScreen);
+        }
+      } catch (e) {}
+    },
+    [caseId, project.organizationId, project.projectId, requestKeyboard],
+  );
+
   return (
     <>
       <div style={{ marginBottom: '.5rem' }}>
-        <RecordScreenActionBar isRecording={isRecording} updateIsRecording={setIsRecording} />
+        <RecordScreenActionBar isRecording={isRecording} updateIsRecording={handleToggleRecording} />
       </div>
       <VideoWrapper>
         <DeviceStreaming.Video
