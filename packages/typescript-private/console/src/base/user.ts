@@ -50,6 +50,7 @@ export interface UserBaseTraits {
   profileImageUrl: string | null;
   isTutorialCompleted: number;
   lastChangeLogSeenAt: Date | null;
+  lastAccessedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

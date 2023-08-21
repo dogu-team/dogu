@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Token, UserAndRefreshToken } from '../../db/entity/index';
+import { Token, User, UserAndRefreshToken } from '../../db/entity/index';
 import { env } from '../../env';
 import { AuthHostService } from './service/auth-host.service';
 import { AuthJwtService } from './service/auth-jwt.service';
@@ -19,7 +19,7 @@ const PROVIDERS = FEATURE_CONFIG.get('thirdPartyLogin')
 @Global()
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserAndRefreshToken, Token]),
+    TypeOrmModule.forFeature([UserAndRefreshToken, Token, User]),
     JwtModule.register({
       secret: env.DOGU_SECRET,
     }),

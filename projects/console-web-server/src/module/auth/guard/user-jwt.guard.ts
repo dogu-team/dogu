@@ -1,6 +1,9 @@
 import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common';
+import { InjectDataSource } from '@nestjs/typeorm';
 import { Request, Response } from 'express';
+import { DataSource } from 'typeorm';
 import { config } from '../../../config';
+import { User } from '../../../db/entity/user.entity';
 import { AuthUserService } from '../service/auth-user.service';
 import { printLog } from './common';
 @Injectable()
@@ -8,6 +11,9 @@ export class UserJwtGuard implements CanActivate {
   constructor(
     @Inject(AuthUserService)
     private readonly authUserService: AuthUserService,
+
+    @InjectDataSource()
+    private readonly dataSource: DataSource,
   ) {}
 
   async canActivate(ctx: ExecutionContext): Promise<boolean> {
@@ -22,6 +28,9 @@ export class UserJwtGuard implements CanActivate {
     if (!payload) {
       return false;
     }
+
+    const userId = payload.userId;
+    this.dataSource.manager.getRepository(User).update(userId, { lastAccessedAt: new Date() });
 
     req.user = payload;
     return true;
