@@ -1,6 +1,6 @@
 {
-  "position": 4,
-  "label": "WebdriverIO",
+  "position": 2,
+  "label": "Jest",
   "collapsible": true,
   "collapsed": true
 }
