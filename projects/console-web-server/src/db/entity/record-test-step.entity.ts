@@ -4,7 +4,7 @@ import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from
 import { ColumnTemplate } from './decorators';
 import { Project } from './project.entity';
 import { RecordTestCase } from './record-test-case.entity';
-import { RecordTestStepActionWebdriverClick } from './record-test-step-action-webdriver-click.entity';
+import { RecordTestStepAction } from './type/type';
 
 @Entity(RECORD_TEST_STEP_TABLE_NAME)
 export class RecordTestStep extends BaseEntity implements RecordTestStepBase {
@@ -47,5 +47,5 @@ export class RecordTestStep extends BaseEntity implements RecordTestStepBase {
   @JoinColumn({ name: RecordTestStepPropSnake.prev_record_test_step_id, referencedColumnName: RecordTestStepPropCamel.recordTestStepId })
   prevRecordTestStep?: RecordTestStep | null;
 
-  recordTestStepAction?: RecordTestStepActionWebdriverClick;
+  recordTestStepAction?: RecordTestStepAction;
 }

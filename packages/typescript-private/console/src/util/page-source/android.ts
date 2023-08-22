@@ -94,6 +94,29 @@ export class AndroidNodeUtilizer extends NodeUtilizer<AndroidNodeAttributes> {
     };
   };
 
+  public getFocusedNode: () => ParsedNode<AndroidNodeAttributes> | null = () => {
+    const root = this.contextAndNode.node;
+
+    function findFocusedNode(node: ParsedNode<AndroidNodeAttributes>): ParsedNode<AndroidNodeAttributes> | null {
+      if (node.attributes.focused) {
+        return node;
+      }
+
+      if (node.children) {
+        for (const child of node.children) {
+          const result = findFocusedNode(child);
+          if (result) {
+            return result;
+          }
+        }
+      }
+
+      return null;
+    }
+
+    return findFocusedNode(root);
+  };
+
   public getNodesByPosition: (x: number, y: number) => ParsedNode<AndroidNodeAttributes>[] = (x, y) => {
     type DepthNode = {
       depth: number;
