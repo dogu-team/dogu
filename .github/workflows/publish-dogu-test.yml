@@ -15,6 +15,12 @@ on:
 jobs:
   input_validation:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - linux/amd64
+          - linux/arm64
     outputs:
       tag: ${{ steps.input_validation.outputs.tag }}
 
@@ -78,7 +84,7 @@ jobs:
           file: ./dockerfile
           push: true
           target: dogu-console
-          platforms: linux/amd64,linux/arm64
+          platforms: ${{ matrix.platform }}
           no-cache: true
           tags: |
             ${{needs.input_validation.outputs.tag}}
