@@ -142,9 +142,9 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Create and push manifest images
-        uses: Noelware/docker-manifest-action@master
+        uses: int128/docker-manifest-create-action@v1
         with:
-          inputs: ${{needs.input_validation.outputs.tag}}-test
-          images: ${{needs.input_validation.outputs.tag}}-amd64,${{needs.input_validation.outputs.tag}}-arm64
-          push: true
-          # amend: true
+          tags: ${{needs.input_validation.outputs.tag}}-test
+          suffixes: |
+            -amd64
+            -arm64
