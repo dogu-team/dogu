@@ -50,6 +50,7 @@ export * from './record-test-scenario';
 export * from './record-test-scenario-and-record-test-case';
 export * from './record-test-step';
 export * from './record-test-step-action-webdrive-click';
+export * from './record-test-step-action-webdrive-input';
 export * from './remote';
 export * from './remote-dest';
 export * from './remote-dest-edge';

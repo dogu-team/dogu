@@ -88,6 +88,11 @@ export class IosNodeUtilizer extends NodeUtilizer<IosNodeAttributes> {
     return [];
   };
 
+  public getFocusedNode: () => ParsedNode<IosNodeAttributes> | null = () => {
+    throw new Error('Method not implemented.');
+    return null;
+  };
+
   public getInspectingArea: GetInspectingAreaFunc = () => {
     const android = this.contextAndNode.android;
 
