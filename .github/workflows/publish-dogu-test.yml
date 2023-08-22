@@ -15,12 +15,6 @@ on:
 jobs:
   input_validation:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        platform:
-          - linux/amd64
-          - linux/arm64
     outputs:
       tag: ${{ steps.input_validation.outputs.tag }}
 
@@ -57,6 +51,12 @@ jobs:
   publish-test:
     needs: input_validation
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          # - linux/amd64sß
+          - linux/arm64
 
     steps:
       - name: docker init
