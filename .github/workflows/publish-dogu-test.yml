@@ -135,10 +135,16 @@ jobs:
     runs-on: dogu-build-arm
 
     steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
       - name: Create and push manifest images
         uses: Noelware/docker-manifest-action@master
         with:
           inputs: ${{needs.input_validation.outputs.tag}}-test
           images: ${{needs.input_validation.outputs.tag}}-amd64,${{needs.input_validation.outputs.tag}}-arm64
           push: true
-          amend: true
+          # amend: true
