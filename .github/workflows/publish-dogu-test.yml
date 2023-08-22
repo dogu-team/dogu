@@ -48,78 +48,90 @@ jobs:
             echo -e "${GREEN} input validation successful${NC}"
           fi
 
-  publish-amd64:
-    needs: input_validation
-    runs-on: ubuntu-latest
+  # publish-amd64:
+  #   needs: input_validation
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: docker init
-        run: docker system prune --volumes -a -f
+  #   steps:
+  #     - name: docker init
+  #       run: docker system prune --volumes -a -f
 
-      - name: Checkout
-        uses: actions/checkout@v3
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+  #     - name: Set up QEMU
+  #       uses: docker/setup-qemu-action@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v2
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #     - name: Login to Docker Hub
+  #       uses: docker/login-action@v2
+  #       with:
+  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ./dockerfile
-          push: true
-          target: dogu-console
-          platforms: linux/amd64
-          no-cache: true
-          tags: |
-            ${{needs.input_validation.outputs.tag}}-amd64
+  #     - name: Build and push Docker image
+  #       uses: docker/build-push-action@v4
+  #       with:
+  #         context: .
+  #         file: ./dockerfile
+  #         push: true
+  #         target: dogu-console
+  #         platforms: linux/amd64
+  #         no-cache: true
+  #         tags: |
+  #           ${{needs.input_validation.outputs.tag}}-amd64
 
-  publish-arm64:
-    needs: input_validation
-    runs-on: dogu-build-arm
+  # publish-arm64:
+  #   needs: input_validation
+  #   runs-on: dogu-build-arm
 
-    steps:
-      - name: docker init
-        run: docker system prune --volumes -a -f
+  #   steps:
+  #     - name: docker init
+  #       run: docker system prune --volumes -a -f
 
-      - name: Checkout
-        uses: actions/checkout@v3
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
 
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+  #     - name: Set up QEMU
+  #       uses: docker/setup-qemu-action@v2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v2
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #     - name: Login to Docker Hub
+  #       uses: docker/login-action@v2
+  #       with:
+  #         username: ${{ secrets.DOCKERHUB_USERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v4
-        with:
-          context: .
-          file: ./dockerfile
-          push: true
-          target: dogu-console
-          platforms: linux/arm64
-          no-cache: true
-          tags: |
-            ${{needs.input_validation.outputs.tag}}-arm64
+  #     - name: Build and push Docker image
+  #       uses: docker/build-push-action@v4
+  #       with:
+  #         context: .
+  #         file: ./dockerfile
+  #         push: true
+  #         target: dogu-console
+  #         platforms: linux/arm64
+  #         no-cache: true
+  #         tags: |
+  #           ${{needs.input_validation.outputs.tag}}-arm64
+
+  # publish-menifest:
+  #   needs: [input_validation, publish-amd64, publish-arm64]
+  #   runs-on: dogu-build-arm
+
+  #   steps:
+  #     - name: Create and push manifest images
+  #       uses: Noelware/docker-manifest-action@master
+  #       with:
+  #         inputs: ${{needs.input_validation.outputs.tag}}-test
+  #         images: ${{needs.input_validation.outputs.tag}}-amd64,${{needs.input_validation.outputs.tag}}-arm64
+  #         push: true
 
   publish-menifest:
-    needs: [publish-amd64, publish-arm64]
+    needs: [input_validation]
     runs-on: dogu-build-arm
 
     steps:
