@@ -144,7 +144,7 @@ jobs:
       - name: Create and push manifest images
         uses: int128/docker-manifest-create-action@v1
         with:
-          tags: ${{needs.input_validation.outputs.tag}}-test
+          tags: ${{needs.input_validation.outputs.tag}}
           suffixes: |
             -amd64
             -arm64
