@@ -1,5 +1,5 @@
 import { PrivateDevice } from '@dogu-private/console-host-agent';
-import { createConsoleApiAuthHeader, DeviceId, HostId, isHostPlatform, OrganizationId, Platform, Serial } from '@dogu-private/types';
+import { createConsoleApiAuthHeader, DeviceId, isHostPlatform, OrganizationId, Platform, Serial } from '@dogu-private/types';
 import { DefaultHttpOptions, errorify, Instance, isFilteredAxiosError, transformAndValidate, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
@@ -34,10 +34,10 @@ export class DeviceResolver {
       throw new Error('Host resolution info is not resolved');
     }
 
-    const { serial, model, platform, organizationId, isVirtual } = value;
-    let deviceId = await this.findDeviceId(organizationId, this.hostResolutionInfo.hostId, serial, isVirtual);
+    const { serial, serialUnique, model, platform, organizationId, isVirtual } = value;
+    let deviceId = await this.findDeviceId(organizationId, serialUnique);
     if (deviceId === null) {
-      deviceId = await this.createDevice(organizationId, serial, model, platform, isVirtual);
+      deviceId = await this.createDevice(organizationId, serial, serialUnique, model, platform, isVirtual);
       this.logger.info('Device created', {
         serial,
         deviceId,
@@ -61,14 +61,12 @@ export class DeviceResolver {
     });
   }
 
-  private async findDeviceId(organizationId: OrganizationId, hostId: HostId, serial: Serial, isVirtual: number): Promise<DeviceId | null> {
+  private async findDeviceId(organizationId: OrganizationId, serialUnique: Serial): Promise<DeviceId | null> {
     try {
       const pathProvider = new PrivateDevice.findDeviceBySerial.pathProvider(organizationId);
       const path = PrivateDevice.findDeviceBySerial.resolvePath(pathProvider);
       const queryInterface: Instance<typeof PrivateDevice.findDeviceBySerial.query> = {
-        hostId,
-        serial,
-        isVirtual,
+        serialUnique,
       };
       const query = await transformAndValidate(PrivateDevice.findDeviceBySerial.query, queryInterface);
       const { data } = await this.consoleClientService.client
@@ -95,7 +93,7 @@ export class DeviceResolver {
     }
   }
 
-  private async createDevice(organizationId: OrganizationId, serial: Serial, model: string, platform: Platform, isVirtual: number): Promise<DeviceId> {
+  private async createDevice(organizationId: OrganizationId, serial: Serial, serialUnique: Serial, model: string, platform: Platform, isVirtual: number): Promise<DeviceId> {
     if (this.hostResolutionInfo === null) {
       throw new Error('Host connection info is not resolved');
     }
@@ -105,6 +103,7 @@ export class DeviceResolver {
     const path = PrivateDevice.createDevice.resolvePath(pathProvider);
     const body: Instance<typeof PrivateDevice.createDevice.requestBody> = {
       serial,
+      serialUnique,
       model,
       platform,
       isHost,

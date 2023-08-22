@@ -17,7 +17,7 @@ export interface HostResolutionInfo extends HostConnectionInfo {
   pathMap: ThirdPartyPathMap;
 }
 
-export type DeviceConnectionInfo = Pick<Device, 'serial' | 'platform' | 'model' | 'version' | 'organizationId' | 'hostId' | 'isVirtual'>;
+export type DeviceConnectionInfo = Pick<Device, 'serial' | 'serialUnique' | 'platform' | 'model' | 'version' | 'organizationId' | 'hostId' | 'isVirtual'>;
 export interface DeviceResolutionInfo extends DeviceConnectionInfo, Pick<Device, 'deviceId'> {
   hostPlatform: Platform;
   rootWorkspacePath: string;

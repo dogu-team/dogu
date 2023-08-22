@@ -22,6 +22,7 @@ import fs from 'fs';
 import lodash from 'lodash';
 import { Observable } from 'rxjs';
 import semver from 'semver';
+import systeminformation from 'systeminformation';
 import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
 import { AppiumService } from '../../appium/appium.service';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
@@ -64,6 +65,9 @@ export class AndroidChannel implements DeviceChannel {
   get serial(): string {
     return this._serial;
   }
+  get serialUnique(): string {
+    return this._serial;
+  }
   get platform(): Platform {
     return Platform.PLATFORM_ANDROID;
   }
@@ -79,6 +83,7 @@ export class AndroidChannel implements DeviceChannel {
 
   protected constructor(
     private readonly _serial: Serial,
+    private readonly _serialUnique: Serial,
     private readonly _info: DeviceSystemInfo,
     private readonly _portContext: DevicePortContext,
     private readonly _deviceAgent: AndroidDeviceAgentService,
@@ -134,9 +139,11 @@ export class AndroidChannel implements DeviceChannel {
     ZombieServiceInstance.addComponent(appiumContextProxy);
 
     const appiumDeviceWebDriverHandler = new AppiumDeviceWebDriverHandler(platform, serial, appiumContextProxy, httpRequestRelayService, appiumEndpointHandlerService, doguLogger);
+    const serialUnique = await generateSerialUnique(systemInfo);
 
     const deviceChannel = new AndroidChannel(
       serial,
+      serialUnique,
       systemInfo,
       portContext,
       deviceAgent,
@@ -431,3 +438,13 @@ export class AndroidChannel implements DeviceChannel {
  * It is difficult to maintain the function of syncing the changed port with go-device-controller and respawning androidDeviceAgentService.
  */
 const portContextes = new Map<Serial, DevicePortContext>();
+
+async function generateSerialUnique(systemInfo: DeviceSystemInfo): Promise<string> {
+  if (!systemInfo.isVirtual) {
+    return systemInfo.system.serial;
+  }
+  const uuid = await systeminformation.uuid();
+  const serialUnique = systemInfo.isVirtual ? `${uuid.os}-${systemInfo.system.serial}` : systemInfo.system.serial;
+
+  return serialUnique;
+}

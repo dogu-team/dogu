@@ -31,6 +31,7 @@ export type LogHandler = Pick<Printable, 'info' | 'error'>;
 
 export interface DeviceChannel {
   get serial(): Serial;
+  get serialUnique(): Serial;
   get platform(): Platform;
   get info(): DeviceSystemInfo;
   get portContext(): DevicePortContext;

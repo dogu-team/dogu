@@ -32,6 +32,9 @@ export class Device extends BaseEntity implements DeviceBase {
   @Column({ type: 'character varying', name: DevicePropSnake.serial, length: DEVICE_SERIAL_MIN_LENGTH, default: '', nullable: false })
   serial!: string;
 
+  @Column({ type: 'character varying', name: DevicePropSnake.serial_unique, length: DEVICE_SERIAL_MIN_LENGTH, default: '', nullable: false })
+  serialUnique!: string;
+
   @Column({ type: 'character varying', name: DevicePropSnake.name, length: DEVICE_NAME_MAX_LENGTH, default: '', nullable: false })
   name!: string;
 

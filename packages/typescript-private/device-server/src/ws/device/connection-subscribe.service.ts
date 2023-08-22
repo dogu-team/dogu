@@ -20,7 +20,7 @@ export class DeviceConnectionSubscribeService
   @OnEvent(OnDevicesConnectedEvent.key)
   onDevicesConnected(value: Instance<typeof OnDevicesConnectedEvent.value>): void {
     const messages = value.channels.map((channel) => {
-      const { serial, platform, info, isVirtual } = channel;
+      const { serial, serialUnique, platform, info, isVirtual } = channel;
       const { system, version, graphics } = info;
       const { model, manufacturer } = system;
       const display = graphics.displays.at(0);
@@ -28,6 +28,7 @@ export class DeviceConnectionSubscribeService
       const resolutionHeight = display?.resolutionY ?? 0;
       const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
         serial,
+        serialUnique,
         platform,
         model,
         version,
@@ -47,6 +48,7 @@ export class DeviceConnectionSubscribeService
     const messages = value.serials.map((serial) => {
       const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
         serial: serial,
+        serialUnique: '',
         platform: Platform.PLATFORM_UNSPECIFIED,
         model: '',
         version: '',

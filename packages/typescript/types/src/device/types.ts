@@ -27,6 +27,7 @@ export enum DeviceConnectionState {
 export interface Device {
   deviceId: string;
   serial: string;
+  serialUnique: string;
   name: string;
   platform: Platform;
   model: string;

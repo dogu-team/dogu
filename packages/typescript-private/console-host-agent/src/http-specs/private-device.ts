@@ -5,10 +5,14 @@ import { Type } from 'class-transformer';
 import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, Max, Min, ValidateNested } from 'class-validator';
 import { Result, WebSocketProxyId, WebSocketProxyReceive } from '../validations/types/built-in-messages';
 
-export class CreateDeviceRequestBody implements Pick<Required<Device>, 'serial' | 'model' | 'platform' | 'hostId' | 'isHost' | 'isVirtual'> {
+export class CreateDeviceRequestBody implements Pick<Required<Device>, 'serial' | 'serialUnique' | 'model' | 'platform' | 'hostId' | 'isHost' | 'isVirtual'> {
   @IsString()
   @IsNotEmpty()
   serial!: Serial;
+
+  @IsString()
+  @IsNotEmpty()
+  serialUnique!: Serial;
 
   @IsString()
   @IsNotEmpty()
@@ -38,20 +42,10 @@ export class CreateDeviceResponseBody implements Pick<Required<Device>, 'deviceI
   deviceId!: DeviceId;
 }
 
-export class FindDeviceBySerialQuery implements Pick<Required<Device>, 'serial' | 'hostId' | 'isVirtual'> {
+export class FindDeviceBySerialQuery implements Pick<Required<Device>, 'serialUnique'> {
   @IsString()
   @IsNotEmpty()
-  serial!: Serial;
-
-  @IsUUID()
-  hostId!: HostId;
-
-  @Min(0)
-  @Max(1)
-  @IsNumber()
-  @IsNotEmpty()
-  @Type(() => Number)
-  isVirtual!: number;
+  serialUnique!: Serial;
 }
 
 export class FindDeviceBySerialResponseBody implements Pick<Required<Device>, 'deviceId'> {

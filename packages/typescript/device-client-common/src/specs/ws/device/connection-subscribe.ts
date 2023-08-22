@@ -8,6 +8,10 @@ export class DeviceConnectionSubscribeReceiveMessage {
   @IsNotEmpty()
   serial!: Serial;
 
+  @IsString()
+  @IsNotEmpty()
+  serialUnique!: Serial;
+
   @IsEnum(Platform)
   platform!: Platform;
 

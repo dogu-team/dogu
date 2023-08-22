@@ -43,15 +43,13 @@ export class PrivateDeviceController {
     @Param(OrganizationPropCamel.organizationId, IsOrganizationExist) organizationId: OrganizationId,
     @Query() query: FindDeviceBySerialQuery,
   ): Promise<Instance<typeof PrivateDevice.findDeviceBySerial.responseBody>> {
-    const { serial, hostId, isVirtual } = query;
-    const device = isVirtual
-      ? await this.deviceRepository.findOne({ where: { hostId, serial, isVirtual, organizationId } })
-      : await this.deviceRepository.findOne({ where: { serial, isVirtual, organizationId } });
+    const { serialUnique } = query;
+    const device = await this.deviceRepository.findOne({ where: { serialUnique, organizationId } });
     if (device === null) {
       throw new NotFoundException({
         message: 'Device not found',
         organizationId,
-        serial,
+        serialUnique,
       });
     }
     const { deviceId } = device;
@@ -68,16 +66,15 @@ export class PrivateDeviceController {
     @Param(OrganizationPropCamel.organizationId, IsOrganizationExist) organizationId: OrganizationId,
     @Body() body: CreateDeviceRequestBody,
   ): Promise<Instance<typeof PrivateDevice.createDevice.responseBody>> {
-    const { serial, hostId, isVirtual } = body;
+    const { serial, serialUnique } = body;
 
-    const exist = isVirtual
-      ? await this.deviceRepository.exist({ where: { hostId, serial, isVirtual, organizationId } })
-      : await this.deviceRepository.exist({ where: { serial, isVirtual, organizationId } });
+    const exist = await this.deviceRepository.exist({ where: { serialUnique, organizationId } });
     if (exist) {
       throw new ConflictException({
         message: 'Device already exists',
         organizationId,
         serial,
+        serialUnique,
       });
     }
 

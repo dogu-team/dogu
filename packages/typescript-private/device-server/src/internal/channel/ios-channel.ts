@@ -81,6 +81,10 @@ export class IosChannel implements DeviceChannel {
     return this._serial;
   }
 
+  get serialUnique(): string {
+    return this._serial;
+  }
+
   get platform(): Platform {
     return Platform.PLATFORM_IOS;
   }

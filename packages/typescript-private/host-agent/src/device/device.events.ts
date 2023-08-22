@@ -8,6 +8,9 @@ export class OnDeviceConnectedEventValue implements DeviceConnectionInfo {
   @IsFilledString()
   serial!: Serial;
 
+  @IsFilledString()
+  serialUnique!: Serial;
+
   @IsEnum(Platform)
   platform!: Platform;
 
