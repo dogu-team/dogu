@@ -141,3 +141,4 @@ jobs:
           inputs: ${{needs.input_validation.outputs.tag}}-test
           images: ${{needs.input_validation.outputs.tag}}-amd64,${{needs.input_validation.outputs.tag}}-arm64
           push: true
+          amend: true
