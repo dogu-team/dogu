@@ -16,12 +16,12 @@ jobs:
   input-validation:
     runs-on: ubuntu-latest
     outputs:
-      tag: ${{ steps.input_validation.outputs.tag }}
+      tag: ${{ steps.input-validation.outputs.tag }}
       temp_repo: dogutechio/dogu-temp
-      upload_repo: ${{ steps.input_validation.outputs.upload_repo }}
+      upload_repo: ${{ steps.input-validation.outputs.upload_repo }}
 
     steps:
-      - id: input_validation
+      - id: input-validation
         name: input validation
         run: |
           RED='\033[0;31m'
@@ -89,7 +89,7 @@ jobs:
           platforms: linux/amd64
           no-cache: true
           tags: |
-            ${{needs.input_validation.outputs.temp_repo}}/${{needs.input_validation.outputs.tag}}-amd64
+            ${{needs.input-validation.outputs.temp_repo}}/${{needs.input-validation.outputs.tag}}-amd64
 
   publish-arm64:
     needs: input-validation
@@ -124,20 +124,20 @@ jobs:
           platforms: linux/arm64
           no-cache: true
           tags: |
-            ${{needs.input_validation.outputs.temp_repo}}/${{needs.input_validation.outputs.tag}}-arm64
+            ${{needs.input-validation.outputs.temp_repo}}/${{needs.input-validation.outputs.tag}}-arm64
 
   publish-menifest:
     needs: [input-validation, publish-arm64, publish-amd64]
     runs-on: dogu-build-arm
     outputs:
-      tag: ${{ steps.input_validation.outputs.tag }}
-      temp_repo: ${{ steps.input_validation.outputs.temp_repo }}
-      upload_repo: ${{ steps.input_validation.outputs.upload_repo }}
+      tag: ${{ steps.input-validation.outputs.tag }}
+      temp_repo: ${{ steps.input-validation.outputs.temp_repo }}
+      upload_repo: ${{ steps.input-validation.outputs.upload_repo }}
 
     steps:
       - name: Create and push manifest images
         run: |
-          docker manifest create ${{needs.input_validation.outputs.upload_repo}}:${{needs.input_validation.outputs.tag}} \
-          ${{needs.input_validation.outputs.temp_repo}}/${{needs.input_validation.outputs.tag}}-amd64 \
-          ${{needs.input_validation.outputs.temp_repo}}/${{needs.input_validation.outputs.tag}}-arm64
-          docker manifest push ${{needs.input_validation.outputs.upload_repo}}:${{needs.input_validation.outputs.tag}}
+          docker manifest create ${{needs.input-validation.outputs.upload_repo}}:${{needs.input-validation.outputs.tag}} \
+          ${{needs.input-validation.outputs.temp_repo}}/${{needs.input-validation.outputs.tag}}-amd64 \
+          ${{needs.input-validation.outputs.temp_repo}}/${{needs.input-validation.outputs.tag}}-arm64
+          docker manifest push ${{needs.input-validation.outputs.upload_repo}}:${{needs.input-validation.outputs.tag}}
