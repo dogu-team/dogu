@@ -93,7 +93,7 @@ export class ZombieTunnel implements Zombieable {
     this.tunnelContext.proc.on('exit', () => {
       ZombieServiceInstance.notifyDie(this);
     });
-    await waitPortOpen(this.hostPort, 60000);
+    await waitPortOpen(this.hostPort, 10000);
     return Promise.resolve();
   }
 

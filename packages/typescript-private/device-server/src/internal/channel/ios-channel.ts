@@ -14,7 +14,7 @@ import {
 } from '@dogu-private/types';
 import { Closable, errorify, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { StreamingOfferDto } from '@dogu-tech/device-client-common';
-import { HostPaths, killChildProcess } from '@dogu-tech/node';
+import { killChildProcess } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
 import compressing from 'compressing';
 import fs from 'fs';
@@ -34,7 +34,7 @@ import { createIdaLogger } from '../../logger/logger.instance';
 import { IdeviceDiagnostics, IdeviceSyslog, MobileDevice } from '../externals';
 import { IosDeviceAgentProcess } from '../externals/cli/ios-device-agent';
 import { ZombieTunnel } from '../externals/cli/mobiledevice-tunnel';
-import { DerivedData } from '../externals/xcode/deriveddata';
+import { WebdriverAgentProcess } from '../externals/cli/webdriver-agent-process';
 import { DeviceChannel, DeviceChannelOpenParam, LogHandler } from '../public/device-channel';
 import { IosDeviceAgentService } from '../services/device-agent/ios-device-agent-service';
 import { IosProfileService } from '../services/profile/ios-profiler';
@@ -68,6 +68,7 @@ export class IosChannel implements DeviceChannel {
     private readonly _info: DeviceSystemInfo,
     private readonly _profilers: ProfileServices,
     private readonly streaming: StreamingService,
+    private webdriverAgentProcess: WebdriverAgentProcess,
     private iosDeviceAgentProcess: IosDeviceAgentProcess,
     private readonly deviceAgent: IosDeviceAgentService,
     private _appiumContext: AppiumContextProxy,
@@ -138,12 +139,12 @@ export class IosChannel implements DeviceChannel {
     }
 
     const logger = createIdaLogger(param.serial);
-    logger.verbose('appium wda privisioning check starting');
-    const _ = await DerivedData.create(HostPaths.external.xcodeProject.wdaDerivedDataPath());
-    logger.verbose('appium wda privisioning check done');
+    logger.verbose('appium wda starting');
+    const wda = await WebdriverAgentProcess.start(serial, portContext.freeHostPort4, logger);
+    logger.verbose('appium wda  done');
 
     logger.verbose('appium context starting');
-    const appiumContextProxy = appiumService.createAppiumContext(platform, serial, 'builtin', portContext.freeHostPort3);
+    const appiumContextProxy = appiumService.createIosAppiumContext(serial, 'builtin', portContext.freeHostPort3, portContext.freeHostPort4);
     ZombieServiceInstance.addComponent(appiumContextProxy);
     logger.verbose('appium context started');
 
@@ -187,6 +188,7 @@ export class IosChannel implements DeviceChannel {
       systemInfo,
       [new IosProfileService(deviceAgent)],
       streaming,
+      wda,
       iosDeviceAgentProcess,
       deviceAgent,
       appiumContextProxy,
@@ -230,6 +232,7 @@ export class IosChannel implements DeviceChannel {
      * @note Does not wait for appium to shutdown
      */
     ZombieServiceInstance.deleteComponent(this._appiumContext);
+    this.webdriverAgentProcess.delete();
     this.iosDeviceAgentProcess.delete();
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === this.serial && zombieable.platform === Platform.PLATFORM_IOS;

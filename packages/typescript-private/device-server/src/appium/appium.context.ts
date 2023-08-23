@@ -38,12 +38,22 @@ export interface DefaultAppiumContextOptions {
   serverPort: number;
 }
 
-export interface AppiumContextOptions extends DefaultAppiumContextOptions {
+export interface BaseAppiumContextOptions extends DefaultAppiumContextOptions {
   service: AppiumService;
-  platform: Platform;
   serial: Serial;
   key: AppiumContextKey;
 }
+
+export interface AndroidAppiumContextOptions extends BaseAppiumContextOptions {
+  platform: Platform.PLATFORM_ANDROID;
+}
+
+export interface IosAppiumContextOptions extends BaseAppiumContextOptions {
+  platform: Platform.PLATFORM_IOS;
+  wdaForwardPort: number;
+}
+
+export type AppiumContextOptions = AndroidAppiumContextOptions | IosAppiumContextOptions;
 
 function transformId(context: unknown): string {
   if (typeof context === 'string') {
@@ -361,25 +371,18 @@ export class AppiumContextImpl implements AppiumContext {
         };
       }
       case Platform.PLATFORM_IOS: {
-        const { tempPath } = HostPaths;
-        const derivedDataPath = path.resolve(tempPath, 'derived-data', serial);
+        const derivedDataPath = path.resolve(HostPaths.external.xcodeProject.wdaDerivedDataClonePath(), serial);
         await fs.promises.mkdir(derivedDataPath, { recursive: true });
-        const wdaLocalPort = await getFreePort();
         const mjpegServerPort = await getFreePort();
         return {
           platformName: 'ios',
           'appium:automationName': 'XCUITest',
           'appium:deviceName': serial,
           'appium:udid': serial,
-          'appium:wdaLocalPort': wdaLocalPort,
+          'appium:webDriverAgentUrl': `http://127.0.0.1:${this.options.wdaForwardPort}`,
           'appium:derivedDataPath': derivedDataPath,
           'appium:mjpegServerPort': mjpegServerPort,
           'appium:newCommandTimeout': AppiumNewCommandTimeout,
-          // 'appium:wdaLaunchTimeout': 300 * 1000,
-          // 'appium:wdaConnectionTimeout': 300 * 1000,
-          // 'appium:wdaStartupRetries': 1,
-          // 'appium:waitForIdleTimeout': 300 * 1000,
-          // 'appium:shouldUseSingletonTestManager': false,
           'appium:showXcodeLog': true,
         };
       }

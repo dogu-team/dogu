@@ -1,4 +1,4 @@
-import { extensionFromPlatform, PlatformType } from '@dogu-private/types';
+import { extensionFromPlatform, Platform, PlatformType } from '@dogu-private/types';
 import {
   DoguApplicationFileSizeHeader,
   DoguApplicationUrlHeader,
@@ -75,10 +75,16 @@ export class AppiumNewSessionEndpointHandler extends AppiumEndpointHandler {
         request.reqBody ??= {};
         _.set(request.reqBody, 'capabilities.alwaysMatch.platformName', 'iOS');
         _.set(request.reqBody, 'capabilities.alwaysMatch.appium:automationName', 'XCUITest');
+        if (remoteContext.options.platform !== Platform.PLATFORM_IOS) {
+          return {
+            status: 400,
+            error: new Error(`Internal error. appium context's platform is not ios. ${remoteContext.options.platform}`),
+            data: {},
+          };
+        }
 
-        const wdaLocalPort = await getFreePort();
         const mjpegServerPort = await getFreePort();
-        _.set(request.reqBody, 'capabilities.alwaysMatch.appium:wdaLocalPort', wdaLocalPort);
+        _.set(request.reqBody, 'capabilities.alwaysMatch.appium:webDriverAgentUrl', `http://127.0.0.1:${remoteContext.options.wdaForwardPort}`);
         _.set(request.reqBody, 'capabilities.alwaysMatch.appium:mjpegServerPort', mjpegServerPort);
         _.set(request.reqBody, 'capabilities.alwaysMatch.appium:showXcodeLog', true);
 
