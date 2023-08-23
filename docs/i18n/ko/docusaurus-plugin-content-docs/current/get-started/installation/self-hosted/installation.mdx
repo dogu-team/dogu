@@ -19,13 +19,13 @@ import TabItem from '@theme/TabItem';
 
 ## 하드웨어 요구사항
 
-|                          | Minimum Requirements                           |
-| :----------------------: | ---------------------------------------------- |
-| <b>Operating System</b>  | Ubuntu(x86_64), macOS(x86_64), Windows(x86_64) |
-|       <b> CPU </b>       | 8 Cores                                        |
-|     <b> Memory </b>      | 16 GB RAM                                      |
-| <b> Free Disk Space </b> | SSD 128GB                                      |
-|  <b> Dependencies </b>   | Docker, Docker-Compose                         |
+|                          | Minimum Requirements                                       |
+| :----------------------: | ---------------------------------------------------------- |
+| <b>Operating System</b>  | Ubuntu(x86_64,arm64), macOS(x86_64,arm64), Windows(x86_64) |
+|       <b> CPU </b>       | 4 Cores                                                    |
+|     <b> Memory </b>      | 8 GB RAM                                                   |
+| <b> Free Disk Space </b> | SSD 128GB                                                  |
+|  <b> Dependencies </b>   | Docker, Docker-Compose                                     |
 
 ## Docker를 이용한 Dogu 설치
 
@@ -67,7 +67,8 @@ icacls "C:\var\lib\dogu\nexus-data" /setowner 200 /T
 
 1. 빈 docker-compose.env 파일 생성
 2. [파일](https://github.com/dogu-team/dogu/blob/main/docker-compose.env) 내용을 docker-compose.env 파일에 붙여넣기
-3. `DOGU_HOST` 값을 Dogu를 실행할 장비의 ip로 변경
+3. `DOGU_HOST` 값을 Dogu를 실행할 장비의 ip로 변경  
+   (`localhost` 또는 `127.0.0.1`을 사용하지 마세요. 로컬 장비에서 Dogu를 실행하는 경우 장비의 `private IP` 또는 `public IP`를 사용하세요.)
 
 ### docker-compose.yml 생성
 
@@ -76,7 +77,7 @@ icacls "C:\var\lib\dogu\nexus-data" /setowner 200 /T
 
 ### 네트워크 보안 설정
 
-Dogu가 설치된 장비의 인/아웃바운드 트래픽 허용 설정에서 `DOGU_HOST`의 IP 접근을 허용해 주세요.  
+Dogu가 설치된 장비의 인/아웃바운드 트래픽 허용 설정에서 `DOGU_HOST`의 IP 접근을 허용해 주세요.
 
 ### Dogu 실행
 
@@ -91,7 +92,7 @@ docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up  -d
 [docker-compose.env 파일 생성](/get-started/installation/self-hosted/installation#docker-composeenv-파일-생성)에서 설정한 `https://DOGU_HOST:3001` 주소로 접속하여 Dogu가 정상적으로 실행되었는지 확인합니다.  
 정상적으로 실행되었다면 아래와 같은 화면이 나타납니다.
 
-<img src="/ko/img/get-started/auth-page.png"/>
+<img src="/ko/img/get-started/auth-page.png" />
 
 ## 디바이스 팜 구축
 

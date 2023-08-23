@@ -19,13 +19,13 @@ This document explains how to start using Dogu as a self-hosted solution.
 
 ## Hardware Requirements
 
-|                          | Minimum Requirements                           |
-| :----------------------: | ---------------------------------------------- |
-| <b>Operating System</b>  | Ubuntu(x86_64), macOS(x86_64), Windows(x86_64) |
-|       <b> CPU </b>       | 8 Cores                                        |
-|     <b> Memory </b>      | 16 GB RAM                                      |
-| <b> Free Disk Space </b> | SSD 128GB                                      |
-|  <b> Dependencies </b>   | Docker, Docker-Compose                         |
+|                          | Minimum Requirements                                       |
+| :----------------------: | ---------------------------------------------------------- |
+| <b>Operating System</b>  | Ubuntu(x86_64,arm64), macOS(x86_64,arm64), Windows(x86_64) |
+|       <b> CPU </b>       | 4 Cores                                                    |
+|     <b> Memory </b>      | 8 GB RAM                                                   |
+| <b> Free Disk Space </b> | SSD 128GB                                                  |
+|  <b> Dependencies </b>   | Docker, Docker-Compose                                     |
 
 ## Dogu Installation using Docker
 
@@ -66,7 +66,8 @@ You can replace the `/var/lib/dogu` path created above with the `VOLUME_PATH` va
 
 1. Create an empty docker-compose.env file.
 2. Copy the contents from the [file](https://github.com/dogu-team/dogu/blob/main/docker-compose.env) and paste them into the docker-compose.env file.
-3. Change the `DOGU_HOST` value to the IP of the machine where Dogu will be running.
+3. Change the `DOGU_HOST` value to the IP of the machine where Dogu will be running.  
+   (Don't use `localhost` or `127.0.0.1`. If you are running Dogu on a local machine, use the `private IP` or `public IP` of the machine.)
 
 ### Create docker-compose.yml
 
@@ -89,7 +90,7 @@ docker compose -f ./docker-compose.yml --env-file ./docker-compose.env up  -d
 
 Access the `https://DOGU_HOST:3001` address that you set in the [Create docker-compose.env File](/get-started/installation/self-hosted/installation#creating-the-docker-composeenv-file) step to check if Dogu is running properly. If it is running correctly, you should see the following screen:
 
-<img src="/img/get-started/auth-page.png"/>
+<img src="/img/get-started/auth-page.png" />
 
 ## Setting up the Device Farm
 
