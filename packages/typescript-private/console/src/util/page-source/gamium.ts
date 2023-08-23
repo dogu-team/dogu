@@ -140,6 +140,11 @@ export class GamiumNodeUtilizer extends NodeUtilizer<GamiumNodeAttributes> {
     return [];
   };
 
+  public getFocusedNode: () => ParsedNode<GamiumNodeAttributes> | null = () => {
+    throw new Error('Method not implemented.');
+    return null;
+  };
+
   public getInspectingArea: GetInspectingAreaFunc = () => {
     const deviceSize = this.getDeviceScreenSize();
 

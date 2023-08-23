@@ -6,6 +6,7 @@ import { DataSource, EntityManager, IsNull } from 'typeorm';
 import { v4 } from 'uuid';
 import { RecordTestCase } from '../../../../db/entity/record-test-case.entity';
 import { RecordTestStepActionWebdriverClick } from '../../../../db/entity/record-test-step-action-webdriver-click.entity';
+import { RecordTestStepActionWebdriverInput } from '../../../../db/entity/record-test-step-action-webdriver-input.entity';
 import { RecordTestStep } from '../../../../db/entity/record-test-step.entity';
 import { ProjectFileService } from '../../../../module/file/project-file.service';
 import { detechRecordTestStepFromCase, getNextRecordTestStepInCase } from '../common';
@@ -81,6 +82,9 @@ export class RecordTestStepService {
         });
         break;
       case RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_INPUT:
+        action = await this.dataSource.getRepository(RecordTestStepActionWebdriverInput).findOne({
+          where: { recordTestStepId: recordTestStep.recordTestStepId },
+        });
         break;
       case RECORD_TEST_STEP_ACTION_TYPE.UNSPECIFIED:
         break;

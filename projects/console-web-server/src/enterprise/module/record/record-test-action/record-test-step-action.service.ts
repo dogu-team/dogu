@@ -24,6 +24,7 @@ import {
 import { makeActionBatchExcutor } from '../common';
 import { CreateRecordTestStepDto } from '../dto/record-test-step.dto';
 import { RecordTestStepActionWebdriverClickService } from './record-test-action-webdriver-click.service';
+import { RecordTestStepActionWebdriverInputService } from './record-test-action-webdriver-input.service';
 
 @Injectable()
 export class RecordTestStepActionService {
@@ -34,6 +35,8 @@ export class RecordTestStepActionService {
     private readonly projectFileService: ProjectFileService,
     @Inject(RecordTestStepActionWebdriverClickService)
     private readonly recordTestStepActionWebdriverClickService: RecordTestStepActionWebdriverClickService,
+    @Inject(RecordTestStepActionWebdriverInputService)
+    private readonly recordTestStepActionWebdriverInputService: RecordTestStepActionWebdriverInputService,
 
     private readonly logger: DoguLogger,
   ) {}
@@ -102,11 +105,10 @@ export class RecordTestStepActionService {
 
     switch (type) {
       case 'WEBDRIVER_CLICK':
-        // recordTestStep.type = RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_CLICK;
         await this.recordTestStepActionWebdriverClickService.addWebdriverClickAction(manager, recordTestCase, recordTestStep, device, utilizer, batchExecutor, dto);
         break;
       case 'WEBDRIVER_INPUT':
-        // recordTestStep.type = RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_INPUT;
+        await this.recordTestStepActionWebdriverInputService.addWebdriverInputAction(manager, recordTestCase, recordTestStep, device, utilizer, batchExecutor, dto);
         break;
       // case RECORD_TEST_STEP_ACTION_TYPE.UNSPECIFIED:
       //   break;
@@ -145,6 +147,7 @@ export class RecordTestStepActionService {
         await this.recordTestStepActionWebdriverClickService.softDeleteRecordTestStepWebdriverClickAction(manager, recordTestStep);
         break;
       case RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_INPUT:
+        await this.recordTestStepActionWebdriverInputService.softDeleteRecordTestStepWebdriverInputAction(manager, recordTestStep);
         break;
       case RECORD_TEST_STEP_ACTION_TYPE.UNSPECIFIED:
         break;
