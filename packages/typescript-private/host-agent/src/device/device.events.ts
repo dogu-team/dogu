@@ -1,12 +1,15 @@
 import { DeviceId, HostId, OrganizationId, Platform, Serial, ThirdPartyPathMap } from '@dogu-private/types';
 import { createEventDefinition, IsFilledString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
-import { IsEnum, IsNotEmpty, IsNotEmptyObject, IsNumber, IsString, IsUUID } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNotEmptyObject, IsNumber, IsString, IsUUID, Max, Min } from 'class-validator';
 import { DeviceConnectionInfo, DeviceResolutionInfo } from '../types';
 
 export class OnDeviceConnectedEventValue implements DeviceConnectionInfo {
   @IsFilledString()
   serial!: Serial;
+
+  @IsFilledString()
+  serialUnique!: Serial;
 
   @IsEnum(Platform)
   platform!: Platform;
@@ -25,6 +28,12 @@ export class OnDeviceConnectedEventValue implements DeviceConnectionInfo {
 
   @IsString()
   manufacturer!: string;
+
+  @Min(0)
+  @Max(1)
+  @IsNumber()
+  @IsNotEmpty()
+  isVirtual!: number;
 
   @IsNumber()
   @Type(() => Number)

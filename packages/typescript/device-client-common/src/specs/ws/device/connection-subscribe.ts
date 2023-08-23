@@ -1,12 +1,16 @@
 import { WebSocketSpec } from '@dogu-tech/common';
 import { DeviceConnectionState, Platform, Serial } from '@dogu-tech/types';
 import { Type } from 'class-transformer';
-import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString, Max, Min } from 'class-validator';
 
 export class DeviceConnectionSubscribeReceiveMessage {
   @IsString()
   @IsNotEmpty()
   serial!: Serial;
+
+  @IsString()
+  @IsNotEmpty()
+  serialUnique!: Serial;
 
   @IsEnum(Platform)
   platform!: Platform;
@@ -22,6 +26,12 @@ export class DeviceConnectionSubscribeReceiveMessage {
 
   @IsString()
   manufacturer!: string;
+
+  @Min(0)
+  @Max(1)
+  @IsNumber()
+  @IsNotEmpty()
+  isVirtual!: number;
 
   @IsNumber()
   @Type(() => Number)

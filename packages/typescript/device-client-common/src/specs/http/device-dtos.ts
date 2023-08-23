@@ -23,6 +23,7 @@ export class GetDeviceSystemInfoResponse implements DeviceSystemInfo {
   marketName!: string;
   version!: string;
   timeMs!: number;
+  isVirtual!: boolean;
   system!: { manufacturer: string; model: string; version: string; serial: string; uuid: string; sku: string };
   bios!: { vendor: string; version: string; releaseDate: string; revision: string; serial?: string | undefined; language?: string | undefined; features?: string[] | undefined };
   baseboard!: { manufacturer: string; model: string; version: string; serial: string; assetTag: string; memMax: number | null; memSlots: number | null };

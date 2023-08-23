@@ -1,16 +1,18 @@
-import { DeviceId, HostId, OrganizationId, Platform, PrivateProtocol, Serial } from '@dogu-private/types';
+import { Device, DeviceId, HostId, OrganizationId, Platform, Serial } from '@dogu-private/types';
 import { ControllerMethodSpec, ControllerSpec, IsFilledString, Log } from '@dogu-tech/common';
 import { RuntimeInfoDto } from '@dogu-tech/device-client-common';
 import { Type } from 'class-transformer';
 import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, Max, Min, ValidateNested } from 'class-validator';
 import { Result, WebSocketProxyId, WebSocketProxyReceive } from '../validations/types/built-in-messages';
 
-type Device = PrivateProtocol.Device;
-
-export class CreateDeviceRequestBody implements Pick<Required<Device>, 'serial' | 'model' | 'platform'> {
+export class CreateDeviceRequestBody implements Pick<Required<Device>, 'serial' | 'serialUnique' | 'model' | 'platform' | 'hostId' | 'isHost' | 'isVirtual'> {
   @IsString()
   @IsNotEmpty()
   serial!: Serial;
+
+  @IsString()
+  @IsNotEmpty()
+  serialUnique!: Serial;
 
   @IsString()
   @IsNotEmpty()
@@ -27,6 +29,12 @@ export class CreateDeviceRequestBody implements Pick<Required<Device>, 'serial' 
 
   @IsUUID()
   hostId!: HostId;
+
+  @Min(0)
+  @Max(1)
+  @IsNumber()
+  @IsNotEmpty()
+  isVirtual!: number;
 }
 
 export class CreateDeviceResponseBody implements Pick<Required<Device>, 'deviceId'> {
@@ -34,10 +42,10 @@ export class CreateDeviceResponseBody implements Pick<Required<Device>, 'deviceI
   deviceId!: DeviceId;
 }
 
-export class FindDeviceBySerialQuery implements Pick<Required<Device>, 'serial'> {
+export class FindDeviceBySerialQuery implements Pick<Required<Device>, 'serialUnique'> {
   @IsString()
   @IsNotEmpty()
-  serial!: Serial;
+  serialUnique!: Serial;
 }
 
 export class FindDeviceBySerialResponseBody implements Pick<Required<Device>, 'deviceId'> {
@@ -61,7 +69,18 @@ export class PushDeviceResultRequestBody {
   result!: Result;
 }
 
-export class UpdateDeviceRequestBody implements Pick<Required<Device>, 'hostId' | 'platform' | 'model' | 'version' | 'manufacturer' | 'resolutionWidth' | 'resolutionHeight'> {
+export class UpdateDeviceRequestBody
+  implements
+    Pick<Required<Device>, 'serial' | 'serialUnique' | 'hostId' | 'platform' | 'model' | 'version' | 'manufacturer' | 'isVirtual' | 'resolutionWidth' | 'resolutionHeight'>
+{
+  @IsString()
+  @IsNotEmpty()
+  serial!: Serial;
+
+  @IsString()
+  @IsNotEmpty()
+  serialUnique!: Serial;
+
   @IsFilledString()
   hostId!: HostId;
 
@@ -76,6 +95,12 @@ export class UpdateDeviceRequestBody implements Pick<Required<Device>, 'hostId' 
 
   @IsString()
   manufacturer!: string;
+
+  @Min(0)
+  @Max(1)
+  @IsNumber()
+  @IsNotEmpty()
+  isVirtual!: number;
 
   @IsNumber()
   @Type(() => Number)

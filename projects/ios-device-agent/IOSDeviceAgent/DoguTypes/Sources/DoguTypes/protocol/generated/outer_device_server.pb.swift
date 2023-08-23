@@ -20,52 +20,6 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
   typealias Version = _2
 }
 
-public enum Outer_DeviceConnectionState: SwiftProtobuf.Enum {
-  public typealias RawValue = Int
-
-  /// Not used. must be initialized to a different value.
-  case unspecified // = 0
-  case disconnected // = 1
-  case connected // = 2
-  case UNRECOGNIZED(Int)
-
-  public init() {
-    self = .unspecified
-  }
-
-  public init?(rawValue: Int) {
-    switch rawValue {
-    case 0: self = .unspecified
-    case 1: self = .disconnected
-    case 2: self = .connected
-    default: self = .UNRECOGNIZED(rawValue)
-    }
-  }
-
-  public var rawValue: Int {
-    switch self {
-    case .unspecified: return 0
-    case .disconnected: return 1
-    case .connected: return 2
-    case .UNRECOGNIZED(let i): return i
-    }
-  }
-
-}
-
-#if swift(>=4.2)
-
-extension Outer_DeviceConnectionState: CaseIterable {
-  // The compiler won't synthesize support with the UNRECOGNIZED case.
-  public static var allCases: [Outer_DeviceConnectionState] = [
-    .unspecified,
-    .disconnected,
-    .connected,
-  ]
-}
-
-#endif  // swift(>=4.2)
-
 public struct Outer_DeviceHostUploadFileStartSendValue {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -296,7 +250,6 @@ public struct Outer_DeviceServerResponse {
 }
 
 #if swift(>=5.5) && canImport(_Concurrency)
-extension Outer_DeviceConnectionState: @unchecked Sendable {}
 extension Outer_DeviceHostUploadFileStartSendValue: @unchecked Sendable {}
 extension Outer_DeviceHostUploadFileInProgressSendValue: @unchecked Sendable {}
 extension Outer_DeviceHostUploadFileCompleteSendValue: @unchecked Sendable {}
@@ -313,14 +266,6 @@ extension Outer_DeviceServerResponse.OneOf_Value: @unchecked Sendable {}
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
 
 fileprivate let _protobuf_package = "outer"
-
-extension Outer_DeviceConnectionState: SwiftProtobuf._ProtoNameProviding {
-  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "DEVICE_CONNECTION_STATE_UNSPECIFIED"),
-    1: .same(proto: "DEVICE_CONNECTION_STATE_DISCONNECTED"),
-    2: .same(proto: "DEVICE_CONNECTION_STATE_CONNECTED"),
-  ]
-}
 
 extension Outer_DeviceHostUploadFileStartSendValue: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DeviceHostUploadFileStartSendValue"

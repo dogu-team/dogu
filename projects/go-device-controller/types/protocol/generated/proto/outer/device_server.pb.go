@@ -21,56 +21,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type DeviceConnectionState int32
-
-const (
-	// Not used. must be initialized to a different value.
-	DeviceConnectionState_DEVICE_CONNECTION_STATE_UNSPECIFIED  DeviceConnectionState = 0
-	DeviceConnectionState_DEVICE_CONNECTION_STATE_DISCONNECTED DeviceConnectionState = 1
-	DeviceConnectionState_DEVICE_CONNECTION_STATE_CONNECTED    DeviceConnectionState = 2
-)
-
-// Enum value maps for DeviceConnectionState.
-var (
-	DeviceConnectionState_name = map[int32]string{
-		0: "DEVICE_CONNECTION_STATE_UNSPECIFIED",
-		1: "DEVICE_CONNECTION_STATE_DISCONNECTED",
-		2: "DEVICE_CONNECTION_STATE_CONNECTED",
-	}
-	DeviceConnectionState_value = map[string]int32{
-		"DEVICE_CONNECTION_STATE_UNSPECIFIED":  0,
-		"DEVICE_CONNECTION_STATE_DISCONNECTED": 1,
-		"DEVICE_CONNECTION_STATE_CONNECTED":    2,
-	}
-)
-
-func (x DeviceConnectionState) Enum() *DeviceConnectionState {
-	p := new(DeviceConnectionState)
-	*p = x
-	return p
-}
-
-func (x DeviceConnectionState) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (DeviceConnectionState) Descriptor() protoreflect.EnumDescriptor {
-	return file_outer_device_server_proto_enumTypes[0].Descriptor()
-}
-
-func (DeviceConnectionState) Type() protoreflect.EnumType {
-	return &file_outer_device_server_proto_enumTypes[0]
-}
-
-func (x DeviceConnectionState) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use DeviceConnectionState.Descriptor instead.
-func (DeviceConnectionState) EnumDescriptor() ([]byte, []int) {
-	return file_outer_device_server_proto_rawDescGZIP(), []int{0}
-}
-
 type DeviceHostUploadFileStartSendValue struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -626,23 +576,14 @@ var file_outer_device_server_proto_rawDesc = []byte{
 	0x65, 0x72, 0x72, 0x6f, 0x72, 0x12, 0x2d, 0x0a, 0x04, 0x64, 0x61, 0x74, 0x61, 0x18, 0x02, 0x20,
 	0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x48, 0x00, 0x52, 0x04,
-	0x64, 0x61, 0x74, 0x61, 0x42, 0x07, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x2a, 0x91, 0x01,
-	0x0a, 0x15, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69,
-	0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x27, 0x0a, 0x23, 0x44, 0x45, 0x56, 0x49, 0x43,
-	0x45, 0x5f, 0x43, 0x4f, 0x4e, 0x4e, 0x45, 0x43, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x53, 0x54, 0x41,
-	0x54, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00,
-	0x12, 0x28, 0x0a, 0x24, 0x44, 0x45, 0x56, 0x49, 0x43, 0x45, 0x5f, 0x43, 0x4f, 0x4e, 0x4e, 0x45,
-	0x43, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x45, 0x5f, 0x44, 0x49, 0x53, 0x43,
-	0x4f, 0x4e, 0x4e, 0x45, 0x43, 0x54, 0x45, 0x44, 0x10, 0x01, 0x12, 0x25, 0x0a, 0x21, 0x44, 0x45,
-	0x56, 0x49, 0x43, 0x45, 0x5f, 0x43, 0x4f, 0x4e, 0x4e, 0x45, 0x43, 0x54, 0x49, 0x4f, 0x4e, 0x5f,
-	0x53, 0x54, 0x41, 0x54, 0x45, 0x5f, 0x43, 0x4f, 0x4e, 0x4e, 0x45, 0x43, 0x54, 0x45, 0x44, 0x10,
-	0x02, 0x42, 0x5e, 0x0a, 0x21, 0x63, 0x6f, 0x6d, 0x2e, 0x64, 0x6f, 0x67, 0x75, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2e, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64,
-	0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x5a, 0x39, 0x67, 0x6f, 0x2d, 0x64, 0x65, 0x76, 0x69, 0x63,
-	0x65, 0x2d, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x6c, 0x65, 0x72, 0x2f, 0x74, 0x79, 0x70,
-	0x65, 0x73, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2f, 0x67, 0x65, 0x6e, 0x65,
-	0x72, 0x61, 0x74, 0x65, 0x64, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x6f, 0x75, 0x74, 0x65,
-	0x72, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x64, 0x61, 0x74, 0x61, 0x42, 0x07, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x42, 0x5e, 0x0a,
+	0x21, 0x63, 0x6f, 0x6d, 0x2e, 0x64, 0x6f, 0x67, 0x75, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63,
+	0x6f, 0x6c, 0x2e, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x2e, 0x6f, 0x75, 0x74,
+	0x65, 0x72, 0x5a, 0x39, 0x67, 0x6f, 0x2d, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x2d, 0x63, 0x6f,
+	0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x6c, 0x65, 0x72, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2f, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65,
+	0x64, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -657,34 +598,32 @@ func file_outer_device_server_proto_rawDescGZIP() []byte {
 	return file_outer_device_server_proto_rawDescData
 }
 
-var file_outer_device_server_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_outer_device_server_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_outer_device_server_proto_goTypes = []interface{}{
-	(DeviceConnectionState)(0),                         // 0: outer.DeviceConnectionState
-	(*DeviceHostUploadFileStartSendValue)(nil),         // 1: outer.DeviceHostUploadFileStartSendValue
-	(*DeviceHostUploadFileInProgressSendValue)(nil),    // 2: outer.DeviceHostUploadFileInProgressSendValue
-	(*DeviceHostUploadFileCompleteSendValue)(nil),      // 3: outer.DeviceHostUploadFileCompleteSendValue
-	(*DeviceHostUploadFileSendMessage)(nil),            // 4: outer.DeviceHostUploadFileSendMessage
-	(*DeviceHostUploadFileInProgressReceiveValue)(nil), // 5: outer.DeviceHostUploadFileInProgressReceiveValue
-	(*DeviceHostUploadFileCompleteReceiveValue)(nil),   // 6: outer.DeviceHostUploadFileCompleteReceiveValue
-	(*DeviceHostUploadFileReceiveMessage)(nil),         // 7: outer.DeviceHostUploadFileReceiveMessage
-	(*DeviceServerResponse)(nil),                       // 8: outer.DeviceServerResponse
-	(*ErrorResult)(nil),                                // 9: outer.ErrorResult
-	(*structpb.Struct)(nil),                            // 10: google.protobuf.Struct
+	(*DeviceHostUploadFileStartSendValue)(nil),         // 0: outer.DeviceHostUploadFileStartSendValue
+	(*DeviceHostUploadFileInProgressSendValue)(nil),    // 1: outer.DeviceHostUploadFileInProgressSendValue
+	(*DeviceHostUploadFileCompleteSendValue)(nil),      // 2: outer.DeviceHostUploadFileCompleteSendValue
+	(*DeviceHostUploadFileSendMessage)(nil),            // 3: outer.DeviceHostUploadFileSendMessage
+	(*DeviceHostUploadFileInProgressReceiveValue)(nil), // 4: outer.DeviceHostUploadFileInProgressReceiveValue
+	(*DeviceHostUploadFileCompleteReceiveValue)(nil),   // 5: outer.DeviceHostUploadFileCompleteReceiveValue
+	(*DeviceHostUploadFileReceiveMessage)(nil),         // 6: outer.DeviceHostUploadFileReceiveMessage
+	(*DeviceServerResponse)(nil),                       // 7: outer.DeviceServerResponse
+	(*ErrorResult)(nil),                                // 8: outer.ErrorResult
+	(*structpb.Struct)(nil),                            // 9: google.protobuf.Struct
 }
 var file_outer_device_server_proto_depIdxs = []int32{
-	1,  // 0: outer.DeviceHostUploadFileSendMessage.start:type_name -> outer.DeviceHostUploadFileStartSendValue
-	2,  // 1: outer.DeviceHostUploadFileSendMessage.in_progress:type_name -> outer.DeviceHostUploadFileInProgressSendValue
-	3,  // 2: outer.DeviceHostUploadFileSendMessage.complete:type_name -> outer.DeviceHostUploadFileCompleteSendValue
-	5,  // 3: outer.DeviceHostUploadFileReceiveMessage.in_progress:type_name -> outer.DeviceHostUploadFileInProgressReceiveValue
-	6,  // 4: outer.DeviceHostUploadFileReceiveMessage.complete:type_name -> outer.DeviceHostUploadFileCompleteReceiveValue
-	9,  // 5: outer.DeviceServerResponse.error:type_name -> outer.ErrorResult
-	10, // 6: outer.DeviceServerResponse.data:type_name -> google.protobuf.Struct
-	7,  // [7:7] is the sub-list for method output_type
-	7,  // [7:7] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	0, // 0: outer.DeviceHostUploadFileSendMessage.start:type_name -> outer.DeviceHostUploadFileStartSendValue
+	1, // 1: outer.DeviceHostUploadFileSendMessage.in_progress:type_name -> outer.DeviceHostUploadFileInProgressSendValue
+	2, // 2: outer.DeviceHostUploadFileSendMessage.complete:type_name -> outer.DeviceHostUploadFileCompleteSendValue
+	4, // 3: outer.DeviceHostUploadFileReceiveMessage.in_progress:type_name -> outer.DeviceHostUploadFileInProgressReceiveValue
+	5, // 4: outer.DeviceHostUploadFileReceiveMessage.complete:type_name -> outer.DeviceHostUploadFileCompleteReceiveValue
+	8, // 5: outer.DeviceServerResponse.error:type_name -> outer.ErrorResult
+	9, // 6: outer.DeviceServerResponse.data:type_name -> google.protobuf.Struct
+	7, // [7:7] is the sub-list for method output_type
+	7, // [7:7] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_outer_device_server_proto_init() }
@@ -809,14 +748,13 @@ func file_outer_device_server_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_outer_device_server_proto_rawDesc,
-			NumEnums:      1,
+			NumEnums:      0,
 			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_outer_device_server_proto_goTypes,
 		DependencyIndexes: file_outer_device_server_proto_depIdxs,
-		EnumInfos:         file_outer_device_server_proto_enumTypes,
 		MessageInfos:      file_outer_device_server_proto_msgTypes,
 	}.Build()
 	File_outer_device_server_proto = out.File

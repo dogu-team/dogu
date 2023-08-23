@@ -7,7 +7,7 @@ import {
   DEVICE_MODEL_MAX_LENGTH,
   DEVICE_MODEL_NAME_MAX_LENGH,
   DEVICE_NAME_MAX_LENGTH,
-  DEVICE_SERIAL_MIN_LENGTH,
+  DEVICE_SERIAL_MAX_LENGTH,
   DEVICE_TABLE_NAME,
   DEVICE_VERSION_MAX_LENGTH,
   HostId,
@@ -29,8 +29,11 @@ export class Device extends BaseEntity implements DeviceBase {
   @PrimaryGeneratedColumn('uuid', { name: DevicePropSnake.device_id })
   deviceId!: DeviceId;
 
-  @Column({ type: 'character varying', name: DevicePropSnake.serial, length: DEVICE_SERIAL_MIN_LENGTH, default: '', nullable: false })
+  @Column({ type: 'character varying', name: DevicePropSnake.serial, length: DEVICE_SERIAL_MAX_LENGTH, default: '', nullable: false })
   serial!: string;
+
+  @Column({ type: 'character varying', name: DevicePropSnake.serial_unique, length: DEVICE_SERIAL_MAX_LENGTH, default: '', nullable: false })
+  serialUnique!: string;
 
   @Column({ type: 'character varying', name: DevicePropSnake.name, length: DEVICE_NAME_MAX_LENGTH, default: '', nullable: false })
   name!: string;
@@ -61,6 +64,9 @@ export class Device extends BaseEntity implements DeviceBase {
 
   @Column({ type: 'smallint', name: DevicePropSnake.is_host, unsigned: true, default: 0, nullable: false })
   isHost!: number;
+
+  @Column({ type: 'smallint', name: DevicePropSnake.is_virtual, unsigned: true, default: 0, nullable: false })
+  isVirtual!: number;
 
   @Column({ type: 'smallint', name: DevicePropSnake.enable_host_device, unsigned: true, default: 0, nullable: false })
   enableHostDevice!: number;

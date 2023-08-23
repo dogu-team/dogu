@@ -3,46 +3,6 @@ import _m0 from 'protobufjs/minimal';
 import { Struct } from '../google/protobuf/struct';
 import { ErrorResult } from './errors';
 
-export enum DeviceConnectionState {
-  /** DEVICE_CONNECTION_STATE_UNSPECIFIED - Not used. must be initialized to a different value. */
-  DEVICE_CONNECTION_STATE_UNSPECIFIED = 0,
-  DEVICE_CONNECTION_STATE_DISCONNECTED = 1,
-  DEVICE_CONNECTION_STATE_CONNECTED = 2,
-  UNRECOGNIZED = -1,
-}
-
-export function deviceConnectionStateFromJSON(object: any): DeviceConnectionState {
-  switch (object) {
-    case 0:
-    case 'DEVICE_CONNECTION_STATE_UNSPECIFIED':
-      return DeviceConnectionState.DEVICE_CONNECTION_STATE_UNSPECIFIED;
-    case 1:
-    case 'DEVICE_CONNECTION_STATE_DISCONNECTED':
-      return DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED;
-    case 2:
-    case 'DEVICE_CONNECTION_STATE_CONNECTED':
-      return DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED;
-    case -1:
-    case 'UNRECOGNIZED':
-    default:
-      return DeviceConnectionState.UNRECOGNIZED;
-  }
-}
-
-export function deviceConnectionStateToJSON(object: DeviceConnectionState): string {
-  switch (object) {
-    case DeviceConnectionState.DEVICE_CONNECTION_STATE_UNSPECIFIED:
-      return 'DEVICE_CONNECTION_STATE_UNSPECIFIED';
-    case DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED:
-      return 'DEVICE_CONNECTION_STATE_DISCONNECTED';
-    case DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED:
-      return 'DEVICE_CONNECTION_STATE_CONNECTED';
-    case DeviceConnectionState.UNRECOGNIZED:
-    default:
-      return 'UNRECOGNIZED';
-  }
-}
-
 export interface DeviceHostUploadFileStartSendValue {
   fileName: string;
   fileSize: number;

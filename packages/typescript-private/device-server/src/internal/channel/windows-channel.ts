@@ -58,6 +58,10 @@ export class WindowsChannel implements DeviceChannel {
     return this._serial;
   }
 
+  get serialUnique(): string {
+    return this._serial;
+  }
+
   get platform(): Platform {
     return Platform.PLATFORM_WINDOWS;
   }
@@ -72,6 +76,10 @@ export class WindowsChannel implements DeviceChannel {
       freeHostPort2: DeviceAgentSecondPort,
       freeHostPort3: DeviceAgentThirdPort,
     };
+  }
+
+  get isVirtual(): boolean {
+    return this._info.isVirtual;
   }
   static async create(
     param: DeviceChannelOpenParam,

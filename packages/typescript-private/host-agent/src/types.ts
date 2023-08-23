@@ -1,11 +1,9 @@
 import { PrivateHostToken } from '@dogu-private/console-host-agent';
-import { Platform, PrivateProtocol, ThirdPartyPathMap } from '@dogu-private/types';
+import { Device, Platform, ThirdPartyPathMap } from '@dogu-private/types';
 import { Class, Instance, KindHavable } from '@dogu-tech/common';
 import { MessageHandler, MessagePattern } from '@nestjs/microservices';
 import { MessageTransportId } from './message/message.microservice';
 import { MessageContext } from './message/message.types';
-
-type Device = PrivateProtocol.Device;
 
 export interface HostConnectionStatus {
   status: 'connected' | 'disconnected';
@@ -19,7 +17,7 @@ export interface HostResolutionInfo extends HostConnectionInfo {
   pathMap: ThirdPartyPathMap;
 }
 
-export type DeviceConnectionInfo = Pick<Device, 'serial' | 'platform' | 'model' | 'version' | 'organizationId' | 'hostId'>;
+export type DeviceConnectionInfo = Pick<Device, 'serial' | 'serialUnique' | 'platform' | 'model' | 'version' | 'organizationId' | 'hostId' | 'isVirtual'>;
 export interface DeviceResolutionInfo extends DeviceConnectionInfo, Pick<Device, 'deviceId'> {
   hostPlatform: Platform;
   rootWorkspacePath: string;
