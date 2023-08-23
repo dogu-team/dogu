@@ -441,10 +441,10 @@ const portContextes = new Map<Serial, DevicePortContext>();
 
 async function generateSerialUnique(systemInfo: DeviceSystemInfo): Promise<string> {
   if (!systemInfo.isVirtual) {
-    return systemInfo.system.serial;
+    return systemInfo.system.serial; // should use ro.serialno value of "adb getprop". because when connect device with wifi, serial from "adb devices" changes.
   }
   const uuid = await systeminformation.uuid();
-  const serialUnique = systemInfo.isVirtual ? `${uuid.os}-${systemInfo.system.serial}` : systemInfo.system.serial;
+  const serialUnique = `${uuid.os}-${systemInfo.system.serial}`;
 
   return serialUnique;
 }

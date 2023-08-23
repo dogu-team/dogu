@@ -70,8 +70,17 @@ export class PushDeviceResultRequestBody {
 }
 
 export class UpdateDeviceRequestBody
-  implements Pick<Required<Device>, 'hostId' | 'platform' | 'model' | 'version' | 'manufacturer' | 'isVirtual' | 'resolutionWidth' | 'resolutionHeight'>
+  implements
+    Pick<Required<Device>, 'serial' | 'serialUnique' | 'hostId' | 'platform' | 'model' | 'version' | 'manufacturer' | 'isVirtual' | 'resolutionWidth' | 'resolutionHeight'>
 {
+  @IsString()
+  @IsNotEmpty()
+  serial!: Serial;
+
+  @IsString()
+  @IsNotEmpty()
+  serialUnique!: Serial;
+
   @IsFilledString()
   hostId!: HostId;
 
