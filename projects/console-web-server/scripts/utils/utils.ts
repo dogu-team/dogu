@@ -97,7 +97,7 @@ export async function exec(command: string, options?: ExecOptions): Promise<Shel
 }
 
 export async function spawnWithFindPattern(command: string, args: string[], pattern: RegExp): Promise<void> {
-  const timeout = 1000 * 60;
+  const timeout = 1000 * 300;
 
   await new Promise<void>((resolve, reject) => {
     const timeoutError = setTimeout(() => {
