@@ -41,12 +41,12 @@ jobs:
             if [ "$rc_check" = "true" ]; then
               echo "tag=rc-felix-test" >> "$GITHUB_OUTPUT"
               echo -e "${GREEN} dogu upload-image-repo is ${upload_repo}${NC}"
-              ecgo -e "${GREEN} dogu upload-image-tag is ${tag}${NC}"
+              echo -e "${GREEN} dogu upload-image-tag is ${tag}${NC}"
             else
               echo "upload_repo=dogutechio/dogu" >> "$GITHUB_OUTPUT"
               echo "tag=$version" >> "$GITHUB_OUTPUT"
               echo -e "${GREEN} dogu upload-image-repo is ${upload_repo}${NC}"
-              ecgo -e "${GREEN} dogu upload-image-tag is ${tag}${NC}"
+              echo -e "${GREEN} dogu upload-image-tag is ${tag}${NC}"
             fi
             echo -e "${GREEN} input validation successful${NC}"
           fi
