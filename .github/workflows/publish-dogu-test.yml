@@ -18,7 +18,7 @@ jobs:
     outputs:
       tag: ${{ steps.input_validation.outputs.tag }}
       temp_repo: dogutechio/dogu-temp
-      upload_repo: dogutechio/${{ steps.input_validation.outputs.upload_repo }}
+      upload_repo: ${{ steps.input_validation.outputs.upload_repo }}
 
     steps:
       - id: input_validation
@@ -40,11 +40,12 @@ jobs:
           else
             if [ "$rc_check" = "true" ]; then
               echo "tag=rc-felix-test" >> "$GITHUB_OUTPUT"
+              echo "upload_repo=dogutechio/dogu-rc" >> "$GITHUB_OUTPUT"
               echo -e "${GREEN} dogu upload-image-repo is ${upload_repo}${NC}"
               echo -e "${GREEN} dogu upload-image-tag is ${tag}${NC}"
             else
-              echo "upload_repo=dogutechio/dogu" >> "$GITHUB_OUTPUT"
               echo "tag=$version" >> "$GITHUB_OUTPUT"
+              echo "upload_repo=dogutechio/dogu" >> "$GITHUB_OUTPUT"
               echo -e "${GREEN} dogu upload-image-repo is ${upload_repo}${NC}"
               echo -e "${GREEN} dogu upload-image-tag is ${tag}${NC}"
             fi
