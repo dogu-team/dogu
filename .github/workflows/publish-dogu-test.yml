@@ -39,13 +39,17 @@ jobs:
             exit 1
           else
             if [ "$rc_check" = "true" ]; then
-              echo "tag=rc-felix-test" >> "$GITHUB_OUTPUT"
-              echo "upload_repo=dogutechio/dogu-rc" >> "$GITHUB_OUTPUT"
+              tag=rc-felix-test
+              upload_repo=dogutechio/dogu-rc
+              echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+              echo "upload_repo=${upload_repo}" >> "$GITHUB_OUTPUT"
               echo -e "${GREEN} dogu upload-image-repo is ${upload_repo}${NC}"
               echo -e "${GREEN} dogu upload-image-tag is ${tag}${NC}"
             else
-              echo "tag=$version" >> "$GITHUB_OUTPUT"
-              echo "upload_repo=dogutechio/dogu" >> "$GITHUB_OUTPUT"
+              tag=${version}
+              upload_repo=dogutechio/dogu
+              echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+              echo "upload_repo=${upload_repo}" >> "$GITHUB_OUTPUT"
               echo -e "${GREEN} dogu upload-image-repo is ${upload_repo}${NC}"
               echo -e "${GREEN} dogu upload-image-tag is ${tag}${NC}"
             fi
