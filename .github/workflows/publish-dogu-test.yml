@@ -39,7 +39,7 @@ jobs:
             exit 1
           else
             if [ "$rc_check" = "true" ]; then
-              tag=rc-felix-test
+              tag=rc
               upload_repo=dogutechio/dogu-rc
               echo "tag=${tag}" >> "$GITHUB_OUTPUT"
               echo "upload_repo=${upload_repo}" >> "$GITHUB_OUTPUT"
