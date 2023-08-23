@@ -3,12 +3,15 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 
 const execAsync = promisify(exec);
+if (!process.env.DOGU_NEXUS_URL) throw new Error('Url is not defined');
+if (!process.env.DOGU_NEXUS_USERNAME) throw new Error('DefaultAdminUsername is not defined');
+if (!process.env.DOGU_NEXUS_PASSWORD) throw new Error('DefaultAdminPassword is not defined');
 
 const ContainerName = process.env.DOGU_NEXUS_CONTAINER_NAME || 'dogu-nexus';
-const Url = process.env.DOGU_NEXUS_URL || 'http://dogu-nexus:8081';
+const Url = process.env.DOGU_NEXUS_URL;
 
-const DefaultAdminUsername = process.env.DOGU_NEXUS_USERNAME || 'admin';
-const DefaultAdminPassword = process.env.DOGU_NEXUS_PASSWORD || 'dogu';
+const DefaultAdminUsername = process.env.DOGU_NEXUS_USERNAME;
+const DefaultAdminPassword = process.env.DOGU_NEXUS_PASSWORD;
 
 const CheckStartTimeout = 10 * 60 * 1000;
 const CheckStartInterval = 10 * 1000;
@@ -165,7 +168,7 @@ async function createRawRepository(name: string): Promise<void> {
 }
 
 async function initialize(): Promise<void> {
-  console.log('Initializing Nexus with', { Url, CheckStartTimeout, CheckStartInterval });
+  console.log('Initializing Nexus with', { Url, DefaultAdminUsername, DefaultAdminPassword, CheckStartTimeout, CheckStartInterval });
   await checkDockerCli();
   await checkServerStarted();
   const isAdminPasswordFileExist = await checkAdminPasswordFile();
