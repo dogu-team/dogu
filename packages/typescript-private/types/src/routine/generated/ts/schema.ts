@@ -35,7 +35,13 @@ export interface JobSchema {
         group: string | string[];
       }
     | string
-    | string[];
+    | string[]
+    | {
+        browserName: string;
+        browserVersion?: string;
+        platformName?: string;
+        deviceName?: string;
+      };
   steps: StepSchema[];
 }
 /**

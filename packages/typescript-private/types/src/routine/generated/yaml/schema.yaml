@@ -55,6 +55,19 @@ definitions:
           - items:
               type: string
             type: array
+          - type: object
+            additionalProperties: false
+            properties:
+              browserName:
+                type: string
+              browserVersion:
+                type: string
+              platformName:
+                type: string
+              deviceName:
+                type: string
+            required:
+              - browserName
       steps:
         type: array
         items:
