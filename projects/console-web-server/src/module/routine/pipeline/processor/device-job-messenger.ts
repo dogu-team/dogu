@@ -60,7 +60,6 @@ export class DeviceJobMessenger {
     return {
       kind: 'RunStep',
       organizationId,
-      routineId,
       projectId,
       deviceId,
       routineDeviceJobId: deviceJobId,
