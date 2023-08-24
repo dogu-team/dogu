@@ -11,7 +11,7 @@ import {
   downloadLastKnownGoodChromeVersionLike,
   findChromeVersionLike,
   parseChromeVersionLike,
-} from './chrome-version-utils';
+} from './browser-manager/chrome-version-utils';
 
 const FirefoxVersionPattern = /^(\d+).*$/;
 const BrowsersPathLock = new AsyncLock();
@@ -20,8 +20,6 @@ function resolveBrowserOrDriverName(browserOrDriverName: BrowserOrDriverName): B
   switch (browserOrDriverName) {
     case 'chrome':
       return Browser.CHROME;
-    case 'chromium':
-      return Browser.CHROMIUM;
     case 'firefox':
       return Browser.FIREFOX;
     case 'chromedriver':

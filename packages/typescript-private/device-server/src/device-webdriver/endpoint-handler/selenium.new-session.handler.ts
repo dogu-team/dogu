@@ -1,4 +1,4 @@
-import { isValidBrowserName } from '@dogu-private/types';
+import { isAllowedBrowserName } from '@dogu-private/types';
 import { DoguBrowserNameHeader, DoguBrowserVersionHeader, DoguRemoteDeviceJobIdHeader, HeaderRecord } from '@dogu-tech/common';
 import { RelayRequest, RelayResponse, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
 import _ from 'lodash';
@@ -31,7 +31,8 @@ export class SeleniumNewSessionEndpointHandler extends SeleniumEndpointHandler {
         data: {},
       };
     }
-    if (!isValidBrowserName(doguBrowserName)) {
+
+    if (!isAllowedBrowserName(doguBrowserName)) {
       return {
         status: 401,
         error: new Error(`doguBrowserName is not valid: ${doguBrowserName}`),

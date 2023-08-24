@@ -1,4 +1,4 @@
-import { BrowserName, isValidBrowserDriverName } from '@dogu-private/types';
+import { BrowserName, isAllowedDriverName } from '@dogu-private/types';
 import { errorify, Printable, stringify } from '@dogu-tech/common';
 import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
@@ -96,7 +96,7 @@ export class SeleniumContext {
       throw new Error(`Unsupported browser name: ${stringify(browserName)}`);
     }
 
-    if (!isValidBrowserDriverName(browserDriverName)) {
+    if (!isAllowedDriverName(browserDriverName)) {
       throw new Error(`Invalid browser driver name: ${stringify(browserDriverName)}`);
     }
 

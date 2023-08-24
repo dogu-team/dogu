@@ -13,10 +13,23 @@ export type BrowserOrDriverName = BrowserName | DriverName;
 export const BrowserPlatform = ['macos', 'windows', 'android', 'ios'] as const;
 export type BrowserPlatform = (typeof BrowserPlatform)[number] extends Extract<PlatformType, 'macos' | 'windows' | 'android' | 'ios'> ? (typeof BrowserPlatform)[number] : never;
 
-export type MacosBrowserName = Extract<BrowserName, 'chrome' | 'firefox' | 'safari' | 'safaritp' | 'edge'>;
-export type WindowsBrowserName = Extract<BrowserName, 'chrome' | 'firefox' | 'edge' | 'iexplorer'>;
+export const MacosBrowserName = ['chrome', 'firefox', 'safari', 'safaritp', 'edge'] as const;
+export type MacosBrowserName = (typeof MacosBrowserName)[number] extends Extract<BrowserName, 'chrome' | 'firefox' | 'safari' | 'safaritp' | 'edge'>
+  ? (typeof MacosBrowserName)[number]
+  : never;
+export const isAllowedMacosBrowserName = (value: string): value is MacosBrowserName => MacosBrowserName.includes(value as MacosBrowserName);
 
-export type AndroidBrowserName = Extract<BrowserName, 'chrome' | 'firefox' | 'edge' | 'samsung-internet'>;
+export const WindowsBrowserName = ['chrome', 'firefox', 'edge', 'iexplorer'] as const;
+export type WindowsBrowserName = (typeof WindowsBrowserName)[number] extends Extract<BrowserName, 'chrome' | 'firefox' | 'edge' | 'iexplorer'>
+  ? (typeof WindowsBrowserName)[number]
+  : never;
+export const isAllowedWindowsBrowserName = (value: string): value is WindowsBrowserName => WindowsBrowserName.includes(value as WindowsBrowserName);
+
+export const AndroidBrowserName = ['chrome', 'firefox', 'edge', 'samsung-internet'] as const;
+export type AndroidBrowserName = (typeof AndroidBrowserName)[number] extends Extract<BrowserName, 'chrome' | 'firefox' | 'edge' | 'samsung-internet'>
+  ? (typeof AndroidBrowserName)[number]
+  : never;
+export const isAllowedAndroidBrowserName = (value: string): value is AndroidBrowserName => AndroidBrowserName.includes(value as AndroidBrowserName);
 export const AndroidBrowserAppIdMap: Record<AndroidBrowserName, string> = {
   chrome: 'com.android.chrome',
   firefox: 'org.mozilla.firefox',
@@ -25,7 +38,9 @@ export const AndroidBrowserAppIdMap: Record<AndroidBrowserName, string> = {
 } as const;
 export type AndroidBrowserAppId = keyof typeof AndroidBrowserAppIdMap;
 
-export type IosBrowserName = Extract<BrowserName, 'chrome' | 'firefox' | 'safari' | 'edge'>;
+export const IosBrowserName = ['chrome', 'firefox', 'safari', 'edge'] as const;
+export type IosBrowserName = (typeof IosBrowserName)[number] extends Extract<BrowserName, 'chrome' | 'firefox' | 'safari' | 'edge'> ? (typeof IosBrowserName)[number] : never;
+export const isAllowedIosBrowserName = (value: string): value is IosBrowserName => IosBrowserName.includes(value as IosBrowserName);
 export const IosBrowserAppIdMap: Record<IosBrowserName, string> = {
   chrome: 'com.google.chrome.ios',
   firefox: 'org.mozilla.iosfirefox',

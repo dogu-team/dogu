@@ -1,4 +1,4 @@
-import { setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
+import { setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
 import axios from 'axios';
 import _ from 'lodash';
 
@@ -33,6 +33,27 @@ export function parseChromeVersionLike(version: string): ChromeVersionLike {
     build: undefined,
     patch: undefined,
   };
+}
+
+export function chromeVersionLikeToString(version: ChromeVersionLike): string {
+  const { major, minor, build, patch } = version;
+  if (!major) {
+    return '';
+  }
+
+  if (!minor) {
+    return `${major}`;
+  }
+
+  if (!build) {
+    return `${major}.${minor}`;
+  }
+
+  if (!patch) {
+    return `${major}.${minor}.${build}`;
+  }
+
+  return `${major}.${minor}.${build}.${patch}`;
 }
 
 export function compareChromeVersionLike(lhs: ChromeVersionLike, rhs: ChromeVersionLike, order: 'asc' | 'desc' = 'asc'): number {
@@ -79,7 +100,7 @@ export function findChromeVersionLike(toMatch: ChromeVersionLike, targerts: Requ
 
 export async function downloadKnownGoodChromeVersionLikes(): Promise<Required<ChromeVersionLike>[]> {
   const response = await client.get(ChromeKnownGoodVersionsUrl).catch((error) => {
-    throw new Error(`Failed to download ${ChromeKnownGoodVersionsUrl}: ${error}`);
+    throw new Error(`Failed to download ${ChromeKnownGoodVersionsUrl}: ${stringify(error)}`);
   });
   const versionObjects = _.get(response.data, 'versions') as { version?: string; revision?: string }[] | undefined;
   const knownGoodVersionLikes = versionObjects
@@ -96,7 +117,7 @@ export async function downloadKnownGoodChromeVersionLikes(): Promise<Required<Ch
 
 export async function downloadLastKnownGoodChromeVersionLike(): Promise<Required<ChromeVersionLike>> {
   const response = await client.get(ChromeLastKnownGoodVersionsUrl).catch((error) => {
-    throw new Error(`Failed to download ${ChromeKnownGoodVersionsUrl}: ${error}`);
+    throw new Error(`Failed to download ${ChromeKnownGoodVersionsUrl}: ${stringify(error)}`);
   });
   const version = _.get(response.data, 'channels.Stable.version') as string | undefined;
   if (!version) {
