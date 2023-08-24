@@ -34,6 +34,7 @@ import { createIdaLogger } from '../../logger/logger.instance';
 import { IdeviceDiagnostics, IdeviceSyslog, MobileDevice } from '../externals';
 import { IosDeviceAgentProcess } from '../externals/cli/ios-device-agent';
 import { ZombieTunnel } from '../externals/cli/mobiledevice-tunnel';
+import { WebdriverAgentProcess } from '../externals/cli/webdriver-agent-process';
 import { DeviceChannel, DeviceChannelOpenParam, LogHandler } from '../public/device-channel';
 import { IosDeviceAgentService } from '../services/device-agent/ios-device-agent-service';
 import { IosProfileService } from '../services/profile/ios-profiler';
@@ -67,7 +68,7 @@ export class IosChannel implements DeviceChannel {
     private readonly _info: DeviceSystemInfo,
     private readonly _profilers: ProfileServices,
     private readonly streaming: StreamingService,
-    // private webdriverAgentProcess: WebdriverAgentProcess,
+    private webdriverAgentProcess: WebdriverAgentProcess,
     private iosDeviceAgentProcess: IosDeviceAgentProcess,
     private readonly deviceAgent: IosDeviceAgentService,
     private _appiumContext: AppiumContextProxy,
@@ -139,7 +140,7 @@ export class IosChannel implements DeviceChannel {
 
     const logger = createIdaLogger(param.serial);
     logger.verbose('appium wda starting');
-    // const wda = await WebdriverAgentProcess.start(serial, portContext.freeHostPort4, logger);
+    const wda = await WebdriverAgentProcess.start(serial, portContext.freeHostPort4, logger);
     logger.verbose('appium wda  done');
 
     logger.verbose('appium context starting');
@@ -187,7 +188,7 @@ export class IosChannel implements DeviceChannel {
       systemInfo,
       [new IosProfileService(deviceAgent)],
       streaming,
-      // wda,
+      wda,
       iosDeviceAgentProcess,
       deviceAgent,
       appiumContextProxy,
@@ -231,7 +232,7 @@ export class IosChannel implements DeviceChannel {
      * @note Does not wait for appium to shutdown
      */
     ZombieServiceInstance.deleteComponent(this._appiumContext);
-    // this.webdriverAgentProcess.delete();
+    this.webdriverAgentProcess.delete();
     this.iosDeviceAgentProcess.delete();
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === this.serial && zombieable.platform === Platform.PLATFORM_IOS;

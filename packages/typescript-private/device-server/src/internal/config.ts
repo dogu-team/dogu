@@ -8,7 +8,7 @@ export const config = {
     port: 50055,
   },
   externalIosDeviceAgent: {
-    use: true,
+    use: false,
     devices: [
       {
         serial: '54f523f21b76e07c62c69c14a1d141269515313d',
