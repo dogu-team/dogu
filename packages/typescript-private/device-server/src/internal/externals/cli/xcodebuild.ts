@@ -167,10 +167,10 @@ export async function removeOldWaves(): Promise<void> {
   await directoryRotation.removeOldWaves();
 }
 
-export function testWithoutBuilding(xctestrunPath: string, serial: Serial, option: XcodebuildOption, printable: Printable): XCTestRunContext {
+export function testWithoutBuilding(prefix: string, xctestrunPath: string, serial: Serial, option: XcodebuildOption, printable: Printable): XCTestRunContext {
   const tempDirPath = `${directoryRotation.getCurrentWavePath()}/${randomUUID()}`;
   const xcodebuildPath = getXcodeBuildPathSync();
-  const prefixLogger = new PrefixLogger(printable, '[xctest]');
+  const prefixLogger = new PrefixLogger(printable, `[${prefix}]`);
   const proc = ChildProcess.spawnSync(
     xcodebuildPath,
     ['test-without-building', '-xctestrun', `${xctestrunPath}`, '-destination', `id=${serial}`, '-resultBundlePath', tempDirPath],

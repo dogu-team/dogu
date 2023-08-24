@@ -152,7 +152,7 @@ class ZombieIdaXCTest implements Zombieable {
     await XcodeBuild.killPreviousXcodebuild(this.serial, `ios-device-agent.*${this.serial}`, this.printable).catch(() => {
       this.logger.warn?.('killPreviousXcodebuild failed');
     });
-    this.xctestrun = XcodeBuild.testWithoutBuilding(xctestrunPath, this.serial, { waitForLog: { str: 'ServerURLHere', timeout: Milisecond.t2Minutes } }, this.printable);
+    this.xctestrun = XcodeBuild.testWithoutBuilding('ida', xctestrunPath, this.serial, { waitForLog: { str: 'ServerURLHere', timeout: Milisecond.t2Minutes } }, this.printable);
     this.xctestrun.proc.on('close', () => {
       this.xctestrun = null;
       ZombieServiceInstance.notifyDie(this);
@@ -162,9 +162,12 @@ class ZombieIdaXCTest implements Zombieable {
       if (await this.isHealth()) {
         break;
       }
+      if (this.error === 'not-alive') {
+        break;
+      }
     }
     if (!(await this.isHealth())) {
-      throw new Error(`ZombieIdaXCTest is not alive. ${this.serial}`);
+      throw new Error(`ZombieIdaXCTest has error. ${this.serial}. ${this.error}`);
     }
   }
 

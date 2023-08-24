@@ -129,7 +129,13 @@ class ZombieWdaXCTest implements Zombieable {
     if (!xctestrun) {
       throw new Error('xctestrun not found');
     }
-    this.xctestrun = XcodeBuild.testWithoutBuilding(xctestrun.filePath, this.serial, { waitForLog: { str: 'ServerURLHere', timeout: Milisecond.t2Minutes } }, this.printable);
+    this.xctestrun = XcodeBuild.testWithoutBuilding(
+      'wda',
+      xctestrun.filePath,
+      this.serial,
+      { waitForLog: { str: 'ServerURLHere', timeout: Milisecond.t2Minutes } },
+      this.printable,
+    );
     this.xctestrun.proc.on('close', () => {
       this.xctestrun = null;
       ZombieServiceInstance.notifyDie(this);
@@ -139,9 +145,12 @@ class ZombieWdaXCTest implements Zombieable {
       if (await this.isHealth()) {
         break;
       }
+      if (this.error === 'not-alive') {
+        break;
+      }
     }
     if (!(await this.isHealth())) {
-      throw new Error(`ZombieWdaXCTest is not alive. ${this.serial}`);
+      throw new Error(`ZombieWdaXCTest has error. ${this.serial}. ${this.error}`);
     }
   }
 
