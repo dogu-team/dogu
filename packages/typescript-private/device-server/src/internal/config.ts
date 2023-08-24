@@ -8,10 +8,10 @@ export const config = {
     port: 50055,
   },
   externalIosDeviceAgent: {
-    use: false,
+    use: true,
     devices: [
       {
-        serial: '880ecd84786a137defe1fe49ed0d6d471838dafb',
+        serial: '54f523f21b76e07c62c69c14a1d141269515313d',
         webDriverPort: 10000,
         grpcPort: 10001,
       },

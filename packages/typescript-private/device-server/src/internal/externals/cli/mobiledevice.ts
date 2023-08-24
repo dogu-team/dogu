@@ -66,7 +66,7 @@ class MobileDeviceImpl {
 
     const proc = ChildProcess.spawnSync(pathMap().macos.mobiledevice, ['tunnel', '-u', udid, hostPort.toString(), devicePort.toString()], {}, newPrintable);
     printable.verbose?.(`tunneling ${udid} ${hostPort} -> ${devicePort}`);
-    const ret = new TunnelContext(proc, hostPort, devicePort);
+    const ret = new TunnelContext(proc, udid, hostPort, devicePort);
     return ret;
   }
 

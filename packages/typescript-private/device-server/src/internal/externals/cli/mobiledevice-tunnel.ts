@@ -10,7 +10,7 @@ import { MobileDevice } from './mobiledevice';
 export class TunnelContext {
   public isAlive = true;
   private logs = '';
-  constructor(public readonly proc: child_process.ChildProcess, private readonly hostPort: number, private readonly devicePort: number) {
+  constructor(public readonly proc: child_process.ChildProcess, private readonly serial: string, private readonly hostPort: number, private readonly devicePort: number) {
     proc.stdout?.on('data', (data) => {
       const str = String(data);
       logger.debug('TunnelContext stdout', { hostPort: this.hostPort, devicePort: this.devicePort, data: str });
@@ -18,7 +18,7 @@ export class TunnelContext {
       this.checkLog();
       if (!this.isAlive) {
         killChildProcess(proc).catch((error) => {
-          logger.error('TunnelContext killChildProcess on stdout', { hostPort: this.hostPort, devicePort: this.devicePort, error });
+          logger.error('TunnelContext killChildProcess on stdout', { serial, hostPort: this.hostPort, devicePort: this.devicePort, error });
         });
       }
     });
@@ -30,19 +30,19 @@ export class TunnelContext {
       this.checkLog();
       if (!this.isAlive) {
         killChildProcess(proc).catch((error) => {
-          logger.error('TunnelContext killChildProcess on stderr', { hostPort: this.hostPort, devicePort: this.devicePort, error });
+          logger.error('TunnelContext killChildProcess on stderr', { serial, hostPort: this.hostPort, devicePort: this.devicePort, error });
         });
       }
     });
 
     proc.on('exit', (code, signal) => {
-      logger.debug('TunnelContext exit', { hostPort: this.hostPort, devicePort: this.devicePort, code, signal });
+      logger.debug('TunnelContext exit', { serial, hostPort: this.hostPort, devicePort: this.devicePort, code, signal });
     });
   }
 
   public kill(): void {
     killChildProcess(this.proc).catch((error) => {
-      logger.error('TunnelContext killChildProcess', { hostPort: this.hostPort, devicePort: this.devicePort, error });
+      logger.error('TunnelContext killChildProcess', { serial: this.serial, hostPort: this.hostPort, devicePort: this.devicePort, error });
     });
   }
 
