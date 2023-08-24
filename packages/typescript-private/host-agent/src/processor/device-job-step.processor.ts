@@ -119,7 +119,7 @@ export class DeviceJobStepProcessor {
   }
 
   async onRunStep(param: RunStep, context: MessageContext): Promise<ErrorResult> {
-    const { routineStepId, env: stepEnv, value, organizationId, deviceId, routineDeviceJobId, stepIndex, projectId, routineId } = param;
+    const { routineStepId, env: stepEnv, value, organizationId, deviceId, routineDeviceJobId, stepIndex, projectId } = param;
     const { info, router, environmentVariableReplacer } = context;
     const { platform, serial, deviceWorkspacePath, rootWorkspacePath, hostPlatform, hostWorkspacePath, pathMap } = info;
     this.logger.info(`Step ${routineStepId} started`);
@@ -145,8 +145,8 @@ export class DeviceJobStepProcessor {
     await fs.promises.mkdir(organizationWorkspacePath, { recursive: true });
 
     const doguRoutineWorkspacePath =
-      (await this.rootWorkspace.findRoutineWorkspace(rootWorkspacePath, { projectId, routineId, deviceId })) ??
-      (await this.rootWorkspace.createRoutineWorkspacePath(rootWorkspacePath, { projectId, routineId, deviceId }));
+      (await this.rootWorkspace.findRoutineWorkspace(rootWorkspacePath, { projectId, deviceId })) ??
+      (await this.rootWorkspace.createRoutineWorkspacePath(rootWorkspacePath, { projectId, deviceId }));
 
     const pathOld = environmentVariableReplacer.stackProvider.export(this.logger).PATH;
     const stepContextEnv: StepContextEnv = {

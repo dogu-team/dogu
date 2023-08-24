@@ -1,4 +1,4 @@
-import { DeviceId, ProjectId, RoutineId } from '@dogu-private/types';
+import { DeviceId, ProjectId } from '@dogu-private/types';
 import { loop, stringify, transformAndValidate } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
@@ -11,9 +11,6 @@ import { DoguLogger } from '../logger/logger';
 export class RoutineWorkspaceMeta {
   @IsUUID()
   projectId!: ProjectId;
-
-  @IsUUID()
-  routineId!: RoutineId;
 
   @IsUUID()
   deviceId!: DeviceId;
@@ -51,7 +48,7 @@ export class RoutineWorkspace {
         const metaFilePath = path.resolve(routinesPath, metaFile);
         const contents = await fs.promises.readFile(metaFilePath, 'utf8');
         const metaObject = await transformAndValidate(RoutineWorkspaceMeta, JSON.parse(contents));
-        if (metaObject.projectId === meta.projectId && metaObject.routineId == meta.routineId && metaObject.deviceId === meta.deviceId) {
+        if (metaObject.projectId === meta.projectId && metaObject.deviceId === meta.deviceId) {
           const routineWorkspacePath = path.resolve(routinesPath, path.basename(metaFile, MetaExtension));
           if (!fs.existsSync(routineWorkspacePath)) {
             await fs.promises.mkdir(routineWorkspacePath, { recursive: true });
