@@ -1,4 +1,4 @@
-import { DeviceId, ErrorResultDto, OrganizationId, ProjectId, RoutineDeviceJob, RoutineDeviceJobId, RoutineStep, RoutineStepId, Serial } from '@dogu-private/types';
+import { DeviceId, ErrorResultDto, OrganizationId, ProjectId, RoutineDeviceJob, RoutineDeviceJobId, RoutineId, RoutineStep, RoutineStepId, Serial } from '@dogu-private/types';
 import { Instance, IsFilledString, IsHttpMethod, IsOptionalObject, IsUrlPath, IsUuidV4, Kindable, Method, OneOf, TransformByKind } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsIn, IsNumber, IsObject, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
@@ -245,6 +245,9 @@ export class RunStep extends Kindable<'RunStep'> implements Pick<RoutineStep, 'r
 
   @IsUUID()
   organizationId!: OrganizationId;
+
+  @IsUUID()
+  routineId!: RoutineId;
 
   @IsUUID()
   projectId!: ProjectId;

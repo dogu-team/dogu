@@ -1,5 +1,5 @@
 import { parseEventResult, RunStep, RunStepValue } from '@dogu-private/console-host-agent';
-import { DeviceId, OrganizationId, ProjectId } from '@dogu-private/types';
+import { DeviceId, OrganizationId, ProjectId, RoutineId } from '@dogu-private/types';
 import { stringify } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { RoutineDeviceJob } from '../../../../db/entity/device-job.entity';
@@ -26,8 +26,11 @@ export class DeviceJobMessenger {
     if (!pipeline) {
       throw new Error(`Pipeline not found: ${stringify(deviceJob)}`);
     }
-    const { projectId } = pipeline;
-    const runSteps = steps?.map((step) => this.stepToRunStep(organizationId, deviceId, projectId, step)) ?? [];
+    const { projectId, routineId } = pipeline;
+    if (!routineId) {
+      throw new Error(`Pipeline routineId not found: ${stringify(deviceJob)}`);
+    }
+    const runSteps = steps?.map((step) => this.stepToRunStep(organizationId, deviceId, projectId, routineId, step)) ?? [];
     const result = await this.deviceMessageRelayer.sendParam(organizationId, deviceId, {
       kind: 'EventParam',
       value: {
@@ -54,12 +57,13 @@ export class DeviceJobMessenger {
     parseEventResult(result);
   }
 
-  private stepToRunStep(organizationId: OrganizationId, deviceId: DeviceId, projectId: ProjectId, step: RoutineStep): RunStep {
+  private stepToRunStep(organizationId: OrganizationId, deviceId: DeviceId, projectId: ProjectId, routineId: RoutineId, step: RoutineStep): RunStep {
     const { env, routineStepId, routineDeviceJobId: deviceJobId, index } = step;
     const runStepValue = this.stepToRunStepValue(step);
     return {
       kind: 'RunStep',
       organizationId,
+      routineId,
       projectId,
       deviceId,
       routineDeviceJobId: deviceJobId,
