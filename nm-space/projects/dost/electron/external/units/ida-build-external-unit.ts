@@ -1,5 +1,5 @@
 import { PrefixLogger, stringify } from '@dogu-tech/common';
-import { HostPaths, killChildProcess, removeItemRecursive } from '@dogu-tech/node';
+import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
@@ -129,7 +129,7 @@ export class IdaBuildExternalUnit extends IExternalUnit {
                 const dirs = await fsPromises.readdir(remainDir.parent);
                 for (const dir of dirs) {
                   if (remainDir.dir.indexOf(dir) === -1) {
-                    await removeItemRecursive(path.resolve(remainDir.parent, dir));
+                    await fs.promises.rm(path.resolve(remainDir.parent, dir), { force: true, recursive: true });
                   }
                 }
               }
@@ -139,7 +139,7 @@ export class IdaBuildExternalUnit extends IExternalUnit {
               const files = await fsPromises.readdir(buildProductsSubDir);
               for (const file of files) {
                 if (!allowedExtensions.some((ext) => file.endsWith(ext))) {
-                  await removeItemRecursive(`${buildProductsSubDir}/${file}`);
+                  await fs.promises.rm(`${buildProductsSubDir}/${file}`, { force: true, recursive: true });
                 }
               }
               resolve();

@@ -65,23 +65,6 @@ export async function getFileSizeRecursive(destPath: string): Promise<number> {
   return 0;
 }
 
-export async function removeItemRecursive(itemPath: string): Promise<void> {
-  const itemStat = await fsPromise.lstat(itemPath);
-
-  if (itemStat.isDirectory()) {
-    const files = await fsPromise.readdir(itemPath);
-
-    for (const file of files) {
-      const filePath = path.join(itemPath, file);
-      await removeItemRecursive(filePath);
-    }
-
-    await fsPromise.rmdir(itemPath);
-  } else {
-    await fsPromise.unlink(itemPath);
-  }
-}
-
 async function directoryExists(dir: string): Promise<boolean> {
   try {
     const stats = await fsPromise.stat(dir);

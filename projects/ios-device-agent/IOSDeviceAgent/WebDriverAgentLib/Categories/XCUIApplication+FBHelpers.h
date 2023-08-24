@@ -17,6 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface XCUIApplication (FBHelpers)
 
+- (CGRect)wdFrame;
+
 /**
  Deactivates application for given time
 

@@ -1,24 +1,25 @@
+import ExceptionCatcher
 import Foundation
 import WebDriverAgentLib
 import XCTest
-import ExceptionCatcher
 
 final class WebDriverAgentLibUtils {
   enum Error: Swift.Error {
     case invalidAppPathAndBundleID(appPath: String, bundleId: String)
   }
-  
+
   static func app() -> XCUIApplication {
     return FBApplication.fb_active()
   }
-  
+
   static func orientation() -> UIInterfaceOrientation {
     return app().interfaceOrientation
   }
 
   static func screenSize() -> CGSize {
     let app = app()
-    return FBAdjustDimensionsForApplication(app.wdFrame.size, app.interfaceOrientation)
+    var size = app.wdFrame.size
+    return FBAdjustDimensionsForApplication(size, app.interfaceOrientation)
   }
 
   static func execute(event: XCSynthesizedEventRecord) throws {
@@ -38,7 +39,7 @@ final class WebDriverAgentLibUtils {
       app.launch()
     }
   }
-  
+
   static func open() {
     FBDebugLogDelegateDecorator.decorateXCTestLogger()
     FBConfiguration.disableRemoteQueryEvaluation()
@@ -50,7 +51,7 @@ final class WebDriverAgentLibUtils {
       FBConfiguration.disableScreenshots()
     }
   }
-  
+
   static func run() {
     let webServer = FBWebServer()
     webServer.startServing()

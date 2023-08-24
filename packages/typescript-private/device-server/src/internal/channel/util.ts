@@ -9,9 +9,11 @@ export async function createPortContext(serial: Serial): Promise<DevicePortConte
   const freeHostPort1 = await getFreePort([], hashModuloed);
   const freeHostPort2 = await getFreePort([freeHostPort1], hashModuloed);
   const freeHostPort3 = await getFreePort([freeHostPort1, freeHostPort2], hashModuloed);
+  const freeHostPort4 = await getFreePort([freeHostPort1, freeHostPort2, freeHostPort3], hashModuloed);
   return {
     freeHostPort1,
     freeHostPort2,
     freeHostPort3,
+    freeHostPort4,
   };
 }

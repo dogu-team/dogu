@@ -122,7 +122,6 @@ func getVMStatistics() -> vm_statistics {
   guard result == KERN_SUCCESS else {
     return vm_statistics()
   }
-  vmstat.free_count
 
   return vmstat
 }

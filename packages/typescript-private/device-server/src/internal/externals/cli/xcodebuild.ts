@@ -79,8 +79,9 @@ export async function validateXcodeBuild(): Promise<void> {
   }
 }
 
-export interface XCTestRunOption {
-  waitForLog?: { str: string; timeout: number };
+export interface XcodebuildOption {
+  extraArgs?: string[];
+  waitForLog?: { str: string; timeout: number }; // kill if log not printed in a certain time
 }
 
 export class XCTestRunContext {
@@ -91,7 +92,7 @@ export class XCTestRunContext {
   constructor(
     private readonly tempDirPath: string,
     public readonly proc: child_process.ChildProcess,
-    private readonly option: XCTestRunOption,
+    private readonly option: XcodebuildOption,
     private readonly logger: Printable,
   ) {
     this.startTime = Date.now();
@@ -166,10 +167,10 @@ export async function removeOldWaves(): Promise<void> {
   await directoryRotation.removeOldWaves();
 }
 
-export function testWithoutBuilding(xctestrunPath: string, serial: Serial, option: XCTestRunOption, printable: Printable): XCTestRunContext {
+export function testWithoutBuilding(prefix: string, xctestrunPath: string, serial: Serial, option: XcodebuildOption, printable: Printable): XCTestRunContext {
   const tempDirPath = `${directoryRotation.getCurrentWavePath()}/${randomUUID()}`;
   const xcodebuildPath = getXcodeBuildPathSync();
-  const prefixLogger = new PrefixLogger(printable, '[xctest]');
+  const prefixLogger = new PrefixLogger(printable, `[${prefix}]`);
   const proc = ChildProcess.spawnSync(
     xcodebuildPath,
     ['test-without-building', '-xctestrun', `${xctestrunPath}`, '-destination', `id=${serial}`, '-resultBundlePath', tempDirPath],
@@ -180,9 +181,22 @@ export function testWithoutBuilding(xctestrunPath: string, serial: Serial, optio
   return new XCTestRunContext(tempDirPath, proc, option, prefixLogger);
 }
 
-export async function killPreviousXcodebuild(serial: Serial, printable: Printable): Promise<void> {
+export function buildAndtest(serial: Serial, projectPath: string, scheme: string, option: XcodebuildOption, printable: Printable): XCTestRunContext {
+  const tempDirPath = `${directoryRotation.getCurrentWavePath()}/${randomUUID()}`;
   const xcodebuildPath = getXcodeBuildPathSync();
-  const lsofResult = await ChildProcess.execIgnoreError(`pgrep -if "${xcodebuildPath}.*${serial}"`, { timeout: 10000 }, printable);
+  const prefixLogger = new PrefixLogger(printable, '[xctest]');
+  const args = ['build-for-testing', 'test-without-building', '-project', projectPath, '-scheme', scheme, '-destination', `id=${serial}`, '-resultBundlePath', tempDirPath];
+  if (option.extraArgs) {
+    args.push(...option.extraArgs);
+  }
+  const proc = ChildProcess.spawnSync(xcodebuildPath, args, {}, prefixLogger);
+
+  return new XCTestRunContext(tempDirPath, proc, option, prefixLogger);
+}
+
+export async function killPreviousXcodebuild(serial: Serial, pattern: string, printable: Printable): Promise<void> {
+  const xcodebuildPath = getXcodeBuildPathSync();
+  const lsofResult = await ChildProcess.execIgnoreError(`pgrep -if "${xcodebuildPath}.*${pattern}"`, { timeout: 10000 }, printable);
   if (0 === lsofResult.stdout.length) {
     return;
   }

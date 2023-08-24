@@ -135,7 +135,7 @@ export class AndroidChannel implements DeviceChannel {
     await deviceAgent.wakeUp();
     await deviceAgent.install();
 
-    const appiumContextProxy = appiumService.createAppiumContext(platform, serial, 'builtin', portContext.freeHostPort3);
+    const appiumContextProxy = appiumService.createAndroidAppiumContext(serial, 'builtin', portContext.freeHostPort3);
     ZombieServiceInstance.addComponent(appiumContextProxy);
 
     const appiumDeviceWebDriverHandler = new AppiumDeviceWebDriverHandler(platform, serial, appiumContextProxy, httpRequestRelayService, appiumEndpointHandlerService, doguLogger);

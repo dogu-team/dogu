@@ -12,7 +12,7 @@ import { ZombieTunnel } from './mobiledevice-tunnel';
 import { XCTestRunContext } from './xcodebuild';
 
 export class IosDeviceAgentProcess {
-  private readonly xctest: ZombieXCTest;
+  private readonly xctest: ZombieIdaXCTest;
   private readonly screenTunnel: ZombieTunnel;
   private readonly grpcTunnel: ZombieTunnel;
   constructor(
@@ -24,10 +24,9 @@ export class IosDeviceAgentProcess {
     private readonly grpcDevicePort: number,
     private readonly webDriverPort: number,
     private readonly logger: Printable,
-    private isKilled = false,
   ) {
     ZombieServiceInstance.deleteComponentIfExist((zombieable: Zombieable): boolean => {
-      if (zombieable instanceof ZombieXCTest) {
+      if (zombieable instanceof ZombieIdaXCTest) {
         return zombieable.serial === this.serial;
       }
       return false;
@@ -45,7 +44,7 @@ export class IosDeviceAgentProcess {
       }
       return false;
     }, 'kill previous tunnel');
-    this.xctest = new ZombieXCTest(this.serial, xctestrunFile, this.screenForwardPort, this.webDriverPort, this.grpcDevicePort, this.logger);
+    this.xctest = new ZombieIdaXCTest(this.serial, xctestrunFile, this.screenForwardPort, this.webDriverPort, this.grpcDevicePort, this.logger);
     this.screenTunnel = new ZombieTunnel(this.serial, this.screenForwardPort, this.screenDevicePort, this.logger);
     this.grpcTunnel = new ZombieTunnel(this.serial, this.grpcForwardPort, this.grpcDevicePort, this.logger);
   }
@@ -100,18 +99,13 @@ export class IosDeviceAgentProcess {
   }
 
   delete(): void {
-    this.isKilled = true;
     ZombieServiceInstance.deleteComponent(this.xctest);
     ZombieServiceInstance.deleteComponent(this.screenTunnel);
     ZombieServiceInstance.deleteComponent(this.grpcTunnel);
   }
-
-  get hasKilled(): boolean {
-    return this.isKilled;
-  }
 }
 
-class ZombieXCTest implements Zombieable {
+class ZombieIdaXCTest implements Zombieable {
   private xctestrun: XCTestRunContext | null = null;
   public readonly zombieWaiter: ZombieWaiter;
   private error: 'not-alive' | 'connect-failed' | 'hello-failed' | 'none' = 'none';
@@ -128,7 +122,7 @@ class ZombieXCTest implements Zombieable {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }
   get name(): string {
-    return `XCTest`;
+    return `IosDeviceAgent`;
   }
   get platform(): Platform {
     return Platform.PLATFORM_IOS;
@@ -140,7 +134,7 @@ class ZombieXCTest implements Zombieable {
     return this.logger;
   }
   async revive(): Promise<void> {
-    this.logger.debug?.(`ZombieXCTest.revive`);
+    this.logger.debug?.(`ZombieIdaXCTest.revive`);
     if (config.externalIosDeviceAgent.use) {
       return;
     }
@@ -155,22 +149,25 @@ class ZombieXCTest implements Zombieable {
       this.logger.warn?.('uninstallApp com.dogu.IOSDeviceAgentRunner.xctrunner failed');
     });
     await this.xctestrunfile.updateIdaXctestrunFile(this.webDriverPort, this.grpcPort);
-    await XcodeBuild.killPreviousXcodebuild(this.serial, this.printable).catch(() => {
+    await XcodeBuild.killPreviousXcodebuild(this.serial, `ios-device-agent.*${this.serial}`, this.printable).catch(() => {
       this.logger.warn?.('killPreviousXcodebuild failed');
     });
-    this.xctestrun = XcodeBuild.testWithoutBuilding(xctestrunPath, this.serial, { waitForLog: { str: 'ServerURLHere', timeout: Milisecond.t1Minute } }, this.printable);
+    this.xctestrun = XcodeBuild.testWithoutBuilding('ida', xctestrunPath, this.serial, { waitForLog: { str: 'ServerURLHere', timeout: Milisecond.t2Minutes } }, this.printable);
     this.xctestrun.proc.on('close', () => {
       this.xctestrun = null;
       ZombieServiceInstance.notifyDie(this);
     });
 
-    for await (const _ of loopTime(Milisecond.t5Seconds, Milisecond.t2Minutes)) {
+    for await (const _ of loopTime(Milisecond.t3Seconds, Milisecond.t2Minutes)) {
       if (await this.isHealth()) {
+        break;
+      }
+      if (this.error === 'not-alive') {
         break;
       }
     }
     if (!(await this.isHealth())) {
-      throw new Error(`xctest is not alive. ${this.serial}`);
+      throw new Error(`ZombieIdaXCTest has error. ${this.serial}. ${this.error}`);
     }
   }
 
@@ -182,11 +179,11 @@ class ZombieXCTest implements Zombieable {
       ZombieServiceInstance.notifyDie(this);
       return;
     }
-    await delay(5000);
+    await delay(3000);
   }
 
   onDie(): void {
-    this.logger.debug?.(`ZombieXCTest.onDie`);
+    this.logger.debug?.(`ZombieIdaXCTest.onDie`);
     this.xctestrun?.kill();
   }
 
@@ -256,7 +253,7 @@ class ZombieXCTest implements Zombieable {
           resolve();
         })
         .catch((e: Error) => {
-          this.logger.error(`ZombieXCTest.sendHello. delay error:${stringifyError(e)}`);
+          this.logger.error(`ZombieIdaXCTest.sendHello. delay error:${stringifyError(e)}`);
           resolve();
         });
     });

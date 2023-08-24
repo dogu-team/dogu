@@ -94,7 +94,7 @@ actor TouchControlPlayer: IControlPlayer {
     ])
     let elapsedTime = Date().unixTimeMilliseconds - beginTime
     lastPlayTime = up.control.timeStamp + elapsedTime
-    
+
     var result = DoguTypes.Inner_Types_CfGdcDaControlResult()
     result.error = DoguTypes.Outer_ErrorResult()
     down.result.set(result: result)
@@ -111,18 +111,18 @@ actor TouchControlPlayer: IControlPlayer {
     let controlSpacePoint = CGPoint(
       x: Double(controlSpacePosition.x),
       y: Double(controlSpacePosition.y))
-    
+
     var screenWidth = screenSize.width
     var screenHeight = screenSize.height
-    if(controlSpacePosition.screenHeight < controlSpacePosition.screenWidth) {
+    if controlSpacePosition.screenHeight < controlSpacePosition.screenWidth {
       screenWidth = max(screenSize.width, screenSize.height)
       screenHeight = min(screenSize.width, screenSize.height)
     }
-    if(controlSpacePosition.screenWidth < controlSpacePosition.screenHeight) {
+    if controlSpacePosition.screenWidth < controlSpacePosition.screenHeight {
       screenWidth = min(screenSize.width, screenSize.height)
       screenHeight = max(screenSize.width, screenSize.height)
     }
-    
+
     return CGPoint(
       x: (controlSpacePoint.x * screenWidth) / controlSpaceSize.width,
       y: (controlSpacePoint.y * screenHeight) / controlSpaceSize.height)

@@ -26,7 +26,7 @@ export class AppiumRemoteContext implements AppiumContext {
 
   openingState: 'opening' | 'openingSucceeded' | 'openingFailed' = 'opening';
 
-  constructor(private readonly options: AppiumContextOptions, public readonly printable: Logger) {}
+  constructor(public readonly options: AppiumContextOptions, public readonly printable: Logger) {}
 
   get name(): string {
     return 'AppiumRemoteContext';

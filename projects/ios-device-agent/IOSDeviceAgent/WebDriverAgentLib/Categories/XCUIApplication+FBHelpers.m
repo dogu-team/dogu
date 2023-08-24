@@ -32,11 +32,39 @@
 #import "XCTRunnerDaemonSession.h"
 #import "FBRunLoopSpinner.h"
 #import "XCUIElement+FBTap.h"
+#import "XCUIElementQuery.h"
+
+
+#define BROKEN_RECT CGRectMake(-1, -1, 0, 0)
+
 
 static NSString* const FBUnknownBundleId = @"unknown";
 
 
 @implementation XCUIApplication (FBHelpers)
+
+
+- (CGRect)wdFrame
+{
+  CGRect frame = self.frame;
+  int width = (int)frame.size.width;
+  int height = (int)frame.size.height;
+  if (width == height) {
+    NSArray<XCUIElement *>* elems = self.application.windows.allElementsBoundByIndex;
+    if(0 < elems.count){
+      frame = elems[0].frame;
+    }
+  }
+
+  // It is mandatory to replace all Infinity values with numbers to avoid JSON parsing
+  // exceptions like https://github.com/facebook/WebDriverAgent/issues/639#issuecomment-314421206
+  // caused by broken element dimensions returned by XCTest
+  return (isinf(frame.size.width) || isinf(frame.size.height)
+          || isinf(frame.origin.x) || isinf(frame.origin.y))
+    ? CGRectIntegral(BROKEN_RECT)
+    : CGRectIntegral(frame);
+}
+
 
 - (BOOL)fb_waitForAppElement:(NSTimeInterval)timeout
 {

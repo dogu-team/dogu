@@ -9,7 +9,7 @@ import util from 'util';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
 import { pathMap } from '../path-map';
-import { AppiumContextKey, AppiumContextOptions, AppiumContextProxy, DefaultAppiumContextOptions } from './appium.context';
+import { AndroidAppiumContextOptions, AppiumContextKey, AppiumContextProxy, DefaultAppiumContextOptions, IosAppiumContextOptions } from './appium.context';
 
 const execAsync = util.promisify(exec);
 
@@ -40,14 +40,29 @@ export class AppiumService implements OnModuleInit {
     await this.validateExternalAppium();
   }
 
-  createAppiumContext(platform: Platform, serial: Serial, key: AppiumContextKey, serverPort: number): AppiumContextProxy {
-    const option: AppiumContextOptions = {
+  createAndroidAppiumContext(serial: Serial, key: AppiumContextKey, serverPort: number): AppiumContextProxy {
+    const option: AndroidAppiumContextOptions = {
       ...this.defaultAppiumContextOptions,
       service: this,
-      platform,
+      platform: Platform.PLATFORM_ANDROID,
       serial,
       key,
       serverPort,
+    };
+
+    const context = new AppiumContextProxy(option);
+    return context;
+  }
+
+  createIosAppiumContext(serial: Serial, key: AppiumContextKey, serverPort: number, wdaForwardPort: number): AppiumContextProxy {
+    const option: IosAppiumContextOptions = {
+      ...this.defaultAppiumContextOptions,
+      service: this,
+      platform: Platform.PLATFORM_IOS,
+      serial,
+      key,
+      serverPort,
+      wdaForwardPort,
     };
 
     const context = new AppiumContextProxy(option);

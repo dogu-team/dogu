@@ -1,5 +1,5 @@
 import { Printable } from '@dogu-tech/common';
-import { checkDirectoryEqual, copyDirectoryRecursive, getDirectorySize, HostPaths, removeItemRecursive } from '@dogu-tech/node';
+import { checkDirectoryEqual, copyDirectoryRecursive, getDirectorySize, HostPaths } from '@dogu-tech/node';
 import fs from 'fs';
 import fsPromise from 'fs/promises';
 import path from 'path';
@@ -34,7 +34,7 @@ export async function removeiOSDeviceAgent(logger: Printable): Promise<void> {
   logger.info(`removeiOSDeviceAgent: ${idaRootDirectoryPath}`);
   if (fs.existsSync(idaRootDirectoryPath)) {
     try {
-      await removeItemRecursive(idaRootDirectoryPath);
+      await fs.promises.rm(idaRootDirectoryPath, { force: true, recursive: true });
       logger.info(`removeiOSDeviceAgent done`);
     } catch (e) {
       logger.error(`Error removing directory: ${e}`);
