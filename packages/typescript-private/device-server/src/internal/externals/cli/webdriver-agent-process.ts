@@ -2,9 +2,7 @@ import { Platform, Serial } from '@dogu-private/types';
 import { delay, loopTime, Milisecond, Printable } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import axios, { AxiosInstance } from 'axios';
-import fs from 'fs';
 import http from 'http';
-import path from 'path';
 import { Zombieable, ZombieProps, ZombieWaiter } from '../../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
 import { XcodeBuild } from '../index';
@@ -80,51 +78,7 @@ class ZombieWdaXCTest implements Zombieable {
     return this.logger;
   }
   async revive(): Promise<void> {
-    this.logger.debug?.(`ZombieWdaXCTest.revive`);
-    await delay(1000);
-
-    await MobileDevice.uninstallApp(this.serial, 'com.facebook.WebDriverAgentRunner', this.logger).catch(() => {
-      this.logger.warn?.('uninstallApp com.facebook.WebDriverAgentRunner failed');
-    });
-    await XcodeBuild.killPreviousXcodebuild(this.serial, `webdriveragent.*${this.serial}`, this.printable).catch(() => {
-      this.logger.warn?.('killPreviousXcodebuild failed');
-    });
-    const derivedDataPath = path.resolve(HostPaths.external.xcodeProject.wdaDerivedDataClonePath(), this.serial);
-    if (!fs.existsSync(derivedDataPath)) {
-      await fs.promises.mkdir(path.dirname(derivedDataPath), { recursive: true });
-    }
-    let timeout = Milisecond.t15Minutes;
-    try {
-      const cloneDerivedData = await DerivedData.create(derivedDataPath);
-      if (0 < cloneDerivedData.debugiOSApps.length) {
-        timeout = Milisecond.t2Minutes;
-      }
-    } catch (e) {
-      this.logger.error?.(`cloneDerivedData not found `);
-    }
-    this.xctestrun = XcodeBuild.buildAndtest(
-      this.serial,
-      path.resolve(HostPaths.external.xcodeProject.wdaProjectDirectoryPath(), 'WebDriverAgent.xcodeproj'),
-      'WebDriverAgentRunner',
-      {
-        extraArgs: ['-derivedDataPath', derivedDataPath, 'GCC_TREAT_WARNINGS_AS_ERRORS=0', 'COMPILER_INDEX_STORE_ENABLE=NO'],
-        waitForLog: { str: 'ServerURLHere', timeout: timeout },
-      },
-      this.printable,
-    );
-    this.xctestrun.proc.on('close', () => {
-      this.xctestrun = null;
-      ZombieServiceInstance.notifyDie(this);
-    });
-
-    for await (const _ of loopTime(Milisecond.t3Seconds, timeout)) {
-      if (await this.isHealth()) {
-        break;
-      }
-    }
-    if (!(await this.isHealth())) {
-      throw new Error(`ZombieWdaXCTest is not alive. ${this.serial}`);
-    }
+    await this.reviveOnlyTest();
   }
 
   async update(): Promise<void> {
@@ -155,4 +109,87 @@ class ZombieWdaXCTest implements Zombieable {
 
     return true;
   }
+
+  async reviveOnlyTest(): Promise<void> {
+    this.logger.debug?.(`ZombieWdaXCTest.revive`);
+    await delay(1000);
+
+    await MobileDevice.uninstallApp(this.serial, 'com.facebook.WebDriverAgentRunner', this.logger).catch(() => {
+      this.logger.warn?.('uninstallApp com.facebook.WebDriverAgentRunner failed');
+    });
+    await XcodeBuild.killPreviousXcodebuild(this.serial, `webdriveragent.*${this.serial}`, this.printable).catch(() => {
+      this.logger.warn?.('killPreviousXcodebuild failed');
+    });
+    const originDerivedData = await DerivedData.create(HostPaths.external.xcodeProject.wdaDerivedDataPath());
+    if (!originDerivedData.hasSerial(this.serial)) {
+      throw new Error(`WebdriverAgent can't be executed on ${this.serial}`);
+    }
+    const copiedDerivedData = await originDerivedData.copyToSerial(HostPaths.external.xcodeProject.wdaDerivedDataClonePath(), this.serial, this.logger);
+    const xctestrun = copiedDerivedData.xctestrun;
+    if (!xctestrun) {
+      throw new Error('xctestrun not found');
+    }
+    this.xctestrun = XcodeBuild.testWithoutBuilding(xctestrun.filePath, this.serial, { waitForLog: { str: 'ServerURLHere', timeout: Milisecond.t2Minutes } }, this.printable);
+    this.xctestrun.proc.on('close', () => {
+      this.xctestrun = null;
+      ZombieServiceInstance.notifyDie(this);
+    });
+
+    for await (const _ of loopTime(Milisecond.t3Seconds, Milisecond.t2Minutes)) {
+      if (await this.isHealth()) {
+        break;
+      }
+    }
+    if (!(await this.isHealth())) {
+      throw new Error(`ZombieWdaXCTest is not alive. ${this.serial}`);
+    }
+  }
+
+  // async reviveBuildAndTest(): Promise<void> {
+  //   this.logger.debug?.(`ZombieWdaXCTest.revive`);
+  //   await delay(1000);
+
+  //   await MobileDevice.uninstallApp(this.serial, 'com.facebook.WebDriverAgentRunner', this.logger).catch(() => {
+  //     this.logger.warn?.('uninstallApp com.facebook.WebDriverAgentRunner failed');
+  //   });
+  //   await XcodeBuild.killPreviousXcodebuild(this.serial, `webdriveragent.*${this.serial}`, this.printable).catch(() => {
+  //     this.logger.warn?.('killPreviousXcodebuild failed');
+  //   });
+  //   const derivedDataPath = path.resolve(HostPaths.external.xcodeProject.wdaDerivedDataClonePath(), this.serial);
+  //   if (!fs.existsSync(derivedDataPath)) {
+  //     await fs.promises.mkdir(path.dirname(derivedDataPath), { recursive: true });
+  //   }
+  //   let timeout = Milisecond.t15Minutes;
+  //   try {
+  //     const cloneDerivedData = await DerivedData.create(derivedDataPath);
+  //     if (0 < cloneDerivedData.debugiOSApps.length) {
+  //       timeout = Milisecond.t2Minutes;
+  //     }
+  //   } catch (e) {
+  //     this.logger.error?.(`cloneDerivedData not found `);
+  //   }
+  //   this.xctestrun = XcodeBuild.buildAndtest(
+  //     this.serial,
+  //     path.resolve(HostPaths.external.xcodeProject.wdaProjectDirectoryPath(), 'WebDriverAgent.xcodeproj'),
+  //     'WebDriverAgentRunner',
+  //     {
+  //       extraArgs: ['-derivedDataPath', derivedDataPath, 'GCC_TREAT_WARNINGS_AS_ERRORS=0', 'COMPILER_INDEX_STORE_ENABLE=NO'],
+  //       waitForLog: { str: 'ServerURLHere', timeout: timeout },
+  //     },
+  //     this.printable,
+  //   );
+  //   this.xctestrun.proc.on('close', () => {
+  //     this.xctestrun = null;
+  //     ZombieServiceInstance.notifyDie(this);
+  //   });
+
+  //   for await (const _ of loopTime(Milisecond.t3Seconds, timeout)) {
+  //     if (await this.isHealth()) {
+  //       break;
+  //     }
+  //   }
+  //   if (!(await this.isHealth())) {
+  //     throw new Error(`ZombieWdaXCTest is not alive. ${this.serial}`);
+  //   }
+  // }
 }
