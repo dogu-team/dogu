@@ -72,9 +72,6 @@ export class AppiumNewSessionEndpointHandler extends AppiumEndpointHandler {
         _.set(request.reqBody, 'capabilities.alwaysMatch.appium:chromedriverPort', chromedriverPort);
         _.set(request.reqBody, 'capabilities.alwaysMatch.appium:mjpegServerPort', mjepgServerPort);
       } else if (platformName === 'ios') {
-        request.reqBody ??= {};
-        _.set(request.reqBody, 'capabilities.alwaysMatch.platformName', 'iOS');
-        _.set(request.reqBody, 'capabilities.alwaysMatch.appium:automationName', 'XCUITest');
         if (remoteContext.options.platform !== Platform.PLATFORM_IOS) {
           return {
             status: 400,
@@ -82,6 +79,9 @@ export class AppiumNewSessionEndpointHandler extends AppiumEndpointHandler {
             data: {},
           };
         }
+        request.reqBody ??= {};
+        _.set(request.reqBody, 'capabilities.alwaysMatch.platformName', 'iOS');
+        _.set(request.reqBody, 'capabilities.alwaysMatch.appium:automationName', 'XCUITest');
 
         const mjpegServerPort = await getFreePort();
         _.set(request.reqBody, 'capabilities.alwaysMatch.appium:webDriverAgentUrl', `http://127.0.0.1:${remoteContext.options.wdaForwardPort}`);

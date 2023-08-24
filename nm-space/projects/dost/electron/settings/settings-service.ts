@@ -1,4 +1,4 @@
-import { HostPaths, newCleanNodeEnv, removeItemRecursive } from '@dogu-tech/node';
+import { HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
 import { exec } from 'child_process';
 import { app, desktopCapturer, ipcMain, shell, systemPreferences } from 'electron';
 import isDev from 'electron-is-dev';
@@ -156,7 +156,7 @@ export class SettingsService {
       logger.info('cleanupDoguTemp', { files });
       for (const file of files) {
         const filePath = path.join(tempPath, file);
-        await removeItemRecursive(filePath).catch((err) => {
+        await fs.promises.rm(filePath, { force: true, recursive: true }).catch((err) => {
           logger.error('cleanupDoguTemp error', { file, err });
         });
       }

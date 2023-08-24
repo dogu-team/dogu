@@ -1,5 +1,5 @@
 import { Printable } from '@dogu-tech/common';
-import { copyDirectoryRecursive, removeItemRecursive } from '@dogu-tech/node';
+import { copyDirectoryRecursive } from '@dogu-tech/node';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
@@ -57,7 +57,7 @@ export class DerivedData {
       const dirs = await fsPromises.readdir(remainDir.parent);
       for (const dir of dirs) {
         if (remainDir.dir.indexOf(dir) === -1) {
-          await removeItemRecursive(path.resolve(remainDir.parent, dir));
+          await fs.promises.rm(path.resolve(remainDir.parent, dir), { force: true, recursive: true });
         }
       }
     }
@@ -73,7 +73,7 @@ export class DerivedData {
     const files = await fsPromises.readdir(debugiOSbuildPath);
     for (const file of files) {
       if (!allowedExtensions.some((ext) => file.endsWith(ext))) {
-        await removeItemRecursive(path.resolve(debugiOSbuildPath, file));
+        await fs.promises.rm(path.resolve(debugiOSbuildPath, file), { force: true, recursive: true });
       }
     }
   }

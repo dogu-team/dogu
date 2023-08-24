@@ -1,5 +1,5 @@
 import { PrefixLogger, stringify } from '@dogu-tech/common';
-import { ChildProcess, getFileSizeRecursive, HostPaths, removeItemRecursive, renameRetry } from '@dogu-tech/node';
+import { ChildProcess, getFileSizeRecursive, HostPaths, renameRetry } from '@dogu-tech/node';
 import compressing from 'compressing';
 import { download } from 'electron-dl';
 import fs from 'fs';
@@ -145,7 +145,7 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
     this.unitCallback.onInstallStarted();
     const destDirPath = path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice');
     if (fs.existsSync(destDirPath)) {
-      await removeItemRecursive(path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice'));
+      await fs.promises.rm(path.resolve(HostPaths.external.externalsPath(), 'libimobiledevice'), { force: true, recursive: true });
     }
     await makeDirectories();
 
@@ -230,7 +230,7 @@ async function renameUnzipedDir(dirname: string, destPath: string, stdLogCallbac
     }
   }
   if (fs.existsSync(uncompressedDirPath)) {
-    await removeItemRecursive(uncompressedDirPath);
+    await fs.promises.rm(uncompressedDirPath, { force: true, recursive: true });
   }
 }
 

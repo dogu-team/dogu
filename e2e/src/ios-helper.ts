@@ -1,4 +1,4 @@
-import { copyDirectoryRecursive, HostPaths, removeItemRecursive } from '@dogu-tech/node';
+import { copyDirectoryRecursive, HostPaths } from '@dogu-tech/node';
 
 import fs from 'fs';
 import fsPromise from 'fs/promises';
@@ -27,7 +27,7 @@ export async function copyIosDeviceAgentProject(): Promise<void> {
   const idaOriginProjectDirectoryPath = path.resolve(pathMap.root, 'projects/ios-device-agent/IOSDeviceAgent');
   const idaDestProjectDirectoryPath = HostPaths.external.xcodeProject.idaProjectDirectoryPath();
   if (fs.existsSync(idaDestProjectDirectoryPath)) {
-    await removeItemRecursive(idaDestProjectDirectoryPath);
+    await fs.promises.rm(idaDestProjectDirectoryPath, { force: true, recursive: true });
   }
 
   await fsPromise.mkdir(idaDestProjectDirectoryPath, { recursive: true });
