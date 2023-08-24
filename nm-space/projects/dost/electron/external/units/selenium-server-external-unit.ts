@@ -115,12 +115,12 @@ export class SeleniumServerExternalUnit extends IExternalUnit {
   }
 
   async isAgreementNeeded(): Promise<boolean> {
-    const value = await this.appConfigService.getOrDefault('external_is_agreed_selenium_driver', false);
+    const value = await this.appConfigService.getOrDefault('external_is_agreed_selenium_server', false);
     return !value;
   }
 
   writeAgreement(value: boolean): Promise<void> {
-    return this.appConfigService.set('external_is_agreed_selenium_driver', value);
+    return this.appConfigService.set('external_is_agreed_selenium_server', value);
   }
 
   getTermUrl(): string | null {

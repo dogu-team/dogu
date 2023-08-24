@@ -1,24 +1,26 @@
 import { PrefixLogger, stringify } from '@dogu-tech/common';
 import { HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
-import { spawn } from 'child_process';
+import { exec, spawn } from 'child_process';
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
-import { ExternalKey } from '../../../src/shares/external';
+import { promisify } from 'util';
+import { ExternalKey, SeleniumWebdriver } from '../../../src/shares/external';
 import { AppConfigService } from '../../app-config/app-config-service';
-import { DotEnvConfigService } from '../../dot-env-config/dot-env-config-service';
 import { logger } from '../../log/logger.instance';
 import { StdLogCallbackService } from '../../log/std-log-callback-service';
 import { ThirdPartyPathMap } from '../../path-map';
 import { ExternalUnitCallback, IExternalUnit } from '../external-unit';
 
-const AppiumVersion = '2.0.0';
+const execAsync = promisify(exec);
 
-export class AppiumExternalUnit extends IExternalUnit {
-  private readonly logger = new PrefixLogger(logger, '[Appium]');
+const name = 'Selenium Webdriver';
+const version = '4.11.1';
+
+export class SeleniumWebdriverExternalUnit extends IExternalUnit {
+  private readonly logger = new PrefixLogger(logger, `[${name}]`);
 
   constructor(
-    private readonly dotEnvConfigService: DotEnvConfigService,
     private readonly stdLogCallbackService: StdLogCallbackService,
     private readonly appConfigService: AppConfigService,
     private readonly unitCallback: ExternalUnitCallback,
@@ -35,11 +37,11 @@ export class AppiumExternalUnit extends IExternalUnit {
   }
 
   getKey(): ExternalKey {
-    return 'appium';
+    return 'selenium-webdriver';
   }
 
   getName(): string {
-    return 'Appium';
+    return name;
   }
 
   getEnvKeys(): string[] {
@@ -47,49 +49,63 @@ export class AppiumExternalUnit extends IExternalUnit {
   }
 
   async validateInternal(): Promise<void> {
-    const appiumPath = HostPaths.external.nodePackage.appiumPath();
-    const stat = await fs.promises.stat(appiumPath).catch((error) => null);
-    if (!stat || !stat.isDirectory()) {
-      throw new Error(`appium not exist or not directory. path: ${appiumPath}`);
+    const rootPath = HostPaths.external.nodePackage.seleniumWebdriver.rootPath();
+    const rootPathStat = await fs.promises.stat(rootPath).catch(() => null);
+    if (!rootPathStat || !rootPathStat.isDirectory()) {
+      throw new Error(`rootPath not exist or not directory. path: ${rootPath}`);
     }
-    const packageJsonPath = path.resolve(appiumPath, 'package.json');
-    const packageJsonStat = await fs.promises.stat(packageJsonPath).catch((error) => null);
+    const packageJsonPath = path.resolve(rootPath, 'package.json');
+    const packageJsonStat = await fs.promises.stat(packageJsonPath).catch(() => null);
     if (!packageJsonStat || !packageJsonStat.isFile()) {
       throw new Error(`package.json not exist or not file. path: ${packageJsonPath}`);
     }
     const content = await fs.promises.readFile(packageJsonPath, { encoding: 'utf8' });
     const packageJson = JSON.parse(content);
-    const version = _.get(packageJson, 'dependencies.appium') as string | undefined;
+    const version = _.get(packageJson, `dependencies.${SeleniumWebdriver}`) as string | undefined;
     if (!version) {
-      throw new Error('appium not exist in package.json');
+      throw new Error('selenium-webdriver not exist in package.json');
     }
+
+    const seleniumManagerPath = HostPaths.external.nodePackage.seleniumWebdriver.seleniumManagerPath();
+    const seleniumManagerPathStat = await fs.promises.stat(seleniumManagerPath).catch(() => null);
+    if (!seleniumManagerPathStat || !seleniumManagerPathStat.isFile()) {
+      throw new Error(`selenium-manager not exist or not file. path: ${seleniumManagerPath}`);
+    }
+
+    await this.checkSeleniumManagerVersion();
+  }
+
+  private async checkSeleniumManagerVersion(): Promise<void> {
+    const seleniumManagerPath = HostPaths.external.nodePackage.seleniumWebdriver.seleniumManagerPath();
+    const { stdout } = await execAsync(`${seleniumManagerPath} --version`, { timeout: 60_000 });
+    const version = stdout.trim();
+    this.stdLogCallbackService.stdout(`selenium manager version: ${version}`);
   }
 
   async isAgreementNeeded(): Promise<boolean> {
-    const value = await this.appConfigService.getOrDefault('external_is_agreed_appium', false);
+    const value = await this.appConfigService.getOrDefault('external_is_agreed_selenium_webdriver', false);
     return !value;
   }
 
   writeAgreement(value: boolean): Promise<void> {
-    return this.appConfigService.set('external_is_agreed_appium', value);
+    return this.appConfigService.set('external_is_agreed_selenium_webdriver', value);
   }
 
-  private async createAppiumPath(): Promise<void> {
-    const appiumPath = HostPaths.external.nodePackage.appiumPath();
-    const appiumPathStat = await fs.promises.stat(appiumPath).catch(() => null);
-    if (!appiumPathStat || !appiumPathStat.isDirectory()) {
-      await fs.promises.mkdir(appiumPath, { recursive: true });
+  private async createSeleniumWebdriverRootPath(): Promise<void> {
+    const rootPath = HostPaths.external.nodePackage.seleniumWebdriver.rootPath();
+    if (await fs.promises.stat(rootPath).catch(() => null)) {
+      await fs.promises.rm(rootPath, { recursive: true, force: true });
+    }
+
+    const rootPathStat = await fs.promises.stat(rootPath).catch(() => null);
+    if (!rootPathStat || !rootPathStat.isDirectory()) {
+      await fs.promises.mkdir(rootPath, { recursive: true });
     }
   }
 
   private createEnv(): NodeJS.ProcessEnv {
-    const appiumHome = this.dotEnvConfigService.get('APPIUM_HOME');
-    if (!appiumHome) {
-      throw new Error('APPIUM_HOME not exist in env file');
-    }
     const cleanNodeEnv = newCleanNodeEnv();
     const env = _.merge(cleanNodeEnv, {
-      APPIUM_HOME: appiumHome,
       PATH: `${ThirdPartyPathMap.common.nodeBin}${path.delimiter}${cleanNodeEnv.PATH}`,
     });
     this.logger.verbose('merged env', { env });
@@ -98,10 +114,10 @@ export class AppiumExternalUnit extends IExternalUnit {
 
   private async pnpmInit(env: NodeJS.ProcessEnv): Promise<void> {
     const { pnpm } = ThirdPartyPathMap.common;
-    const appiumPath = HostPaths.external.nodePackage.appiumPath();
+    const seleniumWebdriverPath = HostPaths.external.nodePackage.seleniumWebdriver.rootPath();
     await new Promise<void>((resolve, reject) => {
       const child = spawn(pnpm, ['init'], {
-        cwd: appiumPath,
+        cwd: seleniumWebdriverPath,
         env,
       });
       const onErrorForReject = (error: Error) => {
@@ -113,13 +129,13 @@ export class AppiumExternalUnit extends IExternalUnit {
         child.on('error', (error) => {
           this.stdLogCallbackService.stderr(stringify(error));
         });
-        this.stdLogCallbackService.stdout(`appium pnpm project initializing...`);
+        this.stdLogCallbackService.stdout(`${SeleniumWebdriver} pnpm project initializing...`);
         child.on('close', (code, signal) => {
-          this.stdLogCallbackService.stdout(`appium pnpm project initialized. code: ${code} signal: ${signal}`);
+          this.stdLogCallbackService.stdout(`${SeleniumWebdriver} pnpm project initialized. code: ${code} signal: ${signal}`);
           if (code === 0) {
             resolve();
           } else {
-            reject(new Error(`appium pnpm project initialize failed. code: ${code} signal: ${signal}`));
+            reject(new Error(`${SeleniumWebdriver} pnpm project initialize failed. code: ${code} signal: ${signal}`));
           }
         });
       });
@@ -144,12 +160,12 @@ export class AppiumExternalUnit extends IExternalUnit {
     });
   }
 
-  private async installAppium(env: NodeJS.ProcessEnv): Promise<void> {
+  private async installSeleniumWebdriver(env: NodeJS.ProcessEnv): Promise<void> {
     const { pnpm } = ThirdPartyPathMap.common;
-    const appiumPath = HostPaths.external.nodePackage.appiumPath();
+    const seleniumWebdriverPath = HostPaths.external.nodePackage.seleniumWebdriver.rootPath();
     await new Promise<void>((resolve, reject) => {
-      const child = spawn(pnpm, ['install', `appium@${AppiumVersion}`], {
-        cwd: appiumPath,
+      const child = spawn(pnpm, ['install', `${SeleniumWebdriver}@${version}`], {
+        cwd: seleniumWebdriverPath,
         env,
       });
       const onErrorForReject = (error: Error) => {
@@ -161,13 +177,13 @@ export class AppiumExternalUnit extends IExternalUnit {
         child.on('error', (error) => {
           this.stdLogCallbackService.stderr(stringify(error));
         });
-        this.stdLogCallbackService.stdout('Installing appium...');
+        this.stdLogCallbackService.stdout(`Installing ${SeleniumWebdriver}...`);
         child.on('close', (code, signal) => {
-          this.stdLogCallbackService.stdout(`appium install completed. code: ${code} signal: ${signal}`);
+          this.stdLogCallbackService.stdout(`${SeleniumWebdriver} install completed. code: ${code} signal: ${signal}`);
           if (code === 0) {
             resolve();
           } else {
-            reject(new Error(`appium install failed. code: ${code} signal: ${signal}`));
+            reject(new Error(`${SeleniumWebdriver} install failed. code: ${code} signal: ${signal}`));
           }
         });
       });
@@ -194,10 +210,10 @@ export class AppiumExternalUnit extends IExternalUnit {
 
   async install(): Promise<void> {
     this.unitCallback.onInstallStarted();
-    await this.createAppiumPath();
+    await this.createSeleniumWebdriverRootPath();
     const env = this.createEnv();
     await this.pnpmInit(env);
-    await this.installAppium(env);
+    await this.installSeleniumWebdriver(env);
     this.unitCallback.onInstallCompleted();
   }
 

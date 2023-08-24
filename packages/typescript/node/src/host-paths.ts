@@ -58,6 +58,11 @@ export const HostPaths = {
         clonePath: (cloneId: string): string => path.resolve(HostPaths.external.nodePackage.nodePackagesPath(), 'webdriver-manager', 'clones', cloneId),
       },
       puppeteerBrowsersPath: (): string => path.resolve(HostPaths.external.nodePackage.nodePackagesPath(), 'puppeteer-browsers'),
+      seleniumWebdriver: {
+        rootPath: (): string => path.resolve(HostPaths.external.nodePackage.nodePackagesPath(), 'selenium-webdriver'),
+        seleniumManagerPath: (): string =>
+          path.resolve(HostPaths.external.nodePackage.seleniumWebdriver.rootPath(), 'node_modules', 'selenium-webdriver', 'bin', seleniumManagerSubPath()),
+      },
     },
     xcodeProject: {
       wdaProjectDirectoryPath: (): string => path.resolve(HostPaths.external.defaultAppiumHomePath(), 'node_modules/appium-xcuitest-driver/node_modules/appium-webdriveragent'),
@@ -173,4 +178,17 @@ function createThirdPartyPathMap(options?: ThirdPartyPathMapOptions): ThirdParty
       mobiledevice: process.platform === 'darwin' ? path.resolve(thirdPartyPath, platformDir, archDir, 'mobiledevice') : '',
     },
   };
+}
+
+function seleniumManagerSubPath(): string {
+  const { platform } = process;
+  if (platform === 'win32') {
+    return 'windows/selenium-manager.exe';
+  } else if (platform === 'darwin') {
+    return 'macos/selenium-manager';
+  } else if (platform === 'linux') {
+    return 'linux/selenium-manager';
+  } else {
+    throw new Error(`Unsupported platform: ${platform}`);
+  }
 }
