@@ -49,16 +49,6 @@ export class GeckoDriverExternalUnit extends IExternalUnit {
     super();
   }
 
-  private info(message: string): void {
-    this.stdLogCallbackService.stdout(message);
-    this.logger.info(message);
-  }
-
-  private warn(message: string): void {
-    this.stdLogCallbackService.stderr(message);
-    this.logger.warn(message);
-  }
-
   isPlatformSupported(): boolean {
     return true;
   }
@@ -86,12 +76,12 @@ export class GeckoDriverExternalUnit extends IExternalUnit {
       throw new Error('gecko driver not found or not a file');
     }
 
-    const { stdout, stderr } = await execAsync(`${geckoDriverPath} --version`, { timeout: 5_000 });
+    const { stdout, stderr } = await execAsync(`${geckoDriverPath} --version`, { timeout: 60_000 });
     if (stdout) {
-      this.info(stdout);
+      this.stdLogCallbackService.stdout(stdout);
     }
     if (stderr) {
-      this.warn(stderr);
+      this.stdLogCallbackService.stderr(stderr);
     }
   }
 
@@ -104,7 +94,7 @@ export class GeckoDriverExternalUnit extends IExternalUnit {
       uncompressedPath = await this.uncompress(compressedFilePath);
       await this.moveFile(uncompressedPath);
       this.unitCallback.onInstallCompleted();
-      this.info('install completed');
+      this.stdLogCallbackService.stdout('install completed');
     } finally {
       if (compressedFilePath) {
         await fs.promises.rm(compressedFilePath, { recursive: true, force: true });

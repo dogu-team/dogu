@@ -17,16 +17,6 @@ export class ChromeBrowserExternalUnit extends IExternalUnit {
     super();
   }
 
-  private info(message: string): void {
-    this.stdLogCallbackService.stdout(message);
-    this.logger.info(message);
-  }
-
-  private warn(message: string): void {
-    this.stdLogCallbackService.stderr(message);
-    this.logger.warn(message);
-  }
-
   isPlatformSupported(): boolean {
     return true;
   }
@@ -72,7 +62,7 @@ export class ChromeBrowserExternalUnit extends IExternalUnit {
           totalBytes,
         });
         if (percent > downloadPercent) {
-          this.info(`download progress: ${percent}%`);
+          this.stdLogCallbackService.stdout(`download progress: ${percent}%`);
           downloadPercent = percent;
         }
       },
@@ -80,7 +70,7 @@ export class ChromeBrowserExternalUnit extends IExternalUnit {
     this.unitCallback.onDownloadCompleted();
     this.unitCallback.onInstallStarted();
     this.unitCallback.onInstallCompleted();
-    this.info('install completed');
+    this.stdLogCallbackService.stdout('install completed');
   }
 
   cancelInstall(): void {
