@@ -21,7 +21,7 @@ const findInstalledBrowserTimeout = 60_000;
 const installDriverTimeout = 10 * 60_000;
 
 export class SeleniumManager {
-  private readonly logger = new PrefixLogger(logger, 'SeleniumManager');
+  private readonly logger = new PrefixLogger(logger, '[SeleniumManager]');
   private validated = false;
 
   private async validateSeleniumManager(): Promise<void> {

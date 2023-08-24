@@ -1,4 +1,4 @@
-import { PrefixLogger } from '@dogu-tech/common';
+import { PrefixLogger, stringify } from '@dogu-tech/common';
 import { logger } from '../logger/logger.instance';
 import { SeleniumManagerBrowserInstaller } from './browser-installers';
 import {
@@ -22,7 +22,7 @@ import { ChromeLatestBrowserVersionResolver } from './latest-browser-version-res
 import { SeleniumManager } from './selenium-manager';
 
 export class BrowserManager {
-  private readonly logger = new PrefixLogger(logger, 'BrowserManager');
+  private readonly logger = new PrefixLogger(logger, '[BrowserManager]');
   private readonly majorVersionPattern = /^[0-9]+.*$/g;
   private readonly latestBrowserVersionResolvers: LatestBrowserVersionResolver[] = [new ChromeLatestBrowserVersionResolver()];
   private readonly installedBrowserFinders: InstalledBrowserFinder[] = [];
@@ -41,7 +41,7 @@ export class BrowserManager {
     this.logger.info(`Ensuring browser and driver...`, { browserName, browserPlatform, requestedBrowserVersion });
 
     const mappedBrowserVersion = this.mapLatestVersion(requestedBrowserVersion);
-    this.logger.info(`Mapped browser version ${requestedBrowserVersion} to ${mappedBrowserVersion}.`);
+    this.logger.info(`Mapped browser version ${stringify(requestedBrowserVersion)} to ${mappedBrowserVersion}.`);
 
     let resolvedBrowserVersionInfo: ResolvedBrowserVersionInfo = { browserVersion: mappedBrowserVersion };
     if (this.needToResolveLatestVersion(mappedBrowserVersion)) {

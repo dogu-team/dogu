@@ -13,7 +13,7 @@ export type LatestBrowserVersionResolverOptions = Readonly<Pick<BrowserOptions, 
 export type InstalledBrowserFinderOptions = Pick<BrowserOptions, 'browserName' | 'browserPlatform' | 'resolvedBrowserVersion' | 'resolvedBrowserVersionMajor'>;
 export type DriverInstallerOptions = Pick<BrowserOptions, 'browserName' | 'browserPlatform' | 'resolvedBrowserVersion'>;
 export type BrowserInstallerOptions = Pick<BrowserOptions, 'browserName' | 'browserPlatform' | 'resolvedBrowserVersion'>;
-export type EnsureBrowserAndDriverOptions = Pick<BrowserOptions, 'browserName' | 'browserPlatform' | 'requestedBrowserVersion'>;
+export type EnsureBrowserAndDriverOptions = Pick<BrowserOptions, 'browserName' | 'browserPlatform'> & Partial<Pick<BrowserOptions, 'requestedBrowserVersion'>>;
 
 export interface BrowserInfo {
   browserName: BrowserName;
