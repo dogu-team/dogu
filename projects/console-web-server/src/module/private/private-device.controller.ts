@@ -9,11 +9,12 @@ import {
   WriteDeviceRunTimeInfosRequestBody,
 } from '@dogu-private/console-host-agent';
 import { FindDeviceBySerialQuery, UpdateDeviceRequestBody } from '@dogu-private/console-host-agent/src/http-specs/private-device';
-import { DeviceId, OrganizationId } from '@dogu-private/types';
+import { DeviceId, getBrowserNamesByPlatform, isAllowedBrowserPlatform, OrganizationId, platformTypeFromPlatform } from '@dogu-private/types';
 import { Instance, transformAndValidate } from '@dogu-tech/common';
 import { Body, ConflictException, Controller, Get, Inject, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
+import { DeviceBrowser } from '../../db/entity/device-browser.entity';
 import { Device } from '../../db/entity/device.entity';
 import { findDeviceModelNameByModelId } from '../../utils/device';
 import { HOST_ACTION_TYPE } from '../auth/auth.types';
@@ -66,7 +67,7 @@ export class PrivateDeviceController {
     @Param(OrganizationPropCamel.organizationId, IsOrganizationExist) organizationId: OrganizationId,
     @Body() body: CreateDeviceRequestBody,
   ): Promise<Instance<typeof PrivateDevice.createDevice.responseBody>> {
-    const { serial, serialUnique } = body;
+    const { serial, serialUnique, platform } = body;
 
     const exist = await this.deviceRepository.exist({ where: { serialUnique, organizationId } });
     if (exist) {
@@ -90,6 +91,20 @@ export class PrivateDeviceController {
         deviceId,
       };
       const responseValidated = await transformAndValidate(PrivateDevice.createDevice.responseBody, response);
+
+      // create device browser
+      const platformType = platformTypeFromPlatform(platform);
+      if (isAllowedBrowserPlatform(platformType)) {
+        const browserPlatform = platformType;
+        const browserNames = getBrowserNamesByPlatform(browserPlatform);
+        await Promise.all(
+          browserNames.map(async (browserName) => {
+            const deviceBrowser = manager.getRepository(DeviceBrowser).create({ deviceId, browserName });
+            await manager.save(deviceBrowser);
+          }),
+        );
+      }
+
       return responseValidated;
     });
 

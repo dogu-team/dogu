@@ -2,6 +2,7 @@ import {
   DeviceAndDeviceTagPropCamel,
   DeviceAndDeviceTagPropSnake,
   DeviceBase,
+  DeviceBrowserPropCamel,
   DevicePropCamel,
   DevicePropSnake,
   DeviceResponse,
@@ -553,6 +554,43 @@ export class DeviceStatusService {
     const devices = await manager.getRepository(Device).find({ where: { deviceId: In(deviceIds), connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED } });
 
     return devices;
+  }
+
+  async findDeviceByDeviceTagWithBrowser(
+    manager: EntityManager,
+    organizationId: OrganizationId,
+    projectId: ProjectId,
+    deviceTag: string,
+    browserName: string,
+    invalidCheck = false,
+  ): Promise<Device | null> {
+    if (invalidCheck) {
+      const tags = await manager.getRepository(DeviceTag).find({ where: { organizationId, name: In([deviceTag]) } });
+      if (tags.length === 0) {
+        throw new HttpException(`Invalid device tag name: ${deviceTag}`, HttpStatus.NOT_FOUND);
+      }
+    }
+
+    const device = await manager
+      .createQueryBuilder(Device, 'device')
+      .leftJoinAndSelect(`device.${DevicePropCamel.deviceAndDeviceTags}`, 'deviceAndDeviceTag')
+      .leftJoinAndSelect(`device.${DevicePropCamel.projectAndDevices}`, 'projectAndDevice')
+      .leftJoinAndSelect(`device.${DevicePropCamel.deviceBrowsers}`, 'deviceBrowser')
+      .leftJoinAndSelect(`deviceAndDeviceTag.${DeviceAndDeviceTagPropCamel.deviceTag}`, 'deviceTag')
+      .where(`device.${DevicePropCamel.organizationId} = :${DevicePropCamel.organizationId}`, { organizationId })
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where(`device.${DevicePropCamel.isGlobal} = 1`);
+          qb.orWhere(`projectAndDevice.${ProjectAndDevicePropCamel.projectId} = :${ProjectAndDevicePropCamel.projectId}`, { projectId });
+        }),
+      )
+      .andWhere(`device.${DevicePropCamel.connectionState} = :${DevicePropCamel.connectionState}`, { connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED })
+      .andWhere(`deviceBrowser.${DeviceBrowserPropCamel.browserName} = :${DeviceBrowserPropCamel.browserName}`, { browserName })
+      .andWhere(`deviceBrowser.${DeviceBrowserPropCamel.isInstalled} = :${DeviceBrowserPropCamel.isInstalled}`, { isInstalled: 1 })
+      .andWhere(`deviceTag.${DeviceTagPropCamel.name} = :${DeviceTagPropCamel.name}`, { name: deviceTag, organizationId })
+      .getOne();
+
+    return device;
   }
 
   async sortDevicesByRunningRate(deviceIds: DeviceId[]): Promise<Device[]> {

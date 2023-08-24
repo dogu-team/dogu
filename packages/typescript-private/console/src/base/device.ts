@@ -1,4 +1,4 @@
-import { Device } from '@dogu-private/types';
+import { Device, DeviceBrowser } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 import { DeviceAndDeviceTagBase, OrganizationBase, RemoteDeviceJobBase } from '..';
 import { DeviceTagBase } from './device-tag';
@@ -16,6 +16,7 @@ interface DeviceRelationTraits {
   projectAndDevices?: ProjectAndDeviceBase[];
   deviceAndDeviceTags?: DeviceAndDeviceTagBase[];
   organization?: OrganizationBase;
+  deviceBrowsers?: DeviceBrowser[];
 }
 
 export type DeviceBase = Omit<Required<Device>, 'heartbeat' | 'modelName'> & {

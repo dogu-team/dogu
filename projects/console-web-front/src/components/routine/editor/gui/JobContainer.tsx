@@ -79,6 +79,13 @@ const RunsOn = ({ runsOn, onDelete }: RunsOnProps) => {
         })}
       </>
     );
+    // FIXME: henry
+  } else if ('browserName' in runsOn) {
+    return (
+      <Tag color="pink" closable onClose={() => onDelete(runsOn.platformName!)}>
+        {runsOn.browserName}
+      </Tag>
+    );
   }
 
   return (
@@ -211,6 +218,10 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
         const newRunsOn = runsOn.group.filter((t) => t !== tag);
 
         updateJob({ ...job, 'runs-on': { group: newRunsOn } }, name);
+        return;
+        // FIXME: henry
+      } else if ('browserName' in runsOn) {
+        updateJob({ ...job, 'runs-on': { browserName: runsOn.browserName } }, name);
         return;
       }
 

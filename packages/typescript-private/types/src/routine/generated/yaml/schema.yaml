@@ -55,19 +55,7 @@ definitions:
           - items:
               type: string
             type: array
-          - type: object
-            additionalProperties: false
-            properties:
-              browserName:
-                type: string
-              browserVersion:
-                type: string
-              platformName:
-                type: string
-              deviceName:
-                type: string
-            required:
-              - browserName
+          - '$ref': '#/definitions/RunsOnWithBrowserName'
       steps:
         type: array
         items:
@@ -95,3 +83,17 @@ definitions:
         description: The environment variables for the step.
     required:
       - name
+  RunsOnWithBrowserName:
+    title: RunsOnWithBrowserNameSchema
+    type: object
+    additionalProperties: false
+    properties:
+      browserName:
+        type: string
+      browserVersion:
+        type: string
+      platformName:
+        type: string
+    required:
+      - browserName
+      - platformName

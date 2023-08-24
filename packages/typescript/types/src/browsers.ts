@@ -12,6 +12,7 @@ export type BrowserOrDriverName = BrowserName | DriverName;
 
 export const BrowserPlatform = ['macos', 'windows', 'android', 'ios'] as const;
 export type BrowserPlatform = (typeof BrowserPlatform)[number] extends Extract<PlatformType, 'macos' | 'windows' | 'android' | 'ios'> ? (typeof BrowserPlatform)[number] : never;
+export const isAllowedBrowserPlatform = (value: string): value is BrowserPlatform => BrowserPlatform.includes(value as BrowserPlatform);
 
 export const MacosBrowserName = ['chrome', 'firefox', 'safari', 'safaritp', 'edge'] as const;
 export type MacosBrowserName = (typeof MacosBrowserName)[number] extends Extract<BrowserName, 'chrome' | 'firefox' | 'safari' | 'safaritp' | 'edge'>
@@ -48,3 +49,35 @@ export const IosBrowserAppIdMap: Record<IosBrowserName, string> = {
   safari: 'com.apple.mobilesafari',
 } as const;
 export type IosBrowserAppId = keyof typeof IosBrowserAppIdMap;
+
+export function isAllowedBrowserNameForPlatform(browserName: BrowserName, platform: BrowserPlatform): boolean {
+  switch (platform) {
+    case 'macos':
+      return isAllowedMacosBrowserName(browserName);
+    case 'windows':
+      return isAllowedWindowsBrowserName(browserName);
+    case 'android':
+      return isAllowedAndroidBrowserName(browserName);
+    case 'ios':
+      return isAllowedIosBrowserName(browserName);
+    default:
+      const _exhaustiveCheck: never = platform;
+      throw new Error(`Invalid platform [${platform}]`);
+  }
+}
+
+export function getBrowserNamesByPlatform(browserPlatform: BrowserPlatform): BrowserName[] {
+  switch (browserPlatform) {
+    case 'macos':
+      return MacosBrowserName as unknown as BrowserName[];
+    case 'windows':
+      return WindowsBrowserName as unknown as BrowserName[];
+    case 'android':
+      return AndroidBrowserName as unknown as BrowserName[];
+    case 'ios':
+      return IosBrowserName as unknown as BrowserName[];
+    default:
+      const _exhaustiveCheck: never = browserPlatform;
+      throw new Error(`Invalid platform [${browserPlatform}]`);
+  }
+}

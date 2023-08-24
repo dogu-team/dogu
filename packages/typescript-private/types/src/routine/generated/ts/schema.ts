@@ -36,13 +36,17 @@ export interface JobSchema {
       }
     | string
     | string[]
-    | {
-        browserName: string;
-        browserVersion?: string;
-        platformName?: string;
-        deviceName?: string;
-      };
+    | RunsOnWithBrowserNameSchema;
   steps: StepSchema[];
+}
+/**
+ * This interface was referenced by `RoutineSchema`'s JSON-Schema
+ * via the `definition` "RunsOnWithBrowserName".
+ */
+export interface RunsOnWithBrowserNameSchema {
+  browserName: string;
+  browserVersion?: string;
+  platformName: string;
 }
 /**
  * This interface was referenced by `RoutineSchema`'s JSON-Schema

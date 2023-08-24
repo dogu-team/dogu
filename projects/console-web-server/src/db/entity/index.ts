@@ -1,5 +1,6 @@
 export * from './controller-handler.entity';
 export * from './dest.entity';
+export * from './device-browser.entity';
 export * from './device-job.entity';
 export * from './device-tag.entity';
 export * from './device.entity';
@@ -24,6 +25,7 @@ export * from './relations/user-and-invitation-token.entity';
 export * from './relations/user-and-refresh-token.entity';
 export * from './relations/user-and-reset-password-token.entity';
 export * from './relations/user-and-verification-token.entity';
+export * from './routine-device-job-browser.entity';
 export * from './subscribe-user.entity';
 export * from './team.entity';
 export * from './token.entity';
