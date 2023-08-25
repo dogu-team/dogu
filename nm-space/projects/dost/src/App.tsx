@@ -23,6 +23,7 @@ import SetupConfig from './pages/SetupConfig';
 import IosSettings from './pages/iOSSettings';
 import { SentyDSNUrl } from './shares/constants';
 import OpenSourceSoftwareNotice from './pages/OpenSourceSoftwareNotice';
+import MacOSSettings from './pages/MacOSSettings';
 
 function App() {
   const { setEnvironment } = useEnvironmentStore();
@@ -111,8 +112,9 @@ function App() {
       </Route>
       <Route path="/home" element={<HomeLayout />}>
         <Route path="connect" element={<Connect />} />
-        <Route path="trouble-shooting" element={<TroubleShoot />} />
+        <Route path="macos-settings" element={<MacOSSettings />} />
         <Route path="ios-settings" element={<IosSettings />} />
+        <Route path="trouble-shooting" element={<TroubleShoot />} />
       </Route>
       <Route path="/settings" element={<Settings />} />
       <Route path="/doctor" element={<Doctor />} />

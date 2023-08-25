@@ -63,4 +63,7 @@ export interface ISettingsClient {
   openIdaProject(): Promise<void>;
 
   changeStrictSSLOnNPMLikes(value: boolean): Promise<void>;
+
+  //report
+  createZipLogReport(): Promise<string>;
 }

@@ -56,6 +56,7 @@ expose('settingsClient', {
   openIdaProject: () => ipcRenderer.invoke(settingsClientKey.openIdaProject),
 
   changeStrictSSLOnNPMLikes: (strictSSL: boolean) => ipcRenderer.invoke(settingsClientKey.changeStrictSSLOnNPMLikes, strictSSL),
+  createZipLogReport: () => ipcRenderer.invoke(settingsClientKey.createZipLogReport),
 });
 
 expose('childClient', {

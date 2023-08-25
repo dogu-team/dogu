@@ -1,10 +1,12 @@
-import { HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
+import { findEndswith, HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
 import { exec } from 'child_process';
+import compressing from 'compressing';
 import { app, desktopCapturer, ipcMain, shell, systemPreferences } from 'electron';
 import isDev from 'electron-is-dev';
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
+import systeminformation from 'systeminformation';
 import { promisify } from 'util';
 import { ILoginItemSettingsOptions, ISettings, MediaType, settingsClientKey } from '../../src/shares/settings';
 import { AppConfigService } from '../app-config/app-config-service';
@@ -52,6 +54,7 @@ export class SettingsService {
     ipcMain.handle(settingsClientKey.openIdaProject, (_) => this.openIdaProject());
 
     ipcMain.handle(settingsClientKey.changeStrictSSLOnNPMLikes, (_, enabled: boolean) => this.changeStrictSSLOnNPMLikes(enabled));
+    ipcMain.handle(settingsClientKey.createZipLogReport, (_) => this.createZipLogReport());
   }
 
   static open(dotEnvConfigService: DotEnvConfigService): void {
@@ -68,12 +71,12 @@ export class SettingsService {
     return await AppConfigService.instance.getOrDefault('is_show_devui', currentLogLevel);
   }
 
-  private async openWritableDirectory(): Promise<void> {
+  private async openDirectoryViewer(directoryPath: string): Promise<void> {
     function commandByPlatform(): string {
       if (process.platform === 'darwin') {
-        return `open ${WritablePath}`;
+        return `open ${directoryPath}`;
       } else if (process.platform === 'win32') {
-        return `explorer.exe ${WritablePath}`;
+        return `explorer.exe ${directoryPath}`;
       } else {
         throw new Error('Unsupported platform');
       }
@@ -84,8 +87,12 @@ export class SettingsService {
       throw new Error(stderr);
     }
     if (stdout) {
-      logger.info('openWritableDirectory', { stdout });
+      logger.info('openDirectoryViewer', { stdout });
     }
+  }
+
+  private async openWritableDirectory(): Promise<void> {
+    await this.openDirectoryViewer(WritablePath);
   }
   private async openSecurityPrefPanel(param: string): Promise<void> {
     // ref https://github.com/karaggeorge/mac-screen-capture-permissions/blob/master/index.js#LL15C75-L15C96
@@ -161,5 +168,59 @@ export class SettingsService {
         });
       }
     }
+  }
+
+  private async createZipLogReport(): Promise<string> {
+    const homePath = HostPaths.doguHomePath;
+    const logsPath = HostPaths.logsPath(homePath);
+    const configsPath = HostPaths.configsPath(homePath);
+
+    const contentsDirPath = path.resolve(HostPaths.doguTempPath(), 'dogu-report');
+    const destLogsPath = path.resolve(contentsDirPath, 'logs');
+    const destConfigsPath = path.resolve(contentsDirPath, 'configs');
+
+    if (fs.existsSync(contentsDirPath)) {
+      await fs.promises.rm(contentsDirPath, { force: true, recursive: true });
+    }
+    await fs.promises.mkdir(contentsDirPath, { recursive: true });
+
+    // cp config
+    await fs.promises.cp(configsPath, destConfigsPath, { recursive: true, force: true });
+
+    // cp logs
+    await fs.promises.mkdir(destLogsPath, { recursive: true });
+    const logFiles = await findEndswith(logsPath, '.log');
+    for (const logFilePath of logFiles) {
+      const stat = await fs.promises.stat(logFilePath);
+      const oneDay = 1000 * 60 * 60 * 24;
+      if (stat.mtimeMs < Date.now() - oneDay) {
+        continue;
+      }
+      await fs.promises.cp(logFilePath, path.resolve(destLogsPath, path.basename(logFilePath)), { recursive: true, force: true });
+    }
+
+    // generate systeminfo
+    const runtimeInfo = {
+      cpuLoad: await systeminformation.currentLoad(),
+      mems: await systeminformation.mem(),
+      fsStats: await systeminformation.fsStats(),
+      disksIO: await systeminformation.disksIO(),
+      networkStats: await systeminformation.networkStats(),
+    };
+
+    await fs.promises.writeFile(path.resolve(contentsDirPath, 'runtimeInfo.json'), JSON.stringify(runtimeInfo, null, 2));
+
+    // generate environments
+    await fs.promises.writeFile(path.resolve(contentsDirPath, 'env.json'), JSON.stringify(process.env, null, 2));
+
+    const zipPath = path.resolve(HostPaths.doguTempPath(), 'dogu-report.zip');
+    if (fs.existsSync(zipPath)) {
+      await fs.promises.rm(zipPath, { force: true, recursive: true });
+    }
+
+    await compressing.zip.compressDir(contentsDirPath, zipPath);
+    await fs.promises.rm(contentsDirPath, { force: true, recursive: true });
+    await this.openDirectoryViewer(path.dirname(zipPath));
+    return zipPath;
   }
 }

@@ -60,6 +60,7 @@
     "shelljs": "0.8.5",
     "styled-components": "6.0.0-rc.2",
     "styled-reset": "4.4.7",
+    "systeminformation": "5.17.14",
     "web-vitals": "3.1.1",
     "zustand": "4.3.8"
   },

@@ -1,5 +1,4 @@
 import { Button, Center, Divider, List, Text } from '@chakra-ui/react';
-import { ErrorDevice, PlatformSerial, Serial } from '@dogu-private/types';
 import { stringify } from '@dogu-tech/common';
 import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -7,9 +6,8 @@ import styled from 'styled-components';
 import ManualExternalToolValidCheckerItem from '../components/external/ManualExternalToolValidCheckerItem';
 import BorderBox from '../components/layouts/BorderBox';
 import PageTitle from '../components/layouts/PageTitle';
-import useManualSetupExternalValidResult from '../hooks/manaul-setup-external-valid-result';
 import { DoguDocsDeviceFarmIosSettingsUrl } from '../shares/constants';
-import { ExternalKey, ExternalValidationResult, IosSettingsExternalKey } from '../shares/external';
+import { ExternalKey, ExternalValidationResult } from '../shares/external';
 import useIosSettingsStatus from '../stores/ios-settings-status';
 import { ipc } from '../utils/window';
 
