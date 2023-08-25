@@ -35,10 +35,6 @@
     "message": "조직",
     "description": "The label for category Organization in sidebar managementSidebar"
   },
-  "sidebar.managementSidebar.category.Device": {
-    "message": "디바이스",
-    "description": "The label for category Device in sidebar managementSidebar"
-  },
   "sidebar.managementSidebar.category.Project": {
     "message": "프로젝트",
     "description": "The label for category Project in sidebar managementSidebar"
@@ -103,10 +99,6 @@
     "message": "CI/CD",
     "description": "The label for category CI/CD in sidebar integrationSidebar"
   },
-  "sidebar.integrationSidebar.category.Community": {
-    "message": "커뮤니티",
-    "description": "The label for category Community in sidebar integrationSidebar"
-  },
   "sidebar.managementSidebar.category.Device Farm": {
     "message": "디바이스 팜",
     "description": "The label for category Device Farm in sidebar managementSidebar"
@@ -114,5 +106,13 @@
   "sidebar.apiSidebar.category.Project": {
     "message": "프로젝트",
     "description": "The label for category Project in sidebar apiSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Gamium": {
+    "message": "Gamium",
+    "description": "The label for category Gamium in sidebar getStartedSidebar"
+  },
+  "sidebar.integrationSidebar.category.Notification": {
+    "message": "알림",
+    "description": "The label for category Notification in sidebar integrationSidebar"
   }
 }

@@ -1,6 +1,6 @@
 {
   "position": 1,
-  "label": "sidebar.managementSidebar.category.Organization",
+  "label": "sidebar.managementSidebar.category.cicd",
   "collapsible": true,
   "collapsed": false
 }

@@ -101,33 +101,9 @@ const config = {
                 to: '/get-started',
               },
               {
-                label: 'orgAndProject',
-                to: '/management',
+                label: 'tutorial',
+                to: '/get-started/tutorials',
               },
-              {
-                label: 'deviceFarm',
-                to: '/device-farm',
-              },
-              {
-                label: 'testAutomation',
-                to: '/test-automation',
-              },
-              {
-                label: 'testReport',
-                to: '/test-report',
-              },
-              {
-                label: 'routine',
-                to: '/routine/routines',
-              },
-              {
-                label: 'API',
-                to: '/api',
-              },
-              // {
-              //   label: 'community',
-              //   to: '/community/slack',
-              // },
             ],
           },
           {

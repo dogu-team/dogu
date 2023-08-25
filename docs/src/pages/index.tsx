@@ -226,13 +226,13 @@ export default function Home(): JSX.Element {
           </h2>
           <ul className={styles.docsSectionListContainer}>
             <li className={styles.docsSectionListItem}>
-              <Link to="/integration/cicd/github">Github</Link>
+              <Link to="/integration/cicd/github-action">Github Action</Link>
             </li>
             <li className={styles.docsSectionListItem}>
               <Link to="/integration/cicd/jenkins">Jenkins</Link>
             </li>
             <li className={styles.docsSectionListItem}>
-              <Link to="/integration/community/slack">Slack</Link>
+              <Link to="/integration/notification/slack">Slack</Link>
             </li>
           </ul>
         </div>

@@ -1,7 +1,7 @@
 ---
 sidebar_position: 1
-title: Github
-locale: ko
+title: Github Action
+locale: en
 ---
 
 import Tabs from '@theme/Tabs';
@@ -28,55 +28,61 @@ import github_action_result from '@site/static/img/integration/github/github_act
 
 <AllBadge />
 
-## 소개
+## Introduction
 
-Routine과 Github Action을 연동하여 테스트 CI/CD 환경을 구축할 수 있습니다.
+You can set up a test CI/CD environment by integrating Routine and Github Actions.
 
-## Token 발급
+:::info Prerequisites
 
-#### 1. Dogu 프로젝트 페이지로 이동하여 `Settings` 탭으로 이동합니다.
+This document assumes that you have created a Routine to integrate with Github Actions. If you haven't created a Routine yet, refer to [Creating Routines](/routine/routines/editor) to create one.
+
+:::
+
+## Issuing a Token
+
+#### 1. Go to the Dogu project page and navigate to the `Settings` tab.
 
 <img src={github_move_dogu_project_settings} />
 
-#### 2. `Show Token`버튼을 클릭한 후 `Project Access Toekn`을 복사합니다.
+#### 2. Click the `Show Token` button and copy the `Project Access Token`.
 
 <img src={github_create_dogu_project_token} />
 
-## Github Secret 추가
+## Adding a Github Secret
 
-#### 1. Github Repository의 `Settings` 탭으로 이동합니다.
+#### 1. Go to the `Settings` tab of your Github Repository.
 
 <img src={github_move_settings} />
 
-#### 2. `Secrets` 탭으로 이동합니다.
+#### 2. Navigate to the `Secrets` tab.
 
 <img src={github_move_secret_settings} />
 
-#### 3. `New repository secret` 버튼을 클릭합니다.
+#### 3. Click the `New repository secret` button.
 
 <img src={github_create_new_repository_secret} />
 
-#### 4. `Name`에 "DOGU_PROJECT_TOKEN"을 입력하고, `Secret`에 복사한 Token을 입력한 다음 `Add secret` 버튼을 클릭합니다.
+#### 4. Enter "DOGU_PROJECT_TOKEN" in the `Name` field, paste the copied Token in the `Secret` field, and then click the `Add secret` button.
 
 <img src={github_create_repository_secret} />
 
-## Github Workflow 추가
+## Adding Github Workflow
 
-#### 1. Github Repository의 `Actions` 탭으로 이동합니다.
+#### 1. Go to the `Actions` tab of your Github Repository.
 
 <img src={github_move_actions} />
 
-#### 2. `New workflow` 버튼을 클릭합니다.
+#### 2. Click the `New workflow` button.
 
 <img src={github_create_workflow} />
 
-#### 3. `Simple workflow`를 선택합니다.
+#### 3. Select `Simple workflow`.
 
-- Simple Workflow가 보이지 않는 경우 "Simple workflow"를 검색하여 선택합니다.
+- If you don't see "Simple workflow," search for it and select it.
 
 <img src={github_simple_workflow} />
 
-#### 4. YAML 내용을 아래와 같이 준비합니다.
+#### 4. Prepare the YAML content as follows.
 
 <Tabs groupId="edition" defaultValue="cloud" queryString>
 <TabItem value="cloud" label="Cloud" default>
@@ -135,38 +141,45 @@ jobs:
 ```
 
 :::info
-api-url은 Self-Hosted Dogu API 서버의 URL을 입력합니다.
+Enter the URL of the Self-Hosted Dogu API server in the `api-url` field.
 :::
 
 </TabItem>
 </Tabs>
 
-- `project-id`는 Dogu 프로젝트 페이지에서 확인할 수 있습니다.
+- You can find the `project-id` on the Dogu project settings page.
 
 <img src={github_copy_dogu_project_id} />
 
-- `routine-id`는 Routine 페이지에서 확인할 수 있습니다.
+- You can find the `routine-id` on the Routine page.
 
 <img src={github_copy_dogu_routine_id} />
 
-#### 5. YAML 파일을 아래와 같이 수정합니다.
+#### 5. Modify the YAML file as shown below.
 
 <img src={github_edit_workflow} />
 
-#### 6. Github Action을 실행한 후 Dogu Routine에서 정상적으로 실행되는지 확인합니다.
+#### 6. Run the Github Action.
 
 <img src={github_action_running} />
 
-<img src={github_dogu_routine_running} />
-
 :::info
-Github Action을 취소하면 Dogu Routine도 취소됩니다.
+Canceling the Github Action will also cancel the Dogu Routine.
 :::
 
-#### 7. Dogu Routine 실행 결과에 대한 URL은 Github Action에서도 확인할 수 있습니다.
+#### 7. Verify that the Dogu Routine is running.
+
+<img src={github_dogu_routine_running} />
+
+#### 8. You can also find the URL for the Dogu Routine execution result in the Github Action.
 
 <img src={github_action_result} />
 
-## 참고
+## References
 
 - [Dogu Github Action](https://github.com/dogu-team/dogu-github-action)
+- [Routines](http://localhost:3101/ko/routine/routines)
+
+```
+
+```

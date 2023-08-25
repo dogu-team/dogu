@@ -2,21 +2,18 @@
 <img src=".github/resources/logo.png" width="128px" height="128px" title="Gamium_Logo"/>
 </p>
 <p align="center">
-Dogu - Integrated test automation platform based on web.
+Dogu - Seamless Unified  Test Automation Platform.
 </p>
 
 <p align="center">
   <a href="https://github.com/dogu-team/dogu/actions/workflows/ci-e2e.yml">
     <img src="https://github.com/dogu-team/dogu/actions/workflows/ci-e2e.yml/badge.svg" alt="GitHub Actions status">
   </a>
-  <a href="https://github.com/dogu-team/dogu/releases" alt="Activity">
+  <a href="https://github.com/dogu-team/dogu/releases" alt="Release">
     <img alt="GitHub tag (latest SemVer pre-release)" src="https://img.shields.io/github/v/tag/dogu-team/dogu?label=release">
   </a>
-  <a href="https://hub.docker.com/r/dogutechio/dogu/tags" alt="Activity">
+  <a href="https://hub.docker.com/r/dogutechio/dogu/tags" alt="Download">
     <img alt="Docker Pulls" src="https://img.shields.io/docker/pulls/dogutechio/dogu?label=downloads">
-  </a>
-  <a href="https://github.com/dogu-team/dogu/pulse" alt="Activity">
-    <img src="https://img.shields.io/github/commit-activity/m/dogu-team/dogu" />
   </a>
   <div align="center">
     <a href="https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw">
@@ -34,19 +31,21 @@ Dogu - Integrated test automation platform based on web.
   </div>
 </p>
 
-Dogu is an cross E2E test automation platform for web, mobile and game application. You can integrate various tools such as Appium, Selenium and Playwright that you have previously used with Dogu, allowing you to perform parallel processing and check test results more easy. Experience more efficient test automation with Dogu.
+# What's Dogu?
 
-## Test Automation Platform
+Dogu is a seamless unified test automation platform for web, mobile and game application. You can integrate various tools such as Appium, Selenium and Playwright that you have previously used with Dogu, allowing you to perform parallel processing and check test results more easy. Experience more efficient test automation with Dogu.
 
-<img src=".github/resources/architecture-device-farm.png" width="100%"/>
-
-Build a systematic test automation infrastructure using Windows, MacOS, Android, and iOS devices.
+# Dogu Features
 
 ## Device Farm
 
-<img src=".github/resources/device_farm_dashboard.png" width="75%" />
+Build a systematic device farm with Windows, MacOS, Android, and iOS devices.
 
-### Control and inspect UI remotely
+<img src=".github/resources/architecture-device-farm.png" width="100%"/>
+
+## Device Studio
+
+Control devices remotely with Device Studio.
 
 <div style="display: flex; flex-direction: row; justify-content: center">
   <img src=".github/resources/android-inspecting.gif" width="32%" />
@@ -54,79 +53,61 @@ Build a systematic test automation infrastructure using Windows, MacOS, Android,
   <img src=".github/resources/gamium-inspecting.gif" width="32%"/>
 </div>
 
-Build device farm with your own devices and control them in web-page
+## Test Automation Framework with Dogu
 
-## Test Automation
-
-Use a variety of test automation frameworks to easily run tests on the device farm.
-
-### Use Dogu With Test Frameworks
-
-- [Appium](https://docs.dogutech.io/get-started/tutorials/appium/)
-- [Selenium](https://docs.dogutech.io/get-started/tutorials/selenium/)
-- [Webdriverio](https://docs.dogutech.io/get-started/tutorials/webdriverio/)
-- [Gamium](https://docs.dogutech.io/get-started/tutorials/gamium/)
+- [Appium](https://docs.dogutech.io/get-started/tutorials/test-automation/appium/)
+- [Selenium](https://docs.dogutech.io/get-started/tutorials/test-automation/selenium/)
+- [Webdriverio](https://docs.dogutech.io/get-started/tutorials/test-automation/webdriverio/)
+- [Gamium](https://docs.dogutech.io/get-started/tutorials/test-automation/gamium/)
 
 ## Test Report
 
-Visualize test unit by integrating test unit framework with test report.
+Visualize test unit by integrating test unit framework with report.
 
 <img src=".github/resources/reporting-testing-profiling.png" width="100%"/>
 
-### Integrate report with test unit frameworks
-
-- [Jest](https://docs.dogutech.io/test-report/jest)
-- [Pytest](https://docs.dogutech.io/test-report/pytest)
-
 ## Routine
 
-Use a pipeline to process tests in parallel.
+Run test parallelly and periodically with routine.
 
-<img src=".github/resources/workflow-inside.png"/>
+<img src=".github/resources/routine-livestreaming.png" width="100%"/>
 
-### Integrate routine With CI/CD
+## Integrations
 
-- [Github Action](https://docs.dogutech.io/integration/cicd/github)
+- [Github Action](https://docs.dogutech.io/integration/cicd/github-action)
 - [Jenkins](https://docs.dogutech.io/integration/cicd/jenkins)
 
-Create routines to run the tests in parallel.
+# Start Dogu
 
-## Why Dogu?
-
-Building and maintaining infrastructure components such as OpenSTF, Jenkins, and Grafana for test automation requires significant time and effort. However, Dogu streamlines this process by providing an integrated platform for these infrastructures, allowing you to concentrate on test automation itself. Moreover, Dogu offers seamless integration with test scripts and frameworks, eliminating the need to develop infrastructure-related tasks such as parallel test execution and data transfer for test reporting.
-
-## Start With Cloud
-
-Start [cloud service](https://dogutech.io) right now without any installation.
-
-## Start With Self-Hosted
+### With Self-Hosted
 
 Use Dogu on a self-hosted. See [guide setting up Dogu with self-hosted](https://docs.dogutech.io/get-started/installation/self-hosted/installation) for more details.
 
-## Documentation
+### With Cloud
+
+Start [cloud service](https://dogutech.io) right now without any installation.
+
+# Documentation
 
 - [Documentation](https://docs.dogutech.io)
-- [Device Farm](https://docs.dogutech.io/get-started/tutorials/device-farm/)
+- [Tutorial - Device Farm](https://docs.dogutech.io/get-started/tutorials/device-farm/)
 
-### Remote
+# RoadMap
 
-- [Selenium](https://docs.dogutech.io/get-started/tutorials/selenium/)
-- [Appium](https://docs.dogutech.io/get-started/tutorials/appium/)
-- [WebdriverIO](https://docs.dogutech.io/get-started/tutorials/webdriverio/)
-- [Gamium](https://docs.dogutech.io/get-started/tutorials/gamium/)
+<img src=".github/resources/roadmap.png" width="100%"/>
 
-## Join Our Community
+# Join Our Community
 
 Join our [Slack Community](https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw) to engage in discussions about test automation and receive community support.
 
-## Contributing
+# Contributing
 
 Do you want to contribute to Dogu? We'd love your help. Dogu is an open source project, built one contribution at a time by users like you. Read [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
-## License
+# License
 
 We provide community edition and enterprise edition. See [LICENSE](LICENSE.md) for more details.
 
-## Contact
+# Contact
 
 contact@dogutech.io

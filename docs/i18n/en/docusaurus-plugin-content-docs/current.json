@@ -35,10 +35,6 @@
     "message": "Organization",
     "description": "The label for category Organization in sidebar managementSidebar"
   },
-  "sidebar.managementSidebar.category.Device": {
-    "message": "Device",
-    "description": "The label for category Device in sidebar managementSidebar"
-  },
   "sidebar.managementSidebar.category.Project": {
     "message": "Project",
     "description": "The label for category Project in sidebar managementSidebar"
@@ -103,10 +99,6 @@
     "message": "CI/CD",
     "description": "The label for category CI/CD in sidebar integrationSidebar"
   },
-  "sidebar.integrationSidebar.category.Community": {
-    "message": "Community",
-    "description": "The label for category Community in sidebar integrationSidebar"
-  },
   "sidebar.managementSidebar.category.Device Farm": {
     "message": "Device Farm",
     "description": "The label for category Device Farm in sidebar managementSidebar"
@@ -114,5 +106,13 @@
   "sidebar.apiSidebar.category.Project": {
     "message": "Project",
     "description": "The label for category Project in sidebar apiSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Gamium": {
+    "message": "Gamium",
+    "description": "The label for category Gamium in sidebar getStartedSidebar"
+  },
+  "sidebar.integrationSidebar.category.Notification": {
+    "message": "Notification",
+    "description": "The label for category Notification in sidebar integrationSidebar"
   }
 }

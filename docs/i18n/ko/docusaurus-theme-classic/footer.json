@@ -23,25 +23,9 @@
     "message": "시작하기",
     "description": "The label of footer link with label=getStarted linking to /get-started"
   },
-  "link.item.label.orgAndProject": {
-    "message": "관리",
-    "description": "The label of footer link with label=orgAndProject linking to /management"
-  },
-  "link.item.label.deviceFarm": {
-    "message": "디바이스 팜",
-    "description": "The label of footer link with label=deviceFarm linking to /device-farm"
-  },
-  "link.item.label.testAutomation": {
-    "message": "테스트 자동화",
-    "description": "The label of footer link with label=testAutomation linking to /test-automation"
-  },
-  "link.item.label.testReport": {
-    "message": "테스트 리포트",
-    "description": "The label of footer link with label=testReport linking to /test-report"
-  },
-  "link.item.label.routine": {
-    "message": "루틴",
-    "description": "The label of footer link with label=routine linking to /routine/routines"
+  "link.item.label.tutorial": {
+    "message": "튜토리얼",
+    "description": "The label of footer link with label=getStarted linking to /get-strated/tutorials"
   },
   "link.title.Services": {
     "message": "Services",

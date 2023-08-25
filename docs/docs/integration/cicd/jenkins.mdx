@@ -3,3 +3,147 @@ sidebar_position: 2
 title: Jenkins
 locale: en
 ---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+import github_move_dogu_project_settings from '@site/static/img/integration/github/github_move_dogu_project_settings.png';
+import github_create_dogu_project_token from '@site/static/img/integration/github/github_create_dogu_project_token.png';
+import github_copy_dogu_project_id from '@site/static/img/integration/github/github_copy_dogu_project_id.png';
+import github_copy_dogu_routine_id from '@site/static/img/integration/github/github_copy_dogu_routine_id.png';
+
+import jenkins_search_plugin from '@site/static/img/integration/jenkins/jenkins_search_plugin.png';
+import jenkins_installed_plugin from '@site/static/img/integration/jenkins/jenkins_installed_plugin.png';
+import jenkins_new_credential from '@site/static/img/integration/jenkins/jenkins_new_credential.png';
+import jenkins_set_api_url from '@site/static/img/integration/jenkins/jenkins_set_api_url.png';
+import jenkins_create_freestyle from '@site/static/img/integration/jenkins/jenkins_create_freestyle.png';
+import jenkins_new_build_step from '@site/static/img/integration/jenkins/jenkins_new_build_step.png';
+import jenkins_set_build_step from '@site/static/img/integration/jenkins/jenkins_set_build_step.png';
+import jenkins_run_build_step from '@site/static/img/integration/jenkins/jenkins_run_build_step.png';
+import jenkins_done_build_step from '@site/static/img/integration/jenkins/jenkins_done_build_step.png';
+import jenkins_dogu_running_routine from '@site/static/img/integration/jenkins/jenkins_dogu_running_routine.png';
+
+import AllBadge from '@site/src/components/badge/AllBadge.tsx';
+
+<AllBadge />
+
+## Introduction
+
+You can set up a test CI/CD environment by integrating Routine and Jenkins.
+
+:::info Prerequisites
+
+This document assumes that you have created a Routine to integrate with Jenkins. If you haven't created a Routine yet, refer to [Creating Routines](/routine/routines/editor) to create one.
+
+:::
+
+## Issuing a Token
+
+#### 1. Go to the Dogu project page and navigate to the `Settings` tab.
+
+<img src={github_move_dogu_project_settings} />
+
+#### 2. Click the `Show Token` button and copy the `Project Access Token`.
+
+<img src={github_create_dogu_project_token} />
+
+## Installing the Plugin
+
+#### 1. Manage Jenkins > Available Plugins > Search for Dogu Integration Plugin
+
+<img src={jenkins_search_plugin} />
+
+#### 2. Verify the Plugin Installation
+
+<img src={jenkins_installed_plugin} />
+
+## Adding Credentials
+
+#### 1. Jenkins Manage > Credentials > System > Global credentials (unrestricted) > Add Credentials
+
+Select Kind: Dogu Access Token and enter ID, Description, and Dogu Access Token.
+
+ID: Used as the credential identifier.  
+Description: Used as the credential description.  
+Dogu Access Token: Paste the Token copied from [Issuing a Token](#issuing-a-token).
+
+<img src={jenkins_new_credential} />
+
+## Setting API URL
+
+<Tabs groupId="edition" defaultValue="cloud" queryString>
+<TabItem value="cloud" label="Cloud" default>
+
+For Cloud, API URL configuration is not required.
+
+</TabItem>
+
+<TabItem value="self-hosted" label="Self-Hosted">
+
+#### 1. Jenkins Manage > System Configuration > System
+
+Under Global properties, go to Environment variables and click Add. Enter Name and Value.
+
+Name: DOGU_API_URL  
+Value: Enter the your hosted "Dogu API URL"
+
+<img src={jenkins_set_api_url} />
+
+</TabItem>
+</Tabs>
+
+## Integrating with Freestyle Project
+
+#### 1. Jenkins Dashboard > New Item > Freestyle project
+
+<img src={jenkins_create_freestyle} />
+
+#### 2. Add a Build Step
+
+Add build step > Select Run Dogu Routine.
+
+<img src={jenkins_new_build_step} />
+
+#### 3. Configure the Build Step
+
+Enter Project ID, Routine ID, and Credential ID.
+
+<img src={jenkins_set_build_step} />
+
+- `project-id` can be found on the Dogu project settings page.
+
+<img src={github_copy_dogu_project_id} />
+
+- `routine-id` can be found on the Routine page.
+
+<img src={github_copy_dogu_routine_id} />
+
+#### 4. Run the Build
+
+Click Build Now to run the build.
+
+<img src={jenkins_run_build_step} />
+
+:::info
+Canceling the build will also cancel the Dogu Routine.
+:::
+
+#### 5. Verify the Routine Execution
+
+<img src={jenkins_dogu_running_routine} />
+
+#### 6. Check Build Completion
+
+Once the build is completed, you can check the build result as shown below. You can find more detailed reports in the Console Output using the URL provided.
+
+<img src={jenkins_done_build_step} />
+
+## Integrating with Pipeline (Coming Soon)
+
+## References
+
+- [Dogu Integration Plugin](https://github.com/jenkinsci/dogu-integration-plugin)
+
+```
+
+```
