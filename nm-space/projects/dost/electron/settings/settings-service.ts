@@ -217,7 +217,9 @@ export class SettingsService {
 
     await compressing.zip.compressDir(contentsDirPath, zipPath);
     await fs.promises.rm(contentsDirPath, { force: true, recursive: true });
-    await this.openDirectoryViewer(path.dirname(zipPath));
+    await this.openDirectoryViewer(path.dirname(zipPath)).catch((err) => {
+      logger.error('openDirectoryViewer error', { err });
+    });
     return zipPath;
   }
 }
