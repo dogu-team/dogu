@@ -39,7 +39,8 @@ If Docker and Docker-compose are not installed, refer to the links below for ins
 ### Create Mount Paths
 
 <Tabs groupId="os" defaultValue="linux" queryString>
-<TabItem value="linux" label="Linux" default>
+
+<TabItem value="linux" label="Linux(x86_64)" default>
 
 ```
 sudo mkdir /var/lib/dogu
@@ -56,10 +57,18 @@ icacls "C:\var\lib\dogu\nexus-data" /setowner 200 /T
 ```
 
 </TabItem>
+<TabItem value="macos" label="macOS(arm64)" default>
+
+```
+Don't need to create mount paths.
+```
+
+</TabItem>
 </Tabs>
 
 :::note
 You can replace the `/var/lib/dogu` path created above with the `VOLUME_PATH` value in the docker-compose.env file you will create in the next step.
+macOS users can skip this step.
 :::
 
 ### Create and Configure docker-compose.env
@@ -71,8 +80,22 @@ You can replace the `/var/lib/dogu` path created above with the `VOLUME_PATH` va
 
 ### Create docker-compose.yml
 
+<Tabs groupId="arch" defaultValue="x86_64" queryString>
+
+<TabItem value="x86_64" label="x86_64" default>
+
 1. Create an empty docker-compose.yml file.
-2. Copy the contents from the [file](https://github.com/dogu-team/dogu/blob/main/docker-compose.yml) and paste them into the docker-compose.yml file.
+2. Copy the contents from the [file(x86_64)](https://github.com/dogu-team/dogu/blob/main/docker-compose.yml) and paste them into the docker-compose.yml file.
+
+</TabItem>
+
+<TabItem value="arm64" label="arm64">
+
+1. Create an empty docker-compose.yml file.
+2. Copy the contents from the [file(arm64)](https://github.com/dogu-team/dogu/blob/main/docker-compose-arm64.yml) and paste them into the docker-compose.yml file.
+
+</TabItem>
+</Tabs>
 
 ### Network Security Configuration
 

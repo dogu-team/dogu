@@ -39,7 +39,8 @@ Docker 및 Docker-compose가 설치되어 있지 않은 경우 아래 링크를 
 ### 마운트 경로 생성
 
 <Tabs groupId="os" defaultValue="linux" queryString>
-<TabItem value="linux" label="Linux" default>
+
+<TabItem value="linux" label="Linux(x86_64)" default>
 
 ```
 sudo mkdir /var/lib/dogu
@@ -56,11 +57,19 @@ icacls "C:\var\lib\dogu\nexus-data" /setowner 200 /T
 ```
 
 </TabItem>
+<TabItem value="macos" label="macOS(arm64)" default>
+
+```
+마운트 경로 생성은 필요 없습니다.
+```
+
+</TabItem>
 </Tabs>
 
 :::note
 위에서 생성한 `/var/lib/dogu` 경로를
 다음 단계에서 생성할 docker-compose.env 파일의 `VOLUME_PATH` 값으로 대체해도 괜찮습니다.
+macOS의 경우 무시해도 됩니다.
 :::
 
 ### docker-compose.env 생성 및 설정
@@ -72,8 +81,22 @@ icacls "C:\var\lib\dogu\nexus-data" /setowner 200 /T
 
 ### docker-compose.yml 생성
 
+<Tabs groupId="arch" defaultValue="x86_64" queryString>
+
+<TabItem value="x86_64" label="x86_64" default>
+
 1. 빈 docker-compose.yml 파일 생성
-2. [파일](https://github.com/dogu-team/dogu/blob/main/docker-compose.yml) 내용을 docker-compose.yml 파일에 붙여넣기
+2. [파일(x86_64)](https://github.com/dogu-team/dogu/blob/main/docker-compose.yml) 내용을 docker-compose.yml 파일에 붙여넣기
+
+</TabItem>
+
+<TabItem value="arm64" label="arm64">
+
+1. 빈 docker-compose.yml 파일 생성
+2. [파일(arm64)](https://github.com/dogu-team/dogu/blob/main/docker-compose-arm64.yml) 내용을 docker-compose.yml 파일에 붙여넣기
+
+</TabItem>
+</Tabs>
 
 ### 네트워크 보안 설정
 
