@@ -81,7 +81,7 @@ function TroubleShoot() {
               </div>
               <Stack direction={['row']} spacing="10px" align={'baseline'}>
                 <Button size="sm" onClick={onReportOpen} mt="8px">
-                  Create Report
+                  Create Report as Zip File
                 </Button>
               </Stack>
             </BorderBox>

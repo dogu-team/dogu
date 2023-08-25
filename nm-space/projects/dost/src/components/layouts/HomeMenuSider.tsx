@@ -64,7 +64,6 @@ const Sider = styled.aside<{ mode: ColorMode }>`
   flex-direction: column;
   justify-content: space-between;
   width: 250px;
-  height: 100%;
   background-color: var(--chakra-colors-gray-${(props) => (props.mode === 'light' ? 200 : 900)});
   flex-shrink: 0;
 
