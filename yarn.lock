@@ -17323,10 +17323,10 @@ __metadata:
     dotenv: 16.0.3
     fast-xml-parser: 4.2.2
     jest: 29.1.2
+    json5: 2.2.3
     lodash: 4.17.21
     nodemon: 2.0.22
     pbxproj-dom: 1.2.0
-    playwright: 1.37.0
     reflect-metadata: 0.1.13
     selenium-webdriver: 4.3.0
     shelljs: 0.8.5
@@ -28849,17 +28849,6 @@ __metadata:
   bin:
     playwright-core: cli.js
   checksum: be91857b1bb56890b3929ed8cd529f5f5abe4b748f709abc8dbe5b0ee4c0e158247c3958fbccec6a52394dafe4619bc0e69c93d1b129a71b31ab3697771e4c5a
-  languageName: node
-  linkType: hard
-
-"playwright@npm:1.37.0":
-  version: 1.37.0
-  resolution: "playwright@npm:1.37.0"
-  dependencies:
-    playwright-core: 1.37.0
-  bin:
-    playwright: cli.js
-  checksum: f07d1d69e4a13db428cb45af0e2cd5697cb490c7139e399adfc5702b547f741b6411b6442a9c91c0b39f374e0cb466b742de0b15490872a771ab8bdc68e767c5
   languageName: node
   linkType: hard
 

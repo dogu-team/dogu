@@ -78,6 +78,7 @@ const RemoteTestOptionSelectors = ({ guideData, selectedFramwork, selectedPlatfo
         }}
         dropdownMatchSelectWidth={false}
         style={{ width: '100%', marginBottom: '.5rem' }}
+        id="framework-selector"
       />
       <Select
         options={platformOptions}
@@ -87,6 +88,7 @@ const RemoteTestOptionSelectors = ({ guideData, selectedFramwork, selectedPlatfo
         }}
         dropdownMatchSelectWidth={false}
         style={{ width: '100%', marginBottom: '.5rem' }}
+        id="platform-selector"
       />
       <Select
         options={targetOptions}
@@ -96,6 +98,7 @@ const RemoteTestOptionSelectors = ({ guideData, selectedFramwork, selectedPlatfo
         }}
         dropdownMatchSelectWidth={false}
         style={{ width: '100%' }}
+        id="target-selector"
       />
     </>
   );
