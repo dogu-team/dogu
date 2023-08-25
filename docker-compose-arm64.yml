@@ -20,7 +20,7 @@ services:
     ports:
       - 8086:8086
     volumes:
-      - ${VOLUME_PATH}/influxdb-volume:/var/lib/influxdb2:rw
+      - influxdb-volume:/var/lib/influxdb2:rw
     environment:
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_USERNAME=${INFLUX_DB_USERNAME}
@@ -44,7 +44,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
-      - ${VOLUME_PATH}/postgresql:/var/lib/postgresql/data
+      - postgresql:/var/lib/postgresql/data
     networks:
       - console_network
 
@@ -82,13 +82,13 @@ services:
 
   nexus:
     container_name: dogu-nexus
-    image: sonatype/nexus3:3.56.0
+    image: klo2k/nexus3:3.43.0
     restart: always
     pull_policy: always
     ports:
       - 8081:8081
     volumes:
-      - ${VOLUME_PATH}/nexus-data:/nexus-data
+      - nexus-data:/nexus-data
     ulimits:
       nofile:
         soft: 65536
@@ -140,3 +140,8 @@ services:
 networks:
   console_network:
     driver: bridge
+
+volumes:
+  nexus-data:
+  postgresql:
+  influxdb-volume:

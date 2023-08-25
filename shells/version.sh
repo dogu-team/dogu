@@ -47,6 +47,7 @@ fi
 if [[ $dogu == true ]]; then
   echo "Performing additional operations for dogu"
   sed -i "" "s|dogu:.*$|dogu:$version|" ./docker-compose.yml
+  sed -i "" "s|dogu:.*$|dogu:$version|" ./docker-compose-arm64.yml
   yarn version -i "$version"
   find ./projects -mindepth 1 -maxdepth 1 -type d -exec sh -c "cd {} && yarn version -i $version" \;
   exit 0
