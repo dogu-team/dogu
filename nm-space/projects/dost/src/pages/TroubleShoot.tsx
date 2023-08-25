@@ -1,12 +1,11 @@
 import { Box, Button, Center, Divider, List, ListItem, Stack, Text, useDisclosure } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import BorderBox from '../components/layouts/BorderBox';
 import PageTitle from '../components/layouts/PageTitle';
 
-import MacOsPermissions from '../components/MacOSPermissions';
 import { NetworkSetupModal } from '../components/overlays/NetworkSetupModal';
+import { ReportLogAlert } from '../components/overlays/ReportLogAlert';
 import { DoguDocsDeviceConfigurationUrl, DoguDocsDeviceTroubleShootingUrl } from '../shares/constants';
 import useEnvironmentStore from '../stores/environment';
 import { ipc } from '../utils/window';
@@ -15,6 +14,7 @@ function TroubleShoot() {
   const { features, platform } = useEnvironmentStore();
   const navigate = useNavigate();
   const { isOpen: isNetworkOpen, onOpen: onNetworkOpen, onClose: onNetworkClose } = useDisclosure();
+  const { isOpen: isReportOpen, onOpen: onReportOpen, onClose: onReportClose } = useDisclosure();
 
   const onClickDoguDocsDeviceConfiguration = async () => {
     await ipc.settingsClient.openExternal(DoguDocsDeviceConfigurationUrl);
@@ -32,21 +32,7 @@ function TroubleShoot() {
       <Divider mb={4} />
 
       <Center>
-        <List spacing={4} width="100%">
-          {platform && platform === 'darwin' ? (
-            <ListItem>
-              <BorderBox>
-                <Stack spacing="8px">
-                  <div>
-                    <MenuTitle>macOS Permissions</MenuTitle>
-                    <Text fontSize=".9rem">Following permissions are required to control macOS.</Text>
-                  </div>
-                  <MacOsPermissions />
-                </Stack>
-              </BorderBox>
-            </ListItem>
-          ) : null}
-
+        <List spacing={2} width="100%">
           <ListItem>
             <BorderBox>
               <MenuTitle>Diagnose packages</MenuTitle>
@@ -59,7 +45,7 @@ function TroubleShoot() {
           <ListItem>
             <BorderBox>
               <div>
-                <MenuTitle>Dogu documents</MenuTitle>
+                <MenuTitle>Documents</MenuTitle>
                 <Text fontSize=".9rem">If you have problems connecting your device, please check the articles below.</Text>
               </div>
               <Stack direction={['row']} spacing="10px" align={'baseline'}>
@@ -87,8 +73,22 @@ function TroubleShoot() {
               </BorderBox>
             </ListItem>
           ) : null}
+          <ListItem>
+            <BorderBox>
+              <div>
+                <MenuTitle>Report</MenuTitle>
+                <Text fontSize=".9rem">If you encounter any problems, please create a report file and report it.</Text>
+              </div>
+              <Stack direction={['row']} spacing="10px" align={'baseline'}>
+                <Button size="sm" onClick={onReportOpen} mt="8px">
+                  Create Report
+                </Button>
+              </Stack>
+            </BorderBox>
+          </ListItem>
         </List>
         <NetworkSetupModal isOpen={isNetworkOpen} onClose={onNetworkClose} />
+        <ReportLogAlert isOpen={isReportOpen} onClose={onReportClose} />
       </Center>
     </div>
   );

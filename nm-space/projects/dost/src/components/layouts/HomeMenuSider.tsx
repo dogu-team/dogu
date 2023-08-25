@@ -1,10 +1,8 @@
 import { ColorMode, Flex, useColorMode } from '@chakra-ui/react';
 import { AiFillExclamationCircle } from 'react-icons/ai';
-import { ImConnection, ImMobile2 } from 'react-icons/im';
+import { ImConnection, ImMobile2, ImAppleinc } from 'react-icons/im';
 import { MdTroubleshoot } from 'react-icons/md';
 import styled from 'styled-components';
-import useManualSetupExternalValidResult from '../../hooks/manaul-setup-external-valid-result';
-import { IosSettingsExternalKey } from '../../shares/external';
 import useEnvironmentStore from '../../stores/environment';
 
 import useHostAgentConnectionStatusStore from '../../stores/host-agent-connection-status';
@@ -29,10 +27,14 @@ const HomeMenuSider = () => {
           </Flex>
           {hostAgentConnectionStatus === null ? <div></div> : <HostAgentConnectionStatusIcon status={hostAgentConnectionStatus} />}
         </SiderButton>
-        <SiderButton link="/home/trouble-shooting">
-          <MdTroubleshoot />
-          &nbsp;&nbsp;Troubleshoot
-        </SiderButton>
+        {platform && platform === 'darwin' ? (
+          <SiderButton link="/home/macos-settings" style={{ justifyContent: 'space-between' }}>
+            <Flex alignItems="center">
+              <ImAppleinc />
+              &nbsp;&nbsp;macOS Settings
+            </Flex>
+          </SiderButton>
+        ) : null}
         {platform && platform === 'darwin' ? (
           <SiderButton link="/home/ios-settings" style={{ justifyContent: 'space-between' }}>
             <Flex alignItems="center">
@@ -42,6 +44,10 @@ const HomeMenuSider = () => {
             {iosStatus.length > 0 && !!iosStatus?.find((r) => !r.isValid) ? <AiFillExclamationCircle style={{ color: '#ff7369' }} /> : <div></div>}
           </SiderButton>
         ) : null}
+        <SiderButton link="/home/trouble-shooting">
+          <MdTroubleshoot />
+          &nbsp;&nbsp;Troubleshoot
+        </SiderButton>
       </div>
 
       <div>

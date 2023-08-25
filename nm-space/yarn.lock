@@ -13278,6 +13278,7 @@ __metadata:
     shx: 0.3.4
     styled-components: 6.0.0-rc.2
     styled-reset: 4.4.7
+    systeminformation: 5.17.14
     ts-node: 10.9.1
     typescript: 4.7.4
     wait-on: 7.0.1
