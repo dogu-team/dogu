@@ -3,13 +3,11 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 
 const execAsync = promisify(exec);
-
-if (!process.env.DOGU_NEXUS_HOST) throw new Error('nexus host is not defined');
 if (!process.env.DOGU_NEXUS_USERNAME) throw new Error('DefaultAdminUsername is not defined');
 if (!process.env.DOGU_NEXUS_PASSWORD) throw new Error('DefaultAdminPassword is not defined');
 
 const ContainerName = process.env.DOGU_NEXUS_CONTAINER_NAME || 'dogu-nexus';
-const Url = `http://${process.env.DOGU_NEXUS_HOST}:${process.env.DOGU_NEXUS_PORT}` || 'http://nexus:8081';
+const Url = process.env.DOGU_NEXUS_URL || 'http://dogu-nexus:8081';
 
 const DefaultAdminUsername = process.env.DOGU_NEXUS_USERNAME;
 const DefaultAdminPassword = process.env.DOGU_NEXUS_PASSWORD;
