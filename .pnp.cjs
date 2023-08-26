@@ -27108,6 +27108,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["lodash", "npm:4.17.21"],\
             ["nodemon", "npm:2.0.22"],\
             ["pbxproj-dom", "npm:1.2.0"],\
+            ["playwright", "npm:1.37.1"],\
             ["reflect-metadata", "npm:0.1.13"],\
             ["selenium-webdriver", "npm:4.3.0"],\
             ["shelljs", "npm:0.8.5"],\
@@ -40210,11 +40211,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["playwright", [\
+        ["npm:1.37.1", {\
+          "packageLocation": "./.yarn/unplugged/playwright-npm-1.37.1-5e4bf191e0/node_modules/playwright/",\
+          "packageDependencies": [\
+            ["playwright", "npm:1.37.1"],\
+            ["playwright-core", "npm:1.37.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["playwright-core", [\
         ["npm:1.37.0", {\
           "packageLocation": "./.yarn/unplugged/playwright-core-npm-1.37.0-e7151e9151/node_modules/playwright-core/",\
           "packageDependencies": [\
             ["playwright-core", "npm:1.37.0"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:1.37.1", {\
+          "packageLocation": "./.yarn/unplugged/playwright-core-npm-1.37.1-2c4000290a/node_modules/playwright-core/",\
+          "packageDependencies": [\
+            ["playwright-core", "npm:1.37.1"]\
           ],\
           "linkType": "HARD"\
         }]\
