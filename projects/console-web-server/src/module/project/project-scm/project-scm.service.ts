@@ -3,6 +3,7 @@ import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundExc
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
+import { ProjectScmBitBucketAuth } from '../../../db/entity/project-scm-bitbucket-auth.entity';
 
 import { ProjectScmGithubAuth } from '../../../db/entity/project-scm-github-auth.entity';
 import { ProjectScmGitlabAuth } from '../../../db/entity/project-scm-gitlab-auth.entity';
@@ -44,6 +45,9 @@ export class ProjectScmService {
           case PROJECT_SCM_TYPE.GITLAB:
             await manager.softDelete(ProjectScmGitlabAuth, { projectScmId: existingProjectScm.projectScmId });
             break;
+          case PROJECT_SCM_TYPE.BITBUCKET:
+            await manager.softDelete(ProjectScmBitBucketAuth, { projectScmId: existingProjectScm.projectScmId });
+            break;
         }
       }
 
@@ -72,6 +76,14 @@ export class ProjectScmService {
           });
           await manager.getRepository(ProjectScmGitlabAuth).save(newProjectScmGitlabAuth);
           return;
+        case PROJECT_SCM_TYPE.BITBUCKET:
+          const newProjectScmBitBucketAuth = manager.getRepository(ProjectScmBitBucketAuth).create({
+            projectScmBitBucketAuthId: v4(),
+            token: encryptedToken,
+            projectScmId: rv.projectScmId,
+          });
+          await manager.getRepository(ProjectScmBitBucketAuth).save(newProjectScmBitBucketAuth);
+          return;
         default:
           throw new BadRequestException('Invalid repository type');
       }
@@ -93,6 +105,9 @@ export class ProjectScmService {
           break;
         case PROJECT_SCM_TYPE.GITLAB:
           await manager.softDelete(ProjectScmGitlabAuth, { projectScmId: existingProjectScm.projectScmId });
+          break;
+        case PROJECT_SCM_TYPE.BITBUCKET:
+          await manager.softDelete(ProjectScmBitBucketAuth, { projectScmId: existingProjectScm.projectScmId });
           break;
       }
     });
@@ -172,6 +187,32 @@ export class ProjectScmService {
 
         return results;
       }
+      case PROJECT_SCM_TYPE.BITBUCKET: {
+        const projectScmBitBucketAuth = await this.dataSource.getRepository(ProjectScmBitBucketAuth).findOne({
+          where: { projectScmId: projectScm.projectScmId },
+        });
+
+        if (!projectScmBitBucketAuth) {
+          throw new NotFoundException('Bitbucket repository auth not configured');
+        }
+
+        const bitbucketToken = await EncryptService.decryptToken(this.dataSource.manager, organizationId, projectScmBitBucketAuth.token);
+        const url = new URL(projectScm.url);
+        const parts: string[] = url.pathname.split('/');
+        const org: string = parts[1];
+        const repo: string = parts[2];
+
+        const content = await Github.readDoguConfigFile(bitbucketToken, org, repo);
+        const json: DoguScmConfig = JSON.parse(content.replaceAll('\n| ', ''));
+        const result = await Github.getScriptFiles(bitbucketToken, org, repo, json.scriptFolderPaths);
+
+        return result.map((r) => ({
+          name: r.path?.split('/').pop() ?? '',
+          path: r.path ?? '',
+          size: r.size ?? 0,
+          type: r.type ?? '',
+        }));
+      }
       default:
         throw new BadRequestException('Invalid repository type');
     }
@@ -207,6 +248,15 @@ export class ProjectScmService {
             throw new HttpException(`This Project does not have github auth: ${projectId}`, HttpStatus.NOT_FOUND);
           }
           token = token = await EncryptService.decryptToken(this.dataSource.manager, organizationId, githubAuth.token);
+        }
+        break;
+      case PROJECT_SCM_TYPE.BITBUCKET:
+        {
+          const bitbucketAuth = await this.dataSource.getRepository(ProjectScmBitBucketAuth).findOne({ where: { projectScmId: scm.projectScmId } });
+          if (!bitbucketAuth) {
+            throw new HttpException(`This Project does not have bitbucket auth: ${projectId}`, HttpStatus.NOT_FOUND);
+          }
+          token = token = await EncryptService.decryptToken(this.dataSource.manager, organizationId, bitbucketAuth.token);
         }
         break;
       default:
