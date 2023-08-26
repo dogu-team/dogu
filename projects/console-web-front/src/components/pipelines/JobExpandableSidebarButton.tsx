@@ -88,7 +88,7 @@ const JobExpandableSidebarButton = ({ job, orgId, pipelineId, projectId, expanda
                   <PlatformIcon platform={item.device?.platform ?? Platform.UNRECOGNIZED} />
                   <DeviceJobName>
                     {`(${item.device?.version}) `}
-                    {item.device?.modelName}
+                    {item.device?.modelName ?? item.device?.model}
                   </DeviceJobName>
                 </FlexRowBox>
               </ProjectSidebarItem>
