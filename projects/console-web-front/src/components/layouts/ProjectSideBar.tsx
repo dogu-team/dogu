@@ -98,6 +98,12 @@ const ProjectSideBar = () => {
             </StyledIconLink>
           ) : undefined,
         },
+      ],
+    },
+    {
+      type: 'group',
+      label: collapsed ? null : 'CI',
+      children: [
         {
           key: 'routine',
           label: collapsed ? (
