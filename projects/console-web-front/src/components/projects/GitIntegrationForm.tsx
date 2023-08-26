@@ -1,6 +1,7 @@
 import { GithubFilled, GitlabOutlined } from '@ant-design/icons';
 import { PROJECT_SCM_TYPE } from '@dogu-private/types';
 import { Form, FormInstance, Input, Radio } from 'antd';
+import { IoLogoBitbucket } from 'react-icons/io5';
 
 export type GitIntegrationFormValues = {
   git: PROJECT_SCM_TYPE;
@@ -28,7 +29,7 @@ const GitIntegrationForm = ({ form, hideType }: Props) => {
               &nbsp;GitLab
             </Radio.Button>
             <Radio.Button value={PROJECT_SCM_TYPE.BITBUCKET}>
-              <GitlabOutlined />
+              <IoLogoBitbucket />
               &nbsp;Bitbucket
             </Radio.Button>
           </Radio.Group>

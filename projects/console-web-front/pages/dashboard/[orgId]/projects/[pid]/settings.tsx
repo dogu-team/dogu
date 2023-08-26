@@ -27,6 +27,7 @@ import GithubButton from '../../../../../src/components/integration/GithubButton
 import GitlabButton from '../../../../../src/components/integration/GitlabButton';
 import useRefresh from '../../../../../src/hooks/useRefresh';
 import SettingTitleDivider from '../../../../../src/components/common/SettingTitleDivider';
+import BitbucketButton from '../../../../../src/components/integration/BitbucketButton';
 
 const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, organization, mutateProject }) => {
   const [editingProject, setEditingProject] = useState<ProjectBase>(project);
@@ -180,6 +181,24 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
               projectId={project.projectId}
               description={
                 project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITLAB ? (
+                  <>
+                    Integrated with{' '}
+                    <a href={project.projectScms[0].url} target="_blank">
+                      {getRepositoyUrl(project.projectScms[0].url)}
+                    </a>
+                  </>
+                ) : undefined
+              }
+            />
+          </div>
+          <div style={{ marginTop: '1rem' }}>
+            <BitbucketButton
+              isConnected={project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.BITBUCKET}
+              disabled={!!project.projectScms && project.projectScms.length > 0 && project.projectScms[0].type !== PROJECT_SCM_TYPE.BITBUCKET}
+              organizationId={organization.organizationId}
+              projectId={project.projectId}
+              description={
+                project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.BITBUCKET ? (
                   <>
                     Integrated with{' '}
                     <a href={project.projectScms[0].url} target="_blank">
