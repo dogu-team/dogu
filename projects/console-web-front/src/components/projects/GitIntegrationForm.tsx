@@ -27,6 +27,10 @@ const GitIntegrationForm = ({ form, hideType }: Props) => {
               <GitlabOutlined />
               &nbsp;GitLab
             </Radio.Button>
+            <Radio.Button value={PROJECT_SCM_TYPE.BITBUCKET}>
+              <GitlabOutlined />
+              &nbsp;Bitbucket
+            </Radio.Button>
           </Radio.Group>
         </Form.Item>
       )}

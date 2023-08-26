@@ -1,15 +1,15 @@
 import { ProjectScmGithubAuthPropCamel, ProjectScmGithubAuthPropSnake } from '@dogu-private/console';
-import { ProjectScmBitBucketAuthBase } from '@dogu-private/console/src/base/project-scm-bitbucket-auth';
-import { ProjectScmBitBucketAuthId, ProjectScmId, PROJECT_SCM_BITBUCKET_AUTH_TABLE_NAME } from '@dogu-private/types';
+import { ProjectScmBitbucketAuthBase } from '@dogu-private/console/src/base/project-scm-bitbucket-auth';
+import { ProjectScmBitbucketAuthId, ProjectScmId, PROJECT_SCM_BITBUCKET_AUTH_TABLE_NAME } from '@dogu-private/types';
 import { Exclude } from 'class-transformer';
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { ProjectScm } from './project-scm.entity';
 
 @Entity(PROJECT_SCM_BITBUCKET_AUTH_TABLE_NAME)
-export class ProjectScmBitBucketAuth extends BaseEntity implements ProjectScmBitBucketAuthBase {
+export class ProjectScmBitbucketAuth extends BaseEntity implements ProjectScmBitbucketAuthBase {
   @PrimaryColumn({ type: 'uuid', name: ProjectScmGithubAuthPropSnake.project_scm_github_auth_id, nullable: false })
-  projectScmBitBucketAuthId!: ProjectScmBitBucketAuthId;
+  projectScmBitbucketAuthId!: ProjectScmBitbucketAuthId;
 
   @ColumnTemplate.RelationUuid(ProjectScmGithubAuthPropSnake.project_scm_id)
   projectScmId!: ProjectScmId;

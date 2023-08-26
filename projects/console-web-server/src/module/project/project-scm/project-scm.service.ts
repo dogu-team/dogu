@@ -3,7 +3,7 @@ import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundExc
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { v4 } from 'uuid';
-import { ProjectScmBitBucketAuth } from '../../../db/entity/project-scm-bitbucket-auth.entity';
+import { ProjectScmBitbucketAuth } from '../../../db/entity/project-scm-bitbucket-auth.entity';
 
 import { ProjectScmGithubAuth } from '../../../db/entity/project-scm-github-auth.entity';
 import { ProjectScmGitlabAuth } from '../../../db/entity/project-scm-gitlab-auth.entity';
@@ -46,7 +46,7 @@ export class ProjectScmService {
             await manager.softDelete(ProjectScmGitlabAuth, { projectScmId: existingProjectScm.projectScmId });
             break;
           case PROJECT_SCM_TYPE.BITBUCKET:
-            await manager.softDelete(ProjectScmBitBucketAuth, { projectScmId: existingProjectScm.projectScmId });
+            await manager.softDelete(ProjectScmBitbucketAuth, { projectScmId: existingProjectScm.projectScmId });
             break;
         }
       }
@@ -77,12 +77,12 @@ export class ProjectScmService {
           await manager.getRepository(ProjectScmGitlabAuth).save(newProjectScmGitlabAuth);
           return;
         case PROJECT_SCM_TYPE.BITBUCKET:
-          const newProjectScmBitBucketAuth = manager.getRepository(ProjectScmBitBucketAuth).create({
-            projectScmBitBucketAuthId: v4(),
+          const newProjectScmBitbucketAuth = manager.getRepository(ProjectScmBitbucketAuth).create({
+            projectScmBitbucketAuthId: v4(),
             token: encryptedToken,
             projectScmId: rv.projectScmId,
           });
-          await manager.getRepository(ProjectScmBitBucketAuth).save(newProjectScmBitBucketAuth);
+          await manager.getRepository(ProjectScmBitbucketAuth).save(newProjectScmBitbucketAuth);
           return;
         default:
           throw new BadRequestException('Invalid repository type');
@@ -107,7 +107,7 @@ export class ProjectScmService {
           await manager.softDelete(ProjectScmGitlabAuth, { projectScmId: existingProjectScm.projectScmId });
           break;
         case PROJECT_SCM_TYPE.BITBUCKET:
-          await manager.softDelete(ProjectScmBitBucketAuth, { projectScmId: existingProjectScm.projectScmId });
+          await manager.softDelete(ProjectScmBitbucketAuth, { projectScmId: existingProjectScm.projectScmId });
           break;
       }
     });
@@ -188,7 +188,7 @@ export class ProjectScmService {
         return results;
       }
       case PROJECT_SCM_TYPE.BITBUCKET: {
-        const projectScmBitBucketAuth = await this.dataSource.getRepository(ProjectScmBitBucketAuth).findOne({
+        const projectScmBitBucketAuth = await this.dataSource.getRepository(ProjectScmBitbucketAuth).findOne({
           where: { projectScmId: projectScm.projectScmId },
         });
 
@@ -252,7 +252,7 @@ export class ProjectScmService {
         break;
       case PROJECT_SCM_TYPE.BITBUCKET:
         {
-          const bitbucketAuth = await this.dataSource.getRepository(ProjectScmBitBucketAuth).findOne({ where: { projectScmId: scm.projectScmId } });
+          const bitbucketAuth = await this.dataSource.getRepository(ProjectScmBitbucketAuth).findOne({ where: { projectScmId: scm.projectScmId } });
           if (!bitbucketAuth) {
             throw new HttpException(`This Project does not have bitbucket auth: ${projectId}`, HttpStatus.NOT_FOUND);
           }
