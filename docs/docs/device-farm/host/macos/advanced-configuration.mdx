@@ -1,0 +1,35 @@
+---
+sidebar_position: 3
+title: Advanced Configuration
+locale: en
+---
+
+# Advanced Configuration
+
+## Routine
+
+### Environment Variable
+
+if you are using `zsh` as your shell, you need to add your variables to `~/.zshenv` instead of `~/.zshrc` or `~/.zprofile`.
+
+:::tip Check shell in use
+
+You can check shell by running `echo $SHELL` in terminal.
+
+:::
+
+## Safari Browser Automation
+
+### Enable safaridriver
+
+Type the following command in the terminal to enable safaridriver
+
+```shell
+sudo /usr/bin/safaridriver --enable
+```
+
+:::tip Official documentation
+
+see [Testing with WebDriver in Safari](https://developer.apple.com/documentation/webkit/testing_with_webdriver_in_safari#2957277) for more information.
+
+:::

@@ -1,0 +1,44 @@
+import Details from '@theme/MDXComponents/Details';
+
+<Details>
+<summary mdxType="summary">Xcode Settings</summary>
+
+1. 앱 스토어 열기
+
+   `command + space` 키를 눌러 spotlight를 여세요, 그리고 `app store` 를 입력하여 실행합니다.
+
+2. 앱스토어에 로그인
+
+   Apple ID로 로그인하세요.
+
+3. Xcode 설치
+
+   앱스토어에서 `xcode`를 검색한 후 설치하세요.
+
+4. Xcode 실행
+
+   Xcode를 열고 라이센스 계약에 동의하십시오.
+
+5. Xcode에 로그인
+
+   Xcode 설정에서 Apple ID로 로그인하세요.
+
+6. Check xcode-select
+
+   터미널에 다음 명령을 입력하십시오:
+
+   ```bash
+   xcode-select -p
+   ```
+
+   출력이 `/Applications/Xcode.app/Contents/Developer`인 경우 _다음 단계를 건너뛸 수 있습니다_.
+
+7. Set xcode-select
+
+   터미널에 다음 명령을 입력하십시오:
+
+   ```bash
+    sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+   ```
+
+</Details>
