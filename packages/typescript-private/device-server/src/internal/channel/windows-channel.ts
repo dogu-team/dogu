@@ -20,17 +20,12 @@ import { StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { ChildProcess, isFreePort } from '@dogu-tech/node';
 import { Observable } from 'rxjs';
 import systeminformation from 'systeminformation';
-import { DeviceWebDriver } from '../../alias';
 import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { SeleniumDeviceWebDriverHandler } from '../../device-webdriver/selenium.device-webdriver.handler';
 import { GamiumContext } from '../../gamium/gamium.context';
-import { GamiumService } from '../../gamium/gamium.service';
-import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
-import { DoguLogger } from '../../logger/logger';
 import { logger } from '../../logger/logger.instance';
-import { SeleniumService } from '../../selenium/selenium.service';
-import { DeviceChannel, DeviceChannelOpenParam, LogHandler } from '../public/device-channel';
+import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService, LogHandler } from '../public/device-channel';
 import { DeviceAgentService } from '../services/device-agent/device-agent-service';
 import { NullDeviceAgentService } from '../services/device-agent/null-device-agent-service';
 import { DesktopProfileService } from '../services/profile/desktop-profiler';
@@ -81,15 +76,7 @@ export class WindowsChannel implements DeviceChannel {
   get isVirtual(): boolean {
     return this._info.isVirtual;
   }
-  static async create(
-    param: DeviceChannelOpenParam,
-    streaming: StreamingService,
-    gamiumService: GamiumService,
-    httpRequestRelayService: HttpRequestRelayService,
-    seleniumEndpointHandler: DeviceWebDriver.SeleniumEndpointHandlerService,
-    seleniumService: SeleniumService,
-    doguLogger: DoguLogger,
-  ): Promise<DeviceChannel> {
+  static async create(param: DeviceChannelOpenParam, streaming: StreamingService, deviceServerService: DeviceServerService): Promise<DeviceChannel> {
     const platform = Platform.PLATFORM_WINDOWS;
     const deviceAgent = new NullDeviceAgentService();
 
@@ -115,15 +102,15 @@ export class WindowsChannel implements DeviceChannel {
     const seleniumDeviceWebDriverHandler = new SeleniumDeviceWebDriverHandler(
       platform,
       param.serial,
-      seleniumService,
-      httpRequestRelayService,
-      seleniumEndpointHandler,
-      doguLogger,
+      deviceServerService.seleniumService,
+      deviceServerService.httpRequestRelayService,
+      deviceServerService.seleniumEndpointHandlerService,
+      deviceServerService.doguLogger,
     );
 
     const deviceChannel = new WindowsChannel(param.serial, info, new DesktopProfileService(), streaming, deviceAgent, seleniumDeviceWebDriverHandler);
 
-    const gamiumContext = gamiumService.openGamiumContext(deviceChannel);
+    const gamiumContext = deviceServerService.gamiumService.openGamiumContext(deviceChannel);
     deviceChannel.gamiumContext = gamiumContext;
 
     return Promise.resolve(deviceChannel);
@@ -143,23 +130,23 @@ export class WindowsChannel implements DeviceChannel {
     };
   }
 
-  startStreamingWebRTC(offer: StreamingOfferDto): Promise<ProtoRTCPeerDescription> {
+  async startStreamingWebRTC(offer: StreamingOfferDto): Promise<ProtoRTCPeerDescription> {
     return Promise.resolve(this._streaming.startStreaming(this.serial, offer));
   }
 
-  startStreamingWebRtcWithTrickle(offer: StreamingOfferDto): Promise<Observable<StreamingAnswer>> {
+  async startStreamingWebRtcWithTrickle(offer: StreamingOfferDto): Promise<Observable<StreamingAnswer>> {
     return Promise.resolve(this._streaming.startStreamingWithTrickle(this.serial, offer));
   }
 
-  startRecord(option: ScreenRecordOption): Promise<ErrorResult> {
+  async startRecord(option: ScreenRecordOption): Promise<ErrorResult> {
     return Promise.resolve(this._streaming.startRecord(this.serial, option));
   }
 
-  stopRecord(): Promise<ErrorResult> {
+  async stopRecord(): Promise<ErrorResult> {
     return Promise.resolve(this._streaming.stopRecord(this.serial));
   }
 
-  control(control: DeviceControl): Promise<void> {
+  control(control: DeviceControl): void {
     throw new Error('Method not implemented.');
   }
 
@@ -182,7 +169,7 @@ export class WindowsChannel implements DeviceChannel {
     await ChildProcess.exec(`taskkill /F /PID ${pid}`, {}, logger);
   }
 
-  reboot(): Promise<void> {
+  reboot(): void {
     throw new Error('Method not implemented.');
   }
 

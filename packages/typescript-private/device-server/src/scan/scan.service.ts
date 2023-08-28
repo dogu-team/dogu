@@ -22,7 +22,6 @@ export class ScanService implements OnModuleInit {
   private deviceDoors: DeviceDoors;
   private befTime = Date.now();
   private onUpdateGuarder = new DuplicatedCallGuarder();
-  private maxRemoveMarkCount = 3;
   private scanFailedDevices: ErrorDevice[] = [];
 
   constructor(
@@ -56,17 +55,16 @@ export class ScanService implements OnModuleInit {
         .filter((e) => PlatformType.includes(e as PlatformType))
         .map((e) => e as PlatformType) ?? PlatformType;
 
-    const factory = createDeviceDriverFactoryByHostPlatform(
-      hostPlatform,
-      enabledPlatforms,
-      this.appiumService,
-      this.gamiumService,
-      this.httpRequestRelayService,
-      this.appiumEndpointHandlerService,
-      this.seleniumEndpointHandlerService,
-      this.seleniumService,
-      this.logger,
-    );
+    const factory = createDeviceDriverFactoryByHostPlatform(hostPlatform, enabledPlatforms, {
+      appiumService: this.appiumService,
+      gamiumService: this.gamiumService,
+      httpRequestRelayService: this.httpRequestRelayService,
+      appiumEndpointHandlerService: this.appiumEndpointHandlerService,
+      seleniumEndpointHandlerService: this.seleniumEndpointHandlerService,
+      seleniumService: this.seleniumService,
+      doguLogger: this.logger,
+    });
+
     this.driverMap = await factory.create();
   }
 

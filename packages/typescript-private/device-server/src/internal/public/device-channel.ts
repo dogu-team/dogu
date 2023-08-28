@@ -13,9 +13,15 @@ import {
 import { Closable, Printable, PromiseOrValue } from '@dogu-tech/common';
 import { StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { Observable } from 'rxjs';
+import { DeviceWebDriver } from '../../alias';
 import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
+import { AppiumService } from '../../appium/appium.service';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { GamiumContext } from '../../gamium/gamium.context';
+import { GamiumService } from '../../gamium/gamium.service';
+import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
+import { DoguLogger } from '../../logger/logger';
+import { SeleniumService } from '../../selenium/selenium.service';
 import { DevicePortContext } from '../types/device-port-context';
 
 type DeviceControl = PrivateProtocol.DeviceControl;
@@ -28,6 +34,16 @@ export interface DeviceChannelOpenParam {
 }
 
 export type LogHandler = Pick<Printable, 'info' | 'error'>;
+
+export interface DeviceServerService {
+  get httpRequestRelayService(): HttpRequestRelayService;
+  get seleniumEndpointHandlerService(): DeviceWebDriver.SeleniumEndpointHandlerService;
+  get appiumEndpointHandlerService(): DeviceWebDriver.AppiumEndpointHandlerService;
+  get doguLogger(): DoguLogger;
+  get gamiumService(): GamiumService;
+  get seleniumService(): SeleniumService;
+  get appiumService(): AppiumService;
+}
 
 export interface DeviceChannel {
   get serial(): Serial;

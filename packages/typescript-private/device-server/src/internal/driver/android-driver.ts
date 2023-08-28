@@ -1,17 +1,12 @@
 import { Platform, Serial } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { killProcessOnPort } from '@dogu-tech/node';
-import { DeviceWebDriver } from '../../alias';
-import { AppiumService } from '../../appium/appium.service';
 import { env } from '../../env';
-import { GamiumService } from '../../gamium/gamium.service';
-import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
-import { DoguLogger } from '../../logger/logger';
 import { logger } from '../../logger/logger.instance';
 import { AndroidChannel } from '../channel/android-channel';
 import { Adb } from '../externals';
 import { DOGU_ADB_SERVER_PORT } from '../externals/cli/adb/adb';
-import { DeviceChannel, DeviceChannelOpenParam } from '../public/device-channel';
+import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService } from '../public/device-channel';
 import { DeviceDriver, DeviceScanResult } from '../public/device-driver';
 import { PionStreamingService } from '../services/streaming/pion-streaming-service';
 import { StreamingService } from '../services/streaming/streaming-service';
@@ -19,24 +14,11 @@ import { StreamingService } from '../services/streaming/streaming-service';
 export class AndroidDriver implements DeviceDriver {
   private channelMap = new Map<Serial, AndroidChannel>();
 
-  private constructor(
-    private readonly streamingService: StreamingService,
-    private readonly appiumService: AppiumService,
-    private readonly gamiumService: GamiumService,
-    private readonly httpRequestRelayService: HttpRequestRelayService,
-    private readonly appiumEndpointHandlerService: DeviceWebDriver.AppiumEndpointHandlerService,
-    private readonly doguLogger: DoguLogger,
-  ) {}
+  private constructor(private readonly streamingService: StreamingService, private readonly deviceServerService: DeviceServerService) {}
 
-  static async create(
-    appiumService: AppiumService,
-    gamiumService: GamiumService,
-    httpRequestRelayService: HttpRequestRelayService,
-    appiumEndpointHandlerService: DeviceWebDriver.AppiumEndpointHandlerService,
-    doguLogger: DoguLogger,
-  ): Promise<AndroidDriver> {
+  static async create(deviceServerService: DeviceServerService): Promise<AndroidDriver> {
     const streaming = await PionStreamingService.create(Platform.PLATFORM_ANDROID, env.DOGU_DEVICE_SERVER_PORT);
-    const driver = new AndroidDriver(streaming, appiumService, gamiumService, httpRequestRelayService, appiumEndpointHandlerService, doguLogger);
+    const driver = new AndroidDriver(streaming, deviceServerService);
     await driver.reset();
     return driver;
   }
@@ -51,15 +33,7 @@ export class AndroidDriver implements DeviceDriver {
   }
 
   async openChannel(initParam: DeviceChannelOpenParam): Promise<DeviceChannel> {
-    const channel = await AndroidChannel.create(
-      initParam,
-      this.streamingService,
-      this.appiumService,
-      this.gamiumService,
-      this.httpRequestRelayService,
-      this.appiumEndpointHandlerService,
-      this.doguLogger,
-    );
+    const channel = await AndroidChannel.create(initParam, this.streamingService, this.deviceServerService);
     this.channelMap.set(initParam.serial, channel);
     return channel;
   }

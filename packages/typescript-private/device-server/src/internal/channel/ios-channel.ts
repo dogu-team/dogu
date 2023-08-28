@@ -22,20 +22,15 @@ import path from 'path';
 import { Observable } from 'rxjs';
 import semver from 'semver';
 import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
-import { AppiumService } from '../../appium/appium.service';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
-import { AppiumEndpointHandlerService } from '../../device-webdriver/endpoint-handler/appium.service';
 import { GamiumContext } from '../../gamium/gamium.context';
-import { GamiumService } from '../../gamium/gamium.service';
-import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
-import { DoguLogger } from '../../logger/logger';
 import { createIdaLogger } from '../../logger/logger.instance';
 import { IdeviceDiagnostics, IdeviceSyslog, MobileDevice } from '../externals';
 import { IosDeviceAgentProcess } from '../externals/cli/ios-device-agent';
 import { ZombieTunnel } from '../externals/cli/mobiledevice-tunnel';
 import { DerivedData } from '../externals/xcode/deriveddata';
-import { DeviceChannel, DeviceChannelOpenParam, LogHandler } from '../public/device-channel';
+import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService, LogHandler } from '../public/device-channel';
 import { IosDeviceAgentService } from '../services/device-agent/ios-device-agent-service';
 import { IosProfileService } from '../services/profile/ios-profiler';
 import { ProfileServices } from '../services/profile/profile-service';
@@ -101,15 +96,7 @@ export class IosChannel implements DeviceChannel {
     return this._info.isVirtual;
   }
 
-  static async create(
-    param: DeviceChannelOpenParam,
-    streaming: StreamingService,
-    appiumService: AppiumService,
-    gamiumService: GamiumService,
-    httpRequestRelayService: HttpRequestRelayService,
-    appiumEndpointHandlerService: AppiumEndpointHandlerService,
-    doguLogger: DoguLogger,
-  ): Promise<IosChannel> {
+  static async create(param: DeviceChannelOpenParam, streaming: StreamingService, deviceServerService: DeviceServerService): Promise<IosChannel> {
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === param.serial && zombieable.platform === Platform.PLATFORM_IOS;
     }, 'kill previous zombie');
@@ -143,7 +130,7 @@ export class IosChannel implements DeviceChannel {
     logger.verbose('appium wda privisioning check done');
 
     logger.verbose('appium context starting');
-    const appiumContextProxy = appiumService.createAppiumContext(platform, serial, 'builtin', portContext.freeHostPort3);
+    const appiumContextProxy = deviceServerService.appiumService.createAppiumContext(platform, serial, 'builtin', portContext.freeHostPort3);
     ZombieServiceInstance.addComponent(appiumContextProxy);
     logger.verbose('appium context started');
 
@@ -179,7 +166,14 @@ export class IosChannel implements DeviceChannel {
     logger.verbose('ios system info service started');
 
     logger.verbose('appium device web driver handler service starting');
-    const appiumDeviceWebDriverHandler = new AppiumDeviceWebDriverHandler(platform, serial, appiumContextProxy, httpRequestRelayService, appiumEndpointHandlerService, doguLogger);
+    const appiumDeviceWebDriverHandler = new AppiumDeviceWebDriverHandler(
+      platform,
+      serial,
+      appiumContextProxy,
+      deviceServerService.httpRequestRelayService,
+      deviceServerService.appiumEndpointHandlerService,
+      deviceServerService.doguLogger,
+    );
 
     const deviceChannel = new IosChannel(
       serial,
@@ -211,7 +205,7 @@ export class IosChannel implements DeviceChannel {
     logger.verbose('streaming service called deviceConnected');
 
     logger.verbose('gamium context starting');
-    const gamiumContext = gamiumService.openGamiumContext(deviceChannel);
+    const gamiumContext = deviceServerService.gamiumService.openGamiumContext(deviceChannel);
     deviceChannel.gamiumContext = gamiumContext;
     logger.verbose('gamium context started');
 
@@ -238,7 +232,7 @@ export class IosChannel implements DeviceChannel {
 
   async queryProfile(methods: ProfileMethod[] | ProfileMethod): Promise<FilledRuntimeInfo> {
     const methodList = Array.isArray(methods) ? methods : [methods];
-    const results = await Promise.allSettled(this._profilers.map((profiler) => profiler.profile(this.serial, methodList)));
+    const results = await Promise.allSettled(this._profilers.map(async (profiler) => profiler.profile(this.serial, methodList)));
     const result = results.reduce((acc, result) => {
       if (result.status === 'fulfilled') {
         Object.keys(acc).forEach((key) => {
@@ -263,15 +257,15 @@ export class IosChannel implements DeviceChannel {
     };
   }
 
-  startStreamingWebRTC(offer: StreamingOfferDto): Promise<ProtoRTCPeerDescription> {
+  async startStreamingWebRTC(offer: StreamingOfferDto): Promise<ProtoRTCPeerDescription> {
     return Promise.resolve(this.streaming.startStreaming(this.serial, offer));
   }
 
-  startStreamingWebRtcWithTrickle(offer: StreamingOfferDto): Promise<Observable<StreamingAnswer>> {
+  async startStreamingWebRtcWithTrickle(offer: StreamingOfferDto): Promise<Observable<StreamingAnswer>> {
     return Promise.resolve(this.streaming.startStreamingWithTrickle(this.serial, offer));
   }
 
-  startRecord(option: ScreenRecordOption): Promise<ErrorResult> {
+  async startRecord(option: ScreenRecordOption): Promise<ErrorResult> {
     const displays = this._info.graphics.displays;
     const maxResolution = option.screen?.maxResolution ?? 720;
 
@@ -294,7 +288,7 @@ export class IosChannel implements DeviceChannel {
     );
   }
 
-  stopRecord(): Promise<ErrorResult> {
+  async stopRecord(): Promise<ErrorResult> {
     return Promise.resolve(this.streaming.stopRecord(this.serial));
   }
 
