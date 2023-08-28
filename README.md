@@ -65,17 +65,17 @@ Inspect UI with Device Studio.
   <img src=".github/resources/gamium-inspecting.gif" width="32%"/>
 </div>
 
-## Test Report
-
-Visualize test unit by integrating test unit framework with report.
-
-<img src=".github/resources/reporting-testing-profiling.png" width="100%"/>
-
 ## Test CI
 
 Run test parallelly and periodically with routine.
 
 <img src=".github/resources/routine-livestreaming.png" width="100%"/>
+
+## Test Report
+
+Visualize test unit by integrating test unit framework with report.
+
+<img src=".github/resources/reporting-testing-profiling.png" width="100%"/>
 
 ## Integration
 
