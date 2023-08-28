@@ -43,6 +43,12 @@ Dogu is a test automation platform that provides a seamless unified experience f
 
 # Dogu Features
 
+Device Farm  
+Device Studio  
+Test Report  
+Test CI  
+Integration
+
 ## Device Farm
 
 Build a systematic device farm with Windows, MacOS, Android, and iOS devices.
@@ -71,7 +77,7 @@ Visualize test unit by integrating test unit framework with report.
 
 <img src=".github/resources/reporting-testing-profiling.png" width="100%"/>
 
-## Routine
+## Test CI
 
 Run test parallelly and periodically with routine.
 
