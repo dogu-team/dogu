@@ -43,8 +43,6 @@ const Splash = () => {
 
         const isExternalReady = await ipc.externalClient.isSupportedPlatformValid({ ignoreManual: true });
         const isExternalAgreementNeed = await ipc.externalClient.isSupportedPlatformAgreementNeeded({ ignoreManual: true });
-        console.log('isExternalReady', isExternalReady);
-        console.log('isExternalAgreementNeed', isExternalAgreementNeed);
 
         if (!isExternalReady || isExternalAgreementNeed) {
           navigate('/setup/installer');

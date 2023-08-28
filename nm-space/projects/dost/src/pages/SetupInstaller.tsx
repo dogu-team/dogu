@@ -19,6 +19,7 @@ const SetupInstaller = () => {
   const [isAgreed, setIsAgreed] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { isOpen: isNetworkOpen, onOpen: onNetworkOpen, onClose: onNetworkClose } = useDisclosure();
+  const { showApiUrlInput } = useEnvironmentStore((state) => state.features);
 
   const navigate = useNavigate();
   const [isInstalling, setIsInstalling] = useState(false);
@@ -42,7 +43,7 @@ const SetupInstaller = () => {
 
   useEffect(() => {
     if (externalInfosToInstallOrAgree !== undefined && externalInfosToInstallOrAgree.length === 0) {
-      navigate('/setup/config');
+      navigate(showApiUrlInput ? '/setup/config' : '/home/connect');
     }
   }, [externalInfosToInstallOrAgree]);
 
@@ -92,7 +93,7 @@ const SetupInstaller = () => {
     }
 
     setIsInstalling(false);
-    navigate('/setup/manual');
+    navigate(showApiUrlInput ? '/setup/config' : '/home/connect');
   };
 
   return (

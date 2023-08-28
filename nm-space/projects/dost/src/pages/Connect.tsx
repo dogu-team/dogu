@@ -53,12 +53,7 @@ function Connect() {
 
           {hostAgentConnectionStatus && tokenInputable && (
             <Item>
-              <TokenConnectionForm
-              // notInputable={!(useApiUrlInput ? apiUrl.length > 0 : true)}
-              // onBeforeSubmit={() => {
-              //   ipc.appConfigClient.set('DOGU_API_BASE_URL', apiUrl);
-              // }}
-              />
+              <TokenConnectionForm />
             </Item>
           )}
         </ListItem>
