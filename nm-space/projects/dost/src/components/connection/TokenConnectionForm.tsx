@@ -64,7 +64,7 @@ const TokenConnectionForm = (props: Props) => {
       setIsFirstTried(false);
       handleConnect();
     }
-  }, [value]);
+  }, [value, isFirstTried]);
 
   return (
     <StyledForm id="host-token-form" onSubmit={handleSubmit}>
