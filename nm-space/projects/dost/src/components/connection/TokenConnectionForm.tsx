@@ -3,6 +3,7 @@ import { Code } from '@dogu-private/types';
 import { stringify } from '@dogu-tech/common';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { create } from 'zustand';
 import { HostAgentConnectionStatus } from '../../shares/child';
 import useHostAgentConnectionStatusStore from '../../stores/host-agent-connection-status';
 
@@ -18,18 +19,23 @@ const TokenConnectionForm = (props: Props) => {
   const [value, setValue] = useState('');
   const [error, setError] = useState<string>();
   const [loading, setLoading] = useState(false);
+  const useTryStore = create(() => ({
+    isFirstTried: false,
+  }));
   const toast = useToast();
   const setHAConnectionStatus = useHostAgentConnectionStatusStore((state) => state.setStatus);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    props.onBeforeSubmit?.();
+    handleConnect();
+  };
 
+  const handleConnect = async () => {
+    props.onBeforeSubmit?.();
     if (!value) {
       setError('Token cannot be empty');
       return;
     }
-
     setLoading(true);
 
     try {
@@ -52,6 +58,15 @@ const TokenConnectionForm = (props: Props) => {
       ipc.rendererLogger.error(`Get host token failed: ${stringify(error)}`);
     });
   }, []);
+  useEffect(() => {
+    if (!value || value.length === 0) {
+      return;
+    }
+    if (useTryStore.getState().isFirstTried === false) {
+      useTryStore.setState({ isFirstTried: true });
+      handleConnect();
+    }
+  }, [value]);
 
   return (
     <StyledForm id="host-token-form" onSubmit={handleSubmit}>

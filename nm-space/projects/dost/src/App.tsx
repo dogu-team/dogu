@@ -18,7 +18,6 @@ import Doctor from './pages/Doctor';
 import Header from './components/layouts/Header';
 import useHostAgentConnectionStatusStore from './stores/host-agent-connection-status';
 import SetupInstaller from './pages/SetupInstaller';
-import SetupManual from './pages/SetupManual';
 import SetupConfig from './pages/SetupConfig';
 import IosSettings from './pages/iOSSettings';
 import { SentyDSNUrl } from './shares/constants';
@@ -107,7 +106,6 @@ function App() {
       <Route path="/" element={<Splash />} />
       <Route path="/setup" element={<SetupLayout />}>
         <Route path="installer" element={<SetupInstaller />} />
-        <Route path="manual" element={<SetupManual />} />
         <Route path="config" element={<SetupConfig />} />
       </Route>
       <Route path="/home" element={<HomeLayout />}>

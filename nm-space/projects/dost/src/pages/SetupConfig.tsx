@@ -1,5 +1,5 @@
 import { Button, Divider, Flex, Text } from '@chakra-ui/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import ApiUrlInputForm from '../components/connection/ApiUrlInputForm';
@@ -9,6 +9,17 @@ import { ipc } from '../utils/window';
 const SetupConfig = () => {
   const [isValid, setIsValid] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    (async () => {
+      const apiUrl = await ipc.appConfigClient.get<string>('DOGU_API_BASE_URL');
+      if (apiUrl) {
+        navigate('/home/connect');
+      }
+    })().catch((error) => {
+      ipc.rendererLogger.error(`SetupConfig useEffect error: ${error}`);
+    });
+  }, []);
 
   return (
     <Flex direction="column" style={{ padding: '24px', height: '100%' }}>
