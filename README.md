@@ -73,13 +73,9 @@ Run test parallelly and periodically with routine.
 
 ## Integration
 
-<div style="display: flex; flex-direction: row; align-items: center;">
-  <img src=".github/resources/integration_github_logo.png" style="margin-right: 8px;" width="96" height="60"/>
-  <img src=".github/resources/integration_gitlab_logo.png" style="margin-right: 8px;" width="96" height="27"/>
-  <img src=".github/resources/integration_bitbucket_logo.png" style="margin-right: 8px;" width="96" height="24"/>
-  <img src=".github/resources/integration_jenkins_logo.png" style="margin-right: 8px;" width="96" height="64"/>
-  <img src=".github/resources/integration_slack_logo.png" style="margin-right: 8px;"  width="96" height="27"/>
-</div>
+Support various integrations such as Github, Gitlab, Bitbucket, Jenkins, Slack.
+
+<img src=".github/resources/integration.png"/>
 
 # Start Dogu
 
