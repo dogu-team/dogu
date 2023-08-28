@@ -6,7 +6,7 @@ import {
   RecordTestScenarioAndRecordTestCasePropCamel,
   RecordTestStepResponse,
 } from '@dogu-private/console';
-import { extensionFromPlatform, OrganizationId, platformTypeFromPlatform, ProjectId, RecordTestCaseId } from '@dogu-private/types';
+import { extensionFromPlatform, OrganizationId, Platform, platformTypeFromPlatform, ProjectId, RecordTestCaseId } from '@dogu-private/types';
 import {
   DoguApplicationFileSizeHeader,
   DoguApplicationUrlHeader,
@@ -86,14 +86,14 @@ export class RecordTestCaseService {
     if (!recordTestCase) {
       throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
     }
-    const activeDeviceSerial = recordTestCase.activeDeviceSerial;
-    if (!activeDeviceSerial) {
-      throw new HttpException(`Device does not have activeDeviceSerial. RecordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
+    const activeDeviceId = recordTestCase.activeDeviceId;
+    if (!activeDeviceId) {
+      throw new HttpException(`Device does not have activeDeviceId. RecordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
     }
 
-    const device = await this.dataSource.getRepository(Device).findOne({ where: { organizationId, serial: activeDeviceSerial } });
+    const device = await this.dataSource.getRepository(Device).findOne({ where: { organizationId, deviceId: activeDeviceId } });
     if (!device) {
-      throw new HttpException(`Device not found. deviceSerial: ${recordTestCase.activeDeviceSerial}`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Device not found. deviceSerial: ${recordTestCase.activeDeviceId}`, HttpStatus.NOT_FOUND);
     }
 
     const batchExecutor: RemoteWebDriverBatchRequestExecutor = makeActionBatchExcutor(this.remoteWebDriverService, organizationId, projectId, recordTestCase, device);
@@ -143,7 +143,8 @@ export class RecordTestCaseService {
       recordTestCaseId: v4(),
       projectId,
       name,
-      activeDeviceSerial: null,
+      platform: Platform.PLATFORM_UNSPECIFIED,
+      activeDeviceId: null,
       activeDeviceScreenSizeX: null,
       activeDeviceScreenSizeY: null,
       activeSessionId: null,
@@ -287,7 +288,7 @@ export class RecordTestCaseService {
     testCase.activeDeviceScreenSizeY = Number(deviceScreenSize.split('x')[1]);
     testCase.activeSessionId = res.value.sessionId;
     testCase.activeSessionKey = activeSessionKey;
-    testCase.activeDeviceSerial = device.serial;
+    testCase.activeDeviceId = device.deviceId;
     await manager.getRepository(RecordTestCase).save(testCase);
 
     return testCase;
@@ -298,14 +299,14 @@ export class RecordTestCaseService {
     if (!testCase) {
       throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
     }
-    const { activeSessionId, activeSessionKey, activeDeviceSerial } = testCase;
-    if (!activeSessionId || !activeSessionKey || !activeDeviceSerial) {
+    const { activeSessionId, activeSessionKey, activeDeviceId } = testCase;
+    if (!activeSessionId || !activeSessionKey || !activeDeviceId) {
       throw new HttpException(`Session not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
     }
 
-    const device = await this.dataSource.getRepository(Device).findOne({ where: { serial: activeDeviceSerial } });
+    const device = await this.dataSource.getRepository(Device).findOne({ where: { deviceId: activeDeviceId } });
     if (!device) {
-      throw new HttpException(`Device not found. serial: ${testCase.activeDeviceSerial}`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Device not found. activeDeviceId: ${testCase.activeDeviceId}`, HttpStatus.NOT_FOUND);
     }
 
     const batchExecutor: RemoteWebDriverBatchRequestExecutor = makeActionBatchExcutor(this.remoteWebDriverService, organizationId, projectId, testCase, device);

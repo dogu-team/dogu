@@ -11,6 +11,7 @@ interface RecordTestScenarioRelationTraits {
 export interface RecordTestScenarioBaseTraits {
   recordTestScenarioId: RecordTestScenarioId;
   projectId: ProjectId;
+  // platform: Platform;
   name: string;
   createdAt: Date;
   updatedAt: Date;

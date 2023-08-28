@@ -119,15 +119,17 @@ export class RecordTestStepService {
     const rv = await this.dataSource.manager.transaction(async (manager) => {
       const { prevRecordTestStepId } = dto;
       const testCase = await manager.getRepository(RecordTestCase).findOne({
-        where: { projectId, recordTestCaseId }, //
+        where: { projectId, recordTestCaseId },
+        relations: [RecordTestStepPropCamel.device],
       });
       if (!testCase) {
         throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
       }
-      if (!testCase.activeDeviceSerial) {
+      if (!testCase.activeDeviceId) {
         throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
       }
 
+      const device = testCase.device!;
       // create recordTestStep
       const recordTestStepId = v4();
       const newData = manager.getRepository(RecordTestStep).create({
@@ -135,7 +137,8 @@ export class RecordTestStepService {
         recordTestCaseId,
         projectId,
         prevRecordTestStepId,
-        deviceSerial: testCase.activeDeviceSerial,
+        deviceId: testCase.activeDeviceId,
+        deviceInfo: JSON.parse(JSON.stringify(device)),
         type: recordTestStepActionTypeFromString(dto.actionInfo.type),
       });
 
