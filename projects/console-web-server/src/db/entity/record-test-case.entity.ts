@@ -1,7 +1,8 @@
 import { RecordTestCaseBase, RecordTestCasePropSnake } from '@dogu-private/console';
-import { ProjectId, RecordTestCaseId, RECORD_TEST_CASE_TABLE_NAME } from '@dogu-private/types';
+import { Platform, ProjectId, RecordTestCaseId, RECORD_TEST_CASE_TABLE_NAME } from '@dogu-private/types';
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
+import { Device } from './device.entity';
 import { Project } from './project.entity';
 import { RecordTestStep } from './record-test-step.entity';
 
@@ -16,8 +17,11 @@ export class RecordTestCase extends BaseEntity implements RecordTestCaseBase {
   @Column({ type: 'character varying', name: RecordTestCasePropSnake.name, nullable: false })
   name!: string;
 
-  @Column({ type: 'character varying', name: RecordTestCasePropSnake.active_device_serial, nullable: true })
-  activeDeviceSerial!: string | null;
+  @Column({ type: 'smallint', name: RecordTestCasePropSnake.platform, unsigned: true, default: Platform.PLATFORM_UNSPECIFIED, nullable: false })
+  platform!: Platform;
+
+  @ColumnTemplate.RelationUuid(RecordTestCasePropSnake.active_device_id, true)
+  activeDeviceId!: string | null;
 
   @Column({ type: 'smallint', name: RecordTestCasePropSnake.active_device_screen_size_x, nullable: true })
   activeDeviceScreenSizeX!: number | null;
@@ -49,6 +53,10 @@ export class RecordTestCase extends BaseEntity implements RecordTestCaseBase {
   @ManyToOne(() => Project, (project) => project, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
   @JoinColumn({ name: RecordTestCasePropSnake.project_id })
   project?: Project;
+
+  @ManyToOne(() => Device, (device) => device, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
+  @JoinColumn({ name: RecordTestCasePropSnake.active_device_id })
+  device?: Device;
 
   @OneToMany(() => RecordTestStep, (recordTestStep) => recordTestStep.recordTestCase, { cascade: ['soft-remove'] })
   recordTestSteps?: RecordTestStep[];

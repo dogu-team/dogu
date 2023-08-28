@@ -50,13 +50,13 @@ export class RecordTestStepActionService {
     if (!recordTestCase) {
       throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
     }
-    const activeDeviceSerial = recordTestCase.activeDeviceSerial;
-    if (!activeDeviceSerial) {
-      throw new HttpException(`Device does not have activeDeviceSerial. RecordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
+    const activeDeviceId = recordTestCase.activeDeviceId;
+    if (!activeDeviceId) {
+      throw new HttpException(`Device does not have activeDeviceId. RecordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
     }
-    const device = await manager.getRepository(Device).findOne({ where: { organizationId, serial: activeDeviceSerial } });
+    const device = await manager.getRepository(Device).findOne({ where: { organizationId, deviceId: activeDeviceId } });
     if (!device) {
-      throw new HttpException(`Device not found. deviceSerial: ${recordTestCase.activeDeviceSerial}`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Device not found. activeDeviceId: ${recordTestCase.activeDeviceId}`, HttpStatus.NOT_FOUND);
     }
     const batchExecutor: RemoteWebDriverBatchRequestExecutor = makeActionBatchExcutor(this.remoteWebDriverService, organizationId, projectId, recordTestCase, device);
 

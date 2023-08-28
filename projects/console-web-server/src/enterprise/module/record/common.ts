@@ -106,9 +106,9 @@ export function makeActionBatchExcutor(
   if (!sessionId || !sessionKey) {
     throw new HttpException(`Session not found. sessionId: ${sessionId}`, HttpStatus.NOT_FOUND);
   }
-  const activeDeviceSerial = recordTestCase.activeDeviceSerial;
-  if (!activeDeviceSerial) {
-    throw new HttpException(`Device does not have activeDeviceSerial. RecordTestCaseId: ${recordTestCase.recordTestCaseId}`, HttpStatus.NOT_FOUND);
+  const activeDeviceId = recordTestCase.activeDeviceId;
+  if (!activeDeviceId) {
+    throw new HttpException(`Device does not have activeDeviceId. RecordTestCaseId: ${recordTestCase.recordTestCaseId}`, HttpStatus.NOT_FOUND);
   }
 
   const headers: HeaderRecord = {
