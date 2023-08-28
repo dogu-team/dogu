@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"time"
 
 	"go-device-controller/types/protocol/generated/proto/outer/streaming"
 
@@ -45,6 +46,10 @@ func (s *iosSurface) Reconnect(serial string, retryCount int, sleepSec int, scre
 	if !ok {
 		fmt.Println("Failed to convert net.Conn to net.TCPConn")
 		os.Exit(1)
+	}
+	err = tcpConn.SetReadDeadline(time.Now().Add(10 * time.Second))
+	if err != nil {
+		log.Inst.Error("iosSurface.SetReadDeadline error", zap.String("serial", serial), zap.Error(err))
 	}
 
 	// make json

@@ -1,6 +1,7 @@
 #include "mywebrtc.h"
 #include "tcpClient.h"
 
+#include <algorithm>
 #include <chrono>
 #include <iostream>
 #include <thread>
@@ -320,7 +321,7 @@ void startCapture()
         auto frameElapsedSec = frameEndTime - frameStartTime;
         auto frameElapsedMilisec = std::chrono::duration_cast<std::chrono::milliseconds>(frameElapsedSec);
         checkFrameDeltaPerPeriod(g_moderatedframeDeltaMs - frameElapsedMilisec.count());
-        long long remainFrameDeltaMillisec = g_moderatedframeDeltaMs - frameElapsedMilisec.count();
+        int remainFrameDeltaMillisec = std::min((int)(g_moderatedframeDeltaMs - frameElapsedMilisec.count()), 1000);
         if (1 < remainFrameDeltaMillisec)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(remainFrameDeltaMillisec - 1));

@@ -46,6 +46,10 @@ func (s *aosSurface) Reconnect(serial string, retryCount int, sleepSec int, scre
 			count += 1
 			continue
 		}
+		err = s.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
+		if err != nil {
+			log.Inst.Error("aosSurface.SetReadDeadline error", zap.String("url", *s.agentUrl), zap.Error(err))
+		}
 		return nil
 	}
 }

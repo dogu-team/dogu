@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"go-device-controller/types/protocol/generated/proto/outer/streaming"
 
@@ -44,13 +45,13 @@ func (s *desktopLibwebrtcSurface) Reconnect(serial string, retryCount int, sleep
 	s.listener = listener
 	defer mutex.Unlock()
 	if err != nil {
-		log.Inst.Error("desktopLibwebrtcSurface.Reconnect", zap.Error(err))
+		log.Inst.Error("desktopLibwebrtcSurface.Reconnect", zap.String("serial", serial), zap.Error(err))
 		return err
 	}
 
 	exePath, err := getDesktopCapturerPath()
 	if err != nil {
-		log.Inst.Error("desktopLibwebrtcSurface.Reconnect", zap.Error(err))
+		log.Inst.Error("desktopLibwebrtcSurface.Reconnect", zap.String("serial", serial), zap.Error(err))
 		return err
 	}
 
@@ -75,13 +76,17 @@ func (s *desktopLibwebrtcSurface) Reconnect(serial string, retryCount int, sleep
 		"--fps", strconv.FormatUint(screenCaptureOption.GetMaxFps(), 10),
 	)
 	if err != nil {
-		log.Inst.Error("desktopLibwebrtcSurface.Reconnect", zap.Error(err))
+		log.Inst.Error("desktopLibwebrtcSurface.Reconnect", zap.String("serial", serial), zap.Error(err))
 		return err
 	}
 	s.conn, err = s.listener.AcceptTCP()
 	if err != nil {
-		log.Inst.Error("desktopLibwebrtcSurface.Reconnect", zap.Error(err))
+		log.Inst.Error("desktopLibwebrtcSurface.Reconnect", zap.String("serial", serial), zap.Error(err))
 		return err
+	}
+	err = s.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
+	if err != nil {
+		log.Inst.Error("desktopLibwebrtcSurface.SetReadDeadline error", zap.String("serial", serial), zap.Error(err))
 	}
 	s.reader = bufio.NewReader(s.conn)
 
