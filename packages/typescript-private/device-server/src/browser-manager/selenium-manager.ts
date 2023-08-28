@@ -1,4 +1,4 @@
-import { BrowserName, BrowserPlatform, isAllowedMacosBrowserName, isAllowedWindowsBrowserName } from '@dogu-private/types';
+import { BrowserName, BrowserPlatform, isAllowedAndroidBrowserName, isAllowedIosBrowserName, isAllowedMacosBrowserName, isAllowedWindowsBrowserName } from '@dogu-private/types';
 import { PrefixLogger } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
@@ -38,7 +38,7 @@ export class SeleniumManager {
     this.validated = true;
   }
 
-  match(options: { browserName: BrowserName; browserPlatform: BrowserPlatform }): boolean {
+  matchForBrowser(options: { browserName: BrowserName; browserPlatform: BrowserPlatform }): boolean {
     const { browserName, browserPlatform } = options;
     if (browserPlatform === 'macos') {
       return isAllowedMacosBrowserName(browserName);
@@ -47,6 +47,23 @@ export class SeleniumManager {
     }
 
     return false;
+  }
+
+  matchForDriver(options: { browserName: BrowserName; browserPlatform: BrowserPlatform }): boolean {
+    const { browserName, browserPlatform } = options;
+    switch (browserPlatform) {
+      case 'macos':
+        return isAllowedMacosBrowserName(browserName);
+      case 'windows':
+        return isAllowedWindowsBrowserName(browserName);
+      case 'android':
+        return isAllowedAndroidBrowserName(browserName);
+      case 'ios':
+        return isAllowedIosBrowserName(browserName);
+      default:
+        const _exhaustiveCheck: never = browserPlatform;
+        throw new Error(`Unknown browser platform: ${_exhaustiveCheck}`);
+    }
   }
 
   async findInstalledBrowser(options: InstalledBrowserFinderOptions): Promise<InstalledBrowserInfo[]> {
@@ -65,6 +82,7 @@ export class SeleniumManager {
 
       return [
         {
+          browserName,
           browserPath,
           driverPath,
         },
@@ -124,6 +142,7 @@ export class SeleniumManager {
 
     this.logger.info(`Browser file found at ${browserPath}`);
     return {
+      browserName,
       browserPath,
     };
   }

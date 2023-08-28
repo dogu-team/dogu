@@ -5,7 +5,7 @@ export class SeleniumManagerDriverInstaller implements DriverInstaller {
   constructor(private readonly seleniumManager: SeleniumManager) {}
 
   match(options: DriverInstallerOptions): boolean {
-    return this.seleniumManager.match(options);
+    return this.seleniumManager.matchForDriver(options);
   }
 
   async install(options: DriverInstallerOptions): Promise<InstalledDriverInfo> {

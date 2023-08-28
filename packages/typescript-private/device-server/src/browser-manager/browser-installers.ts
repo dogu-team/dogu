@@ -5,7 +5,7 @@ export class SeleniumManagerBrowserInstaller implements BrowserInstaller {
   constructor(private readonly seleniumManager: SeleniumManager) {}
 
   match(options: BrowserInstallerOptions): boolean {
-    return this.seleniumManager.match(options);
+    return this.seleniumManager.matchForBrowser(options);
   }
 
   async install(options: BrowserInstallerOptions): Promise<InstalledBrowserInfo> {

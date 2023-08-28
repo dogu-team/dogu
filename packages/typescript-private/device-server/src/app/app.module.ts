@@ -3,6 +3,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AppiumModule } from '../appium/appium.module';
 import { BootstrapModule } from '../bootstrap/bootstrap.module';
+import { BrowserManagerModule } from '../browser-manager/browser-manager.module';
 import { ConfigModule } from '../config/config.module';
 import { DeviceHostModule } from '../device-host/device-host.module';
 import { DeviceInspectorModule } from '../device-inspector/device-inspector.module';
@@ -38,6 +39,7 @@ import { AppService } from './app.service';
     DeviceWebDriverModule,
     SeleniumModule,
     HttpRequestRelayModule,
+    BrowserManagerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

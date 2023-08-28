@@ -31,24 +31,24 @@ export type AndroidBrowserName = (typeof AndroidBrowserName)[number] extends Ext
   ? (typeof AndroidBrowserName)[number]
   : never;
 export const isAllowedAndroidBrowserName = (value: string): value is AndroidBrowserName => AndroidBrowserName.includes(value as AndroidBrowserName);
-export const AndroidBrowserAppIdMap: Record<AndroidBrowserName, string> = {
+export const AndroidBrowserPackageNameMap: Record<AndroidBrowserName, string> = {
   chrome: 'com.android.chrome',
   firefox: 'org.mozilla.firefox',
   edge: 'com.microsoft.emmx',
   'samsung-internet': 'com.sec.android.app.sbrowser',
 } as const;
-export type AndroidBrowserAppId = keyof typeof AndroidBrowserAppIdMap;
+export type AndroidBrowserPackageName = keyof typeof AndroidBrowserPackageNameMap;
 
 export const IosBrowserName = ['chrome', 'firefox', 'safari', 'edge'] as const;
 export type IosBrowserName = (typeof IosBrowserName)[number] extends Extract<BrowserName, 'chrome' | 'firefox' | 'safari' | 'edge'> ? (typeof IosBrowserName)[number] : never;
 export const isAllowedIosBrowserName = (value: string): value is IosBrowserName => IosBrowserName.includes(value as IosBrowserName);
-export const IosBrowserAppIdMap: Record<IosBrowserName, string> = {
+export const IosBrowserPackageNameMap: Record<IosBrowserName, string> = {
   chrome: 'com.google.chrome.ios',
   firefox: 'org.mozilla.iosfirefox',
   edge: 'com.microsoft.edge.ios',
   safari: 'com.apple.mobilesafari',
 } as const;
-export type IosBrowserAppId = keyof typeof IosBrowserAppIdMap;
+export type IosBrowserPackageName = keyof typeof IosBrowserPackageNameMap;
 
 export function isAllowedBrowserNameForPlatform(browserName: BrowserName, platform: BrowserPlatform): boolean {
   switch (platform) {
