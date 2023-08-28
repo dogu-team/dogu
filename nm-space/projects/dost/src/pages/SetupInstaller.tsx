@@ -32,7 +32,7 @@ const SetupInstaller = () => {
   const autoUpdateToast = useToast({
     id: 'update',
     title: 'Proceed update',
-    description: 'The app already has a record of consent, so we proceed with the update right away.',
+    description: 'The app already has a record of consent, so proceeding with the update right away.',
     duration: 10000,
     isClosable: false,
   });

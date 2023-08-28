@@ -140,7 +140,7 @@ export class Dost {
     yield;
 
     if (!process.env.DOGU_SKIP_DOGU_HOME_CLEANUP) {
-      test('Dost Install externals wait or set API url', async () => {
+      test('Dost Install externals wait', async () => {
         const isInstalling = (await this.mainPage!.getByText('Installing packages...', { exact: true }).count()) > 0;
         if (!isInstalling) {
           return;

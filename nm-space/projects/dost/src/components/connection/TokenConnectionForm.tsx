@@ -25,19 +25,19 @@ const TokenConnectionForm = (props: Props) => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    handleConnect();
+    handleConnect(value);
   };
 
-  const handleConnect = async () => {
+  const handleConnect = async (token: string) => {
     props.onBeforeSubmit?.();
-    if (!value) {
+    if (!token) {
       setError('Token cannot be empty');
       return;
     }
     setLoading(true);
 
     try {
-      const result = await connect(value);
+      const result = await connect(token);
       setHAConnectionStatus(result);
     } catch (error) {
       ipc.rendererLogger.error(`Connect host failed: ${stringify(error)}`);
@@ -57,14 +57,21 @@ const TokenConnectionForm = (props: Props) => {
     });
   }, []);
   useEffect(() => {
-    if (!value || value.length === 0) {
-      return;
-    }
-    if (isFirstTried === false) {
-      setIsFirstTried(false);
-      handleConnect();
-    }
-  }, [value, isFirstTried]);
+    (async () => {
+      // do not use 'value' because to not be affected by chaning value
+      const token = await ipc.appConfigClient.get<string>('DOGU_HOST_TOKEN');
+      if (!token || token.length === 0) {
+        setIsFirstTried(true);
+        return;
+      }
+      if (isFirstTried === false) {
+        setIsFirstTried(true);
+        handleConnect(token);
+      }
+    })().catch((error) => {
+      ipc.rendererLogger.error(`Get host token failed: ${stringify(error)}`);
+    });
+  }, [isFirstTried]);
 
   return (
     <StyledForm id="host-token-form" onSubmit={handleSubmit}>
