@@ -1,7 +1,8 @@
 import { WebSocketSpec } from '@dogu-tech/common';
 import { DeviceConnectionState, Platform, Serial } from '@dogu-tech/types';
 import { Type } from 'class-transformer';
-import { IsEnum, IsNotEmpty, IsNumber, IsString, Max, Min } from 'class-validator';
+import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsString, Max, Min, ValidateNested } from 'class-validator';
+import { InstalledBrowserInfo } from '../../../validations/types/browser-manager';
 
 export class DeviceConnectionSubscribeReceiveMessage {
   @IsString()
@@ -40,6 +41,11 @@ export class DeviceConnectionSubscribeReceiveMessage {
   @IsNumber()
   @Type(() => Number)
   resolutionHeight!: number;
+
+  @ValidateNested({ each: true })
+  @Type(() => InstalledBrowserInfo)
+  @IsArray()
+  installedBrowserInfos!: InstalledBrowserInfo[];
 }
 
 export const DeviceConnectionSubscribe = new WebSocketSpec({

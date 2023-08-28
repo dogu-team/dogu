@@ -16,6 +16,8 @@ import { Observable } from 'rxjs';
 import { DeviceWebDriver } from '../../alias';
 import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
 import { AppiumService } from '../../appium/appium.service';
+import { BrowserManagerService } from '../../browser-manager/browser-manager.service';
+import { InstalledBrowserInfo } from '../../browser-manager/browser-manager.types';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { GamiumService } from '../../gamium/gamium.service';
@@ -43,6 +45,7 @@ export interface DeviceServerService {
   get gamiumService(): GamiumService;
   get seleniumService(): SeleniumService;
   get appiumService(): AppiumService;
+  get browserManagerService(): BrowserManagerService;
 }
 
 export interface DeviceChannel {
@@ -52,6 +55,7 @@ export interface DeviceChannel {
   get info(): DeviceSystemInfo;
   get portContext(): DevicePortContext;
   get isVirtual(): boolean;
+  get installedBrowserInfos(): InstalledBrowserInfo[];
 
   // screen
   startStreamingWebRTC(offer: StreamingOfferDto): PromiseOrValue<ProtoRTCPeerDescription>;

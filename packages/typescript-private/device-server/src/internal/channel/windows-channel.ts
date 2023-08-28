@@ -21,6 +21,7 @@ import { ChildProcess, isFreePort } from '@dogu-tech/node';
 import { Observable } from 'rxjs';
 import systeminformation from 'systeminformation';
 import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
+import { InstalledBrowserInfo } from '../../browser-manager/browser-manager.types';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { SeleniumDeviceWebDriverHandler } from '../../device-webdriver/selenium.device-webdriver.handler';
 import { GamiumContext } from '../../gamium/gamium.context';
@@ -47,6 +48,7 @@ export class WindowsChannel implements DeviceChannel {
     private readonly _streaming: StreamingService,
     private readonly _deviceAgent: DeviceAgentService,
     private readonly _seleniumDeviceWebDriverHandler: SeleniumDeviceWebDriverHandler,
+    readonly installedBrowserInfos: InstalledBrowserInfo[],
   ) {}
 
   get serial(): Serial {
@@ -108,7 +110,12 @@ export class WindowsChannel implements DeviceChannel {
       deviceServerService.doguLogger,
     );
 
-    const deviceChannel = new WindowsChannel(param.serial, info, new DesktopProfileService(), streaming, deviceAgent, seleniumDeviceWebDriverHandler);
+    const installedBrowserInfos = await deviceServerService.browserManagerService.findAllInstalledBrowserInfos({
+      deviceSerial: param.serial,
+      browserPlatform: 'windows',
+    });
+
+    const deviceChannel = new WindowsChannel(param.serial, info, new DesktopProfileService(), streaming, deviceAgent, seleniumDeviceWebDriverHandler, installedBrowserInfos);
 
     const gamiumContext = deviceServerService.gamiumService.openGamiumContext(deviceChannel);
     deviceChannel.gamiumContext = gamiumContext;

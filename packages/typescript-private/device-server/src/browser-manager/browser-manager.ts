@@ -1,3 +1,4 @@
+import { getBrowserNamesByPlatform } from '@dogu-private/types';
 import { PrefixLogger, stringify } from '@dogu-tech/common';
 import { logger } from '../logger/logger.instance';
 import { MobileBrowserAutoInstallableChecker, SeleniumManagerBrowserAutoInstallableChecker } from './browser-auto-installable-checkers';
@@ -10,6 +11,8 @@ import {
   DriverInstallerOptions,
   EnsureBrowserAndDriverOptions,
   EnsuredBrowserAndDriverInfo,
+  FindAllInstalledBrowserInfosOptions,
+  FindAllInstalledBrowserInfosResult,
   InstalledBrowserFinder,
   InstalledBrowserFinderOptions,
   InstalledBrowserInfo,
@@ -58,10 +61,10 @@ export class BrowserManager {
     }
 
     const resolvedBrowserVersion = resolvedBrowserVersionInfo.browserVersion;
-    const resolvedBrowserVersionMajor = this.parseMajorVersion(resolvedBrowserVersion);
-    this.logger.info(`Resolved browser version ${resolvedBrowserVersion} major version to ${resolvedBrowserVersionMajor}.`);
+    const resolvedMajorBrowserVersion = this.parseMajorVersion(resolvedBrowserVersion);
+    this.logger.info(`Resolved browser version ${resolvedBrowserVersion} major version to ${resolvedMajorBrowserVersion}.`);
 
-    const installedBrowserInfos = await this.findInstalledBrowserInfos({ browserName, browserPlatform, deviceSerial, resolvedBrowserVersion, resolvedBrowserVersionMajor });
+    const installedBrowserInfos = await this.findInstalledBrowserInfos({ browserName, browserPlatform, deviceSerial, resolvedBrowserVersion, resolvedMajorBrowserVersion });
     this.logger.info(`Found ${installedBrowserInfos.length} installed browsers.`, { installedBrowserInfos });
 
     const installedBrowserWithDriverInfos = installedBrowserInfos.filter(({ driverPath }) => driverPath?.length ?? 0 > 0) as EnsuredBrowserAndDriverInfo[];
@@ -152,7 +155,7 @@ export class BrowserManager {
     throw new Error(`Browser ${browserName} ${browserPlatform} latest version resolver is not handled.`);
   }
 
-  async findInstalledBrowserInfos(options: InstalledBrowserFinderOptions): Promise<InstalledBrowserInfo[]> {
+  private async findInstalledBrowserInfos(options: InstalledBrowserFinderOptions): Promise<InstalledBrowserInfo[]> {
     const results: InstalledBrowserInfo[] = [];
     for (const finder of this.installedBrowserFinders) {
       if (await finder.match(options)) {
@@ -160,6 +163,21 @@ export class BrowserManager {
         results.push(...infos);
       }
     }
+    return results;
+  }
+
+  async findAllInstalledBrowserInfos(options: FindAllInstalledBrowserInfosOptions): Promise<FindAllInstalledBrowserInfosResult> {
+    const { browserPlatform } = options;
+    const browserNames = getBrowserNamesByPlatform(browserPlatform);
+    const promiseResults = await Promise.allSettled(browserNames.map(async (browserName) => this.findInstalledBrowserInfos({ ...options, browserName })));
+    const results = promiseResults
+      .filter((result) => result.status === 'fulfilled')
+      .map((result) => {
+        if (result.status === 'rejected') {
+          throw new Error(`Internal error: already filtered to fulfilled`);
+        }
+        return result.value;
+      });
     return results;
   }
 

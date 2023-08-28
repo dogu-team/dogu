@@ -22,6 +22,7 @@ import path from 'path';
 import { Observable } from 'rxjs';
 import semver from 'semver';
 import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
+import { InstalledBrowserInfo } from '../../browser-manager/browser-manager.types';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { GamiumContext } from '../../gamium/gamium.context';
@@ -68,6 +69,7 @@ export class IosChannel implements DeviceChannel {
     private _appiumContext: AppiumContextProxy,
     private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
     private readonly logger: Printable,
+    readonly installedBrowserInfos: InstalledBrowserInfo[],
   ) {
     this.logger.info(`IosChannel created: ${this.serial}`);
   }
@@ -175,6 +177,11 @@ export class IosChannel implements DeviceChannel {
       deviceServerService.doguLogger,
     );
 
+    const installedBrowserInfos = await deviceServerService.browserManagerService.findAllInstalledBrowserInfos({
+      deviceSerial: serial,
+      browserPlatform: 'ios',
+    });
+
     const deviceChannel = new IosChannel(
       serial,
       portContext,
@@ -186,6 +193,7 @@ export class IosChannel implements DeviceChannel {
       appiumContextProxy,
       appiumDeviceWebDriverHandler,
       logger,
+      installedBrowserInfos,
     );
 
     logger.verbose('streaming service calling deviceConnected');

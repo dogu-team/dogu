@@ -6,6 +6,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { DeviceWebDriver } from '../alias';
 import { AppiumService } from '../appium/appium.service';
+import { BrowserManagerService } from '../browser-manager/browser-manager.service';
 import { OnDeviceConnectionSubscriberConnectedEvent, OnDevicesConnectedEvent, OnDevicesDisconnectedEvent, OnUpdateEvent } from '../events';
 import { GamiumService } from '../gamium/gamium.service';
 import { HttpRequestRelayService } from '../http-request-relay/http-request-relay.common';
@@ -33,6 +34,7 @@ export class ScanService implements OnModuleInit {
     private readonly appiumEndpointHandlerService: DeviceWebDriver.AppiumEndpointHandlerService,
     private readonly seleniumEndpointHandlerService: DeviceWebDriver.SeleniumEndpointHandlerService,
     private readonly seleniumService: SeleniumService,
+    private readonly browserManagerService: BrowserManagerService,
   ) {
     this.deviceDoors = new DeviceDoors({
       onOpen: async (channel: DeviceChannel): Promise<void> => {
@@ -63,6 +65,7 @@ export class ScanService implements OnModuleInit {
       seleniumEndpointHandlerService: this.seleniumEndpointHandlerService,
       seleniumService: this.seleniumService,
       doguLogger: this.logger,
+      browserManagerService: this.browserManagerService,
     });
 
     this.driverMap = await factory.create();

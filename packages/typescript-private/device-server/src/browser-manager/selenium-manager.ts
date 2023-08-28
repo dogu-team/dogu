@@ -1,12 +1,20 @@
-import { BrowserName, BrowserPlatform, isAllowedAndroidBrowserName, isAllowedIosBrowserName, isAllowedMacosBrowserName, isAllowedWindowsBrowserName } from '@dogu-private/types';
+import {
+  BrowserName,
+  BrowserPlatform,
+  isAllowedAndroidBrowserName,
+  isAllowedBrowserName,
+  isAllowedIosBrowserName,
+  isAllowedMacosBrowserName,
+  isAllowedWindowsBrowserName,
+} from '@dogu-private/types';
 import { PrefixLogger } from '@dogu-tech/common';
+import { BrowserInstallerOptions, DriverInstallerOptions, InstalledBrowserFinderOptions, InstalledBrowserInfo, InstalledDriverInfo } from '@dogu-tech/device-client-common';
 import { HostPaths } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
 import { exec } from 'child_process';
 import fs from 'fs';
 import { promisify } from 'util';
 import { logger } from '../logger/logger.instance';
-import { BrowserInstallerOptions, DriverInstallerOptions, InstalledBrowserFinderOptions, InstalledBrowserInfo, InstalledDriverInfo } from './browser-manager.types';
 
 interface LogOutput {
   result?: {
@@ -69,9 +77,22 @@ export class SeleniumManager {
   async findInstalledBrowser(options: InstalledBrowserFinderOptions): Promise<InstalledBrowserInfo[]> {
     await this.validateSeleniumManager();
 
-    const { browserName, resolvedBrowserVersionMajor } = options;
+    const { resolvedMajorBrowserVersion } = options;
+    if (resolvedMajorBrowserVersion) {
+      return this.findInstalledBrowserByMajorVersion(options);
+    } else {
+      return this.findInstalledBrowserFromCache();
+    }
+  }
+
+  private async findInstalledBrowserByMajorVersion(options: InstalledBrowserFinderOptions): Promise<InstalledBrowserInfo[]> {
+    const { browserName, browserPlatform, resolvedMajorBrowserVersion } = options;
+    if (!resolvedMajorBrowserVersion) {
+      throw new Error(`Browser version is required. Browser name: ${browserName}, browser platform: ${browserPlatform}`);
+    }
+
     const seleniumManagerPath = HostPaths.external.nodePackage.seleniumWebdriver.seleniumManagerPath();
-    const { stdout } = await execAsync(`${seleniumManagerPath} --browser ${browserName} --browser-version ${resolvedBrowserVersionMajor} --output JSON --offline`, {
+    const { stdout } = await execAsync(`${seleniumManagerPath} --browser ${browserName} --browser-version ${resolvedMajorBrowserVersion} --output JSON --offline`, {
       timeout: findInstalledBrowserTimeout,
     });
     const parsed = JSON.parse(stdout) as LogOutput;
@@ -90,6 +111,17 @@ export class SeleniumManager {
     }
 
     return [];
+  }
+
+  private async findInstalledBrowserFromCache(): Promise<InstalledBrowserInfo[]> {
+    const seleniumManagerJsonPath = HostPaths.external.nodePackage.seleniumWebdriver.seleniumManagerJsonPath();
+    const content = await fs.promises.readFile(seleniumManagerJsonPath, 'utf-8');
+    const parsed = JSON.parse(content) as { browsers?: { browser_name?: string; major_browser_version?: string; browser_version?: string }[] };
+    const browsers = parsed.browsers ?? [];
+    const browserInfos = browsers
+      .filter((browser) => isAllowedBrowserName(browser.browser_name ?? '') && browser.browser_version)
+      .map((browser) => ({ browserName: browser.browser_name, browserVersion: browser.browser_version } as { browserName: BrowserName; browserVersion: string }));
+    return browserInfos;
   }
 
   async installDriver(options: DriverInstallerOptions): Promise<InstalledDriverInfo> {

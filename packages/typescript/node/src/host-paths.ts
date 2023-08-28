@@ -62,6 +62,7 @@ export const HostPaths = {
         rootPath: (): string => path.resolve(HostPaths.external.nodePackage.nodePackagesPath(), 'selenium-webdriver'),
         seleniumManagerPath: (): string =>
           path.resolve(HostPaths.external.nodePackage.seleniumWebdriver.rootPath(), 'node_modules', 'selenium-webdriver', 'bin', seleniumManagerSubPath()),
+        seleniumManagerJsonPath: (): string => path.resolve(os.homedir(), '.cache', 'selenium', 'selenium-manager.json'),
       },
     },
     xcodeProject: {

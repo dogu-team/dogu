@@ -1,5 +1,6 @@
-import { BrowserName, BrowserPlatform, Serial } from '@dogu-private/types';
 import { PromiseOrValue } from '@dogu-tech/common';
+import { BrowserName, BrowserPlatform, Serial } from '@dogu-tech/types';
+import { IsIn, IsOptional, IsString } from 'class-validator';
 
 export interface BrowserOptions {
   browserName: BrowserName;
@@ -7,7 +8,7 @@ export interface BrowserOptions {
   deviceSerial: Serial;
   requestedBrowserVersion: string;
   resolvedBrowserVersion: string;
-  resolvedBrowserVersionMajor: number;
+  resolvedMajorBrowserVersion: number;
 }
 
 export interface BrowserInfo {
@@ -26,9 +27,28 @@ export interface LatestBrowserVersionResolver {
   resolve(options: LatestBrowserVersionResolverOptions): PromiseOrValue<ResolvedBrowserVersionInfo>;
 }
 
-export type InstalledBrowserFinderOptions = Pick<BrowserOptions, 'browserName' | 'browserPlatform' | 'resolvedBrowserVersion' | 'resolvedBrowserVersionMajor'> &
-  Partial<Pick<BrowserOptions, 'deviceSerial'>>;
-export type InstalledBrowserInfo = Pick<BrowserInfo, 'browserName'> & Partial<Pick<BrowserInfo, 'browserPath' | 'browserPackageName' | 'browserVersion' | 'driverPath'>>;
+export type InstalledBrowserFinderOptions = Pick<BrowserOptions, 'browserName' | 'browserPlatform'> &
+  Partial<Pick<BrowserOptions, 'resolvedBrowserVersion' | 'resolvedMajorBrowserVersion' | 'deviceSerial'>>;
+export class InstalledBrowserInfo implements Pick<BrowserInfo, 'browserName'>, Partial<Pick<BrowserInfo, 'browserPath' | 'browserPackageName' | 'browserVersion' | 'driverPath'>> {
+  @IsIn(BrowserName)
+  browserName!: BrowserName;
+
+  @IsString()
+  @IsOptional()
+  browserPath?: string;
+
+  @IsString()
+  @IsOptional()
+  browserPackageName?: string;
+
+  @IsString()
+  @IsOptional()
+  browserVersion?: string;
+
+  @IsString()
+  @IsOptional()
+  driverPath?: string;
+}
 
 export interface InstalledBrowserFinder {
   match(options: InstalledBrowserFinderOptions): PromiseOrValue<boolean>;
@@ -59,3 +79,6 @@ export interface BrowserInstaller {
 
 export type EnsureBrowserAndDriverOptions = Pick<BrowserOptions, 'browserName' | 'browserPlatform'> & Partial<Pick<BrowserOptions, 'requestedBrowserVersion' | 'deviceSerial'>>;
 export type EnsuredBrowserAndDriverInfo = InstalledBrowserInfo & InstalledDriverInfo;
+
+export type FindAllInstalledBrowserInfosOptions = Pick<InstalledBrowserFinderOptions, 'browserPlatform' | 'deviceSerial'>;
+export type FindAllInstalledBrowserInfosResult = InstalledBrowserInfo[][];

@@ -27,6 +27,7 @@ export * from './specs/ws/device/streaming';
 export * from './specs/ws/device/tcp-relay';
 export * from './specs/ws/device/uninstall-app';
 export * from './specs/ws/device/websocket-relay';
+export * from './validations/types/browser-manager';
 export * from './validations/types/device-configs';
 export * from './validations/types/responses';
 export * from './validations/types/runtime-infos';

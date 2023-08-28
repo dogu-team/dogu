@@ -24,6 +24,7 @@ import { Observable } from 'rxjs';
 import semver from 'semver';
 import systeminformation from 'systeminformation';
 import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
+import { InstalledBrowserInfo } from '../../browser-manager/browser-manager.types';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { env } from '../../env';
@@ -87,7 +88,7 @@ export class AndroidChannel implements DeviceChannel {
     private _appiumContext: AppiumContextProxy,
     private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
     private readonly logger: FilledPrintable,
-    private isClosed = false,
+    readonly installedBrowserInfos: InstalledBrowserInfo[],
   ) {
     this.logger.info(`AndroidChannel created: ${this.serial}`);
   }
@@ -135,6 +136,11 @@ export class AndroidChannel implements DeviceChannel {
     );
     const serialUnique = await generateSerialUnique(systemInfo);
 
+    const installedBrowserInfos = await deviceServerService.browserManagerService.findAllInstalledBrowserInfos({
+      deviceSerial: serial,
+      browserPlatform: 'android',
+    });
+
     const deviceChannel = new AndroidChannel(
       serial,
       serialUnique,
@@ -147,6 +153,7 @@ export class AndroidChannel implements DeviceChannel {
       appiumContextProxy,
       appiumDeviceWebDriverHandler,
       logger,
+      installedBrowserInfos,
     );
 
     await deviceAgent.connect();
@@ -175,7 +182,6 @@ export class AndroidChannel implements DeviceChannel {
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === this.serial && zombieable.platform === Platform.PLATFORM_ANDROID;
     }, 'kill serial bound zombies');
-    this.isClosed = true;
   }
 
   async queryProfile(methods: ProfileMethod[] | ProfileMethod): Promise<FilledRuntimeInfo> {
