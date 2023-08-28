@@ -94,7 +94,16 @@ Start [cloud service](https://dogutech.io) right now without any installation.
 
 # RoadMap
 
-<img src=".github/resources/roadmap.png" width="100%"/>
+- Device Farm (Completed)
+- Test Automation
+  - Recording Test (Running)
+- Test CI
+  - Remote
+    - Selenium Grid (Completed)
+  - Routine
+    - Cross Browser - Chrome, Firefox, Safari, Edge (Running)
+- Test Report
+- Test Auto Recovery
 
 # Join Our Community
 
