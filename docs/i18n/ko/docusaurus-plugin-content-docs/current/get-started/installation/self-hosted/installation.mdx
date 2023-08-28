@@ -19,13 +19,13 @@ import TabItem from '@theme/TabItem';
 
 ## 하드웨어 요구사항
 
-|                          | Minimum Requirements                                       |
-| :----------------------: | ---------------------------------------------------------- |
-| <b>Operating System</b>  | Ubuntu(x86_64,arm64), macOS(x86_64,arm64), Windows(x86_64) |
-|       <b> CPU </b>       | 4 Cores                                                    |
-|     <b> Memory </b>      | 8 GB RAM                                                   |
-| <b> Free Disk Space </b> | SSD 128GB                                                  |
-|  <b> Dependencies </b>   | Docker, Docker-Compose                                     |
+|                          | Minimum Requirements                                 |
+| :----------------------: | ---------------------------------------------------- |
+| <b>Operating System</b>  | Ubuntu(x86_64), macOS(x86_64,arm64), Windows(x86_64) |
+|       <b> CPU </b>       | 4 Cores                                              |
+|     <b> Memory </b>      | 8 GB RAM                                             |
+| <b> Free Disk Space </b> | SSD 128GB                                            |
+|  <b> Dependencies </b>   | Docker, Docker-Compose                               |
 
 :::info
 macOS,Windows는 프로덕션 환경에서 권장하지 않습니다.
@@ -44,7 +44,7 @@ Docker 및 Docker-compose가 설치되어 있지 않은 경우 아래 링크를 
 
 <Tabs groupId="os" defaultValue="linux" queryString>
 
-<TabItem value="linux" label="Linux/macOS(x86_64)" default>
+<TabItem value="linux" label="Linux(x86_64)" default>
 
 ```
 sudo mkdir /var/lib/dogu
@@ -54,14 +54,7 @@ sudo chown 200 -R /var/lib/dogu/nexus-data
 
 </TabItem>
 
-<TabItem value="windows" label="Windows">
-
-```
-icacls "C:\var\lib\dogu\nexus-data" /setowner 200 /T
-```
-
-</TabItem>
-<TabItem value="macos" label="macOS(arm64)" default>
+<TabItem value="windows/macOS" label="Windows/macOS">
 
 ```
 마운트 경로 생성은 필요 없습니다.
@@ -85,19 +78,25 @@ macOS의 경우 무시해도 됩니다.
 
 ### docker-compose.yml 생성
 
-<Tabs groupId="arch" defaultValue="x86_64" queryString>
+<Tabs groupId="arch" defaultValue="Linux(x86_64)" queryString>
 
-<TabItem value="x86_64" label="x86_64" default>
+<TabItem value="Linux(x86_64)" label="Linux(x86_64)" default>
 
 1. 빈 docker-compose.yml 파일 생성
-2. [파일(x86_64)](https://github.com/dogu-team/dogu/blob/main/docker-compose.yml) 내용을 docker-compose.yml 파일에 붙여넣기
+2. [파일(Linux-x86_64)](https://github.com/dogu-team/dogu/blob/main/docker-compose.yml) 내용을 docker-compose.yml 파일에 붙여넣기
 
 </TabItem>
 
-<TabItem value="arm64" label="arm64">
+<TabItem value="macOS(arm64)" label="macOS(arm64)">
 
 1. 빈 docker-compose.yml 파일 생성
-2. [파일(arm64)](https://github.com/dogu-team/dogu/blob/main/docker-compose-arm64.yml) 내용을 docker-compose.yml 파일에 붙여넣기
+2. [파일(macOS-arm64)](https://github.com/dogu-team/dogu/blob/main/docker-compose-macOS-arm64.yml) 내용을 docker-compose.yml 파일에 붙여넣기
+
+</TabItem>
+<TabItem value="windows/macOS(x86_64)" label="windows/macOS(x86_64/arm64)">
+
+1. 빈 docker-compose.yml 파일 생성
+2. [파일(windows&macOS-x86_64)](https://github.com/dogu-team/dogu/blob/main/docker-compose-macOS-windows-x86_64.yml) 내용을 docker-compose.yml 파일에 붙여넣기
 
 </TabItem>
 </Tabs>

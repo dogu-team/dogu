@@ -47,7 +47,8 @@ fi
 if [[ $dogu == true ]]; then
   echo "Performing additional operations for dogu"
   sed -i "" "s|dogu:.*$|dogu:$version|" ./docker-compose.yml
-  sed -i "" "s|dogu:.*$|dogu:$version|" ./docker-compose-arm64.yml
+  sed -i "" "s|dogu:.*$|dogu:$version|" ./docker-compose-macOS-arm64.yml
+  sed -i "" "s|dogu:.*$|dogu:$version|" ./docker-compose-macOS-windows-x86_64.yml
   yarn version -i "$version"
   find ./projects -mindepth 1 -maxdepth 1 -type d -exec sh -c "cd {} && yarn version -i $version" \;
   exit 0
@@ -65,6 +66,8 @@ if [[ $dogu == false && $dost == false ]]; then
   echo "Performing additional operations for dogu and dost"
   yarn version -i "$version"
   sed -i "" "s|dogu:.*$|dogu:$version|" ./docker-compose.yml
+  sed -i "" "s|dogu:.*$|dogu:$version|" ./docker-compose-macOS-arm64.yml
+  sed -i "" "s|dogu:.*$|dogu:$version|" ./docker-compose-macOS-windows-x86_64.yml
   find ./projects -mindepth 1 -maxdepth 1 -type d -exec sh -c "cd {} && yarn version -i $version" \;
   cd nm-space
   yarn workspace dogu-agent version -i "$version"
