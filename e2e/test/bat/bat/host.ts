@@ -143,14 +143,10 @@ export class Dost {
       test('Dost Install externals wait or set API url', async () => {
         const isInstalling = (await this.mainPage!.getByText('Installing packages...', { exact: true }).count()) > 0;
         if (!isInstalling) {
-          await this.mainPage!.getByText('Set', { exact: true }).first().click({ timeout: this.longTimeoutMs });
-          await this.mainPage!.getByText('Finish', { exact: true }).first().click({ timeout: this.longTimeoutMs });
           return;
         }
         await this.mainPage!.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'visible' });
         await this.mainPage!.getByText('Installing packages...', { exact: true }).first().waitFor({ timeout: this.InstallTimeoutMs, state: 'hidden' });
-        await this.mainPage!.getByText('Set', { exact: true }).first().click({ timeout: this.longTimeoutMs });
-        await this.mainPage!.getByText('Finish', { exact: true }).first().click({ timeout: this.longTimeoutMs });
       });
     }
   }
