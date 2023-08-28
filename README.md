@@ -59,13 +59,6 @@ Control devices remotely with Device Studio.
   <img src=".github/resources/gamium-inspecting.gif" width="32%"/>
 </div>
 
-## Test Automation Framework with Dogu
-
-- [Appium](https://docs.dogutech.io/get-started/tutorials/test-automation/appium/)
-- [Selenium](https://docs.dogutech.io/get-started/tutorials/test-automation/selenium/)
-- [Webdriverio](https://docs.dogutech.io/get-started/tutorials/test-automation/webdriverio/)
-- [Gamium](https://docs.dogutech.io/get-started/tutorials/test-automation/gamium/)
-
 ## Test Report
 
 Visualize test unit by integrating test unit framework with report.
@@ -78,10 +71,15 @@ Run test parallelly and periodically with routine.
 
 <img src=".github/resources/routine-livestreaming.png" width="100%"/>
 
-## Integrations
+## Integration
 
-- [Github Action](https://docs.dogutech.io/integration/cicd/github-action)
-- [Jenkins](https://docs.dogutech.io/integration/cicd/jenkins)
+<div style="display: flex; flex-direction: row; align-items: center;">
+  <img src=".github/resources/integration_github_logo.png" style="margin-right: 8px;" width="96" height="60"/>
+  <img src=".github/resources/integration_gitlab_logo.png" style="margin-right: 8px;" width="96" height="27"/>
+  <img src=".github/resources/integration_bitbucket_logo.png" style="margin-right: 8px;" width="96" height="24"/>
+  <img src=".github/resources/integration_jenkins_logo.png" style="margin-right: 8px;" width="96" height="64"/>
+  <img src=".github/resources/integration_slack_logo.png" style="margin-right: 8px;"  width="96" height="27"/>
+</div>
 
 # Start Dogu
 
@@ -97,6 +95,10 @@ Start [cloud service](https://dogutech.io) right now without any installation.
 
 - [Documentation](https://docs.dogutech.io)
 - [Tutorial - Device Farm](https://docs.dogutech.io/get-started/tutorials/device-farm/)
+- [Tutorial - Appium](https://docs.dogutech.io/get-started/tutorials/test-automation/appium/)
+- [Tutorial - Selenium](https://docs.dogutech.io/get-started/tutorials/test-automation/selenium/)
+- [Tutorial - Webdriverio](https://docs.dogutech.io/get-started/tutorials/test-automation/webdriverio/)
+- [Tutorial - Gamium](https://docs.dogutech.io/get-started/tutorials/test-automation/gamium/)
 
 # RoadMap
 
