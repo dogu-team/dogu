@@ -1,9 +1,10 @@
-import { DeviceConnectionState, ProjectRoleId, TeamId, UserId } from '@dogu-private/types';
+import { DeviceConnectionState, ProjectRoleId, PROJECT_TYPE, TeamId, UserId } from '@dogu-private/types';
 import { PageDtoBase } from '../pagination/page.dto';
 
 // project dto start
 export interface CreateProjectDtoBase {
   name: string;
+  type?: PROJECT_TYPE; // FIXME:(felix) type should be not empty
   description?: string;
 }
 
@@ -13,6 +14,7 @@ export interface FindProjectDtoBase extends PageDtoBase {
 
 export interface UpdateProjectDtoBase {
   name: string;
+  type?: PROJECT_TYPE; // FIXME:(felix) type should be not empty
   description?: string;
 }
 // project dto end

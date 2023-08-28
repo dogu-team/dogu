@@ -239,7 +239,7 @@ export class ProjectService {
   }
 
   async createProject(manager: EntityManager, userId: UserId, organizationId: OrganizationId, createProjectDto: CreateProjectDto): Promise<ProjectResponse> {
-    const { name, description } = createProjectDto;
+    const { name, type, description } = createProjectDto;
 
     const project = await manager.getRepository(Project).findOne({ where: { organizationId, name } });
     if (project) {
@@ -248,6 +248,7 @@ export class ProjectService {
 
     const result = manager.getRepository(Project).create({
       name,
+      type,
       description,
       managedBy: userId,
       organizationId: organizationId,
@@ -260,6 +261,7 @@ export class ProjectService {
   }
 
   async updateProject(organizationId: OrganizationId, projectId: ProjectId, updateProjectDto: UpdateProjectDto): Promise<ProjectResponse> {
+    const { name, type, description } = updateProjectDto;
     const project = await this.dataSource.getRepository(Project).findOne({ where: { projectId, organizationId } });
 
     if (!project) {
@@ -267,10 +269,10 @@ export class ProjectService {
     }
 
     const existingProject = await this.dataSource.getRepository(Project).findOne({
-      where: { projectId: Not(projectId), organizationId, name: updateProjectDto.name },
+      where: { projectId: Not(projectId), organizationId, name },
     });
     if (existingProject) {
-      throw new HttpException(`Project name ${updateProjectDto.name} is already exist`, HttpStatus.BAD_REQUEST);
+      throw new HttpException(`Project name ${name} is already exist`, HttpStatus.BAD_REQUEST);
     }
 
     const newData = Object.assign(project, updateProjectDto);

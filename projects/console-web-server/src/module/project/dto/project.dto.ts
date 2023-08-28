@@ -8,7 +8,7 @@ import {
   FindUsersByProjectIdDtoBase,
   UpdateProjectDtoBase,
 } from '@dogu-private/console';
-import { DeviceConnectionState, ProjectId, PROJECT_DESC_MAX_LENGTH, PROJECT_NAME_MAX_LENGTH, PROJECT_NAME_MIN_LENGTH, UserId } from '@dogu-private/types';
+import { DeviceConnectionState, ProjectId, PROJECT_DESC_MAX_LENGTH, PROJECT_NAME_MAX_LENGTH, PROJECT_NAME_MIN_LENGTH, PROJECT_TYPE, UserId } from '@dogu-private/types';
 import { Type } from 'class-transformer';
 import { IsEnum, IsIn, IsISO8601, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import { PageDto } from '../../../module/common/dto/pagination/page.dto';
@@ -19,6 +19,11 @@ export class CreateProjectDto implements CreateProjectDtoBase {
   @MinLength(PROJECT_NAME_MIN_LENGTH)
   @MaxLength(PROJECT_NAME_MAX_LENGTH)
   name!: string;
+
+  // FIXME:(felix) type should be not empty
+  @IsOptional()
+  @IsEnum(PROJECT_TYPE)
+  type: PROJECT_TYPE = PROJECT_TYPE.CUSTOM;
 
   @IsOptional()
   @IsString()
@@ -31,6 +36,11 @@ export class UpdateProjectDto implements UpdateProjectDtoBase {
   @MinLength(PROJECT_NAME_MIN_LENGTH)
   @MaxLength(PROJECT_NAME_MAX_LENGTH)
   name!: string;
+
+  // FIXME:(felix) type should be not empty
+  @IsOptional()
+  @IsEnum(PROJECT_TYPE)
+  type: PROJECT_TYPE = PROJECT_TYPE.CUSTOM;
 
   @IsOptional()
   @IsString()
