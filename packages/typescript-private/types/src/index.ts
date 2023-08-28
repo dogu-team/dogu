@@ -40,6 +40,7 @@ export * from './project-remote-slack';
 export * from './project-role';
 export * from './project-routine-slack';
 export * from './project-scm';
+export * from './project-scm-bitbucket-auth';
 export * from './project-scm-github-auth';
 export * from './project-scm-gitlab-auth';
 export * as PrivateProtocol from './protocol/generated';
