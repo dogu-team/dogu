@@ -3,9 +3,9 @@ import { Code } from '@dogu-private/types';
 import { stringify } from '@dogu-tech/common';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { create } from 'zustand';
 import { HostAgentConnectionStatus } from '../../shares/child';
 import useHostAgentConnectionStatusStore from '../../stores/host-agent-connection-status';
+import useTryStore from '../../stores/try-connect';
 
 import { connect } from '../../utils/connection';
 import { ipc } from '../../utils/window';
@@ -19,9 +19,7 @@ const TokenConnectionForm = (props: Props) => {
   const [value, setValue] = useState('');
   const [error, setError] = useState<string>();
   const [loading, setLoading] = useState(false);
-  const useTryStore = create(() => ({
-    isFirstTried: false,
-  }));
+  const { isFirstTried, setIsFirstTried } = useTryStore();
   const toast = useToast();
   const setHAConnectionStatus = useHostAgentConnectionStatusStore((state) => state.setStatus);
 
@@ -62,8 +60,8 @@ const TokenConnectionForm = (props: Props) => {
     if (!value || value.length === 0) {
       return;
     }
-    if (useTryStore.getState().isFirstTried === false) {
-      useTryStore.setState({ isFirstTried: true });
+    if (isFirstTried === false) {
+      setIsFirstTried(false);
       handleConnect();
     }
   }, [value]);
