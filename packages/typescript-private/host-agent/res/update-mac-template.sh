@@ -25,7 +25,7 @@ fi
 
 
 echo "Unzipping ZIP file..."
-rm -r "$dir_name"
+rm -rf "$dir_name"
 unzip "$zip_file" -d $dir_name
 
 cd $work_dir/$dir_name
@@ -43,7 +43,7 @@ if [ -d "$app_bundle_src_path" ]; then
     echo "Moving app $app_bundle to $app_bundle_dest_path"
     if [ -d "$app_bundle_dest_path" ]; then
         echo "- Remove previous $app_bundle_dest_path"
-        rm -r "$app_bundle_dest_path"
+        rm -rf "$app_bundle_dest_path"
     fi
     mv "$app_bundle_src_path" "/Applications/"
 else
