@@ -53,6 +53,12 @@ Build a systematic device farm with Windows, MacOS, Android, and iOS devices.
 
 Control devices remotely with Device Studio.
 
+<img src=".github/resources/devicestudio.png" width="100%" />
+
+### Inspecting UI
+
+Inspect UI with Device Studio.
+
 <div style="display: flex; flex-direction: row; justify-content: center">
   <img src=".github/resources/android-inspecting.gif" width="32%" />
   <img src=".github/resources/ios-inspecting.gif" width="32%" />  
