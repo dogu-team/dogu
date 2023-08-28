@@ -34,10 +34,10 @@ func newiosSurface(agentUrl *string) *iosSurface {
 
 func (s *iosSurface) Reconnect(serial string, retryCount int, sleepSec int, screenCaptureOption *streaming.ScreenCaptureOption) error {
 	var err error
-	log.Inst.Debug("iosSurface.Reconnect", zap.String("serial", serial), zap.Int("retryCount", retryCount), zap.Int("sleepSec", sleepSec))
+	log.Inst.Debug("iosSurface.Reconnect", zap.String("serial", serial), zap.String("addr", *s.agentUrl), zap.Int("retryCount", retryCount), zap.Int("sleepSec", sleepSec))
 	conn, err := net.Dial("tcp", *s.agentUrl)
 	if err != nil {
-		log.Inst.Error("iosSurface.Reconnect", zap.Error(err))
+		log.Inst.Error("iosSurface.Reconnect", zap.String("serial", serial), zap.String("addr", *s.agentUrl), zap.Error(err))
 		return err
 	}
 
@@ -49,7 +49,7 @@ func (s *iosSurface) Reconnect(serial string, retryCount int, sleepSec int, scre
 
 	// make json
 	json := fmt.Sprintf("{\"type\":\"screen\", \"maxFps\":%d, \"maxResolution\":%d}", *screenCaptureOption.MaxFps, *screenCaptureOption.MaxResolution)
-	log.Inst.Debug("iosSurface.Reconnect option", zap.String("json", json))
+	log.Inst.Debug("iosSurface.Reconnect option", zap.String("serial", serial), zap.String("addr", *s.agentUrl), zap.String("json", json))
 	// send bytes with little endian size prefixed
 	bytes := make([]byte, 4+len(json))
 	binary.LittleEndian.PutUint32(bytes, uint32(len(json)))
