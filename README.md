@@ -35,13 +35,19 @@ Dogu - Seamless Unified  Test Automation Platform.
 
 Dogu is a seamless unified test automation platform for web, mobile and game application. You can integrate various tools such as Appium, Selenium and Playwright that you have previously used with Dogu, allowing you to perform parallel processing and check test results more easy. Experience more efficient test automation with Dogu.
 
+# Architecture
+
+Dogu is a test automation platform that provides a seamless unified experience for web, mobile and game application. Dogu is composed of the following components.
+
+<img src=".github/resources/architecture.png" width="100%"/>
+
 # Dogu Features
 
 ## Device Farm
 
 Build a systematic device farm with Windows, MacOS, Android, and iOS devices.
 
-<img src=".github/resources/architecture-device-farm.png" width="100%"/>
+<img src=".github/resources/device-farm-dashboard.png" width="100%"/>
 
 ## Device Studio
 
