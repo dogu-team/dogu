@@ -1,6 +1,6 @@
 import { loop } from '@dogu-tech/common';
+import { Browser, chromium, ElementHandle, Locator as _Locator, Page } from '@playwright/test';
 import lodash from 'lodash';
-import { Browser, chromium, ElementHandle, Locator as _Locator, Page } from 'playwright';
 import { L10n } from './l10n';
 import { Timer } from './timer';
 
