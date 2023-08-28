@@ -13,7 +13,7 @@ const SetupConfig = () => {
   useEffect(() => {
     (async () => {
       const apiUrl = await ipc.appConfigClient.get<string>('DOGU_API_BASE_URL');
-      if (apiUrl) {
+      if (apiUrl && 0 !== apiUrl.length) {
         navigate('/home/connect');
       }
     })().catch((error) => {
