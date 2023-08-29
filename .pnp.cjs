@@ -36,6 +36,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:e2e"\
       },\
       {\
+        "name": "dogu-device-client",\
+        "reference": "workspace:packages/python/dogu-device-client"\
+      },\
+      {\
         "name": "pytest-dogu-sdk",\
         "reference": "workspace:packages/python/pytest-dogu-sdk"\
       },\
@@ -256,6 +260,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["device-server", ["workspace:projects/device-server"]],\
       ["docs", ["workspace:docs"]],\
       ["dogu", ["workspace:."]],\
+      ["dogu-device-client", ["workspace:packages/python/dogu-device-client"]],\
       ["e2e", ["workspace:e2e"]],\
       ["go-device-controller", ["workspace:projects/go-device-controller"]],\
       ["host-agent", ["workspace:projects/host-agent"]],\
@@ -26904,6 +26909,24 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"],\
             ["ws", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:8.9.0"],\
             ["yargs", "npm:17.7.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["dogu-device-client", [\
+        ["workspace:packages/python/dogu-device-client", {\
+          "packageLocation": "./packages/python/dogu-device-client/",\
+          "packageDependencies": [\
+            ["dogu-device-client", "workspace:packages/python/dogu-device-client"],\
+            ["@types/node", "npm:18.15.11"],\
+            ["@types/shelljs", "npm:0.8.11"],\
+            ["cross-env", "npm:7.0.3"],\
+            ["fast-glob", "npm:3.2.12"],\
+            ["nodemon", "npm:2.0.22"],\
+            ["shelljs", "npm:0.8.5"],\
+            ["shx", "npm:0.3.4"],\
+            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
           ],\
           "linkType": "SOFT"\
         }]\

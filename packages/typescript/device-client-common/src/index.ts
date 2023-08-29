@@ -22,6 +22,7 @@ export * from './specs/ws/device/log-subscribe';
 export * from './specs/ws/device/recording';
 export * from './specs/ws/device/reset';
 export * from './specs/ws/device/run-app';
+export * from './specs/ws/device/run-appium-server';
 export * from './specs/ws/device/runtime-info-subscribe';
 export * from './specs/ws/device/streaming';
 export * from './specs/ws/device/tcp-relay';
