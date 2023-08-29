@@ -1,4 +1,4 @@
-# dogu gamium client
+# dogu-device-client
 
 ## Getting Started
 

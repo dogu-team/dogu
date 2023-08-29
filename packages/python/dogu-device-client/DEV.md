@@ -1,4 +1,4 @@
-# pytest-dogu-sdk
+# dogu-device-client
 
 ## initial settings
 
