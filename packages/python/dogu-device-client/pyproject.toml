@@ -31,4 +31,5 @@ disable = """
     broad-exception-caught,
     too-few-public-methods,
     unused-argument,
+    duplicate-code,
 """
