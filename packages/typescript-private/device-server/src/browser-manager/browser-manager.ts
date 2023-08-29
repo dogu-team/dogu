@@ -28,7 +28,7 @@ import { SeleniumManager } from './selenium-manager';
 
 export class BrowserManager {
   private readonly logger = new PrefixLogger(logger, '[BrowserManager]');
-  private readonly majorVersionPattern = /^[0-9]+.*$/g;
+  private readonly majorVersionPattern = /^(\d+).*$/;
   private readonly latestBrowserVersionResolvers: LatestBrowserVersionResolver[] = [new ChromeLatestBrowserVersionResolver()];
   private readonly browserInstallationFinders: BrowserInstallationFinder[] = [];
   private readonly browserDriverInstallers: BrowserDriverInstaller[] = [];
@@ -81,6 +81,7 @@ export class BrowserManager {
     if (matchedBrowserInstallationWithDriverInfo) {
       const { browserPath, browserDriverPath } = matchedBrowserInstallationWithDriverInfo;
       this.logger.info(`Found installed browser with driver.`, { browserPath, browserDriverPath });
+
       return matchedBrowserInstallationWithDriverInfo;
     }
 
@@ -139,7 +140,7 @@ export class BrowserManager {
   }
 
   private parseMajorVersion(version: string): number {
-    const majorVersion = this.majorVersionPattern.exec(version)?.[0] ?? '';
+    const majorVersion = version.match(this.majorVersionPattern)?.[1] ?? '';
     if (!majorVersion) {
       throw new Error(`Browser version ${version} is not valid`);
     }

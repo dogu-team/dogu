@@ -107,6 +107,10 @@ export class SeleniumManager {
     if (browserPath) {
       this.logger.info(`Browser found at ${browserPath}`);
 
+      if (browserDriverPath) {
+        await fs.promises.chmod(browserDriverPath, 0o755);
+      }
+
       return [
         {
           browserName,
@@ -161,6 +165,8 @@ export class SeleniumManager {
     }
 
     this.logger.info(`Driver file found at ${browserDriverPath}`);
+
+    await fs.promises.chmod(browserDriverPath, 0o755);
     return {
       browserDriverPath,
     };

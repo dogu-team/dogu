@@ -11,7 +11,7 @@ export class DateNano {
   }
 
   static parse(rfc3339Nano: string): bigint {
-    const match = DateNano.rfc3339nanoPattern.exec(rfc3339Nano);
+    const match = rfc3339Nano.match(DateNano.rfc3339nanoPattern);
     if (match === null) {
       throw new Error(`Date string format is invalid: ${rfc3339Nano}`);
     }

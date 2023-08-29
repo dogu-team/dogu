@@ -51,7 +51,7 @@ export class AdbBrowserInstallationFinder implements BrowserInstallationFinder {
       .split('\n')
       .map((line) => ({
         line,
-        match: AdbBrowserInstallationFinder.packageLinePattern.exec(line),
+        match: line.match(AdbBrowserInstallationFinder.packageLinePattern),
       }))
       .filter(({ line, match }) => {
         if (!match) {
@@ -98,7 +98,7 @@ export class AdbBrowserInstallationFinder implements BrowserInstallationFinder {
         }
 
         const packageVersionLine = packageVersionLines[0];
-        const packageVersionMatch = AdbBrowserInstallationFinder.packageVersionLinePattern.exec(packageVersionLine);
+        const packageVersionMatch = packageVersionLine.match(AdbBrowserInstallationFinder.packageVersionLinePattern);
         if (!packageVersionMatch) {
           this.logger.warn(`Failed to match package version line: ${packageVersionLine}`);
           throw new Error(`Failed to match package version line: ${packageVersionLine}`);

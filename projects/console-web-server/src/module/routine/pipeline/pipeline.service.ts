@@ -456,6 +456,7 @@ export class PipelineService {
             with: step.with,
             run: step.run,
             env: createStepEnv(routineSchema, step),
+            cwd: step.cwd ?? '',
           });
           return stepData;
         });

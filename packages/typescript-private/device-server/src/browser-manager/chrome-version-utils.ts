@@ -17,7 +17,7 @@ export interface ChromeVersionLike {
 }
 
 export function parseChromeVersionLike(version: string): ChromeVersionLike {
-  const match = ChromeVersionPattern.exec(version);
+  const match = version.match(ChromeVersionPattern);
   if (match) {
     const [_, major, minor, build, patch] = match;
     return {
@@ -37,19 +37,19 @@ export function parseChromeVersionLike(version: string): ChromeVersionLike {
 
 export function chromeVersionLikeToString(version: ChromeVersionLike): string {
   const { major, minor, build, patch } = version;
-  if (!major) {
+  if (major === undefined) {
     return '';
   }
 
-  if (!minor) {
+  if (minor === undefined) {
     return `${major}`;
   }
 
-  if (!build) {
+  if (build === undefined) {
     return `${major}.${minor}`;
   }
 
-  if (!patch) {
+  if (patch === undefined) {
     return `${major}.${minor}.${build}`;
   }
 

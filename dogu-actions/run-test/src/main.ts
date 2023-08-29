@@ -127,7 +127,7 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
       if (result.status === 0) {
         logger.info(`Command success: [${line}] with status: ${result.status}`);
       } else {
-        throw new Error(`Command failed: ${command} with status: ${result.status}`);
+        throw new Error(`Command failed: ${line} with status: ${result.status}`);
       }
     });
 });
