@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dogu-device-client"
-version = "0.0.3"
+version = "0.0.4"
 description = "dogutech's device client to control devices"
 authors = ["Dogu Technologies"]
 readme = "README.md"
@@ -8,7 +8,9 @@ packages = [{include = "dogu"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-websockets = "^11.0.3"
+websockets = "11.0.3"
+requests = "2.31.0"
+dacite = "1.8.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "7.3.2"
@@ -18,3 +20,15 @@ pylint = "2.17.4"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pylint.'MESSAGES CONTROL']
+max-line-length = 180
+disable = """
+    missing-module-docstring,
+    missing-class-docstring,
+    missing-function-docstring,
+    broad-exception-raised,
+    broad-exception-caught,
+    too-few-public-methods,
+    unused-argument,
+"""
