@@ -301,12 +301,10 @@ export async function addRecordTestCaseToMappingTable(
         recordTestCaseId: IsNull(),
       },
     });
-    if (!originRoot) {
-      throw new HttpException(`First RecordTestCase not found. recordTestScenarioId: ${recordTestScenarioId}`, HttpStatus.NOT_FOUND);
+    if (originRoot) {
+      originRoot.prevRecordTestCaseId = recordTestCase.recordTestCaseId;
+      await manager.getRepository(RecordTestScenarioAndRecordTestCase).save(originRoot);
     }
-    originRoot.prevRecordTestCaseId = recordTestCase.recordTestCaseId;
-    await manager.getRepository(RecordTestScenarioAndRecordTestCase).save(originRoot);
-
     const newRoot = manager.getRepository(RecordTestScenarioAndRecordTestCase).create({
       recordTestScenarioId,
       recordTestCaseId: recordTestCase.recordTestCaseId,

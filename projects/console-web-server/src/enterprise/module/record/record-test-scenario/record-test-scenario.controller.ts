@@ -1,12 +1,12 @@
-import { ProjectPropCamel, RecordTestCasePropCamel, RecordTestScenarioBase, RecordTestScenarioPropCamel, RecordTestScenarioResponse } from '@dogu-private/console';
-import { ProjectId, RecordTestCaseId, RecordTestScenarioId } from '@dogu-private/types';
+import { ProjectPropCamel, RecordTestScenarioBase, RecordTestScenarioPropCamel, RecordTestScenarioResponse } from '@dogu-private/console';
+import { ProjectId, RecordTestScenarioId } from '@dogu-private/types';
 import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Query } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { PROJECT_ROLE } from '../../../../module/auth/auth.types';
 import { ProjectPermission } from '../../../../module/auth/decorators';
 import { Page } from '../../../../module/common/dto/pagination/page';
-import { AddRecordTestCaseToRecordTestScenarioDto, FindRecordTestScenariosByProjectIdDto, UpdateRecordTestScenarioDto } from '../dto/record-test-scenario.dto';
+import { CreateRecordTestScenarioDto, FindRecordTestScenariosByProjectIdDto, UpdateRecordTestScenarioDto } from '../dto/record-test-scenario.dto';
 import { RecordTestScenarioService } from './record-test-scenario.service';
 
 @Controller('organizations/:organizationId/projects/:projectId/record-test-scenarios')
@@ -49,32 +49,32 @@ export class RecordTestScenarioController {
     return rv;
   }
 
-  @Post(`:${RecordTestScenarioPropCamel.recordTestScenarioId}/record-test-cases`)
-  @ProjectPermission(PROJECT_ROLE.WRITE)
-  async attachRecordTestCaseToScenario(
-    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
-    @Param(RecordTestScenarioPropCamel.recordTestScenarioId) recordTestScenarioId: RecordTestScenarioId,
-    @Body() dto: AddRecordTestCaseToRecordTestScenarioDto,
-  ): Promise<void> {
-    const rv = await this.recordTestScenarioService.attachRecordTestCaseToScenario(projectId, recordTestScenarioId, dto);
-    return rv;
-  }
+  // @Post(`:${RecordTestScenarioPropCamel.recordTestScenarioId}/record-test-cases`)
+  // @ProjectPermission(PROJECT_ROLE.WRITE)
+  // async attachRecordTestCaseToScenario(
+  //   @Param(ProjectPropCamel.projectId) projectId: ProjectId,
+  //   @Param(RecordTestScenarioPropCamel.recordTestScenarioId) recordTestScenarioId: RecordTestScenarioId,
+  //   @Body() dto: AddRecordTestCaseToRecordTestScenarioDto,
+  // ): Promise<void> {
+  //   const rv = await this.recordTestScenarioService.attachRecordTestCaseToScenario(projectId, recordTestScenarioId, dto);
+  //   return rv;
+  // }
 
-  @Delete(`:${RecordTestScenarioPropCamel.recordTestScenarioId}/record-test-cases/:recordTestCaseId`)
-  @ProjectPermission(PROJECT_ROLE.WRITE)
-  async detachRecordTestCaseFromScenario(
-    @Param(ProjectPropCamel.projectId) projectId: ProjectId,
-    @Param(RecordTestScenarioPropCamel.recordTestScenarioId) recordTestScenarioId: RecordTestScenarioId,
-    @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
-  ): Promise<void> {
-    await this.recordTestScenarioService.detachRecordTestCaseFromScenario(projectId, recordTestScenarioId, recordTestCaseId);
-  }
+  // @Delete(`:${RecordTestScenarioPropCamel.recordTestScenarioId}/record-test-cases/:recordTestCaseId`)
+  // @ProjectPermission(PROJECT_ROLE.WRITE)
+  // async detachRecordTestCaseFromScenario(
+  //   @Param(ProjectPropCamel.projectId) projectId: ProjectId,
+  //   @Param(RecordTestScenarioPropCamel.recordTestScenarioId) recordTestScenarioId: RecordTestScenarioId,
+  //   @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
+  // ): Promise<void> {
+  //   await this.recordTestScenarioService.detachRecordTestCaseFromScenario(projectId, recordTestScenarioId, recordTestCaseId);
+  // }
 
   @Post()
   @ProjectPermission(PROJECT_ROLE.WRITE)
   async createRecordTestScenario(
     @Param(ProjectPropCamel.projectId) projectId: ProjectId, //
-    @Body() dto: UpdateRecordTestScenarioDto,
+    @Body() dto: CreateRecordTestScenarioDto,
   ): Promise<RecordTestScenarioBase> {
     const rv = await this.recordTestScenarioService.createRecordTestScenario(projectId, dto);
     return rv;
