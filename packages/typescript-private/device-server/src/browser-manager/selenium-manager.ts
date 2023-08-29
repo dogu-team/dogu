@@ -7,7 +7,7 @@ import {
   isAllowedMacosBrowserName,
   isAllowedWindowsBrowserName,
 } from '@dogu-private/types';
-import { PrefixLogger } from '@dogu-tech/common';
+import { errorify, PrefixLogger } from '@dogu-tech/common';
 import {
   BrowserDriverInstallation,
   BrowserDriverInstallerOptions,
@@ -108,7 +108,7 @@ export class SeleniumManager {
       this.logger.info(`Browser found at ${browserPath}`);
 
       if (browserDriverPath) {
-        await fs.promises.chmod(browserDriverPath, 0o755);
+        await this.ensureExecutable(browserDriverPath);
       }
 
       return [
@@ -166,7 +166,7 @@ export class SeleniumManager {
 
     this.logger.info(`Driver file found at ${browserDriverPath}`);
 
-    await fs.promises.chmod(browserDriverPath, 0o755);
+    await this.ensureExecutable(browserDriverPath);
     return {
       browserDriverPath,
     };
@@ -198,5 +198,17 @@ export class SeleniumManager {
       browserName,
       browserPath,
     };
+  }
+
+  private async ensureExecutable(path: string): Promise<void> {
+    try {
+      await fs.promises.chmod(path, 0o755);
+      if (process.platform !== 'darwin') {
+        return;
+      }
+      await execAsync(`/usr/bin/xattr -dr com.apple.quarantine ${path}`);
+    } catch (error) {
+      this.logger.warn(`Failed to set executable bit for ${path}`, { error: errorify(error) });
+    }
   }
 }
