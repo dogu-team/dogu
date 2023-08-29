@@ -8,12 +8,3 @@ actionSource:
     - ../../
     # from dost workspace
     - ../../../
-
-localUserProject:
-  use: false
-  # note: find ${searchPath}/dogu.config.json
-  searchPaths:
-    # from host-agent workspace
-    - ../../user-templates/typescript-template
-    # from dost workspace
-    - ../../../user-templates/typescript-template
