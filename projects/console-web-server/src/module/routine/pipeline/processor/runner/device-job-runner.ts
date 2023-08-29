@@ -1,5 +1,5 @@
 import { StepStatusInfo, UpdateDeviceJobStatusRequestBody } from '@dogu-private/console-host-agent';
-import { DEST_STATE, DeviceId, isCompleted, isDestCompleted, OrganizationId, PIPELINE_STATUS, RoutineDeviceJobId } from '@dogu-private/types';
+import { DEST_STATE, DeviceId, DeviceRunnerId, isCompleted, isDestCompleted, OrganizationId, PIPELINE_STATUS, RoutineDeviceJobId } from '@dogu-private/types';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager } from 'typeorm';
@@ -37,7 +37,7 @@ export class DeviceJobRunner {
   }
 
   async complete(deviceJob: RoutineDeviceJob, event: UpdateDeviceJobStatusRequestBody): Promise<void> {
-    const { routineDeviceJobId: deviceJobId, routineSteps: steps } = deviceJob;
+    const { routineDeviceJobId: deviceJobId, routineSteps: steps, deviceRunnerId } = deviceJob;
     const { stepStatusInfos, deviceJobStatusInfo } = event;
     const incomingStatus = deviceJobStatusInfo.deviceJobStatus;
     const curStatus = deviceJob.status;
@@ -67,28 +67,32 @@ export class DeviceJobRunner {
       deviceJob.localCompletedAt = event.deviceJobStatusInfo.localCompletedAt;
       await manager.getRepository(RoutineDeviceJob).save(deviceJob);
 
-      await this.postUpdate(manager, deviceJobId, steps, stepStatusInfos);
+      await this.postUpdate(manager, deviceJobId, steps, stepStatusInfos, deviceRunnerId);
     });
   }
 
   public async setStatus(manager: EntityManager, deviceJob: RoutineDeviceJob, incomingStatus: PIPELINE_STATUS, serverTimeStamp: Date): Promise<void> {
     if (incomingStatus === PIPELINE_STATUS.IN_PROGRESS) {
       deviceJob.inProgressAt = serverTimeStamp;
-      // deviceJob.localInProgressAt = localTimeStamp;
       deviceJob.heartbeat = serverTimeStamp;
     } else if (isCompleted(incomingStatus)) {
       deviceJob.completedAt = serverTimeStamp;
-      // deviceJob.localCompletedAt = localTimeStamp;
     }
     deviceJob.status = incomingStatus;
     await manager.getRepository(RoutineDeviceJob).save(deviceJob);
-
-    if (deviceJob.deviceRunnerId) {
-      await manager.getRepository(DeviceRunner).update({ deviceRunnerId: deviceJob.deviceRunnerId }, { isInUse: 0 });
-    }
   }
 
-  private async postUpdate(manager: EntityManager, deviceJobId: RoutineDeviceJobId, steps: RoutineStep[], stepStatusInfos: StepStatusInfo[]): Promise<void> {
+  private async postUpdate(
+    manager: EntityManager,
+    deviceJobId: RoutineDeviceJobId,
+    steps: RoutineStep[],
+    stepStatusInfos: StepStatusInfo[],
+    deviceRunnerId: DeviceRunnerId | null,
+  ): Promise<void> {
+    if (deviceRunnerId) {
+      await manager.getRepository(DeviceRunner).update(deviceRunnerId, { isInUse: 0 });
+    }
+
     if (!steps || steps.length === 0) {
       throw new Error(`Steps not found: ${deviceJobId}`);
     }

@@ -112,7 +112,7 @@ export module RemoteDeviceJobProcessor {
       remoteDeviceJob.completedAt = new Date();
 
       if (remoteDeviceJob.deviceRunnerId) {
-        await manager.getRepository(DeviceRunner).update({ deviceRunnerId: remoteDeviceJob.deviceRunnerId }, { isInUse: 0 });
+        await manager.getRepository(DeviceRunner).update(remoteDeviceJob.deviceRunnerId, { isInUse: 0 });
       }
 
       await handleSendingSlackMessage(manager, slackMessageService, remoteDeviceJob);

@@ -67,8 +67,7 @@ export class RemoteDeviceJobUpdater {
           return;
         }
 
-        deviceRunner.isInUse = 1;
-        await this.dataSource.manager.getRepository(DeviceRunner).save(deviceRunner);
+        await this.dataSource.manager.getRepository(DeviceRunner).update(deviceRunner.deviceRunnerId, { isInUse: 1 });
 
         remoteDeviceJob.deviceRunnerId = deviceRunner.deviceRunnerId;
         await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(

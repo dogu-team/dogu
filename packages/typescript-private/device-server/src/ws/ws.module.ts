@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { BrowserManagerModule } from '../browser-manager/browser-manager.module';
 import { DeviceHostModule } from '../device-host/device-host.module';
 import { ScanModule } from '../scan/scan.module';
 import { DeviceHostDownloadSharedResourceWebSocketService } from './device-host/download-shared-resource';
@@ -18,7 +19,7 @@ import { DeviceUninstallAppService } from './device/uninstall-app.service';
 import { DeviceWebSocketRelayService } from './device/websocket-relay.service';
 
 @Module({
-  imports: [ScanModule, DeviceHostModule],
+  imports: [ScanModule, DeviceHostModule, BrowserManagerModule],
   providers: [
     DeviceInstallAppService,
     DeviceConnectionSubscribeService,

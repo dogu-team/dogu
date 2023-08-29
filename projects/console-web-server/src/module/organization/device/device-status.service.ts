@@ -313,7 +313,7 @@ export class DeviceStatusService {
       maxParallelJobs: maxParallelJobs ? maxParallelJobs : deviceById.maxParallelJobs,
     });
     const updateDevice = await manager.getRepository(Device).save(newData);
-    await this.updateDeviceRunners(manager, deviceId);
+    await DeviceStatusService.updateDeviceRunners(manager, deviceId);
     return updateDevice;
   }
 
@@ -641,15 +641,14 @@ export class DeviceStatusService {
     return devicesSortedByCurrentRunningRate;
   }
 
-  async updateDeviceBrowserInstallations(manager: EntityManager, deviceId: DeviceId, browserInstallations: BrowserInstallation[]): Promise<void> {
-    const olds = await manager.find(DeviceBrowserInstallation, { where: { deviceId } });
+  static async updateDeviceBrowserInstallations(manager: EntityManager, deviceId: DeviceId, browserInstallations: BrowserInstallation[]): Promise<void> {
+    const olds = await manager.getRepository(DeviceBrowserInstallation).find({ where: { deviceId } });
     const news = browserInstallations;
     const minLength = Math.min(olds.length, news.length);
     for (let i = 0; i < minLength; i++) {
       const old = olds[i];
       const newOne = news[i];
-      await manager.update(
-        DeviceBrowserInstallation,
+      await manager.getRepository(DeviceBrowserInstallation).update(
         { deviceBrowserInstallationId: old.deviceBrowserInstallationId },
         {
           browserName: newOne.browserName,
@@ -668,31 +667,50 @@ export class DeviceStatusService {
           deviceId,
         })),
       );
-      await manager.save(createds);
+      await manager.getRepository(DeviceBrowserInstallation).save(createds);
     } else if (news.length < olds.length) {
       const deleteds = olds.slice(news.length);
-      await manager.remove(deleteds);
+      await manager.getRepository(DeviceBrowserInstallation).softDelete(deleteds.map((v) => v.deviceBrowserInstallationId));
     }
   }
 
-  async updateDeviceRunners(manager: EntityManager, deviceId: DeviceId): Promise<void> {
-    const device = await manager.findOne(Device, { where: { deviceId }, select: [DevicePropCamel.deviceId, DevicePropCamel.maxParallelJobs] });
+  static async updateDeviceRunners(manager: EntityManager, deviceId: DeviceId): Promise<void> {
+    const device = await manager.getRepository(Device).findOne({ where: { deviceId }, select: [DevicePropCamel.deviceId, DevicePropCamel.maxParallelJobs] });
     if (!device) {
       throw new HttpException(`Cannot find device. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
     }
 
-    const { maxParallelJobs } = device;
-    const deviceRunnerCount = await manager.count(DeviceRunner, { where: { deviceId } });
-    if (maxParallelJobs > deviceRunnerCount) {
-      const deviceRunners = manager.getRepository(DeviceRunner).create(
-        Array.from({ length: maxParallelJobs - deviceRunnerCount }).map(() => ({
-          deviceId,
-        })),
-      );
-      await manager.save(deviceRunners);
-    } else if (maxParallelJobs < deviceRunnerCount) {
-      const deviceRunners = await manager.find(DeviceRunner, { where: { deviceId }, take: deviceRunnerCount - maxParallelJobs });
-      await manager.remove(deviceRunners);
+    const isInUse = await manager.getRepository(DeviceRunner).exist({ where: { deviceId, isInUse: 1 } });
+    if (isInUse) {
+      throw new HttpException(`Device is in use now. deviceId: ${deviceId}`, HttpStatus.BAD_REQUEST);
+    }
+
+    const toUpdateCount = device.maxParallelJobs;
+    const currentCount = await manager.getRepository(DeviceRunner).count({ where: { deviceId } });
+    const toRecoverOrCreateCount = Math.max(0, toUpdateCount - currentCount);
+    if (toRecoverOrCreateCount > 0) {
+      const softDeletedCount = await manager.getRepository(DeviceRunner).count({ where: { deviceId }, withDeleted: true });
+      const toRecoverCount = Math.min(toRecoverOrCreateCount, softDeletedCount);
+      if (toRecoverCount > 0) {
+        const softDeleteds = await manager.getRepository(DeviceRunner).find({ where: { deviceId }, withDeleted: true, take: toRecoverCount });
+        await manager.getRepository(DeviceRunner).recover(softDeleteds);
+      }
+
+      const toCreateCount = Math.max(0, toRecoverOrCreateCount - toRecoverCount);
+      if (toCreateCount > 0) {
+        const toCreates = manager.getRepository(DeviceRunner).create(
+          Array.from({ length: toCreateCount }).map(() => ({
+            deviceId,
+          })),
+        );
+        await manager.getRepository(DeviceRunner).save(toCreates);
+      }
+    }
+
+    const toRemoveCount = Math.max(0, currentCount - toUpdateCount);
+    if (toRemoveCount > 0) {
+      const deviceRunners = await manager.getRepository(DeviceRunner).find({ where: { deviceId }, take: toRemoveCount });
+      await manager.getRepository(DeviceRunner).softDelete(deviceRunners.map((deviceRunner) => deviceRunner.deviceRunnerId));
     }
   }
 }

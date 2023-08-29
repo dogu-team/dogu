@@ -38,22 +38,21 @@ export class AdbBrowserInstallationFinder implements BrowserInstallationFinder {
       throw new Error(`Device serial is required. Browser name: ${browserName}, browser platform: ${browserPlatform}`);
     }
 
-    const browserInfos = await this.findBrowserInstallations(deviceSerial);
-    const browserInfosWithVersion = await this.findBrowserInstallationsWithVersion(deviceSerial, browserInfos);
+    const browserInfos = await this.findAllBrowserInstallations(deviceSerial);
+    const filteredInfos = browserInfos.filter(({ browserName: name }) => name === browserName);
+    const browserInfosWithVersion = await this.findBrowserInstallationsWithVersion(deviceSerial, filteredInfos);
     return browserInfosWithVersion;
   }
 
-  private async findBrowserInstallations(deviceSerial: Serial): Promise<{ browserPackageName: string; browserName: AndroidBrowserName }[]> {
+  private async findAllBrowserInstallations(deviceSerial: Serial): Promise<{ browserPackageName: string; browserName: AndroidBrowserName }[]> {
     const browserNameMap = new Map(Object.entries(AndroidBrowserPackageNameMap).map(([key, value]) => [value, key]));
     const { stdout } = await Adb.shell(deviceSerial, 'pm list packages -f');
     const browserInfos = stdout
       .split('\n')
-      .map((line) => {
-        return {
-          line,
-          match: AdbBrowserInstallationFinder.packageLinePattern.exec(line),
-        };
-      })
+      .map((line) => ({
+        line,
+        match: AdbBrowserInstallationFinder.packageLinePattern.exec(line),
+      }))
       .filter(({ line, match }) => {
         if (!match) {
           this.logger.warn(`Failed to match package line: ${line}`);

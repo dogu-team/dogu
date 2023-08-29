@@ -154,8 +154,7 @@ export class DeviceJobUpdater {
 
         this.logger.info(`device-job ${deviceJob.routineDeviceJobId} status change to in_progress.`);
 
-        deviceRunner.isInUse = 1;
-        await this.dataSource.manager.getRepository(DeviceRunner).save(deviceRunner);
+        await this.dataSource.manager.getRepository(DeviceRunner).update({ deviceRunnerId: deviceRunner.deviceRunnerId }, { isInUse: 1 });
 
         deviceJob.deviceRunnerId = deviceRunner.deviceRunnerId;
         await this.deviceJobRunner.setStatus(this.dataSource.manager, deviceJob, PIPELINE_STATUS.IN_PROGRESS, new Date());

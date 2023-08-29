@@ -1,6 +1,6 @@
 import { DeviceRunnerBase, DeviceRunnerPropCamel, DeviceRunnerPropSnake } from '@dogu-private/console';
 import { DeviceId, DeviceRunnerId, DEVICE_RUNNER_TABLE_NAME } from '@dogu-private/types';
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { RoutineDeviceJob } from './device-job.entity';
 import { Device } from './device.entity';
@@ -8,7 +8,7 @@ import { RemoteDeviceJob } from './remote-device-job.entity';
 
 @Entity(DEVICE_RUNNER_TABLE_NAME)
 export class DeviceRunner extends BaseEntity implements DeviceRunnerBase {
-  @PrimaryColumn({ type: 'uuid', name: DeviceRunnerPropSnake.device_runner_id })
+  @PrimaryGeneratedColumn('uuid', { name: DeviceRunnerPropSnake.device_runner_id })
   deviceRunnerId!: DeviceRunnerId;
 
   @Column({ type: 'smallint', name: DeviceRunnerPropSnake.is_in_use, unsigned: true, default: 0, nullable: false })
