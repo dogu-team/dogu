@@ -50,8 +50,6 @@ export class DeviceJobUpdater {
     const waitingDeviceJobs = await this.dataSource
       .getRepository(RoutineDeviceJob) //
       .createQueryBuilder('deviceJob')
-      // .innerJoinAndSelect(`deviceJob.${RoutineDeviceJobPropCamel.routineSteps}`, 'step')
-      // .innerJoinAndSelect('deviceJob.device', 'device')
       .innerJoinAndSelect(`deviceJob.${RoutineDeviceJobPropCamel.routineJob}`, 'job')
       .innerJoinAndSelect(`job.${RoutineJobPropCamel.routinePipeline}`, 'pipeline', `pipeline.${RoutinePipelinePropSnake.status} =:pipelineStatus`, {
         pipelineStatus: PIPELINE_STATUS.CANCEL_REQUESTED,
@@ -72,8 +70,6 @@ export class DeviceJobUpdater {
     const waitingDeviceJobs = await this.dataSource
       .getRepository(RoutineDeviceJob) //
       .createQueryBuilder('deviceJob')
-      // .innerJoinAndSelect(`deviceJob.${RoutineDeviceJobPropCamel.routineSteps}`, 'step')
-      // .innerJoinAndSelect('deviceJob.device', 'device')
       .innerJoinAndSelect(
         `deviceJob.${RoutineDeviceJobPropCamel.routineJob}`, //
         'job',
@@ -176,7 +172,6 @@ export class DeviceJobUpdater {
     for (const deviceJob of deviceJobs) {
       this.logger.error(`in_progress deviceJob heartbeat is expired. deviceJobId: ${deviceJob.routineDeviceJobId}`);
       this.logger.info(`deviceJob status is changed to failure. deviceJobId: ${deviceJob.routineDeviceJobId}`);
-      // await setStatus(this.dataSource.manager, deviceJob, PIPELINE_STATUS.FAILURE);
       await this.deviceJobRunner.handleHeartbeatExpiredWithInprogress(deviceJob);
     }
   }
@@ -241,7 +236,6 @@ export class DeviceJobUpdater {
     for (const deviceJob of deviceJobs) {
       this.logger.warn(`cancel_requested device-job heartbeat is expired. deviceJobId: ${deviceJob.routineDeviceJobId}`);
       this.logger.info(`deviceJob status is changed to cancelled. deviceJobId: ${deviceJob.routineDeviceJobId}`);
-      // await setStatus(this.dataSource.manager, deviceJob, PIPELINE_STATUS.CANCELLED);
       await this.deviceJobRunner.handleHeartBeatExpiredWithCancelRequested(deviceJob);
     }
   }
