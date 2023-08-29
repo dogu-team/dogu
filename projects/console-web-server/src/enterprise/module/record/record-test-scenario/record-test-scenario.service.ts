@@ -26,10 +26,16 @@ export class RecordTestScenarioService {
   ) {}
 
   async createRecordTestScenario(projectId: ProjectId, dto: CreateRecordTestScenarioDto): Promise<RecordTestScenarioBase> {
+    const { name } = dto;
+    const testScenario = await this.dataSource.getRepository(RecordTestScenario).findOne({ where: { projectId, name } });
+    if (testScenario) {
+      throw new HttpException(`RecordTestScenario already exists. name: ${name}`, HttpStatus.BAD_REQUEST);
+    }
+
     const newData = this.dataSource.getRepository(RecordTestScenario).create({
       recordTestScenarioId: v4(),
       projectId,
-      name: dto.name,
+      name,
     });
 
     const recordCaseIds = dto.recordTestCaseIds ?? [];
@@ -144,7 +150,21 @@ export class RecordTestScenarioService {
         return true;
       });
 
-      // FIXME:(felix) check same app & browser
+      const browserName = recordCases[0].browserName;
+      recordCases.every((recordCase) => {
+        if (recordCase.browserName !== browserName) {
+          throw new HttpException(`RecordTestCases have different browserName.`, HttpStatus.BAD_REQUEST);
+        }
+        return true;
+      });
+
+      const packageName = recordCases[0].packageName;
+      recordCases.every((recordCase) => {
+        if (recordCase.packageName !== packageName) {
+          throw new HttpException(`RecordTestCases have different packageName.`, HttpStatus.BAD_REQUEST);
+        }
+        return true;
+      });
     } else {
       return;
     }
