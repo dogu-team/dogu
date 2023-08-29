@@ -13,7 +13,7 @@ import {
   StreamingAnswer,
 } from '@dogu-private/types';
 import { Closable, errorify, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
-import { StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { InstalledBrowserInfo, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
 import compressing from 'compressing';
@@ -22,7 +22,6 @@ import path from 'path';
 import { Observable } from 'rxjs';
 import semver from 'semver';
 import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
-import { InstalledBrowserInfo } from '../../browser-manager/browser-manager.types';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { GamiumContext } from '../../gamium/gamium.context';

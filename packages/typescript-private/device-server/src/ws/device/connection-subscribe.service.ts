@@ -39,9 +39,7 @@ export class DeviceConnectionSubscribeService
         isVirtual: isVirtual ? 1 : 0,
         resolutionWidth,
         resolutionHeight,
-        installedBrowserInfos: {
-          installedBrowserInfos,
-        },
+        installedBrowserInfos,
       };
       return message;
     });
@@ -62,6 +60,7 @@ export class DeviceConnectionSubscribeService
         isVirtual: 0,
         resolutionWidth: 0,
         resolutionHeight: 0,
+        installedBrowserInfos: [],
       };
       return message;
     });

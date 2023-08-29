@@ -16,12 +16,11 @@ import {
   StreamingAnswer,
 } from '@dogu-private/types';
 import { Closable, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
-import { StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { InstalledBrowserInfo, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { ChildProcess, isFreePort } from '@dogu-tech/node';
 import { Observable } from 'rxjs';
 import systeminformation from 'systeminformation';
 import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
-import { InstalledBrowserInfo } from '../../browser-manager/browser-manager.types';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { SeleniumDeviceWebDriverHandler } from '../../device-webdriver/selenium.device-webdriver.handler';
 import { GamiumContext } from '../../gamium/gamium.context';
@@ -107,12 +106,7 @@ export class MacosChannel implements DeviceChannel {
       deviceServerService.doguLogger,
     );
 
-    const installedBrowserInfos = await deviceServerService.browserManagerService.findAllInstalledBrowserInfos({
-      deviceSerial: param.serial,
-      browserPlatform: 'macos',
-    });
-
-    const deviceChannel = new MacosChannel(param.serial, info, new DesktopProfileService(), streaming, deviceAgent, seleniumDeviceWebDriverHandler, installedBrowserInfos);
+    const deviceChannel = new MacosChannel(param.serial, info, new DesktopProfileService(), streaming, deviceAgent, seleniumDeviceWebDriverHandler, []);
     return Promise.resolve(deviceChannel);
   }
 

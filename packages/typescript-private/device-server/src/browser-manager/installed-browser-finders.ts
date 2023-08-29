@@ -1,8 +1,8 @@
 import { AndroidBrowserName, AndroidBrowserPackageNameMap, isAllowedAndroidBrowserName, Serial } from '@dogu-private/types';
 import { PrefixLogger } from '@dogu-tech/common';
+import { InstalledBrowserFinder, InstalledBrowserFinderOptions, InstalledBrowserInfo } from '@dogu-tech/device-client-common';
 import { Adb } from '../internal/externals/index';
 import { logger } from '../logger/logger.instance';
-import { InstalledBrowserFinder, InstalledBrowserFinderOptions, InstalledBrowserInfo } from './browser-manager.types';
 import { SeleniumManager } from './selenium-manager';
 
 export class SeleniumManagerInstalledBrowserFinder implements InstalledBrowserFinder {

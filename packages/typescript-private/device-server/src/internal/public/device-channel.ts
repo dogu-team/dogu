@@ -11,13 +11,12 @@ import {
   StreamingAnswer,
 } from '@dogu-private/types';
 import { Closable, Printable, PromiseOrValue } from '@dogu-tech/common';
-import { StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { InstalledBrowserInfo, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { Observable } from 'rxjs';
 import { DeviceWebDriver } from '../../alias';
 import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
 import { AppiumService } from '../../appium/appium.service';
 import { BrowserManagerService } from '../../browser-manager/browser-manager.service';
-import { InstalledBrowserInfo } from '../../browser-manager/browser-manager.types';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { GamiumService } from '../../gamium/gamium.service';

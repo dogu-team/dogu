@@ -81,4 +81,4 @@ export type EnsureBrowserAndDriverOptions = Pick<BrowserOptions, 'browserName' |
 export type EnsuredBrowserAndDriverInfo = InstalledBrowserInfo & InstalledDriverInfo;
 
 export type FindAllInstalledBrowserInfosOptions = Pick<InstalledBrowserFinderOptions, 'browserPlatform' | 'deviceSerial'>;
-export type FindAllInstalledBrowserInfosResult = InstalledBrowserInfo[][];
+export type FindAllInstalledBrowserInfosResult = InstalledBrowserInfo[];

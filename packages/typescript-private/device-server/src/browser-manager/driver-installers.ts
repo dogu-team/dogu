@@ -1,4 +1,4 @@
-import { DriverInstaller, DriverInstallerOptions, InstalledDriverInfo } from './browser-manager.types';
+import { DriverInstaller, DriverInstallerOptions, InstalledDriverInfo } from '@dogu-tech/device-client-common';
 import { SeleniumManager } from './selenium-manager';
 
 export class SeleniumManagerDriverInstaller implements DriverInstaller {

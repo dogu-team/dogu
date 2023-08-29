@@ -1,4 +1,4 @@
-import { LatestBrowserVersionResolver, LatestBrowserVersionResolverOptions, ResolvedBrowserVersionInfo } from './browser-manager.types';
+import { LatestBrowserVersionResolver, LatestBrowserVersionResolverOptions, ResolvedBrowserVersionInfo } from '@dogu-tech/device-client-common';
 import { chromeVersionLikeToString, downloadLastKnownGoodChromeVersionLike } from './chrome-version-utils';
 
 export class ChromeLatestBrowserVersionResolver implements LatestBrowserVersionResolver {

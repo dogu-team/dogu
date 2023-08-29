@@ -1,8 +1,5 @@
 import { getBrowserNamesByPlatform } from '@dogu-private/types';
 import { PrefixLogger, stringify } from '@dogu-tech/common';
-import { logger } from '../logger/logger.instance';
-import { MobileBrowserAutoInstallableChecker, SeleniumManagerBrowserAutoInstallableChecker } from './browser-auto-installable-checkers';
-import { SeleniumManagerBrowserInstaller } from './browser-installers';
 import {
   BrowserAutoInstallableChecker,
   BrowserInstaller,
@@ -20,7 +17,10 @@ import {
   LatestBrowserVersionResolver,
   LatestBrowserVersionResolverOptions,
   ResolvedBrowserVersionInfo,
-} from './browser-manager.types';
+} from '@dogu-tech/device-client-common';
+import { logger } from '../logger/logger.instance';
+import { MobileBrowserAutoInstallableChecker, SeleniumManagerBrowserAutoInstallableChecker } from './browser-auto-installable-checkers';
+import { SeleniumManagerBrowserInstaller } from './browser-installers';
 import { SeleniumManagerDriverInstaller } from './driver-installers';
 import { AdbInstalledBrowserFinder, SeleniumManagerInstalledBrowserFinder } from './installed-browser-finders';
 import { ChromeLatestBrowserVersionResolver } from './latest-browser-version-resolvers';
@@ -172,7 +172,7 @@ export class BrowserManager {
     const promiseResults = await Promise.allSettled(browserNames.map(async (browserName) => this.findInstalledBrowserInfos({ ...options, browserName })));
     const results = promiseResults
       .filter((result) => result.status === 'fulfilled')
-      .map((result) => {
+      .flatMap((result) => {
         if (result.status === 'rejected') {
           throw new Error(`Internal error: already filtered to fulfilled`);
         }

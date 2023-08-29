@@ -14,7 +14,7 @@ import {
   StreamingAnswer,
 } from '@dogu-private/types';
 import { Closable, delay, errorify, FilledPrintable, Printable, stringify } from '@dogu-tech/common';
-import { StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { InstalledBrowserInfo, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import { Manifest, open } from 'adbkit-apkreader';
 import { ChildProcess, execFile } from 'child_process';
@@ -24,7 +24,6 @@ import { Observable } from 'rxjs';
 import semver from 'semver';
 import systeminformation from 'systeminformation';
 import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
-import { InstalledBrowserInfo } from '../../browser-manager/browser-manager.types';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { env } from '../../env';

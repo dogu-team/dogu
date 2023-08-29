@@ -1,4 +1,4 @@
-import { BrowserInstaller, BrowserInstallerOptions, InstalledBrowserInfo } from './browser-manager.types';
+import { BrowserInstaller, BrowserInstallerOptions, InstalledBrowserInfo } from '@dogu-tech/device-client-common';
 import { SeleniumManager } from './selenium-manager';
 
 export class SeleniumManagerBrowserInstaller implements BrowserInstaller {

@@ -1,7 +1,7 @@
 import { categoryFromPlatform, isAllowedBrowserNameForPlatform } from '@dogu-private/types';
 import { PrefixLogger } from '@dogu-tech/common';
+import { BrowserAutoInstallableChecker, BrowserAutoInstallableCheckerOptions } from '@dogu-tech/device-client-common';
 import { logger } from '../logger/logger.instance';
-import { BrowserAutoInstallableChecker, BrowserAutoInstallableCheckerOptions } from './browser-manager.types';
 import { SeleniumManager } from './selenium-manager';
 
 export class SeleniumManagerBrowserAutoInstallableChecker implements BrowserAutoInstallableChecker {

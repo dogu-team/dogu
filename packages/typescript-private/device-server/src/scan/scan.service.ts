@@ -75,7 +75,7 @@ export class ScanService implements OnModuleInit {
   onDeviceConnectionSubscriberConnected(value: Instance<typeof OnDeviceConnectionSubscriberConnectedEvent.value>): void {
     const { webSocket } = value;
     const messages = this.channels.map((channel) => {
-      const { serial, serialUnique, platform, info, isVirtual } = channel;
+      const { serial, serialUnique, platform, info, isVirtual, installedBrowserInfos } = channel;
       const { system, version, graphics } = info;
       const { model, manufacturer } = system;
       const display = graphics.displays.at(0);
@@ -92,6 +92,7 @@ export class ScanService implements OnModuleInit {
         isVirtual: isVirtual ? 1 : 0,
         resolutionWidth,
         resolutionHeight,
+        installedBrowserInfos,
       };
       return message;
     });
