@@ -5,12 +5,12 @@
   "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
   "author": "Dogu Technologies",
   "scripts": {
-    "black": "poetry run black src tests",
+    "black": "poetry run black dogu tests",
     "build:python": "poetry build",
     "clean": "ts-node ./scripts/clean.ts",
     "lint": "yarn black && yarn pylint",
     "newbie:python": "poetry install",
-    "pylint": "poetry run pylint src tests",
+    "pylint": "poetry run pylint dogu tests",
     "rebuild:python": "yarn clean && yarn build:python",
     "test:python": "poetry run pytest"
   },

@@ -10,7 +10,7 @@
       "request": "launch",
       "module": "pytest",
       "justMyCode": true,
-      "args": [],
+      "args": ["--capture=no"],
     }
   ]
 }
