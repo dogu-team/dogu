@@ -10888,8 +10888,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-dev-private/publish-package", "workspace:packages/typescript-dev-private/publish-package"],\
             ["@dogu-tech/action-kit", "workspace:packages/typescript/action-kit"],\
             ["@dogu-tech/toolkit", "workspace:packages/typescript/toolkit"],\
+            ["@types/lodash", "npm:4.14.195"],\
             ["@types/node", "npm:18.15.11"],\
             ["cross-env", "npm:7.0.3"],\
+            ["lodash", "npm:4.17.21"],\
             ["nodemon", "npm:2.0.22"],\
             ["shx", "npm:0.3.4"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\

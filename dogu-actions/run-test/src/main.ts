@@ -1,6 +1,7 @@
 import { ActionKit, checkoutProject, downloadApp, errorify, stringify } from '@dogu-tech/action-kit';
 import { tryToQuitGamiumApp } from '@dogu-tech/toolkit';
 import { spawnSync } from 'child_process';
+import _ from 'lodash';
 import path from 'path';
 
 ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionClient, deviceClient }) => {
@@ -108,10 +109,7 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
       ...browserEnv,
     });
 
-    env = {
-      ...env,
-      ...browserEnv,
-    };
+    env = _.merge(env, browserEnv);
   }
 
   command
