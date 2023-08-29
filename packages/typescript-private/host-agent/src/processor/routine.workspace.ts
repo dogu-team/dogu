@@ -1,5 +1,5 @@
 import { DeviceId, DeviceRunnerId, ProjectId } from '@dogu-private/types';
-import { loop } from '@dogu-tech/common';
+import { loop, stringify } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import fs from 'fs';
@@ -20,7 +20,7 @@ export class RoutineWorkspace {
   constructor(private readonly logger: DoguLogger) {}
 
   async createRoutineWorkspacePath(rootWorkspacePath: string, meta: RoutineWorkspaceMeta): Promise<string> {
-    for await (const name of await loop(1000, 30)) {
+    for await (const name of loop(1000, 30)) {
       const name = uuidv4().substring(0, 16);
       const routinesPath = HostPaths.routinesPath(rootWorkspacePath);
       const newRoutineWorkspacePath = path.resolve(routinesPath, name);
@@ -54,7 +54,7 @@ export class RoutineWorkspace {
         }
       }
     } catch (e) {
-      this.logger.info(`Failed to find routine workspace: ${e}`);
+      this.logger.info(`Failed to find routine workspace: ${stringify(e)}`);
     }
     return null;
   }
