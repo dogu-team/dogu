@@ -18,6 +18,8 @@ export interface StepContextEnv extends Record<string, string | undefined> {
   DOGU_STEP_ID: string;
   DOGU_HOST_TOKEN: string;
   PATH: string;
+  DOGU_BROWSER_NAME: string;
+  DOGU_BROWSER_VERSION: string;
 }
 
 export function createConsoleApiAuthHeader(DOGU_HOST_TOKEN: string): {

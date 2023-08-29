@@ -1,55 +1,96 @@
-import { ActionKit } from '@dogu-tech/action-kit';
+import { ActionKit, checkoutProject, downloadApp, errorify, stringify } from '@dogu-tech/action-kit';
+import { tryToQuitGamiumApp } from '@dogu-tech/toolkit';
 import { spawnSync } from 'child_process';
-import fs from 'fs';
 import path from 'path';
 
-ActionKit.run(async ({ options, logger, input, deviceHostClient }) => {
-  const { DOGU_LOG_LEVEL, DOGU_ROUTINE_WORKSPACE_PATH } = options;
+ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionClient, deviceClient }) => {
+  const {
+    DOGU_LOG_LEVEL, //
+    DOGU_ROUTINE_WORKSPACE_PATH,
+    DOGU_DEVICE_PLATFORM,
+    DOGU_HOST_WORKSPACE_PATH,
+    DOGU_DEVICE_SERIAL,
+  } = options;
   logger.info('log level', { DOGU_LOG_LEVEL });
-  const script = input.get<string>('script');
-  const pathMap = await deviceHostClient.getPathMap();
-  const { yarn } = pathMap.common;
-  let yarnPath = yarn;
-  let userProjectPath = DOGU_ROUTINE_WORKSPACE_PATH;
 
-  logger.info('User project path and yarn path', { userProjectPath, yarnPath });
+  const checkout = input.get<boolean>('checkout');
+  const branchOrTag = input.get<string>('branchOrTag');
+  const clean = input.get<boolean>('clean');
+  const checkoutPath = input.get<string>('checkoutPath');
+  const checkoutUrl = input.get<string>('checkoutUrl');
 
-  function runYarn(args: string[]) {
-    const command = yarnPath;
-    logger.info(`Running command: ${command} ${args.join(' ')}`);
-    const result = spawnSync(command, args, {
-      stdio: 'inherit',
-      cwd: userProjectPath,
-    });
-    if (result.status !== 0) {
-      throw new Error(`Command failed: ${command} ${args.join(' ')}`);
-    }
+  const appVersion = input.get<string>('appVersion');
+  const uninstallApp = input.get<boolean>('uninstallApp');
+
+  const gamium = input.get<boolean>('gamium');
+  const gamiumEnginePort = input.get<number>('gamiumEnginePort');
+  const retryCount = input.get<number>('retryCount');
+  const retryInterval = input.get<number>('retryInterval');
+  const requestTimeout = input.get<number>('requestTimeout');
+
+  const command = input.get<string>('command');
+
+  if (checkout) {
+    logger.info('resolve checkout path... from', { DOGU_ROUTINE_WORKSPACE_PATH, checkoutPath });
+    const resolvedCheckoutPath = path.resolve(DOGU_ROUTINE_WORKSPACE_PATH, checkoutPath);
+    logger.info('resolved checkout path', { resolvedCheckoutPath });
+
+    await checkoutProject(logger, consoleActionClient, deviceHostClient, resolvedCheckoutPath, branchOrTag, clean, checkoutUrl);
   }
 
-  runYarn(['install']);
-  const packageJsonPath = path.resolve(userProjectPath, 'package.json');
-  const content = await fs.promises.readFile(packageJsonPath, 'utf8');
-  const packageJson = JSON.parse(content) as { dependencies?: Record<string, string> };
-  const doguDependencies: string[] = [];
-  if (packageJson.dependencies) {
-    for (const [key, value] of Object.entries(packageJson.dependencies)) {
-      if (key.startsWith('@dogu-tech/')) {
-        doguDependencies.push(key);
+  let appPath = '';
+  if (appVersion) {
+    const currentPlatformAppVersion =
+      typeof appVersion === 'object'
+        ? (() => {
+            const platformAppVersion = Reflect.get(appVersion, DOGU_DEVICE_PLATFORM) as string | undefined;
+            if (!platformAppVersion) {
+              throw new Error(`Invalid app version: ${stringify(appVersion)} for platform: ${DOGU_DEVICE_PLATFORM}`);
+            }
+            return platformAppVersion;
+          })()
+        : String(appVersion);
+    appPath = await downloadApp(logger, consoleActionClient, deviceHostClient, DOGU_DEVICE_PLATFORM, DOGU_HOST_WORKSPACE_PATH, currentPlatformAppVersion);
+  }
+
+  if (gamium) {
+    await tryToQuitGamiumApp(logger, deviceClient, deviceHostClient, gamiumEnginePort, DOGU_DEVICE_SERIAL, DOGU_DEVICE_PLATFORM, retryCount, retryInterval, requestTimeout);
+  }
+
+  if (appPath) {
+    if (uninstallApp) {
+      logger.info('Uninstalling app...', { appPath });
+      try {
+        await deviceClient.uninstallApp(DOGU_DEVICE_SERIAL, appPath);
+        logger.info('App uninstalled');
+      } catch (error) {
+        logger.warn('Failed to uninstall app', { error: errorify(error) });
       }
     }
-  }
-  for (const dependency of doguDependencies) {
-    runYarn(['up', '-R', dependency]);
-  }
-  if (script.endsWith('.ts')) {
-    runYarn(['tsc', '-b']);
+
+    logger.info('Installing app...', { appPath });
+    await deviceClient.installApp(DOGU_DEVICE_SERIAL, appPath);
+    logger.info('App installed');
+    logger.info('Run app...', { appPath });
+    await deviceClient.runApp(DOGU_DEVICE_SERIAL, appPath);
+    logger.info('App runned');
   }
 
-  if (script.endsWith('.js')) {
-    runYarn(['node', script]);
-  } else if (script.endsWith('.ts')) {
-    runYarn(['ts-node', script]);
-  } else {
-    throw new Error(`Unexpected script extension: ${script}`);
-  }
+  command
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .forEach((line) => {
+      logger.info(`Run command: [${line}] on ${DOGU_ROUTINE_WORKSPACE_PATH}`);
+      const result = spawnSync(line, {
+        stdio: 'inherit',
+        shell: true,
+        cwd: DOGU_ROUTINE_WORKSPACE_PATH,
+      });
+      if (result.status === 0) {
+        logger.info(`Command success: [${line}] with status: ${result.status}`);
+      } else {
+        throw new Error(`Command failed: ${command} with status: ${result.status}`);
+      }
+    });
 });

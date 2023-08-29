@@ -10887,6 +10887,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-actions/run-test", "workspace:dogu-actions/run-test"],\
             ["@dogu-dev-private/publish-package", "workspace:packages/typescript-dev-private/publish-package"],\
             ["@dogu-tech/action-kit", "workspace:packages/typescript/action-kit"],\
+            ["@dogu-tech/toolkit", "workspace:packages/typescript/toolkit"],\
             ["@types/node", "npm:18.15.11"],\
             ["cross-env", "npm:7.0.3"],\
             ["nodemon", "npm:2.0.22"],\

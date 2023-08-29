@@ -15,7 +15,8 @@
   },
   "types": "./build/src/main.d.ts",
   "dependencies": {
-    "@dogu-tech/action-kit": "workspace:^"
+    "@dogu-tech/action-kit": "workspace:^",
+    "@dogu-tech/toolkit": "workspace:^"
   },
   "devDependencies": {
     "@dogu-dev-private/publish-package": "workspace:^",

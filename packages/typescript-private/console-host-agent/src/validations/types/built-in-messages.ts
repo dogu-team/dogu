@@ -264,6 +264,12 @@ export class RunStep extends Kindable<'RunStep'> implements Pick<RoutineStep, 'r
   @IsNumber()
   stepIndex!: number;
 
+  @IsString()
+  browserName!: string;
+
+  @IsString()
+  browserVersion!: string;
+
   @IsObject()
   env!: Record<string, string>;
 
