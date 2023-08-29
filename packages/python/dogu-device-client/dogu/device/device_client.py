@@ -63,7 +63,7 @@ class DeviceClient:
             break
         return DeviceCloser(conn)
 
-    def run_appium_server(self, serial: str) -> None:
+    def run_appium_server(self, serial: str) -> AppiumServerContext:
         conn = self.__subscribe("/ws/devices/run-appium-server")
         param = DeviceRunAppiumServerSendMessage(serial=serial)
         json_param = json.dumps(asdict(param))

@@ -15,6 +15,7 @@ class AppiumServerContext:
         self.info = info
         self.closer = DeviceCloser(conn)
 
+    @property
     def port(self) -> int:
         return self.info.port
 

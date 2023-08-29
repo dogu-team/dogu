@@ -1,4 +1,5 @@
 export interface StepContextEnv extends Record<string, string | undefined> {
+  CI: string;
   DOGU_API_BASE_URL: string;
   DOGU_DEVICE_ID: string;
   DOGU_DEVICE_JOB_ID: string;

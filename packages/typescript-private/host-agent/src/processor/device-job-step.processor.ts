@@ -150,6 +150,7 @@ export class DeviceJobStepProcessor {
 
     const pathOld = environmentVariableReplacer.stackProvider.export(this.logger).PATH;
     const stepContextEnv: StepContextEnv = {
+      CI: 'true',
       DOGU_DEVICE_PLATFORM: platformTypeFromPlatform(platform),
       DOGU_DEVICE_SERIAL: serial,
       DOGU_DEVICE_ID: deviceId,

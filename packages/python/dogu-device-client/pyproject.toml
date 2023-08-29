@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dogu-device-client"
-version = "0.1.1"
+version = "0.0.2"
 description = "dogutech's device client to control devices"
 authors = ["Dogu Technologies"]
 readme = "README.md"
