@@ -82,13 +82,6 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
   let env = process.env;
   if (browserName) {
     logger.info('Ensure browser and driver...', { browserName, browserVersion });
-    const ensuredBrowserAndDriverInfo = await deviceHostClient.ensureBrowserAndDriver({
-      browserName,
-      browserPlatform: DOGU_DEVICE_PLATFORM,
-      browserVersion: browserVersion,
-      deviceSerial: DOGU_DEVICE_SERIAL,
-    });
-    logger.info('Browser and driver ensured', { ensuredBrowserAndDriverInfo });
     const {
       browserName: ensuredBrowserName,
       browserVersion: ensuredBrowserVersion,
@@ -96,22 +89,29 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
       browserPackageName,
       browserDriverPath,
       browserMajorVersion,
-    } = ensuredBrowserAndDriverInfo;
-    env.DOGU_BROWSER_NAME = ensuredBrowserName;
-    env.DOGU_BROWSER_VERSION = ensuredBrowserVersion || '';
-    env.DOGU_BROWSER_MAJOR_VERSION = browserMajorVersion ? String(browserMajorVersion) : '';
-    env.DOGU_BROWSER_PATH = browserPath || '';
-    env.DOGU_BROWSER_DRIVER_PATH = browserDriverPath;
-    env.DOGU_BROWSER_PACKAGE_NAME = browserPackageName || '';
+    } = await deviceHostClient.ensureBrowserAndDriver({
+      browserName,
+      browserPlatform: DOGU_DEVICE_PLATFORM,
+      browserVersion: browserVersion,
+      deviceSerial: DOGU_DEVICE_SERIAL,
+    });
+    const browserEnv = {
+      DOGU_BROWSER_NAME: ensuredBrowserName,
+      DOGU_BROWSER_VERSION: ensuredBrowserVersion || '',
+      DOGU_BROWSER_MAJOR_VERSION: browserMajorVersion ? String(browserMajorVersion) : '',
+      DOGU_BROWSER_PATH: browserPath || '',
+      DOGU_BROWSER_DRIVER_PATH: browserDriverPath,
+      DOGU_BROWSER_PACKAGE_NAME: browserPackageName || '',
+    };
 
     logger.info('update env for browser and driver', {
-      DOGU_BROWSER_NAME: env.DOGU_BROWSER_NAME,
-      DOGU_BROWSER_VERSION: env.DOGU_BROWSER_VERSION,
-      DOGU_BROWSER_MAJOR_VERSION: env.DOGU_BROWSER_MAJOR_VERSION,
-      DOGU_BROWSER_PATH: env.DOGU_BROWSER_PATH,
-      DOGU_BROWSER_DRIVER_PATH: env.DOGU_BROWSER_DRIVER_PATH,
-      DOGU_BROWSER_PACKAGE_NAME: env.DOGU_BROWSER_PACKAGE_NAME,
+      ...browserEnv,
     });
+
+    env = {
+      ...env,
+      ...browserEnv,
+    };
   }
 
   command
