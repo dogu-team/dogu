@@ -8,6 +8,7 @@ import { ProjectScmBitbucketAuth } from '../../../db/entity/project-scm-bitbucke
 import { ProjectScmGithubAuth } from '../../../db/entity/project-scm-github-auth.entity';
 import { ProjectScmGitlabAuth } from '../../../db/entity/project-scm-gitlab-auth.entity';
 import { ProjectScm } from '../../../db/entity/project-scm.entity';
+import { Bitbucket } from '../../../sdk/git/bitbucket';
 import { Github } from '../../../sdk/github';
 import { Gitlab } from '../../../sdk/gitlab';
 import { EncryptService } from '../../encrypt/encrypt.service';
@@ -199,17 +200,16 @@ export class ProjectScmService {
         const bitbucketToken = await EncryptService.decryptToken(this.dataSource.manager, organizationId, projectScmBitBucketAuth.token);
         const url = new URL(projectScm.url);
         const parts: string[] = url.pathname.split('/');
-        const org: string = parts[1];
+        const workspace: string = parts[1];
         const repo: string = parts[2];
 
-        const content = await Github.readDoguConfigFile(bitbucketToken, org, repo);
-        const json: DoguScmConfig = JSON.parse(content.replaceAll('\n| ', ''));
-        const result = await Github.getScriptFiles(bitbucketToken, org, repo, json.scriptFolderPaths);
+        const content = await Bitbucket.readDoguConfigFile(bitbucketToken, workspace, repo);
+        const result = await Bitbucket.getScriptFiles(bitbucketToken, workspace, repo, content.scriptFolderPaths);
 
         return result.map((r) => ({
           name: r.path?.split('/').pop() ?? '',
           path: r.path ?? '',
-          size: r.size ?? 0,
+          size: (r.size as number | undefined) ?? 0,
           type: r.type ?? '',
         }));
       }
@@ -247,7 +247,7 @@ export class ProjectScmService {
           if (!githubAuth) {
             throw new HttpException(`This Project does not have github auth: ${projectId}`, HttpStatus.NOT_FOUND);
           }
-          token = token = await EncryptService.decryptToken(this.dataSource.manager, organizationId, githubAuth.token);
+          token = await EncryptService.decryptToken(this.dataSource.manager, organizationId, githubAuth.token);
         }
         break;
       case PROJECT_SCM_TYPE.BITBUCKET:
@@ -256,7 +256,7 @@ export class ProjectScmService {
           if (!bitbucketAuth) {
             throw new HttpException(`This Project does not have bitbucket auth: ${projectId}`, HttpStatus.NOT_FOUND);
           }
-          token = token = await EncryptService.decryptToken(this.dataSource.manager, organizationId, bitbucketAuth.token);
+          token = await EncryptService.decryptToken(this.dataSource.manager, organizationId, bitbucketAuth.token);
         }
         break;
       default:

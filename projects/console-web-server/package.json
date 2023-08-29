@@ -69,6 +69,7 @@
     "aws-sdk": "2.1233.0",
     "axios": "1.4.0",
     "bcrypt": "5.0.0",
+    "bitbucket": "2.11.0",
     "body-parser": "1.20.2",
     "bplist-parser": "0.3.2",
     "cgbi-to-png": "1.0.7",

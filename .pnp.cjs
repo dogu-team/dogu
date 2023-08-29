@@ -22632,6 +22632,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["bitbucket", [\
+        ["npm:2.11.0", {\
+          "packageLocation": "./.yarn/cache/bitbucket-npm-2.11.0-12f0fb821a-b2d198c314.zip/node_modules/bitbucket/",\
+          "packageDependencies": [\
+            ["bitbucket", "npm:2.11.0"],\
+            ["before-after-hook", "npm:2.2.3"],\
+            ["deepmerge", "npm:4.3.1"],\
+            ["is-plain-object", "npm:3.0.1"],\
+            ["node-fetch", "virtual:1b72fec7bb0f7f65631883ba39976a89b23a387bb935170eee37fef528f0caab0bcc7663f8211ff33a22ee11d361aa1b8f34bec752dd83d1882c9de3d3bc1fbf#npm:2.6.9"],\
+            ["url-template", "npm:2.0.8"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["bl", [\
         ["npm:1.2.3", {\
           "packageLocation": "./.yarn/cache/bl-npm-1.2.3-49c4213ca5-123f097989.zip/node_modules/bl/",\
@@ -24571,6 +24585,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["aws-sdk", "npm:2.1233.0"],\
             ["axios", "npm:1.4.0"],\
             ["bcrypt", "npm:5.0.0"],\
+            ["bitbucket", "npm:2.11.0"],\
             ["body-parser", "npm:1.20.2"],\
             ["bplist-parser", "npm:0.3.2"],\
             ["cgbi-to-png", "npm:1.0.7"],\
@@ -32305,6 +32320,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["is-plain-object", "npm:2.0.4"],\
             ["isobject", "npm:3.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:3.0.1", {\
+          "packageLocation": "./.yarn/cache/is-plain-object-npm-3.0.1-15b47fb6eb-d13fe75db3.zip/node_modules/is-plain-object/",\
+          "packageDependencies": [\
+            ["is-plain-object", "npm:3.0.1"]\
           ],\
           "linkType": "HARD"\
         }],\
@@ -50250,6 +50272,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["url-parse-lax", "npm:3.0.0"],\
             ["prepend-http", "npm:2.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["url-template", [\
+        ["npm:2.0.8", {\
+          "packageLocation": "./.yarn/cache/url-template-npm-2.0.8-5d44a47d46-4183fccd74.zip/node_modules/url-template/",\
+          "packageDependencies": [\
+            ["url-template", "npm:2.0.8"]\
           ],\
           "linkType": "HARD"\
         }]\
