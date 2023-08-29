@@ -12,5 +12,3 @@ def test_connect():
     closer = device.forward("R39M20AQVAM", host_port, 12345)
     closer.close()
     appium_server.close()
-
-    pass

@@ -53,13 +53,13 @@ class DeviceClient:
         conn.send(json_param)
         while True:
             msg = conn.recv()
-            msg = json.loads(msg)
-            kind = msg["value"]["kind"]
+            msg_json = json.loads(msg)
+            kind = msg_json["value"]["kind"]
             if kind != "DeviceForwardReceiveMessageResultValue":
                 continue
-            success = msg["value"]["success"]
+            success = msg_json["value"]["success"]
             if not success:
-                raise Exception(f"Failed to forward. error: {msg['value']['error']}")
+                raise Exception(f"Failed to forward. error: {msg_json['value']['error']}")
             break
         return DeviceCloser(conn)
 
@@ -70,25 +70,15 @@ class DeviceClient:
         conn.send(json_param)
         while True:
             msg = conn.recv()
-            msg = json.loads(msg)
-            kind = msg["value"]["kind"]
+            msg_json = json.loads(msg)
+            kind = msg_json["value"]["kind"]
             if kind != "DeviceRunAppiumServerReceiveMessageResultValue":
                 continue
-            success = msg["value"]["success"]
+            success = msg_json["value"]["success"]
             if not success:
-                raise Exception(f"Failed to forward. error: {msg['value']['error']}")
+                raise Exception(f"Failed to forward. error: {msg_json['value']['error']}")
             break
-        return AppiumServerContext(AppiumContextServerInfo(port=int(msg["value"]["serverPort"])), conn)
-
-    # def get_appium_context_info(self, serial: str) -> AppiumContextInfo:
-    #     full_path = f"http://{self._host_and_port}/devices/{serial}/appium-channel-info"
-    #     res = requests.get(full_path)
-    #     res.raise_for_status()
-    #     device_res = DeviceHttpResponse(res)
-    #     if device_res.error()[0]:
-    #         raise Exception(f"DeviceClient.get_appium_context_info error: {device_res.error()[1].message}")
-    #     res_obj = device_res.data(GetAppiumContextInfoResponse)
-    #     return res_obj.info
+        return AppiumServerContext(AppiumContextServerInfo(port=int(msg_json["value"]["serverPort"])), conn)
 
     def __subscribe(self, path: str, try_count: int = 5) -> ClientConnection:
         full_path = f"ws://{self._host_and_port}{path}"
