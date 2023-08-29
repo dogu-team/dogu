@@ -11,6 +11,9 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
     DOGU_DEVICE_PLATFORM,
     DOGU_HOST_WORKSPACE_PATH,
     DOGU_DEVICE_SERIAL,
+    DOGU_STEP_WORKING_PATH,
+    DOGU_BROWSER_NAME,
+    DOGU_BROWSER_VERSION,
   } = options;
   logger.info('log level', { DOGU_LOG_LEVEL });
 
@@ -30,9 +33,6 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
   const requestTimeout = input.get<number>('requestTimeout');
 
   const command = input.get<string>('command');
-
-  const browserName = process.env.DOGU_BROWSER_NAME || '';
-  const browserVersion = process.env.DOGU_BROWSER_VERSION || '';
 
   if (checkout) {
     logger.info('resolve checkout path... from', { DOGU_ROUTINE_WORKSPACE_PATH, checkoutPath });
@@ -81,8 +81,8 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
   }
 
   let env = process.env;
-  if (browserName) {
-    logger.info('Ensure browser and driver...', { browserName, browserVersion });
+  if (DOGU_BROWSER_NAME) {
+    logger.info('Ensure browser and driver...', { DOGU_BROWSER_NAME, DOGU_BROWSER_VERSION });
     const {
       browserName: ensuredBrowserName,
       browserVersion: ensuredBrowserVersion,
@@ -91,9 +91,9 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
       browserDriverPath,
       browserMajorVersion,
     } = await deviceHostClient.ensureBrowserAndDriver({
-      browserName,
+      browserName: DOGU_BROWSER_NAME,
       browserPlatform: DOGU_DEVICE_PLATFORM,
-      browserVersion: browserVersion,
+      browserVersion: DOGU_BROWSER_VERSION,
       deviceSerial: DOGU_DEVICE_SERIAL,
     });
     const browserEnv = {
@@ -117,11 +117,11 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
     .map((line) => line.trim())
     .filter((line) => line.length > 0)
     .forEach((line) => {
-      logger.info(`Run command: [${line}] on ${DOGU_ROUTINE_WORKSPACE_PATH}`);
+      logger.info(`Run command: [${line}] on ${DOGU_STEP_WORKING_PATH}`);
       const result = spawnSync(line, {
         stdio: 'inherit',
         shell: true,
-        cwd: DOGU_ROUTINE_WORKSPACE_PATH,
+        cwd: DOGU_STEP_WORKING_PATH,
         env,
       });
       if (result.status === 0) {

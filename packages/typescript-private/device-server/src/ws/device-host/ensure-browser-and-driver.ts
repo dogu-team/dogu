@@ -31,7 +31,7 @@ export class DeviceHostEnsureBrowserAndDriverService
     try {
       await this.onMessage(webSocket, message, valueAccessor);
     } catch (error) {
-      closeWebSocketWithTruncateReason(webSocket, 1001, 'Failed to ensure browser and driver');
+      closeWebSocketWithTruncateReason(webSocket, 1001, 'Failed to ensure');
     }
   }
 

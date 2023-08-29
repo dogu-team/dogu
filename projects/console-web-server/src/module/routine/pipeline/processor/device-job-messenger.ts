@@ -67,7 +67,7 @@ export class DeviceJobMessenger {
     step: RoutineStep,
     routineDeviceJobBrowser: RoutineDeviceJobBrowser | undefined,
   ): RunStep {
-    const { env, routineStepId, routineDeviceJobId: deviceJobId, index } = step;
+    const { env, routineStepId, routineDeviceJobId: deviceJobId, index, cwd } = step;
     const runStepValue = this.stepToRunStepValue(step);
     return {
       kind: 'RunStep',
@@ -82,6 +82,7 @@ export class DeviceJobMessenger {
       browserVersion: routineDeviceJobBrowser?.browserVersion ?? '',
       env: env ?? {},
       value: runStepValue,
+      cwd,
     };
   }
 

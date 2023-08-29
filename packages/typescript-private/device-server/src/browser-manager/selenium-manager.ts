@@ -160,7 +160,7 @@ export class SeleniumManager {
       throw new Error(`Driver file not found at ${browserDriverPathStat}`);
     }
 
-    this.logger.info(`Driver file found at ${browserDriverPathStat}`);
+    this.logger.info(`Driver file found at ${browserDriverPath}`);
     return {
       browserDriverPath,
     };

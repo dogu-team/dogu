@@ -189,7 +189,7 @@ export class DeviceHostClient extends DeviceHttpClient {
         }
         fulfilled = true;
         reject(new Error(`Ensure browser and driver timeout: ${timeoutMilliseconds}ms`));
-      });
+      }, timeoutMilliseconds);
 
       const _resolve = (value: Instance<typeof DeviceHostEnsureBrowserAndDriver.receiveMessage>): void => {
         if (fulfilled) {

@@ -65,4 +65,8 @@ export interface StepSchema {
   env?: {
     [k: string]: string;
   };
+  /**
+   * The working directory for the step. relative to the routine working directory.
+   */
+  cwd?: string;
 }

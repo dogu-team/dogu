@@ -240,7 +240,7 @@ const RunStepValue = [Run, Action] as const;
 export type RunStepValue = Instance<(typeof RunStepValue)[number]>;
 
 @OneOf()
-export class RunStep extends Kindable<'RunStep'> implements Pick<RoutineStep, 'routineStepId' | 'env'>, Pick<RoutineDeviceJob, 'routineDeviceJobId' | 'deviceRunnerId'> {
+export class RunStep extends Kindable<'RunStep'> implements Pick<RoutineStep, 'routineStepId' | 'env' | 'cwd'>, Pick<RoutineDeviceJob, 'routineDeviceJobId' | 'deviceRunnerId'> {
   static override kind = 'RunStep';
 
   @IsUUID()
@@ -272,6 +272,9 @@ export class RunStep extends Kindable<'RunStep'> implements Pick<RoutineStep, 'r
 
   @IsObject()
   env!: Record<string, string>;
+
+  @IsString()
+  cwd!: string;
 
   @ValidateNested()
   @TransformByKind(RunStepValue)

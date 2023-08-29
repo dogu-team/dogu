@@ -5,7 +5,7 @@ import { EnvironmentVariableReplacementProvider, HostPaths } from '@dogu-tech/no
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import fs from 'fs';
-import { delimiter } from 'path';
+import path, { delimiter } from 'path';
 import { DeviceJobContextRegistry } from '../device-job/device-job.context-registry';
 import {
   OnDeviceJobCancelRequestedEvent,
@@ -119,7 +119,7 @@ export class DeviceJobStepProcessor {
   }
 
   async onRunStep(param: RunStep, context: MessageContext): Promise<ErrorResult> {
-    const { routineStepId, env: stepEnv, value, organizationId, deviceId, routineDeviceJobId, stepIndex, projectId, deviceRunnerId, browserName, browserVersion } = param;
+    const { routineStepId, env: stepEnv, value, organizationId, deviceId, routineDeviceJobId, stepIndex, projectId, deviceRunnerId, browserName, browserVersion, cwd } = param;
     const { info, router, environmentVariableReplacer } = context;
     const { platform, serial, deviceWorkspacePath, rootWorkspacePath, hostPlatform, hostWorkspacePath, pathMap } = info;
     this.logger.info(`Step ${routineStepId} started`);
@@ -161,6 +161,7 @@ export class DeviceJobStepProcessor {
       DOGU_ORGANIZATION_WORKSPACE_PATH: organizationWorkspacePath,
       DOGU_PROJECT_ID: projectId,
       DOGU_STEP_ID: `${routineStepId}`,
+      DOGU_STEP_WORKING_PATH: path.resolve(doguRoutineWorkspacePath, cwd),
       DOGU_API_BASE_URL: env.DOGU_API_BASE_URL,
       DOGU_LOG_LEVEL: optionsConfig.get('logLevel', 'verbose'),
       DOGU_ROOT_WORKSPACE_PATH: rootWorkspacePath,

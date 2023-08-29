@@ -1,5 +1,5 @@
 import { getBrowserNamesByPlatform } from '@dogu-private/types';
-import { PrefixLogger, stringify } from '@dogu-tech/common';
+import { errorify, PrefixLogger, stringify } from '@dogu-tech/common';
 import {
   BrowserAndDriverInstallation,
   BrowserAutoInstallableChecker,
@@ -44,6 +44,15 @@ export class BrowserManager {
   }
 
   async ensureBrowserAndDriver(options: EnsureBrowserAndDriverOptions): Promise<BrowserAndDriverInstallation> {
+    try {
+      return await this.ensureBrowserAndDriverInternal(options);
+    } catch (error) {
+      this.logger.error(`Failed to ensure browser and driver`, { error: errorify(error) });
+      throw error;
+    }
+  }
+
+  async ensureBrowserAndDriverInternal(options: EnsureBrowserAndDriverOptions): Promise<BrowserAndDriverInstallation> {
     const { browserName, browserPlatform, requestedBrowserVersion, deviceSerial } = options;
     this.logger.info(`Ensuring browser and driver...`, { browserName, browserPlatform, requestedBrowserVersion, deviceSerial });
 
@@ -132,7 +141,7 @@ export class BrowserManager {
   private parseMajorVersion(version: string): number {
     const majorVersion = this.majorVersionPattern.exec(version)?.[0] ?? '';
     if (!majorVersion) {
-      throw new Error(`Browser version ${version} is not valid.`);
+      throw new Error(`Browser version ${version} is not valid`);
     }
     return Number(majorVersion);
   }

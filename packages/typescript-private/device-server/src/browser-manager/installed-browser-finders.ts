@@ -78,12 +78,7 @@ export class AdbBrowserInstallationFinder implements BrowserInstallationFinder {
         const browserName = browserNameMap.get(packageName);
         return { packageName, browserName };
       })
-      .filter(({ packageName, browserName }) => {
-        if (!browserName) {
-          this.logger.warn(`Failed to find browser name for package name: ${packageName}`);
-        }
-        return !!browserName;
-      })
+      .filter(({ browserName }) => !!browserName)
       .map(({ packageName, browserName }) => ({ browserPackageName: packageName, browserName } as { browserPackageName: string; browserName: AndroidBrowserName }));
 
     return browserInfos;

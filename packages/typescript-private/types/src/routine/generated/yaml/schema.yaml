@@ -81,6 +81,9 @@ definitions:
         additionalProperties:
           type: string
         description: The environment variables for the step.
+      cwd:
+        type: string
+        description: The working directory for the step. relative to the routine working directory.
     required:
       - name
   RunsOnWithBrowserName:
