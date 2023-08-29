@@ -27,9 +27,9 @@ export interface LatestBrowserVersionResolver {
   resolve(options: LatestBrowserVersionResolverOptions): PromiseOrValue<ResolvedBrowserVersionInfo>;
 }
 
-export type InstalledBrowserFinderOptions = Pick<BrowserOptions, 'browserName' | 'browserPlatform'> &
+export type BrowserInstallationFinderOptions = Pick<BrowserOptions, 'browserName' | 'browserPlatform'> &
   Partial<Pick<BrowserOptions, 'resolvedBrowserVersion' | 'resolvedMajorBrowserVersion' | 'deviceSerial'>>;
-export class InstalledBrowserInfo implements Pick<BrowserInfo, 'browserName'>, Partial<Pick<BrowserInfo, 'browserPath' | 'browserPackageName' | 'browserVersion' | 'driverPath'>> {
+export class BrowserInstallation implements Pick<BrowserInfo, 'browserName'>, Partial<Pick<BrowserInfo, 'browserPath' | 'browserPackageName' | 'browserVersion' | 'driverPath'>> {
   @IsIn(BrowserName)
   browserName!: BrowserName;
 
@@ -50,9 +50,9 @@ export class InstalledBrowserInfo implements Pick<BrowserInfo, 'browserName'>, P
   driverPath?: string;
 }
 
-export interface InstalledBrowserFinder {
-  match(options: InstalledBrowserFinderOptions): PromiseOrValue<boolean>;
-  find(options: InstalledBrowserFinderOptions): PromiseOrValue<InstalledBrowserInfo[]>;
+export interface BrowserInstallationFinder {
+  match(options: BrowserInstallationFinderOptions): PromiseOrValue<boolean>;
+  find(options: BrowserInstallationFinderOptions): PromiseOrValue<BrowserInstallation[]>;
 }
 
 export type DriverInstallerOptions = Pick<BrowserOptions, 'browserName' | 'browserPlatform' | 'resolvedBrowserVersion'>;
@@ -74,11 +74,11 @@ export type BrowserInstallerOptions = Pick<BrowserOptions, 'browserName' | 'brow
 
 export interface BrowserInstaller {
   match(options: BrowserInstallerOptions): PromiseOrValue<boolean>;
-  install(options: BrowserInstallerOptions): PromiseOrValue<InstalledBrowserInfo>;
+  install(options: BrowserInstallerOptions): PromiseOrValue<BrowserInstallation>;
 }
 
 export type EnsureBrowserAndDriverOptions = Pick<BrowserOptions, 'browserName' | 'browserPlatform'> & Partial<Pick<BrowserOptions, 'requestedBrowserVersion' | 'deviceSerial'>>;
-export type EnsuredBrowserAndDriverInfo = InstalledBrowserInfo & InstalledDriverInfo;
+export type EnsuredBrowserAndDriverInfo = BrowserInstallation & InstalledDriverInfo;
 
-export type FindAllInstalledBrowserInfosOptions = Pick<InstalledBrowserFinderOptions, 'browserPlatform' | 'deviceSerial'>;
-export type FindAllInstalledBrowserInfosResult = InstalledBrowserInfo[];
+export type FindAllBrowserInstallationsOptions = Pick<BrowserInstallationFinderOptions, 'browserPlatform' | 'deviceSerial'>;
+export type FindAllBrowserInstallationsResult = BrowserInstallation[];

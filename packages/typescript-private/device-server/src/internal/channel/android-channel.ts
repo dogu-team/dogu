@@ -14,7 +14,7 @@ import {
   StreamingAnswer,
 } from '@dogu-private/types';
 import { Closable, delay, errorify, FilledPrintable, Printable, stringify } from '@dogu-tech/common';
-import { InstalledBrowserInfo, StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import { Manifest, open } from 'adbkit-apkreader';
 import { ChildProcess, execFile } from 'child_process';
@@ -87,7 +87,7 @@ export class AndroidChannel implements DeviceChannel {
     private _appiumContext: AppiumContextProxy,
     private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
     private readonly logger: FilledPrintable,
-    readonly installedBrowserInfos: InstalledBrowserInfo[],
+    readonly browserInstallations: BrowserInstallation[],
   ) {
     this.logger.info(`AndroidChannel created: ${this.serial}`);
   }
@@ -135,7 +135,7 @@ export class AndroidChannel implements DeviceChannel {
     );
     const serialUnique = await generateSerialUnique(systemInfo);
 
-    const installedBrowserInfos = await deviceServerService.browserManagerService.findAllInstalledBrowserInfos({
+    const browserInstallations = await deviceServerService.browserManagerService.findAllBrowserInstallations({
       deviceSerial: serial,
       browserPlatform: 'android',
     });
@@ -152,7 +152,7 @@ export class AndroidChannel implements DeviceChannel {
       appiumContextProxy,
       appiumDeviceWebDriverHandler,
       logger,
-      installedBrowserInfos,
+      browserInstallations,
     );
 
     await deviceAgent.connect();

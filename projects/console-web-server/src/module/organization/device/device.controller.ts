@@ -103,8 +103,10 @@ export class DeviceController {
     @Param(DevicePropCamel.deviceId) deviceId: DeviceId,
     @Body() updateDeviceDto: UpdateDeviceDto,
   ): Promise<DeviceResponse> {
-    const rv = await this.deviceStatusService.updateDevice(organizationId, deviceId, updateDeviceDto);
-    return rv;
+    const device = await this.dataSource.transaction(async (manager) => {
+      return await this.deviceStatusService.updateDevice(manager, organizationId, deviceId, updateDeviceDto);
+    });
+    return device;
   }
 
   @Delete(':deviceId')

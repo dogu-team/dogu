@@ -8,6 +8,7 @@ import {
   RoutineStepPropCamel,
 } from '@dogu-private/console';
 import { PIPELINE_STATUS, REMOTE_DEVICE_JOB_SESSION_STATE } from '@dogu-private/types';
+import { errorify } from '@dogu-tech/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import _ from 'lodash';
@@ -15,7 +16,7 @@ import { Brackets, DataSource } from 'typeorm';
 import util from 'util';
 import { config } from '../../../config';
 import { RoutineDeviceJob } from '../../../db/entity/device-job.entity';
-import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
+import { DeviceRunner } from '../../../db/entity/device-runner.entity';
 import { DoguLogger } from '../../logger/logger';
 import { DeviceJobRunner } from '../../routine/pipeline/processor/runner/device-job-runner';
 import { StepRunner } from '../../routine/pipeline/processor/runner/step-runner';
@@ -133,69 +134,38 @@ export class DeviceJobUpdater {
       return;
     }
 
-    // group by deviceId
-    const highestPriorityDeviceJobs: RoutineDeviceJob[] = [];
     const deviceJobGroups = _.groupBy(waitingDeviceJobs, (deviceJob) => deviceJob.deviceId);
     const deviceIds = Object.keys(deviceJobGroups);
-
     for (const deviceId of deviceIds) {
       const waitingRoutineDeviceJobsByDeviceId = deviceJobGroups[deviceId];
-      const waitingRemoteDeviceJobsByDeviceId = await this.dataSource.getRepository(RemoteDeviceJob).find({
-        where: {
-          deviceId,
-          sessionState: REMOTE_DEVICE_JOB_SESSION_STATE.WAITING,
-        },
-      });
-
-      const maxParallel = waitingRoutineDeviceJobsByDeviceId[0].device!.maxParallelJobs;
-      if (maxParallel === 1) {
-        const deviceJob = waitingRoutineDeviceJobsByDeviceId.find((deviceJob) => deviceJob.device!.deviceId === deviceId);
-        const inProgressDeviceJobs = deviceJob!.device!.routineDeviceJobs ?? [];
-        const inProgressRemoteDeviceJobs = deviceJob!.device!.remoteDeviceJobs ?? [];
-        const totalInProgressDeviceJobs = inProgressDeviceJobs.length + inProgressRemoteDeviceJobs.length;
-        if (totalInProgressDeviceJobs === 0) highestPriorityDeviceJobs.push(deviceJob!);
-      } else {
-        const inProgressDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0].device!.routineDeviceJobs?.length ?? 0;
-        const inProgressRemoteDeviceJobs = waitingRoutineDeviceJobsByDeviceId[0].device!.remoteDeviceJobs?.length ?? 0;
-        const addableDeviceJobCount = maxParallel - inProgressDeviceJobs - inProgressRemoteDeviceJobs;
-
-        const allWaingDeviceJobs = [...waitingRoutineDeviceJobsByDeviceId, ...waitingRemoteDeviceJobsByDeviceId];
-
-        // sort by createdAt
-        const sortedDeviceJobs = allWaingDeviceJobs.sort((a, b) => {
-          return a.createdAt.getTime() - b.createdAt.getTime();
-        });
-
-        let pushCount = 0;
-        for (const deviceJob of sortedDeviceJobs) {
-          if (deviceJob instanceof RemoteDeviceJob) {
-            break;
-          }
-
-          if (pushCount >= addableDeviceJobCount) {
-            break;
-          }
-
-          highestPriorityDeviceJobs.push(deviceJob);
-          pushCount++;
+      const sortedWaitingDeviceJobs = waitingRoutineDeviceJobsByDeviceId.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+      const deviceRunners = await this.dataSource.getRepository(DeviceRunner).find({ where: { deviceId, isInUse: 0 } });
+      const promises = _.zip(deviceRunners, sortedWaitingDeviceJobs).map(async ([deviceRunner, deviceJob]) => {
+        if (!deviceRunner || !deviceJob) {
+          return;
         }
-      }
-    }
 
-    for (const deviceJob of highestPriorityDeviceJobs) {
-      const { device } = deviceJob;
-      const { deviceId, organizationId } = device!;
-      const steps = deviceJob.routineSteps;
-      if (!steps || steps.length === 0) {
-        throw new Error(`deviceJob ${deviceJob.routineDeviceJobId} has no steps`);
-      }
+        const { device } = deviceJob;
+        const { deviceId, organizationId } = device!;
+        const steps = deviceJob.routineSteps;
+        if (!steps || steps.length === 0) {
+          throw new Error(`deviceJob ${deviceJob.routineDeviceJobId} has no steps`);
+        }
 
-      this.logger.info(`device-job ${deviceJob.routineDeviceJobId} status change to in_progress.`);
-      await this.deviceJobRunner.setStatus(this.dataSource.manager, deviceJob, PIPELINE_STATUS.IN_PROGRESS, new Date());
+        this.logger.info(`device-job ${deviceJob.routineDeviceJobId} status change to in_progress.`);
 
-      this.deviceJobRunner.sendRunDeviceJob(organizationId, deviceId, deviceJob).catch((error) => {
-        this.logger.error('sendRunDeviceJob process error', { error });
+        deviceRunner.isInUse = 1;
+        await this.dataSource.manager.getRepository(DeviceRunner).save(deviceRunner);
+
+        deviceJob.deviceRunnerId = deviceRunner.deviceRunnerId;
+        await this.deviceJobRunner.setStatus(this.dataSource.manager, deviceJob, PIPELINE_STATUS.IN_PROGRESS, new Date());
+
+        this.deviceJobRunner.sendRunDeviceJob(organizationId, deviceId, deviceJob).catch((error) => {
+          this.logger.error('sendRunDeviceJob process error', { error: errorify(error) });
+        });
       });
+
+      await Promise.allSettled(promises);
     }
   }
 

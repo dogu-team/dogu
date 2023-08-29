@@ -11,7 +11,7 @@ import {
   StreamingAnswer,
 } from '@dogu-private/types';
 import { Closable, Printable, PromiseOrValue } from '@dogu-tech/common';
-import { InstalledBrowserInfo, StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { Observable } from 'rxjs';
 import { DeviceWebDriver } from '../../alias';
 import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
@@ -54,7 +54,7 @@ export interface DeviceChannel {
   get info(): DeviceSystemInfo;
   get portContext(): DevicePortContext;
   get isVirtual(): boolean;
-  get installedBrowserInfos(): InstalledBrowserInfo[];
+  get browserInstallations(): BrowserInstallation[];
 
   // screen
   startStreamingWebRTC(offer: StreamingOfferDto): PromiseOrValue<ProtoRTCPeerDescription>;

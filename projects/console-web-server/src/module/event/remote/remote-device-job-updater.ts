@@ -1,12 +1,12 @@
 import { DevicePropCamel, RemoteDeviceJobPropCamel, RemoteDeviceJobPropSnake, RoutineDeviceJobPropSnake } from '@dogu-private/console';
 import { DEVICE_TABLE_NAME, PIPELINE_STATUS, REMOTE_DEVICE_JOB_SESSION_STATE } from '@dogu-private/types';
-import { DefaultHttpOptions, DoguRequestTimeoutHeader, HeaderRecord } from '@dogu-tech/common';
+import { DefaultHttpOptions, DoguRequestTimeoutHeader, HeaderRecord, stringify } from '@dogu-tech/common';
 import { DeviceWebDriver } from '@dogu-tech/device-client-common';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import _ from 'lodash';
 import { DataSource } from 'typeorm';
-import { RoutineDeviceJob } from '../../../db/entity/index';
+import { DeviceRunner } from '../../../db/entity/device-runner.entity';
 import { RemoteDeviceJob } from '../../../db/entity/remote-device-job.entity';
 import { SlackMessageService } from '../../../enterprise/module/integration/slack/slack-message.service';
 import { DeviceMessageRelayer } from '../../device-message/device-message.relayer';
@@ -53,66 +53,33 @@ export class RemoteDeviceJobUpdater {
       return;
     }
 
-    // group by deviceId
-    const highestPriorityDeviceJobs: RemoteDeviceJob[] = [];
     const deviceJobGroups = _.groupBy(waitingRemoteDeviceJobs, (deviceJob) => deviceJob.deviceId);
     const deviceIds = Object.keys(deviceJobGroups);
 
-    this.logger.info(`checkWaitingRemoteDeviceJobs. check waiting remote-device-jobs. deviceIds: ${deviceIds}`);
+    this.logger.info(`checkWaitingRemoteDeviceJobs. check waiting remote-device-jobs. deviceIds: ${stringify(deviceIds)}`);
 
     for (const deviceId of deviceIds) {
       const waitingRemoteDeviceJobsByDeviceId = deviceJobGroups[deviceId];
-      const waitingRoutineDeviceJobsByDeviceId = await this.dataSource.getRepository(RoutineDeviceJob).find({
-        where: {
-          deviceId,
-          status: PIPELINE_STATUS.WAITING,
-        },
+      const sortedWaitingRemoteDeviceJobsByDeviceId = waitingRemoteDeviceJobsByDeviceId.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+      const deviceRunners = await this.dataSource.getRepository(DeviceRunner).find({ where: { deviceId, isInUse: 0 } });
+      const promises = _.zip(deviceRunners, sortedWaitingRemoteDeviceJobsByDeviceId).map(async ([deviceRunner, remoteDeviceJob]) => {
+        if (!deviceRunner || !remoteDeviceJob) {
+          return;
+        }
+
+        deviceRunner.isInUse = 1;
+        await this.dataSource.manager.getRepository(DeviceRunner).save(deviceRunner);
+
+        remoteDeviceJob.deviceRunnerId = deviceRunner.deviceRunnerId;
+        await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(
+          this.dataSource.manager,
+          remoteDeviceJob,
+          REMOTE_DEVICE_JOB_SESSION_STATE.IN_PROGRESS,
+          this.slackMessageService,
+        );
       });
 
-      const maxParallel = waitingRemoteDeviceJobsByDeviceId[0]?.device!.maxParallelJobs!;
-      if (maxParallel === 1) {
-        const deviceJob = waitingRemoteDeviceJobsByDeviceId.find((deviceJob) => deviceJob.deviceId === deviceId);
-        const inProgressDeviceJobs = deviceJob!.device?.routineDeviceJobs ?? [];
-        const inProgressRemoteDeviceJobs = deviceJob!.device?.remoteDeviceJobs ?? [];
-        const totalInProgressDeviceJobs = inProgressDeviceJobs.length + inProgressRemoteDeviceJobs.length;
-        if (totalInProgressDeviceJobs === 0) highestPriorityDeviceJobs.push(deviceJob!);
-      } else {
-        const inProgressDeviceJobs = waitingRemoteDeviceJobsByDeviceId[0]?.device?.routineDeviceJobs?.length ?? 0;
-        const inProgressRemoteDeviceJobs = waitingRemoteDeviceJobsByDeviceId[0]?.device?.remoteDeviceJobs?.length ?? 0;
-        const addableDeviceJobCount = maxParallel - inProgressDeviceJobs - inProgressRemoteDeviceJobs;
-        if (addableDeviceJobCount <= 0) {
-          continue;
-        }
-
-        const allWaingDeviceJobs = [...waitingRoutineDeviceJobsByDeviceId, ...waitingRemoteDeviceJobsByDeviceId];
-        // sort by createdAt
-        const sortedDeviceJobs = allWaingDeviceJobs.sort((a, b) => {
-          return a.createdAt.getTime() - b.createdAt.getTime();
-        });
-
-        let pushCount = 0;
-        for (const deviceJob of sortedDeviceJobs) {
-          if (deviceJob instanceof RoutineDeviceJob) {
-            break;
-          }
-
-          if (pushCount >= addableDeviceJobCount) {
-            break;
-          }
-
-          highestPriorityDeviceJobs.push(deviceJob);
-          pushCount++;
-        }
-      }
-    }
-
-    for (const remoteDeviceJob of highestPriorityDeviceJobs) {
-      await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(
-        this.dataSource.manager,
-        remoteDeviceJob,
-        REMOTE_DEVICE_JOB_SESSION_STATE.IN_PROGRESS,
-        this.slackMessageService,
-      );
+      await Promise.allSettled(promises);
     }
   }
 

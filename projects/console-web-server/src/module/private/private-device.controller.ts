@@ -9,12 +9,11 @@ import {
   WriteDeviceRunTimeInfosRequestBody,
 } from '@dogu-private/console-host-agent';
 import { FindDeviceBySerialQuery, UpdateDeviceRequestBody } from '@dogu-private/console-host-agent/src/http-specs/private-device';
-import { DeviceId, getBrowserNamesByPlatform, isAllowedBrowserPlatform, OrganizationId, platformTypeFromPlatform } from '@dogu-private/types';
+import { DeviceId, OrganizationId } from '@dogu-private/types';
 import { Instance, transformAndValidate } from '@dogu-tech/common';
-import { Body, ConflictException, Controller, Get, Inject, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, ConflictException, Controller, Get, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { DeviceBrowser } from '../../db/entity/device-browser.entity';
 import { Device } from '../../db/entity/device.entity';
 import { findDeviceModelNameByModelId } from '../../utils/device';
 import { HOST_ACTION_TYPE } from '../auth/auth.types';
@@ -22,6 +21,7 @@ import { HostPermission } from '../auth/decorators';
 import { DeviceMessageQueue } from '../device-message/device-message.queue';
 import { InfluxDbDeviceService } from '../influxdb/influxdb-device.service';
 import { DoguLogger } from '../logger/logger';
+import { DeviceStatusService } from '../organization/device/device-status.service';
 import { IsDeviceExist } from '../organization/device/device.decorators';
 import { IsOrganizationExist } from '../organization/organization.decorators';
 
@@ -32,10 +32,9 @@ export class PrivateDeviceController {
     private readonly deviceMessageQueue: DeviceMessageQueue,
     @InjectDataSource()
     private readonly dataSource: DataSource,
-    @Inject(InfluxDbDeviceService)
     private readonly influxDbDeviceService: InfluxDbDeviceService,
-    @Inject(DoguLogger)
     private readonly logger: DoguLogger,
+    private readonly deviceStatusService: DeviceStatusService,
   ) {}
 
   @Get(PrivateDevice.findDeviceBySerial.path)
@@ -91,20 +90,6 @@ export class PrivateDeviceController {
         deviceId,
       };
       const responseValidated = await transformAndValidate(PrivateDevice.createDevice.responseBody, response);
-
-      // create device browser
-      const platformType = platformTypeFromPlatform(platform);
-      if (isAllowedBrowserPlatform(platformType)) {
-        const browserPlatform = platformType;
-        const browserNames = getBrowserNamesByPlatform(browserPlatform);
-        await Promise.all(
-          browserNames.map(async (browserName) => {
-            const deviceBrowser = manager.getRepository(DeviceBrowser).create({ deviceId, browserName });
-            await manager.save(deviceBrowser);
-          }),
-        );
-      }
-
       return responseValidated;
     });
 
@@ -126,8 +111,12 @@ export class PrivateDeviceController {
         deviceId,
       });
     }
-    const { hostId, version, model, manufacturer, isVirtual, resolutionWidth, resolutionHeight } = body;
-    await this.deviceRepository.update({ deviceId }, { hostId, version, model, manufacturer, isVirtual, resolutionWidth, resolutionHeight });
+    const { hostId, version, model, manufacturer, isVirtual, resolutionWidth, resolutionHeight, browserInstallations } = body;
+    await this.dataSource.transaction(async (manager) => {
+      await manager.update(Device, { deviceId }, { hostId, version, model, manufacturer, isVirtual, resolutionWidth, resolutionHeight });
+      await this.deviceStatusService.updateDeviceBrowserInstallations(manager, deviceId, browserInstallations);
+      await this.deviceStatusService.updateDeviceRunners(manager, deviceId);
+    });
   }
 
   @Patch(PrivateDevice.updateDeviceHeartbeatNow.path)

@@ -1,6 +1,6 @@
 import { DeviceId, HostId, OrganizationId, Platform, Serial, ThirdPartyPathMap } from '@dogu-private/types';
 import { createEventDefinition, IsFilledString } from '@dogu-tech/common';
-import { InstalledBrowserInfo } from '@dogu-tech/device-client';
+import { BrowserInstallation } from '@dogu-tech/device-client';
 import { Type } from 'class-transformer';
 import { IsArray, IsEnum, IsNotEmpty, IsNotEmptyObject, IsNumber, IsString, IsUUID, Max, Min, ValidateNested } from 'class-validator';
 import { DeviceConnectionInfo, DeviceResolutionInfo } from '../types';
@@ -45,9 +45,9 @@ export class OnDeviceConnectedEventValue implements DeviceConnectionInfo {
   resolutionHeight!: number;
 
   @ValidateNested({ each: true })
-  @Type(() => InstalledBrowserInfo)
+  @Type(() => BrowserInstallation)
   @IsArray()
-  installedBrowserInfos!: InstalledBrowserInfo[];
+  browserInstallations!: BrowserInstallation[];
 }
 export const OnDeviceConnectedEvent = createEventDefinition('OnDeviceConnected', OnDeviceConnectedEventValue);
 

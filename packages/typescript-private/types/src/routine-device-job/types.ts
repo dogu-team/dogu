@@ -1,4 +1,4 @@
-import { DeviceId } from '@dogu-tech/types';
+import { DeviceId, DeviceRunnerId } from '@dogu-tech/types';
 import { RoutineJobId } from '../routine-job';
 import { PIPELINE_STATUS } from '../routine-pipeline';
 
@@ -15,6 +15,7 @@ export interface RoutineDeviceJob {
   deviceId: DeviceId;
   status: PIPELINE_STATUS;
   record: number;
+  deviceRunnerId: DeviceRunnerId | null;
   heartbeat: Date | null;
   createdAt: Date;
   updatedAt: Date;

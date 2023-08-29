@@ -2,17 +2,17 @@ import { getBrowserNamesByPlatform } from '@dogu-private/types';
 import { PrefixLogger, stringify } from '@dogu-tech/common';
 import {
   BrowserAutoInstallableChecker,
+  BrowserInstallation,
+  BrowserInstallationFinder,
+  BrowserInstallationFinderOptions,
   BrowserInstaller,
   BrowserInstallerOptions,
   DriverInstaller,
   DriverInstallerOptions,
   EnsureBrowserAndDriverOptions,
   EnsuredBrowserAndDriverInfo,
-  FindAllInstalledBrowserInfosOptions,
-  FindAllInstalledBrowserInfosResult,
-  InstalledBrowserFinder,
-  InstalledBrowserFinderOptions,
-  InstalledBrowserInfo,
+  FindAllBrowserInstallationsOptions,
+  FindAllBrowserInstallationsResult,
   InstalledDriverInfo,
   LatestBrowserVersionResolver,
   LatestBrowserVersionResolverOptions,
@@ -22,7 +22,7 @@ import { logger } from '../logger/logger.instance';
 import { MobileBrowserAutoInstallableChecker, SeleniumManagerBrowserAutoInstallableChecker } from './browser-auto-installable-checkers';
 import { SeleniumManagerBrowserInstaller } from './browser-installers';
 import { SeleniumManagerDriverInstaller } from './driver-installers';
-import { AdbInstalledBrowserFinder, SeleniumManagerInstalledBrowserFinder } from './installed-browser-finders';
+import { AdbBrowserInstallationFinder, SeleniumManagerBrowserInstallationFinder } from './installed-browser-finders';
 import { ChromeLatestBrowserVersionResolver } from './latest-browser-version-resolvers';
 import { SeleniumManager } from './selenium-manager';
 
@@ -30,14 +30,14 @@ export class BrowserManager {
   private readonly logger = new PrefixLogger(logger, '[BrowserManager]');
   private readonly majorVersionPattern = /^[0-9]+.*$/g;
   private readonly latestBrowserVersionResolvers: LatestBrowserVersionResolver[] = [new ChromeLatestBrowserVersionResolver()];
-  private readonly installedBrowserFinders: InstalledBrowserFinder[] = [];
+  private readonly browserInstallationFinders: BrowserInstallationFinder[] = [];
   private readonly driverInstallers: DriverInstaller[] = [];
   private readonly browserInstallers: BrowserInstaller[] = [];
   private readonly browserAutoInstallableCheckers: BrowserAutoInstallableChecker[] = [];
 
   constructor() {
     const seleniumManager = new SeleniumManager();
-    this.installedBrowserFinders.push(new SeleniumManagerInstalledBrowserFinder(seleniumManager), new AdbInstalledBrowserFinder());
+    this.browserInstallationFinders.push(new SeleniumManagerBrowserInstallationFinder(seleniumManager), new AdbBrowserInstallationFinder());
     this.driverInstallers.push(new SeleniumManagerDriverInstaller(seleniumManager));
     this.browserInstallers.push(new SeleniumManagerBrowserInstaller(seleniumManager));
     this.browserAutoInstallableCheckers.push(new SeleniumManagerBrowserAutoInstallableChecker(seleniumManager), new MobileBrowserAutoInstallableChecker());
@@ -64,21 +64,21 @@ export class BrowserManager {
     const resolvedMajorBrowserVersion = this.parseMajorVersion(resolvedBrowserVersion);
     this.logger.info(`Resolved browser version ${resolvedBrowserVersion} major version to ${resolvedMajorBrowserVersion}.`);
 
-    const installedBrowserInfos = await this.findInstalledBrowserInfos({ browserName, browserPlatform, deviceSerial, resolvedBrowserVersion, resolvedMajorBrowserVersion });
-    this.logger.info(`Found ${installedBrowserInfos.length} installed browsers.`, { installedBrowserInfos });
+    const browserInstallations = await this.findBrowserInstallations({ browserName, browserPlatform, deviceSerial, resolvedBrowserVersion, resolvedMajorBrowserVersion });
+    this.logger.info(`Found ${browserInstallations.length} installed browsers.`, { browserInstallations });
 
-    const installedBrowserWithDriverInfos = installedBrowserInfos.filter(({ driverPath }) => driverPath?.length ?? 0 > 0) as EnsuredBrowserAndDriverInfo[];
-    const matchedInstalledBrowserWithDriverInfo = installedBrowserWithDriverInfos.length > 0 ? installedBrowserWithDriverInfos[0] : undefined;
-    if (matchedInstalledBrowserWithDriverInfo) {
-      const { browserPath, driverPath } = matchedInstalledBrowserWithDriverInfo;
+    const browserInstallationWithDriverInfos = browserInstallations.filter(({ driverPath }) => driverPath?.length ?? 0 > 0) as EnsuredBrowserAndDriverInfo[];
+    const matchedBrowserInstallationWithDriverInfo = browserInstallationWithDriverInfos.length > 0 ? browserInstallationWithDriverInfos[0] : undefined;
+    if (matchedBrowserInstallationWithDriverInfo) {
+      const { browserPath, driverPath } = matchedBrowserInstallationWithDriverInfo;
       this.logger.info(`Found installed browser with driver.`, { browserPath, driverPath });
-      return matchedInstalledBrowserWithDriverInfo;
+      return matchedBrowserInstallationWithDriverInfo;
     }
 
-    const installedBrowserWithoutDriverInfos = installedBrowserInfos.filter(({ driverPath }) => driverPath?.length ?? 0 === 0);
-    const matchedInstalledBrowserWithoutDriverInfo = installedBrowserWithoutDriverInfos.length > 0 ? installedBrowserWithoutDriverInfos[0] : undefined;
-    if (matchedInstalledBrowserWithoutDriverInfo) {
-      const { browserPath } = matchedInstalledBrowserWithoutDriverInfo;
+    const browserInstallationWithoutDriverInfos = browserInstallations.filter(({ driverPath }) => driverPath?.length ?? 0 === 0);
+    const matchedBrowserInstallationWithoutDriverInfo = browserInstallationWithoutDriverInfos.length > 0 ? browserInstallationWithoutDriverInfos[0] : undefined;
+    if (matchedBrowserInstallationWithoutDriverInfo) {
+      const { browserPath } = matchedBrowserInstallationWithoutDriverInfo;
       this.logger.info(`Found installed browser without driver.`, { browserPath });
 
       const installedDriverInfo = await this.installDriver({ browserName, browserPlatform, resolvedBrowserVersion });
@@ -105,8 +105,8 @@ export class BrowserManager {
       throw new Error(`Browser ${browserName} ${browserPlatform} is not auto installable. Please install it manually.`);
     }
 
-    const installedBrowserInfo = await this.installBrowser({ browserName, browserPlatform, resolvedBrowserVersion });
-    const { browserPath, driverPath } = installedBrowserInfo;
+    const browserInstallation = await this.installBrowser({ browserName, browserPlatform, resolvedBrowserVersion });
+    const { browserPath, driverPath } = browserInstallation;
     this.logger.info(`Installed browser.`, { browserPath });
 
     if (driverPath) {
@@ -155,9 +155,9 @@ export class BrowserManager {
     throw new Error(`Browser ${browserName} ${browserPlatform} latest version resolver is not handled.`);
   }
 
-  private async findInstalledBrowserInfos(options: InstalledBrowserFinderOptions): Promise<InstalledBrowserInfo[]> {
-    const results: InstalledBrowserInfo[] = [];
-    for (const finder of this.installedBrowserFinders) {
+  private async findBrowserInstallations(options: BrowserInstallationFinderOptions): Promise<BrowserInstallation[]> {
+    const results: BrowserInstallation[] = [];
+    for (const finder of this.browserInstallationFinders) {
       if (await finder.match(options)) {
         const infos = await finder.find(options);
         results.push(...infos);
@@ -166,10 +166,10 @@ export class BrowserManager {
     return results;
   }
 
-  async findAllInstalledBrowserInfos(options: FindAllInstalledBrowserInfosOptions): Promise<FindAllInstalledBrowserInfosResult> {
+  async findAllBrowserInstallations(options: FindAllBrowserInstallationsOptions): Promise<FindAllBrowserInstallationsResult> {
     const { browserPlatform } = options;
     const browserNames = getBrowserNamesByPlatform(browserPlatform);
-    const promiseResults = await Promise.allSettled(browserNames.map(async (browserName) => this.findInstalledBrowserInfos({ ...options, browserName })));
+    const promiseResults = await Promise.allSettled(browserNames.map(async (browserName) => this.findBrowserInstallations({ ...options, browserName })));
     const results = promiseResults
       .filter((result) => result.status === 'fulfilled')
       .flatMap((result) => {
@@ -192,7 +192,7 @@ export class BrowserManager {
     throw new Error(`Browser ${browserName} ${browserPlatform} ${resolvedBrowserVersion} driver installer is not handled.`);
   }
 
-  private async installBrowser(options: BrowserInstallerOptions): Promise<InstalledBrowserInfo> {
+  private async installBrowser(options: BrowserInstallerOptions): Promise<BrowserInstallation> {
     const { browserName, browserPlatform, resolvedBrowserVersion } = options;
     for (const installer of this.browserInstallers) {
       if (await installer.match(options)) {

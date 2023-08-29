@@ -13,7 +13,7 @@ import {
   StreamingAnswer,
 } from '@dogu-private/types';
 import { Closable, errorify, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
-import { InstalledBrowserInfo, StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
 import compressing from 'compressing';
@@ -68,7 +68,7 @@ export class IosChannel implements DeviceChannel {
     private _appiumContext: AppiumContextProxy,
     private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
     private readonly logger: Printable,
-    readonly installedBrowserInfos: InstalledBrowserInfo[],
+    readonly browserInstallations: BrowserInstallation[],
   ) {
     this.logger.info(`IosChannel created: ${this.serial}`);
   }
@@ -176,7 +176,7 @@ export class IosChannel implements DeviceChannel {
       deviceServerService.doguLogger,
     );
 
-    const installedBrowserInfos = await deviceServerService.browserManagerService.findAllInstalledBrowserInfos({
+    const browserInstallations = await deviceServerService.browserManagerService.findAllBrowserInstallations({
       deviceSerial: serial,
       browserPlatform: 'ios',
     });
@@ -192,7 +192,7 @@ export class IosChannel implements DeviceChannel {
       appiumContextProxy,
       appiumDeviceWebDriverHandler,
       logger,
-      installedBrowserInfos,
+      browserInstallations,
     );
 
     logger.verbose('streaming service calling deviceConnected');

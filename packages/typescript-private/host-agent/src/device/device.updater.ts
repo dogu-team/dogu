@@ -20,7 +20,21 @@ export class DeviceUpdater {
 
   @Retry({ printable: logger })
   private async updateDevice(value: Instance<typeof OnDeviceResolvedEvent.value>): Promise<void> {
-    const { organizationId, deviceId, serial, serialUnique, hostId, version, model, manufacturer, resolutionWidth, resolutionHeight, platform, isVirtual } = value;
+    const {
+      organizationId, //
+      deviceId,
+      serial,
+      serialUnique,
+      hostId,
+      version,
+      model,
+      manufacturer,
+      resolutionWidth,
+      resolutionHeight,
+      platform,
+      isVirtual,
+      browserInstallations,
+    } = value;
     const pathProvider = new PrivateDevice.updateDevice.pathProvider(organizationId, deviceId);
     const path = PrivateDevice.updateDevice.resolvePath(pathProvider);
     const body: Instance<typeof PrivateDevice.updateDevice.requestBody> = {
@@ -34,6 +48,7 @@ export class DeviceUpdater {
       resolutionHeight,
       platform,
       isVirtual,
+      browserInstallations,
     };
     const bodyValidated = await transformAndValidate(PrivateDevice.updateDevice.requestBody, body);
     await this.consoleClientService.client

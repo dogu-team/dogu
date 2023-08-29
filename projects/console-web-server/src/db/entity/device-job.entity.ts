@@ -1,7 +1,8 @@
 import { RoutineDeviceJobBase, RoutineDeviceJobPropSnake } from '@dogu-private/console';
-import { DeviceId, PIPELINE_STATUS, RoutineDeviceJobId, RoutineJobId, ROUTINE_DEVICE_JOB_TABLE_NAME } from '@dogu-private/types';
+import { DeviceId, DeviceRunnerId, PIPELINE_STATUS, RoutineDeviceJobId, RoutineJobId, ROUTINE_DEVICE_JOB_TABLE_NAME } from '@dogu-private/types';
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
+import { DeviceRunner } from './device-runner.entity';
 import { Device, RoutineJob } from './index';
 import { RoutineStep } from './step.entity';
 
@@ -24,6 +25,9 @@ export class RoutineDeviceJob extends BaseEntity implements RoutineDeviceJobBase
 
   @ColumnTemplate.Date(RoutineDeviceJobPropSnake.heartbeat, true)
   heartbeat!: Date | null;
+
+  @ColumnTemplate.RelationUuid(RoutineDeviceJobPropSnake.device_runner_id, true)
+  deviceRunnerId!: DeviceRunnerId | null;
 
   @ColumnTemplate.CreateDate(RoutineDeviceJobPropSnake.created_at)
   createdAt!: Date;
@@ -56,4 +60,8 @@ export class RoutineDeviceJob extends BaseEntity implements RoutineDeviceJobBase
 
   @OneToMany(() => RoutineStep, (step) => step.routineDeviceJob, { cascade: ['soft-remove'] })
   routineSteps?: RoutineStep[];
+
+  @ManyToOne(() => DeviceRunner, (deviceRunner) => deviceRunner.routineDeviceJobs, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
+  @JoinColumn({ name: RoutineDeviceJobPropSnake.device_runner_id })
+  deviceRunner?: DeviceRunner;
 }

@@ -17,8 +17,9 @@ import {
 } from '@dogu-private/types';
 import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
-import { DeviceBrowser } from './device-browser.entity';
+import { DeviceBrowserInstallation } from './device-browser-installation.entity';
 import { RoutineDeviceJob } from './device-job.entity';
+import { DeviceRunner } from './device-runner.entity';
 import { DeviceTag } from './device-tag.entity';
 import { Host } from './host.entity';
 import { DeviceAndDeviceTag, Organization, ProjectAndDevice } from './index';
@@ -144,6 +145,9 @@ export class Device extends BaseEntity implements DeviceBase {
   })
   deviceTags?: DeviceTag[];
 
-  @OneToMany(() => DeviceBrowser, (browser) => browser.device, { cascade: ['soft-remove'] })
-  deviceBrowsers?: DeviceBrowser[];
+  @OneToMany(() => DeviceBrowserInstallation, (deviceBrowserInstallation) => deviceBrowserInstallation.device, { cascade: ['soft-remove'] })
+  deviceBrowserInstallations?: DeviceBrowserInstallation[];
+
+  @OneToMany(() => DeviceRunner, (deviceRunner) => deviceRunner.device, { cascade: ['soft-remove'] })
+  deviceRunners?: DeviceRunner[];
 }

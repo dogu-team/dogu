@@ -1,4 +1,4 @@
-import { DeviceId, ProjectId } from '@dogu-private/types';
+import { DeviceId, DeviceRunnerId, ProjectId } from '@dogu-private/types';
 import { loop } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
@@ -10,6 +10,7 @@ import { DoguLogger } from '../logger/logger';
 export interface RoutineWorkspaceMeta {
   projectId: ProjectId;
   deviceId: DeviceId;
+  deviceRunnerId: DeviceRunnerId;
 }
 
 const MetaExtension = '.meta.json';

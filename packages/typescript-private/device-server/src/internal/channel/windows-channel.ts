@@ -16,7 +16,7 @@ import {
   StreamingAnswer,
 } from '@dogu-private/types';
 import { Closable, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
-import { InstalledBrowserInfo, StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { ChildProcess, isFreePort } from '@dogu-tech/node';
 import { Observable } from 'rxjs';
 import systeminformation from 'systeminformation';
@@ -47,7 +47,7 @@ export class WindowsChannel implements DeviceChannel {
     private readonly _streaming: StreamingService,
     private readonly _deviceAgent: DeviceAgentService,
     private readonly _seleniumDeviceWebDriverHandler: SeleniumDeviceWebDriverHandler,
-    readonly installedBrowserInfos: InstalledBrowserInfo[],
+    readonly browserInstallations: BrowserInstallation[],
   ) {}
 
   get serial(): Serial {

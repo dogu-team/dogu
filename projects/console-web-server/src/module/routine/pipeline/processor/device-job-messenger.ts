@@ -1,5 +1,5 @@
 import { parseEventResult, RunStep, RunStepValue } from '@dogu-private/console-host-agent';
-import { DeviceId, OrganizationId, ProjectId } from '@dogu-private/types';
+import { DeviceId, DeviceRunnerId, OrganizationId, ProjectId } from '@dogu-private/types';
 import { stringify } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { RoutineDeviceJob } from '../../../../db/entity/device-job.entity';
@@ -12,10 +12,14 @@ export class DeviceJobMessenger {
   constructor(private readonly deviceMessageRelayer: DeviceMessageRelayer, private readonly logger: DoguLogger) {}
 
   async sendRunDeviceJob(organizationId: OrganizationId, deviceId: DeviceId, deviceJob: RoutineDeviceJob): Promise<void> {
-    const { routineDeviceJobId, record, device, routineSteps: steps, routineJob } = deviceJob;
+    const { routineDeviceJobId, record, device, routineSteps: steps, routineJob, deviceRunnerId } = deviceJob;
 
     if (!device) {
       throw new Error(`Device not found: ${stringify(deviceJob)}`);
+    }
+
+    if (!deviceRunnerId) {
+      throw new Error(`DeviceRunner not found: ${stringify(deviceJob)}`);
     }
 
     const { serial } = device;
@@ -27,12 +31,13 @@ export class DeviceJobMessenger {
       throw new Error(`Pipeline not found: ${stringify(deviceJob)}`);
     }
     const { projectId } = pipeline;
-    const runSteps = steps?.map((step) => this.stepToRunStep(organizationId, deviceId, projectId, step)) ?? [];
+    const runSteps = steps?.map((step) => this.stepToRunStep(organizationId, deviceId, projectId, deviceRunnerId, step)) ?? [];
     const result = await this.deviceMessageRelayer.sendParam(organizationId, deviceId, {
       kind: 'EventParam',
       value: {
         kind: 'RunDeviceJob',
         routineDeviceJobId,
+        deviceRunnerId,
         record,
         serial,
         runSteps,
@@ -54,7 +59,7 @@ export class DeviceJobMessenger {
     parseEventResult(result);
   }
 
-  private stepToRunStep(organizationId: OrganizationId, deviceId: DeviceId, projectId: ProjectId, step: RoutineStep): RunStep {
+  private stepToRunStep(organizationId: OrganizationId, deviceId: DeviceId, projectId: ProjectId, deviceRunnerId: DeviceRunnerId, step: RoutineStep): RunStep {
     const { env, routineStepId, routineDeviceJobId: deviceJobId, index } = step;
     const runStepValue = this.stepToRunStepValue(step);
     return {
@@ -62,6 +67,7 @@ export class DeviceJobMessenger {
       organizationId,
       projectId,
       deviceId,
+      deviceRunnerId,
       routineDeviceJobId: deviceJobId,
       routineStepId,
       stepIndex: index,

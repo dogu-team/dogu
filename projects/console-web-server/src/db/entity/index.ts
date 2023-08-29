@@ -1,6 +1,6 @@
 export * from './controller-handler.entity';
 export * from './dest.entity';
-export * from './device-browser.entity';
+export * from './device-browser-installation.entity';
 export * from './device-job.entity';
 export * from './device-tag.entity';
 export * from './device.entity';

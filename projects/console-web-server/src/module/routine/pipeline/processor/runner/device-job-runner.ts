@@ -4,6 +4,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager } from 'typeorm';
 import { RoutineDeviceJob } from '../../../../../db/entity/device-job.entity';
+import { DeviceRunner } from '../../../../../db/entity/device-runner.entity';
 import { RoutineStep } from '../../../../../db/entity/step.entity';
 import { DoguLogger } from '../../../../logger/logger';
 import { validateStatusTransition } from '../../../common/runner';
@@ -81,6 +82,10 @@ export class DeviceJobRunner {
     }
     deviceJob.status = incomingStatus;
     await manager.getRepository(RoutineDeviceJob).save(deviceJob);
+
+    if (deviceJob.deviceRunnerId) {
+      await manager.getRepository(DeviceRunner).update({ deviceRunnerId: deviceJob.deviceRunnerId }, { isInUse: 0 });
+    }
   }
 
   private async postUpdate(manager: EntityManager, deviceJobId: RoutineDeviceJobId, steps: RoutineStep[], stepStatusInfos: StepStatusInfo[]): Promise<void> {

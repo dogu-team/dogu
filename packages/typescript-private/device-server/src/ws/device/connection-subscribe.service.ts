@@ -21,7 +21,7 @@ export class DeviceConnectionSubscribeService
   @OnEvent(OnDevicesConnectedEvent.key)
   onDevicesConnected(value: Instance<typeof OnDevicesConnectedEvent.value>): void {
     const messages = value.channels.map((channel) => {
-      const { serial, serialUnique, platform, info, isVirtual, installedBrowserInfos } = channel;
+      const { serial, serialUnique, platform, info, isVirtual, browserInstallations } = channel;
       const { system, version, graphics } = info;
       const { model, manufacturer } = system;
       const display = graphics.displays.at(0);
@@ -39,7 +39,7 @@ export class DeviceConnectionSubscribeService
         isVirtual: isVirtual ? 1 : 0,
         resolutionWidth,
         resolutionHeight,
-        installedBrowserInfos,
+        browserInstallations,
       };
       return message;
     });
@@ -60,7 +60,7 @@ export class DeviceConnectionSubscribeService
         isVirtual: 0,
         resolutionWidth: 0,
         resolutionHeight: 0,
-        installedBrowserInfos: [],
+        browserInstallations: [],
       };
       return message;
     });

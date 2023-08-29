@@ -1,29 +1,29 @@
 import { AndroidBrowserName, AndroidBrowserPackageNameMap, isAllowedAndroidBrowserName, Serial } from '@dogu-private/types';
 import { PrefixLogger } from '@dogu-tech/common';
-import { InstalledBrowserFinder, InstalledBrowserFinderOptions, InstalledBrowserInfo } from '@dogu-tech/device-client-common';
+import { BrowserInstallation, BrowserInstallationFinder, BrowserInstallationFinderOptions } from '@dogu-tech/device-client-common';
 import { Adb } from '../internal/externals/index';
 import { logger } from '../logger/logger.instance';
 import { SeleniumManager } from './selenium-manager';
 
-export class SeleniumManagerInstalledBrowserFinder implements InstalledBrowserFinder {
+export class SeleniumManagerBrowserInstallationFinder implements BrowserInstallationFinder {
   constructor(private readonly seleniumManager: SeleniumManager) {}
 
-  match(options: InstalledBrowserFinderOptions): boolean {
+  match(options: BrowserInstallationFinderOptions): boolean {
     return this.seleniumManager.matchForBrowser(options);
   }
 
-  async find(options: InstalledBrowserFinderOptions): Promise<InstalledBrowserInfo[]> {
-    return await this.seleniumManager.findInstalledBrowser(options);
+  async find(options: BrowserInstallationFinderOptions): Promise<BrowserInstallation[]> {
+    return await this.seleniumManager.findBrowserInstallation(options);
   }
 }
 
-export class AdbInstalledBrowserFinder implements InstalledBrowserFinder {
+export class AdbBrowserInstallationFinder implements BrowserInstallationFinder {
   static readonly packageLinePattern = /^package:(?<package>.*)=(?<packageName>.*)$/;
   static readonly packageVersionLinePattern = /^\s*versionName=(?<version>.*)\s*$/;
 
-  private readonly logger = new PrefixLogger(logger, '[AdbInstalledBrowserFinder]');
+  private readonly logger = new PrefixLogger(logger, '[AdbBrowserInstallationFinder]');
 
-  match(options: InstalledBrowserFinderOptions): boolean {
+  match(options: BrowserInstallationFinderOptions): boolean {
     const { browserName, browserPlatform } = options;
     if (browserPlatform !== 'android') {
       return false;
@@ -32,18 +32,18 @@ export class AdbInstalledBrowserFinder implements InstalledBrowserFinder {
     return isAllowedAndroidBrowserName(browserName);
   }
 
-  async find(options: InstalledBrowserFinderOptions): Promise<InstalledBrowserInfo[]> {
+  async find(options: BrowserInstallationFinderOptions): Promise<BrowserInstallation[]> {
     const { browserName, browserPlatform, deviceSerial } = options;
     if (!deviceSerial) {
       throw new Error(`Device serial is required. Browser name: ${browserName}, browser platform: ${browserPlatform}`);
     }
 
-    const browserInfos = await this.findInstalledBrowserInfos(deviceSerial);
-    const browserInfosWithVersion = await this.findInstalledBrowserInfosWithVersion(deviceSerial, browserInfos);
+    const browserInfos = await this.findBrowserInstallations(deviceSerial);
+    const browserInfosWithVersion = await this.findBrowserInstallationsWithVersion(deviceSerial, browserInfos);
     return browserInfosWithVersion;
   }
 
-  private async findInstalledBrowserInfos(deviceSerial: Serial): Promise<{ browserPackageName: string; browserName: AndroidBrowserName }[]> {
+  private async findBrowserInstallations(deviceSerial: Serial): Promise<{ browserPackageName: string; browserName: AndroidBrowserName }[]> {
     const browserNameMap = new Map(Object.entries(AndroidBrowserPackageNameMap).map(([key, value]) => [value, key]));
     const { stdout } = await Adb.shell(deviceSerial, 'pm list packages -f');
     const browserInfos = stdout
@@ -51,7 +51,7 @@ export class AdbInstalledBrowserFinder implements InstalledBrowserFinder {
       .map((line) => {
         return {
           line,
-          match: AdbInstalledBrowserFinder.packageLinePattern.exec(line),
+          match: AdbBrowserInstallationFinder.packageLinePattern.exec(line),
         };
       })
       .filter(({ line, match }) => {
@@ -90,11 +90,11 @@ export class AdbInstalledBrowserFinder implements InstalledBrowserFinder {
     return browserInfos;
   }
 
-  private async findInstalledBrowserInfosWithVersion(
+  private async findBrowserInstallationsWithVersion(
     deviceSerial: Serial,
     browserInfos: { browserPackageName: string; browserName: AndroidBrowserName }[],
   ): Promise<{ browserPackageName: string; browserName: AndroidBrowserName; browserVersion: string }[]> {
-    const installedBrowserInfosWithVersionResults = await Promise.allSettled(
+    const browserInstallationsWithVersionResults = await Promise.allSettled(
       browserInfos.map(async ({ browserPackageName, browserName }) => {
         const { stdout } = await Adb.shell(deviceSerial, `dumpsys package ${browserPackageName} | grep versionName`);
         const packageVersionLines = stdout.split('\n');
@@ -104,7 +104,7 @@ export class AdbInstalledBrowserFinder implements InstalledBrowserFinder {
         }
 
         const packageVersionLine = packageVersionLines[0];
-        const packageVersionMatch = AdbInstalledBrowserFinder.packageVersionLinePattern.exec(packageVersionLine);
+        const packageVersionMatch = AdbBrowserInstallationFinder.packageVersionLinePattern.exec(packageVersionLine);
         if (!packageVersionMatch) {
           this.logger.warn(`Failed to match package version line: ${packageVersionLine}`);
           throw new Error(`Failed to match package version line: ${packageVersionLine}`);
@@ -120,7 +120,7 @@ export class AdbInstalledBrowserFinder implements InstalledBrowserFinder {
       }),
     );
 
-    const installedBrowserInfosWithVersions = installedBrowserInfosWithVersionResults
+    const browserInstallationsWithVersions = browserInstallationsWithVersionResults
       .filter(({ status }) => {
         if (status === 'rejected') {
           this.logger.warn(`Failed to find browser version: ${status}`);
@@ -135,6 +135,6 @@ export class AdbInstalledBrowserFinder implements InstalledBrowserFinder {
         return info.value;
       });
 
-    return installedBrowserInfosWithVersions;
+    return browserInstallationsWithVersions;
   }
 }

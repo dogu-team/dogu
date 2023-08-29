@@ -1,6 +1,6 @@
 import { Device, DeviceId, HostId, OrganizationId, Platform, Serial } from '@dogu-private/types';
 import { ControllerMethodSpec, ControllerSpec, IsFilledString, Log } from '@dogu-tech/common';
-import { RuntimeInfoDto } from '@dogu-tech/device-client-common';
+import { BrowserInstallation, RuntimeInfoDto } from '@dogu-tech/device-client-common';
 import { Type } from 'class-transformer';
 import { IsArray, IsEnum, IsNotEmpty, IsNumber, IsString, IsUUID, Max, Min, ValidateNested } from 'class-validator';
 import { Result, WebSocketProxyId, WebSocketProxyReceive } from '../validations/types/built-in-messages';
@@ -109,6 +109,11 @@ export class UpdateDeviceRequestBody
   @IsNumber()
   @Type(() => Number)
   resolutionHeight!: number;
+
+  @ValidateNested({ each: true })
+  @Type(() => BrowserInstallation)
+  @IsArray()
+  browserInstallations!: BrowserInstallation[];
 }
 
 export class WriteStepLogsRequestBody {

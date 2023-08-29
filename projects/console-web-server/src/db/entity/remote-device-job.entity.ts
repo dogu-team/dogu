@@ -1,8 +1,9 @@
 import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryColumn } from 'typeorm';
 
 import { RemoteDeviceJobBase, RemoteDeviceJobPropSnake, RemotePropCamel } from '@dogu-private/console';
-import { DeviceId, RemoteDeviceJobId, RemoteId, REMOTE_DEVICE_JOB_SESSION_STATE, REMOTE_DEVICE_JOB_TABLE_NAME, WebDriverSessionId } from '@dogu-private/types';
+import { DeviceId, DeviceRunnerId, RemoteDeviceJobId, RemoteId, REMOTE_DEVICE_JOB_SESSION_STATE, REMOTE_DEVICE_JOB_TABLE_NAME, WebDriverSessionId } from '@dogu-private/types';
 import { ColumnTemplate } from './decorators';
+import { DeviceRunner } from './device-runner.entity';
 import { Device } from './device.entity';
 import { RemoteDest } from './remote-dest.entity';
 import { Remote } from './remote.entity';
@@ -33,6 +34,9 @@ export class RemoteDeviceJob extends BaseEntity implements RemoteDeviceJobBase {
   @Column({ type: 'character varying', name: RemoteDeviceJobPropSnake.web_driver_se_cdp, nullable: true })
   webDriverSeCdp!: string | null;
 
+  @ColumnTemplate.RelationUuid(RemoteDeviceJobPropSnake.device_runner_id, true)
+  deviceRunnerId!: DeviceRunnerId | null;
+
   @ColumnTemplate.CreateDate(RemoteDeviceJobPropSnake.created_at)
   createdAt!: Date;
 
@@ -58,4 +62,8 @@ export class RemoteDeviceJob extends BaseEntity implements RemoteDeviceJobBase {
 
   @OneToMany(() => RemoteDest, (remoteDest) => remoteDest.remoteDeviceJob, { cascade: ['soft-remove'] })
   remoteDests?: RemoteDest[];
+
+  @ManyToOne(() => DeviceRunner, (deviceRunner) => deviceRunner.remoteDeviceJobs, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
+  @JoinColumn({ name: RemoteDeviceJobPropSnake.device_runner_id })
+  deviceRunner?: DeviceRunner;
 }

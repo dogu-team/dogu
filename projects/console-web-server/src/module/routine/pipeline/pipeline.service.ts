@@ -390,13 +390,11 @@ export class PipelineService {
 
             const platformType = platformTypeFromPlatform(device.platform);
             if (isAllowedBrowserPlatform(platformType) && isAllowedBrowserName(browserName)) {
-              const browserPlatform = platformType;
               return [
                 {
                   type,
                   routineDeviceJob,
                   browserName,
-                  browserPlatform,
                 },
               ];
             } else {
@@ -427,11 +425,10 @@ export class PipelineService {
         if (type !== RUNS_ON_TYPE.DEVICE_TAG_WITH_BROWSER) {
           throw new HttpException(`Invalid type: ${type}`, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        const { routineDeviceJob, browserName, browserPlatform } = savedRoutineDeviceJobInfo;
+        const { routineDeviceJob, browserName } = savedRoutineDeviceJobInfo;
         const deviceJobBrowser = manager.getRepository(RoutineDeviceJobBrowser).create({
           routineDeviceJobId: routineDeviceJob.routineDeviceJobId,
           browserName,
-          platformName: browserPlatform,
         });
         return deviceJobBrowser;
       });

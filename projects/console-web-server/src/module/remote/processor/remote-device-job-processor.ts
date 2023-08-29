@@ -16,6 +16,7 @@ import dayjs from 'dayjs';
 import _ from 'lodash';
 import { EntityManager } from 'typeorm';
 import { v4 } from 'uuid';
+import { DeviceRunner } from '../../../db/entity/device-runner.entity';
 
 import { Device } from '../../../db/entity/device.entity';
 import { ProjectSlackRemote } from '../../../db/entity/project-slack-remote.entity';
@@ -109,6 +110,10 @@ export module RemoteDeviceJobProcessor {
       remoteDeviceJob.inProgressAt = new Date();
     } else if (isRemoteDeviceJobSessionCompleted(state)) {
       remoteDeviceJob.completedAt = new Date();
+
+      if (remoteDeviceJob.deviceRunnerId) {
+        await manager.getRepository(DeviceRunner).update({ deviceRunnerId: remoteDeviceJob.deviceRunnerId }, { isInUse: 0 });
+      }
 
       await handleSendingSlackMessage(manager, slackMessageService, remoteDeviceJob);
     } else {
