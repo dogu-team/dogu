@@ -45,7 +45,7 @@ export class RoutineWorkspace {
         const metaFilePath = path.resolve(routinesPath, metaFile);
         const contents = await fs.promises.readFile(metaFilePath, 'utf8');
         const metaObject = JSON.parse(contents) as RoutineWorkspaceMeta;
-        if (metaObject.projectId === meta.projectId && metaObject.deviceId === meta.deviceId) {
+        if (metaObject.projectId === meta.projectId && metaObject.deviceId === meta.deviceId && metaObject.deviceRunnerId === meta.deviceRunnerId) {
           const routineWorkspacePath = path.resolve(routinesPath, path.basename(metaFile, MetaExtension));
           if (!fs.existsSync(routineWorkspacePath)) {
             await fs.promises.mkdir(routineWorkspacePath, { recursive: true });
