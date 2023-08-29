@@ -88,17 +88,20 @@ export class BrowserManager {
     const browserInstallationWithoutDriverInfos = browserInstallations.filter(({ browserDriverPath }) => browserDriverPath?.length ?? 0 === 0);
     const matchedBrowserInstallationWithoutDriverInfo = browserInstallationWithoutDriverInfos.length > 0 ? browserInstallationWithoutDriverInfos[0] : undefined;
     if (matchedBrowserInstallationWithoutDriverInfo) {
-      const { browserPath } = matchedBrowserInstallationWithoutDriverInfo;
+      const { browserPath, browserPackageName, browserVersion, browserMajorVersion } = matchedBrowserInstallationWithoutDriverInfo;
       this.logger.info(`Found installed browser without driver.`, { browserPath });
 
-      const installedDriverInfo = await this.installDriver({ browserName, browserPlatform, resolvedBrowserVersion });
-      const { browserDriverPath } = installedDriverInfo;
+      const browserDriverInstallation = await this.installDriver({ browserName, browserPlatform, resolvedBrowserVersion: browserVersion ?? resolvedBrowserVersion });
+      const { browserDriverPath } = browserDriverInstallation;
       this.logger.info(`Installed driver.`, { browserDriverPath });
 
       return {
         browserName,
+        browserVersion: browserVersion ?? resolvedBrowserVersion,
+        browserMajorVersion: browserMajorVersion ?? resolvedBrowserMajorVersion,
         browserPath,
         browserDriverPath,
+        browserPackageName,
       };
     }
 
