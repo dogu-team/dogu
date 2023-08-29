@@ -11,6 +11,7 @@ import { DeviceLogSubscribeService } from './device/log-subscribe.service';
 import { DeviceRecordingService } from './device/recording.service';
 import { DeviceResetService } from './device/reset.service';
 import { DeviceRunAppService } from './device/run-app.service';
+import { DeviceRunAppiumServerService } from './device/run-appium-server.service';
 import { DeviceRuntimeInfoSubscribeService } from './device/runtime-info-subscribe.service';
 import { DeviceStreamingService } from './device/streaming.service';
 import { DeviceTcpRelayService } from './device/tcp-relay.service';
@@ -35,6 +36,7 @@ import { DeviceWebSocketRelayService } from './device/websocket-relay.service';
     DeviceHostDownloadSharedResourceWebSocketService,
     DeviceWebSocketRelayService,
     DeviceTcpRelayService,
+    DeviceRunAppiumServerService,
   ],
 })
 export class WsModule {}
