@@ -3,6 +3,7 @@ import { BrowserManagerModule } from '../browser-manager/browser-manager.module'
 import { DeviceHostModule } from '../device-host/device-host.module';
 import { ScanModule } from '../scan/scan.module';
 import { DeviceHostDownloadSharedResourceWebSocketService } from './device-host/download-shared-resource';
+import { DeviceHostEnsureBrowserAndDriverService } from './device-host/ensure-browser-and-driver';
 import { DeviceHostUploadFileService } from './device-host/upload-file.service';
 import { DeviceConnectionSubscribeService } from './device/connection-subscribe.service';
 import { DeviceForwardService } from './device/forward.service';
@@ -32,10 +33,11 @@ import { DeviceWebSocketRelayService } from './device/websocket-relay.service';
     DeviceRecordingService,
     DeviceResetService,
     DeviceJoinWifiService,
-    DeviceHostUploadFileService,
-    DeviceHostDownloadSharedResourceWebSocketService,
     DeviceWebSocketRelayService,
     DeviceTcpRelayService,
+    DeviceHostUploadFileService,
+    DeviceHostDownloadSharedResourceWebSocketService,
+    DeviceHostEnsureBrowserAndDriverService,
   ],
 })
 export class WsModule {}

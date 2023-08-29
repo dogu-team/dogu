@@ -30,6 +30,9 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
 
   const command = input.get<string>('command');
 
+  const browserName = process.env.DOGU_BROWSER_NAME || '';
+  const browserVersion = process.env.DOGU_BROWSER_VERSION || '';
+
   if (checkout) {
     logger.info('resolve checkout path... from', { DOGU_ROUTINE_WORKSPACE_PATH, checkoutPath });
     const resolvedCheckoutPath = path.resolve(DOGU_ROUTINE_WORKSPACE_PATH, checkoutPath);
@@ -76,6 +79,41 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
     logger.info('App runned');
   }
 
+  let env = process.env;
+  if (browserName) {
+    logger.info('Ensure browser and driver...', { browserName, browserVersion });
+    const ensuredBrowserAndDriverInfo = await deviceHostClient.ensureBrowserAndDriver({
+      browserName,
+      browserPlatform: DOGU_DEVICE_PLATFORM,
+      browserVersion: browserVersion,
+      deviceSerial: DOGU_DEVICE_SERIAL,
+    });
+    logger.info('Browser and driver ensured', { ensuredBrowserAndDriverInfo });
+    const {
+      browserName: ensuredBrowserName,
+      browserVersion: ensuredBrowserVersion,
+      browserPath,
+      browserPackageName,
+      browserDriverPath,
+      browserMajorVersion,
+    } = ensuredBrowserAndDriverInfo;
+    env.DOGU_BROWSER_NAME = ensuredBrowserName;
+    env.DOGU_BROWSER_VERSION = ensuredBrowserVersion || '';
+    env.DOGU_BROWSER_MAJOR_VERSION = browserMajorVersion ? String(browserMajorVersion) : '';
+    env.DOGU_BROWSER_PATH = browserPath || '';
+    env.DOGU_BROWSER_DRIVER_PATH = browserDriverPath;
+    env.DOGU_BROWSER_PACKAGE_NAME = browserPackageName || '';
+
+    logger.info('update env for browser and driver', {
+      DOGU_BROWSER_NAME: env.DOGU_BROWSER_NAME,
+      DOGU_BROWSER_VERSION: env.DOGU_BROWSER_VERSION,
+      DOGU_BROWSER_MAJOR_VERSION: env.DOGU_BROWSER_MAJOR_VERSION,
+      DOGU_BROWSER_PATH: env.DOGU_BROWSER_PATH,
+      DOGU_BROWSER_DRIVER_PATH: env.DOGU_BROWSER_DRIVER_PATH,
+      DOGU_BROWSER_PACKAGE_NAME: env.DOGU_BROWSER_PACKAGE_NAME,
+    });
+  }
+
   command
     .split('\n')
     .map((line) => line.trim())
@@ -86,6 +124,7 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
         stdio: 'inherit',
         shell: true,
         cwd: DOGU_ROUTINE_WORKSPACE_PATH,
+        env,
       });
       if (result.status === 0) {
         logger.info(`Command success: [${line}] with status: ${result.status}`);

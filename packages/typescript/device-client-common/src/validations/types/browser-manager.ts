@@ -1,6 +1,6 @@
 import { PromiseOrValue } from '@dogu-tech/common';
 import { BrowserName, BrowserPlatform, Serial } from '@dogu-tech/types';
-import { IsIn, IsOptional, IsString } from 'class-validator';
+import { IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export interface BrowserOptions {
   browserName: BrowserName;
@@ -8,15 +8,16 @@ export interface BrowserOptions {
   deviceSerial: Serial;
   requestedBrowserVersion: string;
   resolvedBrowserVersion: string;
-  resolvedMajorBrowserVersion: number;
+  resolvedBrowserMajorVersion: number;
 }
 
 export interface BrowserInfo {
   browserName: BrowserName;
   browserVersion: string;
+  browserMajorVersion: number;
   browserPath: string;
   browserPackageName: string;
-  driverPath: string;
+  browserDriverPath: string;
 }
 
 export type LatestBrowserVersionResolverOptions = Readonly<Pick<BrowserOptions, 'browserName' | 'browserPlatform'>>;
@@ -28,8 +29,10 @@ export interface LatestBrowserVersionResolver {
 }
 
 export type BrowserInstallationFinderOptions = Pick<BrowserOptions, 'browserName' | 'browserPlatform'> &
-  Partial<Pick<BrowserOptions, 'resolvedBrowserVersion' | 'resolvedMajorBrowserVersion' | 'deviceSerial'>>;
-export class BrowserInstallation implements Pick<BrowserInfo, 'browserName'>, Partial<Pick<BrowserInfo, 'browserPath' | 'browserPackageName' | 'browserVersion' | 'driverPath'>> {
+  Partial<Pick<BrowserOptions, 'resolvedBrowserVersion' | 'resolvedBrowserMajorVersion' | 'deviceSerial'>>;
+export class BrowserInstallation
+  implements Pick<BrowserInfo, 'browserName'>, Partial<Pick<BrowserInfo, 'browserPath' | 'browserPackageName' | 'browserVersion' | 'browserMajorVersion' | 'browserDriverPath'>>
+{
   @IsIn(BrowserName)
   browserName!: BrowserName;
 
@@ -45,9 +48,13 @@ export class BrowserInstallation implements Pick<BrowserInfo, 'browserName'>, Pa
   @IsOptional()
   browserVersion?: string;
 
+  @IsNumber()
+  @IsOptional()
+  browserMajorVersion?: number;
+
   @IsString()
   @IsOptional()
-  driverPath?: string;
+  browserDriverPath?: string;
 }
 
 export interface BrowserInstallationFinder {
@@ -55,12 +62,12 @@ export interface BrowserInstallationFinder {
   find(options: BrowserInstallationFinderOptions): PromiseOrValue<BrowserInstallation[]>;
 }
 
-export type DriverInstallerOptions = Pick<BrowserOptions, 'browserName' | 'browserPlatform' | 'resolvedBrowserVersion'>;
-export type InstalledDriverInfo = Pick<BrowserInfo, 'driverPath'>;
+export type BrowserDriverInstallerOptions = Pick<BrowserOptions, 'browserName' | 'browserPlatform' | 'resolvedBrowserVersion'>;
+export type BrowserDriverInstallation = Pick<BrowserInfo, 'browserDriverPath'>;
 
-export interface DriverInstaller {
-  match(options: DriverInstallerOptions): PromiseOrValue<boolean>;
-  install(options: DriverInstallerOptions): PromiseOrValue<InstalledDriverInfo>;
+export interface BrowserDriverInstaller {
+  match(options: BrowserDriverInstallerOptions): PromiseOrValue<boolean>;
+  install(options: BrowserDriverInstallerOptions): PromiseOrValue<BrowserDriverInstallation>;
 }
 
 export type BrowserAutoInstallableCheckerOptions = Pick<BrowserOptions, 'browserName' | 'browserPlatform'>;
@@ -78,7 +85,7 @@ export interface BrowserInstaller {
 }
 
 export type EnsureBrowserAndDriverOptions = Pick<BrowserOptions, 'browserName' | 'browserPlatform'> & Partial<Pick<BrowserOptions, 'requestedBrowserVersion' | 'deviceSerial'>>;
-export type EnsuredBrowserAndDriverInfo = BrowserInstallation & InstalledDriverInfo;
+export type BrowserAndDriverInstallation = BrowserInstallation & BrowserDriverInstallation;
 
 export type FindAllBrowserInstallationsOptions = Pick<BrowserInstallationFinderOptions, 'browserPlatform' | 'deviceSerial'>;
 export type FindAllBrowserInstallationsResult = BrowserInstallation[];

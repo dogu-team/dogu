@@ -12,6 +12,7 @@ export * from './specs/http/device-inspector';
 export * from './specs/http/device-webdriver';
 export * from './specs/types';
 export * from './specs/ws/device-host/download-shared-resource';
+export * from './specs/ws/device-host/ensure-browser-and-driver';
 export * from './specs/ws/device-host/record-postprocess';
 export * from './specs/ws/device-host/upload-file';
 export * from './specs/ws/device/connection-subscribe';
