@@ -92,7 +92,7 @@ class ZombieWdaXCTest implements Zombieable {
 
   onDie(): void {
     this.logger.debug?.(`ZombieWdaXCTest.onDie`);
-    this.xctestrun?.kill();
+    this.xctestrun?.kill('ZombieWdaXCTest.onDie');
   }
 
   private async isHealth(): Promise<boolean> {
