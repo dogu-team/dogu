@@ -18,9 +18,6 @@ export class SeleniumManagerBrowserInstallationFinder implements BrowserInstalla
 }
 
 export class AdbBrowserInstallationFinder implements BrowserInstallationFinder {
-  static readonly packageLinePattern = /^package:(?<package>.*)=(?<packageName>.*)$/;
-  static readonly packageVersionLinePattern = /^\s*versionName=(?<version>.*)\s*$/;
-
   private readonly logger = new PrefixLogger(logger, '[AdbBrowserInstallationFinder]');
 
   match(options: BrowserInstallationFinderOptions): boolean {
@@ -46,34 +43,8 @@ export class AdbBrowserInstallationFinder implements BrowserInstallationFinder {
 
   private async findAllBrowserInstallations(deviceSerial: Serial): Promise<{ browserPackageName: string; browserName: AndroidBrowserName }[]> {
     const browserNameMap = new Map(Object.entries(AndroidBrowserPackageNameMap).map(([key, value]) => [value, key]));
-    const { stdout } = await Adb.shell(deviceSerial, 'pm list packages -f');
-    const browserInfos = stdout
-      .split('\n')
-      .map((line) => ({
-        line,
-        match: line.match(AdbBrowserInstallationFinder.packageLinePattern),
-      }))
-      .filter(({ line, match }) => {
-        if (!match) {
-          this.logger.warn(`Failed to match package line: ${line}`);
-        }
-        return !!match;
-      })
-      .map(({ line, match }) => ({ line, match } as { line: string; match: RegExpExecArray }))
-      .filter(({ line, match }) => {
-        if (!match.groups) {
-          this.logger.warn(`Failed to match groups in package line: ${line}`);
-        }
-        return !!match.groups;
-      })
-      .map(({ line, match }) => ({ line, groups: match.groups } as { line: string; groups: Record<string, string> }))
-      .filter(({ line, groups }) => {
-        if (!groups.packageName) {
-          this.logger.warn(`Failed to find package name in package line: ${line}`);
-        }
-        return !!groups.packageName;
-      })
-      .map(({ groups }) => ({ packageName: groups.packageName } as { packageName: string }))
+    const installedPackages = await Adb.getIntalledPackages(deviceSerial);
+    const browserInfos = installedPackages
       .map(({ packageName }) => {
         const browserName = browserNameMap.get(packageName);
         return { packageName, browserName };
@@ -90,27 +61,12 @@ export class AdbBrowserInstallationFinder implements BrowserInstallationFinder {
   ): Promise<{ browserPackageName: string; browserName: AndroidBrowserName; browserVersion: string }[]> {
     const browserInstallationsWithVersionResults = await Promise.allSettled(
       browserInfos.map(async ({ browserPackageName, browserName }) => {
-        const { stdout } = await Adb.shell(deviceSerial, `dumpsys package ${browserPackageName} | grep versionName`);
-        const packageVersionLines = stdout.split('\n');
-        if (packageVersionLines.length < 1) {
-          this.logger.warn(`Failed to find version line for package name: ${browserPackageName}`);
-          throw new Error(`Failed to find version line for package name: ${browserPackageName}`);
+        const installedPackageInfo = await Adb.getInstalledPackageInfo(deviceSerial, browserPackageName, { versionName: true });
+        const { versionName } = installedPackageInfo;
+        if (!versionName) {
+          throw new Error(`Failed to find browser version. Browser name: ${browserName}, browser package name: ${browserPackageName}`);
         }
-
-        const packageVersionLine = packageVersionLines[0];
-        const packageVersionMatch = packageVersionLine.match(AdbBrowserInstallationFinder.packageVersionLinePattern);
-        if (!packageVersionMatch) {
-          this.logger.warn(`Failed to match package version line: ${packageVersionLine}`);
-          throw new Error(`Failed to match package version line: ${packageVersionLine}`);
-        }
-
-        if (!packageVersionMatch.groups) {
-          this.logger.warn(`Failed to match groups in package version line: ${packageVersionLine}`);
-          throw new Error(`Failed to match groups in package version line: ${packageVersionLine}`);
-        }
-
-        const { version } = packageVersionMatch.groups;
-        return { browserPackageName, browserName, browserVersion: version };
+        return { browserPackageName, browserName, browserVersion: versionName };
       }),
     );
 

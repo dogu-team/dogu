@@ -16,12 +16,17 @@ import { parseAndroidProcCpuInfo, parseAndroidProcDiskstats, parseAndroidProcMem
 export const DOGU_ADB_SERVER_PORT = 5037;
 
 export function adbBinary(): string {
-  return pathMap().android.adb;
+  if (process.env.DOGU_ADB_PATH) {
+    return process.env.DOGU_ADB_PATH;
+  } else {
+    return pathMap().android.adb;
+  }
 }
 
 export function adbPrefix(): string {
-  return `${pathMap().android.adb} -P ${DOGU_ADB_SERVER_PORT}`;
+  return `${adbBinary()} -P ${DOGU_ADB_SERVER_PORT}`;
 }
+
 const execFileAsync = util.promisify(execFile);
 
 type DeviceControlKeycode = PrivateProtocol.DeviceControlKeycode;
@@ -509,6 +514,94 @@ export async function getForegroundPackage(serial: Serial): Promise<FocusedAppIn
   return ret;
 }
 
+const packageLinePattern = /^package:(?<packagePath>.*)=(?<packageName>.*)$/;
+
+export interface InstalledPackage {
+  packagePath: string;
+  packageName: string;
+}
+
+export async function getIntalledPackages(serial: Serial): Promise<InstalledPackage[]> {
+  const { stdout } = await shell(serial, 'pm list packages -f');
+  const installedPackages = stdout
+    .split('\n')
+    .map((line) => ({
+      line: line.trim(),
+      match: line.match(packageLinePattern),
+    }))
+    .filter(({ line, match }) => {
+      if (!match) {
+        adbLogger.warn(`Failed to match package line: ${line}`);
+      }
+      return !!match;
+    })
+    .map(({ line, match }) => ({ line, match } as { line: string; match: RegExpExecArray }))
+    .filter(({ line, match }) => {
+      if (!match.groups) {
+        adbLogger.warn(`Failed to match groups in package line: ${line}`);
+      }
+      return !!match.groups;
+    })
+    .map(({ line, match }) => ({ line, groups: match.groups } as { line: string; groups: Record<string, string> }))
+    .filter(({ line, groups }) => {
+      if (!groups.packageName) {
+        adbLogger.warn(`Failed to find package name in package line: ${line}`);
+      }
+      return !!groups.packageName;
+    })
+    .map(
+      ({ line, groups }) =>
+        ({
+          packagePath: groups.packagePath,
+          packageName: groups.packageName,
+        } as InstalledPackage),
+    );
+  return installedPackages;
+}
+
+const packageVersionLinePattern = /^\s*versionName=(?<versionName>.*)\s*$/;
+
+export interface InstalledPackageQueryOptions {
+  versionName?: boolean;
+}
+
+export interface InstalledPackageInfo {
+  versionName?: string;
+}
+
+export async function getInstalledPackageInfo(serial: Serial, packageName: string, queryOptions: InstalledPackageQueryOptions): Promise<InstalledPackageInfo> {
+  const { stdout } = await shell(serial, `dumpsys package ${packageName}`);
+  const lines = stdout.split('\n');
+  let foundPackagesLine = false;
+  let foundPackageNameLine = false;
+  const result: InstalledPackageInfo = {};
+  lines.forEach((line) => {
+    if (!foundPackagesLine) {
+      if (line.startsWith('Packages:')) {
+        foundPackagesLine = true;
+      }
+    }
+
+    if (foundPackagesLine && !foundPackageNameLine) {
+      if (line.startsWith(`  Package [${packageName}]`)) {
+        foundPackageNameLine = true;
+      }
+    }
+
+    if (foundPackagesLine && foundPackageNameLine) {
+      if (queryOptions.versionName) {
+        if (!result.versionName) {
+          const match = line.match(packageVersionLinePattern);
+          if (match && match.groups && match.groups.versionName) {
+            result.versionName = match.groups.versionName;
+          }
+        }
+      }
+    }
+  });
+  return result;
+}
+
 // display
 
 export async function isScreenOn(serial: Serial): Promise<boolean> {
@@ -763,3 +856,7 @@ registerBootstrapHandler(__filename, async (): Promise<void> => {
     throw new Error(`Failed to chmod adb`, { cause });
   }
 });
+
+getInstalledPackageInfo('emulator-5554', 'com.android.chrome', { versionName: true })
+  .then((v) => console.log(v))
+  .catch((e) => console.error(e));
