@@ -33,6 +33,7 @@ import { BrowserInstallation } from '@dogu-tech/device-client-common';
 import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { BaseEntity, Brackets, DataSource, EntityManager, In, SelectQueryBuilder } from 'typeorm';
+import { v4 } from 'uuid';
 import { DeviceRunner } from '../../../db/entity/device-runner.entity';
 import { Device } from '../../../db/entity/device.entity';
 import { DeviceBrowserInstallation, DeviceTag, Project } from '../../../db/entity/index';
@@ -662,6 +663,7 @@ export class DeviceStatusService {
       const addeds = news.slice(olds.length);
       const createds = manager.getRepository(DeviceBrowserInstallation).create(
         addeds.map((v) => ({
+          deviceBrowserInstallationId: v4(),
           browserName: v.browserName,
           browserVersion: v.browserVersion,
           deviceId,
@@ -700,6 +702,7 @@ export class DeviceStatusService {
       if (toCreateCount > 0) {
         const toCreates = manager.getRepository(DeviceRunner).create(
           Array.from({ length: toCreateCount }).map(() => ({
+            deviceRunnerId: v4(),
             deviceId,
           })),
         );

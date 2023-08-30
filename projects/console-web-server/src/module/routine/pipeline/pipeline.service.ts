@@ -35,6 +35,7 @@ import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from
 import { InjectDataSource } from '@nestjs/typeorm';
 import lodash from 'lodash';
 import { DataSource, EntityManager } from 'typeorm';
+import { v4 } from 'uuid';
 import { RoutineDeviceJob } from '../../../db/entity/device-job.entity';
 import { Device, RoutineDeviceJobBrowser, RoutineJob, RoutineJobEdge } from '../../../db/entity/index';
 import { RoutinePipeline } from '../../../db/entity/pipeline.entity';
@@ -459,6 +460,7 @@ export class PipelineService {
         }
         const { routineDeviceJob, browserName } = savedRoutineDeviceJobInfo;
         const deviceJobBrowser = manager.getRepository(RoutineDeviceJobBrowser).create({
+          routineDeviceJobBrowserId: v4(),
           routineDeviceJobId: routineDeviceJob.routineDeviceJobId,
           browserName,
         });

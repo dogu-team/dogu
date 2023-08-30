@@ -65,6 +65,6 @@ export class RoutineDeviceJob extends BaseEntity implements RoutineDeviceJobBase
   @JoinColumn({ name: RoutineDeviceJobPropSnake.device_runner_id })
   deviceRunner?: DeviceRunner;
 
-  @OneToOne(() => RoutineDeviceJobBrowser, (routineDeviceJobBrowser) => routineDeviceJobBrowser.routineDeviceJob)
+  @OneToOne(() => RoutineDeviceJobBrowser, (routineDeviceJobBrowser) => routineDeviceJobBrowser.routineDeviceJob, { createForeignKeyConstraints: false })
   routineDeviceJobBrowser?: RoutineDeviceJobBrowser;
 }

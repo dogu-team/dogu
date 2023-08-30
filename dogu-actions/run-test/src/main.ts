@@ -1,5 +1,6 @@
 import { ActionKit, checkoutProject, downloadApp, errorify, stringify } from '@dogu-tech/action-kit';
 import { spawnSync } from 'child_process';
+import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 
@@ -100,6 +101,8 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
 
     env = _.merge(env, browserEnv);
   }
+
+  await fs.promises.mkdir(DOGU_STEP_WORKING_PATH, { recursive: true });
 
   command
     .split('\n')

@@ -149,7 +149,6 @@ export class DeviceJobStepProcessor {
       (await this.rootWorkspace.createRoutineWorkspacePath(rootWorkspacePath, { projectId, deviceId, deviceRunnerId }));
 
     const stepWorkingPath = path.resolve(doguRoutineWorkspacePath, cwd);
-    await fs.promises.mkdir(stepWorkingPath, { recursive: true });
     this.logger.info(`Step ${routineStepId} working path: ${stepWorkingPath}`);
 
     const pathOld = environmentVariableReplacer.stackProvider.export(this.logger).PATH;

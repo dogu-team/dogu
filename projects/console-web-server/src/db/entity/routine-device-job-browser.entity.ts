@@ -7,13 +7,13 @@ import {
   ROUTINE_DEVICE_JOB_BROWSER_BROWSER_VERSION_MAX_LENGTH,
   ROUTINE_DEVICE_JOB_BROWSER_TABLE_NAME,
 } from '@dogu-private/types';
-import { BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { RoutineDeviceJob } from './device-job.entity';
 
 @Entity(ROUTINE_DEVICE_JOB_BROWSER_TABLE_NAME)
 export class RoutineDeviceJobBrowser extends BaseEntity implements RoutineDeviceJobBrowserBase {
-  @PrimaryGeneratedColumn('uuid', { name: RoutineDeviceJobBrowserPropSnake.routine_device_job_browser_id })
+  @PrimaryColumn('uuid', { name: RoutineDeviceJobBrowserPropSnake.routine_device_job_browser_id })
   routineDeviceJobBrowserId!: RoutineDeviceJobBrowserId;
 
   @Column({ type: 'character varying', name: RoutineDeviceJobBrowserPropSnake.browser_name, length: ROUTINE_DEVICE_JOB_BROWSER_BROWSER_NAME_MAX_LENGTH, nullable: false })

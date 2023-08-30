@@ -18,6 +18,7 @@ import {
 } from '@dogu-private/console-host-agent';
 import { Controller } from '@nestjs/common';
 import { Ctx, Payload } from '@nestjs/microservices';
+import fs from 'fs';
 import { HttpProxyProcessor } from '../http-ws-proxy/http-proxy.processor';
 import { MessageContext } from '../message/message.types';
 import { ActionProcessor } from '../processor/action.processor';
@@ -78,9 +79,10 @@ export class MessageRequestResponseController {
   }
 
   @OnConsoleMessage(Run, ErrorResult)
-  onRun(@Payload() param: Run, @Ctx() context: MessageContext): Promise<ErrorResult> {
+  async onRun(@Payload() param: Run, @Ctx() context: MessageContext): Promise<ErrorResult> {
     const { run } = param;
     let cwd = context instanceof StepMessageContext ? context.workingPath : process.cwd();
+    await fs.promises.mkdir(cwd, { recursive: true });
     return this.commandProcessRegistry.commandLine(run, { cwd }, context);
   }
 
