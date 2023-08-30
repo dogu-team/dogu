@@ -793,6 +793,10 @@ public final class Errors {
      */
     CODE_DEVICE_SERVER_APPIUM_CONTEXT_INFO_NOT_FOUND(3403),
     /**
+     * <code>CODE_DEVICE_SERVER_APPIUM_CAPABILITIES_NOT_FOUND = 3404;</code>
+     */
+    CODE_DEVICE_SERVER_APPIUM_CAPABILITIES_NOT_FOUND(3404),
+    /**
      * <pre>
      **
      * &#64;note Device server errors end.
@@ -1636,6 +1640,10 @@ public final class Errors {
      */
     public static final int CODE_DEVICE_SERVER_APPIUM_CONTEXT_INFO_NOT_FOUND_VALUE = 3403;
     /**
+     * <code>CODE_DEVICE_SERVER_APPIUM_CAPABILITIES_NOT_FOUND = 3404;</code>
+     */
+    public static final int CODE_DEVICE_SERVER_APPIUM_CAPABILITIES_NOT_FOUND_VALUE = 3404;
+    /**
      * <pre>
      **
      * &#64;note Device server errors end.
@@ -1851,6 +1859,7 @@ public final class Errors {
         case 3401: return CODE_DEVICE_SERVER_APPIUM_CONTEXT_NOT_FOUND;
         case 3402: return CODE_DEVICE_SERVER_GAMIUM_CONTEXT_NOT_FOUND;
         case 3403: return CODE_DEVICE_SERVER_APPIUM_CONTEXT_INFO_NOT_FOUND;
+        case 3404: return CODE_DEVICE_SERVER_APPIUM_CAPABILITIES_NOT_FOUND;
         case 3999: return CODE_DEVICE_SERVER_END;
         case 4000: return CODE_DEVICE_CONTROLLER_BEGIN;
         case 4001: return CODE_DEVICE_CONTROLLER_INPUT_NOTSUPPORTED;

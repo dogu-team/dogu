@@ -16,6 +16,21 @@ export function appiumContextNotFoundError(serial: Serial): DeviceServerResponse
   };
 }
 
+export function appiumCapabilitiesNotFoundError(serial: Serial): DeviceServerResponseDto {
+  return {
+    value: {
+      $case: 'error',
+      error: {
+        code: Code.CODE_DEVICE_SERVER_APPIUM_CONTEXT_NOT_FOUND,
+        message: 'Appium context not found',
+        details: {
+          serial,
+        },
+      },
+    },
+  };
+}
+
 export function gamiumContextNotFoundError(serial: Serial): DeviceServerResponseDto {
   return {
     value: {

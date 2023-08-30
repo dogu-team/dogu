@@ -11,7 +11,7 @@ import {
   StreamingAnswer,
 } from '@dogu-private/types';
 import { Closable, Printable, PromiseOrValue } from '@dogu-tech/common';
-import { BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { Observable } from 'rxjs';
 import { DeviceWebDriver } from '../../alias';
 import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
@@ -86,6 +86,7 @@ export interface DeviceChannel {
 
   // appium
   getAppiumContext(): PromiseOrValue<AppiumContext | null>;
+  getAppiumCapabilities(): PromiseOrValue<AppiumCapabilities | null>;
   switchAppiumContext(key: AppiumContextKey): PromiseOrValue<AppiumContext>;
 
   // gamium

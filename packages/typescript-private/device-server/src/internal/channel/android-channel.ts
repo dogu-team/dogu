@@ -14,7 +14,7 @@ import {
   StreamingAnswer,
 } from '@dogu-private/types';
 import { Closable, delay, errorify, FilledPrintable, Printable, stringify } from '@dogu-tech/common';
-import { BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import { Manifest, open } from 'adbkit-apkreader';
 import { ChildProcess, execFile } from 'child_process';
@@ -23,6 +23,7 @@ import lodash from 'lodash';
 import { Observable } from 'rxjs';
 import semver from 'semver';
 import systeminformation from 'systeminformation';
+import { createAppiumCapabilities } from '../../appium/appium.capabilites';
 import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
@@ -414,6 +415,12 @@ export class AndroidChannel implements DeviceChannel {
   async switchAppiumContext(key: AppiumContextKey): Promise<AppiumContext> {
     await this._appiumContext.switchAppiumContext(key);
     return this._appiumContext;
+  }
+
+  async getAppiumCapabilities(): Promise<AppiumCapabilities> {
+    return await createAppiumCapabilities(this._appiumContext.options, {
+      commandTimeout: 60,
+    });
   }
 
   set gamiumContext(context: GamiumContext | null) {

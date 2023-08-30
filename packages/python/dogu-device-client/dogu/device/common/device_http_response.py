@@ -25,10 +25,10 @@ class DeviceHttpResponse:
         )
 
     def data(self, cls: T) -> T:
-        data_dict = self.__data_dict()
+        data_dict = self.data_dict()
         return from_dict(data_class=cls, data=data_dict)
 
-    def __data_dict(self) -> Any:
+    def data_dict(self) -> Any:
         if self.res_json["value"]["$case"] != "data":
             raise Exception("DeviceHttpResponse not a data type")
         return self.res_json["value"]["data"]

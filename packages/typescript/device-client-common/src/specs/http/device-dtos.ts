@@ -254,6 +254,13 @@ export class GetAppiumContextInfoResponse {
   info!: AppiumContextInfo;
 }
 
+export type AppiumCapabilities = Record<string, unknown>;
+
+export class GetAppiumCapabilitiesResponse {
+  @IsObject()
+  capabilities!: AppiumCapabilities;
+}
+
 export class GetSystemBarVisibility {
   @IsBoolean()
   statusBar!: boolean;

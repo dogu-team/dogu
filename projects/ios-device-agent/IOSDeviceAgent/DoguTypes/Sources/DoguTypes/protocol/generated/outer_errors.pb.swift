@@ -344,6 +344,7 @@ public enum Outer_Code: SwiftProtobuf.Enum {
   case deviceServerAppiumContextNotFound // = 3401
   case deviceServerGamiumContextNotFound // = 3402
   case deviceServerAppiumContextInfoNotFound // = 3403
+  case deviceServerAppiumCapabilitiesNotFound // = 3404
 
   ///*
   /// @note Device server errors end.
@@ -507,6 +508,7 @@ public enum Outer_Code: SwiftProtobuf.Enum {
     case 3401: self = .deviceServerAppiumContextNotFound
     case 3402: self = .deviceServerGamiumContextNotFound
     case 3403: self = .deviceServerAppiumContextInfoNotFound
+    case 3404: self = .deviceServerAppiumCapabilitiesNotFound
     case 3999: self = .deviceServerEnd
     case 4000: self = .deviceControllerBegin
     case 4001: self = .deviceControllerInputNotsupported
@@ -649,6 +651,7 @@ public enum Outer_Code: SwiftProtobuf.Enum {
     case .deviceServerAppiumContextNotFound: return 3401
     case .deviceServerGamiumContextNotFound: return 3402
     case .deviceServerAppiumContextInfoNotFound: return 3403
+    case .deviceServerAppiumCapabilitiesNotFound: return 3404
     case .deviceServerEnd: return 3999
     case .deviceControllerBegin: return 4000
     case .deviceControllerInputNotsupported: return 4001
@@ -796,6 +799,7 @@ extension Outer_Code: CaseIterable {
     .deviceServerAppiumContextNotFound,
     .deviceServerGamiumContextNotFound,
     .deviceServerAppiumContextInfoNotFound,
+    .deviceServerAppiumCapabilitiesNotFound,
     .deviceServerEnd,
     .deviceControllerBegin,
     .deviceControllerInputNotsupported,
@@ -973,6 +977,7 @@ extension Outer_Code: SwiftProtobuf._ProtoNameProviding {
     3401: .same(proto: "CODE_DEVICE_SERVER_APPIUM_CONTEXT_NOT_FOUND"),
     3402: .same(proto: "CODE_DEVICE_SERVER_GAMIUM_CONTEXT_NOT_FOUND"),
     3403: .same(proto: "CODE_DEVICE_SERVER_APPIUM_CONTEXT_INFO_NOT_FOUND"),
+    3404: .same(proto: "CODE_DEVICE_SERVER_APPIUM_CAPABILITIES_NOT_FOUND"),
     3999: .same(proto: "CODE_DEVICE_SERVER_END"),
     4000: .same(proto: "CODE_DEVICE_CONTROLLER_BEGIN"),
     4001: .same(proto: "CODE_DEVICE_CONTROLLER_INPUT_NOTSUPPORTED"),

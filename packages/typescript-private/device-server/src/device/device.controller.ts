@@ -6,7 +6,7 @@ import { ConfigService } from '../config/config.service';
 import { toErrorResultDto } from '../device-webdriver/device-webdriver.controller';
 import { Adb } from '../internal/externals/index';
 import { LocalDeviceService } from '../local-device/local-device.service';
-import { appiumContextNotFoundError } from '../response-utils';
+import { appiumCapabilitiesNotFoundError, appiumContextNotFoundError } from '../response-utils';
 import { ScanService } from '../scan/scan.service';
 import { deviceNotFoundError } from './device.utils';
 
@@ -162,6 +162,30 @@ export class DeviceController {
         },
       };
     }
+  }
+
+  @Get(Device.getAppiumCapabilities.path)
+  async getAppiumCapabilities(@Param('serial') serial: Serial): Promise<Instance<typeof Device.getAppiumCapabilities.responseBody>> {
+    const channel = this.scanService.findChannel(serial);
+    if (channel === null) {
+      return deviceNotFoundError(serial);
+    }
+
+    const capabilities = await channel.getAppiumCapabilities();
+    if (capabilities === null) {
+      return appiumCapabilitiesNotFoundError(serial);
+    }
+
+    const data: Instance<typeof Device.getAppiumCapabilities.responseBodyData> = {
+      capabilities,
+    };
+
+    return {
+      value: {
+        $case: 'data',
+        data,
+      },
+    };
   }
 
   @Get(Device.getSystemBarVisibility.path)
