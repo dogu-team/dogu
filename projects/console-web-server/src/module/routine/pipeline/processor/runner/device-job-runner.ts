@@ -120,9 +120,7 @@ export class DeviceJobRunner {
 
           if (dest.inProgressAt === null && dest.state === DEST_STATE.PENDING) {
             await this.destRunner.setState(manager, dest, DEST_STATE.SKIPPED, new Date(), null);
-            // await setDestState(manager, dest, DEST_STATE.SKIPPED);
           } else if (dest.inProgressAt === null || dest.completedAt === null) {
-            // await setDestState(manager, dest, DEST_STATE.UNSPECIFIED, new Date());
             await this.destRunner.setState(manager, dest, DEST_STATE.UNSPECIFIED, new Date(), null);
           }
         }
@@ -144,11 +142,15 @@ export class DeviceJobRunner {
 
     await this.dataSource.transaction(async (manager) => {
       await this.setStatus(manager, deviceJob, PIPELINE_STATUS.CANCELLED, new Date());
-      await this.postCancelledDeviceJobByUpdater(manager, steps);
+      await this.postCancelledDeviceJobByUpdater(manager, steps, deviceJob.deviceRunnerId);
     });
   }
 
-  private async postCancelledDeviceJobByUpdater(manager: EntityManager, steps: RoutineStep[]): Promise<void> {
+  private async postCancelledDeviceJobByUpdater(manager: EntityManager, steps: RoutineStep[], deviceRunnerId: DeviceRunnerId | null): Promise<void> {
+    if (deviceRunnerId) {
+      await manager.getRepository(DeviceRunner).update(deviceRunnerId, { isInUse: 0 });
+    }
+
     for (const step of steps) {
       if (isCompleted(step.status)) {
         continue;
@@ -188,11 +190,15 @@ export class DeviceJobRunner {
 
     await this.dataSource.transaction(async (manager) => {
       await this.setStatus(manager, deviceJob, PIPELINE_STATUS.FAILURE, new Date());
-      await this.postHeartbeatFailureDeviceJob(manager, steps);
+      await this.postHeartbeatFailureDeviceJob(manager, steps, deviceJob.deviceRunnerId);
     });
   }
 
-  private async postHeartbeatFailureDeviceJob(manager: EntityManager, steps: RoutineStep[]): Promise<void> {
+  private async postHeartbeatFailureDeviceJob(manager: EntityManager, steps: RoutineStep[], deviceRunnerId: DeviceRunnerId | null): Promise<void> {
+    if (deviceRunnerId) {
+      await manager.getRepository(DeviceRunner).update(deviceRunnerId, { isInUse: 0 });
+    }
+
     for (const step of steps) {
       if (isCompleted(step.status)) {
         continue;
