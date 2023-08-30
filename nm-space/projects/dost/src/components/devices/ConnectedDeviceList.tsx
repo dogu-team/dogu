@@ -30,7 +30,6 @@ const ConnectedDeviceList = () => {
       (async () => {
         try {
           const deviceSubscribeMessages = await ipc.deviceLookupClient.getSubscribeMessages();
-          console.log('deviceSubscribeMessages', deviceSubscribeMessages);
           setDeviceStatuses(deviceSubscribeMessages);
         } catch (e) {
           ipc.rendererLogger.error(`Get PlatformSerials error: ${stringify(e)}`);

@@ -637,9 +637,16 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
       }
       const befImplKey = this.impl.key;
       this.logger.info(`switching appium context: from: ${befImplKey}, to: ${key} start`);
-      const befImpl = this.impl;
       this.impl = this.nullContext;
-      ZombieServiceInstance.deleteComponent(befImpl, 'switching appium context');
+      ZombieServiceInstance.deleteAllComponentsIfExist((zombieable) => {
+        if (zombieable.serial !== this.options.serial) {
+          return false;
+        }
+        if (zombieable instanceof AppiumContextImpl || zombieable instanceof AppiumRemoteContext) {
+          return true;
+        }
+        return false;
+      }, 'switching appium context');
 
       const appiumContext = AppiumContextProxy.createAppiumContext({ ...this.options, key: key }, this.logger);
       const awaiter = ZombieServiceInstance.addComponent(appiumContext);
