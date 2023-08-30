@@ -26,6 +26,7 @@ import { Device, RecordTestScenarioAndRecordTestCase } from '../../../../db/enti
 import { ProjectApplication } from '../../../../db/entity/project-application.entity';
 import { RecordTestCase } from '../../../../db/entity/record-test-case.entity';
 import { EMPTY_PAGE, Page } from '../../../../module/common/dto/pagination/page';
+import { ProjectFileService } from '../../../../module/file/project-file.service';
 import { ApplicationService } from '../../../../module/project/application/application.service';
 import { FindProjectApplicationDto } from '../../../../module/project/application/dto/application.dto';
 import { AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem } from '../../../../module/remote/remote-webdriver/remote-webdriver.appium-batch-request-items';
@@ -50,6 +51,8 @@ export class RecordTestCaseService {
     private readonly applicationService: ApplicationService,
     @Inject(RecordTestStepService)
     private readonly recordTestStepService: RecordTestStepService,
+    @Inject(ProjectFileService)
+    private readonly projectFileService: ProjectFileService,
   ) {}
 
   async findRecordTestCasesByProjectId(projectId: ProjectId, dto: FindRecordTestCaseByProjectIdDto): Promise<Page<RecordTestCaseBase>> {
@@ -115,12 +118,20 @@ export class RecordTestCaseService {
     if (!recordTestCase) {
       throw new HttpException(`RecordTestCase not found. recordTestCaseId: ${recordTestCaseId}`, HttpStatus.NOT_FOUND);
     }
-    const stepResponses: RecordTestStepResponse[] = [];
+
     const recordTestSteps = recordTestCase.recordTestSteps ?? [];
-    for (const step of recordTestSteps) {
-      const stepResponse = await this.recordTestStepService.findRecordTestStepById(organizationId, projectId, recordTestCaseId, step.recordTestStepId);
-      stepResponses.push(stepResponse);
-    }
+    const stepPromises = recordTestSteps.map(async (step) => {
+      const screenshotUrl = this.projectFileService.getRecordTestScreenshotUrl(organizationId, projectId, recordTestCaseId, step.recordTestStepId);
+      const pageSourceUrl = this.projectFileService.getRecordTestPageSourceUrl(organizationId, projectId, recordTestCaseId, step.recordTestStepId);
+
+      return Promise.all([screenshotUrl, pageSourceUrl]).then(([resolvedScreenshotUrl, resolvedPageSourceUrl]) => ({
+        ...step,
+        screenshotUrl: resolvedScreenshotUrl,
+        pageSourceUrl: resolvedPageSourceUrl,
+      }));
+    });
+    const stepResponses: RecordTestStepResponse[] = await Promise.all(stepPromises);
+
     const rv: RecordTestCaseResponse = {
       ...recordTestCase,
       recordTestSteps: stepResponses,

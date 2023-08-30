@@ -71,7 +71,7 @@ export class RecordTestScenarioController {
   // }
 
   @Post()
-  @ProjectPermission(PROJECT_ROLE.WRITE)
+  // @ProjectPermission(PROJECT_ROLE.WRITE)
   async createRecordTestScenario(
     @Param(ProjectPropCamel.projectId) projectId: ProjectId, //
     @Body() dto: CreateRecordTestScenarioDto,

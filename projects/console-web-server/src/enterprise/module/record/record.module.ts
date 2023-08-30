@@ -8,6 +8,8 @@ import { DeviceMessageModule } from '../../../module/device-message/device-messa
 import { FileModule } from '../../../module/file/file.module';
 import { ProjectModule } from '../../../module/project/project.module';
 import { RemoteModule } from '../../../module/remote/remote.module';
+import { RecordPipelineController } from './pipeline/record-test-pipeline.controller';
+import { RecordPipelineService } from './pipeline/record-test-pipeline.service';
 import { RecordTestStepActionWebdriverClickService } from './record-test-action/record-test-action-webdriver-click.service';
 import { RecordTestStepActionWebdriverInputService } from './record-test-action/record-test-action-webdriver-input.service';
 import { RecordTestStepActionService } from './record-test-action/record-test-step-action.service';
@@ -33,8 +35,9 @@ import { RecordTestStepService } from './record-test-step/record-test-step.servi
     RecordTestStepActionService,
     RecordTestStepActionWebdriverClickService,
     RecordTestStepActionWebdriverInputService,
+    RecordPipelineService,
   ],
   exports: [],
-  controllers: [RecordTestScenarioController, RecordTestCaseController, RecordTestStepController],
+  controllers: [RecordTestScenarioController, RecordTestCaseController, RecordTestStepController, RecordPipelineController],
 })
 export class RecordModule {}

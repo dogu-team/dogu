@@ -1,11 +1,4 @@
-import {
-  RecordTestCaseBase,
-  RecordTestCaseResponse,
-  RecordTestScenarioAndRecordTestCasePropCamel,
-  RecordTestScenarioAndRecordTestCasePropSnake,
-  RecordTestScenarioBase,
-  RecordTestStepResponse,
-} from '@dogu-private/console';
+import { RecordTestScenarioAndRecordTestCasePropCamel, RecordTestScenarioAndRecordTestCasePropSnake } from '@dogu-private/console';
 import { OrganizationId, platformTypeFromPlatform, ProjectId, RecordTestCaseId, RecordTestScenarioId } from '@dogu-private/types';
 import { DoguDevicePlatformHeader, DoguDeviceSerialHeader, DoguRemoteDeviceJobIdHeader, DoguRequestTimeoutHeader, HeaderRecord } from '@dogu-tech/common';
 import { HttpException, HttpStatus } from '@nestjs/common';
@@ -19,62 +12,55 @@ import { RemoteWebDriverBatchRequestExecutor } from '../../../module/remote/remo
 import { RemoteWebDriverService } from '../../../module/remote/remote-webdriver/remote-webdriver.service';
 import { castEntity } from '../../../types/entity-cast';
 
-export function getSortedRecordTestCases(recordTestScenario: RecordTestScenarioBase): RecordTestCaseBase[] {
-  return [];
+export function getSortedRecordTestCases(recordTestScenario: RecordTestScenario): RecordTestCase[] {
+  const mappingData = recordTestScenario.recordTestScenarioAndRecordTestCases ?? [];
+  if (mappingData.length === 0) {
+    return [];
+  }
 
-  // const mappingData = recordTestScenario.recordTestScenarioAndRecordTestCases ?? [];
-  // if (mappingData.length === 0) {
-  //   return [];
-  // }
+  const sortedTestCase: RecordTestCase[] = [];
 
-  // const sortedTestCase: RecordTestCaseBase[] = [];
+  const first = mappingData.find((data) => data.prevRecordTestCaseId === null);
+  if (!first) {
+    throw new HttpException(`Firt RecordTestCase not found. recordTestScenarioId: ${recordTestScenario.recordTestScenarioId}`, HttpStatus.NOT_FOUND);
+  }
 
-  // const first = mappingData.find((data) => data.recordTestCase?.recordTestCaseId === null);
-  // if (!first) {
-  //   throw new HttpException(`Firt RecordTestCase not found. recordTestScenarioId: ${recordTestScenario.recordTestScenarioId}`, HttpStatus.NOT_FOUND);
-  // }
+  const sortedSteps = getSortedRecordTestSteps(first.recordTestCase!);
+  first.recordTestCase!.recordTestSteps = sortedSteps;
+  sortedTestCase.push(first.recordTestCase!);
 
-  // const sortedSteps = getSortedRecordTestSteps(first.recordTestCase!);
-  // first.recordTestCase!.recordTestSteps = sortedSteps;
-  // sortedTestCase.push(first.recordTestCase!);
+  let nextId = first.recordTestCaseId;
+  while (true) {
+    const next = mappingData.find((data) => data.prevRecordTestCaseId === nextId);
+    if (!next) {
+      break;
+    }
+    const isDuplicate = sortedTestCase.some((step) => step.recordTestCaseId === next.recordTestCaseId);
+    if (isDuplicate) {
+      throw new HttpException(`Duplicate RecordTestCase found. recordTestCaseId: ${next.recordTestCaseId}`, HttpStatus.BAD_REQUEST);
+    }
 
-  // let nextId = first.recordTestCaseId;
-  // while (true) {
-  //   const next = mappingData.find((data) => data.prevRecordTestCaseId === nextId);
-  //   if (!next) {
-  //     break;
-  //   }
-  //   const isDuplicate = sortedTestCase.some((step) => step.recordTestCaseId === next.recordTestCaseId);
-  //   if (isDuplicate) {
-  //     throw new HttpException(`Duplicate RecordTestCase found. recordTestCaseId: ${next.recordTestCaseId}`, HttpStatus.BAD_REQUEST);
-  //   }
+    const sortedSteps = getSortedRecordTestSteps(next.recordTestCase!);
+    next.recordTestCase!.recordTestSteps = sortedSteps;
+    sortedTestCase.push(next.recordTestCase!);
+    nextId = next.recordTestCaseId;
+  }
 
-  //   const sortedSteps = getSortedRecordTestSteps(next.recordTestCase!);
-  //   next.recordTestCase!.recordTestSteps = sortedSteps;
-  //   sortedTestCase.push(next.recordTestCase!);
-  //   nextId = next.recordTestCaseId;
-  // }
-
-  // const caseResponses: RecordTestCaseResponse[] = [];
-
-  // for (const testCase of sortedTestCase) {
-  // }
-
-  // return sortedTestCase;
+  return sortedTestCase;
 }
 
-export function getSortedRecordTestSteps(recordTestCase: RecordTestCaseResponse): RecordTestStepResponse[] {
+export function getSortedRecordTestSteps(recordTestCase: RecordTestCase): RecordTestStep[] {
   const recordTestSteps = recordTestCase.recordTestSteps ?? [];
   if (recordTestSteps.length === 0) {
     return [];
   }
 
-  const sortedTestStep: RecordTestStepResponse[] = [];
+  const sortedTestStep: RecordTestStep[] = [];
   const first = recordTestSteps.find((data) => data.prevRecordTestStepId === null);
   if (!first) {
     throw new HttpException(`Firt RecordTestStep not found. recordTestCaseId: ${recordTestCase.recordTestCaseId}`, HttpStatus.NOT_FOUND);
   }
-  sortedTestStep.push(first);
+  const screenshotUrl = sortedTestStep.push(first);
 
   let nextId = first.recordTestStepId;
   while (true) {
