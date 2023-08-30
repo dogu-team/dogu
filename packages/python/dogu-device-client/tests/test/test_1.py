@@ -9,6 +9,9 @@ def test_connect():
 
     appium_server = device.run_appium_server("R39M20AQVAM")
     assert appium_server.port != 0
+
+    capabilites = device.get_appium_capabilities("R39M20AQVAM")
+
     closer = device.forward("R39M20AQVAM", host_port, 12345)
     closer.close()
     appium_server.close()

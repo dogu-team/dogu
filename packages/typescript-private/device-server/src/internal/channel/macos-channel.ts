@@ -192,6 +192,10 @@ export class MacosChannel implements DeviceChannel {
     throw new Error('Method not implemented.');
   }
 
+  getAppiumCapabilities(): null {
+    return null;
+  }
+
   set gamiumContext(context: GamiumContext | null) {
     throw new Error('Method not implemented.');
   }

@@ -13,7 +13,7 @@ import {
   StreamingAnswer,
 } from '@dogu-private/types';
 import { Closable, errorify, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
-import { BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { killChildProcess } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
 import compressing from 'compressing';
@@ -21,6 +21,7 @@ import fs from 'fs';
 import path from 'path';
 import { Observable } from 'rxjs';
 import semver from 'semver';
+import { createAppiumCapabilities } from '../../appium/appium.capabilites';
 import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
@@ -413,6 +414,12 @@ export class IosChannel implements DeviceChannel {
   async switchAppiumContext(key: AppiumContextKey): Promise<AppiumContext> {
     await this._appiumContext.switchAppiumContext(key);
     return this._appiumContext;
+  }
+
+  async getAppiumCapabilities(): Promise<AppiumCapabilities> {
+    return await createAppiumCapabilities(this._appiumContext.options, {
+      commandTimeout: 60,
+    });
   }
 
   set gamiumContext(context: GamiumContext | null) {

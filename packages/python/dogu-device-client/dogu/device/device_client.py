@@ -1,9 +1,12 @@
 import json
 import time
 from dataclasses import dataclass, asdict
+from typing import Any
+import requests
 from websockets.sync.client import connect, ClientConnection
 from dogu.device.appium_server import AppiumContextServerInfo, AppiumServerContext
 from dogu.device.common.device_closer import DeviceCloser
+from dogu.device.common.device_http_response import DeviceHttpResponse
 from dogu.device.logger import create_logger
 
 
@@ -85,6 +88,17 @@ class DeviceClient:
         return AppiumServerContext(
             AppiumContextServerInfo(port=int(msg_json["value"]["serverPort"])), conn
         )
+
+    def get_appium_capabilities(self, serial: str) -> Any:
+        full_path = f"http://{self._host_and_port}/devices/{serial}/appium-capabilities"
+        res = requests.get(full_path, timeout=self.timeout)
+        res.raise_for_status()
+        device_res = DeviceHttpResponse(res)
+        if device_res.error()[0]:
+            raise Exception(
+                f"DeviceClient.get_appium_capabilities error: {device_res.error()[1].message}"
+            )
+        return device_res.data_dict()["capabilities"]
 
     def __subscribe(self, path: str, try_count: int = 5) -> ClientConnection:
         full_path = f"ws://{self._host_and_port}{path}"

@@ -214,6 +214,10 @@ export class WindowsChannel implements DeviceChannel {
     throw new Error('Method not implemented.');
   }
 
+  getAppiumCapabilities(): null {
+    return null;
+  }
+
   set gamiumContext(context: GamiumContext | null) {
     if (this._gamiumContext) {
       throw new Error('Gamium context is already set');

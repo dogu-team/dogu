@@ -6,6 +6,7 @@ import { RTCPeerDescription, StreamingOfferDto } from '../../validations/types/s
 import { DeviceServerControllerMethodSpec } from '../types';
 import {
   CreateLocalDeviceDetectTokenRequest,
+  GetAppiumCapabilitiesResponse,
   GetAppiumContextInfoResponse,
   GetDevicePlatformSerialsResponse,
   GetDeviceSerialsResponse,
@@ -118,6 +119,17 @@ export const Device = {
     },
     responseBody: DeviceServerResponseDto,
     responseBodyData: GetAppiumContextInfoResponse,
+  }),
+
+  getAppiumCapabilities: new DeviceServerControllerMethodSpec({
+    controllerSpec: DeviceController,
+    method: 'GET',
+    path: '/:serial/appium-capabilities',
+    pathProvider: class {
+      constructor(readonly serial: Serial) {}
+    },
+    responseBody: DeviceServerResponseDto,
+    responseBodyData: GetAppiumCapabilitiesResponse,
   }),
 
   getSystemBarVisibility: new DeviceServerControllerMethodSpec({

@@ -3,28 +3,24 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
+import { Platform, Serial } from '@dogu-private/types';
 import { callAsyncWithTimeout, Class, delay, errorify, Instance, NullLogger, Printable, Retry, stringify } from '@dogu-tech/common';
 import { Android, AppiumContextInfo, ContextPageSource, Rect, ScreenSize, SystemBar } from '@dogu-tech/device-client-common';
-import { HostPaths, killChildProcess, killProcessOnPort, Logger, TaskQueueTask } from '@dogu-tech/node';
+import { killChildProcess, killProcessOnPort, Logger, TaskQueueTask } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
-import fs from 'fs';
 import _ from 'lodash';
-import path from 'path';
 import { remote } from 'webdriverio';
-import { DOGU_ADB_SERVER_PORT } from '../internal/externals/cli/adb/adb';
 import { Adb } from '../internal/externals/index';
 import { Zombieable, ZombieProps } from '../internal/services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../internal/services/zombie/zombie-service';
-import { getFreePort } from '../internal/util/net';
 import { createAppiumLogger, logger } from '../logger/logger.instance';
+import { createAppiumCapabilities } from './appium.capabilites';
 import { AppiumRemoteContext } from './appium.remote.context';
 import { AppiumService } from './appium.service';
 
 type Browser = Awaited<ReturnType<typeof remote>>;
 
-const AppiumNewCommandTimeout = 24 * 60 * 60; // unit: seconds
 const AppiumClientCallAsyncTimeout = 10 * 1000; // unit: milliseconds
 export const AppiumHealthCheckInterval = 5 * 1000; // unit: milliseconds
 export const AppiumHealthCheckMaxNotHealthyCount = 3;
@@ -77,6 +73,7 @@ export type AppiumOpeningState = 'opening' | 'openingSucceeded' | 'openingFailed
 export interface AppiumContext extends Zombieable {
   get key(): AppiumContextKey;
   get openingState(): AppiumOpeningState;
+  get options(): AppiumContextOptions;
   getInfo(): AppiumContextInfo;
   getAndroid(): Promise<Android | undefined>;
   getScreenSize(): Promise<ScreenSize>;
@@ -90,7 +87,7 @@ export interface AppiumContext extends Zombieable {
 
 class NullAppiumContext implements AppiumContext {
   public readonly props: ZombieProps = {};
-  constructor(private readonly options: AppiumContextOptions, public readonly printable: Logger) {}
+  constructor(public readonly options: AppiumContextOptions, public readonly printable: Logger) {}
   get name(): string {
     return 'NullAppiumContext';
   }
@@ -194,7 +191,7 @@ export class AppiumContextImpl implements AppiumContext {
   private notHealthyCount = 0;
 
   openingState: 'opening' | 'openingSucceeded' | 'openingFailed' = 'opening';
-  constructor(private readonly options: AppiumContextOptions, public readonly printable: Logger) {}
+  constructor(public readonly options: AppiumContextOptions, public readonly printable: Logger) {}
 
   get name(): string {
     return 'AppiumContextImpl';
@@ -346,51 +343,6 @@ export class AppiumContextImpl implements AppiumContext {
     await killChildProcess(process);
   }
 
-  /**
-   *
-   * @see https://appium.io/docs/en/2.0/guides/caps/
-   * @see https://appium.github.io/appium-xcuitest-driver/latest/capabilities/
-   */
-  private async createArgumentCapabilities(): Promise<Record<string, unknown>> {
-    const { platform, serial } = this.options;
-    switch (platform) {
-      case Platform.PLATFORM_ANDROID: {
-        const systemPort = await getFreePort();
-        const chromedriverPort = await getFreePort();
-        const mjepgServerPort = await getFreePort();
-        return {
-          platformName: 'android',
-          'appium:automationName': 'UiAutomator2',
-          'appium:deviceName': serial,
-          'appium:udid': serial,
-          'appium:mjpegServerPort': mjepgServerPort,
-          'appium:newCommandTimeout': AppiumNewCommandTimeout,
-          'appium:systemPort': systemPort,
-          'appium:chromedriverPort': chromedriverPort,
-          'appium:adbPort': DOGU_ADB_SERVER_PORT,
-        };
-      }
-      case Platform.PLATFORM_IOS: {
-        const derivedDataPath = path.resolve(HostPaths.external.xcodeProject.wdaDerivedDataClonePath(), serial);
-        await fs.promises.mkdir(derivedDataPath, { recursive: true });
-        const mjpegServerPort = await getFreePort();
-        return {
-          platformName: 'ios',
-          'appium:automationName': 'XCUITest',
-          'appium:deviceName': serial,
-          'appium:udid': serial,
-          'appium:webDriverAgentUrl': `http://127.0.0.1:${this.options.wdaForwardPort}`,
-          'appium:derivedDataPath': derivedDataPath,
-          'appium:mjpegServerPort': mjpegServerPort,
-          'appium:newCommandTimeout': AppiumNewCommandTimeout,
-          'appium:showXcodeLog': true,
-        };
-      }
-      default:
-        throw new Error(`platform ${platformTypeFromPlatform(platform)} is not supported`);
-    }
-  }
-
   async getAndroid(): Promise<Android | undefined> {
     const { platform, serial } = this.options;
     if (platform !== Platform.PLATFORM_ANDROID) {
@@ -461,7 +413,7 @@ export class AppiumContextImpl implements AppiumContext {
   @Retry({ retryCount: 10, retryInterval: 3000, printable: logger })
   private async restartClient(serverPort: number): Promise<AppiumData['client']> {
     this.printable.info('Appium client starting');
-    const argumentCapabilities = await this.createArgumentCapabilities();
+    const argumentCapabilities = await createAppiumCapabilities(this.options);
     const remoteOptions: Parameters<typeof remote>[0] = {
       port: serverPort,
       logLevel: 'trace',
@@ -587,7 +539,7 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
   private nullContext: NullAppiumContext;
   private contextLock = new AsyncLock();
 
-  constructor(private readonly options: AppiumContextOptions) {
+  constructor(public readonly options: AppiumContextOptions) {
     this.logger = createAppiumLogger(options.serial);
     this.nullContext = new NullAppiumContext(options, this.logger);
 
@@ -685,9 +637,16 @@ export class AppiumContextProxy implements AppiumContext, Zombieable {
       }
       const befImplKey = this.impl.key;
       this.logger.info(`switching appium context: from: ${befImplKey}, to: ${key} start`);
-      const befImpl = this.impl;
       this.impl = this.nullContext;
-      ZombieServiceInstance.deleteComponent(befImpl, 'switching appium context');
+      ZombieServiceInstance.deleteAllComponentsIfExist((zombieable) => {
+        if (zombieable.serial !== this.options.serial) {
+          return false;
+        }
+        if (zombieable instanceof AppiumContextImpl || zombieable instanceof AppiumRemoteContext) {
+          return true;
+        }
+        return false;
+      }, 'switching appium context');
 
       const appiumContext = AppiumContextProxy.createAppiumContext({ ...this.options, key: key }, this.logger);
       const awaiter = ZombieServiceInstance.addComponent(appiumContext);
