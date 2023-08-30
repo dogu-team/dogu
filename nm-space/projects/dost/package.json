@@ -62,6 +62,7 @@
     "styled-reset": "4.4.7",
     "systeminformation": "5.17.14",
     "web-vitals": "3.1.1",
+    "ws": "8.13.0",
     "zustand": "4.3.8"
   },
   "devDependencies": {
@@ -77,6 +78,7 @@
     "@types/react-dom": "18.0.11",
     "@types/shelljs": "0.8.11",
     "@types/styled-components": "5.1.26",
+    "@types/ws": "8",
     "@types/yargs": "17.0.23",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.0",

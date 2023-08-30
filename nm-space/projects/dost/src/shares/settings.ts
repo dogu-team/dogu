@@ -64,6 +64,9 @@ export interface ISettingsClient {
 
   changeStrictSSLOnNPMLikes(value: boolean): Promise<void>;
 
-  //report
+  // report
   createZipLogReport(): Promise<string>;
+
+  // clipboard
+  writeTextToClipboard(text: string): Promise<void>;
 }

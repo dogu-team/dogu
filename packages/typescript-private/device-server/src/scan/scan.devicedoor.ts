@@ -1,18 +1,25 @@
-import { DeviceAgentPort, DeviceAgentSecondPort, DeviceAgentThirdPort, ErrorDevice, platformTypeFromPlatform, Serial } from '@dogu-private/types';
-import { loop, stringify, stringifyError } from '@dogu-tech/common';
+import { DeviceAgentPort, DeviceAgentSecondPort, DeviceAgentThirdPort, ErrorDevice, PlatformSerial, platformTypeFromPlatform, Serial } from '@dogu-private/types';
+import { errorify, loop, stringify, stringifyError } from '@dogu-tech/common';
 import { DeviceChannel } from '../internal/public/device-channel';
 import { DeviceDriver } from '../internal/public/device-driver';
 import { logger } from '../logger/logger.instance';
 
 interface DeviceDoorEvent {
+  onOpening: (platformSerial: PlatformSerial) => Promise<void>;
+  onError: (device: ErrorDevice) => Promise<void>;
   onOpen: (channel: DeviceChannel) => Promise<void>;
   onClose: (serial: Serial) => Promise<void>;
 }
 
+interface DeviceDoorState {
+  type: 'none' | 'opening' | 'opened' | 'error' | 'closed';
+  error: Error | null;
+}
+
 export class DeviceDoor {
   public channel: DeviceChannel | null = null;
-  private _isLongClosed = false;
-  private _error: Error | null = null;
+  private _isClosedForALongTime = false;
+  private _state: DeviceDoorState = { type: 'none', error: null };
   private _latestOpenTime = 0;
   private _firstCloseTime = 0;
   private _latestCloseTime = 0;
@@ -37,18 +44,18 @@ export class DeviceDoor {
     this._latestCloseTime = Date.now();
   }
 
-  isLongClosed(): boolean {
-    return this._isLongClosed;
+  isClosedForALongTime(): boolean {
+    return this._isClosedForALongTime;
   }
 
-  error(): Error | null {
-    return this._error;
+  state(): DeviceDoorState {
+    return this._state;
   }
 
   private async process(): Promise<void> {
     for await (const _ of loop(1000)) {
       await this.processInternal();
-      if (this._isLongClosed) {
+      if (this._isClosedForALongTime) {
         return;
       }
     }
@@ -57,24 +64,28 @@ export class DeviceDoor {
   private async processInternal(): Promise<void> {
     if (null == this.channel && this._latestCloseTime < this._latestOpenTime) {
       try {
+        this._state = { type: 'opening', error: null };
+        await this.callback.onOpening({ platform: platformTypeFromPlatform(this.driver.platform), serial: this.serial });
         this.channel = await this.driver.openChannel({
           serial: this.serial,
           deviceAgentDevicePort: DeviceAgentPort,
           deviceAgentDeviceSecondPort: DeviceAgentSecondPort,
           deviceAgentDeviceThirdPort: DeviceAgentThirdPort,
         });
-        this._error = null;
+        this._state = { type: 'opened', error: null };
         await this.callback.onOpen(this.channel);
-      } catch (error) {
+      } catch (e) {
+        const error = errorify(e);
         logger.error(`DeviceDoor.processInternal initChannel error serial:${this.serial} ${stringifyError(error)}`);
         this.channel = null;
         this._firstCloseTime = Date.now();
         this._latestCloseTime = Date.now();
-        if (error instanceof Error) {
-          this._error = error;
-        } else {
-          this._error = new Error(stringify(error));
-        }
+        this._state = { type: 'error', error };
+        await this.callback.onError({
+          platform: platformTypeFromPlatform(this.driver.platform),
+          serial: this.serial,
+          error,
+        });
       }
       return;
     }
@@ -83,7 +94,8 @@ export class DeviceDoor {
       this.channel = null;
       await this.driver.closeChannel(this.serial);
       await this.callback.onClose(this.serial);
-      this._isLongClosed = true;
+      this._isClosedForALongTime = true;
+      this._state = { type: 'closed', error: null };
       return;
     }
   }
@@ -121,22 +133,33 @@ export class DeviceDoors {
   }
 
   get channels(): DeviceChannel[] {
-    return this._doors.filter((door) => null !== door.channel && null === door.error()).map((door) => door.channel!);
+    return this._doors.filter((door) => null !== door.channel && 'opened' === door.state().type).map((door) => door.channel!);
   }
 
-  get channelsWithError(): ErrorDevice[] {
+  get channelsOpening(): PlatformSerial[] {
     return this._doors
-      .filter((door) => null != door.error())
+      .filter((door) => 'opening' === door.state().type)
       .map((door) => {
         return {
           platform: platformTypeFromPlatform(door.driver.platform),
           serial: door.serial,
-          error: door.error() ?? new Error('Unknown error'),
+        };
+      });
+  }
+
+  get channelsWithError(): ErrorDevice[] {
+    return this._doors
+      .filter((door) => 'error' === door.state().type)
+      .map((door) => {
+        return {
+          platform: platformTypeFromPlatform(door.driver.platform),
+          serial: door.serial,
+          error: door.state().error ?? new Error('Unknown error'),
         };
       });
   }
 
   private cleanupClosedDoor(): void {
-    this._doors = this._doors.filter((door) => !door.isLongClosed());
+    this._doors = this._doors.filter((door) => !door.isClosedForALongTime());
   }
 }

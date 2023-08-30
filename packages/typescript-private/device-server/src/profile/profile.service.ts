@@ -85,8 +85,7 @@ export class ProfileService {
       return Promise.resolve(channel.queryProfile(toUpdateMethods));
     }
 
-    const queries = this.scanService
-      .getChannels()
+    const queries = this.scanService.channels
       .map((channel) => {
         const { serial } = channel;
         return {

@@ -40,26 +40,6 @@ export class DeviceController {
     };
   }
 
-  @Get(Device.getDevicesWithError.path)
-  getDevicesWithErrors(): Instance<typeof Device.getDevicesWithError.responseBody> {
-    const errorDevices = this.scanService.getChannelsWithError();
-    return {
-      value: {
-        $case: 'data',
-        data: {
-          errorDevices: errorDevices.map((errorDevice) => ({
-            serial: errorDevice.serial,
-            platform: errorDevice.platform,
-            error: {
-              name: errorDevice.error.name,
-              message: errorDevice.error.message,
-            },
-          })),
-        },
-      },
-    };
-  }
-
   @Get(Device.getDeviceSystemInfo.path)
   getDeviceSystemInfo(@Param('serial') serial: Serial): Instance<typeof Device.getDeviceSystemInfo.responseBody> {
     const device = this.scanService.findChannel(serial);

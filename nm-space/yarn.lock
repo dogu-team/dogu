@@ -13246,6 +13246,7 @@ __metadata:
     "@types/react-dom": 18.0.11
     "@types/shelljs": 0.8.11
     "@types/styled-components": 5.1.26
+    "@types/ws": 8
     "@types/yargs": 17.0.23
     ansi-to-html: 0.7.2
     class-transformer: 0.5.1
@@ -13283,6 +13284,7 @@ __metadata:
     typescript: 4.7.4
     wait-on: 7.0.1
     web-vitals: 3.1.1
+    ws: 8.13.0
     yargs: 17.7.1
     zustand: 4.3.8
   languageName: unknown

@@ -1,12 +1,19 @@
-import { DeviceConnectionState, ErrorDevice, Platform, PlatformSerial, PlatformType, platformTypeFromPlatform, Serial } from '@dogu-private/types';
+import { DeviceConnectionState, ErrorDevice, Platform, platformFromPlatformType, PlatformSerial, PlatformType, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { DuplicatedCallGuarder, Instance, stringifyError, validateAndEmitEventAsync } from '@dogu-tech/common';
-import { DeviceConnectionSubscribe } from '@dogu-tech/device-client-common';
+import { DefaultDeviceConnectionSubscribeReceiveMessage, DeviceConnectionSubscribe } from '@dogu-tech/device-client-common';
 import { processPlatform } from '@dogu-tech/node';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { DeviceWebDriver } from '../alias';
 import { AppiumService } from '../appium/appium.service';
-import { OnDeviceConnectionSubscriberConnectedEvent, OnDevicesConnectedEvent, OnDevicesDisconnectedEvent, OnUpdateEvent } from '../events';
+import {
+  OnDeviceConnectionSubscriberConnectedEvent,
+  OnDevicesConnectedEvent,
+  OnDevicesConnectingEvent,
+  OnDevicesDisconnectedEvent,
+  OnDevicesErrorEvent,
+  OnUpdateEvent,
+} from '../events';
 import { GamiumService } from '../gamium/gamium.service';
 import { HttpRequestRelayService } from '../http-request-relay/http-request-relay.common';
 import { DeviceChannel } from '../internal/public/device-channel';
@@ -36,17 +43,48 @@ export class ScanService implements OnModuleInit {
     private readonly seleniumService: SeleniumService,
   ) {
     this.deviceDoors = new DeviceDoors({
+      onOpening: async (platformSerial: PlatformSerial): Promise<void> => {
+        await validateAndEmitEventAsync(this.eventEmitter, OnDevicesConnectingEvent, { platformSerials: [platformSerial] }).catch((e) => {
+          this.logger.error(`ScanService OnDevicesConnectingEvent emit error: ${stringifyError(e)}`);
+        });
+      },
+      onError: async (errorDevice: ErrorDevice): Promise<void> => {
+        await validateAndEmitEventAsync(this.eventEmitter, OnDevicesErrorEvent, { errorDevices: [errorDevice] }).catch((e) => {
+          this.logger.error(`ScanService OnDevicesErrorEvent emit error: ${stringifyError(e)}`);
+        });
+      },
       onOpen: async (channel: DeviceChannel): Promise<void> => {
-        await validateAndEmitEventAsync(this.eventEmitter, OnDevicesConnectedEvent, { channels: [channel] });
+        await validateAndEmitEventAsync(this.eventEmitter, OnDevicesConnectedEvent, { channels: [channel] }).catch((e) => {
+          this.logger.error(`ScanService OnDevicesConnectedEvent emit error: ${stringifyError(e)}`);
+        });
       },
       onClose: async (serial: Serial): Promise<void> => {
-        await validateAndEmitEventAsync(this.eventEmitter, OnDevicesDisconnectedEvent, { serials: [serial] });
+        await validateAndEmitEventAsync(this.eventEmitter, OnDevicesDisconnectedEvent, { serials: [serial] }).catch((e) => {
+          this.logger.error(`ScanService OnDevicesDisconnectedEvent emit error: ${stringifyError(e)}`);
+        });
       },
     });
   }
 
-  private get channels(): DeviceChannel[] {
+  get channels(): Readonly<DeviceChannel[]> {
     return this.deviceDoors.channels;
+  }
+
+  private get channelsOpening(): Readonly<PlatformSerial[]> {
+    return this.deviceDoors.channelsOpening;
+  }
+
+  private get channelsWithOpenError(): Readonly<ErrorDevice[]> {
+    return this.deviceDoors.channelsWithError;
+  }
+
+  private get channelsWithScanError(): Readonly<ErrorDevice[]> {
+    return this.scanFailedDevices.filter((device) => {
+      const { serial } = device;
+      const channel = this.findChannel(serial);
+      if (channel) return false;
+      return true;
+    });
   }
 
   async onModuleInit(): Promise<void> {
@@ -73,27 +111,65 @@ export class ScanService implements OnModuleInit {
   @OnEvent(OnDeviceConnectionSubscriberConnectedEvent.key)
   onDeviceConnectionSubscriberConnected(value: Instance<typeof OnDeviceConnectionSubscriberConnectedEvent.value>): void {
     const { webSocket } = value;
-    const messages = this.channels.map((channel) => {
-      const { serial, serialUnique, platform, info, isVirtual } = channel;
-      const { system, version, graphics } = info;
-      const { model, manufacturer } = system;
-      const display = graphics.displays.at(0);
-      const resolutionWidth = display?.resolutionX ?? 0;
-      const resolutionHeight = display?.resolutionY ?? 0;
-      const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
-        serial,
-        serialUnique,
-        platform,
-        model,
-        version,
-        state: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED,
-        manufacturer,
-        isVirtual: isVirtual ? 1 : 0,
-        resolutionWidth,
-        resolutionHeight,
-      };
-      return message;
-    });
+
+    const messages = [
+      ...this.channelsOpening.map((platformSerial) => {
+        const { platform, serial } = platformSerial;
+        const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
+          ...DefaultDeviceConnectionSubscribeReceiveMessage(),
+          serial,
+          platform: platformFromPlatformType(platform),
+          state: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTING,
+        };
+        return message;
+      }),
+      ...this.channelsWithOpenError.map((errorDevice) => {
+        const { platform, serial, error } = errorDevice;
+        const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
+          ...DefaultDeviceConnectionSubscribeReceiveMessage(),
+          serial,
+          platform: platformFromPlatformType(platform),
+          state: DeviceConnectionState.DEVICE_CONNECTION_STATE_ERROR,
+          errorMessage: error.message,
+        };
+        return message;
+      }),
+      ...this.channelsWithScanError.map((errorDevice) => {
+        const { platform, serial, error } = errorDevice;
+        const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
+          ...DefaultDeviceConnectionSubscribeReceiveMessage(),
+          serial,
+          platform: platformFromPlatformType(platform),
+          state: DeviceConnectionState.DEVICE_CONNECTION_STATE_ERROR,
+          errorMessage: error.message,
+        };
+        return message;
+      }),
+
+      ...this.channels.map((channel) => {
+        const { serial, serialUnique, platform, info, isVirtual } = channel;
+        const { system, version, graphics } = info;
+        const { model, manufacturer } = system;
+        const display = graphics.displays.at(0);
+        const resolutionWidth = display?.resolutionX ?? 0;
+        const resolutionHeight = display?.resolutionY ?? 0;
+        const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
+          serial,
+          serialUnique,
+          platform,
+          model,
+          version,
+          state: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED,
+          errorMessage: '',
+          manufacturer,
+          isVirtual: isVirtual ? 1 : 0,
+          resolutionWidth,
+          resolutionHeight,
+        };
+        return message;
+      }),
+    ];
+
     messages.forEach((message) => {
       webSocket.send(JSON.stringify(message));
     });
@@ -129,6 +205,8 @@ export class ScanService implements OnModuleInit {
       });
       const scannedOnlineSerials = scanedSerials.filter((scanInfo) => scanInfo.status === 'online').map((scanInfo) => scanInfo.serial);
       const scannedOfflineInfos = scanedSerials.filter((scanInfo) => scanInfo.status !== 'online') as DeviceScanFailed[];
+
+      const befScanFailedSerials = this.scanFailedDevices.map((device) => device.serial);
       this.scanFailedDevices = scannedOfflineInfos.map((scanInfo) => {
         const { serial, description } = scanInfo;
         return {
@@ -137,6 +215,12 @@ export class ScanService implements OnModuleInit {
           error: new Error(description),
         };
       });
+      const newScanFailedDevices = this.scanFailedDevices.filter((device) => !befScanFailedSerials.includes(device.serial));
+      if (0 < newScanFailedDevices.length) {
+        await validateAndEmitEventAsync(this.eventEmitter, OnDevicesErrorEvent, { errorDevices: newScanFailedDevices }).catch((e) => {
+          this.logger.error(`ScanService.update OnDevicesErrorEvent emit error: ${stringifyError(e)}`);
+        });
+      }
 
       const removedSerials = befSerials.filter((befSerial) => !scannedOnlineSerials.find((serial) => befSerial === serial));
       if (removedSerials.length !== 0) {
@@ -173,27 +257,6 @@ export class ScanService implements OnModuleInit {
       if (channel.serial == serial) return channel;
     }
     return null;
-  }
-
-  getChannels(): Readonly<DeviceChannel[]> {
-    return this.channels;
-  }
-
-  getChannelsWithError(): Readonly<ErrorDevice[]> {
-    return [...this.getChannelsWithOpenError(), ...this.getChannelsWithScanError()];
-  }
-
-  getChannelsWithOpenError(): Readonly<ErrorDevice[]> {
-    return this.deviceDoors.channelsWithError;
-  }
-
-  getChannelsWithScanError(): Readonly<ErrorDevice[]> {
-    return this.scanFailedDevices.filter((device) => {
-      const { serial } = device;
-      const channel = this.findChannel(serial);
-      if (channel) return false;
-      return true;
-    });
   }
 
   getChannelsByPlatform(platform: Platform): Readonly<DeviceChannel[]> {

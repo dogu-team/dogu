@@ -57,6 +57,7 @@ expose('settingsClient', {
 
   changeStrictSSLOnNPMLikes: (strictSSL: boolean) => ipcRenderer.invoke(settingsClientKey.changeStrictSSLOnNPMLikes, strictSSL),
   createZipLogReport: () => ipcRenderer.invoke(settingsClientKey.createZipLogReport),
+  writeTextToClipboard: (text: string) => ipcRenderer.invoke(settingsClientKey.writeTextToClipboard, text),
 });
 
 expose('childClient', {
@@ -145,9 +146,7 @@ expose('featureConfigClient', {
 });
 
 expose('deviceLookupClient', {
-  getPlatformSerials: () => ipcRenderer.invoke(deviceLookupClientKey.getPlatformSerials),
-  getDevicesWithError: () => ipcRenderer.invoke(deviceLookupClientKey.getDevicesWithError),
-  getDeviceSystemInfo: (serial: string) => ipcRenderer.invoke(deviceLookupClientKey.getDeviceSystemInfo, serial),
+  getSubscribeMessages: () => ipcRenderer.invoke(deviceLookupClientKey.getSubscribeMessages),
 });
 
 expose('servicesOpenStatusClient', {

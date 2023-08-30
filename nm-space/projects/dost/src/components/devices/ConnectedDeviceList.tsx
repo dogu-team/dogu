@@ -1,58 +1,37 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { DeviceSystemInfo, PlatformType, Serial } from '@dogu-private/types';
-import { CircularProgress, HStack, List, ListItem, Text, Tooltip, UnorderedList } from '@chakra-ui/react';
-import { CheckIcon, NotAllowedIcon } from '@chakra-ui/icons';
+import { DeviceConnectionState, DeviceSystemInfo, PlatformType, platformTypeFromPlatform, Serial } from '@dogu-private/types';
+import { Button, CircularProgress, color, HStack, List, ListItem, Spinner, Text, Tooltip, UnorderedList, useToast } from '@chakra-ui/react';
+import { CheckIcon, NotAllowedIcon, SpinnerIcon } from '@chakra-ui/icons';
 import { stringify } from '@dogu-tech/common';
 
 import BorderBox from '../layouts/BorderBox';
 import { ipc } from '../../utils/window';
 import DevicePlatformIcon from './DevicePlatformIcon';
-
-interface DeviceStatus {
-  platform: PlatformType;
-  serial: Serial;
-  error: Error | null;
-  info: DeviceSystemInfo | null;
-}
+import { DeviceConnectionSubscribeReceiveMessage } from '@dogu-tech/device-client-common';
 
 const ConnectedDeviceList = () => {
-  const [deviceStatuses, setDeviceStatuses] = useState<DeviceStatus[]>([]);
+  const [deviceStatuses, setDeviceStatuses] = useState<DeviceConnectionSubscribeReceiveMessage[]>([]);
+  const toast = useToast();
+  const onClipboardCopy = (text: string) => {
+    ipc.settingsClient.writeTextToClipboard(text);
+    toast.closeAll();
+    toast({
+      title: 'Clipboard',
+      description: `Copied ${text} to clipboard`,
+      status: 'success',
+      duration: 1000,
+      isClosable: true,
+    });
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
       (async () => {
         try {
-          const deviceStatuses: DeviceStatus[] = [];
-          const platformSerials = await ipc.deviceLookupClient.getPlatformSerials();
-          for (const platformSerial of platformSerials) {
-            const info = await ipc.deviceLookupClient.getDeviceSystemInfo(platformSerial.serial);
-            if (!info) {
-              deviceStatuses.push({
-                platform: platformSerial.platform,
-                serial: platformSerial.serial,
-                error: null,
-                info: null,
-              });
-            } else {
-              deviceStatuses.push({
-                platform: platformSerial.platform,
-                serial: platformSerial.serial,
-                error: null,
-                info: info,
-              });
-            }
-          }
-          const errorDevices = await ipc.deviceLookupClient.getDevicesWithError();
-          for (const errorDevice of errorDevices) {
-            deviceStatuses.push({
-              platform: errorDevice.platform,
-              serial: errorDevice.serial,
-              error: errorDevice.error,
-              info: null,
-            });
-          }
-          setDeviceStatuses(deviceStatuses);
+          const deviceSubscribeMessages = await ipc.deviceLookupClient.getSubscribeMessages();
+          console.log('deviceSubscribeMessages', deviceSubscribeMessages);
+          setDeviceStatuses(deviceSubscribeMessages);
         } catch (e) {
           ipc.rendererLogger.error(`Get PlatformSerials error: ${stringify(e)}`);
         }
@@ -73,21 +52,34 @@ const ConnectedDeviceList = () => {
         <BorderBox>
           <List spacing={3}>
             {deviceStatuses &&
-              deviceStatuses.map((deviceStatus) => (
-                <ListItem key={deviceStatus.serial}>
+              deviceStatuses.map((device) => (
+                <ListItem key={device.serial}>
                   <HStack>
-                    {deviceStatus.error ? <NotAllowedIcon color="red.500" /> : <CheckIcon color="green.500" />}
-                    <Tooltip label={deviceStatus.platform} aria-label="platform" placement="top">
+                    {device.state === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTING ? (
+                      <Spinner size="sm" color="gray.500" />
+                    ) : device.state === DeviceConnectionState.DEVICE_CONNECTION_STATE_ERROR ? (
+                      <NotAllowedIcon color="red.500" />
+                    ) : (
+                      <CheckIcon color="green.500" />
+                    )}
+                    <Tooltip label={device.platform} aria-label="platform" placement="top">
                       <Text fontSize="large">
-                        <DevicePlatformIcon platform={deviceStatus.platform} />
+                        <DevicePlatformIcon platform={platformTypeFromPlatform(device.platform)} />
                       </Text>
                     </Tooltip>
-                    <Text fontSize="small">{deviceStatus.info?.system.model ?? deviceStatus.serial}</Text>
+                    <Text fontSize="small">{device.model}</Text>
+                    {device.state === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED ? (
+                      <Button colorScheme="teal" variant="link" fontSize="10px" fontWeight="light" textColor="CaptionText" onClick={() => onClipboardCopy(device.serial)}>
+                        ({device.serial})
+                      </Button>
+                    ) : (
+                      <Text fontSize="small">{device.serial}</Text>
+                    )}
                   </HStack>
-                  {deviceStatus.error && (
+                  {device.state === DeviceConnectionState.DEVICE_CONNECTION_STATE_ERROR && (
                     <UnorderedList>
                       <ListItem>
-                        <Text fontSize="small">{deviceStatus.error.message}</Text>
+                        <Text fontSize="small">{device.errorMessage}</Text>
                       </ListItem>
                     </UnorderedList>
                   )}
