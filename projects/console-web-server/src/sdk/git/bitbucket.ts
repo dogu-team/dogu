@@ -78,8 +78,6 @@ export module Bitbucket {
       path: scriptPaths[0],
     });
 
-    ('https://api.bitbucket.org/2.0/repositories/ikalli-test/dogu/src/0753164cd272a3c5774e2cf037a2402938ef839f/test/inner/');
-
     if (rv.status === 200) {
       const files = await getFilesRecursively(rv.data, token);
       return files;
