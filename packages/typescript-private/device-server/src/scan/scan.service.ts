@@ -44,16 +44,24 @@ export class ScanService implements OnModuleInit {
   ) {
     this.deviceDoors = new DeviceDoors({
       onOpening: async (platformSerial: PlatformSerial): Promise<void> => {
-        await validateAndEmitEventAsync(this.eventEmitter, OnDevicesConnectingEvent, { platformSerials: [platformSerial] });
+        await validateAndEmitEventAsync(this.eventEmitter, OnDevicesConnectingEvent, { platformSerials: [platformSerial] }).catch((e) => {
+          this.logger.error(`ScanService OnDevicesConnectingEvent emit error: ${stringifyError(e)}`);
+        });
       },
       onError: async (errorDevice: ErrorDevice): Promise<void> => {
-        await validateAndEmitEventAsync(this.eventEmitter, OnDevicesErrorEvent, { errorDevices: [errorDevice] });
+        await validateAndEmitEventAsync(this.eventEmitter, OnDevicesErrorEvent, { errorDevices: [errorDevice] }).catch((e) => {
+          this.logger.error(`ScanService OnDevicesErrorEvent emit error: ${stringifyError(e)}`);
+        });
       },
       onOpen: async (channel: DeviceChannel): Promise<void> => {
-        await validateAndEmitEventAsync(this.eventEmitter, OnDevicesConnectedEvent, { channels: [channel] });
+        await validateAndEmitEventAsync(this.eventEmitter, OnDevicesConnectedEvent, { channels: [channel] }).catch((e) => {
+          this.logger.error(`ScanService OnDevicesConnectedEvent emit error: ${stringifyError(e)}`);
+        });
       },
       onClose: async (serial: Serial): Promise<void> => {
-        await validateAndEmitEventAsync(this.eventEmitter, OnDevicesDisconnectedEvent, { serials: [serial] });
+        await validateAndEmitEventAsync(this.eventEmitter, OnDevicesDisconnectedEvent, { serials: [serial] }).catch((e) => {
+          this.logger.error(`ScanService OnDevicesDisconnectedEvent emit error: ${stringifyError(e)}`);
+        });
       },
     });
   }
@@ -209,7 +217,9 @@ export class ScanService implements OnModuleInit {
       });
       const newScanFailedDevices = this.scanFailedDevices.filter((device) => !befScanFailedSerials.includes(device.serial));
       if (0 < newScanFailedDevices.length) {
-        await validateAndEmitEventAsync(this.eventEmitter, OnDevicesErrorEvent, { errorDevices: newScanFailedDevices });
+        await validateAndEmitEventAsync(this.eventEmitter, OnDevicesErrorEvent, { errorDevices: newScanFailedDevices }).catch((e) => {
+          this.logger.error(`ScanService.update OnDevicesErrorEvent emit error: ${stringifyError(e)}`);
+        });
       }
 
       const removedSerials = befSerials.filter((befSerial) => !scannedOnlineSerials.find((serial) => befSerial === serial));
