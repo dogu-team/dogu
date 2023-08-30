@@ -856,7 +856,3 @@ registerBootstrapHandler(__filename, async (): Promise<void> => {
     throw new Error(`Failed to chmod adb`, { cause });
   }
 });
-
-getInstalledPackageInfo('emulator-5554', 'com.android.chrome', { versionName: true })
-  .then((v) => console.log(v))
-  .catch((e) => console.error(e));
