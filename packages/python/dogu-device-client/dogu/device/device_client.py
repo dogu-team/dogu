@@ -91,7 +91,7 @@ class DeviceClient:
 
     def get_appium_capabilities(self, serial: str) -> Any:
         full_path = f"http://{self._host_and_port}/devices/{serial}/appium-capabilities"
-        res = requests.get(full_path,  timeout=self.timeout)
+        res = requests.get(full_path, timeout=self.timeout)
         res.raise_for_status()
         device_res = DeviceHttpResponse(res)
         if device_res.error()[0]:
