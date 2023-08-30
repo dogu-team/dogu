@@ -84,12 +84,12 @@ app.whenReady().then(async () => {
     StdLogCallbackService.open(WindowService.instance);
     await ExternalService.open(DotEnvConfigService.instance, StdLogCallbackService.instance, AppConfigService.instance, WindowService.instance);
     ChildService.open(AppConfigService.instance, FeatureConfigService.instance, ExternalService.instance);
+    await DeviceLookupService.open(ChildService.instance, AppConfigService.instance);
     const token = (await AppConfigService.instance.get('DOGU_HOST_TOKEN')) as string;
     if (token && token.length > 0) {
       ChildService.instance.connect(token).catch((err) => logger.error('main connect error', err));
     }
     await UpdaterService.open(AppConfigService.instance, FeatureConfigService.instance, ChildService.instance);
-    await DeviceLookupService.open(ChildService.instance);
   });
 
   app.on('activate', () => {

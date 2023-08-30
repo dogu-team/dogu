@@ -1,10 +1,9 @@
 import { ChildCode } from '@dogu-private/dost-children';
 import { Code } from '@dogu-private/types';
 import { delay } from '@dogu-tech/common';
-import { NodeDeviceService } from '@dogu-tech/device-client';
-import { DeviceClient } from '@dogu-tech/device-client-common';
 import { HostPaths, isFreePort, killProcessOnPort } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
+import EventEmitter from 'events';
 import path from 'path';
 import { deviceServerKey } from '../../../src/shares/child';
 import { AppConfigService } from '../../app-config/app-config-service';
@@ -22,13 +21,9 @@ export class DeviceServerChild implements Child {
     private readonly featureConfigService: FeatureConfigService,
     private readonly externalService: ExternalService,
   ) {}
-  private _client: DeviceClient | undefined;
+  public eventEmitter: NodeJS.EventEmitter = new EventEmitter();
   private _child: ChildProcess | undefined;
   private _lastError: ChildLastError = { code: new ChildCode(Code.CODE_SUCCESS_COMMON_BEGIN_UNSPECIFIED), message: '' };
-
-  get client(): DeviceClient | undefined {
-    return this._client;
-  }
 
   async open(): Promise<void> {
     const { appConfigService } = this;
@@ -63,10 +58,8 @@ export class DeviceServerChild implements Child {
       childLogger: logger,
     });
     this._child = openChild(deviceServerKey, DeviceServerMainScriptPath, options, this.featureConfigService);
-    const deviceService = new NodeDeviceService();
-    this._client = new DeviceClient(deviceService, {
-      port: DOGU_DEVICE_SERVER_PORT,
-      timeout: 5000,
+    this._child.on('spawn', () => {
+      this.eventEmitter.emit('spawn');
     });
     this._child.stderr?.on('data', (data) => {
       const dataString = data.toString();
@@ -74,8 +67,8 @@ export class DeviceServerChild implements Child {
       this._lastError.message = stripped;
     });
     this._child.on('close', (code, signal) => {
+      this.eventEmitter.emit('close');
       if (code !== null) {
-        this._client = undefined;
         if (code === 0) {
           return;
         } else {

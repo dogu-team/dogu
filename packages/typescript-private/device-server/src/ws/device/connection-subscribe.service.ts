@@ -1,11 +1,18 @@
 import { OnWebSocketClose, WebSocketGatewayBase, WebSocketRegistryValueAccessor, WebSocketService } from '@dogu-private/nestjs-common';
-import { DeviceConnectionState, Platform } from '@dogu-private/types';
+import { DeviceConnectionState, Platform, platformFromPlatformType } from '@dogu-private/types';
 import { Instance, validateAndEmitEventAsync } from '@dogu-tech/common';
-import { DeviceConnectionSubscribe } from '@dogu-tech/device-client-common';
+import { DefaultDeviceConnectionSubscribeReceiveMessage, DeviceConnectionSubscribe } from '@dogu-tech/device-client-common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
-import { OnDeviceConnectionSubscriberConnectedEvent, OnDeviceConnectionSubscriberDisconnectedEvent, OnDevicesConnectedEvent, OnDevicesDisconnectedEvent } from '../../events';
+import {
+  OnDeviceConnectionSubscriberConnectedEvent,
+  OnDeviceConnectionSubscriberDisconnectedEvent,
+  OnDevicesConnectedEvent,
+  OnDevicesConnectingEvent,
+  OnDevicesDisconnectedEvent,
+  OnDevicesErrorEvent,
+} from '../../events';
 import { DoguLogger } from '../../logger/logger';
 
 @WebSocketService(DeviceConnectionSubscribe)
@@ -15,6 +22,37 @@ export class DeviceConnectionSubscribeService
 {
   constructor(private readonly eventEmitter: EventEmitter2, private readonly logger: DoguLogger) {
     super(DeviceConnectionSubscribe, logger);
+  }
+
+  @OnEvent(OnDevicesConnectingEvent.key)
+  onDevicesConnecting(value: Instance<typeof OnDevicesConnectingEvent.value>): void {
+    const messages = value.platformSerials.map((platformSerial) => {
+      const { serial, platform } = platformSerial;
+      const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
+        ...DefaultDeviceConnectionSubscribeReceiveMessage(),
+        serial: serial,
+        platform: platformFromPlatformType(platform),
+        state: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTING,
+      };
+      return message;
+    });
+    messages.forEach((message) => this.notify(message));
+  }
+
+  @OnEvent(OnDevicesErrorEvent.key)
+  onDevicesError(value: Instance<typeof OnDevicesErrorEvent.value>): void {
+    const messages = value.errorDevices.map((errorDevice) => {
+      const { serial, platform, error } = errorDevice;
+      const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
+        ...DefaultDeviceConnectionSubscribeReceiveMessage(),
+        serial: serial,
+        platform: platformFromPlatformType(platform),
+        state: DeviceConnectionState.DEVICE_CONNECTION_STATE_ERROR,
+        errorMessage: error.message,
+      };
+      return message;
+    });
+    messages.forEach((message) => this.notify(message));
   }
 
   @OnEvent(OnDevicesConnectedEvent.key)
@@ -33,6 +71,7 @@ export class DeviceConnectionSubscribeService
         model,
         version,
         state: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED,
+        errorMessage: '',
         manufacturer,
         isVirtual: isVirtual ? 1 : 0,
         resolutionWidth,
@@ -47,16 +86,10 @@ export class DeviceConnectionSubscribeService
   onDevicesDisconnected(value: Instance<typeof OnDevicesDisconnectedEvent.value>): void {
     const messages = value.serials.map((serial) => {
       const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
+        ...DefaultDeviceConnectionSubscribeReceiveMessage(),
         serial: serial,
-        serialUnique: '',
         platform: Platform.PLATFORM_UNSPECIFIED,
-        model: '',
-        version: '',
         state: DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED,
-        manufacturer: '',
-        isVirtual: 0,
-        resolutionWidth: 0,
-        resolutionHeight: 0,
       };
       return message;
     });

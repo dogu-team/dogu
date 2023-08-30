@@ -9,7 +9,6 @@ export class DeviceConnectionSubscribeReceiveMessage {
   serial!: Serial;
 
   @IsString()
-  @IsNotEmpty()
   serialUnique!: Serial;
 
   @IsEnum(Platform)
@@ -23,6 +22,9 @@ export class DeviceConnectionSubscribeReceiveMessage {
 
   @IsEnum(DeviceConnectionState)
   state!: DeviceConnectionState;
+
+  @IsString()
+  errorMessage!: string;
 
   @IsString()
   manufacturer!: string;
@@ -40,6 +42,22 @@ export class DeviceConnectionSubscribeReceiveMessage {
   @IsNumber()
   @Type(() => Number)
   resolutionHeight!: number;
+}
+
+export function DefaultDeviceConnectionSubscribeReceiveMessage(): DeviceConnectionSubscribeReceiveMessage {
+  return {
+    serial: '',
+    serialUnique: '',
+    platform: Platform.PLATFORM_UNSPECIFIED,
+    model: '',
+    version: '',
+    state: DeviceConnectionState.DEVICE_CONNECTION_STATE_UNSPECIFIED,
+    errorMessage: '',
+    manufacturer: '',
+    isVirtual: 0,
+    resolutionWidth: 0,
+    resolutionHeight: 0,
+  };
 }
 
 export const DeviceConnectionSubscribe = new WebSocketSpec({

@@ -1,4 +1,4 @@
-import { Serial } from '@dogu-private/types';
+import { ErrorDevice, PlatformSerial, Serial } from '@dogu-private/types';
 import { createEventDefinition } from '@dogu-tech/common';
 import { DeviceConfigDto } from '@dogu-tech/device-client-common';
 import { Type } from 'class-transformer';
@@ -9,6 +9,18 @@ import { DeviceRuntimeInfo } from './types';
 
 export class OnUpdateEventValue {}
 export const OnUpdateEvent = createEventDefinition('OnUpdate', OnUpdateEventValue);
+
+export class OnDevicesConnectingEventValue {
+  @IsArray()
+  platformSerials!: Readonly<PlatformSerial>[];
+}
+export const OnDevicesConnectingEvent = createEventDefinition('OnDevicesConnecting', OnDevicesConnectingEventValue);
+
+export class OnDevicesErrorEventValue {
+  @IsArray()
+  errorDevices!: Readonly<ErrorDevice>[];
+}
+export const OnDevicesErrorEvent = createEventDefinition('OnDevicesError', OnDevicesErrorEventValue);
 
 export class OnDevicesConnectedEventValue {
   @IsArray()
