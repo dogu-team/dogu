@@ -57,6 +57,7 @@ expose('settingsClient', {
 
   changeStrictSSLOnNPMLikes: (strictSSL: boolean) => ipcRenderer.invoke(settingsClientKey.changeStrictSSLOnNPMLikes, strictSSL),
   createZipLogReport: () => ipcRenderer.invoke(settingsClientKey.createZipLogReport),
+  writeTextToClipboard: (text: string) => ipcRenderer.invoke(settingsClientKey.writeTextToClipboard, text),
 });
 
 expose('childClient', {

@@ -1,7 +1,7 @@
 import { findEndswith, HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
 import { exec } from 'child_process';
 import compressing from 'compressing';
-import { app, desktopCapturer, ipcMain, shell, systemPreferences } from 'electron';
+import { app, clipboard, desktopCapturer, ipcMain, shell, systemPreferences } from 'electron';
 import isDev from 'electron-is-dev';
 import fs from 'fs';
 import _ from 'lodash';
@@ -55,6 +55,7 @@ export class SettingsService {
 
     ipcMain.handle(settingsClientKey.changeStrictSSLOnNPMLikes, (_, enabled: boolean) => this.changeStrictSSLOnNPMLikes(enabled));
     ipcMain.handle(settingsClientKey.createZipLogReport, (_) => this.createZipLogReport());
+    ipcMain.handle(settingsClientKey.writeTextToClipboard, (_, text: string) => clipboard.writeText(text));
   }
 
   static open(dotEnvConfigService: DotEnvConfigService): void {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { DeviceConnectionState, DeviceSystemInfo, PlatformType, platformTypeFromPlatform, Serial } from '@dogu-private/types';
-import { CircularProgress, HStack, List, ListItem, Spinner, Text, Tooltip, UnorderedList } from '@chakra-ui/react';
+import { Button, CircularProgress, color, HStack, List, ListItem, Spinner, Text, Tooltip, UnorderedList, useToast } from '@chakra-ui/react';
 import { CheckIcon, NotAllowedIcon, SpinnerIcon } from '@chakra-ui/icons';
 import { stringify } from '@dogu-tech/common';
 
@@ -12,6 +12,18 @@ import { DeviceConnectionSubscribeReceiveMessage } from '@dogu-tech/device-clien
 
 const ConnectedDeviceList = () => {
   const [deviceStatuses, setDeviceStatuses] = useState<DeviceConnectionSubscribeReceiveMessage[]>([]);
+  const toast = useToast();
+  const onClipboardCopy = (text: string) => {
+    ipc.settingsClient.writeTextToClipboard(text);
+    toast.closeAll();
+    toast({
+      title: 'Clipboard',
+      description: `Copied ${text} to clipboard`,
+      status: 'success',
+      duration: 1000,
+      isClosable: true,
+    });
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -55,9 +67,14 @@ const ConnectedDeviceList = () => {
                         <DevicePlatformIcon platform={platformTypeFromPlatform(device.platform)} />
                       </Text>
                     </Tooltip>
-                    <Text fontSize="small">
-                      {device.model}({device.serial})
-                    </Text>
+                    <Text fontSize="small">{device.model}</Text>
+                    {device.state === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED ? (
+                      <Button colorScheme="teal" variant="link" fontSize="10px" fontWeight="light" textColor="CaptionText" onClick={() => onClipboardCopy(device.serial)}>
+                        ({device.serial})
+                      </Button>
+                    ) : (
+                      <Text fontSize="small">{device.serial}</Text>
+                    )}
                   </HStack>
                   {device.state === DeviceConnectionState.DEVICE_CONNECTION_STATE_ERROR && (
                     <UnorderedList>
