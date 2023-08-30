@@ -5,7 +5,6 @@ import { ColumnTemplate } from './decorators';
 import { Device } from './device.entity';
 import { Project } from './project.entity';
 import { RecordTestCase } from './record-test-case.entity';
-import { RecordTestStepAction } from './type/type';
 
 @Entity(RECORD_TEST_STEP_TABLE_NAME)
 export class RecordTestStep extends BaseEntity implements RecordTestStepBase {
@@ -29,6 +28,32 @@ export class RecordTestStep extends BaseEntity implements RecordTestStepBase {
 
   @Column({ type: 'smallint', name: RecordTestStepPropSnake.type, default: RECORD_TEST_STEP_ACTION_TYPE.UNSPECIFIED, nullable: false })
   type!: RECORD_TEST_STEP_ACTION_TYPE;
+
+  //
+  @Column({ type: 'smallint', name: RecordTestStepPropSnake.device_screen_size_x, nullable: false })
+  deviceScreenSizeX!: number;
+
+  @Column({ type: 'smallint', name: RecordTestStepPropSnake.device_screen_size_y, nullable: false })
+  deviceScreenSizeY!: number;
+
+  @Column({ type: 'smallint', name: RecordTestStepPropSnake.bound_x, nullable: false })
+  boundX!: number;
+
+  @Column({ type: 'smallint', name: RecordTestStepPropSnake.bound_y, nullable: false })
+  boundY!: number;
+
+  @Column({ type: 'smallint', name: RecordTestStepPropSnake.bound_width, nullable: false })
+  boundWidth!: number;
+
+  @Column({ type: 'smallint', name: RecordTestStepPropSnake.bound_height, nullable: false })
+  boundHeight!: number;
+
+  @Column({ type: 'character varying', name: RecordTestStepPropSnake.xpath, nullable: true })
+  xpath!: string | null;
+
+  @Column({ type: 'character varying', name: RecordTestStepPropSnake.value, nullable: true })
+  value!: string | null;
+  //
 
   @ColumnTemplate.CreateDate(RecordTestStepPropSnake.created_at)
   createdAt!: Date;
@@ -54,6 +79,4 @@ export class RecordTestStep extends BaseEntity implements RecordTestStepBase {
   @ManyToOne(() => RecordTestStep, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
   @JoinColumn({ name: RecordTestStepPropSnake.prev_record_test_step_id, referencedColumnName: RecordTestStepPropCamel.recordTestStepId })
   prevRecordTestStep?: RecordTestStep | null;
-
-  recordTestStepAction?: RecordTestStepAction;
 }

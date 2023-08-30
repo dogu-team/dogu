@@ -36,7 +36,7 @@ export class ProjectFileService {
     recordTestCaseId: RecordTestCaseId,
     recordTestStepId: RecordTestStepId,
   ) {
-    const path = await this.makeRecordTestStepScreenshotPath(organizationId, projectId, recordTestCaseId, recordTestStepId);
+    const path = this.makeRecordTestStepScreenshotPath(organizationId, projectId, recordTestCaseId, recordTestStepId);
     const getSignedUrlResult = await this.featureFileService.getSignedUrl({
       bucketKey: 'organization',
       key: path,
@@ -72,7 +72,7 @@ export class ProjectFileService {
     recordTestCaseId: RecordTestCaseId,
     recordTestStepId: RecordTestStepId,
   ) {
-    const path = await this.makeRecordTestStepPageSourcePath(organizationId, projectId, recordTestCaseId, recordTestStepId);
+    const path = this.makeRecordTestStepPageSourcePath(organizationId, projectId, recordTestCaseId, recordTestStepId);
     const getSignedUrlResult = await this.featureFileService.getSignedUrl({
       bucketKey: 'organization',
       key: path,

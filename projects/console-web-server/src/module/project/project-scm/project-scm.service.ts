@@ -9,8 +9,8 @@ import { ProjectScmGithubAuth } from '../../../db/entity/project-scm-github-auth
 import { ProjectScmGitlabAuth } from '../../../db/entity/project-scm-gitlab-auth.entity';
 import { ProjectScm } from '../../../db/entity/project-scm.entity';
 import { Bitbucket } from '../../../sdk/git/bitbucket';
-import { Github } from '../../../sdk/github';
-import { Gitlab } from '../../../sdk/gitlab';
+import { Github } from '../../../sdk/git/github';
+import { Gitlab } from '../../../sdk/git/gitlab';
 import { EncryptService } from '../../encrypt/encrypt.service';
 import { UpdateProjectGitDto } from './dto/project-scm.dto';
 

@@ -32,17 +32,13 @@ const StepEditor = ({ step }: Props) => {
         imageWrapperRef.current.style.height = '100%';
       }
 
-      if (step?.recordTestStepAction) {
-        const ratio = imageWrapperRef.current.clientWidth / step.recordTestStepAction.deviceScreenSizeX;
+      if (step) {
+        const ratio = imageWrapperRef.current.clientWidth / step.deviceScreenSizeX;
 
-        console.log(ratio, imageWrapperRef.current.clientWidth, imageWidth);
-
-        const originX = step.recordTestStepAction.boundX;
-        const originY = step.recordTestStepAction.boundY;
-        const originWidth = step.recordTestStepAction.boundWidth;
-        const originHeight = step.recordTestStepAction.boundHeight;
-
-        console.log(originX, originY, originWidth, originHeight);
+        const originX = step.boundX;
+        const originY = step.boundY;
+        const originWidth = step.boundWidth;
+        const originHeight = step.boundHeight;
 
         const boundX = originX * ratio;
         const boundY = originY * ratio;

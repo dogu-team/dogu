@@ -14,7 +14,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import axios from 'axios';
 import { DataSource, EntityManager } from 'typeorm';
 import { User } from '../../db/entity/index';
-import { Gitlab } from '../../sdk/gitlab';
+import { Gitlab } from '../../sdk/git/gitlab';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { DoguLogger } from '../logger/logger';
 
