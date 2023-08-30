@@ -28,6 +28,7 @@ import GitlabButton from '../../../../../src/components/integration/GitlabButton
 import useRefresh from '../../../../../src/hooks/useRefresh';
 import SettingTitleDivider from '../../../../../src/components/common/SettingTitleDivider';
 import BitbucketButton from '../../../../../src/components/integration/BitbucketButton';
+import UpdateTemplateButton from '../../../../../src/components/projects/UpdateTemplateButton';
 
 const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, organization, mutateProject }) => {
   const [editingProject, setEditingProject] = useState<ProjectBase>(project);
@@ -218,6 +219,11 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
               title={t('common:regenerateAccessTokenTitle')}
               description={t('common:regenerateAccessTokenDescriptionText')}
               button={<RegenerateTokenButton regenerate={async () => regenerateProjectAccessToken(organization.organizationId, project.projectId)} />}
+            />
+            <DangerZone.Item
+              title={t('project:changeProjectTemplateMenuTitle')}
+              description={t('project:changeProjectTemplateDescriptionText')}
+              button={<UpdateTemplateButton project={project} />}
             />
             <DangerZone.Item
               title={t('project:deleteProjectMenuTitle')}
