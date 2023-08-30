@@ -16,7 +16,6 @@
   "types": "./build/src/main.d.ts",
   "dependencies": {
     "@dogu-tech/action-kit": "workspace:^",
-    "@dogu-tech/toolkit": "workspace:^",
     "lodash": "4.17.21"
   },
   "devDependencies": {

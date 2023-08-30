@@ -1,5 +1,4 @@
 import { ActionKit, checkoutProject, downloadApp, errorify, stringify } from '@dogu-tech/action-kit';
-import { tryToQuitGamiumApp } from '@dogu-tech/toolkit';
 import { spawnSync } from 'child_process';
 import _ from 'lodash';
 import path from 'path';
@@ -26,12 +25,6 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
   const appVersion = input.get<string>('appVersion');
   const uninstallApp = input.get<boolean>('uninstallApp');
 
-  const gamium = input.get<boolean>('gamium');
-  const gamiumEnginePort = input.get<number>('gamiumEnginePort');
-  const retryCount = input.get<number>('retryCount');
-  const retryInterval = input.get<number>('retryInterval');
-  const requestTimeout = input.get<number>('requestTimeout');
-
   const command = input.get<string>('command');
 
   if (checkout) {
@@ -55,10 +48,6 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
           })()
         : String(appVersion);
     appPath = await downloadApp(logger, consoleActionClient, deviceHostClient, DOGU_DEVICE_PLATFORM, DOGU_HOST_WORKSPACE_PATH, currentPlatformAppVersion);
-  }
-
-  if (gamium) {
-    await tryToQuitGamiumApp(logger, deviceClient, deviceHostClient, gamiumEnginePort, DOGU_DEVICE_SERIAL, DOGU_DEVICE_PLATFORM, retryCount, retryInterval, requestTimeout);
   }
 
   if (appPath) {
@@ -125,9 +114,9 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
         env,
       });
       if (result.status === 0) {
-        logger.info(`Command success: [${line}] with status: ${result.status}`);
+        logger.info(`Command succeed: [${line}] with status: ${result.status}`);
       } else {
-        throw new Error(`Command failed: ${line} with status: ${result.status}`);
+        throw new Error(`Command failed: [${line}] with status: ${result.status}`);
       }
     });
 });

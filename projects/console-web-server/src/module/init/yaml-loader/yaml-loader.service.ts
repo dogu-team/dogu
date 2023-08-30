@@ -13,6 +13,7 @@ import Ajv, { ValidateFunction } from 'ajv';
 import fs from 'fs';
 import { YAMLException } from 'js-yaml';
 import { DoguLogger } from '../../logger/logger';
+import { PipelineService } from '../../routine/pipeline/pipeline.service';
 
 @Injectable()
 export class YamlLoaderService {
@@ -56,9 +57,29 @@ export class YamlLoaderService {
 
   public routineYamlToObject(yamlRaw: string): RoutineSchema {
     const parsedYaml = this.loadYamlRaw<RoutineSchema>(yamlRaw);
-    this.validateRoutineYaml(parsedYaml);
+    this.validateRunsOnType(parsedYaml);
     this.validateRunsOnWithBrowserNameSchema(parsedYaml);
+    this.validateRoutineYaml(parsedYaml);
     return parsedYaml;
+  }
+
+  private validateRunsOnType(parsedYaml: RoutineSchema): void {
+    const { jobs } = parsedYaml;
+    const errors = Object.keys(jobs)
+      .map((jobName) => ({ jobName, runsOn: jobs[jobName]['runs-on'] }))
+      .map(({ jobName, runsOn }) => {
+        try {
+          PipelineService.parseRunsOnOrThrow(runsOn, jobName);
+          return null;
+        } catch (error) {
+          return error;
+        }
+      })
+      .filter((error) => error !== null)
+      .map((error) => error as Error);
+    if (errors.length > 0) {
+      throw new HttpException(errors.map((error) => error.message).join(', '), HttpStatus.BAD_REQUEST);
+    }
   }
 
   private validateRunsOnWithBrowserNameSchema(parsedYaml: RoutineSchema): void {

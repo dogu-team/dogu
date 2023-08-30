@@ -34,28 +34,6 @@ inputs:
     default: false
     required: false
 
-  # gamium options
-  gamium:
-    description: prepare gamium
-    default: false
-    required: false
-  gamiumEnginePort:
-    description: gamium engine port
-    default: 50061
-    required: false
-  retryCount:
-    description: retry count to gamium engine connection
-    default: 2
-    required: false
-  retryInterval:
-    description: retry interval to gamium engine connection
-    default: 1000
-    required: false
-  requestTimeout:
-    description: request timeout to gamium engine
-    default: 50000
-    required: false
-
   # test options
   command:
     description: test command

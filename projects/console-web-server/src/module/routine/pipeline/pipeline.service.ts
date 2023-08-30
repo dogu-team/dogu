@@ -72,6 +72,12 @@ interface ParsedRunsOnTagWithBrowser {
 
 type ParsedRunsOn = ParsedRunsOnNames | ParsedRunsOnTags | ParsedRunsOnTagWithBrowser;
 
+export class ParseRunsOnError extends Error {
+  constructor(message: string, readonly runsOn: JobSchema['runs-on'], readonly jobName: string, options?: ErrorOptions) {
+    super(message, options);
+  }
+}
+
 function createStepEnv(routineSchema: RoutineSchema, stepSchema: StepSchema): Record<string, string> {
   return lodash.merge(routineSchema.env ?? {}, stepSchema.env ?? {});
 }
@@ -87,6 +93,43 @@ export class PipelineService {
     private readonly dataSource: DataSource,
     private readonly logger: DoguLogger,
   ) {}
+
+  static parseRunsOnOrThrow(runsOn: JobSchema['runs-on'], jobName: string): ParsedRunsOn {
+    if (typeof runsOn === 'object') {
+      if ('group' in runsOn && 'browserName' in runsOn) {
+        throw new ParseRunsOnError(`group and browserName cannot be used together in [${jobName}]`, runsOn, jobName);
+      } else if ('group' in runsOn) {
+        return {
+          type: RUNS_ON_TYPE.DEVICE_TAGS,
+          deviceTags: Array.isArray(runsOn.group) ? runsOn.group : [runsOn.group],
+        };
+      } else if ('browserName' in runsOn) {
+        if ('platformName' in runsOn) {
+          return {
+            type: RUNS_ON_TYPE.DEVICE_TAG_WITH_BROWSER,
+            deviceTag: runsOn.platformName,
+            browserName: runsOn.browserName,
+          };
+        } else {
+          throw new ParseRunsOnError(`platformName is required with browserName in [${jobName}]`, runsOn, jobName);
+        }
+      } else if (Array.isArray(runsOn)) {
+        return {
+          type: RUNS_ON_TYPE.DEVICE_NAMES,
+          deviceNames: runsOn,
+        };
+      } else {
+        throw new ParseRunsOnError(`Invalid runs-on object in [${jobName}]`, runsOn, jobName);
+      }
+    } else if (typeof runsOn === 'string') {
+      return {
+        type: RUNS_ON_TYPE.DEVICE_NAMES,
+        deviceNames: [runsOn],
+      };
+    } else {
+      throw new ParseRunsOnError(`Invalid runs-on type in [${jobName}]`, runsOn, jobName);
+    }
+  }
 
   public async findPipelineAndSubDatasById(manager: EntityManager, pipelineId: RoutinePipelineId): Promise<RoutinePipeline> {
     const pipeline = await manager //
@@ -185,26 +228,15 @@ export class PipelineService {
     return true;
   }
 
-  private parseRunsOnFromJobSchema(jobSchema: JobSchema): ParsedRunsOn {
-    const runsOn = jobSchema['runs-on'];
-    if (typeof runsOn === 'object' && 'browserName' in runsOn && 'platformName' in runsOn) {
-      return {
-        type: RUNS_ON_TYPE.DEVICE_TAG_WITH_BROWSER,
-        deviceTag: runsOn.platformName,
-        browserName: runsOn.browserName,
-      };
-    } else if (typeof runsOn === 'string' || Array.isArray(runsOn)) {
-      return {
-        type: RUNS_ON_TYPE.DEVICE_NAMES,
-        deviceNames: Array.isArray(runsOn) ? runsOn : [runsOn],
-      };
-    } else if (typeof runsOn === 'object' && 'group' in runsOn) {
-      return {
-        type: RUNS_ON_TYPE.DEVICE_TAGS,
-        deviceTags: Array.isArray(runsOn.group) ? runsOn.group : [runsOn.group],
-      };
-    } else {
-      throw new HttpException(`Invalid runs-on type: ${stringify(runsOn)}`, HttpStatus.BAD_REQUEST);
+  private parseRunsOnFromJobSchema(jobSchema: JobSchema, jobName: string): ParsedRunsOn {
+    try {
+      return PipelineService.parseRunsOnOrThrow(jobSchema['runs-on'], jobName);
+    } catch (error) {
+      if (error instanceof ParseRunsOnError) {
+        throw new HttpException(`Invalid runs-on type: ${stringify(error.runsOn)}`, HttpStatus.BAD_REQUEST);
+      } else {
+        throw new HttpException('Internal runs-on parse error', HttpStatus.INTERNAL_SERVER_ERROR);
+      }
     }
   }
 
@@ -321,7 +353,7 @@ export class PipelineService {
       .map((routineJob) => {
         const jobSchema = routineSchema.jobs[routineJob.name];
         const record = jobSchema.record ? 1 : 0;
-        const parsedRunsOn = this.parseRunsOnFromJobSchema(jobSchema);
+        const parsedRunsOn = this.parseRunsOnFromJobSchema(jobSchema, routineJob.name);
         return {
           routineJob,
           parsedRunsOn,
@@ -456,7 +488,7 @@ export class PipelineService {
             with: step.with,
             run: step.run,
             env: createStepEnv(routineSchema, step),
-            cwd: step.cwd ?? '',
+            cwd: step.cwd ? step.cwd.trim() : '',
           });
           return stepData;
         });

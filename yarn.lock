@@ -4706,7 +4706,6 @@ __metadata:
   dependencies:
     "@dogu-dev-private/publish-package": "workspace:^"
     "@dogu-tech/action-kit": "workspace:^"
-    "@dogu-tech/toolkit": "workspace:^"
     "@types/lodash": 4
     "@types/node": 18.15.11
     cross-env: 7.0.3
