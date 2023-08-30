@@ -8,6 +8,7 @@
   "docs": "가이드",
 
   "addNewProject": "새 프로젝트 생성",
+  "newProjectModalProjectType": "프로젝트 템플릿",
   "newProjectModalInputName": "프로젝트 이름",
   "newProjectModalInputDesc": "프로젝트 설명",
   "newProjectModalInputDescPlaceholder": "설명 (선택사항)",
