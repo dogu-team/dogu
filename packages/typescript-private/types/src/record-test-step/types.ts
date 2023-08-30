@@ -23,10 +23,3 @@ export function recordTestStepActionTypeFromString(type: RecordTestActionType): 
       throw new Error(`Unknown RECORD_TEST_STEP_ACTION_TYPE: ${type}`);
   }
 }
-
-// export enum RECORD_TEST_STEP_TYPE_STRING {
-//   UNSPECIFIED = 'UNSPECIFIED',
-//   WEBDRIVER_CLICK = 'WEBDRIVER_CLICK',
-//   WEBDRIVER_INPUT = 'WEBDRIVER_INPUT',
-//   // ...
-// }

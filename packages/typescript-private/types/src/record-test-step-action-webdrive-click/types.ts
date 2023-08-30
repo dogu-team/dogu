@@ -1,2 +1,0 @@
-export const RECORD_TEST_STEP_ACTION_WEBDRIVER_CLICK_TABLE_NAME = 'record_test_step_action_webdriver_click';
-export type RecordTestStepActionWebdriverClickId = string;

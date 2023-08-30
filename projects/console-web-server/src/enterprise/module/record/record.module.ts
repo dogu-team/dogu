@@ -3,8 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Device, RecordTestScenarioAndRecordTestCase } from '../../../db/entity/index';
 import { RecordTestCase } from '../../../db/entity/record-test-case.entity';
 import { RecordTestScenario } from '../../../db/entity/record-test-scenario.entity';
-import { RecordTestStepActionWebdriverClick } from '../../../db/entity/record-test-step-action-webdriver-click.entity';
-import { RecordTestStepActionWebdriverInput } from '../../../db/entity/record-test-step-action-webdriver-input.entity';
 import { RecordTestStep } from '../../../db/entity/record-test-step.entity';
 import { DeviceMessageModule } from '../../../module/device-message/device-message.module';
 import { FileModule } from '../../../module/file/file.module';
@@ -22,15 +20,7 @@ import { RecordTestStepService } from './record-test-step/record-test-step.servi
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      RecordTestScenario,
-      RecordTestCase,
-      RecordTestStep,
-      RecordTestScenarioAndRecordTestCase,
-      Device,
-      RecordTestStepActionWebdriverClick,
-      RecordTestStepActionWebdriverInput,
-    ]),
+    TypeOrmModule.forFeature([RecordTestScenario, RecordTestCase, RecordTestStep, RecordTestScenarioAndRecordTestCase, Device]),
     RemoteModule,
     FileModule,
     ProjectModule,

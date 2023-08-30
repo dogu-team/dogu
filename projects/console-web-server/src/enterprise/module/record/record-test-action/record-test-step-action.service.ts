@@ -1,12 +1,10 @@
 import { ContextNode, NodeAttributes, NodeUtilizerFactory, PageSourceParserFacade } from '@dogu-private/console';
-import { RecordTestStepAction } from '@dogu-private/console/src/base/record-test-action';
-import { OrganizationId, Platform, ProjectId, RECORD_TEST_STEP_ACTION_TYPE } from '@dogu-private/types';
+import { OrganizationId, Platform, ProjectId } from '@dogu-private/types';
 import { ScreenSize } from '@dogu-tech/device-client-common';
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { Device } from '../../../../db/entity/device.entity';
 import { RecordTestCase } from '../../../../db/entity/record-test-case.entity';
-import { RecordTestStepActionWebdriverClick } from '../../../../db/entity/record-test-step-action-webdriver-click.entity';
 import { RecordTestStep } from '../../../../db/entity/record-test-step.entity';
 import { ProjectFileService } from '../../../../module/file/project-file.service';
 import { DoguLogger } from '../../../../module/logger/logger';
@@ -101,8 +99,6 @@ export class RecordTestStepActionService {
     await this.projectFileService.uploadRecordTestScreenshot(screenshotBuffer, organizationId, projectId, recordTestCaseId, recordTestStep.recordTestStepId);
     await this.projectFileService.uploadRecordTestPageSource(nativeAppContextInfo.pageSource, organizationId, projectId, recordTestCaseId, recordTestStep.recordTestStepId);
 
-    await manager.getRepository(RecordTestStep).save(recordTestStep);
-
     switch (type) {
       case 'WEBDRIVER_CLICK':
         await this.recordTestStepActionWebdriverClickService.addWebdriverClickAction(manager, recordTestCase, recordTestStep, device, utilizer, batchExecutor, dto);
@@ -115,45 +111,6 @@ export class RecordTestStepActionService {
       default:
         const _exhaustiveCheck: never = type;
         throw new HttpException(`Unknown action type: ${type}`, HttpStatus.BAD_REQUEST);
-    }
-  }
-
-  async getRecordTestStepAction(manager: EntityManager, recordTestStep: RecordTestStep): Promise<RecordTestStepAction> {
-    let action = null;
-    switch (recordTestStep.type) {
-      case RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_CLICK:
-        action = await manager.getRepository(RecordTestStepActionWebdriverClick).findOne({
-          where: { recordTestStepId: recordTestStep.recordTestStepId },
-        });
-        break;
-      case RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_INPUT:
-        break;
-      case RECORD_TEST_STEP_ACTION_TYPE.UNSPECIFIED:
-        break;
-      default:
-        const _exhaustiveCheck: never = recordTestStep.type;
-        throw new HttpException(`RecordTestStep type is invalid. type: ${recordTestStep.type}`, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-    if (!action) {
-      throw new HttpException(`RecordTestStepAction not found. recordTestStepId: ${recordTestStep.recordTestStepId}`, HttpStatus.NOT_FOUND);
-    }
-
-    return action;
-  }
-
-  async softDeleteRecordTestStepAction(manager: EntityManager, recordTestStep: RecordTestStep): Promise<void> {
-    switch (recordTestStep.type) {
-      case RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_CLICK:
-        await this.recordTestStepActionWebdriverClickService.softDeleteRecordTestStepWebdriverClickAction(manager, recordTestStep);
-        break;
-      case RECORD_TEST_STEP_ACTION_TYPE.WEBDRIVER_INPUT:
-        await this.recordTestStepActionWebdriverInputService.softDeleteRecordTestStepWebdriverInputAction(manager, recordTestStep);
-        break;
-      case RECORD_TEST_STEP_ACTION_TYPE.UNSPECIFIED:
-        break;
-      default:
-        const _exhaustiveCheck: never = recordTestStep.type;
-        throw new HttpException(`RecordTestStep type is invalid. type: ${recordTestStep.type}`, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }

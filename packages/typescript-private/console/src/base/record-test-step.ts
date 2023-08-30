@@ -2,7 +2,6 @@ import { DeviceId, ProjectId, RecordTestCaseId, RecordTestStepId, RECORD_TEST_ST
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 import { DeviceBase } from './device';
 import { ProjectBase } from './project';
-import { RecordTestStepAction } from './record-test-action';
 import { RecordTestCaseBase } from './record-test-case';
 
 interface RecordTestStepRelationTraits {
@@ -10,7 +9,25 @@ interface RecordTestStepRelationTraits {
   project?: ProjectBase;
   device?: DeviceBase;
   prevRecordTestStep?: RecordTestStepBase | null;
-  recordTestStepAction?: RecordTestStepAction;
+}
+
+interface RecordTestStepActionCommmon {
+  type: RECORD_TEST_STEP_ACTION_TYPE;
+  deviceScreenSizeX: number;
+  deviceScreenSizeY: number;
+  boundX: number;
+  boundY: number;
+  boundWidth: number;
+  boundHeight: number;
+}
+
+export interface RecordTestStepActionClick extends RecordTestStepActionCommmon {
+  xpath: string | null;
+}
+
+export interface RecordTestStepActionInput extends RecordTestStepActionCommmon {
+  xpath: string | null;
+  value: string | null;
 }
 
 export interface RecordTestStepBaseTraits {
@@ -20,12 +37,11 @@ export interface RecordTestStepBaseTraits {
   prevRecordTestStepId: RecordTestStepId | null;
   deviceId: DeviceId;
   deviceInfo: Record<string, unknown>;
-  type: RECORD_TEST_STEP_ACTION_TYPE;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;
 }
 
-export type RecordTestStepBase = RecordTestStepBaseTraits & RecordTestStepRelationTraits;
+export type RecordTestStepBase = RecordTestStepBaseTraits & RecordTestStepRelationTraits & RecordTestStepActionCommmon & RecordTestStepActionClick & RecordTestStepActionInput;
 export const RecordTestStepPropCamel = propertiesOf<RecordTestStepBase>();
 export const RecordTestStepPropSnake = camelToSnakeCasePropertiesOf<RecordTestStepBase>();

@@ -1,4 +1,12 @@
-import { AndroidNodeAttributes, getDevicePositionByVideoPosition, IosNodeAttributes, NodeUtilizer, ParsedNode } from '@dogu-private/console';
+import {
+  AndroidNodeAttributes,
+  getDevicePositionByVideoPosition,
+  IosNodeAttributes,
+  NodeUtilizer,
+  ParsedNode,
+  RecordTestStepActionClick,
+  RecordTestStepActionInput,
+} from '@dogu-private/console';
 import { AndroidNodeUtilizer } from '@dogu-private/console/src/util/page-source/android';
 import { GamiumNodeUtilizer } from '@dogu-private/console/src/util/page-source/gamium';
 import { IosNodeUtilizer } from '@dogu-private/console/src/util/page-source/ios';
@@ -6,10 +14,8 @@ import { Platform } from '@dogu-private/types';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager } from 'typeorm';
-import { v4 } from 'uuid';
 import { Device } from '../../../../db/entity/device.entity';
 import { RecordTestCase } from '../../../../db/entity/record-test-case.entity';
-import { RecordTestStepActionWebdriverClick } from '../../../../db/entity/record-test-step-action-webdriver-click.entity';
 import { RecordTestStep } from '../../../../db/entity/record-test-step.entity';
 import { AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem } from '../../../../module/remote/remote-webdriver/remote-webdriver.appium-batch-request-items';
 import { RemoteWebDriverBatchRequestExecutor } from '../../../../module/remote/remote-webdriver/remote-webdriver.batch-request-executor';
@@ -39,7 +45,6 @@ export class RecordTestStepActionWebdriverClickService {
     if (dto.actionInfo.type !== 'WEBDRIVER_CLICK') {
       throw new HttpException(`Invalid action type: ${dto.actionInfo.type}`, HttpStatus.BAD_REQUEST);
     }
-
     const { videoScreenSizeX, videoScreenSizeY, videoScreenPositionX, videoScreenPositionY } = dto.actionInfo;
     const deviceScreenSize = {
       width: recordTestCase.activeDeviceScreenSizeX!,
@@ -50,7 +55,6 @@ export class RecordTestStepActionWebdriverClickService {
       height: videoScreenSizeY,
     };
     const devicePosision = getDevicePositionByVideoPosition(deviceScreenSize, videoScreenSize, videoScreenPositionX, videoScreenPositionY);
-
     let clickableTopNode;
     let bound;
     if (device.platform === Platform.PLATFORM_ANDROID) {
@@ -73,38 +77,31 @@ export class RecordTestStepActionWebdriverClickService {
     if (!clickableTopNode) {
       throw new HttpException(`No clickable node found`, HttpStatus.NOT_FOUND);
     }
-
-    const boundX = bound.x;
-    const boundY = bound.y;
-    const boundWidth = bound.width;
-    const boundHeight = bound.height;
     const xpath = clickableTopNode.attributes.path;
     if (!xpath) {
       throw new HttpException(`No xpath found`, HttpStatus.NOT_FOUND);
     }
-
-    const newData = manager.getRepository(RecordTestStepActionWebdriverClick).create({
-      recordTestStepActionWebdriverClickId: v4(),
-      recordTestStepId: recordTestStep.recordTestStepId,
+    const recordTestActionClickData: RecordTestStepActionClick = {
+      type: recordTestStep.type,
       deviceScreenSizeX: deviceScreenSize.width,
       deviceScreenSizeY: deviceScreenSize.height,
       xpath,
-      boundX,
-      boundY,
-      boundWidth,
-      boundHeight,
-    });
+      boundX: bound.x,
+      boundY: bound.y,
+      boundWidth: bound.width,
+      boundHeight: bound.height,
+    };
 
-    await manager.getRepository(RecordTestStepActionWebdriverClick).save(newData);
+    const updateRecordTestStep = { ...recordTestStep, ...recordTestActionClickData };
+
+    await manager.getRepository(RecordTestStep).save(updateRecordTestStep);
 
     const findElExecutor = batchExecutor.new({ parallel: false });
     const findElement = new W3CFindElementRemoteWebDriverBatchRequestItem(findElExecutor, recordTestCase.activeSessionId!, 'xpath', xpath);
     await findElExecutor.execute();
-
     const elId = await findElement.response();
     const clickExecutor = batchExecutor.new({ parallel: false });
     const click = new W3CElementClickRemoteWebDriverBatchRequestItem(clickExecutor, recordTestCase.activeSessionId!, elId);
-
     await clickExecutor.execute();
     await click.response();
   }
@@ -148,28 +145,25 @@ export class RecordTestStepActionWebdriverClickService {
     }
 
     const bound = (utilizer as AndroidNodeUtilizer).getNodeBound(focusedNode);
-    const boundX = bound.x;
-    const boundY = bound.y;
-    const boundWidth = bound.width;
-    const boundHeight = bound.height;
     const xpath = focusedNode.attributes.path;
     if (!xpath) {
       throw new HttpException(`No xpath found`, HttpStatus.NOT_FOUND);
     }
 
-    const newData = manager.getRepository(RecordTestStepActionWebdriverClick).create({
-      recordTestStepActionWebdriverClickId: v4(),
-      recordTestStepId: recordTestStep.recordTestStepId,
+    const recordTestActionInputData: RecordTestStepActionInput = {
+      type: recordTestStep.type,
       deviceScreenSizeX: deviceScreenSize.width,
       deviceScreenSizeY: deviceScreenSize.height,
       xpath,
-      boundX,
-      boundY,
-      boundWidth,
-      boundHeight,
-    });
+      value: 'test',
+      boundX: bound.x,
+      boundY: bound.y,
+      boundWidth: bound.width,
+      boundHeight: bound.height,
+    };
 
-    await manager.getRepository(RecordTestStepActionWebdriverClick).save(newData);
+    const updateRecordTestStep = { ...recordTestStep, ...recordTestActionInputData };
+    await manager.getRepository(RecordTestStep).save(updateRecordTestStep);
 
     const findExcutor = batchExecutor.new({ parallel: false });
     const appiumIsKeyboardShown = new AppiumIsKeyboardShownRemoteWebDriverBatchRequestItem(findExcutor, recordTestCase.activeSessionId!);
@@ -188,16 +182,4 @@ export class RecordTestStepActionWebdriverClickService {
 
     await inputSendExecutor.execute();
   }
-
-  async softDeleteRecordTestStepWebdriverClickAction(manager: EntityManager, recordTestStep: RecordTestStep): Promise<void> {
-    const action = await manager.getRepository(RecordTestStepActionWebdriverClick).findOne({
-      where: { recordTestStepId: recordTestStep.recordTestStepId },
-    });
-    if (!action) {
-      throw new HttpException(`Action not found`, HttpStatus.NOT_FOUND);
-    }
-    await manager.getRepository(RecordTestStepActionWebdriverClick).softDelete(action.recordTestStepActionWebdriverClickId);
-  }
-
-  public async runWebdriverClickAction() {}
 }
