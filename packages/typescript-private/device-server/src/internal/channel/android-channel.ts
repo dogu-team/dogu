@@ -14,7 +14,7 @@ import {
   StreamingAnswer,
 } from '@dogu-private/types';
 import { Closable, delay, errorify, FilledPrintable, Printable, stringify } from '@dogu-tech/common';
-import { StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import { Manifest, open } from 'adbkit-apkreader';
 import { ChildProcess, execFile } from 'child_process';
@@ -24,19 +24,14 @@ import { Observable } from 'rxjs';
 import semver from 'semver';
 import systeminformation from 'systeminformation';
 import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
-import { AppiumService } from '../../appium/appium.service';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
-import { AppiumEndpointHandlerService } from '../../device-webdriver/endpoint-handler/appium.service';
 import { env } from '../../env';
 import { GamiumContext } from '../../gamium/gamium.context';
-import { GamiumService } from '../../gamium/gamium.service';
-import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
-import { DoguLogger } from '../../logger/logger';
 import { createAdaLogger } from '../../logger/logger.instance';
 import { pathMap } from '../../path-map';
 import { Adb } from '../externals';
-import { DeviceChannel, DeviceChannelOpenParam, LogHandler } from '../public/device-channel';
+import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService, LogHandler } from '../public/device-channel';
 import { AndroidDeviceAgentService } from '../services/device-agent/android-device-agent-service';
 import { AndroidAdbProfileService } from '../services/profile/android-profiler';
 import { ProfileServices } from '../services/profile/profile-service';
@@ -92,27 +87,19 @@ export class AndroidChannel implements DeviceChannel {
     private _appiumContext: AppiumContextProxy,
     private readonly _appiumDeviceWebDriverHandler: AppiumDeviceWebDriverHandler,
     private readonly logger: FilledPrintable,
-    private isClosed = false,
+    readonly browserInstallations: BrowserInstallation[],
   ) {
     this.logger.info(`AndroidChannel created: ${this.serial}`);
   }
 
-  public static async create(
-    param: DeviceChannelOpenParam,
-    streaming: StreamingService,
-    appiumService: AppiumService,
-    gamiumService: GamiumService,
-    httpRequestRelayService: HttpRequestRelayService,
-    appiumEndpointHandlerService: AppiumEndpointHandlerService,
-    doguLogger: DoguLogger,
-  ): Promise<AndroidChannel> {
+  public static async create(param: DeviceChannelOpenParam, streaming: StreamingService, deviceServerService: DeviceServerService): Promise<AndroidChannel> {
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === param.serial && zombieable.platform === Platform.PLATFORM_ANDROID;
     }, 'kill previous zombie');
 
     const { serial, deviceAgentDevicePort } = param;
     await Adb.unforwardall(serial).catch((error) => {
-      doguLogger.error('Adb.unforwardall failed', { error: errorify(error) });
+      deviceServerService.doguLogger.error('Adb.unforwardall failed', { error: errorify(error) });
     });
     const platform = Platform.PLATFORM_ANDROID;
 
@@ -121,7 +108,7 @@ export class AndroidChannel implements DeviceChannel {
 
     const version = semver.coerce(systemInfo.version);
     if (version && semver.lt(version, '8.0.0')) {
-      throw new Error(`Android version must be 8 or higher. current version: ${version}`);
+      throw new Error(`Android version must be 8 or higher. current version: ${stringify(version)}`);
     }
 
     let portContext = portContextes.get(serial);
@@ -135,11 +122,23 @@ export class AndroidChannel implements DeviceChannel {
     await deviceAgent.wakeUp();
     await deviceAgent.install();
 
-    const appiumContextProxy = appiumService.createAndroidAppiumContext(serial, 'builtin', portContext.freeHostPort3);
+    const appiumContextProxy = deviceServerService.appiumService.createAndroidAppiumContext(serial, 'builtin', portContext.freeHostPort3);
     ZombieServiceInstance.addComponent(appiumContextProxy);
 
-    const appiumDeviceWebDriverHandler = new AppiumDeviceWebDriverHandler(platform, serial, appiumContextProxy, httpRequestRelayService, appiumEndpointHandlerService, doguLogger);
+    const appiumDeviceWebDriverHandler = new AppiumDeviceWebDriverHandler(
+      platform,
+      serial,
+      appiumContextProxy,
+      deviceServerService.httpRequestRelayService,
+      deviceServerService.appiumEndpointHandlerService,
+      deviceServerService.doguLogger,
+    );
     const serialUnique = await generateSerialUnique(systemInfo);
+
+    const browserInstallations = await deviceServerService.browserManagerService.findAllBrowserInstallations({
+      deviceSerial: serial,
+      browserPlatform: 'android',
+    });
 
     const deviceChannel = new AndroidChannel(
       serial,
@@ -153,6 +152,7 @@ export class AndroidChannel implements DeviceChannel {
       appiumContextProxy,
       appiumDeviceWebDriverHandler,
       logger,
+      browserInstallations,
     );
 
     await deviceAgent.connect();
@@ -165,7 +165,7 @@ export class AndroidChannel implements DeviceChannel {
       screenHeight: 0 < systemInfo.graphics.displays.length ? systemInfo.graphics.displays[0].resolutionY : 0,
     });
 
-    const gamiumContext = gamiumService.openGamiumContext(deviceChannel);
+    const gamiumContext = deviceServerService.gamiumService.openGamiumContext(deviceChannel);
     deviceChannel.gamiumContext = gamiumContext;
 
     return deviceChannel;
@@ -181,12 +181,11 @@ export class AndroidChannel implements DeviceChannel {
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === this.serial && zombieable.platform === Platform.PLATFORM_ANDROID;
     }, 'kill serial bound zombies');
-    this.isClosed = true;
   }
 
   async queryProfile(methods: ProfileMethod[] | ProfileMethod): Promise<FilledRuntimeInfo> {
     const methodList = Array.isArray(methods) ? methods : [methods];
-    const results = await Promise.allSettled(this._profilers.map((profiler) => profiler.profile(this.serial, methodList)));
+    const results = await Promise.allSettled(this._profilers.map(async (profiler) => profiler.profile(this.serial, methodList)));
     const result = results.reduce((acc, result) => {
       if (result.status === 'fulfilled') {
         Object.keys(acc).forEach((key) => {
@@ -211,7 +210,7 @@ export class AndroidChannel implements DeviceChannel {
     };
   }
 
-  startStreamingWebRTC(offer: StreamingOfferDto): Promise<ProtoRTCPeerDescription> {
+  startStreamingWebRTC(offer: StreamingOfferDto): ProtoRTCPeerDescription {
     throw new Error('Method not supported.');
   }
 
@@ -230,11 +229,11 @@ export class AndroidChannel implements DeviceChannel {
     return this._streaming.startStreamingWithTrickle(this.serial, offer);
   }
 
-  startRecord(option: ScreenRecordOption): Promise<ErrorResult> {
+  async startRecord(option: ScreenRecordOption): Promise<ErrorResult> {
     return Promise.resolve(this._streaming.startRecord(this.serial, option));
   }
 
-  stopRecord(): Promise<ErrorResult> {
+  async stopRecord(): Promise<ErrorResult> {
     return Promise.resolve(this._streaming.stopRecord(this.serial));
   }
 

@@ -35,8 +35,18 @@ export interface JobSchema {
         group: string | string[];
       }
     | string
-    | string[];
+    | string[]
+    | RunsOnWithBrowserNameSchema;
   steps: StepSchema[];
+}
+/**
+ * This interface was referenced by `RoutineSchema`'s JSON-Schema
+ * via the `definition` "RunsOnWithBrowserName".
+ */
+export interface RunsOnWithBrowserNameSchema {
+  browserName: string;
+  browserVersion?: string;
+  platformName: string;
 }
 /**
  * This interface was referenced by `RoutineSchema`'s JSON-Schema
@@ -55,4 +65,8 @@ export interface StepSchema {
   env?: {
     [k: string]: string;
   };
+  /**
+   * The working directory for the step. relative to the routine working directory.
+   */
+  cwd?: string;
 }

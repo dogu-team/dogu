@@ -1,4 +1,4 @@
-import { DeviceId, ProjectId } from '@dogu-private/types';
+import { DeviceId, DeviceRunnerId, ProjectId } from '@dogu-private/types';
 import { loop, stringify, transformAndValidate } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
@@ -14,6 +14,9 @@ export class RoutineWorkspaceMeta {
 
   @IsUUID()
   deviceId!: DeviceId;
+
+  @IsUUID()
+  deviceRunnerId!: DeviceRunnerId;
 }
 
 const MetaExtension = '.meta.json';
@@ -23,7 +26,7 @@ export class RoutineWorkspace {
   constructor(private readonly logger: DoguLogger) {}
 
   async createRoutineWorkspacePath(rootWorkspacePath: string, meta: RoutineWorkspaceMeta): Promise<string> {
-    for await (const name of await loop(1000, 30)) {
+    for await (const name of loop(1000, 30)) {
       const name = uuidv4().substring(0, 16);
       const routinesPath = HostPaths.routinesPath(rootWorkspacePath);
       const newRoutineWorkspacePath = path.resolve(routinesPath, name);
@@ -48,7 +51,7 @@ export class RoutineWorkspace {
         const metaFilePath = path.resolve(routinesPath, metaFile);
         const contents = await fs.promises.readFile(metaFilePath, 'utf8');
         const metaObject = await transformAndValidate(RoutineWorkspaceMeta, JSON.parse(contents));
-        if (metaObject.projectId === meta.projectId && metaObject.deviceId === meta.deviceId) {
+        if (metaObject.projectId === meta.projectId && metaObject.deviceId === meta.deviceId && metaObject.deviceRunnerId === meta.deviceRunnerId) {
           const routineWorkspacePath = path.resolve(routinesPath, path.basename(metaFile, MetaExtension));
           if (!fs.existsSync(routineWorkspacePath)) {
             await fs.promises.mkdir(routineWorkspacePath, { recursive: true });

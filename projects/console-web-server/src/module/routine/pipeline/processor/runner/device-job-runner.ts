@@ -1,9 +1,10 @@
 import { StepStatusInfo, UpdateDeviceJobStatusRequestBody } from '@dogu-private/console-host-agent';
-import { DEST_STATE, DeviceId, isCompleted, isDestCompleted, OrganizationId, PIPELINE_STATUS, RoutineDeviceJobId } from '@dogu-private/types';
+import { DEST_STATE, DeviceId, DeviceRunnerId, isCompleted, isDestCompleted, OrganizationId, PIPELINE_STATUS, RoutineDeviceJobId } from '@dogu-private/types';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager } from 'typeorm';
 import { RoutineDeviceJob } from '../../../../../db/entity/device-job.entity';
+import { DeviceRunner } from '../../../../../db/entity/device-runner.entity';
 import { RoutineStep } from '../../../../../db/entity/step.entity';
 import { DoguLogger } from '../../../../logger/logger';
 import { validateStatusTransition } from '../../../common/runner';
@@ -36,7 +37,7 @@ export class DeviceJobRunner {
   }
 
   async complete(deviceJob: RoutineDeviceJob, event: UpdateDeviceJobStatusRequestBody): Promise<void> {
-    const { routineDeviceJobId: deviceJobId, routineSteps: steps } = deviceJob;
+    const { routineDeviceJobId: deviceJobId, routineSteps: steps, deviceRunnerId } = deviceJob;
     const { stepStatusInfos, deviceJobStatusInfo } = event;
     const incomingStatus = deviceJobStatusInfo.deviceJobStatus;
     const curStatus = deviceJob.status;
@@ -66,24 +67,32 @@ export class DeviceJobRunner {
       deviceJob.localCompletedAt = event.deviceJobStatusInfo.localCompletedAt;
       await manager.getRepository(RoutineDeviceJob).save(deviceJob);
 
-      await this.postUpdate(manager, deviceJobId, steps, stepStatusInfos);
+      await this.postUpdate(manager, deviceJobId, steps, stepStatusInfos, deviceRunnerId);
     });
   }
 
   public async setStatus(manager: EntityManager, deviceJob: RoutineDeviceJob, incomingStatus: PIPELINE_STATUS, serverTimeStamp: Date): Promise<void> {
     if (incomingStatus === PIPELINE_STATUS.IN_PROGRESS) {
       deviceJob.inProgressAt = serverTimeStamp;
-      // deviceJob.localInProgressAt = localTimeStamp;
       deviceJob.heartbeat = serverTimeStamp;
     } else if (isCompleted(incomingStatus)) {
       deviceJob.completedAt = serverTimeStamp;
-      // deviceJob.localCompletedAt = localTimeStamp;
     }
     deviceJob.status = incomingStatus;
     await manager.getRepository(RoutineDeviceJob).save(deviceJob);
   }
 
-  private async postUpdate(manager: EntityManager, deviceJobId: RoutineDeviceJobId, steps: RoutineStep[], stepStatusInfos: StepStatusInfo[]): Promise<void> {
+  private async postUpdate(
+    manager: EntityManager,
+    deviceJobId: RoutineDeviceJobId,
+    steps: RoutineStep[],
+    stepStatusInfos: StepStatusInfo[],
+    deviceRunnerId: DeviceRunnerId | null,
+  ): Promise<void> {
+    if (deviceRunnerId) {
+      await manager.getRepository(DeviceRunner).update(deviceRunnerId, { isInUse: 0 });
+    }
+
     if (!steps || steps.length === 0) {
       throw new Error(`Steps not found: ${deviceJobId}`);
     }
@@ -111,9 +120,7 @@ export class DeviceJobRunner {
 
           if (dest.inProgressAt === null && dest.state === DEST_STATE.PENDING) {
             await this.destRunner.setState(manager, dest, DEST_STATE.SKIPPED, new Date(), null);
-            // await setDestState(manager, dest, DEST_STATE.SKIPPED);
           } else if (dest.inProgressAt === null || dest.completedAt === null) {
-            // await setDestState(manager, dest, DEST_STATE.UNSPECIFIED, new Date());
             await this.destRunner.setState(manager, dest, DEST_STATE.UNSPECIFIED, new Date(), null);
           }
         }
@@ -135,11 +142,15 @@ export class DeviceJobRunner {
 
     await this.dataSource.transaction(async (manager) => {
       await this.setStatus(manager, deviceJob, PIPELINE_STATUS.CANCELLED, new Date());
-      await this.postCancelledDeviceJobByUpdater(manager, steps);
+      await this.postCancelledDeviceJobByUpdater(manager, steps, deviceJob.deviceRunnerId);
     });
   }
 
-  private async postCancelledDeviceJobByUpdater(manager: EntityManager, steps: RoutineStep[]): Promise<void> {
+  private async postCancelledDeviceJobByUpdater(manager: EntityManager, steps: RoutineStep[], deviceRunnerId: DeviceRunnerId | null): Promise<void> {
+    if (deviceRunnerId) {
+      await manager.getRepository(DeviceRunner).update(deviceRunnerId, { isInUse: 0 });
+    }
+
     for (const step of steps) {
       if (isCompleted(step.status)) {
         continue;
@@ -179,11 +190,15 @@ export class DeviceJobRunner {
 
     await this.dataSource.transaction(async (manager) => {
       await this.setStatus(manager, deviceJob, PIPELINE_STATUS.FAILURE, new Date());
-      await this.postHeartbeatFailureDeviceJob(manager, steps);
+      await this.postHeartbeatFailureDeviceJob(manager, steps, deviceJob.deviceRunnerId);
     });
   }
 
-  private async postHeartbeatFailureDeviceJob(manager: EntityManager, steps: RoutineStep[]): Promise<void> {
+  private async postHeartbeatFailureDeviceJob(manager: EntityManager, steps: RoutineStep[], deviceRunnerId: DeviceRunnerId | null): Promise<void> {
+    if (deviceRunnerId) {
+      await manager.getRepository(DeviceRunner).update(deviceRunnerId, { isInUse: 0 });
+    }
+
     for (const step of steps) {
       if (isCompleted(step.status)) {
         continue;

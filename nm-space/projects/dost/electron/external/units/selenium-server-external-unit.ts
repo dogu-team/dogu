@@ -29,16 +29,6 @@ export class SeleniumServerExternalUnit extends IExternalUnit {
     super();
   }
 
-  private info(message: string): void {
-    this.stdLogCallbackService.stdout(message);
-    this.logger.info(message);
-  }
-
-  private warn(message: string): void {
-    this.stdLogCallbackService.stderr(message);
-    this.logger.warn(message);
-  }
-
   isPlatformSupported(): boolean {
     return true;
   }
@@ -72,10 +62,10 @@ export class SeleniumServerExternalUnit extends IExternalUnit {
     const javaPath = HostPaths.java.javaPath(javaHomePath);
     const { stdout, stderr } = await execAsync(`${javaPath} -jar ${seleniumServerPath} standalone --version`);
     if (stderr) {
-      this.warn(stderr);
+      this.stdLogCallbackService.stderr(stderr);
     }
     if (stdout) {
-      this.info(stdout);
+      this.stdLogCallbackService.stdout(stdout);
     }
   }
 
@@ -91,18 +81,18 @@ export class SeleniumServerExternalUnit extends IExternalUnit {
       directory: seleniumDirPath,
       onStarted: (item) => {
         this.unitCallback.onDownloadStarted();
-        this.info(`Download started. url: ${item.getURL()}`);
+        this.stdLogCallbackService.stdout(`Download started. url: ${item.getURL()}`);
       },
       onProgress: (progress) => {
         this.unitCallback.onDownloadInProgress(progress);
       },
     });
     const savePath = item.getSavePath();
-    this.info(`Download complete. path: ${savePath}`);
+    this.stdLogCallbackService.stdout(`Download complete. path: ${savePath}`);
     this.unitCallback.onDownloadCompleted();
     this.unitCallback.onInstallStarted();
     await renameRetry(savePath, seleniumServerPath, this.stdLogCallbackService.createPrintable());
-    this.info(`Install complete. path: ${seleniumServerPath}`);
+    this.stdLogCallbackService.stdout(`Install complete. path: ${seleniumServerPath}`);
     this.unitCallback.onInstallCompleted();
   }
 
@@ -115,12 +105,12 @@ export class SeleniumServerExternalUnit extends IExternalUnit {
   }
 
   async isAgreementNeeded(): Promise<boolean> {
-    const value = await this.appConfigService.getOrDefault('external_is_agreed_selenium_driver', false);
+    const value = await this.appConfigService.getOrDefault('external_is_agreed_selenium_server', false);
     return !value;
   }
 
   writeAgreement(value: boolean): Promise<void> {
-    return this.appConfigService.set('external_is_agreed_selenium_driver', value);
+    return this.appConfigService.set('external_is_agreed_selenium_server', value);
   }
 
   getTermUrl(): string | null {

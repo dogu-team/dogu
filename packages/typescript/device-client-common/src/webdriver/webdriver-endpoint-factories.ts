@@ -87,7 +87,7 @@ const SessionCommandFactories: SessionCommandEndPointFactory[] = [
 ];
 
 const SessionCommandEndPointFactoryFactory: EndPointFactory = async (options, next) => {
-  const match = SessionCommandPattern.exec(options.request.path);
+  const match = options.request.path.match(SessionCommandPattern);
   if (match) {
     const [, sessionId, command] = match as (string | undefined)[];
     if (!sessionId) {

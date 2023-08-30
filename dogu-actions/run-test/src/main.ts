@@ -1,82 +1,125 @@
-import { ActionKit, OptionsConfig } from '@dogu-tech/action-kit';
+import { ActionKit, checkoutProject, downloadApp, errorify, stringify } from '@dogu-tech/action-kit';
 import { spawnSync } from 'child_process';
 import fs from 'fs';
+import _ from 'lodash';
 import path from 'path';
 
-ActionKit.run(async ({ options, logger, input, deviceHostClient }) => {
-  const { DOGU_LOG_LEVEL, DOGU_ROUTINE_WORKSPACE_PATH } = options;
+ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionClient, deviceClient }) => {
+  const {
+    DOGU_LOG_LEVEL, //
+    DOGU_ROUTINE_WORKSPACE_PATH,
+    DOGU_DEVICE_PLATFORM,
+    DOGU_HOST_WORKSPACE_PATH,
+    DOGU_DEVICE_SERIAL,
+    DOGU_STEP_WORKING_PATH,
+    DOGU_BROWSER_NAME,
+    DOGU_BROWSER_VERSION,
+  } = options;
   logger.info('log level', { DOGU_LOG_LEVEL });
-  const script = input.get<string>('script');
-  const pathMap = await deviceHostClient.getPathMap();
-  const { yarn } = pathMap.common;
-  let yarnPath = yarn;
-  let userProjectPath = DOGU_ROUTINE_WORKSPACE_PATH;
-  const optionsConfig = await OptionsConfig.load();
-  const useLocalUserProject = optionsConfig.get('localUserProject.use', false);
-  if (useLocalUserProject) {
-    logger.info('Using local user project...');
 
-    async function findLocalUserProject(): Promise<string> {
-      const searchPaths = optionsConfig.get('localUserProject.searchPaths', []);
-      for (const searchPath of searchPaths) {
-        const candidate = path.resolve(searchPath);
-        logger.info('Checking local user project path', { candidate });
-        const doguConfigPath = path.resolve(candidate, 'dogu.config.json');
-        const stat = await fs.promises.stat(doguConfigPath).catch(() => null);
-        if (stat) {
-          return candidate;
-        }
-      }
-      throw new Error(`Local user project not found in search paths: ${searchPaths.join(', ')}`);
-    }
+  const checkout = input.get<boolean>('checkout');
+  const branchOrTag = input.get<string>('branchOrTag');
+  const clean = input.get<boolean>('clean');
+  const checkoutPath = input.get<string>('checkoutPath');
+  const checkoutUrl = input.get<string>('checkoutUrl');
 
-    yarnPath = 'yarn';
-    userProjectPath = await findLocalUserProject();
-  } else {
-    logger.info('Using device user project...');
+  const appVersion = input.get<string>('appVersion');
+  const uninstallApp = input.get<boolean>('uninstallApp');
+
+  const command = input.get<string>('command');
+
+  if (checkout) {
+    logger.info('resolve checkout path... from', { DOGU_ROUTINE_WORKSPACE_PATH, checkoutPath });
+    const resolvedCheckoutPath = path.resolve(DOGU_ROUTINE_WORKSPACE_PATH, checkoutPath);
+    logger.info('resolved checkout path', { resolvedCheckoutPath });
+
+    await checkoutProject(logger, consoleActionClient, deviceHostClient, resolvedCheckoutPath, branchOrTag, clean, checkoutUrl);
   }
 
-  logger.info('User project path and yarn path', { userProjectPath, yarnPath });
+  let appPath = '';
+  if (appVersion) {
+    const currentPlatformAppVersion =
+      typeof appVersion === 'object'
+        ? (() => {
+            const platformAppVersion = Reflect.get(appVersion, DOGU_DEVICE_PLATFORM) as string | undefined;
+            if (!platformAppVersion) {
+              throw new Error(`Invalid app version: ${stringify(appVersion)} for platform: ${DOGU_DEVICE_PLATFORM}`);
+            }
+            return platformAppVersion;
+          })()
+        : String(appVersion);
+    appPath = await downloadApp(logger, consoleActionClient, deviceHostClient, DOGU_DEVICE_PLATFORM, DOGU_HOST_WORKSPACE_PATH, currentPlatformAppVersion);
+  }
 
-  function runYarn(args: string[]) {
-    const command = yarnPath;
-    const shell = useLocalUserProject ? true : false;
-    logger.info(`Running command: ${command} ${args.join(' ')}`);
-    const result = spawnSync(command, args, {
-      stdio: 'inherit',
-      cwd: userProjectPath,
-      shell,
+  if (appPath) {
+    if (uninstallApp) {
+      logger.info('Uninstalling app...', { appPath });
+      try {
+        await deviceClient.uninstallApp(DOGU_DEVICE_SERIAL, appPath);
+        logger.info('App uninstalled');
+      } catch (error) {
+        logger.warn('Failed to uninstall app', { error: errorify(error) });
+      }
+    }
+
+    logger.info('Installing app...', { appPath });
+    await deviceClient.installApp(DOGU_DEVICE_SERIAL, appPath);
+    logger.info('App installed');
+    logger.info('Run app...', { appPath });
+    await deviceClient.runApp(DOGU_DEVICE_SERIAL, appPath);
+    logger.info('App runned');
+  }
+
+  let env = process.env;
+  if (DOGU_BROWSER_NAME) {
+    logger.info('Ensure browser and driver...', { DOGU_BROWSER_NAME, DOGU_BROWSER_VERSION });
+    const {
+      browserName: ensuredBrowserName,
+      browserVersion: ensuredBrowserVersion,
+      browserPath,
+      browserPackageName,
+      browserDriverPath,
+      browserMajorVersion,
+    } = await deviceHostClient.ensureBrowserAndDriver({
+      browserName: DOGU_BROWSER_NAME,
+      browserPlatform: DOGU_DEVICE_PLATFORM,
+      browserVersion: DOGU_BROWSER_VERSION,
+      deviceSerial: DOGU_DEVICE_SERIAL,
     });
-    if (result.status !== 0) {
-      throw new Error(`Command failed: ${command} ${args.join(' ')}`);
-    }
+    const browserEnv = {
+      DOGU_BROWSER_NAME: ensuredBrowserName,
+      DOGU_BROWSER_VERSION: ensuredBrowserVersion || '',
+      DOGU_BROWSER_MAJOR_VERSION: browserMajorVersion ? String(browserMajorVersion) : '',
+      DOGU_BROWSER_PATH: browserPath || '',
+      DOGU_BROWSER_DRIVER_PATH: browserDriverPath,
+      DOGU_BROWSER_PACKAGE_NAME: browserPackageName || '',
+    };
+
+    logger.info('update env for browser and driver', {
+      ...browserEnv,
+    });
+
+    env = _.merge(env, browserEnv);
   }
 
-  if (!optionsConfig.get('localUserProject.use', false)) {
-    runYarn(['install']);
-    const packageJsonPath = path.resolve(userProjectPath, 'package.json');
-    const content = await fs.promises.readFile(packageJsonPath, 'utf8');
-    const packageJson = JSON.parse(content) as { dependencies?: Record<string, string> };
-    const doguDependencies: string[] = [];
-    if (packageJson.dependencies) {
-      for (const [key, value] of Object.entries(packageJson.dependencies)) {
-        if (key.startsWith('@dogu-tech/')) {
-          doguDependencies.push(key);
-        }
+  await fs.promises.mkdir(DOGU_STEP_WORKING_PATH, { recursive: true });
+
+  command
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .forEach((line) => {
+      logger.info(`Run command: [${line}] on ${DOGU_STEP_WORKING_PATH}`);
+      const result = spawnSync(line, {
+        stdio: 'inherit',
+        shell: true,
+        cwd: DOGU_STEP_WORKING_PATH,
+        env,
+      });
+      if (result.status === 0) {
+        logger.info(`Command succeed: [${line}] with status: ${result.status}`);
+      } else {
+        throw new Error(`Command failed: [${line}] with status: ${result.status}`);
       }
-    }
-    for (const dependency of doguDependencies) {
-      runYarn(['up', '-R', dependency]);
-    }
-    if (script.endsWith('.ts')) {
-      runYarn(['tsc', '-b']);
-    }
-  }
-  if (script.endsWith('.js')) {
-    runYarn(['node', script]);
-  } else if (script.endsWith('.ts')) {
-    runYarn(['ts-node', script]);
-  } else {
-    throw new Error(`Unexpected script extension: ${script}`);
-  }
+    });
 });

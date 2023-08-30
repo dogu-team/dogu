@@ -76,8 +76,8 @@ export class AppiumExternalUnit extends IExternalUnit {
 
   private async createAppiumPath(): Promise<void> {
     const appiumPath = HostPaths.external.nodePackage.appiumPath();
-    const appiumPatheStat = await fs.promises.stat(appiumPath).catch(() => null);
-    if (!appiumPatheStat || !appiumPatheStat.isDirectory()) {
+    const appiumPathStat = await fs.promises.stat(appiumPath).catch(() => null);
+    if (!appiumPathStat || !appiumPathStat.isDirectory()) {
       await fs.promises.mkdir(appiumPath, { recursive: true });
     }
   }

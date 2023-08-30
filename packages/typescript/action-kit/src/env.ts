@@ -1,7 +1,7 @@
 import { IsFilledString, LogLevel, TransformBooleanString } from '@dogu-tech/common';
 import { ActionContextEnv, DeviceId, OrganizationId, PlatformType, ProjectId, Serial, StepContextEnv } from '@dogu-tech/types';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsIn, IsJSON, IsNumber, IsNumberString, IsOptional, IsUUID } from 'class-validator';
+import { IsBoolean, IsIn, IsJSON, IsNumber, IsNumberString, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class ActionKitEnv
   implements
@@ -20,6 +20,9 @@ export class ActionKitEnv
       | 'DOGU_ORGANIZATION_ID'
       | 'DOGU_ORGANIZATION_WORKSPACE_PATH'
       | 'DOGU_PROJECT_ID'
+      | 'DOGU_STEP_WORKING_PATH'
+      | 'DOGU_BROWSER_NAME'
+      | 'DOGU_BROWSER_VERSION'
     >,
     Pick<ActionContextEnv, 'DOGU_ACTION_INPUTS'>
 {
@@ -84,6 +87,27 @@ export class ActionKitEnv
    */
   @IsFilledString()
   DOGU_ROUTINE_WORKSPACE_PATH!: string;
+
+  /**
+   * @requires process.env.DOGU_STEP_WORKING_PATH
+   * @default ''
+   */
+  @IsFilledString()
+  DOGU_STEP_WORKING_PATH!: string;
+
+  /**
+   * @requires process.env.DOGU_BROWSER_NAME
+   * @default ''
+   */
+  @IsString()
+  DOGU_BROWSER_NAME!: string;
+
+  /**
+   * @requires process.env.DOGU_BROWSER_VERSION
+   * @default ''
+   */
+  @IsString()
+  DOGU_BROWSER_VERSION!: string;
 
   /**
    * @requires process.env.DOGU_HOST_PLATFORM

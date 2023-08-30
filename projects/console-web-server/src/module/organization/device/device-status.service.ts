@@ -2,6 +2,7 @@ import {
   DeviceAndDeviceTagPropCamel,
   DeviceAndDeviceTagPropSnake,
   DeviceBase,
+  DeviceBrowserInstallationPropCamel,
   DevicePropCamel,
   DevicePropSnake,
   DeviceResponse,
@@ -28,11 +29,14 @@ import {
   validateMaxParallelJobs,
 } from '@dogu-private/types';
 import { notEmpty } from '@dogu-tech/common';
+import { BrowserInstallation } from '@dogu-tech/device-client-common';
 import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { BaseEntity, Brackets, DataSource, EntityManager, In, SelectQueryBuilder } from 'typeorm';
+import { v4 } from 'uuid';
+import { DeviceRunner } from '../../../db/entity/device-runner.entity';
 import { Device } from '../../../db/entity/device.entity';
-import { DeviceTag, Project } from '../../../db/entity/index';
+import { DeviceBrowserInstallation, DeviceTag, Project } from '../../../db/entity/index';
 import { DeviceAndDeviceTag } from '../../../db/entity/relations/device-and-device-tag.entity';
 import { ProjectAndDevice } from '../../../db/entity/relations/project-and-device.entity';
 import { Page } from '../../common/dto/pagination/page';
@@ -285,11 +289,11 @@ export class DeviceStatusService {
     await this.dataSource.getRepository(ProjectAndDevice).softRemove(deviceAndProject);
   }
 
-  async updateDevice(organizationId: OrganizationId, deviceId: DeviceId, dto: UpdateDeviceDto): Promise<DeviceResponse> {
+  async updateDevice(manager: EntityManager, organizationId: OrganizationId, deviceId: DeviceId, dto: UpdateDeviceDto): Promise<DeviceResponse> {
     const { name, maxParallelJobs } = dto;
     const [deviceById, deviceByName] = await Promise.all([
-      this.dataSource.getRepository(Device).findOne({ where: { deviceId } }),
-      this.dataSource.getRepository(Device).findOne({ where: { organizationId, name } }),
+      manager.getRepository(Device).findOne({ where: { deviceId } }),
+      manager.getRepository(Device).findOne({ where: { organizationId, name } }),
     ]);
     if (!deviceById) {
       throw new HttpException(`This device does not exists. : ${deviceId}`, HttpStatus.BAD_REQUEST);
@@ -309,7 +313,8 @@ export class DeviceStatusService {
       name: name ? name : deviceById.name,
       maxParallelJobs: maxParallelJobs ? maxParallelJobs : deviceById.maxParallelJobs,
     });
-    const updateDevice = await this.dataSource.getRepository(Device).save(newData);
+    const updateDevice = await manager.getRepository(Device).save(newData);
+    await DeviceStatusService.updateDeviceRunners(manager, deviceId);
     return updateDevice;
   }
 
@@ -555,6 +560,56 @@ export class DeviceStatusService {
     return devices;
   }
 
+  async findDeviceByDeviceTagWithBrowser(
+    manager: EntityManager,
+    organizationId: OrganizationId,
+    projectId: ProjectId,
+    deviceTag: string,
+    browserName: string,
+    invalidCheck = false,
+  ): Promise<Device | null> {
+    if (invalidCheck) {
+      const tags = await manager.getRepository(DeviceTag).find({ where: { organizationId, name: In([deviceTag]) } });
+      if (tags.length === 0) {
+        throw new HttpException(`Invalid device tag name: ${deviceTag}`, HttpStatus.NOT_FOUND);
+      }
+    }
+
+    const device = await manager
+      .createQueryBuilder(Device, Device.name)
+      .leftJoinAndSelect(`${Device.name}.${DevicePropCamel.deviceAndDeviceTags}`, DeviceAndDeviceTag.name)
+      .leftJoinAndSelect(`${Device.name}.${DevicePropCamel.projectAndDevices}`, ProjectAndDevice.name)
+      .leftJoinAndSelect(`${Device.name}.${DevicePropCamel.deviceBrowserInstallations}`, DeviceBrowserInstallation.name)
+      .leftJoinAndSelect(`${DeviceAndDeviceTag.name}.${DeviceAndDeviceTagPropCamel.deviceTag}`, DeviceTag.name)
+      .where(`${Device.name}.${DevicePropCamel.organizationId} = :${DevicePropCamel.organizationId}`, { organizationId })
+      .andWhere(`${DeviceTag.name}.${DeviceTagPropCamel.name} = :${DeviceTagPropCamel.name}`, { name: deviceTag, organizationId })
+      .andWhere(`${Device.name}.${DevicePropCamel.connectionState} = :${DevicePropCamel.connectionState}`, {
+        connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED,
+      })
+      .andWhere(
+        new Brackets((builder) => {
+          builder
+            .where(`${Device.name}.${DevicePropCamel.isGlobal} = 1`) //
+            .orWhere(`${ProjectAndDevice.name}.${ProjectAndDevicePropCamel.projectId} = :${ProjectAndDevicePropCamel.projectId}`, { projectId });
+        }),
+      )
+      .andWhere(
+        new Brackets((builder) => {
+          builder
+            .where(`${Device.name}.${DevicePropCamel.isHost} = 1`) //
+            .orWhere(
+              `${Device.name}.${DevicePropCamel.isHost} = 0 AND ${DeviceBrowserInstallation.name}.${DeviceBrowserInstallationPropCamel.browserName} = :${DeviceBrowserInstallationPropCamel.browserName}`,
+              {
+                browserName,
+              },
+            );
+        }),
+      )
+      .getOne();
+
+    return device;
+  }
+
   async sortDevicesByRunningRate(deviceIds: DeviceId[]): Promise<Device[]> {
     const devicesJoinedByDeviceJobs = await this.dataSource //
       .getRepository(Device)
@@ -585,5 +640,80 @@ export class DeviceStatusService {
     });
 
     return devicesSortedByCurrentRunningRate;
+  }
+
+  static async updateDeviceBrowserInstallations(manager: EntityManager, deviceId: DeviceId, browserInstallations: BrowserInstallation[]): Promise<void> {
+    const olds = await manager.getRepository(DeviceBrowserInstallation).find({ where: { deviceId } });
+    const news = browserInstallations;
+    const minLength = Math.min(olds.length, news.length);
+    for (let i = 0; i < minLength; i++) {
+      const old = olds[i];
+      const newOne = news[i];
+      await manager.getRepository(DeviceBrowserInstallation).update(
+        { deviceBrowserInstallationId: old.deviceBrowserInstallationId },
+        {
+          browserName: newOne.browserName,
+          browserVersion: newOne.browserVersion,
+          deviceId,
+        },
+      );
+    }
+
+    if (news.length > olds.length) {
+      const addeds = news.slice(olds.length);
+      const createds = manager.getRepository(DeviceBrowserInstallation).create(
+        addeds.map((v) => ({
+          deviceBrowserInstallationId: v4(),
+          browserName: v.browserName,
+          browserVersion: v.browserVersion,
+          deviceId,
+        })),
+      );
+      await manager.getRepository(DeviceBrowserInstallation).save(createds);
+    } else if (news.length < olds.length) {
+      const deleteds = olds.slice(news.length);
+      await manager.getRepository(DeviceBrowserInstallation).softDelete(deleteds.map((v) => v.deviceBrowserInstallationId));
+    }
+  }
+
+  static async updateDeviceRunners(manager: EntityManager, deviceId: DeviceId): Promise<void> {
+    const device = await manager.getRepository(Device).findOne({ where: { deviceId }, select: [DevicePropCamel.deviceId, DevicePropCamel.maxParallelJobs] });
+    if (!device) {
+      throw new HttpException(`Cannot find device. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
+    }
+
+    const isInUse = await manager.getRepository(DeviceRunner).exist({ where: { deviceId, isInUse: 1 } });
+    if (isInUse) {
+      throw new HttpException(`Device is in use now. deviceId: ${deviceId}`, HttpStatus.BAD_REQUEST);
+    }
+
+    const toUpdateCount = device.maxParallelJobs;
+    const currentCount = await manager.getRepository(DeviceRunner).count({ where: { deviceId } });
+    const toRecoverOrCreateCount = Math.max(0, toUpdateCount - currentCount);
+    if (toRecoverOrCreateCount > 0) {
+      const softDeletedCount = await manager.getRepository(DeviceRunner).count({ where: { deviceId }, withDeleted: true });
+      const toRecoverCount = Math.min(toRecoverOrCreateCount, softDeletedCount);
+      if (toRecoverCount > 0) {
+        const softDeleteds = await manager.getRepository(DeviceRunner).find({ where: { deviceId }, withDeleted: true, take: toRecoverCount });
+        await manager.getRepository(DeviceRunner).recover(softDeleteds);
+      }
+
+      const toCreateCount = Math.max(0, toRecoverOrCreateCount - toRecoverCount);
+      if (toCreateCount > 0) {
+        const toCreates = manager.getRepository(DeviceRunner).create(
+          Array.from({ length: toCreateCount }).map(() => ({
+            deviceRunnerId: v4(),
+            deviceId,
+          })),
+        );
+        await manager.getRepository(DeviceRunner).save(toCreates);
+      }
+    }
+
+    const toRemoveCount = Math.max(0, currentCount - toUpdateCount);
+    if (toRemoveCount > 0) {
+      const deviceRunners = await manager.getRepository(DeviceRunner).find({ where: { deviceId }, take: toRemoveCount });
+      await manager.getRepository(DeviceRunner).softDelete(deviceRunners.map((deviceRunner) => deviceRunner.deviceRunnerId));
+    }
   }
 }

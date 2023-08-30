@@ -1,15 +1,10 @@
 import { Platform, Serial } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import systeminformation from 'systeminformation';
-import { DeviceWebDriver } from '../../alias';
 import { env } from '../../env';
-import { GamiumService } from '../../gamium/gamium.service';
-import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
-import { DoguLogger } from '../../logger/logger';
 import { logger } from '../../logger/logger.instance';
-import { SeleniumService } from '../../selenium/selenium.service';
 import { WindowsChannel } from '../channel/windows-channel';
-import { DeviceChannel, DeviceChannelOpenParam } from '../public/device-channel';
+import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService } from '../public/device-channel';
 import { DeviceDriver, DeviceScanResult } from '../public/device-driver';
 import { PionStreamingService } from '../services/streaming/pion-streaming-service';
 import { StreamingService } from '../services/streaming/streaming-service';
@@ -17,24 +12,11 @@ import { StreamingService } from '../services/streaming/streaming-service';
 export class WindowsDriver implements DeviceDriver {
   private channelMap = new Map<Serial, WindowsChannel>();
 
-  private constructor(
-    private readonly streamingService: StreamingService,
-    private readonly gamiumService: GamiumService,
-    private readonly httpRequestRelayService: HttpRequestRelayService,
-    private readonly seleniumEndpointHandlerService: DeviceWebDriver.SeleniumEndpointHandlerService,
-    private readonly seleniumService: SeleniumService,
-    private readonly doguLogger: DoguLogger,
-  ) {}
+  private constructor(private readonly streamingService: StreamingService, private readonly deviceServerService: DeviceServerService) {}
 
-  static async create(
-    gamiumService: GamiumService,
-    httpRequestRelayService: HttpRequestRelayService,
-    seleniumEndpointHandlerService: DeviceWebDriver.SeleniumEndpointHandlerService,
-    seleniumService: SeleniumService,
-    doguLogger: DoguLogger,
-  ): Promise<WindowsDriver> {
+  static async create(deviceServerService: DeviceServerService): Promise<WindowsDriver> {
     const streaming = await PionStreamingService.create(Platform.PLATFORM_WINDOWS, env.DOGU_DEVICE_SERVER_PORT);
-    return new WindowsDriver(streaming, gamiumService, httpRequestRelayService, seleniumEndpointHandlerService, seleniumService, doguLogger);
+    return new WindowsDriver(streaming, deviceServerService);
   }
 
   get platform(): Platform {
@@ -48,15 +30,7 @@ export class WindowsDriver implements DeviceDriver {
   }
 
   async openChannel(initParam: DeviceChannelOpenParam): Promise<DeviceChannel> {
-    return await WindowsChannel.create(
-      initParam,
-      this.streamingService,
-      this.gamiumService,
-      this.httpRequestRelayService,
-      this.seleniumEndpointHandlerService,
-      this.seleniumService,
-      this.doguLogger,
-    );
+    return await WindowsChannel.create(initParam, this.streamingService, this.deviceServerService);
   }
 
   async closeChannel(seial: Serial): Promise<void> {

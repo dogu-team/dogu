@@ -5,7 +5,7 @@ import { EnvironmentVariableReplacementProvider, HostPaths } from '@dogu-tech/no
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import fs from 'fs';
-import { delimiter } from 'path';
+import path, { delimiter } from 'path';
 import { DeviceJobContextRegistry } from '../device-job/device-job.context-registry';
 import {
   OnDeviceJobCancelRequestedEvent,
@@ -119,7 +119,7 @@ export class DeviceJobStepProcessor {
   }
 
   async onRunStep(param: RunStep, context: MessageContext): Promise<ErrorResult> {
-    const { routineStepId, env: stepEnv, value, organizationId, deviceId, routineDeviceJobId, stepIndex, projectId } = param;
+    const { routineStepId, env: stepEnv, value, organizationId, deviceId, routineDeviceJobId, stepIndex, projectId, deviceRunnerId, browserName, browserVersion, cwd } = param;
     const { info, router, environmentVariableReplacer } = context;
     const { platform, serial, deviceWorkspacePath, rootWorkspacePath, hostPlatform, hostWorkspacePath, pathMap } = info;
     this.logger.info(`Step ${routineStepId} started`);
@@ -145,8 +145,11 @@ export class DeviceJobStepProcessor {
     await fs.promises.mkdir(organizationWorkspacePath, { recursive: true });
 
     const doguRoutineWorkspacePath =
-      (await this.rootWorkspace.findRoutineWorkspace(rootWorkspacePath, { projectId, deviceId })) ??
-      (await this.rootWorkspace.createRoutineWorkspacePath(rootWorkspacePath, { projectId, deviceId }));
+      (await this.rootWorkspace.findRoutineWorkspace(rootWorkspacePath, { projectId, deviceId, deviceRunnerId })) ??
+      (await this.rootWorkspace.createRoutineWorkspacePath(rootWorkspacePath, { projectId, deviceId, deviceRunnerId }));
+
+    const stepWorkingPath = path.resolve(doguRoutineWorkspacePath, cwd);
+    this.logger.info(`Step ${routineStepId} working path: ${stepWorkingPath}`);
 
     const pathOld = environmentVariableReplacer.stackProvider.export(this.logger).PATH;
     const stepContextEnv: StepContextEnv = {
@@ -162,6 +165,7 @@ export class DeviceJobStepProcessor {
       DOGU_ORGANIZATION_WORKSPACE_PATH: organizationWorkspacePath,
       DOGU_PROJECT_ID: projectId,
       DOGU_STEP_ID: `${routineStepId}`,
+      DOGU_STEP_WORKING_PATH: stepWorkingPath,
       DOGU_API_BASE_URL: env.DOGU_API_BASE_URL,
       DOGU_LOG_LEVEL: optionsConfig.get('logLevel', 'verbose'),
       DOGU_ROOT_WORKSPACE_PATH: rootWorkspacePath,
@@ -169,8 +173,11 @@ export class DeviceJobStepProcessor {
       DOGU_HOST_WORKSPACE_PATH: hostWorkspacePath,
       DOGU_HOST_TOKEN: env.DOGU_HOST_TOKEN,
       DOGU_RUN_TYPE: env.DOGU_RUN_TYPE,
+      DOGU_BROWSER_NAME: browserName ?? '',
+      DOGU_BROWSER_VERSION: browserVersion ?? '',
       PATH: `${gitLibexecGitCore}${delimiter}${nodeBin}${delimiter}${pathOld ?? ''}`,
     };
+
     const stepContextEnvReplaced = await environmentVariableReplacer.replaceEnv(stepContextEnv);
     environmentVariableReplacer.stackProvider.push(new EnvironmentVariableReplacementProvider(stepContextEnvReplaced));
     const stepEnvReplaced = await environmentVariableReplacer.replaceEnv(stepEnv);
@@ -222,7 +229,7 @@ export class DeviceJobStepProcessor {
           });
         },
       },
-      doguRoutineWorkspacePath,
+      stepWorkingPath,
     );
     const result = await router.route<RunStepValue, ErrorResult>(value, stepMessageContext).catch((error) => {
       const errorified = errorify(error);

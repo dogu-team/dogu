@@ -52,7 +52,10 @@ export const schema = {
   external_is_agreed_gecko_driver: {
     type: 'boolean',
   },
-  external_is_agreed_selenium_driver: {
+  external_is_agreed_selenium_server: {
+    type: 'boolean',
+  },
+  external_is_agreed_selenium_webdriver: {
     type: 'boolean',
   },
 } as const;

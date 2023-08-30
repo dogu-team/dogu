@@ -13,20 +13,16 @@ import {
   StreamingAnswer,
 } from '@dogu-private/types';
 import { Closable, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
-import { StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { ChildProcess, isFreePort } from '@dogu-tech/node';
 import { Observable } from 'rxjs';
 import systeminformation from 'systeminformation';
-import { DeviceWebDriver } from '../../alias';
 import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { SeleniumDeviceWebDriverHandler } from '../../device-webdriver/selenium.device-webdriver.handler';
 import { GamiumContext } from '../../gamium/gamium.context';
-import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
-import { DoguLogger } from '../../logger/logger';
 import { logger } from '../../logger/logger.instance';
-import { SeleniumService } from '../../selenium/selenium.service';
-import { DeviceChannel, DeviceChannelOpenParam, LogHandler } from '../public/device-channel';
+import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService, LogHandler } from '../public/device-channel';
 import { DeviceAgentService } from '../services/device-agent/device-agent-service';
 import { NullDeviceAgentService } from '../services/device-agent/null-device-agent-service';
 import { DesktopProfileService } from '../services/profile/desktop-profiler';
@@ -45,6 +41,7 @@ export class MacosChannel implements DeviceChannel {
     private readonly _streaming: StreamingService,
     private readonly _deviceAgent: DeviceAgentService,
     private readonly _seleniumDeviceWebDriverHandler: SeleniumDeviceWebDriverHandler,
+    readonly browserInstallations: BrowserInstallation[],
   ) {}
 
   get serial(): Serial {
@@ -71,14 +68,7 @@ export class MacosChannel implements DeviceChannel {
     return this._info.isVirtual;
   }
 
-  static async create(
-    param: DeviceChannelOpenParam,
-    streaming: StreamingService,
-    httpRequestRelayService: HttpRequestRelayService,
-    seleniumEndpointHandlerService: DeviceWebDriver.SeleniumEndpointHandlerService,
-    seleniumService: SeleniumService,
-    doguLogger: DoguLogger,
-  ): Promise<DeviceChannel> {
+  static async create(param: DeviceChannelOpenParam, streaming: StreamingService, deviceServerService: DeviceServerService): Promise<DeviceChannel> {
     const platform = Platform.PLATFORM_MACOS;
     const deviceAgent = new NullDeviceAgentService();
 
@@ -103,12 +93,13 @@ export class MacosChannel implements DeviceChannel {
     const seleniumDeviceWebDriverHandler = new SeleniumDeviceWebDriverHandler(
       platform,
       param.serial,
-      seleniumService,
-      httpRequestRelayService,
-      seleniumEndpointHandlerService,
-      doguLogger,
+      deviceServerService.seleniumService,
+      deviceServerService.httpRequestRelayService,
+      deviceServerService.seleniumEndpointHandlerService,
+      deviceServerService.doguLogger,
     );
-    const deviceChannel = new MacosChannel(param.serial, info, new DesktopProfileService(), streaming, deviceAgent, seleniumDeviceWebDriverHandler);
+
+    const deviceChannel = new MacosChannel(param.serial, info, new DesktopProfileService(), streaming, deviceAgent, seleniumDeviceWebDriverHandler, []);
     return Promise.resolve(deviceChannel);
   }
 
@@ -122,19 +113,19 @@ export class MacosChannel implements DeviceChannel {
     };
   }
 
-  startStreamingWebRTC(offer: StreamingOfferDto): Promise<ProtoRTCPeerDescription> {
+  async startStreamingWebRTC(offer: StreamingOfferDto): Promise<ProtoRTCPeerDescription> {
     return Promise.resolve(this._streaming.startStreaming(this.serial, offer));
   }
 
-  startStreamingWebRtcWithTrickle(offer: StreamingOfferDto): Promise<Observable<StreamingAnswer>> {
+  async startStreamingWebRtcWithTrickle(offer: StreamingOfferDto): Promise<Observable<StreamingAnswer>> {
     return Promise.resolve(this._streaming.startStreamingWithTrickle(this.serial, offer));
   }
 
-  startRecord(option: ScreenRecordOption): Promise<ErrorResult> {
+  async startRecord(option: ScreenRecordOption): Promise<ErrorResult> {
     return Promise.resolve(this._streaming.startRecord(this.serial, option));
   }
 
-  stopRecord(): Promise<ErrorResult> {
+  async stopRecord(): Promise<ErrorResult> {
     return Promise.resolve(this._streaming.stopRecord(this.serial));
   }
 
@@ -162,8 +153,9 @@ export class MacosChannel implements DeviceChannel {
     // noop
   }
 
-  isPortListening(port: number): Promise<boolean> {
-    return isFreePort(port);
+  async isPortListening(port: number): Promise<boolean> {
+    const isFree = await isFreePort(port);
+    return !isFree;
   }
 
   uninstallApp(appPath: string): void {

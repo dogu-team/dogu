@@ -1,4 +1,4 @@
-import { DeviceId, ErrorResultDto, OrganizationId, ProjectId, RoutineDeviceJob, RoutineDeviceJobId, RoutineStep, RoutineStepId, Serial } from '@dogu-private/types';
+import { DeviceId, DeviceRunnerId, ErrorResultDto, OrganizationId, ProjectId, RoutineDeviceJob, RoutineDeviceJobId, RoutineStep, RoutineStepId, Serial } from '@dogu-private/types';
 import { Instance, IsFilledString, IsHttpMethod, IsOptionalObject, IsUrlPath, IsUuidV4, Kindable, Method, OneOf, TransformByKind } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsIn, IsNumber, IsObject, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
@@ -240,7 +240,7 @@ const RunStepValue = [Run, Action] as const;
 export type RunStepValue = Instance<(typeof RunStepValue)[number]>;
 
 @OneOf()
-export class RunStep extends Kindable<'RunStep'> implements Pick<RoutineStep, 'routineStepId' | 'env'>, Pick<RoutineDeviceJob, 'routineDeviceJobId'> {
+export class RunStep extends Kindable<'RunStep'> implements Pick<RoutineStep, 'routineStepId' | 'env' | 'cwd'>, Pick<RoutineDeviceJob, 'routineDeviceJobId' | 'deviceRunnerId'> {
   static override kind = 'RunStep';
 
   @IsUUID()
@@ -252,6 +252,9 @@ export class RunStep extends Kindable<'RunStep'> implements Pick<RoutineStep, 'r
   @IsUUID()
   deviceId!: DeviceId;
 
+  @IsUUID()
+  deviceRunnerId!: DeviceRunnerId;
+
   @IsNumber()
   routineDeviceJobId!: RoutineDeviceJobId;
 
@@ -261,8 +264,17 @@ export class RunStep extends Kindable<'RunStep'> implements Pick<RoutineStep, 'r
   @IsNumber()
   stepIndex!: number;
 
+  @IsString()
+  browserName!: string;
+
+  @IsString()
+  browserVersion!: string;
+
   @IsObject()
   env!: Record<string, string>;
+
+  @IsString()
+  cwd!: string;
 
   @ValidateNested()
   @TransformByKind(RunStepValue)
@@ -270,11 +282,14 @@ export class RunStep extends Kindable<'RunStep'> implements Pick<RoutineStep, 'r
 }
 
 @OneOf()
-export class RunDeviceJob extends Kindable<'RunDeviceJob'> implements Pick<RoutineDeviceJob, 'routineDeviceJobId' | 'record'> {
+export class RunDeviceJob extends Kindable<'RunDeviceJob'> implements Pick<RoutineDeviceJob, 'routineDeviceJobId' | 'record' | 'deviceRunnerId'> {
   static override kind = 'RunDeviceJob';
 
   @IsNumber()
   routineDeviceJobId!: RoutineDeviceJobId;
+
+  @IsUUID()
+  deviceRunnerId!: DeviceRunnerId;
 
   @IsIn([0, 1])
   record!: number;

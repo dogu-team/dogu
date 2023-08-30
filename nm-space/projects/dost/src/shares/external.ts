@@ -20,6 +20,7 @@ export const FirefoxBrowser = 'firefox-browser';
 export const ChromeDriver = 'chrome-driver';
 export const SeleniumServer = 'selenium-server';
 export const GeckoDriver = 'gecko-driver';
+export const SeleniumWebdriver = 'selenium-webdriver';
 
 export const ExternalKey = [
   Jdk,
@@ -38,6 +39,7 @@ export const ExternalKey = [
   ChromeDriver,
   SeleniumServer,
   GeckoDriver,
+  SeleniumWebdriver,
 ] as const;
 export type ExternalKey = (typeof ExternalKey)[number];
 export const IosSettingsExternalKey = [Xcode, WebDriverAgentBuild, IosDeviceAgentBuild] as const;

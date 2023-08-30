@@ -6,6 +6,7 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { DeviceWebDriver } from '../alias';
 import { AppiumService } from '../appium/appium.service';
+import { BrowserManagerService } from '../browser-manager/browser-manager.service';
 import {
   OnDeviceConnectionSubscriberConnectedEvent,
   OnDevicesConnectedEvent,
@@ -29,7 +30,6 @@ export class ScanService implements OnModuleInit {
   private deviceDoors: DeviceDoors;
   private befTime = Date.now();
   private onUpdateGuarder = new DuplicatedCallGuarder();
-  private maxRemoveMarkCount = 3;
   private scanFailedDevices: ErrorDevice[] = [];
 
   constructor(
@@ -41,6 +41,7 @@ export class ScanService implements OnModuleInit {
     private readonly appiumEndpointHandlerService: DeviceWebDriver.AppiumEndpointHandlerService,
     private readonly seleniumEndpointHandlerService: DeviceWebDriver.SeleniumEndpointHandlerService,
     private readonly seleniumService: SeleniumService,
+    private readonly browserManagerService: BrowserManagerService,
   ) {
     this.deviceDoors = new DeviceDoors({
       onOpening: async (platformSerial: PlatformSerial): Promise<void> => {
@@ -94,17 +95,17 @@ export class ScanService implements OnModuleInit {
         .filter((e) => PlatformType.includes(e as PlatformType))
         .map((e) => e as PlatformType) ?? PlatformType;
 
-    const factory = createDeviceDriverFactoryByHostPlatform(
-      hostPlatform,
-      enabledPlatforms,
-      this.appiumService,
-      this.gamiumService,
-      this.httpRequestRelayService,
-      this.appiumEndpointHandlerService,
-      this.seleniumEndpointHandlerService,
-      this.seleniumService,
-      this.logger,
-    );
+    const factory = createDeviceDriverFactoryByHostPlatform(hostPlatform, enabledPlatforms, {
+      appiumService: this.appiumService,
+      gamiumService: this.gamiumService,
+      httpRequestRelayService: this.httpRequestRelayService,
+      appiumEndpointHandlerService: this.appiumEndpointHandlerService,
+      seleniumEndpointHandlerService: this.seleniumEndpointHandlerService,
+      seleniumService: this.seleniumService,
+      doguLogger: this.logger,
+      browserManagerService: this.browserManagerService,
+    });
+
     this.driverMap = await factory.create();
   }
 
@@ -147,7 +148,7 @@ export class ScanService implements OnModuleInit {
       }),
 
       ...this.channels.map((channel) => {
-        const { serial, serialUnique, platform, info, isVirtual } = channel;
+        const { serial, serialUnique, platform, info, isVirtual, browserInstallations } = channel;
         const { system, version, graphics } = info;
         const { model, manufacturer } = system;
         const display = graphics.displays.at(0);
@@ -165,6 +166,7 @@ export class ScanService implements OnModuleInit {
           isVirtual: isVirtual ? 1 : 0,
           resolutionWidth,
           resolutionHeight,
+          browserInstallations,
         };
         return message;
       }),

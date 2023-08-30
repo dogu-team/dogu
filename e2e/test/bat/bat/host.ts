@@ -1,7 +1,6 @@
 import { delay, loop } from '@dogu-tech/common';
 import { job, test } from '@dogu-tech/dest';
-import { expect } from '@playwright/test';
-import { ElementHandle, Locator, Page } from 'playwright';
+import { ElementHandle, expect, Locator, Page } from '@playwright/test';
 import { dostPlaywrightColor, launchDost } from '../../../src/dost';
 import { copyIosDeviceAgentProject, replaceIosDeviceAgentSigningStyle, replaceWebDriverAgentSigningStyle } from '../../../src/ios-helper';
 import { Driver } from '../../../src/playwright-driver';

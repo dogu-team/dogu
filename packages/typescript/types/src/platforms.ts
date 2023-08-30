@@ -2,9 +2,11 @@ import { Platform } from './protocol/generated/tsproto/outer/platform';
 
 export const PlatformType = ['unspecified', 'android', 'ios', 'macos', 'windows', 'ps4', 'xbox'] as const;
 export type PlatformType = (typeof PlatformType)[number];
+export const isValidPlatformType = (platform: string): platform is PlatformType => PlatformType.includes(platform as PlatformType);
 
 export const PlatformCategory = ['unspecified', 'desktop', 'mobile', 'console'] as const;
 export type PlatformCategory = (typeof PlatformCategory)[number];
+export const isValidPlatformCategory = (platform: string): platform is PlatformCategory => PlatformCategory.includes(platform as PlatformCategory);
 
 export function validateMaxParallelJobs(platform: Platform, maxParallelJobs: number): boolean {
   if (maxParallelJobs < 1) {

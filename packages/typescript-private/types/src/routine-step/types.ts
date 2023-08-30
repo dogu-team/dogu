@@ -40,4 +40,5 @@ export interface RoutineStep {
   with: Record<string, unknown> | null;
   run: string | null;
   env: Record<string, string> | null;
+  cwd: string;
 }

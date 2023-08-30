@@ -55,6 +55,7 @@ definitions:
           - items:
               type: string
             type: array
+          - '$ref': '#/definitions/RunsOnWithBrowserName'
       steps:
         type: array
         items:
@@ -80,5 +81,22 @@ definitions:
         additionalProperties:
           type: string
         description: The environment variables for the step.
+      cwd:
+        type: string
+        description: The working directory for the step. relative to the routine working directory.
     required:
       - name
+  RunsOnWithBrowserName:
+    title: RunsOnWithBrowserNameSchema
+    type: object
+    additionalProperties: false
+    properties:
+      browserName:
+        type: string
+      browserVersion:
+        type: string
+      platformName:
+        type: string
+    required:
+      - browserName
+      - platformName

@@ -5,6 +5,7 @@ import { DefaultDeviceConnectionSubscribeReceiveMessage, DeviceConnectionSubscri
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
+import { BrowserManagerService } from '../../browser-manager/browser-manager.service';
 import {
   OnDeviceConnectionSubscriberConnectedEvent,
   OnDeviceConnectionSubscriberDisconnectedEvent,
@@ -20,7 +21,7 @@ export class DeviceConnectionSubscribeService
   extends WebSocketGatewayBase<null, typeof DeviceConnectionSubscribe.sendMessage, typeof DeviceConnectionSubscribe.receiveMessage>
   implements OnWebSocketClose<null>
 {
-  constructor(private readonly eventEmitter: EventEmitter2, private readonly logger: DoguLogger) {
+  constructor(private readonly eventEmitter: EventEmitter2, private readonly logger: DoguLogger, private readonly browserManagerService: BrowserManagerService) {
     super(DeviceConnectionSubscribe, logger);
   }
 
@@ -58,12 +59,13 @@ export class DeviceConnectionSubscribeService
   @OnEvent(OnDevicesConnectedEvent.key)
   onDevicesConnected(value: Instance<typeof OnDevicesConnectedEvent.value>): void {
     const messages = value.channels.map((channel) => {
-      const { serial, serialUnique, platform, info, isVirtual } = channel;
+      const { serial, serialUnique, platform, info, isVirtual, browserInstallations } = channel;
       const { system, version, graphics } = info;
       const { model, manufacturer } = system;
       const display = graphics.displays.at(0);
       const resolutionWidth = display?.resolutionX ?? 0;
       const resolutionHeight = display?.resolutionY ?? 0;
+
       const message: Instance<typeof DeviceConnectionSubscribe.receiveMessage> = {
         serial,
         serialUnique,
@@ -76,6 +78,7 @@ export class DeviceConnectionSubscribeService
         isVirtual: isVirtual ? 1 : 0,
         resolutionWidth,
         resolutionHeight,
+        browserInstallations,
       };
       return message;
     });

@@ -26,6 +26,9 @@ function defaultActionKitOptions(): FilledActionKitOptions {
     DOGU_LOG_TO_FILE: false,
     DOGU_RUN_TYPE: '',
     DOGU_HOST_TOKEN: '',
+    DOGU_STEP_WORKING_PATH: '',
+    DOGU_BROWSER_NAME: '',
+    DOGU_BROWSER_VERSION: '',
   };
 }
 

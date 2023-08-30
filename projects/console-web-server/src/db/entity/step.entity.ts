@@ -64,6 +64,9 @@ export class RoutineStep extends BaseEntity implements RoutineStepBase {
   @Column({ type: 'json', name: RoutineStepPropSnake.env, default: () => 'NULL', nullable: true })
   env!: Record<string, string> | null;
 
+  @Column({ type: 'character varying', name: RoutineStepPropSnake.cwd, default: '', nullable: false })
+  cwd!: string;
+
   @ManyToOne(() => RoutineDeviceJob, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
   @JoinColumn({ name: RoutineStepPropSnake.routine_device_job_id })
   routineDeviceJob?: RoutineDeviceJob;

@@ -1,4 +1,4 @@
-import { PrefixLogger, stringify } from '@dogu-tech/common';
+import { NullLogger, PrefixLogger, stringify } from '@dogu-tech/common';
 import { ChildProcess, getFileSizeRecursive, HostPaths, renameRetry } from '@dogu-tech/node';
 import compressing from 'compressing';
 import { download } from 'electron-dl';
@@ -120,7 +120,8 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
       if (!stdout.includes(`architecture: ${file.archName}`)) {
         throw new Error(`${archCheckPath} should be ${file.archName} file`);
       }
-      await ChildProcess.execIgnoreError(`xattr -dr com.apple.quarantine ${archCheckPath}`, {}, this.logger);
+
+      await ChildProcess.execIgnoreError(`xattr -dr com.apple.quarantine ${archCheckPath}`, {}, NullLogger.instance);
       if (file.fileMode) {
         await fs.promises.chmod(path, 0o777);
       }

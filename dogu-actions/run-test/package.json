@@ -15,10 +15,12 @@
   },
   "types": "./build/src/main.d.ts",
   "dependencies": {
-    "@dogu-tech/action-kit": "workspace:^"
+    "@dogu-tech/action-kit": "workspace:^",
+    "lodash": "4.17.21"
   },
   "devDependencies": {
     "@dogu-dev-private/publish-package": "workspace:^",
+    "@types/lodash": "4",
     "@types/node": "18.15.11",
     "cross-env": "7.0.3",
     "nodemon": "2.0.22",

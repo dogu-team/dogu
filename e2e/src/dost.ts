@@ -1,10 +1,10 @@
 import { killProcess, newCleanNodeEnv } from '@dogu-tech/node';
+import { Page, _electron as electron } from '@playwright/test';
 import chalk from 'chalk';
 import child_process from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import { Page, _electron as electron } from 'playwright';
 import stc from 'string-to-color';
 import waiton from 'wait-on';
 import { pathMap } from './path-map';
