@@ -12,6 +12,36 @@ export interface Printable {
 
 export type FilledPrintable = Required<Printable>;
 
+export class ConsoleLogger implements FilledPrintable {
+  error(message: unknown, details?: Record<string, unknown>): void {
+    const messageString = stringify(message);
+    details ? console.error(messageString, stringify(details)) : console.error(messageString);
+    console.error(stringify(message), stringify(details));
+  }
+
+  warn(message: unknown, details?: Record<string, unknown>): void {
+    const messageString = stringify(message);
+    details ? console.warn(messageString, stringify(details)) : console.warn(messageString);
+  }
+
+  info(message: unknown, details?: Record<string, unknown>): void {
+    const messageString = stringify(message);
+    details ? console.info(messageString, stringify(details)) : console.info(messageString);
+  }
+
+  debug(message: unknown, details?: Record<string, unknown>): void {
+    const messageString = stringify(message);
+    details ? console.debug(messageString, stringify(details)) : console.debug(messageString);
+  }
+
+  verbose(message: unknown, details?: Record<string, unknown>): void {
+    const messageString = stringify(message);
+    details ? console.debug(messageString, stringify(details)) : console.debug(messageString);
+  }
+
+  static instance = new ConsoleLogger();
+}
+
 export class PrefixLogger implements FilledPrintable {
   constructor(private readonly printable: Printable, private readonly prefix: string) {}
 

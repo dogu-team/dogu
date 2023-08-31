@@ -1,10 +1,11 @@
-import { DeviceClientOptions, DeviceService } from './bases.js';
+import { DeviceClientOptions } from './bases.js';
 import { DeviceHttpClient } from './device-http-client.js';
+import { NodeDeviceService } from './node-device-service.js';
 import { DeviceHost } from './specs/http/device-host.js';
 
 export class DeviceHostClient extends DeviceHttpClient {
-  constructor(deviceService: DeviceService, options?: DeviceClientOptions) {
-    super(deviceService, options);
+  constructor(options?: DeviceClientOptions) {
+    super(new NodeDeviceService(), options);
   }
 
   async getFreePort(excludes?: number[], offset?: number): Promise<number> {

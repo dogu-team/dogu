@@ -1,10 +1,10 @@
 import 'reflect-metadata';
 
-export * from '@dogu-tech/device-interface';
 export * from './bases.js';
 export * from './device-client.js';
 export * from './device-host-client.js';
 export * from './device-http-client.js';
+export * from './node-device-service.js';
 export * from './specs/http/device-dtos.js';
 export * from './specs/http/device-host.js';
 export * from './specs/http/device.js';

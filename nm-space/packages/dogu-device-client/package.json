@@ -29,7 +29,7 @@
     "dev": "nodemon",
     "rebuild": "yarn run clean && yarn run build",
     "start": "node build/esm/src/cli.js",
-    "test": "cross-env NODE_OPTIONS=\"--experimental-vm-modules $NODE_OPTIONS\" jest",
+    "test": "cross-env NODE_OPTIONS=\"--experimental-vm-modules $NODE_OPTIONS\" jest --runInBand",
     "watch": "clear; echo @dogu-tech/sdk-core Watching... && nodemon"
   },
   "types": "build/types/src/index.d.ts",

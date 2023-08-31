@@ -1,7 +1,7 @@
 import { ClassTransformOptions, plainToInstance } from 'class-transformer';
 import { validateOrReject, validateSync, ValidationError, ValidatorOptions } from 'class-validator';
 import _ from 'lodash';
-import { Printable } from '../common/logs.js';
+import { ConsoleLogger, Printable } from '../common/logs.js';
 import { Class, Instance } from '../common/types.js';
 
 function defaultClassTransformOptions(): ClassTransformOptions {
@@ -59,7 +59,7 @@ function defaultTransformAndValidateOptions(): FilledTransformAndValidateOptions
   return {
     classTransformOptions: defaultClassTransformOptions(),
     validatorOptions: defaultValidatorOptions(),
-    printable: console,
+    printable: ConsoleLogger.instance,
   };
 }
 

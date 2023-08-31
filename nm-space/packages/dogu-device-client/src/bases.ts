@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsNumber, IsObject } from 'class-validator';
-import { Printable } from './common/logs.js';
+import { ConsoleLogger, Printable } from './common/logs.js';
 import { PromiseOrValue } from './common/types.js';
 import { HttpRequest, HttpResponse, WebSocketCloseEvent, WebSocketConnection, WebSocketErrorEvent, WebSocketMessageEvent, WebSocketOpenEvent } from './types/http_ws.js';
 import { fillOptionsSync } from './validations/functions.js';
@@ -14,7 +14,7 @@ export interface DeviceWebSocketListener {
 
 export interface DeviceWebSocket {
   send(message: string | Uint8Array): void;
-  close(code?: number, reason?: string): void;
+  close(code?: number, reason?: string): Promise<void>;
 }
 
 export class DeviceClientOptions {
@@ -26,7 +26,7 @@ export class DeviceClientOptions {
   port?: number;
 
   /**
-   * @default console
+   * @default ConsoleLogger.instance
    */
   @IsObject()
   printable?: Printable;
@@ -45,7 +45,7 @@ export function fillDeviceClientOptions(options?: DeviceClientOptions): Required
     DeviceClientOptions,
     {
       port: 0,
-      printable: console,
+      printable: ConsoleLogger.instance,
       timeout: 60000,
     },
     options,
@@ -60,7 +60,7 @@ export interface DeviceService {
 export class DeviceCloser {
   constructor(readonly deviceWebSocket: DeviceWebSocket) {}
 
-  close(): void {
-    this.deviceWebSocket.close(1000, 'close');
+  async close(): Promise<void> {
+    await this.deviceWebSocket.close(1000, 'close');
   }
 }

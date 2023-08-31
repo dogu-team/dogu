@@ -11,7 +11,7 @@ export class AppiumServerContext {
     return this.info.port;
   }
 
-  close(): void {
-    this.closer.close();
+  async close(): Promise<void> {
+    await this.closer.close();
   }
 }

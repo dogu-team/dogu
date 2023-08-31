@@ -1,8 +1,9 @@
-import { DeviceClientOptions, DeviceCloser, DeviceService, DeviceWebSocket } from './bases.js';
+import { DeviceClientOptions, DeviceCloser, DeviceWebSocket } from './bases.js';
 import { errorify, stringify } from './common/functions.js';
 import { WebSocketSpec } from './common/specs.js';
 import { Class, Instance } from './common/types.js';
 import { DeviceHttpClient } from './device-http-client.js';
+import { NodeDeviceService } from './node-device-service.js';
 import { AppiumCapabilities } from './specs/http/device-dtos.js';
 import { Device } from './specs/http/device.js';
 import { DeviceForward } from './specs/ws/device/forward.js';
@@ -11,8 +12,8 @@ import { AppiumServerContext } from './types/appium.js';
 import { Serial } from './types/types.js';
 
 export class DeviceClient extends DeviceHttpClient {
-  constructor(deviceService: DeviceService, options?: DeviceClientOptions) {
-    super(deviceService, options);
+  constructor(options?: DeviceClientOptions) {
+    super(new NodeDeviceService(), options);
   }
 
   async getAppiumCapabilities(serial: Serial): Promise<AppiumCapabilities> {

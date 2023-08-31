@@ -25,9 +25,14 @@ export class NodeDeviceWebSocket implements DeviceWebSocket {
     });
   }
 
-  close(code?: number | undefined, reason?: string | undefined): void {
-    closeWebSocketWithTruncateReason(this.webSocket, code, reason);
-    this.logger.verbose(`close`, { code, reason });
+  async close(code?: number | undefined, reason?: string | undefined): Promise<void> {
+    await new Promise<void>((resolve) => {
+      this.webSocket.once('close', () => {
+        this.logger.verbose(`close`, { code, reason });
+        resolve();
+      });
+      closeWebSocketWithTruncateReason(this.webSocket, code, reason);
+    });
   }
 }
 
