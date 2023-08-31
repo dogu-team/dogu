@@ -118,7 +118,7 @@ export class IosChannel implements DeviceChannel {
 
     if (!(await WebdriverAgentProcess.isReady(serial))) {
       throw new Error(
-        `iOSDeviceAgent can't be executed on this device. Please register your device. reference: https://developer.apple.com/help/account/register-devices/register-a-single-device. `,
+        `WebDriverAgent can't be executed on this device. Please register your device. reference: https://developer.apple.com/help/account/register-devices/register-a-single-device. `,
       );
     }
 
