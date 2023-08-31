@@ -2,7 +2,7 @@ import { Form, Input, notification } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { mutate } from 'swr';
 import { useRouter } from 'next/router';
-import { OrganizationId, PROJECT_DESC_MAX_LENGTH, PROJECT_DESC_MIN_LENGTH, PROJECT_NAME_MAX_LENGTH, PROJECT_NAME_MIN_LENGTH } from '@dogu-private/types';
+import { OrganizationId, PROJECT_DESC_MAX_LENGTH, PROJECT_DESC_MIN_LENGTH, PROJECT_NAME_MAX_LENGTH, PROJECT_NAME_MIN_LENGTH, PROJECT_TYPE } from '@dogu-private/types';
 
 import { createProject } from 'src/api/project';
 import FormControlModal from '../modals/FormControlModal';
@@ -11,6 +11,7 @@ import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd
 import useEventStore from '../../stores/events';
 import { AxiosError } from 'axios';
 import { getErrorMessageFromAxios } from '../../utils/error';
+import ProjectTypeRadio from './ProjectTypeRadio';
 
 interface Props {
   isOpen: boolean;
@@ -33,7 +34,9 @@ const CreateProjectModal = ({ isOpen, close }: Props) => {
   const handleCreate = async () => {
     const name = form.getFieldValue('name');
     const desc = form.getFieldValue('desc');
-    const createProjectBody = { name, description: desc };
+    const type = form.getFieldValue('type');
+
+    const createProjectBody = { name, description: desc, type };
 
     setLoading(true);
     if (name) {
@@ -60,6 +63,14 @@ const CreateProjectModal = ({ isOpen, close }: Props) => {
       okText={t('common:add')}
       form={
         <Form form={form} id="new-project" layout="vertical" onFinish={handleCreate}>
+          <Form.Item
+            label={t('organization:newProjectModalProjectType')}
+            name="type"
+            rules={[{ required: true, message: 'Select your project template' }]}
+            initialValue={PROJECT_TYPE.WEB}
+          >
+            <ProjectTypeRadio />
+          </Form.Item>
           <Form.Item label={t('organization:newProjectModalInputName')} name="name" rules={[{ required: true, message: t('common:nameInputEmptyError') }]}>
             <Input type="text" placeholder={t('common:name')} required minLength={PROJECT_NAME_MIN_LENGTH} maxLength={PROJECT_NAME_MAX_LENGTH} autoFocus />
           </Form.Item>

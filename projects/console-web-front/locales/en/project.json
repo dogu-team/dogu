@@ -35,6 +35,13 @@
   "editGitIntegrationConfirmModalButtonText": "Confirm and edit",
   "settingEditGitIntegrationConfirmContent": "Are you sure to edit git integration for project?",
 
+  "changeProjectTemplateMenuTitle": "Change project template",
+  "changeProjectTemplateDescriptionText": "Change project template to other - Web, Mobile app, Game and Custom.",
+  "changeProjectTemplateButtonText": "Change template",
+  "changeProjectTemplateConfirmModalTitle": "Change project template",
+  "changeProjectTemplateConfirmModalButtonText": "Confirm and change",
+  "settingChangeProjectTemplateConfirmContent": "Are you sure to change project template?<br />This can affect project page UI.",
+
   "projectIdLabel": "Project ID",
   "organizationIdLabel": "Organization ID",
 

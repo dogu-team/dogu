@@ -1,4 +1,4 @@
-import { OrganizationId, ProjectId, UserId } from '@dogu-private/types';
+import { OrganizationId, ProjectId, PROJECT_TYPE, UserId } from '@dogu-private/types';
 import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 import { ProjectAndDeviceBase, ProjectScmBase, ProjectSlackRemoteBase, ProjectSlackRoutineBase, RoutineBase } from '..';
 import { DeviceBase } from './device';
@@ -29,6 +29,7 @@ interface ProjectResponseTraits {
 export interface ProjectBaseTraits {
   projectId: ProjectId;
   name: string;
+  type: PROJECT_TYPE;
   description: string;
   managedBy: UserId;
   organizationId: OrganizationId;

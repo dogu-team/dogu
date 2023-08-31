@@ -14,6 +14,7 @@ import {
   PROJECT_DESC_MAX_LENGTH,
   PROJECT_NAME_MAX_LENGTH,
   PROJECT_TABLE_NAME,
+  PROJECT_TYPE,
   UserId,
 } from '@dogu-private/types';
 import { BaseEntity, Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
@@ -37,6 +38,9 @@ export class Project extends BaseEntity implements ProjectBase {
 
   @Column({ type: 'character varying', name: ProjectPropSnake.name, length: PROJECT_NAME_MAX_LENGTH, nullable: false })
   name!: string;
+
+  @Column({ type: 'smallint', name: ProjectPropSnake.type, unsigned: true, default: PROJECT_TYPE.CUSTOM, nullable: false })
+  type!: PROJECT_TYPE;
 
   @Column({ type: 'character varying', name: ProjectPropSnake.description, length: PROJECT_DESC_MAX_LENGTH, nullable: false })
   description!: string;

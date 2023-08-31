@@ -8,6 +8,7 @@
   "docs": "Guides",
 
   "addNewProject": "Add new project",
+  "newProjectModalProjectType": "Project template",
   "newProjectModalInputName": "Project name",
   "newProjectModalInputDesc": "Project description",
   "newProjectModalInputDescPlaceholder": "Description (optional)",
