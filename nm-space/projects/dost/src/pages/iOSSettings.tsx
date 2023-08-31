@@ -104,7 +104,7 @@ function IosSettings() {
             <Stack spacing="8px">
               <MenuTitle>Experimental</MenuTitle>
               <Flex alignItems="center">
-                <Text fontSize=".9rem">Restart iOS device when start connection</Text>
+                <Text fontSize=".9rem">Restart iOS device when starting a connection</Text>
                 <Spacer />
                 <Switch size="md" isChecked={isRestartIosOnInit} onChange={(e) => onIosRestartChange(e.target.checked)} />
               </Flex>
