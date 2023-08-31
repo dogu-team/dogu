@@ -229,6 +229,19 @@ const DeviceFarmTutorial = () => {
                 <div style={{ marginTop: '.5rem' }}>
                   <p>To establish a connection, you will need the host token. Let&apos;s move to the next step for it!</p>
                 </div>
+
+                <div style={{ marginTop: '1rem' }}>
+                  <Alert
+                    type="info"
+                    showIcon
+                    message="For more information, pleae visit Documentation - Device Farm"
+                    action={
+                      <Link href="https://docs.dogutech.io/get-started/tutorials/device-farm/host" target="_blank">
+                        <Button type="link">Visit Docs</Button>
+                      </Link>
+                    }
+                  />
+                </div>
               </div>
             }
           />
