@@ -1,20 +1,41 @@
+import { ProjectBase } from '@dogu-private/console';
 import styled from 'styled-components';
+import useSWR from 'swr';
+import { swrAuthFetcher } from '../../api';
+import { ProjectContext } from '../../hooks/useProjectContext';
+import ErrorBox from '../common/boxes/ErrorBox';
 
 import ConsoleLayout, { ConsoleLayoutProps } from './ConsoleLayout';
 import ProjectSideBar from './ProjectSideBar';
 
 interface Props extends Omit<ConsoleLayoutProps, 'sidebar'> {
   innerSidebar?: React.ReactNode;
+  project: ProjectBase;
 }
 
-const ProjectLayoutWithSidebar = ({ children, innerSidebar, ...props }: Props) => {
+const ProjectLayoutWithSidebar = ({ children, innerSidebar, project, ...props }: Props) => {
+  const { data, error, isLoading, mutate } = useSWR<ProjectBase>(`/organizations/${project.organizationId}/projects/${project.projectId}`, swrAuthFetcher, {
+    revalidateOnFocus: false,
+    fallbackData: project,
+  });
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (error) {
+    return <ErrorBox title="Oops..." desc="Failed to load console" />;
+  }
+
   return (
-    <ConsoleLayout sidebar={<ProjectSideBar />} {...props} padding="2rem 2rem 0">
-      <FlexRow>
-        {!!innerSidebar && <SideBar offset={56}>{innerSidebar}</SideBar>}
-        <Content hasSidebar={!!innerSidebar}>{children}</Content>
-      </FlexRow>
-    </ConsoleLayout>
+    <ProjectContext.Provider value={{ project: data ?? project, mutate }}>
+      <ConsoleLayout sidebar={<ProjectSideBar />} {...props} padding="2rem 2rem 0">
+        <FlexRow>
+          {!!innerSidebar && <SideBar offset={56}>{innerSidebar}</SideBar>}
+          <Content hasSidebar={!!innerSidebar}>{children}</Content>
+        </FlexRow>
+      </ConsoleLayout>
+    </ProjectContext.Provider>
   );
 };
 

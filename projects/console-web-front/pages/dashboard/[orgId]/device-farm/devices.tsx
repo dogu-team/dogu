@@ -6,10 +6,10 @@ import TableListView from 'src/components/common/TableListView';
 import DeviceListController from 'src/components/device/DeviceListController';
 import DeviceFilter from 'src/components/device/DeviceFilter';
 import RefreshButton from 'src/components/buttons/RefreshButton';
-import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
 import OrganizationDeviceFarmLayout from '../../../../src/components/layouts/OrganizationDeviceFarmLayout';
 
-const TeamDevicePage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) => {
+const TeamDevicePage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {
   return (
     <>
       <Head>
@@ -29,12 +29,12 @@ const TeamDevicePage: NextPageWithLayout<WithOrganizationProps> = ({ organizatio
 };
 
 TeamDevicePage.getLayout = (page) => {
-  return <OrganizationDeviceFarmLayout>{page}</OrganizationDeviceFarmLayout>;
+  return <OrganizationDeviceFarmLayout organization={page.props.organization}>{page}</OrganizationDeviceFarmLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;
 
-export default withOrganization(TeamDevicePage);
+export default TeamDevicePage;
 
 const TopWrapper = styled.div`
   display: flex;

@@ -13,11 +13,11 @@ import ProjectLayoutWithSidebar from 'src/components/layouts/ProjectLayoutWithSi
 import RemoteItem from 'src/components/remote/RemoteItem';
 import RemoteListController from 'src/components/remote/RemoteListController';
 import SlackRemoteChannelButton from 'src/enterprise/components/slack/SlackRemoteChannelButton';
-import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/hoc/withProject';
 import { flexRowSpaceBetweenStyle } from 'src/styles/box';
 import { NextPageWithLayout } from '../../../../../_app';
 
-const RemoteListPage: NextPageWithLayout<WithProjectProps> = ({ organization, project }) => {
+const RemoteListPage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
   const { data: remoteSlack } = useSWR<ProjectSlackRemoteBase>(`/organizations/${organization.organizationId}/projects/${project.projectId}/slack/remote`, swrAuthFetcher);
 
   return (
@@ -52,12 +52,16 @@ const RemoteListPage: NextPageWithLayout<WithProjectProps> = ({ organization, pr
 };
 
 RemoteListPage.getLayout = (page) => {
-  return <ProjectLayoutWithSidebar titleI18nKey="project:tabMenuRemoteTitle">{page}</ProjectLayoutWithSidebar>;
+  return (
+    <ProjectLayoutWithSidebar {...page.props} titleI18nKey="project:tabMenuRemoteTitle">
+      {page}
+    </ProjectLayoutWithSidebar>
+  );
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;
 
-export default withProject(RemoteListPage);
+export default RemoteListPage;
 
 const FlexBetweenBox = styled.div`
   ${flexRowSpaceBetweenStyle}

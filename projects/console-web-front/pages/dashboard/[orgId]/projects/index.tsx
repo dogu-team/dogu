@@ -5,14 +5,14 @@ import { NextPageWithLayout } from 'pages/_app';
 import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
 import OrganizationSideBar from 'src/components/layouts/OrganizationSideBar';
 import ProjectListController from 'src/components/projects/ProjectListController';
-import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
 import TableListView from '../../../../src/components/common/TableListView';
 import CreateProjectButton from '../../../../src/components/projects/CreateProjectButton';
 import RefreshButton from '../../../../src/components/buttons/RefreshButton';
 import { flexRowSpaceBetweenStyle } from '../../../../src/styles/box';
 import LiveChat from '../../../../src/components/external/livechat';
 
-const TeamProjectsPage: NextPageWithLayout<WithOrganizationProps> = ({ user, organization }) => {
+const TeamProjectsPage: NextPageWithLayout<OrganizationServerSideProps> = ({ user, organization }) => {
   return (
     <>
       <Head>
@@ -40,7 +40,7 @@ const TeamProjectsPage: NextPageWithLayout<WithOrganizationProps> = ({ user, org
 
 TeamProjectsPage.getLayout = (page) => {
   return (
-    <ConsoleLayout sidebar={<OrganizationSideBar />} titleI18nKey="organization:projectPageTitle">
+    <ConsoleLayout organization={page.props.organization} sidebar={<OrganizationSideBar />} titleI18nKey="organization:projectPageTitle">
       {page}
     </ConsoleLayout>
   );
@@ -48,7 +48,7 @@ TeamProjectsPage.getLayout = (page) => {
 
 export const getServerSideProps = getOrganizationPageServerSideProps;
 
-export default withOrganization(TeamProjectsPage);
+export default TeamProjectsPage;
 
 const FlexBox = styled.div`
   ${flexRowSpaceBetweenStyle}

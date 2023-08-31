@@ -10,11 +10,11 @@ import RemoteCreator from '../../../../../../src/components/remote/RemoteCreator
 import RemoteDestListController from '../../../../../../src/components/remote/RemoteDestListController';
 import RemoteDeviceJobStatitics from '../../../../../../src/components/remote/RemoteDeviceJobStatitics';
 import RemoteSidebar from '../../../../../../src/components/remote/RemoteSidebar';
-import withProject, { getProjectPageServerSideProps, ProjectServerSideProps, WithProjectProps } from '../../../../../../src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/hoc/withProject';
 import { flexRowSpaceBetweenStyle } from '../../../../../../src/styles/box';
 import { NextPageWithLayout } from '../../../../../_app';
 
-const RemoteItemPage: NextPageWithLayout<WithProjectProps & { remote: RemoteBase }> = ({ organization, project, remote }) => {
+const RemoteItemPage: NextPageWithLayout<ProjectServerSideProps & { remote: RemoteBase }> = ({ organization, project, remote }) => {
   const router = useRouter();
   const selectedJob = remote.remoteDeviceJobs?.find((rdj) => rdj.remoteDeviceJobId === (router.query.jobId as string | undefined)) ?? remote.remoteDeviceJobs?.[0];
 
@@ -49,7 +49,7 @@ const RemoteItemPage: NextPageWithLayout<WithProjectProps & { remote: RemoteBase
 
 RemoteItemPage.getLayout = (page) => {
   return (
-    <ProjectLayoutWithSidebar innerSidebar={<RemoteSidebar remote={page.props.remote} />} titleI18nKey="project:tabMenuRemoteTitle">
+    <ProjectLayoutWithSidebar {...page.props} innerSidebar={<RemoteSidebar remote={page.props.remote} />} titleI18nKey="project:tabMenuRemoteTitle">
       {page}
     </ProjectLayoutWithSidebar>
   );
@@ -78,7 +78,7 @@ export const getServerSideProps: GetServerSideProps<ProjectServerSideProps & { r
   }
 };
 
-export default withProject(RemoteItemPage);
+export default RemoteItemPage;
 
 const FlexBetweenBox = styled.div`
   ${flexRowSpaceBetweenStyle}

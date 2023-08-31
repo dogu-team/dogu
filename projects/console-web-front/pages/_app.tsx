@@ -16,7 +16,7 @@ import GlobalStyles from 'src/styles/GlobalStyles';
 import { theme, styledComponentsTheme } from 'src/styles/theme';
 
 export type NextPageWithLayout<P = {}> = NextPage<P> & {
-  getLayout?: (page: React.ReactElement) => React.ReactNode;
+  getLayout?: (page: React.ReactElement<P>) => React.ReactNode;
 };
 
 type AppPropsWithLayout = AppProps & {

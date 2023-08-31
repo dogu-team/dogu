@@ -21,7 +21,7 @@ import {
   updateOrganizationOwner,
   uploadOrganizationImage,
 } from 'src/api/organization';
-import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
 import { getErrorMessageFromAxios } from '../../../src/utils/error';
 import OrganizationOwnerSelector from '../../../src/components/organizations/OrganizationOwnerSelector';
@@ -31,12 +31,14 @@ import RegenerateTokenButton from '../../../src/components/common/RegenerateToke
 import AccessTokenButton from '../../../src/components/common/AccessTokenButton';
 import SlackButton from '../../../src/enterprise/components/integration/SlackConnectButton';
 import SettingTitleDivider from '../../../src/components/common/SettingTitleDivider';
+import useOrganizationContext from '../../../src/hooks/useOrganizationContext';
 
-const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ organization, mutateOrganization }) => {
+const OrganizationSettingPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {
   const [editingOrganization, setEditingOrganization] = useState<OrganizationBase>(organization);
   const [newOwner, setNewOwner] = useState<UserBase>();
   const [loading, setLoading] = useState(false);
   const [isImageUploading, setIsImageUploading] = useState(false);
+  const { mutate } = useOrganizationContext();
   const [progress, setProgress] = useState<number | null>(null);
   const { t } = useTranslation();
   const router = useRouter();
@@ -73,7 +75,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
 
         setProgress((e.loaded / e.total) * 100);
       });
-      mutateOrganization(data, false);
+      mutate?.(data, false);
       sendSuccessNotification('Image uploaded successfully');
     } catch (e) {
       if (e instanceof AxiosError) {
@@ -95,7 +97,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
         name: editingOrganization?.name ?? '',
       });
       sendSuccessNotification('Updated!');
-      mutateOrganization((prev) => {
+      mutate?.((prev) => {
         if (prev) {
           return {
             ...prev,
@@ -263,7 +265,7 @@ const OrganizationSettingPage: NextPageWithLayout<WithOrganizationProps> = ({ or
 
 OrganizationSettingPage.getLayout = (page) => {
   return (
-    <ConsoleLayout titleI18nKey="organization:organizationSettingPageTitle" sidebar={<OrganizationSideBar />}>
+    <ConsoleLayout organization={page.props.organization} titleI18nKey="organization:organizationSettingPageTitle" sidebar={<OrganizationSideBar />}>
       {page}
     </ConsoleLayout>
   );
@@ -271,7 +273,7 @@ OrganizationSettingPage.getLayout = (page) => {
 
 export const getServerSideProps = getOrganizationPageServerSideProps;
 
-export default withOrganization(OrganizationSettingPage);
+export default OrganizationSettingPage;
 
 const Box = styled.div`
   max-width: 500px;

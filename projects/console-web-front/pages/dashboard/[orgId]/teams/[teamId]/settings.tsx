@@ -7,12 +7,12 @@ import { TeamBase } from '@dogu-private/console';
 import Head from 'next/head';
 
 import { NextPageWithLayout } from 'pages/_app';
-import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
 import TeamSettings from 'src/components/teams/TeamSettings';
 import { swrAuthFetcher } from 'src/api';
 import TeamPageLayout from 'src/components/layouts/TeamPageLayout';
 
-const TeamMemberPage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) => {
+const TeamMemberPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {
   const router = useRouter();
   const orgId = router.query.orgId as OrganizationId;
   const teamId = Number(router.query.teamId) as TeamId;
@@ -53,9 +53,9 @@ const TeamMemberPage: NextPageWithLayout<WithOrganizationProps> = ({ organizatio
 };
 
 TeamMemberPage.getLayout = (page) => {
-  return <TeamPageLayout>{page}</TeamPageLayout>;
+  return <TeamPageLayout organization={page.props.organization}>{page}</TeamPageLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;
 
-export default withOrganization(TeamMemberPage);
+export default TeamMemberPage;

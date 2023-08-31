@@ -14,7 +14,7 @@ import useModal from 'src/hooks/useModal';
 import TableListView from 'src/components/common/TableListView';
 import HostListController from 'src/components/hosts/HostListController';
 import RefreshButton from 'src/components/buttons/RefreshButton';
-import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
 import HostFilter from 'src/components/hosts/HostFilter';
 import OrganizationDeviceFarmLayout from '../../../../src/components/layouts/OrganizationDeviceFarmLayout';
 import { swrAuthFetcher } from '../../../../src/api';
@@ -23,7 +23,7 @@ export const DoguAgentLatestContext = createContext<{ latestInfo: DownloadablePa
   latestInfo: [],
 });
 
-const HostManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) => {
+const HostManagementPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {
   const { t } = useTranslation();
   const [isAddModalOpen, openAddModal, closeAddModal] = useModal();
   const { data } = useSWR<DownloadablePackageResult[]>(`/downloads/dogu-agent/latest`, swrAuthFetcher, { revalidateOnFocus: false });
@@ -62,12 +62,12 @@ const HostManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ organiz
 };
 
 HostManagementPage.getLayout = (page) => {
-  return <OrganizationDeviceFarmLayout>{page}</OrganizationDeviceFarmLayout>;
+  return <OrganizationDeviceFarmLayout organization={page.props.organization}>{page}</OrganizationDeviceFarmLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;
 
-export default withOrganization(HostManagementPage);
+export default HostManagementPage;
 
 const ButtonBox = styled.div`
   display: flex;

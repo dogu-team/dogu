@@ -15,7 +15,7 @@ import { shallow } from 'zustand/shallow';
 import { NextPageWithLayout } from 'pages/_app';
 import { deleteProject, getProjectAccessToken, regenerateProjectAccessToken, updateProject } from 'src/api/project';
 import { getErrorMessageFromAxios } from 'src/utils/error';
-import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/hoc/withProject';
 import { sendErrorNotification, sendSuccessNotification } from '../../../../../src/utils/antd';
 import DangerZone from '../../../../../src/components/common/boxes/DangerZone';
 import TokenCopyInput from '../../../../../src/components/common/TokenCopyInput';
@@ -29,12 +29,14 @@ import useRefresh from '../../../../../src/hooks/useRefresh';
 import SettingTitleDivider from '../../../../../src/components/common/SettingTitleDivider';
 import BitbucketButton from '../../../../../src/components/integration/BitbucketButton';
 import UpdateTemplateButton from '../../../../../src/components/projects/UpdateTemplateButton';
+import useProjectContext from '../../../../../src/hooks/useProjectContext';
 
-const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, organization, mutateProject }) => {
+const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ project, organization }) => {
   const [editingProject, setEditingProject] = useState<ProjectBase>(project);
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation('project');
   const router = useRouter();
+  const { mutate } = useProjectContext();
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
 
   useEffect(() => {
@@ -43,7 +45,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
     }
   }, [project]);
 
-  useRefresh(['onProjectScmUpdated'], () => mutateProject());
+  useRefresh(['onProjectScmUpdated'], () => mutate?.());
 
   const handleSave = async () => {
     if (!editingProject) {
@@ -53,7 +55,7 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
     setLoading(true);
     try {
       const data = await updateProject(organization.organizationId, project.projectId, { name: editingProject?.name, description: editingProject?.description });
-      mutateProject(data, false);
+      mutate?.(data, false);
       sendSuccessNotification(t('project:projectUpdateSuccessMsg'));
       fireEvent('onProjectUpdated');
     } catch (e) {
@@ -257,12 +259,16 @@ const ProjectSettingPage: NextPageWithLayout<WithProjectProps> = ({ project, org
 };
 
 ProjectSettingPage.getLayout = (page) => {
-  return <ProjectLayoutWithSidebar titleI18nKey="project:tabMenuSettingTitle">{page}</ProjectLayoutWithSidebar>;
+  return (
+    <ProjectLayoutWithSidebar {...page.props} titleI18nKey="project:tabMenuSettingTitle">
+      {page}
+    </ProjectLayoutWithSidebar>
+  );
 };
 
 export const getServerSideProps: GetServerSideProps = getProjectPageServerSideProps;
 
-export default withProject(ProjectSettingPage);
+export default ProjectSettingPage;
 
 const Box = styled.div`
   max-width: 500px;

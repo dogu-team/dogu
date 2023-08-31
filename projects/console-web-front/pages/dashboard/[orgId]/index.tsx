@@ -10,7 +10,8 @@ const OrganizationPage: NextPageWithLayout = () => {
 };
 
 OrganizationPage.getLayout = (page) => {
-  return <ConsoleLayout sidebar={<OrganizationSideBar />}>{page}</ConsoleLayout>;
+  // return <ConsoleLayout sidebar={<OrganizationSideBar />}>{page}</ConsoleLayout>;
+  return page;
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

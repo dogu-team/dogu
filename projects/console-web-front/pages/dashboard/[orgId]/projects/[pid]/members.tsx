@@ -11,10 +11,10 @@ import TableListView from 'src/components/common/TableListView';
 import ProjectMemberListController from 'src/components/projects/ProjectMemberListController';
 import ProjectMemberFilter from 'src/components/projects/ProjectMemberFilter';
 import AddTeamButton from 'src/components/projects/AddTeamButton';
-import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/hoc/withProject';
 import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 
-const ProjectMemberPage: NextPageWithLayout<WithProjectProps> = ({ project }) => {
+const ProjectMemberPage: NextPageWithLayout<ProjectServerSideProps> = ({ project }) => {
   const router = useRouter();
   const organizationId = router.query.orgId as OrganizationId;
   const projectId = router.query.pid as ProjectId;
@@ -42,12 +42,16 @@ const ProjectMemberPage: NextPageWithLayout<WithProjectProps> = ({ project }) =>
 };
 
 ProjectMemberPage.getLayout = (page) => {
-  return <ProjectLayoutWithSidebar titleI18nKey="project:tabMenuMemberTitle">{page}</ProjectLayoutWithSidebar>;
+  return (
+    <ProjectLayoutWithSidebar {...page.props} titleI18nKey="project:tabMenuMemberTitle">
+      {page}
+    </ProjectLayoutWithSidebar>
+  );
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;
 
-export default withProject(ProjectMemberPage);
+export default ProjectMemberPage;
 
 const FlexBox = styled.div`
   display: flex;

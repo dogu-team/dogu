@@ -3,15 +3,12 @@ import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 
 import MenuLinkTabs, { MenuLinkTabProps } from '../MenuLinkTabs';
-import ConsoleLayout from './ConsoleLayout';
+import ConsoleLayout, { ConsoleLayoutProps } from './ConsoleLayout';
 import OrganizationSideBar from './OrganizationSideBar';
 
-interface Props {
-  titleI18nKey: string;
-  children: React.ReactNode;
-}
+interface Props extends Pick<ConsoleLayoutProps, 'organization' | 'titleI18nKey' | 'children'> {}
 
-const OrganizationMemberLayout = ({ titleI18nKey, children }: Props) => {
+const OrganizationMemberLayout = (props: Props) => {
   const { t } = useTranslation();
   const router = useRouter();
   const orgId = router.query.orgId;
@@ -32,11 +29,11 @@ const OrganizationMemberLayout = ({ titleI18nKey, children }: Props) => {
   ];
 
   return (
-    <ConsoleLayout titleI18nKey={titleI18nKey} sidebar={<OrganizationSideBar />}>
+    <ConsoleLayout titleI18nKey={props.titleI18nKey} organization={props.organization} sidebar={<OrganizationSideBar />}>
       <div style={{ marginBottom: '1rem' }}>
         <MenuLinkTabs tabs={tabs} />
       </div>
-      {children}
+      {props.children}
     </ConsoleLayout>
   );
 };

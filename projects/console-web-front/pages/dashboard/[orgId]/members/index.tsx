@@ -8,10 +8,10 @@ import TableListView from 'src/components/common/TableListView';
 import OrganizationMemberListController from 'src/components/users/OrganizationMemberListController';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import OrganizationMemberFilter from 'src/components/users/OrganizationMemberFilter';
-import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
 import OrganizationMemberLayout from '../../../../src/components/layouts/OrganizationMemberLayout';
 
-const ManageUserPage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) => {
+const ManageUserPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {
   return (
     <>
       <Head>
@@ -36,12 +36,16 @@ const ManageUserPage: NextPageWithLayout<WithOrganizationProps> = ({ organizatio
 };
 
 ManageUserPage.getLayout = (page) => {
-  return <OrganizationMemberLayout titleI18nKey="organization:memberPageTitle">{page}</OrganizationMemberLayout>;
+  return (
+    <OrganizationMemberLayout organization={page.props.organization} titleI18nKey="organization:memberPageTitle">
+      {page}
+    </OrganizationMemberLayout>
+  );
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;
 
-export default withOrganization(ManageUserPage);
+export default ManageUserPage;
 
 const TopLeftWrapper = styled.div`
   display: flex;

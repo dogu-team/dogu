@@ -7,13 +7,13 @@ import Head from 'next/head';
 import { NextPageWithLayout } from 'pages/_app';
 import TableListView from 'src/components/common/TableListView';
 import MemberListController from 'src/components/teams/MemberListController';
-import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
 import AddMemberButton from 'src/components/teams/AddMemberButton';
 import TeamMemberFilter from 'src/components/teams/TeamMemberFilter';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import TeamPageLayout from 'src/components/layouts/TeamPageLayout';
 
-const TeamMemberPage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) => {
+const TeamMemberPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {
   const { t } = useTranslation();
   const router = useRouter();
   const teamId = Number(router.query.teamId) as TeamId;
@@ -42,12 +42,12 @@ const TeamMemberPage: NextPageWithLayout<WithOrganizationProps> = ({ organizatio
 };
 
 TeamMemberPage.getLayout = (page) => {
-  return <TeamPageLayout>{page}</TeamPageLayout>;
+  return <TeamPageLayout organization={page.props.organization}>{page}</TeamPageLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;
 
-export default withOrganization(TeamMemberPage);
+export default TeamMemberPage;
 
 const TopBox = styled.div`
   display: flex;

@@ -7,12 +7,12 @@ import { NextPageWithLayout } from 'pages/_app';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import TableListView from 'src/components/common/TableListView';
 import DeviceListController from 'src/components/projects/DeviceListController';
-import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/hoc/withProject';
 import { flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
 import Head from 'next/head';
 import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 
-const ProjectDevicePage: NextPageWithLayout<WithProjectProps> = ({ project, organization }) => {
+const ProjectDevicePage: NextPageWithLayout<ProjectServerSideProps> = ({ project, organization }) => {
   const { t } = useTranslation();
 
   return (
@@ -38,12 +38,16 @@ const ProjectDevicePage: NextPageWithLayout<WithProjectProps> = ({ project, orga
 };
 
 ProjectDevicePage.getLayout = (page) => {
-  return <ProjectLayoutWithSidebar titleI18nKey="project:tabMenuDeviceTitle">{page}</ProjectLayoutWithSidebar>;
+  return (
+    <ProjectLayoutWithSidebar {...page.props} titleI18nKey="project:tabMenuDeviceTitle">
+      {page}
+    </ProjectLayoutWithSidebar>
+  );
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;
 
-export default withProject(ProjectDevicePage);
+export default ProjectDevicePage;
 
 const FlexBetweenBox = styled.div`
   ${flexRowSpaceBetweenStyle}

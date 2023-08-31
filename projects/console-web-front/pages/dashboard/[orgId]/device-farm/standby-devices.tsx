@@ -6,10 +6,10 @@ import RefreshButton from 'src/components/buttons/RefreshButton';
 import TableListView from 'src/components/common/TableListView';
 import AddableDeviceFilter from 'src/components/device/AddableDeviceFilter';
 import AddableDeviceListController from 'src/components/device/AddableDeviceListController';
-import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
 import OrganizationDeviceFarmLayout from '../../../../src/components/layouts/OrganizationDeviceFarmLayout';
 
-const AddDevicesPage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) => {
+const AddDevicesPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {
   return (
     <>
       <Head>
@@ -29,12 +29,12 @@ const AddDevicesPage: NextPageWithLayout<WithOrganizationProps> = ({ organizatio
 };
 
 AddDevicesPage.getLayout = (page) => {
-  return <OrganizationDeviceFarmLayout>{page}</OrganizationDeviceFarmLayout>;
+  return <OrganizationDeviceFarmLayout organization={page.props.organization}>{page}</OrganizationDeviceFarmLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;
 
-export default withOrganization(AddDevicesPage);
+export default AddDevicesPage;
 
 const TopWrapper = styled.div`
   display: flex;

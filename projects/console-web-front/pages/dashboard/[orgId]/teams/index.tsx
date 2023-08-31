@@ -8,10 +8,10 @@ import OrganizationSideBar from 'src/components/layouts/OrganizationSideBar';
 import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
 import TeamListController from 'src/components/teams/TeamListController';
 import CreateTeamButton from 'src/components/teams/CreateTeamButton';
-import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
 import TeamFilter from 'src/components/teams/TeamFilter';
 
-const TeamPage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) => {
+const TeamPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {
   return (
     <>
       <Head>
@@ -35,7 +35,7 @@ const TeamPage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) =
 
 TeamPage.getLayout = (page) => {
   return (
-    <ConsoleLayout sidebar={<OrganizationSideBar />} titleI18nKey="organization:teamPageTitle">
+    <ConsoleLayout organization={page.props.organization} sidebar={<OrganizationSideBar />} titleI18nKey="organization:teamPageTitle">
       {page}
     </ConsoleLayout>
   );
@@ -43,7 +43,7 @@ TeamPage.getLayout = (page) => {
 
 export const getServerSideProps = getOrganizationPageServerSideProps;
 
-export default withOrganization(TeamPage);
+export default TeamPage;
 
 const TopBox = styled.div`
   display: flex;

@@ -1,5 +1,5 @@
 import { ExclamationCircleFilled, LoadingOutlined } from '@ant-design/icons';
-import { RoutinePipelineBase } from '@dogu-private/console';
+import { OrganizationBase, ProjectBase, RoutinePipelineBase } from '@dogu-private/console';
 import { PIPELINE_STATUS } from '@dogu-private/types';
 import { Divider } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
@@ -26,10 +26,11 @@ import ProjectLayoutWithSidebar from './ProjectLayoutWithSidebar';
 
 interface Props {
   children: React.ReactNode;
-  isGitIntegrated: boolean;
+  organization: OrganizationBase;
+  project: ProjectBase;
 }
 
-const PipelineJobLayout = ({ children, isGitIntegrated }: Props) => {
+const PipelineJobLayout = ({ children, organization, project }: Props) => {
   const router = useRouter();
   const orgId = router.query.orgId;
   const projectId = router.query.pid;
@@ -80,7 +81,7 @@ const PipelineJobLayout = ({ children, isGitIntegrated }: Props) => {
   }
 
   return (
-    <ProjectLayoutWithSidebar innerSidebar={<JobListSideBar pipeline={pipeline} />} titleI18nKey="project:tabMenuRoutineTitle">
+    <ProjectLayoutWithSidebar organization={organization} project={project} innerSidebar={<JobListSideBar pipeline={pipeline} />} titleI18nKey="project:tabMenuRoutineTitle">
       <PipelineContainer>
         <PipelineHeadContainer>
           <FlexRowBase>

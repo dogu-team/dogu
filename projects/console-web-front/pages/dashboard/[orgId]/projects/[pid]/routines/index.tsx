@@ -8,7 +8,7 @@ import { GetServerSideProps } from 'next';
 import Image from 'next/image';
 
 import { NextPageWithLayout } from 'pages/_app';
-import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/hoc/withProject';
 import PipelineListController from 'src/components/pipelines/PipelineListController';
 import TableListView from 'src/components/common/TableListView';
 import RefreshButton from 'src/components/buttons/RefreshButton';
@@ -22,7 +22,7 @@ import ProjectLayoutWithSidebar from 'src/components/layouts/ProjectLayoutWithSi
 import ExternalGuideLink from 'src/components/common/ExternalGuideLink';
 import SlackRoutineChannelButton from 'src/enterprise/components/slack/SlackRoutineChannelButton';
 
-const ProjectRoutinePage: NextPageWithLayout<WithProjectProps> = ({ organization, project }) => {
+const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
   const router = useRouter();
   const routineId = router.query.routine as RoutineId | undefined;
   const { data: routine } = useSWR<RoutineBase>(routineId && `/organizations/${organization.organizationId}/projects/${project.projectId}/routines/${routineId}`, swrAuthFetcher);
@@ -82,7 +82,7 @@ const ProjectRoutinePage: NextPageWithLayout<WithProjectProps> = ({ organization
 
 ProjectRoutinePage.getLayout = (page) => {
   return (
-    <ProjectLayoutWithSidebar innerSidebar={<RoutineSideBar isGitIntegrated={page.props.isGitIntegrated} />} titleI18nKey="project:tabMenuRoutineTitle">
+    <ProjectLayoutWithSidebar {...page.props} innerSidebar={<RoutineSideBar isGitIntegrated={page.props.isGitIntegrated} />} titleI18nKey="project:tabMenuRoutineTitle">
       {page}
     </ProjectLayoutWithSidebar>
   );
@@ -90,7 +90,7 @@ ProjectRoutinePage.getLayout = (page) => {
 
 export const getServerSideProps: GetServerSideProps = getProjectPageServerSideProps;
 
-export default withProject(ProjectRoutinePage);
+export default ProjectRoutinePage;
 
 const Box = styled.div``;
 

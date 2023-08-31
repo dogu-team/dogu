@@ -1,15 +1,15 @@
 import { RoutinePipelineId } from '@dogu-private/types';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 
 import { NextPageWithLayout } from 'pages/_app';
-import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/hoc/withProject';
 import ErrorBox from 'src/components/common/boxes/ErrorBox';
 import PipelineJobLayout from 'src/components/layouts/PipelineJobLayout';
 import JobFlowController from 'src/components/pipelines/JobFlowController';
-import Head from 'next/head';
 
-const PipelineDetailPage: NextPageWithLayout<WithProjectProps> = ({ organization, project }) => {
+const PipelineDetailPage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
   const router = useRouter();
   const pipelineId = router.query.pipelineId;
 
@@ -34,9 +34,9 @@ const PipelineDetailPage: NextPageWithLayout<WithProjectProps> = ({ organization
 };
 
 PipelineDetailPage.getLayout = (page) => {
-  return <PipelineJobLayout isGitIntegrated={page.props.isGitIntegrated}>{page}</PipelineJobLayout>;
+  return <PipelineJobLayout {...page.props}>{page}</PipelineJobLayout>;
 };
 
 export const getServerSideProps: GetServerSideProps = getProjectPageServerSideProps;
 
-export default withProject(PipelineDetailPage);
+export default PipelineDetailPage;

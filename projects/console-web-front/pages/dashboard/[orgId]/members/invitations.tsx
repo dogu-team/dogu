@@ -6,10 +6,10 @@ import TableListView from '../../../../src/components/common/TableListView';
 import OrganizationMemberLayout from '../../../../src/components/layouts/OrganizationMemberLayout';
 import InviteUserButton from '../../../../src/components/users/InviteUserButton';
 import OrganizationInvitationMemberListController from '../../../../src/components/users/OrganizationInvitationMemberListController';
-import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from '../../../../src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from '../../../../src/hoc/withOrganization';
 import { NextPageWithLayout } from '../../../_app';
 
-const InvitationUserPage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) => {
+const InvitationUserPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {
   return (
     <>
       <Head>
@@ -34,12 +34,16 @@ const InvitationUserPage: NextPageWithLayout<WithOrganizationProps> = ({ organiz
 };
 
 InvitationUserPage.getLayout = (page) => {
-  return <OrganizationMemberLayout titleI18nKey="organization:memberPageTitle">{page}</OrganizationMemberLayout>;
+  return (
+    <OrganizationMemberLayout organization={page.props.organization} titleI18nKey="organization:memberPageTitle">
+      {page}
+    </OrganizationMemberLayout>
+  );
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;
 
-export default withOrganization(InvitationUserPage);
+export default InvitationUserPage;
 
 const TopLeftWrapper = styled.div`
   display: flex;

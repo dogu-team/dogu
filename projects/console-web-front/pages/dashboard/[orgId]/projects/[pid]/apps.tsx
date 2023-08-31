@@ -9,11 +9,11 @@ import TableListView from '../../../../../src/components/common/TableListView';
 import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 import ProjectApplicationListController from '../../../../../src/components/project-application/ProjectApplicationListController';
 import ProjectApplicationUploadButton from '../../../../../src/components/project-application/ProjectApplicationUploadButton';
-import withProject, { getProjectPageServerSideProps, WithProjectProps } from '../../../../../src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from '../../../../../src/hoc/withProject';
 import { flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
 import { NextPageWithLayout } from '../../../../_app';
 
-const ProjectAppPage: NextPageWithLayout<WithProjectProps> = ({ project, organization }) => {
+const ProjectAppPage: NextPageWithLayout<ProjectServerSideProps> = ({ project, organization }) => {
   const router = useRouter();
 
   return (
@@ -42,12 +42,16 @@ const ProjectAppPage: NextPageWithLayout<WithProjectProps> = ({ project, organiz
 };
 
 ProjectAppPage.getLayout = (page) => {
-  return <ProjectLayoutWithSidebar titleI18nKey="project:tabMenuAppTitle">{page}</ProjectLayoutWithSidebar>;
+  return (
+    <ProjectLayoutWithSidebar {...page.props} titleI18nKey="project:tabMenuAppTitle">
+      {page}
+    </ProjectLayoutWithSidebar>
+  );
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;
 
-export default withProject(ProjectAppPage);
+export default ProjectAppPage;
 
 const Header = styled.div`
   ${flexRowSpaceBetweenStyle}

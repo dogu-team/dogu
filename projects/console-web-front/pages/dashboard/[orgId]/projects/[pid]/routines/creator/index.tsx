@@ -4,13 +4,13 @@ import { GetServerSideProps } from 'next';
 import { useEffect } from 'react';
 
 import { NextPageWithLayout } from 'pages/_app';
-import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/hoc/withProject';
 import RoutineCreator from 'src/components/routine/editor/RoutineCreator';
 import RoutineGitIntegrationAlert from '../../../../../../../src/components/projects/RoutineGitIntegrationAlert';
 import useGitIntegrationStore from '../../../../../../../src/stores/git-integration';
 import ProjectLayoutWithSidebar from '../../../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 
-const ProjectRoutineCreatorPage: NextPageWithLayout<WithProjectProps> = ({ organization, project, isGitIntegrated }) => {
+const ProjectRoutineCreatorPage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project, isGitIntegrated }) => {
   const store = useGitIntegrationStore();
 
   useEffect(() => {
@@ -35,12 +35,16 @@ const ProjectRoutineCreatorPage: NextPageWithLayout<WithProjectProps> = ({ organ
 };
 
 ProjectRoutineCreatorPage.getLayout = (page) => {
-  return <ProjectLayoutWithSidebar titleI18nKey="project:tabMenuRoutineTitle">{page}</ProjectLayoutWithSidebar>;
+  return (
+    <ProjectLayoutWithSidebar {...page.props} titleI18nKey="project:tabMenuRoutineTitle">
+      {page}
+    </ProjectLayoutWithSidebar>
+  );
 };
 
 export const getServerSideProps: GetServerSideProps = getProjectPageServerSideProps;
 
-export default withProject(ProjectRoutineCreatorPage);
+export default ProjectRoutineCreatorPage;
 
 const Box = styled.div`
   display: flex;

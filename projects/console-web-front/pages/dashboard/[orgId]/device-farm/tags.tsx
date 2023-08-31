@@ -7,13 +7,13 @@ import Head from 'next/head';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import useModal from 'src/hooks/useModal';
 import CreateTagModal from 'src/components/device/CreateTagModal';
-import withOrganization, { getOrganizationPageServerSideProps, WithOrganizationProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
 import TagFilter from 'src/components/device/TagFilter';
 import TableListView from '../../../../src/components/common/TableListView';
 import DeviceTagListController from '../../../../src/components/device/DeviceTagListController';
 import OrganizationDeviceFarmLayout from '../../../../src/components/layouts/OrganizationDeviceFarmLayout';
 
-const DeviceTagsManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ organization }) => {
+const DeviceTagsManagementPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {
   const [isOpen, openModal, closeModal] = useModal();
   const { t } = useTranslation();
 
@@ -43,12 +43,12 @@ const DeviceTagsManagementPage: NextPageWithLayout<WithOrganizationProps> = ({ o
 };
 
 DeviceTagsManagementPage.getLayout = (page) => {
-  return <OrganizationDeviceFarmLayout>{page}</OrganizationDeviceFarmLayout>;
+  return <OrganizationDeviceFarmLayout organization={page.props.organization}>{page}</OrganizationDeviceFarmLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;
 
-export default withOrganization(DeviceTagsManagementPage);
+export default DeviceTagsManagementPage;
 
 const FlexBox = styled.div`
   display: flex;

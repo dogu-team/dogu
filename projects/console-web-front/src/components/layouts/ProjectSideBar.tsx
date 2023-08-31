@@ -23,15 +23,15 @@ import { flexRowCenteredStyle } from '../../styles/box';
 import CollpaseSidebarMenu from './CollapseSidebarMenu';
 import ProjectSwitch from '../projects/ProjectSwitch';
 import useRefresh from '../../hooks/useRefresh';
+import useProjectContext from '../../hooks/useProjectContext';
 
 type MenuItem = Required<MenuProps>['items'];
 
 const ProjectSideBar = () => {
   const { me } = useAuthStore();
   const router = useRouter();
-  const orgId = router.query.orgId;
-  const projectId = router.query.pid;
-  const { data, isLoading, mutate } = useSWR<ProjectBase>(me && !!orgId && !!projectId && `/organizations/${orgId}/projects/${projectId}`, swrAuthFetcher);
+  const { project } = useProjectContext();
+  const { data, isLoading, mutate } = useSWR<ProjectBase>(me && !!project && `/organizations/${project.organizationId}/projects/${project.projectId}`, swrAuthFetcher);
   const { t } = useTranslation();
   const collapsed = useCollapsibleSidebar((state) => state.collapsed);
 
@@ -52,8 +52,8 @@ const ProjectSideBar = () => {
       key: 'home',
       icon: collapsed ? (
         <ProjectSwitch
-          organizationId={orgId as OrganizationId}
-          onChange={(project) => router.push(`/dashboard/${orgId}/projects/${project.projectId}/remotes`)}
+          organizationId={project?.organizationId as OrganizationId}
+          onChange={(project) => router.push(`/dashboard/${project?.organizationId}/projects/${project.projectId}/remotes`)}
           selectedProject={data}
           hideIcon
         >
@@ -67,11 +67,17 @@ const ProjectSideBar = () => {
         ? undefined
         : data && (
             <ProjectSwitch
-              organizationId={orgId as OrganizationId}
-              onChange={(project) => router.push(`/dashboard/${orgId}/projects/${project.projectId}/remotes`)}
+              organizationId={project?.organizationId as OrganizationId}
+              onChange={(project) => router.push(`/dashboard/${project?.organizationId}/projects/${project.projectId}/remotes`)}
               selectedProject={data}
             >
-              <SideBarTitle href={`/dashboard/${orgId}`} subTitle={t('organization:sidebarSubTitle')} profileImageUrl={null} name={data.name} accessId="sb-title" />
+              <SideBarTitle
+                href={`/dashboard/${project?.organizationId}`}
+                subTitle={t('organization:sidebarSubTitle')}
+                profileImageUrl={null}
+                name={data.name}
+                accessId="sb-title"
+              />
             </ProjectSwitch>
           ),
     },
@@ -85,15 +91,18 @@ const ProjectSideBar = () => {
             t('project:tabMenuRemoteTitle')
           ) : (
             <SideBarMenu
-              path={`/dashboard/${orgId}/projects/${projectId}/remotes`}
+              path={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/remotes`}
               text={t('project:tabMenuRemoteTitle')}
               accessId="project-side-bar-remote"
               icon={<RiRemoteControlLine style={{ fontSize: '1.2rem' }} />}
-              startWith={`/dashboard/${orgId}/projects/${projectId}/remotes`}
+              startWith={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/remotes`}
             />
           ),
           icon: collapsed ? (
-            <StyledIconLink selected={router.asPath.startsWith(`/dashboard/${orgId}/projects/${projectId}/remotes`)} href={`/dashboard/${orgId}/projects/${projectId}/remotes`}>
+            <StyledIconLink
+              selected={router.asPath.startsWith(`/dashboard/${project?.organizationId}/projects/${project?.projectId}/remotes`)}
+              href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/remotes`}
+            >
               <RiRemoteControlLine />
             </StyledIconLink>
           ) : undefined,
@@ -110,15 +119,18 @@ const ProjectSideBar = () => {
             t('project:tabMenuRoutineTitle')
           ) : (
             <SideBarMenu
-              path={`/dashboard/${orgId}/projects/${projectId}/routines`}
+              path={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/routines`}
               text={t('project:tabMenuRoutineTitle')}
               accessId="project-side-bar-routine"
               icon={<GoWorkflow style={{ fontSize: '1.2rem' }} />}
-              startWith={`/dashboard/${orgId}/projects/${projectId}/routines`}
+              startWith={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/routines`}
             />
           ),
           icon: collapsed ? (
-            <StyledIconLink selected={router.asPath.startsWith(`/dashboard/${orgId}/projects/${projectId}/routines`)} href={`/dashboard/${orgId}/projects/${projectId}/routines`}>
+            <StyledIconLink
+              selected={router.asPath.startsWith(`/dashboard/${project?.organizationId}/projects/${project?.projectId}/routines`)}
+              href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/routines`}
+            >
               <GoWorkflow />
             </StyledIconLink>
           ) : undefined,
@@ -135,7 +147,7 @@ const ProjectSideBar = () => {
             t('project:tabMenuStudioTitle')
           ) : (
             <SideBarMenu
-              path={`/dashboard/${orgId}/projects/${projectId}/studio`}
+              path={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/studio`}
               text={t('project:tabMenuStudioTitle')}
               accessId="project-side-bar-studio"
               icon={<PiMonitorPlayBold style={{ fontSize: '1.2rem' }} />}
@@ -144,8 +156,8 @@ const ProjectSideBar = () => {
           ),
           icon: collapsed ? (
             <StyledIconLink
-              selected={router.asPath.startsWith(`/dashboard/${orgId}/projects/${projectId}/studio`)}
-              href={`/dashboard/${orgId}/projects/${projectId}/studio`}
+              selected={router.asPath.startsWith(`/dashboard/${project?.organizationId}/projects/${project?.projectId}/studio`)}
+              href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/studio`}
               target="_blank"
             >
               <PiMonitorPlayBold />
@@ -158,14 +170,17 @@ const ProjectSideBar = () => {
             t('project:tabMenuDeviceTitle')
           ) : (
             <SideBarMenu
-              path={`/dashboard/${orgId}/projects/${projectId}/devices`}
+              path={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/devices`}
               text={t('project:tabMenuDeviceTitle')}
               accessId="project-side-bar-devices"
               icon={<MobileOutlined style={{ fontSize: '1.2rem' }} />}
             />
           ),
           icon: collapsed ? (
-            <StyledIconLink selected={router.asPath === `/dashboard/${orgId}/projects/${projectId}/devices`} href={`/dashboard/${orgId}/projects/${projectId}/devices`}>
+            <StyledIconLink
+              selected={router.asPath === `/dashboard/${project?.organizationId}/projects/${project?.projectId}/devices`}
+              href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/devices`}
+            >
               <MobileOutlined />
             </StyledIconLink>
           ) : undefined,
@@ -182,14 +197,17 @@ const ProjectSideBar = () => {
             t('project:tabMenuAppTitle')
           ) : (
             <SideBarMenu
-              path={`/dashboard/${orgId}/projects/${projectId}/apps`}
+              path={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/apps`}
               text={t('project:tabMenuAppTitle')}
               accessId="project-side-bar-apps"
               icon={<AppstoreOutlined style={{ fontSize: '1.2rem' }} />}
             />
           ),
           icon: collapsed ? (
-            <StyledIconLink selected={router.asPath === `/dashboard/${orgId}/projects/${projectId}/apps`} href={`/dashboard/${orgId}/projects/${projectId}/apps`}>
+            <StyledIconLink
+              selected={router.asPath === `/dashboard/${project?.organizationId}/projects/${project?.projectId}/apps`}
+              href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/apps`}
+            >
               <AppstoreOutlined />
             </StyledIconLink>
           ) : undefined,
@@ -200,14 +218,17 @@ const ProjectSideBar = () => {
             t('project:tabMenuMemberTitle')
           ) : (
             <SideBarMenu
-              path={`/dashboard/${orgId}/projects/${projectId}/members`}
+              path={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/members`}
               text={t('project:tabMenuMemberTitle')}
               accessId="project-side-bar-members"
               icon={<TeamOutlined style={{ fontSize: '1.2rem' }} />}
             />
           ),
           icon: collapsed ? (
-            <StyledIconLink selected={router.asPath === `/dashboard/${orgId}/projects/${projectId}/members`} href={`/dashboard/${orgId}/projects/${projectId}/members`}>
+            <StyledIconLink
+              selected={router.asPath === `/dashboard/${project?.organizationId}/projects/${project?.projectId}/members`}
+              href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/members`}
+            >
               <TeamOutlined />
             </StyledIconLink>
           ) : undefined,
@@ -218,14 +239,17 @@ const ProjectSideBar = () => {
             t('project:tabMenuSettingTitle')
           ) : (
             <SideBarMenu
-              path={`/dashboard/${orgId}/projects/${projectId}/settings`}
+              path={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/settings`}
               text={t('project:tabMenuSettingTitle')}
               accessId="project-side-bar-settings"
               icon={<SettingOutlined style={{ fontSize: '1.2rem' }} />}
             />
           ),
           icon: collapsed ? (
-            <StyledIconLink selected={router.asPath === `/dashboard/${orgId}/projects/${projectId}/settings`} href={`/dashboard/${orgId}/projects/${projectId}/settings`}>
+            <StyledIconLink
+              selected={router.asPath === `/dashboard/${project?.organizationId}/projects/${project?.projectId}/settings`}
+              href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/settings`}
+            >
               <SettingOutlined />
             </StyledIconLink>
           ) : undefined,
@@ -238,7 +262,7 @@ const ProjectSideBar = () => {
     {
       key: 'back',
       icon: collapsed ? (
-        <StyledIconLink selected={false} href={`/dashboard/${orgId}/projects`}>
+        <StyledIconLink selected={false} href={`/dashboard/${project?.organizationId}/projects`}>
           <ArrowLeftOutlined />
         </StyledIconLink>
       ) : undefined,
@@ -250,7 +274,7 @@ const ProjectSideBar = () => {
       ) : (
         <SideBarMenu
           icon={<ArrowLeftOutlined style={{ fontSize: '1.2rem' }} />}
-          path={`/dashboard/${orgId}/projects`}
+          path={`/dashboard/${project?.organizationId}/projects`}
           text={t('project:tabMenuBackOrganizationTitle')}
           accessId="project-side-bar-back"
         />

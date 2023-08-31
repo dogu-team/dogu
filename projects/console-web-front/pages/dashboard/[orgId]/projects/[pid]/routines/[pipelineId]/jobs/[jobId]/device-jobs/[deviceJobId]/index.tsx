@@ -17,15 +17,13 @@ import PipelineJobLayout from '../../../../../../../../../../../src/components/l
 import DeviceJobLiveLogController from '../../../../../../../../../../../src/components/pipelines/DeviceJobLiveLogController';
 import DeviceJobLiveProfileController from '../../../../../../../../../../../src/components/pipelines/DeviceJobLiveProfileController';
 import StepListController from '../../../../../../../../../../../src/components/pipelines/StepListController';
-import withProject, { getProjectPageServerSideProps, WithProjectProps } from '../../../../../../../../../../../src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from '../../../../../../../../../../../src/hoc/withProject';
 import useAuthStore from '../../../../../../../../../../../src/stores/auth';
 import useLivePipelineStore from '../../../../../../../../../../../src/stores/live-pipeline';
 import { isPipelineInProgress } from '../../../../../../../../../../../src/utils/pipeline';
 import { NextPageWithLayout } from '../../../../../../../../../../_app';
 
-interface PageProps extends WithProjectProps {}
-
-const DeviceJobPage: NextPageWithLayout<PageProps> = ({ organization, project }) => {
+const DeviceJobPage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
   const router = useRouter();
   const me = useAuthStore((state) => state.me);
   const pipelineId = router.query.pipelineId;
@@ -100,12 +98,12 @@ const DeviceJobPage: NextPageWithLayout<PageProps> = ({ organization, project })
 };
 
 DeviceJobPage.getLayout = (page) => {
-  return <PipelineJobLayout isGitIntegrated={page.props.isGitIntegrated}>{page}</PipelineJobLayout>;
+  return <PipelineJobLayout {...page.props}>{page}</PipelineJobLayout>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;
 
-export default withProject(DeviceJobPage);
+export default DeviceJobPage;
 
 const Box = styled.div`
   background-color: rgb(250, 250, 250);

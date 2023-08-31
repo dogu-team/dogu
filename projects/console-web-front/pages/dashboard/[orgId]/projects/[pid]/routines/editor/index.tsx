@@ -2,17 +2,17 @@ import styled from 'styled-components';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
+import { useEffect } from 'react';
 
 import { NextPageWithLayout } from 'pages/_app';
-import withProject, { getProjectPageServerSideProps, WithProjectProps } from 'src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/hoc/withProject';
 import RoutineUpdator from 'src/components/routine/editor/RoutineUpdator';
 import { swrAuthFetcher } from 'src/api';
 import useGitIntegrationStore from '../../../../../../../src/stores/git-integration';
-import { useEffect } from 'react';
 import RoutineGitIntegrationAlert from '../../../../../../../src/components/projects/RoutineGitIntegrationAlert';
 import ProjectLayoutWithSidebar from '../../../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 
-const ProjectRoutineEditorPage: NextPageWithLayout<WithProjectProps> = ({ organization, project, isGitIntegrated }) => {
+const ProjectRoutineEditorPage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project, isGitIntegrated }) => {
   const store = useGitIntegrationStore();
   const router = useRouter();
   const routineId = router.query.routineId as string | undefined;
@@ -46,12 +46,16 @@ const ProjectRoutineEditorPage: NextPageWithLayout<WithProjectProps> = ({ organi
 };
 
 ProjectRoutineEditorPage.getLayout = (page) => {
-  return <ProjectLayoutWithSidebar titleI18nKey="project:tabMenuRoutineTitle">{page}</ProjectLayoutWithSidebar>;
+  return (
+    <ProjectLayoutWithSidebar {...page.props} titleI18nKey="project:tabMenuRoutineTitle">
+      {page}
+    </ProjectLayoutWithSidebar>
+  );
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;
 
-export default withProject(ProjectRoutineEditorPage);
+export default ProjectRoutineEditorPage;
 
 const Box = styled.div`
   display: flex;

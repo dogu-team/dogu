@@ -6,16 +6,13 @@ import { swrAuthFetcher } from 'src/api';
 import styled from 'styled-components';
 import useSWR from 'swr';
 
-import H4 from '../common/headings/H4';
 import MenuLinkTabs, { MenuLinkTabProps } from '../MenuLinkTabs';
 import OrganizationSideBar from './OrganizationSideBar';
-import ConsoleLayout from './ConsoleLayout';
+import ConsoleLayout, { ConsoleLayoutProps } from './ConsoleLayout';
 
-interface Props {
-  children: React.ReactNode;
-}
+interface Props extends Pick<ConsoleLayoutProps, 'organization' | 'children'> {}
 
-const TeamPageLayout = ({ children }: Props) => {
+const TeamPageLayout = ({ children, organization }: Props) => {
   const router = useRouter();
   const orgId = router.query.orgId;
   const teamId = router.query.teamId;
@@ -48,7 +45,7 @@ const TeamPageLayout = ({ children }: Props) => {
   }
 
   return (
-    <ConsoleLayout sidebar={<OrganizationSideBar />} title={t('team:teamDetailPageTitle', { name: data?.name ?? '' })}>
+    <ConsoleLayout organization={organization} sidebar={<OrganizationSideBar />} title={t('team:teamDetailPageTitle', { name: data?.name ?? '' })}>
       <Box>
         <MenuLinkTabs tabs={tabs} />
         <Inner>{children}</Inner>

@@ -10,7 +10,8 @@ const ProjectPage: NextPageWithLayout = () => {
 };
 
 ProjectPage.getLayout = (page) => {
-  return <ProjectLayoutWithSidebar>{page}</ProjectLayoutWithSidebar>;
+  return page;
+  // return <ProjectLayoutWithSidebar>{page}</ProjectLayoutWithSidebar>;
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {

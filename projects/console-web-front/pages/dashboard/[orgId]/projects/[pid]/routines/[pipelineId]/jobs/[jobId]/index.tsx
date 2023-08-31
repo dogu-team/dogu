@@ -15,13 +15,13 @@ import DeviceJobListController from '../../../../../../../../../src/components/p
 import JobStatusIcon from '../../../../../../../../../src/components/pipelines/JobStatusIcon';
 import PipelineEmptyLog from '../../../../../../../../../src/components/pipelines/PipelineEmptyLog';
 import PipelineRuntime from '../../../../../../../../../src/components/pipelines/PipelineRuntime';
-import withProject, { getProjectPageServerSideProps, WithProjectProps } from '../../../../../../../../../src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from '../../../../../../../../../src/hoc/withProject';
 import useLivePipelineStore from '../../../../../../../../../src/stores/live-pipeline';
 import { pipelineJobEmptyText } from '../../../../../../../../../src/utils/mapper';
 import { isPipelineEmptyLogStatus } from '../../../../../../../../../src/utils/pipeline';
 import { NextPageWithLayout } from '../../../../../../../../_app';
 
-const JobSummaryPage: NextPageWithLayout<WithProjectProps> = ({ organization, project }) => {
+const JobSummaryPage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
   const router = useRouter();
   const pipelineId = Number(router.query.pipelineId);
   const jobId = Number(router.query.jobId);
@@ -109,12 +109,12 @@ const JobSummaryPage: NextPageWithLayout<WithProjectProps> = ({ organization, pr
 };
 
 JobSummaryPage.getLayout = (page) => {
-  return <PipelineJobLayout isGitIntegrated={page.props.isGitIntegrated}>{page}</PipelineJobLayout>;
+  return <PipelineJobLayout {...page.props}>{page}</PipelineJobLayout>;
 };
 
 export const getServerSideProps = getProjectPageServerSideProps;
 
-export default withProject(JobSummaryPage);
+export default JobSummaryPage;
 
 const JobBox = styled.div`
   display: flex;

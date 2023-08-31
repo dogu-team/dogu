@@ -1,5 +1,5 @@
 import { ApiOutlined, DesktopOutlined, MobileOutlined, TagsOutlined } from '@ant-design/icons';
-import { DeviceBase, PageBase } from '@dogu-private/console';
+import { DeviceBase, OrganizationBase, PageBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -9,7 +9,7 @@ import useSWR from 'swr';
 import { swrAuthFetcher } from 'src/api';
 import useEventStore from '../../stores/events';
 import MenuLinkTabs, { MenuLinkTabItem, MenuLinkTabProps } from '../MenuLinkTabs';
-import ConsoleLayout from './ConsoleLayout';
+import ConsoleLayout, { ConsoleLayoutProps } from './ConsoleLayout';
 import OrganizationSideBar from './OrganizationSideBar';
 
 interface TabButtonProps {
@@ -50,11 +50,11 @@ const AddDeviceTabButton = ({ selected, href }: TabButtonProps) => {
   );
 };
 
-interface Props {
+interface Props extends Pick<ConsoleLayoutProps, 'organization'> {
   children: React.ReactNode;
 }
 
-const OrganizationDeviceFarmLayout = ({ children }: Props) => {
+const OrganizationDeviceFarmLayout = ({ children, organization }: Props) => {
   const router = useRouter();
   const orgId = router.query.orgId;
   const { t } = useTranslation();
@@ -86,7 +86,7 @@ const OrganizationDeviceFarmLayout = ({ children }: Props) => {
   ];
 
   return (
-    <ConsoleLayout sidebar={<OrganizationSideBar />} titleI18nKey={'organization:deviceFarmPageTitle'}>
+    <ConsoleLayout organization={organization} sidebar={<OrganizationSideBar />} titleI18nKey={'organization:deviceFarmPageTitle'}>
       <MenuLinkTabs tabs={tabs} />
       <Inner>{children}</Inner>
     </ConsoleLayout>
