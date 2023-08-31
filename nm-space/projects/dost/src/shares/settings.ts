@@ -52,6 +52,7 @@ export interface ISettingsClient {
 
   // app
   setBadgeCount(count: number): Promise<void>;
+  restart(): Promise<void>;
 
   // path-map
   getDefaultAndroidHomePath(): Promise<string>;

@@ -18,10 +18,8 @@ function MacOSSettings() {
           <ListItem>
             <BorderBox>
               <Stack spacing="8px">
-                <div>
-                  <MenuTitle>macOS Permissions</MenuTitle>
-                  <Text fontSize=".9rem">Following permissions are required to control macOS.</Text>
-                </div>
+                <MenuTitle>macOS Permissions</MenuTitle>
+                <Text fontSize=".9rem">Following permissions are required to control macOS.</Text>
                 <MacOsPermissions />
               </Stack>
             </BorderBox>

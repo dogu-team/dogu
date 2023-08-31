@@ -19,13 +19,7 @@ interface ManualExternalToolDetailInfo {
 
 export const manualExternalToolDetail: { [key in ExternalKey]?: ManualExternalToolDetailInfo } = {
   xcode: {
-    description: (
-      <div>
-        <UnorderedList width="100%">
-          <ListItem>Required for iOS device control.</ListItem>
-        </UnorderedList>
-      </div>
-    ),
+    description: <div></div>,
     solution: (
       <Stack mt="4">
         <Button

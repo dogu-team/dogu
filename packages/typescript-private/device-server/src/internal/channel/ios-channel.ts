@@ -25,6 +25,7 @@ import { createAppiumCapabilities } from '../../appium/appium.capabilites';
 import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
+import { env } from '../../env';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { createIdaLogger } from '../../logger/logger.instance';
 import { IdeviceDiagnostics, IdeviceSyslog, MobileDevice, Xctrace } from '../externals';
@@ -129,17 +130,7 @@ export class IosChannel implements DeviceChannel {
 
     const logger = createIdaLogger(param.serial);
 
-    await IdeviceDiagnostics.restart(serial, logger);
-    for await (const _ of loopTime(Milisecond.t3Seconds, Milisecond.t5Minutes)) {
-      const deviceInfosFromXctrace = await Xctrace.listDevices(logger, { timeout: Milisecond.t2Minutes }).catch((e) => []);
-      if (deviceInfosFromXctrace.find((deviceInfo) => deviceInfo.serial === serial)) {
-        break;
-      }
-    }
-    const deviceInfosFromXctrace = await Xctrace.listDevices(logger, { timeout: Milisecond.t2Minutes }).catch((e) => []);
-    if (!deviceInfosFromXctrace.find((deviceInfo) => deviceInfo.serial === serial)) {
-      throw new Error(`Device ${serial} is not found after restart. Please check the usb connection.`);
-    }
+    await IosChannel.restartIfAvailiable(serial, logger);
 
     let portContext = portContextes.get(serial);
     if (portContext == null) {
@@ -239,6 +230,23 @@ export class IosChannel implements DeviceChannel {
     logger.verbose('gamium context started');
 
     return deviceChannel;
+  }
+
+  static async restartIfAvailiable(serial: Serial, logger: Printable): Promise<void> {
+    logger.info('IosChannel restartIfAvailiable', { on: env.DOGU_DEVICE_IOS_RESTART_ON_INIT });
+    if (env.DOGU_DEVICE_IOS_RESTART_ON_INIT) {
+      await IdeviceDiagnostics.restart(serial, logger);
+      for await (const _ of loopTime(Milisecond.t3Seconds, Milisecond.t5Minutes)) {
+        const deviceInfosFromXctrace = await Xctrace.listDevices(logger, { timeout: Milisecond.t2Minutes }).catch((e) => []);
+        if (deviceInfosFromXctrace.find((deviceInfo) => deviceInfo.serial === serial)) {
+          break;
+        }
+      }
+      const deviceInfosFromXctrace = await Xctrace.listDevices(logger, { timeout: Milisecond.t2Minutes }).catch((e) => []);
+      if (!deviceInfosFromXctrace.find((deviceInfo) => deviceInfo.serial === serial)) {
+        throw new Error(`Device ${serial} is not found after restart. Please check the usb connection.`);
+      }
+    }
   }
 
   async close(): Promise<void> {

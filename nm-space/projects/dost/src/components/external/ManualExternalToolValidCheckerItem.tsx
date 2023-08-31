@@ -59,8 +59,8 @@ const ManualExternalToolValidCheckerItem = ({ externalKey, name, isValid, error,
     >
       <div>
         <BorderBox>
-          <Flex justifyContent="space-between" alignItems="center" mb={2}>
-            <Flex alignItems="center" mb="8px">
+          <Flex justifyContent="space-between" alignItems="center">
+            <Flex alignItems="center">
               <Text fontWeight="medium" fontSize="m">
                 {name}
               </Text>
