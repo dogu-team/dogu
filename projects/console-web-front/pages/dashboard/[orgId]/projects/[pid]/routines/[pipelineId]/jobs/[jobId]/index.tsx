@@ -1,5 +1,5 @@
 import { CheckCircleOutlined, ExclamationCircleOutlined, FieldTimeOutlined } from '@ant-design/icons';
-import { RoutineDeviceJobBase, RoutineJobBase } from '@dogu-private/console';
+import { RoutineJobBase } from '@dogu-private/console';
 import { PIPELINE_STATUS } from '@dogu-private/types';
 import { Skeleton } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
@@ -15,7 +15,7 @@ import DeviceJobListController from '../../../../../../../../../src/components/p
 import JobStatusIcon from '../../../../../../../../../src/components/pipelines/JobStatusIcon';
 import PipelineEmptyLog from '../../../../../../../../../src/components/pipelines/PipelineEmptyLog';
 import PipelineRuntime from '../../../../../../../../../src/components/pipelines/PipelineRuntime';
-import { getProjectPageServerSideProps, ProjectServerSideProps } from '../../../../../../../../../src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from '../../../../../../../../../src/ssr/project';
 import useLivePipelineStore from '../../../../../../../../../src/stores/live-pipeline';
 import { pipelineJobEmptyText } from '../../../../../../../../../src/utils/mapper';
 import { isPipelineEmptyLogStatus } from '../../../../../../../../../src/utils/pipeline';

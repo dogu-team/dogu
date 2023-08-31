@@ -17,7 +17,7 @@ import PipelineJobLayout from '../../../../../../../../../../../src/components/l
 import DeviceJobLiveLogController from '../../../../../../../../../../../src/components/pipelines/DeviceJobLiveLogController';
 import DeviceJobLiveProfileController from '../../../../../../../../../../../src/components/pipelines/DeviceJobLiveProfileController';
 import StepListController from '../../../../../../../../../../../src/components/pipelines/StepListController';
-import { getProjectPageServerSideProps, ProjectServerSideProps } from '../../../../../../../../../../../src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from '../../../../../../../../../../../src/ssr/project';
 import useAuthStore from '../../../../../../../../../../../src/stores/auth';
 import useLivePipelineStore from '../../../../../../../../../../../src/stores/live-pipeline';
 import { isPipelineInProgress } from '../../../../../../../../../../../src/utils/pipeline';

@@ -21,7 +21,7 @@ import {
   updateOrganizationOwner,
   uploadOrganizationImage,
 } from 'src/api/organization';
-import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/ssr/organization';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
 import { getErrorMessageFromAxios } from '../../../src/utils/error';
 import OrganizationOwnerSelector from '../../../src/components/organizations/OrganizationOwnerSelector';

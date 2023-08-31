@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 
 import { NextPageWithLayout } from 'pages/_app';
-import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/ssr/project';
 import ErrorBox from 'src/components/common/boxes/ErrorBox';
 import PipelineJobLayout from 'src/components/layouts/PipelineJobLayout';
 import JobFlowController from 'src/components/pipelines/JobFlowController';

@@ -4,7 +4,7 @@ import { GetServerSideProps } from 'next';
 import { useEffect } from 'react';
 
 import { NextPageWithLayout } from 'pages/_app';
-import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/ssr/project';
 import RoutineCreator from 'src/components/routine/editor/RoutineCreator';
 import RoutineGitIntegrationAlert from '../../../../../../../src/components/projects/RoutineGitIntegrationAlert';
 import useGitIntegrationStore from '../../../../../../../src/stores/git-integration';

@@ -1,7 +1,7 @@
 import { PROJECT_SCM_TYPE } from '@dogu-private/types';
 import { Form, Modal } from 'antd';
 import { isAxiosError } from 'axios';
-import shallow from 'zustand/shallow';
+import { shallow } from 'zustand/shallow';
 
 import BitbucketIcon from 'public/resources/icons/bitbucket.svg';
 import { deleteProjectScm, updateProjectScm } from '../../api/project';

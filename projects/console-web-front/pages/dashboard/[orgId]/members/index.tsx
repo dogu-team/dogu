@@ -8,7 +8,7 @@ import TableListView from 'src/components/common/TableListView';
 import OrganizationMemberListController from 'src/components/users/OrganizationMemberListController';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import OrganizationMemberFilter from 'src/components/users/OrganizationMemberFilter';
-import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/ssr/organization';
 import OrganizationMemberLayout from '../../../../src/components/layouts/OrganizationMemberLayout';
 
 const ManageUserPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {

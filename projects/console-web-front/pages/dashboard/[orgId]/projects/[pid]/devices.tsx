@@ -7,7 +7,7 @@ import { NextPageWithLayout } from 'pages/_app';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import TableListView from 'src/components/common/TableListView';
 import DeviceListController from 'src/components/projects/DeviceListController';
-import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/ssr/project';
 import { flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
 import Head from 'next/head';
 import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/ProjectLayoutWithSidebar';

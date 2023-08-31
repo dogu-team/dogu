@@ -6,7 +6,7 @@ import Head from 'next/head';
 
 import { NextPageWithLayout } from 'pages/_app';
 import TableListView from 'src/components/common/TableListView';
-import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/ssr/organization';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import AddProjectButton from 'src/components/teams/AddProjectButton';
 import TeamProjectFilter from 'src/components/teams/TeamProjectFilter';

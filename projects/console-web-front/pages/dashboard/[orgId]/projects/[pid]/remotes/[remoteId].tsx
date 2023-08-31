@@ -10,7 +10,7 @@ import RemoteCreator from '../../../../../../src/components/remote/RemoteCreator
 import RemoteDestListController from '../../../../../../src/components/remote/RemoteDestListController';
 import RemoteDeviceJobStatitics from '../../../../../../src/components/remote/RemoteDeviceJobStatitics';
 import RemoteSidebar from '../../../../../../src/components/remote/RemoteSidebar';
-import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/ssr/project';
 import { flexRowSpaceBetweenStyle } from '../../../../../../src/styles/box';
 import { NextPageWithLayout } from '../../../../../_app';
 

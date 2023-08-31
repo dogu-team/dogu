@@ -15,7 +15,7 @@ import { shallow } from 'zustand/shallow';
 import { NextPageWithLayout } from 'pages/_app';
 import { deleteProject, getProjectAccessToken, regenerateProjectAccessToken, updateProject } from 'src/api/project';
 import { getErrorMessageFromAxios } from 'src/utils/error';
-import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/ssr/project';
 import { sendErrorNotification, sendSuccessNotification } from '../../../../../src/utils/antd';
 import DangerZone from '../../../../../src/components/common/boxes/DangerZone';
 import TokenCopyInput from '../../../../../src/components/common/TokenCopyInput';
@@ -225,7 +225,7 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
             <DangerZone.Item
               title={t('project:changeProjectTemplateMenuTitle')}
               description={t('project:changeProjectTemplateDescriptionText')}
-              button={<UpdateTemplateButton project={project} />}
+              button={<UpdateTemplateButton />}
             />
             <DangerZone.Item
               title={t('project:deleteProjectMenuTitle')}

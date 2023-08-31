@@ -6,7 +6,7 @@ import TableListView from '../../../../src/components/common/TableListView';
 import OrganizationMemberLayout from '../../../../src/components/layouts/OrganizationMemberLayout';
 import InviteUserButton from '../../../../src/components/users/InviteUserButton';
 import OrganizationInvitationMemberListController from '../../../../src/components/users/OrganizationInvitationMemberListController';
-import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from '../../../../src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from '../../../../src/ssr/organization';
 import { NextPageWithLayout } from '../../../_app';
 
 const InvitationUserPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {

@@ -7,28 +7,35 @@ import { useEffect, useState } from 'react';
 import { shallow } from 'zustand/shallow';
 
 import { updateProject } from '../../api/project';
+import useProjectContext from '../../hooks/useProjectContext';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import { getErrorMessageFromAxios } from '../../utils/error';
 import DangerZone from '../common/boxes/DangerZone';
 import ProjectTypeRadio from './ProjectTypeRadio';
 
-interface Props {
-  project: ProjectBase;
-}
+interface Props {}
 
-const UpdateTemplateButton = ({ project }: Props) => {
-  const [projectType, setProjectType] = useState<PROJECT_TYPE>(project.type);
+const UpdateTemplateButton = ({}: Props) => {
+  const { project, mutate } = useProjectContext();
+  const [projectType, setProjectType] = useState<PROJECT_TYPE>(project?.type || PROJECT_TYPE.CUSTOM);
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
   const { t } = useTranslation('project');
 
   useEffect(() => {
-    setProjectType(project.type);
-  }, [project.type]);
+    if (project?.type !== undefined) {
+      setProjectType(project.type);
+    }
+  }, [project?.type]);
 
   const handleConfirm = async () => {
+    if (!project) {
+      return;
+    }
+
     try {
-      updateProject(project.organizationId, project.projectId, { name: project.name, type: projectType, description: project.description });
+      const rv = await updateProject(project.organizationId, project.projectId, { type: projectType });
+      mutate?.(rv, false);
       sendSuccessNotification('Project template updated.');
       fireEvent('onProjectUpdated');
     } catch (e) {
@@ -54,7 +61,7 @@ const UpdateTemplateButton = ({ project }: Props) => {
       modalButtonTitle={t('changeProjectTemplateConfirmModalButtonText')}
       onOpenChange={(isOpen) => {
         if (!isOpen) {
-          setProjectType(project.type);
+          setProjectType(project?.type || PROJECT_TYPE.CUSTOM);
         }
       }}
     >

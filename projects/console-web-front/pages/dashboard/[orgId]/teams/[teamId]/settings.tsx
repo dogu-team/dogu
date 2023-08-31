@@ -7,7 +7,7 @@ import { TeamBase } from '@dogu-private/console';
 import Head from 'next/head';
 
 import { NextPageWithLayout } from 'pages/_app';
-import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/ssr/organization';
 import TeamSettings from 'src/components/teams/TeamSettings';
 import { swrAuthFetcher } from 'src/api';
 import TeamPageLayout from 'src/components/layouts/TeamPageLayout';

@@ -5,7 +5,7 @@ import useSWR from 'swr';
 import { useEffect } from 'react';
 
 import { NextPageWithLayout } from 'pages/_app';
-import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/ssr/project';
 import RoutineUpdator from 'src/components/routine/editor/RoutineUpdator';
 import { swrAuthFetcher } from 'src/api';
 import useGitIntegrationStore from '../../../../../../../src/stores/git-integration';

@@ -7,7 +7,7 @@ import Head from 'next/head';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import useModal from 'src/hooks/useModal';
 import CreateTagModal from 'src/components/device/CreateTagModal';
-import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/ssr/organization';
 import TagFilter from 'src/components/device/TagFilter';
 import TableListView from '../../../../src/components/common/TableListView';
 import DeviceTagListController from '../../../../src/components/device/DeviceTagListController';

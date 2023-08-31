@@ -8,7 +8,7 @@ import { GetServerSideProps } from 'next';
 import Image from 'next/image';
 
 import { NextPageWithLayout } from 'pages/_app';
-import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/ssr/project';
 import PipelineListController from 'src/components/pipelines/PipelineListController';
 import TableListView from 'src/components/common/TableListView';
 import RefreshButton from 'src/components/buttons/RefreshButton';

@@ -7,7 +7,7 @@ import Head from 'next/head';
 import { NextPageWithLayout } from 'pages/_app';
 import TableListView from 'src/components/common/TableListView';
 import MemberListController from 'src/components/teams/MemberListController';
-import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/ssr/organization';
 import AddMemberButton from 'src/components/teams/AddMemberButton';
 import TeamMemberFilter from 'src/components/teams/TeamMemberFilter';
 import RefreshButton from 'src/components/buttons/RefreshButton';

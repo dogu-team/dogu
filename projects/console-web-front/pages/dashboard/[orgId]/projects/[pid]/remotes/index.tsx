@@ -13,7 +13,7 @@ import ProjectLayoutWithSidebar from 'src/components/layouts/ProjectLayoutWithSi
 import RemoteItem from 'src/components/remote/RemoteItem';
 import RemoteListController from 'src/components/remote/RemoteListController';
 import SlackRemoteChannelButton from 'src/enterprise/components/slack/SlackRemoteChannelButton';
-import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/ssr/project';
 import { flexRowSpaceBetweenStyle } from 'src/styles/box';
 import { NextPageWithLayout } from '../../../../../_app';
 

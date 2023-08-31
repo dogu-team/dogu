@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { swrAuthFetcher } from 'src/api';
 import styled from 'styled-components';
 import useSWR from 'swr';
-import shallow from 'zustand/shallow';
+import { shallow } from 'zustand/shallow';
 import { MAX_PROJECT_IDS_FILTER_LENGTH, PageBase, ProjectBase } from '@dogu-private/console';
 import { useCallback } from 'react';
 import { ProjectId } from '@dogu-private/types';

@@ -1,12 +1,9 @@
-import { JobDisplayQuery, RoutineJobBase } from '@dogu-private/console';
 import { GetServerSideProps } from 'next';
 import { useRouter } from 'next/router';
-import useSWR from 'swr';
 
-import { swrAuthFetcher } from '../../../../../../../src/api';
 import PipelineJobLayout from '../../../../../../../src/components/layouts/PipelineJobLayout';
 import PipelineDeviceGrid from '../../../../../../../src/components/pipelines/PipelineDeviceGrid';
-import { getProjectPageServerSideProps, ProjectServerSideProps } from '../../../../../../../src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from '../../../../../../../src/ssr/project';
 import useLivePipelineStore from '../../../../../../../src/stores/live-pipeline';
 import { NextPageWithLayout } from '../../../../../../_app';
 

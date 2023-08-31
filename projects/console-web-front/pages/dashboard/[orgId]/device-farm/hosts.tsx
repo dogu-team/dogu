@@ -14,7 +14,7 @@ import useModal from 'src/hooks/useModal';
 import TableListView from 'src/components/common/TableListView';
 import HostListController from 'src/components/hosts/HostListController';
 import RefreshButton from 'src/components/buttons/RefreshButton';
-import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/ssr/organization';
 import HostFilter from 'src/components/hosts/HostFilter';
 import OrganizationDeviceFarmLayout from '../../../../src/components/layouts/OrganizationDeviceFarmLayout';
 import { swrAuthFetcher } from '../../../../src/api';

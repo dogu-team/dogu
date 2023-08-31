@@ -6,7 +6,7 @@ import TableListView from 'src/components/common/TableListView';
 import DeviceListController from 'src/components/device/DeviceListController';
 import DeviceFilter from 'src/components/device/DeviceFilter';
 import RefreshButton from 'src/components/buttons/RefreshButton';
-import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/ssr/organization';
 import OrganizationDeviceFarmLayout from '../../../../src/components/layouts/OrganizationDeviceFarmLayout';
 
 const TeamDevicePage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {

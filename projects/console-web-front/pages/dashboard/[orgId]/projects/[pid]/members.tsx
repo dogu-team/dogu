@@ -11,7 +11,7 @@ import TableListView from 'src/components/common/TableListView';
 import ProjectMemberListController from 'src/components/projects/ProjectMemberListController';
 import ProjectMemberFilter from 'src/components/projects/ProjectMemberFilter';
 import AddTeamButton from 'src/components/projects/AddTeamButton';
-import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/ssr/project';
 import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 
 const ProjectMemberPage: NextPageWithLayout<ProjectServerSideProps> = ({ project }) => {

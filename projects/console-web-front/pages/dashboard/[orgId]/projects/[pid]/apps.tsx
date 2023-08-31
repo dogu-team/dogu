@@ -9,7 +9,7 @@ import TableListView from '../../../../../src/components/common/TableListView';
 import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 import ProjectApplicationListController from '../../../../../src/components/project-application/ProjectApplicationListController';
 import ProjectApplicationUploadButton from '../../../../../src/components/project-application/ProjectApplicationUploadButton';
-import { getProjectPageServerSideProps, ProjectServerSideProps } from '../../../../../src/hoc/withProject';
+import { getProjectPageServerSideProps, ProjectServerSideProps } from '../../../../../src/ssr/project';
 import { flexRowSpaceBetweenStyle } from '../../../../../src/styles/box';
 import { NextPageWithLayout } from '../../../../_app';
 

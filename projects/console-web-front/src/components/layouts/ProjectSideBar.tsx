@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import useSWR from 'swr';
-import { ProjectBase } from '@dogu-private/console';
+import { PROJECT_TYPE } from '@dogu-private/types';
 import useTranslation from 'next-translate/useTranslation';
 import { AppstoreOutlined, ArrowLeftOutlined, MobileOutlined, SettingOutlined, TeamOutlined } from '@ant-design/icons';
 import { PiMonitorPlayBold } from 'react-icons/pi';
@@ -12,7 +11,6 @@ import { RiRemoteControlLine } from 'react-icons/ri';
 import { GoWorkflow } from 'react-icons/go';
 import { OrganizationId } from '@dogu-private/types';
 
-import { swrAuthFetcher } from 'src/api';
 import useAuthStore from 'src/stores/auth';
 import { scrollbarStyle } from '../../styles/common';
 import useCollapsibleSidebar from '../../stores/collapsible-sidebar';
@@ -28,24 +26,78 @@ import useProjectContext from '../../hooks/useProjectContext';
 type MenuItem = Required<MenuProps>['items'];
 
 const ProjectSideBar = () => {
-  const { me } = useAuthStore();
   const router = useRouter();
-  const { project } = useProjectContext();
-  const { data, isLoading, mutate } = useSWR<ProjectBase>(me && !!project && `/organizations/${project.organizationId}/projects/${project.projectId}`, swrAuthFetcher);
+  const { project, mutate } = useProjectContext();
   const { t } = useTranslation();
   const collapsed = useCollapsibleSidebar((state) => state.collapsed);
 
-  useRefresh(['onProjectUpdated'], () => mutate());
+  useRefresh(['onProjectUpdated'], () => mutate?.());
 
-  if (isLoading) {
-    return (
-      <Box>
-        <Skeleton active />
-        <Skeleton active />
-        <Skeleton active />
-      </Box>
-    );
-  }
+  const generalChildrens: MenuItem = [
+    {
+      key: 'app',
+      label: collapsed ? (
+        t('project:tabMenuAppTitle')
+      ) : (
+        <SideBarMenu
+          path={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/apps`}
+          text={t('project:tabMenuAppTitle')}
+          accessId="project-side-bar-apps"
+          icon={<AppstoreOutlined style={{ fontSize: '1.2rem' }} />}
+        />
+      ),
+      icon: collapsed ? (
+        <StyledIconLink
+          selected={router.asPath === `/dashboard/${project?.organizationId}/projects/${project?.projectId}/apps`}
+          href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/apps`}
+        >
+          <AppstoreOutlined />
+        </StyledIconLink>
+      ) : undefined,
+    },
+    {
+      key: 'members',
+      label: collapsed ? (
+        t('project:tabMenuMemberTitle')
+      ) : (
+        <SideBarMenu
+          path={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/members`}
+          text={t('project:tabMenuMemberTitle')}
+          accessId="project-side-bar-members"
+          icon={<TeamOutlined style={{ fontSize: '1.2rem' }} />}
+        />
+      ),
+      icon: collapsed ? (
+        <StyledIconLink
+          selected={router.asPath === `/dashboard/${project?.organizationId}/projects/${project?.projectId}/members`}
+          href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/members`}
+        >
+          <TeamOutlined />
+        </StyledIconLink>
+      ) : undefined,
+    },
+    {
+      key: 'setting',
+      label: collapsed ? (
+        t('project:tabMenuSettingTitle')
+      ) : (
+        <SideBarMenu
+          path={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/settings`}
+          text={t('project:tabMenuSettingTitle')}
+          accessId="project-side-bar-settings"
+          icon={<SettingOutlined style={{ fontSize: '1.2rem' }} />}
+        />
+      ),
+      icon: collapsed ? (
+        <StyledIconLink
+          selected={router.asPath === `/dashboard/${project?.organizationId}/projects/${project?.projectId}/settings`}
+          href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/settings`}
+        >
+          <SettingOutlined />
+        </StyledIconLink>
+      ) : undefined,
+    },
+  ];
 
   const items: MenuItem = [
     {
@@ -54,28 +106,28 @@ const ProjectSideBar = () => {
         <ProjectSwitch
           organizationId={project?.organizationId as OrganizationId}
           onChange={(project) => router.push(`/dashboard/${project?.organizationId}/projects/${project.projectId}/remotes`)}
-          selectedProject={data}
+          selectedProject={project ?? undefined}
           hideIcon
         >
           <OrganizationImageWrapper>
-            <ProfileImage shape="square" size={28} name={data?.name} profileImageUrl={null} />
+            <ProfileImage shape="square" size={28} name={project?.name} profileImageUrl={null} />
           </OrganizationImageWrapper>
         </ProjectSwitch>
       ) : undefined,
       style: { cursor: 'default' },
       label: collapsed
         ? undefined
-        : data && (
+        : project && (
             <ProjectSwitch
               organizationId={project?.organizationId as OrganizationId}
               onChange={(project) => router.push(`/dashboard/${project?.organizationId}/projects/${project.projectId}/remotes`)}
-              selectedProject={data}
+              selectedProject={project}
             >
               <SideBarTitle
                 href={`/dashboard/${project?.organizationId}`}
                 subTitle={t('organization:sidebarSubTitle')}
                 profileImageUrl={null}
-                name={data.name}
+                name={project.name}
                 accessId="sb-title"
               />
             </ProjectSwitch>
@@ -190,71 +242,7 @@ const ProjectSideBar = () => {
     {
       type: 'group',
       label: collapsed ? null : 'General',
-      children: [
-        {
-          key: 'app',
-          label: collapsed ? (
-            t('project:tabMenuAppTitle')
-          ) : (
-            <SideBarMenu
-              path={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/apps`}
-              text={t('project:tabMenuAppTitle')}
-              accessId="project-side-bar-apps"
-              icon={<AppstoreOutlined style={{ fontSize: '1.2rem' }} />}
-            />
-          ),
-          icon: collapsed ? (
-            <StyledIconLink
-              selected={router.asPath === `/dashboard/${project?.organizationId}/projects/${project?.projectId}/apps`}
-              href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/apps`}
-            >
-              <AppstoreOutlined />
-            </StyledIconLink>
-          ) : undefined,
-        },
-        {
-          key: 'members',
-          label: collapsed ? (
-            t('project:tabMenuMemberTitle')
-          ) : (
-            <SideBarMenu
-              path={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/members`}
-              text={t('project:tabMenuMemberTitle')}
-              accessId="project-side-bar-members"
-              icon={<TeamOutlined style={{ fontSize: '1.2rem' }} />}
-            />
-          ),
-          icon: collapsed ? (
-            <StyledIconLink
-              selected={router.asPath === `/dashboard/${project?.organizationId}/projects/${project?.projectId}/members`}
-              href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/members`}
-            >
-              <TeamOutlined />
-            </StyledIconLink>
-          ) : undefined,
-        },
-        {
-          key: 'setting',
-          label: collapsed ? (
-            t('project:tabMenuSettingTitle')
-          ) : (
-            <SideBarMenu
-              path={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/settings`}
-              text={t('project:tabMenuSettingTitle')}
-              accessId="project-side-bar-settings"
-              icon={<SettingOutlined style={{ fontSize: '1.2rem' }} />}
-            />
-          ),
-          icon: collapsed ? (
-            <StyledIconLink
-              selected={router.asPath === `/dashboard/${project?.organizationId}/projects/${project?.projectId}/settings`}
-              href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/settings`}
-            >
-              <SettingOutlined />
-            </StyledIconLink>
-          ) : undefined,
-        },
-      ],
+      children: project?.type === PROJECT_TYPE.WEB ? generalChildrens.filter((child) => child?.key !== 'app') : generalChildrens,
     },
   ];
 

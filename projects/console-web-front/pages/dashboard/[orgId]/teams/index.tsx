@@ -8,7 +8,7 @@ import OrganizationSideBar from 'src/components/layouts/OrganizationSideBar';
 import ConsoleLayout from 'src/components/layouts/ConsoleLayout';
 import TeamListController from 'src/components/teams/TeamListController';
 import CreateTeamButton from 'src/components/teams/CreateTeamButton';
-import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/hoc/withOrganization';
+import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/ssr/organization';
 import TeamFilter from 'src/components/teams/TeamFilter';
 
 const TeamPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {

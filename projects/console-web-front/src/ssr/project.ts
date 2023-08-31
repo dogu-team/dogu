@@ -4,8 +4,8 @@ import { GetServerSideProps } from 'next';
 
 import { getOrganizationInServerSide } from 'src/api/organization';
 import { getProjectInServerSide, getProjectScm } from 'src/api/project';
-import { checkUserVerifiedInServerSide } from '../utils/auth';
 import { redirectWithLocale } from '../ssr/locale';
+import { checkUserVerifiedInServerSide } from '../utils/auth';
 
 export interface ProjectServerSideProps {
   organization: OrganizationBase;
