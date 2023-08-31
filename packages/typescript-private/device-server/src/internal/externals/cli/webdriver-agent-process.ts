@@ -43,6 +43,14 @@ export class WebdriverAgentProcess {
     return ret;
   }
 
+  static async isReady(serial: Serial): Promise<boolean> {
+    const originDerivedData = await DerivedData.create(HostPaths.external.xcodeProject.wdaDerivedDataPath());
+    if (!originDerivedData.hasSerial(serial)) {
+      return false;
+    }
+    return true;
+  }
+
   delete(): void {
     ZombieServiceInstance.deleteComponent(this.xctest);
     ZombieServiceInstance.deleteComponent(this.wdaTunnel);

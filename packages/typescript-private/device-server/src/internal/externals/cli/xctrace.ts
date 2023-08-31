@@ -1,7 +1,7 @@
 import { Serial } from '@dogu-private/types';
 import { Printable } from '@dogu-tech/common';
 import { ChildProcess, DirectoryRotation } from '@dogu-tech/node';
-import child_process from 'child_process';
+import child_process, { ExecOptions } from 'child_process';
 import fs from 'fs';
 import { logger } from '../../../logger/logger.instance';
 import { DeviceScanResult } from '../../public/device-driver';
@@ -31,8 +31,8 @@ export async function record(appPath: string, serial: Serial, printable: Printab
 const XctraceListOutputGroup = ['Devices', 'Devices Offline', 'Simulators', 'unknown'];
 type XctraceListOutputGroup = (typeof XctraceListOutputGroup)[number];
 
-export async function listDevices(printable: Printable): Promise<DeviceScanResult[]> {
-  const result = await ChildProcess.exec(`${XcTraceCommand} list devices`, {}, printable);
+export async function listDevices(printable: Printable, options: ExecOptions = {}): Promise<DeviceScanResult[]> {
+  const result = await ChildProcess.exec(`${XcTraceCommand} list devices`, options, printable);
 
   const infos: DeviceScanResult[] = [];
   let firstDeviceLine = undefined; // macOs Self Device
