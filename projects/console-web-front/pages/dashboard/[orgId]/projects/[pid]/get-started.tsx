@@ -31,7 +31,7 @@ const ProjectGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, o
   const isFrameworkSelected = !!sdk && Object.keys(tutorialData).includes(router.query.sdk as string) && !!router.query.framework;
 
   return (
-    <TutorialContext.Provider value={{ me, organization, project }}>
+    <TutorialContext.Provider value={{ me, organization, project, updateProject: () => {} }}>
       <Head>
         <title>Tutorial - {project.name} | Dogu</title>
       </Head>
