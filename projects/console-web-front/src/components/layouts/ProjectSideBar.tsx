@@ -123,13 +123,7 @@ const ProjectSideBar = () => {
               onChange={(project) => router.push(`/dashboard/${project?.organizationId}/projects/${project.projectId}/remotes`)}
               selectedProject={project}
             >
-              <SideBarTitle
-                href={`/dashboard/${project?.organizationId}`}
-                subTitle={t('organization:sidebarSubTitle')}
-                profileImageUrl={null}
-                name={project.name}
-                accessId="sb-title"
-              />
+              <SideBarTitle profileImageUrl={null} name={project.name} accessId="sb-title" />
             </ProjectSwitch>
           ),
     },

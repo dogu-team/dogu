@@ -53,15 +53,7 @@ const OrganizationSideBar = () => {
       style: { cursor: 'default' },
       label: collapsed
         ? undefined
-        : data && (
-            <SideBarTitle
-              href={`/dashboard/${orgId}`}
-              subTitle={t('organization:sidebarSubTitle')}
-              profileImageUrl={data.profileImageUrl}
-              name={data.name}
-              accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'sb-title' : undefined}
-            />
-          ),
+        : data && <SideBarTitle profileImageUrl={data.profileImageUrl} name={data.name} accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'sb-title' : undefined} />,
     },
     {
       type: 'divider',

@@ -5,14 +5,14 @@ import ProfileImage from 'src/components/ProfileImage';
 import useEventStore from 'src/stores/events';
 
 interface Props {
-  href: string;
-  subTitle: string;
+  // href: string;
+  // subTitle: string;
   profileImageUrl: string | null;
   name: string;
   accessId?: string;
 }
 
-const SideBarTitle = ({ href, subTitle, name, profileImageUrl, accessId }: Props) => {
+const SideBarTitle = ({ name, profileImageUrl, accessId }: Props) => {
   const fireEvent = useEventStore((state) => state.fireEvent);
 
   return (
