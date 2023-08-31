@@ -10,5 +10,6 @@ export const Milisecond = {
   t1Minute: 60_000,
   t2Minutes: 120_000,
   t3Minutes: 180_000,
+  t5Minutes: 300_000,
   t15Minutes: 900_000,
 };

@@ -12,7 +12,7 @@ import {
   Serial,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { Closable, errorify, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
+import { Closable, errorify, loopTime, Milisecond, Printable, PromiseOrValue, stringify } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { killChildProcess } from '@dogu-tech/node';
 import { ChildProcess } from 'child_process';
@@ -25,9 +25,10 @@ import { createAppiumCapabilities } from '../../appium/appium.capabilites';
 import { AppiumContext, AppiumContextKey, AppiumContextProxy } from '../../appium/appium.context';
 import { AppiumDeviceWebDriverHandler } from '../../device-webdriver/appium.device-webdriver.handler';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
+import { env } from '../../env';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { createIdaLogger } from '../../logger/logger.instance';
-import { IdeviceDiagnostics, IdeviceSyslog, MobileDevice } from '../externals';
+import { IdeviceDiagnostics, IdeviceSyslog, MobileDevice, Xctrace } from '../externals';
 import { IosDeviceAgentProcess } from '../externals/cli/ios-device-agent';
 import { ZombieTunnel } from '../externals/cli/mobiledevice-tunnel';
 import { WebdriverAgentProcess } from '../externals/cli/webdriver-agent-process';
@@ -115,11 +116,21 @@ export class IosChannel implements DeviceChannel {
       }
     }
 
+    if (!(await WebdriverAgentProcess.isReady(serial))) {
+      throw new Error(
+        `WebDriverAgent can't be executed on this device. Please register your device. reference: https://developer.apple.com/help/account/register-devices/register-a-single-device. `,
+      );
+    }
+
     if (!(await IosDeviceAgentProcess.isReady(serial))) {
       throw new Error(
         `iOSDeviceAgent can't be executed on this device. Please register your device. reference: https://developer.apple.com/help/account/register-devices/register-a-single-device. `,
       );
     }
+
+    const logger = createIdaLogger(param.serial);
+
+    await IosChannel.restartIfAvailiable(serial, logger);
 
     let portContext = portContextes.get(serial);
     if (portContext == null) {
@@ -127,7 +138,6 @@ export class IosChannel implements DeviceChannel {
       portContextes.set(serial, portContext);
     }
 
-    const logger = createIdaLogger(param.serial);
     logger.verbose('appium wda starting');
     const wda = await WebdriverAgentProcess.start(serial, portContext.freeHostPort4, logger);
     logger.verbose('appium wda  done');
@@ -220,6 +230,23 @@ export class IosChannel implements DeviceChannel {
     logger.verbose('gamium context started');
 
     return deviceChannel;
+  }
+
+  static async restartIfAvailiable(serial: Serial, logger: Printable): Promise<void> {
+    logger.info('IosChannel restartIfAvailiable', { on: env.DOGU_DEVICE_IOS_RESTART_ON_INIT });
+    if (env.DOGU_DEVICE_IOS_RESTART_ON_INIT) {
+      await IdeviceDiagnostics.restart(serial, logger);
+      for await (const _ of loopTime(Milisecond.t3Seconds, Milisecond.t5Minutes)) {
+        const deviceInfosFromXctrace = await Xctrace.listDevices(logger, { timeout: Milisecond.t2Minutes }).catch((e) => []);
+        if (deviceInfosFromXctrace.find((deviceInfo) => deviceInfo.serial === serial)) {
+          break;
+        }
+      }
+      const deviceInfosFromXctrace = await Xctrace.listDevices(logger, { timeout: Milisecond.t2Minutes }).catch((e) => []);
+      if (!deviceInfosFromXctrace.find((deviceInfo) => deviceInfo.serial === serial)) {
+        throw new Error(`Device ${serial} is not found after restart. Please check the usb connection.`);
+      }
+    }
   }
 
   async close(): Promise<void> {

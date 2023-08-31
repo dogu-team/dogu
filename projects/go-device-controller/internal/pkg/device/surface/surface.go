@@ -15,7 +15,7 @@ import (
 )
 
 type surface interface {
-	Reconnect(serial string, retryCount int, sleepSec int, screenCaptureOption *streaming.ScreenCaptureOption) error
+	Reconnect(serial string, sleepSec int, screenCaptureOption *streaming.ScreenCaptureOption) error
 	Receive() ([]byte, error)
 	NotifyData(listener SurfaceListener, timeStamp uint32, data []byte)
 	Close()
@@ -162,7 +162,7 @@ func (s *SurfaceConnector) startRoutine() error {
 
 			if err != nil {
 				s.notifySurfaceClose()
-				err = s.notifySurfaceReconnect(s.serial, 9999, 3)
+				err = s.notifySurfaceReconnect(s.serial, 3)
 				if err != nil {
 					log.Inst.Error("surfaceConnector.startRoutine reconnect error", zap.Error(err))
 				}
@@ -192,10 +192,11 @@ func (s *SurfaceConnector) startRoutine() error {
 	return nil
 }
 
-func (s *SurfaceConnector) notifySurfaceReconnect(serial string, retryCount int, sleepSec int) error {
+func (s *SurfaceConnector) notifySurfaceReconnect(serial string, sleepSec int) error {
 	log.Inst.Info("surfaceConnector.notifySurfaceReconnect", zap.String("serial", s.serial))
-	err := s.surface.Reconnect(serial, retryCount, sleepSec, s.option)
+	err := s.surface.Reconnect(serial, sleepSec, s.option)
 	if err != nil {
+		log.Inst.Warn("surfaceConnector.notifySurfaceReconnect failed", zap.String("serial", s.serial), zap.Error(err))
 		time.Sleep(time.Second * time.Duration(sleepSec))
 		return err
 	}
@@ -209,6 +210,9 @@ func (s *SurfaceConnector) notifySurfaceReceive() ([]byte, error) {
 	startTime := time.Now()
 
 	buf, err := s.surface.Receive()
+	if err != nil {
+		log.Inst.Warn("surfaceConnector.notifySurfaceReceive failed", zap.String("serial", s.serial), zap.Error(err))
+	}
 
 	s.Profile.ReadSizePerPeriod += len(buf)
 	s.Profile.ReadCountPerPeriod += 1

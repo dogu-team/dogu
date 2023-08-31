@@ -34,6 +34,9 @@ export const schema = {
   DOGU_DEVICE_PLATFORM_ENABLED: {
     type: 'string',
   },
+  DOGU_DEVICE_IOS_RESTART_ON_INIT: {
+    type: 'boolean',
+  },
   is_show_devui: {
     type: 'boolean',
   },

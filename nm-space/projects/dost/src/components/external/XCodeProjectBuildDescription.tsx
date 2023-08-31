@@ -19,42 +19,38 @@ const XCodeProjectBuildDescription = ({ projectName, externalKeyAndNames, onOpen
 
   return (
     <div>
-      <UnorderedList width="100%">
-        <ListItem>
-          <Stack spacing={1} direction="row" alignItems="center">
-            <Button size="sm" onClick={onOpenProject}>
-              Open {projectName} project
-            </Button>
-            <Text fontSize={'sm'}> and configure Signing & Capabilities</Text>
-          </Stack>
-        </ListItem>
-        <ListItem mt="8px">
-          <Stack spacing={1} direction="row" alignItems="center">
-            <Button
-              size="sm"
-              onClick={() => {
-                onOpen();
-                setLoading(true);
-              }}
-              isLoading={loading}
-              colorScheme="blue"
-            >
-              Build & Check
-            </Button>
-            <Button
-              size="sm"
-              onClick={() => {
-                onUninstallOpen();
-                setLoading(true);
-              }}
-              isLoading={loading}
-              colorScheme="red"
-            >
-              Clean
-            </Button>
-          </Stack>
-        </ListItem>
-      </UnorderedList>
+      <Stack>
+        <Stack spacing={1} direction="row" alignItems="center">
+          <Button size="sm" onClick={onOpenProject}>
+            Open {projectName} project
+          </Button>
+          <Text fontSize={'sm'}> and configure Signing & Capabilities</Text>
+        </Stack>
+        <Stack spacing={1} direction="row" alignItems="center">
+          <Button
+            size="sm"
+            onClick={() => {
+              onOpen();
+              setLoading(true);
+            }}
+            isLoading={loading}
+            colorScheme="blue"
+          >
+            Build & Check
+          </Button>
+          <Button
+            size="sm"
+            onClick={() => {
+              onUninstallOpen();
+              setLoading(true);
+            }}
+            isLoading={loading}
+            colorScheme="red"
+          >
+            Clean
+          </Button>
+        </Stack>
+      </Stack>
       <ExternalToolInstallerModal
         title={<Text>Building project...</Text>}
         isOpen={isOpen}

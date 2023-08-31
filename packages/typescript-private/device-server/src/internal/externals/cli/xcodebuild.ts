@@ -105,7 +105,8 @@ export class XCTestRunContext {
       this.logger.error(err);
     });
   }
-  public kill(): void {
+  public kill(reason: string): void {
+    this.logger.error(`killed. ${reason}`);
     killChildProcess(this.proc).catch((error) => {
       this.logger.error('XCTestRunContext killChildProcess', { error: errorify(error) });
     });
@@ -117,7 +118,7 @@ export class XCTestRunContext {
     }
     if (this.option.waitForLog && !this.isWaitLogPrinted && this.option.waitForLog.timeout < Date.now() - this.startTime) {
       this.logger.error(`waitForLog timeout expired. ${this.option.waitForLog.str}`);
-      this.kill();
+      this.kill('waitForLog timeout expired');
     }
   }
 
@@ -146,13 +147,13 @@ export class XCTestRunContext {
       },
     }).catch((err) => {
       this.logger.error(`redirectFileToStream failed outputPath: ${outputPath}, err: ${stringify(errorify(err))}`);
-      this.kill();
+      this.kill('redirectFileToStream failed');
     });
   }
 
   private checkLog(): void {
     if (this.logs.includes('TEST EXECUTE FAILED') || this.logs.includes('BUILD INTERRUPTED')) {
-      this.kill();
+      this.kill('TEST EXECUTE FAILED or BUILD INTERRUPTED');
     }
     if (this.option.waitForLog && !this.isWaitLogPrinted && this.logs.includes(this.option.waitForLog.str)) {
       this.isWaitLogPrinted = true;

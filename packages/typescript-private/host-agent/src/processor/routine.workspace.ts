@@ -45,9 +45,12 @@ export class RoutineWorkspace {
 
   async findRoutineWorkspace(rootWorkspacePath: string, meta: RoutineWorkspaceMeta): Promise<string | null> {
     const routinesPath = HostPaths.routinesPath(rootWorkspacePath);
-    try {
-      const metaFiles = (await fs.promises.readdir(routinesPath)).filter((file) => file.endsWith(MetaExtension));
-      for (const metaFile of metaFiles) {
+    if (fs.existsSync(routinesPath) === false) {
+      await fs.promises.mkdir(routinesPath, { recursive: true });
+    }
+    const metaFiles = (await fs.promises.readdir(routinesPath).catch((e) => [])).filter((file) => file.endsWith(MetaExtension));
+    for (const metaFile of metaFiles) {
+      try {
         const metaFilePath = path.resolve(routinesPath, metaFile);
         const contents = await fs.promises.readFile(metaFilePath, 'utf8');
         const metaObject = await transformAndValidate(RoutineWorkspaceMeta, JSON.parse(contents));
@@ -58,10 +61,11 @@ export class RoutineWorkspace {
           }
           return routineWorkspacePath;
         }
+      } catch (e) {
+        this.logger.info(`Failed to validate routine workspace meta: `, { meta, e });
       }
-    } catch (e) {
-      this.logger.info(`Failed to find routine workspace: `, { meta, e });
     }
+    this.logger.info(`Failed to find routine workspace meta`);
     return null;
   }
 }

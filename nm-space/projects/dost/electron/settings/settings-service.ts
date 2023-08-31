@@ -10,6 +10,7 @@ import systeminformation from 'systeminformation';
 import { promisify } from 'util';
 import { ILoginItemSettingsOptions, ISettings, MediaType, settingsClientKey } from '../../src/shares/settings';
 import { AppConfigService } from '../app-config/app-config-service';
+import { ChildService } from '../child/child-service';
 import { DotEnvConfigService } from '../dot-env-config/dot-env-config-service';
 import { logger } from '../log/logger.instance';
 import { ThirdPartyPathMap, WritablePath } from '../path-map';
@@ -45,6 +46,11 @@ export class SettingsService {
     ipcMain.handle(settingsClientKey.openSecurityPrefPanel, (_, param: string) => this.openSecurityPrefPanel(param));
 
     ipcMain.handle(settingsClientKey.setBadgeCount, (_, count: number) => app.setBadgeCount(count));
+    ipcMain.handle(settingsClientKey.restart, async () => {
+      app.relaunch();
+      await ChildService.close();
+      app.exit();
+    });
 
     ipcMain.handle(settingsClientKey.getDefaultAndroidHomePath, (_) => HostPaths.external.defaultAndroidHomePath());
     ipcMain.handle(settingsClientKey.getDefaultJavaHomePath, (_) => HostPaths.external.defaultJavaHomePath());

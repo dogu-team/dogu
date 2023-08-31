@@ -1,4 +1,4 @@
-import { Button, Center, Divider, List, Text } from '@chakra-ui/react';
+import { Button, Center, Divider, Flex, List, Spacer, Stack, Switch, Text, useDisclosure } from '@chakra-ui/react';
 import { stringify } from '@dogu-tech/common';
 import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import ManualExternalToolValidCheckerItem from '../components/external/ManualExternalToolValidCheckerItem';
 import BorderBox from '../components/layouts/BorderBox';
 import PageTitle from '../components/layouts/PageTitle';
+import { RestartAlert } from '../components/overlays/RestartAlert';
 import { DoguDocsDeviceFarmIosSettingsUrl } from '../shares/constants';
 import { ExternalKey, ExternalValidationResult } from '../shares/external';
 import useIosSettingsStatus from '../stores/ios-settings-status';
@@ -13,7 +14,9 @@ import { ipc } from '../utils/window';
 
 function IosSettings() {
   const [xcodeResult, setXcodeResult] = useState<ExternalValidationResult | null>(null);
+  const [isRestartIosOnInit, setIsRestartIosOnInit] = useState(false);
   const { iosStatus, setIosStatus } = useIosSettingsStatus();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onValidateEnd = useCallback(
     (key: ExternalKey, validateResult: ExternalValidationResult) => {
@@ -41,8 +44,28 @@ function IosSettings() {
     }
   }, []);
 
+  const loadConfig = async () => {
+    try {
+      const isRestart = await ipc.appConfigClient.getOrDefault<boolean>('DOGU_DEVICE_IOS_RESTART_ON_INIT', false);
+      setIsRestartIosOnInit(isRestart);
+    } catch (e) {
+      ipc.rendererLogger.error('Error while getting DOGU_DEVICE_IOS_RESTART_ON_INIT', { error: e });
+    }
+  };
+
+  const onIosRestartChange = async (checked: boolean) => {
+    try {
+      await ipc.appConfigClient.set<boolean>('DOGU_DEVICE_IOS_RESTART_ON_INIT', checked);
+      setIsRestartIosOnInit(checked);
+      onOpen();
+    } catch (e) {
+      ipc.rendererLogger.error('Error while setting DOGU_DEVICE_IOS_RESTART_ON_INIT', { error: e });
+    }
+  };
+
   useEffect(() => {
     validateXcode();
+    loadConfig();
   }, []);
 
   return (
@@ -77,8 +100,19 @@ function IosSettings() {
               onValidateEnd={(validateResult) => onValidateEnd(result.key, validateResult)}
             />
           ))}
+          <BorderBox>
+            <Stack spacing="8px">
+              <MenuTitle>Experimental</MenuTitle>
+              <Flex alignItems="center">
+                <Text fontSize=".9rem">Restart iOS device when starting a connection</Text>
+                <Spacer />
+                <Switch size="md" isChecked={isRestartIosOnInit} onChange={(e) => onIosRestartChange(e.target.checked)} />
+              </Flex>
+            </Stack>
+          </BorderBox>
         </List>
       </Center>
+      <RestartAlert isOpen={isOpen} onClose={onClose} />
     </div>
   );
 }

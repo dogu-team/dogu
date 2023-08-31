@@ -47,6 +47,7 @@ expose('settingsClient', {
   openSecurityPrefPanel: (name: string) => ipcRenderer.invoke(settingsClientKey.openSecurityPrefPanel, name),
 
   setBadgeCount: (count: number) => ipcRenderer.invoke(settingsClientKey.setBadgeCount, count),
+  restart: () => ipcRenderer.invoke(settingsClientKey.restart),
 
   getDefaultAndroidHomePath: () => ipcRenderer.invoke(settingsClientKey.getDefaultAndroidHomePath),
   getDefaultJavaHomePath: () => ipcRenderer.invoke(settingsClientKey.getDefaultJavaHomePath),

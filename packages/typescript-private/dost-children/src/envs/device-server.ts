@@ -1,8 +1,8 @@
 import { DoguRunType, NodeEnvType } from '@dogu-private/env-tools';
-import { IsFilledString } from '@dogu-tech/common';
+import { IsFilledString, TransformBooleanString } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import { Type } from 'class-transformer';
-import { IsIn, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsIn, IsNumber, IsString } from 'class-validator';
 
 export class PreloadDeviceServerEnv {
   @IsIn(NodeEnvType)
@@ -31,4 +31,8 @@ export class DeviceServerEnv extends PreloadDeviceServerEnv {
 
   @IsString()
   DOGU_PACKAGED_RESOURCES_PATH = '';
+
+  @IsBoolean()
+  @TransformBooleanString()
+  DOGU_DEVICE_IOS_RESTART_ON_INIT = false;
 }
