@@ -3,12 +3,21 @@ import { errorify, stringify } from './common/functions.js';
 import { WebSocketSpec } from './common/specs.js';
 import { Class, Instance } from './common/types.js';
 import { DeviceHttpClient } from './device-http-client.js';
+import { AppiumCapabilities } from './specs/http/device-dtos.js';
+import { Device } from './specs/http/device.js';
 import { DeviceForward } from './specs/ws/device/forward.js';
+import { DeviceRunAppiumServer } from './specs/ws/device/run-appium-server.js';
+import { AppiumServerContext } from './types/appium.js';
 import { Serial } from './types/types.js';
 
 export class DeviceClient extends DeviceHttpClient {
   constructor(deviceService: DeviceService, options?: DeviceClientOptions) {
     super(deviceService, options);
+  }
+
+  async getAppiumCapabilities(serial: Serial): Promise<AppiumCapabilities> {
+    const response = await this.httpRequest(Device.getAppiumCapabilities, new Device.getAppiumCapabilities.pathProvider(serial));
+    return response.capabilities;
   }
 
   private subscribe<S extends Class<S>, R>(
@@ -123,6 +132,70 @@ export class DeviceClient extends DeviceHttpClient {
         .catch((error) => {
           returningClosable = null;
           printable.error?.(`Failed to forward`, { error: errorify(error) });
+        });
+    });
+  }
+
+  runAppiumServer(serial: Serial): Promise<AppiumServerContext> {
+    const { printable } = this.options;
+    let returningClosable: DeviceCloser | null = null;
+    let resolvedOrRejected = false;
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        if (resolvedOrRejected) {
+          return;
+        }
+        resolvedOrRejected = true;
+        returningClosable?.close();
+        reject(new Error(`Timeout to runAppiumServer`));
+      }, 30 * 1000);
+      this.subscribe(
+        DeviceRunAppiumServer,
+        undefined,
+        (deviceServerWebSocket) => {
+          const sendMessage: Instance<typeof DeviceRunAppiumServer.sendMessage> = {
+            serial,
+          };
+          deviceServerWebSocket.send(JSON.stringify(sendMessage));
+        },
+        (message) => {
+          const parsed = JSON.parse(message) as Instance<typeof DeviceRunAppiumServer.receiveMessage>;
+          const { value } = parsed;
+          const { kind } = value;
+          if (kind === 'DeviceRunAppiumServerReceiveMessageLogValue') {
+            // noop
+          } else if (kind === 'DeviceRunAppiumServerReceiveMessageResultValue') {
+            const { success } = value;
+            if (success) {
+              if (returningClosable === null) {
+                throw new Error(`Unexpected returningClosable`);
+              }
+              clearTimeout(timeout);
+              if (resolvedOrRejected) {
+                return;
+              }
+              resolvedOrRejected = true;
+              resolve(new AppiumServerContext({ port: value.serverPort }, returningClosable));
+            } else {
+              clearTimeout(timeout);
+              if (resolvedOrRejected) {
+                return;
+              }
+              resolvedOrRejected = true;
+              returningClosable?.close();
+              reject(new Error(`Failed to runAppiumServer`));
+            }
+          } else {
+            throw new Error(`Unexpected kind: ${stringify(kind)}`);
+          }
+        },
+      )
+        .then((closable) => {
+          returningClosable = closable;
+        })
+        .catch((error) => {
+          returningClosable = null;
+          printable.error?.(`Failed to runAppiumServer`, { error: errorify(error) });
         });
     });
   }
