@@ -702,6 +702,7 @@ Dest.withOptions({
           });
 
           test('Insert project name', async () => {
+            await Timer.wait(1000, 'wait for input focus');
             await Driver.sendKeys({ xpath: `//input[@placeholder="${l10n('NAME')}"]` }, values.value.PROJECT_NAME, { focusWindow: true });
           });
 
@@ -727,7 +728,6 @@ Dest.withOptions({
 
         job('Add tag', () => {
           test('Click tag tab', async () => {
-            await Timer.wait(3000, 'wait for tag tab');
             await Driver.clickElement({ xpath: '//*[@access-id="org-tag-list-tab"]' });
           });
 
@@ -736,7 +736,7 @@ Dest.withOptions({
           });
 
           test('Enter tag', async () => {
-            await Timer.wait(3000, 'wait for tag input');
+            await Timer.wait(1000, 'wait for input focus');
             await Driver.sendKeys({ xpath: `//input[@id="name"]` }, tag, { focusWindow: true });
           });
 
@@ -752,6 +752,11 @@ Dest.withOptions({
         job('Add tag to device', () => {
           test('Add list tab', async () => {
             await Driver.clickElement({ xpath: '//*[@access-id="org-device-list-tab"]' });
+            if (isHost) {
+              hostDeviceName = await Driver.getText({ xpath: '//span[text()="Host"]/../../p' });
+            } else {
+              androidDeviceName = await Driver.getText({ xpath: '//*[@icon-id="android-icon"]/../../../div[1]/button/p' });
+            }
           });
 
           test('Click menu', async () => {
@@ -763,12 +768,13 @@ Dest.withOptions({
             );
           });
 
-          test('Click chagne tag', async () => {
+          test('Click change tag', async () => {
             await Driver.clickElement({ xpath: `//*[text()="${l10n('EDIT_TAGS')}"]` });
           });
 
           test('Enter tag', async () => {
-            await Driver.sendKeys({ xpath: '//input[@access-id="device-edit-tag-search-input"]' }, tag);
+            await Timer.wait(1000, 'wait for input focus');
+            await Driver.sendKeys({ xpath: '//input[@access-id="device-edit-tag-search-input"]' }, tag, { focusWindow: true });
           });
 
           test('Click tag', async () => {
@@ -795,11 +801,6 @@ Dest.withOptions({
         job(studioJobName, () => {
           test('Click studio button', async () => {
             await Driver.clickElement({ xpath: studio });
-            if (studioJobName.startsWith('Host')) {
-              hostDeviceName = await Driver.getText({ xpath: '//span[text()="Host"]/../../p' });
-            } else if (studioJobName.startsWith('Android')) {
-              androidDeviceName = await Driver.getText({ xpath: '//*[@icon-id="android-icon"]/../../../div[1]/button/p' });
-            }
             await Driver.switchTab(1);
           });
 
@@ -983,7 +984,7 @@ Dest.withOptions({
 
       test('Check global device', async () => {
         await Driver.clickElement({ xpath: '//a[@access-id="side-bar-project"]' });
-        await Driver.clickElement({ xpath: '//a[text()="Sample Project"]' });
+        await Driver.clickElement({ xpath: `//a[text()="${values.value.SAMPLE_PROJECT_NAME}"]` });
         await Driver.clickElement({ xpath: '//a[@access-id="project-side-bar-devices"]' });
         await Driver.findElement({ xpath: '//span[text()="Public"]' });
         await Driver.findElement({ xpath: '//span[text()="Host"]' });
@@ -998,7 +999,7 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: '//button[@id="stop-using-device-confirm-btn"]' });
         await Timer.wait(2000, 'wait for changing device setting');
         await Driver.clickElement({ xpath: '//a[@access-id="side-bar-project"]' });
-        await Driver.clickElement({ xpath: '//a[text()="Sample Project"]' });
+        await Driver.clickElement({ xpath: `//a[text()="${values.value.SAMPLE_PROJECT_NAME}"]` });
         await Driver.clickElement({ xpath: '//a[@access-id="project-side-bar-devices"]' });
         await Driver.findElement({ xpath: '//*[contains(@class, "ant-empty")]' });
       });
@@ -1057,7 +1058,7 @@ Dest.withOptions({
       // project deletion
       test('Delete project', async () => {
         await Driver.clickElement({ xpath: '//a[@access-id="side-bar-project"]' });
-        await Driver.clickElement({ xpath: '//a[text()="Sample Project"]' });
+        await Driver.clickElement({ xpath: `//a[text()="${values.value.SAMPLE_PROJECT_NAME}"]` });
         await Driver.clickElement({ xpath: '//a[@access-id="project-side-bar-settings"]' });
         await Driver.clickElement({ xpath: '//button[@access-id="delete-project-btn"]' });
         await Driver.clickElement({ xpath: '//button[@id="delete-project-confirm-btn"]' });
