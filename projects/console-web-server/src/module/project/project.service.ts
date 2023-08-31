@@ -263,7 +263,7 @@ export class ProjectService {
   async updateProject(organizationId: OrganizationId, projectId: ProjectId, updateProjectDto: UpdateProjectDto): Promise<ProjectResponse> {
     const { name, type, description } = updateProjectDto;
 
-    if (!name && !type && !description) {
+    if (!name && type === undefined && !description) {
       const keyOfUpdateProjectDto = Object.keys(updateProjectDto);
       throw new HttpException(`At least one of the fields must be filled in. : ${keyOfUpdateProjectDto}`, HttpStatus.BAD_REQUEST);
     }
