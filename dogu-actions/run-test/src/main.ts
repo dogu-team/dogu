@@ -104,22 +104,22 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
 
   await fs.promises.mkdir(DOGU_STEP_WORKING_PATH, { recursive: true });
 
-  command
+  const onelineCommand = command
     .split('\n')
     .map((line) => line.trim())
-    .filter((line) => line.length > 0)
-    .forEach((line) => {
-      logger.info(`Run command: [${line}] on ${DOGU_STEP_WORKING_PATH}`);
-      const result = spawnSync(line, {
-        stdio: 'inherit',
-        shell: true,
-        cwd: DOGU_STEP_WORKING_PATH,
-        env,
-      });
-      if (result.status === 0) {
-        logger.info(`Command succeed: [${line}] with status: ${result.status}`);
-      } else {
-        throw new Error(`Command failed: [${line}] with status: ${result.status}`);
-      }
-    });
+    .filter((line) => line)
+    .join(' && ');
+
+  logger.info(`Run command: [${onelineCommand}] on ${DOGU_STEP_WORKING_PATH}`);
+  const result = spawnSync(onelineCommand, {
+    stdio: 'inherit',
+    shell: true,
+    cwd: DOGU_STEP_WORKING_PATH,
+    env,
+  });
+  if (result.status === 0) {
+    logger.info(`Command succeed: [${onelineCommand}] with status: ${result.status}`);
+  } else {
+    throw new Error(`Command failed: [${onelineCommand}] with status: ${result.status}`);
+  }
 });

@@ -74,25 +74,30 @@ export class MessageRequestResponseController {
   }
 
   @OnConsoleMessage(RunStep, ErrorResult)
-  onRunStep(@Payload() param: RunStep, @Ctx() context: MessageContext): Promise<ErrorResult> {
+  async onRunStep(@Payload() param: RunStep, @Ctx() context: MessageContext): Promise<ErrorResult> {
     return this.deviceJobStepProcessor.onRunStep(param, context);
   }
 
   @OnConsoleMessage(Run, ErrorResult)
   async onRun(@Payload() param: Run, @Ctx() context: MessageContext): Promise<ErrorResult> {
     const { run } = param;
-    let cwd = context instanceof StepMessageContext ? context.workingPath : process.cwd();
+    const cwd = context instanceof StepMessageContext ? context.workingPath : process.cwd();
     await fs.promises.mkdir(cwd, { recursive: true });
-    return this.commandProcessRegistry.commandLine(run, { cwd }, context);
+    const onelineCommand = run
+      .split('\n')
+      .map((line) => line.trim())
+      .filter((line) => line)
+      .join(' && ');
+    return this.commandProcessRegistry.commandLine(onelineCommand, { cwd }, context);
   }
 
   @OnConsoleMessage(Action, ErrorResult)
-  onAction(@Payload() param: Action, @Ctx() context: MessageContext): Promise<ErrorResult> {
+  async onAction(@Payload() param: Action, @Ctx() context: MessageContext): Promise<ErrorResult> {
     return this.actionProcessor.action(param, context);
   }
 
   @OnConsoleMessage(UpdateHostAppRequest, ErrorResult)
-  onUpdateHost(@Payload() param: UpdateHostAppRequest, @Ctx() context: MessageContext): Promise<ErrorResult> {
+  async onUpdateHost(@Payload() param: UpdateHostAppRequest, @Ctx() context: MessageContext): Promise<ErrorResult> {
     return this.updateProcessor.update(param);
   }
 }

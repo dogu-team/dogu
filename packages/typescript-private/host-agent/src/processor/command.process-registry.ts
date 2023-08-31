@@ -126,8 +126,7 @@ export class CommandProcessRegistry {
   }
 
   commandLine(commandLine: string, options: SpawnOptions, context: MessageContext): Promise<ErrorResult> {
-    const command = process.platform === 'win32' ? process.env.COMSPEC ?? 'cmd.exe' : process.env.SHELL ?? '/bin/sh';
-    const args = [process.platform === 'win32' ? '/c' : '-c', commandLine];
-    return this.command(command, args, options, context);
+    options.shell = true;
+    return this.command(commandLine, [], options, context);
   }
 }
