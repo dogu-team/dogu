@@ -35,7 +35,7 @@ const values = {
     ANDROID_DEVICE_TAG: `test-android-tag`,
     IOS_DEVICE_TAG: `test-ios-tag`,
     ROUTINE_NAME: 'e2e',
-    SAMPLE_PROJECT_NAME: 'sample project',
+    SAMPLE_PROJECT_NAME: 'Sample project',
     SAMPLE_ROUTINE_NAME: 'sample routine',
     SAMPLE_APP_EXTENSION: 'APK',
     SAMPLE_APP_PATH: path.resolve('samples/dogurpgsample.apk'),
@@ -281,12 +281,6 @@ Dest.withOptions({
       });
 
       test('Check organization creation', async () => {
-        // const orgName = await Driver.getText({ xpath: '//*[@access-id="sb-title"]/div/div/p' });
-        // /**
-        //  * @note uppercase due to css property: text-transform
-        //  */
-        // expect(orgName).toBe(values.value.ORG_NAME.toUpperCase());
-
         await Driver.findElement({ xpath: `//*[text()='${values.value.ORG_NAME}']` }, { waitTime: 20000 });
       });
 
@@ -341,6 +335,33 @@ Dest.withOptions({
       });
     });
 
+    job('Create sample project', () => {
+      test('Go to projects page', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="side-bar-project"]' });
+      });
+
+      test('Click create new project button', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="add-project-btn"]' });
+      });
+
+      test('Enter project info', async () => {
+        await Driver.sendKeys({ xpath: '//*[@id="name"]' }, values.value.SAMPLE_PROJECT_NAME);
+        await Driver.sendKeys({ xpath: '//*[@id="desc"]' }, 'Test Project Description');
+      });
+
+      test('Click create project button', async () => {
+        await Driver.clickElement({ xpath: '//button[@form="new-project"]' });
+      });
+
+      test('Close project tutorial', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="skip-project-tutorial"]' });
+      });
+
+      test('Back to organizaiton page', async () => {
+        await Driver.clickElement({ xpath: '//a[@access-id="project-side-bar-back"]' });
+      });
+    });
+
     job('Create team', () => {
       test('Click team menu', async () => {
         await Driver.clickElement({ xpath: '//*[@access-id="side-bar-team"]' });
@@ -384,10 +405,10 @@ Dest.withOptions({
 
       test('Add project to team', async () => {
         await Driver.clickElement({ xpath: '//button[@access-id="add-project-to-team-btn"]' });
-        await Driver.sendKeys({ xpath: '//input[@access-id="add-project-modal-input"]' }, 'Sample');
-        await Driver.clickElement({ xpath: '//div[contains(text(), "Sample")]' });
+        await Driver.sendKeys({ xpath: '//input[@access-id="add-project-modal-input"]' }, values.value.SAMPLE_PROJECT_NAME);
+        await Driver.clickElement({ xpath: `//div[contains(text(), "${values.value.SAMPLE_PROJECT_NAME}")]` });
         await Driver.clickElement({ xpath: '//button[@access-id="permission-select-submit-button"]' });
-        await Driver.findElement({ xpath: '//p[text()="Sample Project"]' });
+        await Driver.findElement({ xpath: `//p[text()="${values.value.SAMPLE_PROJECT_NAME}"]` });
       });
 
       test('Click settings tab', async () => {
@@ -414,13 +435,8 @@ Dest.withOptions({
     });
 
     job('Create project', () => {
-      test('Click project menu', async () => {
-        await Driver.clickElement(
-          { xpath: '//*[@access-id="side-bar-project"]' },
-          {
-            focusWindow: true,
-          },
-        );
+      test('Go to projects page', async () => {
+        await Driver.clickElement({ xpath: '//*[@access-id="side-bar-project"]' });
       });
 
       test('Click create new project button', async () => {
@@ -428,6 +444,7 @@ Dest.withOptions({
       });
 
       test('Enter project info', async () => {
+        await Driver.clickElement({ xpath: '//input[@type="radio" and @value="2"]/../..' });
         await Driver.sendKeys({ xpath: '//*[@id="name"]' }, values.value.PROJECT_NAME);
         await Driver.sendKeys({ xpath: '//*[@id="desc"]' }, 'Test Project Description');
       });
@@ -485,7 +502,8 @@ Dest.withOptions({
       test('Change permission', async () => {
         await Driver.clickElement({ xpath: `//div[text()="${l10n('PROJECT_ORG_MEMBER_TYPE')}"]/../div[3]/div/div/span[2]` });
         await Driver.clickElement({ xpath: '//div[@title="Write"]' });
-        const permission = await Driver.getText({ xpath: '//span[@class="ant-select-selection-item"]' });
+        await Timer.wait(1500, 'wait for changing permission');
+        const permission = await Driver.getText({ xpath: `//div[text()="${l10n('PROJECT_ORG_MEMBER_TYPE')}"]/..//span[@class="ant-select-selection-item"]` });
         expect(permission).toBe('Write');
       });
 
@@ -545,7 +563,31 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
       });
 
-      // test removing project after streaming
+      test('Change project template', async () => {
+        await Driver.clickElement({ xpath: '//button[@access-id="update-project-template-btn"]' });
+        await Driver.clickElement({ xpath: '//input[@type="radio" and @value="0"]/../..' });
+        await Driver.clickElement({ xpath: '//button[@id="update-project-template-confirm-btn"]' });
+        await Timer.wait(2000, 'wait for changing project template');
+        let element = await Driver.findElement({ xpath: '//div[@title="General" and @class="ant-menu-item-group-title"]/../ul/li[1]/span/a' });
+        let accessId = await element.getAttribute('access-id');
+        expect(accessId).toBe('project-side-bar-apps');
+
+        await Driver.clickElement({ xpath: '//button[@access-id="update-project-template-btn"]' });
+        await Driver.clickElement({ xpath: '//input[@type="radio" and @value="1"]/../..' });
+        await Driver.clickElement({ xpath: '//button[@id="update-project-template-confirm-btn"]' });
+        await Timer.wait(2000, 'wait for changing project template');
+        element = await Driver.findElement({ xpath: '//div[@title="General" and @class="ant-menu-item-group-title"]/../ul/li[1]/span/a' });
+        accessId = await element.getAttribute('access-id');
+        expect(accessId).toBe('project-side-bar-members');
+
+        await Driver.clickElement({ xpath: '//button[@access-id="update-project-template-btn"]' });
+        await Driver.clickElement({ xpath: '//input[@type="radio" and @value="3"]/../..' });
+        await Driver.clickElement({ xpath: '//button[@id="update-project-template-confirm-btn"]' });
+        await Timer.wait(2000, 'wait for changing project template');
+        element = await Driver.findElement({ xpath: '//div[@title="General" and @class="ant-menu-item-group-title"]/../ul/li[1]/span/a' });
+        accessId = await element.getAttribute('access-id');
+        expect(accessId).toBe('project-side-bar-apps');
+      });
     });
 
     job('Host setting', () => {

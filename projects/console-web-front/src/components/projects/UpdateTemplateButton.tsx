@@ -64,6 +64,9 @@ const UpdateTemplateButton = ({}: Props) => {
           setProjectType(project?.type || PROJECT_TYPE.CUSTOM);
         }
       }}
+      buttonProps={{
+        id: 'update-project-template-confirm-btn',
+      }}
     >
       {t('changeProjectTemplateButtonText')}
     </DangerZone.Button>
