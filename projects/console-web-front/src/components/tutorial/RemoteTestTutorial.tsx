@@ -12,8 +12,12 @@ interface Props {
 const RemoteTestTutorial = ({ selectedSdk }: Props) => {
   const { organization, project } = useTutorialContext();
 
-  if (!organization || !project) {
+  if (!organization) {
     return <div>Something went wrong... please contact us</div>;
+  }
+
+  if (!project) {
+    return <div>Create project first.</div>;
   }
 
   return (

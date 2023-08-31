@@ -47,8 +47,7 @@ const DeviceFarmTutorial = () => {
   const [token, setToken] = useState<string>();
   const [loading, setLoading] = useState(false);
   const [host, setHost] = useState<HostBase>();
-  const [project, setProject] = useState<ProjectBase>();
-  const { organization } = useTutorialContext();
+  const { project, updateProject, organization } = useTutorialContext();
 
   const selectedSdk = (router.query.sdk as GuideSupportSdk | undefined) || GuideSupportSdk.WEBDRIVERIO;
   const guideData = tutorialData[selectedSdk];
@@ -68,7 +67,7 @@ const DeviceFarmTutorial = () => {
       if (projectRaw) {
         const data = JSON.parse(projectRaw) as ProjectBase;
         if (data.organizationId === organization.organizationId) {
-          setProject(data);
+          updateProject(data);
         } else {
           sessionStorage.removeItem(TUTORIAL_PROJECT_SESSION_KEY);
         }
@@ -207,7 +206,7 @@ const DeviceFarmTutorial = () => {
                       isOpen={isProjectModalOpen}
                       close={closeProjectModal}
                       onCreate={(result) => {
-                        setProject(result);
+                        updateProject(result);
                       }}
                     />
                   </div>

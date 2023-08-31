@@ -2,6 +2,7 @@ import { OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
 import { GetServerSideProps } from 'next';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
+import { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
 import { getOrganizationInServerSide } from '../../../../src/api/organization';
@@ -19,19 +20,24 @@ import { NextPageWithLayout } from '../../../_app';
 interface ServerSideProps {
   organization: OrganizationBase;
   me: UserBase;
-  projects: ProjectBase[];
 }
 
-const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organization, projects, me }) => {
+const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organization, me }) => {
+  const [project, setProject] = useState<ProjectBase>();
   const router = useRouter();
   const isFrameworkSelected = !!router.query.sdk && Object.keys(tutorialData).includes(router.query.sdk as string) && !!router.query.framework;
+
+  const updateProject = useCallback((project: ProjectBase) => {
+    setProject(project);
+  }, []);
 
   return (
     <TutorialContext.Provider
       value={{
         organization,
-        project: projects[0] ?? null,
+        project: project ?? null,
         me,
+        updateProject,
       }}
     >
       <Head>
@@ -55,11 +61,7 @@ OrganizationTutorialPage.getLayout = (page) => {
 };
 
 export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (context) => {
-  const [organization, checkResult, projectData] = await Promise.all([
-    getOrganizationInServerSide(context),
-    checkUserVerifiedInServerSide(context),
-    getProjectListInServerSide(context, { page: 1, offset: 10 }),
-  ]);
+  const [organization, checkResult] = await Promise.all([getOrganizationInServerSide(context), checkUserVerifiedInServerSide(context)]);
 
   if (checkResult.redirect) {
     return checkResult;
@@ -75,7 +77,6 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (co
     props: {
       organization,
       me: checkResult.props.fallback['/registery/check'],
-      projects: projectData.items,
     },
   };
 };

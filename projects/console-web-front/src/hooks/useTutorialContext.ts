@@ -5,12 +5,14 @@ export interface TutorialContextValue {
   organization: OrganizationBase | null;
   project: ProjectBase | null;
   me: UserBase | null;
+  updateProject: (project: ProjectBase) => void;
 }
 
 const defaultContextValue: TutorialContextValue = {
   organization: null,
   project: null,
   me: null,
+  updateProject: () => {},
 };
 
 export const TutorialContext = React.createContext<TutorialContextValue>(defaultContextValue);
