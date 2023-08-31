@@ -4,7 +4,7 @@ import { PageDtoBase } from '../pagination/page.dto';
 // project dto start
 export interface CreateProjectDtoBase {
   name: string;
-  type?: PROJECT_TYPE; // FIXME:(felix) type should be not empty
+  type: PROJECT_TYPE;
   description?: string;
 }
 
@@ -13,8 +13,8 @@ export interface FindProjectDtoBase extends PageDtoBase {
 }
 
 export interface UpdateProjectDtoBase {
-  name: string;
-  type?: PROJECT_TYPE; // FIXME:(felix) type should be not empty
+  name?: string;
+  type?: PROJECT_TYPE;
   description?: string;
 }
 // project dto end

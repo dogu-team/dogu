@@ -20,66 +20,64 @@ export class CreateProjectDto implements CreateProjectDtoBase {
   @MaxLength(PROJECT_NAME_MAX_LENGTH)
   name!: string;
 
-  // FIXME:(felix) type should be not empty
-  @IsOptional()
   @IsEnum(PROJECT_TYPE)
-  type: PROJECT_TYPE = PROJECT_TYPE.CUSTOM;
+  type!: PROJECT_TYPE;
 
-  @IsOptional()
-  @IsString()
   @MaxLength(PROJECT_DESC_MAX_LENGTH)
+  @IsString()
+  @IsOptional()
   description: string = '';
 }
 
 export class UpdateProjectDto implements UpdateProjectDtoBase {
-  @IsString()
   @MinLength(PROJECT_NAME_MIN_LENGTH)
   @MaxLength(PROJECT_NAME_MAX_LENGTH)
+  @IsString()
+  @IsOptional()
   name!: string;
 
-  // FIXME:(felix) type should be not empty
-  @IsOptional()
   @IsEnum(PROJECT_TYPE)
-  type: PROJECT_TYPE = PROJECT_TYPE.CUSTOM;
-
   @IsOptional()
-  @IsString()
+  type!: PROJECT_TYPE;
+
   @MaxLength(PROJECT_DESC_MAX_LENGTH)
+  @IsString()
+  @IsOptional()
   description: string = '';
 }
 
 export class FindProjectDto extends PageDto implements FindProjectDtoBase {
-  @IsOptional()
   @IsString()
+  @IsOptional()
   keyword = '';
 }
 
 export class FindProjectDeviceDto extends PageDto implements FindProjectDeviceDtoBase {
-  @IsOptional()
   @IsString()
+  @IsOptional()
   keyword = '';
 
-  @IsOptional()
   @Type(() => Number)
   @IsEnum(DeviceConnectionState)
+  @IsOptional()
   connectionState?: DeviceConnectionState;
 }
 
 export class FindUsersByProjectIdDto extends PageDto implements FindUsersByProjectIdDtoBase {
-  @IsOptional()
   @IsString()
+  @IsOptional()
   keyword = '';
 }
 
 export class FindTeamsByProjectIdDto extends PageDto implements FindTeamsByProjectIdDtoBase {
-  @IsOptional()
   @IsString()
+  @IsOptional()
   keyword = '';
 }
 
 export class FindMembersByProjectIdDto extends PageDto implements FindMembersByProjectIdDtoBase {
-  @IsOptional()
   @IsString()
+  @IsOptional()
   keyword = '';
 }
 export class FindProjectRoleDto {
@@ -95,8 +93,8 @@ export class CreatePipelineReportDto implements CreatePipelineReportDtoBase {
   @IsISO8601()
   from!: string;
 
-  @IsOptional()
   @IsISO8601()
+  @IsOptional()
   to?: string;
 }
 
@@ -107,7 +105,7 @@ export class GetProjectRepositoryFileDto {
 }
 
 export class GetProjectScriptMetaDto {
-  @IsOptional()
   @IsIn(['tree', 'blob'])
+  @IsOptional()
   type!: 'tree' | 'blob';
 }

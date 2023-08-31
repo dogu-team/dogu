@@ -262,12 +262,18 @@ export class ProjectService {
 
   async updateProject(organizationId: OrganizationId, projectId: ProjectId, updateProjectDto: UpdateProjectDto): Promise<ProjectResponse> {
     const { name, type, description } = updateProjectDto;
-    const project = await this.dataSource.getRepository(Project).findOne({ where: { projectId, organizationId } });
 
+    if (!name && !type && !description) {
+      const keyOfUpdateProjectDto = Object.keys(updateProjectDto);
+      throw new HttpException(`At least one of the fields must be filled in. : ${keyOfUpdateProjectDto}`, HttpStatus.BAD_REQUEST);
+    }
+
+    const project = await this.dataSource.getRepository(Project).findOne({ where: { projectId, organizationId } });
     if (!project) {
       throw new HttpException(`Project with ${projectId} not found`, HttpStatus.NOT_FOUND);
     }
 
+    // name check
     const existingProject = await this.dataSource.getRepository(Project).findOne({
       where: { projectId: Not(projectId), organizationId, name },
     });
@@ -275,12 +281,18 @@ export class ProjectService {
       throw new HttpException(`Project name ${name} is already exist`, HttpStatus.BAD_REQUEST);
     }
 
-    const newData = Object.assign(project, updateProjectDto);
+    // type check
+    if (type === project.type) {
+      throw new HttpException(`Project type ${type} is already set`, HttpStatus.BAD_REQUEST);
+    }
 
-    const rv = await this.dataSource.transaction(async (manager) => {
-      const project = await manager.getRepository(Project).save(newData);
-      return project;
+    const newData = Object.assign(project, {
+      name: name ?? project.name,
+      type: type ?? project.type,
+      description,
     });
+
+    const rv = await this.dataSource.getRepository(Project).save(newData);
 
     return rv;
   }
