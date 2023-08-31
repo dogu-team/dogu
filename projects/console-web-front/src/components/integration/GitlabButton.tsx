@@ -2,6 +2,7 @@ import { PROJECT_SCM_TYPE } from '@dogu-private/types';
 import { Form, Modal } from 'antd';
 import { isAxiosError } from 'axios';
 import { shallow } from 'zustand/shallow';
+import Link from 'next/link';
 
 import GitlabIcon from 'public/resources/icons/gitlab.svg';
 import { deleteProjectScm, updateProjectScm } from '../../api/project';
@@ -64,7 +65,17 @@ function GitlabButton({ isConnected, disabled, organizationId, projectId, descri
       <IntegrationButton
         icon={<GitlabIcon style={{ width: '24px', height: '24px' }} />}
         name="GitLab"
-        description={description ?? 'Integrate routine with GitLab'}
+        description={
+          description ??
+          (disabled ? null : (
+            <>
+              Integrate routine with GitLab.{' '}
+              <Link href="https://docs.dogutech.io/management/project/git-integration/gitlab" target="_blank">
+                Visit docs
+              </Link>
+            </>
+          ))
+        }
         connectButton={
           isConnected ? (
             <DisconnectButton onClick={disconnect} loading={deleteLoading}>

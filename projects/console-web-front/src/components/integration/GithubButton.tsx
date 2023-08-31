@@ -2,6 +2,7 @@ import { PROJECT_SCM_TYPE } from '@dogu-private/types';
 import { Form, Modal } from 'antd';
 import { isAxiosError } from 'axios';
 import { shallow } from 'zustand/shallow';
+import Link from 'next/link';
 
 import GithubIcon from 'public/resources/icons/github.svg';
 import { deleteProjectScm, updateProjectScm } from '../../api/project';
@@ -64,7 +65,17 @@ function GithubButton({ isConnected, disabled, organizationId, projectId, descri
       <IntegrationButton
         icon={<GithubIcon style={{ width: '24px', height: '24px' }} />}
         name="GitHub"
-        description={description ?? 'Integrate routine with GitHub'}
+        description={
+          description ??
+          (disabled ? null : (
+            <>
+              Integrate routine with GitHub.{' '}
+              <Link href="https://docs.dogutech.io/management/project/git-integration/github" target="_blank">
+                Visit docs
+              </Link>
+            </>
+          ))
+        }
         connectButton={
           isConnected ? (
             <DisconnectButton onClick={disconnect} loading={deleteLoading}>

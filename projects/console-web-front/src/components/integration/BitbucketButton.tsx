@@ -2,6 +2,7 @@ import { PROJECT_SCM_TYPE } from '@dogu-private/types';
 import { Form, Modal } from 'antd';
 import { isAxiosError } from 'axios';
 import { shallow } from 'zustand/shallow';
+import Link from 'next/link';
 
 import BitbucketIcon from 'public/resources/icons/bitbucket.svg';
 import { deleteProjectScm, updateProjectScm } from '../../api/project';
@@ -64,7 +65,17 @@ function BitbucketButton({ isConnected, disabled, organizationId, projectId, des
       <IntegrationButton
         icon={<BitbucketIcon style={{ width: '24px', height: '24px' }} />}
         name="Bitbucket"
-        description={description ?? 'Integrate routine with Bitbucket'}
+        description={
+          description ??
+          (disabled ? null : (
+            <>
+              Integrate routine with Bitbucket.{' '}
+              <Link href="https://docs.dogutech.io/management/project/git-integration/bitbucket" target="_blank">
+                Visit docs
+              </Link>
+            </>
+          ))
+        }
         connectButton={
           isConnected ? (
             <DisconnectButton onClick={disconnect} loading={deleteLoading}>

@@ -15,7 +15,7 @@ function IntegrationButton({ icon, name, description, connectButton, id }: Props
       <IconContainer>{icon}</IconContainer>
       <TextContainer>
         <p style={{ fontSize: '1rem', fontWeight: '600' }}>{name}</p>
-        <div style={{ marginTop: '6px' }} />
+        {!!description && <div style={{ marginTop: '6px' }} />}
         <p style={{ fontSize: '.8rem' }}>{description}</p>
       </TextContainer>
 
