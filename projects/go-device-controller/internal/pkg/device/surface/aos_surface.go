@@ -25,36 +25,22 @@ func newAosSurface(agentUrl *string) *aosSurface {
 	return &s
 }
 
-func (s *aosSurface) Reconnect(serial string, retryCount int, sleepSec int, screenCaptureOption *streaming.ScreenCaptureOption) error {
+func (s *aosSurface) Reconnect(serial string, sleepSec int, screenCaptureOption *streaming.ScreenCaptureOption) error {
 	// reconnect loop
 	var err error
-	count := 0
-	for {
-		s.conn, _, err = websocket.DefaultDialer.Dial(*s.agentUrl, nil)
-		if err != nil {
-			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway) {
-				log.Inst.Info("aosSurface.Reconnect closed", zap.String("serial", serial), zap.String("url", *s.agentUrl))
-				return err
-			}
-			if count >= retryCount {
-				return err
-			}
-			if count%10 == 0 {
-				log.Inst.Info("aosSurface.Reconnect ", zap.String("serial", serial), zap.String("url", *s.agentUrl), zap.Int("retry", count))
-			}
-			time.Sleep(time.Second * time.Duration(sleepSec))
-			count += 1
-			continue
-		}
-		err = s.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
-		if err != nil {
-			log.Inst.Error("aosSurface.SetReadDeadline error", zap.String("url", *s.agentUrl), zap.Error(err))
-		}
-		return nil
+	s.conn, _, err = websocket.DefaultDialer.Dial(*s.agentUrl, nil)
+	if err != nil {
+		return err
 	}
+
+	return nil
 }
 
 func (s *aosSurface) Receive() ([]byte, error) {
+	err := s.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
+	if err != nil {
+		log.Inst.Error("aosSurface.SetReadDeadline error", zap.String("url", *s.agentUrl), zap.Error(err))
+	}
 	_, buf, err := s.conn.ReadMessage()
 	return buf, err
 }

@@ -33,9 +33,9 @@ func newiosSurface(agentUrl *string) *iosSurface {
 	return &s
 }
 
-func (s *iosSurface) Reconnect(serial string, retryCount int, sleepSec int, screenCaptureOption *streaming.ScreenCaptureOption) error {
+func (s *iosSurface) Reconnect(serial string, sleepSec int, screenCaptureOption *streaming.ScreenCaptureOption) error {
 	var err error
-	log.Inst.Debug("iosSurface.Reconnect", zap.String("serial", serial), zap.String("addr", *s.agentUrl), zap.Int("retryCount", retryCount), zap.Int("sleepSec", sleepSec))
+	log.Inst.Debug("iosSurface.Reconnect", zap.String("serial", serial), zap.String("addr", *s.agentUrl), zap.Int("sleepSec", sleepSec))
 	conn, err := net.Dial("tcp", *s.agentUrl)
 	if err != nil {
 		log.Inst.Error("iosSurface.Reconnect", zap.String("serial", serial), zap.String("addr", *s.agentUrl), zap.Error(err))
@@ -46,10 +46,6 @@ func (s *iosSurface) Reconnect(serial string, retryCount int, sleepSec int, scre
 	if !ok {
 		fmt.Println("Failed to convert net.Conn to net.TCPConn")
 		os.Exit(1)
-	}
-	err = tcpConn.SetReadDeadline(time.Now().Add(10 * time.Second))
-	if err != nil {
-		log.Inst.Error("iosSurface.SetReadDeadline error", zap.String("serial", serial), zap.Error(err))
 	}
 
 	// make json
@@ -67,6 +63,7 @@ func (s *iosSurface) Reconnect(serial string, retryCount int, sleepSec int, scre
 
 	s.conn = tcpConn
 	s.reader = bufio.NewReader(s.conn)
+	s.recvQueue.Clear()
 	return nil
 }
 
@@ -77,7 +74,11 @@ func (s *iosSurface) Receive() ([]byte, error) {
 	}
 
 	for {
-		err := s.recvQueue.Push(s.reader)
+		err := s.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
+		if err != nil {
+			log.Inst.Error("iosSurface.SetReadDeadline error", zap.String("addr", *s.agentUrl), zap.Error(err))
+		}
+		err = s.recvQueue.Push(s.reader)
 		if err != nil {
 			log.Inst.Error("iosSurface.Receive push failed", zap.Error(err))
 			return nil, err

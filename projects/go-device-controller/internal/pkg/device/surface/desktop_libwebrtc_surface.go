@@ -38,7 +38,7 @@ func newDesktopLibwebrtcSurface() *desktopLibwebrtcSurface {
 	return &s
 }
 
-func (s *desktopLibwebrtcSurface) Reconnect(serial string, retryCount int, sleepSec int, screenCaptureOption *streaming.ScreenCaptureOption) error {
+func (s *desktopLibwebrtcSurface) Reconnect(serial string, sleepSec int, screenCaptureOption *streaming.ScreenCaptureOption) error {
 	var err error
 	var port int
 	listener, port, err, mutex := utils.ListenTCPFreePort()
@@ -84,10 +84,7 @@ func (s *desktopLibwebrtcSurface) Reconnect(serial string, retryCount int, sleep
 		log.Inst.Error("desktopLibwebrtcSurface.Reconnect", zap.String("serial", serial), zap.Error(err))
 		return err
 	}
-	err = s.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
-	if err != nil {
-		log.Inst.Error("desktopLibwebrtcSurface.SetReadDeadline error", zap.String("serial", serial), zap.Error(err))
-	}
+
 	s.reader = bufio.NewReader(s.conn)
 
 	return nil
@@ -100,7 +97,11 @@ func (s *desktopLibwebrtcSurface) Receive() ([]byte, error) {
 
 	}
 	for {
-		err := s.recvQueue.Push(s.reader)
+		err := s.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
+		if err != nil {
+			log.Inst.Error("desktopLibwebrtcSurface.SetReadDeadline error", zap.Error(err))
+		}
+		err = s.recvQueue.Push(s.reader)
 		if err != nil {
 			log.Inst.Error("desktopLibwebrtcSurface.Receive push failed", zap.Error(err))
 			return nil, err

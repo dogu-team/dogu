@@ -54,3 +54,7 @@ func (q *SizePrefixedRecvQueue) Pop() ([]byte, error) {
 	q.slice = q.slice[4+size:]
 	return data, nil
 }
+
+func (q *SizePrefixedRecvQueue) Clear() {
+	q.slice = q.slice[:0]
+}
