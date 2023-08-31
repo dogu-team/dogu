@@ -31,19 +31,19 @@ import BitbucketButton from '../../../../../src/components/integration/Bitbucket
 import UpdateTemplateButton from '../../../../../src/components/projects/UpdateTemplateButton';
 import useProjectContext from '../../../../../src/hooks/useProjectContext';
 
-const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ project, organization }) => {
-  const [editingProject, setEditingProject] = useState<ProjectBase>(project);
+const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ project: serverProject, organization }) => {
+  const [editingProject, setEditingProject] = useState<ProjectBase>(serverProject);
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation('project');
   const router = useRouter();
-  const { mutate } = useProjectContext();
+  const { project, mutate } = useProjectContext();
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
 
   useEffect(() => {
-    if (project) {
-      setEditingProject(clone(project));
+    if (serverProject) {
+      setEditingProject(clone(serverProject));
     }
-  }, [project]);
+  }, [serverProject]);
 
   useRefresh(['onProjectScmUpdated'], () => mutate?.());
 
@@ -54,7 +54,7 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
 
     setLoading(true);
     try {
-      const data = await updateProject(organization.organizationId, project.projectId, { name: editingProject?.name, description: editingProject?.description });
+      const data = await updateProject(organization.organizationId, serverProject.projectId, { name: editingProject?.name, description: editingProject?.description });
       mutate?.(data, false);
       sendSuccessNotification(t('project:projectUpdateSuccessMsg'));
       fireEvent('onProjectUpdated');
@@ -68,7 +68,7 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
 
   const handleDelete = useCallback(async () => {
     try {
-      await deleteProject(organization.organizationId, project.projectId);
+      await deleteProject(organization.organizationId, serverProject.projectId);
       sendSuccessNotification(t('project:projectDeleteSuccessMsg'));
       router.push(`/dashboard/${organization.organizationId}/projects`);
     } catch (e) {
@@ -76,18 +76,18 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
         sendErrorNotification(t('project:projectDeleteFailedMsg', { reason: getErrorMessageFromAxios(e) }));
       }
     }
-  }, [organization.organizationId, project.projectId, router]);
+  }, [organization.organizationId, serverProject.projectId, router]);
 
   const getToken = useCallback(async () => {
     try {
-      const token = getProjectAccessToken(organization.organizationId, project.projectId);
+      const token = getProjectAccessToken(organization.organizationId, serverProject.projectId);
       return token;
     } catch (e) {
       if (e instanceof AxiosError) {
         sendErrorNotification(`Failed to get project token.\n${getErrorMessageFromAxios(e)}`);
       }
     }
-  }, [organization.organizationId, project.projectId]);
+  }, [organization.organizationId, serverProject.projectId]);
 
   const getRepositoyUrl = (gitUrl: string) => {
     const matches = gitUrl.match(/\/([^/]+\/[^/]+)$/);
@@ -98,12 +98,13 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
     return gitUrl;
   };
 
-  const isChanged = JSON.stringify(project) !== JSON.stringify(editingProject);
+  const isChanged =
+    JSON.stringify({ name: project?.name, description: project?.description }) !== JSON.stringify({ name: editingProject.name, description: editingProject.description });
 
   return (
     <>
       <Head>
-        <title>Project settings - {project.name} | Dogu</title>
+        <title>Project settings - {serverProject.name} | Dogu</title>
       </Head>
       <Box>
         <SettingTitleDivider title="General" style={{ marginTop: '1rem' }} />
@@ -114,7 +115,7 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
           </div>
           <div style={{ marginBottom: '1rem' }}>
             <Label>{t('project:projectIdLabel')}</Label>
-            <TokenCopyInput value={project.projectId} />
+            <TokenCopyInput value={serverProject.projectId} />
           </div>
         </Content>
         <Divider />
@@ -160,16 +161,16 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
         <Content>
           <div>
             <GithubButton
-              isConnected={project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITHUB}
-              disabled={!!project.projectScms && project.projectScms.length > 0 && project.projectScms[0].type !== PROJECT_SCM_TYPE.GITHUB}
+              isConnected={serverProject.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITHUB}
+              disabled={!!serverProject.projectScms && serverProject.projectScms.length > 0 && serverProject.projectScms[0].type !== PROJECT_SCM_TYPE.GITHUB}
               organizationId={organization.organizationId}
-              projectId={project.projectId}
+              projectId={serverProject.projectId}
               description={
-                project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITHUB ? (
+                serverProject.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITHUB ? (
                   <>
                     Integrated with{' '}
-                    <a href={project.projectScms[0].url} target="_blank">
-                      {getRepositoyUrl(project.projectScms[0].url)}
+                    <a href={serverProject.projectScms[0].url} target="_blank">
+                      {getRepositoyUrl(serverProject.projectScms[0].url)}
                     </a>
                   </>
                 ) : undefined
@@ -178,16 +179,16 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
           </div>
           <div style={{ marginTop: '1rem' }}>
             <GitlabButton
-              isConnected={project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITLAB}
-              disabled={!!project.projectScms && project.projectScms.length > 0 && project.projectScms[0].type !== PROJECT_SCM_TYPE.GITLAB}
+              isConnected={serverProject.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITLAB}
+              disabled={!!serverProject.projectScms && serverProject.projectScms.length > 0 && serverProject.projectScms[0].type !== PROJECT_SCM_TYPE.GITLAB}
               organizationId={organization.organizationId}
-              projectId={project.projectId}
+              projectId={serverProject.projectId}
               description={
-                project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITLAB ? (
+                serverProject.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITLAB ? (
                   <>
                     Integrated with{' '}
-                    <a href={project.projectScms[0].url} target="_blank">
-                      {getRepositoyUrl(project.projectScms[0].url)}
+                    <a href={serverProject.projectScms[0].url} target="_blank">
+                      {getRepositoyUrl(serverProject.projectScms[0].url)}
                     </a>
                   </>
                 ) : undefined
@@ -196,16 +197,16 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
           </div>
           <div style={{ marginTop: '1rem' }}>
             <BitbucketButton
-              isConnected={project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.BITBUCKET}
-              disabled={!!project.projectScms && project.projectScms.length > 0 && project.projectScms[0].type !== PROJECT_SCM_TYPE.BITBUCKET}
+              isConnected={serverProject.projectScms?.[0]?.type === PROJECT_SCM_TYPE.BITBUCKET}
+              disabled={!!serverProject.projectScms && serverProject.projectScms.length > 0 && serverProject.projectScms[0].type !== PROJECT_SCM_TYPE.BITBUCKET}
               organizationId={organization.organizationId}
-              projectId={project.projectId}
+              projectId={serverProject.projectId}
               description={
-                project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.BITBUCKET ? (
+                serverProject.projectScms?.[0]?.type === PROJECT_SCM_TYPE.BITBUCKET ? (
                   <>
                     Integrated with{' '}
-                    <a href={project.projectScms[0].url} target="_blank">
-                      {getRepositoyUrl(project.projectScms[0].url)}
+                    <a href={serverProject.projectScms[0].url} target="_blank">
+                      {getRepositoyUrl(serverProject.projectScms[0].url)}
                     </a>
                   </>
                 ) : undefined
@@ -220,7 +221,7 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
             <DangerZone.Item
               title={t('common:regenerateAccessTokenTitle')}
               description={t('common:regenerateAccessTokenDescriptionText')}
-              button={<RegenerateTokenButton regenerate={async () => regenerateProjectAccessToken(organization.organizationId, project.projectId)} />}
+              button={<RegenerateTokenButton regenerate={async () => regenerateProjectAccessToken(organization.organizationId, serverProject.projectId)} />}
             />
             <DangerZone.Item
               title={t('project:changeProjectTemplateMenuTitle')}
@@ -237,7 +238,7 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
                     <Trans
                       i18nKey="project:settingDeleteProjectConfirmContent"
                       components={{ b: <b style={{ fontWeight: '700' }} />, br: <br /> }}
-                      values={{ name: project.name }}
+                      values={{ name: serverProject.name }}
                     />
                   }
                   onConfirm={handleDelete}
