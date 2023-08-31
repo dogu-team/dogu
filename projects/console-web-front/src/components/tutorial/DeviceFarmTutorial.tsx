@@ -1,4 +1,4 @@
-import { HostBase } from '@dogu-private/console';
+import { HostBase, ProjectBase } from '@dogu-private/console';
 import { HostConnectionState } from '@dogu-private/types';
 import { Alert, Button } from 'antd';
 import { isAxiosError } from 'axios';
@@ -25,24 +25,29 @@ import GuideLayout from './GuideLayout';
 import RemoteTestOptionSelectors from './RemoteTestOptionSelectors';
 import GuideStep from './GuideStep';
 import TutorialDeviceList from './TutorialDeviceLIst';
+import CreateProjectModal from '../projects/CreateProjectModal';
 
 const INTRODUCTION_ID = 'introduction';
+const CREATE_PROJECT_ID = 'create-project';
 const INSTALL_DOGU_AGENT_ID = 'install-dogu-agent';
 const CREATE_HOST_ID = 'create-host';
 const USE_HOST_AS_DEVICE_ID = 'use-host-as-device';
 const CONNECT_MOBILE_DEVICE_ID = 'connect-mobile-device';
 const USE_DEVICE_ID = 'use-device';
 
+const TUTORIAL_PROJECT_SESSION_KEY = 'tutorialProject';
 const TUTORIAL_HOST_SESSION_KEY = 'tutorialHost';
 
 type HostSession = { data: HostBase; token: string };
 
 const DeviceFarmTutorial = () => {
   const router = useRouter();
-  const [isOpen, openModal, closeModal] = useModal();
+  const [isProjectModalOpen, openProjectModal, closeProjectModal] = useModal();
+  const [isHostModalOpen, openHostModal, closeHostModal] = useModal();
   const [token, setToken] = useState<string>();
   const [loading, setLoading] = useState(false);
   const [host, setHost] = useState<HostBase>();
+  const [project, setProject] = useState<ProjectBase>();
   const { organization } = useTutorialContext();
 
   const selectedSdk = (router.query.sdk as GuideSupportSdk | undefined) || GuideSupportSdk.WEBDRIVERIO;
@@ -57,7 +62,17 @@ const DeviceFarmTutorial = () => {
 
   useEffect(() => {
     if (organization?.organizationId) {
+      const projectRaw = sessionStorage.getItem(TUTORIAL_PROJECT_SESSION_KEY);
       const hostRaw = sessionStorage.getItem(TUTORIAL_HOST_SESSION_KEY);
+
+      if (projectRaw) {
+        const data = JSON.parse(projectRaw) as ProjectBase;
+        if (data.organizationId === organization.organizationId) {
+          setProject(data);
+        } else {
+          sessionStorage.removeItem(TUTORIAL_PROJECT_SESSION_KEY);
+        }
+      }
 
       if (hostRaw) {
         const { data, token } = JSON.parse(hostRaw) as HostSession;
@@ -136,6 +151,7 @@ const DeviceFarmTutorial = () => {
           <GuideAnchor
             items={[
               { id: INTRODUCTION_ID, title: 'Introduction' },
+              { id: CREATE_PROJECT_ID, title: 'Create project' },
               { id: INSTALL_DOGU_AGENT_ID, title: 'Install Dogu Agent' },
               { id: CREATE_HOST_ID, title: 'Create host' },
               isMobile ? { id: CONNECT_MOBILE_DEVICE_ID, title: 'Connect mobile device' } : { id: USE_HOST_AS_DEVICE_ID, title: 'Use host as device' },
@@ -170,6 +186,36 @@ const DeviceFarmTutorial = () => {
             }
           />
           <GuideStep
+            id={CREATE_PROJECT_ID}
+            title="Create a project"
+            content={
+              <div>
+                {project ? (
+                  `Created project: ${project.name}`
+                ) : (
+                  <div>
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        openProjectModal();
+                      }}
+                    >
+                      Create a project
+                    </Button>
+
+                    <CreateProjectModal
+                      isOpen={isProjectModalOpen}
+                      close={closeProjectModal}
+                      onCreate={(result) => {
+                        setProject(result);
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            }
+          />
+          <GuideStep
             id={INSTALL_DOGU_AGENT_ID}
             title="Install Dogu Agent on the host(macOS, Windows)"
             description="Dogu Agent is a software that is installed on the Windows, macOS to help manage devices from the Dogu."
@@ -200,11 +246,20 @@ const DeviceFarmTutorial = () => {
                     <p>Copy and paste it to Dogu Agent, and establish connection.</p>
                   </HostTokenWrapper>
                 ) : (
-                  <Button type="primary" onClick={() => openModal()}>
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      if (!project) {
+                        sendErrorNotification('Please create a project first.');
+                      } else {
+                        openHostModal();
+                      }
+                    }}
+                  >
                     Create a host
                   </Button>
                 )}
-                <CreateHostModal isOpen={isOpen} close={closeModal} />
+                <CreateHostModal isOpen={isHostModalOpen} close={closeHostModal} />
               </div>
             }
           />

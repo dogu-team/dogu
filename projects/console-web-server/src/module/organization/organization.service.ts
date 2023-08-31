@@ -20,7 +20,7 @@ import {
   UserPropCamel,
   UserPropSnake,
 } from '@dogu-private/console';
-import { OrganizationId, PROJECT_TYPE, UserId, UserPayload, USER_INVITATION_STATUS } from '@dogu-private/types';
+import { OrganizationId, UserId, UserPayload, USER_INVITATION_STATUS } from '@dogu-private/types';
 import { notEmpty } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -169,11 +169,6 @@ export class OrganizationService {
     await manager.getRepository(OrganizationKey).save(organizationKey);
 
     await this.createAccessToken(manager, organizationId);
-
-    // create default project if user tutorial is not completed
-    if (user.isTutorialCompleted === 0) {
-      await this.projectService.createProject(manager, userId, organizationId, { name: 'Sample Project', type: PROJECT_TYPE.CUSTOM, description: '' });
-    }
 
     return org;
   }

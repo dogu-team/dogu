@@ -1,8 +1,8 @@
-import { Form, Input, notification } from 'antd';
+import { Form, Input } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
-import { mutate } from 'swr';
 import { useRouter } from 'next/router';
-import { OrganizationId, PROJECT_DESC_MAX_LENGTH, PROJECT_DESC_MIN_LENGTH, PROJECT_NAME_MAX_LENGTH, PROJECT_NAME_MIN_LENGTH, PROJECT_TYPE } from '@dogu-private/types';
+import { OrganizationId, PROJECT_DESC_MAX_LENGTH, PROJECT_NAME_MAX_LENGTH, PROJECT_NAME_MIN_LENGTH, PROJECT_TYPE } from '@dogu-private/types';
+import { ProjectBase } from '@dogu-private/console';
 
 import { createProject } from 'src/api/project';
 import FormControlModal from '../modals/FormControlModal';
@@ -16,9 +16,10 @@ import ProjectTypeRadio from './ProjectTypeRadio';
 interface Props {
   isOpen: boolean;
   close: () => void;
+  onCreate: (result: ProjectBase) => void;
 }
 
-const CreateProjectModal = ({ isOpen, close }: Props) => {
+const CreateProjectModal = ({ isOpen, close, onCreate }: Props) => {
   const { t } = useTranslation();
   const [form] = Form.useForm();
   const router = useRouter();
@@ -46,7 +47,7 @@ const CreateProjectModal = ({ isOpen, close }: Props) => {
         sendSuccessNotification(t('organization:newProjectSuccessTitle', { name }));
         form.resetFields();
         handleClose();
-        router.push(`${router.asPath}/${result.projectId}/get-started`);
+        onCreate(result);
       } catch (e) {
         if (e instanceof AxiosError) {
           sendErrorNotification(t('organization:newProjectFailTitle', { reason: getErrorMessageFromAxios(e) }));
