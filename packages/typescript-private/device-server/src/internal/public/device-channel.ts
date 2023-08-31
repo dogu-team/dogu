@@ -17,21 +17,18 @@ import { DeviceWebDriver } from '../../alias';
 import { AppiumContext, AppiumContextKey } from '../../appium/appium.context';
 import { AppiumService } from '../../appium/appium.service';
 import { BrowserManagerService } from '../../browser-manager/browser-manager.service';
+import { DevicePortService } from '../../device-port/device-port.service';
 import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.common';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { GamiumService } from '../../gamium/gamium.service';
 import { HttpRequestRelayService } from '../../http-request-relay/http-request-relay.common';
 import { DoguLogger } from '../../logger/logger';
 import { SeleniumService } from '../../selenium/selenium.service';
-import { DevicePortContext } from '../types/device-port-context';
 
 type DeviceControl = PrivateProtocol.DeviceControl;
 
 export interface DeviceChannelOpenParam {
   serial: Serial;
-  deviceAgentDevicePort: number; // android:
-  deviceAgentDeviceSecondPort: number;
-  deviceAgentDeviceThirdPort: number;
 }
 
 export type LogHandler = Pick<Printable, 'info' | 'error'>;
@@ -45,6 +42,7 @@ export interface DeviceServerService {
   get seleniumService(): SeleniumService;
   get appiumService(): AppiumService;
   get browserManagerService(): BrowserManagerService;
+  get devicePortService(): DevicePortService;
 }
 
 export interface DeviceChannel {
@@ -52,7 +50,6 @@ export interface DeviceChannel {
   get serialUnique(): Serial;
   get platform(): Platform;
   get info(): DeviceSystemInfo;
-  get portContext(): DevicePortContext;
   get isVirtual(): boolean;
   get browserInstallations(): BrowserInstallation[];
 

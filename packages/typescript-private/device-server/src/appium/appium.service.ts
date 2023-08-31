@@ -6,6 +6,7 @@ import { exec } from 'child_process';
 import _ from 'lodash';
 import path from 'path';
 import util from 'util';
+import { DevicePortService } from '../device-port/device-port.service';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
 import { pathMap } from '../path-map';
@@ -31,7 +32,7 @@ export class AppiumService implements OnModuleInit {
 
   private logger: PrefixLogger;
 
-  constructor(logger: DoguLogger) {
+  constructor(private readonly devicePortService: DevicePortService, logger: DoguLogger) {
     this.logger = new PrefixLogger(logger, '[AppiumService]');
   }
 
@@ -44,6 +45,7 @@ export class AppiumService implements OnModuleInit {
     const option: AndroidAppiumContextOptions = {
       ...this.defaultAppiumContextOptions,
       service: this,
+      devicePortService: this.devicePortService,
       platform: Platform.PLATFORM_ANDROID,
       serial,
       key,
@@ -58,6 +60,7 @@ export class AppiumService implements OnModuleInit {
     const option: IosAppiumContextOptions = {
       ...this.defaultAppiumContextOptions,
       service: this,
+      devicePortService: this.devicePortService,
       platform: Platform.PLATFORM_IOS,
       serial,
       key,

@@ -11,6 +11,7 @@ import AsyncLock from 'async-lock';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import _ from 'lodash';
 import { remote } from 'webdriverio';
+import { DevicePortService } from '../device-port/device-port.service';
 import { Adb } from '../internal/externals/index';
 import { Zombieable, ZombieProps } from '../internal/services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../internal/services/zombie/zombie-service';
@@ -36,6 +37,7 @@ export interface DefaultAppiumContextOptions {
 
 export interface BaseAppiumContextOptions extends DefaultAppiumContextOptions {
   service: AppiumService;
+  devicePortService: DevicePortService;
   serial: Serial;
   key: AppiumContextKey;
 }
@@ -413,7 +415,7 @@ export class AppiumContextImpl implements AppiumContext {
   @Retry({ retryCount: 10, retryInterval: 3000, printable: logger })
   private async restartClient(serverPort: number): Promise<AppiumData['client']> {
     this.printable.info('Appium client starting');
-    const argumentCapabilities = await createAppiumCapabilities(this.options);
+    const argumentCapabilities = await createAppiumCapabilities(this.options, this.printable);
     const remoteOptions: Parameters<typeof remote>[0] = {
       port: serverPort,
       logLevel: 'trace',

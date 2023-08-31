@@ -7,6 +7,7 @@ import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { DeviceWebDriver } from '../alias';
 import { AppiumService } from '../appium/appium.service';
 import { BrowserManagerService } from '../browser-manager/browser-manager.service';
+import { DevicePortService } from '../device-port/device-port.service';
 import {
   OnDeviceConnectionSubscriberConnectedEvent,
   OnDevicesConnectedEvent,
@@ -42,6 +43,7 @@ export class ScanService implements OnModuleInit {
     private readonly seleniumEndpointHandlerService: DeviceWebDriver.SeleniumEndpointHandlerService,
     private readonly seleniumService: SeleniumService,
     private readonly browserManagerService: BrowserManagerService,
+    private readonly devicePortService: DevicePortService,
   ) {
     this.deviceDoors = new DeviceDoors({
       onOpening: async (platformSerial: PlatformSerial): Promise<void> => {
@@ -104,6 +106,7 @@ export class ScanService implements OnModuleInit {
       seleniumService: this.seleniumService,
       doguLogger: this.logger,
       browserManagerService: this.browserManagerService,
+      devicePortService: this.devicePortService,
     });
 
     this.driverMap = await factory.create();

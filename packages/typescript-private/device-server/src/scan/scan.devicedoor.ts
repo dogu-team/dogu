@@ -1,4 +1,4 @@
-import { DeviceAgentPort, DeviceAgentSecondPort, DeviceAgentThirdPort, ErrorDevice, PlatformSerial, platformTypeFromPlatform, Serial } from '@dogu-private/types';
+import { ErrorDevice, PlatformSerial, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { errorify, loop, stringify, stringifyError } from '@dogu-tech/common';
 import { DeviceChannel } from '../internal/public/device-channel';
 import { DeviceDriver } from '../internal/public/device-driver';
@@ -68,9 +68,6 @@ export class DeviceDoor {
         await this.callback.onOpening({ platform: platformTypeFromPlatform(this.driver.platform), serial: this.serial });
         this.channel = await this.driver.openChannel({
           serial: this.serial,
-          deviceAgentDevicePort: DeviceAgentPort,
-          deviceAgentDeviceSecondPort: DeviceAgentSecondPort,
-          deviceAgentDeviceThirdPort: DeviceAgentThirdPort,
         });
         this._state = { type: 'opened', error: null };
         await this.callback.onOpen(this.channel);
