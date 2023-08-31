@@ -1,12 +1,14 @@
 import { ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
-import { Button, Steps } from 'antd';
+import { Button, Steps, Tooltip } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import styled from 'styled-components';
+import useTutorialContext from '../../hooks/useTutorialContext';
 
 import { GuideSupportSdk, guideSupportSdkText } from '../../resources/guide';
 import { flexRowBaseStyle } from '../../styles/box';
+import { sendErrorNotification } from '../../utils/antd';
 import DeviceFarmTutorial from './DeviceFarmTutorial';
 import RemoteTestTutorial from './RemoteTestTutorial';
 import SdkIcon from './SdkIcon';
@@ -19,6 +21,7 @@ interface Props {
 const UserTutorial = ({ selectedSdk }: Props) => {
   const router = useRouter();
   const step = router.query.step as string;
+  const { project } = useTutorialContext();
 
   useEffect(() => {
     if (Number(step) && Number(step) > 2) {
@@ -61,6 +64,12 @@ const UserTutorial = ({ selectedSdk }: Props) => {
               title: 'Setup device farm',
             },
             {
+              disabled: !project,
+              onClick: () => {
+                if (!project) {
+                  sendErrorNotification('Create a project first');
+                }
+              },
               title: 'Setup test environment',
             },
           ]}
@@ -72,12 +81,14 @@ const UserTutorial = ({ selectedSdk }: Props) => {
           <DeviceFarmTutorial />
           <LinkBox>
             <div />
-            <Link href={{ query: { ...router.query, step: 2 } }} shallow>
-              <Button type="link">
-                Next: Setup test environment&nbsp;
-                <ArrowRightOutlined />
-              </Button>
-            </Link>
+            <Tooltip title="Create a project first" open={!project ? undefined : false}>
+              <Link href={{ query: { ...router.query, step: 2 } }} shallow>
+                <Button type="link" disabled={!project}>
+                  Next: Setup test environment&nbsp;
+                  <ArrowRightOutlined />
+                </Button>
+              </Link>
+            </Tooltip>
           </LinkBox>
         </GuideWrapper>
       )}
