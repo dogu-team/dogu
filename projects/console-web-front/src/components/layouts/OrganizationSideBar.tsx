@@ -1,16 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
-import useSWR from 'swr';
-import { OrganizationBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
 import { BookOutlined, ClusterOutlined, ProjectOutlined, SettingOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons';
-import { Layout, Menu, MenuProps, Skeleton } from 'antd';
+import { Layout, Menu, MenuProps } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { RiExternalLinkLine } from 'react-icons/ri';
 
-import { swrAuthFetcher } from 'src/api';
-import useAuthStore from 'src/stores/auth';
 import { scrollbarStyle } from '../../styles/common';
 import useCollapsibleSidebar from '../../stores/collapsible-sidebar';
 import SideBarMenu from './SideBarMenu';
@@ -19,41 +15,37 @@ import ProfileImage from '../ProfileImage';
 import { flexRowCenteredStyle } from '../../styles/box';
 import CollpaseSidebarMenu from './CollapseSidebarMenu';
 import useRefresh from '../../hooks/useRefresh';
+import useOrganizationContext from '../../hooks/useOrganizationContext';
 
 type MenuItem = Required<MenuProps>['items'];
 
 const OrganizationSideBar = () => {
-  const { me } = useAuthStore();
   const router = useRouter();
   const orgId = router.query.orgId;
-  const { data, isLoading, mutate } = useSWR<OrganizationBase>(me && !!orgId && `/organizations/${orgId}`, swrAuthFetcher);
+  const { organization, mutate } = useOrganizationContext();
   const { t } = useTranslation();
   const collapsed = useCollapsibleSidebar((state) => state.collapsed);
 
-  useRefresh(['onOrganizationUpdated'], () => mutate());
-
-  if (isLoading) {
-    return (
-      <Box>
-        <Skeleton active />
-        <Skeleton active />
-        <Skeleton active />
-      </Box>
-    );
-  }
+  useRefresh(['onOrganizationUpdated'], () => mutate?.());
 
   const items: MenuItem = [
     {
       key: 'home',
       icon: collapsed ? (
         <OrganizationImageWrapper>
-          <ProfileImage shape="square" size={28} name={data?.name} profileImageUrl={data?.profileImageUrl} />
+          <ProfileImage shape="square" size={28} name={organization?.name} profileImageUrl={organization?.profileImageUrl} />
         </OrganizationImageWrapper>
       ) : undefined,
       style: { cursor: 'default' },
       label: collapsed
         ? undefined
-        : data && <SideBarTitle profileImageUrl={data.profileImageUrl} name={data.name} accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'sb-title' : undefined} />,
+        : organization && (
+            <SideBarTitle
+              profileImageUrl={organization.profileImageUrl}
+              name={organization.name}
+              accessId={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'sb-title' : undefined}
+            />
+          ),
     },
     {
       type: 'divider',

@@ -4,14 +4,13 @@ import { PROJECT_TYPE } from '@dogu-private/types';
 import useTranslation from 'next-translate/useTranslation';
 import { AppstoreOutlined, ArrowLeftOutlined, MobileOutlined, SettingOutlined, TeamOutlined } from '@ant-design/icons';
 import { PiMonitorPlayBold } from 'react-icons/pi';
-import { Layout, Menu, MenuProps, Skeleton } from 'antd';
+import { Layout, Menu, MenuProps } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { RiRemoteControlLine } from 'react-icons/ri';
 import { GoWorkflow } from 'react-icons/go';
 import { OrganizationId } from '@dogu-private/types';
 
-import useAuthStore from 'src/stores/auth';
 import { scrollbarStyle } from '../../styles/common';
 import useCollapsibleSidebar from '../../stores/collapsible-sidebar';
 import SideBarMenu from './SideBarMenu';

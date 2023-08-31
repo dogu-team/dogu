@@ -2,13 +2,14 @@ import { Layout } from 'antd';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
 import { OrganizationBase } from '@dogu-private/console';
-import useSWR, { SWRConfig } from 'swr';
+import useSWR from 'swr';
 
 import H4 from 'src/components/common/headings/H4';
 import ConsoleBasicLayout from './ConsoleBasicLayout';
 import LiveChat from '../external/livechat';
 import { swrAuthFetcher } from '../../api';
 import ErrorBox from '../common/boxes/ErrorBox';
+import { OrganizationContext } from '../../hooks/useOrganizationContext';
 
 export interface ConsoleLayoutProps {
   children: React.ReactNode;
@@ -35,7 +36,7 @@ const ConsoleLayout = ({ titleI18nKey, children, sidebar, title, padding, organi
   }
 
   return (
-    <SWRConfig>
+    <OrganizationContext.Provider value={{ organization: data ?? organization, mutate }}>
       <ConsoleBasicLayout>
         <StyledLayout>
           {sidebar}
@@ -53,7 +54,7 @@ const ConsoleLayout = ({ titleI18nKey, children, sidebar, title, padding, organi
         </StyledLayout>
         <LiveChat />
       </ConsoleBasicLayout>
-    </SWRConfig>
+    </OrganizationContext.Provider>
   );
 };
 
