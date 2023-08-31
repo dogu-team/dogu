@@ -26,16 +26,19 @@ const ConnectedDeviceList = () => {
   };
 
   useEffect(() => {
+    const reload = async () => {
+      try {
+        const deviceSubscribeMessages = await ipc.deviceLookupClient.getSubscribeMessages();
+        setDeviceStatuses(deviceSubscribeMessages);
+      } catch (e) {
+        ipc.rendererLogger.error(`Get PlatformSerials error: ${stringify(e)}`);
+      }
+    };
+    reload();
+
     const timer = setInterval(() => {
-      (async () => {
-        try {
-          const deviceSubscribeMessages = await ipc.deviceLookupClient.getSubscribeMessages();
-          setDeviceStatuses(deviceSubscribeMessages);
-        } catch (e) {
-          ipc.rendererLogger.error(`Get PlatformSerials error: ${stringify(e)}`);
-        }
-      })();
-    }, 3000);
+      reload();
+    }, 2000);
     return () => clearInterval(timer);
   }, []);
 
