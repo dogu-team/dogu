@@ -45,7 +45,10 @@ export class RoutineWorkspace {
 
   async findRoutineWorkspace(rootWorkspacePath: string, meta: RoutineWorkspaceMeta): Promise<string | null> {
     const routinesPath = HostPaths.routinesPath(rootWorkspacePath);
-    const metaFiles = (await fs.promises.readdir(routinesPath)).filter((file) => file.endsWith(MetaExtension));
+    if (fs.existsSync(routinesPath) === false) {
+      await fs.promises.mkdir(routinesPath, { recursive: true });
+    }
+    const metaFiles = (await fs.promises.readdir(routinesPath).catch((e) => [])).filter((file) => file.endsWith(MetaExtension));
     for (const metaFile of metaFiles) {
       try {
         const metaFilePath = path.resolve(routinesPath, metaFile);
