@@ -274,11 +274,13 @@ export class ProjectService {
     }
 
     // name check
-    const existingProject = await this.dataSource.getRepository(Project).findOne({
-      where: { projectId: Not(projectId), organizationId, name },
-    });
-    if (existingProject) {
-      throw new HttpException(`Project name ${name} is already exist`, HttpStatus.BAD_REQUEST);
+    if (name) {
+      const existingProject = await this.dataSource.getRepository(Project).findOne({
+        where: { projectId: Not(projectId), organizationId, name },
+      });
+      if (existingProject) {
+        throw new HttpException(`Project name ${name} is already exist`, HttpStatus.BAD_REQUEST);
+      }
     }
 
     // type check
@@ -289,7 +291,7 @@ export class ProjectService {
     const newData = Object.assign(project, {
       name: name ?? project.name,
       type: type ?? project.type,
-      description,
+      description: description ?? project.description,
     });
 
     const rv = await this.dataSource.getRepository(Project).save(newData);
