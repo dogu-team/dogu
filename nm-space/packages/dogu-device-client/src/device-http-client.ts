@@ -3,7 +3,7 @@ import { stringify } from './common/functions.js';
 import { PathProviderType as PathProviderType_ } from './common/specs.js';
 import { Class, Instance } from './common/types.js';
 import { DeviceServerControllerMethodSpec } from './specs/types.js';
-import { Body } from './types/http_ws.js';
+import { Body } from './types/http-ws.js';
 import { transformAndValidate } from './validations/functions.js';
 import { DeviceServerResponseDto } from './validations/types/responses.js';
 

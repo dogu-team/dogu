@@ -1,5 +1,6 @@
 import { Serial } from '@dogu-private/types';
 import { Injectable } from '@nestjs/common';
+import AsyncLock from 'async-lock';
 import { getFreePort } from '../internal/util/net';
 
 export type DeviceHostPortType =
@@ -23,10 +24,14 @@ interface DeviceHostPorts {
 @Injectable()
 export class DevicePortService {
   private serialToHostPortMap: Map<Serial, DeviceHostPorts> = new Map();
+  private lock = new AsyncLock();
 
   public async createOrGetHostPort(serial: Serial, key: DeviceHostPortType): Promise<number> {
-    const devicePorts = this.serialToHostPortMap.get(serial) ?? this.createDeviceHostPort(serial);
-    const targetPort = devicePorts.ports.get(key) ?? (await this.createTargetHostPort(devicePorts, key));
+    const targetPort = await this.lock.acquire(serial, async () => {
+      const deviceHostPorts = this.serialToHostPortMap.get(serial) ?? this.createDeviceHostPorts(serial);
+      const targetPort = deviceHostPorts.ports.get(key) ?? (await this.createTargetHostPort(deviceHostPorts, key));
+      return targetPort;
+    });
     return targetPort;
   }
 
@@ -39,22 +44,22 @@ export class DevicePortService {
   }
 
   public getIosWebDriverAgentServerPort(): number {
-    return 50002;
+    return 50003;
   }
 
   public getAndroidDeviceAgentServerPort(): number {
     return 50001;
   }
 
-  private createDeviceHostPort(serial: Serial): DeviceHostPorts {
-    const devicePort = { ports: new Map<DeviceHostPortType, number>() };
-    this.serialToHostPortMap.set(serial, devicePort);
-    return devicePort;
+  private createDeviceHostPorts(serial: Serial): DeviceHostPorts {
+    const deviceHostPorts = { ports: new Map<DeviceHostPortType, number>() };
+    this.serialToHostPortMap.set(serial, deviceHostPorts);
+    return deviceHostPorts;
   }
 
-  private async createTargetHostPort(devicePorts: DeviceHostPorts, key: DeviceHostPortType): Promise<number> {
+  private async createTargetHostPort(deviceHostPorts: DeviceHostPorts, key: DeviceHostPortType): Promise<number> {
     const port = await getFreePort();
-    devicePorts.ports.set(key, port);
+    deviceHostPorts.ports.set(key, port);
     return port;
   }
 }

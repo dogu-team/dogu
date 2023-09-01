@@ -3,9 +3,9 @@ import { WebSocket } from 'ws';
 import { DeviceClientOptions, DeviceService, DeviceWebSocket, DeviceWebSocketListener } from './bases.js';
 import { setAxiosErrorFilterToIntercepter } from './common/axios-utils.js';
 import { stringify } from './common/functions.js';
-import { closeWebSocketWithTruncateReason } from './common/http_ws.js';
+import { closeWebSocketWithTruncateReason } from './common/http-ws.js';
 import { FilledPrintable, PrefixLogger, Printable } from './common/logs.js';
-import { Headers, HeaderValue, HttpRequest, HttpResponse, WebSocketConnection } from './types/http_ws.js';
+import { Headers, HeaderValue, HttpRequest, HttpResponse, WebSocketConnection } from './types/http-ws.js';
 import { DeviceServerResponseDto } from './validations/types/responses.js';
 
 export class NodeDeviceWebSocket implements DeviceWebSocket {

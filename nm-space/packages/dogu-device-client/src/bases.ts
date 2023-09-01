@@ -2,7 +2,7 @@ import { Type } from 'class-transformer';
 import { IsNumber, IsObject } from 'class-validator';
 import { ConsoleLogger, Printable } from './common/logs.js';
 import { PromiseOrValue } from './common/types.js';
-import { HttpRequest, HttpResponse, WebSocketCloseEvent, WebSocketConnection, WebSocketErrorEvent, WebSocketMessageEvent, WebSocketOpenEvent } from './types/http_ws.js';
+import { HttpRequest, HttpResponse, WebSocketCloseEvent, WebSocketConnection, WebSocketErrorEvent, WebSocketMessageEvent, WebSocketOpenEvent } from './types/http-ws.js';
 import { fillOptionsSync } from './validations/functions.js';
 
 export interface DeviceWebSocketListener {

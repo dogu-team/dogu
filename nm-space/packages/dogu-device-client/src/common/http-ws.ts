@@ -1,7 +1,7 @@
 import { stringify } from './functions.js';
 
 export interface WebSocketCloseable {
-  close(code?: number | undefined, reason?: string | undefined): void;
+  close(code?: number, reason?: string): void;
 }
 
 export function closeWebSocketWithTruncateReason(webSocket: WebSocketCloseable, code?: number, reason?: unknown): void {

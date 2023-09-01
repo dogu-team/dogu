@@ -1,5 +1,4 @@
 import { spawn } from 'child_process';
-import fg from 'fast-glob';
 import fs from 'fs';
 import path from 'path';
 
@@ -40,15 +39,6 @@ async function writePackageJson(buildDir: string, packageType: string) {
   await fs.promises.writeFile(`${buildDir}/package.json`, JSON.stringify({ type: packageType }, null, 2));
 }
 
-async function copyYamlFiles(packageJsonOutDir: string) {
-  const jsonFiles = await fg(`src/**/*.yaml`);
-  await Promise.all(
-    jsonFiles.map(async (jsonFile) => {
-      return fs.promises.cp(`${jsonFile}`, path.resolve(packageJsonOutDir, jsonFile), { force: true });
-    }),
-  );
-}
-
 interface Target {
   tsconfigPath?: string;
   babelConfigPath?: string;
@@ -68,10 +58,6 @@ async function processTarget(target: Target) {
   if (target.buildDir && target.type) {
     console.log(`Writing package.json with type ${target.type} to ${target.buildDir}`);
     await writePackageJson(target.buildDir, target.type);
-  }
-  if (target.buildDir) {
-    console.log(`Copying yaml files to ${target.buildDir}`);
-    await copyYamlFiles(target.buildDir);
   }
 }
 
