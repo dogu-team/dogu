@@ -126,7 +126,7 @@ export class IosChannel implements DeviceChannel {
     await IosChannel.restartIfAvailiable(serial, logger);
 
     logger.verbose('appium wda starting');
-    const wda = await WebdriverAgentProcess.start(serial, await deviceServerService.devicePortService.createOrGetHostPort(serial, 'WebdriverAgentProcess'), logger);
+    const wda = await WebdriverAgentProcess.start(serial, await deviceServerService.devicePortService.createOrGetHostPort(serial, 'WebdriverAgentForward'), logger);
     logger.verbose('appium wda  done');
 
     logger.verbose('appium context starting');
@@ -437,9 +437,7 @@ export class IosChannel implements DeviceChannel {
   }
 
   async getAppiumCapabilities(): Promise<AppiumCapabilities> {
-    return await createAppiumCapabilities(this._appiumContext.options, this.logger, {
-      commandTimeout: 60,
-    });
+    return await createAppiumCapabilities(this._appiumContext.options, this.logger);
   }
 
   set gamiumContext(context: GamiumContext | null) {

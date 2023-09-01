@@ -12,7 +12,6 @@ export type DeviceHostPortType =
   | 'iOSAppiumServer'
   | 'iOSAppiumMjpegServerPort'
   | 'iOSAppiumWebkitDebugProxyPort'
-  | 'WebdriverAgentProcess'
   | 'WebdriverAgentForward'
   | 'iOSScreenForward'
   | 'iOSGrpcForward';
