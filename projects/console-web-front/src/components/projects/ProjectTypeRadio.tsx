@@ -1,12 +1,9 @@
-import { MobileOutlined } from '@ant-design/icons';
 import { PROJECT_TYPE } from '@dogu-private/types';
 import { Radio, RadioGroupProps } from 'antd';
-import { MdOutlineGamepad } from 'react-icons/md';
-import { LiaToolsSolid } from 'react-icons/lia';
-import { MdWeb } from 'react-icons/md';
 import styled from 'styled-components';
 
 import { flexRowCenteredStyle } from '../../styles/box';
+import ProjectTypeIcon from './ProjectTypeIcon';
 
 const ProjectTypeRadio = (props: Omit<RadioGroupProps, 'children'>) => {
   const iconStyle: React.CSSProperties = {
@@ -17,25 +14,25 @@ const ProjectTypeRadio = (props: Omit<RadioGroupProps, 'children'>) => {
     <StyledRadioGroup defaultValue={PROJECT_TYPE.WEB} buttonStyle="solid" {...props}>
       <StyledRadio value={PROJECT_TYPE.WEB}>
         <IconWrapper>
-          <MdWeb style={iconStyle} />
+          <ProjectTypeIcon type={PROJECT_TYPE.WEB} style={iconStyle} />
         </IconWrapper>
-        <Title>Web</Title>
+        <Title>{}</Title>
       </StyledRadio>
       <StyledRadio value={PROJECT_TYPE.APP}>
         <IconWrapper>
-          <MobileOutlined style={iconStyle} />
+          <ProjectTypeIcon type={PROJECT_TYPE.APP} style={iconStyle} />
         </IconWrapper>
         <Title>Mobile App</Title>
       </StyledRadio>
       <StyledRadio value={PROJECT_TYPE.GAME}>
         <IconWrapper>
-          <MdOutlineGamepad style={iconStyle} />
+          <ProjectTypeIcon type={PROJECT_TYPE.GAME} style={iconStyle} />
         </IconWrapper>
         <Title>Game</Title>
       </StyledRadio>
       <StyledRadio value={PROJECT_TYPE.CUSTOM}>
         <IconWrapper>
-          <LiaToolsSolid style={iconStyle} />
+          <ProjectTypeIcon type={PROJECT_TYPE.CUSTOM} style={iconStyle} />
         </IconWrapper>
         <Title>Custom</Title>
       </StyledRadio>

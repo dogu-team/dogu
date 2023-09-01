@@ -4,7 +4,7 @@ import { instanceOfUserBase, ProjectBase, TeamBase, UserBase } from '@dogu-priva
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { Avatar, List, Tooltip } from 'antd';
-import { OrganizationId } from '@dogu-private/types';
+import { OrganizationId, PROJECT_TYPE } from '@dogu-private/types';
 import Link from 'next/link';
 import Trans from 'next-translate/Trans';
 
@@ -15,6 +15,7 @@ import { listActiveNameStyle } from '../../styles/text';
 import ProfileImage from '../ProfileImage';
 import ListEmpty from '../common/boxes/ListEmpty';
 import { getLocaleFormattedDate } from '../../utils/locale';
+import ProjectTypeIcon from './ProjectTypeIcon';
 
 interface ProjectItemProps {
   project: ProjectBase;
@@ -23,12 +24,33 @@ interface ProjectItemProps {
 const ProjectItem = ({ project }: ProjectItemProps) => {
   const { t, lang } = useTranslation();
 
+  const getTypeText = (type: PROJECT_TYPE) => {
+    switch (type) {
+      case PROJECT_TYPE.WEB:
+        return 'Web';
+      case PROJECT_TYPE.APP:
+        return 'Mobile App';
+      case PROJECT_TYPE.GAME:
+        return 'Game';
+      case PROJECT_TYPE.CUSTOM:
+        return 'Custom';
+      default:
+        return '';
+    }
+  };
+
   return (
     <Item>
       <ItemInner>
         <TwoSpan>
           <StyledLink href={`/dashboard/${project.organizationId}/projects/${project.projectId}/remotes`}>{project.name}</StyledLink>
         </TwoSpan>
+        <OneSpan>
+          <FlexRow>
+            <ProjectTypeIcon type={project.type} style={{ fontSize: '1.1rem', marginRight: '.25rem' }} />
+            <p>{getTypeText(project.type)}</p>
+          </FlexRow>
+        </OneSpan>
         <TwoSpan>
           <Avatar.Group>
             {project.members?.map((item) => {
@@ -83,6 +105,7 @@ const ProjectListController = ({ organizationId }: Props) => {
       <Header>
         <ItemInner>
           <TwoSpan>{t('project:projectTableNameColumn')}</TwoSpan>
+          <OneSpan>{'Template'}</OneSpan>
           <TwoSpan>{t('project:projectTableMembersColumn')}</TwoSpan>
           <OneSpan>{t('project:projectTableLastUpdatedColumn')}</OneSpan>
         </ItemInner>
@@ -144,4 +167,8 @@ const StyledLink = styled(Link)`
   &:hover {
     text-decoration: underline;
   }
+`;
+
+const FlexRow = styled.div`
+  ${flexRowBaseStyle}
 `;
