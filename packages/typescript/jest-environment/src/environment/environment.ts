@@ -43,13 +43,15 @@ export class DoguEnvironment extends TestEnvironment {
 
     this.routineDestReporter = new RoutineDestReporterFactory(this.doguConfig).create();
 
-    this.driver = await new DriverFactory().create(this.doguConfig);
-    if (_.has(this.global, driver)) {
-      throw new Error('globalThis.driver is already defined');
-    }
-    _.set(this.global, driver, this.driver);
+    if (this.doguConfig.runsOn) {
+      this.driver = await new DriverFactory().create(this.doguConfig);
+      if (_.has(this.global, driver)) {
+        throw new Error('globalThis.driver is already defined');
+      }
+      _.set(this.global, driver, this.driver);
 
-    this.remoteDestReporter = new RemoteDestReporterFactory(this.doguConfig, this.driver).create();
+      this.remoteDestReporter = new RemoteDestReporterFactory(this.doguConfig, this.driver).create();
+    }
   }
 
   override async teardown(): Promise<void> {
