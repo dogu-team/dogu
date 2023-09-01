@@ -2,9 +2,10 @@ import { ApiOutlined } from '@ant-design/icons';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
+import Image from 'next/image';
+
 import RefreshButton from '../../../../../src/components/buttons/RefreshButton';
 import ExternalGuideLink from '../../../../../src/components/common/ExternalGuideLink';
-
 import TableListView from '../../../../../src/components/common/TableListView';
 import ProjectLayoutWithSidebar from '../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 import ProjectApplicationListController from '../../../../../src/components/project-application/ProjectApplicationListController';
@@ -26,6 +27,20 @@ const ProjectAppPage: NextPageWithLayout<ProjectServerSideProps> = ({ project, o
           <Header>
             <MenuList>
               <ProjectApplicationUploadButton organizationId={organization.organizationId} projectId={project.projectId} />
+
+              <ExternalGuideLink
+                href="https://docs.dogutech.io/integration/cicd/github-action"
+                icon={<Image src="/resources/icons/github-action-logo.svg" alt="Github Action" width={16} height={16} />}
+              >
+                GitHub Action
+              </ExternalGuideLink>
+              <ExternalGuideLink
+                href="https://docs.dogutech.io/integration/cicd/jenkins"
+                icon={<Image src="/resources/icons/jenkins-logo.svg" alt="Jenkins" width={16} height={16} />}
+              >
+                Jenkins
+              </ExternalGuideLink>
+
               <ExternalGuideLink href="https://docs.dogutech.io/api/project/application#upload-application" icon={<ApiOutlined style={{ fontSize: '1rem', color: '#000' }} />}>
                 Upload API
               </ExternalGuideLink>

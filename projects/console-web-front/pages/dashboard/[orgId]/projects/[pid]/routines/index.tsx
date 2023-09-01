@@ -48,13 +48,13 @@ const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organi
                     <RunRoutineButton orgId={organization.organizationId} projectId={project.projectId} routine={routine} />
                     <EditRoutineButton orgId={organization.organizationId} projectId={project.projectId} routine={routine} />
                     <PipelineFilter />
-                    {routineId !== undefined && (
+                    {routine && routineId && (
                       <SlackRoutineChannelButton organizationId={organization.organizationId} projectId={project.projectId} routineId={routineId} routineSlack={routineSlack} />
                     )}
                     {!routine && (
                       <>
                         <ExternalGuideLink
-                          href="https://docs.dogutech.io/integration/cicd/github"
+                          href="https://docs.dogutech.io/integration/cicd/github-action"
                           icon={<Image src="/resources/icons/github-action-logo.svg" alt="Github Action" width={16} height={16} />}
                         >
                           GitHub Action

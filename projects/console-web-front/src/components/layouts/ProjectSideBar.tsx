@@ -128,7 +128,7 @@ const ProjectSideBar = () => {
     },
     {
       type: 'group',
-      label: collapsed ? null : 'Automation',
+      label: collapsed ? null : 'Test Automation',
       children: [
         {
           key: 'remote',
@@ -156,7 +156,7 @@ const ProjectSideBar = () => {
     },
     {
       type: 'group',
-      label: collapsed ? null : 'CI',
+      label: collapsed ? null : 'Test CI',
       children: [
         {
           key: 'routine',
