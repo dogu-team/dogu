@@ -85,6 +85,7 @@ const TitleBox = styled.div`
 `;
 
 const PaddingBox = styled.div`
+  position: relative;
   padding: 2rem;
   padding-bottom: 6rem;
 

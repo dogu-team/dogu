@@ -31,7 +31,7 @@ const UserTutorial = ({ selectedSdk }: Props) => {
 
   return (
     <Box>
-      <HeaderContent>
+      {/* <HeaderContent>
         <div>
           <div style={{ marginLeft: '-.5rem' }}>
             <Link href={{ query: { orgId: router.query.orgId } }} shallow>
@@ -105,7 +105,7 @@ const UserTutorial = ({ selectedSdk }: Props) => {
             <SkipTutorialButton>Close tutorial</SkipTutorialButton>
           </LinkBox>
         </GuideWrapper>
-      )}
+      )} */}
     </Box>
   );
 };

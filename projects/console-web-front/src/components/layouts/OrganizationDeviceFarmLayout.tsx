@@ -1,4 +1,4 @@
-import { ApiOutlined, DesktopOutlined, MobileOutlined, TagsOutlined } from '@ant-design/icons';
+import { ApiOutlined, ArrowRightOutlined, DesktopOutlined, MobileOutlined, TagsOutlined } from '@ant-design/icons';
 import { DeviceBase, OrganizationBase, PageBase } from '@dogu-private/console';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
@@ -11,6 +11,9 @@ import useEventStore from '../../stores/events';
 import MenuLinkTabs, { MenuLinkTabItem, MenuLinkTabProps } from '../MenuLinkTabs';
 import ConsoleLayout, { ConsoleLayoutProps } from './ConsoleLayout';
 import OrganizationSideBar from './OrganizationSideBar';
+import { Button } from 'antd';
+import Link from 'next/link';
+import { TUTORIAL_HOST_SESSION_KEY, TUTORIAL_PROJECT_SESSION_KEY } from '../tutorial/DeviceFarmTutorial';
 
 interface TabButtonProps {
   selected: boolean;
@@ -87,6 +90,20 @@ const OrganizationDeviceFarmLayout = ({ children, organization }: Props) => {
 
   return (
     <ConsoleLayout organization={organization} sidebar={<OrganizationSideBar />} titleI18nKey={'organization:deviceFarmPageTitle'}>
+      <TutorialWrapper>
+        <Link
+          href={`/dashboard/${orgId}/get-started`}
+          onClick={() => {
+            sessionStorage.removeItem(TUTORIAL_PROJECT_SESSION_KEY);
+            sessionStorage.removeItem(TUTORIAL_HOST_SESSION_KEY);
+          }}
+        >
+          <Button type="link">
+            Tutorial&nbsp;
+            <ArrowRightOutlined />
+          </Button>
+        </Link>
+      </TutorialWrapper>
       <MenuLinkTabs tabs={tabs} />
       <Inner>{children}</Inner>
     </ConsoleLayout>
@@ -112,4 +129,10 @@ const Badge = styled.div`
 
 const Inner = styled.div`
   margin-top: 24px;
+`;
+
+const TutorialWrapper = styled.div`
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
 `;

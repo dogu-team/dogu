@@ -1,15 +1,16 @@
-import { OrganizationId } from '@dogu-private/types';
 import { Button } from 'antd';
 import { isAxiosError } from 'axios';
 import { useRouter } from 'next/router';
-import { updateUserTutorial } from '../../api/user';
+import { UrlObject } from 'url';
 
+import { updateUserTutorial } from '../../api/user';
 import useTutorialContext from '../../hooks/useTutorialContext';
 import useRequest from '../../hooks/useRequest';
 import { sendErrorNotification } from '../../utils/antd';
 
 interface Props {
   children: React.ReactNode;
+  // href: UrlObject | string;
 }
 
 const SkipTutorialButton = ({ children }: Props) => {
@@ -23,13 +24,13 @@ const SkipTutorialButton = ({ children }: Props) => {
     }
 
     if (me.isTutorialCompleted) {
-      router.push(`/dashboard/${organization.organizationId}`);
+      router.push(`/dashboard/${organization.organizationId}/device-farm/devices`);
       return;
     }
 
     try {
       await request(me.userId, { isTutorialCompleted: 1 });
-      router.push(`/dashboard/${organization.organizationId}`);
+      router.push(`/dashboard/${organization.organizationId}/device-farm/devices`);
     } catch (e) {
       if (isAxiosError(e)) {
         sendErrorNotification('Failed to skip tutorial');

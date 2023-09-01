@@ -22,7 +22,6 @@ import CreateHostModal from '../hosts/CreateHostModal';
 import GuideAnchor from './GuideAnchor';
 import GuideBanner from './GuideBanner';
 import GuideLayout from './GuideLayout';
-import RemoteTestOptionSelectors from './RemoteTestOptionSelectors';
 import GuideStep from './GuideStep';
 import TutorialDeviceList from './TutorialDeviceLIst';
 import CreateProjectModal from '../projects/CreateProjectModal';
@@ -35,8 +34,8 @@ const USE_HOST_AS_DEVICE_ID = 'use-host-as-device';
 const CONNECT_MOBILE_DEVICE_ID = 'connect-mobile-device';
 const USE_DEVICE_ID = 'use-device';
 
-const TUTORIAL_PROJECT_SESSION_KEY = 'tutorialProject';
-const TUTORIAL_HOST_SESSION_KEY = 'tutorialHost';
+export const TUTORIAL_PROJECT_SESSION_KEY = 'tutorialProject';
+export const TUTORIAL_HOST_SESSION_KEY = 'tutorialHost';
 
 type HostSession = { data: HostBase; token: string };
 
@@ -51,7 +50,7 @@ const DeviceFarmTutorial = () => {
 
   const selectedSdk = (router.query.sdk as GuideSupportSdk | undefined) || GuideSupportSdk.WEBDRIVERIO;
   const guideData = tutorialData[selectedSdk];
-  const { framework, platform, target } = useTutorialSelector({
+  const { platform } = useTutorialSelector({
     defaultFramework: guideData.defaultOptions.framework,
     defaultPlatform: guideData.defaultOptions.platform,
     defaultTarget: guideData.defaultOptions.target,
@@ -142,22 +141,17 @@ const DeviceFarmTutorial = () => {
   return (
     <GuideLayout
       sidebar={
-        <div>
-          <div style={{ marginBottom: '1rem' }}>
-            <RemoteTestOptionSelectors guideData={guideData} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
-          </div>
-
-          <GuideAnchor
-            items={[
-              { id: INTRODUCTION_ID, title: 'Introduction' },
-              { id: CREATE_PROJECT_ID, title: 'Create project' },
-              { id: INSTALL_DOGU_AGENT_ID, title: 'Install Dogu Agent' },
-              { id: CREATE_HOST_ID, title: 'Create host' },
-              isMobile ? { id: CONNECT_MOBILE_DEVICE_ID, title: 'Connect mobile device' } : { id: USE_HOST_AS_DEVICE_ID, title: 'Use host as device' },
-              { id: USE_DEVICE_ID, title: 'Use device' },
-            ]}
-          />
-        </div>
+        <GuideAnchor
+          items={[
+            { id: INTRODUCTION_ID, title: 'Introduction' },
+            { id: CREATE_PROJECT_ID, title: 'Create project' },
+            { id: INSTALL_DOGU_AGENT_ID, title: 'Install Dogu Agent' },
+            { id: CREATE_HOST_ID, title: 'Create host' },
+            { id: USE_HOST_AS_DEVICE_ID, title: 'Use host as device' },
+            { id: CONNECT_MOBILE_DEVICE_ID, title: 'Connect mobile device' },
+            { id: USE_DEVICE_ID, title: 'Use device' },
+          ]}
+        />
       }
       content={
         <div>
@@ -276,46 +270,40 @@ const DeviceFarmTutorial = () => {
             }
           />
 
-          {isMobile ? (
-            <GuideStep
-              id={CONNECT_MOBILE_DEVICE_ID}
-              title="Connect mobile devices"
-              description="Connect Android, iOS devices to the host."
-              content={
-                <div>
-                  <p>
-                    Before connecting, Please follow{' '}
-                    <Link href="https://docs.dogutech.io/device-farm/device/settings" target="_blank">
-                      Device Configuration
-                    </Link>{' '}
-                    document page to connect mobile devices.
-                  </p>
-                </div>
-              }
-            />
-          ) : (
-            <GuideStep
-              id={USE_HOST_AS_DEVICE_ID}
-              title="Use host as a device"
-              description={'After connecting host to the Dogu, you can use the host as a device.'}
-              content={
-                <div>
-                  <Button onClick={handleUseHostAsDevice} loading={loading} type="primary">
-                    Use as a device
-                  </Button>
-                </div>
-              }
-            />
-          )}
+          <GuideStep
+            id={USE_HOST_AS_DEVICE_ID}
+            title="Use host as a device (Optional)"
+            description={'If you like to use host as a device, you can use the host as a device after connection.'}
+            content={
+              <div>
+                <Button onClick={handleUseHostAsDevice} loading={loading} type="primary">
+                  Use as a device
+                </Button>
+              </div>
+            }
+          />
+
+          <GuideStep
+            id={CONNECT_MOBILE_DEVICE_ID}
+            title="Connect mobile devices (Optional)"
+            description="If you like to use mobile devices, connect Android or iOS devices to the host."
+            content={
+              <div>
+                <p>
+                  Before connecting, Please follow{' '}
+                  <Link href="https://docs.dogutech.io/device-farm/device/settings" target="_blank">
+                    Device Configuration
+                  </Link>{' '}
+                  document page to connect mobile devices.
+                </p>
+              </div>
+            }
+          />
 
           <GuideStep
             id={USE_DEVICE_ID}
             title="Use devices"
-            description={
-              isMobile
-                ? 'After connecting device to the host, the device will be marked as standby device. You can use the device by selecting it.'
-                : 'After using host as a device, the host device will be marked as standby device. You can use the device by selecting it.'
-            }
+            description={'After using host as a device or connecting device to the host, the device will be marked as standby device. You can use the device by selecting it.'}
             content={
               <div>
                 {!!organization && !!host ? (
