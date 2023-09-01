@@ -1,26 +1,24 @@
-import {
-  BrowserName,
-  BrowserPlatform,
-  isAllowedAndroidBrowserName,
-  isAllowedBrowserName,
-  isAllowedIosBrowserName,
-  isAllowedMacosBrowserName,
-  isAllowedWindowsBrowserName,
-} from '@dogu-private/types';
+import { BrowserName, isAllowedBrowserName } from '@dogu-private/types';
 import { errorify, PrefixLogger } from '@dogu-tech/common';
-import {
-  BrowserDriverInstallation,
-  BrowserDriverInstallerOptions,
-  BrowserInstallation,
-  BrowserInstallationFinderOptions,
-  BrowserInstallerOptions,
-} from '@dogu-tech/device-client-common';
+import {} from '@dogu-tech/device-client-common';
 import { HostPaths } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
 import { exec } from 'child_process';
 import fs from 'fs';
 import { promisify } from 'util';
 import { logger } from '../logger/logger.instance';
+import {
+  BrowserAllInstallationsFinderOptions,
+  BrowserAllInstallationsFinderResult,
+  BrowserInstallationFinderOptions,
+  BrowserInstallationFinderResult,
+} from './browser-manager.types';
+
+const execAsync = promisify(exec);
+const writeLock = new AsyncLock();
+const callSeleniumManagerVersionTimeout = 60_000;
+const findBrowserInstallationTimeout = 60_000;
+const installDriverTimeout = 10 * 60_000;
 
 interface LogOutput {
   result?: {
@@ -29,10 +27,11 @@ interface LogOutput {
   };
 }
 
-const execAsync = promisify(exec);
-const writeLock = new AsyncLock();
-const findBrowserInstallationTimeout = 60_000;
-const installDriverTimeout = 10 * 60_000;
+type FindBrowserInstallationOptions = BrowserInstallationFinderOptions;
+type FindBrowserInstallationResult = BrowserInstallationFinderResult;
+
+type FindAllBrowserInstallationsOptions = BrowserAllInstallationsFinderOptions;
+type FindAllBrowserInstallationsResult = BrowserAllInstallationsFinderResult;
 
 export class SeleniumManager {
   private readonly logger = new PrefixLogger(logger, '[SeleniumManager]');
@@ -48,39 +47,11 @@ export class SeleniumManager {
       throw new Error(`Selenium manager not found at ${seleniumManagerPath}`);
     }
 
-    await execAsync(`${seleniumManagerPath} --version`, { timeout: 60_000 });
+    await execAsync(`${seleniumManagerPath} --version`, { timeout: callSeleniumManagerVersionTimeout });
     this.validated = true;
   }
 
-  matchForBrowser(options: { browserName: BrowserName; browserPlatform: BrowserPlatform }): boolean {
-    const { browserName, browserPlatform } = options;
-    if (browserPlatform === 'macos') {
-      return isAllowedMacosBrowserName(browserName);
-    } else if (browserPlatform === 'windows') {
-      return isAllowedWindowsBrowserName(browserName);
-    }
-
-    return false;
-  }
-
-  matchForDriver(options: { browserName: BrowserName; browserPlatform: BrowserPlatform }): boolean {
-    const { browserName, browserPlatform } = options;
-    switch (browserPlatform) {
-      case 'macos':
-        return isAllowedMacosBrowserName(browserName);
-      case 'windows':
-        return isAllowedWindowsBrowserName(browserName);
-      case 'android':
-        return isAllowedAndroidBrowserName(browserName);
-      case 'ios':
-        return isAllowedIosBrowserName(browserName);
-      default:
-        const _exhaustiveCheck: never = browserPlatform;
-        throw new Error(`Unknown browser platform: ${_exhaustiveCheck}`);
-    }
-  }
-
-  async findBrowserInstallation(options: BrowserInstallationFinderOptions): Promise<BrowserInstallation[]> {
+  async findBrowserInstallation(options: FindBrowserInstallationOptions): Promise<FindBrowserInstallationResult> {
     await this.validateSeleniumManager();
 
     const { resolvedBrowserMajorVersion } = options;
@@ -90,6 +61,8 @@ export class SeleniumManager {
       return this.findBrowserInstallationFromCache();
     }
   }
+
+  async findAllBrowserInstallations(options: FindAllBrowserInstallationsOptions): Promise<FindAllBrowserInstallationsResult> {}
 
   private async findBrowserInstallationByMajorVersion(options: BrowserInstallationFinderOptions): Promise<BrowserInstallation[]> {
     const { browserName, browserPlatform, resolvedBrowserMajorVersion, resolvedBrowserVersion } = options;
@@ -161,7 +134,7 @@ export class SeleniumManager {
 
     const browserDriverPathStat = await fs.promises.stat(browserDriverPath).catch(() => null);
     if (!browserDriverPathStat || !browserDriverPathStat.isFile()) {
-      throw new Error(`Driver file not found at ${browserDriverPathStat}`);
+      throw new Error(`Driver file not found at ${browserDriverPath}`);
     }
 
     this.logger.info(`Driver file found at ${browserDriverPath}`);
@@ -200,15 +173,15 @@ export class SeleniumManager {
     };
   }
 
-  private async ensureExecutable(path: string): Promise<void> {
+  private async ensureExecutable(executablePath: string): Promise<void> {
     try {
-      await fs.promises.chmod(path, 0o755);
+      await fs.promises.chmod(executablePath, 0o755);
       if (process.platform !== 'darwin') {
         return;
       }
-      await execAsync(`/usr/bin/xattr -dr com.apple.quarantine ${path}`);
+      await execAsync(`/usr/bin/xattr -dr com.apple.quarantine ${executablePath}`);
     } catch (error) {
-      this.logger.warn(`Failed to set executable bit for ${path}`, { error: errorify(error) });
+      this.logger.warn(`Failed to set executable bit for ${executablePath}`, { error: errorify(error) });
     }
   }
 }

@@ -1,35 +1,26 @@
 import { AndroidBrowserName, AndroidBrowserPackageNameMap, isAllowedAndroidBrowserName, Serial } from '@dogu-private/types';
-import { PrefixLogger } from '@dogu-tech/common';
-import { BrowserInstallation, BrowserInstallationFinder, BrowserInstallationFinderOptions } from '@dogu-tech/device-client-common';
+import { PrefixLogger, PromiseOrValue } from '@dogu-tech/common';
 import { Adb } from '../internal/externals/index';
 import { logger } from '../logger/logger.instance';
-import { SeleniumManager } from './selenium-manager';
-
-export class SeleniumManagerBrowserInstallationFinder implements BrowserInstallationFinder {
-  constructor(private readonly seleniumManager: SeleniumManager) {}
-
-  match(options: BrowserInstallationFinderOptions): boolean {
-    return this.seleniumManager.matchForBrowser(options);
-  }
-
-  async find(options: BrowserInstallationFinderOptions): Promise<BrowserInstallation[]> {
-    return await this.seleniumManager.findBrowserInstallation(options);
-  }
-}
+import { BrowserInstallationFinder, BrowserInstallationFinderOptions, BrowserInstallationFinderResult } from './browser-manager.types';
 
 export class AdbBrowserInstallationFinder implements BrowserInstallationFinder {
   private readonly logger = new PrefixLogger(logger, '[AdbBrowserInstallationFinder]');
 
   match(options: BrowserInstallationFinderOptions): boolean {
-    const { browserName, browserPlatform } = options;
+    const { browserName, browserPlatform, deviceSerial } = options;
     if (browserPlatform !== 'android') {
+      return false;
+    }
+
+    if (!deviceSerial) {
       return false;
     }
 
     return isAllowedAndroidBrowserName(browserName);
   }
 
-  async find(options: BrowserInstallationFinderOptions): Promise<BrowserInstallation[]> {
+  async find(options: BrowserInstallationFinderOptions): Promise<BrowserInstallationFinderResult> {
     const { browserName, browserPlatform, deviceSerial } = options;
     if (!deviceSerial) {
       throw new Error(`Device serial is required. Browser name: ${browserName}, browser platform: ${browserPlatform}`);
@@ -86,5 +77,15 @@ export class AdbBrowserInstallationFinder implements BrowserInstallationFinder {
       });
 
     return browserInstallationsWithVersions;
+  }
+}
+
+export class AdbBrowserAllInstallationsFinder implements BrowserAllInstallationsFinder {
+  match(options: BrowserAllInstallationsFinderOptions): PromiseOrValue<boolean> {
+    throw new Error('Method not implemented.');
+  }
+
+  findAll(options: BrowserAllInstallationsFinderOptions): PromiseOrValue<BrowserAllInstallationsFinderResult> {
+    throw new Error('Method not implemented.');
   }
 }

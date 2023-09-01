@@ -4,11 +4,11 @@ export const BrowserName = ['chrome', 'firefox', 'safari', 'safaritp', 'edge', '
 export type BrowserName = (typeof BrowserName)[number];
 export const isAllowedBrowserName = (value: string): value is BrowserName => BrowserName.includes(value as BrowserName);
 
-export const DriverName = ['chromedriver', 'geckodriver', 'safaridriver', 'msedgedriver', 'IEDriverServer'] as const;
-export type DriverName = (typeof DriverName)[number];
-export const isAllowedDriverName = (value: string): value is DriverName => DriverName.includes(value as DriverName);
+export const BrowserDriverName = ['chromedriver', 'geckodriver', 'safaridriver', 'msedgedriver', 'IEDriverServer'] as const;
+export type BrowserDriverName = (typeof BrowserDriverName)[number];
+export const isAllowedBrowserDriverName = (value: string): value is BrowserDriverName => BrowserDriverName.includes(value as BrowserDriverName);
 
-export type BrowserOrDriverName = BrowserName | DriverName;
+export type BrowserOrDriverName = BrowserName | BrowserDriverName;
 
 export const BrowserPlatform = ['macos', 'windows', 'android', 'ios'] as const;
 export type BrowserPlatform = (typeof BrowserPlatform)[number] extends Extract<PlatformType, 'macos' | 'windows' | 'android' | 'ios'> ? (typeof BrowserPlatform)[number] : never;

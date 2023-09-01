@@ -1,17 +1,7 @@
-import { PromiseOrValue, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
+import { setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
 import axios, { AxiosInstance } from 'axios';
 import _ from 'lodash';
-
-const client = axios.create();
-setAxiosErrorFilterToIntercepter(client);
-
-export abstract class VersionUtils<T> {
-  abstract parse(version: string): T | Error;
-  abstract compareWithAsc(lhs: T, rhs: T): number;
-  abstract compareWithDesc(lhs: T, rhs: T): number;
-  abstract toString(version: T): string;
-  abstract latest(): PromiseOrValue<T>;
-}
+import { BrowserVersionProvider, BrowserVersionUtils } from './browser-manager.types';
 
 export interface FirefoxVersion {
   major: number;
@@ -30,8 +20,8 @@ export interface GetFirefoxVersionsUrlResult {
   latest: FirefoxVersion;
 }
 
-export class FirefoxVersionUtils extends VersionUtils<FirefoxVersion> {
-  static readonly pattern = /^(?<major>\d+)(?:\.(?<minor>\d+))?(?:\.(?<patch>\d+))?(?:(?<preid>[a-z]+)(?<prerelease>\d+))?$/;
+export class FirefoxBrowserVersionProvider implements BrowserVersionProvider<FirefoxVersion> {
+  static readonly versionPattern = /^(?<major>\d+)(?:\.(?<minor>\d+))?(?:\.(?<patch>\d+))?(?:(?<preid>[a-z]+)(?<prerelease>\d+))?$/;
   static readonly firefoxVersionsUrl = 'https://product-details.mozilla.org/1.0/firefox_versions.json';
 
   private readonly httpClient: AxiosInstance;
@@ -39,16 +29,52 @@ export class FirefoxVersionUtils extends VersionUtils<FirefoxVersion> {
   private lastLatest: FirefoxVersion | undefined;
 
   constructor() {
-    super();
     const httpClient = axios.create();
     setAxiosErrorFilterToIntercepter(httpClient);
     this.httpClient = httpClient;
   }
 
+  async latest(): Promise<FirefoxVersion> {
+    if (this.lastLatest) {
+      const headFirefoxVersionsUrlResult = await this.headFirefoxVersionsUrl();
+      if (headFirefoxVersionsUrlResult.etag === this.lastEtag) {
+        return this.lastLatest;
+      }
+    }
+
+    const getFirefoxVersionsUrlResult = await this.getFirefoxVersionsUrl();
+    this.lastEtag = getFirefoxVersionsUrlResult.etag;
+    this.lastLatest = getFirefoxVersionsUrlResult.latest;
+    return this.lastLatest;
+  }
+
+  private async getFirefoxVersionsUrl(): Promise<GetFirefoxVersionsUrlResult> {
+    const firefoxVersionsUrl = FirefoxBrowserVersionProvider.firefoxVersionsUrl;
+    const response = await this.httpClient.get(firefoxVersionsUrl);
+    const etag = _.get(response.headers, 'etag') as string | undefined;
+    const latestString = _.get(response.data, 'LATEST_FIREFOX_VERSION') as string | undefined;
+    if (latestString === undefined) {
+      throw new Error(`Failed to get latest Firefox version from ${firefoxVersionsUrl}`);
+    }
+
+    const latest = firefoxBrowserVersionUtils.parse(latestString);
+    return { etag, latest };
+  }
+
+  private async headFirefoxVersionsUrl(): Promise<HeadFirefoxVersionsUrlResult> {
+    const firefoxVersionsUrl = FirefoxBrowserVersionProvider.firefoxVersionsUrl;
+    const response = await this.httpClient.head(firefoxVersionsUrl);
+    const etag = _.get(response.headers, 'etag') as string | undefined;
+    return { etag };
+  }
+}
+
+export class FirefoxBrowserVersionUtils implements BrowserVersionUtils<FirefoxVersion> {
   parse(version: string): FirefoxVersion {
-    const match = version.match(FirefoxVersionUtils.pattern);
+    const pattern = FirefoxBrowserVersionProvider.versionPattern;
+    const match = version.match(pattern);
     if (!match) {
-      throw new Error(`Firefox version [${version}] does not match pattern [${stringify(FirefoxVersionUtils.pattern)}]`);
+      throw new Error(`Firefox version [${version}] does not match pattern [${stringify(pattern)}]`);
     }
 
     if (!match.groups) {
@@ -141,49 +167,20 @@ export class FirefoxVersionUtils extends VersionUtils<FirefoxVersion> {
 
   toString(version: FirefoxVersion): string {
     const { major, minor, patch, preid, prerelease } = version;
-    const versionParts = [String(major), '.', String(minor)];
-    if (patch !== undefined) {
-      versionParts.push('.');
-      versionParts.push(String(patch));
+    if (patch === undefined) {
+      return `${major}.${minor}`;
+    }
+
+    if (preid === undefined && prerelease === undefined) {
+      return `${major}.${minor}.${patch}`;
     }
 
     if (preid !== undefined && prerelease !== undefined) {
-      versionParts.push(preid);
-      versionParts.push(String(prerelease));
+      return `${major}.${minor}.${patch}${preid}${prerelease}`;
     }
 
-    return versionParts.join('');
-  }
-
-  async latest(): Promise<FirefoxVersion> {
-    if (this.lastLatest) {
-      const headFirefoxVersionsUrlResult = await this.headFirefoxVersionsUrl();
-      if (headFirefoxVersionsUrlResult.etag === this.lastEtag) {
-        return this.lastLatest;
-      }
-    }
-
-    const getFirefoxVersionsUrlResult = await this.getFirefoxVersionsUrl();
-    this.lastEtag = getFirefoxVersionsUrlResult.etag;
-    this.lastLatest = getFirefoxVersionsUrlResult.latest;
-    return this.lastLatest;
-  }
-
-  private async getFirefoxVersionsUrl(): Promise<GetFirefoxVersionsUrlResult> {
-    const response = await this.httpClient.get(FirefoxVersionUtils.firefoxVersionsUrl);
-    const etag = _.get(response.headers, 'etag') as string | undefined;
-    const latestString = _.get(response.data, 'LATEST_FIREFOX_VERSION') as string | undefined;
-    if (latestString === undefined) {
-      throw new Error(`Failed to get latest Firefox version from ${FirefoxVersionUtils.firefoxVersionsUrl}`);
-    }
-
-    const latest = this.parse(latestString);
-    return { etag, latest };
-  }
-
-  private async headFirefoxVersionsUrl(): Promise<HeadFirefoxVersionsUrlResult> {
-    const response = await this.httpClient.head(FirefoxVersionUtils.firefoxVersionsUrl);
-    const etag = _.get(response.headers, 'etag') as string | undefined;
-    return { etag };
+    throw new Error(`Invalid firefox version to string: [${stringify(version)}]`);
   }
 }
+
+export const firefoxBrowserVersionUtils = new FirefoxBrowserVersionUtils();

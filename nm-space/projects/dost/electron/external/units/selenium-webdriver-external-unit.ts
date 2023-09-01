@@ -115,6 +115,7 @@ export class SeleniumWebdriverExternalUnit extends IExternalUnit {
   private async pnpmInit(env: NodeJS.ProcessEnv): Promise<void> {
     const { pnpm } = ThirdPartyPathMap.common;
     const seleniumWebdriverPath = HostPaths.external.nodePackage.seleniumWebdriver.rootPath();
+    await fs.promises.mkdir(seleniumWebdriverPath, { recursive: true });
     await new Promise<void>((resolve, reject) => {
       const child = spawn(pnpm, ['init'], {
         cwd: seleniumWebdriverPath,
@@ -163,6 +164,7 @@ export class SeleniumWebdriverExternalUnit extends IExternalUnit {
   private async installSeleniumWebdriver(env: NodeJS.ProcessEnv): Promise<void> {
     const { pnpm } = ThirdPartyPathMap.common;
     const seleniumWebdriverPath = HostPaths.external.nodePackage.seleniumWebdriver.rootPath();
+    await fs.promises.mkdir(seleniumWebdriverPath, { recursive: true });
     await new Promise<void>((resolve, reject) => {
       const child = spawn(pnpm, ['install', `${SeleniumWebdriver}@${version}`], {
         cwd: seleniumWebdriverPath,
