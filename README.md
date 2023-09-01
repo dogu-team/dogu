@@ -77,12 +77,6 @@ Visualize test unit by integrating test unit framework with report.
 
 <img src=".github/resources/reporting-testing-profiling.png" width="100%"/>
 
-## Integration
-
-Support various integrations such as Github, Gitlab, Bitbucket, Jenkins, Slack.
-
-<img src=".github/resources/integration.png"/>
-
 # Start Dogu
 
 ### With Self-Hosted
@@ -125,7 +119,7 @@ Do you want to contribute to Dogu? We'd love your help. Dogu is an open source p
 
 # License
 
-We provide community edition and enterprise edition. See [LICENSE](LICENSE.md) for more details.
+We provide [community edition](https://dogutech.io/pricing) and [enterprise edition](https://dogutech.io/pricing). See [LICENSE](LICENSE.md) for more details.
 
 # Contact
 
