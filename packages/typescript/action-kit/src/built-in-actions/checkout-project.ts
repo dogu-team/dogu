@@ -57,6 +57,7 @@ export async function checkoutProject(
       command(git, [...configArgs, '-C', routineWorkspacePath, 'reset', '--hard'], 'Resetting Git repository...', 'Git reset failed');
       command(git, [...configArgs, '-C', routineWorkspacePath, 'clean', '-fdx'], 'Cleaning Git repository...', 'Git clean failed');
     }
+    command(git, [...configArgs, '-C', routineWorkspacePath, 'remote', 'set-branches', 'origin', branchOrTag], 'Setting Git remote branches...', 'Git remote set-branches failed');
     command(git, [...configArgs, '-C', routineWorkspacePath, 'fetch', 'origin', branchOrTag], 'Fetching Git repository...', 'Git fetch failed');
     command(git, [...configArgs, '-C', routineWorkspacePath, 'checkout', branchOrTag], 'Checking out Git repository...', 'Git checkout failed');
     command(git, [...configArgs, '-C', routineWorkspacePath, 'pull'], 'Pulling Git repository...', 'Git pull failed');

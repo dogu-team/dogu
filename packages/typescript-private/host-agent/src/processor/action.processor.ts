@@ -122,6 +122,11 @@ export class ActionProcessor {
       if (cleanResult.value.code !== 0) {
         return { error: cleanResult };
       }
+      this.logger.verbose('action git remote set-branches', { actionGitPath });
+      const setBranchesResult = await this.commandProcessRegistry.command(gitPath, [...configArgs, '-C', actionGitPath, 'remote', 'set-branches', 'origin', tag], {}, context);
+      if (setBranchesResult.value.code !== 0) {
+        return { error: setBranchesResult };
+      }
       this.logger.verbose('action git fetch', { actionGitPath });
       const fetchResult = await this.commandProcessRegistry.command(gitPath, [...configArgs, '-C', actionGitPath, 'fetch', 'origin', tag], {}, context);
       if (fetchResult.value.code !== 0) {
