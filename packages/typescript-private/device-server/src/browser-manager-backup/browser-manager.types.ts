@@ -83,10 +83,3 @@ export interface BrowserDriverInstaller {
 export interface BrowserVersionProvider<T> {
   latest(): PromiseOrValue<T>;
 }
-
-export interface BrowserVersionUtils<T> {
-  parse(version: string): T;
-  compareWithAsc(lhs: T, rhs: T): number;
-  compareWithDesc(lhs: T, rhs: T): number;
-  toString(version: T): string;
-}

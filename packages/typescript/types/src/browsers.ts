@@ -1,6 +1,6 @@
 import { PlatformType } from './platforms';
 
-export const BrowserName = ['chrome', 'firefox', 'safari', 'safaritp', 'edge', 'iexplorer', 'samsung-internet'] as const;
+export const BrowserName = ['chrome', 'firefox', 'firefox-devedition', 'safari', 'safaritp', 'edge', 'iexplorer', 'samsung-internet'] as const;
 export type BrowserName = (typeof BrowserName)[number];
 export const isAllowedBrowserName = (value: string): value is BrowserName => BrowserName.includes(value as BrowserName);
 
@@ -14,13 +14,13 @@ export const BrowserPlatform = ['macos', 'windows', 'android', 'ios'] as const;
 export type BrowserPlatform = (typeof BrowserPlatform)[number] extends Extract<PlatformType, 'macos' | 'windows' | 'android' | 'ios'> ? (typeof BrowserPlatform)[number] : never;
 export const isAllowedBrowserPlatform = (value: string): value is BrowserPlatform => BrowserPlatform.includes(value as BrowserPlatform);
 
-export const MacosBrowserName = ['chrome', 'firefox', 'safari', 'safaritp', 'edge'] as const;
+export const MacosBrowserName = ['chrome', 'firefox', 'firefox-devedition', 'safari', 'safaritp', 'edge'] as const;
 export type MacosBrowserName = (typeof MacosBrowserName)[number] extends Extract<BrowserName, 'chrome' | 'firefox' | 'safari' | 'safaritp' | 'edge'>
   ? (typeof MacosBrowserName)[number]
   : never;
 export const isAllowedMacosBrowserName = (value: string): value is MacosBrowserName => MacosBrowserName.includes(value as MacosBrowserName);
 
-export const WindowsBrowserName = ['chrome', 'firefox', 'edge', 'iexplorer'] as const;
+export const WindowsBrowserName = ['chrome', 'firefox', 'firefox-devedition', 'edge', 'iexplorer'] as const;
 export type WindowsBrowserName = (typeof WindowsBrowserName)[number] extends Extract<BrowserName, 'chrome' | 'firefox' | 'edge' | 'iexplorer'>
   ? (typeof WindowsBrowserName)[number]
   : never;

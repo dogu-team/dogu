@@ -1,9 +1,11 @@
 import { BrowserOrDriverName } from '@dogu-private/types';
 import { PrefixLogger, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
+import { onDmgMounted } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
 import axios, { AxiosInstance } from 'axios';
 import fs from 'fs';
 import _ from 'lodash';
+import os from 'os';
 import path from 'path';
 import { logger } from '../logger/logger.instance';
 import {
@@ -24,6 +26,7 @@ import {
   VersionRequestTimeoutWithin,
   VersionWithin,
 } from './common';
+import { firefoxVersionUtils } from './firefox-version-utils';
 import { WebCache } from './web-cache';
 
 interface DetailsFirefoxVersions {
@@ -43,7 +46,7 @@ interface DetailsDevedition {
   };
 }
 
-export type FirefoxInstallableName = Extract<BrowserOrDriverName, 'firefox' | 'geckodriver'> | 'devedition';
+export type FirefoxInstallableName = Extract<BrowserOrDriverName, 'firefox' | 'firefox-devedition' | 'geckodriver'>;
 export type FirefoxInstallableNameWithin = InstallableNameWithin<FirefoxInstallableName>;
 
 export type FirefoxNodeJSPlatform = Extract<NodeJS.Platform, 'darwin' | 'win32' | 'linux'>;
@@ -64,9 +67,9 @@ export type GetDownloadUrlOptions = FirefoxInstallableNameWithin & VersionWithin
 export class Firefox {
   static readonly firefoxDownloadBaseUrl = 'https://ftp.mozilla.org/pub';
   static readonly defaultLocale = 'en-US';
-  static readonly latestVersionMap: DeepReadonly<Record<string, keyof DetailsFirefoxVersions>> = {
+  static readonly latestVersionMap: DeepReadonly<Record<Extract<FirefoxInstallableName, 'firefox' | 'firefox-devedition'>, keyof DetailsFirefoxVersions>> = {
     firefox: 'LATEST_FIREFOX_VERSION',
-    devedition: 'LATEST_FIREFOX_DEVEL_VERSION',
+    'firefox-devedition': 'LATEST_FIREFOX_DEVEL_VERSION',
   };
   static readonly executablePathMap: DeepReadonly<Record<FirefoxInstallableName, Record<string, string[]>>> = {
     firefox: {
@@ -74,7 +77,7 @@ export class Firefox {
       win32: ['firefox.exe'],
       linux: ['firefox'],
     },
-    devedition: {
+    'firefox-devedition': {
       darwin: ['Firefox Developer Edition.app', 'Contents', 'MacOS', 'firefox'],
       win32: ['firefox.exe'],
       linux: ['firefox'],
@@ -96,6 +99,11 @@ export class Firefox {
     linux: {
       x64: 'linux-x86_64',
     },
+  };
+  static readonly firefoxInstallableMap: DeepReadonly<Record<FirefoxInstallableName, string>> = {
+    firefox: 'firefox',
+    'firefox-devedition': 'devedition',
+    geckodriver: 'geckodriver',
   };
 
   private readonly logger = new PrefixLogger(logger, `[${this.constructor.name}]`);
@@ -134,7 +142,7 @@ export class Firefox {
     const { installableName, timeout } = mergedOptions;
     switch (installableName) {
       case 'firefox':
-      case 'devedition': {
+      case 'firefox-devedition': {
         const details = await this.detailsFirefoxVersionsCache.get({ timeout });
         const version = details[Firefox.latestVersionMap[installableName]];
         return version;
@@ -157,23 +165,28 @@ export class Firefox {
     const { installableName, timeout, prefix, pattern } = mergedOptions;
     switch (installableName) {
       case 'firefox':
-      case 'devedition': {
+      case 'firefox-devedition': {
         const details =
           installableName === 'firefox'
             ? await this.detailsFirefoxCache.get({ timeout })
-            : installableName === 'devedition'
+            : installableName === 'firefox-devedition'
             ? await this.detailsDeveditionCache.get({ timeout })
             : installableName; // never
 
-        const versions = Object.keys(details.releases).map((version) => version.replace(`${installableName}-`, ''));
-        const reversedVersions = versions.reverse();
+        const firefoxInstallableName = Firefox.firefoxInstallableMap[installableName];
+        const versions = Object.keys(details.releases).map((version) => version.replace(`${firefoxInstallableName}-`, ''));
+        versions.sort((lhs, rhs) => {
+          const lhsVersion = firefoxVersionUtils.parse(lhs);
+          const rhsVersion = firefoxVersionUtils.parse(rhs);
+          return firefoxVersionUtils.compareWithDesc(lhsVersion, rhsVersion);
+        });
         if (prefix) {
-          const version = reversedVersions.find((version) => version.startsWith(prefix));
+          const version = versions.find((version) => version.startsWith(prefix));
           return version;
         }
 
         if (pattern) {
-          const version = reversedVersions.find((version) => pattern.test(version));
+          const version = versions.find((version) => pattern.test(version));
           return version;
         }
 
@@ -193,7 +206,7 @@ export class Firefox {
       defaultDownloadRequestTimeoutWithin(),
       options,
     );
-    const { rootPath, installableName, version, timeout } = mergedOptions;
+    const { installableName, timeout } = mergedOptions;
     const installPath = this.getInstallPath(mergedOptions);
     return await this.pathLock.acquire(installPath, async () => {
       const executablePath = this.getExecutablePath(mergedOptions);
@@ -213,6 +226,20 @@ export class Firefox {
           filePath: downloadFilePath,
           timeout,
         });
+
+        if (downloadFileName.toLowerCase().endsWith('.dmg')) {
+          const mountPath = path.resolve(os.homedir(), `dmp-${Date.now()}`);
+          await onDmgMounted(downloadFilePath, mountPath, timeout, async (mountPath) => {
+            const appName = Firefox.executablePathMap[installableName][process.platform][0];
+            await fs.promises.cp(path.resolve(mountPath, appName), path.resolve(installPath, appName), {
+              recursive: true,
+              force: true,
+            });
+          });
+        } else {
+          throw new Error(`Unexpected download file name: ${downloadFileName}`);
+        }
+
         return {
           executablePath,
         };
@@ -238,7 +265,7 @@ export class Firefox {
     const { installableName, version, platform } = mergedOptions;
     switch (installableName) {
       case 'firefox':
-      case 'devedition':
+      case 'firefox-devedition':
         switch (platform) {
           case 'darwin':
             return `Firefox ${version}.dmg`;
@@ -266,10 +293,11 @@ export class Firefox {
     const { installableName, version } = mergedOptions;
     const downloadFileName = this.getDownloadFileName(mergedOptions);
     const firefoxPlatform = this.getFirefoxPlatform(mergedOptions);
+    const firefoxInstallableName = Firefox.firefoxInstallableMap[installableName];
     switch (installableName) {
       case 'firefox':
-      case 'devedition':
-        return `${Firefox.firefoxDownloadBaseUrl}/${installableName}/releases/${version}/${firefoxPlatform}/${Firefox.defaultLocale}/${downloadFileName}`;
+      case 'firefox-devedition':
+        return `${Firefox.firefoxDownloadBaseUrl}/${firefoxInstallableName}/releases/${version}/${firefoxPlatform}/${Firefox.defaultLocale}/${downloadFileName}`;
       case 'geckodriver':
         throw new Error('Not implemented');
       default:

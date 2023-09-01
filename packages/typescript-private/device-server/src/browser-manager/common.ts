@@ -7,6 +7,13 @@ export type DeepReadonly<T> = {
   readonly [K in keyof T]: T[K] extends Record<keyof any, unknown> | unknown[] ? DeepReadonly<T[K]> : T[K];
 };
 
+export interface VersionUtils<T> {
+  parse(version: string): T;
+  compareWithAsc(lhs: T, rhs: T): number;
+  compareWithDesc(lhs: T, rhs: T): number;
+  toString(version: T): string;
+}
+
 export interface VersionRequestTimeoutWithin {
   /**
    * @description Request timeout in milliseconds
