@@ -16,7 +16,7 @@ const ProjectTypeRadio = (props: Omit<RadioGroupProps, 'children'>) => {
         <IconWrapper>
           <ProjectTypeIcon type={PROJECT_TYPE.WEB} style={iconStyle} />
         </IconWrapper>
-        <Title>{}</Title>
+        <Title>Web</Title>
       </StyledRadio>
       <StyledRadio value={PROJECT_TYPE.APP}>
         <IconWrapper>
