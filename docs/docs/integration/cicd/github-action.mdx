@@ -7,7 +7,6 @@ locale: en
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-import AllBadge from '@site/src/components/badge/AllBadge.tsx';
 import github_move_dogu_project_settings from '@site/static/img/integration/github/github_move_dogu_project_settings.png';
 import github_create_dogu_project_token from '@site/static/img/integration/github/github_create_dogu_project_token.png';
 
@@ -25,16 +24,21 @@ import github_copy_dogu_routine_id from '@site/static/img/integration/github/git
 import github_action_running from '@site/static/img/integration/github/github_action_running.png';
 import github_dogu_routine_running from '@site/static/img/integration/github/github_dogu_routine_running.png';
 import github_action_result from '@site/static/img/integration/github/github_action_result.png';
+import github_action_upload_app from '@site/static/img/integration/github/github_action_upload_app.png';
 
-<AllBadge />
+import CloudBadge from '@site/src/components/badge/CloudBadge.tsx';
+import EnterpriseBadge from '@site/src/components/badge/EnterpriseBadge.tsx';
+
+<CloudBadge />
+<EnterpriseBadge />
 
 ## Introduction
 
-You can set up a test CI/CD environment by integrating Routine and Github Actions.
+You can set up a testing CI/CD environment by integrating with Github Action.
 
 :::info Prerequisites
 
-This document assumes that you have created a Routine to integrate with Github Actions. If you haven't created a Routine yet, refer to [Creating Routines](/routine/routines/editor) to create one.
+This documentation assumes that a routine has already been created for integration with Github Action. If you haven't created a routine yet, refer to [Creating a Routine](/routine/routines/editor).
 
 :::
 
@@ -48,13 +52,13 @@ This document assumes that you have created a Routine to integrate with Github A
 
 <img src={github_create_dogu_project_token} />
 
-## Adding a Github Secret
+## Adding Github Secrets
 
-#### 1. Go to the `Settings` tab of your Github Repository.
+#### 1. Navigate to the `Settings` tab of your Github Repository.
 
 <img src={github_move_settings} />
 
-#### 2. Navigate to the `Secrets` tab.
+#### 2. Go to the `Secrets` tab.
 
 <img src={github_move_secret_settings} />
 
@@ -62,7 +66,7 @@ This document assumes that you have created a Routine to integrate with Github A
 
 <img src={github_create_new_repository_secret} />
 
-#### 4. Enter "DOGU_PROJECT_TOKEN" in the `Name` field, paste the copied Token in the `Secret` field, and then click the `Add secret` button.
+#### 4. Enter "DOGU_PROJECT_TOKEN" in the `Name` field, paste the copied Token into the `Secret` field, and then click the `Add secret` button.
 
 <img src={github_create_repository_secret} />
 
@@ -78,11 +82,88 @@ This document assumes that you have created a Routine to integrate with Github A
 
 #### 3. Select `Simple workflow`.
 
-- If you don't see "Simple workflow," search for it and select it.
+- If you don't see `Simple workflow`, search for it and select it.
 
 <img src={github_simple_workflow} />
 
-#### 4. Prepare the YAML content as follows.
+### Uploading the App
+
+#### 1. Modify the Github Workflow content to the following:
+
+<Tabs groupId="edition" defaultValue="cloud" queryString>
+<TabItem value="cloud" label="Cloud" default>
+
+```yaml
+name: CI
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Upload Application
+        uses: dogu-team/dogu-github-action@v1.0
+        with:
+          template: 'upload_application'
+          project-id: <your project id>
+          file-path: <your .apk, .ipa file path>
+        env:
+          DOGU_TOKEN: ${{ secrets.DOGU_PROJECT_TOKEN }}
+```
+
+</TabItem>
+
+<TabItem value="self-hosted" label="Self-Hosted">
+
+```yaml
+name: CI
+
+on:
+  push:
+    branches: ['main']
+  pull_request:
+    branches: ['main']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Upload Application
+        uses: dogu-team/dogu-github-action@v1.0
+        with:
+          template: 'upload_application'
+          project-id: <your project id>
+          file-path: <your .apk, .ipa file path>
+          api-url: <your api server url>
+        env:
+          DOGU_TOKEN: ${{ secrets.DOGU_PROJECT_TOKEN }}
+```
+
+:::info
+Enter the URL of your Self-Hosted Dogu API server in the `api-url` field.
+:::
+
+</TabItem>
+</Tabs>
+
+#### 2. Run the Github Action.
+
+#### 3. Verify the app upload.
+
+<img src={github_action_upload_app} />
+
+### Running the Routine
+
+#### 1. Modify the Github Workflow content to the following:
 
 <Tabs groupId="edition" defaultValue="cloud" queryString>
 <TabItem value="cloud" label="Cloud" default>
@@ -143,45 +224,22 @@ jobs:
 ```
 
 :::info
-Enter the URL of the Self-Hosted Dogu API server in the `api-url` field.
+Enter the URL of your Self-Hosted Dogu API server in the `api-url` field.
 :::
 
 </TabItem>
 </Tabs>
 
-- You can find the `project-id` on the Dogu project settings page.
+#### 2. Run the Github Action.
 
-<img src={github_copy_dogu_project_id} />
-
-- You can find the `routine-id` on the Routine page.
-
-<img src={github_copy_dogu_routine_id} />
-
-#### 5. Modify the YAML file as shown below.
-
-<img src={github_edit_workflow} />
-
-#### 6. Run the Github Action.
-
-<img src={github_action_running} />
-
-:::info
-Canceling the Github Action will also cancel the Dogu Routine.
-:::
-
-#### 7. Verify that the Dogu Routine is running.
+#### 3. Confirm that the Dogu routine is running.
 
 <img src={github_dogu_routine_running} />
 
-#### 8. You can also find the URL for the Dogu Routine execution result in the Github Action.
+#### 4. You can also check the URL for the Dogu routine execution result in Github Action.
 
 <img src={github_action_result} />
 
 ## References
 
 - [Dogu Github Action](https://github.com/dogu-team/dogu-github-action)
-- [Routines](http://localhost:3101/ko/routine/routines)
-
-```
-
-```

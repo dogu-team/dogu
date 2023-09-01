@@ -11,6 +11,7 @@ import github_move_dogu_project_settings from '@site/static/img/integration/gith
 import github_create_dogu_project_token from '@site/static/img/integration/github/github_create_dogu_project_token.png';
 import github_copy_dogu_project_id from '@site/static/img/integration/github/github_copy_dogu_project_id.png';
 import github_copy_dogu_routine_id from '@site/static/img/integration/github/github_copy_dogu_routine_id.png';
+import github_action_upload_app from '@site/static/img/integration/github/github_action_upload_app.png';
 
 import jenkins_search_plugin from '@site/static/img/integration/jenkins/jenkins_search_plugin.png';
 import jenkins_installed_plugin from '@site/static/img/integration/jenkins/jenkins_installed_plugin.png';
@@ -22,22 +23,28 @@ import jenkins_set_build_step from '@site/static/img/integration/jenkins/jenkins
 import jenkins_run_build_step from '@site/static/img/integration/jenkins/jenkins_run_build_step.png';
 import jenkins_done_build_step from '@site/static/img/integration/jenkins/jenkins_done_build_step.png';
 import jenkins_dogu_running_routine from '@site/static/img/integration/jenkins/jenkins_dogu_running_routine.png';
+import jenkins_build_upload_application from '@site/static/img/integration/jenkins/jenkins_build_upload_application.png';
+import jenkins_create_pipeline from '@site/static/img/integration/jenkins/jenkins_create_pipeline.png';
+import jenkins_done_pipeline from '@site/static/img/integration/jenkins/jenkins_done_pipeline.png';
+import jenkins_new_upload_application from '@site/static/img/integration/jenkins/jenkins_new_upload_application.png';
 
-import AllBadge from '@site/src/components/badge/AllBadge.tsx';
+import CloudBadge from '@site/src/components/badge/CloudBadge.tsx';
+import EnterpriseBadge from '@site/src/components/badge/EnterpriseBadge.tsx';
 
-<AllBadge />
+<CloudBadge />
+<EnterpriseBadge />
 
 ## Introduction
 
-You can set up a test CI/CD environment by integrating Routine and Jenkins.
+You can set up a test CI/CD environment by integrating with Jenkins.
 
 :::info Prerequisites
 
-This document assumes that you have created a Routine to integrate with Jenkins. If you haven't created a Routine yet, refer to [Creating Routines](/routine/routines/editor) to create one.
+This documentation assumes that a routine has already been created for integration with Jenkins. If you haven't created a routine yet, refer to [Creating a Routine](/routine/routines/editor).
 
 :::
 
-## Issuing a Token
+## Token Issuance
 
 #### 1. Go to the Dogu project page and navigate to the `Settings` tab.
 
@@ -47,98 +54,146 @@ This document assumes that you have created a Routine to integrate with Jenkins.
 
 <img src={github_create_dogu_project_token} />
 
-## Installing the Plugin
+## Plugin Installation
 
-#### 1. Manage Jenkins > Available Plugins > Search for Dogu Integration Plugin
+#### 1. Plugin Management > Available Plugins > Search for Dogu Integration Plugin
 
 <img src={jenkins_search_plugin} />
 
-#### 2. Verify the Plugin Installation
+#### 2. Confirm Plugin Installation
 
 <img src={jenkins_installed_plugin} />
 
 ## Adding Credentials
 
-#### 1. Jenkins Manage > Credentials > System > Global credentials (unrestricted) > Add Credentials
+#### 1. Jenkins > Credentials > System > Global credentials (unrestricted) > Add Credentials
 
 Select Kind: Dogu Access Token and enter ID, Description, and Dogu Access Token.
 
-ID: Used as the credential identifier.  
-Description: Used as the credential description.  
-Dogu Access Token: Paste the Token copied from [Issuing a Token](#issuing-a-token).
+ID: Used as a credential identifier.  
+Description: Used as a credential description.  
+Dogu Access Token: Paste the Token copied from [Token Issuance](#token-issuance).
 
 <img src={jenkins_new_credential} />
 
-## Setting API URL
+## API URL Configuration
 
 <Tabs groupId="edition" defaultValue="cloud" queryString>
 <TabItem value="cloud" label="Cloud" default>
 
-For Cloud, API URL configuration is not required.
+No API URL configuration is required for Cloud.
 
 </TabItem>
 
 <TabItem value="self-hosted" label="Self-Hosted">
 
-#### 1. Jenkins Manage > System Configuration > System
+#### 1. Jenkins > Manage Jenkins > System Configuration > System
 
-Under Global properties, go to Environment variables and click Add. Enter Name and Value.
+Under Global properties > Environment variables, click Add to enter Name and Value.
 
 Name: DOGU_API_URL  
-Value: Enter the your hosted "Dogu API URL"
+Value: Enter the hosted "Dogu API URL"
 
 <img src={jenkins_set_api_url} />
 
 </TabItem>
 </Tabs>
 
-## Integrating with Freestyle Project
+## Freestyle Project
 
 #### 1. Jenkins Dashboard > New Item > Freestyle project
 
 <img src={jenkins_create_freestyle} />
 
-#### 2. Add a Build Step
+### Uploading the App
 
-Add build step > Select Run Dogu Routine.
+#### 1. Add build step > Select Upload application to Dogu.
+
+<img src={jenkins_new_upload_application} />
+
+#### 2. Configure the Build Step
+
+<img src={jenkins_build_upload_application} />
+
+#### 3. Click Build Now to run the Build.
+
+#### 4. Verify the app upload.
+
+<img src={github_action_upload_app} />
+
+### Running a Routine
+
+#### 1. Add build step > Select Run Dogu Routine.
 
 <img src={jenkins_new_build_step} />
 
-#### 3. Configure the Build Step
+#### 2. Configure the Build Step
 
 Enter Project ID, Routine ID, and Credential ID.
 
 <img src={jenkins_set_build_step} />
 
-- `project-id` can be found on the Dogu project settings page.
+#### 3. Click Build Now to run the Build.
 
-<img src={github_copy_dogu_project_id} />
+#### 4. Confirm the completion of the routine run.
 
-- `routine-id` can be found on the Routine page.
-
-<img src={github_copy_dogu_routine_id} />
-
-#### 4. Run the Build
-
-Click Build Now to run the build.
-
-<img src={jenkins_run_build_step} />
-
-:::info
-Canceling the build will also cancel the Dogu Routine.
-:::
-
-#### 5. Verify the Routine Execution
-
-<img src={jenkins_dogu_running_routine} />
-
-#### 6. Check Build Completion
-
-Once the build is completed, you can check the build result as shown below. You can find more detailed reports in the Console Output using the URL provided.
+Once the routine is complete, you can check the detailed report by using the URL displayed in the Console Output.
 
 <img src={jenkins_done_build_step} />
 
-## Integrating with Pipeline (Coming Soon)
+## Pipeline Integration
+
+#### 1. Jenkins Dashboard > New Item > Pipeline
+
+<img src={jenkins_create_pipeline} />
+
+### Uploading the App
+
+#### 1. Create a Pipeline Script for App Upload
+
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Upload Application') {
+            steps {
+                doguUploadApplication(applicationPath: '/Users/dogu/warehouseinvasion.apk', projectId: '7ce0c78c-8d47-4b3f-a0ec-7402d14a5c08', credentialsId: 'Simple Project Access Token')
+            }
+        }
+    }
+}
+```
+
+#### 2. Run the Pipeline
+
+#### 3. Verify the app upload.
+
+<img src={github_action_upload_app} />
+
+### Running a Routine
+
+#### 1. Create a Pipeline Script for Routine Execution
+
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Run Routine') {
+            steps {
+                doguRunRoutine(projectId: '7ce0c78c-8d47-4b3f-a0ec-7402d14a5c08', routineId: '88db71bc-f6d8-4a20-8e92-50fc1477a3da', credentialsId: 'Simple Project Access Token')
+            }
+        }
+    }
+}
+```
+
+#### 2. Run the Pipeline
+
+#### 3. Confirm the completion of the routine run.
+
+Once the routine is complete, you can check the detailed report by using the URL displayed in the Console Output.
+
+<img src={jenkins_done_pipeline} />
 
 ## References
 

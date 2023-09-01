@@ -5,10 +5,8 @@ const EnterpriseBadge = () => {
   return (
     <Badge
       label={'Enterprise Support'}
-      overlayText={
-        'Available in the cloud, self-hosted professinal, self-hosted enterprise'
-      }
-      backgroundColor={'#efaf39'}
+      overlayText={'Available in the cloud, self-hosted professinal'}
+      backgroundColor={'#2fc971'}
     ></Badge>
   );
 };

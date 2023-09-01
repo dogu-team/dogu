@@ -42,6 +42,7 @@ const arrowStyle: CSSProperties = {
 };
 
 const linkStyle = {
+  marginRight: '16px',
   textDecoration: 'none',
   ':hover': {
     textDecoration: 'none',

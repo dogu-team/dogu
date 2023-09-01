@@ -6,7 +6,7 @@ const AllBadge = () => {
     <Badge
       label={'ALL Support'}
       overlayText={
-        'Available in the cloud, self-hosted community, self-hosted professional, self-hosted enterprise'
+        'Available in the cloud, self-hosted community, self-hosted professional'
       }
       fontColor={'white'}
       backgroundColor={'#ffc655'}
