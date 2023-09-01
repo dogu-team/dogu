@@ -2,6 +2,7 @@ import { ExclamationCircleFilled, LoadingOutlined } from '@ant-design/icons';
 import { OrganizationBase, ProjectBase, RoutinePipelineBase } from '@dogu-private/console';
 import { PIPELINE_STATUS } from '@dogu-private/types';
 import { Divider } from 'antd';
+import { isAxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -14,6 +15,7 @@ import useWebSocket from '../../hooks/useWebSocket';
 import useLivePipelineStore from '../../stores/live-pipeline';
 import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../styles/box';
 import { clickableTextStyle } from '../../styles/text';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import { isPipelineInProgress } from '../../utils/pipeline';
 import ErrorBox from '../common/boxes/ErrorBox';
 import H5 from '../common/headings/H5';
@@ -77,7 +79,7 @@ const PipelineJobLayout = ({ children, organization, project }: Props) => {
   }
 
   if (!pipeline || pipelineError) {
-    return <ErrorBox title="Something went wrong..." desc="ohoh..." />;
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(pipelineError) ? getErrorMessageFromAxios(pipelineError) : 'Cannot get pipeline information'} />;
   }
 
   return (

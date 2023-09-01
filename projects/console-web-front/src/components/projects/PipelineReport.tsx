@@ -1,6 +1,7 @@
 import { CalendarOutlined, LoadingOutlined } from '@ant-design/icons';
 import { ProjectPipelineReportResponse } from '@dogu-private/console';
 import { OrganizationId, ProjectId } from '@dogu-private/types';
+import { isAxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import { Cell, Legend, Pie, PieChart, Tooltip } from 'recharts';
 import styled from 'styled-components';
@@ -9,6 +10,7 @@ import useSWR from 'swr';
 import { swrAuthFetcher } from '../../api';
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
 import { getFirstOfMonthDate } from '../../utils/date';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import ErrorBox from '../common/boxes/ErrorBox';
 import DashBoard from '../DashBoard';
 
@@ -36,7 +38,7 @@ const PipelineReport = ({ orgId, projectId }: Props) => {
   if (!data || error) {
     return (
       <Box>
-        <ErrorBox title="Error" desc="error" />
+        <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get pipeline report information'} />
       </Box>
     );
   }

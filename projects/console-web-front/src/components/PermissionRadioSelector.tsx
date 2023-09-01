@@ -3,11 +3,14 @@ import { PageBase, ProjectRoleBase } from '@dogu-private/console';
 import { ProjectRoleId } from '@dogu-private/types';
 import { OrganizationId } from '@dogu-private/types';
 import { Radio, Space } from 'antd';
+import { isAxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 import styled from 'styled-components';
 import useSWR from 'swr';
 
 import { swrAuthFetcher } from '../api';
+import { getErrorMessageFromAxios } from '../utils/error';
+import ErrorBox from './common/boxes/ErrorBox';
 
 interface Props {
   organizationId: OrganizationId;
@@ -30,7 +33,7 @@ const PermissionRadioSelector = ({ organizationId, defaultRoleId, onChange }: Pr
   }
 
   if (!data || error) {
-    return <div>something went wrong...</div>;
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find project permission information.'} />;
   }
 
   return (

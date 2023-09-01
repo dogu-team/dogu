@@ -1,16 +1,16 @@
 import { FieldTimeOutlined, LoadingOutlined } from '@ant-design/icons';
 import { RoutineDeviceJobBase } from '@dogu-private/console';
-import { RoutineJobId, OrganizationId, RoutinePipelineId, PIPELINE_STATUS, Platform, ProjectId } from '@dogu-private/types';
+import { RoutineJobId, OrganizationId, RoutinePipelineId, Platform, ProjectId } from '@dogu-private/types';
 import { Button } from 'antd';
-import Image from 'next/image';
+import { isAxiosError } from 'axios';
 import Link from 'next/link';
 import styled from 'styled-components';
 import useSWR from 'swr';
 import { swrAuthFetcher } from '../../api';
 
-import resources from '../../resources';
 import useLivePipelineStore from '../../stores/live-pipeline';
 import { flexRowBaseStyle, tableCellStyle } from '../../styles/box';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import ErrorBox from '../common/boxes/ErrorBox';
 import PlatformIcon from '../device/PlatformIcon';
 import JobStatusIcon from './JobStatusIcon';
@@ -35,7 +35,7 @@ const DeviceJobListController = ({ orgId, projectId, pipelineId, jobId }: Props)
   }
 
   if (error) {
-    return <ErrorBox title="SomethingWentWrong" desc="" />;
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find device jobs information'} />;
   }
 
   const deviceJobsData = liveDeviceJobs?.map((item) => ({ ...item, device: data?.find((d) => d.deviceId === item.deviceId)?.device })) || data;

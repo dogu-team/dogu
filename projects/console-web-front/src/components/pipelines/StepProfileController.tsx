@@ -3,11 +3,13 @@ import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import moment from 'moment';
 import { LoadingOutlined } from '@ant-design/icons';
+import { isAxiosError } from 'axios';
 
 import { swrAuthFetcher } from '../../api';
 import { isPipelineInProgress } from '../../utils/pipeline';
 import ErrorBox from '../common/boxes/ErrorBox';
 import RuntimeProfiles from './RuntimeProfiles';
+import { getErrorMessageFromAxios } from '../../utils/error';
 
 interface Props {
   step: RoutineStepBase;
@@ -30,7 +32,7 @@ const StepProfileController = ({ step }: Props) => {
   }
 
   if (!data || error) {
-    return <ErrorBox title="Oops.." desc="Cannot get runtime info" />;
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get step profile information'} />;
   }
 
   return (

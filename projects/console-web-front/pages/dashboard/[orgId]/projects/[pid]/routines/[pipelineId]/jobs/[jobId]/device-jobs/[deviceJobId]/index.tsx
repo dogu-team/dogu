@@ -2,6 +2,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { RoutineDeviceJobBase } from '@dogu-private/console';
 import { RoutinePipelineId, USER_VERIFICATION_STATUS } from '@dogu-private/types';
 import { Collapse, Divider } from 'antd';
+import { isAxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -20,6 +21,7 @@ import StepListController from '../../../../../../../../../../../src/components/
 import { getProjectPageServerSideProps, ProjectServerSideProps } from '../../../../../../../../../../../src/ssr/project';
 import useAuthStore from '../../../../../../../../../../../src/stores/auth';
 import useLivePipelineStore from '../../../../../../../../../../../src/stores/live-pipeline';
+import { getErrorMessageFromAxios } from '../../../../../../../../../../../src/utils/error';
 import { isPipelineInProgress } from '../../../../../../../../../../../src/utils/pipeline';
 import { NextPageWithLayout } from '../../../../../../../../../../_app';
 
@@ -43,7 +45,7 @@ const DeviceJobPage: NextPageWithLayout<ProjectServerSideProps> = ({ organizatio
   }
 
   if (!data || error) {
-    return <ErrorBox title="Oops.." desc="Cannot find device job" />;
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find device job'} />;
   }
 
   return (

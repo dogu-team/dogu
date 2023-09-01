@@ -11,6 +11,9 @@ import DestStatusIcon from 'src/components/pipelines/DestStatusIcon';
 import JobStatusIcon from 'src/components/pipelines/JobStatusIcon';
 import { flexRowBaseStyle } from 'src/styles/box';
 import { swrAuthFetcher } from '../../api';
+import ErrorBox from '../common/boxes/ErrorBox';
+import { isAxiosError } from 'axios';
+import { getErrorMessageFromAxios } from '../../utils/error';
 
 const getStartedAtWithFormatted = (d1: Date, d2: Date) => {
   const diff = moment(d2).diff(moment(d1), 'seconds');
@@ -67,7 +70,16 @@ const DeviceJobVideoController = ({ deviceJob }: Props) => {
   }
 
   if (!recordUrl || recordUrlError || !deviceJobDetail || deviceJobDetailError) {
-    return <div>Something went wrong...</div>;
+    return (
+      <ErrorBox
+        title="Something went wrong"
+        desc={
+          isAxiosError(recordUrlError || deviceJobDetailError)
+            ? getErrorMessageFromAxios(recordUrlError || deviceJobDetailError)
+            : 'Cannot find record URL or device job information.'
+        }
+      />
+    );
   }
 
   return (

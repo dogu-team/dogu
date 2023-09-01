@@ -2,6 +2,7 @@ import { CalendarOutlined, FieldTimeOutlined, GatewayOutlined, LoadingOutlined, 
 import { PageBase, RoutinePipelineBase } from '@dogu-private/console';
 import { OrganizationId, PIPELINE_STATUS, ProjectId } from '@dogu-private/types';
 import { Button, List } from 'antd';
+import { isAxiosError } from 'axios';
 import Trans from 'next-translate/Trans';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -16,6 +17,7 @@ import { listItemStyle } from '../../styles/box';
 import { menuItemButtonStyles } from '../../styles/button';
 import { listActiveNameStyle } from '../../styles/text';
 import { localizeDate } from '../../utils/date';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import ErrorBox from '../common/boxes/ErrorBox';
 import ListEmpty from '../common/boxes/ListEmpty';
 import PipelineCreatedTimer from './PipelineCreatedTimer';
@@ -106,7 +108,7 @@ const PipelineListController = ({ organizationId, projectId }: Props) => {
 
   if (!data || error) {
     if (error) {
-      return <ErrorBox title="Something went wrong" desc="Cannot find pipelines" />;
+      return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find pipelines information'} />;
     }
 
     return null;

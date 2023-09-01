@@ -1,6 +1,7 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { RoutineBase } from '@dogu-private/console';
 import { OrganizationId, ProjectId } from '@dogu-private/types';
+import { isAxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
@@ -8,6 +9,8 @@ import useSWR from 'swr';
 
 import { swrAuthFetcher } from '../../api';
 import useRefresh from '../../hooks/useRefresh';
+import { getErrorMessageFromAxios } from '../../utils/error';
+import ErrorBox from '../common/boxes/ErrorBox';
 import ProjectSidebarItem from '../projects/ProjectSidebarItem';
 
 interface Props {
@@ -27,7 +30,7 @@ const RoutineListController = ({ organizationId, projectId }: Props) => {
   }
 
   if (!data || error) {
-    return <div>Something went wrong</div>;
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find routines information'} />;
   }
 
   return (

@@ -1,37 +1,55 @@
+import Image from 'next/image';
 import styled from 'styled-components';
+
+interface Props {
+  title: React.ReactNode;
+  desc: React.ReactNode;
+}
+
+const ErrorBox = ({ title, desc }: Props) => {
+  return (
+    <Box>
+      <div>
+        <Image src="/resources/icons/dogu-community.png" alt="Error!" width={128} height={128} unoptimized />
+      </div>
+      <Title>{title}</Title>
+      <Description>{desc}</Description>
+      <Alert>
+        If this error persists, please <a href="mailto:contact@dogutech.io">contact us</a> or{' '}
+        <a href="https://github.com/dogu-team/dogu/issues" target="_blank">
+          report issue
+        </a>
+        .
+      </Alert>
+    </Box>
+  );
+};
+
+export default ErrorBox;
 
 const Box = styled.div`
   display: flex;
-  height: 300px;
-  padding: 24px;
-  border-radius: 12px;
-  background-color: #f78a77;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 `;
 
 const Title = styled.h2`
+  margin-top: 1rem;
   font-size: 1.5rem;
   font-weight: 600;
+  line-height: 1.5;
 `;
 
-const Desc = styled.p`
-  margin-top: 20px;
+const Description = styled.div`
+  margin-top: 1.5rem;
+  line-height: 1.5;
+  text-align: center;
 `;
 
-interface Props {
-  title: string;
-  desc: string;
-}
-
-const ErrorBox = ({ title, desc }: Props) => {
-  return (
-    <Box>
-      <Title>{title}</Title>
-      <Desc>{desc}</Desc>
-    </Box>
-  );
-};
-
-export default ErrorBox;
+const Alert = styled.p`
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: ${(props) => props.theme.main.colors.gray3};
+  text-align: center;
+`;

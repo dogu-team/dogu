@@ -1,5 +1,6 @@
 import useTutorialContext from '../../hooks/useTutorialContext';
 import { GuideSupportSdk } from '../../resources/guide';
+import ErrorBox from '../common/boxes/ErrorBox';
 import AppiumGuide from './AppiumGuide';
 import GamiumGuide from './GamiumGuide';
 import SeleniumGuide from './SeleniumGuide';
@@ -13,11 +14,11 @@ const RemoteTestTutorial = ({ selectedSdk }: Props) => {
   const { organization, project } = useTutorialContext();
 
   if (!organization) {
-    return <div>Something went wrong... please contact us</div>;
+    return <ErrorBox title="Something went wrong" desc="Cannot find organization information" />;
   }
 
   if (!project) {
-    return <div>Create project first.</div>;
+    return <ErrorBox title="Something went wrong" desc="Cannot find project information" />;
   }
 
   return (

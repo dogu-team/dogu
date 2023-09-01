@@ -1,11 +1,14 @@
-import { DatabaseOutlined, LoadingOutlined, MehOutlined } from '@ant-design/icons';
+import { LoadingOutlined, MehOutlined } from '@ant-design/icons';
 import { RemoteDestBase } from '@dogu-private/console';
 import { DEST_TYPE, OrganizationId, ProjectId, RemoteDeviceJobId } from '@dogu-private/types';
+import { isAxiosError } from 'axios';
 import styled from 'styled-components';
 import useSWR from 'swr';
 
 import { swrAuthFetcher } from '../../api/index';
 import { flexRowCenteredStyle } from '../../styles/box';
+import { getErrorMessageFromAxios } from '../../utils/error';
+import ErrorBox from '../common/boxes/ErrorBox';
 import RemoteDestJob from './RemoteDestJob';
 import RemoteDestUnit from './RemoteDestUnit';
 
@@ -30,7 +33,7 @@ const RemoteDestListController = ({ organizationId, projectId, remoteDeviceJobId
   }
 
   if (!data || error) {
-    return <div>Something went wrong</div>;
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get remote dest information'} />;
   }
 
   if (!data.length) {

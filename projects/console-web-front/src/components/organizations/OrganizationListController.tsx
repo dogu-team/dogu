@@ -2,7 +2,7 @@ import { BankOutlined, UserOutlined } from '@ant-design/icons';
 import { OrganizationBase } from '@dogu-private/console';
 import { MenuProps, Tooltip } from 'antd';
 import { List } from 'antd';
-import { AxiosError } from 'axios';
+import { AxiosError, isAxiosError } from 'axios';
 import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
@@ -118,7 +118,7 @@ const OrganizationListController = () => {
 
   if (!data || error) {
     if (error) {
-      return <ErrorBox title="Failed to get organization list." desc="" />;
+      return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get organizations information'} />;
     }
 
     return null;

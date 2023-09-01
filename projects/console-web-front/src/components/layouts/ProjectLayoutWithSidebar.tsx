@@ -1,8 +1,11 @@
 import { ProjectBase } from '@dogu-private/console';
+import { isAxiosError } from 'axios';
 import styled from 'styled-components';
 import useSWR from 'swr';
+
 import { swrAuthFetcher } from '../../api';
 import { ProjectContext } from '../../hooks/useProjectContext';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import ErrorBox from '../common/boxes/ErrorBox';
 
 import ConsoleLayout, { ConsoleLayoutProps } from './ConsoleLayout';
@@ -24,7 +27,7 @@ const ProjectLayoutWithSidebar = ({ children, innerSidebar, project, ...props }:
   }
 
   if (error) {
-    return <ErrorBox title="Oops..." desc="Failed to load console" />;
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get project information'} />;
   }
 
   return (

@@ -16,7 +16,7 @@ const PipelineDetailPage: NextPageWithLayout<ProjectServerSideProps> = ({ organi
   if (!pipelineId) {
     return (
       <div>
-        <ErrorBox title="Error!" desc="Invalid link" />
+        <ErrorBox title="Not Found" desc="Invalid pipeline ID" />
       </div>
     );
   }

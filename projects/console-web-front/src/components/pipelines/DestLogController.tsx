@@ -1,12 +1,15 @@
 import { DestBase, DeviceJobLogInfo, TestLogResponse } from '@dogu-private/console';
 import { DestId, DEST_STATE } from '@dogu-private/types';
+import { isAxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import { useCallback } from 'react';
 import { swrAuthFetcher } from 'src/api';
 import LogContainer from 'src/components/pipelines/LogContainer';
 import useSWR from 'swr';
 import { Url } from 'url';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import { isDestEndedWithData } from '../../utils/pipeline';
+import ErrorBox from '../common/boxes/ErrorBox';
 import DestEmptyData from './DestEmptyData';
 
 interface Props {
@@ -37,7 +40,7 @@ const DestLogController = ({ dest, logType }: Props) => {
   }
 
   if (!data || error) {
-    return <div>Something went wrong...</div>;
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find log information.'} />;
   }
 
   return <LogContainer logs={data} logType={logType} selectedLine={Number(router.query.line) || undefined} getLineLink={getLineLink} />;

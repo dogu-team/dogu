@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import useTutorialContext from '../../hooks/useTutorialContext';
 import { flexRowCenteredStyle } from '../../styles/box';
 import RefreshButton from '../buttons/RefreshButton';
+import ErrorBox from '../common/boxes/ErrorBox';
 import TableListView from '../common/TableListView';
 import RemoteItemWithDeviceJob from '../remote/RemoteItemWithDeviceJob';
 import RemoteListController from '../remote/RemoteListController';
@@ -13,7 +14,7 @@ const RemoteTestResultList = (props: Props) => {
   const { organization, project } = useTutorialContext();
 
   if (!organization || !project) {
-    return <div>Something went wrong... please contact us</div>;
+    return <ErrorBox title="Something went wrong" desc="Cannot find organization or project information" />;
   }
 
   return (

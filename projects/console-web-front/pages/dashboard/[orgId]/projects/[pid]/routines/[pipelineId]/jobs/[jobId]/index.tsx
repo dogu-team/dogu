@@ -2,6 +2,7 @@ import { CheckCircleOutlined, ExclamationCircleOutlined, FieldTimeOutlined } fro
 import { RoutineJobBase } from '@dogu-private/console';
 import { PIPELINE_STATUS } from '@dogu-private/types';
 import { Skeleton } from 'antd';
+import { isAxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
@@ -17,6 +18,7 @@ import PipelineEmptyLog from '../../../../../../../../../src/components/pipeline
 import PipelineRuntime from '../../../../../../../../../src/components/pipelines/PipelineRuntime';
 import { getProjectPageServerSideProps, ProjectServerSideProps } from '../../../../../../../../../src/ssr/project';
 import useLivePipelineStore from '../../../../../../../../../src/stores/live-pipeline';
+import { getErrorMessageFromAxios } from '../../../../../../../../../src/utils/error';
 import { pipelineJobEmptyText } from '../../../../../../../../../src/utils/mapper';
 import { isPipelineEmptyLogStatus } from '../../../../../../../../../src/utils/pipeline';
 import { NextPageWithLayout } from '../../../../../../../../_app';
@@ -35,7 +37,7 @@ const JobSummaryPage: NextPageWithLayout<ProjectServerSideProps> = ({ organizati
   const liveJob = useLivePipelineStore((state) => state.pipeline?.routineJobs?.find((item) => item.routineJobId === jobId));
 
   if (isNaN(pipelineId) || isNaN(jobId)) {
-    return <ErrorBox title="Something went wrong" desc="" />;
+    return <ErrorBox title="Something went wrong" desc="Invalid Pipeline ID or job ID" />;
   }
 
   if (isJobLoading) {
@@ -47,7 +49,7 @@ const JobSummaryPage: NextPageWithLayout<ProjectServerSideProps> = ({ organizati
   }
 
   if (!job || jobError) {
-    return <ErrorBox title="Something went wrong" desc="Cannot find job." />;
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(jobError) ? getErrorMessageFromAxios(jobError) : 'Cannot get job information'} />;
   }
 
   const data = liveJob || job;

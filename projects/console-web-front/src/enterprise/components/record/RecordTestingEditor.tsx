@@ -1,13 +1,16 @@
 import { RecordTestCaseResponse, RecordTestStepResponse } from '@dogu-private/console';
 import { OrganizationId, ProjectId, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
+import { isAxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import styled from 'styled-components';
 import useSWR from 'swr';
 
 import { swrAuthFetcher } from '../../../api/index';
+import ErrorBox from '../../../components/common/boxes/ErrorBox';
 import useRefresh from '../../../hooks/useRefresh';
 import useEventStore from '../../../stores/events';
+import { getErrorMessageFromAxios } from '../../../utils/error';
 import StepEditor from './StepEditor';
 import StepNavigator from './StepNavigator';
 import StepPreviewBar from './StepPreviewBar';
@@ -74,7 +77,7 @@ const RecordTestingEditor = () => {
   }
 
   if (!data || error) {
-    return <div>Something went wrong...</div>;
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get record test case information'} />;
   }
 
   return (

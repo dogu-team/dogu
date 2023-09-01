@@ -1,7 +1,8 @@
-import { FieldTimeOutlined, LinkOutlined, LoadingOutlined, RightOutlined } from '@ant-design/icons';
+import { FieldTimeOutlined, LoadingOutlined, RightOutlined } from '@ant-design/icons';
 import { DestBase, RoutineDeviceJobBase, RoutineStepBase } from '@dogu-private/console';
 import { DEST_TYPE, DeviceId, OrganizationId, RoutinePipelineId, PIPELINE_STATUS, ProjectId, USER_VERIFICATION_STATUS } from '@dogu-private/types';
-import { message, Tabs, TabsProps } from 'antd';
+import { Tabs } from 'antd';
+import { isAxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import React, { useEffect, useRef, useState } from 'react';
@@ -12,7 +13,8 @@ import { swrAuthFetcher } from '../../api';
 import useAuthStore from '../../stores/auth';
 import useLivePipelineStore from '../../stores/live-pipeline';
 import { ResultTabMenuItemType, ResultTabMenuKey } from '../../types/routine';
-import { isPipelineEndedWithData, isPipelineInProgress } from '../../utils/pipeline';
+import { getErrorMessageFromAxios } from '../../utils/error';
+import { isPipelineEndedWithData } from '../../utils/pipeline';
 import ErrorBox from '../common/boxes/ErrorBox';
 import DestJob from './DestJob';
 import DestUnit from './DestUnit';
@@ -207,7 +209,7 @@ const StepListController = ({ orgId, projectId, pipelineId, deviceJob }: Props) 
   }
 
   if (!data || error) {
-    return <ErrorBox title="Something went wrong..." desc="" />;
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get steps information'} />;
   }
 
   return (

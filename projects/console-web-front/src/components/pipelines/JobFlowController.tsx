@@ -8,11 +8,13 @@ import 'reactflow/dist/style.css';
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { isAxiosError } from 'axios';
 
 import { swrAuthFetcher } from '../../api';
 import ErrorBox from '../common/boxes/ErrorBox';
 import JobStatusIcon from './JobStatusIcon';
 import useLivePipelineStore from '../../stores/live-pipeline';
+import { getErrorMessageFromAxios } from '../../utils/error';
 
 interface NodeItemProps {
   job: JobElement;
@@ -140,7 +142,7 @@ const JobFlowController = ({ orgId, projectId, pipelineId }: Props) => {
   }
 
   if (!data || error) {
-    return <ErrorBox title="Oops..." desc="" />;
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find jobs information'} />;
   }
 
   return (

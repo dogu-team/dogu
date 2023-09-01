@@ -1,7 +1,7 @@
 import { MobileOutlined } from '@ant-design/icons';
 import { DeviceBase } from '@dogu-private/console';
 import { List, MenuProps } from 'antd';
-import { AxiosError } from 'axios';
+import { AxiosError, isAxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -201,9 +201,7 @@ const DeviceListController = () => {
   );
 
   if (error) {
-    if (error instanceof AxiosError) {
-      return <ErrorBox title="Oops..." desc={getErrorMessageFromAxios(error)} />;
-    }
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get devices information'} />;
   }
 
   return (

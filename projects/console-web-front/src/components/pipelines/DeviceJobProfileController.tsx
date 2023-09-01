@@ -1,4 +1,5 @@
 import { RoutineDeviceJobBase, RuntimeInfoResponse } from '@dogu-private/console';
+import { isAxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import moment from 'moment';
@@ -8,6 +9,7 @@ import { swrAuthFetcher } from '../../api';
 import { isPipelineInProgress } from '../../utils/pipeline';
 import ErrorBox from '../common/boxes/ErrorBox';
 import RuntimeProfiles from './RuntimeProfiles';
+import { getErrorMessageFromAxios } from '../../utils/error';
 
 interface Props {
   deviceJob: RoutineDeviceJobBase;
@@ -29,7 +31,7 @@ const DeviceJobProfileController = ({ deviceJob }: Props) => {
   }
 
   if (!data || error) {
-    return <ErrorBox title="Oops.." desc="Cannot get runtime info" />;
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find device job profile information'} />;
   }
 
   return (

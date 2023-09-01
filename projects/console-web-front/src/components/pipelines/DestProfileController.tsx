@@ -1,10 +1,13 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { DestBase, RuntimeInfoResponse } from '@dogu-private/console';
+import { isAxiosError } from 'axios';
 import moment from 'moment';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
+
 import { swrAuthFetcher } from '../../api';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import { isDestEndedWithData } from '../../utils/pipeline';
 import ErrorBox from '../common/boxes/ErrorBox';
 import DestEmptyData from './DestEmptyData';
@@ -37,7 +40,7 @@ const DestProfileController = ({ destUnit }: Props) => {
   }
 
   if (!data || error) {
-    return <ErrorBox title="Error" desc="" />;
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get profile information'} />;
   }
 
   return (

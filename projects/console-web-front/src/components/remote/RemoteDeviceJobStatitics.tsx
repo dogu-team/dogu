@@ -4,10 +4,10 @@ import styled from 'styled-components';
 
 import { flexRowBaseStyle } from '../../styles/box';
 import { localizeDate } from '../../utils/date';
+import ErrorBox from '../common/boxes/ErrorBox';
 import PlatformIcon from '../device/PlatformIcon';
 import PipelineCreatedTimer from '../pipelines/PipelineCreatedTimer';
 import DoguOptions from './DoguOptions';
-import RemoteCreator from './RemoteCreator';
 import RemoteJobStateTag from './RemoteJobStateTag';
 import RemoteRuntimeTimer from './RemoteRuntimeTimer';
 
@@ -23,7 +23,7 @@ const RemoteDeviceJobStatitics = ({ organizationId, projectId, remoteDeviceJob, 
   const { browserName } = doguOptions as { browserName: string | undefined; appVersion: string | undefined; browserVersion: string | undefined };
 
   if (!remoteDeviceJob.device) {
-    return <div>Something went wrong</div>;
+    return <ErrorBox title="Something went wrong" desc="Cannot get device information" />;
   }
 
   const state = getRemoteDeviceJobState(remoteDeviceJob);

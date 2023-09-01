@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
 import { OrganizationBase } from '@dogu-private/console';
 import useSWR from 'swr';
+import { isAxiosError } from 'axios';
 
 import H4 from 'src/components/common/headings/H4';
 import ConsoleBasicLayout from './ConsoleBasicLayout';
@@ -10,6 +11,7 @@ import LiveChat from '../external/livechat';
 import { swrAuthFetcher } from '../../api';
 import ErrorBox from '../common/boxes/ErrorBox';
 import { OrganizationContext } from '../../hooks/useOrganizationContext';
+import { getErrorMessageFromAxios } from '../../utils/error';
 
 export interface ConsoleLayoutProps {
   children: React.ReactNode;
@@ -32,7 +34,7 @@ const ConsoleLayout = ({ titleI18nKey, children, sidebar, title, padding, organi
   }
 
   if (error) {
-    return <ErrorBox title="Oops..." desc="Failed to load console" />;
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get organization information'} />;
   }
 
   return (

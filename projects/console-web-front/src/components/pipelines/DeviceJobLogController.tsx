@@ -1,12 +1,15 @@
 import { RoutineDeviceJobBase, TestLogResponse } from '@dogu-private/console';
 import { DeviceJobLogInfo } from '@dogu-private/console';
+import { isAxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import { useCallback } from 'react';
 import useSWR from 'swr';
 import { Url } from 'url';
 
 import { swrAuthFetcher } from '../../api';
+import { getErrorMessageFromAxios } from '../../utils/error';
 import { isPipelineInProgress } from '../../utils/pipeline';
+import ErrorBox from '../common/boxes/ErrorBox';
 import LogContainer from './LogContainer';
 
 interface Props {
@@ -35,7 +38,7 @@ const DeviceJobLogController = ({ deviceJob, logType }: Props) => {
   }
 
   if (!data || error) {
-    return <div>Something went wrong...</div>;
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find device job log information'} />;
   }
 
   return <LogContainer logs={data} logType={logType} selectedLine={Number(router.query.line) || undefined} getLineLink={getLineLink} />;

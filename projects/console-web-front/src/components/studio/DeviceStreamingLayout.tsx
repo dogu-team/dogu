@@ -2,12 +2,15 @@ import { MobileOutlined } from '@ant-design/icons';
 import { DeviceBase, ProjectBase } from '@dogu-private/console';
 import { DeviceId, OrganizationId, ProjectId } from '@dogu-private/types';
 import { Tag } from 'antd';
+import { isAxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import useSWR from 'swr';
 
 import { swrAuthFetcher } from '../../api';
 import { flexRowCenteredStyle } from '../../styles/box';
+import { getErrorMessageFromAxios } from '../../utils/error';
+import ErrorBox from '../common/boxes/ErrorBox';
 import DeviceStreaming from '../streaming/DeviceStreaming';
 import StudioDeviceSelector from './StudioDeviceSelector';
 
@@ -29,7 +32,7 @@ const DeviceStreamingLayout = ({ project, deviceId, right, title, screenViewer, 
   } = useSWR<DeviceBase>(`/organizations/${project.organizationId}/devices/${deviceId}`, swrAuthFetcher, { revalidateOnFocus: false });
 
   if (deviceError) {
-    return <div>Something went wrong...</div>;
+    return <ErrorBox title="Something went wrong" desc={isAxiosError(deviceError) ? getErrorMessageFromAxios(deviceError) : 'Cannot find device information'} />;
   }
 
   return (

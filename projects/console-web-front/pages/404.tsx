@@ -4,6 +4,7 @@ import Head from 'next/head';
 
 import { NextPageWithLayout } from './_app';
 import ConsoleBasicLayout from '../src/components/layouts/ConsoleBasicLayout';
+import ErrorBox from '../src/components/common/boxes/ErrorBox';
 
 const CustomNotFoundPage: NextPageWithLayout = () => {
   return (
@@ -12,10 +13,16 @@ const CustomNotFoundPage: NextPageWithLayout = () => {
         <title>Page not found | Dogu</title>
       </Head>
       <Box>
-        <StyeldH2>404 - Page not found</StyeldH2>
-        <p>
-          Move to <Link href="/">home</Link>
-        </p>
+        <ErrorBox
+          title="Oops! Page not found"
+          desc={
+            <>
+              The page you are looking for might have been removed or is temporarily unavailable.
+              <br />
+              <Link href="/">Move to home</Link>
+            </>
+          }
+        />
       </Box>
     </>
   );
