@@ -101,6 +101,10 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
   const isChanged =
     JSON.stringify({ name: project?.name, description: project?.description }) !== JSON.stringify({ name: editingProject.name, description: editingProject.description });
 
+  if (!project) {
+    return null;
+  }
+
   return (
     <>
       <Head>
@@ -161,16 +165,16 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
         <Content>
           <div>
             <GithubButton
-              isConnected={serverProject.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITHUB}
-              disabled={!!serverProject.projectScms && serverProject.projectScms.length > 0 && serverProject.projectScms[0].type !== PROJECT_SCM_TYPE.GITHUB}
+              isConnected={project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITHUB}
+              disabled={!!project.projectScms && project.projectScms.length > 0 && project.projectScms[0].type !== PROJECT_SCM_TYPE.GITHUB}
               organizationId={organization.organizationId}
-              projectId={serverProject.projectId}
+              projectId={project.projectId}
               description={
-                serverProject.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITHUB ? (
+                project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITHUB ? (
                   <>
                     Integrated with{' '}
-                    <a href={serverProject.projectScms[0].url} target="_blank">
-                      {getRepositoyUrl(serverProject.projectScms[0].url)}
+                    <a href={project.projectScms[0].url} target="_blank">
+                      {getRepositoyUrl(project.projectScms[0].url)}
                     </a>
                   </>
                 ) : undefined
@@ -179,16 +183,16 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
           </div>
           <div style={{ marginTop: '1rem' }}>
             <GitlabButton
-              isConnected={serverProject.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITLAB}
-              disabled={!!serverProject.projectScms && serverProject.projectScms.length > 0 && serverProject.projectScms[0].type !== PROJECT_SCM_TYPE.GITLAB}
+              isConnected={project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITLAB}
+              disabled={!!project.projectScms && project.projectScms.length > 0 && project.projectScms[0].type !== PROJECT_SCM_TYPE.GITLAB}
               organizationId={organization.organizationId}
-              projectId={serverProject.projectId}
+              projectId={project.projectId}
               description={
-                serverProject.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITLAB ? (
+                project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITLAB ? (
                   <>
                     Integrated with{' '}
-                    <a href={serverProject.projectScms[0].url} target="_blank">
-                      {getRepositoyUrl(serverProject.projectScms[0].url)}
+                    <a href={project.projectScms[0].url} target="_blank">
+                      {getRepositoyUrl(project.projectScms[0].url)}
                     </a>
                   </>
                 ) : undefined
@@ -197,16 +201,16 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
           </div>
           <div style={{ marginTop: '1rem' }}>
             <BitbucketButton
-              isConnected={serverProject.projectScms?.[0]?.type === PROJECT_SCM_TYPE.BITBUCKET}
-              disabled={!!serverProject.projectScms && serverProject.projectScms.length > 0 && serverProject.projectScms[0].type !== PROJECT_SCM_TYPE.BITBUCKET}
+              isConnected={project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.BITBUCKET}
+              disabled={!!project.projectScms && project.projectScms.length > 0 && project.projectScms[0].type !== PROJECT_SCM_TYPE.BITBUCKET}
               organizationId={organization.organizationId}
-              projectId={serverProject.projectId}
+              projectId={project.projectId}
               description={
-                serverProject.projectScms?.[0]?.type === PROJECT_SCM_TYPE.BITBUCKET ? (
+                project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.BITBUCKET ? (
                   <>
                     Integrated with{' '}
-                    <a href={serverProject.projectScms[0].url} target="_blank">
-                      {getRepositoyUrl(serverProject.projectScms[0].url)}
+                    <a href={project.projectScms[0].url} target="_blank">
+                      {getRepositoyUrl(project.projectScms[0].url)}
                     </a>
                   </>
                 ) : undefined
