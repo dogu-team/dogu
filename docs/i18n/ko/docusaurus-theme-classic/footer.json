@@ -25,7 +25,7 @@
   },
   "link.item.label.tutorial": {
     "message": "튜토리얼",
-    "description": "The label of footer link with label=getStarted linking to /get-strated/tutorials"
+    "description": "The label of footer link with label=tutorial linking to /get-started/tutorials"
   },
   "link.title.Services": {
     "message": "Services",

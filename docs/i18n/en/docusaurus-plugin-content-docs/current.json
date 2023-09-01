@@ -114,5 +114,9 @@
   "sidebar.integrationSidebar.category.Notification": {
     "message": "Notification",
     "description": "The label for category Notification in sidebar integrationSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Test Automation": {
+    "message": "Test Automation",
+    "description": "The label for category Test Automation in sidebar getStartedSidebar"
   }
 }
