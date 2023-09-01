@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "../build/types",
+    "module": "es2022",
+    "tsBuildInfoFile": "../build-temp/types/tsconfig.tsbuildinfo",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "noEmit": false
+  }
+}

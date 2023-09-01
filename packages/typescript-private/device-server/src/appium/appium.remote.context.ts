@@ -39,7 +39,7 @@ export class AppiumRemoteContext implements AppiumContext {
   }
 
   get props(): ZombieProps {
-    return { srvPort: this._data?.server.port, cliSessId: this.sessionId };
+    return { srvPort: this.options.serverPort, cliSessId: this.sessionId };
   }
 
   getInfo(): AppiumContextInfo {

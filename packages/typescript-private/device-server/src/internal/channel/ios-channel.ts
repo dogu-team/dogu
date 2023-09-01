@@ -40,8 +40,6 @@ import { StreamingService } from '../services/streaming/streaming-service';
 import { IosSystemInfoService } from '../services/system-info/ios-system-info-service';
 import { Zombieable } from '../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../services/zombie/zombie-service';
-import { DevicePortContext } from '../types/device-port-context';
-import { createPortContext } from './util';
 
 type DeviceControl = PrivateProtocol.DeviceControl;
 
@@ -61,7 +59,6 @@ export class IosChannel implements DeviceChannel {
 
   constructor(
     private readonly _serial: Serial,
-    private readonly _portContext: DevicePortContext,
     private readonly _info: DeviceSystemInfo,
     private readonly _profilers: ProfileServices,
     private readonly streaming: StreamingService,
@@ -92,10 +89,6 @@ export class IosChannel implements DeviceChannel {
     return this._info;
   }
 
-  get portContext(): DevicePortContext {
-    return this._portContext;
-  }
-
   get isVirtual(): boolean {
     return this._info.isVirtual;
   }
@@ -105,7 +98,7 @@ export class IosChannel implements DeviceChannel {
       return zombieable.serial === param.serial && zombieable.platform === Platform.PLATFORM_IOS;
     }, 'kill previous zombie');
 
-    const { serial, deviceAgentDevicePort, deviceAgentDeviceSecondPort, deviceAgentDeviceThirdPort } = param;
+    const { serial } = param;
     const platform = Platform.PLATFORM_IOS;
 
     const productVersion = await IosSystemInfoService.getVersion(serial);
@@ -132,29 +125,30 @@ export class IosChannel implements DeviceChannel {
 
     await IosChannel.restartIfAvailiable(serial, logger);
 
-    let portContext = portContextes.get(serial);
-    if (portContext == null) {
-      portContext = await createPortContext(serial);
-      portContextes.set(serial, portContext);
-    }
-
     logger.verbose('appium wda starting');
-    const wda = await WebdriverAgentProcess.start(serial, portContext.freeHostPort4, logger);
+    const wda = await WebdriverAgentProcess.start(serial, await deviceServerService.devicePortService.createOrGetHostPort(serial, 'WebdriverAgentProcess'), logger);
     logger.verbose('appium wda  done');
 
     logger.verbose('appium context starting');
-    const appiumContextProxy = deviceServerService.appiumService.createIosAppiumContext(serial, 'builtin', portContext.freeHostPort3, portContext.freeHostPort4);
+    const appiumContextProxy = deviceServerService.appiumService.createIosAppiumContext(
+      serial,
+      'builtin',
+      await deviceServerService.devicePortService.createOrGetHostPort(serial, 'iOSAppiumServer'),
+      await deviceServerService.devicePortService.createOrGetHostPort(serial, 'WebdriverAgentForward'),
+    );
     ZombieServiceInstance.addComponent(appiumContextProxy);
     logger.verbose('appium context started');
 
     logger.verbose('ios device agent process starting');
+    const screenForwardPort = await deviceServerService.devicePortService.createOrGetHostPort(serial, 'iOSScreenForward');
+    const grpcForwardPort = await deviceServerService.devicePortService.createOrGetHostPort(serial, 'iOSGrpcForward');
     const iosDeviceAgentProcess = await IosDeviceAgentProcess.start(
       serial,
-      portContext.freeHostPort1,
-      deviceAgentDevicePort,
-      portContext.freeHostPort2,
-      deviceAgentDeviceSecondPort,
-      deviceAgentDeviceThirdPort,
+      screenForwardPort,
+      deviceServerService.devicePortService.getIosDeviceAgentScreenServerPort(),
+      grpcForwardPort,
+      deviceServerService.devicePortService.getIosDeviceAgentGrpcServerPort(),
+      deviceServerService.devicePortService.getIosWebDriverAgentServerPort(),
       logger,
     ).catch((error) => {
       logger.error('IosDeviceAgentProcess start failed.', { error: errorify(error) });
@@ -163,7 +157,7 @@ export class IosChannel implements DeviceChannel {
     logger.verbose('ios device agent process started');
 
     logger.verbose('ios device agent service starting');
-    const deviceAgent = new IosDeviceAgentService(portContext.freeHostPort1, `127.0.0.1:${portContext.freeHostPort2}`, 60, logger);
+    const deviceAgent = new IosDeviceAgentService(screenForwardPort, `127.0.0.1:${grpcForwardPort}`, 60, logger);
     await deviceAgent.connect().catch((error) => {
       logger.error('IosDeviceAgentService connect failed.', { error: errorify(error) });
       throw error;
@@ -195,7 +189,6 @@ export class IosChannel implements DeviceChannel {
 
     const deviceChannel = new IosChannel(
       serial,
-      portContext,
       systemInfo,
       [new IosProfileService(deviceAgent)],
       streaming,
@@ -444,7 +437,7 @@ export class IosChannel implements DeviceChannel {
   }
 
   async getAppiumCapabilities(): Promise<AppiumCapabilities> {
-    return await createAppiumCapabilities(this._appiumContext.options, {
+    return await createAppiumCapabilities(this._appiumContext.options, this.logger, {
       commandTimeout: 60,
     });
   }
@@ -464,5 +457,3 @@ export class IosChannel implements DeviceChannel {
     return this._appiumDeviceWebDriverHandler;
   }
 }
-
-const portContextes = new Map<Serial, DevicePortContext>();

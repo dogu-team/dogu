@@ -40,8 +40,6 @@ import { StreamingService } from '../services/streaming/streaming-service';
 import { AndroidSystemInfoService } from '../services/system-info/android-system-info-service';
 import { Zombieable } from '../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../services/zombie/zombie-service';
-import { DevicePortContext } from '../types/device-port-context';
-import { createPortContext } from './util';
 
 type DeviceControl = PrivateProtocol.DeviceControl;
 
@@ -70,9 +68,6 @@ export class AndroidChannel implements DeviceChannel {
   get info(): DeviceSystemInfo {
     return this._info;
   }
-  get portContext(): DevicePortContext {
-    return this._portContext;
-  }
   get isVirtual(): boolean {
     return this._info.isVirtual;
   }
@@ -81,7 +76,6 @@ export class AndroidChannel implements DeviceChannel {
     private readonly _serial: Serial,
     private readonly _serialUnique: Serial,
     private readonly _info: DeviceSystemInfo,
-    private readonly _portContext: DevicePortContext,
     private readonly _deviceAgent: AndroidDeviceAgentService,
     private readonly _profilers: ProfileServices,
     private readonly _streaming: StreamingService,
@@ -98,7 +92,7 @@ export class AndroidChannel implements DeviceChannel {
       return zombieable.serial === param.serial && zombieable.platform === Platform.PLATFORM_ANDROID;
     }, 'kill previous zombie');
 
-    const { serial, deviceAgentDevicePort } = param;
+    const { serial } = param;
     await Adb.unforwardall(serial).catch((error) => {
       deviceServerService.doguLogger.error('Adb.unforwardall failed', { error: errorify(error) });
     });
@@ -112,18 +106,23 @@ export class AndroidChannel implements DeviceChannel {
       throw new Error(`Android version must be 8 or higher. current version: ${stringify(version)}`);
     }
 
-    let portContext = portContextes.get(serial);
-    if (portContext == null) {
-      portContext = await createPortContext(serial);
-      portContextes.set(serial, portContext);
-    }
-
     const logger = createAdaLogger(param.serial);
-    const deviceAgent = new AndroidDeviceAgentService(serial, systemInfo, '127.0.0.1', portContext.freeHostPort1, deviceAgentDevicePort, logger);
+    const deviceAgent = new AndroidDeviceAgentService(
+      serial,
+      systemInfo,
+      '127.0.0.1',
+      await deviceServerService.devicePortService.createOrGetHostPort(serial, 'AndroidDeviceAgentService'),
+      deviceServerService.devicePortService.getAndroidDeviceAgentServerPort(),
+      logger,
+    );
     await deviceAgent.wakeUp();
     await deviceAgent.install();
 
-    const appiumContextProxy = deviceServerService.appiumService.createAndroidAppiumContext(serial, 'builtin', portContext.freeHostPort3);
+    const appiumContextProxy = deviceServerService.appiumService.createAndroidAppiumContext(
+      serial,
+      'builtin',
+      await deviceServerService.devicePortService.createOrGetHostPort(serial, 'AndroidAppiumServer'),
+    );
     ZombieServiceInstance.addComponent(appiumContextProxy);
 
     const appiumDeviceWebDriverHandler = new AppiumDeviceWebDriverHandler(
@@ -145,7 +144,6 @@ export class AndroidChannel implements DeviceChannel {
       serial,
       serialUnique,
       systemInfo,
-      portContext,
       deviceAgent,
       // [new AndroidAdbProfileService(), new AndroidDeviceAgentProfileService(deviceAgent)],
       [new AndroidAdbProfileService()],
@@ -418,7 +416,7 @@ export class AndroidChannel implements DeviceChannel {
   }
 
   async getAppiumCapabilities(): Promise<AppiumCapabilities> {
-    return await createAppiumCapabilities(this._appiumContext.options, {
+    return await createAppiumCapabilities(this._appiumContext.options, this.logger, {
       commandTimeout: 60,
     });
   }
@@ -438,12 +436,6 @@ export class AndroidChannel implements DeviceChannel {
     return this._appiumDeviceWebDriverHandler;
   }
 }
-
-/**
- * @note The deviceAgent forward port is maintained throughout the process lifecycle.
- * It is difficult to maintain the function of syncing the changed port with go-device-controller and respawning androidDeviceAgentService.
- */
-const portContextes = new Map<Serial, DevicePortContext>();
 
 async function generateSerialUnique(systemInfo: DeviceSystemInfo): Promise<string> {
   if (!systemInfo.isVirtual) {

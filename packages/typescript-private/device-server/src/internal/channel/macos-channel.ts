@@ -28,7 +28,6 @@ import { NullDeviceAgentService } from '../services/device-agent/null-device-age
 import { DesktopProfileService } from '../services/profile/desktop-profiler';
 import { ProfileService } from '../services/profile/profile-service';
 import { StreamingService } from '../services/streaming/streaming-service';
-import { DefaultDevicePortContext, DevicePortContext } from '../types/device-port-context';
 import { checkTime } from '../util/check-time';
 
 type DeviceControl = PrivateProtocol.DeviceControl;
@@ -58,10 +57,6 @@ export class MacosChannel implements DeviceChannel {
 
   get info(): DeviceSystemInfo {
     return this._info;
-  }
-
-  get portContext(): DevicePortContext {
-    return DefaultDevicePortContext();
   }
 
   get isVirtual(): boolean {
