@@ -353,10 +353,6 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: '//button[@form="new-project"]' });
       });
 
-      test('Close project tutorial', async () => {
-        await Driver.clickElement({ xpath: '//a[@access-id="skip-project-tutorial"]' });
-      });
-
       test('Back to organizaiton page', async () => {
         await Driver.clickElement({ xpath: '//a[@access-id="project-side-bar-back"]' });
       });
@@ -451,10 +447,6 @@ Dest.withOptions({
 
       test('Click create project button', async () => {
         await Driver.clickElement({ xpath: '//button[@form="new-project"]' });
-      });
-
-      test('Close project tutorial', async () => {
-        await Driver.clickElement({ xpath: '//a[@access-id="skip-project-tutorial"]' });
       });
 
       test('Check project creation', async () => {
