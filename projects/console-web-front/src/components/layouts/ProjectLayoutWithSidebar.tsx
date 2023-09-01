@@ -63,7 +63,7 @@ const SideBar = styled.div<{ offset: number }>`
 
 const Content = styled.div<{ hasSidebar: boolean }>`
   flex: 1;
-  padding: 0 0 1rem ${(props) => (props.hasSidebar ? '1rem' : '0')};
+  padding: 0 0 6rem ${(props) => (props.hasSidebar ? '1rem' : '0')};
 `;
 
 export default ProjectLayoutWithSidebar;
