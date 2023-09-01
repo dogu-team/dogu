@@ -1,3 +1,8 @@
+import { AxiosInstance } from 'axios';
+import fs from 'fs';
+import _ from 'lodash';
+import path from 'path';
+
 export type DeepReadonly<T> = {
   readonly [K in keyof T]: T[K] extends Record<keyof any, unknown> | unknown[] ? DeepReadonly<T[K]> : T[K];
 };
@@ -102,4 +107,41 @@ export function defaultArchWithin(): Required<ArchWithin> {
   return {
     arch: process.arch,
   };
+}
+
+export interface InstallableNameWithin<InstallableName extends string> {
+  /**
+   * @description Installable name
+   */
+  installableName: InstallableName;
+}
+
+export interface ChannelNameWithin<InstallableName extends string> {
+  /**
+   * @description Channel name
+   */
+  channelName: InstallableName;
+}
+
+export interface DownloadOptions extends DownloadRequestTimeoutWithin {
+  client: AxiosInstance;
+  url: string;
+  filePath: string;
+}
+
+export async function download(options: DownloadOptions): Promise<void> {
+  const mergedOptions = _.merge(defaultDownloadRequestTimeoutWithin(), options);
+  const { client, url, filePath, timeout } = mergedOptions;
+  const response = await client.get(url, {
+    timeout,
+    responseType: 'stream',
+  });
+  await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
+  const writer = fs.createWriteStream(filePath);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+  response.data.pipe(writer);
+  await new Promise<void>((resolve, reject) => {
+    writer.on('finish', resolve);
+    writer.on('error', reject);
+  });
 }
