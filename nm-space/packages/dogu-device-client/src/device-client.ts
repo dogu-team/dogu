@@ -83,7 +83,7 @@ export class DeviceClient extends DeviceHttpClient {
         resolvedOrRejected = true;
         returningClosable?.close();
         reject(new Error(`Timeout to forward`));
-      }, 30 * 1000);
+      }, 60 * 1000);
       this.subscribe(
         DeviceForward,
         undefined,
@@ -149,7 +149,7 @@ export class DeviceClient extends DeviceHttpClient {
         resolvedOrRejected = true;
         returningClosable?.close();
         reject(new Error(`Timeout to runAppiumServer`));
-      }, 30 * 1000);
+      }, 300 * 1000);
       this.subscribe(
         DeviceRunAppiumServer,
         undefined,

@@ -205,7 +205,7 @@ export class AppiumContextImpl implements AppiumContext {
     return this.options.serial;
   }
   get props(): ZombieProps {
-    return { srvPort: this._data?.server.port, cliSessId: this._data?.client.driver.sessionId };
+    return { srvPort: this.options.serverPort, cliSessId: this._data?.client.driver.sessionId };
   }
 
   getInfo(): AppiumContextInfo {

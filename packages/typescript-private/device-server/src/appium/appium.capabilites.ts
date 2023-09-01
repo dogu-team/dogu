@@ -24,7 +24,7 @@ export async function createAppiumCapabilities(
     case Platform.PLATFORM_ANDROID: {
       const systemPort = await devicePortService.createOrGetHostPort(serial, 'AndroidAppiumSystemPort');
       const chromedriverPort = await devicePortService.createOrGetHostPort(serial, 'AndroidAppiumChromeDriverPort');
-      const mjepgServerPort = await devicePortService.createOrGetHostPort(serial, 'AndroidAppiumSystemPort');
+      const mjepgServerPort = await devicePortService.createOrGetHostPort(serial, 'AndroidAppiumMjpegServerPort');
       await killProcessOnPort(systemPort, logger);
       await killProcessOnPort(chromedriverPort, logger);
       await killProcessOnPort(mjepgServerPort, logger);

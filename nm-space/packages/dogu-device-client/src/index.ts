@@ -11,4 +11,6 @@ export * from './specs/http/device.js';
 export * from './specs/types.js';
 export * from './specs/ws/device/forward.js';
 export * from './specs/ws/device/run-appium-server.js';
+export * from './types/appium.js';
+export * from './types/types.js';
 export * from './validations/types/responses.js';
