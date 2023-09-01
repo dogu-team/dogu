@@ -437,9 +437,7 @@ export class IosChannel implements DeviceChannel {
   }
 
   async getAppiumCapabilities(): Promise<AppiumCapabilities> {
-    return await createAppiumCapabilities(this._appiumContext.options, this.logger, {
-      commandTimeout: 60,
-    });
+    return await createAppiumCapabilities(this._appiumContext.options, this.logger);
   }
 
   set gamiumContext(context: GamiumContext | null) {
