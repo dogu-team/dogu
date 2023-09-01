@@ -7,6 +7,7 @@ import Trans from 'next-translate/Trans';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { BsRecord2Fill } from 'react-icons/bs';
+import { GoWorkflow } from 'react-icons/go';
 import styled from 'styled-components';
 import useSWR from 'swr';
 
@@ -145,7 +146,7 @@ const PipelineListController = ({ organizationId, projectId }: Props) => {
         locale={{
           emptyText: (
             <ListEmpty
-              image={<GatewayOutlined style={{ fontSize: '90px' }} />}
+              image={<GoWorkflow style={{ fontSize: '90px' }} />}
               description={
                 <Trans
                   i18nKey="routine:pipelineEmptyDescription"
