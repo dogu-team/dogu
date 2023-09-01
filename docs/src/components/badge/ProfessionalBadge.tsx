@@ -1,14 +1,14 @@
 import React from 'react';
 import Badge from './Badge';
 
-const EnterpriseBadge = () => {
+const ProfessionalBadge = () => {
   return (
     <Badge
-      label={'Enterprise Support'}
+      label={'Professional Support'}
       overlayText={'Available in the cloud, self-hosted professinal'}
       backgroundColor={'#2fc971'}
     ></Badge>
   );
 };
 
-export default EnterpriseBadge;
+export default ProfessionalBadge;
