@@ -78,7 +78,13 @@ function BitbucketButton({ isConnected, disabled, organizationId, projectId, des
         }
         connectButton={
           isConnected ? (
-            <DisconnectButton onClick={disconnect} loading={deleteLoading}>
+            <DisconnectButton
+              modalTitle={'Disconnect with Bitbucket'}
+              modalContent={<p>Are you sure you want to disconnect with Bitbucket?</p>}
+              modalButtonTitle={'Confirm & disconnect'}
+              onConfirm={disconnect}
+              loading={deleteLoading}
+            >
               Disconnect
             </DisconnectButton>
           ) : (

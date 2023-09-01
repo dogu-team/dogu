@@ -78,7 +78,13 @@ function GitlabButton({ isConnected, disabled, organizationId, projectId, descri
         }
         connectButton={
           isConnected ? (
-            <DisconnectButton onClick={disconnect} loading={deleteLoading}>
+            <DisconnectButton
+              modalTitle={'Disconnect with GitLab'}
+              modalContent={<p>Are you sure you want to disconnect with GitLab?</p>}
+              modalButtonTitle={'Confirm & disconnect'}
+              onConfirm={disconnect}
+              loading={deleteLoading}
+            >
               Disconnect
             </DisconnectButton>
           ) : (

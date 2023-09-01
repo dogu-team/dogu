@@ -37,7 +37,13 @@ function SlackButton(props: OrganizationIntegrationButtonProps) {
       description="Send notifications to Slack"
       connectButton={
         isConnected ? (
-          <DisconnectButton onClick={disconnect} loading={loading}>
+          <DisconnectButton
+            modalTitle={'Disconnect with Slack'}
+            modalContent={<p>Are you sure you want to disconnect with Slack?</p>}
+            modalButtonTitle={'Confirm & disconnect'}
+            onConfirm={disconnect}
+            loading={loading}
+          >
             Disconnect
           </DisconnectButton>
         ) : (

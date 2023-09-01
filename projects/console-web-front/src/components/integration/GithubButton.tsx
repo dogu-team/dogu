@@ -78,7 +78,13 @@ function GithubButton({ isConnected, disabled, organizationId, projectId, descri
         }
         connectButton={
           isConnected ? (
-            <DisconnectButton onClick={disconnect} loading={deleteLoading}>
+            <DisconnectButton
+              modalTitle={'Disconnect with GitHub'}
+              modalContent={<p>Are you sure you want to disconnect with GitHub?</p>}
+              modalButtonTitle={'Confirm & disconnect'}
+              onConfirm={disconnect}
+              loading={deleteLoading}
+            >
               Disconnect
             </DisconnectButton>
           ) : (
