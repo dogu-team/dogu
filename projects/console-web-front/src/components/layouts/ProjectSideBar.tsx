@@ -126,9 +126,37 @@ const ProjectSideBar = () => {
             </ProjectSwitch>
           ),
     },
+    // {
+    //   type: 'group',
+    //   label: collapsed ? null : 'Test Automation',
+    //   children: [
+    //     {
+    //       key: 'remote',
+    //       label: collapsed ? (
+    //         t('project:tabMenuRemoteTitle')
+    //       ) : (
+    //         <SideBarMenu
+    //           path={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/remotes`}
+    //           text={t('project:tabMenuRemoteTitle')}
+    //           accessId="project-side-bar-remote"
+    //           icon={<RiRemoteControlLine style={{ fontSize: '1.2rem' }} />}
+    //           startWith={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/remotes`}
+    //         />
+    //       ),
+    //       icon: collapsed ? (
+    //         <StyledIconLink
+    //           selected={router.asPath.startsWith(`/dashboard/${project?.organizationId}/projects/${project?.projectId}/remotes`)}
+    //           href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/remotes`}
+    //         >
+    //           <RiRemoteControlLine />
+    //         </StyledIconLink>
+    //       ) : undefined,
+    //     },
+    //   ],
+    // },
     {
       type: 'group',
-      label: collapsed ? null : 'Test Automation',
+      label: collapsed ? null : 'Test CI',
       children: [
         {
           key: 'remote',
@@ -152,12 +180,6 @@ const ProjectSideBar = () => {
             </StyledIconLink>
           ) : undefined,
         },
-      ],
-    },
-    {
-      type: 'group',
-      label: collapsed ? null : 'Test CI',
-      children: [
         {
           key: 'routine',
           label: collapsed ? (
