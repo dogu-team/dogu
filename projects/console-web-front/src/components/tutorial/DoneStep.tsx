@@ -19,7 +19,7 @@ const DoneStep = ({ id }: Props) => {
           />
           <DocumentCard
             title="📝 About routine"
-            description="Would you like to run test with multiple devices or automate more complicate tests?"
+            description="Would you like to automate more complex tests or integrate tests with CI?"
             url="https://docs.dogutech.io/routine/routines"
           />
           <DocumentCard title="📝 Test automation" description="More information about test automation" url="https://docs.dogutech.io/test-automation" />

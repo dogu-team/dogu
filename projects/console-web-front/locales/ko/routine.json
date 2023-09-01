@@ -78,7 +78,7 @@
   "routineChangeLogBackButtonText": "파이프라인",
   "routineChangeLogTitleDescription": "히스토리",
 
-  "pipelineEmptyDescription": "루틴을 만들고, 자동화 테스트를 위해 파이프라인을 실행해보세요.<br></br><br></br><link>여기를 눌러</link> 더 많은 정보 보기",
+  "pipelineEmptyDescription": "루틴을 만들고, 자동화 테스트를 위해 파이프라인을 실행해보세요.<br></br>루틴을 CI와 연동해 실행해 테스트 프로세스를 자동화할 수 있습니다.<br></br><br></br><link>여기를 눌러</link> 더 많은 정보 보기",
 
   "stepTestTabMenuTitle": "테스트",
   "setpLogTabMenuTitle": "로그",

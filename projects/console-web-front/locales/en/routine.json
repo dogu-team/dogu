@@ -78,7 +78,7 @@
   "routineChangeLogBackButtonText": "Pipelines",
   "routineChangeLogTitleDescription": "History",
 
-  "pipelineEmptyDescription": "Create routine and run pipeline for tests.<br></br><br></br><link>Click here</link> for more information",
+  "pipelineEmptyDescription": "Create routine and run pipeline for tests.<br></br>You can automate the testing process by integrating routines with CI and running them<br></br><br></br><link>Click here</link> for more information",
 
   "stepTestTabMenuTitle": "Tests",
   "setpLogTabMenuTitle": "Logs",

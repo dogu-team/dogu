@@ -1,4 +1,4 @@
-import { CalendarOutlined, FieldTimeOutlined, GatewayOutlined, LoadingOutlined, UserOutlined } from '@ant-design/icons';
+import { CalendarOutlined, FieldTimeOutlined, LoadingOutlined, UserOutlined } from '@ant-design/icons';
 import { PageBase, RoutinePipelineBase } from '@dogu-private/console';
 import { OrganizationId, PIPELINE_STATUS, ProjectId } from '@dogu-private/types';
 import { Button, List } from 'antd';
