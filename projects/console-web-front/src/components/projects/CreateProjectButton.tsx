@@ -20,7 +20,7 @@ const CreateProjectButton = () => {
         isOpen={isOpen}
         close={closeModal}
         onCreate={(result) => {
-          router.push(`${router.asPath}/${result.projectId}/get-started`);
+          router.push(`/dashboard/${result.organizationId}/projects/${result.projectId}`);
         }}
       />
     </>
