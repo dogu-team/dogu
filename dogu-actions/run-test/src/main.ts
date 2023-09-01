@@ -25,6 +25,8 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
 
   const appVersion = input.get<string>('appVersion');
   const uninstallApp = input.get<boolean>('uninstallApp');
+  const installApp = input.get<boolean>('installApp');
+  const runApp = input.get<boolean>('runApp');
 
   const command = input.get<string>('command');
 
@@ -51,7 +53,17 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
     appPath = await downloadApp(logger, consoleActionClient, deviceHostClient, DOGU_DEVICE_PLATFORM, DOGU_HOST_WORKSPACE_PATH, currentPlatformAppVersion);
   }
 
+  let env = process.env;
   if (appPath) {
+    const appEnv = {
+      DOGU_APP_PATH: appPath,
+    };
+
+    logger.info('update env for app and driver', {
+      ...appEnv,
+    });
+    env = _.merge(env, appEnv);
+
     if (uninstallApp) {
       logger.info('Uninstalling app...', { appPath });
       try {
@@ -62,15 +74,18 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
       }
     }
 
-    logger.info('Installing app...', { appPath });
-    await deviceClient.installApp(DOGU_DEVICE_SERIAL, appPath);
-    logger.info('App installed');
-    logger.info('Run app...', { appPath });
-    await deviceClient.runApp(DOGU_DEVICE_SERIAL, appPath);
-    logger.info('App runned');
+    if (installApp) {
+      logger.info('Installing app...', { appPath });
+      await deviceClient.installApp(DOGU_DEVICE_SERIAL, appPath);
+      logger.info('App installed');
+    }
+    if (runApp) {
+      logger.info('Run app...', { appPath });
+      await deviceClient.runApp(DOGU_DEVICE_SERIAL, appPath);
+      logger.info('App runned');
+    }
   }
 
-  let env = process.env;
   if (DOGU_BROWSER_NAME) {
     logger.info('Ensure browser and driver...', { DOGU_BROWSER_NAME, DOGU_BROWSER_VERSION });
     const {

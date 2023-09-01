@@ -33,6 +33,14 @@ inputs:
     description: uninstall app before install
     default: false
     required: false
+  installApp:
+    description: install app
+    default: false
+    required: false
+  runApp:
+    description: run app after install
+    default: false
+    required: false
 
   # test options
   command:
