@@ -8,6 +8,8 @@ import DeviceFilter from 'src/components/device/DeviceFilter';
 import RefreshButton from 'src/components/buttons/RefreshButton';
 import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/ssr/organization';
 import OrganizationDeviceFarmLayout from '../../../../src/components/layouts/OrganizationDeviceFarmLayout';
+import DeviceFarmTutorialLinkButton from '../../../../src/components/organizations/DeviceFarmTutorialLinkButton';
+import { flexRowBaseStyle } from '../../../../src/styles/box';
 
 const TeamDevicePage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {
   return (
@@ -18,7 +20,10 @@ const TeamDevicePage: NextPageWithLayout<OrganizationServerSideProps> = ({ organ
       <TableListView
         top={
           <TopWrapper>
-            <DeviceFilter />
+            <FlexRow>
+              <DeviceFarmTutorialLinkButton />
+              <DeviceFilter />
+            </FlexRow>
             <RefreshButton />
           </TopWrapper>
         }
@@ -44,5 +49,13 @@ const TopWrapper = styled.div`
   @media only screen and (max-width: 1023px) {
     flex-direction: column;
     align-items: flex-start;
+  }
+`;
+
+const FlexRow = styled.div`
+  ${flexRowBaseStyle}
+
+  & > * {
+    margin-right: 0.5rem;
   }
 `;

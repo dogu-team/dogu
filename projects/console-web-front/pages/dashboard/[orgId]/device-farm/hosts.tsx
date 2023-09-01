@@ -18,6 +18,7 @@ import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 
 import HostFilter from 'src/components/hosts/HostFilter';
 import OrganizationDeviceFarmLayout from '../../../../src/components/layouts/OrganizationDeviceFarmLayout';
 import { swrAuthFetcher } from '../../../../src/api';
+import DeviceFarmTutorialLinkButton from '../../../../src/components/organizations/DeviceFarmTutorialLinkButton';
 
 export const DoguAgentLatestContext = createContext<{ latestInfo: DownloadablePackageResult[] }>({
   latestInfo: [],
@@ -37,6 +38,7 @@ const HostManagementPage: NextPageWithLayout<OrganizationServerSideProps> = ({ o
         top={
           <ButtonBox>
             <LeftTopBox>
+              <DeviceFarmTutorialLinkButton />
               <Button type="primary" onClick={() => openAddModal()} access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'add-new-host-btn' : undefined}>
                 {t('device-farm:addNewHost')}
               </Button>

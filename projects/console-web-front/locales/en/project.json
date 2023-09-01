@@ -52,5 +52,5 @@
 
   "createProjectButtonTitle": "Create project",
 
-  "projectEmptyDescription": "Create new project and start automated testings!<br></br><br></br><link>Click here</link> for more information."
+  "projectEmptyDescription": "Create new project and start automated testings!<br></br><br></br><tutorialLink>Proceed tutorial</tutorialLink> or <link>click here</link> for more information."
 }

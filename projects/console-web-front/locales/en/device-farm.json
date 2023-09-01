@@ -71,7 +71,7 @@
 
   "hostFilterNamePlaceholder": "Search by name",
 
-  "hostEmptyDescription": "There's no host in your organization.<1></1>Easily manage your devices by adding hosts.<1></1><1></1><0>Click here</0> for see more information",
+  "hostEmptyDescription": "There's no host in your organization.<br></br>Easily manage your devices by adding hosts.<br></br><br></br><tutorialLink>Proceed tutorial</tutorialLink> or <link>click here</link> for see more information",
 
   "deviceListMenuTitle": "In-use devices",
   "deviceAddMenuTitle": "Standby devices",
@@ -200,13 +200,13 @@
   "deleteDeviceFromProjectSuccessMsg": "Deleted!",
   "deleteDeviceFromProjectFailureMsg": "Failed to delete\n{{reason}}",
 
-  "deviceEmptyDescription": "There's no added device in your organization.<br></br>Add devices for remote control and automatic test.<br></br>You can add devices in 'Standby devices' tab.<br></br><br></br><link>Click here</link> for more information",
-  "addableDeviceEmptyDescription": "There's no addable devices.",
+  "deviceEmptyDescription": "There's no added device in your organization.<br></br>Add devices for remote control and automatic test.<br></br>You can add devices in 'Standby devices' tab.<br></br><br></br><tutorialLink>Proceed tutorial</tutorialLink> or <link>click here</link> for more information",
+  "addableDeviceEmptyDescription": "There's no standby devices.",
   "addableDeviceEmptyManualTitle": "To add a device,",
   "addableDeviceEmptyManual1": "Add a host and connect the device you want to add.",
   "addableDeviceEmptyManual2": "When the connection is complete, the device connected to it will appear",
   "addableDeviceEmptyManual3": "Click the 'Start using' button on the menu to select a project to assign the device to.",
-  "addableDeviceEmptyLink": "<link>Click here</link> for more information.",
+  "addableDeviceEmptyLink": "<tutorialLink>Proceed tutorial</tutorialLink> or <link>click here</link> for more information.",
   "tagEmptyDescription": "Create a tag and attach it to a device.<br></br>Groupping devices by tags, and run tests with device tag.<br></br><br></br><link>Click here</link> for more information.",
   "projectEmptyDescription": "Allocate devices to project for running tests and remote control.<br></br><link>Click here</link> for more information."
 }

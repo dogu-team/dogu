@@ -71,7 +71,7 @@
 
   "hostFilterNamePlaceholder": "이름 검색",
 
-  "hostEmptyDescription": "호스트가 없습니다.<1></1>호스트를 추가해 여러 디바이스를 쉽게 관리해보세요.<1></1><1></1><0>여기를 눌러</0> 더 많은 정보 확인하기",
+  "hostEmptyDescription": "호스트가 없습니다.<br></br>호스트를 추가해 여러 디바이스를 쉽게 관리해보세요.<br></br><br></br><tutorialLink>튜토리얼</tutorialLink>을 진행하거나 <link>여기를 눌러</link> 더 많은 정보 확인하기",
 
   "deviceListMenuTitle": "사용중인 디바이스",
   "deviceAddMenuTitle": "대기중인 디바이스",
@@ -200,13 +200,13 @@
   "deleteDeviceFromProjectSuccessMsg": "삭제됨",
   "deleteDeviceFromProjectFailureMsg": "삭제 실패\n{{reason}}",
 
-  "deviceEmptyDescription": "추가된 디바이스가 없습니다.<br></br>디바이스를 추가해 원격 제어 및 자동화 테스트를 진행해 보세요.<br></br>'대기중인 디바이스' 탭에서 디바이스를 추가할 수 있습니다.<br></br><br></br><link>여기를 눌러</link> 더 많은 정보 보기",
+  "deviceEmptyDescription": "추가된 디바이스가 없습니다.<br></br>디바이스를 추가해 원격 제어 및 자동화 테스트를 진행해 보세요.<br></br>'대기중인 디바이스' 탭에서 디바이스를 추가할 수 있습니다.<br></br><br></br><tutorialLink>튜토리얼</tutorialLink>을 진행하거나 <link>여기를 눌러</link> 더 많은 정보 보기",
   "addableDeviceEmptyDescription": "추가할 수 있는 디바이스가 없습니다.",
   "addableDeviceEmptyManualTitle": "디바이를 추가하려면",
   "addableDeviceEmptyManual1": "호스트를 생성하고, 추가할 디바이스를 호스트와 연결합니다.",
   "addableDeviceEmptyManual2": "연결이 완료되면, 여기에 연결한 디바이스가 뜨게 됩니다.",
   "addableDeviceEmptyManual3": "메뉴 중 '사용하기' 버튼을 눌러 디바이스를 할당할 프로젝트를 선택해 보세요.",
-  "addableDeviceEmptyLink": "<link>여기를 눌러</link> 더 많은 정보 보기",
+  "addableDeviceEmptyLink": "<tutorialLink>튜토리얼</tutorialLink>을 진행하거나 <link>여기를 눌러</link> 더 많은 정보 보기",
   "tagEmptyDescription": "태그를 만들고 디바이스에 추가해보세요.<br></br>태그를 통해 디바이스를 그룹짓고, 테스트를 간편하게 진행할 수 있습니다.<br></br><br></br><link>여기를 눌러</link> 더 많은 정보 보기",
   "projectEmptyDescription": "디바이스를 프로젝트에 할당해 테스트 및 원격제어를 해보세요.<br></br><link>여기를 눌러</link> 더 많은 정보 보기"
 }

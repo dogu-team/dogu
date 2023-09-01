@@ -314,15 +314,11 @@ const HostListController = () => {
               description={
                 <Trans
                   i18nKey="device-farm:hostEmptyDescription"
-                  components={[
-                    <Link
-                      href="https://docs.dogutech.io/management/organization/device-farm/host-management"
-                      target="_blank"
-                      key={'docs-link'}
-                      style={{ whiteSpace: 'pre-wrap' }}
-                    />,
-                    <br />,
-                  ]}
+                  components={{
+                    tutorialLink: <Link href={`/dashboard/${router.query.orgId}/get-started`} style={{ whiteSpace: 'pre-wrap' }} />,
+                    link: <Link href="https://docs.dogutech.io/management/organization/device-farm/host-management" target="_blank" style={{ whiteSpace: 'pre-wrap' }} />,
+                    br: <br />,
+                  }}
                 />
               }
             />

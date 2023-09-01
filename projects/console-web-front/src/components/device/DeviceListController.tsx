@@ -240,7 +240,11 @@ const DeviceListController = () => {
               description={
                 <Trans
                   i18nKey="device-farm:deviceEmptyDescription"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/organization/device-farm/device-management" target="_blank" /> }}
+                  components={{
+                    br: <br />,
+                    tutorialLink: <Link href={`/dashboard/${router.query.orgId}/get-started`} />,
+                    link: <Link href="https://docs.dogutech.io/management/organization/device-farm/device-management" target="_blank" />,
+                  }}
                 />
               }
             />

@@ -8,6 +8,8 @@ import AddableDeviceFilter from 'src/components/device/AddableDeviceFilter';
 import AddableDeviceListController from 'src/components/device/AddableDeviceListController';
 import { getOrganizationPageServerSideProps, OrganizationServerSideProps } from 'src/ssr/organization';
 import OrganizationDeviceFarmLayout from '../../../../src/components/layouts/OrganizationDeviceFarmLayout';
+import DeviceFarmTutorialLinkButton from '../../../../src/components/organizations/DeviceFarmTutorialLinkButton';
+import { flexRowBaseStyle } from '../../../../src/styles/box';
 
 const AddDevicesPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {
   return (
@@ -18,7 +20,10 @@ const AddDevicesPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organ
       <TableListView
         top={
           <TopWrapper>
-            <AddableDeviceFilter />
+            <FlexRow>
+              <DeviceFarmTutorialLinkButton />
+              <AddableDeviceFilter />
+            </FlexRow>
             <RefreshButton />
           </TopWrapper>
         }
@@ -40,4 +45,12 @@ const TopWrapper = styled.div`
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
+`;
+
+const FlexRow = styled.div`
+  ${flexRowBaseStyle}
+
+  & > * {
+    margin-right: 0.5rem;
+  }
 `;
