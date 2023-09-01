@@ -105,7 +105,7 @@ const ProjectListController = ({ organizationId }: Props) => {
       <Header>
         <ItemInner>
           <TwoSpan>{t('project:projectTableNameColumn')}</TwoSpan>
-          <OneSpan>{'Template'}</OneSpan>
+          <OneSpan>{t('project:projectTableTemplateColumn')}</OneSpan>
           <TwoSpan>{t('project:projectTableMembersColumn')}</TwoSpan>
           <OneSpan>{t('project:projectTableLastUpdatedColumn')}</OneSpan>
         </ItemInner>

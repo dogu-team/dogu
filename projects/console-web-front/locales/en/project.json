@@ -46,6 +46,7 @@
   "organizationIdLabel": "Organization ID",
 
   "projectTableNameColumn": "Name",
+  "projectTableTemplateColumn": "Template",
   "projectTableMembersColumn": "Members",
   "projectTableLastUpdatedColumn": "Recent Activities",
 

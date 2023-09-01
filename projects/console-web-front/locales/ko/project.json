@@ -46,6 +46,7 @@
   "organizationIdLabel": "조직 ID",
 
   "projectTableNameColumn": "이름",
+  "projectTableTemplateColumn": "템플릿",
   "projectTableMembersColumn": "멤버",
   "projectTableLastUpdatedColumn": "최근 활동일",
 
