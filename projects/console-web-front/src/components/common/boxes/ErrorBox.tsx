@@ -15,9 +15,10 @@ const ErrorBox = ({ title, desc }: Props) => {
       <Title>{title}</Title>
       <Description>{desc}</Description>
       <Alert>
-        If this error persists, please <a href="mailto:contact@dogutech.io">contact us</a> or{' '}
+        If this error persists, please <a href="https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw">join and get help in Slack Community</a>{' '}
+        or{' '}
         <a href="https://github.com/dogu-team/dogu/issues" target="_blank">
-          report issue
+          report issue in Github
         </a>
         .
       </Alert>
