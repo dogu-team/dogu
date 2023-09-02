@@ -35,12 +35,12 @@ export class UpdateProcessor {
 
           this.logger.info(`UpdateProcessor.update. detach shell ${downloadPath}`);
           const child = await this.detachShell(msg.url, msg.fileSize, downloadPath);
-          const pids = child.pid ? [...(await getChildProcessIds(child.pid, this.logger)), child.pid] : [];
 
           // quit app
-          setTimeout(() => {
+          setTimeout(async () => {
             const pid = env.DOGU_ROOT_PID ?? process.pid;
             this.logger.info(`UpdateProcessor.update. quit app pid: ${pid}`);
+            const pids = child.pid ? [...(await getChildProcessIds(child.pid, this.logger)), child.pid] : [];
             killProcessIgnore(pid, pids, this.logger);
           }, 2000);
         })
