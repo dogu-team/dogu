@@ -1,5 +1,5 @@
 <p align="center">
-<img src=".github/resources/logo.png" width="128px" height="128px" title="Gamium_Logo"/>
+<img src=".github/resources/logo.png" width="128px" height="128px" title="Dogu_Logo"/>
 </p>
 <p align="center">
 Dogu - Seamless Unified  Test Automation Platform.
