@@ -46,7 +46,7 @@ interface DetailsDevedition {
   };
 }
 
-export type FirefoxInstallableName = Extract<BrowserOrDriverName, 'firefox' | 'firefox-devedition' | 'geckodriver'>;
+export type FirefoxInstallableName = Extract<BrowserOrDriverName, 'firefox' | 'firefox-devedition'>;
 export type FirefoxInstallableNameWithin = InstallableNameWithin<FirefoxInstallableName>;
 
 export type FirefoxNodeJSPlatform = Extract<NodeJS.Platform, 'darwin' | 'win32' | 'linux'>;
@@ -82,11 +82,6 @@ export class Firefox {
       win32: ['firefox.exe'],
       linux: ['firefox'],
     },
-    geckodriver: {
-      darwin: ['geckodriver'],
-      win32: ['geckodriver.exe'],
-      linux: ['geckodriver'],
-    },
   };
   static readonly firefoxPlatformMap: DeepReadonly<Record<FirefoxNodeJSPlatform, Record<string, string>>> = {
     darwin: {
@@ -103,7 +98,6 @@ export class Firefox {
   static readonly firefoxInstallableMap: DeepReadonly<Record<FirefoxInstallableName, string>> = {
     firefox: 'firefox',
     'firefox-devedition': 'devedition',
-    geckodriver: 'geckodriver',
   };
 
   private readonly logger = new PrefixLogger(logger, `[${this.constructor.name}]`);
@@ -147,8 +141,6 @@ export class Firefox {
         const version = details[Firefox.latestVersionMap[installableName]];
         return version;
       }
-      case 'geckodriver':
-        throw new Error('Not implemented');
       default:
         const _: never = installableName;
         throw new Error(`Unexpected installableName: ${_}`);
@@ -192,8 +184,6 @@ export class Firefox {
 
         throw new Error('Unexpected find version process');
       }
-      case 'geckodriver':
-        throw new Error('Not implemented');
       default:
         const _: never = installableName;
         throw new Error(`Unexpected installableName: ${_}`);
@@ -276,8 +266,6 @@ export class Firefox {
           default:
             throw new Error(`Unexpected platform for download file name: ${platform}`);
         }
-      case 'geckodriver':
-        throw new Error('Not implemented');
       default:
         const _: never = installableName;
         throw new Error(`Unexpected installableName: ${_}`);
@@ -298,8 +286,6 @@ export class Firefox {
       case 'firefox':
       case 'firefox-devedition':
         return `${Firefox.firefoxDownloadBaseUrl}/${firefoxInstallableName}/releases/${version}/${firefoxPlatform}/${Firefox.defaultLocale}/${downloadFileName}`;
-      case 'geckodriver':
-        throw new Error('Not implemented');
       default:
         const _: never = installableName;
         throw new Error(`Unexpected installableName: ${_}`);

@@ -1,4 +1,6 @@
 import { BrowserName, BrowserPlatform, Serial } from '@dogu-tech/types';
+import { Type } from 'class-transformer';
+import { IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export interface BrowserInfo {
   browserName: BrowserName;
@@ -9,17 +11,38 @@ export interface BrowserInfo {
   browserPackageName: string;
   browserDriverVersion: string;
   browserDriverPath: string;
-  browserInstallable: boolean;
   deviceSerial: Serial;
 }
 
 export type EnsureBrowserAndDriverOptions = Readonly<Pick<BrowserInfo, 'browserName' | 'browserPlatform'> & Partial<Pick<BrowserInfo, 'browserVersion' | 'deviceSerial'>>>;
-export type EnsureBrowserAndDriverResult = Pick<
-  BrowserInfo,
-  'browserName' | 'browserPlatform' | 'browserVersion' | 'browserMajorVersion' | 'browserDriverVersion' | 'browserDriverPath' | 'browserInstallable'
-> &
-  Partial<Pick<BrowserInfo, 'deviceSerial' | 'browserPath' | 'browserPackageName'>>;
+export type EnsureBrowserAndDriverResult = Pick<BrowserInfo, 'browserName' | 'browserPlatform' | 'browserDriverVersion' | 'browserDriverPath'> &
+  Partial<Pick<BrowserInfo, 'browserVersion' | 'browserMajorVersion' | 'browserPath' | 'browserPackageName'>>;
 
 export type FindAllBrowserInstallationsOptions = Readonly<Pick<BrowserInfo, 'browserName' | 'browserPlatform'> & Partial<Pick<BrowserInfo, 'deviceSerial'>>>;
-export type FindAllBrowserInstallationsResult = Pick<BrowserInfo, 'browserName' | 'browserPlatform'> &
-  Partial<Pick<BrowserInfo, 'deviceSerial' | 'browserPath' | 'browserPackageName' | 'browserDriverPath'>>[];
+export class BrowserInstallation
+  implements Pick<BrowserInfo, 'browserName' | 'browserPlatform'>, Partial<Pick<BrowserInfo, 'browserVersion' | 'browserMajorVersion' | 'browserPath' | 'browserPackageName'>>
+{
+  @IsIn(BrowserName)
+  browserName!: BrowserName;
+
+  @IsIn(BrowserPlatform)
+  browserPlatform!: BrowserPlatform;
+
+  @IsString()
+  @IsOptional()
+  browserVersion?: string;
+
+  @IsNumber()
+  @Type(() => Number)
+  @IsOptional()
+  browserMajorVersion?: number;
+
+  @IsString()
+  @IsOptional()
+  browserPath?: string;
+
+  @IsString()
+  @IsOptional()
+  browserPackageName?: string;
+}
+export type FindAllBrowserInstallationsResult = BrowserInstallation[];

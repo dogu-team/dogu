@@ -1,7 +1,7 @@
 import { WebSocketSpec } from '@dogu-tech/common';
 import { BrowserName, BrowserPlatform, Serial } from '@dogu-tech/types';
 import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { BrowserAndDriverInstallation, EnsureBrowserAndDriverOptions } from '../../../validations/types/browser-manager';
+import { EnsureBrowserAndDriverOptions, EnsureBrowserAndDriverResult } from '../../../validations/types/browser-manager';
 
 export class DeviceHostEnsureBrowserAndDriverSendMessage implements EnsureBrowserAndDriverOptions {
   @IsIn(BrowserName)
@@ -19,9 +19,12 @@ export class DeviceHostEnsureBrowserAndDriverSendMessage implements EnsureBrowse
   deviceSerial?: Serial;
 }
 
-export class DeviceHostEnsureBrowserAndDriverReceiveMessage implements BrowserAndDriverInstallation {
+export class DeviceHostEnsureBrowserAndDriverReceiveMessage implements EnsureBrowserAndDriverResult {
   @IsIn(BrowserName)
   browserName!: BrowserName;
+
+  @IsIn(BrowserPlatform)
+  browserPlatform!: BrowserPlatform;
 
   @IsString()
   @IsOptional()
@@ -42,6 +45,14 @@ export class DeviceHostEnsureBrowserAndDriverReceiveMessage implements BrowserAn
   @IsString()
   @IsNotEmpty()
   browserDriverPath!: string;
+
+  @IsString()
+  @IsNotEmpty()
+  browserDriverVersion!: string;
+
+  @IsString()
+  @IsOptional()
+  deviceSerial?: Serial;
 }
 
 export const DeviceHostEnsureBrowserAndDriver = new WebSocketSpec({
