@@ -31,6 +31,7 @@ type SurfaceConnector struct {
 	serial             string
 	surface            surface
 	isSurfaceConnected bool
+	lastReconnectTime  time.Time
 	listeners          []SurfaceListener
 	listenerMutex      sync.RWMutex
 
@@ -194,6 +195,12 @@ func (s *SurfaceConnector) startRoutine() error {
 
 func (s *SurfaceConnector) notifySurfaceReconnect(serial string, sleepSec int) error {
 	log.Inst.Info("surfaceConnector.notifySurfaceReconnect", zap.String("serial", s.serial))
+	s.lastReconnectTime = time.Now()
+	deltaTimeMillisecond := 3000 - time.Since(s.lastReconnectTime).Milliseconds()
+	if 0 < deltaTimeMillisecond {
+		log.Inst.Warn("surfaceConnector.notifySurfaceReconnect too fast", zap.String("serial", s.serial))
+		time.Sleep(time.Millisecond * time.Duration(deltaTimeMillisecond))
+	}
 	err := s.surface.Reconnect(serial, sleepSec, s.option)
 	if err != nil {
 		log.Inst.Warn("surfaceConnector.notifySurfaceReconnect failed", zap.String("serial", s.serial), zap.Error(err))
