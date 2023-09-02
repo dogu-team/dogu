@@ -4,6 +4,10 @@ title: Basic Features
 locale: en
 ---
 
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import Admonition from '@theme/Admonition';
+
 ## Device screen streaming
 
 You can view the device screen in real-time on the Dogu console.
@@ -25,11 +29,24 @@ It supports English, numbers, special characters, and more.
 
 :::tip
 
+<Tabs groupId="platform" defaultValue="android" queryString>
+<TabItem value="android" label="Android">
+
 - When you focus on the video area and enter keyboard input, keyboard events are delivered to the device screen.
 
 - To enter regional languages like Korean, install and set [`Gboard`](https://play.google.com/store/apps/details?id=com.google.android.inputmethod.latin) as the default keyboard.
 
 - Press `CMD(WIN)` + `/` to view the keyboard shortcuts.
+
+</TabItem>
+<TabItem value="ios" label="iOS">
+
+- When you focus on the video area and enter keyboard input, keyboard events are delivered to the device screen.
+
+- If you want to use the App Switcher and its features, please use [AssistiveTouch](https://support.apple.com/en-us/HT202658).
+
+</TabItem>
+</Tabs>
 
 :::
 
