@@ -155,6 +155,12 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
       return;
     }
     for (const candidate of this.candidatesBuffer) {
+      if (!candidate.sdpMid) {
+        /**
+         * @note sdpMid is required for firefox
+         */
+        candidate.sdpMid = '0';
+      }
       console.debug('remote iceCandidate added', candidate);
       await peerConnection.addIceCandidate(candidate);
     }
