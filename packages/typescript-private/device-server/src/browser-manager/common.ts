@@ -3,10 +3,6 @@ import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 
-export type DeepReadonly<T> = {
-  readonly [K in keyof T]: T[K] extends Record<keyof any, unknown> | unknown[] ? DeepReadonly<T[K]> : T[K];
-};
-
 export interface VersionUtils<T> {
   parse(version: string): T;
   compareWithAsc(lhs: T, rhs: T): number;
@@ -14,35 +10,38 @@ export interface VersionUtils<T> {
   toString(version: T): string;
 }
 
-export interface VersionRequestTimeoutWithin {
-  /**
-   * @description Request timeout in milliseconds
-   * @default 30_000
-   */
-  timeout?: number;
-}
+/**
+ * @description Timeout for version request
+ * @unit milliseconds
+ */
+export type VersionRequestTimeout = number;
+export const defaultVersionRequestTimeout = (): VersionRequestTimeout => 30_000;
 
-export function defaultVersionRequestTimeoutWithin(): Required<VersionRequestTimeoutWithin> {
-  return {
-    timeout: 30_000,
-  };
-}
+/**
+ * @description Timeout for download request
+ * @unit milliseconds
+ */
+export type DownloadRequestTimeout = number;
+export const defaultDownloadRequestTimeout = (): DownloadRequestTimeout => 10 * 60_000;
 
-export interface PrefixOrPatternWithin {
-  /**
-   * @description Prefix of version
-   * @note Only one of the `prefix` or `pattern` must be defined
-   */
-  prefix?: string;
+/**
+ * @description Installation root path. each browser or driver is installed under `<installationRootPath>/<name>/<version>/<platform>`.
+ * @default process.cwd()
+ */
+export type InstallationRootPath = string;
+export const defaultInstallationRootPath = (): InstallationRootPath => process.cwd();
 
-  /**
-   * @description Pattern of version
-   * @note Only one of the `prefix` or `pattern` must be defined
-   */
-  pattern?: RegExp;
-}
+/**
+ * @description version prefix for finding
+ */
+export type VersionPrefix = string;
 
-export function validatePrefixOrPatternWithin(options: PrefixOrPatternWithin): void {
+/**
+ * @description version pattern for finding
+ */
+export type VersionPattern = RegExp;
+
+export function validatePrefixOrPatternWithin(options: { prefix?: VersionPrefix; pattern?: VersionPattern }): void {
   const { prefix, pattern } = options;
   if (!prefix && !pattern) {
     throw new Error('Either prefix or pattern must be defined');
@@ -53,91 +52,18 @@ export function validatePrefixOrPatternWithin(options: PrefixOrPatternWithin): v
   }
 }
 
-export interface RootPathWithin {
-  /**
-   * @description Install root path. installable will be installed to `<rootPath>/<installableName>/<version>/<platform>/<arch>`
-   * @default process.cwd()
-   */
-  rootPath?: string;
-}
-
-export function defaultRootPathWithin(): Required<RootPathWithin> {
-  return {
-    rootPath: process.cwd(),
-  };
-}
-
-export interface DownloadRequestTimeoutWithin {
-  /**
-   * @description Request timeout in milliseconds
-   * @default 10 * 60_000
-   */
-  timeout?: number;
-}
-
-export function defaultDownloadRequestTimeoutWithin(): Required<DownloadRequestTimeoutWithin> {
-  return {
-    timeout: 10 * 60_000,
-  };
-}
-
-export interface VersionWithin {
-  /**
-   * @description Version
-   */
-  version: string;
-}
-
-export interface PlatformWithin {
-  /**
-   * @description Node.js platform
-   * @default process.platform
-   */
-  platform?: NodeJS.Platform;
-}
-
-export function defaultPlatformWithin(): Required<PlatformWithin> {
-  return {
-    platform: process.platform,
-  };
-}
-
-export interface ArchWithin {
-  /**
-   * @description Node.js architecture
-   * @default process.arch
-   */
-  arch?: NodeJS.Architecture;
-}
-
-export function defaultArchWithin(): Required<ArchWithin> {
-  return {
-    arch: process.arch,
-  };
-}
-
-export interface InstallableNameWithin<InstallableName extends string> {
-  /**
-   * @description Installable name
-   */
-  installableName: InstallableName;
-}
-
-export interface ChannelNameWithin<InstallableName extends string> {
-  /**
-   * @description Channel name
-   */
-  channelName: InstallableName;
-}
-
-export interface DownloadOptions extends DownloadRequestTimeoutWithin {
+export interface DownloadOptions {
   client: AxiosInstance;
   url: string;
   filePath: string;
+  timeout?: DownloadRequestTimeout;
 }
 
 export async function download(options: DownloadOptions): Promise<void> {
-  const mergedOptions = _.merge(defaultDownloadRequestTimeoutWithin(), options);
+  const mergedOptions: Required<DownloadOptions> = {
+    ...options,
+    timeout: defaultDownloadRequestTimeout(),
+  };
   const { client, url, filePath, timeout } = mergedOptions;
   const response = await client.get(url, {
     timeout,

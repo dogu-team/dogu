@@ -8,25 +8,6 @@ import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 import { logger } from '../logger/logger.instance';
-import {
-  ArchWithin,
-  ChannelNameWithin,
-  DeepReadonly,
-  defaultArchWithin,
-  defaultDownloadRequestTimeoutWithin,
-  defaultPlatformWithin,
-  defaultRootPathWithin,
-  defaultVersionRequestTimeoutWithin,
-  download,
-  DownloadRequestTimeoutWithin,
-  InstallableNameWithin,
-  PlatformWithin,
-  PrefixOrPatternWithin,
-  RootPathWithin,
-  validatePrefixOrPatternWithin,
-  VersionRequestTimeoutWithin,
-  VersionWithin,
-} from './common';
 import { WebCache } from './web-cache';
 
 interface LastKnownGoodVersions {
@@ -51,18 +32,18 @@ interface KnownGoodVersions {
 }
 
 export type ChromeInstallableName = Extract<BrowserOrDriverName, 'chrome' | 'chromedriver'>;
-type ChromeInstallableNameWithin = InstallableNameWithin<ChromeInstallableName>;
-
 export type ChromeChannelName = 'stable' | 'beta' | 'dev' | 'canary';
-type ChromeChannelNameWithin = ChannelNameWithin<ChromeChannelName>;
 
-function defaultChromeChannelNameWithin(): Required<ChromeChannelNameWithin> {
+const defaultChromeChannelName = (): ChromeChannelName => 'stable';
+
+export type GetLatestVersionOptions = ChromeChannelNameWithin & VersionRequestTimeoutWithin;
+function defaultGetLatestVersionOptions(): Required<GetLatestVersionOptions> {
   return {
     channelName: 'stable',
+    timeout: 10 * 60_000,
   };
 }
 
-export type GetLatestVersionOptions = ChromeChannelNameWithin & VersionRequestTimeoutWithin;
 export type FindVersionOptions = PrefixOrPatternWithin & VersionRequestTimeoutWithin;
 export type GetChromePlatformOptions = PlatformWithin & ArchWithin;
 export type GetDownloadFileNameOptions = ChromeInstallableNameWithin & PlatformWithin & ArchWithin;
@@ -141,7 +122,7 @@ export class Chrome {
     });
   }
 
-  async getLatestVersion<GetLatestVersionOptions>(options?: GetLatestVersionOptions): Promise<string> {
+  async getLatestVersion(options?: GetLatestVersionOptions): Promise<string> {
     const mergedOptions = _.merge(defaultChromeChannelNameWithin(), defaultVersionRequestTimeoutWithin(), options);
     const { channelName, timeout } = mergedOptions;
     const lastKnownGoodVersions = await this.lastKnownGoodVersionsCache.get({

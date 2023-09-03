@@ -1,3 +1,4 @@
+import { assertUnreachable } from '@dogu-tech/common';
 import { PlatformType } from './platforms';
 
 export const BrowserName = ['chrome', 'firefox', 'firefox-devedition', 'safari', 'safaritp', 'edge', 'iexplorer', 'samsung-internet'] as const;
@@ -9,6 +10,8 @@ export type BrowserDriverName = (typeof BrowserDriverName)[number];
 export const isAllowedBrowserDriverName = (value: string): value is BrowserDriverName => BrowserDriverName.includes(value as BrowserDriverName);
 
 export type BrowserOrDriverName = BrowserName | BrowserDriverName;
+
+export type BrowserVersion = string;
 
 export const BrowserPlatform = ['macos', 'windows', 'android', 'ios'] as const;
 export type BrowserPlatform = (typeof BrowserPlatform)[number] extends Extract<PlatformType, 'macos' | 'windows' | 'android' | 'ios'> ? (typeof BrowserPlatform)[number] : never;
@@ -61,8 +64,7 @@ export function isAllowedBrowserNameForPlatform(browserName: BrowserName, platfo
     case 'ios':
       return isAllowedIosBrowserName(browserName);
     default:
-      const _exhaustiveCheck: never = platform;
-      throw new Error(`Invalid platform [${platform}]`);
+      assertUnreachable(platform);
   }
 }
 
@@ -77,7 +79,6 @@ export function getBrowserNamesByPlatform(browserPlatform: BrowserPlatform): Bro
     case 'ios':
       return IosBrowserName as unknown as BrowserName[];
     default:
-      const _exhaustiveCheck: never = browserPlatform;
-      throw new Error(`Invalid platform [${browserPlatform}]`);
+      assertUnreachable(browserPlatform);
   }
 }
