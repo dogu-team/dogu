@@ -1,5 +1,5 @@
 import { BrowserOrDriverName, BrowserVersion } from '@dogu-private/types';
-import { DeepReadonly, PrefixLogger, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
+import { DeepReadonly, notEmpty, PrefixLogger, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
 import { renameRetry } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
 import axios, { AxiosInstance } from 'axios';
@@ -11,6 +11,40 @@ import { logger } from '../logger/logger.instance';
 import { chromeVersionUtils } from './chrome-version-utils';
 import { defaultVersionRequestTimeout, download, validatePrefixOrPatternWithin } from './common';
 import { WebCache } from './web-cache';
+
+const downloadBaseUrl = 'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing';
+const executablePathMap: DeepReadonly<Record<ChromeInstallableName, Record<ChromePlatform, string[]>>> = {
+  chrome: {
+    'mac-arm64': ['Google Chrome for Testing.app', 'Contents', 'MacOS', 'Google Chrome for Testing'],
+    'mac-x64': ['Google Chrome for Testing.app', 'Contents', 'MacOS', 'Google Chrome for Testing'],
+    win64: ['chrome.exe'],
+    linux64: ['chrome'],
+  },
+  chromedriver: {
+    'mac-arm64': ['chromedriver'],
+    'mac-x64': ['chromedriver'],
+    win64: ['chromedriver.exe'],
+    linux64: ['chromedriver'],
+  },
+};
+const chromePlatformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' | 'win32' | 'linux'>, Record<string, ChromePlatform>>> = {
+  darwin: {
+    arm64: 'mac-arm64',
+    x64: 'mac-x64',
+  },
+  win32: {
+    x64: 'win64',
+  },
+  linux: {
+    x64: 'linux64',
+  },
+};
+const lastKnownGoodVersionsChannelMap: DeepReadonly<Record<ChromeChannelName, keyof LastKnownGoodVersions['channels']>> = {
+  stable: 'Stable',
+  beta: 'Beta',
+  dev: 'Dev',
+  canary: 'Canary',
+};
 
 export interface LastKnownGoodVersions {
   channels: {
@@ -98,6 +132,15 @@ export interface FindInstallationsOptions {
   rootPath: string;
 }
 
+export interface FindInstallationsResult {
+  installations: {
+    installableName: ChromeInstallableName;
+    version: string;
+    platform: ChromePlatform;
+    executablePath: string;
+  }[];
+}
+
 export interface GetInstallPathOptions {
   installableName: ChromeInstallableName;
   version: string;
@@ -131,49 +174,7 @@ export interface InstallResult {
   executablePath: string;
 }
 
-export interface GetInstallationsResult {
-  installations: {
-    installableName: ChromeInstallableName;
-    version: string;
-    platform: NodeJS.Platform;
-    arch: NodeJS.Architecture;
-    executablePath: string;
-  }[];
-}
-
 export class Chrome {
-  static readonly downloadBaseUrl = 'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing';
-  static readonly executablePathMap: DeepReadonly<Record<ChromeInstallableName, Record<string, string[]>>> = {
-    chrome: {
-      darwin: ['Google Chrome for Testing.app', 'Contents', 'MacOS', 'Google Chrome for Testing'],
-      win32: ['chrome.exe'],
-      linux: ['chrome'],
-    },
-    chromedriver: {
-      darwin: ['chromedriver'],
-      win32: ['chromedriver.exe'],
-      linux: ['chromedriver'],
-    },
-  };
-  static readonly chromePlatformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' | 'win32' | 'linux'>, Record<string, ChromePlatform>>> = {
-    darwin: {
-      arm64: 'mac-arm64',
-      x64: 'mac-x64',
-    },
-    win32: {
-      x64: 'win64',
-    },
-    linux: {
-      x64: 'linux64',
-    },
-  };
-  static readonly lastKnownGoodVersionsChannelMap: DeepReadonly<Record<ChromeChannelName, keyof LastKnownGoodVersions['channels']>> = {
-    stable: 'Stable',
-    beta: 'Beta',
-    dev: 'Dev',
-    canary: 'Canary',
-  };
-
   private readonly logger = new PrefixLogger(logger, `[${this.constructor.name}]`);
   private readonly client: AxiosInstance;
   private readonly lastKnownGoodVersionsCache: WebCache<LastKnownGoodVersions>;
@@ -202,7 +203,7 @@ export class Chrome {
     const lastKnownGoodVersions = await this.lastKnownGoodVersionsCache.get({
       timeout,
     });
-    const lastKnownGoodVersionsChannel = Chrome.lastKnownGoodVersionsChannelMap[channelName];
+    const lastKnownGoodVersionsChannel = lastKnownGoodVersionsChannelMap[channelName];
     const version = lastKnownGoodVersions.channels[lastKnownGoodVersionsChannel].version;
     return version;
   }
@@ -289,56 +290,103 @@ export class Chrome {
     });
   }
 
-  async findInstallations(options: FindInstallationsOptions): Promise<GetInstallationsResult> {
+  async findInstallations(options: FindInstallationsOptions): Promise<FindInstallationsResult> {
     const { rootPath } = options;
-    const platformArchs = _.entries(Chrome.chromePlatformMap).flatMap(([platform, archMap]) => _.keys(archMap).map((arch) => ({ platform, arch })));
-    const installables = await Promise.all(
-      _.keys(Chrome.executablePathMap)
-        .map((installableName) => ({
-          installableName: installableName as ChromeInstallableName,
-          installablePath: path.resolve(rootPath, installableName),
-        }))
-        .map(async ({ installableName, installablePath }) => ({
-          installableName,
-          installablePath,
-          installableExist: await fs.promises
-            .stat(installablePath)
-            .then((stat) => stat.isDirectory())
-            .catch(() => false),
-        })),
-    );
-
-    const withArchs = await Promise.all(
-      installables
-        .filter(({ installableExist }) => installableExist)
-        .map(({ installableName, installablePath }) => ({
-          installableName,
-          installablePath,
-        }))
-        .map(async ({ installableName, installablePath }) => {
-          const versions = await fs.promises.readdir(installablePath);
-          return versions.flatMap((version) =>
-            platformArchs.map(({ platform, arch }) => ({ installableName, version, platform: platform as NodeJS.Platform, arch: arch as NodeJS.Architecture })),
-          );
-        }),
-    ).then((installationss) => installationss.flat());
-
-    const withExecutables = await Promise.all(
-      withArchs.map(async (withArch) => {
-        const executablePath = this.getExecutablePath(withArch);
-        const executableExist = await fs.promises
-          .stat(executablePath)
-          .then((stat) => stat.isFile())
-          .catch(() => false);
-        return {
-          ...withArch,
-          executableExist,
-          executablePath,
-        };
-      }),
-    );
-
-    const installations = withExecutables.filter(({ executableExist }) => executableExist).map(({ executableExist, ...rest }) => rest);
+    const installables = _.keys(executablePathMap) as ChromeInstallableName[];
+    const withInstallablePathPromisess = installables.map(async (installableName) => {
+      const installablePath = path.resolve(rootPath, installableName);
+      const installablePathExist = await fs.promises
+        .stat(installablePath)
+        .then((stat) => stat.isDirectory())
+        .catch(() => false);
+      return {
+        installableName,
+        installablePath,
+        installablePathExist,
+      };
+    });
+    const withInstallablePaths = await Promise.all(withInstallablePathPromisess);
+    const resultPromises = withInstallablePaths
+      .filter(({ installablePathExist }) => installablePathExist)
+      .map(async ({ installableName, installablePath }) => {
+        const versions = await fs.promises.readdir(installablePath);
+        const withVersionPromises = versions
+          .filter((version) => {
+            try {
+              chromeVersionUtils.parse(version);
+              return true;
+            } catch {
+              return false;
+            }
+          })
+          .map(async (version) => {
+            const versionPath = path.resolve(installablePath, version);
+            const versionPathExist = await fs.promises
+              .stat(versionPath)
+              .then((stat) => stat.isDirectory())
+              .catch(() => false);
+            return {
+              installableName,
+              version,
+              versionPath,
+              versionPathExist,
+            };
+          });
+        const withVersions = await Promise.all(withVersionPromises);
+        const resultPromises = withVersions
+          .filter(({ versionPathExist }) => versionPathExist)
+          .map(async ({ installableName, version, versionPath }) => {
+            const platforms = await fs.promises.readdir(versionPath);
+            const withPlatformPromises = platforms
+              .filter((platform) => isValidChromePlatform(platform))
+              .map((platform) => platform as ChromePlatform)
+              .map(async (platform) => {
+                const platformPath = path.resolve(versionPath, platform);
+                const platformPathExist = await fs.promises
+                  .stat(platformPath)
+                  .then((stat) => stat.isDirectory())
+                  .catch(() => false);
+                return {
+                  installableName,
+                  version,
+                  platform,
+                  platformPath,
+                  platformPathExist,
+                };
+              });
+            const withPlatforms = await Promise.all(withPlatformPromises);
+            const withExecutablePromises = withPlatforms
+              .filter(({ platformPathExist }) => platformPathExist)
+              .map(async ({ installableName, version, platform, platformPath }) => {
+                const executablePath = this.getExecutablePath({ installableName, version, platform, installPath: platformPath });
+                const executablePathExist = await fs.promises
+                  .stat(executablePath)
+                  .then((stat) => stat.isFile())
+                  .catch(() => false);
+                return {
+                  installableName,
+                  version,
+                  platform,
+                  executablePath,
+                  executablePathExist,
+                };
+              });
+            const withExecutables = await Promise.all(withExecutablePromises);
+            const results = withExecutables
+              .filter(({ executablePathExist }) => executablePathExist)
+              .map(({ installableName, version, platform, executablePath }) => ({
+                installableName,
+                version,
+                platform,
+                executablePath,
+              }));
+            return results;
+          });
+        const results = await Promise.all(resultPromises);
+        return results.flat();
+      });
+    const results = await Promise.all(resultPromises);
+    const installations = results.flat();
     return {
       installations,
     };
@@ -352,14 +400,14 @@ export class Chrome {
 
   getDownloadUrl(options: GetDownloadUrlOptions): string {
     const { version, platform, downloadFileName } = options;
-    const url = `${Chrome.downloadBaseUrl}/${version}/${platform}/${downloadFileName}`;
+    const url = `${downloadBaseUrl}/${version}/${platform}/${downloadFileName}`;
     return url;
   }
 
   getChromePlatform(options?: GetChromePlatformOptions): ChromePlatform {
     const mergedOptions = mergeGetChromePlatformOptions(options);
     const { platform, arch } = mergedOptions;
-    const chromePlatform = _.get(Chrome.chromePlatformMap, [platform, arch]) as string | undefined;
+    const chromePlatform = _.get(chromePlatformMap, [platform, arch]) as string | undefined;
     if (!chromePlatform) {
       throw new Error(`Unsupported platform: ${platform}, arch: ${arch}`);
     }
@@ -371,10 +419,7 @@ export class Chrome {
 
   getExecutablePath(options: GetExecutablePathOptions): string {
     const { installableName, platform, installPath } = options;
-    const relativeExecutablePath = _.get(Chrome.executablePathMap, [installableName, platform]) as string[] | undefined;
-    if (!relativeExecutablePath) {
-      throw new Error(`Unsupported platform: ${platform}`);
-    }
+    const relativeExecutablePath = executablePathMap[installableName][platform];
     const executablePath = path.resolve(installPath, ...relativeExecutablePath);
     return executablePath;
   }
