@@ -41,7 +41,7 @@ export type VersionPrefix = string;
  */
 export type VersionPattern = RegExp;
 
-export function validatePrefixOrPatternWithin(options: { prefix?: VersionPrefix; pattern?: VersionPattern }): void {
+export function validatePrefixOrPatternWithin(options: { prefix?: VersionPrefix | null; pattern?: VersionPattern | null }): void {
   const { prefix, pattern } = options;
   if (!prefix && !pattern) {
     throw new Error('Either prefix or pattern must be defined');
@@ -59,11 +59,15 @@ export interface DownloadOptions {
   timeout?: DownloadRequestTimeout;
 }
 
-export async function download(options: DownloadOptions): Promise<void> {
-  const mergedOptions: Required<DownloadOptions> = {
-    ...options,
+function mergeDownloadOptions(options: DownloadOptions): Required<DownloadOptions> {
+  return {
     timeout: defaultDownloadRequestTimeout(),
+    ...options,
   };
+}
+
+export async function download(options: DownloadOptions): Promise<void> {
+  const mergedOptions = mergeDownloadOptions(options);
   const { client, url, filePath, timeout } = mergedOptions;
   const response = await client.get(url, {
     timeout,

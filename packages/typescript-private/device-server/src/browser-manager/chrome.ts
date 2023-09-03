@@ -1,5 +1,5 @@
-import { BrowserOrDriverName } from '@dogu-private/types';
-import { PrefixLogger, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
+import { BrowserOrDriverName, BrowserVersion } from '@dogu-private/types';
+import { DeepReadonly, PrefixLogger, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
 import { renameRetry } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
 import axios, { AxiosInstance } from 'axios';
@@ -8,9 +8,11 @@ import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 import { logger } from '../logger/logger.instance';
+import { chromeVersionUtils } from './chrome-version-utils';
+import { defaultVersionRequestTimeout, download, validatePrefixOrPatternWithin } from './common';
 import { WebCache } from './web-cache';
 
-interface LastKnownGoodVersions {
+export interface LastKnownGoodVersions {
   channels: {
     Stable: {
       version: string;
@@ -27,7 +29,7 @@ interface LastKnownGoodVersions {
   };
 }
 
-interface KnownGoodVersions {
+export interface KnownGoodVersions {
   versions: { version: string }[];
 }
 
@@ -36,22 +38,94 @@ export type ChromeChannelName = 'stable' | 'beta' | 'dev' | 'canary';
 
 const defaultChromeChannelName = (): ChromeChannelName => 'stable';
 
-export type GetLatestVersionOptions = ChromeChannelNameWithin & VersionRequestTimeoutWithin;
-function defaultGetLatestVersionOptions(): Required<GetLatestVersionOptions> {
+export const ChromePlatform = ['mac-arm64', 'mac-x64', 'win64', 'linux64'] as const;
+export type ChromePlatform = (typeof ChromePlatform)[number];
+const isValidChromePlatform = (value: string): value is ChromePlatform => ChromePlatform.includes(value as ChromePlatform);
+
+interface GetLatestVersionOptions {
+  channelName?: ChromeChannelName;
+  timeout?: number;
+}
+
+function mergeGetLatestVersionOptions(options?: GetLatestVersionOptions): Required<GetLatestVersionOptions> {
   return {
-    channelName: 'stable',
-    timeout: 10 * 60_000,
+    channelName: defaultChromeChannelName(),
+    timeout: defaultVersionRequestTimeout(),
+    ...options,
   };
 }
 
-export type FindVersionOptions = PrefixOrPatternWithin & VersionRequestTimeoutWithin;
-export type GetChromePlatformOptions = PlatformWithin & ArchWithin;
-export type GetDownloadFileNameOptions = ChromeInstallableNameWithin & PlatformWithin & ArchWithin;
-export type GetDownloadUrlOptions = ChromeInstallableNameWithin & VersionWithin & PlatformWithin & ArchWithin;
-export type GetInstallationsOptions = RootPathWithin;
-export type GetInstallPathOptions = RootPathWithin & ChromeInstallableNameWithin & VersionWithin & PlatformWithin & ArchWithin;
-export type GetExecutablePathOptions = RootPathWithin & ChromeInstallableNameWithin & VersionWithin & PlatformWithin & ArchWithin;
-export type InstallOptions = RootPathWithin & ChromeInstallableNameWithin & VersionWithin & PlatformWithin & ArchWithin & DownloadRequestTimeoutWithin;
+interface FindVersionOptions {
+  prefix?: string | null;
+  pattern?: RegExp | null;
+  timeout?: number;
+}
+
+function mergeFindVersionOptions(options?: FindVersionOptions): Required<FindVersionOptions> {
+  return {
+    prefix: null,
+    pattern: null,
+    timeout: defaultVersionRequestTimeout(),
+    ...options,
+  };
+}
+
+interface GetChromePlatformOptions {
+  platform?: NodeJS.Platform;
+  arch?: NodeJS.Architecture;
+}
+
+function mergeGetChromePlatformOptions(options?: GetChromePlatformOptions): Required<GetChromePlatformOptions> {
+  return {
+    platform: process.platform,
+    arch: process.arch,
+    ...options,
+  };
+}
+
+interface GetDownloadFileNameOptions {
+  installableName: ChromeInstallableName;
+  platform: ChromePlatform;
+}
+
+export interface GetDownloadUrlOptions {
+  version: string;
+  platform: ChromePlatform;
+  downloadFileName: string;
+}
+
+export interface FindInstallationsOptions {
+  rootPath: string;
+}
+
+export interface GetInstallPathOptions {
+  installableName: ChromeInstallableName;
+  version: string;
+  platform: ChromePlatform;
+  rootPath: string;
+}
+
+export interface GetExecutablePathOptions {
+  installableName: ChromeInstallableName;
+  version: BrowserVersion;
+  platform: ChromePlatform;
+  installPath: string;
+}
+
+export interface InstallOptions {
+  installableName: ChromeInstallableName;
+  version: string;
+  platform: ChromePlatform;
+  rootPath: string;
+  downloadTimeout?: number;
+}
+
+function mergeInstallOptions(options: InstallOptions): Required<InstallOptions> {
+  return {
+    downloadTimeout: defaultVersionRequestTimeout(),
+    ...options,
+  };
+}
 
 export interface InstallResult {
   executablePath: string;
@@ -81,7 +155,7 @@ export class Chrome {
       linux: ['chromedriver'],
     },
   };
-  static readonly chromePlatformMap: DeepReadonly<Record<string, Record<string, string>>> = {
+  static readonly chromePlatformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' | 'win32' | 'linux'>, Record<string, ChromePlatform>>> = {
     darwin: {
       arm64: 'mac-arm64',
       x64: 'mac-x64',
@@ -123,7 +197,7 @@ export class Chrome {
   }
 
   async getLatestVersion(options?: GetLatestVersionOptions): Promise<string> {
-    const mergedOptions = _.merge(defaultChromeChannelNameWithin(), defaultVersionRequestTimeoutWithin(), options);
+    const mergedOptions = mergeGetLatestVersionOptions(options);
     const { channelName, timeout } = mergedOptions;
     const lastKnownGoodVersions = await this.lastKnownGoodVersionsCache.get({
       timeout,
@@ -134,7 +208,7 @@ export class Chrome {
   }
 
   async findVersion(options?: FindVersionOptions): Promise<string | undefined> {
-    const mergedOptions = _.merge(defaultVersionRequestTimeoutWithin(), options);
+    const mergedOptions = mergeFindVersionOptions(options);
     validatePrefixOrPatternWithin(mergedOptions);
 
     const { prefix, pattern, timeout } = mergedOptions;
@@ -142,14 +216,20 @@ export class Chrome {
       timeout,
     });
 
-    const reversedVersions = [...knownGoodVersions.versions].reverse();
+    const versions = [...knownGoodVersions.versions];
+    versions.sort((lhs, rhs) => {
+      const lhsVersion = chromeVersionUtils.parse(lhs);
+      const rhsVersion = chromeVersionUtils.parse(rhs);
+      return chromeVersionUtils.compareWithDesc(lhsVersion, rhsVersion);
+    });
+
     if (prefix) {
-      const version = reversedVersions.find(({ version }) => version.startsWith(prefix))?.version;
+      const version = versions.find(({ version }) => version.startsWith(prefix))?.version;
       return version;
     }
 
     if (pattern) {
-      const version = reversedVersions.find(({ version }) => pattern.test(version))?.version;
+      const version = versions.find(({ version }) => pattern.test(version))?.version;
       return version;
     }
 
@@ -157,11 +237,11 @@ export class Chrome {
   }
 
   async install(options: InstallOptions): Promise<InstallResult> {
-    const mergedOptions = _.merge(defaultRootPathWithin(), defaultPlatformWithin(), defaultArchWithin(), defaultDownloadRequestTimeoutWithin(), options);
-    const { installableName, version, timeout } = mergedOptions;
+    const mergedOptions = mergeInstallOptions(options);
+    const { downloadTimeout } = mergedOptions;
     const installPath = this.getInstallPath(mergedOptions);
     return await this.pathLock.acquire(installPath, async () => {
-      const executablePath = this.getExecutablePath(mergedOptions);
+      const executablePath = this.getExecutablePath({ ...mergedOptions, installPath });
       if (await fs.promises.stat(executablePath).catch(() => null)) {
         this.logger.info(`Already installed at ${installPath}`);
         return {
@@ -170,15 +250,16 @@ export class Chrome {
       }
 
       await fs.promises.mkdir(installPath, { recursive: true });
-      const downloadUrl = this.getDownloadUrl({ installableName, version });
-      const downloadFileName = this.getDownloadFileName({ installableName });
+      const downloadFileName = this.getDownloadFileName(mergedOptions);
+      const downloadUrl = this.getDownloadUrl({ ...mergedOptions, downloadFileName });
+
       const downloadFilePath = path.resolve(installPath, downloadFileName);
       try {
         await download({
           client: this.client,
           url: downloadUrl,
           filePath: downloadFilePath,
-          timeout,
+          timeout: downloadTimeout,
         });
         await compressing.zip.uncompress(downloadFilePath, installPath);
         const uncompressedPath = path.resolve(installPath, path.basename(downloadFileName, '.zip'));
@@ -208,10 +289,8 @@ export class Chrome {
     });
   }
 
-  async getInstallations(options?: GetInstallationsOptions): Promise<GetInstallationsResult> {
-    const mergedOptions = _.merge(defaultRootPathWithin(), options);
-    const { rootPath } = mergedOptions;
-
+  async findInstallations(options: FindInstallationsOptions): Promise<GetInstallationsResult> {
+    const { rootPath } = options;
     const platformArchs = _.entries(Chrome.chromePlatformMap).flatMap(([platform, archMap]) => _.keys(archMap).map((arch) => ({ platform, arch })));
     const installables = await Promise.all(
       _.keys(Chrome.executablePathMap)
@@ -266,49 +345,43 @@ export class Chrome {
   }
 
   getDownloadFileName(options: GetDownloadFileNameOptions): string {
-    const mergedOptions = _.merge(defaultPlatformWithin(), defaultArchWithin(), options);
-    const { installableName } = mergedOptions;
-    const chromePlatform = this.getChromePlatform(mergedOptions);
-    const fileName = `${installableName}-${chromePlatform}.zip`;
+    const { installableName, platform } = options;
+    const fileName = `${installableName}-${platform}.zip`;
     return fileName;
   }
 
   getDownloadUrl(options: GetDownloadUrlOptions): string {
-    const mergedOptions = _.merge(defaultPlatformWithin(), defaultArchWithin(), options);
-    const { version } = mergedOptions;
-    const downloadFileName = this.getDownloadFileName(mergedOptions);
-    const chromePlatform = this.getChromePlatform(mergedOptions);
-    const url = `${Chrome.downloadBaseUrl}/${version}/${chromePlatform}/${downloadFileName}`;
+    const { version, platform, downloadFileName } = options;
+    const url = `${Chrome.downloadBaseUrl}/${version}/${platform}/${downloadFileName}`;
     return url;
   }
 
-  getChromePlatform(options?: GetChromePlatformOptions): string {
-    const mergedOptions = _.merge(defaultPlatformWithin(), defaultArchWithin(), options);
+  getChromePlatform(options?: GetChromePlatformOptions): ChromePlatform {
+    const mergedOptions = mergeGetChromePlatformOptions(options);
     const { platform, arch } = mergedOptions;
     const chromePlatform = _.get(Chrome.chromePlatformMap, [platform, arch]) as string | undefined;
     if (!chromePlatform) {
       throw new Error(`Unsupported platform: ${platform}, arch: ${arch}`);
     }
+    if (!isValidChromePlatform(chromePlatform)) {
+      throw new Error(`Unsupported chrome platform: ${chromePlatform}`);
+    }
     return chromePlatform;
   }
 
   getExecutablePath(options: GetExecutablePathOptions): string {
-    const mergedOptions = _.merge(defaultRootPathWithin(), defaultPlatformWithin(), defaultArchWithin(), options);
-    const { installableName, platform, arch } = mergedOptions;
-    const installPath = this.getInstallPath(mergedOptions);
+    const { installableName, platform, installPath } = options;
     const relativeExecutablePath = _.get(Chrome.executablePathMap, [installableName, platform]) as string[] | undefined;
     if (!relativeExecutablePath) {
-      throw new Error(`Unsupported platform: ${platform}, arch: ${arch}`);
+      throw new Error(`Unsupported platform: ${platform}`);
     }
     const executablePath = path.resolve(installPath, ...relativeExecutablePath);
     return executablePath;
   }
 
   getInstallPath(options: GetInstallPathOptions): string {
-    const mergedOptions = _.merge(defaultRootPathWithin(), defaultPlatformWithin(), defaultArchWithin(), options);
-    const { installableName, version, rootPath } = mergedOptions;
-    const chromePlatform = this.getChromePlatform(mergedOptions);
-    const installPath = path.resolve(rootPath, installableName, version, chromePlatform);
+    const { installableName, version, rootPath, platform } = options;
+    const installPath = path.resolve(rootPath, installableName, version, platform);
     return installPath;
   }
 }
