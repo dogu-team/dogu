@@ -16,8 +16,22 @@ const useRoutineEditorStore = create<RoutineEditorStore>((set) => ({
     on: {},
     jobs: {},
   },
-  updateYaml: (yaml) => set({ yaml, schema: YamlManager.parseYaml<RoutineSchema>(yaml) }),
-  updateSchema: (schema) => set({ schema, yaml: YamlManager.dumpToYaml<RoutineSchema>(schema, { lineWidth: -1 }) }),
+  updateYaml: (yaml) => {
+    try {
+      const schema = YamlManager.parseYaml<RoutineSchema>(yaml);
+      set({ yaml, schema });
+    } catch (e) {
+      set({ yaml });
+    }
+  },
+  updateSchema: (schema) => {
+    try {
+      const yaml = YamlManager.dumpToYaml<RoutineSchema>(schema, { lineWidth: -1 });
+      set({ schema, yaml });
+    } catch (e) {
+      set({ schema });
+    }
+  },
 }));
 
 export default useRoutineEditorStore;
