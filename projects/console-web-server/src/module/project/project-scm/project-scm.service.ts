@@ -1,4 +1,5 @@
-import { DoguScmConfig, OrganizationId, ProjectId, ProjectTestScript, PROJECT_SCM_TYPE } from '@dogu-private/types';
+import { DoguConfig } from '@dogu-private/console';
+import { OrganizationId, ProjectId, ProjectTestScript, PROJECT_SCM_TYPE } from '@dogu-private/types';
 import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -140,8 +141,8 @@ export class ProjectScmService {
         const repo: string = parts[2];
 
         const content = await Github.readDoguConfigFile(githubToken, org, repo);
-        const json: DoguScmConfig = JSON.parse(content.replaceAll('\n| ', ''));
-        const result = await Github.getScriptFiles(githubToken, org, repo, json.scriptFolderPaths);
+        const json: DoguConfig = JSON.parse(content.replaceAll('\n| ', ''));
+        const result = await Github.getScriptFiles(githubToken, org, repo, json.scriptFolderPaths ?? []);
 
         return result.map((r) => ({
           name: r.path?.split('/').pop() ?? '',
@@ -168,7 +169,7 @@ export class ProjectScmService {
 
         const json = await Gitlab.readDoguConfigFile(hostUrl, gitlabToken, repo);
         const metaTrees = await Promise.all(
-          json.scriptFolderPaths.map(async (path) => {
+          (json.scriptFolderPaths ?? []).map(async (path) => {
             return Gitlab.getProjectFileMetaTree(hostUrl, gitlabToken, repo, path);
           }),
         );
@@ -204,7 +205,7 @@ export class ProjectScmService {
         const repo: string = parts[2];
 
         const content = await Bitbucket.readDoguConfigFile(bitbucketToken, workspace, repo);
-        const result = await Bitbucket.getScriptFiles(bitbucketToken, workspace, repo, content.scriptFolderPaths);
+        const result = await Bitbucket.getScriptFiles(bitbucketToken, workspace, repo, content.scriptFolderPaths ?? []);
 
         return result.map((r) => ({
           name: r.path?.split('/').pop() ?? '',

@@ -11,10 +11,6 @@ export enum PROJECT_SCM_TYPE {
 
 export const DOGU_CONFIG_FILE_NAME = 'dogu.config.json';
 
-export interface DoguScmConfig {
-  scriptFolderPaths: string[];
-}
-
 export interface ProjectTestScript {
   name: string;
   path: string;
