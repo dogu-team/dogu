@@ -20,7 +20,6 @@ const DeviceStreamingLayout = dynamic<DeviceStreamingLayoutProps>(() => import('
 
 const ManualTestingMenu = () => {
   const router = useRouter();
-  const tab = (router.query.tab as StreamingTabMenuKey | undefined) ?? StreamingTabMenuKey.INFO;
   const { device, deviceService, inspector } = useDeviceStreamingContext();
   const runtimeInfos = useDeviceStreamingProfile(deviceService?.deviceClient, device ?? null);
   const { t } = useTranslation();
@@ -81,6 +80,9 @@ const ManualTestingMenu = () => {
   };
 
   const tabMenus = getTabMenu(device?.platform ?? Platform.UNRECOGNIZED);
+  const tab = tabMenus?.find((menu) => menu.key === router.query.tab)
+    ? (router.query.tab as StreamingTabMenuKey | undefined) ?? StreamingTabMenuKey.INFO
+    : StreamingTabMenuKey.INFO;
 
   return (
     <Tabs
