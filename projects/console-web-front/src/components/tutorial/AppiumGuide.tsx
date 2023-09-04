@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Cookies from 'universal-cookie';
-import { USER_ID_COOKIE_NAME } from '@dogu-private/types';
+import { PROJECT_TYPE, USER_ID_COOKIE_NAME } from '@dogu-private/types';
 
 import { appiumGuideData, GuideProps, GuideSupportLanguage, GuideSupportPlatform, GuideSupportTarget, SAMPLE_GIT_URL } from '../../resources/guide';
 import { flexRowBaseStyle } from '../../styles/box';
@@ -19,6 +19,7 @@ import CodeWithCopyButton from '../common/CodeWithCopyButton';
 import ProjectApplicationUploadButton from '../project-application/ProjectApplicationUploadButton';
 import RemoteTestResultList from './RemoteTestResultList';
 import PythonVirtualEnvShell from './PythonVirtualEnvShell';
+import useTutorialContext from '../../hooks/useTutorialContext';
 
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
@@ -29,10 +30,25 @@ const RESULT_ID = 'result';
 const DONE_ID = 'done';
 
 const AppiumGuide = ({ organizationId, projectId }: GuideProps) => {
+  const { project } = useTutorialContext();
+
+  const getProjectTypeDefaultTarget = () => {
+    switch (project?.type) {
+      case PROJECT_TYPE.WEB:
+        return GuideSupportTarget.WEB;
+      case PROJECT_TYPE.APP:
+        return GuideSupportTarget.APP;
+      case PROJECT_TYPE.GAME:
+        return GuideSupportTarget.APP;
+      default:
+        return GuideSupportTarget.APP;
+    }
+  };
+
   const { framework, platform, target } = useTutorialSelector({
     defaultFramework: appiumGuideData.defaultOptions.framework,
     defaultPlatform: appiumGuideData.defaultOptions.platform,
-    defaultTarget: appiumGuideData.defaultOptions.target,
+    defaultTarget: getProjectTypeDefaultTarget(),
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 

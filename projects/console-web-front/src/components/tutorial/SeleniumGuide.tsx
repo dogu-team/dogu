@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import Cookies from 'universal-cookie';
 import { USER_ID_COOKIE_NAME } from '@dogu-private/types';
 
-import { seleniumData, GuideProps, GuideSupportLanguage, SAMPLE_GIT_URL, GuideSupportPlatform } from '../../resources/guide';
+import { seleniumData, GuideProps, GuideSupportLanguage, SAMPLE_GIT_URL, GuideSupportPlatform, GuideSupportTarget } from '../../resources/guide';
 import { flexRowBaseStyle } from '../../styles/box';
 import GuideAnchor from './GuideAnchor';
 import GuideBanner from './GuideBanner';
@@ -28,7 +28,7 @@ const SeleniumGuide = ({ organizationId, projectId }: GuideProps) => {
   const { framework, platform, target } = useTutorialSelector({
     defaultFramework: seleniumData.defaultOptions.framework,
     defaultPlatform: seleniumData.defaultOptions.platform,
-    defaultTarget: seleniumData.defaultOptions.target,
+    defaultTarget: GuideSupportTarget.WEB,
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 

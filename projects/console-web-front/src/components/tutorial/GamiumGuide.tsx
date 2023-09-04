@@ -31,7 +31,7 @@ const GamiumGuide = ({ organizationId, projectId }: GuideProps) => {
   const { framework, platform, target } = useTutorialSelector({
     defaultFramework: gamiumGuideData.defaultOptions.framework,
     defaultPlatform: gamiumGuideData.defaultOptions.platform,
-    defaultTarget: gamiumGuideData.defaultOptions.target,
+    defaultTarget: GuideSupportTarget.UNITY,
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 

@@ -1,5 +1,6 @@
 import { Select, SelectProps } from 'antd';
 import { useRouter } from 'next/router';
+import styled from 'styled-components';
 
 import {
   Guide,
@@ -13,9 +14,10 @@ import {
 } from '../../resources/guide';
 import PlatformIcon from './PlatformIcon';
 import TargetIcon from './TargetIcon';
-import styled from 'styled-components';
 import { flexRowBaseStyle } from '../../styles/box';
 import FrameworkIcon from './FrameworkIcon';
+import useTutorialContext from '../../hooks/useTutorialContext';
+import { PROJECT_TYPE } from '@dogu-private/types';
 
 interface Props {
   guideData: Guide;
@@ -26,6 +28,7 @@ interface Props {
 
 const RemoteTestOptionSelectors = ({ guideData, selectedFramwork, selectedPlatform, selectedTarget }: Props) => {
   const router = useRouter();
+  const { project } = useTutorialContext();
   const availabePlatforms = Object.keys(guideData.platformAndTarget).filter((platform) => guideData.platformAndTarget[platform as GuideSupportPlatform]?.includes(selectedTarget));
   const availableTargets = guideData.platformAndTarget[selectedPlatform];
   const frameworkOptions: SelectProps['options'] = Object.keys(guideData.supportFrameworks).map((language) => {
@@ -90,16 +93,18 @@ const RemoteTestOptionSelectors = ({ guideData, selectedFramwork, selectedPlatfo
         style={{ width: '100%', marginBottom: '.5rem' }}
         id="platform-selector"
       />
-      <Select
-        options={targetOptions}
-        value={selectedTarget}
-        onChange={(value) => {
-          router.replace({ query: { ...router.query, target: value } }, undefined, { shallow: true, scroll: true });
-        }}
-        dropdownMatchSelectWidth={false}
-        style={{ width: '100%' }}
-        id="target-selector"
-      />
+      {(project?.type === PROJECT_TYPE.GAME || project?.type === PROJECT_TYPE.CUSTOM) && (
+        <Select
+          options={targetOptions}
+          value={selectedTarget}
+          onChange={(value) => {
+            router.replace({ query: { ...router.query, target: value } }, undefined, { shallow: true, scroll: true });
+          }}
+          dropdownMatchSelectWidth={false}
+          style={{ width: '100%' }}
+          id="target-selector"
+        />
+      )}
     </>
   );
 };

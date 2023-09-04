@@ -2,7 +2,7 @@ import { Alert } from 'antd';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Cookies from 'universal-cookie';
-import { USER_ID_COOKIE_NAME } from '@dogu-private/types';
+import { PROJECT_TYPE, USER_ID_COOKIE_NAME } from '@dogu-private/types';
 
 import DoneStep from './DoneStep';
 import GuideAnchor from './GuideAnchor';
@@ -17,6 +17,7 @@ import ProjectApplicationUploadButton from '../project-application/ProjectApplic
 import SampleApplicationUploadButton from './SampleApplicationUploadButton';
 import RemoteTestResultList from './RemoteTestResultList';
 import CodeWithCopyButton from '../common/CodeWithCopyButton';
+import useTutorialContext from '../../hooks/useTutorialContext';
 
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
@@ -27,10 +28,25 @@ const RESULT_ID = 'result';
 const DONE_ID = 'done';
 
 const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
+  const { project } = useTutorialContext();
+
+  const getProjectTypeDefaultTarget = () => {
+    switch (project?.type) {
+      case PROJECT_TYPE.WEB:
+        return GuideSupportTarget.WEB;
+      case PROJECT_TYPE.APP:
+        return GuideSupportTarget.APP;
+      case PROJECT_TYPE.GAME:
+        return GuideSupportTarget.APP;
+      default:
+        return GuideSupportTarget.APP;
+    }
+  };
+
   const { framework, platform, target } = useTutorialSelector({
     defaultFramework: webdriverioGuideData.defaultOptions.framework,
     defaultPlatform: webdriverioGuideData.defaultOptions.platform,
-    defaultTarget: webdriverioGuideData.defaultOptions.target,
+    defaultTarget: getProjectTypeDefaultTarget(),
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 
