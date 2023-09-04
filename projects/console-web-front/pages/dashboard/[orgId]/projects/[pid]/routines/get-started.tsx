@@ -11,7 +11,7 @@ import { getOrganizationInServerSide } from 'src/api/organization';
 import { getProjectInServerSide } from 'src/api/project';
 import ConsoleBasicLayout from 'src/components/layouts/ConsoleBasicLayout';
 import FrameworkSelectContainer from 'src/components/tutorial/FrameworkSelectContainer';
-import RemoteTestTutorial from 'src/components/tutorial/RemoteTestTutorial';
+import RemoteTestTutorial from 'src/components/tutorial/remote/RemoteTestTutorial';
 import SdkIcon from 'src/components/tutorial/SdkIcon';
 import { TutorialContext } from 'src/hooks/useTutorialContext';
 import { TutorialSupportSdk, tutorialSupportSdkText } from 'src/resources/tutorials';

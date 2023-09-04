@@ -4,10 +4,10 @@ import styled from 'styled-components';
 import Cookies from 'universal-cookie';
 import { PROJECT_TYPE, USER_ID_COOKIE_NAME } from '@dogu-private/types';
 
-import DoneStep from './DoneStep';
-import GuideAnchor from './GuideAnchor';
-import GuideLayout from './GuideLayout';
-import GuideStep from './GuideStep';
+import DoneStep from '../DoneStep';
+import GuideAnchor from '../GuideAnchor';
+import GuideLayout from '../GuideLayout';
+import GuideStep from '../GuideStep';
 import {
   TutorialSupportLanguage,
   TutorialSupportPlatform,
@@ -15,17 +15,17 @@ import {
   SAMPLE_GIT_URL,
   tutorialSdkSupportInfo,
   TutorialSupportSdk,
-} from '../../resources/tutorials/index';
-import { flexRowBaseStyle } from '../../styles/box';
-import GuideBanner from './GuideBanner';
-import RemoteTestOptionSelectors from './RemoteTestOptionSelectors';
-import useTutorialSelector from '../../hooks/useTutorialSelector';
-import ProjectApplicationUploadButton from '../project-application/ProjectApplicationUploadButton';
-import SampleApplicationUploadButton from './SampleApplicationUploadButton';
+} from '../../../resources/tutorials/index';
+import { flexRowBaseStyle } from '../../../styles/box';
+import GuideBanner from '../GuideBanner';
+import RemoteTestOptionSelectors from '../RemoteTestOptionSelectors';
+import useTutorialSelector from '../../../hooks/useTutorialSelector';
+import ProjectApplicationUploadButton from '../../project-application/ProjectApplicationUploadButton';
+import SampleApplicationUploadButton from '../SampleApplicationUploadButton';
 import RemoteTestResultList from './RemoteTestResultList';
-import CodeWithCopyButton from '../common/CodeWithCopyButton';
-import useTutorialContext from '../../hooks/useTutorialContext';
-import { RemoteTutorialProps, webdriverioRemoteTutoriallData } from '../../resources/tutorials/remote';
+import CodeWithCopyButton from '../../common/CodeWithCopyButton';
+import useTutorialContext from '../../../hooks/useTutorialContext';
+import { RemoteTutorialProps, webdriverioRemoteTutoriallData } from '../../../resources/tutorials/remote';
 
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';

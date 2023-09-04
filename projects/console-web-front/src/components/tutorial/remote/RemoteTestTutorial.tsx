@@ -1,6 +1,6 @@
-import useTutorialContext from '../../hooks/useTutorialContext';
-import { TutorialSupportSdk } from '../../resources/tutorials';
-import ErrorBox from '../common/boxes/ErrorBox';
+import useTutorialContext from '../../../hooks/useTutorialContext';
+import { TutorialSupportSdk } from '../../../resources/tutorials/index';
+import ErrorBox from '../../common/boxes/ErrorBox';
 import AppiumRemoteTutorial from './AppiumRemoteTutorial';
 import GamiumRemoteTutorial from './GamiumRemoteTutorial';
 import SeleniumRemoteTutorial from './SeleniumRemoteTutorial';

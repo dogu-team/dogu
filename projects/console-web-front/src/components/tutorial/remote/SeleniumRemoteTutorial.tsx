@@ -1,3 +1,4 @@
+import { Alert } from 'antd';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import Cookies from 'universal-cookie';
@@ -10,20 +11,19 @@ import {
   TutorialSupportTarget,
   tutorialSdkSupportInfo,
   TutorialSupportSdk,
-} from '../../resources/tutorials/index';
-import { flexRowBaseStyle } from '../../styles/box';
-import GuideAnchor from './GuideAnchor';
-import GuideBanner from './GuideBanner';
-import GuideLayout from './GuideLayout';
-import GuideStep from './GuideStep';
-import DoneStep from './DoneStep';
-import useTutorialSelector from '../../hooks/useTutorialSelector';
-import RemoteTestOptionSelectors from './RemoteTestOptionSelectors';
-import CodeWithCopyButton from '../common/CodeWithCopyButton';
+} from '../../../resources/tutorials/index';
+import { flexRowBaseStyle } from '../../../styles/box';
+import GuideAnchor from '../GuideAnchor';
+import GuideBanner from '../GuideBanner';
+import GuideLayout from '../GuideLayout';
+import GuideStep from '../GuideStep';
+import DoneStep from '../DoneStep';
+import useTutorialSelector from '../../../hooks/useTutorialSelector';
+import RemoteTestOptionSelectors from '../RemoteTestOptionSelectors';
+import CodeWithCopyButton from '../../common/CodeWithCopyButton';
 import RemoteTestResultList from './RemoteTestResultList';
-import PythonVirtualEnvShell from './PythonVirtualEnvShell';
-import { Alert } from 'antd';
-import { RemoteTutorialProps, seleniumRemoteTutorialGuideData } from '../../resources/tutorials/remote';
+import PythonVirtualEnvShell from '../PythonVirtualEnvShell';
+import { RemoteTutorialProps, seleniumRemoteTutorialGuideData } from '../../../resources/tutorials/remote';
 
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
