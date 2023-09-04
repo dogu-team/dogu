@@ -2,15 +2,15 @@ import { AppstoreOutlined } from '@ant-design/icons';
 import { GoBrowser } from 'react-icons/go';
 import { SiUnity } from 'react-icons/si';
 
-import { GuideSupportTarget } from '../../resources/guide';
+import { TutorialSupportTarget } from '../../resources/tutorials';
 
-const TargetIcon = ({ target }: { target: GuideSupportTarget }) => {
+const TargetIcon = ({ target }: { target: TutorialSupportTarget }) => {
   switch (target) {
-    case GuideSupportTarget.WEB:
+    case TutorialSupportTarget.WEB:
       return <GoBrowser />;
-    case GuideSupportTarget.APP:
+    case TutorialSupportTarget.APP:
       return <AppstoreOutlined />;
-    case GuideSupportTarget.UNITY:
+    case TutorialSupportTarget.UNITY:
       return <SiUnity />;
     default:
       return null;

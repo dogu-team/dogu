@@ -26,7 +26,7 @@ interface ServerSideProps {
   project: ProjectBase;
 }
 
-const ProjectRemoteGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, organization, me }) => {
+const ProjectRoutineGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, organization, me }) => {
   const router = useRouter();
   const sdk = router.query.sdk as TutorialSupportSdk | undefined;
   const isFrameworkSelected = !!sdk && Object.keys(remoteTutorialData).includes(router.query.sdk as string) && !!router.query.framework;
@@ -34,7 +34,7 @@ const ProjectRemoteGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ proj
   return (
     <TutorialContext.Provider value={{ me, organization, project, updateProject: () => {} }}>
       <Head>
-        <title>Remote tutorial - {project.name} | Dogu</title>
+        <title>Routine tutorial - {project.name} | Dogu</title>
       </Head>
       {isFrameworkSelected ? (
         <Box>
@@ -87,7 +87,7 @@ const ProjectRemoteGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ proj
   );
 };
 
-ProjectRemoteGetStartedPage.getLayout = (page) => {
+ProjectRoutineGetStartedPage.getLayout = (page) => {
   return <ConsoleBasicLayout>{page}</ConsoleBasicLayout>;
 };
 
@@ -107,7 +107,7 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (co
   };
 };
 
-export default ProjectRemoteGetStartedPage;
+export default ProjectRoutineGetStartedPage;
 
 const Box = styled.div`
   padding: 2rem;

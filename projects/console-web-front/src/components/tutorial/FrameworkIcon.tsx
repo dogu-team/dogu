@@ -1,18 +1,18 @@
 import Image from 'next/image';
 
 import resources from '../../resources';
-import { GuideSupportFramework } from '../../resources/guide';
+import { TutorialSupportFramework } from '../../resources/tutorials';
 
 interface Props {
-  framework: GuideSupportFramework;
+  framework: TutorialSupportFramework;
   size: number;
 }
 
 const FrameworkIcon = ({ framework, size }: Props) => {
   switch (framework) {
-    case GuideSupportFramework.JEST:
+    case TutorialSupportFramework.JEST:
       return <Image src={resources.icons.jest} width={size} height={size} alt="jest" />;
-    case GuideSupportFramework.PYTEST:
+    case TutorialSupportFramework.PYTEST:
       return <Image src={resources.icons.pytest} width={size} height={size} alt="pytest" />;
     default:
       return null;

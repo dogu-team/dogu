@@ -2,14 +2,15 @@ import { PROJECT_TYPE } from '@dogu-private/types';
 import styled from 'styled-components';
 import { Divider } from 'antd';
 
-import { GuideSupportLanguage, guideSupportLanguageText, GuideSupportSdk, guideSupportSdkText, tutorialData } from '../../resources/guide';
+import { tutorialSdkSupportInfo, TutorialSupportLanguage, tutorialSupportLanguageText, TutorialSupportSdk, tutorialSupportSdkText } from '../../resources/tutorials';
 import LanguageIcon from './LanguageIcon';
 import SdkIcon from './SdkIcon';
 import useTutorialContext from '../../hooks/useTutorialContext';
+import { remoteTutorialData } from '../../resources/tutorials/remote';
 
 interface Props {
-  onClickSdk: (sdk: GuideSupportSdk) => void;
-  selectedSdk: GuideSupportSdk;
+  onClickSdk: (sdk: TutorialSupportSdk) => void;
+  selectedSdk: TutorialSupportSdk;
   onClickFramework: (framework: string) => void;
 }
 
@@ -19,13 +20,13 @@ const FrameworkSelectTable = ({ selectedSdk, onClickFramework, onClickSdk }: Pro
   const getAvailableSdk = () => {
     switch (project?.type) {
       case PROJECT_TYPE.WEB:
-        return [GuideSupportSdk.WEBDRIVERIO, GuideSupportSdk.SELENIUM];
+        return [TutorialSupportSdk.WEBDRIVERIO, TutorialSupportSdk.SELENIUM];
       case PROJECT_TYPE.APP:
-        return [GuideSupportSdk.WEBDRIVERIO, GuideSupportSdk.APPIUM];
+        return [TutorialSupportSdk.WEBDRIVERIO, TutorialSupportSdk.APPIUM];
       case PROJECT_TYPE.GAME:
-        return [GuideSupportSdk.GAMIUM];
+        return [TutorialSupportSdk.GAMIUM];
       default:
-        return [GuideSupportSdk.WEBDRIVERIO, GuideSupportSdk.SELENIUM, GuideSupportSdk.APPIUM, GuideSupportSdk.GAMIUM];
+        return [TutorialSupportSdk.WEBDRIVERIO, TutorialSupportSdk.SELENIUM, TutorialSupportSdk.APPIUM, TutorialSupportSdk.GAMIUM];
     }
   };
 
@@ -40,27 +41,27 @@ const FrameworkSelectTable = ({ selectedSdk, onClickFramework, onClickSdk }: Pro
           return (
             <SdkItem key={sdk} onClick={() => onClickSdk(sdk)} isSelected={selectedSdk === sdk}>
               <SdkIcon sdk={sdk} size={32} />
-              <p>{guideSupportSdkText[sdk]}</p>
+              <p>{tutorialSupportSdkText[sdk]}</p>
             </SdkItem>
           );
         })}
       </div>
 
       <ColContainer>
-        {Object.keys(tutorialData[selectedSdk].supportFrameworks).map((lang) => {
-          const language = lang as GuideSupportLanguage;
+        {Object.keys(tutorialSdkSupportInfo[selectedSdk].frameworksPerLang).map((lang) => {
+          const language = lang as TutorialSupportLanguage;
 
           return (
             <Col key={language}>
               <FlexColCenter>
                 <LanguageIcon language={language} size={32} />
-                <p style={{ marginTop: '.25rem', fontWeight: '500' }}>{guideSupportLanguageText[language]}</p>
+                <p style={{ marginTop: '.25rem', fontWeight: '500' }}>{tutorialSupportLanguageText[language]}</p>
               </FlexColCenter>
 
               <Divider />
 
               <FlexColCenter>
-                {tutorialData[selectedSdk].supportFrameworks[language]?.map((framework: string) => {
+                {tutorialSdkSupportInfo[selectedSdk].frameworksPerLang[language]?.map((framework: string) => {
                   return (
                     <FrameworkItem key={framework} onClick={() => onClickFramework(framework)}>
                       {framework}

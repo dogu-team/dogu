@@ -11,7 +11,7 @@ import { getHostByToken, updateUseHostAsDevice } from '../../api/host';
 import useModal from '../../hooks/useModal';
 import useTutorialContext from '../../hooks/useTutorialContext';
 import useTutorialSelector from '../../hooks/useTutorialSelector';
-import { GuideSupportPlatform, GuideSupportSdk, tutorialData } from '../../resources/guide';
+import { TutorialSupportPlatform, TutorialSupportSdk } from '../../resources/tutorials';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import { getErrorMessageFromAxios } from '../../utils/error';
@@ -25,6 +25,7 @@ import GuideLayout from './GuideLayout';
 import GuideStep from './GuideStep';
 import TutorialDeviceList from './TutorialDeviceLIst';
 import CreateProjectModal from '../projects/CreateProjectModal';
+import { remoteTutorialData } from '../../resources/tutorials/remote';
 
 const INTRODUCTION_ID = 'introduction';
 const CREATE_PROJECT_ID = 'create-project';
@@ -48,15 +49,15 @@ const DeviceFarmTutorial = () => {
   const [host, setHost] = useState<HostBase>();
   const { project, updateProject, organization } = useTutorialContext();
 
-  const selectedSdk = (router.query.sdk as GuideSupportSdk | undefined) || GuideSupportSdk.WEBDRIVERIO;
-  const guideData = tutorialData[selectedSdk];
+  const selectedSdk = (router.query.sdk as TutorialSupportSdk | undefined) || TutorialSupportSdk.WEBDRIVERIO;
+  const tutorialData = remoteTutorialData[selectedSdk];
   const { platform } = useTutorialSelector({
-    defaultFramework: guideData.defaultOptions.framework,
-    defaultPlatform: guideData.defaultOptions.platform,
-    defaultTarget: guideData.defaultOptions.target,
+    defaultFramework: tutorialData.defaultOptions.framework,
+    defaultPlatform: tutorialData.defaultOptions.platform,
+    defaultTarget: tutorialData.defaultOptions.target,
   });
 
-  const isMobile = platform === GuideSupportPlatform.ANDROID || platform === GuideSupportPlatform.IOS;
+  const isMobile = platform === TutorialSupportPlatform.ANDROID || platform === TutorialSupportPlatform.IOS;
 
   useEffect(() => {
     if (organization?.organizationId) {

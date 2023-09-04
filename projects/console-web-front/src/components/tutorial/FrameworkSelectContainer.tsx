@@ -7,7 +7,7 @@ import { flexRowSpaceBetweenStyle } from '../../styles/box';
 import GuideBanner from './GuideBanner';
 import DoguText from '../common/DoguText';
 import FrameworkSelectTable from './FrameworkSelectTable';
-import { GuideSupportSdk } from '../../resources/guide';
+import { TutorialSupportSdk } from '../../resources/tutorials';
 import useTutorialContext from '../../hooks/useTutorialContext';
 import { PROJECT_TYPE } from '@dogu-private/types';
 
@@ -18,20 +18,20 @@ interface Props {
 const FrameworkSelectContainer = ({ skipButton }: Props) => {
   const router = useRouter();
   const { project } = useTutorialContext();
-  const [selectedSdk, setSelectedSdk] = useState<GuideSupportSdk>(() => {
+  const [selectedSdk, setSelectedSdk] = useState<TutorialSupportSdk>(() => {
     if (project?.type === PROJECT_TYPE.WEB) {
-      return GuideSupportSdk.WEBDRIVERIO;
+      return TutorialSupportSdk.WEBDRIVERIO;
     }
 
     if (project?.type === PROJECT_TYPE.APP) {
-      return GuideSupportSdk.APPIUM;
+      return TutorialSupportSdk.APPIUM;
     }
 
     if (project?.type === PROJECT_TYPE.GAME) {
-      return GuideSupportSdk.GAMIUM;
+      return TutorialSupportSdk.GAMIUM;
     }
 
-    return GuideSupportSdk.WEBDRIVERIO;
+    return TutorialSupportSdk.WEBDRIVERIO;
   });
 
   const handleClickFramework = (framework: string) => {

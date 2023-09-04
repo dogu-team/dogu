@@ -8,7 +8,14 @@ import DoneStep from './DoneStep';
 import GuideAnchor from './GuideAnchor';
 import GuideLayout from './GuideLayout';
 import GuideStep from './GuideStep';
-import { GuideProps, GuideSupportLanguage, GuideSupportPlatform, GuideSupportTarget, SAMPLE_GIT_URL, webdriverioGuideData } from '../../resources/guide';
+import {
+  TutorialSupportLanguage,
+  TutorialSupportPlatform,
+  TutorialSupportTarget,
+  SAMPLE_GIT_URL,
+  tutorialSdkSupportInfo,
+  TutorialSupportSdk,
+} from '../../resources/tutorials/index';
 import { flexRowBaseStyle } from '../../styles/box';
 import GuideBanner from './GuideBanner';
 import RemoteTestOptionSelectors from './RemoteTestOptionSelectors';
@@ -18,6 +25,7 @@ import SampleApplicationUploadButton from './SampleApplicationUploadButton';
 import RemoteTestResultList from './RemoteTestResultList';
 import CodeWithCopyButton from '../common/CodeWithCopyButton';
 import useTutorialContext from '../../hooks/useTutorialContext';
+import { RemoteTutorialProps, webdriverioRemoteTutoriallData } from '../../resources/tutorials/remote';
 
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
@@ -27,32 +35,32 @@ const RUN_TEST_ID = 'run-test';
 const RESULT_ID = 'result';
 const DONE_ID = 'done';
 
-const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
+const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps) => {
   const { project } = useTutorialContext();
 
   const getProjectTypeDefaultTarget = () => {
     switch (project?.type) {
       case PROJECT_TYPE.WEB:
-        return GuideSupportTarget.WEB;
+        return TutorialSupportTarget.WEB;
       case PROJECT_TYPE.APP:
-        return GuideSupportTarget.APP;
+        return TutorialSupportTarget.APP;
       case PROJECT_TYPE.GAME:
-        return GuideSupportTarget.APP;
+        return TutorialSupportTarget.APP;
       default:
-        return GuideSupportTarget.APP;
+        return TutorialSupportTarget.APP;
     }
   };
 
   const { framework, platform, target } = useTutorialSelector({
-    defaultFramework: webdriverioGuideData.defaultOptions.framework,
-    defaultPlatform: webdriverioGuideData.defaultOptions.platform,
+    defaultFramework: webdriverioRemoteTutoriallData.defaultOptions.framework,
+    defaultPlatform: webdriverioRemoteTutoriallData.defaultOptions.platform,
     defaultTarget: getProjectTypeDefaultTarget(),
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 
-  const selectedGuide = webdriverioGuideData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const frameworkLanguage = Object.keys(webdriverioGuideData.supportFrameworks).find((language) =>
-    webdriverioGuideData.supportFrameworks[language as GuideSupportLanguage]?.includes(framework),
+  const selectedGuide = webdriverioRemoteTutoriallData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
+  const frameworkLanguage = Object.keys(tutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].frameworksPerLang).find((language) =>
+    tutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
   );
 
   useEffect(() => {
@@ -61,7 +69,7 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
         return;
       }
 
-      const code = await webdriverioGuideData.generateCapabilitiesCode({
+      const code = await webdriverioRemoteTutoriallData.generateCapabilitiesCode({
         orgId: organizationId,
         projectId,
         framework,
@@ -80,14 +88,14 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
       sidebar={
         <div>
           <div style={{ marginBottom: '1rem' }}>
-            <RemoteTestOptionSelectors guideData={webdriverioGuideData} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
+            <RemoteTestOptionSelectors sdk={TutorialSupportSdk.WEBDRIVERIO} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
           </div>
           <GuideAnchor
             items={[
               { id: PROJECT_SETUP_ID, title: 'Sample project setup' },
               { id: INSTALL_DEPENDENCIES_ID, title: 'Install dependencies' },
               { id: SET_CAPABILITIES_ID, title: 'Set capabilities' },
-              ...(target === GuideSupportTarget.APP ? [{ id: UPLOAD_SAMPLE_APP_ID, title: 'Upload sample application' }] : []),
+              ...(target === TutorialSupportTarget.APP ? [{ id: UPLOAD_SAMPLE_APP_ID, title: 'Upload sample application' }] : []),
               { id: RUN_TEST_ID, title: 'Run remote testing' },
               { id: RESULT_ID, title: 'Check result' },
               { id: DONE_ID, title: 'Done! Next step' },
@@ -125,7 +133,7 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
             content={<CodeWithCopyButton language="json" code={capabilityCode} />}
           />
 
-          {target === GuideSupportTarget.APP && (
+          {target === TutorialSupportTarget.APP && (
             <GuideStep
               id={UPLOAD_SAMPLE_APP_ID}
               title="Upload sample application"
@@ -135,7 +143,7 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
                   <SampleApplicationUploadButton organizationId={organizationId} projectId={projectId} category="mobile" />
                 ) : (
                   <>
-                    {platform === GuideSupportPlatform.IOS && (
+                    {platform === TutorialSupportPlatform.IOS && (
                       <Alert
                         style={{ marginTop: '.5rem' }}
                         message="For iOS, we don't provide sample app. Please upload your app manually."
@@ -155,11 +163,11 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
             title="Run remote testing"
             description={<p>Start automated testing using sample app and script</p>}
             content={
-              target === GuideSupportTarget.APP && platform === GuideSupportPlatform.IOS ? (
+              target === TutorialSupportTarget.APP && platform === TutorialSupportPlatform.IOS ? (
                 <Alert message="We don't provide sample test script for iOS. Please run test with your own configuration." showIcon type="warning" />
               ) : (
                 <>
-                  {platform === GuideSupportPlatform.MACOS && (
+                  {platform === TutorialSupportPlatform.MACOS && (
                     <Alert
                       message={
                         <p>
@@ -169,7 +177,7 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
                     />
                   )}
                   <CodeWithCopyButton language="bash" code={selectedGuide?.runCommand ?? ''} />
-                  {frameworkLanguage === GuideSupportLanguage.PYTHON && (
+                  {frameworkLanguage === TutorialSupportLanguage.PYTHON && (
                     <Alert message="If test failed with an import error, please activate virtual environment again." type="info" showIcon />
                   )}
                 </>
@@ -190,7 +198,7 @@ const WebdriverIoGuide = ({ organizationId, projectId }: GuideProps) => {
   );
 };
 
-export default WebdriverIoGuide;
+export default WebdriverIoRemoteTutorial;
 
 const FlexRow = styled.div`
   ${flexRowBaseStyle}

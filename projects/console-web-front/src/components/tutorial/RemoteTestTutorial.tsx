@@ -1,13 +1,13 @@
 import useTutorialContext from '../../hooks/useTutorialContext';
-import { GuideSupportSdk } from '../../resources/guide';
+import { TutorialSupportSdk } from '../../resources/tutorials';
 import ErrorBox from '../common/boxes/ErrorBox';
-import AppiumGuide from './AppiumGuide';
-import GamiumGuide from './GamiumGuide';
-import SeleniumGuide from './SeleniumGuide';
-import WebdriverIoGuide from './WebdriverIoGuide';
+import AppiumRemoteTutorial from './AppiumRemoteTutorial';
+import GamiumRemoteTutorial from './GamiumRemoteTutorial';
+import SeleniumRemoteTutorial from './SeleniumRemoteTutorial';
+import WebdriverIoRemoteTutorial from './WebdriverIoRemoteTutorial';
 
 interface Props {
-  selectedSdk: GuideSupportSdk;
+  selectedSdk: TutorialSupportSdk;
 }
 
 const RemoteTestTutorial = ({ selectedSdk }: Props) => {
@@ -23,10 +23,10 @@ const RemoteTestTutorial = ({ selectedSdk }: Props) => {
 
   return (
     <>
-      {selectedSdk === GuideSupportSdk.WEBDRIVERIO && <WebdriverIoGuide organizationId={organization.organizationId} projectId={project.projectId} />}
-      {selectedSdk === GuideSupportSdk.APPIUM && <AppiumGuide organizationId={organization.organizationId} projectId={project.projectId} />}
-      {selectedSdk === GuideSupportSdk.GAMIUM && <GamiumGuide organizationId={organization.organizationId} projectId={project.projectId} />}
-      {selectedSdk === GuideSupportSdk.SELENIUM && <SeleniumGuide organizationId={organization.organizationId} projectId={project.projectId} />}
+      {selectedSdk === TutorialSupportSdk.WEBDRIVERIO && <WebdriverIoRemoteTutorial organizationId={organization.organizationId} projectId={project.projectId} />}
+      {selectedSdk === TutorialSupportSdk.APPIUM && <AppiumRemoteTutorial organizationId={organization.organizationId} projectId={project.projectId} />}
+      {selectedSdk === TutorialSupportSdk.GAMIUM && <GamiumRemoteTutorial organizationId={organization.organizationId} projectId={project.projectId} />}
+      {selectedSdk === TutorialSupportSdk.SELENIUM && <SeleniumRemoteTutorial organizationId={organization.organizationId} projectId={project.projectId} />}
     </>
   );
 };

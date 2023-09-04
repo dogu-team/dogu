@@ -1,42 +1,46 @@
+import { PROJECT_TYPE } from '@dogu-private/types';
 import { Select, SelectProps } from 'antd';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import {
-  Guide,
-  GuideSupportFramework,
-  GuideSupportLanguage,
-  guideSupportLanguageText,
-  GuideSupportPlatform,
-  guideSupportPlatformText,
-  GuideSupportTarget,
-  guideSupportTargetText,
-} from '../../resources/guide';
+  tutorialSdkSupportInfo,
+  TutorialSupportFramework,
+  TutorialSupportLanguage,
+  tutorialSupportLanguageText,
+  TutorialSupportPlatform,
+  tutorialSupportPlatformText,
+  TutorialSupportSdk,
+  TutorialSupportTarget,
+  tutorialSupportTargetText,
+} from '../../resources/tutorials';
 import PlatformIcon from './PlatformIcon';
 import TargetIcon from './TargetIcon';
 import { flexRowBaseStyle } from '../../styles/box';
 import FrameworkIcon from './FrameworkIcon';
 import useTutorialContext from '../../hooks/useTutorialContext';
-import { PROJECT_TYPE } from '@dogu-private/types';
+import { RemoteTutorial } from '../../resources/tutorials/remote';
 
 interface Props {
-  guideData: Guide;
-  selectedFramwork: GuideSupportFramework;
-  selectedPlatform: GuideSupportPlatform;
-  selectedTarget: GuideSupportTarget;
+  sdk: TutorialSupportSdk;
+  selectedFramwork: TutorialSupportFramework;
+  selectedPlatform: TutorialSupportPlatform;
+  selectedTarget: TutorialSupportTarget;
 }
 
-const RemoteTestOptionSelectors = ({ guideData, selectedFramwork, selectedPlatform, selectedTarget }: Props) => {
+const RemoteTestOptionSelectors = ({ sdk, selectedFramwork, selectedPlatform, selectedTarget }: Props) => {
   const router = useRouter();
   const { project } = useTutorialContext();
-  const availabePlatforms = Object.keys(guideData.platformAndTarget).filter((platform) => guideData.platformAndTarget[platform as GuideSupportPlatform]?.includes(selectedTarget));
-  const availableTargets = guideData.platformAndTarget[selectedPlatform];
-  const frameworkOptions: SelectProps['options'] = Object.keys(guideData.supportFrameworks).map((language) => {
-    const lang = language as GuideSupportLanguage;
+  const availabePlatforms = Object.keys(tutorialSdkSupportInfo[sdk].targetsPerPlatform).filter((platform) =>
+    tutorialSdkSupportInfo[sdk].targetsPerPlatform[platform as TutorialSupportPlatform]?.includes(selectedTarget),
+  );
+  const availableTargets = tutorialSdkSupportInfo[sdk].targetsPerPlatform[selectedPlatform];
+  const frameworkOptions: SelectProps['options'] = Object.keys(tutorialSdkSupportInfo[sdk].frameworksPerLang).map((language) => {
+    const lang = language as TutorialSupportLanguage;
 
     return {
-      label: guideSupportLanguageText[lang],
-      options: guideData.supportFrameworks[lang]?.map((framework) => ({
+      label: tutorialSupportLanguageText[lang],
+      options: tutorialSdkSupportInfo[sdk].frameworksPerLang[lang]?.map((framework) => ({
         label: (
           <FlexRow>
             <FrameworkIcon framework={framework} size={16} />
@@ -52,20 +56,20 @@ const RemoteTestOptionSelectors = ({ guideData, selectedFramwork, selectedPlatfo
   const platformOptions: SelectProps['options'] = availabePlatforms?.map((platform) => ({
     label: (
       <FlexRow>
-        <PlatformIcon platform={platform as GuideSupportPlatform} />
+        <PlatformIcon platform={platform as TutorialSupportPlatform} />
         &nbsp;&nbsp;
-        {guideSupportPlatformText[platform as GuideSupportPlatform]}
+        {tutorialSupportPlatformText[platform as TutorialSupportPlatform]}
       </FlexRow>
     ),
     value: platform,
   }));
 
-  const targetOptions: SelectProps['options'] = availableTargets?.map((target: GuideSupportTarget) => ({
+  const targetOptions: SelectProps['options'] = availableTargets?.map((target: TutorialSupportTarget) => ({
     label: (
       <FlexRow>
         <TargetIcon target={target} />
         &nbsp;&nbsp;
-        {guideSupportTargetText[target]}
+        {tutorialSupportTargetText[target]}
       </FlexRow>
     ),
     value: target,
