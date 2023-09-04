@@ -45,4 +45,6 @@ export class BrowserInstallation
   @IsOptional()
   browserPackageName?: string;
 }
-export type FindAllBrowserInstallationsResult = BrowserInstallation[];
+export interface FindAllBrowserInstallationsResult {
+  browserInstallations: BrowserInstallation[];
+}

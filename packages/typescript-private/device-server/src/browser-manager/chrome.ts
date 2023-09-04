@@ -1,5 +1,5 @@
 import { BrowserOrDriverName, BrowserVersion } from '@dogu-private/types';
-import { DeepReadonly, notEmpty, PrefixLogger, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
+import { DeepReadonly, PrefixLogger, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
 import { renameRetry } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
 import axios, { AxiosInstance } from 'axios';
@@ -129,17 +129,17 @@ export interface GetDownloadUrlOptions {
 }
 
 export interface FindInstallationsOptions {
+  installableName: ChromeInstallableName;
+  platform: ChromePlatform;
   rootPath: string;
 }
 
-export interface FindInstallationsResult {
-  installations: {
-    installableName: ChromeInstallableName;
-    version: string;
-    platform: ChromePlatform;
-    executablePath: string;
-  }[];
-}
+export type FindInstallationsResult = {
+  installableName: ChromeInstallableName;
+  version: string;
+  platform: ChromePlatform;
+  executablePath: string;
+}[];
 
 export interface GetInstallPathOptions {
   installableName: ChromeInstallableName;
@@ -217,7 +217,7 @@ export class Chrome {
       timeout,
     });
 
-    const versions = [...knownGoodVersions.versions];
+    const versions = [...knownGoodVersions.versions.map(({ version }) => version)];
     versions.sort((lhs, rhs) => {
       const lhsVersion = chromeVersionUtils.parse(lhs);
       const rhsVersion = chromeVersionUtils.parse(rhs);
@@ -225,12 +225,12 @@ export class Chrome {
     });
 
     if (prefix) {
-      const version = versions.find(({ version }) => version.startsWith(prefix))?.version;
+      const version = versions.find((version) => version.startsWith(prefix));
       return version;
     }
 
     if (pattern) {
-      const version = versions.find(({ version }) => pattern.test(version))?.version;
+      const version = versions.find((version) => pattern.test(version));
       return version;
     }
 
@@ -291,104 +291,144 @@ export class Chrome {
   }
 
   async findInstallations(options: FindInstallationsOptions): Promise<FindInstallationsResult> {
-    const { rootPath } = options;
-    const installables = _.keys(executablePathMap) as ChromeInstallableName[];
-    const withInstallablePathPromisess = installables.map(async (installableName) => {
-      const installablePath = path.resolve(rootPath, installableName);
-      const installablePathExist = await fs.promises
-        .stat(installablePath)
-        .then((stat) => stat.isDirectory())
-        .catch(() => false);
-      return {
+    const { installableName, rootPath, platform: requestedPlatform } = options;
+    const installableNames = _.keys(executablePathMap) as ChromeInstallableName[];
+    const withInstallablePaths = installableNames
+      .filter((name) => name === installableName)
+      .map((installableName) => ({
+        installableName,
+        installablePath: path.resolve(rootPath, installableName),
+      }));
+    const withInstallablePathExists = await Promise.all(
+      withInstallablePaths.map(async ({ installableName, installablePath }) => ({
         installableName,
         installablePath,
-        installablePathExist,
-      };
-    });
-    const withInstallablePaths = await Promise.all(withInstallablePathPromisess);
-    const resultPromises = withInstallablePaths
+        installablePathExist: await fs.promises
+          .stat(installablePath)
+          .then((stat) => stat.isDirectory())
+          .catch(() => false),
+      })),
+    );
+    const withInstallablePathResults = withInstallablePathExists
       .filter(({ installablePathExist }) => installablePathExist)
-      .map(async ({ installableName, installablePath }) => {
+      .map(({ installableName, installablePath }) => ({
+        installableName,
+        installablePath,
+      }));
+    const withVersionss = await Promise.all(
+      withInstallablePathResults.map(async ({ installableName, installablePath }) => {
         const versions = await fs.promises.readdir(installablePath);
-        const withVersionPromises = versions
-          .filter((version) => {
-            try {
-              chromeVersionUtils.parse(version);
-              return true;
-            } catch {
-              return false;
-            }
-          })
-          .map(async (version) => {
-            const versionPath = path.resolve(installablePath, version);
-            const versionPathExist = await fs.promises
-              .stat(versionPath)
-              .then((stat) => stat.isDirectory())
-              .catch(() => false);
-            return {
-              installableName,
-              version,
-              versionPath,
-              versionPathExist,
-            };
-          });
-        const withVersions = await Promise.all(withVersionPromises);
-        const resultPromises = withVersions
-          .filter(({ versionPathExist }) => versionPathExist)
-          .map(async ({ installableName, version, versionPath }) => {
-            const platforms = await fs.promises.readdir(versionPath);
-            const withPlatformPromises = platforms
-              .filter((platform) => isValidChromePlatform(platform))
-              .map((platform) => platform as ChromePlatform)
-              .map(async (platform) => {
-                const platformPath = path.resolve(versionPath, platform);
-                const platformPathExist = await fs.promises
-                  .stat(platformPath)
-                  .then((stat) => stat.isDirectory())
-                  .catch(() => false);
-                return {
-                  installableName,
-                  version,
-                  platform,
-                  platformPath,
-                  platformPathExist,
-                };
-              });
-            const withPlatforms = await Promise.all(withPlatformPromises);
-            const withExecutablePromises = withPlatforms
-              .filter(({ platformPathExist }) => platformPathExist)
-              .map(async ({ installableName, version, platform, platformPath }) => {
-                const executablePath = this.getExecutablePath({ installableName, version, platform, installPath: platformPath });
-                const executablePathExist = await fs.promises
-                  .stat(executablePath)
-                  .then((stat) => stat.isFile())
-                  .catch(() => false);
-                return {
-                  installableName,
-                  version,
-                  platform,
-                  executablePath,
-                  executablePathExist,
-                };
-              });
-            const withExecutables = await Promise.all(withExecutablePromises);
-            const results = withExecutables
-              .filter(({ executablePathExist }) => executablePathExist)
-              .map(({ installableName, version, platform, executablePath }) => ({
-                installableName,
-                version,
-                platform,
-                executablePath,
-              }));
-            return results;
-          });
-        const results = await Promise.all(resultPromises);
-        return results.flat();
-      });
-    const results = await Promise.all(resultPromises);
-    const installations = results.flat();
+        return versions.map((version) => ({
+          installableName,
+          version,
+          installablePath,
+        }));
+      }),
+    );
+    const withVersions = withVersionss.flat();
+    const withVersionPaths = withVersions.map(({ installableName, version, installablePath }) => ({
+      installableName,
+      version,
+      versionPath: path.resolve(installablePath, version),
+    }));
+    const withVersionPathExists = await Promise.all(
+      withVersionPaths.map(async ({ installableName, version, versionPath }) => ({
+        installableName,
+        version,
+        versionPath,
+        versionPathExist: await fs.promises
+          .stat(versionPath)
+          .then((stat) => stat.isDirectory())
+          .catch(() => false),
+      })),
+    );
+    const withVersionPathResults = withVersionPathExists
+      .filter(({ versionPathExist }) => versionPathExist)
+      .map(({ installableName, version, versionPath }) => ({
+        installableName,
+        version,
+        versionPath,
+      }));
+    const withPlatformss = await Promise.all(
+      withVersionPathResults.map(async ({ installableName, version, versionPath }) => {
+        const platforms = await fs.promises.readdir(versionPath);
+        return platforms
+          .filter((platform) => platform === requestedPlatform)
+          .map((platform) => ({
+            installableName,
+            version,
+            platform,
+            versionPath,
+          }))
+          .filter(({ platform }) => isValidChromePlatform(platform))
+          .map(({ installableName, version, platform, versionPath }) => ({
+            installableName,
+            version,
+            platform: platform as ChromePlatform,
+            versionPath,
+          }));
+      }),
+    );
+    const withPlatforms = withPlatformss.flat();
+    const withPlatformPaths = withPlatforms.map(({ installableName, version, platform, versionPath }) => ({
+      installableName,
+      version,
+      platform,
+      platformPath: path.resolve(versionPath, platform),
+    }));
+    const withPlatformPathExists = await Promise.all(
+      withPlatformPaths.map(async ({ installableName, version, platform, platformPath }) => ({
+        installableName,
+        version,
+        platform,
+        platformPath,
+        platformPathExist: await fs.promises
+          .stat(platformPath)
+          .then((stat) => stat.isDirectory())
+          .catch(() => false),
+      })),
+    );
+    const withPlatformPathResults = withPlatformPathExists
+      .filter(({ platformPathExist }) => platformPathExist)
+      .map(({ installableName, version, platform, platformPath }) => ({
+        installableName,
+        version,
+        platform,
+        platformPath,
+      }));
+    const withExecutablePaths = withPlatformPathResults.map(({ installableName, version, platform, platformPath }) => ({
+      installableName,
+      version,
+      platform,
+      executablePath: this.getExecutablePath({
+        installableName,
+        version,
+        platform,
+        installPath: platformPath,
+      }),
+    }));
+    const withExecutablePathExists = await Promise.all(
+      withExecutablePaths.map(async ({ installableName, version, platform, executablePath }) => ({
+        installableName,
+        version,
+        platform,
+        executablePath,
+        executablePathExist: await fs.promises
+          .stat(executablePath)
+          .then((stat) => stat.isFile())
+          .catch(() => false),
+      })),
+    );
+    const withExecutablePathResults = withExecutablePathExists
+      .filter(({ executablePathExist }) => executablePathExist)
+      .map(({ installableName, version, platform, executablePath }) => ({
+        installableName,
+        version,
+        platform,
+        executablePath,
+      }));
     return {
-      installations,
+      installations: withExecutablePathResults,
     };
   }
 

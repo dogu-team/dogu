@@ -1,9 +1,8 @@
-import { isFilteredAxiosError, PrefixLogger, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
+import { DeepReadonly, isFilteredAxiosError, PrefixLogger, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import AsyncLock from 'async-lock';
 import axios, { AxiosInstance, isAxiosError } from 'axios';
 import _ from 'lodash';
 import { logger } from '../logger/logger.instance';
-import { DeepReadonly } from './common';
 
 export interface WebCacheOptions {
   /**
