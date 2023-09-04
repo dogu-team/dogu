@@ -9,19 +9,19 @@ import _ from 'lodash';
 import path from 'path';
 import { logger } from '../logger/logger.instance';
 import { chromeVersionUtils } from './chrome-version-utils';
-import { defaultVersionRequestTimeout, download, validatePrefixOrPatternWithin } from './common';
+import { defaultDownloadRequestTimeout, defaultVersionRequestTimeout, download, validatePrefixOrPatternWithin } from './common';
 import { WebCache } from './web-cache';
 
 export type ChromeInstallableName = Extract<BrowserOrDriverName, 'chrome' | 'chromedriver'>;
 export type ChromeChannelName = 'stable' | 'beta' | 'dev' | 'canary';
 const defaultChromeChannelName = (): ChromeChannelName => 'stable';
 
-export const ChromePlatform = ['mac-arm64', 'mac-x64', 'win64', 'linux64'] as const;
-export type ChromePlatform = (typeof ChromePlatform)[number];
-export const isValidChromePlatform = (value: string): value is ChromePlatform => ChromePlatform.includes(value as ChromePlatform);
+export const ChromeInstallablePlatform = ['mac-arm64', 'mac-x64', 'win64', 'linux64'] as const;
+export type ChromeInstallablePlatform = (typeof ChromeInstallablePlatform)[number];
+export const isValidChromeInstallablePlatform = (value: string): value is ChromeInstallablePlatform => ChromeInstallablePlatform.includes(value as ChromeInstallablePlatform);
 
 const downloadBaseUrl = 'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing';
-const executablePathMap: DeepReadonly<Record<ChromeInstallableName, Record<ChromePlatform, string[]>>> = {
+const executablePathMap: DeepReadonly<Record<ChromeInstallableName, Record<ChromeInstallablePlatform, string[]>>> = {
   chrome: {
     'mac-arm64': ['Google Chrome for Testing.app', 'Contents', 'MacOS', 'Google Chrome for Testing'],
     'mac-x64': ['Google Chrome for Testing.app', 'Contents', 'MacOS', 'Google Chrome for Testing'],
@@ -36,7 +36,7 @@ const executablePathMap: DeepReadonly<Record<ChromeInstallableName, Record<Chrom
   },
 };
 
-const chromePlatformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' | 'win32' | 'linux'>, Record<string, ChromePlatform>>> = {
+const chromePlatformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' | 'win32' | 'linux'>, Record<string, ChromeInstallablePlatform>>> = {
   darwin: {
     arm64: 'mac-arm64',
     x64: 'mac-x64',
@@ -105,12 +105,12 @@ function mergeFindVersionOptions(options?: FindVersionOptions): Required<FindVer
   };
 }
 
-export interface GetChromePlatformOptions {
+export interface GetChromeInstallablePlatformOptions {
   platform?: NodeJS.Platform;
   arch?: NodeJS.Architecture;
 }
 
-function mergeGetChromePlatformOptions(options?: GetChromePlatformOptions): Required<GetChromePlatformOptions> {
+function mergeGetChromeInstallablePlatformOptions(options?: GetChromeInstallablePlatformOptions): Required<GetChromeInstallablePlatformOptions> {
   return {
     platform: process.platform,
     arch: process.arch,
@@ -120,18 +120,18 @@ function mergeGetChromePlatformOptions(options?: GetChromePlatformOptions): Requ
 
 export interface GetDownloadFileNameOptions {
   installableName: ChromeInstallableName;
-  platform: ChromePlatform;
+  platform: ChromeInstallablePlatform;
 }
 
 export interface GetDownloadUrlOptions {
   version: BrowserVersion;
-  platform: ChromePlatform;
+  platform: ChromeInstallablePlatform;
   downloadFileName: string;
 }
 
 export interface FindInstallationsOptions {
   installableName: ChromeInstallableName;
-  platform: ChromePlatform;
+  platform: ChromeInstallablePlatform;
   rootPath: string;
 }
 
@@ -139,34 +139,34 @@ export type FindInstallationsResult = {
   installableName: ChromeInstallableName;
   version: BrowserVersion;
   majorVersion: number;
-  platform: ChromePlatform;
+  platform: ChromeInstallablePlatform;
   executablePath: string;
 }[];
 
 export interface GetInstallPathOptions {
   installableName: ChromeInstallableName;
   version: BrowserVersion;
-  platform: ChromePlatform;
+  platform: ChromeInstallablePlatform;
   rootPath: string;
 }
 
 export interface GetExecutablePathOptions {
   installableName: ChromeInstallableName;
-  platform: ChromePlatform;
+  platform: ChromeInstallablePlatform;
   installPath: string;
 }
 
 export interface InstallOptions {
   installableName: ChromeInstallableName;
   version: BrowserVersion;
-  platform: ChromePlatform;
+  platform: ChromeInstallablePlatform;
   rootPath: string;
   downloadTimeout?: number;
 }
 
 function mergeInstallOptions(options: InstallOptions): Required<InstallOptions> {
   return {
-    downloadTimeout: defaultVersionRequestTimeout(),
+    downloadTimeout: defaultDownloadRequestTimeout(),
     ...options,
   };
 }
@@ -273,6 +273,7 @@ export class Chrome {
             await renameRetry(source, dest, this.logger);
           }),
         );
+
         await fs.promises.rmdir(uncompressedPath);
         return {
           executablePath,
@@ -376,12 +377,12 @@ export class Chrome {
             platform,
             versionPath,
           }))
-          .filter(({ platform }) => isValidChromePlatform(platform))
+          .filter(({ platform }) => isValidChromeInstallablePlatform(platform))
           .map(({ installableName, version, majorVersion, platform, versionPath }) => ({
             installableName,
             version,
             majorVersion,
-            platform: platform as ChromePlatform,
+            platform: platform as ChromeInstallablePlatform,
             versionPath,
           }));
       }),
@@ -469,14 +470,14 @@ export class Chrome {
     return url;
   }
 
-  getChromePlatform(options?: GetChromePlatformOptions): ChromePlatform {
-    const mergedOptions = mergeGetChromePlatformOptions(options);
+  getChromeInstallablePlatform(options?: GetChromeInstallablePlatformOptions): ChromeInstallablePlatform {
+    const mergedOptions = mergeGetChromeInstallablePlatformOptions(options);
     const { platform, arch } = mergedOptions;
     const chromePlatform = _.get(chromePlatformMap, [platform, arch]) as string | undefined;
     if (!chromePlatform) {
       throw new Error(`Unsupported platform: ${platform}, arch: ${arch}`);
     }
-    if (!isValidChromePlatform(chromePlatform)) {
+    if (!isValidChromeInstallablePlatform(chromePlatform)) {
       throw new Error(`Unsupported chrome platform: ${chromePlatform}`);
     }
     return chromePlatform;

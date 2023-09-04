@@ -5,7 +5,7 @@ import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
-const defaultMountTimeout = 60_000;
+export const defaultMountTimeout = 60_000;
 
 async function mountDmg(dmgPath: string, mountPath: string, timeout = defaultMountTimeout): Promise<string> {
   if (process.platform !== 'darwin') {

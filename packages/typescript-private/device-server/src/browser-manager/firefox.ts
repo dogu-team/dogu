@@ -1,6 +1,6 @@
 import { BrowserOrDriverName, BrowserVersion } from '@dogu-private/types';
 import { assertUnreachable, DeepReadonly, PrefixLogger, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
-import { onDmgMounted } from '@dogu-tech/node';
+import { defaultMountTimeout, onDmgMounted } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
 import axios, { AxiosInstance } from 'axios';
 import fs from 'fs';
@@ -8,15 +8,15 @@ import _ from 'lodash';
 import os from 'os';
 import path from 'path';
 import { logger } from '../logger/logger.instance';
-import { defaultVersionRequestTimeout, validatePrefixOrPatternWithin } from './common';
+import { defaultDownloadRequestTimeout, defaultVersionRequestTimeout, download, validatePrefixOrPatternWithin } from './common';
 import { firefoxVersionUtils } from './firefox-version-utils';
 import { WebCache } from './web-cache';
 
 export type FirefoxInstallableName = Extract<BrowserOrDriverName, 'firefox' | 'firefox-devedition'>;
 
-export const FirefoxPlatform = ['mac', 'win64', 'linux-x86_64'] as const;
-export type FirefoxPlatform = (typeof FirefoxPlatform)[number];
-const isValidFirefoxPlatform = (value: string): value is FirefoxPlatform => FirefoxPlatform.includes(value as FirefoxPlatform);
+export const FirefoxInstallablePlatform = ['mac', 'win64', 'linux-x86_64'] as const;
+export type FirefoxInstallablePlatform = (typeof FirefoxInstallablePlatform)[number];
+const isValidFirefoxInstallablePlatform = (value: string): value is FirefoxInstallablePlatform => FirefoxInstallablePlatform.includes(value as FirefoxInstallablePlatform);
 
 const firefoxDownloadBaseUrl = 'https://ftp.mozilla.org/pub';
 const defaultLocale = 'en-US';
@@ -26,7 +26,7 @@ const latestVersionMap: DeepReadonly<Record<Extract<FirefoxInstallableName, 'fir
   'firefox-devedition': 'LATEST_FIREFOX_DEVEL_VERSION',
 };
 
-const executablePathMap: DeepReadonly<Record<FirefoxInstallableName, Record<FirefoxPlatform, string[]>>> = {
+const executablePathMap: DeepReadonly<Record<FirefoxInstallableName, Record<FirefoxInstallablePlatform, string[]>>> = {
   firefox: {
     mac: ['Firefox.app', 'Contents', 'MacOS', 'firefox'],
     win64: ['firefox.exe'],
@@ -39,7 +39,7 @@ const executablePathMap: DeepReadonly<Record<FirefoxInstallableName, Record<Fire
   },
 };
 
-const firefoxPlatformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' | 'win32' | 'linux'>, Record<string, FirefoxPlatform>>> = {
+const firefoxPlatformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' | 'win32' | 'linux'>, Record<string, FirefoxInstallablePlatform>>> = {
   darwin: {
     arm64: 'mac',
     x64: 'mac',
@@ -102,12 +102,12 @@ function mergeFindVersionOptions(options: FindVersionOptions): Required<FindVers
   };
 }
 
-export interface GetFirefoxPlatformOptions {
+export interface GetFirefoxInstallablePlatformOptions {
   platform?: NodeJS.Platform;
   arch?: string;
 }
 
-function mergeGetFirefoxPlatformOptions(options?: GetFirefoxPlatformOptions): Required<GetFirefoxPlatformOptions> {
+function mergeGetFirefoxInstallablePlatformOptions(options?: GetFirefoxInstallablePlatformOptions): Required<GetFirefoxInstallablePlatformOptions> {
   return {
     platform: process.platform,
     arch: process.arch,
@@ -118,32 +118,32 @@ function mergeGetFirefoxPlatformOptions(options?: GetFirefoxPlatformOptions): Re
 export interface GetDownloadFileNameOptions {
   installableName: FirefoxInstallableName;
   version: BrowserVersion;
-  platform: FirefoxPlatform;
+  platform: FirefoxInstallablePlatform;
 }
 
 export interface GetDownloadUrlOptions {
   installableName: FirefoxInstallableName;
   version: BrowserVersion;
-  platform: FirefoxPlatform;
+  platform: FirefoxInstallablePlatform;
   downloadFileName: string;
 }
 
 export interface GetInstallPathOptions {
   installableName: FirefoxInstallableName;
   version: BrowserVersion;
-  platform: FirefoxPlatform;
+  platform: FirefoxInstallablePlatform;
   rootPath: string;
 }
 
 export interface GetExecutablePathOptions {
   installableName: FirefoxInstallableName;
-  platform: FirefoxPlatform;
+  platform: FirefoxInstallablePlatform;
   installPath: string;
 }
 
 export interface FindInstallationsOptions {
   installableName: FirefoxInstallableName;
-  platform: FirefoxPlatform;
+  platform: FirefoxInstallablePlatform;
   rootPath: string;
 }
 
@@ -151,9 +151,30 @@ export type FindInstallationsResult = {
   installableName: FirefoxInstallableName;
   version: BrowserVersion;
   majorVersion: number;
-  platform: FirefoxPlatform;
+  platform: FirefoxInstallablePlatform;
   executablePath: string;
 }[];
+
+export interface InstallOptions {
+  installableName: FirefoxInstallableName;
+  version: BrowserVersion;
+  platform: FirefoxInstallablePlatform;
+  rootPath: string;
+  downloadTimeout?: number;
+  mountTimeout?: number;
+}
+
+function mergeInstallOptions(options: InstallOptions): Required<InstallOptions> {
+  return {
+    downloadTimeout: defaultDownloadRequestTimeout(),
+    mountTimeout: defaultMountTimeout,
+    ...options,
+  };
+}
+
+export interface InstallResult {
+  executablePath: string;
+}
 
 export class Firefox {
   private readonly logger = new PrefixLogger(logger, `[${this.constructor.name}]`);
@@ -238,37 +259,36 @@ export class Firefox {
   }
 
   async install(options: InstallOptions): Promise<InstallResult> {
-    const mergedOptions = _.merge(
-      defaultRootPathWithin(), //
-      defaultDownloadRequestTimeoutWithin(),
-      options,
-    );
-    const { installableName, timeout } = mergedOptions;
+    const mergedOptions = mergeInstallOptions(options);
+    const { installableName, platform, downloadTimeout } = mergedOptions;
     const installPath = this.getInstallPath(mergedOptions);
     return await this.pathLock.acquire(installPath, async () => {
-      const executablePath = this.getExecutablePath(mergedOptions);
+      const executablePath = this.getExecutablePath({ ...mergedOptions, installPath });
       if (await fs.promises.stat(executablePath).catch(() => null)) {
         this.logger.debug(`Already installed at ${installPath}`);
-        return { executablePath };
+        return {
+          executablePath,
+        };
       }
 
       await fs.promises.mkdir(installPath, { recursive: true });
-      const downloadUrl = this.getDownloadUrl(mergedOptions);
       const downloadFileName = this.getDownloadFileName(mergedOptions);
+      const downloadUrl = this.getDownloadUrl({ ...mergedOptions, downloadFileName });
       const downloadFilePath = path.resolve(installPath, downloadFileName);
       try {
         await download({
           client: this.client,
           url: downloadUrl,
           filePath: downloadFilePath,
-          timeout,
+          timeout: downloadTimeout,
         });
-
         if (downloadFileName.toLowerCase().endsWith('.dmg')) {
           const mountPath = path.resolve(os.homedir(), `dmp-${Date.now()}`);
-          await onDmgMounted(downloadFilePath, mountPath, timeout, async (mountPath) => {
-            const appName = Firefox.executablePathMap[installableName][process.platform][0];
-            await fs.promises.cp(path.resolve(mountPath, appName), path.resolve(installPath, appName), {
+          await onDmgMounted(downloadFilePath, mountPath, defaultMountTimeout, async (mountPath) => {
+            const appName = executablePathMap[installableName][platform][0];
+            const sourcePath = path.resolve(mountPath, appName);
+            const targetPath = path.resolve(installPath, appName);
+            await fs.promises.cp(sourcePath, targetPath, {
               recursive: true,
               force: true,
             });
@@ -367,6 +387,97 @@ export class Firefox {
         majorVersion,
         versionPath,
       }));
+    const withPlatformss = await Promise.all(
+      withVersionPathResults.map(async ({ installableName, version, majorVersion, versionPath }) => {
+        const platforms = await fs.promises.readdir(versionPath);
+        return platforms
+          .filter((platform) => platform === requestedPlatform)
+          .map((platform) => ({
+            installableName,
+            version,
+            majorVersion,
+            platform,
+            versionPath,
+          }))
+          .filter(({ platform }) => isValidFirefoxInstallablePlatform(platform))
+          .map(({ installableName, version, majorVersion, platform }) => ({
+            installableName,
+            version,
+            majorVersion,
+            platform: platform as FirefoxInstallablePlatform,
+            versionPath,
+          }));
+      }),
+    );
+    const withPlatforms = withPlatformss.flat();
+    const withPlatformPaths = withPlatforms.map(({ installableName, version, majorVersion, platform, versionPath }) => ({
+      installableName,
+      version,
+      majorVersion,
+      platform,
+      platformPath: path.resolve(versionPath, platform),
+    }));
+    const withPlatformPathExists = await Promise.all(
+      withPlatformPaths.map(async ({ installableName, version, majorVersion, platform, platformPath }) => ({
+        installableName,
+        version,
+        majorVersion,
+        platform,
+        platformPath,
+        platformPathExist: await fs.promises
+          .stat(platformPath)
+          .then((stat) => stat.isDirectory())
+          .catch(() => false),
+      })),
+    );
+    const withPlatformPathResults = withPlatformPathExists
+      .filter(({ platformPathExist }) => platformPathExist)
+      .map(({ installableName, version, majorVersion, platform, platformPath }) => ({
+        installableName,
+        version,
+        majorVersion,
+        platform,
+        platformPath,
+      }));
+    const withExecutablePaths = withPlatformPathResults.map(({ installableName, version, majorVersion, platform, platformPath }) => ({
+      installableName,
+      version,
+      majorVersion,
+      platform,
+      executablePath: this.getExecutablePath({
+        installableName,
+        platform,
+        installPath: platformPath,
+      }),
+    }));
+    const withExecutablePathExists = await Promise.all(
+      withExecutablePaths.map(async ({ installableName, version, majorVersion, platform, executablePath }) => ({
+        installableName,
+        version,
+        majorVersion,
+        platform,
+        executablePath,
+        executablePathExist: await fs.promises
+          .stat(executablePath)
+          .then((stat) => stat.isFile())
+          .catch(() => false),
+      })),
+    );
+    const withExecutablePathResults = withExecutablePathExists
+      .filter(({ executablePathExist }) => executablePathExist)
+      .map(({ installableName, version, majorVersion, platform, executablePath }) => ({
+        installableName,
+        version,
+        majorVersion,
+        platform,
+        executablePath,
+      }))
+      .sort((lhs, rhs) => {
+        const lhsVersion = firefoxVersionUtils.parse(lhs.version);
+        const rhsVersion = firefoxVersionUtils.parse(rhs.version);
+        return firefoxVersionUtils.compareWithDesc(lhsVersion, rhsVersion);
+      });
+    return withExecutablePathResults;
   }
 
   getDownloadFileName(options: GetDownloadFileNameOptions): string {
@@ -402,15 +513,15 @@ export class Firefox {
     }
   }
 
-  getFirefoxPlatform(options?: GetFirefoxPlatformOptions): FirefoxPlatform {
-    const mergedOptions = mergeGetFirefoxPlatformOptions(options);
+  getFirefoxInstallablePlatform(options?: GetFirefoxInstallablePlatformOptions): FirefoxInstallablePlatform {
+    const mergedOptions = mergeGetFirefoxInstallablePlatformOptions(options);
     const { platform, arch } = mergedOptions;
     const firefoxPlatform = _.get(firefoxPlatformMap, [platform, arch]) as string | undefined;
     if (!firefoxPlatform) {
       throw new Error(`Unsupported platform: ${platform}, arch: ${arch}`);
     }
 
-    if (!isValidFirefoxPlatform(firefoxPlatform)) {
+    if (!isValidFirefoxInstallablePlatform(firefoxPlatform)) {
       throw new Error(`Unexpected firefox platform: ${firefoxPlatform}`);
     }
 
