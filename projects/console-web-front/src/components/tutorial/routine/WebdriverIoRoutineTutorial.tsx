@@ -1,10 +1,17 @@
 import { PROJECT_TYPE } from '@dogu-private/types';
+import styled from 'styled-components';
 
 import useTutorialContext from '../../../hooks/useTutorialContext';
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
 import { ROUTINE_SAMPLE_GIT_URL, tutorialSdkSupportInfo, TutorialSupportLanguage, TutorialSupportSdk, TutorialSupportTarget } from '../../../resources/tutorials';
 import { webdriverioRoutineTutorialData } from '../../../resources/tutorials/routine';
+import { flexRowSpaceBetweenStyle } from '../../../styles/box';
+import RefreshButton from '../../buttons/RefreshButton';
+import ErrorBox from '../../common/boxes/ErrorBox';
 import CodeWithCopyButton from '../../common/CodeWithCopyButton';
+import TableListView from '../../common/TableListView';
+import PipelineListController from '../../pipelines/PipelineListController';
+import RunRoutineButton from '../../pipelines/RunRoutineButton';
 import GuideAnchor from '../GuideAnchor';
 import GuideLayout from '../GuideLayout';
 import GuideStep from '../GuideStep';
@@ -43,6 +50,10 @@ const WebdriverIoRoutineTutorial = () => {
   const frameworkLanguage = Object.keys(tutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang).find((language) =>
     tutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
   );
+
+  if (!project) {
+    return <ErrorBox title="Something went wrong" desc="Project not found" />;
+  }
 
   return (
     <GuideLayout
@@ -85,7 +96,22 @@ const WebdriverIoRoutineTutorial = () => {
             content={<RoutineGitTutorial />}
           />
           <GuideStep id={CREATE_ROUTINE_ID} title="Create a routine" description={<p>Create a routine for your automated tests</p>} content={<div>Routine creator...</div>} />
-          <GuideStep id={RUN_ROUTINE_ID} title="Run a routine" description={<p>Run a routine for your automated tests</p>} content={<div>Run routine button, pipeline list</div>} />
+          <GuideStep
+            id={RUN_ROUTINE_ID}
+            title="Run a routine"
+            description={<p>Run a routine for your automated tests</p>}
+            content={
+              <TableListView
+                top={
+                  <FlexSpaceBetween>
+                    <RunRoutineButton orgId={project.organizationId} projectId={project.projectId} />
+                    <RefreshButton />
+                  </FlexSpaceBetween>
+                }
+                table={<PipelineListController organizationId={project.organizationId} projectId={project.projectId} hideEmpty />}
+              />
+            }
+          />
           <DoneStep id={DONE_ID} />
         </div>
       }
@@ -94,3 +120,7 @@ const WebdriverIoRoutineTutorial = () => {
 };
 
 export default WebdriverIoRoutineTutorial;
+
+const FlexSpaceBetween = styled.div`
+  ${flexRowSpaceBetweenStyle}
+`;

@@ -13,7 +13,7 @@ const DoneStep = ({ id }: Props) => {
       content={
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
           <DocumentCard
-            title="📝 CI Integration"
+            title="📝 CI integration"
             description="Would you like to integrate routines with CI tools like GitHub Action and Jenkins?"
             url="https://docs.dogutech.io/integration/cicd/github-action"
           />
