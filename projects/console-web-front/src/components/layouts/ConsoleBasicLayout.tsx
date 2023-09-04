@@ -21,7 +21,13 @@ interface Props {
 const ConsoleBasicLayout = ({ children }: Props) => {
   const { me, isLoading, error, mutate } = useAuth();
   const router = useRouter();
-  const [isBannerVisible, setIsBannerVisible] = useState(() => localStorage.getItem('hideHeaderBanner') !== 'true');
+  const [isBannerVisible, setIsBannerVisible] = useState(() => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    return !localStorage.getItem('hideHeaderBanner');
+  });
 
   if (isLoading) {
     return null;
