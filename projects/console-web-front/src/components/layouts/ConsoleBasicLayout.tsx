@@ -1,14 +1,15 @@
-import { GithubOutlined, SlackOutlined } from '@ant-design/icons';
-import { Tooltip } from 'antd';
+import { CloseOutlined, GithubOutlined, SlackOutlined } from '@ant-design/icons';
+import { Button, Tooltip } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
 import useAuth from '../../hooks/useAuth';
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
 import AccountMenu from '../AccountMenu';
 import ChangeLogButton from '../change-logs/ChangeLogButton';
+import DoguText from '../common/DoguText';
 
 import Header from './Header';
 
@@ -19,6 +20,7 @@ interface Props {
 const ConsoleBasicLayout = ({ children }: Props) => {
   const { me, isLoading, error, mutate } = useAuth();
   const router = useRouter();
+  const [isBannerVisible, setIsBannerVisible] = useState(() => localStorage.getItem('hideHeaderBanner') !== 'true');
 
   if (isLoading) {
     return null;
@@ -37,6 +39,20 @@ const ConsoleBasicLayout = ({ children }: Props) => {
   return (
     <>
       <Box>
+        {isBannerVisible && (
+          <AlertBanner>
+            <DoguText /> is now in ✨Beta. Please feel free to report any bugs or feedback to{' '}
+            <a href="https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw">Slack Community</a>!
+            <CloseAlertButton
+              onClick={() => {
+                localStorage.setItem('hideHeaderBanner', 'true');
+                setIsBannerVisible(false);
+              }}
+            >
+              <CloseOutlined />
+            </CloseAlertButton>
+          </AlertBanner>
+        )}
         <Header
           right={
             <FlexRow>
@@ -83,5 +99,25 @@ const StyledLink = styled(Link)`
 
   &:hover {
     background-color: #f5f5f5;
+  }
+`;
+
+const AlertBanner = styled.div`
+  padding: 0.25rem 2rem;
+  font-size: 0.85rem;
+  background-color: ${(props) => props.theme.main.colors.blue6};
+  line-height: 1.5;
+  text-align: center;
+`;
+
+const CloseAlertButton = styled.button`
+  position: absolute;
+  padding: 0 0.25rem;
+  right: 2rem;
+  border-radius: 4px;
+  background-color: transparent;
+
+  &:hover {
+    background-color: ${(props) => props.theme.main.colors.gray6};
   }
 `;
