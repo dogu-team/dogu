@@ -12,6 +12,14 @@ import { chromeVersionUtils } from './chrome-version-utils';
 import { defaultVersionRequestTimeout, download, validatePrefixOrPatternWithin } from './common';
 import { WebCache } from './web-cache';
 
+export type ChromeInstallableName = Extract<BrowserOrDriverName, 'chrome' | 'chromedriver'>;
+export type ChromeChannelName = 'stable' | 'beta' | 'dev' | 'canary';
+const defaultChromeChannelName = (): ChromeChannelName => 'stable';
+
+export const ChromePlatform = ['mac-arm64', 'mac-x64', 'win64', 'linux64'] as const;
+export type ChromePlatform = (typeof ChromePlatform)[number];
+export const isValidChromePlatform = (value: string): value is ChromePlatform => ChromePlatform.includes(value as ChromePlatform);
+
 const downloadBaseUrl = 'https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing';
 const executablePathMap: DeepReadonly<Record<ChromeInstallableName, Record<ChromePlatform, string[]>>> = {
   chrome: {
@@ -27,6 +35,7 @@ const executablePathMap: DeepReadonly<Record<ChromeInstallableName, Record<Chrom
     linux64: ['chromedriver'],
   },
 };
+
 const chromePlatformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' | 'win32' | 'linux'>, Record<string, ChromePlatform>>> = {
   darwin: {
     arm64: 'mac-arm64',
@@ -39,6 +48,7 @@ const chromePlatformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' |
     x64: 'linux64',
   },
 };
+
 const lastKnownGoodVersionsChannelMap: DeepReadonly<Record<ChromeChannelName, keyof LastKnownGoodVersions['channels']>> = {
   stable: 'Stable',
   beta: 'Beta',
@@ -67,16 +77,7 @@ export interface KnownGoodVersions {
   versions: { version: string }[];
 }
 
-export type ChromeInstallableName = Extract<BrowserOrDriverName, 'chrome' | 'chromedriver'>;
-export type ChromeChannelName = 'stable' | 'beta' | 'dev' | 'canary';
-
-const defaultChromeChannelName = (): ChromeChannelName => 'stable';
-
-export const ChromePlatform = ['mac-arm64', 'mac-x64', 'win64', 'linux64'] as const;
-export type ChromePlatform = (typeof ChromePlatform)[number];
-const isValidChromePlatform = (value: string): value is ChromePlatform => ChromePlatform.includes(value as ChromePlatform);
-
-interface GetLatestVersionOptions {
+export interface GetLatestVersionOptions {
   channelName?: ChromeChannelName;
   timeout?: number;
 }
@@ -89,7 +90,7 @@ function mergeGetLatestVersionOptions(options?: GetLatestVersionOptions): Requir
   };
 }
 
-interface FindVersionOptions {
+export interface FindVersionOptions {
   prefix?: string | null;
   pattern?: RegExp | null;
   timeout?: number;
@@ -104,7 +105,7 @@ function mergeFindVersionOptions(options?: FindVersionOptions): Required<FindVer
   };
 }
 
-interface GetChromePlatformOptions {
+export interface GetChromePlatformOptions {
   platform?: NodeJS.Platform;
   arch?: NodeJS.Architecture;
 }
@@ -117,7 +118,7 @@ function mergeGetChromePlatformOptions(options?: GetChromePlatformOptions): Requ
   };
 }
 
-interface GetDownloadFileNameOptions {
+export interface GetDownloadFileNameOptions {
   installableName: ChromeInstallableName;
   platform: ChromePlatform;
 }
