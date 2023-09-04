@@ -39,6 +39,10 @@ const GameObjectDetail = ({ node, hitPoint }: Props) => {
                 return null;
               }
 
+              if (value === undefined) {
+                return null;
+              }
+
               return (
                 <InspectObjectAttribute
                   key={key}
