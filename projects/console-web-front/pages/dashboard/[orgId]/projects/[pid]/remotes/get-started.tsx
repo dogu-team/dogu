@@ -7,17 +7,17 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
-import { getOrganizationInServerSide } from '../../../../../src/api/organization';
-import { getProjectInServerSide } from '../../../../../src/api/project';
-import ConsoleBasicLayout from '../../../../../src/components/layouts/ConsoleBasicLayout';
-import FrameworkSelectContainer from '../../../../../src/components/tutorial/FrameworkSelectContainer';
-import RemoteTestTutorial from '../../../../../src/components/tutorial/RemoteTestTutorial';
-import SdkIcon from '../../../../../src/components/tutorial/SdkIcon';
-import { TutorialContext } from '../../../../../src/hooks/useTutorialContext';
-import { GuideSupportSdk, guideSupportSdkText, tutorialData } from '../../../../../src/resources/guide';
-import { flexRowBaseStyle } from '../../../../../src/styles/box';
-import { checkUserVerifiedInServerSide } from '../../../../../src/utils/auth';
-import { NextPageWithLayout } from '../../../../_app';
+import { getOrganizationInServerSide } from 'src/api/organization';
+import { getProjectInServerSide } from 'src/api/project';
+import ConsoleBasicLayout from 'src/components/layouts/ConsoleBasicLayout';
+import FrameworkSelectContainer from 'src/components/tutorial/FrameworkSelectContainer';
+import RemoteTestTutorial from 'src/components/tutorial/RemoteTestTutorial';
+import SdkIcon from 'src/components/tutorial/SdkIcon';
+import { TutorialContext } from 'src/hooks/useTutorialContext';
+import { GuideSupportSdk, guideSupportSdkText, tutorialData } from 'src/resources/guide';
+import { flexRowBaseStyle } from 'src/styles/box';
+import { checkUserVerifiedInServerSide } from 'src/utils/auth';
+import { NextPageWithLayout } from '../../../../../_app';
 
 interface ServerSideProps {
   organization: OrganizationBase;

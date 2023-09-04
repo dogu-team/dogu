@@ -29,7 +29,7 @@ const RemoteListPage: NextPageWithLayout<ProjectServerSideProps> = ({ organizati
         top={
           <FlexBetweenBox>
             <LeftMenuButtonList>
-              <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/get-started`}>
+              <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/remotes/get-started`}>
                 <StyledButton>
                   Tutorial <ArrowRightOutlined />
                 </StyledButton>
