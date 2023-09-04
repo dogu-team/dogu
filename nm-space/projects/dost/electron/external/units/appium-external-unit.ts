@@ -12,7 +12,7 @@ import { StdLogCallbackService } from '../../log/std-log-callback-service';
 import { ThirdPartyPathMap } from '../../path-map';
 import { ExternalUnitCallback, IExternalUnit } from '../external-unit';
 
-const AppiumVersion = '2.0.0';
+const AppiumVersion = '2.1.3';
 
 export class AppiumExternalUnit extends IExternalUnit {
   private readonly logger = new PrefixLogger(logger, '[Appium]');
