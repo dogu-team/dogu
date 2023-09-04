@@ -33,9 +33,9 @@ func newiosSurface(agentUrl *string) *iosSurface {
 	return &s
 }
 
-func (s *iosSurface) Reconnect(serial string, sleepSec int, screenCaptureOption *streaming.ScreenCaptureOption) error {
+func (s *iosSurface) Reconnect(serial string, screenCaptureOption *streaming.ScreenCaptureOption) error {
 	var err error
-	log.Inst.Debug("iosSurface.Reconnect", zap.String("serial", serial), zap.String("addr", *s.agentUrl), zap.Int("sleepSec", sleepSec))
+	log.Inst.Debug("iosSurface.Reconnect", zap.String("serial", serial), zap.String("addr", *s.agentUrl))
 	conn, err := net.Dial("tcp", *s.agentUrl)
 	if err != nil {
 		log.Inst.Error("iosSurface.Reconnect", zap.String("serial", serial), zap.String("addr", *s.agentUrl), zap.Error(err))
@@ -67,14 +67,14 @@ func (s *iosSurface) Reconnect(serial string, sleepSec int, screenCaptureOption 
 	return nil
 }
 
-func (s *iosSurface) Receive() ([]byte, error) {
+func (s *iosSurface) Receive(timeout time.Duration) ([]byte, error) {
 	if nil == s.reader {
 		log.Inst.Error("iosSurface.Receive reader is null")
 		return nil, errors.Errorf("iosSurface.Receive reader is null")
 	}
 
 	for {
-		err := s.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
+		err := s.conn.SetReadDeadline(time.Now().Add(timeout))
 		if err != nil {
 			log.Inst.Error("iosSurface.SetReadDeadline error", zap.String("addr", *s.agentUrl), zap.Error(err))
 		}
@@ -83,6 +83,7 @@ func (s *iosSurface) Receive() ([]byte, error) {
 			log.Inst.Error("iosSurface.Receive push failed", zap.Error(err))
 			return nil, err
 		}
+
 		if !s.recvQueue.Has() {
 			continue
 		}

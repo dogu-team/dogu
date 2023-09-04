@@ -25,7 +25,7 @@ func newAosSurface(agentUrl *string) *aosSurface {
 	return &s
 }
 
-func (s *aosSurface) Reconnect(serial string, sleepSec int, screenCaptureOption *streaming.ScreenCaptureOption) error {
+func (s *aosSurface) Reconnect(serial string, screenCaptureOption *streaming.ScreenCaptureOption) error {
 	// reconnect loop
 	var err error
 	s.conn, _, err = websocket.DefaultDialer.Dial(*s.agentUrl, nil)
@@ -36,7 +36,7 @@ func (s *aosSurface) Reconnect(serial string, sleepSec int, screenCaptureOption 
 	return nil
 }
 
-func (s *aosSurface) Receive() ([]byte, error) {
+func (s *aosSurface) Receive(timeout time.Duration) ([]byte, error) {
 	err := s.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
 	if err != nil {
 		log.Inst.Error("aosSurface.SetReadDeadline error", zap.String("url", *s.agentUrl), zap.Error(err))

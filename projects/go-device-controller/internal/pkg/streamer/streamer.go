@@ -18,6 +18,7 @@ import (
 var seqSeed = 1
 
 type Streamer struct {
+	id                int
 	seq               int
 	mediaPeer         webRTCPeer
 	serial            string
@@ -72,6 +73,14 @@ func newStreamer(serial string, deviceServerPort int32, param *streaming.Streami
 	newWebRTCMediaPeer(&streamer.mediaPeer, &streamer, param.StartStreaming.Platform)
 	streamer.mediaPeer.start(param)
 	return &streamer
+}
+
+func (s *Streamer) GetId() int {
+	return s.id
+}
+
+func (s *Streamer) SetId(id int) {
+	s.id = id
 }
 
 func (s *Streamer) GetSurfaceListenerType() string {

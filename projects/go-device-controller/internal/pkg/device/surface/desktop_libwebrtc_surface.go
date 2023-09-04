@@ -38,7 +38,7 @@ func newDesktopLibwebrtcSurface() *desktopLibwebrtcSurface {
 	return &s
 }
 
-func (s *desktopLibwebrtcSurface) Reconnect(serial string, sleepSec int, screenCaptureOption *streaming.ScreenCaptureOption) error {
+func (s *desktopLibwebrtcSurface) Reconnect(serial string, screenCaptureOption *streaming.ScreenCaptureOption) error {
 	var err error
 	var port int
 	listener, port, err, mutex := utils.ListenTCPFreePort()
@@ -90,14 +90,14 @@ func (s *desktopLibwebrtcSurface) Reconnect(serial string, sleepSec int, screenC
 	return nil
 }
 
-func (s *desktopLibwebrtcSurface) Receive() ([]byte, error) {
+func (s *desktopLibwebrtcSurface) Receive(timeout time.Duration) ([]byte, error) {
 	if nil == s.reader {
 		log.Inst.Error("desktopLibwebrtcSurface.Receive reader is null")
 		return nil, errors.Errorf("desktopLibwebrtcSurface.Receive reader is null")
 
 	}
 	for {
-		err := s.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
+		err := s.conn.SetReadDeadline(time.Now().Add(timeout))
 		if err != nil {
 			log.Inst.Error("desktopLibwebrtcSurface.SetReadDeadline error", zap.Error(err))
 		}

@@ -29,7 +29,7 @@ export class AndroidSystemInfoService implements SystemInfoService {
         manufacturer: deviceProp.ro_product_manufacturer,
         model: modelName,
         version: '',
-        serial: isVirtual ? serial : deviceProp.ro_serialno, // ro_serialno is same on emulator
+        serial: isVirtual ? serial : deviceProp.ro_serialno, // ro_serialno is same on multiple emulator in same host
         uuid: '',
         sku: '',
       },

@@ -29,6 +29,7 @@ func (q *SizePrefixedRecvQueue) Push(reader *bufio.Reader) error {
 	if err != nil {
 		return err
 	}
+
 	q.slice = q.slice[:qEnd+n]
 	return nil
 }

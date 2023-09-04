@@ -27,9 +27,12 @@ class ApplyStreamingOptionAPIHandler : IDcDaProtoAPIHandler {
             it.write(Json.encodeToString(Options.serializer(), appContext.options))
         }
         if(!befOption.equals(appContext.options)){
+            Logger.v( "ApplyStreamingOptionAPIHandler.handle close before stream")
             appContext.streamChannel?.close(Exception("Streaming option changed"))
+            Logger.v( "ApplyStreamingOptionAPIHandler.handle close before stream done")
         }
 
+        Logger.v( "ApplyStreamingOptionAPIHandler.handle end")
         val applyRet = DcDaTypes.DcDaApplyStreamingOptionReturn.newBuilder().build()
         return DcDaParams.DcDaReturn.newBuilder().setDcDaApplyStreamingOptionReturn(applyRet)
     }

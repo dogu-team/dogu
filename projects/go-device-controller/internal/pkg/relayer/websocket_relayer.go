@@ -56,6 +56,11 @@ func (r *WebsocketRelayer) startRecvLoop() {
 			continue
 		}
 
+		err := r.conn.SetReadDeadline(time.Now().Add(60 * time.Second))
+		if err != nil {
+			log.Inst.Error("WebsocketRelayer.SetReadDeadline error", zap.String("serial", r.serial), zap.Error(err))
+		}
+
 		_, bytes, err := r.conn.ReadMessage()
 		if err != nil {
 			log.Inst.Error("WebsocketRelayer.ReadMessage error", zap.String("serial", r.serial), zap.Error(err))
@@ -82,10 +87,6 @@ func reconnect(getUrlFunc func() string, retryCount int, sleepSec int) (*websock
 			time.Sleep(time.Second * time.Duration(sleepSec))
 			count += 1
 			continue
-		}
-		err = conn.SetReadDeadline(time.Now().Add(10 * time.Second))
-		if err != nil {
-			log.Inst.Error("WebsocketRelayer.SetReadDeadline error", zap.String("url", serverUrl), zap.Error(err))
 		}
 		return conn, resp, nil
 	}
