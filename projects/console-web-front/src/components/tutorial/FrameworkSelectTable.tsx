@@ -20,7 +20,7 @@ const FrameworkSelectTable = ({ selectedSdk, onClickFramework, onClickSdk }: Pro
   const getAvailableSdk = () => {
     switch (project?.type) {
       case PROJECT_TYPE.WEB:
-        return [TutorialSupportSdk.WEBDRIVERIO, TutorialSupportSdk.SELENIUM];
+        return [TutorialSupportSdk.WEBDRIVERIO, TutorialSupportSdk.SELENIUM, TutorialSupportSdk.APPIUM];
       case PROJECT_TYPE.APP:
         return [TutorialSupportSdk.WEBDRIVERIO, TutorialSupportSdk.APPIUM];
       case PROJECT_TYPE.GAME:
