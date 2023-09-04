@@ -36,8 +36,8 @@ func (s *aosSurface) Reconnect(serial string, screenCaptureOption *streaming.Scr
 	return nil
 }
 
-func (s *aosSurface) Receive(timeout time.Duration) ([]byte, error) {
-	err := s.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
+func (s *aosSurface) Receive() ([]byte, error) {
+	err := s.conn.SetReadDeadline(time.Now().Add(time.Minute * 3)) // include encode intialization time
 	if err != nil {
 		log.Inst.Error("aosSurface.SetReadDeadline error", zap.String("url", *s.agentUrl), zap.Error(err))
 	}

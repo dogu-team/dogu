@@ -90,14 +90,14 @@ func (s *desktopLibwebrtcSurface) Reconnect(serial string, screenCaptureOption *
 	return nil
 }
 
-func (s *desktopLibwebrtcSurface) Receive(timeout time.Duration) ([]byte, error) {
+func (s *desktopLibwebrtcSurface) Receive() ([]byte, error) {
 	if nil == s.reader {
 		log.Inst.Error("desktopLibwebrtcSurface.Receive reader is null")
 		return nil, errors.Errorf("desktopLibwebrtcSurface.Receive reader is null")
 
 	}
 	for {
-		err := s.conn.SetReadDeadline(time.Now().Add(timeout))
+		err := s.conn.SetReadDeadline(time.Now().Add(time.Minute))
 		if err != nil {
 			log.Inst.Error("desktopLibwebrtcSurface.SetReadDeadline error", zap.Error(err))
 		}

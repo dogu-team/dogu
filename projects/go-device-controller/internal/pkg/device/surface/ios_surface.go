@@ -67,14 +67,14 @@ func (s *iosSurface) Reconnect(serial string, screenCaptureOption *streaming.Scr
 	return nil
 }
 
-func (s *iosSurface) Receive(timeout time.Duration) ([]byte, error) {
+func (s *iosSurface) Receive() ([]byte, error) {
 	if nil == s.reader {
 		log.Inst.Error("iosSurface.Receive reader is null")
 		return nil, errors.Errorf("iosSurface.Receive reader is null")
 	}
 
 	for {
-		err := s.conn.SetReadDeadline(time.Now().Add(timeout))
+		err := s.conn.SetReadDeadline(time.Now().Add(time.Minute))
 		if err != nil {
 			log.Inst.Error("iosSurface.SetReadDeadline error", zap.String("addr", *s.agentUrl), zap.Error(err))
 		}
