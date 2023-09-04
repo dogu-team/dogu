@@ -66,5 +66,7 @@
   "regenerateAccessTokenButtonTitle": "재발급",
   "regenerateAccessTokenConfirmModalTitle": "엑세스 토큰 재발급",
   "regenerateAccessTokenConfirmModalContent": "기존 엑세스 토큰은 더 이상 사용할 수 없습니다.\n새 엑세스 토큰을 생성하시겠습니까? 기존 토큰을 사용하고 있는 모든 애플리케이션은 영향을 받게 됩니다.",
-  "regenerateAccessTokenConfirmModalButtonTitle": "확인 및 재발급"
+  "regenerateAccessTokenConfirmModalButtonTitle": "확인 및 재발급",
+
+  "betaBannerTitle": "<dogu></dogu>는 지금 베타✨ 버전입니다. 발생한 문제 또는 피드백을 저희 <link>슬랙 커뮤니티</link>에 참여해 언제든지 보내주세요!"
 }

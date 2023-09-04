@@ -1,5 +1,6 @@
 import { CloseOutlined, GithubOutlined, SlackOutlined } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
+import Trans from 'next-translate/Trans';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
@@ -41,8 +42,14 @@ const ConsoleBasicLayout = ({ children }: Props) => {
       <Box>
         {isBannerVisible && (
           <AlertBanner>
-            <DoguText /> is now in ✨Beta. Please feel free to report any bugs or feedback to{' '}
-            <a href="https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw">Slack Community</a>!
+            <Trans
+              i18nKey="common:betaBannerTitle"
+              components={{
+                dogu: <DoguText />,
+                link: <a href="https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw" target="_blank" />,
+              }}
+            />
+
             <CloseAlertButton
               onClick={() => {
                 localStorage.setItem('hideHeaderBanner', 'true');

@@ -66,5 +66,7 @@
   "regenerateAccessTokenButtonTitle": "Regenerate",
   "regenerateAccessTokenConfirmModalTitle": "Regenerate access token",
   "regenerateAccessTokenConfirmModalContent": "The existing access token will be no longer valid.\nWould you like to generate a new access token? Please note that all applications using the existing token will be affected.",
-  "regenerateAccessTokenConfirmModalButtonTitle": "Confirm and regenerate"
+  "regenerateAccessTokenConfirmModalButtonTitle": "Confirm and regenerate",
+
+  "betaBannerTitle": "<dogu></dogu> is now in ✨Beta. Please feel free to report any bugs or feedbacks to our <link>Slack Community</link>!"
 }
