@@ -85,7 +85,6 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
 
   const handleClickSave = async () => {
     if (!user || !editingMe || !isChanged) {
-      console.log(!user, !editingMe, !isChanged);
       return;
     }
     setLoading(true);
