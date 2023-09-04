@@ -27,11 +27,6 @@ export interface RemoteTutorialDetailData {
 const isMobile = (platform: TutorialSupportPlatform) => [TutorialSupportPlatform.ANDROID, TutorialSupportPlatform.IOS].includes(platform);
 
 export interface RemoteTutorial {
-  defaultOptions: {
-    framework: TutorialSupportFramework;
-    platform: TutorialSupportPlatform;
-    target: TutorialSupportTarget;
-  };
   generateCapabilitiesCode: (params: GenerateCapabilitiesCodeParams) => Promise<string>;
   guides: RemoteTutorialDetailData[];
 }
@@ -42,11 +37,6 @@ export interface RemoteTutorialProps {
 }
 
 export const appiumRemoteTutorialData: RemoteTutorial = {
-  defaultOptions: {
-    framework: TutorialSupportFramework.PYTEST,
-    platform: TutorialSupportPlatform.ANDROID,
-    target: TutorialSupportTarget.WEB,
-  },
   generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId, userId }: GenerateCapabilitiesCodeParams) => {
     let pat: string;
 
@@ -118,11 +108,6 @@ export const appiumRemoteTutorialData: RemoteTutorial = {
 };
 
 export const webdriverioRemoteTutoriallData: RemoteTutorial = {
-  defaultOptions: {
-    framework: TutorialSupportFramework.JEST,
-    platform: TutorialSupportPlatform.ANDROID,
-    target: TutorialSupportTarget.WEB,
-  },
   generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId, userId }: GenerateCapabilitiesCodeParams) => {
     let pat: string;
 
@@ -214,11 +199,6 @@ export const webdriverioRemoteTutoriallData: RemoteTutorial = {
 };
 
 export const seleniumRemoteTutorialGuideData: RemoteTutorial = {
-  defaultOptions: {
-    framework: TutorialSupportFramework.PYTEST,
-    platform: TutorialSupportPlatform.WINDOWS,
-    target: TutorialSupportTarget.WEB,
-  },
   generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId, userId }: GenerateCapabilitiesCodeParams) => {
     let pat: string;
 
@@ -264,11 +244,6 @@ export const seleniumRemoteTutorialGuideData: RemoteTutorial = {
 };
 
 export const gamiumRemoteTutorialGuideData: RemoteTutorial = {
-  defaultOptions: {
-    framework: TutorialSupportFramework.JEST,
-    platform: TutorialSupportPlatform.ANDROID,
-    target: TutorialSupportTarget.UNITY,
-  },
   generateCapabilitiesCode: async ({ framework, userId, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
     let pat: string;
 

@@ -62,6 +62,11 @@ export const tutorialSdkSupportInfo: {
   [key in TutorialSupportSdk]: {
     frameworksPerLang: { [key in TutorialSupportLanguage]?: TutorialSupportFramework[] };
     targetsPerPlatform: { [key in TutorialSupportPlatform]?: TutorialSupportTarget[] };
+    defaultOptions: {
+      framework: TutorialSupportFramework;
+      platform: TutorialSupportPlatform;
+      target: TutorialSupportTarget;
+    };
   };
 } = {
   [TutorialSupportSdk.APPIUM]: {
@@ -71,6 +76,11 @@ export const tutorialSdkSupportInfo: {
     targetsPerPlatform: {
       [TutorialSupportPlatform.ANDROID]: [TutorialSupportTarget.WEB, TutorialSupportTarget.APP],
       [TutorialSupportPlatform.IOS]: [TutorialSupportTarget.WEB, TutorialSupportTarget.APP],
+    },
+    defaultOptions: {
+      framework: TutorialSupportFramework.PYTEST,
+      platform: TutorialSupportPlatform.ANDROID,
+      target: TutorialSupportTarget.WEB,
     },
   },
   [TutorialSupportSdk.WEBDRIVERIO]: {
@@ -83,6 +93,11 @@ export const tutorialSdkSupportInfo: {
       [TutorialSupportPlatform.WINDOWS]: [TutorialSupportTarget.WEB],
       [TutorialSupportPlatform.MACOS]: [TutorialSupportTarget.WEB],
     },
+    defaultOptions: {
+      framework: TutorialSupportFramework.JEST,
+      platform: TutorialSupportPlatform.ANDROID,
+      target: TutorialSupportTarget.WEB,
+    },
   },
   [TutorialSupportSdk.SELENIUM]: {
     frameworksPerLang: {
@@ -91,6 +106,11 @@ export const tutorialSdkSupportInfo: {
     targetsPerPlatform: {
       [TutorialSupportPlatform.WINDOWS]: [TutorialSupportTarget.WEB],
       [TutorialSupportPlatform.MACOS]: [TutorialSupportTarget.WEB],
+    },
+    defaultOptions: {
+      framework: TutorialSupportFramework.PYTEST,
+      platform: TutorialSupportPlatform.WINDOWS,
+      target: TutorialSupportTarget.WEB,
     },
   },
   [TutorialSupportSdk.GAMIUM]: {
@@ -101,6 +121,11 @@ export const tutorialSdkSupportInfo: {
     targetsPerPlatform: {
       [TutorialSupportPlatform.ANDROID]: [TutorialSupportTarget.UNITY],
       [TutorialSupportPlatform.IOS]: [TutorialSupportTarget.UNITY],
+    },
+    defaultOptions: {
+      framework: TutorialSupportFramework.JEST,
+      platform: TutorialSupportPlatform.ANDROID,
+      target: TutorialSupportTarget.UNITY,
     },
   },
 };

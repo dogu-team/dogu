@@ -21,7 +21,7 @@ import GuideStep from '../GuideStep';
 import DoneStep from '../DoneStep';
 import SampleApplicationUploadButton from '../SampleApplicationUploadButton';
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
-import RemoteTestOptionSelectors from '../RemoteTestOptionSelectors';
+import TutorialOptionSelectors from '../TutorialOptionSelectors';
 import CodeWithCopyButton from '../../common/CodeWithCopyButton';
 import ProjectApplicationUploadButton from '../../project-application/ProjectApplicationUploadButton';
 import RemoteTestResultList from './RemoteTestResultList';
@@ -53,8 +53,8 @@ const AppiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
   };
 
   const { framework, platform, target } = useTutorialSelector({
-    defaultFramework: appiumRemoteTutorialData.defaultOptions.framework,
-    defaultPlatform: appiumRemoteTutorialData.defaultOptions.platform,
+    defaultFramework: tutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].defaultOptions.framework,
+    defaultPlatform: tutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].defaultOptions.platform,
     defaultTarget: getProjectTypeDefaultTarget(),
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
@@ -89,7 +89,7 @@ const AppiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
       sidebar={
         <div>
           <div style={{ marginBottom: '1rem' }}>
-            <RemoteTestOptionSelectors sdk={TutorialSupportSdk.APPIUM} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
+            <TutorialOptionSelectors sdk={TutorialSupportSdk.APPIUM} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
           </div>
 
           <GuideAnchor

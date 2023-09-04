@@ -22,7 +22,7 @@ import GuideBanner from '../GuideBanner';
 import GuideLayout from '../GuideLayout';
 import GuideStep from '../GuideStep';
 import PythonVirtualEnvShell from '../PythonVirtualEnvShell';
-import RemoteTestOptionSelectors from '../RemoteTestOptionSelectors';
+import TutorialOptionSelectors from '../TutorialOptionSelectors';
 import RemoteTestResultList from './RemoteTestResultList';
 import SampleApplicationUploadButton from '../SampleApplicationUploadButton';
 
@@ -36,9 +36,9 @@ const DONE_ID = 'done';
 
 const GamiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps) => {
   const { framework, platform, target } = useTutorialSelector({
-    defaultFramework: gamiumRemoteTutorialGuideData.defaultOptions.framework,
-    defaultPlatform: gamiumRemoteTutorialGuideData.defaultOptions.platform,
-    defaultTarget: TutorialSupportTarget.UNITY,
+    defaultFramework: tutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].defaultOptions.framework,
+    defaultPlatform: tutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].defaultOptions.platform,
+    defaultTarget: tutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].defaultOptions.target,
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 
@@ -72,7 +72,7 @@ const GamiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
       sidebar={
         <div>
           <div style={{ marginBottom: '1rem' }}>
-            <RemoteTestOptionSelectors sdk={TutorialSupportSdk.GAMIUM} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
+            <TutorialOptionSelectors sdk={TutorialSupportSdk.GAMIUM} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
           </div>
 
           <GuideAnchor

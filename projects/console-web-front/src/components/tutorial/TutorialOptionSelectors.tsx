@@ -13,13 +13,12 @@ import {
   TutorialSupportSdk,
   TutorialSupportTarget,
   tutorialSupportTargetText,
-} from '../../resources/tutorials';
+} from '../../resources/tutorials/index';
 import PlatformIcon from './PlatformIcon';
 import TargetIcon from './TargetIcon';
 import { flexRowBaseStyle } from '../../styles/box';
 import FrameworkIcon from './FrameworkIcon';
 import useTutorialContext from '../../hooks/useTutorialContext';
-import { RemoteTutorial } from '../../resources/tutorials/remote';
 
 interface Props {
   sdk: TutorialSupportSdk;
@@ -28,7 +27,7 @@ interface Props {
   selectedTarget: TutorialSupportTarget;
 }
 
-const RemoteTestOptionSelectors = ({ sdk, selectedFramwork, selectedPlatform, selectedTarget }: Props) => {
+const TutorialOptionSelectors = ({ sdk, selectedFramwork, selectedPlatform, selectedTarget }: Props) => {
   const router = useRouter();
   const { project } = useTutorialContext();
   const availabePlatforms = Object.keys(tutorialSdkSupportInfo[sdk].targetsPerPlatform).filter((platform) =>
@@ -113,7 +112,7 @@ const RemoteTestOptionSelectors = ({ sdk, selectedFramwork, selectedPlatform, se
   );
 };
 
-export default RemoteTestOptionSelectors;
+export default TutorialOptionSelectors;
 
 const FlexRow = styled.div`
   ${flexRowBaseStyle}

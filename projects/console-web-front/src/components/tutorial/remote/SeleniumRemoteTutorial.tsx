@@ -19,7 +19,7 @@ import GuideLayout from '../GuideLayout';
 import GuideStep from '../GuideStep';
 import DoneStep from '../DoneStep';
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
-import RemoteTestOptionSelectors from '../RemoteTestOptionSelectors';
+import TutorialOptionSelectors from '../TutorialOptionSelectors';
 import CodeWithCopyButton from '../../common/CodeWithCopyButton';
 import RemoteTestResultList from './RemoteTestResultList';
 import PythonVirtualEnvShell from '../PythonVirtualEnvShell';
@@ -34,9 +34,9 @@ const DONE_ID = 'done';
 
 const SeleniumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps) => {
   const { framework, platform, target } = useTutorialSelector({
-    defaultFramework: seleniumRemoteTutorialGuideData.defaultOptions.framework,
-    defaultPlatform: seleniumRemoteTutorialGuideData.defaultOptions.platform,
-    defaultTarget: TutorialSupportTarget.WEB,
+    defaultFramework: tutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.framework,
+    defaultPlatform: tutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.platform,
+    defaultTarget: tutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.target,
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 
@@ -70,7 +70,7 @@ const SeleniumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialPro
       sidebar={
         <div>
           <div style={{ marginBottom: '1rem' }}>
-            <RemoteTestOptionSelectors sdk={TutorialSupportSdk.SELENIUM} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
+            <TutorialOptionSelectors sdk={TutorialSupportSdk.SELENIUM} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
           </div>
 
           <GuideAnchor

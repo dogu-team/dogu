@@ -18,7 +18,7 @@ import {
 } from '../../../resources/tutorials/index';
 import { flexRowBaseStyle } from '../../../styles/box';
 import GuideBanner from '../GuideBanner';
-import RemoteTestOptionSelectors from '../RemoteTestOptionSelectors';
+import TutorialOptionSelectors from '../TutorialOptionSelectors';
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
 import ProjectApplicationUploadButton from '../../project-application/ProjectApplicationUploadButton';
 import SampleApplicationUploadButton from '../SampleApplicationUploadButton';
@@ -52,8 +52,8 @@ const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorial
   };
 
   const { framework, platform, target } = useTutorialSelector({
-    defaultFramework: webdriverioRemoteTutoriallData.defaultOptions.framework,
-    defaultPlatform: webdriverioRemoteTutoriallData.defaultOptions.platform,
+    defaultFramework: tutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].defaultOptions.framework,
+    defaultPlatform: tutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].defaultOptions.platform,
     defaultTarget: getProjectTypeDefaultTarget(),
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
@@ -88,7 +88,7 @@ const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorial
       sidebar={
         <div>
           <div style={{ marginBottom: '1rem' }}>
-            <RemoteTestOptionSelectors sdk={TutorialSupportSdk.WEBDRIVERIO} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
+            <TutorialOptionSelectors sdk={TutorialSupportSdk.WEBDRIVERIO} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
           </div>
           <GuideAnchor
             items={[
