@@ -4,6 +4,7 @@ import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryCo
 import { ColumnTemplate } from './decorators';
 import { RoutineDeviceJob } from './device-job.entity';
 import { Device } from './device.entity';
+import { RecordDeviceJob } from './record-device-job.entity';
 import { RemoteDeviceJob } from './remote-device-job.entity';
 
 @Entity(DEVICE_RUNNER_TABLE_NAME)
@@ -35,4 +36,7 @@ export class DeviceRunner extends BaseEntity implements DeviceRunnerBase {
 
   @OneToMany(() => RemoteDeviceJob, (remoteDeviceJob) => remoteDeviceJob.deviceRunner, { cascade: ['soft-remove'] })
   remoteDeviceJobs?: RemoteDeviceJob[];
+
+  @OneToMany(() => RecordDeviceJob, (recordDeviceJob) => recordDeviceJob.deviceRunner, { cascade: ['soft-remove'] })
+  recordDeviceJobs?: RecordDeviceJob[];
 }

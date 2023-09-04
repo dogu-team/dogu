@@ -1,15 +1,29 @@
 import { RecordTestScenarioAndRecordTestCasePropCamel, RecordTestScenarioAndRecordTestCasePropSnake } from '@dogu-private/console';
-import { OrganizationId, platformTypeFromPlatform, ProjectId, RecordTestCaseId, RecordTestScenarioId } from '@dogu-private/types';
-import { DoguDevicePlatformHeader, DoguDeviceSerialHeader, DoguRemoteDeviceJobIdHeader, DoguRequestTimeoutHeader, HeaderRecord } from '@dogu-tech/common';
+import { extensionFromPlatform, platformTypeFromPlatform, ProjectId, RecordTestCaseId, RecordTestScenarioId, WebDriverSessionId } from '@dogu-private/types';
+import {
+  DoguApplicationFileSizeHeader,
+  DoguApplicationUrlHeader,
+  DoguApplicationVersionHeader,
+  DoguBrowserNameHeader,
+  DoguDevicePlatformHeader,
+  DoguDeviceSerialHeader,
+  DoguRemoteDeviceJobIdHeader,
+  DoguRequestTimeoutHeader,
+  HeaderRecord,
+} from '@dogu-tech/common';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { EntityManager, IsNull } from 'typeorm';
 import { Device } from '../../../db/entity/device.entity';
+import { ProjectApplication } from '../../../db/entity/project-application.entity';
 import { RecordTestCase } from '../../../db/entity/record-test-case.entity';
 import { RecordTestScenario } from '../../../db/entity/record-test-scenario.entity';
 import { RecordTestStep } from '../../../db/entity/record-test-step.entity';
 import { RecordTestScenarioAndRecordTestCase } from '../../../db/entity/relations/record-test-scenario-and-record-test-case.entity';
+import { ApplicationService } from '../../../module/project/application/application.service';
+import { FindProjectApplicationDto } from '../../../module/project/application/dto/application.dto';
 import { RemoteWebDriverBatchRequestExecutor } from '../../../module/remote/remote-webdriver/remote-webdriver.batch-request-executor';
 import { RemoteWebDriverService } from '../../../module/remote/remote-webdriver/remote-webdriver.service';
+import { NewSessionRemoteWebDriverBatchRequestItem } from '../../../module/remote/remote-webdriver/remote-webdriver.w3c-batch-request-items';
 import { castEntity } from '../../../types/entity-cast';
 
 export function getSortedRecordTestCases(recordTestScenario: RecordTestScenario): RecordTestCase[] {
@@ -82,19 +96,13 @@ export function getSortedRecordTestSteps(recordTestCase: RecordTestCase): Record
 
 export function makeActionBatchExcutor(
   remoteWebDriverService: RemoteWebDriverService,
-  organizationId: OrganizationId,
   projectId: ProjectId,
-  recordTestCase: RecordTestCase,
+  sessionId: WebDriverSessionId,
+  sessionKey: string,
   device: Device,
 ): RemoteWebDriverBatchRequestExecutor {
-  const sessionId = recordTestCase.activeSessionId;
-  const sessionKey = recordTestCase.activeSessionKey;
   if (!sessionId || !sessionKey) {
     throw new HttpException(`Session not found. sessionId: ${sessionId}`, HttpStatus.NOT_FOUND);
-  }
-  const activeDeviceId = recordTestCase.activeDeviceId;
-  if (!activeDeviceId) {
-    throw new HttpException(`Device does not have activeDeviceId. RecordTestCaseId: ${recordTestCase.recordTestCaseId}`, HttpStatus.NOT_FOUND);
   }
 
   const headers: HeaderRecord = {
@@ -105,7 +113,7 @@ export function makeActionBatchExcutor(
   };
 
   const batchExecutor = new RemoteWebDriverBatchRequestExecutor(remoteWebDriverService, {
-    organizationId,
+    organizationId: device.organizationId,
     projectId,
     deviceId: device.deviceId,
     deviceSerial: device.serial,
@@ -377,4 +385,77 @@ export async function getPrevRecordTestCaseInScenario(
 
   const prev = current?.prevRecordTestCase;
   return prev ?? null;
+}
+
+export async function newWebDriverSession(
+  manager: EntityManager,
+  applicationService: ApplicationService,
+  remoteWebDriverService: RemoteWebDriverService,
+  device: Device,
+  projectId: ProjectId,
+  sessionKey: string,
+  browserName: string | null,
+  packageName: string | null,
+): Promise<NewSessionRemoteWebDriverBatchRequestItem> {
+  const platformType = platformTypeFromPlatform(device.platform);
+
+  const headers: HeaderRecord = {
+    [DoguRemoteDeviceJobIdHeader]: sessionKey,
+    [DoguDevicePlatformHeader]: platformType,
+    [DoguDeviceSerialHeader]: device.serial,
+    [DoguRequestTimeoutHeader]: '180000',
+  };
+
+  if (packageName && browserName) {
+    throw new HttpException(`appVersion and browserName are exclusive.`, HttpStatus.BAD_REQUEST);
+  } else if (browserName) {
+    headers[DoguBrowserNameHeader] = browserName;
+    // if (browserVersion) headers[DoguBrowserVersionHeader] = browserVersion;
+  } else if (packageName) {
+    const app = await manager.getRepository(ProjectApplication).findOne({ where: { projectId, package: packageName }, order: { createdAt: 'DESC' } });
+    if (!app) {
+      throw new HttpException(`ProjectApplication not found. packageName: ${packageName}`, HttpStatus.NOT_FOUND);
+    }
+    let applicationUrl: string | undefined = undefined;
+    let applicationVersion: string | undefined = undefined;
+    let applicationFileSize: number | undefined = undefined;
+    if (platformType === 'android' || platformType === 'ios') {
+      const findAppDto = new FindProjectApplicationDto();
+      findAppDto.version = app.version;
+      findAppDto.extension = extensionFromPlatform(platformType);
+      const applications = await applicationService.getApplicationList(device.organizationId, projectId, findAppDto);
+      if (applications.items.length === 0) {
+        throw new HttpException(`Application not found. appVersion: ${app.version}`, HttpStatus.NOT_FOUND);
+      }
+      const application = applications.items[0];
+      applicationUrl = await applicationService.getApplicationDownladUrl(application.projectApplicationId, device.organizationId, projectId);
+      applicationVersion = application.version;
+      applicationFileSize = application.fileSize;
+      headers[DoguApplicationUrlHeader] = applicationUrl;
+      headers[DoguApplicationVersionHeader] = applicationVersion;
+      headers[DoguApplicationFileSizeHeader] = applicationFileSize.toString();
+    }
+  } else {
+    throw new HttpException(`appVersion or browserName is required.`, HttpStatus.BAD_REQUEST);
+  }
+
+  const batchExecutor = new RemoteWebDriverBatchRequestExecutor(remoteWebDriverService, {
+    organizationId: device.organizationId,
+    projectId,
+    deviceId: device.deviceId,
+    deviceSerial: device.serial,
+    headers: headers,
+    parallel: true,
+  });
+
+  const newSessionResponse = new NewSessionRemoteWebDriverBatchRequestItem(batchExecutor, {
+    capabilities: {
+      alwaysMatch: {
+        'appium:newCommandTimeout': 60 * 60 * 24,
+      },
+    },
+  });
+  await batchExecutor.execute();
+
+  return newSessionResponse;
 }

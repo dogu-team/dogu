@@ -15,6 +15,7 @@ export interface RecordPipelineBaseTraits {
   projectId: ProjectId;
   recordTestScenarioId: RecordTestScenarioId;
   state: RECORD_PIPELINE_STATE;
+  index: number;
   creatorType: CREATOR_TYPE;
   creatorId: UserId | null;
   cancelerId: UserId | null;

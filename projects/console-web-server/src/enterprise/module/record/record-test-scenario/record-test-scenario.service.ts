@@ -39,6 +39,12 @@ export class RecordTestScenarioService {
     });
 
     const recordCaseIds = dto.recordTestCaseIds ?? [];
+
+    const recordCases = await this.dataSource.getRepository(RecordTestCase).find({ where: { projectId, recordTestCaseId: In(recordCaseIds) } });
+    if (recordCases.length !== recordCaseIds.length) {
+      throw new HttpException(`RecordTestCase not found. recordTestCaseIds: ${recordCaseIds}`, HttpStatus.NOT_FOUND);
+    }
+
     const rv = await this.dataSource.manager.transaction(async (manager) => {
       const scenario = await manager.getRepository(RecordTestScenario).save(newData);
       await this.attachCasesToScenario(manager, projectId, newData.recordTestScenarioId, recordCaseIds);

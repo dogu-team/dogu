@@ -129,7 +129,7 @@ export class JobRunner {
     } else if (someInStatus(deviceJobs, PIPELINE_STATUS.SKIPPED)) {
       this.logger.info(`Job [${routineJobId}][${name}]. Some DeviceJobs are skipped. It will be failure. DeviceJobs: ${deviceJobinfos}`);
       this.logger.info(`Job [${routineJobId}][${name}] will be skipped.`);
-      return PIPELINE_STATUS.FAILURE;
+      return PIPELINE_STATUS.SKIPPED;
     } else {
       // unknown state
       this.logger.error(`Job [${routineJobId}][${name}]. Some DeviceJobs are unknown state. DeviceJobs: ${deviceJobinfos}`);

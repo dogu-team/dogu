@@ -56,7 +56,13 @@ export class RecordTestStepActionService {
     if (!device) {
       throw new HttpException(`Device not found. activeDeviceId: ${recordTestCase.activeDeviceId}`, HttpStatus.NOT_FOUND);
     }
-    const batchExecutor: RemoteWebDriverBatchRequestExecutor = makeActionBatchExcutor(this.remoteWebDriverService, organizationId, projectId, recordTestCase, device);
+    const batchExecutor: RemoteWebDriverBatchRequestExecutor = makeActionBatchExcutor(
+      this.remoteWebDriverService,
+      projectId,
+      recordTestCase.activeSessionId!,
+      recordTestCase.activeSessionKey!,
+      device,
+    );
 
     const activeSessionId = recordTestCase.activeSessionId;
     if (!activeSessionId) {

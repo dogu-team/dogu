@@ -8,6 +8,7 @@ import { HostBase } from './host';
 import { OrganizationBase } from './organization';
 import { ProjectBase } from './project';
 import { ProjectAndDeviceBase } from './project-and-device';
+import { RecordDeviceJobBase } from './record-device-job';
 import { RemoteDeviceJobBase } from './remote-device-job';
 import { RoutineDeviceJobBase } from './routine-device-job';
 
@@ -17,6 +18,7 @@ interface DeviceRelationTraits {
   projects?: ProjectBase[];
   routineDeviceJobs?: RoutineDeviceJobBase[];
   remoteDeviceJobs?: RemoteDeviceJobBase[];
+  recordDeviceJobs?: RecordDeviceJobBase[];
   projectAndDevices?: ProjectAndDeviceBase[];
   deviceAndDeviceTags?: DeviceAndDeviceTagBase[];
   organization?: OrganizationBase;

@@ -67,15 +67,11 @@ export class RemoteDeviceJobUpdater {
           return;
         }
 
-        await this.dataSource.manager.getRepository(DeviceRunner).update(deviceRunner.deviceRunnerId, { isInUse: 1 });
-
-        remoteDeviceJob.deviceRunnerId = deviceRunner.deviceRunnerId;
-        await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(
-          this.dataSource.manager,
-          remoteDeviceJob,
-          REMOTE_DEVICE_JOB_SESSION_STATE.IN_PROGRESS,
-          this.slackMessageService,
-        );
+        await this.dataSource.manager.transaction(async (manager) => {
+          await manager.getRepository(DeviceRunner).update(deviceRunner.deviceRunnerId, { isInUse: 1 });
+          remoteDeviceJob.deviceRunnerId = deviceRunner.deviceRunnerId;
+          await RemoteDeviceJobProcessor.setRemoteDeviceJobSessionState(manager, remoteDeviceJob, REMOTE_DEVICE_JOB_SESSION_STATE.IN_PROGRESS, this.slackMessageService);
+        });
       });
 
       await Promise.allSettled(promises);
