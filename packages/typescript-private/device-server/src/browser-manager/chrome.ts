@@ -59,22 +59,22 @@ const lastKnownGoodVersionsChannelMap: DeepReadonly<Record<ChromeChannelName, ke
 export interface LastKnownGoodVersions {
   channels: {
     Stable: {
-      version: string;
+      version: BrowserVersion;
     };
     Beta: {
-      version: string;
+      version: BrowserVersion;
     };
     Dev: {
-      version: string;
+      version: BrowserVersion;
     };
     Canary: {
-      version: string;
+      version: BrowserVersion;
     };
   };
 }
 
 export interface KnownGoodVersions {
-  versions: { version: string }[];
+  versions: { version: BrowserVersion }[];
 }
 
 export interface GetLatestVersionOptions {
@@ -124,7 +124,7 @@ export interface GetDownloadFileNameOptions {
 }
 
 export interface GetDownloadUrlOptions {
-  version: string;
+  version: BrowserVersion;
   platform: ChromePlatform;
   downloadFileName: string;
 }
@@ -137,7 +137,7 @@ export interface FindInstallationsOptions {
 
 export type FindInstallationsResult = {
   installableName: ChromeInstallableName;
-  version: string;
+  version: BrowserVersion;
   majorVersion: number;
   platform: ChromePlatform;
   executablePath: string;
@@ -145,21 +145,20 @@ export type FindInstallationsResult = {
 
 export interface GetInstallPathOptions {
   installableName: ChromeInstallableName;
-  version: string;
+  version: BrowserVersion;
   platform: ChromePlatform;
   rootPath: string;
 }
 
 export interface GetExecutablePathOptions {
   installableName: ChromeInstallableName;
-  version: BrowserVersion;
   platform: ChromePlatform;
   installPath: string;
 }
 
 export interface InstallOptions {
   installableName: ChromeInstallableName;
-  version: string;
+  version: BrowserVersion;
   platform: ChromePlatform;
   rootPath: string;
   downloadTimeout?: number;
@@ -335,7 +334,7 @@ export class Chrome {
               return null;
             }
           })
-          .filter((result): result is NonNullable<typeof result> => result !== null);
+          .filter((result): result is NonNullable<typeof result> => !!result);
       }),
     );
     const withVersions = withVersionss.flat();
@@ -424,7 +423,6 @@ export class Chrome {
       platform,
       executablePath: this.getExecutablePath({
         installableName,
-        version,
         platform,
         installPath: platformPath,
       }),
