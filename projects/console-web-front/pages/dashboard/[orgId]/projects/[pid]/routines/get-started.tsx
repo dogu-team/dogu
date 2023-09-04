@@ -6,6 +6,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
+import useSWR from 'swr';
 
 import { getOrganizationInServerSide } from 'src/api/organization';
 import { getProjectInServerSide } from 'src/api/project';
@@ -19,6 +20,8 @@ import { checkUserVerifiedInServerSide } from 'src/utils/auth';
 import { NextPageWithLayout } from '../../../../../_app';
 import RoutineTutorial from '../../../../../../src/components/tutorial/routine/RoutineTutorial';
 import { routineTutorialData } from '../../../../../../src/resources/tutorials/routine';
+import { swrAuthFetcher } from '../../../../../../src/api';
+import useRefresh from '../../../../../../src/hooks/useRefresh';
 
 interface ServerSideProps {
   organization: OrganizationBase;
@@ -28,11 +31,17 @@ interface ServerSideProps {
 
 const ProjectRoutineGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, organization, me }) => {
   const router = useRouter();
+  const { data, mutate } = useSWR<ProjectBase>(`/organizations/${organization.organizationId}/projects/${project.projectId}`, swrAuthFetcher, {
+    revalidateOnFocus: false,
+    fallbackData: project,
+  });
   const sdk = router.query.sdk as TutorialSupportSdk | undefined;
   const isFrameworkSelected = !!sdk && Object.keys(routineTutorialData).includes(router.query.sdk as string) && !!router.query.framework;
 
+  useRefresh(['onProjectScmUpdated'], () => mutate());
+
   return (
-    <TutorialContext.Provider value={{ me, organization, project, updateProject: () => {} }}>
+    <TutorialContext.Provider value={{ me, organization, project: data ?? project, updateProject: () => {} }}>
       <Head>
         <title>Routine tutorial - {project.name} | Dogu</title>
       </Head>

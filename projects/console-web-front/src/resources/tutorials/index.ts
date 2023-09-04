@@ -1,4 +1,5 @@
-export const SAMPLE_GIT_URL = 'https://github.com/dogu-team/dogu-examples.git';
+export const REMOTE_SAMPLE_GIT_URL = 'https://github.com/dogu-team/dogu-examples.git';
+export const ROUTINE_SAMPLE_GIT_URL = 'https://github.com/dogu-team/dogu-routine-examples.git';
 
 export enum TutorialSupportSdk {
   APPIUM = 'appium',

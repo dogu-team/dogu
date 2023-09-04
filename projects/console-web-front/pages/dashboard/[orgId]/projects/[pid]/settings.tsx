@@ -30,6 +30,7 @@ import SettingTitleDivider from '../../../../../src/components/common/SettingTit
 import BitbucketButton from '../../../../../src/components/integration/BitbucketButton';
 import UpdateTemplateButton from '../../../../../src/components/projects/UpdateTemplateButton';
 import useProjectContext from '../../../../../src/hooks/useProjectContext';
+import { getRepositoyUrl } from '../../../../../src/utils/url';
 
 const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ project: serverProject, organization }) => {
   const [editingProject, setEditingProject] = useState<ProjectBase>(serverProject);
@@ -88,15 +89,6 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
       }
     }
   }, [organization.organizationId, serverProject.projectId]);
-
-  const getRepositoyUrl = (gitUrl: string) => {
-    const matches = gitUrl.match(/\/([^/]+\/[^/]+)$/);
-    if (matches) {
-      return matches[matches.length - 1];
-    }
-
-    return gitUrl;
-  };
 
   const isChanged =
     JSON.stringify({ name: project?.name, description: project?.description }) !== JSON.stringify({ name: editingProject.name, description: editingProject.description });

@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Cookies from 'universal-cookie';
 import { PROJECT_TYPE, USER_ID_COOKIE_NAME } from '@dogu-private/types';
 
-import DoneStep from '../DoneStep';
+import DoneStep from './DoneStep';
 import GuideAnchor from '../GuideAnchor';
 import GuideLayout from '../GuideLayout';
 import GuideStep from '../GuideStep';
@@ -12,7 +12,7 @@ import {
   TutorialSupportLanguage,
   TutorialSupportPlatform,
   TutorialSupportTarget,
-  SAMPLE_GIT_URL,
+  REMOTE_SAMPLE_GIT_URL,
   tutorialSdkSupportInfo,
   TutorialSupportSdk,
 } from '../../../resources/tutorials/index';
@@ -111,7 +111,7 @@ const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorial
             description={<p>Clone example repository and move to execution directory</p>}
             content={
               <>
-                <CodeWithCopyButton language="bash" code={`git clone ${SAMPLE_GIT_URL}`} />
+                <CodeWithCopyButton language="bash" code={`git clone ${REMOTE_SAMPLE_GIT_URL}`} />
                 <CodeWithCopyButton language="bash" code={selectedGuide?.cd ?? ''} />
               </>
             }

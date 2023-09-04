@@ -9,14 +9,14 @@ import {
   TutorialSupportLanguage,
   TutorialSupportPlatform,
   TutorialSupportTarget,
-  SAMPLE_GIT_URL,
+  REMOTE_SAMPLE_GIT_URL,
   tutorialSdkSupportInfo,
   TutorialSupportSdk,
 } from '../../../resources/tutorials/index';
 import { gamiumRemoteTutorialGuideData, RemoteTutorialProps } from '../../../resources/tutorials/remote';
 import CodeWithCopyButton from '../../common/CodeWithCopyButton';
 import ProjectApplicationUploadButton from '../../project-application/ProjectApplicationUploadButton';
-import DoneStep from '../DoneStep';
+import DoneStep from './DoneStep';
 import GuideAnchor from '../GuideAnchor';
 import GuideBanner from '../GuideBanner';
 import GuideLayout from '../GuideLayout';
@@ -96,7 +96,7 @@ const GamiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
             description={<p>Clone example repository and move to execution directory</p>}
             content={
               <>
-                <CodeWithCopyButton language="bash" code={`git clone ${SAMPLE_GIT_URL}`} />
+                <CodeWithCopyButton language="bash" code={`git clone ${REMOTE_SAMPLE_GIT_URL}`} />
                 <CodeWithCopyButton language="bash" code={selectedGuide?.cd ?? ''} />
                 {frameworkLanguage === TutorialSupportLanguage.PYTHON && (
                   <div style={{ marginTop: '.5rem' }}>

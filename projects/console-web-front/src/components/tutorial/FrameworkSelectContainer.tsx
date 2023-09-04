@@ -1,3 +1,4 @@
+import { PROJECT_TYPE } from '@dogu-private/types';
 import { Divider } from 'antd';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
@@ -9,7 +10,6 @@ import DoguText from '../common/DoguText';
 import FrameworkSelectTable from './FrameworkSelectTable';
 import { TutorialSupportSdk } from '../../resources/tutorials';
 import useTutorialContext from '../../hooks/useTutorialContext';
-import { PROJECT_TYPE } from '@dogu-private/types';
 
 interface Props {
   skipButton: React.ReactNode;

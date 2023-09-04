@@ -6,7 +6,7 @@ import { USER_ID_COOKIE_NAME } from '@dogu-private/types';
 
 import {
   TutorialSupportLanguage,
-  SAMPLE_GIT_URL,
+  REMOTE_SAMPLE_GIT_URL,
   TutorialSupportPlatform,
   TutorialSupportTarget,
   tutorialSdkSupportInfo,
@@ -17,7 +17,7 @@ import GuideAnchor from '../GuideAnchor';
 import GuideBanner from '../GuideBanner';
 import GuideLayout from '../GuideLayout';
 import GuideStep from '../GuideStep';
-import DoneStep from '../DoneStep';
+import DoneStep from './DoneStep';
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
 import TutorialOptionSelectors from '../TutorialOptionSelectors';
 import CodeWithCopyButton from '../../common/CodeWithCopyButton';
@@ -93,7 +93,7 @@ const SeleniumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialPro
             description={<p>Clone example repository and move to execution directory</p>}
             content={
               <>
-                <CodeWithCopyButton language="bash" code={`git clone ${SAMPLE_GIT_URL}`} />
+                <CodeWithCopyButton language="bash" code={`git clone ${REMOTE_SAMPLE_GIT_URL}`} />
                 <CodeWithCopyButton language="bash" code={selectedGuide?.cd ?? ''} />
                 {frameworkLanguage === TutorialSupportLanguage.PYTHON && (
                   <div style={{ marginTop: '.5rem' }}>
