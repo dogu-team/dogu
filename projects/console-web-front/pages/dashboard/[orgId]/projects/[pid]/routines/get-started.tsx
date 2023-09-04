@@ -11,14 +11,14 @@ import { getOrganizationInServerSide } from 'src/api/organization';
 import { getProjectInServerSide } from 'src/api/project';
 import ConsoleBasicLayout from 'src/components/layouts/ConsoleBasicLayout';
 import FrameworkSelectContainer from 'src/components/tutorial/FrameworkSelectContainer';
-import RemoteTestTutorial from 'src/components/tutorial/remote/RemoteTestTutorial';
 import SdkIcon from 'src/components/tutorial/SdkIcon';
 import { TutorialContext } from 'src/hooks/useTutorialContext';
 import { TutorialSupportSdk, tutorialSupportSdkText } from 'src/resources/tutorials';
 import { flexRowBaseStyle } from 'src/styles/box';
 import { checkUserVerifiedInServerSide } from 'src/utils/auth';
 import { NextPageWithLayout } from '../../../../../_app';
-import { remoteTutorialData } from '../../../../../../src/resources/tutorials/remote';
+import RoutineTutorial from '../../../../../../src/components/tutorial/routine/RoutineTutorial';
+import { routineTutorialData } from '../../../../../../src/resources/tutorials/routine';
 
 interface ServerSideProps {
   organization: OrganizationBase;
@@ -29,7 +29,7 @@ interface ServerSideProps {
 const ProjectRoutineGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, organization, me }) => {
   const router = useRouter();
   const sdk = router.query.sdk as TutorialSupportSdk | undefined;
-  const isFrameworkSelected = !!sdk && Object.keys(remoteTutorialData).includes(router.query.sdk as string) && !!router.query.framework;
+  const isFrameworkSelected = !!sdk && Object.keys(routineTutorialData).includes(router.query.sdk as string) && !!router.query.framework;
 
   return (
     <TutorialContext.Provider value={{ me, organization, project, updateProject: () => {} }}>
@@ -63,7 +63,7 @@ const ProjectRoutineGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ pro
 
           <Divider />
 
-          <RemoteTestTutorial selectedSdk={router.query.sdk as TutorialSupportSdk} />
+          <RoutineTutorial selectedSdk={router.query.sdk as TutorialSupportSdk} />
 
           <LinkBox>
             <div />
