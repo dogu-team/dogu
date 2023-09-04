@@ -24,6 +24,7 @@ import { DeviceTag } from './device-tag.entity';
 import { Host } from './host.entity';
 import { DeviceAndDeviceTag, Organization, ProjectAndDevice } from './index';
 import { Project } from './project.entity';
+import { RecordDeviceJob } from './record-device-job.entity';
 import { RemoteDeviceJob } from './remote-device-job.entity';
 
 @Entity(DEVICE_TABLE_NAME)
@@ -102,6 +103,9 @@ export class Device extends BaseEntity implements DeviceBase {
 
   @OneToMany(() => RemoteDeviceJob, (remotedeviceJob) => remotedeviceJob.device, { createForeignKeyConstraints: false })
   remoteDeviceJobs?: RemoteDeviceJob[];
+
+  @OneToMany(() => RecordDeviceJob, (recordDeviceJob) => recordDeviceJob.device, { createForeignKeyConstraints: false })
+  recordDeviceJobs?: RecordDeviceJob[];
 
   @ManyToOne(() => Host, (host) => host.devices, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
   @JoinColumn({ name: DevicePropSnake.host_id })

@@ -49,29 +49,8 @@ export class RecordTestScenarioController {
     return rv;
   }
 
-  // @Post(`:${RecordTestScenarioPropCamel.recordTestScenarioId}/record-test-cases`)
-  // @ProjectPermission(PROJECT_ROLE.WRITE)
-  // async attachRecordTestCaseToScenario(
-  //   @Param(ProjectPropCamel.projectId) projectId: ProjectId,
-  //   @Param(RecordTestScenarioPropCamel.recordTestScenarioId) recordTestScenarioId: RecordTestScenarioId,
-  //   @Body() dto: AddRecordTestCaseToRecordTestScenarioDto,
-  // ): Promise<void> {
-  //   const rv = await this.recordTestScenarioService.attachRecordTestCaseToScenario(projectId, recordTestScenarioId, dto);
-  //   return rv;
-  // }
-
-  // @Delete(`:${RecordTestScenarioPropCamel.recordTestScenarioId}/record-test-cases/:recordTestCaseId`)
-  // @ProjectPermission(PROJECT_ROLE.WRITE)
-  // async detachRecordTestCaseFromScenario(
-  //   @Param(ProjectPropCamel.projectId) projectId: ProjectId,
-  //   @Param(RecordTestScenarioPropCamel.recordTestScenarioId) recordTestScenarioId: RecordTestScenarioId,
-  //   @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
-  // ): Promise<void> {
-  //   await this.recordTestScenarioService.detachRecordTestCaseFromScenario(projectId, recordTestScenarioId, recordTestCaseId);
-  // }
-
   @Post()
-  // @ProjectPermission(PROJECT_ROLE.WRITE)
+  @ProjectPermission(PROJECT_ROLE.WRITE)
   async createRecordTestScenario(
     @Param(ProjectPropCamel.projectId) projectId: ProjectId, //
     @Body() dto: CreateRecordTestScenarioDto,

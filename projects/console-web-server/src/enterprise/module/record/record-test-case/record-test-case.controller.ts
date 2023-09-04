@@ -44,7 +44,7 @@ export class RecordTestCaseController {
     @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,
     @Body() dto: NewSessionRecordTestCaseDto,
   ): Promise<RecordTestCaseBase> {
-    const rv = await this.recordTestCaseService.newSession(this.dataSource.manager, organizationId, projectId, recordTestCaseId, dto);
+    const rv = await this.recordTestCaseService.newSession(this.dataSource.manager, projectId, recordTestCaseId, dto);
     return rv;
   }
 
@@ -61,7 +61,7 @@ export class RecordTestCaseController {
 
   @Get(`:${RecordTestCasePropCamel.recordTestCaseId}/keyboard`)
   @ProjectPermission(PROJECT_ROLE.WRITE)
-  async getKeboardState(
+  async getKeyboardState(
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
     @Param(ProjectPropCamel.projectId) projectId: ProjectId,
     @Param(RecordTestCasePropCamel.recordTestCaseId) recordTestCaseId: RecordTestCaseId,

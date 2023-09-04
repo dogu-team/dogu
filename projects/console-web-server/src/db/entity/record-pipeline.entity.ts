@@ -21,6 +21,9 @@ export class RecordPipeline extends BaseEntity implements RecordPipelineBase {
   @Column({ type: 'smallint', name: RecordPipelinePropSnake.state, default: RECORD_PIPELINE_STATE.WAITING, nullable: false })
   state!: RECORD_PIPELINE_STATE;
 
+  @Column({ type: 'int', name: RecordPipelinePropSnake.index, unsigned: true, unique: true, nullable: false })
+  index!: number;
+
   @Column({ type: 'smallint', name: RecordPipelinePropSnake.creator_type, default: CREATOR_TYPE.UNSPECIFIED, nullable: false })
   creatorType!: CREATOR_TYPE;
 
@@ -59,6 +62,9 @@ export class RecordPipeline extends BaseEntity implements RecordPipelineBase {
 
   @OneToMany(() => RecordDeviceJob, (recordDeviceJob) => recordDeviceJob.recordPipeline, { cascade: ['soft-remove'] })
   recordDeviceJobs?: RecordDeviceJob[];
+
+  // @OneToMany(() => RecordJob, (recordJob) => recordJob.recordPipeline, { cascade: ['soft-remove'] })
+  // recordJobs?: RecordJob[];
 
   @ManyToOne(() => Project, (project) => project, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
   @JoinColumn({ name: RecordPipelinePropSnake.project_id })

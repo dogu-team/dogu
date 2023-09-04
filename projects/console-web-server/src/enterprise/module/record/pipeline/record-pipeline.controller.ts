@@ -5,7 +5,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { PROJECT_ROLE } from '../../../../module/auth/auth.types';
 import { ProjectPermission, User } from '../../../../module/auth/decorators';
-import { RecordPipelineService } from './record-test-pipeline.service';
+import { RecordPipelineService } from './record-pipeline.service';
 
 @Controller('organizations/:organizationId/projects/:projectId/record-test-scenarios/:recordTestScenarioId/record-pipelines')
 export class RecordPipelineController {
@@ -17,7 +17,7 @@ export class RecordPipelineController {
   ) {}
 
   @Post()
-  // @ProjectPermission(PROJECT_ROLE.WRITE)
+  @ProjectPermission(PROJECT_ROLE.WRITE)
   async createRecordPipeline(
     @Param(ProjectPropCamel.projectId) projectId: ProjectId, //
     @Param(RecordTestScenarioPropCamel.recordTestScenarioId) recordTestScenarioId: RecordTestScenarioId,

@@ -5,6 +5,7 @@ import { config } from '../../config';
 import { DoguLogger } from '../logger/logger';
 import { HeartBeatSystemProcessor } from './heartbeat/heartbeat-system.processor';
 import { PipelineSystemProcessor } from './pipeline/pipeline-system.processor';
+import { RecordPipelineSystemProcessor } from './record/record-pipeline-system.processor';
 import { RemoteSystemProcessor } from './remote/remote-system.processor';
 
 @Injectable()
@@ -12,6 +13,7 @@ export class UpdateConsumer {
   private readonly duplicatedHeartBeatCallGuarder = new DuplicatedCallGuarder();
   private readonly duplicatedPipelineCallGuarder = new DuplicatedCallGuarder();
   private readonly duplicatedRemoteCallGuarder = new DuplicatedCallGuarder();
+  private readonly duplicatedRecordCallGuarder = new DuplicatedCallGuarder();
 
   constructor(
     @Inject(PipelineSystemProcessor)
@@ -20,6 +22,9 @@ export class UpdateConsumer {
     private readonly heartBeatSystemProcessor: HeartBeatSystemProcessor,
     @Inject(RemoteSystemProcessor)
     private readonly remoteSystemProcessor: RemoteSystemProcessor,
+    @Inject(RecordPipelineSystemProcessor)
+    private readonly recordPipelineSystemProcessor: RecordPipelineSystemProcessor,
+
     private readonly logger: DoguLogger,
   ) {}
 
@@ -45,6 +50,13 @@ export class UpdateConsumer {
       const remoteEndTime = Date.now();
       if (remoteEndTime - remoteStartTime > 1000) {
         this.logger.error('remote update took too long', { duration: remoteEndTime - remoteStartTime });
+      }
+
+      const recordStartTime = Date.now();
+      await this.duplicatedRecordCallGuarder.guard(this.recordPipelineSystemProcessor.update.bind(this.recordPipelineSystemProcessor));
+      const recordEndTime = Date.now();
+      if (recordEndTime - recordStartTime > 1000) {
+        this.logger.error('record update took too long', { duration: recordEndTime - recordStartTime });
       }
     } catch (error) {
       this.logger.error('comsumer update failed', { error: errorify(error) });

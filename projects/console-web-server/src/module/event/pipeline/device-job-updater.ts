@@ -137,10 +137,11 @@ export class DeviceJobUpdater {
 
         this.logger.info(`device-job ${deviceJob.routineDeviceJobId} status change to in_progress.`);
 
-        await this.dataSource.manager.getRepository(DeviceRunner).update({ deviceRunnerId: deviceRunner.deviceRunnerId }, { isInUse: 1 });
-
-        deviceJob.deviceRunnerId = deviceRunner.deviceRunnerId;
-        await this.deviceJobRunner.setStatus(this.dataSource.manager, deviceJob, PIPELINE_STATUS.IN_PROGRESS, new Date());
+        await this.dataSource.manager.transaction(async (manager) => {
+          await manager.getRepository(DeviceRunner).update({ deviceRunnerId: deviceRunner.deviceRunnerId }, { isInUse: 1 });
+          deviceJob.deviceRunnerId = deviceRunner.deviceRunnerId;
+          await this.deviceJobRunner.setStatus(manager, deviceJob, PIPELINE_STATUS.IN_PROGRESS, new Date());
+        });
 
         this.deviceJobRunner.sendRunDeviceJob(organizationId, deviceId, deviceJob).catch((error) => {
           this.logger.error('sendRunDeviceJob process error', { error: errorify(error) });
