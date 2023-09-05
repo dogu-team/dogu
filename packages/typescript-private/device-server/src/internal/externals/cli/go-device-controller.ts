@@ -1,10 +1,9 @@
 import { Platform } from '@dogu-private/types';
-import { Printable, stringify } from '@dogu-tech/common';
+import { errorify, FilledPrintable, Printable, stringify } from '@dogu-tech/common';
 import { ChildProcess, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import fs from 'fs';
 import { registerBootstrapHandler } from '../../../bootstrap/bootstrap.service';
-import { gdcLogger, logger } from '../../../logger/logger.instance';
 import { pathMap } from '../../../path-map';
 import { config } from '../../config';
 import { Zombieable, ZombieProps, ZombieWaiter } from '../../services/zombie/zombie-component';
@@ -15,18 +14,18 @@ export class GoDeviceControllerProcess implements Zombieable {
   private zombieWaiter: ZombieWaiter;
   private proc: child_process.ChildProcess | null = null;
 
-  constructor(public readonly platform: Platform, public readonly port: number, public readonly deviceServerPort: number) {
+  constructor(public readonly platform: Platform, public readonly port: number, public readonly deviceServerPort: number, private readonly logger: FilledPrintable) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }
 
-  static async create(platform: Platform, deviceServerPort: number): Promise<GoDeviceControllerProcess> {
+  static async create(platform: Platform, deviceServerPort: number, logger: FilledPrintable): Promise<GoDeviceControllerProcess> {
     let port = 0;
     if (config.externalPionStreamer.use) {
       port = config.externalPionStreamer.port;
     } else {
       port = await getFreePort();
     }
-    const ret = new GoDeviceControllerProcess(platform, port, deviceServerPort);
+    const ret = new GoDeviceControllerProcess(platform, port, deviceServerPort, logger);
     await ret.zombieWaiter.waitUntilAlive();
     return ret;
   }
@@ -40,7 +39,7 @@ export class GoDeviceControllerProcess implements Zombieable {
     return { isExternal: config.externalPionStreamer.use, port: this.port };
   }
   get printable(): Printable {
-    return logger;
+    return this.logger;
   }
   get serial(): string {
     return '';
@@ -50,9 +49,9 @@ export class GoDeviceControllerProcess implements Zombieable {
     if (config.externalPionStreamer.use) {
       return;
     }
-    this.proc = startServer(this.port, this.deviceServerPort, gdcLogger);
+    this.proc = startServer(this.port, this.deviceServerPort, this.logger);
     this.proc.on('close', (code: number, signal: string) => {
-      logger.verbose('PionStreamingService.revive exit');
+      this.logger.verbose('PionStreamingService.revive exit');
       ZombieServiceInstance.notifyDie(this, 'ChildProcess close');
     });
     await Promise.resolve();
@@ -60,8 +59,9 @@ export class GoDeviceControllerProcess implements Zombieable {
 
   onDie(): void {
     if (this.proc) {
-      killChildProcess(this.proc).catch((error) => {
-        logger.error('PionStreamingService.onDie killChildProcess error', { error });
+      killChildProcess(this.proc).catch((e) => {
+        const error = errorify(e);
+        this.logger.error('PionStreamingService.onDie killChildProcess error', { error });
       });
     }
   }

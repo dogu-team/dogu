@@ -1,7 +1,7 @@
 import { Platform, Serial } from '@dogu-private/types';
 import systeminformation from 'systeminformation';
 import { env } from '../../env';
-import { idcLogger } from '../../logger/logger.instance';
+import { createGdcLogger, idcLogger } from '../../logger/logger.instance';
 import { MacosChannel } from '../channel/macos-channel';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService } from '../public/device-channel';
 import { DeviceDriver, DeviceScanResult } from '../public/device-driver';
@@ -12,7 +12,7 @@ export class MacosDriver implements DeviceDriver {
   private constructor(private readonly streamingService: StreamingService, private readonly deviceServerService: DeviceServerService) {}
 
   static async create(deviceServerService: DeviceServerService): Promise<MacosDriver> {
-    const streaming = await PionStreamingService.create(Platform.PLATFORM_MACOS, env.DOGU_DEVICE_SERVER_PORT);
+    const streaming = await PionStreamingService.create(Platform.PLATFORM_MACOS, env.DOGU_DEVICE_SERVER_PORT, createGdcLogger(Platform.PLATFORM_MACOS));
     return new MacosDriver(streaming, deviceServerService);
   }
 

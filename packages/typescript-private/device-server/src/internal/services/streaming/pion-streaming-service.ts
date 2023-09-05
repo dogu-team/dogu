@@ -11,7 +11,7 @@ import {
   Serial,
   StreamingAnswer,
 } from '@dogu-private/types';
-import { stringify, stringifyError } from '@dogu-tech/common';
+import { FilledPrintable, stringify, stringifyError } from '@dogu-tech/common';
 import { StreamingOfferDto } from '@dogu-tech/device-client-common';
 import { renameRetry } from '@dogu-tech/node';
 import fs from 'fs';
@@ -19,7 +19,6 @@ import lodash from 'lodash';
 import path from 'path';
 import { Observable } from 'rxjs';
 import { DcGdcDeviceContext } from '../../../../../types/src/protocol/generated';
-import { gdcLogger } from '../../../logger/logger.instance';
 import { makeWebmSeekable } from '../../externals/cli/ffmpeg';
 import { GoDeviceControllerProcess } from '../../externals/cli/go-device-controller';
 import { GoDeviceControllerGrpcClient } from '../../externals/network/go-device-controller-client';
@@ -31,13 +30,13 @@ type DcGdcStartStreamingParam = PrivateProtocol.DcGdcStartStreamingParam;
 type DcGdcStartStreamingResult = PrivateProtocol.DcGdcStartStreamingResult;
 
 export class PionStreamingService implements StreamingService {
-  private constructor(private readonly platform: Platform, private readonly grpcClient: GoDeviceControllerGrpcClient) {}
+  private constructor(private readonly platform: Platform, private readonly grpcClient: GoDeviceControllerGrpcClient, private readonly logger: FilledPrintable) {}
   private port: number | null = null;
 
-  static async create(platform: Platform, deviceServerPort: number): Promise<PionStreamingService> {
-    const gdc = await GoDeviceControllerProcess.create(platform, deviceServerPort);
+  static async create(platform: Platform, deviceServerPort: number, logger: FilledPrintable): Promise<PionStreamingService> {
+    const gdc = await GoDeviceControllerProcess.create(platform, deviceServerPort, logger);
     const gdcClient = await GoDeviceControllerGrpcClient.create(platform, gdc, `127.0.0.1:${gdc.port}`, 60);
-    const ret = new PionStreamingService(platform, gdcClient);
+    const ret = new PionStreamingService(platform, gdcClient, logger);
     return ret;
   }
 
@@ -46,7 +45,7 @@ export class PionStreamingService implements StreamingService {
   }
 
   async startStreamingWithTrickle(serial: string, offer: StreamingOfferDto): Promise<Observable<StreamingAnswer>> {
-    gdcLogger.verbose(`${this.constructor.name}.startStreamingWithTrickle`, {
+    this.logger.verbose(`${this.constructor.name}.startStreamingWithTrickle`, {
       serial,
       offer,
     });
@@ -80,11 +79,11 @@ export class PionStreamingService implements StreamingService {
 
         let errorOccurred: Error | null = null;
         stream.on('error', (error) => {
-          gdcLogger.error('PionStreamingService.startStreamingWithTrickle.onError', { error });
+          this.logger.error('PionStreamingService.startStreamingWithTrickle.onError', { error });
           errorOccurred = error;
         });
         stream.on('close', () => {
-          gdcLogger.verbose('PionStreamingService.startStreamingWithTrickle.onClose');
+          this.logger.verbose('PionStreamingService.startStreamingWithTrickle.onClose');
           if (errorOccurred != null) {
             subscriber.error(errorOccurred);
           } else {
@@ -93,7 +92,7 @@ export class PionStreamingService implements StreamingService {
         });
 
         stream.on('data', (result: DcGdcStartStreamingResult) => {
-          gdcLogger.verbose('PionStreamingService.startStreaming.onData', { result });
+          this.logger.verbose('PionStreamingService.startStreaming.onData', { result });
           const { answer } = result;
           if (answer === undefined) {
             throw new Error('answer is undefined');
@@ -110,7 +109,7 @@ export class PionStreamingService implements StreamingService {
   }
 
   stopStreaming(serial: Serial): void {
-    gdcLogger.warn('PionStreamingService.stopStreaming is not implemented yet');
+    this.logger.warn('PionStreamingService.stopStreaming is not implemented yet');
   }
 
   async startRecord(serial: string, option: ScreenRecordOption): Promise<ErrorResult> {
@@ -142,8 +141,8 @@ export class PionStreamingService implements StreamingService {
     if (!result.error) {
       throw new ErrorResultError(Code.CODE_STRING_EMPTY, 'startRecord response is null');
     }
-    await postProcessRecord(result.filePath);
-    await renameRetry(result.filePath, getOriginFilePathFromTmp(result.filePath), gdcLogger);
+    await postProcessRecord(result.filePath, this.logger);
+    await renameRetry(result.filePath, getOriginFilePathFromTmp(result.filePath), this.logger);
 
     return result.error;
   }
@@ -157,17 +156,17 @@ export class PionStreamingService implements StreamingService {
   }
 }
 
-async function postProcessRecord(filePath: string) {
+async function postProcessRecord(filePath: string, logger: FilledPrintable): Promise<void> {
   const ext = path.extname(filePath);
   if (ext !== '.webm') {
     return;
   }
 
   const convertedFilePath = path.resolve(path.dirname(filePath), `seekable_${path.basename(filePath)}`);
-  await makeWebmSeekable(filePath, convertedFilePath, gdcLogger);
-  gdcLogger.info('startRecording postProcessRecord completed', { filePath, convertedFilePath });
+  await makeWebmSeekable(filePath, convertedFilePath, logger);
+  logger.info('startRecording postProcessRecord completed', { filePath, convertedFilePath });
   const fileTmpPath = `${filePath}.tmp`;
-  await renameRetry(filePath, fileTmpPath, gdcLogger);
-  await renameRetry(convertedFilePath, filePath, gdcLogger);
+  await renameRetry(filePath, fileTmpPath, logger);
+  await renameRetry(convertedFilePath, filePath, logger);
   await fs.promises.rm(fileTmpPath, { force: true });
 }
