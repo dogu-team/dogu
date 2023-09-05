@@ -30,23 +30,23 @@ export interface RoutineSchema {
 export interface JobSchema {
   needs?: string | string[];
   record?: boolean;
+  browserName?: string;
+  browserVersion?: string;
+  appVersion?:
+    | string
+    | {
+        android?: string;
+        ios?: string;
+        macos?: string;
+        windows?: string;
+      };
   'runs-on':
     | {
         group: string | string[];
       }
     | string
-    | string[]
-    | RunsOnWithBrowserNameSchema;
+    | string[];
   steps: StepSchema[];
-}
-/**
- * This interface was referenced by `RoutineSchema`'s JSON-Schema
- * via the `definition` "RunsOnWithBrowserName".
- */
-export interface RunsOnWithBrowserNameSchema {
-  browserName: string;
-  browserVersion?: string;
-  tag: string;
 }
 /**
  * This interface was referenced by `RoutineSchema`'s JSON-Schema

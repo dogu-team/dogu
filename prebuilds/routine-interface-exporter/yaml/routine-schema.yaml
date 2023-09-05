@@ -38,6 +38,24 @@ definitions:
             type: array
       record:
         type: boolean
+      browserName:
+        type: string
+      browserVersion:
+        type: string
+      appVersion:
+        anyOf:
+          - type: string
+          - type: object
+            additionalProperties: false
+            properties:
+              android:
+                type: string
+              ios:
+                type: string
+              macos:
+                type: string
+              windows:
+                type: string
       runs-on:
         anyOf:
           - additionalProperties: false
@@ -55,7 +73,6 @@ definitions:
           - items:
               type: string
             type: array
-          - '$ref': '#/definitions/RunsOnWithBrowserName'
       steps:
         type: array
         items:
@@ -86,17 +103,3 @@ definitions:
         description: The working directory for the step. relative to the routine working directory.
     required:
       - name
-  RunsOnWithBrowserName:
-    title: RunsOnWithBrowserNameSchema
-    type: object
-    additionalProperties: false
-    properties:
-      browserName:
-        type: string
-      browserVersion:
-        type: string
-      tag:
-        type: string
-    required:
-      - browserName
-      - tag
