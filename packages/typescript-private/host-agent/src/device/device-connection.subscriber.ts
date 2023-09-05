@@ -1,5 +1,5 @@
 import { DeviceConnectionState } from '@dogu-private/types';
-import { delay, Instance, transformAndValidate, validateAndEmitEventAsync } from '@dogu-tech/common';
+import { assertUnreachable, delay, Instance, transformAndValidate, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { DeviceConnectionSubscribe } from '@dogu-tech/device-client';
 import {} from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
@@ -85,12 +85,21 @@ export class DeviceConnectionSubscriber {
   private async onMessage(data: string): Promise<void> {
     const deviceConnectionInfo = await transformAndValidate(DeviceConnectionSubscribe.receiveMessage, JSON.parse(data));
     const { state } = deviceConnectionInfo;
-    if (state === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED) {
-      await this.emitOnDeviceConnected(deviceConnectionInfo);
-    } else if (state === DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED) {
-      await this.emitOnDeviceDisconnected(deviceConnectionInfo);
-    } else {
-      throw new Error(`DeviceConnectionStateSubscriber received unknown message ${String(deviceConnectionInfo)}`);
+    switch (state) {
+      case DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED:
+        await this.emitOnDeviceConnected(deviceConnectionInfo);
+        break;
+      case DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED:
+        await this.emitOnDeviceDisconnected(deviceConnectionInfo);
+        break;
+      case DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTING:
+      case DeviceConnectionState.DEVICE_CONNECTION_STATE_ERROR:
+      case DeviceConnectionState.DEVICE_CONNECTION_STATE_UNSPECIFIED:
+      case DeviceConnectionState.UNRECOGNIZED:
+        // noop
+        break;
+      default:
+        assertUnreachable(state);
     }
   }
 

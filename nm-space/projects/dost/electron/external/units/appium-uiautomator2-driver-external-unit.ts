@@ -1,4 +1,4 @@
-import { delay, errorify, PrefixLogger, stringify } from '@dogu-tech/common';
+import { delay, PrefixLogger, stringify } from '@dogu-tech/common';
 import { HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
 import { spawn } from 'child_process';
 import fs from 'fs';
@@ -12,8 +12,8 @@ import { StdLogCallbackService } from '../../log/std-log-callback-service';
 import { ThirdPartyPathMap } from '../../path-map';
 import { ExternalUnitCallback, IExternalUnit } from '../external-unit';
 
-const installRetryCount = 2;
-const installRetryInterval = 3000;
+const installRetryCount = 3;
+const installRetryInterval = 5_000;
 
 export class AppiumUiAutomator2DriverExternalUnit extends IExternalUnit {
   private readonly logger = new PrefixLogger(logger, '[Appium UiAutomator2 Driver]');
@@ -160,7 +160,6 @@ export class AppiumUiAutomator2DriverExternalUnit extends IExternalUnit {
         }
         onStdout?.(message);
         this.stdLogCallbackService.stdout(message);
-        this.logger.info(message);
       });
       child.stderr.setEncoding('utf8');
       child.stderr.on('data', (data) => {
@@ -169,37 +168,31 @@ export class AppiumUiAutomator2DriverExternalUnit extends IExternalUnit {
           return;
         }
         this.stdLogCallbackService.stderr(message);
-        this.logger.warn(message);
       });
     });
   }
 
   private async installDriver(): Promise<void> {
-    for (let i = 1; i <= installRetryCount; i++) {
-      try {
-        await this.execute(['appium', 'driver', 'install', 'uiautomator2']);
-        return;
-      } catch (error) {
-        let casted = errorify(error);
-        if (i === installRetryCount) {
-          throw casted;
-        } else {
-          this.logger.warn(`appium-uiautomator2-driver install failed. retrying... ${i}/${installRetryCount}`, { error: casted });
-          await delay(installRetryInterval);
-        }
-      }
-    }
+    await this.execute(['appium', 'driver', 'install', 'uiautomator2']);
   }
 
   async install(): Promise<void> {
     this.unitCallback.onInstallStarted();
-    const installed = await this.checkInstalled();
-    if (installed) {
-      this.logger.info('already installed');
-      await this.update();
-    } else {
-      this.logger.info('not installed');
-      await this.installDriver();
+    for (let i = 0; i < installRetryCount; i++) {
+      try {
+        const installed = await this.checkInstalled();
+        if (installed) {
+          this.logger.info('already installed');
+          await this.update();
+        } else {
+          this.logger.info('not installed');
+          await this.installDriver();
+        }
+        break;
+      } catch (error) {
+        this.logger.error(error);
+        await delay(installRetryInterval);
+      }
     }
     this.unitCallback.onInstallCompleted();
   }

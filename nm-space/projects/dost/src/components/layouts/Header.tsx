@@ -32,7 +32,7 @@ const Header = ({ right }: Props) => {
         <Title>{getTitle()}</Title>
       </TitleWrapper>
 
-      <Flex alignItems="center">
+      <Flex alignItems="center" style={{ position: 'relative' }}>
         <div style={{ padding: '0 1rem' }}>{right}</div>
         {platform === 'win32' && <WindowsTitleButtonContainer />}
       </Flex>
@@ -51,7 +51,7 @@ const StyledHeader = styled.header<{ mode: ColorMode }>`
   align-items: center;
   -webkit-app-region: drag;
   background-color: ${(props) => (props.mode === 'dark' ? '#000000' : 'var(--chakra-colors-gray-100)')};
-  z-index: 999;
+  z-index: 9999;
 
   button {
     -webkit-app-region: no-drag;

@@ -177,7 +177,10 @@ export class SettingsService {
   private async createZipLogReport(): Promise<string> {
     const homePath = HostPaths.doguHomePath;
     const logsPath = HostPaths.logsPath(homePath);
+    await fs.promises.mkdir(logsPath, { recursive: true });
+
     const configsPath = HostPaths.configsPath(homePath);
+    await fs.promises.mkdir(configsPath, { recursive: true });
 
     const contentsDirPath = path.resolve(HostPaths.doguTempPath(), 'dogu-report');
     const destLogsPath = path.resolve(contentsDirPath, 'logs');
