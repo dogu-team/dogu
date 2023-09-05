@@ -38,7 +38,6 @@ const RoutineEditorMenu = ({ saveButtonText, onSave, mode, onChangeMode }: Props
           <Radio.Button value={RoutineEditMode.SCRIPT} id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'edit-script-routine-btn' : undefined}>
             {t('routine:routineEditScriptModeButtonTitle')}
           </Radio.Button>
-          <Radio.Button value={RoutineEditMode.PREVIEW}>{t('routine:routineEditPreviewModeButtonTitle')}</Radio.Button>
         </Radio.Group>
       </div>
       <div>
