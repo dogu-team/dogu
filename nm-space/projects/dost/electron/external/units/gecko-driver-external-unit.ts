@@ -1,4 +1,3 @@
-import { BrowserInstaller } from '@dogu-private/device-server';
 import { PrefixLogger } from '@dogu-tech/common';
 import { HostPaths, renameRetry } from '@dogu-tech/node';
 import { exec } from 'child_process';
@@ -38,7 +37,6 @@ const Infos = {
 
 export class GeckoDriverExternalUnit extends IExternalUnit {
   private readonly logger = new PrefixLogger(logger, `[${Name}]`);
-  private readonly browserInstaller = new BrowserInstaller();
 
   constructor(
     private readonly windowService: WindowService,
@@ -70,13 +68,13 @@ export class GeckoDriverExternalUnit extends IExternalUnit {
   }
 
   async validateInternal(): Promise<void> {
-    const geckoDriverPath = HostPaths.external.browser.geckoDriverPath();
-    const stat = await fs.promises.stat(geckoDriverPath).catch(() => null);
+    const geckodriverPath = HostPaths.external.browser.geckodriverPath();
+    const stat = await fs.promises.stat(geckodriverPath).catch(() => null);
     if (!stat || !stat.isFile()) {
       throw new Error('gecko driver not found or not a file');
     }
 
-    const { stdout, stderr } = await execAsync(`${geckoDriverPath} --version`, { timeout: 60_000 });
+    const { stdout, stderr } = await execAsync(`${geckodriverPath} --version`, { timeout: 60_000 });
     if (stdout) {
       this.stdLogCallbackService.stdout(stdout);
     }
@@ -118,15 +116,13 @@ export class GeckoDriverExternalUnit extends IExternalUnit {
   private async moveFile(uncompressedPath: string): Promise<void> {
     const relativePath = this.getRelativePath();
     const source = path.resolve(uncompressedPath, relativePath);
-    const geckoDriverPath = HostPaths.external.browser.geckoDriverPath();
-    await this.browserInstaller.lockBrowsersPath(async () => {
-      await fs.promises.mkdir(HostPaths.external.browser.browsersPath(), { recursive: true });
-      const stat = await fs.promises.stat(geckoDriverPath).catch(() => null);
-      if (stat) {
-        await fs.promises.rm(geckoDriverPath, { recursive: true, force: true });
-      }
-      await renameRetry(source, geckoDriverPath, this.stdLogCallbackService.createPrintable());
-    });
+    const geckodriverPath = HostPaths.external.browser.geckodriverPath();
+    await fs.promises.mkdir(HostPaths.external.browser.browsersPath(), { recursive: true });
+    const stat = await fs.promises.stat(geckodriverPath).catch(() => null);
+    if (stat) {
+      await fs.promises.rm(geckodriverPath, { recursive: true, force: true });
+    }
+    await renameRetry(source, geckodriverPath, this.stdLogCallbackService.createPrintable());
   }
 
   private getUncompressFunction(): (source: string, dest: string) => Promise<void> {

@@ -1,4 +1,4 @@
-import { BrowserName, BrowserPlatform, BrowserVersion, getBrowserNamesByPlatform } from '@dogu-private/types';
+import { AndroidBrowserPackageNameMap, BrowserName, BrowserPlatform, BrowserVersion, getBrowserNamesByPlatform, isAllowedAndroidBrowserName } from '@dogu-private/types';
 import { assertUnreachable, PrefixLogger } from '@dogu-tech/common';
 import {
   EnsureBrowserAndDriverOptions,
@@ -299,7 +299,68 @@ export class BrowserManager {
               }));
               return { browserInstallations };
             }
-            case 'android':
+            case 'android': {
+              if (!deviceSerial) {
+                throw new Error('deviceSerial is required');
+              }
+
+              const androidBrowserPackageNames = Object.values(AndroidBrowserPackageNameMap);
+              const installedPackages = await this.adb.getIntalledPackages(deviceSerial);
+              const installedBrowserPackages = installedPackages.filter(({ packageName }) => androidBrowserPackageNames.includes(packageName));
+              const installedPackageInfos = await Promise.allSettled(
+                installedBrowserPackages.map(async ({ packageName }) => {
+                  const info = await this.adb.getInstalledPackageInfo(deviceSerial, packageName, { versionName: true });
+                  return {
+                    packageName,
+                    versionName: info.versionName,
+                  };
+                }),
+              );
+
+              const packageInfos = installedPackageInfos
+                .filter((setteled): setteled is PromiseFulfilledResult<{ packageName: string; versionName: string | undefined }> => setteled.status === 'fulfilled')
+                .map((setteled) => setteled.value)
+                .filter((value): value is { packageName: string; versionName: string } => !!value.versionName);
+
+              const browserInstallations = packageInfos.map(({ packageName, versionName }) => {
+                const browserName = Object.entries(AndroidBrowserPackageNameMap).find(([, packageName]) => packageName === packageName)?.[0];
+                if (!browserName) {
+                  throw new Error(`Browser name not found for package name ${packageName}`);
+                }
+
+                if (!isAllowedAndroidBrowserName(browserName)) {
+                  throw new Error(`Browser name ${browserName} is not allowed`);
+                }
+
+                let browserMajorVersion: number | undefined = undefined;
+                switch (browserName) {
+                  case 'chrome':
+                    browserMajorVersion = chromeVersionUtils.parse(versionName).major;
+                    break;
+                  case 'edge':
+                    browserMajorVersion = chromeVersionUtils.parse(versionName).major;
+                    break;
+                  case 'firefox':
+                    browserMajorVersion = firefoxVersionUtils.parse(versionName).major;
+                    break;
+                  case 'samsung-internet':
+                    browserMajorVersion = chromeVersionUtils.parse(versionName).major;
+                    break;
+                  default:
+                    assertUnreachable(browserName);
+                }
+
+                return {
+                  browserName,
+                  browserPlatform,
+                  browserVersion: versionName,
+                  browserMajorVersion,
+                  browserPackageName: packageName,
+                };
+              });
+
+              return { browserInstallations };
+            }
             case 'ios':
               throw new Error('Not implemented');
             default:

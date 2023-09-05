@@ -82,7 +82,7 @@ const RunsOn = ({ runsOn, onDelete }: RunsOnProps) => {
     // FIXME: henry - browser-manager
   } else if ('browserName' in runsOn) {
     return (
-      <Tag color="pink" closable onClose={() => onDelete(runsOn.platformName!)}>
+      <Tag color="pink" closable onClose={() => onDelete(runsOn.tag!)}>
         {runsOn.browserName}
       </Tag>
     );
@@ -221,7 +221,7 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
         return;
         // FIXME: henry - browser-manager
       } else if ('browserName' in runsOn) {
-        updateJob({ ...job, 'runs-on': { browserName: runsOn.browserName, platformName: '' } }, name);
+        updateJob({ ...job, 'runs-on': { browserName: runsOn.browserName, tag: '' } }, name);
         return;
       }
 

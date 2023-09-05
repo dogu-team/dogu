@@ -1,12 +1,5 @@
 import { YamlManager } from '@dogu-private/console';
-import {
-  isAllowedBrowserName,
-  isAllowedBrowserNameForPlatform,
-  isAllowedBrowserPlatform,
-  RoutineSchema,
-  ROUTINE_YAML_SCHEMA_PATH,
-  RunsOnWithBrowserNameSchema,
-} from '@dogu-private/types';
+import { isAllowedBrowserName, RoutineSchema, ROUTINE_YAML_SCHEMA_PATH, RunsOnWithBrowserNameSchema } from '@dogu-private/types';
 import { stringifyError } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import Ajv, { ValidateFunction } from 'ajv';
@@ -88,22 +81,16 @@ export class YamlLoaderService {
       .map((jobName) => jobs[jobName]['runs-on'])
       .filter((runsOn) => typeof runsOn === 'object')
       .map((runsOn) => runsOn as object)
-      .filter((runsOn) => 'browserName' in runsOn)
-      .map((runsOn) => runsOn as RunsOnWithBrowserNameSchema)
+      .filter((runsOn): runsOn is RunsOnWithBrowserNameSchema => 'browserName' in runsOn)
       .map((runsOn) => {
-        const { browserName, platformName } = runsOn;
+        const { browserName, tag } = runsOn;
         if (!isAllowedBrowserName(browserName)) {
-          return new Error(`Invalid browser [${browserName}] with platform [${platformName}]`);
-        } else if (!isAllowedBrowserPlatform(platformName)) {
-          return new Error(`Invalid platform [${platformName}] with browser [${browserName}]`);
-        } else if (!isAllowedBrowserNameForPlatform(browserName, platformName)) {
-          return new Error(`Invalid browser [${browserName}] for platform [${platformName}]`);
+          return new Error(`Invalid browser [${browserName}] with tag [${tag}]`);
         } else {
           return null;
         }
       })
-      .filter((error) => error !== null)
-      .map((error) => error as Error);
+      .filter((error): error is Error => error !== null);
 
     if (errors.length > 0) {
       throw new HttpException(errors.map((error) => error.message).join(', '), HttpStatus.BAD_REQUEST);
