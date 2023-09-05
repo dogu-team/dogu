@@ -1,5 +1,6 @@
 import { WebSocketSpec } from '@dogu-tech/common';
 import { BrowserName, BrowserPlatform, Serial } from '@dogu-tech/types';
+import { Type } from 'class-transformer';
 import { IsIn, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { EnsureBrowserAndDriverOptions, EnsureBrowserAndDriverResult } from '../../../validations/types/browser-manager';
 
@@ -35,12 +36,11 @@ export class DeviceHostEnsureBrowserAndDriverReceiveMessage implements EnsureBro
   browserPackageName?: string;
 
   @IsString()
-  @IsOptional()
-  browserVersion?: string;
+  browserVersion!: string;
 
   @IsNumber()
-  @IsOptional()
-  browserMajorVersion?: number;
+  @Type(() => Number)
+  browserMajorVersion!: number;
 
   @IsString()
   @IsNotEmpty()
