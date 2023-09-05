@@ -258,10 +258,10 @@ func (s *SurfaceConnector) startRecvRoutine(ctx context.Context, surfaceId int64
 		default:
 			buf, err := s.surface.Receive()
 			if err != nil {
-				log.Inst.Warn("surfaceConnector.startRecvRoutine failed", zap.String("serial", s.serial), zap.Error(err))
+				log.Inst.Warn("surfaceConnector.startRecvRoutine failed", zap.String("serial", s.serial), zap.Int64("surfaceId", surfaceId), zap.Error(err))
 				s.msgChan <- SurfaceMessage{surfaceId: surfaceId, msgType: close, err: err}
 				s.msgChan <- SurfaceMessage{surfaceId: surfaceId, msgType: reconnect}
-				break
+				return
 			}
 			s.Profile.ReadSizePerPeriod += len(buf)
 			s.Profile.ReadCountPerPeriod += 1
