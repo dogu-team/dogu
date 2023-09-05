@@ -206,14 +206,6 @@ func (s *SurfaceConnector) startRoutine() {
 				log.Inst.Warn("surfaceConnector.startRoutine close ignored", zap.String("serial", s.serial), zap.Int64("surfaceId", s.surfaceId), zap.Int64("msg.surfaceId", msg.surfaceId))
 				continue
 			}
-			// if readCancel != nil {
-			// 	readCancel()
-			// 	readCancel = nil
-			// }
-			// if readDoneWaitGroup != nil {
-			// 	readDoneWaitGroup.Wait()
-			// 	readDoneWaitGroup = nil
-			// }
 
 			s.notifySurfaceClose("close")
 		case receive:
