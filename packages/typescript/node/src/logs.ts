@@ -73,6 +73,8 @@ class AdditionalTransportPropertyAccessor {
 
 const additionalTransportPropertyAccessor = new AdditionalTransportPropertyAccessor();
 
+export const maxLogPeriod = '7d';
+
 export class LogTransportFactory {
   static createConsole(): Transport {
     const baseFormat = LogFormatFactory.createBase();
@@ -103,7 +105,7 @@ export class LogTransportFactory {
       datePattern: 'YYYY-MM-DD-HH',
       zippedArchive: false,
       maxSize: '20m',
-      maxFiles: '7d',
+      maxFiles: maxLogPeriod,
       format: format.combine(LogFormatFactory.createBase(), format.uncolorize()),
       level: level,
     });
