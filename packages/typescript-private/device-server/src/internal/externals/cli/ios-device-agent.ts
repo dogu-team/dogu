@@ -106,14 +106,14 @@ export class IosDeviceAgentProcess {
 
   error(): string {
     if (!this.xctest.zombieWaiter.isAlive()) {
-      return this.xctest.error;
+      return `IosDeviceAgent error. ${this.xctest.error}`;
     }
     if (!this.screenTunnel.zombieWaiter.isAlive()) {
-      return 'screen forward error';
+      return 'Screen port forward error';
     }
 
     if (!this.grpcTunnel.zombieWaiter.isAlive()) {
-      return 'input forward error';
+      return 'Input port forward error';
     }
     return '';
   }
