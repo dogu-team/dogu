@@ -2,6 +2,7 @@ import { HeaderRecord, PromiseOrValue } from '@dogu-tech/common';
 import { RelayRequest, RelayResponse, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
 import { Injectable } from '@nestjs/common';
 import _ from 'lodash';
+import { BrowserManagerService } from '../../browser-manager/browser-manager.service';
 import { DoguLogger } from '../../logger/logger';
 import { SeleniumService } from '../../selenium/selenium.service';
 import { OnAfterRequestResult, OnBeforeRequestResult } from './common';
@@ -10,6 +11,7 @@ export abstract class SeleniumEndpointHandler {
   abstract get endpointType(): string;
 
   onBeforeRequest(
+    browserManagerService: BrowserManagerService,
     seleniumService: SeleniumService,
     headers: HeaderRecord,
     endpoint: WebDriverEndPoint,

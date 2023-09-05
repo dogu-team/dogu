@@ -1,4 +1,4 @@
-import { BrowserName, BrowserPlatform, Serial } from '@dogu-tech/types';
+import { BrowserName, BrowserPlatform, BrowserVersion, Serial } from '@dogu-tech/types';
 import { Type } from 'class-transformer';
 import { IsIn, IsNumber, IsOptional, IsString } from 'class-validator';
 
@@ -15,15 +15,16 @@ export interface BrowserInfo {
 }
 
 export type EnsureBrowserAndDriverOptions = Readonly<Pick<BrowserInfo, 'browserName' | 'browserPlatform'> & Partial<Pick<BrowserInfo, 'browserVersion' | 'deviceSerial'>>>;
-export type EnsureBrowserAndDriverResult = Pick<
-  BrowserInfo,
-  'browserName' | 'browserPlatform' | 'browserVersion' | 'browserMajorVersion' | 'browserDriverVersion' | 'browserDriverPath'
-> &
-  Partial<Pick<BrowserInfo, 'browserPath' | 'browserPackageName'>>;
+export type EnsureBrowserAndDriverResult = Readonly<
+  Pick<BrowserInfo, 'browserName' | 'browserPlatform' | 'browserVersion' | 'browserMajorVersion' | 'browserDriverVersion' | 'browserDriverPath'> &
+    Partial<Pick<BrowserInfo, 'browserPath' | 'browserPackageName'>>
+>;
 
-export type FindAllBrowserInstallationsOptions = Readonly<Pick<BrowserInfo, 'browserName' | 'browserPlatform'> & Partial<Pick<BrowserInfo, 'deviceSerial'>>>;
+export type FindBrowserInstallationsOptions = Readonly<Pick<BrowserInfo, 'browserName' | 'browserPlatform'> & Partial<Pick<BrowserInfo, 'deviceSerial'>>>;
 export class BrowserInstallation
-  implements Pick<BrowserInfo, 'browserName' | 'browserPlatform'>, Partial<Pick<BrowserInfo, 'browserVersion' | 'browserMajorVersion' | 'browserPath' | 'browserPackageName'>>
+  implements
+    Readonly<Pick<BrowserInfo, 'browserName' | 'browserPlatform'>>,
+    Readonly<Partial<Pick<BrowserInfo, 'browserVersion' | 'browserMajorVersion' | 'browserPath' | 'browserPackageName'>>>
 {
   @IsIn(BrowserName)
   browserName!: BrowserName;
@@ -32,13 +33,11 @@ export class BrowserInstallation
   browserPlatform!: BrowserPlatform;
 
   @IsString()
-  @IsOptional()
-  browserVersion?: string;
+  browserVersion!: BrowserVersion;
 
   @IsNumber()
   @Type(() => Number)
-  @IsOptional()
-  browserMajorVersion?: number;
+  browserMajorVersion!: number;
 
   @IsString()
   @IsOptional()
@@ -48,6 +47,9 @@ export class BrowserInstallation
   @IsOptional()
   browserPackageName?: string;
 }
-export interface FindAllBrowserInstallationsResult {
-  browserInstallations: BrowserInstallation[];
+export interface FindBrowserInstallationsResult {
+  browserInstallations: Readonly<BrowserInstallation>[];
 }
+
+export type FindAllBrowserInstallationsOptions = Readonly<Omit<FindBrowserInstallationsOptions, 'browserName'>>;
+export type FindAllbrowserInstallationsResult = Readonly<FindBrowserInstallationsResult>;

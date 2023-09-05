@@ -82,3 +82,25 @@ export function getBrowserNamesByPlatform(browserPlatform: BrowserPlatform): Bro
       assertUnreachable(browserPlatform);
   }
 }
+
+export function getBrowserPlatformByNodeJsPlatform(platform: NodeJS.Platform): BrowserPlatform {
+  switch (platform) {
+    case 'darwin':
+      return 'macos';
+    case 'win32':
+      return 'windows';
+    case 'android':
+      return 'android';
+    case 'aix':
+    case 'freebsd':
+    case 'haiku':
+    case 'linux':
+    case 'openbsd':
+    case 'sunos':
+    case 'cygwin':
+    case 'netbsd':
+      throw new Error(`Unsupported platform: ${platform}`);
+    default:
+      assertUnreachable(platform);
+  }
+}

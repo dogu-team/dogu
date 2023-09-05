@@ -8,19 +8,19 @@ const execAsync = promisify(exec);
 const versionTimeout = 10_000;
 
 /**
- * @example geckodriver 0.33.0 (a80e5fd61076 2023-04-02 18:31 +0000)
+ * @example Included with Safari 16.5.2 (18615.2.9.11.10)
  */
-const versionPattern = /^geckodriver\s(?<version>.+)\s\(.+\)\s*$/;
+const versionPattern = /^Included with Safari\s(?<version>.+)\s\(.+\)\s*$/;
 
-export class Geckodriver {
+export class Safaridriver {
   private readonly logger = new PrefixLogger(logger, `[${this.constructor.name}]`);
 
   getExecutablePath(): string {
-    return HostPaths.external.browser.geckodriverPath();
+    return HostPaths.external.browser.safaridriverPath();
   }
 
   async getVersion(): Promise<string | undefined> {
-    const driverPath = HostPaths.external.browser.geckodriverPath();
+    const driverPath = HostPaths.external.browser.safaridriverPath();
     const { stdout } = await execAsync(`${driverPath} --version`, { encoding: 'utf8', timeout: versionTimeout });
     for (const line of stdout.split('\n')) {
       const match = line.match(versionPattern);

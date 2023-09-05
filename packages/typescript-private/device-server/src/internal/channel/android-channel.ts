@@ -136,7 +136,7 @@ export class AndroidChannel implements DeviceChannel {
     );
     const serialUnique = await generateSerialUnique(systemInfo);
 
-    const browserInstallations = await deviceServerService.browserManagerService.findAllBrowserInstallations({
+    const findAllBrowserInstallationsResult = await deviceServerService.browserManagerService.findAllBrowserInstallations({
       deviceSerial: serial,
       browserPlatform: 'android',
     });
@@ -153,7 +153,7 @@ export class AndroidChannel implements DeviceChannel {
       appiumContextProxy,
       appiumDeviceWebDriverHandler,
       logger,
-      browserInstallations,
+      findAllBrowserInstallationsResult.browserInstallations,
     );
 
     await deviceAgent.connect();
