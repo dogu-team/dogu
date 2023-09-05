@@ -196,7 +196,7 @@ class ScreenEncoder(
                 } else {
                     val curTime = System.currentTimeMillis()
                     val elapsedTime = curTime - lastKeyframeShowTime
-                    if (elapsedTime > 5000) {
+                    if (elapsedTime > 3000) {
                         val param = Bundle()
                         param.putInt(MediaCodec.PARAMETER_KEY_REQUEST_SYNC_FRAME, 0)
                         codec.setParameters(param)
