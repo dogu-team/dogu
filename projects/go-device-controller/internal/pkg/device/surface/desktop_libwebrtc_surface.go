@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"go-device-controller/types/protocol/generated/proto/outer/streaming"
 
@@ -96,11 +97,11 @@ func (s *desktopLibwebrtcSurface) Receive() ([]byte, error) {
 
 	}
 	for {
-		// err := s.conn.SetReadDeadline(time.Now().Add(time.Minute))
-		// if err != nil {
-		// 	log.Inst.Error("desktopLibwebrtcSurface.SetReadDeadline error", zap.Error(err))
-		// }
-		err := s.recvQueue.Push(s.reader)
+		err := s.conn.SetReadDeadline(time.Now().Add(time.Minute))
+		if err != nil {
+			log.Inst.Error("desktopLibwebrtcSurface.SetReadDeadline error", zap.Error(err))
+		}
+		err = s.recvQueue.Push(s.reader)
 		if err != nil {
 			log.Inst.Error("desktopLibwebrtcSurface.Receive push failed", zap.Error(err))
 			return nil, err

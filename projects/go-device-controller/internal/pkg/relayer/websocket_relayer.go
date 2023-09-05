@@ -56,11 +56,6 @@ func (r *WebsocketRelayer) startRecvLoop() {
 			continue
 		}
 
-		err := r.conn.SetReadDeadline(time.Now().Add(60 * time.Second))
-		if err != nil {
-			log.Inst.Error("WebsocketRelayer.SetReadDeadline error", zap.String("serial", r.serial), zap.Error(err))
-		}
-
 		_, bytes, err := r.conn.ReadMessage()
 		if err != nil {
 			log.Inst.Error("WebsocketRelayer.ReadMessage error", zap.String("serial", r.serial), zap.Error(err))
