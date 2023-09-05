@@ -440,7 +440,7 @@ async function generateSerialUnique(systemInfo: DeviceSystemInfo): Promise<strin
     return systemInfo.system.serial; // should use ro.serialno value of "adb getprop". because when connect device with wifi, serial from "adb devices" changes.
   }
   const uuid = await systeminformation.uuid();
-  const serialUnique = `${uuid.os}-${systemInfo.system.serial}`;
+  const serialUnique = `${uuid.os}-${systemInfo.system.model}`;
 
   return serialUnique;
 }
