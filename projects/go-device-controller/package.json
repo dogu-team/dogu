@@ -9,6 +9,7 @@
     "dev": "air",
     "killonport": "lsof -ti:50055,2345 -sTCP:LISTEN | xargs kill",
     "newbie:dev": "go install -v golang.org/x/tools/gopls@v0.11.0 && go install -v github.com/cosmtrek/air@v1.41.0",
+    "rebuild:archive": "yarn run clean && yarn run build:archive",
     "start:dev": "./build/go-device-controller"
   },
   "devDependencies": {
