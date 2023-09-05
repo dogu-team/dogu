@@ -17,7 +17,7 @@ export interface BrowserInfo {
 export type EnsureBrowserAndDriverOptions = Readonly<Pick<BrowserInfo, 'browserName' | 'browserPlatform'> & Partial<Pick<BrowserInfo, 'browserVersion' | 'deviceSerial'>>>;
 export type EnsureBrowserAndDriverResult = Readonly<
   Pick<BrowserInfo, 'browserName' | 'browserPlatform' | 'browserVersion' | 'browserMajorVersion' | 'browserDriverVersion' | 'browserDriverPath'> &
-    Partial<Pick<BrowserInfo, 'browserPath' | 'browserPackageName'>>
+    Partial<Pick<BrowserInfo, 'browserPath' | 'browserPackageName' | 'deviceSerial'>>
 >;
 
 export type FindBrowserInstallationsOptions = Readonly<Pick<BrowserInfo, 'browserName' | 'browserPlatform'> & Partial<Pick<BrowserInfo, 'deviceSerial'>>>;
