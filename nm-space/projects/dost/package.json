@@ -11,7 +11,7 @@
     "build": "yarn run build:react && yarn run build:electron",
     "build:electron": "tsc -p electron",
     "build:react": "cross-env CI=true react-app-rewired build",
-    "clean": "shx rm -rf prepare build dist generated/logs",
+    "clean": "shx rm -f prepare build dist generated/logs",
     "deploy:electron": "ts-node scripts/build",
     "deploy:notarize": "ts-node scripts/build --notarize=true",
     "deploy:publish": "ts-node scripts/build --notarize=true --publish=true",
