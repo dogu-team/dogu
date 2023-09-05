@@ -67,7 +67,7 @@ export interface RuntimeInfoNet {
 export interface RuntimeInfoDisplay {
   name: string;
   isScreenOn: boolean;
-  error: string;
+  error?: string | undefined;
 }
 
 export interface RuntimeInfoBattery {
@@ -737,7 +737,7 @@ export const RuntimeInfoNet = {
 };
 
 function createBaseRuntimeInfoDisplay(): RuntimeInfoDisplay {
-  return { name: '', isScreenOn: false, error: '' };
+  return { name: '', isScreenOn: false, error: undefined };
 }
 
 export const RuntimeInfoDisplay = {
@@ -748,7 +748,7 @@ export const RuntimeInfoDisplay = {
     if (message.isScreenOn === true) {
       writer.uint32(16).bool(message.isScreenOn);
     }
-    if (message.error !== '') {
+    if (message.error !== undefined) {
       writer.uint32(26).string(message.error);
     }
     return writer;
@@ -782,7 +782,7 @@ export const RuntimeInfoDisplay = {
     return {
       name: isSet(object.name) ? String(object.name) : '',
       isScreenOn: isSet(object.isScreenOn) ? Boolean(object.isScreenOn) : false,
-      error: isSet(object.error) ? String(object.error) : '',
+      error: isSet(object.error) ? String(object.error) : undefined,
     };
   },
 
@@ -798,7 +798,7 @@ export const RuntimeInfoDisplay = {
     const message = createBaseRuntimeInfoDisplay();
     message.name = object.name ?? '';
     message.isScreenOn = object.isScreenOn ?? false;
-    message.error = object.error ?? '';
+    message.error = object.error ?? undefined;
     return message;
   },
 };

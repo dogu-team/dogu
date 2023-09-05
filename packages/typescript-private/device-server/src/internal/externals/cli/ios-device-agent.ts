@@ -104,7 +104,7 @@ export class IosDeviceAgentProcess {
     ZombieServiceInstance.deleteComponent(this.grpcTunnel);
   }
 
-  error(): string {
+  error(): string | undefined {
     if (!this.xctest.zombieWaiter.isAlive()) {
       return `IosDeviceAgent error. ${this.xctest.error}`;
     }
@@ -115,7 +115,7 @@ export class IosDeviceAgentProcess {
     if (!this.grpcTunnel.zombieWaiter.isAlive()) {
       return 'Input port forward error';
     }
-    return '';
+    return undefined;
   }
 }
 

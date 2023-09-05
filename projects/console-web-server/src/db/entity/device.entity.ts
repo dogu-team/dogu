@@ -72,8 +72,8 @@ export class Device extends BaseEntity implements DeviceBase {
   @Column({ type: 'smallint', name: DevicePropSnake.is_virtual, unsigned: true, default: 0, nullable: false })
   isVirtual!: number;
 
-  @Column({ type: 'character varying', name: DevicePropSnake.display_error, length: DEVICE_DISPLAY_ERROR_MAX_LENGTH, default: '', nullable: false })
-  displayError!: string;
+  @Column({ type: 'character varying', name: DevicePropSnake.display_error, length: DEVICE_DISPLAY_ERROR_MAX_LENGTH, default: null, nullable: true })
+  displayError!: string | null;
 
   @Column({ type: 'smallint', name: DevicePropSnake.enable_host_device, unsigned: true, default: 0, nullable: false })
   enableHostDevice!: number;

@@ -73,7 +73,7 @@ export class FsProfiler implements DesktopProfiler {
 
 export class DisplayProfiler implements DesktopProfiler {
   async profile(serial: Serial): Promise<Partial<RuntimeInfo>> {
-    return Promise.resolve({ displays: [{ name: 'default', isScreenOn: true, error: '' }] });
+    return Promise.resolve({ displays: [{ name: 'default', isScreenOn: true }] });
   }
 }
 

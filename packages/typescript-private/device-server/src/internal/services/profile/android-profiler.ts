@@ -208,6 +208,6 @@ export class AndroidDisplayProfileService implements ProfileService {
     if (!isIncludeType) {
       return {};
     }
-    return { displays: [{ name: 'default', isScreenOn: await Adb.isScreenOn(serial), error: this.deviceAgentService.isAlive() ? '' : 'agent not alive' }] };
+    return { displays: [{ name: 'default', isScreenOn: await Adb.isScreenOn(serial), error: this.deviceAgentService.isAlive() ? undefined : 'agent not alive' }] };
   }
 }

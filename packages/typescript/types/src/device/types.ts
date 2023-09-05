@@ -38,7 +38,7 @@ export interface Device {
   isGlobal: number;
   isHost: number;
   isVirtual: number;
-  displayError: string;
+  displayError: string | undefined;
   connectionState: DeviceConnectionState;
   heartbeat: Date | undefined;
   /** relations */

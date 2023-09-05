@@ -4,7 +4,7 @@ export class typeormMigration1693907649189 implements MigrationInterface {
   name = 'typeormMigration1693907649189';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`ALTER TABLE "device" ADD "display_error" character varying(64) NOT NULL DEFAULT ''`);
+    await queryRunner.query(`ALTER TABLE "device" ADD "display_error" character varying(64)`);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

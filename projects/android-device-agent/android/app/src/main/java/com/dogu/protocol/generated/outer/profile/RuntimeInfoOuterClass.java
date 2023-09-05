@@ -3973,12 +3973,17 @@ public final class RuntimeInfoOuterClass {
     boolean getIsScreenOn();
 
     /**
-     * <code>string error = 3;</code>
+     * <code>optional string error = 3;</code>
+     * @return Whether the error field is set.
+     */
+    boolean hasError();
+    /**
+     * <code>optional string error = 3;</code>
      * @return The error.
      */
     java.lang.String getError();
     /**
-     * <code>string error = 3;</code>
+     * <code>optional string error = 3;</code>
      * @return The bytes for error.
      */
     com.google.protobuf.ByteString
@@ -3996,6 +4001,7 @@ public final class RuntimeInfoOuterClass {
       name_ = "";
       error_ = "";
     }
+    private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
     private java.lang.String name_;
     /**
@@ -4072,7 +4078,15 @@ public final class RuntimeInfoOuterClass {
     public static final int ERROR_FIELD_NUMBER = 3;
     private java.lang.String error_;
     /**
-     * <code>string error = 3;</code>
+     * <code>optional string error = 3;</code>
+     * @return Whether the error field is set.
+     */
+    @java.lang.Override
+    public boolean hasError() {
+      return ((bitField0_ & 0x00000001) != 0);
+    }
+    /**
+     * <code>optional string error = 3;</code>
      * @return The error.
      */
     @java.lang.Override
@@ -4080,7 +4094,7 @@ public final class RuntimeInfoOuterClass {
       return error_;
     }
     /**
-     * <code>string error = 3;</code>
+     * <code>optional string error = 3;</code>
      * @return The bytes for error.
      */
     @java.lang.Override
@@ -4089,31 +4103,31 @@ public final class RuntimeInfoOuterClass {
       return com.google.protobuf.ByteString.copyFromUtf8(error_);
     }
     /**
-     * <code>string error = 3;</code>
+     * <code>optional string error = 3;</code>
      * @param value The error to set.
      */
     private void setError(
         java.lang.String value) {
       java.lang.Class<?> valueClass = value.getClass();
-  
+  bitField0_ |= 0x00000001;
       error_ = value;
     }
     /**
-     * <code>string error = 3;</code>
+     * <code>optional string error = 3;</code>
      */
     private void clearError() {
-      
+      bitField0_ = (bitField0_ & ~0x00000001);
       error_ = getDefaultInstance().getError();
     }
     /**
-     * <code>string error = 3;</code>
+     * <code>optional string error = 3;</code>
      * @param value The bytes for error to set.
      */
     private void setErrorBytes(
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       error_ = value.toStringUtf8();
-      
+      bitField0_ |= 0x00000001;
     }
 
     public static com.dogu.protocol.generated.outer.profile.RuntimeInfoOuterClass.RuntimeInfoDisplay parseFrom(
@@ -4289,7 +4303,15 @@ public final class RuntimeInfoOuterClass {
       }
 
       /**
-       * <code>string error = 3;</code>
+       * <code>optional string error = 3;</code>
+       * @return Whether the error field is set.
+       */
+      @java.lang.Override
+      public boolean hasError() {
+        return instance.hasError();
+      }
+      /**
+       * <code>optional string error = 3;</code>
        * @return The error.
        */
       @java.lang.Override
@@ -4297,7 +4319,7 @@ public final class RuntimeInfoOuterClass {
         return instance.getError();
       }
       /**
-       * <code>string error = 3;</code>
+       * <code>optional string error = 3;</code>
        * @return The bytes for error.
        */
       @java.lang.Override
@@ -4306,7 +4328,7 @@ public final class RuntimeInfoOuterClass {
         return instance.getErrorBytes();
       }
       /**
-       * <code>string error = 3;</code>
+       * <code>optional string error = 3;</code>
        * @param value The error to set.
        * @return This builder for chaining.
        */
@@ -4317,7 +4339,7 @@ public final class RuntimeInfoOuterClass {
         return this;
       }
       /**
-       * <code>string error = 3;</code>
+       * <code>optional string error = 3;</code>
        * @return This builder for chaining.
        */
       public Builder clearError() {
@@ -4326,7 +4348,7 @@ public final class RuntimeInfoOuterClass {
         return this;
       }
       /**
-       * <code>string error = 3;</code>
+       * <code>optional string error = 3;</code>
        * @param value The bytes for error to set.
        * @return This builder for chaining.
        */
@@ -4353,13 +4375,14 @@ public final class RuntimeInfoOuterClass {
         }
         case BUILD_MESSAGE_INFO: {
             java.lang.Object[] objects = new java.lang.Object[] {
+              "bitField0_",
               "name_",
               "isScreenOn_",
               "error_",
             };
             java.lang.String info =
-                "\u0000\u0003\u0000\u0000\u0001\u0003\u0003\u0000\u0000\u0000\u0001\u0208\u0002\u0007" +
-                "\u0003\u0208";
+                "\u0000\u0003\u0000\u0001\u0001\u0003\u0003\u0000\u0000\u0000\u0001\u0208\u0002\u0007" +
+                "\u0003\u1208\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

@@ -190,12 +190,9 @@ export class PrivateDeviceController {
     if (0 < lastInfo.displays.length) {
       const device = await this.deviceRepository.findOne({ where: { deviceId } });
       if (device) {
-        const errorDisplay = lastInfo.displays.find((display) => display.error.length > 0);
-        if (!errorDisplay && device.displayError.length > 0) {
-          await this.deviceRepository.update({ deviceId }, { displayError: '' });
-        }
-        if (errorDisplay && device.displayError !== errorDisplay.error) {
-          await this.deviceRepository.update({ deviceId }, { displayError: errorDisplay.error.slice(0, DEVICE_DISPLAY_ERROR_MAX_LENGTH) });
+        const errorDisplay = lastInfo.displays.find((display) => display.error)?.error?.slice(0, DEVICE_DISPLAY_ERROR_MAX_LENGTH) ?? undefined;
+        if (errorDisplay !== device.displayError) {
+          await this.deviceRepository.update({ deviceId }, { displayError: errorDisplay });
         }
       }
     }
