@@ -1,3 +1,4 @@
+import { PROJECT_TYPE } from '@dogu-private/types';
 import { Button, Radio } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
@@ -8,13 +9,14 @@ import { flexRowSpaceBetweenStyle } from '../../../styles/box';
 import { RoutineEditMode } from '../../../types/routine';
 
 interface Props {
+  projectType: PROJECT_TYPE;
   saveButtonText: string;
   onSave: () => Promise<void>;
   mode: RoutineEditMode;
   onChangeMode: (mode: RoutineEditMode) => void;
 }
 
-const RoutineEditorMenu = ({ saveButtonText, onSave, mode, onChangeMode }: Props) => {
+const RoutineEditorMenu = ({ projectType, saveButtonText, onSave, mode, onChangeMode }: Props) => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
@@ -28,17 +30,19 @@ const RoutineEditorMenu = ({ saveButtonText, onSave, mode, onChangeMode }: Props
   return (
     <MenuBar>
       <div>
-        <Radio.Group
-          value={mode}
-          defaultValue={(router.query.mode as RoutineEditMode | undefined) ?? RoutineEditMode.SCRIPT}
-          buttonStyle="solid"
-          onChange={(e) => onChangeMode(e.target.value)}
-        >
-          <Radio.Button value={RoutineEditMode.GUI}>{t('routine:routineEditGuiModeButtonTitle')}</Radio.Button>
-          <Radio.Button value={RoutineEditMode.SCRIPT} id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'edit-script-routine-btn' : undefined}>
-            {t('routine:routineEditScriptModeButtonTitle')}
-          </Radio.Button>
-        </Radio.Group>
+        {projectType !== PROJECT_TYPE.CUSTOM && (
+          <Radio.Group
+            value={mode}
+            defaultValue={(router.query.mode as RoutineEditMode | undefined) ?? RoutineEditMode.SCRIPT}
+            buttonStyle="solid"
+            onChange={(e) => onChangeMode(e.target.value)}
+          >
+            <Radio.Button value={RoutineEditMode.GUI}>{t('routine:routineEditGuiModeButtonTitle')}</Radio.Button>
+            <Radio.Button value={RoutineEditMode.SCRIPT} id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'edit-script-routine-btn' : undefined}>
+              {t('routine:routineEditScriptModeButtonTitle')}
+            </Radio.Button>
+          </Radio.Group>
+        )}
       </div>
       <div>
         <Button type="primary" loading={loading} onClick={handleSave} access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'save-routine-btn' : undefined}>
