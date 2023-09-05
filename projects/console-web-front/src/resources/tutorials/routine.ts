@@ -7,6 +7,7 @@ export interface RoutineTutorial {
     platform: TutorialSupportPlatform;
     target: TutorialSupportTarget;
     cwd: string;
+    hasSampleApp?: boolean;
     command: string;
   }[];
 }
@@ -34,16 +35,20 @@ export const appiumRoutineTutorialData: RoutineTutorial = {
       language: TutorialSupportLanguage.PYTHON,
       platform: TutorialSupportPlatform.ANDROID,
       target: TutorialSupportTarget.APP,
+      hasSampleApp: true,
       cwd: 'appium/python/pytest',
-      command: '',
+      command: `python -m venv .venv
+source .venv/bin/activate && pytest app/test_android.py`,
     },
     {
       framework: TutorialSupportFramework.PYTEST,
       language: TutorialSupportLanguage.PYTHON,
       platform: TutorialSupportPlatform.IOS,
       target: TutorialSupportTarget.APP,
+      hasSampleApp: false,
       cwd: 'appium/python/pytest',
-      command: '',
+      command: `python -m venv .venv
+source .venv/bin/activate && pytest app/test_android.py`,
     },
   ],
 };
@@ -87,16 +92,20 @@ export const webdriverioRoutineTutorialData: RoutineTutorial = {
       language: TutorialSupportLanguage.JAVASCRIPT,
       platform: TutorialSupportPlatform.ANDROID,
       target: TutorialSupportTarget.APP,
+      hasSampleApp: true,
       cwd: 'webdriverio/javascript/jest',
-      command: '',
+      command: `npm install
+npm run test:app:android`,
     },
     {
       framework: TutorialSupportFramework.JEST,
       language: TutorialSupportLanguage.JAVASCRIPT,
       platform: TutorialSupportPlatform.IOS,
       target: TutorialSupportTarget.APP,
+      hasSampleApp: false,
       cwd: 'webdriverio/javascript/jest',
-      command: '',
+      command: `npm install
+npm run test:app:android`,
     },
   ],
 };
@@ -109,7 +118,8 @@ export const seleniumRoutineTutorialData: RoutineTutorial = {
       platform: TutorialSupportPlatform.WINDOWS,
       target: TutorialSupportTarget.WEB,
       cwd: 'selenium/python/pytest',
-      command: '',
+      command: `python -m venv .venv
+source .venv/bin/activate && pytest web/test_web.py`,
     },
     {
       framework: TutorialSupportFramework.PYTEST,
@@ -117,7 +127,8 @@ export const seleniumRoutineTutorialData: RoutineTutorial = {
       platform: TutorialSupportPlatform.MACOS,
       target: TutorialSupportTarget.WEB,
       cwd: 'selenium/python/pytest',
-      command: '',
+      command: `python -m venv .venv
+source .venv/bin/activate && pytest web/test_web.py`,
     },
   ],
 };
@@ -129,32 +140,44 @@ export const gamiumRoutineTutorialData: RoutineTutorial = {
       language: TutorialSupportLanguage.JAVASCRIPT,
       platform: TutorialSupportPlatform.ANDROID,
       target: TutorialSupportTarget.UNITY,
+      hasSampleApp: true,
       cwd: 'gamium/javascript/jest',
-      command: '',
+      command: `npm install
+npm run test:app`,
     },
     {
       framework: TutorialSupportFramework.JEST,
       language: TutorialSupportLanguage.JAVASCRIPT,
       platform: TutorialSupportPlatform.IOS,
       target: TutorialSupportTarget.UNITY,
+      hasSampleApp: false,
       cwd: 'gamium/javascript/jest',
-      command: '',
+      command: `npm install
+npm run test:app`,
     },
     {
       framework: TutorialSupportFramework.PYTEST,
       language: TutorialSupportLanguage.PYTHON,
       platform: TutorialSupportPlatform.ANDROID,
       target: TutorialSupportTarget.UNITY,
+      hasSampleApp: true,
       cwd: 'gamium/python/pytest',
-      command: '',
+      command: `python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pytest app/test_android.py --capture=no -x`,
     },
     {
       framework: TutorialSupportFramework.PYTEST,
       language: TutorialSupportLanguage.PYTHON,
       platform: TutorialSupportPlatform.IOS,
       target: TutorialSupportTarget.UNITY,
+      hasSampleApp: false,
       cwd: 'gamium/python/pytest',
-      command: '',
+      command: `python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pytest app/test_android.py --capture=no -x`,
     },
   ],
 };

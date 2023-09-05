@@ -15,12 +15,14 @@ import RunRoutineButton from '../../pipelines/RunRoutineButton';
 import GuideAnchor from '../GuideAnchor';
 import GuideLayout from '../GuideLayout';
 import GuideStep from '../GuideStep';
+import SampleApplicationUploadStep from '../SampleApplicationUploadStep';
 import TutorialOptionSelectors from '../TutorialOptionSelectors';
 import DoneStep from './DoneStep';
 import RoutineGitTutorial from './RoutineGitTutorial';
 
 const CLONE_GIT_ID = 'clone-git';
 const INTEGRATE_WITH_GIT_ID = 'integrate-with-git';
+const UPLOAD_SAMPLE_APP_ID = 'upload-sample-app';
 const CREATE_ROUTINE_ID = 'create-routine';
 const RUN_ROUTINE_ID = 'run-routine';
 const DONE_ID = 'done';
@@ -70,6 +72,7 @@ const WebdriverIoRoutineTutorial = () => {
                 id: INTEGRATE_WITH_GIT_ID,
                 title: 'Integrate repository with project',
               },
+              ...(target === TutorialSupportTarget.APP ? [{ id: UPLOAD_SAMPLE_APP_ID, title: 'Upload sample application' }] : []),
               { id: CREATE_ROUTINE_ID, title: 'Create a routine' },
               { id: RUN_ROUTINE_ID, title: 'Run a routine' },
               { id: DONE_ID, title: 'Done! Next Step 🚀' },
@@ -95,6 +98,14 @@ const WebdriverIoRoutineTutorial = () => {
             description={<p>Routine will execute test scripts from the remote repository.</p>}
             content={<RoutineGitTutorial />}
           />
+          {target === TutorialSupportTarget.APP && (
+            <GuideStep
+              id={UPLOAD_SAMPLE_APP_ID}
+              title="Upload sample application"
+              description={<p>Before starting, upload the app that matches the version specified in the script.</p>}
+              content={<SampleApplicationUploadStep hasSampleApp={selectedGuide?.hasSampleApp} category="mobile" />}
+            />
+          )}
           <GuideStep id={CREATE_ROUTINE_ID} title="Create a routine" description={<p>Create a routine for your automated tests</p>} content={<div>Routine creator...</div>} />
           <GuideStep
             id={RUN_ROUTINE_ID}

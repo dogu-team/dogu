@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
-import { ROUTINE_SAMPLE_GIT_URL, tutorialSdkSupportInfo, TutorialSupportLanguage, TutorialSupportSdk } from '../../../resources/tutorials';
+import { ROUTINE_SAMPLE_GIT_URL, tutorialSdkSupportInfo, TutorialSupportLanguage, TutorialSupportSdk, TutorialSupportTarget } from '../../../resources/tutorials';
 import { gamiumRoutineTutorialData } from '../../../resources/tutorials/routine';
 import CodeWithCopyButton from '../../common/CodeWithCopyButton';
 import DoneStep from './DoneStep';
@@ -17,9 +17,11 @@ import RunRoutineButton from '../../pipelines/RunRoutineButton';
 import TableListView from '../../common/TableListView';
 import RefreshButton from '../../buttons/RefreshButton';
 import { flexRowSpaceBetweenStyle } from '../../../styles/box';
+import SampleApplicationUploadStep from '../SampleApplicationUploadStep';
 
 const CLONE_GIT_ID = 'clone-git';
 const INTEGRATE_WITH_GIT_ID = 'integrate-with-git';
+const UPLOAD_SAMPLE_APP_ID = 'upload-sample-app';
 const CREATE_ROUTINE_ID = 'create-routine';
 const RUN_ROUTINE_ID = 'run-routine';
 const DONE_ID = 'done';
@@ -55,6 +57,10 @@ const GamiumRoutineTutorial = () => {
                 id: INTEGRATE_WITH_GIT_ID,
                 title: 'Integrate repository with project',
               },
+              {
+                id: UPLOAD_SAMPLE_APP_ID,
+                title: 'Upload sample application',
+              },
               { id: CREATE_ROUTINE_ID, title: 'Create a routine' },
               { id: RUN_ROUTINE_ID, title: 'Run a routine' },
               { id: DONE_ID, title: 'Done! Next Step 🚀' },
@@ -79,6 +85,12 @@ const GamiumRoutineTutorial = () => {
             title="Integrate your repository with project"
             description={<p>Routine will execute test scripts from the remote repository.</p>}
             content={<RoutineGitTutorial />}
+          />
+          <GuideStep
+            id={UPLOAD_SAMPLE_APP_ID}
+            title="Upload sample application"
+            description={<p>Before starting, upload the app that matches the version specified in the script.</p>}
+            content={<SampleApplicationUploadStep hasSampleApp={selectedGuide?.hasSampleApp} category="game" />}
           />
           <GuideStep id={CREATE_ROUTINE_ID} title="Create a routine" description={<p>Create a routine for your automated tests</p>} content={<div>Routine creator...</div>} />
           <GuideStep

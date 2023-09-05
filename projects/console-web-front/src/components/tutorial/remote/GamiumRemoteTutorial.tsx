@@ -25,6 +25,7 @@ import PythonVirtualEnvShell from '../PythonVirtualEnvShell';
 import TutorialOptionSelectors from '../TutorialOptionSelectors';
 import RemoteTestResultList from './RemoteTestResultList';
 import SampleApplicationUploadButton from '../SampleApplicationUploadButton';
+import SampleApplicationUploadStep from '../SampleApplicationUploadStep';
 
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
@@ -127,23 +128,7 @@ const GamiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
             id={UPLOAD_SAMPLE_APP_ID}
             title="Upload sample application"
             description={<p>Before starting, upload the app that matches the version specified in the script.</p>}
-            content={
-              selectedGuide?.hasSampleApp ? (
-                <SampleApplicationUploadButton organizationId={organizationId} projectId={projectId} category="game" />
-              ) : (
-                <>
-                  {platform === TutorialSupportPlatform.IOS && (
-                    <Alert
-                      style={{ marginTop: '.5rem' }}
-                      message="For iOS, we don't provide sample app. Please upload your app manually."
-                      type="warning"
-                      showIcon
-                      action={<ProjectApplicationUploadButton organizationId={organizationId} projectId={projectId} />}
-                    />
-                  )}
-                </>
-              )
-            }
+            content={<SampleApplicationUploadStep hasSampleApp={selectedGuide?.hasSampleApp} category="game" />}
           />
           <GuideStep
             id={RUN_TEST_ID}
