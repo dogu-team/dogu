@@ -118,9 +118,15 @@ const StyledLink = styled(Link)`
 const AlertBanner = styled.div`
   padding: 0.25rem 2rem;
   font-size: 0.85rem;
-  background-color: ${(props) => props.theme.main.colors.blue6};
+  background-color: ${(props) => props.theme.main.colors.blue3};
   line-height: 1.5;
   text-align: center;
+  color: #fff;
+
+  a {
+    color: #76f17e;
+    text-decoration: underline;
+  }
 `;
 
 const CloseAlertButton = styled.button`
@@ -131,6 +137,6 @@ const CloseAlertButton = styled.button`
   background-color: transparent;
 
   &:hover {
-    background-color: ${(props) => props.theme.main.colors.gray6};
+    background-color: ${(props) => props.theme.main.colors.blue5};
   }
 `;

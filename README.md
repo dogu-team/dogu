@@ -45,13 +45,14 @@ Dogu is a test automation platform that provides a seamless unified experience f
 
 ## Device Farm
 
-Build a systematic device farm with Windows, MacOS, Android, and iOS devices.
+Build a systematic device farm with Windows, MacOS, Android, and iOS devices.  
+Real devices and emulators are supported.
 
 <img src=".github/resources/device-farm-dashboard.png" width="100%"/>
 
 ## Device Studio
 
-Control devices remotely with Device Studio.
+Control devices remotely in Device Studio.
 
 <img src=".github/resources/devicestudio.png" width="100%" />
 
@@ -79,11 +80,11 @@ Visualize test unit by integrating test unit framework with report.
 
 # Start Dogu
 
-### With Self-Hosted
+### Run Dogu With Self-Hosted
 
 Use Dogu on a self-hosted. See [guide setting up Dogu with self-hosted](https://docs.dogutech.io/get-started/installation/self-hosted/installation) for more details.
 
-### With Cloud
+### Run Dogu with Cloud Service
 
 Start [cloud service](https://dogutech.io) right now without any installation.
 

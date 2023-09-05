@@ -7,11 +7,11 @@ const badgeStyle: CSSProperties = {
   fontSize: '0.9rem',
 };
 
-const overlayTextStyle: CSSProperties = {
+const overlayTextStyle = (textLength: number): CSSProperties => ({
   display: 'none',
   justifyContent: 'center',
   position: 'absolute',
-  width: '350%',
+  width: `${textLength * 7.5}px`,
   height: '160%',
   left: '50%',
   top: '100%',
@@ -22,7 +22,7 @@ const overlayTextStyle: CSSProperties = {
   backgroundColor: 'rgba(0, 0, 0, 0.6)',
   color: 'white',
   fontSize: '0.8rem',
-};
+});
 
 const hoverOverlayTextStyle: CSSProperties = {
   display: 'flex',
@@ -72,7 +72,7 @@ const Badge = ({
         {isHovered && <div style={arrowStyle}></div>}
         <div
           style={{
-            ...overlayTextStyle,
+            ...overlayTextStyle(overlayText.length),
             ...(isHovered ? hoverOverlayTextStyle : {}),
           }}
         >

@@ -45,8 +45,6 @@ const StepEditor = ({ step }: Props) => {
         const boundWidth = originWidth * ratio;
         const boundHeight = originHeight * ratio;
 
-        console.log(boundX, boundY, boundWidth, boundHeight);
-
         boundRef.current.style.left = `${boundX}px`;
         boundRef.current.style.top = `${boundY}px`;
         boundRef.current.style.width = `${boundWidth}px`;

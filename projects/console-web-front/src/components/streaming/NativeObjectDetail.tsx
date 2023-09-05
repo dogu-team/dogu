@@ -22,8 +22,12 @@ const NativeObjectDetail = ({ node }: Props) => {
 
               const value = node.attributes[key as keyof typeof node.attributes];
 
+              if (value === undefined) {
+                return null;
+              }
+
               if ((key as AndroidNodeAttributeFields) === 'bounds') {
-                const pos = value as ScreenPosition | undefined;
+                const pos = value as unknown as ScreenPosition | undefined;
                 if (!pos) {
                   return null;
                 }
