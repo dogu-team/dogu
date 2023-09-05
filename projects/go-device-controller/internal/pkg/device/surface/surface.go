@@ -166,8 +166,9 @@ func (s *SurfaceConnector) SetScreenCaptureOption(option *streaming.ScreenCaptur
 
 func (s *SurfaceConnector) startRoutine() {
 	log.Inst.Info("surfaceConnector.startRoutine", zap.String("serial", s.serial))
-	var readCtx context.Context = nil
+	var readCtx context.Context
 	var readCancel context.CancelFunc = nil
+	var readDoneWaitGroup *sync.WaitGroup = nil
 	for msg := range s.msgChan {
 		switch msg.msgType {
 		case reconnect:
@@ -182,6 +183,10 @@ func (s *SurfaceConnector) startRoutine() {
 				readCancel()
 				readCancel = nil
 			}
+			if readDoneWaitGroup != nil {
+				readDoneWaitGroup.Wait()
+				readDoneWaitGroup = nil
+			}
 			err := s.notifySurfaceReconnect(s.serial)
 			if err != nil {
 				log.Inst.Error("surfaceConnector.startRoutine reconnect error", zap.Error(err))
@@ -189,7 +194,9 @@ func (s *SurfaceConnector) startRoutine() {
 			}
 			s.surfaceId++
 			readCtx, readCancel = context.WithCancel(context.Background())
-			go s.startRecvRoutine(readCtx, s.surfaceId)
+			readDoneWaitGroup = &sync.WaitGroup{}
+			readDoneWaitGroup.Add(1)
+			go s.startRecvRoutine(readCtx, readDoneWaitGroup, s.surfaceId)
 		case close:
 			if nil == msg.err {
 				msg.err = errors.Errorf("unknown")
@@ -199,10 +206,14 @@ func (s *SurfaceConnector) startRoutine() {
 				log.Inst.Warn("surfaceConnector.startRoutine close ignored", zap.String("serial", s.serial), zap.Int64("surfaceId", s.surfaceId), zap.Int64("msg.surfaceId", msg.surfaceId))
 				continue
 			}
-			if readCancel != nil {
-				readCancel()
-				readCancel = nil
-			}
+			// if readCancel != nil {
+			// 	readCancel()
+			// 	readCancel = nil
+			// }
+			// if readDoneWaitGroup != nil {
+			// 	readDoneWaitGroup.Wait()
+			// 	readDoneWaitGroup = nil
+			// }
 
 			s.notifySurfaceClose("close")
 		case receive:
@@ -247,10 +258,11 @@ func (s *SurfaceConnector) notifySurfaceReconnect(serial string) error {
 	return nil
 }
 
-func (s *SurfaceConnector) startRecvRoutine(ctx context.Context, surfaceId int64) {
+func (s *SurfaceConnector) startRecvRoutine(ctx context.Context, wg *sync.WaitGroup, surfaceId int64) {
 	if !s.isSurfaceConnected {
 		log.Inst.Error("surfaceConnector.startRecvRoutine called only if surface connected", zap.String("serial", s.serial))
 	}
+	defer wg.Done()
 	for {
 		select {
 		case <-ctx.Done():

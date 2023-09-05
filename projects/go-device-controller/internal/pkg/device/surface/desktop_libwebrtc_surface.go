@@ -86,6 +86,7 @@ func (s *desktopLibwebrtcSurface) Reconnect(serial string, screenCaptureOption *
 	}
 
 	s.reader = bufio.NewReader(s.conn)
+	s.recvQueue.Clear()
 
 	return nil
 }
