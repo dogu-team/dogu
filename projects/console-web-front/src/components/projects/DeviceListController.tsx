@@ -114,7 +114,7 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
             <StudioLinkButton
               href={`/dashboard/${orgId}/projects/${projectId}/studio/${device.deviceId}/manual`}
               target="_blank"
-              isDisabled={!isConnected}
+              disabled={!isConnected}
               onClick={(e) => {
                 if (!isConnected) {
                   e.preventDefault();
@@ -235,18 +235,18 @@ const FlexEndBox = styled(FlexRowBase)`
   justify-content: flex-end;
 `;
 
-const StudioLinkButton = styled(Link)<{ isDisabled: boolean }>`
+const StudioLinkButton = styled(Link)<{ disabled: boolean }>`
   display: inline-flex;
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
-  background-color: ${(props) => (props.isDisabled ? props.theme.main.colors.gray5 : props.theme.colorPrimary)};
-  color: #fff;
+  background-color: ${(props) => (props.disabled ? props.theme.main.colors.gray5 : props.theme.colorPrimary)};
+  color: #fff !important;
   text-align: center;
   align-items: center;
-  cursor: ${(props) => (props.isDisabled ? 'not-allowed' : 'pointer')};
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
 
   &:hover {
     color: #fff;
-    background-color: ${(props) => (props.isDisabled ? props.theme.main.colors.gray5 : `${props.theme.colorPrimary}bb`)};
+    background-color: ${(props) => (props.disabled ? props.theme.main.colors.gray5 : `${props.theme.colorPrimary}bb`)};
   }
 `;
