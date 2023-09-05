@@ -34,3 +34,8 @@ export const ProcessShellTop: ProfileMethod = {
   kind: ProfileMethodKind.PROFILE_METHOD_KIND_ANDROID_PROCESS_SHELLTOP,
   name: 'process shell top',
 };
+
+export const Display: ProfileMethod = {
+  kind: ProfileMethodKind.PROFILE_METHOD_KIND_ANDROID_DISPLAY,
+  name: 'display',
+};

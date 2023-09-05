@@ -36,13 +36,6 @@ export class MemProfiler implements DesktopProfiler {
     };
   }
 }
-
-export class DisplayProfiler implements DesktopProfiler {
-  profile(serial: Serial): Promise<Partial<RuntimeInfo>> {
-    return Promise.resolve({ displays: [{ name: 'default', isScreenOn: true }] });
-  }
-}
-
 export class FsProfiler implements DesktopProfiler {
   async profile(serial: Serial): Promise<Partial<RuntimeInfo>> {
     const fsSizes = await systeminformation.fsSize();
@@ -78,11 +71,18 @@ export class FsProfiler implements DesktopProfiler {
   }
 }
 
+export class DisplayProfiler implements DesktopProfiler {
+  async profile(serial: Serial): Promise<Partial<RuntimeInfo>> {
+    return Promise.resolve({ displays: [{ name: 'default', isScreenOn: true, error: '' }] });
+  }
+}
+
 export class DesktopProfileService implements ProfileService {
   private _profilers = new Map<ProfileMethodKind, DesktopProfiler>([
     [ProfileMethodKind.PROFILE_METHOD_KIND_DESKTOP_CPU, new CpuProfiler()],
     [ProfileMethodKind.PROFILE_METHOD_KIND_DESKTOP_MEM, new MemProfiler()],
     [ProfileMethodKind.PROFILE_METHOD_KIND_DESKTOP_FS, new FsProfiler()],
+    [ProfileMethodKind.PROFILE_METHOD_KIND_DESKTOP_DISPLAY, new DisplayProfiler()],
   ]);
 
   async profile(serial: Serial, methods: ProfileMethod[]): Promise<RuntimeInfo> {

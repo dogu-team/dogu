@@ -9,7 +9,7 @@ import {
   WriteDeviceRunTimeInfosRequestBody,
 } from '@dogu-private/console-host-agent';
 import { FindDeviceBySerialQuery, UpdateDeviceRequestBody } from '@dogu-private/console-host-agent/src/http-specs/private-device';
-import { DeviceId, OrganizationId } from '@dogu-private/types';
+import { DeviceId, DEVICE_DISPLAY_ERROR_MAX_LENGTH, OrganizationId } from '@dogu-private/types';
 import { Instance, transformAndValidate } from '@dogu-tech/common';
 import { Body, ConflictException, Controller, Get, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
@@ -183,6 +183,22 @@ export class PrivateDeviceController {
     @Body() body: WriteDeviceRunTimeInfosRequestBody,
   ): Promise<void> {
     const { runtimeInfos } = body;
+    if (runtimeInfos.length === 0) {
+      return;
+    }
+    const lastInfo = runtimeInfos[runtimeInfos.length - 1];
+    if (0 < lastInfo.displays.length) {
+      const device = await this.deviceRepository.findOne({ where: { deviceId } });
+      if (device) {
+        const errorDisplay = lastInfo.displays.find((display) => display.error.length > 0);
+        if (!errorDisplay && device.displayError.length > 0) {
+          await this.deviceRepository.update({ deviceId }, { displayError: '' });
+        }
+        if (errorDisplay && device.displayError !== errorDisplay.error) {
+          await this.deviceRepository.update({ deviceId }, { displayError: errorDisplay.error.slice(0, DEVICE_DISPLAY_ERROR_MAX_LENGTH) });
+        }
+      }
+    }
     await this.influxDbDeviceService.writeDeviceRunTimeInfos(organizationId, deviceId, runtimeInfos);
   }
 }

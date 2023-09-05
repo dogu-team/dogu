@@ -32,10 +32,6 @@ export class IosDeviceAgentService extends GrpcClientBase implements DeviceAgent
     return this.grpcServerUrl;
   }
 
-  wakeUp(): Promise<void> {
-    return Promise.resolve();
-  }
-
   install(): Promise<void> {
     return Promise.resolve();
   }

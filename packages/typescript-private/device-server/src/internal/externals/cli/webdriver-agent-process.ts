@@ -3,7 +3,7 @@ import { delay, loopTime, Milisecond, Printable, setAxiosErrorFilterToIntercepte
 import { HostPaths } from '@dogu-tech/node';
 import axios, { AxiosInstance } from 'axios';
 import http from 'http';
-import { Zombieable, ZombieProps, ZombieWaiter } from '../../services/zombie/zombie-component';
+import { Zombieable, ZombieProps, ZombieQueriable } from '../../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
 import { XcodeBuild } from '../index';
 import { DerivedData } from '../xcode/deriveddata';
@@ -59,7 +59,7 @@ export class WebdriverAgentProcess {
 
 class ZombieWdaXCTest implements Zombieable {
   private xctestrun: XCTestRunContext | null = null;
-  public readonly zombieWaiter: ZombieWaiter;
+  public readonly zombieWaiter: ZombieQueriable;
   private error: 'not-alive' | 'hello-failed' | 'none' = 'none';
   private client: AxiosInstance;
 

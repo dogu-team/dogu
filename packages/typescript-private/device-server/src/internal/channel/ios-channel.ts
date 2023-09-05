@@ -34,7 +34,7 @@ import { ZombieTunnel } from '../externals/cli/mobiledevice-tunnel';
 import { WebdriverAgentProcess } from '../externals/cli/webdriver-agent-process';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService, LogHandler } from '../public/device-channel';
 import { IosDeviceAgentService } from '../services/device-agent/ios-device-agent-service';
-import { IosProfileService } from '../services/profile/ios-profiler';
+import { IosDisplayProfileService, IosProfileService } from '../services/profile/ios-profiler';
 import { ProfileServices } from '../services/profile/profile-service';
 import { StreamingService } from '../services/streaming/streaming-service';
 import { IosSystemInfoService } from '../services/system-info/ios-system-info-service';
@@ -190,7 +190,7 @@ export class IosChannel implements DeviceChannel {
     const deviceChannel = new IosChannel(
       serial,
       systemInfo,
-      [new IosProfileService(deviceAgent)],
+      [new IosProfileService(deviceAgent), new IosDisplayProfileService(iosDeviceAgentProcess)],
       streaming,
       wda,
       iosDeviceAgentProcess,

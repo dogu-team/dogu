@@ -3,7 +3,7 @@ import { delay, loopTime, Milisecond, Printable, stringifyError } from '@dogu-te
 import { HostPaths } from '@dogu-tech/node';
 import { Socket } from 'net';
 import { config } from '../../config';
-import { Zombieable, ZombieProps, ZombieWaiter } from '../../services/zombie/zombie-component';
+import { Zombieable, ZombieProps, ZombieQueriable } from '../../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
 import { MobileDevice, XcodeBuild } from '../index';
 import { DerivedData } from '../xcode/deriveddata';
@@ -103,12 +103,26 @@ export class IosDeviceAgentProcess {
     ZombieServiceInstance.deleteComponent(this.screenTunnel);
     ZombieServiceInstance.deleteComponent(this.grpcTunnel);
   }
+
+  error(): string {
+    if (!this.xctest.zombieWaiter.isAlive()) {
+      return this.xctest.error;
+    }
+    if (!this.screenTunnel.zombieWaiter.isAlive()) {
+      return 'screen forward error';
+    }
+
+    if (!this.grpcTunnel.zombieWaiter.isAlive()) {
+      return 'input forward error';
+    }
+    return '';
+  }
 }
 
 class ZombieIdaXCTest implements Zombieable {
   private xctestrun: XCTestRunContext | null = null;
-  public readonly zombieWaiter: ZombieWaiter;
-  private error: 'not-alive' | 'connect-failed' | 'hello-failed' | 'none' = 'none';
+  public readonly zombieWaiter: ZombieQueriable;
+  private _error: 'not-alive' | 'connect-failed' | 'hello-failed' | 'none' = 'none';
 
   constructor(
     public readonly serial: Serial,
@@ -128,11 +142,16 @@ class ZombieIdaXCTest implements Zombieable {
     return Platform.PLATFORM_IOS;
   }
   get props(): ZombieProps {
-    return { webDriverPort: this.webDriverPort, grpcPort: this.grpcPort, elapsed: this.xctestrun ? Date.now() - this.xctestrun?.startTime : 0, error: this.error };
+    return { webDriverPort: this.webDriverPort, grpcPort: this.grpcPort, elapsed: this.xctestrun ? Date.now() - this.xctestrun?.startTime : 0, error: this._error };
   }
   get printable(): Printable {
     return this.logger;
   }
+
+  get error(): string {
+    return this._error;
+  }
+
   async revive(): Promise<void> {
     this.logger.debug?.(`ZombieIdaXCTest.revive`);
     if (config.externalIosDeviceAgent.use) {
@@ -162,12 +181,12 @@ class ZombieIdaXCTest implements Zombieable {
       if (await this.isHealth()) {
         break;
       }
-      if (this.error === 'not-alive') {
+      if (this._error === 'not-alive') {
         break;
       }
     }
     if (!(await this.isHealth())) {
-      throw new Error(`ZombieIdaXCTest has error. ${this.serial}. ${this.error}`);
+      throw new Error(`ZombieIdaXCTest has error. ${this.serial}. ${this._error}`);
     }
   }
 
@@ -189,7 +208,7 @@ class ZombieIdaXCTest implements Zombieable {
 
   private async isHealth(): Promise<boolean> {
     if (!this.xctestrun?.isAlive) {
-      this.error = 'not-alive';
+      this._error = 'not-alive';
       return false;
     }
     this.xctestrun.update();
@@ -197,7 +216,7 @@ class ZombieIdaXCTest implements Zombieable {
       return e;
     });
     if (socketOrError instanceof Error) {
-      this.error = 'connect-failed';
+      this._error = 'connect-failed';
       return false;
     }
 
@@ -205,11 +224,11 @@ class ZombieIdaXCTest implements Zombieable {
       return e;
     });
     if (sendErr instanceof Error) {
-      this.error = 'hello-failed';
+      this._error = 'hello-failed';
       socketOrError.resetAndDestroy();
       return false;
     }
-    this.error = 'none';
+    this._error = 'none';
     socketOrError.resetAndDestroy();
     return true;
   }

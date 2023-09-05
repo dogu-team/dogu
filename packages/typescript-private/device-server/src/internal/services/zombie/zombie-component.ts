@@ -59,7 +59,7 @@ export class ZombieComponent {
   }
 }
 
-export class ZombieWaiter {
+export class ZombieQueriable {
   constructor(private readonly zombieComponent: ZombieComponent) {}
 
   async waitUntilAlive(): Promise<void> {
@@ -68,5 +68,9 @@ export class ZombieWaiter {
         return;
       }
     }
+  }
+
+  isAlive(): boolean {
+    return this.zombieComponent.isAlive();
   }
 }

@@ -159,6 +159,9 @@ export class RuntimeInfoDisplayDto implements RuntimeInfoDisplay {
 
   @IsBoolean()
   isScreenOn!: boolean;
+
+  @IsString()
+  error!: string;
 }
 
 export class RuntimeInfoBatteryDto implements RuntimeInfoBattery {
