@@ -1,4 +1,4 @@
-import useTutorialContext from '../../../hooks/useTutorialContext';
+import useTutorialContext from '../../../hooks/context/useTutorialContext';
 import { TutorialSupportSdk } from '../../../resources/tutorials';
 import ErrorBox from '../../common/boxes/ErrorBox';
 import AppiumRoutineTutorial from './AppiumRoutineTutorial';

@@ -5,7 +5,7 @@ import { Divider } from 'antd';
 import { tutorialSdkSupportInfo, TutorialSupportLanguage, tutorialSupportLanguageText, TutorialSupportSdk, tutorialSupportSdkText } from '../../resources/tutorials';
 import LanguageIcon from './LanguageIcon';
 import SdkIcon from './SdkIcon';
-import useTutorialContext from '../../hooks/useTutorialContext';
+import useTutorialContext from '../../hooks/context/useTutorialContext';
 import { remoteTutorialData } from '../../resources/tutorials/remote';
 
 interface Props {

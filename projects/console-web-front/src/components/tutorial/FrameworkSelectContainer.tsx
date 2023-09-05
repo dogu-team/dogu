@@ -9,7 +9,7 @@ import GuideBanner from './GuideBanner';
 import DoguText from '../common/DoguText';
 import FrameworkSelectTable from './FrameworkSelectTable';
 import { TutorialSupportSdk } from '../../resources/tutorials';
-import useTutorialContext from '../../hooks/useTutorialContext';
+import useTutorialContext from '../../hooks/context/useTutorialContext';
 
 interface Props {
   skipButton: React.ReactNode;

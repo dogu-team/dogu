@@ -4,7 +4,7 @@ import { useRouter } from 'next/router';
 import { UrlObject } from 'url';
 
 import { updateUserTutorial } from '../../api/user';
-import useTutorialContext from '../../hooks/useTutorialContext';
+import useTutorialContext from '../../hooks/context/useTutorialContext';
 import useRequest from '../../hooks/useRequest';
 import { sendErrorNotification } from '../../utils/antd';
 

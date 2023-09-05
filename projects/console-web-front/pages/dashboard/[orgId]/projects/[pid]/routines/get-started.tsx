@@ -13,7 +13,7 @@ import { getProjectInServerSide } from 'src/api/project';
 import ConsoleBasicLayout from 'src/components/layouts/ConsoleBasicLayout';
 import FrameworkSelectContainer from 'src/components/tutorial/FrameworkSelectContainer';
 import SdkIcon from 'src/components/tutorial/SdkIcon';
-import { TutorialContext } from 'src/hooks/useTutorialContext';
+import { TutorialContext } from 'src/hooks/context/useTutorialContext';
 import { TutorialSupportSdk, tutorialSupportSdkText } from 'src/resources/tutorials';
 import { flexRowBaseStyle } from 'src/styles/box';
 import { checkUserVerifiedInServerSide } from 'src/utils/auth';

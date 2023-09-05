@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import useTutorialContext from '../../../hooks/useTutorialContext';
+import useTutorialContext from '../../../hooks/context/useTutorialContext';
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
 import { ROUTINE_SAMPLE_GIT_URL, tutorialSdkSupportInfo, TutorialSupportLanguage, TutorialSupportSdk } from '../../../resources/tutorials';
 import { seleniumRoutineTutorialData } from '../../../resources/tutorials/routine';

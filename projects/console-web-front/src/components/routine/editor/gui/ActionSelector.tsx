@@ -1,16 +1,58 @@
 import { Select, SelectProps } from 'antd';
-import { PREPARE_ACTION_NAME, RUN_TEST_ACTION_NAME } from '../../../../types/routine';
+import styled from 'styled-components';
+import { CHECKOUT_ACTION_NAME, PREPARE_ACTION_NAME, RUN_TEST_ACTION_NAME } from '../../../../types/routine';
 
 const ActionSelector = (props: SelectProps) => {
   const actions: SelectProps<string>['options'] = [
     {
-      label: 'Install and run app',
+      label: (
+        <OptionBox>
+          <b>Run test</b>
+          <p>Install and run application or browser and run test scripts. This action contains checkout, and prepare actions.</p>
+        </OptionBox>
+      ),
+      title: 'Run test',
+      value: RUN_TEST_ACTION_NAME,
+    },
+    {
+      label: (
+        <OptionBox>
+          <b>Checkout</b>
+          <p>Checkout git repository from integrated remote repository.</p>
+        </OptionBox>
+      ),
+      title: 'Checkout',
+      value: CHECKOUT_ACTION_NAME,
+    },
+    {
+      label: (
+        <OptionBox>
+          <b>Prepare</b>
+          <p>Install application and run it. This action doesn&apos;t run test script.</p>
+        </OptionBox>
+      ),
+      title: 'Prepare',
       value: PREPARE_ACTION_NAME,
     },
-    { label: 'Run test', value: RUN_TEST_ACTION_NAME },
   ];
 
-  return <Select {...props} options={actions} />;
+  return <Select {...props} options={actions} dropdownMatchSelectWidth={false} />;
 };
 
 export default ActionSelector;
+
+const OptionBox = styled.div`
+  width: 250px;
+  line-height: 1.5;
+
+  b {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  p {
+    font-size: 0.75rem;
+    white-space: pre-wrap;
+  }
+`;

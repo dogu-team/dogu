@@ -1,7 +1,7 @@
 import { PROJECT_SCM_TYPE } from '@dogu-private/types';
 import styled from 'styled-components';
 
-import useTutorialContext from '../../../hooks/useTutorialContext';
+import useTutorialContext from '../../../hooks/context/useTutorialContext';
 import { getRepositoyUrl } from '../../../utils/url';
 import ErrorBox from '../../common/boxes/ErrorBox';
 import BitbucketButton from '../../integration/BitbucketButton';

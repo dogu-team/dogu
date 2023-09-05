@@ -26,7 +26,7 @@ import CodeWithCopyButton from '../../common/CodeWithCopyButton';
 import ProjectApplicationUploadButton from '../../project-application/ProjectApplicationUploadButton';
 import RemoteTestResultList from './RemoteTestResultList';
 import PythonVirtualEnvShell from '../PythonVirtualEnvShell';
-import useTutorialContext from '../../../hooks/useTutorialContext';
+import useTutorialContext from '../../../hooks/context/useTutorialContext';
 import SampleApplicationUploadStep from '../SampleApplicationUploadStep';
 
 const PROJECT_SETUP_ID = 'project-setup';

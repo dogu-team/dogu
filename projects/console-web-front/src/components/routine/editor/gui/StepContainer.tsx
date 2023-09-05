@@ -1,19 +1,20 @@
 import { OrganizationId, PlatformType, ProjectId, StepSchema, ROUTINE_STEP_NAME_MAX_LENGTH, Platform } from '@dogu-private/types';
 import { useRouter } from 'next/router';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { AppVersion } from '@dogu-tech/action-common';
 import useTranslation from 'next-translate/useTranslation';
-import { CloseOutlined, QuestionCircleFilled } from '@ant-design/icons';
-import { Tooltip } from 'antd';
+import { CloseOutlined } from '@ant-design/icons';
+import { Input, Radio } from 'antd';
 
-import { flexRowBaseStyle } from '../../../../styles/box';
-import { PREPARE_ACTION_NAME, RUN_TEST_ACTION_NAME } from '../../../../types/routine';
+import { CHECKOUT_ACTION_NAME, PREPARE_ACTION_NAME, RUN_TEST_ACTION_NAME } from '../../../../types/routine';
 import ActionSelector from './ActionSelector';
 import ContainerMenu from './ContainerMenu';
 import NameEditor from './NameEditor';
 import TestScriptSelector from './TestScriptSelector';
 import PlatformAppVersionSelector from './PlatformAppVersionSelector';
+import useProjectContext from '../../../../hooks/context/useProjectContext';
+import ErrorBox from '../../../common/boxes/ErrorBox';
 
 interface AppVersionProps {
   step: StepSchema;
@@ -87,7 +88,15 @@ interface Props {
   moveStep: (index: number, direction: 'up' | 'down') => void;
 }
 
+enum StepType {
+  ACTION = 'action',
+  SHELL = 'shell',
+}
+
 const StepContainer = ({ jobName, step, index, updateStep, deleteStep, moveStep }: Props) => {
+  const { project } = useProjectContext();
+  const [type, setType] = useState<StepType | null>(step.uses !== undefined ? StepType.ACTION : step.run !== undefined ? StepType.SHELL : null);
+
   const updateStepName = useCallback(
     (value: string) => {
       updateStep({ ...step, name: value }, index);
@@ -154,6 +163,10 @@ const StepContainer = ({ jobName, step, index, updateStep, deleteStep, moveStep 
     [updateStep, step, index],
   );
 
+  if (!project) {
+    return <ErrorBox title="Something went wrong" desc="Cannot find project" />;
+  }
+
   return (
     <Box>
       <ContainerMenu onDeleteClicked={() => deleteStep(index)} onMoveDownClicked={() => moveStep(index, 'down')} onMoveUpClicked={() => moveStep(index, 'up')} />
@@ -163,37 +176,86 @@ const StepContainer = ({ jobName, step, index, updateStep, deleteStep, moveStep 
       </Content>
 
       <Content>
-        <ContentTitle>
-          {t('routineGuiEditorStepActionLabel')}&nbsp;
-          <Tooltip title={t('routineGuiEditorStepActionDescription')} overlayInnerStyle={{ fontSize: '.8rem', whiteSpace: 'pre-wrap' }}>
-            <QuestionCircleFilled />
-          </Tooltip>
-        </ContentTitle>
+        <ContentTitle>Step type</ContentTitle>
         <div>
-          {step.uses === PREPARE_ACTION_NAME || step.uses === RUN_TEST_ACTION_NAME ? (
-            <ActionSelector defaultValue={step.uses} style={{ width: '200px' }} onChange={updateAction} />
-          ) : (
-            <p>{step.uses}</p>
-          )}
+          <Radio.Group
+            value={type}
+            onChange={(e) => {
+              if (e.target.value === StepType.ACTION) {
+                updateStep({ ...step, uses: RUN_TEST_ACTION_NAME, run: undefined, with: {} }, index);
+              } else if (e.target.value === StepType.SHELL) {
+                updateStep({ ...step, uses: undefined, run: '', with: undefined }, index);
+              }
+              setType(e.target.value);
+            }}
+          >
+            <Radio value={StepType.ACTION}>Action</Radio>
+            <Radio value={StepType.SHELL}>Shell</Radio>
+          </Radio.Group>
         </div>
       </Content>
 
-      {step.uses === PREPARE_ACTION_NAME && (
-        <Content>
-          <ContentTitle>{t('routineGuiEditorStepAppVersionLabel')}</ContentTitle>
-          <SelectWrapper>
-            <AppVersionContainer step={step} onUpdate={updateAppVersion} onClose={removeAppVersion} />
-          </SelectWrapper>
-        </Content>
+      {type === 'shell' && (
+        <>
+          <Content>
+            <ContentTitle>Run</ContentTitle>
+            <div>
+              <Input.TextArea
+                value={step.run}
+                placeholder={`npm install
+npm run test:web
+-----or-----
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pytest app/test_android.py`}
+                autoSize
+                onChange={(e) => {
+                  updateStep(
+                    {
+                      ...step,
+                      run: `${e.target.value}`,
+                    },
+                    index,
+                  );
+                }}
+              />
+            </div>
+          </Content>
+        </>
       )}
 
-      {step.uses === RUN_TEST_ACTION_NAME && (
-        <Content>
-          <ContentTitle>{t('routineGuiEditorStepScriptLabel')}</ContentTitle>
-          <SelectWrapper>
-            <ScriptContainer step={step} onUpdate={updateScript} onClose={removeStepWith} />
-          </SelectWrapper>
-        </Content>
+      {type === 'action' && (
+        <>
+          <Content>
+            <ContentTitle>{t('routineGuiEditorStepActionLabel')}</ContentTitle>
+            <div>
+              {!!step.uses && [PREPARE_ACTION_NAME, CHECKOUT_ACTION_NAME, RUN_TEST_ACTION_NAME].includes(step.uses) ? (
+                <ActionSelector value={step.uses} optionLabelProp="title" style={{ width: '200px' }} onChange={updateAction} />
+              ) : (
+                <p>{step.uses}</p>
+              )}
+            </div>
+          </Content>
+
+          {step.uses === PREPARE_ACTION_NAME && (
+            <Content>
+              <ContentTitle>{t('routineGuiEditorStepAppVersionLabel')}</ContentTitle>
+              <SelectWrapper>
+                <AppVersionContainer step={step} onUpdate={updateAppVersion} onClose={removeAppVersion} />
+              </SelectWrapper>
+            </Content>
+          )}
+
+          {step.uses === RUN_TEST_ACTION_NAME && (
+            <Content>
+              <ContentTitle>{t('routineGuiEditorStepScriptLabel')}</ContentTitle>
+              <SelectWrapper>
+                <ScriptContainer step={step} onUpdate={updateScript} onClose={removeStepWith} />
+              </SelectWrapper>
+            </Content>
+          )}
+        </>
       )}
     </Box>
   );
@@ -221,14 +283,6 @@ const ContentTitle = styled.p`
 
 const SelectWrapper = styled.div`
   max-width: 500px;
-`;
-
-const AppSelectPlatformWrapper = styled.div`
-  ${flexRowBaseStyle}
-  margin: .25rem 0;
-  & > span {
-    width: 96px;
-  }
 `;
 
 const CloseButton = styled.button`

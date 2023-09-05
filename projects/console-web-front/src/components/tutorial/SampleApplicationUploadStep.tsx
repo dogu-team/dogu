@@ -1,7 +1,7 @@
 import { UploadSampleAppDtoBase } from '@dogu-private/console';
 import { Alert } from 'antd';
 
-import useTutorialContext from '../../hooks/useTutorialContext';
+import useTutorialContext from '../../hooks/context/useTutorialContext';
 import ErrorBox from '../common/boxes/ErrorBox';
 import ProjectApplicationUploadButton from '../project-application/ProjectApplicationUploadButton';
 import SampleApplicationUploadButton from './SampleApplicationUploadButton';

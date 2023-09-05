@@ -9,7 +9,7 @@ import styled from 'styled-components';
 
 import { getHostByToken, updateUseHostAsDevice } from '../../api/host';
 import useModal from '../../hooks/useModal';
-import useTutorialContext from '../../hooks/useTutorialContext';
+import useTutorialContext from '../../hooks/context/useTutorialContext';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import { getErrorMessageFromAxios } from '../../utils/error';

@@ -1,7 +1,7 @@
 import { RiRemoteControlLine } from 'react-icons/ri';
 import styled from 'styled-components';
 
-import useTutorialContext from '../../../hooks/useTutorialContext';
+import useTutorialContext from '../../../hooks/context/useTutorialContext';
 import { flexRowCenteredStyle } from '../../../styles/box';
 import RefreshButton from '../../buttons/RefreshButton';
 import ErrorBox from '../../common/boxes/ErrorBox';

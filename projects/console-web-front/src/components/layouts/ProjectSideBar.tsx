@@ -20,7 +20,7 @@ import { flexRowCenteredStyle } from '../../styles/box';
 import CollpaseSidebarMenu from './CollapseSidebarMenu';
 import ProjectSwitch from '../projects/ProjectSwitch';
 import useRefresh from '../../hooks/useRefresh';
-import useProjectContext from '../../hooks/useProjectContext';
+import useProjectContext from '../../hooks/context/useProjectContext';
 
 type MenuItem = Required<MenuProps>['items'];
 

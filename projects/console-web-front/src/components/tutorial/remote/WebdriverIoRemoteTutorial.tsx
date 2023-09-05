@@ -24,7 +24,7 @@ import ProjectApplicationUploadButton from '../../project-application/ProjectApp
 import SampleApplicationUploadButton from '../SampleApplicationUploadButton';
 import RemoteTestResultList from './RemoteTestResultList';
 import CodeWithCopyButton from '../../common/CodeWithCopyButton';
-import useTutorialContext from '../../../hooks/useTutorialContext';
+import useTutorialContext from '../../../hooks/context/useTutorialContext';
 import { RemoteTutorialProps, webdriverioRemoteTutoriallData } from '../../../resources/tutorials/remote';
 import SampleApplicationUploadStep from '../SampleApplicationUploadStep';
 

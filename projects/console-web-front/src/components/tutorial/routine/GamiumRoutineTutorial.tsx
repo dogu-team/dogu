@@ -11,7 +11,7 @@ import GuideStep from '../GuideStep';
 import TutorialOptionSelectors from '../TutorialOptionSelectors';
 import RoutineGitTutorial from './RoutineGitTutorial';
 import PipelineListController from '../../pipelines/PipelineListController';
-import useTutorialContext from '../../../hooks/useTutorialContext';
+import useTutorialContext from '../../../hooks/context/useTutorialContext';
 import ErrorBox from '../../common/boxes/ErrorBox';
 import RunRoutineButton from '../../pipelines/RunRoutineButton';
 import TableListView from '../../common/TableListView';

@@ -25,7 +25,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  job-sample:
+  sample-job:
     runs-on:
       group: []
     steps:
@@ -45,7 +45,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  job-sample:
+  sample-job:
     runs-on:
       browserName:
       platformName:

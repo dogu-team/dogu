@@ -18,7 +18,7 @@ import PlatformIcon from './PlatformIcon';
 import TargetIcon from './TargetIcon';
 import { flexRowBaseStyle } from '../../styles/box';
 import FrameworkIcon from './FrameworkIcon';
-import useTutorialContext from '../../hooks/useTutorialContext';
+import useTutorialContext from '../../hooks/context/useTutorialContext';
 
 interface Props {
   sdk: TutorialSupportSdk;
