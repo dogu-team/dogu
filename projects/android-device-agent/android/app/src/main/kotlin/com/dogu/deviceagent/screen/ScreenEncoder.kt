@@ -7,6 +7,7 @@ import android.media.MediaCodecInfo
 import android.media.MediaCodecList
 import android.media.MediaFormat
 import android.os.Build
+import android.os.Bundle
 import android.os.IBinder
 import android.view.Surface
 import com.dogu.deviceagent.Device
@@ -174,6 +175,7 @@ class ScreenEncoder(
         var befTime = System.currentTimeMillis()
         var eof = false
         val bufferInfo = MediaCodec.BufferInfo()
+        var lastKeyframeShowTime = System.currentTimeMillis()
         while (!consumeRotationChange() && !eof) {
             val outputBufferId = codec.dequeueOutputBuffer(bufferInfo, -1)
             try {
@@ -189,12 +191,24 @@ class ScreenEncoder(
                     // must restart encoding with new size
                     break
                 }
+                if (bufferInfo.flags and MediaCodec.BUFFER_FLAG_KEY_FRAME != 0) {
+                    lastKeyframeShowTime = System.currentTimeMillis()
+                } else {
+                    val curTime = System.currentTimeMillis()
+                    val elapsedTime = curTime - lastKeyframeShowTime
+                    if (elapsedTime > 5000) {
+                        val param = Bundle()
+                        param.putInt(MediaCodec.PARAMETER_KEY_REQUEST_SYNC_FRAME, 0)
+                        codec.setParameters(param)
+                    }
+                }
                 if (outputBufferId >= 0) {
                     val codecBuffer = codec.getOutputBuffer(outputBufferId)
                     if (null != codecBuffer) {
                         IO.writeFully(channel, codecBuffer)
                     }
                 }
+
             } finally {
                 if (outputBufferId >= 0) {
                     codec.releaseOutputBuffer(outputBufferId, false)
@@ -210,31 +224,6 @@ class ScreenEncoder(
             befTime = System.currentTimeMillis()
         }
         return !eof
-    }
-
-    @Throws(IOException::class)
-    private fun writeFrameMeta(
-        channel: SendChannel<ByteArray>,
-        bufferInfo: MediaCodec.BufferInfo,
-        packetSize: Int
-    ) {
-        headerBuffer.clear()
-        var pts: Long
-        if (bufferInfo.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0) {
-            pts = PACKET_FLAG_CONFIG // non-media data packet
-        } else {
-            if (ptsOrigin == 0L) {
-                ptsOrigin = bufferInfo.presentationTimeUs
-            }
-            pts = bufferInfo.presentationTimeUs - ptsOrigin
-            if (bufferInfo.flags and MediaCodec.BUFFER_FLAG_KEY_FRAME != 0) {
-                pts = pts or PACKET_FLAG_KEY_FRAME
-            }
-        }
-        headerBuffer.putLong(pts)
-        headerBuffer.putInt(packetSize)
-        headerBuffer.flip()
-        IO.writeFully(channel, headerBuffer)
     }
 
     companion object {
@@ -372,7 +361,10 @@ class ScreenEncoder(
         private val MAX_FPS_FALLBACK = intArrayOf(60, 45, 30, 20, 15)
         private val MAX_SIZE_FALLBACK = intArrayOf(1080, 960, 840, 720, 600, 480, 360)
 
-        private fun getEncodeOptionCombinations(option: Options, deviceSize: Size): List<EncodeOptionCombination> {
+        private fun getEncodeOptionCombinations(
+            option: Options,
+            deviceSize: Size
+        ): List<EncodeOptionCombination> {
             val combinations: MutableList<EncodeOptionCombination> = ArrayList()
             val fpsFallbacks = intArrayOf(option.maxFps, *MAX_FPS_FALLBACK)
             val sizeFallbacks = intArrayOf(option.maxResolution, *MAX_SIZE_FALLBACK)

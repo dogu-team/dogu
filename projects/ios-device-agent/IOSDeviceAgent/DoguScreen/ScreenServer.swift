@@ -12,7 +12,7 @@ class ScreenServer {
   var listener: NWListener?
   var aliveConnection: NWConnection?
   var sessionIdSeed: UInt32 = 0
-  var preventGabage : UnknownSession?
+  var preventGabage: UnknownSession?
   var lastSession: Session?
 
   init(port: NWEndpoint.Port) {
@@ -39,11 +39,11 @@ class ScreenServer {
           NSLog("ScreenServer is not initialized")
           return
         }
-        self.lastSession?.close()
         self.preventGabage = UnknownSession(connection: connection) { (connection: NWConnection, type: String, param: Data, error: NWError?) in
           NSLog("ScreenServer on param \(type), \(String(data: param, encoding: .utf8))")
 
           if type == String("screen") {
+            self.lastSession?.close()
             self.sessionIdSeed += 1
             self.lastSession = Session(sessionId: self.sessionIdSeed, connection: connection, param: param)
           } else {

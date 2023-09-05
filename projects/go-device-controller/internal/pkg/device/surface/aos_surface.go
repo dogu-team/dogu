@@ -1,8 +1,6 @@
 package surface
 
 import (
-	"time"
-
 	"go-device-controller/types/protocol/generated/proto/outer/streaming"
 
 	log "go-device-controller/internal/pkg/log"
@@ -37,10 +35,10 @@ func (s *aosSurface) Reconnect(serial string, screenCaptureOption *streaming.Scr
 }
 
 func (s *aosSurface) Receive() ([]byte, error) {
-	err := s.conn.SetReadDeadline(time.Now().Add(time.Minute * 3)) // include encode intialization time
-	if err != nil {
-		log.Inst.Error("aosSurface.SetReadDeadline error", zap.String("url", *s.agentUrl), zap.Error(err))
-	}
+	// err := s.conn.SetReadDeadline(time.Now().Add(time.Minute * 3)) // include encode intialization time
+	// if err != nil {
+	// 	log.Inst.Error("aosSurface.SetReadDeadline error", zap.String("url", *s.agentUrl), zap.Error(err))
+	// }
 	_, buf, err := s.conn.ReadMessage()
 	return buf, err
 }

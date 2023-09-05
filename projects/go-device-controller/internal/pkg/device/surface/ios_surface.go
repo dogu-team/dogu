@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net"
 	"os"
-	"time"
 
 	"go-device-controller/types/protocol/generated/proto/outer/streaming"
 
@@ -74,11 +73,11 @@ func (s *iosSurface) Receive() ([]byte, error) {
 	}
 
 	for {
-		err := s.conn.SetReadDeadline(time.Now().Add(time.Minute))
-		if err != nil {
-			log.Inst.Error("iosSurface.SetReadDeadline error", zap.String("addr", *s.agentUrl), zap.Error(err))
-		}
-		err = s.recvQueue.Push(s.reader)
+		// err := s.conn.SetReadDeadline(time.Now().Add(time.Minute))
+		// if err != nil {
+		// 	log.Inst.Error("iosSurface.SetReadDeadline error", zap.String("addr", *s.agentUrl), zap.Error(err))
+		// }
+		err := s.recvQueue.Push(s.reader)
 		if err != nil {
 			log.Inst.Error("iosSurface.Receive push failed", zap.Error(err))
 			return nil, err
