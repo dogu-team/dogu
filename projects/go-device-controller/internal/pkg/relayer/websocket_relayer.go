@@ -83,10 +83,6 @@ func reconnect(getUrlFunc func() string, retryCount int, sleepSec int) (*websock
 			count += 1
 			continue
 		}
-		err = conn.SetReadDeadline(time.Now().Add(10 * time.Second))
-		if err != nil {
-			log.Inst.Error("WebsocketRelayer.SetReadDeadline error", zap.String("url", serverUrl), zap.Error(err))
-		}
 		return conn, resp, nil
 	}
 }

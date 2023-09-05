@@ -59,6 +59,7 @@ suspend fun DefaultWebSocketServerSession.routeStream(appContext: AppContext): U
             )
         }
     }
+    Logger.i("DefaultWebSocketServerSession.routeStream $randomId close call")
     streamChannel.close()
 
     Logger.i("DefaultWebSocketServerSession.routeStream $randomId end")

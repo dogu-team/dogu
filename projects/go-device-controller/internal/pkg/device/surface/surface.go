@@ -1,21 +1,21 @@
 package surface
 
 import (
-	"errors"
+	"context"
 	"math/rand"
 	"sync"
-	"sync/atomic"
 	"time"
 
 	"go-device-controller/types/protocol/generated/proto/outer/streaming"
 
 	log "go-device-controller/internal/pkg/log"
 
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
 
 type surface interface {
-	Reconnect(serial string, sleepSec int, screenCaptureOption *streaming.ScreenCaptureOption) error
+	Reconnect(serial string, screenCaptureOption *streaming.ScreenCaptureOption) error
 	Receive() ([]byte, error)
 	NotifyData(listener SurfaceListener, timeStamp uint32, data []byte)
 	Close()
@@ -27,19 +27,36 @@ type SurfaceProfile struct {
 	ReadMillisecPerPeriod int64
 }
 
+type SurfaceMessageType string
+
+const (
+	reconnect SurfaceMessageType = "reconnect"
+	receive   SurfaceMessageType = "receive"
+	close     SurfaceMessageType = "close"
+)
+
+type SurfaceMessage struct {
+	surfaceId int64
+	msgType   SurfaceMessageType
+	buf       []byte
+	err       error
+}
+
 type SurfaceConnector struct {
 	serial             string
 	surface            surface
 	isSurfaceConnected bool
+	surfaceId          int64
+	lastReconnectTime  time.Time
+	listernerIdSeed    int
 	listeners          []SurfaceListener
 	listenerMutex      sync.RWMutex
+
+	msgChan chan SurfaceMessage
 
 	// send timestamp
 	firstTimeStamp uint32
 	firstSendTime  time.Time
-
-	isRoutineAlive   atomic.Value
-	isForceReconnect bool
 
 	option  *streaming.ScreenCaptureOption
 	Profile SurfaceProfile
@@ -47,10 +64,12 @@ type SurfaceConnector struct {
 
 func NewSurfaceConnectorBase(s *SurfaceConnector, serial string) {
 	s.serial = serial
+	s.listernerIdSeed = 0
 	s.listeners = make([]SurfaceListener, 0)
 	s.listenerMutex = sync.RWMutex{}
-	s.isRoutineAlive.Store(false)
-	s.isForceReconnect = false
+	s.msgChan = make(chan SurfaceMessage, 65535)
+	s.surfaceId = 0
+	go s.startRoutine()
 }
 
 func NewAosSurfaceConnector(s *SurfaceConnector, serial string, agentUrl *string) {
@@ -81,24 +100,25 @@ func NewMacSurfaceConnector(s *SurfaceConnector, serial string) {
 func (s *SurfaceConnector) AddListener(listener SurfaceListener) {
 	s.listenerMutex.Lock()
 	defer s.listenerMutex.Unlock()
-	log.Inst.Info("surfaceConnector.addListener", zap.String("serial", s.serial), zap.Int("listenerCount", len(s.listeners)), zap.Bool("isAlive", s.isRoutineAlive.Load().(bool)))
+
+	listener.SetId(s.listernerIdSeed)
+	log.Inst.Info("surfaceConnector.addListener", zap.String("serial", s.serial), zap.Int("id", listener.GetId()), zap.String("type", listener.GetSurfaceListenerType()), zap.Int("listenerCount", len(s.listeners)))
+	s.listernerIdSeed++
 
 	s.listeners = append(s.listeners, listener)
-	s.isForceReconnect = true
 
-	if s.isRoutineAlive.CompareAndSwap(false, true) {
-		err := s.startRoutine()
-		if nil != err {
-			log.Inst.Error("surfaceConnector.addListener startRoutine error", zap.Error(err))
-		}
-	}
+	surfaceId := s.surfaceId
+	s.msgChan <- SurfaceMessage{surfaceId: surfaceId, msgType: close, err: errors.Errorf("listener added")}
+	s.msgChan <- SurfaceMessage{surfaceId: surfaceId, msgType: reconnect}
+
+	log.Inst.Info("surfaceConnector.addListener done", zap.String("serial", s.serial), zap.Int("id", listener.GetId()), zap.String("type", listener.GetSurfaceListenerType()), zap.Int("listenerCount", len(s.listeners)))
 }
 
 // remove listener
 func (s *SurfaceConnector) RemoveListener(listener SurfaceListener) {
 	s.listenerMutex.Lock()
 	defer s.listenerMutex.Unlock()
-	log.Inst.Info("surfaceConnector.removeListener ", zap.String("serial", s.serial), zap.Int("listenerCount", len(s.listeners)))
+	log.Inst.Info("surfaceConnector.removeListener ", zap.String("serial", s.serial), zap.Int("id", listener.GetId()), zap.String("type", listener.GetSurfaceListenerType()), zap.Int("listenerCount", len(s.listeners)))
 
 	for i, l := range s.listeners {
 		if l == listener {
@@ -107,6 +127,10 @@ func (s *SurfaceConnector) RemoveListener(listener SurfaceListener) {
 			break
 		}
 	}
+	if len(s.listeners) <= 0 {
+		s.msgChan <- SurfaceMessage{surfaceId: s.surfaceId, msgType: close, err: errors.Errorf("no listener")}
+	}
+	log.Inst.Info("surfaceConnector.removeListener done", zap.String("serial", s.serial), zap.Int("id", listener.GetId()), zap.String("type", listener.GetSurfaceListenerType()), zap.Int("listenerCount", len(s.listeners)))
 }
 
 func (s *SurfaceConnector) HasListener() bool {
@@ -140,35 +164,50 @@ func (s *SurfaceConnector) SetScreenCaptureOption(option *streaming.ScreenCaptur
 	s.option = option
 }
 
-func (s *SurfaceConnector) startRoutine() error {
-	go func() {
-		log.Inst.Info("surfaceConnector.startRoutine", zap.String("serial", s.serial))
-		var err error
-		var buf []byte = []byte{}
-		for {
-			err = nil
-			if len(s.listeners) <= 0 {
-				if s.isSurfaceConnected {
-					s.notifySurfaceClose()
-				}
-				time.Sleep(time.Millisecond * 200)
+func (s *SurfaceConnector) startRoutine() {
+	log.Inst.Info("surfaceConnector.startRoutine", zap.String("serial", s.serial))
+	var readCtx context.Context = nil
+	var readCancel context.CancelFunc = nil
+	for msg := range s.msgChan {
+		switch msg.msgType {
+		case reconnect:
+			if s.listeners == nil || len(s.listeners) == 0 {
 				continue
 			}
-			if !s.isForceReconnect && s.isSurfaceConnected {
-				buf, err = s.notifySurfaceReceive()
-			} else {
-				err = errors.New("force reconnect")
+			if msg.surfaceId != s.surfaceId {
+				log.Inst.Warn("surfaceConnector.startRoutine reconnect ignored", zap.String("serial", s.serial), zap.Int64("surfaceId", s.surfaceId), zap.Int64("msg.surfaceId", msg.surfaceId))
+				continue
+			}
+			if readCancel != nil {
+				readCancel()
+				readCancel = nil
+			}
+			err := s.notifySurfaceReconnect(s.serial)
+			if err != nil {
+				log.Inst.Error("surfaceConnector.startRoutine reconnect error", zap.Error(err))
+				s.msgChan <- SurfaceMessage{surfaceId: s.surfaceId, msgType: reconnect}
+			}
+			s.surfaceId++
+			readCtx, readCancel = context.WithCancel(context.Background())
+			go s.startRecvRoutine(readCtx, s.surfaceId)
+		case close:
+			if nil == msg.err {
+				msg.err = errors.Errorf("unknown")
+			}
+			log.Inst.Error("surfaceConnector.startRoutine close", zap.String("serial", s.serial), zap.String("reason", msg.err.Error()))
+			if msg.surfaceId != s.surfaceId {
+				log.Inst.Warn("surfaceConnector.startRoutine close ignored", zap.String("serial", s.serial), zap.Int64("surfaceId", s.surfaceId), zap.Int64("msg.surfaceId", msg.surfaceId))
+				continue
+			}
+			if readCancel != nil {
+				readCancel()
+				readCancel = nil
 			}
 
-			if err != nil {
-				s.notifySurfaceClose()
-				err = s.notifySurfaceReconnect(s.serial, 3)
-				if err != nil {
-					log.Inst.Error("surfaceConnector.startRoutine reconnect error", zap.Error(err))
-				}
-				continue
-			}
+			s.notifySurfaceClose("close")
+		case receive:
 			func() {
+				buf := msg.buf
 				s.listenerMutex.RLock()
 				defer s.listenerMutex.RUnlock()
 
@@ -187,45 +226,57 @@ func (s *SurfaceConnector) startRoutine() error {
 				}
 			}()
 		}
-	}()
-
-	return nil
+	}
 }
 
-func (s *SurfaceConnector) notifySurfaceReconnect(serial string, sleepSec int) error {
+func (s *SurfaceConnector) notifySurfaceReconnect(serial string) error {
 	log.Inst.Info("surfaceConnector.notifySurfaceReconnect", zap.String("serial", s.serial))
-	err := s.surface.Reconnect(serial, sleepSec, s.option)
+	deltaTimeMillisecond := 1000 - time.Since(s.lastReconnectTime).Milliseconds()
+	if 0 < deltaTimeMillisecond {
+		log.Inst.Warn("surfaceConnector.notifySurfaceReconnect too fast. so wait", zap.String("serial", s.serial), zap.Int64("deltaTimeMillisecond", deltaTimeMillisecond))
+		time.Sleep(time.Millisecond * time.Duration(deltaTimeMillisecond))
+	}
+	s.lastReconnectTime = time.Now()
+	err := s.surface.Reconnect(serial, s.option)
 	if err != nil {
 		log.Inst.Warn("surfaceConnector.notifySurfaceReconnect failed", zap.String("serial", s.serial), zap.Error(err))
-		time.Sleep(time.Second * time.Duration(sleepSec))
 		return err
 	}
 
 	s.isSurfaceConnected = true
-	s.isForceReconnect = false
 	return nil
 }
 
-func (s *SurfaceConnector) notifySurfaceReceive() ([]byte, error) {
-	startTime := time.Now()
-
-	buf, err := s.surface.Receive()
-	if err != nil {
-		log.Inst.Warn("surfaceConnector.notifySurfaceReceive failed", zap.String("serial", s.serial), zap.Error(err))
+func (s *SurfaceConnector) startRecvRoutine(ctx context.Context, surfaceId int64) {
+	if !s.isSurfaceConnected {
+		log.Inst.Error("surfaceConnector.startRecvRoutine called only if surface connected", zap.String("serial", s.serial))
 	}
-
-	s.Profile.ReadSizePerPeriod += len(buf)
-	s.Profile.ReadCountPerPeriod += 1
-	s.Profile.ReadMillisecPerPeriod += time.Since(startTime).Milliseconds()
-	return buf, err
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+			buf, err := s.surface.Receive()
+			if err != nil {
+				log.Inst.Warn("surfaceConnector.startRecvRoutine failed", zap.String("serial", s.serial), zap.Error(err))
+				s.msgChan <- SurfaceMessage{surfaceId: surfaceId, msgType: close, err: err}
+				s.msgChan <- SurfaceMessage{surfaceId: surfaceId, msgType: reconnect}
+				break
+			}
+			s.Profile.ReadSizePerPeriod += len(buf)
+			s.Profile.ReadCountPerPeriod += 1
+			s.msgChan <- SurfaceMessage{msgType: receive, buf: buf}
+		}
+	}
 }
 
-func (s *SurfaceConnector) notifySurfaceClose() {
+func (s *SurfaceConnector) notifySurfaceClose(reason string) {
 	// log.Inst.Info("surfaceConnector.notifySurfaceClose", zap.String("serial", s.serial))
-	if s.isSurfaceConnected {
-		log.Inst.Info("surfaceConnector.notifySurfaceClose closed", zap.String("serial", s.serial))
-		s.surface.Close()
-	}
 	s.isSurfaceConnected = false
+	if !s.isSurfaceConnected {
+		return
+	}
+	log.Inst.Info("surfaceConnector.notifySurfaceClose closed", zap.String("serial", s.serial), zap.String("reason", reason))
+	s.surface.Close()
 	// s.firstSendTime = time.Time{} <- Resetting timestamp make lack to pre-watchers
 }

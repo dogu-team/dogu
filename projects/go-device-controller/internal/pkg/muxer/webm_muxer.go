@@ -24,6 +24,7 @@ import (
 )
 
 type WebmMuxer struct {
+	id             int
 	filePath       string
 	videoWriter    webm.BlockWriteCloser
 	videoTimestamp time.Duration
@@ -67,6 +68,14 @@ func NewWebmMuxer(filePath string) (*WebmMuxer, *outer.ErrorResult) {
 	)
 	s.sampleBuilder = samplebuilder.New(30000, &codecs.VP8Packet{}, 90000)
 	return &s, gotypes.Success
+}
+
+func (s *WebmMuxer) GetId() int {
+	return s.id
+}
+
+func (s *WebmMuxer) SetId(id int) {
+	s.id = id
 }
 
 func (s *WebmMuxer) FilePath() string {

@@ -436,11 +436,25 @@ export class AndroidChannel implements DeviceChannel {
 }
 
 async function generateSerialUnique(systemInfo: DeviceSystemInfo): Promise<string> {
+  /*
+   * @note
+   * ## adb devices
+   * real-device-a with usb    R3CN203JWKV
+   * real-device-a with wifi   adb-R3CN203JWKV-KYVaup._adb-tls-connect._tcp.
+   * emulator-a                emulator-5554
+   * emulator-b                emulator-5556
+   *
+   * ## adb shell getprop | grep ro.serialno
+   * real-device-a with usb    R3CN203JWKV
+   * real-device-a with wifi   R3CN203JWKV
+   * emulator-a                EMULATOR32X1X15X0
+   * emulator-b                EMULATOR32X1X15X0
+   */
   if (!systemInfo.isVirtual) {
     return systemInfo.system.serial; // should use ro.serialno value of "adb getprop". because when connect device with wifi, serial from "adb devices" changes.
   }
   const uuid = await systeminformation.uuid();
-  const serialUnique = `${uuid.os}-${systemInfo.system.serial}`;
+  const serialUnique = `${uuid.os}-${systemInfo.system.model}`;
 
   return serialUnique;
 }

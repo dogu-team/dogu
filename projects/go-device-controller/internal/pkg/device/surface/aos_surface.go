@@ -1,8 +1,6 @@
 package surface
 
 import (
-	"time"
-
 	"go-device-controller/types/protocol/generated/proto/outer/streaming"
 
 	log "go-device-controller/internal/pkg/log"
@@ -25,7 +23,7 @@ func newAosSurface(agentUrl *string) *aosSurface {
 	return &s
 }
 
-func (s *aosSurface) Reconnect(serial string, sleepSec int, screenCaptureOption *streaming.ScreenCaptureOption) error {
+func (s *aosSurface) Reconnect(serial string, screenCaptureOption *streaming.ScreenCaptureOption) error {
 	// reconnect loop
 	var err error
 	s.conn, _, err = websocket.DefaultDialer.Dial(*s.agentUrl, nil)
@@ -37,10 +35,6 @@ func (s *aosSurface) Reconnect(serial string, sleepSec int, screenCaptureOption 
 }
 
 func (s *aosSurface) Receive() ([]byte, error) {
-	err := s.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
-	if err != nil {
-		log.Inst.Error("aosSurface.SetReadDeadline error", zap.String("url", *s.agentUrl), zap.Error(err))
-	}
 	_, buf, err := s.conn.ReadMessage()
 	return buf, err
 }

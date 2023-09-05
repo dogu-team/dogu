@@ -38,7 +38,7 @@ func newDesktopLibwebrtcSurface() *desktopLibwebrtcSurface {
 	return &s
 }
 
-func (s *desktopLibwebrtcSurface) Reconnect(serial string, sleepSec int, screenCaptureOption *streaming.ScreenCaptureOption) error {
+func (s *desktopLibwebrtcSurface) Reconnect(serial string, screenCaptureOption *streaming.ScreenCaptureOption) error {
 	var err error
 	var port int
 	listener, port, err, mutex := utils.ListenTCPFreePort()
@@ -97,7 +97,7 @@ func (s *desktopLibwebrtcSurface) Receive() ([]byte, error) {
 
 	}
 	for {
-		err := s.conn.SetReadDeadline(time.Now().Add(10 * time.Second))
+		err := s.conn.SetReadDeadline(time.Now().Add(time.Minute))
 		if err != nil {
 			log.Inst.Error("desktopLibwebrtcSurface.SetReadDeadline error", zap.Error(err))
 		}
