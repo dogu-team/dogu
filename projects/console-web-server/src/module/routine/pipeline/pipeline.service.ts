@@ -105,14 +105,14 @@ export class PipelineService {
           deviceTags: Array.isArray(runsOn.group) ? runsOn.group : [runsOn.group],
         };
       } else if ('browserName' in runsOn) {
-        if ('platformName' in runsOn) {
+        if ('tag' in runsOn) {
           return {
             type: RUNS_ON_TYPE.DEVICE_TAG_WITH_BROWSER,
-            deviceTag: runsOn.platformName,
+            deviceTag: runsOn.tag,
             browserName: runsOn.browserName,
           };
         } else {
-          throw new ParseRunsOnError(`platformName is required with browserName in [${jobName}]`, runsOn, jobName);
+          throw new ParseRunsOnError(`[tag] is required with browserName in [${jobName}]`, runsOn, jobName);
         }
       } else if (Array.isArray(runsOn)) {
         return {
@@ -412,7 +412,7 @@ export class PipelineService {
             const { deviceTag, browserName } = parsedRunsOn;
             const device = await this.deviceStatusService.findDeviceByDeviceTagWithBrowser(manager, organizationId, projectId, deviceTag, browserName, true);
             if (!device) {
-              throw new HttpException(`This project has no device Tag: [${deviceTag}]`, HttpStatus.NOT_FOUND);
+              throw new HttpException(`This project has no device tag: [${deviceTag}] with browserName: [${browserName}]`, HttpStatus.NOT_FOUND);
             }
             const routineDeviceJob = manager.getRepository(RoutineDeviceJob).create({
               routineJobId: routineJob.routineJobId,

@@ -1,10 +1,11 @@
-import { BrowserName, isAllowedDriverName } from '@dogu-private/types';
-import { errorify, Printable, stringify } from '@dogu-tech/common';
+import { BrowserName, getBrowserPlatformByNodeJsPlatform } from '@dogu-private/types';
+import { assertUnreachable, errorify, Printable, stringify } from '@dogu-tech/common';
+import { EnsureBrowserAndDriverResult } from '@dogu-tech/device-client-common';
 import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import _ from 'lodash';
 import path from 'path';
-import { BrowserInstaller } from '../browser-installer';
+import { BrowserManagerService } from '../browser-manager/browser-manager.service';
 import { getFreePort } from '../internal/util/net';
 
 const ServerStartPattern = /.*Started Selenium.*/;
@@ -34,9 +35,8 @@ interface SeleniumContextData extends SeleniumContextInfo {
 
 export class SeleniumContext {
   private _data: SeleniumContextData | null = null;
-  private browserInstaller = new BrowserInstaller();
 
-  constructor(private readonly options: FilledSeleniumContextOptions, private readonly logger: Printable) {}
+  constructor(private readonly options: FilledSeleniumContextOptions, private readonly browserManagerService: BrowserManagerService, private readonly logger: Printable) {}
 
   get info(): SeleniumContextInfo {
     if (!this._data) {
@@ -49,70 +49,31 @@ export class SeleniumContext {
     if (this._data) {
       throw new Error('Selenium server is already started.');
     }
-    const resolvedBrowserVersion = await this.installBrowser();
-    await this.installBrowserDriver(resolvedBrowserVersion);
-    this._data = await this.startSeleniumServer(resolvedBrowserVersion);
-  }
 
-  private async installBrowser(): Promise<string> {
-    const { browserName, browserVersion } = this.options;
-    this.logger.info(`Installing browser: ${stringify(browserName)} ${stringify(browserVersion)}`);
-
-    const resolvedBrowserVersion = await this.browserInstaller.resolveLatestVersion(browserName, browserVersion);
-    this.logger.info(`Resolved browser version: ${stringify(resolvedBrowserVersion)}`);
-
-    const foundBrowserVersion = await this.browserInstaller.findHighestInstalledVersion(browserName, resolvedBrowserVersion);
-    this.logger.info(`Found browser version: ${stringify(foundBrowserVersion)}`);
-
-    if (foundBrowserVersion) {
-      return foundBrowserVersion;
-    }
-
-    const toDownloadVersion = await this.browserInstaller.resolveToDownloadVersion(browserName, resolvedBrowserVersion);
-    this.logger.info(`To download browser version: ${stringify(toDownloadVersion)}`);
-
-    await this.browserInstaller.install({
-      name: browserName,
-      version: toDownloadVersion,
+    const browserPlatform = getBrowserPlatformByNodeJsPlatform(process.platform);
+    const ensureBrowserAndDriverResult = await this.browserManagerService.ensureBrowserAndDriver({
+      browserName: this.options.browserName,
+      browserVersion: this.options.browserVersion,
+      browserPlatform,
     });
-    return toDownloadVersion;
+    this._data = await this.startSeleniumServer(ensureBrowserAndDriverResult);
   }
 
-  private async installBrowserDriver(browserVersion: string): Promise<void> {
-    const { browserName } = this.options;
+  private async startSeleniumServer(ensureBrowserAndDriverResult: EnsureBrowserAndDriverResult): Promise<SeleniumContextData> {
+    const { browserName, browserVersion, browserPath, browserDriverPath } = ensureBrowserAndDriverResult;
+    this.logger.info(
+      `Starting selenium server for ${browserName} resolved browser version: ${browserVersion} requested browser version: ${stringify(this.options.browserVersion)}`,
+    );
 
-    let browserDriverName = '';
-    let browserDriverVersion = '';
-    if (browserName === 'chrome') {
-      browserDriverName = 'chromedriver';
-      browserDriverVersion = browserVersion;
-    } else if (browserName === 'firefox') {
-      browserDriverName = 'geckodriver';
-      browserDriverVersion = browserVersion;
-    } else if (browserName === 'safari') {
-      browserDriverName = 'safaridriver';
-      browserDriverVersion = browserVersion;
-    } else {
-      throw new Error(`Unsupported browser name: ${stringify(browserName)}`);
+    if (!browserPath) {
+      throw new Error(`Browser path is not found for ${browserName}`);
     }
 
-    if (!isAllowedDriverName(browserDriverName)) {
-      throw new Error(`Invalid browser driver name: ${stringify(browserDriverName)}`);
+    if (this.options.browserName !== browserName) {
+      throw new Error(`Browser name is not matched. Expected: ${this.options.browserName}, Actual: ${browserName}`);
     }
 
-    const isInstalled = await this.browserInstaller.isInstalled(browserDriverName, browserDriverVersion);
-    if (isInstalled) {
-      return;
-    }
-
-    await this.browserInstaller.install({
-      name: browserDriverName,
-      version: browserDriverVersion,
-    });
-  }
-
-  private async startSeleniumServer(resolvedBrowserVersion: string): Promise<SeleniumContextData> {
-    const { browserName, browserVersion, serverEnv, javaPath } = this.options;
+    const { serverEnv, javaPath } = this.options;
     const seleniumServerPath = HostPaths.external.selenium.seleniumServerPath();
     const port = await getFreePort();
     const args: string[] = ['-jar', seleniumServerPath, 'standalone', '--host', '127.0.0.1', '--port', `${port}`, '--allow-cors', 'true', '--detect-drivers', 'false'];
@@ -122,43 +83,56 @@ export class SeleniumContext {
     }
 
     let stereotype: Record<string, unknown> = {};
-    if (browserName === 'chrome') {
-      const browserPath = this.browserInstaller.getBrowserOrDriverPath(browserName, resolvedBrowserVersion);
-      const browserDriverPath = this.browserInstaller.getBrowserOrDriverPath('chromedriver', resolvedBrowserVersion);
-      stereotype = {
-        browserName: 'chrome',
-        'goog:chromeOptions': {
-          binary: browserPath,
-          args: ['remote-allow-origins=*'],
-        },
-      };
-      args.push('--driver-configuration', 'display-name="Google Chrome for Testing"', `webdriver-executable="${browserDriverPath}"`);
-    } else if (browserName === 'firefox') {
-      const browserPath = this.browserInstaller.getBrowserOrDriverPath(browserName, resolvedBrowserVersion);
-      const browserDriverPath = this.browserInstaller.getBrowserOrDriverPath('geckodriver', resolvedBrowserVersion);
-      stereotype = {
-        browserName: 'firefox',
-        'moz:firefoxOptions': {
-          binary: browserPath,
-        },
-      };
-      args.push('--driver-configuration', 'display-name="Mozilla Firefox"', `webdriver-executable="${browserDriverPath}"`);
-    } else if (browserName === 'safari') {
-      const browserDriverPath = this.browserInstaller.getBrowserOrDriverPath('safaridriver', resolvedBrowserVersion);
-      stereotype = {
-        browserName: 'safari',
-      };
-      args.push('--driver-configuration', 'display-name="Safari"', `webdriver-executable="${browserDriverPath}"`);
-    } else {
-      throw new Error(`Unsupported browser name: ${stringify(browserName)}`);
+    switch (browserName) {
+      case 'chrome':
+        {
+          stereotype = {
+            browserName: 'chrome',
+            'goog:chromeOptions': {
+              binary: browserPath,
+              args: ['remote-allow-origins=*'],
+            },
+          };
+          args.push('--driver-configuration', 'display-name="Google Chrome for Testing"', `webdriver-executable="${browserDriverPath}"`);
+        }
+        break;
+      case 'firefox':
+      case 'firefox-devedition':
+        {
+          stereotype = {
+            browserName: 'firefox',
+            'moz:firefoxOptions': {
+              binary: browserPath,
+            },
+          };
+          args.push('--driver-configuration', 'display-name="Mozilla Firefox"', `webdriver-executable="${browserDriverPath}"`);
+        }
+        break;
+      case 'safari':
+      case 'safaritp':
+        {
+          stereotype = {
+            browserName: 'safari',
+          };
+          args.push('--driver-configuration', 'display-name="Safari"', `webdriver-executable="${browserDriverPath}"`);
+        }
+        break;
+      case 'edge':
+      case 'iexplorer':
+      case 'samsung-internet':
+        throw new Error(`Browser ${browserName} is not supported.`);
+      default:
+        assertUnreachable(browserName);
     }
 
     if (_.isEmpty(stereotype)) {
-      throw new Error(`Stereotype is empty for ${stringify(browserName)} ${stringify(resolvedBrowserVersion)}`);
+      throw new Error(`Stereotype is empty for ${browserName} ${stringify(this.options.browserVersion)}`);
     }
-    if (browserVersion) {
-      _.set(stereotype, 'browserVersion', browserVersion);
+
+    if (this.options.browserVersion) {
+      _.set(stereotype, 'browserVersion', this.options.browserVersion);
     }
+
     let stereotypeString = JSON.stringify(stereotype);
     if (process.platform === 'win32') {
       stereotypeString = stereotypeString.replace(/"/g, '\\"');

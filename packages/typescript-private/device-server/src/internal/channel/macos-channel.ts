@@ -91,6 +91,7 @@ export class MacosChannel implements DeviceChannel {
       deviceServerService.seleniumService,
       deviceServerService.httpRequestRelayService,
       deviceServerService.seleniumEndpointHandlerService,
+      deviceServerService.browserManagerService,
       deviceServerService.doguLogger,
     );
 

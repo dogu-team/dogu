@@ -5,6 +5,7 @@ import AsyncLock from 'async-lock';
 import _ from 'lodash';
 import path from 'path';
 import { setInterval } from 'timers/promises';
+import { BrowserManagerService } from '../browser-manager/browser-manager.service';
 import { DoguLogger } from '../logger/logger';
 import { DefaultSeleniumContextOptions, SeleniumContext, SeleniumContextInfo, SeleniumContextOptions } from './selenium.context';
 
@@ -32,7 +33,7 @@ export class SeleniumService implements OnModuleInit, OnModuleDestroy {
   private lock = new AsyncLock();
   private stopGarbageCollection = false;
 
-  constructor(logger: DoguLogger) {
+  constructor(private readonly browserManagerService: BrowserManagerService, logger: DoguLogger) {
     this.logger = new PrefixLogger(logger, '[SeleniumService]');
   }
 
@@ -48,7 +49,7 @@ export class SeleniumService implements OnModuleInit, OnModuleDestroy {
       this.map.clear();
       return entries;
     });
-    await Promise.all(entries.map((entry) => entry.context.close()));
+    await Promise.all(entries.map(async (entry) => entry.context.close()));
   }
 
   async open(options: SeleniumContextOptions): Promise<SeleniumContextInfo> {
@@ -60,7 +61,7 @@ export class SeleniumService implements OnModuleInit, OnModuleDestroy {
         return entry.context.info;
       }
       const mergedOptions = _.merge(this.defaultSeleniumContextOptions, options);
-      const newContext = new SeleniumContext(mergedOptions, this.logger);
+      const newContext = new SeleniumContext(mergedOptions, this.browserManagerService, this.logger);
       await newContext.open();
       this.map.set(key, {
         context: newContext,
@@ -139,7 +140,7 @@ export class SeleniumService implements OnModuleInit, OnModuleDestroy {
     });
   }
 
-  private collectGarbage(): Promise<void> {
+  private async collectGarbage(): Promise<void> {
     return this.lock.acquire(LockKey, () => {
       const now = new Date();
       for (const [key, entry] of this.map.entries()) {

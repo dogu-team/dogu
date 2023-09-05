@@ -2,6 +2,7 @@ import { Code, ErrorResultError, Platform, Serial } from '@dogu-private/types';
 import { DoguRemoteDeviceJobIdHeader, errorify, HeaderRecord } from '@dogu-tech/common';
 import { RelayRequest, RelayResponse, SessionDeletedParam, WebDriverEndPoint } from '@dogu-tech/device-client-common';
 import _ from 'lodash';
+import { BrowserManagerService } from '../browser-manager/browser-manager.service';
 import { HttpRequestRelayService } from '../http-request-relay/http-request-relay.common';
 import { DoguLogger } from '../logger/logger';
 import { SeleniumService } from '../selenium/selenium.service';
@@ -15,6 +16,7 @@ export class SeleniumDeviceWebDriverHandler implements DeviceWebDriverHandler {
     private readonly seleniumService: SeleniumService,
     private readonly httpRequestRelayService: HttpRequestRelayService,
     private readonly seleniumEndpointHandlerService: SeleniumEndpointHandlerService,
+    private readonly browserManagerService: BrowserManagerService,
     private readonly logger: DoguLogger,
   ) {}
 
@@ -32,7 +34,7 @@ export class SeleniumDeviceWebDriverHandler implements DeviceWebDriverHandler {
     const endpointHandler = this.seleniumEndpointHandlerService.getHandler(endpoint.info.type);
     if (endpointHandler) {
       try {
-        const result = await endpointHandler.onBeforeRequest(this.seleniumService, headers, endpoint, request, this.logger);
+        const result = await endpointHandler.onBeforeRequest(this.browserManagerService, this.seleniumService, headers, endpoint, request, this.logger);
         if (result.error) {
           throw result.error;
         }

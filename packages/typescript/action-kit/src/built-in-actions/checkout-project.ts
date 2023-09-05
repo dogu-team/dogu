@@ -16,8 +16,16 @@ export async function checkoutProject(
 ) {
   if (!checkoutUrl) {
     printable.info('Getting Git url from console...');
-    const { url } = await consoleActionClient.getGitlabUrl();
-    checkoutUrl = url;
+    try {
+      const { url } = await consoleActionClient.getGitlabUrl();
+      checkoutUrl = url;
+    } catch (error) {
+      for (let i = 0; i < 3; ++i) {
+        printable.error('🐱 Git is integrated with 🐶 Dogu project?');
+      }
+
+      throw error;
+    }
   }
   printable.info('Git url', { checkoutUrl });
 
@@ -57,6 +65,7 @@ export async function checkoutProject(
       command(git, [...configArgs, '-C', routineWorkspacePath, 'reset', '--hard'], 'Resetting Git repository...', 'Git reset failed');
       command(git, [...configArgs, '-C', routineWorkspacePath, 'clean', '-fdx'], 'Cleaning Git repository...', 'Git clean failed');
     }
+    command(git, [...configArgs, '-C', routineWorkspacePath, 'remote', 'set-branches', 'origin', branchOrTag], 'Setting Git remote branches...', 'Git remote set-branches failed');
     command(git, [...configArgs, '-C', routineWorkspacePath, 'fetch', 'origin', branchOrTag], 'Fetching Git repository...', 'Git fetch failed');
     command(git, [...configArgs, '-C', routineWorkspacePath, 'checkout', branchOrTag], 'Checking out Git repository...', 'Git checkout failed');
     command(git, [...configArgs, '-C', routineWorkspacePath, 'pull'], 'Pulling Git repository...', 'Git pull failed');

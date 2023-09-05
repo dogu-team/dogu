@@ -95,8 +95,8 @@ definitions:
         type: string
       browserVersion:
         type: string
-      platformName:
+      tag:
         type: string
     required:
       - browserName
-      - platformName
+      - tag

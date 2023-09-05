@@ -1,7 +1,11 @@
 import { errorify, loop, Printable, stringify } from '@dogu-tech/common';
+import { exec } from 'child_process';
 import fs from 'fs';
 import fsPromise from 'fs/promises';
 import path from 'path';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 export async function copyDirectoryRecursive(sourceDir: string, destinationDir: string, logger: Printable): Promise<void> {
   try {
@@ -136,4 +140,17 @@ export async function renameRetry(srcPath: string, destPath: string, printable: 
     }
   }
   throw lastError;
+}
+
+export async function ensureExecutable(executablePath: string, printable: Printable): Promise<void> {
+  try {
+    await fs.promises.chmod(executablePath, 0o755);
+    if (process.platform !== 'darwin') {
+      return;
+    }
+    await execAsync(`/usr/bin/xattr -dr com.apple.quarantine ${executablePath}`);
+  } catch (error) {
+    printable.warn?.(`Failed to set executable bit for ${executablePath}`, { error: errorify(error) });
+    throw error;
+  }
 }

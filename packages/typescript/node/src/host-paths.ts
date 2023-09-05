@@ -53,17 +53,6 @@ export const HostPaths = {
     nodePackage: {
       nodePackagesPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'node-packages'),
       appiumPath: (): string => path.resolve(HostPaths.external.nodePackage.nodePackagesPath(), 'appium'),
-      webdriverManager: {
-        prototypePath: (): string => path.resolve(HostPaths.external.nodePackage.nodePackagesPath(), 'webdriver-manager', 'prototype'),
-        clonePath: (cloneId: string): string => path.resolve(HostPaths.external.nodePackage.nodePackagesPath(), 'webdriver-manager', 'clones', cloneId),
-      },
-      puppeteerBrowsersPath: (): string => path.resolve(HostPaths.external.nodePackage.nodePackagesPath(), 'puppeteer-browsers'),
-      seleniumWebdriver: {
-        rootPath: (): string => path.resolve(HostPaths.external.nodePackage.nodePackagesPath(), 'selenium-webdriver'),
-        seleniumManagerPath: (): string =>
-          path.resolve(HostPaths.external.nodePackage.seleniumWebdriver.rootPath(), 'node_modules', 'selenium-webdriver', 'bin', seleniumManagerSubPath()),
-        seleniumManagerJsonPath: (): string => path.resolve(os.homedir(), '.cache', 'selenium', 'selenium-manager.json'),
-      },
     },
     xcodeProject: {
       wdaProjectDirectoryPath: (): string => path.resolve(HostPaths.external.defaultAppiumHomePath(), 'node_modules/appium-xcuitest-driver/node_modules/appium-webdriveragent'),
@@ -81,9 +70,9 @@ export const HostPaths = {
     },
     browser: {
       browsersPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'browsers'),
-      geckoDriverPath: (): string => path.resolve(HostPaths.external.browser.browsersPath(), process.platform === 'win32' ? 'geckodriver.exe' : 'geckodriver'),
+      geckodriverPath: (): string => path.resolve(HostPaths.external.browser.browsersPath(), process.platform === 'win32' ? 'geckodriver.exe' : 'geckodriver'),
       safariBrowserPath: (): string => path.resolve('/Applications/Safari.app/Contents/MacOS/Safari'),
-      safariDriverPath: (): string => path.resolve('/usr/bin/safaridriver'),
+      safaridriverPath: (): string => (process.platform === 'darwin' ? path.resolve('/usr/bin/safaridriver') : ''),
     },
     selenium: {
       seleniumServerPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'selenium/selenium-server.jar'),
@@ -179,17 +168,4 @@ function createThirdPartyPathMap(options?: ThirdPartyPathMapOptions): ThirdParty
       mobiledevice: process.platform === 'darwin' ? path.resolve(thirdPartyPath, platformDir, archDir, 'mobiledevice') : '',
     },
   };
-}
-
-function seleniumManagerSubPath(): string {
-  const { platform } = process;
-  if (platform === 'win32') {
-    return 'windows/selenium-manager.exe';
-  } else if (platform === 'darwin') {
-    return 'macos/selenium-manager';
-  } else if (platform === 'linux') {
-    return 'linux/selenium-manager';
-  } else {
-    throw new Error(`Unsupported platform: ${platform}`);
-  }
 }
