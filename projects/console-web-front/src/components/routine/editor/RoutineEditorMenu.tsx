@@ -1,11 +1,14 @@
+import { BookOutlined } from '@ant-design/icons';
 import { PROJECT_TYPE } from '@dogu-private/types';
 import { Button, Radio } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
+import { RiExternalLinkLine } from 'react-icons/ri';
 import styled from 'styled-components';
 
-import { flexRowSpaceBetweenStyle } from '../../../styles/box';
+import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../../styles/box';
 import { RoutineEditMode } from '../../../types/routine';
 
 interface Props {
@@ -29,7 +32,7 @@ const RoutineEditorMenu = ({ projectType, saveButtonText, onSave, mode, onChange
 
   return (
     <MenuBar>
-      <div>
+      <FlexRow>
         {projectType !== PROJECT_TYPE.CUSTOM && (
           <Radio.Group
             value={mode}
@@ -43,7 +46,14 @@ const RoutineEditorMenu = ({ projectType, saveButtonText, onSave, mode, onChange
             </Radio.Button>
           </Radio.Group>
         )}
-      </div>
+        {mode === RoutineEditMode.SCRIPT && (
+          <div style={{ marginLeft: '.5rem' }}>
+            <a href="https://docs.dogutech.io/routine/routines/syntax" target="_blank">
+              YAML guide <RiExternalLinkLine />
+            </a>
+          </div>
+        )}
+      </FlexRow>
       <div>
         <Button type="primary" loading={loading} onClick={handleSave} access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'save-routine-btn' : undefined}>
           {saveButtonText}
@@ -58,4 +68,8 @@ export default RoutineEditorMenu;
 const MenuBar = styled.div`
   ${flexRowSpaceBetweenStyle}
   margin-bottom: 1rem;
+`;
+
+const FlexRow = styled.div`
+  ${flexRowBaseStyle}
 `;
