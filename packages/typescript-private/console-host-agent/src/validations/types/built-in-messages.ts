@@ -1,4 +1,16 @@
-import { DeviceId, DeviceRunnerId, ErrorResultDto, OrganizationId, ProjectId, RoutineDeviceJob, RoutineDeviceJobId, RoutineStep, RoutineStepId, Serial } from '@dogu-private/types';
+import {
+  BrowserName,
+  DeviceId,
+  DeviceRunnerId,
+  ErrorResultDto,
+  OrganizationId,
+  ProjectId,
+  RoutineDeviceJob,
+  RoutineDeviceJobId,
+  RoutineStep,
+  RoutineStepId,
+  Serial,
+} from '@dogu-private/types';
 import { Instance, IsFilledString, IsHttpMethod, IsOptionalObject, IsUrlPath, IsUuidV4, Kindable, Method, OneOf, TransformByKind } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { IsArray, IsBoolean, IsIn, IsNumber, IsObject, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
@@ -265,10 +277,16 @@ export class RunStep extends Kindable<'RunStep'> implements Pick<RoutineStep, 'r
   stepIndex!: number;
 
   @IsString()
-  browserName!: string;
+  @IsOptional()
+  appVersion?: string;
+
+  @IsIn(BrowserName)
+  @IsOptional()
+  browserName?: BrowserName;
 
   @IsString()
-  browserVersion!: string;
+  @IsOptional()
+  browserVersion?: string;
 
   @IsObject()
   env!: Record<string, string>;
@@ -293,6 +311,18 @@ export class RunDeviceJob extends Kindable<'RunDeviceJob'> implements Pick<Routi
 
   @IsIn([0, 1])
   record!: number;
+
+  @IsString()
+  @IsOptional()
+  appVersion?: string;
+
+  @IsIn(BrowserName)
+  @IsOptional()
+  browserName?: BrowserName;
+
+  @IsString()
+  @IsOptional()
+  browserVersion?: string;
 
   @IsFilledString()
   serial!: Serial;

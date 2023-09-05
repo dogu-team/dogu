@@ -35,10 +35,11 @@ export interface JobSchema {
   appVersion?:
     | string
     | {
-        android?: string;
-        ios?: string;
-        macos?: string;
-        windows?: string;
+        /**
+         * This interface was referenced by `undefined`'s JSON-Schema definition
+         * via the `patternProperty` "^[a-z]+$".
+         */
+        [k: string]: string;
       };
   'runs-on':
     | {

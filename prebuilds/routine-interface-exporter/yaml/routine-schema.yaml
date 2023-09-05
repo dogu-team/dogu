@@ -33,9 +33,9 @@ definitions:
       needs:
         anyOf:
           - type: string
-          - items:
+          - type: array
+            items:
               type: string
-            type: array
       record:
         type: boolean
       browserName:
@@ -47,18 +47,13 @@ definitions:
           - type: string
           - type: object
             additionalProperties: false
-            properties:
-              android:
-                type: string
-              ios:
-                type: string
-              macos:
-                type: string
-              windows:
+            patternProperties:
+              ^[a-z]+$:
                 type: string
       runs-on:
         anyOf:
-          - additionalProperties: false
+          - type: object
+            additionalProperties: false
             properties:
               group:
                 anyOf:
@@ -68,11 +63,10 @@ definitions:
                     type: array
             required:
               - group
-            type: object
           - type: string
-          - items:
+          - type: array
+            items:
               type: string
-            type: array
       steps:
         type: array
         items:

@@ -1,8 +1,11 @@
 import {
+  DeviceAndDeviceTagPropCamel,
   DevicePropCamel,
   DevicePropSnake,
+  DeviceTagPropCamel,
   JobDisplayQuery,
   JobElement,
+  ProjectAndDevicePropCamel,
   ProjectAndDevicePropSnake,
   RoutineDeviceJobPropCamel,
   RoutineDeviceJobPropSnake,
@@ -15,8 +18,7 @@ import {
 } from '@dogu-private/console';
 import {
   CREATOR_TYPE,
-  isAllowedBrowserName,
-  isAllowedBrowserPlatform,
+  DeviceConnectionState,
   JobSchema,
   OrganizationId,
   PIPELINE_STATUS,
@@ -34,10 +36,9 @@ import { notEmpty, stringify } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import lodash from 'lodash';
-import { DataSource, EntityManager } from 'typeorm';
-import { v4 } from 'uuid';
+import { Brackets, DataSource, EntityManager } from 'typeorm';
 import { RoutineDeviceJob } from '../../../db/entity/device-job.entity';
-import { Device, RoutineDeviceJobBrowser, RoutineJob, RoutineJobEdge } from '../../../db/entity/index';
+import { Device, DeviceAndDeviceTag, DeviceTag, ProjectAndDevice, RoutineJob, RoutineJobEdge } from '../../../db/entity/index';
 import { RoutinePipeline } from '../../../db/entity/pipeline.entity';
 import { Routine } from '../../../db/entity/routine.entity';
 import { RoutineStep } from '../../../db/entity/step.entity';
@@ -48,36 +49,7 @@ import { DoguLogger } from '../../logger/logger';
 import { DeviceStatusService } from '../../organization/device/device-status.service';
 import { validateRoutineSchema } from '../common/validator';
 import { CreateInstantPipelineDto, FindAllPipelinesDto } from './dto/pipeline.dto';
-
-enum RUNS_ON_TYPE {
-  DEVICE_NAMES = 0,
-  DEVICE_TAGS = 1,
-  DEVICE_TAG_WITH_BROWSER = 2,
-}
-
-interface ParsedRunsOnNames {
-  type: RUNS_ON_TYPE.DEVICE_NAMES;
-  deviceNames: string[];
-}
-
-interface ParsedRunsOnTags {
-  type: RUNS_ON_TYPE.DEVICE_TAGS;
-  deviceTags: string[];
-}
-
-interface ParsedRunsOnTagWithBrowser {
-  type: RUNS_ON_TYPE.DEVICE_TAG_WITH_BROWSER;
-  deviceTag: string;
-  browserName: string;
-}
-
-type ParsedRunsOn = ParsedRunsOnNames | ParsedRunsOnTags | ParsedRunsOnTagWithBrowser;
-
-export class ParseRunsOnError extends Error {
-  constructor(message: string, readonly runsOn: JobSchema['runs-on'], readonly jobName: string, options?: ErrorOptions) {
-    super(message, options);
-  }
-}
+import { parseAppVersion, parseBrowserName, parseRunsOn } from './pipeline.common';
 
 function createStepEnv(routineSchema: RoutineSchema, stepSchema: StepSchema): Record<string, string> {
   return lodash.merge(routineSchema.env ?? {}, stepSchema.env ?? {});
@@ -94,43 +66,6 @@ export class PipelineService {
     private readonly dataSource: DataSource,
     private readonly logger: DoguLogger,
   ) {}
-
-  static parseRunsOnOrThrow(runsOn: JobSchema['runs-on'], jobName: string): ParsedRunsOn {
-    if (typeof runsOn === 'object') {
-      if ('group' in runsOn && 'browserName' in runsOn) {
-        throw new ParseRunsOnError(`group and browserName cannot be used together in [${jobName}]`, runsOn, jobName);
-      } else if ('group' in runsOn) {
-        return {
-          type: RUNS_ON_TYPE.DEVICE_TAGS,
-          deviceTags: Array.isArray(runsOn.group) ? runsOn.group : [runsOn.group],
-        };
-      } else if ('browserName' in runsOn) {
-        if ('tag' in runsOn) {
-          return {
-            type: RUNS_ON_TYPE.DEVICE_TAG_WITH_BROWSER,
-            deviceTag: runsOn.tag,
-            browserName: runsOn.browserName,
-          };
-        } else {
-          throw new ParseRunsOnError(`[tag] is required with browserName in [${jobName}]`, runsOn, jobName);
-        }
-      } else if (Array.isArray(runsOn)) {
-        return {
-          type: RUNS_ON_TYPE.DEVICE_NAMES,
-          deviceNames: runsOn,
-        };
-      } else {
-        throw new ParseRunsOnError(`Invalid runs-on object in [${jobName}]`, runsOn, jobName);
-      }
-    } else if (typeof runsOn === 'string') {
-      return {
-        type: RUNS_ON_TYPE.DEVICE_NAMES,
-        deviceNames: [runsOn],
-      };
-    } else {
-      throw new ParseRunsOnError(`Invalid runs-on type in [${jobName}]`, runsOn, jobName);
-    }
-  }
 
   public async findPipelineAndSubDatasById(manager: EntityManager, pipelineId: RoutinePipelineId): Promise<RoutinePipeline> {
     const pipeline = await manager //
@@ -227,18 +162,6 @@ export class PipelineService {
     }
 
     return true;
-  }
-
-  private parseRunsOnFromJobSchema(jobSchema: JobSchema, jobName: string): ParsedRunsOn {
-    try {
-      return PipelineService.parseRunsOnOrThrow(jobSchema['runs-on'], jobName);
-    } catch (error) {
-      if (error instanceof ParseRunsOnError) {
-        throw new HttpException(`Invalid runs-on type: ${stringify(error.runsOn)}`, HttpStatus.BAD_REQUEST);
-      } else {
-        throw new HttpException('Internal runs-on parse error', HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-    }
   }
 
   private async createPipeline(
@@ -343,130 +266,128 @@ export class PipelineService {
     await manager.getRepository(RoutineJobEdge).save(jobEdges);
   }
 
-  private async createDeviceJobs(
+  private static async createDeviceJobs(
     manager: EntityManager,
     organizationId: OrganizationId,
     projectId: ProjectId,
     routineSchema: RoutineSchema,
-    jobs: RoutineJob[],
+    routineJobs: RoutineJob[],
   ): Promise<RoutineDeviceJob[]> {
-    const parsedRoutineDeviceJobPromises = jobs
-      .map((routineJob) => {
-        const jobSchema = routineSchema.jobs[routineJob.name];
-        const record = jobSchema.record ? 1 : 0;
-        const parsedRunsOn = this.parseRunsOnFromJobSchema(jobSchema, routineJob.name);
-        return {
-          routineJob,
-          parsedRunsOn,
-          record,
-        };
-      })
-      .map(async ({ routineJob, parsedRunsOn, record }) => {
-        const { type } = parsedRunsOn;
-        switch (type) {
-          case RUNS_ON_TYPE.DEVICE_NAMES: {
-            const { deviceNames } = parsedRunsOn;
-            const devices = await this.deviceStatusService.findDevicesByName(manager, organizationId, projectId, deviceNames, true);
-            if (devices.length === 0) {
-              throw new HttpException(`This project has no devices with names: [${deviceNames.toString()}]`, HttpStatus.NOT_FOUND);
-            }
-            const routineDeviceJobs = devices.map((device) => {
+    const routineDeviceJobs: RoutineDeviceJob[] = [];
+
+    for (const routineJob of routineJobs) {
+      const jobSchema = routineSchema.jobs[routineJob.name];
+      const record = jobSchema.record ? 1 : 0;
+      const runsOn = parseRunsOn(routineJob.name, jobSchema['runs-on']);
+      const { type, pickables } = runsOn;
+
+      if (type === 'pickOne') {
+        for (const pickable of pickables) {
+          const deviceFromName = await manager
+            .createQueryBuilder(Device, Device.name)
+            .leftJoinAndSelect(`${Device.name}.${DevicePropCamel.projectAndDevices}`, ProjectAndDevice.name)
+            .where(`${Device.name}.${DevicePropCamel.organizationId} = :${DevicePropCamel.organizationId}`, { organizationId })
+            .andWhere(`${Device.name}.${DevicePropCamel.connectionState} = :${DevicePropCamel.connectionState}`, {
+              connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED,
+            })
+            .andWhere(
+              new Brackets((builder) => {
+                builder
+                  .where(`${Device.name}.${DevicePropCamel.isGlobal} = 1`) //
+                  .orWhere(`${ProjectAndDevice.name}.${ProjectAndDevicePropCamel.projectId} = :${ProjectAndDevicePropCamel.projectId}`, { projectId });
+              }),
+            )
+            .andWhere(`${Device.name}.${DevicePropCamel.name} = :${DevicePropCamel.name}`, { name: pickable })
+            .getOne();
+
+          if (deviceFromName) {
+            const routineDeviceJob = manager.getRepository(RoutineDeviceJob).create({
+              routineJobId: routineJob.routineJobId,
+              deviceId: deviceFromName.deviceId,
+              status: PIPELINE_STATUS.WAITING,
+              record,
+              appVersion: parseAppVersion(jobSchema.appVersion, deviceFromName.platform),
+              browserName: parseBrowserName(jobSchema.browserName) ?? null,
+              browserVersion: jobSchema.browserVersion ?? null,
+            });
+            await manager.getRepository(RoutineDeviceJob).save(routineDeviceJob);
+            routineDeviceJobs.push(routineDeviceJob);
+          } else {
+            const deviceFromTag = await manager
+              .createQueryBuilder(Device, Device.name)
+              .leftJoinAndSelect(`${Device.name}.${DevicePropCamel.projectAndDevices}`, ProjectAndDevice.name)
+              .leftJoinAndSelect(`${Device.name}.${DevicePropCamel.deviceAndDeviceTags}`, DeviceAndDeviceTag.name)
+              .leftJoinAndSelect(`${DeviceAndDeviceTag.name}.${DeviceAndDeviceTagPropCamel.deviceTag}`, DeviceTag.name)
+              .where(`${Device.name}.${DevicePropCamel.organizationId} = :${DevicePropCamel.organizationId}`, { organizationId })
+              .andWhere(`${Device.name}.${DevicePropCamel.connectionState} = :${DevicePropCamel.connectionState}`, {
+                connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED,
+              })
+              .andWhere(
+                new Brackets((builder) => {
+                  builder
+                    .where(`${Device.name}.${DevicePropCamel.isGlobal} = 1`) //
+                    .orWhere(`${ProjectAndDevice.name}.${ProjectAndDevicePropCamel.projectId} = :${ProjectAndDevicePropCamel.projectId}`, { projectId });
+                }),
+              )
+              .andWhere(`${DeviceTag.name}.${DeviceTagPropCamel.name} = :${DeviceTagPropCamel.name}`, { name: pickable, organizationId })
+              .getOne();
+
+            if (deviceFromTag) {
               const routineDeviceJob = manager.getRepository(RoutineDeviceJob).create({
                 routineJobId: routineJob.routineJobId,
-                deviceId: device.deviceId,
+                deviceId: deviceFromTag.deviceId,
                 status: PIPELINE_STATUS.WAITING,
                 record,
+                appVersion: parseAppVersion(jobSchema.appVersion, deviceFromTag.platform),
+                browserName: parseBrowserName(jobSchema.browserName) ?? null,
+                browserVersion: jobSchema.browserVersion ?? null,
               });
-              return routineDeviceJob;
-            });
-            return routineDeviceJobs.map((routineDeviceJob) => {
-              return {
-                type,
-                routineDeviceJob,
-              };
-            });
-          }
-          case RUNS_ON_TYPE.DEVICE_TAGS: {
-            const { deviceTags } = parsedRunsOn;
-            const devices = await this.deviceStatusService.findDevicesByDeviceTag(manager, organizationId, projectId, deviceTags, true);
-            if (devices.length === 0) {
-              throw new HttpException(`This project has no device Tags: [${deviceTags.toString()}]`, HttpStatus.NOT_FOUND);
+              await manager.getRepository(RoutineDeviceJob).save(routineDeviceJob);
+              routineDeviceJobs.push(routineDeviceJob);
+            } else {
+              throw new NotFoundException(`This project has no device with name: ${pickable}`);
             }
-            const routineDeviceJobs = devices.map((device) => {
-              const routineDeviceJob = manager.getRepository(RoutineDeviceJob).create({
-                routineJobId: routineJob.routineJobId,
-                deviceId: device.deviceId,
-                status: PIPELINE_STATUS.WAITING,
-                record,
-              });
-              return routineDeviceJob;
-            });
-            return routineDeviceJobs.map((routineDeviceJob) => {
-              return {
-                type,
-                routineDeviceJob,
-              };
-            });
+
+            throw new NotFoundException(`This project has no device with name: ${pickable}`);
           }
-          case RUNS_ON_TYPE.DEVICE_TAG_WITH_BROWSER: {
-            const { deviceTag, browserName } = parsedRunsOn;
-            const device = await this.deviceStatusService.findDeviceByDeviceTagWithBrowser(manager, organizationId, projectId, deviceTag, browserName, true);
-            if (!device) {
-              throw new HttpException(`This project has no device tag: [${deviceTag}] with browserName: [${browserName}]`, HttpStatus.NOT_FOUND);
-            }
+        }
+      } else if (type === 'pickAll') {
+        for (const pickable of pickables) {
+          const deviceFromTag = await manager
+            .createQueryBuilder(Device, Device.name)
+            .leftJoinAndSelect(`${Device.name}.${DevicePropCamel.projectAndDevices}`, ProjectAndDevice.name)
+            .leftJoinAndSelect(`${Device.name}.${DevicePropCamel.deviceAndDeviceTags}`, DeviceAndDeviceTag.name)
+            .leftJoinAndSelect(`${DeviceAndDeviceTag.name}.${DeviceAndDeviceTagPropCamel.deviceTag}`, DeviceTag.name)
+            .where(`${Device.name}.${DevicePropCamel.organizationId} = :${DevicePropCamel.organizationId}`, { organizationId })
+            .andWhere(`${Device.name}.${DevicePropCamel.connectionState} = :${DevicePropCamel.connectionState}`, {
+              connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED,
+            })
+            .andWhere(
+              new Brackets((builder) => {
+                builder
+                  .where(`${Device.name}.${DevicePropCamel.isGlobal} = 1`) //
+                  .orWhere(`${ProjectAndDevice.name}.${ProjectAndDevicePropCamel.projectId} = :${ProjectAndDevicePropCamel.projectId}`, { projectId });
+              }),
+            )
+            .andWhere(`${DeviceTag.name}.${DeviceTagPropCamel.name} = :${DeviceTagPropCamel.name}`, { name: pickable, organizationId })
+            .getMany();
+
+          for (const device of deviceFromTag) {
             const routineDeviceJob = manager.getRepository(RoutineDeviceJob).create({
               routineJobId: routineJob.routineJobId,
               deviceId: device.deviceId,
               status: PIPELINE_STATUS.WAITING,
               record,
+              appVersion: parseAppVersion(jobSchema.appVersion, device.platform),
+              browserName: parseBrowserName(jobSchema.browserName) ?? null,
+              browserVersion: jobSchema.browserVersion ?? null,
             });
-
-            const platformType = platformTypeFromPlatform(device.platform);
-            if (isAllowedBrowserPlatform(platformType) && isAllowedBrowserName(browserName)) {
-              return [
-                {
-                  type,
-                  routineDeviceJob,
-                  browserName,
-                },
-              ];
-            } else {
-              throw new HttpException(`Invalid browserName: ${browserName} or platform: ${platformType}`, HttpStatus.BAD_REQUEST);
-            }
+            await manager.getRepository(RoutineDeviceJob).save(routineDeviceJob);
+            routineDeviceJobs.push(routineDeviceJob);
           }
-          default:
-            const _exhaustiveCheck: never = type;
-            throw new HttpException('Invalid runs-on type', HttpStatus.BAD_REQUEST);
         }
-      });
-
-    const parsedRoutineDeviceJobInfos = (await Promise.all(parsedRoutineDeviceJobPromises)).flat();
-    const routineDeviceJobs = parsedRoutineDeviceJobInfos.map((parsedRoutineDeviceJobInfo) => parsedRoutineDeviceJobInfo.routineDeviceJob);
-    const savedRoutineDeviceJobs = await manager.getRepository(RoutineDeviceJob).save(routineDeviceJobs);
-    const savedRoutineDeviceJobInfos = parsedRoutineDeviceJobInfos.map((parsedRoutineDeviceJobInfo, index) => {
-      const { routineDeviceJob, ...rest } = parsedRoutineDeviceJobInfo;
-      return {
-        ...rest,
-        routineDeviceJob: savedRoutineDeviceJobs[index],
-      };
-    });
-
-    const routineDeviceJobBrowsers = savedRoutineDeviceJobInfos
-      .filter((savedRoutineDeviceJobInfo) => savedRoutineDeviceJobInfo.type === RUNS_ON_TYPE.DEVICE_TAG_WITH_BROWSER)
-      .map((savedRoutineDeviceJobInfo) => {
-        const { type } = savedRoutineDeviceJobInfo;
-        if (type !== RUNS_ON_TYPE.DEVICE_TAG_WITH_BROWSER) {
-          throw new HttpException(`Invalid type: ${type}`, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-        const { routineDeviceJob, browserName } = savedRoutineDeviceJobInfo;
-        const deviceJobBrowser = manager.getRepository(RoutineDeviceJobBrowser).create({
-          routineDeviceJobBrowserId: v4(),
-          routineDeviceJobId: routineDeviceJob.routineDeviceJobId,
-          browserName,
-        });
-        return deviceJobBrowser;
-      });
-    await manager.getRepository(RoutineDeviceJobBrowser).save(routineDeviceJobBrowsers);
+      }
+    }
 
     return routineDeviceJobs;
   }
@@ -520,7 +441,7 @@ export class PipelineService {
 
       await this.createJobEdges(transactionEntityManager, routineSchema, jobs);
 
-      const deviceJobs = await this.createDeviceJobs(transactionEntityManager, organizationId, projectId, routineSchema, jobs);
+      const deviceJobs = await PipelineService.createDeviceJobs(transactionEntityManager, organizationId, projectId, routineSchema, jobs);
       if (deviceJobs.length === 0) {
         throw new HttpException(`DeviceJobs are not created. pipelineId: ${pipeline.routinePipelineId}`, HttpStatus.INTERNAL_SERVER_ERROR);
       }

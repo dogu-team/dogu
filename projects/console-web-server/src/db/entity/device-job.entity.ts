@@ -1,9 +1,20 @@
 import { RoutineDeviceJobBase, RoutineDeviceJobPropSnake } from '@dogu-private/console';
-import { DeviceId, DeviceRunnerId, PIPELINE_STATUS, RoutineDeviceJobId, RoutineJobId, ROUTINE_DEVICE_JOB_TABLE_NAME } from '@dogu-private/types';
-import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  BrowserName,
+  DeviceId,
+  DeviceRunnerId,
+  PIPELINE_STATUS,
+  RoutineDeviceJobId,
+  RoutineJobId,
+  ROUTINE_DEVICE_JOB_APP_VERSION_MAX_LENGTH,
+  ROUTINE_DEVICE_JOB_BROWSER_NAME_MAX_LENGTH,
+  ROUTINE_DEVICE_JOB_BROWSER_VERSION_MAX_LENGTH,
+  ROUTINE_DEVICE_JOB_TABLE_NAME,
+} from '@dogu-private/types';
+import { BaseEntity, Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { ColumnTemplate } from './decorators';
 import { DeviceRunner } from './device-runner.entity';
-import { Device, RoutineDeviceJobBrowser, RoutineJob } from './index';
+import { Device, RoutineJob } from './index';
 import { RoutineStep } from './step.entity';
 
 @Entity(ROUTINE_DEVICE_JOB_TABLE_NAME)
@@ -22,6 +33,15 @@ export class RoutineDeviceJob extends BaseEntity implements RoutineDeviceJobBase
 
   @Column({ type: 'smallint', name: RoutineDeviceJobPropSnake.record, unsigned: true, default: 0, nullable: false })
   record!: number;
+
+  @Column({ type: 'character varying', name: RoutineDeviceJobPropSnake.app_version, length: ROUTINE_DEVICE_JOB_APP_VERSION_MAX_LENGTH, nullable: true })
+  appVersion!: string | null;
+
+  @Column({ type: 'character varying', name: RoutineDeviceJobPropSnake.browser_name, length: ROUTINE_DEVICE_JOB_BROWSER_NAME_MAX_LENGTH, nullable: true })
+  browserName!: BrowserName | null;
+
+  @Column({ type: 'character varying', name: RoutineDeviceJobPropSnake.browser_version, length: ROUTINE_DEVICE_JOB_BROWSER_VERSION_MAX_LENGTH, nullable: true })
+  browserVersion!: string | null;
 
   @ColumnTemplate.Date(RoutineDeviceJobPropSnake.heartbeat, true)
   heartbeat!: Date | null;
@@ -64,7 +84,4 @@ export class RoutineDeviceJob extends BaseEntity implements RoutineDeviceJobBase
   @ManyToOne(() => DeviceRunner, (deviceRunner) => deviceRunner.routineDeviceJobs, { onDelete: 'NO ACTION', onUpdate: 'NO ACTION' })
   @JoinColumn({ name: RoutineDeviceJobPropSnake.device_runner_id })
   deviceRunner?: DeviceRunner;
-
-  @OneToOne(() => RoutineDeviceJobBrowser, (routineDeviceJobBrowser) => routineDeviceJobBrowser.routineDeviceJob, { createForeignKeyConstraints: false })
-  routineDeviceJobBrowser?: RoutineDeviceJobBrowser;
 }
