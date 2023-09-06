@@ -179,14 +179,18 @@ func (s *SurfaceConnector) startRoutine() {
 				log.Inst.Warn("surfaceConnector.startRoutine reconnect ignored", zap.String("serial", s.serial), zap.Int64("surfaceId", s.surfaceId), zap.Int64("msg.surfaceId", msg.surfaceId))
 				continue
 			}
+			log.Inst.Debug("surfaceConnector.startRoutine reconnect", zap.String("serial", s.serial))
 			if readCancel != nil {
+				log.Inst.Debug("surfaceConnector.startRoutine reconnect cancel before", zap.String("serial", s.serial))
 				readCancel()
 				readCancel = nil
 			}
 			if readDoneWaitGroup != nil {
+				log.Inst.Debug("surfaceConnector.startRoutine reconnect wait before", zap.String("serial", s.serial))
 				readDoneWaitGroup.Wait()
 				readDoneWaitGroup = nil
 			}
+			log.Inst.Debug("surfaceConnector.startRoutine reconnect called", zap.String("serial", s.serial))
 			err := s.notifySurfaceReconnect(s.serial)
 			if err != nil {
 				log.Inst.Error("surfaceConnector.startRoutine reconnect error", zap.Error(err))
@@ -275,12 +279,12 @@ func (s *SurfaceConnector) startRecvRoutine(ctx context.Context, wg *sync.WaitGr
 }
 
 func (s *SurfaceConnector) notifySurfaceClose(reason string) {
-	// log.Inst.Info("surfaceConnector.notifySurfaceClose", zap.String("serial", s.serial))
+	log.Inst.Info("surfaceConnector.notifySurfaceClose", zap.String("serial", s.serial))
+	befIsConnected := s.isSurfaceConnected
 	s.isSurfaceConnected = false
-	if !s.isSurfaceConnected {
+	if !befIsConnected {
 		return
 	}
 	log.Inst.Info("surfaceConnector.notifySurfaceClose closed", zap.String("serial", s.serial), zap.String("reason", reason))
 	s.surface.Close()
-	// s.firstSendTime = time.Time{} <- Resetting timestamp make lack to pre-watchers
 }
