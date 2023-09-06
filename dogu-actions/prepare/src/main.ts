@@ -9,16 +9,18 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
   if (!isAppVersion(appVersion)) {
     throw new Error(`Invalid app version: ${stringify(appVersion)}`);
   }
+
+  const resolvedAppVersion = appVersion || process.env.DOGU_APP_VERSION || '';
   const currentPlatformAppVersion =
-    typeof appVersion === 'object'
+    typeof resolvedAppVersion === 'object'
       ? (() => {
-          const platformAppVersion = Reflect.get(appVersion, DOGU_DEVICE_PLATFORM) as string | undefined;
+          const platformAppVersion = Reflect.get(resolvedAppVersion, DOGU_DEVICE_PLATFORM) as string | undefined;
           if (!platformAppVersion) {
-            throw new Error(`Invalid app version: ${stringify(appVersion)} for platform: ${DOGU_DEVICE_PLATFORM}`);
+            throw new Error(`Invalid app version: ${stringify(resolvedAppVersion)} for platform: ${DOGU_DEVICE_PLATFORM}`);
           }
           return platformAppVersion;
         })()
-      : String(appVersion);
+      : String(resolvedAppVersion);
   const gamiumEnginePort = input.get<number>('gamiumEnginePort');
   const uninstallApp = input.get<boolean>('uninstallApp');
   const retryCount = input.get<number>('retryCount');
