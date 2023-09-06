@@ -72,7 +72,8 @@ function GitlabButton({ isConnected, disabled, organizationId, projectId, descri
               Integrate routine with GitLab.{' '}
               <Link href="https://docs.dogutech.io/management/project/git-integration/gitlab" target="_blank">
                 Visit docs
-              </Link>
+              </Link>{' '}
+              for token generation.
             </>
           ))
         }
