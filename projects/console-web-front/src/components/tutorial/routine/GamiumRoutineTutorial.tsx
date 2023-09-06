@@ -18,6 +18,28 @@ import TableListView from '../../common/TableListView';
 import RefreshButton from '../../buttons/RefreshButton';
 import { flexRowSpaceBetweenStyle } from '../../../styles/box';
 import SampleApplicationUploadStep from '../SampleApplicationUploadStep';
+import TutorialRoutineCreator from './TutorialRoutineCreator';
+
+const APP_ROUTINE_SAMPLE = `name: sample-routine
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sample-job:
+    runs-on:
+      group: []
+    appVersion:
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          command: |
+            npm install
+            npm run test:app
+        cwd: 
+`;
 
 const CLONE_GIT_ID = 'clone-git';
 const INTEGRATE_WITH_GIT_ID = 'integrate-with-git';
@@ -92,7 +114,16 @@ const GamiumRoutineTutorial = () => {
             description={<p>Before starting, upload the app that matches the version specified in the script.</p>}
             content={<SampleApplicationUploadStep hasSampleApp={selectedGuide?.hasSampleApp} category="game" />}
           />
-          <GuideStep id={CREATE_ROUTINE_ID} title="Create a routine" description={<p>Create a routine for your automated tests</p>} content={<div>Routine creator...</div>} />
+          <GuideStep
+            id={CREATE_ROUTINE_ID}
+            title="Create a routine"
+            description={<p>Create a routine for your automated tests</p>}
+            content={
+              <div style={{ marginTop: '1rem' }}>
+                <TutorialRoutineCreator project={project} sampleYaml={APP_ROUTINE_SAMPLE} />
+              </div>
+            }
+          />
           <GuideStep
             id={RUN_ROUTINE_ID}
             title="Run a routine"

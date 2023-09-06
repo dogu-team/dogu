@@ -19,6 +19,48 @@ import SampleApplicationUploadStep from '../SampleApplicationUploadStep';
 import TutorialOptionSelectors from '../TutorialOptionSelectors';
 import DoneStep from './DoneStep';
 import RoutineGitTutorial from './RoutineGitTutorial';
+import TutorialRoutineCreator from './TutorialRoutineCreator';
+
+const APP_ROUTINE_SAMPLE = `name: sample-routine
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sample-job:
+    runs-on:
+      group: []
+    appVersion:
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          command: |
+            npm install
+            npm run test:app
+        cwd: 
+`;
+
+const WEB_ROUTINE_SAMPLE = `name: sample-routine
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sample-job:
+    runs-on: []
+    browserName:
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          command: |
+            npm install
+            npm run test:web
+        cwd:
+`;
 
 const CLONE_GIT_ID = 'clone-git';
 const INTEGRATE_WITH_GIT_ID = 'integrate-with-git';
@@ -106,7 +148,16 @@ const WebdriverIoRoutineTutorial = () => {
               content={<SampleApplicationUploadStep hasSampleApp={selectedGuide?.hasSampleApp} category="mobile" />}
             />
           )}
-          <GuideStep id={CREATE_ROUTINE_ID} title="Create a routine" description={<p>Create a routine for your automated tests</p>} content={<div>Routine creator...</div>} />
+          <GuideStep
+            id={CREATE_ROUTINE_ID}
+            title="Create a routine"
+            description={<p>Create a routine for your automated tests</p>}
+            content={
+              <div style={{ marginTop: '1rem' }}>
+                <TutorialRoutineCreator project={project} sampleYaml={target === TutorialSupportTarget.APP ? APP_ROUTINE_SAMPLE : WEB_ROUTINE_SAMPLE} />
+              </div>
+            }
+          />
           <GuideStep
             id={RUN_ROUTINE_ID}
             title="Run a routine"

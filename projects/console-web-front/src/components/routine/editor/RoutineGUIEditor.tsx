@@ -10,11 +10,12 @@ import { RUN_TEST_ACTION_NAME } from '../../../types/routine';
 
 interface Props {
   projectType: PROJECT_TYPE;
+  hideAddButton?: boolean;
 }
 
 export const RoutineProjectTypeContext = createContext<PROJECT_TYPE>(PROJECT_TYPE.CUSTOM);
 
-const RoutineGUIEditor = ({ projectType }: Props) => {
+const RoutineGUIEditor = ({ projectType, hideAddButton }: Props) => {
   const [schema, updateSchema] = useRoutineEditorStore((state) => [state.schema, state.updateSchema]);
   const { t } = useTranslation();
 
@@ -179,10 +180,11 @@ const RoutineGUIEditor = ({ projectType }: Props) => {
                 updateJobName={handleUpdateJobName}
                 deleteJob={handleDeleteJob}
                 updateJobOrder={handleUpdateJobOrder}
+                hideAddButton={hideAddButton}
               />
             );
           })}
-          <AddJobButton onClick={handleAddJob}>{t('routine:routineGuiEditorAddJobButtonTitle')}</AddJobButton>
+          {!hideAddButton && <AddJobButton onClick={handleAddJob}>{t('routine:routineGuiEditorAddJobButtonTitle')}</AddJobButton>}
         </JobWrapper>
       </Box>
     </RoutineProjectTypeContext.Provider>

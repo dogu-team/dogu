@@ -17,6 +17,27 @@ import GuideStep from '../GuideStep';
 import TutorialOptionSelectors from '../TutorialOptionSelectors';
 import DoneStep from './DoneStep';
 import RoutineGitTutorial from './RoutineGitTutorial';
+import TutorialRoutineCreator from './TutorialRoutineCreator';
+
+const WEB_ROUTINE_SAMPLE = `name: sample-routine
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sample-job:
+    runs-on: []
+    browserName:
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          command: |
+            npm install
+            npm run test:web
+        cwd:
+`;
 
 const CLONE_GIT_ID = 'clone-git';
 const INTEGRATE_WITH_GIT_ID = 'integrate-with-git';
@@ -80,7 +101,16 @@ const SeleniumRoutineTutorial = () => {
             description={<p>Routine will execute test scripts from the remote repository.</p>}
             content={<RoutineGitTutorial />}
           />
-          <GuideStep id={CREATE_ROUTINE_ID} title="Create a routine" description={<p>Create a routine for your automated tests</p>} content={<div>Routine creator...</div>} />
+          <GuideStep
+            id={CREATE_ROUTINE_ID}
+            title="Create a routine"
+            description={<p>Create a routine for your automated tests</p>}
+            content={
+              <div style={{ marginTop: '1rem' }}>
+                <TutorialRoutineCreator project={project} sampleYaml={WEB_ROUTINE_SAMPLE} />
+              </div>
+            }
+          />
           <GuideStep
             id={RUN_ROUTINE_ID}
             title="Run a routine"

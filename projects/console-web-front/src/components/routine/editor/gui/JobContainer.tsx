@@ -113,9 +113,10 @@ interface Props {
   updateJobName: (originName: string, newName: string) => void;
   deleteJob: (name: string) => void;
   updateJobOrder: (name: string, direction: 'up' | 'down') => void;
+  hideAddButton?: boolean;
 }
 
-const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJobOrder }: Props) => {
+const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJobOrder, hideAddButton }: Props) => {
   const { t } = useTranslation();
   const projectType = useContext(RoutineProjectTypeContext);
 
@@ -317,16 +318,18 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
           />
         </JobNameTitle>
       </Content>
-      <Content>
-        <div>
-          <ContentTitle>{t('routine:routineGuiEditorJobNeedLabel')}</ContentTitle>
-          <ContentDesc>{t('routine:routineGuiEditorJobNeedDescription')}</ContentDesc>
-        </div>
-        <ContentInner>
-          <Needs needs={job.needs} onDelete={handleRemoveNeed} />
-          <AddNeedButton onSelect={handleAddNeeds} excludeNames={[name]} />
-        </ContentInner>
-      </Content>
+      {!hideAddButton && (
+        <Content>
+          <div>
+            <ContentTitle>{t('routine:routineGuiEditorJobNeedLabel')}</ContentTitle>
+            <ContentDesc>{t('routine:routineGuiEditorJobNeedDescription')}</ContentDesc>
+          </div>
+          <ContentInner>
+            <Needs needs={job.needs} onDelete={handleRemoveNeed} />
+            <AddNeedButton onSelect={handleAddNeeds} excludeNames={[name]} />
+          </ContentInner>
+        </Content>
+      )}
       <Content>
         <div>
           <ContentTitle>{t('routine:routineGuiEditorJobDeviceLabel')}</ContentTitle>
@@ -418,7 +421,7 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
               <StepContainer key={`job-${name}-step-${step.name}-${i}`} jobName={name} step={step} index={i} updateStep={updateStep} deleteStep={deleteStep} moveStep={moveStep} />
             );
           })}
-          <AddStepButton onClick={handleAddStep}>{t('routine:routineGuiEditorAddStepButtonTitle')}</AddStepButton>
+          {!hideAddButton && <AddStepButton onClick={handleAddStep}>{t('routine:routineGuiEditorAddStepButtonTitle')}</AddStepButton>}
         </StepWrapper>
       </Content>
     </Box>
