@@ -29,7 +29,7 @@ export class YamlLoaderService {
     if (!this.routineValidator(parsedYaml)) {
       const { errors } = this.routineValidator;
       const instancePaths = errors ? errors.map((error) => error.instancePath) : [];
-      const errorMsg = instancePaths.length > 0 ? `Invalid Routine Yaml. Please check yaml path. Path: ${instancePaths[0]}.` : `Invalid Routine Yaml. Please check yaml.`;
+      const errorMsg = instancePaths.length > 0 ? `Invalid Routine Yaml. Please check yaml path. path: ${instancePaths[0]}.` : `Invalid Routine Yaml. Please check yaml.`;
       throw new HttpException(errorMsg, HttpStatus.BAD_REQUEST);
     }
   }
@@ -64,7 +64,7 @@ export class YamlLoaderService {
         const errors = steps
           .map((step, index) => {
             if (step.uses && step.run) {
-              return new Error(`Choose one of uses or run. Job: ${jobName}, Step: ${index + 1}`);
+              return new Error(`Choose one of uses or run. job [${jobName}], step [${index + 1}]`);
             }
             return null;
           })
