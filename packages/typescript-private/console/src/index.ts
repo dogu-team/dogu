@@ -52,7 +52,6 @@ export * from './base/remote-device-job';
 export * from './base/remote-webdriver-info';
 export * from './base/routine';
 export * from './base/routine-device-job';
-export * from './base/routine-device-job-browser';
 export * from './base/routine-job';
 export * from './base/routine-job-edge';
 export * from './base/routine-pipeline';

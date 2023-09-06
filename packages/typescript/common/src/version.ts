@@ -15,8 +15,8 @@ export function compareSemverDesc(av: string, bv: string): number {
     const len = Math.min(arr.length, brr.length);
 
     for (let i = 0; i < len; i++) {
-      const a2 = +arr[i] || 0;
-      const b2 = +brr[i] || 0;
+      const a2 = parseInt(arr[i].replace(/[^0-9]/g, ''));
+      const b2 = parseInt(brr[i].replace(/[^0-9]/g, ''));
 
       if (a2 !== b2) {
         return a2 > b2 ? -1 : 1;

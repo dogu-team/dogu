@@ -18,7 +18,6 @@ import { IdaBuildExternalUnit } from './units/ida-build-external-unit';
 import { JdkExternalUnit } from './units/jdk-external-unit';
 import { LibimobledeviceExternalUnit } from './units/libimobiledevice-external-unit';
 import { SeleniumServerExternalUnit } from './units/selenium-server-external-unit';
-import { SeleniumWebdriverExternalUnit } from './units/selenium-webdriver-external-unit';
 import { WdaBuildExternalUnit } from './units/wda-build-external-unit';
 import { XcodeExternalUnit } from './units/xcode-external-unit';
 
@@ -96,7 +95,7 @@ export class ExternalService {
     // this.registerUnit('chrome-driver', (unitCallback) => new ChromeDriverExternalUnit(this.stdLogCallbackService, unitCallback));
     this.registerUnit('gecko-driver', (unitCallback) => new GeckoDriverExternalUnit(this.windowService, this.stdLogCallbackService, this.appConfigService, unitCallback));
     this.registerUnit('selenium-server', (unitCallback) => new SeleniumServerExternalUnit(this.windowService, this.stdLogCallbackService, this.appConfigService, unitCallback));
-    this.registerUnit('selenium-webdriver', (unitCallback) => new SeleniumWebdriverExternalUnit(this.stdLogCallbackService, this.appConfigService, unitCallback));
+    // this.registerUnit('selenium-webdriver', (unitCallback) => new SeleniumWebdriverExternalUnit(this.stdLogCallbackService, this.appConfigService, unitCallback));
   }
 
   private registerHandlers(): void {

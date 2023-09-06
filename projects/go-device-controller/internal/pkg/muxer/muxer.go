@@ -8,6 +8,8 @@ import (
 const MuxerType = "Muxer"
 
 type Muxer interface {
+	GetId() int
+	SetId(id int)
 	FilePath() string
 	GetSurfaceListenerType() string
 	OnSurface(timeStamp uint32, Data []byte)

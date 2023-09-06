@@ -23,6 +23,7 @@ import (
 )
 
 type FFmpegMuxer struct {
+	id        int
 	filePath  string
 	file      *os.File
 	startTime time.Time
@@ -75,6 +76,14 @@ func NewFFmpegMuxer(filePath string, etcParam string, context *types.DcGdcDevice
 	}
 	s.close()
 	return nil, &outer.ErrorResult{Code: outer.Code_CODE_NETWORK_CONNECTION_FAILED, Message: err.Error()}
+}
+
+func (s *FFmpegMuxer) GetId() int {
+	return s.id
+}
+
+func (s *FFmpegMuxer) SetId(id int) {
+	s.id = id
 }
 
 func (s *FFmpegMuxer) FilePath() string {

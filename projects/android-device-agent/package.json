@@ -1,14 +1,15 @@
 {
   "private": true,
   "name": "android-device-agent",
-  "version": "1.10.0",
+  "version": "1.10.1",
   "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
   "author": "Dogu Technologies",
   "scripts": {
     "build": "",
     "build:android:debug": "ts-node ./scripts/buildAndroidDebug",
     "build:archive": "tsc -b && ts-node ./scripts/buildArchive",
-    "clean": "shx rm -rf generated ./node_modules"
+    "clean": "shx rm -rf ./android/app/build ./node_modules",
+    "rebuild:archive": "yarn run clean && yarn run build:archive"
   },
   "resolutions": {
     "@types/react": "18.0.28"

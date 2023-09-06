@@ -119,7 +119,21 @@ export class DeviceJobStepProcessor {
   }
 
   async onRunStep(param: RunStep, context: MessageContext): Promise<ErrorResult> {
-    const { routineStepId, env: stepEnv, value, organizationId, deviceId, routineDeviceJobId, stepIndex, projectId, deviceRunnerId, browserName, browserVersion, cwd } = param;
+    const {
+      routineStepId,
+      env: stepEnv,
+      value,
+      organizationId,
+      deviceId,
+      routineDeviceJobId,
+      stepIndex,
+      projectId,
+      deviceRunnerId,
+      browserName,
+      browserVersion,
+      appVersion,
+      cwd,
+    } = param;
     const { info, router, environmentVariableReplacer } = context;
     const { platform, serial, deviceWorkspacePath, rootWorkspacePath, hostPlatform, hostWorkspacePath, pathMap } = info;
     this.logger.info(`Step ${routineStepId} started`);
@@ -173,6 +187,7 @@ export class DeviceJobStepProcessor {
       DOGU_HOST_WORKSPACE_PATH: hostWorkspacePath,
       DOGU_HOST_TOKEN: env.DOGU_HOST_TOKEN,
       DOGU_RUN_TYPE: env.DOGU_RUN_TYPE,
+      DOGU_APP_VERSION: appVersion ?? '',
       DOGU_BROWSER_NAME: browserName ?? '',
       DOGU_BROWSER_VERSION: browserVersion ?? '',
       PATH: `${gitLibexecGitCore}${delimiter}${nodeBin}${delimiter}${pathOld ?? ''}`,

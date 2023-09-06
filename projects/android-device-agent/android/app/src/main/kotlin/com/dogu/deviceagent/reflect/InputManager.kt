@@ -1,14 +1,13 @@
 package com.dogu.deviceagent.reflect
 
 
-import android.hardware.input.InputManager
 import android.view.InputEvent
 import com.dogu.deviceagent.Logger
 
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
-class InputManager(private val manager: InputManager) {
+class InputManager(private val manager: Object) {
     @get:Throws(NoSuchMethodException::class)
     private var injectInputEventMethod: Method? = null
         private get() {

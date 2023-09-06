@@ -1,131 +1,102 @@
-import { setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
-import axios from 'axios';
-import _ from 'lodash';
+import { stringify } from '@dogu-tech/common';
+import { VersionUtils } from './common';
 
-export const ChromeVersionPattern = /^(\d+)(?:\.(\d+))?(?:\.(\d+))?(?:\.(\d+))?$/;
-export const ChromeKnownGoodVersionsUrl = 'https://googlechromelabs.github.io/chrome-for-testing/known-good-versions.json';
-export const ChromeLastKnownGoodVersionsUrl = 'https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json';
-
-const client = axios.create();
-setAxiosErrorFilterToIntercepter(client);
-
-export interface ChromeVersionLike {
-  major?: number;
+export interface ChromeVersion {
+  major: number;
   minor?: number;
   build?: number;
   patch?: number;
 }
 
-export function parseChromeVersionLike(version: string): ChromeVersionLike {
-  const match = version.match(ChromeVersionPattern);
-  if (match) {
-    const [_, major, minor, build, patch] = match;
+export class ChromeVersionUtils implements VersionUtils<ChromeVersion> {
+  /**
+   * @example
+   * 116.0.5845.163
+   */
+  static readonly pattern = /^(?<major>\d+)(?:\.(?<minor>\d+))?(?:\.(?<build>\d+))?(?:\.(?<patch>\d+))?$/;
+
+  parse(version: string): ChromeVersion {
+    const pattern = ChromeVersionUtils.pattern;
+    const match = version.match(pattern);
+    if (!match) {
+      throw new Error(`Chrome version [${version}] does not match pattern [${stringify(pattern)}]`);
+    }
+
+    if (!match.groups) {
+      throw new Error(`Chrome version [${version}] does not have groups [${stringify(match)}]`);
+    }
+
+    const { major, minor, build, patch } = match.groups as Record<string, string | undefined>;
+    if (major === undefined) {
+      throw new Error(`Chrome version [${version}] does not have a major version`);
+    }
+
+    const majorNumber = parseInt(major);
+    if (Number.isNaN(majorNumber)) {
+      throw new Error(`Chrome version [${version}] has a major version that is not a number`);
+    }
+
+    const minorNumber = minor !== undefined ? parseInt(minor) : undefined;
+    if (minor !== undefined && Number.isNaN(minorNumber)) {
+      throw new Error(`Chrome version [${version}] has a minor version that is not a number`);
+    }
+
+    const buildNumber = build !== undefined ? parseInt(build) : undefined;
+    if (build !== undefined && Number.isNaN(buildNumber)) {
+      throw new Error(`Chrome version [${version}] has a build version that is not a number`);
+    }
+
+    const patchNumber = patch !== undefined ? parseInt(patch) : undefined;
+    if (patch !== undefined && Number.isNaN(patchNumber)) {
+      throw new Error(`Chrome version [${version}] has a patch version that is not a number`);
+    }
+
     return {
-      major: major ? parseInt(major, 10) : undefined,
-      minor: minor ? parseInt(minor, 10) : undefined,
-      build: build ? parseInt(build, 10) : undefined,
-      patch: patch ? parseInt(patch, 10) : undefined,
+      major: majorNumber,
+      minor: minorNumber,
+      build: buildNumber,
+      patch: patchNumber,
     };
   }
-  return {
-    major: undefined,
-    minor: undefined,
-    build: undefined,
-    patch: undefined,
-  };
-}
 
-export function chromeVersionLikeToString(version: ChromeVersionLike): string {
-  const { major, minor, build, patch } = version;
-  if (major === undefined) {
-    return '';
+  compareWithAsc(lhs: ChromeVersion, rhs: ChromeVersion): number {
+    if (lhs.major !== rhs.major) {
+      return lhs.major - rhs.major;
+    } else if (lhs.minor !== rhs.minor) {
+      return (lhs.minor || 0) - (rhs.minor || 0);
+    } else if (lhs.build !== rhs.build) {
+      return (lhs.build || 0) - (rhs.build || 0);
+    } else if (lhs.patch !== rhs.patch) {
+      return (lhs.patch || 0) - (rhs.patch || 0);
+    } else {
+      return 0;
+    }
   }
 
-  if (minor === undefined) {
-    return `${major}`;
+  compareWithDesc(lhs: ChromeVersion, rhs: ChromeVersion): number {
+    return this.compareWithAsc(rhs, lhs);
   }
 
-  if (build === undefined) {
-    return `${major}.${minor}`;
-  }
+  toString(version: ChromeVersion): string {
+    const { major, minor, build, patch } = version;
+    if (major === undefined) {
+      return '';
+    }
 
-  if (patch === undefined) {
-    return `${major}.${minor}.${build}`;
-  }
+    if (minor === undefined) {
+      return `${major}`;
+    }
 
-  return `${major}.${minor}.${build}.${patch}`;
-}
+    if (build === undefined) {
+      return `${major}.${minor}`;
+    }
 
-export function compareChromeVersionLike(lhs: ChromeVersionLike, rhs: ChromeVersionLike, order: 'asc' | 'desc' = 'asc'): number {
-  const factor = order === 'asc' ? 1 : -1;
-  const defaultValue = 0;
-  const lhsWithDefault: Required<ChromeVersionLike> = {
-    major: lhs.major || defaultValue,
-    minor: lhs.minor || defaultValue,
-    build: lhs.build || defaultValue,
-    patch: lhs.patch || defaultValue,
-  };
-  const rhsWithDefault: Required<ChromeVersionLike> = {
-    major: rhs.major || defaultValue,
-    minor: rhs.minor || defaultValue,
-    build: rhs.build || defaultValue,
-    patch: rhs.patch || defaultValue,
-  };
-  if (lhsWithDefault.major !== rhsWithDefault.major) {
-    return factor * (lhsWithDefault.major - rhsWithDefault.major);
-  } else if (lhsWithDefault.minor !== rhsWithDefault.minor) {
-    return factor * (lhsWithDefault.minor - rhsWithDefault.minor);
-  } else if (lhsWithDefault.build !== rhsWithDefault.build) {
-    return factor * (lhsWithDefault.build - rhsWithDefault.build);
-  } else if (lhsWithDefault.patch !== rhsWithDefault.patch) {
-    return factor * (lhsWithDefault.patch - rhsWithDefault.patch);
-  } else {
-    return 0;
+    if (patch === undefined) {
+      return `${major}.${minor}.${build}`;
+    }
+
+    return `${major}.${minor}.${build}.${patch}`;
   }
 }
 
-export function findChromeVersionLike(toMatch: ChromeVersionLike, targerts: Required<ChromeVersionLike>[]): Required<ChromeVersionLike> | undefined {
-  if (toMatch.major !== undefined && toMatch.minor !== undefined && toMatch.build !== undefined && toMatch.patch !== undefined) {
-    return targerts.find((version) => version.major === toMatch.major && version.minor === toMatch.minor && version.build === toMatch.build && version.patch === toMatch.patch);
-  } else if (toMatch.major !== undefined && toMatch.minor !== undefined && toMatch.build !== undefined) {
-    return targerts.find((version) => version.major === toMatch.major && version.minor === toMatch.minor && version.build === toMatch.build);
-  } else if (toMatch.major !== undefined && toMatch.minor !== undefined) {
-    return targerts.find((version) => version.major === toMatch.major && version.minor === toMatch.minor);
-  } else if (toMatch.major !== undefined) {
-    return targerts.find((version) => version.major === toMatch.major);
-  } else {
-    return undefined;
-  }
-}
-
-export async function downloadKnownGoodChromeVersionLikes(): Promise<Required<ChromeVersionLike>[]> {
-  const response = await client.get(ChromeKnownGoodVersionsUrl).catch((error) => {
-    throw new Error(`Failed to download ${ChromeKnownGoodVersionsUrl}: ${stringify(error)}`);
-  });
-  const versionObjects = _.get(response.data, 'versions') as { version?: string; revision?: string }[] | undefined;
-  const knownGoodVersionLikes = versionObjects
-    ?.map((versionObject) => {
-      const version = _.get(versionObject, 'version');
-      if (version) {
-        return parseChromeVersionLike(version);
-      }
-      return undefined;
-    })
-    .filter((version) => version !== undefined) as Required<ChromeVersionLike>[];
-  return knownGoodVersionLikes;
-}
-
-export async function downloadLastKnownGoodChromeVersionLike(): Promise<Required<ChromeVersionLike>> {
-  const response = await client.get(ChromeLastKnownGoodVersionsUrl).catch((error) => {
-    throw new Error(`Failed to download ${ChromeKnownGoodVersionsUrl}: ${stringify(error)}`);
-  });
-  const version = _.get(response.data, 'channels.Stable.version') as string | undefined;
-  if (!version) {
-    throw new Error(`Failed to download ${ChromeLastKnownGoodVersionsUrl}: version is not found`);
-  }
-  const parsed = parseChromeVersionLike(version);
-  if (parsed.major === undefined || parsed.minor === undefined || parsed.build === undefined || parsed.patch === undefined) {
-    throw new Error(`Failed to download ${ChromeLastKnownGoodVersionsUrl}: version is invalid`);
-  }
-  return parsed as Required<ChromeVersionLike>;
-}
+export const chromeVersionUtils = new ChromeVersionUtils();

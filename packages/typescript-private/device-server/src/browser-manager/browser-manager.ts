@@ -1,218 +1,581 @@
-import { getBrowserNamesByPlatform } from '@dogu-private/types';
-import { errorify, PrefixLogger, stringify } from '@dogu-tech/common';
 import {
-  BrowserAndDriverInstallation,
-  BrowserAutoInstallableChecker,
-  BrowserDriverInstallation,
-  BrowserDriverInstaller,
-  BrowserDriverInstallerOptions,
-  BrowserInstallation,
-  BrowserInstallationFinder,
-  BrowserInstallationFinderOptions,
-  BrowserInstaller,
-  BrowserInstallerOptions,
+  AndroidBrowserPackageNameMap,
+  BrowserName,
+  BrowserPlatform,
+  BrowserVersion,
+  getBrowserNamesByPlatform,
+  getBrowserPlatformByNodeJsPlatform,
+  isAllowedAndroidBrowserName,
+} from '@dogu-private/types';
+import { assertUnreachable, PrefixLogger } from '@dogu-tech/common';
+import {
   EnsureBrowserAndDriverOptions,
+  EnsureBrowserAndDriverResult,
   FindAllBrowserInstallationsOptions,
-  FindAllBrowserInstallationsResult,
-  LatestBrowserVersionResolver,
-  LatestBrowserVersionResolverOptions,
-  ResolvedBrowserVersionInfo,
+  FindAllbrowserInstallationsResult,
+  FindBrowserInstallationsOptions,
+  FindBrowserInstallationsResult,
 } from '@dogu-tech/device-client-common';
+import { HostPaths } from '@dogu-tech/node';
+import { Adb } from '../internal/externals/index';
 import { logger } from '../logger/logger.instance';
-import { MobileBrowserAutoInstallableChecker, SeleniumManagerBrowserAutoInstallableChecker } from './browser-auto-installable-checkers';
-import { SeleniumManagerBrowserInstaller } from './browser-installers';
-import { SeleniumManagerBrowserDriverInstaller } from './driver-installers';
-import { AdbBrowserInstallationFinder, SeleniumManagerBrowserInstallationFinder } from './installed-browser-finders';
-import { ChromeLatestBrowserVersionResolver } from './latest-browser-version-resolvers';
-import { SeleniumManager } from './selenium-manager';
+import { Chrome, ChromeInstallablePlatform } from './chrome';
+import { chromeVersionUtils } from './chrome-version-utils';
+import { Firefox, FirefoxInstallablePlatform } from './firefox';
+import { firefoxVersionUtils } from './firefox-version-utils';
+import { Geckodriver } from './geckodriver';
+import { Safaridriver } from './safaridriver';
+
+interface FindBrowserInstallationOptions {
+  browserName: BrowserName;
+  browserPlatform: BrowserPlatform;
+  browserVersionPrefix: string;
+  deviceSerial?: string;
+}
+
+type FindBrowserInstallationResult =
+  | {
+      browserVersion: BrowserVersion;
+      browserMajorVersion: number;
+      browserPath: string;
+    }
+  | undefined;
+
+type EnsureBrowserOptions = Omit<EnsureBrowserAndDriverOptions, 'browserVersion'> & { mappedBrowserVersion: BrowserVersion };
+type EnsureBrowserResult = Omit<EnsureBrowserAndDriverResult, 'browserDriverVersion' | 'browserDriverPath'>;
+
+type EnsureBrowserDriverOptions = Omit<EnsureBrowserAndDriverOptions, 'browserVersion'> & { browserVersion: BrowserVersion };
+type EnsureBrowserDriverResult = Omit<EnsureBrowserAndDriverResult, 'browserVersion' | 'browserMajorVersion' | 'browserPath' | 'browserPackageName'>;
+
+type GetLatestBrowserVersionOptions = Pick<EnsureBrowserOptions, 'browserName'>;
 
 export class BrowserManager {
   private readonly logger = new PrefixLogger(logger, '[BrowserManager]');
-  private readonly majorVersionPattern = /^(\d+).*$/;
-  private readonly latestBrowserVersionResolvers: LatestBrowserVersionResolver[] = [new ChromeLatestBrowserVersionResolver()];
-  private readonly browserInstallationFinders: BrowserInstallationFinder[] = [];
-  private readonly browserDriverInstallers: BrowserDriverInstaller[] = [];
-  private readonly browserInstallers: BrowserInstaller[] = [];
-  private readonly browserAutoInstallableCheckers: BrowserAutoInstallableChecker[] = [];
+  private readonly rootPath = HostPaths.external.browser.browsersPath();
+  private readonly chrome = new Chrome();
+  private readonly firefox = new Firefox();
+  private readonly geckodriver = new Geckodriver();
+  private readonly safaridriver = new Safaridriver();
+  private readonly adb = Adb;
 
-  constructor() {
-    const seleniumManager = new SeleniumManager();
-    this.browserInstallationFinders.push(new SeleniumManagerBrowserInstallationFinder(seleniumManager), new AdbBrowserInstallationFinder());
-    this.browserDriverInstallers.push(new SeleniumManagerBrowserDriverInstaller(seleniumManager));
-    this.browserInstallers.push(new SeleniumManagerBrowserInstaller(seleniumManager));
-    this.browserAutoInstallableCheckers.push(new SeleniumManagerBrowserAutoInstallableChecker(seleniumManager), new MobileBrowserAutoInstallableChecker());
-  }
-
-  async ensureBrowserAndDriver(options: EnsureBrowserAndDriverOptions): Promise<BrowserAndDriverInstallation> {
-    try {
-      return await this.ensureBrowserAndDriverInternal(options);
-    } catch (error) {
-      this.logger.error(`Failed to ensure browser and driver`, { error: errorify(error) });
-      throw error;
+  async getLatestBrowserVersion(options: GetLatestBrowserVersionOptions): Promise<BrowserVersion> {
+    const { browserName } = options;
+    switch (browserName) {
+      case 'chrome':
+        return await this.chrome.getLatestVersion();
+      case 'firefox':
+      case 'firefox-devedition':
+        return await this.firefox.getLatestVersion({ installableName: browserName });
+      case 'safari':
+      case 'safaritp':
+      case 'edge':
+      case 'iexplorer':
+      case 'samsung-internet':
+        throw new Error('Not implemented');
+      default:
+        assertUnreachable(browserName);
     }
   }
 
-  async ensureBrowserAndDriverInternal(options: EnsureBrowserAndDriverOptions): Promise<BrowserAndDriverInstallation> {
-    const { browserName, browserPlatform, requestedBrowserVersion, deviceSerial } = options;
-    this.logger.info(`Ensuring browser and driver...`, { browserName, browserPlatform, requestedBrowserVersion, deviceSerial });
-
-    const mappedBrowserVersion = this.mapLatestVersion(requestedBrowserVersion);
-    this.logger.info(`Mapped browser version ${stringify(requestedBrowserVersion)} to ${mappedBrowserVersion}.`);
-
-    let resolvedBrowserVersionInfo: ResolvedBrowserVersionInfo = { browserVersion: mappedBrowserVersion };
-    if (this.needToResolveLatestVersion(mappedBrowserVersion)) {
-      this.logger.info(`Browser version ${mappedBrowserVersion} needs to be resolved.`);
-      resolvedBrowserVersionInfo = await this.resolveLatestVersion(options);
-      const { browserVersion: resolvedBrowserVersion } = resolvedBrowserVersionInfo;
-      this.logger.info(`Resolved browser version ${mappedBrowserVersion} to ${resolvedBrowserVersion}.`);
-    } else {
-      this.logger.info(`Browser version ${mappedBrowserVersion} does not need to be resolved.`);
-    }
-
-    const resolvedBrowserVersion = resolvedBrowserVersionInfo.browserVersion;
-    const resolvedBrowserMajorVersion = this.parseMajorVersion(resolvedBrowserVersion);
-    this.logger.info(`Resolved browser version ${resolvedBrowserVersion} major version to ${resolvedBrowserMajorVersion}.`);
-
-    const browserInstallations = await this.findBrowserInstallations({ browserName, browserPlatform, deviceSerial, resolvedBrowserVersion, resolvedBrowserMajorVersion });
-    this.logger.info(`Found ${browserInstallations.length} installed browsers.`, { browserInstallations });
-
-    const browserInstallationWithDriverInfos = browserInstallations.filter(({ browserDriverPath }) => browserDriverPath?.length ?? 0 > 0) as BrowserAndDriverInstallation[];
-    const matchedBrowserInstallationWithDriverInfo = browserInstallationWithDriverInfos.length > 0 ? browserInstallationWithDriverInfos[0] : undefined;
-    if (matchedBrowserInstallationWithDriverInfo) {
-      const { browserPath, browserDriverPath } = matchedBrowserInstallationWithDriverInfo;
-      this.logger.info(`Found installed browser with driver.`, { browserPath, browserDriverPath });
-
-      return matchedBrowserInstallationWithDriverInfo;
-    }
-
-    const browserInstallationWithoutDriverInfos = browserInstallations.filter(({ browserDriverPath }) => browserDriverPath?.length ?? 0 === 0);
-    const matchedBrowserInstallationWithoutDriverInfo = browserInstallationWithoutDriverInfos.length > 0 ? browserInstallationWithoutDriverInfos[0] : undefined;
-    if (matchedBrowserInstallationWithoutDriverInfo) {
-      const { browserPath, browserPackageName, browserVersion, browserMajorVersion } = matchedBrowserInstallationWithoutDriverInfo;
-      this.logger.info(`Found installed browser without driver.`, { browserPath });
-
-      const browserDriverInstallation = await this.installDriver({ browserName, browserPlatform, resolvedBrowserVersion: browserVersion ?? resolvedBrowserVersion });
-      const { browserDriverPath } = browserDriverInstallation;
-      this.logger.info(`Installed driver.`, { browserDriverPath });
-
-      return {
-        browserName,
-        browserVersion: browserVersion ?? resolvedBrowserVersion,
-        browserMajorVersion: browserMajorVersion ?? resolvedBrowserMajorVersion,
-        browserPath,
-        browserDriverPath,
-        browserPackageName,
-      };
-    }
-
-    const isBrowserAutoInstallable = await this.browserAutoInstallableCheckers.reduce(async (previous, current) => {
-      const previousValue = await previous;
-      if (previousValue) {
-        return previousValue;
-      }
-      return await current.match({ browserName, browserPlatform });
-    }, Promise.resolve(false));
-    this.logger.info(`Is browser ${browserName} ${browserPlatform} auto installable?`, { isBrowserAutoInstallable });
-
-    if (!isBrowserAutoInstallable) {
-      throw new Error(`Browser ${browserName} ${browserPlatform} is not auto installable. Please install it manually.`);
-    }
-
-    const browserInstallation = await this.installBrowser({ browserName, browserPlatform, resolvedBrowserVersion });
-    const { browserPath, browserDriverPath } = browserInstallation;
-    this.logger.info(`Installed browser.`, { browserPath });
-
-    if (browserDriverPath) {
-      this.logger.info(`Installed browser with driver.`, { browserPath, browserDriverPath });
-
-      return {
-        browserName,
-        browserPath,
-        browserDriverPath,
-      };
-    }
-
-    const installedDriverInfo = await this.installDriver({ browserName, browserPlatform, resolvedBrowserVersion });
-    this.logger.info(`Installed driver.`, { browserDriverPath: installedDriverInfo.browserDriverPath });
-
+  async ensureBrowserAndDriver(options: EnsureBrowserAndDriverOptions): Promise<EnsureBrowserAndDriverResult> {
+    const { browserName, browserPlatform, browserVersion, deviceSerial } = options;
+    const mappedBrowserVersion = browserVersion ?? 'latest';
+    const ensureBrowserResult = await this.ensureBrowser({ browserName, browserPlatform, mappedBrowserVersion, deviceSerial });
+    const ensureBrowserDriverResult = await this.ensureBrowserDriver({ browserName, browserPlatform, browserVersion: ensureBrowserResult.browserVersion, deviceSerial });
     return {
       browserName,
-      browserPath,
-      browserDriverPath: installedDriverInfo.browserDriverPath,
+      browserPlatform,
+      browserVersion: ensureBrowserResult.browserVersion,
+      browserMajorVersion: ensureBrowserResult.browserMajorVersion,
+      browserPath: ensureBrowserResult.browserPath,
+      browserPackageName: ensureBrowserResult.browserPackageName,
+      browserDriverVersion: ensureBrowserDriverResult.browserDriverVersion,
+      browserDriverPath: ensureBrowserDriverResult.browserDriverPath,
     };
   }
 
-  private parseMajorVersion(version: string): number {
-    const majorVersion = version.match(this.majorVersionPattern)?.[1] ?? '';
-    if (!majorVersion) {
-      throw new Error(`Browser version ${version} is not valid`);
-    }
-    return Number(majorVersion);
-  }
+  async ensureBrowser(options: EnsureBrowserOptions): Promise<EnsureBrowserResult> {
+    const { browserName, browserPlatform, mappedBrowserVersion, deviceSerial } = options;
+    switch (browserPlatform) {
+      case 'macos':
+      case 'windows':
+        {
+          switch (browserName) {
+            case 'chrome':
+              {
+                const requestedBrowserVersion = mappedBrowserVersion === 'latest' ? await this.chrome.getLatestVersion() : mappedBrowserVersion;
+                const browserInstallation = await this.findBrowserInstallationForDesktopByVersionPrefix({
+                  browserName,
+                  browserPlatform,
+                  browserVersionPrefix: requestedBrowserVersion,
+                  deviceSerial,
+                });
 
-  private mapLatestVersion(browserVersion?: string): string {
-    return browserVersion || 'latest';
-  }
+                if (browserInstallation) {
+                  return {
+                    browserName,
+                    browserPlatform,
+                    browserVersion: browserInstallation.browserVersion,
+                    browserMajorVersion: browserInstallation.browserMajorVersion,
+                    browserPath: browserInstallation.browserPath,
+                  };
+                }
 
-  private needToResolveLatestVersion(browserVersion: string): boolean {
-    return browserVersion === 'latest';
-  }
+                const foundBrowserVersion = await this.chrome.findVersion({ prefix: requestedBrowserVersion });
+                if (!foundBrowserVersion) {
+                  throw new Error(`Chrome version ${requestedBrowserVersion} not found`);
+                }
 
-  private async resolveLatestVersion(options: LatestBrowserVersionResolverOptions): Promise<ResolvedBrowserVersionInfo> {
-    const { browserName, browserPlatform } = options;
-    for (const resolver of this.latestBrowserVersionResolvers) {
-      if (await resolver.match(options)) {
-        return await resolver.resolve(options);
-      }
-    }
-    throw new Error(`Browser ${browserName} ${browserPlatform} latest version resolver is not handled.`);
-  }
+                const chromePlatform = this.getChromeInstallablePlatformByBrowserPlatform(browserPlatform);
+                if (!chromePlatform) {
+                  throw new Error(`Chrome is not supported on platform ${browserPlatform}`);
+                }
 
-  private async findBrowserInstallations(options: BrowserInstallationFinderOptions): Promise<BrowserInstallation[]> {
-    const results: BrowserInstallation[] = [];
-    for (const finder of this.browserInstallationFinders) {
-      if (await finder.match(options)) {
-        const infos = await finder.find(options);
-        results.push(...infos);
-      }
-    }
-    return results;
-  }
+                const browserInstallResult = await this.chrome.install({
+                  installableName: browserName,
+                  version: foundBrowserVersion,
+                  rootPath: this.rootPath,
+                  platform: chromePlatform,
+                });
 
-  async findAllBrowserInstallations(options: FindAllBrowserInstallationsOptions): Promise<FindAllBrowserInstallationsResult> {
-    const { browserPlatform } = options;
-    const browserNames = getBrowserNamesByPlatform(browserPlatform);
-    const promiseResults = await Promise.allSettled(browserNames.map(async (browserName) => this.findBrowserInstallations({ ...options, browserName })));
-    const results = promiseResults
-      .filter((result) => result.status === 'fulfilled')
-      .flatMap((result) => {
-        if (result.status === 'rejected') {
-          throw new Error(`Internal error: already filtered to fulfilled`);
+                return {
+                  browserName,
+                  browserPlatform,
+                  browserVersion: foundBrowserVersion,
+                  browserMajorVersion: chromeVersionUtils.parse(foundBrowserVersion).major,
+                  browserPath: browserInstallResult.executablePath,
+                };
+              }
+              break;
+            case 'firefox':
+            case 'firefox-devedition':
+              {
+                const requestedBrowserVersion = mappedBrowserVersion === 'latest' ? await this.firefox.getLatestVersion({ installableName: browserName }) : mappedBrowserVersion;
+                const browserInstallation = await this.findBrowserInstallationForDesktopByVersionPrefix({
+                  browserName,
+                  browserPlatform,
+                  browserVersionPrefix: requestedBrowserVersion,
+                  deviceSerial,
+                });
+
+                if (browserInstallation) {
+                  return {
+                    browserName,
+                    browserPlatform,
+                    browserVersion: browserInstallation.browserVersion,
+                    browserMajorVersion: browserInstallation.browserMajorVersion,
+                    browserPath: browserInstallation.browserPath,
+                  };
+                }
+
+                const foundBrowserVersion = await this.firefox.findVersion({ installableName: browserName, prefix: requestedBrowserVersion });
+                if (!foundBrowserVersion) {
+                  throw new Error(`Chrome version ${requestedBrowserVersion} not found`);
+                }
+
+                const firefoxPlatform = this.getFirefoxInstallablePlatformByBrowserPlatform(browserPlatform);
+                if (!firefoxPlatform) {
+                  throw new Error(`Firefox is not supported on platform ${browserPlatform}`);
+                }
+
+                const browserInstallResult = await this.firefox.install({
+                  installableName: browserName,
+                  version: foundBrowserVersion,
+                  rootPath: this.rootPath,
+                  platform: firefoxPlatform,
+                });
+
+                return {
+                  browserName,
+                  browserPlatform,
+                  browserVersion: foundBrowserVersion,
+                  browserMajorVersion: firefoxVersionUtils.parse(foundBrowserVersion).major,
+                  browserPath: browserInstallResult.executablePath,
+                };
+              }
+              break;
+            case 'safari':
+            case 'safaritp':
+            case 'edge':
+            case 'iexplorer':
+            case 'samsung-internet':
+              throw new Error('Not implemented');
+            default:
+              assertUnreachable(browserName);
+          }
         }
-        return result.value;
-      });
-    return results;
+        break;
+      case 'android':
+        {
+          const findBrowserInstallationsResult = await this.findBrowserInstallationsForAndroid({ browserName, browserPlatform, deviceSerial });
+          if (findBrowserInstallationsResult.browserInstallations.length === 0) {
+            throw new Error(`Browser ${browserName} not found`);
+          }
+
+          const browserInstallation = findBrowserInstallationsResult.browserInstallations[0];
+          return {
+            browserName,
+            browserPlatform,
+            browserVersion: browserInstallation.browserVersion,
+            browserMajorVersion: browserInstallation.browserMajorVersion,
+            browserPackageName: browserInstallation.browserPackageName,
+          };
+        }
+        break;
+      case 'ios':
+        throw new Error('Not implemented');
+      default:
+        assertUnreachable(browserPlatform);
+    }
   }
 
-  private async installDriver(options: BrowserDriverInstallerOptions): Promise<BrowserDriverInstallation> {
-    const { browserName, browserPlatform, resolvedBrowserVersion } = options;
-    for (const installer of this.browserDriverInstallers) {
-      if (await installer.match(options)) {
-        return await installer.install(options);
-      }
+  private async ensureBrowserDriverForChrome(options: EnsureBrowserDriverOptions): Promise<EnsureBrowserDriverResult> {
+    const { browserName, browserPlatform, browserVersion } = options;
+    const resolvedBrowserPlatform = this.getBrowserPlatformForChromeBrowserDriver(browserPlatform);
+    const chromePlatform = this.getChromeInstallablePlatformByBrowserPlatform(resolvedBrowserPlatform);
+    if (!chromePlatform) {
+      throw new Error(`Chrome is not supported on platform ${resolvedBrowserPlatform}`);
     }
 
-    throw new Error(`Browser ${browserName} ${browserPlatform} ${resolvedBrowserVersion} driver installer is not handled.`);
+    const driverFounds = await this.chrome.findInstallations({ installableName: 'chromedriver', rootPath: this.rootPath, platform: chromePlatform });
+    const parsedBrowserVersion = chromeVersionUtils.parse(browserVersion);
+    const driverMatchs = driverFounds.filter(({ majorVersion }) => majorVersion === parsedBrowserVersion.major);
+    if (driverMatchs.length > 0) {
+      const match = driverMatchs[0];
+      return {
+        browserName,
+        browserPlatform,
+        browserDriverVersion: match.version,
+        browserDriverPath: match.executablePath,
+      };
+    }
+
+    const foundBrowserVersion = await this.chrome.findVersion({ prefix: `${parsedBrowserVersion.major}` });
+    if (!foundBrowserVersion) {
+      throw new Error(`Chrome version ${parsedBrowserVersion.major} not found`);
+    }
+
+    const driverInstallResult = await this.chrome.install({
+      installableName: 'chromedriver',
+      version: foundBrowserVersion,
+      rootPath: this.rootPath,
+      platform: chromePlatform,
+    });
+
+    return {
+      browserName,
+      browserPlatform,
+      browserDriverVersion: foundBrowserVersion,
+      browserDriverPath: driverInstallResult.executablePath,
+    };
   }
 
-  private async installBrowser(options: BrowserInstallerOptions): Promise<BrowserInstallation> {
-    const { browserName, browserPlatform, resolvedBrowserVersion } = options;
-    for (const installer of this.browserInstallers) {
-      if (await installer.match(options)) {
-        return await installer.install(options);
-      }
+  private async ensureBrowserDriverForFirefox(options: EnsureBrowserDriverOptions): Promise<EnsureBrowserDriverResult> {
+    const { browserName, browserPlatform } = options;
+    const driverPath = this.geckodriver.getExecutablePath();
+    const driverVersion = await this.geckodriver.getVersion();
+    if (!driverVersion) {
+      throw new Error('Geckodriver version not found');
     }
 
-    throw new Error(`Browser ${browserName} ${browserPlatform} ${resolvedBrowserVersion} installer is not handled.`);
+    return {
+      browserName,
+      browserPlatform,
+      browserDriverVersion: driverVersion,
+      browserDriverPath: driverPath,
+    };
+  }
+
+  private async ensureBrowserDriverForSafari(options: EnsureBrowserDriverOptions): Promise<EnsureBrowserDriverResult> {
+    const { browserName, browserPlatform } = options;
+    const driverPath = this.safaridriver.getExecutablePath();
+    const driverVersion = await this.safaridriver.getVersion();
+    if (!driverVersion) {
+      throw new Error('Safaridriver version not found');
+    }
+
+    return {
+      browserName,
+      browserPlatform,
+      browserDriverVersion: driverVersion,
+      browserDriverPath: driverPath,
+    };
+  }
+
+  async ensureBrowserDriver(options: EnsureBrowserDriverOptions): Promise<EnsureBrowserDriverResult> {
+    const { browserName, browserPlatform, browserVersion, deviceSerial } = options;
+    switch (browserName) {
+      case 'chrome':
+        return await this.ensureBrowserDriverForChrome({ browserName, browserPlatform, browserVersion, deviceSerial });
+      case 'firefox':
+      case 'firefox-devedition':
+        return await this.ensureBrowserDriverForFirefox({ browserName, browserPlatform, browserVersion, deviceSerial });
+      case 'safari':
+      case 'safaritp':
+        return await this.ensureBrowserDriverForSafari({ browserName, browserPlatform, browserVersion, deviceSerial });
+      case 'edge':
+      case 'iexplorer':
+      case 'samsung-internet':
+        throw new Error('Not implemented');
+      default:
+        assertUnreachable(browserName);
+    }
+  }
+
+  private async findBrowserInstallationsForChromeDesktop(options: FindBrowserInstallationsOptions): Promise<FindBrowserInstallationsResult> {
+    const { browserName, browserPlatform } = options;
+    if (browserName !== 'chrome') {
+      throw new Error(`Browser ${browserName} is not supported`);
+    }
+
+    const chromePlatform = this.getChromeInstallablePlatformByBrowserPlatform(browserPlatform);
+    if (!chromePlatform) {
+      throw new Error(`Chrome is not supported on platform ${browserPlatform}`);
+    }
+
+    const installations = await this.chrome.findInstallations({ installableName: browserName, rootPath: this.rootPath, platform: chromePlatform });
+    const browserInstallations = installations.map((installation) => ({
+      browserName,
+      browserPlatform,
+      browserVersion: installation.version,
+      browserMajorVersion: chromeVersionUtils.parse(installation.version).major,
+      browserPath: installation.executablePath,
+    }));
+    return { browserInstallations };
+  }
+
+  private async findBrowserInstallationsForFirefoxDesktop(options: FindBrowserInstallationsOptions): Promise<FindBrowserInstallationsResult> {
+    const { browserName, browserPlatform } = options;
+    if (browserName !== 'firefox') {
+      throw new Error(`Browser ${browserName} is not supported`);
+    }
+
+    const firefoxPlatform = this.getFirefoxInstallablePlatformByBrowserPlatform(browserPlatform);
+    if (!firefoxPlatform) {
+      throw new Error(`Firefox is not supported on platform ${browserPlatform}`);
+    }
+
+    const installations = await this.firefox.findInstallations({ installableName: browserName, rootPath: this.rootPath, platform: firefoxPlatform });
+    const browserInstallations = installations.map((installation) => ({
+      browserName,
+      browserPlatform,
+      browserVersion: installation.version,
+      browserMajorVersion: firefoxVersionUtils.parse(installation.version).major,
+      browserPath: installation.executablePath,
+    }));
+    return { browserInstallations };
+  }
+
+  async findBrowserInstallations(options: FindBrowserInstallationsOptions): Promise<FindBrowserInstallationsResult> {
+    const { browserName, browserPlatform, deviceSerial } = options;
+    switch (browserPlatform) {
+      case 'macos':
+      case 'windows':
+        {
+          switch (browserName) {
+            case 'chrome':
+              return await this.findBrowserInstallationsForChromeDesktop({ browserName, browserPlatform, deviceSerial });
+            case 'firefox':
+            case 'firefox-devedition':
+              return await this.findBrowserInstallationsForFirefoxDesktop({ browserName, browserPlatform, deviceSerial });
+            case 'safari':
+            case 'safaritp':
+            case 'edge':
+            case 'iexplorer':
+            case 'samsung-internet':
+              throw new Error('Not implemented');
+            default:
+              assertUnreachable(browserName);
+          }
+        }
+        break;
+      case 'android':
+        return this.findBrowserInstallationsForAndroid({ browserName, browserPlatform, deviceSerial });
+      case 'ios':
+        throw new Error('Not implemented');
+      default:
+        assertUnreachable(browserPlatform);
+    }
+  }
+
+  async findAllBrowserInstallations(options: FindAllBrowserInstallationsOptions): Promise<FindAllbrowserInstallationsResult> {
+    const { browserPlatform, deviceSerial } = options;
+    const setteleds = await Promise.allSettled(
+      getBrowserNamesByPlatform(browserPlatform).map(async (browserName) => this.findBrowserInstallations({ browserName, browserPlatform, deviceSerial })),
+    );
+    const browserInstallations = setteleds
+      .map((setteled) => {
+        if (setteled.status === 'rejected') {
+          this.logger.warn(setteled.reason);
+          return undefined;
+        } else if (setteled.status === 'fulfilled') {
+          return setteled.value;
+        }
+      })
+      .filter((result): result is FindBrowserInstallationsResult => !!result)
+      .map((result) => result.browserInstallations)
+      .flat();
+    return { browserInstallations };
+  }
+
+  private async findBrowserInstallationForDesktopByVersionPrefix(options: FindBrowserInstallationOptions): Promise<FindBrowserInstallationResult> {
+    const { browserName, browserPlatform, browserVersionPrefix } = options;
+    switch (browserName) {
+      case 'chrome': {
+        const chromePlatform = this.getChromeInstallablePlatformByBrowserPlatform(browserPlatform);
+        if (!chromePlatform) {
+          throw new Error(`Chrome is not supported on platform ${browserPlatform}`);
+        }
+
+        const founds = await this.chrome.findInstallations({ installableName: browserName, rootPath: this.rootPath, platform: chromePlatform });
+        const matches = founds.filter(({ version }) => version.startsWith(browserVersionPrefix));
+        if (matches.length === 0) {
+          return undefined;
+        }
+        const match = matches[0];
+        return {
+          browserVersion: match.version,
+          browserMajorVersion: chromeVersionUtils.parse(match.version).major,
+          browserPath: match.executablePath,
+        };
+      }
+      case 'firefox':
+      case 'firefox-devedition': {
+        const firefoxPlatform = this.getFirefoxInstallablePlatformByBrowserPlatform(browserPlatform);
+        if (!firefoxPlatform) {
+          throw new Error(`Firefox is not supported on platform ${browserPlatform}`);
+        }
+
+        const founds = await this.firefox.findInstallations({ installableName: browserName, rootPath: this.rootPath, platform: firefoxPlatform });
+        const matches = founds.filter(({ version }) => version.startsWith(browserVersionPrefix));
+        if (matches.length === 0) {
+          return undefined;
+        }
+        const match = matches[0];
+        return {
+          browserVersion: match.version,
+          browserMajorVersion: firefoxVersionUtils.parse(match.version).major,
+          browserPath: match.executablePath,
+        };
+      }
+      case 'safari':
+      case 'safaritp':
+      case 'edge':
+      case 'iexplorer':
+      case 'samsung-internet':
+        throw new Error('Not implemented');
+      default:
+        assertUnreachable(browserName);
+    }
+  }
+
+  private getBrowserPlatformForChromeBrowserDriver(browserPlatform: BrowserPlatform): BrowserPlatform {
+    switch (browserPlatform) {
+      case 'macos':
+      case 'windows':
+        return browserPlatform;
+      case 'android':
+        return getBrowserPlatformByNodeJsPlatform(process.platform);
+      case 'ios':
+        return getBrowserPlatformByNodeJsPlatform(process.platform);
+      default:
+        assertUnreachable(browserPlatform);
+    }
+  }
+
+  private getChromeInstallablePlatformByBrowserPlatform(browserPlatform: BrowserPlatform): ChromeInstallablePlatform | undefined {
+    switch (browserPlatform) {
+      case 'macos':
+        return this.chrome.getChromeInstallablePlatform({ platform: 'darwin', arch: process.arch });
+      case 'windows':
+        return this.chrome.getChromeInstallablePlatform({ platform: 'win32', arch: process.arch });
+      case 'android':
+      case 'ios':
+        return undefined;
+      default:
+        assertUnreachable(browserPlatform);
+    }
+  }
+
+  private getFirefoxInstallablePlatformByBrowserPlatform(browserPlatform: BrowserPlatform): FirefoxInstallablePlatform | undefined {
+    switch (browserPlatform) {
+      case 'macos':
+        return this.firefox.getFirefoxInstallablePlatform({ platform: 'darwin', arch: process.arch });
+      case 'windows':
+        return this.firefox.getFirefoxInstallablePlatform({ platform: 'win32', arch: process.arch });
+      case 'android':
+      case 'ios':
+        return undefined;
+      default:
+        assertUnreachable(browserPlatform);
+    }
+  }
+
+  private async findBrowserInstallationsForAndroid(options: FindBrowserInstallationsOptions): Promise<FindBrowserInstallationsResult> {
+    const { browserName, browserPlatform, deviceSerial } = options;
+    if (!deviceSerial) {
+      throw new Error('deviceSerial is required');
+    }
+
+    const androidBrowserNameMap = new Map(Object.entries(AndroidBrowserPackageNameMap).map(([browserName, packageName]) => [packageName, browserName]));
+    const installedPackages = await this.adb.getIntalledPackages(deviceSerial);
+    const installedBrowserPackages = installedPackages.filter(({ packageName }) => {
+      const androidBrowserName = androidBrowserNameMap.get(packageName);
+      return browserName === androidBrowserName;
+    });
+    const installedPackageInfos = await Promise.allSettled(
+      installedBrowserPackages.map(async ({ packageName }) => {
+        const info = await this.adb.getInstalledPackageInfo(deviceSerial, packageName, { versionName: true });
+        const browserName = androidBrowserNameMap.get(packageName);
+        if (!browserName) {
+          throw new Error(`Browser name not found for package name ${packageName}`);
+        }
+
+        return {
+          browserName,
+          packageName,
+          versionName: info.versionName,
+        };
+      }),
+    );
+
+    const packageInfos = installedPackageInfos
+      .filter((setteled): setteled is PromiseFulfilledResult<{ browserName: string; packageName: string; versionName: string | undefined }> => setteled.status === 'fulfilled')
+      .map((setteled) => setteled.value)
+      .filter((value): value is { browserName: string; packageName: string; versionName: string } => !!value.versionName);
+
+    const browserInstallations = packageInfos.map(({ browserName, packageName, versionName }) => {
+      if (!isAllowedAndroidBrowserName(browserName)) {
+        throw new Error(`Browser name ${browserName} is not allowed`);
+      }
+
+      let browserMajorVersion: number | undefined = undefined;
+      switch (browserName) {
+        case 'chrome':
+          browserMajorVersion = chromeVersionUtils.parse(versionName).major;
+          break;
+        case 'edge':
+          browserMajorVersion = chromeVersionUtils.parse(versionName).major;
+          break;
+        case 'firefox':
+          browserMajorVersion = firefoxVersionUtils.parse(versionName).major;
+          break;
+        case 'samsung-internet':
+          browserMajorVersion = chromeVersionUtils.parse(versionName).major;
+          break;
+        default:
+          assertUnreachable(browserName);
+      }
+
+      return {
+        browserName,
+        browserPlatform,
+        browserVersion: versionName,
+        browserMajorVersion,
+        browserPackageName: packageName,
+      };
+    });
+
+    return { browserInstallations };
   }
 }

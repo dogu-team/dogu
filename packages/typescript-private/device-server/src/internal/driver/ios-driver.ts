@@ -3,7 +3,7 @@ import { errorify } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import fs from 'fs';
 import { env } from '../../env';
-import { logger } from '../../logger/logger.instance';
+import { createGdcLogger, logger } from '../../logger/logger.instance';
 import { IosChannel } from '../channel/ios-channel';
 import { SystemProfiler, XcodeBuild, Xctrace } from '../externals';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService } from '../public/device-channel';
@@ -19,7 +19,7 @@ export class IosDriver implements DeviceDriver {
     await IosDriver.clearIdaClones();
     await XcodeBuild.validateXcodeBuild();
 
-    const streaming = await PionStreamingService.create(Platform.PLATFORM_IOS, env.DOGU_DEVICE_SERVER_PORT);
+    const streaming = await PionStreamingService.create(Platform.PLATFORM_IOS, env.DOGU_DEVICE_SERVER_PORT, createGdcLogger(Platform.PLATFORM_IOS));
     return new IosDriver(streaming, deviceServerService);
   }
 

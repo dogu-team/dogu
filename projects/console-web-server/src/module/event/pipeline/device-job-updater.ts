@@ -107,7 +107,6 @@ export class DeviceJobUpdater {
         { deviceJobsStatus: PIPELINE_STATUS.IN_PROGRESS },
       )
       .innerJoinAndSelect(`job.${RoutineJobPropCamel.routinePipeline}`, 'pipeline')
-      .leftJoinAndSelect(`deviceJob.${RoutineDeviceJobPropCamel.routineDeviceJobBrowser}`, 'routineDeviceJobBrowser')
       .orderBy(`deviceJob.${RoutineDeviceJobPropCamel.routineDeviceJobId}`, 'ASC')
       .orderBy(`step.${RoutineStepPropCamel.routineStepId}`, 'ASC')
       .where({ status: PIPELINE_STATUS.WAITING })

@@ -1,7 +1,7 @@
 import { PrivateHost } from '@dogu-private/console-host-agent';
 import { Architecture, createConsoleApiAuthHeader, HostId, OrganizationId, Platform } from '@dogu-private/types';
 import { DefaultHttpOptions, errorify, Instance, validateAndEmitEventAsync } from '@dogu-tech/common';
-import { DeleteOldFilesCloser, HostPaths, MultiPlatformEnvironmentVariableReplacer, openDeleteOldFiles, processArchitecture, processPlatform } from '@dogu-tech/node';
+import { DeleteOldFilesCloser, HostPaths, maxLogPeriod, MultiPlatformEnvironmentVariableReplacer, openDeleteOldFiles, processArchitecture, processPlatform } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { isNotEmptyObject } from 'class-validator';
@@ -48,6 +48,7 @@ type DeviceServerPortNeedUpdate = DeviceServerPortYesNeedUpdate | NoNeedUpdate;
 export class HostResolver {
   private readonly envReplacer = new MultiPlatformEnvironmentVariableReplacer();
   private deleteOldRecordsCloser: DeleteOldFilesCloser | null = null;
+  private deleteOldLogsCloser: DeleteOldFilesCloser | null = null;
 
   constructor(
     private readonly consoleClientService: ConsoleClientService,
@@ -90,14 +91,25 @@ export class HostResolver {
     this.logger.info('Host resolved', { hostResolutionInfo });
     await validateAndEmitEventAsync(this.eventEmitter, OnHostResolvedEvent, hostResolutionInfo);
     await this.openDeleteOldRecords(recordWorkspacePath);
+    await this.openDeleteOldLogs();
   }
 
   private async openDeleteOldRecords(recordWorkspacePath: string): Promise<void> {
-    if (this.deleteOldRecordsCloser) {
-      this.deleteOldRecordsCloser.close();
-      this.deleteOldRecordsCloser = null;
-    }
+    this.deleteOldRecordsCloser?.close();
+    this.deleteOldRecordsCloser = null;
     this.deleteOldRecordsCloser = await openDeleteOldFiles(recordWorkspacePath, '7d', '1d', this.logger);
+  }
+
+  private async openDeleteOldLogs(): Promise<void> {
+    this.deleteOldLogsCloser?.close();
+    this.deleteOldLogsCloser = null;
+    const logsPath = process.env.DOGU_LOGS_PATH || '';
+    if (logsPath.length === 0) {
+      this.logger.warn('openDeleteOldLogs - DOGU_LOGS_PATH is empty');
+      return;
+    }
+
+    this.deleteOldLogsCloser = await openDeleteOldFiles(logsPath, maxLogPeriod, '1d', this.logger);
   }
 
   private validateAndUpdatePlatform(platform: Platform): PlatformNeedUpdate {

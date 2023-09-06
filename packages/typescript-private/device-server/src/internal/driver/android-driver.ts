@@ -2,7 +2,7 @@ import { Platform, Serial } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { killProcessOnPort } from '@dogu-tech/node';
 import { env } from '../../env';
-import { logger } from '../../logger/logger.instance';
+import { createGdcLogger, logger } from '../../logger/logger.instance';
 import { AndroidChannel } from '../channel/android-channel';
 import { Adb } from '../externals';
 import { DOGU_ADB_SERVER_PORT } from '../externals/cli/adb/adb';
@@ -17,7 +17,7 @@ export class AndroidDriver implements DeviceDriver {
   private constructor(private readonly streamingService: StreamingService, private readonly deviceServerService: DeviceServerService) {}
 
   static async create(deviceServerService: DeviceServerService): Promise<AndroidDriver> {
-    const streaming = await PionStreamingService.create(Platform.PLATFORM_ANDROID, env.DOGU_DEVICE_SERVER_PORT);
+    const streaming = await PionStreamingService.create(Platform.PLATFORM_ANDROID, env.DOGU_DEVICE_SERVER_PORT, createGdcLogger(Platform.PLATFORM_ANDROID));
     const driver = new AndroidDriver(streaming, deviceServerService);
     await driver.reset();
     return driver;

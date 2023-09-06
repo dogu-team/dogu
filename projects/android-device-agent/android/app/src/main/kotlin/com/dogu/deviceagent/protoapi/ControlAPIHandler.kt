@@ -36,6 +36,7 @@ class ControlAPIHandler() : ICfGdcDaProtoAPIHandler {
                     "action: ${controlMessage.action},  " +
                     "key: ${controlMessage.key}, " +
                     "keycode: ${controlMessage.keycode}, " +
+                    "meta: ${controlMessage.metaState}, " +
                     "error: $e, " +
                     "stack: ${e.stackTraceToString()}")
             errorResult = com.dogu.protocol.generated.outer.Errors.ErrorResult.newBuilder()

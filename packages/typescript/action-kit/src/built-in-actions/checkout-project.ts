@@ -16,8 +16,16 @@ export async function checkoutProject(
 ) {
   if (!checkoutUrl) {
     printable.info('Getting Git url from console...');
-    const { url } = await consoleActionClient.getGitlabUrl();
-    checkoutUrl = url;
+    try {
+      const { url } = await consoleActionClient.getGitlabUrl();
+      checkoutUrl = url;
+    } catch (error) {
+      for (let i = 0; i < 3; ++i) {
+        printable.error('🐱 Git is integrated with 🐶 Dogu project?');
+      }
+
+      throw error;
+    }
   }
   printable.info('Git url', { checkoutUrl });
 

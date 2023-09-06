@@ -12,3 +12,7 @@ export type RecursiveRequired<T> = NonNullable<
     null | undefined
   >
 >;
+
+export type DeepReadonly<T> = {
+  readonly [K in keyof T]: T[K] extends Record<keyof any, unknown> | unknown[] ? DeepReadonly<T[K]> : T[K];
+};

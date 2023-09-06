@@ -3,6 +3,7 @@ package com.dogu.deviceagent.reflect
 import android.annotation.SuppressLint
 import android.os.IBinder
 import android.os.IInterface
+import com.dogu.deviceagent.Logger
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
@@ -23,12 +24,24 @@ class ServiceManager {
     var displayManager: DisplayManager? = null
         get() {
             if (field == null) {
-                field = DisplayManager(
-                    getService(
-                        "display",
-                        "android.hardware.display.IDisplayManager"
-                    )
-                )
+                field = try {
+                    val displayManager = try {
+                        val dmClass = Class.forName("android.hardware.display.DisplayManagerGlobal")
+                        val getInstanceMethod =
+                            dmClass.javaClass.getDeclaredMethod("getInstance")
+                        DisplayManager(getInstanceMethod.invoke(null) as IInterface)
+                    } catch (e: Exception) {
+                        DisplayManager(
+                            getService(
+                                "display",
+                                "android.hardware.display.IDisplayManager"
+                            )
+                        )
+                    }
+                    displayManager
+                } catch (e: Exception) {
+                    throw AssertionError(e)
+                }
             }
             return field
         }
@@ -37,10 +50,20 @@ class ServiceManager {
         get() {
             if (field == null) {
                 field = try {
-                    val getInstanceMethod =
-                        android.hardware.input.InputManager::class.java.getDeclaredMethod("getInstance")
-                    val im = getInstanceMethod.invoke(null) as android.hardware.input.InputManager
-                    InputManager(im)
+                    val inputManagerTried = try{
+                        val im = ReflectObject("android.hardware.input.InputManagerGlobal",).callStatic(
+                            Object::class,
+                            "getInstance"
+                        )
+                        InputManager(im)
+                    } catch (e: Exception) {
+                        Logger.e("Could not get InputManagerGlobal, try with InputManager. $e")
+                        val getInstanceMethod =
+                            android.hardware.input.InputManager::class.java.getDeclaredMethod("getInstance")
+                        val im = getInstanceMethod.invoke(null) as Object
+                        InputManager(im)
+                    }
+                    inputManagerTried
                 } catch (e: NoSuchMethodException) {
                     throw AssertionError(e)
                 } catch (e: IllegalAccessException) {
@@ -81,8 +104,7 @@ class ServiceManager {
         get() {
             if (field == null) {
                 val clipboard = getService("clipboard", "android.content.IClipboard")
-                    ?:
-                    return null
+                    ?: return null
                 field = ClipboardManager(clipboard)
             }
             return field

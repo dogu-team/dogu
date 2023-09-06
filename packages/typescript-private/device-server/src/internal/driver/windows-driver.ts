@@ -2,7 +2,7 @@ import { Platform, Serial } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import systeminformation from 'systeminformation';
 import { env } from '../../env';
-import { logger } from '../../logger/logger.instance';
+import { createGdcLogger, logger } from '../../logger/logger.instance';
 import { WindowsChannel } from '../channel/windows-channel';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService } from '../public/device-channel';
 import { DeviceDriver, DeviceScanResult } from '../public/device-driver';
@@ -15,7 +15,7 @@ export class WindowsDriver implements DeviceDriver {
   private constructor(private readonly streamingService: StreamingService, private readonly deviceServerService: DeviceServerService) {}
 
   static async create(deviceServerService: DeviceServerService): Promise<WindowsDriver> {
-    const streaming = await PionStreamingService.create(Platform.PLATFORM_WINDOWS, env.DOGU_DEVICE_SERVER_PORT);
+    const streaming = await PionStreamingService.create(Platform.PLATFORM_WINDOWS, env.DOGU_DEVICE_SERVER_PORT, createGdcLogger(Platform.PLATFORM_WINDOWS));
     return new WindowsDriver(streaming, deviceServerService);
   }
 

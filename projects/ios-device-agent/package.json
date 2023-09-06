@@ -6,6 +6,7 @@
     "build:archive": "tsc -b && ts-node scripts/buildArchive.ts",
     "clean": "shx rm -rf .build generated",
     "format": "ts-node scripts/format.ts",
+    "rebuild:archive": "yarn run clean && yarn run build:archive",
     "resign": "tsc -b && ts-node scripts/resign2.ts"
   },
   "devDependencies": {
