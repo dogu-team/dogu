@@ -2,6 +2,7 @@ import {
   DeviceAndDeviceTagPropCamel,
   DevicePropCamel,
   DevicePropSnake,
+  DeviceRunnerPropCamel,
   DeviceTagPropCamel,
   JobDisplayQuery,
   JobElement,
@@ -19,6 +20,8 @@ import {
 import {
   CREATOR_TYPE,
   DeviceConnectionState,
+  DeviceId,
+  DeviceRunnerId,
   JobSchema,
   OrganizationId,
   PIPELINE_STATUS,
@@ -38,6 +41,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import lodash from 'lodash';
 import { Brackets, DataSource, EntityManager } from 'typeorm';
 import { RoutineDeviceJob } from '../../../db/entity/device-job.entity';
+import { DeviceRunner } from '../../../db/entity/device-runner.entity';
 import { Device, DeviceAndDeviceTag, DeviceTag, ProjectAndDevice, RoutineJob, RoutineJobEdge } from '../../../db/entity/index';
 import { RoutinePipeline } from '../../../db/entity/pipeline.entity';
 import { Routine } from '../../../db/entity/routine.entity';
@@ -275,18 +279,33 @@ export class PipelineService {
   ): Promise<RoutineDeviceJob[]> {
     const routineDeviceJobs: RoutineDeviceJob[] = [];
 
+    /**
+     * @note for pick one device by device name or device tag using device runner not in use or device runner in use or device.
+     */
+    const reservedDeviceRunnerIds: DeviceRunnerId[] = [];
+
     for (const routineJob of routineJobs) {
       const jobSchema = routineSchema.jobs[routineJob.name];
       const record = jobSchema.record ? 1 : 0;
       const runsOn = parseRunsOn(routineJob.name, jobSchema['runs-on']);
       const { type, pickables } = runsOn;
 
+      /**
+       * @note pick one device by device name or device tag using device runner not in use and reserved.
+       */
       if (type === 'pickOne') {
         for (const pickable of pickables) {
-          const deviceFromName = await manager
-            .createQueryBuilder(Device, Device.name)
+          /**
+           * @note Check device runners not in use by device name or device tag or reserved.
+           */
+          const deviceRunnerNotInUseAndReservedQuery = manager
+            .createQueryBuilder(DeviceRunner, DeviceRunner.name)
+            .leftJoinAndSelect(`${DeviceRunner.name}.${DeviceRunnerPropCamel.device}`, Device.name)
             .leftJoinAndSelect(`${Device.name}.${DevicePropCamel.projectAndDevices}`, ProjectAndDevice.name)
-            .where(`${Device.name}.${DevicePropCamel.organizationId} = :${DevicePropCamel.organizationId}`, { organizationId })
+            .leftJoinAndSelect(`${Device.name}.${DevicePropCamel.deviceAndDeviceTags}`, DeviceAndDeviceTag.name)
+            .leftJoinAndSelect(`${DeviceAndDeviceTag.name}.${DeviceAndDeviceTagPropCamel.deviceTag}`, DeviceTag.name)
+            .where(`${DeviceRunner.name}.${DeviceRunnerPropCamel.isInUse} = 0`)
+            .andWhere(`${Device.name}.${DevicePropCamel.organizationId} = :${DevicePropCamel.organizationId}`, { organizationId })
             .andWhere(`${Device.name}.${DevicePropCamel.connectionState} = :${DevicePropCamel.connectionState}`, {
               connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED,
             })
@@ -297,24 +316,47 @@ export class PipelineService {
                   .orWhere(`${ProjectAndDevice.name}.${ProjectAndDevicePropCamel.projectId} = :${ProjectAndDevicePropCamel.projectId}`, { projectId });
               }),
             )
-            .andWhere(`${Device.name}.${DevicePropCamel.name} = :${DevicePropCamel.name}`, { name: pickable })
-            .getOne();
+            .andWhere(
+              new Brackets((builder) => {
+                builder
+                  .where(`${Device.name}.${DevicePropCamel.name} = :${DevicePropCamel.name}`, { name: pickable })
+                  .orWhere(`${DeviceTag.name}.${DeviceTagPropCamel.name} = :${DeviceTagPropCamel.name}`, { name: pickable, organizationId });
+              }),
+            );
 
-          if (deviceFromName) {
+          if (reservedDeviceRunnerIds.length > 0) {
+            deviceRunnerNotInUseAndReservedQuery.andWhere(`${DeviceRunner.name}.${DeviceRunnerPropCamel.deviceRunnerId} NOT IN (:...reservedDeviceRunnerIds)`, {
+              reservedDeviceRunnerIds,
+            });
+          }
+
+          const deviceRunnerNotInUseAndReserved = await deviceRunnerNotInUseAndReservedQuery.getOne();
+          if (deviceRunnerNotInUseAndReserved) {
+            reservedDeviceRunnerIds.push(deviceRunnerNotInUseAndReserved.deviceRunnerId);
+
+            if (!deviceRunnerNotInUseAndReserved.device) {
+              throw new Error(`Internal error: deviceRunnerNotInUseAndReserved.device is null`);
+            }
+
             const routineDeviceJob = manager.getRepository(RoutineDeviceJob).create({
               routineJobId: routineJob.routineJobId,
-              deviceId: deviceFromName.deviceId,
+              deviceId: deviceRunnerNotInUseAndReserved.deviceId,
               status: PIPELINE_STATUS.WAITING,
               record,
-              appVersion: parseAppVersion(jobSchema.appVersion, deviceFromName.platform),
+              appVersion: parseAppVersion(jobSchema.appVersion, deviceRunnerNotInUseAndReserved.device.platform),
               browserName: parseBrowserName(jobSchema.browserName) ?? null,
               browserVersion: jobSchema.browserVersion ?? null,
             });
             await manager.getRepository(RoutineDeviceJob).save(routineDeviceJob);
             routineDeviceJobs.push(routineDeviceJob);
           } else {
-            const deviceFromTag = await manager
-              .createQueryBuilder(Device, Device.name)
+            /**
+             * @note No device runners are not in use by device name or device tag or reserved.
+             * Check device runners in use by device name or device tag or reserved.
+             */
+            const deviceRunnerInUseAndReservedQuery = manager
+              .createQueryBuilder(DeviceRunner, DeviceRunner.name)
+              .leftJoinAndSelect(`${DeviceRunner.name}.${DeviceRunnerPropCamel.device}`, Device.name)
               .leftJoinAndSelect(`${Device.name}.${DevicePropCamel.projectAndDevices}`, ProjectAndDevice.name)
               .leftJoinAndSelect(`${Device.name}.${DevicePropCamel.deviceAndDeviceTags}`, DeviceAndDeviceTag.name)
               .leftJoinAndSelect(`${DeviceAndDeviceTag.name}.${DeviceAndDeviceTagPropCamel.deviceTag}`, DeviceTag.name)
@@ -329,31 +371,97 @@ export class PipelineService {
                     .orWhere(`${ProjectAndDevice.name}.${ProjectAndDevicePropCamel.projectId} = :${ProjectAndDevicePropCamel.projectId}`, { projectId });
                 }),
               )
-              .andWhere(`${DeviceTag.name}.${DeviceTagPropCamel.name} = :${DeviceTagPropCamel.name}`, { name: pickable, organizationId })
-              .getOne();
+              .andWhere(
+                new Brackets((builder) => {
+                  builder
+                    .where(`${Device.name}.${DevicePropCamel.name} = :${DevicePropCamel.name}`, { name: pickable })
+                    .orWhere(`${DeviceTag.name}.${DeviceTagPropCamel.name} = :${DeviceTagPropCamel.name}`, { name: pickable, organizationId });
+                }),
+              );
 
-            if (deviceFromTag) {
+            if (reservedDeviceRunnerIds.length > 0) {
+              deviceRunnerInUseAndReservedQuery.andWhere(`${DeviceRunner.name}.${DeviceRunnerPropCamel.deviceRunnerId} NOT IN (:...reservedDeviceRunnerIds)`, {
+                reservedDeviceRunnerIds,
+              });
+            }
+
+            const deviceRunnerInUseAndReserved = await deviceRunnerInUseAndReservedQuery.getOne();
+            if (deviceRunnerInUseAndReserved) {
+              reservedDeviceRunnerIds.push(deviceRunnerInUseAndReserved.deviceRunnerId);
+
+              if (!deviceRunnerInUseAndReserved.device) {
+                throw new Error(`Internal error: deviceRunnerInUse.device is null`);
+              }
+
               const routineDeviceJob = manager.getRepository(RoutineDeviceJob).create({
                 routineJobId: routineJob.routineJobId,
-                deviceId: deviceFromTag.deviceId,
+                deviceId: deviceRunnerInUseAndReserved.deviceId,
                 status: PIPELINE_STATUS.WAITING,
                 record,
-                appVersion: parseAppVersion(jobSchema.appVersion, deviceFromTag.platform),
+                appVersion: parseAppVersion(jobSchema.appVersion, deviceRunnerInUseAndReserved.device.platform),
                 browserName: parseBrowserName(jobSchema.browserName) ?? null,
                 browserVersion: jobSchema.browserVersion ?? null,
               });
               await manager.getRepository(RoutineDeviceJob).save(routineDeviceJob);
               routineDeviceJobs.push(routineDeviceJob);
             } else {
-              throw new NotFoundException(`This project has no device with name: ${pickable}`);
-            }
+              /**
+               * @note No device runners are not in use by device name or device tag or reserved.
+               * Check device by device name or device tag
+               */
+              const device = await manager
+                .createQueryBuilder(Device, Device.name)
+                .leftJoinAndSelect(`${Device.name}.${DevicePropCamel.projectAndDevices}`, ProjectAndDevice.name)
+                .leftJoinAndSelect(`${Device.name}.${DevicePropCamel.deviceAndDeviceTags}`, DeviceAndDeviceTag.name)
+                .leftJoinAndSelect(`${DeviceAndDeviceTag.name}.${DeviceAndDeviceTagPropCamel.deviceTag}`, DeviceTag.name)
+                .where(`${DeviceRunner.name}.${DeviceRunnerPropCamel.isInUse} = 0`)
+                .andWhere(`${Device.name}.${DevicePropCamel.organizationId} = :${DevicePropCamel.organizationId}`, { organizationId })
+                .andWhere(`${Device.name}.${DevicePropCamel.connectionState} = :${DevicePropCamel.connectionState}`, {
+                  connectionState: DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED,
+                })
+                .andWhere(
+                  new Brackets((builder) => {
+                    builder
+                      .where(`${Device.name}.${DevicePropCamel.isGlobal} = 1`) //
+                      .orWhere(`${ProjectAndDevice.name}.${ProjectAndDevicePropCamel.projectId} = :${ProjectAndDevicePropCamel.projectId}`, { projectId });
+                  }),
+                )
+                .andWhere(
+                  new Brackets((builder) => {
+                    builder
+                      .where(`${Device.name}.${DevicePropCamel.name} = :${DevicePropCamel.name}`, { name: pickable })
+                      .orWhere(`${DeviceTag.name}.${DeviceTagPropCamel.name} = :${DeviceTagPropCamel.name}`, { name: pickable, organizationId });
+                  }),
+                )
+                .getOne();
 
-            throw new NotFoundException(`This project has no device with name: ${pickable}`);
+              if (device) {
+                const routineDeviceJob = manager.getRepository(RoutineDeviceJob).create({
+                  routineJobId: routineJob.routineJobId,
+                  deviceId: device.deviceId,
+                  status: PIPELINE_STATUS.WAITING,
+                  record,
+                  appVersion: parseAppVersion(jobSchema.appVersion, device.platform),
+                  browserName: parseBrowserName(jobSchema.browserName) ?? null,
+                  browserVersion: jobSchema.browserVersion ?? null,
+                });
+                await manager.getRepository(RoutineDeviceJob).save(routineDeviceJob);
+                routineDeviceJobs.push(routineDeviceJob);
+              } else {
+                /**
+                 * @note No device by device name or device tag
+                 */
+                throw new HttpException(`No device by device name or device tag: ${pickable}`, HttpStatus.NOT_FOUND);
+              }
+            }
           }
         }
+
+        // pick all device by device tag
       } else if (type === 'pickAll') {
+        const reservedDeviceIds: DeviceId[] = [];
         for (const pickable of pickables) {
-          const deviceFromTag = await manager
+          const devicesQuery = manager
             .createQueryBuilder(Device, Device.name)
             .leftJoinAndSelect(`${Device.name}.${DevicePropCamel.projectAndDevices}`, ProjectAndDevice.name)
             .leftJoinAndSelect(`${Device.name}.${DevicePropCamel.deviceAndDeviceTags}`, DeviceAndDeviceTag.name)
@@ -369,21 +477,30 @@ export class PipelineService {
                   .orWhere(`${ProjectAndDevice.name}.${ProjectAndDevicePropCamel.projectId} = :${ProjectAndDevicePropCamel.projectId}`, { projectId });
               }),
             )
-            .andWhere(`${DeviceTag.name}.${DeviceTagPropCamel.name} = :${DeviceTagPropCamel.name}`, { name: pickable, organizationId })
-            .getMany();
+            .andWhere(`${DeviceTag.name}.${DeviceTagPropCamel.name} = :${DeviceTagPropCamel.name}`, { name: pickable, organizationId });
 
-          for (const device of deviceFromTag) {
-            const routineDeviceJob = manager.getRepository(RoutineDeviceJob).create({
-              routineJobId: routineJob.routineJobId,
-              deviceId: device.deviceId,
-              status: PIPELINE_STATUS.WAITING,
-              record,
-              appVersion: parseAppVersion(jobSchema.appVersion, device.platform),
-              browserName: parseBrowserName(jobSchema.browserName) ?? null,
-              browserVersion: jobSchema.browserVersion ?? null,
-            });
-            await manager.getRepository(RoutineDeviceJob).save(routineDeviceJob);
-            routineDeviceJobs.push(routineDeviceJob);
+          if (reservedDeviceIds.length > 0) {
+            devicesQuery.andWhere(`${Device.name}.${DevicePropCamel.deviceId} NOT IN (:...reservedDeviceIds)`, { reservedDeviceIds });
+          }
+
+          const devices = await devicesQuery.getMany();
+          if (devices.length > 0) {
+            const deviceIds = devices.map((device) => device.deviceId);
+            reservedDeviceIds.push(...deviceIds);
+
+            for (const device of devices) {
+              const routineDeviceJob = manager.getRepository(RoutineDeviceJob).create({
+                routineJobId: routineJob.routineJobId,
+                deviceId: device.deviceId,
+                status: PIPELINE_STATUS.WAITING,
+                record,
+                appVersion: parseAppVersion(jobSchema.appVersion, device.platform),
+                browserName: parseBrowserName(jobSchema.browserName) ?? null,
+                browserVersion: jobSchema.browserVersion ?? null,
+              });
+              await manager.getRepository(RoutineDeviceJob).save(routineDeviceJob);
+              routineDeviceJobs.push(routineDeviceJob);
+            }
           }
         }
       }

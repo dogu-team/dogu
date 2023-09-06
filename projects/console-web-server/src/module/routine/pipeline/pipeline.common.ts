@@ -36,8 +36,8 @@ export function parseRunsOn(jobName: string, runsOnRaw: JobSchema['runs-on']): R
       throw new ParseRunsOnError(`Missing group on runs-on [${runsOnRaw}] on job [${jobName}]`, jobName, runsOnRaw);
     }
 
-    if (_.values(runsOnRaw).filter((value) => value !== 'group').length > 0) {
-      throw new ParseRunsOnError(`Unknown property on runs-on [${runsOnRaw}] on job [${jobName}]`, jobName, runsOnRaw);
+    if (_.keys(runsOnRaw).filter((key) => key !== 'group').length > 0) {
+      throw new ParseRunsOnError(`Unknown keys [${_.keys(runsOnRaw).filter((key) => key !== 'group')}] on runs-on [${runsOnRaw}] on job [${jobName}]`, jobName, runsOnRaw);
     }
 
     const { group } = runsOnRaw;
