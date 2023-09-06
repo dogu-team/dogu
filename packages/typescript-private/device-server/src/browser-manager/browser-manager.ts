@@ -21,6 +21,7 @@ import { Adb } from '../internal/externals/index';
 import { logger } from '../logger/logger.instance';
 import { Chrome, ChromeInstallablePlatform } from './chrome';
 import { chromeVersionUtils } from './chrome-version-utils';
+import { Edge, EdgeInstallablePlatformArch, edgeVersionUtils } from './edge';
 import { Firefox, FirefoxInstallablePlatform } from './firefox';
 import { firefoxVersionUtils } from './firefox-version-utils';
 import { Geckodriver } from './geckodriver';
@@ -47,29 +48,60 @@ type EnsureBrowserResult = Omit<EnsureBrowserAndDriverResult, 'browserDriverVers
 type EnsureBrowserDriverOptions = Omit<EnsureBrowserAndDriverOptions, 'browserVersion'> & { browserVersion: BrowserVersion };
 type EnsureBrowserDriverResult = Omit<EnsureBrowserAndDriverResult, 'browserVersion' | 'browserMajorVersion' | 'browserPath' | 'browserPackageName'>;
 
-type GetLatestBrowserVersionOptions = Pick<EnsureBrowserOptions, 'browserName'>;
+type GetLatestBrowserVersionOptions = Pick<EnsureBrowserOptions, 'browserName'> & Partial<Pick<EnsureBrowserOptions, 'browserPlatform'>>;
 
 export class BrowserManager {
   private readonly logger = new PrefixLogger(logger, '[BrowserManager]');
   private readonly rootPath = HostPaths.external.browser.browsersPath();
   private readonly chrome = new Chrome();
   private readonly firefox = new Firefox();
+  private readonly edge = new Edge();
   private readonly geckodriver = new Geckodriver();
   private readonly safaridriver = new Safaridriver();
   private readonly adb = Adb;
 
   async getLatestBrowserVersion(options: GetLatestBrowserVersionOptions): Promise<BrowserVersion> {
-    const { browserName } = options;
+    const { browserName, browserPlatform } = options;
     switch (browserName) {
       case 'chrome':
         return await this.chrome.getLatestVersion();
       case 'firefox':
       case 'firefox-devedition':
         return await this.firefox.getLatestVersion({ installableName: browserName });
+      case 'edge':
+        {
+          if (!browserPlatform) {
+            throw new Error('browserPlatform is required');
+          }
+
+          switch (browserPlatform) {
+            case 'macos':
+            case 'windows': {
+              const edgePlatformArch = this.getEdgeInstallablePlatformArchByBrowserPlatform(browserPlatform);
+              if (!edgePlatformArch) {
+                throw new Error(`Edge is not supported on platform ${browserPlatform}`);
+              }
+
+              return await this.edge.getLatestVersion(edgePlatformArch);
+            }
+            case 'android':
+              return await this.edge.getLatestVersion({
+                platform: 'Android',
+                arch: 'arm64',
+              });
+            case 'ios':
+              return await this.edge.getLatestVersion({
+                platform: 'iOS',
+                arch: 'arm64',
+              });
+            default:
+              assertUnreachable(browserPlatform);
+          }
+        }
+        break;
+      case 'iexplorer':
       case 'safari':
       case 'safaritp':
-      case 'edge':
-      case 'iexplorer':
       case 'samsung-internet':
         throw new Error('Not implemented');
       default:
@@ -511,6 +543,20 @@ export class BrowserManager {
     }
   }
 
+  private getEdgeInstallablePlatformArchByBrowserPlatform(browserPlatform: BrowserPlatform): EdgeInstallablePlatformArch | undefined {
+    switch (browserPlatform) {
+      case 'macos':
+        return this.edge.getEdgeInstallablePlatformArchOptions({ platform: 'darwin' });
+      case 'windows':
+        return this.edge.getEdgeInstallablePlatformArchOptions({ platform: 'win32' });
+      case 'android':
+      case 'ios':
+        return undefined;
+      default:
+        assertUnreachable(browserPlatform);
+    }
+  }
+
   private async findBrowserInstallationsForAndroid(options: FindBrowserInstallationsOptions): Promise<FindBrowserInstallationsResult> {
     const { browserName, browserPlatform, deviceSerial } = options;
     if (!deviceSerial) {
@@ -555,7 +601,7 @@ export class BrowserManager {
           browserMajorVersion = chromeVersionUtils.parse(versionName).major;
           break;
         case 'edge':
-          browserMajorVersion = chromeVersionUtils.parse(versionName).major;
+          browserMajorVersion = edgeVersionUtils.parse(versionName).major;
           break;
         case 'firefox':
           browserMajorVersion = firefoxVersionUtils.parse(versionName).major;

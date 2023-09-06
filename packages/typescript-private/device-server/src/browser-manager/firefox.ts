@@ -282,6 +282,7 @@ export class Firefox {
           filePath: downloadFilePath,
           timeout: downloadTimeout,
         });
+
         if (downloadFileName.toLowerCase().endsWith('.dmg')) {
           const mountPath = path.resolve(os.homedir(), `dmp-${Date.now()}`);
           await onDmgMounted(downloadFilePath, mountPath, defaultMountTimeout, async (mountPath) => {

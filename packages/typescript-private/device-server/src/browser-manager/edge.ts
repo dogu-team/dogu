@@ -1,13 +1,6 @@
-// latest
-// https://edgeupdates.microsoft.com/api/products
-// no etag
-
-// full
-// https://edgeupdates.microsoft.com/api/products?view=enterprise
-// no etag
-
 import { BrowserOrDriverName, BrowserVersion } from '@dogu-private/types';
 import { DeepReadonly, PrefixLogger, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
+import { installPkg, renameRetry } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
 import axios, { AxiosInstance } from 'axios';
 import fs from 'fs';
@@ -16,9 +9,16 @@ import path from 'path';
 import { logger } from '../logger/logger.instance';
 import { ChromeChannelName, chromeChannelNameMap } from './chrome';
 import { chromeVersionUtils } from './chrome-version-utils';
-import { defaultDownloadRequestTimeout, defaultVersionRequestTimeout, validatePrefixOrPatternWithin } from './common';
+import { defaultDownloadRequestTimeout, defaultInstallationTimeout, defaultVersionRequestTimeout, download, validatePrefixOrPatternWithin } from './common';
 
+/**
+ * @note etag is not supported
+ */
 const edgeUpdatesUrlForLatest = 'https://edgeupdates.microsoft.com/api/products';
+
+/**
+ * @note etag is not supported
+ */
 const edgeUpdatesUrlForFull = 'https://edgeupdates.microsoft.com/api/products?view=enterprise';
 
 export const edgeVersionUtils = chromeVersionUtils;
@@ -35,6 +35,10 @@ const defaultEdgeChannelName = (): EdgeChannelName => 'stable';
 export const EdgeInstallablePlatform = ['MacOS', 'Windows'] as const;
 export type EdgeInstallablePlatform = (typeof EdgeInstallablePlatform)[number];
 const isValidEdgeInstallablePlatform = (platform: string): platform is EdgeInstallablePlatform => EdgeInstallablePlatform.includes(platform as EdgeInstallablePlatform);
+
+export const EdgePlatform = [...EdgeInstallablePlatform, 'Android', 'iOS'] as const;
+export type EdgePlatform = (typeof EdgePlatform)[number];
+const isValidEdgePlatform = (platform: string): platform is EdgePlatform => EdgePlatform.includes(platform as EdgePlatform);
 
 export const EdgeInstallableArch = ['universal', 'x64', 'arm64'] as const;
 export type EdgeInstallableArch = (typeof EdgeInstallableArch)[number];
@@ -63,7 +67,7 @@ const executablePathMap: DeepReadonly<Record<EdgeInstallableName, Record<EdgeIns
   },
 };
 
-const edgePlatformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' | 'win32'>, Record<string, EdgeInstallablePlatformArch>>> = {
+const platformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' | 'win32'>, Record<string, EdgeInstallablePlatformArch>>> = {
   darwin: {
     arm64: {
       platform: 'MacOS',
@@ -86,7 +90,15 @@ const edgePlatformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' | '
   },
 };
 
-const edgeArtifactNameMap: DeepReadonly<Record<EdgeInstallablePlatform, Record<EdgeInstallableArch, string>>> = {};
+const artifactNameMap: DeepReadonly<Record<EdgeInstallablePlatform, Record<string, string>>> = {
+  MacOS: {
+    universal: 'pkg',
+  },
+  Windows: {
+    x64: 'msi',
+    arm64: 'msi',
+  },
+};
 
 export interface EdgeUpdatesArtifact {
   ArtifactName: string;
@@ -122,7 +134,7 @@ function mergeGetEdgeInstallablePlatformArchOptions(options?: GetEdgeInstallable
 
 export interface GetLatestVersionOptions {
   channelName?: EdgeChannelName;
-  platform: EdgeInstallablePlatform;
+  platform: EdgePlatform;
   arch: EdgeInstallableArch;
   timeout?: number;
 }
@@ -179,11 +191,13 @@ export interface InstallOptions {
   arch: EdgeInstallableArch;
   rootPath: string;
   downloadTimeout?: number;
+  installTimeout?: number;
 }
 
 function mergeInstallOptions(options: InstallOptions): Required<InstallOptions> {
   return {
     downloadTimeout: defaultDownloadRequestTimeout(),
+    installTimeout: defaultInstallationTimeout(),
     ...options,
   };
 }
@@ -194,6 +208,22 @@ export interface InstallResult {
 
 export type GetDownloadUrlOptions = FindVersionOptions;
 const mergeGetDownloadUrlOptions = mergeFindVersionOptions;
+
+export interface FindInstallationsOptions {
+  installableName: EdgeInstallableName;
+  platform: EdgeInstallablePlatform;
+  arch: EdgeInstallableArch;
+  rootPath: string;
+}
+
+export type FindInstallationsResult = {
+  installableName: EdgeInstallableName;
+  version: BrowserVersion;
+  majorVersion: number;
+  platform: EdgeInstallablePlatform;
+  arch: EdgeInstallableArch;
+  executablePath: string;
+}[];
 
 export class Edge {
   private readonly logger = new PrefixLogger(logger, `[${this.constructor.name}]`);
@@ -279,9 +309,8 @@ export class Edge {
   }
 
   async install(options: InstallOptions): Promise<InstallResult> {
-    //   // installer -pkg Edge.pkg -target CurrentUserHomeDirectory
     const mergedOptions = mergeInstallOptions(options);
-    const { installableName, version, platform, arch, rootPath, downloadTimeout } = mergedOptions;
+    const { version, downloadTimeout, installTimeout } = mergedOptions;
     const installPath = this.getInstallPath(mergedOptions);
     return await this.pathLock.acquire(installPath, async () => {
       const executablePath = this.getExecutablePath({ ...mergedOptions, installPath });
@@ -293,8 +322,47 @@ export class Edge {
       }
 
       await fs.promises.mkdir(installPath, { recursive: true });
-      const downloadUrl = await this.getDownloadUrl(mergedOptions);
+      const downloadUrl = await this.getDownloadUrl({ ...mergedOptions, prefix: version, timeout: downloadTimeout });
+      const downloadFileName = path.basename(downloadUrl);
+      const downloadFilePath = path.resolve(installPath, downloadFileName);
+      try {
+        await download({
+          client: this.client,
+          url: downloadUrl,
+          filePath: downloadFilePath,
+          timeout: downloadTimeout,
+        });
+
+        if (downloadFileName.toLowerCase().endsWith('.pkg')) {
+          const installPkgResult = await installPkg(downloadFilePath, installTimeout);
+          const { appPath } = installPkgResult;
+          const appDirName = path.basename(appPath);
+          const renamePath = path.resolve(installPath, appDirName);
+          await renameRetry(appPath, renamePath, this.logger);
+        } else {
+          throw new Error(`Unexpected download file name: ${downloadFileName}`);
+        }
+
+        return {
+          executablePath,
+        };
+      } catch (error) {
+        throw new Error(`Failed to install from ${downloadUrl} to ${installPath}: ${stringify(error)}`);
+      } finally {
+        try {
+          if (await fs.promises.stat(downloadFilePath).catch(() => null)) {
+            await fs.promises.unlink(downloadFilePath);
+          }
+        } catch (error) {
+          this.logger.warn(`Failed to delete ${downloadFilePath}: ${stringify(error)}`);
+        }
+      }
     });
+  }
+
+  async findInstallations(options: FindInstallationsOptions): Promise<FindInstallationsResult> {
+    const { installableName, platform, arch, rootPath } = options;
+    const installableNames = _.keys(executablePathMap) as EdgeInstallableName[];
   }
 
   async getDownloadUrl(options: GetDownloadUrlOptions): Promise<string> {
@@ -304,13 +372,26 @@ export class Edge {
       throw new Error(`Cannot find release for options: ${stringify(mergedOptions)}`);
     }
 
-    const artifact = release.Artifacts.find((artifact) => artifact.ArtifactName === 'edgedriver');
+    const platform = release.Platform;
+    const arch = release.Architecture;
+    const artifactName = _.get(artifactNameMap, [platform, arch]) as string | undefined;
+    if (!artifactName) {
+      throw new Error(`Cannot find artifact name for platform: ${platform}, arch: ${arch}`);
+    }
+
+    const artifact = release.Artifacts.find((artifact) => artifact.ArtifactName === artifactName);
+    if (!artifact) {
+      throw new Error(`Cannot find artifact for artifact name: ${artifactName}`);
+    }
+
+    const downloadUrl = artifact.Location;
+    return downloadUrl;
   }
 
   getEdgeInstallablePlatformArchOptions(options?: GetEdgeInstallablePlatformArchOptions): Required<EdgeInstallablePlatformArch> {
     const mergedOptions = mergeGetEdgeInstallablePlatformArchOptions(options);
     const { platform, arch } = mergedOptions;
-    const edgePlatformArch = _.get(edgePlatformMap, [platform, arch]) as EdgeInstallablePlatformArch | undefined;
+    const edgePlatformArch = _.get(platformMap, [platform, arch]) as EdgeInstallablePlatformArch | undefined;
     if (!edgePlatformArch) {
       throw new Error(`Cannot find for platform: ${platform}, arch: ${arch}`);
     }
