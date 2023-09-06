@@ -1,5 +1,0 @@
-provider: s3
-bucket: 'appupdate.dev.dogutech.io'
-acl: null
-region: 'ap-northeast-2'
-path: 'dost'

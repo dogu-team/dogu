@@ -34,7 +34,7 @@ import { pathMap } from '../../path-map';
 import { Adb } from '../externals';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService, LogHandler } from '../public/device-channel';
 import { AndroidDeviceAgentService } from '../services/device-agent/android-device-agent-service';
-import { AndroidAdbProfileService } from '../services/profile/android-profiler';
+import { AndroidAdbProfileService, AndroidDisplayProfileService } from '../services/profile/android-profiler';
 import { ProfileServices } from '../services/profile/profile-service';
 import { StreamingService } from '../services/streaming/streaming-service';
 import { AndroidSystemInfoService } from '../services/system-info/android-system-info-service';
@@ -115,7 +115,6 @@ export class AndroidChannel implements DeviceChannel {
       deviceServerService.devicePortService.getAndroidDeviceAgentServerPort(),
       logger,
     );
-    await deviceAgent.wakeUp();
     await deviceAgent.install();
 
     const appiumContextProxy = deviceServerService.appiumService.createAndroidAppiumContext(
@@ -145,8 +144,7 @@ export class AndroidChannel implements DeviceChannel {
       serialUnique,
       systemInfo,
       deviceAgent,
-      // [new AndroidAdbProfileService(), new AndroidDeviceAgentProfileService(deviceAgent)],
-      [new AndroidAdbProfileService()],
+      [new AndroidAdbProfileService(), new AndroidDisplayProfileService(deviceAgent)],
       streaming,
       appiumContextProxy,
       appiumDeviceWebDriverHandler,
@@ -223,7 +221,10 @@ export class AndroidChannel implements DeviceChannel {
     const { option } = startStreaming;
     const screenOption = { ...option.screen } as { [key: string]: unknown };
     const mergedCaptureOption: ScreenCaptureOption = lodash.merge(DefaultScreenCaptureOption(), screenOption as unknown as ScreenCaptureOption);
-    await this._deviceAgent.sendWithProtobuf('dcDaApplyStreamingOptionParam', 'dcDaApplyStreamingOptionReturn', { option: { screen: mergedCaptureOption } });
+    this.logger.info('AndroidChannel.startStreamingWebRtcWithTrickle applyOption start ', { mergedCaptureOption });
+    await this._deviceAgent.sendWithProtobuf('dcDaApplyStreamingOptionParam', 'dcDaApplyStreamingOptionReturn', { option: { screen: mergedCaptureOption } }, 2 * 1000);
+
+    this.logger.info('AndroidChannel.startStreamingWebRtcWithTrickle applyOption done', { mergedCaptureOption });
 
     return this._streaming.startStreamingWithTrickle(this.serial, offer);
   }

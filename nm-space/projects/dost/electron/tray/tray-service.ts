@@ -3,21 +3,22 @@ import { DoguDocsDeviceFarmUrl } from '../../src/shares/constants';
 import { ChildService } from '../child/child-service';
 import { logger } from '../log/logger.instance';
 import { ReactPublicLogo192Path } from '../path-map';
+import { SettingsService } from '../settings/settings-service';
 import { WindowService } from '../window/window-service';
 
 export class TrayService {
   static instance: TrayService;
   private tray: Tray;
-  private constructor() {
+  private constructor(private readonly settingsService: SettingsService) {
     logger.debug(ReactPublicLogo192Path);
     const icon = nativeImage.createFromPath(ReactPublicLogo192Path).resize({ width: 16, height: 16 });
     this.tray = new Tray(icon);
 
     app.setAboutPanelOptions({
-      applicationName: 'Dost',
+      applicationName: 'Dogu Agent',
       copyright: '©2023 Dogu Technologies. All rights reserved.',
       iconPath: ReactPublicLogo192Path,
-      credits: 'https://dogutech.io/licenses/dost',
+      credits: 'https://dogutech.io/licenses/dogu-agent',
     });
 
     const contextMenu = Menu.buildFromTemplate([
@@ -31,7 +32,7 @@ export class TrayService {
       { label: '-', type: 'separator' },
 
       {
-        label: 'Dost Help',
+        label: 'Help',
         type: 'normal',
         click: () => {
           shell.openExternal(DoguDocsDeviceFarmUrl);
@@ -43,6 +44,13 @@ export class TrayService {
         type: 'normal',
         click: () => {
           app.showAboutPanel();
+        },
+      },
+      {
+        label: 'Restart',
+        type: 'normal',
+        click: async () => {
+          await this.settingsService.restart();
         },
       },
       {
@@ -68,7 +76,7 @@ export class TrayService {
     this.tray.setContextMenu(contextMenu);
   }
 
-  static open(): void {
-    TrayService.instance = new TrayService();
+  static open(settingsService: SettingsService): void {
+    TrayService.instance = new TrayService(settingsService);
   }
 }

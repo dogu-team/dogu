@@ -29,7 +29,7 @@ export class YamlLoaderService {
     if (!this.routineValidator(parsedYaml)) {
       const { errors } = this.routineValidator;
       const instancePaths = errors ? errors.map((error) => error.instancePath) : [];
-      const errorMsg = instancePaths.length > 0 ? `Invalid Routine Yaml. Please check yaml path. Path: ${instancePaths[0]}.` : `Invalid Routine Yaml. Please check yaml.`;
+      const errorMsg = instancePaths.length > 0 ? `Invalid Routine Yaml. Please check yaml path. path: ${instancePaths[0]}.` : `Invalid Routine Yaml. Please check yaml.`;
       throw new HttpException(errorMsg, HttpStatus.BAD_REQUEST);
     }
   }
@@ -50,9 +50,34 @@ export class YamlLoaderService {
   public routineYamlToObject(yamlRaw: string): RoutineSchema {
     const parsedYaml = this.loadYamlRaw<RoutineSchema>(yamlRaw);
     this.validateRunsOn(parsedYaml);
-    this.validateJob(parsedYaml);
+    this.validateRoutineJob(parsedYaml);
+    this.validateRoutineStep(parsedYaml);
     this.validateRoutineYaml(parsedYaml);
     return parsedYaml;
+  }
+
+
+  private validateRoutineStep(parsedYaml: RoutineSchema): void {
+    const { jobs } = parsedYaml;
+    const errors = Object.keys(jobs)
+      .map((jobName) => ({ jobName, steps: jobs[jobName].steps }))
+      .map(({ jobName, steps }) => {
+        const errors = steps
+          .map((step, index) => {
+            if (step.uses && step.run) {
+              return new Error(`Choose one of uses or run. job [${jobName}], step [${index + 1}]`);
+            }
+            return null;
+          })
+          .filter((error): error is Error => !!error);
+        return errors;
+      })
+      .flat()
+      .filter((error): error is Error => !!error);
+
+    if (errors.length > 0) {
+      throw new HttpException(errors.map((error) => error.message).join(', '), HttpStatus.BAD_REQUEST);
+    }
   }
 
   private validateRunsOn(parsedYaml: RoutineSchema): void {
@@ -74,7 +99,7 @@ export class YamlLoaderService {
     }
   }
 
-  private validateJob(parsedYaml: RoutineSchema): void {
+  private validateRoutineJob(parsedYaml: RoutineSchema): void {
     const { jobs } = parsedYaml;
     const errors = _.entries(jobs)
       .map(([jobName, jobValue]) => {

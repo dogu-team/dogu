@@ -54,6 +54,7 @@ export function DefaultDeviceConfig(platform: Platform): DeviceConfigDto {
           { profileMethod: ProfileMethods.Desktop.Mem, periodSec: 3 },
           { profileMethod: ProfileMethods.Desktop.Fs, periodSec: 3 },
           { profileMethod: ProfileMethods.Desktop.Net, periodSec: 3 },
+          { profileMethod: ProfileMethods.Desktop.Display, periodSec: 3 },
         ],
       };
     case Platform.PLATFORM_MACOS:
@@ -64,6 +65,7 @@ export function DefaultDeviceConfig(platform: Platform): DeviceConfigDto {
           { profileMethod: ProfileMethods.Desktop.Mem, periodSec: 3 },
           { profileMethod: ProfileMethods.Desktop.Fs, periodSec: 3 },
           { profileMethod: ProfileMethods.Desktop.Net, periodSec: 3 },
+          { profileMethod: ProfileMethods.Desktop.Display, periodSec: 3 },
         ],
       };
     case Platform.PLATFORM_ANDROID:
@@ -75,6 +77,7 @@ export function DefaultDeviceConfig(platform: Platform): DeviceConfigDto {
           { profileMethod: ProfileMethods.Android.FsProcDiskStats, periodSec: 3 },
           { profileMethod: ProfileMethods.Android.NetTrafficStats, periodSec: 3 },
           { profileMethod: ProfileMethods.Android.ProcessShellTop, periodSec: 3 },
+          { profileMethod: ProfileMethods.Android.Display, periodSec: 3 },
         ],
       };
     case Platform.PLATFORM_IOS:
@@ -82,6 +85,7 @@ export function DefaultDeviceConfig(platform: Platform): DeviceConfigDto {
         profileMethods: [
           { profileMethod: ProfileMethods.Ios.CpuLoadInfo, periodSec: 3 },
           { profileMethod: ProfileMethods.Ios.MemVmStatistics, periodSec: 3 },
+          { profileMethod: ProfileMethods.Ios.Display, periodSec: 3 },
         ],
       };
     default:

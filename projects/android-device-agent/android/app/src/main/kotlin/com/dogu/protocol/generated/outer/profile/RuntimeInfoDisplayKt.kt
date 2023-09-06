@@ -55,6 +55,30 @@ object RuntimeInfoDisplayKt {
     fun clearIsScreenOn() {
       _builder.clearIsScreenOn()
     }
+
+    /**
+     * <code>optional string error = 3;</code>
+     */
+    var error: kotlin.String
+      @JvmName("getError")
+      get() = _builder.getError()
+      @JvmName("setError")
+      set(value) {
+        _builder.setError(value)
+      }
+    /**
+     * <code>optional string error = 3;</code>
+     */
+    fun clearError() {
+      _builder.clearError()
+    }
+    /**
+     * <code>optional string error = 3;</code>
+     * @return Whether the error field is set.
+     */
+    fun hasError(): kotlin.Boolean {
+      return _builder.hasError()
+    }
   }
 }
 @kotlin.jvm.JvmSynthetic

@@ -6,12 +6,12 @@ import fs from 'fs';
 import { registerBootstrapHandler } from '../../../bootstrap/bootstrap.service';
 import { pathMap } from '../../../path-map';
 import { config } from '../../config';
-import { Zombieable, ZombieProps, ZombieWaiter } from '../../services/zombie/zombie-component';
+import { Zombieable, ZombieProps, ZombieQueriable } from '../../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
 import { getFreePort } from '../../util/net';
 
 export class GoDeviceControllerProcess implements Zombieable {
-  private zombieWaiter: ZombieWaiter;
+  private zombieWaiter: ZombieQueriable;
   private proc: child_process.ChildProcess | null = null;
 
   constructor(public readonly platform: Platform, public readonly port: number, public readonly deviceServerPort: number, private readonly logger: FilledPrintable) {
