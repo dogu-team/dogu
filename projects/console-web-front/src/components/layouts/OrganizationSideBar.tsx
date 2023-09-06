@@ -15,7 +15,7 @@ import ProfileImage from '../ProfileImage';
 import { flexRowCenteredStyle } from '../../styles/box';
 import CollpaseSidebarMenu from './CollapseSidebarMenu';
 import useRefresh from '../../hooks/useRefresh';
-import useOrganizationContext from '../../hooks/useOrganizationContext';
+import useOrganizationContext from '../../hooks/context/useOrganizationContext';
 
 type MenuItem = Required<MenuProps>['items'];
 

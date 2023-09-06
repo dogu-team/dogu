@@ -29,7 +29,7 @@ import useRefresh from '../../../../../src/hooks/useRefresh';
 import SettingTitleDivider from '../../../../../src/components/common/SettingTitleDivider';
 import BitbucketButton from '../../../../../src/components/integration/BitbucketButton';
 import UpdateTemplateButton from '../../../../../src/components/projects/UpdateTemplateButton';
-import useProjectContext from '../../../../../src/hooks/useProjectContext';
+import useProjectContext from '../../../../../src/hooks/context/useProjectContext';
 import { getRepositoyUrl } from '../../../../../src/utils/url';
 
 const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ project: serverProject, organization }) => {
