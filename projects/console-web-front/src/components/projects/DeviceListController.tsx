@@ -116,7 +116,7 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
               <StudioLinkButton
                 href={`/dashboard/${orgId}/projects/${projectId}/studio/${device.deviceId}/manual`}
                 target="_blank"
-                isDisabled={studioDisabled}
+                disabled={studioDisabled}
                 onClick={(e) => {
                   if (studioDisabled) {
                     e.preventDefault();
