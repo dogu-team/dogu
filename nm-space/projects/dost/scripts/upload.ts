@@ -8,7 +8,7 @@ const client = new OctokitContext(env.DOGU_GITHUB_TOKEN).client;
 const ProjectRoot = path.join(__dirname, '../');
 const Owner = 'dogu-team';
 const Repo = 'big-files';
-const TagPrefix = 'Dost';
+const TagPrefix = 'Dogu-Agent';
 const BigfilesInitialCommitHash = '441bbfd24badcd357c0cc7631dd7debd2fb69c9c';
 
 interface ReleaseInfo {
