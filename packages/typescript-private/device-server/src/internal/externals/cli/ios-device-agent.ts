@@ -1,6 +1,8 @@
 import { Platform, Serial } from '@dogu-private/types';
-import { delay, loopTime, Milisecond, Printable, stringifyError } from '@dogu-tech/common';
+import { delay, loopTime, Milisecond, Printable, setAxiosErrorFilterToIntercepter, stringifyError } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
+import axios, { AxiosInstance } from 'axios';
+import _ from 'lodash';
 import { Socket } from 'net';
 import { config } from '../../config';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../../services/zombie/zombie-component';
@@ -22,6 +24,7 @@ export class IosDeviceAgentProcess {
     private readonly screenDevicePort: number,
     private readonly grpcForwardPort: number,
     private readonly grpcDevicePort: number,
+    private readonly webDriverForwardPort: number,
     private readonly webDriverPort: number,
     private readonly logger: Printable,
   ) {
@@ -44,7 +47,7 @@ export class IosDeviceAgentProcess {
       }
       return false;
     }, 'kill previous tunnel');
-    this.xctest = new ZombieIdaXCTest(this.serial, xctestrunFile, this.screenForwardPort, this.webDriverPort, this.grpcDevicePort, this.logger);
+    this.xctest = new ZombieIdaXCTest(this.serial, xctestrunFile, this.screenForwardPort, this.webDriverForwardPort, this.webDriverPort, this.grpcDevicePort, this.logger);
     this.screenTunnel = new ZombieTunnel(this.serial, this.screenForwardPort, this.screenDevicePort, this.logger);
     this.grpcTunnel = new ZombieTunnel(this.serial, this.grpcForwardPort, this.grpcDevicePort, this.logger);
   }
@@ -63,6 +66,7 @@ export class IosDeviceAgentProcess {
     screenDevicePort: number,
     grpcForwardPort: number,
     grpcDevicePort: number,
+    webDriverForwardPort: number,
     webDriverDevicePort: number,
     logger: Printable,
   ): Promise<IosDeviceAgentProcess> {
@@ -90,7 +94,7 @@ export class IosDeviceAgentProcess {
       throw new Error('xctestrun not found');
     }
     await copiedDerivedData.removeExceptAppsAndXctestrun();
-    const ret = new IosDeviceAgentProcess(serial, xctestrun, screenForwardPort, screenDevicePort, grpcForwardPort, grpcPort, webDriverPort, logger);
+    const ret = new IosDeviceAgentProcess(serial, xctestrun, screenForwardPort, screenDevicePort, grpcForwardPort, grpcPort, webDriverForwardPort, webDriverPort, logger);
     await ret.xctest.zombieWaiter.waitUntilAlive();
     await ret.screenTunnel.zombieWaiter.waitUntilAlive();
     await ret.grpcTunnel.zombieWaiter.waitUntilAlive();
@@ -122,18 +126,24 @@ export class IosDeviceAgentProcess {
 class ZombieIdaXCTest implements Zombieable {
   private xctestrun: XCTestRunContext | null = null;
   public readonly zombieWaiter: ZombieQueriable;
-  private _error: 'not-alive' | 'connect-failed' | 'hello-failed' | 'none' = 'none';
+  private _error = 'none';
+  private wdaClient: AxiosInstance;
 
   constructor(
     public readonly serial: Serial,
     private readonly xctestrunfile: XctestrunFile,
     private readonly screenForwadPort: number,
+    private readonly webDriverForwardPort: number,
     private readonly webDriverPort: number,
     private readonly grpcPort: number,
     // private readonly iosDeviceControllerGrpcClient: IosDeviceControllerGrpcClient,
     private readonly logger: Printable,
   ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
+    this.wdaClient = axios.create({
+      baseURL: `http://127.0.0.1:${this.webDriverForwardPort}`,
+    });
+    setAxiosErrorFilterToIntercepter(this.wdaClient);
   }
   get name(): string {
     return `IosDeviceAgent`;
@@ -159,14 +169,18 @@ class ZombieIdaXCTest implements Zombieable {
     }
 
     await delay(1000);
+    const sessionId = await this.createOrGetSession();
 
     const xctestrunPath = this.xctestrunfile.filePath;
+    await this.dissmissAlert(sessionId);
     await MobileDevice.uninstallApp(this.serial, 'com.dogu.IOSDeviceAgentRunner', this.logger).catch(() => {
       this.logger.warn?.('uninstallApp com.dogu.IOSDeviceAgentRunner failed');
     });
     await MobileDevice.uninstallApp(this.serial, 'com.dogu.IOSDeviceAgentRunner.xctrunner', this.logger).catch(() => {
       this.logger.warn?.('uninstallApp com.dogu.IOSDeviceAgentRunner.xctrunner failed');
     });
+    await this.dissmissAlert(sessionId);
+
     await this.xctestrunfile.updateIdaXctestrunFile(this.webDriverPort, this.grpcPort);
     await XcodeBuild.killPreviousXcodebuild(this.serial, `ios-device-agent.*${this.serial}`, this.printable).catch(() => {
       this.logger.warn?.('killPreviousXcodebuild failed');
@@ -208,7 +222,7 @@ class ZombieIdaXCTest implements Zombieable {
 
   private async isHealth(): Promise<boolean> {
     if (!this.xctestrun?.isAlive) {
-      this._error = 'not-alive';
+      this._error = this.xctestrun?.error ?? 'not-alive';
       return false;
     }
     this.xctestrun.update();
@@ -276,5 +290,61 @@ class ZombieIdaXCTest implements Zombieable {
           resolve();
         });
     });
+  }
+
+  private async createOrGetSession(): Promise<string | undefined> {
+    const sessionId = await this.getSessionId();
+    if (sessionId) {
+      return sessionId;
+    }
+    const response = await this.wdaClient.post('/session', JSON.stringify({ capabilities: {} })).catch(() => {
+      return undefined;
+    });
+    if (!response || response.status !== 200) {
+      return undefined;
+    }
+    const newSessionId = _.get(response, 'data.sessionId', undefined) as unknown;
+    if (typeof newSessionId !== 'string') {
+      return undefined;
+    }
+    return newSessionId;
+  }
+
+  private async getSessionId(): Promise<string | undefined> {
+    const response = await this.wdaClient.get('/status').catch(() => {
+      return undefined;
+    });
+    if (!response || response.status !== 200) {
+      return undefined;
+    }
+
+    const sessionId = _.get(response, 'data.sessionId', undefined) as unknown;
+    if (typeof sessionId !== 'string') {
+      return undefined;
+    }
+    return sessionId;
+  }
+
+  private async dissmissAlert(sessionId: string | undefined): Promise<void> {
+    if (!sessionId) {
+      this.logger.warn?.('sessionId is undefined. so skip dismiss alert');
+      return;
+    }
+    await this.wdaClient
+      .post(`/session/${sessionId}/alert/dismiss`)
+      .then(() => {
+        this.logger.info?.('dismiss alert success');
+      })
+      .catch(() => {
+        this.logger.warn?.('dismiss alert failed');
+      });
+    await this.wdaClient
+      .post(`/session/${sessionId}/alert/accept`)
+      .then(() => {
+        this.logger.info?.('accept alert success');
+      })
+      .catch(() => {
+        this.logger.warn?.('accept alert failed');
+      });
   }
 }

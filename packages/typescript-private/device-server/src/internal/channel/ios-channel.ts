@@ -126,7 +126,8 @@ export class IosChannel implements DeviceChannel {
     await IosChannel.restartIfAvailiable(serial, logger);
 
     logger.verbose('appium wda starting');
-    const wda = await WebdriverAgentProcess.start(serial, await deviceServerService.devicePortService.createOrGetHostPort(serial, 'WebdriverAgentForward'), logger);
+    const wdaForwardPort = await deviceServerService.devicePortService.createOrGetHostPort(serial, 'WebdriverAgentForward');
+    const wda = await WebdriverAgentProcess.start(serial, wdaForwardPort, logger);
     logger.verbose('appium wda  done');
 
     logger.verbose('appium context starting');
@@ -134,7 +135,7 @@ export class IosChannel implements DeviceChannel {
       serial,
       'builtin',
       await deviceServerService.devicePortService.createOrGetHostPort(serial, 'iOSAppiumServer'),
-      await deviceServerService.devicePortService.createOrGetHostPort(serial, 'WebdriverAgentForward'),
+      wdaForwardPort,
     );
     ZombieServiceInstance.addComponent(appiumContextProxy);
     logger.verbose('appium context started');
@@ -148,6 +149,7 @@ export class IosChannel implements DeviceChannel {
       deviceServerService.devicePortService.getIosDeviceAgentScreenServerPort(),
       grpcForwardPort,
       deviceServerService.devicePortService.getIosDeviceAgentGrpcServerPort(),
+      wdaForwardPort,
       deviceServerService.devicePortService.getIosWebDriverAgentServerPort(),
       logger,
     ).catch((error) => {

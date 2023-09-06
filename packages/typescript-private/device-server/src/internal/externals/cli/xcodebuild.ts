@@ -86,9 +86,11 @@ export interface XcodebuildOption {
 
 export class XCTestRunContext {
   public isAlive = true;
+  public error = '';
   private logs = '';
   public readonly startTime: number;
   private isWaitLogPrinted = false;
+
   constructor(
     private readonly tempDirPath: string,
     public readonly proc: child_process.ChildProcess,
@@ -98,6 +100,7 @@ export class XCTestRunContext {
     this.startTime = Date.now();
     const redirectContext = { stop: false };
     proc.on('close', (code, signal) => {
+      this.error += `closed with code: ${code}, signal: ${signal},`;
       this.isAlive = false;
       redirectContext.stop = true;
     });
@@ -106,6 +109,7 @@ export class XCTestRunContext {
     });
   }
   public kill(reason: string): void {
+    this.error += `killed. reason: ${reason},`;
     this.logger.error(`killed. ${reason}`);
     killChildProcess(this.proc).catch((error) => {
       this.logger.error('XCTestRunContext killChildProcess', { error: errorify(error) });
