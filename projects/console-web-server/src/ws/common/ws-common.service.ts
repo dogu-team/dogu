@@ -22,7 +22,7 @@ import { AuthUserService } from '../../module/auth/service/auth-user.service';
 import { DoguLogger } from '../../module/logger/logger';
 import { DoguWsException } from './ws-exception';
 
-export type ValidationResult = { result: boolean; resultCode: number; message: string };
+export type ValidationResult = { result: boolean; resultCode: number; message: string; userId: UserId | null };
 
 @Injectable()
 export class WsCommonService {
@@ -67,15 +67,15 @@ export class WsCommonService {
   ): Promise<ValidationResult> {
     const userId = await this.validateUserAuthToken(incomingMessage);
     if (!userId) {
-      return { result: true, resultCode: 1003, message: 'Unauthorized' };
+      return { result: true, resultCode: 1003, message: 'Unauthorized', userId: null };
     }
 
     const isValid = await this.checkUserPermission(dataSource, logger, userId, organizationId, projectId);
     if (!isValid) {
-      return { result: true, resultCode: 1003, message: 'Unauthorized' };
+      return { result: true, resultCode: 1003, message: 'Unauthorized', userId };
     }
 
-    return { result: true, resultCode: 1000, message: 'success' };
+    return { result: true, resultCode: 1000, message: 'success', userId };
   }
 
   async checkUserPermission(dataSource: DataSource, logger: DoguLogger, userId: UserId, organizationId: OrganizationId, projectId: ProjectId): Promise<boolean> {
@@ -164,16 +164,16 @@ export class WsCommonService {
     // get jwt token from header
     const userId = await this.validateUserAuthToken(incomingMessage);
     if (!userId) {
-      return { result: true, resultCode: 1003, message: 'Unauthorized' };
+      return { result: true, resultCode: 1003, message: 'Unauthorized', userId: null };
     }
 
     const userOrgRole = await dataSource.getRepository(OrganizationAndUserAndOrganizationRole).findOne({ where: { userId, organizationId } });
     if (!userOrgRole) {
-      return { result: false, resultCode: 1003, message: `The user is not a member of the organization. UserId: ${userId}, OrganizationId: ${organizationId}` };
+      return { result: false, resultCode: 1003, message: `The user is not a member of the organization. UserId: ${userId}, OrganizationId: ${organizationId}`, userId };
     }
 
     if (UserPermission.checkOrganizationRolePermission(userOrgRole.organizationRoleId, ORGANIZATION_ROLE.ADMIN)) {
-      return { result: true, resultCode: 1000, message: 'success' };
+      return { result: true, resultCode: 1000, message: 'success', userId };
     }
 
     const device = await dataSource //
@@ -187,16 +187,16 @@ export class WsCommonService {
       .getOne();
 
     if (!device) {
-      return { result: false, resultCode: 1003, message: `The device is not found.` };
+      return { result: false, resultCode: 1003, message: `The device is not found.`, userId };
     }
 
     if (device.isGlobal === 1) {
-      return { result: true, resultCode: 1000, message: 'success' };
+      return { result: true, resultCode: 1000, message: 'success', userId };
     }
 
     const projectIds = device.projectAndDevices?.map((deviceAndProject) => deviceAndProject.projectId).filter(notEmpty) ?? [];
     if (projectIds.length === 0) {
-      return { result: false, resultCode: 1003, message: `The device is not active state.` };
+      return { result: false, resultCode: 1003, message: `The device is not active state.`, userId };
     }
 
     const projectAndUserAndProjectRoles = await dataSource.getRepository(ProjectAndUserAndProjectRole).find({ where: { userId } });
@@ -207,10 +207,11 @@ export class WsCommonService {
         result: false,
         resultCode: 1003,
         message: `This Device is not found in the user's project.`,
+        userId,
       };
     }
 
-    return { result: true, resultCode: 1000, message: 'success' };
+    return { result: true, resultCode: 1000, message: 'success', userId };
   }
 
   public async validateHostWithWebsocket(

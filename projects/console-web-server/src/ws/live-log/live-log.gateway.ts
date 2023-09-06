@@ -35,12 +35,12 @@ export class LiveLogGateway implements OnGatewayConnection, OnGatewayDisconnect 
     let lastUserProjectLogLineNumber = 0;
 
     if (!createdAt) {
-      return { result: false, resultCode: 1003, message: `DeviceJob created_at is not recorded` };
+      return { result: false, resultCode: 1003, message: `DeviceJob created_at is not recorded`, userId: null };
     }
 
     while (isRunning) {
       if (client.readyState === WebSocket.CLOSED) {
-        return { result: false, resultCode: 1003, message: `WebSocket is closed` };
+        return { result: false, resultCode: 1003, message: `WebSocket is closed`, userId: null };
       }
 
       const deviceJob = await this.dataSource
@@ -49,7 +49,7 @@ export class LiveLogGateway implements OnGatewayConnection, OnGatewayDisconnect 
         .where(`deviceJob.${RoutineDeviceJobPropCamel.routineDeviceJobId} = :deviceJobId`, { deviceJobId })
         .getOne();
       if (!deviceJob) {
-        return { result: false, resultCode: 1003, message: `DeviceJob not found` };
+        return { result: false, resultCode: 1003, message: `DeviceJob not found`, userId: null };
       }
       isRunning = deviceJob.status === PIPELINE_STATUS.WAITING || deviceJob.status === PIPELINE_STATUS.IN_PROGRESS ? true : false;
 
@@ -109,7 +109,7 @@ export class LiveLogGateway implements OnGatewayConnection, OnGatewayDisconnect 
       await new Promise((resolve) => setTimeout(resolve, DEVICE_JOB_LOG_LIVE_DELAY_COUNT * 1000));
     }
 
-    return { result: true, resultCode: 1000, message: `DeviceJob is completed` };
+    return { result: true, resultCode: 1000, message: `DeviceJob is completed`, userId: null };
   }
 
   async handleConnection(client: WebSocket, incomingMessage: IncomingMessage): Promise<void> {

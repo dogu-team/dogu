@@ -1,16 +1,23 @@
 import { WebSocketProxyReceiveClose } from '@dogu-private/console-host-agent';
+import { DeviceId, UserId } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, stringify, transformAndValidate } from '@dogu-tech/common';
 import { Inject } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway } from '@nestjs/websockets';
 import { IncomingMessage } from 'http';
-import { DataSource } from 'typeorm';
+import _ from 'lodash';
+import { DataSource, In } from 'typeorm';
+import { WebSocket } from 'ws';
+import { User } from '../../db/entity/user.entity';
+import { DeviceStreamingSessionQueue } from '../../module/device-streaming-session/device-streaming-session.queue';
 import { DoguLogger } from '../../module/logger/logger';
 import { DeviceCommandService } from '../../module/organization/device/device-command.service';
 import { DeviceStatusService } from '../../module/organization/device/device-status.service';
 import { DeviceStreamingOfferDto } from '../../module/organization/device/dto/device.dto';
 import { WsCommonService } from '../common/ws-common.service';
 import { DeviceStreamingQueryDto } from './device-streaming.dto';
+
+const DEVICE_STREAMING_SESSION_LIVE_DELAY_COUNT = 5;
 
 @WebSocketGateway({ path: '/ws/device-streaming' })
 export class DeviceStreamingGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -22,7 +29,46 @@ export class DeviceStreamingGateway implements OnGatewayConnection, OnGatewayDis
     private readonly wsCommonService: WsCommonService,
     @InjectDataSource()
     private readonly dataSource: DataSource,
+    @Inject(DeviceStreamingSessionQueue)
+    private readonly deviceStreamingSessionQueue: DeviceStreamingSessionQueue,
   ) {}
+
+  async sendDeviceStreamingSession(webSocket: WebSocket, deviceId: DeviceId, userId: UserId): Promise<void> {
+    let isRunning = true;
+    const lastSessions = await this.deviceStreamingSessionQueue.rangeParamDatas(deviceId);
+    const groupByUserIds = _.groupBy(lastSessions);
+    let lastUserIds = Object.keys(groupByUserIds);
+    let lastSessionCount = lastUserIds.length;
+
+    while (isRunning) {
+      if (webSocket.readyState === WebSocket.CLOSED) {
+        return;
+      }
+
+      await this.deviceStreamingSessionQueue.removeOneData(deviceId, userId);
+      await this.deviceStreamingSessionQueue.pushData(deviceId, userId);
+
+      const curSessions = await this.deviceStreamingSessionQueue.rangeParamDatas(deviceId);
+      const groupByCurUserIds = _.groupBy(curSessions);
+      const curUserIds = Object.keys(groupByCurUserIds);
+      const curSessionCount = curUserIds.length;
+
+      const lengthString = curSessions.length.toString();
+      this.logger.info('sendDeviceStreamingSession:: COUNT', { lengthString });
+      this.logger.info('sendDeviceStreamingSession:: CUR', { curUserIds });
+
+      const users = await this.dataSource.getRepository(User).find({ where: { userId: In(curUserIds) } });
+
+      // if (lastSessionCount !== curSessionCount) {
+      //   webSocket.send(JSON.stringify({ sessionInfo: curUserIds }));
+      // }
+
+      lastSessionCount = curSessionCount;
+
+      await new Promise((resolve) => setTimeout(resolve, DEVICE_STREAMING_SESSION_LIVE_DELAY_COUNT * 1000));
+    }
+    return;
+  }
 
   async handleConnection(webSocket: WebSocket, incomingMessage: IncomingMessage): Promise<void> {
     // validate url query
@@ -50,19 +96,27 @@ export class DeviceStreamingGateway implements OnGatewayConnection, OnGatewayDis
       const { code, reason } = event;
       this.logger.verbose('close', { code, reason });
     });
-    webSocket.addEventListener('message', async (event: MessageEvent<string>) => {
+    webSocket.addEventListener('message', async (event) => {
       this.logger.verbose('message');
       const rv = await this.wsCommonService.validateDeviceAccessPermission(incomingMessage, this.dataSource, organizationId, deviceId, this.logger);
       if (rv.result === false) {
         this.logger.info(`DeviceStreamingGateway. handleConnection. ${rv.message}`);
-        // webSocket.close(1003, 'Unauthorized');
         closeWebSocketWithTruncateReason(webSocket, 1003, 'Unauthorized');
       }
       const { data } = event;
-      this.onMessage(webSocket, data).catch((error) => {
+      this.onMessage(webSocket, data.toString()).catch((error) => {
         this.logger.error('error', { error: stringify(error) });
         closeWebSocketWithTruncateReason(webSocket, 1001, error);
       });
+
+      try {
+        await this.sendDeviceStreamingSession(webSocket, deviceId, rv.userId!);
+        closeWebSocketWithTruncateReason(webSocket, 1000, `DeviceStreamingGateway. Pipeline is completed`);
+      } catch (e) {
+        this.logger.error(`DeviceStreamingGateway. sendDeviceStreamingSession. ${stringify(e)}`);
+        closeWebSocketWithTruncateReason(webSocket, 1003, e);
+        return;
+      }
     });
   }
 

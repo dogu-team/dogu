@@ -35,12 +35,12 @@ export class LiveProfileGateway implements OnGatewayConnection, OnGatewayDisconn
     const { routineDeviceJobId: deviceJobId } = deviceJob;
 
     if (!createdAt) {
-      return { result: false, resultCode: 1003, message: `DeviceJob createdAt is not recorded` };
+      return { result: false, resultCode: 1003, message: `DeviceJob createdAt is not recorded`, userId: null };
     }
 
     while (isRunning) {
       if (client.readyState === WebSocket.CLOSED) {
-        return { result: false, resultCode: 1003, message: `DeviceJob client is closed` };
+        return { result: false, resultCode: 1003, message: `DeviceJob client is closed`, userId: null };
       }
 
       const deviceJob = await this.dataSource
@@ -49,7 +49,7 @@ export class LiveProfileGateway implements OnGatewayConnection, OnGatewayDisconn
         .where(`deviceJob.${RoutineDeviceJobPropCamel.routineDeviceJobId} = :deviceJobId`, { deviceJobId })
         .getOne();
       if (!deviceJob) {
-        return { result: false, resultCode: 1003, message: `DeviceJob is not found` };
+        return { result: false, resultCode: 1003, message: `DeviceJob is not found`, userId: null };
       }
 
       if (localStartTime === null) {
@@ -73,7 +73,7 @@ export class LiveProfileGateway implements OnGatewayConnection, OnGatewayDisconn
       client.send(JSON.stringify(runtimeInfo));
       await new Promise((resolve) => setTimeout(resolve, DEVICE_JOB_PROFILE_LIVE_DELAY_COUNT * 1000));
     }
-    return { result: true, resultCode: 1000, message: `DeviceJob is completed` };
+    return { result: true, resultCode: 1000, message: `DeviceJob is completed`, userId: null };
   }
 
   async handleConnection(client: WebSocket, incomingMessage: IncomingMessage): Promise<void> {
