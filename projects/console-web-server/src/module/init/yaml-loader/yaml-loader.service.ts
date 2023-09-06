@@ -52,8 +52,32 @@ export class YamlLoaderService {
     const parsedYaml = this.loadYamlRaw<RoutineSchema>(yamlRaw);
     this.validateRunsOnType(parsedYaml);
     this.validateRunsOnWithBrowserNameSchema(parsedYaml);
+    this.validateRoutineStep(parsedYaml);
     this.validateRoutineYaml(parsedYaml);
     return parsedYaml;
+  }
+
+  private validateRoutineStep(parsedYaml: RoutineSchema): void {
+    const { jobs } = parsedYaml;
+    const errors = Object.keys(jobs)
+      .map((jobName) => ({ jobName, steps: jobs[jobName].steps }))
+      .map(({ jobName, steps }) => {
+        const errors = steps
+          .map((step, index) => {
+            if (step.uses && step.run) {
+              return new Error(`Choose one of uses or run. Job: ${jobName}, Step: ${index + 1}`);
+            }
+            return null;
+          })
+          .filter((error): error is Error => !!error);
+        return errors;
+      })
+      .flat()
+      .filter((error): error is Error => !!error);
+
+    if (errors.length > 0) {
+      throw new HttpException(errors.map((error) => error.message).join(', '), HttpStatus.BAD_REQUEST);
+    }
   }
 
   private validateRunsOnType(parsedYaml: RoutineSchema): void {
