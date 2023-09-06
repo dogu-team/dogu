@@ -64,10 +64,10 @@ const StepActionArgumentContainer = ({ step, onUpdate }: Props) => {
           />
         </KeyValueWrapper>
         {!!step.with?.checkout && <CheckoutActionArgumentContainer step={step} updateArgs={handleUpdateArgs} />}
-        <KeyValueWrapper>
+        {/* <KeyValueWrapper>
           <Key>appVersion</Key>:&nbsp;
           <Value></Value>
-        </KeyValueWrapper>
+        </KeyValueWrapper> */}
       </Box>
     );
   }

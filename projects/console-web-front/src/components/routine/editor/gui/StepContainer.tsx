@@ -179,7 +179,7 @@ const StepContainer = ({ jobName, step, index, updateStep, deleteStep, moveStep 
       </Content>
 
       <Content>
-        <ContentTitle>Step type</ContentTitle>
+        <ContentTitle>{t('routine:routineGuiEditorStepTypeLabel')}</ContentTitle>
         <div>
           <Radio.Group
             value={type}
@@ -238,7 +238,8 @@ echo Dogu!`}
 
           {step.uses === RUN_TEST_ACTION_NAME && (
             <Content>
-              <ContentTitle>Working directory</ContentTitle>
+              <ContentTitle>{t('routine:routineGuiEditorStepWorkingDirLabel')}</ContentTitle>
+              <ContentDesc>{t('routine:routineGuiEditorStepWorkingDirDescription')}</ContentDesc>
               <SelectWrapper>
                 <WorkingDirectoryContainer value={step.cwd} onChange={(value) => updateStep({ ...step, cwd: value }, index)} />
               </SelectWrapper>
@@ -246,7 +247,7 @@ echo Dogu!`}
           )}
 
           <Content>
-            <ContentTitle>Arguments</ContentTitle>
+            <ContentTitle>{t('routine:routineGuiEditorStepArgumentLabel')}</ContentTitle>
             <div>
               <StepActionArgumentContainer step={step} onUpdate={(stepWith) => updateStep({ ...step, with: stepWith }, index)} />
             </div>
@@ -274,6 +275,12 @@ const Content = styled.div`
 `;
 
 const ContentTitle = styled.p`
+  margin-bottom: 0.25rem;
+`;
+
+const ContentDesc = styled.p`
+  font-size: 0.8rem;
+  color: ${(props) => props.theme.main.colors.gray3};
   margin-bottom: 0.25rem;
 `;
 

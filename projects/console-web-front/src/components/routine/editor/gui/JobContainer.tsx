@@ -16,6 +16,7 @@ import { RUN_TEST_ACTION_NAME } from '../../../../types/routine';
 import { RoutineProjectTypeContext } from '../RoutineGUIEditor';
 import BrowserNameSelector from './BrowserNameSelector';
 import AppVersionContainer from './AppVersionContainer';
+import Trans from 'next-translate/Trans';
 
 interface NeedsProps {
   needs: JobSchema['needs'];
@@ -315,8 +316,14 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
       </Content>
       <Content>
         <div>
-          <ContentTitle>{t('routine:routineGuiEditorJobDeviceTagLabel')}</ContentTitle>
-          <ContentDesc>{isGroupRun ? t('routine:routineGuiEditorJobDeviceTagDescription') : 'Pick one device each of tag or device name'}</ContentDesc>
+          <ContentTitle>{t('routine:routineGuiEditorJobDeviceLabel')}</ContentTitle>
+          <ContentDesc>
+            {isGroupRun ? (
+              <Trans i18nKey="routine:routineGuiEditorJobDeviceGroupDescription" components={{ b: <b style={{ fontWeight: '600' }} /> }} />
+            ) : (
+              t('routine:routineGuiEditorJobDeviceDescription')
+            )}
+          </ContentDesc>
         </div>
         <div>
           <Checkbox
@@ -329,7 +336,7 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
               }
             }}
           >
-            Group run
+            {t('routine:routineGuiEditorJobDeviceGroupLabel')}
           </Checkbox>
         </div>
         <ContentInner>
@@ -349,8 +356,8 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
       {projectType === PROJECT_TYPE.WEB ? (
         <Content>
           <div>
-            <ContentTitle>Browser Options</ContentTitle>
-            <ContentDesc>Select browser</ContentDesc>
+            <ContentTitle>{t('routine:routineGuiEditorJobBrowserNameLabel')}</ContentTitle>
+            <ContentDesc>{t('routine:routineGuiEditorJobBrowserNameDescription')}</ContentDesc>
           </div>
           <ContentInner>
             <BrowserNameSelector
@@ -364,8 +371,8 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
       ) : (
         <Content>
           <div>
-            <ContentTitle>App Version</ContentTitle>
-            <ContentDesc>Select app version</ContentDesc>
+            <ContentTitle>{t('routine:routineGuiEditorJobAppVersionLabel')}</ContentTitle>
+            <ContentDesc>{t('routine:routineGuiEditorJobAppVersionDescription')}</ContentDesc>
           </div>
           <ContentInner>
             <AppVersionContainer

@@ -1,8 +1,11 @@
 import { Select, SelectProps, Tag } from 'antd';
+import useTranslation from 'next-translate/useTranslation';
 import styled from 'styled-components';
+
 import { CHECKOUT_ACTION_NAME, PREPARE_ACTION_NAME, RUN_TEST_ACTION_NAME } from '../../../../types/routine';
 
 const ActionSelector = (props: SelectProps) => {
+  const { t } = useTranslation();
   const actions: SelectProps<string>['options'] = [
     {
       label: (
@@ -13,7 +16,7 @@ const ActionSelector = (props: SelectProps) => {
               Recommended
             </Tag>
           </b>
-          <p>Install and run application or browser and run test scripts. This action contains checkout, and prepare actions.</p>
+          <p>{t('routine:routineGuiEditorRunTestActionDescription')}</p>
         </OptionBox>
       ),
       title: 'Run test',
@@ -23,7 +26,7 @@ const ActionSelector = (props: SelectProps) => {
       label: (
         <OptionBox>
           <b>Checkout</b>
-          <p>Checkout git repository from integrated remote repository.</p>
+          <p>{t('routine:routineGuiEditorCheckoutActionDescription')}</p>
         </OptionBox>
       ),
       title: 'Checkout',
@@ -33,7 +36,7 @@ const ActionSelector = (props: SelectProps) => {
       label: (
         <OptionBox>
           <b>Prepare</b>
-          <p>Install application and run it. This action contains checkout and doesn&apos;t run test script.</p>
+          <p>{t('routine:routineGuiEditorPrepareActionDescription')}</p>
         </OptionBox>
       ),
       title: 'Prepare',
