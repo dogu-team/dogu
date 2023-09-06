@@ -38,7 +38,9 @@ export const appiumRoutineTutorialData: RoutineTutorial = {
       hasSampleApp: true,
       cwd: 'appium/python/pytest',
       command: `python -m venv .venv
-source .venv/bin/activate && pytest app/test_android.py`,
+source .venv/bin/activate
+pip install -r requirements.txt
+pytest app/test_android.py`,
     },
     {
       framework: TutorialSupportFramework.PYTEST,
@@ -48,7 +50,9 @@ source .venv/bin/activate && pytest app/test_android.py`,
       hasSampleApp: false,
       cwd: 'appium/python/pytest',
       command: `python -m venv .venv
-source .venv/bin/activate && pytest app/test_android.py`,
+source .venv/bin/activate
+pip install -r requirements.txt
+pytest app/test_android.py`,
     },
   ],
 };
@@ -119,7 +123,9 @@ export const seleniumRoutineTutorialData: RoutineTutorial = {
       target: TutorialSupportTarget.WEB,
       cwd: 'selenium/python/pytest',
       command: `python -m venv .venv
-source .venv/bin/activate && pytest web/test_web.py`,
+source .venv/bin/activate
+pip install -r requirements.txt
+pytest web/test_web.py`,
     },
     {
       framework: TutorialSupportFramework.PYTEST,
@@ -128,7 +134,9 @@ source .venv/bin/activate && pytest web/test_web.py`,
       target: TutorialSupportTarget.WEB,
       cwd: 'selenium/python/pytest',
       command: `python -m venv .venv
-source .venv/bin/activate && pytest web/test_web.py`,
+source .venv/bin/activate
+pip install -r requirements.txt
+pytest web/test_web.py`,
     },
   ],
 };

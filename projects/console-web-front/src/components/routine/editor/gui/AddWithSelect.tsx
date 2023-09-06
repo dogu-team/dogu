@@ -6,17 +6,14 @@ import styled from 'styled-components';
 interface Props extends SelectProps<string> {
   selectable?: boolean;
   onSelectableChange?: (value: boolean) => void;
-  values: string[];
 }
 
-const AddWithSelect = ({ selectable: defaultSelectable, onSelectableChange, values, ...props }: Props) => {
+const AddWithSelect = ({ selectable: defaultSelectable, onSelectableChange, ...props }: Props) => {
   const [selectable, setSelectable] = useState(defaultSelectable ?? false);
 
   useEffect(() => {
     onSelectableChange?.(selectable);
   }, [selectable]);
-
-  const selectOptions: SelectProps['options'] = values.map((option) => ({ label: option, value: option }));
 
   return (
     <Box>
@@ -38,13 +35,9 @@ const AddWithSelect = ({ selectable: defaultSelectable, onSelectableChange, valu
               props.onSelect?.(e, o);
               setSelectable(false);
             }}
-            options={selectOptions}
             style={{ minWidth: '15rem' }}
             dropdownMatchSelectWidth={false}
             autoFocus
-            onBlur={() => {
-              setSelectable(false);
-            }}
           />
           <CloseButton
             onClick={() => {

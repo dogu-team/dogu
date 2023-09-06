@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { AppVersion } from '@dogu-tech/action-common';
 import useTranslation from 'next-translate/useTranslation';
 import { CloseOutlined } from '@ant-design/icons';
-import { Input, Radio } from 'antd';
+import { Input, Radio, Select } from 'antd';
 
 import { CHECKOUT_ACTION_NAME, PREPARE_ACTION_NAME, RUN_TEST_ACTION_NAME } from '../../../../types/routine';
 import ActionSelector from './ActionSelector';
@@ -15,6 +15,9 @@ import TestScriptSelector from './TestScriptSelector';
 import PlatformAppVersionSelector from './PlatformAppVersionSelector';
 import useProjectContext from '../../../../hooks/context/useProjectContext';
 import ErrorBox from '../../../common/boxes/ErrorBox';
+import StepActionArgumentContainer from './StepActionArgumentContainer';
+import WorkingDirectorySelector from './WorkingDirectorySelector';
+import WorkingDirectoryContainer from './WorkingDirectoryContainer';
 
 interface AppVersionProps {
   step: StepSchema;
@@ -182,9 +185,9 @@ const StepContainer = ({ jobName, step, index, updateStep, deleteStep, moveStep 
             value={type}
             onChange={(e) => {
               if (e.target.value === StepType.ACTION) {
-                updateStep({ ...step, uses: RUN_TEST_ACTION_NAME, run: undefined, with: {} }, index);
+                updateStep({ ...step, uses: RUN_TEST_ACTION_NAME, run: undefined }, index);
               } else if (e.target.value === StepType.SHELL) {
-                updateStep({ ...step, uses: undefined, run: '', with: undefined }, index);
+                updateStep({ ...step, uses: undefined, run: '', with: undefined, cwd: undefined }, index);
               }
               setType(e.target.value);
             }}
@@ -195,20 +198,15 @@ const StepContainer = ({ jobName, step, index, updateStep, deleteStep, moveStep 
         </div>
       </Content>
 
-      {type === 'shell' && (
+      {type === StepType.SHELL && (
         <>
           <Content>
             <ContentTitle>Run</ContentTitle>
             <div>
               <Input.TextArea
                 value={step.run}
-                placeholder={`npm install
-npm run test:web
------or-----
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-pytest app/test_android.py`}
+                placeholder={`echo Hello
+echo Dogu!`}
                 autoSize
                 onChange={(e) => {
                   updateStep(
@@ -225,7 +223,7 @@ pytest app/test_android.py`}
         </>
       )}
 
-      {type === 'action' && (
+      {type === StepType.ACTION && (
         <>
           <Content>
             <ContentTitle>{t('routineGuiEditorStepActionLabel')}</ContentTitle>
@@ -238,23 +236,21 @@ pytest app/test_android.py`}
             </div>
           </Content>
 
-          {step.uses === PREPARE_ACTION_NAME && (
+          {step.uses === RUN_TEST_ACTION_NAME && (
             <Content>
-              <ContentTitle>{t('routineGuiEditorStepAppVersionLabel')}</ContentTitle>
+              <ContentTitle>Working directory</ContentTitle>
               <SelectWrapper>
-                <AppVersionContainer step={step} onUpdate={updateAppVersion} onClose={removeAppVersion} />
+                <WorkingDirectoryContainer value={step.cwd} onChange={(value) => updateStep({ ...step, cwd: value }, index)} />
               </SelectWrapper>
             </Content>
           )}
 
-          {step.uses === RUN_TEST_ACTION_NAME && (
-            <Content>
-              <ContentTitle>{t('routineGuiEditorStepScriptLabel')}</ContentTitle>
-              <SelectWrapper>
-                <ScriptContainer step={step} onUpdate={updateScript} onClose={removeStepWith} />
-              </SelectWrapper>
-            </Content>
-          )}
+          <Content>
+            <ContentTitle>Arguments</ContentTitle>
+            <div>
+              <StepActionArgumentContainer step={step} onUpdate={(stepWith) => updateStep({ ...step, with: stepWith }, index)} />
+            </div>
+          </Content>
         </>
       )}
     </Box>

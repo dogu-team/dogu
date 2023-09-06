@@ -28,6 +28,11 @@ const resources = {
     inactiveSmilingFace: '/resources/icons/inactive-smiling-face.svg',
     inactiveNeutralFace: '/resources/icons/inactive-neutral-face.svg',
     inactivePensiveFace: '/resources/icons/inactive-pensive-face.svg',
+    chrome: '/resources/icons/browsers/chrome.svg',
+    firefox: '/resources/icons/browsers/firefox.svg',
+    safari: '/resources/icons/browsers/safari.svg',
+    edge: '/resources/icons/browsers/edge.svg',
+    samsungIntenet: '/resources/icons/browsers/samsung-internet.svg',
   },
   images: {},
 };

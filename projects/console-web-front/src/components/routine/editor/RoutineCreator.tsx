@@ -28,14 +28,13 @@ jobs:
   sample-job:
     runs-on:
       group: []
+    appVersion:
     steps:
       - name: run test
         uses: dogu-actions/run-test
         with:
           checkout: true
-          appVersion:
-            android:
-            ios:
+          command:
         cwd:
 `;
 
@@ -46,9 +45,8 @@ on:
 
 jobs:
   sample-job:
-    runs-on:
-      browserName:
-      platformName:
+    runs-on: []
+    browserName:
     steps:
       - name: run test
         uses: dogu-actions/run-test
@@ -111,7 +109,7 @@ const RoutineCreator = ({ project }: Props) => {
       mode={mode}
       menu={<RoutineEditorMenu projectType={project.type} mode={mode} saveButtonText={t('routine:createRoutineButtonTitle')} onSave={handleSave} onChangeMode={updateMode} />}
       scriptEditor={<YamlEditor editorRef={editorRef} height={'65vh'} value={yaml} onChanged={handleEditorOnChange} />}
-      guiEditor={<RoutineGUIEditor />}
+      guiEditor={<RoutineGUIEditor projectType={project.type} />}
       preview={<RoutineFlow />}
     />
   );

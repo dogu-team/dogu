@@ -1,4 +1,4 @@
-import { Select, SelectProps } from 'antd';
+import { Select, SelectProps, Tag } from 'antd';
 import styled from 'styled-components';
 import { CHECKOUT_ACTION_NAME, PREPARE_ACTION_NAME, RUN_TEST_ACTION_NAME } from '../../../../types/routine';
 
@@ -7,7 +7,12 @@ const ActionSelector = (props: SelectProps) => {
     {
       label: (
         <OptionBox>
-          <b>Run test</b>
+          <b>
+            Run test
+            <Tag style={{ marginLeft: '.25rem' }} color="success">
+              Recommended
+            </Tag>
+          </b>
           <p>Install and run application or browser and run test scripts. This action contains checkout, and prepare actions.</p>
         </OptionBox>
       ),
@@ -28,7 +33,7 @@ const ActionSelector = (props: SelectProps) => {
       label: (
         <OptionBox>
           <b>Prepare</b>
-          <p>Install application and run it. This action doesn&apos;t run test script.</p>
+          <p>Install application and run it. This action contains checkout and doesn&apos;t run test script.</p>
         </OptionBox>
       ),
       title: 'Prepare',
@@ -46,6 +51,8 @@ const OptionBox = styled.div`
   line-height: 1.5;
 
   b {
+    display: flex;
+    align-items: center;
     font-size: 0.85rem;
     font-weight: 600;
     margin-bottom: 0.25rem;

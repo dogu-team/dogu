@@ -72,7 +72,7 @@ const RoutineUpdator = (props: Props) => {
       mode={mode}
       menu={<RoutineEditorMenu projectType={props.project.type} mode={mode} saveButtonText={t('routine:updateRoutineButtonTitle')} onSave={handleSave} onChangeMode={updateMode} />}
       scriptEditor={<YamlEditor editorRef={editorRef} height={'65vh'} value={yaml} onChanged={handleEditorOnChange} />}
-      guiEditor={<RoutineGUIEditor />}
+      guiEditor={<RoutineGUIEditor projectType={props.project.type} />}
       preview={<RoutineFlow />}
     />
   );

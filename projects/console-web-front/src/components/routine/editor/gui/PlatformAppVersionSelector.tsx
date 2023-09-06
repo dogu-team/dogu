@@ -1,10 +1,12 @@
-import { CloseOutlined } from '@ant-design/icons';
-import { OrganizationId, PlatformType, ProjectId } from '@dogu-private/types';
+import { AppstoreOutlined, CloseOutlined } from '@ant-design/icons';
+import { OrganizationId, Platform, PlatformType, ProjectId } from '@dogu-private/types';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import useSelect from '../../../../hooks/useSelect';
 
-import { flexRowBaseStyle } from '../../../../styles/box';
+import { flexRowBaseStyle, flexRowCenteredStyle } from '../../../../styles/box';
+import PlatformIcon from '../../../device/PlatformIcon';
 import ProjectApplicationSelector from '../../../project-application/ProjectApplicationSelector';
 
 interface Props {
@@ -31,7 +33,10 @@ const PlatformAppVersionSelector = ({ version, platform, onReset, onChange }: Pr
 
   return (
     <AppSelectPlatformWrapper key={platform}>
-      <PlatformName>{platform}:&nbsp;</PlatformName>
+      <PlatformName>
+        <PlatformIcon platform={platform === 'android' ? Platform.PLATFORM_ANDROID : Platform.PLATFORM_IOS} />
+        :&nbsp;
+      </PlatformName>
       {version ? (
         <span>
           {version}
@@ -51,6 +56,16 @@ const PlatformAppVersionSelector = ({ version, platform, onReset, onChange }: Pr
             toggleOpen={toggle}
             close={close}
             selectedApplication={undefined}
+            notFoundContent={
+              <EmptyBox>
+                <AppstoreOutlined style={{ fontSize: '3rem', marginBottom: '1rem' }} />
+                <EmptyText>
+                  No applicaiton.
+                  <br />
+                  Please upload your app from <Link href={`/dashboard/${router.query.orgId}/projects/${router.query.pid}/apps`}>app menu</Link>.
+                </EmptyText>
+              </EmptyBox>
+            }
           />
         </div>
       )}
@@ -73,7 +88,18 @@ const CloseButton = styled.button`
   cursor: pointer;
 `;
 
-const PlatformName = styled.b`
-  margin-right: 0.25rem;
-  width: 80px;
+const PlatformName = styled.div`
+  ${flexRowBaseStyle}
+  margin-right: 0.5rem;
+`;
+
+const EmptyBox = styled.div`
+  ${flexRowCenteredStyle}
+  flex-direction: column;
+`;
+
+const EmptyText = styled.p`
+  font-size: 0.9rem;
+  text-align: center;
+  line-height: 1.5;
 `;
