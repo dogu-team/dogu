@@ -71,6 +71,7 @@ message RuntimeInfoNet {
 message RuntimeInfoDisplay {
   string name = 1;
   bool is_screen_on = 2;
+  optional string error = 3;
 }
 
 message RuntimeInfoBattery {

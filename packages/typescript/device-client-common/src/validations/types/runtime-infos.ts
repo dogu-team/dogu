@@ -16,7 +16,7 @@ import {
   RuntimeProcessInfoNet,
 } from '@dogu-tech/types';
 import { Type } from 'class-transformer';
-import { IsArray, IsBoolean, IsDate, IsEnum, IsNumber, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsBoolean, IsDate, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export class RuntimeInfoCpuDto implements RuntimeInfoCpu {
   @IsString()
@@ -159,6 +159,10 @@ export class RuntimeInfoDisplayDto implements RuntimeInfoDisplay {
 
   @IsBoolean()
   isScreenOn!: boolean;
+
+  @IsOptional()
+  @IsString()
+  error?: string;
 }
 
 export class RuntimeInfoBatteryDto implements RuntimeInfoBattery {

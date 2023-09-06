@@ -32,7 +32,19 @@ const DeviceStreamingLayout = ({ project, deviceId, right, title, screenViewer, 
   } = useSWR<DeviceBase>(`/organizations/${project.organizationId}/devices/${deviceId}`, swrAuthFetcher, { revalidateOnFocus: false });
 
   if (deviceError) {
-    return <ErrorBox title="Something went wrong" desc={isAxiosError(deviceError) ? getErrorMessageFromAxios(deviceError) : 'Cannot find device information'} />;
+    return (
+      <Box style={{ justifyContent: 'center' }}>
+        <ErrorBox title="Something went wrong" desc={isAxiosError(deviceError) ? getErrorMessageFromAxios(deviceError) : 'Cannot find device information'} />
+      </Box>
+    );
+  }
+
+  if (device && device.displayError !== null) {
+    return (
+      <Box style={{ justifyContent: 'center' }}>
+        <ErrorBox title="Something went wrong" desc={`Device Error: ${device.displayError}`} />
+      </Box>
+    );
   }
 
   return (

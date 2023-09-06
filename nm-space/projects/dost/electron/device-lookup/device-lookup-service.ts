@@ -108,18 +108,17 @@ export class DeviceLookupService {
   private async onMessage(data: string): Promise<void> {
     const deviceConnectionInfo = await transformAndValidate(DeviceConnectionSubscribe.receiveMessage, JSON.parse(data));
     const { state } = deviceConnectionInfo;
-    if (state === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED) {
-      this.messages.set(deviceConnectionInfo.serial, deviceConnectionInfo);
-    } else if (state === DeviceConnectionState.DEVICE_CONNECTION_STATE_ERROR) {
-      this.messages.set(deviceConnectionInfo.serial, deviceConnectionInfo);
-    } else if (state === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTING) {
-      if (!this.messages.has(deviceConnectionInfo.serial)) {
-        this.messages.set(deviceConnectionInfo.serial, deviceConnectionInfo);
-      }
-    } else if (state === DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED) {
+    const prev = this.messages.get(deviceConnectionInfo.serial);
+    const newConnectionInfo: DeviceConnectionSubscribeReceiveMessage = {
+      ...deviceConnectionInfo,
+      errorMessage:
+        deviceConnectionInfo.state === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTING
+          ? prev?.errorMessage ?? deviceConnectionInfo.errorMessage
+          : deviceConnectionInfo.errorMessage,
+    };
+    this.messages.set(deviceConnectionInfo.serial, newConnectionInfo);
+    if (state === DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED) {
       this.messages.delete(deviceConnectionInfo.serial);
-    } else {
-      throw new Error(`DeviceLookupService received unknown message ${String(deviceConnectionInfo)}`);
     }
   }
 }

@@ -23,22 +23,25 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 public enum Outer_Profile_ProfileMethodKind: SwiftProtobuf.Enum {
   public typealias RawValue = Int
   case unspecified // = 0
-  case desktopCpu // = 100
-  case desktopCpufreq // = 101
-  case desktopGpu // = 102
-  case desktopMem // = 103
-  case desktopFs // = 104
-  case desktopNet // = 105
-  case androidCpuShelltop // = 300
-  case androidCpufreqCat // = 311
-  case androidGpuNotyet // = 320
-  case androidMemActivitymanager // = 330
-  case androidMemProcmeminfo // = 341
-  case androidFsProcdiskstats // = 350
-  case androidNetTrafficstats // = 360
-  case androidProcessShelltop // = 370
-  case iosCpuLoadInfo // = 400
-  case iosMemVmStatistics // = 430
+  case desktopCpu // = 1
+  case desktopCpufreq // = 10
+  case desktopGpu // = 20
+  case desktopMem // = 30
+  case desktopFs // = 40
+  case desktopNet // = 50
+  case desktopDisplay // = 60
+  case androidCpuShelltop // = 1001
+  case androidCpufreqCat // = 1010
+  case androidGpuNotyet // = 1020
+  case androidMemActivitymanager // = 1030
+  case androidMemProcmeminfo // = 1031
+  case androidFsProcdiskstats // = 1040
+  case androidNetTrafficstats // = 1050
+  case androidDisplay // = 1060
+  case androidProcessShelltop // = 1070
+  case iosCpuLoadInfo // = 2001
+  case iosMemVmStatistics // = 2030
+  case iosDisplay // = 2060
   case UNRECOGNIZED(Int)
 
   public init() {
@@ -48,22 +51,25 @@ public enum Outer_Profile_ProfileMethodKind: SwiftProtobuf.Enum {
   public init?(rawValue: Int) {
     switch rawValue {
     case 0: self = .unspecified
-    case 100: self = .desktopCpu
-    case 101: self = .desktopCpufreq
-    case 102: self = .desktopGpu
-    case 103: self = .desktopMem
-    case 104: self = .desktopFs
-    case 105: self = .desktopNet
-    case 300: self = .androidCpuShelltop
-    case 311: self = .androidCpufreqCat
-    case 320: self = .androidGpuNotyet
-    case 330: self = .androidMemActivitymanager
-    case 341: self = .androidMemProcmeminfo
-    case 350: self = .androidFsProcdiskstats
-    case 360: self = .androidNetTrafficstats
-    case 370: self = .androidProcessShelltop
-    case 400: self = .iosCpuLoadInfo
-    case 430: self = .iosMemVmStatistics
+    case 1: self = .desktopCpu
+    case 10: self = .desktopCpufreq
+    case 20: self = .desktopGpu
+    case 30: self = .desktopMem
+    case 40: self = .desktopFs
+    case 50: self = .desktopNet
+    case 60: self = .desktopDisplay
+    case 1001: self = .androidCpuShelltop
+    case 1010: self = .androidCpufreqCat
+    case 1020: self = .androidGpuNotyet
+    case 1030: self = .androidMemActivitymanager
+    case 1031: self = .androidMemProcmeminfo
+    case 1040: self = .androidFsProcdiskstats
+    case 1050: self = .androidNetTrafficstats
+    case 1060: self = .androidDisplay
+    case 1070: self = .androidProcessShelltop
+    case 2001: self = .iosCpuLoadInfo
+    case 2030: self = .iosMemVmStatistics
+    case 2060: self = .iosDisplay
     default: self = .UNRECOGNIZED(rawValue)
     }
   }
@@ -71,22 +77,25 @@ public enum Outer_Profile_ProfileMethodKind: SwiftProtobuf.Enum {
   public var rawValue: Int {
     switch self {
     case .unspecified: return 0
-    case .desktopCpu: return 100
-    case .desktopCpufreq: return 101
-    case .desktopGpu: return 102
-    case .desktopMem: return 103
-    case .desktopFs: return 104
-    case .desktopNet: return 105
-    case .androidCpuShelltop: return 300
-    case .androidCpufreqCat: return 311
-    case .androidGpuNotyet: return 320
-    case .androidMemActivitymanager: return 330
-    case .androidMemProcmeminfo: return 341
-    case .androidFsProcdiskstats: return 350
-    case .androidNetTrafficstats: return 360
-    case .androidProcessShelltop: return 370
-    case .iosCpuLoadInfo: return 400
-    case .iosMemVmStatistics: return 430
+    case .desktopCpu: return 1
+    case .desktopCpufreq: return 10
+    case .desktopGpu: return 20
+    case .desktopMem: return 30
+    case .desktopFs: return 40
+    case .desktopNet: return 50
+    case .desktopDisplay: return 60
+    case .androidCpuShelltop: return 1001
+    case .androidCpufreqCat: return 1010
+    case .androidGpuNotyet: return 1020
+    case .androidMemActivitymanager: return 1030
+    case .androidMemProcmeminfo: return 1031
+    case .androidFsProcdiskstats: return 1040
+    case .androidNetTrafficstats: return 1050
+    case .androidDisplay: return 1060
+    case .androidProcessShelltop: return 1070
+    case .iosCpuLoadInfo: return 2001
+    case .iosMemVmStatistics: return 2030
+    case .iosDisplay: return 2060
     case .UNRECOGNIZED(let i): return i
     }
   }
@@ -105,6 +114,7 @@ extension Outer_Profile_ProfileMethodKind: CaseIterable {
     .desktopMem,
     .desktopFs,
     .desktopNet,
+    .desktopDisplay,
     .androidCpuShelltop,
     .androidCpufreqCat,
     .androidGpuNotyet,
@@ -112,9 +122,11 @@ extension Outer_Profile_ProfileMethodKind: CaseIterable {
     .androidMemProcmeminfo,
     .androidFsProcdiskstats,
     .androidNetTrafficstats,
+    .androidDisplay,
     .androidProcessShelltop,
     .iosCpuLoadInfo,
     .iosMemVmStatistics,
+    .iosDisplay,
   ]
 }
 
@@ -183,22 +195,25 @@ fileprivate let _protobuf_package = "outer.profile"
 extension Outer_Profile_ProfileMethodKind: SwiftProtobuf._ProtoNameProviding {
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "PROFILE_METHOD_KIND_UNSPECIFIED"),
-    100: .same(proto: "PROFILE_METHOD_KIND_DESKTOP_CPU"),
-    101: .same(proto: "PROFILE_METHOD_KIND_DESKTOP_CPUFREQ"),
-    102: .same(proto: "PROFILE_METHOD_KIND_DESKTOP_GPU"),
-    103: .same(proto: "PROFILE_METHOD_KIND_DESKTOP_MEM"),
-    104: .same(proto: "PROFILE_METHOD_KIND_DESKTOP_FS"),
-    105: .same(proto: "PROFILE_METHOD_KIND_DESKTOP_NET"),
-    300: .same(proto: "PROFILE_METHOD_KIND_ANDROID_CPU_SHELLTOP"),
-    311: .same(proto: "PROFILE_METHOD_KIND_ANDROID_CPUFREQ_CAT"),
-    320: .same(proto: "PROFILE_METHOD_KIND_ANDROID_GPU_NOTYET"),
-    330: .same(proto: "PROFILE_METHOD_KIND_ANDROID_MEM_ACTIVITYMANAGER"),
-    341: .same(proto: "PROFILE_METHOD_KIND_ANDROID_MEM_PROCMEMINFO"),
-    350: .same(proto: "PROFILE_METHOD_KIND_ANDROID_FS_PROCDISKSTATS"),
-    360: .same(proto: "PROFILE_METHOD_KIND_ANDROID_NET_TRAFFICSTATS"),
-    370: .same(proto: "PROFILE_METHOD_KIND_ANDROID_PROCESS_SHELLTOP"),
-    400: .same(proto: "PROFILE_METHOD_KIND_IOS_CPU_LOAD_INFO"),
-    430: .same(proto: "PROFILE_METHOD_KIND_IOS_MEM_VM_STATISTICS"),
+    1: .same(proto: "PROFILE_METHOD_KIND_DESKTOP_CPU"),
+    10: .same(proto: "PROFILE_METHOD_KIND_DESKTOP_CPUFREQ"),
+    20: .same(proto: "PROFILE_METHOD_KIND_DESKTOP_GPU"),
+    30: .same(proto: "PROFILE_METHOD_KIND_DESKTOP_MEM"),
+    40: .same(proto: "PROFILE_METHOD_KIND_DESKTOP_FS"),
+    50: .same(proto: "PROFILE_METHOD_KIND_DESKTOP_NET"),
+    60: .same(proto: "PROFILE_METHOD_KIND_DESKTOP_DISPLAY"),
+    1001: .same(proto: "PROFILE_METHOD_KIND_ANDROID_CPU_SHELLTOP"),
+    1010: .same(proto: "PROFILE_METHOD_KIND_ANDROID_CPUFREQ_CAT"),
+    1020: .same(proto: "PROFILE_METHOD_KIND_ANDROID_GPU_NOTYET"),
+    1030: .same(proto: "PROFILE_METHOD_KIND_ANDROID_MEM_ACTIVITYMANAGER"),
+    1031: .same(proto: "PROFILE_METHOD_KIND_ANDROID_MEM_PROCMEMINFO"),
+    1040: .same(proto: "PROFILE_METHOD_KIND_ANDROID_FS_PROCDISKSTATS"),
+    1050: .same(proto: "PROFILE_METHOD_KIND_ANDROID_NET_TRAFFICSTATS"),
+    1060: .same(proto: "PROFILE_METHOD_KIND_ANDROID_DISPLAY"),
+    1070: .same(proto: "PROFILE_METHOD_KIND_ANDROID_PROCESS_SHELLTOP"),
+    2001: .same(proto: "PROFILE_METHOD_KIND_IOS_CPU_LOAD_INFO"),
+    2030: .same(proto: "PROFILE_METHOD_KIND_IOS_MEM_VM_STATISTICS"),
+    2060: .same(proto: "PROFILE_METHOD_KIND_IOS_DISPLAY"),
   ]
 }
 

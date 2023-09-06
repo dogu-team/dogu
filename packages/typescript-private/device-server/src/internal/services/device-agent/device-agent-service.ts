@@ -15,7 +15,6 @@ export interface DeviceAgentService {
   get screenUrl(): string;
   get inputUrl(): string;
 
-  wakeUp(): Promise<void>;
   install(): Promise<void>;
   connect(): Promise<void>;
 }

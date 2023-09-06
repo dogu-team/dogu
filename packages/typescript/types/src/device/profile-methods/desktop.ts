@@ -24,3 +24,8 @@ export const Net: ProfileMethod = {
   kind: ProfileMethodKind.PROFILE_METHOD_KIND_DESKTOP_NET,
   name: 'net',
 };
+
+export const Display: ProfileMethod = {
+  kind: ProfileMethodKind.PROFILE_METHOD_KIND_DESKTOP_DISPLAY,
+  name: 'display',
+};

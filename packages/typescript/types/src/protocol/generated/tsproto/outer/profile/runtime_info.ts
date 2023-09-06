@@ -67,6 +67,7 @@ export interface RuntimeInfoNet {
 export interface RuntimeInfoDisplay {
   name: string;
   isScreenOn: boolean;
+  error?: string | undefined;
 }
 
 export interface RuntimeInfoBattery {
@@ -736,7 +737,7 @@ export const RuntimeInfoNet = {
 };
 
 function createBaseRuntimeInfoDisplay(): RuntimeInfoDisplay {
-  return { name: '', isScreenOn: false };
+  return { name: '', isScreenOn: false, error: undefined };
 }
 
 export const RuntimeInfoDisplay = {
@@ -746,6 +747,9 @@ export const RuntimeInfoDisplay = {
     }
     if (message.isScreenOn === true) {
       writer.uint32(16).bool(message.isScreenOn);
+    }
+    if (message.error !== undefined) {
+      writer.uint32(26).string(message.error);
     }
     return writer;
   },
@@ -763,6 +767,9 @@ export const RuntimeInfoDisplay = {
         case 2:
           message.isScreenOn = reader.bool();
           break;
+        case 3:
+          message.error = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -775,6 +782,7 @@ export const RuntimeInfoDisplay = {
     return {
       name: isSet(object.name) ? String(object.name) : '',
       isScreenOn: isSet(object.isScreenOn) ? Boolean(object.isScreenOn) : false,
+      error: isSet(object.error) ? String(object.error) : undefined,
     };
   },
 
@@ -782,6 +790,7 @@ export const RuntimeInfoDisplay = {
     const obj: any = {};
     message.name !== undefined && (obj.name = message.name);
     message.isScreenOn !== undefined && (obj.isScreenOn = message.isScreenOn);
+    message.error !== undefined && (obj.error = message.error);
     return obj;
   },
 
@@ -789,6 +798,7 @@ export const RuntimeInfoDisplay = {
     const message = createBaseRuntimeInfoDisplay();
     message.name = object.name ?? '';
     message.isScreenOn = object.isScreenOn ?? false;
+    message.error = object.error ?? undefined;
     return message;
   },
 };

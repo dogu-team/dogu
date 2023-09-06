@@ -1,6 +1,6 @@
 import { DuplicatedCallGuarder, stringify } from '@dogu-tech/common';
 import { logger } from '../../../logger/logger.instance';
-import { Zombieable, ZombieComponent, ZombieWaiter } from './zombie-component';
+import { Zombieable, ZombieComponent, ZombieQueriable } from './zombie-component';
 import { makeLogs } from './zombie-log';
 
 export interface ZombieChecker {
@@ -32,7 +32,7 @@ export class ZombieService {
     }
   }
 
-  addComponent(zombieable: Zombieable): ZombieWaiter {
+  addComponent(zombieable: Zombieable): ZombieQueriable {
     const ret: ZombieChecker = {
       component: new ZombieComponent(zombieable),
       updateGuard: new DuplicatedCallGuarder(),
@@ -71,7 +71,7 @@ export class ZombieService {
       updateCount: 0,
     };
     this.checkers.push(ret);
-    return new ZombieWaiter(ret.component);
+    return new ZombieQueriable(ret.component);
   }
 
   // notify die of some zombie. zombie will be revived after a while
