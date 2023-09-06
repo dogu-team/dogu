@@ -115,7 +115,7 @@ export class GoDeviceControllerGrpcClient extends GrpcClientBase implements Zomb
 
   startStreaming(param: DcGdcStartStreamingParam): ClientReadableStream<DcGdcStartStreamingResult> {
     if (!this.client) {
-      throw new ErrorResultError(Code.CODE_NETWORK_CONNECTION_FAILED, 'IosDeviceControllerGrpcClient not created. implementation error');
+      throw new ErrorResultError(Code.CODE_NETWORK_CONNECTION_FAILED, 'GoDeviceControllerGrpcClient not created. implementation error');
     }
 
     try {
@@ -128,7 +128,7 @@ export class GoDeviceControllerGrpcClient extends GrpcClientBase implements Zomb
       );
       stream.on('error', (error) => {
         ZombieServiceInstance.notifyDie(this, 'stream error');
-        this.printable.error?.(`IosDeviceControllerGrpcClient.startStreaming error:  ${stringify(error)}`);
+        this.printable.error?.(`GoDeviceControllerGrpcClient.startStreaming error:  ${stringify(error)}`);
       });
       return stream;
     } catch (e: unknown) {

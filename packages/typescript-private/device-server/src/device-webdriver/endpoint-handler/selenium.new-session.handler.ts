@@ -1,8 +1,9 @@
 import { isAllowedBrowserName } from '@dogu-private/types';
-import { DoguBrowserNameHeader, DoguBrowserVersionHeader, DoguRemoteDeviceJobIdHeader, HeaderRecord } from '@dogu-tech/common';
+import { assertUnreachable, DoguBrowserNameHeader, DoguBrowserVersionHeader, DoguRemoteDeviceJobIdHeader, HeaderRecord } from '@dogu-tech/common';
 import { RelayRequest, RelayResponse, WebDriverEndPoint, WebDriverEndpointType } from '@dogu-tech/device-client-common';
 import _ from 'lodash';
-import { BrowserInstaller } from '../../browser-installer';
+import { BrowserManagerService } from '../../browser-manager/browser-manager.service';
+import { firefoxVersionUtils } from '../../browser-manager/firefox-version-utils';
 import { DoguLogger } from '../../logger/logger';
 import { SeleniumService } from '../../selenium/selenium.service';
 import { OnAfterRequestResult, OnBeforeRequestResult } from './common';
@@ -15,13 +16,14 @@ export class SeleniumNewSessionEndpointHandler extends SeleniumEndpointHandler {
   }
 
   override async onBeforeRequest(
+    browserManagerService: BrowserManagerService,
     seleniumService: SeleniumService,
     headers: HeaderRecord,
     endpoint: WebDriverEndPoint,
     request: RelayRequest,
     logger: DoguLogger,
   ): Promise<OnBeforeRequestResult> {
-    await super.onBeforeRequest(seleniumService, headers, endpoint, request, logger);
+    await super.onBeforeRequest(browserManagerService, seleniumService, headers, endpoint, request, logger);
 
     const doguBrowserName = _.get(headers, DoguBrowserNameHeader) as string | undefined;
     if (!doguBrowserName) {
@@ -50,27 +52,27 @@ export class SeleniumNewSessionEndpointHandler extends SeleniumEndpointHandler {
     }
 
     let doguBrowserVersion = _.get(headers, DoguBrowserVersionHeader) as string | undefined;
-    if (doguBrowserName === 'firefox') {
-      doguBrowserVersion ??= 'latest';
-      if (doguBrowserVersion === 'latest') {
-        function parseFirefoxMajorVersion(version: string): number | undefined {
-          const match = version.match(/^(\d+).*$/);
-          if (match) {
-            return Number(match[1]);
+    switch (doguBrowserName) {
+      case 'firefox':
+      case 'firefox-devedition':
+        {
+          doguBrowserVersion ??= 'latest';
+          if (doguBrowserVersion === 'latest') {
+            const latestBrowserVersion = await browserManagerService.getLatestBrowserVersion({ browserName: doguBrowserName });
+            const browserMajorVersion = firefoxVersionUtils.parse(latestBrowserVersion).major;
+            doguBrowserVersion = `${browserMajorVersion}`;
           }
-          return undefined;
         }
-        const resolvedVersion = await new BrowserInstaller().resolveLatestVersion('firefox', doguBrowserVersion);
-        const resolvedMajorVersion = parseFirefoxMajorVersion(resolvedVersion);
-        if (!resolvedMajorVersion) {
-          return {
-            status: 401,
-            error: new Error(`Failed to resolve firefox version: ${resolvedVersion}`),
-            data: {},
-          };
-        }
-        doguBrowserVersion = `${resolvedMajorVersion}`;
-      }
+        break;
+      case 'chrome':
+      case 'safari':
+      case 'safaritp':
+      case 'edge':
+      case 'iexplorer':
+      case 'samsung-internet':
+        break;
+      default:
+        assertUnreachable(doguBrowserName);
     }
 
     const seleniumContextInfo = await seleniumService.open({

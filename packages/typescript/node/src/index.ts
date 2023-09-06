@@ -5,6 +5,7 @@ export * from './clean-env';
 export * from './data-structure/task-queue';
 export * from './date-nano';
 export * from './delete-old-files';
+export * from './dmg-utils';
 export * from './download';
 export * from './environment-variables/matchers';
 export * from './environment-variables/replacement-providers';

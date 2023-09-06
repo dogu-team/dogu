@@ -182,7 +182,7 @@ export class IosChannel implements DeviceChannel {
       deviceServerService.doguLogger,
     );
 
-    const browserInstallations = await deviceServerService.browserManagerService.findAllBrowserInstallations({
+    const findAllBrowserInstallationsResult = await deviceServerService.browserManagerService.findAllBrowserInstallations({
       deviceSerial: serial,
       browserPlatform: 'ios',
     });
@@ -198,7 +198,7 @@ export class IosChannel implements DeviceChannel {
       appiumContextProxy,
       appiumDeviceWebDriverHandler,
       logger,
-      browserInstallations,
+      findAllBrowserInstallationsResult.browserInstallations,
     );
 
     logger.verbose('streaming service calling deviceConnected');

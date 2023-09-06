@@ -46,7 +46,7 @@ export interface JobSchema {
 export interface RunsOnWithBrowserNameSchema {
   browserName: string;
   browserVersion?: string;
-  platformName: string;
+  tag: string;
 }
 /**
  * This interface was referenced by `RoutineSchema`'s JSON-Schema
