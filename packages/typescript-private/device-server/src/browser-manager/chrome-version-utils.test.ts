@@ -39,48 +39,23 @@ describe('chromeVersionUtils.parse', () => {
   });
 
   test('invalid format "" (empty string)', () => {
-    expect(chromeVersionUtils.parse('')).toEqual({
-      major: undefined,
-      minor: undefined,
-      build: undefined,
-      patch: undefined,
-    });
+    expect(() => chromeVersionUtils.parse('')).toThrow();
   });
 
   test('invalid format 1.', () => {
-    expect(chromeVersionUtils.parse('1.')).toEqual({
-      major: undefined,
-      minor: undefined,
-      build: undefined,
-      patch: undefined,
-    });
+    expect(() => chromeVersionUtils.parse('1.')).toThrow();
   });
 
   test('invalid format 1.2.', () => {
-    expect(chromeVersionUtils.parse('1.2.')).toEqual({
-      major: undefined,
-      minor: undefined,
-      build: undefined,
-      patch: undefined,
-    });
+    expect(() => chromeVersionUtils.parse('1.2.')).toThrow();
   });
 
   test('invalid format 1.2.3.', () => {
-    expect(chromeVersionUtils.parse('1.2.3.')).toEqual({
-      major: undefined,
-      minor: undefined,
-      build: undefined,
-      patch: undefined,
-    });
+    expect(() => chromeVersionUtils.parse('1.2.3.')).toThrow();
   });
 
   test('invalid format 1.2.3.4.', () => {
-    expect(chromeVersionUtils.parse('1.2.3.4.')).toEqual({
-      major: undefined,
-      minor: undefined,
-      build: undefined,
-      patch: undefined,
-    });
+    expect(() => chromeVersionUtils.parse('1.2.3.4.')).toThrow();
   });
 });
 
