@@ -39,17 +39,18 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
   }
 
   let appPath = '';
-  if (appVersion) {
+  const resolvedAppVersion = appVersion || process.env.DOGU_APP_VERSION || '';
+  if (resolvedAppVersion) {
     const currentPlatformAppVersion =
-      typeof appVersion === 'object'
+      typeof resolvedAppVersion === 'object'
         ? (() => {
-            const platformAppVersion = Reflect.get(appVersion, DOGU_DEVICE_PLATFORM) as string | undefined;
+            const platformAppVersion = Reflect.get(resolvedAppVersion, DOGU_DEVICE_PLATFORM) as string | undefined;
             if (!platformAppVersion) {
-              throw new Error(`Invalid app version: ${stringify(appVersion)} for platform: ${DOGU_DEVICE_PLATFORM}`);
+              throw new Error(`Invalid app version: ${stringify(resolvedAppVersion)} for platform: ${DOGU_DEVICE_PLATFORM}`);
             }
             return platformAppVersion;
           })()
-        : String(appVersion);
+        : String(resolvedAppVersion);
     appPath = await downloadApp(logger, consoleActionClient, deviceHostClient, DOGU_DEVICE_PLATFORM, DOGU_HOST_WORKSPACE_PATH, currentPlatformAppVersion);
   }
 

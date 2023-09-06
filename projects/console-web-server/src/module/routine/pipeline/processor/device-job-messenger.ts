@@ -1,5 +1,5 @@
 import { parseEventResult, RunStep, RunStepValue } from '@dogu-private/console-host-agent';
-import { DeviceId, DeviceRunnerId, OrganizationId, ProjectId, RoutineDeviceJobBrowser } from '@dogu-private/types';
+import { BrowserName, DeviceId, DeviceRunnerId, OrganizationId, ProjectId } from '@dogu-private/types';
 import { stringify } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { RoutineDeviceJob } from '../../../../db/entity/device-job.entity';
@@ -12,7 +12,20 @@ export class DeviceJobMessenger {
   constructor(private readonly deviceMessageRelayer: DeviceMessageRelayer, private readonly logger: DoguLogger) {}
 
   async sendRunDeviceJob(organizationId: OrganizationId, deviceId: DeviceId, deviceJob: RoutineDeviceJob): Promise<void> {
-    const { routineDeviceJobId, record, device, routineSteps: steps, routineJob, deviceRunnerId, routineDeviceJobBrowser } = deviceJob;
+    const {
+      routineDeviceJobId,
+      record,
+      device,
+      routineSteps: steps,
+      routineJob,
+      deviceRunnerId,
+      appVersion: appVersionRaw,
+      browserName: browserNameRaw,
+      browserVersion: browserVersionRaw,
+    } = deviceJob;
+    const appVersion = appVersionRaw ?? undefined;
+    const browserName = browserNameRaw ?? undefined;
+    const browserVersion = browserVersionRaw ?? undefined;
 
     if (!device) {
       throw new Error(`Device not found: ${stringify(deviceJob)}`);
@@ -31,7 +44,7 @@ export class DeviceJobMessenger {
       throw new Error(`Pipeline not found: ${stringify(deviceJob)}`);
     }
     const { projectId } = pipeline;
-    const runSteps = steps?.map((step) => this.stepToRunStep(organizationId, deviceId, projectId, deviceRunnerId, step, routineDeviceJobBrowser)) ?? [];
+    const runSteps = steps?.map((step) => this.stepToRunStep(organizationId, deviceId, projectId, deviceRunnerId, step, appVersion, browserName, browserVersion)) ?? [];
     const result = await this.deviceMessageRelayer.sendParam(organizationId, deviceId, {
       kind: 'EventParam',
       value: {
@@ -65,7 +78,9 @@ export class DeviceJobMessenger {
     projectId: ProjectId,
     deviceRunnerId: DeviceRunnerId,
     step: RoutineStep,
-    routineDeviceJobBrowser: RoutineDeviceJobBrowser | undefined,
+    appVersion?: string,
+    browserName?: BrowserName,
+    browserVersion?: string,
   ): RunStep {
     const { env, routineStepId, routineDeviceJobId: deviceJobId, index, cwd } = step;
     const runStepValue = this.stepToRunStepValue(step);
@@ -78,11 +93,12 @@ export class DeviceJobMessenger {
       routineDeviceJobId: deviceJobId,
       routineStepId,
       stepIndex: index,
-      browserName: routineDeviceJobBrowser?.browserName ?? '',
-      browserVersion: routineDeviceJobBrowser?.browserVersion ?? '',
       env: env ?? {},
       value: runStepValue,
       cwd,
+      appVersion,
+      browserName,
+      browserVersion,
     };
   }
 
