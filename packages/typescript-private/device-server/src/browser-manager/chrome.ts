@@ -56,6 +56,8 @@ const lastKnownGoodVersionsChannelMap: DeepReadonly<Record<ChromeChannelName, ke
   canary: 'Canary',
 };
 
+export const chromeChannelNameMap = lastKnownGoodVersionsChannelMap;
+
 export interface LastKnownGoodVersions {
   channels: {
     Stable: {
@@ -198,7 +200,7 @@ export class Chrome {
     });
   }
 
-  async getLatestVersion(options?: GetLatestVersionOptions): Promise<string> {
+  async getLatestVersion(options?: GetLatestVersionOptions): Promise<BrowserVersion> {
     const mergedOptions = mergeGetLatestVersionOptions(options);
     const { channelName, timeout } = mergedOptions;
     const lastKnownGoodVersions = await this.lastKnownGoodVersionsCache.get({
@@ -209,7 +211,7 @@ export class Chrome {
     return version;
   }
 
-  async findVersion(options?: FindVersionOptions): Promise<string | undefined> {
+  async findVersion(options?: FindVersionOptions): Promise<BrowserVersion | undefined> {
     const mergedOptions = mergeFindVersionOptions(options);
     validatePrefixOrPatternWithin(mergedOptions);
 
