@@ -1,8 +1,6 @@
-import { ArrowRightOutlined } from '@ant-design/icons';
 import { ProjectSlackRemoteBase } from '@dogu-private/console';
 import { Button } from 'antd';
 import Head from 'next/head';
-import Link from 'next/link';
 import styled from 'styled-components';
 import useSWR from 'swr';
 
@@ -16,6 +14,7 @@ import SlackRemoteChannelButton from 'src/enterprise/components/slack/SlackRemot
 import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/ssr/project';
 import { flexRowSpaceBetweenStyle } from 'src/styles/box';
 import { NextPageWithLayout } from '../../../../../_app';
+import TutorialButton from '../../../../../../src/components/buttons/TutorialButton';
 
 const RemoteListPage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
   const { data: remoteSlack } = useSWR<ProjectSlackRemoteBase>(`/organizations/${organization.organizationId}/projects/${project.projectId}/slack/remote`, swrAuthFetcher);
@@ -29,11 +28,7 @@ const RemoteListPage: NextPageWithLayout<ProjectServerSideProps> = ({ organizati
         top={
           <FlexBetweenBox>
             <LeftMenuButtonList>
-              <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/remotes/get-started`}>
-                <StyledButton>
-                  Tutorial <ArrowRightOutlined />
-                </StyledButton>
-              </Link>
+              <TutorialButton href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/remotes/get-started`} />
               <SlackRemoteChannelButton organizationId={organization.organizationId} projectId={project.projectId} remoteSlack={remoteSlack} />
             </LeftMenuButtonList>
             <RefreshButton />
@@ -72,17 +67,4 @@ const LeftMenuButtonList = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
-`;
-
-const StyledButton = styled(Button)`
-  padding: 4px 8px;
-
-  &:hover .anticon {
-    transition: transform 0.2s;
-    transform: translateX(0.25rem);
-  }
-
-  &:active {
-    color: ${(props) => props.theme.colorPrimary} !important;
-  }
 `;

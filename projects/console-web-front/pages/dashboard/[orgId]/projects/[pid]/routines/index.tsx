@@ -21,8 +21,7 @@ import EditRoutineButton from 'src/components/routine/EditRoutineButton';
 import ProjectLayoutWithSidebar from 'src/components/layouts/ProjectLayoutWithSidebar';
 import ExternalGuideLink from 'src/components/common/ExternalGuideLink';
 import SlackRoutineChannelButton from 'src/enterprise/components/slack/SlackRoutineChannelButton';
-import { Button } from 'antd';
-import Link from 'next/link';
+import TutorialButton from '../../../../../../src/components/buttons/TutorialButton';
 
 const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
   const router = useRouter();
@@ -47,9 +46,7 @@ const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organi
 
                 <PipelineTopButtonWrapper>
                   <RowFlexBox>
-                    <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/routines/get-started`} style={{ marginRight: '.5rem' }}>
-                      <Button>Tutorial</Button>
-                    </Link>
+                    <TutorialButton href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/routines/get-started`} style={{ marginRight: '.5rem' }} />
                     <RunRoutineButton orgId={organization.organizationId} projectId={project.projectId} routine={routine} />
                     <EditRoutineButton orgId={organization.organizationId} projectId={project.projectId} routine={routine} />
                     <PipelineFilter />
