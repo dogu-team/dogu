@@ -1,5 +1,5 @@
 import { StepSchema } from '@dogu-private/types';
-import { Input, Switch } from 'antd';
+import { Checkbox, Input } from 'antd';
 import styled from 'styled-components';
 
 import { flexRowBaseStyle } from '../../../../styles/box';
@@ -14,8 +14,9 @@ const CheckoutActionArgumentContainer = ({ step, updateArgs }: CheckoutProps) =>
   return (
     <>
       <KeyValueWrapper>
-        <Key>clean</Key>:&nbsp;
-        <Switch checked={(step.with?.clean as boolean | undefined) ?? false} onChange={(value) => updateArgs({ clean: value })} />
+        <Checkbox checked={(step.with?.clean as boolean | undefined) ?? false} onChange={(e) => updateArgs({ clean: e.target.checked })}>
+          <Key>clean</Key>
+        </Checkbox>
       </KeyValueWrapper>
       {/* <KeyValueWrapper>
         <Key>tagOrBranch</Key>:&nbsp;
@@ -51,17 +52,19 @@ const StepActionArgumentContainer = ({ step, onUpdate }: Props) => {
     return (
       <Box>
         <KeyValueWrapper>
-          <Key>checkout</Key>:&nbsp;
-          <Switch
+          <Checkbox
             checked={(step.with?.checkout as boolean | undefined) ?? false}
-            onChange={(value) => {
+            onChange={(e) => {
+              const value = e.target.checked;
               if (!value) {
                 handleUpdateArgs({ checkout: value, clean: undefined, tagOrBranch: undefined });
               } else {
                 handleUpdateArgs({ checkout: value });
               }
             }}
-          />
+          >
+            <Key>checkout</Key>
+          </Checkbox>
         </KeyValueWrapper>
         {!!step.with?.checkout && <CheckoutActionArgumentContainer step={step} updateArgs={handleUpdateArgs} />}
         {/* <KeyValueWrapper>
@@ -76,23 +79,21 @@ const StepActionArgumentContainer = ({ step, onUpdate }: Props) => {
     return (
       <Box>
         <KeyValueWrapper>
-          <Key>checkout</Key>:&nbsp;
-          <Switch
+          <Checkbox
             checked={(step.with?.checkout as boolean | undefined) ?? false}
-            onChange={(value) => {
+            onChange={(e) => {
+              const value = e.target.checked;
               if (!value) {
                 handleUpdateArgs({ checkout: value, clean: undefined, tagOrBranch: undefined });
               } else {
                 handleUpdateArgs({ checkout: value });
               }
             }}
-          />
+          >
+            <Key>checkout</Key>
+          </Checkbox>
         </KeyValueWrapper>
         {!!step.with?.checkout && <CheckoutActionArgumentContainer step={step} updateArgs={handleUpdateArgs} />}
-        {/* <KeyValueWrapper>
-          <Key>appVersion</Key>:&nbsp;
-          <Value></Value>
-        </KeyValueWrapper> */}
         <KeyValueWrapper style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
           <Key>command</Key>
           <Input.TextArea
@@ -146,6 +147,8 @@ const KeyValueWrapper = styled.div`
 
 const Key = styled.span`
   font-weight: 600;
+  font-size: 0.8rem;
+  color: #000;
 `;
 
 const Value = styled.code`

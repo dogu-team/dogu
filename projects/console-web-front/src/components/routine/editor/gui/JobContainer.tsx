@@ -5,6 +5,7 @@ import { move, update } from 'ramda';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
 import { AppVersion } from '@dogu-tech/action-common';
+import Trans from 'next-translate/Trans';
 
 import { flexRowBaseStyle } from '../../../../styles/box';
 import AddDeviceAndTagButton from './AddDeviceAndTagButton';
@@ -16,7 +17,6 @@ import { RUN_TEST_ACTION_NAME } from '../../../../types/routine';
 import { RoutineProjectTypeContext } from '../RoutineGUIEditor';
 import BrowserNameSelector from './BrowserNameSelector';
 import AppVersionContainer from './AppVersionContainer';
-import Trans from 'next-translate/Trans';
 
 interface NeedsProps {
   needs: JobSchema['needs'];
@@ -84,14 +84,6 @@ const RunsOn = ({ runsOn, onDelete }: RunsOnProps) => {
       </>
     );
   }
-  // // FIXME: henry - browser-manager
-  // else if ('browserName' in runsOn) {
-  //   return (
-  //     <Tag color="pink" closable onClose={() => onDelete(runsOn!)}>
-  //       {runsOn.browserName}
-  //     </Tag>
-  //   );
-  // }
 
   return (
     <>
@@ -239,11 +231,6 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
         updateJob({ ...job, 'runs-on': { group: newRunsOn } }, name);
         return;
       }
-      // // FIXME: henry - browser-manager
-      // else if ('browserName' in runsOn) {
-      //   updateJob({ ...job, 'runs-on': { browserName: runsOn.browserName, tag: '' } }, name);
-      //   return;
-      // }
 
       const newRunsOn = runsOn.filter((t) => t !== tag);
       updateJob({ ...job, 'runs-on': newRunsOn }, name);
@@ -376,11 +363,11 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
       )}
       <Content>
         <div>
-          <FlexRow>
-            <ContentTitle>{t('routine:routineGuiEditorJobDeviceLabel')}</ContentTitle>
+          <FlexRow style={{ marginBottom: '.25rem' }}>
+            <ContentTitle style={{ marginBottom: '0' }}>{t('routine:routineGuiEditorJobDeviceLabel')}</ContentTitle>
             <Checkbox
               checked={isGroupRun}
-              style={{ marginLeft: '.25rem' }}
+              style={{ marginLeft: '.75rem' }}
               onChange={(e) => {
                 if (e.target.checked) {
                   updateJob({ ...job, 'runs-on': { group: job['runs-on'] as string | string[] } }, name);
