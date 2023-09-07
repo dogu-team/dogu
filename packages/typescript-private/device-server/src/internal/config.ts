@@ -3,7 +3,7 @@ export const config = {
     use: false,
     port: 30001,
   },
-  externalPionStreamer: {
+  externalGoDeviceController: {
     use: false,
     port: 50055,
   },

@@ -13,6 +13,7 @@ import { GoDeviceControllerServiceService } from '@dogu-private/types/protocol/g
 import { GrpcClientBase } from '@dogu-private/types/protocol/grpc/base';
 import { delay, Printable, stringify } from '@dogu-tech/common';
 import { ClientReadableStream, credentials, makeClientConstructor, ServiceError, status } from '@grpc/grpc-js';
+import { config } from '../../config';
 
 import { Zombieable, ZombieProps, ZombieQueriable } from '../../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
@@ -32,15 +33,24 @@ export type DcGdcResultKeys = OneofUnionTypes.UnionValueKeys<DcGdcResult>;
 export type DcGdcResultUnionPick<Key> = OneofUnionTypes.UnionValuePick<DcGdcResult, Key>;
 export type DcGdcResultUnionPickValue<Key extends keyof DcGdcResultUnionPick<Key>> = OneofUnionTypes.UnionValuePickInner<DcGdcResult, Key>;
 
+type DeviceMap = Map<string, DcGdcDeviceContext>;
+
 const ServiceDefenition = GoDeviceControllerServiceService;
 
 export class GoDeviceControllerGrpcClient extends GrpcClientBase implements Zombieable {
   private zombieWaiter: ZombieQueriable;
-  static deviceMap = new Map<string, DcGdcDeviceContext>(); // go-device-controller debug시. 전체 devices리스트는 전역으로 1개만 존재하고 동기화해주기 위함.
+  static _deviceMap = new Map<string, DcGdcDeviceContext>(); // When debugging go-device-controller. The entire device list exists globally and is for synchronization..
+  _deviceMap = new Map<string, DcGdcDeviceContext>();
 
   constructor(public readonly platform: Platform, public readonly goDeviceController: GoDeviceControllerProcess, serverUrl: string, timeoutSeconds: number) {
     super(serverUrl, timeoutSeconds);
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
+  }
+  private get deviceMap(): DeviceMap {
+    if (config.externalGoDeviceController.use) {
+      return GoDeviceControllerGrpcClient._deviceMap;
+    }
+    return this._deviceMap;
   }
 
   static async create(platform: Platform, goDeviceController: GoDeviceControllerProcess, serverUrl: string, timeoutSeconds: number): Promise<GoDeviceControllerGrpcClient> {
@@ -138,14 +148,14 @@ export class GoDeviceControllerGrpcClient extends GrpcClientBase implements Zomb
   }
 
   async deviceConnected(serial: Serial, context: DcGdcDeviceContext): Promise<void> {
-    GoDeviceControllerGrpcClient.deviceMap.set(serial, context);
+    this.deviceMap.set(serial, context);
 
     await this.notifyDevicelist();
   }
 
   async deviceDisconnected(serial: Serial): Promise<void> {
-    if (GoDeviceControllerGrpcClient.deviceMap.has(serial)) {
-      GoDeviceControllerGrpcClient.deviceMap.delete(serial);
+    if (this.deviceMap.has(serial)) {
+      this.deviceMap.delete(serial);
     }
 
     await this.notifyDevicelist();
@@ -157,7 +167,7 @@ export class GoDeviceControllerGrpcClient extends GrpcClientBase implements Zomb
       throw new ErrorResultError(Code.CODE_NETWORK_CONNECTION_CLOSED, 'GoDeviceControllerGrpcClient not connected');
     }
     await this.call('dcGdcUpdateDevicelistParam', 'dcGdcUpdateDevicelistResult', {
-      devices: Array.from(GoDeviceControllerGrpcClient.deviceMap.values()),
+      devices: Array.from(this.deviceMap.values()),
     }).catch((e) => {
       ZombieServiceInstance.notifyDie(this, `notifyDevicelist error: ${stringify(e)}`);
       throw new ErrorResultError(Code.CODE_NETWORK_CONNECTION_ABORTED, `PionStreamingService.deviceConnected error: ${stringify(e)}`);
