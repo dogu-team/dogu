@@ -13,19 +13,9 @@ interface Props {
 const WorkingDirectoryContainer = ({ value, onChange }: Props) => {
   const router = useRouter();
 
-  if (value) {
-    return (
-      <FlexRow>
-        <p>{value}</p>
-        <CloseButton onClick={() => onChange(undefined)}>
-          <CloseOutlined />
-        </CloseButton>
-      </FlexRow>
-    );
-  }
-
   return (
     <WorkingDirectorySelector
+      value={value}
       onChange={onChange}
       organizationId={router.query.orgId as OrganizationId}
       projectId={router.query.pid as ProjectId}

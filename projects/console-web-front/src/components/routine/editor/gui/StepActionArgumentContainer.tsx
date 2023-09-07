@@ -1,6 +1,9 @@
+import { InfoCircleOutlined } from '@ant-design/icons';
 import { StepSchema } from '@dogu-private/types';
-import { Checkbox, Input } from 'antd';
+import { Checkbox, Input, Select } from 'antd';
+import Image from 'next/image';
 import styled from 'styled-components';
+import resources from '../../../../resources';
 
 import { flexRowBaseStyle } from '../../../../styles/box';
 import { CHECKOUT_ACTION_NAME, PREPARE_ACTION_NAME, RUN_TEST_ACTION_NAME } from '../../../../types/routine';
@@ -29,6 +32,11 @@ const CheckoutActionArgumentContainer = ({ step, updateArgs }: CheckoutProps) =>
 interface Props {
   step: StepSchema;
   onUpdate: (stepWith: StepSchema['with']) => void;
+}
+
+enum Environment {
+  PYTHON = 'python',
+  NODE = 'node',
 }
 
 const StepActionArgumentContainer = ({ step, onUpdate }: Props) => {
@@ -95,15 +103,51 @@ const StepActionArgumentContainer = ({ step, onUpdate }: Props) => {
         </KeyValueWrapper>
         {!!step.with?.checkout && <CheckoutActionArgumentContainer step={step} updateArgs={handleUpdateArgs} />}
         <KeyValueWrapper style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-          <Key>command</Key>
+          <Key style={{ marginBottom: '.25rem' }}>Environment</Key>
+          <Select
+            value={step.with?.environment}
+            options={[
+              {
+                label: (
+                  <FlexRow>
+                    <Image src={resources.icons.python} width={20} height={20} alt="python" />
+                    <p style={{ marginLeft: '.3rem' }}>Python</p>
+                  </FlexRow>
+                ),
+                value: Environment.PYTHON,
+              },
+              {
+                label: (
+                  <FlexRow>
+                    <Image src={resources.icons.node} width={20} height={20} alt="node" />
+                    <p style={{ marginLeft: '.3rem' }}>Node</p>
+                  </FlexRow>
+                ),
+                value: Environment.NODE,
+              },
+            ]}
+            placeholder="Select environment"
+            onChange={(value) => {
+              handleUpdateArgs({ environment: value });
+            }}
+            status={!!step.with?.environment && ![Environment.NODE, Environment.PYTHON].includes(step.with?.environment as Environment) ? 'warning' : undefined}
+            dropdownMatchSelectWidth={false}
+          />
+          {!!step.with?.environment && step.with.environment === Environment.PYTHON && (
+            <Description>
+              <InfoCircleOutlined /> For python, doesn&apos;t need to activate virtualenv in command.
+            </Description>
+          )}
+        </KeyValueWrapper>
+        <KeyValueWrapper style={{ flexDirection: 'column', alignItems: 'flex-start' }}>
+          <Key style={{ marginBottom: '.25rem' }}>command</Key>
           <Input.TextArea
             style={{ marginTop: '.25rem' }}
             value={step.with?.command as string | undefined}
             placeholder={`npm install
 npm run ...
 -----or-----
-python -m venv .venv
-source .venv/bin/activate
+# For python, does not need to activate virtualenv.
 pip install -r requirements.txt
 pytest ...`}
             autoSize
@@ -140,7 +184,8 @@ export default StepActionArgumentContainer;
 
 const KeyValueWrapper = styled.div`
   ${flexRowBaseStyle}
-  font-size: .8rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
   line-height: 1.5;
   user-select: text;
 `;
@@ -164,4 +209,14 @@ const Box = styled.div`
   & > *:last-child {
     margin-bottom: 0;
   }
+`;
+
+const FlexRow = styled.div`
+  ${flexRowBaseStyle}
+`;
+
+const Description = styled.p`
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  color: ${(props) => props.theme.main.colors.gray3};
 `;

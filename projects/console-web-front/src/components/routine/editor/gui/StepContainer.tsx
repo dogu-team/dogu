@@ -160,11 +160,7 @@ echo Dogu!`}
           <Content>
             <ContentTitle>{t('routineGuiEditorStepActionLabel')}</ContentTitle>
             <div>
-              {!!step.uses && [PREPARE_ACTION_NAME, CHECKOUT_ACTION_NAME, RUN_TEST_ACTION_NAME].includes(step.uses) ? (
-                <ActionSelector value={step.uses} optionLabelProp="title" style={{ width: '200px' }} onChange={updateAction} />
-              ) : (
-                <p>{step.uses}</p>
-              )}
+              <ActionSelector value={step.uses} optionLabelProp="title" style={{ width: '200px' }} onChange={updateAction} />
             </div>
           </Content>
 

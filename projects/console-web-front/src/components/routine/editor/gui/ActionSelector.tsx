@@ -44,7 +44,9 @@ const ActionSelector = (props: SelectProps) => {
     },
   ];
 
-  return <Select {...props} options={actions} dropdownMatchSelectWidth={false} />;
+  return (
+    <Select {...props} options={actions} dropdownMatchSelectWidth={false} status={props.value && !actions.find((action) => action.value === props.value) ? 'warning' : undefined} />
+  );
 };
 
 export default ActionSelector;

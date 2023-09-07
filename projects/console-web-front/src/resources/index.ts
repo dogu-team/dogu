@@ -14,6 +14,7 @@ const resources = {
     googleLogo: '/resources/icons/g-logo.png',
     typescript: '/resources/icons/languages/typescript.svg',
     javascript: '/resources/icons/languages/javascript.svg',
+    node: '/resources/icons/languages/node.svg',
     python: '/resources/icons/languages/python.svg',
     appium: '/resources/icons/frameworks/appium.png',
     gamium: '/resources/icons/frameworks/gamium.svg',

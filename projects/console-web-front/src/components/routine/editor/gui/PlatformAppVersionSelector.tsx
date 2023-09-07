@@ -37,38 +37,22 @@ const PlatformAppVersionSelector = ({ version, platform, onReset, onChange }: Pr
         <PlatformIcon platform={platform === 'android' ? Platform.PLATFORM_ANDROID : Platform.PLATFORM_IOS} />
         :&nbsp;
       </PlatformName>
-      {version ? (
-        <span>
-          {version}
-          <CloseButton onClick={() => onReset(platform)}>
-            <CloseOutlined />
-          </CloseButton>
-        </span>
-      ) : (
-        <div style={{ width: '200px' }}>
-          <ProjectApplicationSelector
-            organizationId={router.query.orgId as OrganizationId}
-            projectId={router.query.pid as ProjectId}
-            onSelectApp={(app) => onChange(platform, app?.version)}
-            placeholder="Select app"
-            extension={getExtension()}
-            open={isOpen}
-            toggleOpen={toggle}
-            close={close}
-            selectedApplication={undefined}
-            notFoundContent={
-              <EmptyBox>
-                <AppstoreOutlined style={{ fontSize: '3rem', marginBottom: '1rem' }} />
-                <EmptyText>
-                  No applicaiton.
-                  <br />
-                  Please upload your app from <Link href={`/dashboard/${router.query.orgId}/projects/${router.query.pid}/apps`}>app menu</Link>.
-                </EmptyText>
-              </EmptyBox>
-            }
-          />
-        </div>
-      )}
+
+      <div style={{ width: '200px' }}>
+        <ProjectApplicationSelector
+          defaultValue={version}
+          value={version}
+          organizationId={router.query.orgId as OrganizationId}
+          projectId={router.query.pid as ProjectId}
+          onSelectApp={(app) => onChange(platform, app?.version)}
+          placeholder="Select app"
+          extension={getExtension()}
+          open={isOpen}
+          toggleOpen={toggle}
+          close={close}
+          selectedApplication={undefined}
+        />
+      </div>
     </AppSelectPlatformWrapper>
   );
 };
@@ -91,15 +75,4 @@ const CloseButton = styled.button`
 const PlatformName = styled.div`
   ${flexRowBaseStyle}
   margin-right: 0.5rem;
-`;
-
-const EmptyBox = styled.div`
-  ${flexRowCenteredStyle}
-  flex-direction: column;
-`;
-
-const EmptyText = styled.p`
-  font-size: 0.9rem;
-  text-align: center;
-  line-height: 1.5;
 `;
