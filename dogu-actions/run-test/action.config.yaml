@@ -43,6 +43,9 @@ inputs:
     required: false
 
   # test options
+  environment:
+    description: 'test environment. available environment: node, python'
+    required: true
   command:
     description: test command
     required: true
