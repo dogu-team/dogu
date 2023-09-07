@@ -22,6 +22,7 @@ import { logger } from '../logger/logger.instance';
 import { Chrome, ChromeInstallablePlatform } from './chrome';
 import { chromeVersionUtils } from './chrome-version-utils';
 import { Edge, EdgeInstallablePlatformArch, edgeVersionUtils } from './edge';
+import { Edgedriver, EdgedriverInstallablePlatform } from './edgedriver';
 import { Firefox, FirefoxInstallablePlatform } from './firefox';
 import { firefoxVersionUtils } from './firefox-version-utils';
 import { Geckodriver } from './geckodriver';
@@ -55,8 +56,9 @@ export class BrowserManager {
   private readonly rootPath = HostPaths.external.browser.browsersPath();
   private readonly chrome = new Chrome();
   private readonly firefox = new Firefox();
-  private readonly edge = new Edge();
   private readonly geckodriver = new Geckodriver();
+  private readonly edge = new Edge();
+  private readonly edgedriver = new Edgedriver();
   private readonly safaridriver = new Safaridriver();
   private readonly adb = Adb;
 
@@ -226,9 +228,55 @@ export class BrowserManager {
                 };
               }
               break;
+            case 'edge':
+              {
+                const requestedBrowserVersion = mappedBrowserVersion === 'latest' ? await this.getLatestBrowserVersion({ browserName }) : mappedBrowserVersion;
+                const browserInstallation = await this.findBrowserInstallationForDesktopByVersionPrefix({
+                  browserName,
+                  browserPlatform,
+                  browserVersionPrefix: requestedBrowserVersion,
+                  deviceSerial,
+                });
+
+                if (browserInstallation) {
+                  return {
+                    browserName,
+                    browserPlatform,
+                    browserVersion: browserInstallation.browserVersion,
+                    browserMajorVersion: browserInstallation.browserMajorVersion,
+                    browserPath: browserInstallation.browserPath,
+                  };
+                }
+
+                const edgePlatformArch = this.getEdgeInstallablePlatformArchByBrowserPlatform(browserPlatform);
+                if (!edgePlatformArch) {
+                  throw new Error(`Edge is not supported on platform ${browserPlatform}`);
+                }
+
+                const foundBrowserVersion = await this.edge.findVersion({ ...edgePlatformArch, prefix: requestedBrowserVersion });
+                if (!foundBrowserVersion) {
+                  throw new Error(`Edge version ${requestedBrowserVersion} not found`);
+                }
+
+                const browserInstallResult = await this.edge.install({
+                  installableName: browserName,
+                  platform: edgePlatformArch.platform,
+                  arch: edgePlatformArch.arch,
+                  version: foundBrowserVersion,
+                  rootPath: this.rootPath,
+                });
+
+                return {
+                  browserName,
+                  browserPlatform,
+                  browserVersion: foundBrowserVersion,
+                  browserMajorVersion: edgeVersionUtils.parse(foundBrowserVersion).major,
+                  browserPath: browserInstallResult.executablePath,
+                };
+              }
+              break;
             case 'safari':
             case 'safaritp':
-            case 'edge':
             case 'iexplorer':
             case 'samsung-internet':
               throw new Error('Not implemented');
@@ -263,7 +311,7 @@ export class BrowserManager {
 
   private async ensureBrowserDriverForChrome(options: EnsureBrowserDriverOptions): Promise<EnsureBrowserDriverResult> {
     const { browserName, browserPlatform, browserVersion } = options;
-    const resolvedBrowserPlatform = this.getBrowserPlatformForChromeBrowserDriver(browserPlatform);
+    const resolvedBrowserPlatform = this.getBrowserPlatformForBrowserDriver(browserPlatform);
     const chromePlatform = this.getChromeInstallablePlatformByBrowserPlatform(resolvedBrowserPlatform);
     if (!chromePlatform) {
       throw new Error(`Chrome is not supported on platform ${resolvedBrowserPlatform}`);
@@ -334,6 +382,47 @@ export class BrowserManager {
     };
   }
 
+  private async ensureBrowserDriverForEdge(options: EnsureBrowserDriverOptions): Promise<EnsureBrowserDriverResult> {
+    const { browserName, browserVersion, browserPlatform } = options;
+    const resolvedBrowserPlatform = this.getBrowserPlatformForBrowserDriver(browserPlatform);
+    const edgedriverPlatform = this.getEdgedriverInstallablePlatformByBrowserPlatform(resolvedBrowserPlatform);
+    if (!edgedriverPlatform) {
+      throw new Error(`Edge is not supported on platform ${resolvedBrowserPlatform}`);
+    }
+
+    const driverFounds = await this.edgedriver.findInstallations({ installableName: 'msedgedriver', rootPath: this.rootPath, platform: edgedriverPlatform });
+    const parsedBrowserVersion = edgeVersionUtils.parse(browserVersion);
+    const driverMatchs = driverFounds.filter(({ majorVersion }) => majorVersion === parsedBrowserVersion.major);
+    if (driverMatchs.length > 0) {
+      const match = driverMatchs[0];
+      return {
+        browserName,
+        browserPlatform,
+        browserDriverVersion: match.version,
+        browserDriverPath: match.executablePath,
+      };
+    }
+
+    const foundBrowserVersion = await this.edgedriver.findVersion({ prefix: `${parsedBrowserVersion.major}`, platform: edgedriverPlatform });
+    if (!foundBrowserVersion) {
+      throw new Error(`Chrome version ${parsedBrowserVersion.major} not found`);
+    }
+
+    const driverInstallResult = await this.edgedriver.install({
+      installableName: 'msedgedriver',
+      version: foundBrowserVersion.version,
+      rootPath: this.rootPath,
+      platform: edgedriverPlatform,
+    });
+
+    return {
+      browserName,
+      browserPlatform,
+      browserDriverVersion: foundBrowserVersion.version,
+      browserDriverPath: driverInstallResult.executablePath,
+    };
+  }
+
   async ensureBrowserDriver(options: EnsureBrowserDriverOptions): Promise<EnsureBrowserDriverResult> {
     const { browserName, browserPlatform, browserVersion, deviceSerial } = options;
     switch (browserName) {
@@ -346,6 +435,7 @@ export class BrowserManager {
       case 'safaritp':
         return await this.ensureBrowserDriverForSafari({ browserName, browserPlatform, browserVersion, deviceSerial });
       case 'edge':
+        return await this.ensureBrowserDriverForEdge({ browserName, browserPlatform, browserVersion, deviceSerial });
       case 'iexplorer':
       case 'samsung-internet':
         throw new Error('Not implemented');
@@ -398,6 +488,33 @@ export class BrowserManager {
     return { browserInstallations };
   }
 
+  private async findBrowserInstallationsForEdgeDesktop(options: FindBrowserInstallationsOptions): Promise<FindBrowserInstallationsResult> {
+    const { browserName, browserPlatform } = options;
+    if (browserName !== 'edge') {
+      throw new Error(`Browser ${browserName} is not supported`);
+    }
+
+    const edgePlatformArch = this.getEdgeInstallablePlatformArchByBrowserPlatform(browserPlatform);
+    if (!edgePlatformArch) {
+      throw new Error(`Edge is not supported on platform ${browserPlatform}`);
+    }
+
+    const installations = await this.edge.findInstallations({
+      installableName: browserName,
+      rootPath: this.rootPath,
+      platform: edgePlatformArch.platform,
+      arch: edgePlatformArch.arch,
+    });
+    const browserInstallations = installations.map((installation) => ({
+      browserName,
+      browserPlatform,
+      browserVersion: installation.version,
+      browserMajorVersion: edgeVersionUtils.parse(installation.version).major,
+      browserPath: installation.executablePath,
+    }));
+    return { browserInstallations };
+  }
+
   async findBrowserInstallations(options: FindBrowserInstallationsOptions): Promise<FindBrowserInstallationsResult> {
     const { browserName, browserPlatform, deviceSerial } = options;
     switch (browserPlatform) {
@@ -410,9 +527,10 @@ export class BrowserManager {
             case 'firefox':
             case 'firefox-devedition':
               return await this.findBrowserInstallationsForFirefoxDesktop({ browserName, browserPlatform, deviceSerial });
+            case 'edge':
+              return await this.findBrowserInstallationsForEdgeDesktop({ browserName, browserPlatform, deviceSerial });
             case 'safari':
             case 'safaritp':
-            case 'edge':
             case 'iexplorer':
             case 'samsung-internet':
               throw new Error('Not implemented');
@@ -490,9 +608,31 @@ export class BrowserManager {
           browserPath: match.executablePath,
         };
       }
+      case 'edge': {
+        const edgePlatformArch = this.getEdgeInstallablePlatformArchByBrowserPlatform(browserPlatform);
+        if (!edgePlatformArch) {
+          throw new Error(`Edge is not supported on platform ${browserPlatform}`);
+        }
+
+        const founds = await this.edge.findInstallations({
+          installableName: browserName,
+          rootPath: this.rootPath,
+          platform: edgePlatformArch.platform,
+          arch: edgePlatformArch.arch,
+        });
+        const matches = founds.filter(({ version }) => version.startsWith(browserVersionPrefix));
+        if (matches.length === 0) {
+          return undefined;
+        }
+        const match = matches[0];
+        return {
+          browserVersion: match.version,
+          browserMajorVersion: edgeVersionUtils.parse(match.version).major,
+          browserPath: match.executablePath,
+        };
+      }
       case 'safari':
       case 'safaritp':
-      case 'edge':
       case 'iexplorer':
       case 'samsung-internet':
         throw new Error('Not implemented');
@@ -501,7 +641,7 @@ export class BrowserManager {
     }
   }
 
-  private getBrowserPlatformForChromeBrowserDriver(browserPlatform: BrowserPlatform): BrowserPlatform {
+  private getBrowserPlatformForBrowserDriver(browserPlatform: BrowserPlatform): BrowserPlatform {
     switch (browserPlatform) {
       case 'macos':
       case 'windows':
@@ -546,9 +686,23 @@ export class BrowserManager {
   private getEdgeInstallablePlatformArchByBrowserPlatform(browserPlatform: BrowserPlatform): EdgeInstallablePlatformArch | undefined {
     switch (browserPlatform) {
       case 'macos':
-        return this.edge.getEdgeInstallablePlatformArchOptions({ platform: 'darwin' });
+        return this.edge.getEdgeInstallablePlatformArch({ platform: 'darwin' });
       case 'windows':
-        return this.edge.getEdgeInstallablePlatformArchOptions({ platform: 'win32' });
+        return this.edge.getEdgeInstallablePlatformArch({ platform: 'win32' });
+      case 'android':
+      case 'ios':
+        return undefined;
+      default:
+        assertUnreachable(browserPlatform);
+    }
+  }
+
+  private getEdgedriverInstallablePlatformByBrowserPlatform(browserPlatform: BrowserPlatform): EdgedriverInstallablePlatform | undefined {
+    switch (browserPlatform) {
+      case 'macos':
+        return this.edgedriver.getEdgedriverInstallablePlatform({ platform: 'darwin' });
+      case 'windows':
+        return this.edgedriver.getEdgedriverInstallablePlatform({ platform: 'win32' });
       case 'android':
       case 'ios':
         return undefined;

@@ -256,7 +256,6 @@ export class Chrome {
       await fs.promises.mkdir(installPath, { recursive: true });
       const downloadFileName = this.getDownloadFileName(mergedOptions);
       const downloadUrl = this.getDownloadUrl({ ...mergedOptions, downloadFileName });
-
       const downloadFilePath = path.resolve(installPath, downloadFileName);
       try {
         await download({
@@ -265,6 +264,7 @@ export class Chrome {
           filePath: downloadFilePath,
           timeout: downloadTimeout,
         });
+
         await compressing.zip.uncompress(downloadFilePath, installPath);
         const uncompressedPath = path.resolve(installPath, path.basename(downloadFileName, '.zip'));
         const downloadFiles = await fs.promises.readdir(uncompressedPath);

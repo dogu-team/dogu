@@ -22,11 +22,7 @@ const edgeUpdatesUrlForLatest = 'https://edgeupdates.microsoft.com/api/products'
 const edgeUpdatesUrlForFull = 'https://edgeupdates.microsoft.com/api/products?view=enterprise';
 
 export const edgeVersionUtils = chromeVersionUtils;
-
-// https://msedgedriver.azureedge.net/LATEST_STABLE
-// etag
-
-// https://msedgedriver.azureedge.net/<version>/edgedriver_<edgedriverPlatform>.zip
+const edgeChannelNameMap = chromeChannelNameMap;
 
 export type EdgeInstallableName = Extract<BrowserOrDriverName, 'edge'>;
 export type EdgeChannelName = ChromeChannelName;
@@ -61,8 +57,8 @@ const executablePathMap: DeepReadonly<Record<EdgeInstallableName, Record<EdgeIns
       universal: ['Microsoft Edge.app', 'Contents', 'MacOS', 'Microsoft Edge'],
     },
     Windows: {
-      x64: ['msedgedriver.exe'],
-      arm64: ['msedgedriver.exe'],
+      x64: [],
+      arm64: [],
     },
   },
 };
@@ -242,7 +238,7 @@ export class Edge {
     const { data } = await this.client.get<EdgeUpdatesProducts>(edgeUpdatesUrlForLatest, {
       timeout,
     });
-    const productName = chromeChannelNameMap[channelName];
+    const productName = edgeChannelNameMap[channelName];
     const releases = data
       .filter((product) => product.Product === productName)
       .map((product) => product.Releases)
@@ -271,7 +267,7 @@ export class Edge {
     const { data } = await this.client.get<EdgeUpdatesProducts>(edgeUpdatesUrlForFull, {
       timeout,
     });
-    const productName = chromeChannelNameMap[channelName];
+    const productName = edgeChannelNameMap[channelName];
     const releases = data
       .filter((product) => product.Product === productName)
       .map((product) => product.Releases)
@@ -361,8 +357,225 @@ export class Edge {
   }
 
   async findInstallations(options: FindInstallationsOptions): Promise<FindInstallationsResult> {
-    const { installableName, platform, arch, rootPath } = options;
+    const { installableName, platform: requestedPlatform, arch: requestedArch, rootPath } = options;
     const installableNames = _.keys(executablePathMap) as EdgeInstallableName[];
+    const withInstallablePaths = installableNames
+      .filter((name) => name === installableName)
+      .map((installableName) => ({
+        installableName,
+        installablePath: path.resolve(rootPath, installableName),
+      }));
+    const withInstallablePathExists = await Promise.all(
+      withInstallablePaths.map(async ({ installableName, installablePath }) => ({
+        installableName,
+        installablePath,
+        installablePathExist: await fs.promises
+          .stat(installablePath)
+          .then((stat) => stat.isDirectory())
+          .catch(() => false),
+      })),
+    );
+    const withInstallablePathResults = withInstallablePathExists
+      .filter(({ installablePathExist }) => installablePathExist)
+      .map(({ installableName, installablePath }) => ({
+        installableName,
+        installablePath,
+      }));
+    const withVersionss = await Promise.all(
+      withInstallablePathResults.map(async ({ installableName, installablePath }) => {
+        const versions = await fs.promises.readdir(installablePath);
+        return versions
+          .map((version) => {
+            try {
+              const parsed = edgeVersionUtils.parse(version);
+              return {
+                installableName,
+                version,
+                majorVersion: parsed.major,
+                installablePath,
+              };
+            } catch (error) {
+              this.logger.warn(`Failed to parse version: ${version}: ${stringify(error)}`);
+              return null;
+            }
+          })
+          .filter((result): result is NonNullable<typeof result> => !!result);
+      }),
+    );
+    const withVersions = withVersionss.flat();
+    const withVersionPaths = withVersions.map(({ installableName, version, majorVersion, installablePath }) => ({
+      installableName,
+      version,
+      majorVersion,
+      versionPath: path.resolve(installablePath, version),
+    }));
+    const withVersionPathExists = await Promise.all(
+      withVersionPaths.map(async ({ installableName, version, majorVersion, versionPath }) => ({
+        installableName,
+        version,
+        majorVersion,
+        versionPath,
+        versionPathExist: await fs.promises
+          .stat(path.resolve(versionPath, version))
+          .then((stat) => stat.isDirectory())
+          .catch(() => false),
+      })),
+    );
+    const withVersionPathResults = withVersionPathExists
+      .filter(({ versionPathExist }) => versionPathExist)
+      .map(({ installableName, version, majorVersion, versionPath }) => ({
+        installableName,
+        version,
+        majorVersion,
+        versionPath,
+      }));
+    const withPlatformss = await Promise.all(
+      withVersionPathResults.map(async ({ installableName, version, majorVersion, versionPath }) => {
+        const platforms = await fs.promises.readdir(versionPath);
+        return platforms
+          .filter((platform) => platform === requestedPlatform)
+          .map((platform) => ({
+            installableName,
+            version,
+            majorVersion,
+            platform,
+            versionPath,
+          }))
+          .filter(({ platform }) => isValidEdgeInstallablePlatform(platform))
+          .map(({ installableName, version, majorVersion, platform, versionPath }) => ({
+            installableName,
+            version,
+            majorVersion,
+            platform: platform as EdgeInstallablePlatform,
+            versionPath,
+          }));
+      }),
+    );
+    const withPlatforms = withPlatformss.flat();
+    const withPlatformPaths = withPlatforms.map(({ installableName, version, majorVersion, platform, versionPath }) => ({
+      installableName,
+      version,
+      majorVersion,
+      platform,
+      platformPath: path.resolve(versionPath, platform),
+    }));
+    const withPlatformPathExists = await Promise.all(
+      withPlatformPaths.map(async ({ installableName, version, majorVersion, platform, platformPath }) => ({
+        installableName,
+        version,
+        majorVersion,
+        platform,
+        platformPath,
+        platformPathExist: await fs.promises
+          .stat(platformPath)
+          .then((stat) => stat.isDirectory())
+          .catch(() => false),
+      })),
+    );
+    const withPlatformPathResults = withPlatformPathExists
+      .filter(({ platformPathExist }) => platformPathExist)
+      .map(({ installableName, version, majorVersion, platform, platformPath }) => ({
+        installableName,
+        version,
+        majorVersion,
+        platform,
+        platformPath,
+      }));
+    const withArchss = await Promise.all(
+      withPlatformPathResults.map(async ({ installableName, version, majorVersion, platform, platformPath }) => {
+        const archs = await fs.promises.readdir(platformPath);
+        return archs
+          .filter((arch) => arch === requestedArch)
+          .map((arch) => ({
+            installableName,
+            version,
+            majorVersion,
+            platform,
+            arch,
+            platformPath,
+          }))
+          .filter(({ arch }) => isValidEdgeInstallableArch(arch))
+          .map(({ installableName, version, majorVersion, platform, arch }) => ({
+            installableName,
+            version,
+            majorVersion,
+            platform,
+            arch: arch as EdgeInstallableArch,
+            platformPath,
+          }));
+      }),
+    );
+    const withArchs = withArchss.flat();
+    const withArchPaths = withArchs.map(({ installableName, version, majorVersion, platform, arch, platformPath }) => ({
+      installableName,
+      version,
+      majorVersion,
+      platform,
+      arch,
+      archPath: path.resolve(platformPath, arch),
+    }));
+    const withArchPathExists = await Promise.all(
+      withArchPaths.map(async ({ installableName, version, majorVersion, platform, arch, archPath }) => ({
+        installableName,
+        version,
+        majorVersion,
+        platform,
+        arch,
+        archPath,
+        archPathExist: await fs.promises
+          .stat(archPath)
+          .then((stat) => stat.isDirectory())
+          .catch(() => false),
+      })),
+    );
+    const withArchPathResults = withArchPathExists
+      .filter(({ archPathExist }) => archPathExist)
+      .map(({ installableName, version, majorVersion, platform, arch, archPath }) => ({
+        installableName,
+        version,
+        majorVersion,
+        platform,
+        arch,
+        archPath,
+      }));
+    const withExecutablePaths = withArchPathResults.map(({ installableName, version, majorVersion, platform, arch, archPath }) => ({
+      installableName,
+      version,
+      majorVersion,
+      platform,
+      arch,
+      executablePath: this.getExecutablePath({ installableName, platform, arch, installPath: archPath }),
+    }));
+    const withExecutablePathExists = await Promise.all(
+      withExecutablePaths.map(async ({ installableName, version, majorVersion, platform, arch, executablePath }) => ({
+        installableName,
+        version,
+        majorVersion,
+        platform,
+        arch,
+        executablePath,
+        executablePathExist: await fs.promises
+          .stat(executablePath)
+          .then((stat) => stat.isFile())
+          .catch(() => false),
+      })),
+    );
+    const withExecutablePathResults = withExecutablePathExists
+      .filter(({ executablePathExist }) => executablePathExist)
+      .map(({ installableName, version, majorVersion, platform, arch, executablePath }) => ({
+        installableName,
+        version,
+        majorVersion,
+        platform,
+        arch,
+        executablePath,
+      }))
+      .sort((lhs, rhs) => {
+        const lhsVersion = edgeVersionUtils.parse(lhs.version);
+        const rhsVersion = edgeVersionUtils.parse(rhs.version);
+        return edgeVersionUtils.compareWithDesc(lhsVersion, rhsVersion);
+      });
+    return withExecutablePathResults;
   }
 
   async getDownloadUrl(options: GetDownloadUrlOptions): Promise<string> {
@@ -388,7 +601,7 @@ export class Edge {
     return downloadUrl;
   }
 
-  getEdgeInstallablePlatformArchOptions(options?: GetEdgeInstallablePlatformArchOptions): Required<EdgeInstallablePlatformArch> {
+  getEdgeInstallablePlatformArch(options?: GetEdgeInstallablePlatformArchOptions): EdgeInstallablePlatformArch {
     const mergedOptions = mergeGetEdgeInstallablePlatformArchOptions(options);
     const { platform, arch } = mergedOptions;
     const edgePlatformArch = _.get(platformMap, [platform, arch]) as EdgeInstallablePlatformArch | undefined;
