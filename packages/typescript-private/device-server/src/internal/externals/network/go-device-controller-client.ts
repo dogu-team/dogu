@@ -164,13 +164,13 @@ export class GoDeviceControllerGrpcClient extends GrpcClientBase implements Zomb
   async notifyDevicelist(): Promise<void> {
     if (!this.client) {
       ZombieServiceInstance.notifyDie(this, 'client empty');
-      throw new ErrorResultError(Code.CODE_NETWORK_CONNECTION_CLOSED, 'GoDeviceControllerGrpcClient not connected');
+      this.printable.error('GoDeviceControllerGrpcClient not connected');
     }
     await this.call('dcGdcUpdateDevicelistParam', 'dcGdcUpdateDevicelistResult', {
       devices: Array.from(this.deviceMap.values()),
     }).catch((e) => {
       ZombieServiceInstance.notifyDie(this, `notifyDevicelist error: ${stringify(e)}`);
-      throw new ErrorResultError(Code.CODE_NETWORK_CONNECTION_ABORTED, `PionStreamingService.deviceConnected error: ${stringify(e)}`);
+      this.printable.error(`GoDeviceControllerGrpcClient.notifyDevicelist error: ${stringify(e)}`);
     });
   }
 
