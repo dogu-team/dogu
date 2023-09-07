@@ -1,86 +1,18 @@
-import { OrganizationId, PlatformType, ProjectId, StepSchema, ROUTINE_STEP_NAME_MAX_LENGTH, Platform } from '@dogu-private/types';
-import { useRouter } from 'next/router';
+import { PlatformType, StepSchema, ROUTINE_STEP_NAME_MAX_LENGTH } from '@dogu-private/types';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import { AppVersion } from '@dogu-tech/action-common';
 import useTranslation from 'next-translate/useTranslation';
-import { CloseOutlined } from '@ant-design/icons';
-import { Input, Radio, Select } from 'antd';
+import { Input, Radio } from 'antd';
 
 import { CHECKOUT_ACTION_NAME, PREPARE_ACTION_NAME, RUN_TEST_ACTION_NAME } from '../../../../types/routine';
 import ActionSelector from './ActionSelector';
 import ContainerMenu from './ContainerMenu';
 import NameEditor from './NameEditor';
-import TestScriptSelector from './TestScriptSelector';
-import PlatformAppVersionSelector from './PlatformAppVersionSelector';
 import useProjectContext from '../../../../hooks/context/useProjectContext';
 import ErrorBox from '../../../common/boxes/ErrorBox';
 import StepActionArgumentContainer from './StepActionArgumentContainer';
-import WorkingDirectorySelector from './WorkingDirectorySelector';
 import WorkingDirectoryContainer from './WorkingDirectoryContainer';
-
-interface AppVersionProps {
-  step: StepSchema;
-  onUpdate: (platform: PlatformType, version: string | undefined) => void;
-  onClose: (platform: PlatformType) => void;
-}
-
-const AppVersionContainer = ({ step, onUpdate, onClose }: AppVersionProps) => {
-  const appVersion = step.with?.appVersion as AppVersion | undefined;
-
-  if (!appVersion) {
-    onUpdate('android', undefined);
-    onUpdate('ios', undefined);
-
-    return null;
-  }
-
-  if (typeof appVersion === 'string' || typeof appVersion === 'number') {
-    return <p>{appVersion}</p>;
-  }
-
-  return (
-    <div>
-      {Object.keys(appVersion).map((platform) => {
-        return (
-          <PlatformAppVersionSelector key={platform} version={appVersion[platform as PlatformType]} platform={platform as PlatformType} onReset={onClose} onChange={onUpdate} />
-        );
-      })}
-    </div>
-  );
-};
-
-interface ScriptProps {
-  step: StepSchema;
-  onUpdate: (path: string) => void;
-  onClose: () => void;
-}
-
-const ScriptContainer = ({ step, onUpdate, onClose }: ScriptProps) => {
-  const script = step.with?.script as string | undefined;
-  const router = useRouter();
-
-  if (!script) {
-    return (
-      <TestScriptSelector
-        organizationId={router.query.orgId as OrganizationId}
-        projectId={router.query.pid as ProjectId}
-        style={{ maxWidth: '20rem', width: '100%' }}
-        placeholder="Select script"
-        onChange={onUpdate}
-      />
-    );
-  }
-
-  return (
-    <div>
-      {script}
-      <CloseButton onClick={onClose}>
-        <CloseOutlined />
-      </CloseButton>
-    </div>
-  );
-};
 
 interface Props {
   jobName: string;
@@ -263,7 +195,7 @@ export default React.memo(StepContainer);
 const Box = styled.div`
   position: relative;
   padding: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
   border: 1px solid ${(props) => props.theme.colors.gray4};
   border-radius: 0.5rem;
   background-color: #efefef88;

@@ -330,45 +330,6 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
           </ContentInner>
         </Content>
       )}
-      <Content>
-        <div>
-          <ContentTitle>{t('routine:routineGuiEditorJobDeviceLabel')}</ContentTitle>
-          <ContentDesc>
-            {isGroupRun ? (
-              <Trans i18nKey="routine:routineGuiEditorJobDeviceGroupDescription" components={{ b: <b style={{ fontWeight: '600' }} /> }} />
-            ) : (
-              t('routine:routineGuiEditorJobDeviceDescription')
-            )}
-          </ContentDesc>
-        </div>
-        <div>
-          <Checkbox
-            checked={isGroupRun}
-            onChange={(e) => {
-              if (e.target.checked) {
-                updateJob({ ...job, 'runs-on': { group: job['runs-on'] as string | string[] } }, name);
-              } else {
-                updateJob({ ...job, 'runs-on': (job['runs-on'] as { group: string | string[] }).group as string | string[] }, name);
-              }
-            }}
-          >
-            {t('routine:routineGuiEditorJobDeviceGroupLabel')}
-          </Checkbox>
-        </div>
-        <ContentInner>
-          <RunsOn runsOn={job['runs-on']} onDelete={handleRemoveRunsOn} />
-          <AddDeviceAndTagButton onSelect={handleAddRunsOn} />
-        </ContentInner>
-      </Content>
-      <Content>
-        <div>
-          <ContentTitle>{t('routine:routineGuiEditorJobScreenRecordLabel')}</ContentTitle>
-          <ContentDesc>{t('routine:routineGuiEditorJobScreenRecordDescription')}</ContentDesc>
-        </div>
-        <ContentInner>
-          <Switch checked={job.record} onChange={handleUpdateRecord} />
-        </ContentInner>
-      </Content>
       {projectType === PROJECT_TYPE.WEB ? (
         <Content>
           <div>
@@ -414,6 +375,46 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
         </Content>
       )}
       <Content>
+        <div>
+          <FlexRow>
+            <ContentTitle>{t('routine:routineGuiEditorJobDeviceLabel')}</ContentTitle>
+            <Checkbox
+              checked={isGroupRun}
+              style={{ marginLeft: '.25rem' }}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  updateJob({ ...job, 'runs-on': { group: job['runs-on'] as string | string[] } }, name);
+                } else {
+                  updateJob({ ...job, 'runs-on': (job['runs-on'] as { group: string | string[] }).group as string | string[] }, name);
+                }
+              }}
+            >
+              {t('routine:routineGuiEditorJobDeviceGroupLabel')}
+            </Checkbox>
+          </FlexRow>
+          <ContentDesc>
+            {isGroupRun ? (
+              <Trans i18nKey="routine:routineGuiEditorJobDeviceGroupDescription" components={{ b: <b style={{ fontWeight: '600' }} /> }} />
+            ) : (
+              t('routine:routineGuiEditorJobDeviceDescription')
+            )}
+          </ContentDesc>
+        </div>
+        <ContentInner>
+          <RunsOn runsOn={job['runs-on']} onDelete={handleRemoveRunsOn} />
+          <AddDeviceAndTagButton onSelect={handleAddRunsOn} />
+        </ContentInner>
+      </Content>
+      <Content>
+        <div>
+          <ContentTitle>{t('routine:routineGuiEditorJobScreenRecordLabel')}</ContentTitle>
+          <ContentDesc>{t('routine:routineGuiEditorJobScreenRecordDescription')}</ContentDesc>
+        </div>
+        <ContentInner>
+          <Switch checked={job.record} onChange={handleUpdateRecord} />
+        </ContentInner>
+      </Content>
+      <Content>
         <div>{t('routine:routineGuiEditorStepLabel')}</div>
         <StepWrapper>
           {job.steps.map((step, i) => {
@@ -445,7 +446,7 @@ const Box = styled.div`
 `;
 
 const Content = styled.div`
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
 `;
 
 const ContentTitle = styled.p`
@@ -482,4 +483,8 @@ const AddStepButton = styled.div`
   font-size: 0.9rem;
   text-align: center;
   cursor: pointer;
+`;
+
+const FlexRow = styled.div`
+  ${flexRowBaseStyle}
 `;

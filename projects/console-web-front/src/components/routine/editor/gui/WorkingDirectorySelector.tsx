@@ -3,6 +3,7 @@ import { Select, SelectProps } from 'antd';
 import styled from 'styled-components';
 import useSWR from 'swr';
 import { GoFileDirectory } from 'react-icons/go';
+import { useState } from 'react';
 
 import { swrAuthFetcher } from '../../../../api';
 import { flexRowCenteredStyle } from '../../../../styles/box';
@@ -13,7 +14,8 @@ interface Props extends Omit<SelectProps, 'options'> {
 }
 
 const WorkingDirectorySelector = ({ organizationId, projectId, ...props }: Props) => {
-  const { data, isLoading, error } = useSWR<string[]>(`/organizations/${organizationId}/projects/${projectId}/scm/cwds`, swrAuthFetcher, {
+  const [isFocused, setIsFocused] = useState(false);
+  const { data, isLoading, error } = useSWR<string[]>(isFocused && `/organizations/${organizationId}/projects/${projectId}/scm/cwds`, swrAuthFetcher, {
     revalidateOnFocus: false,
   });
 
@@ -30,6 +32,8 @@ const WorkingDirectorySelector = ({ organizationId, projectId, ...props }: Props
       loading={isLoading}
       dropdownMatchSelectWidth={false}
       {...props}
+      onFocus={() => setIsFocused(true)}
+      onBlur={() => setIsFocused(false)}
       notFoundContent={
         <EmptyBox>
           <GoFileDirectory style={{ fontSize: '3rem', marginBottom: '1rem' }} />
