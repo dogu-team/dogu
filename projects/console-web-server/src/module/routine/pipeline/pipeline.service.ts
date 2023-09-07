@@ -501,6 +501,11 @@ export class PipelineService {
               await manager.getRepository(RoutineDeviceJob).save(routineDeviceJob);
               routineDeviceJobs.push(routineDeviceJob);
             }
+          } else {
+            /**
+             * @note No device by device tag
+             */
+            throw new HttpException(`No device by device tag: ${pickable}`, HttpStatus.NOT_FOUND);
           }
         }
       }
@@ -519,6 +524,18 @@ export class PipelineService {
 
         const jobYamlData = routineSchema.jobs[jobName];
         const stepDatas = jobYamlData.steps.map((step, index) => {
+          if (step.with) {
+            const withKeys = Object.keys(step.with);
+            for (const withKey of withKeys) {
+              if (typeof step.with[withKey] === 'string') {
+                step.with[withKey] = (step.with[withKey] as string).replace(/\\+n/g, '\n');
+              }
+            }
+          }
+          if (step.run) {
+            step.run = step.run.replace(/\\+n/g, '\n');
+          }
+
           const stepData = this.dataSource.manager.getRepository(RoutineStep).create({
             routineDeviceJobId: deviceJob.routineDeviceJobId,
             name: step.name,
