@@ -291,10 +291,14 @@ export class DeviceStatusService {
 
   async updateDevice(manager: EntityManager, organizationId: OrganizationId, deviceId: DeviceId, dto: UpdateDeviceDto): Promise<DeviceResponse> {
     const { name, maxParallelJobs } = dto;
-    const [deviceById, deviceByName] = await Promise.all([
-      manager.getRepository(Device).findOne({ where: { deviceId } }),
-      manager.getRepository(Device).findOne({ where: { organizationId, name } }),
-    ]);
+    const deviceById = await manager.getRepository(Device).findOne({ where: { deviceId } });
+    const deviceByName = await manager.getRepository(Device).findOne({ where: { organizationId, name } });
+    const nameTag = await manager.getRepository(DeviceTag).findOne({ where: { organizationId, name: dto.name } });
+
+    if (nameTag) {
+      throw new HttpException(`This name is already used in device tag: ${name}`, HttpStatus.BAD_REQUEST);
+    }
+
     if (!deviceById) {
       throw new HttpException(`This device does not exists. : ${deviceId}`, HttpStatus.BAD_REQUEST);
     }

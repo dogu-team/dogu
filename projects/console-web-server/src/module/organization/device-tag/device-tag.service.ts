@@ -5,6 +5,7 @@ import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nest
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityManager } from 'typeorm';
 import { DeviceTag } from '../../../db/entity/device-tag.entity';
+import { Device } from '../../../db/entity/device.entity';
 import { DeviceAndDeviceTag } from '../../../db/entity/relations/device-and-device-tag.entity';
 import { EMPTY_PAGE, Page } from '../../common/dto/pagination/page';
 import { DeviceStatusService } from '../device/device-status.service';
@@ -58,6 +59,12 @@ export class DeviceTagService {
 
   async createTag(manager: EntityManager, organizationId: OrganizationId, dto: CreateDeviceTagDto): Promise<DeviceTagBase> {
     const tag = await manager.getRepository(DeviceTag).findOne({ where: { organizationId, name: dto.name }, withDeleted: true });
+    const namedDevice = await manager.getRepository(Device).findOne({ where: { organizationId, name: dto.name } });
+
+    if (namedDevice) {
+      throw new HttpException(`Tag name is duplicated with device name: ${dto.name}`, HttpStatus.CONFLICT);
+    }
+
     if (tag && tag.deletedAt === null) {
       throw new HttpException(`Tag name is duplicated: ${dto.name}`, HttpStatus.CONFLICT);
     }
@@ -75,6 +82,12 @@ export class DeviceTagService {
 
   async updateTag(organizationId: OrganizationId, tagId: DeviceTagId, dto: UpdateDeviceTagDto): Promise<DeviceTagBase> {
     const tag = await this.dataSource.getRepository(DeviceTag).findOne({ where: { organizationId, deviceTagId: tagId } });
+    const namedDevice = await this.dataSource.getRepository(Device).findOne({ where: { organizationId, name: dto.name } });
+
+    if (namedDevice) {
+      throw new HttpException(`Tag name is duplicated with device name: ${dto.name}`, HttpStatus.CONFLICT);
+    }
+
     if (!tag) {
       throw new HttpException(`Tag name is not exist: ${dto.name}`, HttpStatus.NOT_FOUND);
     }
