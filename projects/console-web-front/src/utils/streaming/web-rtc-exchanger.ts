@@ -1,8 +1,8 @@
-import { DeviceStreamingOffer } from '@dogu-private/console';
+import { DeviceStreamingDto, DeviceStreamingOffer, DeviceStreamingSessionInfoDto } from '@dogu-private/console';
 import { DefaultScreenCaptureOption, DeviceId, OrganizationId, Platform, Serial, StreamingOption } from '@dogu-private/types';
 import { sdpExt } from '@dogu-private/webrtc';
 import { PromiseOrValue, transformAndValidate } from '@dogu-tech/common';
-import { StreamingAnswerDto } from '@dogu-tech/device-client-common';
+import { DeviceStreamingAnswerDto } from '@dogu-tech/device-client-common';
 
 import { config } from '../../../config';
 import { startDeviceStreaming } from '../../api/device';
@@ -115,11 +115,10 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
     }
   }
 
-  private async onMessage(peerConnection: RTCPeerConnection, event: MessageEvent): Promise<void> {
-    const result = await transformAndValidate(StreamingAnswerDto, JSON.parse(event.data));
-    const { value } = result;
+  private async processAnswer(peerConnection: RTCPeerConnection, answerDto: DeviceStreamingAnswerDto): Promise<void> {
+    const { value } = answerDto;
     if (value === undefined) {
-      throw new Error(`invalid message ${JSON.stringify(result)}`);
+      throw new Error(`invalid message ${JSON.stringify(answerDto)}`);
     }
     const { $case } = value;
     if ($case === 'errorResult') {
@@ -137,7 +136,28 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
       const { iceCandidate } = value;
       await this.addCandidate(peerConnection, iceCandidate);
     } else {
-      throw new Error(`invalid message ${JSON.stringify(result)}`);
+      throw new Error(`invalid message ${JSON.stringify(answerDto)}`);
+    }
+  }
+
+  private async processSessionInfo(sessionInfo: DeviceStreamingSessionInfoDto): Promise<void> {
+    const userInfo = sessionInfo.value;
+    const userIds = userInfo.map((user) => user.userId);
+    // FIXME:(felix) user connection info
+    console.debug('sessionInfo', userIds);
+  }
+
+  private async onMessage(peerConnection: RTCPeerConnection, event: MessageEvent): Promise<void> {
+    const result = await transformAndValidate(DeviceStreamingDto, JSON.parse(event.data));
+    console.log('result', JSON.stringify(result));
+
+    switch (result.streamingData.type) {
+      case 'ANSWER':
+        await this.processAnswer(peerConnection, result.streamingData);
+        break;
+      case 'USER_INFO':
+        this.processSessionInfo(result.streamingData);
+        break;
     }
   }
 

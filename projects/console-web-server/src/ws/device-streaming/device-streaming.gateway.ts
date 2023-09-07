@@ -1,3 +1,4 @@
+import { DeviceStreamingDto } from '@dogu-private/console';
 import { WebSocketProxyReceiveClose } from '@dogu-private/console-host-agent';
 import { DeviceId, UserId } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, stringify, transformAndValidate } from '@dogu-tech/common';
@@ -35,13 +36,10 @@ export class DeviceStreamingGateway implements OnGatewayConnection, OnGatewayDis
 
   async sendDeviceStreamingSession(webSocket: WebSocket, deviceId: DeviceId, userId: UserId): Promise<void> {
     let isRunning = true;
-    const lastSessions = await this.deviceStreamingSessionQueue.rangeParamDatas(deviceId);
-    const groupByUserIds = _.groupBy(lastSessions);
-    let lastUserIds = Object.keys(groupByUserIds);
-    let lastSessionCount = lastUserIds.length;
-
+    let lastUserIds: UserId[] = [];
     while (isRunning) {
       if (webSocket.readyState === WebSocket.CLOSED) {
+        await this.deviceStreamingSessionQueue.removeAllData(deviceId, userId);
         return;
       }
 
@@ -51,7 +49,6 @@ export class DeviceStreamingGateway implements OnGatewayConnection, OnGatewayDis
       const curSessions = await this.deviceStreamingSessionQueue.rangeParamDatas(deviceId);
       const groupByCurUserIds = _.groupBy(curSessions);
       const curUserIds = Object.keys(groupByCurUserIds);
-      const curSessionCount = curUserIds.length;
 
       const lengthString = curSessions.length.toString();
       this.logger.info('sendDeviceStreamingSession:: COUNT', { lengthString });
@@ -59,11 +56,16 @@ export class DeviceStreamingGateway implements OnGatewayConnection, OnGatewayDis
 
       const users = await this.dataSource.getRepository(User).find({ where: { userId: In(curUserIds) } });
 
-      // if (lastSessionCount !== curSessionCount) {
-      //   webSocket.send(JSON.stringify({ sessionInfo: curUserIds }));
-      // }
-
-      lastSessionCount = curSessionCount;
+      if (!_.isEqual(lastUserIds, curUserIds)) {
+        const data: DeviceStreamingDto = {
+          streamingData: {
+            type: 'USER_INFO',
+            value: users,
+          },
+        };
+        webSocket.send(JSON.stringify(data));
+        lastUserIds = [...curUserIds];
+      }
 
       await new Promise((resolve) => setTimeout(resolve, DEVICE_STREAMING_SESSION_LIVE_DELAY_COUNT * 1000));
     }
@@ -81,9 +83,6 @@ export class DeviceStreamingGateway implements OnGatewayConnection, OnGatewayDis
       deviceId: deviceQuery,
     });
     const { deviceId, organizationId } = deviceStreamingQueryDto;
-    const timerId = setTimeout(() => {
-      closeWebSocketWithTruncateReason(webSocket, 1000, 'Timeout');
-    }, 100 * 1000);
 
     webSocket.addEventListener('open', async (event) => {
       this.logger.verbose('open');
@@ -92,7 +91,6 @@ export class DeviceStreamingGateway implements OnGatewayConnection, OnGatewayDis
       this.logger.verbose('error');
     });
     webSocket.addEventListener('close', (event) => {
-      clearTimeout(timerId);
       const { code, reason } = event;
       this.logger.verbose('close', { code, reason });
     });
@@ -104,6 +102,7 @@ export class DeviceStreamingGateway implements OnGatewayConnection, OnGatewayDis
         closeWebSocketWithTruncateReason(webSocket, 1003, 'Unauthorized');
       }
       const { data } = event;
+
       this.onMessage(webSocket, data.toString()).catch((error) => {
         this.logger.error('error', { error: stringify(error) });
         closeWebSocketWithTruncateReason(webSocket, 1001, error);
@@ -131,8 +130,14 @@ export class DeviceStreamingGateway implements OnGatewayConnection, OnGatewayDis
         closeWebSocketWithTruncateReason(webSocket, answer.code, answer.reason);
         break;
       }
+      const answerDto: DeviceStreamingDto = {
+        streamingData: {
+          type: 'ANSWER',
+          value: answer.value,
+        },
+      };
       this.logger.info('message', { answer });
-      webSocket.send(JSON.stringify(answer));
+      webSocket.send(JSON.stringify(answerDto));
     }
   }
 }
