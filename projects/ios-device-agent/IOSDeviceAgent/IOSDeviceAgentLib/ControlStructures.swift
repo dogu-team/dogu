@@ -1,5 +1,4 @@
 import Foundation
-import DoguTypes
 
 typealias Seq = UInt32
 
@@ -54,18 +53,18 @@ struct PatternControl {
     self.control = control
     self.result = result
   }
-  
+
   func discardNotify() {
-    var controlResult = DoguTypes.Inner_Types_CfGdcDaControlResult()
-    controlResult.error = DoguTypes.Outer_ErrorResult()
+    var controlResult = Inner_Types_CfGdcDaControlResult()
+    controlResult.error = Outer_ErrorResult()
     controlResult.error.code = Outer_Code.inputDiscarded
     controlResult.error.message = "input discarded"
     result.set(result: controlResult)
   }
-  
+
   func error(code: Outer_Code, message: String) {
-    var controlResult = DoguTypes.Inner_Types_CfGdcDaControlResult()
-    controlResult.error = DoguTypes.Outer_ErrorResult()
+    var controlResult = Inner_Types_CfGdcDaControlResult()
+    controlResult.error = Outer_ErrorResult()
     controlResult.error.code = code
     controlResult.error.message = message
     result.set(result: controlResult)

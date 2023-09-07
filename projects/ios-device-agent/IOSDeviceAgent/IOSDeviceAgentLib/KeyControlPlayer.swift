@@ -1,5 +1,4 @@
 import Combine
-import DoguTypes
 
 actor KeyControlPlayer: IControlPlayer {
   typealias Broker = KeyControlBroker
@@ -46,8 +45,8 @@ actor KeyControlPlayer: IControlPlayer {
 
   private func play(currentTime: Date) async throws {
     let play = try await broker!.pop()
-    var result = DoguTypes.Inner_Types_CfGdcDaControlResult()
-    result.error = DoguTypes.Outer_ErrorResult()
+    var result = Inner_Types_CfGdcDaControlResult()
+    result.error = Outer_ErrorResult()
 
     switch play {
     case .none:

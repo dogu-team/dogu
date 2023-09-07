@@ -35,7 +35,7 @@ const DEST_TS_INNER_TYPES_DIR = `${CURRENT_DIR}/../../packages/typescript-privat
 const DEST_GO_TYPES_DIR = `${CURRENT_DIR}/../../projects/go-device-controller/types/protocol/generated`;
 const DEST_DEVICE_AGENT_ANDROID_JAVA_DIR = `${CURRENT_DIR}/../../projects/android-device-agent/android/app/src/main/java/`;
 const DEST_DEVICE_AGENT_ANDROID_KOTLIN_DIR = `${CURRENT_DIR}/../../projects/android-device-agent/android/app/src/main/kotlin/`;
-const DEST_SWIFT_TYPES_DIR = `${CURRENT_DIR}/../../projects/ios-device-agent/IOSDeviceAgent/DoguTypes/Sources/DoguTypes/protocol/generated`;
+const DEST_SWIFT_TYPES_DIR = `${CURRENT_DIR}/../../projects/ios-device-agent/IOSDeviceAgent/IOSDeviceAgentLib/DoguTypes/protocol/generated`;
 
 async function prepare(): Promise<void> {
   await filesystem.deleteDirs([EXPORT_DIR]);

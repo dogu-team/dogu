@@ -1,4 +1,3 @@
-import DoguTypes
 import Foundation
 import GRPC
 import SwiftProtobuf
@@ -14,7 +13,8 @@ actor ServiceProvider: Inner_Grpc_Services_IosDeviceAgentServiceAsyncProvider {
   }
 
   func relay(
-    requestStream: GRPC.GRPCAsyncRequestStream<DoguTypes.Inner_Params_CfGdcDaParamList>, responseStream: GRPC.GRPCAsyncResponseStreamWriter<DoguTypes.Inner_Params_CfGdcDaResultList>,
+    requestStream: GRPC.GRPCAsyncRequestStream<Inner_Params_CfGdcDaParamList>,
+    responseStream: GRPC.GRPCAsyncResponseStreamWriter<Inner_Params_CfGdcDaResultList>,
     context: GRPC.GRPCAsyncServerCallContext
   ) async throws {
     do {
@@ -50,7 +50,7 @@ actor ServiceProvider: Inner_Grpc_Services_IosDeviceAgentServiceAsyncProvider {
     return Google_Protobuf_Empty()
   }
 
-  func call(request: DoguTypes.Inner_Params_DcIdaParam, context: GRPC.GRPCAsyncServerCallContext) async throws -> DoguTypes.Inner_Params_DcIdaResult {
+  func call(request: Inner_Params_DcIdaParam, context: GRPC.GRPCAsyncServerCallContext) async throws -> Inner_Params_DcIdaResult {
     do {
       return try await self.callInternal(request: request, context: context)
     } catch let error as GRPCStatus {
@@ -59,8 +59,8 @@ actor ServiceProvider: Inner_Grpc_Services_IosDeviceAgentServiceAsyncProvider {
       throw GRPCStatus(code: .internalError, message: "internal error: \(error)")
     }
   }
-  
-  func callInternal(request: DoguTypes.Inner_Params_DcIdaParam, context: GRPC.GRPCAsyncServerCallContext) async throws -> DoguTypes.Inner_Params_DcIdaResult {
+
+  func callInternal(request: Inner_Params_DcIdaParam, context: GRPC.GRPCAsyncServerCallContext) async throws -> Inner_Params_DcIdaResult {
     switch request.value {
     case .dcIdaRunappParam(let param):
       let result = try await self.onRunApp(param: param)
@@ -88,7 +88,7 @@ actor ServiceProvider: Inner_Grpc_Services_IosDeviceAgentServiceAsyncProvider {
 
     }
   }
-  
+
   func onRunApp(param: Inner_Types_DcIdaRunAppParam) async throws -> Inner_Types_DcIdaRunAppResult {
     let filtered = param.installedAppNames.filter { element in element == param.bundleID }
     guard filtered.count != 0 else {
@@ -99,7 +99,7 @@ actor ServiceProvider: Inner_Grpc_Services_IosDeviceAgentServiceAsyncProvider {
         }
       }
     }
-    
+
     do {
       try await WebDriverAgentLibUtils.runApp(appPath: param.appPath, bundleId: param.bundleID)
       return Inner_Types_DcIdaRunAppResult.with {
@@ -117,9 +117,9 @@ actor ServiceProvider: Inner_Grpc_Services_IosDeviceAgentServiceAsyncProvider {
       }
     }
   }
-  
+
   @MainActor
-  func onGetSystemInfo(param: Inner_Types_DcIdaGetSystemInfoParam) async throws -> Inner_Types_DcIdaGetSystemInfoResult{
+  func onGetSystemInfo(param: Inner_Types_DcIdaGetSystemInfoParam) async throws -> Inner_Types_DcIdaGetSystemInfoResult {
     do {
       let screenSize = WebDriverAgentLibUtils.screenSize()
       return Inner_Types_DcIdaGetSystemInfoResult.with {
@@ -133,12 +133,11 @@ actor ServiceProvider: Inner_Grpc_Services_IosDeviceAgentServiceAsyncProvider {
       }
     }
   }
-  
-  func isPortListening(param: Inner_Types_DcIdaIsPortListeningParam) async throws -> Inner_Types_DcIdaIsPortListeningResult{
+
+  func isPortListening(param: Inner_Types_DcIdaIsPortListeningParam) async throws -> Inner_Types_DcIdaIsPortListeningResult {
     let isOpen = await isTCPPortOpen(host: "127.0.0.1", port: UInt16(param.port))
     return Inner_Types_DcIdaIsPortListeningResult.with {
       $0.isListening = isOpen
     }
   }
 }
-

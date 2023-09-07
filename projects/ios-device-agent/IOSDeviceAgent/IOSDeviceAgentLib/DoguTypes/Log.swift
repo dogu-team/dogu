@@ -29,7 +29,7 @@ public protocol LogMapHandler {
   func verbose(_ data: [String: Any]) async
 }
 
-public class Log {
+public class LogClass {
   public enum Level: Int32 {
     case error = 10
     case warning = 20
@@ -91,12 +91,12 @@ public class Log {
       do {
         serialized = try JSONSerialization.data(withJSONObject: data, options: .sortedKeys)
       } catch {
-        Log.CriticalLogger.default.log("serialization failed. error: \(error) data: \(data)")
+        LogClass.CriticalLogger.default.log("serialization failed. error: \(error) data: \(data)")
         return ""
       }
 
       guard let string = String(data: serialized, encoding: .utf8) else {
-        Log.CriticalLogger.default.log("conversion failed. data: \(serialized)")
+        LogClass.CriticalLogger.default.log("conversion failed. data: \(serialized)")
         return ""
       }
       return string

@@ -6,7 +6,6 @@
 //  Copyright © 2023 Dogu. All rights reserved.
 //
 
-import DoguTypes
 import Foundation
 
 class ControlResult {
@@ -20,13 +19,13 @@ class ControlResult {
     self.responser = responser
   }
 
-  public func set(result: DoguTypes.Inner_Types_CfGdcDaControlResult) {
-    if(self.hasSet){
+  public func set(result: Inner_Types_CfGdcDaControlResult) {
+    if self.hasSet {
       return
     }
     self.hasSet = true
     Task {
-      var resultList = DoguTypes.Inner_Params_CfGdcDaResultList()
+      var resultList = Inner_Params_CfGdcDaResultList()
       var resultUnion = Inner_Params_CfGdcDaResult()
       resultUnion.seq = self.seq
       resultUnion.cfGdcDaControlResult = result

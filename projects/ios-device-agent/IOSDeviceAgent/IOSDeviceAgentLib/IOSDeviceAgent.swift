@@ -1,4 +1,3 @@
-import DoguTypes
 import Foundation
 import GRPC
 import NIOPosix
@@ -19,7 +18,7 @@ public final class IOSDeviceAgent: NSObject {
     runInternal()
     WebDriverAgentLibUtils.run()
   }
-  
+
   private func openInternal() throws {
     config = try EnvironmentParser().parse()
     let screenSize = WebDriverAgentLibUtils.screenSize()
@@ -33,7 +32,7 @@ public final class IOSDeviceAgent: NSObject {
         Log.shared.debug("DeviceControlProcessor open failed. \($0)")
       })
   }
-  
+
   private func runInternal() {
     Task.catchable(
       {

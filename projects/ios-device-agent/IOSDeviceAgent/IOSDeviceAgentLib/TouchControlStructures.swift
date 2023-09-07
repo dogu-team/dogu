@@ -1,5 +1,3 @@
-import DoguTypes
-
 enum TouchControlPatternKey: String {
   case down = "d"
   case move = "m"
