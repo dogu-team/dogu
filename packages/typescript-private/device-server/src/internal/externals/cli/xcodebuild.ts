@@ -86,10 +86,11 @@ export interface XcodebuildOption {
 
 export class XCTestRunContext {
   public isAlive = true;
-  public error = '';
+  public history = '';
   private logs = '';
   public readonly startTime: number;
   private isWaitLogPrinted = false;
+  private pid = 0;
 
   constructor(
     private readonly tempDirPath: string,
@@ -97,10 +98,14 @@ export class XCTestRunContext {
     private readonly option: XcodebuildOption,
     private readonly logger: Printable,
   ) {
+    this.pid = proc.pid ?? 0;
     this.startTime = Date.now();
     const redirectContext = { stop: false };
+    proc.on('open', () => {
+      this.history += `opened time: ${Date.now()}, pid: ${this.pid},`;
+    });
     proc.on('close', (code, signal) => {
-      this.error += `closed with code: ${stringify(code)}, signal: ${stringify(signal)},`;
+      this.history += `closed time:${Date.now()}, pid: ${this.pid}, with code: ${stringify(code)}, signal: ${stringify(signal)},`;
       this.logger.error(`xcodebuild closed with error: ${this.error}`);
       this.isAlive = false;
       redirectContext.stop = true;
@@ -110,10 +115,14 @@ export class XCTestRunContext {
     });
   }
   public kill(reason: string): void {
-    this.error += `killed. reason: ${reason},`;
+    this.history += `killed. time:${Date.now()}, reason: ${reason},`;
     killChildProcess(this.proc).catch((error) => {
       this.logger.error('XCTestRunContext killChildProcess', { error: errorify(error) });
     });
+  }
+
+  get error(): string {
+    return this.history;
   }
 
   public update(): void {
@@ -213,5 +222,6 @@ export async function killPreviousXcodebuild(serial: Serial, pattern: string, pr
   if (!pid) {
     return;
   }
-  child_process.execSync(`kill -9 ${pid}`);
+  printable.info(`killPreviousXcodebuild pattern: ${pattern}, pid: ${pid}`);
+  await ChildProcess.execIgnoreError(`kill -9 ${pid}`, { timeout: 10000 }, printable);
 }

@@ -130,6 +130,7 @@ class ZombieWdaXCTest implements Zombieable {
     await XcodeBuild.killPreviousXcodebuild(this.serial, `webdriveragent.*${this.serial}`, this.printable).catch(() => {
       this.logger.warn?.('killPreviousXcodebuild failed');
     });
+    await delay(1000);
     const originDerivedData = await DerivedData.create(HostPaths.external.xcodeProject.wdaDerivedDataPath());
     if (!originDerivedData.hasSerial(this.serial)) {
       throw new Error(`WebdriverAgent can't be executed on ${this.serial}`);
