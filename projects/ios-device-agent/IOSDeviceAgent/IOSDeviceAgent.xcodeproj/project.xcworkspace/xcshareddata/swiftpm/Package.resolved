@@ -10,15 +10,6 @@
       }
     },
     {
-      "identity" : "grpc-swift",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/grpc/grpc-swift.git",
-      "state" : {
-        "revision" : "9f4e2e4fd0294fe83372a2b80426a883d5617d2b",
-        "version" : "1.17.0"
-      }
-    },
-    {
       "identity" : "swift-atomics",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-atomics.git",
@@ -37,57 +28,12 @@
       }
     },
     {
-      "identity" : "swift-log",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-log.git",
-      "state" : {
-        "revision" : "532d8b529501fb73a2455b179e0bbb6d49b652ed",
-        "version" : "1.5.3"
-      }
-    },
-    {
       "identity" : "swift-nio",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-nio.git",
       "state" : {
         "revision" : "e855380cb5234e96b760d93e0bfdc403e381e928",
         "version" : "2.45.0"
-      }
-    },
-    {
-      "identity" : "swift-nio-extras",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-nio-extras.git",
-      "state" : {
-        "revision" : "0e0d0aab665ff1a0659ce75ac003081f2b1c8997",
-        "version" : "1.19.0"
-      }
-    },
-    {
-      "identity" : "swift-nio-http2",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-nio-http2.git",
-      "state" : {
-        "revision" : "a8ccf13fa62775277a5d56844878c828bbb3be1a",
-        "version" : "1.27.0"
-      }
-    },
-    {
-      "identity" : "swift-nio-ssl",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-nio-ssl.git",
-      "state" : {
-        "revision" : "9d0d5d8798a576fbf674a823734e65e15ca5f2ec",
-        "version" : "2.23.1"
-      }
-    },
-    {
-      "identity" : "swift-nio-transport-services",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-nio-transport-services.git",
-      "state" : {
-        "revision" : "59b966415dd336db6f388bbfe3fb43cfa549b981",
-        "version" : "1.16.0"
       }
     },
     {

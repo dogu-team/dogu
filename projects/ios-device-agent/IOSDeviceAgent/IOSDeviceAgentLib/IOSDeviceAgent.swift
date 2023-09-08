@@ -1,13 +1,20 @@
 import Foundation
-import GRPC
-import NIOPosix
-import UIKit
+import Network
 
-public final class IOSDeviceAgent: NSObject {
+//import UIKit
+
+public final class IOSDeviceAgent {
   private var config = Config()
   private let controlProcessor = MainControlProcessor()
+  var preventGabage: ControlSession?
+  var listener: NWListener?
+  var sessionIdSeed: UInt32 = 0
+  private var sessions: [UInt32: ControlSession] = [:]
 
   public static let shared: IOSDeviceAgent = IOSDeviceAgent()
+
+  init() {
+  }
 
   public func open() throws {
     try openInternal()
@@ -17,6 +24,16 @@ public final class IOSDeviceAgent: NSObject {
   public func run() {
     runInternal()
     WebDriverAgentLibUtils.run()
+  }
+
+  @MainActor
+  public func addSession(session: ControlSession) {
+    self.sessions[session.sessionId] = session
+  }
+
+  @MainActor
+  public func removeSession(session: ControlSession) {
+    self.sessions.removeValue(forKey: session.sessionId)
   }
 
   private func openInternal() throws {
@@ -34,24 +51,35 @@ public final class IOSDeviceAgent: NSObject {
   }
 
   private func runInternal() {
-    Task.catchable(
-      {
-        let group = MultiThreadedEventLoopGroup(numberOfThreads: 1)
-        defer {
-          try? group.syncShutdownGracefully()
+    let port = self.config.grpcPort
+    let nwport: NWEndpoint.Port = NWEndpoint.Port(rawValue: UInt16(self.config.grpcPort)) ?? 50002
+    do {
+      listener = try NWListener(using: .tcp, on: nwport)
+      listener?.stateUpdateHandler = { [weak self] state in
+        switch state {
+        case .ready:
+          Log.shared.info("ScreenServer started on port \(port)")
+        case .failed(let error):
+          Log.shared.error("ScreenServer failure, error: \(error.localizedDescription)")
+        default:
+          break
         }
+      }
 
-        let server = try await Server.insecure(group: group)
-          .withServiceProviders([
-            ServiceProvider(controlProcessor: self.controlProcessor)
-          ])
-          .bind(host: "0.0.0.0", port: Int(self.config.grpcPort))
-          .get()
-        Log.shared.debug("grpc server started on \(WebDriverAgentLibUtils.ipv4()):\(self.config.grpcPort)")
-        try await server.onClose.get()
-      },
-      catch: {
-        Log.shared.debug("grpc server closed. \($0)")
-      })
+      listener?.newConnectionHandler = { [weak self] connection in
+        Log.shared.info("ScreenServer newConnectionHandler")
+        guard let self = self else {
+          Log.shared.error("ScreenServer is not initialized")
+          return
+        }
+        self.sessionIdSeed += 1
+        self.preventGabage = ControlSession(
+          sessionId: self.sessionIdSeed, connection: connection, listener: ControlSessionListener(controlProcessor: self.controlProcessor, iosdeviceagent: self))
+      }
+
+      listener?.start(queue: .main)
+    } catch {
+      Log.shared.error("ScreenServer Failed to start server, error: \(error.localizedDescription)")
+    }
   }
 }

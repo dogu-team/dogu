@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package inner.params;
 
+import "inner/params/cf_gdc_da.proto";
 import "inner/types/dc_ida.proto";
 
 option go_package = "go-device-controller/types/protocol/generated/proto/inner/params";
@@ -13,6 +14,7 @@ message DcIdaParam {
     types.DcIdaGetSystemInfoParam dc_ida_get_system_info_param = 2;
     types.DcIdaIsPortListeningParam dc_ida_is_port_listening_param = 3;
     types.DcIdaQueryProfileParam dc_ida_query_profile_param = 4;
+    params.CfGdcDaParamList dc_gdc_da_param = 5;
   }
 }
 
@@ -22,5 +24,6 @@ message DcIdaResult {
     types.DcIdaGetSystemInfoResult dc_ida_get_system_info_result = 2;
     types.DcIdaIsPortListeningResult dc_ida_is_port_listening_result = 3;
     types.DcIdaQueryProfileResult dc_ida_query_profile_result = 4;
+    params.CfGdcDaResultList dc_gdc_da_result = 5;
   }
 }

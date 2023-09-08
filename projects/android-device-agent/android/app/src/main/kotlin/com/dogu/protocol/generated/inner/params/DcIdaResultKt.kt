@@ -117,6 +117,30 @@ object DcIdaResultKt {
     fun hasDcIdaQueryProfileResult(): kotlin.Boolean {
       return _builder.hasDcIdaQueryProfileResult()
     }
+
+    /**
+     * <code>.inner.params.CfGdcDaResultList dc_gdc_da_result = 5;</code>
+     */
+    var dcGdcDaResult: com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaResultList
+      @JvmName("getDcGdcDaResult")
+      get() = _builder.getDcGdcDaResult()
+      @JvmName("setDcGdcDaResult")
+      set(value) {
+        _builder.setDcGdcDaResult(value)
+      }
+    /**
+     * <code>.inner.params.CfGdcDaResultList dc_gdc_da_result = 5;</code>
+     */
+    fun clearDcGdcDaResult() {
+      _builder.clearDcGdcDaResult()
+    }
+    /**
+     * <code>.inner.params.CfGdcDaResultList dc_gdc_da_result = 5;</code>
+     * @return Whether the dcGdcDaResult field is set.
+     */
+    fun hasDcGdcDaResult(): kotlin.Boolean {
+      return _builder.hasDcGdcDaResult()
+    }
     val valueCase: com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult.ValueCase
       @JvmName("getValueCase")
       get() = _builder.getValueCase()
@@ -141,4 +165,7 @@ val com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultOrBuilder.dcIdaIsP
 
 val com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultOrBuilder.dcIdaQueryProfileResultOrNull: com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult?
   get() = if (hasDcIdaQueryProfileResult()) getDcIdaQueryProfileResult() else null
+
+val com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultOrBuilder.dcGdcDaResultOrNull: com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaResultList?
+  get() = if (hasDcGdcDaResult()) getDcGdcDaResult() else null
 

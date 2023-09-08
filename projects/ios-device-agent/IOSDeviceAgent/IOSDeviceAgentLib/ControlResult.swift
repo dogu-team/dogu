@@ -11,12 +11,12 @@ import Foundation
 class ControlResult {
   public let seq: Seq
   private var hasSet: Bool
-  private let responser: RelayResponser
+  private let session: ControlSession
 
-  public init(seq: Seq, responser: RelayResponser) {
+  public init(seq: Seq, session: ControlSession) {
     self.seq = seq
     self.hasSet = false
-    self.responser = responser
+    self.session = session
   }
 
   public func set(result: Inner_Types_CfGdcDaControlResult) {
@@ -30,7 +30,7 @@ class ControlResult {
       resultUnion.seq = self.seq
       resultUnion.cfGdcDaControlResult = result
       resultList.results.append(resultUnion)
-      try await self.responser.send(resultList: resultList)
+      try self.session.send(data: resultList.serializedData())
     }
   }
 }

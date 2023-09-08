@@ -10,13 +10,15 @@ import {
   DcIdaRunAppParam,
   DcIdaRunAppResult,
 } from '../types/dc_ida';
+import { CfGdcDaParamList, CfGdcDaResultList } from './cf_gdc_da';
 
 export interface DcIdaParam {
   value?:
     | { $case: 'dcIdaRunappParam'; dcIdaRunappParam: DcIdaRunAppParam }
     | { $case: 'dcIdaGetSystemInfoParam'; dcIdaGetSystemInfoParam: DcIdaGetSystemInfoParam }
     | { $case: 'dcIdaIsPortListeningParam'; dcIdaIsPortListeningParam: DcIdaIsPortListeningParam }
-    | { $case: 'dcIdaQueryProfileParam'; dcIdaQueryProfileParam: DcIdaQueryProfileParam };
+    | { $case: 'dcIdaQueryProfileParam'; dcIdaQueryProfileParam: DcIdaQueryProfileParam }
+    | { $case: 'dcGdcDaParam'; dcGdcDaParam: CfGdcDaParamList };
 }
 
 export interface DcIdaResult {
@@ -24,7 +26,8 @@ export interface DcIdaResult {
     | { $case: 'dcIdaRunappResult'; dcIdaRunappResult: DcIdaRunAppResult }
     | { $case: 'dcIdaGetSystemInfoResult'; dcIdaGetSystemInfoResult: DcIdaGetSystemInfoResult }
     | { $case: 'dcIdaIsPortListeningResult'; dcIdaIsPortListeningResult: DcIdaIsPortListeningResult }
-    | { $case: 'dcIdaQueryProfileResult'; dcIdaQueryProfileResult: DcIdaQueryProfileResult };
+    | { $case: 'dcIdaQueryProfileResult'; dcIdaQueryProfileResult: DcIdaQueryProfileResult }
+    | { $case: 'dcGdcDaResult'; dcGdcDaResult: CfGdcDaResultList };
 }
 
 function createBaseDcIdaParam(): DcIdaParam {
@@ -44,6 +47,9 @@ export const DcIdaParam = {
     }
     if (message.value?.$case === 'dcIdaQueryProfileParam') {
       DcIdaQueryProfileParam.encode(message.value.dcIdaQueryProfileParam, writer.uint32(34).fork()).ldelim();
+    }
+    if (message.value?.$case === 'dcGdcDaParam') {
+      CfGdcDaParamList.encode(message.value.dcGdcDaParam, writer.uint32(42).fork()).ldelim();
     }
     return writer;
   },
@@ -79,6 +85,9 @@ export const DcIdaParam = {
             dcIdaQueryProfileParam: DcIdaQueryProfileParam.decode(reader, reader.uint32()),
           };
           break;
+        case 5:
+          message.value = { $case: 'dcGdcDaParam', dcGdcDaParam: CfGdcDaParamList.decode(reader, reader.uint32()) };
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -106,6 +115,8 @@ export const DcIdaParam = {
             $case: 'dcIdaQueryProfileParam',
             dcIdaQueryProfileParam: DcIdaQueryProfileParam.fromJSON(object.dcIdaQueryProfileParam),
           }
+        : isSet(object.dcGdcDaParam)
+        ? { $case: 'dcGdcDaParam', dcGdcDaParam: CfGdcDaParamList.fromJSON(object.dcGdcDaParam) }
         : undefined,
     };
   },
@@ -119,6 +130,7 @@ export const DcIdaParam = {
       (obj.dcIdaIsPortListeningParam = message.value?.dcIdaIsPortListeningParam ? DcIdaIsPortListeningParam.toJSON(message.value?.dcIdaIsPortListeningParam) : undefined);
     message.value?.$case === 'dcIdaQueryProfileParam' &&
       (obj.dcIdaQueryProfileParam = message.value?.dcIdaQueryProfileParam ? DcIdaQueryProfileParam.toJSON(message.value?.dcIdaQueryProfileParam) : undefined);
+    message.value?.$case === 'dcGdcDaParam' && (obj.dcGdcDaParam = message.value?.dcGdcDaParam ? CfGdcDaParamList.toJSON(message.value?.dcGdcDaParam) : undefined);
     return obj;
   },
 
@@ -148,6 +160,9 @@ export const DcIdaParam = {
         dcIdaQueryProfileParam: DcIdaQueryProfileParam.fromPartial(object.value.dcIdaQueryProfileParam),
       };
     }
+    if (object.value?.$case === 'dcGdcDaParam' && object.value?.dcGdcDaParam !== undefined && object.value?.dcGdcDaParam !== null) {
+      message.value = { $case: 'dcGdcDaParam', dcGdcDaParam: CfGdcDaParamList.fromPartial(object.value.dcGdcDaParam) };
+    }
     return message;
   },
 };
@@ -169,6 +184,9 @@ export const DcIdaResult = {
     }
     if (message.value?.$case === 'dcIdaQueryProfileResult') {
       DcIdaQueryProfileResult.encode(message.value.dcIdaQueryProfileResult, writer.uint32(34).fork()).ldelim();
+    }
+    if (message.value?.$case === 'dcGdcDaResult') {
+      CfGdcDaResultList.encode(message.value.dcGdcDaResult, writer.uint32(42).fork()).ldelim();
     }
     return writer;
   },
@@ -204,6 +222,9 @@ export const DcIdaResult = {
             dcIdaQueryProfileResult: DcIdaQueryProfileResult.decode(reader, reader.uint32()),
           };
           break;
+        case 5:
+          message.value = { $case: 'dcGdcDaResult', dcGdcDaResult: CfGdcDaResultList.decode(reader, reader.uint32()) };
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -231,6 +252,8 @@ export const DcIdaResult = {
             $case: 'dcIdaQueryProfileResult',
             dcIdaQueryProfileResult: DcIdaQueryProfileResult.fromJSON(object.dcIdaQueryProfileResult),
           }
+        : isSet(object.dcGdcDaResult)
+        ? { $case: 'dcGdcDaResult', dcGdcDaResult: CfGdcDaResultList.fromJSON(object.dcGdcDaResult) }
         : undefined,
     };
   },
@@ -245,6 +268,7 @@ export const DcIdaResult = {
       (obj.dcIdaIsPortListeningResult = message.value?.dcIdaIsPortListeningResult ? DcIdaIsPortListeningResult.toJSON(message.value?.dcIdaIsPortListeningResult) : undefined);
     message.value?.$case === 'dcIdaQueryProfileResult' &&
       (obj.dcIdaQueryProfileResult = message.value?.dcIdaQueryProfileResult ? DcIdaQueryProfileResult.toJSON(message.value?.dcIdaQueryProfileResult) : undefined);
+    message.value?.$case === 'dcGdcDaResult' && (obj.dcGdcDaResult = message.value?.dcGdcDaResult ? CfGdcDaResultList.toJSON(message.value?.dcGdcDaResult) : undefined);
     return obj;
   },
 
@@ -272,6 +296,12 @@ export const DcIdaResult = {
       message.value = {
         $case: 'dcIdaQueryProfileResult',
         dcIdaQueryProfileResult: DcIdaQueryProfileResult.fromPartial(object.value.dcIdaQueryProfileResult),
+      };
+    }
+    if (object.value?.$case === 'dcGdcDaResult' && object.value?.dcGdcDaResult !== undefined && object.value?.dcGdcDaResult !== null) {
+      message.value = {
+        $case: 'dcGdcDaResult',
+        dcGdcDaResult: CfGdcDaResultList.fromPartial(object.value.dcGdcDaResult),
       };
     }
     return message;

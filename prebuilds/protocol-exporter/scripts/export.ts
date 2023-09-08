@@ -1,5 +1,7 @@
 import { filesystem, process as buildToolsProcess, time, typescript } from '@dogu-dev-private/base-build-tools';
+import { findFiles } from '@dogu-dev-private/base-build-tools/src/filesystem';
 import fsPromises from 'fs/promises';
+import path from 'path';
 import { cwd } from 'process';
 import { Md5 } from 'ts-md5';
 import { config } from './config';
@@ -80,13 +82,18 @@ async function findEnvs(): Promise<string[]> {
 
 async function exportGoJavaKotlinSwift(protos: string[]): Promise<void> {
   await filesystem.createDirs([EXPORT_GO_PROTO_DIR]);
-  return buildToolsProcess.createProcess(
+  await buildToolsProcess.createProcess(
     `docker exec ${
       config.docker.containerName
     } /bin/bash --login -c "source /root/.bashrc && protoc --proto_path=${PROTO_DIR} --go_out=${EXPORT_GO_PROTO_DIR} --go_opt=paths=source_relative --go-grpc_out=${EXPORT_GO_PROTO_DIR} --go-grpc_opt=paths=source_relative --java_out=lite:${EXPORT_JAVA_DIR} --kotlin_out=${EXPORT_KOTLIN_DIR} --swift_out=${EXPORT_SWIFT_DIR} --grpc-swift_out=${EXPORT_SWIFT_DIR} --swift_opt=FileNaming=PathToUnderscores --grpc-swift_opt=FileNaming=PathToUnderscores --swift_opt=Visibility=Public --grpc-swift_opt=Visibility=Public ${protos.join(
       ' ',
     )}"`,
   );
+  const swiftFiles = await findFiles(path.resolve(CURRENT_DIR, EXPORT_SWIFT_DIR), '.swift');
+  const tobeRemovedFiles = swiftFiles.filter((file) => path.basename(file).startsWith('inner_grpc_services'));
+  for (const removedFile of tobeRemovedFiles) {
+    await fsPromises.unlink(removedFile);
+  }
 }
 
 async function exportTypeScript(protos: string[], dir: string): Promise<void> {
