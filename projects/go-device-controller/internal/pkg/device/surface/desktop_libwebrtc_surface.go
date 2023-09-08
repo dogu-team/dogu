@@ -38,20 +38,20 @@ func newDesktopLibwebrtcSurface() *desktopLibwebrtcSurface {
 	return &s
 }
 
-func (s *desktopLibwebrtcSurface) Reconnect(serial string, screenCaptureOption *streaming.ScreenCaptureOption) error {
+func (s *desktopLibwebrtcSurface) Connect(serial string, screenCaptureOption *streaming.ScreenCaptureOption) error {
 	var err error
 	var port int
 	listener, port, err, mutex := utils.ListenTCPFreePort()
 	s.listener = listener
 	defer mutex.Unlock()
 	if err != nil {
-		log.Inst.Error("desktopLibwebrtcSurface.Reconnect", zap.String("serial", serial), zap.Error(err))
+		log.Inst.Error("desktopLibwebrtcSurface.Connect", zap.String("serial", serial), zap.Error(err))
 		return err
 	}
 
 	exePath, err := getDesktopCapturerPath()
 	if err != nil {
-		log.Inst.Error("desktopLibwebrtcSurface.Reconnect", zap.String("serial", serial), zap.Error(err))
+		log.Inst.Error("desktopLibwebrtcSurface.Connect", zap.String("serial", serial), zap.Error(err))
 		return err
 	}
 
@@ -76,12 +76,12 @@ func (s *desktopLibwebrtcSurface) Reconnect(serial string, screenCaptureOption *
 		"--fps", strconv.FormatUint(screenCaptureOption.GetMaxFps(), 10),
 	)
 	if err != nil {
-		log.Inst.Error("desktopLibwebrtcSurface.Reconnect", zap.String("serial", serial), zap.Error(err))
+		log.Inst.Error("desktopLibwebrtcSurface.Connect", zap.String("serial", serial), zap.Error(err))
 		return err
 	}
 	s.conn, err = s.listener.AcceptTCP()
 	if err != nil {
-		log.Inst.Error("desktopLibwebrtcSurface.Reconnect", zap.String("serial", serial), zap.Error(err))
+		log.Inst.Error("desktopLibwebrtcSurface.Connect", zap.String("serial", serial), zap.Error(err))
 		return err
 	}
 

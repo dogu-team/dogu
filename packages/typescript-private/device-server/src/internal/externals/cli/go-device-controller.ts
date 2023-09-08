@@ -20,8 +20,8 @@ export class GoDeviceControllerProcess implements Zombieable {
 
   static async create(platform: Platform, deviceServerPort: number, logger: FilledPrintable): Promise<GoDeviceControllerProcess> {
     let port = 0;
-    if (config.externalPionStreamer.use) {
-      port = config.externalPionStreamer.port;
+    if (config.externalGoDeviceController.use) {
+      port = config.externalGoDeviceController.port;
     } else {
       port = await getFreePort();
     }
@@ -36,7 +36,7 @@ export class GoDeviceControllerProcess implements Zombieable {
   }
 
   get props(): ZombieProps {
-    return { isExternal: config.externalPionStreamer.use, port: this.port };
+    return { isExternal: config.externalGoDeviceController.use, port: this.port };
   }
   get printable(): Printable {
     return this.logger;
@@ -46,12 +46,12 @@ export class GoDeviceControllerProcess implements Zombieable {
   }
 
   async revive(): Promise<void> {
-    if (config.externalPionStreamer.use) {
+    if (config.externalGoDeviceController.use) {
       return;
     }
     this.proc = startServer(this.port, this.deviceServerPort, this.logger);
     this.proc.on('close', (code: number, signal: string) => {
-      this.logger.verbose('PionStreamingService.revive exit');
+      this.logger.error('PionStreamingService.revive exit');
       ZombieServiceInstance.notifyDie(this, 'ChildProcess close');
     });
     await Promise.resolve();

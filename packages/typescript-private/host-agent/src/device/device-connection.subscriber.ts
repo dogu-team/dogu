@@ -84,6 +84,7 @@ export class DeviceConnectionSubscriber {
 
   private async onMessage(data: string): Promise<void> {
     const deviceConnectionInfo = await transformAndValidate(DeviceConnectionSubscribe.receiveMessage, JSON.parse(data));
+    this.logger.debug('DeviceConnectionStateSubscriber received message', { deviceConnectionInfo });
     const { state } = deviceConnectionInfo;
     switch (state) {
       case DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED:

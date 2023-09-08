@@ -23,6 +23,23 @@ object DcIdaResultKt {
     internal fun _build(): com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult = _builder.build()
 
     /**
+     * <code>fixed32 seq = 10;</code>
+     */
+    var seq: kotlin.Int
+      @JvmName("getSeq")
+      get() = _builder.getSeq()
+      @JvmName("setSeq")
+      set(value) {
+        _builder.setSeq(value)
+      }
+    /**
+     * <code>fixed32 seq = 10;</code>
+     */
+    fun clearSeq() {
+      _builder.clearSeq()
+    }
+
+    /**
      * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 1;</code>
      */
     var dcIdaRunappResult: com.dogu.protocol.generated.inner.types.DcIda.DcIdaRunAppResult
@@ -117,6 +134,30 @@ object DcIdaResultKt {
     fun hasDcIdaQueryProfileResult(): kotlin.Boolean {
       return _builder.hasDcIdaQueryProfileResult()
     }
+
+    /**
+     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
+     */
+    var dcGdcDaControlResult: com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult
+      @JvmName("getDcGdcDaControlResult")
+      get() = _builder.getDcGdcDaControlResult()
+      @JvmName("setDcGdcDaControlResult")
+      set(value) {
+        _builder.setDcGdcDaControlResult(value)
+      }
+    /**
+     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
+     */
+    fun clearDcGdcDaControlResult() {
+      _builder.clearDcGdcDaControlResult()
+    }
+    /**
+     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
+     * @return Whether the dcGdcDaControlResult field is set.
+     */
+    fun hasDcGdcDaControlResult(): kotlin.Boolean {
+      return _builder.hasDcGdcDaControlResult()
+    }
     val valueCase: com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult.ValueCase
       @JvmName("getValueCase")
       get() = _builder.getValueCase()
@@ -141,4 +182,7 @@ val com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultOrBuilder.dcIdaIsP
 
 val com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultOrBuilder.dcIdaQueryProfileResultOrNull: com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult?
   get() = if (hasDcIdaQueryProfileResult()) getDcIdaQueryProfileResult() else null
+
+val com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultOrBuilder.dcGdcDaControlResultOrNull: com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult?
+  get() = if (hasDcGdcDaControlResult()) getDcGdcDaControlResult() else null
 

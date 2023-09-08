@@ -7,7 +7,6 @@
 
 import AVFoundation
 import Accelerate
-import NIO
 import ReplayKit
 import VideoToolbox
 

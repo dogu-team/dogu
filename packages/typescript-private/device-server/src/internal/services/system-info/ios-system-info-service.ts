@@ -25,15 +25,15 @@ export class IosSystemInfoService implements SystemInfoService {
       idcLogger.error(error);
       return 'unknown';
     });
-    const deviceAgentInfo = await this.service.call('dcIdaGetSystemInfoParam', 'dcIdaGetSystemInfoResult', {});
+    const deviceAgentInfo = await this.service.sendWithProtobuf('dcIdaGetSystemInfoParam', 'dcIdaGetSystemInfoResult', {});
     info.graphics.displays.push({
       vendor: '',
       vendorId: '',
       model: '',
       deviceName: '',
       displayId: '',
-      resolutionX: deviceAgentInfo.screenWidth,
-      resolutionY: deviceAgentInfo.screenHeight,
+      resolutionX: deviceAgentInfo?.screenWidth ?? 0,
+      resolutionY: deviceAgentInfo?.screenHeight ?? 0,
     });
     return info;
   }

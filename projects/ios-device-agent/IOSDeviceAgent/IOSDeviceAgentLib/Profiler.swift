@@ -6,7 +6,6 @@
 //  Copyright © 2023 Dogu. All rights reserved.
 //
 
-import DoguTypes
 import Foundation
 
 func queryProfile(param: Inner_Types_DcIdaQueryProfileParam) async throws -> Inner_Types_DcIdaQueryProfileResult {

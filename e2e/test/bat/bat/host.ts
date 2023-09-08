@@ -1,8 +1,12 @@
 import { delay, loop } from '@dogu-tech/common';
 import { job, test } from '@dogu-tech/dest';
+import { findEndswith } from '@dogu-tech/node';
 import { ElementHandle, expect, Locator, Page } from '@playwright/test';
+import fs from 'fs';
+import path from 'path';
 import { dostPlaywrightColor, launchDost } from '../../../src/dost';
 import { copyIosDeviceAgentProject, replaceIosDeviceAgentSigningStyle, replaceWebDriverAgentSigningStyle } from '../../../src/ios-helper';
+import { pathMap } from '../../../src/path-map';
 import { Driver } from '../../../src/playwright-driver';
 import { getClockTime } from '../../../src/time';
 import { Timer } from '../../../src/timer';
@@ -216,6 +220,44 @@ export class Dost {
       }
       if (!isConnected) {
         throw new Error('Dost is not connected');
+      }
+    });
+  }
+
+  checkLog(): void {
+    test('Dogu-Agent check critical error log', async () => {
+      const dostLogsPath = path.resolve(pathMap.root, 'nm-space/projects/dost/generated/logs');
+      const criticalKeyword = ['unhandledRejection', 'uncaughtException', 'panic:'];
+      const allLogFiles = await findEndswith(dostLogsPath, '.log');
+      const logDetected: {
+        file: string;
+        keyword: string;
+        contents: string[];
+      }[] = [];
+      for (const file of allLogFiles) {
+        const contents = (await fs.promises.readFile(file, { encoding: 'utf-8' })).split('\n');
+        for (let i = 0; i < contents.length; i++) {
+          const content = contents[i];
+          for (const keyword of criticalKeyword) {
+            if (content.includes(keyword)) {
+              const min = Math.max(0, i - 5);
+              const max = Math.min(contents.length, i + 5);
+              logDetected.push({
+                file: file,
+                keyword: keyword,
+                contents: contents.slice(min, max),
+              });
+            }
+          }
+        }
+      }
+      if (logDetected.length > 0) {
+        console.error(`Critical error log(${logDetected.length}) detected`);
+        for (const log of logDetected) {
+          console.error(`> File: ${log.file}, Keyword ${log.keyword}`);
+          console.error(log.contents.join('\n'));
+        }
+        throw new Error('Critical error log detected');
       }
     });
   }

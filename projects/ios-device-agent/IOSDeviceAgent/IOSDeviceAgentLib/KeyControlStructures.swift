@@ -1,5 +1,3 @@
-import DoguTypes
-
 enum KeyControlError: Error {
 }
 

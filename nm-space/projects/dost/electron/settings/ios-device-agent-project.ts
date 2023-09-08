@@ -43,7 +43,7 @@ export async function removeiOSDeviceAgent(logger: Printable): Promise<void> {
 }
 
 export async function checkProjectEqual(logger: Printable): Promise<boolean> {
-  const compareTargetDirNames = ['DoguDev', 'DoguDevRunner', 'DoguRunner', 'DoguScreen', 'DoguTypes/Sources', 'DoguTypes/Tests'];
+  const compareTargetDirNames = ['DoguDev', 'DoguDevRunner', 'DoguRunner', 'DoguScreen', 'IOSDeviceAgentLib'];
   for (const dirname of compareTargetDirNames) {
     const idaOriginProjectDirectoryPath = path.resolve(HostPaths.thirdParty.pathMap().macos.iosDeviceAgentProject, dirname);
     const idaDestProjectDirectoryPath = path.resolve(HostPaths.external.xcodeProject.idaProjectDirectoryPath(), dirname);

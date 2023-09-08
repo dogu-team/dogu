@@ -89,8 +89,12 @@ export class DeviceDoor {
 
     if (this._latestOpenTime < this._latestCloseTime && 10000 < this._latestCloseTime - this._firstCloseTime) {
       this.channel = null;
-      await this.driver.closeChannel(this.serial);
-      await this.callback.onClose(this.serial);
+      await Promise.resolve(this.driver.closeChannel(this.serial)).catch((error) => {
+        logger.error(`DeviceDoor.processInternal closeChannel error serial:${this.serial} ${stringifyError(error)}`);
+      });
+      await this.callback.onClose(this.serial).catch((error) => {
+        logger.error(`DeviceDoor.processInternal onClose error serial:${this.serial} ${stringifyError(error)}`);
+      });
       this._isClosedForALongTime = true;
       this._state = { type: 'closed', error: null };
       return;

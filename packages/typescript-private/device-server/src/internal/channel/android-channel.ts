@@ -115,7 +115,7 @@ export class AndroidChannel implements DeviceChannel {
       deviceServerService.devicePortService.getAndroidDeviceAgentServerPort(),
       logger,
     );
-    await deviceAgent.install();
+    await deviceAgent.wait();
 
     const appiumContextProxy = deviceServerService.appiumService.createAndroidAppiumContext(
       serial,
@@ -152,7 +152,6 @@ export class AndroidChannel implements DeviceChannel {
       findAllBrowserInstallationsResult.browserInstallations,
     );
 
-    await deviceAgent.connect();
     await streaming.deviceConnected(serial, {
       serial,
       platform: Platform.PLATFORM_ANDROID,
@@ -174,7 +173,7 @@ export class AndroidChannel implements DeviceChannel {
       this.logger.error('android gamium context close failed', { error: errorify(error) });
     });
     ZombieServiceInstance.deleteComponent(this._appiumContext);
-    ZombieServiceInstance.deleteComponent(this._deviceAgent, `AndroidChannel closed: ${this.serial}`);
+    this._deviceAgent.delete();
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === this.serial && zombieable.platform === Platform.PLATFORM_ANDROID;
     }, 'kill serial bound zombies');

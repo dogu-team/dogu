@@ -1,5 +1,3 @@
-import DoguTypes
-
 actor MainControlProcessor {
   enum Error: Swift.Error {
     case unknownDeviceControlType(Inner_Types_DeviceControl)
@@ -20,10 +18,12 @@ actor MainControlProcessor {
   func close() async throws {}
 
   func push(control: Inner_Types_DeviceControl, result: ControlResult) async throws {
-    Log.shared.debug("main \(result.seq) \(control.type) \(control.action) \(control.keycode) \(control.key) \(control.position.x) \(control.position.y) \(control.position.screenWidth) \(control.position.screenHeight) \(control.timeStamp)")
+    Log.shared.debug(
+      "main \(result.seq) \(control.type) \(control.action) \(control.keycode) \(control.key) \(control.position.x) \(control.position.y) \(control.position.screenWidth) \(control.position.screenHeight) \(control.timeStamp)"
+    )
     guard let processor = processors[control.type] else {
-      var controlResult = DoguTypes.Inner_Types_CfGdcDaControlResult()
-      controlResult.error = DoguTypes.Outer_ErrorResult()
+      var controlResult = Inner_Types_CfGdcDaControlResult()
+      controlResult.error = Outer_ErrorResult()
       controlResult.error.code = Outer_Code.inputUnknown
       controlResult.error.message = "input unknown"
       result.set(result: controlResult)

@@ -1,5 +1,3 @@
-import DoguTypes
-
 actor TouchControlBroker: IControlBroker {
   typealias Control = PatternControl
   typealias PatternKey = TouchControlPatternKey
@@ -38,17 +36,17 @@ actor TouchControlBroker: IControlBroker {
     guard let playAfterIndex = controls.firstIndex(where: { $0.control.timeStamp > lastPlayTime }) else {
       return
     }
-    Array(controls[0..<playAfterIndex]).forEach({$0.discardNotify()})
+    Array(controls[0..<playAfterIndex]).forEach({ $0.discardNotify() })
     controls = Array(controls[playAfterIndex..<controls.count])
   }
 
   private func discard(before patternKey: PatternKey) {
     guard let downIndex = controls.firstIndex(where: { $0.patternKey == patternKey.rawValue }) else {
-      controls.forEach({$0.discardNotify()})
+      controls.forEach({ $0.discardNotify() })
       controls = []
       return
     }
-    Array(controls[0..<downIndex]).forEach({$0.discardNotify()})
+    Array(controls[0..<downIndex]).forEach({ $0.discardNotify() })
     controls = Array(controls[downIndex..<controls.count])
   }
 
@@ -68,7 +66,7 @@ actor TouchControlBroker: IControlBroker {
     let upControl = controls[lastUpIndex]
 
     let afterIndex = match.range.location + match.range.length
-    Array(controls[firstDownIndex + 1..<lastUpIndex]).forEach({$0.discardNotify()})
+    Array(controls[firstDownIndex + 1..<lastUpIndex]).forEach({ $0.discardNotify() })
     controls = Array(controls[afterIndex..<controls.count])
     return DownUp(down: downControl, up: upControl)
   }

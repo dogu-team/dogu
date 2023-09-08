@@ -1,12 +1,11 @@
-import DoguTypes
-
 actor ControlProcessor<Factory, Broker, Player>: IControlProcessor
-  where
+where
   Factory: IControlFactory,
   Broker: IControlBroker,
   Player: IControlPlayer,
   Player.Broker == Broker,
-  Factory.Control  == Broker.Control {
+  Factory.Control == Broker.Control
+{
 
   private var broker: Broker? = nil
   private var player: Player? = nil
@@ -25,7 +24,7 @@ actor ControlProcessor<Factory, Broker, Player>: IControlProcessor
     try await broker?.close()
   }
 
-  func push( with source: Inner_Types_DeviceControl, result: ControlResult) async throws {
+  func push(with source: Inner_Types_DeviceControl, result: ControlResult) async throws {
     let control = try factory!.create(from: source, result: result)
     await broker!.push(with: control)
   }

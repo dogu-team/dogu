@@ -6,6 +6,7 @@ import (
 	log "go-device-controller/internal/pkg/log"
 
 	"github.com/gorilla/websocket"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
 )
 
@@ -23,7 +24,7 @@ func newAosSurface(agentUrl *string) *aosSurface {
 	return &s
 }
 
-func (s *aosSurface) Reconnect(serial string, screenCaptureOption *streaming.ScreenCaptureOption) error {
+func (s *aosSurface) Connect(serial string, screenCaptureOption *streaming.ScreenCaptureOption) error {
 	// reconnect loop
 	var err error
 	s.conn, _, err = websocket.DefaultDialer.Dial(*s.agentUrl, nil)
@@ -35,6 +36,9 @@ func (s *aosSurface) Reconnect(serial string, screenCaptureOption *streaming.Scr
 }
 
 func (s *aosSurface) Receive() ([]byte, error) {
+	if nil == s.conn {
+		return nil, errors.Errorf("aosSurface.Receive reader is null")
+	}
 	_, buf, err := s.conn.ReadMessage()
 	return buf, err
 }

@@ -60,7 +60,7 @@ export class WebdriverAgentProcess {
 class ZombieWdaXCTest implements Zombieable {
   private xctestrun: XCTestRunContext | null = null;
   public readonly zombieWaiter: ZombieQueriable;
-  private error: 'not-alive' | 'hello-failed' | 'none' = 'none';
+  private error = 'none';
   private client: AxiosInstance;
 
   constructor(public readonly serial: Serial, private readonly wdaHostPort: number, private readonly logger: Printable) {
@@ -105,7 +105,7 @@ class ZombieWdaXCTest implements Zombieable {
 
   private async isHealth(): Promise<boolean> {
     if (!this.xctestrun?.isAlive) {
-      this.error = 'not-alive';
+      this.error = this.xctestrun?.error ?? 'not-alive';
       return false;
     }
     this.xctestrun.update();
@@ -115,6 +115,7 @@ class ZombieWdaXCTest implements Zombieable {
       this.error = 'hello-failed';
       return false;
     }
+    this.error = 'none';
 
     return true;
   }

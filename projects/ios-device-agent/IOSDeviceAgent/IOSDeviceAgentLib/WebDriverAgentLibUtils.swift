@@ -18,8 +18,7 @@ final class WebDriverAgentLibUtils {
 
   static func screenSize() -> CGSize {
     let app = app()
-    var size = app.wdFrame.size
-    return FBAdjustDimensionsForApplication(size, app.interfaceOrientation)
+    return FBAdjustDimensionsForApplication(app.wdFrame.size, app.interfaceOrientation)
   }
 
   static func execute(event: XCSynthesizedEventRecord) throws {

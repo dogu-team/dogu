@@ -1,14 +1,17 @@
-import { GRPC_ACTION_NOT_FOUND_ERROR, GRPC_CLIENT_NOT_FOUND_ERROR, GRPC_RETURN_NOT_FOUND_ERROR, OneofUnionTypes, PrivateProtocol } from '@dogu-private/types';
-import { IosDeviceAgentServiceService } from '@dogu-private/types/protocol/generated/tsproto/inner/grpc/services/ios_device_agent_service';
-import { GrpcClientBase } from '@dogu-private/types/protocol/grpc/base';
-import { Printable } from '@dogu-tech/common';
-import { credentials, makeClientConstructor, ServiceError } from '@grpc/grpc-js';
+import { OneofUnionTypes, Platform, PrivateProtocol, Serial } from '@dogu-private/types';
+import { delay, Printable, SizePrefixedRecvQueue, stringify } from '@dogu-tech/common';
+import EventEmitter from 'events';
+import { Socket } from 'net';
 import { DeviceAgentService } from '../../services/device-agent/device-agent-service';
+import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
+import { ZombieServiceInstance } from '../zombie/zombie-service';
 
 type DcIdaParam = PrivateProtocol.DcIdaParam;
 type DcIdaResult = PrivateProtocol.DcIdaResult;
-type DcIdaRunAppParam = PrivateProtocol.DcIdaRunAppParam;
-type DcIdaRunAppResult = PrivateProtocol.DcIdaRunAppResult;
+type DcIdaParamList = PrivateProtocol.DcIdaParamList;
+type DcIdaResultList = PrivateProtocol.DcIdaResultList;
+const DcIdaParamList = PrivateProtocol.DcIdaParamList;
+const DcIdaResultList = PrivateProtocol.DcIdaResultList;
 
 export type DcIdaParamKeys = OneofUnionTypes.UnionValueKeys<DcIdaParam>;
 export type DcIdaParamUnionPick<Key> = OneofUnionTypes.UnionValuePick<DcIdaParam, Key>;
@@ -18,154 +21,196 @@ export type DcIdaResultKeys = OneofUnionTypes.UnionValueKeys<DcIdaResult>;
 export type DcIdaResultUnionPick<Key> = OneofUnionTypes.UnionValuePick<DcIdaResult, Key>;
 export type DcIdaResultUnionPickValue<Key extends keyof DcIdaResultUnionPick<Key>> = OneofUnionTypes.UnionValuePickInner<DcIdaResult, Key>;
 
-const ServiceDefenition = IosDeviceAgentServiceService;
+export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
+  private readonly client: Socket;
+  private protoAPIRetEmitter = new ProtoAPIEmitterImpl();
+  private readonly recvQueue = new SizePrefixedRecvQueue();
+  private isConnected: boolean;
+  private seq = 0;
+  private zombieWaiter: ZombieQueriable;
 
-export class IosDeviceAgentService extends GrpcClientBase implements DeviceAgentService {
-  constructor(private readonly screenPort: number, private readonly grpcServerUrl: string, timeoutSeconds: number, private readonly logger: Printable) {
-    super(grpcServerUrl, timeoutSeconds);
+  constructor(public readonly serial: Serial, private readonly screenPort: number, private readonly serverPort: number, private readonly logger: Printable) {
+    this.zombieWaiter = ZombieServiceInstance.addComponent(this);
+    this.client = new Socket();
+    this.isConnected = false;
+
+    this.client.on('connect', () => {
+      logger.debug?.('IosDeviceAgentService. client connect');
+      this.isConnected = true;
+    });
+
+    this.client.on('error', (error: Error) => {
+      logger.error(`IosDeviceAgentService. client error: ${stringify(error)}`);
+    });
+
+    this.client.on('timeout', () => {
+      logger.error('IosDeviceAgentService. client timeout');
+    });
+
+    this.client.on('close', (isError: boolean) => {
+      logger.error('IosDeviceAgentService. client close');
+      this.isConnected = false;
+      ZombieServiceInstance.notifyDie(this, `IosDeviceAgentService. client close`);
+    });
+
+    this.client.on('end', () => {
+      logger.debug?.('IosDeviceAgentService. client end');
+      this.isConnected = false;
+    });
+
+    this.client.on('data', (data: Buffer) => {
+      this.recvQueue.pushBuffer(data);
+      if (!this.recvQueue.has()) {
+        return;
+      }
+      const array = this.recvQueue.pop();
+      const decodeRet = DcIdaResultList.decode(array);
+      for (const result of decodeRet.results) {
+        this.protoAPIRetEmitter.emit(result.seq.toString(), result);
+      }
+    });
   }
+
+  async wait(): Promise<void> {
+    await this.zombieWaiter?.waitUntilAlive();
+  }
+
+  async revive(): Promise<void> {
+    await this.connect();
+  }
+
+  onDie(): void | Promise<void> {
+    if (this.isConnected) {
+      this.client.resetAndDestroy();
+    }
+  }
+
+  delete(): void {
+    ZombieServiceInstance.deleteComponent(this);
+  }
+
   get screenUrl(): string {
     return `127.0.0.1:${this.screenPort}`;
   }
 
   get inputUrl(): string {
-    return this.grpcServerUrl;
+    return `127.0.0.1:${this.serverPort}`;
   }
 
-  install(): Promise<void> {
+  get connected(): boolean {
+    return this.isConnected;
+  }
+
+  async install(): Promise<void> {
     return Promise.resolve();
   }
 
-  async connect(): Promise<void> {
-    const constructor = makeClientConstructor(ServiceDefenition, 'IosDeviceAgentServiceService', GrpcClientBase.createClientOption());
-    this.client = new constructor(this.serverUrl, credentials.createInsecure());
-    await this.waitForReady();
-  }
-
-  async checkHealth(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!this.client) {
-        throw GRPC_CLIENT_NOT_FOUND_ERROR;
-      }
-
-      this.client.makeUnaryRequest<DcIdaParam, DcIdaResult>(
-        ServiceDefenition.checkHealth.path,
-        ServiceDefenition.checkHealth.requestSerialize,
-        ServiceDefenition.checkHealth.responseDeserialize,
-        {},
-        this.createMetadata(),
-        // TODO(henry): 개발 중 타임아웃 발생해서 주석처리함
-        // this.createCallOptions(),
-        (error?: ServiceError | null, value?: DcIdaResult) => {
-          if (error) {
-            reject(error);
-            return;
-          }
-
-          if (value == null) {
-            reject(GRPC_ACTION_NOT_FOUND_ERROR);
-            return;
-          }
-
-          resolve();
-        },
-      );
-    });
-  }
-
-  async runApp(param: DcIdaRunAppParam): Promise<DcIdaRunAppResult> {
-    return new Promise((resolve, reject) => {
-      if (!this.client) {
-        throw GRPC_CLIENT_NOT_FOUND_ERROR;
-      }
-
-      const dcIdaParam: DcIdaParam = {
-        value: {
-          $case: 'dcIdaRunappParam',
-          dcIdaRunappParam: param,
-        },
-      };
-      this.client.makeUnaryRequest<DcIdaParam, DcIdaResult>(
-        ServiceDefenition.call.path,
-        ServiceDefenition.call.requestSerialize,
-        ServiceDefenition.call.responseDeserialize,
-        dcIdaParam,
-        this.createMetadata(),
-        // TODO(henry): 개발 중 타임아웃 발생해서 주석처리함
-        // this.createCallOptions(),
-        (error?: ServiceError | null, value?: DcIdaResult) => {
-          if (error) {
-            reject(error);
-            return;
-          }
-
-          if (value == null) {
-            reject(GRPC_ACTION_NOT_FOUND_ERROR);
-            return;
-          }
-
-          if (value.value == null) {
-            reject(GRPC_RETURN_NOT_FOUND_ERROR);
-            return;
-          }
-          if (value.value.$case !== 'dcIdaRunappResult') {
-            reject(GRPC_RETURN_NOT_FOUND_ERROR);
-            return;
-          }
-
-          resolve(value.value.dcIdaRunappResult);
-        },
-      );
-    });
-  }
-  async call<
+  async sendWithProtobuf<
     ParamKey extends DcIdaParamKeys & keyof DcIdaParamUnionPick<ParamKey>,
     ResultKey extends DcIdaResultKeys & keyof DcIdaResultUnionPick<ResultKey>,
     ParamValue extends DcIdaParamUnionPickValue<ParamKey>,
     ResultValue extends DcIdaResultUnionPickValue<ResultKey>,
-  >(paramKey: ParamKey, resultKey: ResultKey, paramValue: ParamValue): Promise<ResultValue> {
-    return new Promise((resolve, reject) => {
+  >(paramKey: ParamKey, resultKey: ResultKey, paramValue: ParamValue, timeout = 10000): Promise<ResultValue | null> {
+    const { logger } = this;
+    return new Promise((resolve) => {
       if (!this.client) {
-        throw GRPC_CLIENT_NOT_FOUND_ERROR;
+        logger.error('IosDeviceAgentService.sendWithProtobuf this.client is null');
+        return null;
       }
+      const seq = this.getSeq();
 
+      // complete handle
+      this.protoAPIRetEmitter.once(seq.toString(), (data: DcIdaResult) => {
+        if (data.value?.$case !== resultKey) {
+          logger.error(`IosDeviceAgentService.sendWithProtobuf ${resultKey} is null`);
+          resolve(null);
+          return;
+        }
+        const returnObj = data.value as DcIdaResultUnionPick<ResultKey>;
+        if (returnObj == null) {
+          logger.error('IosDeviceAgentService.sendWithProtobuf returnObj is null');
+          resolve(null);
+          return;
+        }
+        resolve(returnObj[resultKey] as ResultValue);
+      });
+
+      // timeout handle
+      setTimeout(() => {
+        resolve(null);
+      }, timeout);
+
+      // request
       const paramObj = {
         $case: paramKey,
         [paramKey]: paramValue,
       } as unknown as DcIdaParamUnionPick<ParamKey>;
 
-      const param: DcIdaParam = {
+      const castedParam: DcIdaParam = {
+        seq: seq,
         value: paramObj,
       };
+      const castedParamList: DcIdaParamList = {
+        params: [castedParam],
+      };
+      const message = DcIdaParamList.encode(castedParamList).finish();
+      const sizeBuffer = Buffer.alloc(4);
+      sizeBuffer.writeUInt32LE(message.byteLength, 0);
 
-      this.client.makeUnaryRequest<DcIdaParam, DcIdaResult>(
-        ServiceDefenition.call.path,
-        ServiceDefenition.call.requestSerialize,
-        ServiceDefenition.call.responseDeserialize,
-        param,
-        this.createMetadata(),
-        // TODO(henry): 개발 중 타임아웃 발생해서 주석처리함
-        // this.createCallOptions({ deadline: Date.now() + 1000 * 60 }),
-        (error?: ServiceError | null, value?: DcIdaResult) => {
-          if (error) {
-            reject(error);
-            return;
-          }
-
-          if (value == null) {
-            reject(GRPC_ACTION_NOT_FOUND_ERROR);
-            return;
-          }
-
-          const resultObj = value.value as DcIdaResultUnionPick<ResultKey>;
-          if (resultObj == null) {
-            reject(GRPC_RETURN_NOT_FOUND_ERROR);
-            return;
-          }
-
-          resolve(resultObj[resultKey] as ResultValue);
-        },
-      );
+      const bufferConcated = Buffer.concat([sizeBuffer, Buffer.from(message)]);
+      this.client.write(bufferConcated);
     });
   }
+
+  private async connect(tryCount = 10): Promise<void> {
+    const { logger } = this;
+    this.recvQueue.clear();
+    logger.info(`IosDeviceAgentService.connect ${this.serverPort}`);
+    if (this.client.connecting) {
+      throw new Error('IosDeviceAgentService.already connected');
+    }
+
+    for (let i = 0; i < tryCount; i++) {
+      const isConnected = await new Promise<boolean>((resolve, reject) => {
+        this.client.once('close', (isError: boolean) => {
+          resolve(false);
+        });
+        this.client.connect({ host: '127.0.0.1', port: this.serverPort }, () => {
+          resolve(true);
+        });
+      });
+      if (!isConnected) {
+        logger.warn?.(`IosDeviceAgentService. connect failed. count: ${i}`);
+        await delay(1000);
+        continue;
+      }
+      return;
+    }
+    throw new Error('IosDeviceAgentService.connect. notconnected');
+  }
+
+  private getSeq(): number {
+    const ret = this.seq;
+    this.seq += 1;
+    return ret;
+  }
+
+  get name(): string {
+    return `iOSDeviceAgentService`;
+  }
+  get platform(): Platform {
+    return Platform.PLATFORM_IOS;
+  }
+  get props(): ZombieProps {
+    return { serverPort: this.serverPort };
+  }
+  get printable(): Printable {
+    return this.logger;
+  }
 }
+
+interface ProtoAPIEmitter {
+  once(eventName: string, listener: (data: DcIdaResult) => void): EventEmitter;
+}
+
+class ProtoAPIEmitterImpl extends EventEmitter implements ProtoAPIEmitter {}

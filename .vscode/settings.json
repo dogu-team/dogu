@@ -208,7 +208,6 @@
   },
   "files.saveConflictResolution": "overwriteFileOnDisk",
   "eslint.run": "onSave",
-  "cmake.sourceDirectory": "${workspaceFolder}/packages/swift/types/DoguTypes/.build/checkouts/swift-atomics/Tests",
   "lldb.library": "/Applications/Xcode.app/Contents/SharedFrameworks/LLDB.framework/Versions/A/LLDB",
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"

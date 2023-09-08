@@ -1,5 +1,3 @@
-import DoguTypes
-
 actor KeyControlBroker: IControlBroker {
   typealias Control = PatternControl
   typealias PatternKey = KeyControlPatternKey

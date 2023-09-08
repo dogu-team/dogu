@@ -126,7 +126,8 @@ export class IosChannel implements DeviceChannel {
     await IosChannel.restartIfAvailiable(serial, logger);
 
     logger.verbose('appium wda starting');
-    const wda = await WebdriverAgentProcess.start(serial, await deviceServerService.devicePortService.createOrGetHostPort(serial, 'WebdriverAgentForward'), logger);
+    const wdaForwardPort = await deviceServerService.devicePortService.createOrGetHostPort(serial, 'WebdriverAgentForward');
+    const wda = await WebdriverAgentProcess.start(serial, wdaForwardPort, logger);
     logger.verbose('appium wda  done');
 
     logger.verbose('appium context starting');
@@ -134,7 +135,7 @@ export class IosChannel implements DeviceChannel {
       serial,
       'builtin',
       await deviceServerService.devicePortService.createOrGetHostPort(serial, 'iOSAppiumServer'),
-      await deviceServerService.devicePortService.createOrGetHostPort(serial, 'WebdriverAgentForward'),
+      wdaForwardPort,
     );
     ZombieServiceInstance.addComponent(appiumContextProxy);
     logger.verbose('appium context started');
@@ -148,6 +149,7 @@ export class IosChannel implements DeviceChannel {
       deviceServerService.devicePortService.getIosDeviceAgentScreenServerPort(),
       grpcForwardPort,
       deviceServerService.devicePortService.getIosDeviceAgentGrpcServerPort(),
+      wdaForwardPort,
       deviceServerService.devicePortService.getIosWebDriverAgentServerPort(),
       logger,
     ).catch((error) => {
@@ -157,11 +159,8 @@ export class IosChannel implements DeviceChannel {
     logger.verbose('ios device agent process started');
 
     logger.verbose('ios device agent service starting');
-    const deviceAgent = new IosDeviceAgentService(screenForwardPort, `127.0.0.1:${grpcForwardPort}`, 60, logger);
-    await deviceAgent.connect().catch((error) => {
-      logger.error('IosDeviceAgentService connect failed.', { error: errorify(error) });
-      throw error;
-    });
+    const deviceAgent = new IosDeviceAgentService(serial, screenForwardPort, grpcForwardPort, logger);
+    await deviceAgent.wait();
     logger.verbose('ios device agent service started');
 
     logger.verbose('ios system info service starting');
@@ -256,6 +255,7 @@ export class IosChannel implements DeviceChannel {
     ZombieServiceInstance.deleteComponent(this._appiumContext);
     this.webdriverAgentProcess.delete();
     this.iosDeviceAgentProcess.delete();
+    this.deviceAgent.delete();
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === this.serial && zombieable.platform === Platform.PLATFORM_IOS;
     }, 'kill serial bound zombies');
@@ -363,8 +363,8 @@ export class IosChannel implements DeviceChannel {
   }
 
   async isPortListening(port: number): Promise<boolean> {
-    const res = await this.deviceAgent.call('dcIdaIsPortListeningParam', 'dcIdaIsPortListeningResult', { port });
-    return res.isListening;
+    const res = await this.deviceAgent.sendWithProtobuf('dcIdaIsPortListeningParam', 'dcIdaIsPortListeningResult', { port });
+    return res?.isListening ?? false;
   }
 
   private async findDotAppPath(appPath: string): Promise<string> {
@@ -404,11 +404,14 @@ export class IosChannel implements DeviceChannel {
     const installedAppNames = await MobileDevice.listApps(this.serial);
     const dotAppPath = await this.findDotAppPath(appPath);
     const bundleId = await MobileDevice.getBundleId(dotAppPath);
-    const result = await this.deviceAgent.runApp({
+    const result = await this.deviceAgent.sendWithProtobuf('dcIdaRunappParam', 'dcIdaRunappResult', {
       appPath,
       installedAppNames,
       bundleId,
     });
+    if (!result) {
+      throw new Error('runApp failed: result is null');
+    }
     if (CodeUtil.isNotSuccess(result.error?.code)) {
       throw new Error(`runApp failed: ${stringify(result.error)}`);
     }

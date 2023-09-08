@@ -3,7 +3,7 @@ export const config = {
     use: false,
     port: 30001,
   },
-  externalPionStreamer: {
+  externalGoDeviceController: {
     use: false,
     port: 50055,
   },
@@ -11,7 +11,7 @@ export const config = {
     use: false,
     devices: [
       {
-        serial: '54f523f21b76e07c62c69c14a1d141269515313d',
+        serial: '00008030-001C18E91443802E',
         webDriverPort: 10000,
         grpcPort: 10001,
       },

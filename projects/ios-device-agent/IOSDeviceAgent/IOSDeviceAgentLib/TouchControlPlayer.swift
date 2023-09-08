@@ -1,5 +1,4 @@
 import Combine
-import DoguTypes
 
 actor TouchControlPlayer: IControlPlayer {
   typealias Broker = TouchControlBroker
@@ -95,8 +94,8 @@ actor TouchControlPlayer: IControlPlayer {
     let elapsedTime = Date().unixTimeMilliseconds - beginTime
     lastPlayTime = up.control.timeStamp + elapsedTime
 
-    var result = DoguTypes.Inner_Types_CfGdcDaControlResult()
-    result.error = DoguTypes.Outer_ErrorResult()
+    var result = Inner_Types_CfGdcDaControlResult()
+    result.error = Outer_ErrorResult()
     down.result.set(result: result)
     up.result.set(result: result)
   }
