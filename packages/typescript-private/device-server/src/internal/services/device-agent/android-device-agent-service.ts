@@ -200,6 +200,10 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     }
   }
 
+  delete(): void {
+    ZombieServiceInstance.deleteComponent(this);
+  }
+
   isAlive(): boolean {
     return this.zombieWaiter.isAlive();
   }
