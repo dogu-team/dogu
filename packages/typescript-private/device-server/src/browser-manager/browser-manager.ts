@@ -230,7 +230,13 @@ export class BrowserManager {
               break;
             case 'edge':
               {
-                const requestedBrowserVersion = mappedBrowserVersion === 'latest' ? await this.getLatestBrowserVersion({ browserName }) : mappedBrowserVersion;
+                const requestedBrowserVersion =
+                  mappedBrowserVersion === 'latest'
+                    ? await this.getLatestBrowserVersion({
+                        browserName,
+                        browserPlatform,
+                      })
+                    : mappedBrowserVersion;
                 const browserInstallation = await this.findBrowserInstallationForDesktopByVersionPrefix({
                   browserName,
                   browserPlatform,

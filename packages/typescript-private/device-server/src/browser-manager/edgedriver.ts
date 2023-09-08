@@ -71,7 +71,7 @@ export interface GetLatestVersionOptions {
   timeout?: number;
 }
 
-function mergeGetLatestVersionOptions(options: GetLatestVersionOptions): Required<GetLatestVersionOptions> {
+function mergeGetLatestVersionOptions(options?: GetLatestVersionOptions): Required<GetLatestVersionOptions> {
   return {
     timeout: defaultVersionRequestTimeout(),
     ...options,
@@ -95,6 +95,12 @@ function mergeFindVersionOptions(options: FindVersionOptions): Required<FindVers
 }
 
 export interface FindVersionResult {
+  version: BrowserVersion;
+  url: string;
+}
+
+interface VersionUrl {
+  platform: EdgedriverInstallablePlatform;
   version: BrowserVersion;
   url: string;
 }
@@ -164,25 +170,28 @@ export class Edgedriver {
   private readonly logger = new PrefixLogger(logger, `[${this.constructor.name}]`);
   private readonly client: AxiosInstance;
   private readonly pathLock = new AsyncLock();
-  private readonly latestVersionCache: WebCache<string>;
+  private readonly latestVersionCache: WebCache<Buffer>;
+  private versionUrlsCache: VersionUrl[] = [];
+  private latestVersionForVersionUrlsCache: string | undefined;
 
   constructor() {
     const client = axios.create();
     setAxiosErrorFilterToIntercepter(client);
     this.client = client;
-    this.latestVersionCache = new WebCache<string>({
+    this.latestVersionCache = new WebCache<Buffer>({
       name: 'edgedriver-latest-version',
       url: 'https://msedgedriver.azureedge.net/LATEST_STABLE',
       client,
     });
   }
 
-  async getLatestVersion(options: GetLatestVersionOptions): Promise<BrowserVersion> {
+  async getLatestVersion(options?: GetLatestVersionOptions): Promise<BrowserVersion> {
     const mergedOptions = mergeGetLatestVersionOptions(options);
     const { timeout } = mergedOptions;
-    const versionPattern = await this.latestVersionCache.get({
+    const versionPatternRaw = await this.latestVersionCache.get({
       timeout,
     });
+    const versionPattern = Buffer.from(versionPatternRaw).toString('utf16le');
     const match = versionPattern.match(latestVersionPattern);
     if (!match) {
       throw new Error(`Invalid version pattern: ${versionPattern}`);
@@ -207,6 +216,28 @@ export class Edgedriver {
     validatePrefixOrPatternWithin(mergedOptions);
 
     const { prefix, pattern, platform: requestedPlatform, timeout } = mergedOptions;
+    const latestVersionForVersionUrlsCache = await this.getLatestVersion({
+      timeout,
+    });
+
+    if (latestVersionForVersionUrlsCache === this.latestVersionForVersionUrlsCache) {
+      const versionUrl = this.versionUrlsCache
+        .filter(({ platform }) => platform === requestedPlatform)
+        .find(({ version }) => {
+          if (prefix) {
+            return version.startsWith(prefix);
+          }
+
+          if (pattern) {
+            return pattern.test(version);
+          }
+
+          throw new Error('Unexpected filter condition');
+        });
+
+      return versionUrl;
+    }
+
     const parser = new XMLParser();
     const nameUrls: { name: string; url: string }[] = [];
     let marker = '';
@@ -231,7 +262,7 @@ export class Edgedriver {
       marker = blobResult.EnumerationResults.NextMarker;
     }
 
-    const versions = nameUrls
+    const versionUrls = nameUrls
       .map(({ name, url }) => {
         const match = name.match(blobUrlPattern);
         if (!match) {
@@ -264,23 +295,28 @@ export class Edgedriver {
         return edgeVersionUtils.compareWithDesc(lhsVersion, rhsVersion);
       });
 
-    if (versions.length === 0) {
+    if (versionUrls.length === 0) {
       return undefined;
     }
 
-    const version = versions.find(({ version }) => {
-      if (prefix) {
-        return version.startsWith(prefix);
-      }
+    this.versionUrlsCache = versionUrls;
+    this.latestVersionForVersionUrlsCache = latestVersionForVersionUrlsCache;
 
-      if (pattern) {
-        return pattern.test(version);
-      }
+    const versionUrl = versionUrls
+      .filter(({ platform }) => platform === requestedPlatform)
+      .find(({ version }) => {
+        if (prefix) {
+          return version.startsWith(prefix);
+        }
 
-      throw new Error('Unexpected filter condition');
-    });
+        if (pattern) {
+          return pattern.test(version);
+        }
 
-    return version;
+        throw new Error('Unexpected filter condition');
+      });
+
+    return versionUrl;
   }
 
   async install(options: InstallOptions): Promise<InstallResult> {
@@ -325,8 +361,8 @@ export class Edgedriver {
         throw new Error(`Failed to install from ${url} to ${installPath}: ${stringify(error)}`);
       } finally {
         try {
-          if (await fs.promises.stat(executablePath).catch(() => null)) {
-            await fs.promises.unlink(executablePath);
+          if (await fs.promises.stat(downloadFilePath).catch(() => null)) {
+            await fs.promises.unlink(downloadFilePath);
           }
         } catch (error) {
           this.logger.warn(`Failed to delete ${url}: ${stringify(error)}`);
