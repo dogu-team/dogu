@@ -30,6 +30,3 @@ export class Safari {
     return executablePath;
   }
 }
-
-const safari = new Safari();
-safari.getVersion().then(console.log);
