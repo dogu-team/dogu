@@ -8,6 +8,7 @@ export interface RoutineTutorial {
     target: TutorialSupportTarget;
     cwd: string;
     hasSampleApp?: boolean;
+    environment: 'node' | 'python';
     command: string;
   }[];
 }
@@ -20,6 +21,7 @@ export const appiumRoutineTutorialData: RoutineTutorial = {
       platform: TutorialSupportPlatform.ANDROID,
       target: TutorialSupportTarget.WEB,
       cwd: 'appium/python/pytest',
+      environment: 'python',
       command: '',
     },
     {
@@ -28,6 +30,7 @@ export const appiumRoutineTutorialData: RoutineTutorial = {
       platform: TutorialSupportPlatform.IOS,
       target: TutorialSupportTarget.WEB,
       cwd: 'appium/python/pytest',
+      environment: 'python',
       command: '',
     },
     {
@@ -37,9 +40,8 @@ export const appiumRoutineTutorialData: RoutineTutorial = {
       target: TutorialSupportTarget.APP,
       hasSampleApp: true,
       cwd: 'appium/python/pytest',
-      command: `python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+      environment: 'python',
+      command: `pip install -r requirements.txt
 pytest app/test_android.py`,
     },
     {
@@ -49,9 +51,8 @@ pytest app/test_android.py`,
       target: TutorialSupportTarget.APP,
       hasSampleApp: false,
       cwd: 'appium/python/pytest',
-      command: `python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+      environment: 'python',
+      command: `pip install -r requirements.txt
 pytest app/test_android.py`,
     },
   ],
@@ -65,6 +66,7 @@ export const webdriverioRoutineTutorialData: RoutineTutorial = {
       platform: TutorialSupportPlatform.ANDROID,
       target: TutorialSupportTarget.WEB,
       cwd: 'webdriverio/javascript/jest',
+      environment: 'node',
       command: '',
     },
     {
@@ -73,6 +75,7 @@ export const webdriverioRoutineTutorialData: RoutineTutorial = {
       platform: TutorialSupportPlatform.IOS,
       target: TutorialSupportTarget.WEB,
       cwd: 'webdriverio/javascript/jest',
+      environment: 'node',
       command: '',
     },
     {
@@ -81,6 +84,7 @@ export const webdriverioRoutineTutorialData: RoutineTutorial = {
       platform: TutorialSupportPlatform.WINDOWS,
       target: TutorialSupportTarget.WEB,
       cwd: 'webdriverio/javascript/jest',
+      environment: 'node',
       command: '',
     },
     {
@@ -89,6 +93,7 @@ export const webdriverioRoutineTutorialData: RoutineTutorial = {
       platform: TutorialSupportPlatform.MACOS,
       target: TutorialSupportTarget.WEB,
       cwd: 'webdriverio/javascript/jest',
+      environment: 'node',
       command: '',
     },
     {
@@ -98,6 +103,7 @@ export const webdriverioRoutineTutorialData: RoutineTutorial = {
       target: TutorialSupportTarget.APP,
       hasSampleApp: true,
       cwd: 'webdriverio/javascript/jest',
+      environment: 'node',
       command: `npm install
 npm run test:app:android`,
     },
@@ -108,6 +114,7 @@ npm run test:app:android`,
       target: TutorialSupportTarget.APP,
       hasSampleApp: false,
       cwd: 'webdriverio/javascript/jest',
+      environment: 'node',
       command: `npm install
 npm run test:app:android`,
     },
@@ -122,9 +129,8 @@ export const seleniumRoutineTutorialData: RoutineTutorial = {
       platform: TutorialSupportPlatform.WINDOWS,
       target: TutorialSupportTarget.WEB,
       cwd: 'selenium/python/pytest',
-      command: `python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+      environment: 'python',
+      command: `pip install -r requirements.txt
 pytest web/test_web.py`,
     },
     {
@@ -133,9 +139,8 @@ pytest web/test_web.py`,
       platform: TutorialSupportPlatform.MACOS,
       target: TutorialSupportTarget.WEB,
       cwd: 'selenium/python/pytest',
-      command: `python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+      environment: 'python',
+      command: `pip install -r requirements.txt
 pytest web/test_web.py`,
     },
   ],
@@ -150,6 +155,7 @@ export const gamiumRoutineTutorialData: RoutineTutorial = {
       target: TutorialSupportTarget.UNITY,
       hasSampleApp: true,
       cwd: 'gamium/javascript/jest',
+      environment: 'node',
       command: `npm install
 npm run test:app`,
     },
@@ -160,6 +166,7 @@ npm run test:app`,
       target: TutorialSupportTarget.UNITY,
       hasSampleApp: false,
       cwd: 'gamium/javascript/jest',
+      environment: 'node',
       command: `npm install
 npm run test:app`,
     },
@@ -170,9 +177,8 @@ npm run test:app`,
       target: TutorialSupportTarget.UNITY,
       hasSampleApp: true,
       cwd: 'gamium/python/pytest',
-      command: `python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+      environment: 'python',
+      command: `pip install -r requirements.txt
 pytest app/test_android.py --capture=no -x`,
     },
     {
@@ -182,9 +188,8 @@ pytest app/test_android.py --capture=no -x`,
       target: TutorialSupportTarget.UNITY,
       hasSampleApp: false,
       cwd: 'gamium/python/pytest',
-      command: `python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+      environment: 'python',
+      command: `pip install -r requirements.txt
 pytest app/test_android.py --capture=no -x`,
     },
   ],

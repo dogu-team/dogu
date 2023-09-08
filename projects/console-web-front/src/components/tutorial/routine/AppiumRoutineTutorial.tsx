@@ -21,47 +21,6 @@ import DoneStep from './DoneStep';
 import RoutineGitTutorial from './RoutineGitTutorial';
 import TutorialRoutineCreator from './TutorialRoutineCreator';
 
-const APP_ROUTINE_SAMPLE = `name: sample-routine
-
-on:
-  workflow_dispatch:
-
-jobs:
-  sample-job:
-    runs-on:
-      group: []
-    appVersion:
-    steps:
-      - name: run test
-        uses: dogu-actions/run-test
-        with:
-          checkout: true
-          command: |
-            npm install
-            npm run test:app
-        cwd: 
-`;
-
-const WEB_ROUTINE_SAMPLE = `name: sample-routine
-
-on:
-  workflow_dispatch:
-
-jobs:
-  sample-job:
-    runs-on: []
-    browserName:
-    steps:
-      - name: run test
-        uses: dogu-actions/run-test
-        with:
-          checkout: true
-          command: |
-            npm install
-            npm run test:web
-        cwd:
-`;
-
 const CLONE_GIT_ID = 'clone-git';
 const INTEGRATE_WITH_GIT_ID = 'integrate-with-git';
 const UPLOAD_SAMPLE_APP_ID = 'upload-sample-app';
@@ -94,6 +53,49 @@ const AppiumRoutineTutorial = () => {
   const frameworkLanguage = Object.keys(tutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang).find((language) =>
     tutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
   );
+
+  const APP_ROUTINE_SAMPLE = `name: sample-routine
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sample-job:
+    runs-on:
+      group: []
+    appVersion:
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: ${selectedGuide?.environment ?? ''}
+          command: |
+            npm install
+            npm run test:app
+        cwd: 
+`;
+
+  const WEB_ROUTINE_SAMPLE = `name: sample-routine
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sample-job:
+    runs-on: []
+    browserName:
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: ${selectedGuide?.environment ?? ''}
+          command: |
+            npm install
+            npm run test:web
+        cwd:
+`;
 
   if (!project) {
     return <ErrorBox title="Something went wrong" desc="Project not found" />;
