@@ -47,7 +47,8 @@ on:
 jobs:
   sample-job:
     runs-on:
-      group: []
+      group:
+        - android
     appVersion:
     steps:
       - name: run test
@@ -56,9 +57,8 @@ jobs:
           checkout: true
           environment: ${selectedGuide?.environment ?? ''}
           command: |
-            npm install
-            npm run test:app
-        cwd: 
+            ${selectedGuide?.command ?? ''}
+        cwd: ${selectedGuide?.cwd ?? ''}
 `;
 
   if (!project) {

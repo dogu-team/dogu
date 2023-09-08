@@ -42,7 +42,7 @@ export const appiumRoutineTutorialData: RoutineTutorial = {
       cwd: 'appium/python/pytest',
       environment: 'python',
       command: `pip install -r requirements.txt
-pytest app/test_android.py`,
+            pytest app/test_android.py`,
     },
     {
       framework: TutorialSupportFramework.PYTEST,
@@ -53,7 +53,7 @@ pytest app/test_android.py`,
       cwd: 'appium/python/pytest',
       environment: 'python',
       command: `pip install -r requirements.txt
-pytest app/test_android.py`,
+            pytest app/test_android.py`,
     },
   ],
 };
@@ -105,7 +105,7 @@ export const webdriverioRoutineTutorialData: RoutineTutorial = {
       cwd: 'webdriverio/javascript/jest',
       environment: 'node',
       command: `npm install
-npm run test:app:android`,
+            npm run test:app:android`,
     },
     {
       framework: TutorialSupportFramework.JEST,
@@ -116,7 +116,7 @@ npm run test:app:android`,
       cwd: 'webdriverio/javascript/jest',
       environment: 'node',
       command: `npm install
-npm run test:app:android`,
+            npm run test:app:android`,
     },
   ],
 };
@@ -131,7 +131,7 @@ export const seleniumRoutineTutorialData: RoutineTutorial = {
       cwd: 'selenium/python/pytest',
       environment: 'python',
       command: `pip install -r requirements.txt
-pytest web/test_web.py`,
+            pytest web/test_web.py`,
     },
     {
       framework: TutorialSupportFramework.PYTEST,
@@ -141,7 +141,7 @@ pytest web/test_web.py`,
       cwd: 'selenium/python/pytest',
       environment: 'python',
       command: `pip install -r requirements.txt
-pytest web/test_web.py`,
+            pytest web/test_web.py`,
     },
   ],
 };
@@ -157,7 +157,7 @@ export const gamiumRoutineTutorialData: RoutineTutorial = {
       cwd: 'gamium/javascript/jest',
       environment: 'node',
       command: `npm install
-npm run test:app`,
+            npm run test:app`,
     },
     {
       framework: TutorialSupportFramework.JEST,
@@ -168,7 +168,7 @@ npm run test:app`,
       cwd: 'gamium/javascript/jest',
       environment: 'node',
       command: `npm install
-npm run test:app`,
+            npm run test:app`,
     },
     {
       framework: TutorialSupportFramework.PYTEST,
@@ -179,7 +179,7 @@ npm run test:app`,
       cwd: 'gamium/python/pytest',
       environment: 'python',
       command: `pip install -r requirements.txt
-pytest app/test_android.py --capture=no -x`,
+            pytest app/test_android.py --capture=no -x`,
     },
     {
       framework: TutorialSupportFramework.PYTEST,
@@ -190,7 +190,7 @@ pytest app/test_android.py --capture=no -x`,
       cwd: 'gamium/python/pytest',
       environment: 'python',
       command: `pip install -r requirements.txt
-pytest app/test_android.py --capture=no -x`,
+            pytest app/test_android.py --capture=no -x`,
     },
   ],
 };

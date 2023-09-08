@@ -1,5 +1,4 @@
 import useTranslation from 'next-translate/useTranslation';
-import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
 import Monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { isAxiosError } from 'axios';
@@ -20,43 +19,6 @@ import YamlEditor from '../../editor/yaml/YamlEditor';
 import RoutineGUIEditor from '../../routine/editor/RoutineGUIEditor';
 import { ProjectContext } from '../../../hooks/context/useProjectContext';
 
-const APP_ROUTINE_SAMPLE = `name: sample-routine
-
-on:
-  workflow_dispatch:
-
-jobs:
-  sample-job:
-    runs-on:
-      group: []
-    appVersion:
-    steps:
-      - name: run test
-        uses: dogu-actions/run-test
-        with:
-          checkout: true
-          command:
-        cwd:
-`;
-
-const WEB_ROUTINE_SAMPLE = `name: sample-routine
-
-on:
-  workflow_dispatch:
-
-jobs:
-  sample-job:
-    runs-on: []
-    browserName:
-    steps:
-      - name: run test
-        uses: dogu-actions/run-test
-        with:
-          checkout: true
-          command:
-        cwd:
-`;
-
 interface Props {
   project: ProjectBase;
   sampleYaml: string;
@@ -70,7 +32,7 @@ const TutorialRoutineCreator = ({ project, sampleYaml }: Props) => {
 
   useEffect(() => {
     updateYaml(sampleYaml);
-  }, [project.type]);
+  }, [sampleYaml]);
 
   function handleEditorOnChange() {
     if (editorRef.current) {
@@ -109,7 +71,7 @@ const TutorialRoutineCreator = ({ project, sampleYaml }: Props) => {
 
       <MenuBox>
         <Button type="primary" onClick={handleSave}>
-          Save
+          Save routine
         </Button>
       </MenuBox>
     </ProjectContext.Provider>
@@ -118,8 +80,4 @@ const TutorialRoutineCreator = ({ project, sampleYaml }: Props) => {
 
 export default TutorialRoutineCreator;
 
-const MenuBox = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 1rem;
-`;
+const MenuBox = styled.div``;

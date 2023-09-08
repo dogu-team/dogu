@@ -45,7 +45,7 @@ on:
 jobs:
   sample-job:
     runs-on: []
-    browserName:
+    browserName: chrome
     steps:
       - name: run test
         uses: dogu-actions/run-test
@@ -53,9 +53,8 @@ jobs:
           checkout: true
           environment: ${selectedGuide?.environment ?? ''}
           command: |
-            npm install
-            npm run test:web
-        cwd:
+            ${selectedGuide?.command ?? ''}
+        cwd: ${selectedGuide?.cwd ?? ''}
 `;
 
   if (!project) {
