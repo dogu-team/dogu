@@ -1,6 +1,5 @@
-import { GRPC_ACTION_NOT_FOUND_ERROR, GRPC_CLIENT_NOT_FOUND_ERROR, GRPC_RETURN_NOT_FOUND_ERROR, OneofUnionTypes, PrivateProtocol } from '@dogu-private/types';
+import { OneofUnionTypes, PrivateProtocol } from '@dogu-private/types';
 import { IosDeviceAgentServiceService } from '@dogu-private/types/protocol/generated/tsproto/inner/grpc/services/ios_device_agent_service';
-import { GrpcClientBase } from '@dogu-private/types/protocol/grpc/base';
 import { Printable } from '@dogu-tech/common';
 import { credentials, makeClientConstructor, ServiceError } from '@grpc/grpc-js';
 import { DeviceAgentService } from '../../services/device-agent/device-agent-service';
@@ -20,17 +19,20 @@ export type DcIdaResultUnionPickValue<Key extends keyof DcIdaResultUnionPick<Key
 
 const ServiceDefenition = IosDeviceAgentServiceService;
 
-export class IosDeviceAgentService extends GrpcClientBase implements DeviceAgentService {
-  constructor(private readonly screenPort: number, private readonly grpcServerUrl: string, timeoutSeconds: number, private readonly logger: Printable) {
-    super(grpcServerUrl, timeoutSeconds);
-  }
+export class IosDeviceAgentService implements DeviceAgentService {
+  constructor(private readonly screenPort: number, private readonly serverUrl: string, timeoutSeconds: number, private readonly logger: Printable) {}
   get screenUrl(): string {
     return `127.0.0.1:${this.screenPort}`;
   }
 
   get inputUrl(): string {
-    return this.grpcServerUrl;
+    return this.serverUrl;
   }
+
+  get connected(): boolean {
+    return this.isConnected;
+  }
+  private isConnected: boolean;
 
   install(): Promise<void> {
     return Promise.resolve();

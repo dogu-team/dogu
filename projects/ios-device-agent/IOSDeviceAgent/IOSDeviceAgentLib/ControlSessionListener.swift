@@ -26,55 +26,51 @@ actor ControlSessionListener: IControlSessionListener {
     await self.iosdeviceagent.removeSession(session: session)
   }
 
-  func onParam(session: ControlSession, param: Inner_Params_DcIdaParam) async throws {
-    switch param.value {
+  func onParam(session: ControlSession, abstractParam: Inner_Params_DcIdaParam) async throws {
+    switch abstractParam.value {
     case .dcIdaRunappParam(let param):
       let result = try await self.onRunApp(param: param)
       let resultToSend = Inner_Params_DcIdaResult.with {
+        $0.seq = abstractParam.seq
         $0.dcIdaRunappResult = result
       }
-      try session.send(data: resultToSend.serializedData())
+      session.send(result: resultToSend)
       break
     case .dcIdaGetSystemInfoParam(let param):
       let result = try await self.onGetSystemInfo(param: param)
       let resultToSend = Inner_Params_DcIdaResult.with {
+        $0.seq = abstractParam.seq
         $0.dcIdaGetSystemInfoResult = result
       }
-      try session.send(data: resultToSend.serializedData())
+      session.send(result: resultToSend)
       break
     case .dcIdaIsPortListeningParam(let param):
       let result = try await self.isPortListening(param: param)
       let resultToSend = Inner_Params_DcIdaResult.with {
+        $0.seq = abstractParam.seq
         $0.dcIdaIsPortListeningResult = result
       }
-      try session.send(data: resultToSend.serializedData())
+      session.send(result: resultToSend)
       break
     case .dcIdaQueryProfileParam(let param):
       let result = try await queryProfile(param: param)
       let resultToSend = Inner_Params_DcIdaResult.with {
+        $0.seq = abstractParam.seq
         $0.dcIdaQueryProfileResult = result
       }
-      try session.send(data: resultToSend.serializedData())
+      session.send(result: resultToSend)
       break
-    case .dcGdcDaParam(let abstractParam):
-      for param in abstractParam.params {
-        let controlResult = ControlResult(seq: param.seq, session: session)
-        switch param.value {
-        case .cfGdcDaControlParam(let param):
-          do {
-            try await controlProcessor.push(control: param.control, result: controlResult)
-            Log.shared.debug("ControlSessionListener.onParam pushed control: \(param.control)")
-          } catch {
-            Log.shared.debug("ControlSessionListener.onParam failed to push control: \(param.control)")
-          }
-        default:
-          Log.shared.debug("ControlSessionListener.onParam.dcGdcDaParam unknown param: \(param)")
-          continue
-        }
+    case .dcGdcDaControlParam(let param):
+      let controlResult = ControlResult(seq: abstractParam.seq, session: session)
+      do {
+        try await controlProcessor.push(control: param.control, result: controlResult)
+        Log.shared.debug("ControlSessionListener.onParam pushed control: \(param.control)")
+      } catch {
+        Log.shared.debug("ControlSessionListener.onParam failed to push control: \(param.control)")
       }
       break
     default:
-      Log.shared.debug("ControlSessionListener.onParam  unknown param: \(param)")
+      Log.shared.debug("ControlSessionListener.onParam  unknown param: \(abstractParam)")
       break
     }
   }

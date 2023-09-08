@@ -13,7 +13,7 @@ import SwiftProtobuf
 protocol IControlSessionListener {
   func open(session: ControlSession) async throws
   func close(session: ControlSession) async throws
-  func onParam(session: ControlSession, param: Inner_Params_DcIdaParam) async throws
+  func onParam(session: ControlSession, abstractParam: Inner_Params_DcIdaParam) async throws
 }
 
 public class ControlSession {
@@ -83,7 +83,10 @@ public class ControlSession {
           let packet = this.recvQueue.pop()
           Task.catchable(
             {
-              try await this.eventListener.onParam(session: this, param: Inner_Params_DcIdaParam(serializedData: packet))
+              let paramList = try Inner_Params_DcIdaParamList(serializedData: packet)
+              for param in paramList.params {
+                try await this.eventListener.onParam(session: this, abstractParam: param)
+              }
             },
             catch: {
               Log.shared.error("ControlSession.receiveData decode error: \($0.localizedDescription)")
@@ -106,7 +109,17 @@ public class ControlSession {
       })
   }
 
-  func send(data: Data) {
+  func send(result: Inner_Params_DcIdaResult) {
+    var resultList = Inner_Params_DcIdaResultList()
+    resultList.results.append(result)
+    do {
+      self.send(data: try resultList.serializedData())
+    } catch {
+      Log.shared.error("ControlSession.send result error: \(error.localizedDescription)")
+    }
+  }
+
+  private func send(data: Data) {
     if self.state == .closed {
       Log.shared.error("ControlSession.send: connection is closed. id: \(self.sessionId)")
       return

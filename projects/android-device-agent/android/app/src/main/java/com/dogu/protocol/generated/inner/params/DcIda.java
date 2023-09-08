@@ -13,6 +13,12 @@ public final class DcIda {
       com.google.protobuf.MessageLiteOrBuilder {
 
     /**
+     * <code>fixed32 seq = 10;</code>
+     * @return The seq.
+     */
+    int getSeq();
+
+    /**
      * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 1;</code>
      * @return Whether the dcIdaRunappParam field is set.
      */
@@ -57,15 +63,15 @@ public final class DcIda {
     com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam getDcIdaQueryProfileParam();
 
     /**
-     * <code>.inner.params.CfGdcDaParamList dc_gdc_da_param = 5;</code>
-     * @return Whether the dcGdcDaParam field is set.
+     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
+     * @return Whether the dcGdcDaControlParam field is set.
      */
-    boolean hasDcGdcDaParam();
+    boolean hasDcGdcDaControlParam();
     /**
-     * <code>.inner.params.CfGdcDaParamList dc_gdc_da_param = 5;</code>
-     * @return The dcGdcDaParam.
+     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
+     * @return The dcGdcDaControlParam.
      */
-    com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaParamList getDcGdcDaParam();
+    com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam getDcGdcDaControlParam();
 
     public com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam.ValueCase getValueCase();
   }
@@ -86,7 +92,7 @@ public final class DcIda {
       DC_IDA_GET_SYSTEM_INFO_PARAM(2),
       DC_IDA_IS_PORT_LISTENING_PARAM(3),
       DC_IDA_QUERY_PROFILE_PARAM(4),
-      DC_GDC_DA_PARAM(5),
+      DC_GDC_DA_CONTROL_PARAM(5),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -106,7 +112,7 @@ public final class DcIda {
           case 2: return DC_IDA_GET_SYSTEM_INFO_PARAM;
           case 3: return DC_IDA_IS_PORT_LISTENING_PARAM;
           case 4: return DC_IDA_QUERY_PROFILE_PARAM;
-          case 5: return DC_GDC_DA_PARAM;
+          case 5: return DC_GDC_DA_CONTROL_PARAM;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -126,6 +132,32 @@ public final class DcIda {
     private void clearValue() {
       valueCase_ = 0;
       value_ = null;
+    }
+
+    public static final int SEQ_FIELD_NUMBER = 10;
+    private int seq_;
+    /**
+     * <code>fixed32 seq = 10;</code>
+     * @return The seq.
+     */
+    @java.lang.Override
+    public int getSeq() {
+      return seq_;
+    }
+    /**
+     * <code>fixed32 seq = 10;</code>
+     * @param value The seq to set.
+     */
+    private void setSeq(int value) {
+      
+      seq_ = value;
+    }
+    /**
+     * <code>fixed32 seq = 10;</code>
+     */
+    private void clearSeq() {
+      
+      seq_ = 0;
     }
 
     public static final int DC_IDA_RUNAPP_PARAM_FIELD_NUMBER = 1;
@@ -328,40 +360,40 @@ public final class DcIda {
       }
     }
 
-    public static final int DC_GDC_DA_PARAM_FIELD_NUMBER = 5;
+    public static final int DC_GDC_DA_CONTROL_PARAM_FIELD_NUMBER = 5;
     /**
-     * <code>.inner.params.CfGdcDaParamList dc_gdc_da_param = 5;</code>
+     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
      */
     @java.lang.Override
-    public boolean hasDcGdcDaParam() {
+    public boolean hasDcGdcDaControlParam() {
       return valueCase_ == 5;
     }
     /**
-     * <code>.inner.params.CfGdcDaParamList dc_gdc_da_param = 5;</code>
+     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
      */
     @java.lang.Override
-    public com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaParamList getDcGdcDaParam() {
+    public com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam getDcGdcDaControlParam() {
       if (valueCase_ == 5) {
-         return (com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaParamList) value_;
+         return (com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam) value_;
       }
-      return com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaParamList.getDefaultInstance();
+      return com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam.getDefaultInstance();
     }
     /**
-     * <code>.inner.params.CfGdcDaParamList dc_gdc_da_param = 5;</code>
+     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
      */
-    private void setDcGdcDaParam(com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaParamList value) {
+    private void setDcGdcDaControlParam(com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam value) {
       value.getClass();
   value_ = value;
       valueCase_ = 5;
     }
     /**
-     * <code>.inner.params.CfGdcDaParamList dc_gdc_da_param = 5;</code>
+     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
      */
-    private void mergeDcGdcDaParam(com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaParamList value) {
+    private void mergeDcGdcDaControlParam(com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam value) {
       value.getClass();
   if (valueCase_ == 5 &&
-          value_ != com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaParamList.getDefaultInstance()) {
-        value_ = com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaParamList.newBuilder((com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaParamList) value_)
+          value_ != com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam.newBuilder((com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam) value_)
             .mergeFrom(value).buildPartial();
       } else {
         value_ = value;
@@ -369,9 +401,9 @@ public final class DcIda {
       valueCase_ = 5;
     }
     /**
-     * <code>.inner.params.CfGdcDaParamList dc_gdc_da_param = 5;</code>
+     * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
      */
-    private void clearDcGdcDaParam() {
+    private void clearDcGdcDaControlParam() {
       if (valueCase_ == 5) {
         valueCase_ = 0;
         value_ = null;
@@ -484,6 +516,34 @@ public final class DcIda {
         return this;
       }
 
+
+      /**
+       * <code>fixed32 seq = 10;</code>
+       * @return The seq.
+       */
+      @java.lang.Override
+      public int getSeq() {
+        return instance.getSeq();
+      }
+      /**
+       * <code>fixed32 seq = 10;</code>
+       * @param value The seq to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSeq(int value) {
+        copyOnWrite();
+        instance.setSeq(value);
+        return this;
+      }
+      /**
+       * <code>fixed32 seq = 10;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearSeq() {
+        copyOnWrite();
+        instance.clearSeq();
+        return this;
+      }
 
       /**
        * <code>.inner.types.DcIdaRunAppParam dc_ida_runapp_param = 1;</code>
@@ -678,50 +738,50 @@ public final class DcIda {
       }
 
       /**
-       * <code>.inner.params.CfGdcDaParamList dc_gdc_da_param = 5;</code>
+       * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
        */
       @java.lang.Override
-      public boolean hasDcGdcDaParam() {
-        return instance.hasDcGdcDaParam();
+      public boolean hasDcGdcDaControlParam() {
+        return instance.hasDcGdcDaControlParam();
       }
       /**
-       * <code>.inner.params.CfGdcDaParamList dc_gdc_da_param = 5;</code>
+       * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
        */
       @java.lang.Override
-      public com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaParamList getDcGdcDaParam() {
-        return instance.getDcGdcDaParam();
+      public com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam getDcGdcDaControlParam() {
+        return instance.getDcGdcDaControlParam();
       }
       /**
-       * <code>.inner.params.CfGdcDaParamList dc_gdc_da_param = 5;</code>
+       * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
        */
-      public Builder setDcGdcDaParam(com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaParamList value) {
+      public Builder setDcGdcDaControlParam(com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam value) {
         copyOnWrite();
-        instance.setDcGdcDaParam(value);
+        instance.setDcGdcDaControlParam(value);
         return this;
       }
       /**
-       * <code>.inner.params.CfGdcDaParamList dc_gdc_da_param = 5;</code>
+       * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
        */
-      public Builder setDcGdcDaParam(
-          com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaParamList.Builder builderForValue) {
+      public Builder setDcGdcDaControlParam(
+          com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam.Builder builderForValue) {
         copyOnWrite();
-        instance.setDcGdcDaParam(builderForValue.build());
+        instance.setDcGdcDaControlParam(builderForValue.build());
         return this;
       }
       /**
-       * <code>.inner.params.CfGdcDaParamList dc_gdc_da_param = 5;</code>
+       * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
        */
-      public Builder mergeDcGdcDaParam(com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaParamList value) {
+      public Builder mergeDcGdcDaControlParam(com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam value) {
         copyOnWrite();
-        instance.mergeDcGdcDaParam(value);
+        instance.mergeDcGdcDaControlParam(value);
         return this;
       }
       /**
-       * <code>.inner.params.CfGdcDaParamList dc_gdc_da_param = 5;</code>
+       * <code>.inner.types.CfGdcDaControlParam dc_gdc_da_control_param = 5;</code>
        */
-      public Builder clearDcGdcDaParam() {
+      public Builder clearDcGdcDaControlParam() {
         copyOnWrite();
-        instance.clearDcGdcDaParam();
+        instance.clearDcGdcDaControlParam();
         return this;
       }
 
@@ -747,11 +807,12 @@ public final class DcIda {
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoParam.class,
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningParam.class,
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileParam.class,
-              com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaParamList.class,
+              com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlParam.class,
+              "seq_",
             };
             java.lang.String info =
-                "\u0000\u0005\u0001\u0000\u0001\u0005\u0005\u0000\u0000\u0000\u0001<\u0000\u0002<" +
-                "\u0000\u0003<\u0000\u0004<\u0000\u0005<\u0000";
+                "\u0000\u0006\u0001\u0000\u0001\n\u0006\u0000\u0000\u0000\u0001<\u0000\u0002<\u0000" +
+                "\u0003<\u0000\u0004<\u0000\u0005<\u0000\n\u0006";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
@@ -811,6 +872,12 @@ public final class DcIda {
       com.google.protobuf.MessageLiteOrBuilder {
 
     /**
+     * <code>fixed32 seq = 10;</code>
+     * @return The seq.
+     */
+    int getSeq();
+
+    /**
      * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 1;</code>
      * @return Whether the dcIdaRunappResult field is set.
      */
@@ -855,15 +922,15 @@ public final class DcIda {
     com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult getDcIdaQueryProfileResult();
 
     /**
-     * <code>.inner.params.CfGdcDaResultList dc_gdc_da_result = 5;</code>
-     * @return Whether the dcGdcDaResult field is set.
+     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
+     * @return Whether the dcGdcDaControlResult field is set.
      */
-    boolean hasDcGdcDaResult();
+    boolean hasDcGdcDaControlResult();
     /**
-     * <code>.inner.params.CfGdcDaResultList dc_gdc_da_result = 5;</code>
-     * @return The dcGdcDaResult.
+     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
+     * @return The dcGdcDaControlResult.
      */
-    com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaResultList getDcGdcDaResult();
+    com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult getDcGdcDaControlResult();
 
     public com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult.ValueCase getValueCase();
   }
@@ -884,7 +951,7 @@ public final class DcIda {
       DC_IDA_GET_SYSTEM_INFO_RESULT(2),
       DC_IDA_IS_PORT_LISTENING_RESULT(3),
       DC_IDA_QUERY_PROFILE_RESULT(4),
-      DC_GDC_DA_RESULT(5),
+      DC_GDC_DA_CONTROL_RESULT(5),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -904,7 +971,7 @@ public final class DcIda {
           case 2: return DC_IDA_GET_SYSTEM_INFO_RESULT;
           case 3: return DC_IDA_IS_PORT_LISTENING_RESULT;
           case 4: return DC_IDA_QUERY_PROFILE_RESULT;
-          case 5: return DC_GDC_DA_RESULT;
+          case 5: return DC_GDC_DA_CONTROL_RESULT;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -924,6 +991,32 @@ public final class DcIda {
     private void clearValue() {
       valueCase_ = 0;
       value_ = null;
+    }
+
+    public static final int SEQ_FIELD_NUMBER = 10;
+    private int seq_;
+    /**
+     * <code>fixed32 seq = 10;</code>
+     * @return The seq.
+     */
+    @java.lang.Override
+    public int getSeq() {
+      return seq_;
+    }
+    /**
+     * <code>fixed32 seq = 10;</code>
+     * @param value The seq to set.
+     */
+    private void setSeq(int value) {
+      
+      seq_ = value;
+    }
+    /**
+     * <code>fixed32 seq = 10;</code>
+     */
+    private void clearSeq() {
+      
+      seq_ = 0;
     }
 
     public static final int DC_IDA_RUNAPP_RESULT_FIELD_NUMBER = 1;
@@ -1126,40 +1219,40 @@ public final class DcIda {
       }
     }
 
-    public static final int DC_GDC_DA_RESULT_FIELD_NUMBER = 5;
+    public static final int DC_GDC_DA_CONTROL_RESULT_FIELD_NUMBER = 5;
     /**
-     * <code>.inner.params.CfGdcDaResultList dc_gdc_da_result = 5;</code>
+     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
      */
     @java.lang.Override
-    public boolean hasDcGdcDaResult() {
+    public boolean hasDcGdcDaControlResult() {
       return valueCase_ == 5;
     }
     /**
-     * <code>.inner.params.CfGdcDaResultList dc_gdc_da_result = 5;</code>
+     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
      */
     @java.lang.Override
-    public com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaResultList getDcGdcDaResult() {
+    public com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult getDcGdcDaControlResult() {
       if (valueCase_ == 5) {
-         return (com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaResultList) value_;
+         return (com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult) value_;
       }
-      return com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaResultList.getDefaultInstance();
+      return com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult.getDefaultInstance();
     }
     /**
-     * <code>.inner.params.CfGdcDaResultList dc_gdc_da_result = 5;</code>
+     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
      */
-    private void setDcGdcDaResult(com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaResultList value) {
+    private void setDcGdcDaControlResult(com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult value) {
       value.getClass();
   value_ = value;
       valueCase_ = 5;
     }
     /**
-     * <code>.inner.params.CfGdcDaResultList dc_gdc_da_result = 5;</code>
+     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
      */
-    private void mergeDcGdcDaResult(com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaResultList value) {
+    private void mergeDcGdcDaControlResult(com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult value) {
       value.getClass();
   if (valueCase_ == 5 &&
-          value_ != com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaResultList.getDefaultInstance()) {
-        value_ = com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaResultList.newBuilder((com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaResultList) value_)
+          value_ != com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult.newBuilder((com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult) value_)
             .mergeFrom(value).buildPartial();
       } else {
         value_ = value;
@@ -1167,9 +1260,9 @@ public final class DcIda {
       valueCase_ = 5;
     }
     /**
-     * <code>.inner.params.CfGdcDaResultList dc_gdc_da_result = 5;</code>
+     * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
      */
-    private void clearDcGdcDaResult() {
+    private void clearDcGdcDaControlResult() {
       if (valueCase_ == 5) {
         valueCase_ = 0;
         value_ = null;
@@ -1282,6 +1375,34 @@ public final class DcIda {
         return this;
       }
 
+
+      /**
+       * <code>fixed32 seq = 10;</code>
+       * @return The seq.
+       */
+      @java.lang.Override
+      public int getSeq() {
+        return instance.getSeq();
+      }
+      /**
+       * <code>fixed32 seq = 10;</code>
+       * @param value The seq to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSeq(int value) {
+        copyOnWrite();
+        instance.setSeq(value);
+        return this;
+      }
+      /**
+       * <code>fixed32 seq = 10;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearSeq() {
+        copyOnWrite();
+        instance.clearSeq();
+        return this;
+      }
 
       /**
        * <code>.inner.types.DcIdaRunAppResult dc_ida_runapp_result = 1;</code>
@@ -1476,50 +1597,50 @@ public final class DcIda {
       }
 
       /**
-       * <code>.inner.params.CfGdcDaResultList dc_gdc_da_result = 5;</code>
+       * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
        */
       @java.lang.Override
-      public boolean hasDcGdcDaResult() {
-        return instance.hasDcGdcDaResult();
+      public boolean hasDcGdcDaControlResult() {
+        return instance.hasDcGdcDaControlResult();
       }
       /**
-       * <code>.inner.params.CfGdcDaResultList dc_gdc_da_result = 5;</code>
+       * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
        */
       @java.lang.Override
-      public com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaResultList getDcGdcDaResult() {
-        return instance.getDcGdcDaResult();
+      public com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult getDcGdcDaControlResult() {
+        return instance.getDcGdcDaControlResult();
       }
       /**
-       * <code>.inner.params.CfGdcDaResultList dc_gdc_da_result = 5;</code>
+       * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
        */
-      public Builder setDcGdcDaResult(com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaResultList value) {
+      public Builder setDcGdcDaControlResult(com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult value) {
         copyOnWrite();
-        instance.setDcGdcDaResult(value);
+        instance.setDcGdcDaControlResult(value);
         return this;
       }
       /**
-       * <code>.inner.params.CfGdcDaResultList dc_gdc_da_result = 5;</code>
+       * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
        */
-      public Builder setDcGdcDaResult(
-          com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaResultList.Builder builderForValue) {
+      public Builder setDcGdcDaControlResult(
+          com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult.Builder builderForValue) {
         copyOnWrite();
-        instance.setDcGdcDaResult(builderForValue.build());
+        instance.setDcGdcDaControlResult(builderForValue.build());
         return this;
       }
       /**
-       * <code>.inner.params.CfGdcDaResultList dc_gdc_da_result = 5;</code>
+       * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
        */
-      public Builder mergeDcGdcDaResult(com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaResultList value) {
+      public Builder mergeDcGdcDaControlResult(com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult value) {
         copyOnWrite();
-        instance.mergeDcGdcDaResult(value);
+        instance.mergeDcGdcDaControlResult(value);
         return this;
       }
       /**
-       * <code>.inner.params.CfGdcDaResultList dc_gdc_da_result = 5;</code>
+       * <code>.inner.types.CfGdcDaControlResult dc_gdc_da_control_result = 5;</code>
        */
-      public Builder clearDcGdcDaResult() {
+      public Builder clearDcGdcDaControlResult() {
         copyOnWrite();
-        instance.clearDcGdcDaResult();
+        instance.clearDcGdcDaControlResult();
         return this;
       }
 
@@ -1545,11 +1666,12 @@ public final class DcIda {
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaGetSystemInfoResult.class,
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaIsPortListeningResult.class,
               com.dogu.protocol.generated.inner.types.DcIda.DcIdaQueryProfileResult.class,
-              com.dogu.protocol.generated.inner.params.CfGdcDa.CfGdcDaResultList.class,
+              com.dogu.protocol.generated.inner.types.CfGdcDa.CfGdcDaControlResult.class,
+              "seq_",
             };
             java.lang.String info =
-                "\u0000\u0005\u0001\u0000\u0001\u0005\u0005\u0000\u0000\u0000\u0001<\u0000\u0002<" +
-                "\u0000\u0003<\u0000\u0004<\u0000\u0005<\u0000";
+                "\u0000\u0006\u0001\u0000\u0001\n\u0006\u0000\u0000\u0000\u0001<\u0000\u0002<\u0000" +
+                "\u0003<\u0000\u0004<\u0000\u0005<\u0000\n\u0006";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
@@ -1600,6 +1722,796 @@ public final class DcIda {
     private static volatile com.google.protobuf.Parser<DcIdaResult> PARSER;
 
     public static com.google.protobuf.Parser<DcIdaResult> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
+  public interface DcIdaParamListOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:inner.params.DcIdaParamList)
+      com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+     */
+    java.util.List<com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam> 
+        getParamsList();
+    /**
+     * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+     */
+    com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam getParams(int index);
+    /**
+     * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+     */
+    int getParamsCount();
+  }
+  /**
+   * Protobuf type {@code inner.params.DcIdaParamList}
+   */
+  public  static final class DcIdaParamList extends
+      com.google.protobuf.GeneratedMessageLite<
+          DcIdaParamList, DcIdaParamList.Builder> implements
+      // @@protoc_insertion_point(message_implements:inner.params.DcIdaParamList)
+      DcIdaParamListOrBuilder {
+    private DcIdaParamList() {
+      params_ = emptyProtobufList();
+    }
+    public static final int PARAMS_FIELD_NUMBER = 1;
+    private com.google.protobuf.Internal.ProtobufList<com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam> params_;
+    /**
+     * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam> getParamsList() {
+      return params_;
+    }
+    /**
+     * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+     */
+    public java.util.List<? extends com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamOrBuilder> 
+        getParamsOrBuilderList() {
+      return params_;
+    }
+    /**
+     * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+     */
+    @java.lang.Override
+    public int getParamsCount() {
+      return params_.size();
+    }
+    /**
+     * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam getParams(int index) {
+      return params_.get(index);
+    }
+    /**
+     * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+     */
+    public com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamOrBuilder getParamsOrBuilder(
+        int index) {
+      return params_.get(index);
+    }
+    private void ensureParamsIsMutable() {
+      com.google.protobuf.Internal.ProtobufList<com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam> tmp = params_;
+      if (!tmp.isModifiable()) {
+        params_ =
+            com.google.protobuf.GeneratedMessageLite.mutableCopy(tmp);
+       }
+    }
+
+    /**
+     * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+     */
+    private void setParams(
+        int index, com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam value) {
+      value.getClass();
+  ensureParamsIsMutable();
+      params_.set(index, value);
+    }
+    /**
+     * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+     */
+    private void addParams(com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam value) {
+      value.getClass();
+  ensureParamsIsMutable();
+      params_.add(value);
+    }
+    /**
+     * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+     */
+    private void addParams(
+        int index, com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam value) {
+      value.getClass();
+  ensureParamsIsMutable();
+      params_.add(index, value);
+    }
+    /**
+     * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+     */
+    private void addAllParams(
+        java.lang.Iterable<? extends com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam> values) {
+      ensureParamsIsMutable();
+      com.google.protobuf.AbstractMessageLite.addAll(
+          values, params_);
+    }
+    /**
+     * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+     */
+    private void clearParams() {
+      params_ = emptyProtobufList();
+    }
+    /**
+     * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+     */
+    private void removeParams(int index) {
+      ensureParamsIsMutable();
+      params_.remove(index);
+    }
+
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code inner.params.DcIdaParamList}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList, Builder> implements
+        // @@protoc_insertion_point(builder_implements:inner.params.DcIdaParamList)
+        com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamListOrBuilder {
+      // Construct using com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      /**
+       * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+       */
+      @java.lang.Override
+      public java.util.List<com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam> getParamsList() {
+        return java.util.Collections.unmodifiableList(
+            instance.getParamsList());
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+       */
+      @java.lang.Override
+      public int getParamsCount() {
+        return instance.getParamsCount();
+      }/**
+       * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam getParams(int index) {
+        return instance.getParams(index);
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+       */
+      public Builder setParams(
+          int index, com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam value) {
+        copyOnWrite();
+        instance.setParams(index, value);
+        return this;
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+       */
+      public Builder setParams(
+          int index, com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam.Builder builderForValue) {
+        copyOnWrite();
+        instance.setParams(index,
+            builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+       */
+      public Builder addParams(com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam value) {
+        copyOnWrite();
+        instance.addParams(value);
+        return this;
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+       */
+      public Builder addParams(
+          int index, com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam value) {
+        copyOnWrite();
+        instance.addParams(index, value);
+        return this;
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+       */
+      public Builder addParams(
+          com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam.Builder builderForValue) {
+        copyOnWrite();
+        instance.addParams(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+       */
+      public Builder addParams(
+          int index, com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam.Builder builderForValue) {
+        copyOnWrite();
+        instance.addParams(index,
+            builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+       */
+      public Builder addAllParams(
+          java.lang.Iterable<? extends com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam> values) {
+        copyOnWrite();
+        instance.addAllParams(values);
+        return this;
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+       */
+      public Builder clearParams() {
+        copyOnWrite();
+        instance.clearParams();
+        return this;
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaParam params = 1;</code>
+       */
+      public Builder removeParams(int index) {
+        copyOnWrite();
+        instance.removeParams(index);
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:inner.params.DcIdaParamList)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "params_",
+              com.dogu.protocol.generated.inner.params.DcIda.DcIdaParam.class,
+            };
+            java.lang.String info =
+                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0001\u0000\u0001\u001b";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList> parser = PARSER;
+          if (parser == null) {
+            synchronized (com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:inner.params.DcIdaParamList)
+    private static final com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList DEFAULT_INSTANCE;
+    static {
+      DcIdaParamList defaultInstance = new DcIdaParamList();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        DcIdaParamList.class, defaultInstance);
+    }
+
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaParamList getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<DcIdaParamList> PARSER;
+
+    public static com.google.protobuf.Parser<DcIdaParamList> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
+  public interface DcIdaResultListOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:inner.params.DcIdaResultList)
+      com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+     */
+    java.util.List<com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult> 
+        getResultsList();
+    /**
+     * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+     */
+    com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult getResults(int index);
+    /**
+     * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+     */
+    int getResultsCount();
+  }
+  /**
+   * Protobuf type {@code inner.params.DcIdaResultList}
+   */
+  public  static final class DcIdaResultList extends
+      com.google.protobuf.GeneratedMessageLite<
+          DcIdaResultList, DcIdaResultList.Builder> implements
+      // @@protoc_insertion_point(message_implements:inner.params.DcIdaResultList)
+      DcIdaResultListOrBuilder {
+    private DcIdaResultList() {
+      results_ = emptyProtobufList();
+    }
+    public static final int RESULTS_FIELD_NUMBER = 1;
+    private com.google.protobuf.Internal.ProtobufList<com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult> results_;
+    /**
+     * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+     */
+    @java.lang.Override
+    public java.util.List<com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult> getResultsList() {
+      return results_;
+    }
+    /**
+     * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+     */
+    public java.util.List<? extends com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultOrBuilder> 
+        getResultsOrBuilderList() {
+      return results_;
+    }
+    /**
+     * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+     */
+    @java.lang.Override
+    public int getResultsCount() {
+      return results_.size();
+    }
+    /**
+     * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult getResults(int index) {
+      return results_.get(index);
+    }
+    /**
+     * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+     */
+    public com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultOrBuilder getResultsOrBuilder(
+        int index) {
+      return results_.get(index);
+    }
+    private void ensureResultsIsMutable() {
+      com.google.protobuf.Internal.ProtobufList<com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult> tmp = results_;
+      if (!tmp.isModifiable()) {
+        results_ =
+            com.google.protobuf.GeneratedMessageLite.mutableCopy(tmp);
+       }
+    }
+
+    /**
+     * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+     */
+    private void setResults(
+        int index, com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult value) {
+      value.getClass();
+  ensureResultsIsMutable();
+      results_.set(index, value);
+    }
+    /**
+     * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+     */
+    private void addResults(com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult value) {
+      value.getClass();
+  ensureResultsIsMutable();
+      results_.add(value);
+    }
+    /**
+     * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+     */
+    private void addResults(
+        int index, com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult value) {
+      value.getClass();
+  ensureResultsIsMutable();
+      results_.add(index, value);
+    }
+    /**
+     * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+     */
+    private void addAllResults(
+        java.lang.Iterable<? extends com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult> values) {
+      ensureResultsIsMutable();
+      com.google.protobuf.AbstractMessageLite.addAll(
+          values, results_);
+    }
+    /**
+     * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+     */
+    private void clearResults() {
+      results_ = emptyProtobufList();
+    }
+    /**
+     * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+     */
+    private void removeResults(int index) {
+      ensureResultsIsMutable();
+      results_.remove(index);
+    }
+
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code inner.params.DcIdaResultList}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList, Builder> implements
+        // @@protoc_insertion_point(builder_implements:inner.params.DcIdaResultList)
+        com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultListOrBuilder {
+      // Construct using com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      /**
+       * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+       */
+      @java.lang.Override
+      public java.util.List<com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult> getResultsList() {
+        return java.util.Collections.unmodifiableList(
+            instance.getResultsList());
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+       */
+      @java.lang.Override
+      public int getResultsCount() {
+        return instance.getResultsCount();
+      }/**
+       * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult getResults(int index) {
+        return instance.getResults(index);
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+       */
+      public Builder setResults(
+          int index, com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult value) {
+        copyOnWrite();
+        instance.setResults(index, value);
+        return this;
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+       */
+      public Builder setResults(
+          int index, com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult.Builder builderForValue) {
+        copyOnWrite();
+        instance.setResults(index,
+            builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+       */
+      public Builder addResults(com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult value) {
+        copyOnWrite();
+        instance.addResults(value);
+        return this;
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+       */
+      public Builder addResults(
+          int index, com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult value) {
+        copyOnWrite();
+        instance.addResults(index, value);
+        return this;
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+       */
+      public Builder addResults(
+          com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult.Builder builderForValue) {
+        copyOnWrite();
+        instance.addResults(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+       */
+      public Builder addResults(
+          int index, com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult.Builder builderForValue) {
+        copyOnWrite();
+        instance.addResults(index,
+            builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+       */
+      public Builder addAllResults(
+          java.lang.Iterable<? extends com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult> values) {
+        copyOnWrite();
+        instance.addAllResults(values);
+        return this;
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+       */
+      public Builder clearResults() {
+        copyOnWrite();
+        instance.clearResults();
+        return this;
+      }
+      /**
+       * <code>repeated .inner.params.DcIdaResult results = 1;</code>
+       */
+      public Builder removeResults(int index) {
+        copyOnWrite();
+        instance.removeResults(index);
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:inner.params.DcIdaResultList)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "results_",
+              com.dogu.protocol.generated.inner.params.DcIda.DcIdaResult.class,
+            };
+            java.lang.String info =
+                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0001\u0000\u0001\u001b";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList> parser = PARSER;
+          if (parser == null) {
+            synchronized (com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:inner.params.DcIdaResultList)
+    private static final com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList DEFAULT_INSTANCE;
+    static {
+      DcIdaResultList defaultInstance = new DcIdaResultList();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        DcIdaResultList.class, defaultInstance);
+    }
+
+    public static com.dogu.protocol.generated.inner.params.DcIda.DcIdaResultList getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<DcIdaResultList> PARSER;
+
+    public static com.google.protobuf.Parser<DcIdaResultList> parser() {
       return DEFAULT_INSTANCE.getParserForType();
     }
   }

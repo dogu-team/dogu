@@ -25,6 +25,8 @@ public struct Inner_Params_DcIdaParam {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
+  public var seq: UInt32 = 0
+
   public var value: Inner_Params_DcIdaParam.OneOf_Value? = nil
 
   public var dcIdaRunappParam: Inner_Types_DcIdaRunAppParam {
@@ -59,12 +61,12 @@ public struct Inner_Params_DcIdaParam {
     set {value = .dcIdaQueryProfileParam(newValue)}
   }
 
-  public var dcGdcDaParam: Inner_Params_CfGdcDaParamList {
+  public var dcGdcDaControlParam: Inner_Types_CfGdcDaControlParam {
     get {
-      if case .dcGdcDaParam(let v)? = value {return v}
-      return Inner_Params_CfGdcDaParamList()
+      if case .dcGdcDaControlParam(let v)? = value {return v}
+      return Inner_Types_CfGdcDaControlParam()
     }
-    set {value = .dcGdcDaParam(newValue)}
+    set {value = .dcGdcDaControlParam(newValue)}
   }
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -74,7 +76,7 @@ public struct Inner_Params_DcIdaParam {
     case dcIdaGetSystemInfoParam(Inner_Types_DcIdaGetSystemInfoParam)
     case dcIdaIsPortListeningParam(Inner_Types_DcIdaIsPortListeningParam)
     case dcIdaQueryProfileParam(Inner_Types_DcIdaQueryProfileParam)
-    case dcGdcDaParam(Inner_Params_CfGdcDaParamList)
+    case dcGdcDaControlParam(Inner_Types_CfGdcDaControlParam)
 
   #if !swift(>=4.1)
     public static func ==(lhs: Inner_Params_DcIdaParam.OneOf_Value, rhs: Inner_Params_DcIdaParam.OneOf_Value) -> Bool {
@@ -98,8 +100,8 @@ public struct Inner_Params_DcIdaParam {
         guard case .dcIdaQueryProfileParam(let l) = lhs, case .dcIdaQueryProfileParam(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
-      case (.dcGdcDaParam, .dcGdcDaParam): return {
-        guard case .dcGdcDaParam(let l) = lhs, case .dcGdcDaParam(let r) = rhs else { preconditionFailure() }
+      case (.dcGdcDaControlParam, .dcGdcDaControlParam): return {
+        guard case .dcGdcDaControlParam(let l) = lhs, case .dcGdcDaControlParam(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -115,6 +117,8 @@ public struct Inner_Params_DcIdaResult {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
+
+  public var seq: UInt32 = 0
 
   public var value: Inner_Params_DcIdaResult.OneOf_Value? = nil
 
@@ -150,12 +154,12 @@ public struct Inner_Params_DcIdaResult {
     set {value = .dcIdaQueryProfileResult(newValue)}
   }
 
-  public var dcGdcDaResult: Inner_Params_CfGdcDaResultList {
+  public var dcGdcDaControlResult: Inner_Types_CfGdcDaControlResult {
     get {
-      if case .dcGdcDaResult(let v)? = value {return v}
-      return Inner_Params_CfGdcDaResultList()
+      if case .dcGdcDaControlResult(let v)? = value {return v}
+      return Inner_Types_CfGdcDaControlResult()
     }
-    set {value = .dcGdcDaResult(newValue)}
+    set {value = .dcGdcDaControlResult(newValue)}
   }
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -165,7 +169,7 @@ public struct Inner_Params_DcIdaResult {
     case dcIdaGetSystemInfoResult(Inner_Types_DcIdaGetSystemInfoResult)
     case dcIdaIsPortListeningResult(Inner_Types_DcIdaIsPortListeningResult)
     case dcIdaQueryProfileResult(Inner_Types_DcIdaQueryProfileResult)
-    case dcGdcDaResult(Inner_Params_CfGdcDaResultList)
+    case dcGdcDaControlResult(Inner_Types_CfGdcDaControlResult)
 
   #if !swift(>=4.1)
     public static func ==(lhs: Inner_Params_DcIdaResult.OneOf_Value, rhs: Inner_Params_DcIdaResult.OneOf_Value) -> Bool {
@@ -189,8 +193,8 @@ public struct Inner_Params_DcIdaResult {
         guard case .dcIdaQueryProfileResult(let l) = lhs, case .dcIdaQueryProfileResult(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
-      case (.dcGdcDaResult, .dcGdcDaResult): return {
-        guard case .dcGdcDaResult(let l) = lhs, case .dcGdcDaResult(let r) = rhs else { preconditionFailure() }
+      case (.dcGdcDaControlResult, .dcGdcDaControlResult): return {
+        guard case .dcGdcDaControlResult(let l) = lhs, case .dcGdcDaControlResult(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -202,11 +206,37 @@ public struct Inner_Params_DcIdaResult {
   public init() {}
 }
 
+public struct Inner_Params_DcIdaParamList {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var params: [Inner_Params_DcIdaParam] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
+public struct Inner_Params_DcIdaResultList {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  public var results: [Inner_Params_DcIdaResult] = []
+
+  public var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  public init() {}
+}
+
 #if swift(>=5.5) && canImport(_Concurrency)
 extension Inner_Params_DcIdaParam: @unchecked Sendable {}
 extension Inner_Params_DcIdaParam.OneOf_Value: @unchecked Sendable {}
 extension Inner_Params_DcIdaResult: @unchecked Sendable {}
 extension Inner_Params_DcIdaResult.OneOf_Value: @unchecked Sendable {}
+extension Inner_Params_DcIdaParamList: @unchecked Sendable {}
+extension Inner_Params_DcIdaResultList: @unchecked Sendable {}
 #endif  // swift(>=5.5) && canImport(_Concurrency)
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -216,11 +246,12 @@ fileprivate let _protobuf_package = "inner.params"
 extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DcIdaParam"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    10: .same(proto: "seq"),
     1: .standard(proto: "dc_ida_runapp_param"),
     2: .standard(proto: "dc_ida_get_system_info_param"),
     3: .standard(proto: "dc_ida_is_port_listening_param"),
     4: .standard(proto: "dc_ida_query_profile_param"),
-    5: .standard(proto: "dc_gdc_da_param"),
+    5: .standard(proto: "dc_gdc_da_control_param"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -282,18 +313,19 @@ extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._Message
         }
       }()
       case 5: try {
-        var v: Inner_Params_CfGdcDaParamList?
+        var v: Inner_Types_CfGdcDaControlParam?
         var hadOneofValue = false
         if let current = self.value {
           hadOneofValue = true
-          if case .dcGdcDaParam(let m) = current {v = m}
+          if case .dcGdcDaControlParam(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
         if let v = v {
           if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.value = .dcGdcDaParam(v)
+          self.value = .dcGdcDaControlParam(v)
         }
       }()
+      case 10: try { try decoder.decodeSingularFixed32Field(value: &self.seq) }()
       default: break
       }
     }
@@ -321,16 +353,20 @@ extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._Message
       guard case .dcIdaQueryProfileParam(let v)? = self.value else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
     }()
-    case .dcGdcDaParam?: try {
-      guard case .dcGdcDaParam(let v)? = self.value else { preconditionFailure() }
+    case .dcGdcDaControlParam?: try {
+      guard case .dcGdcDaControlParam(let v)? = self.value else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
     }()
     case nil: break
+    }
+    if self.seq != 0 {
+      try visitor.visitSingularFixed32Field(value: self.seq, fieldNumber: 10)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Inner_Params_DcIdaParam, rhs: Inner_Params_DcIdaParam) -> Bool {
+    if lhs.seq != rhs.seq {return false}
     if lhs.value != rhs.value {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
@@ -340,11 +376,12 @@ extension Inner_Params_DcIdaParam: SwiftProtobuf.Message, SwiftProtobuf._Message
 extension Inner_Params_DcIdaResult: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   public static let protoMessageName: String = _protobuf_package + ".DcIdaResult"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    10: .same(proto: "seq"),
     1: .standard(proto: "dc_ida_runapp_result"),
     2: .standard(proto: "dc_ida_get_system_info_result"),
     3: .standard(proto: "dc_ida_is_port_listening_result"),
     4: .standard(proto: "dc_ida_query_profile_result"),
-    5: .standard(proto: "dc_gdc_da_result"),
+    5: .standard(proto: "dc_gdc_da_control_result"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -406,18 +443,19 @@ extension Inner_Params_DcIdaResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
         }
       }()
       case 5: try {
-        var v: Inner_Params_CfGdcDaResultList?
+        var v: Inner_Types_CfGdcDaControlResult?
         var hadOneofValue = false
         if let current = self.value {
           hadOneofValue = true
-          if case .dcGdcDaResult(let m) = current {v = m}
+          if case .dcGdcDaControlResult(let m) = current {v = m}
         }
         try decoder.decodeSingularMessageField(value: &v)
         if let v = v {
           if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.value = .dcGdcDaResult(v)
+          self.value = .dcGdcDaControlResult(v)
         }
       }()
+      case 10: try { try decoder.decodeSingularFixed32Field(value: &self.seq) }()
       default: break
       }
     }
@@ -445,17 +483,85 @@ extension Inner_Params_DcIdaResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
       guard case .dcIdaQueryProfileResult(let v)? = self.value else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
     }()
-    case .dcGdcDaResult?: try {
-      guard case .dcGdcDaResult(let v)? = self.value else { preconditionFailure() }
+    case .dcGdcDaControlResult?: try {
+      guard case .dcGdcDaControlResult(let v)? = self.value else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
     }()
     case nil: break
+    }
+    if self.seq != 0 {
+      try visitor.visitSingularFixed32Field(value: self.seq, fieldNumber: 10)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Inner_Params_DcIdaResult, rhs: Inner_Params_DcIdaResult) -> Bool {
+    if lhs.seq != rhs.seq {return false}
     if lhs.value != rhs.value {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Inner_Params_DcIdaParamList: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DcIdaParamList"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "params"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.params) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.params.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.params, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Inner_Params_DcIdaParamList, rhs: Inner_Params_DcIdaParamList) -> Bool {
+    if lhs.params != rhs.params {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension Inner_Params_DcIdaResultList: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  public static let protoMessageName: String = _protobuf_package + ".DcIdaResultList"
+  public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "results"),
+  ]
+
+  public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every case branch when no optimizations are
+      // enabled. https://github.com/apple/swift-protobuf/issues/1034
+      switch fieldNumber {
+      case 1: try { try decoder.decodeRepeatedMessageField(value: &self.results) }()
+      default: break
+      }
+    }
+  }
+
+  public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if !self.results.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.results, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  public static func ==(lhs: Inner_Params_DcIdaResultList, rhs: Inner_Params_DcIdaResultList) -> Bool {
+    if lhs.results != rhs.results {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

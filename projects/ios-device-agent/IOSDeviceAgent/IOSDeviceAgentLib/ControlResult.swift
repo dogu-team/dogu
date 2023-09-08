@@ -25,12 +25,12 @@ class ControlResult {
     }
     self.hasSet = true
     Task {
-      var resultList = Inner_Params_CfGdcDaResultList()
-      var resultUnion = Inner_Params_CfGdcDaResult()
-      resultUnion.seq = self.seq
-      resultUnion.cfGdcDaControlResult = result
-      resultList.results.append(resultUnion)
-      try self.session.send(data: resultList.serializedData())
+      let resultToSend = Inner_Params_DcIdaResult.with {
+        $0.seq = self.seq
+        $0.dcGdcDaControlResult = result
+      }
+
+      self.session.send(result: resultToSend)
     }
   }
 }
