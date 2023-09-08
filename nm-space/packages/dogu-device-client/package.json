@@ -1,6 +1,6 @@
 {
   "name": "dogu-device-client",
-  "version": "0.0.1",
+  "version": "0.0.2-rc.1",
   "license": "MIT License",
   "author": "Dogu Technologies",
   "type": "module",
