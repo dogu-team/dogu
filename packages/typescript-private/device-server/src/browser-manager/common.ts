@@ -24,6 +24,13 @@ export type DownloadRequestTimeout = number;
 export const defaultDownloadRequestTimeout = (): DownloadRequestTimeout => 10 * 60_000;
 
 /**
+ * @description Timeout for installation
+ * @unit milliseconds
+ */
+export type InstallationTimeout = number;
+export const defaultInstallationTimeout = (): InstallationTimeout => 10 * 60_000;
+
+/**
  * @description Installation root path. each browser or driver is installed under `<installationRootPath>/<name>/<version>/<platform>`.
  * @default process.cwd()
  */

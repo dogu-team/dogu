@@ -18,7 +18,7 @@ export const FirefoxInstallablePlatform = ['mac', 'win64', 'linux-x86_64'] as co
 export type FirefoxInstallablePlatform = (typeof FirefoxInstallablePlatform)[number];
 const isValidFirefoxInstallablePlatform = (value: string): value is FirefoxInstallablePlatform => FirefoxInstallablePlatform.includes(value as FirefoxInstallablePlatform);
 
-const firefoxDownloadBaseUrl = 'https://ftp.mozilla.org/pub';
+const downloadBaseUrl = 'https://ftp.mozilla.org/pub';
 const defaultLocale = 'en-US';
 
 const latestVersionMap: DeepReadonly<Record<Extract<FirefoxInstallableName, 'firefox' | 'firefox-devedition'>, keyof DetailsFirefoxVersions>> = {
@@ -39,7 +39,7 @@ const executablePathMap: DeepReadonly<Record<FirefoxInstallableName, Record<Fire
   },
 };
 
-const firefoxPlatformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' | 'win32' | 'linux'>, Record<string, FirefoxInstallablePlatform>>> = {
+const platformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' | 'win32' | 'linux'>, Record<string, FirefoxInstallablePlatform>>> = {
   darwin: {
     arm64: 'mac',
     x64: 'mac',
@@ -52,7 +52,7 @@ const firefoxPlatformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' 
   },
 };
 
-const firefoxInstallableMap: DeepReadonly<Record<FirefoxInstallableName, string>> = {
+const installableMap: DeepReadonly<Record<FirefoxInstallableName, string>> = {
   firefox: 'firefox',
   'firefox-devedition': 'devedition',
 };
@@ -237,7 +237,7 @@ export class Firefox {
         assertUnreachable(installableName);
     }
 
-    const firefoxInstallableName = firefoxInstallableMap[installableName];
+    const firefoxInstallableName = installableMap[installableName];
     const versions = Object.keys(details.releases).map((version) => version.replace(`${firefoxInstallableName}-`, ''));
     versions.sort((lhs, rhs) => {
       const lhsVersion = firefoxVersionUtils.parse(lhs);
@@ -282,6 +282,7 @@ export class Firefox {
           filePath: downloadFilePath,
           timeout: downloadTimeout,
         });
+
         if (downloadFileName.toLowerCase().endsWith('.dmg')) {
           const mountPath = path.resolve(os.homedir(), `dmp-${Date.now()}`);
           await onDmgMounted(downloadFilePath, mountPath, defaultMountTimeout, async (mountPath) => {
@@ -316,7 +317,7 @@ export class Firefox {
 
   async findInstallations(options: FindInstallationsOptions): Promise<FindInstallationsResult> {
     const { installableName, platform: requestedPlatform, rootPath } = options;
-    const installableNames = _.keys(firefoxInstallableMap) as FirefoxInstallableName[];
+    const installableNames = _.keys(installableMap) as FirefoxInstallableName[];
     const withInstallablePaths = installableNames
       .filter((name) => name === installableName)
       .map((installableName) => ({
@@ -503,11 +504,11 @@ export class Firefox {
 
   getDownloadUrl(options: GetDownloadUrlOptions): string {
     const { installableName, version, platform, downloadFileName } = options;
-    const firefoxInstallableName = firefoxInstallableMap[installableName];
+    const firefoxInstallableName = installableMap[installableName];
     switch (installableName) {
       case 'firefox':
       case 'firefox-devedition':
-        return `${firefoxDownloadBaseUrl}/${firefoxInstallableName}/releases/${version}/${platform}/${defaultLocale}/${downloadFileName}`;
+        return `${downloadBaseUrl}/${firefoxInstallableName}/releases/${version}/${platform}/${defaultLocale}/${downloadFileName}`;
       default:
         assertUnreachable(installableName);
     }
@@ -516,7 +517,7 @@ export class Firefox {
   getFirefoxInstallablePlatform(options?: GetFirefoxInstallablePlatformOptions): FirefoxInstallablePlatform {
     const mergedOptions = mergeGetFirefoxInstallablePlatformOptions(options);
     const { platform, arch } = mergedOptions;
-    const firefoxPlatform = _.get(firefoxPlatformMap, [platform, arch]) as string | undefined;
+    const firefoxPlatform = _.get(platformMap, [platform, arch]) as string | undefined;
     if (!firefoxPlatform) {
       throw new Error(`Unsupported platform: ${platform}, arch: ${arch}`);
     }

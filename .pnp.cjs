@@ -11147,6 +11147,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["class-validator", "npm:0.14.0"],\
             ["compressing", "npm:1.9.0"],\
             ["cross-env", "npm:7.0.3"],\
+            ["fast-xml-parser", "npm:4.2.7"],\
             ["find-free-ports", "npm:3.0.0"],\
             ["gamium", "npm:2.0.2"],\
             ["glob", "npm:10.0.0"],\
@@ -29077,6 +29078,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/fast-xml-parser-npm-4.2.2-3696e5f2bb-f0e687927d.zip/node_modules/fast-xml-parser/",\
           "packageDependencies": [\
             ["fast-xml-parser", "npm:4.2.2"],\
+            ["strnum", "npm:1.0.5"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:4.2.7", {\
+          "packageLocation": "./.yarn/cache/fast-xml-parser-npm-4.2.7-c57a954c1f-d8b0c9e047.zip/node_modules/fast-xml-parser/",\
+          "packageDependencies": [\
+            ["fast-xml-parser", "npm:4.2.7"],\
             ["strnum", "npm:1.0.5"]\
           ],\
           "linkType": "HARD"\
