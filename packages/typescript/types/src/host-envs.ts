@@ -20,6 +20,9 @@ export interface StepContextEnv extends Record<string, string | undefined> {
   DOGU_STEP_WORKING_PATH: string;
   DOGU_HOST_TOKEN: string;
   PATH: string;
+
+  // job level variables
+  DOGU_APP_VERSION: string;
   DOGU_BROWSER_NAME: string;
   DOGU_BROWSER_VERSION: string;
 }

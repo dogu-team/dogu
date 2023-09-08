@@ -20,8 +20,6 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
     DOGU_HOST_WORKSPACE_PATH,
     DOGU_DEVICE_SERIAL,
     DOGU_STEP_WORKING_PATH,
-    DOGU_BROWSER_NAME,
-    DOGU_BROWSER_VERSION,
   } = options;
   logger.info('log level', { DOGU_LOG_LEVEL });
 
@@ -98,37 +96,6 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
       await deviceClient.runApp(DOGU_DEVICE_SERIAL, appPath);
       logger.info('App runned');
     }
-  }
-
-  if (DOGU_BROWSER_NAME) {
-    logger.info('Ensure browser and driver...', { DOGU_BROWSER_NAME, DOGU_BROWSER_VERSION });
-    const {
-      browserName: ensuredBrowserName,
-      browserVersion: ensuredBrowserVersion,
-      browserPath,
-      browserPackageName,
-      browserDriverPath,
-      browserMajorVersion,
-    } = await deviceHostClient.ensureBrowserAndDriver({
-      browserName: DOGU_BROWSER_NAME,
-      browserPlatform: DOGU_DEVICE_PLATFORM,
-      browserVersion: DOGU_BROWSER_VERSION,
-      deviceSerial: DOGU_DEVICE_SERIAL,
-    });
-    const browserEnv = {
-      DOGU_BROWSER_NAME: ensuredBrowserName,
-      DOGU_BROWSER_VERSION: ensuredBrowserVersion || '',
-      DOGU_BROWSER_MAJOR_VERSION: browserMajorVersion ? String(browserMajorVersion) : '',
-      DOGU_BROWSER_PATH: browserPath || '',
-      DOGU_BROWSER_DRIVER_PATH: browserDriverPath,
-      DOGU_BROWSER_PACKAGE_NAME: browserPackageName || '',
-    };
-
-    logger.info('update env for browser and driver', {
-      ...browserEnv,
-    });
-
-    env = _.merge(env, browserEnv);
   }
 
   await fs.promises.mkdir(DOGU_STEP_WORKING_PATH, { recursive: true });

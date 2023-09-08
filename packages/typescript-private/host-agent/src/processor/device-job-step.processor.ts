@@ -187,10 +187,12 @@ export class DeviceJobStepProcessor {
       DOGU_HOST_WORKSPACE_PATH: hostWorkspacePath,
       DOGU_HOST_TOKEN: env.DOGU_HOST_TOKEN,
       DOGU_RUN_TYPE: env.DOGU_RUN_TYPE,
+      PATH: `${gitLibexecGitCore}${delimiter}${nodeBin}${delimiter}${pathOld ?? ''}`,
+
+      // job level variables
       DOGU_APP_VERSION: appVersion ?? '',
       DOGU_BROWSER_NAME: browserName ?? '',
       DOGU_BROWSER_VERSION: browserVersion ?? '',
-      PATH: `${gitLibexecGitCore}${delimiter}${nodeBin}${delimiter}${pathOld ?? ''}`,
     };
 
     const stepContextEnvReplaced = await environmentVariableReplacer.replaceEnv(stepContextEnv);
