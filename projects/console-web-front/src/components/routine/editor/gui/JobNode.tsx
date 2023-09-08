@@ -32,7 +32,7 @@ const JobNode = ({ data, isConnectable }: NodeProps<JobNodeData>) => {
           <JobName>{name}</JobName>
         </JobNameWrapper>
         {/* <Section>
-          <SectionTitle>{t('routineGuiEditorJobDeviceTagLabel')}</SectionTitle>
+          <SectionTitle>{t('routineGuiEditorJobDeviceLabel')}</SectionTitle>
           <TagContent>
             {typeof runsOnGroup === 'string' ? (
               <Tag color="pink">{runsOnGroup}</Tag>

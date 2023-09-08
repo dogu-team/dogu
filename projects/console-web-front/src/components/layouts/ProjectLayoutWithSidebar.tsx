@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import useSWR from 'swr';
 
 import { swrAuthFetcher } from '../../api';
-import { ProjectContext } from '../../hooks/useProjectContext';
+import { ProjectContext } from '../../hooks/context/useProjectContext';
 import { getErrorMessageFromAxios } from '../../utils/error';
 import ErrorBox from '../common/boxes/ErrorBox';
 

@@ -9,11 +9,6 @@ export class NullDeviceAgentService implements DeviceAgentService {
     return '';
   }
 
-  async wakeUp(): Promise<void> {
-    logger.warn('NullDeviceAgentService.wakeUp');
-    await Promise.resolve();
-  }
-
   async install(): Promise<void> {
     logger.warn('NullDeviceAgentService.install');
     await Promise.resolve();

@@ -2,12 +2,12 @@ import { useCallback } from 'react';
 import useTranslation from 'next-translate/useTranslation';
 import { DeviceBase } from '@dogu-private/console';
 import { DeviceConnectionState, OrganizationId, ProjectId } from '@dogu-private/types';
-import { List, MenuProps } from 'antd';
+import { List, MenuProps, Tooltip } from 'antd';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import Link from 'next/link';
-import { MobileOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, MobileOutlined } from '@ant-design/icons';
 import Trans from 'next-translate/Trans';
 import { PiMonitorPlayBold } from 'react-icons/pi';
 
@@ -44,6 +44,7 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
 
   const isConnected = device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED;
   const isGlobalDevice = device.isGlobal === 1;
+  const studioDisabled = !isConnected || device.displayError !== null;
 
   const handleDelete = async () => {
     try {
@@ -111,29 +112,31 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
             />
           </OneSpanCell>
           <OneSpanCell style={{ display: 'flex', justifyContent: 'center' }}>
-            <StudioLinkButton
-              href={`/dashboard/${orgId}/projects/${projectId}/studio/${device.deviceId}/manual`}
-              target="_blank"
-              isDisabled={!isConnected}
-              onClick={(e) => {
-                if (!isConnected) {
-                  e.preventDefault();
-                }
-              }}
-              onAuxClick={(e) => {
-                if (!isConnected) {
-                  e.preventDefault();
-                }
-              }}
-              onContextMenu={(e) => {
-                if (!isConnected) {
-                  e.preventDefault();
-                }
-              }}
-            >
-              <PiMonitorPlayBold style={{ marginRight: '.25rem' }} />
-              Studio
-            </StudioLinkButton>
+            <Tooltip title={device.displayError} open={device.displayError ? undefined : false}>
+              <StudioLinkButton
+                href={`/dashboard/${orgId}/projects/${projectId}/studio/${device.deviceId}/manual`}
+                target="_blank"
+                disabled={studioDisabled}
+                onClick={(e) => {
+                  if (studioDisabled) {
+                    e.preventDefault();
+                  }
+                }}
+                onAuxClick={(e) => {
+                  if (studioDisabled) {
+                    e.preventDefault();
+                  }
+                }}
+                onContextMenu={(e) => {
+                  if (studioDisabled) {
+                    e.preventDefault();
+                  }
+                }}
+              >
+                {device.displayError ? <ExclamationCircleOutlined style={{ color: '#ff4d4f', marginRight: '.25rem' }} /> : <PiMonitorPlayBold style={{ marginRight: '.25rem' }} />}
+                Studio
+              </StudioLinkButton>
+            </Tooltip>
           </OneSpanCell>
           <MenuCell>
             <FlexEndBox>
@@ -235,18 +238,18 @@ const FlexEndBox = styled(FlexRowBase)`
   justify-content: flex-end;
 `;
 
-const StudioLinkButton = styled(Link)<{ isDisabled: boolean }>`
+const StudioLinkButton = styled(Link)<{ disabled: boolean }>`
   display: inline-flex;
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
-  background-color: ${(props) => (props.isDisabled ? props.theme.main.colors.gray5 : props.theme.colorPrimary)};
-  color: #fff;
+  background-color: ${(props) => (props.disabled ? props.theme.main.colors.gray5 : props.theme.colorPrimary)};
+  color: #fff !important;
   text-align: center;
   align-items: center;
-  cursor: ${(props) => (props.isDisabled ? 'not-allowed' : 'pointer')};
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
 
   &:hover {
     color: #fff;
-    background-color: ${(props) => (props.isDisabled ? props.theme.main.colors.gray5 : `${props.theme.colorPrimary}bb`)};
+    background-color: ${(props) => (props.disabled ? props.theme.main.colors.gray5 : `${props.theme.colorPrimary}bb`)};
   }
 `;

@@ -39,7 +39,7 @@ const ProjectRoutineEditorPage: NextPageWithLayout<ProjectServerSideProps> = ({ 
             <RoutineGitIntegrationAlert />
           </div>
         )}
-        <RoutineUpdator organizationId={organization.organizationId} projectId={project.projectId} routineId={routineId} value={data} />
+        <RoutineUpdator project={project} routineId={routineId} value={data} />
       </Box>
     </>
   );

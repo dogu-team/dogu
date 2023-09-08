@@ -26,9 +26,10 @@ interface DeviceRelationTraits {
   deviceRunners?: DeviceRunnerBase[];
 }
 
-export type DeviceBase = Omit<Required<Device>, 'heartbeat' | 'modelName'> & {
+export type DeviceBase = Omit<Required<Device>, 'heartbeat' | 'modelName' | 'displayError'> & {
   heartbeat: Date | null;
   modelName: string | null;
+  displayError: string | null;
   deletedAt: Date | null;
   enableHostDevice: number;
   maxParallelJobs: number;

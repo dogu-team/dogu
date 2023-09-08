@@ -1,4 +1,3 @@
-import { ProjectBase } from '@dogu-private/console';
 import { PROJECT_TYPE } from '@dogu-private/types';
 import { isAxiosError } from 'axios';
 import Trans from 'next-translate/Trans';
@@ -7,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { shallow } from 'zustand/shallow';
 
 import { updateProject } from '../../api/project';
-import useProjectContext from '../../hooks/useProjectContext';
+import useProjectContext from '../../hooks/context/useProjectContext';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import { getErrorMessageFromAxios } from '../../utils/error';

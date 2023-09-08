@@ -1,8 +1,16 @@
-import { ActionKit, checkoutProject, downloadApp, errorify, stringify } from '@dogu-tech/action-kit';
-import { spawnSync } from 'child_process';
+import { ActionKit, assertUnreachable, checkoutProject, downloadApp, errorify, stringify } from '@dogu-tech/action-kit';
+import { exec, spawnSync } from 'child_process';
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
+const pythonCheckTimeout = 10_000;
+
+const TestEnvironment = ['node', 'python'] as const;
+type TestEnvironment = (typeof TestEnvironment)[number];
+const isValidTestEnvironment = (value: string): value is TestEnvironment => TestEnvironment.includes(value as TestEnvironment);
 
 ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionClient, deviceClient }) => {
   const {
@@ -28,7 +36,12 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
   const installApp = input.get<boolean>('installApp');
   const runApp = input.get<boolean>('runApp');
 
+  const environment = input.get<string>('environment');
   const command = input.get<string>('command');
+
+  if (!isValidTestEnvironment(environment)) {
+    throw new Error(`Invalid environment: ${environment}`);
+  }
 
   if (checkout) {
     logger.info('resolve checkout path... from', { DOGU_ROUTINE_WORKSPACE_PATH, checkoutPath });
@@ -120,22 +133,56 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
 
   await fs.promises.mkdir(DOGU_STEP_WORKING_PATH, { recursive: true });
 
-  const onelineCommand = command
+  const prefixCommands: string[] = [];
+  switch (environment) {
+    case 'node':
+      {
+        // noop
+      }
+      break;
+    case 'python':
+      {
+        const pythonExe = process.platform === 'win32' ? 'python' : 'python3';
+        try {
+          await execAsync(`${pythonExe} --version`, { timeout: pythonCheckTimeout });
+        } catch (error) {
+          throw new Error(
+            `Please ensure command [${pythonExe}] 🐍 first. if you are using macos, please read this https://docs.dogutech.io/device-farm/host/macos/advanced-configuration`,
+          );
+        }
+
+        prefixCommands.push(`${pythonExe} -m venv .venv`);
+        if (process.platform === 'win32') {
+          prefixCommands.push('.venv\\Scripts\\activate.bat');
+        } else {
+          prefixCommands.push('source .venv/bin/activate');
+        }
+      }
+      break;
+    default:
+      assertUnreachable(environment);
+      throw new Error(`Unexpected environment: ${environment}`);
+  }
+
+  const onelineCommands = command
     .split('\n')
     .map((line) => line.trim())
-    .filter((line) => line)
-    .join(' && ');
+    .filter((line) => line);
 
-  logger.info(`Run command: [${onelineCommand}] on ${DOGU_STEP_WORKING_PATH}`);
-  const result = spawnSync(onelineCommand, {
+  const executeCommands = [...prefixCommands, ...onelineCommands];
+  const executeCommand = executeCommands.join(' && ');
+
+  logger.info(`Run command: [${executeCommand}] on ${DOGU_STEP_WORKING_PATH}`);
+  const result = spawnSync(executeCommand, {
+    encoding: 'utf8',
     stdio: 'inherit',
     shell: true,
     cwd: DOGU_STEP_WORKING_PATH,
     env,
   });
   if (result.status === 0) {
-    logger.info(`Command succeed: [${onelineCommand}] with status: ${result.status}`);
+    logger.info(`Command succeed: [${executeCommand}] with status: ${result.status}`);
   } else {
-    throw new Error(`Command failed: [${onelineCommand}] with status: ${result.status}`);
+    throw new Error(`Command failed: [${executeCommand}] with status: ${result.status}`);
   }
 });

@@ -1,6 +1,6 @@
 import { RoutineBase } from '@dogu-private/console';
 import { OrganizationId, ProjectId, RoutineId } from '@dogu-private/types';
-import { Button, Dropdown, MenuProps, notification } from 'antd';
+import { Button, Dropdown, MenuProps } from 'antd';
 import { AxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 import { useState } from 'react';

@@ -7,7 +7,7 @@ import WebSocket from 'ws';
 import { logger } from '../../../logger/logger.instance';
 import { pathMap } from '../../../path-map';
 import { Adb, AdbUtil } from '../../externals/index';
-import { Zombieable, ZombieProps, ZombieWaiter } from '../zombie/zombie-component';
+import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
 import { ZombieServiceInstance } from '../zombie/zombie-service';
 import {
   DcDaParamKeys,
@@ -28,7 +28,7 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
   private protoWs: WebSocket | undefined = undefined;
   private protoAPIRetEmitter = new ProtoAPIEmitterImpl();
   private seq = 0;
-  private zombieWaiter: ZombieWaiter;
+  private zombieWaiter: ZombieQueriable;
   private proc: child_process.ChildProcess | null = null;
 
   constructor(
@@ -48,10 +48,6 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
 
   get inputUrl(): string {
     return `ws://127.0.0.1:${this.port}/cf_gdc_da_proto`;
-  }
-
-  wakeUp(): Promise<void> {
-    return Promise.resolve();
   }
 
   async install(): Promise<void> {
@@ -198,6 +194,10 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
         this.logger.error('AndroidDeviceAgentService killChildProcess', { error });
       });
     }
+  }
+
+  isAlive(): boolean {
+    return this.zombieWaiter.isAlive();
   }
 }
 

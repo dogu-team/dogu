@@ -9,3 +9,8 @@ export const MemVmStatistics: ProfileMethod = {
   kind: ProfileMethodKind.PROFILE_METHOD_KIND_IOS_MEM_VM_STATISTICS,
   name: 'vm statistics',
 };
+
+export const Display: ProfileMethod = {
+  kind: ProfileMethodKind.PROFILE_METHOD_KIND_IOS_DISPLAY,
+  name: 'display',
+};

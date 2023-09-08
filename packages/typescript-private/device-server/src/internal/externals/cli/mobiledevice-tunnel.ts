@@ -3,7 +3,7 @@ import { delay, Printable } from '@dogu-tech/common';
 import { ChildProcess, killChildProcess, killProcessOnPortOnMacos, waitPortOpen } from '@dogu-tech/node';
 import child_process from 'child_process';
 import { idcLogger, logger } from '../../../logger/logger.instance';
-import { Zombieable, ZombieProps, ZombieWaiter } from '../../services/zombie/zombie-component';
+import { Zombieable, ZombieProps, ZombieQueriable } from '../../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
 import { MobileDevice } from './mobiledevice';
 
@@ -63,7 +63,7 @@ export class TunnelContext {
 
 export class ZombieTunnel implements Zombieable {
   private tunnelContext: TunnelContext | null = null;
-  public readonly zombieWaiter: ZombieWaiter;
+  public readonly zombieWaiter: ZombieQueriable;
   constructor(public readonly serial: Serial, readonly hostPort: number, readonly devicePort: number, private readonly logger: Printable) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
   }

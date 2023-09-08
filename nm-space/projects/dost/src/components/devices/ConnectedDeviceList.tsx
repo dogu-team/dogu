@@ -78,7 +78,7 @@ const ConnectedDeviceList = () => {
                       <Text fontSize="small">{device.serial}</Text>
                     )}
                   </HStack>
-                  {device.state === DeviceConnectionState.DEVICE_CONNECTION_STATE_ERROR && (
+                  {0 < device.errorMessage.length && (
                     <UnorderedList>
                       <ListItem>
                         <Text fontSize="small">{device.errorMessage}</Text>

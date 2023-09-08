@@ -1,5 +1,5 @@
-import DocumentCard from './DocumentCard';
-import GuideStep from './GuideStep';
+import DocumentCard from '../DocumentCard';
+import GuideStep from '../GuideStep';
 
 interface Props {
   id: string;
@@ -13,14 +13,14 @@ const DoneStep = ({ id }: Props) => {
       content={
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
           <DocumentCard
+            title="📝 CI integration"
+            description="Would you like to integrate routines with CI tools like GitHub Action and Jenkins?"
+            url="https://docs.dogutech.io/integration/cicd/github-action"
+          />
+          <DocumentCard
             title="📝 About project"
             description="Explore features for project. ie) Git integration, App management"
             url="https://docs.dogutech.io/management/project"
-          />
-          <DocumentCard
-            title="📝 About routine"
-            description="Would you like to automate more complex tests or integrate tests with CI?"
-            url="https://docs.dogutech.io/routine/routines"
           />
           <DocumentCard title="📝 Test automation" description="More information about test automation" url="https://docs.dogutech.io/test-automation" />
           <DocumentCard title="📝 Test report" description="More information about test report" url="https://docs.dogutech.io/test-report" />

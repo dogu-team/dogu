@@ -21,8 +21,8 @@ export enum DeviceConnectionState {
   DEVICE_CONNECTION_STATE_UNSPECIFIED = 0,
   DEVICE_CONNECTION_STATE_DISCONNECTED = 1,
   DEVICE_CONNECTION_STATE_CONNECTED = 2,
-  DEVICE_CONNECTION_STATE_CONNECTING = 3,
-  DEVICE_CONNECTION_STATE_ERROR = 4,
+  DEVICE_CONNECTION_STATE_CONNECTING = -1,
+  DEVICE_CONNECTION_STATE_ERROR = -2,
   UNRECOGNIZED = -1,
 }
 
@@ -38,6 +38,7 @@ export interface Device {
   isGlobal: number;
   isHost: number;
   isVirtual: number;
+  displayError: string | undefined;
   connectionState: DeviceConnectionState;
   heartbeat: Date | undefined;
   /** relations */

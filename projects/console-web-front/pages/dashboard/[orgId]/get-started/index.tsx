@@ -10,7 +10,7 @@ import { getOrganizationInServerSide } from '../../../../src/api/organization';
 import ConsoleBasicLayout from '../../../../src/components/layouts/ConsoleBasicLayout';
 import DeviceFarmTutorial from '../../../../src/components/tutorial/DeviceFarmTutorial';
 import SkipTutorialButton from '../../../../src/components/tutorial/SkipTutorialButton';
-import { TutorialContext } from '../../../../src/hooks/useTutorialContext';
+import { TutorialContext } from '../../../../src/hooks/context/useTutorialContext';
 import { flexRowBaseStyle } from '../../../../src/styles/box';
 import { checkUserVerifiedInServerSide } from '../../../../src/utils/auth';
 import { NextPageWithLayout } from '../../../_app';

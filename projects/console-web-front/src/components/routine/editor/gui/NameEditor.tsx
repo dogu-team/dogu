@@ -50,6 +50,7 @@ const NameEditor = ({ defaultValue, onSave, style, placeholder }: Props) => {
         {isEditing ? (
           <>
             <StyledButton
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => {
                 onSave(value);
                 setIsEditing(false);

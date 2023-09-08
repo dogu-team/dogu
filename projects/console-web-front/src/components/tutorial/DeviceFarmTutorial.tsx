@@ -9,9 +9,7 @@ import styled from 'styled-components';
 
 import { getHostByToken, updateUseHostAsDevice } from '../../api/host';
 import useModal from '../../hooks/useModal';
-import useTutorialContext from '../../hooks/useTutorialContext';
-import useTutorialSelector from '../../hooks/useTutorialSelector';
-import { GuideSupportPlatform, GuideSupportSdk, tutorialData } from '../../resources/guide';
+import useTutorialContext from '../../hooks/context/useTutorialContext';
 import useEventStore from '../../stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
 import { getErrorMessageFromAxios } from '../../utils/error';
@@ -47,16 +45,6 @@ const DeviceFarmTutorial = () => {
   const [loading, setLoading] = useState(false);
   const [host, setHost] = useState<HostBase>();
   const { project, updateProject, organization } = useTutorialContext();
-
-  const selectedSdk = (router.query.sdk as GuideSupportSdk | undefined) || GuideSupportSdk.WEBDRIVERIO;
-  const guideData = tutorialData[selectedSdk];
-  const { platform } = useTutorialSelector({
-    defaultFramework: guideData.defaultOptions.framework,
-    defaultPlatform: guideData.defaultOptions.platform,
-    defaultTarget: guideData.defaultOptions.target,
-  });
-
-  const isMobile = platform === GuideSupportPlatform.ANDROID || platform === GuideSupportPlatform.IOS;
 
   useEffect(() => {
     if (organization?.organizationId) {

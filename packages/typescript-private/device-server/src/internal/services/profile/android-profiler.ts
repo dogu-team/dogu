@@ -74,12 +74,6 @@ export class MemProfiler implements AndroidAdbProfiler {
   }
 }
 
-export class DisplayProfiler implements AndroidAdbProfiler {
-  async profile(serial: Serial, context: AndroidAdbProfileContext): Promise<Partial<RuntimeInfo>> {
-    return { displays: [{ name: 'default', isScreenOn: await Adb.isScreenOn(serial) }] };
-  }
-}
-
 export class FsProfiler implements AndroidAdbProfiler {
   async profile(serial: Serial, context: AndroidAdbProfileContext): Promise<Partial<RuntimeInfo>> {
     const dfInfos = (await Adb.getDfInfo(serial)).filter((x) => x.Mounted.startsWith('/data') || x.Mounted.startsWith('/storage'));
@@ -203,5 +197,17 @@ export class AndroidDeviceAgentProfileService implements ProfileService {
   async profile(serial: Serial, methods: ProfileMethod[]): Promise<Partial<RuntimeInfo>> {
     const response = await this.deviceAgentService.sendWithProtobuf('dcDaQueryProfileParam', 'dcDaQueryProfileReturn', { profileMethods: methods }, 1000);
     return response?.info ?? {};
+  }
+}
+
+export class AndroidDisplayProfileService implements ProfileService {
+  constructor(private readonly deviceAgentService: AndroidDeviceAgentService) {}
+
+  async profile(serial: Serial, methods: ProfileMethod[]): Promise<Partial<RuntimeInfo>> {
+    const isIncludeType = methods.some((method) => method.kind === ProfileMethodKind.PROFILE_METHOD_KIND_ANDROID_DISPLAY);
+    if (!isIncludeType) {
+      return {};
+    }
+    return { displays: [{ name: 'default', isScreenOn: await Adb.isScreenOn(serial), error: this.deviceAgentService.isAlive() ? undefined : 'agent not alive' }] };
   }
 }

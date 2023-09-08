@@ -24,3 +24,4 @@ export enum RoutineGUIEditorNodeType {
 
 export const PREPARE_ACTION_NAME = 'dogu-actions/prepare';
 export const RUN_TEST_ACTION_NAME = 'dogu-actions/run-test';
+export const CHECKOUT_ACTION_NAME = 'dogu-actions/checkout';

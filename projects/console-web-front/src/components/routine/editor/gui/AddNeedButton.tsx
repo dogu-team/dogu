@@ -16,7 +16,7 @@ const AddNeedButton = ({ onSelect, excludeNames }: Props) => {
 
   return (
     <AddWithSelect
-      values={jobNames}
+      options={jobNames.map((name) => ({ label: name, value: name }))}
       onSelect={onSelect}
       showSearch
       filterOption={(input, option) => ((option?.label ?? '') as string).toLowerCase().includes(input.toLowerCase())}

@@ -14,7 +14,7 @@ import { GrpcClientBase } from '@dogu-private/types/protocol/grpc/base';
 import { delay, Printable, stringify } from '@dogu-tech/common';
 import { ClientReadableStream, credentials, makeClientConstructor, ServiceError, status } from '@grpc/grpc-js';
 
-import { Zombieable, ZombieProps, ZombieWaiter } from '../../services/zombie/zombie-component';
+import { Zombieable, ZombieProps, ZombieQueriable } from '../../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
 import { GoDeviceControllerProcess } from '../cli/go-device-controller';
 
@@ -35,7 +35,7 @@ export type DcGdcResultUnionPickValue<Key extends keyof DcGdcResultUnionPick<Key
 const ServiceDefenition = GoDeviceControllerServiceService;
 
 export class GoDeviceControllerGrpcClient extends GrpcClientBase implements Zombieable {
-  private zombieWaiter: ZombieWaiter;
+  private zombieWaiter: ZombieQueriable;
   static deviceMap = new Map<string, DcGdcDeviceContext>(); // go-device-controller debug시. 전체 devices리스트는 전역으로 1개만 존재하고 동기화해주기 위함.
 
   constructor(public readonly platform: Platform, public readonly goDeviceController: GoDeviceControllerProcess, serverUrl: string, timeoutSeconds: number) {

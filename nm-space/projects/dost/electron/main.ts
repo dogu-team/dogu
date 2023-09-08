@@ -79,7 +79,7 @@ app.whenReady().then(async () => {
     }
     await DotEnvConfigService.open(AppConfigService.instance);
     SettingsService.open(DotEnvConfigService.instance);
-    TrayService.open();
+    TrayService.open(SettingsService.instance);
     WindowService.open();
     StdLogCallbackService.open(WindowService.instance);
     await ExternalService.open(DotEnvConfigService.instance, StdLogCallbackService.instance, AppConfigService.instance, WindowService.instance);

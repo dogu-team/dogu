@@ -72,7 +72,8 @@ function GithubButton({ isConnected, disabled, organizationId, projectId, descri
               Integrate routine with GitHub.{' '}
               <Link href="https://docs.dogutech.io/management/project/git-integration/github" target="_blank">
                 Visit docs
-              </Link>
+              </Link>{' '}
+              for token generation.
             </>
           ))
         }

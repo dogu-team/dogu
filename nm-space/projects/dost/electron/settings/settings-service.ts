@@ -46,11 +46,7 @@ export class SettingsService {
     ipcMain.handle(settingsClientKey.openSecurityPrefPanel, (_, param: string) => this.openSecurityPrefPanel(param));
 
     ipcMain.handle(settingsClientKey.setBadgeCount, (_, count: number) => app.setBadgeCount(count));
-    ipcMain.handle(settingsClientKey.restart, async () => {
-      app.relaunch();
-      await ChildService.close();
-      app.exit();
-    });
+    ipcMain.handle(settingsClientKey.restart, () => this.restart());
 
     ipcMain.handle(settingsClientKey.getDefaultAndroidHomePath, (_) => HostPaths.external.defaultAndroidHomePath());
     ipcMain.handle(settingsClientKey.getDefaultJavaHomePath, (_) => HostPaths.external.defaultJavaHomePath());
@@ -69,6 +65,12 @@ export class SettingsService {
     SettingsService.cleanupDoguTemp().catch((err) => {
       logger.error('cleanupDoguTemp error', { err });
     });
+  }
+
+  async restart(): Promise<void> {
+    app.relaunch();
+    await ChildService.close();
+    app.exit();
   }
 
   private async isShowDevUI(): Promise<boolean> {

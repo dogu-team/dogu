@@ -1,24 +1,32 @@
-import { Alert, Button } from 'antd';
-import styled from 'styled-components';
+import { Alert } from 'antd';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import styled from 'styled-components';
 import Cookies from 'universal-cookie';
-import { USER_ID_COOKIE_NAME } from '@dogu-private/types';
+import { PROJECT_TYPE, USER_ID_COOKIE_NAME } from '@dogu-private/types';
 
-import { appiumGuideData, GuideProps, GuideSupportLanguage, GuideSupportPlatform, GuideSupportTarget, SAMPLE_GIT_URL } from '../../resources/guide';
-import { flexRowBaseStyle } from '../../styles/box';
-import GuideAnchor from './GuideAnchor';
-import GuideBanner from './GuideBanner';
-import GuideLayout from './GuideLayout';
-import GuideStep from './GuideStep';
 import DoneStep from './DoneStep';
-import SampleApplicationUploadButton from './SampleApplicationUploadButton';
-import useTutorialSelector from '../../hooks/useTutorialSelector';
-import RemoteTestOptionSelectors from './RemoteTestOptionSelectors';
-import CodeWithCopyButton from '../common/CodeWithCopyButton';
-import ProjectApplicationUploadButton from '../project-application/ProjectApplicationUploadButton';
+import GuideAnchor from '../GuideAnchor';
+import GuideLayout from '../GuideLayout';
+import GuideStep from '../GuideStep';
+import {
+  TutorialSupportLanguage,
+  TutorialSupportPlatform,
+  TutorialSupportTarget,
+  REMOTE_SAMPLE_GIT_URL,
+  tutorialSdkSupportInfo,
+  TutorialSupportSdk,
+} from '../../../resources/tutorials/index';
+import { flexRowBaseStyle } from '../../../styles/box';
+import GuideBanner from '../GuideBanner';
+import TutorialOptionSelectors from '../TutorialOptionSelectors';
+import useTutorialSelector from '../../../hooks/useTutorialSelector';
+import ProjectApplicationUploadButton from '../../project-application/ProjectApplicationUploadButton';
+import SampleApplicationUploadButton from '../SampleApplicationUploadButton';
 import RemoteTestResultList from './RemoteTestResultList';
-import PythonVirtualEnvShell from './PythonVirtualEnvShell';
+import CodeWithCopyButton from '../../common/CodeWithCopyButton';
+import useTutorialContext from '../../../hooks/context/useTutorialContext';
+import { RemoteTutorialProps, webdriverioRemoteTutoriallData } from '../../../resources/tutorials/remote';
+import SampleApplicationUploadStep from '../SampleApplicationUploadStep';
 
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
@@ -28,17 +36,32 @@ const RUN_TEST_ID = 'run-test';
 const RESULT_ID = 'result';
 const DONE_ID = 'done';
 
-const AppiumGuide = ({ organizationId, projectId }: GuideProps) => {
+const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps) => {
+  const { project } = useTutorialContext();
+
+  const getProjectTypeDefaultTarget = () => {
+    switch (project?.type) {
+      case PROJECT_TYPE.WEB:
+        return TutorialSupportTarget.WEB;
+      case PROJECT_TYPE.APP:
+        return TutorialSupportTarget.APP;
+      case PROJECT_TYPE.GAME:
+        return TutorialSupportTarget.APP;
+      default:
+        return TutorialSupportTarget.APP;
+    }
+  };
+
   const { framework, platform, target } = useTutorialSelector({
-    defaultFramework: appiumGuideData.defaultOptions.framework,
-    defaultPlatform: appiumGuideData.defaultOptions.platform,
-    defaultTarget: appiumGuideData.defaultOptions.target,
+    defaultFramework: tutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].defaultOptions.framework,
+    defaultPlatform: tutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].defaultOptions.platform,
+    defaultTarget: getProjectTypeDefaultTarget(),
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 
-  const selectedGuide = appiumGuideData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const frameworkLanguage = Object.keys(appiumGuideData.supportFrameworks).find((language) =>
-    appiumGuideData.supportFrameworks[language as GuideSupportLanguage]?.includes(framework),
+  const selectedGuide = webdriverioRemoteTutoriallData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
+  const frameworkLanguage = Object.keys(tutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].frameworksPerLang).find((language) =>
+    tutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
   );
 
   useEffect(() => {
@@ -47,7 +70,7 @@ const AppiumGuide = ({ organizationId, projectId }: GuideProps) => {
         return;
       }
 
-      const code = await appiumGuideData.generateCapabilitiesCode({
+      const code = await webdriverioRemoteTutoriallData.generateCapabilitiesCode({
         orgId: organizationId,
         projectId,
         framework,
@@ -66,15 +89,14 @@ const AppiumGuide = ({ organizationId, projectId }: GuideProps) => {
       sidebar={
         <div>
           <div style={{ marginBottom: '1rem' }}>
-            <RemoteTestOptionSelectors guideData={appiumGuideData} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
+            <TutorialOptionSelectors sdk={TutorialSupportSdk.WEBDRIVERIO} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
           </div>
-
           <GuideAnchor
             items={[
               { id: PROJECT_SETUP_ID, title: 'Sample project setup' },
               { id: INSTALL_DEPENDENCIES_ID, title: 'Install dependencies' },
               { id: SET_CAPABILITIES_ID, title: 'Set capabilities' },
-              ...(target === GuideSupportTarget.APP ? [{ id: UPLOAD_SAMPLE_APP_ID, title: 'Upload sample application' }] : []),
+              ...(target === TutorialSupportTarget.APP ? [{ id: UPLOAD_SAMPLE_APP_ID, title: 'Upload sample application' }] : []),
               { id: RUN_TEST_ID, title: 'Run remote testing' },
               { id: RESULT_ID, title: 'Check result' },
               { id: DONE_ID, title: 'Done! Next step' },
@@ -90,14 +112,8 @@ const AppiumGuide = ({ organizationId, projectId }: GuideProps) => {
             description={<p>Clone example repository and move to execution directory</p>}
             content={
               <>
-                <CodeWithCopyButton language="bash" code={`git clone ${SAMPLE_GIT_URL}`} />
+                <CodeWithCopyButton language="bash" code={`git clone ${REMOTE_SAMPLE_GIT_URL}`} />
                 <CodeWithCopyButton language="bash" code={selectedGuide?.cd ?? ''} />
-                {frameworkLanguage === GuideSupportLanguage.PYTHON && (
-                  <div style={{ marginTop: '.5rem' }}>
-                    <p>And, setup virtual environment</p>
-                    <PythonVirtualEnvShell />
-                  </div>
-                )}
               </>
             }
           />
@@ -115,43 +131,38 @@ const AppiumGuide = ({ organizationId, projectId }: GuideProps) => {
                 Open <StyledCode>dogu.config.json</StyledCode> and configure capabilities for your project
               </p>
             }
-            content={<CodeWithCopyButton language={'json'} code={capabilityCode} />}
+            content={<CodeWithCopyButton language="json" code={capabilityCode} />}
           />
-          {target === GuideSupportTarget.APP && (
+
+          {target === TutorialSupportTarget.APP && (
             <GuideStep
               id={UPLOAD_SAMPLE_APP_ID}
               title="Upload sample application"
               description={<p>Before starting, upload the app that matches the version specified in the script.</p>}
-              content={
-                selectedGuide?.hasSampleApp ? (
-                  <SampleApplicationUploadButton organizationId={organizationId} projectId={projectId} category="mobile" />
-                ) : (
-                  <>
-                    {platform === GuideSupportPlatform.IOS && (
-                      <Alert
-                        style={{ marginTop: '.5rem' }}
-                        message="For iOS, we don't provide sample app. Please upload your app manually."
-                        type="warning"
-                        showIcon
-                        action={<ProjectApplicationUploadButton organizationId={organizationId} projectId={projectId} />}
-                      />
-                    )}
-                  </>
-                )
-              }
+              content={<SampleApplicationUploadStep hasSampleApp={selectedGuide?.hasSampleApp} category="mobile" />}
             />
           )}
+
           <GuideStep
             id={RUN_TEST_ID}
             title="Run remote testing"
             description={<p>Start automated testing using sample app and script</p>}
             content={
-              target === GuideSupportTarget.APP && platform === GuideSupportPlatform.IOS ? (
+              target === TutorialSupportTarget.APP && platform === TutorialSupportPlatform.IOS ? (
                 <Alert message="We don't provide sample test script for iOS. Please run test with your own configuration." showIcon type="warning" />
               ) : (
                 <>
+                  {platform === TutorialSupportPlatform.MACOS && (
+                    <Alert
+                      message={
+                        <p>
+                          For Safari in macOS, please run <CodeWithCopyButton language="bash" code="sudo /usr/bin/safaridriver --enable" /> for testing.
+                        </p>
+                      }
+                    />
+                  )}
                   <CodeWithCopyButton language="bash" code={selectedGuide?.runCommand ?? ''} />
-                  {frameworkLanguage === GuideSupportLanguage.PYTHON && (
+                  {frameworkLanguage === TutorialSupportLanguage.PYTHON && (
                     <Alert message="If test failed with an import error, please activate virtual environment again." type="info" showIcon />
                   )}
                 </>
@@ -160,7 +171,7 @@ const AppiumGuide = ({ organizationId, projectId }: GuideProps) => {
           />
 
           <div style={{ marginBottom: '2rem' }}>
-            <GuideBanner docsUrl="https://docs.dogutech.io/test-automation/appium" />
+            <GuideBanner docsUrl="https://docs.dogutech.io/test-automation/webdriverio" />
           </div>
 
           <GuideStep id={RESULT_ID} title="Check result" description={<p>Check remote testing result</p>} content={<RemoteTestResultList />} />
@@ -172,7 +183,7 @@ const AppiumGuide = ({ organizationId, projectId }: GuideProps) => {
   );
 };
 
-export default AppiumGuide;
+export default WebdriverIoRemoteTutorial;
 
 const FlexRow = styled.div`
   ${flexRowBaseStyle}

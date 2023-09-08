@@ -1,3 +1,4 @@
+import { PROJECT_TYPE } from '@dogu-private/types';
 import { Divider } from 'antd';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
@@ -7,7 +8,8 @@ import { flexRowSpaceBetweenStyle } from '../../styles/box';
 import GuideBanner from './GuideBanner';
 import DoguText from '../common/DoguText';
 import FrameworkSelectTable from './FrameworkSelectTable';
-import { GuideSupportSdk } from '../../resources/guide';
+import { TutorialSupportSdk } from '../../resources/tutorials';
+import useTutorialContext from '../../hooks/context/useTutorialContext';
 
 interface Props {
   skipButton: React.ReactNode;
@@ -15,7 +17,22 @@ interface Props {
 
 const FrameworkSelectContainer = ({ skipButton }: Props) => {
   const router = useRouter();
-  const [selectedSdk, setSelectedSdk] = useState<GuideSupportSdk>(GuideSupportSdk.WEBDRIVERIO);
+  const { project } = useTutorialContext();
+  const [selectedSdk, setSelectedSdk] = useState<TutorialSupportSdk>(() => {
+    if (project?.type === PROJECT_TYPE.WEB) {
+      return TutorialSupportSdk.WEBDRIVERIO;
+    }
+
+    if (project?.type === PROJECT_TYPE.APP) {
+      return TutorialSupportSdk.APPIUM;
+    }
+
+    if (project?.type === PROJECT_TYPE.GAME) {
+      return TutorialSupportSdk.GAMIUM;
+    }
+
+    return TutorialSupportSdk.WEBDRIVERIO;
+  });
 
   const handleClickFramework = (framework: string) => {
     if (!selectedSdk) return;
