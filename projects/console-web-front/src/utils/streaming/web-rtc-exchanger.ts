@@ -58,7 +58,7 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
     await peerConnection.setLocalDescription(offer);
     console.debug(`${this.constructor.name} local`, { localDescription: peerConnection.localDescription });
 
-    const url = new WebSocketUrlResolver().resolve(`/ws/device-streaming?organizationId=${organizationId}&deviceId=${deviceId}`);
+    const url = new WebSocketUrlResolver().resolve(`/ws/device-streaming-trickle-exchanger?organizationId=${organizationId}&deviceId=${deviceId}`);
     const webSocket = new WebSocket(url);
     this.webSocket = webSocket;
 
@@ -115,11 +115,10 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
     }
   }
 
-  private async onMessage(peerConnection: RTCPeerConnection, event: MessageEvent): Promise<void> {
-    const result = await transformAndValidate(StreamingAnswerDto, JSON.parse(event.data));
-    const { value } = result;
+  private async processAnswer(peerConnection: RTCPeerConnection, answerDto: StreamingAnswerDto): Promise<void> {
+    const { value } = answerDto;
     if (value === undefined) {
-      throw new Error(`invalid message ${JSON.stringify(result)}`);
+      throw new Error(`invalid message ${JSON.stringify(answerDto)}`);
     }
     const { $case } = value;
     if ($case === 'errorResult') {
@@ -137,8 +136,13 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
       const { iceCandidate } = value;
       await this.addCandidate(peerConnection, iceCandidate);
     } else {
-      throw new Error(`invalid message ${JSON.stringify(result)}`);
+      throw new Error(`invalid message ${JSON.stringify(answerDto)}`);
     }
+  }
+
+  private async onMessage(peerConnection: RTCPeerConnection, event: MessageEvent): Promise<void> {
+    const result = await transformAndValidate(StreamingAnswerDto, JSON.parse(event.data));
+    await this.processAnswer(peerConnection, result);
   }
 
   private async addCandidate(peerConnection: RTCPeerConnection, iceCandidate: RTCIceCandidateInit): Promise<void> {

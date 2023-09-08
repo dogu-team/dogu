@@ -1,4 +1,6 @@
 import { DeviceConnectionState, DeviceId, DeviceTagId, HostId, OrganizationId, ProjectId, StreamingOffer } from '@dogu-private/types';
+import { IsArray, IsObject } from 'class-validator';
+import { UserBase } from '../../base/user';
 import { PageDtoBase } from '../pagination/page.dto';
 
 export const MAX_TAG_NAMES_FILTER_LENGTH = 10;
@@ -35,9 +37,11 @@ export interface EnableDeviceDtoBase {
   projectId?: ProjectId;
 }
 
-// export type EnableDeviceDtoType =
-//   | ({ isGlobal: true } & { projectId?: never }) //
-//   | ({ isGlobal: false } & { projectId: ProjectId });
+export class DeviceStreamingSessionInfoDto {
+  @IsObject({ each: true })
+  @IsArray()
+  users!: UserBase[];
+}
 
 export abstract class IsGlobalEnableDeviceDto {
   isGlobal!: true;

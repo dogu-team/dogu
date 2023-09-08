@@ -5,19 +5,18 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway } from '@nestjs/websockets';
 import { IncomingMessage } from 'http';
 import { DataSource } from 'typeorm';
-import { DoguLogger } from '../../module/logger/logger';
-import { DeviceCommandService } from '../../module/organization/device/device-command.service';
-import { DeviceStatusService } from '../../module/organization/device/device-status.service';
-import { DeviceStreamingOfferDto } from '../../module/organization/device/dto/device.dto';
-import { WsCommonService } from '../common/ws-common.service';
-import { DeviceStreamingQueryDto } from './device-streaming.dto';
+import { WebSocket } from 'ws';
+import { DoguLogger } from '../../../module/logger/logger';
+import { DeviceCommandService } from '../../../module/organization/device/device-command.service';
+import { DeviceStreamingOfferDto } from '../../../module/organization/device/dto/device.dto';
+import { WsCommonService } from '../../common/ws-common.service';
+import { DeviceStreamingQueryDto } from '../dto/device-streaming.dto';
 
-@WebSocketGateway({ path: '/ws/device-streaming' })
-export class DeviceStreamingGateway implements OnGatewayConnection, OnGatewayDisconnect {
+@WebSocketGateway({ path: '/ws/device-streaming-trickle-exchanger' })
+export class DeviceStreamingTrickleExchangerGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly deviceCommandService: DeviceCommandService,
     private readonly logger: DoguLogger,
-    private readonly deviceStatusService: DeviceStatusService,
     @Inject(WsCommonService)
     private readonly wsCommonService: WsCommonService,
     @InjectDataSource()
@@ -35,9 +34,6 @@ export class DeviceStreamingGateway implements OnGatewayConnection, OnGatewayDis
       deviceId: deviceQuery,
     });
     const { deviceId, organizationId } = deviceStreamingQueryDto;
-    const timerId = setTimeout(() => {
-      closeWebSocketWithTruncateReason(webSocket, 1000, 'Timeout');
-    }, 100 * 1000);
 
     webSocket.addEventListener('open', async (event) => {
       this.logger.verbose('open');
@@ -46,20 +42,19 @@ export class DeviceStreamingGateway implements OnGatewayConnection, OnGatewayDis
       this.logger.verbose('error');
     });
     webSocket.addEventListener('close', (event) => {
-      clearTimeout(timerId);
       const { code, reason } = event;
       this.logger.verbose('close', { code, reason });
     });
-    webSocket.addEventListener('message', async (event: MessageEvent<string>) => {
+    webSocket.addEventListener('message', async (event) => {
       this.logger.verbose('message');
       const rv = await this.wsCommonService.validateDeviceAccessPermission(incomingMessage, this.dataSource, organizationId, deviceId, this.logger);
       if (rv.result === false) {
         this.logger.info(`DeviceStreamingGateway. handleConnection. ${rv.message}`);
-        // webSocket.close(1003, 'Unauthorized');
         closeWebSocketWithTruncateReason(webSocket, 1003, 'Unauthorized');
       }
       const { data } = event;
-      this.onMessage(webSocket, data).catch((error) => {
+
+      this.onMessage(webSocket, data.toString()).catch((error) => {
         this.logger.error('error', { error: stringify(error) });
         closeWebSocketWithTruncateReason(webSocket, 1001, error);
       });
@@ -77,7 +72,6 @@ export class DeviceStreamingGateway implements OnGatewayConnection, OnGatewayDis
         closeWebSocketWithTruncateReason(webSocket, answer.code, answer.reason);
         break;
       }
-      this.logger.info('message', { answer });
       webSocket.send(JSON.stringify(answer));
     }
   }

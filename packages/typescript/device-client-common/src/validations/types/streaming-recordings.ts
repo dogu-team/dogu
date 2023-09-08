@@ -9,7 +9,6 @@ import {
   ScreenRecordOption,
   Serial,
   StartStreaming,
-  StreamingAnswer,
   StreamingOffer,
   StreamingOption,
 } from '@dogu-tech/types';
@@ -153,10 +152,13 @@ export class ErrorResultValue extends Caseable<'errorResult'> {
   errorResult!: ErrorResultDto;
 }
 
+export const DeviceStreamingTypes = ['ANSWER', 'USER_INFO'] as const;
+export type DeviceStreamingType = (typeof DeviceStreamingTypes)[number];
+
 export const StreamingAnswerValue = [PeerDescriptionValue, IceCandidateValue, ErrorResultValue] as const;
 export type StreamingAnswerValue = Instance<(typeof StreamingAnswerValue)[number]>;
 
-export class StreamingAnswerDto implements StreamingAnswer {
+export class StreamingAnswerDto {
   @ValidateNested()
   @TransformByCase(StreamingAnswerValue)
   @IsNotEmpty()

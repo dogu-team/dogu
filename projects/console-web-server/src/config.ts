@@ -51,11 +51,13 @@ export const config = {
     key: {
       deviceParam: (organizationId: OrganizationId, deviceId: DeviceId): string => `/organizations/${organizationId}/devices/${deviceId}/params`,
       deviceResult: (organizationId: OrganizationId, deviceId: DeviceId, resultId: string): string => `/organizations/${organizationId}/devices/${deviceId}/results/${resultId}`,
+      deviceStreamingSessionParam: (deviceId: DeviceId): string => `device-streaming-session/${deviceId}/params`,
       updateConnection: '/updateConnection',
       WebSocketProxyReceive: (organizationId: OrganizationId, deviceId: DeviceId, webSocketProxyId: WebSocketProxyId): string =>
         `/organizations/${organizationId}/devices/${deviceId}/webSocketProxies/${webSocketProxyId}/receives`,
     },
     expireSeconds: 10 * 60,
+    deviceStreamingExpireSeconds: 7,
   },
   influxdb: {
     host: env.DOGU_INFLUX_DB_HOST,
