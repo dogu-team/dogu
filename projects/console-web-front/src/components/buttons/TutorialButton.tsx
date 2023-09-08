@@ -8,11 +8,11 @@ interface Props extends LinkProps {
   style?: React.CSSProperties;
 }
 
-const TutorialButton = ({ href, style }: Props) => {
+const TutorialButton = ({ href, style, ...props }: Props) => {
   const { t } = useTranslation('common');
 
   return (
-    <Link href={href} style={style}>
+    <Link {...props} href={href} style={style}>
       <StyledButton icon={<BookOutlined />}>{t('tutorial')}</StyledButton>
     </Link>
   );
