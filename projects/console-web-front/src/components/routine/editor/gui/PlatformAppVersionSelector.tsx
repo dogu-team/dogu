@@ -1,10 +1,12 @@
-import { CloseOutlined } from '@ant-design/icons';
-import { OrganizationId, PlatformType, ProjectId } from '@dogu-private/types';
+import { AppstoreOutlined, CloseOutlined } from '@ant-design/icons';
+import { OrganizationId, Platform, PlatformType, ProjectId } from '@dogu-private/types';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import useSelect from '../../../../hooks/useSelect';
 
-import { flexRowBaseStyle } from '../../../../styles/box';
+import { flexRowBaseStyle, flexRowCenteredStyle } from '../../../../styles/box';
+import PlatformIcon from '../../../device/PlatformIcon';
 import ProjectApplicationSelector from '../../../project-application/ProjectApplicationSelector';
 
 interface Props {
@@ -31,29 +33,26 @@ const PlatformAppVersionSelector = ({ version, platform, onReset, onChange }: Pr
 
   return (
     <AppSelectPlatformWrapper key={platform}>
-      <PlatformName>{platform}:&nbsp;</PlatformName>
-      {version ? (
-        <span>
-          {version}
-          <CloseButton onClick={() => onReset(platform)}>
-            <CloseOutlined />
-          </CloseButton>
-        </span>
-      ) : (
-        <div style={{ width: '200px' }}>
-          <ProjectApplicationSelector
-            organizationId={router.query.orgId as OrganizationId}
-            projectId={router.query.pid as ProjectId}
-            onSelectApp={(app) => onChange(platform, app?.version)}
-            placeholder="Select app"
-            extension={getExtension()}
-            open={isOpen}
-            toggleOpen={toggle}
-            close={close}
-            selectedApplication={undefined}
-          />
-        </div>
-      )}
+      <PlatformName>
+        <PlatformIcon platform={platform === 'android' ? Platform.PLATFORM_ANDROID : Platform.PLATFORM_IOS} />
+        :&nbsp;
+      </PlatformName>
+
+      <div style={{ width: '200px' }}>
+        <ProjectApplicationSelector
+          defaultValue={version}
+          value={version}
+          organizationId={router.query.orgId as OrganizationId}
+          projectId={router.query.pid as ProjectId}
+          onSelectApp={(app) => onChange(platform, app?.version)}
+          placeholder="Select app"
+          extension={getExtension()}
+          open={isOpen}
+          toggleOpen={toggle}
+          close={close}
+          selectedApplication={undefined}
+        />
+      </div>
     </AppSelectPlatformWrapper>
   );
 };
@@ -73,7 +72,7 @@ const CloseButton = styled.button`
   cursor: pointer;
 `;
 
-const PlatformName = styled.b`
-  margin-right: 0.25rem;
-  width: 80px;
+const PlatformName = styled.div`
+  ${flexRowBaseStyle}
+  margin-right: 0.5rem;
 `;

@@ -41,7 +41,14 @@ export class ProjectScmController {
   }
 
   @Get('scripts')
+  @ProjectPermission(PROJECT_ROLE.READ)
   async getTestScripts(@Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, @Param(ProjectPropCamel.projectId) projectId: string) {
     return await this.projectScmService.findTestScripts(organizationId, projectId);
+  }
+
+  @Get('cwds')
+  @ProjectPermission(PROJECT_ROLE.READ)
+  async getCwds(@Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, @Param(ProjectPropCamel.projectId) projectId: string): Promise<string[]> {
+    return await this.projectScmService.findCwds(organizationId, projectId);
   }
 }

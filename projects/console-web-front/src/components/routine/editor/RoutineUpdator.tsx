@@ -1,6 +1,6 @@
 import Monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { OrganizationId, ProjectId } from '@dogu-private/types';
+import { ProjectBase } from '@dogu-private/console';
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
 import { shallow } from 'zustand/shallow';
@@ -19,8 +19,7 @@ import RoutineFlow from './RoutineFlow';
 import { getErrorMessageFromAxios } from '../../../utils/error';
 
 interface Props {
-  organizationId: OrganizationId;
-  projectId: ProjectId;
+  project: ProjectBase;
   routineId: string;
   value: string;
 }
@@ -29,7 +28,7 @@ const RoutineUpdator = (props: Props) => {
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor>(null);
   const router = useRouter();
   const [isChanged, setChanged] = useState<boolean>(false);
-  const [mode, updateMode] = useRoutineEditMode();
+  const [mode, updateMode] = useRoutineEditMode(props.project);
   const [yaml, updateYaml] = useRoutineEditorStore((state) => [state.yaml, state.updateYaml], shallow);
   useExitBlocker(isChanged);
   const { t } = useTranslation();
@@ -56,8 +55,8 @@ const RoutineUpdator = (props: Props) => {
       const file = new File([yaml], 'index.yaml', { type: 'text/yaml' });
       setChanged(false);
 
-      await updateRoutine(props.organizationId, props.projectId, props.routineId, file);
-      router.push(`/dashboard/${props.organizationId}/projects/${props.projectId}/routines?routine=${props.routineId}`);
+      await updateRoutine(props.project.organizationId, props.project.projectId, props.routineId, file);
+      router.push(`/dashboard/${props.project.organizationId}/projects/${props.project.projectId}/routines?routine=${props.routineId}`);
 
       sendSuccessNotification(t('routine:updateRoutineSuccessMessage'));
     } catch (error) {
@@ -71,9 +70,9 @@ const RoutineUpdator = (props: Props) => {
   return (
     <RoutineEditor
       mode={mode}
-      menu={<RoutineEditorMenu mode={mode} saveButtonText={t('routine:updateRoutineButtonTitle')} onSave={handleSave} onChangeMode={updateMode} />}
+      menu={<RoutineEditorMenu projectType={props.project.type} mode={mode} saveButtonText={t('routine:updateRoutineButtonTitle')} onSave={handleSave} onChangeMode={updateMode} />}
       scriptEditor={<YamlEditor editorRef={editorRef} height={'65vh'} value={yaml} onChanged={handleEditorOnChange} />}
-      guiEditor={<RoutineGUIEditor />}
+      guiEditor={<RoutineGUIEditor projectType={props.project.type} />}
       preview={<RoutineFlow />}
     />
   );

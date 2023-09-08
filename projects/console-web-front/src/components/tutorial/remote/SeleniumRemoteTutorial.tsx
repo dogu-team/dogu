@@ -1,21 +1,29 @@
+import { Alert } from 'antd';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import Cookies from 'universal-cookie';
 import { USER_ID_COOKIE_NAME } from '@dogu-private/types';
 
-import { seleniumData, GuideProps, GuideSupportLanguage, SAMPLE_GIT_URL, GuideSupportPlatform } from '../../resources/guide';
-import { flexRowBaseStyle } from '../../styles/box';
-import GuideAnchor from './GuideAnchor';
-import GuideBanner from './GuideBanner';
-import GuideLayout from './GuideLayout';
-import GuideStep from './GuideStep';
+import {
+  TutorialSupportLanguage,
+  REMOTE_SAMPLE_GIT_URL,
+  TutorialSupportPlatform,
+  TutorialSupportTarget,
+  tutorialSdkSupportInfo,
+  TutorialSupportSdk,
+} from '../../../resources/tutorials/index';
+import { flexRowBaseStyle } from '../../../styles/box';
+import GuideAnchor from '../GuideAnchor';
+import GuideBanner from '../GuideBanner';
+import GuideLayout from '../GuideLayout';
+import GuideStep from '../GuideStep';
 import DoneStep from './DoneStep';
-import useTutorialSelector from '../../hooks/useTutorialSelector';
-import RemoteTestOptionSelectors from './RemoteTestOptionSelectors';
-import CodeWithCopyButton from '../common/CodeWithCopyButton';
+import useTutorialSelector from '../../../hooks/useTutorialSelector';
+import TutorialOptionSelectors from '../TutorialOptionSelectors';
+import CodeWithCopyButton from '../../common/CodeWithCopyButton';
 import RemoteTestResultList from './RemoteTestResultList';
-import PythonVirtualEnvShell from './PythonVirtualEnvShell';
-import { Alert } from 'antd';
+import PythonVirtualEnvShell from '../PythonVirtualEnvShell';
+import { RemoteTutorialProps, seleniumRemoteTutorialGuideData } from '../../../resources/tutorials/remote';
 
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
@@ -24,16 +32,18 @@ const RUN_TEST_ID = 'run-test';
 const RESULT_ID = 'result';
 const DONE_ID = 'done';
 
-const SeleniumGuide = ({ organizationId, projectId }: GuideProps) => {
+const SeleniumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps) => {
   const { framework, platform, target } = useTutorialSelector({
-    defaultFramework: seleniumData.defaultOptions.framework,
-    defaultPlatform: seleniumData.defaultOptions.platform,
-    defaultTarget: seleniumData.defaultOptions.target,
+    defaultFramework: tutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.framework,
+    defaultPlatform: tutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.platform,
+    defaultTarget: tutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.target,
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 
-  const selectedGuide = seleniumData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const frameworkLanguage = Object.keys(seleniumData.supportFrameworks).find((language) => seleniumData.supportFrameworks[language as GuideSupportLanguage]?.includes(framework));
+  const selectedGuide = seleniumRemoteTutorialGuideData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
+  const frameworkLanguage = Object.keys(tutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].frameworksPerLang).find((language) =>
+    tutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
+  );
 
   useEffect(() => {
     const updateCapabilityCode = async () => {
@@ -41,7 +51,7 @@ const SeleniumGuide = ({ organizationId, projectId }: GuideProps) => {
         return;
       }
 
-      const code = await seleniumData.generateCapabilitiesCode({
+      const code = await seleniumRemoteTutorialGuideData.generateCapabilitiesCode({
         orgId: organizationId,
         projectId,
         framework,
@@ -60,7 +70,7 @@ const SeleniumGuide = ({ organizationId, projectId }: GuideProps) => {
       sidebar={
         <div>
           <div style={{ marginBottom: '1rem' }}>
-            <RemoteTestOptionSelectors guideData={seleniumData} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
+            <TutorialOptionSelectors sdk={TutorialSupportSdk.SELENIUM} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
           </div>
 
           <GuideAnchor
@@ -83,9 +93,9 @@ const SeleniumGuide = ({ organizationId, projectId }: GuideProps) => {
             description={<p>Clone example repository and move to execution directory</p>}
             content={
               <>
-                <CodeWithCopyButton language="bash" code={`git clone ${SAMPLE_GIT_URL}`} />
+                <CodeWithCopyButton language="bash" code={`git clone ${REMOTE_SAMPLE_GIT_URL}`} />
                 <CodeWithCopyButton language="bash" code={selectedGuide?.cd ?? ''} />
-                {frameworkLanguage === GuideSupportLanguage.PYTHON && (
+                {frameworkLanguage === TutorialSupportLanguage.PYTHON && (
                   <div style={{ marginTop: '.5rem' }}>
                     <p>And, setup virtual environment</p>
                     <PythonVirtualEnvShell />
@@ -116,7 +126,7 @@ const SeleniumGuide = ({ organizationId, projectId }: GuideProps) => {
             description={<p>Start automated testing using sample app and script</p>}
             content={
               <>
-                {platform === GuideSupportPlatform.MACOS && (
+                {platform === TutorialSupportPlatform.MACOS && (
                   <Alert
                     message={
                       <p>
@@ -126,7 +136,7 @@ const SeleniumGuide = ({ organizationId, projectId }: GuideProps) => {
                   />
                 )}
                 <CodeWithCopyButton language="bash" code={selectedGuide?.runCommand ?? ''} />
-                {frameworkLanguage === GuideSupportLanguage.PYTHON && (
+                {frameworkLanguage === TutorialSupportLanguage.PYTHON && (
                   <Alert message="If test failed with an import error, please activate virtual environment again." type="info" showIcon />
                 )}
               </>
@@ -146,7 +156,7 @@ const SeleniumGuide = ({ organizationId, projectId }: GuideProps) => {
   );
 };
 
-export default SeleniumGuide;
+export default SeleniumRemoteTutorial;
 
 const FlexRow = styled.div`
   ${flexRowBaseStyle}

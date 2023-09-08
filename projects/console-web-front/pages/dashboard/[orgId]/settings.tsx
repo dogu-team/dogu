@@ -31,7 +31,7 @@ import RegenerateTokenButton from '../../../src/components/common/RegenerateToke
 import AccessTokenButton from '../../../src/components/common/AccessTokenButton';
 import SlackButton from '../../../src/enterprise/components/integration/SlackConnectButton';
 import SettingTitleDivider from '../../../src/components/common/SettingTitleDivider';
-import useOrganizationContext from '../../../src/hooks/useOrganizationContext';
+import useOrganizationContext from '../../../src/hooks/context/useOrganizationContext';
 
 const OrganizationSettingPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {
   const [editingOrganization, setEditingOrganization] = useState<OrganizationBase>(organization);

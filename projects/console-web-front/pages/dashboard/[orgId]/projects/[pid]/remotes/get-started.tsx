@@ -11,13 +11,14 @@ import { getOrganizationInServerSide } from 'src/api/organization';
 import { getProjectInServerSide } from 'src/api/project';
 import ConsoleBasicLayout from 'src/components/layouts/ConsoleBasicLayout';
 import FrameworkSelectContainer from 'src/components/tutorial/FrameworkSelectContainer';
-import RemoteTestTutorial from 'src/components/tutorial/RemoteTestTutorial';
+import RemoteTestTutorial from 'src/components/tutorial/remote/RemoteTestTutorial';
 import SdkIcon from 'src/components/tutorial/SdkIcon';
-import { TutorialContext } from 'src/hooks/useTutorialContext';
-import { GuideSupportSdk, guideSupportSdkText, tutorialData } from 'src/resources/guide';
+import { TutorialContext } from 'src/hooks/context/useTutorialContext';
+import { TutorialSupportSdk, tutorialSupportSdkText } from 'src/resources/tutorials';
 import { flexRowBaseStyle } from 'src/styles/box';
 import { checkUserVerifiedInServerSide } from 'src/utils/auth';
 import { NextPageWithLayout } from '../../../../../_app';
+import { remoteTutorialData } from '../../../../../../src/resources/tutorials/remote';
 
 interface ServerSideProps {
   organization: OrganizationBase;
@@ -25,15 +26,15 @@ interface ServerSideProps {
   project: ProjectBase;
 }
 
-const ProjectGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, organization, me }) => {
+const ProjectRemoteGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, organization, me }) => {
   const router = useRouter();
-  const sdk = router.query.sdk as GuideSupportSdk | undefined;
-  const isFrameworkSelected = !!sdk && Object.keys(tutorialData).includes(router.query.sdk as string) && !!router.query.framework;
+  const sdk = router.query.sdk as TutorialSupportSdk | undefined;
+  const isFrameworkSelected = !!sdk && Object.keys(remoteTutorialData).includes(router.query.sdk as string) && !!router.query.framework;
 
   return (
     <TutorialContext.Provider value={{ me, organization, project, updateProject: () => {} }}>
       <Head>
-        <title>Tutorial - {project.name} | Dogu</title>
+        <title>Remote tutorial - {project.name} | Dogu</title>
       </Head>
       {isFrameworkSelected ? (
         <Box>
@@ -50,7 +51,7 @@ const ProjectGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, o
                 Quick start -&nbsp;
                 <SdkIcon sdk={sdk} size={28} />
                 &nbsp;
-                {guideSupportSdkText[sdk]}
+                {tutorialSupportSdkText[sdk]}
               </StyledTitle>
             </div>
             <div>
@@ -62,7 +63,7 @@ const ProjectGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, o
 
           <Divider />
 
-          <RemoteTestTutorial selectedSdk={router.query.sdk as GuideSupportSdk} />
+          <RemoteTestTutorial selectedSdk={router.query.sdk as TutorialSupportSdk} />
 
           <LinkBox>
             <div />
@@ -86,7 +87,7 @@ const ProjectGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, o
   );
 };
 
-ProjectGetStartedPage.getLayout = (page) => {
+ProjectRemoteGetStartedPage.getLayout = (page) => {
   return <ConsoleBasicLayout>{page}</ConsoleBasicLayout>;
 };
 
@@ -106,7 +107,7 @@ export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (co
   };
 };
 
-export default ProjectGetStartedPage;
+export default ProjectRemoteGetStartedPage;
 
 const Box = styled.div`
   padding: 2rem;

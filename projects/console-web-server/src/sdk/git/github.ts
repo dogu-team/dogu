@@ -1,3 +1,4 @@
+import { DoguConfig } from '@dogu-private/console';
 import { DOGU_CONFIG_FILE_NAME } from '@dogu-private/types';
 import { Octokit } from '@octokit/rest';
 
@@ -10,7 +11,7 @@ export module Github {
     });
   }
 
-  export async function readDoguConfigFile(token: string, owner: string, repo: string) {
+  export async function readDoguConfigFile(token: string, owner: string, repo: string): Promise<DoguConfig> {
     const octokit = createSession(token);
     const rv = await octokit.repos.getContent({
       owner,
@@ -27,7 +28,8 @@ export module Github {
       }
 
       const decodedContent = Buffer.from(`${(rv.data as { content: string }).content}`, 'base64').toString('utf8');
-      return decodedContent;
+      const json = JSON.parse(decodedContent.replaceAll('\n| ', '')) as DoguConfig;
+      return json;
     } else {
       throw new Error(`Failed to read dogu config file. status: ${rv.status}, message: ${rv.data}`);
     }

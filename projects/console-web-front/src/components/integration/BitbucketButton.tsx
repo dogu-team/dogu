@@ -72,7 +72,8 @@ function BitbucketButton({ isConnected, disabled, organizationId, projectId, des
               Integrate routine with Bitbucket.{' '}
               <Link href="https://docs.dogutech.io/management/project/git-integration/bitbucket" target="_blank">
                 Visit docs
-              </Link>
+              </Link>{' '}
+              for token generation.
             </>
           ))
         }

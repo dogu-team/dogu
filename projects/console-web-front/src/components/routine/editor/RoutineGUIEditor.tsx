@@ -1,16 +1,21 @@
-import { JobSchema } from '@dogu-private/types';
-import React, { useCallback } from 'react';
+import { JobSchema, PROJECT_TYPE } from '@dogu-private/types';
+import React, { createContext, useCallback } from 'react';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
 
 import useRoutineEditorStore from '../../../stores/routine-editor';
 import JobContainer from './gui/JobContainer';
 import RoutineNameEditor from './gui/RoutineNameEditor';
-import { PREPARE_ACTION_NAME, RUN_TEST_ACTION_NAME } from '../../../types/routine';
+import { RUN_TEST_ACTION_NAME } from '../../../types/routine';
 
-interface Props {}
+interface Props {
+  projectType: PROJECT_TYPE;
+  hideAddButton?: boolean;
+}
 
-const RoutineGUIEditor = ({}: Props) => {
+export const RoutineProjectTypeContext = createContext<PROJECT_TYPE>(PROJECT_TYPE.CUSTOM);
+
+const RoutineGUIEditor = ({ projectType, hideAddButton }: Props) => {
   const [schema, updateSchema] = useRoutineEditorStore((state) => [state.schema, state.updateSchema]);
   const { t } = useTranslation();
 
@@ -25,19 +30,7 @@ const RoutineGUIEditor = ({}: Props) => {
         ...schema.jobs,
         [`new-job-${newIndex}`]: {
           'runs-on': { group: [] },
-          steps: [
-            {
-              name: 'prepare',
-              uses: PREPARE_ACTION_NAME,
-              with: {
-                appVersion: {
-                  android: undefined,
-                  ios: undefined,
-                },
-              },
-            },
-            { name: 'run-test', uses: RUN_TEST_ACTION_NAME, with: {} },
-          ],
+          steps: [{ name: 'run-test', uses: RUN_TEST_ACTION_NAME, with: {} }],
         },
       },
     });
@@ -172,42 +165,33 @@ const RoutineGUIEditor = ({}: Props) => {
   );
 
   return (
-    // <ReactFlowProvider>
-    //   <Box>
-    //     <GUISidebar />
-    //     <GUIFlow />
-    //   </Box>
-    // </ReactFlowProvider>
-    <Box>
-      <RoutineNameEditor name={schema.name} onChange={(value) => updateSchema({ ...schema, name: value })} />
-      <StyledTitle>{t('routine:routineGuiEditorJobLabel')}</StyledTitle>
-      <JobWrapper>
-        {Object.keys(schema.jobs).map((jobName, i) => {
-          return (
-            <JobContainer
-              key={`${jobName}-${i}`}
-              name={jobName}
-              job={schema.jobs[jobName]}
-              updateJob={handleUpdateJob}
-              updateJobName={handleUpdateJobName}
-              deleteJob={handleDeleteJob}
-              updateJobOrder={handleUpdateJobOrder}
-            />
-          );
-        })}
-        <AddJobButton onClick={handleAddJob}>{t('routine:routineGuiEditorAddJobButtonTitle')}</AddJobButton>
-      </JobWrapper>
-    </Box>
+    <RoutineProjectTypeContext.Provider value={projectType}>
+      <Box>
+        <RoutineNameEditor name={schema.name} onChange={(value) => updateSchema({ ...schema, name: value })} />
+        <StyledTitle>{t('routine:routineGuiEditorJobLabel')}</StyledTitle>
+        <JobWrapper>
+          {Object.keys(schema.jobs).map((jobName, i) => {
+            return (
+              <JobContainer
+                key={`${jobName}-${i}`}
+                name={jobName}
+                job={schema.jobs[jobName]}
+                updateJob={handleUpdateJob}
+                updateJobName={handleUpdateJobName}
+                deleteJob={handleDeleteJob}
+                updateJobOrder={handleUpdateJobOrder}
+                hideAddButton={hideAddButton}
+              />
+            );
+          })}
+          {!hideAddButton && <AddJobButton onClick={handleAddJob}>{t('routine:routineGuiEditorAddJobButtonTitle')}</AddJobButton>}
+        </JobWrapper>
+      </Box>
+    </RoutineProjectTypeContext.Provider>
   );
 };
 
 export default RoutineGUIEditor;
-
-// const Box = styled.div`
-//   ${flexRowBaseStyle}
-//   height: 100%;
-//   align-items: flex-start;
-// `;
 
 const Box = styled.div`
   line-height: 1.4;

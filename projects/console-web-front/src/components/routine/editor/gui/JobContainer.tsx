@@ -1,18 +1,22 @@
-import { QuestionCircleFilled } from '@ant-design/icons';
-import { JobSchema, ROUTINE_JOB_NAME_MAX_LENGTH, StepSchema } from '@dogu-private/types';
-import { Switch, Tag, Tooltip } from 'antd';
-import { useCallback } from 'react';
+import { JobSchema, PROJECT_TYPE, ROUTINE_JOB_NAME_MAX_LENGTH, StepSchema } from '@dogu-private/types';
+import { Checkbox, Switch, Tag } from 'antd';
+import { useCallback, useContext } from 'react';
 import { move, update } from 'ramda';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
+import { AppVersion } from '@dogu-tech/action-common';
+import Trans from 'next-translate/Trans';
 
 import { flexRowBaseStyle } from '../../../../styles/box';
-import AddDeviceTagButton from './AddDeviceTagButton';
+import AddDeviceAndTagButton from './AddDeviceAndTagButton';
 import AddNeedButton from './AddNeedButton';
 import ContainerMenu from './ContainerMenu';
 import NameEditor from './NameEditor';
 import StepContainer from './StepContainer';
 import { RUN_TEST_ACTION_NAME } from '../../../../types/routine';
+import { RoutineProjectTypeContext } from '../RoutineGUIEditor';
+import BrowserNameSelector from './BrowserNameSelector';
+import AppVersionContainer from './AppVersionContainer';
 
 interface NeedsProps {
   needs: JobSchema['needs'];
@@ -80,14 +84,6 @@ const RunsOn = ({ runsOn, onDelete }: RunsOnProps) => {
       </>
     );
   }
-  // // FIXME: henry - browser-manager
-  // else if ('browserName' in runsOn) {
-  //   return (
-  //     <Tag color="pink" closable onClose={() => onDelete(runsOn!)}>
-  //       {runsOn.browserName}
-  //     </Tag>
-  //   );
-  // }
 
   return (
     <>
@@ -109,10 +105,14 @@ interface Props {
   updateJobName: (originName: string, newName: string) => void;
   deleteJob: (name: string) => void;
   updateJobOrder: (name: string, direction: 'up' | 'down') => void;
+  hideAddButton?: boolean;
 }
 
-const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJobOrder }: Props) => {
+const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJobOrder, hideAddButton }: Props) => {
   const { t } = useTranslation();
+  const projectType = useContext(RoutineProjectTypeContext);
+
+  const isGroupRun = 'group' in (job['runs-on'] as object);
 
   const handleAddNeeds = useCallback(
     (need: string) => {
@@ -153,6 +153,16 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
         }
 
         updateJob({ ...job, 'runs-on': { group: [runsOn, tag] } }, name);
+        return;
+      }
+
+      if (Array.isArray(runsOn)) {
+        if (runsOn.includes(tag)) {
+          return;
+        }
+
+        const newRunsOn = [...runsOn, tag];
+        updateJob({ ...job, 'runs-on': newRunsOn }, name);
         return;
       }
 
@@ -221,11 +231,6 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
         updateJob({ ...job, 'runs-on': { group: newRunsOn } }, name);
         return;
       }
-      // // FIXME: henry - browser-manager
-      // else if ('browserName' in runsOn) {
-      //   updateJob({ ...job, 'runs-on': { browserName: runsOn.browserName, tag: '' } }, name);
-      //   return;
-      // }
 
       const newRunsOn = runsOn.filter((t) => t !== tag);
       updateJob({ ...job, 'runs-on': newRunsOn }, name);
@@ -300,36 +305,97 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
           />
         </JobNameTitle>
       </Content>
+      {!hideAddButton && (
+        <Content>
+          <div>
+            <ContentTitle>{t('routine:routineGuiEditorJobNeedLabel')}</ContentTitle>
+            <ContentDesc>{t('routine:routineGuiEditorJobNeedDescription')}</ContentDesc>
+          </div>
+          <ContentInner>
+            <Needs needs={job.needs} onDelete={handleRemoveNeed} />
+            <AddNeedButton onSelect={handleAddNeeds} excludeNames={[name]} />
+          </ContentInner>
+        </Content>
+      )}
+      {projectType === PROJECT_TYPE.WEB ? (
+        <Content>
+          <div>
+            <ContentTitle>{t('routine:routineGuiEditorJobBrowserNameLabel')}</ContentTitle>
+            <ContentDesc>{t('routine:routineGuiEditorJobBrowserNameDescription')}</ContentDesc>
+          </div>
+          <ContentInner>
+            <BrowserNameSelector
+              value={job.browserName}
+              onChange={(value) => {
+                updateJob({ ...job, browserName: value }, name);
+              }}
+            />
+          </ContentInner>
+        </Content>
+      ) : (
+        <Content>
+          <div>
+            <ContentTitle>{t('routine:routineGuiEditorJobAppVersionLabel')}</ContentTitle>
+            <ContentDesc>{t('routine:routineGuiEditorJobAppVersionDescription')}</ContentDesc>
+          </div>
+          <ContentInner>
+            <AppVersionContainer
+              appVersion={job.appVersion as AppVersion}
+              onUpdate={(platform, version) => {
+                if (typeof job.appVersion === 'string') {
+                  updateJob({ ...job, appVersion: { [platform]: version as string } }, name);
+                  return;
+                }
+                updateJob({ ...job, appVersion: { ...job.appVersion, [platform]: version as string } }, name);
+              }}
+              onClose={(platform) => {
+                if (typeof job.appVersion === 'string') {
+                  updateJob({ ...job, appVersion: {} }, name);
+                  return;
+                }
+                const clonedAppVersion = { ...job.appVersion };
+                delete clonedAppVersion[platform];
+                updateJob({ ...job, appVersion: { ...clonedAppVersion } }, name);
+              }}
+            />
+          </ContentInner>
+        </Content>
+      )}
       <Content>
         <div>
-          {t('routine:routineGuiEditorJobNeedLabel')}{' '}
-          <Tooltip overlayInnerStyle={{ fontSize: '.8rem' }} title={t('routine:routineGuiEditorJobNeedDescription')}>
-            <QuestionCircleFilled />
-          </Tooltip>
-        </div>
-        <ContentInner>
-          <Needs needs={job.needs} onDelete={handleRemoveNeed} />
-          <AddNeedButton onSelect={handleAddNeeds} excludeNames={[name]} />
-        </ContentInner>
-      </Content>
-      <Content>
-        <div>
-          {t('routine:routineGuiEditorJobDeviceTagLabel')}{' '}
-          <Tooltip overlayInnerStyle={{ fontSize: '.8rem' }} title={t('routine:routineGuiEditorJobDeviceTagDescription')}>
-            <QuestionCircleFilled />
-          </Tooltip>
+          <FlexRow style={{ marginBottom: '.25rem' }}>
+            <ContentTitle style={{ marginBottom: '0' }}>{t('routine:routineGuiEditorJobDeviceLabel')}</ContentTitle>
+            <Checkbox
+              checked={isGroupRun}
+              style={{ marginLeft: '.75rem' }}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  updateJob({ ...job, 'runs-on': { group: job['runs-on'] as string | string[] } }, name);
+                } else {
+                  updateJob({ ...job, 'runs-on': (job['runs-on'] as { group: string | string[] }).group as string | string[] }, name);
+                }
+              }}
+            >
+              {t('routine:routineGuiEditorJobDeviceGroupLabel')}
+            </Checkbox>
+          </FlexRow>
+          <ContentDesc>
+            {isGroupRun ? (
+              <Trans i18nKey="routine:routineGuiEditorJobDeviceGroupDescription" components={{ b: <b style={{ fontWeight: '600' }} /> }} />
+            ) : (
+              t('routine:routineGuiEditorJobDeviceDescription')
+            )}
+          </ContentDesc>
         </div>
         <ContentInner>
           <RunsOn runsOn={job['runs-on']} onDelete={handleRemoveRunsOn} />
-          <AddDeviceTagButton onSelect={handleAddRunsOn} />
+          <AddDeviceAndTagButton onSelect={handleAddRunsOn} />
         </ContentInner>
       </Content>
       <Content>
         <div>
-          {t('routine:routineGuiEditorJobScreenRecordLabel')}{' '}
-          <Tooltip overlayInnerStyle={{ fontSize: '.8rem' }} title={t('routine:routineGuiEditorJobScreenRecordDescription')}>
-            <QuestionCircleFilled />
-          </Tooltip>
+          <ContentTitle>{t('routine:routineGuiEditorJobScreenRecordLabel')}</ContentTitle>
+          <ContentDesc>{t('routine:routineGuiEditorJobScreenRecordDescription')}</ContentDesc>
         </div>
         <ContentInner>
           <Switch checked={job.record} onChange={handleUpdateRecord} />
@@ -343,7 +409,7 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
               <StepContainer key={`job-${name}-step-${step.name}-${i}`} jobName={name} step={step} index={i} updateStep={updateStep} deleteStep={deleteStep} moveStep={moveStep} />
             );
           })}
-          <AddStepButton onClick={handleAddStep}>{t('routine:routineGuiEditorAddStepButtonTitle')}</AddStepButton>
+          {!hideAddButton && <AddStepButton onClick={handleAddStep}>{t('routine:routineGuiEditorAddStepButtonTitle')}</AddStepButton>}
         </StepWrapper>
       </Content>
     </Box>
@@ -367,7 +433,19 @@ const Box = styled.div`
 `;
 
 const Content = styled.div`
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
+`;
+
+const ContentTitle = styled.p`
+  margin-bottom: 0.25rem;
+  line-height: 1.5;
+`;
+
+const ContentDesc = styled.p`
+  margin-bottom: 0.25rem;
+  line-height: 1.5;
+  font-size: 0.8rem;
+  color: ${(props) => props.theme.main.colors.gray3};
 `;
 
 const ContentInner = styled.div`
@@ -392,4 +470,8 @@ const AddStepButton = styled.div`
   font-size: 0.9rem;
   text-align: center;
   cursor: pointer;
+`;
+
+const FlexRow = styled.div`
+  ${flexRowBaseStyle}
 `;

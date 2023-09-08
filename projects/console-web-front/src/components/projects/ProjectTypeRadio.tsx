@@ -19,7 +19,7 @@ const ProjectTypeRadio = (props: Omit<RadioGroupProps, 'children'>) => {
       case PROJECT_TYPE.GAME:
         return '* Specialized for mobile and desktop game.';
       case PROJECT_TYPE.CUSTOM:
-        return '* Able to customize project features for your needs.';
+        return '* For experts, able to customize project features for your needs.';
       default:
         return '';
     }

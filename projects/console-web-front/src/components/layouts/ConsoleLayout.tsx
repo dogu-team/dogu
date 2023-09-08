@@ -10,7 +10,7 @@ import ConsoleBasicLayout from './ConsoleBasicLayout';
 import LiveChat from '../external/livechat';
 import { swrAuthFetcher } from '../../api';
 import ErrorBox from '../common/boxes/ErrorBox';
-import { OrganizationContext } from '../../hooks/useOrganizationContext';
+import { OrganizationContext } from '../../hooks/context/useOrganizationContext';
 import { getErrorMessageFromAxios } from '../../utils/error';
 
 export interface ConsoleLayoutProps {

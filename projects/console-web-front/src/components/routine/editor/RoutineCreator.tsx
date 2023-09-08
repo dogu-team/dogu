@@ -1,6 +1,7 @@
+import { ProjectBase } from '@dogu-private/console';
+import { PROJECT_TYPE } from '@dogu-private/types';
 import Monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import { useEffect, useRef, useState } from 'react';
-import { OrganizationId, ProjectId } from '@dogu-private/types';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import useTranslation from 'next-translate/useTranslation';
@@ -18,51 +19,65 @@ import useRoutineEditorStore from '../../../stores/routine-editor';
 import RoutineGUIEditor from './RoutineGUIEditor';
 import RoutineFlow from './RoutineFlow';
 
-const sample = `name:
+const APP_ROUTINE_SAMPLE = `name: sample-routine
 
 on:
   workflow_dispatch:
 
 jobs:
-  job-sample:
+  sample-job:
     runs-on:
       group: []
+    appVersion:
     steps:
-      - name: prepare
-        uses: dogu-actions/prepare
-        with:
-          appVersion:
-            android:
-            ios:
       - name: run test
         uses: dogu-actions/run-test
         with:
-          script:
+          checkout: true
+          command:
+        cwd:
+`;
+
+const WEB_ROUTINE_SAMPLE = `name: sample-routine
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sample-job:
+    runs-on: []
+    browserName:
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          command:
+        cwd:
 `;
 
 interface Props {
-  organizationId: OrganizationId;
-  projectId: ProjectId;
+  project: ProjectBase;
 }
 
-const RoutineCreator = (props: Props) => {
+const RoutineCreator = ({ project }: Props) => {
   const editorRef = useRef<Monaco.editor.IStandaloneCodeEditor>(null);
   const router = useRouter();
   const [isChanged, setChanged] = useState<boolean>(false);
-  const [mode, updateMode] = useRoutineEditMode();
+  const [mode, updateMode] = useRoutineEditMode(project);
   const [yaml, updateYaml] = useRoutineEditorStore((state) => [state.yaml, state.updateYaml], shallow);
   useExitBlocker(isChanged);
   const { t } = useTranslation();
 
   useEffect(() => {
-    updateYaml(sample);
-  }, []);
+    updateYaml(project.type === PROJECT_TYPE.WEB ? WEB_ROUTINE_SAMPLE : APP_ROUTINE_SAMPLE);
+  }, [project.type]);
 
   function handleEditorOnChange() {
     if (editorRef.current) {
       const value = editorRef.current.getValue();
       updateYaml(value);
-      if (value !== sample) {
+      if (value !== (project.type === PROJECT_TYPE.WEB ? WEB_ROUTINE_SAMPLE : APP_ROUTINE_SAMPLE)) {
         setChanged(true);
         return;
       }
@@ -77,8 +92,8 @@ const RoutineCreator = (props: Props) => {
 
     try {
       setChanged(false);
-      const { routineId } = await createRoutine(props.organizationId, props.projectId, file);
-      router.push(`/dashboard/${props.organizationId}/projects/${props.projectId}/routines?routine=${routineId}`);
+      const { routineId } = await createRoutine(project.organizationId, project.projectId, file);
+      router.push(`/dashboard/${project.organizationId}/projects/${project.projectId}/routines?routine=${routineId}`);
       sendSuccessNotification(t('routine:createRoutineSuccessMessage'));
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -92,9 +107,9 @@ const RoutineCreator = (props: Props) => {
   return (
     <RoutineEditor
       mode={mode}
-      menu={<RoutineEditorMenu mode={mode} saveButtonText={t('routine:createRoutineButtonTitle')} onSave={handleSave} onChangeMode={updateMode} />}
+      menu={<RoutineEditorMenu projectType={project.type} mode={mode} saveButtonText={t('routine:createRoutineButtonTitle')} onSave={handleSave} onChangeMode={updateMode} />}
       scriptEditor={<YamlEditor editorRef={editorRef} height={'65vh'} value={yaml} onChanged={handleEditorOnChange} />}
-      guiEditor={<RoutineGUIEditor />}
+      guiEditor={<RoutineGUIEditor projectType={project.type} />}
       preview={<RoutineFlow />}
     />
   );

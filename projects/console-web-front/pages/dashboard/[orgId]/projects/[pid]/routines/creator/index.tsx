@@ -28,7 +28,7 @@ const ProjectRoutineCreatorPage: NextPageWithLayout<ProjectServerSideProps> = ({
             <RoutineGitIntegrationAlert />
           </div>
         )}
-        <RoutineCreator organizationId={organization.organizationId} projectId={project.projectId} />
+        <RoutineCreator project={project} />
       </Box>
     </>
   );

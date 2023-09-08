@@ -1,53 +1,67 @@
+import { PROJECT_TYPE } from '@dogu-private/types';
 import styled from 'styled-components';
 import { Divider } from 'antd';
 
-import { GuideSupportLanguage, guideSupportLanguageText, GuideSupportSdk, tutorialData } from '../../resources/guide';
+import { tutorialSdkSupportInfo, TutorialSupportLanguage, tutorialSupportLanguageText, TutorialSupportSdk, tutorialSupportSdkText } from '../../resources/tutorials';
 import LanguageIcon from './LanguageIcon';
 import SdkIcon from './SdkIcon';
+import useTutorialContext from '../../hooks/context/useTutorialContext';
+import { remoteTutorialData } from '../../resources/tutorials/remote';
 
 interface Props {
-  onClickSdk: (sdk: GuideSupportSdk) => void;
-  selectedSdk: GuideSupportSdk;
+  onClickSdk: (sdk: TutorialSupportSdk) => void;
+  selectedSdk: TutorialSupportSdk;
   onClickFramework: (framework: string) => void;
 }
 
 const FrameworkSelectTable = ({ selectedSdk, onClickFramework, onClickSdk }: Props) => {
+  const { project } = useTutorialContext();
+
+  const getAvailableSdk = () => {
+    switch (project?.type) {
+      case PROJECT_TYPE.WEB:
+        return [TutorialSupportSdk.WEBDRIVERIO, TutorialSupportSdk.SELENIUM, TutorialSupportSdk.APPIUM];
+      case PROJECT_TYPE.APP:
+        return [TutorialSupportSdk.WEBDRIVERIO, TutorialSupportSdk.APPIUM];
+      case PROJECT_TYPE.GAME:
+        return [TutorialSupportSdk.GAMIUM];
+      default:
+        return [TutorialSupportSdk.WEBDRIVERIO, TutorialSupportSdk.SELENIUM, TutorialSupportSdk.APPIUM, TutorialSupportSdk.GAMIUM];
+    }
+  };
+
+  if (!project) {
+    return null;
+  }
+
   return (
     <FlexTable>
       <div>
-        <SdkItem onClick={() => onClickSdk(GuideSupportSdk.WEBDRIVERIO)} isSelected={selectedSdk === GuideSupportSdk.WEBDRIVERIO}>
-          <SdkIcon sdk={GuideSupportSdk.WEBDRIVERIO} size={32} />
-          <p>WebdriverIO</p>
-        </SdkItem>
-        <SdkItem onClick={() => onClickSdk(GuideSupportSdk.APPIUM)} isSelected={selectedSdk === GuideSupportSdk.APPIUM}>
-          <SdkIcon sdk={GuideSupportSdk.APPIUM} size={32} />
-          <p>Appium</p>
-        </SdkItem>
-        <SdkItem onClick={() => onClickSdk(GuideSupportSdk.SELENIUM)} isSelected={selectedSdk === GuideSupportSdk.SELENIUM}>
-          <SdkIcon sdk={GuideSupportSdk.SELENIUM} size={32} />
-          <p>Selenium</p>
-        </SdkItem>
-        <SdkItem onClick={() => onClickSdk(GuideSupportSdk.GAMIUM)} isSelected={selectedSdk === GuideSupportSdk.GAMIUM}>
-          <SdkIcon sdk={GuideSupportSdk.GAMIUM} size={32} />
-          <p>Gamium</p>
-        </SdkItem>
+        {getAvailableSdk().map((sdk) => {
+          return (
+            <SdkItem key={sdk} onClick={() => onClickSdk(sdk)} isSelected={selectedSdk === sdk}>
+              <SdkIcon sdk={sdk} size={32} />
+              <p>{tutorialSupportSdkText[sdk]}</p>
+            </SdkItem>
+          );
+        })}
       </div>
 
       <ColContainer>
-        {Object.keys(tutorialData[selectedSdk].supportFrameworks).map((lang) => {
-          const language = lang as GuideSupportLanguage;
+        {Object.keys(tutorialSdkSupportInfo[selectedSdk].frameworksPerLang).map((lang) => {
+          const language = lang as TutorialSupportLanguage;
 
           return (
             <Col key={language}>
               <FlexColCenter>
                 <LanguageIcon language={language} size={32} />
-                <p style={{ marginTop: '.25rem', fontWeight: '500' }}>{guideSupportLanguageText[language]}</p>
+                <p style={{ marginTop: '.25rem', fontWeight: '500' }}>{tutorialSupportLanguageText[language]}</p>
               </FlexColCenter>
 
               <Divider />
 
               <FlexColCenter>
-                {tutorialData[selectedSdk].supportFrameworks[language]?.map((framework: string) => {
+                {tutorialSdkSupportInfo[selectedSdk].frameworksPerLang[language]?.map((framework: string) => {
                   return (
                     <FrameworkItem key={framework} onClick={() => onClickFramework(framework)}>
                       {framework}

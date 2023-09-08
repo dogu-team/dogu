@@ -113,7 +113,7 @@ export class YamlLoaderService {
 
         if (appVersion) {
           if (typeof appVersion === 'object') {
-            const invalids = _.keys(appVersion).filter((value) => isValidPlatformType(value));
+            const invalids = _.keys(appVersion).filter((value) => !isValidPlatformType(value));
             if (invalids.length > 0) {
               return new Error(`Invalid platform type [${invalids.join(', ')}] on job [${jobName}]`);
             }

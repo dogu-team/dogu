@@ -87,9 +87,10 @@ const PipelineItem = ({ pipeline }: ItemProps) => {
 interface Props {
   organizationId: OrganizationId;
   projectId: ProjectId;
+  hideEmpty?: boolean;
 }
 
-const PipelineListController = ({ organizationId, projectId }: Props) => {
+const PipelineListController = ({ organizationId, projectId, hideEmpty }: Props) => {
   const router = useRouter();
   const page = router.query.page;
   const routine = router.query.routine;
@@ -148,10 +149,12 @@ const PipelineListController = ({ organizationId, projectId }: Props) => {
             <ListEmpty
               image={<GoWorkflow style={{ fontSize: '90px' }} />}
               description={
-                <Trans
-                  i18nKey="routine:pipelineEmptyDescription"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/project/routine" target="_blank" /> }}
-                />
+                !hideEmpty && (
+                  <Trans
+                    i18nKey="routine:pipelineEmptyDescription"
+                    components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/project/routine" target="_blank" /> }}
+                  />
+                )
               }
             />
           ),

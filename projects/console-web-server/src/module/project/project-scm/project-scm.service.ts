@@ -1,4 +1,4 @@
-import { DoguScmConfig, OrganizationId, ProjectId, ProjectTestScript, PROJECT_SCM_TYPE } from '@dogu-private/types';
+import { OrganizationId, ProjectId, ProjectTestScript, PROJECT_SCM_TYPE } from '@dogu-private/types';
 import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -140,8 +140,7 @@ export class ProjectScmService {
         const repo: string = parts[2];
 
         const content = await Github.readDoguConfigFile(githubToken, org, repo);
-        const json: DoguScmConfig = JSON.parse(content.replaceAll('\n| ', ''));
-        const result = await Github.getScriptFiles(githubToken, org, repo, json.scriptFolderPaths);
+        const result = await Github.getScriptFiles(githubToken, org, repo, content.scriptFolderPaths ?? []);
 
         return result.map((r) => ({
           name: r.path?.split('/').pop() ?? '',
@@ -168,7 +167,7 @@ export class ProjectScmService {
 
         const json = await Gitlab.readDoguConfigFile(hostUrl, gitlabToken, repo);
         const metaTrees = await Promise.all(
-          json.scriptFolderPaths.map(async (path) => {
+          (json.scriptFolderPaths ?? []).map(async (path) => {
             return Gitlab.getProjectFileMetaTree(hostUrl, gitlabToken, repo, path);
           }),
         );
@@ -204,7 +203,7 @@ export class ProjectScmService {
         const repo: string = parts[2];
 
         const content = await Bitbucket.readDoguConfigFile(bitbucketToken, workspace, repo);
-        const result = await Bitbucket.getScriptFiles(bitbucketToken, workspace, repo, content.scriptFolderPaths);
+        const result = await Bitbucket.getScriptFiles(bitbucketToken, workspace, repo, content.scriptFolderPaths ?? []);
 
         return result.map((r) => ({
           name: r.path?.split('/').pop() ?? '',
@@ -212,6 +211,69 @@ export class ProjectScmService {
           size: (r.size as number | undefined) ?? 0,
           type: r.type ?? '',
         }));
+      }
+      default:
+        throw new BadRequestException('Invalid repository type');
+    }
+  }
+
+  async findCwds(organizationId: OrganizationId, projectId: ProjectId): Promise<string[]> {
+    const projectScm = await this.dataSource.getRepository(ProjectScm).findOne({
+      where: { projectId },
+    });
+
+    if (!projectScm) {
+      throw new NotFoundException('Project repository not configured');
+    }
+
+    switch (projectScm.type) {
+      case PROJECT_SCM_TYPE.GITHUB: {
+        const projectScmGithubAuth = await this.dataSource.getRepository(ProjectScmGithubAuth).findOne({
+          where: { projectScmId: projectScm.projectScmId },
+        });
+
+        if (!projectScmGithubAuth) {
+          throw new NotFoundException('Github repository auth not configured');
+        }
+
+        const githubToken = await EncryptService.decryptToken(this.dataSource.manager, organizationId, projectScmGithubAuth.token);
+        const { url, parts, org, repo } = this.getGitInformation(projectScm);
+
+        const content = await Github.readDoguConfigFile(githubToken, org, repo);
+
+        return content.workingDirPaths ?? [];
+      }
+      case PROJECT_SCM_TYPE.GITLAB: {
+        const projectScmGitlabbAuth = await this.dataSource.getRepository(ProjectScmGitlabAuth).findOne({
+          where: { projectScmId: projectScm.projectScmId },
+        });
+
+        if (!projectScmGitlabbAuth) {
+          throw new NotFoundException('Gitlab repository auth not configured');
+        }
+
+        const gitlabToken = await EncryptService.decryptToken(this.dataSource.manager, organizationId, projectScmGitlabbAuth.token);
+        const { url, parts, org, repo } = this.getGitInformation(projectScm);
+
+        const content = await Gitlab.readDoguConfigFile(gitlabToken, org, repo);
+
+        return content.workingDirPaths ?? [];
+      }
+      case PROJECT_SCM_TYPE.BITBUCKET: {
+        const projectScmBitBucketAuth = await this.dataSource.getRepository(ProjectScmBitbucketAuth).findOne({
+          where: { projectScmId: projectScm.projectScmId },
+        });
+
+        if (!projectScmBitBucketAuth) {
+          throw new NotFoundException('Bitbucket repository auth not configured');
+        }
+
+        const bitbucketToken = await EncryptService.decryptToken(this.dataSource.manager, organizationId, projectScmBitBucketAuth.token);
+        const { url, parts, org, repo } = this.getGitInformation(projectScm);
+
+        const content = await Bitbucket.readDoguConfigFile(bitbucketToken, org, repo);
+
+        return content.workingDirPaths ?? [];
       }
       default:
         throw new BadRequestException('Invalid repository type');
@@ -266,5 +328,19 @@ export class ProjectScmService {
     const gitUrlWithAuth = `${protocol}//oauth2:${token}@${host}/${org}/${repo}.git`;
 
     return gitUrlWithAuth;
+  }
+
+  private getGitInformation(scm: ProjectScm): { url: URL; parts: string[]; org: string; repo: string } {
+    const url = new URL(scm.url);
+    const parts: string[] = url.pathname.split('/');
+    const org: string = parts[1];
+    const repo: string = parts[2];
+
+    return {
+      url,
+      parts,
+      org,
+      repo,
+    };
   }
 }
