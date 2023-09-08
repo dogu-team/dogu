@@ -1,16 +1,19 @@
 import { MobileOutlined } from '@ant-design/icons';
-import { DeviceBase, ProjectBase } from '@dogu-private/console';
+import { DeviceBase, ProjectBase, UserBase } from '@dogu-private/console';
 import { DeviceId, OrganizationId, ProjectId } from '@dogu-private/types';
-import { Tag } from 'antd';
+import { Avatar, Tag, Tooltip } from 'antd';
 import { isAxiosError } from 'axios';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import useSWR from 'swr';
 
 import { swrAuthFetcher } from '../../api';
-import { flexRowCenteredStyle } from '../../styles/box';
+import useWebSocket from '../../hooks/useWebSocket';
+import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
 import { getErrorMessageFromAxios } from '../../utils/error';
 import ErrorBox from '../common/boxes/ErrorBox';
+import ProfileImage from '../ProfileImage';
 import DeviceStreaming from '../streaming/DeviceStreaming';
 import StudioDeviceSelector from './StudioDeviceSelector';
 
@@ -30,6 +33,22 @@ const DeviceStreamingLayout = ({ project, deviceId, right, title, screenViewer, 
     error: deviceError,
     isLoading: deviceIsLoading,
   } = useSWR<DeviceBase>(`/organizations/${project.organizationId}/devices/${deviceId}`, swrAuthFetcher, { revalidateOnFocus: false });
+  const websocket = useWebSocket(`/ws/device-streaming-session?organizationId=${project.organizationId}&deviceId=${deviceId}`);
+  const [users, setUsers] = useState<UserBase[]>([]);
+
+  useEffect(() => {
+    if (websocket.current) {
+      websocket.current.onmessage = (event) => {
+        const data: { users: UserBase[] } = JSON.parse(event.data);
+        setUsers(data.users);
+      };
+
+      return () => {
+        console.log('close');
+        websocket.current?.close();
+      };
+    }
+  }, []);
 
   if (deviceError) {
     return (
@@ -53,6 +72,13 @@ const DeviceStreamingLayout = ({ project, deviceId, right, title, screenViewer, 
         <ScreenBox>
           <TitleBox>
             <h3>{title}</h3>
+            <Avatar.Group>
+              {users.map((user) => (
+                <Tooltip title={user.name}>
+                  <ProfileImage key={user.userId} name={user.name} profileImageUrl={user.profileImageUrl} size={32} />
+                </Tooltip>
+              ))}
+            </Avatar.Group>
           </TitleBox>
           {!hideDeviceSelector && (
             <SelectorBox>
@@ -108,12 +134,6 @@ const ToolBox = styled.div`
   width: 50%;
 `;
 
-const VideoWrapper = styled.div`
-  flex: 1;
-  width: 100%;
-  height: 100%;
-`;
-
 const RightWrapper = styled.div`
   height: 100%;
   overflow: hidden;
@@ -128,7 +148,7 @@ const SelectorBox = styled.div`
 const TitleBox = styled.div`
   width: 100%;
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   margin-bottom: 0.5rem;
 
   h3 {
@@ -136,4 +156,8 @@ const TitleBox = styled.div`
     font-weight: 600;
     line-height: 1.5;
   }
+`;
+
+const FlexRow = styled.div`
+  ${flexRowBaseStyle}
 `;
