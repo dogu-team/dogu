@@ -115,7 +115,7 @@ export class AndroidChannel implements DeviceChannel {
       deviceServerService.devicePortService.getAndroidDeviceAgentServerPort(),
       logger,
     );
-    await deviceAgent.install();
+    await deviceAgent.wait();
 
     const appiumContextProxy = deviceServerService.appiumService.createAndroidAppiumContext(
       serial,
@@ -152,7 +152,6 @@ export class AndroidChannel implements DeviceChannel {
       findAllBrowserInstallationsResult.browserInstallations,
     );
 
-    await deviceAgent.connect();
     await streaming.deviceConnected(serial, {
       serial,
       platform: Platform.PLATFORM_ANDROID,

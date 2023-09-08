@@ -14,7 +14,4 @@ export type DcDaReturnUnionPickValue<Key extends keyof DcDaReturnUnionPick<Key>>
 export interface DeviceAgentService {
   get screenUrl(): string;
   get inputUrl(): string;
-
-  install(): Promise<void>;
-  connect(): Promise<void>;
 }

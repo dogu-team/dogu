@@ -4,11 +4,11 @@ export const config = {
     port: 30001,
   },
   externalGoDeviceController: {
-    use: true,
+    use: false,
     port: 50055,
   },
   externalIosDeviceAgent: {
-    use: true,
+    use: false,
     devices: [
       {
         serial: '00008030-001C18E91443802E',

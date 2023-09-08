@@ -30,4 +30,8 @@ export class SizePrefixedRecvQueue {
     this.buffer = this.buffer.subarray(4 + packetSize, this.buffer.length);
     return ret;
   }
+
+  public clear(): void {
+    this.buffer = new Uint8Array(0);
+  }
 }

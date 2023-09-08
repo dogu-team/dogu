@@ -50,11 +50,11 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     return `ws://127.0.0.1:${this.port}/cf_gdc_da_proto`;
   }
 
-  async install(): Promise<void> {
+  async wait(): Promise<void> {
     await this.zombieWaiter?.waitUntilAlive();
   }
 
-  async connect(): Promise<void> {
+  private async connect(): Promise<void> {
     const ws = new WebSocket(`ws://127.0.0.1:${this.port}/proto`);
 
     ws.on('open', () => {
@@ -74,6 +74,11 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     });
     ws.on('error', (err: Error) => {
       logger.error(`AndroidDeviceAgentService.connect ws error: ${stringifyError(err)}`);
+    });
+
+    ws.on('close', (err: Error) => {
+      logger.error(`AndroidDeviceAgentService.connect ws clpsed: ${stringifyError(err)}`);
+      ZombieServiceInstance.notifyDie(this, `AndroidDeviceAgentService.connect ws clpsed: ${stringifyError(err)}`);
     });
 
     return Promise.resolve();
@@ -184,6 +189,7 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
       ZombieServiceInstance.notifyDie(this);
     });
     await AdbUtil.waitPortOpenInternal(this.serial, this.devicePort);
+    await this.connect();
   }
 
   onDie(): void {

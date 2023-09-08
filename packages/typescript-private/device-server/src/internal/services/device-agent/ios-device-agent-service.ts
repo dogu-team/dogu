@@ -1,9 +1,10 @@
-import { OneofUnionTypes, PrivateProtocol } from '@dogu-private/types';
-import { IosDeviceAgentServiceService } from '@dogu-private/types/protocol/generated/tsproto/inner/grpc/services/ios_device_agent_service';
+import { OneofUnionTypes, Platform, PrivateProtocol, Serial } from '@dogu-private/types';
 import { delay, Printable, SizePrefixedRecvQueue, stringify } from '@dogu-tech/common';
 import EventEmitter from 'events';
 import { Socket } from 'net';
 import { DeviceAgentService } from '../../services/device-agent/device-agent-service';
+import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
+import { ZombieServiceInstance } from '../zombie/zombie-service';
 
 type DcIdaParam = PrivateProtocol.DcIdaParam;
 type DcIdaResult = PrivateProtocol.DcIdaResult;
@@ -11,9 +12,6 @@ type DcIdaParamList = PrivateProtocol.DcIdaParamList;
 type DcIdaResultList = PrivateProtocol.DcIdaResultList;
 const DcIdaParamList = PrivateProtocol.DcIdaParamList;
 const DcIdaResultList = PrivateProtocol.DcIdaResultList;
-
-type DcIdaRunAppParam = PrivateProtocol.DcIdaRunAppParam;
-type DcIdaRunAppResult = PrivateProtocol.DcIdaRunAppResult;
 
 export type DcIdaParamKeys = OneofUnionTypes.UnionValueKeys<DcIdaParam>;
 export type DcIdaParamUnionPick<Key> = OneofUnionTypes.UnionValuePick<DcIdaParam, Key>;
@@ -23,16 +21,16 @@ export type DcIdaResultKeys = OneofUnionTypes.UnionValueKeys<DcIdaResult>;
 export type DcIdaResultUnionPick<Key> = OneofUnionTypes.UnionValuePick<DcIdaResult, Key>;
 export type DcIdaResultUnionPickValue<Key extends keyof DcIdaResultUnionPick<Key>> = OneofUnionTypes.UnionValuePickInner<DcIdaResult, Key>;
 
-const ServiceDefenition = IosDeviceAgentServiceService;
-
-export class IosDeviceAgentService implements DeviceAgentService {
+export class IosDeviceAgentService implements DeviceAgentService, Zombieable {
   private readonly client: Socket;
   private protoAPIRetEmitter = new ProtoAPIEmitterImpl();
   private readonly recvQueue = new SizePrefixedRecvQueue();
   private isConnected: boolean;
   private seq = 0;
+  private zombieWaiter: ZombieQueriable;
 
-  constructor(private readonly screenPort: number, private readonly serverPort: number, timeoutSeconds: number, private readonly logger: Printable) {
+  constructor(public readonly serial: Serial, private readonly screenPort: number, private readonly serverPort: number, private readonly logger: Printable) {
+    this.zombieWaiter = ZombieServiceInstance.addComponent(this);
     this.client = new Socket();
     this.isConnected = false;
 
@@ -52,6 +50,7 @@ export class IosDeviceAgentService implements DeviceAgentService {
     this.client.on('close', (isError: boolean) => {
       logger.error('IosDeviceAgentService. client close');
       this.isConnected = false;
+      ZombieServiceInstance.notifyDie(this, `IosDeviceAgentService. client close`);
     });
 
     this.client.on('end', () => {
@@ -71,6 +70,25 @@ export class IosDeviceAgentService implements DeviceAgentService {
       }
     });
   }
+
+  async wait(): Promise<void> {
+    await this.zombieWaiter?.waitUntilAlive();
+  }
+
+  async revive(): Promise<void> {
+    await this.connect();
+  }
+
+  onDie(): void | Promise<void> {
+    if (this.isConnected) {
+      this.client.resetAndDestroy();
+    }
+  }
+
+  delete(): void {
+    ZombieServiceInstance.deleteComponent(this);
+  }
+
   get screenUrl(): string {
     return `127.0.0.1:${this.screenPort}`;
   }
@@ -83,34 +101,8 @@ export class IosDeviceAgentService implements DeviceAgentService {
     return this.isConnected;
   }
 
-  install(): Promise<void> {
+  async install(): Promise<void> {
     return Promise.resolve();
-  }
-
-  async connect(tryCount = 10): Promise<void> {
-    const { logger } = this;
-    logger.info(`IosDeviceAgentService.connect ${this.serverPort}`);
-    if (this.client.connecting) {
-      throw new Error('IosDeviceAgentService.already connected');
-    }
-
-    for (let i = 0; i < tryCount; i++) {
-      const isConnected = await new Promise<boolean>((resolve, reject) => {
-        this.client.once('close', (isError: boolean) => {
-          resolve(false);
-        });
-        this.client.connect({ host: '127.0.0.1', port: this.serverPort }, () => {
-          resolve(true);
-        });
-      });
-      if (!isConnected) {
-        logger.warn?.(`IosDeviceAgentService. connect failed. count: ${i}`);
-        await delay(1000);
-        continue;
-      }
-      return;
-    }
-    throw new Error('IosDeviceAgentService.connect. notconnected');
   }
 
   async sendWithProtobuf<
@@ -170,10 +162,50 @@ export class IosDeviceAgentService implements DeviceAgentService {
     });
   }
 
+  private async connect(tryCount = 10): Promise<void> {
+    const { logger } = this;
+    this.recvQueue.clear();
+    logger.info(`IosDeviceAgentService.connect ${this.serverPort}`);
+    if (this.client.connecting) {
+      throw new Error('IosDeviceAgentService.already connected');
+    }
+
+    for (let i = 0; i < tryCount; i++) {
+      const isConnected = await new Promise<boolean>((resolve, reject) => {
+        this.client.once('close', (isError: boolean) => {
+          resolve(false);
+        });
+        this.client.connect({ host: '127.0.0.1', port: this.serverPort }, () => {
+          resolve(true);
+        });
+      });
+      if (!isConnected) {
+        logger.warn?.(`IosDeviceAgentService. connect failed. count: ${i}`);
+        await delay(1000);
+        continue;
+      }
+      return;
+    }
+    throw new Error('IosDeviceAgentService.connect. notconnected');
+  }
+
   private getSeq(): number {
     const ret = this.seq;
     this.seq += 1;
     return ret;
+  }
+
+  get name(): string {
+    return `iOSDeviceAgentService`;
+  }
+  get platform(): Platform {
+    return Platform.PLATFORM_IOS;
+  }
+  get props(): ZombieProps {
+    return { serverPort: this.serverPort };
+  }
+  get printable(): Printable {
+    return this.logger;
   }
 }
 

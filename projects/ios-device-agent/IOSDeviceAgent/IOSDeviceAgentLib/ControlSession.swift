@@ -92,7 +92,7 @@ public actor ControlSession {
 
   private func onRecvData(data: Data, isComplete: Bool, error: NWError?) async throws {
     self.recvQueue.pushBuffer(buffer: data)
-    while true {
+    for _ in 0..<10000 {
       if !self.recvQueue.has() {
         break
       }
@@ -102,13 +102,12 @@ public actor ControlSession {
         try await self.eventListener.onParam(session: self, abstractParam: param)
       }
     }
-    
+
     if let error = error {
       Log.shared.error("ControlSession.receiveData Receive data error: \(error.localizedDescription)")
       self.connection.cancel()
       return
     }
-
 
     if !isComplete {
       self.receiveData(on: connection)

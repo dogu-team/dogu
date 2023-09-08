@@ -159,11 +159,8 @@ export class IosChannel implements DeviceChannel {
     logger.verbose('ios device agent process started');
 
     logger.verbose('ios device agent service starting');
-    const deviceAgent = new IosDeviceAgentService(screenForwardPort, grpcForwardPort, 60, logger);
-    await deviceAgent.connect().catch((error) => {
-      logger.error('IosDeviceAgentService connect failed.', { error: errorify(error) });
-      throw error;
-    });
+    const deviceAgent = new IosDeviceAgentService(serial, screenForwardPort, grpcForwardPort, logger);
+    await deviceAgent.wait();
     logger.verbose('ios device agent service started');
 
     logger.verbose('ios system info service starting');
@@ -258,6 +255,7 @@ export class IosChannel implements DeviceChannel {
     ZombieServiceInstance.deleteComponent(this._appiumContext);
     this.webdriverAgentProcess.delete();
     this.iosDeviceAgentProcess.delete();
+    this.deviceAgent.delete();
     ZombieServiceInstance.deleteAllComponentsIfExist((zombieable: Zombieable): boolean => {
       return zombieable.serial === this.serial && zombieable.platform === Platform.PLATFORM_IOS;
     }, 'kill serial bound zombies');
