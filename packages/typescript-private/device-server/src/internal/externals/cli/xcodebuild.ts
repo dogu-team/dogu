@@ -1,5 +1,5 @@
 import { Serial } from '@dogu-private/types';
-import { delay, errorify, loopTime, Milisecond, PrefixLogger, Printable, stringify } from '@dogu-tech/common';
+import { BufferLogger, delay, errorify, FilledPrintable, loopTime, Milisecond, MixedLogger, PrefixLogger, stringify } from '@dogu-tech/common';
 import { ChildProcess, DirectoryRotation, findEndswith, HostPaths, killChildProcess, redirectFileToStream } from '@dogu-tech/node';
 import child_process, { exec, execFile } from 'child_process';
 import { randomUUID } from 'crypto';
@@ -86,7 +86,6 @@ export interface XcodebuildOption {
 
 export class XCTestRunContext {
   public isAlive = true;
-  public history = '';
   private logs = '';
   public readonly startTime: number;
   private isWaitLogPrinted = false;
@@ -96,17 +95,27 @@ export class XCTestRunContext {
     private readonly tempDirPath: string,
     public readonly proc: child_process.ChildProcess,
     private readonly option: XcodebuildOption,
-    private readonly logger: Printable,
+    private readonly logger: MixedLogger,
+    private readonly buffer: BufferLogger,
   ) {
     this.pid = proc.pid ?? 0;
     this.startTime = Date.now();
     const redirectContext = { stop: false };
     proc.on('open', () => {
-      this.history += `opened time: ${Date.now()}, pid: ${this.pid},`;
+      this.logger.debug?.(`xcodebuild opened. time: ${Date.now()}, pid: ${this.pid}`);
+    });
+    proc.stdout?.setEncoding('utf8');
+    proc.stdout?.on('data', (data) => {
+      this.logger.debug?.(`stdout time: ${Date.now()}, pid: ${this.pid}, data: ${String(data)}`);
+    });
+    proc.stderr?.setEncoding('utf8');
+    proc.stderr?.on('data', (data) => {
+      this.logger.debug?.(`stderr time: ${Date.now()}, pid: ${this.pid}, data: ${String(data)}`);
     });
     proc.on('close', (code, signal) => {
-      this.history += `closed time:${Date.now()}, pid: ${this.pid}, with code: ${stringify(code)}, signal: ${stringify(signal)},`;
-      this.logger.error(`xcodebuild closed with error: ${this.error}`);
+      this.logger.debug?.(`closed time:${Date.now()}, pid: ${this.pid}, with code: ${stringify(code)}, signal: ${stringify(signal)}`);
+      this.logger.debug?.(`xcodebuild closed with logs: ${this.history}`);
+      this.logger.error(`xcodebuild closed with with code: ${stringify(code)}, signal: ${stringify(signal)}`);
       this.isAlive = false;
       redirectContext.stop = true;
     });
@@ -115,14 +124,28 @@ export class XCTestRunContext {
     });
   }
   public kill(reason: string): void {
-    this.history += `killed. time:${Date.now()}, reason: ${reason},`;
+    this.logger.debug?.(`killed. time:${Date.now()}, reason: ${reason}`);
+    this.logger.error(`killed. reason: ${reason}`);
     killChildProcess(this.proc).catch((error) => {
       this.logger.error('XCTestRunContext killChildProcess', { error: errorify(error) });
     });
   }
 
+  get history(): string {
+    let bufferLogs = '';
+    for (const buffer of this.buffer.buffers) {
+      bufferLogs += `level: ${buffer[0]}, logs: ${stringify(buffer[1])}`;
+    }
+    return bufferLogs;
+  }
+
   get error(): string {
-    return this.history;
+    let bufferLogs = '';
+    const buffer = this.buffer.buffers.get('error');
+    if (buffer) {
+      bufferLogs = buffer.map((log) => log.message).join('\n');
+    }
+    return bufferLogs;
   }
 
   public update(): void {
@@ -181,34 +204,36 @@ export async function removeOldWaves(): Promise<void> {
   await directoryRotation.removeOldWaves();
 }
 
-export function testWithoutBuilding(prefix: string, xctestrunPath: string, serial: Serial, option: XcodebuildOption, printable: Printable): XCTestRunContext {
+export function testWithoutBuilding(prefix: string, xctestrunPath: string, serial: Serial, option: XcodebuildOption, printable: FilledPrintable): XCTestRunContext {
   const tempDirPath = `${directoryRotation.getCurrentWavePath()}/${randomUUID()}`;
   const xcodebuildPath = getXcodeBuildPathSync();
-  const prefixLogger = new PrefixLogger(printable, `[${prefix}]`);
+  const bufferedLogger = new BufferLogger({ limit: 30 });
+  const logger = new MixedLogger([new PrefixLogger(printable, `[${prefix}]`), bufferedLogger]);
   const proc = ChildProcess.spawnSync(
     xcodebuildPath,
     ['test-without-building', '-xctestrun', `${xctestrunPath}`, '-destination', `id=${serial}`, '-resultBundlePath', tempDirPath],
     {},
-    prefixLogger,
+    logger,
   );
 
-  return new XCTestRunContext(tempDirPath, proc, option, prefixLogger);
+  return new XCTestRunContext(tempDirPath, proc, option, logger, bufferedLogger);
 }
 
-export function buildAndtest(serial: Serial, projectPath: string, scheme: string, option: XcodebuildOption, printable: Printable): XCTestRunContext {
+export function buildAndtest(serial: Serial, projectPath: string, scheme: string, option: XcodebuildOption, printable: FilledPrintable): XCTestRunContext {
   const tempDirPath = `${directoryRotation.getCurrentWavePath()}/${randomUUID()}`;
   const xcodebuildPath = getXcodeBuildPathSync();
-  const prefixLogger = new PrefixLogger(printable, '[xctest]');
+  const bufferedLogger = new BufferLogger({ limit: 30 });
+  const logger = new MixedLogger([new PrefixLogger(printable, '[xctest]'), bufferedLogger]);
   const args = ['build-for-testing', 'test-without-building', '-project', projectPath, '-scheme', scheme, '-destination', `id=${serial}`, '-resultBundlePath', tempDirPath];
   if (option.extraArgs) {
     args.push(...option.extraArgs);
   }
-  const proc = ChildProcess.spawnSync(xcodebuildPath, args, {}, prefixLogger);
+  const proc = ChildProcess.spawnSync(xcodebuildPath, args, {}, logger);
 
-  return new XCTestRunContext(tempDirPath, proc, option, prefixLogger);
+  return new XCTestRunContext(tempDirPath, proc, option, logger, bufferedLogger);
 }
 
-export async function killPreviousXcodebuild(serial: Serial, pattern: string, printable: Printable): Promise<void> {
+export async function killPreviousXcodebuild(serial: Serial, pattern: string, printable: FilledPrintable): Promise<void> {
   const xcodebuildPath = getXcodeBuildPathSync();
   const lsofResult = await ChildProcess.execIgnoreError(`pgrep -if "${xcodebuildPath}.*${pattern}"`, { timeout: 10000 }, printable);
   if (0 === lsofResult.stdout.length) {

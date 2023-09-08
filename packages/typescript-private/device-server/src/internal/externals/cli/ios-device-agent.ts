@@ -1,5 +1,5 @@
 import { Platform, Serial } from '@dogu-private/types';
-import { delay, loopTime, Milisecond, Printable, setAxiosErrorFilterToIntercepter, stringifyError } from '@dogu-tech/common';
+import { delay, FilledPrintable, loopTime, Milisecond, Printable, setAxiosErrorFilterToIntercepter, stringifyError } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import axios, { AxiosInstance } from 'axios';
 import _ from 'lodash';
@@ -26,7 +26,7 @@ export class IosDeviceAgentProcess {
     private readonly grpcDevicePort: number,
     private readonly webDriverForwardPort: number,
     private readonly webDriverPort: number,
-    private readonly logger: Printable,
+    private readonly logger: FilledPrintable,
   ) {
     ZombieServiceInstance.deleteComponentIfExist((zombieable: Zombieable): boolean => {
       if (zombieable instanceof ZombieIdaXCTest) {
@@ -68,7 +68,7 @@ export class IosDeviceAgentProcess {
     grpcDevicePort: number,
     webDriverForwardPort: number,
     webDriverDevicePort: number,
-    logger: Printable,
+    logger: FilledPrintable,
   ): Promise<IosDeviceAgentProcess> {
     let webDriverPort = webDriverDevicePort;
     let grpcPort = grpcDevicePort;
@@ -137,7 +137,7 @@ class ZombieIdaXCTest implements Zombieable {
     private readonly webDriverPort: number,
     private readonly grpcPort: number,
     // private readonly iosDeviceControllerGrpcClient: IosDeviceControllerGrpcClient,
-    private readonly logger: Printable,
+    private readonly logger: FilledPrintable,
   ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
     this.wdaClient = axios.create({
@@ -182,11 +182,11 @@ class ZombieIdaXCTest implements Zombieable {
     await this.dissmissAlert(sessionId);
 
     await this.xctestrunfile.updateIdaXctestrunFile(this.webDriverPort, this.grpcPort);
-    await XcodeBuild.killPreviousXcodebuild(this.serial, `ios-device-agent.*${this.serial}`, this.printable).catch(() => {
+    await XcodeBuild.killPreviousXcodebuild(this.serial, `ios-device-agent.*${this.serial}`, this.logger).catch(() => {
       this.logger.warn?.('killPreviousXcodebuild failed');
     });
     await delay(1000);
-    this.xctestrun = XcodeBuild.testWithoutBuilding('ida', xctestrunPath, this.serial, { waitForLog: { str: 'ServerURLHere', timeout: Milisecond.t2Minutes } }, this.printable);
+    this.xctestrun = XcodeBuild.testWithoutBuilding('ida', xctestrunPath, this.serial, { waitForLog: { str: 'ServerURLHere', timeout: Milisecond.t2Minutes } }, this.logger);
     this.xctestrun.proc.on('close', () => {
       this.xctestrun = null;
       ZombieServiceInstance.notifyDie(this);
