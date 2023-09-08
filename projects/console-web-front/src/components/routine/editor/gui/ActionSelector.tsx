@@ -1,3 +1,4 @@
+import { WarningFilled } from '@ant-design/icons';
 import { Select, SelectProps, Tag } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import styled from 'styled-components';
@@ -6,6 +7,7 @@ import { CHECKOUT_ACTION_NAME, PREPARE_ACTION_NAME, RUN_TEST_ACTION_NAME } from 
 
 const ActionSelector = (props: SelectProps) => {
   const { t } = useTranslation();
+
   const actions: SelectProps<string>['options'] = [
     {
       label: (
@@ -43,9 +45,16 @@ const ActionSelector = (props: SelectProps) => {
       value: PREPARE_ACTION_NAME,
     },
   ];
+  const isInvalid = !!props.value && !actions.find((action) => action.value === props.value);
 
   return (
-    <Select {...props} options={actions} dropdownMatchSelectWidth={false} status={props.value && !actions.find((action) => action.value === props.value) ? 'warning' : undefined} />
+    <Select
+      {...props}
+      options={actions}
+      dropdownMatchSelectWidth={false}
+      status={isInvalid ? 'warning' : undefined}
+      suffixIcon={isInvalid ? <WarningFilled style={{ color: '#ffd666' }} /> : undefined}
+    />
   );
 };
 

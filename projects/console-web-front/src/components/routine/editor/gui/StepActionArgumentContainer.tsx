@@ -1,10 +1,10 @@
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { InfoCircleOutlined, WarningFilled } from '@ant-design/icons';
 import { StepSchema } from '@dogu-private/types';
 import { Checkbox, Input, Select } from 'antd';
 import Image from 'next/image';
 import styled from 'styled-components';
-import resources from '../../../../resources';
 
+import resources from '../../../../resources';
 import { flexRowBaseStyle } from '../../../../styles/box';
 import { CHECKOUT_ACTION_NAME, PREPARE_ACTION_NAME, RUN_TEST_ACTION_NAME } from '../../../../types/routine';
 
@@ -83,6 +83,8 @@ const StepActionArgumentContainer = ({ step, onUpdate }: Props) => {
     );
   }
 
+  const isEnvironmentInvalid = !!step.with?.environment && ![Environment.NODE, Environment.PYTHON].includes(step.with?.environment as Environment);
+
   if (step.uses === RUN_TEST_ACTION_NAME) {
     return (
       <Box>
@@ -130,7 +132,8 @@ const StepActionArgumentContainer = ({ step, onUpdate }: Props) => {
             onChange={(value) => {
               handleUpdateArgs({ environment: value });
             }}
-            status={!!step.with?.environment && ![Environment.NODE, Environment.PYTHON].includes(step.with?.environment as Environment) ? 'warning' : undefined}
+            status={isEnvironmentInvalid ? 'warning' : undefined}
+            suffixIcon={isEnvironmentInvalid ? <WarningFilled style={{ color: '#ffd666' }} /> : undefined}
             dropdownMatchSelectWidth={false}
           />
           {!!step.with?.environment && step.with.environment === Environment.PYTHON && (

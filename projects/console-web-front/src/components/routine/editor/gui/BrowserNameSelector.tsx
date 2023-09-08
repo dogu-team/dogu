@@ -1,3 +1,4 @@
+import { WarningFilled } from '@ant-design/icons';
 import { Select, SelectProps } from 'antd';
 import Image from 'next/image';
 import styled from 'styled-components';
@@ -60,8 +61,18 @@ const BrowserNameSelector = ({ ...props }: Props) => {
       value: 'samsung-internet',
     },
   ];
+  const isInvalid = !!props.value && !options.find((option) => option.value === props.value);
 
-  return <Select<string> placeholder="Select browser" options={options} dropdownMatchSelectWidth={false} {...props} />;
+  return (
+    <Select<string>
+      placeholder="Select browser"
+      options={options}
+      dropdownMatchSelectWidth={false}
+      {...props}
+      status={isInvalid ? 'warning' : undefined}
+      suffixIcon={isInvalid ? <WarningFilled style={{ color: '#ffd666' }} /> : undefined}
+    />
+  );
 };
 
 export default BrowserNameSelector;

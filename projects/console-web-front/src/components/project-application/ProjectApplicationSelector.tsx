@@ -1,4 +1,4 @@
-import { AppstoreOutlined, LoadingOutlined, WarningOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, LoadingOutlined, WarningFilled } from '@ant-design/icons';
 import { PageBase, ProjectApplicationWithIcon } from '@dogu-private/console';
 import { OrganizationId, ProjectId } from '@dogu-private/types';
 import { Select, SelectProps } from 'antd';
@@ -44,7 +44,7 @@ const ProjectApplicationSelector = ({ selectedApplication, organizationId, proje
       style={{ width: '100%' }}
       showSearch
       status={isInvalid ? 'warning' : undefined}
-      suffixIcon={isInvalid ? <WarningOutlined style={{ color: '#ffd666' }} /> : undefined}
+      suffixIcon={isInvalid ? <WarningFilled style={{ color: '#ffd666' }} /> : undefined}
       onSearch={handleChangeValues}
       onChange={(e) => {
         const selected = data?.items.find((item) => item.version === e);
