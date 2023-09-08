@@ -51,7 +51,7 @@ export class GoDeviceControllerProcess implements Zombieable {
     }
     this.proc = startServer(this.port, this.deviceServerPort, this.logger);
     this.proc.on('close', (code: number, signal: string) => {
-      this.logger.verbose('PionStreamingService.revive exit');
+      this.logger.error('PionStreamingService.revive exit');
       ZombieServiceInstance.notifyDie(this, 'ChildProcess close');
     });
     await Promise.resolve();
