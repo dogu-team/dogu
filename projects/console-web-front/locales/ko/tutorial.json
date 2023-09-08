@@ -76,5 +76,29 @@
   "uploadSampleAppButtonTitle": "예제 앱 업로드하기",
   "uploadSampleAppNotSupportMessage": "해당 플랫폼에서는 예제 앱을 제공하지 않습니다. 대신 앱을 직접 업로드 해주세요.",
 
-  "runTestNotSupportMessage": "해당 플랫폼에서는 예제 테스트 스크립트를 제공하지 않습니다. 직접 구성하여 테스트를 실행해 보세요."
+  "runTestNotSupportMessage": "해당 플랫폼에서는 예제 테스트 스크립트를 제공하지 않습니다. 직접 구성하여 테스트를 실행해 보세요.",
+
+  "routineTutorialTitle": "시작하기 - <icon></icon> <sdk></sdk>",
+
+  "routineTutorialIntroTitle": "인트로",
+  "routineTutorialIntroDescription": "루틴은 리모트 저장소에서 지정된 액션을 통해 테스트를 수행합니다. GUI 에디터 또는 YAML 에디터를 통해 루틴을 만들고 직접 실행해보세요.<br></br>루틴은 여러 디바이스에서 병렬 수행이 가능하고 CI와 연동해서 실행할 수 있는 강력한 테스트 자동화 기능입니다.",
+  "routineTutorialRepositoryConfigurationTitle": "레포지토리 구성하기",
+  "routineTutorialRepositoryConfigurationDescription": "예제 레포지토리를 클론하거나 포크한 후 레포지토리를 생성합니다. <dogu></dogu>는 GitHub, GitLab, Bitbucket 연동을 지원합니다.",
+  "routineTutorialGitIntegrationTitle": "Git 연동하기",
+  "routineTutorialGitIntegrationDescription": "루틴은 리모트 저장소로부터 테스트 스크립트를 가져옵니다. 루틴에서 가져올 레포지토리를 연동합니다.",
+  "routineTutorialUploadSampleAppTitle": "예제 앱 업로드하기",
+  "routineTutorialUploadSampleAppDescription": "루틴에서 테스트할 앱을 버전에 맞게 업로드합니다.",
+  "routineTutorialCreateRoutineTitle": "루틴 생성하기",
+  "routineTutorialCreateRoutineDescription": "에디터를 통해 루틴을 생성합니다.",
+  "routineTutorialRunRoutineTitle": "루틴 실행하기",
+  "routineTutorialRunRoutineDescription": "루틴을 실행하고 결과를 확인합니다.",
+
+  "routineTutorialIntroAnchorTitle": "인트로",
+  "routineTutorialRepositoryConfigurationAnchorTitle": "레포지토리 구성하기",
+  "routineTutorialGitIntegrationAnchorTitle": "Git 연동하기",
+  "routineTutorialUploadSampleAppAnchorTitle": "예제 앱 업로드하기",
+  "routineTutorialCreateRoutineAnchorTitle": "루틴 생성하기",
+  "routineTutorialRunRoutineAnchorTitle": "루틴 실행하기",
+
+  "saveRoutineButtonTitle": "루틴 생성하기"
 }

@@ -69,7 +69,7 @@ function GithubButton({ isConnected, disabled, organizationId, projectId, descri
           description ??
           (disabled ? null : (
             <>
-              Integrate routine with GitHub.{' '}
+              Integrate project with GitHub.{' '}
               <Link href="https://docs.dogutech.io/management/project/git-integration/github" target="_blank">
                 Visit docs
               </Link>{' '}

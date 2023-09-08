@@ -1,5 +1,7 @@
 import { PROJECT_TYPE } from '@dogu-private/types';
 import styled from 'styled-components';
+import Trans from 'next-translate/Trans';
+import useTranslation from 'next-translate/useTranslation';
 
 import useTutorialContext from '../../../hooks/context/useTutorialContext';
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
@@ -20,7 +22,9 @@ import TutorialOptionSelectors from '../TutorialOptionSelectors';
 import DoneStep from './DoneStep';
 import RoutineGitTutorial from './RoutineGitTutorial';
 import TutorialRoutineCreator from './TutorialRoutineCreator';
+import DoguText from '../../common/DoguText';
 
+const INTRODUCTION_ID = 'introduction';
 const CLONE_GIT_ID = 'clone-git';
 const INTEGRATE_WITH_GIT_ID = 'integrate-with-git';
 const UPLOAD_SAMPLE_APP_ID = 'upload-sample-app';
@@ -30,6 +34,7 @@ const DONE_ID = 'done';
 
 const AppiumRoutineTutorial = () => {
   const { project } = useTutorialContext();
+  const { t } = useTranslation('tutorial');
 
   const getProjectTypeDefaultTarget = () => {
     switch (project?.type) {
@@ -110,15 +115,16 @@ jobs:
 
           <GuideAnchor
             items={[
-              { id: CLONE_GIT_ID, title: 'Clone example and create repo' },
+              { id: INTRODUCTION_ID, title: t('routineTutorialIntroAnchorTitle') },
+              { id: CLONE_GIT_ID, title: t('routineTutorialRepositoryConfigurationAnchorTitle') },
               {
                 id: INTEGRATE_WITH_GIT_ID,
-                title: 'Integrate repository with project',
+                title: t('routineTutorialGitIntegrationAnchorTitle'),
               },
-              ...(target === TutorialSupportTarget.APP ? [{ id: UPLOAD_SAMPLE_APP_ID, title: 'Upload sample application' }] : []),
-              { id: CREATE_ROUTINE_ID, title: 'Create a routine' },
-              { id: RUN_ROUTINE_ID, title: 'Run a routine' },
-              { id: DONE_ID, title: 'Done! Next Step 🚀' },
+              ...(target === TutorialSupportTarget.APP ? [{ id: UPLOAD_SAMPLE_APP_ID, title: t('routineTutorialUploadSampleAppAnchorTitle') }] : []),
+              { id: CREATE_ROUTINE_ID, title: t('routineTutorialCreateRoutineAnchorTitle') },
+              { id: RUN_ROUTINE_ID, title: t('routineTutorialRunRoutineAnchorTitle') },
+              { id: DONE_ID, title: t('doneStepTitle') },
             ]}
           />
         </div>
@@ -126,9 +132,28 @@ jobs:
       content={
         <div>
           <GuideStep
+            id={INTRODUCTION_ID}
+            title={t('routineTutorialIntroTitle')}
+            description={
+              <p>
+                <Trans i18nKey="tutorial:routineTutorialIntroDescription" components={{ br: <br /> }} />
+              </p>
+            }
+            content={null}
+          />
+          <GuideStep
             id={CLONE_GIT_ID}
-            title="Clone example repository and create repository"
-            description={<p>Clone or fork example repository and create your own repository. We support GitHub, GitLab, Bitbucket for integration.</p>}
+            title={t('routineTutorialRepositoryConfigurationTitle')}
+            description={
+              <p>
+                <Trans
+                  i18nKey="tutorial:routineTutorialRepositoryConfigurationDescription"
+                  components={{
+                    dogu: <DoguText />,
+                  }}
+                />
+              </p>
+            }
             content={
               <div>
                 <CodeWithCopyButton language="bash" code={`git clone ${ROUTINE_SAMPLE_GIT_URL}`} />
@@ -137,22 +162,22 @@ jobs:
           />
           <GuideStep
             id={INTEGRATE_WITH_GIT_ID}
-            title="Integrate your repository with project"
-            description={<p>Routine will execute test scripts from the remote repository.</p>}
+            title={t('routineTutorialGitIntegrationTitle')}
+            description={<p>{t('routineTutorialGitIntegrationDescription')}</p>}
             content={<RoutineGitTutorial />}
           />
           {target === TutorialSupportTarget.APP && (
             <GuideStep
               id={UPLOAD_SAMPLE_APP_ID}
-              title="Upload sample application"
-              description={<p>Before starting, upload the app that matches the version specified in the script.</p>}
+              title={t('routineTutorialUploadSampleAppTitle')}
+              description={<p>{t('routineTutorialUploadSampleAppDescription')}</p>}
               content={<SampleApplicationUploadStep hasSampleApp={selectedGuide?.hasSampleApp} category="mobile" />}
             />
           )}
           <GuideStep
             id={CREATE_ROUTINE_ID}
-            title="Create a routine"
-            description={<p>Create a routine for your automated tests</p>}
+            title={t('routineTutorialCreateRoutineTitle')}
+            description={<p>{t('routineTutorialCreateRoutineDescription')}</p>}
             content={
               <div style={{ marginTop: '1rem' }}>
                 <TutorialRoutineCreator project={project} sampleYaml={target === TutorialSupportTarget.APP ? APP_ROUTINE_SAMPLE : WEB_ROUTINE_SAMPLE} />
@@ -161,8 +186,8 @@ jobs:
           />
           <GuideStep
             id={RUN_ROUTINE_ID}
-            title="Run a routine"
-            description={<p>Run a routine for your automated tests</p>}
+            title={t('routineTutorialRunRoutineTitle')}
+            description={<p>{t('routineTutorialRunRoutineDescription')}</p>}
             content={
               <TableListView
                 top={

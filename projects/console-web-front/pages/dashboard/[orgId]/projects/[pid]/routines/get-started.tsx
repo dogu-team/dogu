@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import useSWR from 'swr';
+import Trans from 'next-translate/Trans';
+import useTranslation from 'next-translate/useTranslation';
 
 import { getOrganizationInServerSide } from 'src/api/organization';
 import { getProjectInServerSide } from 'src/api/project';
@@ -35,6 +37,7 @@ const ProjectRoutineGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ pro
     revalidateOnFocus: false,
     fallbackData: project,
   });
+  const { t } = useTranslation('tutorial');
   const sdk = router.query.sdk as TutorialSupportSdk | undefined;
   const isFrameworkSelected = !!sdk && Object.keys(routineTutorialData).includes(router.query.sdk as string) && !!router.query.framework;
 
@@ -52,20 +55,23 @@ const ProjectRoutineGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ pro
               <div style={{ marginLeft: '-.5rem' }}>
                 <Link href={{ query: { orgId: organization.organizationId, pid: project.projectId } }} shallow>
                   <Button icon={<ArrowLeftOutlined />} type="link">
-                    Back
+                    {t('backLinkTitle')}
                   </Button>
                 </Link>
               </div>
               <StyledTitle>
-                Quick start -&nbsp;
-                <SdkIcon sdk={sdk} size={28} />
-                &nbsp;
-                {tutorialSupportSdkText[sdk]}
+                <Trans
+                  i18nKey="tutorial:routineTutorialTitle"
+                  components={{
+                    icon: <SdkIcon sdk={sdk} size={28} />,
+                    sdk: <>{tutorialSupportSdkText[sdk]}</>,
+                  }}
+                />
               </StyledTitle>
             </div>
             <div>
               <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/routines`}>
-                <Button type="link">Close tutorial</Button>
+                <Button type="link">{t('closeTutorialLinkTitle')}</Button>
               </Link>
             </div>
           </HeaderContent>
@@ -77,7 +83,7 @@ const ProjectRoutineGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ pro
           <LinkBox>
             <div />
             <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/routines`}>
-              <Button type="link">Close tutorial</Button>
+              <Button type="link">{t('closeTutorialLinkTitle')}</Button>
             </Link>
           </LinkBox>
         </Box>
@@ -86,7 +92,7 @@ const ProjectRoutineGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ pro
           <FrameworkSelectContainer
             skipButton={
               <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/routines`} access-id="skip-project-tutorial">
-                <Button type="link">Skip tutorial</Button>
+                <Button type="link">{t('skipTutorialLinkTitle')}</Button>
               </Link>
             }
           />

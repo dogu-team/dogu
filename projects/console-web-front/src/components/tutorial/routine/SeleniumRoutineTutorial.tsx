@@ -1,4 +1,6 @@
 import styled from 'styled-components';
+import Trans from 'next-translate/Trans';
+import useTranslation from 'next-translate/useTranslation';
 
 import useTutorialContext from '../../../hooks/context/useTutorialContext';
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
@@ -18,7 +20,9 @@ import TutorialOptionSelectors from '../TutorialOptionSelectors';
 import DoneStep from './DoneStep';
 import RoutineGitTutorial from './RoutineGitTutorial';
 import TutorialRoutineCreator from './TutorialRoutineCreator';
+import DoguText from '../../common/DoguText';
 
+const INTRODUCTION_ID = 'introduction';
 const CLONE_GIT_ID = 'clone-git';
 const INTEGRATE_WITH_GIT_ID = 'integrate-with-git';
 const CREATE_ROUTINE_ID = 'create-routine';
@@ -32,6 +36,8 @@ const SeleniumRoutineTutorial = () => {
     defaultPlatform: tutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.platform,
     defaultTarget: tutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.target,
   });
+  const { t } = useTranslation('tutorial');
+
   const selectedGuide = seleniumRoutineTutorialData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
   const frameworkLanguage = Object.keys(tutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang).find((language) =>
     tutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
@@ -71,14 +77,15 @@ jobs:
 
           <GuideAnchor
             items={[
-              { id: CLONE_GIT_ID, title: 'Clone example and create repo' },
+              { id: INTRODUCTION_ID, title: t('routineTutorialIntroAnchorTitle') },
+              { id: CLONE_GIT_ID, title: t('routineTutorialRepositoryConfigurationAnchorTitle') },
               {
                 id: INTEGRATE_WITH_GIT_ID,
-                title: 'Integrate repository with project',
+                title: t('routineTutorialGitIntegrationAnchorTitle'),
               },
-              { id: CREATE_ROUTINE_ID, title: 'Create a routine' },
-              { id: RUN_ROUTINE_ID, title: 'Run a routine' },
-              { id: DONE_ID, title: 'Done! Next Step 🚀' },
+              { id: CREATE_ROUTINE_ID, title: t('routineTutorialCreateRoutineAnchorTitle') },
+              { id: RUN_ROUTINE_ID, title: t('routineTutorialRunRoutineAnchorTitle') },
+              { id: DONE_ID, title: t('doneStepTitle') },
             ]}
           />
         </div>
@@ -86,9 +93,28 @@ jobs:
       content={
         <div>
           <GuideStep
+            id={INTRODUCTION_ID}
+            title={t('routineTutorialIntroTitle')}
+            description={
+              <p>
+                <Trans i18nKey="tutorial:routineTutorialIntroDescription" components={{ br: <br /> }} />
+              </p>
+            }
+            content={null}
+          />
+          <GuideStep
             id={CLONE_GIT_ID}
-            title="Clone example repository and create repository"
-            description={<p>Clone or fork example repository and create your own repository. We support GitHub, GitLab, Bitbucket for integration.</p>}
+            title={t('routineTutorialRepositoryConfigurationTitle')}
+            description={
+              <p>
+                <Trans
+                  i18nKey="tutorial:routineTutorialRepositoryConfigurationDescription"
+                  components={{
+                    dogu: <DoguText />,
+                  }}
+                />
+              </p>
+            }
             content={
               <div>
                 <CodeWithCopyButton language="bash" code={`git clone ${ROUTINE_SAMPLE_GIT_URL}`} />
@@ -97,14 +123,14 @@ jobs:
           />
           <GuideStep
             id={INTEGRATE_WITH_GIT_ID}
-            title="Integrate your repository with project"
-            description={<p>Routine will execute test scripts from the remote repository.</p>}
+            title={t('routineTutorialGitIntegrationTitle')}
+            description={<p>{t('routineTutorialGitIntegrationDescription')}</p>}
             content={<RoutineGitTutorial />}
           />
           <GuideStep
             id={CREATE_ROUTINE_ID}
-            title="Create a routine"
-            description={<p>Create a routine for your automated tests</p>}
+            title={t('routineTutorialCreateRoutineTitle')}
+            description={<p>{t('routineTutorialCreateRoutineDescription')}</p>}
             content={
               <div style={{ marginTop: '1rem' }}>
                 <TutorialRoutineCreator project={project} sampleYaml={WEB_ROUTINE_SAMPLE} />
@@ -113,8 +139,8 @@ jobs:
           />
           <GuideStep
             id={RUN_ROUTINE_ID}
-            title="Run a routine"
-            description={<p>Run a routine for your automated tests</p>}
+            title={t('routineTutorialRunRoutineTitle')}
+            description={<p>{t('routineTutorialRunRoutineDescription')}</p>}
             content={
               <TableListView
                 top={

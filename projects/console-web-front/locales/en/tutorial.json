@@ -75,5 +75,29 @@
   "uploadSampleAppButtonTitle": "Upload sample app",
   "uploadSampleAppNotSupportMessage": "For this platform, we don't provide sample app. Please upload your app manually.",
 
-  "runTestNotSupportMessage": "We don't provide sample test script for this platform. Please run test with your own configuration."
+  "runTestNotSupportMessage": "We don't provide sample test script for this platform. Please run test with your own configuration.",
+
+  "routineTutorialTitle": "Quick start - <icon></icon> <sdk></sdk>",
+
+  "routineTutorialIntroTitle": "Introduction",
+  "routineTutorialIntroDescription": "Routines perform tests through specified actions in a remote repository. Create and run routines using a GUI editor or a YAML editor.<br></br>Routines is the powerful test automation feature that supports parallel execution on multiple devices and can be integrated with CI for execution.",
+  "routineTutorialRepositoryConfigurationTitle": "Configure your own repository",
+  "routineTutorialRepositoryConfigurationDescription": "Clone or fork example repository and create your own repository. <dogu></dogu> support GitHub, GitLab, Bitbucket for integration.",
+  "routineTutorialGitIntegrationTitle": "Integrate repository with project",
+  "routineTutorialGitIntegrationDescription": "Routine will execute test scripts from the remote repository. Integrate repostiory with project to use routines.",
+  "routineTutorialUploadSampleAppTitle": "Upload sample application",
+  "routineTutorialUploadSampleAppDescription": "Before starting, upload the app that matches the version specified in the routine.",
+  "routineTutorialCreateRoutineTitle": "Create a routine",
+  "routineTutorialCreateRoutineDescription": "Create a routine with editor.",
+  "routineTutorialRunRoutineTitle": "Run a routine",
+  "routineTutorialRunRoutineDescription": "Run a routine for your automated testing.",
+
+  "routineTutorialIntroAnchorTitle": "Introduction",
+  "routineTutorialRepositoryConfigurationAnchorTitle": "Configure a repository",
+  "routineTutorialGitIntegrationAnchorTitle": "Integrate repository with project",
+  "routineTutorialUploadSampleAppAnchorTitle": "Upload sample application",
+  "routineTutorialCreateRoutineAnchorTitle": "Create a routine",
+  "routineTutorialRunRoutineAnchorTitle": "Run a routine",
+
+  "saveRoutineButtonTitle": "Create routine"
 }

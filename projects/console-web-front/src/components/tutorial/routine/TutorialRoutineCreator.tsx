@@ -71,7 +71,7 @@ const TutorialRoutineCreator = ({ project, sampleYaml }: Props) => {
 
       <MenuBox>
         <Button type="primary" onClick={handleSave}>
-          Save routine
+          {t('tutorial:saveRoutineButtonTitle')}
         </Button>
       </MenuBox>
     </ProjectContext.Provider>

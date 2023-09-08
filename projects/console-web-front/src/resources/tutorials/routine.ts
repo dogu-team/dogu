@@ -42,7 +42,7 @@ export const appiumRoutineTutorialData: RoutineTutorial = {
       cwd: 'appium/python/pytest',
       environment: 'python',
       command: `pip install -r requirements.txt
-            pytest app/test_android.py`,
+            pytest app/test_android.py --capture=no -x`,
     },
     {
       framework: TutorialSupportFramework.PYTEST,
@@ -53,7 +53,7 @@ export const appiumRoutineTutorialData: RoutineTutorial = {
       cwd: 'appium/python/pytest',
       environment: 'python',
       command: `pip install -r requirements.txt
-            pytest app/test_android.py`,
+            pytest app/test_android.py --capture=no -x`,
     },
   ],
 };
@@ -131,7 +131,7 @@ export const seleniumRoutineTutorialData: RoutineTutorial = {
       cwd: 'selenium/python/pytest',
       environment: 'python',
       command: `pip install -r requirements.txt
-            pytest web/test_web.py`,
+            pytest web/test_web.py --capture=no -x`,
     },
     {
       framework: TutorialSupportFramework.PYTEST,
@@ -141,7 +141,7 @@ export const seleniumRoutineTutorialData: RoutineTutorial = {
       cwd: 'selenium/python/pytest',
       environment: 'python',
       command: `pip install -r requirements.txt
-            pytest web/test_web.py`,
+            pytest web/test_web.py --capture=no -x`,
     },
   ],
 };
