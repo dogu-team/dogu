@@ -26,6 +26,7 @@ import { Edgedriver, EdgedriverInstallablePlatform } from './edgedriver';
 import { Firefox, FirefoxInstallablePlatform } from './firefox';
 import { firefoxVersionUtils } from './firefox-version-utils';
 import { Geckodriver } from './geckodriver';
+import { Safari, safariVersionUtils } from './safari';
 import { Safaridriver } from './safaridriver';
 
 interface FindBrowserInstallationOptions {
@@ -59,6 +60,7 @@ export class BrowserManager {
   private readonly geckodriver = new Geckodriver();
   private readonly edge = new Edge();
   private readonly edgedriver = new Edgedriver();
+  private readonly safari = new Safari();
   private readonly safaridriver = new Safaridriver();
   private readonly adb = Adb;
 
@@ -101,9 +103,26 @@ export class BrowserManager {
           }
         }
         break;
-      case 'iexplorer':
-      case 'safari':
+      case 'safari': {
+        if (!browserPlatform) {
+          throw new Error('browserPlatform is required');
+        }
+
+        switch (browserPlatform) {
+          case 'macos':
+          case 'windows': {
+            this.logger.warn(`Safari is only support default version`);
+            return this.safari.getVersion();
+          }
+          case 'android':
+          case 'ios':
+            throw new Error('Not implemented');
+          default:
+            assertUnreachable(browserPlatform);
+        }
+      }
       case 'safaritp':
+      case 'iexplorer':
       case 'samsung-internet':
         throw new Error('Not implemented');
       default:
@@ -282,6 +301,19 @@ export class BrowserManager {
               }
               break;
             case 'safari':
+              {
+                const browserVersion = await this.safari.getVersion();
+                const browserMajorVersion = safariVersionUtils.parse(browserVersion).major;
+                const browserPath = this.safari.getExecutablePath();
+                return {
+                  browserName,
+                  browserPlatform,
+                  browserVersion,
+                  browserMajorVersion,
+                  browserPath,
+                };
+              }
+              break;
             case 'safaritp':
             case 'iexplorer':
             case 'samsung-internet':
@@ -535,7 +567,22 @@ export class BrowserManager {
               return await this.findBrowserInstallationsForFirefoxDesktop({ browserName, browserPlatform, deviceSerial });
             case 'edge':
               return await this.findBrowserInstallationsForEdgeDesktop({ browserName, browserPlatform, deviceSerial });
-            case 'safari':
+            case 'safari': {
+              const browserVersion = await this.safari.getVersion();
+              const browserMajorVersion = safariVersionUtils.parse(browserVersion).major;
+              const browserPath = this.safari.getExecutablePath();
+              return {
+                browserInstallations: [
+                  {
+                    browserName,
+                    browserPlatform,
+                    browserVersion,
+                    browserMajorVersion,
+                    browserPath,
+                  },
+                ],
+              };
+            }
             case 'safaritp':
             case 'iexplorer':
             case 'samsung-internet':
