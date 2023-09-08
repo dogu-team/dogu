@@ -1,7 +1,5 @@
 import { DeviceConnectionState, DeviceId, DeviceTagId, HostId, OrganizationId, ProjectId, StreamingOffer } from '@dogu-private/types';
-import { DeviceStreamingAnswerDto, DeviceStreamingDtoBase } from '@dogu-tech/device-client-common';
-import { Type } from 'class-transformer';
-import { Equals, IsArray, IsObject, ValidateNested } from 'class-validator';
+import { IsArray, IsObject } from 'class-validator';
 import { UserBase } from '../../base/user';
 import { PageDtoBase } from '../pagination/page.dto';
 
@@ -39,28 +37,10 @@ export interface EnableDeviceDtoBase {
   projectId?: ProjectId;
 }
 
-export class DeviceStreamingSessionInfoDto extends DeviceStreamingDtoBase {
-  @Equals('USER_INFO')
-  declare type: 'USER_INFO';
-
+export class DeviceStreamingSessionInfoDto {
   @IsObject({ each: true })
   @IsArray()
-  value!: UserBase[];
-}
-
-export class DeviceStreamingDto {
-  @ValidateNested()
-  @Type(() => DeviceStreamingDtoBase, {
-    discriminator: {
-      property: 'type',
-      subTypes: [
-        { value: DeviceStreamingSessionInfoDto, name: 'USER_INFO' },
-        { value: DeviceStreamingAnswerDto, name: 'ANSWER' },
-      ],
-    },
-    keepDiscriminatorProperty: true,
-  })
-  streamingData!: DeviceStreamingSessionInfoDto | DeviceStreamingAnswerDto;
+  users!: UserBase[];
 }
 
 export abstract class IsGlobalEnableDeviceDto {

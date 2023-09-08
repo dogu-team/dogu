@@ -13,7 +13,7 @@ import {
   StreamingOption,
 } from '@dogu-tech/types';
 import { Type } from 'class-transformer';
-import { Equals, IsEnum, IsIn, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export class ScreenCaptureOptionDto implements ScreenCaptureOption {
   @IsNumber()
@@ -155,25 +155,10 @@ export class ErrorResultValue extends Caseable<'errorResult'> {
 export const DeviceStreamingTypes = ['ANSWER', 'USER_INFO'] as const;
 export type DeviceStreamingType = (typeof DeviceStreamingTypes)[number];
 
-export class DeviceStreamingDtoBase {
-  @IsIn(DeviceStreamingTypes)
-  type!: DeviceStreamingType;
-}
-
 export const StreamingAnswerValue = [PeerDescriptionValue, IceCandidateValue, ErrorResultValue] as const;
 export type StreamingAnswerValue = Instance<(typeof StreamingAnswerValue)[number]>;
 
 export class StreamingAnswerDto {
-  @ValidateNested()
-  @TransformByCase(StreamingAnswerValue)
-  @IsNotEmpty()
-  value!: StreamingAnswerValue;
-}
-
-export class DeviceStreamingAnswerDto implements StreamingAnswerDto, DeviceStreamingDtoBase {
-  @Equals('ANSWER')
-  declare type: 'ANSWER';
-
   @ValidateNested()
   @TransformByCase(StreamingAnswerValue)
   @IsNotEmpty()
