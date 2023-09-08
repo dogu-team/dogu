@@ -227,7 +227,7 @@ export class Dost {
   checkLog(): void {
     test('Dogu-Agent check critical error log', async () => {
       const dostLogsPath = path.resolve(pathMap.root, 'nm-space/projects/dost/generated/logs');
-      const creticalKeyword = ['unhandledRejection', 'uncaughtException', 'panic:'];
+      const criticalKeyword = ['unhandledRejection', 'uncaughtException', 'panic:'];
       const allLogFiles = await findEndswith(dostLogsPath, '.log');
       const logDetected: {
         file: string;
@@ -238,7 +238,7 @@ export class Dost {
         const contents = (await fs.promises.readFile(file, { encoding: 'utf-8' })).split('\n');
         for (let i = 0; i < contents.length; i++) {
           const content = contents[i];
-          for (const keyword of creticalKeyword) {
+          for (const keyword of criticalKeyword) {
             if (content.includes(keyword)) {
               const min = Math.max(0, i - 5);
               const max = Math.min(contents.length, i + 5);
