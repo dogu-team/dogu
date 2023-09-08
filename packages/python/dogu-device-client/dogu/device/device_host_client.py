@@ -34,6 +34,7 @@ class EnsureBrowserAndDriverOptions:
     deviceSerial: Optional[str]
 
 
+# pylint: disable=too-many-instance-attributes
 @dataclass(frozen=True)
 class EnsureBrowserAndDriverResult:
     # pylint: disable=invalid-name
@@ -87,8 +88,12 @@ class DeviceHostClient:
         res_obj = device_res.data(GetFreePortResponse)
         return res_obj.port
 
-    def ensure_browser_and_driver(self, options: EnsureBrowserAndDriverOptions) -> EnsureBrowserAndDriverResult:
-        full_path = f"http://{self._host_and_port}/device-host/ensure-browser-and-driver"
+    def ensure_browser_and_driver(
+        self, options: EnsureBrowserAndDriverOptions
+    ) -> EnsureBrowserAndDriverResult:
+        full_path = (
+            f"http://{self._host_and_port}/device-host/ensure-browser-and-driver"
+        )
         res = requests.post(full_path, json=asdict(options), timeout=self.timeout)
         res.raise_for_status()
         device_res = DeviceHttpResponse(res)
