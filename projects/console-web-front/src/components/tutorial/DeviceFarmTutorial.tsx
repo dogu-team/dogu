@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import useTranslation from 'next-translate/useTranslation';
 
 import { getHostByToken, updateUseHostAsDevice } from '../../api/host';
 import useModal from '../../hooks/useModal';
@@ -23,6 +24,8 @@ import GuideLayout from './GuideLayout';
 import GuideStep from './GuideStep';
 import TutorialDeviceList from './TutorialDeviceLIst';
 import CreateProjectModal from '../projects/CreateProjectModal';
+import Trans from 'next-translate/Trans';
+import DoguText from '../common/DoguText';
 
 const INTRODUCTION_ID = 'introduction';
 const CREATE_PROJECT_ID = 'create-project';
@@ -45,6 +48,7 @@ const DeviceFarmTutorial = () => {
   const [loading, setLoading] = useState(false);
   const [host, setHost] = useState<HostBase>();
   const { project, updateProject, organization } = useTutorialContext();
+  const { t } = useTranslation('tutorial');
 
   useEffect(() => {
     if (organization?.organizationId) {
@@ -131,13 +135,13 @@ const DeviceFarmTutorial = () => {
       sidebar={
         <GuideAnchor
           items={[
-            { id: INTRODUCTION_ID, title: 'Introduction' },
-            { id: CREATE_PROJECT_ID, title: 'Create project' },
-            { id: INSTALL_DOGU_AGENT_ID, title: 'Install Dogu Agent' },
-            { id: CREATE_HOST_ID, title: 'Create host' },
-            { id: USE_HOST_AS_DEVICE_ID, title: 'Use host as device' },
-            { id: CONNECT_MOBILE_DEVICE_ID, title: 'Connect mobile device' },
-            { id: USE_DEVICE_ID, title: 'Use device' },
+            { id: INTRODUCTION_ID, title: t('deviceFarmTutorialIntroAnchorTitle') },
+            { id: CREATE_PROJECT_ID, title: t('deviceFarmTutorialCreateProjectAnchorTitle') },
+            { id: INSTALL_DOGU_AGENT_ID, title: t('deviceFarmTutorialInstallDoguAgentAnchorTitle') },
+            { id: CREATE_HOST_ID, title: t('deviceFarmTutorialCreateHostAnchorTitle') },
+            { id: USE_HOST_AS_DEVICE_ID, title: t('deviceFarmTutorialUseHostDeviceAnchorTitle') },
+            { id: CONNECT_MOBILE_DEVICE_ID, title: t('deviceFarmTutorialConnectDeviceAnchorTitle') },
+            { id: USE_DEVICE_ID, title: t('deviceFarmTutorialUseDeviceAnchorTitle') },
           ]}
         />
       }
@@ -145,22 +149,22 @@ const DeviceFarmTutorial = () => {
         <div>
           <GuideStep
             id={INTRODUCTION_ID}
-            title="Introduction"
+            title={t('deviceFarmTutorialIntroTitle')}
             content={
               <div>
-                <p>Dogu provides the Device Farm feature, allowing you to manage devices from various platforms such as Windows, Mac, Android, and iOS in one place.</p>
+                <p>
+                  <Trans i18nKey="tutorial:deviceFarmTutorialIntroDescription" components={{ dogu: <DoguText /> }} />
+                </p>
 
                 <div style={{ marginTop: '.5rem' }}>
                   <p>
-                    For more information about the Device Farm, please refer to{' '}
-                    <Link href="https://docs.dogutech.io/device-farm/" target="_blank">
-                      Device Farm
-                    </Link>{' '}
-                    and{' '}
-                    <Link href="https://docs.dogutech.io/get-started/tutorials/device-farm" target="_blank">
-                      Device Farm Tutorial
-                    </Link>{' '}
-                    document pages.
+                    <Trans
+                      i18nKey="tutorial:deviceFarmTutorialIntroDetailDescription"
+                      components={{
+                        dfLink: <Link href="https://docs.dogutech.io/device-farm/" target="_blank" />,
+                        dftLink: <Link href="https://docs.dogutech.io/get-started/tutorials/device-farm" target="_blank" />,
+                      }}
+                    />
                   </p>
                 </div>
               </div>
@@ -168,11 +172,12 @@ const DeviceFarmTutorial = () => {
           />
           <GuideStep
             id={CREATE_PROJECT_ID}
-            title="Create a project"
+            title={t('deviceFarmTutorialCreateProjectTitle')}
+            description={t('deviceFarmTutorialCreateProjectDescription')}
             content={
               <div>
                 {project ? (
-                  `Created project: ${project.name}`
+                  t('deviceFarmTutorialCreateProjectDoneDescription', { name: project.name })
                 ) : (
                   <div>
                     <Button
@@ -181,13 +186,14 @@ const DeviceFarmTutorial = () => {
                         openProjectModal();
                       }}
                     >
-                      Create a project
+                      {t('createProjectButtonTitle')}
                     </Button>
 
                     <CreateProjectModal
                       isOpen={isProjectModalOpen}
                       close={closeProjectModal}
                       onCreate={(result) => {
+                        sessionStorage.setItem(TUTORIAL_PROJECT_SESSION_KEY, JSON.stringify(result));
                         updateProject(result);
                       }}
                     />
@@ -198,25 +204,25 @@ const DeviceFarmTutorial = () => {
           />
           <GuideStep
             id={INSTALL_DOGU_AGENT_ID}
-            title="Install Dogu Agent on the host(macOS, Windows)"
-            description="Dogu Agent is a software that is installed on the Windows, macOS to help manage devices from the Dogu."
+            title={t('deviceFarmTutorialInstallDoguAgentTitle')}
+            description={t('deviceFarmTutorialInstallDoguAgentDescription')}
             content={
               <div>
                 <div>
                   <Link href={doguAgentDownloadLink} target="_blank">
-                    <Button type="primary">Download</Button>
+                    <Button type="primary">{t('downloadDoguAgentButtonTitle')}</Button>
                   </Link>
                 </div>
 
                 <div style={{ marginTop: '.5rem' }}>
-                  <p>To establish a connection, you will need the host token. Let&apos;s move to the next step for it!</p>
+                  <p>{t('deviceFarmTutorialInstallDoguAgentTailDescription')}</p>
                 </div>
 
                 <div style={{ marginTop: '1rem' }}>
                   <Alert
                     type="info"
                     showIcon
-                    message="For more information, pleae visit Documentation - Device Farm"
+                    message={t('deviceFarmTutorialInstallDoguAgentInfoMessage')}
                     action={
                       <Link href="https://docs.dogutech.io/get-started/tutorials/device-farm/host" target="_blank">
                         <Button type="link">Visit Docs</Button>
@@ -229,15 +235,15 @@ const DeviceFarmTutorial = () => {
           />
           <GuideStep
             id={CREATE_HOST_ID}
-            title="Create a host"
-            description="Host is a computer that is installed Dogu Agent. You can connect devices to the host and use them or use the host as a device."
+            title={t('deviceFarmTutorialCreateHostTitle')}
+            description={t('deviceFarmTutorialCreateHostDescription')}
             content={
               <div>
                 {token ? (
                   <HostTokenWrapper>
-                    <p>Your host token is...</p>
+                    <p>{t('deviceFarmTutorialCreateHostDoneTokenTitle')}</p>
                     <TokenCopyInput value={token} />
-                    <p>Copy and paste it to Dogu Agent, and establish connection.</p>
+                    <p>{t('deviceFarmTutorialCreateHostDoneCopyMessage')}</p>
                   </HostTokenWrapper>
                 ) : (
                   <Button
@@ -250,7 +256,7 @@ const DeviceFarmTutorial = () => {
                       }
                     }}
                   >
-                    Create a host
+                    {t('createHostButtonTitle')}
                   </Button>
                 )}
                 <CreateHostModal isOpen={isHostModalOpen} close={closeHostModal} />
@@ -260,12 +266,12 @@ const DeviceFarmTutorial = () => {
 
           <GuideStep
             id={USE_HOST_AS_DEVICE_ID}
-            title="Use host as a device (Optional)"
-            description={'If you like to use host as a device, you can use the host as a device after connection.'}
+            title={t('deviceFarmTutorialUseHostDeviceTitle')}
+            description={t('deviceFarmTutorialUseHostDeviceDescription')}
             content={
               <div>
                 <Button onClick={handleUseHostAsDevice} loading={loading} type="primary">
-                  Use as a device
+                  {t('useHostAsDeviceButtonTitle')}
                 </Button>
               </div>
             }
@@ -273,39 +279,34 @@ const DeviceFarmTutorial = () => {
 
           <GuideStep
             id={CONNECT_MOBILE_DEVICE_ID}
-            title="Connect mobile devices (Optional)"
-            description="If you like to use mobile devices, connect Android or iOS devices to the host."
-            content={
-              <div>
-                <p>
-                  Before connecting, Please follow{' '}
-                  <Link href="https://docs.dogutech.io/device-farm/device/settings" target="_blank">
-                    Device Configuration
-                  </Link>{' '}
-                  document page to connect mobile devices.
-                </p>
-              </div>
+            title={t('deviceFarmTutorialConnectDeviceTitle')}
+            description={
+              <Trans
+                i18nKey="tutorial:deviceFarmTutorialConnectDeviceDescription"
+                components={{ link: <Link href="https://docs.dogutech.io/device-farm/device/settings" target="_blank" />, br: <br /> }}
+              />
             }
+            content={null}
           />
 
           <GuideStep
             id={USE_DEVICE_ID}
-            title="Use devices"
-            description={'After using host as a device or connecting device to the host, the device will be marked as standby device. You can use the device by selecting it.'}
+            title={t('deviceFarmTutorialUseDeviceTitle')}
+            description={t('deviceFarmTutorialUseDeviceDescription')}
             content={
               <div>
-                {!!organization && !!host ? (
+                {!!organization && !!project && !!host ? (
                   <>
                     <FlexEnd>
                       <RefreshButton />
                     </FlexEnd>
 
                     <MarginWrapper>
-                      <TutorialDeviceList organizationId={organization?.organizationId} hostId={host.hostId} />
+                      <TutorialDeviceList organizationId={organization.organizationId} projectId={project.projectId} hostId={host.hostId} />
                     </MarginWrapper>
                   </>
                 ) : (
-                  <Alert type="error" message={'For using device, create host and connect with Dogu Agent first'} showIcon />
+                  <Alert type="error" message={t('deviceFarmTutorialUseDeviceAlertMessage')} showIcon />
                 )}
 
                 <MarginWrapper>

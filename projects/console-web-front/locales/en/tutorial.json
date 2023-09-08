@@ -1,0 +1,45 @@
+{
+  "skipTutorialLinkTitle": "Skip tutorial",
+  "closeTutorialLinkTitle": "Close tutorial",
+
+  "needHelpMessage": "Need help? Please talk to us to help.",
+
+  "deviceFarmTutorialTitle": "Quick start - <icon></icon> Device Farm",
+
+  "deviceFarmTutorialIntroTitle": "Introduction",
+  "deviceFarmTutorialIntroDescription": "<dogu></dogu> provides the Device Farm feature, allowing you to manage devices from various platforms such as Windows, Mac, Android, and iOS in one place.",
+  "deviceFarmTutorialIntroDetailDescription": "For more information about the Device Farm, please refer to <dfLink>Device Farm</dfLink> and <dftLink>Device Farm Tutorial</dftLink> guides.",
+  "deviceFarmTutorialCreateProjectTitle": "Create a project",
+  "deviceFarmTutorialCreateProjectDescription": "Create a project that matches the type of product you want to test. You can add devices to the created project and perform tests on them.",
+  "deviceFarmTutorialCreateProjectDoneDescription": "Created project: {{name}}",
+  "deviceFarmTutorialInstallDoguAgentTitle": "Install Dogu Agent on the host(macOS, Windows)",
+  "deviceFarmTutorialInstallDoguAgentDescription": "The Dogu Agent runs on macOS and Windows PC and manages devices connected to Device Farm.",
+  "deviceFarmTutorialInstallDoguAgentTailDescription": "To establish a connection, you will need the host token. Let's move to the next step for it!",
+  "deviceFarmTutorialInstallDoguAgentInfoMessage": "For more information, pleae refer to our documentation - Dogu Agent.",
+  "deviceFarmTutorialCreateHostTitle": "Create a host",
+  "deviceFarmTutorialCreateHostDescription": "A host refers to a PC with the Dogu Agent installed. Creating a host allows you to use devices connected to the host in Device Farm.",
+  "deviceFarmTutorialCreateHostDoneTokenTitle": "Your host token",
+  "deviceFarmTutorialCreateHostDoneCopyMessage": "Copy and paste it to Dogu Agent, and establish connection.",
+  "deviceFarmTutorialUseHostDeviceTitle": "Use host as a device (Optional)",
+  "deviceFarmTutorialUseHostDeviceDescription": "You can also use the host as a device. You can perform tests that are only possible on the host, such as desktop web browser testing.",
+  "deviceFarmTutorialConnectDeviceTitle": "Connect mobile devices (Optional)",
+  "deviceFarmTutorialConnectDeviceDescription": "To test mobile apps, browsers, and games, you need to connect mobile devices. You can connect devices via USB.<br></br>Before connecting, please follow the <link>Device Configuration</link> guide to complete the device setup.",
+  "deviceFarmTutorialUseDeviceTitle": "Use devices",
+  "deviceFarmTutorialUseDeviceDescription": "After using the host as a device or connecting a mobile device, it will be labeled as \"Standby devices.\" From there, you can select the device you want to use for testing and change it to \"In-use devices\" to perform tests.",
+  "deviceFarmTutorialUseDeviceAlertMessage": "For using device, create host and connect with Dogu Agent first",
+  "deviceFarmTutorialUseDeviceTableStandbyTitle": "Standby dvices",
+  "deviceFarmTutorialUseDeviceTableInUseTitle": "In-use devices",
+
+  "deviceFarmTutorialIntroAnchorTitle": "Introduction",
+  "deviceFarmTutorialCreateProjectAnchorTitle": "Create project",
+  "deviceFarmTutorialInstallDoguAgentAnchorTitle": "Install Dogu Agent",
+  "deviceFarmTutorialCreateHostAnchorTitle": "Create host",
+  "deviceFarmTutorialUseHostDeviceAnchorTitle": "Use host as device",
+  "deviceFarmTutorialConnectDeviceAnchorTitle": "Connect mobile device",
+  "deviceFarmTutorialUseDeviceAnchorTitle": "Use devices",
+
+  "createProjectButtonTitle": "New project",
+  "downloadDoguAgentButtonTitle": "Download",
+  "createHostButtonTitle": "New host",
+  "useHostAsDeviceButtonTitle": "Use as device"
+}

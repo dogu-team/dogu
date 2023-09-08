@@ -1,8 +1,9 @@
 import { DeviceBase } from '@dogu-private/console';
-import { HostId, OrganizationId } from '@dogu-private/types';
+import { HostId, OrganizationId, ProjectId } from '@dogu-private/types';
 import { Transfer } from 'antd';
 import { TransferDirection, TransferItem } from 'antd/es/transfer';
 import { isAxiosError } from 'axios';
+import useTranslation from 'next-translate/useTranslation';
 import { useState } from 'react';
 import styled from 'styled-components';
 import { enableDevice } from '../../api/device';
@@ -17,10 +18,11 @@ import PlatformIcon from '../device/PlatformIcon';
 
 interface Props {
   organizationId: OrganizationId;
+  projectId: ProjectId;
   hostId: HostId;
 }
 
-const TutorialDeviceList = ({ organizationId, hostId }: Props) => {
+const TutorialDeviceList = ({ organizationId, projectId, hostId }: Props) => {
   const {
     data: stanbyDevices,
     error: standbyDeviceError,
@@ -56,6 +58,7 @@ const TutorialDeviceList = ({ organizationId, hostId }: Props) => {
     },
   );
   const [loading, setLoading] = useState(false);
+  const { t } = useTranslation('tutorial');
 
   useRefresh(['onRefreshClicked'], async () => {
     mutateStandbyDevices();
@@ -69,7 +72,7 @@ const TutorialDeviceList = ({ organizationId, hostId }: Props) => {
 
     setLoading(true);
     try {
-      await Promise.all(targetKeys.map((deviceId) => enableDevice(organizationId, deviceId, { isGlobal: true })));
+      await Promise.all(targetKeys.map((deviceId) => enableDevice(organizationId, deviceId, { projectId, isGlobal: false })));
       mutateStandbyDevices();
       mutateUsingDevices();
       sendSuccessNotification('Successfully use devices!');
@@ -103,7 +106,10 @@ const TutorialDeviceList = ({ organizationId, hostId }: Props) => {
   return (
     <StyledTransfer
       dataSource={data}
-      titles={[<StyledTitle key="source">Standby devices</StyledTitle>, <StyledTitle key="target">Using devices</StyledTitle>]}
+      titles={[
+        <StyledTitle key="source">{t('deviceFarmTutorialUseDeviceTableStandbyTitle')}</StyledTitle>,
+        <StyledTitle key="target">{t('deviceFarmTutorialUseDeviceTableInUseTitle')}</StyledTitle>,
+      ]}
       oneWay
       render={(item) => {
         const device = devices?.find((d) => d.deviceId === item.key);

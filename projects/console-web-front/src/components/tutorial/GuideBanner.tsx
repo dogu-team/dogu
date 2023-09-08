@@ -1,5 +1,6 @@
 import { BookOutlined, GithubFilled } from '@ant-design/icons';
 import { Button } from 'antd';
+import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
 import { SiSlack } from 'react-icons/si';
 import styled from 'styled-components';
@@ -11,9 +12,11 @@ interface Props {
 }
 
 const GuideBanner = ({ docsUrl }: Props) => {
+  const { t } = useTranslation('tutorial');
+
   return (
     <Box>
-      <p style={{ marginRight: '1rem' }}>Need help? Please talk to us to help.</p>
+      <p style={{ marginRight: '1rem' }}>{t('needHelpMessage')}</p>
       <ButtonWrapper>
         <Link href="https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw" target="_blank" style={{ textDecoration: 'none' }}>
           <StyledButton icon={<SiSlack />}>&nbsp;&nbsp;Slack Community</StyledButton>

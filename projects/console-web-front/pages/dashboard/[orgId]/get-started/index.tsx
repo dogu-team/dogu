@@ -1,8 +1,9 @@
 import { ClusterOutlined } from '@ant-design/icons';
 import { OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
 import { GetServerSideProps } from 'next';
+import Trans from 'next-translate/Trans';
+import useTranslation from 'next-translate/useTranslation';
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
@@ -22,7 +23,7 @@ interface ServerSideProps {
 
 const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organization, me }) => {
   const [project, setProject] = useState<ProjectBase>();
-  const router = useRouter();
+  const { t } = useTranslation('tutorial');
 
   const updateProject = useCallback((project: ProjectBase) => {
     setProject(project);
@@ -45,18 +46,16 @@ const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organiz
           <HeaderContent>
             <div>
               <StyledTitle>
-                Quick start -&nbsp;
-                <ClusterOutlined />
-                &nbsp;Device farm
+                <Trans i18nKey="tutorial:deviceFarmTutorialTitle" components={{ icon: <ClusterOutlined style={{ margin: '0 0.35rem' }} /> }} />
               </StyledTitle>
             </div>
             <div>
-              <SkipTutorialButton>Skip tutorial</SkipTutorialButton>
+              <SkipTutorialButton>{t('skipTutorialLinkTitle')}</SkipTutorialButton>
             </div>
           </HeaderContent>
           <DeviceFarmTutorial />
           <FlexEndBox>
-            <SkipTutorialButton>Close tutorial</SkipTutorialButton>
+            <SkipTutorialButton>{t('closeTutorialLinkTitle')}</SkipTutorialButton>
           </FlexEndBox>
         </Inner>
       </Box>
