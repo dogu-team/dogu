@@ -1,4 +1,4 @@
-import { DeviceStreamingSessionInfoDto } from '@dogu-private/console';
+import { DeviceStreamingSessionInfoDto, UserBase } from '@dogu-private/console';
 import { DeviceId, UserId } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, stringify, transformAndValidate } from '@dogu-tech/common';
 import { Inject } from '@nestjs/common';
@@ -44,15 +44,18 @@ export class DeviceStreamingSessionGateway implements OnGatewayConnection, OnGat
       const groupByCurUserIds = _.groupBy(curSessions);
       const curUserIds = Object.keys(groupByCurUserIds);
 
-      const lengthString = curSessions.length.toString();
-      this.logger.info('sendDeviceStreamingSession:: COUNT', { lengthString });
-      this.logger.info('sendDeviceStreamingSession:: CUR', { curUserIds });
-
       const users = await this.dataSource.getRepository(User).find({ where: { userId: In(curUserIds) } });
+      const excludePassUsers: UserBase[] = users.map((user) => {
+        const { password, ...rest } = user;
+        return rest;
+      });
+
+      const me: UserBase = excludePassUsers.find((user) => user.userId === userId)!;
+      const orderedUsers: UserBase[] = [me, ...excludePassUsers.filter((user) => user.userId !== userId)];
 
       if (!_.isEqual(lastUserIds, curUserIds)) {
         const data: DeviceStreamingSessionInfoDto = {
-          users,
+          users: orderedUsers,
         };
         webSocket.send(JSON.stringify(data));
         lastUserIds = [...curUserIds];
