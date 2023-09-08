@@ -24,13 +24,18 @@ class ControlResult {
       return
     }
     self.hasSet = true
-    Task {
-      let resultToSend = Inner_Params_DcIdaResult.with {
-        $0.seq = self.seq
-        $0.dcGdcDaControlResult = result
-      }
+    Task.catchable(
+      {
+        let resultToSend = Inner_Params_DcIdaResult.with {
+          $0.seq = self.seq
+          $0.dcGdcDaControlResult = result
+        }
 
-      self.session.send(result: resultToSend)
-    }
+        Log.shared.debug("ControlResult.set eq: \(self.seq), control: \(resultToSend.dcGdcDaControlResult)")
+        try await self.session.send(result: resultToSend)
+      },
+      catch: {
+        Log.shared.error("ControlResult.set handle error: \($0.localizedDescription)")
+      })
   }
 }

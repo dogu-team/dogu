@@ -54,7 +54,7 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     await this.zombieWaiter?.waitUntilAlive();
   }
 
-  connect(): Promise<void> {
+  async connect(): Promise<void> {
     const ws = new WebSocket(`ws://127.0.0.1:${this.port}/proto`);
 
     ws.on('open', () => {
@@ -79,7 +79,7 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     return Promise.resolve();
   }
 
-  sendWithProtobuf<
+  async sendWithProtobuf<
     ParamKey extends DcDaParamKeys & keyof DcDaParamUnionPick<ParamKey>,
     ReturnKey extends DcDaReturnKeys & keyof DcDaReturnUnionPick<ReturnKey>,
     ParamValue extends DcDaParamUnionPickValue<ParamKey>,
@@ -129,6 +129,7 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
       this.protoWs.send(buffer);
     });
   }
+
   async test(): Promise<void> {
     const ret = await this.sendWithProtobuf('dcDaConnectionParam', 'dcDaConnectionReturn', {
       version: '1.0.0',
@@ -151,9 +152,6 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     return ret;
   }
 
-  get parent(): Zombieable | null {
-    return null;
-  }
   get name(): string {
     return `AndroidDeviceAgentService`;
   }

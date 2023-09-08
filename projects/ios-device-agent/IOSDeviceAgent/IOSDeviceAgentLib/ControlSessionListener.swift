@@ -34,7 +34,7 @@ actor ControlSessionListener: IControlSessionListener {
         $0.seq = abstractParam.seq
         $0.dcIdaRunappResult = result
       }
-      session.send(result: resultToSend)
+      try await session.send(result: resultToSend)
       break
     case .dcIdaGetSystemInfoParam(let param):
       let result = try await self.onGetSystemInfo(param: param)
@@ -42,7 +42,7 @@ actor ControlSessionListener: IControlSessionListener {
         $0.seq = abstractParam.seq
         $0.dcIdaGetSystemInfoResult = result
       }
-      session.send(result: resultToSend)
+      try await session.send(result: resultToSend)
       break
     case .dcIdaIsPortListeningParam(let param):
       let result = try await self.isPortListening(param: param)
@@ -50,7 +50,7 @@ actor ControlSessionListener: IControlSessionListener {
         $0.seq = abstractParam.seq
         $0.dcIdaIsPortListeningResult = result
       }
-      session.send(result: resultToSend)
+      try await session.send(result: resultToSend)
       break
     case .dcIdaQueryProfileParam(let param):
       let result = try await queryProfile(param: param)
@@ -58,16 +58,18 @@ actor ControlSessionListener: IControlSessionListener {
         $0.seq = abstractParam.seq
         $0.dcIdaQueryProfileResult = result
       }
-      session.send(result: resultToSend)
+      try await session.send(result: resultToSend)
       break
     case .dcGdcDaControlParam(let param):
       let controlResult = ControlResult(seq: abstractParam.seq, session: session)
-      do {
-        try await controlProcessor.push(control: param.control, result: controlResult)
-        Log.shared.debug("ControlSessionListener.onParam pushed control: \(param.control)")
-      } catch {
-        Log.shared.debug("ControlSessionListener.onParam failed to push control: \(param.control)")
-      }
+      Task.catchable(
+        {
+          Log.shared.debug("ControlSessionListener.onParam pushed seq: \(abstractParam.seq), control: \(param.control)")
+          try await self.controlProcessor.push(control: param.control, result: controlResult)
+        },
+        catch: {
+          Log.shared.debug("ControlSessionListener.onParam failed to push control: \(param.control), \($0.localizedDescription)")
+        })
       break
     default:
       Log.shared.debug("ControlSessionListener.onParam  unknown param: \(abstractParam)")

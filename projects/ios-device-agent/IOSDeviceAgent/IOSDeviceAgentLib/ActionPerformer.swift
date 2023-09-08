@@ -11,6 +11,7 @@ actor ActionPerformer {
     self.webDriverClient = webDriverClient
   }
 
+  @MainActor
   func performW3CActions(_ actions: [Any]) async throws {
     try await webDriverClient.setSessionIfNotSet()
     guard let session = FBSession.active() else {

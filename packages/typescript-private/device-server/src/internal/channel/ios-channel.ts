@@ -159,7 +159,7 @@ export class IosChannel implements DeviceChannel {
     logger.verbose('ios device agent process started');
 
     logger.verbose('ios device agent service starting');
-    const deviceAgent = new IosDeviceAgentService(screenForwardPort, `127.0.0.1:${grpcForwardPort}`, 60, logger);
+    const deviceAgent = new IosDeviceAgentService(screenForwardPort, grpcForwardPort, 60, logger);
     await deviceAgent.connect().catch((error) => {
       logger.error('IosDeviceAgentService connect failed.', { error: errorify(error) });
       throw error;
@@ -365,8 +365,8 @@ export class IosChannel implements DeviceChannel {
   }
 
   async isPortListening(port: number): Promise<boolean> {
-    const res = await this.deviceAgent.call('dcIdaIsPortListeningParam', 'dcIdaIsPortListeningResult', { port });
-    return res.isListening;
+    const res = await this.deviceAgent.sendWithProtobuf('dcIdaIsPortListeningParam', 'dcIdaIsPortListeningResult', { port });
+    return res?.isListening ?? false;
   }
 
   private async findDotAppPath(appPath: string): Promise<string> {
@@ -406,11 +406,14 @@ export class IosChannel implements DeviceChannel {
     const installedAppNames = await MobileDevice.listApps(this.serial);
     const dotAppPath = await this.findDotAppPath(appPath);
     const bundleId = await MobileDevice.getBundleId(dotAppPath);
-    const result = await this.deviceAgent.runApp({
+    const result = await this.deviceAgent.sendWithProtobuf('dcIdaRunappParam', 'dcIdaRunappResult', {
       appPath,
       installedAppNames,
       bundleId,
     });
+    if (!result) {
+      throw new Error('runApp failed: result is null');
+    }
     if (CodeUtil.isNotSuccess(result.error?.code)) {
       throw new Error(`runApp failed: ${stringify(result.error)}`);
     }

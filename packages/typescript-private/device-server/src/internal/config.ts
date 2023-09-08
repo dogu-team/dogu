@@ -4,14 +4,14 @@ export const config = {
     port: 30001,
   },
   externalGoDeviceController: {
-    use: false,
+    use: true,
     port: 50055,
   },
   externalIosDeviceAgent: {
-    use: false,
+    use: true,
     devices: [
       {
-        serial: '54f523f21b76e07c62c69c14a1d141269515313d',
+        serial: '00008030-001C18E91443802E',
         webDriverPort: 10000,
         grpcPort: 10001,
       },

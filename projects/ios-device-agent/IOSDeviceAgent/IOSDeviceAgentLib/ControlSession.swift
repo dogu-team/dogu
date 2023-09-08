@@ -16,7 +16,7 @@ protocol IControlSessionListener {
   func onParam(session: ControlSession, abstractParam: Inner_Params_DcIdaParam) async throws
 }
 
-public class ControlSession {
+public actor ControlSession {
   public enum State {
     case started
     case closed
@@ -24,7 +24,7 @@ public class ControlSession {
 
   let sessionId: UInt32
   let eventListener: IControlSessionListener
-  let semaphore = DispatchSemaphore(value: 0)
+
   var connection: NWConnection
   var state: State = .started
 
@@ -43,29 +43,33 @@ public class ControlSession {
       }
       Task.catchable(
         {
-          switch state {
-          case .ready:
-            Log.shared.info("ControlSession connected")
-            try await this.eventListener.open(session: this)
-          case .failed(let error):
-            Log.shared.error("ControlSession failure, error: \(error.localizedDescription)")
-            this.state = .closed
-            try await this.eventListener.close(session: this)
-          default:
-            break
-          }
+          try await this.onStateUpdate(state: state)
         },
         catch: {
           Log.shared.error("ControlSession.stateUpdateHandler handle error: \($0.localizedDescription)")
         })
     }
 
-    receiveData(on: connection)
     Log.shared.info("ControlSession.start")
     connection.start(queue: .main)
   }
 
-  func receiveData(on connection: NWConnection) {
+  private func onStateUpdate(state: NWConnection.State) async throws {
+    switch state {
+    case .ready:
+      Log.shared.info("ControlSession connected")
+      try await self.eventListener.open(session: self)
+      self.receiveData(on: connection)
+    case .failed(let error):
+      Log.shared.error("ControlSession failure, error: \(error.localizedDescription)")
+      self.state = .closed
+      try await self.eventListener.close(session: self)
+    default:
+      break
+    }
+  }
+
+  private func receiveData(on connection: NWConnection) {
     NSLog("ControlSession.receiveData")
     connection.receive(
       minimumIncompleteLength: 1, maximumLength: 1400,
@@ -75,51 +79,53 @@ public class ControlSession {
             Log.shared.error("ControlSession.receiveData no self")
             return
           }
-
-          this.recvQueue.pushBuffer(buffer: data)
-          if !this.recvQueue.has() {
-            return
-          }
-          let packet = this.recvQueue.pop()
           Task.catchable(
             {
-              let paramList = try Inner_Params_DcIdaParamList(serializedData: packet)
-              for param in paramList.params {
-                try await this.eventListener.onParam(session: this, abstractParam: param)
-              }
+              try await this.onRecvData(data: data, isComplete: isComplete, error: error)
             },
             catch: {
-              Log.shared.error("ControlSession.receiveData decode error: \($0.localizedDescription)")
+              Log.shared.error("ControlSession.stateUpdateHandler handle error: \($0.localizedDescription)")
             })
-        }
-
-        if let error = error {
-          Log.shared.error("ControlSession.receiveData Receive data error: \(error.localizedDescription)")
-          guard let this = self else {
-            Log.shared.error("ControlSession.receiveData no self")
-            return
-          }
-          this.connection.cancel()
-          return
-        }
-
-        if !isComplete {
-          self?.receiveData(on: connection)
         }
       })
   }
 
-  func send(result: Inner_Params_DcIdaResult) {
+  private func onRecvData(data: Data, isComplete: Bool, error: NWError?) async throws {
+    self.recvQueue.pushBuffer(buffer: data)
+    while true {
+      if !self.recvQueue.has() {
+        break
+      }
+      let packet = self.recvQueue.pop()
+      let paramList = try Inner_Params_DcIdaParamList(serializedData: packet)
+      for param in paramList.params {
+        try await self.eventListener.onParam(session: self, abstractParam: param)
+      }
+    }
+    
+    if let error = error {
+      Log.shared.error("ControlSession.receiveData Receive data error: \(error.localizedDescription)")
+      self.connection.cancel()
+      return
+    }
+
+
+    if !isComplete {
+      self.receiveData(on: connection)
+    }
+  }
+
+  func send(result: Inner_Params_DcIdaResult) async throws {
     var resultList = Inner_Params_DcIdaResultList()
     resultList.results.append(result)
     do {
-      self.send(data: try resultList.serializedData())
+      try await self.send(data: try resultList.serializedData())
     } catch {
       Log.shared.error("ControlSession.send result error: \(error.localizedDescription)")
     }
   }
 
-  private func send(data: Data) {
+  private func send(data: Data) async throws {
     if self.state == .closed {
       Log.shared.error("ControlSession.send: connection is closed. id: \(self.sessionId)")
       return
@@ -138,15 +144,7 @@ public class ControlSession {
           Log.shared.error("ControlSession.send data error: \(error.localizedDescription)")
           self.state = .closed
         }
-        self.semaphore.signal()
       }))
-    let timeout = DispatchTime.now() + .seconds(5)
-    let result = self.semaphore.wait(timeout: timeout)
-    if result == .timedOut {
-      Log.shared.error("ControlSession.send: send timeout. id: \(self.sessionId)")
-      connection.cancel()
-      self.state = .closed
-    }
   }
 
   func close() {
