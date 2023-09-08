@@ -23,15 +23,6 @@ export function startConsoleAndDost(consoleWebFrontPort: number): { dost: Dost }
   return { dost: dost };
 }
 
-export function startDost(): { dost: Dost } {
-  const dost = new Dost();
-  job('Execute dost', () => {
-    dost.nextTest();
-    dost.nextTest();
-  });
-  return { dost: dost };
-}
-
 class ConsoleWebFront {
   private proc: ChildProcessWithoutNullStreams | undefined = undefined;
   constructor(readonly consoleWebFrontPort: number) {

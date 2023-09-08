@@ -1103,5 +1103,8 @@ Dest.withOptions({
         expect(elems.length).toBe(1);
       });
     });
+    job('Check log', () => {
+      dost.checkLog();
+    });
   });
 });
