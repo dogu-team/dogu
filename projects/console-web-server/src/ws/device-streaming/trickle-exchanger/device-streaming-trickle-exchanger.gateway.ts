@@ -20,7 +20,7 @@ export class DeviceStreamingTrickleExchangerGateway implements OnGatewayConnecti
     @Inject(WsCommonService)
     private readonly wsCommonService: WsCommonService,
     @InjectDataSource()
-    private readonly dataSource: DataSource, // @Inject(DeviceStreamingSessionQueue) // private readonly deviceStreamingSessionQueue: DeviceStreamingSessionQueue,
+    private readonly dataSource: DataSource,
   ) {}
 
   async handleConnection(webSocket: WebSocket, incomingMessage: IncomingMessage): Promise<void> {
