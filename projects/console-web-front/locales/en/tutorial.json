@@ -41,5 +41,39 @@
   "createProjectButtonTitle": "New project",
   "downloadDoguAgentButtonTitle": "Download",
   "createHostButtonTitle": "New host",
-  "useHostAsDeviceButtonTitle": "Use as device"
+  "useHostAsDeviceButtonTitle": "Use as device",
+
+  "remoteTestTutorialTitle": "Quick start -<icon></icon> <sdk></sdk>",
+
+  "remoteTestTutorialIntroTitle": "Introduction",
+  "remoteTestTutorialIntroDescription": "Remote testing is a feature that allows you to execute test scripts being developed locally on devices connected to Device Farm without uploading them to an external repository.",
+  "remoteTestTutorialSampleProjectSetupTitle": "Sample project setup",
+  "remoteTestTutorialSampleProjectSetupDescription": "Clone example repository and move to execution directory.",
+  "remoteTestTutorialInstallDependenciesTitle": "Install dependencies",
+  "remoteTestTutorialInstallDependenciesDescription": "Install external packages",
+  "remoteTestTutorialInstallDependenciesVenvDescription": "If you are using a virtual environment, activate it.",
+  "remoteTestTutorialSetCapabilitiesTitle": "Set capabilities",
+  "remoteTestTutorialSetCapabilitiesDescription": "Open <code>dogu.config.json</code> file and configure capabilities for your project.<br></br>For more information about capabilities, please refer to <link>Capabilities</link> guide.",
+  "remoteTestTutorialUploadSampleAppTitle": "Uplaod sample app",
+  "remoteTestTutorialUploadSampleAppDescription": "Before starting, upload the app that matches the version specified in the script.",
+  "remoteTestTutorialRunTestTitle": "Run remote testing",
+  "remoteTestTutorialRunTestDescription": "Start automated testing using sample app and script.",
+  "remoteTestTutorialPytonErrorMessage": "If test failed with an import error, please activate virtual environment again.",
+  "remoteTestTutorialCheckResultTitle": "Check results",
+  "remoteTestTutorialCheckResultDescription": "Check remote testing result. You can check more detail reports in remote testing page in project.",
+
+  "remoteTestTutorialIntroAnchorTitle": "Introduction",
+  "remoteTestTutorialSampleProjectSetupAnchorTitle": "Sample project setup",
+  "remoteTestTutorialInstallDependenciesAnchorTitle": "Install dependencies",
+  "remoteTestTutorialSetCapabilitiesAnchorTitle": "Set capabilities",
+  "remoteTestTutorialUploadSampleAppAnchorTitle": "Upload sample app",
+  "remoteTestTutorialRunTestAnchorTitle": "Run remote testing",
+  "remoteTestTutorialCheckResultAnchorTitle": "Check results",
+
+  "doneStepTitle": "Done! Next step 🚀",
+
+  "uploadSampleAppButtonTitle": "Upload sample app",
+  "uploadSampleAppNotSupportMessage": "For this platform, we don't provide sample app. Please upload your app manually.",
+
+  "runTestNotSupportMessage": "We don't provide sample test script for this platform. Please run test with your own configuration."
 }

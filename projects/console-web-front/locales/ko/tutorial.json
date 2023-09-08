@@ -1,4 +1,5 @@
 {
+  "backLinkTitle": "뒤로가기",
   "skipTutorialLinkTitle": "튜토리얼 건너뛰기",
   "closeTutorialLinkTitle": "튜토리얼 닫기",
 
@@ -41,5 +42,39 @@
   "createProjectButtonTitle": "새 프로젝트",
   "downloadDoguAgentButtonTitle": "다운로드",
   "createHostButtonTitle": "새 호스트",
-  "useHostAsDeviceButtonTitle": "호스트 디바이스로 사용"
+  "useHostAsDeviceButtonTitle": "호스트 디바이스로 사용",
+
+  "remoteTestTutorialTitle": "시작하기 -<icon></icon> <sdk></sdk>",
+
+  "remoteTestTutorialIntroTitle": "인트로",
+  "remoteTestTutorialIntroDescription": "리모트 테스트는 로컬에서 작성중인 테스트 스크립트를 외부 저장소에 올리지 않고 디바이스 팜에 연결된 디바이스에서 실행할 수 있도록 하는 기능입니다.",
+  "remoteTestTutorialSampleProjectSetupTitle": "예제 프로젝트 구성하기",
+  "remoteTestTutorialSampleProjectSetupDescription": "예제 레포지토리를 클론하고 작업 디렉토리로 이동합니다.",
+  "remoteTestTutorialInstallDependenciesTitle": "패키지 설치하기",
+  "remoteTestTutorialInstallDependenciesDescription": "의존성 패키지를 설치합니다.",
+  "remoteTestTutorialInstallDependenciesVenvDescription": "가상환경을 사용하는 경우, 가상환경을 활성화해 주세요.",
+  "remoteTestTutorialSetCapabilitiesTitle": "Capabilities 설정하기",
+  "remoteTestTutorialSetCapabilitiesDescription": "<code>dogu.config.json</code> 파일을 열고 프로젝트에 맞게 capabilities를 설정합니다.<br></br>capabilities 옵션에 대한 자세한 내용은 <link>Capabilities</link> 가이드를 참고해 주세요.",
+  "remoteTestTutorialUploadSampleAppTitle": "예제 앱 업로드하기",
+  "remoteTestTutorialUploadSampleAppDescription": "테스트 하고자 하는 앱을 버전에 맞게 프로젝트에 업로드합니다.",
+  "remoteTestTutorialRunTestTitle": "리모트 테스트 실행하기",
+  "remoteTestTutorialRunTestDescription": "아래 명령어를 통해 리모트 테스트를 실행합니다.",
+  "remoteTestTutorialPytonErrorMessage": "import 에러가 난다면, 가상환경을 다시 활성화 하고 재시도 해주세요.",
+  "remoteTestTutorialCheckResultTitle": "결과 확인하기",
+  "remoteTestTutorialCheckResultDescription": "리모트 테스트 결과를 확인합니다. 프로젝트 내 리모트 테스트 페이지에서 더 자세히 확인할 수 있습니다.",
+
+  "remoteTestTutorialIntroAnchorTitle": "인트로",
+  "remoteTestTutorialSampleProjectSetupAnchorTitle": "예제 프로젝트 구성하기",
+  "remoteTestTutorialInstallDependenciesAnchorTitle": "패키지 설치하기",
+  "remoteTestTutorialSetCapabilitiesAnchorTitle": "Capabilities 설정하기",
+  "remoteTestTutorialUploadSampleAppAnchorTitle": "예제 앱 업로드하기",
+  "remoteTestTutorialRunTestAnchorTitle": "리모트 테스트 실행하기",
+  "remoteTestTutorialCheckResultAnchorTitle": "결과 확인하기",
+
+  "doneStepTitle": "마치며, 더 알아보기 🚀",
+
+  "uploadSampleAppButtonTitle": "예제 앱 업로드하기",
+  "uploadSampleAppNotSupportMessage": "해당 플랫폼에서는 예제 앱을 제공하지 않습니다. 대신 앱을 직접 업로드 해주세요.",
+
+  "runTestNotSupportMessage": "해당 플랫폼에서는 예제 테스트 스크립트를 제공하지 않습니다. 직접 구성하여 테스트를 실행해 보세요."
 }

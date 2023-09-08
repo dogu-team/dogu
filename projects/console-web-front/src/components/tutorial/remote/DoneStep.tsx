@@ -1,3 +1,4 @@
+import useTranslation from 'next-translate/useTranslation';
 import DocumentCard from '../DocumentCard';
 import GuideStep from '../GuideStep';
 
@@ -6,10 +7,12 @@ interface Props {
 }
 
 const DoneStep = ({ id }: Props) => {
+  const { t } = useTranslation('tutorial');
+
   return (
     <GuideStep
       id={id}
-      title="Done! Next step 🚀"
+      title={t('doneStepTitle')}
       content={
         <div style={{ display: 'flex', flexWrap: 'wrap' }}>
           <DocumentCard

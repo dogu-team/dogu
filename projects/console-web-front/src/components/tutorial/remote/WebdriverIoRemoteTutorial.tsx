@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Cookies from 'universal-cookie';
 import { PROJECT_TYPE, USER_ID_COOKIE_NAME } from '@dogu-private/types';
+import useTranslation from 'next-translate/useTranslation';
 
 import DoneStep from './DoneStep';
 import GuideAnchor from '../GuideAnchor';
@@ -20,14 +21,14 @@ import { flexRowBaseStyle } from '../../../styles/box';
 import GuideBanner from '../GuideBanner';
 import TutorialOptionSelectors from '../TutorialOptionSelectors';
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
-import ProjectApplicationUploadButton from '../../project-application/ProjectApplicationUploadButton';
-import SampleApplicationUploadButton from '../SampleApplicationUploadButton';
 import RemoteTestResultList from './RemoteTestResultList';
 import CodeWithCopyButton from '../../common/CodeWithCopyButton';
 import useTutorialContext from '../../../hooks/context/useTutorialContext';
 import { RemoteTutorialProps, webdriverioRemoteTutoriallData } from '../../../resources/tutorials/remote';
 import SampleApplicationUploadStep from '../SampleApplicationUploadStep';
+import Trans from 'next-translate/Trans';
 
+const INTRODUCTION_ID = 'introduction';
 const PROJECT_SETUP_ID = 'project-setup';
 const INSTALL_DEPENDENCIES_ID = 'install-dependencies';
 const SET_CAPABILITIES_ID = 'set-capabilities';
@@ -38,6 +39,7 @@ const DONE_ID = 'done';
 
 const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps) => {
   const { project } = useTutorialContext();
+  const { t } = useTranslation('tutorial');
 
   const getProjectTypeDefaultTarget = () => {
     switch (project?.type) {
@@ -93,23 +95,25 @@ const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorial
           </div>
           <GuideAnchor
             items={[
-              { id: PROJECT_SETUP_ID, title: 'Sample project setup' },
-              { id: INSTALL_DEPENDENCIES_ID, title: 'Install dependencies' },
-              { id: SET_CAPABILITIES_ID, title: 'Set capabilities' },
-              ...(target === TutorialSupportTarget.APP ? [{ id: UPLOAD_SAMPLE_APP_ID, title: 'Upload sample application' }] : []),
-              { id: RUN_TEST_ID, title: 'Run remote testing' },
-              { id: RESULT_ID, title: 'Check result' },
-              { id: DONE_ID, title: 'Done! Next step' },
+              { id: INTRODUCTION_ID, title: t('remoteTestTutorialIntroAnchorTitle') },
+              { id: PROJECT_SETUP_ID, title: t('remoteTestTutorialSampleProjectSetupAnchorTitle') },
+              { id: INSTALL_DEPENDENCIES_ID, title: t('remoteTestTutorialInstallDependenciesAnchorTitle') },
+              { id: SET_CAPABILITIES_ID, title: t('remoteTestTutorialSetCapabilitiesAnchorTitle') },
+              ...(target === TutorialSupportTarget.APP ? [{ id: UPLOAD_SAMPLE_APP_ID, title: t('remoteTestTutorialUploadSampleAppAnchorTitle') }] : []),
+              { id: RUN_TEST_ID, title: t('remoteTestTutorialRunTestAnchorTitle') },
+              { id: RESULT_ID, title: t('remoteTestTutorialCheckResultAnchorTitle') },
+              { id: DONE_ID, title: t('doneStepTitle') },
             ]}
           />
         </div>
       }
       content={
         <div>
+          <GuideStep id={INTRODUCTION_ID} title={t('remoteTestTutorialIntroTitle')} description={<p>{t('remoteTestTutorialIntroDescription')}</p>} content={null} />
           <GuideStep
             id={PROJECT_SETUP_ID}
-            title="Sample project setup"
-            description={<p>Clone example repository and move to execution directory</p>}
+            title={t('remoteTestTutorialSampleProjectSetupTitle')}
+            description={<p>{t('remoteTestTutorialSampleProjectSetupDescription')}</p>}
             content={
               <>
                 <CodeWithCopyButton language="bash" code={`git clone ${REMOTE_SAMPLE_GIT_URL}`} />
@@ -119,16 +123,19 @@ const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorial
           />
           <GuideStep
             id={INSTALL_DEPENDENCIES_ID}
-            title="Install dependencies"
-            description={<p>Install external packages</p>}
+            title={t('remoteTestTutorialInstallDependenciesTitle')}
+            description={<p>{t('remoteTestTutorialInstallDependenciesDescription')}</p>}
             content={<CodeWithCopyButton language="bash" code={selectedGuide?.installDependencies ?? ''} />}
           />
           <GuideStep
             id={SET_CAPABILITIES_ID}
-            title="Set capabilities"
+            title={t('remoteTestTutorialSetCapabilitiesTitle')}
             description={
               <p>
-                Open <StyledCode>dogu.config.json</StyledCode> and configure capabilities for your project
+                <Trans
+                  i18nKey="tutorial:remoteTestTutorialSetCapabilitiesDescription"
+                  components={{ code: <StyledCode />, link: <a href="https://docs.dogutech.io/test-automation/" target="_blank" />, br: <br /> }}
+                />
               </p>
             }
             content={<CodeWithCopyButton language="json" code={capabilityCode} />}
@@ -137,19 +144,19 @@ const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorial
           {target === TutorialSupportTarget.APP && (
             <GuideStep
               id={UPLOAD_SAMPLE_APP_ID}
-              title="Upload sample application"
-              description={<p>Before starting, upload the app that matches the version specified in the script.</p>}
+              title={t('remoteTestTutorialUploadSampleAppTitle')}
+              description={<p>{t('remoteTestTutorialUploadSampleAppDescription')}</p>}
               content={<SampleApplicationUploadStep hasSampleApp={selectedGuide?.hasSampleApp} category="mobile" />}
             />
           )}
 
           <GuideStep
             id={RUN_TEST_ID}
-            title="Run remote testing"
-            description={<p>Start automated testing using sample app and script</p>}
+            title={t('remoteTestTutorialRunTestTitle')}
+            description={<p>{t('remoteTestTutorialRunTestDescription')}</p>}
             content={
               target === TutorialSupportTarget.APP && platform === TutorialSupportPlatform.IOS ? (
-                <Alert message="We don't provide sample test script for iOS. Please run test with your own configuration." showIcon type="warning" />
+                <Alert message={t('runTestNotSupportMessage')} showIcon type="warning" />
               ) : (
                 <>
                   {platform === TutorialSupportPlatform.MACOS && (
@@ -171,10 +178,15 @@ const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorial
           />
 
           <div style={{ marginBottom: '2rem' }}>
-            <GuideBanner docsUrl="https://docs.dogutech.io/test-automation/webdriverio" />
+            <GuideBanner docsUrl="https://docs.dogutech.io/test-automation" />
           </div>
 
-          <GuideStep id={RESULT_ID} title="Check result" description={<p>Check remote testing result</p>} content={<RemoteTestResultList />} />
+          <GuideStep
+            id={RESULT_ID}
+            title={t('remoteTestTutorialCheckResultTitle')}
+            description={<p>{t('remoteTestTutorialCheckResultDescription')}</p>}
+            content={<RemoteTestResultList />}
+          />
 
           <DoneStep id={DONE_ID} />
         </div>

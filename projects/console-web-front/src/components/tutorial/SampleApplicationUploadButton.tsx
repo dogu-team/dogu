@@ -3,6 +3,7 @@ import { UploadSampleAppDtoBase } from '@dogu-private/console';
 import { OrganizationId, ProjectId } from '@dogu-private/types';
 import { Button } from 'antd';
 import { isAxiosError } from 'axios';
+import useTranslation from 'next-translate/useTranslation';
 
 import { uploadSampleApplication } from '../../api/project-application';
 import useRequest from '../../hooks/useRequest';
@@ -17,6 +18,7 @@ interface Props {
 
 const SampleApplicationUploadButton = ({ organizationId, projectId, category }: Props) => {
   const [loading, request] = useRequest(uploadSampleApplication);
+  const { t } = useTranslation('tutorial');
 
   const handleUploadSample = async () => {
     try {
@@ -31,7 +33,7 @@ const SampleApplicationUploadButton = ({ organizationId, projectId, category }: 
 
   return (
     <Button type="primary" onClick={handleUploadSample} loading={loading} icon={<UploadOutlined />}>
-      Click here for upload
+      {t('uploadSampleAppButtonTitle')}
     </Button>
   );
 };

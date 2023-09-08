@@ -1,5 +1,6 @@
 import { UploadSampleAppDtoBase } from '@dogu-private/console';
 import { Alert } from 'antd';
+import useTranslation from 'next-translate/useTranslation';
 
 import useTutorialContext from '../../hooks/context/useTutorialContext';
 import ErrorBox from '../common/boxes/ErrorBox';
@@ -13,6 +14,7 @@ interface Props {
 
 const SampleApplicationUploadStep = ({ hasSampleApp, category }: Props) => {
   const { project } = useTutorialContext();
+  const { t } = useTranslation('tutorial');
 
   if (!project) {
     return <ErrorBox title="Something went wrong" desc="Project not found" />;
@@ -25,7 +27,7 @@ const SampleApplicationUploadStep = ({ hasSampleApp, category }: Props) => {
   return (
     <Alert
       style={{ marginTop: '.5rem' }}
-      message="For this platform, we don't provide sample app. Please upload your app manually."
+      message={t('uploadSampleAppNotSupportMessage')}
       type="warning"
       showIcon
       action={<ProjectApplicationUploadButton organizationId={project.organizationId} projectId={project.projectId} />}
