@@ -33,21 +33,23 @@ const DeviceStreamingLayout = ({ project, deviceId, right, title, screenViewer, 
     error: deviceError,
     isLoading: deviceIsLoading,
   } = useSWR<DeviceBase>(`/organizations/${project.organizationId}/devices/${deviceId}`, swrAuthFetcher, { revalidateOnFocus: false });
-  const websocket = useWebSocket(`/ws/device-streaming-session?organizationId=${project.organizationId}&deviceId=${deviceId}`);
+  const socketRef = useWebSocket(`/ws/device-streaming-session?organizationId=${project.organizationId}&deviceId=${deviceId}`);
   const [users, setUsers] = useState<UserBase[]>([]);
 
   useEffect(() => {
-    if (websocket.current) {
-      websocket.current.onmessage = (event) => {
+    if (socketRef.current) {
+      socketRef.current.onmessage = (event) => {
         const data: { users: UserBase[] } = JSON.parse(event.data);
         setUsers(data.users);
       };
-
-      return () => {
-        console.log('close');
-        websocket.current?.close();
-      };
     }
+
+    return () => {
+      if (socketRef.current) {
+        console.log('close');
+        socketRef.current?.close();
+      }
+    };
   }, []);
 
   if (deviceError) {
