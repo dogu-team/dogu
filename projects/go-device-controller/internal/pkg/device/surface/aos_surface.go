@@ -40,6 +40,10 @@ func (s *aosSurface) Receive() ([]byte, error) {
 		return nil, errors.Errorf("aosSurface.Receive reader is null")
 	}
 	_, buf, err := s.conn.ReadMessage()
+	if err != nil {
+		s.conn = nil
+	}
+
 	return buf, err
 }
 
@@ -48,10 +52,10 @@ func (s *aosSurface) NotifyData(listener SurfaceListener, timeStamp uint32, data
 }
 
 func (s *aosSurface) Close() {
-	if nil != s.conn {
-		if closeEr := s.conn.Close(); closeEr != nil {
-			log.Inst.Error("aosSurface.Close", zap.Error(closeEr))
-		}
+	if nil == s.conn {
+		return
 	}
-	s.conn = nil
+	if closeEr := s.conn.Close(); closeEr != nil {
+		log.Inst.Error("aosSurface.Close", zap.Error(closeEr))
+	}
 }
