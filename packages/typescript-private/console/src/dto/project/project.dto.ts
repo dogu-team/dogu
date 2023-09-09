@@ -1,4 +1,4 @@
-import { DeviceConnectionState, ProjectRoleId, PROJECT_TYPE, TeamId, UserId } from '@dogu-private/types';
+import { DeviceConnectionState, Platform, ProjectRoleId, PROJECT_TYPE, TeamId, UserId } from '@dogu-private/types';
 import { PageDtoBase } from '../pagination/page.dto';
 
 // project dto start
@@ -21,6 +21,7 @@ export interface UpdateProjectDtoBase {
 
 export interface FindProjectDeviceDtoBase extends PageDtoBase {
   keyword?: string;
+  platform?: Platform;
   connectionState?: DeviceConnectionState;
 }
 

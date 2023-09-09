@@ -21,6 +21,14 @@ const TutorialButton = ({ href, style, ...props }: Props) => {
 export default TutorialButton;
 
 const StyledButton = styled(Button)`
+  background-color: #f6ffed;
+  border: 1px solid #6ce616;
+
+  &:hover {
+    color: #000000 !important;
+    border: 1px solid #6ce616 !important;
+  }
+
   &:active {
     color: ${(props) => props.theme.colorPrimary} !important;
   }

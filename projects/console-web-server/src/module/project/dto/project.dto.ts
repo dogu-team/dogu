@@ -8,7 +8,7 @@ import {
   FindUsersByProjectIdDtoBase,
   UpdateProjectDtoBase,
 } from '@dogu-private/console';
-import { DeviceConnectionState, ProjectId, PROJECT_DESC_MAX_LENGTH, PROJECT_NAME_MAX_LENGTH, PROJECT_NAME_MIN_LENGTH, PROJECT_TYPE, UserId } from '@dogu-private/types';
+import { DeviceConnectionState, Platform, ProjectId, PROJECT_DESC_MAX_LENGTH, PROJECT_NAME_MAX_LENGTH, PROJECT_NAME_MIN_LENGTH, PROJECT_TYPE, UserId } from '@dogu-private/types';
 import { Type } from 'class-transformer';
 import { IsEnum, IsIn, IsISO8601, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import { PageDto } from '../../../module/common/dto/pagination/page.dto';
@@ -56,6 +56,11 @@ export class FindProjectDeviceDto extends PageDto implements FindProjectDeviceDt
   @IsString()
   @IsOptional()
   keyword = '';
+
+  @Type(() => Number)
+  @IsEnum(Platform)
+  @IsOptional()
+  platform?: Platform;
 
   @Type(() => Number)
   @IsEnum(DeviceConnectionState)

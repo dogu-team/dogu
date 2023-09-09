@@ -356,12 +356,14 @@ export class ProjectService {
 
     const qb = this.dataSource.getRepository(Device).createQueryBuilder('device');
     const connectionStateFilterClause = dto.connectionState !== undefined ? 'device.connection_state IN (:connectionState)' : '1=1';
+    const platformFilterClause = dto.platform !== undefined ? 'device.platform IN (:platform)' : '1=1';
 
     const enabledProjectDeviceSubQuery = this.deviceStatusService.enabledProjectDeviceSubQuery(qb, organizationId, projectId);
 
     const rawPagedDevicesQuery = qb
       .where(`device.${DevicePropSnake.device_id} IN ${enabledProjectDeviceSubQuery.getQuery()}`)
       .andWhere(connectionStateFilterClause, { connectionState: dto.connectionState })
+      .andWhere(platformFilterClause, { platform: dto.platform })
       .andWhere(
         new Brackets((qb) => {
           qb.where(`device.${DevicePropSnake.name} ILIKE :keyword`, { keyword: `%${dto.keyword}%` })

@@ -1,4 +1,4 @@
-import { JobSchema, PROJECT_TYPE, ROUTINE_JOB_NAME_MAX_LENGTH, StepSchema } from '@dogu-private/types';
+import { JobSchema, Platform, PROJECT_TYPE, ROUTINE_JOB_NAME_MAX_LENGTH, StepSchema } from '@dogu-private/types';
 import { Checkbox, Switch, Tag } from 'antd';
 import { useCallback, useContext } from 'react';
 import { move, update } from 'ramda';
@@ -305,6 +305,24 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
     [job, name, updateJob],
   );
 
+  const getPlatformByAppVersion = (): Platform | undefined => {
+    if (job.appVersion) {
+      if (typeof job.appVersion === 'string') {
+        return undefined;
+      }
+
+      if (job.appVersion.android) {
+        return Platform.PLATFORM_ANDROID;
+      }
+
+      if (job.appVersion.ios) {
+        return Platform.PLATFORM_IOS;
+      }
+    }
+
+    return undefined;
+  };
+
   return (
     <Box>
       <ContainerMenu onDeleteClicked={() => deleteJob(name)} onMoveDownClicked={() => updateJobOrder(name, 'down')} onMoveUpClicked={() => updateJobOrder(name, 'up')} />
@@ -402,7 +420,7 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
         </div>
         <ContentInner>
           <RunsOn runsOn={job['runs-on']} onDelete={handleRemoveRunsOn} />
-          <AddDeviceAndTagButton onSelect={handleAddRunsOn} />
+          <AddDeviceAndTagButton onSelect={handleAddRunsOn} devicePlatform={getPlatformByAppVersion()} />
         </ContentInner>
       </Content>
       <Content>

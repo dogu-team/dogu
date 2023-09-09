@@ -1,5 +1,6 @@
 import { MobileOutlined, TagOutlined } from '@ant-design/icons';
 import { PageBase, DeviceTagBase, DeviceBase } from '@dogu-private/console';
+import { Platform } from '@dogu-private/types';
 import { Tabs } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
@@ -22,9 +23,10 @@ enum TabMenu {
 
 interface Props {
   onSelect: (value: string) => void;
+  devicePlatform?: Platform;
 }
 
-const AddDeviceAndTagButton = ({ onSelect }: Props) => {
+const AddDeviceAndTagButton = ({ onSelect, devicePlatform }: Props) => {
   const [selectable, setSelectable] = useState(false);
   const [currentTab, setCurrentTab] = useState<TabMenu>(TabMenu.DEVICE);
   const { debouncedValue, handleChangeValues } = useDebouncedInputValues();
@@ -43,7 +45,9 @@ const AddDeviceAndTagButton = ({ onSelect }: Props) => {
     isLoading: devicesLoading,
     error: deviceError,
   } = useSWR<PageBase<DeviceBase>>(
-    selectable && currentTab === TabMenu.DEVICE && `/organizations/${router.query.orgId}/projects/${router.query.pid}/devices?keyword=${debouncedValue}`,
+    selectable &&
+      currentTab === TabMenu.DEVICE &&
+      `/organizations/${router.query.orgId}/projects/${router.query.pid}/devices?keyword=${debouncedValue}${devicePlatform ? `&platform=${devicePlatform}` : ''}`,
     swrAuthFetcher,
     {
       keepPreviousData: true,

@@ -25,7 +25,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  sample-job:
+  new-job-1:
     runs-on:
       group: []
     appVersion:
@@ -44,7 +44,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  sample-job:
+  new-job-1:
     runs-on: []
     browserName:
     steps:
