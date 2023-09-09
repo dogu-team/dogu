@@ -92,10 +92,10 @@ Start [cloud service](https://dogutech.io) right now without any installation.
 
 - [Documentation](https://docs.dogutech.io)
 - [Tutorial - Device Farm](https://docs.dogutech.io/get-started/tutorials/device-farm/)
-- [Tutorial - Appium](https://docs.dogutech.io/get-started/tutorials/test-automation/appium/)
-- [Tutorial - Selenium](https://docs.dogutech.io/get-started/tutorials/test-automation/selenium/)
-- [Tutorial - Webdriverio](https://docs.dogutech.io/get-started/tutorials/test-automation/webdriverio/)
-- [Tutorial - Gamium](https://docs.dogutech.io/get-started/tutorials/test-automation/gamium/)
+- [Tutorial - Appium](https://docs.dogutech.io/get-started/tutorials/test-automation/remote-testing/appium/)
+- [Tutorial - Selenium](https://docs.dogutech.io/get-started/tutorials/test-automation/remote-testing/selenium/)
+- [Tutorial - Webdriverio](https://docs.dogutech.io/get-started/tutorials/test-automation/remote-testing/webdriverio/)
+- [Tutorial - Gamium](https://docs.dogutech.io/get-started/tutorials/test-automation/remote-testing/gamium/)
 
 # RoadMap
 
