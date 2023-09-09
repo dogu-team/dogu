@@ -76,10 +76,16 @@ jobs:
       - name: Run
         run: |
           docker pull ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.DOGU_AWS_REGION }}.amazonaws.com/prod-dogu-docs:latest
-          docker stop $(docker ps -a -q)
-          docker rm $(docker ps -a -q)
-          docker run -d -p 3100:3100 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.DOGU_AWS_REGION }}.amazonaws.com/prod-dogu-docs:latest
-          docker image prune -f
+          CONTAINERS=$(docker ps -a -q)
+          if [ -n "$CONTAINERS" ]; then
+            docker stop $(docker ps -a -q)
+            docker rm $(docker ps -a -q)
+            docker run -d -p 3100:3100 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.DOGU_AWS_REGION }}.amazonaws.com/prod-dogu-docs:latest
+            docker image prune -f
+          else
+            docker run -d -p 3100:3100 ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.DOGU_AWS_REGION }}.amazonaws.com/prod-dogu-docs:latest
+            docker image prune -f
+          fi
 
   crawl-docs:
     runs-on: ubuntu-latest
