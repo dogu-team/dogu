@@ -11,7 +11,7 @@ import useTranslation from 'next-translate/useTranslation';
 import { getOrganizationInServerSide } from 'src/api/organization';
 import { getProjectInServerSide } from 'src/api/project';
 import ConsoleBasicLayout from 'src/components/layouts/ConsoleBasicLayout';
-import FrameworkSelectContainer from 'src/components/tutorial/FrameworkSelectContainer';
+import RemoteFrameworkSelectContainer from 'src/components/tutorial/remote/RemoteFrameworkSelectContainer';
 import RemoteTestTutorial from 'src/components/tutorial/remote/RemoteTestTutorial';
 import SdkIcon from 'src/components/tutorial/SdkIcon';
 import { TutorialContext } from 'src/hooks/context/useTutorialContext';
@@ -80,7 +80,7 @@ const ProjectRemoteGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ proj
         </Box>
       ) : (
         <CenteredBox>
-          <FrameworkSelectContainer
+          <RemoteFrameworkSelectContainer
             skipButton={
               <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/remotes`} access-id="skip-project-tutorial">
                 <Button type="link">{t('skipTutorialLinkTitle')}</Button>

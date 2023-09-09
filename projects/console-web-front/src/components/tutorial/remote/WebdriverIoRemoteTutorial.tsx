@@ -9,14 +9,7 @@ import DoneStep from './DoneStep';
 import GuideAnchor from '../GuideAnchor';
 import GuideLayout from '../GuideLayout';
 import GuideStep from '../GuideStep';
-import {
-  TutorialSupportLanguage,
-  TutorialSupportPlatform,
-  TutorialSupportTarget,
-  REMOTE_SAMPLE_GIT_URL,
-  tutorialSdkSupportInfo,
-  TutorialSupportSdk,
-} from '../../../resources/tutorials/index';
+import { TutorialSupportLanguage, TutorialSupportPlatform, TutorialSupportTarget, REMOTE_SAMPLE_GIT_URL, TutorialSupportSdk } from '../../../resources/tutorials/index';
 import { flexRowBaseStyle } from '../../../styles/box';
 import GuideBanner from '../GuideBanner';
 import TutorialOptionSelectors from '../TutorialOptionSelectors';
@@ -24,7 +17,7 @@ import useTutorialSelector from '../../../hooks/useTutorialSelector';
 import RemoteTestResultList from './RemoteTestResultList';
 import CodeWithCopyButton from '../../common/CodeWithCopyButton';
 import useTutorialContext from '../../../hooks/context/useTutorialContext';
-import { RemoteTutorialProps, webdriverioRemoteTutoriallData } from '../../../resources/tutorials/remote';
+import { RemoteTutorialProps, remoteTutorialSdkSupportInfo, webdriverioRemoteTutoriallData } from '../../../resources/tutorials/remote';
 import SampleApplicationUploadStep from '../SampleApplicationUploadStep';
 import Trans from 'next-translate/Trans';
 
@@ -55,15 +48,15 @@ const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorial
   };
 
   const { framework, platform, target } = useTutorialSelector({
-    defaultFramework: tutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].defaultOptions.framework,
-    defaultPlatform: tutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].defaultOptions.platform,
+    defaultFramework: remoteTutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].defaultOptions.framework,
+    defaultPlatform: remoteTutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].defaultOptions.platform,
     defaultTarget: getProjectTypeDefaultTarget(),
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 
   const selectedGuide = webdriverioRemoteTutoriallData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const frameworkLanguage = Object.keys(tutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].frameworksPerLang).find((language) =>
-    tutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
+  const frameworkLanguage = Object.keys(remoteTutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].frameworksPerLang).find((language) =>
+    remoteTutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
   );
 
   useEffect(() => {
@@ -91,7 +84,13 @@ const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorial
       sidebar={
         <div>
           <div style={{ marginBottom: '1rem' }}>
-            <TutorialOptionSelectors sdk={TutorialSupportSdk.WEBDRIVERIO} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
+            <TutorialOptionSelectors
+              sdk={TutorialSupportSdk.WEBDRIVERIO}
+              sdkSupportInfo={remoteTutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO]}
+              selectedFramwork={framework}
+              selectedPlatform={platform}
+              selectedTarget={target}
+            />
           </div>
           <GuideAnchor
             items={[

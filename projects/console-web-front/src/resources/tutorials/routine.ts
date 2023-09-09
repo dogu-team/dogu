@@ -1,4 +1,67 @@
-import { TutorialSupportFramework, TutorialSupportLanguage, TutorialSupportPlatform, TutorialSupportSdk, TutorialSupportTarget } from '.';
+import { TutorialSdkSupportInfoMap, TutorialSupportFramework, TutorialSupportLanguage, TutorialSupportPlatform, TutorialSupportSdk, TutorialSupportTarget } from '.';
+
+export const routineTutorialSdkSupportInfo: TutorialSdkSupportInfoMap = {
+  [TutorialSupportSdk.APPIUM]: {
+    frameworksPerLang: {
+      [TutorialSupportLanguage.PYTHON]: [TutorialSupportFramework.PYTEST],
+    },
+    targetsPerPlatform: {
+      [TutorialSupportPlatform.ANDROID]: [TutorialSupportTarget.WEB, TutorialSupportTarget.APP],
+      [TutorialSupportPlatform.IOS]: [TutorialSupportTarget.WEB, TutorialSupportTarget.APP],
+    },
+    defaultOptions: {
+      framework: TutorialSupportFramework.PYTEST,
+      platform: TutorialSupportPlatform.ANDROID,
+      target: TutorialSupportTarget.WEB,
+    },
+  },
+  [TutorialSupportSdk.WEBDRIVERIO]: {
+    frameworksPerLang: {
+      [TutorialSupportLanguage.JAVASCRIPT]: [TutorialSupportFramework.JEST],
+    },
+    targetsPerPlatform: {
+      [TutorialSupportPlatform.ANDROID]: [TutorialSupportTarget.WEB, TutorialSupportTarget.APP],
+      [TutorialSupportPlatform.IOS]: [TutorialSupportTarget.WEB, TutorialSupportTarget.APP],
+      [TutorialSupportPlatform.WINDOWS]: [TutorialSupportTarget.WEB],
+      [TutorialSupportPlatform.MACOS]: [TutorialSupportTarget.WEB],
+    },
+    defaultOptions: {
+      framework: TutorialSupportFramework.JEST,
+      platform: TutorialSupportPlatform.ANDROID,
+      target: TutorialSupportTarget.WEB,
+    },
+  },
+  [TutorialSupportSdk.SELENIUM]: {
+    frameworksPerLang: {
+      [TutorialSupportLanguage.TYPESCRIPT]: [TutorialSupportFramework.JEST],
+      [TutorialSupportLanguage.PYTHON]: [TutorialSupportFramework.PYTEST],
+    },
+    targetsPerPlatform: {
+      [TutorialSupportPlatform.WINDOWS]: [TutorialSupportTarget.WEB],
+      [TutorialSupportPlatform.MACOS]: [TutorialSupportTarget.WEB],
+    },
+    defaultOptions: {
+      framework: TutorialSupportFramework.JEST,
+      platform: TutorialSupportPlatform.WINDOWS,
+      target: TutorialSupportTarget.WEB,
+    },
+  },
+  [TutorialSupportSdk.GAMIUM]: {
+    frameworksPerLang: {
+      [TutorialSupportLanguage.TYPESCRIPT]: [TutorialSupportFramework.JEST],
+      [TutorialSupportLanguage.PYTHON]: [TutorialSupportFramework.PYTEST],
+    },
+    targetsPerPlatform: {
+      [TutorialSupportPlatform.ANDROID]: [TutorialSupportTarget.UNITY],
+      [TutorialSupportPlatform.IOS]: [TutorialSupportTarget.UNITY],
+    },
+    defaultOptions: {
+      framework: TutorialSupportFramework.JEST,
+      platform: TutorialSupportPlatform.ANDROID,
+      target: TutorialSupportTarget.UNITY,
+    },
+  },
+};
 
 export interface RoutineTutorial {
   guides: {
@@ -15,24 +78,24 @@ export interface RoutineTutorial {
 
 export const appiumRoutineTutorialData: RoutineTutorial = {
   guides: [
-    {
-      framework: TutorialSupportFramework.PYTEST,
-      language: TutorialSupportLanguage.PYTHON,
-      platform: TutorialSupportPlatform.ANDROID,
-      target: TutorialSupportTarget.WEB,
-      cwd: 'appium/python/pytest',
-      environment: 'python',
-      command: '',
-    },
-    {
-      framework: TutorialSupportFramework.PYTEST,
-      language: TutorialSupportLanguage.PYTHON,
-      platform: TutorialSupportPlatform.IOS,
-      target: TutorialSupportTarget.WEB,
-      cwd: 'appium/python/pytest',
-      environment: 'python',
-      command: '',
-    },
+    // {
+    //   framework: TutorialSupportFramework.PYTEST,
+    //   language: TutorialSupportLanguage.PYTHON,
+    //   platform: TutorialSupportPlatform.ANDROID,
+    //   target: TutorialSupportTarget.WEB,
+    //   cwd: 'appium/python/pytest',
+    //   environment: 'python',
+    //   command: '',
+    // },
+    // {
+    //   framework: TutorialSupportFramework.PYTEST,
+    //   language: TutorialSupportLanguage.PYTHON,
+    //   platform: TutorialSupportPlatform.IOS,
+    //   target: TutorialSupportTarget.WEB,
+    //   cwd: 'appium/python/pytest',
+    //   environment: 'python',
+    //   command: '',
+    // },
     {
       framework: TutorialSupportFramework.PYTEST,
       language: TutorialSupportLanguage.PYTHON,
@@ -124,6 +187,26 @@ export const webdriverioRoutineTutorialData: RoutineTutorial = {
 export const seleniumRoutineTutorialData: RoutineTutorial = {
   guides: [
     {
+      framework: TutorialSupportFramework.JEST,
+      language: TutorialSupportLanguage.TYPESCRIPT,
+      platform: TutorialSupportPlatform.WINDOWS,
+      target: TutorialSupportTarget.WEB,
+      cwd: 'selenium/typescript/jest',
+      environment: 'node',
+      command: `npm install
+            npm run test:web`,
+    },
+    {
+      framework: TutorialSupportFramework.JEST,
+      language: TutorialSupportLanguage.TYPESCRIPT,
+      platform: TutorialSupportPlatform.MACOS,
+      target: TutorialSupportTarget.WEB,
+      cwd: 'selenium/typescript/jest',
+      environment: 'node',
+      command: `npm install
+            npm run test:web`,
+    },
+    {
       framework: TutorialSupportFramework.PYTEST,
       language: TutorialSupportLanguage.PYTHON,
       platform: TutorialSupportPlatform.WINDOWS,
@@ -150,22 +233,22 @@ export const gamiumRoutineTutorialData: RoutineTutorial = {
   guides: [
     {
       framework: TutorialSupportFramework.JEST,
-      language: TutorialSupportLanguage.JAVASCRIPT,
+      language: TutorialSupportLanguage.TYPESCRIPT,
       platform: TutorialSupportPlatform.ANDROID,
       target: TutorialSupportTarget.UNITY,
       hasSampleApp: true,
-      cwd: 'gamium/javascript/jest',
+      cwd: 'gamium/typescript/jest',
       environment: 'node',
       command: `npm install
             npm run test:app`,
     },
     {
       framework: TutorialSupportFramework.JEST,
-      language: TutorialSupportLanguage.JAVASCRIPT,
+      language: TutorialSupportLanguage.TYPESCRIPT,
       platform: TutorialSupportPlatform.IOS,
       target: TutorialSupportTarget.UNITY,
       hasSampleApp: false,
-      cwd: 'gamium/javascript/jest',
+      cwd: 'gamium/typescript/jest',
       environment: 'node',
       command: `npm install
             npm run test:app`,

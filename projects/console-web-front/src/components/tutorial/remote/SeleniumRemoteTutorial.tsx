@@ -6,7 +6,7 @@ import { USER_ID_COOKIE_NAME } from '@dogu-private/types';
 import useTranslation from 'next-translate/useTranslation';
 import Trans from 'next-translate/Trans';
 
-import { TutorialSupportLanguage, REMOTE_SAMPLE_GIT_URL, TutorialSupportPlatform, tutorialSdkSupportInfo, TutorialSupportSdk } from '../../../resources/tutorials/index';
+import { TutorialSupportLanguage, REMOTE_SAMPLE_GIT_URL, TutorialSupportPlatform, TutorialSupportSdk } from '../../../resources/tutorials/index';
 import { flexRowBaseStyle } from '../../../styles/box';
 import GuideAnchor from '../GuideAnchor';
 import GuideBanner from '../GuideBanner';
@@ -18,7 +18,7 @@ import TutorialOptionSelectors from '../TutorialOptionSelectors';
 import CodeWithCopyButton from '../../common/CodeWithCopyButton';
 import RemoteTestResultList from './RemoteTestResultList';
 import PythonVirtualEnvShell from '../PythonVirtualEnvShell';
-import { RemoteTutorialProps, seleniumRemoteTutorialGuideData } from '../../../resources/tutorials/remote';
+import { RemoteTutorialProps, remoteTutorialSdkSupportInfo, seleniumRemoteTutorialGuideData } from '../../../resources/tutorials/remote';
 
 const INTRODUCTION_ID = 'introduction';
 const PROJECT_SETUP_ID = 'project-setup';
@@ -30,16 +30,16 @@ const DONE_ID = 'done';
 
 const SeleniumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps) => {
   const { framework, platform, target } = useTutorialSelector({
-    defaultFramework: tutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.framework,
-    defaultPlatform: tutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.platform,
-    defaultTarget: tutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.target,
+    defaultFramework: remoteTutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.framework,
+    defaultPlatform: remoteTutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.platform,
+    defaultTarget: remoteTutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.target,
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
   const { t } = useTranslation('tutorial');
 
   const selectedGuide = seleniumRemoteTutorialGuideData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const frameworkLanguage = Object.keys(tutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].frameworksPerLang).find((language) =>
-    tutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
+  const frameworkLanguage = Object.keys(remoteTutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].frameworksPerLang).find((language) =>
+    remoteTutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
   );
 
   useEffect(() => {
@@ -67,7 +67,13 @@ const SeleniumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialPro
       sidebar={
         <div>
           <div style={{ marginBottom: '1rem' }}>
-            <TutorialOptionSelectors sdk={TutorialSupportSdk.SELENIUM} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
+            <TutorialOptionSelectors
+              sdk={TutorialSupportSdk.SELENIUM}
+              sdkSupportInfo={remoteTutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM]}
+              selectedFramwork={framework}
+              selectedPlatform={platform}
+              selectedTarget={target}
+            />
           </div>
 
           <GuideAnchor

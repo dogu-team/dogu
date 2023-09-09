@@ -4,8 +4,8 @@ import useTranslation from 'next-translate/useTranslation';
 
 import useTutorialContext from '../../../hooks/context/useTutorialContext';
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
-import { ROUTINE_SAMPLE_GIT_URL, tutorialSdkSupportInfo, TutorialSupportLanguage, TutorialSupportSdk } from '../../../resources/tutorials';
-import { seleniumRoutineTutorialData } from '../../../resources/tutorials/routine';
+import { ROUTINE_SAMPLE_GIT_URL, TutorialSupportLanguage, TutorialSupportSdk } from '../../../resources/tutorials';
+import { routineTutorialSdkSupportInfo, seleniumRoutineTutorialData } from '../../../resources/tutorials/routine';
 import { flexRowSpaceBetweenStyle } from '../../../styles/box';
 import RefreshButton from '../../buttons/RefreshButton';
 import ErrorBox from '../../common/boxes/ErrorBox';
@@ -32,15 +32,15 @@ const DONE_ID = 'done';
 const SeleniumRoutineTutorial = () => {
   const { project } = useTutorialContext();
   const { framework, platform, target } = useTutorialSelector({
-    defaultFramework: tutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.framework,
-    defaultPlatform: tutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.platform,
-    defaultTarget: tutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.target,
+    defaultFramework: routineTutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.framework,
+    defaultPlatform: routineTutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.platform,
+    defaultTarget: routineTutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].defaultOptions.target,
   });
   const { t } = useTranslation('tutorial');
 
   const selectedGuide = seleniumRoutineTutorialData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const frameworkLanguage = Object.keys(tutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang).find((language) =>
-    tutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
+  const frameworkLanguage = Object.keys(routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang).find((language) =>
+    routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
   );
 
   const WEB_ROUTINE_SAMPLE = `name: sample-routine
@@ -72,7 +72,13 @@ jobs:
       sidebar={
         <div>
           <div style={{ marginBottom: '1rem' }}>
-            <TutorialOptionSelectors sdk={TutorialSupportSdk.SELENIUM} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
+            <TutorialOptionSelectors
+              sdk={TutorialSupportSdk.SELENIUM}
+              sdkSupportInfo={routineTutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM]}
+              selectedFramwork={framework}
+              selectedPlatform={platform}
+              selectedTarget={target}
+            />
           </div>
 
           <GuideAnchor

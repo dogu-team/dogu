@@ -1,7 +1,69 @@
 import { OrganizationId, ProjectId } from '@dogu-private/types';
 
-import { TutorialSupportFramework, TutorialSupportLanguage, TutorialSupportPlatform, TutorialSupportSdk, TutorialSupportTarget } from '.';
+import { TutorialSdkSupportInfoMap, TutorialSupportFramework, TutorialSupportLanguage, TutorialSupportPlatform, TutorialSupportSdk, TutorialSupportTarget } from '.';
 import { getPersonalAccessToken } from '../../api/user';
+
+export const remoteTutorialSdkSupportInfo: TutorialSdkSupportInfoMap = {
+  [TutorialSupportSdk.APPIUM]: {
+    frameworksPerLang: {
+      [TutorialSupportLanguage.PYTHON]: [TutorialSupportFramework.PYTEST],
+    },
+    targetsPerPlatform: {
+      [TutorialSupportPlatform.ANDROID]: [TutorialSupportTarget.WEB, TutorialSupportTarget.APP],
+      [TutorialSupportPlatform.IOS]: [TutorialSupportTarget.WEB, TutorialSupportTarget.APP],
+    },
+    defaultOptions: {
+      framework: TutorialSupportFramework.PYTEST,
+      platform: TutorialSupportPlatform.ANDROID,
+      target: TutorialSupportTarget.WEB,
+    },
+  },
+  [TutorialSupportSdk.WEBDRIVERIO]: {
+    frameworksPerLang: {
+      [TutorialSupportLanguage.JAVASCRIPT]: [TutorialSupportFramework.JEST],
+    },
+    targetsPerPlatform: {
+      [TutorialSupportPlatform.ANDROID]: [TutorialSupportTarget.WEB, TutorialSupportTarget.APP],
+      [TutorialSupportPlatform.IOS]: [TutorialSupportTarget.WEB, TutorialSupportTarget.APP],
+      [TutorialSupportPlatform.WINDOWS]: [TutorialSupportTarget.WEB],
+      [TutorialSupportPlatform.MACOS]: [TutorialSupportTarget.WEB],
+    },
+    defaultOptions: {
+      framework: TutorialSupportFramework.JEST,
+      platform: TutorialSupportPlatform.ANDROID,
+      target: TutorialSupportTarget.WEB,
+    },
+  },
+  [TutorialSupportSdk.SELENIUM]: {
+    frameworksPerLang: {
+      [TutorialSupportLanguage.PYTHON]: [TutorialSupportFramework.PYTEST],
+    },
+    targetsPerPlatform: {
+      [TutorialSupportPlatform.WINDOWS]: [TutorialSupportTarget.WEB],
+      [TutorialSupportPlatform.MACOS]: [TutorialSupportTarget.WEB],
+    },
+    defaultOptions: {
+      framework: TutorialSupportFramework.PYTEST,
+      platform: TutorialSupportPlatform.WINDOWS,
+      target: TutorialSupportTarget.WEB,
+    },
+  },
+  [TutorialSupportSdk.GAMIUM]: {
+    frameworksPerLang: {
+      [TutorialSupportLanguage.JAVASCRIPT]: [TutorialSupportFramework.JEST],
+      [TutorialSupportLanguage.PYTHON]: [TutorialSupportFramework.PYTEST],
+    },
+    targetsPerPlatform: {
+      [TutorialSupportPlatform.ANDROID]: [TutorialSupportTarget.UNITY],
+      [TutorialSupportPlatform.IOS]: [TutorialSupportTarget.UNITY],
+    },
+    defaultOptions: {
+      framework: TutorialSupportFramework.JEST,
+      platform: TutorialSupportPlatform.ANDROID,
+      target: TutorialSupportTarget.UNITY,
+    },
+  },
+};
 
 export type GenerateCapabilitiesCodeParams = {
   framework: TutorialSupportFramework;

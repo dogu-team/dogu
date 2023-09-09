@@ -13,7 +13,7 @@ import useTranslation from 'next-translate/useTranslation';
 import { getOrganizationInServerSide } from 'src/api/organization';
 import { getProjectInServerSide } from 'src/api/project';
 import ConsoleBasicLayout from 'src/components/layouts/ConsoleBasicLayout';
-import FrameworkSelectContainer from 'src/components/tutorial/FrameworkSelectContainer';
+import RemoteFrameworkSelectContainer from 'src/components/tutorial/remote/RemoteFrameworkSelectContainer';
 import SdkIcon from 'src/components/tutorial/SdkIcon';
 import { TutorialContext } from 'src/hooks/context/useTutorialContext';
 import { TutorialSupportSdk, tutorialSupportSdkText } from 'src/resources/tutorials';
@@ -24,6 +24,7 @@ import RoutineTutorial from '../../../../../../src/components/tutorial/routine/R
 import { routineTutorialData } from '../../../../../../src/resources/tutorials/routine';
 import { swrAuthFetcher } from '../../../../../../src/api';
 import useRefresh from '../../../../../../src/hooks/useRefresh';
+import RoutineFrameworkSelectContainer from '../../../../../../src/components/tutorial/routine/RoutineFrameworkSelectContainer';
 
 interface ServerSideProps {
   organization: OrganizationBase;
@@ -89,7 +90,7 @@ const ProjectRoutineGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ pro
         </Box>
       ) : (
         <CenteredBox>
-          <FrameworkSelectContainer
+          <RoutineFrameworkSelectContainer
             skipButton={
               <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/routines`} access-id="skip-project-tutorial">
                 <Button type="link">{t('skipTutorialLinkTitle')}</Button>

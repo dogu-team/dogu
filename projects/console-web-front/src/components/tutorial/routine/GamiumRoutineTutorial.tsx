@@ -3,8 +3,8 @@ import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
 
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
-import { ROUTINE_SAMPLE_GIT_URL, tutorialSdkSupportInfo, TutorialSupportLanguage, TutorialSupportSdk, TutorialSupportTarget } from '../../../resources/tutorials';
-import { gamiumRoutineTutorialData } from '../../../resources/tutorials/routine';
+import { ROUTINE_SAMPLE_GIT_URL, TutorialSupportLanguage, TutorialSupportSdk, TutorialSupportTarget } from '../../../resources/tutorials';
+import { gamiumRoutineTutorialData, routineTutorialSdkSupportInfo } from '../../../resources/tutorials/routine';
 import CodeWithCopyButton from '../../common/CodeWithCopyButton';
 import DoneStep from './DoneStep';
 import GuideAnchor from '../GuideAnchor';
@@ -34,15 +34,15 @@ const DONE_ID = 'done';
 const GamiumRoutineTutorial = () => {
   const { project } = useTutorialContext();
   const { framework, platform, target } = useTutorialSelector({
-    defaultFramework: tutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].defaultOptions.framework,
-    defaultPlatform: tutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].defaultOptions.platform,
-    defaultTarget: tutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].defaultOptions.target,
+    defaultFramework: routineTutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].defaultOptions.framework,
+    defaultPlatform: routineTutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].defaultOptions.platform,
+    defaultTarget: routineTutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].defaultOptions.target,
   });
   const { t } = useTranslation('tutorial');
 
   const selectedGuide = gamiumRoutineTutorialData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const frameworkLanguage = Object.keys(tutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang).find((language) =>
-    tutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
+  const frameworkLanguage = Object.keys(routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang).find((language) =>
+    routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
   );
 
   const APP_ROUTINE_SAMPLE = `name: sample-routine
@@ -76,7 +76,13 @@ jobs:
       sidebar={
         <div>
           <div style={{ marginBottom: '1rem' }}>
-            <TutorialOptionSelectors sdk={TutorialSupportSdk.GAMIUM} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
+            <TutorialOptionSelectors
+              sdk={TutorialSupportSdk.GAMIUM}
+              sdkSupportInfo={routineTutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM]}
+              selectedFramwork={framework}
+              selectedPlatform={platform}
+              selectedTarget={target}
+            />
           </div>
 
           <GuideAnchor
@@ -97,6 +103,16 @@ jobs:
       }
       content={
         <div>
+          <GuideStep
+            id={INTRODUCTION_ID}
+            title={t('routineTutorialIntroTitle')}
+            description={
+              <p>
+                <Trans i18nKey="tutorial:routineTutorialIntroDescription" components={{ br: <br /> }} />
+              </p>
+            }
+            content={null}
+          />
           <GuideStep
             id={CLONE_GIT_ID}
             title={t('routineTutorialRepositoryConfigurationTitle')}

@@ -3,24 +3,26 @@ import { Divider } from 'antd';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import { useState } from 'react';
+import { GoWorkflow } from 'react-icons/go';
 
-import { flexRowSpaceBetweenStyle } from '../../styles/box';
-import GuideBanner from './GuideBanner';
-import DoguText from '../common/DoguText';
-import FrameworkSelectTable from './FrameworkSelectTable';
-import { TutorialSupportSdk } from '../../resources/tutorials';
-import useTutorialContext from '../../hooks/context/useTutorialContext';
+import { flexRowSpaceBetweenStyle } from '../../../styles/box';
+import GuideBanner from '../GuideBanner';
+import DoguText from '../../common/DoguText';
+import FrameworkSelectTable from '../FrameworkSelectTable';
+import { TutorialSupportSdk } from '../../../resources/tutorials/index';
+import useTutorialContext from '../../../hooks/context/useTutorialContext';
+import { routineTutorialSdkSupportInfo } from '../../../resources/tutorials/routine';
 
 interface Props {
   skipButton: React.ReactNode;
 }
 
-const FrameworkSelectContainer = ({ skipButton }: Props) => {
+const RoutineFrameworkSelectContainer = ({ skipButton }: Props) => {
   const router = useRouter();
   const { project } = useTutorialContext();
   const [selectedSdk, setSelectedSdk] = useState<TutorialSupportSdk>(() => {
     if (project?.type === PROJECT_TYPE.WEB) {
-      return TutorialSupportSdk.WEBDRIVERIO;
+      return TutorialSupportSdk.SELENIUM;
     }
 
     if (project?.type === PROJECT_TYPE.APP) {
@@ -31,22 +33,43 @@ const FrameworkSelectContainer = ({ skipButton }: Props) => {
       return TutorialSupportSdk.GAMIUM;
     }
 
-    return TutorialSupportSdk.WEBDRIVERIO;
+    return TutorialSupportSdk.SELENIUM;
   });
+
+  const getAvailableSdk = (): TutorialSupportSdk[] => {
+    switch (project?.type) {
+      case PROJECT_TYPE.WEB:
+        // return [TutorialSupportSdk.WEBDRIVERIO, TutorialSupportSdk.SELENIUM, TutorialSupportSdk.APPIUM];
+        return [TutorialSupportSdk.SELENIUM];
+      case PROJECT_TYPE.APP:
+        return [TutorialSupportSdk.APPIUM];
+      case PROJECT_TYPE.GAME:
+        return [TutorialSupportSdk.GAMIUM];
+      default:
+        return [TutorialSupportSdk.SELENIUM, TutorialSupportSdk.APPIUM, TutorialSupportSdk.GAMIUM];
+    }
+  };
 
   const handleClickFramework = (framework: string) => {
     if (!selectedSdk) return;
     router.push({ query: { ...router.query, sdk: selectedSdk, framework } }, undefined, { shallow: true });
   };
 
+  if (!project) {
+    return null;
+  }
+
   return (
     <Box>
       <TitleWrapper>
         <div style={{ marginRight: '.5rem' }}>
+          <p style={{ marginBottom: '.15rem', fontSize: '1.1rem', fontWeight: '500' }}>
+            <GoWorkflow style={{ fontSize: '1.1rem' }} /> Routine
+          </p>
           <StyledH1>
             Get started with <DoguText />!
           </StyledH1>
-          <Description>Run automated testings for your web, app and game!</Description>
+          <Description>Run automated testings for your project!</Description>
         </div>
 
         <div>{skipButton}</div>
@@ -57,7 +80,13 @@ const FrameworkSelectContainer = ({ skipButton }: Props) => {
       <TableWrapper>
         <StyledH2>Select test framework!</StyledH2>
 
-        <FrameworkSelectTable selectedSdk={selectedSdk} onClickSdk={setSelectedSdk} onClickFramework={handleClickFramework} />
+        <FrameworkSelectTable
+          sdks={getAvailableSdk()}
+          supportMap={routineTutorialSdkSupportInfo}
+          selectedSdk={selectedSdk}
+          onClickSdk={setSelectedSdk}
+          onClickFramework={handleClickFramework}
+        />
       </TableWrapper>
 
       <Divider />
@@ -69,7 +98,7 @@ const FrameworkSelectContainer = ({ skipButton }: Props) => {
   );
 };
 
-export default FrameworkSelectContainer;
+export default RoutineFrameworkSelectContainer;
 
 const Box = styled.div`
   padding: 3rem;
@@ -84,6 +113,7 @@ const Box = styled.div`
 
 const TitleWrapper = styled.div`
   ${flexRowSpaceBetweenStyle}
+  align-items: flex-start;
 `;
 
 const StyledH1 = styled.h1`

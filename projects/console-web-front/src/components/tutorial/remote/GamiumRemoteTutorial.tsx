@@ -7,15 +7,8 @@ import useTranslation from 'next-translate/useTranslation';
 import Trans from 'next-translate/Trans';
 
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
-import {
-  TutorialSupportLanguage,
-  TutorialSupportPlatform,
-  TutorialSupportTarget,
-  REMOTE_SAMPLE_GIT_URL,
-  tutorialSdkSupportInfo,
-  TutorialSupportSdk,
-} from '../../../resources/tutorials/index';
-import { gamiumRemoteTutorialGuideData, RemoteTutorialProps } from '../../../resources/tutorials/remote';
+import { TutorialSupportLanguage, TutorialSupportPlatform, TutorialSupportTarget, REMOTE_SAMPLE_GIT_URL, TutorialSupportSdk } from '../../../resources/tutorials/index';
+import { gamiumRemoteTutorialGuideData, RemoteTutorialProps, remoteTutorialSdkSupportInfo } from '../../../resources/tutorials/remote';
 import CodeWithCopyButton from '../../common/CodeWithCopyButton';
 import DoneStep from './DoneStep';
 import GuideAnchor from '../GuideAnchor';
@@ -38,16 +31,16 @@ const DONE_ID = 'done';
 
 const GamiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps) => {
   const { framework, platform, target } = useTutorialSelector({
-    defaultFramework: tutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].defaultOptions.framework,
-    defaultPlatform: tutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].defaultOptions.platform,
-    defaultTarget: tutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].defaultOptions.target,
+    defaultFramework: remoteTutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].defaultOptions.framework,
+    defaultPlatform: remoteTutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].defaultOptions.platform,
+    defaultTarget: remoteTutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].defaultOptions.target,
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
   const { t } = useTranslation('tutorial');
 
   const selectedGuide = gamiumRemoteTutorialGuideData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const frameworkLanguage = Object.keys(tutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].frameworksPerLang).find((language) =>
-    tutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
+  const frameworkLanguage = Object.keys(remoteTutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].frameworksPerLang).find((language) =>
+    remoteTutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
   );
 
   useEffect(() => {
@@ -75,7 +68,13 @@ const GamiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
       sidebar={
         <div>
           <div style={{ marginBottom: '1rem' }}>
-            <TutorialOptionSelectors sdk={TutorialSupportSdk.GAMIUM} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
+            <TutorialOptionSelectors
+              sdk={TutorialSupportSdk.GAMIUM}
+              sdkSupportInfo={remoteTutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM]}
+              selectedFramwork={framework}
+              selectedPlatform={platform}
+              selectedTarget={target}
+            />
           </div>
 
           <GuideAnchor

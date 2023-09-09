@@ -4,7 +4,8 @@ import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
 import {
-  tutorialSdkSupportInfo,
+  TutorialSdkSupportInfo,
+  TutorialSdkSupportInfoMap,
   TutorialSupportFramework,
   TutorialSupportLanguage,
   tutorialSupportLanguageText,
@@ -22,24 +23,25 @@ import useTutorialContext from '../../hooks/context/useTutorialContext';
 
 interface Props {
   sdk: TutorialSupportSdk;
+  sdkSupportInfo: TutorialSdkSupportInfo;
   selectedFramwork: TutorialSupportFramework;
   selectedPlatform: TutorialSupportPlatform;
   selectedTarget: TutorialSupportTarget;
 }
 
-const TutorialOptionSelectors = ({ sdk, selectedFramwork, selectedPlatform, selectedTarget }: Props) => {
+const TutorialOptionSelectors = ({ sdk, sdkSupportInfo, selectedFramwork, selectedPlatform, selectedTarget }: Props) => {
   const router = useRouter();
   const { project } = useTutorialContext();
-  const availabePlatforms = Object.keys(tutorialSdkSupportInfo[sdk].targetsPerPlatform).filter((platform) =>
-    tutorialSdkSupportInfo[sdk].targetsPerPlatform[platform as TutorialSupportPlatform]?.includes(selectedTarget),
+  const availabePlatforms = Object.keys(sdkSupportInfo.targetsPerPlatform).filter((platform) =>
+    sdkSupportInfo.targetsPerPlatform[platform as TutorialSupportPlatform]?.includes(selectedTarget),
   );
-  const availableTargets = tutorialSdkSupportInfo[sdk].targetsPerPlatform[selectedPlatform];
-  const frameworkOptions: SelectProps['options'] = Object.keys(tutorialSdkSupportInfo[sdk].frameworksPerLang).map((language) => {
+  const availableTargets = sdkSupportInfo.targetsPerPlatform[selectedPlatform];
+  const frameworkOptions: SelectProps['options'] = Object.keys(sdkSupportInfo.frameworksPerLang).map((language) => {
     const lang = language as TutorialSupportLanguage;
 
     return {
       label: tutorialSupportLanguageText[lang],
-      options: tutorialSdkSupportInfo[sdk].frameworksPerLang[lang]?.map((framework) => ({
+      options: sdkSupportInfo.frameworksPerLang[lang]?.map((framework) => ({
         label: (
           <FlexRow>
             <FrameworkIcon framework={framework} size={16} />

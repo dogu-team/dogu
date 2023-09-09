@@ -18,6 +18,8 @@ import { RoutineEditMode } from '../../../types/routine';
 import YamlEditor from '../../editor/yaml/YamlEditor';
 import RoutineGUIEditor from '../../routine/editor/RoutineGUIEditor';
 import { ProjectContext } from '../../../hooks/context/useProjectContext';
+import Link from 'next/link';
+import { RiExternalLinkLine } from 'react-icons/ri';
 
 interface Props {
   project: ProjectBase;
@@ -61,6 +63,16 @@ const TutorialRoutineCreator = ({ project, sampleYaml }: Props) => {
 
   return (
     <ProjectContext.Provider value={{ project, mutate: null }}>
+      {isCustom && (
+        <div style={{ marginBottom: '1rem' }}>
+          <Link href="https://docs.dogutech.io/routine/routines/syntax" target="_blank">
+            <Button>
+              YAML Guide
+              <RiExternalLinkLine style={{ marginLeft: '.25rem' }} />
+            </Button>
+          </Link>
+        </div>
+      )}
       <RoutineEditor
         mode={isCustom ? RoutineEditMode.SCRIPT : RoutineEditMode.GUI}
         menu={null}

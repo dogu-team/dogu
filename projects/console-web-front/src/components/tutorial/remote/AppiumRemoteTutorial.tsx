@@ -6,15 +6,8 @@ import { PROJECT_TYPE, USER_ID_COOKIE_NAME } from '@dogu-private/types';
 import useTranslation from 'next-translate/useTranslation';
 import Trans from 'next-translate/Trans';
 
-import {
-  TutorialSupportLanguage,
-  TutorialSupportPlatform,
-  TutorialSupportTarget,
-  REMOTE_SAMPLE_GIT_URL,
-  tutorialSdkSupportInfo,
-  TutorialSupportSdk,
-} from '../../../resources/tutorials/index';
-import { appiumRemoteTutorialData, RemoteTutorialProps } from '../../../resources/tutorials/remote';
+import { TutorialSupportLanguage, TutorialSupportPlatform, TutorialSupportTarget, REMOTE_SAMPLE_GIT_URL, TutorialSupportSdk } from '../../../resources/tutorials/index';
+import { appiumRemoteTutorialData, RemoteTutorialProps, remoteTutorialSdkSupportInfo } from '../../../resources/tutorials/remote';
 import { flexRowBaseStyle } from '../../../styles/box';
 import GuideAnchor from '../GuideAnchor';
 import GuideBanner from '../GuideBanner';
@@ -56,15 +49,15 @@ const AppiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
   };
 
   const { framework, platform, target } = useTutorialSelector({
-    defaultFramework: tutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].defaultOptions.framework,
-    defaultPlatform: tutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].defaultOptions.platform,
+    defaultFramework: remoteTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].defaultOptions.framework,
+    defaultPlatform: remoteTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].defaultOptions.platform,
     defaultTarget: getProjectTypeDefaultTarget(),
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 
   const selectedGuide = appiumRemoteTutorialData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const frameworkLanguage = Object.keys(tutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang).find((language) =>
-    tutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
+  const frameworkLanguage = Object.keys(remoteTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang).find((language) =>
+    remoteTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
   );
 
   useEffect(() => {
@@ -92,7 +85,13 @@ const AppiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
       sidebar={
         <div>
           <div style={{ marginBottom: '1rem' }}>
-            <TutorialOptionSelectors sdk={TutorialSupportSdk.APPIUM} selectedFramwork={framework} selectedPlatform={platform} selectedTarget={target} />
+            <TutorialOptionSelectors
+              sdk={TutorialSupportSdk.APPIUM}
+              sdkSupportInfo={remoteTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM]}
+              selectedFramwork={framework}
+              selectedPlatform={platform}
+              selectedTarget={target}
+            />
           </div>
 
           <GuideAnchor
