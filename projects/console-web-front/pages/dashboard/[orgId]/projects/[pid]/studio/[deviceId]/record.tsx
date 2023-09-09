@@ -5,7 +5,7 @@ import { getStudioTestingLayout, getStudioTestingServerSideProps, StudioTestingP
 import { NextPageWithLayout } from '../../../../../../_app';
 
 const RecordTestingPage: NextPageWithLayout<StudioTestingPageProps> = ({ organization, project, me, deviceId }) => {
-  return <RecordTesting organization={organization} project={project} deviceId={deviceId} />;
+  return <RecordTesting organization={organization} project={project} deviceId={deviceId} me={me} />;
 };
 
 RecordTestingPage.getLayout = getStudioTestingLayout;
