@@ -203,7 +203,7 @@ func (s *SurfaceConnector) startRoutine() {
 				continue
 			}
 			lastSurfaceReconnectCompleteTime = time.Now()
-			recvRoutineStartTime := lastSurfaceReconnectCompleteTime
+			recvRoutineStartTime := time.Now() // caution recvRoutineStartTime must be after lastSurfaceReconnectCompleteTime
 			recvRoutineStartTime = recvRoutineStartTime.Add(time.Millisecond * 100)
 			go startRecvRoutine(newSurface,
 				func(err error) {
