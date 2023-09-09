@@ -146,7 +146,7 @@ class ZombieWdaXCTest implements Zombieable {
       ZombieServiceInstance.notifyDie(this);
     });
 
-    for await (const _ of loopTime(Milisecond.t3Seconds, Milisecond.t5Minutes)) {
+    for await (const _ of loopTime(Milisecond.t3Seconds, Milisecond.t3Minutes)) {
       if (await this.isHealth()) {
         break;
       }
