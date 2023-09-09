@@ -200,6 +200,7 @@ func (s *SurfaceConnector) startRoutine() {
 			if err != nil {
 				log.Inst.Error("surfaceConnector.startRoutine reconnect error", zap.Error(err))
 				s.msgChan <- SurfaceMessage{time: time.Now(), msgType: reconnect}
+				continue
 			}
 			recvRoutineStartTime := time.Now()
 			go startRecvRoutine(newSurface,
