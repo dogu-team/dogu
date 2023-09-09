@@ -53,6 +53,7 @@ public final class IOSDeviceAgent {
   private func runInternal() {
     let port = self.config.grpcPort
     let nwport: NWEndpoint.Port = NWEndpoint.Port(rawValue: UInt16(self.config.grpcPort)) ?? 50002
+    yellAlivePeriodically()
     do {
       listener = try NWListener(using: .tcp, on: nwport)
       listener?.stateUpdateHandler = { [weak self] state in
@@ -81,5 +82,12 @@ public final class IOSDeviceAgent {
     } catch {
       Log.shared.error("ScreenServer Failed to start server, error: \(error.localizedDescription)")
     }
+  }
+
+  private func yellAlivePeriodically() {
+    let timer = Timer(timeInterval: 30, repeats: true) { [weak self] _ in
+      Log.shared.info("IOSDeviceAgent is alive")
+    }
+    RunLoop.main.add(timer, forMode: .common)
   }
 }

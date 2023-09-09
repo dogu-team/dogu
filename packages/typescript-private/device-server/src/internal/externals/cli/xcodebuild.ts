@@ -1,5 +1,5 @@
 import { Serial } from '@dogu-private/types';
-import { BufferLogger, delay, errorify, FilledPrintable, loopTime, Milisecond, MixedLogger, PrefixLogger, stringify } from '@dogu-tech/common';
+import { BufferLogger, delay, errorify, FilledPrintable, IdleCheckLogger, loopTime, Milisecond, MixedLogger, PrefixLogger, stringify } from '@dogu-tech/common';
 import { ChildProcess, DirectoryRotation, findEndswith, HostPaths, killChildProcess, redirectFileToStream } from '@dogu-tech/node';
 import child_process, { exec, execFile } from 'child_process';
 import { randomUUID } from 'crypto';
@@ -81,7 +81,7 @@ export async function validateXcodeBuild(): Promise<void> {
 
 export interface XcodebuildOption {
   extraArgs?: string[];
-  waitForLog?: { str: string; timeout: number }; // kill if log not printed in a certain time
+  idleLogTimeoutMillis?: number;
 }
 
 export class XCTestRunContext {
@@ -97,23 +97,24 @@ export class XCTestRunContext {
     private readonly option: XcodebuildOption,
     private readonly logger: MixedLogger,
     private readonly buffer: BufferLogger,
+    private readonly idleChecker: IdleCheckLogger,
   ) {
     this.pid = proc.pid ?? 0;
     this.startTime = Date.now();
     const redirectContext = { stop: false };
     proc.on('open', () => {
-      this.logger.debug?.(`xcodebuild opened. time: ${Date.now()}, pid: ${this.pid}`);
+      this.logger.debug?.(`xcodebuild opened. pid: ${this.pid}`);
     });
     proc.stdout?.setEncoding('utf8');
     proc.stdout?.on('data', (data) => {
-      this.logger.debug?.(`stdout time: ${Date.now()}, pid: ${this.pid}, data: ${String(data)}`);
+      this.logger.debug?.(`stdout pid: ${this.pid}, data: ${String(data)}`);
     });
     proc.stderr?.setEncoding('utf8');
     proc.stderr?.on('data', (data) => {
-      this.logger.debug?.(`stderr time: ${Date.now()}, pid: ${this.pid}, data: ${String(data)}`);
+      this.logger.debug?.(`stderr pid: ${this.pid}, data: ${String(data)}`);
     });
     proc.on('close', (code, signal) => {
-      this.logger.debug?.(`closed time:${Date.now()}, pid: ${this.pid}, with code: ${stringify(code)}, signal: ${stringify(signal)}`);
+      this.logger.debug?.(`closed pid: ${this.pid}, with code: ${stringify(code)}, signal: ${stringify(signal)}`);
       this.logger.debug?.(`xcodebuild closed with logs: ${this.history}`);
       this.logger.error(`xcodebuild closed with with code: ${stringify(code)}, signal: ${stringify(signal)}`);
       this.isAlive = false;
@@ -124,7 +125,7 @@ export class XCTestRunContext {
     });
   }
   public kill(reason: string): void {
-    this.logger.debug?.(`killed. time:${Date.now()}, reason: ${reason}`);
+    this.logger.debug?.(`killed. reason: ${reason}`);
     this.logger.error(`killed. reason: ${reason}`);
     killChildProcess(this.proc).catch((error) => {
       this.logger.error('XCTestRunContext killChildProcess', { error: errorify(error) });
@@ -132,10 +133,19 @@ export class XCTestRunContext {
   }
 
   get history(): string {
-    let bufferLogs = '';
-    for (const buffer of this.buffer.buffers) {
-      bufferLogs += `level: ${buffer[0]}, logs: ${stringify(buffer[1])}`;
-    }
+    let logInfos = Array.from(this.buffer.buffers).flatMap((buffer) =>
+      buffer[1].flatMap((log) => {
+        return {
+          level: buffer[0],
+          time: log.time,
+          message: log.message,
+          details: log.details,
+        };
+      }),
+    );
+    logInfos.sort((a, b) => a.time - b.time);
+    const bufferLogs =
+      '>>> LOG DUMP start\n' + logInfos.map((log) => `${log.level}|${new Date(log.time).toISOString()}|${log.message} ${stringify(log.details)}`).join('\n') + '\n>>> LOG DUMP end';
     return bufferLogs;
   }
 
@@ -152,9 +162,9 @@ export class XCTestRunContext {
     if (!this.isAlive) {
       return;
     }
-    if (this.option.waitForLog && !this.isWaitLogPrinted && this.option.waitForLog.timeout < Date.now() - this.startTime) {
-      this.logger.error(`waitForLog timeout expired. ${this.option.waitForLog.str}`);
-      this.kill('waitForLog timeout expired');
+    if (this.option.idleLogTimeoutMillis && this.idleChecker.isBefore(this.option.idleLogTimeoutMillis)) {
+      this.logger.error(`idleLog timeout expired. ${Date.now() - this.startTime}ms`);
+      this.kill(`idleLog timeout expired. ${Date.now() - this.startTime}ms`);
     }
   }
 
@@ -191,9 +201,6 @@ export class XCTestRunContext {
     if (this.logs.includes('TEST EXECUTE FAILED') || this.logs.includes('BUILD INTERRUPTED')) {
       this.kill('TEST EXECUTE FAILED or BUILD INTERRUPTED');
     }
-    if (this.option.waitForLog && !this.isWaitLogPrinted && this.logs.includes(this.option.waitForLog.str)) {
-      this.isWaitLogPrinted = true;
-    }
     if (this.logs.length > 10000) {
       this.logs = this.logs.slice(1000);
     }
@@ -208,7 +215,8 @@ export function testWithoutBuilding(prefix: string, xctestrunPath: string, seria
   const tempDirPath = `${directoryRotation.getCurrentWavePath()}/${randomUUID()}`;
   const xcodebuildPath = getXcodeBuildPathSync();
   const bufferedLogger = new BufferLogger({ limit: 30 });
-  const logger = new MixedLogger([new PrefixLogger(printable, `[${prefix}]`), bufferedLogger]);
+  const idleCheckLogger = new IdleCheckLogger();
+  const logger = new MixedLogger([new PrefixLogger(printable, `[${prefix}]`), bufferedLogger, idleCheckLogger]);
   const proc = ChildProcess.spawnSync(
     xcodebuildPath,
     ['test-without-building', '-xctestrun', `${xctestrunPath}`, '-destination', `id=${serial}`, '-resultBundlePath', tempDirPath],
@@ -216,21 +224,22 @@ export function testWithoutBuilding(prefix: string, xctestrunPath: string, seria
     logger,
   );
 
-  return new XCTestRunContext(tempDirPath, proc, option, logger, bufferedLogger);
+  return new XCTestRunContext(tempDirPath, proc, option, logger, bufferedLogger, idleCheckLogger);
 }
 
 export function buildAndtest(serial: Serial, projectPath: string, scheme: string, option: XcodebuildOption, printable: FilledPrintable): XCTestRunContext {
   const tempDirPath = `${directoryRotation.getCurrentWavePath()}/${randomUUID()}`;
   const xcodebuildPath = getXcodeBuildPathSync();
   const bufferedLogger = new BufferLogger({ limit: 30 });
-  const logger = new MixedLogger([new PrefixLogger(printable, '[xctest]'), bufferedLogger]);
+  const idleCheckLogger = new IdleCheckLogger();
+  const logger = new MixedLogger([new PrefixLogger(printable, '[xctest]'), bufferedLogger, idleCheckLogger]);
   const args = ['build-for-testing', 'test-without-building', '-project', projectPath, '-scheme', scheme, '-destination', `id=${serial}`, '-resultBundlePath', tempDirPath];
   if (option.extraArgs) {
     args.push(...option.extraArgs);
   }
   const proc = ChildProcess.spawnSync(xcodebuildPath, args, {}, logger);
 
-  return new XCTestRunContext(tempDirPath, proc, option, logger, bufferedLogger);
+  return new XCTestRunContext(tempDirPath, proc, option, logger, bufferedLogger, idleCheckLogger);
 }
 
 export async function killPreviousXcodebuild(serial: Serial, pattern: string, printable: FilledPrintable): Promise<void> {

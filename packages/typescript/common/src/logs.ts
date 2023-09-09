@@ -51,6 +51,7 @@ export function logLevelTypeToEnum(level: LogLevel): LogLevelEnum {
 
 export interface LogInfo {
   message: unknown;
+  time: number;
   details?: Record<string, unknown>;
 }
 
@@ -203,7 +204,7 @@ export class BufferLogger implements FilledPrintable {
     if (!buffer) {
       return;
     }
-    buffer.push({ message, details });
+    buffer.push({ message, time: Date.now(), details });
     if (this.options.limit > 0 && buffer.length > this.options.limit) {
       buffer.shift();
     }
@@ -301,6 +302,34 @@ export class LoggerHolder implements FilledPrintable {
 
   setLogger(printable: Printable): void {
     this.printable = printable;
+  }
+}
+
+export class IdleCheckLogger implements FilledPrintable {
+  constructor(private _lastLogTime: number = Date.now()) {}
+
+  isBefore(deltaTimeMillis: number): boolean {
+    return Date.now() - this._lastLogTime > deltaTimeMillis;
+  }
+
+  error(message: unknown, details?: Record<string, unknown>): void {
+    this._lastLogTime = Date.now();
+  }
+
+  warn(message: unknown, details?: Record<string, unknown>): void {
+    this._lastLogTime = Date.now();
+  }
+
+  info(message: unknown, details?: Record<string, unknown>): void {
+    this._lastLogTime = Date.now();
+  }
+
+  debug(message: unknown, details?: Record<string, unknown>): void {
+    this._lastLogTime = Date.now();
+  }
+
+  verbose(message: unknown, details?: Record<string, unknown>): void {
+    this._lastLogTime = Date.now();
   }
 }
 
