@@ -202,7 +202,9 @@ func (s *SurfaceConnector) startRoutine() {
 				s.msgChan <- SurfaceMessage{time: time.Now(), msgType: reconnect}
 				continue
 			}
-			recvRoutineStartTime := time.Now()
+			lastSurfaceReconnectCompleteTime = time.Now()
+			recvRoutineStartTime := lastSurfaceReconnectCompleteTime
+			recvRoutineStartTime = recvRoutineStartTime.Add(time.Millisecond * 100)
 			go startRecvRoutine(newSurface,
 				func(err error) {
 					log.Inst.Warn("surfaceConnector.startRecvRoutine failed", zap.String("serial", s.serial), zap.Error(err))
@@ -234,7 +236,6 @@ func (s *SurfaceConnector) startRoutine() {
 				})
 
 			lastSurface = newSurface
-			lastSurfaceReconnectCompleteTime = time.Now()
 		case close:
 			if nil == msg.err {
 				msg.err = errors.Errorf("unknown")
