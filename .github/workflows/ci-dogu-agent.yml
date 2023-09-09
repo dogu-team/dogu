@@ -72,17 +72,6 @@ jobs:
           path: ${{ github.workspace }}/third-party
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('scripts/third-parties/download.ts') }}-${{ hashFiles('projects/go-device-controller/**') }}-${{ hashFiles('projects/android-device-agent/**') }}-${{ hashFiles('projects/ios-device-agent/**') }}-${{ hashFiles('projects/go-device-controller/**') }}-${{ hashFiles('projects/android-device-agent/**') }}-${{ hashFiles('projects/ios-device-agent/**') }}
 
-      - name: Cache Go
-        uses: actions/cache@v3
-        id: cache_go
-        env:
-          cache-name: cache-go
-        with:
-          path: |
-            ~/hostedtoolcache/go/${{ env.GO_VERSION }}
-            C:\hostedtoolcache\windows\go\${{ env.GO_VERSION }}
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ env.GO_VERSION }}
-
       - name: Cache NM Space
         uses: actions/cache@v3
         id: cache_nm_space
@@ -153,11 +142,11 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
-      - if: steps.cache_go.outputs.cache-hit != 'true'
-        name: Common - Setup go
-        uses: actions/setup-go@v3
+      - name: Common - Setup go
+        uses: actions/setup-go@v4
         with:
           go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: ${{ github.workspace }}/projects/go-device-controller/go.sum
 
       - name: Common - Set up JDK 11 for android build
         uses: actions/setup-java@v3
