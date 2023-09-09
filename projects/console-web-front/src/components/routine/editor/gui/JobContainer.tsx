@@ -120,7 +120,7 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
   const { t } = useTranslation();
   const projectType = useContext(RoutineProjectTypeContext);
 
-  const isGroupRun = 'group' in (job['runs-on'] as object);
+  const isGroupRun = typeof job['runs-on'] === 'object' && 'group' in (job['runs-on'] as object);
 
   const handleAddNeeds = useCallback(
     (need: string) => {
@@ -420,7 +420,7 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
         </div>
         <ContentInner>
           <RunsOn runsOn={job['runs-on']} onDelete={handleRemoveRunsOn} />
-          <AddDeviceAndTagButton group={typeof job['runs-on'] === 'object' && 'group' in job['runs-on']} onSelect={handleAddRunsOn} devicePlatform={getPlatformByAppVersion()} />
+          <AddDeviceAndTagButton group={isGroupRun} onSelect={handleAddRunsOn} devicePlatform={getPlatformByAppVersion()} />
         </ContentInner>
       </Content>
       <Content>
