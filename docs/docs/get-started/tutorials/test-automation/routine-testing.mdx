@@ -1,6 +1,6 @@
 ---
 sidebar_position: 1
-title: 🔁📝📊 Routine Testing
+title: 🔁 Routine Testing
 locale: en
 toc_max_heading_level: 4
 ---
@@ -13,7 +13,7 @@ import {
   BrowserPlatform,
 } from '@site/src/platform/platform.ts';
 
-# 🔁📝📊 Routine Testing
+# 🔁 Routine Testing
 
 ## What is Routine Testing?
 
@@ -69,17 +69,17 @@ This repository contains examples of using the Dogu Agent API for cross browsing
 - 🌎 **Automatic installation of browser and web drivers** for ⚔️ cross browsing testing.  
   Auto installables: 🌐 chrome with chromedriver, 🦊 firefox with geckodriver, 📐 edge with edgedriver
 - 💾 **Automatic download of project apps** for app testing.  
-  Only when executed in "Dogu Route". If you want it to be available locally, please contact us.
-- 📱 **Control of the built-in Appium Server** for app testing
+  Only when executed in **Dogu Routine**. If you want it to be available locally, please contact us.
+- 📱 **Control of the built-in Appium Server** for app testing.
 
 #### 2. Write Environment Variables To `.env.local` File
-
-We use [dotenv](https://www.npmjs.com/package/dotenv) to load environment variables from `.env.local` file and this file is not included in the repository for local testing.
 
 <BrowserOnly>
 {() => (
 <Tabs groupId="programming-language" defaultValue="typescript">
 <TabItem value="typescript" label="🇹 Typescript" default>
+
+We use [dotenv](https://www.npmjs.com/package/dotenv) to load environment variables from `.env.local` file and this file is not included in the repository for local testing.
 
 ```typescript
 // selenium/typescript/jest/web/setup.ts
@@ -94,6 +94,8 @@ Write the following environment variables to `.env.local` file on `selenium/type
 </TabItem>
 
 <TabItem value="python" label="🐍 Python">
+
+We use [python-dotenv](https://pypi.org/project/python-dotenv/) to load environment variables from `.env.local` file and this file is not included in the repository for local testing.
 
 ```python
 # selenium/python/pytest/web/conftest.py
@@ -334,7 +336,7 @@ jobs:
 
 #### 2. Change Max Parallel Jobs Count on Your Host Device
 
-Change the max parallel jobs count to `16` on your host device for the parallel execution of the Jobs.
+Change the max parallel jobs count to `8` on your host device for the parallel execution of the Jobs.
 
 :::info
 

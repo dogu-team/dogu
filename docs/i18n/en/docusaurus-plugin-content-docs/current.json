@@ -118,5 +118,49 @@
   "sidebar.getStartedSidebar.category.Test Automation": {
     "message": "Test Automation",
     "description": "The label for category Test Automation in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.🛠️ Installation": {
+    "message": "🛠️ Installation",
+    "description": "The label for category 🛠️ Installation in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.👨‍💻 Self-Hosted": {
+    "message": "👨‍💻 Self-Hosted",
+    "description": "The label for category 👨‍💻 Self-Hosted in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.🎓 Tutorials": {
+    "message": "🎓 Tutorials",
+    "description": "The label for category 🎓 Tutorials in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.📱 Device Farm": {
+    "message": "📱 Device Farm",
+    "description": "The label for category 📱 Device Farm in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.📱 Device": {
+    "message": "📱 Device",
+    "description": "The label for category 📱 Device in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.🤖 Test Automation": {
+    "message": "🤖 Test Automation",
+    "description": "The label for category 🤖 Test Automation in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.📲 Remote Testing": {
+    "message": "📲 Remote Testing",
+    "description": "The label for category 📲 Remote Testing in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.🌎 Selenium": {
+    "message": "🌎 Selenium",
+    "description": "The label for category 🌎 Selenium in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.📱 Appium": {
+    "message": "📱 Appium",
+    "description": "The label for category 📱 Appium in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.🤖 WebdriverIO": {
+    "message": "🤖 WebdriverIO",
+    "description": "The label for category 🤖 WebdriverIO in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.🎮 Gamium": {
+    "message": "🎮 Gamium",
+    "description": "The label for category 🎮 Gamium in sidebar getStartedSidebar"
   }
 }
