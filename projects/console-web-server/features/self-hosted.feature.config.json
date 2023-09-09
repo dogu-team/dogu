@@ -1,4 +1,5 @@
 {
+  "licenseVerification": "self-hosted",
   "defaultEdition": "community",
   "fileService": "nexus",
   "useSampleProject": false,

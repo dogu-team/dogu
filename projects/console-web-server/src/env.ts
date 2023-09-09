@@ -25,6 +25,13 @@ export class Env {
   @IsFilledString()
   DOGU_CONSOLE_DOMAIN!: string;
 
+  @IsFilledString()
+  DOGU_LICENSE_SERVER_URL!: string;
+
+  @IsOptional()
+  @IsString()
+  DOGU_LICENSE_COMPANY_NAME!: string;
+
   @IsOptional()
   @IsString()
   DOGU_CONSOLE_GOOGLE_OAUTH_LOGIN_CLIENT_ID!: string | undefined;
