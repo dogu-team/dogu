@@ -1,0 +1,273 @@
+---
+sidebar_position: 2
+title: Examples
+locale: en
+---
+
+You can define and automate the execution of web, mobile app, and game testing flows through routines, integrating them with CI/CD. This document explains examples of routine creation and CI/CD integration.
+
+## Routine examples
+
+The examples are based on `YAML` and can also be created using a GUI editor.
+
+### Cross-Browser testing
+
+Cross-browser testing ensures that your application works correctly in all browsers. The example below demonstrates a routine that performs tests simultaneously on multiple browsers using **a single test script**.
+
+:::tip Host Device
+
+Host devices on macOS and Windows platforms can run multiple `job` instances concurrently.
+
+For more details, refer to the [Device Settings](/management/organization/device-farm/device-management#update-device-settings) guide.
+
+:::
+
+```yaml title="web_test.yaml"
+name: web_test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  # By default, jobs run concurrently.
+  test-chrome:
+    runs-on: macos
+    browserName: chrome
+    record: true
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: node
+          command: |
+            npm install
+            npm run test:web
+        cwd: selenium/typescript/jest
+
+  test-firefox:
+    runs-on: macos
+    browserName: firefox
+    record: true
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: node
+          command: |
+            npm install
+            npm run test:web
+        cwd: selenium/typescript/jest
+
+  test-edge:
+    runs-on: macos
+    browserName: edge
+    record: true
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: node
+          command: |
+            npm install
+            npm run test:web
+        cwd: selenium/typescript/jest
+
+  test-safari:
+    runs-on: macos
+    browserName: safari
+    record: true
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: node
+          command: |
+            npm install
+            npm run test:web
+        cwd: selenium/typescript/jest
+```
+
+### Cross-Platform mobile app and game testing
+
+The following example demonstrates a routine for cross-platform mobile app and game testing (Android and iOS). By specifying `group` in the `runs-on` attribute, it runs tests on **all devices** with `android` and `ios` tags.
+
+:::info Prerequisites
+
+To perform app and game testing, you need to upload the project's app.
+
+For more details, refer to the [App Management](/management/project/app) guide.
+
+:::
+
+```yaml title="app_test.yaml"
+name: app_test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  # By default, jobs run concurrently.
+  test-android:
+    runs-on:
+      # Through group execution, the tests will be run on all devices with these tags.
+      group:
+        - android
+    appVersion:
+      android: 1.0.0
+    record: true
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: python
+          command: |
+            pip install -r requirements.txt
+            pytest app/test_android.py --capture=no -x
+        cwd: app/python/pytest
+
+  test-ios:
+    runs-on:
+      group:
+        - ios
+    appVersion:
+      ios: 1.0.0
+    record: true
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: python
+          command: |
+            pip install -r requirements.txt
+            pytest app/test_ios.py --capture=no -x
+        cwd: app/python/pytest
+```
+
+## CI/CD integration examples
+
+Routines are most effective when integrated with CI/CD tools. This example explains how to run routines using GitHub Actions.
+
+:::info
+
+Dogu supports integration with GitHub Actions and Jenkins.
+
+- [GitHub Action](/integration/cicd/github-action)
+- [Jenkins](/integration/cicd/jenkins)
+
+:::
+
+### GitHub Actions
+
+Let's assume you want to deploy to a staging environment and perform testing before a production release. In most cases, you would write an action like this:
+
+```yaml release-staging.yml
+name: release-staging
+
+on:
+  workflow_dispatch:
+
+job:
+  build:
+    runs-on: my-device
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+      - name: install dependencies
+        run: yarn install
+      - name: build
+        run: yarn build
+  release:
+    runs-on: my-device
+    steps:
+      - name: release
+        run: do something...
+```
+
+Running routines is straightforward! You can run routines using the [dogu-github-action](https://github.com/dogu-team/dogu-github-action).
+
+:::tip
+
+Refer to the respective guides for your project ID, routine ID, and API token.
+
+- [Project ID](/management/project/settings)
+- [Routine ID](/management/project/routine#check-routine-id)
+- [API Token](/api)
+
+:::
+
+```yaml release-staging.yml
+# Omitted
+release:
+  runs-on: my-device
+  steps:
+    - name: release
+      run: do something...
+run-dogu-routine:
+  runs-on: my-device
+  steps:
+    - name: run dogu routine
+      uses: dogu-team/dogu-github-action@v1.0
+      with:
+        template: 'run_routine'
+        project-id: 'my project id'
+        routine-id: 'my routine id'
+        api-url: https://api.dogutech.io # If you are in a Self-Hosted environment, provide the URL.
+      env:
+        DOGU_TOKEN: ${{ secrets.DOGU_TOKEN }}
+```
+
+#### App upload
+
+For mobile app and game testing, you need to upload the app to your project. This process should be done before running routines.
+
+Let's assume the app is generated during the app build process and is located at `./sample.apk`.
+
+You can do it like this:
+
+```yaml release-staging.yml
+# Omitted
+build:
+  runs-on: my-device
+  run: ./gradlew assembleRelease
+release:
+  runs-on: my-device
+  steps:
+    - name: release
+      run: do something...
+upload-app:
+  runs-on: my-device
+  steps:
+    - name: upload to Dogu
+      uses: dogu-team/dogu-github-action@v1.0
+      with:
+        template: 'upload_app'
+        project-id: 'my project id'
+        file-path: ./sample.apk
+        api-url: https://api.dogutech.io # If you are in a Self-Hosted environment, provide
+
+ the URL.
+      env:
+        DOGU_TOKEN: ${{ secrets.DOGU_TOKEN }}
+run-dogu-routine:
+  runs-on: my-device
+  steps:
+    - name: run dogu routine
+      uses: dogu-team/dogu-github-action@v1.0
+      with:
+        template: 'run_routine'
+        project-id: 'my project id'
+        routine-id: 'my routine id'
+        api-url: https://api.dogutech.io # If you are in a Self-Hosted environment, provide the URL.
+      env:
+        DOGU_TOKEN: ${{ secrets.DOGU_TOKEN }}
+```
