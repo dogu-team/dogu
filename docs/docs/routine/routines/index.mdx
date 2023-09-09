@@ -4,8 +4,20 @@ title: Routine
 locale: en
 ---
 
+:::info Prerequisites
+
+To run the routine, the following items must be prepared.
+
+- group
+- project
+- test script
+- uploaded app (not required if using the web template)
+- Connected device
+
+:::
+
 Dogu provides a **routine** feature for performing automated tests.  
-A routine is a set of test cases used to perform game testing. Routines define how to run test cases, and record the results of the execution of test cases.
+A routine is a set of test cases used to perform automated testing. Routines define how to run test cases, and record the results of the execution of test cases.
 Routines can be created without restrictions in one project.
 
 This document covers how to create routines using the GUI, routine actions, YAML syntax, and more.
@@ -63,15 +75,6 @@ The routine execution has the following flow:
 
 A device can only run one job. Devices that are already running other routines or script tests cannot run other tasks. Any work to be done after that will be queued.
 
-:::
-
-:::tip
-
-To run the routine, the following items must be prepared.
-
-- group
-- project
-- test script
-- Connected device
+The host device can execute multiple jobs simultaneously. You can specify the maximum number of parallel jobs through [device settings](/management/organization/device-farm/device-management#update-device-settings).
 
 :::
