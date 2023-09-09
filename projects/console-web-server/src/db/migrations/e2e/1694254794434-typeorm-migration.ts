@@ -13,7 +13,7 @@ export class typeormMigration1694254794434 implements MigrationInterface {
 4. **Display members watching same device in Dogu Studio**
 
 Thank you for your continued support!  
-For more details, please visit our [blog post](https://blog.dogutech.io/dogu_v1-10-0_updates)!  
+For more details, please visit our [blog post](https://blog.dogutech.io/dogu_v1-11-0_updates)!  
 
 Please feel free to reach out to our team on [Dogu Community](https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw) if you have any questions or need assistance.',
 '${ChangeLogType.RELEASE},${ChangeLogType.FEATURE}')`,
