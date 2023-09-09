@@ -3,6 +3,7 @@ import { TutorialSdkSupportInfoMap, TutorialSupportFramework, TutorialSupportLan
 export const routineTutorialSdkSupportInfo: TutorialSdkSupportInfoMap = {
   [TutorialSupportSdk.APPIUM]: {
     frameworksPerLang: {
+      [TutorialSupportLanguage.TYPESCRIPT]: [TutorialSupportFramework.JEST],
       [TutorialSupportLanguage.PYTHON]: [TutorialSupportFramework.PYTEST],
     },
     targetsPerPlatform: {
@@ -10,7 +11,7 @@ export const routineTutorialSdkSupportInfo: TutorialSdkSupportInfoMap = {
       [TutorialSupportPlatform.IOS]: [TutorialSupportTarget.WEB, TutorialSupportTarget.APP],
     },
     defaultOptions: {
-      framework: TutorialSupportFramework.PYTEST,
+      framework: TutorialSupportFramework.JEST,
       platform: TutorialSupportPlatform.ANDROID,
       target: TutorialSupportTarget.WEB,
     },
@@ -96,6 +97,28 @@ export const appiumRoutineTutorialData: RoutineTutorial = {
     //   environment: 'python',
     //   command: '',
     // },
+    {
+      framework: TutorialSupportFramework.JEST,
+      language: TutorialSupportLanguage.TYPESCRIPT,
+      platform: TutorialSupportPlatform.ANDROID,
+      target: TutorialSupportTarget.APP,
+      hasSampleApp: true,
+      cwd: 'webdriverio/typescript/jest',
+      environment: 'node',
+      command: `npm install
+            test:app:android`,
+    },
+    {
+      framework: TutorialSupportFramework.PYTEST,
+      language: TutorialSupportLanguage.PYTHON,
+      platform: TutorialSupportPlatform.IOS,
+      target: TutorialSupportTarget.APP,
+      hasSampleApp: false,
+      cwd: 'webdriverio/typescript/jest',
+      environment: 'node',
+      command: `npm install
+            test:app:android`,
+    },
     {
       framework: TutorialSupportFramework.PYTEST,
       language: TutorialSupportLanguage.PYTHON,
