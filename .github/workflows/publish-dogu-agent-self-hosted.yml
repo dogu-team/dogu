@@ -60,7 +60,9 @@ jobs:
         env:
           cache-name: cache-android-build-files
         with:
-          path: ${{ github.workspace }}/projects/android-device-agent/android/app/build
+          path: |
+            ${{ github.workspace }}/projects/android-device-agent/android/app/build
+            ${{ github.workspace }}/projects/android-device-agent/android/.gradle
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('projects/android-device-agent/**') }}
 
       - name: Cache Go buildfiles

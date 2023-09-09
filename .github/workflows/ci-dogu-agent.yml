@@ -62,14 +62,16 @@ jobs:
         with:
           path: ${{ github.workspace }}/.yarn/unplugged
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
-      
+
       - name: Cache Android buildfiles
         uses: actions/cache@v3
         id: cache_android_build_files
         env:
           cache-name: cache-android-build-files
         with:
-          path: ${{ github.workspace }}/projects/android-device-agent/android/app/build
+          path: |
+            ${{ github.workspace }}/projects/android-device-agent/android/app/build
+            ${{ github.workspace }}/projects/android-device-agent/android/.gradle
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('projects/android-device-agent/**') }}
 
       - name: Cache Go buildfiles
@@ -173,7 +175,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ env.GO_VERSION }}
-          cache-dependency-path: "**/*/go.sum"
+          cache-dependency-path: '**/*/go.sum'
 
       - name: Common - Set up JDK 11 for android build
         uses: actions/setup-java@v3
