@@ -30,7 +30,7 @@ function IosSettings() {
         }
         return status;
       });
-      if (key == 'ios-device-agent-build' && validateResult.valid) {
+      if (key === 'ios-device-agent-build' && validateResult.valid) {
         const beforeStatus = iosStatus?.find((status) => status.key === key);
         if (beforeStatus && beforeStatus.isValid === false) {
           onRestartOpen();
