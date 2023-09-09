@@ -5,7 +5,7 @@ import { Tabs } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import styled from 'styled-components';
 import useSWR from 'swr';
@@ -23,12 +23,13 @@ enum TabMenu {
 
 interface Props {
   onSelect: (value: string) => void;
+  group: boolean;
   devicePlatform?: Platform;
 }
 
-const AddDeviceAndTagButton = ({ onSelect, devicePlatform }: Props) => {
+const AddDeviceAndTagButton = ({ onSelect, group, devicePlatform }: Props) => {
   const [selectable, setSelectable] = useState(false);
-  const [currentTab, setCurrentTab] = useState<TabMenu>(TabMenu.DEVICE);
+  const [currentTab, setCurrentTab] = useState<TabMenu>(group ? TabMenu.DEVICE_TAG : TabMenu.DEVICE);
   const { debouncedValue, handleChangeValues } = useDebouncedInputValues();
   const router = useRouter();
   const { t } = useTranslation();
@@ -46,6 +47,7 @@ const AddDeviceAndTagButton = ({ onSelect, devicePlatform }: Props) => {
     error: deviceError,
   } = useSWR<PageBase<DeviceBase>>(
     selectable &&
+      !group &&
       currentTab === TabMenu.DEVICE &&
       `/organizations/${router.query.orgId}/projects/${router.query.pid}/devices?keyword=${debouncedValue}${devicePlatform ? `&platform=${devicePlatform}` : ''}`,
     swrAuthFetcher,
@@ -54,6 +56,12 @@ const AddDeviceAndTagButton = ({ onSelect, devicePlatform }: Props) => {
       revalidateOnFocus: false,
     },
   );
+
+  useEffect(() => {
+    if (group) {
+      setCurrentTab(TabMenu.DEVICE_TAG);
+    }
+  }, [group]);
 
   return (
     <AddWithSelect
@@ -91,10 +99,14 @@ const AddDeviceAndTagButton = ({ onSelect, devicePlatform }: Props) => {
                 handleChangeValues('');
               }}
               items={[
-                {
-                  key: TabMenu.DEVICE,
-                  label: 'Device',
-                },
+                ...(group
+                  ? []
+                  : [
+                      {
+                        key: TabMenu.DEVICE,
+                        label: 'Device',
+                      },
+                    ]),
                 {
                   key: TabMenu.DEVICE_TAG,
                   label: 'Device tag',

@@ -113,7 +113,7 @@
   "routineGuiEditorJobDeviceLabel": "디바이스",
   "routineGuiEditorJobDeviceDescription": "해당 이름 또는 태그를 갖고있는 디바이스에서 작업이 실행됩니다.",
   "routineGuiEditorJobDeviceGroupLabel": "그룹 실행",
-  "routineGuiEditorJobDeviceGroupDescription": "해당 디바이스 또는 태그를 가진 <b>모든 디바이스</b>에서 작업이 실행됩니다.",
+  "routineGuiEditorJobDeviceGroupDescription": "해당 태그를 가진 <b>모든 디바이스</b>에서 작업이 실행됩니다. 이 옵션을 사용하면 디바이스를 선택할 수 없습니다.",
   "routineGuiEditorJobDeviceTagSelectorPlaceholder": "태그 이름",
   "routineGuiEditorJobScreenRecordLabel": "디바이스 화면 녹화",
   "routineGuiEditorJobScreenRecordDescription": "활성화하면 작업이 실행될 때 디바이스 화면을 녹화합니다.",

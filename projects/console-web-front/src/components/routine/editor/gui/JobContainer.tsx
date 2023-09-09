@@ -420,7 +420,7 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
         </div>
         <ContentInner>
           <RunsOn runsOn={job['runs-on']} onDelete={handleRemoveRunsOn} />
-          <AddDeviceAndTagButton onSelect={handleAddRunsOn} devicePlatform={getPlatformByAppVersion()} />
+          <AddDeviceAndTagButton group={typeof job['runs-on'] === 'object' && 'group' in job['runs-on']} onSelect={handleAddRunsOn} devicePlatform={getPlatformByAppVersion()} />
         </ContentInner>
       </Content>
       <Content>

@@ -113,7 +113,7 @@
   "routineGuiEditorJobDeviceLabel": "Devices",
   "routineGuiEditorJobDeviceDescription": "This job will be executed on the devices with the selected tag or name.",
   "routineGuiEditorJobDeviceGroupLabel": "Group execution",
-  "routineGuiEditorJobDeviceGroupDescription": "This job will be executed on the <b>all devices</b> with the selected tag or device.",
+  "routineGuiEditorJobDeviceGroupDescription": "This job will be executed on the <b>all devices</b> with the selected tag. Cannot select device if this option is enabled.",
   "routineGuiEditorJobDeviceTagSelectorPlaceholder": "Tag name",
   "routineGuiEditorJobScreenRecordLabel": "Device screen recording",
   "routineGuiEditorJobScreenRecordDescription": "This job will record the screen of the device if the option is enabled.",
