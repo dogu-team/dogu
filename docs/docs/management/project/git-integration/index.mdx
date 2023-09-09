@@ -18,10 +18,13 @@ You can check the repository example at https://github.com/dogu-team/dogu-exampl
 2. Create a `dogu.config.json` file in the **root directory** with the following content:
    ```json
    {
-     "scriptFolderPaths": ["test"]
+     "scriptFolderPaths": ["test"], // optional
+     "workingDirPaths": ["selenium/typescript/jest"] // optional
    }
    ```
-3. Write test scripts in the path specified in `scriptFolderPaths`.
+
+- `scriptFolderPaths`: Writes test scripts under the specified path. This is used when searching for scripts in the [Routine GUI editor](/routine/routines/editor).
+- `workingDirPaths`: Executes the `dogu-actions/run-test` command at the specified path. This is used when locating the working directory in the [Routine GUI editor](/routine/routines/editor).
 
 ## Integration
 

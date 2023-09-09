@@ -19,10 +19,13 @@ https://github.com/dogu-team/dogu-examples 에서 레포지토리 예시를 확�
 2. **루트 경로**에 `dogu.config.json` 파일을 아래의 내용과 같이 생성합니다.
    ```json
    {
-     "scriptFolderPaths": ["test"]
+     "scriptFolderPaths": ["test"], // optional
+     "workingDirPaths": ["selenium/typescript/jest"] // optional
    }
    ```
-3. `scriptFolderPaths`에 지정한 경로 하위에 테스트 스크립트를 작성합니다.
+
+- `scriptFolderPaths`: 지정한 경로 하위에 테스트 스크립트를 작성합니다. [루틴 GUI 에디터](/routine/routines/editor)에서 스크립트를 찾을 때 사용됩니다.
+- `workingDirPaths`: 지정한 경로에서 `dogu-actions/run-test`의 커맨드를 실행합니다. [루틴 GUI 에디터](/routine/routines/editor)에서 작업 디렉토리를 찾을 때 사용됩니다.
 
 ## 연동하기
 
