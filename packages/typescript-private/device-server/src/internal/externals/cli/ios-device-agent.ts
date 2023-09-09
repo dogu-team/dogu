@@ -157,6 +157,9 @@ class ZombieIdaXCTest implements Zombieable {
   private wdaClient: AxiosInstance;
   private healthFailCount = 0;
 
+  private isLiveCheckSocketConnected = false;
+  private lastLiveCheckRecvTime = Date.now();
+
   constructor(
     public readonly serial: Serial,
     private readonly xctestrunfile: XctestrunFile,
@@ -229,24 +232,24 @@ class ZombieIdaXCTest implements Zombieable {
     });
 
     for await (const _ of loopTime(Milisecond.t3Seconds, Milisecond.t3Minutes)) {
-      if (await this.isHealth()) {
+      if (this.isHealth()) {
         break;
       }
       if (this._error === 'not-alive') {
         break;
       }
     }
-    if (!(await this.isHealth())) {
+    if (!this.isHealth()) {
       throw new Error(`ZombieIdaXCTest has error. ${this.serial}. ${this._error}`);
     }
     this.healthFailCount = 0;
   }
 
   async update(): Promise<void> {
-    if (config.externalIosDeviceAgent.use) {
-      return;
-    }
-    if (!(await this.isHealth())) {
+    // if (config.externalIosDeviceAgent.use) {
+    //   return;
+    // }
+    if (!this.isHealth()) {
       this.healthFailCount++;
       if (this.healthFailCount > 3) {
         ZombieServiceInstance.notifyDie(this);
@@ -263,35 +266,24 @@ class ZombieIdaXCTest implements Zombieable {
     this.xctestrun?.kill('ZombieIdaXCTest.onDie');
   }
 
-  private async isHealth(): Promise<boolean> {
-    if (!this.xctestrun?.isAlive) {
-      this._error = this.xctestrun?.error ?? 'not-alive';
-      return false;
-    }
-    this.xctestrun.update();
-    const socketOrError = await this.connectSocket().catch((e: Error) => {
-      return e;
-    });
-    if (socketOrError instanceof Error) {
-      this._error = 'connect-failed';
+  private isHealth(): boolean {
+    // if (!this.xctestrun?.isAlive) {
+    //   this._error = this.xctestrun?.error ?? 'not-alive';
+    //   return false;
+    // }
+    // this.xctestrun.update();
+    this.checkAlive();
+    if (Date.now() - this.lastLiveCheckRecvTime > Milisecond.t5Seconds) {
+      this._error = 'no signal';
       return false;
     }
 
-    const sendErr = await this.sendHello(socketOrError).catch((e: Error) => {
-      return e;
-    });
-    if (sendErr instanceof Error) {
-      this._error = 'hello-failed';
-      socketOrError.resetAndDestroy();
-      return false;
-    }
     if (!this.iosDeviceAgentService.connected) {
-      this._error = 'client-connected';
+      this._error = 'client not connected';
       return false;
     }
 
     this._error = 'none';
-    socketOrError.resetAndDestroy();
     return true;
   }
 
@@ -325,30 +317,50 @@ class ZombieIdaXCTest implements Zombieable {
     });
   }
 
-  private async sendHello(socket: Socket): Promise<void> {
-    return new Promise((resolve, reject) => {
+  private checkAlive(): void {
+    if (this.isLiveCheckSocketConnected) {
+      return;
+    }
+    const liveCheckSocket = new Socket();
+    liveCheckSocket.once('connect', () => {
+      this.isLiveCheckSocketConnected = true;
       const message = '{"type":"livecheck"}';
       const sizeBuffer = Buffer.alloc(4);
       sizeBuffer.writeUInt32LE(message.length, 0);
-
-      let isNotified = false;
-      const rejectIfNotNotified = (error: Error): void => {
-        if (!isNotified) {
-          isNotified = true;
-          reject(error);
+      liveCheckSocket.write(Buffer.concat([sizeBuffer, Buffer.from(message)]), (err: Error | undefined) => {
+        if (!err) {
+          return;
         }
-      };
-
-      socket.once('data', (data: Buffer) => {
-        isNotified = true;
-        resolve();
+        this.logger.error(`startLiveCheck write failed`, { err });
+        this.isLiveCheckSocketConnected = false;
       });
-      socket.once('error', (error: Error) => {
-        rejectIfNotNotified(error);
-      });
-
-      socket.write(Buffer.concat([sizeBuffer, Buffer.from(message)]), (err: Error | undefined) => {});
     });
+
+    liveCheckSocket.on('data', (data: Buffer) => {
+      this.lastLiveCheckRecvTime = Date.now();
+    });
+
+    liveCheckSocket.once('error', () => {
+      this.isLiveCheckSocketConnected = false;
+      liveCheckSocket.removeAllListeners();
+    });
+
+    liveCheckSocket.once('timeout', () => {
+      this.isLiveCheckSocketConnected = false;
+      liveCheckSocket.removeAllListeners();
+    });
+
+    liveCheckSocket.once('close', () => {
+      this.isLiveCheckSocketConnected = false;
+      liveCheckSocket.removeAllListeners();
+    });
+
+    liveCheckSocket.once('end', () => {
+      this.isLiveCheckSocketConnected = false;
+      liveCheckSocket.removeAllListeners();
+    });
+
+    liveCheckSocket.connect({ host: '127.0.0.1', port: this.screenForwadPort });
   }
 
   private async trySendKill(): Promise<void> {

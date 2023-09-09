@@ -11,9 +11,9 @@ export const config = {
     use: false,
     devices: [
       {
-        serial: '00008030-001C18E91443802E',
+        serial: '33611c72d0429eddfefeec2f29b7a8eee69a7bdd',
         webDriverPort: 10000,
-        grpcPort: 10001,
+        grpcPort: 35002,
       },
     ],
   },

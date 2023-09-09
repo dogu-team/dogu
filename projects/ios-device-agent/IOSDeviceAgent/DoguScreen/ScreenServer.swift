@@ -10,10 +10,10 @@ class ScreenServer {
 
   let port: NWEndpoint.Port
   var listener: NWListener?
-  var aliveConnection: NWConnection?
   var sessionIdSeed: UInt32 = 0
   var preventGabage: UnknownSession?
   var lastSession: Session?
+  var liveCheckSession: LiveCheckSession?
 
   init(port: NWEndpoint.Port) {
     self.port = port
@@ -37,31 +37,27 @@ class ScreenServer {
 
       listener?.newConnectionHandler = { [weak self] connection in
         NSLog("ScreenServer newConnectionHandler")
+
         guard let self = self else {
           NSLog("ScreenServer is not initialized")
           return
         }
+
         self.preventGabage = UnknownSession(connection: connection) { (connection: NWConnection, type: String, param: Data, error: NWError?) in
           NSLog("ScreenServer on param \(type), \(String(data: param, encoding: .utf8))")
 
           if type == String("screen") {
+            NSLog("ScreenServer screen connection")
             self.lastSession?.close()
             self.sessionIdSeed += 1
             self.lastSession = Session(sessionId: self.sessionIdSeed, connection: connection, param: param)
           } else if type == String("livecheck") {
             NSLog("ScreenServer alive connection")
-            self.aliveConnection = connection
-            let sumDummy = Data(bytes: [0x05])
-            connection.send(
-              content: sumDummy,
-              isComplete: true,
-              completion: .contentProcessed({ error in
-                if let error = error {
-                  NSLog(" ScreenServer alive connection Send data error: \(error.localizedDescription)")
-                }
-              }))
+            self.liveCheckSession?.close()
+            self.liveCheckSession = LiveCheckSession(connection: connection)
+            self.liveCheckSession?.startTimer()
           } else if type == String("kill") {
-            NSLog("ScreenServer alive kill")
+            NSLog("ScreenServer kill connection")
             self.stop()
             exit(0)
           }
@@ -91,8 +87,8 @@ class ScreenServer {
 
   func stop() {
     NSLog("ScreenServer stop")
-    self.aliveConnection?.cancel()
     self.lastSession?.connection.cancel()
+    self.liveCheckSession?.close()
     listener?.cancel()
   }
 }
