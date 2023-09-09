@@ -23,31 +23,146 @@ steps:
   - name: Run Test
     uses: dogu-actions/run-test
     with:
-      script: test/samples/dogurpgsample.test.ts
+      environment: node
+      command: test/samples/dogurpgsample.test.ts
 ```
-
-:::caution
-
-The test script must exist in git repository.
-
-:::
 
 ## Arguments
 
-### script
+### checkout
+
+<code
+  style={{ position: 'relative', top: '-20px', fontSize: '90%' }}
+  children="optional"
+/>
+
+Checkout the project repository before running the test script.
+
+#### Default
+
+false
+
+### branchOrTag
+
+<code
+  style={{ position: 'relative', top: '-20px', fontSize: '90%' }}
+  children="optional"
+/>
+
+The branch or tag to checkout. If checkout is false, this option is ignored.
+
+#### Default
+
+main
+
+### clean
+
+<code
+  style={{ position: 'relative', top: '-20px', fontSize: '90%' }}
+  children="optional"
+/>
+
+Clean the project repository before checkout. If checkout is false, this option is ignored.
+
+#### Default
+
+true
+
+### checkoutPath
+
+<code
+  style={{ position: 'relative', top: '-20px', fontSize: '90%' }}
+  children="optional"
+/>
+
+The path to checkout the project repository. If checkout is false, this option is ignored.  
+This path is relative to the routine workspace directory.
+
+#### Default
+
+''
+
+### checkoutUrl
+
+<code
+  style={{ position: 'relative', top: '-20px', fontSize: '90%' }}
+  children="optional"
+/>
+
+The url to checkout the project repository. If checkout is false, this option is ignored.
+If not set, use repository url from Dogu project settings. recommended to use repository url from Dogu project settings.
+
+#### Default
+
+''
+
+### appVersion
+
+<code
+  style={{ position: 'relative', top: '-20px', fontSize: '90%' }}
+  children="optional"
+/>
+
+App version to download and install from the Dogu project repository.
+
+#### Default
+
+''
+
+### uninstallApp
+
+<code
+  style={{ position: 'relative', top: '-20px', fontSize: '90%' }}
+  children="optional"
+/>
+
+Uninstall app before install.
+
+#### Default
+
+false
+
+### installApp
+
+<code
+  style={{ position: 'relative', top: '-20px', fontSize: '90%' }}
+  children="optional"
+/>
+
+Install app before run test script.
+
+#### Default
+
+false
+
+### runApp
+
+<code
+  style={{ position: 'relative', top: '-20px', fontSize: '90%' }}
+  children="optional"
+/>
+
+Run app after install.
+
+#### Default
+
+false
+
+### environment
 
 <code
   style={{ position: 'relative', top: '-20px', fontSize: '90%', color: 'red' }}
   children="required"
 />
 
-Enter the path to the test script file.
+The environment to run the test script.
+availables: node, python
 
-#### Usage
+### command
 
-```yaml
-# Execute the file test/samples/dogurpgsample.test.ts.
-uses: dogu-actions/run-test
-with:
-  script: test/samples/dogurpgsample.test.ts
-```
+<code
+  style={{ position: 'relative', top: '-20px', fontSize: '90%', color: 'red' }}
+  children="required"
+/>
+
+The command to run the test script.
