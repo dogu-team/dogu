@@ -52,12 +52,16 @@ export class IosDeviceAgentProcess {
     this.grpcTunnel = new ZombieTunnel(this.serial, this.grpcForwardPort, this.grpcDevicePort, this.logger);
   }
 
-  static async isReady(serial: Serial): Promise<boolean> {
-    const originDerivedData = await DerivedData.create(HostPaths.external.xcodeProject.idaDerivedDataPath());
-    if (!originDerivedData.hasSerial(serial)) {
-      return false;
+  static async isReady(serial: Serial): Promise<'build not found' | 'device not registered' | 'ok'> {
+    try {
+      const originDerivedData = await DerivedData.create(HostPaths.external.xcodeProject.idaDerivedDataPath());
+      if (!originDerivedData.hasSerial(serial)) {
+        return 'device not registered';
+      }
+    } catch (e) {
+      return 'build not found';
     }
-    return true;
+    return 'ok';
   }
 
   static async start(

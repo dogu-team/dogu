@@ -43,12 +43,17 @@ export class WebdriverAgentProcess {
     return ret;
   }
 
-  static async isReady(serial: Serial): Promise<boolean> {
-    const originDerivedData = await DerivedData.create(HostPaths.external.xcodeProject.wdaDerivedDataPath());
-    if (!originDerivedData.hasSerial(serial)) {
-      return false;
+  static async isReady(serial: Serial): Promise<'build not found' | 'device not registered' | 'ok'> {
+    try {
+      const originDerivedData = await DerivedData.create(HostPaths.external.xcodeProject.wdaDerivedDataPath());
+      if (!originDerivedData.hasSerial(serial)) {
+        return 'device not registered';
+      }
+    } catch (e) {
+      return 'build not found';
     }
-    return true;
+
+    return 'ok';
   }
 
   delete(): void {

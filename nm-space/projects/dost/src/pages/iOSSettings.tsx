@@ -16,7 +16,7 @@ function IosSettings() {
   const [xcodeResult, setXcodeResult] = useState<ExternalValidationResult | null>(null);
   const [isRestartIosOnInit, setIsRestartIosOnInit] = useState(false);
   const { iosStatus, setIosStatus } = useIosSettingsStatus();
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isRestartOpen, onOpen: onRestartOpen, onClose: onRestartClose } = useDisclosure();
 
   const onValidateEnd = useCallback(
     (key: ExternalKey, validateResult: ExternalValidationResult) => {
@@ -30,6 +30,12 @@ function IosSettings() {
         }
         return status;
       });
+      if (key == 'ios-device-agent-build' && validateResult.valid) {
+        const beforeStatus = iosStatus?.find((status) => status.key === key);
+        if (beforeStatus && beforeStatus.isValid === false) {
+          onRestartOpen();
+        }
+      }
       setIosStatus(newStatus);
     },
     [iosStatus],
@@ -57,7 +63,7 @@ function IosSettings() {
     try {
       await ipc.appConfigClient.set<boolean>('DOGU_DEVICE_IOS_RESTART_ON_INIT', checked);
       setIsRestartIosOnInit(checked);
-      onOpen();
+      onRestartOpen();
     } catch (e) {
       ipc.rendererLogger.error('Error while setting DOGU_DEVICE_IOS_RESTART_ON_INIT', { error: e });
     }
@@ -112,7 +118,7 @@ function IosSettings() {
           </BorderBox>
         </List>
       </Center>
-      <RestartAlert isOpen={isOpen} onClose={onClose} />
+      <RestartAlert isOpen={isRestartOpen} onClose={onRestartClose} />
     </div>
   );
 }
