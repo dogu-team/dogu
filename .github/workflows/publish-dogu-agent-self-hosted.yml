@@ -54,6 +54,33 @@ jobs:
           path: ${{ github.workspace }}/.yarn/unplugged
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
 
+      - name: Cache Android buildfiles
+        uses: actions/cache@v3
+        id: cache_android_build_files
+        env:
+          cache-name: cache-android-build-files
+        with:
+          path: ${{ github.workspace }}/projects/android-device-agent/android/app/build
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('projects/android-device-agent/**') }}
+
+      - name: Cache Go buildfiles
+        uses: actions/cache@v3
+        id: cache_go_build_files
+        env:
+          cache-name: cache-go-build-files
+        with:
+          path: ${{ github.workspace }}/projects/go-device-controller/build
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('projects/go-device-controller/**') }}
+
+      - name: Cache Electron
+        uses: actions/cache@v3
+        id: cache_elctrons
+        env:
+          cache-name: cache-electrons
+        with:
+          path: ${{ github.workspace }}/.electron-cache
+          key: ${{ runner.os }}-${{ env.cache-name }}
+
       - name: Cache Third-Party
         uses: actions/cache@v3
         id: cache_third_party
@@ -137,7 +164,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ env.GO_VERSION }}
-          cache-dependency-path: ${{ github.workspace }}/projects/go-device-controller/go.sum
+          cache-dependency-path: '**/*/go.sum'
 
       - name: Common - Set up JDK 11 for android build
         uses: actions/setup-java@v3
@@ -222,6 +249,8 @@ jobs:
         working-directory: ./nm-space/projects/dost
         env:
           DOGU_BUILD_ARCH: ${{ matrix.arch }}
+          ELECTRON_CACHE: ${{ github.workspace }}/.electron-cache/electron
+          ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.electron-cache/electron-builder
 
       - name: Upload dogu-agent
         if: ${{ success() }}

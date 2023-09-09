@@ -81,6 +81,15 @@ jobs:
           path: ${{ github.workspace }}/projects/go-device-controller/build
           key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('projects/go-device-controller/**') }}
 
+      - name: Cache Electron
+        uses: actions/cache@v3
+        id: cache_elctrons
+        env:
+          cache-name: cache-electrons
+        with:
+          path: ${{ github.workspace }}/.electron-cache
+          key: ${{ runner.os }}-${{ env.cache-name }}
+
       - name: Cache Third-Party
         uses: actions/cache@v3
         id: cache_third_party
@@ -253,6 +262,8 @@ jobs:
         working-directory: ./nm-space/projects/dost
         env:
           DOGU_BUILD_ARCH: ${{ matrix.arch }}
+          ELECTRON_CACHE: ${{ github.workspace }}/.electron-cache/electron
+          ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.electron-cache/electron-builder
 
       - name: Upload dogu-agent windows
         if: ${{ success() }} && runner.os == 'Windows'
