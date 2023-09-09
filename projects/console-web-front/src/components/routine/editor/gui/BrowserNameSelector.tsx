@@ -51,15 +51,15 @@ const BrowserNameSelector = ({ ...props }: Props) => {
       ),
       value: 'edge',
     },
-    {
-      label: (
-        <FlexRow>
-          <StyledImage src={resources.icons.samsungIntenet} width={20} height={20} alt={'Samsung Internet'} />
-          Samsung Internet
-        </FlexRow>
-      ),
-      value: 'samsung-internet',
-    },
+    // {
+    //   label: (
+    //     <FlexRow>
+    //       <StyledImage src={resources.icons.samsungIntenet} width={20} height={20} alt={'Samsung Internet'} />
+    //       Samsung Internet
+    //     </FlexRow>
+    //   ),
+    //   value: 'samsung-internet',
+    // },
   ];
   const isInvalid = !!props.value && !options.find((option) => option.value === props.value);
 
