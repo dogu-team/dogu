@@ -129,7 +129,7 @@ export class IosChannel implements DeviceChannel {
     }
 
     if (!env.DOGU_DEVICE_IOS_IS_IDAPROJECT_VALIDATED) {
-      throw new Error('iOSDeviceAgent build is not latest. please clean and build iOSDeviceAgent.xcodeproj');
+      throw new Error('iOSDeviceAgent build is not latest. Please clean and build iOSDeviceAgent.xcodeproj');
     }
 
     const logger = createIdaLogger(param.serial);
