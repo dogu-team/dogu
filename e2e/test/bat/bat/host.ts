@@ -240,8 +240,8 @@ export class Dost {
           const content = contents[i];
           for (const keyword of criticalKeyword) {
             if (content.includes(keyword)) {
-              const min = Math.max(0, i - 5);
-              const max = Math.min(contents.length, i + 5);
+              const min = Math.max(0, i - 20);
+              const max = Math.min(contents.length, i + 20);
               logDetected.push({
                 file: file,
                 keyword: keyword,
@@ -253,9 +253,13 @@ export class Dost {
       }
       if (logDetected.length > 0) {
         console.error(`Critical error log(${logDetected.length}) detected`);
-        for (const log of logDetected) {
+        // for (const log of logDetected) {
+        for (let i = 0; i < logDetected.length; i++) {
+          const log = logDetected[i];
+          console.error(`>>> LOG DUMP(${i}) start <<<`);
           console.error(`> File: ${log.file}, Keyword ${log.keyword}`);
           console.error(log.contents.join('\n'));
+          console.error(`>>> LOG DUMP(${i}) end <<<`);
         }
         throw new Error('Critical error log detected');
       }
