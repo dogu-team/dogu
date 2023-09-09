@@ -164,7 +164,7 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: ${{ env.GO_VERSION }}
-          cache-dependency-path: cache-dependency-path: "**/*/go.sum"
+          cache-dependency-path: "**/*/go.sum"
 
       - name: Common - Set up JDK 11 for android build
         uses: actions/setup-java@v3
