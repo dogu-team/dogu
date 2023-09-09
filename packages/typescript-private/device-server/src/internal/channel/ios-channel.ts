@@ -109,16 +109,27 @@ export class IosChannel implements DeviceChannel {
       }
     }
 
-    if (!(await WebdriverAgentProcess.isReady(serial))) {
+    const isWdaReady = await WebdriverAgentProcess.isReady(serial);
+    if (isWdaReady === 'build not found') {
+      throw new Error(`WebDriverAgent can't be executed on this device. Please build WebDriverAgent.xcodeproj.`);
+    }
+    if (isWdaReady === 'device not registered') {
       throw new Error(
-        `WebDriverAgent can't be executed on this device. Please register your device. reference: https://developer.apple.com/help/account/register-devices/register-a-single-device. `,
+        `WebDriverAgent can't be executed on this device. Please register your device. reference: https://developer.apple.com/help/account/register-devices/register-a-single-device.`,
+      );
+    }
+    const isIdaReady = await IosDeviceAgentProcess.isReady(serial);
+    if (isIdaReady === 'build not found') {
+      throw new Error(`iOSDeviceAgent can't be executed on this device. Please build iOSDeviceAgent.xcodeproj.`);
+    }
+    if (isIdaReady === 'device not registered') {
+      throw new Error(
+        `iOSDeviceAgent can't be executed on this device. Please register your device. reference: https://developer.apple.com/help/account/register-devices/register-a-single-device.`,
       );
     }
 
-    if (!(await IosDeviceAgentProcess.isReady(serial))) {
-      throw new Error(
-        `iOSDeviceAgent can't be executed on this device. Please register your device. reference: https://developer.apple.com/help/account/register-devices/register-a-single-device. `,
-      );
+    if (!env.DOGU_DEVICE_IOS_IS_IDAPROJECT_VALIDATED) {
+      throw new Error('iOSDeviceAgent build is not latest. Please clean and build iOSDeviceAgent.xcodeproj');
     }
 
     const logger = createIdaLogger(param.serial);

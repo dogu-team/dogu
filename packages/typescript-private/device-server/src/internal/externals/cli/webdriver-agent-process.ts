@@ -1,5 +1,5 @@
 import { Platform, Serial } from '@dogu-private/types';
-import { delay, loopTime, Milisecond, Printable, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
+import { delay, FilledPrintable, loopTime, Milisecond, Printable, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import axios, { AxiosInstance } from 'axios';
 import http from 'http';
@@ -15,7 +15,7 @@ export class WebdriverAgentProcess {
   private readonly xctest: ZombieWdaXCTest;
   private readonly wdaTunnel: ZombieTunnel;
 
-  constructor(private readonly serial: Serial, private readonly wdaHostPort: number, private readonly logger: Printable, private isKilled = false) {
+  constructor(private readonly serial: Serial, private readonly wdaHostPort: number, private readonly logger: FilledPrintable, private isKilled = false) {
     ZombieServiceInstance.deleteComponentIfExist((zombieable: Zombieable): boolean => {
       if (zombieable instanceof ZombieWdaXCTest) {
         return zombieable.serial === this.serial;
@@ -32,7 +32,7 @@ export class WebdriverAgentProcess {
     this.wdaTunnel = new ZombieTunnel(this.serial, wdaHostPort, 8100, this.logger);
   }
 
-  static async start(serial: Serial, wdaHostPort: number, logger: Printable): Promise<WebdriverAgentProcess> {
+  static async start(serial: Serial, wdaHostPort: number, logger: FilledPrintable): Promise<WebdriverAgentProcess> {
     const originDerivedData = await DerivedData.create(HostPaths.external.xcodeProject.wdaDerivedDataPath());
     if (!originDerivedData.hasSerial(serial)) {
       throw new Error(`WebdriverAgent can't be executed on ${serial}`);
@@ -43,12 +43,17 @@ export class WebdriverAgentProcess {
     return ret;
   }
 
-  static async isReady(serial: Serial): Promise<boolean> {
-    const originDerivedData = await DerivedData.create(HostPaths.external.xcodeProject.wdaDerivedDataPath());
-    if (!originDerivedData.hasSerial(serial)) {
-      return false;
+  static async isReady(serial: Serial): Promise<'build not found' | 'device not registered' | 'ok'> {
+    try {
+      const originDerivedData = await DerivedData.create(HostPaths.external.xcodeProject.wdaDerivedDataPath());
+      if (!originDerivedData.hasSerial(serial)) {
+        return 'device not registered';
+      }
+    } catch (e) {
+      return 'build not found';
     }
-    return true;
+
+    return 'ok';
   }
 
   delete(): void {
@@ -63,7 +68,7 @@ class ZombieWdaXCTest implements Zombieable {
   private error = 'none';
   private client: AxiosInstance;
 
-  constructor(public readonly serial: Serial, private readonly wdaHostPort: number, private readonly logger: Printable) {
+  constructor(public readonly serial: Serial, private readonly wdaHostPort: number, private readonly logger: FilledPrintable) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
     this.client = axios.create({
       baseURL: `http://127.0.0.1:${wdaHostPort}`,
@@ -127,9 +132,10 @@ class ZombieWdaXCTest implements Zombieable {
     await MobileDevice.uninstallApp(this.serial, 'com.facebook.WebDriverAgentRunner', this.logger).catch(() => {
       this.logger.warn?.('uninstallApp com.facebook.WebDriverAgentRunner failed');
     });
-    await XcodeBuild.killPreviousXcodebuild(this.serial, `webdriveragent.*${this.serial}`, this.printable).catch(() => {
+    await XcodeBuild.killPreviousXcodebuild(this.serial, `webdriveragent.*${this.serial}`, this.logger).catch(() => {
       this.logger.warn?.('killPreviousXcodebuild failed');
     });
+    await delay(1000);
     const originDerivedData = await DerivedData.create(HostPaths.external.xcodeProject.wdaDerivedDataPath());
     if (!originDerivedData.hasSerial(this.serial)) {
       throw new Error(`WebdriverAgent can't be executed on ${this.serial}`);
@@ -139,19 +145,13 @@ class ZombieWdaXCTest implements Zombieable {
     if (!xctestrun) {
       throw new Error('xctestrun not found');
     }
-    this.xctestrun = XcodeBuild.testWithoutBuilding(
-      'wda',
-      xctestrun.filePath,
-      this.serial,
-      { waitForLog: { str: 'ServerURLHere', timeout: Milisecond.t2Minutes } },
-      this.printable,
-    );
+    this.xctestrun = XcodeBuild.testWithoutBuilding('wda', xctestrun.filePath, this.serial, { idleLogTimeoutMillis: Milisecond.t1Minute + Milisecond.t30Seconds }, this.logger);
     this.xctestrun.proc.on('close', () => {
       this.xctestrun = null;
       ZombieServiceInstance.notifyDie(this);
     });
 
-    for await (const _ of loopTime(Milisecond.t3Seconds, Milisecond.t2Minutes)) {
+    for await (const _ of loopTime(Milisecond.t3Seconds, Milisecond.t3Minutes)) {
       if (await this.isHealth()) {
         break;
       }

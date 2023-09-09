@@ -67,11 +67,19 @@ func (s *iosSurface) Connect(serial string, screenCaptureOption *streaming.Scree
 }
 
 func (s *iosSurface) Receive() ([]byte, error) {
-	if nil == s.reader {
-		log.Inst.Error("iosSurface.Receive reader is null")
+	if nil == s.conn || nil == s.reader {
+		log.Inst.Error("iosSurface.Receive null exists", zap.Bool("conn", nil == s.conn), zap.Bool("reader", nil == s.reader))
 		return nil, errors.Errorf("iosSurface.Receive reader is null")
 	}
+	buf, err := s.receive()
+	if err != nil {
+		s.conn = nil
+		s.reader = nil
+	}
+	return buf, err
+}
 
+func (s *iosSurface) receive() ([]byte, error) {
 	for {
 		err := s.recvQueue.Push(s.reader)
 		if err != nil {
@@ -110,11 +118,10 @@ func (s *iosSurface) NotifyData(listener SurfaceListener, timeStamp uint32, data
 }
 
 func (s *iosSurface) Close() {
-	if nil != s.conn {
-		if closeEr := s.conn.Close(); closeEr != nil {
-			log.Inst.Error("iosSurface.Close", zap.Error(closeEr))
-		}
-		s.conn = nil
+	if nil == s.conn {
+		return
 	}
-	s.reader = nil
+	if closeEr := s.conn.Close(); closeEr != nil {
+		log.Inst.Error("iosSurface.Close", zap.Error(closeEr))
+	}
 }

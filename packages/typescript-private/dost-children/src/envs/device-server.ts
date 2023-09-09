@@ -35,4 +35,8 @@ export class DeviceServerEnv extends PreloadDeviceServerEnv {
   @IsBoolean()
   @TransformBooleanString()
   DOGU_DEVICE_IOS_RESTART_ON_INIT = false;
+
+  @IsBoolean()
+  @TransformBooleanString()
+  DOGU_DEVICE_IOS_IS_IDAPROJECT_VALIDATED = false;
 }

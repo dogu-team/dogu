@@ -51,6 +51,7 @@ export function logLevelTypeToEnum(level: LogLevel): LogLevelEnum {
 
 export interface LogInfo {
   message: unknown;
+  time: number;
   details?: Record<string, unknown>;
 }
 
@@ -174,28 +175,39 @@ export class ConsoleLogger implements FilledPrintable {
 export class BufferLogger implements FilledPrintable {
   readonly buffers = new Map<LogLevel, LogInfo[]>();
 
-  constructor() {
+  constructor(private readonly options: { limit: number } = { limit: 0 }) {
     LogLevel.forEach((level) => this.buffers.set(level, []));
   }
 
   error(message: unknown, details?: Record<string, unknown>): void {
-    this.buffers.get('error')?.push({ message, details });
+    this.pushToBuffer('error', message, details);
   }
 
   warn(message: unknown, details?: Record<string, unknown>): void {
-    this.buffers.get('warn')?.push({ message, details });
+    this.pushToBuffer('warn', message, details);
   }
 
   info(message: unknown, details?: Record<string, unknown>): void {
-    this.buffers.get('info')?.push({ message, details });
+    this.pushToBuffer('info', message, details);
   }
 
   debug(message: unknown, details?: Record<string, unknown>): void {
-    this.buffers.get('debug')?.push({ message, details });
+    this.pushToBuffer('debug', message, details);
   }
 
   verbose(message: unknown, details?: Record<string, unknown>): void {
-    this.buffers.get('verbose')?.push({ message, details });
+    this.pushToBuffer('verbose', message, details);
+  }
+
+  private pushToBuffer(level: LogLevel, message: unknown, details?: Record<string, unknown>): void {
+    const buffer = this.buffers.get(level);
+    if (!buffer) {
+      return;
+    }
+    buffer.push({ message, time: Date.now(), details });
+    if (this.options.limit > 0 && buffer.length > this.options.limit) {
+      buffer.shift();
+    }
   }
 }
 
@@ -290,5 +302,67 @@ export class LoggerHolder implements FilledPrintable {
 
   setLogger(printable: Printable): void {
     this.printable = printable;
+  }
+}
+
+export class IdleCheckLogger implements FilledPrintable {
+  constructor(private _lastLogTime: number = Date.now()) {}
+
+  isBefore(deltaTimeMillis: number): boolean {
+    return Date.now() - this._lastLogTime > deltaTimeMillis;
+  }
+
+  error(message: unknown, details?: Record<string, unknown>): void {
+    this._lastLogTime = Date.now();
+  }
+
+  warn(message: unknown, details?: Record<string, unknown>): void {
+    this._lastLogTime = Date.now();
+  }
+
+  info(message: unknown, details?: Record<string, unknown>): void {
+    this._lastLogTime = Date.now();
+  }
+
+  debug(message: unknown, details?: Record<string, unknown>): void {
+    this._lastLogTime = Date.now();
+  }
+
+  verbose(message: unknown, details?: Record<string, unknown>): void {
+    this._lastLogTime = Date.now();
+  }
+}
+
+export class MixedLogger implements FilledPrintable {
+  constructor(readonly loggers: Printable[]) {}
+
+  error(message: unknown, details?: Record<string, unknown>): void {
+    for (const logger of this.loggers) {
+      logger.error(message, details);
+    }
+  }
+
+  warn(message: unknown, details?: Record<string, unknown>): void {
+    for (const logger of this.loggers) {
+      logger.warn?.(message, details);
+    }
+  }
+
+  info(message: unknown, details?: Record<string, unknown>): void {
+    for (const logger of this.loggers) {
+      logger.info(message, details);
+    }
+  }
+
+  debug(message: unknown, details?: Record<string, unknown>): void {
+    for (const logger of this.loggers) {
+      logger.debug?.(message, details);
+    }
+  }
+
+  verbose(message: unknown, details?: Record<string, unknown>): void {
+    for (const logger of this.loggers) {
+      logger.verbose?.(message, details);
+    }
   }
 }

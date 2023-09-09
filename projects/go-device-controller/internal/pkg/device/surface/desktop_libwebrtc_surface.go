@@ -92,11 +92,21 @@ func (s *desktopLibwebrtcSurface) Connect(serial string, screenCaptureOption *st
 }
 
 func (s *desktopLibwebrtcSurface) Receive() ([]byte, error) {
-	if nil == s.reader {
-		log.Inst.Error("desktopLibwebrtcSurface.Receive reader is null")
-		return nil, errors.Errorf("desktopLibwebrtcSurface.Receive reader is null")
-
+	if nil == s.listener || nil == s.cmd || nil == s.reader || nil == s.conn {
+		log.Inst.Error("desktopLibwebrtcSurface.Receive null exists", zap.Bool("listener", nil != s.listener), zap.Bool("cmd", nil != s.cmd), zap.Bool("reader", nil != s.reader), zap.Bool("conn", nil != s.conn))
+		return nil, errors.Errorf("desktopLibwebrtcSurface.Receive null exists")
 	}
+	buf, err := s.receive()
+	if err != nil {
+		s.listener = nil
+		s.conn = nil
+		s.reader = nil
+		s.cmd = nil
+	}
+	return buf, err
+}
+
+func (s *desktopLibwebrtcSurface) receive() ([]byte, error) {
 	for {
 		err := s.conn.SetReadDeadline(time.Now().Add(time.Minute))
 		if err != nil {
@@ -115,7 +125,6 @@ func (s *desktopLibwebrtcSurface) Receive() ([]byte, error) {
 			log.Inst.Error("desktopLibwebrtcSurface.Receive pop failed", zap.Error(err))
 			return nil, err
 		}
-		// log.Inst.Debug("desktopLibwebrtcSurface.Receive", zap.Int("size", len(buf)))
 		return buf, nil
 	}
 }
@@ -129,21 +138,17 @@ func (s *desktopLibwebrtcSurface) Close() {
 		if closeEr := s.listener.Close(); closeEr != nil {
 			log.Inst.Error("desktopLibwebrtcSurface.Close", zap.Error(closeEr))
 		}
-		s.listener = nil
 	}
 	if nil != s.conn {
 		if closeEr := s.conn.Close(); closeEr != nil {
 			log.Inst.Error("desktopLibwebrtcSurface.Close", zap.Error(closeEr))
 		}
-		s.conn = nil
 	}
-	s.reader = nil
 	if nil != s.cmd {
 		if closeEr := s.cmd.Process.Kill(); closeEr != nil {
 			log.Inst.Warn("desktopLibwebrtcSurface.Close", zap.Error(closeEr))
 		}
 		utils.Execute("taskkill", "/PID", fmt.Sprintf("%v", s.cmd.Process.Pid), "/F", "/T")
-		s.cmd = nil
 	}
 }
 

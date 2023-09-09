@@ -12,6 +12,7 @@ import { FeatureConfigService } from '../../feature-config/feature-config-servic
 import { getLogLevel, logger } from '../../log/logger.instance';
 import { stripAnsi } from '../../log/strip-ansi';
 import { DeviceServerLogsPath, DeviceServerMainScriptPath } from '../../path-map';
+import { checkProjectEqual } from '../../settings/ios-device-agent-project';
 import { Child, ChildLastError, fillChildOptions } from '../types';
 import { closeChild, openChild } from './lifecycle';
 
@@ -32,6 +33,7 @@ export class DeviceServerChild implements Child {
     const DOGU_DEVICE_SERVER_PORT = await appConfigService.get('DOGU_DEVICE_SERVER_PORT');
     const DOGU_DEVICE_PLATFORM_ENABLED = await appConfigService.get('DOGU_DEVICE_PLATFORM_ENABLED');
     const DOGU_DEVICE_IOS_RESTART_ON_INIT = await appConfigService.getOrDefault('DOGU_DEVICE_IOS_RESTART_ON_INIT', false);
+    const DOGU_DEVICE_IOS_IS_IDAPROJECT_VALIDATED = await checkProjectEqual(logger);
     const DOGU_LOG_LEVEL = await getLogLevel(DOGU_RUN_TYPE, appConfigService);
     await killProcessOnPort(DOGU_DEVICE_SERVER_PORT, logger).catch((err) => {
       logger.error('killProcessOnPort', { err });
@@ -55,6 +57,7 @@ export class DeviceServerChild implements Child {
           DOGU_LOG_LEVEL,
           DOGU_DEVICE_PLATFORM_ENABLED,
           DOGU_DEVICE_IOS_RESTART_ON_INIT: DOGU_DEVICE_IOS_RESTART_ON_INIT ? 'true' : 'false',
+          DOGU_DEVICE_IOS_IS_IDAPROJECT_VALIDATED: DOGU_DEVICE_IOS_IS_IDAPROJECT_VALIDATED ? 'true' : 'false',
         },
       },
       childLogger: logger,
