@@ -35,11 +35,11 @@ export class DevicePortService {
   }
 
   public getIosDeviceAgentScreenServerPort(): number {
-    return 50001;
+    return 35001;
   }
 
   public getIosDeviceAgentGrpcServerPort(): number {
-    return 50002;
+    return 35002;
   }
 
   public getIosWebDriverAgentServerPort(): number {

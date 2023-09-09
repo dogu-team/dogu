@@ -154,6 +154,7 @@ export class IosChannel implements DeviceChannel {
     logger.verbose('ios device agent process starting');
     const screenForwardPort = await deviceServerService.devicePortService.createOrGetHostPort(serial, 'iOSScreenForward');
     const grpcForwardPort = await deviceServerService.devicePortService.createOrGetHostPort(serial, 'iOSGrpcForward');
+    const deviceAgent = new IosDeviceAgentService(serial, screenForwardPort, grpcForwardPort, logger);
     const iosDeviceAgentProcess = await IosDeviceAgentProcess.start(
       serial,
       screenForwardPort,
@@ -162,6 +163,7 @@ export class IosChannel implements DeviceChannel {
       deviceServerService.devicePortService.getIosDeviceAgentGrpcServerPort(),
       wdaForwardPort,
       deviceServerService.devicePortService.getIosWebDriverAgentServerPort(),
+      deviceAgent,
       logger,
     ).catch((error) => {
       logger.error('IosDeviceAgentProcess start failed.', { error: errorify(error) });
@@ -170,7 +172,6 @@ export class IosChannel implements DeviceChannel {
     logger.verbose('ios device agent process started');
 
     logger.verbose('ios device agent service starting');
-    const deviceAgent = new IosDeviceAgentService(serial, screenForwardPort, grpcForwardPort, logger);
     await deviceAgent.wait();
     logger.verbose('ios device agent service started');
 

@@ -17,7 +17,7 @@ class SampleHandler: RPBroadcastSampleHandler {
   static var screenServer: ScreenServer?
 
   override func broadcastStarted(withSetupInfo setupInfo: [String: NSObject]?) {
-    SampleHandler.screenServer = ScreenServer(port: 50001)
+    SampleHandler.screenServer = ScreenServer(port: 35001)
     guard let screenServer = SampleHandler.screenServer else {
       NSLog("SampleHandler screenSaver create failed")
       return

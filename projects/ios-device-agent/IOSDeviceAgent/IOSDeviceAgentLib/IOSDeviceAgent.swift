@@ -52,7 +52,7 @@ public final class IOSDeviceAgent {
 
   private func runInternal() {
     let port = self.config.grpcPort
-    let nwport: NWEndpoint.Port = NWEndpoint.Port(rawValue: UInt16(self.config.grpcPort)) ?? 50002
+    let nwport: NWEndpoint.Port = NWEndpoint.Port(rawValue: UInt16(self.config.grpcPort)) ?? 35002
     yellAlivePeriodically()
     do {
       let parameters = NWParameters.tcp
@@ -61,18 +61,18 @@ public final class IOSDeviceAgent {
       listener?.stateUpdateHandler = { [weak self] state in
         switch state {
         case .ready:
-          Log.shared.info("ScreenServer started on port \(port)")
+          Log.shared.info("IOSDeviceAgent started on port \(port)")
         case .failed(let error):
-          Log.shared.error("ScreenServer failure, error: \(error.localizedDescription)")
+          Log.shared.error("IOSDeviceAgent failure, error: \(error.localizedDescription)")
         default:
           break
         }
       }
 
       listener?.newConnectionHandler = { [weak self] connection in
-        Log.shared.info("ScreenServer newConnectionHandler")
+        Log.shared.info("IOSDeviceAgent newConnectionHandler")
         guard let self = self else {
-          Log.shared.error("ScreenServer is not initialized")
+          Log.shared.error("IOSDeviceAgent is not initialized")
           return
         }
         self.sessionIdSeed += 1
@@ -82,7 +82,7 @@ public final class IOSDeviceAgent {
 
       listener?.start(queue: .main)
     } catch {
-      Log.shared.error("ScreenServer Failed to start server, error: \(error.localizedDescription)")
+      Log.shared.error("IOSDeviceAgent Failed to start server, error: \(error.localizedDescription)")
     }
   }
 

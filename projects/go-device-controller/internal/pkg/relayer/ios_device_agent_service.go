@@ -67,6 +67,7 @@ func (s *IosDeviceAgentService) SendMessage(params *params.DcIdaParamList) error
 }
 
 func (s *IosDeviceAgentService) startRecvLoop() {
+	errorLogCount := 0
 	for {
 		if nil == s.conn || nil == s.reader {
 			time.Sleep(time.Second * 1)
@@ -75,7 +76,10 @@ func (s *IosDeviceAgentService) startRecvLoop() {
 
 		err := s.recvQueue.Push(s.reader)
 		if err != nil {
-			log.Inst.Error("IosDeviceAgentService.Receive push failed", zap.Error(err))
+			if errorLogCount%100 == 0 {
+				log.Inst.Error("IosDeviceAgentService.Receive push failed", zap.Error(err))
+			}
+			errorLogCount += 1
 			continue
 		}
 
@@ -94,6 +98,7 @@ func (s *IosDeviceAgentService) startRecvLoop() {
 			log.Inst.Error("IosDeviceAgentService.onEach proto.Unmarshal error", zap.Error(err))
 			return
 		}
+		errorLogCount = 0
 
 		s.onRecvMessage(result)
 	}

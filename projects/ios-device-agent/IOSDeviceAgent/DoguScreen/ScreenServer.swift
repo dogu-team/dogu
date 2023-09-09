@@ -48,9 +48,22 @@ class ScreenServer {
             self.lastSession?.close()
             self.sessionIdSeed += 1
             self.lastSession = Session(sessionId: self.sessionIdSeed, connection: connection, param: param)
-          } else {
+          } else if type == String("livecheck") {
             NSLog("ScreenServer alive connection")
             self.aliveConnection = connection
+            let sumDummy = Data(bytes: [0x05])
+            connection.send(
+              content: sumDummy,
+              isComplete: true,
+              completion: .contentProcessed({ error in
+                if let error = error {
+                  NSLog(" ScreenServer alive connection Send data error: \(error.localizedDescription)")
+                }
+              }))
+          } else if type == String("kill") {
+            NSLog("ScreenServer alive kill")
+            self.stop()
+            exit(0)
           }
         }
       }

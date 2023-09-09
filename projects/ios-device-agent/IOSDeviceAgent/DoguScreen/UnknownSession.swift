@@ -55,21 +55,23 @@ class UnknownSession {
           }
 
           this.recvQueue.pushBuffer(buffer: data)
-          if !this.recvQueue.has() {
-            NSLog("UnknownSession.receiveData data not yet")
-            return
-          }
-          let packet = this.recvQueue.pop()
-          let packetString = String(data: packet, encoding: .utf8)
-          NSLog("UnknownSession.receiveData packetString \(String(describing: packetString))")
-          // decode packet as json
-          let decoder = JSONDecoder()
-          do {
-            let jsonDoc = try decoder.decode(SessionType.self, from: packet)
-            NSLog("UnknownSession.receiveData type: \(jsonDoc.type)")
-            this.completion((connection: connection, type: jsonDoc.type, param: packet, error: nil))
-          } catch {
-            NSLog("UnknownSession.receiveData decode error: \(error.localizedDescription)")
+          for _ in 0..<10000 {
+            if !this.recvQueue.has() {
+              NSLog("UnknownSession.receiveData data not yet")
+              break
+            }
+            let packet = this.recvQueue.pop()
+            let packetString = String(data: packet, encoding: .utf8)
+            NSLog("UnknownSession.receiveData packetString \(String(describing: packetString))")
+            // decode packet as json
+            let decoder = JSONDecoder()
+            do {
+              let jsonDoc = try decoder.decode(SessionType.self, from: packet)
+              NSLog("UnknownSession.receiveData type: \(jsonDoc.type)")
+              this.completion((connection: connection, type: jsonDoc.type, param: packet, error: nil))
+            } catch {
+              NSLog("UnknownSession.receiveData decode error: \(error.localizedDescription)")
+            }
           }
         }
 

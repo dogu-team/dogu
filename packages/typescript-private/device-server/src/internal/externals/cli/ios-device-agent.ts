@@ -1,10 +1,11 @@
 import { Platform, Serial } from '@dogu-private/types';
-import { delay, FilledPrintable, loopTime, Milisecond, Printable, setAxiosErrorFilterToIntercepter, stringifyError } from '@dogu-tech/common';
+import { delay, FilledPrintable, loopTime, Milisecond, Printable, setAxiosErrorFilterToIntercepter } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
 import axios, { AxiosInstance } from 'axios';
 import _ from 'lodash';
 import { Socket } from 'net';
 import { config } from '../../config';
+import { IosDeviceAgentService } from '../../services/device-agent/ios-device-agent-service';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
 import { MobileDevice, XcodeBuild } from '../index';
@@ -26,6 +27,7 @@ export class IosDeviceAgentProcess {
     private readonly grpcDevicePort: number,
     private readonly webDriverForwardPort: number,
     private readonly webDriverPort: number,
+    private readonly iosDeviceAgentService: IosDeviceAgentService,
     private readonly logger: FilledPrintable,
   ) {
     ZombieServiceInstance.deleteComponentIfExist((zombieable: Zombieable): boolean => {
@@ -47,7 +49,16 @@ export class IosDeviceAgentProcess {
       }
       return false;
     }, 'kill previous tunnel');
-    this.xctest = new ZombieIdaXCTest(this.serial, xctestrunFile, this.screenForwardPort, this.webDriverForwardPort, this.webDriverPort, this.grpcDevicePort, this.logger);
+    this.xctest = new ZombieIdaXCTest(
+      this.serial,
+      xctestrunFile,
+      this.screenForwardPort,
+      this.webDriverForwardPort,
+      this.webDriverPort,
+      this.grpcDevicePort,
+      iosDeviceAgentService,
+      this.logger,
+    );
     this.screenTunnel = new ZombieTunnel(this.serial, this.screenForwardPort, this.screenDevicePort, this.logger);
     this.grpcTunnel = new ZombieTunnel(this.serial, this.grpcForwardPort, this.grpcDevicePort, this.logger);
   }
@@ -72,6 +83,7 @@ export class IosDeviceAgentProcess {
     grpcDevicePort: number,
     webDriverForwardPort: number,
     webDriverDevicePort: number,
+    iosDeviceAgentService: IosDeviceAgentService,
     logger: FilledPrintable,
   ): Promise<IosDeviceAgentProcess> {
     let webDriverPort = webDriverDevicePort;
@@ -98,7 +110,18 @@ export class IosDeviceAgentProcess {
       throw new Error('xctestrun not found');
     }
     await copiedDerivedData.removeExceptAppsAndXctestrun();
-    const ret = new IosDeviceAgentProcess(serial, xctestrun, screenForwardPort, screenDevicePort, grpcForwardPort, grpcPort, webDriverForwardPort, webDriverPort, logger);
+    const ret = new IosDeviceAgentProcess(
+      serial,
+      xctestrun,
+      screenForwardPort,
+      screenDevicePort,
+      grpcForwardPort,
+      grpcPort,
+      webDriverForwardPort,
+      webDriverPort,
+      iosDeviceAgentService,
+      logger,
+    );
     await ret.xctest.zombieWaiter.waitUntilAlive();
     await ret.screenTunnel.zombieWaiter.waitUntilAlive();
     await ret.grpcTunnel.zombieWaiter.waitUntilAlive();
@@ -141,6 +164,7 @@ class ZombieIdaXCTest implements Zombieable {
     private readonly webDriverForwardPort: number,
     private readonly webDriverPort: number,
     private readonly grpcPort: number,
+    private readonly iosDeviceAgentService: IosDeviceAgentService,
     // private readonly iosDeviceControllerGrpcClient: IosDeviceControllerGrpcClient,
     private readonly logger: FilledPrintable,
   ) {
@@ -193,6 +217,7 @@ class ZombieIdaXCTest implements Zombieable {
     await this.dissmissAlert(sessionId);
 
     await this.xctestrunfile.updateIdaXctestrunFile(this.webDriverPort, this.grpcPort);
+    await this.trySendKill();
     await XcodeBuild.killPreviousXcodebuild(this.serial, `ios-device-agent.*${this.serial}`, this.logger).catch(() => {
       this.logger.warn?.('killPreviousXcodebuild failed');
     });
@@ -260,6 +285,11 @@ class ZombieIdaXCTest implements Zombieable {
       socketOrError.resetAndDestroy();
       return false;
     }
+    if (!this.iosDeviceAgentService.connected) {
+      this._error = 'client-connected';
+      return false;
+    }
+
     this._error = 'none';
     socketOrError.resetAndDestroy();
     return true;
@@ -268,20 +298,28 @@ class ZombieIdaXCTest implements Zombieable {
   private async connectSocket(): Promise<Socket> {
     const socket = new Socket();
     return new Promise((resolve, reject) => {
+      let isNotified = false;
+      const rejectIfNotNotified = (error: Error): void => {
+        if (!isNotified) {
+          isNotified = true;
+          reject(error);
+        }
+      };
       socket.once('connect', () => {
+        isNotified = true;
         resolve(socket);
       });
 
       socket.once('error', (error: Error) => {
-        reject(error);
+        rejectIfNotNotified(error);
       });
 
       socket.once('timeout', () => {
-        reject(new Error('timeout'));
+        rejectIfNotNotified(new Error('timeout'));
       });
 
       socket.once('end', () => {
-        reject(new Error('end'));
+        rejectIfNotNotified(new Error('end'));
       });
       socket.connect({ host: '127.0.0.1', port: this.screenForwadPort });
     });
@@ -293,21 +331,39 @@ class ZombieIdaXCTest implements Zombieable {
       const sizeBuffer = Buffer.alloc(4);
       sizeBuffer.writeUInt32LE(message.length, 0);
 
-      socket.write(Buffer.concat([sizeBuffer, Buffer.from(message)]), (err: Error | undefined) => {
-        // noop
+      let isNotified = false;
+      const rejectIfNotNotified = (error: Error): void => {
+        if (!isNotified) {
+          isNotified = true;
+          reject(error);
+        }
+      };
+
+      socket.once('data', (data: Buffer) => {
+        isNotified = true;
+        resolve();
       });
       socket.once('error', (error: Error) => {
-        reject(error);
+        rejectIfNotNotified(error);
       });
-      delay(1000)
-        .then(() => {
-          resolve();
-        })
-        .catch((e: Error) => {
-          this.logger.error(`ZombieIdaXCTest.sendHello. delay error:${stringifyError(e)}`);
-          resolve();
-        });
+
+      socket.write(Buffer.concat([sizeBuffer, Buffer.from(message)]), (err: Error | undefined) => {});
     });
+  }
+
+  private async trySendKill(): Promise<void> {
+    const socketOrError = await this.connectSocket().catch((e: Error) => {
+      return e;
+    });
+    if (socketOrError instanceof Error) {
+      return;
+    }
+
+    const message = '{"type":"kill"}';
+    const sizeBuffer = Buffer.alloc(4);
+    sizeBuffer.writeUInt32LE(message.length, 0);
+
+    socketOrError.write(Buffer.concat([sizeBuffer, Buffer.from(message)]), (err: Error | undefined) => {});
   }
 
   private async createOrGetSession(): Promise<string | undefined> {
