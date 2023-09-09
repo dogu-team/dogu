@@ -28,7 +28,7 @@ const ExternalToolInstallerModal = ({ title, isUninstall, externalKeyAndNames, i
   );
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false} isCentered>
+    <Modal size="3xl" isOpen={isOpen} onClose={onClose} closeOnEsc={false} closeOnOverlayClick={false} isCentered>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>

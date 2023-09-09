@@ -125,6 +125,7 @@ export class AppiumUiAutomator2DriverExternalUnit extends IExternalUnit {
       const cleanNodeEnv = newCleanNodeEnv();
       const env = _.merge(cleanNodeEnv, {
         APPIUM_HOME: appiumHome,
+        APPIUM_SKIP_CHROMEDRIVER_INSTALL: 1,
         PATH: `${ThirdPartyPathMap.common.nodeBin}${path.delimiter}${cleanNodeEnv.PATH}`,
       });
       logger.verbose('merged env', { env });

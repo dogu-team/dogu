@@ -102,7 +102,7 @@ function IosSettings() {
           ))}
           <BorderBox>
             <Stack spacing="8px">
-              <MenuTitle>Experimental</MenuTitle>
+              <MenuTitle>Experimental 🧪</MenuTitle>
               <Flex alignItems="center">
                 <Text fontSize=".9rem">Restart iOS device when starting a connection</Text>
                 <Spacer />
