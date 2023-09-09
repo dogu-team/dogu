@@ -52,10 +52,11 @@ func (s *aosSurface) NotifyData(listener SurfaceListener, timeStamp uint32, data
 }
 
 func (s *aosSurface) Close() {
-	if nil == s.conn {
+	conn := s.conn
+	if nil == conn {
 		return
 	}
-	if closeEr := s.conn.Close(); closeEr != nil {
+	if closeEr := conn.Close(); closeEr != nil {
 		log.Inst.Error("aosSurface.Close", zap.Error(closeEr))
 	}
 }

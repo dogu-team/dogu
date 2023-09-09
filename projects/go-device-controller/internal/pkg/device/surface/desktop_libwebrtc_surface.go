@@ -134,21 +134,27 @@ func (s *desktopLibwebrtcSurface) NotifyData(listener SurfaceListener, timeStamp
 }
 
 func (s *desktopLibwebrtcSurface) Close() {
-	if nil != s.listener {
-		if closeEr := s.listener.Close(); closeEr != nil {
+	listener := s.listener
+	conn := s.conn
+	cmd := s.cmd
+	if nil != listener {
+		if closeEr := listener.Close(); closeEr != nil {
 			log.Inst.Error("desktopLibwebrtcSurface.Close", zap.Error(closeEr))
 		}
 	}
-	if nil != s.conn {
-		if closeEr := s.conn.Close(); closeEr != nil {
+	if nil != conn {
+		if closeEr := conn.Close(); closeEr != nil {
 			log.Inst.Error("desktopLibwebrtcSurface.Close", zap.Error(closeEr))
 		}
 	}
-	if nil != s.cmd {
-		if closeEr := s.cmd.Process.Kill(); closeEr != nil {
-			log.Inst.Warn("desktopLibwebrtcSurface.Close", zap.Error(closeEr))
+	if nil != cmd {
+		process := cmd.Process
+		if nil != process {
+			if closeEr := process.Kill(); closeEr != nil {
+				log.Inst.Warn("desktopLibwebrtcSurface.Close", zap.Error(closeEr))
+			}
+			utils.Execute("taskkill", "/PID", fmt.Sprintf("%v", process.Pid), "/F", "/T")
 		}
-		utils.Execute("taskkill", "/PID", fmt.Sprintf("%v", s.cmd.Process.Pid), "/F", "/T")
 	}
 }
 
