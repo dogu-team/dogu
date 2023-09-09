@@ -80,6 +80,7 @@ func (s *IosDeviceAgentService) startRecvLoop() {
 				log.Inst.Error("IosDeviceAgentService.Receive push failed", zap.Error(err))
 			}
 			errorLogCount += 1
+			time.Sleep(time.Millisecond * 200)
 			continue
 		}
 
