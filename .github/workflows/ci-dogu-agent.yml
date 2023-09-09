@@ -57,7 +57,7 @@ jobs:
       - name: Cache yarn with setup-node test
         uses: actions/setup-node@v3
         with:
-          node-version: 16.20
+          node-version: 16.20.0
           cache: 'yarn'
           cache-dependency-path: |
             yarn.lock
