@@ -132,7 +132,7 @@ export class BrowserManager {
 
   async ensureBrowserAndDriver(options: EnsureBrowserAndDriverOptions): Promise<EnsureBrowserAndDriverResult> {
     const { browserName, browserPlatform, browserVersion, deviceSerial } = options;
-    const mappedBrowserVersion = browserVersion ?? 'latest';
+    const mappedBrowserVersion = !!browserVersion ? browserVersion : 'latest';
     const ensureBrowserResult = await this.ensureBrowser({ browserName, browserPlatform, mappedBrowserVersion, deviceSerial });
     const ensureBrowserDriverResult = await this.ensureBrowserDriver({ browserName, browserPlatform, browserVersion: ensureBrowserResult.browserVersion, deviceSerial });
     return {
