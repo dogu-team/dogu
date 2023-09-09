@@ -10,7 +10,9 @@ import useSWR from 'swr';
 
 import { swrAuthFetcher } from '../../api';
 import useWebSocket from '../../hooks/useWebSocket';
+import useAuthStore from '../../stores/auth';
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
+import { theme } from '../../styles/theme';
 import { getErrorMessageFromAxios } from '../../utils/error';
 import ErrorBox from '../common/boxes/ErrorBox';
 import ProfileImage from '../ProfileImage';
@@ -19,6 +21,7 @@ import StudioDeviceSelector from './StudioDeviceSelector';
 
 export interface DeviceStreamingLayoutProps {
   project: ProjectBase;
+  userId: UserBase['userId'];
   deviceId: DeviceId;
   right: React.ReactNode;
   title: string;
@@ -26,7 +29,7 @@ export interface DeviceStreamingLayoutProps {
   hideDeviceSelector?: boolean;
 }
 
-const DeviceStreamingLayout = ({ project, deviceId, right, title, screenViewer, hideDeviceSelector }: DeviceStreamingLayoutProps) => {
+const DeviceStreamingLayout = ({ project, userId, deviceId, right, title, screenViewer, hideDeviceSelector }: DeviceStreamingLayoutProps) => {
   const router = useRouter();
   const {
     data: device,
@@ -46,11 +49,10 @@ const DeviceStreamingLayout = ({ project, deviceId, right, title, screenViewer, 
 
     return () => {
       if (socketRef.current) {
-        console.log('close');
         socketRef.current?.close();
       }
     };
-  }, []);
+  }, [socketRef]);
 
   if (deviceError) {
     return (
@@ -76,8 +78,13 @@ const DeviceStreamingLayout = ({ project, deviceId, right, title, screenViewer, 
             <h3>{title}</h3>
             <Avatar.Group>
               {users.map((user) => (
-                <Tooltip title={user.name}>
-                  <ProfileImage key={user.userId} name={user.name} profileImageUrl={user.profileImageUrl} size={32} />
+                <Tooltip key={user.userId} title={user.name}>
+                  <ProfileImage
+                    name={user.name}
+                    profileImageUrl={user.profileImageUrl}
+                    size={32}
+                    style={{ border: userId === user.userId ? `2px solid ${theme.colorPrimary}` : undefined }}
+                  />
                 </Tooltip>
               ))}
             </Avatar.Group>

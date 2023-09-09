@@ -1,4 +1,4 @@
-import { OrganizationBase, ProjectBase } from '@dogu-private/console';
+import { OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
 import { DeviceId, RecordTestCaseId, RecordTestStepId } from '@dogu-private/types';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/router';
@@ -14,9 +14,10 @@ interface Props {
   organization: OrganizationBase;
   project: ProjectBase;
   deviceId: DeviceId;
+  me: UserBase;
 }
 
-const RecordTesting = ({ organization, project, deviceId }: Props) => {
+const RecordTesting = ({ organization, me, project, deviceId }: Props) => {
   const router = useRouter();
   const caseId = router.query.caseId as RecordTestCaseId | undefined;
   const stepId = router.query.step as RecordTestStepId | undefined;
@@ -29,6 +30,7 @@ const RecordTesting = ({ organization, project, deviceId }: Props) => {
       title="Record Testing"
       screenViewer={<RecordTestingScreenViewer project={project} caseId={caseId} stepId={stepId} />}
       hideDeviceSelector
+      userId={me.userId}
     />
   );
 };

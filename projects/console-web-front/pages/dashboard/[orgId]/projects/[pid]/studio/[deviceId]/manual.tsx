@@ -8,7 +8,7 @@ import { getStudioTestingLayout, getStudioTestingServerSideProps, StudioTestingP
 const StudioManualPage: NextPageWithLayout<StudioTestingPageProps> = ({ organization, project, me, deviceId }) => {
   return (
     <Box>
-      <ManualTesting organization={organization} project={project} deviceId={deviceId} />
+      <ManualTesting organization={organization} project={project} deviceId={deviceId} me={me} />
     </Box>
   );
 };

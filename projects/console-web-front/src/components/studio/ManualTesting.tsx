@@ -1,4 +1,4 @@
-import { OrganizationBase, ProjectBase } from '@dogu-private/console';
+import { OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
 import { DeviceId, Platform } from '@dogu-private/types';
 import styled from 'styled-components';
 import dynamic from 'next/dynamic';
@@ -102,9 +102,10 @@ interface Props {
   organization: OrganizationBase;
   project: ProjectBase;
   deviceId: DeviceId;
+  me: UserBase;
 }
 
-const ManualTesting = ({ organization, project, deviceId }: Props) => {
+const ManualTesting = ({ organization, me, project, deviceId }: Props) => {
   return (
     <DeviceStreamingLayout
       project={project}
@@ -116,6 +117,7 @@ const ManualTesting = ({ organization, project, deviceId }: Props) => {
       }
       title="Manual Testing"
       screenViewer={<ManualTestingScreenViewer />}
+      userId={me.userId}
     />
   );
 };
