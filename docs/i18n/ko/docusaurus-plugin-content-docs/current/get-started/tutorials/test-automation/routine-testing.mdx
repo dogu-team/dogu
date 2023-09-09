@@ -189,8 +189,13 @@ Dogu 루틴은 GitHub Actions, Jenkins, Bitbucket과 같은 다른 CI 시스템�
 <Tabs groupId="programming-language" defaultValue="typescript">
 <TabItem value="typescript" label="🇹 Typescript" default>
 
+<BrowserOnly>
+{() => (
+<Tabs groupId="browser-platform" defaultValue={getBrowserPlatform()}>
+<TabItem value="macos" label="🍎 macOS" default>
+
 ```yaml
-name: cross-browsing-testing
+name: cross-browsing-testing-typescript-macos
 
 'on':
   workflow_dispatch: null
@@ -259,10 +264,76 @@ jobs:
 
 </TabItem>
 
-<TabItem value="python" label="🐍 Python">
+<TabItem value="windows" label="🪟 Windows">
 
 ```yaml
-name: cross-browsing-testing
+name: cross-browsing-testing-typescript-windows
+
+'on':
+  workflow_dispatch: null
+
+jobs:
+  test-chrome:
+    runs-on: windows
+    browserName: chrome
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: node
+          command: |-
+            npm install
+            npm run test:web
+        cwd: selenium/typescript/jest
+    record: true
+
+  test-firefox:
+    runs-on: windows
+    browserName: firefox
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: node
+          command: |-
+            npm install
+            npm run test:web
+        cwd: selenium/typescript/jest
+    record: true
+
+  test-edge:
+    runs-on: windows
+    browserName: edge
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: node
+          command: |-
+            npm install
+            npm run test:web
+        cwd: selenium/typescript/jest
+    record: true
+```
+
+</TabItem>
+</Tabs>
+)}
+</BrowserOnly>
+</TabItem>
+
+<TabItem value="python" label="🐍 Python">
+
+<BrowserOnly>
+{() => (
+<Tabs groupId="browser-platform" defaultValue={getBrowserPlatform()}>
+<TabItem value="macos" label="🍎 macOS" default>
+
+```yaml
+name: cross-browsing-testing-python-macos
 
 'on':
   workflow_dispatch: null
@@ -328,6 +399,68 @@ jobs:
         cwd: selenium/python/pytest
     record: true
 ```
+
+</TabItem>
+
+<TabItem value="windows" label="🪟 Windows">
+
+```yaml
+name: cross-browsing-testing-python-windows
+
+'on':
+  workflow_dispatch: null
+
+jobs:
+  test-chrome:
+    runs-on: windows
+    browserName: chrome
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: python
+          command: |-
+            pip3 install -r requirements.txt
+            pytest web/test_web.py --capture=no -x
+        cwd: selenium/python/pytest
+    record: true
+
+  test-firefox:
+    runs-on: windows
+    browserName: firefox
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: python
+          command: |-
+            pip3 install -r requirements.txt
+            pytest web/test_web.py --capture=no -x
+        cwd: selenium/python/pytest
+    record: true
+
+  test-edge:
+    runs-on: windows
+    browserName: edge
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: python
+          command: |-
+            pip3 install -r requirements.txt
+            pytest web/test_web.py --capture=no -x
+        cwd: selenium/python/pytest
+    record: true
+```
+
+</TabItem>
+</Tabs>
+)}
+</BrowserOnly>
 
 </TabItem>
 </Tabs>
