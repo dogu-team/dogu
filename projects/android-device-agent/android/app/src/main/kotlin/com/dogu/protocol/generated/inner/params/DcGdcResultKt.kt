@@ -93,6 +93,30 @@ object DcGdcResultKt {
     fun hasDcGdcStopScreenRecordResult(): kotlin.Boolean {
       return _builder.hasDcGdcStopScreenRecordResult()
     }
+
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusResult dc_gdc_get_surface_status_result = 15;</code>
+     */
+    var dcGdcGetSurfaceStatusResult: com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult
+      @JvmName("getDcGdcGetSurfaceStatusResult")
+      get() = _builder.getDcGdcGetSurfaceStatusResult()
+      @JvmName("setDcGdcGetSurfaceStatusResult")
+      set(value) {
+        _builder.setDcGdcGetSurfaceStatusResult(value)
+      }
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusResult dc_gdc_get_surface_status_result = 15;</code>
+     */
+    fun clearDcGdcGetSurfaceStatusResult() {
+      _builder.clearDcGdcGetSurfaceStatusResult()
+    }
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusResult dc_gdc_get_surface_status_result = 15;</code>
+     * @return Whether the dcGdcGetSurfaceStatusResult field is set.
+     */
+    fun hasDcGdcGetSurfaceStatusResult(): kotlin.Boolean {
+      return _builder.hasDcGdcGetSurfaceStatusResult()
+    }
     val valueCase: com.dogu.protocol.generated.inner.params.DcGdc.DcGdcResult.ValueCase
       @JvmName("getValueCase")
       get() = _builder.getValueCase()
@@ -114,4 +138,7 @@ val com.dogu.protocol.generated.inner.params.DcGdc.DcGdcResultOrBuilder.dcGdcSta
 
 val com.dogu.protocol.generated.inner.params.DcGdc.DcGdcResultOrBuilder.dcGdcStopScreenRecordResultOrNull: com.dogu.protocol.generated.inner.types.DcGdc.DcGdcStopScreenRecordResult?
   get() = if (hasDcGdcStopScreenRecordResult()) getDcGdcStopScreenRecordResult() else null
+
+val com.dogu.protocol.generated.inner.params.DcGdc.DcGdcResultOrBuilder.dcGdcGetSurfaceStatusResultOrNull: com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult?
+  get() = if (hasDcGdcGetSurfaceStatusResult()) getDcGdcGetSurfaceStatusResult() else null
 

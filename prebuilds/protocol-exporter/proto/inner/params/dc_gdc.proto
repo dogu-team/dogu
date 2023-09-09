@@ -12,6 +12,7 @@ message DcGdcParam {
     types.DcGdcUpdateDeviceListParam dc_gdc_update_devicelist_param = 10;
     types.DcGdcStartScreenRecordParam dc_gdc_start_screen_record_param = 13;
     types.DcGdcStopScreenRecordParam dc_gdc_stop_screen_record_param = 14;
+    types.DcGdcGetSurfaceStatusParam dc_gdc_get_surface_status_param = 15;
   }
 }
 
@@ -20,5 +21,6 @@ message DcGdcResult {
     types.DcGdcUpdateDeviceListResult dc_gdc_update_devicelist_result = 10;
     types.DcGdcStartScreenRecordResult dc_gdc_start_screen_record_result = 13;
     types.DcGdcStopScreenRecordResult dc_gdc_stop_screen_record_result = 14;
+    types.DcGdcGetSurfaceStatusResult dc_gdc_get_surface_status_result = 15;
   }
 }

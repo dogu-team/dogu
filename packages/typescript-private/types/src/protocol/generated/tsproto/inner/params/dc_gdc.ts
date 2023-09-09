@@ -1,6 +1,8 @@
 /* eslint-disable */
 import _m0 from 'protobufjs/minimal';
 import {
+  DcGdcGetSurfaceStatusParam,
+  DcGdcGetSurfaceStatusResult,
   DcGdcStartScreenRecordParam,
   DcGdcStartScreenRecordResult,
   DcGdcStopScreenRecordParam,
@@ -12,21 +14,17 @@ import {
 export interface DcGdcParam {
   value?:
     | { $case: 'dcGdcUpdateDevicelistParam'; dcGdcUpdateDevicelistParam: DcGdcUpdateDeviceListParam }
-    | {
-        $case: 'dcGdcStartScreenRecordParam';
-        dcGdcStartScreenRecordParam: DcGdcStartScreenRecordParam;
-      }
-    | { $case: 'dcGdcStopScreenRecordParam'; dcGdcStopScreenRecordParam: DcGdcStopScreenRecordParam };
+    | { $case: 'dcGdcStartScreenRecordParam'; dcGdcStartScreenRecordParam: DcGdcStartScreenRecordParam }
+    | { $case: 'dcGdcStopScreenRecordParam'; dcGdcStopScreenRecordParam: DcGdcStopScreenRecordParam }
+    | { $case: 'dcGdcGetSurfaceStatusParam'; dcGdcGetSurfaceStatusParam: DcGdcGetSurfaceStatusParam };
 }
 
 export interface DcGdcResult {
   value?:
     | { $case: 'dcGdcUpdateDevicelistResult'; dcGdcUpdateDevicelistResult: DcGdcUpdateDeviceListResult }
-    | {
-        $case: 'dcGdcStartScreenRecordResult';
-        dcGdcStartScreenRecordResult: DcGdcStartScreenRecordResult;
-      }
-    | { $case: 'dcGdcStopScreenRecordResult'; dcGdcStopScreenRecordResult: DcGdcStopScreenRecordResult };
+    | { $case: 'dcGdcStartScreenRecordResult'; dcGdcStartScreenRecordResult: DcGdcStartScreenRecordResult }
+    | { $case: 'dcGdcStopScreenRecordResult'; dcGdcStopScreenRecordResult: DcGdcStopScreenRecordResult }
+    | { $case: 'dcGdcGetSurfaceStatusResult'; dcGdcGetSurfaceStatusResult: DcGdcGetSurfaceStatusResult };
 }
 
 function createBaseDcGdcParam(): DcGdcParam {
@@ -43,6 +41,9 @@ export const DcGdcParam = {
     }
     if (message.value?.$case === 'dcGdcStopScreenRecordParam') {
       DcGdcStopScreenRecordParam.encode(message.value.dcGdcStopScreenRecordParam, writer.uint32(114).fork()).ldelim();
+    }
+    if (message.value?.$case === 'dcGdcGetSurfaceStatusParam') {
+      DcGdcGetSurfaceStatusParam.encode(message.value.dcGdcGetSurfaceStatusParam, writer.uint32(122).fork()).ldelim();
     }
     return writer;
   },
@@ -72,6 +73,12 @@ export const DcGdcParam = {
             dcGdcStopScreenRecordParam: DcGdcStopScreenRecordParam.decode(reader, reader.uint32()),
           };
           break;
+        case 15:
+          message.value = {
+            $case: 'dcGdcGetSurfaceStatusParam',
+            dcGdcGetSurfaceStatusParam: DcGdcGetSurfaceStatusParam.decode(reader, reader.uint32()),
+          };
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -97,6 +104,11 @@ export const DcGdcParam = {
             $case: 'dcGdcStopScreenRecordParam',
             dcGdcStopScreenRecordParam: DcGdcStopScreenRecordParam.fromJSON(object.dcGdcStopScreenRecordParam),
           }
+        : isSet(object.dcGdcGetSurfaceStatusParam)
+        ? {
+            $case: 'dcGdcGetSurfaceStatusParam',
+            dcGdcGetSurfaceStatusParam: DcGdcGetSurfaceStatusParam.fromJSON(object.dcGdcGetSurfaceStatusParam),
+          }
         : undefined,
     };
   },
@@ -109,6 +121,8 @@ export const DcGdcParam = {
       (obj.dcGdcStartScreenRecordParam = message.value?.dcGdcStartScreenRecordParam ? DcGdcStartScreenRecordParam.toJSON(message.value?.dcGdcStartScreenRecordParam) : undefined);
     message.value?.$case === 'dcGdcStopScreenRecordParam' &&
       (obj.dcGdcStopScreenRecordParam = message.value?.dcGdcStopScreenRecordParam ? DcGdcStopScreenRecordParam.toJSON(message.value?.dcGdcStopScreenRecordParam) : undefined);
+    message.value?.$case === 'dcGdcGetSurfaceStatusParam' &&
+      (obj.dcGdcGetSurfaceStatusParam = message.value?.dcGdcGetSurfaceStatusParam ? DcGdcGetSurfaceStatusParam.toJSON(message.value?.dcGdcGetSurfaceStatusParam) : undefined);
     return obj;
   },
 
@@ -132,6 +146,12 @@ export const DcGdcParam = {
         dcGdcStopScreenRecordParam: DcGdcStopScreenRecordParam.fromPartial(object.value.dcGdcStopScreenRecordParam),
       };
     }
+    if (object.value?.$case === 'dcGdcGetSurfaceStatusParam' && object.value?.dcGdcGetSurfaceStatusParam !== undefined && object.value?.dcGdcGetSurfaceStatusParam !== null) {
+      message.value = {
+        $case: 'dcGdcGetSurfaceStatusParam',
+        dcGdcGetSurfaceStatusParam: DcGdcGetSurfaceStatusParam.fromPartial(object.value.dcGdcGetSurfaceStatusParam),
+      };
+    }
     return message;
   },
 };
@@ -150,6 +170,9 @@ export const DcGdcResult = {
     }
     if (message.value?.$case === 'dcGdcStopScreenRecordResult') {
       DcGdcStopScreenRecordResult.encode(message.value.dcGdcStopScreenRecordResult, writer.uint32(114).fork()).ldelim();
+    }
+    if (message.value?.$case === 'dcGdcGetSurfaceStatusResult') {
+      DcGdcGetSurfaceStatusResult.encode(message.value.dcGdcGetSurfaceStatusResult, writer.uint32(122).fork()).ldelim();
     }
     return writer;
   },
@@ -179,6 +202,12 @@ export const DcGdcResult = {
             dcGdcStopScreenRecordResult: DcGdcStopScreenRecordResult.decode(reader, reader.uint32()),
           };
           break;
+        case 15:
+          message.value = {
+            $case: 'dcGdcGetSurfaceStatusResult',
+            dcGdcGetSurfaceStatusResult: DcGdcGetSurfaceStatusResult.decode(reader, reader.uint32()),
+          };
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -204,6 +233,11 @@ export const DcGdcResult = {
             $case: 'dcGdcStopScreenRecordResult',
             dcGdcStopScreenRecordResult: DcGdcStopScreenRecordResult.fromJSON(object.dcGdcStopScreenRecordResult),
           }
+        : isSet(object.dcGdcGetSurfaceStatusResult)
+        ? {
+            $case: 'dcGdcGetSurfaceStatusResult',
+            dcGdcGetSurfaceStatusResult: DcGdcGetSurfaceStatusResult.fromJSON(object.dcGdcGetSurfaceStatusResult),
+          }
         : undefined,
     };
   },
@@ -218,6 +252,8 @@ export const DcGdcResult = {
         : undefined);
     message.value?.$case === 'dcGdcStopScreenRecordResult' &&
       (obj.dcGdcStopScreenRecordResult = message.value?.dcGdcStopScreenRecordResult ? DcGdcStopScreenRecordResult.toJSON(message.value?.dcGdcStopScreenRecordResult) : undefined);
+    message.value?.$case === 'dcGdcGetSurfaceStatusResult' &&
+      (obj.dcGdcGetSurfaceStatusResult = message.value?.dcGdcGetSurfaceStatusResult ? DcGdcGetSurfaceStatusResult.toJSON(message.value?.dcGdcGetSurfaceStatusResult) : undefined);
     return obj;
   },
 
@@ -239,6 +275,12 @@ export const DcGdcResult = {
       message.value = {
         $case: 'dcGdcStopScreenRecordResult',
         dcGdcStopScreenRecordResult: DcGdcStopScreenRecordResult.fromPartial(object.value.dcGdcStopScreenRecordResult),
+      };
+    }
+    if (object.value?.$case === 'dcGdcGetSurfaceStatusResult' && object.value?.dcGdcGetSurfaceStatusResult !== undefined && object.value?.dcGdcGetSurfaceStatusResult !== null) {
+      message.value = {
+        $case: 'dcGdcGetSurfaceStatusResult',
+        dcGdcGetSurfaceStatusResult: DcGdcGetSurfaceStatusResult.fromPartial(object.value.dcGdcGetSurfaceStatusResult),
       };
     }
     return message;

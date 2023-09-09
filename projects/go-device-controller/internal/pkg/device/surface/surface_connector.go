@@ -50,12 +50,20 @@ type SurfaceConnector struct {
 
 	msgChan chan SurfaceMessage
 
+	// recv timestamp
+	lastRecvTime time.Time
+
 	// send timestamp
 	firstTimeStamp uint32
 	firstSendTime  time.Time
 
 	option  *streaming.ScreenCaptureOption
 	Profile SurfaceProfile
+}
+
+type SurfaceStatus struct {
+	IsPlaying              bool
+	LastFrameDeltaMillisec int64
 }
 
 func NewSurfaceConnectorBase(s *SurfaceConnector, serial string) {
@@ -139,6 +147,13 @@ func (s *SurfaceConnector) RemoveListener(listener SurfaceListener) {
 	log.Inst.Info("surfaceConnector.removeListener done", zap.String("serial", s.serial), zap.Int("id", listener.GetId()), zap.String("type", listener.GetSurfaceListenerType()), zap.Int("listenerCount", len(s.listeners)))
 }
 
+func (s *SurfaceConnector) GetStatus() SurfaceStatus {
+	return SurfaceStatus{
+		IsPlaying:              s.HasListener(),
+		LastFrameDeltaMillisec: time.Since(s.lastRecvTime).Milliseconds(),
+	}
+}
+
 func (s *SurfaceConnector) HasListener() bool {
 	return 0 < len(s.listeners)
 }
@@ -212,6 +227,7 @@ func (s *SurfaceConnector) startRoutine() {
 					s.msgChan <- SurfaceMessage{time: recvRoutineStartTime, msgType: reconnect}
 				},
 				func(buf []byte) {
+					s.lastRecvTime = time.Now()
 					s.Profile.ReadSizePerPeriod += len(buf)
 					s.Profile.ReadCountPerPeriod += 1
 

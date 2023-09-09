@@ -164,6 +164,7 @@ export class IosChannel implements DeviceChannel {
       wdaForwardPort,
       deviceServerService.devicePortService.getIosWebDriverAgentServerPort(),
       deviceAgent,
+      streaming,
       logger,
     ).catch((error) => {
       logger.error('IosDeviceAgentProcess start failed.', { error: errorify(error) });

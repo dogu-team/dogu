@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { Socket } from 'net';
 import { config } from '../../config';
 import { IosDeviceAgentService } from '../../services/device-agent/ios-device-agent-service';
+import { StreamingService } from '../../services/streaming/streaming-service';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../../services/zombie/zombie-component';
 import { ZombieServiceInstance } from '../../services/zombie/zombie-service';
 import { MobileDevice, XcodeBuild } from '../index';
@@ -28,6 +29,7 @@ export class IosDeviceAgentProcess {
     private readonly webDriverForwardPort: number,
     private readonly webDriverPort: number,
     private readonly iosDeviceAgentService: IosDeviceAgentService,
+    private readonly streamingService: StreamingService,
     private readonly logger: FilledPrintable,
   ) {
     ZombieServiceInstance.deleteComponentIfExist((zombieable: Zombieable): boolean => {
@@ -57,6 +59,7 @@ export class IosDeviceAgentProcess {
       this.webDriverPort,
       this.grpcDevicePort,
       iosDeviceAgentService,
+      streamingService,
       this.logger,
     );
     this.screenTunnel = new ZombieTunnel(this.serial, this.screenForwardPort, this.screenDevicePort, this.logger);
@@ -84,6 +87,7 @@ export class IosDeviceAgentProcess {
     webDriverForwardPort: number,
     webDriverDevicePort: number,
     iosDeviceAgentService: IosDeviceAgentService,
+    streamingService: StreamingService,
     logger: FilledPrintable,
   ): Promise<IosDeviceAgentProcess> {
     let webDriverPort = webDriverDevicePort;
@@ -120,6 +124,7 @@ export class IosDeviceAgentProcess {
       webDriverForwardPort,
       webDriverPort,
       iosDeviceAgentService,
+      streamingService,
       logger,
     );
     await ret.xctest.zombieWaiter.waitUntilAlive();
@@ -168,7 +173,7 @@ class ZombieIdaXCTest implements Zombieable {
     private readonly webDriverPort: number,
     private readonly grpcPort: number,
     private readonly iosDeviceAgentService: IosDeviceAgentService,
-    // private readonly iosDeviceControllerGrpcClient: IosDeviceControllerGrpcClient,
+    private readonly streamingService: StreamingService,
     private readonly logger: FilledPrintable,
   ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
@@ -232,24 +237,24 @@ class ZombieIdaXCTest implements Zombieable {
     });
 
     for await (const _ of loopTime(Milisecond.t3Seconds, Milisecond.t3Minutes)) {
-      if (this.isHealth()) {
+      if (await this.isHealth()) {
         break;
       }
       if (this._error === 'not-alive') {
         break;
       }
     }
-    if (!this.isHealth()) {
+    if (!(await this.isHealth())) {
       throw new Error(`ZombieIdaXCTest has error. ${this.serial}. ${this._error}`);
     }
     this.healthFailCount = 0;
   }
 
   async update(): Promise<void> {
-    // if (config.externalIosDeviceAgent.use) {
-    //   return;
-    // }
-    if (!this.isHealth()) {
+    if (config.externalIosDeviceAgent.use) {
+      return;
+    }
+    if (!(await this.isHealth())) {
       this.healthFailCount++;
       if (this.healthFailCount > 3) {
         ZombieServiceInstance.notifyDie(this);
@@ -266,12 +271,12 @@ class ZombieIdaXCTest implements Zombieable {
     this.xctestrun?.kill('ZombieIdaXCTest.onDie');
   }
 
-  private isHealth(): boolean {
-    // if (!this.xctestrun?.isAlive) {
-    //   this._error = this.xctestrun?.error ?? 'not-alive';
-    //   return false;
-    // }
-    // this.xctestrun.update();
+  private async isHealth(): Promise<boolean> {
+    if (!this.xctestrun?.isAlive) {
+      this._error = this.xctestrun?.error ?? 'not-alive';
+      return false;
+    }
+    this.xctestrun.update();
     this.checkAlive();
     if (Date.now() - this.lastLiveCheckRecvTime > Milisecond.t5Seconds) {
       this._error = 'no signal';
@@ -280,6 +285,13 @@ class ZombieIdaXCTest implements Zombieable {
 
     if (!this.iosDeviceAgentService.connected) {
       this._error = 'client not connected';
+      return false;
+    }
+    const surfaceStatus = await this.streamingService.getSurfaceStatus(this.serial).catch(() => {
+      return { hasSurface: null };
+    });
+    if (surfaceStatus.hasSurface && surfaceStatus.isPlaying && surfaceStatus.lastFrameDeltaMillisec > Milisecond.t15Seconds) {
+      this._error = 'not stable playing';
       return false;
     }
 

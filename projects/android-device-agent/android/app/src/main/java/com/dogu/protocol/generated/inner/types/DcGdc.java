@@ -3739,6 +3739,664 @@ public final class DcGdc {
     }
   }
 
+  public interface DcGdcGetSurfaceStatusParamOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:inner.types.DcGdcGetSurfaceStatusParam)
+      com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>string serial = 1;</code>
+     * @return The serial.
+     */
+    java.lang.String getSerial();
+    /**
+     * <code>string serial = 1;</code>
+     * @return The bytes for serial.
+     */
+    com.google.protobuf.ByteString
+        getSerialBytes();
+  }
+  /**
+   * Protobuf type {@code inner.types.DcGdcGetSurfaceStatusParam}
+   */
+  public  static final class DcGdcGetSurfaceStatusParam extends
+      com.google.protobuf.GeneratedMessageLite<
+          DcGdcGetSurfaceStatusParam, DcGdcGetSurfaceStatusParam.Builder> implements
+      // @@protoc_insertion_point(message_implements:inner.types.DcGdcGetSurfaceStatusParam)
+      DcGdcGetSurfaceStatusParamOrBuilder {
+    private DcGdcGetSurfaceStatusParam() {
+      serial_ = "";
+    }
+    public static final int SERIAL_FIELD_NUMBER = 1;
+    private java.lang.String serial_;
+    /**
+     * <code>string serial = 1;</code>
+     * @return The serial.
+     */
+    @java.lang.Override
+    public java.lang.String getSerial() {
+      return serial_;
+    }
+    /**
+     * <code>string serial = 1;</code>
+     * @return The bytes for serial.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getSerialBytes() {
+      return com.google.protobuf.ByteString.copyFromUtf8(serial_);
+    }
+    /**
+     * <code>string serial = 1;</code>
+     * @param value The serial to set.
+     */
+    private void setSerial(
+        java.lang.String value) {
+      java.lang.Class<?> valueClass = value.getClass();
+  
+      serial_ = value;
+    }
+    /**
+     * <code>string serial = 1;</code>
+     */
+    private void clearSerial() {
+      
+      serial_ = getDefaultInstance().getSerial();
+    }
+    /**
+     * <code>string serial = 1;</code>
+     * @param value The bytes for serial to set.
+     */
+    private void setSerialBytes(
+        com.google.protobuf.ByteString value) {
+      checkByteStringIsUtf8(value);
+      serial_ = value.toStringUtf8();
+      
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code inner.types.DcGdcGetSurfaceStatusParam}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam, Builder> implements
+        // @@protoc_insertion_point(builder_implements:inner.types.DcGdcGetSurfaceStatusParam)
+        com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParamOrBuilder {
+      // Construct using com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      /**
+       * <code>string serial = 1;</code>
+       * @return The serial.
+       */
+      @java.lang.Override
+      public java.lang.String getSerial() {
+        return instance.getSerial();
+      }
+      /**
+       * <code>string serial = 1;</code>
+       * @return The bytes for serial.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getSerialBytes() {
+        return instance.getSerialBytes();
+      }
+      /**
+       * <code>string serial = 1;</code>
+       * @param value The serial to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSerial(
+          java.lang.String value) {
+        copyOnWrite();
+        instance.setSerial(value);
+        return this;
+      }
+      /**
+       * <code>string serial = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearSerial() {
+        copyOnWrite();
+        instance.clearSerial();
+        return this;
+      }
+      /**
+       * <code>string serial = 1;</code>
+       * @param value The bytes for serial to set.
+       * @return This builder for chaining.
+       */
+      public Builder setSerialBytes(
+          com.google.protobuf.ByteString value) {
+        copyOnWrite();
+        instance.setSerialBytes(value);
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:inner.types.DcGdcGetSurfaceStatusParam)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "serial_",
+            };
+            java.lang.String info =
+                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\u0208";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam> parser = PARSER;
+          if (parser == null) {
+            synchronized (com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:inner.types.DcGdcGetSurfaceStatusParam)
+    private static final com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam DEFAULT_INSTANCE;
+    static {
+      DcGdcGetSurfaceStatusParam defaultInstance = new DcGdcGetSurfaceStatusParam();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        DcGdcGetSurfaceStatusParam.class, defaultInstance);
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<DcGdcGetSurfaceStatusParam> PARSER;
+
+    public static com.google.protobuf.Parser<DcGdcGetSurfaceStatusParam> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
+  public interface DcGdcGetSurfaceStatusResultOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:inner.types.DcGdcGetSurfaceStatusResult)
+      com.google.protobuf.MessageLiteOrBuilder {
+
+    /**
+     * <code>bool has_surface = 1;</code>
+     * @return The hasSurface.
+     */
+    boolean getHasSurface();
+
+    /**
+     * <code>bool is_playing = 2;</code>
+     * @return The isPlaying.
+     */
+    boolean getIsPlaying();
+
+    /**
+     * <code>uint32 last_frame_delta_millisec = 3;</code>
+     * @return The lastFrameDeltaMillisec.
+     */
+    int getLastFrameDeltaMillisec();
+  }
+  /**
+   * Protobuf type {@code inner.types.DcGdcGetSurfaceStatusResult}
+   */
+  public  static final class DcGdcGetSurfaceStatusResult extends
+      com.google.protobuf.GeneratedMessageLite<
+          DcGdcGetSurfaceStatusResult, DcGdcGetSurfaceStatusResult.Builder> implements
+      // @@protoc_insertion_point(message_implements:inner.types.DcGdcGetSurfaceStatusResult)
+      DcGdcGetSurfaceStatusResultOrBuilder {
+    private DcGdcGetSurfaceStatusResult() {
+    }
+    public static final int HAS_SURFACE_FIELD_NUMBER = 1;
+    private boolean hasSurface_;
+    /**
+     * <code>bool has_surface = 1;</code>
+     * @return The hasSurface.
+     */
+    @java.lang.Override
+    public boolean getHasSurface() {
+      return hasSurface_;
+    }
+    /**
+     * <code>bool has_surface = 1;</code>
+     * @param value The hasSurface to set.
+     */
+    private void setHasSurface(boolean value) {
+      
+      hasSurface_ = value;
+    }
+    /**
+     * <code>bool has_surface = 1;</code>
+     */
+    private void clearHasSurface() {
+      
+      hasSurface_ = false;
+    }
+
+    public static final int IS_PLAYING_FIELD_NUMBER = 2;
+    private boolean isPlaying_;
+    /**
+     * <code>bool is_playing = 2;</code>
+     * @return The isPlaying.
+     */
+    @java.lang.Override
+    public boolean getIsPlaying() {
+      return isPlaying_;
+    }
+    /**
+     * <code>bool is_playing = 2;</code>
+     * @param value The isPlaying to set.
+     */
+    private void setIsPlaying(boolean value) {
+      
+      isPlaying_ = value;
+    }
+    /**
+     * <code>bool is_playing = 2;</code>
+     */
+    private void clearIsPlaying() {
+      
+      isPlaying_ = false;
+    }
+
+    public static final int LAST_FRAME_DELTA_MILLISEC_FIELD_NUMBER = 3;
+    private int lastFrameDeltaMillisec_;
+    /**
+     * <code>uint32 last_frame_delta_millisec = 3;</code>
+     * @return The lastFrameDeltaMillisec.
+     */
+    @java.lang.Override
+    public int getLastFrameDeltaMillisec() {
+      return lastFrameDeltaMillisec_;
+    }
+    /**
+     * <code>uint32 last_frame_delta_millisec = 3;</code>
+     * @param value The lastFrameDeltaMillisec to set.
+     */
+    private void setLastFrameDeltaMillisec(int value) {
+      
+      lastFrameDeltaMillisec_ = value;
+    }
+    /**
+     * <code>uint32 last_frame_delta_millisec = 3;</code>
+     */
+    private void clearLastFrameDeltaMillisec() {
+      
+      lastFrameDeltaMillisec_ = 0;
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, data, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return parseDelimitedFrom(DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input);
+    }
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageLite.parseFrom(
+          DEFAULT_INSTANCE, input, extensionRegistry);
+    }
+
+    public static Builder newBuilder() {
+      return (Builder) DEFAULT_INSTANCE.createBuilder();
+    }
+    public static Builder newBuilder(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult prototype) {
+      return (Builder) DEFAULT_INSTANCE.createBuilder(prototype);
+    }
+
+    /**
+     * Protobuf type {@code inner.types.DcGdcGetSurfaceStatusResult}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageLite.Builder<
+          com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult, Builder> implements
+        // @@protoc_insertion_point(builder_implements:inner.types.DcGdcGetSurfaceStatusResult)
+        com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResultOrBuilder {
+      // Construct using com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult.newBuilder()
+      private Builder() {
+        super(DEFAULT_INSTANCE);
+      }
+
+
+      /**
+       * <code>bool has_surface = 1;</code>
+       * @return The hasSurface.
+       */
+      @java.lang.Override
+      public boolean getHasSurface() {
+        return instance.getHasSurface();
+      }
+      /**
+       * <code>bool has_surface = 1;</code>
+       * @param value The hasSurface to set.
+       * @return This builder for chaining.
+       */
+      public Builder setHasSurface(boolean value) {
+        copyOnWrite();
+        instance.setHasSurface(value);
+        return this;
+      }
+      /**
+       * <code>bool has_surface = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearHasSurface() {
+        copyOnWrite();
+        instance.clearHasSurface();
+        return this;
+      }
+
+      /**
+       * <code>bool is_playing = 2;</code>
+       * @return The isPlaying.
+       */
+      @java.lang.Override
+      public boolean getIsPlaying() {
+        return instance.getIsPlaying();
+      }
+      /**
+       * <code>bool is_playing = 2;</code>
+       * @param value The isPlaying to set.
+       * @return This builder for chaining.
+       */
+      public Builder setIsPlaying(boolean value) {
+        copyOnWrite();
+        instance.setIsPlaying(value);
+        return this;
+      }
+      /**
+       * <code>bool is_playing = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearIsPlaying() {
+        copyOnWrite();
+        instance.clearIsPlaying();
+        return this;
+      }
+
+      /**
+       * <code>uint32 last_frame_delta_millisec = 3;</code>
+       * @return The lastFrameDeltaMillisec.
+       */
+      @java.lang.Override
+      public int getLastFrameDeltaMillisec() {
+        return instance.getLastFrameDeltaMillisec();
+      }
+      /**
+       * <code>uint32 last_frame_delta_millisec = 3;</code>
+       * @param value The lastFrameDeltaMillisec to set.
+       * @return This builder for chaining.
+       */
+      public Builder setLastFrameDeltaMillisec(int value) {
+        copyOnWrite();
+        instance.setLastFrameDeltaMillisec(value);
+        return this;
+      }
+      /**
+       * <code>uint32 last_frame_delta_millisec = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearLastFrameDeltaMillisec() {
+        copyOnWrite();
+        instance.clearLastFrameDeltaMillisec();
+        return this;
+      }
+
+      // @@protoc_insertion_point(builder_scope:inner.types.DcGdcGetSurfaceStatusResult)
+    }
+    @java.lang.Override
+    @java.lang.SuppressWarnings({"unchecked", "fallthrough"})
+    protected final java.lang.Object dynamicMethod(
+        com.google.protobuf.GeneratedMessageLite.MethodToInvoke method,
+        java.lang.Object arg0, java.lang.Object arg1) {
+      switch (method) {
+        case NEW_MUTABLE_INSTANCE: {
+          return new com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult();
+        }
+        case NEW_BUILDER: {
+          return new Builder();
+        }
+        case BUILD_MESSAGE_INFO: {
+            java.lang.Object[] objects = new java.lang.Object[] {
+              "hasSurface_",
+              "isPlaying_",
+              "lastFrameDeltaMillisec_",
+            };
+            java.lang.String info =
+                "\u0000\u0003\u0000\u0000\u0001\u0003\u0003\u0000\u0000\u0000\u0001\u0007\u0002\u0007" +
+                "\u0003\u000b";
+            return newMessageInfo(DEFAULT_INSTANCE, info, objects);
+        }
+        // fall through
+        case GET_DEFAULT_INSTANCE: {
+          return DEFAULT_INSTANCE;
+        }
+        case GET_PARSER: {
+          com.google.protobuf.Parser<com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult> parser = PARSER;
+          if (parser == null) {
+            synchronized (com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult.class) {
+              parser = PARSER;
+              if (parser == null) {
+                parser =
+                    new DefaultInstanceBasedParser<com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult>(
+                        DEFAULT_INSTANCE);
+                PARSER = parser;
+              }
+            }
+          }
+          return parser;
+      }
+      case GET_MEMOIZED_IS_INITIALIZED: {
+        return (byte) 1;
+      }
+      case SET_MEMOIZED_IS_INITIALIZED: {
+        return null;
+      }
+      }
+      throw new UnsupportedOperationException();
+    }
+
+
+    // @@protoc_insertion_point(class_scope:inner.types.DcGdcGetSurfaceStatusResult)
+    private static final com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult DEFAULT_INSTANCE;
+    static {
+      DcGdcGetSurfaceStatusResult defaultInstance = new DcGdcGetSurfaceStatusResult();
+      // New instances are implicitly immutable so no need to make
+      // immutable.
+      DEFAULT_INSTANCE = defaultInstance;
+      com.google.protobuf.GeneratedMessageLite.registerDefaultInstance(
+        DcGdcGetSurfaceStatusResult.class, defaultInstance);
+    }
+
+    public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static volatile com.google.protobuf.Parser<DcGdcGetSurfaceStatusResult> PARSER;
+
+    public static com.google.protobuf.Parser<DcGdcGetSurfaceStatusResult> parser() {
+      return DEFAULT_INSTANCE.getParserForType();
+    }
+  }
+
 
   static {
   }

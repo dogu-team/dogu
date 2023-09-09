@@ -138,6 +138,24 @@ func (ds *Devices) FindSurfaceListeners(serial string, listenerType string) []su
 	return device.Surface().FindListeners(listenerType)
 }
 
+func (ds *Devices) GetSurfaceStatus(serial string) types.DcGdcGetSurfaceStatusResult {
+	device := ds.findDevice(serial)
+	if nil == device {
+		log.Inst.Error("Devices.FindSurfaceListener device not found", zap.String("serial", serial))
+		return types.DcGdcGetSurfaceStatusResult{
+			HasSurface:             false,
+			IsPlaying:              false,
+			LastFrameDeltaMillisec: 0,
+		}
+	}
+	status := device.Surface().GetStatus()
+	return types.DcGdcGetSurfaceStatusResult{
+		HasSurface:             true,
+		IsPlaying:              status.IsPlaying,
+		LastFrameDeltaMillisec: uint32(status.LastFrameDeltaMillisec),
+	}
+}
+
 func (ds *Devices) OnDataChannel(serial string, ctx *structs.DatachannelContext) error {
 	device := ds.findDevice(serial)
 	if nil == device {
