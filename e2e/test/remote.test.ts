@@ -11,6 +11,12 @@ const doJestAndroidApp = false;
 const doJestWindowsWeb = false;
 const doJestMacosWeb = true;
 
+const serverUrl = '';
+const userEmail = '';
+const userPassword = '';
+const organizationName = '';
+const projectName = '';
+
 async function concatText(textElements: Awaited<ReturnType<Page['$$']>>): Promise<string> {
   const concated = (await Promise.all(textElements.map(async (element) => element.textContent())))
     .filter((text) => text)
@@ -72,18 +78,19 @@ test.afterAll(async () => {
 });
 
 test('goto', async () => {
-  await page.goto('http://localhost:3001');
+  await page.goto(serverUrl);
 });
 
 test('login', async () => {
-  await page.fill('//*[@id="__next"]/div/div[1]/div[2]/div[2]/div[1]/form/div[1]/input', 'hunhoekim@gmail.com');
-  await page.fill('//*[@id="__next"]/div/div[1]/div[2]/div[2]/div[1]/form/div[2]/span/input', 'hunhoekim1!');
+  await page.fill('//*[@id="__next"]/div/div[1]/div[2]/div[2]/div[1]/form/div[1]/input', userEmail);
+  await page.fill('//*[@id="__next"]/div/div[1]/div[2]/div[2]/div[1]/form/div[2]/span/input', userPassword);
   await page.click('//*[@id="__next"]/div/div[1]/div[2]/div[2]/div[1]/form/button');
 });
 
 test('go to tutorial', async () => {
+  await page.getByText(organizationName, { exact: true }).click({ timeout: 10000, force: true });
   await page.click('//a[@access-id="side-bar-project"]');
-  await page.click('//a[contains(text(),"Sample Project")]');
+  await page.click(`//a[contains(text(),${projectName})]`);
   await page.click('//a[@access-id="project-side-bar-remote"]');
   await page.click('//button/span[contains(text(),"Tutorial")]/..');
 });
@@ -94,60 +101,8 @@ test('go to webdriver jest', async () => {
 
   await expect(page.locator('//*[@id="framework-selector"]/../../*[contains(.,"Jest")]')).toBeVisible();
   await expect(page.locator('//*[@id="platform-selector"]/../../*[contains(.,"Android")]')).toBeVisible();
-  await expect(page.locator('//*[@id="target-selector"]/../../*[contains(.,"Web")]')).toBeVisible();
+  // await expect(page.locator('//*[@id="target-selector"]/../../*[contains(.,"Web")]')).toBeVisible();
 });
-
-if (doJestAndroidWeb) {
-  test.describe('test jest android web', () => {
-    let cwd = '';
-
-    test('ensure jest android web', async () => {
-      await expect(page.locator('//*[@id="framework-selector"]/../../*[contains(.,"Jest")]')).toBeVisible();
-      await expect(page.locator('//*[@id="platform-selector"]/../../*[contains(.,"Android")]')).toBeVisible();
-      await expect(page.locator('//*[@id="target-selector"]/../../*[contains(.,"Web")]')).toBeVisible();
-    });
-
-    test('change directory', async () => {
-      const textElements = await page.$$('//*[@id="project-setup"]/div[2]/div[2]/pre/code/span');
-      const command = await concatText(textElements);
-      const code = await spawnAndWait(command, repoDir);
-      expect(code).toBe(0);
-
-      cwd = path.resolve(repoDir, command.replace('cd ', ''));
-    });
-
-    test('install dependencies', async () => {
-      const textElements = await page.$$('//*[@id="install-dependencies"]/div[2]/div/pre/code/span');
-      const command = await concatText(textElements);
-      const code = await spawnAndWait(command, cwd);
-      expect(code).toBe(0);
-    });
-
-    test('set capabilities', async () => {
-      const textElements = await page.$$('//*[@id="set-capabilities"]/div[2]/div/pre/code/span');
-      const config = await concatText(textElements);
-      const parse = (): unknown | null => {
-        try {
-          JSON5.parse(config);
-          return null;
-        } catch (error) {
-          console.error('config parse error:', error);
-          return error;
-        }
-      };
-      expect(parse()).toBeNull();
-      await fs.promises.writeFile(path.resolve(cwd, doguConfigJsonFileName), config);
-    });
-
-    test('run test', async () => {
-      test.setTimeout(60_000);
-      const textElements = await page.$$('//*[@id="run-test"]/div[2]/div/pre/code/span');
-      const command = await concatText(textElements);
-      const code = await spawnAndWait(command, cwd);
-      expect(code).toBe(0);
-    });
-  });
-}
 
 if (doJestAndroidApp) {
   test.describe('test jest android app', () => {
@@ -208,11 +163,69 @@ if (doJestAndroidApp) {
   });
 }
 
+if (doJestAndroidWeb) {
+  test.describe('test jest android web', () => {
+    let cwd = '';
+
+    test('ensure jest android web', async () => {
+      await page.click('//*[@id="target-selector"]/../../span/div');
+      await page.click('//*[@id="target-selector_list_0"]');
+
+      await expect(page.locator('//*[@id="framework-selector"]/../../*[contains(.,"Jest")]')).toBeVisible();
+      await expect(page.locator('//*[@id="platform-selector"]/../../*[contains(.,"Android")]')).toBeVisible();
+      await expect(page.locator('//*[@id="target-selector"]/../../*[contains(.,"Web")]')).toBeVisible();
+    });
+
+    test('change directory', async () => {
+      const textElements = await page.$$('//*[@id="project-setup"]/div[2]/div[2]/pre/code/span');
+      const command = await concatText(textElements);
+      const code = await spawnAndWait(command, repoDir);
+      expect(code).toBe(0);
+
+      cwd = path.resolve(repoDir, command.replace('cd ', ''));
+    });
+
+    test('install dependencies', async () => {
+      const textElements = await page.$$('//*[@id="install-dependencies"]/div[2]/div/pre/code/span');
+      const command = await concatText(textElements);
+      const code = await spawnAndWait(command, cwd);
+      expect(code).toBe(0);
+    });
+
+    test('set capabilities', async () => {
+      const textElements = await page.$$('//*[@id="set-capabilities"]/div[2]/div/pre/code/span');
+      const config = await concatText(textElements);
+      const parse = (): unknown | null => {
+        try {
+          JSON5.parse(config);
+          return null;
+        } catch (error) {
+          console.error('config parse error:', error);
+          return error;
+        }
+      };
+      expect(parse()).toBeNull();
+      await fs.promises.writeFile(path.resolve(cwd, doguConfigJsonFileName), config);
+    });
+
+    test('run test', async () => {
+      test.setTimeout(60_000);
+      const textElements = await page.$$('//*[@id="run-test"]/div[2]/div/pre/code/span');
+      const command = await concatText(textElements);
+      const code = await spawnAndWait(command, cwd);
+      expect(code).toBe(0);
+    });
+  });
+}
+
 if (doJestWindowsWeb) {
   test.describe('test jest windows web', () => {
     let cwd = '';
 
     test('change jest windows web', async () => {
+      await page.click('//*[@id="target-selector"]/../../span/div');
+      await page.click('//*[@id="target-selector_list_0"]');
+
       await page.click('//*[@id="platform-selector"]/../../span/div');
       await page.click('//*[@id="platform-selector_list_2"]');
 
@@ -268,6 +281,9 @@ if (doJestMacosWeb) {
     let cwd = '';
 
     test('change jest macos web', async () => {
+      await page.click('//*[@id="target-selector"]/../../span/div');
+      await page.click('//*[@id="target-selector_list_0"]');
+
       await page.click('//*[@id="platform-selector"]/../../span/div');
       await page.click('//*[@id="platform-selector_list_3"]');
 
