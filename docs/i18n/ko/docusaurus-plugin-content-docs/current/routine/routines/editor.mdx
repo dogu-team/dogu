@@ -8,9 +8,9 @@ Dogu 콘솔에서 두가지 방법으로 루틴을 작성할 수 있습니다.
 
 :::info Prerequisites
 
-루틴을 작성하기 위해서는 프로젝트에 앱을 업로드하고, 테스트 스크립트를 작성해야 합니다.
+루틴을 작성하고 실행하기 위해서는 테스트 스크립트가 있는 Git 저장소를 연동해야 합니다.
 
-각 내용은 [앱 관리](/management/project/app)와 [Git 연동하기](/management/project/git-integration) 문서를 참고하세요.
+자세한 내용은 [Git 연동하기](/management/project/git-integration) 문서를 참고하세요.
 
 :::
 
@@ -49,14 +49,26 @@ YAML 문법이 익숙하지 않은 사용자를 위해 GUI 에디터를 제공�
        src="/ko/img/routine/gui-editor-predecessors.png"
        style={{ width: 600, display: 'block' }}
      />
-3. 디바이스 태그
-   - 작업이 실행될 디바이스 태그를 선택할 수 있습니다. 여러 태그를 선택할 수 있습니다.
-   - 프로젝트에 할당된 디바이스나 퍼블릭 디바이스에서 선택한 태그가 있는 디바이스가 모두 실행됩니다.
+3. 브라우저 또는 앱 버전
+   - 웹 템플릿: 작업이 실행될 브라우저를 선택할 수 있습니다.
      <img
-       src="/ko/img/routine/gui-editor-device-tag.png"
+       src="/ko/img/routine/gui-editor-browser-name.png"
        style={{ width: 600, display: 'block' }}
      />
-4. 디바이스 화면 녹화
+   - 모바일 앱, 게임 템플릿: 작업이 실행될 앱 버전을 선택할 수 있습니다.
+     <img
+       src="/ko/img/routine/gui-editor-app-version.png"
+       style={{ width: 600, display: 'block' }}
+     />
+4. 디바이스
+   - 작업이 실행될 디바이스 또는 디바이스 태그를 선택할 수 있습니다.
+   - 그룹 실행을 비활성화 한 경우, 선택된 태그가 있는 디바이스 중 랜덤으로 하나가 실행됩니다. 디바이스를 선택한 경우 디바이스가 실행됩니다.
+   - 그룹 실행을 활성화 한 경우, 프로젝트에 할당된 디바이스나 퍼블릭 디바이스에서 선택한 태그가 있는 디바이스가 모두 실행됩니다.
+     <img
+       src="/ko/img/routine/gui-editor-device.png"
+       style={{ width: 600, display: 'block' }}
+     />
+5. 디바이스 화면 녹화
    - 해당 작업을 실행할 때 디바이스 화면을 녹화할지 선택합니다.
    - 녹화 옵션을 활성화하면 디바이스 작업 결과 페이지에서 영상을 볼 수 있습니다.
      <img
@@ -78,32 +90,28 @@ YAML 문법이 익숙하지 않은 사용자를 위해 GUI 에디터를 제공�
        src="/ko/img/routine/gui-editor-step-name.png"
        style={{ width: 600, display: 'block' }}
      />
-2. 액션
+2. 스텝 유형
+   - 액션, 쉘 명령을 선택할 수 있습니다.
+     <img
+       src="/ko/img/routine/gui-editor-step-type.png"
+       style={{ width: 600, display: 'block' }}
+     />
+3. 액션
    - 해당 스텝이 어떤 일을 하는지 정의합니다.
      <img
        src="/ko/img/routine/gui-editor-step-action.png"
        style={{ width: 600, display: 'block' }}
      />
-   - GUI 에디터에서는 2가지 옵션을 제공합니다.
-     - **Install and run app**: 앱을 설치하고 실행합니다. 앱 목록에서 설치할 앱 버전을 선택하세요.
-       <img
-         src="/ko/img/routine/gui-editor-app-version.png"
-         style={{ width: 600, display: 'block' }}
-       />
-     - **Run test**: 테스트 스크립트를 수행합니다. 테스트 스크립트 목록에서 실행할 스크립트를 선택하세요.
-
-:::caution 액션 순서
-
-액션의 순서는 실행에 있어서 매우 중요합니다. 앱을 설치하지 않았는데 테스트 스크립트를 실행하면 테스트 스크립트가 실패합니다.
-
-따라서 `Install app and run` 액션을 실행한 뒤에 `Run test` 액션을 실행해야 동작하게 됩니다. 액션에 대한 자세한 내용은 [액션](/routine/actions) 문서를 참고하세요.
-:::
-
-:::tip
-
-여러 작업 또는 한 작업 내에서 같은 버전의 앱으로 계속 테스트를 수행할 경우, `Install app and run` 액션을 사용한 스텝은 맨 처음에 한번만 정의하면 됩니다.
-
-:::
+   - GUI 에디터에서는 3가지 옵션을 제공합니다.
+     - **Run test(권장)**: 테스트 스크립트를 수행합니다.
+     - **Prepare**: 앱을 설치하고 실행합니다. 작업에서 설치할 앱 버전을 선택하세요.
+     - **Checkout**: Git 저장소에서 연동된 레포지토리를 가져옵니다.
+4. 쉘 명령
+   - 해당 스텝에서 실행할 쉘 명령을 입력합니다.
+     <img
+       src="/ko/img/routine/gui-editor-step-shell.png"
+       style={{ width: 600, display: 'block' }}
+     />
 
 ## YAML 에디터로 작성하기
 
@@ -129,31 +137,38 @@ jobs:
     needs:
     runs-on:
       group: android
+    appVersion:
+      android: 1.0.0
     steps:
-      - name: prepare
-        uses: dogu-actions/checkout
-        env:
-          YOUR_CUSTOM_ENV: 'custom step env'
-
       - name: test-tutorial
         uses: dogu-actions/run-test
+        cwd: appium/typescript/jest
         with:
-          script: test/dogurpgsample.test.ts
-
+          checkout: true
+          clean: true
+          environment: node
+          command: |
+            yarn install
+            yarn test
       - name: custom-cli
         run: echo hi
     env:
       YOUR_CUSTOM_ENV: 'custom job env'
 
-  test-ios:
+  test-web:
     needs:
     runs-on:
-      group: ios
+      - my-device-name
+    browserName: chrome
     steps:
-      - name: test-ios
-        run: yarn workspace gamium-client-userproject run run:DoguRpgSample
-        env:
-          DOGU_GAMIUM_BUILD_DIRECTORYPATH: $HOME/.dogu/demo/ios
-          DOGU_GAMIUM_BUILD_FILEPATH: '**/DoguRpgSample.ipa'
-          DOGU_GAMIUM_PLATFORM: PLATFORM_IOS
+      - name: chrome-test
+        uses: dogu-actions/run-test
+        cwd: selenium/python/pytest
+        with:
+          checkout: true
+          clean: true
+          environment: python
+          command: |
+            pip install -r requirements.txt
+            pytest test.py
 ```
