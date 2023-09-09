@@ -54,6 +54,15 @@ jobs:
           clean: true
           fetch-depth: 0
 
+      - name: Cache yarn with setup-node test
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.20
+          cache: 'yarn'
+          cache-dependency-path: |
+            yarn.lock
+            nm-space/yarn.lock
+
       - name: Cache Yarn Unplugged
         uses: actions/cache@v3
         id: cache_yarn_unplugged
