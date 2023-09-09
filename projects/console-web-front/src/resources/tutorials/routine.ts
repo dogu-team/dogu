@@ -106,7 +106,7 @@ export const appiumRoutineTutorialData: RoutineTutorial = {
       cwd: 'webdriverio/typescript/jest',
       environment: 'node',
       command: `npm install
-            test:app:android`,
+            npm run test:app:android`,
     },
     {
       framework: TutorialSupportFramework.PYTEST,
@@ -117,7 +117,7 @@ export const appiumRoutineTutorialData: RoutineTutorial = {
       cwd: 'webdriverio/typescript/jest',
       environment: 'node',
       command: `npm install
-            test:app:android`,
+            npm run test:app:android`,
     },
     {
       framework: TutorialSupportFramework.PYTEST,
