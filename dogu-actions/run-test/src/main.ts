@@ -1,4 +1,4 @@
-import { ActionKit, assertUnreachable, checkoutProject, downloadApp, errorify, stringify } from '@dogu-tech/action-kit';
+import { ActionKit, assertUnreachable, checkoutProject, downloadApp, errorify, newCleanNodeEnv, stringify } from '@dogu-tech/action-kit';
 import { exec, spawnSync } from 'child_process';
 import fs from 'fs';
 import _ from 'lodash';
@@ -65,7 +65,7 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
     appPath = await downloadApp(logger, consoleActionClient, deviceHostClient, DOGU_DEVICE_PLATFORM, DOGU_HOST_WORKSPACE_PATH, currentPlatformAppVersion);
   }
 
-  let env = process.env;
+  let env = newCleanNodeEnv();
   if (appPath) {
     const appEnv = {
       DOGU_APP_PATH: appPath,
