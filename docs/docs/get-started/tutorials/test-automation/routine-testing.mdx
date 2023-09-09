@@ -191,7 +191,7 @@ Add the sample below to your project routine.
 
 <BrowserOnly>
 {() => (
-<Tabs groupId="browser-platform" defaultValue={getBrowserPlatform()}>
+<Tabs groupId="browser-platform" defaultValue={getBrowserPlatform('macos')}>
 <TabItem value="macos" label="🍎 macOS" default>
 
 ```yaml
@@ -329,7 +329,7 @@ jobs:
 
 <BrowserOnly>
 {() => (
-<Tabs groupId="browser-platform" defaultValue={getBrowserPlatform()}>
+<Tabs groupId="browser-platform" defaultValue={getBrowserPlatform('macos')}>
 <TabItem value="macos" label="🍎 macOS" default>
 
 ```yaml
