@@ -295,7 +295,7 @@ jobs:
           command: |-
             pip3 install -r requirements.txt
             pytest web/test_web.py --capture=no -x
-            cwd: selenium/python/pytest
+        cwd: selenium/python/pytest
     record: true
 
   test-edge:
@@ -310,7 +310,7 @@ jobs:
           command: |-
             pip3 install -r requirements.txt
             pytest web/test_web.py --capture=no -x
-            cwd: selenium/python/pytest
+        cwd: selenium/python/pytest
     record: true
 
   test-safari:
@@ -325,7 +325,7 @@ jobs:
           command: |-
             pip3 install -r requirements.txt
             pytest web/test_web.py --capture=no -x
-            cwd: selenium/python/pytest
+        cwd: selenium/python/pytest
     record: true
 ```
 
