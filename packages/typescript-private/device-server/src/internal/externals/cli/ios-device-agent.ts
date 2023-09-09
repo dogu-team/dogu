@@ -186,7 +186,7 @@ class ZombieIdaXCTest implements Zombieable {
       this.logger.warn?.('killPreviousXcodebuild failed');
     });
     await delay(1000);
-    this.xctestrun = XcodeBuild.testWithoutBuilding('ida', xctestrunPath, this.serial, { idleLogTimeoutMillis: Milisecond.t2Minutes }, this.logger);
+    this.xctestrun = XcodeBuild.testWithoutBuilding('ida', xctestrunPath, this.serial, { idleLogTimeoutMillis: Milisecond.t1Minute + Milisecond.t30Seconds }, this.logger);
     this.xctestrun.proc.on('close', () => {
       this.xctestrun = null;
       ZombieServiceInstance.notifyDie(this);
