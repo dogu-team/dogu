@@ -1,0 +1,381 @@
+---
+sidebar_position: 1
+title: 🔁📝📊 Routine Testing
+locale: en
+toc_max_heading_level: 4
+---
+
+import BrowserOnly from '@docusaurus/BrowserOnly';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import {
+  getBrowserPlatform,
+  BrowserPlatform,
+} from '@site/src/platform/platform.ts';
+
+# 🔁📝📊 Routine Testing
+
+## What is Routine Testing?
+
+**Routine Testing** is a feature that integrate your test scripts (like pytest, jest or even if it's not a testing framework) with other CI systems, allowing you to periodically test with **Dogu device farm**.
+
+## How to use Routine Testing?
+
+:::tip
+
+We recommend you to do the Dogu Routine interactive tutorial first.
+
+:::
+
+### 1. Interactive Tutorial
+
+:::info prerequisite
+
+You need to create a project in the your **Self-hosted Dogu Console** or [Cloud Dogu Console](https://console.dogutech.io) before you can try the tutorial.  
+Please refer to [Managing Projects](/management/organization/project) for details.
+
+:::
+
+✅ Click the _Routines_ button as shown below, and ✅ click the _Tutorial_ button.
+
+<img
+  src="/img/get-started/routine-tutorial.png"
+  style={{ width: 1000, display: 'block' }}
+/>
+
+🎉 Enjoy the tutorial! 🎉
+
+### 2. Local Testing With Dogu Agent API
+
+:::info prerequisite
+
+You need to install the [Dogu Agent](/get-started/tutorials/device-farm/host) in your local environment.
+
+:::
+
+:::tip
+
+This is an example of using selenium for cross browsing testing.  
+You can refer to the [dogu-routine-examples](https://github.com/dogu-team/dogu-routine-examples) repository on GitHub for more examples.
+
+:::
+
+#### 1. Checkout The [dogu-routine-examples](https://github.com/dogu-team/dogu-routine-examples) Repository On GitHub
+
+This repository contains examples of using the Dogu Agent API for cross browsing testing with **dogu-device-client**.
+
+**dogu-device-client** provides a set of APIs for controlling the Dogu Agent.
+
+- 🌎 **Automatic installation of browser and web drivers** for ⚔️ cross browsing testing.  
+  Auto installables: 🌐 chrome with chromedriver, 🦊 firefox with geckodriver, 📐 edge with edgedriver
+- 💾 **Automatic download of project apps** for app testing.  
+  Only when executed in "Dogu Route". If you want it to be available locally, please contact us.
+- 📱 **Control of the built-in Appium Server** for app testing
+
+#### 2. Write Environment Variables To `.env.local` File
+
+We use [dotenv](https://www.npmjs.com/package/dotenv) to load environment variables from `.env.local` file and this file is not included in the repository for local testing.
+
+<BrowserOnly>
+{() => (
+<Tabs groupId="programming-language" defaultValue="typescript">
+<TabItem value="typescript" label="🇹 Typescript" default>
+
+```typescript
+// selenium/typescript/jest/web/setup.ts
+import { config } from 'dotenv';
+// ...
+config({ path: '.env.local' });
+// ...
+```
+
+Write the following environment variables to `.env.local` file on `selenium/typescript/jest` directory.
+
+</TabItem>
+
+<TabItem value="python" label="🐍 Python">
+
+```python
+# selenium/python/pytest/web/conftest.py
+from pathlib import Path
+from dotenv import load_dotenv
+# ...
+load_dotenv(str(Path(__file__).parent.parent / '.env.local'))
+# ...
+```
+
+Write the following environment variables to `.env.local` file on `selenium/python/pytest` directory.
+
+</TabItem>
+</Tabs>
+)}
+</BrowserOnly>
+
+```shell
+# .env.local
+DOGU_BROWSER_NAME=chrome
+DOGU_DEVICE_PLATFORM=macos # or windows
+DOGU_DEVICE_SERIAL=
+```
+
+Click the _Device Serial_ on the device as shown in the screen below. It is then copied to the clipboard.
+
+<img
+  src="/img/get-started/routine-local-device-serial.png"
+  style={{ width: 800, display: 'block' }}
+/>
+
+Paste the device serial to `.env.local` file.
+
+```shell
+# .env.local
+# ...
+DOGU_DEVICE_SERIAL=<your device serial>
+```
+
+#### 3. Run Test Script Locally
+
+<BrowserOnly>
+{() => (
+<Tabs groupId="programming-language" defaultValue="typescript">
+<TabItem value="typescript" label="🇹 Typescript" default>
+
+Run command on `selenium/typescript/jest` directory.
+
+```shell
+npm install
+npm run test:web
+```
+
+</TabItem>
+
+<TabItem value="python" label="🐍 Python">
+
+Run command on `selenium/python/pytest` directory.
+
+```shell
+python3 -m venv .venv
+source .venv/bin/activate
+pip3 install -r requirements.txt
+pytest web/test_web.py --capture=no -x
+```
+
+</TabItem>
+</Tabs>
+)}
+</BrowserOnly>
+
+🎉 Local testing with Dogu Agent API is complete! 🎉
+
+### 3. Test Running With Dogu Device Farm Using Dogu Routine
+
+Dogu Routine can be integrated with other CI systems such as GitHub Actions, Jenkins, Bitbucket.  
+If you want to integrate with other CI systems, please connect us.
+
+#### 1. Write Routine Yaml
+
+:::info
+
+You can see the [Managing Routine](/management/project/routine) for details on how to write the routine yaml.
+
+:::
+
+Add the sample below to your project routine.
+
+<BrowserOnly>
+{() => (
+<Tabs groupId="programming-language" defaultValue="typescript">
+<TabItem value="typescript" label="🇹 Typescript" default>
+
+```yaml
+name: cross-browsing-testing
+
+'on':
+  workflow_dispatch: null
+
+jobs:
+  test-chrome:
+    runs-on: macos
+    browserName: chrome
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: node
+          command: |-
+            npm install
+            npm run test:web
+        cwd: selenium/typescript/jest
+    record: true
+
+  test-firefox:
+    runs-on: macos
+    browserName: firefox
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: node
+          command: |-
+            npm install
+            npm run test:web
+        cwd: selenium/typescript/jest
+    record: true
+
+  test-edge:
+    runs-on: macos
+    browserName: edge
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: node
+          command: |-
+            npm install
+            npm run test:web
+        cwd: selenium/typescript/jest
+    record: true
+
+  test-safari:
+    runs-on: macos
+    browserName: safari
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: node
+          command: |-
+            npm install
+            npm run test:web
+        cwd: selenium/typescript/jest
+    record: true
+```
+
+</TabItem>
+
+<TabItem value="python" label="🐍 Python">
+
+```yaml
+name: cross-browsing-testing
+
+'on':
+  workflow_dispatch: null
+
+jobs:
+  test-chrome:
+    runs-on: macos
+    browserName: chrome
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: python
+          command: |-
+            pip3 install -r requirements.txt
+            pytest web/test_web.py --capture=no -x
+        cwd: selenium/python/pytest
+    record: true
+
+  test-firefox:
+    runs-on: macos
+    browserName: firefox
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: python
+          command: |-
+            pip3 install -r requirements.txt
+            pytest web/test_web.py --capture=no -x
+            cwd: selenium/python/pytest
+    record: true
+
+  test-edge:
+    runs-on: macos
+    browserName: edge
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: python
+          command: |-
+            pip3 install -r requirements.txt
+            pytest web/test_web.py --capture=no -x
+            cwd: selenium/python/pytest
+    record: true
+
+  test-safari:
+    runs-on: macos
+    browserName: safari
+    steps:
+      - name: run test
+        uses: dogu-actions/run-test
+        with:
+          checkout: true
+          environment: python
+          command: |-
+            pip3 install -r requirements.txt
+            pytest web/test_web.py --capture=no -x
+            cwd: selenium/python/pytest
+    record: true
+```
+
+</TabItem>
+</Tabs>
+)}
+</BrowserOnly>
+
+#### 2. Change Max Parallel Jobs Count on Your Host Device
+
+Change the max parallel jobs count to `16` on your host device for the parallel execution of the Jobs.
+
+:::info
+
+see [Managing Device](/management/organization/device-farm/device-management#update-device-settings) for details on how to change the max parallel jobs count.
+
+:::
+
+#### 3. Create Your Github Token
+
+:::info
+
+see [Generate GitHub Token](/management/project/git-integration/github) for details on how to create Github Token.
+
+:::
+
+#### 4. Integrate With GitHub
+
+:::info
+
+see [Git Integration](/management/project/git-integration/#integration) for details on how to integrate with GitHub.
+
+:::
+
+#### 5. Run The Routine
+
+:::info
+
+see [Run a Routine](/management/project/routine#run-a-routine) for details on how to run a routine.
+
+:::
+
+🎉 Test Running With Dogu Device Farm Using Dogu Routine! 🎉
+
+### 4. Integration With Other CI Systems for Routine Testing
+
+:::info
+
+see [CI/CD](/integration/cicd/) for details on how to integrate with other CI systems.
+
+:::
+
+If you want to integrate with other CI systems, please connect us.
+
+🎉 Integration with other CI systems for routine testing is complete! 🎉
