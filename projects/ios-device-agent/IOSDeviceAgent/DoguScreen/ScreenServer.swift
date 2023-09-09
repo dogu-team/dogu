@@ -21,7 +21,9 @@ class ScreenServer {
 
   func start() throws {
     do {
-      listener = try NWListener(using: .tcp, on: port)
+      let parameters = NWParameters.tcp
+      parameters.allowLocalEndpointReuse = true
+      listener = try NWListener(using: parameters, on: port)
       listener?.stateUpdateHandler = { [weak self] state in
         switch state {
         case .ready:

@@ -55,7 +55,9 @@ public final class IOSDeviceAgent {
     let nwport: NWEndpoint.Port = NWEndpoint.Port(rawValue: UInt16(self.config.grpcPort)) ?? 50002
     yellAlivePeriodically()
     do {
-      listener = try NWListener(using: .tcp, on: nwport)
+      let parameters = NWParameters.tcp
+      parameters.allowLocalEndpointReuse = true
+      listener = try NWListener(using: parameters, on: nwport)
       listener?.stateUpdateHandler = { [weak self] state in
         switch state {
         case .ready:
