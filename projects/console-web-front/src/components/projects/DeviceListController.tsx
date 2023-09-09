@@ -112,7 +112,7 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
             />
           </OneSpanCell>
           <OneSpanCell style={{ display: 'flex', justifyContent: 'center' }}>
-            <Tooltip title={device.displayError} open={device.displayError ? undefined : false}>
+            <Tooltip title={device.displayError} open={isConnected && device.displayError ? undefined : false}>
               <StudioLinkButton
                 href={`/dashboard/${orgId}/projects/${projectId}/studio/${device.deviceId}/manual`}
                 target="_blank"
@@ -133,7 +133,11 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
                   }
                 }}
               >
-                {device.displayError ? <ExclamationCircleOutlined style={{ color: '#ff4d4f', marginRight: '.25rem' }} /> : <PiMonitorPlayBold style={{ marginRight: '.25rem' }} />}
+                {isConnected && device.displayError ? (
+                  <ExclamationCircleOutlined style={{ color: '#ff4d4f', marginRight: '.25rem' }} />
+                ) : (
+                  <PiMonitorPlayBold style={{ marginRight: '.25rem' }} />
+                )}
                 Studio
               </StudioLinkButton>
             </Tooltip>
