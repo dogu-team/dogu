@@ -67,6 +67,7 @@ class ZombieWdaXCTest implements Zombieable {
   public readonly zombieWaiter: ZombieQueriable;
   private error = 'none';
   private client: AxiosInstance;
+  private healthFailCount = 0;
 
   constructor(public readonly serial: Serial, private readonly wdaHostPort: number, private readonly logger: FilledPrintable) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
@@ -86,19 +87,25 @@ class ZombieWdaXCTest implements Zombieable {
     return Platform.PLATFORM_IOS;
   }
   get props(): ZombieProps {
-    return { wdaHostPort: this.wdaHostPort, elapsed: this.xctestrun ? Date.now() - this.xctestrun?.startTime : 0, error: this.error };
+    return { wdaHostPort: this.wdaHostPort, elapsed: this.xctestrun ? Date.now() - this.xctestrun?.startTime : 0, failCount: this.healthFailCount, error: this.error };
   }
   get printable(): Printable {
     return this.logger;
   }
   async revive(): Promise<void> {
     await this.reviveOnlyTest();
+    this.healthFailCount = 0;
   }
 
   async update(): Promise<void> {
     if (!(await this.isHealth())) {
-      ZombieServiceInstance.notifyDie(this);
+      this.healthFailCount++;
+      if (this.healthFailCount > 3) {
+        ZombieServiceInstance.notifyDie(this);
+      }
       return;
+    } else {
+      this.healthFailCount = 0;
     }
     await delay(3000);
   }

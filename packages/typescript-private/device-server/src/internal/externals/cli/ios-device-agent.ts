@@ -132,6 +132,7 @@ class ZombieIdaXCTest implements Zombieable {
   public readonly zombieWaiter: ZombieQueriable;
   private _error = 'none';
   private wdaClient: AxiosInstance;
+  private healthFailCount = 0;
 
   constructor(
     public readonly serial: Serial,
@@ -156,7 +157,13 @@ class ZombieIdaXCTest implements Zombieable {
     return Platform.PLATFORM_IOS;
   }
   get props(): ZombieProps {
-    return { webDriverPort: this.webDriverPort, grpcPort: this.grpcPort, elapsed: this.xctestrun ? Date.now() - this.xctestrun?.startTime : 0, error: this._error };
+    return {
+      webDriverPort: this.webDriverPort,
+      grpcPort: this.grpcPort,
+      elapsed: this.xctestrun ? Date.now() - this.xctestrun?.startTime : 0,
+      failCount: this.healthFailCount,
+      error: this._error,
+    };
   }
   get printable(): Printable {
     return this.logger;
@@ -207,6 +214,7 @@ class ZombieIdaXCTest implements Zombieable {
     if (!(await this.isHealth())) {
       throw new Error(`ZombieIdaXCTest has error. ${this.serial}. ${this._error}`);
     }
+    this.healthFailCount = 0;
   }
 
   async update(): Promise<void> {
@@ -214,8 +222,13 @@ class ZombieIdaXCTest implements Zombieable {
       return;
     }
     if (!(await this.isHealth())) {
-      ZombieServiceInstance.notifyDie(this);
+      this.healthFailCount++;
+      if (this.healthFailCount > 3) {
+        ZombieServiceInstance.notifyDie(this);
+      }
       return;
+    } else {
+      this.healthFailCount = 0;
     }
     await delay(3000);
   }
