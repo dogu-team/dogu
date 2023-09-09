@@ -100,5 +100,6 @@
   "routineTutorialCreateRoutineAnchorTitle": "Create a routine",
   "routineTutorialRunRoutineAnchorTitle": "Run a routine",
 
-  "saveRoutineButtonTitle": "Create routine"
+  "saveRoutineButtonTitle": "Create routine",
+  "maxParallelJobCountGuideMessage": "For the host device, if you want to run multiple jobs simultaneously, please increase the maximum parallel job count in the Organization - Device's settings."
 }

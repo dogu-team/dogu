@@ -1,6 +1,9 @@
 import styled from 'styled-components';
 import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
+import { Alert, Button } from 'antd';
+import Link from 'next/link';
+import { RiExternalLinkLine } from 'react-icons/ri';
 
 import useTutorialContext from '../../../hooks/context/useTutorialContext';
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
@@ -139,6 +142,20 @@ jobs:
             description={<p>{t('routineTutorialCreateRoutineDescription')}</p>}
             content={
               <div style={{ marginTop: '1rem' }}>
+                <Alert
+                  style={{ marginBottom: '1rem' }}
+                  type="info"
+                  showIcon
+                  message={t('maxParallelJobCountGuideMessage')}
+                  action={
+                    <Link href="https://docs.dogutech.io/management/organization/device-farm/device-management#update-device-settings">
+                      <Button>
+                        Guide&nbsp;
+                        <RiExternalLinkLine />
+                      </Button>
+                    </Link>
+                  }
+                />
                 <TutorialRoutineCreator project={project} sampleYaml={WEB_ROUTINE_SAMPLE} />
               </div>
             }

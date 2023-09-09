@@ -100,5 +100,6 @@
   "routineTutorialCreateRoutineAnchorTitle": "루틴 생성하기",
   "routineTutorialRunRoutineAnchorTitle": "루틴 실행하기",
 
-  "saveRoutineButtonTitle": "루틴 생성하기"
+  "saveRoutineButtonTitle": "루틴 생성하기",
+  "maxParallelJobCountGuideMessage": "호스트 디바이스의 경우, 여러 작업을 동시에 실행하려면 조직 - 디바이스의 설정에서 최대 실행 가능한 작업 수를 늘려주세요."
 }
