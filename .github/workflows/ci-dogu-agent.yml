@@ -54,15 +54,6 @@ jobs:
           clean: true
           fetch-depth: 0
 
-      - name: Cache yarn with setup-node test
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16.20'
-          cache: 'yarn'
-          cache-dependency-path: |
-            yarn.lock
-            nm-space/yarn.lock
-
       - name: Cache Yarn Unplugged
         uses: actions/cache@v3
         id: cache_yarn_unplugged
@@ -81,7 +72,7 @@ jobs:
           path: |
             ${{ github.workspace }}/projects/android-device-agent/android/app/build
             ${{ github.workspace }}/projects/android-device-agent/android/.gradle
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('projects/android-device-agent/android/app/src/**') }} # It doesn't have to match exactly.
+          key: ${{ runner.os }}-${{ env.cache-name }} # It doesn't have to match exactly.
 
       - name: Cache Go buildfiles
         uses: actions/cache@v3
@@ -90,7 +81,7 @@ jobs:
           cache-name: cache-go-build-files
         with:
           path: ${{ github.workspace }}/projects/go-device-controller/build
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('projects/go-device-controller/internal/**') }} # It doesn't have to match exactly.
+          key: ${{ runner.os }}-${{ env.cache-name }} # It doesn't have to match exactly.
 
       - name: Cache Electron
         uses: actions/cache@v3
