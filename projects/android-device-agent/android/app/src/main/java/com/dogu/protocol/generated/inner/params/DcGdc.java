@@ -45,6 +45,17 @@ public final class DcGdc {
      */
     com.dogu.protocol.generated.inner.types.DcGdc.DcGdcStopScreenRecordParam getDcGdcStopScreenRecordParam();
 
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusParam dc_gdc_get_surface_status_param = 15;</code>
+     * @return Whether the dcGdcGetSurfaceStatusParam field is set.
+     */
+    boolean hasDcGdcGetSurfaceStatusParam();
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusParam dc_gdc_get_surface_status_param = 15;</code>
+     * @return The dcGdcGetSurfaceStatusParam.
+     */
+    com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam getDcGdcGetSurfaceStatusParam();
+
     public com.dogu.protocol.generated.inner.params.DcGdc.DcGdcParam.ValueCase getValueCase();
   }
   /**
@@ -63,6 +74,7 @@ public final class DcGdc {
       DC_GDC_UPDATE_DEVICELIST_PARAM(10),
       DC_GDC_START_SCREEN_RECORD_PARAM(13),
       DC_GDC_STOP_SCREEN_RECORD_PARAM(14),
+      DC_GDC_GET_SURFACE_STATUS_PARAM(15),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -81,6 +93,7 @@ public final class DcGdc {
           case 10: return DC_GDC_UPDATE_DEVICELIST_PARAM;
           case 13: return DC_GDC_START_SCREEN_RECORD_PARAM;
           case 14: return DC_GDC_STOP_SCREEN_RECORD_PARAM;
+          case 15: return DC_GDC_GET_SURFACE_STATUS_PARAM;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -247,6 +260,56 @@ public final class DcGdc {
      */
     private void clearDcGdcStopScreenRecordParam() {
       if (valueCase_ == 14) {
+        valueCase_ = 0;
+        value_ = null;
+      }
+    }
+
+    public static final int DC_GDC_GET_SURFACE_STATUS_PARAM_FIELD_NUMBER = 15;
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusParam dc_gdc_get_surface_status_param = 15;</code>
+     */
+    @java.lang.Override
+    public boolean hasDcGdcGetSurfaceStatusParam() {
+      return valueCase_ == 15;
+    }
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusParam dc_gdc_get_surface_status_param = 15;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam getDcGdcGetSurfaceStatusParam() {
+      if (valueCase_ == 15) {
+         return (com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam) value_;
+      }
+      return com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam.getDefaultInstance();
+    }
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusParam dc_gdc_get_surface_status_param = 15;</code>
+     */
+    private void setDcGdcGetSurfaceStatusParam(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam value) {
+      value.getClass();
+  value_ = value;
+      valueCase_ = 15;
+    }
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusParam dc_gdc_get_surface_status_param = 15;</code>
+     */
+    private void mergeDcGdcGetSurfaceStatusParam(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam value) {
+      value.getClass();
+  if (valueCase_ == 15 &&
+          value_ != com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam.newBuilder((com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam) value_)
+            .mergeFrom(value).buildPartial();
+      } else {
+        value_ = value;
+      }
+      valueCase_ = 15;
+    }
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusParam dc_gdc_get_surface_status_param = 15;</code>
+     */
+    private void clearDcGdcGetSurfaceStatusParam() {
+      if (valueCase_ == 15) {
         valueCase_ = 0;
         value_ = null;
       }
@@ -503,6 +566,54 @@ public final class DcGdc {
         return this;
       }
 
+      /**
+       * <code>.inner.types.DcGdcGetSurfaceStatusParam dc_gdc_get_surface_status_param = 15;</code>
+       */
+      @java.lang.Override
+      public boolean hasDcGdcGetSurfaceStatusParam() {
+        return instance.hasDcGdcGetSurfaceStatusParam();
+      }
+      /**
+       * <code>.inner.types.DcGdcGetSurfaceStatusParam dc_gdc_get_surface_status_param = 15;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam getDcGdcGetSurfaceStatusParam() {
+        return instance.getDcGdcGetSurfaceStatusParam();
+      }
+      /**
+       * <code>.inner.types.DcGdcGetSurfaceStatusParam dc_gdc_get_surface_status_param = 15;</code>
+       */
+      public Builder setDcGdcGetSurfaceStatusParam(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam value) {
+        copyOnWrite();
+        instance.setDcGdcGetSurfaceStatusParam(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcGdcGetSurfaceStatusParam dc_gdc_get_surface_status_param = 15;</code>
+       */
+      public Builder setDcGdcGetSurfaceStatusParam(
+          com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam.Builder builderForValue) {
+        copyOnWrite();
+        instance.setDcGdcGetSurfaceStatusParam(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcGdcGetSurfaceStatusParam dc_gdc_get_surface_status_param = 15;</code>
+       */
+      public Builder mergeDcGdcGetSurfaceStatusParam(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam value) {
+        copyOnWrite();
+        instance.mergeDcGdcGetSurfaceStatusParam(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcGdcGetSurfaceStatusParam dc_gdc_get_surface_status_param = 15;</code>
+       */
+      public Builder clearDcGdcGetSurfaceStatusParam() {
+        copyOnWrite();
+        instance.clearDcGdcGetSurfaceStatusParam();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:inner.params.DcGdcParam)
     }
     @java.lang.Override
@@ -524,10 +635,11 @@ public final class DcGdc {
               com.dogu.protocol.generated.inner.types.DcGdc.DcGdcUpdateDeviceListParam.class,
               com.dogu.protocol.generated.inner.types.DcGdc.DcGdcStartScreenRecordParam.class,
               com.dogu.protocol.generated.inner.types.DcGdc.DcGdcStopScreenRecordParam.class,
+              com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam.class,
             };
             java.lang.String info =
-                "\u0000\u0003\u0001\u0000\n\u000e\u0003\u0000\u0000\u0000\n<\u0000\r<\u0000\u000e" +
-                "<\u0000";
+                "\u0000\u0004\u0001\u0000\n\u000f\u0004\u0000\u0000\u0000\n<\u0000\r<\u0000\u000e" +
+                "<\u0000\u000f<\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
@@ -619,6 +731,17 @@ public final class DcGdc {
      */
     com.dogu.protocol.generated.inner.types.DcGdc.DcGdcStopScreenRecordResult getDcGdcStopScreenRecordResult();
 
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusResult dc_gdc_get_surface_status_result = 15;</code>
+     * @return Whether the dcGdcGetSurfaceStatusResult field is set.
+     */
+    boolean hasDcGdcGetSurfaceStatusResult();
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusResult dc_gdc_get_surface_status_result = 15;</code>
+     * @return The dcGdcGetSurfaceStatusResult.
+     */
+    com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult getDcGdcGetSurfaceStatusResult();
+
     public com.dogu.protocol.generated.inner.params.DcGdc.DcGdcResult.ValueCase getValueCase();
   }
   /**
@@ -637,6 +760,7 @@ public final class DcGdc {
       DC_GDC_UPDATE_DEVICELIST_RESULT(10),
       DC_GDC_START_SCREEN_RECORD_RESULT(13),
       DC_GDC_STOP_SCREEN_RECORD_RESULT(14),
+      DC_GDC_GET_SURFACE_STATUS_RESULT(15),
       VALUE_NOT_SET(0);
       private final int value;
       private ValueCase(int value) {
@@ -655,6 +779,7 @@ public final class DcGdc {
           case 10: return DC_GDC_UPDATE_DEVICELIST_RESULT;
           case 13: return DC_GDC_START_SCREEN_RECORD_RESULT;
           case 14: return DC_GDC_STOP_SCREEN_RECORD_RESULT;
+          case 15: return DC_GDC_GET_SURFACE_STATUS_RESULT;
           case 0: return VALUE_NOT_SET;
           default: return null;
         }
@@ -821,6 +946,56 @@ public final class DcGdc {
      */
     private void clearDcGdcStopScreenRecordResult() {
       if (valueCase_ == 14) {
+        valueCase_ = 0;
+        value_ = null;
+      }
+    }
+
+    public static final int DC_GDC_GET_SURFACE_STATUS_RESULT_FIELD_NUMBER = 15;
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusResult dc_gdc_get_surface_status_result = 15;</code>
+     */
+    @java.lang.Override
+    public boolean hasDcGdcGetSurfaceStatusResult() {
+      return valueCase_ == 15;
+    }
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusResult dc_gdc_get_surface_status_result = 15;</code>
+     */
+    @java.lang.Override
+    public com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult getDcGdcGetSurfaceStatusResult() {
+      if (valueCase_ == 15) {
+         return (com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult) value_;
+      }
+      return com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult.getDefaultInstance();
+    }
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusResult dc_gdc_get_surface_status_result = 15;</code>
+     */
+    private void setDcGdcGetSurfaceStatusResult(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult value) {
+      value.getClass();
+  value_ = value;
+      valueCase_ = 15;
+    }
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusResult dc_gdc_get_surface_status_result = 15;</code>
+     */
+    private void mergeDcGdcGetSurfaceStatusResult(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult value) {
+      value.getClass();
+  if (valueCase_ == 15 &&
+          value_ != com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult.getDefaultInstance()) {
+        value_ = com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult.newBuilder((com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult) value_)
+            .mergeFrom(value).buildPartial();
+      } else {
+        value_ = value;
+      }
+      valueCase_ = 15;
+    }
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusResult dc_gdc_get_surface_status_result = 15;</code>
+     */
+    private void clearDcGdcGetSurfaceStatusResult() {
+      if (valueCase_ == 15) {
         valueCase_ = 0;
         value_ = null;
       }
@@ -1077,6 +1252,54 @@ public final class DcGdc {
         return this;
       }
 
+      /**
+       * <code>.inner.types.DcGdcGetSurfaceStatusResult dc_gdc_get_surface_status_result = 15;</code>
+       */
+      @java.lang.Override
+      public boolean hasDcGdcGetSurfaceStatusResult() {
+        return instance.hasDcGdcGetSurfaceStatusResult();
+      }
+      /**
+       * <code>.inner.types.DcGdcGetSurfaceStatusResult dc_gdc_get_surface_status_result = 15;</code>
+       */
+      @java.lang.Override
+      public com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult getDcGdcGetSurfaceStatusResult() {
+        return instance.getDcGdcGetSurfaceStatusResult();
+      }
+      /**
+       * <code>.inner.types.DcGdcGetSurfaceStatusResult dc_gdc_get_surface_status_result = 15;</code>
+       */
+      public Builder setDcGdcGetSurfaceStatusResult(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult value) {
+        copyOnWrite();
+        instance.setDcGdcGetSurfaceStatusResult(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcGdcGetSurfaceStatusResult dc_gdc_get_surface_status_result = 15;</code>
+       */
+      public Builder setDcGdcGetSurfaceStatusResult(
+          com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult.Builder builderForValue) {
+        copyOnWrite();
+        instance.setDcGdcGetSurfaceStatusResult(builderForValue.build());
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcGdcGetSurfaceStatusResult dc_gdc_get_surface_status_result = 15;</code>
+       */
+      public Builder mergeDcGdcGetSurfaceStatusResult(com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult value) {
+        copyOnWrite();
+        instance.mergeDcGdcGetSurfaceStatusResult(value);
+        return this;
+      }
+      /**
+       * <code>.inner.types.DcGdcGetSurfaceStatusResult dc_gdc_get_surface_status_result = 15;</code>
+       */
+      public Builder clearDcGdcGetSurfaceStatusResult() {
+        copyOnWrite();
+        instance.clearDcGdcGetSurfaceStatusResult();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:inner.params.DcGdcResult)
     }
     @java.lang.Override
@@ -1098,10 +1321,11 @@ public final class DcGdc {
               com.dogu.protocol.generated.inner.types.DcGdc.DcGdcUpdateDeviceListResult.class,
               com.dogu.protocol.generated.inner.types.DcGdc.DcGdcStartScreenRecordResult.class,
               com.dogu.protocol.generated.inner.types.DcGdc.DcGdcStopScreenRecordResult.class,
+              com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusResult.class,
             };
             java.lang.String info =
-                "\u0000\u0003\u0001\u0000\n\u000e\u0003\u0000\u0000\u0000\n<\u0000\r<\u0000\u000e" +
-                "<\u0000";
+                "\u0000\u0004\u0001\u0000\n\u000f\u0004\u0000\u0000\u0000\n<\u0000\r<\u0000\u000e" +
+                "<\u0000\u000f<\u0000";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

@@ -28,9 +28,11 @@ import { StreamingService } from './streaming-service';
 
 type DcGdcStartStreamingParam = PrivateProtocol.DcGdcStartStreamingParam;
 type DcGdcStartStreamingResult = PrivateProtocol.DcGdcStartStreamingResult;
+type DcGdcGetSurfaceStatusResult = PrivateProtocol.DcGdcGetSurfaceStatusResult;
 
 export class PionStreamingService implements StreamingService {
   private constructor(private readonly platform: Platform, private readonly grpcClient: GoDeviceControllerGrpcClient, private readonly logger: FilledPrintable) {}
+
   private port: number | null = null;
 
   static async create(platform: Platform, deviceServerPort: number, logger: FilledPrintable): Promise<PionStreamingService> {
@@ -153,6 +155,10 @@ export class PionStreamingService implements StreamingService {
 
   async deviceDisconnected(serial: Serial): Promise<void> {
     await this.grpcClient.deviceDisconnected(serial);
+  }
+
+  async getSurfaceStatus(serial: string): Promise<PrivateProtocol.DcGdcGetSurfaceStatusResult> {
+    return await this.grpcClient.call('dcGdcGetSurfaceStatusParam', 'dcGdcGetSurfaceStatusResult', { serial: serial });
   }
 }
 

@@ -93,6 +93,30 @@ object DcGdcParamKt {
     fun hasDcGdcStopScreenRecordParam(): kotlin.Boolean {
       return _builder.hasDcGdcStopScreenRecordParam()
     }
+
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusParam dc_gdc_get_surface_status_param = 15;</code>
+     */
+    var dcGdcGetSurfaceStatusParam: com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam
+      @JvmName("getDcGdcGetSurfaceStatusParam")
+      get() = _builder.getDcGdcGetSurfaceStatusParam()
+      @JvmName("setDcGdcGetSurfaceStatusParam")
+      set(value) {
+        _builder.setDcGdcGetSurfaceStatusParam(value)
+      }
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusParam dc_gdc_get_surface_status_param = 15;</code>
+     */
+    fun clearDcGdcGetSurfaceStatusParam() {
+      _builder.clearDcGdcGetSurfaceStatusParam()
+    }
+    /**
+     * <code>.inner.types.DcGdcGetSurfaceStatusParam dc_gdc_get_surface_status_param = 15;</code>
+     * @return Whether the dcGdcGetSurfaceStatusParam field is set.
+     */
+    fun hasDcGdcGetSurfaceStatusParam(): kotlin.Boolean {
+      return _builder.hasDcGdcGetSurfaceStatusParam()
+    }
     val valueCase: com.dogu.protocol.generated.inner.params.DcGdc.DcGdcParam.ValueCase
       @JvmName("getValueCase")
       get() = _builder.getValueCase()
@@ -114,4 +138,7 @@ val com.dogu.protocol.generated.inner.params.DcGdc.DcGdcParamOrBuilder.dcGdcStar
 
 val com.dogu.protocol.generated.inner.params.DcGdc.DcGdcParamOrBuilder.dcGdcStopScreenRecordParamOrNull: com.dogu.protocol.generated.inner.types.DcGdc.DcGdcStopScreenRecordParam?
   get() = if (hasDcGdcStopScreenRecordParam()) getDcGdcStopScreenRecordParam() else null
+
+val com.dogu.protocol.generated.inner.params.DcGdc.DcGdcParamOrBuilder.dcGdcGetSurfaceStatusParamOrNull: com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam?
+  get() = if (hasDcGdcGetSurfaceStatusParam()) getDcGdcGetSurfaceStatusParam() else null
 

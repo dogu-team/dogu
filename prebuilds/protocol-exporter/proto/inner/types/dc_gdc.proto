@@ -60,3 +60,13 @@ message DcGdcStopScreenRecordResult {
   outer.ErrorResult error = 1;
   string file_path = 2;
 }
+
+message DcGdcGetSurfaceStatusParam {
+  string serial = 1;
+}
+
+message DcGdcGetSurfaceStatusResult {
+  bool has_surface = 1;
+  bool is_playing = 2;
+  uint32 last_frame_delta_millisec = 3;
+}

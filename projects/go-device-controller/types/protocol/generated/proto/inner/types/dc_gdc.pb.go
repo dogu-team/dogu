@@ -577,6 +577,116 @@ func (x *DcGdcStopScreenRecordResult) GetFilePath() string {
 	return ""
 }
 
+type DcGdcGetSurfaceStatusParam struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Serial string `protobuf:"bytes,1,opt,name=serial,proto3" json:"serial,omitempty"`
+}
+
+func (x *DcGdcGetSurfaceStatusParam) Reset() {
+	*x = DcGdcGetSurfaceStatusParam{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_inner_types_dc_gdc_proto_msgTypes[11]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DcGdcGetSurfaceStatusParam) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DcGdcGetSurfaceStatusParam) ProtoMessage() {}
+
+func (x *DcGdcGetSurfaceStatusParam) ProtoReflect() protoreflect.Message {
+	mi := &file_inner_types_dc_gdc_proto_msgTypes[11]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DcGdcGetSurfaceStatusParam.ProtoReflect.Descriptor instead.
+func (*DcGdcGetSurfaceStatusParam) Descriptor() ([]byte, []int) {
+	return file_inner_types_dc_gdc_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *DcGdcGetSurfaceStatusParam) GetSerial() string {
+	if x != nil {
+		return x.Serial
+	}
+	return ""
+}
+
+type DcGdcGetSurfaceStatusResult struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	HasSurface             bool   `protobuf:"varint,1,opt,name=has_surface,json=hasSurface,proto3" json:"has_surface,omitempty"`
+	IsPlaying              bool   `protobuf:"varint,2,opt,name=is_playing,json=isPlaying,proto3" json:"is_playing,omitempty"`
+	LastFrameDeltaMillisec uint32 `protobuf:"varint,3,opt,name=last_frame_delta_millisec,json=lastFrameDeltaMillisec,proto3" json:"last_frame_delta_millisec,omitempty"`
+}
+
+func (x *DcGdcGetSurfaceStatusResult) Reset() {
+	*x = DcGdcGetSurfaceStatusResult{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_inner_types_dc_gdc_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *DcGdcGetSurfaceStatusResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DcGdcGetSurfaceStatusResult) ProtoMessage() {}
+
+func (x *DcGdcGetSurfaceStatusResult) ProtoReflect() protoreflect.Message {
+	mi := &file_inner_types_dc_gdc_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DcGdcGetSurfaceStatusResult.ProtoReflect.Descriptor instead.
+func (*DcGdcGetSurfaceStatusResult) Descriptor() ([]byte, []int) {
+	return file_inner_types_dc_gdc_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *DcGdcGetSurfaceStatusResult) GetHasSurface() bool {
+	if x != nil {
+		return x.HasSurface
+	}
+	return false
+}
+
+func (x *DcGdcGetSurfaceStatusResult) GetIsPlaying() bool {
+	if x != nil {
+		return x.IsPlaying
+	}
+	return false
+}
+
+func (x *DcGdcGetSurfaceStatusResult) GetLastFrameDeltaMillisec() uint32 {
+	if x != nil {
+		return x.LastFrameDeltaMillisec
+	}
+	return 0
+}
+
 var File_inner_types_dc_gdc_proto protoreflect.FileDescriptor
 
 var file_inner_types_dc_gdc_proto_rawDesc = []byte{
@@ -648,14 +758,27 @@ var file_inner_types_dc_gdc_proto_rawDesc = []byte{
 	0x32, 0x12, 0x2e, 0x6f, 0x75, 0x74, 0x65, 0x72, 0x2e, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x52, 0x65,
 	0x73, 0x75, 0x6c, 0x74, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x12, 0x1b, 0x0a, 0x09, 0x66,
 	0x69, 0x6c, 0x65, 0x5f, 0x70, 0x61, 0x74, 0x68, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
-	0x66, 0x69, 0x6c, 0x65, 0x50, 0x61, 0x74, 0x68, 0x42, 0x6a, 0x0a, 0x27, 0x63, 0x6f, 0x6d, 0x2e,
-	0x64, 0x6f, 0x67, 0x75, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2e, 0x67, 0x65,
-	0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x2e, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x2e, 0x74, 0x79,
-	0x70, 0x65, 0x73, 0x5a, 0x3f, 0x67, 0x6f, 0x2d, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x2d, 0x63,
-	0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x6c, 0x65, 0x72, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2f,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74,
-	0x65, 0x64, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x2f, 0x74,
-	0x79, 0x70, 0x65, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x66, 0x69, 0x6c, 0x65, 0x50, 0x61, 0x74, 0x68, 0x22, 0x34, 0x0a, 0x1a, 0x44, 0x63, 0x47, 0x64,
+	0x63, 0x47, 0x65, 0x74, 0x53, 0x75, 0x72, 0x66, 0x61, 0x63, 0x65, 0x53, 0x74, 0x61, 0x74, 0x75,
+	0x73, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x65, 0x72, 0x69, 0x61, 0x6c,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x22, 0x98,
+	0x01, 0x0a, 0x1b, 0x44, 0x63, 0x47, 0x64, 0x63, 0x47, 0x65, 0x74, 0x53, 0x75, 0x72, 0x66, 0x61,
+	0x63, 0x65, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x12, 0x1f,
+	0x0a, 0x0b, 0x68, 0x61, 0x73, 0x5f, 0x73, 0x75, 0x72, 0x66, 0x61, 0x63, 0x65, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x08, 0x52, 0x0a, 0x68, 0x61, 0x73, 0x53, 0x75, 0x72, 0x66, 0x61, 0x63, 0x65, 0x12,
+	0x1d, 0x0a, 0x0a, 0x69, 0x73, 0x5f, 0x70, 0x6c, 0x61, 0x79, 0x69, 0x6e, 0x67, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x08, 0x52, 0x09, 0x69, 0x73, 0x50, 0x6c, 0x61, 0x79, 0x69, 0x6e, 0x67, 0x12, 0x39,
+	0x0a, 0x19, 0x6c, 0x61, 0x73, 0x74, 0x5f, 0x66, 0x72, 0x61, 0x6d, 0x65, 0x5f, 0x64, 0x65, 0x6c,
+	0x74, 0x61, 0x5f, 0x6d, 0x69, 0x6c, 0x6c, 0x69, 0x73, 0x65, 0x63, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x0d, 0x52, 0x16, 0x6c, 0x61, 0x73, 0x74, 0x46, 0x72, 0x61, 0x6d, 0x65, 0x44, 0x65, 0x6c, 0x74,
+	0x61, 0x4d, 0x69, 0x6c, 0x6c, 0x69, 0x73, 0x65, 0x63, 0x42, 0x6a, 0x0a, 0x27, 0x63, 0x6f, 0x6d,
+	0x2e, 0x64, 0x6f, 0x67, 0x75, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2e, 0x67,
+	0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x64, 0x2e, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x2e, 0x74,
+	0x79, 0x70, 0x65, 0x73, 0x5a, 0x3f, 0x67, 0x6f, 0x2d, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x2d,
+	0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x6c, 0x65, 0x72, 0x2f, 0x74, 0x79, 0x70, 0x65, 0x73,
+	0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x63, 0x6f, 0x6c, 0x2f, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61,
+	0x74, 0x65, 0x64, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x69, 0x6e, 0x6e, 0x65, 0x72, 0x2f,
+	0x74, 0x79, 0x70, 0x65, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -670,7 +793,7 @@ func file_inner_types_dc_gdc_proto_rawDescGZIP() []byte {
 	return file_inner_types_dc_gdc_proto_rawDescData
 }
 
-var file_inner_types_dc_gdc_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_inner_types_dc_gdc_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_inner_types_dc_gdc_proto_goTypes = []interface{}{
 	(*DcGdcDeviceContext)(nil),           // 0: inner.types.DcGdcDeviceContext
 	(*DcGdcUpdateDeviceListParam)(nil),   // 1: inner.types.DcGdcUpdateDeviceListParam
@@ -683,20 +806,22 @@ var file_inner_types_dc_gdc_proto_goTypes = []interface{}{
 	(*DcGdcStartScreenRecordResult)(nil), // 8: inner.types.DcGdcStartScreenRecordResult
 	(*DcGdcStopScreenRecordParam)(nil),   // 9: inner.types.DcGdcStopScreenRecordParam
 	(*DcGdcStopScreenRecordResult)(nil),  // 10: inner.types.DcGdcStopScreenRecordResult
-	(outer.Platform)(0),                  // 11: outer.Platform
-	(*streaming.StreamingOffer)(nil),     // 12: outer.streaming.StreamingOffer
-	(*streaming.StreamingAnswer)(nil),    // 13: outer.streaming.StreamingAnswer
-	(*streaming.ScreenRecordOption)(nil), // 14: outer.streaming.ScreenRecordOption
-	(*outer.ErrorResult)(nil),            // 15: outer.ErrorResult
+	(*DcGdcGetSurfaceStatusParam)(nil),   // 11: inner.types.DcGdcGetSurfaceStatusParam
+	(*DcGdcGetSurfaceStatusResult)(nil),  // 12: inner.types.DcGdcGetSurfaceStatusResult
+	(outer.Platform)(0),                  // 13: outer.Platform
+	(*streaming.StreamingOffer)(nil),     // 14: outer.streaming.StreamingOffer
+	(*streaming.StreamingAnswer)(nil),    // 15: outer.streaming.StreamingAnswer
+	(*streaming.ScreenRecordOption)(nil), // 16: outer.streaming.ScreenRecordOption
+	(*outer.ErrorResult)(nil),            // 17: outer.ErrorResult
 }
 var file_inner_types_dc_gdc_proto_depIdxs = []int32{
-	11, // 0: inner.types.DcGdcDeviceContext.platform:type_name -> outer.Platform
+	13, // 0: inner.types.DcGdcDeviceContext.platform:type_name -> outer.Platform
 	0,  // 1: inner.types.DcGdcUpdateDeviceListParam.devices:type_name -> inner.types.DcGdcDeviceContext
-	12, // 2: inner.types.DcGdcStartStreamingParam.offer:type_name -> outer.streaming.StreamingOffer
-	13, // 3: inner.types.DcGdcStartStreamingResult.answer:type_name -> outer.streaming.StreamingAnswer
-	14, // 4: inner.types.DcGdcStartScreenRecordParam.option:type_name -> outer.streaming.ScreenRecordOption
-	15, // 5: inner.types.DcGdcStartScreenRecordResult.error:type_name -> outer.ErrorResult
-	15, // 6: inner.types.DcGdcStopScreenRecordResult.error:type_name -> outer.ErrorResult
+	14, // 2: inner.types.DcGdcStartStreamingParam.offer:type_name -> outer.streaming.StreamingOffer
+	15, // 3: inner.types.DcGdcStartStreamingResult.answer:type_name -> outer.streaming.StreamingAnswer
+	16, // 4: inner.types.DcGdcStartScreenRecordParam.option:type_name -> outer.streaming.ScreenRecordOption
+	17, // 5: inner.types.DcGdcStartScreenRecordResult.error:type_name -> outer.ErrorResult
+	17, // 6: inner.types.DcGdcStopScreenRecordResult.error:type_name -> outer.ErrorResult
 	7,  // [7:7] is the sub-list for method output_type
 	7,  // [7:7] is the sub-list for method input_type
 	7,  // [7:7] is the sub-list for extension type_name
@@ -842,6 +967,30 @@ func file_inner_types_dc_gdc_proto_init() {
 				return nil
 			}
 		}
+		file_inner_types_dc_gdc_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DcGdcGetSurfaceStatusParam); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_inner_types_dc_gdc_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*DcGdcGetSurfaceStatusResult); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -849,7 +998,7 @@ func file_inner_types_dc_gdc_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_inner_types_dc_gdc_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

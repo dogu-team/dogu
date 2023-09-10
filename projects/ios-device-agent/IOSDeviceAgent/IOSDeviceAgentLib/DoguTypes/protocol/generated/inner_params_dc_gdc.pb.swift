@@ -51,12 +51,21 @@ public struct Inner_Params_DcGdcParam {
     set {value = .dcGdcStopScreenRecordParam(newValue)}
   }
 
+  public var dcGdcGetSurfaceStatusParam: Inner_Types_DcGdcGetSurfaceStatusParam {
+    get {
+      if case .dcGdcGetSurfaceStatusParam(let v)? = value {return v}
+      return Inner_Types_DcGdcGetSurfaceStatusParam()
+    }
+    set {value = .dcGdcGetSurfaceStatusParam(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_Value: Equatable {
     case dcGdcUpdateDevicelistParam(Inner_Types_DcGdcUpdateDeviceListParam)
     case dcGdcStartScreenRecordParam(Inner_Types_DcGdcStartScreenRecordParam)
     case dcGdcStopScreenRecordParam(Inner_Types_DcGdcStopScreenRecordParam)
+    case dcGdcGetSurfaceStatusParam(Inner_Types_DcGdcGetSurfaceStatusParam)
 
   #if !swift(>=4.1)
     public static func ==(lhs: Inner_Params_DcGdcParam.OneOf_Value, rhs: Inner_Params_DcGdcParam.OneOf_Value) -> Bool {
@@ -74,6 +83,10 @@ public struct Inner_Params_DcGdcParam {
       }()
       case (.dcGdcStopScreenRecordParam, .dcGdcStopScreenRecordParam): return {
         guard case .dcGdcStopScreenRecordParam(let l) = lhs, case .dcGdcStopScreenRecordParam(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.dcGdcGetSurfaceStatusParam, .dcGdcGetSurfaceStatusParam): return {
+        guard case .dcGdcGetSurfaceStatusParam(let l) = lhs, case .dcGdcGetSurfaceStatusParam(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -116,12 +129,21 @@ public struct Inner_Params_DcGdcResult {
     set {value = .dcGdcStopScreenRecordResult(newValue)}
   }
 
+  public var dcGdcGetSurfaceStatusResult: Inner_Types_DcGdcGetSurfaceStatusResult {
+    get {
+      if case .dcGdcGetSurfaceStatusResult(let v)? = value {return v}
+      return Inner_Types_DcGdcGetSurfaceStatusResult()
+    }
+    set {value = .dcGdcGetSurfaceStatusResult(newValue)}
+  }
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public enum OneOf_Value: Equatable {
     case dcGdcUpdateDevicelistResult(Inner_Types_DcGdcUpdateDeviceListResult)
     case dcGdcStartScreenRecordResult(Inner_Types_DcGdcStartScreenRecordResult)
     case dcGdcStopScreenRecordResult(Inner_Types_DcGdcStopScreenRecordResult)
+    case dcGdcGetSurfaceStatusResult(Inner_Types_DcGdcGetSurfaceStatusResult)
 
   #if !swift(>=4.1)
     public static func ==(lhs: Inner_Params_DcGdcResult.OneOf_Value, rhs: Inner_Params_DcGdcResult.OneOf_Value) -> Bool {
@@ -139,6 +161,10 @@ public struct Inner_Params_DcGdcResult {
       }()
       case (.dcGdcStopScreenRecordResult, .dcGdcStopScreenRecordResult): return {
         guard case .dcGdcStopScreenRecordResult(let l) = lhs, case .dcGdcStopScreenRecordResult(let r) = rhs else { preconditionFailure() }
+        return l == r
+      }()
+      case (.dcGdcGetSurfaceStatusResult, .dcGdcGetSurfaceStatusResult): return {
+        guard case .dcGdcGetSurfaceStatusResult(let l) = lhs, case .dcGdcGetSurfaceStatusResult(let r) = rhs else { preconditionFailure() }
         return l == r
       }()
       default: return false
@@ -167,6 +193,7 @@ extension Inner_Params_DcGdcParam: SwiftProtobuf.Message, SwiftProtobuf._Message
     10: .standard(proto: "dc_gdc_update_devicelist_param"),
     13: .standard(proto: "dc_gdc_start_screen_record_param"),
     14: .standard(proto: "dc_gdc_stop_screen_record_param"),
+    15: .standard(proto: "dc_gdc_get_surface_status_param"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -214,6 +241,19 @@ extension Inner_Params_DcGdcParam: SwiftProtobuf.Message, SwiftProtobuf._Message
           self.value = .dcGdcStopScreenRecordParam(v)
         }
       }()
+      case 15: try {
+        var v: Inner_Types_DcGdcGetSurfaceStatusParam?
+        var hadOneofValue = false
+        if let current = self.value {
+          hadOneofValue = true
+          if case .dcGdcGetSurfaceStatusParam(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.value = .dcGdcGetSurfaceStatusParam(v)
+        }
+      }()
       default: break
       }
     }
@@ -237,6 +277,10 @@ extension Inner_Params_DcGdcParam: SwiftProtobuf.Message, SwiftProtobuf._Message
       guard case .dcGdcStopScreenRecordParam(let v)? = self.value else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 14)
     }()
+    case .dcGdcGetSurfaceStatusParam?: try {
+      guard case .dcGdcGetSurfaceStatusParam(let v)? = self.value else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
+    }()
     case nil: break
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -255,6 +299,7 @@ extension Inner_Params_DcGdcResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
     10: .standard(proto: "dc_gdc_update_devicelist_result"),
     13: .standard(proto: "dc_gdc_start_screen_record_result"),
     14: .standard(proto: "dc_gdc_stop_screen_record_result"),
+    15: .standard(proto: "dc_gdc_get_surface_status_result"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -302,6 +347,19 @@ extension Inner_Params_DcGdcResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
           self.value = .dcGdcStopScreenRecordResult(v)
         }
       }()
+      case 15: try {
+        var v: Inner_Types_DcGdcGetSurfaceStatusResult?
+        var hadOneofValue = false
+        if let current = self.value {
+          hadOneofValue = true
+          if case .dcGdcGetSurfaceStatusResult(let m) = current {v = m}
+        }
+        try decoder.decodeSingularMessageField(value: &v)
+        if let v = v {
+          if hadOneofValue {try decoder.handleConflictingOneOf()}
+          self.value = .dcGdcGetSurfaceStatusResult(v)
+        }
+      }()
       default: break
       }
     }
@@ -324,6 +382,10 @@ extension Inner_Params_DcGdcResult: SwiftProtobuf.Message, SwiftProtobuf._Messag
     case .dcGdcStopScreenRecordResult?: try {
       guard case .dcGdcStopScreenRecordResult(let v)? = self.value else { preconditionFailure() }
       try visitor.visitSingularMessageField(value: v, fieldNumber: 14)
+    }()
+    case .dcGdcGetSurfaceStatusResult?: try {
+      guard case .dcGdcGetSurfaceStatusResult(let v)? = self.value else { preconditionFailure() }
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 15)
     }()
     case nil: break
     }

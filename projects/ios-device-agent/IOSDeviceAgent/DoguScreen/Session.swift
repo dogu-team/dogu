@@ -37,9 +37,9 @@ class Session {
     connection.stateUpdateHandler = { [weak self] state in
       switch state {
       case .ready:
-        NSLog("Client connected")
+        NSLog("Session connected")
       case .failed(let error):
-        NSLog("Connection failure, error: \(error.localizedDescription)")
+        NSLog("Session.Connection failure, error: \(error.localizedDescription)")
         self?.state = .closed
       default:
         break

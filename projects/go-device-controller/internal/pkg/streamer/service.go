@@ -68,6 +68,14 @@ func (s *GoDeviceControllerService) Call(ctx context.Context, param *params.DcGd
 			},
 		}
 		return ret, nil
+	case *params.DcGdcParam_DcGdcGetSurfaceStatusParam:
+		result := s.getSurfaceStatus(a)
+		ret := &params.DcGdcResult{
+			Value: &params.DcGdcResult_DcGdcGetSurfaceStatusResult{
+				DcGdcGetSurfaceStatusResult: &result,
+			},
+		}
+		return ret, nil
 	}
 
 	return nil, status.Errorf(codes.Internal, "unkown type %v", param.Value)
@@ -155,6 +163,10 @@ func (s *GoDeviceControllerService) stopRecording(a *params.DcGdcParam_DcGdcStop
 			Message: "recorder not found",
 		},
 	}
+}
+
+func (s *GoDeviceControllerService) getSurfaceStatus(a *params.DcGdcParam_DcGdcGetSurfaceStatusParam) types.DcGdcGetSurfaceStatusResult {
+	return s.devices.GetSurfaceStatus(a.DcGdcGetSurfaceStatusParam.Serial)
 }
 
 func (s *GoDeviceControllerService) cleanUpStreamer() {

@@ -52,6 +52,16 @@ export interface DcGdcStopScreenRecordResult {
   filePath: string;
 }
 
+export interface DcGdcGetSurfaceStatusParam {
+  serial: string;
+}
+
+export interface DcGdcGetSurfaceStatusResult {
+  hasSurface: boolean;
+  isPlaying: boolean;
+  lastFrameDeltaMillisec: number;
+}
+
 function createBaseDcGdcDeviceContext(): DcGdcDeviceContext {
   return { serial: '', platform: 0, screenUrl: '', inputUrl: '', screenWidth: 0, screenHeight: 0 };
 }
@@ -624,6 +634,120 @@ export const DcGdcStopScreenRecordResult = {
     const message = createBaseDcGdcStopScreenRecordResult();
     message.error = object.error !== undefined && object.error !== null ? ErrorResult.fromPartial(object.error) : undefined;
     message.filePath = object.filePath ?? '';
+    return message;
+  },
+};
+
+function createBaseDcGdcGetSurfaceStatusParam(): DcGdcGetSurfaceStatusParam {
+  return { serial: '' };
+}
+
+export const DcGdcGetSurfaceStatusParam = {
+  encode(message: DcGdcGetSurfaceStatusParam, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.serial !== '') {
+      writer.uint32(10).string(message.serial);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): DcGdcGetSurfaceStatusParam {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDcGdcGetSurfaceStatusParam();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.serial = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DcGdcGetSurfaceStatusParam {
+    return { serial: isSet(object.serial) ? String(object.serial) : '' };
+  },
+
+  toJSON(message: DcGdcGetSurfaceStatusParam): unknown {
+    const obj: any = {};
+    message.serial !== undefined && (obj.serial = message.serial);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<DcGdcGetSurfaceStatusParam>, I>>(object: I): DcGdcGetSurfaceStatusParam {
+    const message = createBaseDcGdcGetSurfaceStatusParam();
+    message.serial = object.serial ?? '';
+    return message;
+  },
+};
+
+function createBaseDcGdcGetSurfaceStatusResult(): DcGdcGetSurfaceStatusResult {
+  return { hasSurface: false, isPlaying: false, lastFrameDeltaMillisec: 0 };
+}
+
+export const DcGdcGetSurfaceStatusResult = {
+  encode(message: DcGdcGetSurfaceStatusResult, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.hasSurface === true) {
+      writer.uint32(8).bool(message.hasSurface);
+    }
+    if (message.isPlaying === true) {
+      writer.uint32(16).bool(message.isPlaying);
+    }
+    if (message.lastFrameDeltaMillisec !== 0) {
+      writer.uint32(24).uint32(message.lastFrameDeltaMillisec);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): DcGdcGetSurfaceStatusResult {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDcGdcGetSurfaceStatusResult();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.hasSurface = reader.bool();
+          break;
+        case 2:
+          message.isPlaying = reader.bool();
+          break;
+        case 3:
+          message.lastFrameDeltaMillisec = reader.uint32();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DcGdcGetSurfaceStatusResult {
+    return {
+      hasSurface: isSet(object.hasSurface) ? Boolean(object.hasSurface) : false,
+      isPlaying: isSet(object.isPlaying) ? Boolean(object.isPlaying) : false,
+      lastFrameDeltaMillisec: isSet(object.lastFrameDeltaMillisec) ? Number(object.lastFrameDeltaMillisec) : 0,
+    };
+  },
+
+  toJSON(message: DcGdcGetSurfaceStatusResult): unknown {
+    const obj: any = {};
+    message.hasSurface !== undefined && (obj.hasSurface = message.hasSurface);
+    message.isPlaying !== undefined && (obj.isPlaying = message.isPlaying);
+    message.lastFrameDeltaMillisec !== undefined && (obj.lastFrameDeltaMillisec = Math.round(message.lastFrameDeltaMillisec));
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<DcGdcGetSurfaceStatusResult>, I>>(object: I): DcGdcGetSurfaceStatusResult {
+    const message = createBaseDcGdcGetSurfaceStatusResult();
+    message.hasSurface = object.hasSurface ?? false;
+    message.isPlaying = object.isPlaying ?? false;
+    message.lastFrameDeltaMillisec = object.lastFrameDeltaMillisec ?? 0;
     return message;
   },
 };
