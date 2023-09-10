@@ -66,8 +66,6 @@ jobs:
       - name: Cache Android buildfiles
         uses: actions/cache@v3
         id: cache_android_build_files
-        env:
-          cache-name: cache-android-build-files
         with:
           path: |
             ${{ github.workspace }}/projects/android-device-agent/android/app/build
@@ -77,8 +75,6 @@ jobs:
       - name: Cache Go buildfiles
         uses: actions/cache@v3
         id: cache_go_build_files
-        env:
-          cache-name: cache-go-build-files
         with:
           path: ${{ github.workspace }}/projects/go-device-controller/build
           key: ${{ runner.os }}-${{ env.cache-name }} # It doesn't have to match exactly.
@@ -86,8 +82,6 @@ jobs:
       - name: Cache Electron
         uses: actions/cache@v3
         id: cache_elctrons
-        env:
-          cache-name: cache-electrons
         with:
           path: ${{ github.workspace }}/.electron-cache
           key: ${{ runner.os }}-${{ env.cache-name }}
@@ -95,22 +89,17 @@ jobs:
       - name: Cache Third-Party
         uses: actions/cache@v3
         id: cache_third_party
-        env:
-          cache-name: cache-third-party
         with:
           path: ${{ github.workspace }}/third-party
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('scripts/third-parties/download.ts') }}-${{ hashFiles('projects/go-device-controller/**') }}-${{ hashFiles('projects/android-device-agent/**') }}-${{ hashFiles('projects/ios-device-agent/**') }}-${{ hashFiles('projects/go-device-controller/**') }}-${{ hashFiles('projects/android-device-agent/**') }}-${{ hashFiles('projects/ios-device-agent/**') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('scripts/third-parties/download.ts') }}
 
-      - name: Cache NM Space
+      - name: Cache NM Space node_modules
         uses: actions/cache@v3
-        id: cache_nm_space
-        env:
-          cache-name: cache-nm-space
+        id: cache_nm_space_node_modules
         with:
           path: |
-            ${{ github.workspace }}/nm-space/mirror
             ${{ github.workspace }}/nm-space/node_modules
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('packages/typescript*/**') }}-${{ hashFiles('nm-space/yarn.lock') }}
+          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('yarn.lock') }}
 
       - name: Windows - Msys2 - MIGW64 - Setup for cgo
         uses: msys2/setup-msys2@v2
@@ -192,24 +181,21 @@ jobs:
         run: |
           yarn run newbie:cicd
 
-      - name: Build Projects
+      - name: Build Packages
         run: |
           yarn workspace dogu run rebuild:packages
 
-      - if: steps.cache_third_party.outputs.cache-hit != 'true'
-        name: Download, Build third-party
+      - name: Download, Build third-party
         run: |
           yarn third-party:download:build
         env:
           DOGU_APPLE_API_KEY_ID: ${{ secrets.DOGU_APPLE_API_KEY_ID }}
           DOGU_APPLE_API_ISSUER_ID: ${{ secrets.DOGU_APPLE_API_ISSUER_ID }}
 
-      - if: steps.cache_nm_space.outputs.cache-hit != 'true'
-        name: Dogu Agent - Newbie nm-space
+      - name: Dogu Agent - Newbie nm-space
         run: |
           yarn workspace dogu run newbie:nm-space
 
-      # - if: steps.cache_nm_space_node_modules.outputs.cache-hit != 'true'
       - name: Dogu Agent - Install nm-space
         run: |
           yarn install
