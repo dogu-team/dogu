@@ -1,6 +1,6 @@
 {
   "name": "console-web-server",
-  "version": "1.11.2",
+  "version": "1.11.3",
   "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
   "author": "Dogu Technologies",
   "scripts": {
