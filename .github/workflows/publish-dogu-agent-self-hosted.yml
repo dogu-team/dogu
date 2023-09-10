@@ -62,7 +62,7 @@ jobs:
             ${{ github.workspace }}/projects/android-device-agent/android/.gradle
           key: ${{ runner.os }}-cache_android_files-${{ hashFiles('projects/android-device-agent/android/app/src/**') }} # It doesn't have to match exactly.
           restore-keys: |
-            ${{ runner.os }}-cache_android_files
+            ${{ runner.os }}-cache_android_files-
 
       - name: Cache Go buildfiles
         uses: actions/cache@v3
@@ -70,7 +70,7 @@ jobs:
           path: ${{ github.workspace }}/projects/go-device-controller/build
           key: ${{ runner.os }}-cache_go_files-${{ hashFiles('projects/go-device-controller/internal/**') }} # It doesn't have to match exactly.
           restore-keys: |
-            ${{ runner.os }}-cache_go_files
+            ${{ runner.os }}-cache_go_files-
 
       - name: Cache Electron
         uses: actions/cache@v3
