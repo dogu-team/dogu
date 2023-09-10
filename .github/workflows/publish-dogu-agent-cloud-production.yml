@@ -52,41 +52,40 @@ jobs:
 
       - name: Cache Android buildfiles
         uses: actions/cache@v3
-        id: cache_android_build_files
-        env:
-          cache-name: cache-android-build-files
         with:
           path: |
             ${{ github.workspace }}/projects/android-device-agent/android/app/build
             ${{ github.workspace }}/projects/android-device-agent/android/.gradle
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('projects/android-device-agent/android/app/src/**') }} # It doesn't have to match exactly.
+          key: ${{ runner.os }}-cache_android_files-${{ hashFiles('projects/android-device-agent/android/app/src/**') }} # It doesn't have to match exactly.
+          restore-keys: |
+            ${{ runner.os }}-cache_android_files
 
       - name: Cache Go buildfiles
         uses: actions/cache@v3
-        id: cache_go_build_files
-        env:
-          cache-name: cache-go-build-files
         with:
           path: ${{ github.workspace }}/projects/go-device-controller/build
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('projects/go-device-controller/internal/**') }} # It doesn't have to match exactly.
+          key: ${{ runner.os }}-cache_go_files-${{ hashFiles('projects/go-device-controller/internal/**') }} # It doesn't have to match exactly.
+          restore-keys: |
+            ${{ runner.os }}-cache_go_files
 
       - name: Cache Electron
         uses: actions/cache@v3
-        id: cache_elctrons
-        env:
-          cache-name: cache-electrons
         with:
           path: ${{ github.workspace }}/.electron-cache
-          key: ${{ runner.os }}-${{ env.cache-name }}
+          key: ${{ runner.os }}-cache_elctrons
 
       - name: Cache Third-Party
         uses: actions/cache@v3
-        id: cache_third_party
-        env:
-          cache-name: cache-third-party
         with:
           path: ${{ github.workspace }}/third-party
-          key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('scripts/third-parties/download.ts') }}-${{ hashFiles('projects/go-device-controller/**') }}-${{ hashFiles('projects/android-device-agent/**') }}-${{ hashFiles('projects/ios-device-agent/**') }}
+          key: ${{ runner.os }}-cache-thirdparty-${{ hashFiles('scripts/third-parties/download.ts') }}
+
+      - name: Cache NM Space node_modules
+        uses: actions/cache@v3
+        with:
+          path: |
+            ${{ github.workspace }}/nm-space/node_modules
+          key: ${{ runner.os }}-cache_nm_space_node_modules-${{ hashFiles('yarn.lock') }}
 
       - name: Cache NM Space
         uses: actions/cache@v3
@@ -183,13 +182,11 @@ jobs:
         run: |
           yarn workspace dogu run rebuild:packages
 
-      - if: steps.cache_third_party.outputs.cache-hit != 'true'
-        name: Download, Build third-party
+      - name: Download, Build third-party
         run: |
           yarn third-party:download:build
 
-      - if: steps.cache_nm_space.outputs.cache-hit != 'true'
-        name: Dogu Agent - Newbie nm-space
+      - name: Dogu Agent - Newbie nm-space
         run: |
           yarn workspace dogu run newbie:nm-space
 
