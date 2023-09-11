@@ -29,6 +29,7 @@ jobs:
     runs-on:
       group: []
     appVersion:
+    record: true
     steps:
       - name: run test
         uses: dogu-actions/run-test
@@ -47,6 +48,7 @@ jobs:
   new-job-1:
     runs-on: []
     browserName:
+    record: true
     steps:
       - name: run test
         uses: dogu-actions/run-test

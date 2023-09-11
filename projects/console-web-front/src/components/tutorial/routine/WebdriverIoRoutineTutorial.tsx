@@ -70,6 +70,7 @@ jobs:
       group:
         - android
     appVersion:
+    record: true
     steps:
       - name: run test
         uses: dogu-actions/run-test
@@ -90,6 +91,7 @@ jobs:
   sample-job:
     runs-on: []
     browserName: chrome
+    record: true
     steps:
       - name: run test
         uses: dogu-actions/run-test

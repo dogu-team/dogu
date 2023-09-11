@@ -55,6 +55,7 @@ jobs:
   sample-job:
     runs-on: []
     browserName: chrome
+    record: true
     steps:
       - name: run test
         uses: dogu-actions/run-test

@@ -56,6 +56,7 @@ jobs:
       group:
         - android
     appVersion:
+    record: true
     steps:
       - name: run test
         uses: dogu-actions/run-test
