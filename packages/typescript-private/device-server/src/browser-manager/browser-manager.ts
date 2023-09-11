@@ -103,24 +103,26 @@ export class BrowserManager {
           }
         }
         break;
-      case 'safari': {
-        if (!browserPlatform) {
-          throw new Error('browserPlatform is required');
-        }
-
-        switch (browserPlatform) {
-          case 'macos':
-          case 'windows': {
-            this.logger.warn(`Safari is only support default version`);
-            return this.safari.getVersion();
+      case 'safari':
+        {
+          if (!browserPlatform) {
+            throw new Error('browserPlatform is required');
           }
-          case 'android':
-          case 'ios':
-            throw new Error('Not implemented');
-          default:
-            assertUnreachable(browserPlatform);
+
+          switch (browserPlatform) {
+            case 'macos':
+            case 'windows': {
+              this.logger.warn(`Safari is only support default version`);
+              return this.safari.getVersion();
+            }
+            case 'android':
+            case 'ios':
+              throw new Error('Not implemented');
+            default:
+              assertUnreachable(browserPlatform);
+          }
         }
-      }
+        break;
       case 'safaritp':
       case 'iexplorer':
       case 'samsung-internet':
@@ -132,7 +134,7 @@ export class BrowserManager {
 
   async ensureBrowserAndDriver(options: EnsureBrowserAndDriverOptions): Promise<EnsureBrowserAndDriverResult> {
     const { browserName, browserPlatform, browserVersion, deviceSerial } = options;
-    const mappedBrowserVersion = !!browserVersion ? browserVersion : 'latest';
+    const mappedBrowserVersion = browserVersion ? browserVersion : 'latest';
     const ensureBrowserResult = await this.ensureBrowser({ browserName, browserPlatform, mappedBrowserVersion, deviceSerial });
     const ensureBrowserDriverResult = await this.ensureBrowserDriver({ browserName, browserPlatform, browserVersion: ensureBrowserResult.browserVersion, deviceSerial });
     return {
@@ -675,6 +677,19 @@ export class BrowserManager {
         });
         const matches = founds.filter(({ version }) => version.startsWith(browserVersionPrefix));
         if (matches.length === 0) {
+          if (browserPlatform === 'windows') {
+            if (founds.length === 0) {
+              return undefined;
+            }
+
+            const found = founds[0];
+            return {
+              browserVersion: found.version,
+              browserMajorVersion: edgeVersionUtils.parse(found.version).major,
+              browserPath: found.executablePath,
+            };
+          }
+
           return undefined;
         }
         const match = matches[0];

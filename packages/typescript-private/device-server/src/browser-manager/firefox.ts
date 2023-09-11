@@ -3,14 +3,18 @@ import { assertUnreachable, DeepReadonly, PrefixLogger, setAxiosErrorFilterToInt
 import { defaultMountTimeout, onDmgMounted } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
 import axios, { AxiosInstance } from 'axios';
+import { exec } from 'child_process';
 import fs from 'fs';
 import _ from 'lodash';
 import os from 'os';
 import path from 'path';
+import { promisify } from 'util';
 import { logger } from '../logger/logger.instance';
 import { defaultDownloadRequestTimeout, defaultVersionRequestTimeout, download, validatePrefixOrPatternWithin } from './common';
 import { firefoxVersionUtils } from './firefox-version-utils';
 import { WebCache } from './web-cache';
+
+const execAsync = promisify(exec);
 
 export type FirefoxInstallableName = Extract<BrowserOrDriverName, 'firefox' | 'firefox-devedition'>;
 
@@ -29,7 +33,7 @@ const latestVersionMap: DeepReadonly<Record<Extract<FirefoxInstallableName, 'fir
 const executablePathMap: DeepReadonly<Record<FirefoxInstallableName, Record<FirefoxInstallablePlatform, string[]>>> = {
   firefox: {
     mac: ['Firefox.app', 'Contents', 'MacOS', 'firefox'],
-    win64: ['firefox.exe'],
+    win64: ['core', 'firefox.exe'],
     'linux-x86_64': ['firefox'],
   },
   'firefox-devedition': {
@@ -56,6 +60,8 @@ const installableMap: DeepReadonly<Record<FirefoxInstallableName, string>> = {
   firefox: 'firefox',
   'firefox-devedition': 'devedition',
 };
+
+const windowsInstallTimeout = 10 * 60_000;
 
 interface DetailsFirefoxVersions {
   LATEST_FIREFOX_VERSION: string;
@@ -294,6 +300,13 @@ export class Firefox {
               force: true,
             });
           });
+        } else if (downloadFileName.toLowerCase().endsWith('.exe')) {
+          const { stdout } = await execAsync(`"${downloadFilePath}" /ExtractDir=${installPath}`, {
+            timeout: windowsInstallTimeout,
+          });
+          if (stdout) {
+            this.logger.info(stdout);
+          }
         } else {
           throw new Error(`Unexpected download file name: ${downloadFileName}`);
         }

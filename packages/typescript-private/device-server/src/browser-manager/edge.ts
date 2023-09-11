@@ -3,13 +3,17 @@ import { DeepReadonly, PrefixLogger, setAxiosErrorFilterToIntercepter, stringify
 import { installPkg, renameRetry } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
 import axios, { AxiosInstance } from 'axios';
+import { exec } from 'child_process';
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
+import { promisify } from 'util';
 import { logger } from '../logger/logger.instance';
 import { ChromeChannelName, chromeChannelNameMap } from './chrome';
 import { chromeVersionUtils } from './chrome-version-utils';
 import { defaultDownloadRequestTimeout, defaultInstallationTimeout, defaultVersionRequestTimeout, download, validatePrefixOrPatternWithin } from './common';
+
+const execAsync = promisify(exec);
 
 /**
  * @note etag is not supported
@@ -20,6 +24,8 @@ const edgeUpdatesUrlForLatest = 'https://edgeupdates.microsoft.com/api/products'
  * @note etag is not supported
  */
 const edgeUpdatesUrlForFull = 'https://edgeupdates.microsoft.com/api/products?view=enterprise';
+
+const windowsEdgeRootDirPath = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application';
 
 export const edgeVersionUtils = chromeVersionUtils;
 const edgeChannelNameMap = chromeChannelNameMap;
@@ -57,8 +63,8 @@ const executablePathMap: DeepReadonly<Record<EdgeInstallableName, Record<EdgeIns
       universal: ['Microsoft Edge.app', 'Contents', 'MacOS', 'Microsoft Edge'],
     },
     Windows: {
-      x64: [],
-      arm64: [],
+      x64: ['msedge.exe'],
+      arm64: ['msedge.exe'],
     },
   },
 };
@@ -306,10 +312,14 @@ export class Edge {
 
   async install(options: InstallOptions): Promise<InstallResult> {
     const mergedOptions = mergeInstallOptions(options);
-    const { version, downloadTimeout, installTimeout } = mergedOptions;
+    const { version, downloadTimeout, installTimeout, platform } = mergedOptions;
+
     const installPath = this.getInstallPath(mergedOptions);
     return await this.pathLock.acquire(installPath, async () => {
-      const executablePath = this.getExecutablePath({ ...mergedOptions, installPath });
+      const executablePath =
+        platform === 'Windows' //
+          ? this.getExecutablePath({ ...mergedOptions, installPath: windowsEdgeRootDirPath })
+          : this.getExecutablePath({ ...mergedOptions, installPath });
       if (await fs.promises.stat(executablePath).catch(() => null)) {
         this.logger.info(`Already installed: ${executablePath}`);
         return {
@@ -335,13 +345,25 @@ export class Edge {
           const appDirName = path.basename(appPath);
           const renamePath = path.resolve(installPath, appDirName);
           await renameRetry(appPath, renamePath, this.logger);
+          return {
+            executablePath,
+          };
+        } else if (downloadFileName.toLowerCase().endsWith('.msi')) {
+          try {
+            const { stdout } = await execAsync(`msiexec /i ${downloadFilePath} /quiet /qn /norestart`, {
+              timeout: installTimeout,
+              encoding: 'utf8',
+            });
+            this.logger.info(`msiexec stdout: ${stdout}`);
+          } catch (error) {
+            this.logger.warn(`Failed to install msiexec: ${stringify(error)}`);
+          }
+          return {
+            executablePath,
+          };
         } else {
           throw new Error(`Unexpected download file name: ${downloadFileName}`);
         }
-
-        return {
-          executablePath,
-        };
       } catch (error) {
         throw new Error(`Failed to install from ${downloadUrl} to ${installPath}: ${stringify(error)}`);
       } finally {
@@ -356,8 +378,91 @@ export class Edge {
     });
   }
 
+  async findInstallationsForWindows(options: FindInstallationsOptions): Promise<FindInstallationsResult> {
+    const { installableName, platform: requestedPlatform, arch: requestedArch } = options;
+    if (requestedPlatform !== 'Windows') {
+      throw new Error(`Unexpected platform: ${requestedPlatform}`);
+    }
+
+    if (!(await fs.promises.stat(windowsEdgeRootDirPath).catch(() => null))) {
+      return [];
+    }
+
+    const entries = await fs.promises.readdir(windowsEdgeRootDirPath);
+    const versionDirs = entries.filter((entry) => {
+      try {
+        edgeVersionUtils.parse(entry);
+        return true;
+      } catch (error) {
+        return false;
+      }
+    });
+    const withVersionPaths = versionDirs.map((versionDir) => ({
+      installableName,
+      version: versionDir,
+      majorVersion: edgeVersionUtils.parse(versionDir).major,
+      versionPath: path.resolve(windowsEdgeRootDirPath, versionDir),
+    }));
+    const withVersionPathExists = await Promise.all(
+      withVersionPaths.map(async ({ installableName, version, majorVersion, versionPath }) => ({
+        installableName,
+        version,
+        majorVersion,
+        versionPath,
+        versionPathExist: await fs.promises
+          .stat(versionPath)
+          .then((stat) => stat.isDirectory())
+          .catch(() => false),
+      })),
+    );
+    const withExecutablePaths = withVersionPathExists
+      .filter(({ versionPathExist }) => versionPathExist)
+      .map(({ installableName, version, majorVersion, versionPath }) => ({
+        installableName,
+        version,
+        majorVersion,
+        platform: requestedPlatform,
+        arch: requestedArch,
+        executablePath: this.getExecutablePath({ installableName, platform: requestedPlatform, arch: requestedArch, installPath: versionPath }),
+      }));
+    const withExecutablePathExists = await Promise.all(
+      withExecutablePaths.map(async ({ installableName, version, majorVersion, platform, arch, executablePath }) => ({
+        installableName,
+        version,
+        majorVersion,
+        platform,
+        arch,
+        executablePath,
+        executablePathExist: await fs.promises
+          .stat(executablePath)
+          .then((stat) => stat.isFile())
+          .catch(() => false),
+      })),
+    );
+    const withExecutablePathResults = withExecutablePathExists
+      .filter(({ executablePathExist }) => executablePathExist)
+      .map(({ installableName, version, majorVersion, platform, arch, executablePath }) => ({
+        installableName,
+        version,
+        majorVersion,
+        platform,
+        arch,
+        executablePath,
+      }))
+      .sort((lhs, rhs) => {
+        const lhsVersion = edgeVersionUtils.parse(lhs.version);
+        const rhsVersion = edgeVersionUtils.parse(rhs.version);
+        return edgeVersionUtils.compareWithDesc(lhsVersion, rhsVersion);
+      });
+    return withExecutablePathResults;
+  }
+
   async findInstallations(options: FindInstallationsOptions): Promise<FindInstallationsResult> {
     const { installableName, platform: requestedPlatform, arch: requestedArch, rootPath } = options;
+    if (requestedPlatform === 'Windows') {
+      return await this.findInstallationsForWindows(options);
+    }
+
     const installableNames = _.keys(executablePathMap) as EdgeInstallableName[];
     const withInstallablePaths = installableNames
       .filter((name) => name === installableName)
