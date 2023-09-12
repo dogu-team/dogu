@@ -1,6 +1,7 @@
 import { InboxOutlined } from '@ant-design/icons';
 import { OrganizationId, ProjectId } from '@dogu-private/types';
-import { Button, Modal, Upload, UploadFile } from 'antd';
+import { Button, Checkbox, Modal, Upload, UploadFile } from 'antd';
+import { RcFile } from 'antd/es/upload';
 import { AxiosError } from 'axios';
 import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
@@ -20,20 +21,27 @@ interface Props {
 
 const ProjectApplicationUploadButton = ({ organizationId, projectId }: Props) => {
   const [isOpen, openModal, closeModal] = useModal();
+  const [isLatest, setIsLatest] = useState<boolean>(false);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const fireEvent = useEventStore((state) => state.fireEvent);
   const { t } = useTranslation();
 
   const handleCloseModal = () => {
     setFileList([]);
+    setIsLatest(false);
     closeModal();
   };
 
-  const handleUploadFile = async (file: File, onSuccess: () => void, onError: (message: string) => void) => {
+  const handleUploadFile = async () => {
+    if (fileList.length < 1) {
+      return;
+    }
+
+    setLoading(true);
     try {
-      setFileList([{ name: file.name, status: 'uploading', uid: file.name }]);
-      await uploadProjectApplication(organizationId, projectId, file);
-      onSuccess();
+      const file = fileList[0];
+      await uploadProjectApplication(organizationId, projectId, file.originFileObj!, isLatest);
       sendSuccessNotification(t('project-app:uploadAppSuccessMessage'));
       fireEvent('onProjectApplicationUploaded');
       handleCloseModal();
@@ -42,6 +50,7 @@ const ProjectApplicationUploadButton = ({ organizationId, projectId }: Props) =>
         sendErrorNotification(t('project-app:uploadAppFailureMessage', { reason: getErrorMessageFromAxios(e) }));
       }
     }
+    setLoading(false);
   };
 
   return (
@@ -50,16 +59,26 @@ const ProjectApplicationUploadButton = ({ organizationId, projectId }: Props) =>
         {t('project-app:uploadAppButtonTitle')}
       </Button>
 
-      <Modal open={isOpen} closable centered title={t('project-app:uploadAppModalTitle')} onCancel={handleCloseModal} footer={null}>
+      <Modal
+        open={isOpen}
+        closable
+        centered
+        title={t('project-app:uploadAppModalTitle')}
+        onCancel={handleCloseModal}
+        onOk={handleUploadFile}
+        confirmLoading={loading}
+        cancelText={t('common:cancel')}
+        okText={t('common:upload')}
+        destroyOnClose
+        okButtonProps={{ id: 'project-app-upload-modal-ok-btn' }}
+      >
         <Upload.Dragger
           id="project-app-uploader"
           accept=".apk, .ipa"
+          disabled={loading}
           customRequest={async (option) => {
-            await handleUploadFile(
-              option.file as File,
-              () => option.onSuccess!({}),
-              (message) => option.onError!({ message, name: 'FileUploadError' }),
-            );
+            const file = option.file as RcFile;
+            setFileList([{ name: file.name, status: 'done', uid: file.name, originFileObj: file }]);
           }}
           fileList={fileList}
           multiple={false}
@@ -72,6 +91,11 @@ const ProjectApplicationUploadButton = ({ organizationId, projectId }: Props) =>
             <Trans i18nKey="project-app:uploadAppDescriptionHintText" components={{ br: <br />, code: <code /> }} />
           </StyledHint>
         </Upload.Dragger>
+        <div style={{ marginTop: '.5rem' }}>
+          <Checkbox checked={isLatest} onChange={(e) => setIsLatest(e.target.checked)}>
+            {t('project-app:uploadAppLatestCheckboxText')}
+          </Checkbox>
+        </div>
       </Modal>
     </>
   );

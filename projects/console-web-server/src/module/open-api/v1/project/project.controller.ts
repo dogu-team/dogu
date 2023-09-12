@@ -1,11 +1,12 @@
 import { ProjectPropCamel } from '@dogu-private/console';
 import { V1Project } from '@dogu-private/console-open-api';
 import { CREATOR_TYPE, ProjectId, V1CALLER_TYPE, V1OpenApiPayload } from '@dogu-private/types';
-import { Controller, Inject, Param, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Inject, Param, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { applicationFileParser } from '../../../../utils/file';
 import { PROJECT_ROLE } from '../../../auth/auth.types';
 import { V1OpenApiCaller, V1OpenApiProjectPermission } from '../../../auth/decorators';
+import { UploadProjectApplicationDto } from '../../../project/application/dto/application.dto';
 import { V1ProjectService } from './project.service';
 
 @Controller(V1Project.controller.path)
@@ -22,6 +23,7 @@ export class V1ProjectController {
     @UploadedFile(applicationFileParser) file: Express.Multer.File,
     @V1OpenApiCaller() openApiCaller: V1OpenApiPayload,
     @Param(ProjectPropCamel.projectId) projectId: ProjectId,
+    @Body() dto: UploadProjectApplicationDto,
   ) {
     let creatorId = null;
     let creatorType: CREATOR_TYPE;
@@ -45,6 +47,6 @@ export class V1ProjectController {
         break;
       }
     }
-    await this.v1ProjectService.uploadApplication(file, projectId, creatorId, creatorType);
+    await this.v1ProjectService.uploadApplication(file, projectId, creatorId, creatorType, dto);
   }
 }

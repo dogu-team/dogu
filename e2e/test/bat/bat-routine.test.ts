@@ -480,6 +480,8 @@ Dest.withOptions({
 
       test('Upload sample app', async () => {
         await Driver.uploadFile({ xpath: '//input[@id="project-app-uploader"]' }, values.value.SAMPLE_APP_PATH);
+        await Timer.wait(1000, 'wait for app upload');
+        await Driver.clickElement({ xpath: '//button[@id="project-app-upload-modal-ok-btn"]' });
         await Timer.wait(10000, 'wait for app upload');
       });
 

@@ -1,6 +1,6 @@
 import { ProjectApplicationWithIcon } from '@dogu-private/console';
 import { OrganizationId, ProjectId } from '@dogu-private/types';
-import { List, MenuProps } from 'antd';
+import { List, MenuProps, Tag } from 'antd';
 import { AxiosError } from 'axios';
 import moment from 'moment';
 import useTranslation from 'next-translate/useTranslation';
@@ -95,7 +95,14 @@ const ProjectApplicationItem = ({ application }: ItemProps) => {
             &nbsp;{application.name}
           </NameWrapper>
         </ThreeSpan>
-        <TwoSpan>{application.version}</TwoSpan>
+        <TwoSpan>
+          {application.version}
+          {application.isLatest === 1 && (
+            <Tag style={{ marginLeft: '.5rem' }} color="magenta">
+              Latest
+            </Tag>
+          )}
+        </TwoSpan>
         <OneSpan>
           <ProjectApplicationExtensionTag extension={application.fileExtension} />
         </OneSpan>

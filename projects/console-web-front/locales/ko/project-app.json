@@ -24,5 +24,6 @@
   "uploadAppDescriptionText": "앱을 업로드하세요.",
   "uploadAppDescriptionHintText": "앱을 여기로 드래그 하거나 여기를 클릭해 업로드 할 수 있습니다.<br></br><code>.apk .ipa</code> 파일 형식만 지원됩니다.",
   "uploadAppSuccessMessage": "업로드 성공",
+  "uploadAppLatestCheckboxText": "최신 버전으로 업로드하기",
   "uploadAppFailureMessage": "업로드 실패\n{{reason}}"
 }
