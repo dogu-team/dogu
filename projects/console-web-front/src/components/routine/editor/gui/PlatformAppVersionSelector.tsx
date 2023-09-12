@@ -1,13 +1,11 @@
-import { AppstoreOutlined, CloseOutlined } from '@ant-design/icons';
 import { OrganizationId, Platform, PlatformType, ProjectId } from '@dogu-private/types';
-import Link from 'next/link';
+import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import useSelect from '../../../../hooks/useSelect';
 
-import { flexRowBaseStyle, flexRowCenteredStyle } from '../../../../styles/box';
+import { flexRowBaseStyle } from '../../../../styles/box';
 import PlatformIcon from '../../../device/PlatformIcon';
-import ProjectApplicationLatestTag from '../../../project-application/ProjectApplicationLatestTag';
 import ProjectApplicationSelector from '../../../project-application/ProjectApplicationSelector';
 
 interface Props {
@@ -20,6 +18,7 @@ interface Props {
 const PlatformAppVersionSelector = ({ version, platform, onReset, onChange }: Props) => {
   const router = useRouter();
   const { isOpen, toggle, close } = useSelect();
+  const { t } = useTranslation();
 
   const getExtension = () => {
     switch (platform) {
@@ -45,12 +44,8 @@ const PlatformAppVersionSelector = ({ version, platform, onReset, onChange }: Pr
             {
               label: (
                 <div>
-                  <b>Latest 태그 앱</b>
-                  <LatestDescription>
-                    항상 Latest 태그가 붙은 앱을 실행합니다.
-                    <br />
-                    만약 태그가 지정된 앱이 없다면, 앱을 실행할 수 없습니다.
-                  </LatestDescription>
+                  <b>{t('routine:routineGuiEditorJobAppVersionLatestOptionTitle')}</b>
+                  <LatestDescription>{t('routine:routineGuiEditorJobAppVersionLatestOptionDescription')}</LatestDescription>
                 </div>
               ),
               value: 'latest',
@@ -90,4 +85,5 @@ const LatestDescription = styled.p`
   color: #999;
   line-height: 1.5;
   margin-top: 0.25rem;
+  white-space: pre-wrap;
 `;
