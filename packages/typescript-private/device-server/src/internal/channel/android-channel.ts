@@ -113,6 +113,7 @@ export class AndroidChannel implements DeviceChannel {
       '127.0.0.1',
       await deviceServerService.devicePortService.createOrGetHostPort(serial, 'AndroidDeviceAgentService'),
       deviceServerService.devicePortService.getAndroidDeviceAgentServerPort(),
+      streaming,
       logger,
     );
     await deviceAgent.wait();

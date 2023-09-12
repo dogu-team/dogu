@@ -1,5 +1,5 @@
 import { DeviceSystemInfo, Platform, PrivateProtocol, Serial } from '@dogu-private/types';
-import { delay, Printable, stringify, stringifyError } from '@dogu-tech/common';
+import { delay, Milisecond, Printable, stringifyError } from '@dogu-tech/common';
 import { isFreePort, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import { EventEmitter } from 'stream';
@@ -7,6 +7,7 @@ import WebSocket from 'ws';
 import { logger } from '../../../logger/logger.instance';
 import { pathMap } from '../../../path-map';
 import { Adb, AdbUtil } from '../../externals/index';
+import { StreamingService } from '../streaming/streaming-service';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../zombie/zombie-component';
 import { ZombieServiceInstance } from '../zombie/zombie-service';
 import {
@@ -30,6 +31,8 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
   private seq = 0;
   private zombieWaiter: ZombieQueriable;
   private proc: child_process.ChildProcess | null = null;
+  private healthFailCount = 0;
+  private _error: 'not stable playing' | 'forward closed' | 'none' = 'none';
 
   constructor(
     public readonly serial: Serial,
@@ -37,6 +40,7 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     private readonly host: string,
     private readonly port: number,
     private readonly devicePort: number,
+    private readonly streamingService: StreamingService,
     private readonly logger: Printable,
   ) {
     this.zombieWaiter = ZombieServiceInstance.addComponent(this);
@@ -190,6 +194,7 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
     });
     await AdbUtil.waitPortOpenInternal(this.serial, this.devicePort);
     await this.connect();
+    this.healthFailCount = 0;
   }
 
   onDie(): void {
@@ -201,12 +206,33 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
   }
 
   async update(): Promise<void> {
-    const isFree = await isFreePort(this.port);
-    if (!isFree) {
+    if (!(await this.isHealth())) {
+      this.healthFailCount++;
+      if (this.healthFailCount > 3) {
+        ZombieServiceInstance.notifyDie(this);
+      }
       return;
+    } else {
+      this.healthFailCount = 0;
     }
     await delay(3000);
-    ZombieServiceInstance.notifyDie(this, `AndroidDeviceAgentService.update port isn't listening: ${stringify(isFree)}`);
+  }
+
+  private async isHealth(): Promise<boolean> {
+    const isFree = await isFreePort(this.port);
+    if (isFree) {
+      this._error = 'forward closed';
+      return false;
+    }
+
+    const surfaceStatus = await this.streamingService.getSurfaceStatus(this.serial).catch(() => {
+      return { hasSurface: null };
+    });
+    if (surfaceStatus.hasSurface && surfaceStatus.isPlaying && surfaceStatus.lastFrameDeltaMillisec > Milisecond.t15Seconds) {
+      this._error = 'not stable playing';
+      return false;
+    }
+    return true;
   }
 
   delete(): void {
