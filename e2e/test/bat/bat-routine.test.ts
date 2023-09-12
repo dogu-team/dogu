@@ -450,8 +450,22 @@ Dest.withOptions({
       });
 
       test('Check project creation', async () => {
-        const createdProjectName = await Driver.getText({ xpath: '//p[@access-id="sb-title"]' });
-        expect(createdProjectName).toBe(values.value.PROJECT_NAME);
+        let lastError: unknown | undefined;
+        for (let i = 0; i < 5; i++) {
+          try {
+            const createdProjectName = await Driver.getText({ xpath: '//p[@access-id="sb-title"]' });
+            expect(createdProjectName).toBe(values.value.PROJECT_NAME);
+            lastError = undefined;
+            break;
+          } catch (error) {
+            lastError = error;
+            await Timer.wait(1000, 'wait for project creation');
+          }
+        }
+
+        if (lastError) {
+          throw lastError;
+        }
       });
     });
 
