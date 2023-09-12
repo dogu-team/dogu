@@ -1,5 +1,5 @@
 import { isRecordCompleted } from '@dogu-private/console';
-import { RECORD_PIPELINE_STATE } from '@dogu-private/types';
+import { ProjectId, RECORD_PIPELINE_STATE } from '@dogu-private/types';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 import { DeviceRunner } from '../../../../db/entity/device-runner.entity';
@@ -8,8 +8,10 @@ import { RecordDeviceJob } from '../../../../db/entity/record-device-job.entity'
 import { RecordStepAction } from '../../../../db/entity/record-step-action.entity';
 import { logger } from '../../../../module/logger/logger.instance';
 import { ApplicationService } from '../../../../module/project/application/application.service';
+import { RemoteWebDriverBatchRequestExecutor } from '../../../../module/remote/remote-webdriver/remote-webdriver.batch-request-executor';
 import { RemoteWebDriverService } from '../../../../module/remote/remote-webdriver/remote-webdriver.service';
-import { newWebDriverSession } from '../common';
+import { DeleteSessionRemoteWebDriverBatchRequestItem } from '../../../../module/remote/remote-webdriver/remote-webdriver.w3c-batch-request-items';
+import { makeActionBatchExcutor, newWebDriverSession } from '../common';
 import { everyRecordCompleted, everyRecordInState, someRecordInState } from './common/util';
 
 export module RecordDeviceJobProcessor {
@@ -146,5 +148,25 @@ export module RecordDeviceJobProcessor {
     );
     const res = await newSessionResponse.response();
     await manager.getRepository(RecordDeviceJob).update(recordDeviceJob.recordDeviceJobId, { sessionId: res.value.sessionId });
+  }
+
+  export async function deleteSession(recordDeviceJob: RecordDeviceJob, projectId: ProjectId, remoteWebDriverService: RemoteWebDriverService) {
+    const { device, deviceId } = recordDeviceJob;
+    if (!device) {
+      throw new HttpException(`Device not found. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
+    }
+
+    const batchExecutor: RemoteWebDriverBatchRequestExecutor = makeActionBatchExcutor(
+      remoteWebDriverService,
+      projectId,
+      recordDeviceJob.sessionId!,
+      recordDeviceJob.recordDeviceJobId,
+      device,
+    );
+    const deleteSessionResponse = new DeleteSessionRemoteWebDriverBatchRequestItem(batchExecutor, recordDeviceJob.sessionId!);
+    await batchExecutor.execute();
+
+    await deleteSessionResponse.response();
+    return;
   }
 }

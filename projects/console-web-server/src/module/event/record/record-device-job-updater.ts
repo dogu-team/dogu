@@ -110,6 +110,7 @@ export class RecordDeviceJobUpdater {
     const inProgressJobs = await this.dataSource
       .getRepository(RecordDeviceJob) //
       .createQueryBuilder('recordDeviceJob')
+      .innerJoinAndSelect(`recordDeviceJob.${RecordDeviceJobPropCamel.device}`, 'device')
       .innerJoinAndSelect(`recordDeviceJob.${RecordDeviceJobPropCamel.recordCaseActions}`, 'recordCaseAction')
       .innerJoinAndSelect(`recordDeviceJob.${RecordDeviceJobPropCamel.recordPipeline}`, 'pipeline')
       .where(`recordDeviceJob.${RecordDeviceJobPropSnake.state} = :${RecordDeviceJobPropSnake.state}`, { state: RECORD_PIPELINE_STATE.IN_PROGRESS })
@@ -126,6 +127,7 @@ export class RecordDeviceJobUpdater {
       }
       await this.dataSource.manager.transaction(async (manager) => {
         await RecordDeviceJobProcessor.complete(manager, nextState, recordDeviceJob, new Date());
+        RecordDeviceJobProcessor.deleteSession(recordDeviceJob, recordDeviceJob.recordPipeline!.projectId!, this.remoteWebDriverService);
       });
     }
   }

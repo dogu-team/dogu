@@ -51,9 +51,8 @@ export class RecordPipelineService {
       // const sortedSteps = sortedCases.flatMap((c) => c.recordTestSteps).filter(notEmpty);
 
       // FIXME:(felix) test code
-      const d = await manager.getRepository(Device).findOne({ where: { deviceId: '85420e5a-1733-4d79-9eaa-226f7b9e979a' } });
-      const d2 = await manager.getRepository(Device).findOne({ where: { deviceId: 'd8bb319e-5b92-443f-a3c8-21392d10765a' } });
-      const devices: Device[] = [d!, d2!];
+      const d = await manager.getRepository(Device).findOne({ where: { deviceId: '5f3a1f3e-804c-40e9-9d21-89fe157d484e' } });
+      const devices: Device[] = [d!];
       // create pipeline
       scenario.lastIndex = scenario.lastIndex + 1;
       await manager.getRepository(RecordTestScenario).update({ recordTestScenarioId }, { lastIndex: scenario.lastIndex });
