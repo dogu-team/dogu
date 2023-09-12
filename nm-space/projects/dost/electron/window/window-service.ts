@@ -58,6 +58,7 @@ export class WindowService {
       webPreferences: {
         preload: PreloadScriptPath,
         nodeIntegration: true,
+        devTools: false,
       },
     });
     this.window.on('closed', () => {
