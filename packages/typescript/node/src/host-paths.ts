@@ -22,9 +22,10 @@ export const HostPaths = {
   hostSharesPath: (hostWorkspacePath: string): string => path.resolve(hostWorkspacePath, 'shares'),
   deviceWorkspacePath: (organizationWorkspacePath: string, deviceId: string): string => path.resolve(organizationWorkspacePath, 'devices', deviceId),
   deviceActionWorkspacePath: (deviceWorkspacePath: string): string => path.resolve(deviceWorkspacePath, 'actions'),
-  deviceActionGitPath: (deviceWorkspacePath: string, actionId: string): string => path.resolve(deviceWorkspacePath, 'actions', actionId.replaceAll('@', '-').replaceAll(':', '-')),
+  deviceActionGitPath: (workspacePath: string, actionId: string): string => path.resolve(workspacePath, 'actions', actionId.replaceAll('@', '-').replaceAll(':', '-')),
   actionSourcePath: (doguWorkspacePath: string, actionId: string): string => path.resolve(doguWorkspacePath, actionId),
   idaRunspacesPath: (doguHomePath: string): string => path.resolve(doguHomePath, 'ida-runspaces'),
+  deviceRunnerWorkspacePath: (doguHomePath: string, deviceRunnerId: string): string => path.resolve(doguHomePath, 'device-runners', deviceRunnerId),
 
   android: {
     platformToolsPath: (androidHomePath: string): string => path.resolve(androidHomePath, 'platform-tools'),

@@ -10,6 +10,7 @@ import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
 import { MessageContext } from '../message/message.types';
 import { optionsConfig } from '../options-config.instance';
+import { StepMessageContext } from '../step/step.types';
 import { CommandProcessRegistry } from './command.process-registry';
 
 interface PackageJson {
@@ -37,13 +38,16 @@ export class ActionProcessor {
 
   async action(action: Action, context: MessageContext): Promise<ErrorResult> {
     const { info, environmentVariableReplacer } = context;
-    const { deviceWorkspacePath } = info;
     const { actionId, inputs } = action;
     this.logger.verbose('action started', { action });
     const pathMap = await this.deviceClientService.deviceHostClient.getPathMap();
     const yarnPath = pathMap.common.yarn;
     const gitPath = pathMap.common.git;
-    const { error, actionGitPath } = await this.prepare(context, deviceWorkspacePath, actionId, gitPath, yarnPath);
+
+    const workspacePath = await this.resolveWorkspacePath(context);
+    this.logger.verbose('action workspace path', { workspacePath });
+
+    const { error, actionGitPath } = await this.prepare(context, workspacePath, actionId, gitPath, yarnPath);
     if (error) {
       return error;
     } else if (!actionGitPath) {
@@ -57,17 +61,30 @@ export class ActionProcessor {
     return this.parseConfigAndRun(context, actionGitPath, env, yarnPath);
   }
 
-  private async prepare(context: MessageContext, deviceWorkspacePath: string, actionId: string, gitPath: string, yarnPath: string): Promise<PrepareResult> {
+  private async resolveWorkspacePath(context: MessageContext): Promise<string> {
+    if (context instanceof StepMessageContext) {
+      const { deviceRunnerId } = context;
+      const deviceRunnerWorkspacePath = HostPaths.deviceRunnerWorkspacePath(HostPaths.doguHomePath, deviceRunnerId);
+      await fs.promises.mkdir(deviceRunnerWorkspacePath, { recursive: true });
+      return deviceRunnerWorkspacePath;
+    } else {
+      const { info } = context;
+      const { deviceWorkspacePath } = info;
+      return deviceWorkspacePath;
+    }
+  }
+
+  private async prepare(context: MessageContext, workspacePath: string, actionId: string, gitPath: string, yarnPath: string): Promise<PrepareResult> {
     this.logger.verbose('action prepare', { actionId });
     if (this.useSource()) {
       const actionSourcePath = await this.findSource(actionId);
       if (actionSourcePath) {
         return { actionGitPath: actionSourcePath };
       } else {
-        return this.fetchGitAndUpdateYarn(context, deviceWorkspacePath, actionId, gitPath, yarnPath);
+        return this.fetchGitAndUpdateYarn(context, workspacePath, actionId, gitPath, yarnPath);
       }
     } else {
-      return this.fetchGitAndUpdateYarn(context, deviceWorkspacePath, actionId, gitPath, yarnPath);
+      return this.fetchGitAndUpdateYarn(context, workspacePath, actionId, gitPath, yarnPath);
     }
   }
 
@@ -94,8 +111,8 @@ export class ActionProcessor {
     return null;
   }
 
-  private async fetchGit(context: MessageContext, deviceWorkspacePath: string, actionId: string, gitPath: string): Promise<PrepareResult> {
-    const actionGitPath = HostPaths.deviceActionGitPath(deviceWorkspacePath, actionId);
+  private async fetchGit(context: MessageContext, workspacePath: string, actionId: string, gitPath: string): Promise<PrepareResult> {
+    const actionGitPath = HostPaths.deviceActionGitPath(workspacePath, actionId);
     const dotGitPath = path.resolve(actionGitPath, '.git');
     const stat = await fs.promises.stat(dotGitPath).catch(() => null);
     const configArgs = ['-c', 'core.longpaths=true'];
@@ -185,8 +202,8 @@ export class ActionProcessor {
     };
   }
 
-  private async fetchGitAndUpdateYarn(context: MessageContext, deviceWorkspacePath: string, actionId: string, gitPath: string, yarnPath: string): Promise<PrepareResult> {
-    const { error, actionGitPath } = await this.fetchGit(context, deviceWorkspacePath, actionId, gitPath);
+  private async fetchGitAndUpdateYarn(context: MessageContext, workspacePath: string, actionId: string, gitPath: string, yarnPath: string): Promise<PrepareResult> {
+    const { error, actionGitPath } = await this.fetchGit(context, workspacePath, actionId, gitPath);
     if (error) {
       return { error };
     } else if (!actionGitPath) {

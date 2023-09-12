@@ -247,6 +247,7 @@ export class DeviceJobStepProcessor {
         },
       },
       stepWorkingPath,
+      deviceRunnerId,
     );
     const result = await router.route<RunStepValue, ErrorResult>(value, stepMessageContext).catch((error) => {
       const errorified = errorify(error);
