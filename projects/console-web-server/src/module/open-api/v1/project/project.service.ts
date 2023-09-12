@@ -4,6 +4,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { Project } from '../../../../db/entity/project.entity';
 import { ApplicationService } from '../../../project/application/application.service';
+import { UploadProjectApplicationDto } from '../../../project/application/dto/application.dto';
 
 @Injectable()
 export class V1ProjectService {
@@ -14,7 +15,7 @@ export class V1ProjectService {
     private readonly applicationService: ApplicationService,
   ) {}
 
-  async uploadApplication(file: Express.Multer.File, projectId: ProjectId, creatorUserId: UserId | null, creatorType: CREATOR_TYPE) {
+  async uploadApplication(file: Express.Multer.File, projectId: ProjectId, creatorUserId: UserId | null, creatorType: CREATOR_TYPE, dto: UploadProjectApplicationDto) {
     const project = await this.dataSource.getRepository(Project).findOne({
       where: { projectId },
     });
@@ -22,7 +23,7 @@ export class V1ProjectService {
     const organizationId = project!.organizationId!;
 
     await this.dataSource.transaction(async (manager) => {
-      await this.applicationService.uploadApplication(manager, file, creatorUserId, creatorType, organizationId, projectId);
+      await this.applicationService.uploadApplication(manager, file, creatorUserId, creatorType, organizationId, projectId, dto);
     });
   }
 }

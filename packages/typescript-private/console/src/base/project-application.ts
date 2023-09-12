@@ -14,6 +14,7 @@ export interface ProjectApplicationBaseTraits {
   projectId: ProjectId;
   creatorId: UserId | null;
   creatorType: CREATOR_TYPE;
+  isLatest: number;
   name: string;
   iconFileName: ProjectApplicationIconFileName;
   fileName: string;

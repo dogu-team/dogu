@@ -13,7 +13,7 @@ import { Ipa } from '../../../sdk/ipa';
 import { Page } from '../../common/dto/pagination/page';
 import { convertExtToProjectAppType, projectAppMeta } from '../../file/project-app-file';
 import { ProjectFileService } from '../../file/project-file.service';
-import { FindProjectApplicationDto } from './dto/application.dto';
+import { FindProjectApplicationDto, UploadProjectApplicationDto } from './dto/application.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -108,7 +108,7 @@ export class ApplicationService {
       size: size,
     } as Express.Multer.File;
 
-    await this.uploadApplication(manager, apkFile, creatorUserId, CREATOR_TYPE.USER, organizationId, projectId);
+    await this.uploadApplication(manager, apkFile, creatorUserId, CREATOR_TYPE.USER, organizationId, projectId, { isLatest: false });
     return;
   }
 
@@ -119,7 +119,9 @@ export class ApplicationService {
     creatorType: CREATOR_TYPE,
     organizationId: OrganizationId,
     projectId: ProjectId,
+    dto: UploadProjectApplicationDto,
   ) {
+    const { isLatest } = dto;
     const extension = file.originalname.split('.').pop();
     if (!extension) {
       throw new Error('extension is null');
@@ -136,6 +138,20 @@ export class ApplicationService {
       throw new Error('extracting appInfo failed');
     }
     const appName = appInfo.name.replaceAll(' ', '_');
+
+    if (isLatest) {
+      await manager.getRepository(ProjectApplication).update(
+        {
+          organizationId: organizationId,
+          projectId: projectId,
+          fileExtension: extension,
+          isLatest: 1,
+        },
+        {
+          isLatest: 0,
+        },
+      );
+    }
 
     const application = await manager.getRepository(ProjectApplication).findOne({
       where: {
@@ -169,6 +185,7 @@ export class ApplicationService {
           package: appInfo.package,
           creatorId: creatorUserId,
           creatorType,
+          isLatest: isLatest ? 1 : 0,
         },
       );
 
@@ -189,6 +206,7 @@ export class ApplicationService {
         fileSize: file.size,
         package: appInfo.package,
         version: appInfo.version,
+        isLatest: isLatest ? 1 : 0,
       });
     }
 
