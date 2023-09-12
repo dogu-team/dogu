@@ -1,6 +1,6 @@
 import { DeviceSystemInfo, Platform, PrivateProtocol, Serial } from '@dogu-private/types';
-import { Printable, stringifyError } from '@dogu-tech/common';
-import { killChildProcess } from '@dogu-tech/node';
+import { delay, Printable, stringify, stringifyError } from '@dogu-tech/common';
+import { isFreePort, killChildProcess } from '@dogu-tech/node';
 import child_process from 'child_process';
 import { EventEmitter } from 'stream';
 import WebSocket from 'ws';
@@ -198,6 +198,15 @@ export class AndroidDeviceAgentService implements DeviceAgentService, Zombieable
         this.logger.error('AndroidDeviceAgentService killChildProcess', { error });
       });
     }
+  }
+
+  async update(): Promise<void> {
+    const isFree = await isFreePort(this.port);
+    if (!isFree) {
+      return;
+    }
+    await delay(3000);
+    ZombieServiceInstance.notifyDie(this, `AndroidDeviceAgentService.update port isn't listening: ${stringify(isFree)}`);
   }
 
   delete(): void {

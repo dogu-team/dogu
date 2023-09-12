@@ -15,7 +15,7 @@ import {
 } from '@dogu-private/types';
 import { Closable, delay, errorify, FilledPrintable, Printable, stringify } from '@dogu-tech/common';
 import { AppiumCapabilities, BrowserInstallation, StreamingOfferDto } from '@dogu-tech/device-client-common';
-import { HostPaths, killChildProcess } from '@dogu-tech/node';
+import { HostPaths, killChildProcess, killProcessOnPort } from '@dogu-tech/node';
 import { Manifest, open } from 'adbkit-apkreader';
 import { ChildProcess, execFile } from 'child_process';
 import fs from 'fs';
@@ -264,6 +264,7 @@ export class AndroidChannel implements DeviceChannel {
   }
 
   async forward(hostPort: number, devicePort: number, printable?: Printable): Promise<void> {
+    await killProcessOnPort(hostPort, this.logger);
     await Adb.forward(this.serial, hostPort, devicePort, printable);
   }
 
