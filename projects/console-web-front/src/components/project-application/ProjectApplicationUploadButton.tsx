@@ -67,7 +67,8 @@ const ProjectApplicationUploadButton = ({ organizationId, projectId }: Props) =>
         onCancel={handleCloseModal}
         onOk={handleUploadFile}
         confirmLoading={loading}
-        okText={'Upload'}
+        cancelText={t('common:cancel')}
+        okText={t('common:upload')}
         destroyOnClose
         okButtonProps={{ id: 'project-app-upload-modal-ok-btn' }}
       >
@@ -92,7 +93,7 @@ const ProjectApplicationUploadButton = ({ organizationId, projectId }: Props) =>
         </Upload.Dragger>
         <div style={{ marginTop: '.5rem' }}>
           <Checkbox checked={isLatest} onChange={(e) => setIsLatest(e.target.checked)}>
-            Upload to latest
+            {t('project-app:uploadAppLatestCheckboxText')}
           </Checkbox>
         </div>
       </Modal>

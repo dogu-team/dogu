@@ -23,6 +23,7 @@
   "uploadAppModalTitle": "Upload an application",
   "uploadAppDescriptionText": "Upload an application",
   "uploadAppDescriptionHintText": "You can upload an application by dragging it here or clicking on the button.<br></br>Only <code>.apk .ipa</code> files are supported.",
+  "uploadAppLatestCheckboxText": "Upload as latest version",
   "uploadAppSuccessMessage": "Uploaded successfully.",
   "uploadAppFailureMessage": "Failed to upload.\n{{reason}}"
 }
