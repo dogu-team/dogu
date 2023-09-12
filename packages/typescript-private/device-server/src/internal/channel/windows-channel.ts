@@ -22,7 +22,7 @@ import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.
 import { SeleniumDeviceWebDriverHandler } from '../../device-webdriver/selenium.device-webdriver.handler';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { logger } from '../../logger/logger.instance';
-import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService, LogHandler } from '../public/device-channel';
+import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { DeviceAgentService } from '../services/device-agent/device-agent-service';
 import { NullDeviceAgentService } from '../services/device-agent/null-device-agent-service';
 import { DesktopProfileService } from '../services/profile/desktop-profiler';
@@ -161,6 +161,10 @@ export class WindowsChannel implements DeviceChannel {
 
   reboot(): void {
     throw new Error('Method not implemented.');
+  }
+
+  checkHealth(): DeviceHealthStatus {
+    return { isHealthy: true, message: '' };
   }
 
   forward(hostPort: number, devicePort: number, printable?: Printable): void {

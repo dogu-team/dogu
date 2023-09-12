@@ -239,7 +239,7 @@ export class ScanService implements OnModuleInit {
       });
 
       removedSerials.forEach((serial) => {
-        this.deviceDoors.closeDoor(driver, serial);
+        this.deviceDoors.closeDoor(driver, serial, 'Not detected by scan');
       });
     }
   }

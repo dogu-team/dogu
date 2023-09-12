@@ -31,6 +31,11 @@ export interface DeviceChannelOpenParam {
   serial: Serial;
 }
 
+export interface DeviceHealthStatus {
+  isHealthy: boolean;
+  message: string;
+}
+
 export type LogHandler = Pick<Printable, 'info' | 'error'>;
 
 export interface DeviceServerService {
@@ -65,6 +70,7 @@ export interface DeviceChannel {
 
   // lifecycle
   reboot(): PromiseOrValue<void>;
+  checkHealth(): PromiseOrValue<DeviceHealthStatus>;
   reset(): PromiseOrValue<void>;
 
   // process
