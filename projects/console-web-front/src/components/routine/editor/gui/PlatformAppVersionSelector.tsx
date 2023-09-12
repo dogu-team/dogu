@@ -7,6 +7,7 @@ import useSelect from '../../../../hooks/useSelect';
 
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../../../styles/box';
 import PlatformIcon from '../../../device/PlatformIcon';
+import ProjectApplicationLatestTag from '../../../project-application/ProjectApplicationLatestTag';
 import ProjectApplicationSelector from '../../../project-application/ProjectApplicationSelector';
 
 interface Props {
@@ -40,11 +41,26 @@ const PlatformAppVersionSelector = ({ version, platform, onReset, onChange }: Pr
 
       <div style={{ width: '200px' }}>
         <ProjectApplicationSelector
+          preOptions={[
+            {
+              label: (
+                <div>
+                  <b>Latest 태그 앱</b>
+                  <LatestDescription>
+                    항상 Latest 태그가 붙은 앱을 실행합니다.
+                    <br />
+                    만약 태그가 지정된 앱이 없다면, 앱을 실행할 수 없습니다.
+                  </LatestDescription>
+                </div>
+              ),
+              value: 'latest',
+            },
+          ]}
           defaultValue={version}
           value={version}
           organizationId={router.query.orgId as OrganizationId}
           projectId={router.query.pid as ProjectId}
-          onSelectApp={(app) => onChange(platform, app?.version)}
+          onSelectApp={(version, app) => onChange(platform, version)}
           placeholder="Select app"
           extension={getExtension()}
           open={isOpen}
@@ -64,15 +80,14 @@ const AppSelectPlatformWrapper = styled.div`
   margin: .25rem 0;
 `;
 
-const CloseButton = styled.button`
-  padding: 0.25rem;
-  margin-left: 0.25rem;
-  border: none;
-  background-color: transparent;
-  cursor: pointer;
-`;
-
 const PlatformName = styled.div`
   ${flexRowBaseStyle}
   margin-right: 0.5rem;
+`;
+
+const LatestDescription = styled.p`
+  font-size: 0.8rem;
+  color: #999;
+  line-height: 1.5;
+  margin-top: 0.25rem;
 `;

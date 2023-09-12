@@ -25,6 +25,7 @@ import ListEmpty from '../common/boxes/ListEmpty';
 import ProjectApplicationExtensionTag from './ProjectApplicationExtensionTag';
 import ProfileImage from '../../components/ProfileImage';
 import ProfileImageWithName from '../users/ProfileImageWithName';
+import ProjectApplicationLatestTag from './ProjectApplicationLatestTag';
 
 interface ItemProps {
   application: ProjectApplicationWithIcon;
@@ -97,11 +98,7 @@ const ProjectApplicationItem = ({ application }: ItemProps) => {
         </ThreeSpan>
         <TwoSpan>
           {application.version}
-          {application.isLatest === 1 && (
-            <Tag style={{ marginLeft: '.5rem' }} color="magenta">
-              Latest
-            </Tag>
-          )}
+          {application.isLatest === 1 && <ProjectApplicationLatestTag />}
         </TwoSpan>
         <OneSpan>
           <ProjectApplicationExtensionTag extension={application.fileExtension} />
