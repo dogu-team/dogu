@@ -32,7 +32,7 @@ import { GamiumContext } from '../../gamium/gamium.context';
 import { createAdaLogger } from '../../logger/logger.instance';
 import { pathMap } from '../../path-map';
 import { Adb } from '../externals';
-import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService, LogHandler } from '../public/device-channel';
+import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { AndroidDeviceAgentService } from '../services/device-agent/android-device-agent-service';
 import { AndroidAdbProfileService, AndroidDisplayProfileService } from '../services/profile/android-profiler';
 import { ProfileServices } from '../services/profile/profile-service';
@@ -76,6 +76,7 @@ export class AndroidChannel implements DeviceChannel {
     private readonly _serial: Serial,
     private readonly _serialUnique: Serial,
     private readonly _info: DeviceSystemInfo,
+    private readonly _systemInfoService: AndroidSystemInfoService,
     private readonly _deviceAgent: AndroidDeviceAgentService,
     private readonly _profilers: ProfileServices,
     private readonly _streaming: StreamingService,
@@ -144,6 +145,7 @@ export class AndroidChannel implements DeviceChannel {
       serial,
       serialUnique,
       systemInfo,
+      systemInfoService,
       deviceAgent,
       [new AndroidAdbProfileService(), new AndroidDisplayProfileService(deviceAgent)],
       streaming,
@@ -250,6 +252,16 @@ export class AndroidChannel implements DeviceChannel {
 
   async reboot(): Promise<void> {
     await Adb.reboot(this.serial);
+  }
+
+  async checkHealth(): Promise<DeviceHealthStatus> {
+    if (this.isVirtual) {
+      const emulatorName = await this._systemInfoService.getEmulatorName(this.serial);
+      if (emulatorName !== this.info.system.model) {
+        return { isHealthy: false, message: `emulator name is changed. before: ${this.info.system.model}, actual: ${emulatorName}` };
+      }
+    }
+    return { isHealthy: true, message: '' };
   }
 
   /**

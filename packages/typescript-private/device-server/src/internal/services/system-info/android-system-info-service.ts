@@ -101,4 +101,8 @@ export class AndroidSystemInfoService implements SystemInfoService {
 
     return info;
   }
+
+  async getEmulatorName(serial: Serial): Promise<string> {
+    return getEmulatorName(serial);
+  }
 }

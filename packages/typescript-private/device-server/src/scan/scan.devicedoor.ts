@@ -23,6 +23,8 @@ export class DeviceDoor {
   private _latestOpenTime = 0;
   private _firstCloseTime = 0;
   private _latestCloseTime = 0;
+  private _closeReason = '';
+  private _healthFaliCount = 0;
 
   constructor(public readonly driver: DeviceDriver, public serial: Serial, private readonly callback: DeviceDoorEvent) {
     this.process().catch((error) => {
@@ -36,11 +38,12 @@ export class DeviceDoor {
     this._latestOpenTime = Date.now();
   }
 
-  close(): void {
+  close(reason: string): void {
     this._latestOpenTime = 0;
     if (0 == this._firstCloseTime) {
       this._firstCloseTime = Date.now();
     }
+    this._closeReason = reason;
     this._latestCloseTime = Date.now();
   }
 
@@ -65,6 +68,7 @@ export class DeviceDoor {
     if (null == this.channel && this._latestCloseTime < this._latestOpenTime) {
       try {
         this._state = { type: 'opening', error: null };
+        logger.info(`DeviceDoor.processInternal initChannel serial:${this.serial}`);
         await this.callback.onOpening({ platform: platformTypeFromPlatform(this.driver.platform), serial: this.serial });
         this.channel = await this.driver.openChannel({
           serial: this.serial,
@@ -86,9 +90,23 @@ export class DeviceDoor {
       }
       return;
     }
+    let closedForced = false;
+    if (this.channel && this._state.type === 'opened') {
+      const healthStatus = await this.channel.checkHealth();
+      if (!healthStatus.isHealthy) {
+        this._healthFaliCount++;
+        if (this._healthFaliCount > 3) {
+          this._closeReason = 'health check failed';
+          closedForced = true;
+        }
+      } else {
+        this._healthFaliCount = 0;
+      }
+    }
 
-    if (this._latestOpenTime < this._latestCloseTime && 10000 < this._latestCloseTime - this._firstCloseTime) {
+    if ((this._latestOpenTime < this._latestCloseTime && 10000 < this._latestCloseTime - this._firstCloseTime) || closedForced) {
       this.channel = null;
+      logger.info(`DeviceDoor.processInternal closeChannel serial:${this.serial}, reason: ${this._closeReason}`);
       await Promise.resolve(this.driver.closeChannel(this.serial)).catch((error) => {
         logger.error(`DeviceDoor.processInternal closeChannel error serial:${this.serial} ${stringifyError(error)}`);
       });
@@ -121,7 +139,7 @@ export class DeviceDoors {
     door.openIfNotActive();
   }
 
-  closeDoor(driver: DeviceDriver, serial: Serial): void {
+  closeDoor(driver: DeviceDriver, serial: Serial, reason: string): void {
     this.cleanupClosedDoor();
 
     const platform = driver.platform;
@@ -130,7 +148,7 @@ export class DeviceDoors {
       logger.warn(`DeviceDoors.closeDoor. serial: ${serial}, platform:${platform} is not found`);
       return;
     }
-    door.close();
+    door.close(reason);
   }
 
   get channels(): DeviceChannel[] {

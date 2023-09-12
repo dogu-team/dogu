@@ -32,7 +32,7 @@ import { IdeviceDiagnostics, IdeviceSyslog, MobileDevice, Xctrace } from '../ext
 import { IosDeviceAgentProcess } from '../externals/cli/ios-device-agent';
 import { ZombieTunnel } from '../externals/cli/mobiledevice-tunnel';
 import { WebdriverAgentProcess } from '../externals/cli/webdriver-agent-process';
-import { DeviceChannel, DeviceChannelOpenParam, DeviceServerService, LogHandler } from '../public/device-channel';
+import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { IosDeviceAgentService } from '../services/device-agent/ios-device-agent-service';
 import { IosDisplayProfileService, IosProfileService } from '../services/profile/ios-profiler';
 import { ProfileServices } from '../services/profile/profile-service';
@@ -347,6 +347,10 @@ export class IosChannel implements DeviceChannel {
   async reboot(): Promise<void> {
     this.logger.verbose?.(`IosChannel.reboot ${this.serial}`);
     await IdeviceDiagnostics.restart(this.serial);
+  }
+
+  checkHealth(): DeviceHealthStatus {
+    return { isHealthy: true, message: '' };
   }
 
   killOnPort(port: number): void {
