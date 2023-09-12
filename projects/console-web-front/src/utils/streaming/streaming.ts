@@ -55,6 +55,7 @@ export const mapWebMetaKeyToDeviceMetaState = (event: React.KeyboardEvent) => {
 };
 
 export const mapWebKeyboardToDeviceKeyboard = (event: React.KeyboardEvent): DeviceControlKeycode => {
+  // ref: https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values
   switch (event.code) {
     // number
     case 'Digit1':
@@ -176,7 +177,7 @@ export const mapWebKeyboardToDeviceKeyboard = (event: React.KeyboardEvent): Devi
       return DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_TAB;
     case 'Backslash':
       return DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_BACKSLASH;
-    case 'BackQuote':
+    case 'Backquote':
       return DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_GRAVE;
     case 'Quote':
       return DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_APOSTROPHE;
@@ -186,7 +187,7 @@ export const mapWebKeyboardToDeviceKeyboard = (event: React.KeyboardEvent): Devi
       return DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_RIGHT_BRACKET;
     case 'Slash':
       return DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_SLASH;
-    case 'SemiColon':
+    case 'Semicolon':
       return DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_SEMICOLON;
     case 'Comma':
       return DeviceControlKeycode.DEVICE_CONTROL_KEYCODE_COMMA;

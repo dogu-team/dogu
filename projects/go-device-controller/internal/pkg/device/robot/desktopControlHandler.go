@@ -13,7 +13,6 @@ import (
 	log "go-device-controller/internal/pkg/log"
 
 	"github.com/go-vgo/robotgo"
-	"github.com/go-vgo/robotgo/clipboard"
 	"go.uber.org/zap"
 )
 
@@ -131,20 +130,14 @@ func (dch *DesktopControlHandler) handleControl(c *types.DeviceControl, platform
 		dch.screenSize.W, dch.screenSize.H = robotgo.GetScreenSize()
 		return handleControlInjectScroll(c, &dch.screenSize)
 	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_SET_CLIPBOARD:
-		err := clipboard.WriteAll(c.GetText())
-		if nil != err {
-			return &outer.ErrorResult{
-				Code:    outer.Code_CODE_DEVICE_CONTROLLER_INPUT_NOTSUPPORTED,
-				Message: fmt.Sprintf("MessageHandler.handleControl clipboard set failed %s", err.Error()),
-			}
-		}
-	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_GET_CLIPBOARD:
+		return handleSetClipboard(c, platform, dch.keyPressMap)
 	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_FOCUSED:
 		clearAllMetaKeys(dch.keyPressMap)
 		return gotypes.Success
 	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_UNFOCUSED:
 		clearAllMetaKeys(dch.keyPressMap)
 		return gotypes.Success
+	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_GET_CLIPBOARD:
 	}
 	log.Inst.Error("MessageHandler.handleControl unknown", zap.Any("type", c.Type))
 	return &outer.ErrorResult{

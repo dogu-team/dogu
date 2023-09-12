@@ -2,6 +2,7 @@ package robot
 
 import (
 	"fmt"
+	"runtime"
 
 	"go-device-controller/types/protocol/generated/proto/inner/types"
 	"go-device-controller/types/protocol/generated/proto/outer"
@@ -19,11 +20,6 @@ type ShouldTypeKeys struct {
 	shiftKey string
 }
 
-var shouldTypeKeys []ShouldTypeKeys = []ShouldTypeKeys{
-	{keycode: types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_GRAVE, key: "`", shiftKey: "~"},
-	{keycode: types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_SEMICOLON, key: ";", shiftKey: ":"},
-}
-
 // keyboard
 func handleControlInjectKeyCode(c *types.DeviceControl, platform outer.Platform, keyMaps map[string]bool) *outer.ErrorResult {
 	var inputError error
@@ -31,20 +27,6 @@ func handleControlInjectKeyCode(c *types.DeviceControl, platform outer.Platform,
 		return &outer.ErrorResult{
 			Code:    outer.Code_CODE_DEVICE_CONTROLLER_INPUT_NOTSUPPORTED,
 			Message: fmt.Sprintf("MessageHandler.handleControlInjectKeyCode invalid type %s", c.Type.String()),
-		}
-	}
-
-	// checkif should type keys has c.Keycode
-	for _, shouldTypeKey := range shouldTypeKeys {
-		if shouldTypeKey.keycode == c.Keycode {
-			if c.Action == types.DeviceControlAction_DEVICE_CONTROL_ACTION_DESKTOP_ACTION_UP {
-				if keyMaps["lshift"] || keyMaps["rshift"] {
-					robotgo.TypeStr(shouldTypeKey.shiftKey)
-				} else {
-					robotgo.TypeStr(shouldTypeKey.key)
-				}
-			}
-			return gotypes.Success
 		}
 	}
 
@@ -56,8 +38,11 @@ func handleControlInjectKeyCode(c *types.DeviceControl, platform outer.Platform,
 		}
 	}
 	metaInterfaces := calculateKeyMetas(c)
-	checkKeyPress(c.Action, key, keyMaps)
-	log.Inst.Debug("MessageHandler.handleControlInjectKeyCode", zap.String("keycode", c.Keycode.String()), zap.String("action", c.Action.String()), zap.String("meta", fmt.Sprintf("%v", metaInterfaces)))
+	log.Inst.Debug("MessageHandler.handleControlInjectKeyCode", zap.String("key", key),
+		zap.Int("action", int(c.Action.Number())),
+		zap.String("meta", fmt.Sprintf("%v", metaInterfaces)),
+		zap.Strings("pressedKeys", getPressedKeys(keyMaps)))
+	markKeyPress(c.Action, key, keyMaps)
 	inputError = robotgo.KeyToggle(key, metaInterfaces...)
 
 	if nil != inputError {
@@ -69,6 +54,38 @@ func handleControlInjectKeyCode(c *types.DeviceControl, platform outer.Platform,
 	return gotypes.Success
 }
 
+func handleSetClipboard(c *types.DeviceControl, platform outer.Platform, keyMaps map[string]bool) *outer.ErrorResult {
+	log.Inst.Debug("MessageHandler.handleSetClipboard start")
+	clearAllMetaKeys(keyMaps)
+	err := robotgo.WriteAll(c.GetText())
+	if nil != err {
+		log.Inst.Debug("MessageHandler.handleSetClipboard fail", zap.String("err", err.Error()))
+		return &outer.ErrorResult{
+			Code:    outer.Code_CODE_DEVICE_CONTROLLER_INPUT_NOTSUPPORTED,
+			Message: fmt.Sprintf("MessageHandler.handleControl clipboard set failed %s", err.Error()),
+		}
+	}
+
+	metaKey := "ctrl"
+
+	if runtime.GOOS == "darwin" {
+		metaKey = "cmd"
+	}
+	robotgo.KeyToggle(metaKey)
+	robotgo.MilliSleep(10)
+	robotgo.KeyToggle("v")
+	robotgo.MilliSleep(50)
+	robotgo.KeyToggle("v", "up")
+	robotgo.MilliSleep(10)
+	robotgo.KeyToggle(metaKey, "up")
+
+	clearAllMetaKeys(keyMaps)
+
+	log.Inst.Debug("MessageHandler.handleSetClipboard done")
+
+	return gotypes.Success
+}
+
 func clearPressedMetaKeys(keyMaps map[string]bool) {
 	for key, pressed := range keyMaps {
 		if pressed {
@@ -77,6 +94,7 @@ func clearPressedMetaKeys(keyMaps map[string]bool) {
 			keyMaps[key] = false
 		}
 	}
+	robotgo.MilliSleep(50)
 }
 
 func clearAllMetaKeys(keyMaps map[string]bool) {
@@ -86,6 +104,16 @@ func clearAllMetaKeys(keyMaps map[string]bool) {
 		robotgo.KeyToggle(key, "up")
 		keyMaps[key] = false
 	}
+}
+
+func getPressedKeys(keyMaps map[string]bool) []string {
+	var pressedKeys []string
+	for key, pressed := range keyMaps {
+		if pressed {
+			pressedKeys = append(pressedKeys, key)
+		}
+	}
+	return pressedKeys
 }
 
 func calculateKeyMetas(c *types.DeviceControl) []interface{} {
@@ -98,7 +126,7 @@ func calculateKeyMetas(c *types.DeviceControl) []interface{} {
 	return metaInterfaces
 }
 
-func checkKeyPress(action types.DeviceControlAction, keyStr string, keyMaps map[string]bool) {
+func markKeyPress(action types.DeviceControlAction, keyStr string, keyMaps map[string]bool) {
 	switch action {
 	case types.DeviceControlAction_DEVICE_CONTROL_ACTION_DESKTOP_ACTION_UP:
 		keyMaps[keyStr] = false
