@@ -28,6 +28,9 @@ import { Project } from './project.entity';
 import { RecordDeviceJob } from './record-device-job.entity';
 import { RemoteDeviceJob } from './remote-device-job.entity';
 
+const DEVICE_DEFAULT_MAX_PARALLEL_JOBS = 1;
+export const DEVICE_DEFAULT_MAX_PARALLEL_JOBS_IF_IS_HOST = 8;
+
 @Entity(DEVICE_TABLE_NAME)
 export class Device extends BaseEntity implements DeviceBase {
   @PrimaryGeneratedColumn('uuid', { name: DevicePropSnake.device_id })
@@ -81,7 +84,7 @@ export class Device extends BaseEntity implements DeviceBase {
   @Column({ type: 'smallint', name: DevicePropSnake.connection_state, unsigned: true, default: DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED, nullable: false })
   connectionState!: DeviceConnectionState;
 
-  @Column({ type: 'smallint', name: DevicePropSnake.max_parallel_jobs, unsigned: true, default: 1, nullable: false })
+  @Column({ type: 'smallint', name: DevicePropSnake.max_parallel_jobs, unsigned: true, default: DEVICE_DEFAULT_MAX_PARALLEL_JOBS, nullable: false })
   maxParallelJobs!: number;
 
   @ColumnTemplate.Date(DevicePropSnake.heartbeat, true)
