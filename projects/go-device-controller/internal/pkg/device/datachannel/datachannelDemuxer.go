@@ -11,6 +11,7 @@ import (
 )
 
 type DatachannelHandler interface {
+	OnOpen() error
 	SetSendFunc(func(*params.CfGdcDaResult, error))
 	OnEachParam(*params.CfGdcDaParam) bool
 	OnParamList(*params.CfGdcDaParamList) bool
@@ -38,6 +39,9 @@ func NewDatachannelDemuxer(demux *DatachannelDemuxer,
 
 func (demux *DatachannelDemuxer) OnDataChannel(ctx *structs.DatachannelContext) error {
 	demux.ctx = ctx
+	for _, handler := range demux.handlers {
+		handler.OnOpen()
+	}
 	return nil
 }
 

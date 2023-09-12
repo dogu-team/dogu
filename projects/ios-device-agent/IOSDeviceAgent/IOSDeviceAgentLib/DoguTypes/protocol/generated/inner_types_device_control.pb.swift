@@ -43,6 +43,8 @@ public enum Inner_Types_DeviceControlType: SwiftProtobuf.Enum {
   public static let desktopInjectScrollEvent = aosInjectScrollEvent
   public static let desktopGetClipboard = aosGetClipboard
   public static let desktopSetClipboard = aosSetClipboard
+  case desktopOnscreenFocused // = 30
+  case desktopOnscreenUnfocused // = 31
   public static let iosInjectKeycode = aosInjectKeycode
   public static let iosInjectText = aosInjectText
   public static let iosInjectTouchEvent = aosInjectTouchEvent
@@ -68,6 +70,8 @@ public enum Inner_Types_DeviceControlType: SwiftProtobuf.Enum {
     case 10: self = .aosSetClipboard
     case 11: self = .aosSetScreenPowerMode
     case 12: self = .aosRotateDevice
+    case 30: self = .desktopOnscreenFocused
+    case 31: self = .desktopOnscreenUnfocused
     default: self = .UNRECOGNIZED(rawValue)
     }
   }
@@ -87,6 +91,8 @@ public enum Inner_Types_DeviceControlType: SwiftProtobuf.Enum {
     case .aosSetClipboard: return 10
     case .aosSetScreenPowerMode: return 11
     case .aosRotateDevice: return 12
+    case .desktopOnscreenFocused: return 30
+    case .desktopOnscreenUnfocused: return 31
     case .UNRECOGNIZED(let i): return i
     }
   }
@@ -111,6 +117,8 @@ extension Inner_Types_DeviceControlType: CaseIterable {
     .aosSetClipboard,
     .aosSetScreenPowerMode,
     .aosRotateDevice,
+    .desktopOnscreenFocused,
+    .desktopOnscreenUnfocused,
   ]
 }
 
@@ -1945,6 +1953,8 @@ extension Inner_Types_DeviceControlType: SwiftProtobuf._ProtoNameProviding {
     10: .aliased(proto: "DEVICE_CONTROL_TYPE_AOS_SET_CLIPBOARD", aliases: ["DEVICE_CONTROL_TYPE_DESKTOP_SET_CLIPBOARD"]),
     11: .same(proto: "DEVICE_CONTROL_TYPE_AOS_SET_SCREEN_POWER_MODE"),
     12: .same(proto: "DEVICE_CONTROL_TYPE_AOS_ROTATE_DEVICE"),
+    30: .same(proto: "DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_FOCUSED"),
+    31: .same(proto: "DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_UNFOCUSED"),
   ]
 }
 

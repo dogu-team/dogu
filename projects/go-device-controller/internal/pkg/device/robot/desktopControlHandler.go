@@ -7,11 +7,13 @@ import (
 	"go-device-controller/types/protocol/generated/proto/inner/params"
 	"go-device-controller/types/protocol/generated/proto/inner/types"
 	"go-device-controller/types/protocol/generated/proto/outer"
+	gotypes "go-device-controller/types/types"
 
 	"go-device-controller/internal/pkg/device/datachannel"
 	log "go-device-controller/internal/pkg/log"
 
 	"github.com/go-vgo/robotgo"
+	"github.com/go-vgo/robotgo/clipboard"
 	"go.uber.org/zap"
 )
 
@@ -58,6 +60,11 @@ func NewDesktopControlHandler() *DesktopControlHandler {
 	dch.platform = outer.Platform_PLATFORM_WINDOWS
 	go dch.run()
 	return &dch
+}
+
+func (h *DesktopControlHandler) OnOpen() error {
+	clearAllMetaKeys(h.keyPressMap)
+	return nil
 }
 
 func (h *DesktopControlHandler) SetSendFunc(sendFunc func(*params.CfGdcDaResult, error)) {
@@ -118,11 +125,26 @@ func (dch *DesktopControlHandler) handleControl(c *types.DeviceControl, platform
 		return handleControlInjectKeyCode(c, platform, dch.keyPressMap)
 	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_INJECT_TEXT:
 	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_INJECT_MOUSE_EVENT:
+		dch.screenSize.W, dch.screenSize.H = robotgo.GetScreenSize()
 		return handleControlInjectMouse(c, &dch.screenSize, dch.mousePressMap, &dch.mouseInjectOption)
 	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_INJECT_SCROLL_EVENT:
+		dch.screenSize.W, dch.screenSize.H = robotgo.GetScreenSize()
 		return handleControlInjectScroll(c, &dch.screenSize)
-	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_GET_CLIPBOARD:
 	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_SET_CLIPBOARD:
+		err := clipboard.WriteAll(c.GetText())
+		if nil != err {
+			return &outer.ErrorResult{
+				Code:    outer.Code_CODE_DEVICE_CONTROLLER_INPUT_NOTSUPPORTED,
+				Message: fmt.Sprintf("MessageHandler.handleControl clipboard set failed %s", err.Error()),
+			}
+		}
+	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_GET_CLIPBOARD:
+	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_FOCUSED:
+		clearAllMetaKeys(dch.keyPressMap)
+		return gotypes.Success
+	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_UNFOCUSED:
+		clearAllMetaKeys(dch.keyPressMap)
+		return gotypes.Success
 	}
 	log.Inst.Error("MessageHandler.handleControl unknown", zap.Any("type", c.Type))
 	return &outer.ErrorResult{

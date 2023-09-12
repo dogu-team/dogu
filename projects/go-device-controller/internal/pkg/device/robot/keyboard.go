@@ -13,6 +13,17 @@ import (
 	"go.uber.org/zap"
 )
 
+type ShouldTypeKeys struct {
+	keycode  types.DeviceControlKeycode
+	key      string
+	shiftKey string
+}
+
+var shouldTypeKeys []ShouldTypeKeys = []ShouldTypeKeys{
+	{keycode: types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_GRAVE, key: "`", shiftKey: "~"},
+	{keycode: types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_SEMICOLON, key: ";", shiftKey: ":"},
+}
+
 // keyboard
 func handleControlInjectKeyCode(c *types.DeviceControl, platform outer.Platform, keyMaps map[string]bool) *outer.ErrorResult {
 	var inputError error
@@ -20,6 +31,20 @@ func handleControlInjectKeyCode(c *types.DeviceControl, platform outer.Platform,
 		return &outer.ErrorResult{
 			Code:    outer.Code_CODE_DEVICE_CONTROLLER_INPUT_NOTSUPPORTED,
 			Message: fmt.Sprintf("MessageHandler.handleControlInjectKeyCode invalid type %s", c.Type.String()),
+		}
+	}
+
+	// checkif should type keys has c.Keycode
+	for _, shouldTypeKey := range shouldTypeKeys {
+		if shouldTypeKey.keycode == c.Keycode {
+			if c.Action == types.DeviceControlAction_DEVICE_CONTROL_ACTION_DESKTOP_ACTION_UP {
+				if keyMaps["lshift"] || keyMaps["rshift"] {
+					robotgo.TypeStr(shouldTypeKey.shiftKey)
+				} else {
+					robotgo.TypeStr(shouldTypeKey.key)
+				}
+			}
+			return gotypes.Success
 		}
 	}
 
@@ -54,6 +79,15 @@ func clearPressedMetaKeys(keyMaps map[string]bool) {
 	}
 }
 
+func clearAllMetaKeys(keyMaps map[string]bool) {
+	log.Inst.Info("MessageHandler.clearAllMetaKeys")
+	metaKeys := []string{"cmd", "lcmd", "rcmd", "alt", "lalt", "ralt", "ctrl", "lctrl", "rctrl", "shift", "lshift", "rshift"}
+	for _, key := range metaKeys {
+		robotgo.KeyToggle(key, "up")
+		keyMaps[key] = false
+	}
+}
+
 func calculateKeyMetas(c *types.DeviceControl) []interface{} {
 	var metaInterfaces []interface{}
 	switch c.Action {
@@ -74,7 +108,7 @@ func checkKeyPress(action types.DeviceControlAction, keyStr string, keyMaps map[
 }
 
 func getKeyCode(code types.DeviceControlKeycode, platform outer.Platform) string {
-	// ref: https://github.com/go-vgo/robotgo/blob/master/doc.go
+	// ref: https://github.com/go-vgo/robotgo/blob/master/doc.go, https://github.com/vcaesar/keycode/blob/main/keycode.go#L146
 	switch code {
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_A:
 		return "a"
