@@ -9,6 +9,11 @@ export class FindProjectApplicationDto extends PageDto implements FindProjectApp
   version?: string;
 
   @IsOptional()
+  @IsBoolean()
+  @TransformBooleanString()
+  latestOnly?: boolean;
+
+  @IsOptional()
   @IsString()
   extension?: string;
 }

@@ -1,10 +1,11 @@
 import { Printable } from '@dogu-tech/common';
 import { DeviceHostClient } from '@dogu-tech/device-client';
+import { HostPaths } from '@dogu-tech/node';
 import { PlatformType } from '@dogu-tech/types';
 import fs from 'fs';
 import path from 'path';
+import { Application } from '..';
 import { ConsoleActionClient } from '../console-action-client';
-import { HostPaths } from '@dogu-tech/node';
 
 export async function downloadApp(
   printable: Printable,
@@ -30,10 +31,22 @@ export async function downloadApp(
     version: appVersion,
     extension,
   });
-  const { applications } = await consoleActionClient.getApplicationList({
-    version: appVersion,
-    extension,
-  });
+
+  let applications: Application[];
+  if (appVersion === 'latest') {
+    const { applications: apps } = await consoleActionClient.getApplicationList({
+      latestOnly: true,
+      extension,
+    });
+    applications = apps;
+  } else {
+    const { applications: apps } = await consoleActionClient.getApplicationList({
+      version: appVersion,
+      extension,
+    });
+    applications = apps;
+  }
+
   if (applications.length === 0) {
     throw new Error(`No application found for version ${appVersion} and extension ${extension}`);
   }
