@@ -3064,6 +3064,18 @@ public final class DcGdc {
      */
     com.google.protobuf.ByteString
         getSerialBytes();
+
+    /**
+     * <code>string file_path = 2;</code>
+     * @return The filePath.
+     */
+    java.lang.String getFilePath();
+    /**
+     * <code>string file_path = 2;</code>
+     * @return The bytes for filePath.
+     */
+    com.google.protobuf.ByteString
+        getFilePathBytes();
   }
   /**
    * Protobuf type {@code inner.types.DcGdcStopScreenRecordParam}
@@ -3075,6 +3087,7 @@ public final class DcGdc {
       DcGdcStopScreenRecordParamOrBuilder {
     private DcGdcStopScreenRecordParam() {
       serial_ = "";
+      filePath_ = "";
     }
     public static final int SERIAL_FIELD_NUMBER = 1;
     private java.lang.String serial_;
@@ -3120,6 +3133,53 @@ public final class DcGdc {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       serial_ = value.toStringUtf8();
+      
+    }
+
+    public static final int FILE_PATH_FIELD_NUMBER = 2;
+    private java.lang.String filePath_;
+    /**
+     * <code>string file_path = 2;</code>
+     * @return The filePath.
+     */
+    @java.lang.Override
+    public java.lang.String getFilePath() {
+      return filePath_;
+    }
+    /**
+     * <code>string file_path = 2;</code>
+     * @return The bytes for filePath.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getFilePathBytes() {
+      return com.google.protobuf.ByteString.copyFromUtf8(filePath_);
+    }
+    /**
+     * <code>string file_path = 2;</code>
+     * @param value The filePath to set.
+     */
+    private void setFilePath(
+        java.lang.String value) {
+      java.lang.Class<?> valueClass = value.getClass();
+  
+      filePath_ = value;
+    }
+    /**
+     * <code>string file_path = 2;</code>
+     */
+    private void clearFilePath() {
+      
+      filePath_ = getDefaultInstance().getFilePath();
+    }
+    /**
+     * <code>string file_path = 2;</code>
+     * @param value The bytes for filePath to set.
+     */
+    private void setFilePathBytes(
+        com.google.protobuf.ByteString value) {
+      checkByteStringIsUtf8(value);
+      filePath_ = value.toStringUtf8();
       
     }
 
@@ -3267,6 +3327,55 @@ public final class DcGdc {
         return this;
       }
 
+      /**
+       * <code>string file_path = 2;</code>
+       * @return The filePath.
+       */
+      @java.lang.Override
+      public java.lang.String getFilePath() {
+        return instance.getFilePath();
+      }
+      /**
+       * <code>string file_path = 2;</code>
+       * @return The bytes for filePath.
+       */
+      @java.lang.Override
+      public com.google.protobuf.ByteString
+          getFilePathBytes() {
+        return instance.getFilePathBytes();
+      }
+      /**
+       * <code>string file_path = 2;</code>
+       * @param value The filePath to set.
+       * @return This builder for chaining.
+       */
+      public Builder setFilePath(
+          java.lang.String value) {
+        copyOnWrite();
+        instance.setFilePath(value);
+        return this;
+      }
+      /**
+       * <code>string file_path = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearFilePath() {
+        copyOnWrite();
+        instance.clearFilePath();
+        return this;
+      }
+      /**
+       * <code>string file_path = 2;</code>
+       * @param value The bytes for filePath to set.
+       * @return This builder for chaining.
+       */
+      public Builder setFilePathBytes(
+          com.google.protobuf.ByteString value) {
+        copyOnWrite();
+        instance.setFilePathBytes(value);
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:inner.types.DcGdcStopScreenRecordParam)
     }
     @java.lang.Override
@@ -3284,9 +3393,11 @@ public final class DcGdc {
         case BUILD_MESSAGE_INFO: {
             java.lang.Object[] objects = new java.lang.Object[] {
               "serial_",
+              "filePath_",
             };
             java.lang.String info =
-                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\u0208";
+                "\u0000\u0002\u0000\u0000\u0001\u0002\u0002\u0000\u0000\u0000\u0001\u0208\u0002\u0208" +
+                "";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

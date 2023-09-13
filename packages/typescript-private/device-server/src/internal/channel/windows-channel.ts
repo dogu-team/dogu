@@ -132,8 +132,8 @@ export class WindowsChannel implements DeviceChannel {
     return Promise.resolve(this._streaming.startRecord(this.serial, option));
   }
 
-  async stopRecord(): Promise<ErrorResult> {
-    return Promise.resolve(this._streaming.stopRecord(this.serial));
+  async stopRecord(filePath: string): Promise<ErrorResult> {
+    return Promise.resolve(this._streaming.stopRecord(this.serial, filePath));
   }
 
   control(control: DeviceControl): void {

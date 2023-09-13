@@ -32,11 +32,11 @@ export class DeviceJobStepProcessor {
   ) {}
 
   async onRunDeviceJob(param: RunDeviceJob, context: MessageContext): Promise<void> {
-    const { routineDeviceJobId, record, runSteps } = param;
+    const { routineDeviceJobId, record, runSteps, deviceRunnerId } = param;
     const { info, router } = context;
     const { organizationId, deviceId, serial, recordWorkspacePath, platform } = info;
-    const recordSerialPath = HostPaths.recordSerialPath(recordWorkspacePath, serial);
-    await fs.promises.mkdir(recordSerialPath, { recursive: true });
+    const recordDeviceRunnerPath = HostPaths.recordDeviceRunnerPath(recordWorkspacePath, deviceRunnerId);
+    await fs.promises.mkdir(recordDeviceRunnerPath, { recursive: true });
     this.logger.info(`DeviceJob ${routineDeviceJobId} started on device ${serial}`);
     const deviceJobLocalStartedAt = new Date();
 
@@ -55,7 +55,7 @@ export class DeviceJobStepProcessor {
       organizationId,
       deviceId,
       routineDeviceJobId,
-      recordSerialPath,
+      recordDeviceRunnerPath,
       record,
       serial,
       platform,

@@ -12,7 +12,7 @@ export interface StreamingService {
   startStreamingWithTrickle(serial: Serial, offer: StreamingOfferDto): PromiseOrValue<Observable<StreamingAnswer>>;
   stopStreaming(serial: Serial): PromiseOrValue<void>;
   startRecord(serial: Serial, option: ScreenRecordOption): PromiseOrValue<ErrorResult>;
-  stopRecord(serial: Serial): PromiseOrValue<ErrorResult>;
+  stopRecord(serial: Serial, filePath: string): PromiseOrValue<ErrorResult>;
   deviceConnected(serial: Serial, context: DcGdcDeviceContext): PromiseOrValue<void>;
   deviceDisconnected(serial: Serial): PromiseOrValue<void>;
   getSurfaceStatus(serial: Serial): Promise<DcGdcGetSurfaceStatusResult>;

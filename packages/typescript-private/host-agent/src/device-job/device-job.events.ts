@@ -30,7 +30,7 @@ export class OnDeviceJobStartedEventValue extends OnDeviceJobEventValueBase {
   stepStatusInfos!: StepStatusInfo[];
 
   @IsFilledString()
-  recordSerialPath!: string;
+  recordDeviceRunnerPath!: string;
 }
 export const OnDeviceJobStartedEvent = createEventDefinition('OnDeviceJobStarted', OnDeviceJobStartedEventValue);
 
