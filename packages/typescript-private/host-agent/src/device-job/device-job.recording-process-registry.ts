@@ -51,18 +51,20 @@ export class DeviceJobRecordingProcessRegistry {
     if (!this.hostResolutionInfo) {
       throw new Error('onDeviceJobStarted: hostResolutionInfo not found');
     }
-    const { organizationId, deviceId, routineDeviceJobId, serial, platform, record, recordSerialPath } = value;
+    const { organizationId, deviceId, routineDeviceJobId, serial, platform, record, recordDeviceRunnerPath } = value;
     if (!record) {
       this.logger.info('startRecording: record is false', { organizationId, deviceId, routineDeviceJobId });
       return;
     }
     const fileName = toISOStringWithTimezone(new Date(), '-');
-    const filePath = path.resolve(recordSerialPath, `${fileName}${getRecordExt(platform)}`);
+    const filePath = path.resolve(recordDeviceRunnerPath, `${fileName}${getRecordExt(platform)}`);
     const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceRecording.path}`);
     const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
     this.webSockets.set(key, { webSocket, serial, organizationId, deviceId, routineDeviceJobId, filePath });
     webSocket.addEventListener('open', () => {
-      this.logger.info('startRecording open');
+      this.logger.info('startRecording open', {
+        filePath,
+      });
       const sendMessage: Instance<typeof DeviceRecording.sendMessage> = {
         serial,
         screenRecordOption: {
