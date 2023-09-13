@@ -3,9 +3,9 @@
 
 #include <string>
 
-namespace windows
+namespace mywindows
 {
 void getInfos(std::string &out);
-} // namespace windows
+} // namespace mywindows
 
 #endif /* MYWINDOWS_H */

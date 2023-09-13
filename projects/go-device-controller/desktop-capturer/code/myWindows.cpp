@@ -1,4 +1,5 @@
-#include "windows.h"
+
+#include "myWindows.h"
 
 #include <algorithm>
 #include <chrono>
@@ -12,9 +13,7 @@
 #define WEBRTC_WIN
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
-#pragma comment(lib, "D3D11.lib")
-#pragma comment(lib, "DXGI.lib")
-#pragma comment(lib, "Winmm.lib")
+#include <windows.h>
 #else
 #define WEBRTC_POSIX
 #define WEBRTC_MAC
@@ -26,7 +25,8 @@
 #include "modules/desktop_capture/desktop_region.h"
 
 #if defined(_WIN32)
-#include "modules/desktop_capture/win/window_list_utils.h"
+#include "winuser.h"
+#pragma comment(lib, "User32.lib")
 #elif defined(__APPLE__)
 #include "modules/desktop_capture/mac/desktop_configuration.h"
 #include "modules/desktop_capture/mac/full_screen_mac_application_handler.h"
@@ -38,7 +38,7 @@
 struct WindowInfo
 {
     intptr_t id = 0;
-    int pid = 0;
+    intptr_t pid = 0;
     std::string title = "";
 
     std::string ToJson() const
@@ -53,7 +53,7 @@ struct WindowInfo
     }
 };
 
-namespace windows
+namespace mywindows
 {
 void getInfos(std::string &out)
 {
@@ -68,8 +68,12 @@ void getInfos(std::string &out)
         WindowInfo info;
         info.id = s.id;
         info.title = s.title;
-#if defined(_WIN32)
+        std::cout << "s: " << s.title << std::endl << std::flush;
 
+#if defined(_WIN32)
+        DWORD processId;
+        GetWindowThreadProcessId(HWND(s.id), &processId);
+        info.pid = processId;
 #elif defined(__APPLE__)
         info.pid = webrtc::GetWindowOwnerPid(uint32_t(s.id));
 #else
@@ -91,4 +95,4 @@ void getInfos(std::string &out)
     ss << "]";
     out = ss.str();
 }
-} // namespace windows
+} // namespace mywindows

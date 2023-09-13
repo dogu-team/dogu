@@ -6,10 +6,14 @@
 //
 
 #include "args/args.hxx"
+#include "myWindows.h"
 #include "mywebrtc.h"
-#include "windows.h"
 
 #include <iostream>
+
+#if defined(_WIN32)
+#include <windows.h>
+#endif // defined(_WIN32 )
 
 void StreamingCommand(args::Subparser &parser)
 {
@@ -90,14 +94,18 @@ void WindowCommand(args::Subparser &parser)
 
     if (info)
     {
-      std::string json;
-      windows::getInfos(json);
-      std::cout << json << std::endl << std::flush;
+        std::string json;
+        mywindows::getInfos(json);
+        std::cout << json << std::endl << std::flush;
     }
 }
 
 int main(int argc, const char *argv[])
 {
+#if defined(_WIN32)
+    SetConsoleOutputCP(CP_UTF8);
+    setvbuf(stdout, nullptr, _IONBF, 0);
+#endif // defined(_WIN32 )
 
     args::ArgumentParser parser("Desktopcapturer.", "");
     args::Group commands(parser, "commands");
