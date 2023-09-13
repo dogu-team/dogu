@@ -390,6 +390,68 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
     [handleTouchInput],
   );
 
+  const handleFocus = useCallback(
+    async (event: React.FocusEvent<HTMLTextAreaElement>) => {
+      if (!deviceRTCCaller) {
+        return;
+      }
+
+      if (deviceRTCCaller.channel.readyState !== 'open' || event.currentTarget === null) {
+        return undefined;
+      }
+
+      if (event.currentTarget === null) {
+        return;
+      }
+
+      try {
+        const c: DeviceControl = {
+          ...input.DefaultDeviceControl(),
+          type: DeviceControlType.DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_FOCUSED,
+          timeStamp: event.timeStamp,
+        };
+
+        const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
+          control: c,
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [deviceRTCCaller],
+  );
+
+  const handleBlur = useCallback(
+    async (event: React.FocusEvent<HTMLTextAreaElement>) => {
+      if (!deviceRTCCaller) {
+        return;
+      }
+
+      if (deviceRTCCaller.channel.readyState !== 'open' || event.currentTarget === null) {
+        return undefined;
+      }
+
+      if (event.currentTarget === null) {
+        return;
+      }
+
+      try {
+        const c: DeviceControl = {
+          ...input.DefaultDeviceControl(),
+          type: DeviceControlType.DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_UNFOCUSED,
+          timeStamp: event.timeStamp,
+        };
+
+        const result = await deviceRTCCaller.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
+          control: c,
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [deviceRTCCaller],
+  );
+
   return {
     handleKeyDown,
     handleKeyUp,
@@ -400,6 +462,8 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
     handleMouseLeave,
     handleDoubleClick,
     handleToolMenuInput,
+    handleFocus,
+    handleBlur,
   };
 };
 

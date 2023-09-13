@@ -25,6 +25,8 @@ interface Props {
   onMouseLeave?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
   onDoubleClick?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
   onClick?: (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => void | Promise<void>;
+  onFocus?: (e: React.FocusEvent<HTMLTextAreaElement>) => void | Promise<void>;
+  onBlur?: (e: React.FocusEvent<HTMLTextAreaElement>) => void | Promise<void>;
   readonly?: boolean;
 }
 
@@ -44,6 +46,8 @@ const StreamingVideo = ({
   onMouseLeave,
   onDoubleClick,
   onClick,
+  onFocus,
+  onBlur,
   readonly,
 }: Props) => {
   const { videoRef, loading } = useDeviceStreamingContext();
@@ -234,6 +238,16 @@ const StreamingVideo = ({
               e.stopPropagation();
               onClick?.(e, videoSize);
               focusInputForKeyboardEvent();
+            }}
+            onFocus={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onFocus?.(e);
+            }}
+            onBlur={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onBlur?.(e);
             }}
             readOnly
           />

@@ -22,6 +22,8 @@ const ManualTestingScreenViewer = () => {
     handleMouseMove,
     handleMouseUp,
     handleWheel,
+    handleFocus,
+    handleBlur,
   } = useDeviceInput(deviceRTCCaller ?? undefined);
 
   const handleMouseDownVideo = useCallback(
@@ -70,6 +72,8 @@ const ManualTestingScreenViewer = () => {
         onMouseMove={handleMouseMoveVideo}
         onMouseLeave={handleMouseLeaveVideo}
         onDoubleClick={handleDoubleClick}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
       >
         {tab === StreamingTabMenuKey.INSPECTOR && !!inspector && inspector.inspectingNode && (
           <InspectorSelectedNode nodeInfo={inspector.inspectingNode} />
