@@ -30,11 +30,23 @@ PUT /v1/projects/:projectId/applications
 
 ### Example
 
+**Basic Usage**
+
 ```
 curl -v -X PUT "https://api.dogutech.io/v1/projects/${projectId}/applications" \
 -H "Authorization: Bearer ${ACCESS_TOKEN}" \
 -H "Content-Type: multipart/form-data" \
 -F "file=@${FilePath}"
+```
+
+**Upload as the latest version**
+
+```
+curl -v -X PUT "https://api.dogutech.io/v1/projects/${projectId}/applications" \
+-H "Authorization: Bearer ${ACCESS_TOKEN}" \
+-H "Content-Type: multipart/form-data" \
+-F "file=@${FilePath}"
+-F "isLatest=true"
 ```
 
 ### Response Example {#upload-application-response}
