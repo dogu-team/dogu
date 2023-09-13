@@ -1,11 +1,12 @@
 #include "windows.h"
 
-#include <string>
-
 #include <algorithm>
 #include <chrono>
 #include <iostream>
+#include <sstream>
+#include <string>
 #include <thread>
+#include <vector>
 
 #if defined(_WIN32)
 #define WEBRTC_WIN
@@ -39,6 +40,17 @@ struct WindowInfo
     intptr_t id = 0;
     int pid = 0;
     std::string title = "";
+
+    std::string ToJson() const
+    {
+        std::stringstream ss;
+        ss << "{";
+        ss << "\"id\":" << id << ",";
+        ss << "\"pid\":" << pid << ",";
+        ss << "\"title\":\"" << title << "\"";
+        ss << "}";
+        return ss.str();
+    }
 };
 
 namespace windows
@@ -49,6 +61,8 @@ void getInfos(std::string &out)
     webrtc::DesktopCapturer::SourceList desktop_windows;
     std::unique_ptr<webrtc::DesktopCapturer> capturer = webrtc::DesktopCapturer::CreateWindowCapturer(option);
     capturer->GetSourceList(&desktop_windows);
+
+    std::vector<WindowInfo> infos;
     for (auto &s : desktop_windows)
     {
         WindowInfo info;
@@ -61,8 +75,20 @@ void getInfos(std::string &out)
 #else
 #error "Unsupported platform."
 #endif // defined(_WIN32 )
-        std::cout << "window: " << s.id << " -> " << s.title << "\n" << std::flush;
+        infos.push_back(info);
     }
-    return capturer;
+
+    std::stringstream ss;
+    ss << "[";
+    for (size_t i = 0; i < infos.size(); i++)
+    {
+        ss << infos[i].ToJson();
+        if (i != infos.size() - 1)
+        {
+            ss << ",";
+        }
+    }
+    ss << "]";
+    out = ss.str();
 }
 } // namespace windows

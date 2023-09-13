@@ -7,6 +7,7 @@
 
 #include "args/args.hxx"
 #include "mywebrtc.h"
+#include "windows.h"
 
 #include <iostream>
 
@@ -89,7 +90,9 @@ void WindowCommand(args::Subparser &parser)
 
     if (info)
     {
-        std::cout << "info" << std::endl;
+      std::string json;
+      windows::getInfos(json);
+      std::cout << json << std::endl << std::flush;
     }
 }
 
