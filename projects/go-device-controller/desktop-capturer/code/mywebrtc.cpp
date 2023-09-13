@@ -205,7 +205,7 @@ void prepare(int port, int width, int height, int fps, int pid)
     g_width = width & ~1;
     g_height = height & ~1;
     g_fps = fps;
-  g_pid = pid;
+    g_pid = pid;
 
     g_frameDeltaMs = (int)(1000 / g_fps);
     g_moderatedframeDeltaMs = g_frameDeltaMs;

@@ -1,9 +1,9 @@
 #ifndef MYWINDOWS_H
 #define MYWINDOWS_H
 
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
 
 #include "modules/desktop_capture/desktop_geometry.h"
 
@@ -15,7 +15,7 @@ struct WindowInfo
     intptr_t id = 0;
     intptr_t pid = 0;
     std::string title = "";
-  webrtc::DesktopRect rect;
+    webrtc::DesktopRect rect;
 
     std::string ToJson() const
     {
@@ -23,12 +23,13 @@ struct WindowInfo
         ss << "{";
         ss << "\"id\":" << id << ",";
         ss << "\"pid\":" << pid << ",";
-        ss << "\"title\":\"" << title << "\"";
+        ss << "\"title\":\"" << title << ",";
+        ss << "\"width\":\"" << rect.size().width() << ",";
+        ss << "\"height\":\"" << rect.size().height() << "\"";
         ss << "}";
         return ss.str();
     }
 };
-
 
 std::vector<WindowInfo> getInfos();
 void getInfosString(std::string &out);

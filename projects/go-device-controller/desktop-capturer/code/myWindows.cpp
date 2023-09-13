@@ -24,8 +24,8 @@
 #include "modules/desktop_capture/desktop_region.h"
 
 #if defined(_WIN32)
-#include "winuser.h"
 #include "modules/desktop_capture/win/window_capture_utils.h"
+#include "winuser.h"
 #pragma comment(lib, "User32.lib")
 #elif defined(__APPLE__)
 #include "modules/desktop_capture/mac/desktop_configuration.h"
@@ -35,46 +35,44 @@
 #error "Unsupported platform."
 #endif // defined(_WIN32)
 
-
 namespace mywindows
 {
 
 std::vector<WindowInfo> getInfos()
 {
-  
-  webrtc::DesktopCaptureOptions option = webrtc::DesktopCaptureOptions::CreateDefault();
-  webrtc::DesktopCapturer::SourceList desktop_windows;
-  std::unique_ptr<webrtc::DesktopCapturer> capturer = webrtc::DesktopCapturer::CreateWindowCapturer(option);
-  capturer->GetSourceList(&desktop_windows);
 
-  std::vector<WindowInfo> infos;
-  for (auto &s : desktop_windows)
-  {
-      WindowInfo info;
-      info.id = s.id;
-      info.title = s.title;
-      std::cout << "s: " << s.title << std::endl << std::flush;
+    webrtc::DesktopCaptureOptions option = webrtc::DesktopCaptureOptions::CreateDefault();
+    webrtc::DesktopCapturer::SourceList desktop_windows;
+    std::unique_ptr<webrtc::DesktopCapturer> capturer = webrtc::DesktopCapturer::CreateWindowCapturer(option);
+    capturer->GetSourceList(&desktop_windows);
+
+    std::vector<WindowInfo> infos;
+    for (auto &s : desktop_windows)
+    {
+        WindowInfo info;
+        info.id = s.id;
+        info.title = s.title;
 
 #if defined(_WIN32)
-      DWORD processId;
-      GetWindowThreadProcessId(HWND(s.id), &processId);
-      info.pid = processId;
-      webrtc::GetWindowRect(HWND(s.id), &info.rect);
+        DWORD processId;
+        GetWindowThreadProcessId(HWND(s.id), &processId);
+        info.pid = processId;
+        webrtc::GetWindowRect(HWND(s.id), &info.rect);
 #elif defined(__APPLE__)
-      info.pid = webrtc::GetWindowOwnerPid(uint32_t(s.id));
-    info.rect = webrtc::GetWindowBounds(uint32_t(s.id));
+        info.pid = webrtc::GetWindowOwnerPid(uint32_t(s.id));
+        info.rect = webrtc::GetWindowBounds(uint32_t(s.id));
 #else
 #error "Unsupported platform."
 #endif // defined(_WIN32 )
-      infos.push_back(info);
-  }
-  
-  return infos;
+        infos.push_back(info);
+    }
+
+    return infos;
 }
 
 void getInfosString(std::string &out)
 {
-  auto infos = getInfos();
+    auto infos = getInfos();
 
     std::stringstream ss;
     ss << "[";
