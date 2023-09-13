@@ -26,7 +26,8 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
   const retryCount = input.get<number>('retryCount');
   const retryInterval = input.get<number>('retryInterval');
   const requestTimeout = input.get<number>('requestTimeout');
-  const branchOrTag = input.get<string>('branchOrTag');
+  const branch = input.get<string>('branch');
+  const tag = input.get<string>('tag');
   const checkoutPath = input.get<string>('checkoutPath');
   const checkoutUrl = input.get<string>('checkoutUrl');
 
@@ -34,7 +35,7 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
   const resolvedCheckoutPath = path.resolve(DOGU_ROUTINE_WORKSPACE_PATH, checkoutPath);
   logger.info('resolved checkout path', { resolvedCheckoutPath });
 
-  await checkoutProject(logger, consoleActionClient, deviceHostClient, resolvedCheckoutPath, branchOrTag, clean, checkoutUrl);
+  await checkoutProject(logger, consoleActionClient, deviceHostClient, resolvedCheckoutPath, clean, branch, tag, checkoutUrl);
 
   const appPath = await downloadApp(logger, consoleActionClient, deviceHostClient, DOGU_DEVICE_PLATFORM, DOGU_HOST_WORKSPACE_PATH, currentPlatformAppVersion);
   await tryToQuitGamiumApp(logger, deviceClient, deviceHostClient, gamiumEnginePort, DOGU_DEVICE_SERIAL, DOGU_DEVICE_PLATFORM, retryCount, retryInterval, requestTimeout);

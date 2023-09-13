@@ -24,7 +24,8 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
   logger.info('log level', { DOGU_LOG_LEVEL });
 
   const checkout = input.get<boolean>('checkout');
-  const branchOrTag = input.get<string>('branchOrTag');
+  const branch = input.get<string>('branch');
+  const tag = input.get<string>('tag');
   const clean = input.get<boolean>('clean');
   const checkoutPath = input.get<string>('checkoutPath');
   const checkoutUrl = input.get<string>('checkoutUrl');
@@ -46,7 +47,7 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
     const resolvedCheckoutPath = path.resolve(DOGU_ROUTINE_WORKSPACE_PATH, checkoutPath);
     logger.info('resolved checkout path', { resolvedCheckoutPath });
 
-    await checkoutProject(logger, consoleActionClient, deviceHostClient, resolvedCheckoutPath, branchOrTag, clean, checkoutUrl);
+    await checkoutProject(logger, consoleActionClient, deviceHostClient, resolvedCheckoutPath, clean, branch, tag, checkoutUrl);
   }
 
   let appPath = '';
