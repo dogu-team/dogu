@@ -12,6 +12,7 @@ import (
 	"go-device-controller/internal/pkg/device/datachannel"
 	log "go-device-controller/internal/pkg/log"
 
+	"github.com/dogu-team/keybd_event"
 	"github.com/go-vgo/robotgo"
 	"go.uber.org/zap"
 )
@@ -27,7 +28,7 @@ type DesktopControlHandler struct {
 	controlChan       chan *DevicControlProcess
 	screenSize        robotgo.Size
 	mousePressMap     map[string]bool
-	keyPressMap       map[string]bool
+	keyBonding        keybd_event.KeyBonding
 	mouseInjectOption mouseInjectOption
 	platform          outer.Platform
 
@@ -54,7 +55,11 @@ func NewDesktopControlHandler() *DesktopControlHandler {
 	dch.screenSize.W, dch.screenSize.H = robotgo.GetScreenSize()
 
 	dch.mousePressMap = make(map[string]bool)
-	dch.keyPressMap = make(map[string]bool)
+	kb, err := keybd_event.NewKeyBonding()
+	if err != nil {
+		log.Inst.Error("NewDesktopControlHandler NewKeyBonding error", zap.Error(err))
+	}
+	dch.keyBonding = kb
 	dch.mouseInjectOption.isAllowRepeatClick = false
 	dch.platform = outer.Platform_PLATFORM_WINDOWS
 	go dch.run()
@@ -62,7 +67,7 @@ func NewDesktopControlHandler() *DesktopControlHandler {
 }
 
 func (h *DesktopControlHandler) OnOpen() error {
-	clearAllMetaKeys(h.keyPressMap)
+	clearAllMetaKeys(&h.keyBonding)
 	return nil
 }
 
@@ -106,7 +111,7 @@ func (dch *DesktopControlHandler) run() {
 		case <-dch.ticker.C:
 			curTime := time.Now()
 			if curTime.Sub(dch.lastControlTime) > inputCheckTime {
-				clearPressedMetaKeys(dch.keyPressMap)
+				clearAllMetaKeys(&dch.keyBonding)
 			}
 
 		case c := <-dch.controlChan:
@@ -121,7 +126,7 @@ func (dch *DesktopControlHandler) handleControl(c *types.DeviceControl, platform
 	// log.Inst.Info("MessageHandler.handleControl", zap.String("type", c.Type.String()))
 	switch c.Type {
 	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_INJECT_KEYCODE:
-		return handleControlInjectKeyCode(c, platform, dch.keyPressMap)
+		return handleControlInjectKeyCode(c, platform, &dch.keyBonding)
 	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_INJECT_TEXT:
 	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_INJECT_MOUSE_EVENT:
 		dch.screenSize.W, dch.screenSize.H = robotgo.GetScreenSize()
@@ -130,12 +135,12 @@ func (dch *DesktopControlHandler) handleControl(c *types.DeviceControl, platform
 		dch.screenSize.W, dch.screenSize.H = robotgo.GetScreenSize()
 		return handleControlInjectScroll(c, &dch.screenSize)
 	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_SET_CLIPBOARD:
-		return handleSetClipboard(c, platform, dch.keyPressMap)
+		return handleSetClipboard(c, platform)
 	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_FOCUSED:
-		clearAllMetaKeys(dch.keyPressMap)
+		clearAllMetaKeys(&dch.keyBonding)
 		return gotypes.Success
 	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_UNFOCUSED:
-		clearAllMetaKeys(dch.keyPressMap)
+		clearAllMetaKeys(&dch.keyBonding)
 		return gotypes.Success
 	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_GET_CLIPBOARD:
 	}

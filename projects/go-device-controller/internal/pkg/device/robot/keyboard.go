@@ -1,6 +1,7 @@
 package robot
 
 import (
+	"errors"
 	"fmt"
 	"runtime"
 
@@ -10,19 +11,84 @@ import (
 
 	"go-device-controller/internal/pkg/log"
 
+	"github.com/dogu-team/keybd_event"
 	"github.com/go-vgo/robotgo"
 	"go.uber.org/zap"
 )
 
-type ShouldTypeKeys struct {
-	keycode  types.DeviceControlKeycode
-	key      string
-	shiftKey string
+type PseudoKey struct {
+	key       int
+	hasCTRL   bool
+	hasALT    bool
+	hasSHIFT  bool
+	hasRCTRL  bool
+	hasRSHIFT bool
+	hasALTGR  bool
+	hasSuper  bool
+}
+
+var emptyPseudoKey = PseudoKey{}
+
+func newPseudoKeyWithKey(key int) (PseudoKey, error) {
+	return PseudoKey{
+		key: key,
+	}, nil
+}
+
+func (p *PseudoKey) applyToKeyBonding(kb *keybd_event.KeyBonding) {
+	if p.hasALT {
+		kb.HasALT(true)
+	}
+	if p.hasALTGR {
+		kb.HasALTGR(true)
+	}
+	if p.hasCTRL {
+		kb.HasCTRL(true)
+	}
+	if p.hasRCTRL {
+		kb.HasCTRLR(true)
+	}
+	if p.hasSHIFT {
+		kb.HasSHIFT(true)
+	}
+	if p.hasRSHIFT {
+		kb.HasSHIFTR(true)
+	}
+	if p.hasSuper {
+		kb.HasSuper(true)
+	}
+	if p.key >= 0 {
+		kb.SetKeys(p.key)
+	}
+}
+
+func (p *PseudoKey) revertToKeyBonding(kb *keybd_event.KeyBonding) {
+	if p.hasALT {
+		kb.HasALT(false)
+	}
+	if p.hasALTGR {
+		kb.HasALTGR(false)
+	}
+	if p.hasCTRL {
+		kb.HasCTRL(false)
+	}
+	if p.hasRCTRL {
+		kb.HasCTRLR(false)
+	}
+	if p.hasSHIFT {
+		kb.HasSHIFT(false)
+	}
+	if p.hasRSHIFT {
+		kb.HasSHIFTR(false)
+	}
+	if p.hasSuper {
+		kb.HasSuper(false)
+	}
+	kb.RemoveKey(p.key)
 }
 
 // keyboard
-func handleControlInjectKeyCode(c *types.DeviceControl, platform outer.Platform, keyMaps map[string]bool) *outer.ErrorResult {
-	var inputError error
+func handleControlInjectKeyCode(c *types.DeviceControl, platform outer.Platform, kb *keybd_event.KeyBonding) *outer.ErrorResult {
 	if c.Type != types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_INJECT_KEYCODE {
 		return &outer.ErrorResult{
 			Code:    outer.Code_CODE_DEVICE_CONTROLLER_INPUT_NOTSUPPORTED,
@@ -30,33 +96,41 @@ func handleControlInjectKeyCode(c *types.DeviceControl, platform outer.Platform,
 		}
 	}
 
-	key := getKeyCode(c.Keycode, platform)
-	if len(key) == 0 {
-		return &outer.ErrorResult{
-			Code:    outer.Code_CODE_DEVICE_CONTROLLER_INPUT_NOTSUPPORTED,
-			Message: fmt.Sprintf("MessageHandler.handleControlInjectKeyCode invalid keycode %s", c.Keycode.String()),
-		}
-	}
-	metaInterfaces := calculateKeyMetas(c)
-	log.Inst.Debug("MessageHandler.handleControlInjectKeyCode", zap.String("key", key),
-		zap.Int("action", int(c.Action.Number())),
-		zap.String("meta", fmt.Sprintf("%v", metaInterfaces)),
-		zap.Strings("pressedKeys", getPressedKeys(keyMaps)))
-	markKeyPress(c.Action, key, keyMaps)
-	inputError = robotgo.KeyToggle(key, metaInterfaces...)
-
-	if nil != inputError {
+	pseudoKey, error := getKeyCode(c.Keycode, platform)
+	if nil != error {
 		return &outer.ErrorResult{
 			Code:    outer.Code_CODE_DEVICE_CONTROLLER_INPUT_UNKNOWN,
-			Message: fmt.Sprintf("MessageHandler.handleControlInjectKeyCode unknown msg:%s", inputError.Error()),
+			Message: fmt.Sprintf("MessageHandler.handleControlInjectKeyCode unknown msg:%s", error.Error()),
+		}
+	}
+	pseudoKey.applyToKeyBonding(kb)
+
+	log.Inst.Debug("MessageHandler.handleControlInjectKeyCode", zap.String("key", c.Keycode.String()), zap.Int("action", int(c.Action.Number())))
+	switch c.Action {
+	case types.DeviceControlAction_DEVICE_CONTROL_ACTION_DESKTOP_ACTION_DOWN_UNSPECIFIED:
+		error = kb.Press()
+	case types.DeviceControlAction_DEVICE_CONTROL_ACTION_DESKTOP_ACTION_UP:
+		error = kb.Release()
+		pseudoKey.revertToKeyBonding(kb)
+	}
+
+	if nil != error {
+		return &outer.ErrorResult{
+			Code:    outer.Code_CODE_DEVICE_CONTROLLER_INPUT_UNKNOWN,
+			Message: fmt.Sprintf("MessageHandler.handleControlInjectKeyCode unknown msg:%s", error.Error()),
 		}
 	}
 	return gotypes.Success
 }
 
-func handleSetClipboard(c *types.DeviceControl, platform outer.Platform, keyMaps map[string]bool) *outer.ErrorResult {
+func handleSetClipboard(c *types.DeviceControl, platform outer.Platform) *outer.ErrorResult {
 	log.Inst.Debug("MessageHandler.handleSetClipboard start")
-	clearAllMetaKeys(keyMaps)
+
+	log.Inst.Info("MessageHandler.clearAllMetaKeys")
+	metaKeys := []string{"cmd", "lcmd", "rcmd", "alt", "lalt", "ralt", "ctrl", "lctrl", "rctrl", "shift", "lshift", "rshift"}
+	for _, key := range metaKeys {
+		robotgo.KeyToggle(key, "up")
+	}
 	err := robotgo.WriteAll(c.GetText())
 	if nil != err {
 		log.Inst.Debug("MessageHandler.handleSetClipboard fail", zap.String("err", err.Error()))
@@ -79,291 +153,257 @@ func handleSetClipboard(c *types.DeviceControl, platform outer.Platform, keyMaps
 	robotgo.MilliSleep(10)
 	robotgo.KeyToggle(metaKey, "up")
 
-	clearAllMetaKeys(keyMaps)
-
 	log.Inst.Debug("MessageHandler.handleSetClipboard done")
 
 	return gotypes.Success
 }
 
-func clearPressedMetaKeys(keyMaps map[string]bool) {
-	for key, pressed := range keyMaps {
-		if pressed {
-			robotgo.KeyToggle(key, "up")
-			log.Inst.Info("MessageHandler.clearPressedMetaKeys", zap.String("key", key), zap.Bool("pressed", pressed))
-			keyMaps[key] = false
-		}
-	}
-	robotgo.MilliSleep(50)
+func clearAllMetaKeys(kb *keybd_event.KeyBonding) {
+	kb.Clear()
 }
 
-func clearAllMetaKeys(keyMaps map[string]bool) {
-	log.Inst.Info("MessageHandler.clearAllMetaKeys")
-	metaKeys := []string{"cmd", "lcmd", "rcmd", "alt", "lalt", "ralt", "ctrl", "lctrl", "rctrl", "shift", "lshift", "rshift"}
-	for _, key := range metaKeys {
-		robotgo.KeyToggle(key, "up")
-		keyMaps[key] = false
-	}
-}
-
-func getPressedKeys(keyMaps map[string]bool) []string {
-	var pressedKeys []string
-	for key, pressed := range keyMaps {
-		if pressed {
-			pressedKeys = append(pressedKeys, key)
-		}
-	}
-	return pressedKeys
-}
-
-func calculateKeyMetas(c *types.DeviceControl) []interface{} {
-	var metaInterfaces []interface{}
-	switch c.Action {
-	case types.DeviceControlAction_DEVICE_CONTROL_ACTION_DESKTOP_ACTION_UP:
-		metaInterfaces = append(metaInterfaces, "up")
-	}
-
-	return metaInterfaces
-}
-
-func markKeyPress(action types.DeviceControlAction, keyStr string, keyMaps map[string]bool) {
-	switch action {
-	case types.DeviceControlAction_DEVICE_CONTROL_ACTION_DESKTOP_ACTION_UP:
-		keyMaps[keyStr] = false
-	default:
-		keyMaps[keyStr] = true
-	}
-}
-
-func getKeyCode(code types.DeviceControlKeycode, platform outer.Platform) string {
-	// ref: https://github.com/go-vgo/robotgo/blob/master/doc.go, https://github.com/vcaesar/keycode/blob/main/keycode.go#L146
+func getKeyCode(code types.DeviceControlKeycode, platform outer.Platform) (PseudoKey, error) {
 	switch code {
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_A:
-		return "a"
+		return newPseudoKeyWithKey(keybd_event.VK_A)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_B:
-		return "b"
+		return newPseudoKeyWithKey(keybd_event.VK_B)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_C:
-		return "c"
+		return newPseudoKeyWithKey(keybd_event.VK_C)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_D:
-		return "d"
+		return newPseudoKeyWithKey(keybd_event.VK_D)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_E:
-		return "e"
+		return newPseudoKeyWithKey(keybd_event.VK_E)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_F:
-		return "f"
+		return newPseudoKeyWithKey(keybd_event.VK_F)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_G:
-		return "g"
+		return newPseudoKeyWithKey(keybd_event.VK_G)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_H:
-		return "h"
+		return newPseudoKeyWithKey(keybd_event.VK_H)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_I:
-		return "i"
+		return newPseudoKeyWithKey(keybd_event.VK_I)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_J:
-		return "j"
+		return newPseudoKeyWithKey(keybd_event.VK_J)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_K:
-		return "k"
+		return newPseudoKeyWithKey(keybd_event.VK_K)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_L:
-		return "l"
+		return newPseudoKeyWithKey(keybd_event.VK_L)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_M:
-		return "m"
+		return newPseudoKeyWithKey(keybd_event.VK_M)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_N:
-		return "n"
+		return newPseudoKeyWithKey(keybd_event.VK_N)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_O:
-		return "o"
+		return newPseudoKeyWithKey(keybd_event.VK_O)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_P:
-		return "p"
+		return newPseudoKeyWithKey(keybd_event.VK_P)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_Q:
-		return "q"
+		return newPseudoKeyWithKey(keybd_event.VK_Q)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_R:
-		return "r"
+		return newPseudoKeyWithKey(keybd_event.VK_R)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_S:
-		return "s"
+		return newPseudoKeyWithKey(keybd_event.VK_S)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_T:
-		return "t"
+		return newPseudoKeyWithKey(keybd_event.VK_T)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_U:
-		return "u"
+		return newPseudoKeyWithKey(keybd_event.VK_U)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_V:
-		return "v"
+		return newPseudoKeyWithKey(keybd_event.VK_V)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_W:
-		return "w"
+		return newPseudoKeyWithKey(keybd_event.VK_W)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_X:
-		return "x"
+		return newPseudoKeyWithKey(keybd_event.VK_X)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_Y:
-		return "y"
+		return newPseudoKeyWithKey(keybd_event.VK_Y)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_Z:
-		return "z"
+		return newPseudoKeyWithKey(keybd_event.VK_Z)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_0:
-		return "0"
+		return newPseudoKeyWithKey(keybd_event.VK_0)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_1:
-		return "1"
+		return newPseudoKeyWithKey(keybd_event.VK_1)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_2:
-		return "2"
+		return newPseudoKeyWithKey(keybd_event.VK_2)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_3:
-		return "3"
+		return newPseudoKeyWithKey(keybd_event.VK_3)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_4:
-		return "4"
+		return newPseudoKeyWithKey(keybd_event.VK_4)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_5:
-		return "5"
+		return newPseudoKeyWithKey(keybd_event.VK_5)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_6:
-		return "6"
+		return newPseudoKeyWithKey(keybd_event.VK_6)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_7:
-		return "7"
+		return newPseudoKeyWithKey(keybd_event.VK_7)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_8:
-		return "8"
+		return newPseudoKeyWithKey(keybd_event.VK_8)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_9:
-		return "9"
+		return newPseudoKeyWithKey(keybd_event.VK_9)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_F1:
-		return "f1"
+		return newPseudoKeyWithKey(keybd_event.VK_F1)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_F2:
-		return "f2"
+		return newPseudoKeyWithKey(keybd_event.VK_F2)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_F3:
-		return "f3"
+		return newPseudoKeyWithKey(keybd_event.VK_F3)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_F4:
-		return "f4"
+		return newPseudoKeyWithKey(keybd_event.VK_F4)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_F5:
-		return "f5"
+		return newPseudoKeyWithKey(keybd_event.VK_F5)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_F6:
-		return "f6"
+		return newPseudoKeyWithKey(keybd_event.VK_F6)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_F7:
-		return "f7"
+		return newPseudoKeyWithKey(keybd_event.VK_F7)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_F8:
-		return "f8"
+		return newPseudoKeyWithKey(keybd_event.VK_F8)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_F9:
-		return "f9"
+		return newPseudoKeyWithKey(keybd_event.VK_F9)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_F10:
-		return "f10"
+		return newPseudoKeyWithKey(keybd_event.VK_F10)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_F11:
-		return "f11"
+		return newPseudoKeyWithKey(keybd_event.VK_F11)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_F12:
-		return "f12"
+		return newPseudoKeyWithKey(keybd_event.VK_F12)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_DEL:
-		return "backspace"
+		return newPseudoKeyWithKey(keybd_event.VK_DELETE)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_FORWARD_DEL:
-		return "delete"
+		return newPseudoKeyWithKey(keybd_event.VK_ForwardDelete)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_ENTER:
-		return "enter"
+		return newPseudoKeyWithKey(keybd_event.VK_ENTER)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_TAB:
-		return "tab"
+		return newPseudoKeyWithKey(keybd_event.VK_TAB)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_ESCAPE:
-		return "escape"
+		return newPseudoKeyWithKey(keybd_event.VK_ESC)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_DPAD_UP:
-		return "up"
+		return newPseudoKeyWithKey(keybd_event.VK_UP)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_DPAD_DOWN:
-		return "down"
+		return newPseudoKeyWithKey(keybd_event.VK_DOWN)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_DPAD_RIGHT:
-		return "right"
+		return newPseudoKeyWithKey(keybd_event.VK_RIGHT)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_DPAD_LEFT:
-		return "left"
+		return newPseudoKeyWithKey(keybd_event.VK_LEFT)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_MOVE_HOME:
-		return "home"
+		return newPseudoKeyWithKey(keybd_event.VK_HOME)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_MOVE_END:
-		return "end"
+		return newPseudoKeyWithKey(keybd_event.VK_END)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_PAGE_UP:
-		return "pageup"
+		return newPseudoKeyWithKey(keybd_event.VK_PAGEUP)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_PAGE_DOWN:
-		return "pagedown"
+		return newPseudoKeyWithKey(keybd_event.VK_PAGEDOWN)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_META_LEFT:
-		switch platform {
-		case outer.Platform_PLATFORM_MACOS:
-			return "lcmd"
-		case outer.Platform_PLATFORM_WINDOWS:
-			return "cmd"
-		}
+		return PseudoKey{
+			key:      -1,
+			hasSuper: true,
+		}, nil
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_META_RIGHT:
-		switch platform {
-		case outer.Platform_PLATFORM_MACOS:
-			return "rcmd"
-		case outer.Platform_PLATFORM_WINDOWS:
-			return "cmd"
-		}
+		return PseudoKey{
+			key:      -1,
+			hasSuper: true,
+		}, nil
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_ALT_LEFT:
-		return "lalt"
+		return PseudoKey{
+			key:    -1,
+			hasALT: true,
+		}, nil
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_ALT_RIGHT:
-		return "ralt"
+		return PseudoKey{
+			key:      -1,
+			hasALTGR: true,
+		}, nil
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_CTRL_LEFT:
-		return "lctrl"
+		return PseudoKey{
+			key:     -1,
+			hasCTRL: true,
+		}, nil
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_CTRL_RIGHT:
-		return "rctrl"
+		return PseudoKey{
+			key:     -1,
+			hasCTRL: true,
+		}, nil
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_SHIFT_LEFT:
-		return "lshift"
+		return PseudoKey{
+			key:      -1,
+			hasSHIFT: true,
+		}, nil
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_SHIFT_RIGHT:
-		return "rshift"
+		return PseudoKey{
+			key:       -1,
+			hasRSHIFT: true,
+		}, nil
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_SWITCH_CHARSET:
-		return "capslock"
+		return emptyPseudoKey, errors.New("not supported")
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_CAPS_LOCK:
-		return "capslock"
+		return newPseudoKeyWithKey(keybd_event.VK_CAPSLOCK)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_SPACE:
-		return "space"
+		return newPseudoKeyWithKey(keybd_event.VK_SPACE)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_SYSRQ:
-		return "printscreen"
+		return emptyPseudoKey, errors.New("not supported")
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_VOLUME_MUTE:
-		return "audio_mute"
+		return newPseudoKeyWithKey(keybd_event.VK_MUTE)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_VOLUME_DOWN:
-		return "audio_vol_down"
+		return newPseudoKeyWithKey(keybd_event.VK_VOLUMEDOWN)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_VOLUME_UP:
-		return "audio_vol_up"
+		return newPseudoKeyWithKey(keybd_event.VK_VOLUMEUP)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_INSERT:
-		return "insert"
+		return emptyPseudoKey, errors.New("not supported")
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_NUMPAD_0:
-		return "num0"
+		return newPseudoKeyWithKey(keybd_event.VK_Keypad0)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_NUMPAD_1:
-		return "num1"
+		return newPseudoKeyWithKey(keybd_event.VK_Keypad1)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_NUMPAD_2:
-		return "num2"
+		return newPseudoKeyWithKey(keybd_event.VK_Keypad2)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_NUMPAD_3:
-		return "num3"
+		return newPseudoKeyWithKey(keybd_event.VK_Keypad3)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_NUMPAD_4:
-		return "num4"
+		return newPseudoKeyWithKey(keybd_event.VK_Keypad4)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_NUMPAD_5:
-		return "num5"
+		return newPseudoKeyWithKey(keybd_event.VK_Keypad5)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_NUMPAD_6:
-		return "num6"
+		return newPseudoKeyWithKey(keybd_event.VK_Keypad6)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_NUMPAD_7:
-		return "num7"
+		return newPseudoKeyWithKey(keybd_event.VK_Keypad7)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_NUMPAD_8:
-		return "num8"
+		return newPseudoKeyWithKey(keybd_event.VK_Keypad8)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_NUMPAD_9:
-		return "num9"
+		return newPseudoKeyWithKey(keybd_event.VK_Keypad9)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_NUM_LOCK:
-		return "num_lock"
+		return emptyPseudoKey, errors.New("not supported")
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_PERIOD:
-		return "num."
+		return newPseudoKeyWithKey(keybd_event.VK_Period)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_NUMPAD_DOT:
-		return "num."
+		return emptyPseudoKey, errors.New("not supported")
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_NUMPAD_ADD:
-		return "num+"
+		return newPseudoKeyWithKey(keybd_event.VK_KeypadPlus)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_NUMPAD_SUBTRACT:
-		return "num-"
+		return newPseudoKeyWithKey(keybd_event.VK_KeypadMinus)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_NUMPAD_MULTIPLY:
-		return "num*"
+		return newPseudoKeyWithKey(keybd_event.VK_KeypadMultiply)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_NUMPAD_DIVIDE:
-		return "num/"
+		return newPseudoKeyWithKey(keybd_event.VK_KeypadDivide)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_CLEAR:
-		return "num_clear"
+		return newPseudoKeyWithKey(keybd_event.VK_KeypadClear)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_NUMPAD_ENTER:
-		return "num_enter"
+		return newPseudoKeyWithKey(keybd_event.VK_KeypadEnter)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_NUMPAD_EQUALS:
-		return "num_eqaul"
+		return newPseudoKeyWithKey(keybd_event.VK_KeypadEquals)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_COMMA:
-		return ","
+		return newPseudoKeyWithKey(keybd_event.VK_COMMA)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_SLASH:
-		return "/"
+		return newPseudoKeyWithKey(keybd_event.VK_SLASH)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_BACKSLASH:
-		return "\\"
+		return newPseudoKeyWithKey(keybd_event.VK_BACKSLASH)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_PLUS:
-		return "+"
+		return newPseudoKeyWithKey(keybd_event.VK_SP3)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_MINUS:
-		return "-"
+		return newPseudoKeyWithKey(keybd_event.VK_SP2)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_EQUALS:
-		return "="
+		return newPseudoKeyWithKey(keybd_event.VK_SP3)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_SEMICOLON:
-		return ";"
+		return newPseudoKeyWithKey(keybd_event.VK_SP6)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_LEFT_BRACKET:
-		return "["
+		return newPseudoKeyWithKey(keybd_event.VK_SP4)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_RIGHT_BRACKET:
-		return "]"
+		return newPseudoKeyWithKey(keybd_event.VK_SP5)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_GRAVE:
-		return "`"
+		return newPseudoKeyWithKey(keybd_event.VK_SP1)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_APOSTROPHE:
-		return "'"
+		return newPseudoKeyWithKey(keybd_event.VK_SP7)
 	}
-	return ""
+	return emptyPseudoKey, errors.New("not supported")
 }
