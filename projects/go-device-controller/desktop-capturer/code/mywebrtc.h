@@ -3,7 +3,7 @@
 
 namespace mywebrtc
 {
-void prepare(int port, int width, int height, int fps);
+void prepare(int port, int width, int height, int fps, int pid);
 void connect();
 void createEncoder();
 void startCapture();

@@ -21,6 +21,7 @@ void StreamingCommand(args::Subparser &parser)
     args::ValueFlag<int> width(parser, "width", "width to encode", {"width"}, 0);
     args::ValueFlag<int> height(parser, "height", "height to encode", {"height"}, 0);
     args::ValueFlag<int> fps(parser, "fps", "fps to encode", {"fps"}, 30);
+    args::ValueFlag<int> pid(parser, "pid", "pid to capture", {"pid"}, 0);
     try
     {
         parser.Parse();
@@ -60,8 +61,9 @@ void StreamingCommand(args::Subparser &parser)
     std::cout << "width: " << width.Get() << std::endl << std::flush;
     std::cout << "height: " << height.Get() << std::endl << std::flush;
     std::cout << "fps: " << fps.Get() << std::endl << std::flush;
+    std::cout << "pid: " << pid.Get() << std::endl << std::flush;
 
-    mywebrtc::prepare(port.Get(), width.Get(), height.Get(), fps.Get());
+    mywebrtc::prepare(port.Get(), width.Get(), height.Get(), fps.Get(), pid.Get());
     mywebrtc::connect();
     mywebrtc::createEncoder();
     mywebrtc::startCapture();
@@ -95,7 +97,7 @@ void WindowCommand(args::Subparser &parser)
     if (info)
     {
         std::string json;
-        mywindows::getInfos(json);
+        mywindows::getInfosString(json);
         std::cout << json << std::endl << std::flush;
     }
 }

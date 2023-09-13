@@ -75,6 +75,7 @@ func (s *desktopLibwebrtcSurface) Connect(serial string, screenCaptureOption *st
 		"--width", fmt.Sprintf("%d", width),
 		"--height", fmt.Sprintf("%d", height),
 		"--fps", strconv.FormatUint(screenCaptureOption.GetMaxFps(), 10),
+		"--pid", strconv.FormatUint(0, 10),
 	)
 	if err != nil {
 		log.Inst.Error("desktopLibwebrtcSurface.Connect", zap.String("serial", serial), zap.Error(err))

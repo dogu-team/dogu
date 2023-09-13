@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <chrono>
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <thread>
 #include <vector>
@@ -26,6 +25,7 @@
 
 #if defined(_WIN32)
 #include "winuser.h"
+#include "modules/desktop_capture/win/window_capture_utils.h"
 #pragma comment(lib, "User32.lib")
 #elif defined(__APPLE__)
 #include "modules/desktop_capture/mac/desktop_configuration.h"
@@ -35,52 +35,45 @@
 #error "Unsupported platform."
 #endif // defined(_WIN32)
 
-struct WindowInfo
-{
-    intptr_t id = 0;
-    intptr_t pid = 0;
-    std::string title = "";
-
-    std::string ToJson() const
-    {
-        std::stringstream ss;
-        ss << "{";
-        ss << "\"id\":" << id << ",";
-        ss << "\"pid\":" << pid << ",";
-        ss << "\"title\":\"" << title << "\"";
-        ss << "}";
-        return ss.str();
-    }
-};
 
 namespace mywindows
 {
-void getInfos(std::string &out)
-{
-    webrtc::DesktopCaptureOptions option = webrtc::DesktopCaptureOptions::CreateDefault();
-    webrtc::DesktopCapturer::SourceList desktop_windows;
-    std::unique_ptr<webrtc::DesktopCapturer> capturer = webrtc::DesktopCapturer::CreateWindowCapturer(option);
-    capturer->GetSourceList(&desktop_windows);
 
-    std::vector<WindowInfo> infos;
-    for (auto &s : desktop_windows)
-    {
-        WindowInfo info;
-        info.id = s.id;
-        info.title = s.title;
-        std::cout << "s: " << s.title << std::endl << std::flush;
+std::vector<WindowInfo> getInfos()
+{
+  
+  webrtc::DesktopCaptureOptions option = webrtc::DesktopCaptureOptions::CreateDefault();
+  webrtc::DesktopCapturer::SourceList desktop_windows;
+  std::unique_ptr<webrtc::DesktopCapturer> capturer = webrtc::DesktopCapturer::CreateWindowCapturer(option);
+  capturer->GetSourceList(&desktop_windows);
+
+  std::vector<WindowInfo> infos;
+  for (auto &s : desktop_windows)
+  {
+      WindowInfo info;
+      info.id = s.id;
+      info.title = s.title;
+      std::cout << "s: " << s.title << std::endl << std::flush;
 
 #if defined(_WIN32)
-        DWORD processId;
-        GetWindowThreadProcessId(HWND(s.id), &processId);
-        info.pid = processId;
+      DWORD processId;
+      GetWindowThreadProcessId(HWND(s.id), &processId);
+      info.pid = processId;
 #elif defined(__APPLE__)
-        info.pid = webrtc::GetWindowOwnerPid(uint32_t(s.id));
+      info.pid = webrtc::GetWindowOwnerPid(uint32_t(s.id));
+    info.rect = webrtc::GetWindowBounds(uint32_t(s.id));
 #else
 #error "Unsupported platform."
 #endif // defined(_WIN32 )
-        infos.push_back(info);
-    }
+      infos.push_back(info);
+  }
+  
+  return infos;
+}
+
+void getInfosString(std::string &out)
+{
+  auto infos = getInfos();
 
     std::stringstream ss;
     ss << "[";

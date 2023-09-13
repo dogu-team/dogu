@@ -89,6 +89,7 @@ int g_port;
 int g_width;
 int g_height;
 int g_fps;
+int g_pid;
 int g_frameDeltaMs;
 int g_moderatedframeDeltaMs;
 
@@ -198,12 +199,13 @@ class CaptureCallback : public webrtc::DesktopCapturer::Callback
     rtc::scoped_refptr<webrtc::I420Buffer> i420_buffer_;
 };
 
-void prepare(int port, int width, int height, int fps)
+void prepare(int port, int width, int height, int fps, int pid)
 {
     g_port = port;
     g_width = width & ~1;
     g_height = height & ~1;
     g_fps = fps;
+  g_pid = pid;
 
     g_frameDeltaMs = (int)(1000 / g_fps);
     g_moderatedframeDeltaMs = g_frameDeltaMs;
