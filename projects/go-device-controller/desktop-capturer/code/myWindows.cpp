@@ -59,6 +59,7 @@ std::vector<WindowInfo> getInfos()
       DWORD processId;
       GetWindowThreadProcessId(HWND(s.id), &processId);
       info.pid = processId;
+      webrtc::GetWindowRect(HWND(s.id), &info.rect);
 #elif defined(__APPLE__)
       info.pid = webrtc::GetWindowOwnerPid(uint32_t(s.id));
     info.rect = webrtc::GetWindowBounds(uint32_t(s.id));
