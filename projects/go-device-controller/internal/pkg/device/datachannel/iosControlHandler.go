@@ -37,6 +37,10 @@ func NewIosControlHandler(serial string, getDeviceAgentUrlFunc func() string) *I
 	return &ach
 }
 
+func (h *IosControlHandler) OnOpen() error {
+	return nil
+}
+
 func (h *IosControlHandler) SetSendFunc(sendFunc func(*params.CfGdcDaResult, error)) {
 	h.sendFunc = sendFunc
 }

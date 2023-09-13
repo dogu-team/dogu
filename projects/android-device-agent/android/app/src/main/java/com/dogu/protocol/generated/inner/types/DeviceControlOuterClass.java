@@ -65,6 +65,14 @@ public final class DeviceControlOuterClass {
      * <code>DEVICE_CONTROL_TYPE_AOS_ROTATE_DEVICE = 12;</code>
      */
     DEVICE_CONTROL_TYPE_AOS_ROTATE_DEVICE(12),
+    /**
+     * <code>DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_FOCUSED = 30;</code>
+     */
+    DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_FOCUSED(30),
+    /**
+     * <code>DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_UNFOCUSED = 31;</code>
+     */
+    DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_UNFOCUSED(31),
     UNRECOGNIZED(-1),
     ;
 
@@ -193,6 +201,14 @@ public final class DeviceControlOuterClass {
      */
     public static final int DEVICE_CONTROL_TYPE_DESKTOP_SET_CLIPBOARD_VALUE = 10;
     /**
+     * <code>DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_FOCUSED = 30;</code>
+     */
+    public static final int DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_FOCUSED_VALUE = 30;
+    /**
+     * <code>DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_UNFOCUSED = 31;</code>
+     */
+    public static final int DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_UNFOCUSED_VALUE = 31;
+    /**
      * <code>DEVICE_CONTROL_TYPE_IOS_INJECT_KEYCODE = 1;</code>
      */
     public static final int DEVICE_CONTROL_TYPE_IOS_INJECT_KEYCODE_VALUE = 1;
@@ -244,6 +260,8 @@ public final class DeviceControlOuterClass {
         case 10: return DEVICE_CONTROL_TYPE_AOS_SET_CLIPBOARD;
         case 11: return DEVICE_CONTROL_TYPE_AOS_SET_SCREEN_POWER_MODE;
         case 12: return DEVICE_CONTROL_TYPE_AOS_ROTATE_DEVICE;
+        case 30: return DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_FOCUSED;
+        case 31: return DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_UNFOCUSED;
         default: return null;
       }
     }
