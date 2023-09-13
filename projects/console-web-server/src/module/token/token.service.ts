@@ -30,6 +30,12 @@ export class TokenService {
     return hostToken;
   }
 
+  static createEmailUnsubscribeToken(): string {
+    const tokenBody = this.createToken();
+    const emailUnsubscribeToken = tokenBody;
+    return emailUnsubscribeToken;
+  }
+
   static createExpiredAt(duration: DurationLike): Date {
     return DateTime.now().plus(duration).toJSDate();
   }

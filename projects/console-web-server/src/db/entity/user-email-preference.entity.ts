@@ -11,6 +11,9 @@ export class UserEmailPreference implements UserEmailPreferenceBase {
   @Column({ type: 'smallint', name: UserEmailPreferencePropSnake.newsletter, default: 0, nullable: false })
   newsletter!: number;
 
+  @Column({ type: 'character varying', name: UserEmailPreferencePropSnake.token, nullable: false, default: '' })
+  token!: string;
+
   @ColumnTemplate.CreateDate(UserEmailPreferencePropSnake.created_at)
   createdAt!: Date;
 

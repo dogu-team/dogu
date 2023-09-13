@@ -6,6 +6,7 @@ import { UserEmailPreference } from '../../db/entity/user-email-preference.entit
 // import { UserGitlab } from '../../db/entity/user-gitlab.entity';
 import { UserSns } from '../../db/entity/user-sns.entity';
 import { User } from '../../db/entity/user.entity';
+import { TokenService } from '../token/token.service';
 
 export async function createUser(manager: EntityManager, email: string, password: string | null, name: string) {
   let savePassword;
@@ -44,7 +45,8 @@ export async function createSNSUser(manager: EntityManager, userId: UserId, user
 // }
 
 export async function createUserEmailPreference(manager: EntityManager, userId: UserId, newsletter: boolean) {
-  const userEmailPreference = manager.getRepository(UserEmailPreference).create({ userId, newsletter: newsletter ? 1 : 0 });
+  const token = TokenService.createEmailUnsubscribeToken();
+  const userEmailPreference = manager.getRepository(UserEmailPreference).create({ userId, newsletter: newsletter ? 1 : 0, token });
   await manager.getRepository(UserEmailPreference).save(userEmailPreference);
 }
 
