@@ -91,6 +91,7 @@ export class PrivateDeviceController {
         deviceId,
       };
       const responseValidated = await transformAndValidate(PrivateDevice.createDevice.responseBody, response);
+      await DeviceStatusService.updateDeviceRunners(manager, deviceId);
       return responseValidated;
     });
 
