@@ -136,8 +136,9 @@ export class PionStreamingService implements StreamingService {
     return result.error;
   }
 
-  async stopRecord(serial: string): Promise<ErrorResult> {
-    const result = await this.grpcClient.call('dcGdcStopScreenRecordParam', 'dcGdcStopScreenRecordResult', { serial: serial }).catch((e) => {
+  async stopRecord(serial: string, filePath: string): Promise<ErrorResult> {
+    const tmpFilePath = makeTmpFilePath(filePath);
+    const result = await this.grpcClient.call('dcGdcStopScreenRecordParam', 'dcGdcStopScreenRecordResult', { serial, filePath: tmpFilePath }).catch((e) => {
       throw new ErrorResultError(Code.CODE_NETWORK_CONNECTION_ABORTED, `PionStreamingService.stopStreaming error: ${stringifyError(e)}`);
     });
     if (!result.error) {

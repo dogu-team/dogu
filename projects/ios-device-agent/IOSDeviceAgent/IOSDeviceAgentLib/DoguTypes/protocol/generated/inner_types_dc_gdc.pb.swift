@@ -179,6 +179,8 @@ public struct Inner_Types_DcGdcStopScreenRecordParam {
 
   public var serial: String = String()
 
+  public var filePath: String = String()
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -573,6 +575,7 @@ extension Inner_Types_DcGdcStopScreenRecordParam: SwiftProtobuf.Message, SwiftPr
   public static let protoMessageName: String = _protobuf_package + ".DcGdcStopScreenRecordParam"
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "serial"),
+    2: .standard(proto: "file_path"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -582,6 +585,7 @@ extension Inner_Types_DcGdcStopScreenRecordParam: SwiftProtobuf.Message, SwiftPr
       // enabled. https://github.com/apple/swift-protobuf/issues/1034
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularStringField(value: &self.serial) }()
+      case 2: try { try decoder.decodeSingularStringField(value: &self.filePath) }()
       default: break
       }
     }
@@ -591,11 +595,15 @@ extension Inner_Types_DcGdcStopScreenRecordParam: SwiftProtobuf.Message, SwiftPr
     if !self.serial.isEmpty {
       try visitor.visitSingularStringField(value: self.serial, fieldNumber: 1)
     }
+    if !self.filePath.isEmpty {
+      try visitor.visitSingularStringField(value: self.filePath, fieldNumber: 2)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Inner_Types_DcGdcStopScreenRecordParam, rhs: Inner_Types_DcGdcStopScreenRecordParam) -> Bool {
     if lhs.serial != rhs.serial {return false}
+    if lhs.filePath != rhs.filePath {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

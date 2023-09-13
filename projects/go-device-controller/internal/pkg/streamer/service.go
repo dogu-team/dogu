@@ -11,11 +11,13 @@ import (
 	"go-device-controller/types/protocol/generated/proto/outer/streaming"
 	gotypes "go-device-controller/types/types"
 
+	"go-device-controller/internal/pkg/device/surface"
 	log "go-device-controller/internal/pkg/log"
 	"go-device-controller/internal/pkg/muxer"
 
 	"go-device-controller/internal/pkg/device"
 
+	"github.com/samber/lo"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -106,15 +108,27 @@ func (s *GoDeviceControllerService) StartStreaming(param *types.DcGdcStartStream
 func (s *GoDeviceControllerService) startRecording(a *params.DcGdcParam_DcGdcStartScreenRecordParam) *outer.ErrorResult {
 	serial := a.DcGdcStartScreenRecordParam.Serial
 	option := a.DcGdcStartScreenRecordParam.Option
+	log.Inst.Debug("GoDeviceControllerService.startRecording", zap.Any("option", option))
 	recorders := s.devices.FindSurfaceListeners(serial, muxer.MuxerType)
-	if len(recorders) > 0 {
+	_, ok := lo.Find(recorders, func(i surface.SurfaceListener) bool {
+		muxer, ok := i.(muxer.Muxer)
+		if ok {
+			return muxer.FilePath() == option.FilePath
+		}
+		return false
+	})
+
+	if ok {
+		log.Inst.Warn("GoDeviceControllerService.startRecording already recording", zap.Any("option", option))
 		return &outer.ErrorResult{
 			Code:    outer.Code_CODE_SCREENRECORD_ALREADY_RECORDING,
 			Message: "already recording",
 		}
 	}
+
 	context, err := s.devices.GetContext(serial)
 	if err != nil {
+		log.Inst.Warn("GoDeviceControllerService.startRecording device not found", zap.Any("option", option))
 		return &outer.ErrorResult{
 			Code:    outer.Code_CODE_SCREENRECORD_NOTSTARTED,
 			Message: "device not found",
@@ -130,38 +144,41 @@ func (s *GoDeviceControllerService) startRecording(a *params.DcGdcParam_DcGdcSta
 
 func (s *GoDeviceControllerService) stopRecording(a *params.DcGdcParam_DcGdcStopScreenRecordParam) *types.DcGdcStopScreenRecordResult {
 	serial := a.DcGdcStopScreenRecordParam.GetSerial()
-	listeners := s.devices.FindSurfaceListeners(serial, muxer.MuxerType)
-	if len(listeners) == 0 {
+	log.Inst.Debug("GoDeviceControllerService.stopRecording", zap.Any("serial", serial), zap.String("filePath", a.DcGdcStopScreenRecordParam.GetFilePath()))
+	recorders := s.devices.FindSurfaceListeners(serial, muxer.MuxerType)
+	targetRecorder, ok := lo.Find(recorders, func(i surface.SurfaceListener) bool {
+		muxer, ok := i.(muxer.Muxer)
+		if ok {
+			return muxer.FilePath() == a.DcGdcStopScreenRecordParam.GetFilePath()
+		}
+		return false
+	})
+
+	if !ok {
+		log.Inst.Warn("GoDeviceControllerService.stopRecording not found", zap.Any("serial", serial), zap.String("filePath", a.DcGdcStopScreenRecordParam.GetFilePath()))
 		return &types.DcGdcStopScreenRecordResult{
 			Error: &outer.ErrorResult{
 				Code:    outer.Code_CODE_SCREENRECORD_NOTSTARTED,
 				Message: "recording notstarted",
 			},
 		}
-	} else if len(listeners) > 1 {
+	}
+
+	muxer, ok := targetRecorder.(muxer.Muxer)
+	if !ok {
+		log.Inst.Warn("GoDeviceControllerService.stopRecording not found", zap.Any("serial", serial), zap.String("filePath", a.DcGdcStopScreenRecordParam.GetFilePath()))
 		return &types.DcGdcStopScreenRecordResult{
 			Error: &outer.ErrorResult{
-				Code:    outer.Code_CODE_SCREENRECORD_MULTIPLE_RECORDING,
-				Message: "multiple recording",
+				Code:    outer.Code_CODE_SCREENRECORD_NOTSTARTED,
+				Message: "recorder not found",
 			},
 		}
 	}
-	for _, listener := range listeners {
-		muxer, ok := listener.(muxer.Muxer)
-		if ok {
-			filePath := muxer.FilePath()
-			s.devices.RemoveSurfaceListener(serial, muxer)
-			return &types.DcGdcStopScreenRecordResult{
-				Error:    gotypes.Success,
-				FilePath: filePath,
-			}
-		}
-	}
+	filePath := muxer.FilePath()
+	s.devices.RemoveSurfaceListener(serial, muxer)
 	return &types.DcGdcStopScreenRecordResult{
-		Error: &outer.ErrorResult{
-			Code:    outer.Code_CODE_SCREENRECORD_NOTFOUND,
-			Message: "recorder not found",
-		},
+		Error:    gotypes.Success,
+		FilePath: filePath,
 	}
 }
 

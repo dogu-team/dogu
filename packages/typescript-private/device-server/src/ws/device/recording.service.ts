@@ -9,6 +9,7 @@ import { ScanService } from '../../scan/scan.service';
 
 interface Value {
   serial: Serial;
+  filePath: string;
   isRecording: boolean;
 }
 
@@ -22,7 +23,7 @@ export class DeviceRecordingService
   }
 
   override onWebSocketOpen(webSocket: WebSocket, incommingMessage: IncomingMessage): Value {
-    return { serial: '', isRecording: false };
+    return { serial: '', filePath: '', isRecording: false };
   }
 
   async onWebSocketMessage(webSocket: WebSocket, message: Instance<typeof DeviceRecording.sendMessage>, valueAccessor: WebSocketRegistryValueAccessor<Value>): Promise<void> {
@@ -32,14 +33,14 @@ export class DeviceRecordingService
       throw new Error(`Device with serial ${serial} not found`);
     }
 
-    const { isRecording } = valueAccessor.get();
-    if (isRecording) {
-      const result = await deviceChannel.stopRecord();
+    const { filePath, isRecording } = valueAccessor.get();
+    if (isRecording && 0 < filePath.length) {
+      const result = await deviceChannel.stopRecord(filePath);
       const { code } = result;
       if (CodeUtil.isNotSuccess(code)) {
         closeWebSocketWithTruncateReason(webSocket, 1001, 'Recording stop on message failed');
       }
-      valueAccessor.update({ serial, isRecording: false });
+      valueAccessor.update({ serial, filePath: filePath, isRecording: false });
     }
 
     const result = await deviceChannel.startRecord(screenRecordOption);
@@ -47,11 +48,11 @@ export class DeviceRecordingService
     if (CodeUtil.isNotSuccess(code)) {
       closeWebSocketWithTruncateReason(webSocket, 1001, 'Recording start failed');
     }
-    valueAccessor.update({ serial, isRecording: true });
+    valueAccessor.update({ serial, filePath: screenRecordOption.filePath, isRecording: true });
   }
 
   async onWebSocketClose(webSocket: WebSocket, event: WebSocket.CloseEvent, valueAccessor: WebSocketRegistryValueAccessor<Value>): Promise<void> {
-    const { serial, isRecording } = valueAccessor.get();
+    const { serial, filePath, isRecording } = valueAccessor.get();
     if (!isRecording) {
       return;
     }
@@ -59,7 +60,7 @@ export class DeviceRecordingService
     if (deviceChannel === null) {
       throw new Error(`Device with serial ${serial} not found`);
     }
-    const result = await deviceChannel.stopRecord();
+    const result = await deviceChannel.stopRecord(filePath);
     const { code } = result;
     if (CodeUtil.isNotSuccess(code)) {
       closeWebSocketWithTruncateReason(webSocket, 1001, 'Recording stop on close failed');

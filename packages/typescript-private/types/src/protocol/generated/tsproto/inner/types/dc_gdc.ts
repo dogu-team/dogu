@@ -45,6 +45,7 @@ export interface DcGdcStartScreenRecordResult {
 
 export interface DcGdcStopScreenRecordParam {
   serial: string;
+  filePath: string;
 }
 
 export interface DcGdcStopScreenRecordResult {
@@ -534,13 +535,16 @@ export const DcGdcStartScreenRecordResult = {
 };
 
 function createBaseDcGdcStopScreenRecordParam(): DcGdcStopScreenRecordParam {
-  return { serial: '' };
+  return { serial: '', filePath: '' };
 }
 
 export const DcGdcStopScreenRecordParam = {
   encode(message: DcGdcStopScreenRecordParam, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.serial !== '') {
       writer.uint32(10).string(message.serial);
+    }
+    if (message.filePath !== '') {
+      writer.uint32(18).string(message.filePath);
     }
     return writer;
   },
@@ -555,6 +559,9 @@ export const DcGdcStopScreenRecordParam = {
         case 1:
           message.serial = reader.string();
           break;
+        case 2:
+          message.filePath = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -564,18 +571,23 @@ export const DcGdcStopScreenRecordParam = {
   },
 
   fromJSON(object: any): DcGdcStopScreenRecordParam {
-    return { serial: isSet(object.serial) ? String(object.serial) : '' };
+    return {
+      serial: isSet(object.serial) ? String(object.serial) : '',
+      filePath: isSet(object.filePath) ? String(object.filePath) : '',
+    };
   },
 
   toJSON(message: DcGdcStopScreenRecordParam): unknown {
     const obj: any = {};
     message.serial !== undefined && (obj.serial = message.serial);
+    message.filePath !== undefined && (obj.filePath = message.filePath);
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<DcGdcStopScreenRecordParam>, I>>(object: I): DcGdcStopScreenRecordParam {
     const message = createBaseDcGdcStopScreenRecordParam();
     message.serial = object.serial ?? '';
+    message.filePath = object.filePath ?? '';
     return message;
   },
 };

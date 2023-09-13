@@ -332,8 +332,8 @@ export class IosChannel implements DeviceChannel {
     );
   }
 
-  async stopRecord(): Promise<ErrorResult> {
-    return Promise.resolve(this.streaming.stopRecord(this.serial));
+  async stopRecord(filePath: string): Promise<ErrorResult> {
+    return Promise.resolve(this.streaming.stopRecord(this.serial, filePath));
   }
 
   control(control: DeviceControl): void {

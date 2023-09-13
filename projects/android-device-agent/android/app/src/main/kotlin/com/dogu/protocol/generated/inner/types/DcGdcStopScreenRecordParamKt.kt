@@ -38,6 +38,23 @@ object DcGdcStopScreenRecordParamKt {
     fun clearSerial() {
       _builder.clearSerial()
     }
+
+    /**
+     * <code>string file_path = 2;</code>
+     */
+    var filePath: kotlin.String
+      @JvmName("getFilePath")
+      get() = _builder.getFilePath()
+      @JvmName("setFilePath")
+      set(value) {
+        _builder.setFilePath(value)
+      }
+    /**
+     * <code>string file_path = 2;</code>
+     */
+    fun clearFilePath() {
+      _builder.clearFilePath()
+    }
   }
 }
 @kotlin.jvm.JvmSynthetic

@@ -62,7 +62,7 @@ export interface DeviceChannel {
   startStreamingWebRTC(offer: StreamingOfferDto): PromiseOrValue<ProtoRTCPeerDescription>;
   startStreamingWebRtcWithTrickle(offer: StreamingOfferDto): PromiseOrValue<Observable<StreamingAnswer>>;
   startRecord(option: ScreenRecordOption): PromiseOrValue<ErrorResult>;
-  stopRecord(): PromiseOrValue<ErrorResult>;
+  stopRecord(filePath: string): PromiseOrValue<ErrorResult>;
   turnScreen(isOn: boolean): PromiseOrValue<void>;
 
   // control
