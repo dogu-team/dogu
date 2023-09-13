@@ -4,12 +4,14 @@ go 1.18
 
 require (
 	github.com/at-wat/ebml-go v0.16.0
+	github.com/dogu-team/keybd_event v0.0.0-20230913041537-42fbe7d89c8e
 	github.com/go-vgo/robotgo v1.0.0-beta6
 	github.com/gorilla/websocket v1.5.0
 	github.com/pion/interceptor v0.1.17
 	github.com/pion/rtp v1.8.0
 	github.com/pion/webrtc/v3 v3.2.13
 	github.com/pkg/errors v0.8.1
+	github.com/samber/lo v1.38.1
 	github.com/stretchr/testify v1.8.4
 	go.uber.org/zap v1.23.0
 	golang.org/x/sys v0.9.0
@@ -42,7 +44,6 @@ require (
 	github.com/power-devops/perfstat v0.0.0-20220216144756-c35f1ee13d7c // indirect
 	github.com/robotn/xgb v0.0.0-20190912153532-2cb92d044934 // indirect
 	github.com/robotn/xgbutil v0.0.0-20190912154524-c861d6f87770 // indirect
-	github.com/samber/lo v1.38.1 // indirect
 	github.com/shirou/gopsutil/v3 v3.22.10 // indirect
 	github.com/tklauser/go-sysconf v0.3.11 // indirect
 	github.com/tklauser/numcpus v0.6.0 // indirect
