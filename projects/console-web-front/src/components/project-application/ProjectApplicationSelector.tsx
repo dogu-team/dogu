@@ -15,13 +15,14 @@ interface Props extends Omit<SelectProps<string>, 'options'> {
   selectedApplication: ProjectApplicationWithIcon | undefined;
   organizationId: OrganizationId;
   projectId: ProjectId;
-  onSelectApp: (app: ProjectApplicationWithIcon | undefined) => void;
+  onSelectApp: (version: string | undefined, app: ProjectApplicationWithIcon | undefined) => void;
   toggleOpen: () => void;
   close: () => void;
   extension?: string;
+  preOptions?: SelectProps<string>['options'];
 }
 
-const ProjectApplicationSelector = ({ selectedApplication, organizationId, projectId, extension, toggleOpen, close, onSelectApp, ...props }: Props) => {
+const ProjectApplicationSelector = ({ selectedApplication, organizationId, projectId, extension, preOptions, toggleOpen, close, onSelectApp, ...props }: Props) => {
   const { debouncedValue, handleChangeValues } = useDebouncedInputValues();
   const { data, isLoading, error } = useSWR<PageBase<ProjectApplicationWithIcon>>(
     `/organizations/${organizationId}/projects/${projectId}/applications?version=${debouncedValue}${extension ? `&extension=${extension}` : ''}`,
@@ -29,13 +30,10 @@ const ProjectApplicationSelector = ({ selectedApplication, organizationId, proje
   );
 
   const applications = selectedApplication ? [selectedApplication, ...(data?.items || [])] : data?.items;
-  const options: SelectProps['options'] = applications?.map((item) => {
-    return {
-      label: <ProjectApplicationOptionItem app={item} />,
-      value: item.version,
-    };
-  });
-  const isInvalid = !!props.value && !data?.items.find((item) => item.version === props.value);
+  const options: SelectProps['options'] = preOptions
+    ? preOptions.concat(applications?.map((item) => ({ label: <ProjectApplicationOptionItem app={item} />, value: item.version })) ?? [])
+    : applications?.map((item) => ({ label: <ProjectApplicationOptionItem app={item} />, value: item.version }));
+  const isInvalid = !!props.value && props.value !== 'latest' && !data?.items.find((item) => item.version === props.value);
 
   return (
     <Select<string>
@@ -46,9 +44,9 @@ const ProjectApplicationSelector = ({ selectedApplication, organizationId, proje
       status={isInvalid ? 'warning' : undefined}
       suffixIcon={isInvalid ? <WarningFilled style={{ color: '#ffd666' }} /> : undefined}
       onSearch={handleChangeValues}
-      onChange={(e) => {
-        const selected = data?.items.find((item) => item.version === e);
-        onSelectApp(selected);
+      onChange={(version) => {
+        const selected = data?.items.find((item) => item.version === version);
+        onSelectApp(version, selected);
       }}
       dropdownMatchSelectWidth={false}
       filterOption={false}

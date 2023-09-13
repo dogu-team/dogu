@@ -1,11 +1,10 @@
-import { AppstoreOutlined, CloseOutlined } from '@ant-design/icons';
 import { OrganizationId, Platform, PlatformType, ProjectId } from '@dogu-private/types';
-import Link from 'next/link';
+import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 import useSelect from '../../../../hooks/useSelect';
 
-import { flexRowBaseStyle, flexRowCenteredStyle } from '../../../../styles/box';
+import { flexRowBaseStyle } from '../../../../styles/box';
 import PlatformIcon from '../../../device/PlatformIcon';
 import ProjectApplicationSelector from '../../../project-application/ProjectApplicationSelector';
 
@@ -19,6 +18,7 @@ interface Props {
 const PlatformAppVersionSelector = ({ version, platform, onReset, onChange }: Props) => {
   const router = useRouter();
   const { isOpen, toggle, close } = useSelect();
+  const { t } = useTranslation();
 
   const getExtension = () => {
     switch (platform) {
@@ -40,11 +40,22 @@ const PlatformAppVersionSelector = ({ version, platform, onReset, onChange }: Pr
 
       <div style={{ width: '200px' }}>
         <ProjectApplicationSelector
+          preOptions={[
+            {
+              label: (
+                <div>
+                  <b>{t('routine:routineGuiEditorJobAppVersionLatestOptionTitle')}</b>
+                  <LatestDescription>{t('routine:routineGuiEditorJobAppVersionLatestOptionDescription')}</LatestDescription>
+                </div>
+              ),
+              value: 'latest',
+            },
+          ]}
           defaultValue={version}
           value={version}
           organizationId={router.query.orgId as OrganizationId}
           projectId={router.query.pid as ProjectId}
-          onSelectApp={(app) => onChange(platform, app?.version)}
+          onSelectApp={(version, app) => onChange(platform, version)}
           placeholder="Select app"
           extension={getExtension()}
           open={isOpen}
@@ -64,15 +75,15 @@ const AppSelectPlatformWrapper = styled.div`
   margin: .25rem 0;
 `;
 
-const CloseButton = styled.button`
-  padding: 0.25rem;
-  margin-left: 0.25rem;
-  border: none;
-  background-color: transparent;
-  cursor: pointer;
-`;
-
 const PlatformName = styled.div`
   ${flexRowBaseStyle}
   margin-right: 0.5rem;
+`;
+
+const LatestDescription = styled.p`
+  font-size: 0.8rem;
+  color: #999;
+  line-height: 1.5;
+  margin-top: 0.25rem;
+  white-space: pre-wrap;
 `;

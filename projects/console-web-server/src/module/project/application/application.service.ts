@@ -24,14 +24,15 @@ export class ApplicationService {
   ) {}
 
   async getApplicationList(organizationId: OrganizationId, projectId: ProjectId, dto: FindProjectApplicationDto): Promise<Page<ProjectApplicationWithIcon>> {
-    const { version, extension, page, offset } = dto;
+    const { version, extension, latestOnly, page, offset } = dto;
+
     const [applications, count] = await this.dataSource
       .getRepository(ProjectApplication)
       .createQueryBuilder('projectApplication')
       .leftJoinAndSelect(`projectApplication.${ProjectApplicationPropCamel.creator}`, 'creator')
       .where({ organizationId, projectId })
       .andWhere(extension ? 'projectApplication.fileExtension = :extension' : '1=1', { extension: extension })
-      .andWhere(version ? 'projectApplication.version LIKE :version' : '1=1', { version: `%${version}%` })
+      .andWhere(latestOnly ? 'projectApplication.isLatest = 1' : version ? 'projectApplication.version LIKE :version' : '1=1', { version: `%${version}%` })
       .skip(dto.getDBOffset())
       .take(dto.getDBLimit())
       .getManyAndCount();
@@ -64,7 +65,7 @@ export class ApplicationService {
   async getApplicationMeta(name: string, organizationId: OrganizationId, projectId: ProjectId) {}
 
   async getApplicationWithUniquePackage(organizationId: OrganizationId, projectId: ProjectId, dto: FindProjectApplicationDto): Promise<ProjectApplicationWithIcon[]> {
-    const { version, extension } = dto;
+    const { version, extension, latestOnly } = dto;
 
     const applications = await await this.dataSource
       .getRepository(ProjectApplication)
@@ -72,7 +73,7 @@ export class ApplicationService {
       .leftJoinAndSelect(`projectApplication.${ProjectApplicationPropCamel.creator}`, 'creator')
       .where({ organizationId, projectId })
       .andWhere(extension ? 'projectApplication.fileExtension = :extension' : '1=1', { extension: extension })
-      .andWhere(version ? 'projectApplication.version LIKE :version' : '1=1', { version: `%${version}%` })
+      .andWhere(latestOnly ? 'projectApplication.isLatest = 1' : version ? 'projectApplication.version LIKE :version' : '1=1', { version: `%${version}%` })
       .orderBy('projectApplication.createdAt', 'DESC')
       .getMany();
 

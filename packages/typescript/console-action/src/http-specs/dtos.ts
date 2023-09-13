@@ -1,6 +1,6 @@
-import { IsFilledString } from '@dogu-tech/common';
+import { IsFilledString, TransformBooleanString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
-import { IsNumber, ValidateNested } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, ValidateNested } from 'class-validator';
 
 export class GetGitUrlResponse {
   @IsFilledString()
@@ -8,8 +8,14 @@ export class GetGitUrlResponse {
 }
 
 export class GetApplicationListQuery {
+  @IsOptional()
   @IsFilledString()
-  version!: string;
+  version?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  @TransformBooleanString()
+  latestOnly?: boolean;
 
   @IsFilledString()
   extension!: string;

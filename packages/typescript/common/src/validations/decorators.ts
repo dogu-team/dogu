@@ -127,6 +127,6 @@ export function transformBooleanString(value: unknown): boolean {
 
 export function TransformBooleanString(): PropertyDecorator {
   return Transform(({ value }) => {
-    return transformBooleanString(value);
+    return transformBooleanString(value ?? false);
   });
 }
