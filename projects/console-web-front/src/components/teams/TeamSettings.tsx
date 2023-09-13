@@ -102,5 +102,7 @@ const TeamSettings = ({ organizationId, team, onDeleteEnd, onUpdateEnd }: Props)
 export default TeamSettings;
 
 const Box = styled.div`
-  max-width: 500px;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
 `;

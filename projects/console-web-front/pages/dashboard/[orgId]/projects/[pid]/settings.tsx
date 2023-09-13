@@ -268,7 +268,9 @@ export const getServerSideProps: GetServerSideProps = getProjectPageServerSidePr
 export default ProjectSettingPage;
 
 const Box = styled.div`
-  max-width: 500px;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
 `;
 
 const Content = styled.div`

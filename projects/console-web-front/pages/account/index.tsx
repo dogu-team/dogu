@@ -292,7 +292,7 @@ export default AccountPage;
 const Box = styled.div`
   padding: ${(props) => props.theme.spaces.xlarge};
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   margin: 0 auto;
   flex: 1;
   font-size: 0.9rem;
