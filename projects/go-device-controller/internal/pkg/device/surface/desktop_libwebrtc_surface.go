@@ -70,6 +70,7 @@ func (s *desktopLibwebrtcSurface) Connect(serial string, screenCaptureOption *st
 	}
 	s.cmd, err = utils.Execute(
 		exePath,
+		"streaming",
 		"--port", fmt.Sprintf("%d", port),
 		"--width", fmt.Sprintf("%d", width),
 		"--height", fmt.Sprintf("%d", height),

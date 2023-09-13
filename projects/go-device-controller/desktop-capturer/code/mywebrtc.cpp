@@ -42,10 +42,11 @@
 #include "modules/desktop_capture/desktop_frame.h"
 #include "modules/desktop_capture/desktop_region.h"
 
-#ifdef WEBRTC_MAC
+#if defined(__APPLE__)
 #include "modules/desktop_capture/mac/desktop_configuration.h"
 #include "modules/desktop_capture/mac/full_screen_mac_application_handler.h"
-#endif
+#include "modules/desktop_capture/mac/window_list_utils.h"
+#endif // defined(__APPLE__ )
 
 #include "call/rtp_transport_controller_send.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
