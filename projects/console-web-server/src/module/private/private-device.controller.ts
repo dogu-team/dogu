@@ -14,7 +14,7 @@ import { Instance, transformAndValidate } from '@dogu-tech/common';
 import { Body, ConflictException, Controller, Get, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
-import { Device } from '../../db/entity/device.entity';
+import { Device, DEVICE_DEFAULT_MAX_PARALLEL_JOBS_IF_IS_HOST } from '../../db/entity/device.entity';
 import { findDeviceModelNameByModelId } from '../../utils/device';
 import { HOST_ACTION_TYPE } from '../auth/auth.types';
 import { HostPermission } from '../auth/decorators';
@@ -81,7 +81,8 @@ export class PrivateDeviceController {
     // find model name from id
     const modelName = findDeviceModelNameByModelId(body.model);
 
-    const created = this.deviceRepository.create({ ...body, organizationId, name: serial, modelName: modelName ?? undefined });
+    const maxParallelJobs = body.isHost ? DEVICE_DEFAULT_MAX_PARALLEL_JOBS_IF_IS_HOST : undefined;
+    const created = this.deviceRepository.create({ ...body, organizationId, name: serial, modelName: modelName ?? undefined, maxParallelJobs });
 
     const rv = await this.dataSource.transaction(async (manager) => {
       const saved = await manager.save(created);
@@ -90,6 +91,7 @@ export class PrivateDeviceController {
         deviceId,
       };
       const responseValidated = await transformAndValidate(PrivateDevice.createDevice.responseBody, response);
+      await DeviceStatusService.updateDeviceRunners(manager, deviceId);
       return responseValidated;
     });
 
