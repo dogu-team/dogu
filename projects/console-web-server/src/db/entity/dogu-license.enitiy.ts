@@ -7,16 +7,16 @@ export class DoguLicense implements DoguLicenseBase {
   @PrimaryColumn('uuid', { name: DoguLicensePropSnake.dogu_license_id })
   doguLicenseId!: DoguLicenseId;
 
-  @Column({ type: 'enum', name: DoguLicensePropSnake.type, enum: [LicenseTypeKey], nullable: false })
+  @Column({ type: 'enum', name: DoguLicensePropSnake.type, enum: LicenseTypeKey, nullable: false })
   type!: LicenseType;
 
   @Column({ type: 'character varying', name: DoguLicensePropSnake.token, unique: true, nullable: false })
   token!: string;
 
-  @Column({ type: 'character varying', name: DoguLicensePropSnake.organization_id, unique: true, nullable: true })
+  @Column({ type: 'character varying', name: DoguLicensePropSnake.organization_id, unique: false, nullable: true })
   organizationId!: string | null;
 
-  @Column({ type: 'character varying', name: DoguLicensePropSnake.company_name, unique: true, nullable: true })
+  @Column({ type: 'character varying', name: DoguLicensePropSnake.company_name, unique: false, nullable: true })
   companyName!: string | null;
 
   @ColumnTemplate.CreateDate(DoguLicensePropSnake.created_at)

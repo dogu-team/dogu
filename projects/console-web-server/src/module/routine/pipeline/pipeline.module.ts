@@ -11,7 +11,7 @@ import { FileModule } from '../../file/file.module';
 import { InfluxDbModule } from '../../influxdb/influxdb.module';
 import { InitModule } from '../../init/init.module';
 import { DeviceTagService } from '../../organization/device-tag/device-tag.service';
-import { DeviceStatusService } from '../../organization/device/device-status.service';
+import { DeviceModule } from '../../organization/device/device.module';
 import { DestController } from './dest/dest.controller';
 import { DestService } from './dest/dest.service';
 import { DeviceJobController } from './device-job/device-job.controller';
@@ -49,6 +49,7 @@ import { StepService } from './step/step.service';
     InfluxDbModule,
     FileModule,
     SlackModule,
+    DeviceModule,
     forwardRef(() => EventModule),
   ],
   providers: [
@@ -63,7 +64,6 @@ import { StepService } from './step/step.service';
     DestService,
     DeviceJobService,
     StepService,
-    DeviceStatusService,
     DeviceTagService,
   ],
   controllers: [PipelineController, DeviceJobController, StepController, DestController],
@@ -78,7 +78,6 @@ import { StepService } from './step/step.service';
     DeviceJobMessenger,
     DestService,
     StepService,
-    DeviceStatusService,
     DeviceTagService,
   ],
 })

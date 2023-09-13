@@ -1,10 +1,19 @@
-import { CreateLicenseDto, DoguLicenseId, LicenseBase, LicenseValidateClass } from '@dogu-private/console';
+import {
+  CreateLicenseDto,
+  DEFAULT_SELF_HOSTED_LICENSE_DATA,
+  DoguLicenseId,
+  FindLicenseDtoBase,
+  FindLicenseWithSelfHostedDto,
+  LicenseBase,
+  LicenseValidateClass,
+} from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
-import { Retry, stringify, transformAndValidate } from '@dogu-tech/common';
+import { Retry, transformAndValidate } from '@dogu-tech/common';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { DataSource, EntityManager } from 'typeorm';
+import { v4 } from 'uuid';
 import { config } from '../../../../config';
 import { DoguLicense } from '../../../../db/entity/dogu-license.enitiy';
 import { FeatureLicenseService } from '../feature-license.service';
@@ -22,63 +31,103 @@ export class LicenseSelfHostedService extends FeatureLicenseService {
   }
 
   @Retry()
-  private async getLicenseApiCall(organizationId: OrganizationId, doguLicenseId: DoguLicenseId, token: string): Promise<LicenseBase> {
+  private async getLicenseApiCall(dto: FindLicenseWithSelfHostedDto) {
+    const { licenseToken, companyName } = dto;
     const query = new URLSearchParams({
-      companyName: this.companyName,
+      companyName,
     });
 
-    const response = await axios.get(`${this.licenseServerUrl}/licenses/${doguLicenseId}/?${query.toString()}`, {
+    const response = await axios.get(`${this.licenseServerUrl}/licenses/?${query.toString()}`, {
       headers: {
-        Authorization: `Bearer ${token}`,
-        organizationId,
+        Authorization: `Bearer ${licenseToken}`,
       },
     });
+    return response;
+  }
+
+  async getLicense(organizationId: OrganizationId): Promise<LicenseBase> {
+    const doguLicense = await this.dataSource.manager.getRepository(DoguLicense).findOne({ where: { companyName: this.companyName } });
+    if (!doguLicense) {
+      return DEFAULT_SELF_HOSTED_LICENSE_DATA;
+    }
+
+    const token = doguLicense ? doguLicense.token : '';
+
+    let response;
+    try {
+      response = await this.getLicenseApiCall({ licenseToken: token, companyName: this.companyName });
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const data = error.response?.data;
+        const message = data?.message;
+        const statusCode = data?.statusCode;
+
+        if (error.response?.status === HttpStatus.UNAUTHORIZED) {
+          throw new HttpException(`License key is Invaild. companyName: ${this.companyName} licenseToken: ${token}`, HttpStatus.UNAUTHORIZED);
+        } else if (error.response?.status === HttpStatus.BAD_REQUEST) {
+          throw new HttpException(`License Vaildation Failed. companyName: ${this.companyName} licenseToken: ${token} message: ${message}`, HttpStatus.BAD_REQUEST);
+        } else {
+          throw new HttpException(
+            `License Vaildation Failed. Server Error. companyName: ${this.companyName} licenseToken: ${token} error: ${error}`,
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        }
+      }
+      throw new HttpException(`License Vaildation Failed. Server Error.`, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
     const serverLicenseInfo = response.data;
     const licenseInfo = await transformAndValidate(LicenseValidateClass, serverLicenseInfo);
     return licenseInfo;
   }
 
-  async getLicense(organizationId: OrganizationId, doguLicenseId: DoguLicenseId): Promise<LicenseBase> {
-    const doguLicense = await this.dataSource.manager.getRepository(DoguLicense).findOne({ where: { doguLicenseId } });
-    if (!doguLicense) throw new HttpException('License not found', HttpStatus.NOT_FOUND);
-
-    try {
-      const licenseInfo = await this.getLicenseApiCall(organizationId, doguLicenseId, doguLicense.token);
-      return licenseInfo;
-    } catch (error) {
-      throw new HttpException(stringify(error), HttpStatus.BAD_REQUEST);
+  async setLicense(manager: EntityManager, organizationId: OrganizationId, dto: FindLicenseDtoBase): Promise<LicenseBase> {
+    const { licenseToken } = dto;
+    const doguLicense = await manager.getRepository(DoguLicense).findOne({ where: { companyName: this.companyName } });
+    if (doguLicense) {
+      throw new HttpException(`License is already exist. companyName: ${this.companyName}`, HttpStatus.BAD_REQUEST);
     }
+    let response;
+    try {
+      response = await this.getLicenseApiCall({ licenseToken, companyName: this.companyName });
+    } catch (error) {
+      throw new HttpException(`License Vaildation Failed. Server Error. companyName: ${this.companyName} licenseToken: ${licenseToken}`, HttpStatus.BAD_REQUEST);
+    }
+
+    const serverLicenseInfo = response.data;
+    const licenseInfo = await transformAndValidate(LicenseValidateClass, serverLicenseInfo);
+    licenseInfo;
+
+    const doguLicenseId = v4();
+    const newData = manager.getRepository(DoguLicense).create({
+      doguLicenseId,
+      token: licenseToken,
+      companyName: this.companyName,
+      type: licenseInfo.type,
+    });
+    await manager.getRepository(DoguLicense).save(newData);
+    return licenseInfo;
   }
 
   async createLicense(manager: EntityManager, dto: CreateLicenseDto): Promise<string> {
-    // await this.dataSource.manager.transaction(async (manager) => {
-
-    // });
-
-    // const query = new URLSearchParams({
-    //   companyName: this.companyName,
-    // });
-
-    // try {
-    //   const response = await axios.post(`${this.licenseServerUrl}/licenses`, {
-    //     headers: {
-    //       // Authorization: `Bearer ${token}`,
-
-    //     },
-    //   });
-    //   const serverLicenseInfo = response.data;
-    //   const licenseInfo = await transformAndValidate(LicenseValidateClass, serverLicenseInfo);
-    //   return licenseInfo;
-    // } catch (error) {
-    //   throw new HttpException(stringify(error), HttpStatus.BAD_REQUEST);
-    // }
-
-    return '';
+    throw new Error('Method not implemented.');
   }
 
-  async renewLicense(doguLicenseId: DoguLicenseId, dto: CreateLicenseDto): Promise<string> {
-    return '';
+  async renewLicense(manager: EntityManager, organizationId: OrganizationId, dto: FindLicenseDtoBase): Promise<LicenseBase> {
+    const doguLicense = await this.dataSource.manager.getRepository(DoguLicense).findOne({ where: { companyName: this.companyName } });
+    if (!doguLicense) {
+      throw new HttpException(`Current license is not exist.`, HttpStatus.BAD_REQUEST);
+    }
+    if (doguLicense.token === dto.licenseToken) {
+      throw new HttpException(`The license key is already used.`, HttpStatus.BAD_REQUEST);
+    }
+    await manager.getRepository(DoguLicense).softDelete(doguLicense.doguLicenseId);
+
+    const rv = await this.setLicense(manager, organizationId, dto);
+    return rv;
   }
 
-  async deleteLicense(doguLicenseId: DoguLicenseId): Promise<void> {}
+  async deleteLicense(doguLicenseId: DoguLicenseId): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
 }

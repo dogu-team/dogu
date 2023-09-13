@@ -13,7 +13,7 @@ export class LicenseDtoBase {
 
   @IsNumber()
   @Type(() => Number)
-  durationDate?: number;
+  durationDate?: number | null;
 }
 
 export class CreateLicenseWithCloudDto extends LicenseDtoBase {
@@ -44,7 +44,20 @@ export class CreateLicenseDto {
     },
     keepDiscriminatorProperty: true,
   })
-  liceseInfo!: CreateLicenseWithCloudDto | CreateLicenseWithSelfHostedDto;
+  licenseInfo!: CreateLicenseWithCloudDto | CreateLicenseWithSelfHostedDto;
 }
 
-export interface LicenseResponse {}
+export class FindLicenseDtoBase {
+  @IsString()
+  licenseToken!: string;
+}
+
+export class FindLicenseWithCloudDto extends FindLicenseDtoBase {
+  @IsUUID()
+  organizationId!: OrganizationId;
+}
+
+export class FindLicenseWithSelfHostedDto extends FindLicenseDtoBase {
+  @IsString()
+  companyName!: string;
+}

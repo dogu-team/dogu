@@ -55,6 +55,7 @@ import { UserAndInvitationToken } from '../../db/entity/relations/user-and-invit
 import { Routine } from '../../db/entity/routine.entity';
 import { RoutineStep } from '../../db/entity/step.entity';
 import { UserVisit } from '../../db/entity/user-visit.entity';
+import { FeatureLicenseService } from '../../enterprise/module/license/feature-license.service';
 import { castEntity } from '../../types/entity-cast';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { EMPTY_PAGE, Page } from '../common/dto/pagination/page';
@@ -86,6 +87,8 @@ export class OrganizationService {
     private readonly projectService: ProjectService,
     @Inject(RoutineService)
     private readonly routineService: RoutineService,
+    @Inject(FeatureLicenseService)
+    private readonly licenseService: FeatureLicenseService,
   ) {}
 
   async isOrganizationExist(organizationId: OrganizationId): Promise<boolean> {
@@ -105,7 +108,7 @@ export class OrganizationService {
     return org;
   }
 
-  async findOrganizationByOrganizationId(organizationId: OrganizationId): Promise<OrganizationBase> {
+  async findOrganizationByOrganizationId(organizationId: OrganizationId): Promise<OrganizationResponse> {
     const organizationRoleIdPropSnake = OrganizationAndUserAndOrganizationRolePropSnake.organization_role_id;
     const organizationRoleIdPropCamel = OrganizationAndUserAndOrganizationRolePropCamel.organizationRoleId;
 
@@ -141,11 +144,13 @@ export class OrganizationService {
     }
     const owner = orgUserRole.user;
 
-    const orgBase: OrganizationResponse = { ...organization, owner };
+    const licenseInfo = await this.licenseService.getLicense(organizationId);
+
+    const orgBase: OrganizationResponse = { ...organization, owner, licenseInfo };
     return orgBase;
   }
 
-  async createOrganization(manager: EntityManager, userId: UserId, dto: createOrganizationDto): Promise<OrganizationResponse> {
+  async createOrganization(manager: EntityManager, userId: UserId, dto: createOrganizationDto): Promise<OrganizationBase> {
     const orgData = manager.getRepository(Organization).create({ name: dto.name });
     const org = await manager.getRepository(Organization).save(orgData);
     const organizationId = org.organizationId;
@@ -173,7 +178,7 @@ export class OrganizationService {
     return org;
   }
 
-  async updateOrganization(userPayload: UserPayload, organizationId: OrganizationId, dto: UpdateOrganizationDto): Promise<OrganizationResponse> {
+  async updateOrganization(userPayload: UserPayload, organizationId: OrganizationId, dto: UpdateOrganizationDto): Promise<OrganizationBase> {
     const organization = await this.dataSource.getRepository(Organization).findOne({
       where: { organizationId },
     });
@@ -185,14 +190,14 @@ export class OrganizationService {
     const newData = Object.assign(organization, dto);
 
     const rv = await this.dataSource.transaction(async (manager) => {
-      const org: OrganizationResponse = await manager.getRepository(Organization).save(newData);
+      const org: OrganizationBase = await manager.getRepository(Organization).save(newData);
       return org;
     });
 
     return rv;
   }
 
-  async uploadOrganizationImage(userPayload: UserPayload, organizationId: OrganizationId, file: Express.Multer.File): Promise<OrganizationResponse> {
+  async uploadOrganizationImage(userPayload: UserPayload, organizationId: OrganizationId, file: Express.Multer.File): Promise<OrganizationBase> {
     const organization = await this.dataSource.getRepository(Organization).findOne({
       where: { organizationId },
     });

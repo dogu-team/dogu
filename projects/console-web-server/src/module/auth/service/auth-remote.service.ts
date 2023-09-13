@@ -31,7 +31,7 @@ export class AuthRemoteService {
       throw new HttpException('Token is invalid', HttpStatus.UNAUTHORIZED);
     }
 
-    if (TokenService.isExpired(tokenCheck)) {
+    if (TokenService.isExpired(tokenCheck.expiredAt)) {
       throw new HttpException('Token is expired', HttpStatus.UNAUTHORIZED);
     }
 

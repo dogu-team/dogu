@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { config, dataSourceConfig } from '../../config';
 import { HostAppModule } from '../../enterprise/module/host-app/host-app.module';
 import { SlackModule } from '../../enterprise/module/integration/slack/slack.module';
+import { LicenseModule } from '../../enterprise/module/license/feature-license.module';
 import { RecordModule } from '../../enterprise/module/record/record.module';
 import { FEATURE_CONFIG } from '../../feature.config';
 import { LoggerMiddleware } from '../../middleware/logger.middleware';
@@ -89,6 +90,7 @@ const BASE_MODULES = [
   RemoteWebDriverBiDiModule,
   ChangeLogModule,
   HostAppModule,
+  LicenseModule,
 ];
 
 const MODULES =
