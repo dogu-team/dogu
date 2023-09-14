@@ -73,11 +73,13 @@ export type GitCheckoutOptions = GitCheckoutWithBranchOptions | GitCheckoutWithT
 
 export interface GitPullOptions {
   noFastForward?: boolean;
+  allowUnrelatedHistories?: boolean;
 }
 
 function mergeGitPullOptions(options?: GitPullOptions): Required<GitPullOptions> {
   return {
     noFastForward: true,
+    allowUnrelatedHistories: true,
     ...options,
   };
 }
