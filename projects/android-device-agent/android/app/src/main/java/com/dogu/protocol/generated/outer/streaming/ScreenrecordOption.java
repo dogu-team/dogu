@@ -36,6 +36,17 @@ public final class ScreenrecordOption {
         getFilePathBytes();
 
     /**
+     * <code>optional int32 pid = 3;</code>
+     * @return Whether the pid field is set.
+     */
+    boolean hasPid();
+    /**
+     * <code>optional int32 pid = 3;</code>
+     * @return The pid.
+     */
+    int getPid();
+
+    /**
      * <code>optional string etc_param = 10;</code>
      * @return Whether the etcParam field is set.
      */
@@ -158,6 +169,40 @@ public final class ScreenrecordOption {
       
     }
 
+    public static final int PID_FIELD_NUMBER = 3;
+    private int pid_;
+    /**
+     * <code>optional int32 pid = 3;</code>
+     * @return Whether the pid field is set.
+     */
+    @java.lang.Override
+    public boolean hasPid() {
+      return ((bitField0_ & 0x00000001) != 0);
+    }
+    /**
+     * <code>optional int32 pid = 3;</code>
+     * @return The pid.
+     */
+    @java.lang.Override
+    public int getPid() {
+      return pid_;
+    }
+    /**
+     * <code>optional int32 pid = 3;</code>
+     * @param value The pid to set.
+     */
+    private void setPid(int value) {
+      bitField0_ |= 0x00000001;
+      pid_ = value;
+    }
+    /**
+     * <code>optional int32 pid = 3;</code>
+     */
+    private void clearPid() {
+      bitField0_ = (bitField0_ & ~0x00000001);
+      pid_ = 0;
+    }
+
     public static final int ETC_PARAM_FIELD_NUMBER = 10;
     private java.lang.String etcParam_;
     /**
@@ -166,7 +211,7 @@ public final class ScreenrecordOption {
      */
     @java.lang.Override
     public boolean hasEtcParam() {
-      return ((bitField0_ & 0x00000001) != 0);
+      return ((bitField0_ & 0x00000002) != 0);
     }
     /**
      * <code>optional string etc_param = 10;</code>
@@ -192,14 +237,14 @@ public final class ScreenrecordOption {
     private void setEtcParam(
         java.lang.String value) {
       java.lang.Class<?> valueClass = value.getClass();
-  bitField0_ |= 0x00000001;
+  bitField0_ |= 0x00000002;
       etcParam_ = value;
     }
     /**
      * <code>optional string etc_param = 10;</code>
      */
     private void clearEtcParam() {
-      bitField0_ = (bitField0_ & ~0x00000001);
+      bitField0_ = (bitField0_ & ~0x00000002);
       etcParam_ = getDefaultInstance().getEtcParam();
     }
     /**
@@ -210,7 +255,7 @@ public final class ScreenrecordOption {
         com.google.protobuf.ByteString value) {
       checkByteStringIsUtf8(value);
       etcParam_ = value.toStringUtf8();
-      bitField0_ |= 0x00000001;
+      bitField0_ |= 0x00000002;
     }
 
     public static com.dogu.protocol.generated.outer.streaming.ScreenrecordOption.ScreenRecordOption parseFrom(
@@ -405,6 +450,42 @@ public final class ScreenrecordOption {
       }
 
       /**
+       * <code>optional int32 pid = 3;</code>
+       * @return Whether the pid field is set.
+       */
+      @java.lang.Override
+      public boolean hasPid() {
+        return instance.hasPid();
+      }
+      /**
+       * <code>optional int32 pid = 3;</code>
+       * @return The pid.
+       */
+      @java.lang.Override
+      public int getPid() {
+        return instance.getPid();
+      }
+      /**
+       * <code>optional int32 pid = 3;</code>
+       * @param value The pid to set.
+       * @return This builder for chaining.
+       */
+      public Builder setPid(int value) {
+        copyOnWrite();
+        instance.setPid(value);
+        return this;
+      }
+      /**
+       * <code>optional int32 pid = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearPid() {
+        copyOnWrite();
+        instance.clearPid();
+        return this;
+      }
+
+      /**
        * <code>optional string etc_param = 10;</code>
        * @return Whether the etcParam field is set.
        */
@@ -480,11 +561,12 @@ public final class ScreenrecordOption {
               "bitField0_",
               "screen_",
               "filePath_",
+              "pid_",
               "etcParam_",
             };
             java.lang.String info =
-                "\u0000\u0003\u0000\u0001\u0001\n\u0003\u0000\u0000\u0000\u0001\t\u0002\u0208\n\u1208" +
-                "\u0000";
+                "\u0000\u0004\u0000\u0001\u0001\n\u0004\u0000\u0000\u0000\u0001\t\u0002\u0208\u0003" +
+                "\u1004\u0000\n\u1208\u0001";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

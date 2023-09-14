@@ -128,11 +128,11 @@ public final class ScreencaptureOption {
     /**
      * <pre>
      * (android): available
-     * 현재 width x height 중 width의 값으로 처리함
-     * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+     * Currently processed as height value among width x height
+     * ex) 1920, 1600, 1280, 1024, 800, 640, 320
      * (ios): available
-     * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-     * 2160 &lt;= max_resolution        -&gt; 3840x2160
+     * In the case of iOS, the device changes to the available resolution preset
+     * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
      * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
      *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
      * ...                           -&gt; 960x540
@@ -148,11 +148,11 @@ public final class ScreencaptureOption {
     /**
      * <pre>
      * (android): available
-     * 현재 width x height 중 width의 값으로 처리함
-     * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+     * Currently processed as height value among width x height
+     * ex) 1920, 1600, 1280, 1024, 800, 640, 320
      * (ios): available
-     * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-     * 2160 &lt;= max_resolution        -&gt; 3840x2160
+     * In the case of iOS, the device changes to the available resolution preset
+     * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
      * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
      *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
      * ...                           -&gt; 960x540
@@ -165,6 +165,27 @@ public final class ScreencaptureOption {
      * @return The maxResolution.
      */
     int getMaxResolution();
+
+    /**
+     * <pre>
+     * Used for desktop platform
+     * If pid paaed. capture pid's window
+     * </pre>
+     *
+     * <code>optional int32 pid = 7;</code>
+     * @return Whether the pid field is set.
+     */
+    boolean hasPid();
+    /**
+     * <pre>
+     * Used for desktop platform
+     * If pid paaed. capture pid's window
+     * </pre>
+     *
+     * <code>optional int32 pid = 7;</code>
+     * @return The pid.
+     */
+    int getPid();
   }
   /**
    * Protobuf type {@code outer.streaming.ScreenCaptureOption}
@@ -468,11 +489,11 @@ public final class ScreencaptureOption {
     /**
      * <pre>
      * (android): available
-     * 현재 width x height 중 width의 값으로 처리함
-     * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+     * Currently processed as height value among width x height
+     * ex) 1920, 1600, 1280, 1024, 800, 640, 320
      * (ios): available
-     * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-     * 2160 &lt;= max_resolution        -&gt; 3840x2160
+     * In the case of iOS, the device changes to the available resolution preset
+     * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
      * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
      *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
      * ...                           -&gt; 960x540
@@ -491,11 +512,11 @@ public final class ScreencaptureOption {
     /**
      * <pre>
      * (android): available
-     * 현재 width x height 중 width의 값으로 처리함
-     * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+     * Currently processed as height value among width x height
+     * ex) 1920, 1600, 1280, 1024, 800, 640, 320
      * (ios): available
-     * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-     * 2160 &lt;= max_resolution        -&gt; 3840x2160
+     * In the case of iOS, the device changes to the available resolution preset
+     * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
      * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
      *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
      * ...                           -&gt; 960x540
@@ -514,11 +535,11 @@ public final class ScreencaptureOption {
     /**
      * <pre>
      * (android): available
-     * 현재 width x height 중 width의 값으로 처리함
-     * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+     * Currently processed as height value among width x height
+     * ex) 1920, 1600, 1280, 1024, 800, 640, 320
      * (ios): available
-     * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-     * 2160 &lt;= max_resolution        -&gt; 3840x2160
+     * In the case of iOS, the device changes to the available resolution preset
+     * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
      * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
      *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
      * ...                           -&gt; 960x540
@@ -537,11 +558,11 @@ public final class ScreencaptureOption {
     /**
      * <pre>
      * (android): available
-     * 현재 width x height 중 width의 값으로 처리함
-     * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+     * Currently processed as height value among width x height
+     * ex) 1920, 1600, 1280, 1024, 800, 640, 320
      * (ios): available
-     * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-     * 2160 &lt;= max_resolution        -&gt; 3840x2160
+     * In the case of iOS, the device changes to the available resolution preset
+     * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
      * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
      *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
      * ...                           -&gt; 960x540
@@ -555,6 +576,60 @@ public final class ScreencaptureOption {
     private void clearMaxResolution() {
       bitField0_ = (bitField0_ & ~0x00000020);
       maxResolution_ = 0;
+    }
+
+    public static final int PID_FIELD_NUMBER = 7;
+    private int pid_;
+    /**
+     * <pre>
+     * Used for desktop platform
+     * If pid paaed. capture pid's window
+     * </pre>
+     *
+     * <code>optional int32 pid = 7;</code>
+     * @return Whether the pid field is set.
+     */
+    @java.lang.Override
+    public boolean hasPid() {
+      return ((bitField0_ & 0x00000040) != 0);
+    }
+    /**
+     * <pre>
+     * Used for desktop platform
+     * If pid paaed. capture pid's window
+     * </pre>
+     *
+     * <code>optional int32 pid = 7;</code>
+     * @return The pid.
+     */
+    @java.lang.Override
+    public int getPid() {
+      return pid_;
+    }
+    /**
+     * <pre>
+     * Used for desktop platform
+     * If pid paaed. capture pid's window
+     * </pre>
+     *
+     * <code>optional int32 pid = 7;</code>
+     * @param value The pid to set.
+     */
+    private void setPid(int value) {
+      bitField0_ |= 0x00000040;
+      pid_ = value;
+    }
+    /**
+     * <pre>
+     * Used for desktop platform
+     * If pid paaed. capture pid's window
+     * </pre>
+     *
+     * <code>optional int32 pid = 7;</code>
+     */
+    private void clearPid() {
+      bitField0_ = (bitField0_ & ~0x00000040);
+      pid_ = 0;
     }
 
     public static com.dogu.protocol.generated.outer.streaming.ScreencaptureOption.ScreenCaptureOption parseFrom(
@@ -951,11 +1026,11 @@ public final class ScreencaptureOption {
       /**
        * <pre>
        * (android): available
-       * 현재 width x height 중 width의 값으로 처리함
-       * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+       * Currently processed as height value among width x height
+       * ex) 1920, 1600, 1280, 1024, 800, 640, 320
        * (ios): available
-       * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-       * 2160 &lt;= max_resolution        -&gt; 3840x2160
+       * In the case of iOS, the device changes to the available resolution preset
+       * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
        * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
        *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
        * ...                           -&gt; 960x540
@@ -974,11 +1049,11 @@ public final class ScreencaptureOption {
       /**
        * <pre>
        * (android): available
-       * 현재 width x height 중 width의 값으로 처리함
-       * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+       * Currently processed as height value among width x height
+       * ex) 1920, 1600, 1280, 1024, 800, 640, 320
        * (ios): available
-       * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-       * 2160 &lt;= max_resolution        -&gt; 3840x2160
+       * In the case of iOS, the device changes to the available resolution preset
+       * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
        * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
        *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
        * ...                           -&gt; 960x540
@@ -997,11 +1072,11 @@ public final class ScreencaptureOption {
       /**
        * <pre>
        * (android): available
-       * 현재 width x height 중 width의 값으로 처리함
-       * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+       * Currently processed as height value among width x height
+       * ex) 1920, 1600, 1280, 1024, 800, 640, 320
        * (ios): available
-       * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-       * 2160 &lt;= max_resolution        -&gt; 3840x2160
+       * In the case of iOS, the device changes to the available resolution preset
+       * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
        * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
        *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
        * ...                           -&gt; 960x540
@@ -1022,11 +1097,11 @@ public final class ScreencaptureOption {
       /**
        * <pre>
        * (android): available
-       * 현재 width x height 중 width의 값으로 처리함
-       * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+       * Currently processed as height value among width x height
+       * ex) 1920, 1600, 1280, 1024, 800, 640, 320
        * (ios): available
-       * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-       * 2160 &lt;= max_resolution        -&gt; 3840x2160
+       * In the case of iOS, the device changes to the available resolution preset
+       * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
        * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
        *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
        * ...                           -&gt; 960x540
@@ -1041,6 +1116,62 @@ public final class ScreencaptureOption {
       public Builder clearMaxResolution() {
         copyOnWrite();
         instance.clearMaxResolution();
+        return this;
+      }
+
+      /**
+       * <pre>
+       * Used for desktop platform
+       * If pid paaed. capture pid's window
+       * </pre>
+       *
+       * <code>optional int32 pid = 7;</code>
+       * @return Whether the pid field is set.
+       */
+      @java.lang.Override
+      public boolean hasPid() {
+        return instance.hasPid();
+      }
+      /**
+       * <pre>
+       * Used for desktop platform
+       * If pid paaed. capture pid's window
+       * </pre>
+       *
+       * <code>optional int32 pid = 7;</code>
+       * @return The pid.
+       */
+      @java.lang.Override
+      public int getPid() {
+        return instance.getPid();
+      }
+      /**
+       * <pre>
+       * Used for desktop platform
+       * If pid paaed. capture pid's window
+       * </pre>
+       *
+       * <code>optional int32 pid = 7;</code>
+       * @param value The pid to set.
+       * @return This builder for chaining.
+       */
+      public Builder setPid(int value) {
+        copyOnWrite();
+        instance.setPid(value);
+        return this;
+      }
+      /**
+       * <pre>
+       * Used for desktop platform
+       * If pid paaed. capture pid's window
+       * </pre>
+       *
+       * <code>optional int32 pid = 7;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearPid() {
+        copyOnWrite();
+        instance.clearPid();
         return this;
       }
 
@@ -1067,11 +1198,12 @@ public final class ScreencaptureOption {
               "frameInterval_",
               "repeatFrameDelay_",
               "maxResolution_",
+              "pid_",
             };
             java.lang.String info =
-                "\u0000\u0006\u0000\u0001\u0001\u0006\u0006\u0000\u0000\u0000\u0001\u1005\u0000\u0002" +
+                "\u0000\u0007\u0000\u0001\u0001\u0007\u0007\u0000\u0000\u0000\u0001\u1005\u0000\u0002" +
                 "\u1005\u0001\u0003\u1005\u0002\u0004\u1005\u0003\u0005\u1005\u0004\u0006\u1006\u0005" +
-                "";
+                "\u0007\u1004\u0006";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

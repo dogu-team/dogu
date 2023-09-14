@@ -38,12 +38,12 @@ export interface ScreenCaptureOption {
   repeatFrameDelay?: number | undefined;
   /**
    * (android): available
-   * 현재 width x height 중 width의 값으로 처리함
-   * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+   * Currently processed as height value among width x height
+   * ex) 1920, 1600, 1280, 1024, 800, 640, 320
    *
    * (ios): available
-   * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-   * 2160 <= max_resolution        -> 3840x2160
+   * In the case of iOS, the device changes to the available resolution preset
+   * according to the input value. 2160 <= max_resolution        -> 3840x2160
    * 1080 <= max_resolution < 2160 -> 1920x1080
    *  720 <= max_resolution < 1080 -> 1280x720
    * ...                           -> 960x540
@@ -52,6 +52,11 @@ export interface ScreenCaptureOption {
    * ...                           -> 320x240
    */
   maxResolution?: number | undefined;
+  /**
+   * Used for desktop platform
+   * If pid paaed. capture pid's window
+   */
+  pid?: number | undefined;
 }
 
 function createBaseScreenCaptureOption(): ScreenCaptureOption {
@@ -62,6 +67,7 @@ function createBaseScreenCaptureOption(): ScreenCaptureOption {
     frameInterval: undefined,
     repeatFrameDelay: undefined,
     maxResolution: undefined,
+    pid: undefined,
   };
 }
 
@@ -84,6 +90,9 @@ export const ScreenCaptureOption = {
     }
     if (message.maxResolution !== undefined) {
       writer.uint32(53).fixed32(message.maxResolution);
+    }
+    if (message.pid !== undefined) {
+      writer.uint32(56).int32(message.pid);
     }
     return writer;
   },
@@ -113,6 +122,9 @@ export const ScreenCaptureOption = {
         case 6:
           message.maxResolution = reader.fixed32();
           break;
+        case 7:
+          message.pid = reader.int32();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -129,6 +141,7 @@ export const ScreenCaptureOption = {
       frameInterval: isSet(object.frameInterval) ? Number(object.frameInterval) : undefined,
       repeatFrameDelay: isSet(object.repeatFrameDelay) ? Number(object.repeatFrameDelay) : undefined,
       maxResolution: isSet(object.maxResolution) ? Number(object.maxResolution) : undefined,
+      pid: isSet(object.pid) ? Number(object.pid) : undefined,
     };
   },
 
@@ -140,6 +153,7 @@ export const ScreenCaptureOption = {
     message.frameInterval !== undefined && (obj.frameInterval = Math.round(message.frameInterval));
     message.repeatFrameDelay !== undefined && (obj.repeatFrameDelay = Math.round(message.repeatFrameDelay));
     message.maxResolution !== undefined && (obj.maxResolution = Math.round(message.maxResolution));
+    message.pid !== undefined && (obj.pid = Math.round(message.pid));
     return obj;
   },
 
@@ -151,6 +165,7 @@ export const ScreenCaptureOption = {
     message.frameInterval = object.frameInterval ?? undefined;
     message.repeatFrameDelay = object.repeatFrameDelay ?? undefined;
     message.maxResolution = object.maxResolution ?? undefined;
+    message.pid = object.pid ?? undefined;
     return message;
   },
 };

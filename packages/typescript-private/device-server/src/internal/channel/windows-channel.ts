@@ -1,6 +1,7 @@
 import {
   DefaultDeviceSystemInfo,
   DeviceSystemInfo,
+  DeviceWindowInfo,
   ErrorResult,
   FilledRuntimeInfo,
   Platform,
@@ -22,6 +23,7 @@ import { DeviceWebDriverHandler } from '../../device-webdriver/device-webdriver.
 import { SeleniumDeviceWebDriverHandler } from '../../device-webdriver/selenium.device-webdriver.handler';
 import { GamiumContext } from '../../gamium/gamium.context';
 import { logger } from '../../logger/logger.instance';
+import { DesktopCapturer } from '../externals/index';
 import { DeviceChannel, DeviceChannelOpenParam, DeviceHealthStatus, DeviceServerService, LogHandler } from '../public/device-channel';
 import { DeviceAgentService } from '../services/device-agent/device-agent-service';
 import { NullDeviceAgentService } from '../services/device-agent/null-device-agent-service';
@@ -178,6 +180,10 @@ export class WindowsChannel implements DeviceChannel {
   async isPortListening(port: number): Promise<boolean> {
     const isFree = await isFreePort(port);
     return !isFree;
+  }
+
+  async getWindows(): Promise<DeviceWindowInfo[]> {
+    return await DesktopCapturer.getWindows(logger);
   }
 
   uninstallApp(appPath: string): void {

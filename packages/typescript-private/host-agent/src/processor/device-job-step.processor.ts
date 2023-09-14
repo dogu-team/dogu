@@ -18,7 +18,7 @@ import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
 import { MessageContext, NullMessagePostProcessor } from '../message/message.types';
 import { optionsConfig } from '../options-config.instance';
-import { OnStepCompletedEvent, OnStepInProgressEvent, OnStepStartedEvent } from '../step/step.events';
+import { OnStepCompletedEvent, OnStepInProgressEvent, OnStepProcessStartedEvent, OnStepStartedEvent } from '../step/step.events';
 import { StepMessageContext } from '../step/step.types';
 import { RoutineWorkspace } from './routine.workspace';
 
@@ -32,7 +32,7 @@ export class DeviceJobStepProcessor {
   ) {}
 
   async onRunDeviceJob(param: RunDeviceJob, context: MessageContext): Promise<void> {
-    const { routineDeviceJobId, record, runSteps, deviceRunnerId } = param;
+    const { routineDeviceJobId, record, runSteps, deviceRunnerId, browserName } = param;
     const { info, router } = context;
     const { organizationId, deviceId, serial, recordWorkspacePath, platform } = info;
     const recordDeviceRunnerPath = HostPaths.recordDeviceRunnerPath(recordWorkspacePath, deviceRunnerId);
@@ -59,6 +59,7 @@ export class DeviceJobStepProcessor {
       record,
       serial,
       platform,
+      browserName,
       stepStatusInfos: runSteps.map((runStep) => {
         return { stepStatus: PIPELINE_STATUS.UNSPECIFIED, localStartedAt: null, localCompletedAt: null };
       }),
@@ -205,6 +206,19 @@ export class DeviceJobStepProcessor {
       router,
       environmentVariableReplacer,
       {
+        onProcessStarted: (pid): void => {
+          const value: Instance<typeof OnStepProcessStartedEvent.value> = {
+            organizationId,
+            deviceId,
+            routineStepId,
+            routineDeviceJobId,
+            stepIndex,
+            pid,
+          };
+          validateAndEmitEventAsync(this.eventEmitter, OnStepProcessStartedEvent, value).catch((error) => {
+            this.logger.error('Failed to emit step process started event', { error: errorify(error) });
+          });
+        },
         onLog: (log): void => {
           const value: Instance<typeof OnDeviceJobLoggedEvent.value> = {
             organizationId,

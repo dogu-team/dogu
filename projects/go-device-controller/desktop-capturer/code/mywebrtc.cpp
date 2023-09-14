@@ -287,7 +287,7 @@ void modifyFrameDeltaPerPeriod(std::chrono::system_clock::time_point &periodStar
     }
 }
 
-void startCapture()
+std::unique_ptr<webrtc::DesktopCapturer> createCapturer()
 {
     webrtc::DesktopCaptureOptions option = webrtc::DesktopCaptureOptions::CreateDefault();
 #ifdef WEBRTC_MAC
@@ -296,13 +296,33 @@ void startCapture()
 
     webrtc::DesktopCapturer::SourceList desktop_screens;
 
-    g_capturer = webrtc::DesktopCapturer::CreateScreenCapturer(option);
-    g_capturer->GetSourceList(&desktop_screens);
-    for (auto &s : desktop_screens)
+    if (0 == g_pid)
     {
-        std::cout << "screen: " << s.id << " -> " << s.title << "\n" << std::flush;
+        std::unique_ptr<webrtc::DesktopCapturer> capturer = webrtc::DesktopCapturer::CreateScreenCapturer(option);
+        capturer->GetSourceList(&desktop_screens);
+        for (auto &s : desktop_screens)
+        {
+            std::cout << "screen: " << s.id << " -> " << s.title << "\n" << std::flush;
+        }
+        capturer->SelectSource(desktop_screens[0].id);
+        return capturer;
     }
-    g_capturer->SelectSource(desktop_screens[0].id);
+    else
+    {
+        std::unique_ptr<webrtc::DesktopCapturer> capturer = webrtc::DesktopCapturer::CreateWindowCapturer(option);
+        capturer->GetSourceList(&desktop_screens);
+        for (auto &s : desktop_screens)
+        {
+            std::cout << "window: " << s.id << " -> " << s.title << "\n" << std::flush;
+        }
+        capturer->SelectSource(desktop_screens[0].id);
+        return capturer;
+    }
+}
+
+void startCapture()
+{
+    g_capturer = createCapturer();
 
     CaptureCallback *callback = new CaptureCallback();
     g_capturer->Start(callback);

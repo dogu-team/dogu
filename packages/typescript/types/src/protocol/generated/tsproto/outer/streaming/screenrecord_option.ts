@@ -5,11 +5,12 @@ import { ScreenCaptureOption } from './screencapture_option';
 export interface ScreenRecordOption {
   screen: ScreenCaptureOption | undefined;
   filePath: string;
+  pid?: number | undefined;
   etcParam?: string | undefined;
 }
 
 function createBaseScreenRecordOption(): ScreenRecordOption {
-  return { screen: undefined, filePath: '', etcParam: undefined };
+  return { screen: undefined, filePath: '', pid: undefined, etcParam: undefined };
 }
 
 export const ScreenRecordOption = {
@@ -19,6 +20,9 @@ export const ScreenRecordOption = {
     }
     if (message.filePath !== '') {
       writer.uint32(18).string(message.filePath);
+    }
+    if (message.pid !== undefined) {
+      writer.uint32(24).int32(message.pid);
     }
     if (message.etcParam !== undefined) {
       writer.uint32(82).string(message.etcParam);
@@ -39,6 +43,9 @@ export const ScreenRecordOption = {
         case 2:
           message.filePath = reader.string();
           break;
+        case 3:
+          message.pid = reader.int32();
+          break;
         case 10:
           message.etcParam = reader.string();
           break;
@@ -54,6 +61,7 @@ export const ScreenRecordOption = {
     return {
       screen: isSet(object.screen) ? ScreenCaptureOption.fromJSON(object.screen) : undefined,
       filePath: isSet(object.filePath) ? String(object.filePath) : '',
+      pid: isSet(object.pid) ? Number(object.pid) : undefined,
       etcParam: isSet(object.etcParam) ? String(object.etcParam) : undefined,
     };
   },
@@ -62,6 +70,7 @@ export const ScreenRecordOption = {
     const obj: any = {};
     message.screen !== undefined && (obj.screen = message.screen ? ScreenCaptureOption.toJSON(message.screen) : undefined);
     message.filePath !== undefined && (obj.filePath = message.filePath);
+    message.pid !== undefined && (obj.pid = Math.round(message.pid));
     message.etcParam !== undefined && (obj.etcParam = message.etcParam);
     return obj;
   },
@@ -70,6 +79,7 @@ export const ScreenRecordOption = {
     const message = createBaseScreenRecordOption();
     message.screen = object.screen !== undefined && object.screen !== null ? ScreenCaptureOption.fromPartial(object.screen) : undefined;
     message.filePath = object.filePath ?? '';
+    message.pid = object.pid ?? undefined;
     message.etcParam = object.etcParam ?? undefined;
     return message;
   },

@@ -28,6 +28,10 @@ export interface MessageEventHandler {
   onCancelerCreated(canceler: MessageCanceler): PromiseOrValue<void>;
 }
 
+export interface StepMessageEventHandler extends MessageEventHandler {
+  onProcessStarted(pid?: number): PromiseOrValue<void>;
+}
+
 export const NullMessageEventHandler: MessageEventHandler = {
   onLog(): void {
     // noop

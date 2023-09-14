@@ -26,6 +26,16 @@ export class OnStepStartedEventValue extends OnStepEventValueBase {
 }
 export const OnStepStartedEvent = createEventDefinition('OnStepStarted', OnStepStartedEventValue);
 
+export class OnStepProcessStartedEventValue extends OnStepEventValueBase {
+  @IsNumber()
+  stepIndex!: number;
+
+  @IsOptional()
+  @IsNumber()
+  pid?: number;
+}
+export const OnStepProcessStartedEvent = createEventDefinition('OnStepProcessStarted', OnStepProcessStartedEventValue);
+
 export class OnStepInProgressEventValue extends OnStepEventValueBase {
   @IsObject()
   messageCanceler!: MessageCanceler;

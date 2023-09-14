@@ -89,12 +89,12 @@ public struct Outer_Streaming_ScreenCaptureOption {
   public mutating func clearRepeatFrameDelay() {self._repeatFrameDelay = nil}
 
   /// (android): available
-  /// 현재 width x height 중 width의 값으로 처리함
-  /// 예) 1920, 1600, 1280, 1024, 800, 640, 320
+  /// Currently processed as height value among width x height
+  /// ex) 1920, 1600, 1280, 1024, 800, 640, 320
   ///
   /// (ios): available
-  /// iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-  /// 2160 <= max_resolution        -> 3840x2160
+  /// In the case of iOS, the device changes to the available resolution preset
+  /// according to the input value. 2160 <= max_resolution        -> 3840x2160
   /// 1080 <= max_resolution < 2160 -> 1920x1080
   ///  720 <= max_resolution < 1080 -> 1280x720
   /// ...                           -> 960x540
@@ -110,6 +110,17 @@ public struct Outer_Streaming_ScreenCaptureOption {
   /// Clears the value of `maxResolution`. Subsequent reads from it will return its default value.
   public mutating func clearMaxResolution() {self._maxResolution = nil}
 
+  /// Used for desktop platform
+  /// If pid paaed. capture pid's window
+  public var pid: Int32 {
+    get {return _pid ?? 0}
+    set {_pid = newValue}
+  }
+  /// Returns true if `pid` has been explicitly set.
+  public var hasPid: Bool {return self._pid != nil}
+  /// Clears the value of `pid`. Subsequent reads from it will return its default value.
+  public mutating func clearPid() {self._pid = nil}
+
   public var unknownFields = SwiftProtobuf.UnknownStorage()
 
   public init() {}
@@ -120,6 +131,7 @@ public struct Outer_Streaming_ScreenCaptureOption {
   fileprivate var _frameInterval: UInt64? = nil
   fileprivate var _repeatFrameDelay: UInt64? = nil
   fileprivate var _maxResolution: UInt32? = nil
+  fileprivate var _pid: Int32? = nil
 }
 
 #if swift(>=5.5) && canImport(_Concurrency)
@@ -139,6 +151,7 @@ extension Outer_Streaming_ScreenCaptureOption: SwiftProtobuf.Message, SwiftProto
     4: .standard(proto: "frame_interval"),
     5: .standard(proto: "repeat_frame_delay"),
     6: .standard(proto: "max_resolution"),
+    7: .same(proto: "pid"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -153,6 +166,7 @@ extension Outer_Streaming_ScreenCaptureOption: SwiftProtobuf.Message, SwiftProto
       case 4: try { try decoder.decodeSingularFixed64Field(value: &self._frameInterval) }()
       case 5: try { try decoder.decodeSingularFixed64Field(value: &self._repeatFrameDelay) }()
       case 6: try { try decoder.decodeSingularFixed32Field(value: &self._maxResolution) }()
+      case 7: try { try decoder.decodeSingularInt32Field(value: &self._pid) }()
       default: break
       }
     }
@@ -181,6 +195,9 @@ extension Outer_Streaming_ScreenCaptureOption: SwiftProtobuf.Message, SwiftProto
     try { if let v = self._maxResolution {
       try visitor.visitSingularFixed32Field(value: v, fieldNumber: 6)
     } }()
+    try { if let v = self._pid {
+      try visitor.visitSingularInt32Field(value: v, fieldNumber: 7)
+    } }()
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -191,6 +208,7 @@ extension Outer_Streaming_ScreenCaptureOption: SwiftProtobuf.Message, SwiftProto
     if lhs._frameInterval != rhs._frameInterval {return false}
     if lhs._repeatFrameDelay != rhs._repeatFrameDelay {return false}
     if lhs._maxResolution != rhs._maxResolution {return false}
+    if lhs._pid != rhs._pid {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

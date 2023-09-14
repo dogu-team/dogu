@@ -1,5 +1,6 @@
 import {
   DeviceSystemInfo,
+  DeviceWindowInfo,
   ErrorResult,
   FilledRuntimeInfo,
   Platform,
@@ -81,6 +82,7 @@ export interface DeviceChannel {
   subscribeLog(args: string[], handler: LogHandler, printable?: Printable): PromiseOrValue<Closable>;
   joinWifi(ssid: string, password: string): PromiseOrValue<void>;
   isPortListening(port: number): PromiseOrValue<boolean>;
+  getWindows(): PromiseOrValue<DeviceWindowInfo[]>;
 
   // app
   uninstallApp(appPath: string, printable?: Printable): PromiseOrValue<void>;
