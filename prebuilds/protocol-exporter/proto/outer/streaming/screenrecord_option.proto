@@ -10,6 +10,5 @@ option java_package = "com.dogu.protocol.generated.outer.streaming";
 message ScreenRecordOption {
   ScreenCaptureOption screen = 1;
   string file_path = 2;
-  optional int32 pid = 3;
   optional string etc_param = 10;
 }

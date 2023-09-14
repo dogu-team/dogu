@@ -1,5 +1,5 @@
 import { PrivateDeviceJob } from '@dogu-private/console-host-agent';
-import { BrowserName, createConsoleApiAuthHeader, DeviceId, OrganizationId, Platform, RoutineDeviceJobId, Serial } from '@dogu-private/types';
+import { createConsoleApiAuthHeader, DeviceId, OrganizationId, RoutineDeviceJobId, Serial } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, DefaultHttpOptions, errorify, Instance, loop } from '@dogu-tech/common';
 import { DeviceFindWindows, DeviceRecording } from '@dogu-tech/device-client';
 import { Injectable } from '@nestjs/common';
@@ -15,19 +15,16 @@ export interface DeviceJobRecordParam {
   organizationId: OrganizationId;
   deviceId: DeviceId;
   routineDeviceJobId: RoutineDeviceJobId;
-  record: number;
   serial: Serial;
-  platform: Platform;
-  browserName?: BrowserName;
-  recordDeviceRunnerPath: string;
+  pid?: number;
 }
 
 @Injectable()
 export class DeviceJobRecordingService {
   constructor(private readonly logger: DoguLogger, private readonly consoleClientService: ConsoleClientService) {}
 
-  connectRecordWs(value: DeviceJobRecordParam, filePath: string, onClose: (ws: WebSocket) => void): WebSocket {
-    const { organizationId, deviceId, routineDeviceJobId, serial } = value;
+  connectAndUploadRecordWs(value: DeviceJobRecordParam, filePath: string, onClose: (ws: WebSocket) => void): WebSocket {
+    const { organizationId, deviceId, routineDeviceJobId, serial, pid } = value;
     const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceRecording.path}`);
     webSocket.addEventListener('open', () => {
       this.logger.info('startRecording open', {
@@ -36,7 +33,7 @@ export class DeviceJobRecordingService {
       const sendMessage: Instance<typeof DeviceRecording.sendMessage> = {
         serial,
         screenRecordOption: {
-          screen: {},
+          screen: { pid },
           filePath,
         },
       };
@@ -107,7 +104,6 @@ export class DeviceJobRecordingService {
       this.logger.info('startRecording message', { data });
       const result = JSON.parse(data.toString('utf-8')) as Instance<typeof DeviceFindWindows.receiveMessage>;
       onMessage(result);
-      closeWebSocketWithTruncateReason(webSocket, 1000, 'Find device windows done');
     });
     return webSocket;
   }

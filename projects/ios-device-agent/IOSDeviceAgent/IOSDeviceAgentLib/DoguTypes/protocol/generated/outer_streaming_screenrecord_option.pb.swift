@@ -36,15 +36,6 @@ public struct Outer_Streaming_ScreenRecordOption {
 
   public var filePath: String = String()
 
-  public var pid: Int32 {
-    get {return _pid ?? 0}
-    set {_pid = newValue}
-  }
-  /// Returns true if `pid` has been explicitly set.
-  public var hasPid: Bool {return self._pid != nil}
-  /// Clears the value of `pid`. Subsequent reads from it will return its default value.
-  public mutating func clearPid() {self._pid = nil}
-
   public var etcParam: String {
     get {return _etcParam ?? String()}
     set {_etcParam = newValue}
@@ -59,7 +50,6 @@ public struct Outer_Streaming_ScreenRecordOption {
   public init() {}
 
   fileprivate var _screen: Outer_Streaming_ScreenCaptureOption? = nil
-  fileprivate var _pid: Int32? = nil
   fileprivate var _etcParam: String? = nil
 }
 
@@ -76,7 +66,6 @@ extension Outer_Streaming_ScreenRecordOption: SwiftProtobuf.Message, SwiftProtob
   public static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "screen"),
     2: .standard(proto: "file_path"),
-    3: .same(proto: "pid"),
     10: .standard(proto: "etc_param"),
   ]
 
@@ -88,7 +77,6 @@ extension Outer_Streaming_ScreenRecordOption: SwiftProtobuf.Message, SwiftProtob
       switch fieldNumber {
       case 1: try { try decoder.decodeSingularMessageField(value: &self._screen) }()
       case 2: try { try decoder.decodeSingularStringField(value: &self.filePath) }()
-      case 3: try { try decoder.decodeSingularInt32Field(value: &self._pid) }()
       case 10: try { try decoder.decodeSingularStringField(value: &self._etcParam) }()
       default: break
       }
@@ -106,9 +94,6 @@ extension Outer_Streaming_ScreenRecordOption: SwiftProtobuf.Message, SwiftProtob
     if !self.filePath.isEmpty {
       try visitor.visitSingularStringField(value: self.filePath, fieldNumber: 2)
     }
-    try { if let v = self._pid {
-      try visitor.visitSingularInt32Field(value: v, fieldNumber: 3)
-    } }()
     try { if let v = self._etcParam {
       try visitor.visitSingularStringField(value: v, fieldNumber: 10)
     } }()
@@ -118,7 +103,6 @@ extension Outer_Streaming_ScreenRecordOption: SwiftProtobuf.Message, SwiftProtob
   public static func ==(lhs: Outer_Streaming_ScreenRecordOption, rhs: Outer_Streaming_ScreenRecordOption) -> Bool {
     if lhs._screen != rhs._screen {return false}
     if lhs.filePath != rhs.filePath {return false}
-    if lhs._pid != rhs._pid {return false}
     if lhs._etcParam != rhs._etcParam {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true

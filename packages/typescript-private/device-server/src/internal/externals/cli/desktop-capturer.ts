@@ -1,6 +1,6 @@
 import { DeviceWindowInfo } from '@dogu-private/types';
 import { Printable, stringify } from '@dogu-tech/common';
-import { ChildProcess, HostPaths, logger } from '@dogu-tech/node';
+import { ChildProcess, HostPaths } from '@dogu-tech/node';
 import fs from 'fs';
 import { registerBootstrapHandler } from '../../../bootstrap/bootstrap.service';
 
@@ -37,7 +37,6 @@ const makeAccessableSync = (): void => {
 registerBootstrapHandler(__filename, async () => {
   try {
     await fs.promises.chmod(binPath(), 0o777);
-    await getWindows(logger);
   } catch (error) {
     const cause = error instanceof Error ? error : new Error(stringify(error));
     throw new Error(`Failed to chmod desktop-capturer`, { cause });

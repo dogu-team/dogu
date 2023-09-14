@@ -7,6 +7,7 @@ import { DeviceJobHeartbeater } from './device-job.heartbeater';
 import { DeviceJobLogger } from './device-job.logger';
 import { DeviceJobRecordingProcessRegistry } from './device-job.recording-process-registry';
 import { DeviceJobRecordingService } from './device-job.recording-service';
+import { DeviceJobRecordingWindowProcessRegistry } from './device-job.recording-windows-process-registry';
 import { DeviceJobUpdater } from './device-job.updater';
 
 @Module({
@@ -16,6 +17,7 @@ import { DeviceJobUpdater } from './device-job.updater';
     DeviceJobUpdater,
     DeviceJobRecordingService,
     DeviceJobRecordingProcessRegistry,
+    DeviceJobRecordingWindowProcessRegistry,
     DeviceJobContextRegistry,
     DeviceJobLogProcessRegistry,
     DeviceJobLogger,

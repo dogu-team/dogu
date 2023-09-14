@@ -1,7 +1,7 @@
 import { OnWebSocketClose, OnWebSocketMessage, WebSocketGatewayBase, WebSocketRegistryValueAccessor, WebSocketService } from '@dogu-private/nestjs-common';
 import { categoryFromPlatform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, DuplicatedCallGuarder, errorify, Instance } from '@dogu-tech/common';
-import { DeviceFindWindows } from '@dogu-tech/device-client-common/src/specs/ws/device/find-windows';
+import { DeviceFindWindows } from '@dogu-tech/device-client-common';
 import { getChildProcessIds } from '@dogu-tech/node';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';

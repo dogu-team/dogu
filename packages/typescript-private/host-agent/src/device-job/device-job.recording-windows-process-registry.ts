@@ -1,4 +1,4 @@
-import { DeviceId, OrganizationId, Platform, RoutineDeviceJobId, Serial } from '@dogu-private/types';
+import { BrowserName, DeviceId, OrganizationId, Platform, RoutineDeviceJobId, Serial } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, Instance, toISOStringWithTimezone } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
@@ -7,20 +7,22 @@ import WebSocket from 'ws';
 import { OnDeviceJobCancelRequestedEvent, OnDeviceJobPostProcessCompletedEvent, OnDeviceJobStartedEvent } from '../device-job/device-job.events';
 import { OnHostDisconnectedEvent, OnHostResolvedEvent } from '../host/host.events';
 import { DoguLogger } from '../logger/logger';
+import { OnStepProcessStartedEvent } from '../step/step.events';
 import { HostResolutionInfo } from '../types';
 import { DeviceJobRecordingService } from './device-job.recording-service';
 
 interface DeviceRecordingInfo {
-  webSocket: WebSocket;
+  webSocket: WebSocket | null;
   organizationId: OrganizationId;
   deviceId: DeviceId;
   routineDeviceJobId: RoutineDeviceJobId;
   serial: Serial;
+  browserName?: BrowserName;
   filePath: string;
 }
 
 @Injectable()
-export class DeviceJobRecordingProcessRegistry {
+export class DeviceJobRecordingWindowProcessRegistry {
   private hostResolutionInfo: HostResolutionInfo | null = null;
   private readonly webSockets = new Map<string, DeviceRecordingInfo>();
 
@@ -30,6 +32,9 @@ export class DeviceJobRecordingProcessRegistry {
   onHostDisconnected(value: Instance<typeof OnHostDisconnectedEvent.value>): void {
     this.webSockets.forEach((info, serial) => {
       const { webSocket } = info;
+      if (!webSocket) {
+        return;
+      }
       closeWebSocketWithTruncateReason(webSocket, 1001, 'Host disconnected');
     });
     this.webSockets.clear();
@@ -51,26 +56,53 @@ export class DeviceJobRecordingProcessRegistry {
       this.logger.info('startRecording: record is false', { organizationId, deviceId, routineDeviceJobId });
       return;
     }
-    if (browserName) {
-      this.logger.info(`startRecording: DeviceJobRecordingProcessRegistry doesn't handle when browserName is not null`, { routineDeviceJobId, browserName });
+
+    if (!browserName) {
+      this.logger.info(`startRecording: DeviceJobRecordingWindowProcessRegistry doesn't handle when browserName is null`, { routineDeviceJobId, browserName });
       return;
     }
     const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
     const fileName = toISOStringWithTimezone(new Date(), '-');
     const filePath = path.resolve(recordDeviceRunnerPath, `${fileName}${getRecordExt(platform)}`);
-    const webSocket = this.record.connectAndUploadRecordWs(value, filePath, (_) => {
-      this.webSockets.delete(key);
-    });
 
-    this.webSockets.set(key, { webSocket, serial, organizationId, deviceId, routineDeviceJobId, filePath });
+    this.webSockets.set(key, { webSocket: null, serial, organizationId, deviceId, routineDeviceJobId, browserName, filePath });
   }
-  @OnEvent(OnDeviceJobCancelRequestedEvent.key)
-  onDeviceJobCancelRequested(value: Instance<typeof OnDeviceJobCancelRequestedEvent.value>): void {
-    const { organizationId, deviceId, routineDeviceJobId, record } = value;
-    if (!record) {
-      this.logger.info('onDeviceJobCancelRequested: record is false', { organizationId, deviceId, routineDeviceJobId });
+
+  @OnEvent(OnStepProcessStartedEvent.key)
+  OnStepProcessStarted(value: Instance<typeof OnStepProcessStartedEvent.value>): void {
+    if (!this.hostResolutionInfo) {
+      throw new Error('OnStepProcessStarted: hostResolutionInfo not found');
+    }
+
+    const { organizationId, deviceId, routineDeviceJobId, serial, pid } = value;
+    const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
+    const deviceRecordingInfo = this.webSockets.get(key);
+    if (!deviceRecordingInfo) {
+      this.logger.warn('OnStepProcessStarted: deviceRecordingInfo not found', { organizationId, deviceId, routineDeviceJobId });
       return;
     }
+    if (!pid) {
+      this.logger.warn('OnStepProcessStarted: pid is null', { organizationId, deviceId, routineDeviceJobId });
+      return;
+    }
+    if (deviceRecordingInfo.webSocket) {
+      closeWebSocketWithTruncateReason(deviceRecordingInfo.webSocket, 1000, 'Next step started');
+    }
+
+    const findWindowsSocket = this.record.connectFindWindowsWs({ serial, parentPid: pid }, (result) => {
+      closeWebSocketWithTruncateReason(findWindowsSocket, 1000, 'Find device windows done');
+      const recordWebSocket = this.record.connectAndUploadRecordWs({ ...value, pid: result.pid }, deviceRecordingInfo.filePath, (_) => {
+        this.webSockets.delete(key);
+      });
+      this.webSockets.set(key, { ...deviceRecordingInfo, webSocket: recordWebSocket });
+    });
+
+    this.webSockets.set(key, { ...deviceRecordingInfo, webSocket: findWindowsSocket });
+  }
+
+  @OnEvent(OnDeviceJobCancelRequestedEvent.key)
+  onDeviceJobCancelRequested(value: Instance<typeof OnDeviceJobCancelRequestedEvent.value>): void {
+    const { organizationId, deviceId, routineDeviceJobId } = value;
     const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
     const deviceRecordingInfo = this.webSockets.get(key);
     if (!deviceRecordingInfo) {
@@ -78,6 +110,10 @@ export class DeviceJobRecordingProcessRegistry {
       return;
     }
     const { webSocket } = deviceRecordingInfo;
+    if (!webSocket) {
+      this.logger.warn('onDeviceJobCancelRequested: webSocket is null', { organizationId, deviceId, routineDeviceJobId });
+      return;
+    }
     if (webSocket.readyState === WebSocket.CLOSING || webSocket.readyState === WebSocket.CLOSED) {
       this.logger.warn('onDeviceJobCancelRequested: webSocket is already closing or closed', { organizationId, deviceId, routineDeviceJobId });
       return;
@@ -87,11 +123,7 @@ export class DeviceJobRecordingProcessRegistry {
 
   @OnEvent(OnDeviceJobPostProcessCompletedEvent.key)
   onDeviceJobPostProcessCompleted(value: Instance<typeof OnDeviceJobPostProcessCompletedEvent.value>): void {
-    const { organizationId, deviceId, routineDeviceJobId, record } = value;
-    if (!record) {
-      this.logger.info('onDeviceJobCompleted: record is false', { organizationId, deviceId, routineDeviceJobId });
-      return;
-    }
+    const { organizationId, deviceId, routineDeviceJobId } = value;
     const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
     const deviceRecordingInfo = this.webSockets.get(key);
     if (!deviceRecordingInfo) {
@@ -99,6 +131,10 @@ export class DeviceJobRecordingProcessRegistry {
       return;
     }
     const { webSocket } = deviceRecordingInfo;
+    if (!webSocket) {
+      this.logger.warn('onDeviceJobCancelRequested: webSocket is null', { organizationId, deviceId, routineDeviceJobId });
+      return;
+    }
     closeWebSocketWithTruncateReason(webSocket, 1000, 'Completed');
   }
 

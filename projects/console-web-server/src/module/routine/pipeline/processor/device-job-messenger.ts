@@ -54,6 +54,9 @@ export class DeviceJobMessenger {
         record,
         serial,
         runSteps,
+        appVersion,
+        browserName,
+        browserVersion,
       },
     });
     parseEventResult(result);
