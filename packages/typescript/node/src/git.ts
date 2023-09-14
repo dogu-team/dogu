@@ -71,6 +71,17 @@ export interface GitCheckoutWithTagOptions {
 
 export type GitCheckoutOptions = GitCheckoutWithBranchOptions | GitCheckoutWithTagOptions;
 
+export interface GitPullOptions {
+  noFastForward?: boolean;
+}
+
+function mergeGitPullOptions(options?: GitPullOptions): Required<GitPullOptions> {
+  return {
+    noFastForward: true,
+    ...options,
+  };
+}
+
 export class GitCommandBuilder {
   constructor(private readonly executablePath: string, private readonly workingPath: string) {}
 
@@ -191,12 +202,18 @@ export class GitCommandBuilder {
     };
   }
 
-  async pull(): Promise<GitCommand> {
+  async pull(options?: GitPullOptions): Promise<GitCommand> {
     await this.ensurePaths();
+    const { noFastForward } = mergeGitPullOptions(options);
+    const args = this.defaultArgs().concat(['pull']);
+    if (noFastForward) {
+      args.push('--no-ff');
+    }
+
     return {
       executablePath: this.executablePath,
       env: this.defaultEnv(),
-      args: this.defaultArgs().concat(['pull']),
+      args,
     };
   }
 
