@@ -17079,6 +17079,7 @@ __metadata:
     "@nestjs/cli": 9.1.2
     "@types/copyfiles": 2
     "@types/eslint": 8
+    "@types/lodash": 4
     "@types/node": 18.15.11
     "@types/nodemon": 1.19.2
     "@types/prettier-package-json": 2
@@ -17102,6 +17103,7 @@ __metadata:
     eslint-plugin-promise: 6.0.1
     husky: 8.0.1
     lint-staged: 13.0.3
+    lodash: 4.17.21
     node-gyp: 9.0.0
     nodemon: 2.0.22
     organize-imports-cli: 0.10.0

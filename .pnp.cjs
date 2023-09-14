@@ -281,6 +281,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@nestjs/cli", "npm:9.1.2"],\
             ["@types/copyfiles", "npm:2.4.1"],\
             ["@types/eslint", "npm:8.37.0"],\
+            ["@types/lodash", "npm:4.14.195"],\
             ["@types/node", "npm:18.15.11"],\
             ["@types/nodemon", "npm:1.19.2"],\
             ["@types/prettier-package-json", "npm:2.1.1"],\
@@ -304,6 +305,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-plugin-promise", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:6.0.1"],\
             ["husky", "npm:8.0.1"],\
             ["lint-staged", "npm:13.0.3"],\
+            ["lodash", "npm:4.17.21"],\
             ["node-gyp", "npm:9.0.0"],\
             ["nodemon", "npm:2.0.22"],\
             ["organize-imports-cli", "npm:0.10.0"],\
@@ -26827,6 +26829,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@nestjs/cli", "npm:9.1.2"],\
             ["@types/copyfiles", "npm:2.4.1"],\
             ["@types/eslint", "npm:8.37.0"],\
+            ["@types/lodash", "npm:4.14.195"],\
             ["@types/node", "npm:18.15.11"],\
             ["@types/nodemon", "npm:1.19.2"],\
             ["@types/prettier-package-json", "npm:2.1.1"],\
@@ -26850,6 +26853,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-plugin-promise", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:6.0.1"],\
             ["husky", "npm:8.0.1"],\
             ["lint-staged", "npm:13.0.3"],\
+            ["lodash", "npm:4.17.21"],\
             ["node-gyp", "npm:9.0.0"],\
             ["nodemon", "npm:2.0.22"],\
             ["organize-imports-cli", "npm:0.10.0"],\
