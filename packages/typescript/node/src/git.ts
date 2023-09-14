@@ -206,10 +206,14 @@ export class GitCommandBuilder {
 
   async pull(options?: GitPullOptions): Promise<GitCommand> {
     await this.ensurePaths();
-    const { noFastForward } = mergeGitPullOptions(options);
+    const { noFastForward, allowUnrelatedHistories } = mergeGitPullOptions(options);
     const args = this.defaultArgs().concat(['pull']);
     if (noFastForward) {
       args.push('--no-ff');
+    }
+
+    if (allowUnrelatedHistories) {
+      args.push('--allow-unrelated-histories');
     }
 
     return {
