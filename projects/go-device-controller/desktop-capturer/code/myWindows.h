@@ -23,9 +23,9 @@ struct WindowInfo
         ss << "{";
         ss << "\"id\":" << id << ",";
         ss << "\"pid\":" << pid << ",";
-        ss << "\"title\":\"" << title << ",";
-        ss << "\"width\":\"" << rect.size().width() << ",";
-        ss << "\"height\":\"" << rect.size().height() << "\"";
+        ss << "\"title\":\"" << title << "\",";
+        ss << "\"width\":" << rect.size().width() << ",";
+        ss << "\"height\":" << rect.size().height() << "";
         ss << "}";
         return ss.str();
     }
