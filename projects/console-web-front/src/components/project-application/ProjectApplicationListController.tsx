@@ -101,13 +101,17 @@ const ProjectApplicationItem = ({ application }: ItemProps) => {
         <ThreeSpan>
           <NameWrapper>
             <Image src={application.iconUrl} width={24} height={24} alt={application.name} />
-            &nbsp;{application.name}
+            <div style={{ marginLeft: '.5rem' }}>
+              {application.name}
+              <div className="package">{`(${application.package})`}</div>
+            </div>
           </NameWrapper>
         </ThreeSpan>
         <TwoSpan>
           {application.version}
           {application.isLatest === 1 && <ProjectApplicationLatestTag />}
         </TwoSpan>
+        <OneSpan>{application.versionCode}</OneSpan>
         <OneSpan>
           <ProjectApplicationExtensionTag extension={application.fileExtension} />
         </OneSpan>
@@ -159,6 +163,7 @@ const ProjectApplicationListController = ({ organizationId, projectId }: Props) 
         <ItemInner>
           <ThreeSpan>{t('project-app:appTableNameColumn')}</ThreeSpan>
           <TwoSpan>{t('project-app:appTableVersionColumn')}</TwoSpan>
+          <OneSpan>{t('project-app:appTableVersionCodeColumn')}</OneSpan>
           <OneSpan>{t('project-app:appTableExtensionColumn')}</OneSpan>
           <OneSpan>{t('project-app:appTableSizeColumn')}</OneSpan>
           <OneSpan>{t('project-app:appTableUploader')}</OneSpan>
@@ -243,4 +248,9 @@ const Menu = styled(OneSpan)`
 
 const NameWrapper = styled.div`
   ${flexRowBaseStyle}
+
+  .package {
+    font-size: 0.8rem;
+    color: #888;
+  }
 `;

@@ -21,7 +21,6 @@ interface Props {
 
 const ProjectApplicationUploadButton = ({ organizationId, projectId }: Props) => {
   const [isOpen, openModal, closeModal] = useModal();
-  const [isLatest, setIsLatest] = useState<boolean>(false);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const fireEvent = useEventStore((state) => state.fireEvent);
@@ -29,25 +28,22 @@ const ProjectApplicationUploadButton = ({ organizationId, projectId }: Props) =>
 
   const handleCloseModal = () => {
     setFileList([]);
-    setIsLatest(false);
     closeModal();
   };
 
-  const handleUploadFile = async () => {
-    if (fileList.length < 1) {
-      return;
-    }
-
+  const handleUploadFile = async (file: File, onSuccess: () => void, onError: (message: string) => void) => {
     setLoading(true);
     try {
-      const file = fileList[0];
-      await uploadProjectApplication(organizationId, projectId, file.originFileObj!, isLatest);
+      setFileList([{ name: file.name, status: 'uploading', uid: file.name }]);
+      await uploadProjectApplication(organizationId, projectId, file);
+      onSuccess();
       sendSuccessNotification(t('project-app:uploadAppSuccessMessage'));
       fireEvent('onProjectApplicationUploaded');
       handleCloseModal();
     } catch (e) {
       if (e instanceof AxiosError) {
         sendErrorNotification(t('project-app:uploadAppFailureMessage', { reason: getErrorMessageFromAxios(e) }));
+        onError(getErrorMessageFromAxios(e));
       }
     }
     setLoading(false);
@@ -65,20 +61,20 @@ const ProjectApplicationUploadButton = ({ organizationId, projectId }: Props) =>
         centered
         title={t('project-app:uploadAppModalTitle')}
         onCancel={handleCloseModal}
-        onOk={handleUploadFile}
         confirmLoading={loading}
-        cancelText={t('common:cancel')}
-        okText={t('common:upload')}
+        footer={null}
         destroyOnClose
-        okButtonProps={{ id: 'project-app-upload-modal-ok-btn' }}
       >
         <Upload.Dragger
           id="project-app-uploader"
           accept=".apk, .ipa"
           disabled={loading}
           customRequest={async (option) => {
-            const file = option.file as RcFile;
-            setFileList([{ name: file.name, status: 'done', uid: file.name, originFileObj: file }]);
+            await handleUploadFile(
+              option.file as File,
+              () => option.onSuccess!({}),
+              (message) => option.onError!({ message, name: 'FileUploadError' }),
+            );
           }}
           fileList={fileList}
           multiple={false}
@@ -91,11 +87,6 @@ const ProjectApplicationUploadButton = ({ organizationId, projectId }: Props) =>
             <Trans i18nKey="project-app:uploadAppDescriptionHintText" components={{ br: <br />, code: <code /> }} />
           </StyledHint>
         </Upload.Dragger>
-        <div style={{ marginTop: '.5rem' }}>
-          <Checkbox checked={isLatest} onChange={(e) => setIsLatest(e.target.checked)}>
-            {t('project-app:uploadAppLatestCheckboxText')}
-          </Checkbox>
-        </div>
       </Modal>
     </>
   );

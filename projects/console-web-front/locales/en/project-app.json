@@ -1,6 +1,7 @@
 {
   "appTableNameColumn": "Name",
-  "appTableVersionColumn": "Version",
+  "appTableVersionColumn": "Version name",
+  "appTableVersionCodeColumn": "Build version",
   "appTableExtensionColumn": "Extension",
   "appTableUploader": "Uploader",
   "appTableUploadDateColumn": "Uploaded",

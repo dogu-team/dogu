@@ -4,27 +4,27 @@ import { AppVersion } from '@dogu-tech/action-common';
 import { Button } from 'antd';
 import { useState } from 'react';
 import styled from 'styled-components';
-import { flexRowBaseStyle } from '../../../../styles/box';
 
+import { flexRowBaseStyle } from '../../../../styles/box';
 import PlatformIcon from '../../../device/PlatformIcon';
-import PlatformAppVersionSelector from './PlatformAppVersionSelector';
+import PlatformAppPcakageNameSelector from './PlatformAppPackagenNameSelector';
 
 interface ItemProps {
   platform: PlatformType;
-  version: string | undefined;
+  packageName: string | undefined;
   onReset: (platform: PlatformType) => void;
   onChange: (platform: PlatformType, version: string | undefined) => void;
   onClickButton: (platform: PlatformType) => void;
 }
 
-const AppVersionItem = ({ platform, version, onReset, onChange, onClickButton }: ItemProps) => {
-  const [open, setOpen] = useState(!!version);
+const AppPackageNameItem = ({ platform, packageName, onReset, onChange, onClickButton }: ItemProps) => {
+  const [open, setOpen] = useState(!!packageName);
 
   return open ? (
     <FlexRow>
-      <PlatformAppVersionSelector
+      <PlatformAppPcakageNameSelector
         key={platform}
-        version={version}
+        packageName={packageName}
         platform={platform}
         onReset={(platform) => {
           onReset(platform);
@@ -62,18 +62,18 @@ const AppVersionItem = ({ platform, version, onReset, onChange, onClickButton }:
       }}
     >
       <PlatformIcon platform={platform === 'android' ? Platform.PLATFORM_ANDROID : Platform.PLATFORM_IOS} />
-      &nbsp;Select app version
+      &nbsp;Select app
     </Button>
   );
 };
 
 interface Props {
-  appVersion: AppVersion;
+  appPackageName: AppVersion;
   onUpdate: (platform: PlatformType, version: string | undefined) => void;
   onClose: (platform: PlatformType) => void;
 }
 
-const AppVersionContainer = ({ appVersion, onUpdate, onClose }: Props) => {
+const AppPackageNameContainer = ({ appPackageName, onUpdate, onClose }: Props) => {
   const [selectedPlatform, setSelectedPlatform] = useState<PlatformType>();
 
   const handleClose = (platform: PlatformType) => {
@@ -81,21 +81,21 @@ const AppVersionContainer = ({ appVersion, onUpdate, onClose }: Props) => {
     onClose(platform);
   };
 
-  if (typeof appVersion === 'string' || typeof appVersion === 'number') {
-    return <p>{appVersion}</p>;
+  if (typeof appPackageName === 'string' || typeof appPackageName === 'number') {
+    return <p>{appPackageName}</p>;
   }
 
   const platforms: PlatformType[] = ['android', 'ios'];
 
-  if (!!appVersion && typeof appVersion === 'object' && Object.keys(appVersion).length > 0) {
+  if (!!appPackageName && typeof appPackageName === 'object' && Object.keys(appPackageName).length > 0) {
     return (
       <div>
-        {Object.keys(appVersion).map((platform) => {
+        {Object.keys(appPackageName).map((platform) => {
           return (
-            <AppVersionItem
+            <AppPackageNameItem
               key={platform}
               platform={platform as PlatformType}
-              version={appVersion?.[platform as PlatformType]}
+              packageName={appPackageName?.[platform as PlatformType]}
               onReset={handleClose}
               onChange={onUpdate}
               onClickButton={setSelectedPlatform}
@@ -109,10 +109,10 @@ const AppVersionContainer = ({ appVersion, onUpdate, onClose }: Props) => {
   return (
     <div>
       {selectedPlatform ? (
-        <AppVersionItem
+        <AppPackageNameItem
           key={selectedPlatform}
           platform={selectedPlatform}
-          version={appVersion?.[selectedPlatform]}
+          packageName={appPackageName?.[selectedPlatform]}
           onReset={handleClose}
           onChange={onUpdate}
           onClickButton={setSelectedPlatform}
@@ -120,10 +120,10 @@ const AppVersionContainer = ({ appVersion, onUpdate, onClose }: Props) => {
       ) : (
         platforms.map((platform) => {
           return (
-            <AppVersionItem
+            <AppPackageNameItem
               key={platform}
               platform={platform}
-              version={appVersion?.[platform]}
+              packageName={appPackageName?.[platform]}
               onReset={handleClose}
               onChange={onUpdate}
               onClickButton={setSelectedPlatform}
@@ -135,7 +135,7 @@ const AppVersionContainer = ({ appVersion, onUpdate, onClose }: Props) => {
   );
 };
 
-export default AppVersionContainer;
+export default AppPackageNameContainer;
 
 const FlexRow = styled.div`
   ${flexRowBaseStyle}

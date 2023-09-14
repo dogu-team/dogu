@@ -16,7 +16,12 @@ export interface RunOnPickAll {
 export type RunsOn = RunsOnPickOne | RunOnPickAll;
 
 export class ParseRunsOnError extends Error {
-  constructor(message: string, readonly jobName: string, readonly runsOnRaw: JobSchema['runs-on'], options?: ErrorOptions) {
+  constructor(
+    message: string,
+    readonly jobName: string,
+    readonly runsOnRaw: JobSchema['runs-on'],
+    options?: ErrorOptions,
+  ) {
     super(message, options);
   }
 }
@@ -59,6 +64,21 @@ export function parseAppVersion(appVersionRaw: JobSchema['appVersion'], platform
     } else if (typeof appVersionRaw === 'object') {
       const platformType = platformTypeFromPlatform(platform);
       const appVersion = appVersionRaw[platformType];
+      if (appVersion) {
+        return appVersion;
+      }
+    }
+  }
+  return null;
+}
+
+export function parseAppPackageName(appPackageNameRaw: JobSchema['appPackageName'], platform: Platform): string | null {
+  if (appPackageNameRaw) {
+    if (typeof appPackageNameRaw === 'string') {
+      return appPackageNameRaw;
+    } else if (typeof appPackageNameRaw === 'object') {
+      const platformType = platformTypeFromPlatform(platform);
+      const appVersion = appPackageNameRaw[platformType];
       if (appVersion) {
         return appVersion;
       }

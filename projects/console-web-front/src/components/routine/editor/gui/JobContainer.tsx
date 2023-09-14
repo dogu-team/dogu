@@ -16,7 +16,7 @@ import StepContainer from './StepContainer';
 import { RUN_TEST_ACTION_NAME } from '../../../../types/routine';
 import { RoutineProjectTypeContext } from '../RoutineGUIEditor';
 import BrowserNameSelector from './BrowserNameSelector';
-import AppVersionContainer from './AppVersionContainer';
+import AppPackageNameContainer from './AppPackageNameContainer';
 
 interface NeedsProps {
   needs: JobSchema['needs'];
@@ -370,27 +370,30 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
       ) : (
         <Content>
           <div>
-            <ContentTitle>{t('routine:routineGuiEditorJobAppVersionLabel')}</ContentTitle>
-            <ContentDesc>{t('routine:routineGuiEditorJobAppVersionDescription')}</ContentDesc>
+            <ContentTitle>{t('routine:routineGuiEditorJobAppPackageNameLabel')}</ContentTitle>
+            <ContentDesc>{t('routine:routineGuiEditorJobAppPackageNameDescription')}</ContentDesc>
           </div>
           <ContentInner>
-            <AppVersionContainer
-              appVersion={job.appVersion as AppVersion}
-              onUpdate={(platform, version) => {
-                if (typeof job.appVersion === 'string') {
-                  updateJob({ ...job, appVersion: { [platform]: version as string } }, name);
+            <AppPackageNameContainer
+              appPackageName={job.appPackageName as AppVersion}
+              onUpdate={(platform, packageName) => {
+                if (typeof job.appPackageName === 'string') {
+                  updateJob({ ...job, appPackageName: { [platform]: packageName as string } }, name);
                   return;
                 }
-                updateJob({ ...job, appVersion: { ...job.appVersion, [platform]: version as string } }, name);
+                updateJob(
+                  { ...job, appPackageName: { ...job.appPackageName, [platform]: packageName as string } },
+                  name,
+                );
               }}
               onClose={(platform) => {
-                if (typeof job.appVersion === 'string') {
-                  updateJob({ ...job, appVersion: {} }, name);
+                if (typeof job.appPackageName === 'string') {
+                  updateJob({ ...job, appPackageName: {} }, name);
                   return;
                 }
-                const clonedAppVersion = { ...job.appVersion };
+                const clonedAppVersion = { ...job.appPackageName };
                 delete clonedAppVersion[platform];
-                updateJob({ ...job, appVersion: { ...clonedAppVersion } }, name);
+                updateJob({ ...job, appPackageName: { ...clonedAppVersion } }, name);
               }}
             />
           </ContentInner>

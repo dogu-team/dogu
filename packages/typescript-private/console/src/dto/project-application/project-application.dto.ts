@@ -9,7 +9,3 @@ export interface UploadSampleAppDtoBase {
   category: 'mobile' | 'game';
   extension: 'apk';
 }
-
-export interface UploadProjectApplicationDtoBase {
-  isLatest?: boolean;
-}

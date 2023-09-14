@@ -47,6 +47,19 @@ export class ConsoleActionClient {
   }
 
   @Retry({ printable: ActionLogger })
+  async getApplicationsWithUniquePackage(query: Instance<typeof PublicAction.getApplicationList.query>): Promise<Instance<typeof PublicAction.getApplicationList.responseBody>> {
+    const pathProvider = new PublicAction.getApplicationsWithUniquePackage.pathProvider(this.DOGU_ORGANIZATION_ID, this.DOGU_PROJECT_ID);
+    const path = PublicAction.getApplicationsWithUniquePackage.resolvePath(pathProvider);
+    const { data } = await this.instance.get<Instance<typeof PublicAction.getApplicationList.responseBody>>(path, {
+      params: query,
+      ...createConsoleApiAuthHeader(this.DOGU_HOST_TOKEN),
+      timeout: DefaultHttpOptions.request.timeout,
+    });
+    const validated = await transformAndValidate(PublicAction.getApplicationList.responseBody, data);
+    return validated;
+  }
+
+  @Retry({ printable: ActionLogger })
   async getApplicationDownloadUrl(projectApplicationId: ProjectApplicationId): Promise<Instance<typeof PublicAction.getApplicationDownloadUrl.responseBody>> {
     const pathProvider = new PublicAction.getApplicationDownloadUrl.pathProvider(this.DOGU_ORGANIZATION_ID, this.DOGU_PROJECT_ID, projectApplicationId);
     const path = PublicAction.getApplicationDownloadUrl.resolvePath(pathProvider);

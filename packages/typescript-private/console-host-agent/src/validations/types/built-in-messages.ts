@@ -280,6 +280,10 @@ export class RunStep extends Kindable<'RunStep'> implements Pick<RoutineStep, 'r
   @IsOptional()
   appVersion?: string;
 
+  @IsString()
+  @IsOptional()
+  appPackageName?: string;
+
   @IsIn(BrowserName)
   @IsOptional()
   browserName?: BrowserName;
@@ -315,6 +319,10 @@ export class RunDeviceJob extends Kindable<'RunDeviceJob'> implements Pick<Routi
   @IsString()
   @IsOptional()
   appVersion?: string;
+
+  @IsString()
+  @IsOptional()
+  appPackageName?: string;
 
   @IsIn(BrowserName)
   @IsOptional()

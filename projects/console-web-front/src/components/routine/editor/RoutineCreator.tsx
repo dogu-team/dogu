@@ -28,7 +28,7 @@ jobs:
   new-job-1:
     runs-on:
       group: []
-    appVersion:
+    appPackageName:
     record: true
     steps:
       - name: run test
@@ -47,7 +47,7 @@ on:
 jobs:
   new-job-1:
     runs-on: []
-    browserName:
+    appPackageName:
     record: true
     steps:
       - name: run test

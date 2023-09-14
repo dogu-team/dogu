@@ -22,6 +22,7 @@ export interface ProjectApplicationBaseTraits {
   fileSize: number;
   package: string;
   version: string;
+  versionCode: number;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date | null;

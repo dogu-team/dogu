@@ -1,6 +1,7 @@
 {
   "appTableNameColumn": "이름",
-  "appTableVersionColumn": "버전",
+  "appTableVersionColumn": "버전이름",
+  "appTableVersionCodeColumn": "빌드버전",
   "appTableExtensionColumn": "확장자",
   "appTableUploader": "업로더",
   "appTableUploadDateColumn": "업로드 날짜",
