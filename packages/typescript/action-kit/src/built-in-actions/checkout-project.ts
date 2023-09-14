@@ -1,9 +1,8 @@
 import { Printable } from '@dogu-tech/common';
 import { DeviceHostClient } from '@dogu-tech/device-client';
-import { spawnSync, SpawnSyncOptionsWithStringEncoding, SpawnSyncReturns } from 'child_process';
+import { spawnSync } from 'child_process';
 import fs from 'fs';
-import _ from 'lodash';
-import path from 'path';
+import { GitCommand, GitCommandBuilder, isGitRepositoryPath, isSameRemoteOriginUrl } from '..';
 import { ConsoleActionClient } from '../console-action-client';
 
 export async function checkoutProject(
@@ -11,10 +10,15 @@ export async function checkoutProject(
   consoleActionClient: ConsoleActionClient,
   deviceHostClient: DeviceHostClient,
   workspacePath: string,
-  branchOrTag: string,
   clean: boolean,
+  branch?: string,
+  tag?: string,
   checkoutUrl?: string,
 ) {
+  if (!branch && !tag) {
+    throw new Error('branch or tag must be specified');
+  }
+
   if (!checkoutUrl) {
     printable.info('Getting Git url from console...');
     try {
@@ -32,65 +36,65 @@ export async function checkoutProject(
 
   const pathMap = await deviceHostClient.getPathMap();
   const { git } = pathMap.common;
-  printable.info('Git path', { git });
-  const configArgs = ['-c', 'core.longpaths=true'];
+  printable.info('Git executable path', { git });
 
-  function command(command: string, args: string[], logMessage: string, errorMessage: string, spawnOptions?: SpawnSyncOptionsWithStringEncoding): SpawnSyncReturns<string> {
+  function runGitCommand(gitCommand: GitCommand, logMessage: string, errorMessage: string): void {
+    const { executablePath, args, env } = gitCommand;
     printable.info(logMessage);
-    printable.info('Running command', { command: `${command} ${args.join(' ')}` });
-    const env = {
-      ...process.env,
-      GIT_TERMINAL_PROMPT: 'false',
-      GIT_ASK_YESNO: 'false',
-    };
-    const mergedOptions = _.merge(
-      {
-        stdio: 'inherit',
-        env,
-        encoding: 'utf8',
+    printable.info('Running command', { command: `${executablePath} ${args.join(' ')}` });
+    const result = spawnSync(executablePath, args, {
+      env: {
+        ...process.env,
+        ...env,
       },
-      spawnOptions,
-    );
-    const result = spawnSync(command, args, mergedOptions);
+      stdio: 'inherit',
+      encoding: 'utf8',
+    });
     printable.verbose?.('Command result', { result });
     if (result.status !== 0) {
       throw new Error(errorMessage);
     }
-    return result;
   }
 
-  command(git, [...configArgs, '--version'], 'Check Git...', 'Git not found');
-  const dotGitPath = path.resolve(workspacePath, '.git');
-  const stat = await fs.promises.stat(dotGitPath).catch(() => null);
+  const gitCommandBuilder = new GitCommandBuilder(git, workspacePath);
+  const gitVersionCommand = await gitCommandBuilder.version();
+  runGitCommand(gitVersionCommand, 'Checking Git executable...', 'Git executable not found');
 
-  const clone = (checkoutUrl: string) =>
-    command(git, [...configArgs, 'clone', '--depth', '1', '--branch', branchOrTag, checkoutUrl, workspacePath], 'Cloning Git repository...', 'Git clone failed');
+  if (!(await isGitRepositoryPath(workspacePath))) {
+    printable.info('Git repository not found. deleting workspace...', { workspacePath });
+    await fs.promises.rm(workspacePath, { recursive: true, force: true });
 
-  if (!stat) {
-    printable.info('Git repository not found', { workspacePath });
-    clone(checkoutUrl);
-  } else {
-    printable.info('Git repository found', { workspacePath });
-    const result = command(git, [...configArgs, '-C', workspacePath, 'remote', 'get-url', 'origin'], 'Getting Git remote url...', 'Git remote get-url failed', {
-      stdio: 'pipe',
-      encoding: 'utf8',
-    });
-    const remoteUrl = result.stdout.trim();
-    const parsedRemoteUrl = new URL(remoteUrl);
-    const parsedCheckoutUrl = new URL(checkoutUrl);
-    if (parsedRemoteUrl.origin !== parsedCheckoutUrl.origin || parsedRemoteUrl.pathname !== parsedCheckoutUrl.pathname) {
-      printable.info('Git remote url is different, re clone', { remoteUrl, checkoutUrl });
-      await fs.promises.rm(workspacePath, { recursive: true, force: true });
-      clone(checkoutUrl);
-      return;
-    }
+    const gitCloneCommand = await gitCommandBuilder.clone({ url: checkoutUrl });
+    runGitCommand(gitCloneCommand, 'Cloning Git repository...', 'Git clone failed');
+  }
 
-    if (clean) {
-      command(git, [...configArgs, '-C', workspacePath, 'reset', '--hard'], 'Resetting Git repository...', 'Git reset failed');
-      command(git, [...configArgs, '-C', workspacePath, 'clean', '-fdx'], 'Cleaning Git repository...', 'Git clean failed');
-    }
-    command(git, [...configArgs, '-C', workspacePath, 'fetch', 'origin', branchOrTag], 'Fetching Git repository...', 'Git fetch failed');
-    command(git, [...configArgs, '-C', workspacePath, 'checkout', branchOrTag], 'Checking out Git repository...', 'Git checkout failed');
-    command(git, [...configArgs, '-C', workspacePath, 'pull'], 'Pulling Git repository...', 'Git pull failed');
+  if (!(await isSameRemoteOriginUrl(git, workspacePath, checkoutUrl))) {
+    printable.info('Git remote url is not same. deleting workspace...', { workspacePath });
+    await fs.promises.rm(workspacePath, { recursive: true, force: true });
+
+    const gitCloneCommand = await gitCommandBuilder.clone({ url: checkoutUrl });
+    runGitCommand(gitCloneCommand, 'Cloning Git repository...', 'Git clone failed');
+  }
+
+  if (clean) {
+    const gitResetCommand = await gitCommandBuilder.reset();
+    runGitCommand(gitResetCommand, 'Resetting Git repository...', 'Git reset failed');
+
+    const gitCleanCommand = await gitCommandBuilder.clean();
+    runGitCommand(gitCleanCommand, 'Cleaning Git repository...', 'Git clean failed');
+  }
+
+  const gitFetchCommand = await gitCommandBuilder.fetch();
+  runGitCommand(gitFetchCommand, 'Fetching Git repository...', 'Git fetch failed');
+
+  if (tag) {
+    const gitCheckoutCommand = await gitCommandBuilder.checkout({ tag });
+    runGitCommand(gitCheckoutCommand, 'Checking out Git repository using tag...', 'Git checkout failed');
+  } else if (branch) {
+    const gitCheckoutCommand = await gitCommandBuilder.checkout({ branch });
+    runGitCommand(gitCheckoutCommand, 'Checking out Git repository using branch...', 'Git checkout failed');
+
+    const gitPullCommand = await gitCommandBuilder.pull();
+    runGitCommand(gitPullCommand, 'Pulling Git repository...', 'Git pull failed');
   }
 }

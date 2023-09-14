@@ -5,7 +5,8 @@ import path from 'path';
 ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionClient }) => {
   const { DOGU_ROUTINE_WORKSPACE_PATH } = options;
   const clean = input.get<boolean>('clean');
-  const branchOrTag = input.get<string>('branchOrTag');
+  const branch = input.get<string>('branch');
+  const tag = input.get<string>('tag');
   const postCommand = input.get<string>('postCommand');
   const checkoutPath = input.get<string>('checkoutPath');
   const checkoutUrl = input.get<string>('checkoutUrl');
@@ -14,7 +15,7 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
   const resolvedCheckoutPath = path.resolve(DOGU_ROUTINE_WORKSPACE_PATH, checkoutPath);
   logger.info('resolved checkout path', { resolvedCheckoutPath });
 
-  await checkoutProject(logger, consoleActionClient, deviceHostClient, resolvedCheckoutPath, branchOrTag, clean, checkoutUrl);
+  await checkoutProject(logger, consoleActionClient, deviceHostClient, resolvedCheckoutPath, clean, branch, tag, checkoutUrl);
   const workspacePath = resolvedCheckoutPath;
 
   if (postCommand) {
