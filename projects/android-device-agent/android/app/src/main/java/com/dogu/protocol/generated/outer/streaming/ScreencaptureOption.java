@@ -168,11 +168,53 @@ public final class ScreencaptureOption {
 
     /**
      * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 width = 7;</code>
+     * @return Whether the width field is set.
+     */
+    boolean hasWidth();
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 width = 7;</code>
+     * @return The width.
+     */
+    int getWidth();
+
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 height = 8;</code>
+     * @return Whether the height field is set.
+     */
+    boolean hasHeight();
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 height = 8;</code>
+     * @return The height.
+     */
+    int getHeight();
+
+    /**
+     * <pre>
      * Used for desktop platform
      * If pid paaed. capture pid's window
      * </pre>
      *
-     * <code>optional int32 pid = 7;</code>
+     * <code>optional int32 pid = 9;</code>
      * @return Whether the pid field is set.
      */
     boolean hasPid();
@@ -182,7 +224,7 @@ public final class ScreencaptureOption {
      * If pid paaed. capture pid's window
      * </pre>
      *
-     * <code>optional int32 pid = 7;</code>
+     * <code>optional int32 pid = 9;</code>
      * @return The pid.
      */
     int getPid();
@@ -578,7 +620,115 @@ public final class ScreencaptureOption {
       maxResolution_ = 0;
     }
 
-    public static final int PID_FIELD_NUMBER = 7;
+    public static final int WIDTH_FIELD_NUMBER = 7;
+    private int width_;
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 width = 7;</code>
+     * @return Whether the width field is set.
+     */
+    @java.lang.Override
+    public boolean hasWidth() {
+      return ((bitField0_ & 0x00000040) != 0);
+    }
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 width = 7;</code>
+     * @return The width.
+     */
+    @java.lang.Override
+    public int getWidth() {
+      return width_;
+    }
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 width = 7;</code>
+     * @param value The width to set.
+     */
+    private void setWidth(int value) {
+      bitField0_ |= 0x00000040;
+      width_ = value;
+    }
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 width = 7;</code>
+     */
+    private void clearWidth() {
+      bitField0_ = (bitField0_ & ~0x00000040);
+      width_ = 0;
+    }
+
+    public static final int HEIGHT_FIELD_NUMBER = 8;
+    private int height_;
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 height = 8;</code>
+     * @return Whether the height field is set.
+     */
+    @java.lang.Override
+    public boolean hasHeight() {
+      return ((bitField0_ & 0x00000080) != 0);
+    }
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 height = 8;</code>
+     * @return The height.
+     */
+    @java.lang.Override
+    public int getHeight() {
+      return height_;
+    }
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 height = 8;</code>
+     * @param value The height to set.
+     */
+    private void setHeight(int value) {
+      bitField0_ |= 0x00000080;
+      height_ = value;
+    }
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 height = 8;</code>
+     */
+    private void clearHeight() {
+      bitField0_ = (bitField0_ & ~0x00000080);
+      height_ = 0;
+    }
+
+    public static final int PID_FIELD_NUMBER = 9;
     private int pid_;
     /**
      * <pre>
@@ -586,12 +736,12 @@ public final class ScreencaptureOption {
      * If pid paaed. capture pid's window
      * </pre>
      *
-     * <code>optional int32 pid = 7;</code>
+     * <code>optional int32 pid = 9;</code>
      * @return Whether the pid field is set.
      */
     @java.lang.Override
     public boolean hasPid() {
-      return ((bitField0_ & 0x00000040) != 0);
+      return ((bitField0_ & 0x00000100) != 0);
     }
     /**
      * <pre>
@@ -599,7 +749,7 @@ public final class ScreencaptureOption {
      * If pid paaed. capture pid's window
      * </pre>
      *
-     * <code>optional int32 pid = 7;</code>
+     * <code>optional int32 pid = 9;</code>
      * @return The pid.
      */
     @java.lang.Override
@@ -612,11 +762,11 @@ public final class ScreencaptureOption {
      * If pid paaed. capture pid's window
      * </pre>
      *
-     * <code>optional int32 pid = 7;</code>
+     * <code>optional int32 pid = 9;</code>
      * @param value The pid to set.
      */
     private void setPid(int value) {
-      bitField0_ |= 0x00000040;
+      bitField0_ |= 0x00000100;
       pid_ = value;
     }
     /**
@@ -625,10 +775,10 @@ public final class ScreencaptureOption {
      * If pid paaed. capture pid's window
      * </pre>
      *
-     * <code>optional int32 pid = 7;</code>
+     * <code>optional int32 pid = 9;</code>
      */
     private void clearPid() {
-      bitField0_ = (bitField0_ & ~0x00000040);
+      bitField0_ = (bitField0_ & ~0x00000100);
       pid_ = 0;
     }
 
@@ -1121,11 +1271,123 @@ public final class ScreencaptureOption {
 
       /**
        * <pre>
+       * If width, height is set, capture the screen with the specified size.
+       * override max_resolution
+       * </pre>
+       *
+       * <code>optional fixed32 width = 7;</code>
+       * @return Whether the width field is set.
+       */
+      @java.lang.Override
+      public boolean hasWidth() {
+        return instance.hasWidth();
+      }
+      /**
+       * <pre>
+       * If width, height is set, capture the screen with the specified size.
+       * override max_resolution
+       * </pre>
+       *
+       * <code>optional fixed32 width = 7;</code>
+       * @return The width.
+       */
+      @java.lang.Override
+      public int getWidth() {
+        return instance.getWidth();
+      }
+      /**
+       * <pre>
+       * If width, height is set, capture the screen with the specified size.
+       * override max_resolution
+       * </pre>
+       *
+       * <code>optional fixed32 width = 7;</code>
+       * @param value The width to set.
+       * @return This builder for chaining.
+       */
+      public Builder setWidth(int value) {
+        copyOnWrite();
+        instance.setWidth(value);
+        return this;
+      }
+      /**
+       * <pre>
+       * If width, height is set, capture the screen with the specified size.
+       * override max_resolution
+       * </pre>
+       *
+       * <code>optional fixed32 width = 7;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearWidth() {
+        copyOnWrite();
+        instance.clearWidth();
+        return this;
+      }
+
+      /**
+       * <pre>
+       * If width, height is set, capture the screen with the specified size.
+       * override max_resolution
+       * </pre>
+       *
+       * <code>optional fixed32 height = 8;</code>
+       * @return Whether the height field is set.
+       */
+      @java.lang.Override
+      public boolean hasHeight() {
+        return instance.hasHeight();
+      }
+      /**
+       * <pre>
+       * If width, height is set, capture the screen with the specified size.
+       * override max_resolution
+       * </pre>
+       *
+       * <code>optional fixed32 height = 8;</code>
+       * @return The height.
+       */
+      @java.lang.Override
+      public int getHeight() {
+        return instance.getHeight();
+      }
+      /**
+       * <pre>
+       * If width, height is set, capture the screen with the specified size.
+       * override max_resolution
+       * </pre>
+       *
+       * <code>optional fixed32 height = 8;</code>
+       * @param value The height to set.
+       * @return This builder for chaining.
+       */
+      public Builder setHeight(int value) {
+        copyOnWrite();
+        instance.setHeight(value);
+        return this;
+      }
+      /**
+       * <pre>
+       * If width, height is set, capture the screen with the specified size.
+       * override max_resolution
+       * </pre>
+       *
+       * <code>optional fixed32 height = 8;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearHeight() {
+        copyOnWrite();
+        instance.clearHeight();
+        return this;
+      }
+
+      /**
+       * <pre>
        * Used for desktop platform
        * If pid paaed. capture pid's window
        * </pre>
        *
-       * <code>optional int32 pid = 7;</code>
+       * <code>optional int32 pid = 9;</code>
        * @return Whether the pid field is set.
        */
       @java.lang.Override
@@ -1138,7 +1400,7 @@ public final class ScreencaptureOption {
        * If pid paaed. capture pid's window
        * </pre>
        *
-       * <code>optional int32 pid = 7;</code>
+       * <code>optional int32 pid = 9;</code>
        * @return The pid.
        */
       @java.lang.Override
@@ -1151,7 +1413,7 @@ public final class ScreencaptureOption {
        * If pid paaed. capture pid's window
        * </pre>
        *
-       * <code>optional int32 pid = 7;</code>
+       * <code>optional int32 pid = 9;</code>
        * @param value The pid to set.
        * @return This builder for chaining.
        */
@@ -1166,7 +1428,7 @@ public final class ScreencaptureOption {
        * If pid paaed. capture pid's window
        * </pre>
        *
-       * <code>optional int32 pid = 7;</code>
+       * <code>optional int32 pid = 9;</code>
        * @return This builder for chaining.
        */
       public Builder clearPid() {
@@ -1198,12 +1460,14 @@ public final class ScreencaptureOption {
               "frameInterval_",
               "repeatFrameDelay_",
               "maxResolution_",
+              "width_",
+              "height_",
               "pid_",
             };
             java.lang.String info =
-                "\u0000\u0007\u0000\u0001\u0001\u0007\u0007\u0000\u0000\u0000\u0001\u1005\u0000\u0002" +
-                "\u1005\u0001\u0003\u1005\u0002\u0004\u1005\u0003\u0005\u1005\u0004\u0006\u1006\u0005" +
-                "\u0007\u1004\u0006";
+                "\u0000\t\u0000\u0001\u0001\t\t\u0000\u0000\u0000\u0001\u1005\u0000\u0002\u1005\u0001" +
+                "\u0003\u1005\u0002\u0004\u1005\u0003\u0005\u1005\u0004\u0006\u1006\u0005\u0007\u1006" +
+                "\u0006\b\u1006\u0007\t\u1004\b";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

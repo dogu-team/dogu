@@ -53,6 +53,16 @@ export interface ScreenCaptureOption {
    */
   maxResolution?: number | undefined;
   /**
+   * If width, height is set, capture the screen with the specified size.
+   * override max_resolution
+   */
+  width?: number | undefined;
+  /**
+   * If width, height is set, capture the screen with the specified size.
+   * override max_resolution
+   */
+  height?: number | undefined;
+  /**
    * Used for desktop platform
    * If pid paaed. capture pid's window
    */
@@ -67,6 +77,8 @@ function createBaseScreenCaptureOption(): ScreenCaptureOption {
     frameInterval: undefined,
     repeatFrameDelay: undefined,
     maxResolution: undefined,
+    width: undefined,
+    height: undefined,
     pid: undefined,
   };
 }
@@ -91,8 +103,14 @@ export const ScreenCaptureOption = {
     if (message.maxResolution !== undefined) {
       writer.uint32(53).fixed32(message.maxResolution);
     }
+    if (message.width !== undefined) {
+      writer.uint32(61).fixed32(message.width);
+    }
+    if (message.height !== undefined) {
+      writer.uint32(69).fixed32(message.height);
+    }
     if (message.pid !== undefined) {
-      writer.uint32(56).int32(message.pid);
+      writer.uint32(72).int32(message.pid);
     }
     return writer;
   },
@@ -123,6 +141,12 @@ export const ScreenCaptureOption = {
           message.maxResolution = reader.fixed32();
           break;
         case 7:
+          message.width = reader.fixed32();
+          break;
+        case 8:
+          message.height = reader.fixed32();
+          break;
+        case 9:
           message.pid = reader.int32();
           break;
         default:
@@ -141,6 +165,8 @@ export const ScreenCaptureOption = {
       frameInterval: isSet(object.frameInterval) ? Number(object.frameInterval) : undefined,
       repeatFrameDelay: isSet(object.repeatFrameDelay) ? Number(object.repeatFrameDelay) : undefined,
       maxResolution: isSet(object.maxResolution) ? Number(object.maxResolution) : undefined,
+      width: isSet(object.width) ? Number(object.width) : undefined,
+      height: isSet(object.height) ? Number(object.height) : undefined,
       pid: isSet(object.pid) ? Number(object.pid) : undefined,
     };
   },
@@ -153,6 +179,8 @@ export const ScreenCaptureOption = {
     message.frameInterval !== undefined && (obj.frameInterval = Math.round(message.frameInterval));
     message.repeatFrameDelay !== undefined && (obj.repeatFrameDelay = Math.round(message.repeatFrameDelay));
     message.maxResolution !== undefined && (obj.maxResolution = Math.round(message.maxResolution));
+    message.width !== undefined && (obj.width = Math.round(message.width));
+    message.height !== undefined && (obj.height = Math.round(message.height));
     message.pid !== undefined && (obj.pid = Math.round(message.pid));
     return obj;
   },
@@ -165,6 +193,8 @@ export const ScreenCaptureOption = {
     message.frameInterval = object.frameInterval ?? undefined;
     message.repeatFrameDelay = object.repeatFrameDelay ?? undefined;
     message.maxResolution = object.maxResolution ?? undefined;
+    message.width = object.width ?? undefined;
+    message.height = object.height ?? undefined;
     message.pid = object.pid ?? undefined;
     return message;
   },

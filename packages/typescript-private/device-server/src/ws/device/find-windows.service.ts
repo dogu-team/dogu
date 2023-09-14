@@ -55,6 +55,8 @@ export class DeviceFindWindowsService
           }
           this.send(webSocket, {
             pid: targetWindow.pid,
+            width: targetWindow.width,
+            height: targetWindow.height,
           });
           await Promise.resolve();
         })

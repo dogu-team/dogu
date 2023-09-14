@@ -159,10 +159,17 @@ class CaptureCallback : public webrtc::DesktopCapturer::Callback
             return;
         }
 
-        output_frame_ = std::make_unique<webrtc::BasicDesktopFrame>(webrtc::DesktopSize(g_width, g_height));
+        if (width == g_width && height == g_height)
+        {
+            output_frame_ = std::move(frame);
+        }
+        else
+        {
+            output_frame_ = std::make_unique<webrtc::BasicDesktopFrame>(webrtc::DesktopSize(g_width, g_height));
 
-        libyuv::ARGBScale(frame->data(), frame->stride(), frame->size().width(), frame->size().height(), output_frame_->GetFrameDataAtPos(webrtc::DesktopVector(0, 0)),
-                          output_frame_->stride(), output_frame_->size().width(), output_frame_->size().height(), libyuv::kFilterBilinear);
+            libyuv::ARGBScale(frame->data(), frame->stride(), frame->size().width(), frame->size().height(), output_frame_->GetFrameDataAtPos(webrtc::DesktopVector(0, 0)),
+                              output_frame_->stride(), output_frame_->size().width(), output_frame_->size().height(), libyuv::kFilterBilinear);
+        }
 
         if (!i420_buffer_.get() || i420_buffer_->width() * i420_buffer_->height() < g_width * g_height)
         {

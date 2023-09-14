@@ -91,7 +91,7 @@ export class DeviceJobRecordingWindowProcessRegistry {
 
     const findWindowsSocket = this.record.connectFindWindowsWs({ serial, parentPid: pid }, (result) => {
       closeWebSocketWithTruncateReason(findWindowsSocket, 1000, 'Find device windows done');
-      const recordWebSocket = this.record.connectAndUploadRecordWs({ ...value, pid: result.pid }, deviceRecordingInfo.filePath, (_) => {
+      const recordWebSocket = this.record.connectAndUploadRecordWs({ ...value, pid: result.pid, width: result.width, height: result.height }, deviceRecordingInfo.filePath, (_) => {
         this.webSockets.delete(key);
       });
       this.webSockets.set(key, { ...deviceRecordingInfo, webSocket: recordWebSocket });

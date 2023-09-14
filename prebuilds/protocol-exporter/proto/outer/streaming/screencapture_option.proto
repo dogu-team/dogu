@@ -49,7 +49,15 @@ message ScreenCaptureOption {
   // ...                           -> 320x240
   optional fixed32 max_resolution = 6;
 
+  // If width, height is set, capture the screen with the specified size.
+  // override max_resolution
+  optional fixed32 width = 7;
+
+  // If width, height is set, capture the screen with the specified size.
+  // override max_resolution
+  optional fixed32 height = 8;
+
   // Used for desktop platform
   // If pid paaed. capture pid's window
-  optional int32 pid = 7;
+  optional int32 pid = 9;
 }

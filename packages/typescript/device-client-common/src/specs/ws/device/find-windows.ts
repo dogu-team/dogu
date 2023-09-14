@@ -13,6 +13,12 @@ export class DeviceFindWindowsSendMessage {
 export class DeviceFindWindowsReceiveMessage {
   @IsNumber()
   pid!: number;
+
+  @IsNumber()
+  width!: number;
+
+  @IsNumber()
+  height!: number;
 }
 
 export const DeviceFindWindows = new WebSocketSpec({

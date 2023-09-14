@@ -42,6 +42,14 @@ export class ScreenCaptureOptionDto implements ScreenCaptureOption {
 
   @IsNumber()
   @IsOptional()
+  width?: number;
+
+  @IsNumber()
+  @IsOptional()
+  height?: number;
+
+  @IsNumber()
+  @IsOptional()
   pid?: number;
 }
 

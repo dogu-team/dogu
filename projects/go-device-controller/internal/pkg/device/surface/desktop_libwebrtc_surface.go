@@ -68,6 +68,12 @@ func (s *desktopLibwebrtcSurface) Connect(serial string, screenCaptureOption *st
 		height = int(screenCaptureOption.GetMaxResolution())
 		width = int(float64(width) * ratio)
 	}
+	if 0 < screenCaptureOption.GetWidth() {
+		width = int(screenCaptureOption.GetWidth())
+	}
+	if 0 < screenCaptureOption.GetHeight() {
+		height = int(screenCaptureOption.GetHeight())
+	}
 	s.cmd, err = utils.Execute(
 		exePath,
 		"streaming",
