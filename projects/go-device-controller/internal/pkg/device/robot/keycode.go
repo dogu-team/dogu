@@ -240,17 +240,17 @@ func getKeyCode(code types.DeviceControlKeycode, platform outer.Platform) (Pseud
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_PLUS:
 		return newPseudoKeyWithKey(keybd_event.VK_SP3)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_MINUS:
-		return newPseudoKeyWithKey(keybd_event.VK_SP2)
+		return newPseudoKeyWithKey(keybd_event.VK_MINUS)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_EQUALS:
-		return newPseudoKeyWithKey(keybd_event.VK_SP3)
+		return newPseudoKeyWithKey(keybd_event.VK_EQUAL)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_SEMICOLON:
-		return newPseudoKeyWithKey(keybd_event.VK_SP6)
+		return newPseudoKeyWithKey(keybd_event.VK_SEMICOLON)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_LEFT_BRACKET:
-		return newPseudoKeyWithKey(keybd_event.VK_SP4)
+		return newPseudoKeyWithKey(keybd_event.VK_LeftBracket)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_RIGHT_BRACKET:
-		return newPseudoKeyWithKey(keybd_event.VK_SP5)
+		return newPseudoKeyWithKey(keybd_event.VK_RightBracket)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_GRAVE:
-		return newPseudoKeyWithKey(keybd_event.VK_SP1)
+		return newPseudoKeyWithKey(keybd_event.VK_GRAVE)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_APOSTROPHE:
 		return newPseudoKeyWithKey(keybd_event.VK_SP7)
 	}
