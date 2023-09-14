@@ -1,6 +1,6 @@
 import { CloseOutlined } from '@ant-design/icons';
 import { Platform, PlatformType } from '@dogu-private/types';
-import { AppVersion } from '@dogu-tech/action-common';
+import { AppPackageName } from '@dogu-tech/action-common';
 import { Button } from 'antd';
 import { useState } from 'react';
 import styled from 'styled-components';
@@ -68,7 +68,7 @@ const AppPackageNameItem = ({ platform, packageName, onReset, onChange, onClickB
 };
 
 interface Props {
-  appPackageName: AppVersion;
+  appPackageName: AppPackageName;
   onUpdate: (platform: PlatformType, version: string | undefined) => void;
   onClose: (platform: PlatformType) => void;
 }

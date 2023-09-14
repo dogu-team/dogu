@@ -4,7 +4,7 @@ import { useCallback, useContext } from 'react';
 import { move, update } from 'ramda';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
-import { AppVersion } from '@dogu-tech/action-common';
+import { AppPackageName } from '@dogu-tech/action-common';
 import Trans from 'next-translate/Trans';
 
 import { flexRowBaseStyle } from '../../../../styles/box';
@@ -305,17 +305,17 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
     [job, name, updateJob],
   );
 
-  const getPlatformByAppVersion = (): Platform | undefined => {
-    if (job.appVersion) {
-      if (typeof job.appVersion === 'string') {
+  const getPlatformByAppPackageName = (): Platform | undefined => {
+    if (job.appPackageName) {
+      if (typeof job.appPackageName === 'string') {
         return undefined;
       }
 
-      if (job.appVersion.android) {
+      if (job.appPackageName.android) {
         return Platform.PLATFORM_ANDROID;
       }
 
-      if (job.appVersion.ios) {
+      if (job.appPackageName.ios) {
         return Platform.PLATFORM_IOS;
       }
     }
@@ -375,7 +375,7 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
           </div>
           <ContentInner>
             <AppPackageNameContainer
-              appPackageName={job.appPackageName as AppVersion}
+              appPackageName={job.appPackageName as AppPackageName}
               onUpdate={(platform, packageName) => {
                 if (typeof job.appPackageName === 'string') {
                   updateJob({ ...job, appPackageName: { [platform]: packageName as string } }, name);
@@ -391,9 +391,9 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
                   updateJob({ ...job, appPackageName: {} }, name);
                   return;
                 }
-                const clonedAppVersion = { ...job.appPackageName };
-                delete clonedAppVersion[platform];
-                updateJob({ ...job, appPackageName: { ...clonedAppVersion } }, name);
+                const clonedAppPackageName = { ...job.appPackageName };
+                delete clonedAppPackageName[platform];
+                updateJob({ ...job, appPackageName: { ...clonedAppPackageName } }, name);
               }}
             />
           </ContentInner>
@@ -439,7 +439,7 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
           <AddDeviceAndTagButton
             group={isGroupRun}
             onSelect={handleAddRunsOn}
-            devicePlatform={getPlatformByAppVersion()}
+            devicePlatform={getPlatformByAppPackageName()}
           />
         </ContentInner>
       </Content>
