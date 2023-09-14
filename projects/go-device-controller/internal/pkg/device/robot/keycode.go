@@ -4,17 +4,11 @@ package robot
 
 import (
 	"errors"
-	"fmt"
-	"go-device-controller/internal/pkg/log"
+
 	"go-device-controller/types/protocol/generated/proto/inner/types"
 	"go-device-controller/types/protocol/generated/proto/outer"
-	"runtime"
-
-	gotypes "go-device-controller/types/types"
 
 	"github.com/dogu-team/keybd_event"
-	"github.com/go-vgo/robotgo"
-	"go.uber.org/zap"
 )
 
 func getKeyCode(code types.DeviceControlKeycode, platform outer.Platform) (PseudoKey, error) {

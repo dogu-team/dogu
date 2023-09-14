@@ -3,6 +3,7 @@ package robot
 import (
 	"fmt"
 	"runtime"
+	"time"
 
 	"go-device-controller/types/protocol/generated/proto/inner/types"
 	"go-device-controller/types/protocol/generated/proto/outer"
@@ -10,8 +11,8 @@ import (
 
 	"go-device-controller/internal/pkg/log"
 
+	"github.com/atotto/clipboard"
 	"github.com/dogu-team/keybd_event"
-	"github.com/go-vgo/robotgo"
 	"go.uber.org/zap"
 )
 
@@ -122,15 +123,11 @@ func handleControlInjectKeyCode(c *types.DeviceControl, platform outer.Platform,
 	return gotypes.Success
 }
 
-func handleSetClipboard(c *types.DeviceControl, platform outer.Platform) *outer.ErrorResult {
+func handleSetClipboard(c *types.DeviceControl, platform outer.Platform, kb *keybd_event.KeyBonding) *outer.ErrorResult {
 	log.Inst.Debug("MessageHandler.handleSetClipboard start")
 
 	log.Inst.Info("MessageHandler.clearAllMetaKeys")
-	metaKeys := []string{"cmd", "lcmd", "rcmd", "alt", "lalt", "ralt", "ctrl", "lctrl", "rctrl", "shift", "lshift", "rshift"}
-	for _, key := range metaKeys {
-		robotgo.KeyToggle(key, "up")
-	}
-	err := robotgo.WriteAll(c.GetText())
+	err := clipboard.WriteAll(c.GetText())
 	if nil != err {
 		log.Inst.Debug("MessageHandler.handleSetClipboard fail", zap.String("err", err.Error()))
 		return &outer.ErrorResult{
@@ -138,21 +135,22 @@ func handleSetClipboard(c *types.DeviceControl, platform outer.Platform) *outer.
 			Message: fmt.Sprintf("MessageHandler.handleControl clipboard set failed %s", err.Error()),
 		}
 	}
-
-	metaKey := "ctrl"
+	kb.Clear()
 
 	if runtime.GOOS == "darwin" {
-		metaKey = "cmd"
+		kb.HasSuper(true)
+	} else {
+		kb.HasCTRL(true)
 	}
-	robotgo.KeyToggle(metaKey)
-	robotgo.MilliSleep(10)
-	robotgo.KeyToggle("v")
-	robotgo.MilliSleep(50)
-	robotgo.KeyToggle("v", "up")
-	robotgo.MilliSleep(10)
-	robotgo.KeyToggle(metaKey, "up")
+	kb.SetKeys(keybd_event.VK_V)
+
+	kb.Press()
+	time.Sleep(100 * time.Millisecond)
+	kb.Release()
 
 	log.Inst.Debug("MessageHandler.handleSetClipboard done")
+
+	kb.Clear()
 
 	return gotypes.Success
 }
