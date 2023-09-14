@@ -19,7 +19,9 @@ const StepPreview = ({ step, index }: Props) => {
     <Box>
       <Button
         onClick={() => {
-          router.replace({ query: { ...router.query, step: step.recordTestStepId } }, undefined, { shallow: true });
+          router.replace({ query: { ...router.query, step: step.recordTestStepId } }, undefined, {
+            shallow: true,
+          });
         }}
       >
         <div>
@@ -27,7 +29,14 @@ const StepPreview = ({ step, index }: Props) => {
           <StepTypeIcon type={step.type} />
         </div>
         <ImageWrapper isSelected={isSelected}>
-          <Image src={step.screenshotUrl} fill sizes="256px" quality={10} alt={step.recordTestStepId} style={{ objectFit: 'contain' }} />
+          <Image
+            src={step.screenshotUrl}
+            fill
+            sizes="256px"
+            quality={10}
+            alt={step.recordTestStepId}
+            style={{ objectFit: 'contain' }}
+          />
         </ImageWrapper>
       </Button>
 

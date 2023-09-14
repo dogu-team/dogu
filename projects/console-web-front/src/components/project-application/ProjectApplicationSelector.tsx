@@ -22,18 +22,39 @@ interface Props extends Omit<SelectProps<string>, 'options'> {
   preOptions?: SelectProps<string>['options'];
 }
 
-const ProjectApplicationSelector = ({ selectedApplication, organizationId, projectId, extension, preOptions, toggleOpen, close, onSelectApp, ...props }: Props) => {
+const ProjectApplicationSelector = ({
+  selectedApplication,
+  organizationId,
+  projectId,
+  extension,
+  preOptions,
+  toggleOpen,
+  close,
+  onSelectApp,
+  ...props
+}: Props) => {
   const { debouncedValue, handleChangeValues } = useDebouncedInputValues();
   const { data, isLoading, error } = useSWR<PageBase<ProjectApplicationWithIcon>>(
-    `/organizations/${organizationId}/projects/${projectId}/applications?version=${debouncedValue}${extension ? `&extension=${extension}` : ''}`,
+    `/organizations/${organizationId}/projects/${projectId}/applications?version=${debouncedValue}${
+      extension ? `&extension=${extension}` : ''
+    }`,
     swrAuthFetcher,
   );
 
   const applications = selectedApplication ? [selectedApplication, ...(data?.items || [])] : data?.items;
   const options: SelectProps['options'] = preOptions
-    ? preOptions.concat(applications?.map((item) => ({ label: <ProjectApplicationOptionItem app={item} />, value: item.version })) ?? [])
-    : applications?.map((item) => ({ label: <ProjectApplicationOptionItem app={item} />, value: item.version }));
-  const isInvalid = !!props.value && props.value !== 'latest' && !data?.items.find((item) => item.version === props.value);
+    ? preOptions.concat(
+        applications?.map((item) => ({
+          label: <ProjectApplicationOptionItem app={item} />,
+          value: item.version,
+        })) ?? [],
+      )
+    : applications?.map((item) => ({
+        label: <ProjectApplicationOptionItem app={item} />,
+        value: item.version,
+      }));
+  const isInvalid =
+    !!props.value && props.value !== 'latest' && !data?.items.find((item) => item.version === props.value);
 
   return (
     <Select<string>
@@ -66,7 +87,8 @@ const ProjectApplicationSelector = ({ selectedApplication, organizationId, proje
             <EmptyText>
               No applicaiton.
               <br />
-              Please upload your app from <Link href={`/dashboard/${organizationId}/projects/${projectId}/apps`}>app menu</Link>.
+              Please upload your app from{' '}
+              <Link href={`/dashboard/${organizationId}/projects/${projectId}/apps`}>app menu</Link>.
             </EmptyText>
           </EmptyBox>
         )

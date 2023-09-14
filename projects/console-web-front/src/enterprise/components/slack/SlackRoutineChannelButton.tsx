@@ -28,7 +28,12 @@ const SlackRoutineChannelButton = (props: Props) => {
   const pureFormValues = useRef<FormFields>({ channelId: '', events: [] });
   const [isOpen, setIsOpen] = useState(false);
   const [form] = Form.useForm<FormFields>();
-  const { data: channelItems, error, mutate, isLoading } = useSWR<SlackChannelItem[]>(`/organizations/${props.organizationId}/slack/channels`, swrAuthFetcher);
+  const {
+    data: channelItems,
+    error,
+    mutate,
+    isLoading,
+  } = useSWR<SlackChannelItem[]>(`/organizations/${props.organizationId}/slack/channels`, swrAuthFetcher);
 
   const initFormValues = useCallback(() => {
     if (props.routineSlack) {
@@ -49,7 +54,9 @@ const SlackRoutineChannelButton = (props: Props) => {
     }
   }, [props.routineSlack]);
 
-  const handleOpen = (e: MouseEvent<HTMLAnchorElement, globalThis.MouseEvent> | MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
+  const handleOpen = (
+    e: MouseEvent<HTMLAnchorElement, globalThis.MouseEvent> | MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
+  ) => {
     e.stopPropagation();
     setIsOpen(true);
   };
@@ -107,7 +114,11 @@ const SlackRoutineChannelButton = (props: Props) => {
         centered
         closable
       >
-        <SlackChannelForm organizationId={props.organizationId} form={form} channelItems={channelItems ? channelItems : []} />
+        <SlackChannelForm
+          organizationId={props.organizationId}
+          form={form}
+          channelItems={channelItems ? channelItems : []}
+        />
       </Modal>
     </>
   );

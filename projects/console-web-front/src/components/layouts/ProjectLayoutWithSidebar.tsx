@@ -17,17 +17,26 @@ interface Props extends Omit<ConsoleLayoutProps, 'sidebar'> {
 }
 
 const ProjectLayoutWithSidebar = ({ children, innerSidebar, project, ...props }: Props) => {
-  const { data, error, isLoading, mutate } = useSWR<ProjectBase>(`/organizations/${project.organizationId}/projects/${project.projectId}`, swrAuthFetcher, {
-    revalidateOnFocus: false,
-    fallbackData: project,
-  });
+  const { data, error, isLoading, mutate } = useSWR<ProjectBase>(
+    `/organizations/${project.organizationId}/projects/${project.projectId}`,
+    swrAuthFetcher,
+    {
+      revalidateOnFocus: false,
+      fallbackData: project,
+    },
+  );
 
   if (isLoading) {
     return null;
   }
 
   if (error) {
-    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get project information'} />;
+    return (
+      <ErrorBox
+        title="Something went wrong"
+        desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get project information'}
+      />
+    );
   }
 
   return (

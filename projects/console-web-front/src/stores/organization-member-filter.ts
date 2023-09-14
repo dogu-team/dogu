@@ -14,7 +14,8 @@ interface OrganizationMemberFilterStore extends FilterStore<OrganizationMemberFi
 
 const useOrganizationMemberFilterStore = create<OrganizationMemberFilterStore>((set, get) => ({
   filterValue: defaultOrganizationMemberFilter,
-  updateFilter: (updator) => filterUpdatorFunc<OrganizationMemberFilter, OrganizationMemberFilterStore>(updator, set, get),
+  updateFilter: (updator) =>
+    filterUpdatorFunc<OrganizationMemberFilter, OrganizationMemberFilterStore>(updator, set, get),
   resetFilter: () => set({ filterValue: defaultOrganizationMemberFilter }),
 }));
 

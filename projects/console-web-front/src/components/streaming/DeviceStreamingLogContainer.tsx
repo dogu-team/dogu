@@ -18,11 +18,21 @@ interface Props {
   clearLog: () => void;
 }
 
-const DeviceStreamingLogContainer = ({ filterValue, deviceLogs, isStopped, onTogglePlay, onChangeFilterValue, clearLog }: Props) => {
+const DeviceStreamingLogContainer = ({
+  filterValue,
+  deviceLogs,
+  isStopped,
+  onTogglePlay,
+  onChangeFilterValue,
+  clearLog,
+}: Props) => {
   const [value, setValue] = useState(filterValue);
   const { t } = useTranslation();
 
-  const extractKey = useCallback((item: Log, index: number) => `${item.localTimeStampNano} ${item.message} ${index}`, []);
+  const extractKey = useCallback(
+    (item: Log, index: number) => `${item.localTimeStampNano} ${item.message} ${index}`,
+    [],
+  );
 
   const renderItem = useCallback((item: Log, index: number) => {
     return <DeviceLogItem lineNumber={index + 1} log={item} />;
@@ -43,7 +53,11 @@ const DeviceStreamingLogContainer = ({ filterValue, deviceLogs, isStopped, onTog
             value={value}
             onChange={(e) => setValue(e.target.value)}
             enterButton={
-              <Button type="primary" disabled={filterValue ? value === filterValue : false} access-id="log-filter-set-btn">
+              <Button
+                type="primary"
+                disabled={filterValue ? value === filterValue : false}
+                access-id="log-filter-set-btn"
+              >
                 {t('device-streaming:deviceLogFilterSetButtonText')}
               </Button>
             }
@@ -54,11 +68,22 @@ const DeviceStreamingLogContainer = ({ filterValue, deviceLogs, isStopped, onTog
         </div>
 
         <ButtonWrapper>
-          <Button icon={isStopped ? <CaretRightFilled /> : <PauseOutlined />} onClick={onTogglePlay} size="small" access-id="toggle-log-btn" />
+          <Button
+            icon={isStopped ? <CaretRightFilled /> : <PauseOutlined />}
+            onClick={onTogglePlay}
+            size="small"
+            access-id="toggle-log-btn"
+          />
           <Button icon={<DeleteOutlined />} onClick={clearLog} size="small" />
         </ButtonWrapper>
       </MenuBox>
-      <VirtualizeLogContainer<Log> keyExtractor={extractKey} items={deviceLogs} renderItem={renderItem} itemsPerBundle={50} scrollEndOnUpdate />
+      <VirtualizeLogContainer<Log>
+        keyExtractor={extractKey}
+        items={deviceLogs}
+        renderItem={renderItem}
+        itemsPerBundle={50}
+        scrollEndOnUpdate
+      />
     </Box>
   );
 };

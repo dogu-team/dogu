@@ -1,4 +1,9 @@
-import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined, QuestionCircleFilled } from '@ant-design/icons';
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+  QuestionCircleFilled,
+} from '@ant-design/icons';
 import { Tag, Tooltip } from 'antd';
 import { parseSemver } from '../../utils/download';
 
@@ -25,7 +30,9 @@ const HostVesrsionBadge = ({ version }: Props) => {
     >
       <Tag
         color={isMatched ? 'green' : isMajorMatched ? 'warning' : 'error'}
-        icon={isMatched ? <CheckCircleOutlined /> : isMajorMatched ? <ExclamationCircleOutlined /> : <CloseCircleOutlined />}
+        icon={
+          isMatched ? <CheckCircleOutlined /> : isMajorMatched ? <ExclamationCircleOutlined /> : <CloseCircleOutlined />
+        }
       >
         {version}
       </Tag>

@@ -44,7 +44,9 @@ const InviteSignupPage: NextPageWithLayout<Props> = ({ email, token, invitation 
           invitationOrganizationId: invitation.organization?.organizationId,
           invitationToken: token,
         });
-        router.push(`/auth/invite-confirm?email=${email}&organizationId=${invitation.organization?.organizationId}&token=${token}`);
+        router.push(
+          `/auth/invite-confirm?email=${email}&organizationId=${invitation.organization?.organizationId}&token=${token}`,
+        );
       } catch (e) {
         if (e instanceof AxiosError) {
           if (e.response?.status === 409) {
@@ -66,7 +68,12 @@ const InviteSignupPage: NextPageWithLayout<Props> = ({ email, token, invitation 
       <Box>
         <FlexColumnCentered>
           <div>
-            <ProfileImage profileImageUrl={invitation.organization?.profileImageUrl} name={invitation.organization?.name} shape="square" size={48} />
+            <ProfileImage
+              profileImageUrl={invitation.organization?.profileImageUrl}
+              name={invitation.organization?.name}
+              shape="square"
+              size={48}
+            />
           </div>
           <StyledTitle>
             You&apos;re invited to join <b>{invitation.organization?.name}</b> organization
@@ -80,7 +87,11 @@ const InviteSignupPage: NextPageWithLayout<Props> = ({ email, token, invitation 
           <SocialSignInForm
             onClickButton={() => {
               const cookies = new Cookies();
-              cookies.set('redirectUrl', `/auth/invite-confirm?email=${email}&organizationId=${invitation.organizationId}&token=${token}`, { path: '/' });
+              cookies.set(
+                'redirectUrl',
+                `/auth/invite-confirm?email=${email}&organizationId=${invitation.organizationId}&token=${token}`,
+                { path: '/' },
+              );
             }}
           />
         )}
@@ -88,7 +99,10 @@ const InviteSignupPage: NextPageWithLayout<Props> = ({ email, token, invitation 
         <div style={{ marginTop: '1rem' }}>
           <ServiceAgreement />
           <AccountText>
-            <Trans i18nKey="registery:signUpAlreadyAccountExist" components={[<StyledLink key="signin" href={{ pathname: '/signin/invite', query: router.query }} />]} />
+            <Trans
+              i18nKey="registery:signUpAlreadyAccountExist"
+              components={[<StyledLink key="signin" href={{ pathname: '/signin/invite', query: router.query }} />]}
+            />
           </AccountText>
         </div>
       </Box>

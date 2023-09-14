@@ -19,7 +19,10 @@ interface Props {
 const PermissionSelector = ({ organizationId, defaultRoleId, onSelectRole }: Props) => {
   const [role, setRole] = useState(defaultRoleId);
   const [keyword, setKeyword] = useState('');
-  const { data, error, isLoading } = useSWR<PageBase<ProjectRoleBase>>(`/organizations/${organizationId}/project-roles?page=1&offset=10&keyword=${keyword}`, swrAuthFetcher);
+  const { data, error, isLoading } = useSWR<PageBase<ProjectRoleBase>>(
+    `/organizations/${organizationId}/project-roles?page=1&offset=10&keyword=${keyword}`,
+    swrAuthFetcher,
+  );
 
   const debouncedUpdate = useMemo(() => debounce((value: string) => setKeyword(value), 250), []);
 

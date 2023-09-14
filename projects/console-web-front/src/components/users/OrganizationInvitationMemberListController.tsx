@@ -30,7 +30,9 @@ interface ItemProps {
 
 const InvitationMemberItem = ({ invitation }: ItemProps) => {
   const router = useRouter();
-  const status = checkExpiredInvitation(new Date(invitation.updatedAt)) ? INVITATION_STATUS.EXPIRED : INVITATION_STATUS.PENDING;
+  const status = checkExpiredInvitation(new Date(invitation.updatedAt))
+    ? INVITATION_STATUS.EXPIRED
+    : INVITATION_STATUS.PENDING;
   const fireEvent = useEventStore((state) => state.fireEvent);
   const { t } = useTranslation();
 
@@ -81,7 +83,11 @@ const InvitationMemberItem = ({ invitation }: ItemProps) => {
           modalButtonTitle={t('org-member:invitationCancelConfirmButtonText')}
           modalContent={
             <p>
-              <Trans i18nKey="org-member:invitationCancelModalDescription" components={{ b: <b style={{ fontWeight: '700' }} /> }} values={{ email: invitation.email }} />
+              <Trans
+                i18nKey="org-member:invitationCancelModalDescription"
+                components={{ b: <b style={{ fontWeight: '700' }} /> }}
+                values={{ email: invitation.email }}
+              />
             </p>
           }
         >
@@ -113,7 +119,9 @@ interface Props {
 }
 
 const OrganizationInvitationMemberListController = ({ organizationId }: Props) => {
-  const { data, isLoading, error, page, updatePage, mutate } = usePaginationSWR<UserAndInvitationTokenBase>(`/organizations/${organizationId}/invitations`);
+  const { data, isLoading, error, page, updatePage, mutate } = usePaginationSWR<UserAndInvitationTokenBase>(
+    `/organizations/${organizationId}/invitations`,
+  );
   const { t } = useTranslation();
 
   useRefresh(['onRefreshClicked', 'onInvitationSent', 'onInvitationCanceled'], () => mutate());
@@ -145,7 +153,12 @@ const OrganizationInvitationMemberListController = ({ organizationId }: Props) =
           total: data?.totalCount,
         }}
         locale={{
-          emptyText: <ListEmpty image={<MailOutlined style={{ fontSize: '90px' }} />} description={t('org-member:invitationEmptyDescription')} />,
+          emptyText: (
+            <ListEmpty
+              image={<MailOutlined style={{ fontSize: '90px' }} />}
+              description={t('org-member:invitationEmptyDescription')}
+            />
+          ),
         }}
       />
     </>

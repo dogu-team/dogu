@@ -13,7 +13,13 @@ const AddMemberItem = ({ profile, onAddClick, isJoined }: Props) => {
     <MemberItem>
       {profile}
 
-      <div>{isJoined ? <p>Already joined</p> : <Button icon={<PlusOutlined style={{ fontSize: '1.2rem' }} />} onClick={onAddClick} />}</div>
+      <div>
+        {isJoined ? (
+          <p>Already joined</p>
+        ) : (
+          <Button icon={<PlusOutlined style={{ fontSize: '1.2rem' }} />} onClick={onAddClick} />
+        )}
+      </div>
     </MemberItem>
   );
 };

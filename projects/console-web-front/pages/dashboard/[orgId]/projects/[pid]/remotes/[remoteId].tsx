@@ -14,9 +14,15 @@ import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/ssr/p
 import { flexRowSpaceBetweenStyle } from '../../../../../../src/styles/box';
 import { NextPageWithLayout } from '../../../../../_app';
 
-const RemoteItemPage: NextPageWithLayout<ProjectServerSideProps & { remote: RemoteBase }> = ({ organization, project, remote }) => {
+const RemoteItemPage: NextPageWithLayout<ProjectServerSideProps & { remote: RemoteBase }> = ({
+  organization,
+  project,
+  remote,
+}) => {
   const router = useRouter();
-  const selectedJob = remote.remoteDeviceJobs?.find((rdj) => rdj.remoteDeviceJobId === (router.query.jobId as string | undefined)) ?? remote.remoteDeviceJobs?.[0];
+  const selectedJob =
+    remote.remoteDeviceJobs?.find((rdj) => rdj.remoteDeviceJobId === (router.query.jobId as string | undefined)) ??
+    remote.remoteDeviceJobs?.[0];
 
   return (
     <>
@@ -39,7 +45,11 @@ const RemoteItemPage: NextPageWithLayout<ProjectServerSideProps & { remote: Remo
         )}
         <div>
           {!!selectedJob && (
-            <RemoteDestListController organizationId={organization.organizationId} projectId={project.projectId} remoteDeviceJobId={selectedJob?.remoteDeviceJobId} />
+            <RemoteDestListController
+              organizationId={organization.organizationId}
+              projectId={project.projectId}
+              remoteDeviceJobId={selectedJob?.remoteDeviceJobId}
+            />
           )}
         </div>
       </div>
@@ -49,13 +59,19 @@ const RemoteItemPage: NextPageWithLayout<ProjectServerSideProps & { remote: Remo
 
 RemoteItemPage.getLayout = (page) => {
   return (
-    <ProjectLayoutWithSidebar {...page.props} innerSidebar={<RemoteSidebar remote={page.props.remote} />} titleI18nKey="project:tabMenuRemoteTitle">
+    <ProjectLayoutWithSidebar
+      {...page.props}
+      innerSidebar={<RemoteSidebar remote={page.props.remote} />}
+      titleI18nKey="project:tabMenuRemoteTitle"
+    >
       {page}
     </ProjectLayoutWithSidebar>
   );
 };
 
-export const getServerSideProps: GetServerSideProps<ProjectServerSideProps & { remote: RemoteBase }> = async (context) => {
+export const getServerSideProps: GetServerSideProps<ProjectServerSideProps & { remote: RemoteBase }> = async (
+  context,
+) => {
   const result = await getProjectPageServerSideProps(context);
 
   if ('props' in result) {

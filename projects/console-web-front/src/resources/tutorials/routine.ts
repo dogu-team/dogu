@@ -1,4 +1,11 @@
-import { TutorialSdkSupportInfoMap, TutorialSupportFramework, TutorialSupportLanguage, TutorialSupportPlatform, TutorialSupportSdk, TutorialSupportTarget } from '.';
+import {
+  TutorialSdkSupportInfoMap,
+  TutorialSupportFramework,
+  TutorialSupportLanguage,
+  TutorialSupportPlatform,
+  TutorialSupportSdk,
+  TutorialSupportTarget,
+} from '.';
 
 export const routineTutorialSdkSupportInfo: TutorialSdkSupportInfoMap = {
   [TutorialSupportSdk.APPIUM]: {

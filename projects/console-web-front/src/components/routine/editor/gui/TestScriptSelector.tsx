@@ -15,18 +15,26 @@ interface Props extends Omit<SelectProps, 'options'> {
 }
 
 const TestScriptSelector = ({ organizationId, projectId, ...props }: Props) => {
-  const { data, isLoading, error } = useSWR<ProjectTestScript[]>(`/organizations/${organizationId}/projects/${projectId}/scm/scripts?type=blob`, swrAuthFetcher, {
-    revalidateOnFocus: false,
-  });
+  const { data, isLoading, error } = useSWR<ProjectTestScript[]>(
+    `/organizations/${organizationId}/projects/${projectId}/scm/scripts?type=blob`,
+    swrAuthFetcher,
+    {
+      revalidateOnFocus: false,
+    },
+  );
 
   const getFileIcon = (name: string) => {
     const extension = name.split('.').pop();
 
     switch (extension) {
       case 'js':
-        return <Image src={resources.icons.javascript} width={16} height={16} alt="javascript" style={{ display: 'flex' }} />;
+        return (
+          <Image src={resources.icons.javascript} width={16} height={16} alt="javascript" style={{ display: 'flex' }} />
+        );
       case 'ts':
-        return <Image src={resources.icons.typescript} width={16} height={16} alt="typescript" style={{ display: 'flex' }} />;
+        return (
+          <Image src={resources.icons.typescript} width={16} height={16} alt="typescript" style={{ display: 'flex' }} />
+        );
       case 'py':
         return <Image src={resources.icons.python} width={16} height={16} alt="python" style={{ display: 'flex' }} />;
       default:

@@ -27,9 +27,16 @@ const RecordTestingScreenViewer = ({ project, caseId, stepId }: Props) => {
   const [requestLoading, request] = useRequest(createRecordTestStep);
   const [isRecording, setIsRecording] = useState(false);
   const [isDeviceKeyboardShown, setIsDeviceKeyboardShown] = useState(false);
-  const { handleDoubleClick, handleKeyDown, handleKeyUp, handleMouseDown, handleMouseLeave, handleMouseMove, handleMouseUp, handleWheel } = useDeviceInput(
-    deviceRTCCaller ?? undefined,
-  );
+  const {
+    handleDoubleClick,
+    handleKeyDown,
+    handleKeyUp,
+    handleMouseDown,
+    handleMouseLeave,
+    handleMouseMove,
+    handleMouseUp,
+    handleWheel,
+  } = useDeviceInput(deviceRTCCaller ?? undefined);
   const fireEvent = useEventStore((state) => state.fireEvent, shallow);
 
   const handleClick = useCallback(

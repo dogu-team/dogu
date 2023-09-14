@@ -20,11 +20,33 @@ const LogContainer = ({ logs, logType, selectedLine, getLineLink }: Props) => {
   const renderItem = useCallback(
     (item: DeviceJobLogInfo) => {
       if (logType === 'deviceLogs') {
-        return <DeviceLogItem lineNumber={item.line} lineNumberComponent={<LineLink href={getLineLink(item)} scroll={false} selected={selectedLine === item.line}>{item.line}</LineLink>} log={item} selected={selectedLine === item.line} />;
+        return (
+          <DeviceLogItem
+            lineNumber={item.line}
+            lineNumberComponent={
+              <LineLink href={getLineLink(item)} scroll={false} selected={selectedLine === item.line}>
+                {item.line}
+              </LineLink>
+            }
+            log={item}
+            selected={selectedLine === item.line}
+          />
+        );
       }
 
       if (logType === 'userProjectLogs') {
-        return <AnsiLogItem lineNumber={item.line} lineNumberComponent={<LineLink href={getLineLink(item)} scroll={false} selected={selectedLine === item.line}>{item.line}</LineLink>} log={item} selected={selectedLine === item.line} />;
+        return (
+          <AnsiLogItem
+            lineNumber={item.line}
+            lineNumberComponent={
+              <LineLink href={getLineLink(item)} scroll={false} selected={selectedLine === item.line}>
+                {item.line}
+              </LineLink>
+            }
+            log={item}
+            selected={selectedLine === item.line}
+          />
+        );
       }
 
       return null;
@@ -42,14 +64,19 @@ const LogContainer = ({ logs, logType, selectedLine, getLineLink }: Props) => {
 
   return (
     <div>
-      <VirtualizeLogContainer<DeviceJobLogInfo> items={filteredLogs} renderItem={renderItem} keyExtractor={extractKey} selectedLine={selectedLine} />
+      <VirtualizeLogContainer<DeviceJobLogInfo>
+        items={filteredLogs}
+        renderItem={renderItem}
+        keyExtractor={extractKey}
+        selectedLine={selectedLine}
+      />
     </div>
   );
 };
 
 export default LogContainer;
 
-const LineLink = styled(Link)<{selected: boolean}>`
+const LineLink = styled(Link)<{ selected: boolean }>`
   display: block;
   height: 100%;
   color: ${(props) => (props.selected ? props.theme.colorPrimary : '#000')};

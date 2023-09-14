@@ -23,7 +23,10 @@ const ProjectSearchBox = () => {
     swrAuthFetcher,
     { keepPreviousData: true },
   );
-  const [selectedProjects, updateFilter] = useDeviceFilterStore((state) => [state.filterValue.projects, state.updateFilter], shallow);
+  const [selectedProjects, updateFilter] = useDeviceFilterStore(
+    (state) => [state.filterValue.projects, state.updateFilter],
+    shallow,
+  );
   const { t } = useTranslation();
 
   const handleRemoveFilter = useCallback((name: string) => {
@@ -60,13 +63,19 @@ const ProjectSearchBox = () => {
         />
       }
       selectedItems={selectedProjects.map((item) => {
-        return <FilterSelectedTag key={`project-filter-${item.projectId}`} value={item.name} onClick={handleRemoveFilter} />;
+        return (
+          <FilterSelectedTag key={`project-filter-${item.projectId}`} value={item.name} onClick={handleRemoveFilter} />
+        );
       })}
       optionItems={data?.items.map((item) => {
         const selected = !!selectedProjects.find((sp) => sp.projectId === item.projectId);
 
         return (
-          <FilterSelectOption key={`search-${item.projectId}`} checked={selected} onClick={() => handleToggleOption(item, selected)}>
+          <FilterSelectOption
+            key={`search-${item.projectId}`}
+            checked={selected}
+            onClick={() => handleToggleOption(item, selected)}
+          >
             {item.name}
           </FilterSelectOption>
         );

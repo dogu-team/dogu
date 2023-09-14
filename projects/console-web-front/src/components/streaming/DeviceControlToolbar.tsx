@@ -1,6 +1,14 @@
 import styled from 'styled-components';
 import Image from 'next/image';
-import { HomeOutlined, LockOutlined, MenuOutlined, PoweroffOutlined, RollbackOutlined, UnlockOutlined, AlignLeftOutlined } from '@ant-design/icons';
+import {
+  HomeOutlined,
+  LockOutlined,
+  MenuOutlined,
+  PoweroffOutlined,
+  RollbackOutlined,
+  UnlockOutlined,
+  AlignLeftOutlined,
+} from '@ant-design/icons';
 import React from 'react';
 import { Platform } from '@dogu-private/types';
 
@@ -36,7 +44,10 @@ const DeviceControlToolbar = () => {
       <ToolbarButton onClick={(e) => handleToolMenuInput(e, DeviceToolBarMenu.VOLUME_DOWN)}>
         <Image src={resources.icons.volumeDown} width={32} height={32} alt="volume down" />
       </ToolbarButton>
-      <ToolbarButton workingPlatforms={[Platform.PLATFORM_ANDROID, Platform.PLATFORM_WINDOWS]} onClick={(e) => handleToolMenuInput(e, DeviceToolBarMenu.VOLUME_MUTE)}>
+      <ToolbarButton
+        workingPlatforms={[Platform.PLATFORM_ANDROID, Platform.PLATFORM_WINDOWS]}
+        onClick={(e) => handleToolMenuInput(e, DeviceToolBarMenu.VOLUME_MUTE)}
+      >
         <Image src={resources.icons.volumeMute} width={32} height={32} alt="volume mute" />
       </ToolbarButton>
 

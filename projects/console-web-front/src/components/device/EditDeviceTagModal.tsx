@@ -1,6 +1,12 @@
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { PageBase, DeviceTagBase } from '@dogu-private/console';
-import { OrganizationId, DeviceId, DEVICE_TAG_NAME_MAX_LENGTHC, DEVICE_TAG_NAME_MIN_LENGTH, PlatformType } from '@dogu-private/types';
+import {
+  OrganizationId,
+  DeviceId,
+  DEVICE_TAG_NAME_MAX_LENGTHC,
+  DEVICE_TAG_NAME_MIN_LENGTH,
+  PlatformType,
+} from '@dogu-private/types';
 import { Input, InputRef, Modal, notification, Tag } from 'antd';
 import { AxiosError } from 'axios';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -64,7 +70,8 @@ const EditDeviceTagModal = ({ deviceId, isOpen, close }: Props) => {
       fireEvent('onDeviceTagUpdated');
       mutateDeviceTags();
     } catch (e) {
-      if (e instanceof AxiosError) sendErrorNotification(t('device-farm:deviceTagEditFailureMsg', { reason: getErrorMessageFromAxios(e) }));
+      if (e instanceof AxiosError)
+        sendErrorNotification(t('device-farm:deviceTagEditFailureMsg', { reason: getErrorMessageFromAxios(e) }));
     }
   };
 
@@ -74,7 +81,8 @@ const EditDeviceTagModal = ({ deviceId, isOpen, close }: Props) => {
       fireEvent('onDeviceTagUpdated');
       mutateDeviceTags();
     } catch (e) {
-      if (e instanceof AxiosError) sendErrorNotification(t('device-farm:deviceTagEditFailureMsg', { reason: getErrorMessageFromAxios(e) }));
+      if (e instanceof AxiosError)
+        sendErrorNotification(t('device-farm:deviceTagEditFailureMsg', { reason: getErrorMessageFromAxios(e) }));
     }
   };
 

@@ -36,7 +36,9 @@ const EmailPreferenceModifier = ({ user }: Props) => {
       sendSuccessNotification(t('account:updateEmailPreferenceSuccessMessage'));
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('account:updateEmailPreferenceFailureMessage', { reason: getErrorMessageFromAxios(e) }));
+        sendErrorNotification(
+          t('account:updateEmailPreferenceFailureMessage', { reason: getErrorMessageFromAxios(e) }),
+        );
       }
     }
   };

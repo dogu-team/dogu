@@ -27,7 +27,11 @@ const PipelineDetailPage: NextPageWithLayout<ProjectServerSideProps> = ({ organi
         <title>Pipeline - {project.name} | Dogu</title>
       </Head>
       <div>
-        <JobFlowController orgId={organization.organizationId} projectId={project.projectId} pipelineId={Number(pipelineId) as RoutinePipelineId} />
+        <JobFlowController
+          orgId={organization.organizationId}
+          projectId={project.projectId}
+          pipelineId={Number(pipelineId) as RoutinePipelineId}
+        />
       </div>
     </>
   );

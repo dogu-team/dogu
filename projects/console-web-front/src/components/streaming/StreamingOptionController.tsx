@@ -59,7 +59,12 @@ const StreamingOptionController = () => {
       </Content>
       <Content>
         <ContentTitle>{t('device-streaming:scrollSensitivity')}</ContentTitle>
-        <Slider min={1} max={100} onChange={(value) => updateOption({ scrollSensitivity: value })} value={option.scrollSensitivity ?? 25} />
+        <Slider
+          min={1}
+          max={100}
+          onChange={(value) => updateOption({ scrollSensitivity: value })}
+          value={option.scrollSensitivity ?? 25}
+        />
       </Content>
     </Box>
   );

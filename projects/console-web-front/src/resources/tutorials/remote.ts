@@ -1,6 +1,13 @@
 import { OrganizationId, ProjectId } from '@dogu-private/types';
 
-import { TutorialSdkSupportInfoMap, TutorialSupportFramework, TutorialSupportLanguage, TutorialSupportPlatform, TutorialSupportSdk, TutorialSupportTarget } from '.';
+import {
+  TutorialSdkSupportInfoMap,
+  TutorialSupportFramework,
+  TutorialSupportLanguage,
+  TutorialSupportPlatform,
+  TutorialSupportSdk,
+  TutorialSupportTarget,
+} from '.';
 import { getPersonalAccessToken } from '../../api/user';
 
 export const remoteTutorialSdkSupportInfo: TutorialSdkSupportInfoMap = {
@@ -86,7 +93,8 @@ export interface RemoteTutorialDetailData {
   sampleFilePath: string;
 }
 
-const isMobile = (platform: TutorialSupportPlatform) => [TutorialSupportPlatform.ANDROID, TutorialSupportPlatform.IOS].includes(platform);
+const isMobile = (platform: TutorialSupportPlatform) =>
+  [TutorialSupportPlatform.ANDROID, TutorialSupportPlatform.IOS].includes(platform);
 
 export interface RemoteTutorial {
   generateCapabilitiesCode: (params: GenerateCapabilitiesCodeParams) => Promise<string>;
@@ -99,7 +107,14 @@ export interface RemoteTutorialProps {
 }
 
 export const appiumRemoteTutorialData: RemoteTutorial = {
-  generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId, userId }: GenerateCapabilitiesCodeParams) => {
+  generateCapabilitiesCode: async ({
+    framework,
+    platform,
+    target,
+    orgId,
+    projectId,
+    userId,
+  }: GenerateCapabilitiesCodeParams) => {
     let pat: string;
 
     try {
@@ -117,8 +132,12 @@ export const appiumRemoteTutorialData: RemoteTutorial = {
   "runsOn": "${platform}",  // or another device tag
   ${
     target === TutorialSupportTarget.WEB
-      ? `"browserName": "${platform === TutorialSupportPlatform.IOS ? 'safari' : 'chrome'}", ${isMobile(platform) ? '' : '// available: "safari", "chrome", "firefox"'}`
-      : `"appVersion": "${platform === TutorialSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'INSERT_YOUR_APP_VERSION'}",`
+      ? `"browserName": "${platform === TutorialSupportPlatform.IOS ? 'safari' : 'chrome'}", ${
+          isMobile(platform) ? '' : '// available: "safari", "chrome", "firefox"'
+        }`
+      : `"appVersion": "${
+          platform === TutorialSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'INSERT_YOUR_APP_VERSION'
+        }",`
   }
 }
 `;
@@ -170,7 +189,14 @@ export const appiumRemoteTutorialData: RemoteTutorial = {
 };
 
 export const webdriverioRemoteTutoriallData: RemoteTutorial = {
-  generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId, userId }: GenerateCapabilitiesCodeParams) => {
+  generateCapabilitiesCode: async ({
+    framework,
+    platform,
+    target,
+    orgId,
+    projectId,
+    userId,
+  }: GenerateCapabilitiesCodeParams) => {
     let pat: string;
 
     try {
@@ -188,8 +214,12 @@ export const webdriverioRemoteTutoriallData: RemoteTutorial = {
   "runsOn": "${platform}",  // or another device tag
   ${
     target === TutorialSupportTarget.WEB
-      ? `"browserName": "${platform === TutorialSupportPlatform.IOS ? 'safari' : 'chrome'}", ${isMobile(platform) ? '' : '// available: "safari", "chrome", "firefox"'}`
-      : `"appVersion": "${platform === TutorialSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'INSERT_YOUR_APP_VERSION'}",`
+      ? `"browserName": "${platform === TutorialSupportPlatform.IOS ? 'safari' : 'chrome'}", ${
+          isMobile(platform) ? '' : '// available: "safari", "chrome", "firefox"'
+        }`
+      : `"appVersion": "${
+          platform === TutorialSupportPlatform.ANDROID ? '2.5.194-alpha-2017-05-30' : 'INSERT_YOUR_APP_VERSION'
+        }",`
   }
 }
 `;
@@ -261,7 +291,14 @@ export const webdriverioRemoteTutoriallData: RemoteTutorial = {
 };
 
 export const seleniumRemoteTutorialGuideData: RemoteTutorial = {
-  generateCapabilitiesCode: async ({ framework, platform, target, orgId, projectId, userId }: GenerateCapabilitiesCodeParams) => {
+  generateCapabilitiesCode: async ({
+    framework,
+    platform,
+    target,
+    orgId,
+    projectId,
+    userId,
+  }: GenerateCapabilitiesCodeParams) => {
     let pat: string;
 
     try {
@@ -306,7 +343,14 @@ export const seleniumRemoteTutorialGuideData: RemoteTutorial = {
 };
 
 export const gamiumRemoteTutorialGuideData: RemoteTutorial = {
-  generateCapabilitiesCode: async ({ framework, userId, platform, target, orgId, projectId }: GenerateCapabilitiesCodeParams) => {
+  generateCapabilitiesCode: async ({
+    framework,
+    userId,
+    platform,
+    target,
+    orgId,
+    projectId,
+  }: GenerateCapabilitiesCodeParams) => {
     let pat: string;
 
     try {

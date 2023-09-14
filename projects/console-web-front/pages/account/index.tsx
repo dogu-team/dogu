@@ -14,7 +14,15 @@ import { shallow } from 'zustand/shallow';
 import { NextPageWithLayout } from 'pages/_app';
 import H4 from 'src/components/common/headings/H4';
 import ProfileImage from 'src/components/ProfileImage';
-import { deleteUser, getPersonalAccessToken, getUserByIdInServerSide, regeneratePersonalAccessToken, resetPassword, updateProfileImage, updateUser } from 'src/api/user';
+import {
+  deleteUser,
+  getPersonalAccessToken,
+  getUserByIdInServerSide,
+  regeneratePersonalAccessToken,
+  resetPassword,
+  updateProfileImage,
+  updateUser,
+} from 'src/api/user';
 import ImageCropUploader from 'src/components/images/ImageCropUploader';
 import H5 from 'src/components/common/headings/H5';
 import ResetPasswordForm from 'src/components/registery/ResetPasswordForm';
@@ -161,7 +169,14 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
         <Inner>
           <SettingTitleDivider title="General" />
           <ImageCropUploader
-            profileImage={<ProfileImage size={120} profileImageUrl={editingMe?.profileImageUrl ?? null} name={editingMe?.name ?? 'Name'} style={{ fontSize: '2.5rem' }} />}
+            profileImage={
+              <ProfileImage
+                size={120}
+                profileImageUrl={editingMe?.profileImageUrl ?? null}
+                name={editingMe?.name ?? 'Name'}
+                style={{ fontSize: '2.5rem' }}
+              />
+            }
             onCropEnd={updateProfileImageToThumbnail}
             progress={progress}
             onUpload={uploadImage}
@@ -186,7 +201,13 @@ const AccountPage: NextPageWithLayout<Props> = ({ user }) => {
             />
           </ContentBox>
           <ContentBox style={{ display: 'flex' }}>
-            <Button type="primary" disabled={isImageUploading || !isChanged} loading={loading} onClick={handleClickSave} access-id="update-proifle-btn">
+            <Button
+              type="primary"
+              disabled={isImageUploading || !isChanged}
+              loading={loading}
+              onClick={handleClickSave}
+              access-id="update-proifle-btn"
+            >
               {t('account:profileContentSubmitButton')}
             </Button>
           </ContentBox>
@@ -252,7 +273,10 @@ AccountPage.getLayout = (page) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   try {
-    const [userResult, checkResult] = await Promise.all([getUserByIdInServerSide(context), checkUserVerifiedInServerSide(context)]);
+    const [userResult, checkResult] = await Promise.all([
+      getUserByIdInServerSide(context),
+      checkUserVerifiedInServerSide(context),
+    ]);
 
     if ('redirect' in checkResult) {
       if (checkResult.redirect) {

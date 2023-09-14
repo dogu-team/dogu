@@ -15,7 +15,11 @@ const PipelineFilter = () => {
 
   return (
     <div>
-      <SelectFilterDropdown title={t('routine:pipelineFilterStatusTitle')} selectedCount={status.length} menu={<PipelineStatusSelector />} />
+      <SelectFilterDropdown
+        title={t('routine:pipelineFilterStatusTitle')}
+        selectedCount={status.length}
+        menu={<PipelineStatusSelector />}
+      />
     </div>
   );
 };

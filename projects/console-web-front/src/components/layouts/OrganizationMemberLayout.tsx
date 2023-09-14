@@ -29,7 +29,11 @@ const OrganizationMemberLayout = (props: Props) => {
   ];
 
   return (
-    <ConsoleLayout titleI18nKey={props.titleI18nKey} organization={props.organization} sidebar={<OrganizationSideBar />}>
+    <ConsoleLayout
+      titleI18nKey={props.titleI18nKey}
+      organization={props.organization}
+      sidebar={<OrganizationSideBar />}
+    >
       <div style={{ marginBottom: '1rem' }}>
         <MenuLinkTabs tabs={tabs} />
       </div>

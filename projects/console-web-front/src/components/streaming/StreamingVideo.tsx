@@ -152,14 +152,30 @@ const StreamingVideo = ({
           <p style={{ lineHeight: '1.4' }}>
             <Trans
               i18nKey="device-streaming:deviceStreamingLoadingText"
-              components={{ br: <br />, link: <Link href="https://docs.dogutech.io/device-farm/device/trouble-shooting" target="_blank" /> }}
+              components={{
+                br: <br />,
+                link: <Link href="https://docs.dogutech.io/device-farm/device/trouble-shooting" target="_blank" />,
+              }}
             />
           </p>
         </LoadingBox>
       )}
 
-      <InputWrapper canDisplay={!loading} ratio={videoRatio} videoWidth={videoRef?.current ? videoSize.width * (videoRef.current.offsetHeight / videoSize.height) : undefined}>
-        <StyledVideo ref={videoRef} id={videoId} playsInline autoPlay muted boxHeight={boxRef.current?.clientHeight ?? 0} />
+      <InputWrapper
+        canDisplay={!loading}
+        ratio={videoRatio}
+        videoWidth={
+          videoRef?.current ? videoSize.width * (videoRef.current.offsetHeight / videoSize.height) : undefined
+        }
+      >
+        <StyledVideo
+          ref={videoRef}
+          id={videoId}
+          playsInline
+          autoPlay
+          muted
+          boxHeight={boxRef.current?.clientHeight ?? 0}
+        />
         {!readonly && (
           <StyledInput
             ref={inputRef}

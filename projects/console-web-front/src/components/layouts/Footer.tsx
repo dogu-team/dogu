@@ -102,7 +102,9 @@ const Footer = ({ showCompanyInfo = false, className }: Props) => {
               {t('common:footerCompanyAddress')}
             </p>
 
-            <p style={{ marginTop: '1.5rem' }}>©{new Date().getFullYear()} Dogu Technologies Inc. All rights reserved.</p>
+            <p style={{ marginTop: '1.5rem' }}>
+              ©{new Date().getFullYear()} Dogu Technologies Inc. All rights reserved.
+            </p>
           </CompanyInfo>
         </Inner>
       )}

@@ -44,7 +44,15 @@ const VerifyEmailPage: NextPage<Props> = ({ email, token }) => {
   return (
     <>
       <Head>Verification | Dogu</Head>
-      <Box>{loading ? <LoadingOutlined /> : error ? <ErrorBox title="Somthing went wrong" desc={error} /> : <p>verified</p>}</Box>
+      <Box>
+        {loading ? (
+          <LoadingOutlined />
+        ) : error ? (
+          <ErrorBox title="Somthing went wrong" desc={error} />
+        ) : (
+          <p>verified</p>
+        )}
+      </Box>
     </>
   );
 };

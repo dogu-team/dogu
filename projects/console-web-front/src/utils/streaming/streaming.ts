@@ -12,7 +12,10 @@ const DeviceControlButton = PrivateProtocol.DeviceControlButton;
 
 export const convertDeviceControl = (deviceId: DeviceId, deviceControl: DeviceControl) => {
   const deviceControlParamKey = 'cfGdcDaControlParam';
-  const paramObj: { $case: typeof deviceControlParamKey; [deviceControlParamKey]: CfGdcDaControlParam } = {
+  const paramObj: {
+    $case: typeof deviceControlParamKey;
+    [deviceControlParamKey]: CfGdcDaControlParam;
+  } = {
     $case: deviceControlParamKey,
     [deviceControlParamKey]: { control: deviceControl },
   };

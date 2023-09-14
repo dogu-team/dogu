@@ -54,7 +54,12 @@ const AppVersionItem = ({ platform, version, onReset, onChange, onClickButton }:
         setOpen(true);
         onClickButton(platform);
       }}
-      style={{ display: 'inline-flex', alignItems: 'center', borderStyle: 'dashed', marginRight: '.25rem' }}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        borderStyle: 'dashed',
+        marginRight: '.25rem',
+      }}
     >
       <PlatformIcon platform={platform === 'android' ? Platform.PLATFORM_ANDROID : Platform.PLATFORM_IOS} />
       &nbsp;Select app version
@@ -115,7 +120,14 @@ const AppVersionContainer = ({ appVersion, onUpdate, onClose }: Props) => {
       ) : (
         platforms.map((platform) => {
           return (
-            <AppVersionItem key={platform} platform={platform} version={appVersion?.[platform]} onReset={handleClose} onChange={onUpdate} onClickButton={setSelectedPlatform} />
+            <AppVersionItem
+              key={platform}
+              platform={platform}
+              version={appVersion?.[platform]}
+              onReset={handleClose}
+              onChange={onUpdate}
+              onClickButton={setSelectedPlatform}
+            />
           );
         })
       )}

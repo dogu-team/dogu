@@ -33,7 +33,9 @@ const PlatformSpecifiedShell = ({ shell }: Props) => {
   const items: TabsProps['items'] = Object.keys(shell).map((key) => ({
     key,
     label: labelText[key as keyof Props['shell']],
-    children: shell[key as keyof Props['shell']]?.map((cmd) => <CodeWithCopyButton key={cmd} code={cmd} language={language[key as keyof Props['shell']] ?? 'bash'} />),
+    children: shell[key as keyof Props['shell']]?.map((cmd) => (
+      <CodeWithCopyButton key={cmd} code={cmd} language={language[key as keyof Props['shell']] ?? 'bash'} />
+    )),
   }));
 
   return <Tabs defaultActiveKey={getDefaultKey()} items={items} />;

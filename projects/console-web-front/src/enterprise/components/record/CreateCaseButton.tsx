@@ -1,4 +1,11 @@
-import { CreateRecordTestCaseDtoBase, DeviceBase, NewSessionRecordTestCaseDtoBase, ProjectApplicationWithIcon, ProjectBase, RecordTestCaseBase } from '@dogu-private/console';
+import {
+  CreateRecordTestCaseDtoBase,
+  DeviceBase,
+  NewSessionRecordTestCaseDtoBase,
+  ProjectApplicationWithIcon,
+  ProjectBase,
+  RecordTestCaseBase,
+} from '@dogu-private/console';
 import { Platform } from '@dogu-private/types';
 import { Button, ButtonProps, Form, Modal, Input, Select } from 'antd';
 import { isAxiosError } from 'axios';
@@ -29,7 +36,8 @@ const CreateCaseButton = ({ project, onCreate, device, isSessionCreating, ...pro
   const [loading, request] = useRequest(createRecordTestCase);
   const extension = device.platform === Platform.PLATFORM_IOS ? 'ipa' : Platform.PLATFORM_ANDROID ? 'apk' : '';
   const { data, isLoading, error } = useSWR<ProjectApplicationWithIcon[]>(
-    isOpen && `/organizations/${project.organizationId}/projects/${project.projectId}/applications/packages?extension=${extension}`,
+    isOpen &&
+      `/organizations/${project.organizationId}/projects/${project.projectId}/applications/packages?extension=${extension}`,
     swrAuthFetcher,
   );
   const FORM_ID = 'create-case-form';
@@ -49,7 +57,11 @@ const CreateCaseButton = ({ project, onCreate, device, isSessionCreating, ...pro
     }
 
     try {
-      const rv = await request(project.organizationId, project.projectId, { name, browserName: null, packageName: app });
+      const rv = await request(project.organizationId, project.projectId, {
+        name,
+        browserName: null,
+        packageName: app,
+      });
       await onCreate?.(rv);
       handleClose();
       sendSuccessNotification('Created');
@@ -80,13 +92,26 @@ const CreateCaseButton = ({ project, onCreate, device, isSessionCreating, ...pro
           <Form.Item name="name" label="Name" required rules={[{ required: true, message: 'Input case name' }]}>
             <Input placeholder="Name" minLength={1} required disabled={formDisabled} />
           </Form.Item>
-          <Form.Item name="app" label="Application" required rules={[{ required: true, message: 'Select application' }]}>
+          <Form.Item
+            name="app"
+            label="Application"
+            required
+            rules={[{ required: true, message: 'Select application' }]}
+          >
             <Select placeholder="Select application" dropdownMatchSelectWidth={false} disabled={formDisabled}>
               {data?.map((app) => (
                 <Select.Option key={app.projectApplicationId} value={app.package}>
                   <FlexRowSpaceBetween>
                     <FlexRow>
-                      {!!app.iconUrl && <Image src={app.iconUrl} width={20} height={20} alt={app.name} style={{ marginRight: '.5rem' }} />}
+                      {!!app.iconUrl && (
+                        <Image
+                          src={app.iconUrl}
+                          width={20}
+                          height={20}
+                          alt={app.name}
+                          style={{ marginRight: '.5rem' }}
+                        />
+                      )}
                       <p style={{ marginRight: '.5rem' }}>{app.name}</p>
                       <ProjectApplicationExtensionTag extension={app.fileExtension} />
                     </FlexRow>
@@ -100,7 +125,8 @@ const CreateCaseButton = ({ project, onCreate, device, isSessionCreating, ...pro
         </Form>
         <div>
           <Description>
-            * <Link href={`/dashboard/${project.organizationId}/projects/${project.projectId}/apps`}>Move here</Link> for uploading your application
+            * <Link href={`/dashboard/${project.organizationId}/projects/${project.projectId}/apps`}>Move here</Link>{' '}
+            for uploading your application
           </Description>
         </div>
       </Modal>

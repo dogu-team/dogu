@@ -3,7 +3,13 @@ import styled from 'styled-components';
 import { AxiosError } from 'axios';
 import { notification } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
-import { OrganizationId, USER_EMAIL_MAX_LENGTH, USER_EMAIL_MIN_LENGTH, USER_PASSWORD_MAX_LENGTH, USER_PASSWORD_MIN_LENGTH } from '@dogu-private/types';
+import {
+  OrganizationId,
+  USER_EMAIL_MAX_LENGTH,
+  USER_EMAIL_MIN_LENGTH,
+  USER_PASSWORD_MAX_LENGTH,
+  USER_PASSWORD_MIN_LENGTH,
+} from '@dogu-private/types';
 import { useRouter } from 'next/router';
 
 import { signIn } from 'src/api/registery';
@@ -36,7 +42,12 @@ const InviteSignInForm = (props: Props) => {
 
     if (email && password) {
       try {
-        const { lastAccessOrganizationId } = await signIn({ email, password, invitationToken: props.token, invitationOrganizationId: props.organizationId });
+        const { lastAccessOrganizationId } = await signIn({
+          email,
+          password,
+          invitationToken: props.token,
+          invitationOrganizationId: props.organizationId,
+        });
         if (!lastAccessOrganizationId) {
           sendErrorNotification('Invitation and account are mismatched!');
         }

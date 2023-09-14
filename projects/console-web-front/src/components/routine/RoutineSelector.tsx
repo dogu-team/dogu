@@ -19,7 +19,10 @@ const RoutineSelector = ({ onRunClick }: Props) => {
   const [inputValue, setInputValue] = useState<string>();
   const { debouncedValue, handleChangeValues } = useDebouncedInputValues();
   const [selectedRoutineId, setSelectedRoutineId] = useState<RoutineId>();
-  const { data, isLoading, error } = useSWR<RoutineBase[]>(`/organizations/${router.query.orgId}/projects/${router.query.pid}/routines?name=${debouncedValue}`, swrAuthFetcher);
+  const { data, isLoading, error } = useSWR<RoutineBase[]>(
+    `/organizations/${router.query.orgId}/projects/${router.query.pid}/routines?name=${debouncedValue}`,
+    swrAuthFetcher,
+  );
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
 

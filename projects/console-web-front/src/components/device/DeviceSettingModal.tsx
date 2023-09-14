@@ -86,10 +86,20 @@ const DeviceSettingModal = ({ isOpen, device, close }: Props) => {
             rules={[{ required: true, message: t('device-farm:deviceSettingNameRequiredMsg') }]}
             initialValue={device.name}
           >
-            <Input type="text" placeholder={t('common:name')} maxLength={DEVICE_NAME_MAX_LENGTH} minLength={DEVICE_NAME_MIN_LENGTH} />
+            <Input
+              type="text"
+              placeholder={t('common:name')}
+              maxLength={DEVICE_NAME_MAX_LENGTH}
+              minLength={DEVICE_NAME_MIN_LENGTH}
+            />
           </Form.Item>
           <Form.Item
-            label={<Trans i18nKey="device-farm:deviceSettingMaxParallelJobLabelText" components={{ span: <span style={{ fontSize: '.8rem', marginLeft: '.3rem' }} /> }} />}
+            label={
+              <Trans
+                i18nKey="device-farm:deviceSettingMaxParallelJobLabelText"
+                components={{ span: <span style={{ fontSize: '.8rem', marginLeft: '.3rem' }} /> }}
+              />
+            }
             name="max"
             required
             rules={[
@@ -112,7 +122,12 @@ const DeviceSettingModal = ({ isOpen, device, close }: Props) => {
             ]}
             initialValue={device.maxParallelJobs}
           >
-            <InputNumber disabled={!isDesktop(device)} placeholder={'Max count'} min={DEVICE_MAX_PARALLEL_JOBS_MIN} max={DEVICE_MAX_PARALLEL_JOBS_MAX} />
+            <InputNumber
+              disabled={!isDesktop(device)}
+              placeholder={'Max count'}
+              min={DEVICE_MAX_PARALLEL_JOBS_MIN}
+              max={DEVICE_MAX_PARALLEL_JOBS_MAX}
+            />
           </Form.Item>
         </Form>
       </FormContainer>

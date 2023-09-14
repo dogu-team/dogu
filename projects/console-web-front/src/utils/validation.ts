@@ -1,6 +1,8 @@
 import { USER_PASSWORD_MIN_LENGTH } from '@dogu-private/types';
 
-export const passwordRegex = new RegExp(`^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{${USER_PASSWORD_MIN_LENGTH},}$`);
+export const passwordRegex = new RegExp(
+  `^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]{${USER_PASSWORD_MIN_LENGTH},}$`,
+);
 
 /**
  * check password with regex

@@ -17,7 +17,11 @@ import React, { RefObject, useCallback, useEffect, useMemo, useRef, useState } f
 import { InspectorWorkerMessage, InspectorWorkerResponse } from '../../types/inspector';
 import { BrowserDeviceInspector } from '../../utils/streaming/browser-device-inspector';
 
-const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, device: DeviceBase | null, videoRef: RefObject<HTMLVideoElement> | null) => {
+const useInspector = (
+  deviceInspector: BrowserDeviceInspector | undefined,
+  device: DeviceBase | null,
+  videoRef: RefObject<HTMLVideoElement> | null,
+) => {
   const [contextAndNodes, setContextAndNodes] = useState<ContextNode<NodeAttributes>[]>();
   const [selectedContextKey, setSelectedContextKey] = useState<string>();
   const [hitPoint, setHitPoint] = useState<HitPoint>();
@@ -31,7 +35,10 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
 
   useEffect(() => {
     if (selectedContextAndNode && device?.platform) {
-      inspectorModule.current = NodeUtilizerFactory.create(device?.platform, selectedContextAndNode) as NodeUtilizer<NodeAttributes>;
+      inspectorModule.current = NodeUtilizerFactory.create(
+        device?.platform,
+        selectedContextAndNode,
+      ) as NodeUtilizer<NodeAttributes>;
     }
   }, [selectedContextAndNode, isGamium, device?.platform]);
 
@@ -180,7 +187,12 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
       const inspectAreaWidth = inspectArea.width * deviceWidthRatio;
       const inspectAreaHeight = inspectArea.height * deviceHeightRatio;
 
-      if (mouseX < inspectAreaX || mouseX > inspectAreaX + inspectAreaWidth || mouseY < inspectAreaY || mouseY > inspectAreaY + inspectAreaHeight) {
+      if (
+        mouseX < inspectAreaX ||
+        mouseX > inspectAreaX + inspectAreaWidth ||
+        mouseY < inspectAreaY ||
+        mouseY > inspectAreaY + inspectAreaHeight
+      ) {
         return;
       }
 
@@ -192,7 +204,12 @@ const useInspector = (deviceInspector: BrowserDeviceInspector | undefined, devic
           const deviceX = mouseX / deviceWidthRatio;
           const deviceY = mouseY / deviceHeightRatio;
 
-          if (nodePos.x <= deviceX && deviceX <= nodePos.x + nodePos.width && nodePos.y <= deviceY && deviceY <= nodePos.y + nodePos.height) {
+          if (
+            nodePos.x <= deviceX &&
+            deviceX <= nodePos.x + nodePos.width &&
+            nodePos.y <= deviceY &&
+            deviceY <= nodePos.y + nodePos.height
+          ) {
             result.push(node);
           }
         }

@@ -22,8 +22,16 @@ const DoneStep = ({ id }: Props) => {
             description="Explore features for project. ie) Git integration, App management"
             url="https://docs.dogutech.io/management/project"
           />
-          <DocumentCard title="📝 Test automation" description="More information about test automation" url="https://docs.dogutech.io/test-automation" />
-          <DocumentCard title="📝 Test report" description="More information about test report" url="https://docs.dogutech.io/test-report" />
+          <DocumentCard
+            title="📝 Test automation"
+            description="More information about test automation"
+            url="https://docs.dogutech.io/test-automation"
+          />
+          <DocumentCard
+            title="📝 Test report"
+            description="More information about test report"
+            url="https://docs.dogutech.io/test-report"
+          />
         </div>
       }
     />

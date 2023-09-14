@@ -9,7 +9,10 @@ interface Props {
 }
 
 const InspectorContextMenu = ({ contexts, selectedContext, onContextChange }: Props) => {
-  const options: SelectProps<string>['options'] = contexts.map((context) => ({ label: context, value: context }));
+  const options: SelectProps<string>['options'] = contexts.map((context) => ({
+    label: context,
+    value: context,
+  }));
 
   return (
     <Box>

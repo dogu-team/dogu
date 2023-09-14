@@ -16,7 +16,10 @@ interface Props {
 
 const OrganizationOwnerSelector = ({ organization, onChange }: Props) => {
   const { debouncedValue, inputValue, handleChangeValues } = useDebouncedInputValues();
-  const { data } = usePaginationSWR<UserBase>(`/organizations/${organization.organizationId}/users?keyword=${debouncedValue}`, { skipQuestionMark: true });
+  const { data } = usePaginationSWR<UserBase>(
+    `/organizations/${organization.organizationId}/users?keyword=${debouncedValue}`,
+    { skipQuestionMark: true },
+  );
   const [owner, setOwner] = useState<UserBase | undefined>(organization.owner);
 
   const handleUpdate = async (value: UserId) => {
@@ -67,7 +70,12 @@ const OrganizationOwnerSelector = ({ organization, onChange }: Props) => {
                 value: organization.owner?.userId,
                 label: (
                   <ProfileBox>
-                    <ProfileImage name={organization.owner?.name} profileImageUrl={organization.owner?.profileImageUrl} shape="circle" size={28} />
+                    <ProfileImage
+                      name={organization.owner?.name}
+                      profileImageUrl={organization.owner?.profileImageUrl}
+                      shape="circle"
+                      size={28}
+                    />
                     <p style={{ marginLeft: '.5rem' }}>{organization.owner?.name}</p>
                   </ProfileBox>
                 ),

@@ -21,7 +21,11 @@ const GitIntegrationDangerButton = () => {
     const values = await form.validateFields();
 
     try {
-      await updateProjectScm(router.query.orgId as OrganizationId, router.query.pid as ProjectId, { service: values.git, url: values.repo, token: values.token });
+      await updateProjectScm(router.query.orgId as OrganizationId, router.query.pid as ProjectId, {
+        service: values.git,
+        url: values.repo,
+        token: values.token,
+      });
       sendSuccessNotification(t('projectUpdateSuccessMsg'));
       updateStatus(true);
     } catch (e) {

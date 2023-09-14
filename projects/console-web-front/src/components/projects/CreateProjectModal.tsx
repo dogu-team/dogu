@@ -1,7 +1,13 @@
 import { Form, Input } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
-import { OrganizationId, PROJECT_DESC_MAX_LENGTH, PROJECT_NAME_MAX_LENGTH, PROJECT_NAME_MIN_LENGTH, PROJECT_TYPE } from '@dogu-private/types';
+import {
+  OrganizationId,
+  PROJECT_DESC_MAX_LENGTH,
+  PROJECT_NAME_MAX_LENGTH,
+  PROJECT_NAME_MIN_LENGTH,
+  PROJECT_TYPE,
+} from '@dogu-private/types';
 import { ProjectBase } from '@dogu-private/console';
 
 import { createProject } from 'src/api/project';
@@ -72,11 +78,26 @@ const CreateProjectModal = ({ isOpen, close, onCreate }: Props) => {
           >
             <ProjectTypeRadio />
           </Form.Item>
-          <Form.Item label={t('organization:newProjectModalInputName')} name="name" rules={[{ required: true, message: t('common:nameInputEmptyError') }]}>
-            <Input type="text" placeholder={t('common:name')} required minLength={PROJECT_NAME_MIN_LENGTH} maxLength={PROJECT_NAME_MAX_LENGTH} autoFocus />
+          <Form.Item
+            label={t('organization:newProjectModalInputName')}
+            name="name"
+            rules={[{ required: true, message: t('common:nameInputEmptyError') }]}
+          >
+            <Input
+              type="text"
+              placeholder={t('common:name')}
+              required
+              minLength={PROJECT_NAME_MIN_LENGTH}
+              maxLength={PROJECT_NAME_MAX_LENGTH}
+              autoFocus
+            />
           </Form.Item>
           <Form.Item label={t('organization:newProjectModalInputDesc')} name="desc">
-            <Input type="text" placeholder={t('organization:newProjectModalInputDescPlaceholder')} maxLength={PROJECT_DESC_MAX_LENGTH} />
+            <Input
+              type="text"
+              placeholder={t('organization:newProjectModalInputDescPlaceholder')}
+              maxLength={PROJECT_DESC_MAX_LENGTH}
+            />
           </Form.Item>
         </Form>
       }

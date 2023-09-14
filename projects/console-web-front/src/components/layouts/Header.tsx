@@ -41,7 +41,11 @@ const Header = ({ links, right, drawerItem, limitWidth = false, image }: Props) 
             <FlexAlignCenterBox>
               <Name>
                 {image ?? (
-                  <StyledLink href={me ? (router.query.orgId ? `/dashboard/${router.query.orgId}` : `/account/organizations`) : '/'}>
+                  <StyledLink
+                    href={
+                      me ? (router.query.orgId ? `/dashboard/${router.query.orgId}` : `/account/organizations`) : '/'
+                    }
+                  >
                     <Image src={resources.icons.logoHorizontal} width={99} height={48} alt="Dogu" priority />
                   </StyledLink>
                 )}

@@ -17,7 +17,11 @@ const ResetPasswordForm = ({ needCurrentPassword, onFinish, submitButtonStyle }:
   const { t } = useTranslation();
 
   const handleFinish = async () => {
-    const result: { current?: string; new: string; confirm: string } = form.getFieldsValue(['current', 'new', 'confirm']);
+    const result: { current?: string; new: string; confirm: string } = form.getFieldsValue([
+      'current',
+      'new',
+      'confirm',
+    ]);
 
     setLoading(true);
     await onFinish(result.current, result.new, result.confirm);

@@ -46,7 +46,12 @@ export class BrowserDeviceInspector extends DeviceHttpClient {
     const body: Instance<typeof DeviceInspector.switchContextAndGetPageSource.requestBody> = {
       context,
     };
-    const response = await this.httpRequest(DeviceInspector.switchContextAndGetPageSource, pathProvider, undefined, body);
+    const response = await this.httpRequest(
+      DeviceInspector.switchContextAndGetPageSource,
+      pathProvider,
+      undefined,
+      body,
+    );
     return response.pageSource;
   }
 
@@ -65,7 +70,11 @@ export class BrowserDeviceInspector extends DeviceHttpClient {
     return response.status;
   }
 
-  async getHitPoint(serial: Serial, screenPos: { x: number; y: number }, deviceSize: { width: number; height: number }): Promise<HitPoint | undefined> {
+  async getHitPoint(
+    serial: Serial,
+    screenPos: { x: number; y: number },
+    deviceSize: { width: number; height: number },
+  ): Promise<HitPoint | undefined> {
     const pathProvider = new DeviceInspector.getHitPoint.pathProvider(serial);
     const query: Instance<typeof DeviceInspector.getHitPoint.query> = {
       x: screenPos.x,

@@ -12,7 +12,12 @@ import { createDataChannel } from '../../utils/streaming/web-rtc';
 type DataChannelLabel = PrivateProtocol.DataChannelLabel;
 
 class GamiumEnginePortForwarder {
-  constructor(private deviceHostClient: DeviceHostClient, private deviceClient: DeviceClient, private device: DeviceBase, private gamiumEnginePort: number) {}
+  constructor(
+    private deviceHostClient: DeviceHostClient,
+    private deviceClient: DeviceClient,
+    private device: DeviceBase,
+    private gamiumEnginePort: number,
+  ) {}
 
   @Retry()
   async forward(): Promise<{ closer: Closable | null; port: number }> {
@@ -79,7 +84,10 @@ const useGamiumClient = (
           },
         },
       };
-      const gamiumDc = createDataChannel(peerConnection, gamiumDcLabel, { ordered: true, maxRetransmits: 0 });
+      const gamiumDc = createDataChannel(peerConnection, gamiumDcLabel, {
+        ordered: true,
+        maxRetransmits: 0,
+      });
       const gamiumService = new BrowserGamiumService(gamiumDc);
       const gamiumClient = new GamiumClient(gamiumService, console);
       gamiumService.setSendThrottleMs(sendThrottleMs);

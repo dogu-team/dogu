@@ -55,7 +55,18 @@ interface ItemButtonProps {
   ['access-id']?: string;
 }
 
-const DangerZoneButton = ({ children, modalTitle, modalButtonTitle, modalContent, buttonProps, footer, persistOpen, onConfirm, onOpenChange, ...props }: ItemButtonProps) => {
+const DangerZoneButton = ({
+  children,
+  modalTitle,
+  modalButtonTitle,
+  modalContent,
+  buttonProps,
+  footer,
+  persistOpen,
+  onConfirm,
+  onOpenChange,
+  ...props
+}: ItemButtonProps) => {
   const [isOpen, openModal, closeModal] = useModal();
   const [loading, setLoading] = useState(false);
 

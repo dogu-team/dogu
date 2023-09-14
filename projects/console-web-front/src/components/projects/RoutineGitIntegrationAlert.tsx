@@ -25,7 +25,11 @@ const RoutineGitIntegrationAlert = () => {
     const values = await form.validateFields();
 
     try {
-      await request(router.query.orgId as OrganizationId, router.query.pid as ProjectId, { service: values.git, url: values.repo.replace('.git', ''), token: values.token });
+      await request(router.query.orgId as OrganizationId, router.query.pid as ProjectId, {
+        service: values.git,
+        url: values.repo.replace('.git', ''),
+        token: values.token,
+      });
       sendSuccessNotification(t('projectUpdateSuccessMsg'));
       store.updateGitIntegrationStatus(true);
       closeModal();
@@ -52,14 +56,26 @@ const RoutineGitIntegrationAlert = () => {
             <Button type="primary" size="small" style={{ width: '100%' }} onClick={() => openModal()}>
               Integrate
             </Button>
-            <Link href="https://docs.dogutech.io/management/project/git-integration/" target="_blank" style={{ textDecoration: 'none' }}>
+            <Link
+              href="https://docs.dogutech.io/management/project/git-integration/"
+              target="_blank"
+              style={{ textDecoration: 'none' }}
+            >
               <Button size="small">Documentation</Button>
             </Link>
           </Space>
         }
       />
 
-      <Modal open={isOpen} centered closable onCancel={handleClose} okText={'Save'} onOk={saveGitIntegration} confirmLoading={loading}>
+      <Modal
+        open={isOpen}
+        centered
+        closable
+        onCancel={handleClose}
+        okText={'Save'}
+        onOk={saveGitIntegration}
+        confirmLoading={loading}
+      >
         <GitIntegrationForm form={form} />
       </Modal>
     </>

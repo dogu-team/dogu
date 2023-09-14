@@ -6,7 +6,12 @@ import { USER_ID_COOKIE_NAME } from '@dogu-private/types';
 import useTranslation from 'next-translate/useTranslation';
 import Trans from 'next-translate/Trans';
 
-import { TutorialSupportLanguage, REMOTE_SAMPLE_GIT_URL, TutorialSupportPlatform, TutorialSupportSdk } from '../../../resources/tutorials/index';
+import {
+  TutorialSupportLanguage,
+  REMOTE_SAMPLE_GIT_URL,
+  TutorialSupportPlatform,
+  TutorialSupportSdk,
+} from '../../../resources/tutorials/index';
 import { flexRowBaseStyle } from '../../../styles/box';
 import GuideAnchor from '../GuideAnchor';
 import GuideBanner from '../GuideBanner';
@@ -18,7 +23,11 @@ import TutorialOptionSelectors from '../TutorialOptionSelectors';
 import CodeWithCopyButton from '../../common/CodeWithCopyButton';
 import RemoteTestResultList from './RemoteTestResultList';
 import PythonVirtualEnvShell from '../PythonVirtualEnvShell';
-import { RemoteTutorialProps, remoteTutorialSdkSupportInfo, seleniumRemoteTutorialGuideData } from '../../../resources/tutorials/remote';
+import {
+  RemoteTutorialProps,
+  remoteTutorialSdkSupportInfo,
+  seleniumRemoteTutorialGuideData,
+} from '../../../resources/tutorials/remote';
 
 const INTRODUCTION_ID = 'introduction';
 const PROJECT_SETUP_ID = 'project-setup';
@@ -37,9 +46,16 @@ const SeleniumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialPro
   const [capabilityCode, setCapabilityCode] = useState<string>('');
   const { t } = useTranslation('tutorial');
 
-  const selectedGuide = seleniumRemoteTutorialGuideData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const frameworkLanguage = Object.keys(remoteTutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].frameworksPerLang).find((language) =>
-    remoteTutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
+  const selectedGuide = seleniumRemoteTutorialGuideData.guides.find(
+    (data) => data.framework === framework && data.target === target && data.platform === platform,
+  );
+  const frameworkLanguage = Object.keys(
+    remoteTutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].frameworksPerLang,
+  ).find(
+    (language) =>
+      remoteTutorialSdkSupportInfo[TutorialSupportSdk.SELENIUM].frameworksPerLang[
+        language as TutorialSupportLanguage
+      ]?.includes(framework),
   );
 
   useEffect(() => {
@@ -80,7 +96,10 @@ const SeleniumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialPro
             items={[
               { id: INTRODUCTION_ID, title: t('remoteTestTutorialIntroAnchorTitle') },
               { id: PROJECT_SETUP_ID, title: t('remoteTestTutorialSampleProjectSetupAnchorTitle') },
-              { id: INSTALL_DEPENDENCIES_ID, title: t('remoteTestTutorialInstallDependenciesAnchorTitle') },
+              {
+                id: INSTALL_DEPENDENCIES_ID,
+                title: t('remoteTestTutorialInstallDependenciesAnchorTitle'),
+              },
               { id: SET_CAPABILITIES_ID, title: t('remoteTestTutorialSetCapabilitiesAnchorTitle') },
               { id: RUN_TEST_ID, title: t('remoteTestTutorialRunTestAnchorTitle') },
               { id: RESULT_ID, title: t('remoteTestTutorialCheckResultAnchorTitle') },
@@ -91,7 +110,12 @@ const SeleniumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialPro
       }
       content={
         <div>
-          <GuideStep id={INTRODUCTION_ID} title={t('remoteTestTutorialIntroTitle')} description={<p>{t('remoteTestTutorialIntroDescription')}</p>} content={null} />
+          <GuideStep
+            id={INTRODUCTION_ID}
+            title={t('remoteTestTutorialIntroTitle')}
+            description={<p>{t('remoteTestTutorialIntroDescription')}</p>}
+            content={null}
+          />
           <GuideStep
             id={PROJECT_SETUP_ID}
             title={t('remoteTestTutorialSampleProjectSetupTitle')}
@@ -122,7 +146,11 @@ const SeleniumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialPro
               <p>
                 <Trans
                   i18nKey="tutorial:remoteTestTutorialSetCapabilitiesDescription"
-                  components={{ code: <StyledCode />, link: <a href="https://docs.dogutech.io/test-automation/selenium" target="_blank" />, br: <br /> }}
+                  components={{
+                    code: <StyledCode />,
+                    link: <a href="https://docs.dogutech.io/test-automation/selenium" target="_blank" />,
+                    br: <br />,
+                  }}
                 />
               </p>
             }
@@ -138,13 +166,16 @@ const SeleniumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialPro
                   <Alert
                     message={
                       <p>
-                        For Safari in macOS, please run <CodeWithCopyButton language="bash" code="sudo /usr/bin/safaridriver --enable" /> for testing.
+                        For Safari in macOS, please run{' '}
+                        <CodeWithCopyButton language="bash" code="sudo /usr/bin/safaridriver --enable" /> for testing.
                       </p>
                     }
                   />
                 )}
                 <CodeWithCopyButton language="bash" code={selectedGuide?.runCommand ?? ''} />
-                {frameworkLanguage === TutorialSupportLanguage.PYTHON && <Alert message={t('remoteTestTutorialPytonErrorMessage')} type="info" showIcon />}
+                {frameworkLanguage === TutorialSupportLanguage.PYTHON && (
+                  <Alert message={t('remoteTestTutorialPytonErrorMessage')} type="info" showIcon />
+                )}
               </>
             }
           />

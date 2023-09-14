@@ -7,7 +7,10 @@ export interface OrganizationContextProviderProps {
   mutate: KeyedMutator<OrganizationBase> | null;
 }
 
-export const OrganizationContext = React.createContext<OrganizationContextProviderProps>({ organization: null, mutate: null });
+export const OrganizationContext = React.createContext<OrganizationContextProviderProps>({
+  organization: null,
+  mutate: null,
+});
 
 const useOrganizationContext = () => {
   const context = useContext(OrganizationContext);

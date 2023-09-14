@@ -325,7 +325,11 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
 
   return (
     <Box>
-      <ContainerMenu onDeleteClicked={() => deleteJob(name)} onMoveDownClicked={() => updateJobOrder(name, 'down')} onMoveUpClicked={() => updateJobOrder(name, 'up')} />
+      <ContainerMenu
+        onDeleteClicked={() => deleteJob(name)}
+        onMoveDownClicked={() => updateJobOrder(name, 'down')}
+        onMoveUpClicked={() => updateJobOrder(name, 'up')}
+      />
       <Content>
         <JobNameTitle style={{ paddingRight: '4rem' }}>
           <NameEditor
@@ -403,7 +407,13 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
                 if (e.target.checked) {
                   updateJob({ ...job, 'runs-on': { group: job['runs-on'] as string | string[] } }, name);
                 } else {
-                  updateJob({ ...job, 'runs-on': (job['runs-on'] as { group: string | string[] }).group as string | string[] }, name);
+                  updateJob(
+                    {
+                      ...job,
+                      'runs-on': (job['runs-on'] as { group: string | string[] }).group as string | string[],
+                    },
+                    name,
+                  );
                 }
               }}
             >
@@ -412,7 +422,10 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
           </FlexRow>
           <ContentDesc>
             {isGroupRun ? (
-              <Trans i18nKey="routine:routineGuiEditorJobDeviceGroupDescription" components={{ b: <b style={{ fontWeight: '600' }} /> }} />
+              <Trans
+                i18nKey="routine:routineGuiEditorJobDeviceGroupDescription"
+                components={{ b: <b style={{ fontWeight: '600' }} /> }}
+              />
             ) : (
               t('routine:routineGuiEditorJobDeviceDescription')
             )}
@@ -420,7 +433,11 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
         </div>
         <ContentInner>
           <RunsOn runsOn={job['runs-on']} onDelete={handleRemoveRunsOn} />
-          <AddDeviceAndTagButton group={isGroupRun} onSelect={handleAddRunsOn} devicePlatform={getPlatformByAppVersion()} />
+          <AddDeviceAndTagButton
+            group={isGroupRun}
+            onSelect={handleAddRunsOn}
+            devicePlatform={getPlatformByAppVersion()}
+          />
         </ContentInner>
       </Content>
       <Content>
@@ -437,10 +454,20 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
         <StepWrapper>
           {job.steps.map((step, i) => {
             return (
-              <StepContainer key={`job-${name}-step-${step.name}-${i}`} jobName={name} step={step} index={i} updateStep={updateStep} deleteStep={deleteStep} moveStep={moveStep} />
+              <StepContainer
+                key={`job-${name}-step-${step.name}-${i}`}
+                jobName={name}
+                step={step}
+                index={i}
+                updateStep={updateStep}
+                deleteStep={deleteStep}
+                moveStep={moveStep}
+              />
             );
           })}
-          {!hideAddButton && <AddStepButton onClick={handleAddStep}>{t('routine:routineGuiEditorAddStepButtonTitle')}</AddStepButton>}
+          {!hideAddButton && (
+            <AddStepButton onClick={handleAddStep}>{t('routine:routineGuiEditorAddStepButtonTitle')}</AddStepButton>
+          )}
         </StepWrapper>
       </Content>
     </Box>

@@ -88,7 +88,12 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
         </FlexRowBase>
       </Item>
 
-      <AddDeviceToProjectModal deviceId={device.deviceId} isOpen={isAddProjectModalOpen} close={closeAddProjectModal} isGlobal={false} />
+      <AddDeviceToProjectModal
+        deviceId={device.deviceId}
+        isOpen={isAddProjectModalOpen}
+        close={closeAddProjectModal}
+        isGlobal={false}
+      />
       <DeviceSettingModal device={device} isOpen={isEditModalOpen} close={closeEditModal} />
     </>
   );
@@ -124,7 +129,13 @@ const AddableDeviceListController = () => {
         renderItem={(item) => <DeviceItem device={item} />}
         loading={isLoading}
         rowKey={(item) => `addable-device-${item.deviceId}`}
-        pagination={{ defaultCurrent: 1, current: page, pageSize: 10, total: data?.totalCount, onChange: (page, pageSize) => updatePage(page) }}
+        pagination={{
+          defaultCurrent: 1,
+          current: page,
+          pageSize: 10,
+          total: data?.totalCount,
+          onChange: (page, pageSize) => updatePage(page),
+        }}
         locale={{
           emptyText: (
             <ListEmpty
@@ -133,7 +144,9 @@ const AddableDeviceListController = () => {
                   <p>{t('device-farm:addableDeviceEmptyDescription')}</p>
                   <br />
                   <EmptyDescriptionManualBox>
-                    <EmptyDescriptionManualTitle>{t('device-farm:addableDeviceEmptyManualTitle')}</EmptyDescriptionManualTitle>
+                    <EmptyDescriptionManualTitle>
+                      {t('device-farm:addableDeviceEmptyManualTitle')}
+                    </EmptyDescriptionManualTitle>
                     <EmptyDescriptionList>
                       <EmptyDescriptionListItem>{t('device-farm:addableDeviceEmptyManual1')}</EmptyDescriptionListItem>
                       <EmptyDescriptionListItem>{t('device-farm:addableDeviceEmptyManual2')}</EmptyDescriptionListItem>
@@ -143,7 +156,12 @@ const AddableDeviceListController = () => {
                       i18nKey="device-farm:addableDeviceEmptyLink"
                       components={{
                         tutorialLink: <Link href={`/dashboard/${router.query.orgId}/get-started`} />,
-                        link: <Link href={'https://docs.dogutech.io/management/organization/device-farm/device-management'} target="_blank" />,
+                        link: (
+                          <Link
+                            href={'https://docs.dogutech.io/management/organization/device-farm/device-management'}
+                            target="_blank"
+                          />
+                        ),
                       }}
                     />
                   </EmptyDescriptionManualBox>

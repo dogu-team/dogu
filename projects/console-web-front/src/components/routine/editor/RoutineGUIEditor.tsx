@@ -22,7 +22,8 @@ const RoutineGUIEditor = ({ projectType, hideAddButton }: Props) => {
   const handleAddJob = () => {
     const jobNames = Object.keys(schema.jobs);
     const newJobNames = jobNames.filter((name) => name.match(/^new-job-[0-9]{1,}$/));
-    const newIndex = newJobNames.length > 0 ? Math.max(...newJobNames.map((name) => Number(name.split('-')[2]))) + 1 : 1;
+    const newIndex =
+      newJobNames.length > 0 ? Math.max(...newJobNames.map((name) => Number(name.split('-')[2]))) + 1 : 1;
 
     updateSchema({
       ...schema,
@@ -84,7 +85,10 @@ const RoutineGUIEditor = ({ projectType, hideAddButton }: Props) => {
               }
             } else {
               if (needs.includes(originName)) {
-                newJobs[n] = { ...jobs[n], needs: needs.map((need) => (need === originName ? newName : need)) };
+                newJobs[n] = {
+                  ...jobs[n],
+                  needs: needs.map((need) => (need === originName ? newName : need)),
+                };
               } else {
                 newJobs[n] = jobs[n];
               }
@@ -184,7 +188,9 @@ const RoutineGUIEditor = ({ projectType, hideAddButton }: Props) => {
               />
             );
           })}
-          {!hideAddButton && <AddJobButton onClick={handleAddJob}>{t('routine:routineGuiEditorAddJobButtonTitle')}</AddJobButton>}
+          {!hideAddButton && (
+            <AddJobButton onClick={handleAddJob}>{t('routine:routineGuiEditorAddJobButtonTitle')}</AddJobButton>
+          )}
         </JobWrapper>
       </Box>
     </RoutineProjectTypeContext.Provider>

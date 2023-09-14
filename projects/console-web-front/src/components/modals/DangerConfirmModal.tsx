@@ -18,7 +18,14 @@ export const DangerConfirmModal = ({ buttonTitle, children, buttonProps, ...prop
         ) : (
           <div>
             {/* @ts-ignore */}
-            <Button {...buttonProps} danger type="primary" style={{ width: '100%' }} onClick={props.onOk} loading={props.confirmLoading}>
+            <Button
+              {...buttonProps}
+              danger
+              type="primary"
+              style={{ width: '100%' }}
+              onClick={props.onOk}
+              loading={props.confirmLoading}
+            >
               {buttonTitle}
             </Button>
           </div>

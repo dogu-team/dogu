@@ -38,7 +38,11 @@ const JobListSideBar = ({ pipeline }: Props) => {
         <H6>{t('routine:jobSidebarTitle')}</H6>
       </TitleWrapper>
       <JobContainer>
-        <JobListController orgId={orgId as OrganizationId} projectId={projectId as ProjectId} pipelineId={Number(pipelineId) as RoutinePipelineId} />
+        <JobListController
+          orgId={orgId as OrganizationId}
+          projectId={projectId as ProjectId}
+          pipelineId={Number(pipelineId) as RoutinePipelineId}
+        />
       </JobContainer>
     </Box>
   );

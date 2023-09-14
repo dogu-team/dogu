@@ -23,7 +23,14 @@ const SelectedInspectNode = ({ nodeInfo }: Props) => {
       overlayStyle={{ fontSize: '.6rem' }}
       overlayInnerStyle={{ padding: '4px' }}
     >
-      <Box style={{ top: `${nodeInfo.position.y}px`, left: `${nodeInfo.position.x}px`, width: `${nodeInfo.position.width}px`, height: `${nodeInfo.position.height}px` }} />
+      <Box
+        style={{
+          top: `${nodeInfo.position.y}px`,
+          left: `${nodeInfo.position.x}px`,
+          width: `${nodeInfo.position.width}px`,
+          height: `${nodeInfo.position.height}px`,
+        }}
+      />
     </Tooltip>
   );
 };

@@ -40,9 +40,13 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
     isLoading: isProjectLoading,
     error: isProjectError,
     mutate: mutateProjects,
-  } = useSWR<PageBase<ProjectBase>>(orgId && `/organizations/${orgId}/projects?keyword=${debouncedValue}`, swrAuthFetcher, {
-    keepPreviousData: true,
-  });
+  } = useSWR<PageBase<ProjectBase>>(
+    orgId && `/organizations/${orgId}/projects?keyword=${debouncedValue}`,
+    swrAuthFetcher,
+    {
+      keepPreviousData: true,
+    },
+  );
   const [loading, setLoading] = useState(false);
   const [isGlobal, setIsGlobal] = useState(isGlobalProp);
   const fireEvent = useEventStore((state) => state.fireEvent);
@@ -87,7 +91,11 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
       sendSuccessNotification(t('device-farm:removeDeviceFromProjectSuccessMsg'));
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:removeDeviceFromProjectFailureMsg', { reason: getErrorMessageFromAxios(e) }));
+        sendErrorNotification(
+          t('device-farm:removeDeviceFromProjectFailureMsg', {
+            reason: getErrorMessageFromAxios(e),
+          }),
+        );
       }
     }
   };
@@ -98,7 +106,14 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
   };
 
   return (
-    <Modal title={t('device-farm:deviceEditProjectModalTitle')} closable onCancel={handleClose} open={isOpen} centered footer={null}>
+    <Modal
+      title={t('device-farm:deviceEditProjectModalTitle')}
+      closable
+      onCancel={handleClose}
+      open={isOpen}
+      centered
+      footer={null}
+    >
       <Box>
         <ContentTitle>{t('device-farm:deviceEditProjectSearchTitle')}</ContentTitle>
         <InputWrapper>
@@ -118,7 +133,10 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
             <ResultContainer>
               {projects?.items.map((item) => {
                 return (
-                  <ResultItem key={`add-project-${item.projectId}`} onMouseDown={() => handleAddProject(item.projectId)}>
+                  <ResultItem
+                    key={`add-project-${item.projectId}`}
+                    onMouseDown={() => handleAddProject(item.projectId)}
+                  >
                     {item.name}
                   </ResultItem>
                 );
@@ -132,7 +150,11 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
           <TagContainer>
             {deviceProjects?.map((item) => {
               return (
-                <Tag key={`device-${deviceId}-${item.projectId}`} closable onClose={() => handleDeleteProject(item.projectId)}>
+                <Tag
+                  key={`device-${deviceId}-${item.projectId}`}
+                  closable
+                  onClose={() => handleDeleteProject(item.projectId)}
+                >
                   {item.name}
                 </Tag>
               );
@@ -147,7 +169,11 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
         </SelectedProjectBox>
 
         <GlobalCheckBoxWrapper>
-          <Checkbox checked={isGlobal} onChange={(e) => handleToggleGlobal(e.target.checked)} id="use-as-public-device-checkbox">
+          <Checkbox
+            checked={isGlobal}
+            onChange={(e) => handleToggleGlobal(e.target.checked)}
+            id="use-as-public-device-checkbox"
+          >
             {t('device-farm:deviceEditProjectGlobalLabelText')}
           </Checkbox>
 

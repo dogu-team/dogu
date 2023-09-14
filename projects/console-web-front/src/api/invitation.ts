@@ -2,10 +2,18 @@ import { AcceptUserInvitationDtoBase, UserAndInvitationTokenBase } from '@dogu-p
 import { OrganizationId } from '@dogu-private/types';
 import api from '.';
 
-export const getInvitationServerSide = async (email: string, organizationId: OrganizationId, invitationToken: string, userToken: string) => {
-  const { data } = await api.get<UserAndInvitationTokenBase>(`/invitations?email=${email}&organizationId=${organizationId}&token=${invitationToken}`, {
-    headers: { Authorization: `Bearer ${userToken}` },
-  });
+export const getInvitationServerSide = async (
+  email: string,
+  organizationId: OrganizationId,
+  invitationToken: string,
+  userToken: string,
+) => {
+  const { data } = await api.get<UserAndInvitationTokenBase>(
+    `/invitations?email=${email}&organizationId=${organizationId}&token=${invitationToken}`,
+    {
+      headers: { Authorization: `Bearer ${userToken}` },
+    },
+  );
 
   return data;
 };

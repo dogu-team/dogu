@@ -15,14 +15,23 @@ interface DropdownMenuProps extends CommonUIProps {
   input?: React.ReactNode;
 }
 
-export const SelectFilterDropdownMenu = ({ title, input, selectedItems, optionItems, hideSelectedItems = false, className }: DropdownMenuProps) => {
+export const SelectFilterDropdownMenu = ({
+  title,
+  input,
+  selectedItems,
+  optionItems,
+  hideSelectedItems = false,
+  className,
+}: DropdownMenuProps) => {
   const { t } = useTranslation();
 
   return (
     <Box onClick={(e) => e.stopPropagation()} className={className}>
       {title && <Title>{title}</Title>}
       {input}
-      {!hideSelectedItems && !!selectedItems && selectedItems.length > 0 && <FilterTagBox>{...selectedItems}</FilterTagBox>}
+      {!hideSelectedItems && !!selectedItems && selectedItems.length > 0 && (
+        <FilterTagBox>{...selectedItems}</FilterTagBox>
+      )}
       {!!optionItems ? <TagBox>{...optionItems}</TagBox> : <div>{t('common:emptySearchResultText')}</div>}
     </Box>
   );

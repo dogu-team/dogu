@@ -20,7 +20,11 @@ const RoutineGitTutorial = () => {
       <div>
         <GithubButton
           isConnected={project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITHUB}
-          disabled={!!project.projectScms && project.projectScms.length > 0 && project.projectScms[0].type !== PROJECT_SCM_TYPE.GITHUB}
+          disabled={
+            !!project.projectScms &&
+            project.projectScms.length > 0 &&
+            project.projectScms[0].type !== PROJECT_SCM_TYPE.GITHUB
+          }
           organizationId={project.organizationId}
           projectId={project.projectId}
           description={
@@ -38,7 +42,11 @@ const RoutineGitTutorial = () => {
       <div style={{ marginTop: '1rem' }}>
         <GitlabButton
           isConnected={project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITLAB}
-          disabled={!!project.projectScms && project.projectScms.length > 0 && project.projectScms[0].type !== PROJECT_SCM_TYPE.GITLAB}
+          disabled={
+            !!project.projectScms &&
+            project.projectScms.length > 0 &&
+            project.projectScms[0].type !== PROJECT_SCM_TYPE.GITLAB
+          }
           organizationId={project.organizationId}
           projectId={project.projectId}
           description={
@@ -56,7 +64,11 @@ const RoutineGitTutorial = () => {
       <div style={{ marginTop: '1rem' }}>
         <BitbucketButton
           isConnected={project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.BITBUCKET}
-          disabled={!!project.projectScms && project.projectScms.length > 0 && project.projectScms[0].type !== PROJECT_SCM_TYPE.BITBUCKET}
+          disabled={
+            !!project.projectScms &&
+            project.projectScms.length > 0 &&
+            project.projectScms[0].type !== PROJECT_SCM_TYPE.BITBUCKET
+          }
           organizationId={project.organizationId}
           projectId={project.projectId}
           description={

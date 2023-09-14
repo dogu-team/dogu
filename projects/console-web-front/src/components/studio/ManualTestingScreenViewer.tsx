@@ -13,9 +13,16 @@ const ManualTestingScreenViewer = () => {
   const router = useRouter();
   const { mode, loading, inspector, device, deviceRTCCaller, updateMode } = useDeviceStreamingContext();
   const tab = (router.query.tab as StreamingTabMenuKey | undefined) ?? StreamingTabMenuKey.INFO;
-  const { handleDoubleClick, handleKeyDown, handleKeyUp, handleMouseDown, handleMouseLeave, handleMouseMove, handleMouseUp, handleWheel } = useDeviceInput(
-    deviceRTCCaller ?? undefined,
-  );
+  const {
+    handleDoubleClick,
+    handleKeyDown,
+    handleKeyUp,
+    handleMouseDown,
+    handleMouseLeave,
+    handleMouseMove,
+    handleMouseUp,
+    handleWheel,
+  } = useDeviceInput(deviceRTCCaller ?? undefined);
 
   const handleMouseDownVideo = useCallback(
     (e: React.MouseEvent<HTMLTextAreaElement>, videoSize: VideoSize) => {
@@ -64,7 +71,9 @@ const ManualTestingScreenViewer = () => {
         onMouseLeave={handleMouseLeaveVideo}
         onDoubleClick={handleDoubleClick}
       >
-        {tab === StreamingTabMenuKey.INSPECTOR && !!inspector && inspector.inspectingNode && <InspectorSelectedNode nodeInfo={inspector.inspectingNode} />}
+        {tab === StreamingTabMenuKey.INSPECTOR && !!inspector && inspector.inspectingNode && (
+          <InspectorSelectedNode nodeInfo={inspector.inspectingNode} />
+        )}
       </DeviceStreaming.Video>
     </VideoWrapper>
   );

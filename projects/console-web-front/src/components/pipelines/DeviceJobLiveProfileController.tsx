@@ -41,7 +41,13 @@ const DeviceJobLiveProfileController = ({ deviceJob }: Props) => {
     gameRuntimeInfos: liveProfiles.map((profile) => profile.gameRuntimeInfos).flat(),
   };
 
-  return <RuntimeProfiles profileData={data} startedAt={deviceJob.inProgressAt ? new Date(deviceJob.inProgressAt) : new Date()} endedAt={new Date()} />;
+  return (
+    <RuntimeProfiles
+      profileData={data}
+      startedAt={deviceJob.inProgressAt ? new Date(deviceJob.inProgressAt) : new Date()}
+      endedAt={new Date()}
+    />
+  );
 };
 
 export default DeviceJobLiveProfileController;

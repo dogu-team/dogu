@@ -64,7 +64,8 @@ const DeviceStreamingBasicMenu = ({}: Props) => {
           <KeyContent>
             <KeyTitle>{t('device-streaming:pasteToClipboard')}</KeyTitle>
             <KeyCapContainer>
-              <KeyCap>ctrl</KeyCap>&nbsp;+&nbsp;<KeyCap>shift</KeyCap>&nbsp;+&nbsp;<KeyCap>v</KeyCap>
+              <KeyCap>ctrl</KeyCap>&nbsp;+&nbsp;<KeyCap>shift</KeyCap>&nbsp;+&nbsp;
+              <KeyCap>v</KeyCap>
             </KeyCapContainer>
           </KeyContent>
         </div>

@@ -45,7 +45,9 @@ const PlatformAppVersionSelector = ({ version, platform, onReset, onChange }: Pr
               label: (
                 <div>
                   <b>{t('routine:routineGuiEditorJobAppVersionLatestOptionTitle')}</b>
-                  <LatestDescription>{t('routine:routineGuiEditorJobAppVersionLatestOptionDescription')}</LatestDescription>
+                  <LatestDescription>
+                    {t('routine:routineGuiEditorJobAppVersionLatestOptionDescription')}
+                  </LatestDescription>
                 </div>
               ),
               value: 'latest',

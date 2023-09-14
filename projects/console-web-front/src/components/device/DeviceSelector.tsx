@@ -38,13 +38,27 @@ export interface DeviceSelectorProps {
   onBlur?: () => void;
 }
 
-const DeviceSelector = ({ devices, selectedDevice, loading, onDeviceSelected, onFilterChanged, className, placeholder, open, onClick, onBlur }: DeviceSelectorProps) => {
+const DeviceSelector = ({
+  devices,
+  selectedDevice,
+  loading,
+  onDeviceSelected,
+  onFilterChanged,
+  className,
+  placeholder,
+  open,
+  onClick,
+  onBlur,
+}: DeviceSelectorProps) => {
   const listOptions: SelectProps['options'] = devices.map((device) => ({
     value: device.deviceId,
     label: <SelectLabel device={device} />,
   }));
   const options: SelectProps['options'] = selectedDevice
-    ? [{ value: selectedDevice.deviceId, label: <SelectLabel device={selectedDevice} /> }, ...listOptions.filter((item) => item.value !== selectedDevice.deviceId)]
+    ? [
+        { value: selectedDevice.deviceId, label: <SelectLabel device={selectedDevice} /> },
+        ...listOptions.filter((item) => item.value !== selectedDevice.deviceId),
+      ]
     : listOptions;
 
   return (

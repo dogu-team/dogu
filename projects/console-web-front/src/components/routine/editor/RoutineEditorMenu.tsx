@@ -41,7 +41,10 @@ const RoutineEditorMenu = ({ projectType, saveButtonText, onSave, mode, onChange
             onChange={(e) => onChangeMode(e.target.value)}
           >
             <Radio.Button value={RoutineEditMode.GUI}>{t('routine:routineEditGuiModeButtonTitle')}</Radio.Button>
-            <Radio.Button value={RoutineEditMode.SCRIPT} id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'edit-script-routine-btn' : undefined}>
+            <Radio.Button
+              value={RoutineEditMode.SCRIPT}
+              id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'edit-script-routine-btn' : undefined}
+            >
               {t('routine:routineEditScriptModeButtonTitle')}
             </Radio.Button>
           </Radio.Group>
@@ -55,7 +58,12 @@ const RoutineEditorMenu = ({ projectType, saveButtonText, onSave, mode, onChange
         )}
       </FlexRow>
       <div>
-        <Button type="primary" loading={loading} onClick={handleSave} access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'save-routine-btn' : undefined}>
+        <Button
+          type="primary"
+          loading={loading}
+          onClick={handleSave}
+          access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'save-routine-btn' : undefined}
+        >
           {saveButtonText}
         </Button>
       </div>

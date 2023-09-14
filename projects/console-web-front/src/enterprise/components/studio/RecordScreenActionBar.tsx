@@ -21,7 +21,12 @@ const RecordScreenActionBar = ({ isRecording, updateIsRecording }: Props) => {
         />
       </Tooltip>
       <Tooltip title="Input mode">
-        <StyledButton icon={<HiCursorClick />} shape="circle" onClick={() => updateIsRecording(false)} type={!isRecording ? 'primary' : 'default'} />
+        <StyledButton
+          icon={<HiCursorClick />}
+          shape="circle"
+          onClick={() => updateIsRecording(false)}
+          type={!isRecording ? 'primary' : 'default'}
+        />
       </Tooltip>
     </Box>
   );

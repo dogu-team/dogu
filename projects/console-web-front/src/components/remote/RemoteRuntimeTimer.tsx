@@ -16,7 +16,9 @@ const RemoteRuntimeTimer = ({ state, startedAt, endedAt }: Props) => {
       return <>In progress</>;
     case REMOTE_DEVICE_JOB_STATE.SUCCESS:
     case REMOTE_DEVICE_JOB_STATE.FAILURE:
-      return <>{!!startedAt && !!endedAt ? stringifyDuration(getDateDiffAsMilliseconds(startedAt, endedAt)) : 'Error'}</>;
+      return (
+        <>{!!startedAt && !!endedAt ? stringifyDuration(getDateDiffAsMilliseconds(startedAt, endedAt)) : 'Error'}</>
+      );
     default:
       return <>Unknown</>;
   }

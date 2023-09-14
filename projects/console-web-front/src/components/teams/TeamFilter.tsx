@@ -15,7 +15,10 @@ const TeamFilter = () => {
     resetFilter();
   }, []);
 
-  const debouncedUpdateFilter = useMemo(() => debounce((value: string) => updateFilter({ keyword: () => value }), 250), []);
+  const debouncedUpdateFilter = useMemo(
+    () => debounce((value: string) => updateFilter({ keyword: () => value }), 250),
+    [],
+  );
 
   const handleChange = (value: string) => {
     setValue(value);
@@ -24,7 +27,12 @@ const TeamFilter = () => {
 
   return (
     <Box>
-      <StyledSearchInput value={value} onChange={(e) => handleChange(e.target.value)} placeholder={t('team:teamFilterNamePlaceholder')} allowClear />
+      <StyledSearchInput
+        value={value}
+        onChange={(e) => handleChange(e.target.value)}
+        placeholder={t('team:teamFilterNamePlaceholder')}
+        allowClear
+      />
     </Box>
   );
 };

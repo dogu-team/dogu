@@ -31,7 +31,13 @@ const NativeObjectDetail = ({ node }: Props) => {
                 if (!pos) {
                   return null;
                 }
-                return <InspectObjectAttribute key={key} title={key} values={`[${pos.start[0]},${pos.start[1]}][${pos.end[0]},${pos.end[1]}]`} />;
+                return (
+                  <InspectObjectAttribute
+                    key={key}
+                    title={key}
+                    values={`[${pos.start[0]},${pos.start[1]}][${pos.end[0]},${pos.end[1]}]`}
+                  />
+                );
               }
 
               return <InspectObjectAttribute key={key} title={key} values={`${value}`} />;

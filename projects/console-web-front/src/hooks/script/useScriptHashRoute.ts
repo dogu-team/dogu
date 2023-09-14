@@ -1,6 +1,10 @@
 import { useRouter } from 'next/router';
 
-const useScriptHashRoute = (): { pipelineId: string | undefined; jobId: string | undefined; deviceJobId: string | undefined } => {
+const useScriptHashRoute = (): {
+  pipelineId: string | undefined;
+  jobId: string | undefined;
+  deviceJobId: string | undefined;
+} => {
   const router = useRouter();
   const ids: string | undefined = router.asPath.split('#')[1];
 

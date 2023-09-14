@@ -1,7 +1,14 @@
 import React, { useState, useRef } from 'react';
 import { Checkbox, Form, Input, InputRef } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
-import { USER_EMAIL_MAX_LENGTH, USER_EMAIL_MIN_LENGTH, USER_NAME_MAX_LENGTH, USER_NAME_MIN_LENGTH, USER_PASSWORD_MAX_LENGTH, USER_PASSWORD_MIN_LENGTH } from '@dogu-private/types';
+import {
+  USER_EMAIL_MAX_LENGTH,
+  USER_EMAIL_MIN_LENGTH,
+  USER_NAME_MAX_LENGTH,
+  USER_NAME_MIN_LENGTH,
+  USER_PASSWORD_MAX_LENGTH,
+  USER_PASSWORD_MIN_LENGTH,
+} from '@dogu-private/types';
 import styled from 'styled-components';
 import Trans from 'next-translate/Trans';
 
@@ -23,7 +30,13 @@ const SignUpForm = (props: Props) => {
   const emailRef = useRef<InputRef>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    const { userName, email, password, newsletter } = form.getFieldsValue(['orgName', 'userName', 'email', 'password', 'newsletter']);
+    const { userName, email, password, newsletter } = form.getFieldsValue([
+      'orgName',
+      'userName',
+      'email',
+      'password',
+      'newsletter',
+    ]);
     setLoading(true);
     await props.onSubmit(email, userName, password, newsletter ?? false);
     setLoading(false);
@@ -31,7 +44,12 @@ const SignUpForm = (props: Props) => {
 
   return (
     <Form form={form} className={props.className} onFinish={handleSubmit} layout="vertical">
-      <Form.Item name="userName" label={t('registery:signUpFormNameLabel')} required rules={[{ required: true, message: 'Input your name.' }]}>
+      <Form.Item
+        name="userName"
+        label={t('registery:signUpFormNameLabel')}
+        required
+        rules={[{ required: true, message: 'Input your name.' }]}
+      >
         <Input
           type="text"
           placeholder={t('registery:signUpFormNamePlaceholder')}
@@ -44,7 +62,13 @@ const SignUpForm = (props: Props) => {
           access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'sign-up-form-user-name' : undefined}
         />
       </Form.Item>
-      <Form.Item name="email" label={t('registery:signUpFormEmailLabel')} required rules={[{ required: true, message: 'Input your email.' }]} initialValue={props.defaultEmail}>
+      <Form.Item
+        name="email"
+        label={t('registery:signUpFormEmailLabel')}
+        required
+        rules={[{ required: true, message: 'Input your email.' }]}
+        initialValue={props.defaultEmail}
+      >
         <Input
           ref={emailRef}
           type="email"
@@ -64,7 +88,13 @@ const SignUpForm = (props: Props) => {
         name="password"
         label={t('registery:signUpFormPasswordLabel')}
         required
-        rules={[{ required: true, message: t('common:invalidPasswordFormatErrorMsg'), pattern: passwordRegex }]}
+        rules={[
+          {
+            required: true,
+            message: t('common:invalidPasswordFormatErrorMsg'),
+            pattern: passwordRegex,
+          },
+        ]}
       >
         <Input
           type="password"
@@ -80,7 +110,10 @@ const SignUpForm = (props: Props) => {
         />
       </Form.Item>
       <Form.Item>
-        <SubmitButton loading={loading} access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'sign-up-form-submit' : undefined}>
+        <SubmitButton
+          loading={loading}
+          access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'sign-up-form-submit' : undefined}
+        >
           {props.submitButtonText ?? t('registery:signUpFormSubmitButtonTitle')}
         </SubmitButton>
       </Form.Item>

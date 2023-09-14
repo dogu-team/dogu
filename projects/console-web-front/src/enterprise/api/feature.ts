@@ -8,7 +8,9 @@ export const getFeatureConfigInServerSide = async (context: GetServerSidePropsCo
   const { authToken } = getServersideCookies(context.req.cookies);
 
   if (authToken) {
-    const data = await api.get<FeatureTableBase>(`/feature`, { headers: { Authorization: `Bearer ${authToken}` } });
+    const data = await api.get<FeatureTableBase>(`/feature`, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
     setCookiesInServerSide(data, context);
 
     const feature = data.data;

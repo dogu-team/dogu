@@ -45,7 +45,11 @@ const TeamPageLayout = ({ children, organization }: Props) => {
   }
 
   return (
-    <ConsoleLayout organization={organization} sidebar={<OrganizationSideBar />} title={t('team:teamDetailPageTitle', { name: data?.name ?? '' })}>
+    <ConsoleLayout
+      organization={organization}
+      sidebar={<OrganizationSideBar />}
+      title={t('team:teamDetailPageTitle', { name: data?.name ?? '' })}
+    >
       <Box>
         <MenuLinkTabs tabs={tabs} />
         <Inner>{children}</Inner>

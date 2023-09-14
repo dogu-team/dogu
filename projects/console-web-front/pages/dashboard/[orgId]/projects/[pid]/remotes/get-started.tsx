@@ -31,7 +31,8 @@ interface ServerSideProps {
 const ProjectRemoteGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, organization, me }) => {
   const router = useRouter();
   const sdk = router.query.sdk as TutorialSupportSdk | undefined;
-  const isFrameworkSelected = !!sdk && Object.keys(remoteTutorialData).includes(router.query.sdk as string) && !!router.query.framework;
+  const isFrameworkSelected =
+    !!sdk && Object.keys(remoteTutorialData).includes(router.query.sdk as string) && !!router.query.framework;
   const { t } = useTranslation('tutorial');
 
   return (
@@ -82,7 +83,10 @@ const ProjectRemoteGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ proj
         <CenteredBox>
           <RemoteFrameworkSelectContainer
             skipButton={
-              <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/remotes`} access-id="skip-project-tutorial">
+              <Link
+                href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/remotes`}
+                access-id="skip-project-tutorial"
+              >
                 <Button type="link">{t('skipTutorialLinkTitle')}</Button>
               </Link>
             }
@@ -98,7 +102,11 @@ ProjectRemoteGetStartedPage.getLayout = (page) => {
 };
 
 export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (context) => {
-  const [organization, checkResult, project] = await Promise.all([getOrganizationInServerSide(context), checkUserVerifiedInServerSide(context), getProjectInServerSide(context)]);
+  const [organization, checkResult, project] = await Promise.all([
+    getOrganizationInServerSide(context),
+    checkUserVerifiedInServerSide(context),
+    getProjectInServerSide(context),
+  ]);
 
   if (checkResult.redirect) {
     return checkResult;

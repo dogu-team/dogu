@@ -1,4 +1,10 @@
-import { CheckCircleFilled, CloseCircleFilled, LoadingOutlined, QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
+import {
+  CheckCircleFilled,
+  CloseCircleFilled,
+  LoadingOutlined,
+  QuestionCircleOutlined,
+  SettingOutlined,
+} from '@ant-design/icons';
 import { REMOTE_DEVICE_JOB_STATE } from '@dogu-private/types';
 import { Tag } from 'antd';
 import styled from 'styled-components';

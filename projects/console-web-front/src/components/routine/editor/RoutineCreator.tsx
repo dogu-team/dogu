@@ -109,7 +109,15 @@ const RoutineCreator = ({ project }: Props) => {
   return (
     <RoutineEditor
       mode={mode}
-      menu={<RoutineEditorMenu projectType={project.type} mode={mode} saveButtonText={t('routine:createRoutineButtonTitle')} onSave={handleSave} onChangeMode={updateMode} />}
+      menu={
+        <RoutineEditorMenu
+          projectType={project.type}
+          mode={mode}
+          saveButtonText={t('routine:createRoutineButtonTitle')}
+          onSave={handleSave}
+          onChangeMode={updateMode}
+        />
+      }
       scriptEditor={<YamlEditor editorRef={editorRef} height={'65vh'} value={yaml} onChanged={handleEditorOnChange} />}
       guiEditor={<RoutineGUIEditor projectType={project.type} />}
       preview={<RoutineFlow />}

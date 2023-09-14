@@ -1,6 +1,14 @@
 import { FieldTimeOutlined, LoadingOutlined, RightOutlined } from '@ant-design/icons';
 import { DestBase, RoutineDeviceJobBase, RoutineStepBase } from '@dogu-private/console';
-import { DEST_TYPE, DeviceId, OrganizationId, RoutinePipelineId, PIPELINE_STATUS, ProjectId, USER_VERIFICATION_STATUS } from '@dogu-private/types';
+import {
+  DEST_TYPE,
+  DeviceId,
+  OrganizationId,
+  RoutinePipelineId,
+  PIPELINE_STATUS,
+  ProjectId,
+  USER_VERIFICATION_STATUS,
+} from '@dogu-private/types';
 import { Tabs } from 'antd';
 import { isAxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
@@ -64,7 +72,11 @@ const StepItem = React.memo(({ step, deviceId }: ItemProps) => {
   const openable = hasDest || isPipelineEndedWithData(step.status);
 
   useEffect(() => {
-    if (Number(router.query.step) === step.routineStepId || step.status === PIPELINE_STATUS.IN_PROGRESS || step.status === PIPELINE_STATUS.FAILURE) {
+    if (
+      Number(router.query.step) === step.routineStepId ||
+      step.status === PIPELINE_STATUS.IN_PROGRESS ||
+      step.status === PIPELINE_STATUS.FAILURE
+    ) {
       setIsOpen(true);
       setTimeout(() => {
         buttonRef.current?.scrollIntoView();
@@ -145,13 +157,25 @@ const StepItem = React.memo(({ step, deviceId }: ItemProps) => {
         isVerified={me?.userAndVerificationToken?.status === USER_VERIFICATION_STATUS.VERIFIED}
       >
         <FlexRowBox>
-          {openable && <RightOutlined style={{ marginRight: '1rem', transform: isOpen ? 'rotate(90deg)' : 'none', transition: 'all .2s' }} />}
+          {openable && (
+            <RightOutlined
+              style={{
+                marginRight: '1rem',
+                transform: isOpen ? 'rotate(90deg)' : 'none',
+                transition: 'all .2s',
+              }}
+            />
+          )}
           <JobStatusIcon status={step.status} />
           <Name>{step.name}</Name>
         </FlexRowBox>
         <FlexRowBox>
           <FieldTimeOutlined style={{ marginRight: '.25rem' }} />
-          <PipelineRuntime status={step.status} startedAt={step.inProgressAt && new Date(step.inProgressAt)} endedAt={step.completedAt && new Date(step.completedAt)} />
+          <PipelineRuntime
+            status={step.status}
+            startedAt={step.inProgressAt && new Date(step.inProgressAt)}
+            endedAt={step.completedAt && new Date(step.completedAt)}
+          />
         </FlexRowBox>
       </StepHeader>
 
@@ -167,10 +191,22 @@ const StepItem = React.memo(({ step, deviceId }: ItemProps) => {
               items={items}
               destroyInactiveTabPane
               onChange={(key) =>
-                router.push({ pathname: router.pathname, query: { ...router.query, line: undefined, menu: key, step: step.routineStepId } }, undefined, {
-                  shallow: true,
-                  scroll: false,
-                })
+                router.push(
+                  {
+                    pathname: router.pathname,
+                    query: {
+                      ...router.query,
+                      line: undefined,
+                      menu: key,
+                      step: step.routineStepId,
+                    },
+                  },
+                  undefined,
+                  {
+                    shallow: true,
+                    scroll: false,
+                  },
+                )
               }
             />
           </StepBody>
@@ -209,7 +245,12 @@ const StepListController = ({ orgId, projectId, pipelineId, deviceJob }: Props) 
   }
 
   if (!data || error) {
-    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get steps information'} />;
+    return (
+      <ErrorBox
+        title="Something went wrong"
+        desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get steps information'}
+      />
+    );
   }
 
   return (

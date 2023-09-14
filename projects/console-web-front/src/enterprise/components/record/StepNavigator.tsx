@@ -14,7 +14,13 @@ interface Props {
   onNextStep: () => void;
 }
 
-const StepNavigator = ({ currentStepIndex, totalStepCount, onCurrentStepIndexChanged, onPrevStep, onNextStep }: Props) => {
+const StepNavigator = ({
+  currentStepIndex,
+  totalStepCount,
+  onCurrentStepIndexChanged,
+  onPrevStep,
+  onNextStep,
+}: Props) => {
   const [value, setValue] = useState(currentStepIndex);
 
   useEffect(() => {

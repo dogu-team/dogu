@@ -29,14 +29,26 @@ export interface DeviceStreamingLayoutProps {
   hideDeviceSelector?: boolean;
 }
 
-const DeviceStreamingLayout = ({ project, userId, deviceId, right, title, screenViewer, hideDeviceSelector }: DeviceStreamingLayoutProps) => {
+const DeviceStreamingLayout = ({
+  project,
+  userId,
+  deviceId,
+  right,
+  title,
+  screenViewer,
+  hideDeviceSelector,
+}: DeviceStreamingLayoutProps) => {
   const router = useRouter();
   const {
     data: device,
     error: deviceError,
     isLoading: deviceIsLoading,
-  } = useSWR<DeviceBase>(`/organizations/${project.organizationId}/devices/${deviceId}`, swrAuthFetcher, { revalidateOnFocus: false });
-  const socketRef = useWebSocket(`/ws/device-streaming-session?organizationId=${project.organizationId}&deviceId=${deviceId}`);
+  } = useSWR<DeviceBase>(`/organizations/${project.organizationId}/devices/${deviceId}`, swrAuthFetcher, {
+    revalidateOnFocus: false,
+  });
+  const socketRef = useWebSocket(
+    `/ws/device-streaming-session?organizationId=${project.organizationId}&deviceId=${deviceId}`,
+  );
   const [users, setUsers] = useState<UserBase[]>([]);
 
   useEffect(() => {
@@ -57,7 +69,10 @@ const DeviceStreamingLayout = ({ project, userId, deviceId, right, title, screen
   if (deviceError) {
     return (
       <Box style={{ justifyContent: 'center' }}>
-        <ErrorBox title="Something went wrong" desc={isAxiosError(deviceError) ? getErrorMessageFromAxios(deviceError) : 'Cannot find device information'} />
+        <ErrorBox
+          title="Something went wrong"
+          desc={isAxiosError(deviceError) ? getErrorMessageFromAxios(deviceError) : 'Cannot find device information'}
+        />
       </Box>
     );
   }
@@ -83,7 +98,9 @@ const DeviceStreamingLayout = ({ project, userId, deviceId, right, title, screen
                     name={user.name}
                     profileImageUrl={user.profileImageUrl}
                     size={32}
-                    style={{ border: userId === user.userId ? `2px solid ${theme.colorPrimary}` : undefined }}
+                    style={{
+                      border: userId === user.userId ? `2px solid ${theme.colorPrimary}` : undefined,
+                    }}
                   />
                 </Tooltip>
               ))}
@@ -100,7 +117,14 @@ const DeviceStreamingLayout = ({ project, userId, deviceId, right, title, screen
                 projectId={router.query.pid as ProjectId}
                 onSelectedDeviceChanged={(device) => {
                   if (device) {
-                    router.push({ query: { orgId: router.query.orgId, pid: router.query.pid, deviceId: device?.deviceId, tab: router.query.tab } });
+                    router.push({
+                      query: {
+                        orgId: router.query.orgId,
+                        pid: router.query.pid,
+                        deviceId: device?.deviceId,
+                        tab: router.query.tab,
+                      },
+                    });
                   } else {
                     router.push(`/dashboard/${router.query.orgId}/projects/${router.query.pid}/studio`);
                   }

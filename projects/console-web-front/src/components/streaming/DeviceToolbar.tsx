@@ -1,7 +1,14 @@
 import styled from 'styled-components';
 import Image from 'next/image';
 import React from 'react';
-import { HomeOutlined, LockOutlined, MenuOutlined, PoweroffOutlined, RollbackOutlined, UnlockOutlined } from '@ant-design/icons';
+import {
+  HomeOutlined,
+  LockOutlined,
+  MenuOutlined,
+  PoweroffOutlined,
+  RollbackOutlined,
+  UnlockOutlined,
+} from '@ant-design/icons';
 
 import { DeviceToolBarMenu } from 'src/utils/streaming/streaming';
 import resources from 'src/resources';

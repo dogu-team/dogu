@@ -30,7 +30,11 @@ function LiveChat(props: Props) {
           const fcWidget = window.fcWidget;
           if (fcWidget && fcWidget.user) {
             if (props.user) {
-              fcWidget.user.setProperties({ firstName: props.user.name, lastName: props.user.organizationId, email: props.user.email });
+              fcWidget.user.setProperties({
+                firstName: props.user.name,
+                lastName: props.user.organizationId,
+                email: props.user.email,
+              });
             }
 
             clearInterval(setUserLoop);

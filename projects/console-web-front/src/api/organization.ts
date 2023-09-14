@@ -20,7 +20,11 @@ export const updateOrganization = async (organizationId: OrganizationId, updated
   return data;
 };
 
-export const uploadOrganizationImage = async (organizationId: OrganizationId, file: File, progress?: (e: AxiosProgressEvent) => void) => {
+export const uploadOrganizationImage = async (
+  organizationId: OrganizationId,
+  file: File,
+  progress?: (e: AxiosProgressEvent) => void,
+) => {
   const formData = new FormData();
   formData.append('image', file);
 
@@ -38,7 +42,9 @@ export const getOrganizationInServerSide = async (context: GetServerSidePropsCon
   const { authToken } = getServersideCookies(context.req.cookies);
 
   if (authToken) {
-    const data = await api.get<OrganizationBase>(`/organizations/${context.query.orgId}`, { headers: { Authorization: `Bearer ${authToken}` } });
+    const data = await api.get<OrganizationBase>(`/organizations/${context.query.orgId}`, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
     setCookiesInServerSide(data, context);
 
     const organization = data.data;
@@ -72,7 +78,11 @@ export const getOrganizationPublic = async (orgId: OrganizationId) => {
   return data;
 };
 
-export const updateUserOrgPermission = async (organizationId: OrganizationId, userId: UserId, updateRoleDtoBase: UpdateOrganizationRoleDtoBase) => {
+export const updateUserOrgPermission = async (
+  organizationId: OrganizationId,
+  userId: UserId,
+  updateRoleDtoBase: UpdateOrganizationRoleDtoBase,
+) => {
   const data = await api.patch<UserBase>(`/organizations/${organizationId}/users/${userId}/role`, updateRoleDtoBase);
 
   return data.data;

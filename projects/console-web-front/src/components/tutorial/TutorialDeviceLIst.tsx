@@ -72,7 +72,9 @@ const TutorialDeviceList = ({ organizationId, projectId, hostId }: Props) => {
 
     setLoading(true);
     try {
-      await Promise.all(targetKeys.map((deviceId) => enableDevice(organizationId, deviceId, { projectId, isGlobal: false })));
+      await Promise.all(
+        targetKeys.map((deviceId) => enableDevice(organizationId, deviceId, { projectId, isGlobal: false })),
+      );
       mutateStandbyDevices();
       mutateUsingDevices();
       sendSuccessNotification('Successfully use devices!');

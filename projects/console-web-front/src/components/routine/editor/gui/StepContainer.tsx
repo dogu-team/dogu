@@ -30,7 +30,9 @@ enum StepType {
 
 const StepContainer = ({ jobName, step, index, updateStep, deleteStep, moveStep }: Props) => {
   const { project } = useProjectContext();
-  const [type, setType] = useState<StepType | null>(step.uses !== undefined ? StepType.ACTION : step.run !== undefined ? StepType.SHELL : null);
+  const [type, setType] = useState<StepType | null>(
+    step.uses !== undefined ? StepType.ACTION : step.run !== undefined ? StepType.SHELL : null,
+  );
 
   const updateStepName = useCallback(
     (value: string) => {
@@ -104,7 +106,11 @@ const StepContainer = ({ jobName, step, index, updateStep, deleteStep, moveStep 
 
   return (
     <Box>
-      <ContainerMenu onDeleteClicked={() => deleteStep(index)} onMoveDownClicked={() => moveStep(index, 'down')} onMoveUpClicked={() => moveStep(index, 'up')} />
+      <ContainerMenu
+        onDeleteClicked={() => deleteStep(index)}
+        onMoveDownClicked={() => moveStep(index, 'down')}
+        onMoveUpClicked={() => moveStep(index, 'up')}
+      />
 
       <Content style={{ fontWeight: '600', paddingRight: '4rem' }}>
         <NameEditor defaultValue={step.name} onSave={updateStepName} maxLength={ROUTINE_STEP_NAME_MAX_LENGTH} />
@@ -160,7 +166,12 @@ echo Dogu!`}
           <Content>
             <ContentTitle>{t('routineGuiEditorStepActionLabel')}</ContentTitle>
             <div>
-              <ActionSelector value={step.uses} optionLabelProp="title" style={{ width: '200px' }} onChange={updateAction} />
+              <ActionSelector
+                value={step.uses}
+                optionLabelProp="title"
+                style={{ width: '200px' }}
+                onChange={updateAction}
+              />
             </div>
           </Content>
 
@@ -169,7 +180,10 @@ echo Dogu!`}
               <ContentTitle>{t('routine:routineGuiEditorStepWorkingDirLabel')}</ContentTitle>
               <ContentDesc>{t('routine:routineGuiEditorStepWorkingDirDescription')}</ContentDesc>
               <SelectWrapper>
-                <WorkingDirectoryContainer value={step.cwd} onChange={(value) => updateStep({ ...step, cwd: value }, index)} />
+                <WorkingDirectoryContainer
+                  value={step.cwd}
+                  onChange={(value) => updateStep({ ...step, cwd: value }, index)}
+                />
               </SelectWrapper>
             </Content>
           )}
@@ -177,7 +191,10 @@ echo Dogu!`}
           <Content>
             <ContentTitle>{t('routine:routineGuiEditorStepArgumentLabel')}</ContentTitle>
             <div>
-              <StepActionArgumentContainer step={step} onUpdate={(stepWith) => updateStep({ ...step, with: stepWith }, index)} />
+              <StepActionArgumentContainer
+                step={step}
+                onUpdate={(stepWith) => updateStep({ ...step, with: stepWith }, index)}
+              />
             </div>
           </Content>
         </>

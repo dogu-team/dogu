@@ -3,7 +3,10 @@ import { Architecture, DownloadablePackageResult, DOWNLOAD_PLATFORMS, Platform }
 
 import { parseSemver } from '../../utils/download';
 
-export const getAgentUpdatableInfo = (latestInfo: DownloadablePackageResult[], host: HostBase): { isLatest: boolean; isUpdatable: boolean; reason?: string } => {
+export const getAgentUpdatableInfo = (
+  latestInfo: DownloadablePackageResult[],
+  host: HostBase,
+): { isLatest: boolean; isUpdatable: boolean; reason?: string } => {
   if (!host.agentVersion) {
     return {
       isLatest: false,

@@ -63,7 +63,10 @@ const UnsubscribePage: NextPageWithLayout<Props> = ({ isSuccess, message, userId
 };
 
 export const getServerSideProps: GetServerSideProps<Props> = async (context) => {
-  const { userId, token } = context.query as { userId: UserId | undefined; token: string | undefined };
+  const { userId, token } = context.query as {
+    userId: UserId | undefined;
+    token: string | undefined;
+  };
 
   if (!userId || !token) {
     return {

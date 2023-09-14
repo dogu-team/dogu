@@ -12,7 +12,11 @@ const CreateProjectButton = () => {
 
   return (
     <>
-      <Button type="primary" onClick={() => openModal()} access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'add-project-btn' : undefined}>
+      <Button
+        type="primary"
+        onClick={() => openModal()}
+        access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'add-project-btn' : undefined}
+      >
         {t('project:createProjectButtonTitle')}
       </Button>
 

@@ -11,7 +11,11 @@ const InputItem = forwardRef<HTMLInputElement, Props>(({ desc, errorMsg, ...prop
   return (
     <div className={props.className}>
       <Desc>{desc}</Desc>
-      {props.type === 'password' ? <Input.Password ref={forwardedRef as Ref<InputRef>} required {...props} /> : <Input ref={forwardedRef as Ref<InputRef>} {...props} />}
+      {props.type === 'password' ? (
+        <Input.Password ref={forwardedRef as Ref<InputRef>} required {...props} />
+      ) : (
+        <Input ref={forwardedRef as Ref<InputRef>} {...props} />
+      )}
       {errorMsg && <ErrorComment>{errorMsg}</ErrorComment>}
     </div>
   );

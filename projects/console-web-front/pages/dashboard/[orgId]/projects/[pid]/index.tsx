@@ -16,7 +16,11 @@ ProjectPage.getLayout = (page) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
-    redirect: redirectWithLocale(context, `/dashboard/${context.query.orgId}/projects/${context.query.pid}/remotes`, true),
+    redirect: redirectWithLocale(
+      context,
+      `/dashboard/${context.query.orgId}/projects/${context.query.pid}/remotes`,
+      true,
+    ),
   };
 };
 

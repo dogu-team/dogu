@@ -137,10 +137,16 @@ const DeviceFarmTutorial = () => {
           items={[
             { id: INTRODUCTION_ID, title: t('deviceFarmTutorialIntroAnchorTitle') },
             { id: CREATE_PROJECT_ID, title: t('deviceFarmTutorialCreateProjectAnchorTitle') },
-            { id: INSTALL_DOGU_AGENT_ID, title: t('deviceFarmTutorialInstallDoguAgentAnchorTitle') },
+            {
+              id: INSTALL_DOGU_AGENT_ID,
+              title: t('deviceFarmTutorialInstallDoguAgentAnchorTitle'),
+            },
             { id: CREATE_HOST_ID, title: t('deviceFarmTutorialCreateHostAnchorTitle') },
             { id: USE_HOST_AS_DEVICE_ID, title: t('deviceFarmTutorialUseHostDeviceAnchorTitle') },
-            { id: CONNECT_MOBILE_DEVICE_ID, title: t('deviceFarmTutorialConnectDeviceAnchorTitle') },
+            {
+              id: CONNECT_MOBILE_DEVICE_ID,
+              title: t('deviceFarmTutorialConnectDeviceAnchorTitle'),
+            },
             { id: USE_DEVICE_ID, title: t('deviceFarmTutorialUseDeviceAnchorTitle') },
           ]}
         />
@@ -162,7 +168,9 @@ const DeviceFarmTutorial = () => {
                       i18nKey="tutorial:deviceFarmTutorialIntroDetailDescription"
                       components={{
                         dfLink: <Link href="https://docs.dogutech.io/device-farm/" target="_blank" />,
-                        dftLink: <Link href="https://docs.dogutech.io/get-started/tutorials/device-farm" target="_blank" />,
+                        dftLink: (
+                          <Link href="https://docs.dogutech.io/get-started/tutorials/device-farm" target="_blank" />
+                        ),
                       }}
                     />
                   </p>
@@ -283,7 +291,10 @@ const DeviceFarmTutorial = () => {
             description={
               <Trans
                 i18nKey="tutorial:deviceFarmTutorialConnectDeviceDescription"
-                components={{ link: <Link href="https://docs.dogutech.io/device-farm/device/settings" target="_blank" />, br: <br /> }}
+                components={{
+                  link: <Link href="https://docs.dogutech.io/device-farm/device/settings" target="_blank" />,
+                  br: <br />,
+                }}
               />
             }
             content={null}
@@ -302,7 +313,11 @@ const DeviceFarmTutorial = () => {
                     </FlexEnd>
 
                     <MarginWrapper>
-                      <TutorialDeviceList organizationId={organization.organizationId} projectId={project.projectId} hostId={host.hostId} />
+                      <TutorialDeviceList
+                        organizationId={organization.organizationId}
+                        projectId={project.projectId}
+                        hostId={host.hostId}
+                      />
                     </MarginWrapper>
                   </>
                 ) : (

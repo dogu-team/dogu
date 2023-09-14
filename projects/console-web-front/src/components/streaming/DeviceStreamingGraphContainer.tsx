@@ -18,7 +18,8 @@ const DeviceStreamingGraphContainer = ({ infos }: Props) => {
   const cpuInfos = runtimeInfoParser.parseCpuUsage(infos);
   const memoryInfos = runtimeInfoParser.parseMemoryUsage(infos);
 
-  const currentForegroundProc = infos.length > 0 ? infos[infos.length - 1].processes?.find((item) => item.isForeground) : undefined;
+  const currentForegroundProc =
+    infos.length > 0 ? infos[infos.length - 1].processes?.find((item) => item.isForeground) : undefined;
 
   return (
     <>

@@ -124,7 +124,9 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
 
       try {
         deviceRTCCaller?.setSendThrottleMs(33);
-        const result = await deviceRTCCaller?.call('cfGdcDaControlParam', 'cfGdcDaControlResult', { control: c });
+        const result = await deviceRTCCaller?.call('cfGdcDaControlParam', 'cfGdcDaControlResult', {
+          control: c,
+        });
         handleControlResult(result);
       } catch (e) {}
     },
@@ -164,7 +166,9 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
       const c: DeviceControl = {
         ...input.DefaultDeviceControl(),
         metaState: mapWebMetaKeyToDeviceMetaState(event),
-        action: isKeyUp ? DeviceControlAction.DEVICE_CONTROL_ACTION_AOS_KEYEVENT_ACTION_UP : DeviceControlAction.DEVICE_CONTROL_ACTION_AOS_KEYEVENT_ACTION_DOWN_UNSPECIFIED,
+        action: isKeyUp
+          ? DeviceControlAction.DEVICE_CONTROL_ACTION_AOS_KEYEVENT_ACTION_UP
+          : DeviceControlAction.DEVICE_CONTROL_ACTION_AOS_KEYEVENT_ACTION_DOWN_UNSPECIFIED,
         type: DeviceControlType.DEVICE_CONTROL_TYPE_AOS_INJECT_KEYCODE,
         keycode: mapWebKeyboardToDeviceKeyboard(event),
         key: event.key,
@@ -189,7 +193,12 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
       }
 
       const downMenus = [DeviceToolBarMenu.BACK, DeviceToolBarMenu.HOME];
-      const upMenus = [DeviceToolBarMenu.BACK, DeviceToolBarMenu.HOME, DeviceToolBarMenu.SWITCH, DeviceToolBarMenu.LOCK];
+      const upMenus = [
+        DeviceToolBarMenu.BACK,
+        DeviceToolBarMenu.HOME,
+        DeviceToolBarMenu.SWITCH,
+        DeviceToolBarMenu.LOCK,
+      ];
 
       let controls: DeviceControl[] = [];
       if (downMenus.includes(menu)) {
@@ -235,7 +244,9 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
         if (null === result || null == result.error) {
           console.debug(`e2e handleToolMenuInput code: ${DeviceControlKeycode[c.keycode]} failed result: ${result}`);
         } else if (CodeUtil.isNotSuccess(result.error.code)) {
-          console.debug(`e2e handleToolMenuInput code: ${DeviceControlKeycode[c.keycode]} failed error: ${result.error.code}`);
+          console.debug(
+            `e2e handleToolMenuInput code: ${DeviceControlKeycode[c.keycode]} failed error: ${result.error.code}`,
+          );
         } else {
           console.debug(`e2e handleToolMenuInput code: ${DeviceControlKeycode[c.keycode]} success`);
         }
@@ -379,7 +390,17 @@ const useDeviceInput = (deviceRTCCaller: DeviceRTCCaller | undefined) => {
     [handleTouchInput],
   );
 
-  return { handleKeyDown, handleKeyUp, handleWheel, handleMouseDown, handleMouseUp, handleMouseMove, handleMouseLeave, handleDoubleClick, handleToolMenuInput };
+  return {
+    handleKeyDown,
+    handleKeyUp,
+    handleWheel,
+    handleMouseDown,
+    handleMouseUp,
+    handleMouseMove,
+    handleMouseLeave,
+    handleDoubleClick,
+    handleToolMenuInput,
+  };
 };
 
 export default useDeviceInput;

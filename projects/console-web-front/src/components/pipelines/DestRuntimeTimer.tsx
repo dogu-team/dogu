@@ -21,7 +21,12 @@ const DestRuntimeTimer = ({ dest }: Props) => {
         return <div>Unknown</div>;
       }
 
-      return <RuntimeTimer startDate={new Date(dest.inProgressAt)} endDate={dest.completedAt && new Date(dest.completedAt)} />;
+      return (
+        <RuntimeTimer
+          startDate={new Date(dest.inProgressAt)}
+          endDate={dest.completedAt && new Date(dest.completedAt)}
+        />
+      );
     default:
       return null;
   }

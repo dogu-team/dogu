@@ -36,7 +36,9 @@ const ProjectItem = ({ item }: ProjectItemProps) => {
   const handleUpdatePermission = useCallback(
     async (selectedRole: ProjectRoleId, onError: () => void) => {
       try {
-        await updateTeamInProject(orgId, item.projectId, item.teamId, { projectRoleId: selectedRole });
+        await updateTeamInProject(orgId, item.projectId, item.teamId, {
+          projectRoleId: selectedRole,
+        });
         sendSuccessNotification(t('team:projectPermissionUpdateSuccessMsg'));
         fireEvent('onTeamProjectPermissionUpdated');
       } catch (e) {
@@ -87,7 +89,11 @@ const ProjectItem = ({ item }: ProjectItemProps) => {
           </StyledLink>
         </NameCell>
         <PermissionCell>
-          <PermissionSelector defaultRoleId={item.projectRoleId} organizationId={orgId} onSelectRole={async (roleId, onError) => await handleUpdatePermission(roleId, onError)} />
+          <PermissionSelector
+            defaultRoleId={item.projectRoleId}
+            organizationId={orgId}
+            onSelectRole={async (roleId, onError) => await handleUpdatePermission(roleId, onError)}
+          />
         </PermissionCell>
         <MenuCell>
           <FlexEndBox>
@@ -114,7 +120,9 @@ const ProjectListController = ({ teamId, organizationId }: Props) => {
   );
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onTeamProjectAdded', 'onTeamProjectPermissionUpdated', 'onTeamProjectDeleted'], () => mutate());
+  useRefresh(['onRefreshClicked', 'onTeamProjectAdded', 'onTeamProjectPermissionUpdated', 'onTeamProjectDeleted'], () =>
+    mutate(),
+  );
 
   return (
     <>
@@ -130,9 +138,20 @@ const ProjectListController = ({ teamId, organizationId }: Props) => {
         rowKey={(record) => `team-project-${record.projectId}`}
         dataSource={data?.items}
         renderItem={(item) => <ProjectItem item={item} />}
-        pagination={{ defaultCurrent: 1, current: page, pageSize: 10, total: data?.totalCount, onChange: (page, pageSize) => updatePage(page) }}
+        pagination={{
+          defaultCurrent: 1,
+          current: page,
+          pageSize: 10,
+          total: data?.totalCount,
+          onChange: (page, pageSize) => updatePage(page),
+        }}
         locale={{
-          emptyText: <ListEmpty image={<AppstoreOutlined style={{ fontSize: '80px' }} />} description={t('team:teamProjectEmptyDescription')} />,
+          emptyText: (
+            <ListEmpty
+              image={<AppstoreOutlined style={{ fontSize: '80px' }} />}
+              description={t('team:teamProjectEmptyDescription')}
+            />
+          ),
         }}
       />
     </>

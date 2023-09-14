@@ -83,7 +83,9 @@ const AddMemberModal = ({ isOpen, close, organizationId, teamId }: Props) => {
             {data.items.map((item) => (
               <AddMemberItem
                 key={`user-${item.userId}`}
-                profile={<Profile profileImageUrl={item.profileImageUrl} name={item.name} desc={item.email} showProfileImage />}
+                profile={
+                  <Profile profileImageUrl={item.profileImageUrl} name={item.name} desc={item.email} showProfileImage />
+                }
                 onAddClick={() => handleAddMember(item)}
                 isJoined={!!item.teams?.find((team) => team.teamId === teamId)}
               />

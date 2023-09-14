@@ -30,8 +30,12 @@ const RecordTestingEntry = ({ project }: Props) => {
     }
 
     try {
-      const testCaseWithSession = await request(project.organizationId, project.projectId, testCase.recordTestCaseId, { deviceId: device?.deviceId });
-      router.push({ query: { ...router.query, caseId: testCaseWithSession.recordTestCaseId } }, undefined, { shallow: true });
+      const testCaseWithSession = await request(project.organizationId, project.projectId, testCase.recordTestCaseId, {
+        deviceId: device?.deviceId,
+      });
+      router.push({ query: { ...router.query, caseId: testCaseWithSession.recordTestCaseId } }, undefined, {
+        shallow: true,
+      });
     } catch (e) {
       if (isAxiosError(e)) {
         sendErrorNotification(`Failed to create session.\n${getErrorMessageFromAxios(e)}`);
@@ -42,7 +46,8 @@ const RecordTestingEntry = ({ project }: Props) => {
   if (!device) {
     return (
       <div>
-        No device selected... <Link href={`/dashboard/${project.organizationId}/projects/${project.projectId}/studio`}>Move studio</Link>
+        No device selected...{' '}
+        <Link href={`/dashboard/${project.organizationId}/projects/${project.projectId}/studio`}>Move studio</Link>
       </div>
     );
   }
@@ -53,7 +58,14 @@ const RecordTestingEntry = ({ project }: Props) => {
         <Title>Create or open test case and make your tests easily!</Title>
       </Head>
       <ButtonWrapper>
-        <CreateCaseButton project={project} icon={<PlusOutlined />} type="primary" onCreate={moveAfterCreateSession} device={device} isSessionCreating={loading}>
+        <CreateCaseButton
+          project={project}
+          icon={<PlusOutlined />}
+          type="primary"
+          onCreate={moveAfterCreateSession}
+          device={device}
+          isSessionCreating={loading}
+        >
           Create new
         </CreateCaseButton>
         <Divider style={{ margin: '0 .5rem' }}>or</Divider>

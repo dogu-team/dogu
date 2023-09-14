@@ -21,7 +21,13 @@ const SampleApplicationUploadStep = ({ hasSampleApp, category }: Props) => {
   }
 
   if (hasSampleApp) {
-    return <SampleApplicationUploadButton organizationId={project.organizationId} projectId={project.projectId} category={category} />;
+    return (
+      <SampleApplicationUploadButton
+        organizationId={project.organizationId}
+        projectId={project.projectId}
+        category={category}
+      />
+    );
   }
 
   return (

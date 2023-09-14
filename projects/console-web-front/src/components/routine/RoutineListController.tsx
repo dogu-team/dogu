@@ -20,7 +20,10 @@ interface Props {
 
 const RoutineListController = ({ organizationId, projectId }: Props) => {
   const router = useRouter();
-  const { data, isLoading, error, mutate } = useSWR<RoutineBase[]>(`/organizations/${organizationId}/projects/${projectId}/routines?name=`, swrAuthFetcher);
+  const { data, isLoading, error, mutate } = useSWR<RoutineBase[]>(
+    `/organizations/${organizationId}/projects/${projectId}/routines?name=`,
+    swrAuthFetcher,
+  );
   const { t } = useTranslation();
 
   useRefresh(['onRoutineCreated', 'onRoutineDeleted'], () => mutate());
@@ -30,7 +33,12 @@ const RoutineListController = ({ organizationId, projectId }: Props) => {
   }
 
   if (!data || error) {
-    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find routines information'} />;
+    return (
+      <ErrorBox
+        title="Something went wrong"
+        desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find routines information'}
+      />
+    );
   }
 
   return (

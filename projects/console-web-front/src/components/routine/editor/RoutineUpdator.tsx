@@ -56,7 +56,9 @@ const RoutineUpdator = (props: Props) => {
       setChanged(false);
 
       await updateRoutine(props.project.organizationId, props.project.projectId, props.routineId, file);
-      router.push(`/dashboard/${props.project.organizationId}/projects/${props.project.projectId}/routines?routine=${props.routineId}`);
+      router.push(
+        `/dashboard/${props.project.organizationId}/projects/${props.project.projectId}/routines?routine=${props.routineId}`,
+      );
 
       sendSuccessNotification(t('routine:updateRoutineSuccessMessage'));
     } catch (error) {
@@ -70,7 +72,15 @@ const RoutineUpdator = (props: Props) => {
   return (
     <RoutineEditor
       mode={mode}
-      menu={<RoutineEditorMenu projectType={props.project.type} mode={mode} saveButtonText={t('routine:updateRoutineButtonTitle')} onSave={handleSave} onChangeMode={updateMode} />}
+      menu={
+        <RoutineEditorMenu
+          projectType={props.project.type}
+          mode={mode}
+          saveButtonText={t('routine:updateRoutineButtonTitle')}
+          onSave={handleSave}
+          onChangeMode={updateMode}
+        />
+      }
       scriptEditor={<YamlEditor editorRef={editorRef} height={'65vh'} value={yaml} onChanged={handleEditorOnChange} />}
       guiEditor={<RoutineGUIEditor projectType={props.project.type} />}
       preview={<RoutineFlow />}

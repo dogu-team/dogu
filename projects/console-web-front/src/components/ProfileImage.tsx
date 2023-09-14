@@ -13,7 +13,11 @@ const ProfileImage = forwardRef<HTMLImageElement, Props>(({ profileImageUrl, nam
   return (
     <StyledAvartar
       {...props}
-      src={profileImageUrl ? <StyledImage ref={forwaredRef} src={profileImageUrl} fill sizes="128px" alt={name ?? ''} priority /> : undefined}
+      src={
+        profileImageUrl ? (
+          <StyledImage ref={forwaredRef} src={profileImageUrl} fill sizes="128px" alt={name ?? ''} priority />
+        ) : undefined
+      }
       style={{ backgroundColor: '#cdcdcd', fontSize: '0.9rem', flexShrink: 0, ...props.style }}
     >
       {name?.charAt(0).toUpperCase()}

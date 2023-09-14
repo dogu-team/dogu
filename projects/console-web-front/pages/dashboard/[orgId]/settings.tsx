@@ -180,7 +180,13 @@ const OrganizationSettingPage: NextPageWithLayout<OrganizationServerSideProps> =
             }
           />
         </Content>
-        <Button type="primary" disabled={isImageUploading || !isChanged} loading={loading} onClick={handleSubmit} access-id="submit-org-profile-btn">
+        <Button
+          type="primary"
+          disabled={isImageUploading || !isChanged}
+          loading={loading}
+          onClick={handleSubmit}
+          access-id="submit-org-profile-btn"
+        >
           {t('common:save')}
         </Button>
 
@@ -197,7 +203,10 @@ const OrganizationSettingPage: NextPageWithLayout<OrganizationServerSideProps> =
         <SettingTitleDivider title="Integrations" />
 
         <Content>
-          <SlackButton isConnected={organization!.organizationSlack!.length === 1} organizationId={organization.organizationId} />
+          <SlackButton
+            isConnected={organization!.organizationSlack!.length === 1}
+            organizationId={organization.organizationId}
+          />
         </Content>
 
         <div style={{ marginTop: '3rem' }}>
@@ -205,7 +214,11 @@ const OrganizationSettingPage: NextPageWithLayout<OrganizationServerSideProps> =
             <DangerZone.Item
               title={t('common:regenerateAccessTokenTitle')}
               description={t('common:regenerateAccessTokenDescriptionText')}
-              button={<RegenerateTokenButton regenerate={async () => regenerateOrganizationAccessToken(organization.organizationId)} />}
+              button={
+                <RegenerateTokenButton
+                  regenerate={async () => regenerateOrganizationAccessToken(organization.organizationId)}
+                />
+              }
             />
             <DangerZone.Item
               title={t('organization:settingChangeOwnerMenuTitle')}
@@ -217,7 +230,10 @@ const OrganizationSettingPage: NextPageWithLayout<OrganizationServerSideProps> =
                   modalContent={
                     <div>
                       <p style={{ marginBottom: '.5rem' }}>
-                        <Trans i18nKey="organization:settingchangeOwnerConfirmModalContent" components={{ br: <br /> }} />
+                        <Trans
+                          i18nKey="organization:settingchangeOwnerConfirmModalContent"
+                          components={{ br: <br /> }}
+                        />
                       </p>
                       <div style={{ width: '100% ' }}>
                         <OrganizationOwnerSelector organization={organization} onChange={setNewOwner} />
@@ -265,7 +281,11 @@ const OrganizationSettingPage: NextPageWithLayout<OrganizationServerSideProps> =
 
 OrganizationSettingPage.getLayout = (page) => {
   return (
-    <ConsoleLayout organization={page.props.organization} titleI18nKey="organization:organizationSettingPageTitle" sidebar={<OrganizationSideBar />}>
+    <ConsoleLayout
+      organization={page.props.organization}
+      titleI18nKey="organization:organizationSettingPageTitle"
+      sidebar={<OrganizationSideBar />}
+    >
       {page}
     </ConsoleLayout>
   );

@@ -20,9 +20,13 @@ interface Props {
 }
 
 const ProjectSwitch = ({ organizationId, onChange, children, selectedProject, hideIcon }: Props) => {
-  const { data, size, setSize, error, isLoading } = useSWRInfinite<PageBase<ProjectBase>>((page) => `/organizations/${organizationId}/projects?page=${page + 1}`, swrAuthFetcher, {
-    revalidateFirstPage: false,
-  });
+  const { data, size, setSize, error, isLoading } = useSWRInfinite<PageBase<ProjectBase>>(
+    (page) => `/organizations/${organizationId}/projects?page=${page + 1}`,
+    swrAuthFetcher,
+    {
+      revalidateFirstPage: false,
+    },
+  );
   const [isOpened, setIsOpened] = useState(false);
   const [top, setTop] = useState(140);
   const container = useRef<HTMLDivElement>(null);
@@ -39,7 +43,11 @@ const ProjectSwitch = ({ organizationId, onChange, children, selectedProject, hi
   useEffect(() => {
     if (isOpened) {
       const handleClickOutside = (e: MouseEvent) => {
-        if (container.current && !container.current.contains(e.target as Node) && !buttonRef.current?.contains(e.target as Node)) {
+        if (
+          container.current &&
+          !container.current.contains(e.target as Node) &&
+          !buttonRef.current?.contains(e.target as Node)
+        ) {
           setIsOpened(false);
         }
       };
@@ -105,7 +113,13 @@ const ProjectSwitch = ({ organizationId, onChange, children, selectedProject, hi
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <ProfileImage name={project.name} profileImageUrl={null} size={28} style={{ fontSize: '.9rem' }} shape="square" />
+                      <ProfileImage
+                        name={project.name}
+                        profileImageUrl={null}
+                        size={28}
+                        style={{ fontSize: '.9rem' }}
+                        shape="square"
+                      />
                       <div style={{ marginLeft: '.5rem' }}>{project.name}</div>
                     </div>
                     {selected && (

@@ -15,7 +15,13 @@ const AnsiLogItem = ({ lineNumber, log, selected, lineNumberComponent }: Props) 
   return (
     <LogItem
       lineNumber={lineNumber}
-      log={<StyledLog dangerouslySetInnerHTML={{ __html: new Convert({ fg: '#000', bg: '#fff', newline: true }).toHtml(log.message) }} />}
+      log={
+        <StyledLog
+          dangerouslySetInnerHTML={{
+            __html: new Convert({ fg: '#000', bg: '#fff', newline: true }).toHtml(log.message),
+          }}
+        />
+      }
       selected={selected}
       lineNumberComponent={lineNumberComponent}
     />

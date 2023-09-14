@@ -29,7 +29,10 @@ export class BrowserGamiumService implements GamiumService {
   private isConnected: boolean;
   private seq = 0;
 
-  constructor(public readonly channel: RTCDataChannel, private readonly requestTimeout: number = 50000) {
+  constructor(
+    public readonly channel: RTCDataChannel,
+    private readonly requestTimeout: number = 50000,
+  ) {
     this.isConnected = false;
 
     channel.addEventListener('open', (event) => {
@@ -87,7 +90,10 @@ export class BrowserGamiumService implements GamiumService {
     this.channel.close();
   }
 
-  request<P extends GcGaParamTypes, R extends GcGaResultTypes>(packet: PacketTypes<P, R>, options: { timeout: number } = { timeout: this.requestTimeout }): Promise<R> {
+  request<P extends GcGaParamTypes, R extends GcGaResultTypes>(
+    packet: PacketTypes<P, R>,
+    options: { timeout: number } = { timeout: this.requestTimeout },
+  ): Promise<R> {
     return new Promise((resolve, reject) => {
       const befAsyncError = new Error('GamiumEngineService.request');
       if (!this.isConnected) {
@@ -103,7 +109,11 @@ export class BrowserGamiumService implements GamiumService {
       // timeout handle
       const timeout = setTimeout(() => {
         console.error(`GamiumEngineService. request timeout: ${seq}`);
-        reject(new GamiumError(ErrorCode.Timeout, 'request timeout', undefined, { cause: befAsyncError }));
+        reject(
+          new GamiumError(ErrorCode.Timeout, 'request timeout', undefined, {
+            cause: befAsyncError,
+          }),
+        );
       }, options.timeout);
 
       // complete handle
@@ -129,17 +139,32 @@ export class BrowserGamiumService implements GamiumService {
       console.debug(`GamiumEngineService. response: ${JSON.stringify(response).substring(0, 300)} >> `);
       if (response.error == null) {
         clearTimeout(timeout);
-        reject(new GamiumError(ErrorCode.InternalError, 'request response error is null', undefined, { cause: befAsyncError }));
+        reject(
+          new GamiumError(ErrorCode.InternalError, 'request response error is null', undefined, {
+            cause: befAsyncError,
+          }),
+        );
         return;
       }
       if (response.error.code !== ErrorCode.None) {
         clearTimeout(timeout);
-        reject(new GamiumError(response.error.code, response.error.reason as string, undefined, { cause: befAsyncError }));
+        reject(
+          new GamiumError(response.error.code, response.error.reason as string, undefined, {
+            cause: befAsyncError,
+          }),
+        );
         return;
       }
       if (response.resultType !== packet.resultEnum) {
         clearTimeout(timeout);
-        reject(new GamiumError(ErrorCode.InternalError, `request resultType(${response.resultType}) is not ${packet.resultEnum}`, undefined, { cause: befAsyncError }));
+        reject(
+          new GamiumError(
+            ErrorCode.InternalError,
+            `request resultType(${response.resultType}) is not ${packet.resultEnum}`,
+            undefined,
+            { cause: befAsyncError },
+          ),
+        );
         return;
       }
 
@@ -147,7 +172,11 @@ export class BrowserGamiumService implements GamiumService {
       const resultObj = response.result as R;
       if (resultObj == null) {
         clearTimeout(timeout);
-        reject(new GamiumError(ErrorCode.InternalError, 'request resultObj is null', undefined, { cause: befAsyncError }));
+        reject(
+          new GamiumError(ErrorCode.InternalError, 'request resultObj is null', undefined, {
+            cause: befAsyncError,
+          }),
+        );
         return;
       }
       clearTimeout(timeout);
@@ -198,7 +227,10 @@ export class BrowserGamiumService implements GamiumService {
     for (const discardReq of discardedReqs) {
       this.responseEmitter.emit(
         discardReq.seq.toString(),
-        new GamiumProtocol.ResponseT(discardReq.seq, new GamiumProtocol.ErrorResultT(ErrorCode.InternalError, 'request discarded')),
+        new GamiumProtocol.ResponseT(
+          discardReq.seq,
+          new GamiumProtocol.ErrorResultT(ErrorCode.InternalError, 'request discarded'),
+        ),
       );
     }
 

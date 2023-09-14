@@ -41,9 +41,20 @@ const SlackChannelForm = (props: Props) => {
     <Form form={props.form} layout="vertical" name="slack-channel">
       <Form.Item
         label={
-          <div style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'space-evenly', alignItems: 'center' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              width: '100%',
+              justifyContent: 'space-evenly',
+              alignItems: 'center',
+            }}
+          >
             <p>Channel</p>
-            <PrivateChannelGuideText href="https://docs.dogutech.io/integration/notification/slack#private-channel" target="_blank">
+            <PrivateChannelGuideText
+              href="https://docs.dogutech.io/integration/notification/slack#private-channel"
+              target="_blank"
+            >
               {`Private channel isn't visible?`}
             </PrivateChannelGuideText>
           </div>

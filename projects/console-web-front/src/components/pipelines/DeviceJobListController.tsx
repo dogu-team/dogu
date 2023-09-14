@@ -28,17 +28,28 @@ const DeviceJobListController = ({ orgId, projectId, pipelineId, jobId }: Props)
     `/organizations/${orgId}/projects/${projectId}/pipelines/${pipelineId}/jobs/${jobId}/device-jobs`,
     swrAuthFetcher,
   );
-  const liveDeviceJobs = useLivePipelineStore((state) => state.pipeline?.routineJobs?.find((job) => job.routineJobId === jobId)?.routineDeviceJobs);
+  const liveDeviceJobs = useLivePipelineStore(
+    (state) => state.pipeline?.routineJobs?.find((job) => job.routineJobId === jobId)?.routineDeviceJobs,
+  );
 
   if (isLoading) {
     return <LoadingOutlined />;
   }
 
   if (error) {
-    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find device jobs information'} />;
+    return (
+      <ErrorBox
+        title="Something went wrong"
+        desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find device jobs information'}
+      />
+    );
   }
 
-  const deviceJobsData = liveDeviceJobs?.map((item) => ({ ...item, device: data?.find((d) => d.deviceId === item.deviceId)?.device })) || data;
+  const deviceJobsData =
+    liveDeviceJobs?.map((item) => ({
+      ...item,
+      device: data?.find((d) => d.deviceId === item.deviceId)?.device,
+    })) || data;
 
   return (
     <Box>
@@ -74,7 +85,14 @@ const DeviceJobListController = ({ orgId, projectId, pipelineId, jobId }: Props)
 
             <TimerCell>
               <FieldTimeOutlined style={{ marginRight: '.25rem' }} />
-              {item.inProgressAt ? <RuntimeTimer startDate={new Date(item.inProgressAt)} endDate={item.completedAt && new Date(item.completedAt)} /> : 'Waiting...'}
+              {item.inProgressAt ? (
+                <RuntimeTimer
+                  startDate={new Date(item.inProgressAt)}
+                  endDate={item.completedAt && new Date(item.completedAt)}
+                />
+              ) : (
+                'Waiting...'
+              )}
             </TimerCell>
           </Item>
         );

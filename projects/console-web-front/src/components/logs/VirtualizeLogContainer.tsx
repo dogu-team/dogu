@@ -38,7 +38,9 @@ const Bundle = <I,>({ items, renderItem, keyExtractor, index, itemsPerBundle }: 
   return (
     <BundleBox ref={ref}>
       {items.map((item, i) => (
-        <React.Fragment key={keyExtractor(item, index * itemsPerBundle + i)}>{renderItem(item, index * itemsPerBundle + i)}</React.Fragment>
+        <React.Fragment key={keyExtractor(item, index * itemsPerBundle + i)}>
+          {renderItem(item, index * itemsPerBundle + i)}
+        </React.Fragment>
       ))}
     </BundleBox>
   );
@@ -52,7 +54,16 @@ interface Props<I> extends VirtualProps<I> {
   maxHeight?: number;
 }
 
-const VirtualizeLogContainer = <I,>({ items, renderItem, keyExtractor, maxHeight, scrollEndOnInit, scrollEndOnUpdate, itemsPerBundle = 50, selectedLine }: Props<I>) => {
+const VirtualizeLogContainer = <I,>({
+  items,
+  renderItem,
+  keyExtractor,
+  maxHeight,
+  scrollEndOnInit,
+  scrollEndOnUpdate,
+  itemsPerBundle = 50,
+  selectedLine,
+}: Props<I>) => {
   const fullBundleCount = Math.trunc(items.length / itemsPerBundle);
   const bundleCount = items.length % itemsPerBundle === 0 ? fullBundleCount : fullBundleCount + 1;
   const bundles = Array.from(Array(bundleCount));

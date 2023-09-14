@@ -1,4 +1,12 @@
-import { CheckCircleFilled, CloseCircleFilled, LoadingOutlined, MinusCircleFilled, QuestionCircleOutlined, SettingOutlined, StopFilled } from '@ant-design/icons';
+import {
+  CheckCircleFilled,
+  CloseCircleFilled,
+  LoadingOutlined,
+  MinusCircleFilled,
+  QuestionCircleOutlined,
+  SettingOutlined,
+  StopFilled,
+} from '@ant-design/icons';
 import { REMOTE_DEVICE_JOB_STATE } from '@dogu-private/types';
 
 import { remoteStatusColor } from '../../utils/mapper';

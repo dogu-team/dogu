@@ -39,9 +39,7 @@ const RemoteItemWithDeviceJob = ({ remote }: Props) => {
               <Title>Remote device jobs</Title>
             </TitleWrapper>
             <StyledList>
-              {remote.remoteDeviceJobs?.map((job) => (
-                <RemoteDeviceItem key={job.remoteId} remoteJob={job} />
-              ))}
+              {remote.remoteDeviceJobs?.map((job) => <RemoteDeviceItem key={job.remoteId} remoteJob={job} />)}
             </StyledList>
           </DeviceJobBox>
         </Collapse.Panel>

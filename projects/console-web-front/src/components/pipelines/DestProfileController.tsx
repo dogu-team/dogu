@@ -40,7 +40,12 @@ const DestProfileController = ({ destUnit }: Props) => {
   }
 
   if (!data || error) {
-    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get profile information'} />;
+    return (
+      <ErrorBox
+        title="Something went wrong"
+        desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get profile information'}
+      />
+    );
   }
 
   return (

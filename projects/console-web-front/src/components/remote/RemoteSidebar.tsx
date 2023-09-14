@@ -66,7 +66,9 @@ const RemoteSidebar = ({ remote }: Props) => {
                       <p style={{ fontSize: '.85rem', fontWeight: '500', marginLeft: '.25rem' }}>{item.device.name}</p>
                     </FlexRow>
                     <div style={{ marginTop: '.25rem' }}>
-                      <div style={{ fontSize: '.75rem' }}>{item.device.modelName ? `${item.device.modelName} (${item.device.model})` : item.device.model}</div>
+                      <div style={{ fontSize: '.75rem' }}>
+                        {item.device.modelName ? `${item.device.modelName} (${item.device.model})` : item.device.model}
+                      </div>
                     </div>
                   </div>
                 </FlexRow>

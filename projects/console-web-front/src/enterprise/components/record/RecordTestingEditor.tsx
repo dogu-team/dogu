@@ -21,12 +21,20 @@ const RecordTestingEditor = () => {
   const projectId = router.query.pid as ProjectId;
   const caseId = router.query.caseId as RecordTestCaseId | undefined;
   const stepId = router.query.step as RecordTestStepId | undefined;
-  const { data, isLoading, error, mutate } = useSWR<RecordTestCaseResponse>(caseId && `/organizations/${orgId}/projects/${projectId}/record-test-cases/${caseId}`, swrAuthFetcher, {
-    revalidateOnFocus: false,
-  });
+  const { data, isLoading, error, mutate } = useSWR<RecordTestCaseResponse>(
+    caseId && `/organizations/${orgId}/projects/${projectId}/record-test-cases/${caseId}`,
+    swrAuthFetcher,
+    {
+      revalidateOnFocus: false,
+    },
+  );
 
   const steps = data?.recordTestSteps ?? [];
-  const currentStep = steps.length ? (stepId ? steps.find((step) => step.recordTestStepId === stepId) : steps[0]) : undefined;
+  const currentStep = steps.length
+    ? stepId
+      ? steps.find((step) => step.recordTestStepId === stepId)
+      : steps[0]
+    : undefined;
   const currentStepPageNumber = currentStep ? steps.indexOf(currentStep) + 1 ?? 0 : 0;
 
   useRefresh(['onRecordStepCreated'], (payload) => {
@@ -37,7 +45,9 @@ const RecordTestingEditor = () => {
           return { ...prev, recordTestSteps: prev?.recordTestSteps?.concat(rv) };
         }
       }).then(() => {
-        router.push({ query: { ...router.query, step: rv.recordTestStepId } }, undefined, { shallow: true });
+        router.push({ query: { ...router.query, step: rv.recordTestStepId } }, undefined, {
+          shallow: true,
+        });
       });
     }
   });
@@ -48,12 +58,19 @@ const RecordTestingEditor = () => {
         const deletedStep = payload as RecordTestStepResponse;
         mutate((prev) => {
           if (prev) {
-            return { ...prev, recordTestSteps: prev?.recordTestSteps?.filter((item) => item.recordTestStepId !== deletedStep.recordTestStepId) };
+            return {
+              ...prev,
+              recordTestSteps: prev?.recordTestSteps?.filter(
+                (item) => item.recordTestStepId !== deletedStep.recordTestStepId,
+              ),
+            };
           }
         });
         if (deletedStep.recordTestCaseId === caseId) {
           if (steps.length === 1) {
-            router.push({ query: { ...router.query, step: undefined } }, undefined, { shallow: true });
+            router.push({ query: { ...router.query, step: undefined } }, undefined, {
+              shallow: true,
+            });
             return;
           }
 
@@ -62,7 +79,9 @@ const RecordTestingEditor = () => {
             return;
           }
 
-          router.replace({ query: { ...router.query, step: currentStep?.prevRecordTestStepId } }, undefined, { shallow: true });
+          router.replace({ query: { ...router.query, step: currentStep?.prevRecordTestStepId } }, undefined, {
+            shallow: true,
+          });
         }
       }
     });
@@ -77,7 +96,12 @@ const RecordTestingEditor = () => {
   }
 
   if (!data || error) {
-    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get record test case information'} />;
+    return (
+      <ErrorBox
+        title="Something went wrong"
+        desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get record test case information'}
+      />
+    );
   }
 
   return (
@@ -91,13 +115,30 @@ const RecordTestingEditor = () => {
             currentStepIndex={currentStepPageNumber}
             totalStepCount={steps.length}
             onCurrentStepIndexChanged={(value) => {
-              router.push({ query: { ...router.query, step: steps[value - 1]?.recordTestStepId } }, undefined, { shallow: true });
+              router.push({ query: { ...router.query, step: steps[value - 1]?.recordTestStepId } }, undefined, {
+                shallow: true,
+              });
             }}
             onNextStep={() => {
-              router.push({ query: { ...router.query, step: steps[currentStepPageNumber]?.recordTestStepId } }, undefined, { shallow: true });
+              router.push(
+                {
+                  query: { ...router.query, step: steps[currentStepPageNumber]?.recordTestStepId },
+                },
+                undefined,
+                { shallow: true },
+              );
             }}
             onPrevStep={() => {
-              router.push({ query: { ...router.query, step: steps[currentStepPageNumber - 2]?.recordTestStepId } }, undefined, { shallow: true });
+              router.push(
+                {
+                  query: {
+                    ...router.query,
+                    step: steps[currentStepPageNumber - 2]?.recordTestStepId,
+                  },
+                },
+                undefined,
+                { shallow: true },
+              );
             }}
           />
         </NavigatorWrapper>

@@ -56,7 +56,11 @@ const OrganizationListItem = ({ organization }: Props) => {
           modalTitle={t('account:leaveOraganizationModalTitle')}
           modalContent={
             <p>
-              <Trans i18nKey="account:leaveOrganizationModalDescription" components={{ b: <b style={{ fontWeight: '700' }} /> }} values={{ organizationName: organization.name }} />
+              <Trans
+                i18nKey="account:leaveOrganizationModalDescription"
+                components={{ b: <b style={{ fontWeight: '700' }} /> }}
+                values={{ organizationName: organization.name }}
+              />
               <br />
               {t('account:leaveOrganizationModalDescription2')}
             </p>
@@ -76,7 +80,12 @@ const OrganizationListItem = ({ organization }: Props) => {
       <FlexRowBox>
         <Col flex={2}>
           <StyledLink href={`/dashboard/${organization.organizationId}`}>
-            <ProfileImage shape="square" profileImageUrl={organization.profileImageUrl} size={32} name={organization.name} />
+            <ProfileImage
+              shape="square"
+              profileImageUrl={organization.profileImageUrl}
+              size={32}
+              name={organization.name}
+            />
             <OrgName>{organization.name}</OrgName>
           </StyledLink>
         </Col>
@@ -95,7 +104,9 @@ const OrganizationListItem = ({ organization }: Props) => {
         <Col flex={2}>
           <UserOutlined style={{ marginRight: '.5rem' }} />
           {organization.users?.length}&nbsp;
-          {organization.users && organization.users.length > 1 ? t('account:organizationListMemberPluralText') : t('account:organizationListMemberSingularText')}
+          {organization.users && organization.users.length > 1
+            ? t('account:organizationListMemberPluralText')
+            : t('account:organizationListMemberSingularText')}
         </Col>
         <Col flex={1} style={{ justifyContent: 'flex-end' }}>
           <MenuButton menu={{ items }} />
@@ -107,7 +118,9 @@ const OrganizationListItem = ({ organization }: Props) => {
 
 const OrganizationListController = () => {
   const { me } = useAuthStore();
-  const { data, isLoading, isValidating, error, page, updatePage, mutate } = usePaginationSWR<OrganizationBase>(me && `/users/${me.userId}/organizations`);
+  const { data, isLoading, isValidating, error, page, updatePage, mutate } = usePaginationSWR<OrganizationBase>(
+    me && `/users/${me.userId}/organizations`,
+  );
   const router = useRouter();
 
   useRefresh(['onRefreshClicked', 'onOrganizationCreated', 'onOrganizationLeft'], () => mutate());
@@ -118,7 +131,12 @@ const OrganizationListController = () => {
 
   if (!data || error) {
     if (error) {
-      return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get organizations information'} />;
+      return (
+        <ErrorBox
+          title="Something went wrong"
+          desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get organizations information'}
+        />
+      );
     }
 
     return null;
@@ -145,7 +163,13 @@ const OrganizationListController = () => {
             <ListEmpty
               image={<BankOutlined style={{ fontSize: '90px' }} />}
               description={
-                <Trans i18nKey="account:emptyOrganizationDescription" components={{ br: <br />, link: <Link href="https://docs.dogutech.io/get-started" target="_blank" /> }} />
+                <Trans
+                  i18nKey="account:emptyOrganizationDescription"
+                  components={{
+                    br: <br />,
+                    link: <Link href="https://docs.dogutech.io/get-started" target="_blank" />,
+                  }}
+                />
               }
             />
           ),

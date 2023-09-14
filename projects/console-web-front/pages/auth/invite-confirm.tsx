@@ -49,7 +49,12 @@ const InviteConfirmPage: NextPageWithLayout<Props> = ({ email, token, invitation
       <div>
         <FlexColumnBox>
           <div>
-            <ProfileImage profileImageUrl={invitation.organization?.profileImageUrl} name={invitation.organization?.name} shape="square" size={48} />
+            <ProfileImage
+              profileImageUrl={invitation.organization?.profileImageUrl}
+              name={invitation.organization?.name}
+              shape="square"
+              size={48}
+            />
           </div>
           <Description>
             You&apos;re invited to join <b>{invitation.organization?.name}</b> organization

@@ -43,7 +43,15 @@ const HostDetailModal = ({ isOpen, host, close }: Props) => {
   }, [isOpen]);
 
   return (
-    <Modal open={isOpen} closable onCancel={close} title={t('device-farm:hostDetailModalTitle')} centered destroyOnClose footer={null}>
+    <Modal
+      open={isOpen}
+      closable
+      onCancel={close}
+      title={t('device-farm:hostDetailModalTitle')}
+      centered
+      destroyOnClose
+      footer={null}
+    >
       <Box>
         <Content>
           <StyledH4>{t('device-farm:hostDetilNameTitle')}</StyledH4>
@@ -55,18 +63,19 @@ const HostDetailModal = ({ isOpen, host, close }: Props) => {
         </Content>
         <Content>
           <StyledH4>{t('device-farm:hostDetailConnectedDeviceTitle')}</StyledH4>
-          <div>
-            {host?.devices?.map((item) => (
-              <Tag key={item.deviceId}>{item.name}</Tag>
-            ))}
-          </div>
+          <div>{host?.devices?.map((item) => <Tag key={item.deviceId}>{item.name}</Tag>)}</div>
 
           <DeviceTotal>Total: {host?.devices?.length}</DeviceTotal>
         </Content>
         {host?.creator && (
           <Content>
             <StyledH4 id="host-creator-title">{t('device-farm:hostDetailCreatorTitle')}</StyledH4>
-            <ProfileImageWithName profileImage={<ProfileImage name={host.creator.name} size={36} profileImageUrl={host.creator.profileImageUrl} />} name={host.creator.name} />
+            <ProfileImageWithName
+              profileImage={
+                <ProfileImage name={host.creator.name} size={36} profileImageUrl={host.creator.profileImageUrl} />
+              }
+              name={host.creator.name}
+            />
           </Content>
         )}
         <Content>

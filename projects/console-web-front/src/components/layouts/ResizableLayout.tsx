@@ -16,7 +16,17 @@ interface Props {
   onResize?: (size: number) => void;
 }
 
-const ResizableLayout = ({ direction, first, last, firstStyle, lastStyle, initFirstSize, onResize, firstMinSize, firstMaxSize }: Props) => {
+const ResizableLayout = ({
+  direction,
+  first,
+  last,
+  firstStyle,
+  lastStyle,
+  initFirstSize,
+  onResize,
+  firstMinSize,
+  firstMaxSize,
+}: Props) => {
   const [pressPos, setPressPos] = useState<{ x: number; y: number }>();
   const [size, setSize] = useState(initFirstSize);
   const [isPressing, setIsPressing] = useState(false);
@@ -117,7 +127,14 @@ const ResizableLayout = ({ direction, first, last, firstStyle, lastStyle, initFi
         {first}
       </FirstBoxWrapper>
       {!!initFirstSize && (
-        <Divider initSize={initFirstSize} ref={dividerRef} direction={direction} onMouseDown={handleDown} onMouseMove={handleMove} onMouseUp={handleMouseUp}>
+        <Divider
+          initSize={initFirstSize}
+          ref={dividerRef}
+          direction={direction}
+          onMouseDown={handleDown}
+          onMouseMove={handleMove}
+          onMouseUp={handleMouseUp}
+        >
           <div />
         </Divider>
       )}

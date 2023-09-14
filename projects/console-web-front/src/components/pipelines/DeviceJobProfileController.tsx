@@ -31,7 +31,12 @@ const DeviceJobProfileController = ({ deviceJob }: Props) => {
   }
 
   if (!data || error) {
-    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find device job profile information'} />;
+    return (
+      <ErrorBox
+        title="Something went wrong"
+        desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find device job profile information'}
+      />
+    );
   }
 
   return (

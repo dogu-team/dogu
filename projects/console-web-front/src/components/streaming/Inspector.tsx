@@ -56,7 +56,10 @@ const Inspector = ({ inspector }: Props) => {
               Select context first for inspecting.
               <br />
               <br />
-              <Link href="https://docs.dogutech.io/device-farm/device/streaming-and-remote-control/ui-inspector" target="_blank">
+              <Link
+                href="https://docs.dogutech.io/device-farm/device/streaming-and-remote-control/ui-inspector"
+                target="_blank"
+              >
                 Click here
               </Link>{' '}
               for more information.
@@ -91,7 +94,10 @@ const Inspector = ({ inspector }: Props) => {
         </Inner>
         <Inner h={45} style={{ overflow: 'auto' }}>
           {inspector.selectedContextKey === GAMIUM_CONTEXT_KEY ? (
-            <GameObjectDetail node={inspector.selectedNode?.node as ParsedNode<GamiumNodeAttributes> | undefined} hitPoint={inspector.hitPoint} />
+            <GameObjectDetail
+              node={inspector.selectedNode?.node as ParsedNode<GamiumNodeAttributes> | undefined}
+              hitPoint={inspector.hitPoint}
+            />
           ) : (
             <NativeObjectDetail node={inspector.selectedNode?.node} />
           )}

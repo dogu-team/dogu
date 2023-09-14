@@ -38,7 +38,11 @@ const ProjectApplicationItem = ({ application }: ItemProps) => {
 
   const handleDowndload = async () => {
     try {
-      const url = await getProjectApplicationDownloadUrl(application.organizationId, application.projectId, application.projectApplicationId);
+      const url = await getProjectApplicationDownloadUrl(
+        application.organizationId,
+        application.projectId,
+        application.projectApplicationId,
+      );
       window.open(url, '_blank');
     } catch (e) {
       if (e instanceof AxiosError) {
@@ -49,7 +53,11 @@ const ProjectApplicationItem = ({ application }: ItemProps) => {
 
   const handleDelete = async () => {
     try {
-      await deleteProjectApplication(application.organizationId, application.projectId, application.projectApplicationId);
+      await deleteProjectApplication(
+        application.organizationId,
+        application.projectId,
+        application.projectApplicationId,
+      );
       sendSuccessNotification(t('project-app:appItemDeleteSuccessMessage'));
       fireEvent('onProjectApplicationDeleted');
     } catch (e) {
@@ -106,14 +114,21 @@ const ProjectApplicationItem = ({ application }: ItemProps) => {
         <OneSpan>{convertByteWithMaxUnit(application.fileSize)}</OneSpan>
         <OneSpan>
           <ProfileImageWithName
-            profileImage={<ProfileImage profileImageUrl={application.creator?.profileImageUrl} name={application.creator?.name} />}
+            profileImage={
+              <ProfileImage profileImageUrl={application.creator?.profileImageUrl} name={application.creator?.name} />
+            }
             name={application.creator?.name}
           />
         </OneSpan>
         <OneSpan>
-          {new Intl.DateTimeFormat(router.locale, { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }).format(
-            moment(application.updatedAt).toDate(),
-          )}
+          {new Intl.DateTimeFormat(router.locale, {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+          }).format(moment(application.updatedAt).toDate())}
         </OneSpan>
         <Menu>
           <MenuButton menu={{ items }} />
@@ -173,7 +188,10 @@ const ProjectApplicationListController = ({ organizationId, projectId }: Props) 
               description={
                 <Trans
                   i18nKey="project-app:appEmptyDescription"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/project/app" target="_blank" /> }}
+                  components={{
+                    br: <br />,
+                    link: <Link href="https://docs.dogutech.io/management/project/app" target="_blank" />,
+                  }}
                 />
               }
             />

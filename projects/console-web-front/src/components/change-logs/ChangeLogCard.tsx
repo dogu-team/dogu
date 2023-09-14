@@ -27,7 +27,11 @@ const ChangeLogCard = ({ changeLog }: Props) => {
         </div>
       </TitleWrapper>
       <Article>
-        <ReactMarkdown remarkPlugins={[remarkGfm]} components={{ a: (props) => <a {...props} target="_blank" /> }} remarkRehypeOptions={{ allowDangerousHtml: true }}>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          components={{ a: (props) => <a {...props} target="_blank" /> }}
+          remarkRehypeOptions={{ allowDangerousHtml: true }}
+        >
           {changeLog.content}
         </ReactMarkdown>
       </Article>
@@ -35,7 +39,10 @@ const ChangeLogCard = ({ changeLog }: Props) => {
         <>
           <Divider />
           <BarWrapper>
-            <ReactionButtonBar changeLogId={changeLog.changeLogId} selectedReaction={changeLog.userReactions?.[0]?.reactionType} />
+            <ReactionButtonBar
+              changeLogId={changeLog.changeLogId}
+              selectedReaction={changeLog.userReactions?.[0]?.reactionType}
+            />
           </BarWrapper>
         </>
       )}

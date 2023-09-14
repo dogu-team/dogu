@@ -41,7 +41,10 @@ const PipelineJobLayout = ({ children, organization, project }: Props) => {
     data: pipeline,
     error: pipelineError,
     isLoading: pipelineLoading,
-  } = useSWR<RoutinePipelineBase>(!!pipelineId && `/organizations/${orgId}/projects/${projectId}/pipelines/${pipelineId}`, swrAuthFetcher);
+  } = useSWR<RoutinePipelineBase>(
+    !!pipelineId && `/organizations/${orgId}/projects/${projectId}/pipelines/${pipelineId}`,
+    swrAuthFetcher,
+  );
   const [livePipeline, updateLivePipeline] = useLivePipelineStore((state) => [state.pipeline, state.setPipeline]);
   const { t } = useTranslation();
 
@@ -79,21 +82,36 @@ const PipelineJobLayout = ({ children, organization, project }: Props) => {
   }
 
   if (!pipeline || pipelineError) {
-    return <ErrorBox title="Something went wrong" desc={isAxiosError(pipelineError) ? getErrorMessageFromAxios(pipelineError) : 'Cannot get pipeline information'} />;
+    return (
+      <ErrorBox
+        title="Something went wrong"
+        desc={isAxiosError(pipelineError) ? getErrorMessageFromAxios(pipelineError) : 'Cannot get pipeline information'}
+      />
+    );
   }
 
   return (
-    <ProjectLayoutWithSidebar organization={organization} project={project} innerSidebar={<JobListSideBar pipeline={pipeline} />} titleI18nKey="project:tabMenuRoutineTitle">
+    <ProjectLayoutWithSidebar
+      organization={organization}
+      project={project}
+      innerSidebar={<JobListSideBar pipeline={pipeline} />}
+      titleI18nKey="project:tabMenuRoutineTitle"
+    >
       <PipelineContainer>
         <PipelineHeadContainer>
           <FlexRowBase>
             <PipelineStatusIcon status={livePipeline?.status ?? pipeline.status} />
             <H5>
-              {`${pipeline.routine?.name}`}&nbsp;<PipelineCounter>#{pipeline.index}</PipelineCounter>
+              {`${pipeline.routine?.name}`}&nbsp;
+              <PipelineCounter>#{pipeline.index}</PipelineCounter>
             </H5>
           </FlexRowBase>
 
-          <div>{pipeline.routine && isPipelineInProgress(livePipeline?.status ?? pipeline.status) && <CancelPipelineButton pipeline={pipeline} />}</div>
+          <div>
+            {pipeline.routine && isPipelineInProgress(livePipeline?.status ?? pipeline.status) && (
+              <CancelPipelineButton pipeline={pipeline} />
+            )}
+          </div>
         </PipelineHeadContainer>
         <PipelineBodyContainer>
           {pipeline.creator && (
@@ -101,7 +119,12 @@ const PipelineJobLayout = ({ children, organization, project }: Props) => {
               <PipelineDescTitle>{t('routine:pipelineSummaryRunByTitle')}</PipelineDescTitle>
               <PipelineDescContent>
                 <PipelineCreatorContainer>
-                  <ProfileImage size={24} profileImageUrl={pipeline.creator.profileImageUrl} name={pipeline.creator.name} style={{ fontSize: '12px' }} />
+                  <ProfileImage
+                    size={24}
+                    profileImageUrl={pipeline.creator.profileImageUrl}
+                    name={pipeline.creator.name}
+                    style={{ fontSize: '12px' }}
+                  />
                   <p>{pipeline.creator.name}</p>
                 </PipelineCreatorContainer>
               </PipelineDescContent>
@@ -129,7 +152,12 @@ const PipelineJobLayout = ({ children, organization, project }: Props) => {
           <ExclamationCircleFilled style={{ color: '#f26a5e', fontSize: '1.2rem', marginRight: '.25rem' }} />
           <p>This pipeline was cancelled by&nbsp;</p>
           <CancelerBox>
-            <ProfileImage size={24} profileImageUrl={canceler.profileImageUrl} name={canceler.name} style={{ fontSize: '12px' }} />
+            <ProfileImage
+              size={24}
+              profileImageUrl={canceler.profileImageUrl}
+              name={canceler.name}
+              style={{ fontSize: '12px' }}
+            />
             <p>{canceler.name}</p>
           </CancelerBox>
         </CancelBox>

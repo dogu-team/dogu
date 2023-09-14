@@ -35,7 +35,11 @@ const useLocalDeviceDetect = (device: DeviceBase | undefined) => {
     error: remoteError,
     isLoading: remoteIsLoading,
   } = useSWR<LocalDeviceDetectToken[]>(
-    !!device && isDesktop(device) && (localDeviceDetectToken ? `/organizations/${router.query.orgId}/devices/${device.deviceId}/localDeviceDetectTokens` : null),
+    !!device &&
+      isDesktop(device) &&
+      (localDeviceDetectToken
+        ? `/organizations/${router.query.orgId}/devices/${device.deviceId}/localDeviceDetectTokens`
+        : null),
     swrAuthFetcher,
     {},
   );

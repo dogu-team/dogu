@@ -1,4 +1,11 @@
-import { CheckCircleFilled, ClockCircleFilled, ExclamationCircleFilled, MinusCircleFilled, SettingFilled, StopFilled } from '@ant-design/icons';
+import {
+  CheckCircleFilled,
+  ClockCircleFilled,
+  ExclamationCircleFilled,
+  MinusCircleFilled,
+  SettingFilled,
+  StopFilled,
+} from '@ant-design/icons';
 import { PIPELINE_STATUS } from '@dogu-private/types';
 import styled from 'styled-components';
 

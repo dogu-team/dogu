@@ -45,13 +45,20 @@ const RemoteFrameworkSelectContainer = ({ skipButton }: Props) => {
       case PROJECT_TYPE.GAME:
         return [TutorialSupportSdk.GAMIUM];
       default:
-        return [TutorialSupportSdk.WEBDRIVERIO, TutorialSupportSdk.SELENIUM, TutorialSupportSdk.APPIUM, TutorialSupportSdk.GAMIUM];
+        return [
+          TutorialSupportSdk.WEBDRIVERIO,
+          TutorialSupportSdk.SELENIUM,
+          TutorialSupportSdk.APPIUM,
+          TutorialSupportSdk.GAMIUM,
+        ];
     }
   };
 
   const handleClickFramework = (framework: string) => {
     if (!selectedSdk) return;
-    router.push({ query: { ...router.query, sdk: selectedSdk, framework } }, undefined, { shallow: true });
+    router.push({ query: { ...router.query, sdk: selectedSdk, framework } }, undefined, {
+      shallow: true,
+    });
   };
 
   if (!project) {

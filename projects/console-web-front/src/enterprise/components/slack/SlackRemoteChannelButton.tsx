@@ -27,7 +27,12 @@ const SlackRemoteChannelButton = (props: Props) => {
   const pureFormValues = useRef<FormFields>({ channelId: '', events: [] });
   const [form] = Form.useForm<FormFields>();
   const [isOpen, setIsOpen] = useState(false);
-  const { data: channelItems, error, mutate, isLoading } = useSWR<SlackChannelItem[]>(`/organizations/${props.organizationId}/slack/channels`, swrAuthFetcher);
+  const {
+    data: channelItems,
+    error,
+    mutate,
+    isLoading,
+  } = useSWR<SlackChannelItem[]>(`/organizations/${props.organizationId}/slack/channels`, swrAuthFetcher);
 
   const initFormValues = useCallback(() => {
     if (props.remoteSlack) {
@@ -48,7 +53,9 @@ const SlackRemoteChannelButton = (props: Props) => {
     }
   }, [props.remoteSlack]);
 
-  const handleOpen = (e: MouseEvent<HTMLAnchorElement, globalThis.MouseEvent> | MouseEvent<HTMLButtonElement, globalThis.MouseEvent>) => {
+  const handleOpen = (
+    e: MouseEvent<HTMLAnchorElement, globalThis.MouseEvent> | MouseEvent<HTMLButtonElement, globalThis.MouseEvent>,
+  ) => {
     e.stopPropagation();
     setIsOpen(true);
   };
@@ -105,7 +112,11 @@ const SlackRemoteChannelButton = (props: Props) => {
         closable
         destroyOnClose
       >
-        <SlackChannelForm organizationId={props.organizationId} form={form} channelItems={channelItems ? channelItems : []} />
+        <SlackChannelForm
+          organizationId={props.organizationId}
+          form={form}
+          channelItems={channelItems ? channelItems : []}
+        />
       </Modal>
     </>
   );

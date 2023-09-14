@@ -30,14 +30,22 @@ const StudioLayout = ({ children, project, deviceId, editionType }: Props) => {
         <title>Studio - {project.name} | Dogu</title>
       </Head>
       <Box>
-        <Header image={<Image src={resources.icons.studioLogo} height={48} width={170} alt="Dogu Studio" unoptimized priority />} />
+        <Header
+          image={
+            <Image src={resources.icons.studioLogo} height={48} width={170} alt="Dogu Studio" unoptimized priority />
+          }
+        />
         <FlexRow>
           <Side>
             <Tooltip title="Manual Testing" placement="right">
               <StyledLink
                 href={{
                   pathname: '/dashboard/[orgId]/projects/[pid]/studio/[deviceId]/manual',
-                  query: { orgId: router.query.orgId, pid: router.query.pid, deviceId: deviceId ?? undefined },
+                  query: {
+                    orgId: router.query.orgId,
+                    pid: router.query.pid,
+                    deviceId: deviceId ?? undefined,
+                  },
                 }}
                 style={{ display: 'block' }}
                 isSelected={router.asPath.includes('manual')}

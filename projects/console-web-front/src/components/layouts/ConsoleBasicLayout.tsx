@@ -52,7 +52,12 @@ const ConsoleBasicLayout = ({ children }: Props) => {
               i18nKey="common:betaBannerTitle"
               components={{
                 dogu: <DoguText />,
-                link: <a href="https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw" target="_blank" />,
+                link: (
+                  <a
+                    href="https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw"
+                    target="_blank"
+                  />
+                ),
               }}
             />
 
@@ -72,8 +77,16 @@ const ConsoleBasicLayout = ({ children }: Props) => {
               <StyledLink href={`https://github.com/dogu-team/dogu`} target="_blank">
                 <GithubOutlined />
               </StyledLink>
-              <Tooltip title="Community" arrow={false} overlayInnerStyle={{ fontSize: '.8rem' }} style={{ minHeight: '0' }}>
-                <StyledLink href={`https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw`} target="_blank">
+              <Tooltip
+                title="Community"
+                arrow={false}
+                overlayInnerStyle={{ fontSize: '.8rem' }}
+                style={{ minHeight: '0' }}
+              >
+                <StyledLink
+                  href={`https://join.slack.com/t/dogu-community/shared_invite/zt-1zespy16o-TgYIureSBI6ma6o_nG3gVw`}
+                  target="_blank"
+                >
                   <SlackOutlined />
                 </StyledLink>
               </Tooltip>

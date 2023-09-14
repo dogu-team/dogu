@@ -49,7 +49,11 @@ function SlackButton(props: OrganizationIntegrationButtonProps) {
         ) : (
           <IntegrationConnectButton
             isConnected={isConnected}
-            onClick={() => open('https://slack.com/oauth/v2/authorize?test=103&client_id=2910592940257.5689283091841&scope=chat:write,chat:write.public&user_scope=')}
+            onClick={() =>
+              open(
+                'https://slack.com/oauth/v2/authorize?test=103&client_id=2910592940257.5689283091841&scope=chat:write,chat:write.public&user_scope=',
+              )
+            }
           />
         )
       }

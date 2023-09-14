@@ -8,7 +8,10 @@ import RecordTestingEditor from '../record/RecordTestingEditor';
 import RecordTestingEntry from './RecordTestingEntry';
 import RecordTestingScreenViewer from './RecordTestingScreenViewer';
 // @ts-ignore
-const DeviceStreamingLayout = dynamic<DeviceStreamingLayoutProps>(() => import('../../../components/studio/DeviceStreamingLayout'), { ssr: false });
+const DeviceStreamingLayout = dynamic<DeviceStreamingLayoutProps>(
+  () => import('../../../components/studio/DeviceStreamingLayout'),
+  { ssr: false },
+);
 
 interface Props {
   organization: OrganizationBase;

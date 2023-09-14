@@ -1,4 +1,9 @@
-import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined, QuestionCircleFilled } from '@ant-design/icons';
+import {
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  ExclamationCircleOutlined,
+  QuestionCircleFilled,
+} from '@ant-design/icons';
 import { HostBase } from '@dogu-private/console';
 import { EDITION_TYPE, HostConnectionState } from '@dogu-private/types';
 import { Button, Tag, Tooltip } from 'antd';
@@ -54,8 +59,12 @@ const HostVesrsionBadge = ({ host }: Props) => {
 
   const updatableInfo = getAgentUpdatableInfo(latestContext.latestInfo, host);
   const updatable =
-    host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED && featureContext?.defaultEdition === EDITION_TYPE.ENTERPRISE && updatableInfo.isUpdatable;
-  const shouldShowUpdateButton = host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED && (updatableInfo.reason || updatableInfo.isUpdatable);
+    host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED &&
+    featureContext?.defaultEdition === EDITION_TYPE.ENTERPRISE &&
+    updatableInfo.isUpdatable;
+  const shouldShowUpdateButton =
+    host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED &&
+    (updatableInfo.reason || updatableInfo.isUpdatable);
 
   return (
     <>
@@ -72,11 +81,23 @@ const HostVesrsionBadge = ({ host }: Props) => {
       >
         {shouldShowUpdateButton ? (
           <FlexButton disabled={!updatable} type="primary" onClick={() => openModal()}>
-            Update to latest&nbsp;<b style={{ fontSize: '.75rem' }}>{`(current: ${host.agentVersion})`}</b>
+            Update to latest&nbsp;
+            <b style={{ fontSize: '.75rem' }}>{`(current: ${host.agentVersion})`}</b>
             {featureContext?.defaultEdition === EDITION_TYPE.COMUINITIY && <ProTag style={{ marginLeft: '.5rem' }} />}
           </FlexButton>
         ) : (
-          <Tag color={isMatched ? 'green' : 'error'} icon={isMatched ? <CheckCircleOutlined /> : isMajorMatched ? <ExclamationCircleOutlined /> : <CloseCircleOutlined />}>
+          <Tag
+            color={isMatched ? 'green' : 'error'}
+            icon={
+              isMatched ? (
+                <CheckCircleOutlined />
+              ) : isMajorMatched ? (
+                <ExclamationCircleOutlined />
+              ) : (
+                <CloseCircleOutlined />
+              )
+            }
+          >
             {host.agentVersion}
           </Tag>
         )}

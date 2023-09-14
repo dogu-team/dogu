@@ -27,7 +27,11 @@ const StudioEntryPage: NextPage<StudioEntryServerSideProps> = ({ organization, p
 
   return (
     <Box>
-      <Header image={<Image src={resources.icons.studioLogo} height={48} width={170} alt="Dogu Studio" unoptimized priority />} />
+      <Header
+        image={
+          <Image src={resources.icons.studioLogo} height={48} width={170} alt="Dogu Studio" unoptimized priority />
+        }
+      />
       <Centered>
         <ImageContent>
           <Image src={resources.icons.logo} width={96} height={96} alt="Dogu" />
@@ -37,7 +41,9 @@ const StudioEntryPage: NextPage<StudioEntryServerSideProps> = ({ organization, p
           <Description style={{ marginBottom: '1rem', fontWeight: '500' }}>
             Dogu studio is for manaul testing, UI inspector, device real-time streaming and remote controls
           </Description>
-          <Description style={{ fontWeight: '300', fontSize: '.9rem', marginBottom: '1rem' }}>Select your device to continue</Description>
+          <Description style={{ fontWeight: '300', fontSize: '.9rem', marginBottom: '1rem' }}>
+            Select your device to continue
+          </Description>
           <SelectWrapper>
             <StudioDeviceSelector
               selectedDevice={undefined}
@@ -45,14 +51,20 @@ const StudioEntryPage: NextPage<StudioEntryServerSideProps> = ({ organization, p
               projectId={project.projectId}
               onSelectedDeviceChanged={(device) => {
                 if (device) {
-                  router.push(`/dashboard/${organization.organizationId}/projects/${project.projectId}/studio/${device.deviceId}/manual`);
+                  router.push(
+                    `/dashboard/${organization.organizationId}/projects/${project.projectId}/studio/${device.deviceId}/manual`,
+                  );
                 } else {
                   router.push(`/dashboard/${organization.organizationId}/projects/${project.projectId}/studio`);
                 }
               }}
             />
           </SelectWrapper>
-          <Link style={{ fontWeight: '300', fontSize: '.9rem', marginTop: '2rem' }} href={`/dashboard/${organization.organizationId}/device-farm/hosts`} target={'_blank'}>
+          <Link
+            style={{ fontWeight: '300', fontSize: '.9rem', marginTop: '2rem' }}
+            href={`/dashboard/${organization.organizationId}/device-farm/hosts`}
+            target={'_blank'}
+          >
             {`Isn't there a device available to select? Please assign a device to this project.`}
           </Link>
         </FlexColCenter>
@@ -63,7 +75,11 @@ const StudioEntryPage: NextPage<StudioEntryServerSideProps> = ({ organization, p
 
 export const getServerSideProps: GetServerSideProps<StudioEntryServerSideProps> = async (context) => {
   try {
-    const [organization, project, user] = await Promise.all([getOrganizationInServerSide(context), getProjectInServerSide(context), getUserInServerSide(context)]);
+    const [organization, project, user] = await Promise.all([
+      getOrganizationInServerSide(context),
+      getProjectInServerSide(context),
+      getUserInServerSide(context),
+    ]);
 
     return {
       props: {
@@ -113,7 +129,13 @@ const StyledH2 = styled.h2`
   margin-bottom: 2rem;
   font-weight: 700;
   line-height: 1.5;
-  background: linear-gradient(to right, #7953cd 20%, #00affa 30%, ${(props) => props.theme.colorPrimary} 70%, #764ada 80%);
+  background: linear-gradient(
+    to right,
+    #7953cd 20%,
+    #00affa 30%,
+    ${(props) => props.theme.colorPrimary} 70%,
+    #764ada 80%
+  );
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;

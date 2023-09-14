@@ -24,7 +24,12 @@ const OpenCaseButton = ({ project, onSelect, isSessionCreating }: Props) => {
 
       <Modal open={isOpen} centered title="Select case" footer={null} closable onCancel={closeModal} destroyOnClose>
         <div>
-          <CaseSelector organizationId={project.organizationId} projectId={project.projectId} onSelect={onSelect} disabled={isSessionCreating} />
+          <CaseSelector
+            organizationId={project.organizationId}
+            projectId={project.projectId}
+            onSelect={onSelect}
+            disabled={isSessionCreating}
+          />
         </div>
 
         {isSessionCreating && (

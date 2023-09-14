@@ -38,7 +38,10 @@ const PipelineReport = ({ orgId, projectId }: Props) => {
   if (!data || error) {
     return (
       <Box>
-        <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get pipeline report information'} />
+        <ErrorBox
+          title="Something went wrong"
+          desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get pipeline report information'}
+        />
       </Box>
     );
   }
@@ -91,7 +94,15 @@ const PipelineReport = ({ orgId, projectId }: Props) => {
             <ChartWrapper>
               {canDrawChart && (
                 <PieChart width={200} height={200}>
-                  <Pie data={chartData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} fill="#8884d8">
+                  <Pie
+                    data={chartData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={80}
+                    fill="#8884d8"
+                  >
                     {chartData.map((item, i) => (
                       <Cell key={`cell-${item.name}`} fill={colors[i]} />
                     ))}

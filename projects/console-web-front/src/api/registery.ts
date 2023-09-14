@@ -1,4 +1,10 @@
-import { CreateAdminDtoBase, CreateInvitationMemberDtoBase, ResetPasswordWithTokenDtoBase, SignInDtoBase, UserBase } from '@dogu-private/console';
+import {
+  CreateAdminDtoBase,
+  CreateInvitationMemberDtoBase,
+  ResetPasswordWithTokenDtoBase,
+  SignInDtoBase,
+  UserBase,
+} from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { GetServerSidePropsContext } from 'next';
 
@@ -31,7 +37,9 @@ export const signOut = async () => {
 };
 
 export const getMyData = async (token: any) => {
-  const response = await api.get<UserBase>('/registery/check', { headers: { Authorization: `Bearer ${token}` } });
+  const response = await api.get<UserBase>('/registery/check', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
   return response;
 };
 

@@ -22,7 +22,11 @@ const CreateOrganizationButton = () => {
 
   return (
     <>
-      <Button type="primary" onClick={() => openModal()} access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'new-org-btn' : undefined}>
+      <Button
+        type="primary"
+        onClick={() => openModal()}
+        access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'new-org-btn' : undefined}
+      >
         {t('account:createOrganizationButtonText')}
       </Button>
 

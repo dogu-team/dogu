@@ -1,4 +1,10 @@
-import { AttachTagToDeviceDtoBase, DeviceBase, DeviceStreamingOffer, EnableDeviceDtoBase, UpdateDeviceDtoBase } from '@dogu-private/console';
+import {
+  AttachTagToDeviceDtoBase,
+  DeviceBase,
+  DeviceStreamingOffer,
+  EnableDeviceDtoBase,
+  UpdateDeviceDtoBase,
+} from '@dogu-private/console';
 import { DeviceId, DeviceTagId, HostId, OrganizationId, ProjectId, ProtoRTCPeerDescription } from '@dogu-private/types';
 
 import { sdpExt } from '@dogu-private/webrtc';
@@ -11,7 +17,9 @@ export const getDeviceCpuRuntimeInfo = async (organizationId: OrganizationId, ho
     measurement: 'device_cpu',
     fieldKey: 'currentLoad',
   });
-  const data = await api.get(`/organizations/${organizationId}/hosts/${hostId}/devices/${deviceId}/runtime/?${query.toString()}`);
+  const data = await api.get(
+    `/organizations/${organizationId}/hosts/${hostId}/devices/${deviceId}/runtime/?${query.toString()}`,
+  );
 
   return data;
 };
@@ -34,13 +42,24 @@ export const disableDevice = async (organizationId: OrganizationId, deviceId: De
   return await api.post<void>(`/organizations/${organizationId}/devices/${deviceId}/disable`);
 };
 
-export const updateDevice = async (organizationId: OrganizationId, deviceId: DeviceId, updateDeviceBody: UpdateDeviceDtoBase) => {
-  const { data } = await api.patch<DeviceBase>(`/organizations/${organizationId}/devices/${deviceId}`, updateDeviceBody);
+export const updateDevice = async (
+  organizationId: OrganizationId,
+  deviceId: DeviceId,
+  updateDeviceBody: UpdateDeviceDtoBase,
+) => {
+  const { data } = await api.patch<DeviceBase>(
+    `/organizations/${organizationId}/devices/${deviceId}`,
+    updateDeviceBody,
+  );
 
   return data;
 };
 
-export const attachTagToDevice = async (organizationId: OrganizationId, deviceId: DeviceId, attachTagBody: AttachTagToDeviceDtoBase) => {
+export const attachTagToDevice = async (
+  organizationId: OrganizationId,
+  deviceId: DeviceId,
+  attachTagBody: AttachTagToDeviceDtoBase,
+) => {
   const { data } = await api.post<void>(`/organizations/${organizationId}/devices/${deviceId}/tags`, attachTagBody);
 
   return data;
@@ -56,17 +75,32 @@ export const checkDeviceStateAsync = async (organizationId: OrganizationId, devi
   return await api.head<void>(`/organizations/${organizationId}/devices/${deviceId}`);
 };
 
-export const startDeviceStreaming = async (organizationId: OrganizationId, deviceId: DeviceId, streamingBody: DeviceStreamingOffer): Promise<RTCSessionDescription> => {
-  const { data } = await api.post<ProtoRTCPeerDescription>(`/organizations/${organizationId}/devices/${deviceId}/streaming`, streamingBody);
+export const startDeviceStreaming = async (
+  organizationId: OrganizationId,
+  deviceId: DeviceId,
+  streamingBody: DeviceStreamingOffer,
+): Promise<RTCSessionDescription> => {
+  const { data } = await api.post<ProtoRTCPeerDescription>(
+    `/organizations/${organizationId}/devices/${deviceId}/streaming`,
+    streamingBody,
+  );
   return sdpExt.convertSdpFromProtoToTs(data);
 };
 
-export const enableDevice = async (organizationId: OrganizationId, deviceId: DeviceId, body: EnableDeviceDtoBase): Promise<void> => {
+export const enableDevice = async (
+  organizationId: OrganizationId,
+  deviceId: DeviceId,
+  body: EnableDeviceDtoBase,
+): Promise<void> => {
   await api.post<void>(`/organizations/${organizationId}/devices/${deviceId}/enable`, body);
   return;
 };
 
-export const removeDeviceFromProject = async (organizationId: OrganizationId, deviceId: DeviceId, projectId: ProjectId): Promise<void> => {
+export const removeDeviceFromProject = async (
+  organizationId: OrganizationId,
+  deviceId: DeviceId,
+  projectId: ProjectId,
+): Promise<void> => {
   await api.delete<void>(`/organizations/${organizationId}/devices/${deviceId}/projects/${projectId}`);
   return;
 };

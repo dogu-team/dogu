@@ -16,14 +16,19 @@ import DeviceStreamingLogContainer from '../streaming/DeviceStreamingLogContaine
 import useDeviceLog from '../../hooks/streaming/useDeviceLog';
 import ManualTestingScreenViewer from './ManualTestingScreenViewer';
 // @ts-ignore
-const DeviceStreamingLayout = dynamic<DeviceStreamingLayoutProps>(() => import('./DeviceStreamingLayout'), { ssr: false });
+const DeviceStreamingLayout = dynamic<DeviceStreamingLayoutProps>(() => import('./DeviceStreamingLayout'), {
+  ssr: false,
+});
 
 const ManualTestingMenu = () => {
   const router = useRouter();
   const { device, deviceService, inspector } = useDeviceStreamingContext();
   const runtimeInfos = useDeviceStreamingProfile(deviceService?.deviceClient, device ?? null);
   const { t } = useTranslation();
-  const { deviceLogs, isLogStopped, logFilterValue, togglePlay, handleChangeFilterValue, clearLog } = useDeviceLog(deviceService?.deviceClient, device ?? null);
+  const { deviceLogs, isLogStopped, logFilterValue, togglePlay, handleChangeFilterValue, clearLog } = useDeviceLog(
+    deviceService?.deviceClient,
+    device ?? null,
+  );
 
   const getTabMenu = (platform: Platform): TabsProps['items'] => {
     const infoTab: NonNullable<TabsProps['items']>[number] = {

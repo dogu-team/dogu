@@ -18,7 +18,11 @@ export interface StudioTestingPageProps {
 
 export const getStudioTestingLayout = (page: React.ReactElement<StudioTestingPageProps>) => {
   return (
-    <StudioLayout editionType={page.props.feature.defaultEdition} project={page.props.project} deviceId={page.props.deviceId}>
+    <StudioLayout
+      editionType={page.props.feature.defaultEdition}
+      project={page.props.project}
+      deviceId={page.props.deviceId}
+    >
       {page}
     </StudioLayout>
   );

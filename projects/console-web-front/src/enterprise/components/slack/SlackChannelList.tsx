@@ -29,6 +29,15 @@ const SlackChannelList = (props: Props) => {
       })
     : [];
 
-  return <Select defaultValue={props.defaultChannelId} showSearch placeholder="Select a channel" optionFilterProp="children" options={channels} onSelect={props.onSelect} />;
+  return (
+    <Select
+      defaultValue={props.defaultChannelId}
+      showSearch
+      placeholder="Select a channel"
+      optionFilterProp="children"
+      options={channels}
+      onSelect={props.onSelect}
+    />
+  );
 };
 export default SlackChannelList;

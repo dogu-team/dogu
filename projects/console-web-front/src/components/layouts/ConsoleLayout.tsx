@@ -24,17 +24,26 @@ export interface ConsoleLayoutProps {
 
 const ConsoleLayout = ({ titleI18nKey, children, sidebar, title, padding, organization }: ConsoleLayoutProps) => {
   const { t } = useTranslation();
-  const { data, error, mutate, isLoading } = useSWR<OrganizationBase>(`/organizations/${organization.organizationId}`, swrAuthFetcher, {
-    revalidateOnFocus: false,
-    fallbackData: organization,
-  });
+  const { data, error, mutate, isLoading } = useSWR<OrganizationBase>(
+    `/organizations/${organization.organizationId}`,
+    swrAuthFetcher,
+    {
+      revalidateOnFocus: false,
+      fallbackData: organization,
+    },
+  );
 
   if (isLoading) {
     return null;
   }
 
   if (error) {
-    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get organization information'} />;
+    return (
+      <ErrorBox
+        title="Something went wrong"
+        desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get organization information'}
+      />
+    );
   }
 
   return (
