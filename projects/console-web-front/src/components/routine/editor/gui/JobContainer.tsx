@@ -371,7 +371,9 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
         <Content>
           <div>
             <ContentTitle>{t('routine:routineGuiEditorJobAppPackageNameLabel')}</ContentTitle>
-            <ContentDesc>{t('routine:routineGuiEditorJobAppPackageNameDescription')}</ContentDesc>
+            <ContentDesc style={{ whiteSpace: 'pre-wrap' }}>
+              {t('routine:routineGuiEditorJobAppPackageNameDescription')}
+            </ContentDesc>
           </div>
           <ContentInner>
             <AppPackageNameContainer
