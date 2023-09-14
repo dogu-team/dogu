@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/at-wat/ebml-go v0.16.0
 	github.com/atotto/clipboard v0.1.4
-	github.com/dogu-team/keybd_event v0.0.0-20230913041537-42fbe7d89c8e
+	github.com/dogu-team/keybd_event v0.0.0-20230914144628-68e2e33afa73
 	github.com/go-vgo/robotgo v1.0.0-beta6
 	github.com/gorilla/websocket v1.5.0
 	github.com/pion/interceptor v0.1.17
