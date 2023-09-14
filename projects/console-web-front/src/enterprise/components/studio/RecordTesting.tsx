@@ -7,8 +7,8 @@ import { DeviceStreamingLayoutProps } from '../../../components/studio/DeviceStr
 import RecordTestingEditor from '../record/RecordTestingEditor';
 import RecordTestingEntry from './RecordTestingEntry';
 import RecordTestingScreenViewer from './RecordTestingScreenViewer';
-// @ts-ignore
 const DeviceStreamingLayout = dynamic<DeviceStreamingLayoutProps>(
+  // @ts-ignore
   () => import('../../../components/studio/DeviceStreamingLayout'),
   { ssr: false },
 );

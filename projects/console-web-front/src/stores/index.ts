@@ -16,8 +16,8 @@ export const filterUpdatorFunc = <I, S>(
   const state = getter();
   Object.keys(updator).map((item) => {
     const key = item as keyof Omit<S, 'updateFilter'>;
-    // @ts-ignore
     setter((prev: FilterStore<I>) => ({
+      // @ts-ignore
       filterValue: { ...prev.filterValue, [key]: updator[key](state.filterValue[key]) },
     }));
   });
