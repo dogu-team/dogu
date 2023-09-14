@@ -18,11 +18,13 @@ export interface GitCommand {
 
 export interface GitFetchOptions {
   depth?: number;
+  force?: boolean;
 }
 
 function mergeGitFetchOptions(options?: GitFetchOptions): Required<GitFetchOptions> {
   return {
     depth: 1,
+    force: true,
     ...options,
   };
 }
@@ -115,11 +117,15 @@ export class GitCommandBuilder {
 
   async fetch(options?: GitFetchOptions): Promise<GitCommand> {
     await this.ensurePaths();
-    const { depth } = mergeGitFetchOptions(options);
+    const { depth, force } = mergeGitFetchOptions(options);
+    const args = this.defaultArgs().concat(['fetch', '--all', '--tags', '--prune', '--prune-tags', `--depth=${depth}`]);
+    if (force) {
+      args.push('--force');
+    }
     return {
       executablePath: this.executablePath,
       env: this.defaultEnv(),
-      args: this.defaultArgs().concat(['fetch', '--all', '--tags', '--prune', '--prune-tags', `--depth=${depth}`]),
+      args,
     };
   }
 
