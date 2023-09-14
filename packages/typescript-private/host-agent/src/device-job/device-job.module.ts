@@ -6,11 +6,20 @@ import { DeviceJobLogProcessRegistry } from './device-job.device-log-process-reg
 import { DeviceJobHeartbeater } from './device-job.heartbeater';
 import { DeviceJobLogger } from './device-job.logger';
 import { DeviceJobRecordingProcessRegistry } from './device-job.recording-process-registry';
+import { DeviceJobRecordingService } from './device-job.recording-service';
 import { DeviceJobUpdater } from './device-job.updater';
 
 @Module({
   imports: [ConsoleClientModule, ProcessorModule],
-  providers: [DeviceJobHeartbeater, DeviceJobUpdater, DeviceJobRecordingProcessRegistry, DeviceJobContextRegistry, DeviceJobLogProcessRegistry, DeviceJobLogger],
+  providers: [
+    DeviceJobHeartbeater,
+    DeviceJobUpdater,
+    DeviceJobRecordingService,
+    DeviceJobRecordingProcessRegistry,
+    DeviceJobContextRegistry,
+    DeviceJobLogProcessRegistry,
+    DeviceJobLogger,
+  ],
   exports: [DeviceJobContextRegistry, DeviceJobLogger],
 })
 export class DeviceJobModule {}

@@ -1,5 +1,5 @@
-import { DeviceId, OrganizationId, PIPELINE_STATUS, RoutineDeviceJobId, RoutineStepId } from '@dogu-private/types';
-import { createEventDefinition } from '@dogu-tech/common';
+import { DeviceId, OrganizationId, PIPELINE_STATUS, RoutineDeviceJobId, RoutineStepId, Serial } from '@dogu-private/types';
+import { createEventDefinition, IsFilledString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
 import { IsDate, IsEnum, IsNumber, IsObject, IsOptional, IsUUID } from 'class-validator';
 import { MessageCanceler, MessagePostProcessor } from '../message/message.types';
@@ -11,6 +11,9 @@ export class OnStepEventValueBase implements StepRegistryKeySource {
 
   @IsUUID()
   deviceId!: DeviceId;
+
+  @IsFilledString()
+  serial!: Serial;
 
   @IsNumber()
   routineDeviceJobId!: RoutineDeviceJobId;

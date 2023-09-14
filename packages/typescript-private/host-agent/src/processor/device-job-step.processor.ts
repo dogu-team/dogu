@@ -142,6 +142,7 @@ export class DeviceJobStepProcessor {
       await validateAndEmitEventAsync(this.eventEmitter, OnStepStartedEvent, {
         organizationId,
         deviceId,
+        serial,
         routineDeviceJobId,
         routineStepId,
         localTimeStamp: new Date(),
@@ -210,6 +211,7 @@ export class DeviceJobStepProcessor {
           const value: Instance<typeof OnStepProcessStartedEvent.value> = {
             organizationId,
             deviceId,
+            serial,
             routineStepId,
             routineDeviceJobId,
             stepIndex,
@@ -248,6 +250,7 @@ export class DeviceJobStepProcessor {
           const value: Instance<typeof OnStepInProgressEvent.value> = {
             organizationId,
             deviceId,
+            serial,
             routineStepId,
             routineDeviceJobId,
             messageCanceler: canceler,
@@ -286,6 +289,7 @@ export class DeviceJobStepProcessor {
       await validateAndEmitEventAsync(this.eventEmitter, OnStepCompletedEvent, {
         organizationId,
         deviceId,
+        serial,
         routineDeviceJobId,
         routineStepId,
         stepIndex,

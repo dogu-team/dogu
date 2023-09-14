@@ -1,19 +1,15 @@
-import { PrivateDeviceJob } from '@dogu-private/console-host-agent';
-import { BrowserName, createConsoleApiAuthHeader, DeviceId, OrganizationId, Platform, RoutineDeviceJobId, Serial } from '@dogu-private/types';
-import { closeWebSocketWithTruncateReason, DefaultHttpOptions, errorify, Instance, loop, toISOStringWithTimezone } from '@dogu-tech/common';
-import { DeviceRecording } from '@dogu-tech/device-client';
+import { BrowserName, DeviceId, OrganizationId, Platform, RoutineDeviceJobId, Serial } from '@dogu-private/types';
+import { closeWebSocketWithTruncateReason, Instance, toISOStringWithTimezone } from '@dogu-tech/common';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import FormData from 'form-data';
-import fs from 'fs';
 import path from 'path';
 import WebSocket from 'ws';
-import { ConsoleClientService } from '../console-client/console-client.service';
 import { OnDeviceJobCancelRequestedEvent, OnDeviceJobPostProcessCompletedEvent, OnDeviceJobStartedEvent } from '../device-job/device-job.events';
-import { env } from '../env';
 import { OnHostDisconnectedEvent, OnHostResolvedEvent } from '../host/host.events';
 import { DoguLogger } from '../logger/logger';
+import { OnStepProcessStartedEvent } from '../step/step.events';
 import { HostResolutionInfo } from '../types';
+import { DeviceJobRecordingService } from './device-job.recording-service';
 
 interface DeviceRecordingInfo {
   webSocket: WebSocket;
@@ -30,7 +26,7 @@ export class DeviceJobRecordingProcessRegistry {
   private hostResolutionInfo: HostResolutionInfo | null = null;
   private readonly webSockets = new Map<string, DeviceRecordingInfo>();
 
-  constructor(private readonly logger: DoguLogger, private readonly consoleClientService: ConsoleClientService) {}
+  constructor(private readonly logger: DoguLogger, private readonly record: DeviceJobRecordingService) {}
 
   @OnEvent(OnHostDisconnectedEvent.key)
   onHostDisconnected(value: Instance<typeof OnHostDisconnectedEvent.value>): void {
@@ -61,68 +57,38 @@ export class DeviceJobRecordingProcessRegistry {
       this.logger.info('startRecording: DeviceJobRecordingProcessRegistry doesnt handle when browserName is not null', { routineDeviceJobId, browserName });
       return;
     }
+    const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
     const fileName = toISOStringWithTimezone(new Date(), '-');
     const filePath = path.resolve(recordDeviceRunnerPath, `${fileName}${getRecordExt(platform)}`);
-    const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceRecording.path}`);
-    const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
-    this.webSockets.set(key, { webSocket, serial, organizationId, deviceId, routineDeviceJobId, browserName, filePath });
-    webSocket.addEventListener('open', () => {
-      this.logger.info('startRecording open', {
-        filePath,
-      });
-      const sendMessage: Instance<typeof DeviceRecording.sendMessage> = {
-        serial,
-        screenRecordOption: {
-          screen: {},
-          filePath,
-        },
-      };
-      webSocket.send(JSON.stringify(sendMessage), (error) => {
-        if (error) {
-          closeWebSocketWithTruncateReason(webSocket, 1001, 'Failed to device recording');
-          this.logger.error('startRecording failed to send message', { error });
-        } else {
-          this.logger.info('startRecording sent message');
-        }
-      });
-    });
-    webSocket.addEventListener('error', (ev) => {
-      this.logger.error('startRecording error', { error: errorify(ev.error) });
-    });
-    webSocket.addEventListener('close', (ev) => {
-      const deviceRecordingInfo = this.webSockets.get(key);
-      if (!deviceRecordingInfo) {
-        this.logger.warn('startRecording close: deviceRecordingInfo not found', { organizationId, deviceId, routineDeviceJobId });
-        return;
-      }
-      const { filePath } = deviceRecordingInfo;
+    const webSocket = this.record.connectRecordWs(value, filePath, (_) => {
       this.webSockets.delete(key);
-
-      (async (): Promise<void> => {
-        try {
-          for await (const _ of loop(1000, 60)) {
-            if (fs.existsSync(filePath)) {
-              break;
-            }
-          }
-          if (!fs.existsSync(filePath)) {
-            throw new Error(`startRecording: file not found. ${filePath}`);
-          }
-
-          this.uploadDeviceRecording(organizationId, deviceId, routineDeviceJobId, filePath).catch((error) => {
-            this.logger.error('uploadDeviceRecording failed', { error: errorify(error) });
-          });
-        } catch (error) {
-          this.logger.error('uploadDeviceRecording failed', { error: errorify(error) });
-        }
-      })().catch((error) => {
-        this.logger.error('uploadDeviceRecording failed', { error: errorify(error) });
-      });
     });
-    webSocket.addEventListener('message', (ev) => {
-      const { data } = ev;
-      this.logger.info('startRecording message', { data });
+
+    this.webSockets.set(key, { webSocket, serial, organizationId, deviceId, routineDeviceJobId, browserName, filePath });
+  }
+
+  @OnEvent(OnStepProcessStartedEvent.key)
+  OnStepProcessStarted(value: Instance<typeof OnStepProcessStartedEvent.value>): void {
+    if (!this.hostResolutionInfo) {
+      throw new Error('onDeviceJobStarted: hostResolutionInfo not found');
+    }
+    const { organizationId, deviceId, routineDeviceJobId, serial } = value;
+    if (!record) {
+      this.logger.info('startRecording: record is false', { organizationId, deviceId, routineDeviceJobId });
+      return;
+    }
+    if (browserName) {
+      this.logger.info('startRecording: DeviceJobRecordingProcessRegistry doesnt handle when browserName is not null', { routineDeviceJobId, browserName });
+      return;
+    }
+    const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
+    const fileName = toISOStringWithTimezone(new Date(), '-');
+    const filePath = path.resolve(recordDeviceRunnerPath, `${fileName}${getRecordExt(platform)}`);
+    const webSocket = this.record.connectRecordWs(value, filePath, (_) => {
+      this.webSockets.delete(key);
     });
+
+    this.webSockets.set(key, { webSocket, serial, organizationId, deviceId, routineDeviceJobId, browserName, filePath });
   }
 
   @OnEvent(OnDeviceJobCancelRequestedEvent.key)
@@ -165,25 +131,6 @@ export class DeviceJobRecordingProcessRegistry {
 
   private createKey(organizationId: OrganizationId, deviceId: DeviceId, routineDeviceJobId: RoutineDeviceJobId): string {
     return `${organizationId}:${deviceId}:${routineDeviceJobId}`;
-  }
-
-  private async uploadDeviceRecording(organizationId: OrganizationId, deviceId: DeviceId, routineDeviceJobId: RoutineDeviceJobId, filePath: string): Promise<void> {
-    if (!fs.existsSync(filePath)) {
-      throw new Error(`File not found: ${filePath}`);
-    }
-    const buffer = await fs.promises.readFile(filePath);
-    const fileName = path.basename(filePath);
-    const form = new FormData();
-    form.append('record', buffer, fileName);
-    const pathProvider = new PrivateDeviceJob.uploadDeviceJobRecord.pathProvider(organizationId, deviceId, routineDeviceJobId);
-    const urlPath = PrivateDeviceJob.uploadDeviceJobRecord.resolvePath(pathProvider);
-    await this.consoleClientService.client.post(urlPath, form, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        Authorization: createConsoleApiAuthHeader(env.DOGU_HOST_TOKEN).headers.Authorization,
-      },
-      timeout: DefaultHttpOptions.request.timeout1minutes,
-    });
   }
 }
 
