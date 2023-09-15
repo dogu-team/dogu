@@ -16,10 +16,17 @@ export async function createUser(manager: EntityManager, email: string, password
     savePassword = null;
   }
 
+  const rootUser = await manager.getRepository(User).findOne({
+    where: {
+      isRoot: true,
+    },
+  });
+
   const userData = manager.getRepository(User).create({
     email,
     name,
     password: savePassword,
+    isRoot: rootUser ? false : true,
   });
   const user = await manager.getRepository(User).save(userData);
   return user;

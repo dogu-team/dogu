@@ -150,13 +150,14 @@ export class OrganizationService {
 
     if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
       const licenseInfo = await this.licenseService.getLicense(organizationId);
-      if (user!.isRoot) {
-        return { ...organization, owner, licenseInfo };
-      }
-      return orgBase;
+      return { ...organization, owner, licenseInfo };
+      // if (user!.isRoot) {
+      //   return { ...organization, owner, licenseInfo };
+      // }
+      // return orgBase;
     } else {
       if (user!.userId == owner.userId) {
-        return { ...organization, owner }; // FIXME:(felix) dogu license
+        return { ...organization, owner };
       }
 
       return orgBase;
