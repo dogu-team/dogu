@@ -11,7 +11,7 @@ import useRefresh from 'src/hooks/useRefresh';
 import useUnallowedDeviceFilterStore from 'src/stores/unallowed-device-filter';
 import DeviceConnectionStateTag from './DeviceConnectionStateTag';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
-import AddDeviceToProjectModal from './EditDeviceProjectModal';
+import EditDeviceProjectModal from '../../../enterprise/components/device/EditDeviceProjectModal';
 import useModal from '../../hooks/useModal';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
@@ -87,7 +87,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
         </FlexRowBase>
       </Item>
 
-      <AddDeviceToProjectModal
+      <EditDeviceProjectModal
         deviceId={device.deviceId}
         isOpen={isAddProjectModalOpen}
         close={closeAddProjectModal}

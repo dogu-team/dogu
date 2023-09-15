@@ -1,14 +1,11 @@
-import {
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  ExclamationCircleOutlined,
-  QuestionCircleFilled,
-} from '@ant-design/icons';
+import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { HostBase } from '@dogu-private/console';
 import { EDITION_TYPE, HostConnectionState } from '@dogu-private/types';
 import { Button, Tag, Tooltip } from 'antd';
 import { useContext } from 'react';
 import styled from 'styled-components';
+import useTranslation from 'next-translate/useTranslation';
+import { isAxiosError } from 'axios';
 
 import { DoguAgentLatestContext } from '../../../pages/dashboard/[orgId]/device-farm/hosts';
 import { parseSemver } from '../../../src/utils/download';
@@ -17,11 +14,9 @@ import { getAgentUpdatableInfo } from '../../utils/host';
 import ProTag from '../common/ProTag';
 import useModal from '../../../src/hooks/useModal';
 import DangerConfirmModal from '../../../src/components/modals/DangerConfirmModal';
-import useTranslation from 'next-translate/useTranslation';
 import useRequest from '../../../src/hooks/useRequest';
 import { updateHostApp } from '../../api/host';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
-import { isAxiosError } from 'axios';
 import { getErrorMessageFromAxios } from '../../../src/utils/error';
 
 interface Props {

@@ -30,7 +30,7 @@ import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
 import EditDeviceTagModal from './EditDeviceTagModal';
 import DeviceSettingModal from './DeviceSettingModal';
-import AddDeviceToProjectModal from './EditDeviceProjectModal';
+import EditDeviceProjectModal from '../../../enterprise/components/device/EditDeviceProjectModal';
 import DeviceName from './DeviceName';
 import DeviceTagAndProject from './DeviceTagAndProject';
 import useEventStore from '../../stores/events';
@@ -189,7 +189,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
         isOpen={isEditDeviceTagModalOpen}
         close={closeEditDeviceTagModal}
       />
-      <AddDeviceToProjectModal
+      <EditDeviceProjectModal
         deviceId={device.deviceId}
         isOpen={isEditDeviceProjectModalOpen}
         close={closeEditDeviceProjectModal}

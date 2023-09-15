@@ -2,7 +2,7 @@ import { ExclamationCircleFilled, WarningFilled } from '@ant-design/icons';
 import { PageBase, ProjectBase } from '@dogu-private/console';
 import { ProjectId, PROJECT_NAME_MAX_LENGTH } from '@dogu-private/types';
 import { DeviceId, OrganizationId } from '@dogu-private/types';
-import { Button, Checkbox, Input, Modal, notification, Tag } from 'antd';
+import { Checkbox, Input, Modal, Tag } from 'antd';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -10,12 +10,13 @@ import styled from 'styled-components';
 import useSWR from 'swr';
 import useTranslation from 'next-translate/useTranslation';
 
-import { swrAuthFetcher } from '../../api/index';
-import { enableDevice, removeDeviceFromProject } from '../../api/device';
-import useDebouncedInputValues from '../../hooks/useDebouncedInputValues';
-import useEventStore from '../../stores/events';
-import { getErrorMessageFromAxios } from '../../utils/error';
-import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
+import { swrAuthFetcher } from '../../../src/api/index';
+import { removeDeviceFromProject } from '../../../src/api/device';
+import useDebouncedInputValues from '../../../src/hooks/useDebouncedInputValues';
+import useEventStore from '../../../src/stores/events';
+import { getErrorMessageFromAxios } from '../../../src/utils/error';
+import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
+import { enableDevice } from '../../api/device';
 
 interface Props {
   deviceId: DeviceId;
@@ -24,7 +25,7 @@ interface Props {
   close: () => void;
 }
 
-const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalProp }: Props) => {
+const EditDeviceProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalProp }: Props) => {
   const router = useRouter();
   const orgId = router.query.orgId;
   const [showResult, setShowResult] = useState(false);
@@ -47,7 +48,6 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
       keepPreviousData: true,
     },
   );
-  const [loading, setLoading] = useState(false);
   const [isGlobal, setIsGlobal] = useState(isGlobalProp);
   const fireEvent = useEventStore((state) => state.fireEvent);
   const { t } = useTranslation();
@@ -187,7 +187,7 @@ const AddDeviceToProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPr
   );
 };
 
-export default AddDeviceToProjectModal;
+export default EditDeviceProjectModal;
 
 const Box = styled.div``;
 

@@ -2,6 +2,7 @@
   "signInPageTitle": "Sign In",
   "forgotPasswordPageTitle": "Forgot Password",
   "signUpPageTitle": "Sign Up",
+  "signUpRootPageTitle": "Create root account",
   "signUpWithInvitationPageTitle": "Sign Up",
 
   "signInForgotPasswordLinkText": "Forgot password?",

@@ -2,6 +2,7 @@
   "signInPageTitle": "로그인",
   "forgotPasswordPageTitle": "비밀번호 찾기",
   "signUpPageTitle": "회원가입",
+  "signUpRootPageTitle": "루트 계정 생성",
   "signUpWithInvitationPageTitle": "회원가입",
 
   "signInForgotPasswordLinkText": "비밀번호를 잊으셨나요?",

@@ -1,6 +1,7 @@
 import { isAxiosError } from 'axios';
-import SlackIcon from 'public/resources/icons/slack.svg';
 import { useState } from 'react';
+
+import SlackIcon from 'public/resources/icons/slack.svg';
 import { disconnectSlack } from '../../../src/api/slack';
 import useRequest from '../../../src/hooks/useRequest';
 import { OrganizationIntegrationButtonProps } from '../../../src/types/props';

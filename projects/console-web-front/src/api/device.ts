@@ -1,10 +1,4 @@
-import {
-  AttachTagToDeviceDtoBase,
-  DeviceBase,
-  DeviceStreamingOffer,
-  EnableDeviceDtoBase,
-  UpdateDeviceDtoBase,
-} from '@dogu-private/console';
+import { AttachTagToDeviceDtoBase, DeviceBase, DeviceStreamingOffer, UpdateDeviceDtoBase } from '@dogu-private/console';
 import { DeviceId, DeviceTagId, HostId, OrganizationId, ProjectId, ProtoRTCPeerDescription } from '@dogu-private/types';
 
 import { sdpExt } from '@dogu-private/webrtc';
@@ -85,15 +79,6 @@ export const startDeviceStreaming = async (
     streamingBody,
   );
   return sdpExt.convertSdpFromProtoToTs(data);
-};
-
-export const enableDevice = async (
-  organizationId: OrganizationId,
-  deviceId: DeviceId,
-  body: EnableDeviceDtoBase,
-): Promise<void> => {
-  await api.post<void>(`/organizations/${organizationId}/devices/${deviceId}/enable`, body);
-  return;
 };
 
 export const removeDeviceFromProject = async (

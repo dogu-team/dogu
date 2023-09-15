@@ -8,13 +8,13 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import { enableDevice } from '../../api/device';
 
-import usePaginationSWR from '../../hooks/usePaginationSWR';
-import useRefresh from '../../hooks/useRefresh';
-import { flexRowBaseStyle } from '../../styles/box';
-import { sendErrorNotification, sendSuccessNotification } from '../../utils/antd';
-import { getErrorMessageFromAxios } from '../../utils/error';
-import DeviceConnectionStateTag from '../device/DeviceConnectionStateTag';
-import PlatformIcon from '../device/PlatformIcon';
+import usePaginationSWR from '../../../src/hooks/usePaginationSWR';
+import useRefresh from '../../../src/hooks/useRefresh';
+import { flexRowBaseStyle } from '../../../src/styles/box';
+import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
+import { getErrorMessageFromAxios } from '../../../src/utils/error';
+import DeviceConnectionStateTag from '../../../src/components/device/DeviceConnectionStateTag';
+import PlatformIcon from '../../../src/components/device/PlatformIcon';
 
 interface Props {
   organizationId: OrganizationId;

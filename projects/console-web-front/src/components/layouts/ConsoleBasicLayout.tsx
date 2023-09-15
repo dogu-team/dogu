@@ -1,4 +1,4 @@
-import { CloseOutlined, GithubOutlined, SlackOutlined } from '@ant-design/icons';
+import { CloseOutlined, GithubOutlined, SettingOutlined, SlackOutlined } from '@ant-design/icons';
 import { Button, Tooltip } from 'antd';
 import Trans from 'next-translate/Trans';
 import Link from 'next/link';
@@ -74,6 +74,18 @@ const ConsoleBasicLayout = ({ children }: Props) => {
         <Header
           right={
             <FlexRow>
+              {process.env.NEXT_PUBLIC_ENV === 'self-hosted' && me.isRoot && (
+                <Tooltip
+                  title="Admin"
+                  arrow={false}
+                  overlayInnerStyle={{ fontSize: '.8rem' }}
+                  style={{ minHeight: '0' }}
+                >
+                  <StyledLink href="/admin">
+                    <SettingOutlined />
+                  </StyledLink>
+                </Tooltip>
+              )}
               <StyledLink href={`https://github.com/dogu-team/dogu`} target="_blank">
                 <GithubOutlined />
               </StyledLink>
