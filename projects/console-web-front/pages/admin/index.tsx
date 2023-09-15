@@ -1,14 +1,17 @@
 import { KeyOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
+import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
 
+import LicenseContainer from '../../enterprise/components/license/LicenseContainer';
+import { AdminProps, getAdminServerSideProps } from '../../enterprise/pages/admin';
 import ConsoleBasicLayout from '../../src/components/layouts/ConsoleBasicLayout';
 import { flexRowBaseStyle } from '../../src/styles/box';
 import { NextPageWithLayout } from '../_app';
 
-const AdminPage: NextPageWithLayout = () => {
+const AdminPage: NextPageWithLayout<AdminProps> = ({ license }) => {
   const router = useRouter();
 
   return (
@@ -24,12 +27,11 @@ const AdminPage: NextPageWithLayout = () => {
       <FlexRow style={{ alignItems: 'flex-start' }}>
         <Sidebar>
           <MenuItem href="/admin" isSelected={router.pathname === '/admin'}>
-            General
+            <KeyOutlined /> License
           </MenuItem>
         </Sidebar>
         <Content>
-          <div>우리 가격 플랜 봐라~~~ 링크</div>
-          <div>License component from enterprise...</div>
+          <LicenseContainer license={license ?? undefined} organizationId={null} />
         </Content>
       </FlexRow>
     </Box>
@@ -37,8 +39,10 @@ const AdminPage: NextPageWithLayout = () => {
 };
 
 AdminPage.getLayout = (page) => {
-  return <ConsoleBasicLayout>{page}</ConsoleBasicLayout>;
+  return <ConsoleBasicLayout user={page.props.user}>{page}</ConsoleBasicLayout>;
 };
+
+export const getServerSideProps: GetServerSideProps<AdminProps> = getAdminServerSideProps;
 
 export default AdminPage;
 

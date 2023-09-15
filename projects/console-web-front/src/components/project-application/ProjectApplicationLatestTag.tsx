@@ -1,8 +1,12 @@
 import { Tag } from 'antd';
 
-const ProjectApplicationLatestTag = () => {
+interface Props {
+  style?: React.CSSProperties;
+}
+
+const ProjectApplicationLatestTag = ({ style }: Props) => {
   return (
-    <Tag style={{ marginLeft: '.5rem' }} color="magenta">
+    <Tag style={style} color="magenta">
       Latest
     </Tag>
   );

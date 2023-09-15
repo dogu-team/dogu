@@ -1,4 +1,5 @@
 import { CloseOutlined, GithubOutlined, SettingOutlined, SlackOutlined } from '@ant-design/icons';
+import { UserBase } from '@dogu-private/console';
 import { Button, Tooltip } from 'antd';
 import Trans from 'next-translate/Trans';
 import Link from 'next/link';
@@ -16,10 +17,11 @@ import Header from './Header';
 
 interface Props {
   children: React.ReactNode;
+  user?: UserBase;
 }
 
-const ConsoleBasicLayout = ({ children }: Props) => {
-  const { me, isLoading, error, mutate } = useAuth();
+const ConsoleBasicLayout = ({ children, user }: Props) => {
+  const { me, isLoading, error, mutate } = useAuth(user);
   const router = useRouter();
   const [isBannerVisible, setIsBannerVisible] = useState(() => {
     if (typeof window === 'undefined') {

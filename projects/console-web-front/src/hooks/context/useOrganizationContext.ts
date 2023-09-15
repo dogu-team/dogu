@@ -1,10 +1,10 @@
-import { OrganizationBase } from '@dogu-private/console';
+import { OrganizationResponse } from '@dogu-private/console';
 import React, { useContext } from 'react';
 import { KeyedMutator } from 'swr';
 
 export interface OrganizationContextProviderProps {
-  organization: OrganizationBase | null;
-  mutate: KeyedMutator<OrganizationBase> | null;
+  organization: OrganizationResponse | null;
+  mutate: KeyedMutator<OrganizationResponse> | null;
 }
 
 export const OrganizationContext = React.createContext<OrganizationContextProviderProps>({

@@ -1,7 +1,7 @@
 import { Layout } from 'antd';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
-import { OrganizationBase } from '@dogu-private/console';
+import { OrganizationResponse } from '@dogu-private/console';
 import useSWR from 'swr';
 import { isAxiosError } from 'axios';
 
@@ -16,7 +16,7 @@ import { getErrorMessageFromAxios } from '../../utils/error';
 export interface ConsoleLayoutProps {
   children: React.ReactNode;
   sidebar: React.ReactNode;
-  organization: OrganizationBase;
+  organization: OrganizationResponse;
   titleI18nKey?: string;
   title?: string;
   padding?: string;
@@ -24,7 +24,7 @@ export interface ConsoleLayoutProps {
 
 const ConsoleLayout = ({ titleI18nKey, children, sidebar, title, padding, organization }: ConsoleLayoutProps) => {
   const { t } = useTranslation();
-  const { data, error, mutate, isLoading } = useSWR<OrganizationBase>(
+  const { data, error, mutate, isLoading } = useSWR<OrganizationResponse>(
     `/organizations/${organization.organizationId}`,
     swrAuthFetcher,
     {

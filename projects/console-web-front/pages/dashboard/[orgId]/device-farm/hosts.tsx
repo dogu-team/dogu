@@ -19,13 +19,12 @@ import HostFilter from 'src/components/hosts/HostFilter';
 import OrganizationDeviceFarmLayout from '../../../../src/components/layouts/OrganizationDeviceFarmLayout';
 import { swrAuthFetcher } from '../../../../src/api';
 import DeviceFarmTutorialLinkButton from '../../../../src/components/organizations/DeviceFarmTutorialLinkButton';
-import { FeatureContext } from '../../../../enterprise/contexts/feature';
 
 export const DoguAgentLatestContext = createContext<{ latestInfo: DownloadablePackageResult[] }>({
   latestInfo: [],
 });
 
-const HostManagementPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization, featureConfig }) => {
+const HostManagementPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization }) => {
   const { t } = useTranslation();
   const [isAddModalOpen, openAddModal, closeAddModal] = useModal();
   const { data } = useSWR<DownloadablePackageResult[]>(`/downloads/dogu-agent/latest`, swrAuthFetcher, {
@@ -33,51 +32,47 @@ const HostManagementPage: NextPageWithLayout<OrganizationServerSideProps> = ({ o
   });
 
   return (
-    <FeatureContext.Provider value={featureConfig}>
-      <DoguAgentLatestContext.Provider value={{ latestInfo: data ?? [] }}>
-        <Head>
-          <title>Hosts - {organization.name} | Dogu</title>
-        </Head>
-        <TableListView
-          top={
-            <ButtonBox>
-              <LeftTopBox>
-                <DeviceFarmTutorialLinkButton />
-                <Button
-                  type="primary"
-                  onClick={() => openAddModal()}
-                  access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'add-new-host-btn' : undefined}
-                >
-                  {t('device-farm:addNewHost')}
-                </Button>
-                {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
-                  <Link href={`${process.env.NEXT_PUBLIC_LANDING_URL}/downloads/dogu-agent`} target="_blank">
-                    <Button
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        border: '',
-                      }}
-                    >
-                      <FcDownload style={{ marginRight: '4px' }} width={24} height={24} />
-                      {t('device-farm:agentDownloadTitle')}
-                    </Button>
-                  </Link>
-                )}
-                <HostFilter />
-              </LeftTopBox>
-              <RefreshButton
-                {...(process.env.NEXT_PUBLIC_ENV !== 'production' ? { 'access-id': 'host-refresh' } : {})}
-              />
-            </ButtonBox>
-          }
-          table={<HostListController />}
-        />
+    <DoguAgentLatestContext.Provider value={{ latestInfo: data ?? [] }}>
+      <Head>
+        <title>Hosts - {organization.name} | Dogu</title>
+      </Head>
+      <TableListView
+        top={
+          <ButtonBox>
+            <LeftTopBox>
+              <DeviceFarmTutorialLinkButton />
+              <Button
+                type="primary"
+                onClick={() => openAddModal()}
+                access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'add-new-host-btn' : undefined}
+              >
+                {t('device-farm:addNewHost')}
+              </Button>
+              {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
+                <Link href={`${process.env.NEXT_PUBLIC_LANDING_URL}/downloads/dogu-agent`} target="_blank">
+                  <Button
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      border: '',
+                    }}
+                  >
+                    <FcDownload style={{ marginRight: '4px' }} width={24} height={24} />
+                    {t('device-farm:agentDownloadTitle')}
+                  </Button>
+                </Link>
+              )}
+              <HostFilter />
+            </LeftTopBox>
+            <RefreshButton {...(process.env.NEXT_PUBLIC_ENV !== 'production' ? { 'access-id': 'host-refresh' } : {})} />
+          </ButtonBox>
+        }
+        table={<HostListController />}
+      />
 
-        <CreateHostModal close={closeAddModal} isOpen={isAddModalOpen} />
-      </DoguAgentLatestContext.Provider>
-    </FeatureContext.Provider>
+      <CreateHostModal close={closeAddModal} isOpen={isAddModalOpen} />
+    </DoguAgentLatestContext.Provider>
   );
 };
 

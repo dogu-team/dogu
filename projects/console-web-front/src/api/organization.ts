@@ -2,6 +2,7 @@ import {
   CreateOrganizationDtoBase,
   InviteEmailDtoBase,
   OrganizationBase,
+  OrganizationResponse,
   UpdateOrganizationDtoBase,
   UpdateOrganizationOwnerDtoBase,
   UpdateOrganizationRoleDtoBase,
@@ -42,7 +43,7 @@ export const getOrganizationInServerSide = async (context: GetServerSidePropsCon
   const { authToken } = getServersideCookies(context.req.cookies);
 
   if (authToken) {
-    const data = await api.get<OrganizationBase>(`/organizations/${context.query.orgId}`, {
+    const data = await api.get<OrganizationResponse>(`/organizations/${context.query.orgId}`, {
       headers: { Authorization: `Bearer ${authToken}` },
     });
     setCookiesInServerSide(data, context);

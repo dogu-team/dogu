@@ -1,6 +1,6 @@
 import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { HostBase } from '@dogu-private/console';
-import { EDITION_TYPE, HostConnectionState } from '@dogu-private/types';
+import { HostConnectionState } from '@dogu-private/types';
 import { Button, Tag, Tooltip } from 'antd';
 import { useContext } from 'react';
 import styled from 'styled-components';
@@ -9,7 +9,6 @@ import { isAxiosError } from 'axios';
 
 import { DoguAgentLatestContext } from '../../../pages/dashboard/[orgId]/device-farm/hosts';
 import { parseSemver } from '../../../src/utils/download';
-import useFeatureContext from '../../contexts/feature';
 import { getAgentUpdatableInfo } from '../../utils/host';
 import ProTag from '../common/ProTag';
 import useModal from '../../../src/hooks/useModal';
@@ -18,6 +17,10 @@ import useRequest from '../../../src/hooks/useRequest';
 import { updateHostApp } from '../../api/host';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
 import { getErrorMessageFromAxios } from '../../../src/utils/error';
+import { OrganizationContext } from '../../../src/hooks/context/useOrganizationContext';
+import { isPaymentRequired, isTimeout } from '../../utils/error';
+import UpgradePlanBannerModal from '../license/UpgradePlanBannerModal';
+import TimeoutDocsModal from '../license/TimeoutDocsModal';
 
 interface Props {
   host: HostBase;
@@ -25,8 +28,10 @@ interface Props {
 
 const HostVesrsionBadge = ({ host }: Props) => {
   const latestContext = useContext(DoguAgentLatestContext);
-  const featureContext = useFeatureContext();
+  const { organization } = useContext(OrganizationContext);
   const [isOpen, openModal, closeModal] = useModal();
+  const [isBannerOpen, openBanner, closeBanner] = useModal();
+  const [isDocsOtpen, openDocs, closeDocs] = useModal();
   const [loading, request] = useRequest(updateHostApp);
   const { t } = useTranslation();
 
@@ -41,7 +46,12 @@ const HostVesrsionBadge = ({ host }: Props) => {
       closeModal();
     } catch (e) {
       if (isAxiosError(e)) {
-        sendErrorNotification(t('device-farm:hostUpdateFailMsg', { reason: getErrorMessageFromAxios(e) }));
+        if (isPaymentRequired(e)) {
+          openBanner();
+        } else if (isTimeout(e)) {
+        } else {
+          sendErrorNotification(t('device-farm:hostUpdateFailMsg', { reason: getErrorMessageFromAxios(e) }));
+        }
       }
     }
   };
@@ -54,12 +64,11 @@ const HostVesrsionBadge = ({ host }: Props) => {
 
   const updatableInfo = getAgentUpdatableInfo(latestContext.latestInfo, host);
   const updatable =
-    host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED &&
-    featureContext?.defaultEdition === EDITION_TYPE.ENTERPRISE &&
-    updatableInfo.isUpdatable;
+    host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED && updatableInfo.isUpdatable;
   const shouldShowUpdateButton =
     host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED &&
     (updatableInfo.reason || updatableInfo.isUpdatable);
+  const isFreeTier = !organization?.licenseInfo?.licenseTier?.doguAgentAutoUpdateEnabled;
 
   return (
     <>
@@ -75,10 +84,20 @@ const HostVesrsionBadge = ({ host }: Props) => {
         overlayInnerStyle={{ fontSize: '.8rem', textAlign: 'center', whiteSpace: 'pre-wrap' }}
       >
         {shouldShowUpdateButton ? (
-          <FlexButton disabled={!updatable} type="primary" onClick={() => openModal()}>
+          <FlexButton
+            disabled={!updatable}
+            type="primary"
+            onClick={() => {
+              if (isFreeTier) {
+                openBanner();
+              } else {
+                openModal();
+              }
+            }}
+          >
             Update to latest&nbsp;
             <b style={{ fontSize: '.75rem' }}>{`(current: ${host.agentVersion})`}</b>
-            {featureContext?.defaultEdition === EDITION_TYPE.COMUINITIY && <ProTag style={{ marginLeft: '.5rem' }} />}
+            {isFreeTier && <ProTag style={{ marginLeft: '.5rem' }} />}
           </FlexButton>
         ) : (
           <Tag
@@ -109,6 +128,8 @@ const HostVesrsionBadge = ({ host }: Props) => {
       >
         <p>{t('device-farm:hostUpdateModalContentInfo')}</p>
       </DangerConfirmModal>
+      <UpgradePlanBannerModal isOpen={isBannerOpen} close={closeBanner} title={'Need to update?'} description={null} />
+      <TimeoutDocsModal isOpen={isDocsOtpen} close={closeDocs} />
     </>
   );
 };

@@ -1,14 +1,16 @@
 import { CopyOutlined } from '@ant-design/icons';
-import { Input, InputRef, message } from 'antd';
+import { Input, InputProps, InputRef, message } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 import { useRef } from 'react';
 import styled from 'styled-components';
 
 interface Props {
   value: string;
+  status?: InputProps['status'];
+  suffix?: InputProps['suffix'];
 }
 
-const TokenCopyInput = ({ value }: Props) => {
+const TokenCopyInput = ({ value, status, suffix }: Props) => {
   const { t } = useTranslation();
   const inputRef = useRef<InputRef>(null);
 
@@ -30,6 +32,8 @@ const TokenCopyInput = ({ value }: Props) => {
       value={value}
       onSearch={handleCopy}
       enterButton={<CopyOutlined />}
+      status={status}
+      suffix={suffix}
     />
   );
 };

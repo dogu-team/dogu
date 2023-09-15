@@ -17,6 +17,10 @@ import useEventStore from '../../../src/stores/events';
 import { getErrorMessageFromAxios } from '../../../src/utils/error';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
 import { enableDevice } from '../../api/device';
+import { isPaymentRequired, isTimeout } from '../../utils/error';
+import useModal from '../../../src/hooks/useModal';
+import UpgradePlanBannerModal from '../license/UpgradePlanBannerModal';
+import TimeoutDocsModal from '../license/TimeoutDocsModal';
 
 interface Props {
   deviceId: DeviceId;
@@ -30,24 +34,19 @@ const EditDeviceProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPro
   const orgId = router.query.orgId;
   const [showResult, setShowResult] = useState(false);
   const { inputValue, debouncedValue, handleChangeValues } = useDebouncedInputValues();
-  const {
-    data: deviceProjects,
-    error: deviceProjectError,
-    mutate: mutateDeviceProjects,
-    isLoading: isDeviceProjectLoading,
-  } = useSWR<ProjectBase[]>(`/organizations/${orgId}/devices/${deviceId}/projects`, swrAuthFetcher);
-  const {
-    data: projects,
-    isLoading: isProjectLoading,
-    error: isProjectError,
-    mutate: mutateProjects,
-  } = useSWR<PageBase<ProjectBase>>(
+  const { data: deviceProjects, mutate: mutateDeviceProjects } = useSWR<ProjectBase[]>(
+    `/organizations/${orgId}/devices/${deviceId}/projects`,
+    swrAuthFetcher,
+  );
+  const { data: projects, isLoading: isProjectLoading } = useSWR<PageBase<ProjectBase>>(
     orgId && `/organizations/${orgId}/projects?keyword=${debouncedValue}`,
     swrAuthFetcher,
     {
       keepPreviousData: true,
     },
   );
+  const [isBannerOpen, openBanner, closeBanner] = useModal();
+  const [isDocsOtpen, openDocs, closeDocs] = useModal();
   const [isGlobal, setIsGlobal] = useState(isGlobalProp);
   const fireEvent = useEventStore((state) => state.fireEvent);
   const { t } = useTranslation();
@@ -65,7 +64,15 @@ const EditDeviceProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPro
       sendSuccessNotification(t('device-farm:addDeviceToProjectSuccessMsg'));
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:addDeviceToProjectFailureMsg', { reason: getErrorMessageFromAxios(e) }));
+        if (isPaymentRequired(e)) {
+          close();
+          openBanner();
+        } else if (isTimeout(e)) {
+          close();
+          openDocs();
+        } else {
+          sendErrorNotification(t('device-farm:addDeviceToProjectFailureMsg', { reason: getErrorMessageFromAxios(e) }));
+        }
       }
     }
   };
@@ -78,7 +85,16 @@ const EditDeviceProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPro
       mutateDeviceProjects();
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:toggleDeviceAsGlobalFailureMsg', { reason: getErrorMessageFromAxios(e) }));
+        if (isPaymentRequired(e)) {
+          close();
+          openBanner();
+        } else if (isTimeout(e)) {
+          close();
+        } else {
+          sendErrorNotification(
+            t('device-farm:toggleDeviceAsGlobalFailureMsg', { reason: getErrorMessageFromAxios(e) }),
+          );
+        }
       }
       setIsGlobal(isGlobalProp);
     }
@@ -106,84 +122,93 @@ const EditDeviceProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPro
   };
 
   return (
-    <Modal
-      title={t('device-farm:deviceEditProjectModalTitle')}
-      closable
-      onCancel={handleClose}
-      open={isOpen}
-      centered
-      footer={null}
-    >
-      <Box>
-        <ContentTitle>{t('device-farm:deviceEditProjectSearchTitle')}</ContentTitle>
-        <InputWrapper>
-          <Input.Search
-            value={inputValue}
-            onChange={(e) => handleChangeValues(e.target.value)}
-            disabled={isGlobal}
-            loading={isProjectLoading}
-            onBlur={() => setShowResult(false)}
-            onFocus={() => setShowResult(true)}
-            allowClear
-            placeholder={t('device-farm:deviceEditProjectSearchInputPlaceholder')}
-            maxLength={PROJECT_NAME_MAX_LENGTH}
-          />
+    <>
+      <Modal
+        title={t('device-farm:deviceEditProjectModalTitle')}
+        closable
+        onCancel={handleClose}
+        open={isOpen}
+        centered
+        footer={null}
+      >
+        <Box>
+          <ContentTitle>{t('device-farm:deviceEditProjectSearchTitle')}</ContentTitle>
+          <InputWrapper>
+            <Input.Search
+              value={inputValue}
+              onChange={(e) => handleChangeValues(e.target.value)}
+              disabled={isGlobal}
+              loading={isProjectLoading}
+              onBlur={() => setShowResult(false)}
+              onFocus={() => setShowResult(true)}
+              allowClear
+              placeholder={t('device-farm:deviceEditProjectSearchInputPlaceholder')}
+              maxLength={PROJECT_NAME_MAX_LENGTH}
+            />
 
-          {showResult && (
-            <ResultContainer>
-              {projects?.items.map((item) => {
+            {showResult && (
+              <ResultContainer>
+                {projects?.items.map((item) => {
+                  return (
+                    <ResultItem
+                      key={`add-project-${item.projectId}`}
+                      onMouseDown={() => handleAddProject(item.projectId)}
+                    >
+                      {item.name}
+                    </ResultItem>
+                  );
+                })}
+              </ResultContainer>
+            )}
+          </InputWrapper>
+
+          <SelectedProjectBox>
+            <ContentTitle>{t('device-farm:deviceEditProjectDeviceProjectTitle')}</ContentTitle>
+            <TagContainer>
+              {deviceProjects?.map((item) => {
                 return (
-                  <ResultItem
-                    key={`add-project-${item.projectId}`}
-                    onMouseDown={() => handleAddProject(item.projectId)}
+                  <Tag
+                    key={`device-${deviceId}-${item.projectId}`}
+                    closable
+                    onClose={() => handleDeleteProject(item.projectId)}
                   >
                     {item.name}
-                  </ResultItem>
+                  </Tag>
                 );
               })}
-            </ResultContainer>
-          )}
-        </InputWrapper>
+            </TagContainer>
+            {!isGlobal && !!deviceProjects && deviceProjects.length === 0 && (
+              <div>
+                <ExclamationCircleFilled style={{ color: 'red' }} />
+                &nbsp;{t('device-farm:deviceEditProjectEmptyProjectText')}
+              </div>
+            )}
+          </SelectedProjectBox>
 
-        <SelectedProjectBox>
-          <ContentTitle>{t('device-farm:deviceEditProjectDeviceProjectTitle')}</ContentTitle>
-          <TagContainer>
-            {deviceProjects?.map((item) => {
-              return (
-                <Tag
-                  key={`device-${deviceId}-${item.projectId}`}
-                  closable
-                  onClose={() => handleDeleteProject(item.projectId)}
-                >
-                  {item.name}
-                </Tag>
-              );
-            })}
-          </TagContainer>
-          {!isGlobal && !!deviceProjects && deviceProjects.length === 0 && (
-            <div>
-              <ExclamationCircleFilled style={{ color: 'red' }} />
-              &nbsp;{t('device-farm:deviceEditProjectEmptyProjectText')}
-            </div>
-          )}
-        </SelectedProjectBox>
+          <GlobalCheckBoxWrapper>
+            <Checkbox
+              checked={isGlobal}
+              onChange={(e) => handleToggleGlobal(e.target.checked)}
+              id="use-as-public-device-checkbox"
+            >
+              {t('device-farm:deviceEditProjectGlobalLabelText')}
+            </Checkbox>
 
-        <GlobalCheckBoxWrapper>
-          <Checkbox
-            checked={isGlobal}
-            onChange={(e) => handleToggleGlobal(e.target.checked)}
-            id="use-as-public-device-checkbox"
-          >
-            {t('device-farm:deviceEditProjectGlobalLabelText')}
-          </Checkbox>
-
-          <WarningBox>
-            <WarningFilled style={{ color: '#f8b118', fontSize: '1.2rem' }} />
-            <p>{t('device-farm:deviceEditProjectGlobalWarningText')}</p>
-          </WarningBox>
-        </GlobalCheckBoxWrapper>
-      </Box>
-    </Modal>
+            <WarningBox>
+              <WarningFilled style={{ color: '#f8b118', fontSize: '1.2rem' }} />
+              <p>{t('device-farm:deviceEditProjectGlobalWarningText')}</p>
+            </WarningBox>
+          </GlobalCheckBoxWrapper>
+        </Box>
+      </Modal>
+      <UpgradePlanBannerModal
+        isOpen={isBannerOpen}
+        close={closeBanner}
+        title={'Need more device?'}
+        description={null}
+      />
+      <TimeoutDocsModal isOpen={isDocsOtpen} close={closeDocs} />
+    </>
   );
 };
 

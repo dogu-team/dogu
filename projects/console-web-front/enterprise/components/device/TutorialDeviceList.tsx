@@ -6,8 +6,8 @@ import { isAxiosError } from 'axios';
 import useTranslation from 'next-translate/useTranslation';
 import { useState } from 'react';
 import styled from 'styled-components';
-import { enableDevice } from '../../api/device';
 
+import { enableDevice } from '../../api/device';
 import usePaginationSWR from '../../../src/hooks/usePaginationSWR';
 import useRefresh from '../../../src/hooks/useRefresh';
 import { flexRowBaseStyle } from '../../../src/styles/box';
