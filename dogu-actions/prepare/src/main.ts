@@ -36,7 +36,7 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
         ? (() => {
             const platformAppVersion = Reflect.get(resolvedAppPackageName, DOGU_DEVICE_PLATFORM) as string | undefined;
             if (!platformAppVersion) {
-              throw new Error(`Invalid app version: ${stringify(resolvedAppPackageName)} for platform: ${DOGU_DEVICE_PLATFORM}`);
+              throw new Error(`Invalid app package name: ${stringify(resolvedAppPackageName)} for platform: ${DOGU_DEVICE_PLATFORM}`);
             }
             return platformAppVersion;
           })()
