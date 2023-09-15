@@ -52,8 +52,11 @@ FROM ubuntu:22.04 AS dogu-agent
 
 RUN apt-get update && \
     apt-get install -y \
+    ca-certificates \
     git \
     curl
+
+RUN update-ca-certificates
 
 RUN curl -o node-v16.20.2-linux-x64.tar.gz https://nodejs.org/download/release/v16.20.2/node-v16.20.2-linux-x64.tar.gz && \
     tar -xvf node-v16.20.2-linux-x64.tar.gz && \
