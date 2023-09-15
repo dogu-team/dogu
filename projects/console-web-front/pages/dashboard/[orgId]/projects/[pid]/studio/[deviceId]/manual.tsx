@@ -7,7 +7,7 @@ import {
   getStudioTestingLayout,
   getStudioTestingServerSideProps,
   StudioTestingPageProps,
-} from 'src/enterprise/pages/studio';
+} from 'enterprise/pages/studio';
 
 const StudioManualPage: NextPageWithLayout<StudioTestingPageProps> = ({ organization, project, me, deviceId }) => {
   return (

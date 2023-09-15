@@ -19,7 +19,7 @@ import HostFilter from 'src/components/hosts/HostFilter';
 import OrganizationDeviceFarmLayout from '../../../../src/components/layouts/OrganizationDeviceFarmLayout';
 import { swrAuthFetcher } from '../../../../src/api';
 import DeviceFarmTutorialLinkButton from '../../../../src/components/organizations/DeviceFarmTutorialLinkButton';
-import { FeatureContext } from '../../../../src/enterprise/contexts/feature';
+import { FeatureContext } from '../../../../enterprise/contexts/feature';
 
 export const DoguAgentLatestContext = createContext<{ latestInfo: DownloadablePackageResult[] }>({
   latestInfo: [],

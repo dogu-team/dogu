@@ -3,7 +3,7 @@ import { AxiosError } from 'axios';
 import { GetServerSideProps } from 'next';
 
 import { getOrganizationInServerSide } from 'src/api/organization';
-import { getFeatureConfigInServerSide } from '../enterprise/api/feature';
+import { getFeatureConfigInServerSide } from '../../enterprise/api/feature';
 import { redirectWithLocale } from '../ssr/locale';
 import { checkUserVerifiedInServerSide } from '../utils/auth';
 

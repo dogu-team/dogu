@@ -35,7 +35,7 @@ import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from '../device/PlatformIcon';
 import TokenCopyInput from '../common/TokenCopyInput';
 import { menuItemButtonStyles } from '../../styles/button';
-import HostVesrsionBadge from '../../enterprise/components/host/HostVersionBadge';
+import HostVesrsionBadge from '../../../enterprise/components/host/HostVersionBadge';
 
 interface HostItemProps {
   host: HostBase;

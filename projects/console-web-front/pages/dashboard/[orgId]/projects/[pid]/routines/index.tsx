@@ -20,7 +20,7 @@ import { swrAuthFetcher } from 'src/api/index';
 import EditRoutineButton from 'src/components/routine/EditRoutineButton';
 import ProjectLayoutWithSidebar from 'src/components/layouts/ProjectLayoutWithSidebar';
 import ExternalGuideLink from 'src/components/common/ExternalGuideLink';
-import SlackRoutineChannelButton from 'src/enterprise/components/slack/SlackRoutineChannelButton';
+import SlackRoutineChannelButton from 'enterprise/components/slack/SlackRoutineChannelButton';
 import TutorialButton from '../../../../../../src/components/buttons/TutorialButton';
 
 const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
