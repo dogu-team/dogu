@@ -78,9 +78,9 @@ export function parseAppPackageName(appPackageNameRaw: JobSchema['appPackageName
       return appPackageNameRaw;
     } else if (typeof appPackageNameRaw === 'object') {
       const platformType = platformTypeFromPlatform(platform);
-      const appVersion = appPackageNameRaw[platformType];
-      if (appVersion) {
-        return appVersion;
+      const appPackageName = appPackageNameRaw[platformType];
+      if (appPackageName) {
+        return appPackageName;
       }
     }
   }
