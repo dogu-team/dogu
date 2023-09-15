@@ -46,3 +46,36 @@ COPY ./shells/entrypoint.sh ./entrypoint.sh
 EXPOSE 3001 4000 
 
 ENTRYPOINT ["sh" ,"-c", "./entrypoint.sh"]
+
+
+FROM ubuntu:22.04 AS dogu-agent
+
+RUN apt-get update && \
+    apt-get install -y \
+    git \
+    curl
+
+RUN curl -o node-v16.20.2-linux-x64.tar.gz https://nodejs.org/download/release/v16.20.2/node-v16.20.2-linux-x64.tar.gz && \
+    tar -xvf node-v16.20.2-linux-x64.tar.gz && \
+    mv node-v16.20.2-linux-x64 /node && \
+    rm node-v16.20.2-linux-x64.tar.gz
+
+ENV PATH /node/bin:${PATH}
+RUN corepack enable
+
+WORKDIR /dogu
+ENV NODE_OPTIONS --max-old-space-size=8192 ${NODE_OPTIONS}
+COPY .dogu-workspace ./.dogu-workspace
+COPY .yarnrc.yml package.json tsconfig.json tsconfig.eslint.json .pnp.cjs .pnp.loader.mjs yarn.lock ./
+COPY .yarn ./.yarn
+COPY .husky ./.husky
+COPY packages/typescript ./packages/typescript
+COPY packages/typescript-private ./packages/typescript-private
+COPY packages/typescript-dev-private ./packages/typescript-dev-private
+COPY projects/dogu-agent ./projects/dogu-agent
+
+RUN yarn run newbie:cicd
+RUN yarn run build
+RUN yarn run third-party:download:build
+
+ENTRYPOINT ["yarn", "dogu-agent"]

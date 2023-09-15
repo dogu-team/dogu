@@ -74,6 +74,11 @@ const files: ThirdPartyFile[] = [
     path: 'win32/common/ffmpeg.exe',
   },
   {
+    condition: () => process.platform === 'linux' && process.arch === 'x64',
+    url: 'https://github.com/dogu-team/third-party-binaries/releases/download/ffmpeg-6.0-tessus/ffmpeg-linux-x64',
+    path: 'linux/x64/ffmpeg',
+  },
+  {
     condition: () => process.platform === 'win32',
     url: 'https://github.com/dogu-team/third-party-binaries/releases/download/zlib-1.2.13/zlib1-windows-x64.dll',
     path: 'win32/x64/zlib1.dll',
