@@ -22,12 +22,12 @@ export module LicenseValidator {
     if (isExpired) {
       const defaultDeviceCount = DEFAULT_SELF_HOSTED_LICENSE_DATA.licenseTier?.deviceCount;
       if (defaultDeviceCount! < deviceCount) {
-        throw new HttpException(`License device count is not enough. license device count: ${defaultDeviceCount}`, HttpStatus.UNAUTHORIZED);
+        throw new HttpException(`License device count is not enough. license device count: ${defaultDeviceCount}`, HttpStatus.PAYMENT_REQUIRED);
       }
     }
 
     if (license.licenseTier!.deviceCount < deviceCount) {
-      throw new HttpException(`License device count is not enough. license device count: ${license.licenseTier!.deviceCount}`, HttpStatus.UNAUTHORIZED);
+      throw new HttpException(`License device count is not enough. license device count: ${license.licenseTier!.deviceCount}`, HttpStatus.PAYMENT_REQUIRED);
     }
   }
 
@@ -39,12 +39,12 @@ export module LicenseValidator {
     if (isExpired) {
       const defaultOpenApiEnabled = DEFAULT_SELF_HOSTED_LICENSE_DATA.licenseTier?.openApiEnabled;
       if (!defaultOpenApiEnabled) {
-        throw new HttpException(`This License is not enabled. License Tier: ${license.licenseTier!.name}`, HttpStatus.UNAUTHORIZED);
+        throw new HttpException(`This License is not enabled. License Tier: ${license.licenseTier!.name}`, HttpStatus.PAYMENT_REQUIRED);
       }
     }
 
     if (!license.licenseTier!.openApiEnabled) {
-      throw new HttpException(`This License is not enabled. License Tier: ${license.licenseTier!.name}`, HttpStatus.UNAUTHORIZED);
+      throw new HttpException(`This License is not enabled. License Tier: ${license.licenseTier!.name}`, HttpStatus.PAYMENT_REQUIRED);
     }
   }
 
@@ -57,12 +57,12 @@ export module LicenseValidator {
     if (isExpired) {
       const defaultDoguAgentAutoUpdateEnabled = DEFAULT_SELF_HOSTED_LICENSE_DATA.licenseTier?.doguAgentAutoUpdateEnabled;
       if (!defaultDoguAgentAutoUpdateEnabled) {
-        throw new HttpException(`License dogu agent auto update is not enabled.`, HttpStatus.UNAUTHORIZED);
+        throw new HttpException(`License dogu agent auto update is not enabled.`, HttpStatus.PAYMENT_REQUIRED);
       }
     }
 
     if (!license.licenseTier!.doguAgentAutoUpdateEnabled) {
-      throw new HttpException(`License dogu agent auto update is not enabled.`, HttpStatus.UNAUTHORIZED);
+      throw new HttpException(`License dogu agent auto update is not enabled.`, HttpStatus.PAYMENT_REQUIRED);
     }
   }
 }
