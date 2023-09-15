@@ -13,7 +13,7 @@ export async function downloadApp(
   deviceHostClient: DeviceHostClient,
   DOGU_DEVICE_PLATFORM: PlatformType,
   DOGU_HOST_WORKSPACE_PATH: string,
-  appVersion: string,
+  by: { appVersion?: string; appPackageName?: string },
 ): Promise<string> {
   function getExtension(platform: PlatformType): string {
     switch (platform) {
@@ -28,29 +28,33 @@ export async function downloadApp(
 
   const extension = getExtension(DOGU_DEVICE_PLATFORM);
   printable.info('Get application list for', {
-    version: appVersion,
+    version: by.appVersion,
+    packageName: by.appPackageName,
     extension,
   });
 
-  let applications: Application[];
-  if (appVersion === 'latest') {
-    const { applications: apps } = await consoleActionClient.getApplicationList({
-      latestOnly: true,
+  let application: Application | undefined;
+  if (by.appPackageName) {
+    const { applications: apps } = await consoleActionClient.getApplicationsWithUniquePackage({
       extension,
     });
-    applications = apps;
-  } else {
+    application = apps.find((app) => app.packageName === by.appPackageName);
+  } else if (by.appVersion) {
     const { applications: apps } = await consoleActionClient.getApplicationList({
-      version: appVersion,
+      version: by.appVersion,
       extension,
     });
-    applications = apps;
+    application = apps[0];
   }
 
-  if (applications.length === 0) {
-    throw new Error(`No application found for version ${appVersion} and extension ${extension}`);
+  if (application === undefined) {
+    throw new Error(
+      `No application found for ${
+        by.appPackageName ? `appPackageName ${by.appPackageName}` : by.appVersion ? `appVersion ${by.appVersion}` : 'empty condition'
+      } and extension ${extension}`,
+    );
   }
-  const application = applications[0];
+
   printable.info('Get application download url', {
     application,
   });

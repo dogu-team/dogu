@@ -1,5 +1,5 @@
 import { FeatureTableBase, OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
-import { DeviceId, EDITION_TYPE } from '@dogu-private/types';
+import { DeviceId } from '@dogu-private/types';
 import { GetServerSideProps } from 'next';
 
 import { getOrganizationInServerSide } from '../../api/organization';

@@ -33,6 +33,10 @@ inputs:
     description: app version to download and install
     default: ''
     required: false
+  appPackageName:
+    description: app package name to download and install
+    default: ''
+    required: false
   uninstallApp:
     description: uninstall app before install
     default: false

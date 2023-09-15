@@ -50,6 +50,14 @@ definitions:
             patternProperties:
               ^[a-z]+$:
                 type: string
+      appPackageName:
+        anyOf:
+          - type: string
+          - type: object
+            additionalProperties: false
+            patternProperties:
+              ^[a-z]+$:
+                type: string
       runs-on:
         anyOf:
           - type: object

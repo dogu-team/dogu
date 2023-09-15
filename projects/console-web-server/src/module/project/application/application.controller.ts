@@ -11,7 +11,7 @@ import { PROJECT_ROLE } from '../../auth/auth.types';
 import { ProjectPermission, User } from '../../auth/decorators';
 import { Page } from '../../common/dto/pagination/page';
 import { ApplicationService } from './application.service';
-import { FindProjectApplicationDto, UploadProjectApplicationDto, UploadSampleAppDto } from './dto/application.dto';
+import { FindProjectApplicationDto, UploadSampleAppDto } from './dto/application.dto';
 
 @Controller('organizations/:organizationId/projects')
 export class ApplicationController {
@@ -59,10 +59,9 @@ export class ApplicationController {
     @User() userPayload: UserPayload,
     @Param('organizationId') organizationId: OrganizationId,
     @Param('projectId') projectId: ProjectId,
-    @Body() dto: UploadProjectApplicationDto,
   ) {
     await this.dataSource.transaction(async (manager) => {
-      await this.applicationService.uploadApplication(manager, file, userPayload.userId, CREATOR_TYPE.USER, organizationId, projectId, dto);
+      await this.applicationService.uploadApplication(manager, file, userPayload.userId, CREATOR_TYPE.USER, organizationId, projectId);
     });
   }
 

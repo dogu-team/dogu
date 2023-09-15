@@ -390,8 +390,6 @@ Default: `null`
 
 ---
 
-Choose the version of the app to run in the job.
-
 :::info
 
 This is an attribute for mobile app and game testing. Do not use it for other types of tests.
@@ -400,36 +398,9 @@ The app version of the project must be uploaded.
 
 :::
 
-:::tip
+Choose the version of the app to run in the job.
 
-Apps specified as `Latest` can be used in routines without specifying a version.  
-To upload the app to the latest version, refer to the [App Management](/management/project/app) documentation.
-
-:::
-
-1. If you want to run the app specified as `Latest` on all platforms of the target device:
-   > Example
-   >
-   > ```yaml
-   > jobs:
-   >   job1:
-   >     runs-on:
-   >       group: macos
-   >     appVersion: latest
-   > ```
-2. If you want to run the app specified as `Latest` on each platform of the target device:
-   > Example
-   >
-   > ```yaml
-   > jobs:
-   >   job1:
-   >     runs-on:
-   >       group: macos
-   >     appVersion:
-   >       android: latest
-   >       ios: latest
-   > ```
-3. If you want to use a single version for all platforms of the target device:
+1. If all platforms use the same version:
    > Example
    >
    > ```yaml
@@ -439,7 +410,7 @@ To upload the app to the latest version, refer to the [App Management](/manageme
    >       group: macos
    >     appVersion: 1.0.0
    > ```
-4. If you want to use different versions for each platform of the target device:
+2. If each platform uses a different version:
    > Example
    >
    > ```yaml

@@ -2,20 +2,20 @@ import { OrganizationId, Platform, PlatformType, ProjectId } from '@dogu-private
 import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
-import useSelect from '../../../../hooks/useSelect';
 
+import useSelect from '../../../../hooks/useSelect';
 import { flexRowBaseStyle } from '../../../../styles/box';
 import PlatformIcon from '../../../device/PlatformIcon';
 import ProjectApplicationSelector from '../../../project-application/ProjectApplicationSelector';
 
 interface Props {
-  version: string | undefined;
+  packageName: string | undefined;
   platform: PlatformType;
   onReset: (platform: PlatformType) => void;
-  onChange: (platform: PlatformType, version: string | undefined) => void;
+  onChange: (platform: PlatformType, packageName: string | undefined) => void;
 }
 
-const PlatformAppVersionSelector = ({ version, platform, onReset, onChange }: Props) => {
+const PlatformAppPcakageNameSelector = ({ packageName, platform, onReset, onChange }: Props) => {
   const router = useRouter();
   const { isOpen, toggle, close } = useSelect();
   const { t } = useTranslation();
@@ -40,24 +40,11 @@ const PlatformAppVersionSelector = ({ version, platform, onReset, onChange }: Pr
 
       <div style={{ width: '200px' }}>
         <ProjectApplicationSelector
-          preOptions={[
-            {
-              label: (
-                <div>
-                  <b>{t('routine:routineGuiEditorJobAppVersionLatestOptionTitle')}</b>
-                  <LatestDescription>
-                    {t('routine:routineGuiEditorJobAppVersionLatestOptionDescription')}
-                  </LatestDescription>
-                </div>
-              ),
-              value: 'latest',
-            },
-          ]}
-          defaultValue={version}
-          value={version}
+          defaultValue={packageName}
+          value={packageName}
           organizationId={router.query.orgId as OrganizationId}
           projectId={router.query.pid as ProjectId}
-          onSelectApp={(version, app) => onChange(platform, version)}
+          onSelectApp={(packageName, app) => onChange(platform, packageName)}
           placeholder="Select app"
           extension={getExtension()}
           open={isOpen}
@@ -70,7 +57,7 @@ const PlatformAppVersionSelector = ({ version, platform, onReset, onChange }: Pr
   );
 };
 
-export default PlatformAppVersionSelector;
+export default PlatformAppPcakageNameSelector;
 
 const AppSelectPlatformWrapper = styled.div`
   ${flexRowBaseStyle}

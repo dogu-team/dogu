@@ -8,12 +8,10 @@ export const uploadProjectApplication = async (
   organizationId: OrganizationId,
   projectId: ProjectId,
   file: File,
-  isLatest: boolean,
   progress?: (e: AxiosProgressEvent) => void,
 ) => {
   const fd = new FormData();
   fd.append('file', file);
-  fd.append('isLatest', isLatest.toString());
 
   await api.put<void>(`/organizations/${organizationId}/projects/${projectId}/applications`, fd, {
     headers: {

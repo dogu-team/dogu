@@ -64,11 +64,10 @@ const WebdriverIoRoutineTutorial = () => {
   );
   const frameworkLanguage = Object.keys(
     routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang,
-  ).find(
-    (language) =>
-      routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[
-        language as TutorialSupportLanguage
-      ]?.includes(framework),
+  ).find((language) =>
+    routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[
+      language as TutorialSupportLanguage
+    ]?.includes(framework),
   );
 
   const APP_ROUTINE_SAMPLE = `name: sample-routine
@@ -81,7 +80,7 @@ jobs:
     runs-on:
       group:
         - android
-    appVersion:
+    appPackageName:
     record: true
     steps:
       - name: run test

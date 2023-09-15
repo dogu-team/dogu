@@ -1,6 +1,6 @@
 import { IsFilledString, TransformBooleanString } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsNumber, IsOptional, ValidateNested } from 'class-validator';
+import { IsBoolean, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export class GetGitUrlResponse {
   @IsFilledString()
@@ -9,7 +9,7 @@ export class GetGitUrlResponse {
 
 export class GetApplicationListQuery {
   @IsOptional()
-  @IsFilledString()
+  @IsString()
   version?: string;
 
   @IsOptional()
@@ -30,6 +30,9 @@ export class Application {
 
   @IsFilledString()
   fileName!: string;
+
+  @IsFilledString()
+  packageName!: string;
 
   @IsNumber()
   @Type(() => Number)

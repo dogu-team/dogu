@@ -19,7 +19,6 @@ interface Props extends Omit<SelectProps<string>, 'options'> {
   toggleOpen: () => void;
   close: () => void;
   extension?: string;
-  preOptions?: SelectProps<string>['options'];
 }
 
 const ProjectApplicationSelector = ({
@@ -27,34 +26,25 @@ const ProjectApplicationSelector = ({
   organizationId,
   projectId,
   extension,
-  preOptions,
   toggleOpen,
   close,
   onSelectApp,
   ...props
 }: Props) => {
   const { debouncedValue, handleChangeValues } = useDebouncedInputValues();
-  const { data, isLoading, error } = useSWR<PageBase<ProjectApplicationWithIcon>>(
-    `/organizations/${organizationId}/projects/${projectId}/applications?version=${debouncedValue}${
-      extension ? `&extension=${extension}` : ''
+  const { data, isLoading, error } = useSWR<ProjectApplicationWithIcon[]>(
+    `/organizations/${organizationId}/projects/${projectId}/applications/packages${
+      extension ? `?extension=${extension}` : ''
     }`,
     swrAuthFetcher,
   );
 
-  const applications = selectedApplication ? [selectedApplication, ...(data?.items || [])] : data?.items;
-  const options: SelectProps['options'] = preOptions
-    ? preOptions.concat(
-        applications?.map((item) => ({
-          label: <ProjectApplicationOptionItem app={item} />,
-          value: item.version,
-        })) ?? [],
-      )
-    : applications?.map((item) => ({
-        label: <ProjectApplicationOptionItem app={item} />,
-        value: item.version,
-      }));
-  const isInvalid =
-    !!props.value && props.value !== 'latest' && !data?.items.find((item) => item.version === props.value);
+  const applications = selectedApplication ? [selectedApplication, ...(data || [])] : data;
+  const options: SelectProps['options'] = applications?.map((item) => ({
+    label: <ProjectApplicationOptionItem app={item} />,
+    value: item.package,
+  }));
+  const isInvalid = !!props.value && props.value !== 'latest' && !data?.find((item) => item.package === props.value);
 
   return (
     <Select<string>
@@ -65,9 +55,9 @@ const ProjectApplicationSelector = ({
       status={isInvalid ? 'warning' : undefined}
       suffixIcon={isInvalid ? <WarningFilled style={{ color: '#ffd666' }} /> : undefined}
       onSearch={handleChangeValues}
-      onChange={(version) => {
-        const selected = data?.items.find((item) => item.version === version);
-        onSelectApp(version, selected);
+      onChange={(appPackage) => {
+        const selected = data?.find((item) => item.package === appPackage);
+        onSelectApp(appPackage, selected);
       }}
       dropdownMatchSelectWidth={false}
       filterOption={false}

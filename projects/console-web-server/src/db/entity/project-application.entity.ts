@@ -45,6 +45,9 @@ export class ProjectApplication implements ProjectApplicationBase {
   @Column({ type: 'character varying', name: ProjectApplicationPropSnake.version, nullable: false })
   version!: string;
 
+  @Column({ type: 'bigint', name: ProjectApplicationPropSnake.version_code, nullable: false, default: 0 })
+  versionCode!: number;
+
   @Column({ type: 'smallint', name: ProjectApplicationPropSnake.is_latest, nullable: false, default: 0 })
   isLatest!: number;
 
