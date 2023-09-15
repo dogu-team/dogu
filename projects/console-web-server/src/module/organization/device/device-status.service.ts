@@ -231,16 +231,9 @@ export class DeviceStatusService {
   async curUsedDevices(organizationId: OrganizationId): Promise<Device[]> {
     const qb = this.dataSource.getRepository(Device).createQueryBuilder('device');
 
-    const globalDeviceSubQuery = qb
-      .subQuery() //
-      .select(`globalDevice.${DevicePropSnake.device_id}`)
-      .from(Device, 'globalDevice')
-      .where(`globalDevice.${DevicePropSnake.is_global} = 1 AND globalDevice.${DevicePropSnake.organization_id} = ${organizationId}`);
-
     const devices = await qb
       .leftJoinAndSelect(`device.${DevicePropCamel.projectAndDevices}`, 'projectAndDevice')
       .where(`device.${DevicePropSnake.organization_id} = :${DevicePropCamel.organizationId}`, { organizationId })
-      // .orWhere(`device.${DevicePropSnake.device_id} IN ${globalDeviceSubQuery.getQuery()}`)
       .getMany();
 
     const globalDevices = devices.filter((device) => device.isGlobal === 1);
