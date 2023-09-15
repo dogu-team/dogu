@@ -45,8 +45,11 @@ export class OrganizationController {
 
   @Get(':organizationId')
   @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
-  async findOrganizationByOrganizationId(@Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId): Promise<OrganizationResponse> {
-    const rv = await this.organizationService.findOrganizationByOrganizationId(organizationId);
+  async findOrganizationByOrganizationId(
+    @User() userPayload: UserPayload,
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
+  ): Promise<OrganizationResponse> {
+    const rv = await this.organizationService.findOrganizationByOrganizationId(organizationId, userPayload);
     return rv;
   }
 

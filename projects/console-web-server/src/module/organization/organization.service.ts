@@ -56,6 +56,7 @@ import { Routine } from '../../db/entity/routine.entity';
 import { RoutineStep } from '../../db/entity/step.entity';
 import { UserVisit } from '../../db/entity/user-visit.entity';
 import { FeatureLicenseService } from '../../enterprise/module/license/feature-license.service';
+import { FEATURE_CONFIG } from '../../feature.config';
 import { castEntity } from '../../types/entity-cast';
 import { ORGANIZATION_ROLE } from '../auth/auth.types';
 import { EMPTY_PAGE, Page } from '../common/dto/pagination/page';
@@ -108,7 +109,7 @@ export class OrganizationService {
     return org;
   }
 
-  async findOrganizationByOrganizationId(organizationId: OrganizationId): Promise<OrganizationResponse> {
+  async findOrganizationByOrganizationId(organizationId: OrganizationId, userPayload: UserPayload): Promise<OrganizationResponse> {
     const organizationRoleIdPropSnake = OrganizationAndUserAndOrganizationRolePropSnake.organization_role_id;
     const organizationRoleIdPropCamel = OrganizationAndUserAndOrganizationRolePropCamel.organizationRoleId;
 
@@ -144,10 +145,23 @@ export class OrganizationService {
     }
     const owner = orgUserRole.user;
 
-    const licenseInfo = await this.licenseService.getLicense(organizationId);
+    const orgBase: OrganizationBase = { ...organization, owner };
+    const user = await this.dataSource.getRepository(User).findOne({ where: { userId: userPayload.userId } });
 
-    const orgBase: OrganizationResponse = { ...organization, owner, licenseInfo }; // org onwer or self hotsted root
-    return orgBase;
+    if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
+      const licenseInfo = await this.licenseService.getLicense(organizationId);
+      return { ...organization, owner, licenseInfo };
+      // if (user!.isRoot) {
+      //   return { ...organization, owner, licenseInfo };
+      // }
+      // return orgBase;
+    } else {
+      // if (user!.userId == owner.userId) {
+      //   return { ...organization, owner };
+      // }
+
+      return orgBase;
+    }
   }
 
   async createOrganization(manager: EntityManager, userId: UserId, dto: createOrganizationDto): Promise<OrganizationBase> {
