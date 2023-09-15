@@ -196,6 +196,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:projects/device-server"\
       },\
       {\
+        "name": "dogu-agent",\
+        "reference": "workspace:projects/dogu-agent"\
+      },\
+      {\
         "name": "go-device-controller",\
         "reference": "workspace:projects/go-device-controller"\
       },\
@@ -260,6 +264,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["device-server", ["workspace:projects/device-server"]],\
       ["docs", ["workspace:docs"]],\
       ["dogu", ["workspace:."]],\
+      ["dogu-agent", ["workspace:projects/dogu-agent"]],\
       ["dogu-device-client", ["workspace:packages/python/dogu-device-client"]],\
       ["e2e", ["workspace:e2e"]],\
       ["go-device-controller", ["workspace:projects/go-device-controller"]],\
@@ -26872,6 +26877,25 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["dogu-agent", [\
+        ["workspace:projects/dogu-agent", {\
+          "packageLocation": "./projects/dogu-agent/",\
+          "packageDependencies": [\
+            ["dogu-agent", "workspace:projects/dogu-agent"],\
+            ["@types/lodash", "npm:4.14.195"],\
+            ["@types/node", "npm:18.15.11"],\
+            ["@types/yargs", "npm:17.0.24"],\
+            ["cross-env", "npm:7.0.3"],\
+            ["lodash", "npm:4.17.21"],\
+            ["nodemon", "npm:2.0.22"],\
+            ["shx", "npm:0.3.4"],\
+            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"],\
+            ["yargs", "npm:17.7.2"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["dogu-device-client", [\
         ["workspace:packages/python/dogu-device-client", {\
           "packageLocation": "./packages/python/dogu-device-client/",\
@@ -51826,6 +51850,20 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/yargs-npm-17.7.1-0758ec0e50-3d8a43c336.zip/node_modules/yargs/",\
           "packageDependencies": [\
             ["yargs", "npm:17.7.1"],\
+            ["cliui", "npm:8.0.1"],\
+            ["escalade", "npm:3.1.1"],\
+            ["get-caller-file", "npm:2.0.5"],\
+            ["require-directory", "npm:2.1.1"],\
+            ["string-width", "npm:4.2.3"],\
+            ["y18n", "npm:5.0.8"],\
+            ["yargs-parser", "npm:21.1.1"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:17.7.2", {\
+          "packageLocation": "./.yarn/cache/yargs-npm-17.7.2-80b62638e1-73b572e863.zip/node_modules/yargs/",\
+          "packageDependencies": [\
+            ["yargs", "npm:17.7.2"],\
             ["cliui", "npm:8.0.1"],\
             ["escalade", "npm:3.1.1"],\
             ["get-caller-file", "npm:2.0.5"],\
