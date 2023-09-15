@@ -19,17 +19,17 @@ import { PersonalAccessToken } from '../../../db/entity/personal-access-token.en
 import { ProjectAccessToken } from '../../../db/entity/project-access-token.entity';
 import { ProjectRole } from '../../../db/entity/project-role.entity';
 import { logger } from '../../logger/logger.instance';
-import { EMAIL_VERIFICATION, ORGANIZATION_ROLE, PROJECT_ROLE } from '../auth.types';
+import { EMAIL_VERIFICATION, ORGANIZATION_ROLE, PROJECT_ROLE, SELF_HOSTED_ROLE } from '../auth.types';
 
 export interface LogInfo {
   controller: string;
   method: string;
   handler: string;
-  roleType: PROJECT_ROLE | ORGANIZATION_ROLE | EMAIL_VERIFICATION | null;
+  roleType: PROJECT_ROLE | ORGANIZATION_ROLE | EMAIL_VERIFICATION | SELF_HOSTED_ROLE | null;
   payload: AuthPayLoad;
 }
 
-export function printLog(ctx: ExecutionContext, guardName: string, roleType: PROJECT_ROLE | ORGANIZATION_ROLE | EMAIL_VERIFICATION | null) {
+export function printLog(ctx: ExecutionContext, guardName: string, roleType: PROJECT_ROLE | ORGANIZATION_ROLE | EMAIL_VERIFICATION | SELF_HOSTED_ROLE | null) {
   const logInfo: LogInfo = {
     controller: ctx.getClass().name,
     method: ctx.switchToHttp().getRequest<{ method: string }>().method,
@@ -54,6 +54,14 @@ export function getOrganizationIdFromRequest(ctx: ExecutionContext): Organizatio
 }
 
 export module UserPermission {
+  export async function isSelfHostedRootUser(manager: EntityManager, userId: UserId): Promise<boolean> {
+    const user = await manager.getRepository(User).findOne({ where: { userId } });
+    if (!user) {
+      throw new HttpException(`The user is not exist.`, HttpStatus.UNAUTHORIZED);
+    }
+    return user.isRoot ? true : false;
+  }
+
   export async function getUserWithOrganizationRoleAndProjectRoleGroup(
     manager: EntityManager,
     organizationId: OrganizationId,

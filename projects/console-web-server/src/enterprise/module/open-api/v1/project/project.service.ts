@@ -2,8 +2,8 @@ import { CREATOR_TYPE, ProjectId, UserId } from '@dogu-private/types';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { Project } from '../../../../db/entity/project.entity';
-import { ApplicationService } from '../../../project/application/application.service';
+import { Project } from '../../../../../db/entity/project.entity';
+import { ApplicationService } from '../../../../../module/project/application/application.service';
 
 @Injectable()
 export class V1ProjectService {

@@ -1,8 +1,8 @@
 import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common';
 import { Request } from 'express';
-import { config } from '../../../../../config';
+import { config } from '../../../../../../config';
+import { printLog } from '../../../../../../module/auth/guard/common';
 import { V1AuthOpenApiService } from '../../../service/open-api/v1/auth-open-api.service';
-import { printLog } from '../../common';
 
 @Injectable()
 export class V1OpenApiGuard implements CanActivate {
@@ -16,6 +16,7 @@ export class V1OpenApiGuard implements CanActivate {
       printLog(ctx, 'V1OpenApiGuard', null);
     }
     const req = ctx.switchToHttp().getRequest<Request>();
+
     await this.v1AuthOpenApiService.validateRequestData(req);
     return true;
   }

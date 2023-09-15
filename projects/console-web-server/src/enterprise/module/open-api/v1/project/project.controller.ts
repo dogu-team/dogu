@@ -3,9 +3,9 @@ import { V1Project } from '@dogu-private/console-open-api';
 import { CREATOR_TYPE, ProjectId, V1CALLER_TYPE, V1OpenApiPayload } from '@dogu-private/types';
 import { Controller, Inject, Param, Put, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { applicationFileParser } from '../../../../utils/file';
-import { PROJECT_ROLE } from '../../../auth/auth.types';
-import { V1OpenApiCaller, V1OpenApiProjectPermission } from '../../../auth/decorators';
+import { LICENSE_AUTHROIZE, PROJECT_ROLE } from '../../../../../module/auth/auth.types';
+import { LicensePermission, V1OpenApiCaller, V1OpenApiProjectPermission } from '../../../../../module/auth/decorators';
+import { applicationFileParser } from '../../../../../utils/file';
 import { V1ProjectService } from './project.service';
 
 @Controller(V1Project.controller.path)
@@ -17,6 +17,7 @@ export class V1ProjectController {
 
   @Put(V1Project.uploadApplicatoin.path)
   @V1OpenApiProjectPermission(PROJECT_ROLE.WRITE)
+  @LicensePermission(LICENSE_AUTHROIZE.OPEN_API)
   @UseInterceptors(FileInterceptor('file'))
   async uploadApplication(
     @UploadedFile(applicationFileParser) file: Express.Multer.File,

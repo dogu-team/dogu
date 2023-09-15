@@ -6,6 +6,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { config, dataSourceConfig } from '../../config';
 import { HostAppModule } from '../../enterprise/module/host-app/host-app.module';
 import { SlackModule } from '../../enterprise/module/integration/slack/slack.module';
+import { LicenseModule } from '../../enterprise/module/license/feature-license.module';
+import { OpenApiMoudule } from '../../enterprise/module/open-api/open-api.module';
 import { RecordModule } from '../../enterprise/module/record/record.module';
 import { FEATURE_CONFIG } from '../../feature.config';
 import { LoggerMiddleware } from '../../middleware/logger.middleware';
@@ -28,7 +30,6 @@ import { FileModule } from '../file/file.module';
 import { GitlabModule } from '../gitlab/gitlab.module';
 import { InitModule } from '../init/init.module';
 import { LoggerModule } from '../logger/logger.module';
-import { OpenApiMoudule } from '../open-api/open-api.module';
 import { DeviceTagModule } from '../organization/device-tag/device-tag.module';
 import { DeviceModule } from '../organization/device/device.module';
 import { HostModule } from '../organization/host/host.module';
@@ -89,6 +90,7 @@ const BASE_MODULES = [
   RemoteWebDriverBiDiModule,
   ChangeLogModule,
   HostAppModule,
+  LicenseModule,
 ];
 
 const MODULES =

@@ -76,7 +76,7 @@ export class HostService {
       throw new HttpException(`This host does not have token. : ${hostId}`, HttpStatus.BAD_REQUEST);
     }
 
-    if (TokenService.isExpired(token)) {
+    if (TokenService.isExpired(token.expiredAt)) {
       throw new HttpException(`This host token is expired. Please regenerate token. : ${hostId}`, HttpStatus.BAD_REQUEST);
     }
 

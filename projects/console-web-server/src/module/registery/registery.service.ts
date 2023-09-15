@@ -304,7 +304,7 @@ export class RegisteryService {
       if (storedToken.token !== token) {
         throw new HttpException('Invalid token', HttpStatus.BAD_REQUEST);
       }
-      if (TokenService.isExpired(storedToken)) {
+      if (TokenService.isExpired(storedToken.expiredAt)) {
         throw new HttpException('Token is expired', HttpStatus.BAD_REQUEST);
       }
 

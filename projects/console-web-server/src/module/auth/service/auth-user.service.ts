@@ -136,7 +136,7 @@ export class AuthUserService {
     if (!token) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
-    if (TokenService.isExpired(token)) {
+    if (TokenService.isExpired(token.expiredAt)) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
 
@@ -188,7 +188,7 @@ export class AuthUserService {
       const tokenIds = userAndRefreshTokens.map((userAndRefreshToken) => userAndRefreshToken.tokenId);
       const tokens = await manager.getRepository(Token).find({ where: { tokenId: In(tokenIds) } });
 
-      const expiredTokens = tokens.filter((token) => TokenService.isExpired(token));
+      const expiredTokens = tokens.filter((token) => TokenService.isExpired(token.expiredAt));
       if (expiredTokens.length === 0) {
         return;
       }

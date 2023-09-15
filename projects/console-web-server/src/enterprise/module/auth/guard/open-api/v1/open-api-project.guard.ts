@@ -4,11 +4,11 @@ import { Reflector } from '@nestjs/core';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Request } from 'express';
 import { DataSource } from 'typeorm';
-import { config } from '../../../../../config';
-import { DoguLogger } from '../../../../logger/logger';
-import { PROJECT_ROLE } from '../../../auth.types';
+import { config } from '../../../../../../config';
+import { PROJECT_ROLE } from '../../../../../../module/auth/auth.types';
+import { ApiPermission, printLog } from '../../../../../../module/auth/guard/common';
+import { DoguLogger } from '../../../../../../module/logger/logger';
 import { V1AuthOpenApiService } from '../../../service/open-api/v1/auth-open-api.service';
-import { ApiPermission, printLog } from '../../common';
 
 @Injectable()
 export class V1OpenApiProjectGuard implements CanActivate {

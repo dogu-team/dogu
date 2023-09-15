@@ -3,11 +3,11 @@ import { CREATOR_TYPE, getPipelineStateKey, ProjectId, RoutineId, RoutinePipelin
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
-import { RoutinePipeline } from '../../../../db/entity/pipeline.entity';
-import { Project } from '../../../../db/entity/project.entity';
-import { env } from '../../../../env';
-import { CancelPipelineEvent, CancelPipelineQueue } from '../../../event/pipeline/update-pipeline-queue';
-import { PipelineService } from '../../../routine/pipeline/pipeline.service';
+import { RoutinePipeline } from '../../../../../db/entity/pipeline.entity';
+import { Project } from '../../../../../db/entity/project.entity';
+import { env } from '../../../../../env';
+import { CancelPipelineEvent, CancelPipelineQueue } from '../../../../../module/event/pipeline/update-pipeline-queue';
+import { PipelineService } from '../../../../../module/routine/pipeline/pipeline.service';
 
 @Injectable()
 export class V1RoutineService {

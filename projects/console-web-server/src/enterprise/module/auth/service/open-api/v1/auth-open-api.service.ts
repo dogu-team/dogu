@@ -2,9 +2,9 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { Request } from 'express';
 import { DataSource } from 'typeorm';
-import { Token } from '../../../../../db/entity/token.entity';
-import { DoguLogger } from '../../../../logger/logger';
-import { TokenService } from '../../../../token/token.service';
+import { Token } from '../../../../../../db/entity/token.entity';
+import { DoguLogger } from '../../../../../../module/logger/logger';
+import { TokenService } from '../../../../../../module/token/token.service';
 
 @Injectable()
 export class V1AuthOpenApiService {
@@ -27,7 +27,7 @@ export class V1AuthOpenApiService {
       throw new HttpException('Token is invalid', HttpStatus.UNAUTHORIZED);
     }
 
-    if (TokenService.isExpired(tokenCheck)) {
+    if (TokenService.isExpired(tokenCheck.expiredAt)) {
       throw new HttpException('Token is expired', HttpStatus.UNAUTHORIZED);
     }
   }

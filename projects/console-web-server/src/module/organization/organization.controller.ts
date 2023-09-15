@@ -51,7 +51,7 @@ export class OrganizationController {
   }
 
   @Get(':organizationId/public')
-  async findOrganizationByOrganizationIdPublic(@Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId): Promise<OrganizationResponse> {
+  async findOrganizationByOrganizationIdPublic(@Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId): Promise<OrganizationBase> {
     const rv = await this.organizationService.findOrganizationByIdPublic(organizationId);
     return rv;
   }
@@ -62,7 +62,7 @@ export class OrganizationController {
     @User() userPayload: UserPayload,
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
     @Body() dto: UpdateOrganizationDto,
-  ): Promise<OrganizationResponse> {
+  ): Promise<OrganizationBase> {
     const rv = await this.organizationService.updateOrganization(userPayload, organizationId, dto);
     return rv;
   }
@@ -74,7 +74,7 @@ export class OrganizationController {
     @User() userPayload: UserPayload,
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId,
     @UploadedFile(ImageFileParser) image: Express.Multer.File,
-  ): Promise<OrganizationResponse> {
+  ): Promise<OrganizationBase> {
     const rv = await this.organizationService.uploadOrganizationImage(userPayload, organizationId, image);
     return rv;
   }

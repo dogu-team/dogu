@@ -6,7 +6,11 @@ import { HostService } from '../../../module/organization/host/host.service';
 
 @Injectable()
 export class HostAppService {
-  constructor(private readonly hostService: HostService, private readonly downloadService: DownloadService, private readonly deviceMessageRelayer: DeviceMessageRelayer) {}
+  constructor(
+    private readonly hostService: HostService, //
+    private readonly downloadService: DownloadService,
+    private readonly deviceMessageRelayer: DeviceMessageRelayer,
+  ) {}
 
   async update(organizationId: OrganizationId, hostId: HostId): Promise<void> {
     const host = await this.hostService.findHost(hostId);
