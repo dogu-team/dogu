@@ -380,7 +380,7 @@ Job에서 실행할 브라우저를 선택합니다. **여러 브라우저를 �
 >     browserName: chrome
 > ```
 
-## jobs.&lt;job-name&gt;.appVersion
+## jobs.&lt;job-name&gt;.appPackageName
 
 <code
   style={{ position: 'relative', top: '-20px', fontSize: '90%' }}
@@ -390,6 +390,62 @@ Job에서 실행할 브라우저를 선택합니다. **여러 브라우저를 �
 기본값: `null`
 
 ---
+
+:::tip Latest 앱
+
+같은 패키지 이름을 가진 앱 중에서 가장 최신 빌드 버전 앱을 사용합니다.
+
+:::
+
+:::info
+
+모바일 앱, 게임 테스트를 위한 속성입니다. 해당 테스트가 아닌 경우, 사용하지 않습니다.
+
+프로젝트에 해당 패키지 이름의 앱이 업로드되어 있어야 합니다.
+
+:::
+
+Job에서 실행할 앱의 패키지 이름을 선택합니다.
+
+1. 모든 플랫폼이 하나의 패키지 이름을 사용할 경우
+   > 예시
+   >
+   > ```yaml
+   > jobs:
+   >   job1:
+   >     runs-on:
+   >       group: macos
+   >     appPackageName: com.dogutech.app
+   > ```
+2. 각 플랫폼이 다른 패키지 이름을 사용할 경우
+   > 예시
+   >
+   > ```yaml
+   > jobs:
+   >   job1:
+   >     runs-on:
+   >       group: macos
+   >     appVersion:
+   >       android: com.dogutech.app
+   >       ios: com.dogutech.sample
+   > ```
+
+## jobs.&lt;job-name&gt;.appVersion (deprecated)
+
+<code
+  style={{ position: 'relative', top: '-20px', fontSize: '90%' }}
+  children="optional"
+/>
+
+기본값: `null`
+
+---
+
+:::danger deprecated
+
+사용 편의성을 위해 `jobs.<job-name>.appPackageName` 으로 사용하는 것을 권장합니다.
+
+:::
 
 :::info
 

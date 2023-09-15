@@ -119,8 +119,9 @@ jobs:
       # group 실행을 통해 해당 태그를 가진 모든 디바이스에서 테스트를 수행합니다.
       group:
         - android
-    appVersion:
-      android: 1.0.0
+    appPackageName:
+      # 패키지 이름이 같은 앱 목록에서 최신 빌드 버전의 앱을 자동으로 다운로드합니다.
+      android: com.dogutech.app
     record: true
     steps:
       - name: run test
@@ -137,8 +138,8 @@ jobs:
     runs-on:
       group:
         - ios
-    appVersion:
-      ios: 1.0.0
+    appPackageName:
+      ios: com.dogutech.app
     record: true
     steps:
       - name: run test

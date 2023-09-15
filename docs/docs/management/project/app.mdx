@@ -25,6 +25,7 @@ Dogu collects the following information from your app:
 - App ID
 - App name
 - App version
+- App build version
 - App icon
 - App size
 
@@ -50,9 +51,9 @@ Only `.apk` or `.ipa` files are supported for app uploads.
      style={{ width: 600, display: 'block' }}
    />
 
-:::caution App Version
+:::tup Latest App
 
-If an app with the same version already exists, it will be overwritten by the uploaded app.
+If you upload an app with the same app ID, the uploaded app will become the "Latest" app if its build version is the same or higher.
 
 :::
 
