@@ -33,21 +33,21 @@ export async function downloadApp(
     extension,
   });
 
-  let applications: Application[] = [];
+  let application: Application | undefined;
   if (by.appPackageName) {
     const { applications: apps } = await consoleActionClient.getApplicationsWithUniquePackage({
       extension,
     });
-    applications = apps;
+    application = apps.find((app) => app.packageName === by.appPackageName);
   } else if (by.appVersion) {
     const { applications: apps } = await consoleActionClient.getApplicationList({
       version: by.appVersion,
       extension,
     });
-    applications = apps;
+    application = apps[0];
   }
 
-  if (applications.length === 0) {
+  if (application === undefined) {
     throw new Error(
       `No application found for ${
         by.appPackageName ? `appPackageName ${by.appPackageName}` : by.appVersion ? `appVersion ${by.appVersion}` : 'empty condition'
@@ -55,7 +55,6 @@ export async function downloadApp(
     );
   }
 
-  const application = applications[0];
   printable.info('Get application download url', {
     application,
   });

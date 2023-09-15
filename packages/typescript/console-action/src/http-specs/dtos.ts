@@ -31,6 +31,9 @@ export class Application {
   @IsFilledString()
   fileName!: string;
 
+  @IsFilledString()
+  packageName!: string;
+
   @IsNumber()
   @Type(() => Number)
   fileSize!: number;

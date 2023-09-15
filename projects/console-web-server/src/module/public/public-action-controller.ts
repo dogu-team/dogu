@@ -37,11 +37,12 @@ export class PublicActionController {
     const dto = transform(FindProjectApplicationDto, query);
     const applicationListSource = await this.applicationService.getApplicationList(organizationId, projectId, dto);
     const { items } = applicationListSource;
-    const applicationList = items.map(({ projectApplicationId, name, fileName, fileSize }) => {
+    const applicationList = items.map(({ projectApplicationId, name, fileName, fileSize, package: packageName }) => {
       const application: Instance<typeof Application> = {
         id: projectApplicationId,
         name,
         fileName,
+        packageName,
         fileSize,
       };
       return application;
@@ -60,11 +61,12 @@ export class PublicActionController {
   ): Promise<Instance<typeof PublicAction.getApplicationList.responseBody>> {
     const dto = transform(FindProjectApplicationDto, query);
     const applicationListSource = await this.applicationService.getApplicationWithUniquePackage(organizationId, projectId, dto);
-    const applicationList = applicationListSource.map(({ projectApplicationId, name, fileName, fileSize }) => {
+    const applicationList = applicationListSource.map(({ projectApplicationId, name, fileName, fileSize, package: packageName }) => {
       const application: Instance<typeof Application> = {
         id: projectApplicationId,
         name,
         fileName,
+        packageName,
         fileSize,
       };
       return application;
