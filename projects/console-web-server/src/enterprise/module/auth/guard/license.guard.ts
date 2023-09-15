@@ -1,14 +1,17 @@
-import { CanActivate, ExecutionContext, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { CanActivate, ExecutionContext, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
 import { config } from '../../../../config';
 import { LICENSE_AUTHROIZE, LICENSE_AUTHROIZE_KEY } from '../../../../module/auth/auth.types';
 import { printLog } from '../../../../module/auth/guard/common';
+import { AuthLicenseService } from '../service/auth-license.service';
 
 @Injectable()
 export class LicenseGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector, //
+    @Inject(AuthLicenseService)
+    private readonly authLicenseService: AuthLicenseService,
   ) {}
 
   async canActivate(ctx: ExecutionContext): Promise<boolean> {
@@ -21,9 +24,7 @@ export class LicenseGuard implements CanActivate {
       printLog(ctx, 'License', null);
     }
     const req = ctx.switchToHttp().getRequest<Request>();
-
-    // await this.v1AuthOpenApiService.validateLicense(req);
-    // await this.v1AuthOpenApiService.validateRequestData(req);
+    await this.authLicenseService.validateLicense(req, controllerRoleType);
     return true;
   }
 }

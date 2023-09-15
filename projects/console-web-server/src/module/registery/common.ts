@@ -3,9 +3,9 @@ import * as bcrypt from 'bcrypt';
 import { EntityManager } from 'typeorm';
 import { UserAndVerificationToken } from '../../db/entity/relations/user-and-verification-token.entity';
 import { UserEmailPreference } from '../../db/entity/user-email-preference.entity';
-// import { UserGitlab } from '../../db/entity/user-gitlab.entity';
 import { UserSns } from '../../db/entity/user-sns.entity';
 import { User } from '../../db/entity/user.entity';
+import { FEATURE_CONFIG } from '../../feature.config';
 import { TokenService } from '../token/token.service';
 
 export async function createUser(manager: EntityManager, email: string, password: string | null, name: string) {
@@ -16,17 +16,24 @@ export async function createUser(manager: EntityManager, email: string, password
     savePassword = null;
   }
 
-  const rootUser = await manager.getRepository(User).findOne({
-    where: {
-      isRoot: true,
-    },
-  });
+  let isRootUser = false;
+  if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
+    const rootUser = await manager.getRepository(User).findOne({
+      where: {
+        isRoot: true,
+      },
+    });
+
+    if (!rootUser) {
+      isRootUser = true;
+    }
+  }
 
   const userData = manager.getRepository(User).create({
     email,
     name,
     password: savePassword,
-    isRoot: rootUser ? false : true,
+    isRoot: isRootUser,
   });
   const user = await manager.getRepository(User).save(userData);
   return user;
