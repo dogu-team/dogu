@@ -10,11 +10,17 @@ import {
 } from '@dogu-private/types';
 import { applyDecorators, createParamDecorator, ExecutionContext, SetMetadata, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { LicenseGuard } from '../../enterprise/module/auth/guard/license.guard';
+import { V1OpenApiOrganizationGuard } from '../../enterprise/module/auth/guard/open-api/v1/open-api-organization.guard';
+import { V1OpenApiProjectGuard } from '../../enterprise/module/auth/guard/open-api/v1/open-api-project.guard';
+import { V1OpenApiGuard } from '../../enterprise/module/auth/guard/open-api/v1/open-api.guard';
 import {
   EMAIL_VERIFICATION,
   EMAIL_VERIFICATION_KEY,
   HOST_ACTION_KEY,
   HOST_ACTION_TYPE,
+  LICENSE_AUTHROIZE,
+  LICENSE_AUTHROIZE_KEY,
   ORGANIZATION_ROLE,
   ORGANIZATION_ROLE_KEY,
   PROJECT_ROLE,
@@ -25,9 +31,6 @@ import {
 import { DeviceAcessGuard } from './guard/device.guard';
 import { EmailVerificationGuard } from './guard/email-verification.guard';
 import { HostGuard } from './guard/host.guard';
-import { V1OpenApiOrganizationGuard } from './guard/open-api/v1/open-api-organization.guard';
-import { V1OpenApiProjectGuard } from './guard/open-api/v1/open-api-project.guard';
-import { V1OpenApiGuard } from './guard/open-api/v1/open-api.guard';
 import { OrganizationGuard } from './guard/organization.guard';
 import { ProjectGuard } from './guard/project.guard';
 import { RemoteOrganizationGuard } from './guard/remote/remote-organization.guard';
@@ -99,3 +102,7 @@ export const V1OpenApiCaller = createParamDecorator((data: unknown, ctx: Executi
   const request = ctx.switchToHttp().getRequest<{ user: V1OpenApiPayload }>();
   return request.user;
 });
+
+export function LicensePermission(roleType: LICENSE_AUTHROIZE): PropertyDecorator {
+  return applyDecorators(SetMetadata(LICENSE_AUTHROIZE_KEY, roleType), UseGuards(LicenseGuard));
+}

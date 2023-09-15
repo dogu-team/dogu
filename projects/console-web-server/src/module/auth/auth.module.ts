@@ -6,10 +6,11 @@ import { env } from '../../env';
 import { AuthHostService } from './service/auth-host.service';
 import { AuthJwtService } from './service/auth-jwt.service';
 
+import { V1AuthOpenApiService } from '../../enterprise/module/auth/service/open-api/v1/auth-open-api.service';
+import { LicenseModule } from '../../enterprise/module/license/feature-license.module';
 import { FEATURE_CONFIG } from '../../feature.config';
 import { AuthRemoteService } from './service/auth-remote.service';
 import { AuthUserService } from './service/auth-user.service';
-import { V1AuthOpenApiService } from './service/open-api/v1/auth-open-api.service';
 import { GoogleStrategy } from './strategy/google-strategy';
 
 const PROVIDERS = FEATURE_CONFIG.get('thirdPartyLogin')
@@ -23,6 +24,7 @@ const PROVIDERS = FEATURE_CONFIG.get('thirdPartyLogin')
     JwtModule.register({
       secret: env.DOGU_SECRET,
     }),
+    LicenseModule,
   ],
   exports: [AuthUserService, AuthJwtService, AuthHostService, AuthRemoteService, V1AuthOpenApiService],
   providers: PROVIDERS,

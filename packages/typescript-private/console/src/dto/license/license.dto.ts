@@ -2,14 +2,14 @@ import { OrganizationId } from '@dogu-private/types';
 import { Type } from 'class-transformer';
 import { Equals, IsEnum, IsIn, IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { LicenseType, LicenseTypeKey } from '../../base/license';
-import { LICENSE_TIER_TYPE } from '../../base/license-tier';
+import { LICENSE_SELF_HOSTED_TIER_TYPE } from '../../base/license-self-hosted-tier';
 
 export class LicenseDtoBase {
   @IsIn([LicenseTypeKey])
   licenseType!: LicenseType;
 
-  @IsEnum(LICENSE_TIER_TYPE)
-  tierType!: LICENSE_TIER_TYPE;
+  @IsEnum(LICENSE_SELF_HOSTED_TIER_TYPE)
+  tierType!: LICENSE_SELF_HOSTED_TIER_TYPE;
 
   @IsNumber()
   @Type(() => Number)

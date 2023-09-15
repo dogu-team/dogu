@@ -7,10 +7,10 @@ import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway } from '@nes
 import { IncomingMessage } from 'http';
 import { DataSource } from 'typeorm';
 import { WebSocket } from 'ws';
-import { PROJECT_ROLE } from '../../../auth/auth.types';
-import { ApiPermission } from '../../../auth/guard/common';
+import { PROJECT_ROLE } from '../../../../../module/auth/auth.types';
+import { ApiPermission } from '../../../../../module/auth/guard/common';
+import { DoguLogger } from '../../../../../module/logger/logger';
 import { V1OpenApiGuard } from '../../../auth/guard/open-api/v1/open-api.guard';
-import { DoguLogger } from '../../../logger/logger';
 import { V1RoutineService } from './routine.service';
 
 @WebSocketGateway({ path: V1RoutinePipelineWsController.path })

@@ -5,9 +5,10 @@ import { FEATURE_CONFIG } from '../../../feature.config';
 import { FeatureLicenseService } from './feature-license.service';
 import { LicenseCloudService } from './implementations/license-cloud.service';
 import { LicenseSelfHostedService } from './implementations/license-self-hosted.service';
-import { LicenseController } from './license.controller';
+import { LicenseCloudController } from './license-cloud.controller';
+import { LicenseSelfHostedController } from './license-self-hosted.controller';
 
-const FeatureLicenseServiceValue = FEATURE_CONFIG.get('licenseVerification');
+const FeatureLicenseServiceValue = FEATURE_CONFIG.get('licenseModule');
 const FeatureLicenseServiceProvider: ClassProvider = {
   provide: FeatureLicenseService,
   useClass: FeatureLicenseServiceValue === 'cloud' ? LicenseCloudService : LicenseSelfHostedService,
@@ -15,7 +16,7 @@ const FeatureLicenseServiceProvider: ClassProvider = {
 
 @Module({
   imports: [TypeOrmModule.forFeature([DoguLicense])],
-  controllers: [LicenseController],
+  controllers: [LicenseCloudController, LicenseSelfHostedController],
   providers: [FeatureLicenseServiceProvider],
   exports: [FeatureLicenseServiceProvider],
 })

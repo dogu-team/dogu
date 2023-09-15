@@ -146,7 +146,7 @@ export class OrganizationService {
 
     const licenseInfo = await this.licenseService.getLicense(organizationId);
 
-    const orgBase: OrganizationResponse = { ...organization, owner, licenseInfo };
+    const orgBase: OrganizationResponse = { ...organization, owner, licenseInfo }; // org onwer or self hotsted root
     return orgBase;
   }
 

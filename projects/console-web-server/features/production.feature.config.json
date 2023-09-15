@@ -1,5 +1,5 @@
 {
-  "licenseVerification": "cloud",
+  "licenseModule": "cloud",
   "defaultEdition": "enterprise",
   "fileService": "s3",
   "useSampleProject": true,

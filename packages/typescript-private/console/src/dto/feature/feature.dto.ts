@@ -1,7 +1,7 @@
 import { EDITION_TYPE } from '@dogu-private/types';
 
 export interface FeatureTableBase {
-  licenseVerification: 'cloud' | 'self-hosted';
+  licenseModule: 'cloud' | 'self-hosted';
   defaultEdition: EDITION_TYPE;
   fileService: 's3' | 'nexus';
   useSampleProject: boolean;

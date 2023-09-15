@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Pipeline } from 'ioredis';
-import { User } from '../../../db/entity/user.entity';
-import { WsCommonService } from '../../../ws/common/ws-common.service';
-import { EventModule } from '../../event/event.module';
-import { ProjectModule } from '../../project/project.module';
-import { PipelineModule } from '../../routine/pipeline/pipeline.module';
+import { User } from '../../../../db/entity/user.entity';
+import { EventModule } from '../../../../module/event/event.module';
+import { ProjectModule } from '../../../../module/project/project.module';
+import { PipelineModule } from '../../../../module/routine/pipeline/pipeline.module';
+import { WsCommonService } from '../../../../ws/common/ws-common.service';
 import { V1ProjectController } from './project/project.controller';
 import { V1ProjectService } from './project/project.service';
 import { V1LivePipelineStatusGateway } from './routine/live-pipeline-state.gateway';

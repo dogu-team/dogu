@@ -17,7 +17,7 @@ export * from './base/gitlab';
 export * from './base/gitlab-project';
 export * from './base/host';
 export * from './base/license';
-export * from './base/license-tier';
+export * from './base/license-self-hosted-tier';
 export * from './base/log';
 export * from './base/member';
 export * from './base/organization';

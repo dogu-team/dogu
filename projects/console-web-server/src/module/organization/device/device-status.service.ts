@@ -267,7 +267,6 @@ export class DeviceStatusService {
     if (!isUsingDevice) {
       const license = await this.licenseService.getLicense(organizationId);
       LicenseValidator.validateDeviceCount(license, curUsedDevices.length + 1);
-
       const maxDeviceCount = license.licenseTier!.deviceCount;
       if (curUsedDevices.length >= maxDeviceCount) {
         throw new HttpException(`Cannot enable device. maxDeviceCount: ${maxDeviceCount}`, HttpStatus.BAD_REQUEST);
