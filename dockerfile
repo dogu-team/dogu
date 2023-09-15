@@ -62,7 +62,6 @@ RUN curl -o node-v16.20.2-linux-x64.tar.gz https://nodejs.org/download/release/v
     tar -xvf node-v16.20.2-linux-x64.tar.gz && \
     mv node-v16.20.2-linux-x64 /node && \
     rm node-v16.20.2-linux-x64.tar.gz
-
 ENV PATH /node/bin:${PATH}
 RUN corepack enable
 
