@@ -94,7 +94,10 @@ export async function checkoutProject(
     const gitCheckoutCommand = await gitCommandBuilder.checkout({ branch });
     runGitCommand(gitCheckoutCommand, 'Checking out Git repository using branch...', 'Git checkout failed');
 
-    const gitPullCommand = await gitCommandBuilder.pull();
-    runGitCommand(gitPullCommand, 'Pulling Git repository...', 'Git pull failed');
+    const commit = `origin/${branch}`;
+    const gitResetCommand = await gitCommandBuilder.reset({
+      commit,
+    });
+    runGitCommand(gitResetCommand, `Resetting Git repository to ${commit}...`, 'Git reset failed');
   }
 }

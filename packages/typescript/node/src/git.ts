@@ -17,12 +17,20 @@ export interface GitCommand {
 }
 
 export interface GitFetchOptions {
+  all?: boolean;
+  tags?: boolean;
+  prune?: boolean;
+  pruneTags?: boolean;
   depth?: number;
   force?: boolean;
 }
 
 function mergeGitFetchOptions(options?: GitFetchOptions): Required<GitFetchOptions> {
   return {
+    all: true,
+    tags: true,
+    prune: true,
+    pruneTags: true,
     depth: 1,
     force: true,
     ...options,
@@ -31,11 +39,13 @@ function mergeGitFetchOptions(options?: GitFetchOptions): Required<GitFetchOptio
 
 export interface GitResetOptions {
   hard?: boolean;
+  commit?: string | null;
 }
 
 function mergeGitResetOptions(options?: GitResetOptions): Required<GitResetOptions> {
   return {
     hard: true,
+    commit: null,
     ...options,
   };
 }
@@ -130,8 +140,23 @@ export class GitCommandBuilder {
 
   async fetch(options?: GitFetchOptions): Promise<GitCommand> {
     await this.ensurePaths();
-    const { depth, force } = mergeGitFetchOptions(options);
-    const args = this.defaultArgs().concat(['fetch', '--all', '--tags', '--prune', '--prune-tags', `--depth=${depth}`]);
+    const { all, tags, prune, pruneTags, depth, force } = mergeGitFetchOptions(options);
+    const args = this.defaultArgs().concat(['fetch']);
+    if (all) {
+      args.push('--all');
+    }
+    if (tags) {
+      args.push('--tags');
+    }
+    if (prune) {
+      args.push('--prune');
+    }
+    if (pruneTags) {
+      args.push('--prune-tags');
+    }
+    if (depth > 0) {
+      args.push(`--depth=${depth}`);
+    }
     if (force) {
       args.push('--force');
     }
@@ -170,10 +195,13 @@ export class GitCommandBuilder {
 
   async reset(options?: GitResetOptions): Promise<GitCommand> {
     await this.ensurePaths();
-    const { hard } = mergeGitResetOptions(options);
+    const { hard, commit } = mergeGitResetOptions(options);
     const args = this.defaultArgs().concat(['reset']);
     if (hard) {
       args.push('--hard');
+    }
+    if (commit) {
+      args.push(commit);
     }
 
     return {
