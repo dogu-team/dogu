@@ -15,7 +15,7 @@ export enum LICENSE_SELF_HOSTED_TIER_TYPE {
 export function getDeviceCountByTier(licenseTierType: LICENSE_SELF_HOSTED_TIER_TYPE): number {
   switch (licenseTierType) {
     case LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_community:
-      return 2;
+      return 3;
     case LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_enterprise_1:
       return 5;
     case LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_enterprise_2:
