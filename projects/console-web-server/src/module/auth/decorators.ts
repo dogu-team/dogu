@@ -27,6 +27,8 @@ import {
   PROJECT_ROLE_KEY,
   REMOTE_ORGANIZATION_ROLE_KEY,
   REMOTE_PROJECT_ROLE_KEY,
+  SELF_HOSTED_ROLE,
+  SELF_HOSTED_ROLE_KEY,
 } from './auth.types';
 import { DeviceAcessGuard } from './guard/device.guard';
 import { EmailVerificationGuard } from './guard/email-verification.guard';
@@ -36,6 +38,7 @@ import { ProjectGuard } from './guard/project.guard';
 import { RemoteOrganizationGuard } from './guard/remote/remote-organization.guard';
 import { RemoteProjectGuard } from './guard/remote/remote-project.guard';
 import { RemoteGuard } from './guard/remote/remote.guard';
+import { SelfHostedRoleGuard } from './guard/self-hosted-root.guard';
 import { UserJwtGuard } from './guard/user-jwt.guard';
 
 export function RemoteOrganizationPermission(roleType: ORGANIZATION_ROLE): PropertyDecorator {
@@ -52,6 +55,10 @@ export function DeviceAccessPermission(): PropertyDecorator {
 
 export function HostPermission(actionType: HOST_ACTION_TYPE): PropertyDecorator {
   return applyDecorators(SetMetadata(HOST_ACTION_KEY, actionType), UseGuards(HostGuard));
+}
+
+export function SelfHostedPermission(roleType: SELF_HOSTED_ROLE): PropertyDecorator {
+  return applyDecorators(SetMetadata(SELF_HOSTED_ROLE_KEY, roleType), UseGuards(UserJwtGuard), UseGuards(SelfHostedRoleGuard));
 }
 
 export function OrganizationPermission(roleType: ORGANIZATION_ROLE): PropertyDecorator {

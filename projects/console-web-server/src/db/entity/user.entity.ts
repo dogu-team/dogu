@@ -67,6 +67,9 @@ export class User extends BaseEntity implements UserBase {
   @Column({ type: 'timestamptz', name: UserPropSnake.last_change_log_seen_at, precision: 3, nullable: true })
   lastChangeLogSeenAt!: Date | null;
 
+  @Column({ type: 'boolean', name: UserPropSnake.is_root, nullable: false, default: false })
+  isRoot!: boolean;
+
   @ColumnTemplate.Date(UserPropSnake.last_accessed_at, true)
   lastAccessedAt!: Date;
 
