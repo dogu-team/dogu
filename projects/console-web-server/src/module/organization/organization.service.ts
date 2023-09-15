@@ -156,9 +156,9 @@ export class OrganizationService {
       // }
       // return orgBase;
     } else {
-      if (user!.userId == owner.userId) {
-        return { ...organization, owner };
-      }
+      // if (user!.userId == owner.userId) {
+      //   return { ...organization, owner };
+      // }
 
       return orgBase;
     }
