@@ -12,7 +12,7 @@ export enum LICENSE_SELF_HOSTED_TIER_TYPE {
 export function getDefaultMaxMobileEnableCountByTier(licenseTierType: LICENSE_SELF_HOSTED_TIER_TYPE): number {
   switch (licenseTierType) {
     case LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_community:
-      return 1;
+      return 2;
     case LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_default_dogutech:
       return 999;
     default:
