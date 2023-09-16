@@ -162,7 +162,6 @@ func (ds *Devices) GetSurfaceStatus(a *types.DcGdcGetSurfaceStatusParam) types.D
 
 	status := device.Surfaces().GetStatus(surfaceType, screenId, pid)
 	if nil == status {
-		log.Inst.Error("Devices.GetSurfaceStatus surface not found", zap.String("serial", a.GetSerial()), zap.Int32("type", a.GetScreenId()), zap.Int32("pid", a.GetPid()))
 		return types.DcGdcGetSurfaceStatusResult{
 			HasSurface:             false,
 			IsPlaying:              false,

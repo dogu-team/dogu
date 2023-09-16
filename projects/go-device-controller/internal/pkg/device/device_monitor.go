@@ -45,6 +45,7 @@ func (sm *deviceMonitor) update() {
 		profiles := device.Surfaces().Profiles()
 		for _, surfaceProfile := range profiles {
 			deviceProfile := newDeviceProfile(device.Context().Serial, &surfaceProfile, diffTime)
+			deviceProfiles = append(deviceProfiles, deviceProfile)
 			allDeviceProfile.ReadMBytesPerSec += deviceProfile.ReadMBytesPerSec
 			allDeviceProfile.ReadCountPerSec += deviceProfile.ReadCountPerSec
 			allDeviceProfile.ReadMilisecPerSec += deviceProfile.ReadMilisecPerSec

@@ -41,9 +41,9 @@ namespace mywindows
 std::vector<WindowInfo> getInfos()
 {
 
-    webrtc::DesktopCaptureOptions option = webrtc::DesktopCaptureOptions::CreateDefault();
+    auto option = webrtc::DesktopCaptureOptions::CreateDefault();
     webrtc::DesktopCapturer::SourceList desktop_windows;
-    std::unique_ptr<webrtc::DesktopCapturer> capturer = webrtc::DesktopCapturer::CreateWindowCapturer(option);
+    auto capturer = webrtc::DesktopCapturer::CreateWindowCapturer(option);
     capturer->GetSourceList(&desktop_windows);
 
     std::vector<WindowInfo> infos;

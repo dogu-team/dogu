@@ -1,4 +1,5 @@
 #include "mywebrtc.h"
+#include "myWindows.h"
 #include "tcpClient.h"
 
 #include <algorithm>
@@ -305,7 +306,7 @@ std::unique_ptr<webrtc::DesktopCapturer> createCapturer()
 
     if (0 == g_pid)
     {
-        std::unique_ptr<webrtc::DesktopCapturer> capturer = webrtc::DesktopCapturer::CreateScreenCapturer(option);
+        auto capturer = webrtc::DesktopCapturer::CreateScreenCapturer(option);
         capturer->GetSourceList(&desktop_screens);
         for (auto &s : desktop_screens)
         {
@@ -316,14 +317,23 @@ std::unique_ptr<webrtc::DesktopCapturer> createCapturer()
     }
     else
     {
-        std::unique_ptr<webrtc::DesktopCapturer> capturer = webrtc::DesktopCapturer::CreateWindowCapturer(option);
-        capturer->GetSourceList(&desktop_screens);
-        for (auto &s : desktop_screens)
+
+        auto windows = mywindows::getInfos();
+        for (auto &w : windows)
         {
-            std::cout << "window: " << s.id << " -> " << s.title << "\n" << std::flush;
+            if (w.pid == g_pid)
+            {
+                std::cout << "window: " << w.id << " -> " << w.title << "\n" << std::flush;
+                auto option = webrtc::DesktopCaptureOptions::CreateDefault();
+                webrtc::DesktopCapturer::SourceList desktop_windows;
+                auto capturer = webrtc::DesktopCapturer::CreateWindowCapturer(option);
+                capturer->SelectSource(w.id);
+                return capturer;
+            }
         }
-        capturer->SelectSource(desktop_screens[0].id);
-        return capturer;
+
+        auto errorMessage = "window not found. pid: " + std::to_string(g_pid);
+        throw std::runtime_error(errorMessage);
     }
 }
 

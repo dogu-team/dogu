@@ -1,6 +1,6 @@
 import { IsFilledString, WebSocketSpec } from '@dogu-tech/common';
 import { Serial } from '@dogu-tech/types';
-import { IsNumber } from 'class-validator';
+import { IsBoolean, IsNumber } from 'class-validator';
 
 export class DeviceFindWindowsSendMessage {
   @IsFilledString()
@@ -8,6 +8,9 @@ export class DeviceFindWindowsSendMessage {
 
   @IsNumber()
   parentPid!: number;
+
+  @IsBoolean()
+  isSafari!: boolean;
 }
 
 export class DeviceFindWindowsReceiveMessage {

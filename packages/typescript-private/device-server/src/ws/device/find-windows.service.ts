@@ -2,7 +2,7 @@ import { OnWebSocketClose, OnWebSocketMessage, WebSocketGatewayBase, WebSocketRe
 import { categoryFromPlatform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, DuplicatedCallGuarder, errorify, Instance } from '@dogu-tech/common';
 import { DeviceFindWindows } from '@dogu-tech/device-client-common';
-import { getChildProcessIds } from '@dogu-tech/node';
+import { getChildProcessIds, getProcessesMapMacos } from '@dogu-tech/node';
 import { IncomingMessage } from 'http';
 import WebSocket from 'ws';
 import { DoguLogger } from '../../logger/logger';
@@ -30,7 +30,7 @@ export class DeviceFindWindowsService
 
   async onWebSocketMessage(webSocket: WebSocket, message: Instance<typeof DeviceFindWindows.sendMessage>, valueAccessor: WebSocketRegistryValueAccessor<Value>): Promise<void> {
     const { updateGuard } = valueAccessor.get();
-    const { serial, parentPid } = message;
+    const { serial, parentPid, isSafari } = message;
     const deviceChannel = this.scanService.findChannel(serial);
     if (deviceChannel === null) {
       throw new Error(`Device with serial ${serial} not found`);
@@ -40,6 +40,7 @@ export class DeviceFindWindowsService
     if (categoryPlatform !== 'desktop') {
       throw new Error(`Device with serial ${serial} is not desktop`);
     }
+
     const timer = setInterval(() => {
       updateGuard
         .guard(async () => {
@@ -49,6 +50,13 @@ export class DeviceFindWindowsService
           }
           const windows = await deviceChannel.getWindows();
           const childProcess = await getChildProcessIds(parentPid, this.logger);
+          if (isSafari && process.platform === 'darwin') {
+            const procs = await getProcessesMapMacos(this.logger);
+            const safariProc = Array.from(procs).find((proc) => proc[1].commandLine.includes('Safari.app/Contents/MacOS/Safari'));
+            if (safariProc) {
+              childProcess.push(safariProc[0]);
+            }
+          }
           const targetWindow = windows.find((window) => childProcess.includes(window.pid));
           if (!targetWindow) {
             return;

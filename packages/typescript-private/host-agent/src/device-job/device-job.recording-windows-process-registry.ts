@@ -1,5 +1,6 @@
 import { BrowserName, DeviceId, OrganizationId, Platform, RoutineDeviceJobId, Serial } from '@dogu-private/types';
-import { closeWebSocketWithTruncateReason, Instance, toISOStringWithTimezone } from '@dogu-tech/common';
+import { closeWebSocketWithTruncateReason, errorify, Instance, toISOStringWithTimezone } from '@dogu-tech/common';
+import { ChildProcess } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import path from 'path';
@@ -65,6 +66,14 @@ export class DeviceJobRecordingWindowProcessRegistry {
     const fileName = toISOStringWithTimezone(new Date(), '-');
     const filePath = path.resolve(recordDeviceRunnerPath, `${fileName}${getRecordExt(platform)}`);
 
+    if (browserName === 'safari' && process.platform === 'darwin') {
+      this.logger.info('startRecording: kill Safari', { organizationId, deviceId, routineDeviceJobId });
+      ChildProcess.exec(`osascript -e 'quit app "Safari"'`, {}, this.logger).catch((e) => {
+        const error = errorify(e);
+        this.logger.error('Failed to kill Safari', { error });
+      });
+    }
+
     this.webSockets.set(key, { webSocket: null, serial, organizationId, deviceId, routineDeviceJobId, browserName, filePath });
   }
 
@@ -89,7 +98,7 @@ export class DeviceJobRecordingWindowProcessRegistry {
       closeWebSocketWithTruncateReason(deviceRecordingInfo.webSocket, 1000, 'Next step started');
     }
 
-    const findWindowsSocket = this.record.connectFindWindowsWs({ serial, parentPid: pid }, (result) => {
+    const findWindowsSocket = this.record.connectFindWindowsWs({ serial, parentPid: pid, isSafari: deviceRecordingInfo.browserName === 'safari' }, (result) => {
       closeWebSocketWithTruncateReason(findWindowsSocket, 1000, 'Find device windows done');
       const recordWebSocket = this.record.connectAndUploadRecordWs({ ...value, pid: result.pid, width: result.width, height: result.height }, deviceRecordingInfo.filePath, (_) => {
         this.webSockets.delete(key);
