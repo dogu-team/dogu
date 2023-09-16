@@ -72,11 +72,11 @@ RUN curl -o node-v16.20.2-linux-x64.tar.gz https://nodejs.org/download/release/v
     mv node-v16.20.2-linux-x64 /node && \
     rm node-v16.20.2-linux-x64.tar.gz
 ENV PATH /node/bin:${PATH}
+ENV NODE_OPTIONS --max-old-space-size=8192 ${NODE_OPTIONS}
 RUN corepack enable && \
     corepack prepare yarn@3.3.1
 
 WORKDIR /dogu
-ENV NODE_OPTIONS --max-old-space-size=8192 ${NODE_OPTIONS}
 COPY .dogu-workspace ./.dogu-workspace
 COPY .yarnrc.yml package.json tsconfig.json tsconfig.eslint.json .pnp.cjs .pnp.loader.mjs yarn.lock ./
 COPY .yarn ./.yarn
