@@ -54,8 +54,12 @@ std::vector<WindowInfo> getInfos()
         info.title = s.title;
 
 #if defined(_WIN32)
-        DWORD processId;
-        GetWindowThreadProcessId(HWND(s.id), &processId);
+        DWORD processId = 0;
+        auto threadId = GetWindowThreadProcessId(HWND(s.id), &processId);
+        if (0 == threadId)
+        {
+            std::cout << "GetWindowThreadProcessId failed." << std::endl;
+        }
         info.pid = processId;
         webrtc::GetWindowRect(HWND(s.id), &info.rect);
 #elif defined(__APPLE__)
