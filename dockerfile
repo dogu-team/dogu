@@ -54,9 +54,18 @@ RUN apt-get update && \
     apt-get install -y \
     ca-certificates \
     git \
-    curl
-
-RUN update-ca-certificates
+    curl \
+    libx11-dev \
+    libxdamage-dev \
+    libxfixes-dev \
+    libxcomposite-dev \
+    libxext-dev \
+    libxtst-dev \
+    libxrandr-dev \
+    libglib2.0-dev \
+    libgbm-dev \ 
+    && \
+    update-ca-certificates
 
 RUN curl -o node-v16.20.2-linux-x64.tar.gz https://nodejs.org/download/release/v16.20.2/node-v16.20.2-linux-x64.tar.gz && \
     tar -xvf node-v16.20.2-linux-x64.tar.gz && \
