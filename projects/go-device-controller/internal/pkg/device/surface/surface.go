@@ -76,6 +76,7 @@ type SurfaceStatus struct {
 }
 
 func NewSurface(s *Surface, serial string, platform outer.Platform, surfaceType SurfaceType, screenId ScreenId, pid Pid, surfaceSourceFactory func() SurfaceSource) {
+	now := time.Now()
 	s.serial = serial
 	s.listernerIdSeed = 0
 	s.listeners = make([]SurfaceListener, 0)
@@ -87,8 +88,9 @@ func NewSurface(s *Surface, serial string, platform outer.Platform, surfaceType 
 	s.pid = pid
 	s.Profile.ScreenId = screenId
 	s.Profile.Pid = pid
+	s.lastRecvTime = now
 	s.surfaceSourceFactory = surfaceSourceFactory
-	go s.startRoutine()
+	go s.startRoutine(now)
 }
 
 func (s *Surface) IsEqual(serial string, surfaceType SurfaceType, screenId ScreenId, pid Pid) bool {
@@ -173,12 +175,12 @@ func (s *Surface) SetScreenCaptureOption(option *streaming.ScreenCaptureOption) 
 	s.option = option
 }
 
-func (s *Surface) startRoutine() {
+func (s *Surface) startRoutine(startTime time.Time) {
 	log.Inst.Info("surface.startRoutine", zap.String("serial", s.serial))
 	var lastSurfaceSource SurfaceSource
-	var lastSurfaceReconnectCompleteTime time.Time = time.Now()
-	var lastReconnectTryTime time.Time = time.Now()
-	var lastSurfaceClosedTime time.Time = time.Now()
+	var lastSurfaceReconnectCompleteTime time.Time = startTime
+	var lastReconnectTryTime time.Time = startTime
+	var lastSurfaceClosedTime time.Time = startTime
 	for msg := range s.msgChan {
 		switch msg.msgType {
 		case Reconnect:
