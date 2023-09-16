@@ -19,7 +19,7 @@ import { sendErrorNotification, sendSuccessNotification } from '../../../src/uti
 import { getErrorMessageFromAxios } from '../../../src/utils/error';
 import { OrganizationContext } from '../../../src/hooks/context/useOrganizationContext';
 import { isPaymentRequired, isTimeout } from '../../utils/error';
-import UpgradePlanBannerModal from '../license/UpgradePlanBannerModal';
+import { UpgradeConveniencePlanModal } from '../license/UpgradePlanBannerModal';
 import TimeoutDocsModal from '../license/TimeoutDocsModal';
 
 interface Props {
@@ -49,6 +49,7 @@ const HostVesrsionBadge = ({ host }: Props) => {
         if (isPaymentRequired(e)) {
           openBanner();
         } else if (isTimeout(e)) {
+          openDocs();
         } else {
           sendErrorNotification(t('device-farm:hostUpdateFailMsg', { reason: getErrorMessageFromAxios(e) }));
         }
@@ -77,8 +78,11 @@ const HostVesrsionBadge = ({ host }: Props) => {
           host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED && updatableInfo.reason
             ? updatableInfo.reason
             : host.connectionState !== HostConnectionState.HOST_CONNECTION_STATE_CONNECTED
-            ? `Updatable when connected`
-            : `Dogu and Agent version not matched!\nThis can result in unexpected behavior.\nDogu: ${process.env.NEXT_PUBLIC_DOGU_VERSION}, Agent: ${host.agentVersion}`
+            ? t('device-farm:doguAgentUpdateDisconnectedMessage')
+            : t('device-farm:doguAgentVersionMismatchMessage', {
+                doguVersion: process.env.NEXT_PUBLIC_DOGU_VERSION,
+                agentVersion: host.agentVersion,
+              })
         }
         open={!updatableInfo.reason && isMatched ? false : undefined}
         overlayInnerStyle={{ fontSize: '.8rem', textAlign: 'center', whiteSpace: 'pre-wrap' }}
@@ -95,7 +99,7 @@ const HostVesrsionBadge = ({ host }: Props) => {
               }
             }}
           >
-            Update to latest&nbsp;
+            {t('device-farm:doguAgentUpdateAvailableMessage')}&nbsp;
             <b style={{ fontSize: '.75rem' }}>{`(current: ${host.agentVersion})`}</b>
             {isFreeTier && <ProTag style={{ marginLeft: '.5rem' }} />}
           </FlexButton>
@@ -128,7 +132,12 @@ const HostVesrsionBadge = ({ host }: Props) => {
       >
         <p>{t('device-farm:hostUpdateModalContentInfo')}</p>
       </DangerConfirmModal>
-      <UpgradePlanBannerModal isOpen={isBannerOpen} close={closeBanner} title={'Need to update?'} description={null} />
+      <UpgradeConveniencePlanModal
+        isOpen={isBannerOpen}
+        close={closeBanner}
+        title={t('license:agentUpdateModalTitle')}
+        description={null}
+      />
       <TimeoutDocsModal isOpen={isDocsOtpen} close={closeDocs} />
     </>
   );

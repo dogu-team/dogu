@@ -1,6 +1,7 @@
 import { CheckOutlined } from '@ant-design/icons';
 import { LICENSE_SELF_HOSTED_TIER_TYPE } from '@dogu-private/console';
 import { Button, Divider, Modal, Tag } from 'antd';
+import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
 import styled from 'styled-components';
 
@@ -15,7 +16,6 @@ interface PricingItemProps {
   pricing: React.ReactNode;
   isCurrentPlan: boolean;
   button?: React.ReactNode;
-  maximumDeviceCount?: number;
 }
 
 const PricingItem: React.FC<PricingItemProps> = ({
@@ -25,13 +25,14 @@ const PricingItem: React.FC<PricingItemProps> = ({
   availableFeatures,
   isCurrentPlan,
   button,
-  maximumDeviceCount,
 }) => {
+  const { t } = useTranslation('license');
+
   return (
     <PricingItemBox>
       <FlexRow>
         <PricingTitle>{title}</PricingTitle>
-        {isCurrentPlan && <Tag style={{ marginRight: '0', marginLeft: '.25rem' }}>Current Plan</Tag>}
+        {isCurrentPlan && <Tag style={{ marginRight: '0', marginLeft: '.25rem' }}>{t('pricingCurrentPlan')}</Tag>}
       </FlexRow>
       <div style={{ marginTop: '.5rem' }}>
         <Description>{description}</Description>
@@ -41,11 +42,6 @@ const PricingItem: React.FC<PricingItemProps> = ({
       </div>
       <Divider />
       <div>
-        {maximumDeviceCount && (
-          <Description style={{ marginBottom: '.5rem' }}>
-            Your current plan can enable up to <b>{maximumDeviceCount}</b> devices.
-          </Description>
-        )}
         {availableFeatures.map((feature) => (
           <FeatureContent key={feature}>
             <CheckOutlined style={{ marginRight: '.25rem', color: 'green' }} /> {feature}
@@ -64,8 +60,9 @@ interface Props {
   description: React.ReactNode;
 }
 
-const UpgradePlanBannerModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
+export const UpgradeDevicePlanBannerModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
   const { organization } = useOrganizationContext();
+  const { t } = useTranslation('license');
   const licenseInfo = organization?.licenseInfo;
 
   return (
@@ -81,24 +78,28 @@ const UpgradePlanBannerModal: React.FC<Props> = ({ isOpen, close, title, descrip
             <PricingItem
               isCurrentPlan
               title={'Community'}
-              pricing={'Free'}
-              description={'For beginners'}
-              availableFeatures={['Up to 3 devices', 'Web/Mobile App/Game test automation']}
+              pricing={t('pricingFree')}
+              description={t('pricingCommunityDescription')}
+              availableFeatures={[t('pricingCommunityDeviceFeature1'), t('pricingCommunityDeviceFeature2')]}
             />
             <PricingItem
               isCurrentPlan={false}
               title={'Professional'}
-              description={'Per device per month'}
-              pricing={'31,000 KRW'}
-              availableFeatures={['Enable more than 3 devices', 'Dogu Agent easy update', 'Open API for integration']}
+              description={t('pricingProDeviceDescription')}
+              pricing={t('pricingPaid', { price: '29,000' })}
+              availableFeatures={[
+                t('pricingProDeviceFeature1', { count: 2 }),
+                t('pricingProCommonFeature2'),
+                t('pricingProCommonFeature3'),
+              ]}
               button={
                 <Link
-                  href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing`}
+                  href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing?type=self-hosted`}
                   target="_blank"
                   style={{ display: 'block' }}
                 >
                   <Button type={'primary'} style={{ width: '100%' }}>
-                    Upgrade plan
+                    {t('upgradePlan')}
                   </Button>
                 </Link>
               }
@@ -109,22 +110,21 @@ const UpgradePlanBannerModal: React.FC<Props> = ({ isOpen, close, title, descrip
             <PricingItem
               isCurrentPlan
               title={'Professional'}
-              description={'Per device per month'}
-              pricing={'31,000 KRW'}
-              maximumDeviceCount={licenseInfo?.licenseTier?.deviceCount}
+              description={t('pricingProDeviceDescription')}
+              pricing={t('pricingPaid', { price: '29,000' })}
               availableFeatures={[
-                `Enable more than ${licenseInfo?.licenseTier?.deviceCount ?? 3} devices`,
-                'Dogu Agent easy update',
-                'Open API for integration',
+                t('pricingProDeviceFeature1', { count: licenseInfo?.licenseTier?.deviceCount ?? 2 }),
+                t('pricingProCommonFeature2'),
+                t('pricingProCommonFeature3'),
               ]}
               button={
                 <Link
-                  href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing`}
+                  href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing?type=self-hosted`}
                   target="_blank"
                   style={{ display: 'block' }}
                 >
                   <Button type={'primary'} style={{ width: '100%' }}>
-                    Upgrade plan
+                    {t('upgradePlan')}
                   </Button>
                 </Link>
               }
@@ -136,7 +136,157 @@ const UpgradePlanBannerModal: React.FC<Props> = ({ isOpen, close, title, descrip
   );
 };
 
-export default UpgradePlanBannerModal;
+export const UpgradeBrowserPlanModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
+  const { organization } = useOrganizationContext();
+  const { t } = useTranslation('license');
+  const licenseInfo = organization?.licenseInfo;
+
+  return (
+    <Modal destroyOnClose open={isOpen} onCancel={close} closable title={title} footer={null} centered>
+      <div>
+        <p>{description}</p>
+      </div>
+      <PricingItemWrapper>
+        {!licenseInfo ||
+        licenseInfo?.licenseTierId === LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_community ||
+        checkExpired(licenseInfo) ? (
+          <>
+            <PricingItem
+              isCurrentPlan
+              title={'Community'}
+              pricing={t('pricingFree')}
+              description={t('pricingCommunityDescription')}
+              availableFeatures={[t('pricingCommunityBrowserFeature1'), t('pricingCommunityBrowserFeature2')]}
+            />
+            <PricingItem
+              isCurrentPlan={false}
+              title={'Professional'}
+              description={t('pricingProBrowserDescription')}
+              pricing={t('pricingPaid', { price: '19,000' })}
+              availableFeatures={[
+                t('pricingProBrowserFeature1', { count: 2 }),
+                t('pricingProCommonFeature2'),
+                t('pricingProCommonFeature3'),
+              ]}
+              button={
+                <Link
+                  href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing?type=self-hosted`}
+                  target="_blank"
+                  style={{ display: 'block' }}
+                >
+                  <Button type={'primary'} style={{ width: '100%' }}>
+                    {t('upgradePlan')}
+                  </Button>
+                </Link>
+              }
+            />
+          </>
+        ) : (
+          <>
+            <PricingItem
+              isCurrentPlan
+              title={'Professional'}
+              description={t('pricingProBrowserDescription')}
+              pricing={t('pricingPaid', { price: '19,000' })}
+              availableFeatures={[
+                t('pricingProBrowserFeature1', { count: licenseInfo?.licenseTier?.deviceCount ?? 2 }),
+                t('pricingProCommonFeature2'),
+                t('pricingProCommonFeature3'),
+              ]}
+              button={
+                <Link
+                  href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing?type=self-hosted`}
+                  target="_blank"
+                  style={{ display: 'block' }}
+                >
+                  <Button type={'primary'} style={{ width: '100%' }}>
+                    {t('upgradePlan')}
+                  </Button>
+                </Link>
+              }
+            />
+          </>
+        )}
+      </PricingItemWrapper>
+    </Modal>
+  );
+};
+
+export const UpgradeConveniencePlanModal: React.FC<Props> = ({ isOpen, close, title, description }) => {
+  const { organization } = useOrganizationContext();
+  const { t } = useTranslation('license');
+  const licenseInfo = organization?.licenseInfo;
+
+  return (
+    <Modal destroyOnClose open={isOpen} onCancel={close} closable title={title} footer={null} centered>
+      <div>
+        <p>{description}</p>
+      </div>
+      <PricingItemWrapper>
+        {!licenseInfo ||
+        licenseInfo?.licenseTierId === LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_community ||
+        checkExpired(licenseInfo) ? (
+          <>
+            <PricingItem
+              isCurrentPlan
+              title={'Community'}
+              pricing={null}
+              description={t('pricingCommunityDescription')}
+              availableFeatures={[t('pricingCommunityCommonFeature1'), t('pricingCommunityCommonFeature2')]}
+            />
+            <PricingItem
+              isCurrentPlan={false}
+              title={'Professional'}
+              pricing={null}
+              description={t('pricingProCommonDescription')}
+              availableFeatures={[
+                t('pricingProCommonFeature1'),
+                t('pricingProCommonFeature2'),
+                t('pricingProCommonFeature3'),
+              ]}
+              button={
+                <Link
+                  href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing?type=self-hosted`}
+                  target="_blank"
+                  style={{ display: 'block' }}
+                >
+                  <Button type={'primary'} style={{ width: '100%' }}>
+                    {t('upgradePlan')}
+                  </Button>
+                </Link>
+              }
+            />
+          </>
+        ) : (
+          <>
+            <PricingItem
+              isCurrentPlan={false}
+              title={'Professional'}
+              pricing={null}
+              description={t('pricingProCommonDescription')}
+              availableFeatures={[
+                t('pricingProCommonFeature1'),
+                t('pricingProCommonFeature2'),
+                t('pricingProCommonFeature3'),
+              ]}
+              button={
+                <Link
+                  href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing?type=self-hosted`}
+                  target="_blank"
+                  style={{ display: 'block' }}
+                >
+                  <Button type={'primary'} style={{ width: '100%' }}>
+                    {t('upgradePlan')}
+                  </Button>
+                </Link>
+              }
+            />
+          </>
+        )}
+      </PricingItemWrapper>
+    </Modal>
+  );
+};
 
 const PricingItemWrapper = styled.div`
   display: flex;
@@ -180,4 +330,5 @@ const FeatureContent = styled.div`
   margin: 0.25rem 0;
   font-size: 0.8rem;
   line-height: 1.5;
+  word-break: keep-all;
 `;

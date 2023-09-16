@@ -1,0 +1,29 @@
+{
+  "comparePlans": "Compare plans",
+  "upgradePlan": "Upgrade plan",
+
+  "pricingCommunityDescription": "For beginners",
+  "pricingCommunityCommonFeature1": "Limited browsers/devices",
+  "pricingCommunityCommonFeature2": "Web/Mobile app/Game test automation",
+  "pricingCommunityBrowserFeature1": "Up to 2 browsers",
+  "pricingCommunityBrowserFeature2": "Web test automation",
+  "pricingCommunityDeviceFeature1": "Up to 2 devices",
+  "pricingCommunityDeviceFeature2": "Mobile App/Game test automation",
+  "pricingProCommonDescription": "With powerful features",
+  "pricingProBrowserDescription": "Per browser per month",
+  "pricingProDeviceDescription": "Per device per month",
+  "pricingProCommonFeature1": "Pay-as-you-go browsers/devices",
+  "pricingProCommonFeature2": "Dogu Agent easy update",
+  "pricingProCommonFeature3": "Open API for integration",
+  "pricingProBrowserFeature1": "Enable more than {{count}} browsers",
+  "pricingProDeviceFeature1": "Enable more than {{count}} devices",
+  "pricingCurrentPlan": "Current plan",
+  "pricingFree": "Free",
+  "pricingPaid": "{{price}} KRW",
+
+  "agentUpdateModalTitle": "Need to update?",
+
+  "addHostDeviceModalTitle": "Need more browser?",
+
+  "addDeviceModalTitle": "Need more device?"
+}

@@ -1,7 +1,7 @@
 import { ExclamationCircleFilled, WarningFilled } from '@ant-design/icons';
-import { PageBase, ProjectBase } from '@dogu-private/console';
+import { DeviceBase, PageBase, ProjectBase } from '@dogu-private/console';
 import { ProjectId, PROJECT_NAME_MAX_LENGTH } from '@dogu-private/types';
-import { DeviceId, OrganizationId } from '@dogu-private/types';
+import { OrganizationId } from '@dogu-private/types';
 import { Checkbox, Input, Modal, Tag } from 'antd';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/router';
@@ -19,23 +19,24 @@ import { sendErrorNotification, sendSuccessNotification } from '../../../src/uti
 import { enableDevice } from '../../api/device';
 import { isPaymentRequired, isTimeout } from '../../utils/error';
 import useModal from '../../../src/hooks/useModal';
-import UpgradePlanBannerModal from '../license/UpgradePlanBannerModal';
+import { UpgradeDevicePlanBannerModal, UpgradeBrowserPlanModal } from '../license/UpgradePlanBannerModal';
 import TimeoutDocsModal from '../license/TimeoutDocsModal';
+import { isDesktop } from '../../../src/utils/device';
 
 interface Props {
-  deviceId: DeviceId;
+  device: DeviceBase;
   isGlobal: boolean;
   isOpen: boolean;
   close: () => void;
 }
 
-const EditDeviceProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalProp }: Props) => {
+const EditDeviceProjectModal = ({ device, isOpen, close, isGlobal: isGlobalProp }: Props) => {
   const router = useRouter();
   const orgId = router.query.orgId;
   const [showResult, setShowResult] = useState(false);
   const { inputValue, debouncedValue, handleChangeValues } = useDebouncedInputValues();
   const { data: deviceProjects, mutate: mutateDeviceProjects } = useSWR<ProjectBase[]>(
-    `/organizations/${orgId}/devices/${deviceId}/projects`,
+    `/organizations/${orgId}/devices/${device.deviceId}/projects`,
     swrAuthFetcher,
   );
   const { data: projects, isLoading: isProjectLoading } = useSWR<PageBase<ProjectBase>>(
@@ -59,7 +60,7 @@ const EditDeviceProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPro
 
   const handleAddProject = async (projectId: ProjectId) => {
     try {
-      await enableDevice(orgId as OrganizationId, deviceId, { isGlobal: false, projectId });
+      await enableDevice(orgId as OrganizationId, device.deviceId, { isGlobal: false, projectId });
       mutateDeviceProjects();
       sendSuccessNotification(t('device-farm:addDeviceToProjectSuccessMsg'));
     } catch (e) {
@@ -80,7 +81,7 @@ const EditDeviceProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPro
   const handleToggleGlobal = async (checked: boolean) => {
     setIsGlobal(checked);
     try {
-      await enableDevice(orgId as OrganizationId, deviceId, { isGlobal: checked });
+      await enableDevice(orgId as OrganizationId, device.deviceId, { isGlobal: checked });
       sendSuccessNotification(t('device-farm:toggleDeviceAsGlobalSuccessMsg'));
       mutateDeviceProjects();
     } catch (e) {
@@ -90,6 +91,7 @@ const EditDeviceProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPro
           openBanner();
         } else if (isTimeout(e)) {
           close();
+          openDocs();
         } else {
           sendErrorNotification(
             t('device-farm:toggleDeviceAsGlobalFailureMsg', { reason: getErrorMessageFromAxios(e) }),
@@ -102,7 +104,7 @@ const EditDeviceProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPro
 
   const handleDeleteProject = async (projectId: ProjectId) => {
     try {
-      await removeDeviceFromProject(orgId as OrganizationId, deviceId, projectId);
+      await removeDeviceFromProject(orgId as OrganizationId, device.deviceId, projectId);
       mutateDeviceProjects();
       sendSuccessNotification(t('device-farm:removeDeviceFromProjectSuccessMsg'));
     } catch (e) {
@@ -168,7 +170,7 @@ const EditDeviceProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPro
               {deviceProjects?.map((item) => {
                 return (
                   <Tag
-                    key={`device-${deviceId}-${item.projectId}`}
+                    key={`device-${device.deviceId}-${item.projectId}`}
                     closable
                     onClose={() => handleDeleteProject(item.projectId)}
                   >
@@ -201,12 +203,21 @@ const EditDeviceProjectModal = ({ deviceId, isOpen, close, isGlobal: isGlobalPro
           </GlobalCheckBoxWrapper>
         </Box>
       </Modal>
-      <UpgradePlanBannerModal
-        isOpen={isBannerOpen}
-        close={closeBanner}
-        title={'Need more device?'}
-        description={null}
-      />
+      {isDesktop(device) ? (
+        <UpgradeBrowserPlanModal
+          isOpen={isBannerOpen}
+          close={closeBanner}
+          title={t('license:addHostDeviceModalTitle')}
+          description={null}
+        />
+      ) : (
+        <UpgradeDevicePlanBannerModal
+          isOpen={isBannerOpen}
+          close={closeBanner}
+          title={t('license:addDeviceModalTitle')}
+          description={null}
+        />
+      )}
       <TimeoutDocsModal isOpen={isDocsOtpen} close={closeDocs} />
     </>
   );

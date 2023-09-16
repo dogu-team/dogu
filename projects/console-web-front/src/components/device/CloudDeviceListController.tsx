@@ -88,7 +88,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
       </Item>
 
       <EditDeviceProjectModal
-        deviceId={device.deviceId}
+        device={device}
         isOpen={isAddProjectModalOpen}
         close={closeAddProjectModal}
         isGlobal={false}

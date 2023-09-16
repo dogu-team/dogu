@@ -1,0 +1,29 @@
+{
+  "comparePlans": "가격 비교하기",
+  "upgradePlan": "플랜 업그레이드",
+
+  "pricingCommunityDescription": "테스트 자동화의 시작",
+  "pricingCommunityCommonFeature1": "제한된 브라우저/디바이스",
+  "pricingCommunityCommonFeature2": "웹/모바일 앱/게임 테스트 자동화",
+  "pricingCommunityBrowserFeature1": "브라우저 ~2개",
+  "pricingCommunityBrowserFeature2": "웹 테스트 자동화",
+  "pricingCommunityDeviceFeature1": "디바이스 ~2대",
+  "pricingCommunityDeviceFeature2": "모바일 앱/게임 테스트 자동화",
+  "pricingProCommonDescription": "테스트 자동화를 위한 강력한 기능",
+  "pricingProBrowserDescription": "브라우저 / 월",
+  "pricingProDeviceDescription": "디바이스 / 월",
+  "pricingProCommonFeature1": "원하는 브라우저/디바이스 수",
+  "pricingProCommonFeature2": "Dogu Agent 원클릭 업데이트",
+  "pricingProCommonFeature3": "연동을 위한 Open API",
+  "pricingProBrowserFeature1": "{{count}}개 이상의 브라우저",
+  "pricingProDeviceFeature1": "{{count}}대 이상의 디바이스",
+  "pricingCurrentPlan": "현재 플랜",
+  "pricingFree": "무료",
+  "pricingPaid": "{{price}}원",
+
+  "agentUpdateModalTitle": "업데이트가 필요하신가요?",
+
+  "addHostDeviceModalTitle": "브라우저가 필요하신가요?",
+
+  "addDeviceModalTitle": "디바이스가 필요하신가요?"
+}

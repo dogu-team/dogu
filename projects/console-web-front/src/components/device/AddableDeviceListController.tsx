@@ -20,6 +20,8 @@ import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from './PlatformIcon';
 import DevicePrefixTag from './DevicePrefixTag';
 import useEventStore from '../../stores/events';
+import { isDesktop } from '../../utils/device';
+import HostDeviceRunnerSettingModal from '../../../enterprise/components/device/HostDeviceRunnerSettingModal';
 
 interface DeviceItemProps {
   device: DeviceBase;
@@ -28,6 +30,7 @@ interface DeviceItemProps {
 const DeviceItem = ({ device }: DeviceItemProps) => {
   const [isAddProjectModalOpen, openAddProjectModal, closeAddProjectModal] = useModal();
   const [isEditModalOpen, openEditModal, closeEditModal] = useModal();
+  const [isHostDeviceRunnerModalOpen, openHostDeviceRunnerModal, closeHostDeviceRunnerModal] = useModal();
   const fireEvent = useEventStore((state) => state.fireEvent);
   const { t } = useTranslation();
 
@@ -56,6 +59,20 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
       ),
       key: 'edit',
     },
+    isDesktop(device)
+      ? {
+          label: (
+            <MenuItemButton
+              danger={false}
+              onClick={() => openHostDeviceRunnerModal()}
+              id={`${device.name}-runner-setting-menu-btn`}
+            >
+              {t('device-farm:deviceItemRunnerSettingMenu')}
+            </MenuItemButton>
+          ),
+          key: 'runner-setting',
+        }
+      : null,
   ];
 
   return (
@@ -89,12 +106,17 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
       </Item>
 
       <EditDeviceProjectModal
-        deviceId={device.deviceId}
+        device={device}
         isOpen={isAddProjectModalOpen}
         close={closeAddProjectModal}
         isGlobal={false}
       />
       <DeviceSettingModal device={device} isOpen={isEditModalOpen} close={closeEditModal} />
+      <HostDeviceRunnerSettingModal
+        device={device}
+        isOpen={isHostDeviceRunnerModalOpen}
+        close={closeHostDeviceRunnerModal}
+      />
     </>
   );
 };

@@ -15,6 +15,10 @@ import { sendErrorNotification, sendSuccessNotification } from '../../../src/uti
 import { getErrorMessageFromAxios } from '../../../src/utils/error';
 import DeviceConnectionStateTag from '../../../src/components/device/DeviceConnectionStateTag';
 import PlatformIcon from '../../../src/components/device/PlatformIcon';
+import { isPaymentRequired, isTimeout } from '../../utils/error';
+import useModal from '../../../src/hooks/useModal';
+import TimeoutDocsModal from '../license/TimeoutDocsModal';
+import { UpgradeDevicePlanBannerModal } from '../license/UpgradePlanBannerModal';
 
 interface Props {
   organizationId: OrganizationId;
@@ -58,6 +62,8 @@ const TutorialDeviceList = ({ organizationId, projectId, hostId }: Props) => {
     },
   );
   const [loading, setLoading] = useState(false);
+  const [isBannerOpen, openBanner, closeBanner] = useModal();
+  const [isDocsOtpen, openDocs, closeDocs] = useModal();
   const { t } = useTranslation('tutorial');
 
   useRefresh(['onRefreshClicked'], async () => {
@@ -80,7 +86,15 @@ const TutorialDeviceList = ({ organizationId, projectId, hostId }: Props) => {
       sendSuccessNotification('Successfully use devices!');
     } catch (e) {
       if (isAxiosError(e)) {
-        sendErrorNotification(`Failed to use devices\b${getErrorMessageFromAxios(e)}`);
+        if (isPaymentRequired(e)) {
+          close();
+          openBanner();
+        } else if (isTimeout(e)) {
+          close();
+          openDocs();
+        } else {
+          sendErrorNotification(`Failed to use devices\b${getErrorMessageFromAxios(e)}`);
+        }
       }
     }
     setLoading(false);
@@ -106,34 +120,44 @@ const TutorialDeviceList = ({ organizationId, projectId, hostId }: Props) => {
   const devices = usingDevices?.items.concat(stanbyDevices?.items ?? []);
 
   return (
-    <StyledTransfer
-      dataSource={data}
-      titles={[
-        <StyledTitle key="source">{t('deviceFarmTutorialUseDeviceTableStandbyTitle')}</StyledTitle>,
-        <StyledTitle key="target">{t('deviceFarmTutorialUseDeviceTableInUseTitle')}</StyledTitle>,
-      ]}
-      oneWay
-      render={(item) => {
-        const device = devices?.find((d) => d.deviceId === item.key);
-        if (!device) {
-          return null;
-        }
+    <>
+      <StyledTransfer
+        dataSource={data}
+        titles={[
+          <StyledTitle key="source">{t('deviceFarmTutorialUseDeviceTableStandbyTitle')}</StyledTitle>,
+          <StyledTitle key="target">{t('deviceFarmTutorialUseDeviceTableInUseTitle')}</StyledTitle>,
+        ]}
+        oneWay
+        render={(item) => {
+          const device = devices?.find((d) => d.deviceId === item.key);
+          if (!device) {
+            return null;
+          }
 
-        return (
-          <FlexRow>
-            <DeviceConnectionStateTag connectionState={device.connectionState} />
-            &nbsp;
-            <PlatformIcon platform={device.platform} />
-            {`${device.version} |`}
-            &nbsp;
-            {device.modelName}
-          </FlexRow>
-        );
-      }}
-      targetKeys={usingDevices?.items.map((device) => device.deviceId)}
-      onChange={handleChange}
-      disabled={loading}
-    />
+          return (
+            <FlexRow>
+              <DeviceConnectionStateTag connectionState={device.connectionState} />
+              &nbsp;
+              <PlatformIcon platform={device.platform} />
+              {`${device.version} |`}
+              &nbsp;
+              {device.modelName}
+            </FlexRow>
+          );
+        }}
+        targetKeys={usingDevices?.items.map((device) => device.deviceId)}
+        onChange={handleChange}
+        disabled={loading}
+      />
+
+      <UpgradeDevicePlanBannerModal
+        isOpen={isBannerOpen}
+        close={closeBanner}
+        title={t('license:addDeviceModalTitle')}
+        description={null}
+      />
+      <TimeoutDocsModal isOpen={isDocsOtpen} close={closeDocs} />
+    </>
   );
 };
 

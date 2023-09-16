@@ -2,6 +2,7 @@ import { ArrowRightOutlined, CloseOutlined, GithubOutlined, SettingOutlined, Sla
 import { LicenseBase, LICENSE_SELF_HOSTED_TIER_TYPE, UserBase } from '@dogu-private/console';
 import { Tag, Tooltip } from 'antd';
 import Trans from 'next-translate/Trans';
+import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
@@ -33,6 +34,7 @@ const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
 
     return !localStorage.getItem('hideHeaderBanner');
   });
+  const { t } = useTranslation();
   const [licenseInfoState, setLicenseInfoState] = useState<LicenseBase | undefined>(licenseInfo);
 
   useEffect(() => {
@@ -104,8 +106,8 @@ const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
                     <div>
                       <p>Community Edition</p>
                       <div style={{ marginTop: '.25rem' }}>
-                        <a href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing`} target="_blank">
-                          Compare plans <ArrowRightOutlined />
+                        <a href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing?type=self-hosted`} target="_blank">
+                          {t('license:comparePlans')} <ArrowRightOutlined />
                         </a>
                       </div>
                     </div>

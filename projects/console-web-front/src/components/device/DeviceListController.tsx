@@ -40,6 +40,9 @@ import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from './PlatformIcon';
 import DeviceUsageStatusBadge from './DeviceUsageStatusBadge';
 import DeviceVersionAlertIcon from './DeviceVersionAlertIcon';
+import { useDeviceCount } from '../../../enterprise/api/device';
+import HostDeviceRunnerSettingModal from '../../../enterprise/components/device/HostDeviceRunnerSettingModal';
+import { isDesktop } from '../../utils/device';
 
 interface DeviceItemProps {
   device: DeviceBase;
@@ -50,12 +53,12 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
   const orgId = router.query.orgId as OrganizationId;
   const { t } = useTranslation();
   const [isDeviceSettingModalOpen, openDeviceSettingModal, closeDeviceSettingModal] = useModal();
+  const [isHostDeviceRunnerModalOpen, openHostDeviceRunnerModal, closeHostDeviceRunnerModal] = useModal();
   const [isEditDeviceTagModalOpen, openEditDeviceTagModal, closeEditDeviceTagModal] = useModal();
   const [isEditDeviceProjectModalOpen, openEditDeviceProjectModal, closeEditDeviceProjectModal] = useModal();
   const [isDetailModlOpen, openDetailModal, closeDetailModal] = useModal();
   const fireEvent = useEventStore((state) => state.fireEvent);
 
-  const streamingable = device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED;
   const rebootable =
     (device.platform === Platform.PLATFORM_ANDROID || device.platform === Platform.PLATFORM_IOS) &&
     device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED;
@@ -114,6 +117,20 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
       ),
       key: 'setting',
     },
+    isDesktop(device)
+      ? {
+          label: (
+            <MenuItemButton
+              danger={false}
+              onClick={() => openHostDeviceRunnerModal()}
+              id={`${device.name}-runner-setting-menu-btn`}
+            >
+              {t('device-farm:deviceItemRunnerSettingMenu')}
+            </MenuItemButton>
+          ),
+          key: 'runner-setting',
+        }
+      : null,
     { type: 'divider' },
     {
       label: (
@@ -183,6 +200,11 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
       </Item>
 
       <DeviceSettingModal device={device} isOpen={isDeviceSettingModalOpen} close={closeDeviceSettingModal} />
+      <HostDeviceRunnerSettingModal
+        device={device}
+        isOpen={isHostDeviceRunnerModalOpen}
+        close={closeHostDeviceRunnerModal}
+      />
       <DeviceDetailModal isOpen={isDetailModlOpen} device={device} close={closeDetailModal} />
       <EditDeviceTagModal
         deviceId={device.deviceId}
@@ -190,7 +212,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
         close={closeEditDeviceTagModal}
       />
       <EditDeviceProjectModal
-        deviceId={device.deviceId}
+        device={device}
         isOpen={isEditDeviceProjectModalOpen}
         close={closeEditDeviceProjectModal}
         isGlobal={isGlobalDevice}
@@ -215,6 +237,7 @@ const DeviceListController = () => {
       skipQuestionMark: true,
     },
   );
+  const { data: deviceCount, mutate: mutateDeviceCount } = useDeviceCount();
   const { t } = useTranslation();
 
   useRefresh(
