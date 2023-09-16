@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { ChildProcess, spawn, SpawnOptions } from 'child_process';
 import fs from 'fs';
 import { DoguLogger } from '../logger/logger';
-import { MessageCanceler, MessageContext } from '../message/message.types';
+import { isStepMessageEventHandler, MessageCanceler, MessageContext } from '../message/message.types';
 
 export interface CommandHandler {
   onStdout: (data: string) => PromiseOrValue<void>;
@@ -53,6 +53,11 @@ export class CommandProcessRegistry {
         };
         child.on('spawn', () => {
           this.logger.info('child process spawned', { command: commandReplaced, args: argsReplaced });
+          if (isStepMessageEventHandler(eventHandler)) {
+            Promise.resolve(eventHandler.onProcessStarted(child.pid)).catch((error) => {
+              this.logger.error('Failed to call onProcessStarted', { error: errorify(error) });
+            });
+          }
         });
         let errorOccurred: unknown | null = null;
         child.on('error', (error) => {

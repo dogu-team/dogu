@@ -128,11 +128,11 @@ public final class ScreencaptureOption {
     /**
      * <pre>
      * (android): available
-     * 현재 width x height 중 width의 값으로 처리함
-     * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+     * Currently processed as height value among width x height
+     * ex) 1920, 1600, 1280, 1024, 800, 640, 320
      * (ios): available
-     * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-     * 2160 &lt;= max_resolution        -&gt; 3840x2160
+     * In the case of iOS, the device changes to the available resolution preset
+     * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
      * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
      *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
      * ...                           -&gt; 960x540
@@ -148,11 +148,11 @@ public final class ScreencaptureOption {
     /**
      * <pre>
      * (android): available
-     * 현재 width x height 중 width의 값으로 처리함
-     * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+     * Currently processed as height value among width x height
+     * ex) 1920, 1600, 1280, 1024, 800, 640, 320
      * (ios): available
-     * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-     * 2160 &lt;= max_resolution        -&gt; 3840x2160
+     * In the case of iOS, the device changes to the available resolution preset
+     * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
      * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
      *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
      * ...                           -&gt; 960x540
@@ -165,6 +165,88 @@ public final class ScreencaptureOption {
      * @return The maxResolution.
      */
     int getMaxResolution();
+
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 width = 7;</code>
+     * @return Whether the width field is set.
+     */
+    boolean hasWidth();
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 width = 7;</code>
+     * @return The width.
+     */
+    int getWidth();
+
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 height = 8;</code>
+     * @return Whether the height field is set.
+     */
+    boolean hasHeight();
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 height = 8;</code>
+     * @return The height.
+     */
+    int getHeight();
+
+    /**
+     * <pre>
+     * Used for desktop platform
+     * </pre>
+     *
+     * <code>optional int32 screen_id = 9;</code>
+     * @return Whether the screenId field is set.
+     */
+    boolean hasScreenId();
+    /**
+     * <pre>
+     * Used for desktop platform
+     * </pre>
+     *
+     * <code>optional int32 screen_id = 9;</code>
+     * @return The screenId.
+     */
+    int getScreenId();
+
+    /**
+     * <pre>
+     * Used for desktop platform
+     * If pid paaed. capture pid's window
+     * </pre>
+     *
+     * <code>optional int32 pid = 10;</code>
+     * @return Whether the pid field is set.
+     */
+    boolean hasPid();
+    /**
+     * <pre>
+     * Used for desktop platform
+     * If pid paaed. capture pid's window
+     * </pre>
+     *
+     * <code>optional int32 pid = 10;</code>
+     * @return The pid.
+     */
+    int getPid();
   }
   /**
    * Protobuf type {@code outer.streaming.ScreenCaptureOption}
@@ -468,11 +550,11 @@ public final class ScreencaptureOption {
     /**
      * <pre>
      * (android): available
-     * 현재 width x height 중 width의 값으로 처리함
-     * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+     * Currently processed as height value among width x height
+     * ex) 1920, 1600, 1280, 1024, 800, 640, 320
      * (ios): available
-     * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-     * 2160 &lt;= max_resolution        -&gt; 3840x2160
+     * In the case of iOS, the device changes to the available resolution preset
+     * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
      * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
      *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
      * ...                           -&gt; 960x540
@@ -491,11 +573,11 @@ public final class ScreencaptureOption {
     /**
      * <pre>
      * (android): available
-     * 현재 width x height 중 width의 값으로 처리함
-     * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+     * Currently processed as height value among width x height
+     * ex) 1920, 1600, 1280, 1024, 800, 640, 320
      * (ios): available
-     * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-     * 2160 &lt;= max_resolution        -&gt; 3840x2160
+     * In the case of iOS, the device changes to the available resolution preset
+     * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
      * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
      *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
      * ...                           -&gt; 960x540
@@ -514,11 +596,11 @@ public final class ScreencaptureOption {
     /**
      * <pre>
      * (android): available
-     * 현재 width x height 중 width의 값으로 처리함
-     * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+     * Currently processed as height value among width x height
+     * ex) 1920, 1600, 1280, 1024, 800, 640, 320
      * (ios): available
-     * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-     * 2160 &lt;= max_resolution        -&gt; 3840x2160
+     * In the case of iOS, the device changes to the available resolution preset
+     * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
      * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
      *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
      * ...                           -&gt; 960x540
@@ -537,11 +619,11 @@ public final class ScreencaptureOption {
     /**
      * <pre>
      * (android): available
-     * 현재 width x height 중 width의 값으로 처리함
-     * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+     * Currently processed as height value among width x height
+     * ex) 1920, 1600, 1280, 1024, 800, 640, 320
      * (ios): available
-     * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-     * 2160 &lt;= max_resolution        -&gt; 3840x2160
+     * In the case of iOS, the device changes to the available resolution preset
+     * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
      * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
      *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
      * ...                           -&gt; 960x540
@@ -555,6 +637,218 @@ public final class ScreencaptureOption {
     private void clearMaxResolution() {
       bitField0_ = (bitField0_ & ~0x00000020);
       maxResolution_ = 0;
+    }
+
+    public static final int WIDTH_FIELD_NUMBER = 7;
+    private int width_;
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 width = 7;</code>
+     * @return Whether the width field is set.
+     */
+    @java.lang.Override
+    public boolean hasWidth() {
+      return ((bitField0_ & 0x00000040) != 0);
+    }
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 width = 7;</code>
+     * @return The width.
+     */
+    @java.lang.Override
+    public int getWidth() {
+      return width_;
+    }
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 width = 7;</code>
+     * @param value The width to set.
+     */
+    private void setWidth(int value) {
+      bitField0_ |= 0x00000040;
+      width_ = value;
+    }
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 width = 7;</code>
+     */
+    private void clearWidth() {
+      bitField0_ = (bitField0_ & ~0x00000040);
+      width_ = 0;
+    }
+
+    public static final int HEIGHT_FIELD_NUMBER = 8;
+    private int height_;
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 height = 8;</code>
+     * @return Whether the height field is set.
+     */
+    @java.lang.Override
+    public boolean hasHeight() {
+      return ((bitField0_ & 0x00000080) != 0);
+    }
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 height = 8;</code>
+     * @return The height.
+     */
+    @java.lang.Override
+    public int getHeight() {
+      return height_;
+    }
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 height = 8;</code>
+     * @param value The height to set.
+     */
+    private void setHeight(int value) {
+      bitField0_ |= 0x00000080;
+      height_ = value;
+    }
+    /**
+     * <pre>
+     * If width, height is set, capture the screen with the specified size.
+     * override max_resolution
+     * </pre>
+     *
+     * <code>optional fixed32 height = 8;</code>
+     */
+    private void clearHeight() {
+      bitField0_ = (bitField0_ & ~0x00000080);
+      height_ = 0;
+    }
+
+    public static final int SCREEN_ID_FIELD_NUMBER = 9;
+    private int screenId_;
+    /**
+     * <pre>
+     * Used for desktop platform
+     * </pre>
+     *
+     * <code>optional int32 screen_id = 9;</code>
+     * @return Whether the screenId field is set.
+     */
+    @java.lang.Override
+    public boolean hasScreenId() {
+      return ((bitField0_ & 0x00000100) != 0);
+    }
+    /**
+     * <pre>
+     * Used for desktop platform
+     * </pre>
+     *
+     * <code>optional int32 screen_id = 9;</code>
+     * @return The screenId.
+     */
+    @java.lang.Override
+    public int getScreenId() {
+      return screenId_;
+    }
+    /**
+     * <pre>
+     * Used for desktop platform
+     * </pre>
+     *
+     * <code>optional int32 screen_id = 9;</code>
+     * @param value The screenId to set.
+     */
+    private void setScreenId(int value) {
+      bitField0_ |= 0x00000100;
+      screenId_ = value;
+    }
+    /**
+     * <pre>
+     * Used for desktop platform
+     * </pre>
+     *
+     * <code>optional int32 screen_id = 9;</code>
+     */
+    private void clearScreenId() {
+      bitField0_ = (bitField0_ & ~0x00000100);
+      screenId_ = 0;
+    }
+
+    public static final int PID_FIELD_NUMBER = 10;
+    private int pid_;
+    /**
+     * <pre>
+     * Used for desktop platform
+     * If pid paaed. capture pid's window
+     * </pre>
+     *
+     * <code>optional int32 pid = 10;</code>
+     * @return Whether the pid field is set.
+     */
+    @java.lang.Override
+    public boolean hasPid() {
+      return ((bitField0_ & 0x00000200) != 0);
+    }
+    /**
+     * <pre>
+     * Used for desktop platform
+     * If pid paaed. capture pid's window
+     * </pre>
+     *
+     * <code>optional int32 pid = 10;</code>
+     * @return The pid.
+     */
+    @java.lang.Override
+    public int getPid() {
+      return pid_;
+    }
+    /**
+     * <pre>
+     * Used for desktop platform
+     * If pid paaed. capture pid's window
+     * </pre>
+     *
+     * <code>optional int32 pid = 10;</code>
+     * @param value The pid to set.
+     */
+    private void setPid(int value) {
+      bitField0_ |= 0x00000200;
+      pid_ = value;
+    }
+    /**
+     * <pre>
+     * Used for desktop platform
+     * If pid paaed. capture pid's window
+     * </pre>
+     *
+     * <code>optional int32 pid = 10;</code>
+     */
+    private void clearPid() {
+      bitField0_ = (bitField0_ & ~0x00000200);
+      pid_ = 0;
     }
 
     public static com.dogu.protocol.generated.outer.streaming.ScreencaptureOption.ScreenCaptureOption parseFrom(
@@ -951,11 +1245,11 @@ public final class ScreencaptureOption {
       /**
        * <pre>
        * (android): available
-       * 현재 width x height 중 width의 값으로 처리함
-       * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+       * Currently processed as height value among width x height
+       * ex) 1920, 1600, 1280, 1024, 800, 640, 320
        * (ios): available
-       * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-       * 2160 &lt;= max_resolution        -&gt; 3840x2160
+       * In the case of iOS, the device changes to the available resolution preset
+       * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
        * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
        *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
        * ...                           -&gt; 960x540
@@ -974,11 +1268,11 @@ public final class ScreencaptureOption {
       /**
        * <pre>
        * (android): available
-       * 현재 width x height 중 width의 값으로 처리함
-       * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+       * Currently processed as height value among width x height
+       * ex) 1920, 1600, 1280, 1024, 800, 640, 320
        * (ios): available
-       * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-       * 2160 &lt;= max_resolution        -&gt; 3840x2160
+       * In the case of iOS, the device changes to the available resolution preset
+       * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
        * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
        *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
        * ...                           -&gt; 960x540
@@ -997,11 +1291,11 @@ public final class ScreencaptureOption {
       /**
        * <pre>
        * (android): available
-       * 현재 width x height 중 width의 값으로 처리함
-       * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+       * Currently processed as height value among width x height
+       * ex) 1920, 1600, 1280, 1024, 800, 640, 320
        * (ios): available
-       * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-       * 2160 &lt;= max_resolution        -&gt; 3840x2160
+       * In the case of iOS, the device changes to the available resolution preset
+       * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
        * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
        *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
        * ...                           -&gt; 960x540
@@ -1022,11 +1316,11 @@ public final class ScreencaptureOption {
       /**
        * <pre>
        * (android): available
-       * 현재 width x height 중 width의 값으로 처리함
-       * 예) 1920, 1600, 1280, 1024, 800, 640, 320
+       * Currently processed as height value among width x height
+       * ex) 1920, 1600, 1280, 1024, 800, 640, 320
        * (ios): available
-       * iOS의 경우, 입력값에 따라 단말기가 가능한 해상도 프리셋으로 변경되어 사용함
-       * 2160 &lt;= max_resolution        -&gt; 3840x2160
+       * In the case of iOS, the device changes to the available resolution preset
+       * according to the input value. 2160 &lt;= max_resolution        -&gt; 3840x2160
        * 1080 &lt;= max_resolution &lt; 2160 -&gt; 1920x1080
        *  720 &lt;= max_resolution &lt; 1080 -&gt; 1280x720
        * ...                           -&gt; 960x540
@@ -1041,6 +1335,226 @@ public final class ScreencaptureOption {
       public Builder clearMaxResolution() {
         copyOnWrite();
         instance.clearMaxResolution();
+        return this;
+      }
+
+      /**
+       * <pre>
+       * If width, height is set, capture the screen with the specified size.
+       * override max_resolution
+       * </pre>
+       *
+       * <code>optional fixed32 width = 7;</code>
+       * @return Whether the width field is set.
+       */
+      @java.lang.Override
+      public boolean hasWidth() {
+        return instance.hasWidth();
+      }
+      /**
+       * <pre>
+       * If width, height is set, capture the screen with the specified size.
+       * override max_resolution
+       * </pre>
+       *
+       * <code>optional fixed32 width = 7;</code>
+       * @return The width.
+       */
+      @java.lang.Override
+      public int getWidth() {
+        return instance.getWidth();
+      }
+      /**
+       * <pre>
+       * If width, height is set, capture the screen with the specified size.
+       * override max_resolution
+       * </pre>
+       *
+       * <code>optional fixed32 width = 7;</code>
+       * @param value The width to set.
+       * @return This builder for chaining.
+       */
+      public Builder setWidth(int value) {
+        copyOnWrite();
+        instance.setWidth(value);
+        return this;
+      }
+      /**
+       * <pre>
+       * If width, height is set, capture the screen with the specified size.
+       * override max_resolution
+       * </pre>
+       *
+       * <code>optional fixed32 width = 7;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearWidth() {
+        copyOnWrite();
+        instance.clearWidth();
+        return this;
+      }
+
+      /**
+       * <pre>
+       * If width, height is set, capture the screen with the specified size.
+       * override max_resolution
+       * </pre>
+       *
+       * <code>optional fixed32 height = 8;</code>
+       * @return Whether the height field is set.
+       */
+      @java.lang.Override
+      public boolean hasHeight() {
+        return instance.hasHeight();
+      }
+      /**
+       * <pre>
+       * If width, height is set, capture the screen with the specified size.
+       * override max_resolution
+       * </pre>
+       *
+       * <code>optional fixed32 height = 8;</code>
+       * @return The height.
+       */
+      @java.lang.Override
+      public int getHeight() {
+        return instance.getHeight();
+      }
+      /**
+       * <pre>
+       * If width, height is set, capture the screen with the specified size.
+       * override max_resolution
+       * </pre>
+       *
+       * <code>optional fixed32 height = 8;</code>
+       * @param value The height to set.
+       * @return This builder for chaining.
+       */
+      public Builder setHeight(int value) {
+        copyOnWrite();
+        instance.setHeight(value);
+        return this;
+      }
+      /**
+       * <pre>
+       * If width, height is set, capture the screen with the specified size.
+       * override max_resolution
+       * </pre>
+       *
+       * <code>optional fixed32 height = 8;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearHeight() {
+        copyOnWrite();
+        instance.clearHeight();
+        return this;
+      }
+
+      /**
+       * <pre>
+       * Used for desktop platform
+       * </pre>
+       *
+       * <code>optional int32 screen_id = 9;</code>
+       * @return Whether the screenId field is set.
+       */
+      @java.lang.Override
+      public boolean hasScreenId() {
+        return instance.hasScreenId();
+      }
+      /**
+       * <pre>
+       * Used for desktop platform
+       * </pre>
+       *
+       * <code>optional int32 screen_id = 9;</code>
+       * @return The screenId.
+       */
+      @java.lang.Override
+      public int getScreenId() {
+        return instance.getScreenId();
+      }
+      /**
+       * <pre>
+       * Used for desktop platform
+       * </pre>
+       *
+       * <code>optional int32 screen_id = 9;</code>
+       * @param value The screenId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setScreenId(int value) {
+        copyOnWrite();
+        instance.setScreenId(value);
+        return this;
+      }
+      /**
+       * <pre>
+       * Used for desktop platform
+       * </pre>
+       *
+       * <code>optional int32 screen_id = 9;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearScreenId() {
+        copyOnWrite();
+        instance.clearScreenId();
+        return this;
+      }
+
+      /**
+       * <pre>
+       * Used for desktop platform
+       * If pid paaed. capture pid's window
+       * </pre>
+       *
+       * <code>optional int32 pid = 10;</code>
+       * @return Whether the pid field is set.
+       */
+      @java.lang.Override
+      public boolean hasPid() {
+        return instance.hasPid();
+      }
+      /**
+       * <pre>
+       * Used for desktop platform
+       * If pid paaed. capture pid's window
+       * </pre>
+       *
+       * <code>optional int32 pid = 10;</code>
+       * @return The pid.
+       */
+      @java.lang.Override
+      public int getPid() {
+        return instance.getPid();
+      }
+      /**
+       * <pre>
+       * Used for desktop platform
+       * If pid paaed. capture pid's window
+       * </pre>
+       *
+       * <code>optional int32 pid = 10;</code>
+       * @param value The pid to set.
+       * @return This builder for chaining.
+       */
+      public Builder setPid(int value) {
+        copyOnWrite();
+        instance.setPid(value);
+        return this;
+      }
+      /**
+       * <pre>
+       * Used for desktop platform
+       * If pid paaed. capture pid's window
+       * </pre>
+       *
+       * <code>optional int32 pid = 10;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearPid() {
+        copyOnWrite();
+        instance.clearPid();
         return this;
       }
 
@@ -1067,11 +1581,15 @@ public final class ScreencaptureOption {
               "frameInterval_",
               "repeatFrameDelay_",
               "maxResolution_",
+              "width_",
+              "height_",
+              "screenId_",
+              "pid_",
             };
             java.lang.String info =
-                "\u0000\u0006\u0000\u0001\u0001\u0006\u0006\u0000\u0000\u0000\u0001\u1005\u0000\u0002" +
-                "\u1005\u0001\u0003\u1005\u0002\u0004\u1005\u0003\u0005\u1005\u0004\u0006\u1006\u0005" +
-                "";
+                "\u0000\n\u0000\u0001\u0001\n\n\u0000\u0000\u0000\u0001\u1005\u0000\u0002\u1005\u0001" +
+                "\u0003\u1005\u0002\u0004\u1005\u0003\u0005\u1005\u0004\u0006\u1006\u0005\u0007\u1006" +
+                "\u0006\b\u1006\u0007\t\u1004\b\n\u1004\t";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

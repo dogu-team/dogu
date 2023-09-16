@@ -6,6 +6,7 @@ export * as ProfileMethods from './device/profile-methods';
 export * from './device/runtime-infos';
 export * from './device/system-infos';
 export * from './device/types';
+export * from './device/windows';
 export * from './errors';
 export * from './host-envs';
 export * from './host-paths';

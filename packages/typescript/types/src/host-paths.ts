@@ -2,6 +2,7 @@ interface CommonPathMap {
   androidDeviceAgent: string;
   adbJoinWifiApk: string;
   goDeviceController: string;
+  desktopCapturer: string;
   git: string;
   gitLibexecGitCore: string;
   node16: string;

@@ -154,6 +154,7 @@ function createThirdPartyPathMap(options?: ThirdPartyPathMapOptions): ThirdParty
       androidDeviceAgent: path.resolve(thirdPartyPath, platformCommonDir, 'android_deviceagent.txt'),
       adbJoinWifiApk: path.resolve(thirdPartyPath, platformCommonDir, `adb-join-wifi.apk`),
       goDeviceController: path.resolve(thirdPartyPath, platformDir, archDir, `go-device-controller${exeExtension}`),
+      desktopCapturer: path.resolve(thirdPartyPath, platformDir, archDir, `desktop-capturer${exeExtension}`),
       git: path.resolve(thirdPartyPath, platformDir, archDir, 'git', gitBinDir, `git${exeExtension}`),
       gitLibexecGitCore: path.resolve(thirdPartyPath, platformDir, archDir, 'git', gitLibexecParentDir, 'libexec', 'git-core'),
       node16: path.resolve(thirdPartyPath, platformDir, archDir, 'node', 'v16.20.0', nodeBinDir, `node${exeExtension}`),

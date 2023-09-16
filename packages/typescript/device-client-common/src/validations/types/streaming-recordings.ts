@@ -39,6 +39,18 @@ export class ScreenCaptureOptionDto implements ScreenCaptureOption {
   @IsNumber()
   @IsOptional()
   maxResolution?: number;
+
+  @IsNumber()
+  @IsOptional()
+  width?: number;
+
+  @IsNumber()
+  @IsOptional()
+  height?: number;
+
+  @IsNumber()
+  @IsOptional()
+  pid?: number;
 }
 
 export class RTCIceCandidateInit implements ProtoRTCIceCandidateInit {
@@ -172,4 +184,8 @@ export class ScreenRecordOptionDto implements ScreenRecordOption {
 
   @IsFilledString()
   filePath!: string;
+
+  @IsOptional()
+  @IsNumber()
+  pid?: number;
 }

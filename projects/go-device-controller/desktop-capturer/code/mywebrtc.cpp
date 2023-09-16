@@ -1,4 +1,5 @@
 #include "mywebrtc.h"
+#include "myWindows.h"
 #include "tcpClient.h"
 
 #include <algorithm>
@@ -42,10 +43,11 @@
 #include "modules/desktop_capture/desktop_frame.h"
 #include "modules/desktop_capture/desktop_region.h"
 
-#ifdef WEBRTC_MAC
+#if defined(__APPLE__)
 #include "modules/desktop_capture/mac/desktop_configuration.h"
 #include "modules/desktop_capture/mac/full_screen_mac_application_handler.h"
-#endif
+#include "modules/desktop_capture/mac/window_list_utils.h"
+#endif // defined(__APPLE__ )
 
 #include "call/rtp_transport_controller_send.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
@@ -88,6 +90,7 @@ int g_port;
 int g_width;
 int g_height;
 int g_fps;
+int g_pid;
 int g_frameDeltaMs;
 int g_moderatedframeDeltaMs;
 
@@ -157,10 +160,17 @@ class CaptureCallback : public webrtc::DesktopCapturer::Callback
             return;
         }
 
-        output_frame_ = std::make_unique<webrtc::BasicDesktopFrame>(webrtc::DesktopSize(g_width, g_height));
+        if (width == g_width && height == g_height)
+        {
+            output_frame_ = std::move(frame);
+        }
+        else
+        {
+            output_frame_ = std::make_unique<webrtc::BasicDesktopFrame>(webrtc::DesktopSize(g_width, g_height));
 
-        libyuv::ARGBScale(frame->data(), frame->stride(), frame->size().width(), frame->size().height(), output_frame_->GetFrameDataAtPos(webrtc::DesktopVector(0, 0)),
-                          output_frame_->stride(), output_frame_->size().width(), output_frame_->size().height(), libyuv::kFilterBilinear);
+            libyuv::ARGBScale(frame->data(), frame->stride(), frame->size().width(), frame->size().height(), output_frame_->GetFrameDataAtPos(webrtc::DesktopVector(0, 0)),
+                              output_frame_->stride(), output_frame_->size().width(), output_frame_->size().height(), libyuv::kFilterBilinear);
+        }
 
         if (!i420_buffer_.get() || i420_buffer_->width() * i420_buffer_->height() < g_width * g_height)
         {
@@ -197,12 +207,13 @@ class CaptureCallback : public webrtc::DesktopCapturer::Callback
     rtc::scoped_refptr<webrtc::I420Buffer> i420_buffer_;
 };
 
-void prepare(int port, int width, int height, int fps)
+void prepare(int port, int width, int height, int fps, int pid)
 {
     g_port = port;
     g_width = width & ~1;
     g_height = height & ~1;
     g_fps = fps;
+    g_pid = pid;
 
     g_frameDeltaMs = (int)(1000 / g_fps);
     g_moderatedframeDeltaMs = g_frameDeltaMs;
@@ -284,7 +295,7 @@ void modifyFrameDeltaPerPeriod(std::chrono::system_clock::time_point &periodStar
     }
 }
 
-void startCapture()
+std::unique_ptr<webrtc::DesktopCapturer> createCapturer()
 {
     webrtc::DesktopCaptureOptions option = webrtc::DesktopCaptureOptions::CreateDefault();
 #ifdef WEBRTC_MAC
@@ -293,13 +304,42 @@ void startCapture()
 
     webrtc::DesktopCapturer::SourceList desktop_screens;
 
-    g_capturer = webrtc::DesktopCapturer::CreateScreenCapturer(option);
-    g_capturer->GetSourceList(&desktop_screens);
-    for (auto &s : desktop_screens)
+    if (0 == g_pid)
     {
-        std::cout << "screen: " << s.id << " -> " << s.title << "\n" << std::flush;
+        auto capturer = webrtc::DesktopCapturer::CreateScreenCapturer(option);
+        capturer->GetSourceList(&desktop_screens);
+        for (auto &s : desktop_screens)
+        {
+            std::cout << "screen: " << s.id << " -> " << s.title << "\n" << std::flush;
+        }
+        capturer->SelectSource(desktop_screens[0].id);
+        return capturer;
     }
-    g_capturer->SelectSource(desktop_screens[0].id);
+    else
+    {
+
+        auto windows = mywindows::getInfos();
+        for (auto &w : windows)
+        {
+            if (w.pid == g_pid)
+            {
+                std::cout << "window: " << w.id << " -> " << w.title << "\n" << std::flush;
+                auto option = webrtc::DesktopCaptureOptions::CreateDefault();
+                webrtc::DesktopCapturer::SourceList desktop_windows;
+                auto capturer = webrtc::DesktopCapturer::CreateWindowCapturer(option);
+                capturer->SelectSource(w.id);
+                return capturer;
+            }
+        }
+
+        auto errorMessage = "window not found. pid: " + std::to_string(g_pid);
+        throw std::runtime_error(errorMessage);
+    }
+}
+
+void startCapture()
+{
+    g_capturer = createCapturer();
 
     CaptureCallback *callback = new CaptureCallback();
     g_capturer->Start(callback);

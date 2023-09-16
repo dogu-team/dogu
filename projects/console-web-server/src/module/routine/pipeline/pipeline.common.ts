@@ -16,12 +16,7 @@ export interface RunOnPickAll {
 export type RunsOn = RunsOnPickOne | RunOnPickAll;
 
 export class ParseRunsOnError extends Error {
-  constructor(
-    message: string,
-    readonly jobName: string,
-    readonly runsOnRaw: JobSchema['runs-on'],
-    options?: ErrorOptions,
-  ) {
+  constructor(message: string, readonly jobName: string, readonly runsOnRaw: JobSchema['runs-on'], options?: ErrorOptions) {
     super(message, options);
   }
 }

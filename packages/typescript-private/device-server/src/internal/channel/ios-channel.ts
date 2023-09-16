@@ -1,6 +1,7 @@
 import {
   CodeUtil,
   DeviceSystemInfo,
+  DeviceWindowInfo,
   ErrorResult,
   FilledRuntimeInfo,
   Platform,
@@ -382,6 +383,10 @@ export class IosChannel implements DeviceChannel {
   async isPortListening(port: number): Promise<boolean> {
     const res = await this.deviceAgent.sendWithProtobuf('dcIdaIsPortListeningParam', 'dcIdaIsPortListeningResult', { port });
     return res?.isListening ?? false;
+  }
+
+  getWindows(): DeviceWindowInfo[] {
+    return [];
   }
 
   private async findDotAppPath(appPath: string): Promise<string> {

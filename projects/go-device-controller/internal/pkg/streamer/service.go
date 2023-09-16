@@ -175,7 +175,16 @@ func (s *GoDeviceControllerService) stopRecording(a *params.DcGdcParam_DcGdcStop
 		}
 	}
 	filePath := muxer.FilePath()
-	s.devices.RemoveSurfaceListener(serial, muxer)
+	ok = s.devices.RemoveSurfaceListener(serial, muxer)
+	if !ok {
+		log.Inst.Warn("GoDeviceControllerService.stopRecording not found", zap.Any("serial", serial), zap.String("filePath", a.DcGdcStopScreenRecordParam.GetFilePath()))
+		return &types.DcGdcStopScreenRecordResult{
+			Error: &outer.ErrorResult{
+				Code:    outer.Code_CODE_SCREENRECORD_NOTSTARTED,
+				Message: "recording listener not found",
+			},
+		}
+	}
 	return &types.DcGdcStopScreenRecordResult{
 		Error:    gotypes.Success,
 		FilePath: filePath,
@@ -183,7 +192,7 @@ func (s *GoDeviceControllerService) stopRecording(a *params.DcGdcParam_DcGdcStop
 }
 
 func (s *GoDeviceControllerService) getSurfaceStatus(a *params.DcGdcParam_DcGdcGetSurfaceStatusParam) types.DcGdcGetSurfaceStatusResult {
-	return s.devices.GetSurfaceStatus(a.DcGdcGetSurfaceStatusParam.Serial)
+	return s.devices.GetSurfaceStatus(a.DcGdcGetSurfaceStatusParam)
 }
 
 func (s *GoDeviceControllerService) cleanUpStreamer() {

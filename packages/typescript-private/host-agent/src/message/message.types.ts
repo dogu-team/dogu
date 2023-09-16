@@ -1,4 +1,4 @@
-import { Log, PromiseOrValue } from '@dogu-tech/common';
+import { isFunction, Log, PromiseOrValue } from '@dogu-tech/common';
 import { StackEnvironmentVariableReplacer } from '@dogu-tech/node';
 import { MessageInfo } from '../types';
 import { MessageRouter } from './message.router';
@@ -26,6 +26,14 @@ export const NullMessagePostProcessor: MessagePostProcessor = {
 export interface MessageEventHandler {
   onLog(log: Log): PromiseOrValue<void>;
   onCancelerCreated(canceler: MessageCanceler): PromiseOrValue<void>;
+}
+
+export interface StepMessageEventHandler extends MessageEventHandler {
+  onProcessStarted(pid?: number): PromiseOrValue<void>;
+}
+
+export function isStepMessageEventHandler(param: MessageEventHandler): param is StepMessageEventHandler {
+  return isFunction((param as unknown as StepMessageEventHandler).onProcessStarted);
 }
 
 export const NullMessageEventHandler: MessageEventHandler = {

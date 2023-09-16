@@ -8,5 +8,6 @@ export const DefaultScreenCaptureOption: () => ScreenCaptureOption = () => {
     frameInterval: 1,
     repeatFrameDelay: 100000,
     maxResolution: 720,
+    pid: undefined,
   };
 };

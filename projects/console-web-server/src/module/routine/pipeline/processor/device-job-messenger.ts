@@ -10,10 +10,7 @@ import { DoguLogger } from '../../../logger/logger';
 
 @Injectable()
 export class DeviceJobMessenger {
-  constructor(
-    private readonly deviceMessageRelayer: DeviceMessageRelayer,
-    private readonly logger: DoguLogger,
-  ) {}
+  constructor(private readonly deviceMessageRelayer: DeviceMessageRelayer, private readonly logger: DoguLogger) {}
 
   async sendRunDeviceJob(organizationId: OrganizationId, deviceId: DeviceId, deviceJob: RoutineDeviceJob): Promise<void> {
     const {
@@ -61,7 +58,10 @@ export class DeviceJobMessenger {
         record,
         serial,
         runSteps,
+        appVersion,
         appPackageName,
+        browserName,
+        browserVersion,
       },
     });
     parseEventResult(result);

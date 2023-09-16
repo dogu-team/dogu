@@ -29,10 +29,7 @@ class ChannelInfo {
   lastSendTimeMs = 0;
   flushTimer: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(
-    readonly channel: RTCDataChannel,
-    readonly sendThrottleMs: number,
-  ) {}
+  constructor(readonly channel: RTCDataChannel, readonly sendThrottleMs: number) {}
 
   requestFlushSendBuffer(): void {
     if (Date.now() - this.lastSendTimeMs < this.sendThrottleMs) {

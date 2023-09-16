@@ -22,7 +22,7 @@ import (
 	"go.uber.org/zap"
 )
 
-type desktopLibwebrtcSurface struct {
+type desktopLibwebrtcSurfaceSource struct {
 	listener  *net.TCPListener
 	conn      *net.TCPConn
 	reader    *bufio.Reader
@@ -30,35 +30,35 @@ type desktopLibwebrtcSurface struct {
 	recvQueue utils.SizePrefixedRecvQueue
 }
 
-var _dls surface = &desktopLibwebrtcSurface{}
+var _dls SurfaceSource = &desktopLibwebrtcSurfaceSource{}
 
-func newDesktopLibwebrtcSurface() *desktopLibwebrtcSurface {
-	log.Inst.Info("desktopLibwebrtcSurface.newDesktopLibwebrtcSurface")
-	s := desktopLibwebrtcSurface{}
+func NewDesktopLibwebrtcSurfaceSource() *desktopLibwebrtcSurfaceSource {
+	log.Inst.Info("desktopLibwebrtcSurfaceSource.newDesktopLibwebrtcSurface")
+	s := desktopLibwebrtcSurfaceSource{}
 	return &s
 }
 
-func (s *desktopLibwebrtcSurface) Connect(serial string, screenCaptureOption *streaming.ScreenCaptureOption) error {
+func (s *desktopLibwebrtcSurfaceSource) Connect(serial string, screenCaptureOption *streaming.ScreenCaptureOption) error {
 	var err error
 	var port int
 	listener, port, err, mutex := utils.ListenTCPFreePort()
 	s.listener = listener
 	defer mutex.Unlock()
 	if err != nil {
-		log.Inst.Error("desktopLibwebrtcSurface.Connect", zap.String("serial", serial), zap.Error(err))
+		log.Inst.Error("desktopLibwebrtcSurfaceSource.Connect", zap.String("serial", serial), zap.Error(err))
 		return err
 	}
 
 	exePath, err := getDesktopCapturerPath()
 	if err != nil {
-		log.Inst.Error("desktopLibwebrtcSurface.Connect", zap.String("serial", serial), zap.Error(err))
+		log.Inst.Error("desktopLibwebrtcSurfaceSource.Connect", zap.String("serial", serial), zap.Error(err))
 		return err
 	}
 
 	width, height := robotgo.GetScreenSize()
 	// img, err := screenshot.CaptureDisplay(0)
 	// if err != nil {
-	// 	log.Inst.Error("desktopLibwebrtcSurface.Reconnect", zap.Error(err))
+	// 	log.Inst.Error("desktopLibwebrtcSurfaceSource.Reconnect", zap.Error(err))
 	// 	return err
 	// }
 	// width := img.Bounds().Size().X
@@ -68,20 +68,28 @@ func (s *desktopLibwebrtcSurface) Connect(serial string, screenCaptureOption *st
 		height = int(screenCaptureOption.GetMaxResolution())
 		width = int(float64(width) * ratio)
 	}
+	if 0 < screenCaptureOption.GetWidth() {
+		width = int(screenCaptureOption.GetWidth())
+	}
+	if 0 < screenCaptureOption.GetHeight() {
+		height = int(screenCaptureOption.GetHeight())
+	}
 	s.cmd, err = utils.Execute(
 		exePath,
+		"streaming",
 		"--port", fmt.Sprintf("%d", port),
 		"--width", fmt.Sprintf("%d", width),
 		"--height", fmt.Sprintf("%d", height),
 		"--fps", strconv.FormatUint(screenCaptureOption.GetMaxFps(), 10),
+		"--pid", strconv.FormatInt(int64(screenCaptureOption.GetPid()), 10),
 	)
 	if err != nil {
-		log.Inst.Error("desktopLibwebrtcSurface.Connect", zap.String("serial", serial), zap.Error(err))
+		log.Inst.Error("desktopLibwebrtcSurfaceSource.Connect", zap.String("serial", serial), zap.Error(err))
 		return err
 	}
 	s.conn, err = s.listener.AcceptTCP()
 	if err != nil {
-		log.Inst.Error("desktopLibwebrtcSurface.Connect", zap.String("serial", serial), zap.Error(err))
+		log.Inst.Error("desktopLibwebrtcSurfaceSource.Connect", zap.String("serial", serial), zap.Error(err))
 		return err
 	}
 
@@ -91,10 +99,10 @@ func (s *desktopLibwebrtcSurface) Connect(serial string, screenCaptureOption *st
 	return nil
 }
 
-func (s *desktopLibwebrtcSurface) Receive() ([]byte, error) {
+func (s *desktopLibwebrtcSurfaceSource) Receive() ([]byte, error) {
 	if nil == s.listener || nil == s.cmd || nil == s.reader || nil == s.conn {
-		log.Inst.Error("desktopLibwebrtcSurface.Receive null exists", zap.Bool("listener", nil != s.listener), zap.Bool("cmd", nil != s.cmd), zap.Bool("reader", nil != s.reader), zap.Bool("conn", nil != s.conn))
-		return nil, errors.Errorf("desktopLibwebrtcSurface.Receive null exists")
+		log.Inst.Error("desktopLibwebrtcSurfaceSource.Receive null exists", zap.Bool("listener", nil != s.listener), zap.Bool("cmd", nil != s.cmd), zap.Bool("reader", nil != s.reader), zap.Bool("conn", nil != s.conn))
+		return nil, errors.Errorf("desktopLibwebrtcSurfaceSource.Receive null exists")
 	}
 	buf, err := s.receive()
 	if err != nil {
@@ -106,15 +114,15 @@ func (s *desktopLibwebrtcSurface) Receive() ([]byte, error) {
 	return buf, err
 }
 
-func (s *desktopLibwebrtcSurface) receive() ([]byte, error) {
+func (s *desktopLibwebrtcSurfaceSource) receive() ([]byte, error) {
 	for {
 		err := s.conn.SetReadDeadline(time.Now().Add(time.Minute))
 		if err != nil {
-			log.Inst.Error("desktopLibwebrtcSurface.SetReadDeadline error", zap.Error(err))
+			log.Inst.Error("desktopLibwebrtcSurfaceSource.SetReadDeadline error", zap.Error(err))
 		}
 		err = s.recvQueue.Push(s.reader)
 		if err != nil {
-			log.Inst.Error("desktopLibwebrtcSurface.Receive push failed", zap.Error(err))
+			log.Inst.Error("desktopLibwebrtcSurfaceSource.Receive push failed", zap.Error(err))
 			return nil, err
 		}
 		if !s.recvQueue.Has() {
@@ -122,36 +130,36 @@ func (s *desktopLibwebrtcSurface) receive() ([]byte, error) {
 		}
 		buf, err := s.recvQueue.Pop()
 		if err != nil {
-			log.Inst.Error("desktopLibwebrtcSurface.Receive pop failed", zap.Error(err))
+			log.Inst.Error("desktopLibwebrtcSurfaceSource.Receive pop failed", zap.Error(err))
 			return nil, err
 		}
 		return buf, nil
 	}
 }
 
-func (s *desktopLibwebrtcSurface) NotifyData(listener SurfaceListener, timeStamp uint32, data []byte) {
+func (s *desktopLibwebrtcSurfaceSource) NotifyData(listener SurfaceListener, timeStamp uint32, data []byte) {
 	listener.OnSurface(timeStamp, data)
 }
 
-func (s *desktopLibwebrtcSurface) Close() {
+func (s *desktopLibwebrtcSurfaceSource) Close() {
 	listener := s.listener
 	conn := s.conn
 	cmd := s.cmd
 	if nil != listener {
 		if closeEr := listener.Close(); closeEr != nil {
-			log.Inst.Error("desktopLibwebrtcSurface.Close", zap.Error(closeEr))
+			log.Inst.Error("desktopLibwebrtcSurfaceSource.Close", zap.Error(closeEr))
 		}
 	}
 	if nil != conn {
 		if closeEr := conn.Close(); closeEr != nil {
-			log.Inst.Error("desktopLibwebrtcSurface.Close", zap.Error(closeEr))
+			log.Inst.Error("desktopLibwebrtcSurfaceSource.Close", zap.Error(closeEr))
 		}
 	}
 	if nil != cmd {
 		process := cmd.Process
 		if nil != process {
 			if closeEr := process.Kill(); closeEr != nil {
-				log.Inst.Warn("desktopLibwebrtcSurface.Close", zap.Error(closeEr))
+				log.Inst.Warn("desktopLibwebrtcSurfaceSource.Close", zap.Error(closeEr))
 			}
 			utils.Execute("taskkill", "/PID", fmt.Sprintf("%v", process.Pid), "/F", "/T")
 		}

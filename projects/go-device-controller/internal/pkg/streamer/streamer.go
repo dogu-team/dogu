@@ -83,7 +83,7 @@ func (s *Streamer) SetId(id int) {
 	s.id = id
 }
 
-func (s *Streamer) GetSurfaceListenerType() string {
+func (s *Streamer) GetSurfaceListenerType() surface.SurfaceListenerType {
 	return "Streamer"
 }
 

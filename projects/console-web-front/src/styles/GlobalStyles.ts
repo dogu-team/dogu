@@ -67,7 +67,7 @@ const GlobalStyles = createGlobalStyle<{ locale?: string }>`
 
   #nprogress .peg {
     box-shadow: 0 0 10px ${(props) => props.theme.colorPrimary}, 0 0 5px ${(props) =>
-      props.theme.colorPrimary} !important;
+  props.theme.colorPrimary} !important;
   }
 
   #nprogress .spinner {

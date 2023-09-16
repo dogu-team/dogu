@@ -64,6 +64,8 @@ message DcGdcStopScreenRecordResult {
 
 message DcGdcGetSurfaceStatusParam {
   string serial = 1;
+  optional int32 screen_id = 2;
+  optional int32 pid = 3;
 }
 
 message DcGdcGetSurfaceStatusResult {

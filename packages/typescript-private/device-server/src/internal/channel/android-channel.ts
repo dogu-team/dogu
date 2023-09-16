@@ -1,6 +1,7 @@
 import {
   DefaultScreenCaptureOption,
   DeviceSystemInfo,
+  DeviceWindowInfo,
   ErrorResult,
   FilledRuntimeInfo,
   Platform,
@@ -287,6 +288,10 @@ export class AndroidChannel implements DeviceChannel {
 
   async isPortListening(port: number): Promise<boolean> {
     return Adb.isPortOpen(this.serial, port);
+  }
+
+  getWindows(): DeviceWindowInfo[] {
+    return [];
   }
 
   async subscribeLog(args: string[], handler: LogHandler, printable?: Printable): Promise<Closable> {

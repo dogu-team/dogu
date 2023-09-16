@@ -2,7 +2,7 @@
 //  tcpClient.cpp
 //  webrtc_lib_practice
 //
-//  Created by jenkins on 2022/12/05.
+//  Created by Dogu on 2022/12/05.
 //
 
 #include "tcpClient.h"

@@ -105,7 +105,7 @@ export async function getChildProcessIds(pid: Pid, printable: Printable): Promis
         printable.error('child process close. pidtree error', { error: err });
         resolve([]);
       } else {
-        printable.info('child process close. pidtree', { pids });
+        printable.debug?.('child process close. pidtree', { pids });
         resolve(pids);
       }
     });

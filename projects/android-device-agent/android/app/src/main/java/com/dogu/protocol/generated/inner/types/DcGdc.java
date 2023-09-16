@@ -3865,6 +3865,28 @@ public final class DcGdc {
      */
     com.google.protobuf.ByteString
         getSerialBytes();
+
+    /**
+     * <code>optional int32 screen_id = 2;</code>
+     * @return Whether the screenId field is set.
+     */
+    boolean hasScreenId();
+    /**
+     * <code>optional int32 screen_id = 2;</code>
+     * @return The screenId.
+     */
+    int getScreenId();
+
+    /**
+     * <code>optional int32 pid = 3;</code>
+     * @return Whether the pid field is set.
+     */
+    boolean hasPid();
+    /**
+     * <code>optional int32 pid = 3;</code>
+     * @return The pid.
+     */
+    int getPid();
   }
   /**
    * Protobuf type {@code inner.types.DcGdcGetSurfaceStatusParam}
@@ -3877,6 +3899,7 @@ public final class DcGdc {
     private DcGdcGetSurfaceStatusParam() {
       serial_ = "";
     }
+    private int bitField0_;
     public static final int SERIAL_FIELD_NUMBER = 1;
     private java.lang.String serial_;
     /**
@@ -3922,6 +3945,74 @@ public final class DcGdc {
       checkByteStringIsUtf8(value);
       serial_ = value.toStringUtf8();
       
+    }
+
+    public static final int SCREEN_ID_FIELD_NUMBER = 2;
+    private int screenId_;
+    /**
+     * <code>optional int32 screen_id = 2;</code>
+     * @return Whether the screenId field is set.
+     */
+    @java.lang.Override
+    public boolean hasScreenId() {
+      return ((bitField0_ & 0x00000001) != 0);
+    }
+    /**
+     * <code>optional int32 screen_id = 2;</code>
+     * @return The screenId.
+     */
+    @java.lang.Override
+    public int getScreenId() {
+      return screenId_;
+    }
+    /**
+     * <code>optional int32 screen_id = 2;</code>
+     * @param value The screenId to set.
+     */
+    private void setScreenId(int value) {
+      bitField0_ |= 0x00000001;
+      screenId_ = value;
+    }
+    /**
+     * <code>optional int32 screen_id = 2;</code>
+     */
+    private void clearScreenId() {
+      bitField0_ = (bitField0_ & ~0x00000001);
+      screenId_ = 0;
+    }
+
+    public static final int PID_FIELD_NUMBER = 3;
+    private int pid_;
+    /**
+     * <code>optional int32 pid = 3;</code>
+     * @return Whether the pid field is set.
+     */
+    @java.lang.Override
+    public boolean hasPid() {
+      return ((bitField0_ & 0x00000002) != 0);
+    }
+    /**
+     * <code>optional int32 pid = 3;</code>
+     * @return The pid.
+     */
+    @java.lang.Override
+    public int getPid() {
+      return pid_;
+    }
+    /**
+     * <code>optional int32 pid = 3;</code>
+     * @param value The pid to set.
+     */
+    private void setPid(int value) {
+      bitField0_ |= 0x00000002;
+      pid_ = value;
+    }
+    /**
+     * <code>optional int32 pid = 3;</code>
+     */
+    private void clearPid() {
+      bitField0_ = (bitField0_ & ~0x00000002);
+      pid_ = 0;
     }
 
     public static com.dogu.protocol.generated.inner.types.DcGdc.DcGdcGetSurfaceStatusParam parseFrom(
@@ -4068,6 +4159,78 @@ public final class DcGdc {
         return this;
       }
 
+      /**
+       * <code>optional int32 screen_id = 2;</code>
+       * @return Whether the screenId field is set.
+       */
+      @java.lang.Override
+      public boolean hasScreenId() {
+        return instance.hasScreenId();
+      }
+      /**
+       * <code>optional int32 screen_id = 2;</code>
+       * @return The screenId.
+       */
+      @java.lang.Override
+      public int getScreenId() {
+        return instance.getScreenId();
+      }
+      /**
+       * <code>optional int32 screen_id = 2;</code>
+       * @param value The screenId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setScreenId(int value) {
+        copyOnWrite();
+        instance.setScreenId(value);
+        return this;
+      }
+      /**
+       * <code>optional int32 screen_id = 2;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearScreenId() {
+        copyOnWrite();
+        instance.clearScreenId();
+        return this;
+      }
+
+      /**
+       * <code>optional int32 pid = 3;</code>
+       * @return Whether the pid field is set.
+       */
+      @java.lang.Override
+      public boolean hasPid() {
+        return instance.hasPid();
+      }
+      /**
+       * <code>optional int32 pid = 3;</code>
+       * @return The pid.
+       */
+      @java.lang.Override
+      public int getPid() {
+        return instance.getPid();
+      }
+      /**
+       * <code>optional int32 pid = 3;</code>
+       * @param value The pid to set.
+       * @return This builder for chaining.
+       */
+      public Builder setPid(int value) {
+        copyOnWrite();
+        instance.setPid(value);
+        return this;
+      }
+      /**
+       * <code>optional int32 pid = 3;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearPid() {
+        copyOnWrite();
+        instance.clearPid();
+        return this;
+      }
+
       // @@protoc_insertion_point(builder_scope:inner.types.DcGdcGetSurfaceStatusParam)
     }
     @java.lang.Override
@@ -4084,10 +4247,14 @@ public final class DcGdc {
         }
         case BUILD_MESSAGE_INFO: {
             java.lang.Object[] objects = new java.lang.Object[] {
+              "bitField0_",
               "serial_",
+              "screenId_",
+              "pid_",
             };
             java.lang.String info =
-                "\u0000\u0001\u0000\u0000\u0001\u0001\u0001\u0000\u0000\u0000\u0001\u0208";
+                "\u0000\u0003\u0000\u0001\u0001\u0003\u0003\u0000\u0000\u0000\u0001\u0208\u0002\u1004" +
+                "\u0000\u0003\u1004\u0001";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through

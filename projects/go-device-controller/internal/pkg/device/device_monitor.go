@@ -42,15 +42,18 @@ func (sm *deviceMonitor) update() {
 	allDeviceProfile := deviceProfile{Serial: "all"}
 	deviceProfiles := []*deviceProfile{}
 	for _, device := range *sm.devices {
-		surfaceProfile := &device.Surface().Profile
-		deviceProfile := newDeviceProfile(device.Context().Serial, surfaceProfile, diffTime)
-		allDeviceProfile.ReadMBytesPerSec += deviceProfile.ReadMBytesPerSec
-		allDeviceProfile.ReadCountPerSec += deviceProfile.ReadCountPerSec
-		allDeviceProfile.ReadMilisecPerSec += deviceProfile.ReadMilisecPerSec
+		profiles := device.Surfaces().Profiles()
+		for _, surfaceProfile := range profiles {
+			deviceProfile := newDeviceProfile(device.Context().Serial, &surfaceProfile, diffTime)
+			deviceProfiles = append(deviceProfiles, deviceProfile)
+			allDeviceProfile.ReadMBytesPerSec += deviceProfile.ReadMBytesPerSec
+			allDeviceProfile.ReadCountPerSec += deviceProfile.ReadCountPerSec
+			allDeviceProfile.ReadMilisecPerSec += deviceProfile.ReadMilisecPerSec
 
-		surfaceProfile.ReadSizePerPeriod = 0
-		surfaceProfile.ReadCountPerPeriod = 0
-		surfaceProfile.ReadMillisecPerPeriod = 0
+			surfaceProfile.ReadSizePerPeriod = 0
+			surfaceProfile.ReadCountPerPeriod = 0
+			surfaceProfile.ReadMillisecPerPeriod = 0
+		}
 	}
 	deviceProfiles = append(deviceProfiles, &allDeviceProfile)
 
@@ -63,6 +66,8 @@ func (sm *deviceMonitor) update() {
 
 type deviceProfile struct {
 	Serial            string
+	ScreenId          surface.ScreenId
+	Pid               surface.Pid
 	ReadMBytesPerSec  float64
 	ReadCountPerSec   float64
 	ReadMilisecPerSec float64
@@ -71,6 +76,8 @@ type deviceProfile struct {
 func newDeviceProfile(serial string, surfaceProflile *surface.SurfaceProfile, diffTime float64) *deviceProfile {
 	profile := deviceProfile{}
 	profile.Serial = serial
+	profile.ScreenId = surfaceProflile.ScreenId
+	profile.Pid = surfaceProflile.Pid
 	profile.ReadMBytesPerSec = float64(surfaceProflile.ReadSizePerPeriod) / 1024.0 / 1024.0 / diffTime
 	profile.ReadCountPerSec = float64(surfaceProflile.ReadCountPerPeriod) / diffTime
 	profile.ReadMilisecPerSec = float64(surfaceProflile.ReadMillisecPerPeriod) / diffTime

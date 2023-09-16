@@ -1,17 +1,18 @@
 package muxer
 
 import (
+	"go-device-controller/internal/pkg/device/surface"
 	"go-device-controller/types/protocol/generated/proto/inner/types"
 	"go-device-controller/types/protocol/generated/proto/outer"
 )
 
-const MuxerType = "Muxer"
+const MuxerType surface.SurfaceListenerType = "Muxer"
 
 type Muxer interface {
 	GetId() int
 	SetId(id int)
 	FilePath() string
-	GetSurfaceListenerType() string
+	GetSurfaceListenerType() surface.SurfaceListenerType
 	OnSurface(timeStamp uint32, Data []byte)
 	OnRTPBytes(timeStamp uint32, Data []byte)
 	OnRemove()

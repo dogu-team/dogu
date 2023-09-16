@@ -29,10 +29,7 @@ export class BrowserGamiumService implements GamiumService {
   private isConnected: boolean;
   private seq = 0;
 
-  constructor(
-    public readonly channel: RTCDataChannel,
-    private readonly requestTimeout: number = 50000,
-  ) {
+  constructor(public readonly channel: RTCDataChannel, private readonly requestTimeout: number = 50000) {
     this.isConnected = false;
 
     channel.addEventListener('open', (event) => {

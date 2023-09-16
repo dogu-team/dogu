@@ -1,7 +1,7 @@
 import { DeviceId, DeviceRunnerId, OrganizationId, RoutineStepId } from '@dogu-private/types';
 import { StackEnvironmentVariableReplacer } from '@dogu-tech/node';
 import { MessageRouter } from '../message/message.router';
-import { MessageCanceler, MessageContext, MessageEventHandler } from '../message/message.types';
+import { MessageCanceler, MessageContext, StepMessageEventHandler } from '../message/message.types';
 import { MessageInfo, Resolve } from '../types';
 
 export interface StepRegistryKeySource {
@@ -21,7 +21,7 @@ export class StepMessageContext extends MessageContext {
     info: MessageInfo,
     router: MessageRouter,
     replacer: StackEnvironmentVariableReplacer,
-    handler: MessageEventHandler,
+    handler: StepMessageEventHandler,
     readonly workingPath: string,
     readonly deviceRunnerId: DeviceRunnerId,
   ) {

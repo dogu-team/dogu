@@ -14,10 +14,7 @@ export const PublicAction = {
     method: 'GET',
     path: '/:projectId/git-url',
     pathProvider: class {
-      constructor(
-        readonly organizationId: OrganizationId,
-        readonly projectId: ProjectId,
-      ) {}
+      constructor(readonly organizationId: OrganizationId, readonly projectId: ProjectId) {}
     },
     responseBody: GetGitUrlResponse,
   }),
@@ -27,10 +24,7 @@ export const PublicAction = {
     method: 'GET',
     path: '/:projectId/applications',
     pathProvider: class {
-      constructor(
-        readonly organizationId: OrganizationId,
-        readonly projectId: ProjectId,
-      ) {}
+      constructor(readonly organizationId: OrganizationId, readonly projectId: ProjectId) {}
     },
     query: GetApplicationListQuery,
     responseBody: GetApplicationListResponse,
@@ -41,10 +35,7 @@ export const PublicAction = {
     method: 'GET',
     path: '/:projectId/applications/packages',
     pathProvider: class {
-      constructor(
-        readonly organizationId: OrganizationId,
-        readonly projectId: ProjectId,
-      ) {}
+      constructor(readonly organizationId: OrganizationId, readonly projectId: ProjectId) {}
     },
     query: GetApplicationListQuery,
     responseBody: GetApplicationListResponse,
@@ -55,11 +46,7 @@ export const PublicAction = {
     method: 'GET',
     path: '/:projectId/applications/:projectApplicationId/download-url',
     pathProvider: class {
-      constructor(
-        readonly organizationId: OrganizationId,
-        readonly projectId: ProjectId,
-        readonly projectApplicationId: ProjectApplicationId,
-      ) {}
+      constructor(readonly organizationId: OrganizationId, readonly projectId: ProjectId, readonly projectApplicationId: ProjectApplicationId) {}
     },
     responseBody: GetApplicationUrlResponse,
   }),

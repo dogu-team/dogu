@@ -5,6 +5,7 @@ import { ScanModule } from '../scan/scan.module';
 import { DeviceHostDownloadSharedResourceWebSocketService } from './device-host/download-shared-resource';
 import { DeviceHostUploadFileService } from './device-host/upload-file.service';
 import { DeviceConnectionSubscribeService } from './device/connection-subscribe.service';
+import { DeviceFindWindowsService } from './device/find-windows.service';
 import { DeviceForwardService } from './device/forward.service';
 import { DeviceInstallAppService } from './device/install-app.service';
 import { DeviceJoinWifiService } from './device/join-wifi.service';
@@ -38,6 +39,7 @@ import { DeviceWebSocketRelayService } from './device/websocket-relay.service';
     DeviceRunAppiumServerService,
     DeviceHostUploadFileService,
     DeviceHostDownloadSharedResourceWebSocketService,
+    DeviceFindWindowsService,
   ],
 })
 export class WsModule {}
