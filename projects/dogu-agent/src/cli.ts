@@ -6,7 +6,7 @@ import yargs from 'yargs/yargs';
 const args = hideBin(process.argv);
 yargs(args)
   .command(
-    'run --url <url> --token <token>',
+    'run',
     'run Dogu Agent',
     (yargs) => {
       return yargs
@@ -27,14 +27,7 @@ yargs(args)
       console.log(`token: ${token}`);
     },
   )
-  .command(
-    'doctor',
-    'check the system',
-    (yargs) => yargs,
-    (argv) => {
-      console.log('doctor not implemented');
-    },
-  )
   .strictCommands()
   .demandCommand(1)
+  .scriptName('dogu-agent')
   .parse();
