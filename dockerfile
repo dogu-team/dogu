@@ -84,10 +84,9 @@ COPY .husky ./.husky
 COPY packages/typescript ./packages/typescript
 COPY packages/typescript-private ./packages/typescript-private
 COPY packages/typescript-dev-private ./packages/typescript-dev-private
-COPY projects/android-device-agent ./projects/android-device-agent
 COPY projects/dogu-agent ./projects/dogu-agent
 COPY projects/go-device-controller ./projects/go-device-controller
-COPY projects/ios-device-agent ./projects/ios-device-agent
+COPY scripts ./scripts
 
 RUN yarn run newbie:cicd
 RUN yarn run build
