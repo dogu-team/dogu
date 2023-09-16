@@ -259,7 +259,7 @@ export class DeviceStatusService {
       throw new HttpException(`Cannot find device. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
     }
 
-    LicenseValidator.validateMobileEnableCount(this.dataSource.manager, this.licenseService, organizationId, device);
+    await LicenseValidator.validateMobileEnableCount(this.dataSource.manager, this.licenseService, organizationId, device);
 
     await this.dataSource.transaction(async (manager) => {
       if (dto.isGlobal === true) {
@@ -332,7 +332,7 @@ export class DeviceStatusService {
       }
     }
 
-    LicenseValidator.validateBrowserEnableCount(manager, this.licenseService, organizationId, deviceById, maxParallelJobs);
+    await LicenseValidator.validateBrowserEnableCount(manager, this.licenseService, organizationId, deviceById, maxParallelJobs);
 
     const newData = Object.assign(deviceById, {
       maxParallelJobs,
