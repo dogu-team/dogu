@@ -16,6 +16,12 @@ github.com/dogu-team/keybd_event v0.0.0-20230913041537-42fbe7d89c8e h1:31U8Mk4qe
 github.com/dogu-team/keybd_event v0.0.0-20230913041537-42fbe7d89c8e/go.mod h1:mRB2CC0ub/vo59EtN76ezr2s3cNZbmqb2gcpBU5pS7I=
 github.com/dogu-team/keybd_event v0.0.0-20230914144628-68e2e33afa73 h1:rxui+LYKuiK8cWae4nB2asSDVajKfQY9zUubT36lxec=
 github.com/dogu-team/keybd_event v0.0.0-20230914144628-68e2e33afa73/go.mod h1:mRB2CC0ub/vo59EtN76ezr2s3cNZbmqb2gcpBU5pS7I=
+github.com/dogu-team/keybd_event v0.0.0-20230916113659-77186b57dede h1:DbnrkibHxlLS7chCdkkb+0H++m0TwYoU5h4XQyhvWFQ=
+github.com/dogu-team/keybd_event v0.0.0-20230916113659-77186b57dede/go.mod h1:mRB2CC0ub/vo59EtN76ezr2s3cNZbmqb2gcpBU5pS7I=
+github.com/dogu-team/keybd_event v0.0.0-20230916115747-4d8ef9f75ee3 h1:Obc65NG/ccsM5CfCdo5kXMoUyVhpa5nMbhtBwqRBdGM=
+github.com/dogu-team/keybd_event v0.0.0-20230916115747-4d8ef9f75ee3/go.mod h1:mRB2CC0ub/vo59EtN76ezr2s3cNZbmqb2gcpBU5pS7I=
+github.com/dogu-team/keybd_event v0.0.0-20230916121040-3bdebdcda936 h1:adcoStk+kp1EglGss8Ff/YHtEYKG4Y9xC4P4bOP30Vk=
+github.com/dogu-team/keybd_event v0.0.0-20230916121040-3bdebdcda936/go.mod h1:mRB2CC0ub/vo59EtN76ezr2s3cNZbmqb2gcpBU5pS7I=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
 github.com/fsnotify/fsnotify v1.4.7/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=

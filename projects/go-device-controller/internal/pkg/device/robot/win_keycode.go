@@ -109,9 +109,9 @@ func getKeyCode(code types.DeviceControlKeycode, platform outer.Platform) (Pseud
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_F12:
 		return newPseudoKeyWithKey(keybd_event.VK_F12)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_DEL:
-		return newPseudoKeyWithKey(keybd_event.VK_DELETE)
-	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_FORWARD_DEL:
 		return newPseudoKeyWithKey(keybd_event.VK_BACKSPACE)
+	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_FORWARD_DEL:
+		return newPseudoKeyWithKey(keybd_event.VK_DELETE)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_ENTER:
 		return newPseudoKeyWithKey(keybd_event.VK_ENTER)
 	case types.DeviceControlKeycode_DEVICE_CONTROL_KEYCODE_TAB:
