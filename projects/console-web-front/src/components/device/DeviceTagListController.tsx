@@ -70,7 +70,11 @@ const TagItem = ({ tag, mutateTags }: TagItemProps) => {
             <p>
               {t('device-farm:tagDeleteModalContentWaningMsg')}
               <Trans
-                i18nKey={tag.devices!.length < 2 ? 'device-farm:tagDeleteModalContentTextSingular' : 'device-farm:tagDeleteModalContentTextPlurar'}
+                i18nKey={
+                  tag.devices!.length < 2
+                    ? 'device-farm:tagDeleteModalContentTextSingular'
+                    : 'device-farm:tagDeleteModalContentTextPlurar'
+                }
                 components={[<b style={{ fontWeight: '500' }} key="tag-count" />]}
                 values={{ count: tag.devices?.length }}
               />
@@ -123,9 +127,12 @@ interface Props {
 
 const DeviceTagListController = ({ organizationId }: Props) => {
   const { keyword } = useTagFilterStore((state) => state.filterValue);
-  const { data, error, mutate, page, updatePage, isLoading } = usePaginationSWR<DeviceTagBase>(`/organizations/${organizationId}/tags?keyword=${keyword}`, {
-    skipQuestionMark: true,
-  });
+  const { data, error, mutate, page, updatePage, isLoading } = usePaginationSWR<DeviceTagBase>(
+    `/organizations/${organizationId}/tags?keyword=${keyword}`,
+    {
+      skipQuestionMark: true,
+    },
+  );
   const { t } = useTranslation();
 
   useRefresh(['onRefreshClicked', 'onTagCreated', 'onTagEdited'], () => mutate());
@@ -142,7 +149,13 @@ const DeviceTagListController = ({ organizationId }: Props) => {
       <List<DeviceTagBase>
         dataSource={data?.items}
         loading={isLoading}
-        pagination={{ defaultCurrent: 1, current: page, pageSize: 10, total: data?.totalCount, onChange: (page, pageSize) => updatePage(page) }}
+        pagination={{
+          defaultCurrent: 1,
+          current: page,
+          pageSize: 10,
+          total: data?.totalCount,
+          onChange: (page, pageSize) => updatePage(page),
+        }}
         renderItem={(item) => <TagItem tag={item} mutateTags={mutate} />}
         rowKey={(record) => `tag-${record.deviceTagId}`}
         locale={{
@@ -152,7 +165,15 @@ const DeviceTagListController = ({ organizationId }: Props) => {
               description={
                 <Trans
                   i18nKey="device-farm:tagEmptyDescription"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/organization/device-farm/tag-management" target="_blank" /> }}
+                  components={{
+                    br: <br />,
+                    link: (
+                      <Link
+                        href="https://docs.dogutech.io/management/organization/device-farm/tag-management"
+                        target="_blank"
+                      />
+                    ),
+                  }}
                 />
               }
             />

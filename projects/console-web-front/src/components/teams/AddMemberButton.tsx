@@ -14,7 +14,11 @@ const AddMemberButton = ({ organizationId, teamId, ...buttonProps }: Props) => {
 
   return (
     <>
-      <Button {...buttonProps} onClick={() => openModal()} access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'add-team-member-btn' : undefined} />
+      <Button
+        {...buttonProps}
+        onClick={() => openModal()}
+        access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'add-team-member-btn' : undefined}
+      />
 
       <AddMemberModal isOpen={isOpen} close={closeModal} organizationId={organizationId} teamId={teamId} />
     </>

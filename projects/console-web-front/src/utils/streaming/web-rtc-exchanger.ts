@@ -1,5 +1,12 @@
 import { DeviceStreamingOffer } from '@dogu-private/console';
-import { DefaultScreenCaptureOption, DeviceId, OrganizationId, Platform, Serial, StreamingOption } from '@dogu-private/types';
+import {
+  DefaultScreenCaptureOption,
+  DeviceId,
+  OrganizationId,
+  Platform,
+  Serial,
+  StreamingOption,
+} from '@dogu-private/types';
 import { sdpExt } from '@dogu-private/webrtc';
 import { PromiseOrValue, transformAndValidate } from '@dogu-tech/common';
 import { StreamingAnswerDto } from '@dogu-tech/device-client-common';
@@ -35,12 +42,14 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
     option?: StreamingOption,
     onError?: (error: StreamingError) => PromiseOrValue<void>,
   ): void {
-    this.startExchangeInternal(organizationId, deviceId, serial, peerConnection, platform, option, onError).catch(async (error) => {
-      if (onError !== undefined) {
-        await onError(error);
-      }
-      console.debug('startExchangeInternal error', error);
-    });
+    this.startExchangeInternal(organizationId, deviceId, serial, peerConnection, platform, option, onError).catch(
+      async (error) => {
+        if (onError !== undefined) {
+          await onError(error);
+        }
+        console.debug('startExchangeInternal error', error);
+      },
+    );
   }
 
   private async startExchangeInternal(
@@ -56,9 +65,13 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
 
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);
-    console.debug(`${this.constructor.name} local`, { localDescription: peerConnection.localDescription });
+    console.debug(`${this.constructor.name} local`, {
+      localDescription: peerConnection.localDescription,
+    });
 
-    const url = new WebSocketUrlResolver().resolve(`/ws/device-streaming-trickle-exchanger?organizationId=${organizationId}&deviceId=${deviceId}`);
+    const url = new WebSocketUrlResolver().resolve(
+      `/ws/device-streaming-trickle-exchanger?organizationId=${organizationId}&deviceId=${deviceId}`,
+    );
     const webSocket = new WebSocket(url);
     this.webSocket = webSocket;
 
@@ -183,12 +196,14 @@ export class WebRtcNonTrickleExchanger implements WebRtcExchanger {
     option?: StreamingOption,
     onError?: (error: StreamingError) => PromiseOrValue<void>,
   ): void {
-    this.startExchangeInternal(organizationId, deviceId, serial, peerConnection, platform, option, onError).catch(async (error) => {
-      if (onError !== undefined) {
-        await onError(error);
-      }
-      console.debug('startExchangeInternal error', error);
-    });
+    this.startExchangeInternal(organizationId, deviceId, serial, peerConnection, platform, option, onError).catch(
+      async (error) => {
+        if (onError !== undefined) {
+          await onError(error);
+        }
+        console.debug('startExchangeInternal error', error);
+      },
+    );
   }
 
   private async startExchangeInternal(

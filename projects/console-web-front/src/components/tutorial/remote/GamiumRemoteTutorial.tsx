@@ -7,8 +7,18 @@ import useTranslation from 'next-translate/useTranslation';
 import Trans from 'next-translate/Trans';
 
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
-import { TutorialSupportLanguage, TutorialSupportPlatform, TutorialSupportTarget, REMOTE_SAMPLE_GIT_URL, TutorialSupportSdk } from '../../../resources/tutorials/index';
-import { gamiumRemoteTutorialGuideData, RemoteTutorialProps, remoteTutorialSdkSupportInfo } from '../../../resources/tutorials/remote';
+import {
+  TutorialSupportLanguage,
+  TutorialSupportPlatform,
+  TutorialSupportTarget,
+  REMOTE_SAMPLE_GIT_URL,
+  TutorialSupportSdk,
+} from '../../../resources/tutorials/index';
+import {
+  gamiumRemoteTutorialGuideData,
+  RemoteTutorialProps,
+  remoteTutorialSdkSupportInfo,
+} from '../../../resources/tutorials/remote';
 import CodeWithCopyButton from '../../common/CodeWithCopyButton';
 import DoneStep from './DoneStep';
 import GuideAnchor from '../GuideAnchor';
@@ -38,9 +48,14 @@ const GamiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
   const [capabilityCode, setCapabilityCode] = useState<string>('');
   const { t } = useTranslation('tutorial');
 
-  const selectedGuide = gamiumRemoteTutorialGuideData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const frameworkLanguage = Object.keys(remoteTutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].frameworksPerLang).find((language) =>
-    remoteTutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
+  const selectedGuide = gamiumRemoteTutorialGuideData.guides.find(
+    (data) => data.framework === framework && data.target === target && data.platform === platform,
+  );
+  const frameworkLanguage = Object.keys(remoteTutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].frameworksPerLang).find(
+    (language) =>
+      remoteTutorialSdkSupportInfo[TutorialSupportSdk.GAMIUM].frameworksPerLang[
+        language as TutorialSupportLanguage
+      ]?.includes(framework),
   );
 
   useEffect(() => {
@@ -81,9 +96,15 @@ const GamiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
             items={[
               { id: INTRODUCTION_ID, title: t('remoteTestTutorialIntroAnchorTitle') },
               { id: PROJECT_SETUP_ID, title: t('remoteTestTutorialSampleProjectSetupAnchorTitle') },
-              { id: INSTALL_DEPENDENCIES_ID, title: t('remoteTestTutorialInstallDependenciesAnchorTitle') },
+              {
+                id: INSTALL_DEPENDENCIES_ID,
+                title: t('remoteTestTutorialInstallDependenciesAnchorTitle'),
+              },
               { id: SET_CAPABILITIES_ID, title: t('remoteTestTutorialSetCapabilitiesAnchorTitle') },
-              { id: UPLOAD_SAMPLE_APP_ID, title: t('remoteTestTutorialUploadSampleAppAnchorTitle') },
+              {
+                id: UPLOAD_SAMPLE_APP_ID,
+                title: t('remoteTestTutorialUploadSampleAppAnchorTitle'),
+              },
               { id: RUN_TEST_ID, title: t('remoteTestTutorialRunTestAnchorTitle') },
               { id: RESULT_ID, title: t('remoteTestTutorialCheckResultAnchorTitle') },
               { id: DONE_ID, title: t('doneStepTitle') },
@@ -93,7 +114,12 @@ const GamiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
       }
       content={
         <div>
-          <GuideStep id={INTRODUCTION_ID} title={t('remoteTestTutorialIntroTitle')} description={<p>{t('remoteTestTutorialIntroDescription')}</p>} content={null} />
+          <GuideStep
+            id={INTRODUCTION_ID}
+            title={t('remoteTestTutorialIntroTitle')}
+            description={<p>{t('remoteTestTutorialIntroDescription')}</p>}
+            content={null}
+          />
           <GuideStep
             id={PROJECT_SETUP_ID}
             title={t('remoteTestTutorialSampleProjectSetupTitle')}
@@ -124,7 +150,11 @@ const GamiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
               <p>
                 <Trans
                   i18nKey="tutorial:remoteTestTutorialSetCapabilitiesDescription"
-                  components={{ code: <StyledCode />, link: <a href="https://docs.dogutech.io/test-automation/gamium" target="_blank" />, br: <br /> }}
+                  components={{
+                    code: <StyledCode />,
+                    link: <a href="https://docs.dogutech.io/test-automation/gamium" target="_blank" />,
+                    br: <br />,
+                  }}
                 />
               </p>
             }
@@ -146,7 +176,9 @@ const GamiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
               ) : (
                 <>
                   <CodeWithCopyButton language="bash" code={selectedGuide?.runCommand ?? ''} />
-                  {frameworkLanguage === TutorialSupportLanguage.PYTHON && <Alert message={t('remoteTestTutorialPytonErrorMessage')} type="info" showIcon />}
+                  {frameworkLanguage === TutorialSupportLanguage.PYTHON && (
+                    <Alert message={t('remoteTestTutorialPytonErrorMessage')} type="info" showIcon />
+                  )}
                 </>
               )
             }

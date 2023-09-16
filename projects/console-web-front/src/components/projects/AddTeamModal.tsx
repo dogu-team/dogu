@@ -28,7 +28,9 @@ const AddTeamModal = ({ isOpen, close, organizationId, projectId }: Props) => {
   const { inputValue, debouncedValue, handleChangeValues } = useDebouncedInputValues();
   const fireEvent = useEventStore((state) => state.fireEvent);
   const { data, error, mutate, isLoading } = useSWR<PageBase<TeamBase>>(
-    !!debouncedValue && organizationId && `/organizations/${organizationId}/teams?keyword=${debouncedValue}&page=1&offset=10`,
+    !!debouncedValue &&
+      organizationId &&
+      `/organizations/${organizationId}/teams?keyword=${debouncedValue}&page=1&offset=10`,
     swrAuthFetcher,
   );
   const { t } = useTranslation();
@@ -43,7 +45,10 @@ const AddTeamModal = ({ isOpen, close, organizationId, projectId }: Props) => {
   const handleAddTeam = useCallback(
     async (team: TeamBase, permission: ProjectRoleId) => {
       try {
-        await request(organizationId, projectId, { teamId: team.teamId, projectRoleId: permission });
+        await request(organizationId, projectId, {
+          teamId: team.teamId,
+          projectRoleId: permission,
+        });
         mutate();
         sendSuccessNotification(t('project-member:addProjectMemberSuccessMsg'));
         fireEvent('onProjectMemberAdded');
@@ -58,7 +63,14 @@ const AddTeamModal = ({ isOpen, close, organizationId, projectId }: Props) => {
   );
 
   return (
-    <Modal open={isOpen} centered destroyOnClose onCancel={resetAndClose} footer={null} title={t('project-member:addProjectTeamModalTitle')}>
+    <Modal
+      open={isOpen}
+      centered
+      destroyOnClose
+      onCancel={resetAndClose}
+      footer={null}
+      title={t('project-member:addProjectTeamModalTitle')}
+    >
       <PermissionSelectContentBox<TeamBase>
         input={
           <Input.Search
@@ -78,7 +90,9 @@ const AddTeamModal = ({ isOpen, close, organizationId, projectId }: Props) => {
         renderSearchResultItem={(item) => (
           <FlexSpaceBetweenBox>
             <Text>{item.name}</Text>
-            {!!item.projectAndTeamAndProjectRoles?.find((tr) => tr.projectId === projectId) && <Text>Already joined</Text>}
+            {!!item.projectAndTeamAndProjectRoles?.find((tr) => tr.projectId === projectId) && (
+              <Text>Already joined</Text>
+            )}
           </FlexSpaceBetweenBox>
         )}
         itemKey={(item) => `add-team-${item.teamId}`}

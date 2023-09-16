@@ -29,11 +29,17 @@ interface Props {
   selectedTarget: TutorialSupportTarget;
 }
 
-const TutorialOptionSelectors = ({ sdk, sdkSupportInfo, selectedFramwork, selectedPlatform, selectedTarget }: Props) => {
+const TutorialOptionSelectors = ({
+  sdk,
+  sdkSupportInfo,
+  selectedFramwork,
+  selectedPlatform,
+  selectedTarget,
+}: Props) => {
   const router = useRouter();
   const { project } = useTutorialContext();
-  const availabePlatforms = Object.keys(sdkSupportInfo.targetsPerPlatform).filter((platform) =>
-    sdkSupportInfo.targetsPerPlatform[platform as TutorialSupportPlatform]?.includes(selectedTarget),
+  const availabePlatforms = Object.keys(sdkSupportInfo.targetsPerPlatform).filter(
+    (platform) => sdkSupportInfo.targetsPerPlatform[platform as TutorialSupportPlatform]?.includes(selectedTarget),
   );
   const availableTargets = sdkSupportInfo.targetsPerPlatform[selectedPlatform];
   const frameworkOptions: SelectProps['options'] = Object.keys(sdkSupportInfo.frameworksPerLang).map((language) => {
@@ -82,7 +88,10 @@ const TutorialOptionSelectors = ({ sdk, sdkSupportInfo, selectedFramwork, select
         options={frameworkOptions}
         value={selectedFramwork}
         onChange={(value: string) => {
-          router.replace({ query: { ...router.query, framework: value } }, undefined, { shallow: true, scroll: true });
+          router.replace({ query: { ...router.query, framework: value } }, undefined, {
+            shallow: true,
+            scroll: true,
+          });
         }}
         dropdownMatchSelectWidth={false}
         style={{ width: '100%', marginBottom: '.5rem' }}
@@ -92,7 +101,10 @@ const TutorialOptionSelectors = ({ sdk, sdkSupportInfo, selectedFramwork, select
         options={platformOptions}
         value={selectedPlatform}
         onChange={(value) => {
-          router.replace({ query: { ...router.query, platform: value } }, undefined, { shallow: true, scroll: true });
+          router.replace({ query: { ...router.query, platform: value } }, undefined, {
+            shallow: true,
+            scroll: true,
+          });
         }}
         dropdownMatchSelectWidth={false}
         style={{ width: '100%', marginBottom: '.5rem' }}
@@ -103,7 +115,10 @@ const TutorialOptionSelectors = ({ sdk, sdkSupportInfo, selectedFramwork, select
           options={targetOptions}
           value={selectedTarget}
           onChange={(value) => {
-            router.replace({ query: { ...router.query, target: value } }, undefined, { shallow: true, scroll: true });
+            router.replace({ query: { ...router.query, target: value } }, undefined, {
+              shallow: true,
+              scroll: true,
+            });
           }}
           dropdownMatchSelectWidth={false}
           style={{ width: '100%' }}

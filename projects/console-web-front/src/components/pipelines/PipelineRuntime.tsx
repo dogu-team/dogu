@@ -18,7 +18,9 @@ const PipelineRuntime = ({ status, startedAt, endedAt }: Props) => {
       return <p>Waiting...</p>;
     case PIPELINE_STATUS.SUCCESS:
     case PIPELINE_STATUS.FAILURE:
-      return <p>{!!startedAt && !!endedAt ? stringifyDuration(getDateDiffAsMilliseconds(startedAt, endedAt)) : 'Error'}</p>;
+      return (
+        <p>{!!startedAt && !!endedAt ? stringifyDuration(getDateDiffAsMilliseconds(startedAt, endedAt)) : 'Error'}</p>
+      );
     case PIPELINE_STATUS.CANCELLED:
       if (!!startedAt && !!endedAt) {
         return <p>{stringifyDuration(getDateDiffAsMilliseconds(startedAt, endedAt))}</p>;

@@ -33,7 +33,9 @@ const UpdateTemplateButton = ({}: Props) => {
     }
 
     try {
-      const rv = await updateProject(project.organizationId, project.projectId, { type: projectType });
+      const rv = await updateProject(project.organizationId, project.projectId, {
+        type: projectType,
+      });
       mutate?.(rv, false);
       sendSuccessNotification('Project template updated.');
       fireEvent('onProjectUpdated');

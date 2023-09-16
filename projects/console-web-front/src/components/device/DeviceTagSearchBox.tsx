@@ -18,9 +18,13 @@ const DeviceTagSearchBox = () => {
   const [keyword, setKeyword] = useState('');
   const [name, setName] = useState('');
   const { filterValue, updateFilter } = useDeviceFilterStore();
-  const { data, error, isLoading } = useSWR<PageBase<DeviceTagBase>>(organizationId && `/organizations/${organizationId}/tags?offset=5&keyword=${keyword}`, swrAuthFetcher, {
-    keepPreviousData: true,
-  });
+  const { data, error, isLoading } = useSWR<PageBase<DeviceTagBase>>(
+    organizationId && `/organizations/${organizationId}/tags?offset=5&keyword=${keyword}`,
+    swrAuthFetcher,
+    {
+      keepPreviousData: true,
+    },
+  );
   const { t } = useTranslation();
 
   const debouncedUpdateKeyword = useMemo(
@@ -36,7 +40,10 @@ const DeviceTagSearchBox = () => {
     debouncedUpdateKeyword(value);
   };
 
-  const handleRemoveSelected = useCallback((value: string) => updateFilter({ tags: (prev) => prev.filter((ft) => ft !== value) }), []);
+  const handleRemoveSelected = useCallback(
+    (value: string) => updateFilter({ tags: (prev) => prev.filter((ft) => ft !== value) }),
+    [],
+  );
 
   const handleToggleOption = (value: string) => {
     if (filterValue.tags.includes(value)) {
@@ -59,13 +66,23 @@ const DeviceTagSearchBox = () => {
     <StyledSelectFilterDropdownMenu
       title={t('device-farm:deviceFilterTagSearchTitle')}
       input={
-        <Input.Search value={name} onChange={(e) => handleChange(e.target.value)} placeholder={t('device-farm:deviceFilterTagSearchPlaceholder')} allowClear loading={isLoading} />
+        <Input.Search
+          value={name}
+          onChange={(e) => handleChange(e.target.value)}
+          placeholder={t('device-farm:deviceFilterTagSearchPlaceholder')}
+          allowClear
+          loading={isLoading}
+        />
       }
       selectedItems={filterValue.tags.map((item) => {
         return <FilterSelectedTag key={`tag-filter-${item}`} value={item} onClick={handleRemoveSelected} />;
       })}
       optionItems={data?.items.map((item) => (
-        <FilterSelectOption key={`search-${item.deviceTagId}`} checked={filterValue.tags.includes(item.name)} onClick={() => handleToggleOption(item.name)}>
+        <FilterSelectOption
+          key={`search-${item.deviceTagId}`}
+          checked={filterValue.tags.includes(item.name)}
+          onClick={() => handleToggleOption(item.name)}
+        >
           {item.name}
         </FilterSelectOption>
       ))}

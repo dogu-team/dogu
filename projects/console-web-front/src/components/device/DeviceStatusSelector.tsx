@@ -5,7 +5,11 @@ import styled from 'styled-components';
 import useDeviceFilterStore from 'src/stores/device-filter';
 import DeviceConnectionStateTag from './DeviceConnectionStateTag';
 
-const status = [DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED, DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED, DeviceConnectionState.UNRECOGNIZED];
+const status = [
+  DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED,
+  DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED,
+  DeviceConnectionState.UNRECOGNIZED,
+];
 
 const DeviceStatusSelector = () => {
   const { filterValue, updateFilter } = useDeviceFilterStore();

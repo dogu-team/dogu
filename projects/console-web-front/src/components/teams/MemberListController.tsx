@@ -83,9 +83,12 @@ interface Props {
 
 const MemberListController = ({ organizationId, teamId }: Props) => {
   const { keyword } = useTeamMemberFilterStore((state) => state.filterValue);
-  const { data, page, updatePage, error, mutate, isLoading } = usePaginationSWR<UserBase>(`/organizations/${organizationId}/teams/${teamId}/users?keyword=${keyword}`, {
-    skipQuestionMark: true,
-  });
+  const { data, page, updatePage, error, mutate, isLoading } = usePaginationSWR<UserBase>(
+    `/organizations/${organizationId}/teams/${teamId}/users?keyword=${keyword}`,
+    {
+      skipQuestionMark: true,
+    },
+  );
   const { t } = useTranslation();
 
   useRefresh(['onRefreshClicked', 'onTeamMemberAdded', 'onTeamMemberDeleted'], () => mutate());
@@ -103,9 +106,20 @@ const MemberListController = ({ organizationId, teamId }: Props) => {
         rowKey={(record) => `team-member-${record.userId}`}
         dataSource={data?.items}
         renderItem={(item) => <MemberItem member={item} teamId={teamId} />}
-        pagination={{ defaultCurrent: 1, current: page, pageSize: 10, total: data?.totalCount, onChange: (page, pageSize) => updatePage(page) }}
+        pagination={{
+          defaultCurrent: 1,
+          current: page,
+          pageSize: 10,
+          total: data?.totalCount,
+          onChange: (page, pageSize) => updatePage(page),
+        }}
         locale={{
-          emptyText: <ListEmpty image={<UserOutlined style={{ fontSize: '90px' }} />} description={t('team:teamMemberEmptyDescription')} />,
+          emptyText: (
+            <ListEmpty
+              image={<UserOutlined style={{ fontSize: '90px' }} />}
+              description={t('team:teamMemberEmptyDescription')}
+            />
+          ),
         }}
       />
     </>

@@ -67,6 +67,10 @@ export const config = {
     bucket: env.DOGU_INFLUX_DB_BUCKET,
     url: `http://${env.DOGU_INFLUX_DB_HOST}:${env.DOGU_INFLUX_DB_PORT}`,
   },
+  license: {
+    url: env.DOGU_LICENSE_SERVER_URL,
+    companyName: env.DOGU_LICENSE_COMPANY_NAME,
+  },
   fileService: {
     s3: {
       accessKeyId: env.DOGU_AWS_KEY_ID,

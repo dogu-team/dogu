@@ -19,7 +19,10 @@ interface Props {
 }
 
 const PermissionRadioSelector = ({ organizationId, defaultRoleId, onChange }: Props) => {
-  const { data, error, isLoading } = useSWR<PageBase<ProjectRoleBase>>(`/organizations/${organizationId}/project-roles`, swrAuthFetcher);
+  const { data, error, isLoading } = useSWR<PageBase<ProjectRoleBase>>(
+    `/organizations/${organizationId}/project-roles`,
+    swrAuthFetcher,
+  );
   const { t } = useTranslation();
 
   const roleDescriptions: { [key: number]: string } = {
@@ -33,7 +36,12 @@ const PermissionRadioSelector = ({ organizationId, defaultRoleId, onChange }: Pr
   }
 
   if (!data || error) {
-    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find project permission information.'} />;
+    return (
+      <ErrorBox
+        title="Something went wrong"
+        desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find project permission information.'}
+      />
+    );
   }
 
   return (

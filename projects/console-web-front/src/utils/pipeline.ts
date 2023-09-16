@@ -5,7 +5,12 @@ export const isPipelineInProgress = (status: PIPELINE_STATUS): boolean => {
 };
 
 export const isPipelineEmptyLogStatus = (status: PIPELINE_STATUS) => {
-  return status === PIPELINE_STATUS.WAITING || status === PIPELINE_STATUS.CANCELLED || status === PIPELINE_STATUS.SKIPPED || status === PIPELINE_STATUS.CANCEL_REQUESTED;
+  return (
+    status === PIPELINE_STATUS.WAITING ||
+    status === PIPELINE_STATUS.CANCELLED ||
+    status === PIPELINE_STATUS.SKIPPED ||
+    status === PIPELINE_STATUS.CANCEL_REQUESTED
+  );
 };
 
 export const isPipelineEndedWithData = (status: PIPELINE_STATUS) => {

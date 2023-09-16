@@ -114,9 +114,12 @@ const OrganizationMemberListController = () => {
   const router = useRouter();
   const organizationId = router.query.orgId as OrganizationId;
   const { keyword } = useOrganizationMemberFilterStore((state) => state.filterValue);
-  const { data, error, mutate, page, updatePage, isLoading } = usePaginationSWR<UserBase>(organizationId ? `/organizations/${organizationId}/users?keyword=${keyword}` : null, {
-    skipQuestionMark: true,
-  });
+  const { data, error, mutate, page, updatePage, isLoading } = usePaginationSWR<UserBase>(
+    organizationId ? `/organizations/${organizationId}/users?keyword=${keyword}` : null,
+    {
+      skipQuestionMark: true,
+    },
+  );
   const { t } = useTranslation();
 
   useRefresh(['onRefreshClicked', 'onOrgMemberDeleted', 'onOrgMemberUpdated'], () => mutate());

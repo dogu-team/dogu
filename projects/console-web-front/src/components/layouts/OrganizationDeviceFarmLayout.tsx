@@ -21,9 +21,13 @@ const AddDeviceTabButton = ({ selected, href }: TabButtonProps) => {
   const router = useRouter();
   const [isRefreshEnabled, setIsRefreshEnabled] = useState(true);
   const organizationId = router.query.orgId;
-  const { data } = useSWR<PageBase<DeviceBase>>(organizationId ? `/organizations/${organizationId}/devices/addable?deviceName=&page=1&offset=10` : null, swrAuthFetcher, {
-    refreshInterval: isRefreshEnabled ? 5000 : undefined,
-  });
+  const { data } = useSWR<PageBase<DeviceBase>>(
+    organizationId ? `/organizations/${organizationId}/devices/addable?deviceName=&page=1&offset=10` : null,
+    swrAuthFetcher,
+    {
+      refreshInterval: isRefreshEnabled ? 5000 : undefined,
+    },
+  );
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -44,7 +48,13 @@ const AddDeviceTabButton = ({ selected, href }: TabButtonProps) => {
 
   return (
     <RelativeBox>
-      <MenuLinkTabItem selected={selected} title={t('device-farm:deviceAddMenuTitle')} icon={<ApiOutlined />} href={href} access-id={'org-add-device-tab'} />
+      <MenuLinkTabItem
+        selected={selected}
+        title={t('device-farm:deviceAddMenuTitle')}
+        icon={<ApiOutlined />}
+        href={href}
+        access-id={'org-add-device-tab'}
+      />
       {data && data.totalCount > 0 && <Badge />}
     </RelativeBox>
   );
@@ -73,7 +83,9 @@ const OrganizationDeviceFarmLayout = ({ children, organization }: Props) => {
       'access-id': 'org-device-list-tab',
     },
     {
-      tab: (selected) => <AddDeviceTabButton selected={selected} href={`/dashboard/${orgId}/device-farm/standby-devices`} />,
+      tab: (selected) => (
+        <AddDeviceTabButton selected={selected} href={`/dashboard/${orgId}/device-farm/standby-devices`} />
+      ),
       href: `/dashboard/${orgId}/device-farm/standby-devices`,
       'access-id': 'org-add-device-tab',
     },
@@ -86,7 +98,11 @@ const OrganizationDeviceFarmLayout = ({ children, organization }: Props) => {
   ];
 
   return (
-    <ConsoleLayout organization={organization} sidebar={<OrganizationSideBar />} titleI18nKey={'organization:deviceFarmPageTitle'}>
+    <ConsoleLayout
+      organization={organization}
+      sidebar={<OrganizationSideBar />}
+      titleI18nKey={'organization:deviceFarmPageTitle'}
+    >
       <MenuLinkTabs tabs={tabs} />
       <Inner>{children}</Inner>
     </ConsoleLayout>

@@ -3,7 +3,12 @@ import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
 
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
-import { ROUTINE_SAMPLE_GIT_URL, TutorialSupportLanguage, TutorialSupportSdk, TutorialSupportTarget } from '../../../resources/tutorials';
+import {
+  ROUTINE_SAMPLE_GIT_URL,
+  TutorialSupportLanguage,
+  TutorialSupportSdk,
+  TutorialSupportTarget,
+} from '../../../resources/tutorials';
 import { gamiumRoutineTutorialData, routineTutorialSdkSupportInfo } from '../../../resources/tutorials/routine';
 import CodeWithCopyButton from '../../common/CodeWithCopyButton';
 import DoneStep from './DoneStep';
@@ -40,9 +45,15 @@ const GamiumRoutineTutorial = () => {
   });
   const { t } = useTranslation('tutorial');
 
-  const selectedGuide = gamiumRoutineTutorialData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const frameworkLanguage = Object.keys(routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang).find((language) =>
-    routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
+  const selectedGuide = gamiumRoutineTutorialData.guides.find(
+    (data) => data.framework === framework && data.target === target && data.platform === platform,
+  );
+  const frameworkLanguage = Object.keys(
+    routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang,
+  ).find((language) =>
+    routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[
+      language as TutorialSupportLanguage
+    ]?.includes(framework),
   );
 
   const APP_ROUTINE_SAMPLE = `name: sample-routine
@@ -55,7 +66,7 @@ jobs:
     runs-on:
       group:
         - android
-    appVersion:
+    appPackageName:
     record: true
     steps:
       - name: run test
@@ -167,7 +178,13 @@ jobs:
                     <RefreshButton />
                   </FlexSpaceBetween>
                 }
-                table={<PipelineListController organizationId={project.organizationId} projectId={project.projectId} hideEmpty />}
+                table={
+                  <PipelineListController
+                    organizationId={project.organizationId}
+                    projectId={project.projectId}
+                    hideEmpty
+                  />
+                }
               />
             }
           />

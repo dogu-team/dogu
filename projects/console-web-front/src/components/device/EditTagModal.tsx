@@ -58,7 +58,12 @@ const EditTagModal = ({ tag, isOpen, closeModal }: Props) => {
       title={t('device-farm:editTagModalTitle')}
       form={
         <Form id="edit-device-tag" layout="vertical" preserve={false} onFinish={handleSubmit} form={form}>
-          <Form.Item label={t('device-farm:editTagNameLabel')} name="name" required rules={[{ required: true, message: t('device-farm:editTagEmptyNameErrorMsg') }]}>
+          <Form.Item
+            label={t('device-farm:editTagNameLabel')}
+            name="name"
+            required
+            rules={[{ required: true, message: t('device-farm:editTagEmptyNameErrorMsg') }]}
+          >
             <Input
               placeholder={t('device-farm:editTagNameInputPlaceholer')}
               minLength={DEVICE_TAG_NAME_MIN_LENGTH}

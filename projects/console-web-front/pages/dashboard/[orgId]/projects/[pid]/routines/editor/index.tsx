@@ -12,13 +12,22 @@ import useGitIntegrationStore from '../../../../../../../src/stores/git-integrat
 import RoutineGitIntegrationAlert from '../../../../../../../src/components/projects/RoutineGitIntegrationAlert';
 import ProjectLayoutWithSidebar from '../../../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 
-const ProjectRoutineEditorPage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project, isGitIntegrated }) => {
+const ProjectRoutineEditorPage: NextPageWithLayout<ProjectServerSideProps> = ({
+  organization,
+  project,
+  isGitIntegrated,
+}) => {
   const store = useGitIntegrationStore();
   const router = useRouter();
   const routineId = router.query.routineId as string | undefined;
-  const { data } = useSWR<string>(routineId && `/organizations/${organization.organizationId}/projects/${project.projectId}/routines/file/${routineId}`, swrAuthFetcher, {
-    revalidateOnFocus: false,
-  });
+  const { data } = useSWR<string>(
+    routineId &&
+      `/organizations/${organization.organizationId}/projects/${project.projectId}/routines/file/${routineId}`,
+    swrAuthFetcher,
+    {
+      revalidateOnFocus: false,
+    },
+  );
 
   useEffect(() => {
     store.updateGitIntegrationStatus(isGitIntegrated);

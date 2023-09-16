@@ -3,7 +3,8 @@ import { DefaultTheme } from 'styled-components';
 
 export const theme: Partial<AliasToken> = {
   colorPrimary: '#67b2ee',
-  fontFamily: "'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
+  fontFamily:
+    "'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif",
 };
 
 export const styledComponentsTheme: DefaultTheme = {

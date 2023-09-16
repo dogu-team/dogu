@@ -1,11 +1,10 @@
-import { PlatformType, StepSchema, ROUTINE_STEP_NAME_MAX_LENGTH } from '@dogu-private/types';
+import { StepSchema, ROUTINE_STEP_NAME_MAX_LENGTH } from '@dogu-private/types';
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
-import { AppVersion } from '@dogu-tech/action-common';
 import useTranslation from 'next-translate/useTranslation';
 import { Input, Radio } from 'antd';
 
-import { CHECKOUT_ACTION_NAME, PREPARE_ACTION_NAME, RUN_TEST_ACTION_NAME } from '../../../../types/routine';
+import { PREPARE_ACTION_NAME, RUN_TEST_ACTION_NAME } from '../../../../types/routine';
 import ActionSelector from './ActionSelector';
 import ContainerMenu from './ContainerMenu';
 import NameEditor from './NameEditor';
@@ -30,7 +29,9 @@ enum StepType {
 
 const StepContainer = ({ jobName, step, index, updateStep, deleteStep, moveStep }: Props) => {
   const { project } = useProjectContext();
-  const [type, setType] = useState<StepType | null>(step.uses !== undefined ? StepType.ACTION : step.run !== undefined ? StepType.SHELL : null);
+  const [type, setType] = useState<StepType | null>(
+    step.uses !== undefined ? StepType.ACTION : step.run !== undefined ? StepType.SHELL : null,
+  );
 
   const updateStepName = useCallback(
     (value: string) => {
@@ -40,62 +41,11 @@ const StepContainer = ({ jobName, step, index, updateStep, deleteStep, moveStep 
   );
   const { t } = useTranslation('routine');
 
-  const updateAppVersion = useCallback(
-    (platform: PlatformType, version: string | undefined) => {
-      if (!version) {
-        return;
-      }
-
-      const existAppVersion = step.with?.appVersion as AppVersion | undefined;
-
-      if (existAppVersion) {
-        if (typeof existAppVersion === 'string' || typeof existAppVersion === 'number') {
-          updateStep({ ...step, with: { appVersion: { [platform]: version } } }, index);
-        } else {
-          updateStep({ ...step, with: { appVersion: { ...existAppVersion, [platform]: version } } }, index);
-        }
-      } else {
-        updateStep({ ...step, with: { appVersion: { [platform]: version } } }, index);
-      }
-    },
-    [updateStep, index, step],
-  );
-
   const updateAction = useCallback(
     (value: typeof PREPARE_ACTION_NAME | typeof RUN_TEST_ACTION_NAME) => {
       updateStep({ ...step, uses: value, with: undefined }, index);
     },
     [updateStep, index, step],
-  );
-
-  const updateScript = useCallback(
-    (path: string) => {
-      updateStep({ ...step, with: { script: path } }, index);
-    },
-    [updateStep, index, step],
-  );
-
-  const removeStepWith = useCallback(() => {
-    updateStep({ ...step, with: {} }, index);
-  }, [updateStep, index, step]);
-
-  const removeAppVersion = useCallback(
-    (platform: PlatformType) => {
-      const appVersion = step.with?.appVersion as AppVersion | undefined;
-
-      if (!appVersion) {
-        return;
-      }
-
-      if (typeof appVersion === 'string') {
-        return;
-      }
-
-      if (typeof appVersion === 'object') {
-        updateStep({ ...step, with: { appVersion: { ...appVersion, [platform]: undefined } } }, index);
-      }
-    },
-    [updateStep, step, index],
   );
 
   if (!project) {
@@ -104,7 +54,11 @@ const StepContainer = ({ jobName, step, index, updateStep, deleteStep, moveStep 
 
   return (
     <Box>
-      <ContainerMenu onDeleteClicked={() => deleteStep(index)} onMoveDownClicked={() => moveStep(index, 'down')} onMoveUpClicked={() => moveStep(index, 'up')} />
+      <ContainerMenu
+        onDeleteClicked={() => deleteStep(index)}
+        onMoveDownClicked={() => moveStep(index, 'down')}
+        onMoveUpClicked={() => moveStep(index, 'up')}
+      />
 
       <Content style={{ fontWeight: '600', paddingRight: '4rem' }}>
         <NameEditor defaultValue={step.name} onSave={updateStepName} maxLength={ROUTINE_STEP_NAME_MAX_LENGTH} />
@@ -160,7 +114,12 @@ echo Dogu!`}
           <Content>
             <ContentTitle>{t('routineGuiEditorStepActionLabel')}</ContentTitle>
             <div>
-              <ActionSelector value={step.uses} optionLabelProp="title" style={{ width: '200px' }} onChange={updateAction} />
+              <ActionSelector
+                value={step.uses}
+                optionLabelProp="title"
+                style={{ width: '200px' }}
+                onChange={updateAction}
+              />
             </div>
           </Content>
 
@@ -169,7 +128,10 @@ echo Dogu!`}
               <ContentTitle>{t('routine:routineGuiEditorStepWorkingDirLabel')}</ContentTitle>
               <ContentDesc>{t('routine:routineGuiEditorStepWorkingDirDescription')}</ContentDesc>
               <SelectWrapper>
-                <WorkingDirectoryContainer value={step.cwd} onChange={(value) => updateStep({ ...step, cwd: value }, index)} />
+                <WorkingDirectoryContainer
+                  value={step.cwd}
+                  onChange={(value) => updateStep({ ...step, cwd: value }, index)}
+                />
               </SelectWrapper>
             </Content>
           )}
@@ -177,7 +139,10 @@ echo Dogu!`}
           <Content>
             <ContentTitle>{t('routine:routineGuiEditorStepArgumentLabel')}</ContentTitle>
             <div>
-              <StepActionArgumentContainer step={step} onUpdate={(stepWith) => updateStep({ ...step, with: stepWith }, index)} />
+              <StepActionArgumentContainer
+                step={step}
+                onUpdate={(stepWith) => updateStep({ ...step, with: stepWith }, index)}
+              />
             </div>
           </Content>
         </>

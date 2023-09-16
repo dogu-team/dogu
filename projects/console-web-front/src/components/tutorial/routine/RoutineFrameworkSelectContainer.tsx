@@ -52,7 +52,9 @@ const RoutineFrameworkSelectContainer = ({ skipButton }: Props) => {
 
   const handleClickFramework = (framework: string) => {
     if (!selectedSdk) return;
-    router.push({ query: { ...router.query, sdk: selectedSdk, framework } }, undefined, { shallow: true });
+    router.push({ query: { ...router.query, sdk: selectedSdk, framework } }, undefined, {
+      shallow: true,
+    });
   };
 
   if (!project) {

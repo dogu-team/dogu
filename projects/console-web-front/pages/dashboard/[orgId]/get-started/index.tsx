@@ -46,7 +46,10 @@ const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organiz
           <HeaderContent>
             <div>
               <StyledTitle>
-                <Trans i18nKey="tutorial:deviceFarmTutorialTitle" components={{ icon: <ClusterOutlined style={{ margin: '0 0.35rem' }} /> }} />
+                <Trans
+                  i18nKey="tutorial:deviceFarmTutorialTitle"
+                  components={{ icon: <ClusterOutlined style={{ margin: '0 0.35rem' }} /> }}
+                />
               </StyledTitle>
             </div>
             <div>
@@ -68,7 +71,10 @@ OrganizationTutorialPage.getLayout = (page) => {
 };
 
 export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (context) => {
-  const [organization, checkResult] = await Promise.all([getOrganizationInServerSide(context), checkUserVerifiedInServerSide(context)]);
+  const [organization, checkResult] = await Promise.all([
+    getOrganizationInServerSide(context),
+    checkUserVerifiedInServerSide(context),
+  ]);
 
   if (checkResult.redirect) {
     return checkResult;

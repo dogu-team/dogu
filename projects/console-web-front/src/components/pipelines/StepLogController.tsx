@@ -30,7 +30,10 @@ const StepLogController = ({ step, logType }: Props) => {
 
   const getLineLink = useCallback(
     (item: DeviceJobLogInfo): Partial<Url> => {
-      return { pathname: router.pathname, query: { ...router.query, step: `${step.routineStepId}`, line: `${item.line}` } };
+      return {
+        pathname: router.pathname,
+        query: { ...router.query, step: `${step.routineStepId}`, line: `${item.line}` },
+      };
     },
     [router.pathname, router.query, step.routineStepId],
   );
@@ -40,10 +43,22 @@ const StepLogController = ({ step, logType }: Props) => {
   }
 
   if (!data || error) {
-    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find step log information'} />;
+    return (
+      <ErrorBox
+        title="Something went wrong"
+        desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find step log information'}
+      />
+    );
   }
 
-  return <LogContainer logs={data} logType={logType} selectedLine={Number(router.query.line) || undefined} getLineLink={getLineLink} />;
+  return (
+    <LogContainer
+      logs={data}
+      logType={logType}
+      selectedLine={Number(router.query.line) || undefined}
+      getLineLink={getLineLink}
+    />
+  );
 };
 
 export default StepLogController;

@@ -17,7 +17,11 @@ const InspectorTreeTitle = ({ selected, hovered, node, onClickNode, onHoverNode,
   const { t } = useTranslation();
   const titleBaseStyle: React.CSSProperties = { height: '100%', whiteSpace: 'nowrap' };
   const hoveredStyle: React.CSSProperties = { ...titleBaseStyle, backgroundColor: '#87CEEB66' };
-  const selectedStyle: React.CSSProperties = { ...titleBaseStyle, color: 'red', backgroundColor: 'skyblue' };
+  const selectedStyle: React.CSSProperties = {
+    ...titleBaseStyle,
+    color: 'red',
+    backgroundColor: 'skyblue',
+  };
 
   const menu: MenuProps['items'] = [
     {

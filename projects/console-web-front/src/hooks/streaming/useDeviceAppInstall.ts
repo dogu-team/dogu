@@ -2,7 +2,11 @@ import { Serial } from '@dogu-private/types';
 import { DeviceClient, DeviceHostClient, HostFileUploader } from '@dogu-tech/device-client-common';
 import { useCallback, useEffect, useState } from 'react';
 
-const useDeviceAppInstall = (serial: Serial | undefined, deviceHostClient: DeviceHostClient | undefined, deviceClient: DeviceClient | undefined) => {
+const useDeviceAppInstall = (
+  serial: Serial | undefined,
+  deviceHostClient: DeviceHostClient | undefined,
+  deviceClient: DeviceClient | undefined,
+) => {
   const [app, setApp] = useState<File>();
   const [progress, setProgress] = useState<number>();
   const [uploadedFilePath, setUploadedFilePath] = useState('');

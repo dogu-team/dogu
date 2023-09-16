@@ -28,7 +28,7 @@ jobs:
   new-job-1:
     runs-on:
       group: []
-    appVersion:
+    appPackageName:
     record: true
     steps:
       - name: run test
@@ -47,7 +47,7 @@ on:
 jobs:
   new-job-1:
     runs-on: []
-    browserName:
+    appPackageName:
     record: true
     steps:
       - name: run test
@@ -109,7 +109,15 @@ const RoutineCreator = ({ project }: Props) => {
   return (
     <RoutineEditor
       mode={mode}
-      menu={<RoutineEditorMenu projectType={project.type} mode={mode} saveButtonText={t('routine:createRoutineButtonTitle')} onSave={handleSave} onChangeMode={updateMode} />}
+      menu={
+        <RoutineEditorMenu
+          projectType={project.type}
+          mode={mode}
+          saveButtonText={t('routine:createRoutineButtonTitle')}
+          onSave={handleSave}
+          onChangeMode={updateMode}
+        />
+      }
       scriptEditor={<YamlEditor editorRef={editorRef} height={'65vh'} value={yaml} onChanged={handleEditorOnChange} />}
       guiEditor={<RoutineGUIEditor projectType={project.type} />}
       preview={<RoutineFlow />}

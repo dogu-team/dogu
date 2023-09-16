@@ -4,10 +4,14 @@ import { AxiosProgressEvent } from 'axios';
 
 import api from '.';
 
-export const uploadProjectApplication = async (organizationId: OrganizationId, projectId: ProjectId, file: File, isLatest: boolean, progress?: (e: AxiosProgressEvent) => void) => {
+export const uploadProjectApplication = async (
+  organizationId: OrganizationId,
+  projectId: ProjectId,
+  file: File,
+  progress?: (e: AxiosProgressEvent) => void,
+) => {
   const fd = new FormData();
   fd.append('file', file);
-  fd.append('isLatest', isLatest.toString());
 
   await api.put<void>(`/organizations/${organizationId}/projects/${projectId}/applications`, fd, {
     headers: {
@@ -17,8 +21,14 @@ export const uploadProjectApplication = async (organizationId: OrganizationId, p
   });
 };
 
-export const getProjectApplicationDownloadUrl = async (organizationId: OrganizationId, projectId: ProjectId, id: number) => {
-  const { data } = await api.get<string>(`/organizations/${organizationId}/projects/${projectId}/applications/${id}/url`);
+export const getProjectApplicationDownloadUrl = async (
+  organizationId: OrganizationId,
+  projectId: ProjectId,
+  id: number,
+) => {
+  const { data } = await api.get<string>(
+    `/organizations/${organizationId}/projects/${projectId}/applications/${id}/url`,
+  );
 
   return data;
 };
@@ -27,6 +37,10 @@ export const deleteProjectApplication = async (organizationId: OrganizationId, p
   await api.delete<void>(`/organizations/${organizationId}/projects/${projectId}/applications/${id}`);
 };
 
-export const uploadSampleApplication = async (organizationId: OrganizationId, projectId: ProjectId, dto: UploadSampleAppDtoBase) => {
+export const uploadSampleApplication = async (
+  organizationId: OrganizationId,
+  projectId: ProjectId,
+  dto: UploadSampleAppDtoBase,
+) => {
   await api.put<void>(`/organizations/${organizationId}/projects/${projectId}/applications/samples`, dto);
 };

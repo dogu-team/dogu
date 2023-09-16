@@ -28,8 +28,18 @@ const AccountMenu = () => {
         const user = payload as UserBase | undefined;
         if (user) {
           if (user.profileImageUrl) {
-            mutate((prev) => ({ ...prev, ...user, profileImageUrl: (user.profileImageUrl += `?lastModified=${new Date().getTime()}`) }), false);
-            updateAuthStore({ ...user, profileImageUrl: (user.profileImageUrl += `?lastModified=${new Date().getTime()}`) });
+            mutate(
+              (prev) => ({
+                ...prev,
+                ...user,
+                profileImageUrl: (user.profileImageUrl += `?lastModified=${new Date().getTime()}`),
+              }),
+              false,
+            );
+            updateAuthStore({
+              ...user,
+              profileImageUrl: (user.profileImageUrl += `?lastModified=${new Date().getTime()}`),
+            });
           } else {
             mutate((prev) => {
               if (prev) {
@@ -78,7 +88,11 @@ const AccountMenu = () => {
       label: <GroupTitle>{t('common:accountMenuWorksTitle')}</GroupTitle>,
       children: [
         {
-          label: <StyledItem onClick={() => router.push(`/account/organizations`)}>{t('common:accountMenuMyOrgListButton')}</StyledItem>,
+          label: (
+            <StyledItem onClick={() => router.push(`/account/organizations`)}>
+              {t('common:accountMenuMyOrgListButton')}
+            </StyledItem>
+          ),
           key: '1',
         },
       ],

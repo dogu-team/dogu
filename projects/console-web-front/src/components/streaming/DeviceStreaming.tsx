@@ -29,7 +29,13 @@ const DeviceStreaming = ({ device, children }: Props) => {
   const isSelf = useLocalDeviceDetect(device);
   const { loading, deviceRTCCaller, peerConnection, videoRef, error } = useRTCConnection(device, THROTTLE_MS);
   const deviceService = useDeviceClient(peerConnection, THROTTLE_MS);
-  const gamiumService = useGamiumClient(peerConnection, device, deviceService.deviceHostClient, deviceService.deviceClient, THROTTLE_MS);
+  const gamiumService = useGamiumClient(
+    peerConnection,
+    device,
+    deviceService.deviceHostClient,
+    deviceService.deviceClient,
+    THROTTLE_MS,
+  );
   const inspector = useInspector(deviceService?.deviceInspector, device ?? null, videoRef);
   const { t } = useTranslation();
 
@@ -37,7 +43,10 @@ const DeviceStreaming = ({ device, children }: Props) => {
     return (
       <>
         <div style={{ flex: 1 }}>
-          <ErrorBox title={t('device-streaming:deviceStreamingStreamingErrorTitle')} desc={t('device-streaming:deviceRTCStreamingDisconnectedErrorMessage')} />
+          <ErrorBox
+            title={t('device-streaming:deviceStreamingStreamingErrorTitle')}
+            desc={t('device-streaming:deviceRTCStreamingDisconnectedErrorMessage')}
+          />
         </div>
       </>
     );
@@ -47,7 +56,10 @@ const DeviceStreaming = ({ device, children }: Props) => {
     return (
       <>
         <div style={{ flex: 1 }}>
-          <ErrorBox title={t('device-streaming:deviceStreamingStreamingErrorTitle')} desc={t('device-streaming:deviceRTCStreamingDisconnectedErrorMessage')} />
+          <ErrorBox
+            title={t('device-streaming:deviceStreamingStreamingErrorTitle')}
+            desc={t('device-streaming:deviceRTCStreamingDisconnectedErrorMessage')}
+          />
         </div>
       </>
     );
@@ -57,7 +69,10 @@ const DeviceStreaming = ({ device, children }: Props) => {
     return (
       <>
         <div style={{ flex: 1 }}>
-          <ErrorBox title={t('device-streaming:deviceStreamingStreamingErrorTitle')} desc={t('device-streaming:deviceRTCStreamingFailedErrorMessage')} />
+          <ErrorBox
+            title={t('device-streaming:deviceStreamingStreamingErrorTitle')}
+            desc={t('device-streaming:deviceRTCStreamingFailedErrorMessage')}
+          />
         </div>
       </>
     );

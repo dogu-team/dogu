@@ -17,7 +17,13 @@ import DeviceConnectionStateTag from './DeviceConnectionStateTag';
 import DeviceDetailModal from './DeviceDetailModal';
 import useDeviceFilterStore from 'src/stores/device-filter';
 import { getErrorMessageFromAxios } from 'src/utils/error';
-import { flexRowBaseStyle, flexRowSpaceBetweenStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
+import {
+  flexRowBaseStyle,
+  flexRowSpaceBetweenStyle,
+  listItemStyle,
+  tableCellStyle,
+  tableHeaderStyle,
+} from '../../styles/box';
 import { menuItemButtonStyles } from '../../styles/button';
 import useModal from '../../hooks/useModal';
 import MenuButton from '../buttons/MenuButton';
@@ -90,7 +96,11 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
     },
     {
       label: (
-        <MenuItemButton danger={false} onClick={() => openEditDeviceProjectModal()} id={`${device.name}-edit-project-menu-btn`}>
+        <MenuItemButton
+          danger={false}
+          onClick={() => openEditDeviceProjectModal()}
+          id={`${device.name}-edit-project-menu-btn`}
+        >
           {t('device-farm:deviceItemEditProejctMenu')}
         </MenuItemButton>
       ),
@@ -174,8 +184,17 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
 
       <DeviceSettingModal device={device} isOpen={isDeviceSettingModalOpen} close={closeDeviceSettingModal} />
       <DeviceDetailModal isOpen={isDetailModlOpen} device={device} close={closeDetailModal} />
-      <EditDeviceTagModal deviceId={device.deviceId} isOpen={isEditDeviceTagModalOpen} close={closeEditDeviceTagModal} />
-      <AddDeviceToProjectModal deviceId={device.deviceId} isOpen={isEditDeviceProjectModalOpen} close={closeEditDeviceProjectModal} isGlobal={isGlobalDevice} />
+      <EditDeviceTagModal
+        deviceId={device.deviceId}
+        isOpen={isEditDeviceTagModalOpen}
+        close={closeEditDeviceTagModal}
+      />
+      <AddDeviceToProjectModal
+        deviceId={device.deviceId}
+        isOpen={isEditDeviceProjectModalOpen}
+        close={closeEditDeviceProjectModal}
+        isGlobal={isGlobalDevice}
+      />
     </>
   );
 };
@@ -188,7 +207,9 @@ const DeviceListController = () => {
     organizationId
       ? `/organizations/${organizationId}/devices?deviceName=${
           filterValue.name
-        }&tagNames=${filterValue.tags.join()}&connectionStates=${filterValue.states.join()}&projectIds=${filterValue.projects.map((item) => item.projectId).join()}`
+        }&tagNames=${filterValue.tags.join()}&connectionStates=${filterValue.states.join()}&projectIds=${filterValue.projects
+          .map((item) => item.projectId)
+          .join()}`
       : null,
     {
       skipQuestionMark: true,
@@ -196,12 +217,26 @@ const DeviceListController = () => {
   );
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onDeviceTagUpdated', 'onDeviceAdded', 'onDeviceUpdated', 'onAddDeviceToProjectModalClosed', 'onDeviceStopped', 'onDeviceReboot'], () =>
-    mutate(),
+  useRefresh(
+    [
+      'onRefreshClicked',
+      'onDeviceTagUpdated',
+      'onDeviceAdded',
+      'onDeviceUpdated',
+      'onAddDeviceToProjectModalClosed',
+      'onDeviceStopped',
+      'onDeviceReboot',
+    ],
+    () => mutate(),
   );
 
   if (error) {
-    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get devices information'} />;
+    return (
+      <ErrorBox
+        title="Something went wrong"
+        desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get devices information'}
+      />
+    );
   }
 
   return (
@@ -243,7 +278,12 @@ const DeviceListController = () => {
                   components={{
                     br: <br />,
                     tutorialLink: <Link href={`/dashboard/${router.query.orgId}/get-started`} />,
-                    link: <Link href="https://docs.dogutech.io/management/organization/device-farm/device-management" target="_blank" />,
+                    link: (
+                      <Link
+                        href="https://docs.dogutech.io/management/organization/device-farm/device-management"
+                        target="_blank"
+                      />
+                    ),
                   }}
                 />
               }

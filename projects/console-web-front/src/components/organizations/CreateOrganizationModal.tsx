@@ -60,7 +60,11 @@ const CreateOrganizationModal = ({ open, close }: Props) => {
             required
             rules={[{ required: true, message: t('account:createOrganizationNaameInputErrorMesssage') }]}
           >
-            <Input placeholder={t('account:createOrganizationNameInputPlaceholder')} maxLength={ORGANIZATION_NAME_MAX_LENGTH} minLength={ORGANIZATION_NAME_MIN_LENGTH} />
+            <Input
+              placeholder={t('account:createOrganizationNameInputPlaceholder')}
+              maxLength={ORGANIZATION_NAME_MAX_LENGTH}
+              minLength={ORGANIZATION_NAME_MIN_LENGTH}
+            />
           </Form.Item>
         </Form>
       }

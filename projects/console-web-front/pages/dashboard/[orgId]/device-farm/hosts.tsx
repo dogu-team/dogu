@@ -19,7 +19,7 @@ import HostFilter from 'src/components/hosts/HostFilter';
 import OrganizationDeviceFarmLayout from '../../../../src/components/layouts/OrganizationDeviceFarmLayout';
 import { swrAuthFetcher } from '../../../../src/api';
 import DeviceFarmTutorialLinkButton from '../../../../src/components/organizations/DeviceFarmTutorialLinkButton';
-import { FeatureContext } from '../../../../src/enterprise/contexts/feature';
+import { FeatureContext } from '../../../../enterprise/contexts/feature';
 
 export const DoguAgentLatestContext = createContext<{ latestInfo: DownloadablePackageResult[] }>({
   latestInfo: [],
@@ -28,7 +28,9 @@ export const DoguAgentLatestContext = createContext<{ latestInfo: DownloadablePa
 const HostManagementPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organization, featureConfig }) => {
   const { t } = useTranslation();
   const [isAddModalOpen, openAddModal, closeAddModal] = useModal();
-  const { data } = useSWR<DownloadablePackageResult[]>(`/downloads/dogu-agent/latest`, swrAuthFetcher, { revalidateOnFocus: false });
+  const { data } = useSWR<DownloadablePackageResult[]>(`/downloads/dogu-agent/latest`, swrAuthFetcher, {
+    revalidateOnFocus: false,
+  });
 
   return (
     <FeatureContext.Provider value={featureConfig}>
@@ -41,12 +43,23 @@ const HostManagementPage: NextPageWithLayout<OrganizationServerSideProps> = ({ o
             <ButtonBox>
               <LeftTopBox>
                 <DeviceFarmTutorialLinkButton />
-                <Button type="primary" onClick={() => openAddModal()} access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'add-new-host-btn' : undefined}>
+                <Button
+                  type="primary"
+                  onClick={() => openAddModal()}
+                  access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'add-new-host-btn' : undefined}
+                >
                   {t('device-farm:addNewHost')}
                 </Button>
                 {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
                   <Link href={`${process.env.NEXT_PUBLIC_LANDING_URL}/downloads/dogu-agent`} target="_blank">
-                    <Button style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', border: '' }}>
+                    <Button
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        border: '',
+                      }}
+                    >
                       <FcDownload style={{ marginRight: '4px' }} width={24} height={24} />
                       {t('device-farm:agentDownloadTitle')}
                     </Button>
@@ -54,7 +67,9 @@ const HostManagementPage: NextPageWithLayout<OrganizationServerSideProps> = ({ o
                 )}
                 <HostFilter />
               </LeftTopBox>
-              <RefreshButton {...(process.env.NEXT_PUBLIC_ENV !== 'production' ? { 'access-id': 'host-refresh' } : {})} />
+              <RefreshButton
+                {...(process.env.NEXT_PUBLIC_ENV !== 'production' ? { 'access-id': 'host-refresh' } : {})}
+              />
             </ButtonBox>
           }
           table={<HostListController />}

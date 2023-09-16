@@ -24,7 +24,10 @@ interface Props {
 }
 
 const VerifyAccountEntryPage: NextPageWithLayout<Props> = ({ me }) => {
-  const { data } = useSWR<UserBase>('/registery/check', swrAuthFetcher, { fallbackData: me, revalidateOnFocus: true });
+  const { data } = useSWR<UserBase>('/registery/check', swrAuthFetcher, {
+    fallbackData: me,
+    revalidateOnFocus: true,
+  });
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
   const router = useRouter();
@@ -98,12 +101,20 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  if (process.env.NEXT_PUBLIC_ENV === 'local' || process.env.NEXT_PUBLIC_ENV === 'e2e' || process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
+  if (
+    process.env.NEXT_PUBLIC_ENV === 'local' ||
+    process.env.NEXT_PUBLIC_ENV === 'e2e' ||
+    process.env.NEXT_PUBLIC_ENV === 'self-hosted'
+  ) {
     const cookie = new Cookies(context.req.cookies);
     const organizationId = cookie.get('newOrgId');
     context.res.setHeader('Set-Cookie', `newOrgId=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`);
     return {
-      redirect: redirectWithLocale(context, organizationId ? `/dashboard/${organizationId}` : '/account/organizations', false),
+      redirect: redirectWithLocale(
+        context,
+        organizationId ? `/dashboard/${organizationId}` : '/account/organizations',
+        false,
+      ),
     };
   }
 

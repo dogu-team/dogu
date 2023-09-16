@@ -38,7 +38,11 @@ const ProjectApplicationItem = ({ application }: ItemProps) => {
 
   const handleDowndload = async () => {
     try {
-      const url = await getProjectApplicationDownloadUrl(application.organizationId, application.projectId, application.projectApplicationId);
+      const url = await getProjectApplicationDownloadUrl(
+        application.organizationId,
+        application.projectId,
+        application.projectApplicationId,
+      );
       window.open(url, '_blank');
     } catch (e) {
       if (e instanceof AxiosError) {
@@ -49,7 +53,11 @@ const ProjectApplicationItem = ({ application }: ItemProps) => {
 
   const handleDelete = async () => {
     try {
-      await deleteProjectApplication(application.organizationId, application.projectId, application.projectApplicationId);
+      await deleteProjectApplication(
+        application.organizationId,
+        application.projectId,
+        application.projectApplicationId,
+      );
       sendSuccessNotification(t('project-app:appItemDeleteSuccessMessage'));
       fireEvent('onProjectApplicationDeleted');
     } catch (e) {
@@ -93,27 +101,38 @@ const ProjectApplicationItem = ({ application }: ItemProps) => {
         <ThreeSpan>
           <NameWrapper>
             <Image src={application.iconUrl} width={24} height={24} alt={application.name} />
-            &nbsp;{application.name}
+            <div style={{ marginLeft: '.5rem' }}>
+              {application.name}
+              <div className="package">{`(${application.package})`}</div>
+            </div>
           </NameWrapper>
         </ThreeSpan>
         <TwoSpan>
           {application.version}
           {application.isLatest === 1 && <ProjectApplicationLatestTag />}
         </TwoSpan>
+        <OneSpan>{application.versionCode}</OneSpan>
         <OneSpan>
           <ProjectApplicationExtensionTag extension={application.fileExtension} />
         </OneSpan>
         <OneSpan>{convertByteWithMaxUnit(application.fileSize)}</OneSpan>
         <OneSpan>
           <ProfileImageWithName
-            profileImage={<ProfileImage profileImageUrl={application.creator?.profileImageUrl} name={application.creator?.name} />}
+            profileImage={
+              <ProfileImage profileImageUrl={application.creator?.profileImageUrl} name={application.creator?.name} />
+            }
             name={application.creator?.name}
           />
         </OneSpan>
         <OneSpan>
-          {new Intl.DateTimeFormat(router.locale, { year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' }).format(
-            moment(application.updatedAt).toDate(),
-          )}
+          {new Intl.DateTimeFormat(router.locale, {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+          }).format(moment(application.updatedAt).toDate())}
         </OneSpan>
         <Menu>
           <MenuButton menu={{ items }} />
@@ -144,6 +163,7 @@ const ProjectApplicationListController = ({ organizationId, projectId }: Props) 
         <ItemInner>
           <ThreeSpan>{t('project-app:appTableNameColumn')}</ThreeSpan>
           <TwoSpan>{t('project-app:appTableVersionColumn')}</TwoSpan>
+          <OneSpan>{t('project-app:appTableVersionCodeColumn')}</OneSpan>
           <OneSpan>{t('project-app:appTableExtensionColumn')}</OneSpan>
           <OneSpan>{t('project-app:appTableSizeColumn')}</OneSpan>
           <OneSpan>{t('project-app:appTableUploader')}</OneSpan>
@@ -173,7 +193,10 @@ const ProjectApplicationListController = ({ organizationId, projectId }: Props) 
               description={
                 <Trans
                   i18nKey="project-app:appEmptyDescription"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/project/app" target="_blank" /> }}
+                  components={{
+                    br: <br />,
+                    link: <Link href="https://docs.dogutech.io/management/project/app" target="_blank" />,
+                  }}
                 />
               }
             />
@@ -225,4 +248,9 @@ const Menu = styled(OneSpan)`
 
 const NameWrapper = styled.div`
   ${flexRowBaseStyle}
+
+  .package {
+    font-size: 0.8rem;
+    color: #888;
+  }
 `;

@@ -157,14 +157,22 @@ const useRTCConnection = (device: DeviceBase | undefined, sendThrottleMs: number
 
     const { platform, serial } = device;
     const webRtcExchanger = WebRtcExchangerFactory.createByPlatform(platform);
-    webRtcExchanger.startExchange(organizationId, device.deviceId, serial, pc, device.platform, streamingOption, (error) => {
-      console.debug('startExchange error', error);
-      if (isVideoShowing(videoRef.current)) {
-        console.debug('rtc in progress. so ignore ws error', error);
-        return;
-      }
-      setHAConnectionError(error);
-    });
+    webRtcExchanger.startExchange(
+      organizationId,
+      device.deviceId,
+      serial,
+      pc,
+      device.platform,
+      streamingOption,
+      (error) => {
+        console.debug('startExchange error', error);
+        if (isVideoShowing(videoRef.current)) {
+          console.debug('rtc in progress. so ignore ws error', error);
+          return;
+        }
+        setHAConnectionError(error);
+      },
+    );
 
     const caller = new DeviceRTCCaller(device.deviceId, dc);
     caller.setSendThrottleMs(sendThrottleMs);

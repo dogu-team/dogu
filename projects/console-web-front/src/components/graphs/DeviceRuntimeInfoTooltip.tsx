@@ -9,7 +9,13 @@ interface Props extends TooltipProps<number | string, string> {
   totalUnit?: string;
 }
 
-const DeviceRuntimeInfoTooltip = ({ isDurationTicks, hiddenForegroundProcName, getTotal, totalUnit, ...props }: Props) => {
+const DeviceRuntimeInfoTooltip = ({
+  isDurationTicks,
+  hiddenForegroundProcName,
+  getTotal,
+  totalUnit,
+  ...props
+}: Props) => {
   if (!!props.payload?.length && props.active && props.label) {
     const payloadWithoutProcessName = props.payload.filter((item) => item.dataKey !== 'foregroundProcName');
 

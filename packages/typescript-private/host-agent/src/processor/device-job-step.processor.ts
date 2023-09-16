@@ -133,6 +133,7 @@ export class DeviceJobStepProcessor {
       browserName,
       browserVersion,
       appVersion,
+      appPackageName,
       cwd,
     } = param;
     const { info, router, environmentVariableReplacer } = context;
@@ -195,6 +196,7 @@ export class DeviceJobStepProcessor {
       DOGU_APP_VERSION: appVersion ?? '',
       DOGU_BROWSER_NAME: browserName ?? '',
       DOGU_BROWSER_VERSION: browserVersion ?? '',
+      DOGU_APP_PACKAGE_NAME: appPackageName ?? '',
     };
 
     const stepContextEnvReplaced = await environmentVariableReplacer.replaceEnv(stepContextEnv);

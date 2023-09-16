@@ -1,5 +1,11 @@
 import { ProjectBase } from '@dogu-private/console';
-import { PROJECT_DESC_MAX_LENGTH, PROJECT_DESC_MIN_LENGTH, PROJECT_NAME_MAX_LENGTH, PROJECT_NAME_MIN_LENGTH, PROJECT_SCM_TYPE } from '@dogu-private/types';
+import {
+  PROJECT_DESC_MAX_LENGTH,
+  PROJECT_DESC_MIN_LENGTH,
+  PROJECT_NAME_MAX_LENGTH,
+  PROJECT_NAME_MIN_LENGTH,
+  PROJECT_SCM_TYPE,
+} from '@dogu-private/types';
 import { GetServerSideProps } from 'next';
 import { clone } from 'ramda';
 import styled from 'styled-components';
@@ -55,7 +61,10 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
 
     setLoading(true);
     try {
-      const data = await updateProject(organization.organizationId, serverProject.projectId, { name: editingProject?.name, description: editingProject?.description });
+      const data = await updateProject(organization.organizationId, serverProject.projectId, {
+        name: editingProject?.name,
+        description: editingProject?.description,
+      });
       mutate?.(data, false);
       sendSuccessNotification(t('project:projectUpdateSuccessMsg'));
       fireEvent('onProjectUpdated');
@@ -91,7 +100,8 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
   }, [organization.organizationId, serverProject.projectId]);
 
   const isChanged =
-    JSON.stringify({ name: project?.name, description: project?.description }) !== JSON.stringify({ name: editingProject.name, description: editingProject.description });
+    JSON.stringify({ name: project?.name, description: project?.description }) !==
+    JSON.stringify({ name: editingProject.name, description: editingProject.description });
 
   if (!project) {
     return null;
@@ -143,7 +153,12 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
             maxLength={PROJECT_DESC_MAX_LENGTH}
           />
         </Content>
-        <Button type="primary" onClick={handleSave} disabled={loading || !isChanged} access-id="update-project-profile-btn">
+        <Button
+          type="primary"
+          onClick={handleSave}
+          disabled={loading || !isChanged}
+          access-id="update-project-profile-btn"
+        >
           {t('common:save')}
         </Button>
 
@@ -158,7 +173,11 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
           <div>
             <GithubButton
               isConnected={project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITHUB}
-              disabled={!!project.projectScms && project.projectScms.length > 0 && project.projectScms[0].type !== PROJECT_SCM_TYPE.GITHUB}
+              disabled={
+                !!project.projectScms &&
+                project.projectScms.length > 0 &&
+                project.projectScms[0].type !== PROJECT_SCM_TYPE.GITHUB
+              }
               organizationId={organization.organizationId}
               projectId={project.projectId}
               description={
@@ -176,7 +195,11 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
           <div style={{ marginTop: '1rem' }}>
             <GitlabButton
               isConnected={project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.GITLAB}
-              disabled={!!project.projectScms && project.projectScms.length > 0 && project.projectScms[0].type !== PROJECT_SCM_TYPE.GITLAB}
+              disabled={
+                !!project.projectScms &&
+                project.projectScms.length > 0 &&
+                project.projectScms[0].type !== PROJECT_SCM_TYPE.GITLAB
+              }
               organizationId={organization.organizationId}
               projectId={project.projectId}
               description={
@@ -194,7 +217,11 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
           <div style={{ marginTop: '1rem' }}>
             <BitbucketButton
               isConnected={project.projectScms?.[0]?.type === PROJECT_SCM_TYPE.BITBUCKET}
-              disabled={!!project.projectScms && project.projectScms.length > 0 && project.projectScms[0].type !== PROJECT_SCM_TYPE.BITBUCKET}
+              disabled={
+                !!project.projectScms &&
+                project.projectScms.length > 0 &&
+                project.projectScms[0].type !== PROJECT_SCM_TYPE.BITBUCKET
+              }
               organizationId={organization.organizationId}
               projectId={project.projectId}
               description={
@@ -217,7 +244,13 @@ const ProjectSettingPage: NextPageWithLayout<ProjectServerSideProps> = ({ projec
             <DangerZone.Item
               title={t('common:regenerateAccessTokenTitle')}
               description={t('common:regenerateAccessTokenDescriptionText')}
-              button={<RegenerateTokenButton regenerate={async () => regenerateProjectAccessToken(organization.organizationId, serverProject.projectId)} />}
+              button={
+                <RegenerateTokenButton
+                  regenerate={async () =>
+                    regenerateProjectAccessToken(organization.organizationId, serverProject.projectId)
+                  }
+                />
+              }
             />
             <DangerZone.Item
               title={t('project:changeProjectTemplateMenuTitle')}
@@ -268,7 +301,9 @@ export const getServerSideProps: GetServerSideProps = getProjectPageServerSidePr
 export default ProjectSettingPage;
 
 const Box = styled.div`
-  max-width: 500px;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
 `;
 
 const Content = styled.div`

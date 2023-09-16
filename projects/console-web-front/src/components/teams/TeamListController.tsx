@@ -29,15 +29,27 @@ const TeamItem = ({ team }: TeamItemProps) => {
 
   const items: MenuProps['items'] = [
     {
-      label: <StyledMenuLink href={`/dashboard/${router.query.orgId}/teams/${team.teamId}/members`}>{t('team:teamItemMemberMenu')}</StyledMenuLink>,
+      label: (
+        <StyledMenuLink href={`/dashboard/${router.query.orgId}/teams/${team.teamId}/members`}>
+          {t('team:teamItemMemberMenu')}
+        </StyledMenuLink>
+      ),
       key: 'detail',
     },
     {
-      label: <StyledMenuLink href={`/dashboard/${router.query.orgId}/teams/${team.teamId}/projects`}>{t('team:teamItemProjectMenu')}</StyledMenuLink>,
+      label: (
+        <StyledMenuLink href={`/dashboard/${router.query.orgId}/teams/${team.teamId}/projects`}>
+          {t('team:teamItemProjectMenu')}
+        </StyledMenuLink>
+      ),
       key: 'detail',
     },
     {
-      label: <StyledMenuLink href={`/dashboard/${router.query.orgId}/teams/${team.teamId}/settings`}>{t('team:teamItemSettingMenu')}</StyledMenuLink>,
+      label: (
+        <StyledMenuLink href={`/dashboard/${router.query.orgId}/teams/${team.teamId}/settings`}>
+          {t('team:teamItemSettingMenu')}
+        </StyledMenuLink>
+      ),
       key: 'detail',
     },
   ];
@@ -80,12 +92,17 @@ const TeamListController = () => {
   const router = useRouter();
   const organizationId = router.query.orgId;
   const { keyword } = useTeamFilterStore((state) => state.filterValue);
-  const { data, page, updatePage, error, mutate, isLoading } = usePaginationSWR<TeamBase>(!!organizationId ? `/organizations/${organizationId}/teams?keyword=${keyword}` : null, {
-    skipQuestionMark: true,
-  });
+  const { data, page, updatePage, error, mutate, isLoading } = usePaginationSWR<TeamBase>(
+    !!organizationId ? `/organizations/${organizationId}/teams?keyword=${keyword}` : null,
+    {
+      skipQuestionMark: true,
+    },
+  );
   const { t } = useTranslation();
 
-  useRefresh(['onRefreshClicked', 'onTeamCreated', 'onTeamUpdated', 'onTeamDeleted', 'onTeamMemberAdded'], () => mutate());
+  useRefresh(['onRefreshClicked', 'onTeamCreated', 'onTeamUpdated', 'onTeamDeleted', 'onTeamMemberAdded'], () =>
+    mutate(),
+  );
 
   return (
     <>
@@ -103,7 +120,13 @@ const TeamListController = () => {
           return <TeamItem team={item} />;
         }}
         rowKey={(item) => `team-${item.teamId}`}
-        pagination={{ defaultCurrent: 1, current: page, pageSize: 10, total: data?.totalCount, onChange: (page, pageSize) => updatePage(page) }}
+        pagination={{
+          defaultCurrent: 1,
+          current: page,
+          pageSize: 10,
+          total: data?.totalCount,
+          onChange: (page, pageSize) => updatePage(page),
+        }}
         locale={{
           emptyText: (
             <ListEmpty
@@ -111,7 +134,10 @@ const TeamListController = () => {
               description={
                 <Trans
                   i18nKey="team:teamEmptyDescription"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/organization/team" target="_blank" /> }}
+                  components={{
+                    br: <br />,
+                    link: <Link href="https://docs.dogutech.io/management/organization/team" target="_blank" />,
+                  }}
                 />
               }
             />

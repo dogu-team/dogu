@@ -1,6 +1,10 @@
 import { useCallback, useRef } from 'react';
 
-export type ResizerPreferenceKey = 'device-streaming-menu-width' | 'project-script-file-tree-width' | 'project-script-editor-width' | 'project-script-inspector-width';
+export type ResizerPreferenceKey =
+  | 'device-streaming-menu-width'
+  | 'project-script-file-tree-width'
+  | 'project-script-editor-width'
+  | 'project-script-inspector-width';
 
 const useResizePreference = (key: ResizerPreferenceKey, defaultWidth?: number) => {
   const initWidth = useRef<number>(localStorage.getItem(key) ? Number(localStorage.getItem(key)) : defaultWidth ?? 100);

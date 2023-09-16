@@ -24,7 +24,9 @@ const NodeItem = ({ job }: NodeItemProps) => {
   const router = useRouter();
 
   return (
-    <ItemBox href={`/dashboard/${router.query.orgId}/projects/${router.query.pid}/routines/${router.query.pipelineId}/jobs/${job.routineJobId}`}>
+    <ItemBox
+      href={`/dashboard/${router.query.orgId}/projects/${router.query.pid}/routines/${router.query.pipelineId}/jobs/${job.routineJobId}`}
+    >
       <JobStatusIcon status={job.status} />
       <p>{job.name}</p>
     </ItemBox>
@@ -101,7 +103,19 @@ const JobFlowController = ({ orgId, projectId, pipelineId }: Props) => {
                   type: 'input',
                   sourcePosition: Position.Right,
                   position: { x: 200 * genIndex + 50, y: 60 * index + 50 },
-                  data: { label: <NodeItem job={livePipeline ? (livePipeline.routineJobs?.find((job) => job.routineJobId === item.routineJobId) as JobElement) : item} /> },
+                  data: {
+                    label: (
+                      <NodeItem
+                        job={
+                          livePipeline
+                            ? (livePipeline.routineJobs?.find(
+                                (job) => job.routineJobId === item.routineJobId,
+                              ) as JobElement)
+                            : item
+                        }
+                      />
+                    ),
+                  },
                 }
               : genIndex === nodesByGeneration.length - 1
               ? {
@@ -109,14 +123,38 @@ const JobFlowController = ({ orgId, projectId, pipelineId }: Props) => {
                   type: 'output',
                   targetPosition: Position.Left,
                   position: { x: 200 * genIndex + 50, y: 60 * index + 50 },
-                  data: { label: <NodeItem job={livePipeline ? (livePipeline.routineJobs?.find((job) => job.routineJobId === item.routineJobId) as JobElement) : item} /> },
+                  data: {
+                    label: (
+                      <NodeItem
+                        job={
+                          livePipeline
+                            ? (livePipeline.routineJobs?.find(
+                                (job) => job.routineJobId === item.routineJobId,
+                              ) as JobElement)
+                            : item
+                        }
+                      />
+                    ),
+                  },
                 }
               : {
                   id: `${item.routineJobId}`,
                   sourcePosition: Position.Right,
                   targetPosition: Position.Left,
                   position: { x: 200 * genIndex + 50, y: 60 * index + 50 },
-                  data: { label: <NodeItem job={livePipeline ? (livePipeline.routineJobs?.find((job) => job.routineJobId === item.routineJobId) as JobElement) : item} /> },
+                  data: {
+                    label: (
+                      <NodeItem
+                        job={
+                          livePipeline
+                            ? (livePipeline.routineJobs?.find(
+                                (job) => job.routineJobId === item.routineJobId,
+                              ) as JobElement)
+                            : item
+                        }
+                      />
+                    ),
+                  },
                 },
         ),
       );
@@ -124,8 +162,15 @@ const JobFlowController = ({ orgId, projectId, pipelineId }: Props) => {
 
       const edges: Edge[] = nodesByGeneration
         .flatMap((gen) =>
-          gen.flatMap((item) =>
-            item.routineJobEdges?.map((e): Edge => ({ id: `e-${e.routineJobId}-${e.parentRoutineJobId}`, source: `${e.parentRoutineJobId}`, target: `${e.routineJobId}` })),
+          gen.flatMap(
+            (item) =>
+              item.routineJobEdges?.map(
+                (e): Edge => ({
+                  id: `e-${e.routineJobId}-${e.parentRoutineJobId}`,
+                  source: `${e.parentRoutineJobId}`,
+                  target: `${e.routineJobId}`,
+                }),
+              ),
           ),
         )
         .filter((item) => !!item) as Edge[];
@@ -142,12 +187,24 @@ const JobFlowController = ({ orgId, projectId, pipelineId }: Props) => {
   }
 
   if (!data || error) {
-    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find jobs information'} />;
+    return (
+      <ErrorBox
+        title="Something went wrong"
+        desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find jobs information'}
+      />
+    );
   }
 
   return (
     <Box>
-      <ReactFlow nodes={nodes} edges={edges} zoomOnScroll={false} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} nodesConnectable={false}>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        zoomOnScroll={false}
+        onNodesChange={onNodesChange}
+        onEdgesChange={onEdgesChange}
+        nodesConnectable={false}
+      >
         <Controls />
       </ReactFlow>
     </Box>

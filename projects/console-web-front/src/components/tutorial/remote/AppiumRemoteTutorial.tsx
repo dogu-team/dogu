@@ -6,8 +6,18 @@ import { PROJECT_TYPE, USER_ID_COOKIE_NAME } from '@dogu-private/types';
 import useTranslation from 'next-translate/useTranslation';
 import Trans from 'next-translate/Trans';
 
-import { TutorialSupportLanguage, TutorialSupportPlatform, TutorialSupportTarget, REMOTE_SAMPLE_GIT_URL, TutorialSupportSdk } from '../../../resources/tutorials/index';
-import { appiumRemoteTutorialData, RemoteTutorialProps, remoteTutorialSdkSupportInfo } from '../../../resources/tutorials/remote';
+import {
+  TutorialSupportLanguage,
+  TutorialSupportPlatform,
+  TutorialSupportTarget,
+  REMOTE_SAMPLE_GIT_URL,
+  TutorialSupportSdk,
+} from '../../../resources/tutorials/index';
+import {
+  appiumRemoteTutorialData,
+  RemoteTutorialProps,
+  remoteTutorialSdkSupportInfo,
+} from '../../../resources/tutorials/remote';
 import { flexRowBaseStyle } from '../../../styles/box';
 import GuideAnchor from '../GuideAnchor';
 import GuideBanner from '../GuideBanner';
@@ -55,9 +65,14 @@ const AppiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 
-  const selectedGuide = appiumRemoteTutorialData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const frameworkLanguage = Object.keys(remoteTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang).find((language) =>
-    remoteTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
+  const selectedGuide = appiumRemoteTutorialData.guides.find(
+    (data) => data.framework === framework && data.target === target && data.platform === platform,
+  );
+  const frameworkLanguage = Object.keys(remoteTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang).find(
+    (language) =>
+      remoteTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[
+        language as TutorialSupportLanguage
+      ]?.includes(framework),
   );
 
   useEffect(() => {
@@ -98,9 +113,19 @@ const AppiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
             items={[
               { id: INTRODUCTION_ID, title: t('remoteTestTutorialIntroAnchorTitle') },
               { id: PROJECT_SETUP_ID, title: t('remoteTestTutorialSampleProjectSetupAnchorTitle') },
-              { id: INSTALL_DEPENDENCIES_ID, title: t('remoteTestTutorialInstallDependenciesAnchorTitle') },
+              {
+                id: INSTALL_DEPENDENCIES_ID,
+                title: t('remoteTestTutorialInstallDependenciesAnchorTitle'),
+              },
               { id: SET_CAPABILITIES_ID, title: t('remoteTestTutorialSetCapabilitiesAnchorTitle') },
-              ...(target === TutorialSupportTarget.APP ? [{ id: UPLOAD_SAMPLE_APP_ID, title: t('remoteTestTutorialUploadSampleAppAnchorTitle') }] : []),
+              ...(target === TutorialSupportTarget.APP
+                ? [
+                    {
+                      id: UPLOAD_SAMPLE_APP_ID,
+                      title: t('remoteTestTutorialUploadSampleAppAnchorTitle'),
+                    },
+                  ]
+                : []),
               { id: RUN_TEST_ID, title: t('remoteTestTutorialRunTestAnchorTitle') },
               { id: RESULT_ID, title: t('remoteTestTutorialCheckResultAnchorTitle') },
               { id: DONE_ID, title: t('doneStepTitle') },
@@ -110,7 +135,12 @@ const AppiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
       }
       content={
         <div>
-          <GuideStep id={INTRODUCTION_ID} title={t('remoteTestTutorialIntroTitle')} description={<p>{t('remoteTestTutorialIntroDescription')}</p>} content={null} />
+          <GuideStep
+            id={INTRODUCTION_ID}
+            title={t('remoteTestTutorialIntroTitle')}
+            description={<p>{t('remoteTestTutorialIntroDescription')}</p>}
+            content={null}
+          />
           <GuideStep
             id={PROJECT_SETUP_ID}
             title={t('remoteTestTutorialSampleProjectSetupTitle')}
@@ -141,7 +171,11 @@ const AppiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
               <p>
                 <Trans
                   i18nKey="tutorial:remoteTestTutorialSetCapabilitiesDescription"
-                  components={{ code: <StyledCode />, link: <a href="https://docs.dogutech.io/test-automation/appium" target="_blank" />, br: <br /> }}
+                  components={{
+                    code: <StyledCode />,
+                    link: <a href="https://docs.dogutech.io/test-automation/appium" target="_blank" />,
+                    br: <br />,
+                  }}
                 />
               </p>
             }
@@ -165,7 +199,9 @@ const AppiumRemoteTutorial = ({ organizationId, projectId }: RemoteTutorialProps
               ) : (
                 <>
                   <CodeWithCopyButton language="bash" code={selectedGuide?.runCommand ?? ''} />
-                  {frameworkLanguage === TutorialSupportLanguage.PYTHON && <Alert message={t('remoteTestTutorialPytonErrorMessage')} type="info" showIcon />}
+                  {frameworkLanguage === TutorialSupportLanguage.PYTHON && (
+                    <Alert message={t('remoteTestTutorialPytonErrorMessage')} type="info" showIcon />
+                  )}
                 </>
               )
             }

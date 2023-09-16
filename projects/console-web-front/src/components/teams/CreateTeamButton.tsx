@@ -43,7 +43,11 @@ const CreateTeamButton = () => {
 
   return (
     <>
-      <StyledButton type="primary" onClick={() => openModal()} access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'create-team-btn' : undefined}>
+      <StyledButton
+        type="primary"
+        onClick={() => openModal()}
+        access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'create-team-btn' : undefined}
+      >
         {t('team:createNewTeamButtonText')}
       </StyledButton>
 
@@ -55,8 +59,20 @@ const CreateTeamButton = () => {
         okText={t('common:add')}
         form={
           <Form layout="vertical" id="new-team" form={form} onFinish={handleSubmit}>
-            <Form.Item label={t('team:createNewTeamModalNameLabel')} name="name" key="name" required rules={[{ required: true, message: 'Input team name' }]}>
-              <Input placeholder={t('team:createNewTeamModalNamePlaceHolder')} minLength={TEAM_NAME_MIN_LENGTH} maxLength={TEAM_NAME_MAX_LENGTH} required autoFocus />
+            <Form.Item
+              label={t('team:createNewTeamModalNameLabel')}
+              name="name"
+              key="name"
+              required
+              rules={[{ required: true, message: 'Input team name' }]}
+            >
+              <Input
+                placeholder={t('team:createNewTeamModalNamePlaceHolder')}
+                minLength={TEAM_NAME_MIN_LENGTH}
+                maxLength={TEAM_NAME_MAX_LENGTH}
+                required
+                autoFocus
+              />
             </Form.Item>
           </Form>
         }

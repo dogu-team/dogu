@@ -15,7 +15,9 @@ const SdkIcon = ({ sdk, size }: Props) => {
 
   switch (sdk) {
     case TutorialSupportSdk.WEBDRIVERIO:
-      return <Image src={resources.icons.webdriverio} width={size} height={size} style={imageStyle} alt="webdriverio" />;
+      return (
+        <Image src={resources.icons.webdriverio} width={size} height={size} style={imageStyle} alt="webdriverio" />
+      );
     case TutorialSupportSdk.APPIUM:
       return <Image src={resources.icons.appium} width={size} height={size} style={imageStyle} alt="appium" />;
     case TutorialSupportSdk.GAMIUM:

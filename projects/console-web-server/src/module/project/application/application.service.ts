@@ -13,7 +13,7 @@ import { Ipa } from '../../../sdk/ipa';
 import { Page } from '../../common/dto/pagination/page';
 import { convertExtToProjectAppType, projectAppMeta } from '../../file/project-app-file';
 import { ProjectFileService } from '../../file/project-file.service';
-import { FindProjectApplicationDto, UploadProjectApplicationDto } from './dto/application.dto';
+import { FindProjectApplicationDto } from './dto/application.dto';
 
 @Injectable()
 export class ApplicationService {
@@ -33,6 +33,8 @@ export class ApplicationService {
       .where({ organizationId, projectId })
       .andWhere(extension ? 'projectApplication.fileExtension = :extension' : '1=1', { extension: extension })
       .andWhere(latestOnly ? 'projectApplication.isLatest = 1' : version ? 'projectApplication.version LIKE :version' : '1=1', { version: `%${version}%` })
+      .orderBy('projectApplication.isLatest', 'DESC')
+      .addOrderBy('projectApplication.createdAt', 'DESC')
       .skip(dto.getDBOffset())
       .take(dto.getDBLimit())
       .getManyAndCount();
@@ -65,15 +67,15 @@ export class ApplicationService {
   async getApplicationMeta(name: string, organizationId: OrganizationId, projectId: ProjectId) {}
 
   async getApplicationWithUniquePackage(organizationId: OrganizationId, projectId: ProjectId, dto: FindProjectApplicationDto): Promise<ProjectApplicationWithIcon[]> {
-    const { version, extension, latestOnly } = dto;
+    const { extension } = dto;
 
-    const applications = await await this.dataSource
+    const applications = await this.dataSource
       .getRepository(ProjectApplication)
       .createQueryBuilder('projectApplication')
       .leftJoinAndSelect(`projectApplication.${ProjectApplicationPropCamel.creator}`, 'creator')
       .where({ organizationId, projectId })
       .andWhere(extension ? 'projectApplication.fileExtension = :extension' : '1=1', { extension: extension })
-      .andWhere(latestOnly ? 'projectApplication.isLatest = 1' : version ? 'projectApplication.version LIKE :version' : '1=1', { version: `%${version}%` })
+      .andWhere('projectApplication.isLatest = 1')
       .orderBy('projectApplication.createdAt', 'DESC')
       .getMany();
 
@@ -109,7 +111,7 @@ export class ApplicationService {
       size: size,
     } as Express.Multer.File;
 
-    await this.uploadApplication(manager, apkFile, creatorUserId, CREATOR_TYPE.USER, organizationId, projectId, { isLatest: false });
+    await this.uploadApplication(manager, apkFile, creatorUserId, CREATOR_TYPE.USER, organizationId, projectId);
     return;
   }
 
@@ -120,9 +122,7 @@ export class ApplicationService {
     creatorType: CREATOR_TYPE,
     organizationId: OrganizationId,
     projectId: ProjectId,
-    dto: UploadProjectApplicationDto,
   ) {
-    const { isLatest } = dto;
     const extension = file.originalname.split('.').pop();
     if (!extension) {
       throw new Error('extension is null');
@@ -140,13 +140,41 @@ export class ApplicationService {
     }
     const appName = appInfo.name.replaceAll(' ', '_');
 
-    if (isLatest) {
+    const applications = await manager.getRepository(ProjectApplication).find({
+      where: {
+        organizationId: organizationId,
+        projectId: projectId,
+        package: appInfo.package,
+        fileExtension: extension,
+      },
+    });
+
+    const duplicatedVersionCodeApp = applications.find((app) => app.versionCode === appInfo.versionCode);
+    const duplicatedVersionApp = applications.find((app) => app.version === appInfo.version);
+
+    if (duplicatedVersionCodeApp) {
+      await manager.getRepository(ProjectApplication).softRemove(duplicatedVersionCodeApp);
+    } else if (duplicatedVersionApp) {
+      await manager.getRepository(ProjectApplication).softRemove(duplicatedVersionApp);
+    }
+
+    const isLatest =
+      applications.length === 0
+        ? true
+        : !!duplicatedVersionApp
+        ? Math.max(...applications.filter((app) => app.projectApplicationId !== duplicatedVersionApp.projectApplicationId).map((app) => app.versionCode)) <= appInfo.versionCode
+        : Math.max(...applications.map((app) => app.versionCode)) <= appInfo.versionCode;
+    const fileName = `${appName}-${appInfo.version}-${appInfo.versionCode}-${randHash}.${extension}`;
+    const iconFileName = appInfo.icon === undefined ? null : `${appName}-${appInfo.version}-${appInfo.versionCode}-${randHash}.${appInfo.iconExt}`;
+
+    const latestApp = applications.find((app) => app.isLatest === 1);
+
+    if (latestApp) {
       await manager.getRepository(ProjectApplication).update(
         {
+          projectApplicationId: latestApp.projectApplicationId,
           organizationId: organizationId,
           projectId: projectId,
-          fileExtension: extension,
-          isLatest: 1,
         },
         {
           isLatest: 0,
@@ -154,67 +182,26 @@ export class ApplicationService {
       );
     }
 
-    const application = await manager.getRepository(ProjectApplication).findOne({
-      where: {
-        organizationId: organizationId,
-        projectId: projectId,
-        package: appInfo.package,
-        version: appInfo.version,
-        fileExtension: extension,
-      },
+    await manager.getRepository(ProjectApplication).insert({
+      organizationId: organizationId,
+      projectId: projectId,
+      creatorId: creatorUserId,
+      creatorType,
+      name: appName,
+      iconFileName,
+      fileName,
+      fileExtension: extension,
+      fileSize: file.size,
+      package: appInfo.package,
+      version: appInfo.version,
+      versionCode: appInfo.versionCode,
+      isLatest: isLatest ? 1 : 0,
     });
-    const existApplication = application !== null;
-    const appFileName = existApplication ? application.fileName : `${appName}-${appInfo.version}-${randHash}.${extension}`;
-
-    let iconFileName = appInfo.icon === null ? null : `${appName}-${appInfo.version}-${randHash}.${appInfo.iconExt}`;
-    if (existApplication) {
-      iconFileName = application.iconFileName;
-    }
-
-    if (existApplication) {
-      await manager.getRepository(ProjectApplication).update(
-        {
-          organizationId: organizationId,
-          projectId: projectId,
-          package: appInfo.package,
-          version: appInfo.version,
-          fileExtension: extension,
-        },
-        {
-          name: appName,
-          fileSize: file.size,
-          package: appInfo.package,
-          creatorId: creatorUserId,
-          creatorType,
-          isLatest: isLatest ? 1 : 0,
-        },
-      );
-
-      if (application.iconFileName) {
-        await appFileDirectory.delete(application.iconFileName);
-      }
-      await appFileDirectory.delete(application.fileName);
-    } else {
-      await manager.getRepository(ProjectApplication).insert({
-        organizationId: organizationId,
-        projectId: projectId,
-        creatorId: creatorUserId,
-        creatorType,
-        name: appName,
-        iconFileName: iconFileName,
-        fileName: appFileName,
-        fileExtension: extension,
-        fileSize: file.size,
-        package: appInfo.package,
-        version: appInfo.version,
-        isLatest: isLatest ? 1 : 0,
-      });
-    }
 
     if (appInfo.icon && iconFileName) {
       await appFileDirectory.uploadBuffer(appInfo.icon, iconFileName, ['.png', '.jpg', '.jpeg', 'webp'], file.mimetype);
     }
-    await appFileDirectory.uploadFile(file, appFileName, projectAppMeta[appFileType].mimeTypes);
+    await appFileDirectory.uploadFile(file, fileName, projectAppMeta[appFileType].mimeTypes);
   }
 
   async deleteApplication(id: ProjectApplicationId, organizationId: OrganizationId, projectId: ProjectId) {
@@ -242,6 +229,32 @@ export class ApplicationService {
         organizationId: organizationId,
         projectId: projectId,
       });
+
+      const samePackageApplications = await entityManager.getRepository(ProjectApplication).find({
+        where: {
+          organizationId: organizationId,
+          projectId: projectId,
+          package: application.package,
+          fileExtension: application.fileExtension,
+        },
+      });
+
+      if (samePackageApplications.length > 0) {
+        const latestApplication = samePackageApplications.reduce((prev, current) => {
+          return prev.versionCode > current.versionCode ? prev : current;
+        });
+
+        await entityManager.getRepository(ProjectApplication).update(
+          {
+            projectApplicationId: latestApplication.projectApplicationId,
+            organizationId: organizationId,
+            projectId: projectId,
+          },
+          {
+            isLatest: 1,
+          },
+        );
+      }
 
       await appFileDirectory.delete(application.fileName);
       if (application.iconFileName !== null) {
@@ -279,13 +292,14 @@ export class ApplicationService {
 async function getAppInfo(
   file: Express.Multer.File,
   hash: string,
-): Promise<{ name: string; version: string; package: string; icon: Buffer | undefined; iconExt: string } | undefined> {
+): Promise<{ name: string; version: string; versionCode: number; package: string; icon: Buffer | undefined; iconExt: string } | undefined> {
   const extension = file.originalname.split('.').pop();
   if (extension === 'apk') {
     const info = await Apk.getApkInfo(file.buffer, hash);
     return {
       name: info.name,
       version: info.version,
+      versionCode: info.versionCode,
       package: info.package,
       icon: info.icon,
       iconExt: '.png',
@@ -296,6 +310,8 @@ async function getAppInfo(
     return {
       name: info.name,
       version: info.version,
+      // use CFBundleVersion as versionCode
+      versionCode: info.bundleVersion,
       package: info.package,
       icon: info.icon,
       iconExt: '.png',

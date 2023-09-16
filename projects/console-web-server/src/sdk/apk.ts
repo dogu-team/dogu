@@ -41,6 +41,7 @@ export module Apk {
     package: string;
     version: string;
     icon: Buffer | undefined;
+    versionCode: number;
   }
 
   async function writeApk(buffer: Buffer, hash: string) {
@@ -168,6 +169,7 @@ export module Apk {
         name: appName,
         package: androidManifestXml.package!,
         version: androidManifestXml.versionName!,
+        versionCode: androidManifestXml.versionCode ?? 0,
         icon: iconData,
       };
 

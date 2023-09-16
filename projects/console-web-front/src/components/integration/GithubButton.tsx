@@ -49,7 +49,11 @@ function GithubButton({ isConnected, disabled, organizationId, projectId, descri
     const values = await form.validateFields();
 
     try {
-      await saveScm(organizationId, projectId, { service: PROJECT_SCM_TYPE.GITHUB, token: values.token, url: values.repo.replace('.git', '') });
+      await saveScm(organizationId, projectId, {
+        service: PROJECT_SCM_TYPE.GITHUB,
+        token: values.token,
+        url: values.repo.replace('.git', ''),
+      });
       sendSuccessNotification('GitHub integration saved');
       fireEvent('onProjectScmUpdated');
       handleClose();
@@ -94,7 +98,16 @@ function GithubButton({ isConnected, disabled, organizationId, projectId, descri
         }
       />
 
-      <Modal open={isOpen} centered closable onCancel={handleClose} okText={'Save'} onOk={saveGitHubIntegration} confirmLoading={saveLoading} title="GitHub Integration">
+      <Modal
+        open={isOpen}
+        centered
+        closable
+        onCancel={handleClose}
+        okText={'Save'}
+        onOk={saveGitHubIntegration}
+        confirmLoading={saveLoading}
+        title="GitHub Integration"
+      >
         <GitIntegrationForm form={form} hideType />
       </Modal>
     </>

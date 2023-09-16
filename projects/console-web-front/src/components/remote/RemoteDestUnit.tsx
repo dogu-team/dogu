@@ -8,7 +8,9 @@ interface Props {
 }
 
 const RemoteDestUnit = ({ dest }: Props) => {
-  return <StyledDestUnit state={dest.state} name={dest.name} startedAt={dest.inProgressAt} endedAt={dest.completedAt} />;
+  return (
+    <StyledDestUnit state={dest.state} name={dest.name} startedAt={dest.inProgressAt} endedAt={dest.completedAt} />
+  );
 };
 
 export default RemoteDestUnit;

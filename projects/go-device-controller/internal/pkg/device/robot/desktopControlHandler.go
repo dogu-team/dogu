@@ -129,7 +129,7 @@ func (dch *DesktopControlHandler) handleControl(c *types.DeviceControl, platform
 		dch.screenSize.W, dch.screenSize.H = robotgo.GetScreenSize()
 		return handleControlInjectScroll(c, &dch.screenSize)
 	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_SET_CLIPBOARD:
-		return handleSetClipboard(c, platform)
+		return handleSetClipboard(c, platform, &dch.keyBonding)
 	case types.DeviceControlType_DEVICE_CONTROL_TYPE_DESKTOP_ONSCREEN_FOCUSED:
 		clearAllMetaKeys(&dch.keyBonding)
 		return gotypes.Success

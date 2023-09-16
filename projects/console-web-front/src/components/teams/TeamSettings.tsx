@@ -60,9 +60,25 @@ const TeamSettings = ({ organizationId, team, onDeleteEnd, onUpdateEnd }: Props)
   return (
     <Box>
       <SettingTitleDivider title="General" style={{ marginTop: '0' }} />
-      <Form layout="vertical" form={form} initialValues={{ name: team.name }} onFinish={handleFinish} autoComplete="off">
-        <Form.Item label={t('team:teamDetailPageSettingNameLabel')} name="name" required rules={[{ required: true, message: t('team:teamDetailPageSettingNameEmptyMsg') }]}>
-          <Input minLength={TEAM_NAME_MIN_LENGTH} maxLength={TEAM_NAME_MAX_LENGTH} required placeholder={t('team:teamDetailPageSettingNamePlaceholder')} />
+      <Form
+        layout="vertical"
+        form={form}
+        initialValues={{ name: team.name }}
+        onFinish={handleFinish}
+        autoComplete="off"
+      >
+        <Form.Item
+          label={t('team:teamDetailPageSettingNameLabel')}
+          name="name"
+          required
+          rules={[{ required: true, message: t('team:teamDetailPageSettingNameEmptyMsg') }]}
+        >
+          <Input
+            minLength={TEAM_NAME_MIN_LENGTH}
+            maxLength={TEAM_NAME_MAX_LENGTH}
+            required
+            placeholder={t('team:teamDetailPageSettingNamePlaceholder')}
+          />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" access-id="update-team-profile-btn">
@@ -80,7 +96,11 @@ const TeamSettings = ({ organizationId, team, onDeleteEnd, onUpdateEnd }: Props)
               <DangerZone.Button
                 modalTitle={t('team:removeTeamConfirmModalTitle')}
                 modalContent={
-                  <Trans i18nKey="team:removeTeamConfirmModalContent" components={{ b: <b style={{ fontWeight: '700' }} />, br: <br /> }} values={{ name: team.name }} />
+                  <Trans
+                    i18nKey="team:removeTeamConfirmModalContent"
+                    components={{ b: <b style={{ fontWeight: '700' }} />, br: <br /> }}
+                    values={{ name: team.name }}
+                  />
                 }
                 modalButtonTitle={t('team:removeTeamConfirmModalButtonTitle')}
                 onConfirm={handleDelete}
@@ -102,5 +122,7 @@ const TeamSettings = ({ organizationId, team, onDeleteEnd, onUpdateEnd }: Props)
 export default TeamSettings;
 
 const Box = styled.div`
-  max-width: 500px;
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
 `;

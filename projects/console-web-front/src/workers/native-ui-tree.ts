@@ -11,7 +11,10 @@ globalThis.onmessage = (e: MessageEvent<InspectorWorkerMessage>) => {
 
     for (const r of result) {
       const { context, pageSource } = r;
-      convertedResult.push({ context, node: new PageSourceParserFacade().parse(platform, pageSource) });
+      convertedResult.push({
+        context,
+        node: new PageSourceParserFacade().parse(platform, pageSource),
+      });
     }
 
     self.postMessage(convertedResult);

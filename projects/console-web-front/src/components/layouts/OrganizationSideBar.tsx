@@ -1,7 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
-import { BookOutlined, ClusterOutlined, ProjectOutlined, SettingOutlined, TeamOutlined, UserOutlined } from '@ant-design/icons';
+import {
+  BookOutlined,
+  ClusterOutlined,
+  ProjectOutlined,
+  SettingOutlined,
+  TeamOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import { Layout, Menu, MenuProps } from 'antd';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
@@ -33,7 +40,12 @@ const OrganizationSideBar = () => {
       key: 'home',
       icon: collapsed ? (
         <OrganizationImageWrapper>
-          <ProfileImage shape="square" size={28} name={organization?.name} profileImageUrl={organization?.profileImageUrl} />
+          <ProfileImage
+            shape="square"
+            size={28}
+            name={organization?.name}
+            profileImageUrl={organization?.profileImageUrl}
+          />
         </OrganizationImageWrapper>
       ) : undefined,
       style: { cursor: 'default' },
@@ -53,7 +65,10 @@ const OrganizationSideBar = () => {
     {
       key: 'project',
       icon: collapsed ? (
-        <StyledIconLink selected={router.asPath === `/dashboard/${orgId}/projects`} href={`/dashboard/${orgId}/projects`}>
+        <StyledIconLink
+          selected={router.asPath === `/dashboard/${orgId}/projects`}
+          href={`/dashboard/${orgId}/projects`}
+        >
           <ProjectOutlined />
         </StyledIconLink>
       ) : undefined,
@@ -72,7 +87,10 @@ const OrganizationSideBar = () => {
     {
       key: 'device-farm',
       icon: collapsed ? (
-        <StyledIconLink selected={router.asPath.startsWith(`/dashboard/${orgId}/device-farm`)} href={`/dashboard/${orgId}/device-farm/hosts`}>
+        <StyledIconLink
+          selected={router.asPath.startsWith(`/dashboard/${orgId}/device-farm`)}
+          href={`/dashboard/${orgId}/device-farm/hosts`}
+        >
           <ClusterOutlined />
         </StyledIconLink>
       ) : undefined,
@@ -93,7 +111,10 @@ const OrganizationSideBar = () => {
     {
       key: 'member',
       icon: collapsed ? (
-        <StyledIconLink selected={router.asPath.startsWith(`/dashboard/${orgId}/members`)} href={`/dashboard/${orgId}/members`}>
+        <StyledIconLink
+          selected={router.asPath.startsWith(`/dashboard/${orgId}/members`)}
+          href={`/dashboard/${orgId}/members`}
+        >
           <UserOutlined />
         </StyledIconLink>
       ) : undefined,
@@ -113,7 +134,10 @@ const OrganizationSideBar = () => {
     {
       key: 'team',
       icon: collapsed ? (
-        <StyledIconLink selected={router.asPath.startsWith(`/dashboard/${orgId}/teams`)} href={`/dashboard/${orgId}/teams`}>
+        <StyledIconLink
+          selected={router.asPath.startsWith(`/dashboard/${orgId}/teams`)}
+          href={`/dashboard/${orgId}/teams`}
+        >
           <TeamOutlined />
         </StyledIconLink>
       ) : undefined,
@@ -134,7 +158,10 @@ const OrganizationSideBar = () => {
     {
       key: 'settings',
       icon: collapsed ? (
-        <StyledIconLink selected={router.asPath === `/dashboard/${orgId}/settings`} href={`/dashboard/${orgId}/settings`}>
+        <StyledIconLink
+          selected={router.asPath === `/dashboard/${orgId}/settings`}
+          href={`/dashboard/${orgId}/settings`}
+        >
           <SettingOutlined />
         </StyledIconLink>
       ) : undefined,
@@ -166,7 +193,12 @@ const OrganizationSideBar = () => {
           <RiExternalLinkLine />
         </div>
       ) : (
-        <SideBarMenu icon={<BookOutlined style={{ fontSize: '1.2rem' }} />} path={'https://docs.dogutech.io'} text={t('organization:docs')} external />
+        <SideBarMenu
+          icon={<BookOutlined style={{ fontSize: '1.2rem' }} />}
+          path={'https://docs.dogutech.io'}
+          text={t('organization:docs')}
+          external
+        />
       ),
     },
   ];
@@ -174,7 +206,16 @@ const OrganizationSideBar = () => {
   return (
     <StyledSider collapsible collapsed={collapsed} trigger={null}>
       <StyledBox>
-        <div style={{ position: 'relative', width: '100%', flex: 1, maxHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            flex: 1,
+            maxHeight: '100dvh',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           <SidebarInner>
             <Box>
               <Menu style={{ borderInline: 'none' }} items={items} mode="inline" />

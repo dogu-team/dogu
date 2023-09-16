@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -17,11 +17,7 @@
     >
       <tr>
         <td></td>
-        <td
-          width="700"
-          align="center"
-          style="background-size: 100%; background-repeat: no-repeat"
-        >
+        <td width="700" align="center" style="background-size: 100%; background-repeat: no-repeat">
           <table border="0" cellpadding="0" cellspacing="0" width="100%">
             <tr>
               <td style="padding: 20px 20px 0 20px">
@@ -37,14 +33,7 @@
                     </td>
                   </tr>
                   <tr>
-                    <td
-                      align="center"
-                      style="
-                        padding: 40px 0 0 0;
-                        font-size: 24px;
-                        font-weight: 600;
-                      "
-                    >
+                    <td align="center" style="padding: 40px 0 0 0; font-size: 24px; font-weight: 600">
                       <!-- profile image here -->
                       <!-- if profile image return <div style="width: 48px; height: 48px; border-radius: 6px; overflow: hidden"><img src={profileImageUrl} style="width: 48px; height: 48px" /></div> -->
                       <!-- else return <div src={profileImageUrl} style="width: 48px; height: 48px;" /> -->
@@ -65,28 +54,13 @@
                     </td>
                   </tr>
                   <tr>
-                    <td
-                      align="center"
-                      style="
-                        padding: 40px 0 0 0;
-                        font-size: 24px;
-                        font-weight: 600;
-                      "
-                    >
+                    <td align="center" style="padding: 40px 0 0 0; font-size: 24px; font-weight: 600">
                       ${inviterName} invited you to join organization ${orgName}
                     </td>
                   </tr>
                   <tr>
-                    <td
-                      align="center"
-                      style="
-                        padding: 32px 0 0 0;
-                        font-size: 16px;
-                        line-height: 1.4;
-                      "
-                    >
-                      ${inviterName} invited you to join organization ${orgName}
-                      on Dogu.
+                    <td align="center" style="padding: 32px 0 0 0; font-size: 16px; line-height: 1.4">
+                      ${inviterName} invited you to join organization ${orgName} on Dogu.
                       <br />
                       This invitation will expire in 7 days.
                     </td>
@@ -111,44 +85,22 @@
                     </td>
                   </tr>
                   <tr>
-                    <td
-                      align="center"
-                      style="
-                        padding: 32px 0 32px 0;
-                        font-size: 12px;
-                        line-height: 1.4;
-                      "
-                    >
-                      You're receiving this email because ${orgName} invited
-                      you.
+                    <td align="center" style="padding: 32px 0 32px 0; font-size: 12px; line-height: 1.4">
+                      You're receiving this email because ${orgName} invited you.
                     </td>
                   </tr>
                 </table>
               </td>
             </tr>
             <tr>
-              <td
-                style="background-color: #f8f8f8; padding: 16px 20px 16px 20px"
-              >
+              <td style="background-color: #f8f8f8; padding: 16px 20px 16px 20px">
                 <table border="0" cellpadding="0" cellspacing="0" width="100%">
                   <tr>
                     <td align="center">
-                      <p style="font-size: 12px; margin: 0 0 0 0">
-                        © 2023 Dogu Technologies Inc. All rights reserved
-                      </p>
-                      <div
-                        style="
-                          font-size: 12px;
-                          color: #888888;
-                          margin: 8px 0 0 0;
-                        "
-                      >
+                      <p style="font-size: 12px; margin: 0 0 0 0">© 2023 Dogu Technologies Inc. All rights reserved</p>
+                      <div style="font-size: 12px; color: #888888; margin: 8px 0 0 0">
                         <a
-                          style="
-                            font-size: 12px;
-                            color: #888888;
-                            text-decoration: none;
-                          "
+                          style="font-size: 12px; color: #888888; text-decoration: none"
                           href="${process.env.DOGU_CONSOLE_URL as string}/notices/privacy"
                           >Privacy Policy</a
                         >

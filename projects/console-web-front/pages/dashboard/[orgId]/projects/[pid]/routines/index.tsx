@@ -20,15 +20,19 @@ import { swrAuthFetcher } from 'src/api/index';
 import EditRoutineButton from 'src/components/routine/EditRoutineButton';
 import ProjectLayoutWithSidebar from 'src/components/layouts/ProjectLayoutWithSidebar';
 import ExternalGuideLink from 'src/components/common/ExternalGuideLink';
-import SlackRoutineChannelButton from 'src/enterprise/components/slack/SlackRoutineChannelButton';
+import SlackRoutineChannelButton from 'enterprise/components/slack/SlackRoutineChannelButton';
 import TutorialButton from '../../../../../../src/components/buttons/TutorialButton';
 
 const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
   const router = useRouter();
   const routineId = router.query.routine as RoutineId | undefined;
-  const { data: routine } = useSWR<RoutineBase>(routineId && `/organizations/${organization.organizationId}/projects/${project.projectId}/routines/${routineId}`, swrAuthFetcher);
+  const { data: routine } = useSWR<RoutineBase>(
+    routineId && `/organizations/${organization.organizationId}/projects/${project.projectId}/routines/${routineId}`,
+    swrAuthFetcher,
+  );
   const { data: routineSlack } = useSWR<ProjectSlackRoutineBase>(
-    routineId && `/organizations/${organization.organizationId}/projects/${project.projectId}/slack/routine/${routineId}`,
+    routineId &&
+      `/organizations/${organization.organizationId}/projects/${project.projectId}/slack/routine/${routineId}`,
     swrAuthFetcher,
   );
 
@@ -42,22 +46,49 @@ const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organi
           <TableListView
             top={
               <PipelineTopBox>
-                <RoutineInfoContainer orgId={organization.organizationId} projectId={project.projectId} routine={routine} />
+                <RoutineInfoContainer
+                  orgId={organization.organizationId}
+                  projectId={project.projectId}
+                  routine={routine}
+                />
 
                 <PipelineTopButtonWrapper>
                   <RowFlexBox>
-                    <TutorialButton href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/routines/get-started`} style={{ marginRight: '.5rem' }} />
-                    <RunRoutineButton orgId={organization.organizationId} projectId={project.projectId} routine={routine} />
-                    <EditRoutineButton orgId={organization.organizationId} projectId={project.projectId} routine={routine} />
+                    <TutorialButton
+                      href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/routines/get-started`}
+                      style={{ marginRight: '.5rem' }}
+                    />
+                    <RunRoutineButton
+                      orgId={organization.organizationId}
+                      projectId={project.projectId}
+                      routine={routine}
+                    />
+                    <EditRoutineButton
+                      orgId={organization.organizationId}
+                      projectId={project.projectId}
+                      routine={routine}
+                    />
                     <PipelineFilter />
                     {routine && routineId && (
-                      <SlackRoutineChannelButton organizationId={organization.organizationId} projectId={project.projectId} routineId={routineId} routineSlack={routineSlack} />
+                      <SlackRoutineChannelButton
+                        organizationId={organization.organizationId}
+                        projectId={project.projectId}
+                        routineId={routineId}
+                        routineSlack={routineSlack}
+                      />
                     )}
                     {!routine && (
                       <>
                         <ExternalGuideLink
                           href="https://docs.dogutech.io/integration/cicd/github-action"
-                          icon={<Image src="/resources/icons/github-action-logo.svg" alt="Github Action" width={16} height={16} />}
+                          icon={
+                            <Image
+                              src="/resources/icons/github-action-logo.svg"
+                              alt="Github Action"
+                              width={16}
+                              height={16}
+                            />
+                          }
                         >
                           GitHub Action
                         </ExternalGuideLink>
@@ -74,7 +105,9 @@ const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organi
                 </PipelineTopButtonWrapper>
               </PipelineTopBox>
             }
-            table={<PipelineListController organizationId={organization.organizationId} projectId={project.projectId} />}
+            table={
+              <PipelineListController organizationId={organization.organizationId} projectId={project.projectId} />
+            }
           />
         </PipelineContainer>
       </Box>
@@ -84,7 +117,11 @@ const ProjectRoutinePage: NextPageWithLayout<ProjectServerSideProps> = ({ organi
 
 ProjectRoutinePage.getLayout = (page) => {
   return (
-    <ProjectLayoutWithSidebar {...page.props} innerSidebar={<RoutineSideBar isGitIntegrated={page.props.isGitIntegrated} />} titleI18nKey="project:tabMenuRoutineTitle">
+    <ProjectLayoutWithSidebar
+      {...page.props}
+      innerSidebar={<RoutineSideBar isGitIntegrated={page.props.isGitIntegrated} />}
+      titleI18nKey="project:tabMenuRoutineTitle"
+    >
       {page}
     </ProjectLayoutWithSidebar>
   );

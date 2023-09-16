@@ -4,7 +4,7 @@ import { useCallback, useContext } from 'react';
 import { move, update } from 'ramda';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
-import { AppVersion } from '@dogu-tech/action-common';
+import { AppPackageName } from '@dogu-tech/action-common';
 import Trans from 'next-translate/Trans';
 
 import { flexRowBaseStyle } from '../../../../styles/box';
@@ -16,7 +16,7 @@ import StepContainer from './StepContainer';
 import { RUN_TEST_ACTION_NAME } from '../../../../types/routine';
 import { RoutineProjectTypeContext } from '../RoutineGUIEditor';
 import BrowserNameSelector from './BrowserNameSelector';
-import AppVersionContainer from './AppVersionContainer';
+import AppPackageNameContainer from './AppPackageNameContainer';
 
 interface NeedsProps {
   needs: JobSchema['needs'];
@@ -305,17 +305,17 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
     [job, name, updateJob],
   );
 
-  const getPlatformByAppVersion = (): Platform | undefined => {
-    if (job.appVersion) {
-      if (typeof job.appVersion === 'string') {
+  const getPlatformByAppPackageName = (): Platform | undefined => {
+    if (job.appPackageName) {
+      if (typeof job.appPackageName === 'string') {
         return undefined;
       }
 
-      if (job.appVersion.android) {
+      if (job.appPackageName.android) {
         return Platform.PLATFORM_ANDROID;
       }
 
-      if (job.appVersion.ios) {
+      if (job.appPackageName.ios) {
         return Platform.PLATFORM_IOS;
       }
     }
@@ -325,7 +325,11 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
 
   return (
     <Box>
-      <ContainerMenu onDeleteClicked={() => deleteJob(name)} onMoveDownClicked={() => updateJobOrder(name, 'down')} onMoveUpClicked={() => updateJobOrder(name, 'up')} />
+      <ContainerMenu
+        onDeleteClicked={() => deleteJob(name)}
+        onMoveDownClicked={() => updateJobOrder(name, 'down')}
+        onMoveUpClicked={() => updateJobOrder(name, 'up')}
+      />
       <Content>
         <JobNameTitle style={{ paddingRight: '4rem' }}>
           <NameEditor
@@ -366,27 +370,32 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
       ) : (
         <Content>
           <div>
-            <ContentTitle>{t('routine:routineGuiEditorJobAppVersionLabel')}</ContentTitle>
-            <ContentDesc>{t('routine:routineGuiEditorJobAppVersionDescription')}</ContentDesc>
+            <ContentTitle>{t('routine:routineGuiEditorJobAppPackageNameLabel')}</ContentTitle>
+            <ContentDesc style={{ whiteSpace: 'pre-wrap' }}>
+              {t('routine:routineGuiEditorJobAppPackageNameDescription')}
+            </ContentDesc>
           </div>
           <ContentInner>
-            <AppVersionContainer
-              appVersion={job.appVersion as AppVersion}
-              onUpdate={(platform, version) => {
-                if (typeof job.appVersion === 'string') {
-                  updateJob({ ...job, appVersion: { [platform]: version as string } }, name);
+            <AppPackageNameContainer
+              appPackageName={job.appPackageName as AppPackageName}
+              onUpdate={(platform, packageName) => {
+                if (typeof job.appPackageName === 'string') {
+                  updateJob({ ...job, appPackageName: { [platform]: packageName as string } }, name);
                   return;
                 }
-                updateJob({ ...job, appVersion: { ...job.appVersion, [platform]: version as string } }, name);
+                updateJob(
+                  { ...job, appPackageName: { ...job.appPackageName, [platform]: packageName as string } },
+                  name,
+                );
               }}
               onClose={(platform) => {
-                if (typeof job.appVersion === 'string') {
-                  updateJob({ ...job, appVersion: {} }, name);
+                if (typeof job.appPackageName === 'string') {
+                  updateJob({ ...job, appPackageName: {} }, name);
                   return;
                 }
-                const clonedAppVersion = { ...job.appVersion };
-                delete clonedAppVersion[platform];
-                updateJob({ ...job, appVersion: { ...clonedAppVersion } }, name);
+                const clonedAppPackageName = { ...job.appPackageName };
+                delete clonedAppPackageName[platform];
+                updateJob({ ...job, appPackageName: { ...clonedAppPackageName } }, name);
               }}
             />
           </ContentInner>
@@ -403,7 +412,13 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
                 if (e.target.checked) {
                   updateJob({ ...job, 'runs-on': { group: job['runs-on'] as string | string[] } }, name);
                 } else {
-                  updateJob({ ...job, 'runs-on': (job['runs-on'] as { group: string | string[] }).group as string | string[] }, name);
+                  updateJob(
+                    {
+                      ...job,
+                      'runs-on': (job['runs-on'] as { group: string | string[] }).group as string | string[],
+                    },
+                    name,
+                  );
                 }
               }}
             >
@@ -412,7 +427,10 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
           </FlexRow>
           <ContentDesc>
             {isGroupRun ? (
-              <Trans i18nKey="routine:routineGuiEditorJobDeviceGroupDescription" components={{ b: <b style={{ fontWeight: '600' }} /> }} />
+              <Trans
+                i18nKey="routine:routineGuiEditorJobDeviceGroupDescription"
+                components={{ b: <b style={{ fontWeight: '600' }} /> }}
+              />
             ) : (
               t('routine:routineGuiEditorJobDeviceDescription')
             )}
@@ -420,7 +438,11 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
         </div>
         <ContentInner>
           <RunsOn runsOn={job['runs-on']} onDelete={handleRemoveRunsOn} />
-          <AddDeviceAndTagButton group={isGroupRun} onSelect={handleAddRunsOn} devicePlatform={getPlatformByAppVersion()} />
+          <AddDeviceAndTagButton
+            group={isGroupRun}
+            onSelect={handleAddRunsOn}
+            devicePlatform={getPlatformByAppPackageName()}
+          />
         </ContentInner>
       </Content>
       <Content>
@@ -437,10 +459,20 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
         <StepWrapper>
           {job.steps.map((step, i) => {
             return (
-              <StepContainer key={`job-${name}-step-${step.name}-${i}`} jobName={name} step={step} index={i} updateStep={updateStep} deleteStep={deleteStep} moveStep={moveStep} />
+              <StepContainer
+                key={`job-${name}-step-${step.name}-${i}`}
+                jobName={name}
+                step={step}
+                index={i}
+                updateStep={updateStep}
+                deleteStep={deleteStep}
+                moveStep={moveStep}
+              />
             );
           })}
-          {!hideAddButton && <AddStepButton onClick={handleAddStep}>{t('routine:routineGuiEditorAddStepButtonTitle')}</AddStepButton>}
+          {!hideAddButton && (
+            <AddStepButton onClick={handleAddStep}>{t('routine:routineGuiEditorAddStepButtonTitle')}</AddStepButton>
+          )}
         </StepWrapper>
       </Content>
     </Box>

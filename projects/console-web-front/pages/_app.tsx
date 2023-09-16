@@ -45,7 +45,8 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     // alert due to dashboard's responsive design is not implemented yet
     if (router.asPath.startsWith('/dashboard/')) {
       if (window.innerWidth < 767 && sessionStorage.getItem('responsiveDesignAlert') !== 'true') {
-        const alertString = 'Dogu 콘솔은 아직 모바일 뷰를 완전히 지원하지 않습니다. 원할한 사용을 위해 데스크탑 브라우저를 사용해주세요.';
+        const alertString =
+          'Dogu 콘솔은 아직 모바일 뷰를 완전히 지원하지 않습니다. 원할한 사용을 위해 데스크탑 브라우저를 사용해주세요.';
         alert(alertString);
         sessionStorage.setItem('responsiveDesignAlert', 'true');
       }

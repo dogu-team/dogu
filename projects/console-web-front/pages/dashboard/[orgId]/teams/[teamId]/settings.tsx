@@ -16,7 +16,10 @@ const TeamMemberPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organ
   const router = useRouter();
   const orgId = router.query.orgId as OrganizationId;
   const teamId = Number(router.query.teamId) as TeamId;
-  const { data, error, isLoading, mutate } = useSWR<TeamBase>(`/organizations/${orgId}/teams/${teamId}`, swrAuthFetcher);
+  const { data, error, isLoading, mutate } = useSWR<TeamBase>(
+    `/organizations/${orgId}/teams/${teamId}`,
+    swrAuthFetcher,
+  );
 
   const handleAfterUpdate = useCallback(
     async (result: TeamBase) => {
@@ -32,7 +35,10 @@ const TeamMemberPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organ
     [mutate],
   );
 
-  const handleAfterRemove = useCallback(() => router.push(`/dashboard/${organization.organizationId}/teams`), [organization.organizationId, router]);
+  const handleAfterRemove = useCallback(
+    () => router.push(`/dashboard/${organization.organizationId}/teams`),
+    [organization.organizationId, router],
+  );
 
   if (isLoading) {
     return null;
@@ -47,7 +53,12 @@ const TeamMemberPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organ
       <Head>
         <title>Team settings | Dogu</title>
       </Head>
-      <TeamSettings organizationId={organization.organizationId} team={data} onUpdateEnd={handleAfterUpdate} onDeleteEnd={handleAfterRemove} />
+      <TeamSettings
+        organizationId={organization.organizationId}
+        team={data}
+        onUpdateEnd={handleAfterUpdate}
+        onDeleteEnd={handleAfterRemove}
+      />
     </>
   );
 };

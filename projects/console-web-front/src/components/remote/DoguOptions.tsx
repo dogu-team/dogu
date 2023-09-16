@@ -8,7 +8,11 @@ interface Props {
 }
 
 const DoguOptions = ({ doguOptions }: Props) => {
-  const { browserName, appVersion, browserVersion } = doguOptions as { browserName: string | undefined; appVersion: string | undefined; browserVersion: string | undefined };
+  const { browserName, appVersion, browserVersion } = doguOptions as {
+    browserName: string | undefined;
+    appVersion: string | undefined;
+    browserVersion: string | undefined;
+  };
 
   const getIcon = () => {
     if (browserName === 'chrome') {

@@ -10,7 +10,11 @@ import RoutineGitIntegrationAlert from '../../../../../../../src/components/proj
 import useGitIntegrationStore from '../../../../../../../src/stores/git-integration';
 import ProjectLayoutWithSidebar from '../../../../../../../src/components/layouts/ProjectLayoutWithSidebar';
 
-const ProjectRoutineCreatorPage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project, isGitIntegrated }) => {
+const ProjectRoutineCreatorPage: NextPageWithLayout<ProjectServerSideProps> = ({
+  organization,
+  project,
+  isGitIntegrated,
+}) => {
   const store = useGitIntegrationStore();
 
   useEffect(() => {

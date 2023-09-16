@@ -1,4 +1,10 @@
-import { CheckCircleOutlined, CloseOutlined, ExclamationCircleOutlined, InboxOutlined, LoadingOutlined } from '@ant-design/icons';
+import {
+  CheckCircleOutlined,
+  CloseOutlined,
+  ExclamationCircleOutlined,
+  InboxOutlined,
+  LoadingOutlined,
+} from '@ant-design/icons';
 import { Platform } from '@dogu-private/types';
 import { Button, Divider, Progress, Steps, Switch, Tooltip, Upload } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
@@ -65,7 +71,9 @@ const ApplicationUploader = ({}: Props) => {
           <InboxOutlined />
         </p>
         <p className="ant-upload-text">{t('device-streaming:uploadApplicationDescription')}</p>
-        <p className="ant-upload-hint">{t('device-streaming:uploadApplicationHint', { extension: availableExtension })}</p>
+        <p className="ant-upload-hint">
+          {t('device-streaming:uploadApplicationHint', { extension: availableExtension })}
+        </p>
       </StyledUpload>
       {app && (
         <ApplicationInfoBox>
@@ -96,7 +104,11 @@ const ApplicationUploader = ({}: Props) => {
               ) : (
                 <FlexCentered>
                   <ExclamationCircleOutlined style={{ fontSize: '3rem', color: '#f78a77', marginBottom: '.5rem' }} />
-                  <p>{result.failType === 'upload' ? t('device-streaming:uploadTransferFailureMessage') : t('device-streaming:uploadInstallFailureMessage')}</p>
+                  <p>
+                    {result.failType === 'upload'
+                      ? t('device-streaming:uploadTransferFailureMessage')
+                      : t('device-streaming:uploadInstallFailureMessage')}
+                  </p>
                 </FlexCentered>
               )
             ) : (

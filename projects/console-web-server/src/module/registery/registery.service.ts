@@ -1,5 +1,5 @@
 import { RegisterySignResult, RegisteryWithOrganizationIdResult, UserAndVerificationTokenPropCamel, UserAndVerificationTokenPropSnake, UserPropCamel } from '@dogu-private/console';
-import { OAuthPayLoad, OrganizationId, SNS_TYPE, USER_INVITATION_STATUS, USER_VERIFICATION_STATUS } from '@dogu-private/types';
+import { OAuthPayLoad, OrganizationId, SNS_TYPE, UserId, USER_INVITATION_STATUS, USER_VERIFICATION_STATUS } from '@dogu-private/types';
 import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -80,8 +80,7 @@ export class RegisteryService {
       const organization = await this.organizationService.createOrganization(entityManager, user.userId, { name: `${user.name}'s organization` });
 
       // create user email preference
-      const userEmailPreference = entityManager.getRepository(UserEmailPreference).create({ userId: user.userId, newsletter: newsletter ? 1 : 0 });
-      await entityManager.getRepository(UserEmailPreference).save(userEmailPreference);
+      await createUserEmailPreference(entityManager, user.userId, newsletter);
 
       if (isFromInvitation) {
         const verificationData = entityManager.getRepository(UserAndVerificationToken).create({
@@ -305,7 +304,7 @@ export class RegisteryService {
       if (storedToken.token !== token) {
         throw new HttpException('Invalid token', HttpStatus.BAD_REQUEST);
       }
-      if (TokenService.isExpired(storedToken)) {
+      if (TokenService.isExpired(storedToken.expiredAt)) {
         throw new HttpException('Token is expired', HttpStatus.BAD_REQUEST);
       }
 
@@ -355,6 +354,32 @@ export class RegisteryService {
 
       void this.emailService.sendVerifyEmail(user, token.token);
     });
+  }
+
+  async subscribeEmail(dto: { userId: UserId; token: string }): Promise<void> {
+    const { userId, token } = dto;
+    const userEmailPreference = await this.dataSource.getRepository(UserEmailPreference).findOne({
+      where: { userId, token },
+    });
+
+    if (!userEmailPreference) {
+      throw new HttpException(`User not found. userId: ${userId}`, HttpStatus.NOT_FOUND);
+    }
+
+    await this.dataSource.getRepository(UserEmailPreference).update({ userId, token }, { newsletter: 1 });
+  }
+
+  async unsubscribeEmail(dto: { userId: UserId; token: string }): Promise<void> {
+    const { userId, token } = dto;
+    const userEmailPreference = await this.dataSource.getRepository(UserEmailPreference).findOne({
+      where: { userId, token },
+    });
+
+    if (!userEmailPreference) {
+      throw new HttpException(`User not found. userId: ${userId}`, HttpStatus.NOT_FOUND);
+    }
+
+    await this.dataSource.getRepository(UserEmailPreference).update({ userId, token }, { newsletter: 0 });
   }
 
   private async checkValidInvitation(email: string, organizationId: OrganizationId, token: string): Promise<boolean> {

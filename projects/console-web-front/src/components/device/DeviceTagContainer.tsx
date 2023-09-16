@@ -17,7 +17,9 @@ const DeviceTagContainer = ({ tags }: Props) => {
       {data.map((item) => (
         <StyledTag key={`device-tag-${item.deviceTagId}`}>{item.name}</StyledTag>
       ))}
-      {tags.length > 5 && <TextButton onClick={() => setSeeMore((prev) => !prev)}>{seeMore ? 'hide' : 'see more'}</TextButton>}
+      {tags.length > 5 && (
+        <TextButton onClick={() => setSeeMore((prev) => !prev)}>{seeMore ? 'hide' : 'see more'}</TextButton>
+      )}
     </>
   );
 };

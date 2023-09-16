@@ -25,7 +25,11 @@ export const reissuesHostConnectionToken = async (organizationId: OrganizationId
   return data;
 };
 
-export const updateHostName = async (organizationId: OrganizationId, hostId: HostId, updateHostNameBody: UpdateHostNameDtoBase) => {
+export const updateHostName = async (
+  organizationId: OrganizationId,
+  hostId: HostId,
+  updateHostNameBody: UpdateHostNameDtoBase,
+) => {
   const { data } = await api.patch<HostBase>(`/organizations/${organizationId}/hosts/${hostId}`, updateHostNameBody);
 
   return data;

@@ -26,7 +26,12 @@ const SignUpPage: NextPageWithLayout = () => {
 
   const handleSignUp = useCallback(async (email: string, name: string, password: string, newsletter: boolean) => {
     try {
-      const { organizationId } = await signUp({ email, name, password, newsletter: newsletter ?? false });
+      const { organizationId } = await signUp({
+        email,
+        name,
+        password,
+        newsletter: newsletter ?? false,
+      });
       const cookies = new Cookies();
       cookies.set('newOrgId', organizationId, { path: '/' });
       router.push('/auth/entry');
@@ -50,7 +55,10 @@ const SignUpPage: NextPageWithLayout = () => {
         <StyledSignUpForm onSubmit={handleSignUp} />
         <ServiceAgreement />
         <AccountText>
-          <Trans i18nKey="registery:signUpAlreadyAccountExist" components={[<StyledLink key="signin" href={`/signin`} />]} />
+          <Trans
+            i18nKey="registery:signUpAlreadyAccountExist"
+            components={[<StyledLink key="signin" href={`/signin`} />]}
+          />
         </AccountText>
         {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && <SocialSignInForm />}
       </Box>

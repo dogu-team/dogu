@@ -1,4 +1,11 @@
-import { CheckCircleFilled, ClockCircleFilled, CloseCircleFilled, ExclamationCircleOutlined, LoadingOutlined, MinusCircleFilled } from '@ant-design/icons';
+import {
+  CheckCircleFilled,
+  ClockCircleFilled,
+  CloseCircleFilled,
+  ExclamationCircleOutlined,
+  LoadingOutlined,
+  MinusCircleFilled,
+} from '@ant-design/icons';
 import { DEST_STATE } from '@dogu-private/types';
 
 import { destStatusColor } from '../../utils/mapper';

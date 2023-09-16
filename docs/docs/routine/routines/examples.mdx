@@ -116,8 +116,9 @@ jobs:
       # Through group execution, the tests will be run on all devices with these tags.
       group:
         - android
-    appVersion:
-      android: 1.0.0
+    appPackageName:
+      # Automatically download the app with the latest build version from the list of apps with the same package name.
+      android: com.dogutech.app
     record: true
     steps:
       - name: run test
@@ -134,8 +135,8 @@ jobs:
     runs-on:
       group:
         - ios
-    appVersion:
-      ios: 1.0.0
+    appPackageName:
+      ios: com.dogutech.app
     record: true
     steps:
       - name: run test

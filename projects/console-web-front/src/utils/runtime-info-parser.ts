@@ -49,7 +49,9 @@ export class DeviceRuntimeInfoParser {
 
         const cores = Math.trunc(cpuInfo.currentLoadCpu / 100);
         const sysInfo = Math.round(((cpuInfo.currentLoadSystem * 100) / cpuInfo.currentLoadCpu) * 1e2) / 1e2;
-        const userInfo = Math.round((((cpuInfo.currentLoadUser + cpuInfo.currentLoadNice) * 100) / cpuInfo.currentLoadCpu) * 1e2) / 1e2;
+        const userInfo =
+          Math.round((((cpuInfo.currentLoadUser + cpuInfo.currentLoadNice) * 100) / cpuInfo.currentLoadCpu) * 1e2) /
+          1e2;
         const foregroundProc = item.processes.find((item) => item.isForeground);
 
         if (cores === 0) {
@@ -156,7 +158,11 @@ export class DeviceRuntimeInfoParser {
   }
 
   private localizeDate(date: Date): string {
-    return Intl.DateTimeFormat(this.locale, { hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(date);
+    return Intl.DateTimeFormat(this.locale, {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    }).format(date);
   }
 
   private getDurationAsMilliseconds(start: Date, now: Date): number {

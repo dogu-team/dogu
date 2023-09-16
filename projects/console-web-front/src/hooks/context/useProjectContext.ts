@@ -7,7 +7,10 @@ export interface ProjectContextProviderProps {
   mutate: KeyedMutator<ProjectBase> | null;
 }
 
-export const ProjectContext = React.createContext<ProjectContextProviderProps>({ project: null, mutate: null });
+export const ProjectContext = React.createContext<ProjectContextProviderProps>({
+  project: null,
+  mutate: null,
+});
 
 const useProjectContext = () => {
   const context = useContext(ProjectContext);

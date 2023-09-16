@@ -1,7 +1,11 @@
 import { GetServerSideProps } from 'next';
 
-import RecordTesting from '../../../../../../../src/enterprise/components/studio/RecordTesting';
-import { getStudioTestingLayout, getStudioTestingServerSideProps, StudioTestingPageProps } from '../../../../../../../src/enterprise/pages/studio';
+import RecordTesting from '../../../../../../../enterprise/components/studio/RecordTesting';
+import {
+  getStudioTestingLayout,
+  getStudioTestingServerSideProps,
+  StudioTestingPageProps,
+} from '../../../../../../../enterprise/pages/studio';
 import { NextPageWithLayout } from '../../../../../../_app';
 
 const RecordTestingPage: NextPageWithLayout<StudioTestingPageProps> = ({ organization, project, me, deviceId }) => {

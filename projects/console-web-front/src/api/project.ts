@@ -16,13 +16,19 @@ import { GetServerSidePropsContext } from 'next';
 import api from 'src/api';
 import { EmptyTokenError, getServersideCookies, setCookiesInServerSide } from 'src/utils/auth';
 
-export const getProjectListInServerSide = async (context: GetServerSidePropsContext, pageOptions: { page: number; offset: number }) => {
+export const getProjectListInServerSide = async (
+  context: GetServerSidePropsContext,
+  pageOptions: { page: number; offset: number },
+) => {
   const { authToken } = getServersideCookies(context.req.cookies);
 
   if (authToken) {
-    const data = await api.get<PageBase<ProjectBase>>(`/organizations/${context.query.orgId}/projects?page=${pageOptions.page}&offset=${pageOptions.offset}`, {
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
+    const data = await api.get<PageBase<ProjectBase>>(
+      `/organizations/${context.query.orgId}/projects?page=${pageOptions.page}&offset=${pageOptions.offset}`,
+      {
+        headers: { Authorization: `Bearer ${authToken}` },
+      },
+    );
     setCookiesInServerSide(data, context);
 
     const project = data.data;
@@ -37,7 +43,9 @@ export const getProjectInServerSide = async (context: GetServerSidePropsContext)
   const { authToken } = getServersideCookies(context.req.cookies);
 
   if (authToken) {
-    const data = await api.get<ProjectBase>(`/organizations/${context.query.orgId}/projects/${context.query.pid}`, { headers: { Authorization: `Bearer ${authToken}` } });
+    const data = await api.get<ProjectBase>(`/organizations/${context.query.orgId}/projects/${context.query.pid}`, {
+      headers: { Authorization: `Bearer ${authToken}` },
+    });
     setCookiesInServerSide(data, context);
 
     const project = data.data;
@@ -54,13 +62,24 @@ export const createProject = async (organizationId: OrganizationId, createProjec
   return data;
 };
 
-export const updateProject = async (organizationId: OrganizationId, projectId: ProjectId, updateProjectBody: UpdateProjectDtoBase) => {
-  const { data } = await api.patch<ProjectBase>(`/organizations/${organizationId}/projects/${projectId}`, updateProjectBody);
+export const updateProject = async (
+  organizationId: OrganizationId,
+  projectId: ProjectId,
+  updateProjectBody: UpdateProjectDtoBase,
+) => {
+  const { data } = await api.patch<ProjectBase>(
+    `/organizations/${organizationId}/projects/${projectId}`,
+    updateProjectBody,
+  );
 
   return data;
 };
 
-export const addUserToProject = async (organizationId: OrganizationId, projectId: ProjectId, addMemberBody: AddUserToProjectDtoBase) => {
+export const addUserToProject = async (
+  organizationId: OrganizationId,
+  projectId: ProjectId,
+  addMemberBody: AddUserToProjectDtoBase,
+) => {
   return await api.post<void>(`/organizations/${organizationId}/projects/${projectId}/users`, addMemberBody);
 };
 
@@ -68,7 +87,11 @@ export const removeUserFromProject = async (organizationId: OrganizationId, proj
   return await api.delete(`/organizations/${organizationId}/projects/${projectId}/users/${memberId}`);
 };
 
-export const addTeamToProject = async (organizationId: OrganizationId, projectId: ProjectId, body: AddTeamToProjectDtoBase) => {
+export const addTeamToProject = async (
+  organizationId: OrganizationId,
+  projectId: ProjectId,
+  body: AddTeamToProjectDtoBase,
+) => {
   return await api.post<void>(`/organizations/${organizationId}/projects/${projectId}/teams`, body);
 };
 
@@ -80,11 +103,21 @@ export const deleteProject = async (organizationId: OrganizationId, projectId: P
   return await api.delete(`/organizations/${organizationId}/projects/${projectId}`);
 };
 
-export const updateTeamInProject = async (organizationId: OrganizationId, projectId: ProjectId, teamId: TeamId, body: UpdateTeamProjectRoleDtoBase) => {
+export const updateTeamInProject = async (
+  organizationId: OrganizationId,
+  projectId: ProjectId,
+  teamId: TeamId,
+  body: UpdateTeamProjectRoleDtoBase,
+) => {
   return await api.patch<void>(`/organizations/${organizationId}/projects/${projectId}/teams/${teamId}/role`, body);
 };
 
-export const updateUserInProject = async (organizationId: OrganizationId, projectId: ProjectId, userId: UserId, body: UpdateUserProjectRoleDtoBase) => {
+export const updateUserInProject = async (
+  organizationId: OrganizationId,
+  projectId: ProjectId,
+  userId: UserId,
+  body: UpdateUserProjectRoleDtoBase,
+) => {
   return await api.patch<void>(`/organizations/${organizationId}/projects/${projectId}/users/${userId}/role`, body);
 };
 
@@ -92,9 +125,12 @@ export const getProjectScm = async (context: GetServerSidePropsContext) => {
   const { authToken } = getServersideCookies(context.req.cookies);
 
   if (authToken) {
-    const data = await api.get<ProjectScmBase | null>(`/organizations/${context.query.orgId}/projects/${context.query.pid}/scm`, {
-      headers: { Authorization: `Bearer ${authToken}` },
-    });
+    const data = await api.get<ProjectScmBase | null>(
+      `/organizations/${context.query.orgId}/projects/${context.query.pid}/scm`,
+      {
+        headers: { Authorization: `Bearer ${authToken}` },
+      },
+    );
     setCookiesInServerSide(data, context);
 
     const rv = data.data;

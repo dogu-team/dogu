@@ -8,7 +8,9 @@ import { flexRowBaseStyle } from '../../styles/box';
 interface Props extends DropdownProps {}
 
 const MenuButton = (props: Props) => {
-  const items: MenuProps['items'] = props.menu?.items?.map((item) => ({ ...item, style: { padding: '0' } } as ItemType));
+  const items: MenuProps['items'] = props.menu?.items?.map(
+    (item) => ({ ...item, style: { padding: '0' } }) as ItemType,
+  );
 
   return (
     <Box>

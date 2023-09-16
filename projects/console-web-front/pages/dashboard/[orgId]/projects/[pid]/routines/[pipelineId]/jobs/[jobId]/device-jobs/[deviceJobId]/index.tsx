@@ -18,7 +18,10 @@ import PipelineJobLayout from '../../../../../../../../../../../src/components/l
 import DeviceJobLiveLogController from '../../../../../../../../../../../src/components/pipelines/DeviceJobLiveLogController';
 import DeviceJobLiveProfileController from '../../../../../../../../../../../src/components/pipelines/DeviceJobLiveProfileController';
 import StepListController from '../../../../../../../../../../../src/components/pipelines/StepListController';
-import { getProjectPageServerSideProps, ProjectServerSideProps } from '../../../../../../../../../../../src/ssr/project';
+import {
+  getProjectPageServerSideProps,
+  ProjectServerSideProps,
+} from '../../../../../../../../../../../src/ssr/project';
 import useAuthStore from '../../../../../../../../../../../src/stores/auth';
 import useLivePipelineStore from '../../../../../../../../../../../src/stores/live-pipeline';
 import { getErrorMessageFromAxios } from '../../../../../../../../../../../src/utils/error';
@@ -35,8 +38,11 @@ const DeviceJobPage: NextPageWithLayout<ProjectServerSideProps> = ({ organizatio
     `/organizations/${organization.organizationId}/projects/${project.projectId}/pipelines/${pipelineId}/jobs/${jobId}/device-jobs/${deviceJobId}`,
     swrAuthFetcher,
   );
-  const liveDeviceJob = useLivePipelineStore((state) =>
-    state.pipeline?.routineJobs?.find((job) => job.routineJobId === Number(jobId))?.routineDeviceJobs?.find((deviceJob) => deviceJob.routineDeviceJobId === Number(deviceJobId)),
+  const liveDeviceJob = useLivePipelineStore(
+    (state) =>
+      state.pipeline?.routineJobs
+        ?.find((job) => job.routineJobId === Number(jobId))
+        ?.routineDeviceJobs?.find((deviceJob) => deviceJob.routineDeviceJobId === Number(deviceJobId)),
   );
   const { t } = useTranslation();
 
@@ -45,7 +51,12 @@ const DeviceJobPage: NextPageWithLayout<ProjectServerSideProps> = ({ organizatio
   }
 
   if (!data || error) {
-    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find device job'} />;
+    return (
+      <ErrorBox
+        title="Something went wrong"
+        desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find device job'}
+      />
+    );
   }
 
   return (
@@ -63,7 +74,12 @@ const DeviceJobPage: NextPageWithLayout<ProjectServerSideProps> = ({ organizatio
         <Content>
           <ContentSection>
             <ContentSectionTitle>{t('routine:stepInfoContentTitle')}</ContentSectionTitle>
-            <StepListController orgId={organization.organizationId} projectId={project.projectId} pipelineId={Number(pipelineId) as RoutinePipelineId} deviceJob={data} />
+            <StepListController
+              orgId={organization.organizationId}
+              projectId={project.projectId}
+              pipelineId={Number(pipelineId) as RoutinePipelineId}
+              deviceJob={data}
+            />
           </ContentSection>
 
           <Divider />
@@ -72,8 +88,15 @@ const DeviceJobPage: NextPageWithLayout<ProjectServerSideProps> = ({ organizatio
             <ContentSectionTitle>{t('routine:deviceJobInfoContentTitle')}</ContentSectionTitle>
 
             {isPipelineInProgress((liveDeviceJob || data).status) ? (
-              <Collapse bordered={false} defaultActiveKey={['profiles', 'live-logs']} style={{ backgroundColor: 'inherit' }}>
-                <Collapse.Panel header={<PannelHeader>{t('routine:deviceJobInfoProfileTitle')}</PannelHeader>} key="profiles">
+              <Collapse
+                bordered={false}
+                defaultActiveKey={['profiles', 'live-logs']}
+                style={{ backgroundColor: 'inherit' }}
+              >
+                <Collapse.Panel
+                  header={<PannelHeader>{t('routine:deviceJobInfoProfileTitle')}</PannelHeader>}
+                  key="profiles"
+                >
                   <DeviceJobLiveProfileController deviceJob={liveDeviceJob ?? data} />
                 </Collapse.Panel>
                 <Collapse.Panel header={<PannelHeader>라이브 로그</PannelHeader>} key="live-logs">
@@ -81,13 +104,23 @@ const DeviceJobPage: NextPageWithLayout<ProjectServerSideProps> = ({ organizatio
                 </Collapse.Panel>
               </Collapse>
             ) : (
-              <Collapse bordered={false} defaultActiveKey={['video', 'profiles']} style={{ backgroundColor: 'inherit' }}>
+              <Collapse
+                bordered={false}
+                defaultActiveKey={['video', 'profiles']}
+                style={{ backgroundColor: 'inherit' }}
+              >
                 {(liveDeviceJob || data).record === 1 && (
-                  <Collapse.Panel header={<PannelHeader>{t('routine:deviceJobInfoVideoTitle')}</PannelHeader>} key="video">
+                  <Collapse.Panel
+                    header={<PannelHeader>{t('routine:deviceJobInfoVideoTitle')}</PannelHeader>}
+                    key="video"
+                  >
                     <DeviceJobVideoController deviceJob={liveDeviceJob ?? data} />
                   </Collapse.Panel>
                 )}
-                <Collapse.Panel header={<PannelHeader>{t('routine:deviceJobInfoProfileTitle')}</PannelHeader>} key="profiles">
+                <Collapse.Panel
+                  header={<PannelHeader>{t('routine:deviceJobInfoProfileTitle')}</PannelHeader>}
+                  key="profiles"
+                >
                   <DeviceJobProfileController deviceJob={liveDeviceJob ?? data} />
                 </Collapse.Panel>
               </Collapse>

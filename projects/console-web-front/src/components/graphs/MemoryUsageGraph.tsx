@@ -1,5 +1,17 @@
 import { useCallback } from 'react';
-import { Area, CartesianGrid, ComposedChart, Legend, Line, ReferenceLine, ResponsiveContainer, Tooltip, TooltipProps, XAxis, YAxis } from 'recharts';
+import {
+  Area,
+  CartesianGrid,
+  ComposedChart,
+  Legend,
+  Line,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  TooltipProps,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import styled from 'styled-components';
 import { RuntimeInfoGraphBaseProps } from '../../types/graph';
 import { MemoryUsageInfo } from '../../utils/runtime-info-parser';
@@ -32,11 +44,37 @@ const MemoryUsageGraph = ({ data, durationTicks, empty, durationTicksFormatter }
             tickFormatter={durationTicksFormatter}
           />
           {data.length > 0 && <ReferenceLine y={data[0].total} stroke="red" />}
-          <Area type="monotone" dataKey="used" name="User" stackId="1" isAnimationActive={false} stroke="#82ca9d" fill="#82ca9d" unit="GB" />
-          <Line type="monotone" dataKey="foreground" name="Foreground" isAnimationActive={false} stroke="#0000ff" unit="GB" dot={false} />
-          <Line type="monotone" dataKey="foregroundProcName" isAnimationActive={false} stroke="none" dot={false} legendType="none" />
+          <Area
+            type="monotone"
+            dataKey="used"
+            name="User"
+            stackId="1"
+            isAnimationActive={false}
+            stroke="#82ca9d"
+            fill="#82ca9d"
+            unit="GB"
+          />
+          <Line
+            type="monotone"
+            dataKey="foreground"
+            name="Foreground"
+            isAnimationActive={false}
+            stroke="#0000ff"
+            unit="GB"
+            dot={false}
+          />
+          <Line
+            type="monotone"
+            dataKey="foregroundProcName"
+            isAnimationActive={false}
+            stroke="none"
+            dot={false}
+            legendType="none"
+          />
           <Legend />
-          <Tooltip content={<DeviceRuntimeInfoTooltip isDurationTicks={!!durationTicks} getTotal={getTotal} totalUnit="GB" />} />
+          <Tooltip
+            content={<DeviceRuntimeInfoTooltip isDurationTicks={!!durationTicks} getTotal={getTotal} totalUnit="GB" />}
+          />
         </ComposedChart>
       </ResponsiveContainer>
 

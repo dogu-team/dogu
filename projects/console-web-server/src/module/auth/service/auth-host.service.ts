@@ -86,7 +86,7 @@ export class AuthHostService {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
 
-    if (TokenService.isExpired(token)) {
+    if (TokenService.isExpired(token.expiredAt)) {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
 

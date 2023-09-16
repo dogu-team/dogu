@@ -40,7 +40,9 @@ const PipelineItem = ({ pipeline }: ItemProps) => {
             <PipelineStatusIcon status={pipeline.status} />
           </IconWrapper>
           <div>
-            <Link href={`/dashboard/${router.query.orgId}/projects/${router.query.pid}/routines/${pipeline.routinePipelineId}`}>
+            <Link
+              href={`/dashboard/${router.query.orgId}/projects/${router.query.pid}/routines/${pipeline.routinePipelineId}`}
+            >
               <Name>
                 {`${pipeline.routine?.name}`}&nbsp;
                 <b>#{pipeline.index}</b>
@@ -57,8 +59,15 @@ const PipelineItem = ({ pipeline }: ItemProps) => {
         <Content style={{ justifyContent: 'flex-end' }}>
           {pipeline.status === PIPELINE_STATUS.IN_PROGRESS && (
             <div style={{ marginRight: '1rem' }}>
-              <Link href={`/dashboard/${router.query.orgId}/projects/${router.query.pid}/routines/${pipeline.routinePipelineId}/devices`}>
-                <Button style={{ display: 'flex', alignItems: 'center' }} size="small" icon={<BsRecord2Fill style={{ color: 'red' }} />} type="primary">
+              <Link
+                href={`/dashboard/${router.query.orgId}/projects/${router.query.pid}/routines/${pipeline.routinePipelineId}/devices`}
+              >
+                <Button
+                  style={{ display: 'flex', alignItems: 'center' }}
+                  size="small"
+                  icon={<BsRecord2Fill style={{ color: 'red' }} />}
+                  type="primary"
+                >
                   &nbsp;Live
                 </Button>
               </Link>
@@ -96,7 +105,9 @@ const PipelineListController = ({ organizationId, projectId, hideEmpty }: Props)
   const routine = router.query.routine;
   const { status } = usePipelineFilterStore((state) => state.filterValue);
   const { data, isLoading, error, mutate } = useSWR<PageBase<RoutinePipelineBase>>(
-    `/organizations/${organizationId}/projects/${projectId}/pipelines?routine=${routine ?? ''}&status=${status.join()}&page=${Number(page) || 1}&offset=10`,
+    `/organizations/${organizationId}/projects/${projectId}/pipelines?routine=${
+      routine ?? ''
+    }&status=${status.join()}&page=${Number(page) || 1}&offset=10`,
     swrAuthFetcher,
   );
 
@@ -110,7 +121,12 @@ const PipelineListController = ({ organizationId, projectId, hideEmpty }: Props)
 
   if (!data || error) {
     if (error) {
-      return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find pipelines information'} />;
+      return (
+        <ErrorBox
+          title="Something went wrong"
+          desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find pipelines information'}
+        />
+      );
     }
 
     return null;
@@ -152,7 +168,10 @@ const PipelineListController = ({ organizationId, projectId, hideEmpty }: Props)
                 !hideEmpty && (
                   <Trans
                     i18nKey="routine:pipelineEmptyDescription"
-                    components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/project/routine" target="_blank" /> }}
+                    components={{
+                      br: <br />,
+                      link: <Link href="https://docs.dogutech.io/management/project/routine" target="_blank" />,
+                    }}
                   />
                 )
               }

@@ -32,9 +32,14 @@ const JobSummaryPage: NextPageWithLayout<ProjectServerSideProps> = ({ organizati
     isLoading: isJobLoading,
     error: jobError,
     mutate,
-  } = useSWR<RoutineJobBase>(`/organizations/${organization.organizationId}/projects/${project.projectId}/pipelines/${pipelineId}/jobs/${jobId}`, swrAuthFetcher);
+  } = useSWR<RoutineJobBase>(
+    `/organizations/${organization.organizationId}/projects/${project.projectId}/pipelines/${pipelineId}/jobs/${jobId}`,
+    swrAuthFetcher,
+  );
   const { t } = useTranslation();
-  const liveJob = useLivePipelineStore((state) => state.pipeline?.routineJobs?.find((item) => item.routineJobId === jobId));
+  const liveJob = useLivePipelineStore(
+    (state) => state.pipeline?.routineJobs?.find((item) => item.routineJobId === jobId),
+  );
 
   if (isNaN(pipelineId) || isNaN(jobId)) {
     return <ErrorBox title="Something went wrong" desc="Invalid Pipeline ID or job ID" />;
@@ -49,7 +54,12 @@ const JobSummaryPage: NextPageWithLayout<ProjectServerSideProps> = ({ organizati
   }
 
   if (!job || jobError) {
-    return <ErrorBox title="Something went wrong" desc={isAxiosError(jobError) ? getErrorMessageFromAxios(jobError) : 'Cannot get job information'} />;
+    return (
+      <ErrorBox
+        title="Something went wrong"
+        desc={isAxiosError(jobError) ? getErrorMessageFromAxios(jobError) : 'Cannot get job information'}
+      />
+    );
   }
 
   const data = liveJob || job;
@@ -78,21 +88,31 @@ const JobSummaryPage: NextPageWithLayout<ProjectServerSideProps> = ({ organizati
                   <StatisticContent>
                     <CheckCircleOutlined style={{ color: 'green', marginRight: '.25rem' }} />
                     {successJobCount ?? 0}&nbsp;
-                    {successJobCount !== undefined && (successJobCount > 1 ? t('routine:deviceJobSuccessPlurarText') : t('routine:deviceJobSuccessSingularText'))}
+                    {successJobCount !== undefined &&
+                      (successJobCount > 1
+                        ? t('routine:deviceJobSuccessPlurarText')
+                        : t('routine:deviceJobSuccessSingularText'))}
                     &nbsp;
                     {`(${(((successJobCount ?? 0) / data.routineDeviceJobs.length) * 100).toFixed()}%)`}
                   </StatisticContent>
                   <StatisticContent>
                     <ExclamationCircleOutlined style={{ color: 'red', marginRight: '.25rem' }} />
                     {failedJobCount ?? 0}&nbsp;
-                    {successJobCount !== undefined && (successJobCount > 1 ? t('routine:deviceJobFailurePlularText') : t('routine:deviceJobFailureSingularText'))}
+                    {successJobCount !== undefined &&
+                      (successJobCount > 1
+                        ? t('routine:deviceJobFailurePlularText')
+                        : t('routine:deviceJobFailureSingularText'))}
                     &nbsp;
                     {`(${(((failedJobCount ?? 0) / data.routineDeviceJobs.length) * 100).toFixed(1)}%)`}
                   </StatisticContent>
                 </Statistics>
               )}
               <FieldTimeOutlined style={{ marginRight: '.25rem' }} />
-              <PipelineRuntime status={data.status} startedAt={data.inProgressAt && new Date(data.inProgressAt)} endedAt={data.completedAt && new Date(data.completedAt)} />
+              <PipelineRuntime
+                status={data.status}
+                startedAt={data.inProgressAt && new Date(data.inProgressAt)}
+                endedAt={data.completedAt && new Date(data.completedAt)}
+              />
             </FlexRowBox>
           </JobBox>
         </div>
@@ -102,7 +122,12 @@ const JobSummaryPage: NextPageWithLayout<ProjectServerSideProps> = ({ organizati
           {isPipelineEmptyLogStatus(data.status) ? (
             <PipelineEmptyLog status={data.status} title={pipelineJobEmptyText[data.status] ?? 'Empty'} />
           ) : (
-            <DeviceJobListController orgId={organization.organizationId} projectId={project.projectId} pipelineId={pipelineId} jobId={jobId} />
+            <DeviceJobListController
+              orgId={organization.organizationId}
+              projectId={project.projectId}
+              pipelineId={pipelineId}
+              jobId={jobId}
+            />
           )}
         </DeviceJobBox>
       </div>

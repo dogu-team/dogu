@@ -16,11 +16,18 @@ const getPaginationQuery = (page: number, offset: number = 10) => {
   return sp.toString();
 };
 
-const usePaginationSWR = <D>(key: string | null, option?: PaginationSWROption, swrConfig?: SWRConfiguration<PageBase<D>>) => {
+const usePaginationSWR = <D>(
+  key: string | null,
+  option?: PaginationSWROption,
+  swrConfig?: SWRConfiguration<PageBase<D>>,
+) => {
   const [page, setPage] = useState(1);
   const [swrKey, setSWRKey] = useState<string | null>();
   const pageQuery = useMemo(() => getPaginationQuery(page, option?.offset), [page, option?.offset]);
-  const { data, error, mutate, isLoading, isValidating } = useSWR<PageBase<D>>(swrKey, swrAuthFetcher, { keepPreviousData: true, ...swrConfig });
+  const { data, error, mutate, isLoading, isValidating } = useSWR<PageBase<D>>(swrKey, swrAuthFetcher, {
+    keepPreviousData: true,
+    ...swrConfig,
+  });
 
   useEffect(() => {
     // NOTE: 키 변경 시 페이지 초기화

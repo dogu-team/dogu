@@ -14,7 +14,10 @@ interface Props extends Omit<SelectProps, 'options'> {
 }
 
 const WorkingDirectorySelector = ({ organizationId, projectId, ...props }: Props) => {
-  const { data, isLoading, error } = useSWR<string[]>(`/organizations/${organizationId}/projects/${projectId}/scm/cwds`, swrAuthFetcher);
+  const { data, isLoading, error } = useSWR<string[]>(
+    `/organizations/${organizationId}/projects/${projectId}/scm/cwds`,
+    swrAuthFetcher,
+  );
 
   const options: SelectProps['options'] = data?.map((item) => {
     return {

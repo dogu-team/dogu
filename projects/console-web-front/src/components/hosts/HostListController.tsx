@@ -15,7 +15,13 @@ import HostStateTag from './HostStateTag';
 import HostDetailModal from './HostDetailModal';
 import useRefresh from 'src/hooks/useRefresh';
 import useHostFilterStore from 'src/stores/host-filter';
-import { flexRowBaseStyle, flexRowSpaceBetweenStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
+import {
+  flexRowBaseStyle,
+  flexRowSpaceBetweenStyle,
+  listItemStyle,
+  tableCellStyle,
+  tableHeaderStyle,
+} from '../../styles/box';
 import useModal from '../../hooks/useModal';
 import { listActiveNameStyle } from '../../styles/text';
 import MenuButton from '../buttons/MenuButton';
@@ -29,7 +35,7 @@ import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from '../device/PlatformIcon';
 import TokenCopyInput from '../common/TokenCopyInput';
 import { menuItemButtonStyles } from '../../styles/button';
-import HostVesrsionBadge from '../../enterprise/components/host/HostVersionBadge';
+import HostVesrsionBadge from '../../../enterprise/components/host/HostVersionBadge';
 
 interface HostItemProps {
   host: HostBase;
@@ -125,7 +131,10 @@ const HostItem = ({ host }: HostItemProps) => {
                   message={
                     <Trans
                       i18nKey="device-farm:hostRevokeAfterDescription"
-                      components={{ br: <br />, link: <Link href="https://docs.dogutech.io/device-farm/host" target="_blank" /> }}
+                      components={{
+                        br: <br />,
+                        link: <Link href="https://docs.dogutech.io/device-farm/host" target="_blank" />,
+                      }}
                     />
                   }
                 />
@@ -133,7 +142,9 @@ const HostItem = ({ host }: HostItemProps) => {
                 <div style={{ marginTop: '1rem' }}>
                   <p>{t('device-farm:hostCreateModalTokenDescription')}</p>
                   <TokenCopyInput value={token} />
-                  <p style={{ fontSize: '.8rem', lineHeight: '1.4' }}>* {t('device-farm:hostCreateModalTokenCheckDescription')}</p>
+                  <p style={{ fontSize: '.8rem', lineHeight: '1.4' }}>
+                    * {t('device-farm:hostCreateModalTokenCheckDescription')}
+                  </p>
                 </div>
               </div>
             ) : (
@@ -276,7 +287,10 @@ const HostListController = () => {
   );
   const { t } = useTranslation();
 
-  useRefresh(['onHostCreated', 'onRefreshClicked', 'onHostUpdated', 'onHostDeleted', 'onHostDeviceStopped', 'onHostDeviceUsed'], () => mutate());
+  useRefresh(
+    ['onHostCreated', 'onRefreshClicked', 'onHostUpdated', 'onHostDeleted', 'onHostDeviceStopped', 'onHostDeviceUsed'],
+    () => mutate(),
+  );
 
   return (
     <>
@@ -315,8 +329,16 @@ const HostListController = () => {
                 <Trans
                   i18nKey="device-farm:hostEmptyDescription"
                   components={{
-                    tutorialLink: <Link href={`/dashboard/${router.query.orgId}/get-started`} style={{ whiteSpace: 'pre-wrap' }} />,
-                    link: <Link href="https://docs.dogutech.io/management/organization/device-farm/host-management" target="_blank" style={{ whiteSpace: 'pre-wrap' }} />,
+                    tutorialLink: (
+                      <Link href={`/dashboard/${router.query.orgId}/get-started`} style={{ whiteSpace: 'pre-wrap' }} />
+                    ),
+                    link: (
+                      <Link
+                        href="https://docs.dogutech.io/management/organization/device-farm/host-management"
+                        target="_blank"
+                        style={{ whiteSpace: 'pre-wrap' }}
+                      />
+                    ),
                     br: <br />,
                   }}
                 />

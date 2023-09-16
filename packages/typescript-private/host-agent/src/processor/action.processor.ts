@@ -1,7 +1,7 @@
 import { Action, ErrorResult } from '@dogu-private/console-host-agent';
 import { ActionContextEnv } from '@dogu-private/types';
 import { ActionConfigLoader } from '@dogu-tech/action-kit';
-import { EnvironmentVariableReplacementProvider, HostPaths } from '@dogu-tech/node';
+import { EnvironmentVariableReplacementProvider, GitCommand, GitCommandBuilder, HostPaths, isGitRepositoryPath, isSameRemoteOriginUrl } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import fs from 'fs';
 import path from 'path';
@@ -113,48 +113,76 @@ export class ActionProcessor {
 
   private async fetchGit(context: MessageContext, workspacePath: string, actionId: string, gitPath: string): Promise<PrepareResult> {
     const actionGitPath = HostPaths.deviceActionGitPath(workspacePath, actionId);
-    const dotGitPath = path.resolve(actionGitPath, '.git');
-    const stat = await fs.promises.stat(dotGitPath).catch(() => null);
-    const configArgs = ['-c', 'core.longpaths=true'];
+    const gitCommandBuilder = new GitCommandBuilder(gitPath, actionGitPath);
+    const url = `https://github.com/${actionId}.git`;
     const tag = getActionTagByRunType(env.DOGU_RUN_TYPE);
-    if (!stat) {
-      this.logger.verbose('action git path is not git repo', { actionGitPath });
-      this.logger.verbose('delete action git path', { actionGitPath });
+
+    if (!(await isGitRepositoryPath(actionGitPath))) {
+      this.logger.info('action git path is not git repo path. delete action git path.', { actionGitPath });
       await fs.promises.rm(actionGitPath, { recursive: true, force: true });
-      const url = `https://github.com/${actionId}.git`;
-      this.logger.verbose('action git clone', { url, actionGitPath });
-      const result = await this.commandProcessRegistry.command(gitPath, [...configArgs, 'clone', '--depth', '1', '--branch', tag, url, actionGitPath], {}, context);
-      if (result.value.code !== 0) {
-        return { error: result };
-      }
-    } else {
-      this.logger.verbose('action git path is git repo', { actionGitPath });
-      this.logger.verbose('action git reset', { actionGitPath });
-      const resetResult = await this.commandProcessRegistry.command(gitPath, [...configArgs, '-C', actionGitPath, 'reset', '--hard'], {}, context);
-      if (resetResult.value.code !== 0) {
-        return { error: resetResult };
-      }
-      this.logger.verbose('action git clean', { actionGitPath });
-      const cleanResult = await this.commandProcessRegistry.command(gitPath, [...configArgs, '-C', actionGitPath, 'clean', '-fdx'], {}, context);
-      if (cleanResult.value.code !== 0) {
-        return { error: cleanResult };
-      }
-      this.logger.verbose('action git fetch', { actionGitPath });
-      const fetchResult = await this.commandProcessRegistry.command(gitPath, [...configArgs, '-C', actionGitPath, 'fetch', 'origin', tag], {}, context);
-      if (fetchResult.value.code !== 0) {
-        return { error: fetchResult };
-      }
-      this.logger.verbose('action git checkout', { actionGitPath });
-      const checkoutResult = await this.commandProcessRegistry.command(gitPath, [...configArgs, '-C', actionGitPath, 'checkout', tag], {}, context);
-      if (checkoutResult.value.code !== 0) {
-        return { error: checkoutResult };
-      }
-      this.logger.verbose('action git pull', { actionGitPath });
-      const pullResult = await this.commandProcessRegistry.command(gitPath, [...configArgs, '-C', actionGitPath, 'pull'], {}, context);
-      if (pullResult.value.code !== 0) {
-        return { error: pullResult };
+
+      this.logger.info('action git clone', { url, actionGitPath });
+      const cloneCommand = await gitCommandBuilder.clone({
+        url,
+      });
+      const errorResult = await this.runGitCommand(cloneCommand, context);
+      if (errorResult.value.code !== 0) {
+        return { error: errorResult };
       }
     }
+
+    if (!(await isSameRemoteOriginUrl(gitPath, actionGitPath, url))) {
+      this.logger.info('action git path is not same remote origin url. delete action git path.', { actionGitPath });
+      await fs.promises.rm(actionGitPath, { recursive: true, force: true });
+
+      this.logger.info('action git clone', { url, actionGitPath });
+      const cloneCommand = await gitCommandBuilder.clone({
+        url,
+      });
+      const errorResult = await this.runGitCommand(cloneCommand, context);
+      if (errorResult.value.code !== 0) {
+        return { error: errorResult };
+      }
+    }
+
+    {
+      this.logger.info('action git reset', { actionGitPath });
+      const gitCommand = await gitCommandBuilder.reset();
+      const errorResult = await this.runGitCommand(gitCommand, context);
+      if (errorResult.value.code !== 0) {
+        return { error: errorResult };
+      }
+    }
+
+    {
+      this.logger.info('action git clean', { actionGitPath });
+      const gitCommand = await gitCommandBuilder.clean();
+      const errorResult = await this.runGitCommand(gitCommand, context);
+      if (errorResult.value.code !== 0) {
+        return { error: errorResult };
+      }
+    }
+
+    {
+      this.logger.info('action git fetch', { actionGitPath });
+      const gitCommand = await gitCommandBuilder.fetch();
+      const errorResult = await this.runGitCommand(gitCommand, context);
+      if (errorResult.value.code !== 0) {
+        return { error: errorResult };
+      }
+    }
+
+    {
+      this.logger.info('action git checkout', { tag, actionGitPath });
+      const gitCommand = await gitCommandBuilder.checkout({
+        tag,
+      });
+      const errorResult = await this.runGitCommand(gitCommand, context);
+      if (errorResult.value.code !== 0) {
+        return { error: errorResult };
+      }
+    }
+
     return { actionGitPath };
   }
 
@@ -237,5 +265,10 @@ export class ActionProcessor {
       },
       context,
     );
+  }
+
+  private async runGitCommand(gitCommand: GitCommand, context: MessageContext): Promise<ErrorResult> {
+    const { executablePath, env, args } = gitCommand;
+    return await this.commandProcessRegistry.command(executablePath, args, { env }, context);
   }
 }

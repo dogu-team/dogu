@@ -46,8 +46,15 @@ export default class MyDocument extends Document {
           <meta charSet="utf-8" />
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
-          <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
-          <Script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_DOGU_GA_ID}`} strategy="beforeInteractive" />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@700&family=Noto+Sans+KR:wght@400;500;700&display=swap"
+            rel="stylesheet"
+          />
+          <Script
+            async
+            src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_DOGU_GA_ID}`}
+            strategy="beforeInteractive"
+          />
           <Script
             id="gtag"
             async

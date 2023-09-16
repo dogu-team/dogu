@@ -5,7 +5,12 @@ import useTranslation from 'next-translate/useTranslation';
 
 import useTutorialContext from '../../../hooks/context/useTutorialContext';
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
-import { ROUTINE_SAMPLE_GIT_URL, TutorialSupportLanguage, TutorialSupportSdk, TutorialSupportTarget } from '../../../resources/tutorials';
+import {
+  ROUTINE_SAMPLE_GIT_URL,
+  TutorialSupportLanguage,
+  TutorialSupportSdk,
+  TutorialSupportTarget,
+} from '../../../resources/tutorials';
 import { appiumRoutineTutorialData, routineTutorialSdkSupportInfo } from '../../../resources/tutorials/routine';
 import { flexRowSpaceBetweenStyle } from '../../../styles/box';
 import RefreshButton from '../../buttons/RefreshButton';
@@ -54,9 +59,15 @@ const AppiumRoutineTutorial = () => {
     defaultPlatform: routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].defaultOptions.platform,
     defaultTarget: getProjectTypeDefaultTarget(),
   });
-  const selectedGuide = appiumRoutineTutorialData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const frameworkLanguage = Object.keys(routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang).find((language) =>
-    routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
+  const selectedGuide = appiumRoutineTutorialData.guides.find(
+    (data) => data.framework === framework && data.target === target && data.platform === platform,
+  );
+  const frameworkLanguage = Object.keys(
+    routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang,
+  ).find((language) =>
+    routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[
+      language as TutorialSupportLanguage
+    ]?.includes(framework),
   );
 
   const APP_ROUTINE_SAMPLE = `name: sample-routine
@@ -69,7 +80,7 @@ jobs:
     runs-on:
       group:
         - android
-    appVersion:
+    appPackageName:
     record: true
     steps:
       - name: run test
@@ -129,7 +140,14 @@ jobs:
                 id: INTEGRATE_WITH_GIT_ID,
                 title: t('routineTutorialGitIntegrationAnchorTitle'),
               },
-              ...(target === TutorialSupportTarget.APP ? [{ id: UPLOAD_SAMPLE_APP_ID, title: t('routineTutorialUploadSampleAppAnchorTitle') }] : []),
+              ...(target === TutorialSupportTarget.APP
+                ? [
+                    {
+                      id: UPLOAD_SAMPLE_APP_ID,
+                      title: t('routineTutorialUploadSampleAppAnchorTitle'),
+                    },
+                  ]
+                : []),
               { id: CREATE_ROUTINE_ID, title: t('routineTutorialCreateRoutineAnchorTitle') },
               { id: RUN_ROUTINE_ID, title: t('routineTutorialRunRoutineAnchorTitle') },
               { id: DONE_ID, title: t('doneStepTitle') },
@@ -188,7 +206,10 @@ jobs:
             description={<p>{t('routineTutorialCreateRoutineDescription')}</p>}
             content={
               <div style={{ marginTop: '1rem' }}>
-                <TutorialRoutineCreator project={project} sampleYaml={target === TutorialSupportTarget.APP ? APP_ROUTINE_SAMPLE : WEB_ROUTINE_SAMPLE} />
+                <TutorialRoutineCreator
+                  project={project}
+                  sampleYaml={target === TutorialSupportTarget.APP ? APP_ROUTINE_SAMPLE : WEB_ROUTINE_SAMPLE}
+                />
               </div>
             }
           />
@@ -204,7 +225,13 @@ jobs:
                     <RefreshButton />
                   </FlexSpaceBetween>
                 }
-                table={<PipelineListController organizationId={project.organizationId} projectId={project.projectId} hideEmpty />}
+                table={
+                  <PipelineListController
+                    organizationId={project.organizationId}
+                    projectId={project.projectId}
+                    hideEmpty
+                  />
+                }
               />
             }
           />

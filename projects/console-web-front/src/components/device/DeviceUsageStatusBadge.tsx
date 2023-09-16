@@ -8,7 +8,10 @@ interface Props {
 }
 
 const DeviceUsageStatusBadge = ({ device }: Props) => {
-  if (device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED || device.connectionState === DeviceConnectionState.UNRECOGNIZED) {
+  if (
+    device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_DISCONNECTED ||
+    device.connectionState === DeviceConnectionState.UNRECOGNIZED
+  ) {
     return (
       <Box style={{ backgroundColor: '#bbbbbb33' }}>
         <Text style={{ color: '#bbbbbb' }}>Unknown</Text>
@@ -32,7 +35,11 @@ const DeviceUsageStatusBadge = ({ device }: Props) => {
     );
   }
 
-  if (device.routineDeviceJobs.filter((job) => job.status === PIPELINE_STATUS.IN_PROGRESS || job.status === PIPELINE_STATUS.CANCEL_REQUESTED).length > 0) {
+  if (
+    device.routineDeviceJobs.filter(
+      (job) => job.status === PIPELINE_STATUS.IN_PROGRESS || job.status === PIPELINE_STATUS.CANCEL_REQUESTED,
+    ).length > 0
+  ) {
     return (
       <Box style={{ backgroundColor: '#6499f533' }}>
         <Text style={{ color: '#6499f5' }}>Running</Text>
@@ -42,7 +49,9 @@ const DeviceUsageStatusBadge = ({ device }: Props) => {
 
   return (
     <Box style={{ backgroundColor: '#fcba0333' }}>
-      <Text style={{ color: '#fcba03' }}>{`Waiting (${device.routineDeviceJobs.filter((job) => job.status === PIPELINE_STATUS.WAITING).length})`}</Text>
+      <Text style={{ color: '#fcba03' }}>{`Waiting (${
+        device.routineDeviceJobs.filter((job) => job.status === PIPELINE_STATUS.WAITING).length
+      })`}</Text>
     </Box>
   );
 };

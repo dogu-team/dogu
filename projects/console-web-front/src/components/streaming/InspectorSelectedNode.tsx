@@ -9,7 +9,8 @@ interface Props {
 const InspectorSelectedNode = ({ nodeInfo }: Props) => {
   const pathValue = nodeInfo.node.attributes.path;
   const splited = pathValue?.split('/');
-  const displayedPath = !!splited && splited.length > 5 ? splited.slice(0, 4).join('/') + '/.../' + splited[splited.length - 1] : pathValue;
+  const displayedPath =
+    !!splited && splited.length > 5 ? splited.slice(0, 4).join('/') + '/.../' + splited[splited.length - 1] : pathValue;
 
   return (
     <Tooltip
@@ -30,7 +31,14 @@ const InspectorSelectedNode = ({ nodeInfo }: Props) => {
       overlayStyle={{ fontSize: '.6rem' }}
       overlayInnerStyle={{ padding: '4px' }}
     >
-      <Box style={{ top: `${nodeInfo.position.y}px`, left: `${nodeInfo.position.x}px`, width: `${nodeInfo.position.width}px`, height: `${nodeInfo.position.height}px` }} />
+      <Box
+        style={{
+          top: `${nodeInfo.position.y}px`,
+          left: `${nodeInfo.position.x}px`,
+          width: `${nodeInfo.position.width}px`,
+          height: `${nodeInfo.position.height}px`,
+        }}
+      />
     </Tooltip>
   );
 };

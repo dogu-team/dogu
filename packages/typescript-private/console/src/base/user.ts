@@ -49,6 +49,7 @@ export interface UserBaseTraits {
   name: string;
   profileImageUrl: string | null;
   isTutorialCompleted: number;
+  isRoot: boolean;
   lastChangeLogSeenAt: Date | null;
   lastAccessedAt: Date | null;
   createdAt: Date;

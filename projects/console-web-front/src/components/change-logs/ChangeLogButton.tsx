@@ -20,7 +20,9 @@ interface Props {
 const ChangeLogButton = ({ me, mutateMe }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [hasNewLogs, setHasNewLogs] = useState(false);
-  const { data, isLoading, error, mutate } = useSWR<ChangeLogBase[]>(`/change-logs`, swrAuthFetcher, { revalidateOnFocus: false });
+  const { data, isLoading, error, mutate } = useSWR<ChangeLogBase[]>(`/change-logs`, swrAuthFetcher, {
+    revalidateOnFocus: false,
+  });
 
   useRefresh(['onChangeLogReactionUpdated'], () => mutate());
 

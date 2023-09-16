@@ -1,5 +1,16 @@
 import { useCallback } from 'react';
-import { Area, CartesianGrid, ComposedChart, Legend, Line, ResponsiveContainer, Tooltip, TooltipProps, XAxis, YAxis } from 'recharts';
+import {
+  Area,
+  CartesianGrid,
+  ComposedChart,
+  Legend,
+  Line,
+  ResponsiveContainer,
+  Tooltip,
+  TooltipProps,
+  XAxis,
+  YAxis,
+} from 'recharts';
 import styled from 'styled-components';
 
 import { RuntimeInfoGraphBaseProps } from '../../types/graph';
@@ -32,12 +43,47 @@ const CpuUsageGraph = ({ data, empty, durationTicks, durationTicksFormatter }: P
             tickFormatter={durationTicksFormatter}
           />
           <YAxis domain={[0, 100]} unit="%" />
-          <Area type="monotone" dataKey="system" name="System" stackId="1" isAnimationActive={false} stroke="#8884d8" fill="#8884d8" unit="%" />
-          <Area type="monotone" dataKey="user" name="User" stackId="1" isAnimationActive={false} stroke="#82ca9d" fill="#82ca9d" unit="%" />
-          <Line type="monotone" dataKey="foreground" name="Foregroud" isAnimationActive={false} stroke="#0000ff" unit="%" dot={false} />
-          <Line type="monotone" dataKey="foregroundProcName" isAnimationActive={false} stroke="none" dot={false} legendType="none" />
+          <Area
+            type="monotone"
+            dataKey="system"
+            name="System"
+            stackId="1"
+            isAnimationActive={false}
+            stroke="#8884d8"
+            fill="#8884d8"
+            unit="%"
+          />
+          <Area
+            type="monotone"
+            dataKey="user"
+            name="User"
+            stackId="1"
+            isAnimationActive={false}
+            stroke="#82ca9d"
+            fill="#82ca9d"
+            unit="%"
+          />
+          <Line
+            type="monotone"
+            dataKey="foreground"
+            name="Foregroud"
+            isAnimationActive={false}
+            stroke="#0000ff"
+            unit="%"
+            dot={false}
+          />
+          <Line
+            type="monotone"
+            dataKey="foregroundProcName"
+            isAnimationActive={false}
+            stroke="none"
+            dot={false}
+            legendType="none"
+          />
           <Legend />
-          <Tooltip content={<DeviceRuntimeInfoTooltip isDurationTicks={!!durationTicks} getTotal={getTotal} totalUnit="%" />} />
+          <Tooltip
+            content={<DeviceRuntimeInfoTooltip isDurationTicks={!!durationTicks} getTotal={getTotal} totalUnit="%" />}
+          />
         </ComposedChart>
       </ResponsiveContainer>
 

@@ -34,7 +34,12 @@ const InviteSigninPage: NextPageWithLayout<Props> = ({ email, token, invitation 
       <Box>
         <FlexColumnCentered>
           <div>
-            <ProfileImage profileImageUrl={invitation.organization?.profileImageUrl} name={invitation.organization?.name} shape="square" size={48} />
+            <ProfileImage
+              profileImageUrl={invitation.organization?.profileImageUrl}
+              name={invitation.organization?.name}
+              shape="square"
+              size={48}
+            />
           </div>
           <StyledTitle>
             You&apos;re invited to join <b>{invitation.organization?.name}</b> organization
@@ -42,12 +47,19 @@ const InviteSigninPage: NextPageWithLayout<Props> = ({ email, token, invitation 
         </FlexColumnCentered>
 
         <FormBox>
-          <InviteSignInForm token={token} organizationId={invitation.organization?.organizationId ?? (router.query.organizationId as OrganizationId)} />
+          <InviteSignInForm
+            token={token}
+            organizationId={invitation.organization?.organizationId ?? (router.query.organizationId as OrganizationId)}
+          />
           {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && (
             <SocialSignInForm
               onClickButton={() => {
                 const cookies = new Cookies();
-                cookies.set('redirectUrl', `/auth/invite-confirm?email=${email}&organizationId=${invitation.organizationId}&token=${token}`, { path: '/' });
+                cookies.set(
+                  'redirectUrl',
+                  `/auth/invite-confirm?email=${email}&organizationId=${invitation.organizationId}&token=${token}`,
+                  { path: '/' },
+                );
               }}
             />
           )}
@@ -57,7 +69,9 @@ const InviteSigninPage: NextPageWithLayout<Props> = ({ email, token, invitation 
           <FlexBox>
             <StyledLink href="/signin/forgot">{t('registery:signInForgotPasswordLinkText')}</StyledLink>
             <p>&nbsp;{t('registery:orText')}&nbsp;</p>
-            <StyledLink href={{ pathname: '/signup/invite', query: router.query }}>{t('registery:signInSignUpLinkText')}</StyledLink>
+            <StyledLink href={{ pathname: '/signup/invite', query: router.query }}>
+              {t('registery:signInSignUpLinkText')}
+            </StyledLink>
           </FlexBox>
         </LinkWrapper>
       </Box>

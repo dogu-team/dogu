@@ -19,7 +19,15 @@ interface Props {
   onLeaveNode: () => void;
 }
 
-const InspectorUITree = ({ isInspecting, treeData, inspectingNode, selectedNode, onClickNode, onHoverNode, onLeaveNode }: Props) => {
+const InspectorUITree = ({
+  isInspecting,
+  treeData,
+  inspectingNode,
+  selectedNode,
+  onClickNode,
+  onHoverNode,
+  onLeaveNode,
+}: Props) => {
   const [expandedKeys, setExpandedKeys] = useState<Key[]>([]);
   const [autoExpandedParents, setAutoExpandedParents] = useState(true);
   const [treeWidth, setTreeWidth] = useState<number>();
@@ -71,7 +79,15 @@ const InspectorUITree = ({ isInspecting, treeData, inspectingNode, selectedNode,
               description={
                 <Trans
                   i18nKey="device-streaming:inspectorEmptyTreeText"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/device-farm/device/streaming-and-remote-control/ui-inspector" target="_blank" /> }}
+                  components={{
+                    br: <br />,
+                    link: (
+                      <Link
+                        href="https://docs.dogutech.io/device-farm/device/streaming-and-remote-control/ui-inspector"
+                        target="_blank"
+                      />
+                    ),
+                  }}
                 />
               }
             />

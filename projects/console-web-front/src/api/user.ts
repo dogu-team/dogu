@@ -1,4 +1,11 @@
-import { ResetPasswordDtoBase, UpdateLastOrganizationDtoBase, UpdateTutorialDtoBase, UpdateUserDtoBase, UpdateUserEmailPreferenceDtoBase, UserBase } from '@dogu-private/console';
+import {
+  ResetPasswordDtoBase,
+  UpdateLastOrganizationDtoBase,
+  UpdateTutorialDtoBase,
+  UpdateUserDtoBase,
+  UpdateUserEmailPreferenceDtoBase,
+  UserBase,
+} from '@dogu-private/console';
 import { OrganizationId, UserId } from '@dogu-private/types';
 import { AxiosProgressEvent } from 'axios';
 import { GetServerSidePropsContext } from 'next';
@@ -61,7 +68,9 @@ export const getUserById = async (userId: UserId) => {
 export const getUserByIdInServerSide = async (context: GetServerSidePropsContext) => {
   const { authToken, userId } = getServersideCookies(context.req.cookies);
 
-  const response = await api.get<UserBase>(`/users/${userId}`, { headers: { Authorization: `Bearer ${authToken}` } });
+  const response = await api.get<UserBase>(`/users/${userId}`, {
+    headers: { Authorization: `Bearer ${authToken}` },
+  });
   setCookiesInServerSide(response, context);
 
   return response.data;

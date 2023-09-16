@@ -56,7 +56,14 @@ const AddMemberModal = ({ isOpen, close, organizationId, projectId }: Props) => 
   };
 
   return (
-    <Modal open={isOpen} centered destroyOnClose onCancel={handleClose} footer={null} title={t('project-member:addProjectOrgMemberModalTitle')}>
+    <Modal
+      open={isOpen}
+      centered
+      destroyOnClose
+      onCancel={handleClose}
+      footer={null}
+      title={t('project-member:addProjectOrgMemberModalTitle')}
+    >
       <PermissionSelectContentBox<UserBase>
         input={
           <Input.Search

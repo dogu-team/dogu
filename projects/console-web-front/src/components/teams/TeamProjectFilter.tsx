@@ -15,7 +15,11 @@ const TeamProjectFilter = () => {
 
   return (
     <Box>
-      <KeywordSearchInput placeholder={t('team:projectFilterInputPlaceholder')} onDebouncedChange={handleUpdateProjectFilter} onMount={resetFilter} />
+      <KeywordSearchInput
+        placeholder={t('team:projectFilterInputPlaceholder')}
+        onDebouncedChange={handleUpdateProjectFilter}
+        onMount={resetFilter}
+      />
     </Box>
   );
 };

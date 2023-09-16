@@ -1,4 +1,10 @@
-import { ProjectBase, PageBase, MemberAndRoleGroupBase, instanceOfTeamAndRoleGroupBase, instanceOfUserAndRoleGroupBase } from '@dogu-private/console';
+import {
+  ProjectBase,
+  PageBase,
+  MemberAndRoleGroupBase,
+  instanceOfTeamAndRoleGroupBase,
+  instanceOfUserAndRoleGroupBase,
+} from '@dogu-private/console';
 import { OrganizationId, ProjectId, ProjectRoleId } from '@dogu-private/types';
 import { List, MenuProps } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
@@ -10,7 +16,12 @@ import styled from 'styled-components';
 import { KeyedMutator } from 'swr';
 import { TeamOutlined } from '@ant-design/icons';
 
-import { removeTeamFromProject, removeUserFromProject, updateTeamInProject, updateUserInProject } from 'src/api/project';
+import {
+  removeTeamFromProject,
+  removeUserFromProject,
+  updateTeamInProject,
+  updateUserInProject,
+} from 'src/api/project';
 import usePaginationSWR from 'src/hooks/usePaginationSWR';
 import useRefresh from 'src/hooks/useRefresh';
 import useAuthStore from 'src/stores/auth';
@@ -50,7 +61,11 @@ const MemberItem = ({ item, projectId, mutateMembers }: MemberItemProps) => {
         mutateMembers();
       } catch (e) {
         if (e instanceof AxiosError) {
-          sendErrorNotification(t('project-member:updateMemberPermissionFailureMsg', { reason: getErrorMessageFromAxios(e) }));
+          sendErrorNotification(
+            t('project-member:updateMemberPermissionFailureMsg', {
+              reason: getErrorMessageFromAxios(e),
+            }),
+          );
         }
         onError();
       }
@@ -101,13 +116,26 @@ const MemberItem = ({ item, projectId, mutateMembers }: MemberItemProps) => {
           {instanceOfTeamAndRoleGroupBase(item) ? (
             <StyledTeamLink href={`/dashboard/${orgId}/teams/${item.teamId}/members`}>{item.team?.name}</StyledTeamLink>
           ) : (
-            <ProfileImageWithName profileImage={<ProfileImage size={32} name={item.user?.name} profileImageUrl={item.user?.profileImageUrl} />} name={item.user?.name} />
+            <ProfileImageWithName
+              profileImage={
+                <ProfileImage size={32} name={item.user?.name} profileImageUrl={item.user?.profileImageUrl} />
+              }
+              name={item.user?.name}
+            />
           )}
         </NameCell>
         {/* TODO */}
-        <OneSpanCell>{instanceOfTeamAndRoleGroupBase(item) ? t('project-member:teamMemberType') : t('project-member:orgMemberType')}</OneSpanCell>
+        <OneSpanCell>
+          {instanceOfTeamAndRoleGroupBase(item)
+            ? t('project-member:teamMemberType')
+            : t('project-member:orgMemberType')}
+        </OneSpanCell>
         <PermissionCell>
-          <PermissionSelector defaultRoleId={item.projectRole?.projectRoleId} organizationId={orgId} onSelectRole={handleSelectRole} />
+          <PermissionSelector
+            defaultRoleId={item.projectRole?.projectRoleId}
+            organizationId={orgId}
+            onSelectRole={handleSelectRole}
+          />
         </PermissionCell>
         <MenuCell>
           <FlexEndBox>
@@ -134,7 +162,10 @@ const ProjectMemberListController = ({ project }: Props) => {
     page,
     updatePage,
     isLoading,
-  } = usePaginationSWR<MemberAndRoleGroupBase>(`/organizations/${organizationId}/projects/${project.projectId}/members?keyword=${keyword}`, { skipQuestionMark: true });
+  } = usePaginationSWR<MemberAndRoleGroupBase>(
+    `/organizations/${organizationId}/projects/${project.projectId}/members?keyword=${keyword}`,
+    { skipQuestionMark: true },
+  );
   const { me } = useAuthStore();
   const { t } = useTranslation();
 
@@ -175,7 +206,10 @@ const ProjectMemberListController = ({ project }: Props) => {
               description={
                 <Trans
                   i18nKey="project-member:projectMemberEmptyDescription"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/project/member" target="_blank" /> }}
+                  components={{
+                    br: <br />,
+                    link: <Link href="https://docs.dogutech.io/management/project/member" target="_blank" />,
+                  }}
                 />
               }
             />

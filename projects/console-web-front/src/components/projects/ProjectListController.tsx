@@ -43,7 +43,9 @@ const ProjectItem = ({ project }: ProjectItemProps) => {
     <Item>
       <ItemInner>
         <TwoSpan>
-          <StyledLink href={`/dashboard/${project.organizationId}/projects/${project.projectId}/remotes`}>{project.name}</StyledLink>
+          <StyledLink href={`/dashboard/${project.organizationId}/projects/${project.projectId}/remotes`}>
+            {project.name}
+          </StyledLink>
         </TwoSpan>
         <OneSpan>
           <FlexRow>
@@ -56,8 +58,15 @@ const ProjectItem = ({ project }: ProjectItemProps) => {
             {project.members?.map((item) => {
               if (instanceOfUserBase(item)) {
                 return (
-                  <Tooltip key={`project-${project.projectId}-member-${(item as UserBase).userId}`} title={(item as UserBase).name}>
-                    <ProfileImage size={32} name={(item as UserBase).name} profileImageUrl={(item as UserBase).profileImageUrl} />
+                  <Tooltip
+                    key={`project-${project.projectId}-member-${(item as UserBase).userId}`}
+                    title={(item as UserBase).name}
+                  >
+                    <ProfileImage
+                      size={32}
+                      name={(item as UserBase).name}
+                      profileImageUrl={(item as UserBase).profileImageUrl}
+                    />
                   </Tooltip>
                 );
               }
@@ -65,7 +74,9 @@ const ProjectItem = ({ project }: ProjectItemProps) => {
               return (
                 <Tooltip
                   key={`project-${project.projectId}-member-${(item as TeamBase).teamId}`}
-                  title={t('organization:projectTeamMemberTooltipTitle', { name: (item as TeamBase).name })}
+                  title={t('organization:projectTeamMemberTooltipTitle', {
+                    name: (item as TeamBase).name,
+                  })}
                 >
                   <ProfileImage size={32} name={(item as TeamBase).name} profileImageUrl={null} />
                 </Tooltip>
@@ -91,7 +102,9 @@ interface Props {
 
 const ProjectListController = ({ organizationId }: Props) => {
   const router = useRouter();
-  const { data, isLoading, error, mutate, page, updatePage } = usePaginationSWR<ProjectBase>(`/organizations/${organizationId}/projects`);
+  const { data, isLoading, error, mutate, page, updatePage } = usePaginationSWR<ProjectBase>(
+    `/organizations/${organizationId}/projects`,
+  );
   const { t } = useTranslation();
 
   useRefresh(['onProjectCreated', 'onRefreshClicked'], () => mutate());
@@ -116,7 +129,13 @@ const ProjectListController = ({ organizationId }: Props) => {
         renderItem={(item) => <ProjectItem project={item} />}
         loading={isLoading}
         rowKey={(item) => item.projectId}
-        pagination={{ defaultCurrent: 1, current: page, pageSize: 10, total: data?.totalCount, onChange: (page, pageSize) => updatePage(page) }}
+        pagination={{
+          defaultCurrent: 1,
+          current: page,
+          pageSize: 10,
+          total: data?.totalCount,
+          onChange: (page, pageSize) => updatePage(page),
+        }}
         locale={{
           emptyText: (
             <ListEmpty

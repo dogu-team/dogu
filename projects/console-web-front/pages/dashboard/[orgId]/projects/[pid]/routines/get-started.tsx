@@ -33,13 +33,18 @@ interface ServerSideProps {
 
 const ProjectRoutineGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ project, organization, me }) => {
   const router = useRouter();
-  const { data, mutate } = useSWR<ProjectBase>(`/organizations/${organization.organizationId}/projects/${project.projectId}`, swrAuthFetcher, {
-    revalidateOnFocus: false,
-    fallbackData: project,
-  });
+  const { data, mutate } = useSWR<ProjectBase>(
+    `/organizations/${organization.organizationId}/projects/${project.projectId}`,
+    swrAuthFetcher,
+    {
+      revalidateOnFocus: false,
+      fallbackData: project,
+    },
+  );
   const { t } = useTranslation('tutorial');
   const sdk = router.query.sdk as TutorialSupportSdk | undefined;
-  const isFrameworkSelected = !!sdk && Object.keys(routineTutorialData).includes(router.query.sdk as string) && !!router.query.framework;
+  const isFrameworkSelected =
+    !!sdk && Object.keys(routineTutorialData).includes(router.query.sdk as string) && !!router.query.framework;
 
   useRefresh(['onProjectScmUpdated'], () => mutate());
 
@@ -91,7 +96,10 @@ const ProjectRoutineGetStartedPage: NextPageWithLayout<ServerSideProps> = ({ pro
         <CenteredBox>
           <RoutineFrameworkSelectContainer
             skipButton={
-              <Link href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/routines`} access-id="skip-project-tutorial">
+              <Link
+                href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/routines`}
+                access-id="skip-project-tutorial"
+              >
                 <Button type="link">{t('skipTutorialLinkTitle')}</Button>
               </Link>
             }
@@ -107,7 +115,11 @@ ProjectRoutineGetStartedPage.getLayout = (page) => {
 };
 
 export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (context) => {
-  const [organization, checkResult, project] = await Promise.all([getOrganizationInServerSide(context), checkUserVerifiedInServerSide(context), getProjectInServerSide(context)]);
+  const [organization, checkResult, project] = await Promise.all([
+    getOrganizationInServerSide(context),
+    checkUserVerifiedInServerSide(context),
+    getProjectInServerSide(context),
+  ]);
 
   if (checkResult.redirect) {
     return checkResult;

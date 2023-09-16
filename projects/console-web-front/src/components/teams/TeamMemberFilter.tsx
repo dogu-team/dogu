@@ -19,7 +19,11 @@ const TeamMemberFilter = () => {
 
   return (
     <Box>
-      <KeywordSearchInput placeholder={t('team:memberFilterInputPlaceholder')} onDebouncedChange={handleUpdateUserFilter} onMount={resetFilter} />
+      <KeywordSearchInput
+        placeholder={t('team:memberFilterInputPlaceholder')}
+        onDebouncedChange={handleUpdateUserFilter}
+        onMount={resetFilter}
+      />
     </Box>
   );
 };

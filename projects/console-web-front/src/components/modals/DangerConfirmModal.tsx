@@ -1,4 +1,5 @@
 import { Button, ButtonProps, Modal, ModalProps } from 'antd';
+import React from 'react';
 import styled from 'styled-components';
 
 interface Props extends ModalProps {
@@ -17,8 +18,15 @@ export const DangerConfirmModal = ({ buttonTitle, children, buttonProps, ...prop
           props.footer
         ) : (
           <div>
-            {/* @ts-ignore */}
-            <Button {...buttonProps} danger type="primary" style={{ width: '100%' }} onClick={props.onOk} loading={props.confirmLoading}>
+            <Button
+              {...buttonProps}
+              danger
+              type="primary"
+              style={{ width: '100%' }}
+              // @ts-ignore
+              onClick={props.onOk}
+              loading={props.confirmLoading}
+            >
               {buttonTitle}
             </Button>
           </div>

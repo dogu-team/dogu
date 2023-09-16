@@ -58,7 +58,11 @@ const InviteUserButton = () => {
 
   return (
     <>
-      <StyledButton type="primary" onClick={() => setIsOpen(true)} access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'invite-user-btn' : undefined}>
+      <StyledButton
+        type="primary"
+        onClick={() => setIsOpen(true)}
+        access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'invite-user-btn' : undefined}
+      >
         {t('org-member:inviteMemberButtonText')}
       </StyledButton>
 
@@ -81,7 +85,11 @@ const InviteUserButton = () => {
           {email ? (
             <div>
               <p style={{ marginBottom: '.5rem' }}>
-                <Trans i18nKey="org-member:inviteEmailPermissionSelectDescription1" components={{ b: <b style={{ fontWeight: '700' }} /> }} values={{ email }} />
+                <Trans
+                  i18nKey="org-member:inviteEmailPermissionSelectDescription1"
+                  components={{ b: <b style={{ fontWeight: '700' }} /> }}
+                  values={{ email }}
+                />
               </p>
               <p style={{ marginBottom: '.5rem' }}>{t('org-member:inviteEmailPermissionSelectDescription2')}</p>
               <Radio.Group
@@ -99,7 +107,15 @@ const InviteUserButton = () => {
                   </StyledRadio>
                   <StyledRadio value={ORGANIZATION_ROLE.MEMBER}>
                     <PermissionBox>
-                      <PermissionTitle access-id={process.env.NEXT_PUBLIC_ENV !== 'production' ? 'invite-user-member-permission-title' : undefined}>Member</PermissionTitle>
+                      <PermissionTitle
+                        access-id={
+                          process.env.NEXT_PUBLIC_ENV !== 'production'
+                            ? 'invite-user-member-permission-title'
+                            : undefined
+                        }
+                      >
+                        Member
+                      </PermissionTitle>
                       <PermissionDescription>{t('org-member:inviteMemberPermissionDescription')}</PermissionDescription>
                     </PermissionBox>
                   </StyledRadio>
@@ -140,7 +156,11 @@ const InviteUserButton = () => {
               >
                 <PlusOutlined />
                 &nbsp;
-                <Trans i18nKey="org-member:inviteEmailButtonText" components={{ b: <b style={{ fontWeight: '700' }} /> }} values={{ email: debouncedValue }} />
+                <Trans
+                  i18nKey="org-member:inviteEmailButtonText"
+                  components={{ b: <b style={{ fontWeight: '700' }} /> }}
+                  values={{ email: debouncedValue }}
+                />
               </Button>
             </AddEmailButtonBox>
           )}

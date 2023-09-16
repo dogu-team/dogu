@@ -104,7 +104,9 @@ const ProjectSideBar = () => {
       icon: collapsed ? (
         <ProjectSwitch
           organizationId={project?.organizationId as OrganizationId}
-          onChange={(project) => router.push(`/dashboard/${project?.organizationId}/projects/${project.projectId}/remotes`)}
+          onChange={(project) =>
+            router.push(`/dashboard/${project?.organizationId}/projects/${project.projectId}/remotes`)
+          }
           selectedProject={project ?? undefined}
           hideIcon
         >
@@ -119,7 +121,9 @@ const ProjectSideBar = () => {
         : project && (
             <ProjectSwitch
               organizationId={project?.organizationId as OrganizationId}
-              onChange={(project) => router.push(`/dashboard/${project?.organizationId}/projects/${project.projectId}/remotes`)}
+              onChange={(project) =>
+                router.push(`/dashboard/${project?.organizationId}/projects/${project.projectId}/remotes`)
+              }
               selectedProject={project}
             >
               <SideBarTitle profileImageUrl={null} name={project.name} accessId="sb-title" />
@@ -173,7 +177,9 @@ const ProjectSideBar = () => {
           ),
           icon: collapsed ? (
             <StyledIconLink
-              selected={router.asPath.startsWith(`/dashboard/${project?.organizationId}/projects/${project?.projectId}/remotes`)}
+              selected={router.asPath.startsWith(
+                `/dashboard/${project?.organizationId}/projects/${project?.projectId}/remotes`,
+              )}
               href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/remotes`}
             >
               <RiRemoteControlLine />
@@ -195,7 +201,9 @@ const ProjectSideBar = () => {
           ),
           icon: collapsed ? (
             <StyledIconLink
-              selected={router.asPath.startsWith(`/dashboard/${project?.organizationId}/projects/${project?.projectId}/routines`)}
+              selected={router.asPath.startsWith(
+                `/dashboard/${project?.organizationId}/projects/${project?.projectId}/routines`,
+              )}
               href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/routines`}
             >
               <GoWorkflow />
@@ -223,7 +231,9 @@ const ProjectSideBar = () => {
           ),
           icon: collapsed ? (
             <StyledIconLink
-              selected={router.asPath.startsWith(`/dashboard/${project?.organizationId}/projects/${project?.projectId}/studio`)}
+              selected={router.asPath.startsWith(
+                `/dashboard/${project?.organizationId}/projects/${project?.projectId}/studio`,
+              )}
               href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/studio`}
               target="_blank"
             >
@@ -245,7 +255,9 @@ const ProjectSideBar = () => {
           ),
           icon: collapsed ? (
             <StyledIconLink
-              selected={router.asPath === `/dashboard/${project?.organizationId}/projects/${project?.projectId}/devices`}
+              selected={
+                router.asPath === `/dashboard/${project?.organizationId}/projects/${project?.projectId}/devices`
+              }
               href={`/dashboard/${project?.organizationId}/projects/${project?.projectId}/devices`}
             >
               <MobileOutlined />
@@ -257,7 +269,10 @@ const ProjectSideBar = () => {
     {
       type: 'group',
       label: collapsed ? null : 'General',
-      children: project?.type === PROJECT_TYPE.WEB ? generalChildrens.filter((child) => child?.key !== 'app') : generalChildrens,
+      children:
+        project?.type === PROJECT_TYPE.WEB
+          ? generalChildrens.filter((child) => child?.key !== 'app')
+          : generalChildrens,
     },
   ];
 
@@ -288,7 +303,16 @@ const ProjectSideBar = () => {
   return (
     <StyledSider collapsible collapsed={collapsed} trigger={null}>
       <StyledBox>
-        <div style={{ position: 'relative', width: '100%', flex: 1, maxHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+        <div
+          style={{
+            position: 'relative',
+            width: '100%',
+            flex: 1,
+            maxHeight: '100dvh',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           <SidebarInner>
             <Box>
               <Menu style={{ borderInline: 'none' }} items={items} mode="inline" />

@@ -67,6 +67,21 @@ export function parseAppVersion(appVersionRaw: JobSchema['appVersion'], platform
   return null;
 }
 
+export function parseAppPackageName(appPackageNameRaw: JobSchema['appPackageName'], platform: Platform): string | null {
+  if (appPackageNameRaw) {
+    if (typeof appPackageNameRaw === 'string') {
+      return appPackageNameRaw;
+    } else if (typeof appPackageNameRaw === 'object') {
+      const platformType = platformTypeFromPlatform(platform);
+      const appPackageName = appPackageNameRaw[platformType];
+      if (appPackageName) {
+        return appPackageName;
+      }
+    }
+  }
+  return null;
+}
+
 export function parseBrowserName(browserNameRaw?: string): BrowserName | undefined {
   if (browserNameRaw && isAllowedBrowserName(browserNameRaw)) {
     return browserNameRaw;

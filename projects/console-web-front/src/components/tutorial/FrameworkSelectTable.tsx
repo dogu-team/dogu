@@ -1,7 +1,13 @@
 import styled from 'styled-components';
 import { Divider } from 'antd';
 
-import { TutorialSdkSupportInfoMap, TutorialSupportLanguage, tutorialSupportLanguageText, TutorialSupportSdk, tutorialSupportSdkText } from '../../resources/tutorials';
+import {
+  TutorialSdkSupportInfoMap,
+  TutorialSupportLanguage,
+  tutorialSupportLanguageText,
+  TutorialSupportSdk,
+  tutorialSupportSdkText,
+} from '../../resources/tutorials';
 import LanguageIcon from './LanguageIcon';
 import SdkIcon from './SdkIcon';
 

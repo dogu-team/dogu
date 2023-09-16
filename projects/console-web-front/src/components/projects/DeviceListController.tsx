@@ -53,7 +53,11 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
       fireEvent('onProjectDeviceDeleted');
     } catch (e) {
       if (e instanceof AxiosError) {
-        sendErrorNotification(t('device-farm:deleteDeviceFromProjectFailureMsg', { reason: getErrorMessageFromAxios(e) }));
+        sendErrorNotification(
+          t('device-farm:deleteDeviceFromProjectFailureMsg', {
+            reason: getErrorMessageFromAxios(e),
+          }),
+        );
       }
     }
   };
@@ -67,7 +71,9 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
           disabled={device.isGlobal === 1}
           modalTitle={t('device-farm:deleteDeviceFromProjectModalTitle')}
           modalButtonTitle={t('device-farm:deleteDeviceFromProjectModalButtonText')}
-          modalContent={t('device-farm:deleteDeviceFromProjectModalContentText', { name: device.name })}
+          modalContent={t('device-farm:deleteDeviceFromProjectModalContentText', {
+            name: device.name,
+          })}
         >
           {t('device-farm:deviceItemDeleteFromProjectMenu')}
         </MenuItemButton>
@@ -161,9 +167,13 @@ interface Props {
 }
 
 const DeviceListController = ({ organizationId, projectId }: Props) => {
-  const { data, isLoading, error, mutate, updatePage, page } = usePaginationSWR<DeviceBase>(`/organizations/${organizationId}/projects/${projectId}/devices`, undefined, {
-    keepPreviousData: true,
-  });
+  const { data, isLoading, error, mutate, updatePage, page } = usePaginationSWR<DeviceBase>(
+    `/organizations/${organizationId}/projects/${projectId}/devices`,
+    undefined,
+    {
+      keepPreviousData: true,
+    },
+  );
   const { t } = useTranslation();
 
   useRefresh(['onRefreshClicked', 'onProjectDeviceDeleted'], () => mutate());
@@ -184,7 +194,13 @@ const DeviceListController = ({ organizationId, projectId }: Props) => {
       <List<DeviceBase>
         dataSource={data?.items}
         loading={isLoading}
-        pagination={{ defaultCurrent: 1, current: page, pageSize: 10, total: data?.totalCount, onChange: (page, pageSize) => updatePage(page) }}
+        pagination={{
+          defaultCurrent: 1,
+          current: page,
+          pageSize: 10,
+          total: data?.totalCount,
+          onChange: (page, pageSize) => updatePage(page),
+        }}
         renderItem={(item) => <DeviceItem device={item} projectId={projectId} />}
         rowKey={(item) => `project-${projectId}-device-${item.deviceId}`}
         locale={{
@@ -194,7 +210,10 @@ const DeviceListController = ({ organizationId, projectId }: Props) => {
               description={
                 <Trans
                   i18nKey="device-farm:projectEmptyDescription"
-                  components={{ br: <br />, link: <Link href="https://docs.dogutech.io/management/project/device" target="_blank" /> }}
+                  components={{
+                    br: <br />,
+                    link: <Link href="https://docs.dogutech.io/management/project/device" target="_blank" />,
+                  }}
                 />
               }
             />

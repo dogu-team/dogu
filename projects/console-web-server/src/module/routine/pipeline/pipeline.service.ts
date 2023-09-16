@@ -53,7 +53,7 @@ import { DoguLogger } from '../../logger/logger';
 import { DeviceStatusService } from '../../organization/device/device-status.service';
 import { validateRoutineSchema } from '../common/validator';
 import { CreateInstantPipelineDto, FindAllPipelinesDto } from './dto/pipeline.dto';
-import { parseAppVersion, parseBrowserName, parseRunsOn } from './pipeline.common';
+import { parseAppPackageName, parseAppVersion, parseBrowserName, parseRunsOn } from './pipeline.common';
 
 function createStepEnv(routineSchema: RoutineSchema, stepSchema: StepSchema): Record<string, string> {
   return lodash.merge(routineSchema.env ?? {}, stepSchema.env ?? {});
@@ -344,6 +344,7 @@ export class PipelineService {
               status: PIPELINE_STATUS.WAITING,
               record,
               appVersion: parseAppVersion(jobSchema.appVersion, deviceRunnerNotInUseAndReserved.device.platform),
+              appPackageName: parseAppPackageName(jobSchema.appPackageName, deviceRunnerNotInUseAndReserved.device.platform),
               browserName: parseBrowserName(jobSchema.browserName) ?? null,
               browserVersion: jobSchema.browserVersion ?? null,
             });
@@ -399,6 +400,7 @@ export class PipelineService {
                 status: PIPELINE_STATUS.WAITING,
                 record,
                 appVersion: parseAppVersion(jobSchema.appVersion, deviceRunnerInUseAndReserved.device.platform),
+                appPackageName: parseAppPackageName(jobSchema.appPackageName, deviceRunnerInUseAndReserved.device.platform),
                 browserName: parseBrowserName(jobSchema.browserName) ?? null,
                 browserVersion: jobSchema.browserVersion ?? null,
               });
@@ -441,6 +443,7 @@ export class PipelineService {
                   status: PIPELINE_STATUS.WAITING,
                   record,
                   appVersion: parseAppVersion(jobSchema.appVersion, device.platform),
+                  appPackageName: parseAppPackageName(jobSchema.appPackageName, device.platform),
                   browserName: parseBrowserName(jobSchema.browserName) ?? null,
                   browserVersion: jobSchema.browserVersion ?? null,
                 });
@@ -494,6 +497,7 @@ export class PipelineService {
                 status: PIPELINE_STATUS.WAITING,
                 record,
                 appVersion: parseAppVersion(jobSchema.appVersion, device.platform),
+                appPackageName: parseAppPackageName(jobSchema.appPackageName, device.platform),
                 browserName: parseBrowserName(jobSchema.browserName) ?? null,
                 browserVersion: jobSchema.browserVersion ?? null,
               });

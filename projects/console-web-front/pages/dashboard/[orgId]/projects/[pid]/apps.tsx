@@ -26,11 +26,16 @@ const ProjectAppPage: NextPageWithLayout<ProjectServerSideProps> = ({ project, o
         top={
           <Header>
             <MenuList>
-              <ProjectApplicationUploadButton organizationId={organization.organizationId} projectId={project.projectId} />
+              <ProjectApplicationUploadButton
+                organizationId={organization.organizationId}
+                projectId={project.projectId}
+              />
 
               <ExternalGuideLink
                 href="https://docs.dogutech.io/integration/cicd/github-action"
-                icon={<Image src="/resources/icons/github-action-logo.svg" alt="Github Action" width={16} height={16} />}
+                icon={
+                  <Image src="/resources/icons/github-action-logo.svg" alt="Github Action" width={16} height={16} />
+                }
               >
                 GitHub Action
               </ExternalGuideLink>
@@ -41,7 +46,10 @@ const ProjectAppPage: NextPageWithLayout<ProjectServerSideProps> = ({ project, o
                 Jenkins
               </ExternalGuideLink>
 
-              <ExternalGuideLink href="https://docs.dogutech.io/api/project/application#upload-application" icon={<ApiOutlined style={{ fontSize: '1rem', color: '#000' }} />}>
+              <ExternalGuideLink
+                href="https://docs.dogutech.io/api/project/application#upload-application"
+                icon={<ApiOutlined style={{ fontSize: '1rem', color: '#000' }} />}
+              >
                 Upload API
               </ExternalGuideLink>
             </MenuList>
@@ -50,7 +58,12 @@ const ProjectAppPage: NextPageWithLayout<ProjectServerSideProps> = ({ project, o
             </div>
           </Header>
         }
-        table={<ProjectApplicationListController organizationId={organization.organizationId} projectId={project.projectId} />}
+        table={
+          <ProjectApplicationListController
+            organizationId={organization.organizationId}
+            projectId={project.projectId}
+          />
+        }
       />
     </>
   );

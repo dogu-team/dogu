@@ -54,8 +54,18 @@ const CreateTagModal = ({ isOpen, close }: Props) => {
       title={t('device-farm:createTagModalTitle')}
       form={
         <Form form={form} id="new-tag" layout="vertical" preserve={false} onFinish={handleSubmit}>
-          <Form.Item name="name" label={t('device-farm:createTagModalNameLabel')} required rules={[{ required: true, message: t('device-farm:createTagModalInputRuleErrorMsg') }]}>
-            <Input placeholder={t('device-farm:createTagModalNamePlaceHolder')} required minLength={DEVICE_TAG_NAME_MIN_LENGTH} maxLength={DEVICE_TAG_NAME_MAX_LENGTHC} />
+          <Form.Item
+            name="name"
+            label={t('device-farm:createTagModalNameLabel')}
+            required
+            rules={[{ required: true, message: t('device-farm:createTagModalInputRuleErrorMsg') }]}
+          >
+            <Input
+              placeholder={t('device-farm:createTagModalNamePlaceHolder')}
+              required
+              minLength={DEVICE_TAG_NAME_MIN_LENGTH}
+              maxLength={DEVICE_TAG_NAME_MAX_LENGTHC}
+            />
           </Form.Item>
         </Form>
       }

@@ -8,7 +8,10 @@ import useTranslation from 'next-translate/useTranslation';
 
 const OrganizationMemberFilter = () => {
   const [name, setName] = useState('');
-  const [updateFilter, resetFilter] = useOrganizationMemberFilterStore((state) => [state.updateFilter, state.resetFilter]);
+  const [updateFilter, resetFilter] = useOrganizationMemberFilterStore((state) => [
+    state.updateFilter,
+    state.resetFilter,
+  ]);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -30,7 +33,13 @@ const OrganizationMemberFilter = () => {
 
   return (
     <Box>
-      <StyledSearchInput placeholder={t('org-member:memberFilterNamePlaceholder')} onChange={(e) => handleChange(e.target.value)} value={name} allowClear maxLength={50} />
+      <StyledSearchInput
+        placeholder={t('org-member:memberFilterNamePlaceholder')}
+        onChange={(e) => handleChange(e.target.value)}
+        value={name}
+        allowClear
+        maxLength={50}
+      />
     </Box>
   );
 };

@@ -49,7 +49,11 @@ function BitbucketButton({ isConnected, disabled, organizationId, projectId, des
     const values = await form.validateFields();
 
     try {
-      await saveScm(organizationId, projectId, { service: PROJECT_SCM_TYPE.BITBUCKET, token: values.token, url: values.repo.replace('.git', '') });
+      await saveScm(organizationId, projectId, {
+        service: PROJECT_SCM_TYPE.BITBUCKET,
+        token: values.token,
+        url: values.repo.replace('.git', ''),
+      });
       sendSuccessNotification('Bitbucket integration saved');
       fireEvent('onProjectScmUpdated');
       handleClose();
@@ -94,7 +98,16 @@ function BitbucketButton({ isConnected, disabled, organizationId, projectId, des
         }
       />
 
-      <Modal open={isOpen} centered closable onCancel={handleClose} okText={'Save'} onOk={saveBitbucketIntegration} confirmLoading={saveLoading} title="Bitbucket Integration">
+      <Modal
+        open={isOpen}
+        centered
+        closable
+        onCancel={handleClose}
+        okText={'Save'}
+        onOk={saveBitbucketIntegration}
+        confirmLoading={saveLoading}
+        title="Bitbucket Integration"
+      >
         <GitIntegrationForm form={form} hideType />
       </Modal>
     </>

@@ -40,10 +40,22 @@ const DestLogController = ({ dest, logType }: Props) => {
   }
 
   if (!data || error) {
-    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find log information.'} />;
+    return (
+      <ErrorBox
+        title="Something went wrong"
+        desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot find log information.'}
+      />
+    );
   }
 
-  return <LogContainer logs={data} logType={logType} selectedLine={Number(router.query.line) || undefined} getLineLink={getLineLink} />;
+  return (
+    <LogContainer
+      logs={data}
+      logType={logType}
+      selectedLine={Number(router.query.line) || undefined}
+      getLineLink={getLineLink}
+    />
+  );
 };
 
 export default DestLogController;

@@ -1,5 +1,4 @@
 import { DateTime, DurationLike } from 'luxon';
-import { Token } from '../../db/entity/token.entity';
 
 export class TokenService {
   static createToken(): string {
@@ -30,12 +29,21 @@ export class TokenService {
     return hostToken;
   }
 
+  static createEmailUnsubscribeToken(): string {
+    const tokenBody = this.createToken();
+    const emailUnsubscribeToken = tokenBody;
+    return emailUnsubscribeToken;
+  }
+
   static createExpiredAt(duration: DurationLike): Date {
     return DateTime.now().plus(duration).toJSDate();
   }
 
-  static isExpired(token: Token): boolean {
-    if (token.expiredAt !== null && token.expiredAt.getTime() < DateTime.now().toMillis()) {
+  static isExpired(expiredAt: Date | null | string): boolean {
+    if (!expiredAt) return false;
+
+    if (typeof expiredAt === 'string') expiredAt = new Date(expiredAt);
+    if (expiredAt && expiredAt.getTime() < new Date().getTime()) {
       return true;
     }
     return false;

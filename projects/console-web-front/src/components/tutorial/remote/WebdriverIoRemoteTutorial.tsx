@@ -9,7 +9,13 @@ import DoneStep from './DoneStep';
 import GuideAnchor from '../GuideAnchor';
 import GuideLayout from '../GuideLayout';
 import GuideStep from '../GuideStep';
-import { TutorialSupportLanguage, TutorialSupportPlatform, TutorialSupportTarget, REMOTE_SAMPLE_GIT_URL, TutorialSupportSdk } from '../../../resources/tutorials/index';
+import {
+  TutorialSupportLanguage,
+  TutorialSupportPlatform,
+  TutorialSupportTarget,
+  REMOTE_SAMPLE_GIT_URL,
+  TutorialSupportSdk,
+} from '../../../resources/tutorials/index';
 import { flexRowBaseStyle } from '../../../styles/box';
 import GuideBanner from '../GuideBanner';
 import TutorialOptionSelectors from '../TutorialOptionSelectors';
@@ -17,7 +23,11 @@ import useTutorialSelector from '../../../hooks/useTutorialSelector';
 import RemoteTestResultList from './RemoteTestResultList';
 import CodeWithCopyButton from '../../common/CodeWithCopyButton';
 import useTutorialContext from '../../../hooks/context/useTutorialContext';
-import { RemoteTutorialProps, remoteTutorialSdkSupportInfo, webdriverioRemoteTutoriallData } from '../../../resources/tutorials/remote';
+import {
+  RemoteTutorialProps,
+  remoteTutorialSdkSupportInfo,
+  webdriverioRemoteTutoriallData,
+} from '../../../resources/tutorials/remote';
 import SampleApplicationUploadStep from '../SampleApplicationUploadStep';
 import Trans from 'next-translate/Trans';
 
@@ -54,9 +64,16 @@ const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorial
   });
   const [capabilityCode, setCapabilityCode] = useState<string>('');
 
-  const selectedGuide = webdriverioRemoteTutoriallData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const frameworkLanguage = Object.keys(remoteTutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].frameworksPerLang).find((language) =>
-    remoteTutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
+  const selectedGuide = webdriverioRemoteTutoriallData.guides.find(
+    (data) => data.framework === framework && data.target === target && data.platform === platform,
+  );
+  const frameworkLanguage = Object.keys(
+    remoteTutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].frameworksPerLang,
+  ).find(
+    (language) =>
+      remoteTutorialSdkSupportInfo[TutorialSupportSdk.WEBDRIVERIO].frameworksPerLang[
+        language as TutorialSupportLanguage
+      ]?.includes(framework),
   );
 
   useEffect(() => {
@@ -96,9 +113,19 @@ const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorial
             items={[
               { id: INTRODUCTION_ID, title: t('remoteTestTutorialIntroAnchorTitle') },
               { id: PROJECT_SETUP_ID, title: t('remoteTestTutorialSampleProjectSetupAnchorTitle') },
-              { id: INSTALL_DEPENDENCIES_ID, title: t('remoteTestTutorialInstallDependenciesAnchorTitle') },
+              {
+                id: INSTALL_DEPENDENCIES_ID,
+                title: t('remoteTestTutorialInstallDependenciesAnchorTitle'),
+              },
               { id: SET_CAPABILITIES_ID, title: t('remoteTestTutorialSetCapabilitiesAnchorTitle') },
-              ...(target === TutorialSupportTarget.APP ? [{ id: UPLOAD_SAMPLE_APP_ID, title: t('remoteTestTutorialUploadSampleAppAnchorTitle') }] : []),
+              ...(target === TutorialSupportTarget.APP
+                ? [
+                    {
+                      id: UPLOAD_SAMPLE_APP_ID,
+                      title: t('remoteTestTutorialUploadSampleAppAnchorTitle'),
+                    },
+                  ]
+                : []),
               { id: RUN_TEST_ID, title: t('remoteTestTutorialRunTestAnchorTitle') },
               { id: RESULT_ID, title: t('remoteTestTutorialCheckResultAnchorTitle') },
               { id: DONE_ID, title: t('doneStepTitle') },
@@ -108,7 +135,12 @@ const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorial
       }
       content={
         <div>
-          <GuideStep id={INTRODUCTION_ID} title={t('remoteTestTutorialIntroTitle')} description={<p>{t('remoteTestTutorialIntroDescription')}</p>} content={null} />
+          <GuideStep
+            id={INTRODUCTION_ID}
+            title={t('remoteTestTutorialIntroTitle')}
+            description={<p>{t('remoteTestTutorialIntroDescription')}</p>}
+            content={null}
+          />
           <GuideStep
             id={PROJECT_SETUP_ID}
             title={t('remoteTestTutorialSampleProjectSetupTitle')}
@@ -133,7 +165,11 @@ const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorial
               <p>
                 <Trans
                   i18nKey="tutorial:remoteTestTutorialSetCapabilitiesDescription"
-                  components={{ code: <StyledCode />, link: <a href="https://docs.dogutech.io/test-automation/" target="_blank" />, br: <br /> }}
+                  components={{
+                    code: <StyledCode />,
+                    link: <a href="https://docs.dogutech.io/test-automation/" target="_blank" />,
+                    br: <br />,
+                  }}
                 />
               </p>
             }
@@ -162,14 +198,19 @@ const WebdriverIoRemoteTutorial = ({ organizationId, projectId }: RemoteTutorial
                     <Alert
                       message={
                         <p>
-                          For Safari in macOS, please run <CodeWithCopyButton language="bash" code="sudo /usr/bin/safaridriver --enable" /> for testing.
+                          For Safari in macOS, please run{' '}
+                          <CodeWithCopyButton language="bash" code="sudo /usr/bin/safaridriver --enable" /> for testing.
                         </p>
                       }
                     />
                   )}
                   <CodeWithCopyButton language="bash" code={selectedGuide?.runCommand ?? ''} />
                   {frameworkLanguage === TutorialSupportLanguage.PYTHON && (
-                    <Alert message="If test failed with an import error, please activate virtual environment again." type="info" showIcon />
+                    <Alert
+                      message="If test failed with an import error, please activate virtual environment again."
+                      type="info"
+                      showIcon
+                    />
                   )}
                 </>
               )

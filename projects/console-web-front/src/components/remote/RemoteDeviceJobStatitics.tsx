@@ -20,7 +20,11 @@ interface Props {
 }
 
 const RemoteDeviceJobStatitics = ({ organizationId, projectId, remoteDeviceJob, doguOptions, creator }: Props) => {
-  const { browserName } = doguOptions as { browserName: string | undefined; appVersion: string | undefined; browserVersion: string | undefined };
+  const { browserName } = doguOptions as {
+    browserName: string | undefined;
+    appVersion: string | undefined;
+    browserVersion: string | undefined;
+  };
 
   if (!remoteDeviceJob.device) {
     return <ErrorBox title="Something went wrong" desc="Cannot get device information" />;
@@ -43,7 +47,11 @@ const RemoteDeviceJobStatitics = ({ organizationId, projectId, remoteDeviceJob, 
         <StatBox>
           <StatTtile>Model</StatTtile>
           <StatBody>
-            <p>{remoteDeviceJob.device.modelName ? `${remoteDeviceJob.device.modelName} (${remoteDeviceJob.device.model})` : remoteDeviceJob.device.model}</p>
+            <p>
+              {remoteDeviceJob.device.modelName
+                ? `${remoteDeviceJob.device.modelName} (${remoteDeviceJob.device.model})`
+                : remoteDeviceJob.device.model}
+            </p>
           </StatBody>
         </StatBox>
         <StatBox>
@@ -65,7 +73,11 @@ const RemoteDeviceJobStatitics = ({ organizationId, projectId, remoteDeviceJob, 
         <StatBox>
           <StatTtile>Duration</StatTtile>
           <StatBody>
-            <RemoteRuntimeTimer state={state} startedAt={remoteDeviceJob.inProgressAt} endedAt={remoteDeviceJob.completedAt} />
+            <RemoteRuntimeTimer
+              state={state}
+              startedAt={remoteDeviceJob.inProgressAt}
+              endedAt={remoteDeviceJob.completedAt}
+            />
           </StatBody>
         </StatBox>
         <StatBox>

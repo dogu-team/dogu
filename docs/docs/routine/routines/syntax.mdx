@@ -379,7 +379,57 @@ Possible browsers are as follows:
 >     browserName: chrome
 > ```
 
-## jobs.&lt;job-name&gt;.appVersion
+## jobs.&lt;job-name&gt;.appPackageName
+
+<code
+  style={{ position: 'relative', top: '-20px', fontSize: '90%' }}
+  children="optional"
+/>
+
+Default Value: `null`
+
+---
+
+:::tip Latest App
+
+This uses the latest build version app of apps with the same package name.
+
+:::
+
+:::info
+
+This is an attribute for mobile app and game testing. Do not use it for other types of tests.
+
+The app with this package name must be uploaded to the project.
+
+:::
+
+Select the package name of the app to run in the job.
+
+1. If all platforms use the same package name:
+   > Example
+   >
+   > ```yaml
+   > jobs:
+   >   job1:
+   >     runs-on:
+   >       group: macos
+   >     appPackageName: com.dogutech.app
+   > ```
+2. If each platform uses a different package name:
+   > Example
+   >
+   > ```yaml
+   > jobs:
+   >   job1:
+   >     runs-on:
+   >       group: macos
+   >     appVersion:
+   >       android: com.dogutech.app
+   >       ios: com.dogutech.sample
+   > ```
+
+## jobs.&lt;job-name&gt;.appVersion (deprecated)
 
 <code
   style={{ position: 'relative', top: '-20px', fontSize: '90%' }}
@@ -389,6 +439,12 @@ Possible browsers are as follows:
 Default: `null`
 
 ---
+
+:::danger deprecated
+
+For convenience, it is recommended to use `jobs.<job-name>.appPackageName`.
+
+:::
 
 :::info
 

@@ -5,7 +5,9 @@ import { useCallback, useState } from 'react';
 import { RoutineEditMode } from '../types/routine';
 
 const useRoutineEditMode = (project: ProjectBase) => {
-  const [mode, setMode] = useState<RoutineEditMode>(() => (project.type === PROJECT_TYPE.CUSTOM ? RoutineEditMode.SCRIPT : RoutineEditMode.GUI));
+  const [mode, setMode] = useState<RoutineEditMode>(() =>
+    project.type === PROJECT_TYPE.CUSTOM ? RoutineEditMode.SCRIPT : RoutineEditMode.GUI,
+  );
 
   const changeMode = useCallback((mode: RoutineEditMode) => {
     setMode(mode);

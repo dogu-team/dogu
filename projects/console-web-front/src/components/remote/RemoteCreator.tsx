@@ -22,7 +22,12 @@ const RemoteCreator = ({ remote }: Props) => {
       }
       return (
         <FlexRow>
-          <ProfileImage profileImageUrl={remote.creator.profileImageUrl} name={remote.creator.name} size={20} style={{ fontSize: '.7rem' }} />
+          <ProfileImage
+            profileImageUrl={remote.creator.profileImageUrl}
+            name={remote.creator.name}
+            size={20}
+            style={{ fontSize: '.7rem' }}
+          />
           <p style={{ marginLeft: '.25rem' }}>{remote.creator.name}</p>
         </FlexRow>
       );

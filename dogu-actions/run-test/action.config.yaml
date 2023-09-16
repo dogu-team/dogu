@@ -7,9 +7,13 @@ inputs:
     description: checkout git repository
     default: false
     required: false
-  branchOrTag:
-    description: branch or tag to checkout
+  branch:
+    description: branch to checkout. if tag is set, branch is ignored.
     default: main
+    required: false
+  tag:
+    description: tag to checkout. if tag is set, branch is ignored.
+    default: ''
     required: false
   clean:
     description: run git clean -fdx before git pull without git clone
@@ -27,6 +31,10 @@ inputs:
   # app options
   appVersion:
     description: app version to download and install
+    default: ''
+    required: false
+  appPackageName:
+    description: app package name to download and install
     default: ''
     required: false
   uninstallApp:

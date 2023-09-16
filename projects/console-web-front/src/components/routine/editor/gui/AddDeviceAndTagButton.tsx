@@ -37,10 +37,16 @@ const AddDeviceAndTagButton = ({ onSelect, group, devicePlatform }: Props) => {
     data: tags,
     isLoading: tagsLoading,
     error: tagError,
-  } = useSWR<PageBase<DeviceTagBase>>(selectable && currentTab === TabMenu.DEVICE_TAG && `/organizations/${router.query.orgId}/tags?keyword=${debouncedValue}`, swrAuthFetcher, {
-    keepPreviousData: true,
-    revalidateOnFocus: false,
-  });
+  } = useSWR<PageBase<DeviceTagBase>>(
+    selectable &&
+      currentTab === TabMenu.DEVICE_TAG &&
+      `/organizations/${router.query.orgId}/tags?keyword=${debouncedValue}`,
+    swrAuthFetcher,
+    {
+      keepPreviousData: true,
+      revalidateOnFocus: false,
+    },
+  );
   const {
     data: devices,
     isLoading: devicesLoading,
@@ -49,7 +55,9 @@ const AddDeviceAndTagButton = ({ onSelect, group, devicePlatform }: Props) => {
     selectable &&
       !group &&
       currentTab === TabMenu.DEVICE &&
-      `/organizations/${router.query.orgId}/projects/${router.query.pid}/devices?keyword=${debouncedValue}${devicePlatform ? `&platform=${devicePlatform}` : ''}`,
+      `/organizations/${router.query.orgId}/projects/${router.query.pid}/devices?keyword=${debouncedValue}${
+        devicePlatform ? `&platform=${devicePlatform}` : ''
+      }`,
     swrAuthFetcher,
     {
       keepPreviousData: true,
@@ -135,7 +143,8 @@ const AddDeviceAndTagButton = ({ onSelect, group, devicePlatform }: Props) => {
               <>
                 No device.
                 <br />
-                Register your device from <Link href={`/dashboard/${router.query.orgId}/device-farm/devices`}>here</Link>
+                Register your device from{' '}
+                <Link href={`/dashboard/${router.query.orgId}/device-farm/devices`}>here</Link>
               </>
             )}
           </EmptyText>

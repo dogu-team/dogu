@@ -35,7 +35,11 @@ const TeamPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organizatio
 
 TeamPage.getLayout = (page) => {
   return (
-    <ConsoleLayout organization={page.props.organization} sidebar={<OrganizationSideBar />} titleI18nKey="organization:teamPageTitle">
+    <ConsoleLayout
+      organization={page.props.organization}
+      sidebar={<OrganizationSideBar />}
+      titleI18nKey="organization:teamPageTitle"
+    >
       {page}
     </ConsoleLayout>
   );

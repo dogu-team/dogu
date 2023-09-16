@@ -62,7 +62,9 @@ const RemoteListController = ({ organizationId, projectId, renderItem, emptyText
               image={<RiRemoteControlLine style={{ fontSize: '90px' }} />}
               description={
                 <p>
-                  No remote test results. Please refer to <Link href={`/dashboard/${organizationId}/projects/${projectId}/remotes/get-started`}>tutorial</Link> for remote testing.
+                  No remote test results. Please refer to{' '}
+                  <Link href={`/dashboard/${organizationId}/projects/${projectId}/remotes/get-started`}>tutorial</Link>{' '}
+                  for remote testing.
                 </p>
               }
             />

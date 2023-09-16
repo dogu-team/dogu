@@ -59,7 +59,7 @@ export class UserInvitationService {
     if (!invitationToken) {
       throw new BadRequestException('Invitation token does not exist');
     }
-    if (TokenService.isExpired(invitationToken)) {
+    if (TokenService.isExpired(invitationToken.expiredAt)) {
       throw new BadRequestException('Expired invitation');
     }
 

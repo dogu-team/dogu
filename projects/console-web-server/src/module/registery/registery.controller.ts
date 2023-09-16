@@ -1,7 +1,8 @@
 import { LastAccessOrganizationResponse, UserResponse } from '@dogu-private/console';
-import { GoogleOAuthPayload, UserPayload } from '@dogu-private/types';
+import { GoogleOAuthPayload, UserId, UserPayload } from '@dogu-private/types';
 import { Body, Controller, Get, Head, HttpException, HttpStatus, Inject, NotFoundException, Param, Post, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
+
 import { env } from '../../env';
 import { EmailVerification, GoogleOAuth, GoogleUser, User } from '../../module/auth/decorators';
 import { ResetPasswordWithToken, SendVerifyEmailDto, ValidationResetPasswordDto, VerifyEmailDto } from '../../module/registery/dto/registery.dto';
@@ -107,5 +108,15 @@ export class RegisteryController {
   async resetPassword(@Body() resetPasswordDto: ResetPasswordWithToken): Promise<boolean> {
     await this.resetPasswordService.resetPasswordWithToken(resetPasswordDto);
     return true;
+  }
+
+  @Post('email/subscribe')
+  async subscribeEmail(@Body() dto: { userId: UserId; token: string }): Promise<void> {
+    return await this.registeryService.subscribeEmail(dto);
+  }
+
+  @Post('email/unsubscribe')
+  async unsubscribeEmail(@Body() dto: { userId: UserId; token: string }): Promise<void> {
+    return await this.registeryService.unsubscribeEmail(dto);
   }
 }

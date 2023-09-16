@@ -1,6 +1,8 @@
 import { useCallback, useState } from 'react';
 
-const useModal = <T = undefined>(initState: boolean = false): [boolean, (payload?: T) => void, () => void, T | undefined] => {
+const useModal = <T = undefined>(
+  initState: boolean = false,
+): [boolean, (payload?: T) => void, () => void, T | undefined] => {
   const [isOpen, setIsOpen] = useState(initState);
   const [data, setData] = useState<T>();
 

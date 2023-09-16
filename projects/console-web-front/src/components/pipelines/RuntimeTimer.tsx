@@ -25,7 +25,9 @@ const RuntimeTimer = ({ startDate, endDate }: Props) => {
     };
   }, [endDate]);
 
-  return <>{stringifyDuration(getDateDiffAsMilliseconds(localizeDate(startDate), endDate ? localizeDate(endDate) : now))}</>;
+  return (
+    <>{stringifyDuration(getDateDiffAsMilliseconds(localizeDate(startDate), endDate ? localizeDate(endDate) : now))}</>
+  );
 };
 
 export default RuntimeTimer;

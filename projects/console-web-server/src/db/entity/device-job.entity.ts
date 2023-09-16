@@ -6,6 +6,7 @@ import {
   PIPELINE_STATUS,
   RoutineDeviceJobId,
   RoutineJobId,
+  ROUTINE_DEVICE_JOB_APP_PACKAGE_NAME_MAX_LENGTH,
   ROUTINE_DEVICE_JOB_APP_VERSION_MAX_LENGTH,
   ROUTINE_DEVICE_JOB_BROWSER_NAME_MAX_LENGTH,
   ROUTINE_DEVICE_JOB_BROWSER_VERSION_MAX_LENGTH,
@@ -36,6 +37,9 @@ export class RoutineDeviceJob extends BaseEntity implements RoutineDeviceJobBase
 
   @Column({ type: 'character varying', name: RoutineDeviceJobPropSnake.app_version, length: ROUTINE_DEVICE_JOB_APP_VERSION_MAX_LENGTH, nullable: true })
   appVersion!: string | null;
+
+  @Column({ type: 'character varying', name: RoutineDeviceJobPropSnake.app_package_name, length: ROUTINE_DEVICE_JOB_APP_PACKAGE_NAME_MAX_LENGTH, nullable: true })
+  appPackageName!: string | null;
 
   @Column({ type: 'character varying', name: RoutineDeviceJobPropSnake.browser_name, length: ROUTINE_DEVICE_JOB_BROWSER_NAME_MAX_LENGTH, nullable: true })
   browserName!: BrowserName | null;

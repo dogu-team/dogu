@@ -10,11 +10,7 @@ interface AlertContent {
  * Custom hook for action result. ex) Form
  * @returns [alertContent, openAlert, closeAlert]
  */
-const useResultAlert = (): [
-  AlertContent,
-  (isSucceed: boolean, message: string) => void,
-  () => void,
-] => {
+const useResultAlert = (): [AlertContent, (isSucceed: boolean, message: string) => void, () => void] => {
   const [result, setResult] = useState<AlertContent>({
     isOpen: false,
     message: '',
@@ -26,10 +22,7 @@ const useResultAlert = (): [
     [],
   );
 
-  const closeAlert = useCallback(
-    () => setResult({ isOpen: false, message: '', isSucceed: false }),
-    [],
-  );
+  const closeAlert = useCallback(() => setResult({ isOpen: false, message: '', isSucceed: false }), []);
 
   return [result, openAlert, closeAlert];
 };

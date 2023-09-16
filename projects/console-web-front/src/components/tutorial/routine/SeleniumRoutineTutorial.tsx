@@ -41,9 +41,16 @@ const SeleniumRoutineTutorial = () => {
   });
   const { t } = useTranslation('tutorial');
 
-  const selectedGuide = seleniumRoutineTutorialData.guides.find((data) => data.framework === framework && data.target === target && data.platform === platform);
-  const frameworkLanguage = Object.keys(routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang).find((language) =>
-    routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[language as TutorialSupportLanguage]?.includes(framework),
+  const selectedGuide = seleniumRoutineTutorialData.guides.find(
+    (data) => data.framework === framework && data.target === target && data.platform === platform,
+  );
+  const frameworkLanguage = Object.keys(
+    routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang,
+  ).find(
+    (language) =>
+      routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[
+        language as TutorialSupportLanguage
+      ]?.includes(framework),
   );
 
   const WEB_ROUTINE_SAMPLE = `name: sample-routine
@@ -173,7 +180,13 @@ jobs:
                     <RefreshButton />
                   </FlexSpaceBetween>
                 }
-                table={<PipelineListController organizationId={project.organizationId} projectId={project.projectId} hideEmpty />}
+                table={
+                  <PipelineListController
+                    organizationId={project.organizationId}
+                    projectId={project.projectId}
+                    hideEmpty
+                  />
+                }
               />
             }
           />

@@ -1,5 +1,11 @@
 import { UserBase } from '@dogu-private/console';
-import { UserAuthToken, USER_ACCESS_TOKEN_COOKIE_NAME, USER_ID_COOKIE_NAME, USER_REFRESH_TOKEN_COOKIE_NAME, USER_VERIFICATION_STATUS } from '@dogu-private/types';
+import {
+  UserAuthToken,
+  USER_ACCESS_TOKEN_COOKIE_NAME,
+  USER_ID_COOKIE_NAME,
+  USER_REFRESH_TOKEN_COOKIE_NAME,
+  USER_VERIFICATION_STATUS,
+} from '@dogu-private/types';
 import { AxiosResponse } from 'axios';
 import { GetServerSidePropsContext } from 'next';
 import Cookies from 'universal-cookie';

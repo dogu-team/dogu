@@ -104,8 +104,15 @@ const DeviceJobVideoController = ({ deviceJob }: Props) => {
                 <ControllerDestButtonBox>
                   {step.dests.map((dest, i) =>
                     dest.type === DEST_TYPE.UNIT && !!dest.localInProgressAt && !!dest.localCompletedAt ? (
-                      <ControllerButton key={`${step.routineStepId} ${dest.destId}`} onClick={() => handleClickButton(moment(dest.localInProgressAt).toDate())}>
-                        {getStartedAtWithFormatted(moment(deviceJob.localInProgressAt).toDate(), moment(dest.localInProgressAt).toDate())}&nbsp;
+                      <ControllerButton
+                        key={`${step.routineStepId} ${dest.destId}`}
+                        onClick={() => handleClickButton(moment(dest.localInProgressAt).toDate())}
+                      >
+                        {getStartedAtWithFormatted(
+                          moment(deviceJob.localInProgressAt).toDate(),
+                          moment(dest.localInProgressAt).toDate(),
+                        )}
+                        &nbsp;
                         <DestStatusIcon state={dest.state} />
                         &nbsp;{dest.name}
                       </ControllerButton>
@@ -115,7 +122,11 @@ const DeviceJobVideoController = ({ deviceJob }: Props) => {
               ) : !!step.localInProgressAt && !!step.localCompletedAt ? (
                 <div>
                   <ControllerButton onClick={() => handleClickButton(moment(step.localInProgressAt).toDate())}>
-                    {getStartedAtWithFormatted(moment(deviceJob.localInProgressAt).toDate(), moment(step.localInProgressAt).toDate())}&nbsp;Move to step
+                    {getStartedAtWithFormatted(
+                      moment(deviceJob.localInProgressAt).toDate(),
+                      moment(step.localInProgressAt).toDate(),
+                    )}
+                    &nbsp;Move to step
                   </ControllerButton>
                 </div>
               ) : null}

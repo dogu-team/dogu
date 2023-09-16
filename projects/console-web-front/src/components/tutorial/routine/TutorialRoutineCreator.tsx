@@ -76,7 +76,11 @@ const TutorialRoutineCreator = ({ project, sampleYaml }: Props) => {
       <RoutineEditor
         mode={isCustom ? RoutineEditMode.SCRIPT : RoutineEditMode.GUI}
         menu={null}
-        scriptEditor={isCustom ? <YamlEditor editorRef={editorRef} height={'65vh'} value={yaml} onChanged={handleEditorOnChange} /> : null}
+        scriptEditor={
+          isCustom ? (
+            <YamlEditor editorRef={editorRef} height={'65vh'} value={yaml} onChanged={handleEditorOnChange} />
+          ) : null
+        }
         guiEditor={isCustom ? null : <RoutineGUIEditor projectType={project.type} hideAddButton />}
         preview={null}
       />

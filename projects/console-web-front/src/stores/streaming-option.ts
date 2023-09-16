@@ -9,7 +9,9 @@ export interface CustomizedStreamingOption {
 
 interface StreamingOptionStore {
   option: CustomizedStreamingOption;
-  updateOption: (option: { [key in keyof CustomizedStreamingOption]?: CustomizedStreamingOption[key] }) => void;
+  updateOption: (option: {
+    [key in keyof CustomizedStreamingOption]?: CustomizedStreamingOption[key];
+  }) => void;
 }
 
 const useStreamingOptionStore = create<StreamingOptionStore>()(

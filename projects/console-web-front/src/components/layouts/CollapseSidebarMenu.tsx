@@ -11,17 +11,19 @@ const CollpaseSidebarMenu = () => {
       <Button onClick={updateCollapsed}>
         <div />
       </Button>
-      <CollapseButton onClick={updateCollapsed} collapsed={collapsed}>{collapsed ? <RightOutlined style={{ fontSize: '.8rem' }} /> : <LeftOutlined style={{ fontSize: '.8rem' }} />}</CollapseButton>
+      <CollapseButton onClick={updateCollapsed} collapsed={collapsed}>
+        {collapsed ? <RightOutlined style={{ fontSize: '.8rem' }} /> : <LeftOutlined style={{ fontSize: '.8rem' }} />}
+      </CollapseButton>
     </Box>
   );
 };
 
 export default CollpaseSidebarMenu;
 
-const CollapseButton = styled.button<{collapsed: boolean}>`
+const CollapseButton = styled.button<{ collapsed: boolean }>`
   position: fixed;
   top: calc(50% - 0.875rem);
-  left: ${props => props.collapsed ? '4rem' : '15rem'};
+  left: ${(props) => (props.collapsed ? '4rem' : '15rem')};
   opacity: 0;
   width: 1.75rem;
   height: 1.75rem;
@@ -34,7 +36,7 @@ const CollapseButton = styled.button<{collapsed: boolean}>`
   transition: all 0.25s;
 
   @media only screen and (max-width: 1023px) {
-    left: ${props => props.collapsed ? '4.25rem' : '13rem'};
+    left: ${(props) => (props.collapsed ? '4.25rem' : '13rem')};
   }
 `;
 

@@ -18,7 +18,15 @@ const DeviceDetailModal = ({ isOpen, device, close }: Props) => {
   const isGlobal = device.isGlobal === 1;
 
   return (
-    <Modal open={isOpen} closable onCancel={close} title={t('device-farm:deviceDetailModalTitle')} centered destroyOnClose footer={null}>
+    <Modal
+      open={isOpen}
+      closable
+      onCancel={close}
+      title={t('device-farm:deviceDetailModalTitle')}
+      centered
+      destroyOnClose
+      footer={null}
+    >
       <Box>
         <Content>
           <StyledH4>{t('device-farm:deviceDetailNameTitle')}</StyledH4>
@@ -29,20 +37,12 @@ const DeviceDetailModal = ({ isOpen, device, close }: Props) => {
         {!isGlobal && (
           <Content>
             <StyledH4>{t('device-farm:deviceDetailProjectTitle')}</StyledH4>
-            <div>
-              {device?.projects?.map((item) => (
-                <Tag key={item.projectId}>{item.name}</Tag>
-              ))}
-            </div>
+            <div>{device?.projects?.map((item) => <Tag key={item.projectId}>{item.name}</Tag>)}</div>
           </Content>
         )}
         <Content>
           <StyledH4>{t('device-farm:deviceDetailTagTitle')}</StyledH4>
-          <div>
-            {device?.deviceTags?.map((item) => (
-              <Tag key={item.deviceTagId}>{item.name}</Tag>
-            ))}
-          </div>
+          <div>{device?.deviceTags?.map((item) => <Tag key={item.deviceTagId}>{item.name}</Tag>)}</div>
         </Content>
         <Content>
           <StyledH4>{t('device-farm:deviceDetailConnectedHostTitle')}</StyledH4>

@@ -65,7 +65,11 @@ const DeviceVersionAlertIcon = ({ device }: Props) => {
           <Centered>
             Device version is lower than the minimum version.
             <br />
-            <Link href={docsLink[device.platform] ?? 'https://docs.dogutech.io/device-farm'} target="_blank" style={{ textDecoration: 'underline' }}>
+            <Link
+              href={docsLink[device.platform] ?? 'https://docs.dogutech.io/device-farm'}
+              target="_blank"
+              style={{ textDecoration: 'underline' }}
+            >
               Click here
             </Link>{' '}
             to check the minimum version.

@@ -1,3 +1,6 @@
+import { LicenseBase } from '../..';
 import { OrganizationBase } from '../../base/organization';
 
-export type OrganizationResponse = OrganizationBase;
+export interface OrganizationResponse extends OrganizationBase {
+  licenseInfo?: LicenseBase;
+}

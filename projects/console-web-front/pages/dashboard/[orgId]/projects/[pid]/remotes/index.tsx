@@ -10,14 +10,17 @@ import TableListView from 'src/components/common/TableListView';
 import ProjectLayoutWithSidebar from 'src/components/layouts/ProjectLayoutWithSidebar';
 import RemoteItem from 'src/components/remote/RemoteItem';
 import RemoteListController from 'src/components/remote/RemoteListController';
-import SlackRemoteChannelButton from 'src/enterprise/components/slack/SlackRemoteChannelButton';
+import SlackRemoteChannelButton from 'enterprise/components/slack/SlackRemoteChannelButton';
 import { getProjectPageServerSideProps, ProjectServerSideProps } from 'src/ssr/project';
 import { flexRowSpaceBetweenStyle } from 'src/styles/box';
 import { NextPageWithLayout } from '../../../../../_app';
 import TutorialButton from '../../../../../../src/components/buttons/TutorialButton';
 
 const RemoteListPage: NextPageWithLayout<ProjectServerSideProps> = ({ organization, project }) => {
-  const { data: remoteSlack } = useSWR<ProjectSlackRemoteBase>(`/organizations/${organization.organizationId}/projects/${project.projectId}/slack/remote`, swrAuthFetcher);
+  const { data: remoteSlack } = useSWR<ProjectSlackRemoteBase>(
+    `/organizations/${organization.organizationId}/projects/${project.projectId}/slack/remote`,
+    swrAuthFetcher,
+  );
 
   return (
     <>
@@ -28,8 +31,14 @@ const RemoteListPage: NextPageWithLayout<ProjectServerSideProps> = ({ organizati
         top={
           <FlexBetweenBox>
             <LeftMenuButtonList>
-              <TutorialButton href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/remotes/get-started`} />
-              <SlackRemoteChannelButton organizationId={organization.organizationId} projectId={project.projectId} remoteSlack={remoteSlack} />
+              <TutorialButton
+                href={`/dashboard/${organization.organizationId}/projects/${project.projectId}/remotes/get-started`}
+              />
+              <SlackRemoteChannelButton
+                organizationId={organization.organizationId}
+                projectId={project.projectId}
+                remoteSlack={remoteSlack}
+              />
             </LeftMenuButtonList>
             <RefreshButton />
           </FlexBetweenBox>

@@ -12,6 +12,7 @@ export module Ipa {
     name: string;
     package: string;
     version: string;
+    bundleVersion: number;
     icon: Buffer | undefined;
   }
 
@@ -45,7 +46,7 @@ export module Ipa {
     return { plist: plist, images: images };
   }
 
-  function readInfoPlist(entry: IZipEntry): { name: string; package: string; version: string; iconPaths: string[] } {
+  function readInfoPlist(entry: IZipEntry): { name: string; package: string; version: string; bundleVersion: string; iconPaths: string[] } {
     const fileData = entry.getData().toString('utf8');
     let doc: PlistObject = {};
     try {
@@ -57,6 +58,7 @@ export module Ipa {
     const name = (doc.CFBundleDisplayName as string) || (doc.CFBundleName as string) || 'unknown';
     const packageName = (doc.CFBundleIdentifier as string) || 'unknown';
     const version = (doc.CFBundleShortVersionString as string) || 'unknown';
+    const bundleVersion = (doc.CFBundleVersion as string) || 'unknown';
     let iconPaths: string[] = [];
     try {
       const bundleIcons = doc.CFBundleIcons as PlistObject;
@@ -65,7 +67,7 @@ export module Ipa {
     } catch {
       logger.error(`Cannot find icon path in plist`);
     }
-    return { name: name, package: packageName, version: version, iconPaths: iconPaths };
+    return { name: name, package: packageName, version: version, bundleVersion, iconPaths: iconPaths };
   }
 
   function getIcon(images: IZipEntry[], iconPaths: string[]): Buffer | undefined {
@@ -93,6 +95,7 @@ export module Ipa {
       name: plistDoc.name,
       package: plistDoc.package,
       version: plistDoc.version,
+      bundleVersion: Number(plistDoc.bundleVersion) || 0,
       icon: iconData,
     };
 

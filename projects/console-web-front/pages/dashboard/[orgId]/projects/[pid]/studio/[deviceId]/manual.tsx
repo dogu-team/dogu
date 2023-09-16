@@ -3,7 +3,11 @@ import styled from 'styled-components';
 
 import { NextPageWithLayout } from 'pages/_app';
 import ManualTesting from 'src/components/studio/ManualTesting';
-import { getStudioTestingLayout, getStudioTestingServerSideProps, StudioTestingPageProps } from 'src/enterprise/pages/studio';
+import {
+  getStudioTestingLayout,
+  getStudioTestingServerSideProps,
+  StudioTestingPageProps,
+} from 'enterprise/pages/studio';
 
 const StudioManualPage: NextPageWithLayout<StudioTestingPageProps> = ({ organization, project, me, deviceId }) => {
   return (

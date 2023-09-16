@@ -27,11 +27,15 @@ const JobExpandableSidebarButton = ({ job, orgId, pipelineId, projectId, expanda
   const router = useRouter();
   const [expanded, setExpanded] = useState(Number(router.query.jobId) === job.routineJobId);
   const { data, isLoading, error, mutate } = useSWR<RoutineDeviceJobBase[]>(
-    expandable && expanded && `/organizations/${orgId}/projects/${projectId}/pipelines/${pipelineId}/jobs/${job.routineJobId}/device-jobs`,
+    expandable &&
+      expanded &&
+      `/organizations/${orgId}/projects/${projectId}/pipelines/${pipelineId}/jobs/${job.routineJobId}/device-jobs`,
     swrAuthFetcher,
   );
   const { t } = useTranslation();
-  const liveJob = useLivePipelineStore((state) => state.pipeline?.routineJobs?.find((j) => j.routineJobId === job.routineJobId));
+  const liveJob = useLivePipelineStore(
+    (state) => state.pipeline?.routineJobs?.find((j) => j.routineJobId === job.routineJobId),
+  );
 
   const jobStatus = liveJob ? liveJob.status : job.status;
 
@@ -75,7 +79,10 @@ const JobExpandableSidebarButton = ({ job, orgId, pipelineId, projectId, expanda
             {t('routine:jobSummaryText')}
           </ProjectSidebarItem>
           {data?.map((item) => {
-            const deviceJobStatus = liveJob ? liveJob.routineDeviceJobs?.find((deviceJob) => deviceJob.routineDeviceJobId === item.routineDeviceJobId)?.status : item.status;
+            const deviceJobStatus = liveJob
+              ? liveJob.routineDeviceJobs?.find((deviceJob) => deviceJob.routineDeviceJobId === item.routineDeviceJobId)
+                  ?.status
+              : item.status;
 
             return (
               <ProjectSidebarItem

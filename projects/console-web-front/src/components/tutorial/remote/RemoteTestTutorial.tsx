@@ -23,10 +23,18 @@ const RemoteTestTutorial = ({ selectedSdk }: Props) => {
 
   return (
     <>
-      {selectedSdk === TutorialSupportSdk.WEBDRIVERIO && <WebdriverIoRemoteTutorial organizationId={organization.organizationId} projectId={project.projectId} />}
-      {selectedSdk === TutorialSupportSdk.APPIUM && <AppiumRemoteTutorial organizationId={organization.organizationId} projectId={project.projectId} />}
-      {selectedSdk === TutorialSupportSdk.GAMIUM && <GamiumRemoteTutorial organizationId={organization.organizationId} projectId={project.projectId} />}
-      {selectedSdk === TutorialSupportSdk.SELENIUM && <SeleniumRemoteTutorial organizationId={organization.organizationId} projectId={project.projectId} />}
+      {selectedSdk === TutorialSupportSdk.WEBDRIVERIO && (
+        <WebdriverIoRemoteTutorial organizationId={organization.organizationId} projectId={project.projectId} />
+      )}
+      {selectedSdk === TutorialSupportSdk.APPIUM && (
+        <AppiumRemoteTutorial organizationId={organization.organizationId} projectId={project.projectId} />
+      )}
+      {selectedSdk === TutorialSupportSdk.GAMIUM && (
+        <GamiumRemoteTutorial organizationId={organization.organizationId} projectId={project.projectId} />
+      )}
+      {selectedSdk === TutorialSupportSdk.SELENIUM && (
+        <SeleniumRemoteTutorial organizationId={organization.organizationId} projectId={project.projectId} />
+      )}
     </>
   );
 };

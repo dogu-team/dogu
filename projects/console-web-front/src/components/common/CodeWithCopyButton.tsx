@@ -29,7 +29,10 @@ const CodeWithCopyButton = ({ code, language }: CopyButtonContainerProps) => {
         {code}
       </SyntaxHighlighter>
       <Tooltip open={copied} title={'Copied'}>
-        <StyledButton icon={copied ? <CheckCircleFilled style={{ color: '#32CD32' }} /> : <CopyOutlined />} onClick={handleCopy} />
+        <StyledButton
+          icon={copied ? <CheckCircleFilled style={{ color: '#32CD32' }} /> : <CopyOutlined />}
+          onClick={handleCopy}
+        />
       </Tooltip>
     </Box>
   );

@@ -41,6 +41,15 @@ export interface JobSchema {
          */
         [k: string]: string;
       };
+  appPackageName?:
+    | string
+    | {
+        /**
+         * This interface was referenced by `undefined`'s JSON-Schema definition
+         * via the `patternProperty` "^[a-z]+$".
+         */
+        [k: string]: string;
+      };
   'runs-on':
     | {
         group: string | string[];

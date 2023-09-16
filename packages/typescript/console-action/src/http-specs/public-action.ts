@@ -30,6 +30,17 @@ export const PublicAction = {
     responseBody: GetApplicationListResponse,
   }),
 
+  getApplicationsWithUniquePackage: new ControllerMethodSpec({
+    controllerSpec: PublicActionController,
+    method: 'GET',
+    path: '/:projectId/applications/packages',
+    pathProvider: class {
+      constructor(readonly organizationId: OrganizationId, readonly projectId: ProjectId) {}
+    },
+    query: GetApplicationListQuery,
+    responseBody: GetApplicationListResponse,
+  }),
+
   getApplicationDownloadUrl: new ControllerMethodSpec({
     controllerSpec: PublicActionController,
     method: 'GET',

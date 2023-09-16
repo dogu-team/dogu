@@ -33,7 +33,12 @@ const RemoteDestListController = ({ organizationId, projectId, remoteDeviceJobId
   }
 
   if (!data || error) {
-    return <ErrorBox title="Something went wrong" desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get remote dest information'} />;
+    return (
+      <ErrorBox
+        title="Something went wrong"
+        desc={isAxiosError(error) ? getErrorMessageFromAxios(error) : 'Cannot get remote dest information'}
+      />
+    );
   }
 
   if (!data.length) {

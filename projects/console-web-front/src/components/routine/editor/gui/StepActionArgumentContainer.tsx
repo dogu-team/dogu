@@ -17,7 +17,10 @@ const CheckoutActionArgumentContainer = ({ step, updateArgs }: CheckoutProps) =>
   return (
     <>
       <KeyValueWrapper>
-        <Checkbox checked={(step.with?.clean as boolean | undefined) ?? false} onChange={(e) => updateArgs({ clean: e.target.checked })}>
+        <Checkbox
+          checked={(step.with?.clean as boolean | undefined) ?? false}
+          onChange={(e) => updateArgs({ clean: e.target.checked })}
+        >
           <Key>clean</Key>
         </Checkbox>
       </KeyValueWrapper>
@@ -75,15 +78,12 @@ const StepActionArgumentContainer = ({ step, onUpdate }: Props) => {
           </Checkbox>
         </KeyValueWrapper>
         {!!step.with?.checkout && <CheckoutActionArgumentContainer step={step} updateArgs={handleUpdateArgs} />}
-        {/* <KeyValueWrapper>
-          <Key>appVersion</Key>:&nbsp;
-          <Value></Value>
-        </KeyValueWrapper> */}
       </Box>
     );
   }
 
-  const isEnvironmentInvalid = !!step.with?.environment && ![Environment.NODE, Environment.PYTHON].includes(step.with?.environment as Environment);
+  const isEnvironmentInvalid =
+    !!step.with?.environment && ![Environment.NODE, Environment.PYTHON].includes(step.with?.environment as Environment);
 
   if (step.uses === RUN_TEST_ACTION_NAME) {
     return (

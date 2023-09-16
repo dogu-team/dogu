@@ -20,7 +20,9 @@ interface Props {
 }
 
 const RemoteItem = ({ remote, organizationId }: Props) => {
-  const passedCount = remote.remoteDeviceJobs?.filter((rdj) => isRemoteDeviceJobState(rdj, REMOTE_DEVICE_JOB_STATE.SUCCESS)).length;
+  const passedCount = remote.remoteDeviceJobs?.filter((rdj) =>
+    isRemoteDeviceJobState(rdj, REMOTE_DEVICE_JOB_STATE.SUCCESS),
+  ).length;
   const totalCount = remote.remoteDeviceJobs?.length;
   const isRemoteRunningState = isRemoteRunning(remote);
 
@@ -34,7 +36,17 @@ const RemoteItem = ({ remote, organizationId }: Props) => {
                 <RemoteStateSummaryGraph remoteJobs={remote.remoteDeviceJobs} />
               </div>
               <div style={{ marginLeft: '.5rem', fontWeight: '500' }}>
-                <Tag color={isRemoteRunningState ? 'blue' : passedCount === totalCount ? 'green' : passedCount === 0 ? 'error' : 'warning'}>
+                <Tag
+                  color={
+                    isRemoteRunningState
+                      ? 'blue'
+                      : passedCount === totalCount
+                      ? 'green'
+                      : passedCount === 0
+                      ? 'error'
+                      : 'warning'
+                  }
+                >
                   {passedCount} / {totalCount} PASSED
                 </Tag>
               </div>
@@ -44,7 +56,9 @@ const RemoteItem = ({ remote, organizationId }: Props) => {
           )}
 
           <div>
-            <Name href={`/dashboard/${organizationId}/projects/${remote.projectId}/remotes/${remote.remoteId}`}>{remote.remoteId}</Name>
+            <Name href={`/dashboard/${organizationId}/projects/${remote.projectId}/remotes/${remote.remoteId}`}>
+              {remote.remoteId}
+            </Name>
             <FlexRow style={{ fontSize: '.8rem' }}>
               <FlexRow>
                 Run by&nbsp;

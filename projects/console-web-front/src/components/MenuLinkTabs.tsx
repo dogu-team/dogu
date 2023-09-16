@@ -29,14 +29,20 @@ const MenuLinkTabs = ({ tabs }: MenuLinkTabProps) => {
     <Box>
       {tabs.map((tab) => {
         if ((tab as CustomMenuLinkTabItemProps).tab) {
-          return <React.Fragment key={tab.href}>{(tab as CustomMenuLinkTabItemProps).tab(router.asPath === tab.href)}</React.Fragment>;
+          return (
+            <React.Fragment key={tab.href}>
+              {(tab as CustomMenuLinkTabItemProps).tab(router.asPath === tab.href)}
+            </React.Fragment>
+          );
         }
 
         return (
           <MenuLinkTabItem
             key={tab.href}
             title={(tab as MenuLinkTabItemProps).title}
-            selected={(tab as MenuLinkTabItemProps).startsWith ? router.asPath.startsWith(tab.href) : router.asPath === tab.href}
+            selected={
+              (tab as MenuLinkTabItemProps).startsWith ? router.asPath.startsWith(tab.href) : router.asPath === tab.href
+            }
             href={tab.href}
             icon={(tab as MenuLinkTabItemProps).icon}
             blank={(tab as MenuLinkTabItemProps).blank}
@@ -51,7 +57,13 @@ const MenuLinkTabs = ({ tabs }: MenuLinkTabProps) => {
 
 export default MenuLinkTabs;
 
-export const MenuLinkTabItem = ({ title, icon, href, selected, ...props }: MenuLinkTabItemProps & { selected: boolean }) => {
+export const MenuLinkTabItem = ({
+  title,
+  icon,
+  href,
+  selected,
+  ...props
+}: MenuLinkTabItemProps & { selected: boolean }) => {
   return (
     <StyledLink
       target={props.blank ? '_blank' : undefined}

@@ -97,7 +97,9 @@ export const organizationRoleText: { [key in ORGANIZATION_ROLE]: string } = {
   [ORGANIZATION_ROLE.MEMBER]: 'Member',
 };
 
-export const deviceLogLevelColor: { [key in DeviceLogLevel]: { backgroundColor: string; color: string } } = {
+export const deviceLogLevelColor: {
+  [key in DeviceLogLevel]: { backgroundColor: string; color: string };
+} = {
   V: {
     backgroundColor: '#333333',
     color: '#ffffff',

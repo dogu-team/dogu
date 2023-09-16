@@ -84,14 +84,22 @@ const CreateHostModal = ({ isOpen, close }: Props) => {
               />
 
               <div style={{ marginTop: '1rem' }}>
-                <p style={{ flexShrink: 0, marginRight: '.25rem' }}>{t('device-farm:hostCreateModalTokenDescription')}</p>
+                <p style={{ flexShrink: 0, marginRight: '.25rem' }}>
+                  {t('device-farm:hostCreateModalTokenDescription')}
+                </p>
                 <TokenCopyInput value={result.message} />
-                <p style={{ fontSize: '.8rem', lineHeight: '1.4' }}>* {t('device-farm:hostCreateModalTokenCheckDescription')}</p>
+                <p style={{ fontSize: '.8rem', lineHeight: '1.4' }}>
+                  * {t('device-farm:hostCreateModalTokenCheckDescription')}
+                </p>
               </div>
             </div>
           ) : (
             <Form form={form} id="new-host" layout="vertical" onFinish={handleSubmit}>
-              <Form.Item name="name" label={t('device-farm:newHostModalInputName')} rules={[{ required: true, message: t('common:nameInputEmptyError') }]}>
+              <Form.Item
+                name="name"
+                label={t('device-farm:newHostModalInputName')}
+                rules={[{ required: true, message: t('common:nameInputEmptyError') }]}
+              >
                 <Input
                   type="text"
                   placeholder={t('common:name')}

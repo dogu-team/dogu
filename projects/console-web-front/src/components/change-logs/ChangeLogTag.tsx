@@ -3,7 +3,16 @@ import styled from 'styled-components';
 
 import { flexRowCenteredStyle } from '../../styles/box';
 
-export type AnnouncementType = 'announcement' | 'feature' | 'event' | 'release' | 'web' | 'mobile' | 'game' | 'automation' | 'integration';
+export type AnnouncementType =
+  | 'announcement'
+  | 'feature'
+  | 'event'
+  | 'release'
+  | 'web'
+  | 'mobile'
+  | 'game'
+  | 'automation'
+  | 'integration';
 
 interface Props {
   type: ChangeLogType;

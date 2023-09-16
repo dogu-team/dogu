@@ -1,6 +1,18 @@
-import { HttpRequest, HttpRequestParam, HttpRequestWebSocketResult, HttpResponse, WebSocketConnection, WebSocketMessage } from '@dogu-private/types';
+import {
+  HttpRequest,
+  HttpRequestParam,
+  HttpRequestWebSocketResult,
+  HttpResponse,
+  WebSocketConnection,
+  WebSocketMessage,
+} from '@dogu-private/types';
 import { SizePrefixedRecvQueue, Uint8ArrayUtil } from '@dogu-tech/common';
-import { DeviceClientOptions, DeviceService, DeviceWebSocket, DeviceWebSocketListener } from '@dogu-tech/device-client-common';
+import {
+  DeviceClientOptions,
+  DeviceService,
+  DeviceWebSocket,
+  DeviceWebSocketListener,
+} from '@dogu-tech/device-client-common';
 import EventEmitter from 'events';
 
 interface ResultEmitter {
@@ -66,7 +78,11 @@ class ChannelInfo {
 }
 
 class BrowserDeviceWebSocket implements DeviceWebSocket {
-  constructor(readonly name: string, private readonly channel: () => ChannelInfo | undefined, private readonly sendInternal: (message: WebSocketMessage) => void) {}
+  constructor(
+    readonly name: string,
+    private readonly channel: () => ChannelInfo | undefined,
+    private readonly sendInternal: (message: WebSocketMessage) => void,
+  ) {}
 
   send(message: string | Uint8Array): void {
     const channelInfo = this.channel();
@@ -108,7 +124,10 @@ export class BrowserDeviceService implements DeviceService {
 
   constructor(
     httpChannel: RTCDataChannel,
-    readonly wsChannelCreator: (connection: WebSocketConnection) => { name: string; channel: RTCDataChannel },
+    readonly wsChannelCreator: (connection: WebSocketConnection) => {
+      name: string;
+      channel: RTCDataChannel;
+    },
     readonly sendThrottleMs: number,
   ) {
     this.addChannel(this.httpChannelName, httpChannel);
@@ -227,7 +246,11 @@ export class BrowserDeviceService implements DeviceService {
     });
   }
 
-  connectWebSocket(connection: WebSocketConnection, options: Required<DeviceClientOptions>, listener?: DeviceWebSocketListener): DeviceWebSocket {
+  connectWebSocket(
+    connection: WebSocketConnection,
+    options: Required<DeviceClientOptions>,
+    listener?: DeviceWebSocketListener,
+  ): DeviceWebSocket {
     console.log('connectWebSocket', connection.path);
     const { name, channel } = this.wsChannelCreator(connection);
     this.addChannel(name, channel);

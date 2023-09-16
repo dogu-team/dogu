@@ -5,7 +5,14 @@ import styled from 'styled-components';
 import usePipelineFilterStore from '../../stores/pipeline-filter';
 import PipelineStatusIcon from './PipelineStatusIcon';
 
-const statusList = [PIPELINE_STATUS.WAITING, PIPELINE_STATUS.IN_PROGRESS, PIPELINE_STATUS.SUCCESS, PIPELINE_STATUS.FAILURE, PIPELINE_STATUS.CANCELLED, PIPELINE_STATUS.SKIPPED];
+const statusList = [
+  PIPELINE_STATUS.WAITING,
+  PIPELINE_STATUS.IN_PROGRESS,
+  PIPELINE_STATUS.SUCCESS,
+  PIPELINE_STATUS.FAILURE,
+  PIPELINE_STATUS.CANCELLED,
+  PIPELINE_STATUS.SKIPPED,
+];
 
 const PipelineStatusSelector = () => {
   const updateFilter = usePipelineFilterStore((state) => state.updateFilter);

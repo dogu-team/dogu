@@ -1,7 +1,16 @@
 import { JobSchema } from '@dogu-private/types';
 import { useRouter } from 'next/router';
 import { useEffect, useRef } from 'react';
-import ReactFlow, { Background, Controls, Edge, MiniMap, Node as ReactFlowNode, NodeTypes, useEdgesState, useNodesState } from 'reactflow';
+import ReactFlow, {
+  Background,
+  Controls,
+  Edge,
+  MiniMap,
+  Node as ReactFlowNode,
+  NodeTypes,
+  useEdgesState,
+  useNodesState,
+} from 'reactflow';
 import styled from 'styled-components';
 import 'reactflow/dist/style.css';
 
@@ -57,7 +66,13 @@ const RoutineFlow = ({}: Props) => {
      * iterate until done;
      */
 
-    const pushJobRelatedNodes = (generationNodes: ReactFlowNode[], generation: number, jobName: string, job: JobSchema, jobYPos: number) => {
+    const pushJobRelatedNodes = (
+      generationNodes: ReactFlowNode[],
+      generation: number,
+      jobName: string,
+      job: JobSchema,
+      jobYPos: number,
+    ) => {
       generationNodes.push({
         id: `job-${jobName}`,
         type: RoutineGUIEditorNodeType.JOB,
@@ -90,7 +105,11 @@ const RoutineFlow = ({}: Props) => {
       });
     };
 
-    const locateGenerationNodes = (generationNodes: ReactFlowNode[], generation: number, generationJobNames: string[]) => {
+    const locateGenerationNodes = (
+      generationNodes: ReactFlowNode[],
+      generation: number,
+      generationJobNames: string[],
+    ) => {
       let yPos = 48;
 
       generationJobNames.forEach((jobName) => {
@@ -155,7 +174,11 @@ const RoutineFlow = ({}: Props) => {
 
       if (!isNeedsInJobNames) {
         alert('There is a job that needs a job that is not in the job list. Please check your job dependencies.');
-        router.replace({ pathname: router.pathname, query: { ...router.query, mode: RoutineEditMode.SCRIPT } }, undefined, { shallow: true });
+        router.replace(
+          { pathname: router.pathname, query: { ...router.query, mode: RoutineEditMode.SCRIPT } },
+          undefined,
+          { shallow: true },
+        );
         break;
       }
 
@@ -225,7 +248,15 @@ const RoutineFlow = ({}: Props) => {
 
   return (
     <FlowWrapper ref={wrapperRef}>
-      <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} onEdgesChange={onEdgesChange} onNodesChange={onNodesChange} snapGrid={[16, 16]} snapToGrid={true}>
+      <ReactFlow
+        nodes={nodes}
+        edges={edges}
+        nodeTypes={nodeTypes}
+        onEdgesChange={onEdgesChange}
+        onNodesChange={onNodesChange}
+        snapGrid={[16, 16]}
+        snapToGrid={true}
+      >
         <MiniMap zoomable pannable />
         <Controls />
         <Background color="#aaa" gap={16} />

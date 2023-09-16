@@ -49,7 +49,11 @@ function GitlabButton({ isConnected, disabled, organizationId, projectId, descri
     const values = await form.validateFields();
 
     try {
-      await saveScm(organizationId, projectId, { service: PROJECT_SCM_TYPE.GITLAB, token: values.token, url: values.repo.replace('.git', '') });
+      await saveScm(organizationId, projectId, {
+        service: PROJECT_SCM_TYPE.GITLAB,
+        token: values.token,
+        url: values.repo.replace('.git', ''),
+      });
       sendSuccessNotification('Gitlab integration saved');
       fireEvent('onProjectScmUpdated');
       handleClose();
@@ -94,7 +98,16 @@ function GitlabButton({ isConnected, disabled, organizationId, projectId, descri
         }
       />
 
-      <Modal open={isOpen} centered closable onCancel={handleClose} okText={'Save'} onOk={saveGitLabIntegration} confirmLoading={saveLoading} title="GitLab Integration">
+      <Modal
+        open={isOpen}
+        centered
+        closable
+        onCancel={handleClose}
+        okText={'Save'}
+        onOk={saveGitLabIntegration}
+        confirmLoading={saveLoading}
+        title="GitLab Integration"
+      >
         <GitIntegrationForm form={form} hideType />
       </Modal>
     </>

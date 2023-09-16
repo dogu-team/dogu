@@ -2,9 +2,13 @@ name: dogu-actions/checkout
 description: checkout repository
 author: dogu
 inputs:
-  branchOrTag:
-    description: branch or tag to download
+  branch:
+    description: branch to checkout. if tag is set, branch is ignored.
     default: main
+    required: false
+  tag:
+    description: tag to checkout. if tag is set, branch is ignored.
+    default: ''
     required: false
   clean:
     description: run git clean -fdx before git pull without git clone

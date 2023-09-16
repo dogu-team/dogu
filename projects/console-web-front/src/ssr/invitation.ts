@@ -20,7 +20,11 @@ export const getInvitationServerSideProps: GetServerSideProps = async (context) 
 
     if (me) {
       return {
-        redirect: redirectWithLocale(context, `/auth/invite-confirm?email=${email}&organizationId=${organizationId}&token=${token}`, false),
+        redirect: redirectWithLocale(
+          context,
+          `/auth/invite-confirm?email=${email}&organizationId=${organizationId}&token=${token}`,
+          false,
+        ),
       };
     }
   } catch (e) {
@@ -31,7 +35,12 @@ export const getInvitationServerSideProps: GetServerSideProps = async (context) 
 
   try {
     const { authToken } = getServersideCookies(context.req.cookies);
-    const invitation = await getInvitationServerSide(email as string, organizationId as OrganizationId, token as string, authToken ?? '');
+    const invitation = await getInvitationServerSide(
+      email as string,
+      organizationId as OrganizationId,
+      token as string,
+      authToken ?? '',
+    );
 
     return {
       props: {
