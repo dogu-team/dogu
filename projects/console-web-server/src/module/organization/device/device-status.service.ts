@@ -109,6 +109,7 @@ export class DeviceStatusService {
       .leftJoinAndSelect(`device.${DevicePropCamel.remoteDeviceJobs}`, 'remoteDeviceJob', `remoteDeviceJob.${RemoteDeviceJobPropCamel.sessionState} IN (:...sessionStates)`, {
         sessionStates: [REMOTE_DEVICE_JOB_STATE.WAITING, REMOTE_DEVICE_JOB_STATE.IN_PROGRESS],
       })
+      .leftJoinAndSelect(`device.${DevicePropCamel.deviceRunners}`, 'deviceRunner')
       .where('organization.organization_id = :organizationId', { organizationId })
       .andWhere('device.name ILIKE :name', { name: `%${dto.deviceName}%` })
       .andWhere(projectIdFilterClause, { projectIds: dto.projectIds })
@@ -150,6 +151,7 @@ export class DeviceStatusService {
       .where(`hostDevice.${DevicePropSnake.is_host} = 1 AND hostDevice.${DevicePropSnake.enable_host_device} = 0`);
 
     const rawPagedDevicesQuery = qb
+      .leftJoinAndSelect(`device.${DevicePropCamel.deviceRunners}`, 'deviceRunner')
       .where('device.organization_id = :organizationId', { organizationId })
       .andWhere(`device.${DevicePropSnake.device_id} NOT IN ${projectDeviceSubQuery.getQuery()}`)
       .andWhere(`device.${DevicePropSnake.device_id} NOT IN ${hostDeviceSubQuery.getQuery()}`)
@@ -177,6 +179,7 @@ export class DeviceStatusService {
       .leftJoinAndSelect(`device.${DevicePropCamel.host}`, 'host')
       .leftJoinAndSelect(`device.${DevicePropCamel.projectAndDevices}`, 'projectAndDevice')
       .leftJoinAndSelect(`projectAndDevice.${ProjectAndDevicePropCamel.project}`, 'project')
+      .leftJoinAndSelect(`device.${DevicePropCamel.deviceRunners}`, 'deviceRunner')
       .where(`device.${DevicePropCamel.deviceId} = :deviceId`, { deviceId })
       .orderBy(`device.${DevicePropCamel.updatedAt}`, 'DESC')
       .orderBy(`deviceTag.${DeviceTagPropCamel.createdAt}`, 'ASC')
