@@ -72,7 +72,8 @@ RUN curl -o node-v16.20.2-linux-x64.tar.gz https://nodejs.org/download/release/v
     mv node-v16.20.2-linux-x64 /node && \
     rm node-v16.20.2-linux-x64.tar.gz
 ENV PATH /node/bin:${PATH}
-RUN corepack enable
+RUN corepack enable && \
+    corepack prepare yarn@3.3.1
 
 WORKDIR /dogu
 ENV NODE_OPTIONS --max-old-space-size=8192 ${NODE_OPTIONS}
@@ -83,7 +84,10 @@ COPY .husky ./.husky
 COPY packages/typescript ./packages/typescript
 COPY packages/typescript-private ./packages/typescript-private
 COPY packages/typescript-dev-private ./packages/typescript-dev-private
+COPY projects/android-device-agent ./projects/android-device-agent
 COPY projects/dogu-agent ./projects/dogu-agent
+COPY projects/go-device-controller ./projects/go-device-controller
+COPY projects/ios-device-agent ./projects/ios-device-agent
 
 RUN yarn run newbie:cicd
 RUN yarn run build
