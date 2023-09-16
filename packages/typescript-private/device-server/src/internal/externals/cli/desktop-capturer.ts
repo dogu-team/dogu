@@ -1,7 +1,8 @@
 import { DeviceWindowInfo } from '@dogu-private/types';
-import { Printable, stringify } from '@dogu-tech/common';
+import { Printable, stringify, transformAndValidate } from '@dogu-tech/common';
 import { ChildProcess, HostPaths } from '@dogu-tech/node';
 import fs from 'fs';
+import { isArray } from 'lodash';
 import { registerBootstrapHandler } from '../../../bootstrap/bootstrap.service';
 
 const binPath = (): string => HostPaths.thirdParty.pathMap().common.desktopCapturer;
@@ -13,6 +14,13 @@ export async function getWindows(printable: Printable): Promise<DeviceWindowInfo
     return [];
   }
   const infos = JSON.parse(res.stdout) as DeviceWindowInfo[];
+  if (!isArray(infos)) {
+    throw new Error(`Invalid result: ${res.stdout}`);
+  }
+  for (const info of infos) {
+    await transformAndValidate(DeviceWindowInfo, info, { printable });
+  }
+
   return infos;
 }
 
