@@ -55,6 +55,8 @@ export interface DcGdcStopScreenRecordResult {
 
 export interface DcGdcGetSurfaceStatusParam {
   serial: string;
+  screenId?: number | undefined;
+  pid?: number | undefined;
 }
 
 export interface DcGdcGetSurfaceStatusResult {
@@ -651,13 +653,19 @@ export const DcGdcStopScreenRecordResult = {
 };
 
 function createBaseDcGdcGetSurfaceStatusParam(): DcGdcGetSurfaceStatusParam {
-  return { serial: '' };
+  return { serial: '', screenId: undefined, pid: undefined };
 }
 
 export const DcGdcGetSurfaceStatusParam = {
   encode(message: DcGdcGetSurfaceStatusParam, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.serial !== '') {
       writer.uint32(10).string(message.serial);
+    }
+    if (message.screenId !== undefined) {
+      writer.uint32(16).int32(message.screenId);
+    }
+    if (message.pid !== undefined) {
+      writer.uint32(24).int32(message.pid);
     }
     return writer;
   },
@@ -672,6 +680,12 @@ export const DcGdcGetSurfaceStatusParam = {
         case 1:
           message.serial = reader.string();
           break;
+        case 2:
+          message.screenId = reader.int32();
+          break;
+        case 3:
+          message.pid = reader.int32();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -681,18 +695,26 @@ export const DcGdcGetSurfaceStatusParam = {
   },
 
   fromJSON(object: any): DcGdcGetSurfaceStatusParam {
-    return { serial: isSet(object.serial) ? String(object.serial) : '' };
+    return {
+      serial: isSet(object.serial) ? String(object.serial) : '',
+      screenId: isSet(object.screenId) ? Number(object.screenId) : undefined,
+      pid: isSet(object.pid) ? Number(object.pid) : undefined,
+    };
   },
 
   toJSON(message: DcGdcGetSurfaceStatusParam): unknown {
     const obj: any = {};
     message.serial !== undefined && (obj.serial = message.serial);
+    message.screenId !== undefined && (obj.screenId = Math.round(message.screenId));
+    message.pid !== undefined && (obj.pid = Math.round(message.pid));
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<DcGdcGetSurfaceStatusParam>, I>>(object: I): DcGdcGetSurfaceStatusParam {
     const message = createBaseDcGdcGetSurfaceStatusParam();
     message.serial = object.serial ?? '';
+    message.screenId = object.screenId ?? undefined;
+    message.pid = object.pid ?? undefined;
     return message;
   },
 };

@@ -58,6 +58,9 @@ message ScreenCaptureOption {
   optional fixed32 height = 8;
 
   // Used for desktop platform
+  optional int32 screen_id = 9;
+
+  // Used for desktop platform
   // If pid paaed. capture pid's window
-  optional int32 pid = 9;
+  optional int32 pid = 10;
 }

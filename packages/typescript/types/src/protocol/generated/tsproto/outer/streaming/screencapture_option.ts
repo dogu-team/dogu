@@ -62,6 +62,8 @@ export interface ScreenCaptureOption {
    * override max_resolution
    */
   height?: number | undefined;
+  /** Used for desktop platform */
+  screenId?: number | undefined;
   /**
    * Used for desktop platform
    * If pid paaed. capture pid's window
@@ -79,6 +81,7 @@ function createBaseScreenCaptureOption(): ScreenCaptureOption {
     maxResolution: undefined,
     width: undefined,
     height: undefined,
+    screenId: undefined,
     pid: undefined,
   };
 }
@@ -109,8 +112,11 @@ export const ScreenCaptureOption = {
     if (message.height !== undefined) {
       writer.uint32(69).fixed32(message.height);
     }
+    if (message.screenId !== undefined) {
+      writer.uint32(72).int32(message.screenId);
+    }
     if (message.pid !== undefined) {
-      writer.uint32(72).int32(message.pid);
+      writer.uint32(80).int32(message.pid);
     }
     return writer;
   },
@@ -147,6 +153,9 @@ export const ScreenCaptureOption = {
           message.height = reader.fixed32();
           break;
         case 9:
+          message.screenId = reader.int32();
+          break;
+        case 10:
           message.pid = reader.int32();
           break;
         default:
@@ -167,6 +176,7 @@ export const ScreenCaptureOption = {
       maxResolution: isSet(object.maxResolution) ? Number(object.maxResolution) : undefined,
       width: isSet(object.width) ? Number(object.width) : undefined,
       height: isSet(object.height) ? Number(object.height) : undefined,
+      screenId: isSet(object.screenId) ? Number(object.screenId) : undefined,
       pid: isSet(object.pid) ? Number(object.pid) : undefined,
     };
   },
@@ -181,6 +191,7 @@ export const ScreenCaptureOption = {
     message.maxResolution !== undefined && (obj.maxResolution = Math.round(message.maxResolution));
     message.width !== undefined && (obj.width = Math.round(message.width));
     message.height !== undefined && (obj.height = Math.round(message.height));
+    message.screenId !== undefined && (obj.screenId = Math.round(message.screenId));
     message.pid !== undefined && (obj.pid = Math.round(message.pid));
     return obj;
   },
@@ -195,6 +206,7 @@ export const ScreenCaptureOption = {
     message.maxResolution = object.maxResolution ?? undefined;
     message.width = object.width ?? undefined;
     message.height = object.height ?? undefined;
+    message.screenId = object.screenId ?? undefined;
     message.pid = object.pid ?? undefined;
     return message;
   },

@@ -82,7 +82,7 @@ func (s *WebmMuxer) FilePath() string {
 	return s.filePath
 }
 
-func (s *WebmMuxer) GetSurfaceListenerType() string {
+func (s *WebmMuxer) GetSurfaceListenerType() surface.SurfaceListenerType {
 	return MuxerType
 }
 

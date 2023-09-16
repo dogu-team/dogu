@@ -85,24 +85,30 @@ public struct Outer_Streaming_StreamingOffer {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  public var serial: String = String()
+  public var serial: String {
+    get {return _storage._serial}
+    set {_uniqueStorage()._serial = newValue}
+  }
 
-  public var value: Outer_Streaming_StreamingOffer.OneOf_Value? = nil
+  public var value: OneOf_Value? {
+    get {return _storage._value}
+    set {_uniqueStorage()._value = newValue}
+  }
 
   public var startStreaming: Outer_Streaming_StartStreaming {
     get {
-      if case .startStreaming(let v)? = value {return v}
+      if case .startStreaming(let v)? = _storage._value {return v}
       return Outer_Streaming_StartStreaming()
     }
-    set {value = .startStreaming(newValue)}
+    set {_uniqueStorage()._value = .startStreaming(newValue)}
   }
 
   public var iceCandidate: Outer_Streaming_ProtoRTCIceCandidateInit {
     get {
-      if case .iceCandidate(let v)? = value {return v}
+      if case .iceCandidate(let v)? = _storage._value {return v}
       return Outer_Streaming_ProtoRTCIceCandidateInit()
     }
-    set {value = .iceCandidate(newValue)}
+    set {_uniqueStorage()._value = .iceCandidate(newValue)}
   }
 
   public var unknownFields = SwiftProtobuf.UnknownStorage()
@@ -132,6 +138,8 @@ public struct Outer_Streaming_StreamingOffer {
   }
 
   public init() {}
+
+  fileprivate var _storage = _StorageClass.defaultInstance
 }
 
 public struct Outer_Streaming_StreamingAnswer {
@@ -322,69 +330,103 @@ extension Outer_Streaming_StreamingOffer: SwiftProtobuf.Message, SwiftProtobuf._
     3: .standard(proto: "ice_candidate"),
   ]
 
+  fileprivate class _StorageClass {
+    var _serial: String = String()
+    var _value: Outer_Streaming_StreamingOffer.OneOf_Value?
+
+    static let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _serial = source._serial
+      _value = source._value
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularStringField(value: &self.serial) }()
-      case 2: try {
-        var v: Outer_Streaming_StartStreaming?
-        var hadOneofValue = false
-        if let current = self.value {
-          hadOneofValue = true
-          if case .startStreaming(let m) = current {v = m}
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularStringField(value: &_storage._serial) }()
+        case 2: try {
+          var v: Outer_Streaming_StartStreaming?
+          var hadOneofValue = false
+          if let current = _storage._value {
+            hadOneofValue = true
+            if case .startStreaming(let m) = current {v = m}
+          }
+          try decoder.decodeSingularMessageField(value: &v)
+          if let v = v {
+            if hadOneofValue {try decoder.handleConflictingOneOf()}
+            _storage._value = .startStreaming(v)
+          }
+        }()
+        case 3: try {
+          var v: Outer_Streaming_ProtoRTCIceCandidateInit?
+          var hadOneofValue = false
+          if let current = _storage._value {
+            hadOneofValue = true
+            if case .iceCandidate(let m) = current {v = m}
+          }
+          try decoder.decodeSingularMessageField(value: &v)
+          if let v = v {
+            if hadOneofValue {try decoder.handleConflictingOneOf()}
+            _storage._value = .iceCandidate(v)
+          }
+        }()
+        default: break
         }
-        try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.value = .startStreaming(v)
-        }
-      }()
-      case 3: try {
-        var v: Outer_Streaming_ProtoRTCIceCandidateInit?
-        var hadOneofValue = false
-        if let current = self.value {
-          hadOneofValue = true
-          if case .iceCandidate(let m) = current {v = m}
-        }
-        try decoder.decodeSingularMessageField(value: &v)
-        if let v = v {
-          if hadOneofValue {try decoder.handleConflictingOneOf()}
-          self.value = .iceCandidate(v)
-        }
-      }()
-      default: break
       }
     }
   }
 
   public func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    if !self.serial.isEmpty {
-      try visitor.visitSingularStringField(value: self.serial, fieldNumber: 1)
-    }
-    switch self.value {
-    case .startStreaming?: try {
-      guard case .startStreaming(let v)? = self.value else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
-    }()
-    case .iceCandidate?: try {
-      guard case .iceCandidate(let v)? = self.value else { preconditionFailure() }
-      try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
-    }()
-    case nil: break
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      if !_storage._serial.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._serial, fieldNumber: 1)
+      }
+      switch _storage._value {
+      case .startStreaming?: try {
+        guard case .startStreaming(let v)? = _storage._value else { preconditionFailure() }
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 2)
+      }()
+      case .iceCandidate?: try {
+        guard case .iceCandidate(let v)? = _storage._value else { preconditionFailure() }
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 3)
+      }()
+      case nil: break
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   public static func ==(lhs: Outer_Streaming_StreamingOffer, rhs: Outer_Streaming_StreamingOffer) -> Bool {
-    if lhs.serial != rhs.serial {return false}
-    if lhs.value != rhs.value {return false}
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._serial != rhs_storage._serial {return false}
+        if _storage._value != rhs_storage._value {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

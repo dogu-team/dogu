@@ -102,53 +102,73 @@ func (ds *Devices) onDeviceDisconnected(serial string) {
 		return
 	}
 
-	device.Surface().RemoveAllListeners()
+	device.Surfaces().Remove()
 	delete(ds.devicesMap, serial)
 }
 
 func (ds *Devices) AddSurfaceListener(serial string, listener surface.SurfaceListener, option *streaming.ScreenCaptureOption) *outer.ErrorResult {
 	device := ds.findDevice(serial)
 	if nil == device {
-		log.Inst.Error("Devices.AddSurfaceListener device not found", zap.String("serial", serial))
+		log.Inst.Error("Devices.AddSurfaceListener device not found", zap.String("serial", serial), zap.Int32("type", option.GetScreenId()), zap.Int32("pid", option.GetPid()))
 		return &outer.ErrorResult{
 			Code:    outer.Code_CODE_DEVICE_NOTFOUND,
 			Message: "device not found",
 		}
 	}
-	device.Surface().SetScreenCaptureOption(option)
-	device.Surface().AddListener(listener)
+	screenId := surface.ScreenId(option.GetScreenId())
+	pid := surface.Pid(option.GetPid())
+	surfaceType := surface.NewSurfaceType(screenId, pid)
+
+	surface := device.Surfaces().GetOrCreateSurface(surfaceType, surface.ScreenId(screenId), surface.Pid(pid))
+	surface.SetScreenCaptureOption(option)
+	surface.AddListener(listener)
+
 	return gotypes.Success
 }
 
-func (ds *Devices) RemoveSurfaceListener(serial string, listener surface.SurfaceListener) {
+func (ds *Devices) RemoveSurfaceListener(serial string, listener surface.SurfaceListener) bool {
 	device := ds.findDevice(serial)
 	if nil == device {
 		log.Inst.Error("Devices.RemoveSurfaceListener device not found", zap.String("serial", serial))
-		return
+		return false
 	}
-	device.Surface().RemoveListener(listener)
+
+	return device.Surfaces().RemoveSurfaceListener(listener)
 }
 
-func (ds *Devices) FindSurfaceListeners(serial string, listenerType string) []surface.SurfaceListener {
+func (ds *Devices) FindSurfaceListeners(serial string, listenerType surface.SurfaceListenerType) []surface.SurfaceListener {
 	device := ds.findDevice(serial)
 	if nil == device {
-		log.Inst.Error("Devices.FindSurfaceListener device not found", zap.String("serial", serial))
+		log.Inst.Error("Devices.FindSurfaceListener device not found", zap.String("serial", serial), zap.String("type", listenerType.String()))
 		return make([]surface.SurfaceListener, 0)
 	}
-	return device.Surface().FindListeners(listenerType)
+	listeners := device.Surfaces().FindListeners(listenerType)
+	return listeners
 }
 
-func (ds *Devices) GetSurfaceStatus(serial string) types.DcGdcGetSurfaceStatusResult {
-	device := ds.findDevice(serial)
+func (ds *Devices) GetSurfaceStatus(a *types.DcGdcGetSurfaceStatusParam) types.DcGdcGetSurfaceStatusResult {
+	device := ds.findDevice(a.GetSerial())
 	if nil == device {
-		log.Inst.Error("Devices.FindSurfaceListener device not found", zap.String("serial", serial))
+		log.Inst.Error("Devices.GetSurfaceStatus device not found", zap.String("serial", a.GetSerial()), zap.Int32("type", a.GetScreenId()), zap.Int32("pid", a.GetPid()))
 		return types.DcGdcGetSurfaceStatusResult{
 			HasSurface:             false,
 			IsPlaying:              false,
 			LastFrameDeltaMillisec: 0,
 		}
 	}
-	status := device.Surface().GetStatus()
+	screenId := surface.ScreenId(a.GetScreenId())
+	pid := surface.Pid(a.GetPid())
+	surfaceType := surface.NewSurfaceType(screenId, pid)
+
+	status := device.Surfaces().GetStatus(surfaceType, screenId, pid)
+	if nil == status {
+		log.Inst.Error("Devices.GetSurfaceStatus surface not found", zap.String("serial", a.GetSerial()), zap.Int32("type", a.GetScreenId()), zap.Int32("pid", a.GetPid()))
+		return types.DcGdcGetSurfaceStatusResult{
+			HasSurface:             false,
+			IsPlaying:              false,
+			LastFrameDeltaMillisec: 0,
+		}
+	}
 	return types.DcGdcGetSurfaceStatusResult{
 		HasSurface:             true,
 		IsPlaying:              status.IsPlaying,

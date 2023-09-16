@@ -42,13 +42,7 @@ type DesktopControlHandler struct {
 
 var _ach datachannel.DatachannelHandler = &DesktopControlHandler{}
 
-func NewMacDesktopControlHandler() *DesktopControlHandler {
-	dch := NewDesktopControlHandler()
-	dch.platform = outer.Platform_PLATFORM_MACOS
-	return dch
-}
-
-func NewDesktopControlHandler() *DesktopControlHandler {
+func NewDesktopControlHandler(platform outer.Platform) *DesktopControlHandler {
 	dch := DesktopControlHandler{}
 	dch.controlChan = make(chan *DevicControlProcess, 1000)
 	dch.ticker = time.NewTicker(inputCheckTime)
@@ -61,7 +55,7 @@ func NewDesktopControlHandler() *DesktopControlHandler {
 	}
 	dch.keyBonding = kb
 	dch.mouseInjectOption.isAllowRepeatClick = false
-	dch.platform = outer.Platform_PLATFORM_WINDOWS
+	dch.platform = platform
 	go dch.run()
 	return &dch
 }

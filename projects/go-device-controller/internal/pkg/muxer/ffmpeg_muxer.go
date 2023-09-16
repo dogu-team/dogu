@@ -90,7 +90,7 @@ func (s *FFmpegMuxer) FilePath() string {
 	return s.filePath
 }
 
-func (s *FFmpegMuxer) GetSurfaceListenerType() string {
+func (s *FFmpegMuxer) GetSurfaceListenerType() surface.SurfaceListenerType {
 	return MuxerType
 }
 

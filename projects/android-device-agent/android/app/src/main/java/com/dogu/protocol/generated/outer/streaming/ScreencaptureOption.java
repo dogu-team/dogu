@@ -211,10 +211,29 @@ public final class ScreencaptureOption {
     /**
      * <pre>
      * Used for desktop platform
+     * </pre>
+     *
+     * <code>optional int32 screen_id = 9;</code>
+     * @return Whether the screenId field is set.
+     */
+    boolean hasScreenId();
+    /**
+     * <pre>
+     * Used for desktop platform
+     * </pre>
+     *
+     * <code>optional int32 screen_id = 9;</code>
+     * @return The screenId.
+     */
+    int getScreenId();
+
+    /**
+     * <pre>
+     * Used for desktop platform
      * If pid paaed. capture pid's window
      * </pre>
      *
-     * <code>optional int32 pid = 9;</code>
+     * <code>optional int32 pid = 10;</code>
      * @return Whether the pid field is set.
      */
     boolean hasPid();
@@ -224,7 +243,7 @@ public final class ScreencaptureOption {
      * If pid paaed. capture pid's window
      * </pre>
      *
-     * <code>optional int32 pid = 9;</code>
+     * <code>optional int32 pid = 10;</code>
      * @return The pid.
      */
     int getPid();
@@ -728,7 +747,57 @@ public final class ScreencaptureOption {
       height_ = 0;
     }
 
-    public static final int PID_FIELD_NUMBER = 9;
+    public static final int SCREEN_ID_FIELD_NUMBER = 9;
+    private int screenId_;
+    /**
+     * <pre>
+     * Used for desktop platform
+     * </pre>
+     *
+     * <code>optional int32 screen_id = 9;</code>
+     * @return Whether the screenId field is set.
+     */
+    @java.lang.Override
+    public boolean hasScreenId() {
+      return ((bitField0_ & 0x00000100) != 0);
+    }
+    /**
+     * <pre>
+     * Used for desktop platform
+     * </pre>
+     *
+     * <code>optional int32 screen_id = 9;</code>
+     * @return The screenId.
+     */
+    @java.lang.Override
+    public int getScreenId() {
+      return screenId_;
+    }
+    /**
+     * <pre>
+     * Used for desktop platform
+     * </pre>
+     *
+     * <code>optional int32 screen_id = 9;</code>
+     * @param value The screenId to set.
+     */
+    private void setScreenId(int value) {
+      bitField0_ |= 0x00000100;
+      screenId_ = value;
+    }
+    /**
+     * <pre>
+     * Used for desktop platform
+     * </pre>
+     *
+     * <code>optional int32 screen_id = 9;</code>
+     */
+    private void clearScreenId() {
+      bitField0_ = (bitField0_ & ~0x00000100);
+      screenId_ = 0;
+    }
+
+    public static final int PID_FIELD_NUMBER = 10;
     private int pid_;
     /**
      * <pre>
@@ -736,12 +805,12 @@ public final class ScreencaptureOption {
      * If pid paaed. capture pid's window
      * </pre>
      *
-     * <code>optional int32 pid = 9;</code>
+     * <code>optional int32 pid = 10;</code>
      * @return Whether the pid field is set.
      */
     @java.lang.Override
     public boolean hasPid() {
-      return ((bitField0_ & 0x00000100) != 0);
+      return ((bitField0_ & 0x00000200) != 0);
     }
     /**
      * <pre>
@@ -749,7 +818,7 @@ public final class ScreencaptureOption {
      * If pid paaed. capture pid's window
      * </pre>
      *
-     * <code>optional int32 pid = 9;</code>
+     * <code>optional int32 pid = 10;</code>
      * @return The pid.
      */
     @java.lang.Override
@@ -762,11 +831,11 @@ public final class ScreencaptureOption {
      * If pid paaed. capture pid's window
      * </pre>
      *
-     * <code>optional int32 pid = 9;</code>
+     * <code>optional int32 pid = 10;</code>
      * @param value The pid to set.
      */
     private void setPid(int value) {
-      bitField0_ |= 0x00000100;
+      bitField0_ |= 0x00000200;
       pid_ = value;
     }
     /**
@@ -775,10 +844,10 @@ public final class ScreencaptureOption {
      * If pid paaed. capture pid's window
      * </pre>
      *
-     * <code>optional int32 pid = 9;</code>
+     * <code>optional int32 pid = 10;</code>
      */
     private void clearPid() {
-      bitField0_ = (bitField0_ & ~0x00000100);
+      bitField0_ = (bitField0_ & ~0x00000200);
       pid_ = 0;
     }
 
@@ -1384,10 +1453,62 @@ public final class ScreencaptureOption {
       /**
        * <pre>
        * Used for desktop platform
+       * </pre>
+       *
+       * <code>optional int32 screen_id = 9;</code>
+       * @return Whether the screenId field is set.
+       */
+      @java.lang.Override
+      public boolean hasScreenId() {
+        return instance.hasScreenId();
+      }
+      /**
+       * <pre>
+       * Used for desktop platform
+       * </pre>
+       *
+       * <code>optional int32 screen_id = 9;</code>
+       * @return The screenId.
+       */
+      @java.lang.Override
+      public int getScreenId() {
+        return instance.getScreenId();
+      }
+      /**
+       * <pre>
+       * Used for desktop platform
+       * </pre>
+       *
+       * <code>optional int32 screen_id = 9;</code>
+       * @param value The screenId to set.
+       * @return This builder for chaining.
+       */
+      public Builder setScreenId(int value) {
+        copyOnWrite();
+        instance.setScreenId(value);
+        return this;
+      }
+      /**
+       * <pre>
+       * Used for desktop platform
+       * </pre>
+       *
+       * <code>optional int32 screen_id = 9;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearScreenId() {
+        copyOnWrite();
+        instance.clearScreenId();
+        return this;
+      }
+
+      /**
+       * <pre>
+       * Used for desktop platform
        * If pid paaed. capture pid's window
        * </pre>
        *
-       * <code>optional int32 pid = 9;</code>
+       * <code>optional int32 pid = 10;</code>
        * @return Whether the pid field is set.
        */
       @java.lang.Override
@@ -1400,7 +1521,7 @@ public final class ScreencaptureOption {
        * If pid paaed. capture pid's window
        * </pre>
        *
-       * <code>optional int32 pid = 9;</code>
+       * <code>optional int32 pid = 10;</code>
        * @return The pid.
        */
       @java.lang.Override
@@ -1413,7 +1534,7 @@ public final class ScreencaptureOption {
        * If pid paaed. capture pid's window
        * </pre>
        *
-       * <code>optional int32 pid = 9;</code>
+       * <code>optional int32 pid = 10;</code>
        * @param value The pid to set.
        * @return This builder for chaining.
        */
@@ -1428,7 +1549,7 @@ public final class ScreencaptureOption {
        * If pid paaed. capture pid's window
        * </pre>
        *
-       * <code>optional int32 pid = 9;</code>
+       * <code>optional int32 pid = 10;</code>
        * @return This builder for chaining.
        */
       public Builder clearPid() {
@@ -1462,12 +1583,13 @@ public final class ScreencaptureOption {
               "maxResolution_",
               "width_",
               "height_",
+              "screenId_",
               "pid_",
             };
             java.lang.String info =
-                "\u0000\t\u0000\u0001\u0001\t\t\u0000\u0000\u0000\u0001\u1005\u0000\u0002\u1005\u0001" +
+                "\u0000\n\u0000\u0001\u0001\n\n\u0000\u0000\u0000\u0001\u1005\u0000\u0002\u1005\u0001" +
                 "\u0003\u1005\u0002\u0004\u1005\u0003\u0005\u1005\u0004\u0006\u1006\u0005\u0007\u1006" +
-                "\u0006\b\u1006\u0007\t\u1004\b";
+                "\u0006\b\u1006\u0007\t\u1004\b\n\u1004\t";
             return newMessageInfo(DEFAULT_INSTANCE, info, objects);
         }
         // fall through
