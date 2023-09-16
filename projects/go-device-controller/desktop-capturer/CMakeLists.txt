@@ -56,7 +56,6 @@ elseif (APPLE)
 elseif (UNIX)
     find_library(desktop-capturer-lib linux-x86_64-libwebrtc.a PATHS externals/webrtc/lib )
     target_link_libraries(desktop-capturer PUBLIC ${desktop-capturer-lib})
-    # https://www.cnblogs.com/chai51/p/16443100.html
     target_link_libraries(desktop-capturer PUBLIC "-lX11")
     target_link_libraries(desktop-capturer PUBLIC "-lXdamage")
     target_link_libraries(desktop-capturer PUBLIC "-lXfixes")
