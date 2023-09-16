@@ -61,6 +61,11 @@ export class LicenseSelfHostedService extends FeatureLicenseService {
             `Dogu License Server connection failed. Please check dogu license  server connection. Dogu License Url : ${this.licenseServerUrl}`,
             HttpStatus.REQUEST_TIMEOUT,
           );
+        } else if (error.code === 'ENOTFOUND') {
+          throw new HttpException(
+            `Dogu License Server connection failed. Please check dogu license  server connection. Dogu License Url : ${this.licenseServerUrl}`,
+            HttpStatus.REQUEST_TIMEOUT,
+          );
         } else {
           throw new HttpException(
             `License Vaildation Failed. Server Error. companyName: ${this.companyName} licenseToken: ${licenseToken} error: ${error}`,

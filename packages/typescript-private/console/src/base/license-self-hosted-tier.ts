@@ -3,13 +3,13 @@ import { camelToSnakeCasePropertiesOf, propertiesOf } from '@dogu-tech/common';
 export const LICENSE_SELF_HOSTED_TIER_TABLE_NAME = 'license_self_hotsed_tier';
 
 export type LicenseSelfHostedTierId = number;
-
 export enum LICENSE_SELF_HOSTED_TIER_TYPE {
   self_hosted_community = 0,
   self_hosted_enterprise_1 = 1,
   self_hosted_enterprise_2 = 2,
   self_hosted_enterprise_3 = 3,
   self_hosted_enterprise_4 = 4,
+  self_hosted_enterprise_5 = 5,
 }
 
 export function getDeviceCountByTier(licenseTierType: LICENSE_SELF_HOSTED_TIER_TYPE): number {
@@ -17,13 +17,15 @@ export function getDeviceCountByTier(licenseTierType: LICENSE_SELF_HOSTED_TIER_T
     case LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_community:
       return 3;
     case LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_enterprise_1:
-      return 5;
+      return 1;
     case LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_enterprise_2:
-      return 10;
+      return 2;
     case LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_enterprise_3:
-      return 15;
+      return 5;
     case LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_enterprise_4:
-      return 20;
+      return 10;
+    case LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_enterprise_5:
+      return 25;
     default:
       const _exhaustiveCheck: never = licenseTierType;
       throw new Error(`Unknown license tier type: ${LICENSE_SELF_HOSTED_TIER_TYPE[_exhaustiveCheck]}`);
@@ -42,6 +44,8 @@ export function getOpenApiEnableByTier(licenseTierType: LICENSE_SELF_HOSTED_TIER
       return true;
     case LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_enterprise_4:
       return true;
+    case LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_enterprise_5:
+      return true;
     default:
       const _exhaustiveCheck: never = licenseTierType;
       throw new Error(`Unknown license tier type: ${LICENSE_SELF_HOSTED_TIER_TYPE[_exhaustiveCheck]}`);
@@ -59,6 +63,8 @@ export function getDoguAgentAutoUpdateEnableByTier(licenseTierType: LICENSE_SELF
     case LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_enterprise_3:
       return true;
     case LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_enterprise_4:
+      return true;
+    case LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_enterprise_5:
       return true;
     default:
       const _exhaustiveCheck: never = licenseTierType;
