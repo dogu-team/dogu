@@ -41,7 +41,6 @@ import { DeviceAndDeviceTag } from '../../../db/entity/relations/device-and-devi
 import { ProjectAndDevice } from '../../../db/entity/relations/project-and-device.entity';
 import { LicenseValidator } from '../../../enterprise/module/license/common/validation';
 import { FeatureLicenseService } from '../../../enterprise/module/license/feature-license.service';
-import { FEATURE_CONFIG } from '../../../feature.config';
 import { Page } from '../../common/dto/pagination/page';
 import { DeviceTagService } from '../device-tag/device-tag.service';
 import { AttachTagToDeviceDto, EnableDeviceDto, FindAddableDevicesByOrganizationIdDto, FindDevicesByOrganizationIdDto, UpdateDeviceDto } from './dto/device.dto';
@@ -197,7 +196,6 @@ export class DeviceStatusService {
       // public device
       if (device.isGlobal === 1) {
         await this.dataSource.getRepository(Device).save(Object.assign(device, { isGlobal: 0 }));
-        // return;
       }
 
       //  belongs to project device
@@ -228,37 +226,6 @@ export class DeviceStatusService {
     return;
   }
 
-  async curUsedDevices(organizationId: OrganizationId): Promise<Device[]> {
-    const qb = this.dataSource.getRepository(Device).createQueryBuilder('device');
-
-    const devices = await qb
-      .leftJoinAndSelect(`device.${DevicePropCamel.projectAndDevices}`, 'projectAndDevice')
-      .where(`device.${DevicePropSnake.organization_id} = :${DevicePropCamel.organizationId}`, { organizationId })
-      .getMany();
-
-    const globalDevices = devices.filter((device) => device.isGlobal === 1);
-    const projectDevices = devices.filter((device) => {
-      return device.isGlobal === 0 && device.projectAndDevices && device.projectAndDevices.length > 0;
-    });
-
-    const curUsedDevices = [...globalDevices, ...projectDevices];
-
-    return curUsedDevices;
-  }
-
-  async curUsedAllDevices(): Promise<Device[]> {
-    const qb = this.dataSource.getRepository(Device).createQueryBuilder('device');
-    const devices = await qb.leftJoinAndSelect(`device.${DevicePropCamel.projectAndDevices}`, 'projectAndDevice').getMany();
-
-    const globalDevices = devices.filter((device) => device.isGlobal === 1);
-    const projectDevices = devices.filter((device) => {
-      return device.isGlobal === 0 && device.projectAndDevices && device.projectAndDevices.length > 0;
-    });
-
-    const curUsedDevices = [...globalDevices, ...projectDevices];
-    return curUsedDevices;
-  }
-
   async enableAndUpateDevice(organizationId: OrganizationId, deviceId: DeviceId, dto: EnableDeviceDto): Promise<void> {
     const { projectId } = dto;
     const device = await this.dataSource.getRepository(Device).findOne({ where: { deviceId } });
@@ -266,16 +233,7 @@ export class DeviceStatusService {
       throw new HttpException(`Cannot find device. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
     }
 
-    if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
-      const curUsedDevices = await this.curUsedAllDevices();
-      const curUsedDeviceIds = curUsedDevices.map((device) => device.deviceId);
-      const isUsingDevice = curUsedDeviceIds.includes(deviceId);
-
-      if (!isUsingDevice) {
-        const license = await this.licenseService.getLicense(organizationId);
-        LicenseValidator.validateDeviceCount(license, curUsedDevices.length + 1);
-      }
-    }
+    LicenseValidator.validateMobileEnableCount(this.dataSource.manager, this.licenseService, organizationId, device);
 
     await this.dataSource.transaction(async (manager) => {
       if (dto.isGlobal === true) {

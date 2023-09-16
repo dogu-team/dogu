@@ -1,7 +1,11 @@
-import { DEFAULT_SELF_HOSTED_LICENSE_DATA, LicenseBase } from '@dogu-private/console';
+import { DEFAULT_SELF_HOSTED_LICENSE_DATA, DevicePropCamel, DevicePropSnake, LicenseBase } from '@dogu-private/console';
+import { OrganizationId } from '@dogu-private/types';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { EntityManager } from 'typeorm';
+import { Device } from '../../../../db/entity/device.entity';
 import { FEATURE_CONFIG } from '../../../../feature.config';
 import { TokenService } from '../../../../module/token/token.service';
+import { FeatureLicenseService } from '../feature-license.service';
 
 export module LicenseValidator {
   export function isLicenseExpiration(license: LicenseBase): boolean {
@@ -13,21 +17,46 @@ export module LicenseValidator {
     return false;
   }
 
-  export function validateDeviceCount(license: LicenseBase, deviceCount: number): void {
+  export async function validateMobileEnableCount(
+    manager: EntityManager,
+    licenseService: FeatureLicenseService,
+    organizationId: OrganizationId | null,
+    device: Device,
+  ): Promise<void> {
     if (FEATURE_CONFIG.get('licenseModule') === 'cloud') {
       return;
     }
 
-    const isExpired = isLicenseExpiration(license);
-    if (isExpired) {
-      const defaultDeviceCount = DEFAULT_SELF_HOSTED_LICENSE_DATA.licenseTier?.deviceCount;
-      if (defaultDeviceCount! < deviceCount) {
-        throw new HttpException(`License device count is not enough. license device count: ${defaultDeviceCount}`, HttpStatus.PAYMENT_REQUIRED);
-      }
-    }
+    const mobildDevices = await manager
+      .getRepository(Device) //
+      .createQueryBuilder('device')
+      .leftJoinAndSelect(`device.${DevicePropCamel.projectAndDevices}`, 'projectAndDevice')
+      .where(`device.${DevicePropSnake.is_host} = :${DevicePropCamel.isHost}`, { isHost: 0 })
+      .getMany();
 
-    if (license.licenseTier!.deviceCount < deviceCount) {
-      throw new HttpException(`License device count is not enough. license device count: ${license.licenseTier!.deviceCount}`, HttpStatus.PAYMENT_REQUIRED);
+    const globalDevices = mobildDevices.filter((device) => device.isGlobal === 1);
+    const projectDevices = mobildDevices.filter((device) => {
+      return device.isGlobal === 0 && device.projectAndDevices && device.projectAndDevices.length > 0;
+    });
+
+    const curUsedDevices = [...globalDevices, ...projectDevices];
+
+    const curUsedDeviceIds = curUsedDevices.map((device) => device.deviceId);
+    const isUsingDevice = curUsedDeviceIds.includes(device.deviceId);
+
+    if (!isUsingDevice) {
+      const license = await licenseService.getLicense(organizationId);
+      const isExpired = isLicenseExpiration(license);
+      if (isExpired) {
+        const defaultMobileEnableCount = DEFAULT_SELF_HOSTED_LICENSE_DATA.licenseTier?.maxMobileEnableCount;
+        if (defaultMobileEnableCount! < curUsedDevices.length + 1) {
+          throw new HttpException(`License device count is not enough. license device count: ${defaultMobileEnableCount}`, HttpStatus.PAYMENT_REQUIRED);
+        }
+      }
+
+      if (license.licenseTier!.maxMobileEnableCount < curUsedDevices.length + 1) {
+        throw new HttpException(`License device count is not enough. license device count: ${license.licenseTier!.maxMobileEnableCount}`, HttpStatus.PAYMENT_REQUIRED);
+      }
     }
   }
 

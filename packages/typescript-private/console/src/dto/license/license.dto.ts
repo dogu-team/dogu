@@ -1,7 +1,7 @@
 import { OrganizationId } from '@dogu-private/types';
 import { Type } from 'class-transformer';
 import { Equals, IsEnum, IsIn, IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
-import { LicenseType, LicenseTypeKey } from '../../base/license';
+import { LicenseBase, LicenseType, LicenseTypeKey } from '../../base/license';
 import { LICENSE_SELF_HOSTED_TIER_TYPE } from '../../base/license-self-hosted-tier';
 
 export class LicenseDtoBase {
@@ -60,4 +60,14 @@ export class FindLicenseWithCloudDto extends FindLicenseDtoBase {
 export class FindLicenseWithSelfHostedDto extends FindLicenseDtoBase {
   @IsString()
   companyName!: string;
+}
+
+export interface LicenseErrorInfo {
+  isTokenInValid: boolean;
+  isLicenseServerDisConnected: boolean;
+  unKnownError: boolean;
+}
+export interface LicenseResponse extends LicenseBase {
+  errorInfo: LicenseErrorInfo | null;
+  isCommunityEdition: boolean;
 }
