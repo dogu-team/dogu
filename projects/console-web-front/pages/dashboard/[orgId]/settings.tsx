@@ -282,7 +282,7 @@ const OrganizationSettingPage: NextPageWithLayout<OrganizationServerSideProps> =
 OrganizationSettingPage.getLayout = (page) => {
   return (
     <ConsoleLayout
-      organization={page.props.organization}
+      {...page.props}
       titleI18nKey="organization:organizationSettingPageTitle"
       sidebar={<OrganizationSideBar />}
     >

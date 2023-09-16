@@ -12,17 +12,17 @@ import { swrAuthFetcher } from '../../api';
 import ErrorBox from '../common/boxes/ErrorBox';
 import { OrganizationContext } from '../../hooks/context/useOrganizationContext';
 import { getErrorMessageFromAxios } from '../../utils/error';
+import { OrganizationServerSideProps } from '../../ssr/organization';
 
-export interface ConsoleLayoutProps {
+export interface ConsoleLayoutProps extends OrganizationServerSideProps {
   children: React.ReactNode;
   sidebar: React.ReactNode;
-  organization: OrganizationResponse;
   titleI18nKey?: string;
   title?: string;
   padding?: string;
 }
 
-const ConsoleLayout = ({ titleI18nKey, children, sidebar, title, padding, organization }: ConsoleLayoutProps) => {
+const ConsoleLayout = ({ titleI18nKey, children, sidebar, title, padding, organization, user }: ConsoleLayoutProps) => {
   const { t } = useTranslation();
   const { data, error, mutate, isLoading } = useSWR<OrganizationResponse>(
     `/organizations/${organization.organizationId}`,
@@ -48,7 +48,7 @@ const ConsoleLayout = ({ titleI18nKey, children, sidebar, title, padding, organi
 
   return (
     <OrganizationContext.Provider value={{ organization: data ?? organization, mutate }}>
-      <ConsoleBasicLayout>
+      <ConsoleBasicLayout licenseInfo={organization.licenseInfo} user={user}>
         <StyledLayout>
           {sidebar}
           <StyledLayoutContent>

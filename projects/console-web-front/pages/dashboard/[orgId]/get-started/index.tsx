@@ -67,7 +67,7 @@ const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organiz
 };
 
 OrganizationTutorialPage.getLayout = (page) => {
-  return <ConsoleBasicLayout>{page}</ConsoleBasicLayout>;
+  return <ConsoleBasicLayout {...page.props}>{page}</ConsoleBasicLayout>;
 };
 
 export const getServerSideProps: GetServerSideProps<ServerSideProps> = async (context) => {

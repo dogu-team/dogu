@@ -12,6 +12,7 @@ import useSWR from 'swr';
 
 import { swrAuthFetcher } from '../../api';
 import useWebSocket from '../../hooks/useWebSocket';
+import { ProjectServerSideProps } from '../../ssr/project';
 import useLivePipelineStore from '../../stores/live-pipeline';
 import { flexRowBaseStyle, flexRowSpaceBetweenStyle } from '../../styles/box';
 import { clickableTextStyle } from '../../styles/text';
@@ -26,13 +27,11 @@ import PipelineStatusIcon from '../pipelines/PipelineStatusIcon';
 import ProfileImage from '../ProfileImage';
 import ProjectLayoutWithSidebar from './ProjectLayoutWithSidebar';
 
-interface Props {
+interface Props extends Omit<ProjectServerSideProps, 'isGitIntegrated'> {
   children: React.ReactNode;
-  organization: OrganizationBase;
-  project: ProjectBase;
 }
 
-const PipelineJobLayout = ({ children, organization, project }: Props) => {
+const PipelineJobLayout = ({ children, organization, project, user }: Props) => {
   const router = useRouter();
   const orgId = router.query.orgId;
   const projectId = router.query.pid;
@@ -94,6 +93,7 @@ const PipelineJobLayout = ({ children, organization, project }: Props) => {
     <ProjectLayoutWithSidebar
       organization={organization}
       project={project}
+      user={user}
       innerSidebar={<JobListSideBar pipeline={pipeline} />}
       titleI18nKey="project:tabMenuRoutineTitle"
     >

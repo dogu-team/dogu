@@ -1,4 +1,4 @@
-import { OrganizationBase, ProjectBase } from '@dogu-private/console';
+import { OrganizationBase, ProjectBase, UserBase } from '@dogu-private/console';
 import { AxiosError } from 'axios';
 import { GetServerSideProps } from 'next';
 
@@ -10,6 +10,7 @@ import { checkUserVerifiedInServerSide } from '../utils/auth';
 export interface ProjectServerSideProps {
   organization: OrganizationBase;
   project: ProjectBase;
+  user: UserBase;
   isGitIntegrated: boolean;
 }
 
@@ -36,6 +37,7 @@ export const getProjectPageServerSideProps: GetServerSideProps<ProjectServerSide
       props: {
         organization,
         project,
+        user: checkResult.props.fallback['/registery/check'],
         isGitIntegrated: !!scm,
       },
     };

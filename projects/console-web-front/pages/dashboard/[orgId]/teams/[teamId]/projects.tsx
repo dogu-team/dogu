@@ -40,7 +40,7 @@ const TeamProjectPage: NextPageWithLayout<OrganizationServerSideProps> = ({ orga
 };
 
 TeamProjectPage.getLayout = (page) => {
-  return <TeamPageLayout organization={page.props.organization}>{page}</TeamPageLayout>;
+  return <TeamPageLayout {...page.props}>{page}</TeamPageLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;

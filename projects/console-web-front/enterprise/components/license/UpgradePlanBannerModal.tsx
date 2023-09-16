@@ -89,8 +89,8 @@ const UpgradePlanBannerModal: React.FC<Props> = ({ isOpen, close, title, descrip
               isCurrentPlan={false}
               title={'Professional'}
               description={'Per device per month'}
-              pricing={'29,000 KRW'}
-              availableFeatures={['Dogu Agent updatable', 'Open API for integration', 'Enable more than 3 devices']}
+              pricing={'31,000 KRW'}
+              availableFeatures={['Enable more than 3 devices', 'Dogu Agent easy update', 'Open API for integration']}
               button={
                 <Link
                   href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing`}
@@ -110,12 +110,12 @@ const UpgradePlanBannerModal: React.FC<Props> = ({ isOpen, close, title, descrip
               isCurrentPlan
               title={'Professional'}
               description={'Per device per month'}
-              pricing={'29,000 KRW'}
+              pricing={'31,000 KRW'}
               maximumDeviceCount={licenseInfo?.licenseTier?.deviceCount}
               availableFeatures={[
-                'Dogu Agent updatable',
-                'Open API for integration',
                 `Enable more than ${licenseInfo?.licenseTier?.deviceCount ?? 3} devices`,
+                'Dogu Agent easy update',
+                'Open API for integration',
               ]}
               button={
                 <Link

@@ -1,26 +1,29 @@
-import { CloseOutlined, GithubOutlined, SettingOutlined, SlackOutlined } from '@ant-design/icons';
-import { UserBase } from '@dogu-private/console';
-import { Button, Tooltip } from 'antd';
+import { ArrowRightOutlined, CloseOutlined, GithubOutlined, SettingOutlined, SlackOutlined } from '@ant-design/icons';
+import { LicenseBase, LICENSE_SELF_HOSTED_TIER_TYPE, UserBase } from '@dogu-private/console';
+import { Tag, Tooltip } from 'antd';
 import Trans from 'next-translate/Trans';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 
+import ProTag from '../../../enterprise/components/common/ProTag';
+import { checkExpired } from '../../../enterprise/utils/license';
 import useAuth from '../../hooks/useAuth';
+import useEventStore from '../../stores/events';
 import { flexRowBaseStyle, flexRowCenteredStyle } from '../../styles/box';
 import AccountMenu from '../AccountMenu';
 import ChangeLogButton from '../change-logs/ChangeLogButton';
 import DoguText from '../common/DoguText';
-
 import Header from './Header';
 
 interface Props {
   children: React.ReactNode;
   user?: UserBase;
+  licenseInfo?: LicenseBase;
 }
 
-const ConsoleBasicLayout = ({ children, user }: Props) => {
+const ConsoleBasicLayout = ({ children, user, licenseInfo }: Props) => {
   const { me, isLoading, error, mutate } = useAuth(user);
   const router = useRouter();
   const [isBannerVisible, setIsBannerVisible] = useState(() => {
@@ -30,6 +33,21 @@ const ConsoleBasicLayout = ({ children, user }: Props) => {
 
     return !localStorage.getItem('hideHeaderBanner');
   });
+  const [licenseInfoState, setLicenseInfoState] = useState<LicenseBase | undefined>(licenseInfo);
+
+  useEffect(() => {
+    setLicenseInfoState(licenseInfo);
+  }, [licenseInfo]);
+
+  useEffect(() => {
+    useEventStore.subscribe(({ eventName, payload }) => {
+      if (eventName === 'onLicenseUpdated') {
+        if (payload) {
+          setLicenseInfoState(payload as LicenseBase);
+        }
+      }
+    });
+  }, []);
 
   if (isLoading) {
     return null;
@@ -74,6 +92,32 @@ const ConsoleBasicLayout = ({ children, user }: Props) => {
           </AlertBanner>
         )}
         <Header
+          links={
+            licenseInfoState ? (
+              licenseInfoState.licenseTierId !== LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_community &&
+              !checkExpired(licenseInfoState) ? (
+                <ProTag style={{ marginLeft: '-2rem' }} />
+              ) : (
+                <Tooltip
+                  placement="bottom"
+                  title={
+                    <div>
+                      <p>Community Edition</p>
+                      <div style={{ marginTop: '.25rem' }}>
+                        <a href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing`} target="_blank">
+                          Compare plans <ArrowRightOutlined />
+                        </a>
+                      </div>
+                    </div>
+                  }
+                >
+                  <Tag style={{ marginLeft: '-2rem', fontSize: '12px' }} color="blue">
+                    Community
+                  </Tag>
+                </Tooltip>
+              )
+            ) : null
+          }
           right={
             <FlexRow>
               {process.env.NEXT_PUBLIC_ENV === 'self-hosted' && me.isRoot && (

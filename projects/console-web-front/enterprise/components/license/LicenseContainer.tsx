@@ -18,6 +18,7 @@ import { isTimeout } from '../../utils/error';
 import ProTag from '../common/ProTag';
 import LicenseSubmitForm, { LicenseSubmitFormValues } from './LicenseSubmitForm';
 import TimeoutDocsModal from './TimeoutDocsModal';
+import useEventStore from '../../../src/stores/events';
 
 interface Props {
   license: LicenseBase;
@@ -29,6 +30,7 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
   const [isTimeoutOpen, openTimeoutModal, closeTimeoutModal] = useModal();
   const [form] = Form.useForm<LicenseSubmitFormValues>();
   const router = useRouter();
+  const fireEvent = useEventStore((state) => state.fireEvent);
 
   useEffect(() => {
     setLicenseInfo(license);
@@ -39,6 +41,7 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
       if (!organizationId) {
         const rv = await registerSelfHostedLicense({ licenseToken: licenseKey });
         setLicenseInfo(rv);
+        fireEvent('onLicenseUpdated', rv);
       } else {
         // TODO: cloud license register
       }
@@ -59,6 +62,7 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
       if (!organizationId) {
         const rv = await reRegisterSelfHostedLicense({ licenseToken: licenseKey });
         setLicenseInfo(rv);
+        fireEvent('onLicenseUpdated', rv);
       } else {
         // TODO: cloud license register
       }

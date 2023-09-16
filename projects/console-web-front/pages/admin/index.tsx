@@ -39,7 +39,11 @@ const AdminPage: NextPageWithLayout<AdminProps> = ({ license }) => {
 };
 
 AdminPage.getLayout = (page) => {
-  return <ConsoleBasicLayout user={page.props.user}>{page}</ConsoleBasicLayout>;
+  return (
+    <ConsoleBasicLayout user={page.props.user} licenseInfo={page.props.license}>
+      {page}
+    </ConsoleBasicLayout>
+  );
 };
 
 export const getServerSideProps: GetServerSideProps<AdminProps> = getAdminServerSideProps;

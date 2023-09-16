@@ -43,7 +43,7 @@ const DeviceTagsManagementPage: NextPageWithLayout<OrganizationServerSideProps> 
 };
 
 DeviceTagsManagementPage.getLayout = (page) => {
-  return <OrganizationDeviceFarmLayout organization={page.props.organization}>{page}</OrganizationDeviceFarmLayout>;
+  return <OrganizationDeviceFarmLayout {...page.props}>{page}</OrganizationDeviceFarmLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;
