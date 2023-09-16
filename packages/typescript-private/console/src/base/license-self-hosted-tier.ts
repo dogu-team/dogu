@@ -36,8 +36,8 @@ export function getDefaultMaxBrowserEnableCountByTier(licenseTierType: LICENSE_S
 export interface LicenseSelfHostedTierBaseTraits {
   licenseSelfHostedTierId: LicenseSelfHostedTierId;
   name: string;
-  maxMobileEnableCount: number;
-  maxBrowserEnableCount: number;
+  enabledMobileCount: number;
+  enabledBrowserCount: number;
   openApiEnabled: boolean;
   doguAgentAutoUpdateEnabled: boolean;
   createdAt: Date;
@@ -51,8 +51,8 @@ export const LicenseSelfHostedTierPropSnake = camelToSnakeCasePropertiesOf<Licen
 export const DEFAULT_SELF_HOSTED_LICENSE_TIER_DATA: LicenseSelfHostedTierBase = {
   licenseSelfHostedTierId: LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_community,
   name: LICENSE_SELF_HOSTED_TIER_TYPE[LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_community],
-  maxMobileEnableCount: getDefaultMaxMobileEnableCountByTier(LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_community),
-  maxBrowserEnableCount: getDefaultMaxBrowserEnableCountByTier(LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_community),
+  enabledMobileCount: getDefaultMaxMobileEnableCountByTier(LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_community),
+  enabledBrowserCount: getDefaultMaxBrowserEnableCountByTier(LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_community),
   openApiEnabled: false,
   doguAgentAutoUpdateEnabled: false,
   createdAt: new Date(),

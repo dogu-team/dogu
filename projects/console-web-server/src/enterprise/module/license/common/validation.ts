@@ -77,14 +77,14 @@ export module LicenseValidator {
       const license = await licenseService.getLicense(organizationId);
       const isExpired = isLicenseExpiration(license);
       if (isExpired) {
-        const defaultMobileEnableCount = DEFAULT_SELF_HOSTED_LICENSE_DATA.licenseTier?.maxMobileEnableCount;
+        const defaultMobileEnableCount = DEFAULT_SELF_HOSTED_LICENSE_DATA.licenseTier?.enabledMobileCount;
         if (defaultMobileEnableCount! < curUsedDevices.length + 1) {
-          throw new HttpException(`License device count is not enough. license device count: ${defaultMobileEnableCount}`, HttpStatus.PAYMENT_REQUIRED);
+          throw new HttpException(`License mobile device count is not enough. license mobile device count: ${defaultMobileEnableCount}`, HttpStatus.PAYMENT_REQUIRED);
         }
       }
 
-      if (license.licenseTier!.maxMobileEnableCount < curUsedDevices.length + 1) {
-        throw new HttpException(`License device count is not enough. license device count: ${license.licenseTier!.maxMobileEnableCount}`, HttpStatus.PAYMENT_REQUIRED);
+      if (license.licenseTier!.enabledMobileCount < curUsedDevices.length + 1) {
+        throw new HttpException(`License mobile device count is not enough. license mobile device count: ${license.licenseTier!.enabledMobileCount}`, HttpStatus.PAYMENT_REQUIRED);
       }
     }
   }
@@ -101,7 +101,6 @@ export module LicenseValidator {
     }
 
     const curUsedHostedDevice = await enabledHostDevices(manager);
-    // const curUsedHostedDeviceIds = curUsedHostedDevice.map((device) => device.deviceId);
     const enabledHostRunnerCount = curUsedHostedDevice.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
 
     if (device.maxParallelJobs > updateParrellelJobCount) {
@@ -113,14 +112,14 @@ export module LicenseValidator {
     const license = await licenseService.getLicense(organizationId);
     const isExpired = isLicenseExpiration(license);
     if (isExpired) {
-      const defaultBrowserEnableCount = DEFAULT_SELF_HOSTED_LICENSE_DATA.licenseTier?.maxBrowserEnableCount;
+      const defaultBrowserEnableCount = DEFAULT_SELF_HOSTED_LICENSE_DATA.licenseTier?.enabledBrowserCount;
       if (defaultBrowserEnableCount! < updateCount) {
-        throw new HttpException(`License device count is not enough. license device count: ${defaultBrowserEnableCount}`, HttpStatus.PAYMENT_REQUIRED);
+        throw new HttpException(`License browser device count is not enough. license browser device count: ${defaultBrowserEnableCount}`, HttpStatus.PAYMENT_REQUIRED);
       }
     }
 
-    if (license.licenseTier!.maxBrowserEnableCount < updateCount) {
-      throw new HttpException(`License device count is not enough. license device count: ${license.licenseTier!.maxBrowserEnableCount}`, HttpStatus.PAYMENT_REQUIRED);
+    if (license.licenseTier!.enabledBrowserCount < updateCount) {
+      throw new HttpException(`License browser device count is not enough. license browser device count: ${license.licenseTier!.enabledBrowserCount}`, HttpStatus.PAYMENT_REQUIRED);
     }
   }
 

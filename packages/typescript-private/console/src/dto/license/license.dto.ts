@@ -1,19 +1,18 @@
 import { OrganizationId } from '@dogu-private/types';
 import { Type } from 'class-transformer';
-import { Equals, IsEnum, IsIn, IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { Equals, IsIn, IsNumber, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { LicenseBase, LicenseType, LicenseTypeKey } from '../../base/license';
-import { LICENSE_SELF_HOSTED_TIER_TYPE } from '../../base/license-self-hosted-tier';
 
 export class LicenseDtoBase {
   @IsIn([LicenseTypeKey])
   licenseType!: LicenseType;
 
-  @IsEnum(LICENSE_SELF_HOSTED_TIER_TYPE)
-  tierType!: LICENSE_SELF_HOSTED_TIER_TYPE;
-
   @IsNumber()
   @Type(() => Number)
   durationDate?: number | null;
+
+  @IsString()
+  licenseTierName!: string;
 }
 
 export class CreateLicenseWithCloudDto extends LicenseDtoBase {
@@ -30,6 +29,14 @@ export class CreateLicenseWithSelfHostedDto extends LicenseDtoBase {
 
   @IsString()
   companyName!: string;
+
+  @IsNumber()
+  @Type(() => Number)
+  enabledMobileCount!: number;
+
+  @IsNumber()
+  @Type(() => Number)
+  enabledBrowserCount!: number;
 }
 
 export class CreateLicenseDto {
