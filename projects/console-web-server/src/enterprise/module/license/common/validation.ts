@@ -17,16 +17,10 @@ export module LicenseValidator {
     return false;
   }
 
-  export async function validateMobileEnableCount(
-    manager: EntityManager,
-    licenseService: FeatureLicenseService,
-    organizationId: OrganizationId | null,
-    device: Device,
-  ): Promise<void> {
-    if (FEATURE_CONFIG.get('licenseModule') === 'cloud') {
-      return;
+  export async function enabledMobileDevices(manager: EntityManager) {
+    if (FEATURE_CONFIG.get('licenseModule') !== 'self-hosted') {
+      throw new HttpException(`This Action is not allowed.`, HttpStatus.FORBIDDEN);
     }
-
     const mobildDevices = await manager
       .getRepository(Device) //
       .createQueryBuilder('device')
@@ -39,8 +33,43 @@ export module LicenseValidator {
       return device.isGlobal === 0 && device.projectAndDevices && device.projectAndDevices.length > 0;
     });
 
-    const curUsedDevices = [...globalDevices, ...projectDevices];
+    const enabledMobildDevices = [...globalDevices, ...projectDevices];
+    return enabledMobildDevices;
+  }
 
+  export async function enabledHostDevices(manager: EntityManager) {
+    if (FEATURE_CONFIG.get('licenseModule') !== 'self-hosted') {
+      throw new HttpException(`This Action is not allowed.`, HttpStatus.FORBIDDEN);
+    }
+
+    const hostDevices = await manager
+      .getRepository(Device) //
+      .createQueryBuilder('device')
+      .leftJoinAndSelect(`device.${DevicePropCamel.projectAndDevices}`, 'projectAndDevice')
+      .where(`device.${DevicePropSnake.is_host} = :${DevicePropCamel.isHost}`, { isHost: 1 })
+      .getMany();
+
+    const globalDevices = hostDevices.filter((device) => device.isGlobal === 1);
+    const projectDevices = hostDevices.filter((device) => {
+      return device.isGlobal === 0 && device.projectAndDevices && device.projectAndDevices.length > 0;
+    });
+
+    const enabledHostDevices = [...globalDevices, ...projectDevices];
+
+    return enabledHostDevices;
+  }
+
+  export async function validateMobileEnableCount(
+    manager: EntityManager,
+    licenseService: FeatureLicenseService,
+    organizationId: OrganizationId | null,
+    device: Device,
+  ): Promise<void> {
+    if (FEATURE_CONFIG.get('licenseModule') === 'cloud') {
+      return;
+    }
+
+    const curUsedDevices = await enabledMobileDevices(manager);
     const curUsedDeviceIds = curUsedDevices.map((device) => device.deviceId);
     const isUsingDevice = curUsedDeviceIds.includes(device.deviceId);
 
@@ -57,6 +86,41 @@ export module LicenseValidator {
       if (license.licenseTier!.maxMobileEnableCount < curUsedDevices.length + 1) {
         throw new HttpException(`License device count is not enough. license device count: ${license.licenseTier!.maxMobileEnableCount}`, HttpStatus.PAYMENT_REQUIRED);
       }
+    }
+  }
+
+  export async function validateBrowserEnableCount(
+    manager: EntityManager,
+    licenseService: FeatureLicenseService,
+    organizationId: OrganizationId | null,
+    device: Device,
+    updateParrellelJobCount: number,
+  ): Promise<void> {
+    if (FEATURE_CONFIG.get('licenseModule') === 'cloud') {
+      return;
+    }
+
+    const curUsedHostedDevice = await enabledHostDevices(manager);
+    // const curUsedHostedDeviceIds = curUsedHostedDevice.map((device) => device.deviceId);
+    const enabledHostRunnerCount = curUsedHostedDevice.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
+
+    if (device.maxParallelJobs > updateParrellelJobCount) {
+      return;
+    }
+
+    const updateCount = enabledHostRunnerCount - device.maxParallelJobs + updateParrellelJobCount;
+
+    const license = await licenseService.getLicense(organizationId);
+    const isExpired = isLicenseExpiration(license);
+    if (isExpired) {
+      const defaultBrowserEnableCount = DEFAULT_SELF_HOSTED_LICENSE_DATA.licenseTier?.maxBrowserEnableCount;
+      if (defaultBrowserEnableCount! < updateCount) {
+        throw new HttpException(`License device count is not enough. license device count: ${defaultBrowserEnableCount}`, HttpStatus.PAYMENT_REQUIRED);
+      }
+    }
+
+    if (license.licenseTier!.maxBrowserEnableCount < updateCount) {
+      throw new HttpException(`License device count is not enough. license device count: ${license.licenseTier!.maxBrowserEnableCount}`, HttpStatus.PAYMENT_REQUIRED);
     }
   }
 

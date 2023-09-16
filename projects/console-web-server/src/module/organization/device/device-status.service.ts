@@ -7,6 +7,7 @@ import {
   DevicePropSnake,
   DeviceResponse,
   DeviceTagPropCamel,
+  GetEnabledDeviceCountResponse,
   ProjectAndDevicePropCamel,
   ProjectAndDevicePropSnake,
   ProjectBase,
@@ -43,7 +44,14 @@ import { LicenseValidator } from '../../../enterprise/module/license/common/vali
 import { FeatureLicenseService } from '../../../enterprise/module/license/feature-license.service';
 import { Page } from '../../common/dto/pagination/page';
 import { DeviceTagService } from '../device-tag/device-tag.service';
-import { AttachTagToDeviceDto, EnableDeviceDto, FindAddableDevicesByOrganizationIdDto, FindDevicesByOrganizationIdDto, UpdateDeviceDto } from './dto/device.dto';
+import {
+  AttachTagToDeviceDto,
+  EnableDeviceDto,
+  FindAddableDevicesByOrganizationIdDto,
+  FindDevicesByOrganizationIdDto,
+  UpdateDeviceDto,
+  UpdateDeviceMaxParallelJobsDto,
+} from './dto/device.dto';
 
 @Injectable()
 export class DeviceStatusService {
@@ -55,6 +63,21 @@ export class DeviceStatusService {
     @InjectDataSource()
     private readonly dataSource: DataSource,
   ) {}
+
+  async getEnabledDeviceCount(): Promise<GetEnabledDeviceCountResponse> {
+    const enabledMobileDevices = await LicenseValidator.enabledMobileDevices(this.dataSource.manager);
+    const enabledHostDevices = await LicenseValidator.enabledHostDevices(this.dataSource.manager);
+
+    const enabledMobileCount = enabledMobileDevices.length;
+    const enabledHostRunnerCount = enabledHostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
+
+    const rv: GetEnabledDeviceCountResponse = {
+      enabledMobileCount,
+      enabledBrowserCount: enabledHostRunnerCount,
+    };
+
+    return rv;
+  }
 
   async findDevicesByOrganizationId(userPayload: UserPayload, organizationId: OrganizationId, dto: FindDevicesByOrganizationIdDto): Promise<Page<DeviceResponse>> {
     const projectIdFilterClause = dto.projectIds.length !== 0 ? 'project.project_id IN (:...projectIds)' : '1=1';
@@ -294,8 +317,31 @@ export class DeviceStatusService {
     await this.dataSource.getRepository(ProjectAndDevice).softRemove(deviceAndProject);
   }
 
+  async updateDeviceMaxParallelJobs(manager: EntityManager, organizationId: OrganizationId, deviceId: DeviceId, dto: UpdateDeviceMaxParallelJobsDto): Promise<DeviceResponse> {
+    const { maxParallelJobs } = dto;
+    const deviceById = await manager.getRepository(Device).findOne({ where: { deviceId, organizationId } });
+    if (!deviceById) {
+      throw new HttpException(`This device does not exists. : ${deviceId}`, HttpStatus.BAD_REQUEST);
+    }
+    if (maxParallelJobs) {
+      if (!validateMaxParallelJobs(deviceById.platform, maxParallelJobs)) {
+        throw new HttpException(`maxParallelJobs is invalid. : ${maxParallelJobs}, platform: ${platformTypeFromPlatform(deviceById.platform)}`, HttpStatus.BAD_REQUEST);
+      }
+    }
+
+    LicenseValidator.validateBrowserEnableCount(manager, this.licenseService, organizationId, deviceById, maxParallelJobs);
+
+    const newData = Object.assign(deviceById, {
+      maxParallelJobs,
+    });
+
+    const updateDevice = await manager.getRepository(Device).save(newData);
+    await DeviceStatusService.updateDeviceRunners(manager, deviceId);
+    return updateDevice;
+  }
+
   async updateDevice(manager: EntityManager, organizationId: OrganizationId, deviceId: DeviceId, dto: UpdateDeviceDto): Promise<DeviceResponse> {
-    const { name, maxParallelJobs } = dto;
+    const { name } = dto;
     const deviceById = await manager.getRepository(Device).findOne({ where: { deviceId } });
     const deviceByName = await manager.getRepository(Device).findOne({ where: { organizationId, name } });
     const nameTag = await manager.getRepository(DeviceTag).findOne({ where: { organizationId, name: dto.name } });
@@ -312,15 +358,9 @@ export class DeviceStatusService {
         throw new HttpException(`This device name already exists. : ${name}`, HttpStatus.BAD_REQUEST);
       }
     }
-    if (maxParallelJobs) {
-      if (!validateMaxParallelJobs(deviceById.platform, maxParallelJobs)) {
-        throw new HttpException(`maxParallelJobs is invalid. : ${maxParallelJobs}, platform: ${platformTypeFromPlatform(deviceById.platform)}`, HttpStatus.BAD_REQUEST);
-      }
-    }
 
     const newData = Object.assign(deviceById, {
       name: name ? name : deviceById.name,
-      maxParallelJobs: maxParallelJobs ? maxParallelJobs : deviceById.maxParallelJobs,
     });
     const updateDevice = await manager.getRepository(Device).save(newData);
     await DeviceStatusService.updateDeviceRunners(manager, deviceId);

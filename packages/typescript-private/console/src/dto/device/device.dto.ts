@@ -29,7 +29,10 @@ export interface UpdateDeviceDtoBase {
   hostId?: HostId;
   connectionState?: DeviceConnectionState;
   name?: string;
-  maxParallelJobs?: number;
+}
+
+export interface UpdateDeviceMaxParallelJobsDtoBase {
+  maxParallelJobs: number;
 }
 
 export interface EnableDeviceDtoBase {

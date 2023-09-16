@@ -8,6 +8,7 @@ import {
   MAX_PROJECT_IDS_FILTER_LENGTH,
   MAX_TAG_NAMES_FILTER_LENGTH,
   UpdateDeviceDtoBase,
+  UpdateDeviceMaxParallelJobsDtoBase,
 } from '@dogu-private/console';
 import {
   DeviceConnectionState,
@@ -24,37 +25,6 @@ import { StreamingOfferValue } from '@dogu-tech/device-client-common';
 import { Transform, Type } from 'class-transformer';
 import { ArrayMaxSize, IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, Max, MaxLength, Min, MinLength, ValidateNested } from 'class-validator';
 import { PageDto } from '../../../common/dto/pagination/page.dto';
-
-// import { registerDecorator, ValidationArguments, ValidationOptions, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
-
-// @ValidatorConstraint({ async: false })
-// export class IsExclusive implements ValidatorConstraintInterface {
-//   validate(value: any, args: ValidationArguments) {
-//     const [relatedPropertyName] = args.constraints;
-//     const relatedValue = (args.object as any)[relatedPropertyName];
-//     if (value && relatedValue) {
-//       return false;
-//     }
-//     return true;
-//   }
-
-//   defaultMessage(args: ValidationArguments) {
-//     const [relatedPropertyName] = args.constraints;
-//     return `${relatedPropertyName} and ${args.property} cannot both be set`;
-//   }
-// }
-
-// export function ExclusiveDeviceEnableOption(validationOptions?: ValidationOptions) {
-//   return function (object: Object, propertyName: string) {
-//     registerDecorator({
-//       target: object.constructor,
-//       propertyName: propertyName,
-//       options: validationOptions,
-//       constraints: [DevicePropCamel.isGlobal],
-//       validator: IsExclusive,
-//     });
-//   };
-// }
 
 export class AttachTagToDeviceDto implements AttachTagToDeviceDtoBase {
   @IsNotEmpty()
@@ -146,12 +116,14 @@ export class UpdateDeviceDto implements UpdateDeviceDtoBase {
   @MinLength(DEVICE_NAME_MIN_LENGTH)
   @MaxLength(DEVICE_NAME_MAX_LENGTH)
   name?: string;
+}
 
-  @IsOptional()
+export class UpdateDeviceMaxParallelJobsDto implements UpdateDeviceMaxParallelJobsDtoBase {
   @Min(DEVICE_MAX_PARALLEL_JOBS_MIN)
   @Max(DEVICE_MAX_PARALLEL_JOBS_MAX)
   @IsNumber()
-  maxParallelJobs?: number;
+  @IsOptional()
+  maxParallelJobs!: number;
 }
 
 export class EnableDeviceDto implements EnableDeviceDtoBase {

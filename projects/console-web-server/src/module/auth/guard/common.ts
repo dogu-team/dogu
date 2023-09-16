@@ -54,24 +54,12 @@ export function getOrganizationIdFromRequest(ctx: ExecutionContext): Organizatio
 }
 
 export module UserPermission {
-  export async function isSelfHostedRootUser(manager: EntityManager, userId: UserId): Promise<boolean> {
-    const user = await manager.getRepository(User).findOne({ where: { userId } });
-    if (!user) {
-      throw new HttpException(`The user is not exist.`, HttpStatus.UNAUTHORIZED);
-    }
-    return user.isRoot ? true : false;
-  }
-
   export async function getUserWithOrganizationRoleAndProjectRoleGroup(
     manager: EntityManager,
     organizationId: OrganizationId,
     projectId: ProjectId,
     userId: UserId,
   ): Promise<User | null> {
-    // const userId = ctx.switchToHttp().getRequest<{ user: UserPayload }>().user.userId;
-    // const projectId = ctx.switchToHttp().getRequest<{ params: { projectId: ProjectId } }>().params.projectId;
-    // const organizationId = getOrganizationIdFromRequest(ctx);
-
     const user = await manager //
       .getRepository(User)
       .createQueryBuilder('user')
@@ -99,9 +87,6 @@ export module UserPermission {
   }
 
   export async function getProjectUserRole(manager: EntityManager, projectId: ProjectId, userId: UserId): Promise<ProjectRole> {
-    // const userId = ctx.switchToHttp().getRequest<{ user: UserPayload }>().user.userId;
-    // const projectId = ctx.switchToHttp().getRequest<{ params: { projectId: ProjectId } }>().params.projectId;
-
     const projectUserRole = await manager //
       .getRepository(ProjectAndUserAndProjectRole)
       .createQueryBuilder('projectUserRole')
@@ -215,8 +200,6 @@ export module UserPermission {
       .filter(notEmpty);
 
     if (projectTeamRoles.length === 0) {
-      // logger.error(`The team with the user is not a member of the project.`);
-      // throw new HttpException(`The user is not a member of the project.`, HttpStatus.CONFLICT);
       return false;
     }
     if (projectTeamRoles.length > 1) {
@@ -251,7 +234,6 @@ export module UserPermission {
     const requiredRoleName = PROJECT_ROLE[controllerRoleType];
     if (!UserPermission.checkProjectRolePermission(projectRole.projectRoleId, controllerRoleType)) {
       logger.info(`The user is not a ${requiredRoleName} role of the project.`);
-      // throw new HttpException(`The user is not a ${requiredRoleName} role of the project.`, HttpStatus.UNAUTHORIZED);
       return false;
     }
 
