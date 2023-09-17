@@ -25,5 +25,19 @@
 
   "addHostDeviceModalTitle": "Need more browser?",
 
-  "addDeviceModalTitle": "Need more device?"
+  "addDeviceModalTitle": "Need more device?",
+
+  "licenseType": "License type",
+  "licenseKey": "License key",
+  "licenseActivatedDate": "Activated date",
+  "licenseExpirationDate": "Expiration date",
+  "licenseExpiredText": "Expired",
+  "licenseExpiredAlertMessage": "Your license has expired. Please renew your license.",
+
+  "renewLicenseKeyMenuTitle": "Renew license",
+  "renewLicenseKeyMenuDescription": "Renew <dogu></dogu> license.",
+  "renewLicenseKeyMenuButtonTitle": "Renew license",
+  "renewLicenseKeyModalTitle": "Renew license",
+  "renewLicenseKeyModalDescription": "Are you sure to renew your license?",
+  "renewLicenseKeyModalConfirmButtonTitle": "Confirm and renew"
 }

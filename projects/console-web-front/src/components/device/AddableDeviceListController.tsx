@@ -22,6 +22,7 @@ import DevicePrefixTag from './DevicePrefixTag';
 import useEventStore from '../../stores/events';
 import { isDesktop } from '../../utils/device';
 import HostDeviceRunnerSettingModal from '../../../enterprise/components/device/HostDeviceRunnerSettingModal';
+import DeviceCounter from './DeviceCounter';
 
 interface DeviceItemProps {
   device: DeviceBase;
@@ -137,6 +138,9 @@ const AddableDeviceListController = () => {
 
   return (
     <>
+      <div style={{ marginBottom: '.5rem' }}>
+        <DeviceCounter />
+      </div>
       <Header>
         <FlexRowBase>
           <NameCell>{t('device-farm:deviceTableNameColumn')}</NameCell>

@@ -25,5 +25,19 @@
 
   "addHostDeviceModalTitle": "브라우저가 필요하신가요?",
 
-  "addDeviceModalTitle": "디바이스가 필요하신가요?"
+  "addDeviceModalTitle": "디바이스가 필요하신가요?",
+
+  "licenseType": "라이센스 유형",
+  "licenseKey": "라이센스 키",
+  "licenseActivatedDate": "시작 날짜",
+  "licenseExpirationDate": "만료 날짜",
+  "licenseExpiredText": "만료됨",
+  "licenseExpiredAlertMessage": "라이센스가 만료되었습니다. 라이센스를 재등록해주세요.",
+
+  "renewLicenseKeyMenuTitle": "라이센스 재등록",
+  "renewLicenseKeyMenuDescription": "<dogu></dogu> 라이센스를 재등록합니다.",
+  "renewLicenseKeyMenuButtonTitle": "라이센스 재등록",
+  "renewLicenseKeyModalTitle": "라이센스 재등록",
+  "renewLicenseKeyModalDescription": "라이센스를 재등록하시겠습니까?",
+  "renewLicenseKeyModalConfirmButtonTitle": "확인 및 재등록"
 }

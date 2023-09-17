@@ -43,6 +43,8 @@ import DeviceVersionAlertIcon from './DeviceVersionAlertIcon';
 import { useDeviceCount } from '../../../enterprise/api/device';
 import HostDeviceRunnerSettingModal from '../../../enterprise/components/device/HostDeviceRunnerSettingModal';
 import { isDesktop } from '../../utils/device';
+import useOrganizationContext from '../../hooks/context/useOrganizationContext';
+import DeviceCounter from './DeviceCounter';
 
 interface DeviceItemProps {
   device: DeviceBase;
@@ -237,7 +239,6 @@ const DeviceListController = () => {
       skipQuestionMark: true,
     },
   );
-  const { data: deviceCount, mutate: mutateDeviceCount } = useDeviceCount();
   const { t } = useTranslation();
 
   useRefresh(
@@ -250,7 +251,9 @@ const DeviceListController = () => {
       'onDeviceStopped',
       'onDeviceReboot',
     ],
-    () => mutate(),
+    () => {
+      mutate();
+    },
   );
 
   if (error) {
@@ -264,6 +267,9 @@ const DeviceListController = () => {
 
   return (
     <>
+      <div style={{ marginBottom: '.5rem' }}>
+        <DeviceCounter />
+      </div>
       <Header>
         <DeviceItemInner>
           <NameCell>{t('device-farm:deviceTableNameColumn')}</NameCell>

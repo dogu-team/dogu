@@ -1,4 +1,9 @@
-import { EnableDeviceDtoBase } from '@dogu-private/console';
+import {
+  DeviceBase,
+  EnableDeviceDtoBase,
+  GetEnabledDeviceCountResponse,
+  UpdateDeviceMaxParallelJobsDtoBase,
+} from '@dogu-private/console';
 import { DeviceId, OrganizationId } from '@dogu-private/types';
 import { AxiosError } from 'axios';
 import useSWR, { SWRResponse } from 'swr';
@@ -14,7 +19,19 @@ export const enableDevice = async (
   return;
 };
 
-export const useDeviceCount = (): SWRResponse<number, AxiosError> => {
-  const rv = useSWR<number>(process.env.NEXT_PUBLIC_ENV === 'self-hosted' && `/devices/count`, swrAuthFetcher);
+export const useDeviceCount = (): SWRResponse<GetEnabledDeviceCountResponse, AxiosError> => {
+  const rv = useSWR<GetEnabledDeviceCountResponse>(
+    process.env.NEXT_PUBLIC_ENV === 'self-hosted' && `/devices/count`,
+    swrAuthFetcher,
+  );
   return rv;
+};
+
+export const updateDeviceMaxParallelCount = async (
+  orgId: OrganizationId,
+  deviceId: DeviceId,
+  dto: UpdateDeviceMaxParallelJobsDtoBase,
+): Promise<DeviceBase> => {
+  const { data } = await api.patch<DeviceBase>(`/organizations/${orgId}/devices/${deviceId}/max-parallel-job`, dto);
+  return data;
 };

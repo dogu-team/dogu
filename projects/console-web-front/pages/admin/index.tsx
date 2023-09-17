@@ -1,5 +1,4 @@
 import { KeyOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
 import { GetServerSideProps } from 'next';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
@@ -16,13 +15,8 @@ const AdminPage: NextPageWithLayout<AdminProps> = ({ license }) => {
 
   return (
     <Box>
-      <FlexRow style={{ justifyContent: 'space-between', padding: '1rem 0' }}>
+      <FlexRow style={{ padding: '1rem 0' }}>
         <StyledH1>Admin Settings</StyledH1>
-        <div>
-          <Link href="/">
-            <Button>Exit Admin</Button>
-          </Link>
-        </div>
       </FlexRow>
       <FlexRow style={{ alignItems: 'flex-start' }}>
         <Sidebar>

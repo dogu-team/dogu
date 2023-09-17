@@ -94,7 +94,7 @@ export const UpgradeDevicePlanBannerModal: React.FC<Props> = ({ isOpen, close, t
               ]}
               button={
                 <Link
-                  href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing?type=self-hosted`}
+                  href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing?type=self-hosted&menu=mobile`}
                   target="_blank"
                   style={{ display: 'block' }}
                 >
@@ -113,13 +113,13 @@ export const UpgradeDevicePlanBannerModal: React.FC<Props> = ({ isOpen, close, t
               description={t('pricingProDeviceDescription')}
               pricing={t('pricingPaid', { price: '29,000' })}
               availableFeatures={[
-                t('pricingProDeviceFeature1', { count: licenseInfo?.licenseTier?.deviceCount ?? 2 }),
+                t('pricingProDeviceFeature1', { count: licenseInfo?.licenseTier?.enabledMobileCount ?? 2 }),
                 t('pricingProCommonFeature2'),
                 t('pricingProCommonFeature3'),
               ]}
               button={
                 <Link
-                  href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing?type=self-hosted`}
+                  href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing?type=self-hosted&menu=mobile`}
                   target="_blank"
                   style={{ display: 'block' }}
                 >
@@ -170,7 +170,7 @@ export const UpgradeBrowserPlanModal: React.FC<Props> = ({ isOpen, close, title,
               ]}
               button={
                 <Link
-                  href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing?type=self-hosted`}
+                  href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing?type=self-hosted&menu=web`}
                   target="_blank"
                   style={{ display: 'block' }}
                 >
@@ -189,13 +189,13 @@ export const UpgradeBrowserPlanModal: React.FC<Props> = ({ isOpen, close, title,
               description={t('pricingProBrowserDescription')}
               pricing={t('pricingPaid', { price: '19,000' })}
               availableFeatures={[
-                t('pricingProBrowserFeature1', { count: licenseInfo?.licenseTier?.deviceCount ?? 2 }),
+                t('pricingProBrowserFeature1', { count: licenseInfo?.licenseTier?.enabledBrowserCount ?? 2 }),
                 t('pricingProCommonFeature2'),
                 t('pricingProCommonFeature3'),
               ]}
               button={
                 <Link
-                  href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing?type=self-hosted`}
+                  href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing?type=self-hosted&menu=web`}
                   target="_blank"
                   style={{ display: 'block' }}
                 >

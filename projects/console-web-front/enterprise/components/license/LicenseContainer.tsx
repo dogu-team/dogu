@@ -1,11 +1,13 @@
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { LicenseBase, LICENSE_SELF_HOSTED_TIER_TYPE } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
-import { Form, Input, Tag } from 'antd';
+import { Alert, Form, Input, Tag } from 'antd';
 import { isAxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import useTranslation from 'next-translate/useTranslation';
+import Trans from 'next-translate/Trans';
 
 import DangerZone from '../../../src/components/common/boxes/DangerZone';
 import TokenCopyInput from '../../../src/components/common/TokenCopyInput';
@@ -19,6 +21,7 @@ import ProTag from '../common/ProTag';
 import LicenseSubmitForm, { LicenseSubmitFormValues } from './LicenseSubmitForm';
 import TimeoutDocsModal from './TimeoutDocsModal';
 import useEventStore from '../../../src/stores/events';
+import DoguText from '../../../src/components/common/DoguText';
 
 interface Props {
   license: LicenseBase;
@@ -30,6 +33,7 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
   const [isTimeoutOpen, openTimeoutModal, closeTimeoutModal] = useModal();
   const [form] = Form.useForm<LicenseSubmitFormValues>();
   const router = useRouter();
+  const { t } = useTranslation('license');
   const fireEvent = useEventStore((state) => state.fireEvent);
 
   useEffect(() => {
@@ -88,7 +92,9 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
           return (
             <>
               <ProTag style={{ marginRight: '.25rem' }} />
-              {`Professional (Max devices: ${licenseInfo.licenseTier?.deviceCount ?? 0})`}
+              {`Professional (Max browsers: ${licenseInfo.licenseTier?.enabledBrowserCount ?? 2} / Max devices: ${
+                licenseInfo.licenseTier?.enabledMobileCount ?? 2
+              })`}
             </>
           );
       }
@@ -100,18 +106,21 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
   return (
     <Box>
       <Content>
-        <ContentTitle>License Type</ContentTitle>
+        <ContentTitle>{t('licenseType')}</ContentTitle>
         <ContentValue>
           {isExpired && (
             <Tag icon={<ExclamationCircleOutlined />} color="error">
-              Expired
+              {t('licenseExpiredText')}
             </Tag>
           )}
           {getTypeText()}
         </ContentValue>
       </Content>
       <Content>
-        <ContentTitle>License Key</ContentTitle>
+        <ContentTitle>{t('licenseKey')}</ContentTitle>
+        {isExpired && (
+          <Alert style={{ marginBottom: '1rem' }} type="error" showIcon message={t('licenseExpiredAlertMessage')} />
+        )}
         {licenseInfo?.licenseToken?.token ? (
           <TokenCopyInput
             value={licenseInfo.licenseToken.token}
@@ -124,7 +133,7 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
       </Content>
       {licenseInfo.licenseToken?.createdAt && (
         <Content>
-          <ContentTitle>Activated Date</ContentTitle>
+          <ContentTitle>{t('licenseActivatedDate')}</ContentTitle>
           <ContentValue>
             {new Date(licenseInfo.licenseToken.createdAt).toLocaleDateString(router.locale, {
               hour: '2-digit',
@@ -136,7 +145,7 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
       )}
       {licenseInfo.licenseToken?.expiredAt && (
         <Content>
-          <ContentTitle>Expiration Date</ContentTitle>
+          <ContentTitle>{t('licenseExpirationDate')}</ContentTitle>
           <ContentValue>
             {new Date(licenseInfo.licenseToken.expiredAt).toLocaleDateString(router.locale, {
               hour: '2-digit',
@@ -150,14 +159,14 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
       <div style={{ marginTop: '3rem' }}>
         <DangerZone>
           <DangerZone.Item
-            title={'Re-register license key'}
-            description={'Overwrite the current license key with a new license key.'}
+            title={t('renewLicenseKeyMenuTitle')}
+            description={<Trans i18nKey="license:renewLicenseKeyMenuDescription" components={{ dogu: <DoguText /> }} />}
             button={
               <DangerZone.Button
-                modalTitle={'Re-register license key'}
+                modalTitle={t('renewLicenseKeyModalTitle')}
                 modalContent={
                   <div>
-                    <p>Are you sure to re-register license key?</p>
+                    <p>{t('renewLicenseKeyModalDescription')}</p>
 
                     <div style={{ marginTop: '1rem' }}>
                       <Form<LicenseSubmitFormValues> id="re-register-key" form={form} layout="vertical">
@@ -186,9 +195,9 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
                 buttonProps={{
                   form: 're-register-key',
                 }}
-                modalButtonTitle="Confirm and re-register"
+                modalButtonTitle={t('renewLicenseKeyModalConfirmButtonTitle')}
               >
-                Re-register license key
+                {t('renewLicenseKeyMenuButtonTitle')}
               </DangerZone.Button>
             }
           />
