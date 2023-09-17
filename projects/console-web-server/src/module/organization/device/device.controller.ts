@@ -110,7 +110,7 @@ export class DeviceController {
     return device;
   }
 
-  @Patch(':deviceId/max-parrallel-job')
+  @Patch(':deviceId/max-parallel-job')
   @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
   async updateMaxParallelJob(
     @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, //
