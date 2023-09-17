@@ -14,7 +14,7 @@
   "pricingProDeviceDescription": "Per device per month",
   "pricingProCommonFeature1": "Pay-as-you-go browsers/devices",
   "pricingProCommonFeature2": "Dogu Agent easy update",
-  "pricingProCommonFeature3": "Open API for integration",
+  "pricingProCommonFeature3": "OpenAPI for integration",
   "pricingProBrowserFeature1": "Enable more than {{count}} browsers",
   "pricingProDeviceFeature1": "Enable more than {{count}} devices",
   "pricingCurrentPlan": "Current plan",

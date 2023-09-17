@@ -6,7 +6,6 @@ import useTranslation from 'next-translate/useTranslation';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-import { updateDevice } from '../../../src/api/device';
 import useModal from '../../../src/hooks/useModal';
 import useEventStore from '../../../src/stores/events';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';

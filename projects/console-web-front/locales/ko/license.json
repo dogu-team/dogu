@@ -14,7 +14,7 @@
   "pricingProDeviceDescription": "디바이스 / 월",
   "pricingProCommonFeature1": "원하는 브라우저/디바이스 수",
   "pricingProCommonFeature2": "Dogu Agent 원클릭 업데이트",
-  "pricingProCommonFeature3": "연동을 위한 Open API",
+  "pricingProCommonFeature3": "연동을 위한 OpenAPI",
   "pricingProBrowserFeature1": "{{count}}개 이상의 브라우저",
   "pricingProDeviceFeature1": "{{count}}대 이상의 디바이스",
   "pricingCurrentPlan": "현재 플랜",
