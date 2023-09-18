@@ -2,6 +2,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RoutineDeviceJob } from '../../db/entity/device-job.entity';
 import { Device } from '../../db/entity/device.entity';
+import { DoguLicense } from '../../db/entity/dogu-license.enitiy';
 import { Host } from '../../db/entity/host.entity';
 import { Organization, RoutineJobEdge } from '../../db/entity/index';
 import { RoutineJob } from '../../db/entity/job.entity';
@@ -14,7 +15,10 @@ import { RemoteDest } from '../../db/entity/remote-dest.entity';
 import { RemoteDeviceJob } from '../../db/entity/remote-device-job.entity';
 import { Routine } from '../../db/entity/routine.entity';
 import { RoutineStep } from '../../db/entity/step.entity';
+import { LicenseSystemProcessor } from '../../enterprise/module/event/license/license-system.processor';
+import { LicenseUpdater } from '../../enterprise/module/event/license/license-updater';
 import { SlackModule } from '../../enterprise/module/integration/slack/slack.module';
+import { LicenseModule } from '../../enterprise/module/license/feature-license.module';
 import { DeviceMessageModule } from '../device-message/device-message.module';
 import { ProjectModule } from '../project/project.module';
 import { RemoteModule } from '../remote/remote.module';
@@ -58,12 +62,14 @@ import { UpdateProducer } from './update-producer';
       RecordDeviceJob,
       RecordCaseAction,
       RecordStepAction,
+      DoguLicense,
     ]), //
     DeviceMessageModule,
     forwardRef(() => PipelineModule),
     RemoteModule,
     SlackModule,
     ProjectModule,
+    LicenseModule,
   ],
   providers: [
     UpdateProducer,
@@ -78,6 +84,7 @@ import { UpdateProducer } from './update-producer';
     PipelineSystemProcessor,
     HeartBeatSystemProcessor,
     RemoteSystemProcessor,
+    LicenseSystemProcessor,
 
     PipelineUpdater,
     JobUpdater,
@@ -95,6 +102,8 @@ import { UpdateProducer } from './update-producer';
     RecordCaseActionUpdater,
     RecordDeviceJobUpdater,
     RecordPipelineUpdater,
+
+    LicenseUpdater,
   ],
   exports: [CancelPipelineQueue, UpdateStepStatusQueue, UpdateDeviceJobStatusQueue, UpdateDestStateQueue, UpdateRemoteDestStateQueue],
 })

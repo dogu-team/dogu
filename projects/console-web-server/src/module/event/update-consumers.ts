@@ -2,6 +2,8 @@ import { DuplicatedCallGuarder, errorify } from '@dogu-tech/common';
 import { Inject, Injectable } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { config } from '../../config';
+import { LicenseSystemProcessor } from '../../enterprise/module/event/license/license-system.processor';
+import { FEATURE_CONFIG } from '../../feature.config';
 import { DoguLogger } from '../logger/logger';
 import { HeartBeatSystemProcessor } from './heartbeat/heartbeat-system.processor';
 import { PipelineSystemProcessor } from './pipeline/pipeline-system.processor';
@@ -14,6 +16,7 @@ export class UpdateConsumer {
   private readonly duplicatedPipelineCallGuarder = new DuplicatedCallGuarder();
   private readonly duplicatedRemoteCallGuarder = new DuplicatedCallGuarder();
   private readonly duplicatedRecordCallGuarder = new DuplicatedCallGuarder();
+  private readonly duplicatedLicenseCallGuarder = new DuplicatedCallGuarder();
 
   constructor(
     @Inject(PipelineSystemProcessor)
@@ -24,9 +27,23 @@ export class UpdateConsumer {
     private readonly remoteSystemProcessor: RemoteSystemProcessor,
     @Inject(RecordPipelineSystemProcessor)
     private readonly recordPipelineSystemProcessor: RecordPipelineSystemProcessor,
+    @Inject(LicenseSystemProcessor)
+    private readonly licenseSystemProcessor: LicenseSystemProcessor,
 
     private readonly logger: DoguLogger,
   ) {}
+
+  @Interval(config.event.license.check.intervalMilliseconds)
+  async onLicenseUpdate(): Promise<void> {
+    if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
+      const licenseStartTime = Date.now();
+      await this.duplicatedLicenseCallGuarder.guard(this.licenseSystemProcessor.update.bind(this.licenseSystemProcessor));
+      const licenseEndTime = Date.now();
+      if (licenseEndTime - licenseStartTime > 1000) {
+        this.logger.error('license update took too long', { duration: licenseEndTime - licenseStartTime });
+      }
+    }
+  }
 
   @Interval(config.event.updateConnection.pop.intervalMilliseconds)
   async onUpdate(): Promise<void> {

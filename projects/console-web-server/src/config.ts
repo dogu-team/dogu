@@ -106,6 +106,11 @@ export const config = {
         intervalMilliseconds: 1000,
       },
     },
+    license: {
+      check: {
+        intervalMilliseconds: 60000,
+      },
+    },
   },
   host: {
     heartbeat: {
