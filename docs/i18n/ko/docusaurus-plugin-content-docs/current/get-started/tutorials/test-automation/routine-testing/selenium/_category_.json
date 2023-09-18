@@ -1,6 +1,7 @@
 {
   "position": 2,
-  "label": "🌎 Selenium",
+  "label": "Selenium",
   "collapsible": true,
-  "collapsed": true
+  "collapsed": true,
+  "className": "selenium_sidebar_header"
 }

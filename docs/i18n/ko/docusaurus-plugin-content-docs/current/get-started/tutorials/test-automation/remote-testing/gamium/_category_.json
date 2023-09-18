@@ -1,6 +1,7 @@
 {
   "position": 5,
-  "label": "🎮 Gamium",
+  "label": "Gamium",
   "collapsible": true,
-  "collapsed": true
+  "collapsed": true,
+  "className": "gamium_sidebar_header"
 }

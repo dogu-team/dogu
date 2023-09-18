@@ -162,5 +162,13 @@
   "sidebar.getStartedSidebar.category.🎮 Gamium": {
     "message": "🎮 Gamium",
     "description": "The label for category 🎮 Gamium in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Routine Testing": {
+    "message": "Routine Testing",
+    "description": "The label for category Routine Testing in sidebar getStartedSidebar"
+  },
+  "sidebar.getStartedSidebar.category.Remote Testing": {
+    "message": "Remote Testing",
+    "description": "The label for category Remote Testing in sidebar getStartedSidebar"
   }
 }

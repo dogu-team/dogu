@@ -1,6 +1,7 @@
 {
   "position": 2,
-  "label": "📱 Appium",
+  "label": "Appium",
   "collapsible": true,
-  "collapsed": false
+  "collapsed": false,
+  "className": "appium_sidebar_header"
 }

@@ -1,6 +1,7 @@
 {
   "position": 1,
-  "label": "🔁 Routine Testing",
+  "label": "Routine Testing",
   "collapsible": true,
-  "collapsed": true
+  "collapsed": true,
+  "className": "routine_sidebar_header"
 }
