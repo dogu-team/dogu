@@ -1,0 +1,29 @@
+---
+sidebar_position: 1
+title: Appium routine test
+sidebar_label: Routine
+locale: en
+---
+
+## Routine Appium options
+
+Appium 테스트를 Routine과 함께 실행할 경우에 옵션을 설명합니다. 자세한 방법은 [Tutorial](/get-started/tutorials/test-automation/routine-testing/appium)을 참고해주세요.
+
+## Preconfigured Capabilities
+
+dogu-device-client를 사용하여 getAppiumCapability()를 호출할 때 설정되는 기본값입니다. dogu-device-client 사용 예시는 [dogu-routine-examples](https://github.com/dogu-team/dogu-routine-examples)에서 확인할 수 있습니다.
+
+| key                           | description                                                            | value                                            |
+| ----------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------ |
+| `platformName`                | `platformName`은 Dogu server가 Device 정보를 통해 자동으로 덮어씁니다. | android: `android`<br></br> ios: `ios`           |
+| `appium:automationName`       | Dogu server가 Device 정보를 통해 자동으로 덮어씁니다                   | android: `uiautomator2`<br></br> ios: `xcuitest` |
+| `appium:deviceName`           | 디바이스 serial 또는 udid                                              | android: {serial}<br></br> ios: {udid}           |
+| `appium:udid`                 | 디바이스 serial 또는 udid                                              | android: {serial}<br></br> ios: {udid}           |
+| `appium:mjpegServerPort`      | 호스트 장비의 유휴 임의 포트                                           | {free random port}                               |
+| `appium:newCommandTimeout`    | 24 시간                                                                | 86,400                                           |
+| `appium:systemPort`           | **ANDROID ONLY** 호스트 장비의 유휴 임의 포트                          | {free random port}                               |
+| `appium:chromedriverPort`     | **ANDROID ONLY** 호스트 장비의 유휴 임의 포트                          | {free random port}                               |
+| `appium:adbPort`              | **ANDROID ONLY** 호스트 장비의 유휴 임의 포트                          | {free random port}                               |
+| `appium:webDriverAgentUrl`    | **IOS ONLY** 디바이스 WebdriverAgent 서버로 forward된 호스트 포트      | http://127.0.0.1:{free random port}              |
+| `appium:webkitDebugProxyPort` | **IOS ONLY** 디바이스 webkit으로 forward된 호스트 포트                 | http://127.0.0.1:{free random port}              |
+| `appium:showXcodeLog`         | **IOS ONLY** Xcode 로그를 Dogu Agent로 출력합니다.                     | true                                             |

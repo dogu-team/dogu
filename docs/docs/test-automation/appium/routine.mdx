@@ -1,0 +1,29 @@
+---
+sidebar_position: 1
+title: Appium routine test
+sidebar_label: Routine
+locale: en
+---
+
+## Routine Appium options
+
+Describes options when running Appium. Please refer to the [Tutorial](/get-started/tutorials/test-automation/routine-testing/appium) on how to run Appium tests with routine.
+
+## Preconfigured Capabilities
+
+Default value set when calling getAppiumCapabilities() using dogu-device-client. An example of using dogu-device-client can be found at [dogu-routine-examples](https://github.com/dogu-team/dogu-routine-examples).
+
+| key                           | description                                                                                    | value                                            |
+| ----------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| `platformName`                | The `platformName` is automatically overwritten by the Dogu server through device information. | android: `android`<br></br> ios: `ios`           |
+| `appium:automationName`       | Dogu server automatically overwrites with device information                                   | android: `uiautomator2`<br></br> ios: `xcuitest` |
+| `appium:deviceName`           | Device serial or udid                                                                          | android: {serial}<br></br> ios: {udid}           |
+| `appium:udid`                 | Device serial or udid                                                                          | android: {serial}<br></br> ios: {udid}           |
+| `appium:mjpegServerPort`      | host machine's free random port                                                                | {free random port}                               |
+| `appium:newCommandTimeout`    | 24 Hours                                                                                       | 86,400                                           |
+| `appium:systemPort`           | **ANDROID ONLY** host machine's free random port                                               | {free random port}                               |
+| `appium:chromedriverPort`     | **ANDROID ONLY** host machine's free random port                                               | {free random port}                               |
+| `appium:adbPort`              | **ANDROID ONLY** host machine's free random port                                               | {free random port}                               |
+| `appium:webDriverAgentUrl`    | **IOS ONLY** Host port forwarded to device WebdriverAgent server                               | http://127.0.0.1:{idle random port}              |
+| `appium:webkitDebugProxyPort` | **IOS ONLY** Host port forwarded to device webkit                                              | http://127.0.0.1:{idle random port}              |
+| `appium:showXcodeLog`         | **IOS ONLY** Whether to show Xcode log to Dogu Agent                                           | true                                             |
