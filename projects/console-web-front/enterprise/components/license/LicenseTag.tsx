@@ -1,6 +1,7 @@
 import { ArrowRightOutlined } from '@ant-design/icons';
 import { LicenseResponse, UserBase } from '@dogu-private/console';
 import { Tag, Tooltip } from 'antd';
+import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
 import Link from 'next/link';
 
@@ -25,15 +26,22 @@ const LicenseTag: React.FC<Props> = ({ licenseInfo, me }) => {
           licenseInfo?.errorInfo ? (
             me.isRoot ? (
               <p style={{ fontSize: '.8rem', lineHeight: '1.5' }}>
-                Something went wrong!
-                <br />
-                Please move to <Link href="/admin">Admin setting</Link>.
+                <Trans
+                  i18nKey="license:licenseRootWarningMessage"
+                  components={{
+                    br: <br />,
+                    link: <Link href="/admin" />,
+                  }}
+                />
               </p>
             ) : (
               <p style={{ fontSize: '.8rem', lineHeight: '1.5' }}>
-                Something went wrong!
-                <br />
-                Please contact your admin.
+                <Trans
+                  i18nKey="license:licenseCommonWarningMessage"
+                  components={{
+                    br: <br />,
+                  }}
+                />
               </p>
             )
           ) : undefined

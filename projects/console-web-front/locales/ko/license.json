@@ -1,6 +1,8 @@
 {
   "comparePlans": "가격 비교하기",
   "upgradePlan": "플랜 업그레이드",
+  "networkGuide": "가이드 보기",
+  "contactUs": "문의하기",
 
   "pricingCommunityDescription": "테스트 자동화의 시작",
   "pricingCommunityCommonFeature1": "제한된 브라우저/디바이스",
@@ -39,5 +41,15 @@
   "renewLicenseKeyMenuButtonTitle": "라이센스 재등록",
   "renewLicenseKeyModalTitle": "라이센스 재등록",
   "renewLicenseKeyModalDescription": "라이센스를 재등록하시겠습니까?",
-  "renewLicenseKeyModalConfirmButtonTitle": "확인 및 재등록"
+  "renewLicenseKeyModalConfirmButtonTitle": "확인 및 재등록",
+
+  "timeoutModalTitle": "라이센스를 확인할 수 없습니다",
+  "timeoutModalContent": "라이센스 확인에 실패했습니다. 네트워크를 확인하고 다시 시도해주세요.",
+
+  "licenseRootWarningMessage": "문제가 발생했습니다!<br></br><link>Admin setting</link>에서 확인해주세요.",
+  "licenseCommonWarningMessage": "문제가 발생했습니다!<br></br>관리자에게 문의해주세요.",
+
+  "licenseServerDisconnectedMessage": "라이센스를 확인할 수 없습니다. 네트워크를 확인하고 다시 시도하거나 문의해주세요.",
+  "licenseTokenInvalidMessage": "유효하지 않은 키입니다. 유효한 키로 다시 시도하거나 문의해주세요.",
+  "licenseUnknownErrorMessage": "문제가 발생했습니다!"
 }

@@ -1,6 +1,8 @@
 {
   "comparePlans": "Compare plans",
   "upgradePlan": "Upgrade plan",
+  "networkGuide": "Visit guide",
+  "contactUs": "Contact us",
 
   "pricingCommunityDescription": "For beginners",
   "pricingCommunityCommonFeature1": "Limited browsers/devices",
@@ -39,5 +41,15 @@
   "renewLicenseKeyMenuButtonTitle": "Renew license",
   "renewLicenseKeyModalTitle": "Renew license",
   "renewLicenseKeyModalDescription": "Are you sure to renew your license?",
-  "renewLicenseKeyModalConfirmButtonTitle": "Confirm and renew"
+  "renewLicenseKeyModalConfirmButtonTitle": "Confirm and renew",
+
+  "timeoutModalTitle": "Unable to verify license",
+  "timeoutModalContent": "License verification failed. Please check your network and try again",
+
+  "licenseRootWarningMessage": "Something went wrong!<br></br>Please move to <link>Admin setting</link>.",
+  "licenseCommonWarningMessage": "Something went wrong!<br></br>Please contact to your admin",
+
+  "licenseServerDisconnectedMessage": "The license could not be verified, please check your network and try again or contact us",
+  "licenseTokenInvalidMessage": "Invalid license key. Please try again with a valid key or contact us.",
+  "licenseUnknownErrorMessage": "Something went wrong!"
 }
