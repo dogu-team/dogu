@@ -84,6 +84,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/typescript-private/device-server"\
       },\
       {\
+        "name": "@dogu-private/dogu-agent-core",\
+        "reference": "workspace:packages/typescript-private/dogu-agent-core"\
+      },\
+      {\
         "name": "@dogu-private/dost-children",\
         "reference": "workspace:packages/typescript-private/dost-children"\
       },\
@@ -236,6 +240,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@dogu-private/console-open-api", ["workspace:packages/typescript-private/console-open-api"]],\
       ["@dogu-private/console-ui", ["workspace:packages/typescript-private/console-ui"]],\
       ["@dogu-private/device-server", ["workspace:packages/typescript-private/device-server"]],\
+      ["@dogu-private/dogu-agent-core", ["workspace:packages/typescript-private/dogu-agent-core"]],\
       ["@dogu-private/dost-children", ["workspace:packages/typescript-private/dost-children"]],\
       ["@dogu-private/env-tools", ["workspace:packages/typescript-private/env-tools"]],\
       ["@dogu-private/host-agent", ["workspace:packages/typescript-private/host-agent"]],\
@@ -11178,6 +11183,23 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["webdriverio", "npm:7.32.0"],\
             ["winston", "npm:3.8.2"],\
             ["ws", "virtual:549e67a1ca2151a2885dacb53709039b296c8bb335e8c0fffceae875fec0cfdb1972cc0a8fc5ecb2d9fd69d1458b4d163dcaeea7b6fb277d10411e98da07ff5e#npm:8.13.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@dogu-private/dogu-agent-core", [\
+        ["workspace:packages/typescript-private/dogu-agent-core", {\
+          "packageLocation": "./packages/typescript-private/dogu-agent-core/",\
+          "packageDependencies": [\
+            ["@dogu-private/dogu-agent-core", "workspace:packages/typescript-private/dogu-agent-core"],\
+            ["@jest/globals", "npm:29.6.1"],\
+            ["@types/node", "npm:18.15.11"],\
+            ["jest", "virtual:b2489bbc0216283d7687523442dd6b04aeaedb71246257f8a0a0e6ae86307b18dca708146dd0f430b02186348d070ef7e31b7b07c55f7aabad66d13be5ae7e15#npm:29.6.1"],\
+            ["nodemon", "npm:2.0.22"],\
+            ["shx", "npm:0.3.4"],\
+            ["ts-jest", "virtual:b2489bbc0216283d7687523442dd6b04aeaedb71246257f8a0a0e6ae86307b18dca708146dd0f430b02186348d070ef7e31b7b07c55f7aabad66d13be5ae7e15#npm:29.1.1"],\
+            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
           ],\
           "linkType": "SOFT"\
         }]\

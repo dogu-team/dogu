@@ -1,0 +1,6 @@
+{
+  "verbose": true,
+  "watch": ["./src"],
+  "exec": "tsc -b",
+  "ext": "ts"
+}
