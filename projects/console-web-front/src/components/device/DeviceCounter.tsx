@@ -1,13 +1,10 @@
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
-import Link from 'next/link';
 import styled from 'styled-components';
+
 import { useDeviceCount } from '../../../enterprise/api/device';
+import { COMMUNITY_MAX_BROWSER_COUNT, COMMUNITY_MAX_MOBILE_COUNT } from '../../../enterprise/utils/license';
 import useOrganizationContext from '../../hooks/context/useOrganizationContext';
 import useRefresh from '../../hooks/useRefresh';
-
-const COMMUNITY_MAX_BROWSER_COUNT = 2;
-const COMMUNITY_MAX_MOBILE_COUNT = 2;
 
 const DeviceCounter: React.FC = () => {
   const { organization } = useOrganizationContext();

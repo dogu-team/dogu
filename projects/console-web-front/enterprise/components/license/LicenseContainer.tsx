@@ -1,5 +1,5 @@
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { LicenseBase, LICENSE_SELF_HOSTED_TIER_TYPE } from '@dogu-private/console';
+import { LicenseResponse } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Alert, Form, Input, Tag } from 'antd';
 import { isAxiosError } from 'axios';
@@ -15,26 +15,35 @@ import useModal from '../../../src/hooks/useModal';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
 import { getErrorMessageFromAxios } from '../../../src/utils/error';
 import { registerSelfHostedLicense, reRegisterSelfHostedLicense } from '../../api/license';
-import { checkExpired } from '../../utils/license';
+import {
+  checkCommunityEdition,
+  checkExpired,
+  COMMUNITY_MAX_BROWSER_COUNT,
+  COMMUNITY_MAX_MOBILE_COUNT,
+} from '../../utils/license';
 import { isTimeout } from '../../utils/error';
 import ProTag from '../common/ProTag';
 import LicenseSubmitForm, { LicenseSubmitFormValues } from './LicenseSubmitForm';
 import TimeoutDocsModal from './TimeoutDocsModal';
 import useEventStore from '../../../src/stores/events';
 import DoguText from '../../../src/components/common/DoguText';
+import LicenseErrorAlert from './LicenseErrorAlert';
 
 interface Props {
-  license: LicenseBase;
+  license: LicenseResponse;
   organizationId: OrganizationId | null;
 }
 
 const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
-  const [licenseInfo, setLicenseInfo] = useState<LicenseBase>(license);
+  const [licenseInfo, setLicenseInfo] = useState<LicenseResponse>(license);
   const [isTimeoutOpen, openTimeoutModal, closeTimeoutModal] = useModal();
   const [form] = Form.useForm<LicenseSubmitFormValues>();
   const router = useRouter();
   const { t } = useTranslation('license');
   const fireEvent = useEventStore((state) => state.fireEvent);
+
+  const isExpired = checkExpired(licenseInfo);
+  const hasError = isExpired || licenseInfo.errorInfo !== null;
 
   useEffect(() => {
     setLicenseInfo(license);
@@ -85,23 +94,20 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
   const getTypeText = (): React.ReactNode => {
     if (organizationId) {
     } else {
-      switch (licenseInfo?.licenseTierId) {
-        case LICENSE_SELF_HOSTED_TIER_TYPE.self_hosted_community:
-          return 'Community';
-        default:
-          return (
-            <>
-              <ProTag style={{ marginRight: '.25rem' }} />
-              {`Professional (Max browsers: ${licenseInfo.licenseTier?.enabledBrowserCount ?? 2} / Max devices: ${
-                licenseInfo.licenseTier?.enabledMobileCount ?? 2
-              })`}
-            </>
-          );
+      if (checkCommunityEdition(licenseInfo)) {
+        return 'Community Edition';
+      } else {
+        return (
+          <>
+            <ProTag style={{ marginRight: '.25rem' }} warnging={licenseInfo?.errorInfo !== null} />
+            {`Professional (Max browsers: ${
+              licenseInfo.licenseTier?.enabledBrowserCount ?? COMMUNITY_MAX_BROWSER_COUNT
+            } / Max devices: ${licenseInfo.licenseTier?.enabledMobileCount ?? COMMUNITY_MAX_MOBILE_COUNT})`}
+          </>
+        );
       }
     }
   };
-
-  const isExpired = checkExpired(licenseInfo);
 
   return (
     <Box>
@@ -118,14 +124,15 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
       </Content>
       <Content>
         <ContentTitle>{t('licenseKey')}</ContentTitle>
-        {isExpired && (
-          <Alert style={{ marginBottom: '1rem' }} type="error" showIcon message={t('licenseExpiredAlertMessage')} />
-        )}
-        {licenseInfo?.licenseToken?.token ? (
+        <div style={{ marginBottom: '1rem' }}>
+          {isExpired && <Alert type="error" showIcon message={t('licenseExpiredAlertMessage')} />}
+          {licenseInfo.errorInfo !== null && <LicenseErrorAlert errorInfo={licenseInfo.errorInfo} />}
+        </div>
+        {licenseInfo?.consoleRegisteredToken ? (
           <TokenCopyInput
-            value={licenseInfo.licenseToken.token}
-            status={isExpired ? 'error' : undefined}
-            suffix={isExpired ? <ExclamationCircleOutlined style={{ color: 'red' }} /> : undefined}
+            value={licenseInfo?.consoleRegisteredToken}
+            status={hasError ? 'error' : undefined}
+            suffix={hasError ? <ExclamationCircleOutlined style={{ color: 'red' }} /> : undefined}
           />
         ) : (
           <LicenseSubmitForm form={form} onSubmit={handleSubmit} />
