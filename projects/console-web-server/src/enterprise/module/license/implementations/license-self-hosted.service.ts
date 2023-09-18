@@ -132,7 +132,9 @@ export class LicenseSelfHostedService extends FeatureLicenseService {
     }
 
     const licenseInfo = await this.getLicenseApiWithException({ licenseToken, companyName: this.companyName });
-
+    if (licenseInfo.errorInfo) {
+      throw new HttpException(`License is not valid or license server is not connected. companyName: ${this.companyName}`, HttpStatus.BAD_REQUEST);
+    }
     const doguLicenseId = v4();
     const newData = manager.getRepository(DoguLicense).create({
       doguLicenseId,
