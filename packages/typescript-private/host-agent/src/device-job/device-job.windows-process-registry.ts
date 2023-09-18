@@ -1,5 +1,5 @@
 import { PrivateDeviceJob } from '@dogu-private/console-host-agent';
-import { BrowserName, createConsoleApiAuthHeader, DeviceId, OrganizationId, Platform, RoutineDeviceJobId, Serial } from '@dogu-private/types';
+import { BrowserName, createConsoleApiAuthHeader, DeviceId, OrganizationId, Platform, RoutineDeviceJobId } from '@dogu-private/types';
 import { closeWebSocketWithTruncateReason, DefaultHttpOptions, errorify, Instance, Retry, toISOStringWithTimezone } from '@dogu-tech/common';
 import { ChildProcess, logger } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
@@ -19,39 +19,33 @@ interface WindowInfo {
   pid: number;
 }
 
-interface RecordInfo {
-  filePath: string;
-}
-
 interface DeviceJobInfo {
-  webSocket: WebSocket | null;
-
-  organizationId: OrganizationId;
-  deviceId: DeviceId;
-  routineDeviceJobId: RoutineDeviceJobId;
-  serial: Serial;
-
   browserName: BrowserName;
-  record: RecordInfo | null;
+  recordDeviceRunnerPath: string;
+  record: boolean;
+  platform: Platform;
 }
 
 @Injectable()
 export class DeviceJobWindowsProcessRegistry {
   private hostResolutionInfo: HostResolutionInfo | null = null;
-  private readonly webSockets = new Map<string, DeviceJobInfo>();
+  private readonly deviceJobInfos = new Map<string, DeviceJobInfo>();
+  private readonly findWindowsWebSockets = new Map<string, WebSocket>();
+  private readonly recordWebSockets = new Map<string, WebSocket>();
 
   constructor(private readonly logger: DoguLogger, private readonly record: DeviceJobRecordingService, private readonly consoleClientService: ConsoleClientService) {}
 
   @OnEvent(OnHostDisconnectedEvent.key)
   onHostDisconnected(value: Instance<typeof OnHostDisconnectedEvent.value>): void {
-    this.webSockets.forEach((info, serial) => {
-      const { webSocket } = info;
-      if (!webSocket) {
-        return;
-      }
+    this.findWindowsWebSockets.forEach((webSocket) => {
       closeWebSocketWithTruncateReason(webSocket, 1001, 'Host disconnected');
     });
-    this.webSockets.clear();
+    this.recordWebSockets.forEach((webSocket) => {
+      closeWebSocketWithTruncateReason(webSocket, 1001, 'Host disconnected');
+    });
+    this.deviceJobInfos.clear();
+    this.findWindowsWebSockets.clear();
+    this.recordWebSockets.clear();
     this.hostResolutionInfo = null;
   }
 
@@ -65,19 +59,17 @@ export class DeviceJobWindowsProcessRegistry {
     if (!this.hostResolutionInfo) {
       throw new Error('onDeviceJobStarted: hostResolutionInfo not found');
     }
-    const { organizationId, deviceId, routineDeviceJobId, serial, platform, record, browserName, recordDeviceRunnerPath } = value;
+    const { organizationId, deviceId, routineDeviceJobId, platform, record, browserName, recordDeviceRunnerPath } = value;
 
     if (!browserName) {
       this.logger.info(`startRecording: DeviceJobRecordingWindowProcessRegistry doesn't handle when browserName is null`, { routineDeviceJobId, browserName });
       return;
     }
     const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
-    const fileName = toISOStringWithTimezone(new Date(), '-');
-    const filePath = path.resolve(recordDeviceRunnerPath, `${fileName}${getRecordExt(platform)}`);
 
     this.quitSafari(browserName, organizationId, deviceId, routineDeviceJobId);
 
-    this.webSockets.set(key, { webSocket: null, serial, organizationId, deviceId, routineDeviceJobId, browserName, record: record ? { filePath } : null });
+    this.deviceJobInfos.set(key, { browserName, platform, recordDeviceRunnerPath, record: !!record });
   }
 
   @OnEvent(OnStepProcessStartedEvent.key)
@@ -88,45 +80,51 @@ export class DeviceJobWindowsProcessRegistry {
 
     const { organizationId, deviceId, routineDeviceJobId, serial, pid } = value;
     const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
-    const deviceJobInfo = this.webSockets.get(key);
-    if (!deviceJobInfo) {
-      this.logger.warn('OnStepProcessStarted: deviceJobInfo not found', { organizationId, deviceId, routineDeviceJobId });
-      return;
-    }
+
     if (!pid) {
       this.logger.warn('OnStepProcessStarted: pid is null', { organizationId, deviceId, routineDeviceJobId });
       return;
     }
-    if (deviceJobInfo.webSocket) {
-      closeWebSocketWithTruncateReason(deviceJobInfo.webSocket, 1000, 'Next step started');
+    const deviceJobInfo = this.deviceJobInfos.get(key);
+    if (!deviceJobInfo) {
+      this.logger.warn('OnStepProcessStarted: deviceJobInfo not found', { organizationId, deviceId, routineDeviceJobId });
+      return;
     }
 
-    const findWindowsSocket = this.record.connectFindWindowsWs(
+    const findWindowWebSocket = this.findWindowsWebSockets.get(key);
+    if (findWindowWebSocket) {
+      closeWebSocketWithTruncateReason(findWindowWebSocket, 1000, 'Next step started');
+    }
+
+    const newFindWindowsWebSocket = this.record.connectFindWindowsWs(
       { serial, parentPid: pid, isSafari: deviceJobInfo.browserName === 'safari' },
-      (result) => {
-        closeWebSocketWithTruncateReason(findWindowsSocket, 1000, 'Find device windows done');
-        const window: WindowInfo = { pid: result.pid };
-        this.updateDeviceJobWindow(organizationId, deviceId, routineDeviceJobId, window).catch((error) => {
-          this.logger.error('Failed to update deviceJob window', { error: errorify(error) });
-        });
-        if (!deviceJobInfo.record) {
-          return;
-        }
-        const recordWebSocket = this.record.connectAndUploadRecordWs({ ...value, pid: result.pid }, deviceJobInfo.record.filePath, (_) => {
-          this.webSockets.delete(key);
-        });
-        this.webSockets.set(key, { ...deviceJobInfo, webSocket: recordWebSocket });
-      },
-      (ws: WebSocket) => {
-        const deviceJobInfo = this.webSockets.get(key);
-        if (!deviceJobInfo || deviceJobInfo.webSocket !== ws) {
-          return;
-        }
-        this.webSockets.delete(key);
+      {
+        onMessage: (result) => {
+          closeWebSocketWithTruncateReason(newFindWindowsWebSocket, 1000, 'Find device windows done');
+          const window: WindowInfo = { pid: result.pid };
+          this.updateDeviceJobWindow(organizationId, deviceId, routineDeviceJobId, window).catch((error) => {
+            this.logger.error('Failed to update deviceJob window', { error: errorify(error) });
+          });
+          if (!deviceJobInfo.record) {
+            return;
+          }
+
+          const fileName = toISOStringWithTimezone(new Date(), '-');
+          const filePath = path.resolve(deviceJobInfo.recordDeviceRunnerPath, `${fileName}${getRecordExt(deviceJobInfo.platform)}`);
+          const recordWebSocket = this.record.connectAndUploadRecordWs({ ...value, pid: result.pid }, filePath, {
+            onClose: () => {
+              this.recordWebSockets.delete(key);
+            },
+          });
+          this.recordWebSockets.set(key, recordWebSocket);
+        },
+        onClose: () => {
+          this.findWindowsWebSockets.delete(key);
+        },
       },
     );
 
-    this.webSockets.set(key, { ...deviceJobInfo, webSocket: findWindowsSocket });
+    this.findWindowsWebSockets.set(key, newFindWindowsWebSocket);
   }
 
   @OnEvent(OnDeviceJobCancelRequestedEvent.key)
@@ -147,14 +145,24 @@ export class DeviceJobWindowsProcessRegistry {
 
   private closeKey(comment: string, organizationId: OrganizationId, deviceId: DeviceId, routineDeviceJobId: RoutineDeviceJobId): void {
     const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
-    const deviceJobInfo = this.webSockets.get(key);
-    if (!deviceJobInfo) {
-      this.logger.warn(`${comment}: deviceJobInfo not found`, { organizationId, deviceId, routineDeviceJobId });
+    this.deviceJobInfos.delete(key);
+    this.closeKeyFindWindows(comment, key);
+    this.closeKeyRecording(comment, key);
+  }
+
+  private closeKeyFindWindows(comment: string, key: string): void {
+    const webSocket = this.findWindowsWebSockets.get(key);
+    if (!webSocket) {
+      this.logger.warn(`${comment}: findWindows webSocket not found`, { key });
       return;
     }
-    const { webSocket } = deviceJobInfo;
+    closeWebSocketWithTruncateReason(webSocket, 1000, 'Completed');
+  }
+
+  private closeKeyRecording(comment: string, key: string): void {
+    const webSocket = this.recordWebSockets.get(key);
     if (!webSocket) {
-      this.logger.warn(`${comment}: webSocket is null`, { organizationId, deviceId, routineDeviceJobId });
+      this.logger.warn(`${comment}: recording webSocket not found`, { key });
       return;
     }
     closeWebSocketWithTruncateReason(webSocket, 1000, 'Completed');

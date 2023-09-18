@@ -58,8 +58,10 @@ export class DeviceJobRecordingProcessRegistry {
     const key = this.createKey(organizationId, deviceId, routineDeviceJobId);
     const fileName = toISOStringWithTimezone(new Date(), '-');
     const filePath = path.resolve(recordDeviceRunnerPath, `${fileName}${getRecordExt(platform)}`);
-    const webSocket = this.record.connectAndUploadRecordWs(value, filePath, (_) => {
-      this.webSockets.delete(key);
+    const webSocket = this.record.connectAndUploadRecordWs(value, filePath, {
+      onClose: () => {
+        this.webSockets.delete(key);
+      },
     });
 
     this.webSockets.set(key, { webSocket, serial, organizationId, deviceId, routineDeviceJobId, filePath });
