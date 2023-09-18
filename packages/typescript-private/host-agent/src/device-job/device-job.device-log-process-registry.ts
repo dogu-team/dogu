@@ -100,7 +100,6 @@ export class DeviceJobLogProcessRegistry {
       return;
     }
     closeWebSocketWithTruncateReason(webSocket, 1001, 'Cancel requested');
-    this.webSockets.delete(key);
   }
 
   @OnEvent(OnDeviceJobPostProcessCompletedEvent.key)
@@ -114,7 +113,6 @@ export class DeviceJobLogProcessRegistry {
     }
     const { webSocket } = deviceLogInfo;
     closeWebSocketWithTruncateReason(webSocket, 1001, 'Completed');
-    this.webSockets.delete(key);
   }
 
   private createKey(organizationId: OrganizationId, deviceId: DeviceId, routineDeviceJobId: RoutineDeviceJobId): string {

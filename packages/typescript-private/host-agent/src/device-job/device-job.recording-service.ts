@@ -79,7 +79,11 @@ export class DeviceJobRecordingService {
     return webSocket;
   }
 
-  connectFindWindowsWs(param: Instance<typeof DeviceFindWindows.sendMessage>, onMessage: (result: Instance<typeof DeviceFindWindows.receiveMessage>) => void): WebSocket {
+  connectFindWindowsWs(
+    param: Instance<typeof DeviceFindWindows.sendMessage>,
+    onMessage: (result: Instance<typeof DeviceFindWindows.receiveMessage>) => void,
+    onClose: (ws: WebSocket) => void,
+  ): WebSocket {
     const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceFindWindows.path}`);
     webSocket.addEventListener('open', () => {
       this.logger.info('connectFindWindowsWs open', {
@@ -98,7 +102,9 @@ export class DeviceJobRecordingService {
     webSocket.addEventListener('error', (ev) => {
       this.logger.error('connectFindWindowsWs error', { error: errorify(ev.error) });
     });
-    webSocket.addEventListener('close', (ev) => {});
+    webSocket.addEventListener('close', (ev) => {
+      onClose(webSocket);
+    });
     webSocket.addEventListener('message', (ev) => {
       const { data } = ev;
       this.logger.info('startRecording message', { data });

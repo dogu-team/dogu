@@ -101,21 +101,30 @@ export class DeviceJobWindowsProcessRegistry {
       closeWebSocketWithTruncateReason(deviceJobInfo.webSocket, 1000, 'Next step started');
     }
 
-    const findWindowsSocket = this.record.connectFindWindowsWs({ serial, parentPid: pid, isSafari: deviceJobInfo.browserName === 'safari' }, (result) => {
-      closeWebSocketWithTruncateReason(findWindowsSocket, 1000, 'Find device windows done');
-      const window: WindowInfo = { pid: result.pid };
-      if (deviceJobInfo.record) {
+    const findWindowsSocket = this.record.connectFindWindowsWs(
+      { serial, parentPid: pid, isSafari: deviceJobInfo.browserName === 'safari' },
+      (result) => {
+        closeWebSocketWithTruncateReason(findWindowsSocket, 1000, 'Find device windows done');
+        const window: WindowInfo = { pid: result.pid };
+        this.updateDeviceJobWindow(organizationId, deviceId, routineDeviceJobId, window).catch((error) => {
+          this.logger.error('Failed to update deviceJob window', { error: errorify(error) });
+        });
+        if (!deviceJobInfo.record) {
+          return;
+        }
         const recordWebSocket = this.record.connectAndUploadRecordWs({ ...value, pid: result.pid }, deviceJobInfo.record.filePath, (_) => {
           this.webSockets.delete(key);
         });
         this.webSockets.set(key, { ...deviceJobInfo, webSocket: recordWebSocket });
-      } else {
-        this.webSockets.set(key, { ...deviceJobInfo, webSocket: null });
-      }
-      this.updateDeviceJobWindow(organizationId, deviceId, routineDeviceJobId, window).catch((error) => {
-        this.logger.error('Failed to update deviceJob window', { error: errorify(error) });
-      });
-    });
+      },
+      (ws: WebSocket) => {
+        const deviceJobInfo = this.webSockets.get(key);
+        if (!deviceJobInfo || deviceJobInfo.webSocket !== ws) {
+          return;
+        }
+        this.webSockets.delete(key);
+      },
+    );
 
     this.webSockets.set(key, { ...deviceJobInfo, webSocket: findWindowsSocket });
   }
@@ -149,7 +158,6 @@ export class DeviceJobWindowsProcessRegistry {
       return;
     }
     closeWebSocketWithTruncateReason(webSocket, 1000, 'Completed');
-    this.webSockets.delete(key);
   }
 
   private quitSafari(browserName: string, organizationId: string, deviceId: string, routineDeviceJobId: number): void {
