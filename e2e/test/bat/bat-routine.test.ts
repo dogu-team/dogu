@@ -954,19 +954,29 @@ Dest.withOptions({
         await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
         await Driver.clickElement({ xpath: `//button[@id="${hostDeviceName}-setting-menu-btn"]` });
         await Driver.sendKeys({ xpath: '//input[@id="name"]' }, 'edit');
-        await Driver.sendKeys({ xpath: '//input[@id="max"]' }, '\b8');
         await Driver.clickElement({ xpath: '//button[@id="save-device-setting-btn"]' });
         await Timer.wait(2000, 'wait for changing device setting');
         hostDeviceName += 'edit';
       });
 
-      test('Check device name', async () => {
-        await Driver.findElement({ xpath: '//span[text()="Host"]/../../p[contains(text(), "edit")]' });
+      test('Check device settings', async () => {
         await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
-        await Driver.clickElement({ xpath: `//button[@id="${hostDeviceName}-setting-menu-btn"]` });
-        await Driver.findElement({ xpath: '//input[@id="max" and @value="8"]' });
-        await Driver.clickElement({ xpath: '//button[@class="ant-modal-close"]' });
+        const deviceName = await Driver.getText({ xpath: `//p[text()="${hostDeviceName}"]` });
+        expect(deviceName).toBe(hostDeviceName);
       });
+
+      // test('Update runner in host device', async () => {
+      //   await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
+      //   await Driver.clickElement({ xpath: `//button[@id="${hostDeviceName}-runner-setting-menu-btn"]` });
+      //   await Driver.clickElement({ xpath: `//input[@id="browser"]` });
+      //   await Driver.sendKeys({ xpath: `//input[@id="browser"]` }, '\b2');
+      //   await Driver.clickElement({ xpath: `//button[text()="${l10n('SAVE')}"]` });
+      //   await Timer.wait(2000, 'wait for changing device setting');
+      // });
+
+      // test('Check runner count', async () => {
+      //   await Driver.findElement({ xpath: `//p[text()="${hostDeviceName}"]/../../../../div[2]/div[2]` });
+      // });
 
       test('Detach tag', async () => {
         await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });

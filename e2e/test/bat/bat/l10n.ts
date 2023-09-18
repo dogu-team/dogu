@@ -19,6 +19,7 @@ export interface E2eL10nValue {
   ORGANIZATIONS: string;
   PROJECT_ORG_MEMBER_TYPE: string;
   PROJECT_TEAM_MEMBER_TYPE: string;
+  SAVE: string;
 }
 
 export const l10nMap = createL10nMap<E2eL10nValue>([
@@ -43,6 +44,7 @@ export const l10nMap = createL10nMap<E2eL10nValue>([
       ORGANIZATIONS: 'Organizations',
       PROJECT_ORG_MEMBER_TYPE: 'Organization member',
       PROJECT_TEAM_MEMBER_TYPE: 'Team',
+      SAVE: 'Save',
     },
   },
   {
@@ -66,6 +68,7 @@ export const l10nMap = createL10nMap<E2eL10nValue>([
       ORGANIZATIONS: '모든 조직',
       PROJECT_ORG_MEMBER_TYPE: '멤버',
       PROJECT_TEAM_MEMBER_TYPE: '팀',
+      SAVE: '저장',
     },
   },
 ]);
