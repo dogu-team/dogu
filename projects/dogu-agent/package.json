@@ -14,6 +14,7 @@
   },
   "types": "./build/src/cli.d.ts",
   "dependencies": {
+    "@dogu-tech/node": "workspace:^",
     "lodash": "4.17.21",
     "yargs": "17.7.2"
   },
