@@ -164,32 +164,35 @@ import ProjectAdminPermission from '@site/src/components/console/ProjectAdminPer
 | 플랫폼 및 모델 | 디바이스의 플랫폼, 플랫폼 버전과 모델입니다.<br />플랫폼은 아이콘으로 표기되며, 플랫폼의 오른쪽은 플랫폼 버전을 나타냅니다.<br />아래에는 디바이스 모델명이 표기됩니다. |
 | 호스트         | 해당 디바이스가 물리적으로 연결된 호스트입니다.                                                                                                                         |
 
-## 디바이스 스트리밍 밎 원격제어
+## 호스트 디바이스 러너
 
-:::caution 디바이스 스트리밍 권한
+호스트 디바이스 러너는 호스트 디바이스에서 실행되는 러너입니다. 호스트 디바이스는 1~16개의 러너를 가질 수 있습니다.  
+러너는 하나의 작업을 수행하며, 웹 테스트에서 하나의 브라우저를 의미합니다.
 
-퍼블릭 디바이스의 스트리밍 밎 원격제어는 조직 내 모든 멤버가 가능합니다.<br />
-프로젝트에 할당된 디바이스는 조직 소유자, 조직 `Admin` 권한 이상을 가진 멤버, 해당 프로젝트에 참여한 멤버만 가능합니다.
+<img
+  src="/ko/img/console/organization/host-device-runners.png"
+  style={{ width: 600, display: 'block' }}
+/>
 
-:::
+:::info
 
-:::tip
-
-디바이스 스트리밍 및 원격제어는 디바이스의 연결상태가 `Online` 상태인 경우에만 가능합니다.
-
-:::
-
-:::info 디바이스 원격제어 기능
-
-디바이스 스트리밍 및 원격제어의 기능에 대한 설명은 [디바이스 원격제어](/device-farm/device/streaming-and-remote-control) 문서를 참고해주세요.
+러너는 호스트 디바이스에서만 존재합니다.
 
 :::
+
+### 러너 수 변경하기
 
 1. Dogu 콘솔에서 조직 페이지 내 왼쪽 사이드바에서 "디바이스 팜" 메뉴를 클릭합니다.
-2. "사용중인 디바이스" 탭에서 스트리밍 및 원격제어를 하고자 하는 디바이스를 찾고, 메뉴 버튼(`···`)을 클릭합니다.
-3. "스트리밍" 메뉴를 클릭해 디바이스 스트리밍 페이지로 이동합니다
+2. "사용중인 디바이스" 또는 "대기중인 디바이스" 탭 메뉴를 클릭합니다.
+3. 러너 수를 변경할 호스트 디바이스의 메뉴 버튼(`···`)을 클릭합니다.
    <img
-     src="/ko/img/console/organization/streaming-device-menu.png"
+     src="/ko/img/console/organization/host-device-runner-setting-menu.png"
+     style={{ width: 600, display: 'block' }}
+   />
+4. "러너 설정" 메뉴를 클릭합니다.
+5. 러너 수를 변경하고 저장 버튼을 클릭합니다.
+   <img
+     src="/ko/img/console/organization/host-device-runner-setting-modal.png"
      style={{ width: 600, display: 'block' }}
    />
 

@@ -161,6 +161,38 @@ The device information displayed in the list of "In-use devices" is as follows.
 | Platform & Model  | The platform, platform version, and model of the device.<br />The platform is represented by an icon, and the platform version is displayed next to it.<br />The device model name is listed below. |
 | Host              | The host to which the device is physically connected.                                                                                                                                               |
 
+## Host device runner
+
+The host device runner is a runner that runs on the host device. A host device can have 1 to 16 runners.  
+A runner performs a single task and represents one browser in web testing.
+
+<img
+  src="/img/console/organization/host-device-runners.png"
+  style={{ width: 600, display: 'block' }}
+/>
+
+:::info
+
+Runners exist only on the host device.
+
+:::
+
+### Changing the Number of Runners
+
+1. In the Dogu console, click on the "Device Farm" menu in the left sidebar of the organization page.
+2. Click on the "In-use devices" or "Standby devices" tab menu.
+3. Click on the menu button (`···`) of the host device for which you want to change the number of runners.
+   <img
+     src="/img/console/organization/host-device-runner-setting-menu.png"
+     style={{ width: 600, display: 'block' }}
+   />
+4. Click on the "Runner settings" menu.
+5. Change the number of runners and click the save button.
+   <img
+     src="/img/console/organization/host-device-runner-setting-modal.png"
+     style={{ width: 600, display: 'block' }}
+   />
+
 ## Update device's tags
 
 <OrganizationAdminPermission prefix="Updating device's tags" />
