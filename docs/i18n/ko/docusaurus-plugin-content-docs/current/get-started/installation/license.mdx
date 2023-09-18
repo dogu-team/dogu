@@ -14,7 +14,33 @@ Self-Hosted 환경에서는 Community, Professional 라이센스를 사용할 �
 
 ### 라이센스 등록 전 준비사항
 
-TODO: felix
+라이센스 인증을 위해 `https://api-client-admin.dev.dogutech.io`의 네트워크 접근을 허용해주세요.
+
+:::info 접근 확인 방법
+[Request]
+
+```
+curl -v -X GET "https://api-client-admin.dogutech.io"
+```
+
+[Response]
+
+```
+...
+< HTTP/2 200
+< date: Mon, 18 Sep 2023 13:00:15 GMT
+< content-type: text/html; charset=utf-8
+< content-length: 16
+< x-powered-by: Express
+< vary: Origin
+< access-control-allow-credentials: true
+< etag: W/"10-k0TK3BmnTaGqizD3XcxpzK9Yp0o"
+<
+* Connection #0 to host api-client-admin.dev.dogutech.io left intact
+Welcome to Dogu!%
+```
+
+:::
 
 ### 라이센스 등록 방법
 

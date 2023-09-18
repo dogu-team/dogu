@@ -14,7 +14,33 @@ You can purchase a professional license by applying for a trial and making an in
 
 ### Preparation before license registration
 
-TODO: felix
+Allow `https://api-client-admin.dev.dogutech.io` network access for license authentication.
+
+:::info How to check network access
+[Request]
+
+```
+curl -v -X GET "https://api-client-admin.dogutech.io"
+```
+
+[Response]
+
+```
+...
+< HTTP/2 200
+< date: Mon, 18 Sep 2023 13:00:15 GMT
+< content-type: text/html; charset=utf-8
+< content-length: 16
+< x-powered-by: Express
+< vary: Origin
+< access-control-allow-credentials: true
+< etag: W/"10-k0TK3BmnTaGqizD3XcxpzK9Yp0o"
+<
+* Connection #0 to host api-client-admin.dev.dogutech.io left intact
+Welcome to Dogu!%
+```
+
+:::
 
 ### How to register a license
 
