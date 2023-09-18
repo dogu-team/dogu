@@ -48,6 +48,7 @@ export class LicenseSelfHostedService extends FeatureLicenseService {
         ...licenseInfo,
         errorInfo: null,
         isCommunityEdition: false,
+        consoleRegisteredToken: licenseToken,
       };
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -63,6 +64,7 @@ export class LicenseSelfHostedService extends FeatureLicenseService {
               unKnownError: false,
             },
             isCommunityEdition: false,
+            consoleRegisteredToken: licenseToken,
           };
         } else if (error.response?.status === HttpStatus.REQUEST_TIMEOUT) {
           return {
@@ -73,6 +75,7 @@ export class LicenseSelfHostedService extends FeatureLicenseService {
               unKnownError: false,
             },
             isCommunityEdition: false,
+            consoleRegisteredToken: licenseToken,
           };
         } else if (error.code === 'ECONNREFUSED') {
           return {
@@ -83,6 +86,7 @@ export class LicenseSelfHostedService extends FeatureLicenseService {
               unKnownError: false,
             },
             isCommunityEdition: false,
+            consoleRegisteredToken: licenseToken,
           };
         } else if (error.code === 'ENOTFOUND') {
           return {
@@ -92,8 +96,8 @@ export class LicenseSelfHostedService extends FeatureLicenseService {
               isLicenseServerDisConnected: true,
               unKnownError: false,
             },
-
             isCommunityEdition: false,
+            consoleRegisteredToken: licenseToken,
           };
         } else if (error.response?.status === HttpStatus.BAD_REQUEST) {
           throw new HttpException(`License Vaildation Failed. companyName: ${this.companyName} licenseToken: ${licenseToken} message: ${message}`, HttpStatus.BAD_REQUEST);
@@ -112,6 +116,7 @@ export class LicenseSelfHostedService extends FeatureLicenseService {
         ...DEFAULT_SELF_HOSTED_LICENSE_DATA,
         errorInfo: null,
         isCommunityEdition: true,
+        consoleRegisteredToken: null,
       };
     }
 

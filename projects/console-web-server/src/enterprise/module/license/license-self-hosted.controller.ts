@@ -1,4 +1,4 @@
-import { FindLicenseDtoBase, LicenseBase } from '@dogu-private/console';
+import { FindLicenseDtoBase, LicenseResponse } from '@dogu-private/console';
 import { Body, Controller, Delete, Get, Inject, Patch, Post } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
@@ -18,7 +18,7 @@ export class LicenseSelfHostedController {
 
   @Post()
   @SelfHostedPermission(SELF_HOSTED_ROLE.ROOT)
-  async setLicense(@Body() dto: FindLicenseDtoBase): Promise<LicenseBase> {
+  async setLicense(@Body() dto: FindLicenseDtoBase): Promise<LicenseResponse> {
     const rv = await this.dataSource.manager.transaction(async (manager) => {
       const token = await this.licenseService.setLicense(manager, dto);
       return token;
@@ -28,7 +28,7 @@ export class LicenseSelfHostedController {
 
   @Patch('')
   @SelfHostedPermission(SELF_HOSTED_ROLE.ROOT)
-  async renewLicense(@Body() dto: FindLicenseDtoBase): Promise<LicenseBase> {
+  async renewLicense(@Body() dto: FindLicenseDtoBase): Promise<LicenseResponse> {
     const rv = await this.dataSource.manager.transaction(async (manager) => {
       const token = await this.licenseService.renewLicense(manager, dto);
       return token;
@@ -44,7 +44,7 @@ export class LicenseSelfHostedController {
 
   @Get('')
   @SelfHostedPermission(SELF_HOSTED_ROLE.ROOT)
-  async getLicense(): Promise<LicenseBase> {
+  async getLicense(): Promise<LicenseResponse> {
     const license = await this.licenseService.getLicense(null);
     return license;
   }

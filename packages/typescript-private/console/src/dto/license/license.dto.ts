@@ -77,4 +77,5 @@ export interface LicenseErrorInfo {
 export interface LicenseResponse extends LicenseBase {
   errorInfo: LicenseErrorInfo | null;
   isCommunityEdition: boolean;
+  consoleRegisteredToken: string | null;
 }
