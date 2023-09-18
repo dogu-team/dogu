@@ -33,7 +33,7 @@ import { notEmpty } from '@dogu-tech/common';
 import { BrowserInstallation } from '@dogu-tech/device-client-common';
 import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { BaseEntity, Brackets, DataSource, EntityManager, In, SelectQueryBuilder } from 'typeorm';
+import { BaseEntity, Brackets, DataSource, EntityManager, In, IsNull, Not, SelectQueryBuilder } from 'typeorm';
 import { v4 } from 'uuid';
 import { DeviceRunner } from '../../../db/entity/device-runner.entity';
 import { Device } from '../../../db/entity/device.entity';
@@ -771,10 +771,12 @@ export class DeviceStatusService {
     const currentCount = await manager.getRepository(DeviceRunner).count({ where: { deviceId } });
     const toRecoverOrCreateCount = Math.max(0, toUpdateCount - currentCount);
     if (toRecoverOrCreateCount > 0) {
-      const softDeletedCount = await manager.getRepository(DeviceRunner).count({ where: { deviceId }, withDeleted: true });
+      // const softDeletedCount = await manager.getRepository(DeviceRunner).count({ where: { deviceId }, withDeleted: true });
+      const softDeletedCount = await manager.getRepository(DeviceRunner).count({ where: { deviceId, deletedAt: Not(IsNull()) }, withDeleted: true });
       const toRecoverCount = Math.min(toRecoverOrCreateCount, softDeletedCount);
       if (toRecoverCount > 0) {
-        const softDeleteds = await manager.getRepository(DeviceRunner).find({ where: { deviceId }, withDeleted: true, take: toRecoverCount });
+        // const softDeleteds = await manager.getRepository(DeviceRunner).find({ where: { deviceId }, withDeleted: true, take: toRecoverCount });
+        const softDeleteds = await manager.getRepository(DeviceRunner).find({ where: { deviceId, deletedAt: Not(IsNull()) }, withDeleted: true, take: toRecoverCount });
         await manager.getRepository(DeviceRunner).recover(softDeleteds);
       }
 
