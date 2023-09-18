@@ -161,7 +161,12 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
           <RunnerWrapper>
             {device.deviceRunners?.map((runner, index) => {
               return (
-                <DeviceRunnerItem key={`device-runner-${runner.deviceRunnerId}`} runner={runner} index={index + 1} />
+                <DeviceRunnerItem
+                  key={`device-runner-${runner.deviceRunnerId}`}
+                  runner={runner}
+                  index={index + 1}
+                  hideStatus={device.connectionState !== DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED}
+                />
               );
             })}
           </RunnerWrapper>

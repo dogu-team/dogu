@@ -40,10 +40,8 @@ import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from './PlatformIcon';
 import DeviceUsageStatusBadge from './DeviceUsageStatusBadge';
 import DeviceVersionAlertIcon from './DeviceVersionAlertIcon';
-import { useDeviceCount } from '../../../enterprise/api/device';
 import HostDeviceRunnerSettingModal from '../../../enterprise/components/device/HostDeviceRunnerSettingModal';
 import { isDesktop } from '../../utils/device';
-import useOrganizationContext from '../../hooks/context/useOrganizationContext';
 import DeviceCounter from './DeviceCounter';
 import DeviceRunnerItem from './DeviceRuunerItem';
 
@@ -204,7 +202,12 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
           <RunnerWrapper>
             {device.deviceRunners?.map((runner, index) => {
               return (
-                <DeviceRunnerItem key={`device-runner-${runner.deviceRunnerId}`} runner={runner} index={index + 1} />
+                <DeviceRunnerItem
+                  key={`device-runner-${runner.deviceRunnerId}`}
+                  runner={runner}
+                  index={index + 1}
+                  hideStatus={device.connectionState !== DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED}
+                />
               );
             })}
           </RunnerWrapper>
