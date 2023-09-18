@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
   "author": "Dogu Technologies",
-  "main": "./build/src/app/index.js",
+  "main": "./build/src/index.js",
   "scripts": {
     "build": "tsc -b",
     "clean": "shx rm -rf build",
@@ -13,7 +13,15 @@
     "test": "jest",
     "watch": "clear; echo @dogu-private/dogu-agent-core Watching... && nodemon"
   },
-  "types": "./build/src/app/index.d.ts",
+  "types": "./build/src/index.d.ts",
+  "dependencies": {
+    "@dogu-private/dost-children": "workspace:^",
+    "@dogu-tech/common": "workspace:^",
+    "@dogu-tech/node": "workspace:^",
+    "dotenv": "16.3.1",
+    "electron-store": "8.1.0",
+    "lodash": "4.17.21"
+  },
   "devDependencies": {
     "@jest/globals": "29.6.1",
     "@types/lodash": "4",
@@ -25,24 +33,5 @@
     "ts-node": "10.9.1",
     "typescript": "4.7.4"
   },
-  "url": "https://github.com/dogu-team/dogu",
-  "dependencies": {
-    "@dogu-private/dost-children": "workspace:^",
-    "@dogu-tech/common": "workspace:^",
-    "@dogu-tech/node": "workspace:^",
-    "dotenv": "16.3.1",
-    "electron-store": "8.1.0",
-    "lodash": "4.17.21"
-  },
-  "exports": {
-    "./app": {
-      "types": "./build/src/app/index.d.ts",
-      "default": "./build/src/app/index.js"
-    },
-    "./shares": {
-      "types": "./build/src/shares/index.d.ts",
-      "default": "./build/src/shares/index.js"
-    }
-  },
-  "type": "commonjs"
+  "url": "https://github.com/dogu-team/dogu"
 }

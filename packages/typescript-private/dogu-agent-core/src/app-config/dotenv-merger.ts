@@ -1,11 +1,11 @@
 import { PreloadDeviceServerEnv, PreloadHostAgentEnv } from '@dogu-private/dost-children';
 import { Class, transformAndValidate } from '@dogu-tech/common';
+import { Logger } from '@dogu-tech/node';
 import dotenv from 'dotenv';
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
-import { AppConfigService } from './app-config-service';
-import { Logger } from '@dogu-tech/node';
+import { AppConfigService } from './service';
 
 interface DotenvInfo<T extends Class<T> = any> {
   fileName: string;
@@ -24,13 +24,13 @@ async function findDotenvFileInSearchPaths(searchPaths: string[], fileName: stri
   return null;
 }
 
-export interface DotEnvServiceOptions {
+export interface DotEnvMergerOptions {
   isDev: boolean;
   resourcesPath: string;
   additionalDotenvInfos?: DotenvInfo[];
 }
 
-export class DotenvService {
+export class DotenvMerger {
   private readonly searchPaths: string[] = [];
   private readonly dotenvInfos: DotenvInfo[] = [
     {
@@ -43,7 +43,7 @@ export class DotenvService {
     },
   ];
 
-  constructor(options: DotEnvServiceOptions) {
+  constructor(options: DotEnvMergerOptions) {
     const { isDev, resourcesPath } = options;
     if (isDev) {
       this.searchPaths.push(process.cwd());
@@ -78,7 +78,8 @@ export class DotenvService {
       }
       const content = await fs.promises.readFile(found, { encoding: 'utf8' });
       const parsed = dotenv.parse(content);
-      const validated = await transformAndValidate(classConstructor, parsed);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const validated = (await transformAndValidate(classConstructor, parsed)) as Record<string, unknown>;
       Object.entries(validated).forEach(([key, value]) => {
         if (!appConfigService.client.has(key)) {
           appConfigService.client.set(key, value);

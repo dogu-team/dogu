@@ -1,10 +1,5 @@
-import { Logger } from '@dogu-tech/node';
 import Store from 'electron-store';
-import fs from 'fs';
-import _ from 'lodash';
-import path from 'path';
-import { AppConfigKey, AppConfigSchema } from '../../shares/app-config';
-import { DotenvService, DotEnvServiceOptions } from './dotenv-service';
+import { AppConfigKey, AppConfigSchema } from './types';
 
 export type Client = Store<AppConfigSchema>;
 
