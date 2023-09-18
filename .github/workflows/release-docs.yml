@@ -63,7 +63,9 @@ jobs:
 
     steps:
       - name: docker init
-        run: docker system prune --volumes -a -f
+        run: |
+          docker ps -qa | xargs -r docker rm -f
+          docker system prune --volumes -a -f
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1-node16
