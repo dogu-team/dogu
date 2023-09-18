@@ -111,5 +111,5 @@ export const V1OpenApiCaller = createParamDecorator((data: unknown, ctx: Executi
 });
 
 export function LicensePermission(roleType: LICENSE_AUTHROIZE): PropertyDecorator {
-  return applyDecorators(SetMetadata(LICENSE_AUTHROIZE_KEY, roleType), UseGuards(UserJwtGuard), UseGuards(LicenseGuard));
+  return applyDecorators(SetMetadata(LICENSE_AUTHROIZE_KEY, roleType), UseGuards(LicenseGuard));
 }
