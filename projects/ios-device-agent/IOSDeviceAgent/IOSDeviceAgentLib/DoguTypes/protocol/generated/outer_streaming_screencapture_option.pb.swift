@@ -110,28 +110,6 @@ public struct Outer_Streaming_ScreenCaptureOption {
   /// Clears the value of `maxResolution`. Subsequent reads from it will return its default value.
   public mutating func clearMaxResolution() {self._maxResolution = nil}
 
-  /// If width, height is set, capture the screen with the specified size.
-  /// override max_resolution
-  public var width: UInt32 {
-    get {return _width ?? 0}
-    set {_width = newValue}
-  }
-  /// Returns true if `width` has been explicitly set.
-  public var hasWidth: Bool {return self._width != nil}
-  /// Clears the value of `width`. Subsequent reads from it will return its default value.
-  public mutating func clearWidth() {self._width = nil}
-
-  /// If width, height is set, capture the screen with the specified size.
-  /// override max_resolution
-  public var height: UInt32 {
-    get {return _height ?? 0}
-    set {_height = newValue}
-  }
-  /// Returns true if `height` has been explicitly set.
-  public var hasHeight: Bool {return self._height != nil}
-  /// Clears the value of `height`. Subsequent reads from it will return its default value.
-  public mutating func clearHeight() {self._height = nil}
-
   /// Used for desktop platform
   public var screenID: Int32 {
     get {return _screenID ?? 0}
@@ -163,8 +141,6 @@ public struct Outer_Streaming_ScreenCaptureOption {
   fileprivate var _frameInterval: UInt64? = nil
   fileprivate var _repeatFrameDelay: UInt64? = nil
   fileprivate var _maxResolution: UInt32? = nil
-  fileprivate var _width: UInt32? = nil
-  fileprivate var _height: UInt32? = nil
   fileprivate var _screenID: Int32? = nil
   fileprivate var _pid: Int32? = nil
 }
@@ -186,10 +162,8 @@ extension Outer_Streaming_ScreenCaptureOption: SwiftProtobuf.Message, SwiftProto
     4: .standard(proto: "frame_interval"),
     5: .standard(proto: "repeat_frame_delay"),
     6: .standard(proto: "max_resolution"),
-    7: .same(proto: "width"),
-    8: .same(proto: "height"),
-    9: .standard(proto: "screen_id"),
-    10: .same(proto: "pid"),
+    7: .standard(proto: "screen_id"),
+    8: .same(proto: "pid"),
   ]
 
   public mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -204,10 +178,8 @@ extension Outer_Streaming_ScreenCaptureOption: SwiftProtobuf.Message, SwiftProto
       case 4: try { try decoder.decodeSingularFixed64Field(value: &self._frameInterval) }()
       case 5: try { try decoder.decodeSingularFixed64Field(value: &self._repeatFrameDelay) }()
       case 6: try { try decoder.decodeSingularFixed32Field(value: &self._maxResolution) }()
-      case 7: try { try decoder.decodeSingularFixed32Field(value: &self._width) }()
-      case 8: try { try decoder.decodeSingularFixed32Field(value: &self._height) }()
-      case 9: try { try decoder.decodeSingularInt32Field(value: &self._screenID) }()
-      case 10: try { try decoder.decodeSingularInt32Field(value: &self._pid) }()
+      case 7: try { try decoder.decodeSingularInt32Field(value: &self._screenID) }()
+      case 8: try { try decoder.decodeSingularInt32Field(value: &self._pid) }()
       default: break
       }
     }
@@ -236,17 +208,11 @@ extension Outer_Streaming_ScreenCaptureOption: SwiftProtobuf.Message, SwiftProto
     try { if let v = self._maxResolution {
       try visitor.visitSingularFixed32Field(value: v, fieldNumber: 6)
     } }()
-    try { if let v = self._width {
-      try visitor.visitSingularFixed32Field(value: v, fieldNumber: 7)
-    } }()
-    try { if let v = self._height {
-      try visitor.visitSingularFixed32Field(value: v, fieldNumber: 8)
-    } }()
     try { if let v = self._screenID {
-      try visitor.visitSingularInt32Field(value: v, fieldNumber: 9)
+      try visitor.visitSingularInt32Field(value: v, fieldNumber: 7)
     } }()
     try { if let v = self._pid {
-      try visitor.visitSingularInt32Field(value: v, fieldNumber: 10)
+      try visitor.visitSingularInt32Field(value: v, fieldNumber: 8)
     } }()
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -258,8 +224,6 @@ extension Outer_Streaming_ScreenCaptureOption: SwiftProtobuf.Message, SwiftProto
     if lhs._frameInterval != rhs._frameInterval {return false}
     if lhs._repeatFrameDelay != rhs._repeatFrameDelay {return false}
     if lhs._maxResolution != rhs._maxResolution {return false}
-    if lhs._width != rhs._width {return false}
-    if lhs._height != rhs._height {return false}
     if lhs._screenID != rhs._screenID {return false}
     if lhs._pid != rhs._pid {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}

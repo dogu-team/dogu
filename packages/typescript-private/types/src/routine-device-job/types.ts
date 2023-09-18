@@ -21,6 +21,7 @@ export interface RoutineDeviceJob {
   browserName: string | null;
   browserVersion: string | null;
   deviceRunnerId: DeviceRunnerId | null;
+  windowProcessId: number | null;
   heartbeat: Date | null;
   createdAt: Date;
   updatedAt: Date;

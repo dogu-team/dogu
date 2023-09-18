@@ -56,23 +56,14 @@ func (s *desktopLibwebrtcSurfaceSource) Connect(serial string, screenCaptureOpti
 	}
 
 	width, height := robotgo.GetScreenSize()
-	// img, err := screenshot.CaptureDisplay(0)
-	// if err != nil {
-	// 	log.Inst.Error("desktopLibwebrtcSurfaceSource.Reconnect", zap.Error(err))
-	// 	return err
-	// }
-	// width := img.Bounds().Size().X
-	// height := img.Bounds().Size().Y
 	if 0 < screenCaptureOption.GetMaxResolution() {
 		ratio := float64(screenCaptureOption.GetMaxResolution()) / float64(height)
 		height = int(screenCaptureOption.GetMaxResolution())
 		width = int(float64(width) * ratio)
 	}
-	if 0 < screenCaptureOption.GetWidth() {
-		width = int(screenCaptureOption.GetWidth())
-	}
-	if 0 < screenCaptureOption.GetHeight() {
-		height = int(screenCaptureOption.GetHeight())
+	if 0 < screenCaptureOption.GetPid() {
+		width = 0
+		height = 0
 	}
 	s.cmd, err = utils.Execute(
 		exePath,
