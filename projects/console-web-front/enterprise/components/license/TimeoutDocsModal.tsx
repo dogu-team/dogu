@@ -1,6 +1,8 @@
 import { Button, Modal } from 'antd';
 import useTranslation from 'next-translate/useTranslation';
 
+import { LICENSE_DOCS_URL } from '../../utils/license';
+
 interface Props {
   isOpen: boolean;
   close: () => void;
@@ -15,7 +17,7 @@ const TimeoutDocsModal: React.FC<Props> = ({ isOpen, close }) => {
         <p style={{ lineHeight: '1.5' }}>{t('timeoutModalContent')}</p>
       </div>
       <div style={{ marginTop: '1rem' }}>
-        <a href="https://docs.dogutech.io" target="_blank">
+        <a href={LICENSE_DOCS_URL} target="_blank">
           <Button type="primary" style={{ width: '100%' }}>
             {t('visitGuide')}
           </Button>

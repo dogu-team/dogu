@@ -31,6 +31,10 @@
 
   "addDeviceModalTitle": "디바이스가 필요하신가요?",
 
+  "licenseActivateFormKeyLabel": "라이센스 키",
+  "licenseActivateFormKeyInputPlaceholder": "라이센스 키를 입력해주세요.",
+  "licenseActivateFormSubmitButtonText": "라이센스 등록",
+
   "licenseType": "라이센스 유형",
   "licenseKey": "라이센스 키",
   "licenseActivatedDate": "시작 날짜",

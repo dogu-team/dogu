@@ -20,6 +20,7 @@ import {
   checkExpired,
   COMMUNITY_MAX_BROWSER_COUNT,
   COMMUNITY_MAX_MOBILE_COUNT,
+  LICENSE_DOCS_URL,
 } from '../../utils/license';
 import { isTimeout } from '../../utils/error';
 import ProTag from '../common/ProTag';
@@ -141,14 +142,14 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
               message={t('needHelpAlertMessage')}
               action={
                 <Space direction="vertical">
-                  <Button size="small" style={{ width: '100%' }} href="https://docs.dogutech.io" target="_blank">
+                  <Button size="small" style={{ width: '100%' }} href={LICENSE_DOCS_URL} target="_blank">
                     {t('visitGuide')}
                   </Button>
 
                   <Button
                     size="small"
                     style={{ width: '100%' }}
-                    href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing`}
+                    href={`${process.env.NEXT_PUBLIC_LANDING_URL}/contact-us`}
                     target="_blank"
                   >
                     {t('contactUs')}
@@ -198,9 +199,13 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
 
                     <div style={{ marginTop: '1rem' }}>
                       <Form<LicenseSubmitFormValues> id="re-register-key" form={form} layout="vertical">
-                        <Form.Item name="key" label="License" rules={[{ required: true, message: 'Input key' }]}>
+                        <Form.Item
+                          name="key"
+                          label={t('licenseActivateFormKeyLabel')}
+                          rules={[{ required: true, message: 'Input key' }]}
+                        >
                           <Input
-                            placeholder="License Key"
+                            placeholder={t('licenseActivateFormKeyInputPlaceholder')}
                             autoComplete="off"
                             autoCorrect="off"
                             minLength={1}

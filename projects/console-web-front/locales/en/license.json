@@ -31,6 +31,10 @@
 
   "addDeviceModalTitle": "Need more device?",
 
+  "licenseActivateFormKeyLabel": "License key",
+  "licenseActivateFormKeyInputPlaceholder": "Enter your license key",
+  "licenseActivateFormSubmitButtonText": "Activate license",
+
   "licenseType": "License type",
   "licenseKey": "License key",
   "licenseActivatedDate": "Activated date",
