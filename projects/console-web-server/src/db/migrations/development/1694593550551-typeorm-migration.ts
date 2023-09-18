@@ -7,7 +7,7 @@ export class typeormMigration1694593550551 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`ALTER TABLE "user_email_preference" ADD "token" character varying NOT NULL DEFAULT ''`);
-    const users = await queryRunner.manager.getRepository(User).find();
+    const users = await queryRunner.manager.getRepository(User).createQueryBuilder('user').select('user.userId').getMany();
 
     for (const uses of users) {
       const emailToken = TokenService.createEmailUnsubscribeToken();
