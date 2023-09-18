@@ -94,7 +94,6 @@ expose('updaterClient', {
 });
 
 expose('dotEnvConfigClient', {
-  load: () => ipcRenderer.invoke(dotEnvConfigClientKey.load),
   set: (key: DotEnvConfigKey, value: string) => ipcRenderer.invoke(dotEnvConfigClientKey.set, key, value),
   get: (key: DotEnvConfigKey) => ipcRenderer.invoke(dotEnvConfigClientKey.get, key),
   getDotEnvConfigPath: () => ipcRenderer.invoke(dotEnvConfigClientKey.getDotEnvConfigPath),

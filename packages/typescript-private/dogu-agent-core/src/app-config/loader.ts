@@ -30,15 +30,18 @@ async function clearConfigsIfInvalid(dotenvMerger: DotenvMerger, configsPath: st
   await fs.promises.mkdir(configsPath, { recursive: true });
 }
 
-export interface AppConfigServiceFactoryOptions extends DotEnvMergerOptions, Omit<AppConfigServiceOptions, 'client'> {
+export interface AppConfigLoaderOptions extends DotEnvMergerOptions, Omit<AppConfigServiceOptions, 'client'> {
   configsPath: string;
   appName: string;
   logger: Logger;
 }
 
-export class AppConfigServiceFactory {
-  async create(options: AppConfigServiceFactoryOptions): Promise<AppConfigService> {
-    const { appName, configsPath, logger } = options;
+export class AppConfigLoader {
+  constructor(private readonly options: AppConfigLoaderOptions) {}
+
+  async load(): Promise<AppConfigService> {
+    const { options } = this;
+    const { appName, configsPath, logger } = this.options;
     Store.initRenderer();
 
     const dotenvMerger = new DotenvMerger(options);

@@ -17,8 +17,8 @@ export class AppConfigService {
     this.client = options.client;
   }
 
-  getOrDefault<T = any>(key: AppConfigKey, value: T): T {
-    return (this.client.get(key) as unknown as T) ?? value;
+  getOrDefault<T = any>(key: AppConfigKey, defaultValue: T): T {
+    return (this.client.get(key) as unknown as T) ?? defaultValue;
   }
 
   get<T = any>(key: AppConfigKey): T {
