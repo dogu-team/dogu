@@ -17,10 +17,16 @@ const DeviceCounter: React.FC = () => {
   }
 
   const browserUsedCount = countInfo?.enabledBrowserCount ?? 0;
-  const browserMaxCount = organization.licenseInfo?.licenseTier?.enabledBrowserCount ?? COMMUNITY_MAX_BROWSER_COUNT;
+  const browserMaxCount =
+    process.env.NEXT_PUBLIC_ENV === 'self-hosted'
+      ? organization.licenseInfo?.licenseTier?.enabledBrowserCount ?? COMMUNITY_MAX_BROWSER_COUNT
+      : Number.POSITIVE_INFINITY;
 
   const mobileUsedCount = countInfo?.enabledMobileCount ?? 0;
-  const mobileMaxCount = organization.licenseInfo?.licenseTier?.enabledMobileCount ?? COMMUNITY_MAX_MOBILE_COUNT;
+  const mobileMaxCount =
+    process.env.NEXT_PUBLIC_ENV === 'self-hosted'
+      ? organization.licenseInfo?.licenseTier?.enabledMobileCount ?? COMMUNITY_MAX_MOBILE_COUNT
+      : Number.POSITIVE_INFINITY;
 
   const isBrowserMaxed = browserUsedCount >= browserMaxCount;
   const isMobileMaxed = mobileUsedCount >= mobileMaxCount;
@@ -29,9 +35,9 @@ const DeviceCounter: React.FC = () => {
     <FlexRow>
       <StyledText>
         {isBrowserMaxed && <ExclamationCircleOutlined style={{ color: 'red' }} />}&nbsp;Browsers: {browserUsedCount} /{' '}
-        {browserMaxCount}
+        {browserMaxCount === Number.POSITIVE_INFINITY ? '∞' : browserMaxCount}
         &nbsp;&nbsp;&nbsp;{isMobileMaxed && <ExclamationCircleOutlined style={{ color: 'red' }} />}&nbsp;Devices:{' '}
-        {countInfo?.enabledMobileCount} / {organization.licenseInfo?.licenseTier?.enabledMobileCount}
+        {countInfo?.enabledMobileCount} / {mobileMaxCount === Number.POSITIVE_INFINITY ? '∞' : mobileMaxCount}
       </StyledText>
 
       {/* {(isBrowserMaxed || isMobileMaxed) && (
