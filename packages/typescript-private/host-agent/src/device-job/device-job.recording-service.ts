@@ -17,8 +17,6 @@ export interface DeviceJobRecordParam {
   routineDeviceJobId: RoutineDeviceJobId;
   serial: Serial;
   pid?: number;
-  width?: number;
-  height?: number;
 }
 
 @Injectable()
@@ -26,7 +24,7 @@ export class DeviceJobRecordingService {
   constructor(private readonly logger: DoguLogger, private readonly consoleClientService: ConsoleClientService) {}
 
   connectAndUploadRecordWs(value: DeviceJobRecordParam, filePath: string, onClose: (ws: WebSocket) => void): WebSocket {
-    const { organizationId, deviceId, routineDeviceJobId, serial, pid, width, height } = value;
+    const { organizationId, deviceId, routineDeviceJobId, serial, pid } = value;
     const webSocket = new WebSocket(`ws://${env.DOGU_DEVICE_SERVER_HOST_PORT}${DeviceRecording.path}`);
     webSocket.addEventListener('open', () => {
       this.logger.info('startRecording open', {
@@ -35,7 +33,7 @@ export class DeviceJobRecordingService {
       const sendMessage: Instance<typeof DeviceRecording.sendMessage> = {
         serial,
         screenRecordOption: {
-          screen: { pid, width, height },
+          screen: { pid },
           filePath,
         },
       };

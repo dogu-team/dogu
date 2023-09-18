@@ -1,5 +1,11 @@
 import { DevicePropCamel, OrganizationPropCamel } from '@dogu-private/console';
-import { PrivateDeviceJob, UpdateDeviceJobLocalStartedAtRequestBody, UpdateDeviceJobStatusRequestBody, WriteDeviceJobLogsRequestBody } from '@dogu-private/console-host-agent';
+import {
+  PrivateDeviceJob,
+  UpdateDeviceJobLocalStartedAtRequestBody,
+  UpdateDeviceJobStatusRequestBody,
+  UpdateDeviceJobWindowRequestBody,
+  WriteDeviceJobLogsRequestBody,
+} from '@dogu-private/console-host-agent';
 import { DeviceId, OrganizationId, RoutineDeviceJobId } from '@dogu-private/types';
 import { Body, Controller, HttpException, HttpStatus, Inject, Param, Patch, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -92,5 +98,20 @@ export class PrivateDeviceJobController {
     @Body() body: WriteDeviceJobLogsRequestBody,
   ): Promise<void> {
     await this.influxDbLogService.writeDeviceJobLogs(organizationId, deviceId, deviceJobId, body);
+  }
+
+  @Patch(PrivateDeviceJob.updateDeviceJobWindow.path)
+  @HostPermission(HOST_ACTION_TYPE.DEVICE_API)
+  async updateDeviceJobWindow(
+    @Param(OrganizationPropCamel.organizationId, IsOrganizationExist) organizationId: OrganizationId,
+    @Param('deviceJobId', IsDeviceJobExist) deviceJobId: RoutineDeviceJobId,
+    @Body() body: UpdateDeviceJobWindowRequestBody,
+  ): Promise<void> {
+    this.logger.debug('DeviceJob window updated', { organizationId, deviceJobId, timestamp: new Date() });
+    const exist = await this.dataSource.getRepository(RoutineDeviceJob).exist({ where: { routineDeviceJobId: deviceJobId } });
+    if (!exist) {
+      throw new HttpException(`Device job not found. organizationId: ${organizationId}, deviceJobId: ${deviceJobId}`, HttpStatus.NOT_FOUND);
+    }
+    await this.dataSource.getRepository(RoutineDeviceJob).update({ routineDeviceJobId: deviceJobId }, { windowProcessId: body.windowProcessId });
   }
 }

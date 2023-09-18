@@ -207,6 +207,56 @@ class CaptureCallback : public webrtc::DesktopCapturer::Callback
     rtc::scoped_refptr<webrtc::I420Buffer> i420_buffer_;
 };
 
+std::unique_ptr<webrtc::DesktopCapturer> createCapturer()
+{
+    webrtc::DesktopCaptureOptions option = webrtc::DesktopCaptureOptions::CreateDefault();
+#ifdef WEBRTC_MAC
+    option.set_allow_iosurface(true);
+#endif
+
+    webrtc::DesktopCapturer::SourceList desktop_screens;
+
+    if (0 == g_pid)
+    {
+        auto capturer = webrtc::DesktopCapturer::CreateScreenCapturer(option);
+        capturer->GetSourceList(&desktop_screens);
+        for (auto &s : desktop_screens)
+        {
+            std::cout << "screen: " << s.id << " -> " << s.title << "\n" << std::flush;
+        }
+        capturer->SelectSource(desktop_screens[0].id);
+        return capturer;
+    }
+    else
+    {
+
+        auto windows = mywindows::getInfos();
+        for (auto &w : windows)
+        {
+            if (w.pid == g_pid)
+            {
+                std::cout << "window: " << w.id << " -> " << w.title << "\n" << std::flush;
+                if (g_width == 0)
+                {
+                    g_width = w.rect.width() & ~1;
+                }
+                if (g_height == 0)
+                {
+                    g_height = w.rect.height() & ~1;
+                }
+                auto option = webrtc::DesktopCaptureOptions::CreateDefault();
+                webrtc::DesktopCapturer::SourceList desktop_windows;
+                auto capturer = webrtc::DesktopCapturer::CreateWindowCapturer(option);
+                capturer->SelectSource(w.id);
+                return capturer;
+            }
+        }
+
+        auto errorMessage = "window not found. pid: " + std::to_string(g_pid);
+        throw std::runtime_error(errorMessage);
+    }
+}
+
 void prepare(int port, int width, int height, int fps, int pid)
 {
     g_port = port;
@@ -217,6 +267,7 @@ void prepare(int port, int width, int height, int fps, int pid)
 
     g_frameDeltaMs = (int)(1000 / g_fps);
     g_moderatedframeDeltaMs = g_frameDeltaMs;
+    g_capturer = createCapturer();
 }
 
 void connect()
@@ -295,52 +346,8 @@ void modifyFrameDeltaPerPeriod(std::chrono::system_clock::time_point &periodStar
     }
 }
 
-std::unique_ptr<webrtc::DesktopCapturer> createCapturer()
-{
-    webrtc::DesktopCaptureOptions option = webrtc::DesktopCaptureOptions::CreateDefault();
-#ifdef WEBRTC_MAC
-    option.set_allow_iosurface(true);
-#endif
-
-    webrtc::DesktopCapturer::SourceList desktop_screens;
-
-    if (0 == g_pid)
-    {
-        auto capturer = webrtc::DesktopCapturer::CreateScreenCapturer(option);
-        capturer->GetSourceList(&desktop_screens);
-        for (auto &s : desktop_screens)
-        {
-            std::cout << "screen: " << s.id << " -> " << s.title << "\n" << std::flush;
-        }
-        capturer->SelectSource(desktop_screens[0].id);
-        return capturer;
-    }
-    else
-    {
-
-        auto windows = mywindows::getInfos();
-        for (auto &w : windows)
-        {
-            if (w.pid == g_pid)
-            {
-                std::cout << "window: " << w.id << " -> " << w.title << "\n" << std::flush;
-                auto option = webrtc::DesktopCaptureOptions::CreateDefault();
-                webrtc::DesktopCapturer::SourceList desktop_windows;
-                auto capturer = webrtc::DesktopCapturer::CreateWindowCapturer(option);
-                capturer->SelectSource(w.id);
-                return capturer;
-            }
-        }
-
-        auto errorMessage = "window not found. pid: " + std::to_string(g_pid);
-        throw std::runtime_error(errorMessage);
-    }
-}
-
 void startCapture()
 {
-    g_capturer = createCapturer();
-
     CaptureCallback *callback = new CaptureCallback();
     g_capturer->Start(callback);
 

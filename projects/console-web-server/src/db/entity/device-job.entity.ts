@@ -47,6 +47,9 @@ export class RoutineDeviceJob extends BaseEntity implements RoutineDeviceJobBase
   @Column({ type: 'character varying', name: RoutineDeviceJobPropSnake.browser_version, length: ROUTINE_DEVICE_JOB_BROWSER_VERSION_MAX_LENGTH, nullable: true })
   browserVersion!: string | null;
 
+  @Column({ type: 'int', name: RoutineDeviceJobPropSnake.window_process_id, unsigned: true, nullable: true })
+  windowProcessId!: number | null;
+
   @ColumnTemplate.Date(RoutineDeviceJobPropSnake.heartbeat, true)
   heartbeat!: Date | null;
 

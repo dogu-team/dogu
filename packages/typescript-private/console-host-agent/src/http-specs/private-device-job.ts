@@ -1,7 +1,7 @@
 import { DeviceId, DeviceJobLog, OrganizationId, PIPELINE_STATUS, RoutineDeviceJobId } from '@dogu-private/types';
 import { ControllerMethodSpec, ControllerSpec } from '@dogu-tech/common';
 import { Type } from 'class-transformer';
-import { IsArray, IsDate, IsEnum, IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
+import { IsArray, IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, ValidateNested } from 'class-validator';
 
 export class StepStatusInfo {
   @IsEnum(PIPELINE_STATUS)
@@ -64,6 +64,11 @@ export class WriteDeviceJobLogsRequestBody {
   logs!: DeviceJobLog[];
 }
 
+export class UpdateDeviceJobWindowRequestBody {
+  @IsNumber()
+  windowProcessId!: number;
+}
+
 const PrivateDeviceJobController = new ControllerSpec({
   path: '/private/organizations/:organizationId/devices/:deviceId/device-jobs',
 });
@@ -118,5 +123,15 @@ export const PrivateDeviceJob = {
       constructor(readonly organizationId: OrganizationId, readonly deviceId: DeviceId, readonly deviceJobId: RoutineDeviceJobId) {}
     },
     requestBody: UpdateDeviceJobLocalStartedAtRequestBody,
+  }),
+
+  updateDeviceJobWindow: new ControllerMethodSpec({
+    controllerSpec: PrivateDeviceJobController,
+    method: 'PATCH',
+    path: '/:deviceJobId/window',
+    pathProvider: class {
+      constructor(readonly organizationId: OrganizationId, readonly deviceId: DeviceId, readonly deviceJobId: RoutineDeviceJobId) {}
+    },
+    requestBody: UpdateDeviceJobWindowRequestBody,
   }),
 };
