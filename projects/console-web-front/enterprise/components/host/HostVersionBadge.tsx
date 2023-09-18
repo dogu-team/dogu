@@ -69,7 +69,9 @@ const HostVesrsionBadge = ({ host }: Props) => {
   const shouldShowUpdateButton =
     host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED &&
     (updatableInfo.reason || updatableInfo.isUpdatable);
-  const isFreeTier = !organization?.licenseInfo?.licenseTier?.doguAgentAutoUpdateEnabled;
+  const isCommunityEdition =
+    process.env.NEXT_PUBLIC_ENV === 'self-hosted' &&
+    !organization?.licenseInfo?.licenseTier?.doguAgentAutoUpdateEnabled;
 
   return (
     <>
@@ -92,7 +94,7 @@ const HostVesrsionBadge = ({ host }: Props) => {
             disabled={!updatable}
             type="primary"
             onClick={() => {
-              if (isFreeTier) {
+              if (isCommunityEdition) {
                 openBanner();
               } else {
                 openModal();
@@ -101,7 +103,7 @@ const HostVesrsionBadge = ({ host }: Props) => {
           >
             {t('device-farm:doguAgentUpdateAvailableMessage')}&nbsp;
             <b style={{ fontSize: '.75rem' }}>{`(current: ${host.agentVersion})`}</b>
-            {isFreeTier && <ProTag style={{ marginLeft: '.5rem' }} />}
+            {isCommunityEdition && <ProTag style={{ marginLeft: '.5rem' }} />}
           </FlexButton>
         ) : (
           <Tag
