@@ -1,6 +1,6 @@
 import { WebSocketProxyReceiveClose } from '@dogu-private/console-host-agent';
 import { DeviceId, LocalDeviceDetectToken, OrganizationId, Serial } from '@dogu-private/types';
-import { HeaderRecord, Instance, stringify } from '@dogu-tech/common';
+import { HeaderRecord, stringify } from '@dogu-tech/common';
 import {
   Device,
   DeviceInstallApp,
@@ -24,32 +24,6 @@ import { DeviceStreamingOfferDto } from './dto/device.dto';
 @Injectable()
 export class DeviceCommandService {
   constructor(private readonly deviceMessageRelayer: DeviceMessageRelayer, private readonly logger: DoguLogger) {}
-
-  /**
-   * Not using due to trickle running on websocket
-   */
-  async startDeviceStreaming(offer: DeviceStreamingOfferDto): Promise<Instance<typeof Device.startDeviceStreaming.responseBodyData>> {
-    const { organizationId, deviceId, serial, ...rest } = offer;
-    const pathProvider = new Device.startDeviceStreaming.pathProvider(serial);
-    const path = Device.startDeviceStreaming.resolvePath(pathProvider);
-    const requestBody: Instance<typeof DeviceStreaming.sendMessage> = {
-      serial,
-      ...rest,
-    };
-    const responseBody = await this.deviceMessageRelayer.sendHttpRequest(
-      organizationId,
-      deviceId,
-      Device.startDeviceStreaming.method,
-      path,
-      {
-        'Content-Type': 'application/json',
-      },
-      undefined,
-      requestBody,
-      Device.startDeviceStreaming.responseBodyData,
-    );
-    return responseBody;
-  }
 
   async *startDeviceStreamingWithTrickle(offer: DeviceStreamingOfferDto): AsyncGenerator<StreamingAnswerDto | WebSocketProxyReceiveClose> {
     const { organizationId, deviceId, serial, ...rest } = offer;

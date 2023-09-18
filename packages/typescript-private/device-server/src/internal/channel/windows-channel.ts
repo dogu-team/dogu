@@ -7,7 +7,6 @@ import {
   Platform,
   PrivateProtocol,
   ProfileMethod,
-  ProtoRTCPeerDescription,
   RuntimeInfo,
   ScreenRecordOption,
   Serial,
@@ -120,10 +119,6 @@ export class WindowsChannel implements DeviceChannel {
       platform: Platform.PLATFORM_WINDOWS,
       localTimeStamp: new Date(),
     };
-  }
-
-  async startStreamingWebRTC(offer: StreamingOfferDto): Promise<ProtoRTCPeerDescription> {
-    return Promise.resolve(this._streaming.startStreaming(this.serial, offer));
   }
 
   async startStreamingWebRtcWithTrickle(offer: StreamingOfferDto): Promise<Observable<StreamingAnswer>> {

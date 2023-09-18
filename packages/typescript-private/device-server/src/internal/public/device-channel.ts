@@ -6,7 +6,6 @@ import {
   Platform,
   PrivateProtocol,
   ProfileMethod,
-  ProtoRTCPeerDescription,
   ScreenRecordOption,
   Serial,
   StreamingAnswer,
@@ -60,7 +59,6 @@ export interface DeviceChannel {
   get browserInstallations(): BrowserInstallation[];
 
   // screen
-  startStreamingWebRTC(offer: StreamingOfferDto): PromiseOrValue<ProtoRTCPeerDescription>;
   startStreamingWebRtcWithTrickle(offer: StreamingOfferDto): PromiseOrValue<Observable<StreamingAnswer>>;
   startRecord(option: ScreenRecordOption): PromiseOrValue<ErrorResult>;
   stopRecord(filePath: string): PromiseOrValue<ErrorResult>;

@@ -2,7 +2,6 @@ import { ControllerSpec, DefaultPathProvider } from '@dogu-tech/common';
 import { Serial } from '@dogu-tech/types';
 import { DeviceConfigDto } from '../../validations/types/device-configs';
 import { DeviceNotFoundErrorDetails, DeviceServerResponseDto } from '../../validations/types/responses';
-import { RTCPeerDescription, StreamingOfferDto } from '../../validations/types/streaming-recordings';
 import { DeviceServerControllerMethodSpec } from '../types';
 import {
   CreateLocalDeviceDetectTokenRequest,
@@ -58,19 +57,6 @@ export const Device = {
       constructor(readonly serial: Serial) {}
     },
     responseBody: DeviceServerResponseDto,
-    responseBodyError: DeviceNotFoundErrorDetails,
-  }),
-
-  startDeviceStreaming: new DeviceServerControllerMethodSpec({
-    controllerSpec: DeviceController,
-    method: 'POST',
-    path: '/:serial/streaming',
-    pathProvider: class {
-      constructor(readonly serial: Serial) {}
-    },
-    requestBody: StreamingOfferDto,
-    responseBody: DeviceServerResponseDto,
-    responseBodyData: RTCPeerDescription,
     responseBodyError: DeviceNotFoundErrorDetails,
   }),
 

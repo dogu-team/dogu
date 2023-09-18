@@ -7,7 +7,6 @@ import {
   Platform,
   PrivateProtocol,
   ProfileMethod,
-  ProtoRTCPeerDescription,
   RuntimeInfo,
   ScreenCaptureOption,
   ScreenRecordOption,
@@ -208,10 +207,6 @@ export class AndroidChannel implements DeviceChannel {
       platform: Platform.PLATFORM_ANDROID,
       localTimeStamp: new Date(),
     };
-  }
-
-  startStreamingWebRTC(offer: StreamingOfferDto): ProtoRTCPeerDescription {
-    throw new Error('Method not supported.');
   }
 
   async startStreamingWebRtcWithTrickle(offer: StreamingOfferDto): Promise<Observable<StreamingAnswer>> {

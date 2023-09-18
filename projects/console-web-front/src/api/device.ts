@@ -1,7 +1,6 @@
-import { AttachTagToDeviceDtoBase, DeviceBase, DeviceStreamingOffer, UpdateDeviceDtoBase } from '@dogu-private/console';
-import { DeviceId, DeviceTagId, HostId, OrganizationId, ProjectId, ProtoRTCPeerDescription } from '@dogu-private/types';
+import { AttachTagToDeviceDtoBase, DeviceBase, UpdateDeviceDtoBase } from '@dogu-private/console';
+import { DeviceId, DeviceTagId, HostId, OrganizationId, ProjectId } from '@dogu-private/types';
 
-import { sdpExt } from '@dogu-private/webrtc';
 import api from 'src/api';
 
 export const getDeviceCpuRuntimeInfo = async (organizationId: OrganizationId, hostId: HostId, deviceId: string) => {
@@ -67,18 +66,6 @@ export const detachTagFromDevice = async (organizationId: OrganizationId, device
 
 export const checkDeviceStateAsync = async (organizationId: OrganizationId, deviceId: DeviceId) => {
   return await api.head<void>(`/organizations/${organizationId}/devices/${deviceId}`);
-};
-
-export const startDeviceStreaming = async (
-  organizationId: OrganizationId,
-  deviceId: DeviceId,
-  streamingBody: DeviceStreamingOffer,
-): Promise<RTCSessionDescription> => {
-  const { data } = await api.post<ProtoRTCPeerDescription>(
-    `/organizations/${organizationId}/devices/${deviceId}/streaming`,
-    streamingBody,
-  );
-  return sdpExt.convertSdpFromProtoToTs(data);
 };
 
 export const removeDeviceFromProject = async (

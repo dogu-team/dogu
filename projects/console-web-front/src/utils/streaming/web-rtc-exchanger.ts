@@ -12,7 +12,6 @@ import { PromiseOrValue, transformAndValidate } from '@dogu-tech/common';
 import { StreamingAnswerDto } from '@dogu-tech/device-client-common';
 
 import { config } from '../../../config';
-import { startDeviceStreaming } from '../../api/device';
 import { StreamingError, StreamingErrorType } from '../../types/streaming';
 import { WebSocketUrlResolver } from '../web-socket';
 
@@ -183,67 +182,6 @@ export class WebRtcTrickleExchanger implements WebRtcExchanger {
     }
     console.debug('remote iceCandidate flushCandidates');
     this.candidatesBuffer = [];
-  }
-}
-
-export class WebRtcNonTrickleExchanger implements WebRtcExchanger {
-  startExchange(
-    organizationId: OrganizationId,
-    deviceId: DeviceId,
-    serial: Serial,
-    peerConnection: RTCPeerConnection,
-    platform: Platform,
-    option?: StreamingOption,
-    onError?: (error: StreamingError) => PromiseOrValue<void>,
-  ): void {
-    this.startExchangeInternal(organizationId, deviceId, serial, peerConnection, platform, option, onError).catch(
-      async (error) => {
-        if (onError !== undefined) {
-          await onError(error);
-        }
-        console.debug('startExchangeInternal error', error);
-      },
-    );
-  }
-
-  private async startExchangeInternal(
-    organizationId: OrganizationId,
-    deviceId: DeviceId,
-    serial: Serial,
-    peerConnection: RTCPeerConnection,
-    platform: Platform,
-    option?: StreamingOption,
-    onError?: (error: StreamingError) => PromiseOrValue<void>,
-  ): Promise<void> {
-    console.debug(`${this.constructor.name} message`, { option });
-
-    const offer = await peerConnection.createOffer();
-    await peerConnection.setLocalDescription(offer);
-    if (peerConnection.localDescription === null) {
-      throw new Error('no local session');
-    }
-
-    const peerDescription = sdpExt.convertSdpFromTsToProto(peerConnection.localDescription);
-    const param: DeviceStreamingOffer = {
-      organizationId,
-      deviceId,
-      serial,
-      value: {
-        $case: 'startStreaming',
-        startStreaming: {
-          peerDescription,
-          option: option ?? {
-            screen: DefaultScreenCaptureOption(),
-          },
-          turnServerUrl: config.turnServer.url,
-          turnServerUsername: config.turnServer.userName,
-          turnServerPassword: config.turnServer.password,
-          platform: platform,
-        },
-      },
-    };
-    const answer = await startDeviceStreaming(organizationId, deviceId, param);
-    await peerConnection.setRemoteDescription(answer);
   }
 }
 

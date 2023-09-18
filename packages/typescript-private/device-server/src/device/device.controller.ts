@@ -1,6 +1,6 @@
 import { Code, Platform, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { Instance } from '@dogu-tech/common';
-import { CreateLocalDeviceDetectTokenRequest, Device, DeviceConfigDto, StreamingOfferDto } from '@dogu-tech/device-client-common';
+import { CreateLocalDeviceDetectTokenRequest, Device, DeviceConfigDto } from '@dogu-tech/device-client-common';
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ConfigService } from '../config/config.service';
 import { toErrorResultDto } from '../device-webdriver/device-webdriver.controller';
@@ -80,21 +80,6 @@ export class DeviceController {
       value: {
         $case: 'data',
         data: {},
-      },
-    };
-  }
-
-  @Post(Device.startDeviceStreaming.path)
-  async startStreaming(@Param('serial') serial: Serial, @Body() offer: StreamingOfferDto): Promise<Instance<typeof Device.startDeviceStreaming.responseBody>> {
-    const channel = this.scanService.findChannel(serial);
-    if (channel === null) {
-      return deviceNotFoundError(serial);
-    }
-    const peerDescription = await channel.startStreamingWebRTC(offer);
-    return {
-      value: {
-        $case: 'data',
-        data: peerDescription,
       },
     };
   }

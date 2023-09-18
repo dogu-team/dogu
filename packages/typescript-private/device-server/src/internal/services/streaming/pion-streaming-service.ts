@@ -5,7 +5,6 @@ import {
   ErrorResultError,
   Platform,
   PrivateProtocol,
-  ProtoRTCPeerDescription,
   ScreenCaptureOption,
   ScreenRecordOption,
   Serial,
@@ -40,10 +39,6 @@ export class PionStreamingService implements StreamingService {
     const gdcClient = await GoDeviceControllerGrpcClient.create(platform, gdc, `127.0.0.1:${gdc.port}`, 60);
     const ret = new PionStreamingService(platform, gdcClient, logger);
     return ret;
-  }
-
-  startStreaming(serial: Serial, offer: StreamingOfferDto): ProtoRTCPeerDescription {
-    throw new Error('Method not supported.');
   }
 
   async startStreamingWithTrickle(serial: string, offer: StreamingOfferDto): Promise<Observable<StreamingAnswer>> {

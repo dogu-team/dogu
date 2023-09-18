@@ -1,6 +1,6 @@
 import { DeviceBase, DevicePropCamel, DeviceResponse, DeviceTagBase, OrganizationPropCamel, ProjectBase, RuntimeInfoResponse } from '@dogu-private/console';
-import { DeviceId, DeviceTagId, LocalDeviceDetectToken, OrganizationId, ProjectId, ProtoRTCPeerDescription, UserPayload } from '@dogu-private/types';
-import { Body, Controller, Delete, ForbiddenException, Get, Head, Inject, Param, Patch, Post, Query } from '@nestjs/common';
+import { DeviceId, DeviceTagId, LocalDeviceDetectToken, OrganizationId, ProjectId, UserPayload } from '@dogu-private/types';
+import { Body, Controller, Delete, Get, Head, Inject, Param, Patch, Post, Query } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { ORGANIZATION_ROLE } from '../../auth/auth.types';
@@ -14,7 +14,6 @@ import { DeviceStatusService } from './device-status.service';
 import { IsDeviceConnected } from './device.decorators';
 import {
   AttachTagToDeviceDto,
-  DeviceStreamingOfferDto,
   EnableDeviceDto,
   FindAddableDevicesByOrganizationIdDto,
   FindDevicesByOrganizationIdDto,
@@ -162,18 +161,6 @@ export class DeviceController {
     @Param('tagId') tagId: DeviceTagId,
   ): Promise<void> {
     await this.deviceStatusService.softRemoveTagFromDevice(organizationId, deviceId, tagId);
-  }
-
-  @Post(':deviceId/streaming')
-  @OrganizationPermission(ORGANIZATION_ROLE.OWNER)
-  async startDeviceStreaming(
-    @User() user: UserPayload,
-    @Param(DevicePropCamel.deviceId, IsDeviceConnected) deviceId: DeviceId,
-    @Body() streamingDto: DeviceStreamingOfferDto,
-  ): Promise<ProtoRTCPeerDescription> {
-    throw new ForbiddenException('Cannot use this API.');
-    // const peerDescription = await this.deviceCommandService.startDeviceStreaming(streamingDto);
-    // return peerDescription;
   }
 
   @Post(':deviceId/reboot')
