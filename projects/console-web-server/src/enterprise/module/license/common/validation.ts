@@ -107,7 +107,8 @@ export module LicenseValidator {
       return;
     }
 
-    const updateCount = enabledHostRunnerCount - device.maxParallelJobs + updateParrellelJobCount;
+    const isEnabledDevice = device.isGlobal === 1 || (device.projectAndDevices && device.projectAndDevices.length > 0);
+    const updateCount = isEnabledDevice ? enabledHostRunnerCount - device.maxParallelJobs + updateParrellelJobCount : enabledHostRunnerCount + updateParrellelJobCount;
 
     const license = await licenseService.getLicense(organizationId);
     const isExpired = isLicenseExpiration(license);

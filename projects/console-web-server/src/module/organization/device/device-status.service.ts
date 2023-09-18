@@ -253,35 +253,48 @@ export class DeviceStatusService {
   }
 
   async enableAndUpateDevice(organizationId: OrganizationId, deviceId: DeviceId, dto: EnableDeviceDto): Promise<void> {
-    const { projectId } = dto;
-    const device = await this.dataSource.getRepository(Device).findOne({ where: { deviceId } });
+    const { projectId, isGlobal } = dto;
+    const device = await this.dataSource
+      .getRepository(Device) //
+      .createQueryBuilder('device')
+      .leftJoinAndSelect(`device.${DevicePropCamel.projectAndDevices}`, 'projectAndDevice')
+      .where(`device.${DevicePropCamel.deviceId} = :deviceId`, { deviceId })
+      .andWhere(`device.${DevicePropCamel.organizationId} = :organizationId`, { organizationId })
+      .getOne();
+
     if (!device) {
       throw new HttpException(`Cannot find device. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
     }
 
-    await LicenseValidator.validateMobileEnableCount(this.dataSource.manager, this.licenseService, organizationId, device);
+    if (projectId || isGlobal) {
+      if (device.isHost) {
+        await LicenseValidator.validateBrowserEnableCount(this.dataSource.manager, this.licenseService, organizationId, device, device.maxParallelJobs);
+      } else {
+        await LicenseValidator.validateMobileEnableCount(this.dataSource.manager, this.licenseService, organizationId, device);
+      }
+    }
 
     await this.dataSource.transaction(async (manager) => {
-      if (dto.isGlobal === true) {
+      if (isGlobal === true) {
         const deviceAndProjects = await manager.getRepository(ProjectAndDevice).find({ where: { deviceId } });
         if (deviceAndProjects.length > 0) {
           await manager.getRepository(ProjectAndDevice).softRemove(deviceAndProjects);
         }
-        await manager.getRepository(Device).save(Object.assign(device, { isGlobal: 1 }));
-      } else if (dto.projectId) {
+        await manager.getRepository(Device).update({ deviceId }, { isGlobal: 1 });
+      } else if (projectId) {
         const deviceAndProject = await manager.getRepository(ProjectAndDevice).findOne({ where: { deviceId, projectId }, withDeleted: true });
         if (deviceAndProject) {
           if (deviceAndProject.deletedAt) {
             await manager.getRepository(ProjectAndDevice).recover(deviceAndProject);
           }
-          await manager.getRepository(Device).save(Object.assign(device, { isGlobal: 0 }));
+          await manager.getRepository(Device).update({ deviceId }, { isGlobal: 0 });
         } else {
           const newData = manager.getRepository(ProjectAndDevice).create({ deviceId, projectId });
           await manager.getRepository(ProjectAndDevice).save(newData);
-          await manager.getRepository(Device).save(Object.assign(device, { isGlobal: 0 }));
+          await manager.getRepository(Device).update({ deviceId }, { isGlobal: 0 });
         }
       } else {
-        await manager.getRepository(Device).save(Object.assign(device, { isGlobal: 0 }));
+        await manager.getRepository(Device).update({ deviceId }, { isGlobal: 0 });
       }
       await this.addDefaultTagToDevices(manager, device);
     });
@@ -322,19 +335,34 @@ export class DeviceStatusService {
 
   async updateDeviceMaxParallelJobs(manager: EntityManager, organizationId: OrganizationId, deviceId: DeviceId, dto: UpdateDeviceMaxParallelJobsDto): Promise<DeviceResponse> {
     const { maxParallelJobs } = dto;
-    const deviceById = await manager.getRepository(Device).findOne({ where: { deviceId, organizationId } });
-    if (!deviceById) {
+    // const device = await manager.getRepository(Device).findOne({ where: { deviceId, organizationId, isHost: 1 } });
+
+    const device = await manager
+      .getRepository(Device) //
+      .createQueryBuilder('device')
+      .leftJoinAndSelect(`device.${DevicePropCamel.projectAndDevices}`, 'projectAndDevice')
+      .where(`device.${DevicePropCamel.deviceId} = :deviceId`, { deviceId })
+      .andWhere(`device.${DevicePropCamel.organizationId} = :organizationId`, { organizationId })
+      .andWhere(`device.${DevicePropCamel.isHost} = :isHost`, { isHost: 1 })
+      .getOne();
+
+    if (!device) {
       throw new HttpException(`This device does not exists. : ${deviceId}`, HttpStatus.BAD_REQUEST);
     }
+
     if (maxParallelJobs) {
-      if (!validateMaxParallelJobs(deviceById.platform, maxParallelJobs)) {
-        throw new HttpException(`maxParallelJobs is invalid. : ${maxParallelJobs}, platform: ${platformTypeFromPlatform(deviceById.platform)}`, HttpStatus.BAD_REQUEST);
+      if (!validateMaxParallelJobs(device.platform, maxParallelJobs)) {
+        throw new HttpException(`maxParallelJobs is invalid. : ${maxParallelJobs}, platform: ${platformTypeFromPlatform(device.platform)}`, HttpStatus.BAD_REQUEST);
       }
     }
 
-    await LicenseValidator.validateBrowserEnableCount(manager, this.licenseService, organizationId, deviceById, maxParallelJobs);
+    if (device.isGlobal === 1 || (device.projectAndDevices && device.projectAndDevices.length > 0)) {
+      if (device.maxParallelJobs < maxParallelJobs) {
+        await LicenseValidator.validateBrowserEnableCount(manager, this.licenseService, organizationId, device, maxParallelJobs);
+      }
+    }
 
-    const newData = Object.assign(deviceById, {
+    const newData = Object.assign(device, {
       maxParallelJobs,
     });
 

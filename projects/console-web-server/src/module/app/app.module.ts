@@ -9,7 +9,6 @@ import { SlackModule } from '../../enterprise/module/integration/slack/slack.mod
 import { LicenseModule } from '../../enterprise/module/license/feature-license.module';
 import { OpenApiMoudule } from '../../enterprise/module/open-api/open-api.module';
 import { RecordModule } from '../../enterprise/module/record/record.module';
-import { FEATURE_CONFIG } from '../../feature.config';
 import { LoggerMiddleware } from '../../middleware/logger.middleware';
 import { TokenModule } from '../../module/token/token.module';
 import { DeviceStreamingModule } from '../../ws/device-streaming/device-streaming.module';
@@ -91,15 +90,11 @@ const BASE_MODULES = [
   ChangeLogModule,
   HostAppModule,
   LicenseModule,
+  RecordModule,
 ];
 
-const MODULES =
-  FEATURE_CONFIG.get('defaultEdition') === 'enterprise' //
-    ? [...BASE_MODULES, RecordModule]
-    : BASE_MODULES;
-
 @Module({
-  imports: MODULES,
+  imports: BASE_MODULES,
   controllers: [AppController],
   providers: [AppService],
 })
