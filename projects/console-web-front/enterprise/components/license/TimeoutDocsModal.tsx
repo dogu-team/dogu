@@ -17,7 +17,7 @@ const TimeoutDocsModal: React.FC<Props> = ({ isOpen, close }) => {
       <div style={{ marginTop: '1rem' }}>
         <a href="https://docs.dogutech.io" target="_blank">
           <Button type="primary" style={{ width: '100%' }}>
-            {t('networkGuide')}
+            {t('visitGuide')}
           </Button>
         </a>
       </div>

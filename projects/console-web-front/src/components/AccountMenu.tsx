@@ -95,6 +95,12 @@ const AccountMenu = () => {
           ),
           key: '1',
         },
+        process.env.NEXT_PUBLIC_ENV === 'self-hosted' && me.isRoot
+          ? {
+              label: <StyledItem onClick={() => router.push(`/admin`)}>{t('common:accountAdminButton')}</StyledItem>,
+              key: '2',
+            }
+          : null,
       ],
     },
     {

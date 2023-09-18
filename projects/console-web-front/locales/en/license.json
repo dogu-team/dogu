@@ -1,8 +1,10 @@
 {
   "comparePlans": "Compare plans",
   "upgradePlan": "Upgrade plan",
-  "networkGuide": "Visit guide",
+  "visitGuide": "Visit guide",
   "contactUs": "Contact us",
+
+  "needHelpAlertMessage": "Need help? Please visit our guide or contact us",
 
   "pricingCommunityDescription": "For beginners",
   "pricingCommunityCommonFeature1": "Limited browsers/devices",

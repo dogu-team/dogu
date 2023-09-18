@@ -1,7 +1,7 @@
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { LicenseResponse } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
-import { Alert, Form, Input, Tag } from 'antd';
+import { Alert, Button, Form, Input, Space, Tag } from 'antd';
 import { isAxiosError } from 'axios';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -135,7 +135,28 @@ const LicenseContainer: React.FC<Props> = ({ license, organizationId }) => {
             suffix={hasError ? <ExclamationCircleOutlined style={{ color: 'red' }} /> : undefined}
           />
         ) : (
-          <LicenseSubmitForm form={form} onSubmit={handleSubmit} />
+          <>
+            <LicenseSubmitForm form={form} onSubmit={handleSubmit} />
+            <Alert
+              message={t('needHelpAlertMessage')}
+              action={
+                <Space direction="vertical">
+                  <Button size="small" style={{ width: '100%' }} href="https://docs.dogutech.io" target="_blank">
+                    {t('visitGuide')}
+                  </Button>
+
+                  <Button
+                    size="small"
+                    style={{ width: '100%' }}
+                    href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing`}
+                    target="_blank"
+                  >
+                    {t('contactUs')}
+                  </Button>
+                </Space>
+              }
+            />
+          </>
         )}
       </Content>
       {licenseInfo.licenseToken?.createdAt && (

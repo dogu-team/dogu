@@ -1,8 +1,10 @@
 {
   "comparePlans": "가격 비교하기",
   "upgradePlan": "플랜 업그레이드",
-  "networkGuide": "가이드 보기",
+  "visitGuide": "가이드 보기",
   "contactUs": "문의하기",
+
+  "needHelpAlertMessage": "도움이 필요하신가요? 가이드를 확인하거나 문의해주세요.",
 
   "pricingCommunityDescription": "테스트 자동화의 시작",
   "pricingCommunityCommonFeature1": "제한된 브라우저/디바이스",

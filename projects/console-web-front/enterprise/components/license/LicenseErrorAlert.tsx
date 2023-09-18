@@ -30,7 +30,7 @@ const LicenseErrorAlert: React.FC<Props> = ({ errorInfo }) => {
         errorInfo.isLicenseServerDisConnected ? (
           <>
             <Button type="link" href={`https://docs.dogutech.io`} target="_blank">
-              {t('networkGuide')}
+              {t('visitGuide')}
             </Button>
             <Button type="link" href={`${process.env.NEXT_PUBLIC_LANDING_URL}/contact-us`} target="_blank">
               {t('contactUs')}
