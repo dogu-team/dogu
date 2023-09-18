@@ -13,53 +13,53 @@ env:
   DOCS_GA_ID: G-5WLY043T9W
 
 jobs:
-  # build:
-  #   if: github.ref == 'refs/heads/main'
-  #   runs-on: ubuntu-latest
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v3
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
 
-  #     - uses: actions/setup-node@v3
-  #       with:
-  #         node-version: 16
-  #         cache: yarn
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: yarn
 
-  #     - name: Install dependencies
-  #       run: yarn workspace docs install --frozen-lockfile
+      - name: Install dependencies
+        run: yarn workspace docs install --frozen-lockfile
 
-  #     - name: Write env for production
-  #       run: echo "GOOGLE_ANALYTICS_ID=$GOOGLE_ANALYTICS_ID" >> ./docs/.env
-  #       env:
-  #         GOOGLE_ANALYTICS_ID: ${{ env.DOCS_GA_ID }}
+      - name: Write env for production
+        run: echo "GOOGLE_ANALYTICS_ID=$GOOGLE_ANALYTICS_ID" >> ./docs/.env
+        env:
+          GOOGLE_ANALYTICS_ID: ${{ env.DOCS_GA_ID }}
 
-  #     - name: Build docs
-  #       run: yarn build:docs
+      - name: Build docs
+        run: yarn build:docs
 
-  #     - name: Configure AWS credentials
-  #       uses: aws-actions/configure-aws-credentials@v1-node16
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         aws-region: ${{ env.DOGU_AWS_REGION }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.DOGU_AWS_REGION }}
 
-  #     - name: Login to Amazon ECR Private
-  #       id: login-ecr
-  #       uses: aws-actions/amazon-ecr-login@v1
+      - name: Login to Amazon ECR Private
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
 
-  #     - name: Build and push
-  #       uses: docker/build-push-action@v3
-  #       with:
-  #         push: true
-  #         context: ./docs
-  #         tags: ${{ steps.login-ecr.outputs.registry }}/prod-dogu-docs:latest
-  #         platforms: linux/amd64
-  #         target: dogu-docs
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          context: ./docs
+          tags: ${{ steps.login-ecr.outputs.registry }}/prod-dogu-docs:latest
+          platforms: linux/amd64
+          target: dogu-docs
 
   release:
     runs-on: dogu-docs
-    # needs: build
+    needs: build
 
     steps:
       - name: docker init
