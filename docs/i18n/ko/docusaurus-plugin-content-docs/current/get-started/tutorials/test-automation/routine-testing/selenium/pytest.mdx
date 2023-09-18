@@ -1,0 +1,56 @@
+---
+sidebar_position: 2
+title: Pytest
+locale: en
+---
+
+import {
+  getBrowserPlatform,
+  BrowserPlatform,
+} from '@site/src/platform/platform.ts';
+import { RoutineSeleniumExample } from '@site/src/components/tutorial/yaml/RoutineSeleniumExample.tsx';
+import BrowserOnly from '@docusaurus/BrowserOnly';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import DevicePrerequisites from '@site/src/components/tutorial/desktop/DevicePrerequisitesKor.mdx';
+import IntegrateWithGitRepository from '@site/src/components/tutorial/routine/IntegrateWithGitRepositoryKor.mdx';
+import CreateARoutine from '@site/src/components/tutorial/routine/CreateARoutineKor.mdx';
+import RunARoutine from '@site/src/components/tutorial/routine/RunARoutineKor.mdx';
+
+<DevicePrerequisites />
+
+<IntegrateWithGitRepository />
+<CreateARoutine />
+
+<BrowserOnly>
+{() => (
+<Tabs groupId="target" defaultValue={`${getBrowserPlatform('windows')}`} queryString>
+<TabItem value="windows" label="Windows">
+
+<div>
+  {RoutineSeleniumExample({
+    runsOn: 'windows',
+    environment: 'python',
+    cwd: 'selenium/python/pytest',
+    command: 'pytest web/test_web.py --capture=no -x',
+  })}
+</div>
+
+</TabItem>
+<TabItem value="macos" label="macOS">
+
+<div>
+  {RoutineSeleniumExample({
+    runsOn: 'macos',
+    environment: 'python',
+    cwd: 'selenium/python/pytest',
+    command: 'pytest web/test_web.py --capture=no -x',
+  })}
+</div>
+
+</TabItem>
+</Tabs>
+)}
+</BrowserOnly>
+
+<RunARoutine />
