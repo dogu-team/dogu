@@ -1,51 +1,111 @@
-import { Printable } from '@dogu-tech/common';
+import { Printable, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
+import axios, { AxiosInstance } from 'axios';
 import fs from 'fs';
-import fspromise from 'fs/promises';
+import _ from 'lodash';
 import path from 'path';
-import { HttpClient } from 'typed-rest-client/HttpClient';
 
 interface Headers {
-  [key: string]: string | number;
+  [key: string]: string;
 }
 
-export async function download(url: string, destPath: string, headers: Headers, printable: Printable): Promise<boolean> {
-  const httpc = new HttpClient('');
-  const destDirectoryPath = path.dirname(destPath);
-  await fspromise.mkdir(destDirectoryPath, { recursive: true });
+/**
+ * @description Timeout for download request
+ * @unit milliseconds
+ */
+export type DownloadRequestTimeout = number;
+export const defaultDownloadRequestTimeout = (): DownloadRequestTimeout => 10 * 60_000;
 
-  const file: NodeJS.WritableStream = fs.createWriteStream(destPath);
-  const res = await httpc.get(url, headers);
-  return new Promise((resolve, reject) => {
-    const stream = res.message.pipe(file);
-    printable.verbose?.(`download. ${url}`);
-    stream
-      .on('error', (error) => {
-        printable.error(error);
-        reject(error);
-      })
-      .on('data', (_) => {
+export interface DownloadProgress {
+  percent: number;
+  transferredBytes: number;
+  totalBytes: number;
+}
+
+export interface DownloadOptions {
+  url: string;
+  filePath: string;
+
+  /**
+   * @description axios instance for download request. if not specified, default instance is used.
+   */
+  client?: AxiosInstance;
+
+  /**
+   * @description Timeout for download request
+   * @unit milliseconds
+   * @default 10 * 60_000
+   */
+  timeout?: DownloadRequestTimeout;
+  headers?: Headers;
+  logger?: Printable | null;
+  onProgress?: (progress: DownloadProgress) => void | null;
+}
+
+const defaultClient = axios.create();
+setAxiosErrorFilterToIntercepter(defaultClient);
+
+function mergeDownloadOptions(options: DownloadOptions): Required<DownloadOptions> {
+  return _.merge(
+    {
+      client: defaultClient,
+      timeout: defaultDownloadRequestTimeout(),
+      headers: {},
+      logger: null,
+      onProgress: null,
+    },
+    options,
+  );
+}
+
+export async function download(options: DownloadOptions): Promise<void> {
+  const mergedOptions = mergeDownloadOptions(options);
+  const { client, url, filePath, timeout, headers, logger, onProgress } = mergedOptions;
+  logger?.verbose?.('download start', { url, filePath });
+  const response = await client.get(url, {
+    timeout,
+    responseType: 'stream',
+    headers,
+  });
+
+  const responseContentLength = response.headers['content-length'] ? Number(response.headers['content-length']) : 0;
+  logger?.verbose?.('download response', { url, filePath, responseContentLength });
+
+  await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
+  const writer = fs.createWriteStream(filePath);
+  const reader = response.data as NodeJS.ReadableStream;
+  reader.pipe(writer);
+
+  const totalBytes = responseContentLength;
+  let transferredBytes = 0;
+  reader.on('data', (data: Buffer) => {
+    transferredBytes += data.length;
+    const percent = Math.floor((transferredBytes * 100) / totalBytes);
+    onProgress?.({ percent, transferredBytes, totalBytes });
+  });
+
+  await new Promise<void>((resolve, reject) => {
+    writer.on('finish', () => {
+      logger?.verbose?.('download finish', { url, filePath });
+      if (response.status !== 200) {
+        logger?.error('download failed', { url, filePath, status: response.status });
+        reject(new Error(`download failed. url:${url}, filePath:${filePath}, status:${stringify(response.status)}`));
         return;
-      })
-      .on('finish', (_) => {
-        const isOk = res.message.statusCode === 200;
-        const destStat = fs.statSync(destPath);
-        const contentLength: number = res.message.headers['content-length'] ? Number(res.message.headers['content-length']) : 0;
-        const isSizeEqual = contentLength === destStat.size;
-        if (!isOk) {
-          printable.error(
-            `download failed. url:${url}, dest:${destPath}, code:${res.message.statusCode ?? 'undefined'}, contentLength:${contentLength}, statSize:${destStat.size}`,
-          );
-          reject(res.message.statusCode);
-          return;
-        }
-        if (0 < contentLength && !isSizeEqual) {
-          printable.error(
-            `download failed. url:${url}, dest:${destPath}, code:${res.message.statusCode ?? 'undefined'}, contentLength:${contentLength}, statSize:${destStat.size}`,
-          );
-          reject(res.message.statusCode);
-          return;
-        }
-        resolve(true);
-      });
+      }
+
+      const responseContentLength = response.headers['content-length'] ? Number(response.headers['content-length']) : 0;
+      const fileSize = fs.statSync(filePath).size;
+      if (0 < responseContentLength && responseContentLength !== fileSize) {
+        logger?.error('download failed', { url, filePath, responseContentLength, fileSize });
+        reject(new Error(`download failed. url:${url}, filePath:${filePath}, responseContentLength:${responseContentLength}, fileSize:${fileSize}`));
+        return;
+      }
+
+      resolve();
+    });
+
+    writer.on('error', (error) => {
+      logger?.error(error);
+      reject(error);
+    });
   });
 }

@@ -11195,15 +11195,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@dogu-private/dost-children", "workspace:packages/typescript-private/dost-children"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
+            ["@dogu-tech/types", "workspace:packages/typescript/types"],\
             ["@jest/globals", "npm:29.6.1"],\
-            ["@types/lodash", "npm:4.14.198"],\
+            ["@types/lodash", "npm:4.14.195"],\
             ["@types/node", "npm:18.15.11"],\
-            ["class-transformer", "npm:0.5.1"],\
+            ["@types/shelljs", "npm:0.8.12"],\
+            ["compressing", "npm:1.10.0"],\
             ["dotenv", "npm:16.3.1"],\
             ["electron-store", "npm:8.1.0"],\
             ["jest", "virtual:b2489bbc0216283d7687523442dd6b04aeaedb71246257f8a0a0e6ae86307b18dca708146dd0f430b02186348d070ef7e31b7b07c55f7aabad66d13be5ae7e15#npm:29.6.1"],\
             ["lodash", "npm:4.17.21"],\
             ["nodemon", "npm:2.0.22"],\
+            ["shelljs", "npm:0.8.5"],\
             ["shx", "npm:0.3.4"],\
             ["ts-jest", "virtual:b2489bbc0216283d7687523442dd6b04aeaedb71246257f8a0a0e6ae86307b18dca708146dd0f430b02186348d070ef7e31b7b07c55f7aabad66d13be5ae7e15#npm:29.1.1"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
@@ -11751,6 +11754,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:18.15.11"],\
             ["@types/plist", "npm:3.0.2"],\
             ["@types/ws", "npm:8.5.4"],\
+            ["axios", "npm:1.5.0"],\
             ["bplist-parser", "npm:0.3.2"],\
             ["class-transformer", "npm:0.5.1"],\
             ["class-validator", "npm:0.14.0"],\
@@ -18426,13 +18430,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/lodash", "npm:4.14.195"]\
           ],\
           "linkType": "HARD"\
-        }],\
-        ["npm:4.14.198", {\
-          "packageLocation": "./.yarn/cache/@types-lodash-npm-4.14.198-92ef32a77d-b290e44807.zip/node_modules/@types/lodash/",\
-          "packageDependencies": [\
-            ["@types/lodash", "npm:4.14.198"]\
-          ],\
-          "linkType": "HARD"\
         }]\
       ]],\
       ["@types/long", [\
@@ -19033,6 +19030,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@types/shelljs", "npm:0.8.11"],\
             ["@types/glob", "npm:8.1.0"],\
+            ["@types/node", "npm:18.15.13"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:0.8.12", {\
+          "packageLocation": "./.yarn/cache/@types-shelljs-npm-0.8.12-cbc88427ef-ffb47809ab.zip/node_modules/@types/shelljs/",\
+          "packageDependencies": [\
+            ["@types/shelljs", "npm:0.8.12"],\
+            ["@types/glob", "npm:7.2.0"],\
             ["@types/node", "npm:18.15.13"]\
           ],\
           "linkType": "HARD"\
@@ -21700,6 +21706,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["proxy-from-env", "npm:1.1.0"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:1.5.0", {\
+          "packageLocation": "./.yarn/cache/axios-npm-1.5.0-35a845e191-e7405a5dbb.zip/node_modules/axios/",\
+          "packageDependencies": [\
+            ["axios", "npm:1.5.0"],\
+            ["follow-redirects", "virtual:a1c287d287cceec925a9c0ff143359f3710be8008f8559da00a15e4d93f76849e9493b8b7760d073ae605ea56d1482d54174c007b28cbf6b38332d152576190f#npm:1.15.2"],\
+            ["form-data", "npm:4.0.0"],\
+            ["proxy-from-env", "npm:1.1.0"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["axobject-query", [\
@@ -24287,6 +24303,22 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["compressing", [\
+        ["npm:1.10.0", {\
+          "packageLocation": "./.yarn/cache/compressing-npm-1.10.0-81d2590528-e26573ff35.zip/node_modules/compressing/",\
+          "packageDependencies": [\
+            ["compressing", "npm:1.10.0"],\
+            ["@eggjs/yauzl", "npm:2.11.0"],\
+            ["flushwritable", "npm:1.0.0"],\
+            ["get-ready", "npm:1.0.0"],\
+            ["iconv-lite", "npm:0.5.2"],\
+            ["mkdirp", "npm:0.5.6"],\
+            ["pump", "npm:3.0.0"],\
+            ["streamifier", "npm:0.1.1"],\
+            ["tar-stream", "npm:1.6.2"],\
+            ["yazl", "npm:2.5.1"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
         ["npm:1.9.0", {\
           "packageLocation": "./.yarn/cache/compressing-npm-1.9.0-b52c2b9ca2-e359047104.zip/node_modules/compressing/",\
           "packageDependencies": [\

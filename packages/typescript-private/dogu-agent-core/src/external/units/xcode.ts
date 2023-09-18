@@ -1,15 +1,14 @@
-import { PrefixLogger } from '@dogu-tech/common';
-import { ExternalKey } from '../../../src/shares/external';
-import { logger } from '../../log/logger.instance';
-import { StdLogCallbackService } from '../../log/std-log-callback-service';
-import { IExternalUnit } from '../external-unit';
+import { PrefixLogger, Printable } from '@dogu-tech/common';
+import { ExternalKey } from '../types';
+import { IExternalUnit } from '../unit';
 import { validateXcode } from '../xcode';
 
 export class XcodeExternalUnit extends IExternalUnit {
-  private readonly logger = new PrefixLogger(logger, '[Xcode]');
+  private readonly logger: PrefixLogger;
 
-  constructor(private readonly stdLogCallbackService: StdLogCallbackService) {
+  constructor(logger: Printable) {
     super();
+    this.logger = new PrefixLogger(logger, '[Xcode]');
   }
 
   isPlatformSupported(): boolean {
@@ -33,7 +32,7 @@ export class XcodeExternalUnit extends IExternalUnit {
   }
 
   async validateInternal(): Promise<void> {
-    await validateXcode(this.stdLogCallbackService);
+    await validateXcode(this.logger);
   }
 
   isAgreementNeeded(): boolean {

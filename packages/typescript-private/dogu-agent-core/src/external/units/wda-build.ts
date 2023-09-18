@@ -1,22 +1,21 @@
-import { PrefixLogger, stringify } from '@dogu-tech/common';
+import { PrefixLogger, Printable, stringify } from '@dogu-tech/common';
 import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
-import { ExternalKey } from '../../../src/shares/external';
-import { logger } from '../../log/logger.instance';
-import { StdLogCallbackService } from '../../log/std-log-callback-service';
 import { removeWdaDeviceAgent } from '../../settings/webdriver-agent-project';
-import { IExternalUnit } from '../external-unit';
+import { ExternalKey } from '../types';
+import { IExternalUnit } from '../unit';
 import { validateXcode } from '../xcode';
 
 export class WdaBuildExternalUnit extends IExternalUnit {
-  private readonly logger = new PrefixLogger(logger, '[WebDriverAgentBuild]');
+  private readonly logger: PrefixLogger;
   private child: ChildProcessWithoutNullStreams | null = null;
 
-  constructor(private readonly stdLogCallbackService: StdLogCallbackService) {
+  constructor(logger: Printable) {
     super();
+    this.logger = new PrefixLogger(logger, '[WebDriverAgentBuild]');
   }
 
   isPlatformSupported(): boolean {
@@ -40,7 +39,7 @@ export class WdaBuildExternalUnit extends IExternalUnit {
   }
 
   async validateInternal(): Promise<void> {
-    await validateXcode(this.stdLogCallbackService);
+    await validateXcode(this.logger);
     const wdaProductsPath = path.resolve(HostPaths.external.xcodeProject.wdaDerivedDataPath(), 'Build/Products');
     const webDriverAgentExePath = path.resolve(wdaProductsPath, 'Debug-iphoneos/WebDriverAgentRunner-Runner.app/WebDriverAgentRunner-Runner');
     if (!fs.existsSync(webDriverAgentExePath)) {
@@ -83,23 +82,23 @@ export class WdaBuildExternalUnit extends IExternalUnit {
         wdaDerivedDataPath,
       ]);
 
-      const onErrorForReject = (error: Error) => {
+      const onErrorForReject = (error: Error): void => {
         reject(error);
       };
       this.child.on('error', onErrorForReject);
       this.child.on('spawn', () => {
         this.child?.off('error', onErrorForReject);
         this.child?.on('error', (error) => {
-          this.stdLogCallbackService.stderr(stringify(error));
+          this.logger.error(stringify(error));
         });
-        this.stdLogCallbackService.stdout(`${this.getName()} spawned`);
+        this.logger.info(`${this.getName()} spawned`);
         this.child?.on('close', (code, signal) => {
-          this.stdLogCallbackService.stdout(`${this.getName()} is closed. code: ${code} signal: ${signal}`);
+          this.logger.info(`${this.getName()} is closed. code: ${stringify(code)} signal: ${stringify(signal)}`);
           this.child = null;
           if (code === 0) {
             resolve();
           } else {
-            reject(new Error(`${this.getName()} failed. code: ${code} signal: ${signal}`));
+            reject(new Error(`${this.getName()} failed. code: ${stringify(code)} signal: ${stringify(signal)}`));
           }
         });
         this.child?.stdout.setEncoding('utf8');
@@ -108,7 +107,6 @@ export class WdaBuildExternalUnit extends IExternalUnit {
           if (!message) {
             return;
           }
-          this.stdLogCallbackService.stdout(message);
           this.logger.info(message);
         });
         this.child?.stderr.setEncoding('utf8');
@@ -117,8 +115,7 @@ export class WdaBuildExternalUnit extends IExternalUnit {
           if (!message) {
             return;
           }
-          this.stdLogCallbackService.stderr(message);
-          this.logger.warn(message);
+          this.logger.error(message);
         });
       });
     });
@@ -137,7 +134,7 @@ export class WdaBuildExternalUnit extends IExternalUnit {
   }
 
   async uninstall(): Promise<void> {
-    await removeWdaDeviceAgent(this.stdLogCallbackService.createPrintable());
+    await removeWdaDeviceAgent(this.logger);
   }
 
   getTermUrl(): string | null {

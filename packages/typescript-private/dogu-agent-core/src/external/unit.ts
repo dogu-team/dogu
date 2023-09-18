@@ -1,13 +1,5 @@
-import { PromiseOrValue } from '@dogu-tech/common';
-import { DownloadProgress, ExternalKey, ExternalValidationResult } from '../../src/shares/external';
-
-export interface ExternalUnitCallback {
-  onDownloadStarted: () => void;
-  onDownloadInProgress: (progress: DownloadProgress) => void;
-  onDownloadCompleted: () => void;
-  onInstallStarted: () => void;
-  onInstallCompleted: () => void;
-}
+import { errorify, PromiseOrValue } from '@dogu-tech/common';
+import { ExternalKey, ExternalValidationResult } from './types';
 
 export abstract class IExternalUnit {
   protected _lastValidationResult: ExternalValidationResult | null = null;
@@ -28,7 +20,7 @@ export abstract class IExternalUnit {
       .catch((error) => {
         return {
           valid: false,
-          error,
+          error: errorify(error),
         };
       });
     return this._lastValidationResult;

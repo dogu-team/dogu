@@ -1,17 +1,13 @@
-import { errorify, PrefixLogger, stringify } from '@dogu-tech/common';
-import { HostPaths, renameRetry } from '@dogu-tech/node';
+import { errorify, PrefixLogger, Printable, stringify } from '@dogu-tech/common';
+import { download, HostPaths, renameRetry } from '@dogu-tech/node';
 import { spawn } from 'child_process';
 import compressing from 'compressing';
-import { download } from 'electron-dl';
 import fs from 'fs';
 import path from 'path';
-import { ExternalKey } from '../../../src/shares/external';
-import { AppConfigService } from '../../app-config/app-config-service';
-import { DotEnvConfigService } from '../../dot-env-config/dot-env-config-service';
-import { logger } from '../../log/logger.instance';
-import { StdLogCallbackService } from '../../log/std-log-callback-service';
-import { WindowService } from '../../window/window-service';
-import { ExternalUnitCallback, IExternalUnit } from '../external-unit';
+import { AppConfigService } from '../../app-config/service';
+import { DotenvConfigService } from '../../dotenv-config/service';
+import { ExternalKey, ExternalUnitCallback } from '../types';
+import { IExternalUnit } from '../unit';
 
 const Infos = {
   darwin: {
@@ -34,16 +30,16 @@ const Infos = {
 };
 
 export class JdkExternalUnit extends IExternalUnit {
-  private readonly logger = new PrefixLogger(logger, '[JDK]');
+  private readonly logger: PrefixLogger;
 
   constructor(
-    private readonly dotEnvConfigService: DotEnvConfigService,
-    private readonly stdLogCallbackService: StdLogCallbackService,
+    private readonly dotenvConfigService: DotenvConfigService, //
     private readonly appConfigService: AppConfigService,
-    private readonly windowService: WindowService,
     private readonly unitCallback: ExternalUnitCallback,
+    logger: Printable,
   ) {
     super();
+    this.logger = new PrefixLogger(logger, '[JDK]');
   }
 
   isPlatformSupported(): boolean {
@@ -67,7 +63,7 @@ export class JdkExternalUnit extends IExternalUnit {
   }
 
   async validateInternal(): Promise<void> {
-    const javaHomePath = this.dotEnvConfigService.get('JAVA_HOME');
+    const javaHomePath = this.dotenvConfigService.get('JAVA_HOME');
     if (!javaHomePath) {
       throw new Error('JAVA_HOME not exist in env file');
     }
@@ -87,13 +83,13 @@ export class JdkExternalUnit extends IExternalUnit {
     await new Promise<void>((resolve, reject) => {
       const child = spawn(javaPath, ['-version']);
       child.on('spawn', () => {
-        this.stdLogCallbackService.stdout(`Checking java version... path: ${javaPath}`);
+        this.logger.info(`Checking java version... path: ${javaPath}`);
       });
       child.on('error', (error) => {
-        this.stdLogCallbackService.stderr(stringify(error));
+        this.logger.error(stringify(error));
       });
       child.on('close', (code, signal) => {
-        this.stdLogCallbackService.stdout(`exit code: ${code}, signal: ${signal}`);
+        this.logger.info(`exit code: ${stringify(code)}, signal: ${stringify(signal)}`);
         if (code !== null) {
           if (code === 0) {
             resolve();
@@ -101,7 +97,7 @@ export class JdkExternalUnit extends IExternalUnit {
             reject(new Error(`java executable exit with code ${code}`));
           }
         } else {
-          reject(new Error(`java executable exit with signal ${signal}`));
+          reject(new Error(`java executable exit with signal ${stringify(signal)}`));
         }
       });
       child.stdout.setEncoding('utf8');
@@ -110,7 +106,6 @@ export class JdkExternalUnit extends IExternalUnit {
         if (!message) {
           return;
         }
-        this.stdLogCallbackService.stdout(message);
         this.logger.info(message);
       });
       child.stderr.setEncoding('utf8');
@@ -119,8 +114,7 @@ export class JdkExternalUnit extends IExternalUnit {
         if (!message) {
           return;
         }
-        this.stdLogCallbackService.stderr(message);
-        this.logger.warn(message);
+        this.logger.error(message);
       });
     });
   }
@@ -148,37 +142,39 @@ export class JdkExternalUnit extends IExternalUnit {
   }
 
   async install(): Promise<void> {
-    const window = this.windowService.window;
-    if (!window) {
-      throw new Error('window not exist');
-    }
     if (this.canceler) {
       throw new Error('already installing');
     }
     const downloadUrl = this.getDownloadUrl();
     const downloadsPath = HostPaths.downloadsPath(HostPaths.doguHomePath);
     await fs.promises.mkdir(downloadsPath, { recursive: true });
-    const item = await download(window, downloadUrl, {
-      directory: downloadsPath,
-      onStarted: (item) => {
-        this.canceler = () => {
-          item.cancel();
-        };
-        this.unitCallback.onDownloadStarted();
-        this.stdLogCallbackService.stdout(`Download started. url: ${item.getURL()}`);
-      },
+    const downloadFileName = downloadUrl.split('/').pop();
+    if (!downloadFileName) {
+      throw new Error(`Invalid download url: ${downloadUrl}`);
+    }
+
+    this.canceler = (): void => {
+      /* noop */
+    };
+    const savePath = path.resolve(downloadsPath, downloadFileName);
+    this.logger.info(`Download started. url: ${downloadUrl}`);
+    this.unitCallback.onDownloadStarted();
+    await download({
+      url: downloadUrl,
+      filePath: savePath,
+      logger: this.logger,
       onProgress: (progress) => {
         this.unitCallback.onDownloadInProgress(progress);
       },
     });
-    this.canceler = null;
-    const savePath = item.getSavePath();
-    this.stdLogCallbackService.stdout(`Download complete. path: ${savePath}`);
     this.unitCallback.onDownloadCompleted();
+    this.canceler = null;
+    this.logger.info(`Download completed. path: ${savePath}`);
+
     this.unitCallback.onInstallStarted();
-    this.stdLogCallbackService.stdout(`Uncompressing... path: ${savePath}`);
+    this.logger.info(`Uncompressing... path: ${savePath}`);
     const uncompressedPath = await this.uncompress(savePath);
-    this.stdLogCallbackService.stdout(`Uncompress complete. path: ${uncompressedPath}`);
+    this.logger.info(`Uncompress complete. path: ${uncompressedPath}`);
     const uncompressedHomePath = path.resolve(uncompressedPath, this.getRelativeJavaHomePath());
     const javaHomeStat = await fs.promises.stat(uncompressedHomePath).catch(() => null);
     if (!javaHomeStat || !javaHomeStat.isDirectory()) {
@@ -187,18 +183,18 @@ export class JdkExternalUnit extends IExternalUnit {
     const defaultJavaHomePath = HostPaths.external.defaultJavaHomePath();
     const defaultJavaHomeStat = await fs.promises.stat(defaultJavaHomePath).catch(() => null);
     if (defaultJavaHomeStat && defaultJavaHomeStat.isDirectory()) {
-      this.stdLogCallbackService.stdout(`Deleting default JAVA_HOME... ${defaultJavaHomePath}`);
+      this.logger.info(`Deleting default JAVA_HOME... ${defaultJavaHomePath}`);
       await fs.promises.rm(defaultJavaHomePath, { recursive: true, force: true });
-      this.stdLogCallbackService.stdout(`Delete complete. ${defaultJavaHomePath}`);
+      this.logger.info(`Delete complete. ${defaultJavaHomePath}`);
     }
     const defaultJavaHomeParentPath = path.dirname(defaultJavaHomePath);
     await fs.promises.mkdir(defaultJavaHomeParentPath, { recursive: true });
-    this.stdLogCallbackService.stdout(`Moving... ${uncompressedHomePath} to ${defaultJavaHomePath}`);
-    await renameRetry(uncompressedHomePath, defaultJavaHomePath, this.stdLogCallbackService.createPrintable());
-    this.stdLogCallbackService.stdout(`Move complete. ${uncompressedPath} to ${defaultJavaHomePath}`);
-    this.stdLogCallbackService.stdout('Writing JAVA_HOME to env file...');
-    await this.dotEnvConfigService.write('JAVA_HOME', defaultJavaHomePath);
-    this.stdLogCallbackService.stdout('Write complete');
+    this.logger.info(`Moving... ${uncompressedHomePath} to ${defaultJavaHomePath}`);
+    await renameRetry(uncompressedHomePath, defaultJavaHomePath, this.logger);
+    this.logger.info(`Move complete. ${uncompressedPath} to ${defaultJavaHomePath}`);
+    this.logger.info('Writing JAVA_HOME to env file...');
+    await this.dotenvConfigService.write('JAVA_HOME', defaultJavaHomePath);
+    this.logger.info('Write complete');
     try {
       this.logger.info('deleting uncompressedPath and savePath...', {
         uncompressedPath,
@@ -258,12 +254,12 @@ export class JdkExternalUnit extends IExternalUnit {
     this.logger.warn('uninstall not supported');
   }
 
-  async isAgreementNeeded(): Promise<boolean> {
-    const value = await this.appConfigService.getOrDefault('external_is_agreed_jdk', false);
+  isAgreementNeeded(): boolean {
+    const value = this.appConfigService.getOrDefault('external_is_agreed_jdk', false);
     return !value;
   }
 
-  writeAgreement(value: boolean): Promise<void> {
+  writeAgreement(value: boolean): void {
     return this.appConfigService.set('external_is_agreed_jdk', value);
   }
 

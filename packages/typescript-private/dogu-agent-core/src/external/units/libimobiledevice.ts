@@ -1,17 +1,13 @@
-import { NullLogger, PrefixLogger, stringify } from '@dogu-tech/common';
-import { ChildProcess, getFileSizeRecursive, HostPaths, renameRetry } from '@dogu-tech/node';
+import { NullLogger, PrefixLogger, Printable, stringify } from '@dogu-tech/common';
+import { ChildProcess, download, getFileSizeRecursive, HostPaths, renameRetry } from '@dogu-tech/node';
 import compressing from 'compressing';
-import { download } from 'electron-dl';
 import fs from 'fs';
 import fsPromise from 'fs/promises';
 import path from 'path';
 import shelljs from 'shelljs';
-import { ExternalKey } from '../../../src/shares/external';
-import { AppConfigService } from '../../app-config/app-config-service';
-import { logger } from '../../log/logger.instance';
-import { StdLogCallbackService } from '../../log/std-log-callback-service';
-import { WindowService } from '../../window/window-service';
-import { ExternalUnitCallback, IExternalUnit } from '../external-unit';
+import { AppConfigService } from '../../app-config/service';
+import { ExternalKey, ExternalUnitCallback } from '../types';
+import { IExternalUnit } from '../unit';
 
 interface File {
   condition?: () => boolean;
@@ -75,15 +71,15 @@ const files: File[] = [
 ];
 
 export class LibimobledeviceExternalUnit extends IExternalUnit {
-  private readonly logger = new PrefixLogger(logger, '[libimobiledevice]');
+  private readonly logger: PrefixLogger;
 
   constructor(
-    private readonly stdLogCallbackService: StdLogCallbackService,
-    private readonly windowService: WindowService,
-    private readonly appConfigService: AppConfigService,
+    private readonly appConfigService: AppConfigService, //
     private readonly unitCallback: ExternalUnitCallback,
+    logger: Printable,
   ) {
     super();
+    this.logger = new PrefixLogger(logger, '[libimobiledevice]');
   }
 
   isPlatformSupported(): boolean {
@@ -133,12 +129,12 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
     }
   }
 
-  async isAgreementNeeded(): Promise<boolean> {
-    const value = await this.appConfigService.getOrDefault('external_is_agreed_libimobiledevice', false);
+  isAgreementNeeded(): boolean {
+    const value = this.appConfigService.getOrDefault('external_is_agreed_libimobiledevice', false);
     return !value;
   }
 
-  writeAgreement(value: boolean): Promise<void> {
+  writeAgreement(value: boolean): void {
     return this.appConfigService.set('external_is_agreed_libimobiledevice', value);
   }
 
@@ -150,48 +146,47 @@ export class LibimobledeviceExternalUnit extends IExternalUnit {
     }
     await makeDirectories();
 
-    const window = this.windowService.window;
-    if (!window) {
-      throw new Error('window not exist');
-    }
-
     for (const file of files) {
       if (file.condition && !file.condition()) {
         continue;
       }
       const downloadsPath = HostPaths.downloadsPath(HostPaths.doguHomePath);
       await fs.promises.mkdir(downloadsPath, { recursive: true });
-      const downloadItem = await download(window, file.url, {
-        directory: downloadsPath,
-        onStarted: (item) => {
-          this.unitCallback.onDownloadStarted();
-          this.stdLogCallbackService.stdout(`Download started. url: ${item.getURL()}`);
-        },
+
+      const fileName = file.url.split('/').pop();
+      if (!fileName) {
+        throw new Error(`Invalid download url: ${file.url}`);
+      }
+
+      const savedPath = path.resolve(downloadsPath, fileName);
+      this.logger.info(`Download started. url: ${file.url}`);
+      this.unitCallback.onDownloadStarted();
+      await download({
+        url: file.url,
+        filePath: savedPath,
+        logger: this.logger,
         onProgress: (progress) => {
           this.unitCallback.onDownloadInProgress(progress);
         },
-      }).catch((err) => {
-        this.stdLogCallbackService.stderr(`Failed to download ${file.url}: ${err}`);
-        throw err;
       });
-      const savedPath = downloadItem.getSavePath();
-      this.stdLogCallbackService.stdout(`Download completed. path: ${savedPath}`);
+      this.unitCallback.onDownloadCompleted();
+      this.logger.info(`Download completed. path: ${savedPath}`);
 
       const destPath = file.path();
       const isZip = savedPath.endsWith('.zip');
       if (isZip) {
-        this.stdLogCallbackService.stdout(`${savedPath} unzipping`);
+        this.logger.info(`${savedPath} unzipping`);
         await compressing.zip.uncompress(savedPath, path.dirname(destPath));
         fs.unlinkSync(savedPath);
         removeMacosxFiles(destPath);
         if (file.unzipDirName) {
-          await renameUnzipedDir(file.unzipDirName, destPath, this.stdLogCallbackService);
+          await renameUnzipedDir(file.unzipDirName, destPath, this.logger);
         }
       } else {
         await fs.promises.mkdir(path.dirname(destPath), { recursive: true });
         await fs.promises.copyFile(savedPath, destPath);
         await fs.promises.unlink(savedPath);
-        this.stdLogCallbackService.stdout(`Download move completed. path: ${destPath}`);
+        this.logger.info(`Download move completed. path: ${destPath}`);
       }
     }
 
@@ -216,15 +211,15 @@ function removeMacosxFiles(destPath: string): void {
   shelljs.rm('-rf', macosxPath);
 }
 
-async function renameUnzipedDir(dirname: string, destPath: string, stdLogCallbackService: StdLogCallbackService): Promise<void> {
+async function renameUnzipedDir(dirname: string, destPath: string, logger: Printable): Promise<void> {
   const uncompressedDirPath = path.resolve(path.dirname(destPath), dirname);
   if (fs.existsSync(uncompressedDirPath) && !fs.existsSync(destPath)) {
     for (let i = 0; i < 10; i++) {
       try {
-        await renameRetry(uncompressedDirPath, destPath, stdLogCallbackService.createPrintable());
+        await renameRetry(uncompressedDirPath, destPath, logger);
         break;
       } catch (e) {
-        stdLogCallbackService.stderr(`rename failed ${i} times. ${stringify(e)}`);
+        logger.error(`rename failed ${i} times. ${stringify(e)}`);
         await new Promise((resolve) => setTimeout(resolve, 1000));
         continue;
       }

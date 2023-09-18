@@ -1,6 +1,6 @@
 import { BrowserOrDriverName, BrowserVersion } from '@dogu-private/types';
 import { assertUnreachable, DeepReadonly, PrefixLogger, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
-import { defaultMountTimeout, onDmgMounted } from '@dogu-tech/node';
+import { defaultDownloadRequestTimeout, defaultMountTimeout, download, onDmgMounted } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
 import axios, { AxiosInstance } from 'axios';
 import { exec } from 'child_process';
@@ -10,7 +10,7 @@ import os from 'os';
 import path from 'path';
 import { promisify } from 'util';
 import { logger } from '../logger/logger.instance';
-import { defaultDownloadRequestTimeout, defaultVersionRequestTimeout, download, validatePrefixOrPatternWithin } from './common';
+import { defaultVersionRequestTimeout, validatePrefixOrPatternWithin } from './common';
 import { firefoxVersionUtils } from './firefox-version-utils';
 import { WebCache } from './web-cache';
 

@@ -1,17 +1,13 @@
-import { PrefixLogger } from '@dogu-tech/common';
-import { HostPaths, renameRetry } from '@dogu-tech/node';
+import { PrefixLogger, Printable } from '@dogu-tech/common';
+import { download, HostPaths, renameRetry } from '@dogu-tech/node';
 import { exec } from 'child_process';
 import compressing from 'compressing';
-import { download } from 'electron-dl';
 import fs from 'fs';
 import path from 'path';
 import { promisify } from 'util';
-import { ExternalKey } from '../../../src/shares/external';
-import { AppConfigService } from '../../app-config/app-config-service';
-import { logger } from '../../log/logger.instance';
-import { StdLogCallbackService } from '../../log/std-log-callback-service';
-import { WindowService } from '../../window/window-service';
-import { ExternalUnitCallback, IExternalUnit } from '../external-unit';
+import { AppConfigService } from '../../app-config/service';
+import { ExternalKey, ExternalUnitCallback } from '../types';
+import { IExternalUnit } from '../unit';
 
 const execAsync = promisify(exec);
 
@@ -36,15 +32,15 @@ const Infos = {
 };
 
 export class GeckoDriverExternalUnit extends IExternalUnit {
-  private readonly logger = new PrefixLogger(logger, `[${Name}]`);
+  private readonly logger: PrefixLogger;
 
   constructor(
-    private readonly windowService: WindowService,
-    private readonly stdLogCallbackService: StdLogCallbackService,
-    private readonly appConfigService: AppConfigService,
+    private readonly appConfigService: AppConfigService, //
     private readonly unitCallback: ExternalUnitCallback,
+    logger: Printable,
   ) {
     super();
+    this.logger = new PrefixLogger(logger, `[${Name}]`);
   }
 
   isPlatformSupported(): boolean {
@@ -76,10 +72,10 @@ export class GeckoDriverExternalUnit extends IExternalUnit {
 
     const { stdout, stderr } = await execAsync(`${geckodriverPath} --version`, { timeout: 60_000 });
     if (stdout) {
-      this.stdLogCallbackService.stdout(stdout);
+      this.logger.info(stdout);
     }
     if (stderr) {
-      this.stdLogCallbackService.stderr(stderr);
+      this.logger.error(stderr);
     }
   }
 
@@ -92,7 +88,7 @@ export class GeckoDriverExternalUnit extends IExternalUnit {
       uncompressedPath = await this.uncompress(compressedFilePath);
       await this.moveFile(uncompressedPath);
       this.unitCallback.onInstallCompleted();
-      this.stdLogCallbackService.stdout('install completed');
+      this.logger.info('install completed');
     } finally {
       if (compressedFilePath) {
         await fs.promises.rm(compressedFilePath, { recursive: true, force: true });
@@ -122,7 +118,7 @@ export class GeckoDriverExternalUnit extends IExternalUnit {
     if (stat) {
       await fs.promises.rm(geckodriverPath, { recursive: true, force: true });
     }
-    await renameRetry(source, geckodriverPath, this.stdLogCallbackService.createPrintable());
+    await renameRetry(source, geckodriverPath, this.logger);
   }
 
   private getUncompressFunction(): (source: string, dest: string) => Promise<void> {
@@ -170,33 +166,34 @@ export class GeckoDriverExternalUnit extends IExternalUnit {
   }
 
   private async download(): Promise<string> {
-    const window = this.windowService.window;
-    if (!window) {
-      throw new Error('window not exist');
-    }
     if (this.canceler) {
       throw new Error('already installing');
     }
     const downloadUrl = this.getDownloadUrl();
     const downloadsPath = HostPaths.downloadsPath(HostPaths.doguHomePath);
     await fs.promises.mkdir(downloadsPath, { recursive: true });
-    const geckoDriverItem = await download(window, downloadUrl, {
-      directory: downloadsPath,
-      onStarted: (item) => {
-        this.canceler = () => {
-          item.cancel();
-        };
-        this.unitCallback.onDownloadStarted();
-        this.stdLogCallbackService.stdout(`Download started. url: ${item.getURL()}`);
-      },
+    const downloadFileName = downloadUrl.split('/').pop();
+    if (!downloadFileName) {
+      throw new Error(`Invalid download url: ${downloadUrl}`);
+    }
+
+    this.canceler = (): void => {
+      /* noop */
+    };
+    this.unitCallback.onDownloadStarted();
+    const geckoDriverSavePath = path.resolve(downloadsPath, downloadFileName);
+    this.logger.info(`Download started. url: ${downloadUrl}`);
+    await download({
+      url: downloadUrl,
+      filePath: geckoDriverSavePath,
+      logger: this.logger,
       onProgress: (progress) => {
         this.unitCallback.onDownloadInProgress(progress);
       },
     });
-    this.canceler = null;
-    const geckoDriverSavePath = geckoDriverItem.getSavePath();
-    this.stdLogCallbackService.stdout(`Download completed. path: ${geckoDriverSavePath}`);
     this.unitCallback.onDownloadCompleted();
+    this.canceler = null;
+    this.logger.info(`Download completed. path: ${geckoDriverSavePath}`);
     return geckoDriverSavePath;
   }
 
@@ -208,12 +205,12 @@ export class GeckoDriverExternalUnit extends IExternalUnit {
     this.logger.warn('uninstall not supported');
   }
 
-  async isAgreementNeeded(): Promise<boolean> {
-    const value = await this.appConfigService.getOrDefault('external_is_agreed_gecko_driver', false);
+  isAgreementNeeded(): boolean {
+    const value = this.appConfigService.getOrDefault('external_is_agreed_gecko_driver', false);
     return !value;
   }
 
-  writeAgreement(value: boolean): Promise<void> {
+  writeAgreement(value: boolean): void {
     return this.appConfigService.set('external_is_agreed_gecko_driver', value);
   }
 

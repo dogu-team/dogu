@@ -1,17 +1,13 @@
-import { PrefixLogger, stringify } from '@dogu-tech/common';
-import { HostPaths, renameRetry } from '@dogu-tech/node';
+import { PrefixLogger, Printable, stringify } from '@dogu-tech/common';
+import { download, HostPaths, renameRetry } from '@dogu-tech/node';
 import { spawn } from 'child_process';
 import compressing from 'compressing';
-import { download } from 'electron-dl';
 import fs from 'fs';
 import path from 'path';
-import { ExternalKey } from '../../../src/shares/external';
-import { AppConfigService } from '../../app-config/app-config-service';
-import { DotEnvConfigService } from '../../dot-env-config/dot-env-config-service';
-import { logger } from '../../log/logger.instance';
-import { StdLogCallbackService } from '../../log/std-log-callback-service';
-import { WindowService } from '../../window/window-service';
-import { ExternalUnitCallback, IExternalUnit } from '../external-unit';
+import { AppConfigService } from '../../app-config/service';
+import { DotenvConfigService } from '../../dotenv-config/service';
+import { ExternalKey, ExternalUnitCallback } from '../types';
+import { IExternalUnit } from '../unit';
 
 const Infos = {
   commandLineTools: {
@@ -42,16 +38,16 @@ const Infos = {
 };
 
 export class AndroidSdkExternalUnit extends IExternalUnit {
-  private readonly logger = new PrefixLogger(logger, '[Android SDK]');
+  private readonly logger: PrefixLogger;
 
   constructor(
-    private readonly dotEnvConfigService: DotEnvConfigService,
-    private readonly stdLogCallbackService: StdLogCallbackService,
+    private readonly dotenvConfigService: DotenvConfigService,
     private readonly appConfigService: AppConfigService,
-    private readonly windowService: WindowService,
     private readonly unitCallback: ExternalUnitCallback,
+    logger: Printable,
   ) {
     super();
+    this.logger = new PrefixLogger(logger, '[Android SDK]');
   }
 
   isPlatformSupported(): boolean {
@@ -75,7 +71,7 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
   }
 
   async validateInternal(): Promise<void> {
-    const androidHome = this.dotEnvConfigService.get('ANDROID_HOME');
+    const androidHome = this.dotenvConfigService.get('ANDROID_HOME');
     if (!androidHome) {
       throw new Error('ANDROID_HOME not exist in env file');
     }
@@ -96,7 +92,7 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
     const buildToolsVersionPath = HostPaths.android.buildToolsVersionPath(androidHome, Infos.buildTools.version);
     const buildToolsVersionStat = await fs.promises.stat(buildToolsVersionPath).catch(() => null);
     if (!buildToolsVersionStat || !buildToolsVersionStat.isDirectory()) {
-      throw new Error(`buildTools version path is not exist or not directory. path: ${buildToolsVersionStat}`);
+      throw new Error(`buildTools version path is not exist or not directory. path: ${stringify(buildToolsVersionStat)}`);
     }
     await this.checkAdbVersion(androidHome);
   }
@@ -110,23 +106,23 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
     await new Promise<void>((resolve, reject) => {
       const child = spawn(adbPath, ['--version']);
       child.on('spawn', () => {
-        this.stdLogCallbackService.stdout('Checking adb version...');
+        this.logger.info('Checking adb version...');
       });
       child.on('error', (error) => {
-        this.stdLogCallbackService.stderr(`adb version check failed. error: ${error}`);
+        this.logger.error(`adb version check failed. error: ${stringify(error)}`);
       });
       child.on('close', (code, signal) => {
         if (code !== null) {
           if (code === 0) {
-            this.stdLogCallbackService.stdout('adb version check completed.');
+            this.logger.info('adb version check completed.');
             resolve();
           } else {
-            this.stdLogCallbackService.stderr(`adb version check failed. code: ${code}`);
+            this.logger.error(`adb version check failed. code: ${code}`);
             reject(new Error(`adb version check failed. code: ${code}`));
           }
         } else {
-          this.stdLogCallbackService.stderr(`adb version check failed. signal: ${signal}`);
-          reject(new Error(`adb version check failed. signal: ${signal}`));
+          this.logger.error(`adb version check failed. signal: ${stringify(signal)}`);
+          reject(new Error(`adb version check failed. signal: ${stringify(signal)}`));
         }
       });
       child.stdout.setEncoding('utf8');
@@ -135,7 +131,6 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
         if (!message) {
           return;
         }
-        this.stdLogCallbackService.stdout(message);
         this.logger.info(message);
       });
       child.stderr.setEncoding('utf8');
@@ -144,8 +139,7 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
         if (!message) {
           return;
         }
-        this.stdLogCallbackService.stderr(message);
-        this.logger.warn(message);
+        this.logger.error(message);
       });
     });
   }
@@ -203,9 +197,9 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
   }
 
   private async writeEnv_ANDROID_HOME(): Promise<void> {
-    this.stdLogCallbackService.stdout('Writing ANDROID_HOME to env file...');
-    await this.dotEnvConfigService.write('ANDROID_HOME', HostPaths.external.defaultAndroidHomePath());
-    this.stdLogCallbackService.stdout('Write complete');
+    this.logger.info('Writing ANDROID_HOME to env file...');
+    await this.dotenvConfigService.write('ANDROID_HOME', HostPaths.external.defaultAndroidHomePath());
+    this.logger.info('Write complete');
   }
 
   private getPlatformToolsDownloadUrl(): string {
@@ -219,32 +213,32 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
   }
 
   private async downloadPlatformTools(): Promise<string> {
-    const window = this.windowService.window;
-    if (!window) {
-      throw new Error('window not exist');
-    }
     if (this.canceler) {
       throw new Error('already installing');
     }
     const platformToolsDownloadUrl = this.getPlatformToolsDownloadUrl();
     const downloadsPath = HostPaths.downloadsPath(HostPaths.doguHomePath);
     await fs.promises.mkdir(downloadsPath, { recursive: true });
-    const platformToolsItem = await download(window, platformToolsDownloadUrl, {
-      directory: downloadsPath,
-      onStarted: (item) => {
-        this.canceler = () => {
-          item.cancel();
-        };
-        this.unitCallback.onDownloadStarted();
-        this.stdLogCallbackService.stdout(`Download started. url: ${item.getURL()}`);
-      },
+    this.canceler = (): void => {
+      /* noop */
+    };
+    this.unitCallback.onDownloadStarted();
+    const downloadFileName = platformToolsDownloadUrl.split('/').pop();
+    if (!downloadFileName) {
+      throw new Error(`downloadFileName not exist. platformToolsDownloadUrl: ${platformToolsDownloadUrl}`);
+    }
+    const platformToolsSavePath = path.resolve(downloadsPath, downloadFileName);
+    this.logger.info(`Downloading... url: ${platformToolsDownloadUrl}`);
+    await download({
+      url: platformToolsDownloadUrl,
+      logger: this.logger,
+      filePath: platformToolsSavePath,
       onProgress: (progress) => {
         this.unitCallback.onDownloadInProgress(progress);
       },
     });
     this.canceler = null;
-    const platformToolsSavePath = platformToolsItem.getSavePath();
-    this.stdLogCallbackService.stdout(`Download completed. path: ${platformToolsSavePath}`);
+    this.logger.info(`Download completed. path: ${platformToolsSavePath}`);
     this.unitCallback.onDownloadCompleted();
     return platformToolsSavePath;
   }
@@ -253,23 +247,23 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
     await new Promise<void>((resolve, reject) => {
       const child = spawn(sdkManagerPath, [`build-tools;${Infos.buildTools.version}`]);
       child.on('spawn', () => {
-        this.stdLogCallbackService.stdout('Downloading build-tools and platform-tools...');
+        this.logger.info('Downloading build-tools and platform-tools...');
       });
       child.on('error', (error) => {
-        this.stdLogCallbackService.stderr(`sdkmanager download failed. error: ${error}`);
+        this.logger.error(`sdkmanager download failed. error: ${stringify(error)}`);
       });
       child.on('close', (code, signal) => {
         if (code !== null) {
           if (code === 0) {
-            this.stdLogCallbackService.stdout('sdkmanager download completed.');
+            this.logger.info('sdkmanager download completed.');
             resolve();
           } else {
-            this.stdLogCallbackService.stderr(`sdkmanager download failed. code: ${code}`);
+            this.logger.error(`sdkmanager download failed. code: ${code}`);
             reject(new Error(`sdkmanager download failed. code: ${code}`));
           }
         } else {
-          this.stdLogCallbackService.stderr(`sdkmanager download failed. signal: ${signal}`);
-          reject(new Error(`sdkmanager download failed. signal: ${signal}`));
+          this.logger.error(`sdkmanager download failed. signal: ${stringify(signal)}`);
+          reject(new Error(`sdkmanager download failed. signal: ${stringify(signal)}`));
         }
       });
       child.stdout.setEncoding('utf8');
@@ -278,7 +272,6 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
         if (!message) {
           return;
         }
-        this.stdLogCallbackService.stdout(message);
         this.logger.info(message);
       });
       child.stderr.setEncoding('utf8');
@@ -287,39 +280,38 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
         if (!message) {
           return;
         }
-        this.stdLogCallbackService.stderr(message);
-        this.logger.warn(message);
+        this.logger.error(message);
       });
     });
   }
 
   private async downloadCommandLineTools(): Promise<string> {
-    const window = this.windowService.window;
-    if (!window) {
-      throw new Error('window not exist');
-    }
     if (this.canceler) {
       throw new Error('already installing');
     }
     const commandLineToolsDownloadUrl = this.getCommandLineToolsDownloadUrl();
     const downloadsPath = HostPaths.downloadsPath(HostPaths.doguHomePath);
     await fs.promises.mkdir(downloadsPath, { recursive: true });
-    const commandLineToolsItem = await download(window, commandLineToolsDownloadUrl, {
-      directory: downloadsPath,
-      onStarted: (item) => {
-        this.canceler = () => {
-          item.cancel();
-        };
-        this.unitCallback.onDownloadStarted();
-        this.stdLogCallbackService.stdout(`Download started. url: ${item.getURL()}`);
-      },
+    this.canceler = (): void => {
+      /* noop */
+    };
+    const downloadFileName = commandLineToolsDownloadUrl.split('/').pop();
+    if (!downloadFileName) {
+      throw new Error(`downloadFileName not exist. commandLineToolsDownloadUrl: ${commandLineToolsDownloadUrl}`);
+    }
+    this.logger.info(`Downloading... url: ${commandLineToolsDownloadUrl}`);
+    const commandLineToolsSavePath = path.resolve(downloadsPath, downloadFileName);
+    this.unitCallback.onDownloadStarted();
+    await download({
+      url: commandLineToolsDownloadUrl,
+      logger: this.logger,
+      filePath: commandLineToolsSavePath,
       onProgress: (progress) => {
         this.unitCallback.onDownloadInProgress(progress);
       },
     });
     this.canceler = null;
-    const commandLineToolsSavePath = commandLineToolsItem.getSavePath();
-    this.stdLogCallbackService.stdout(`Download completed. path: ${commandLineToolsSavePath}`);
+    this.logger.info(`Download completed. path: ${commandLineToolsSavePath}`);
     this.unitCallback.onDownloadCompleted();
     return commandLineToolsSavePath;
   }
@@ -334,12 +326,12 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
   }
 
   private async uncompressPlatformTools(savePath: string): Promise<string> {
-    this.stdLogCallbackService.stdout(`Uncompressing... path: ${savePath}`);
+    this.logger.info(`Uncompressing... path: ${savePath}`);
     const platformToolsFileExtensionPattern = this.getPlatformToolsFileExtensionPattern();
     const uncompressedPath = savePath.replace(platformToolsFileExtensionPattern, '');
     await fs.promises.rm(uncompressedPath, { recursive: true, force: true });
     await compressing.zip.uncompress(savePath, uncompressedPath);
-    this.stdLogCallbackService.stdout(`Uncompress completed. path: ${uncompressedPath}`);
+    this.logger.info(`Uncompress completed. path: ${uncompressedPath}`);
     return uncompressedPath;
   }
 
@@ -357,36 +349,36 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
     const defaultAndroidHomePath = HostPaths.external.defaultAndroidHomePath();
     const defaultPlatformToolsPath = HostPaths.android.platformToolsPath(defaultAndroidHomePath);
     const defaultPlatformToolsParentPath = path.dirname(defaultPlatformToolsPath);
-    this.stdLogCallbackService.stdout(`Creating... ${defaultPlatformToolsParentPath}`);
+    this.logger.info(`Creating... ${defaultPlatformToolsParentPath}`);
     await fs.promises.mkdir(defaultPlatformToolsParentPath, { recursive: true });
-    this.stdLogCallbackService.stdout(`Create complete. ${defaultPlatformToolsParentPath}`);
+    this.logger.info(`Create complete. ${defaultPlatformToolsParentPath}`);
 
-    this.stdLogCallbackService.stdout(`Moving... ${platformToolsUncompressedDirPath} -> ${defaultPlatformToolsPath}`);
-    await renameRetry(platformToolsUncompressedDirPath, defaultPlatformToolsPath, this.stdLogCallbackService.createPrintable());
-    this.stdLogCallbackService.stdout(`Move complete. ${platformToolsUncompressedDirPath} -> ${defaultPlatformToolsPath}`);
+    this.logger.info(`Moving... ${platformToolsUncompressedDirPath} -> ${defaultPlatformToolsPath}`);
+    await renameRetry(platformToolsUncompressedDirPath, defaultPlatformToolsPath, this.logger);
+    this.logger.info(`Move complete. ${platformToolsUncompressedDirPath} -> ${defaultPlatformToolsPath}`);
   }
 
   private async updateSdkManager(sdkManagerPath: string): Promise<void> {
     await new Promise<void>((resolve, reject) => {
       const child = spawn(sdkManagerPath, ['--update']);
       child.on('spawn', () => {
-        this.stdLogCallbackService.stdout('Updating sdkmanager...');
+        this.logger.info('Updating sdkmanager...');
       });
       child.on('error', (error) => {
-        this.stdLogCallbackService.stderr(`sdkmanager update failed. error: ${error}`);
+        this.logger.error(`sdkmanager update failed. error: ${stringify(error)}`);
       });
       child.on('close', (code, signal) => {
         if (code !== null) {
           if (code === 0) {
-            this.stdLogCallbackService.stdout('sdkmanager update completed.');
+            this.logger.info('sdkmanager update completed.');
             resolve();
           } else {
-            this.stdLogCallbackService.stderr(`sdkmanager update failed. code: ${code}`);
+            this.logger.error(`sdkmanager update failed. code: ${code}`);
             reject(new Error(`sdkmanager update failed. code: ${code}`));
           }
         } else {
-          this.stdLogCallbackService.stderr(`sdkmanager update failed. signal: ${signal}`);
-          reject(new Error(`sdkmanager update failed. signal: ${signal}`));
+          this.logger.error(`sdkmanager update failed. signal: ${stringify(signal)}`);
+          reject(new Error(`sdkmanager update failed. signal: ${stringify(signal)}`));
         }
       });
       child.stdout.setEncoding('utf8');
@@ -395,7 +387,6 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
         if (!message) {
           return;
         }
-        this.stdLogCallbackService.stdout(message);
         this.logger.info(message);
       });
       child.stderr.setEncoding('utf8');
@@ -404,8 +395,7 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
         if (!message) {
           return;
         }
-        this.stdLogCallbackService.stderr(message);
-        this.logger.warn(message);
+        this.logger.error(message);
       });
     });
   }
@@ -414,23 +404,23 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
     await new Promise<void>((resolve, reject) => {
       const child = spawn(sdkManagerPath, ['--licenses']);
       child.on('spawn', () => {
-        this.stdLogCallbackService.stdout('Accepting sdkmanager licenses...');
+        this.logger.info('Accepting sdkmanager licenses...');
       });
       child.on('error', (error) => {
-        this.stdLogCallbackService.stderr(`sdkmanager licenses accept failed. error: ${error}`);
+        this.logger.error(`sdkmanager licenses accept failed. error: ${stringify(error)}`);
       });
       child.on('close', (code, signal) => {
         if (code !== null) {
           if (code === 0) {
-            this.stdLogCallbackService.stdout('sdkmanager licenses accept completed.');
+            this.logger.info('sdkmanager licenses accept completed.');
             resolve();
           } else {
-            this.stdLogCallbackService.stderr(`sdkmanager licenses accept failed. code: ${code}`);
+            this.logger.error(`sdkmanager licenses accept failed. code: ${code}`);
             reject(new Error(`sdkmanager licenses accept failed. code: ${code}`));
           }
         } else {
-          this.stdLogCallbackService.stderr(`sdkmanager licenses accept failed. signal: ${signal}`);
-          reject(new Error(`sdkmanager licenses accept failed. signal: ${signal}`));
+          this.logger.error(`sdkmanager licenses accept failed. signal: ${stringify(signal)}`);
+          reject(new Error(`sdkmanager licenses accept failed. signal: ${stringify(signal)}`));
         }
       });
       child.stdout.setEncoding('utf8');
@@ -442,7 +432,6 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
         if (message.includes('(y/N)')) {
           child.stdin.write('y\n');
         }
-        this.stdLogCallbackService.stdout(message);
         this.logger.info(message);
       });
       child.stderr.setEncoding('utf8');
@@ -451,8 +440,7 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
         if (!message) {
           return;
         }
-        this.stdLogCallbackService.stderr(message);
-        this.logger.warn(message);
+        this.logger.error(message);
       });
     });
   }
@@ -470,27 +458,27 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
     const defaultAndroidHomePath = HostPaths.external.defaultAndroidHomePath();
     const defaultAndroidHomeStat = await fs.promises.stat(defaultAndroidHomePath).catch(() => null);
     if (defaultAndroidHomeStat && defaultAndroidHomeStat.isDirectory()) {
-      this.stdLogCallbackService.stdout(`Deleting default ANDROID_HOME... ${defaultAndroidHomePath}`);
+      this.logger.info(`Deleting default ANDROID_HOME... ${defaultAndroidHomePath}`);
       await fs.promises.rm(defaultAndroidHomePath, { recursive: true, force: true });
-      this.stdLogCallbackService.stdout(`Delete complete. ${defaultAndroidHomePath}`);
+      this.logger.info(`Delete complete. ${defaultAndroidHomePath}`);
     }
 
-    this.stdLogCallbackService.stdout(`Creating... ${defaultAndroidHomePath}`);
+    this.logger.info(`Creating... ${defaultAndroidHomePath}`);
     await fs.promises.mkdir(defaultAndroidHomePath, { recursive: true });
-    this.stdLogCallbackService.stdout(`Create complete. ${defaultAndroidHomePath}`);
+    this.logger.info(`Create complete. ${defaultAndroidHomePath}`);
   }
 
   private async moveCommandLineTools(commandLineToolsUncompressedDirPath: string): Promise<void> {
     const defaultAndroidHomePath = HostPaths.external.defaultAndroidHomePath();
     const defaultCommandLineToolsPath = HostPaths.android.cmdlineToolsPath(defaultAndroidHomePath);
     const defaultCommandLineToolsParentPath = path.dirname(defaultCommandLineToolsPath);
-    this.stdLogCallbackService.stdout(`Creating... ${defaultCommandLineToolsParentPath}`);
+    this.logger.info(`Creating... ${defaultCommandLineToolsParentPath}`);
     await fs.promises.mkdir(defaultCommandLineToolsParentPath, { recursive: true });
-    this.stdLogCallbackService.stdout(`Create complete. ${defaultCommandLineToolsParentPath}`);
+    this.logger.info(`Create complete. ${defaultCommandLineToolsParentPath}`);
 
-    this.stdLogCallbackService.stdout(`Moving... ${commandLineToolsUncompressedDirPath} -> ${defaultCommandLineToolsPath}`);
-    await renameRetry(commandLineToolsUncompressedDirPath, defaultCommandLineToolsPath, this.stdLogCallbackService.createPrintable());
-    this.stdLogCallbackService.stdout(`Move complete. ${commandLineToolsUncompressedDirPath} -> ${defaultCommandLineToolsPath}`);
+    this.logger.info(`Moving... ${commandLineToolsUncompressedDirPath} -> ${defaultCommandLineToolsPath}`);
+    await renameRetry(commandLineToolsUncompressedDirPath, defaultCommandLineToolsPath, this.logger);
+    this.logger.info(`Move complete. ${commandLineToolsUncompressedDirPath} -> ${defaultCommandLineToolsPath}`);
   }
 
   private async validateCommandLineToolsDirInUncompressedPath(commandLineToolsUncompressedPath: string): Promise<string> {
@@ -513,12 +501,12 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
   }
 
   private async uncompressCommandLineTools(savePath: string): Promise<string> {
-    this.stdLogCallbackService.stdout(`Uncompressing... path: ${savePath}`);
+    this.logger.info(`Uncompressing... path: ${savePath}`);
     const commandLineToolsFileExtensionPattern = this.getCommandLineToolsFileExtensionPattern();
     const uncompressedPath = savePath.replace(commandLineToolsFileExtensionPattern, '');
     await fs.promises.rm(uncompressedPath, { recursive: true, force: true });
     await compressing.zip.uncompress(savePath, uncompressedPath);
-    this.stdLogCallbackService.stdout(`Uncompress completed. path: ${uncompressedPath}`);
+    this.logger.info(`Uncompress completed. path: ${uncompressedPath}`);
     return uncompressedPath;
   }
 
@@ -535,13 +523,13 @@ export class AndroidSdkExternalUnit extends IExternalUnit {
     this.logger.warn('uninstall not supported');
   }
 
-  async isAgreementNeeded(): Promise<boolean> {
-    const value = await this.appConfigService.getOrDefault('external_is_agreed_android_sdk', false);
+  isAgreementNeeded(): boolean {
+    const value = this.appConfigService.getOrDefault('external_is_agreed_android_sdk', false);
     return !value;
   }
 
-  writeAgreement(value: boolean): Promise<void> {
-    return this.appConfigService.set('external_is_agreed_android_sdk', value);
+  writeAgreement(value: boolean): void {
+    this.appConfigService.set('external_is_agreed_android_sdk', value);
   }
 
   getTermUrl(): string | null {

@@ -1,4 +1,4 @@
-import { Printable } from '@dogu-tech/common';
+import { Printable, stringify } from '@dogu-tech/common';
 import { checkDirectoryEqual, copyDirectoryRecursive, getDirectorySize, HostPaths } from '@dogu-tech/node';
 import fs from 'fs';
 import fsPromise from 'fs/promises';
@@ -15,7 +15,7 @@ export async function validateiOSDeviceAgentProjectExist(logger: Printable): Pro
         return true;
       }
     } catch (e) {
-      logger.error(`Error removing directory: ${e}`);
+      logger.error(`Error removing directory: ${stringify(e)}`);
     }
   }
   return false;
@@ -37,7 +37,7 @@ export async function removeiOSDeviceAgent(logger: Printable): Promise<void> {
       await fs.promises.rm(idaRootDirectoryPath, { force: true, recursive: true });
       logger.info(`removeiOSDeviceAgent done`);
     } catch (e) {
-      logger.error(`Error removing directory: ${e}`);
+      logger.error(`Error removing directory: ${stringify(e)}`);
     }
   }
 }
@@ -48,7 +48,7 @@ export async function checkProjectEqual(logger: Printable): Promise<boolean> {
     const idaOriginProjectDirectoryPath = path.resolve(HostPaths.thirdParty.pathMap().macos.iosDeviceAgentProject, dirname);
     const idaDestProjectDirectoryPath = path.resolve(HostPaths.external.xcodeProject.idaProjectDirectoryPath(), dirname);
     const result = await checkDirectoryEqual(idaOriginProjectDirectoryPath, idaDestProjectDirectoryPath, '.swift');
-    logger.info(`checkProjectEqual: dirname:${dirname}, isEqual:${result.isEqual}, reason: ${result.reason}`);
+    logger.info(`checkProjectEqual: dirname:${dirname}, isEqual:${stringify(result.isEqual)}, reason: ${result.reason}`);
     if (!result.isEqual) {
       return false;
     }

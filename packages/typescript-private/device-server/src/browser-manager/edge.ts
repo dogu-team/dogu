@@ -1,6 +1,6 @@
 import { BrowserOrDriverName, BrowserVersion } from '@dogu-private/types';
 import { DeepReadonly, PrefixLogger, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
-import { installPkg, renameRetry } from '@dogu-tech/node';
+import { defaultDownloadRequestTimeout, download, installPkg, renameRetry } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
 import axios, { AxiosInstance } from 'axios';
 import { exec } from 'child_process';
@@ -11,7 +11,7 @@ import { promisify } from 'util';
 import { logger } from '../logger/logger.instance';
 import { ChromeChannelName, chromeChannelNameMap } from './chrome';
 import { chromeVersionUtils } from './chrome-version-utils';
-import { defaultDownloadRequestTimeout, defaultInstallationTimeout, defaultVersionRequestTimeout, download, validatePrefixOrPatternWithin } from './common';
+import { defaultInstallationTimeout, defaultVersionRequestTimeout, validatePrefixOrPatternWithin } from './common';
 
 const execAsync = promisify(exec);
 

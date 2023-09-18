@@ -1,23 +1,22 @@
-import { PrefixLogger, stringify } from '@dogu-tech/common';
+import { PrefixLogger, Printable, stringify } from '@dogu-tech/common';
 import { HostPaths, killChildProcess } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
 import path from 'path';
-import { ExternalKey } from '../../../src/shares/external';
-import { logger } from '../../log/logger.instance';
-import { StdLogCallbackService } from '../../log/std-log-callback-service';
 import { checkProjectEqual, copyiOSDeviceAgentProject, removeiOSDeviceAgent, validateiOSDeviceAgentProjectExist } from '../../settings/ios-device-agent-project';
-import { IExternalUnit } from '../external-unit';
+import { ExternalKey } from '../types';
+import { IExternalUnit } from '../unit';
 import { validateXcode } from '../xcode';
 
 export class IdaBuildExternalUnit extends IExternalUnit {
-  private readonly logger = new PrefixLogger(logger, '[IosDeviceAgentBuild]');
+  private readonly logger: PrefixLogger;
   private child: ChildProcessWithoutNullStreams | null = null;
   private failCount = 0;
 
-  constructor(private readonly stdLogCallbackService: StdLogCallbackService) {
+  constructor(logger: Printable) {
     super();
+    this.logger = new PrefixLogger(logger, '[iOSDeviceAgent Build]');
   }
 
   isPlatformSupported(): boolean {
@@ -41,8 +40,8 @@ export class IdaBuildExternalUnit extends IExternalUnit {
   }
 
   async validateInternal(): Promise<void> {
-    await validateXcode(this.stdLogCallbackService);
-    const isEqual = await checkProjectEqual(this.stdLogCallbackService.createPrintable());
+    await validateXcode(this.logger);
+    const isEqual = await checkProjectEqual(this.logger);
     if (!isEqual) {
       throw Error('iOSDeviceAgent project is not equal. It could be an outdated version of the iOSDeviceAgnet project. Please build again after cleaning.');
     }
@@ -78,10 +77,10 @@ export class IdaBuildExternalUnit extends IExternalUnit {
       await killChildProcess(this.child);
       this.child = null;
     }
-    if (!(await validateiOSDeviceAgentProjectExist(logger))) {
-      this.stdLogCallbackService.stdout(`${this.getName()} copy project start.`);
-      await copyiOSDeviceAgentProject(logger);
-      this.stdLogCallbackService.stdout(`${this.getName()} copy project done.`);
+    if (!(await validateiOSDeviceAgentProjectExist(this.logger))) {
+      this.logger.info(`${this.getName()} copy project start.`);
+      await copyiOSDeviceAgentProject(this.logger);
+      this.logger.info(`${this.getName()} copy project done.`);
     }
     this.logger.info(`${this.getName()} copy project done.`);
     const idaDerivedDataPath = HostPaths.external.xcodeProject.idaDerivedDataPath();
@@ -102,21 +101,20 @@ export class IdaBuildExternalUnit extends IExternalUnit {
         idaDerivedDataPath,
       ]);
 
-      const onErrorForReject = (error: Error) => {
+      const onErrorForReject = (error: Error): void => {
         reject(error);
       };
       this.child.on('error', onErrorForReject);
       this.child.on('spawn', () => {
         this.child?.off('error', onErrorForReject);
         this.child?.on('error', (error) => {
-          this.stdLogCallbackService.stderr(stringify(error));
+          this.logger.error(stringify(error));
         });
-        this.stdLogCallbackService.stdout(`${this.getName()} spawned`);
+        this.logger.info(`${this.getName()} spawned`);
         this.child?.on('close', (code, signal) => {
-          (async () => {
-            const msg = `${this.getName()} is closed. code: ${code} signal: ${signal}`;
+          (async (): Promise<void> => {
+            const msg = `${this.getName()} is closed. code: ${stringify(code)} signal: ${stringify(signal)}`;
             this.logger.info(msg);
-            this.stdLogCallbackService.stdout(msg);
             this.child = null;
 
             if (code === 0) {
@@ -145,7 +143,7 @@ export class IdaBuildExternalUnit extends IExternalUnit {
               resolve();
             } else {
               this.failCount += 1;
-              reject(new Error(`${this.getName()} failed. code: ${code} signal: ${signal}`));
+              reject(new Error(`${this.getName()} failed. code: ${stringify(code)} signal: ${stringify(signal)}`));
             }
           })().catch((error) => {
             this.logger.error(error);
@@ -158,7 +156,6 @@ export class IdaBuildExternalUnit extends IExternalUnit {
           if (!message) {
             return;
           }
-          this.stdLogCallbackService.stdout(message);
           this.logger.info(message);
         });
         this.child?.stderr.setEncoding('utf8');
@@ -167,8 +164,7 @@ export class IdaBuildExternalUnit extends IExternalUnit {
           if (!message) {
             return;
           }
-          this.stdLogCallbackService.stderr(message);
-          this.logger.warn(message);
+          this.logger.error(message);
         });
       });
     });
@@ -187,7 +183,7 @@ export class IdaBuildExternalUnit extends IExternalUnit {
   }
 
   async uninstall(): Promise<void> {
-    await removeiOSDeviceAgent(this.stdLogCallbackService.createPrintable());
+    await removeiOSDeviceAgent(this.logger);
   }
 
   getTermUrl(): string | null {

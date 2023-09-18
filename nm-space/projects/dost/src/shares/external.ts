@@ -1,4 +1,4 @@
-import { DotenvConfigKey } from '@dogu-private/dogu-agent-core';
+import { DotenvConfigKey, DownloadProgress } from '@dogu-private/dogu-agent-core';
 import { IpcRendererEvent } from 'electron';
 import { instanceKeys } from './electron-ipc';
 
@@ -66,12 +66,6 @@ export interface IExternalClient {
 }
 
 export const externalCallbackKey = instanceKeys<IExternalCallback>('externalCallback');
-
-export interface DownloadProgress {
-  percent: number;
-  transferredBytes: number;
-  totalBytes: number;
-}
 
 export interface IExternalCallback {
   onDownloadStarted: (callback: (event: IpcRendererEvent, key: ExternalKey) => void) => void;

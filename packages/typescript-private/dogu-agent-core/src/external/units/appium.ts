@@ -1,29 +1,29 @@
-import { PrefixLogger, stringify } from '@dogu-tech/common';
+import { PrefixLogger, Printable, stringify } from '@dogu-tech/common';
 import { HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
+import { ThirdPartyPathMap } from '@dogu-tech/types';
 import { spawn } from 'child_process';
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
-import { ExternalKey } from '../../../src/shares/external';
-import { AppConfigService } from '../../app-config/app-config-service';
-import { DotEnvConfigService } from '../../dot-env-config/dot-env-config-service';
-import { logger } from '../../log/logger.instance';
-import { StdLogCallbackService } from '../../log/std-log-callback-service';
-import { ThirdPartyPathMap } from '../../path-map';
-import { ExternalUnitCallback, IExternalUnit } from '../external-unit';
+import { AppConfigService } from '../../app-config/service';
+import { DotenvConfigService } from '../../dotenv-config/service';
+import { ExternalKey, ExternalUnitCallback } from '../types';
+import { IExternalUnit } from '../unit';
 
 const AppiumVersion = '2.0.0';
 
 export class AppiumExternalUnit extends IExternalUnit {
-  private readonly logger = new PrefixLogger(logger, '[Appium]');
+  private readonly logger: PrefixLogger;
 
   constructor(
-    private readonly dotEnvConfigService: DotEnvConfigService,
-    private readonly stdLogCallbackService: StdLogCallbackService,
+    private readonly dotEnvConfigService: DotenvConfigService, //
     private readonly appConfigService: AppConfigService,
     private readonly unitCallback: ExternalUnitCallback,
+    private readonly thirdPartyPathMap: ThirdPartyPathMap,
+    logger: Printable,
   ) {
     super();
+    this.logger = new PrefixLogger(logger, '[Appium]');
   }
 
   isPlatformSupported(): boolean {
@@ -58,19 +58,19 @@ export class AppiumExternalUnit extends IExternalUnit {
       throw new Error(`package.json not exist or not file. path: ${packageJsonPath}`);
     }
     const content = await fs.promises.readFile(packageJsonPath, { encoding: 'utf8' });
-    const packageJson = JSON.parse(content);
+    const packageJson = JSON.parse(content) as Record<string, unknown>;
     const version = _.get(packageJson, 'dependencies.appium') as string | undefined;
     if (!version) {
       throw new Error('appium not exist in package.json');
     }
   }
 
-  async isAgreementNeeded(): Promise<boolean> {
-    const value = await this.appConfigService.getOrDefault('external_is_agreed_appium', false);
+  isAgreementNeeded(): boolean {
+    const value = this.appConfigService.getOrDefault('external_is_agreed_appium', false);
     return !value;
   }
 
-  writeAgreement(value: boolean): Promise<void> {
+  writeAgreement(value: boolean): void {
     return this.appConfigService.set('external_is_agreed_appium', value);
   }
 
@@ -90,36 +90,36 @@ export class AppiumExternalUnit extends IExternalUnit {
     const cleanNodeEnv = newCleanNodeEnv();
     const env = _.merge(cleanNodeEnv, {
       APPIUM_HOME: appiumHome,
-      PATH: `${ThirdPartyPathMap.common.nodeBin}${path.delimiter}${cleanNodeEnv.PATH}`,
+      PATH: `${this.thirdPartyPathMap.common.nodeBin}${path.delimiter}${cleanNodeEnv.PATH || ''}`,
     });
     this.logger.verbose('merged env', { env });
     return env;
   }
 
   private async pnpmInit(env: NodeJS.ProcessEnv): Promise<void> {
-    const { pnpm } = ThirdPartyPathMap.common;
+    const { pnpm } = this.thirdPartyPathMap.common;
     const appiumPath = HostPaths.external.nodePackage.appiumPath();
     await new Promise<void>((resolve, reject) => {
       const child = spawn(pnpm, ['init'], {
         cwd: appiumPath,
         env,
       });
-      const onErrorForReject = (error: Error) => {
+      const onErrorForReject = (error: Error): void => {
         reject(error);
       };
       child.on('error', onErrorForReject);
       child.on('spawn', () => {
         child.off('error', onErrorForReject);
         child.on('error', (error) => {
-          this.stdLogCallbackService.stderr(stringify(error));
+          this.logger.error(stringify(error));
         });
-        this.stdLogCallbackService.stdout(`appium pnpm project initializing...`);
+        this.logger.info(`appium pnpm project initializing...`);
         child.on('close', (code, signal) => {
-          this.stdLogCallbackService.stdout(`appium pnpm project initialized. code: ${code} signal: ${signal}`);
+          this.logger.info(`appium pnpm project initialized. code: ${stringify(code)} signal: ${stringify(signal)}`);
           if (code === 0) {
             resolve();
           } else {
-            reject(new Error(`appium pnpm project initialize failed. code: ${code} signal: ${signal}`));
+            reject(new Error(`appium pnpm project initialize failed. code: ${stringify(code)} signal: ${stringify(signal)}`));
           }
         });
       });
@@ -129,7 +129,6 @@ export class AppiumExternalUnit extends IExternalUnit {
         if (!message) {
           return;
         }
-        this.stdLogCallbackService.stdout(message);
         this.logger.info(message);
       });
       child.stderr.setEncoding('utf8');
@@ -138,36 +137,35 @@ export class AppiumExternalUnit extends IExternalUnit {
         if (!message) {
           return;
         }
-        this.stdLogCallbackService.stderr(message);
-        this.logger.warn(message);
+        this.logger.error(message);
       });
     });
   }
 
   private async installAppium(env: NodeJS.ProcessEnv): Promise<void> {
-    const { pnpm } = ThirdPartyPathMap.common;
+    const { pnpm } = this.thirdPartyPathMap.common;
     const appiumPath = HostPaths.external.nodePackage.appiumPath();
     await new Promise<void>((resolve, reject) => {
       const child = spawn(pnpm, ['install', `appium@${AppiumVersion}`], {
         cwd: appiumPath,
         env,
       });
-      const onErrorForReject = (error: Error) => {
+      const onErrorForReject = (error: Error): void => {
         reject(error);
       };
       child.on('error', onErrorForReject);
       child.on('spawn', () => {
         child.off('error', onErrorForReject);
         child.on('error', (error) => {
-          this.stdLogCallbackService.stderr(stringify(error));
+          this.logger.error(stringify(error));
         });
-        this.stdLogCallbackService.stdout('Installing appium...');
+        this.logger.info('Installing appium...');
         child.on('close', (code, signal) => {
-          this.stdLogCallbackService.stdout(`appium install completed. code: ${code} signal: ${signal}`);
+          this.logger.info(`appium install completed. code: ${stringify(code)} signal: ${stringify(signal)}`);
           if (code === 0) {
             resolve();
           } else {
-            reject(new Error(`appium install failed. code: ${code} signal: ${signal}`));
+            reject(new Error(`appium install failed. code: ${stringify(code)} signal: ${stringify(signal)}`));
           }
         });
       });
@@ -177,7 +175,6 @@ export class AppiumExternalUnit extends IExternalUnit {
         if (!message) {
           return;
         }
-        this.stdLogCallbackService.stdout(message);
         this.logger.info(message);
       });
       child.stderr.setEncoding('utf8');
@@ -186,8 +183,7 @@ export class AppiumExternalUnit extends IExternalUnit {
         if (!message) {
           return;
         }
-        this.stdLogCallbackService.stderr(message);
-        this.logger.warn(message);
+        this.logger.error(message);
       });
     });
   }

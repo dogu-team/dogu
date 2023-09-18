@@ -1,3 +1,4 @@
+import { checkProjectEqual } from '@dogu-private/dogu-agent-core';
 import { ChildCode } from '@dogu-private/dost-children';
 import { Code } from '@dogu-private/types';
 import { delay } from '@dogu-tech/common';
@@ -12,7 +13,6 @@ import { FeatureConfigService } from '../../feature-config/feature-config-servic
 import { getLogLevel, logger } from '../../log/logger.instance';
 import { stripAnsi } from '../../log/strip-ansi';
 import { DeviceServerLogsPath, DeviceServerMainScriptPath } from '../../path-map';
-import { checkProjectEqual } from '../../settings/ios-device-agent-project';
 import { Child, ChildLastError, fillChildOptions } from '../types';
 import { closeChild, openChild } from './lifecycle';
 

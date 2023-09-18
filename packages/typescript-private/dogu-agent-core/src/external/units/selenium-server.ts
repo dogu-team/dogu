@@ -1,16 +1,12 @@
-import { PrefixLogger } from '@dogu-tech/common';
-import { HostPaths, renameRetry } from '@dogu-tech/node';
+import { PrefixLogger, Printable } from '@dogu-tech/common';
+import { download, HostPaths, renameRetry } from '@dogu-tech/node';
 import { exec } from 'child_process';
-import { download } from 'electron-dl';
 import fs from 'fs';
 import path from 'path';
 import util from 'util';
-import { ExternalKey } from '../../../src/shares/external';
-import { AppConfigService } from '../../app-config/app-config-service';
-import { logger } from '../../log/logger.instance';
-import { StdLogCallbackService } from '../../log/std-log-callback-service';
-import { WindowService } from '../../window/window-service';
-import { ExternalUnitCallback, IExternalUnit } from '../external-unit';
+import { AppConfigService } from '../../app-config/service';
+import { ExternalKey, ExternalUnitCallback } from '../types';
+import { IExternalUnit } from '../unit';
 
 const execAsync = util.promisify(exec);
 
@@ -18,15 +14,15 @@ const Name = 'Selenium Server';
 const DownloadUrl = 'https://github.com/SeleniumHQ/selenium/releases/download/selenium-4.10.0/selenium-server-4.10.0.jar';
 
 export class SeleniumServerExternalUnit extends IExternalUnit {
-  private readonly logger = new PrefixLogger(logger, `[${Name}]`);
+  private readonly logger: PrefixLogger;
 
   constructor(
-    private readonly windowService: WindowService,
-    private readonly stdLogCallbackService: StdLogCallbackService,
-    private readonly appConfigService: AppConfigService,
+    private readonly appConfigService: AppConfigService, //
     private readonly unitCallback: ExternalUnitCallback,
+    logger: Printable,
   ) {
     super();
+    this.logger = new PrefixLogger(logger, `[${Name}]`);
   }
 
   isPlatformSupported(): boolean {
@@ -62,37 +58,40 @@ export class SeleniumServerExternalUnit extends IExternalUnit {
     const javaPath = HostPaths.java.javaPath(javaHomePath);
     const { stdout, stderr } = await execAsync(`${javaPath} -jar ${seleniumServerPath} standalone --version`);
     if (stderr) {
-      this.stdLogCallbackService.stderr(stderr);
+      this.logger.error(stderr);
     }
     if (stdout) {
-      this.stdLogCallbackService.stdout(stdout);
+      this.logger.info(stdout);
     }
   }
 
   async install(): Promise<void> {
-    const window = this.windowService.window;
-    if (!window) {
-      throw new Error('window not exist');
-    }
     const seleniumServerPath = HostPaths.external.selenium.seleniumServerPath();
     const seleniumDirPath = path.dirname(seleniumServerPath);
     await fs.promises.mkdir(seleniumDirPath, { recursive: true });
-    const item = await download(window, DownloadUrl, {
-      directory: seleniumDirPath,
-      onStarted: (item) => {
-        this.unitCallback.onDownloadStarted();
-        this.stdLogCallbackService.stdout(`Download started. url: ${item.getURL()}`);
-      },
+
+    const downloadFileName = DownloadUrl.split('/').pop();
+    if (!downloadFileName) {
+      throw new Error(`Invalid download url: ${DownloadUrl}`);
+    }
+
+    const downloadFilePath = path.join(seleniumDirPath, downloadFileName);
+    this.unitCallback.onDownloadStarted();
+    this.logger.info(`Download started. url: ${DownloadUrl}`);
+    await download({
+      url: DownloadUrl,
+      filePath: downloadFilePath,
+      logger: this.logger,
       onProgress: (progress) => {
         this.unitCallback.onDownloadInProgress(progress);
       },
     });
-    const savePath = item.getSavePath();
-    this.stdLogCallbackService.stdout(`Download complete. path: ${savePath}`);
     this.unitCallback.onDownloadCompleted();
+    this.logger.info(`Download completed. path: ${downloadFilePath}`);
+
     this.unitCallback.onInstallStarted();
-    await renameRetry(savePath, seleniumServerPath, this.stdLogCallbackService.createPrintable());
-    this.stdLogCallbackService.stdout(`Install complete. path: ${seleniumServerPath}`);
+    await renameRetry(downloadFilePath, seleniumServerPath, this.logger);
+    this.logger.info(`Install complete. path: ${seleniumServerPath}`);
     this.unitCallback.onInstallCompleted();
   }
 
@@ -104,12 +103,12 @@ export class SeleniumServerExternalUnit extends IExternalUnit {
     this.logger.warn('uninstall not supported');
   }
 
-  async isAgreementNeeded(): Promise<boolean> {
-    const value = await this.appConfigService.getOrDefault('external_is_agreed_selenium_server', false);
+  isAgreementNeeded(): boolean {
+    const value = this.appConfigService.getOrDefault('external_is_agreed_selenium_server', false);
     return !value;
   }
 
-  writeAgreement(value: boolean): Promise<void> {
+  writeAgreement(value: boolean): void {
     return this.appConfigService.set('external_is_agreed_selenium_server', value);
   }
 

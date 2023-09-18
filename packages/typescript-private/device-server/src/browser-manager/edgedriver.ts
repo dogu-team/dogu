@@ -1,5 +1,6 @@
 import { BrowserOrDriverName, BrowserVersion } from '@dogu-private/types';
 import { DeepReadonly, PrefixLogger, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
+import { download } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
 import axios, { AxiosInstance } from 'axios';
 import compressing from 'compressing';
@@ -8,7 +9,7 @@ import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
 import { logger } from '../logger/logger.instance';
-import { defaultVersionRequestTimeout, download, validatePrefixOrPatternWithin } from './common';
+import { defaultVersionRequestTimeout, validatePrefixOrPatternWithin } from './common';
 import { edgeVersionUtils } from './edge';
 import { WebCache } from './web-cache';
 
@@ -241,12 +242,14 @@ export class Edgedriver {
     const parser = new XMLParser();
     const nameUrls: { name: string; url: string }[] = [];
     let marker = '';
+    // eslint-disable-next-line no-constant-condition
     while (true) {
       const url = marker ? `${blobUrl}&marker=${marker}` : blobUrl;
-      const { data } = await this.client.get(url, {
+      const response = await this.client.get(url, {
         timeout,
       });
 
+      const data = response.data as string;
       const blobResult = parser.parse(data) as BlobResult;
       const { Blob } = blobResult.EnumerationResults.Blobs;
       if (Array.isArray(Blob)) {
@@ -547,7 +550,7 @@ export class Edgedriver {
     }
 
     if (!isValidEdgedriverInstallablePlatform(edgedriverPlatform)) {
-      throw new Error(`Invalid edgedriver platform: ${edgedriverPlatform}`);
+      throw new Error(`Invalid edgedriver platform: ${stringify(edgedriverPlatform)}`);
     }
 
     return edgedriverPlatform;
