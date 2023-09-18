@@ -30,15 +30,17 @@ interface DeviceJobInfo {
 export class DeviceJobWindowsProcessRegistry {
   private hostResolutionInfo: HostResolutionInfo | null = null;
   private readonly deviceJobInfos = new Map<string, DeviceJobInfo>();
-  private readonly findWindowsWebSockets = new Map<string, WebSocket>();
+  private readonly findWindowsWebSockets = new Map<string, WebSocket[]>();
   private readonly recordWebSockets = new Map<string, WebSocket>();
 
   constructor(private readonly logger: DoguLogger, private readonly record: DeviceJobRecordingService, private readonly consoleClientService: ConsoleClientService) {}
 
   @OnEvent(OnHostDisconnectedEvent.key)
   onHostDisconnected(value: Instance<typeof OnHostDisconnectedEvent.value>): void {
-    this.findWindowsWebSockets.forEach((webSocket) => {
-      closeWebSocketWithTruncateReason(webSocket, 1001, 'Host disconnected');
+    this.findWindowsWebSockets.forEach((webSockets) => {
+      for (const webSocket of webSockets) {
+        closeWebSocketWithTruncateReason(webSocket, 1001, 'Host disconnected');
+      }
     });
     this.recordWebSockets.forEach((webSocket) => {
       closeWebSocketWithTruncateReason(webSocket, 1001, 'Host disconnected');
@@ -91,9 +93,11 @@ export class DeviceJobWindowsProcessRegistry {
       return;
     }
 
-    const findWindowWebSocket = this.findWindowsWebSockets.get(key);
-    if (findWindowWebSocket) {
-      closeWebSocketWithTruncateReason(findWindowWebSocket, 1000, 'Next step started');
+    const findWindowWebSockets = this.findWindowsWebSockets.get(key);
+    if (findWindowWebSockets) {
+      for (const findWindowWebSocket of findWindowWebSockets) {
+        closeWebSocketWithTruncateReason(findWindowWebSocket, 1000, 'Next step started');
+      }
     }
 
     const newFindWindowsWebSocket = this.record.connectFindWindowsWs(
@@ -119,12 +123,19 @@ export class DeviceJobWindowsProcessRegistry {
           this.recordWebSockets.set(key, recordWebSocket);
         },
         onClose: () => {
-          this.findWindowsWebSockets.delete(key);
+          const findWindowWebSockets = this.findWindowsWebSockets.get(key);
+          if (!findWindowWebSockets) {
+            return;
+          }
+          this.findWindowsWebSockets.set(
+            key,
+            findWindowWebSockets.filter((webSocket) => webSocket !== newFindWindowsWebSocket),
+          );
         },
       },
     );
 
-    this.findWindowsWebSockets.set(key, newFindWindowsWebSocket);
+    this.findWindowsWebSockets.set(key, [newFindWindowsWebSocket]);
   }
 
   @OnEvent(OnDeviceJobCancelRequestedEvent.key)
@@ -151,12 +162,14 @@ export class DeviceJobWindowsProcessRegistry {
   }
 
   private closeKeyFindWindows(comment: string, key: string): void {
-    const webSocket = this.findWindowsWebSockets.get(key);
-    if (!webSocket) {
-      this.logger.warn(`${comment}: findWindows webSocket not found`, { key });
+    const webSockets = this.findWindowsWebSockets.get(key);
+    if (!webSockets) {
+      this.logger.warn(`${comment}: findWindows webSockets not found`, { key });
       return;
     }
-    closeWebSocketWithTruncateReason(webSocket, 1000, 'Completed');
+    for (const webSocket of webSockets) {
+      closeWebSocketWithTruncateReason(webSocket, 1000, 'Completed');
+    }
   }
 
   private closeKeyRecording(comment: string, key: string): void {
