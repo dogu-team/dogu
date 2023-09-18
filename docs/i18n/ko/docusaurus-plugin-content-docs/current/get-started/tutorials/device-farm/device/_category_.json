@@ -1,6 +1,7 @@
 {
   "position": 2,
-  "label": "📱 Device",
+  "label": "Device",
   "collapsible": true,
-  "collapsed": true
+  "collapsed": true,
+  "className": "mobile_sidebar_header"
 }

@@ -1,6 +1,7 @@
 {
   "position": 3,
-  "label": "sidebar.getStartedSidebar.category.🎓 Tutorials",
+  "label": "sidebar.getStartedSidebar.category.Tutorials",
   "collapsible": true,
-  "collapsed": false
+  "collapsed": false,
+  "className": "book_sidebar_header"
 }
