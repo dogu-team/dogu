@@ -1,4 +1,5 @@
-import { FeatureConfigLoader, FeatureConfigService as Impl, FeatureKey, FeatureValue } from '@dogu-private/dogu-agent-core';
+import { FeatureConfigLoader, FeatureConfigService as Impl } from '@dogu-private/dogu-agent-core/app';
+import { FeatureKey, FeatureValue } from '@dogu-private/dogu-agent-core/shares';
 import { app, ipcMain } from 'electron';
 import { featureConfigClientKey } from '../../src/shares/feature-config';
 import { AppConfigService } from '../app-config/app-config-service';

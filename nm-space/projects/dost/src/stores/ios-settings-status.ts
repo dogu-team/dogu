@@ -1,7 +1,7 @@
+import { IosSettingsExternalKey } from '@dogu-private/dogu-agent-core/shares';
 import { useEffect } from 'react';
 import { create } from 'zustand';
 import useManualSetupExternalValidResult, { ManaulSetupExteranlValidResult } from '../hooks/manaul-setup-external-valid-result';
-import { IosSettingsExternalKey } from '../shares/external';
 
 type IosSettingIsValidStatus = ManaulSetupExteranlValidResult[];
 

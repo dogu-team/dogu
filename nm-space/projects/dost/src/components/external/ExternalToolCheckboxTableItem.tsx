@@ -2,8 +2,7 @@ import { CheckCircleIcon, QuestionIcon } from '@chakra-ui/icons';
 import { Checkbox, HStack, Icon, Input, Td, Text, Tooltip, Tr } from '@chakra-ui/react';
 import React from 'react';
 
-import { DotenvConfigKey } from '@dogu-private/dogu-agent-core';
-import { ExternalKey } from '../../shares/external';
+import { DotenvConfigKey, ExternalKey } from '@dogu-private/dogu-agent-core/shares';
 
 interface Props {
   isChecked: boolean;

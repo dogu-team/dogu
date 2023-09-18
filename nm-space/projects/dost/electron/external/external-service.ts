@@ -1,7 +1,16 @@
-import { DotenvConfigKey, DownloadProgress, ExternalLoader, ExternalService as Impl, IExternalUnit, UnitCallbackFactory } from '@dogu-private/dogu-agent-core';
+import {
+  DotenvConfigKey,
+  DownloadProgress,
+  ExternalKey,
+  ExternalService as Impl,
+  ExternalServiceFactory,
+  IExternalUnit,
+  UnitCallbackFactory,
+  ValidationCheckOption,
+} from '@dogu-private/dogu-agent-core/app';
 import { Printable, stringify } from '@dogu-tech/common';
 import { ipcMain } from 'electron';
-import { externalCallbackKey, externalKey, ExternalKey, ValidationCheckOption } from '../../src/shares/external';
+import { externalCallbackKey, externalKey } from '../../src/shares/external';
 import { AppConfigService } from '../app-config/app-config-service';
 import { DotEnvConfigService } from '../dot-env-config/dot-env-config-service';
 import { logger } from '../log/logger.instance';
@@ -40,29 +49,29 @@ export class ExternalService {
 
     const loggerImpl: Printable = {
       error: (message: unknown, details?: Record<string, unknown>) => {
-        stdLogCallbackService.stderr(`[ExternalService] ${message}` + (details ? ` ${stringify(details)}` : ''));
+        stdLogCallbackService.stderr(`${message}` + (details ? ` ${stringify(details)}` : ''));
       },
       warn: (message: unknown, details?: Record<string, unknown>) => {
-        stdLogCallbackService.stdout(`[ExternalService] ${message}` + (details ? ` ${stringify(details)}` : ''));
+        stdLogCallbackService.stdout(`${message}` + (details ? ` ${stringify(details)}` : ''));
       },
       info: (message: unknown, details?: Record<string, unknown>) => {
-        stdLogCallbackService.stdout(`[ExternalService] ${message}` + (details ? ` ${stringify(details)}` : ''));
+        stdLogCallbackService.stdout(`${message}` + (details ? ` ${stringify(details)}` : ''));
       },
       debug: (message: unknown, details?: Record<string, unknown>) => {
-        logger.debug(`[ExternalService] ${message}`, details);
+        logger.debug(`${message}`, details);
       },
       verbose: (message: unknown, details?: Record<string, unknown>) => {
-        logger.verbose(`[ExternalService] ${message}`, details);
+        logger.verbose(`${message}`, details);
       },
     };
 
-    const impl = await new ExternalLoader({
+    const impl = await new ExternalServiceFactory({
       dotenvConfigService: dotenvConfigService.impl,
       appConfigService: appConfigService.impl,
       thirdPartyPathMap: ThirdPartyPathMap,
       unitCallbackFactory,
       logger: loggerImpl,
-    }).load();
+    }).create();
 
     ExternalService.instance = new ExternalService(impl);
     const { instance } = ExternalService;
@@ -128,7 +137,7 @@ export class ExternalService {
   }
 
   private async isSupportedPlatformAgreementNeeded(option: ValidationCheckOption): Promise<boolean> {
-    return await this.isSupportedPlatformAgreementNeeded(option);
+    return await this.impl.isSupportedPlatformAgreementNeeded(option);
   }
 
   async updateIsSupportedPlatformValid(): Promise<boolean> {

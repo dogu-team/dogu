@@ -117,7 +117,7 @@ const cleanup = () => {
   killSelfProcess();
 };
 
-const quitSignalAndEvents = ['beforeExit', 'exit', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGKILL', 'SIGSTOP', 'SIGABRT'];
+const quitSignalAndEvents = ['beforeExit', 'exit', 'SIGINT', 'SIGTERM', 'SIGQUIT', 'SIGABRT'];
 for (const event of quitSignalAndEvents) {
   process.on(event, async (code) => {
     logger.info(`handle ${event}`, { event, code });

@@ -1,4 +1,4 @@
-import { copyiOSDeviceAgentProject, validateiOSDeviceAgentProjectExist } from '@dogu-private/dogu-agent-core';
+import { copyiOSDeviceAgentProject, validateiOSDeviceAgentProjectExist } from '@dogu-private/dogu-agent-core/app';
 import { findEndswith, HostPaths, newCleanNodeEnv } from '@dogu-tech/node';
 import { exec } from 'child_process';
 import compressing from 'compressing';

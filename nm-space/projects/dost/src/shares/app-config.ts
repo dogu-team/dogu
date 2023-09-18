@@ -1,4 +1,4 @@
-import { AppConfigKey, AppConfigSchema } from '@dogu-private/dogu-agent-core';
+import { AppConfigKey, AppConfigSchema } from '@dogu-private/dogu-agent-core/shares';
 import { instanceKeys } from './electron-ipc';
 
 export const appConfigClientKey = instanceKeys<IAppConfigClient>('appConfigClient');

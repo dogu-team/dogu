@@ -4,7 +4,17 @@
   "version": "0.0.1",
   "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
   "author": "Dogu Technologies",
-  "main": "./build/src/index.js",
+  "exports": {
+    "./app": {
+      "types": "./build/src/index.d.ts",
+      "default": "./build/src/index.js"
+    },
+    "./shares": {
+      "types": "./build/src/shares/index.d.ts",
+      "default": "./build/src/shares/index.js"
+    }
+  },
+  "main": "./build/src/app/index.js",
   "scripts": {
     "build": "tsc -b",
     "clean": "shx rm -rf build",
@@ -13,16 +23,22 @@
     "test": "jest",
     "watch": "clear; echo @dogu-private/dogu-agent-core Watching... && nodemon"
   },
-  "types": "./build/src/index.d.ts",
+  "types": "./build/src/app/index.d.ts",
   "dependencies": {
+    "@dogu-private/device-server": "workspace:^",
     "@dogu-private/dost-children": "workspace:^",
+    "@dogu-private/env-tools": "workspace:^",
+    "@dogu-private/host-agent": "workspace:^",
     "@dogu-tech/common": "workspace:^",
     "@dogu-tech/node": "workspace:^",
     "@dogu-tech/types": "workspace:^",
+    "axios": "1.3.5",
     "compressing": "1.10.0",
     "dotenv": "16.3.1",
     "electron-store": "8.1.0",
+    "find-free-ports": "3.1.1",
     "lodash": "4.17.21",
+    "pidtree": "0.6.0",
     "shelljs": "0.8.5"
   },
   "devDependencies": {

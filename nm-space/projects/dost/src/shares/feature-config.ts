@@ -1,4 +1,4 @@
-import { FeatureKey, FeatureValue } from '@dogu-private/dogu-agent-core';
+import { FeatureKey, FeatureValue } from '@dogu-private/dogu-agent-core/shares';
 import { instanceKeys } from './electron-ipc';
 
 export const featureConfigClientKey = instanceKeys<IFeatureConfigClient>('featureConfigClient');

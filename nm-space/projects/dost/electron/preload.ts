@@ -1,11 +1,11 @@
-import { DotenvConfigKey, DownloadProgress, FeatureKey } from '@dogu-private/dogu-agent-core';
+import { DotenvConfigKey, DownloadProgress, ExternalKey, FeatureKey, ValidationCheckOption } from '@dogu-private/dogu-agent-core/shares';
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { appConfigClientKey } from '../src/shares/app-config';
 import { childCallbackKey, childClientKey, ChildTree, HostAgentConnectionStatus, Key } from '../src/shares/child';
 import { deviceLookupClientKey } from '../src/shares/device-lookup';
 import { dotenvConfigClientKey } from '../src/shares/dotenv-config';
 import { IElectronIpc } from '../src/shares/electron-ipc';
-import { externalCallbackKey, ExternalKey, externalKey, ValidationCheckOption } from '../src/shares/external';
+import { externalCallbackKey, externalKey } from '../src/shares/external';
 import { featureConfigClientKey } from '../src/shares/feature-config';
 import { rendererLoggerKey, stdLogCallbackKey } from '../src/shares/log';
 import { servicesOpenStatusClientKey } from '../src/shares/services-open-status';

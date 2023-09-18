@@ -1,4 +1,5 @@
-import { AppConfigKey, AppConfigLoader, AppConfigService as Impl } from '@dogu-private/dogu-agent-core';
+import { AppConfigLoader, AppConfigService as Impl } from '@dogu-private/dogu-agent-core/app';
+import { AppConfigKey } from '@dogu-private/dogu-agent-core/shares';
 import { app, ipcMain } from 'electron';
 import isDev from 'electron-is-dev';
 import { appConfigClientKey } from '../../src/shares/app-config';

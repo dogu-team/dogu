@@ -1,4 +1,5 @@
 import { Button, Center, Divider, Flex, List, Spacer, Stack, Switch, Text, useDisclosure } from '@chakra-ui/react';
+import { ExternalKey, ExternalValidationResult } from '@dogu-private/dogu-agent-core/shares';
 import { stringify } from '@dogu-tech/common';
 import { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -8,7 +9,6 @@ import BorderBox from '../components/layouts/BorderBox';
 import PageTitle from '../components/layouts/PageTitle';
 import { RestartAlert } from '../components/overlays/RestartAlert';
 import { DoguDocsDeviceFarmIosSettingsUrl } from '../shares/constants';
-import { ExternalKey, ExternalValidationResult } from '../shares/external';
 import useIosSettingsStatus from '../stores/ios-settings-status';
 import { ipc } from '../utils/window';
 

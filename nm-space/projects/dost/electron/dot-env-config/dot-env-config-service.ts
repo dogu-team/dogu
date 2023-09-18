@@ -1,4 +1,4 @@
-import { DotenvConfigKey, DotenvConfigLoader, DotenvConfigService as Impl } from '@dogu-private/dogu-agent-core';
+import { DotenvConfigKey, DotenvConfigLoader, DotenvConfigService as Impl } from '@dogu-private/dogu-agent-core/app';
 import { ipcMain } from 'electron';
 import { dotenvConfigClientKey } from '../../src/shares/dotenv-config';
 import { AppConfigService } from '../app-config/app-config-service';

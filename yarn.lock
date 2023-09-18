@@ -4974,7 +4974,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@dogu-private/dogu-agent-core@workspace:packages/typescript-private/dogu-agent-core"
   dependencies:
+    "@dogu-private/device-server": "workspace:^"
     "@dogu-private/dost-children": "workspace:^"
+    "@dogu-private/env-tools": "workspace:^"
+    "@dogu-private/host-agent": "workspace:^"
     "@dogu-tech/common": "workspace:^"
     "@dogu-tech/node": "workspace:^"
     "@dogu-tech/types": "workspace:^"
@@ -4982,12 +4985,15 @@ __metadata:
     "@types/lodash": 4
     "@types/node": 18.15.11
     "@types/shelljs": 0
+    axios: ^1.5.0
     compressing: 1.10.0
     dotenv: 16.3.1
     electron-store: 8.1.0
+    find-free-ports: 3.1.1
     jest: 29.6.1
     lodash: 4.17.21
     nodemon: 2.0.22
+    pidtree: 0.6.0
     shelljs: 0.8.5
     shx: 0.3.4
     ts-jest: 29.1.1
@@ -19251,6 +19257,13 @@ __metadata:
   version: 3.0.0
   resolution: "find-free-ports@npm:3.0.0"
   checksum: faffd16f2e65f9ed4dee9c3fa1affc1df76d3a424f72b21ba13bd49f831d61081e190f98123efb3b87d4ca03c8d7798da03a199d510f3d137bea4abec2c92df6
+  languageName: node
+  linkType: hard
+
+"find-free-ports@npm:3.1.1":
+  version: 3.1.1
+  resolution: "find-free-ports@npm:3.1.1"
+  checksum: e9e6296c79e8a60c7f6a7c282191f676ac0bd07e7024273179c62563b83245c1a966cef9226ffe4303f1e8ec1475a1c12c71aa577173454239f8e2680b8b5a7a
   languageName: node
   linkType: hard
 

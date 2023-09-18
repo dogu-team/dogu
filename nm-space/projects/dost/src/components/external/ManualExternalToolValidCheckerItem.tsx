@@ -1,10 +1,10 @@
 import { CheckCircleIcon, QuestionIcon, QuestionOutlineIcon } from '@chakra-ui/icons';
 import { Button, Flex, Icon, Popover, PopoverArrow, PopoverBody, PopoverContent, Text, Tooltip, useToast } from '@chakra-ui/react';
+import { ExternalKey, ExternalValidationResult } from '@dogu-private/dogu-agent-core/shares';
 import { stringify } from '@dogu-tech/common';
 import { useState, createContext } from 'react';
 import styled from 'styled-components';
 
-import { ExternalKey, ExternalValidationResult } from '../../shares/external';
 import { ipc } from '../../utils/window';
 import BorderBox from '../layouts/BorderBox';
 import { manualExternalToolDetail } from './ManualExternalToolDetail';

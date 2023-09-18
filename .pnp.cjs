@@ -11192,7 +11192,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./packages/typescript-private/dogu-agent-core/",\
           "packageDependencies": [\
             ["@dogu-private/dogu-agent-core", "workspace:packages/typescript-private/dogu-agent-core"],\
+            ["@dogu-private/device-server", "workspace:packages/typescript-private/device-server"],\
             ["@dogu-private/dost-children", "workspace:packages/typescript-private/dost-children"],\
+            ["@dogu-private/env-tools", "workspace:packages/typescript-private/env-tools"],\
+            ["@dogu-private/host-agent", "workspace:packages/typescript-private/host-agent"],\
             ["@dogu-tech/common", "workspace:packages/typescript/common"],\
             ["@dogu-tech/node", "workspace:packages/typescript/node"],\
             ["@dogu-tech/types", "workspace:packages/typescript/types"],\
@@ -11200,12 +11203,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/lodash", "npm:4.14.195"],\
             ["@types/node", "npm:18.15.11"],\
             ["@types/shelljs", "npm:0.8.12"],\
+            ["axios", "npm:1.5.0"],\
             ["compressing", "npm:1.10.0"],\
             ["dotenv", "npm:16.3.1"],\
             ["electron-store", "npm:8.1.0"],\
+            ["find-free-ports", "npm:3.1.1"],\
             ["jest", "virtual:b2489bbc0216283d7687523442dd6b04aeaedb71246257f8a0a0e6ae86307b18dca708146dd0f430b02186348d070ef7e31b7b07c55f7aabad66d13be5ae7e15#npm:29.6.1"],\
             ["lodash", "npm:4.17.21"],\
             ["nodemon", "npm:2.0.22"],\
+            ["pidtree", "npm:0.6.0"],\
             ["shelljs", "npm:0.8.5"],\
             ["shx", "npm:0.3.4"],\
             ["ts-jest", "virtual:b2489bbc0216283d7687523442dd6b04aeaedb71246257f8a0a0e6ae86307b18dca708146dd0f430b02186348d070ef7e31b7b07c55f7aabad66d13be5ae7e15#npm:29.1.1"],\
@@ -29546,6 +29552,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/find-free-ports-npm-3.0.0-ea346e89d2-faffd16f2e.zip/node_modules/find-free-ports/",\
           "packageDependencies": [\
             ["find-free-ports", "npm:3.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:3.1.1", {\
+          "packageLocation": "./.yarn/cache/find-free-ports-npm-3.1.1-9468a40788-e9e6296c79.zip/node_modules/find-free-ports/",\
+          "packageDependencies": [\
+            ["find-free-ports", "npm:3.1.1"]\
           ],\
           "linkType": "HARD"\
         }]\

@@ -6,7 +6,8 @@
     "baseUrl": "../",
     "outDir": "../build",
     "incremental": true,
-    "removeComments": true
+    "removeComments": true,
+    "moduleResolution": "Node16"
   },
   "include": ["**/*.ts", "../src/shares"]
 }

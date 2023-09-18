@@ -1,11 +1,9 @@
 import { Table, TableContainer, Tbody, Th, Thead, Tr } from '@chakra-ui/react';
+import { ExternalKey } from '@dogu-private/dogu-agent-core/shares';
 import { stringify } from '@dogu-tech/common';
 
 import { ExternalToolInfo } from '../../hooks/platform-supported-external-info';
-import { ExternalKey } from '../../shares/external';
 import ExternalToolCheckboxItem from './ExternalToolCheckboxTableItem';
-
-// type ExternalToolInfo = { key: ExternalKey; name: string; envs: { key: DotEnvConfigKey; value: string }[]; result: ExternalValidationResult };
 
 interface Props {
   checkedEnvKeys: ExternalKey[];

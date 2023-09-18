@@ -1,4 +1,4 @@
-import { FeatureTable } from '@dogu-private/dogu-agent-core';
+import { FeatureTable } from '@dogu-private/dogu-agent-core/shares';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { AppConfigTable } from '../shares/app-config';
