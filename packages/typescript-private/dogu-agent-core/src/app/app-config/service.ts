@@ -1,19 +1,17 @@
-import Store from 'electron-store';
+import Conf from 'conf';
 import { AppConfigKey, AppConfigSchema } from '../../shares/app-config';
 
-export type Client = Store<AppConfigSchema>;
+export type Client = Conf<AppConfigSchema>;
 
 export interface AppConfigServiceOptions {
-  isDev: boolean;
+  enableOpenInEditor: boolean;
   client: Client;
 }
 
 export class AppConfigService {
-  private readonly isDev: boolean;
   readonly client: Readonly<Client>;
 
   constructor(options: AppConfigServiceOptions) {
-    this.isDev = options.isDev;
     this.client = options.client;
   }
 
@@ -31,11 +29,5 @@ export class AppConfigService {
 
   delete(key: AppConfigKey): void {
     this.client.delete(key);
-  }
-
-  openJsonConfig(): void {
-    if (this.isDev) {
-      this.client.openInEditor();
-    }
   }
 }

@@ -1,33 +1,20 @@
 #!/usr/bin/env node
 
-import { hideBin } from 'yargs/helpers';
-import yargs from 'yargs/yargs';
+import { Command } from '@commander-js/extra-typings';
+import { run } from './commands/run';
 
-const args = hideBin(process.argv);
-yargs(args)
-  .command(
-    'run',
-    'run Dogu Agent',
-    (yargs) => {
-      return yargs
-        .option('url', {
-          type: 'string',
-          description: 'Dogu API URL',
-          demandOption: true,
-        })
-        .option('token', {
-          type: 'string',
-          description: 'Dogu Host Token',
-          demandOption: true,
-        });
-    },
-    (argv) => {
-      const { url, token } = argv;
-      console.log(`url: ${url}`);
-      console.log(`token: ${token}`);
-    },
-  )
-  .strictCommands()
-  .demandCommand(1)
-  .scriptName('dogu-agent')
-  .parse();
+const program = new Command();
+
+program.name('dogu-agent').description('Dogu Agent CLI').version('0.8.0');
+
+program
+  .command('run')
+  .description('run Dogu Agent')
+  .requiredOption('--url <url>', 'Dogu API URL')
+  .requiredOption('--token <token>', 'Dogu Host Token')
+  .action(async (options) => {
+    const { url, token } = options;
+    await run(url, token);
+  });
+
+program.parse();

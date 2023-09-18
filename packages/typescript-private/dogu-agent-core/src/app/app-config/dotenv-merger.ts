@@ -25,13 +25,12 @@ async function findDotenvFileInSearchPaths(searchPaths: string[], fileName: stri
 }
 
 export interface DotEnvMergerOptions {
-  isDev: boolean;
-  resourcesPath: string;
+  dotenvSearchPaths: string[];
   additionalDotenvInfos?: DotenvInfo[];
 }
 
 export class DotenvMerger {
-  private readonly searchPaths: string[] = [];
+  private readonly dotenvSearchPaths: string[];
   private readonly dotenvInfos: DotenvInfo[] = [
     {
       fileName: '.env.device-server',
@@ -44,20 +43,16 @@ export class DotenvMerger {
   ];
 
   constructor(options: DotEnvMergerOptions) {
-    const { isDev, resourcesPath } = options;
-    if (isDev) {
-      this.searchPaths.push(process.cwd());
-    }
-    this.searchPaths.push(path.resolve(resourcesPath, 'dotenv'));
+    this.dotenvSearchPaths = options.dotenvSearchPaths;
     if (options.additionalDotenvInfos) {
       this.dotenvInfos.push(...options.additionalDotenvInfos);
     }
   }
 
   async find(key: string, logger: Logger): Promise<string | null> {
-    const { searchPaths, dotenvInfos } = this;
+    const { dotenvSearchPaths, dotenvInfos } = this;
     for (const { fileName } of dotenvInfos) {
-      const found = await findDotenvFileInSearchPaths(searchPaths, fileName, logger);
+      const found = await findDotenvFileInSearchPaths(dotenvSearchPaths, fileName, logger);
       if (found) {
         const content = await fs.promises.readFile(found, { encoding: 'utf8' });
         const parsed = dotenv.parse(content);
@@ -70,9 +65,9 @@ export class DotenvMerger {
   }
 
   async merge(appConfigService: AppConfigService, logger: Logger): Promise<void> {
-    const { searchPaths, dotenvInfos } = this;
+    const { dotenvSearchPaths, dotenvInfos } = this;
     for (const { fileName, classConstructor } of dotenvInfos) {
-      const found = await findDotenvFileInSearchPaths(searchPaths, fileName, logger);
+      const found = await findDotenvFileInSearchPaths(dotenvSearchPaths, fileName, logger);
       if (!found) {
         throw new Error(`file not found: ${fileName}`);
       }

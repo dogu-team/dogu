@@ -1,5 +1,5 @@
 import { Logger } from '@dogu-tech/node';
-import Store from 'electron-store';
+import Conf from 'conf';
 import fs from 'fs';
 import _ from 'lodash';
 import path from 'path';
@@ -42,14 +42,13 @@ export class AppConfigLoader {
   async load(): Promise<AppConfigService> {
     const { options } = this;
     const { appName, configsPath, logger } = this.options;
-    Store.initRenderer();
 
     const dotenvMerger = new DotenvMerger(options);
     await clearConfigsIfInvalid(dotenvMerger, configsPath, appName, logger);
 
     const appNameResolved = resolveAppName(appName);
-    const client = new Store<AppConfigSchema>({
-      name: appNameResolved,
+    const client = new Conf<AppConfigSchema>({
+      configName: appNameResolved,
       schema: AppConfigSchema,
       accessPropertiesByDotNotation: false,
       cwd: configsPath,

@@ -2,6 +2,7 @@ import { AppConfigLoader, AppConfigService as Impl } from '@dogu-private/dogu-ag
 import { AppConfigKey } from '@dogu-private/dogu-agent-core/shares';
 import { app, ipcMain } from 'electron';
 import isDev from 'electron-is-dev';
+import path from 'path';
 import { appConfigClientKey } from '../../src/shares/app-config';
 import { logger } from '../log/logger.instance';
 import { ConfigsPath } from '../path-map';
@@ -10,12 +11,18 @@ export class AppConfigService {
   static instance: AppConfigService;
 
   static async open(): Promise<void> {
+    const dotenvSearchPaths: string[] = [];
+    if (isDev) {
+      dotenvSearchPaths.push(process.cwd());
+    }
+    dotenvSearchPaths.push(path.resolve(process.resourcesPath, 'dotenv'));
+
     const impl = await new AppConfigLoader({
       appName: app.name,
       configsPath: ConfigsPath,
-      isDev,
-      resourcesPath: process.resourcesPath,
+      dotenvSearchPaths,
       logger,
+      enableOpenInEditor: isDev,
     }).load();
 
     AppConfigService.instance = new AppConfigService(impl);
@@ -42,9 +49,5 @@ export class AppConfigService {
 
   async delete(key: AppConfigKey): Promise<void> {
     this.impl.delete(key);
-  }
-
-  openJsonConfig(): void {
-    this.impl.openJsonConfig();
   }
 }

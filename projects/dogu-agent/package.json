@@ -14,14 +14,15 @@
   },
   "types": "./build/src/cli.d.ts",
   "dependencies": {
+    "@commander-js/extra-typings": "^11.0.0",
+    "@dogu-private/dogu-agent-core": "workspace:^",
     "@dogu-tech/node": "workspace:^",
-    "lodash": "4.17.21",
-    "yargs": "17.7.2"
+    "commander": "11.0.0",
+    "lodash": "4.17.21"
   },
   "devDependencies": {
     "@types/lodash": "4",
     "@types/node": "18.15.11",
-    "@types/yargs": "17",
     "cross-env": "7.0.3",
     "nodemon": "2.0.22",
     "shx": "0.3.4",

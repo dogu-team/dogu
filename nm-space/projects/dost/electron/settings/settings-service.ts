@@ -34,7 +34,6 @@ export class SettingsService {
     ipcMain.handle(settingsClientKey.setSecureKeyboardEntryEnabled, (_, enabled: boolean) => {
       app.setSecureKeyboardEntryEnabled(enabled);
     });
-    ipcMain.handle(settingsClientKey.openJsonConfig, () => AppConfigService.instance.openJsonConfig());
     ipcMain.handle(settingsClientKey.openWritableDirectory, () => this.openWritableDirectory());
     ipcMain.handle(settingsClientKey.openExternal, (_, url: string) => shell.openExternal(url));
 
