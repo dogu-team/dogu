@@ -1,5 +1,5 @@
 import { errorify, Printable } from '@dogu-tech/common';
-import { ThirdPartyPathMap } from '@dogu-tech/types';
+import { categoryFromPlatform, isValidPlatformType, PlatformType, ThirdPartyPathMap } from '@dogu-tech/types';
 import { setInterval } from 'timers/promises';
 import { DotenvConfigKey } from '../../shares/dotenv-config';
 import { ExternalKey, ValidationCheckOption } from '../../shares/external';
@@ -41,30 +41,58 @@ export class ExternalService {
     this.thirdPartyPathMap = options.thirdPartyPathMap;
     this.unitCallbackFactory = options.unitCallbackFactory;
     this.logger = options.logger;
-    this.registerUnits();
+
+    const platformTypes = this.appConfigService
+      .getOrDefault('DOGU_DEVICE_PLATFORM_ENABLED', '')
+      .split(',')
+      .map((platformType) => {
+        if (isValidPlatformType(platformType)) {
+          return platformType;
+        }
+        throw new Error(`invalid platform type found. platformType: ${platformType}`);
+      });
+    this.registerUnits(platformTypes);
   }
 
-  private registerUnits(): void {
-    this.registerUnit('jdk', (unitCallback) => new JdkExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.logger));
-    this.registerUnit('android-sdk', (unitCallback) => new AndroidSdkExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.logger));
-    this.registerUnit('appium', (unitCallback) => new AppiumExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.thirdPartyPathMap, this.logger));
-    this.registerUnit(
-      'appium-uiautomator2-driver',
-      (unitCallback) => new AppiumUiAutomator2DriverExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.thirdPartyPathMap, this.logger),
-    );
-    this.registerUnit('xcode', () => new XcodeExternalUnit(this.logger));
-    this.registerUnit(
-      'appium-xcuitest-driver',
-      (unitCallback) => new AppiumXcUiTestDriverExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.thirdPartyPathMap, this.logger),
-    );
-    this.registerUnit('libimobiledevice', (unitCallback) => new LibimobledeviceExternalUnit(this.appConfigService, unitCallback, this.logger));
-    this.registerUnit('web-driver-agent-build', () => new WdaBuildExternalUnit(this.logger));
-    this.registerUnit('ios-device-agent-build', () => new IdaBuildExternalUnit(this.logger));
-    this.registerUnit('gecko-driver', (unitCallback) => new GeckoDriverExternalUnit(this.appConfigService, unitCallback, this.logger));
-    this.registerUnit('selenium-server', (unitCallback) => new SeleniumServerExternalUnit(this.appConfigService, unitCallback, this.logger));
+  /**
+   * @note register order is important
+   */
+  private registerUnits(platformTypes: PlatformType[]): void {
+    if (platformTypes.includes('android')) {
+      this.registerUnit('jdk', (unitCallback) => new JdkExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.logger));
+      this.registerUnit('android-sdk', (unitCallback) => new AndroidSdkExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.logger));
+    }
+
+    if (platformTypes.some((platformType) => categoryFromPlatform(platformType) === 'mobile')) {
+      this.registerUnit('appium', (unitCallback) => new AppiumExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.thirdPartyPathMap, this.logger));
+    }
+
+    if (platformTypes.includes('android')) {
+      this.registerUnit(
+        'appium-uiautomator2-driver',
+        (unitCallback) => new AppiumUiAutomator2DriverExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.thirdPartyPathMap, this.logger),
+      );
+    }
+
+    if (platformTypes.includes('ios')) {
+      this.registerUnit('xcode', () => new XcodeExternalUnit(this.logger));
+      this.registerUnit(
+        'appium-xcuitest-driver',
+        (unitCallback) => new AppiumXcUiTestDriverExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.thirdPartyPathMap, this.logger),
+      );
+      this.registerUnit('libimobiledevice', (unitCallback) => new LibimobledeviceExternalUnit(this.appConfigService, unitCallback, this.logger));
+      this.registerUnit('web-driver-agent-build', () => new WdaBuildExternalUnit(this.logger));
+      this.registerUnit('ios-device-agent-build', () => new IdaBuildExternalUnit(this.logger));
+    }
+
+    if (platformTypes.some((platformType) => categoryFromPlatform(platformType) === 'desktop')) {
+      this.registerUnit('gecko-driver', (unitCallback) => new GeckoDriverExternalUnit(this.appConfigService, unitCallback, this.logger));
+      this.registerUnit('selenium-server', (unitCallback) => new SeleniumServerExternalUnit(this.appConfigService, unitCallback, this.logger));
+    }
   }
 
   private registerUnit(key: ExternalKey, onRegister: (unitCallback: ExternalUnitCallback) => IExternalUnit): void {
+    this.logger.info(`register external tool unit. key: ${key}`);
     const unit = onRegister(this.unitCallbackFactory(key));
     this.units.set(key, unit);
   }

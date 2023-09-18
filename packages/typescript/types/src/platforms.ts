@@ -1,6 +1,6 @@
 import { Platform } from './protocol/generated/tsproto/outer/platform';
 
-export const PlatformType = ['unspecified', 'android', 'ios', 'macos', 'windows', 'ps4', 'xbox'] as const;
+export const PlatformType = ['unspecified', 'android', 'ios', 'macos', 'windows', 'linux', 'ps4', 'xbox'] as const;
 export type PlatformType = (typeof PlatformType)[number];
 export const isValidPlatformType = (platform: string): platform is PlatformType => PlatformType.includes(platform as PlatformType);
 
@@ -24,6 +24,7 @@ export function validateMaxParallelJobs(platform: Platform, maxParallelJobs: num
     }
     case Platform.PLATFORM_MACOS:
     case Platform.PLATFORM_WINDOWS:
+    case Platform.PLATFORM_LINUX:
       return true;
     default:
       throw new Error(`Invalid platform: ${platform}`);
@@ -37,6 +38,7 @@ export function categoryFromPlatform(platform: PlatformType): PlatformCategory {
       return 'mobile';
     case 'macos':
     case 'windows':
+    case 'linux':
       return 'desktop';
     case 'ps4':
     case 'xbox':
@@ -56,6 +58,8 @@ export function platformTypeFromPlatform(platform: Platform): PlatformType {
       return 'macos';
     case Platform.PLATFORM_WINDOWS:
       return 'windows';
+    case Platform.PLATFORM_LINUX:
+      return 'linux';
     case Platform.PLATFORM_PS4:
       return 'ps4';
     case Platform.PLATFORM_XBOX:
@@ -75,6 +79,8 @@ export function platformFromPlatformType(platform: PlatformType): Platform {
       return Platform.PLATFORM_MACOS;
     case 'windows':
       return Platform.PLATFORM_WINDOWS;
+    case 'linux':
+      return Platform.PLATFORM_LINUX;
     case 'ps4':
       return Platform.PLATFORM_PS4;
     case 'xbox':

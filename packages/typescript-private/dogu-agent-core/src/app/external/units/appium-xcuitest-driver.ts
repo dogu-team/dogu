@@ -126,7 +126,6 @@ export class AppiumXcUiTestDriverExternalUnit extends IExternalUnit {
             return;
           }
           this.logger.info(message);
-          this.logger.info(message);
         });
         child.stderr.setEncoding('utf8');
         child.stderr.on('data', (data) => {
@@ -135,7 +134,6 @@ export class AppiumXcUiTestDriverExternalUnit extends IExternalUnit {
             return;
           }
           this.logger.error(message);
-          this.logger.warn(message);
         });
       });
     });

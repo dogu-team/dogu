@@ -4,7 +4,6 @@ import { AppConfigKey, AppConfigSchema } from '../../shares/app-config';
 export type Client = Conf<AppConfigSchema>;
 
 export interface AppConfigServiceOptions {
-  enableOpenInEditor: boolean;
   client: Client;
 }
 

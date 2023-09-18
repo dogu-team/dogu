@@ -72,6 +72,7 @@ export class ExternalService {
       unitCallbackFactory,
       logger: loggerImpl,
     }).create();
+    impl.startLoopUpdateIsSupportedPlatformValid();
 
     ExternalService.instance = new ExternalService(impl);
     const { instance } = ExternalService;

@@ -20,7 +20,6 @@ export class ExternalServiceFactory {
     const service = new ExternalService(this.options);
     await service.validateSupportedPlatform();
     await service.updateIsSupportedPlatformValid();
-    service.startLoopUpdateIsSupportedPlatformValid();
     return service;
   }
 }
