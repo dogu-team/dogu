@@ -45,6 +45,7 @@ import HostDeviceRunnerSettingModal from '../../../enterprise/components/device/
 import { isDesktop } from '../../utils/device';
 import useOrganizationContext from '../../hooks/context/useOrganizationContext';
 import DeviceCounter from './DeviceCounter';
+import DeviceRunnerItem from './DeviceRuunerItem';
 
 interface DeviceItemProps {
   device: DeviceBase;
@@ -164,7 +165,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
 
   return (
     <>
-      <Item key={`device-${device.deviceId}`}>
+      <Item key={`device-${device.deviceId}`} style={{ flexDirection: 'column' }}>
         <DeviceItemInner>
           <NameCell>
             <DeviceName device={device} onClick={handleClickDetail} />
@@ -199,6 +200,15 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
             </FlexSpaceBetweenBox>
           </InfoCell>
         </DeviceItemInner>
+        {isDesktop(device) && (
+          <RunnerWrapper>
+            {device.deviceRunners?.map((runner, index) => {
+              return (
+                <DeviceRunnerItem key={`device-runner-${runner.deviceRunnerId}`} runner={runner} index={index + 1} />
+              );
+            })}
+          </RunnerWrapper>
+        )}
       </Item>
 
       <DeviceSettingModal device={device} isOpen={isDeviceSettingModalOpen} close={closeDeviceSettingModal} />
@@ -383,4 +393,8 @@ const PrimaryLinkButton = styled(Link)<{ disabled: boolean }>`
     background-color: ${(props) => (props.disabled ? '#0000000a' : props.theme.colorPrimary)};
     color: ${(props) => (props.disabled ? '#00000040' : '#fff')} !important;
   }
+`;
+
+const RunnerWrapper = styled.div`
+  padding-left: 1rem;
 `;

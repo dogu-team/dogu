@@ -23,6 +23,7 @@ import useEventStore from '../../stores/events';
 import { isDesktop } from '../../utils/device';
 import HostDeviceRunnerSettingModal from '../../../enterprise/components/device/HostDeviceRunnerSettingModal';
 import DeviceCounter from './DeviceCounter';
+import DeviceRunnerItem from './DeviceRuunerItem';
 
 interface DeviceItemProps {
   device: DeviceBase;
@@ -78,7 +79,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
 
   return (
     <>
-      <Item>
+      <Item style={{ flexDirection: 'column' }}>
         <FlexRowBase>
           <NameCell>
             <DevicePrefixTag device={device} />
@@ -104,6 +105,21 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
             </FlexRowEnd>
           </MenuCell>
         </FlexRowBase>
+
+        {isDesktop(device) && (
+          <RunnerWrapper>
+            {device.deviceRunners?.map((runner, index) => {
+              return (
+                <DeviceRunnerItem
+                  key={`device-runner-${runner.deviceRunnerId}`}
+                  runner={runner}
+                  index={index + 1}
+                  hideStatus
+                />
+              );
+            })}
+          </RunnerWrapper>
+        )}
       </Item>
 
       <EditDeviceProjectModal
@@ -266,4 +282,8 @@ const EmptyDescriptionList = styled.ol`
 
 const EmptyDescriptionListItem = styled.li`
   list-style-type: decimal;
+`;
+
+const RunnerWrapper = styled.div`
+  padding-left: 1rem;
 `;

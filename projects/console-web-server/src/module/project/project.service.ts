@@ -380,6 +380,7 @@ export class ProjectService {
       })
       .leftJoinAndSelect(`device.${DevicePropCamel.projects}`, 'project')
       .innerJoinAndSelect(`device.${DevicePropSnake.host}`, 'host')
+      .leftJoinAndSelect(`device.${DevicePropCamel.deviceRunners}`, 'deviceRunner')
       .orderBy(`device.${DevicePropCamel.connectionState}`, 'DESC')
       .addOrderBy(`device.${DevicePropCamel.name}`, 'ASC')
       .take(dto.getDBLimit())
