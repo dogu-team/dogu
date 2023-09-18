@@ -1,6 +1,6 @@
-import { DotEnvConfigKey, DotEnvConfigLoader, DotEnvConfigService as Impl } from '@dogu-private/dogu-agent-core';
+import { DotenvConfigKey, DotenvConfigLoader, DotenvConfigService as Impl } from '@dogu-private/dogu-agent-core';
 import { ipcMain } from 'electron';
-import { dotEnvConfigClientKey } from '../../src/shares/dot-env-config';
+import { dotenvConfigClientKey } from '../../src/shares/dotenv-config';
 import { AppConfigService } from '../app-config/app-config-service';
 import { logger } from '../log/logger.instance';
 import { ConfigsPath } from '../path-map';
@@ -11,7 +11,7 @@ export class DotEnvConfigService {
   private constructor(readonly impl: Impl) {}
 
   static async open(appConfigService: AppConfigService): Promise<void> {
-    const impl = await new DotEnvConfigLoader({
+    const impl = await new DotenvConfigLoader({
       appConfigService: appConfigService.impl,
       configsPath: ConfigsPath,
       logger,
@@ -19,20 +19,20 @@ export class DotEnvConfigService {
 
     DotEnvConfigService.instance = new DotEnvConfigService(impl);
     const { instance } = DotEnvConfigService;
-    ipcMain.handle(dotEnvConfigClientKey.set, async (_, key: DotEnvConfigKey, value: string) => instance.write(key, value));
-    ipcMain.handle(dotEnvConfigClientKey.get, (_, key: DotEnvConfigKey) => instance.get(key));
-    ipcMain.handle(dotEnvConfigClientKey.getDotEnvConfigPath, () => instance.getDotEnvConfigPath());
+    ipcMain.handle(dotenvConfigClientKey.set, async (_, key: DotenvConfigKey, value: string) => instance.write(key, value));
+    ipcMain.handle(dotenvConfigClientKey.get, (_, key: DotenvConfigKey) => instance.get(key));
+    ipcMain.handle(dotenvConfigClientKey.getDotenvConfigPath, () => instance.getDotenvConfigPath());
   }
 
-  getDotEnvConfigPath(): string {
-    return this.impl.getDotEnvConfigPath();
+  getDotenvConfigPath(): string {
+    return this.impl.getDotenvConfigPath();
   }
 
-  get(key: DotEnvConfigKey): string | undefined {
+  get(key: DotenvConfigKey): string | undefined {
     return this.impl.get(key);
   }
 
-  async write(key: DotEnvConfigKey, value: string): Promise<void> {
+  async write(key: DotenvConfigKey, value: string): Promise<void> {
     await this.impl.write(key, value);
   }
 }

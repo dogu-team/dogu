@@ -4,12 +4,12 @@ import path from 'path';
 
 const ConfigFileName = 'feature.config.json';
 
-function getRootConfigPath(configDir: string): string {
-  return path.resolve(configDir, ConfigFileName);
+function getRootConfigPath(configDirPath: string): string {
+  return path.resolve(configDirPath, ConfigFileName);
 }
 
-function getRunTypeConfigPath(configDir: string, runType: string): string {
-  return path.resolve(configDir, 'features', `${runType}.${ConfigFileName}`);
+function getRunTypeConfigPath(configDirPath: string, runType: string): string {
+  return path.resolve(configDirPath, 'features', `${runType}.${ConfigFileName}`);
 }
 
 function createFeatureConfigFileNotFoundError(...paths: string[]): Error {
@@ -29,13 +29,13 @@ function parseConfig<T>(filePath: string, content: string, printable: Printable)
   }
 }
 
-export function loadFeatureConfigSync<T>(doguRunType: string, printable: Printable, configDir: string = process.cwd()): FeatureConfig<T> {
-  const rootConfigPath = getRootConfigPath(configDir);
+export function loadFeatureConfigSync<T>(doguRunType: string, printable: Printable, configDirPath: string = process.cwd()): FeatureConfig<T> {
+  const rootConfigPath = getRootConfigPath(configDirPath);
   if (fs.existsSync(rootConfigPath)) {
     const content = fs.readFileSync(rootConfigPath, 'utf8');
     return parseConfig<T>(rootConfigPath, content, printable);
   } else {
-    const runTypeConfigPath = getRunTypeConfigPath(configDir, doguRunType);
+    const runTypeConfigPath = getRunTypeConfigPath(configDirPath, doguRunType);
     if (!fs.existsSync(runTypeConfigPath)) {
       throw createFeatureConfigFileNotFoundError(rootConfigPath, runTypeConfigPath);
     }
@@ -44,7 +44,7 @@ export function loadFeatureConfigSync<T>(doguRunType: string, printable: Printab
   }
 }
 
-export async function loadFeatureConfig<T>(doguRunType: string, printable: Printable, configDir: string = process.cwd()): Promise<FeatureConfig<T>> {
+export async function loadFeatureConfig<T>(doguRunType: string, printable: Printable, configDirPath: string = process.cwd()): Promise<FeatureConfig<T>> {
   const isExist = async (path: string): Promise<boolean> => {
     return fs.promises
       .stat(path)
@@ -54,12 +54,12 @@ export async function loadFeatureConfig<T>(doguRunType: string, printable: Print
       .catch(() => false);
   };
 
-  const rootConfigPath = getRootConfigPath(configDir);
+  const rootConfigPath = getRootConfigPath(configDirPath);
   if (await isExist(rootConfigPath)) {
     const content = await fs.promises.readFile(rootConfigPath, 'utf8');
     return parseConfig<T>(rootConfigPath, content, printable);
   } else {
-    const runTypeConfigPath = getRunTypeConfigPath(configDir, doguRunType);
+    const runTypeConfigPath = getRunTypeConfigPath(configDirPath, doguRunType);
     if (!(await isExist(runTypeConfigPath))) {
       throw createFeatureConfigFileNotFoundError(rootConfigPath, runTypeConfigPath);
     }

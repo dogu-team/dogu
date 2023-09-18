@@ -11,7 +11,7 @@ export const HostPaths = {
   doguTempPath: (): string => path.resolve(HostPaths.doguHomePath, 'temp'),
 
   configsPath: (doguHomePath: string): string => path.resolve(doguHomePath, 'configs'),
-  dotEnvConfigPath: (configsPath: string, runType: string): string => path.resolve(configsPath, `${runType === 'production' ? '' : runType}.env`),
+  dotenvConfigPath: (configsPath: string, runType: string): string => path.resolve(configsPath, `${runType === 'production' ? '' : runType}.env`),
 
   logsPath: (doguHomePath: string): string => path.resolve(doguHomePath, 'logs'),
   recordWorkspacePath: (doguHomePath: string): string => path.resolve(doguHomePath, 'records'),

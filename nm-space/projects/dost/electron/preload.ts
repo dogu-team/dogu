@@ -1,11 +1,12 @@
+import { DotenvConfigKey, FeatureKey } from '@dogu-private/dogu-agent-core';
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 import { appConfigClientKey } from '../src/shares/app-config';
 import { childCallbackKey, childClientKey, ChildTree, HostAgentConnectionStatus, Key } from '../src/shares/child';
 import { deviceLookupClientKey } from '../src/shares/device-lookup';
-import { dotEnvConfigClientKey, DotEnvConfigKey } from '../src/shares/dot-env-config';
+import { dotenvConfigClientKey } from '../src/shares/dotenv-config';
 import { IElectronIpc } from '../src/shares/electron-ipc';
 import { DownloadProgress, externalCallbackKey, ExternalKey, externalKey, ValidationCheckOption } from '../src/shares/external';
-import { featureConfigClientKey, FeatureKey } from '../src/shares/feature-config';
+import { featureConfigClientKey } from '../src/shares/feature-config';
 import { rendererLoggerKey, stdLogCallbackKey } from '../src/shares/log';
 import { servicesOpenStatusClientKey } from '../src/shares/services-open-status';
 import { ILoginItemSettingsOptions, ISettings, MediaType, settingsClientKey } from '../src/shares/settings';
@@ -93,10 +94,10 @@ expose('updaterClient', {
   downloadAndInstallUpdate: () => ipcRenderer.invoke(updaterClientKey.downloadAndInstallUpdate),
 });
 
-expose('dotEnvConfigClient', {
-  set: (key: DotEnvConfigKey, value: string) => ipcRenderer.invoke(dotEnvConfigClientKey.set, key, value),
-  get: (key: DotEnvConfigKey) => ipcRenderer.invoke(dotEnvConfigClientKey.get, key),
-  getDotEnvConfigPath: () => ipcRenderer.invoke(dotEnvConfigClientKey.getDotEnvConfigPath),
+expose('dotenvConfigClient', {
+  set: (key: DotenvConfigKey, value: string) => ipcRenderer.invoke(dotenvConfigClientKey.set, key, value),
+  get: (key: DotenvConfigKey) => ipcRenderer.invoke(dotenvConfigClientKey.get, key),
+  getDotenvConfigPath: () => ipcRenderer.invoke(dotenvConfigClientKey.getDotenvConfigPath),
 });
 
 expose('externalClient', {
@@ -104,8 +105,8 @@ expose('externalClient', {
   isPlatformSupported: (key: ExternalKey) => ipcRenderer.invoke(externalKey.isPlatformSupported, key),
   getName: (key: ExternalKey) => ipcRenderer.invoke(externalKey.getName, key),
   getEnvKeys: (key: ExternalKey) => ipcRenderer.invoke(externalKey.getEnvKeys, key),
-  getEnvValue: (key: ExternalKey, dotEnvConfigKey: DotEnvConfigKey) => ipcRenderer.invoke(externalKey.getEnvValue, key, dotEnvConfigKey),
-  writeEnvValue: (key: ExternalKey, dotEnvConfigKey: DotEnvConfigKey, value: string) => ipcRenderer.invoke(externalKey.writeEnvValue, key, dotEnvConfigKey, value),
+  getEnvValue: (key: ExternalKey, dotenvConfigKey: DotenvConfigKey) => ipcRenderer.invoke(externalKey.getEnvValue, key, dotenvConfigKey),
+  writeEnvValue: (key: ExternalKey, dotenvConfigKey: DotenvConfigKey, value: string) => ipcRenderer.invoke(externalKey.writeEnvValue, key, dotenvConfigKey, value),
   getLastValidationResult: (key: ExternalKey) => ipcRenderer.invoke(externalKey.getLastValidationResult, key),
   isAgreementNeeded: (key: ExternalKey) => ipcRenderer.invoke(externalKey.isAgreementNeeded, key),
   writeAgreement: (key: ExternalKey, value: boolean) => ipcRenderer.invoke(externalKey.writeAgreement, key, value),

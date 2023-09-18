@@ -1,1 +1,0 @@
-export type DotEnvConfigKey = 'JAVA_HOME' | 'ANDROID_HOME' | 'APPIUM_HOME' | 'NODE_TLS_REJECT_UNAUTHORIZED';

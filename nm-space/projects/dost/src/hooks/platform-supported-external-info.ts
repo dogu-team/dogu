@@ -1,6 +1,6 @@
+import { DotenvConfigKey } from '@dogu-private/dogu-agent-core';
 import { stringify } from '@dogu-tech/common';
 import { useCallback, useEffect, useState } from 'react';
-import { DotEnvConfigKey } from '../shares/dot-env-config';
 
 import { ExternalKey, ExternalValidationResult } from '../shares/external';
 import { ipc } from '../utils/window';
@@ -8,7 +8,7 @@ import { ipc } from '../utils/window';
 export type ExternalToolInfo = {
   key: ExternalKey;
   name: string;
-  envs: { key: DotEnvConfigKey; value: string }[];
+  envs: { key: DotenvConfigKey; value: string }[];
   result: ExternalValidationResult | null;
   isManualInstallNeeded: boolean;
   isAgreementNeeded: boolean;

@@ -1,5 +1,5 @@
+import { DotenvConfigKey } from '@dogu-private/dogu-agent-core';
 import { IpcRendererEvent } from 'electron';
-import { DotEnvConfigKey } from './dot-env-config';
 import { instanceKeys } from './electron-ipc';
 
 export const externalKey = instanceKeys<IExternalClient>('externalClient');
@@ -13,14 +13,8 @@ export const AppiumXcuitestDriver = 'appium-xcuitest-driver';
 export const WebDriverAgentBuild = 'web-driver-agent-build';
 export const IosDeviceAgentBuild = 'ios-device-agent-build';
 export const LibiMobileDevice = 'libimobiledevice';
-export const WebdriverManager = 'webdriver-manager';
-export const PuppeteerBrowsers = 'puppeteer-browsers';
-export const ChromeBrowser = 'chrome-browser';
-export const FirefoxBrowser = 'firefox-browser';
-export const ChromeDriver = 'chrome-driver';
 export const SeleniumServer = 'selenium-server';
 export const GeckoDriver = 'gecko-driver';
-export const SeleniumWebdriver = 'selenium-webdriver';
 
 export const ExternalKey = [
   Jdk,
@@ -32,14 +26,8 @@ export const ExternalKey = [
   WebDriverAgentBuild,
   IosDeviceAgentBuild,
   LibiMobileDevice,
-  WebdriverManager,
-  PuppeteerBrowsers,
-  ChromeBrowser,
-  FirefoxBrowser,
-  ChromeDriver,
   SeleniumServer,
   GeckoDriver,
-  SeleniumWebdriver,
 ] as const;
 export type ExternalKey = (typeof ExternalKey)[number];
 export const IosSettingsExternalKey = [Xcode, WebDriverAgentBuild, IosDeviceAgentBuild] as const;
@@ -57,9 +45,9 @@ export interface IExternalClient {
   getKeys(): Promise<ExternalKey[]>;
   isPlatformSupported(key: ExternalKey): Promise<boolean>;
   getName(key: ExternalKey): Promise<string>;
-  getEnvKeys(key: ExternalKey): Promise<DotEnvConfigKey[]>;
-  getEnvValue(key: ExternalKey, envKey: DotEnvConfigKey): Promise<string>;
-  writeEnvValue(key: ExternalKey, envKey: DotEnvConfigKey, value: string): Promise<void>;
+  getEnvKeys(key: ExternalKey): Promise<DotenvConfigKey[]>;
+  getEnvValue(key: ExternalKey, envKey: DotenvConfigKey): Promise<string>;
+  writeEnvValue(key: ExternalKey, envKey: DotenvConfigKey, value: string): Promise<void>;
   getLastValidationResult(key: ExternalKey): Promise<ExternalValidationResult | null>;
   isAgreementNeeded(key: ExternalKey): Promise<boolean>;
   writeAgreement(key: ExternalKey, value: boolean): Promise<void>;

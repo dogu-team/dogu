@@ -2,14 +2,14 @@ import { CheckCircleIcon, QuestionIcon } from '@chakra-ui/icons';
 import { Checkbox, HStack, Icon, Input, Td, Text, Tooltip, Tr } from '@chakra-ui/react';
 import React from 'react';
 
-import { DotEnvConfigKey } from '../../shares/dot-env-config';
+import { DotenvConfigKey } from '@dogu-private/dogu-agent-core';
 import { ExternalKey } from '../../shares/external';
 
 interface Props {
   isChecked: boolean;
   toolKey: ExternalKey;
   name: string;
-  envs: { key: DotEnvConfigKey; value: string }[];
+  envs: { key: DotenvConfigKey; value: string }[];
   isValid: boolean;
   errorMessage?: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>, key: ExternalKey) => void | Promise<void>;

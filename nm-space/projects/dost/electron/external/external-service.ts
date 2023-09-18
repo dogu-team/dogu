@@ -1,7 +1,7 @@
+import { DotenvConfigKey } from '@dogu-private/dogu-agent-core';
 import { errorify } from '@dogu-tech/common';
 import { ipcMain } from 'electron';
 import { setInterval } from 'timers/promises';
-import { DotEnvConfigKey } from '../../src/shares/dot-env-config';
 import { DownloadProgress, externalCallbackKey, externalKey, ExternalKey, ValidationCheckOption } from '../../src/shares/external';
 import { AppConfigService } from '../app-config/app-config-service';
 import { DotEnvConfigService } from '../dot-env-config/dot-env-config-service';
@@ -86,16 +86,10 @@ export class ExternalService {
       (unitCallback) => new AppiumXcUiTestDriverExternalUnit(this.dotEnvConfigService, this.stdLogCallbackService, this.appConfigService, unitCallback),
     );
     this.registerUnit('libimobiledevice', (unitCallback) => new LibimobledeviceExternalUnit(this.stdLogCallbackService, this.windowService, this.appConfigService, unitCallback));
-    // this.registerUnit('webdriver-manager', (unitCallback) => new WebdriverManagerExternalUnit(this.stdLogCallbackService, unitCallback));
     this.registerUnit('web-driver-agent-build', () => new WdaBuildExternalUnit(this.stdLogCallbackService));
     this.registerUnit('ios-device-agent-build', () => new IdaBuildExternalUnit(this.stdLogCallbackService));
-    // this.registerUnit('puppeteer-browsers', (unitCallback) => new PuppeteerBrowsersExternalUnit(this.stdLogCallbackService, unitCallback));
-    // this.registerUnit('chrome-browser', (unitCallback) => new ChromeBrowserExternalUnit(this.stdLogCallbackService, unitCallback));
-    // this.registerUnit('firefox-browser', (unitCallback) => new FirefoxBrowserExternalUnit(this.stdLogCallbackService, unitCallback));
-    // this.registerUnit('chrome-driver', (unitCallback) => new ChromeDriverExternalUnit(this.stdLogCallbackService, unitCallback));
     this.registerUnit('gecko-driver', (unitCallback) => new GeckoDriverExternalUnit(this.windowService, this.stdLogCallbackService, this.appConfigService, unitCallback));
     this.registerUnit('selenium-server', (unitCallback) => new SeleniumServerExternalUnit(this.windowService, this.stdLogCallbackService, this.appConfigService, unitCallback));
-    // this.registerUnit('selenium-webdriver', (unitCallback) => new SeleniumWebdriverExternalUnit(this.stdLogCallbackService, this.appConfigService, unitCallback));
   }
 
   private registerHandlers(): void {
@@ -103,8 +97,8 @@ export class ExternalService {
     ipcMain.handle(externalKey.isPlatformSupported, (_, key: ExternalKey) => this.getUnit(key).isPlatformSupported());
     ipcMain.handle(externalKey.getName, (_, key: ExternalKey) => this.getName(key));
     ipcMain.handle(externalKey.getEnvKeys, (_, key: ExternalKey) => this.getUnit(key).getEnvKeys());
-    ipcMain.handle(externalKey.getEnvValue, (_, key: ExternalKey, dotEnvConfigKey: DotEnvConfigKey) => this.getEnvValue(key, dotEnvConfigKey));
-    ipcMain.handle(externalKey.writeEnvValue, (_, key: ExternalKey, dotEnvConfigKey: DotEnvConfigKey, value: string) => this.writeEnvValue(key, dotEnvConfigKey, value));
+    ipcMain.handle(externalKey.getEnvValue, (_, key: ExternalKey, dotEnvConfigKey: DotenvConfigKey) => this.getEnvValue(key, dotEnvConfigKey));
+    ipcMain.handle(externalKey.writeEnvValue, (_, key: ExternalKey, dotEnvConfigKey: DotenvConfigKey, value: string) => this.writeEnvValue(key, dotEnvConfigKey, value));
     ipcMain.handle(externalKey.getLastValidationResult, (_, key: ExternalKey) => this.getUnit(key).lastValidationResult);
     ipcMain.handle(externalKey.isAgreementNeeded, (_, key: ExternalKey) => this.getUnit(key).isAgreementNeeded());
     ipcMain.handle(externalKey.writeAgreement, (_, key: ExternalKey, value: boolean) => this.getUnit(key).writeAgreement(value));
@@ -144,14 +138,14 @@ export class ExternalService {
     return Promise.resolve(unit.getName());
   }
 
-  private getEnvValue(key: ExternalKey, dotEnvConfigKey: DotEnvConfigKey): string | undefined {
+  private getEnvValue(key: ExternalKey, dotenvConfigKey: DotenvConfigKey): string | undefined {
     const unit = this.getUnit(key);
-    return this.dotEnvConfigService.get(dotEnvConfigKey);
+    return this.dotEnvConfigService.get(dotenvConfigKey);
   }
 
-  private async writeEnvValue(key: ExternalKey, dotEnvConfigKey: DotEnvConfigKey, value: string): Promise<void> {
+  private async writeEnvValue(key: ExternalKey, dotenvConfigKey: DotenvConfigKey, value: string): Promise<void> {
     const unit = this.getUnit(key);
-    await this.dotEnvConfigService.write(dotEnvConfigKey, value);
+    await this.dotEnvConfigService.write(dotenvConfigKey, value);
   }
 
   private async validateSupportedPlatform(): Promise<void> {
