@@ -50,5 +50,6 @@ export enum LICENSE_AUTHROIZE {
 
 export const SELF_HOSTED_ROLE_KEY = 'SELF_HOSTED_ROLE';
 export enum SELF_HOSTED_ROLE {
-  ROOT = 1,
+  ROOT = 'ROOT',
+  MEMBER = 'MEMBER',
 }

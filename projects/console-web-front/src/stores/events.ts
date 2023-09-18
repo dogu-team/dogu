@@ -72,7 +72,10 @@ export type EventName =
 
   // record
   | 'onRecordStepCreated'
-  | 'onRecordStepDeleted';
+  | 'onRecordStepDeleted'
+
+  // license
+  | 'onLicenseUpdated';
 
 interface EventStore {
   eventName: EventName | null;

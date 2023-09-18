@@ -73,6 +73,10 @@
 
   "hostEmptyDescription": "There's no host in your organization.<br></br>Easily manage your devices by adding hosts.<br></br><br></br><tutorialLink>Proceed tutorial</tutorialLink> or <link>click here</link> for see more information",
 
+  "doguAgentUpdateDisconnectedMessage": "Updatable when connected",
+  "doguAgentVersionMismatchMessage": "Dogu and Agent version not matched!\nThis can result in unexpected behavior.\nDogu: {{doguVersion}, Agent: {{agentVersion}}",
+  "doguAgentUpdateAvailableMessage": "Update to latest",
+
   "deviceListMenuTitle": "In-use devices",
   "deviceAddMenuTitle": "Standby devices",
   "deviceTagMenuTitle": "Device tags",
@@ -87,6 +91,7 @@
 
   "deviceItemStreamingMenu": "Streaming",
   "deviceItemSettingMenu": "Settings",
+  "deviceItemRunnerSettingMenu": "Runner settings",
   "deviceItemEditTagMenu": "Edit tags",
   "deviceItemEditProejctMenu": "Edit projects",
   "deviceItemRebootMenu": "Reboot",
@@ -99,8 +104,9 @@
   "deviceSettingFailureMsg": "Failed to update.\n{{message}}",
   "deviceSettingNameLabelText": "Device name",
   "deviceSettingNameRequiredMsg": "Input device name",
-  "deviceSettingMaxParallelJobLabelText": "Max parallel jobs count <span>(Only host device can change this value.)</span>",
-  "deviceSettingMaxParallelJobErrorMsg": "Max parallel jobs count must be a number between 1 and 16",
+
+  "hostDeviceRunnerSettingModalTitle": "Host device runner settings",
+  "hostDeviceRunnerSettingBrowserLabelText": "Number of browser runners",
 
   "deviceEditTagModalTitle": "Edit device tags",
   "deviceEditTagSearchTitle": "Search tags",

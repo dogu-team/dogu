@@ -2,7 +2,7 @@
   "locales": ["en", "ko"],
   "defaultLocale": "en",
   "pages": {
-    "*": ["common"],
+    "*": ["common", "license"],
     "/account": ["account"],
     "/account/reset-password": ["account"],
     "/account/organizations": ["account"],
@@ -14,6 +14,8 @@
 
     "/auth/entry": ["account"],
     "/auth/invite-confirm": ["auth"],
+
+    "/admin": ["admin"],
 
     "/dashboard/[orgId]": ["organization"],
     "/dashboard/[orgId]/get-started": ["organization", "tutorial", "project-app", "device-farm"],

@@ -24,7 +24,7 @@ interface Props {
 
 const DeviceSettingModal = ({ isOpen, device, close }: Props) => {
   const { t } = useTranslation();
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<{ name: string }>();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const organizationId = router.query.orgId as OrganizationId;
@@ -32,27 +32,23 @@ const DeviceSettingModal = ({ isOpen, device, close }: Props) => {
 
   useEffect(() => {
     form.setFieldValue('name', device?.name ?? '');
-    form.setFieldValue('max', device?.maxParallelJobs ? device.maxParallelJobs : 1);
   }, [device, form]);
 
   const handleSave = async () => {
-    const name: string = form.getFieldValue('name');
-    const max: number = form.getFieldValue('max');
+    const { name } = await form.validateFields();
 
-    await form.validateFields();
-
-    if (!name || !device || !max) {
+    if (!name) {
       return;
     }
 
-    if (device.name === name && device.maxParallelJobs === max) {
+    if (device.name === name) {
       close();
       return;
     }
 
     setLoading(true);
     try {
-      await updateDevice(organizationId, device.deviceId, { name, maxParallelJobs: max });
+      await updateDevice(organizationId, device.deviceId, { name });
       sendSuccessNotification(t('device-farm:deviceSettingSuccessMsg'));
       fireEvent('onDeviceUpdated');
       close();
@@ -91,42 +87,6 @@ const DeviceSettingModal = ({ isOpen, device, close }: Props) => {
               placeholder={t('common:name')}
               maxLength={DEVICE_NAME_MAX_LENGTH}
               minLength={DEVICE_NAME_MIN_LENGTH}
-            />
-          </Form.Item>
-          <Form.Item
-            label={
-              <Trans
-                i18nKey="device-farm:deviceSettingMaxParallelJobLabelText"
-                components={{ span: <span style={{ fontSize: '.8rem', marginLeft: '.3rem' }} /> }}
-              />
-            }
-            name="max"
-            required
-            rules={[
-              {
-                required: true,
-                message: t('device-farm:deviceSettingMaxParallelJobErrorMsg'),
-                transform(value) {
-                  return Number(value);
-                },
-                type: 'number',
-                validator(_, value) {
-                  if (value < DEVICE_MAX_PARALLEL_JOBS_MIN || value > DEVICE_MAX_PARALLEL_JOBS_MAX) {
-                    return Promise.reject(new Error('Max count should be 1 to 16'));
-                  }
-                  return Promise.resolve();
-                },
-                min: DEVICE_MAX_PARALLEL_JOBS_MIN,
-                max: DEVICE_MAX_PARALLEL_JOBS_MAX,
-              },
-            ]}
-            initialValue={device.maxParallelJobs}
-          >
-            <InputNumber
-              disabled={!isDesktop(device)}
-              placeholder={'Max count'}
-              min={DEVICE_MAX_PARALLEL_JOBS_MIN}
-              max={DEVICE_MAX_PARALLEL_JOBS_MAX}
             />
           </Form.Item>
         </Form>

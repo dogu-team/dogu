@@ -10,9 +10,9 @@ import MenuLinkTabs, { MenuLinkTabProps } from '../MenuLinkTabs';
 import OrganizationSideBar from './OrganizationSideBar';
 import ConsoleLayout, { ConsoleLayoutProps } from './ConsoleLayout';
 
-interface Props extends Pick<ConsoleLayoutProps, 'organization' | 'children'> {}
+interface Props extends Pick<ConsoleLayoutProps, 'organization' | 'user' | 'children'> {}
 
-const TeamPageLayout = ({ children, organization }: Props) => {
+const TeamPageLayout = ({ children, ...props }: Props) => {
   const router = useRouter();
   const orgId = router.query.orgId;
   const teamId = router.query.teamId;
@@ -46,7 +46,7 @@ const TeamPageLayout = ({ children, organization }: Props) => {
 
   return (
     <ConsoleLayout
-      organization={organization}
+      {...props}
       sidebar={<OrganizationSideBar />}
       title={t('team:teamDetailPageTitle', { name: data?.name ?? '' })}
     >

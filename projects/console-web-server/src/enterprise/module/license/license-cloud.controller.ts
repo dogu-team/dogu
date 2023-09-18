@@ -1,4 +1,4 @@
-import { FindLicenseDtoBase, LicenseBase, OrganizationPropCamel } from '@dogu-private/console';
+import { FindLicenseDtoBase, LicenseBase, LicenseResponse, OrganizationPropCamel } from '@dogu-private/console';
 import { OrganizationId } from '@dogu-private/types';
 import { Body, Controller, Get, Inject, Param, Patch, Post } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -51,7 +51,7 @@ export class LicenseCloudController {
 
   @Get('')
   @OrganizationPermission(ORGANIZATION_ROLE.OWNER)
-  async getLicense(@Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId): Promise<LicenseBase> {
+  async getLicense(@Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId): Promise<LicenseResponse> {
     const license = await this.licenseService.getLicense(organizationId);
     return license;
   }

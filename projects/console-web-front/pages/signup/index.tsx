@@ -7,6 +7,7 @@ import Trans from 'next-translate/Trans';
 import { useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
+import Cookies from 'universal-cookie';
 
 import SignUpForm from 'src/components/registery/SignUpForm';
 import { checkLoginInServerSide, redirectToLastAccessOrganization } from 'src/utils/auth';
@@ -18,9 +19,13 @@ import { sendErrorNotification } from '../../src/utils/antd';
 import { getErrorMessageFromAxios } from '../../src/utils/error';
 import SocialSignInForm from '../../src/components/social-signin/SocialSignInForm';
 import { redirectWithLocale } from '../../src/ssr/locale';
-import Cookies from 'universal-cookie';
+import { hasRootUser } from '../../src/api/feature';
 
-const SignUpPage: NextPageWithLayout = () => {
+interface Props {
+  shouldSetupRoot: boolean;
+}
+
+const SignUpPage: NextPageWithLayout<Props> = ({ shouldSetupRoot }) => {
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -54,12 +59,14 @@ const SignUpPage: NextPageWithLayout = () => {
       <Box>
         <StyledSignUpForm onSubmit={handleSignUp} />
         <ServiceAgreement />
-        <AccountText>
-          <Trans
-            i18nKey="registery:signUpAlreadyAccountExist"
-            components={[<StyledLink key="signin" href={`/signin`} />]}
-          />
-        </AccountText>
+        {!shouldSetupRoot && (
+          <AccountText>
+            <Trans
+              i18nKey="registery:signUpAlreadyAccountExist"
+              components={[<StyledLink key="signin" href={`/signin`} />]}
+            />
+          </AccountText>
+        )}
         {process.env.NEXT_PUBLIC_ENV !== 'self-hosted' && <SocialSignInForm />}
       </Box>
     </>
@@ -67,10 +74,32 @@ const SignUpPage: NextPageWithLayout = () => {
 };
 
 SignUpPage.getLayout = function (page) {
-  return <SmallBoxCenteredLayout titleI18nKey="registery:signUpPageTitle">{page}</SmallBoxCenteredLayout>;
+  return (
+    <SmallBoxCenteredLayout
+      titleI18nKey={page.props.shouldSetupRoot ? 'registery:signUpRootPageTitle' : 'registery:signUpPageTitle'}
+    >
+      {page}
+    </SmallBoxCenteredLayout>
+  );
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps<Props> = async (context) => {
+  let shouldSetupRoot = false;
+
+  if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
+    try {
+      shouldSetupRoot = !(await hasRootUser());
+    } catch (e) {}
+  }
+
+  if (shouldSetupRoot) {
+    return {
+      props: {
+        shouldSetupRoot,
+      },
+    };
+  }
+
   const me = await checkLoginInServerSide(context);
 
   if (me) {
@@ -86,7 +115,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   return {
-    props: {},
+    props: {
+      shouldSetupRoot,
+    },
   };
 };
 

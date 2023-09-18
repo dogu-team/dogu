@@ -100,6 +100,7 @@ const ProjectApplicationItem = ({ application }: ItemProps) => {
       <ItemInner>
         <ThreeSpan>
           <NameWrapper>
+            {application.isLatest === 1 && <ProjectApplicationLatestTag style={{ margin: 0, marginRight: '.5rem' }} />}
             <Image src={application.iconUrl} width={24} height={24} alt={application.name} />
             <div style={{ marginLeft: '.5rem' }}>
               {application.name}
@@ -107,10 +108,7 @@ const ProjectApplicationItem = ({ application }: ItemProps) => {
             </div>
           </NameWrapper>
         </ThreeSpan>
-        <TwoSpan>
-          {application.version}
-          {application.isLatest === 1 && <ProjectApplicationLatestTag />}
-        </TwoSpan>
+        <TwoSpan>{application.version}</TwoSpan>
         <OneSpan>{application.versionCode}</OneSpan>
         <OneSpan>
           <ProjectApplicationExtensionTag extension={application.fileExtension} />

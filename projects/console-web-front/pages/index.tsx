@@ -1,10 +1,11 @@
 import type { GetServerSideProps } from 'next';
 import styled from 'styled-components';
+import Cookies from 'universal-cookie';
 
 import { NextPageWithLayout } from './_app';
 import { checkLoginInServerSide, redirectToLastAccessOrganization } from 'src/utils/auth';
 import { redirectWithLocale } from '../src/ssr/locale';
-import Cookies from 'universal-cookie';
+import { hasRootUser } from '../src/api/feature';
 
 const Home: NextPageWithLayout = () => {
   return (
@@ -15,6 +16,23 @@ const Home: NextPageWithLayout = () => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  let shouldSetupRoot = false;
+
+  if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
+    try {
+      shouldSetupRoot = !(await hasRootUser());
+    } catch (e) {}
+  }
+
+  if (shouldSetupRoot) {
+    return {
+      redirect: {
+        destination: '/signup',
+        permanent: false,
+      },
+    };
+  }
+
   const cookies = new Cookies(context.req.cookies);
   const redirectUrl = cookies.get('redirectUrl');
 

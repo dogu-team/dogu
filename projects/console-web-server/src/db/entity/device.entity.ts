@@ -29,7 +29,7 @@ import { RecordDeviceJob } from './record-device-job.entity';
 import { RemoteDeviceJob } from './remote-device-job.entity';
 
 const DEVICE_DEFAULT_MAX_PARALLEL_JOBS = 1;
-export const DEVICE_DEFAULT_MAX_PARALLEL_JOBS_IF_IS_HOST = 8;
+export const DEVICE_DEFAULT_MAX_PARALLEL_JOBS_IF_IS_HOST = 1;
 
 @Entity(DEVICE_TABLE_NAME)
 export class Device extends BaseEntity implements DeviceBase {

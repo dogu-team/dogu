@@ -26,7 +26,8 @@ export class AuthLicenseService {
         await this.validateDoguAgentAutoUpdateLicense(req);
         break;
       default:
-        throw new HttpException(`LicenseGuard. The action is not defined.`, HttpStatus.UNAUTHORIZED);
+        const _exhaustiveCheck: never = type;
+        throw new HttpException(`LicenseGuard. The action is not defined. ${_exhaustiveCheck}`, HttpStatus.UNAUTHORIZED);
     }
   }
 

@@ -10,6 +10,7 @@ import { NextPageWithLayout } from 'pages/_app';
 import SmallBoxCenteredLayout from 'src/components/layouts/SmallBoxCenterLayout';
 import SocialSignInForm from 'src/components/social-signin/SocialSignInForm';
 import { redirectWithLocale } from 'src/ssr/locale';
+import { hasRootUser } from '../../src/api/feature';
 
 const LoginPage: NextPageWithLayout = () => {
   const { t } = useTranslation();
@@ -43,6 +44,23 @@ LoginPage.getLayout = function (page) {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  let shouldSetupRoot = false;
+
+  if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
+    try {
+      shouldSetupRoot = !(await hasRootUser());
+    } catch (e) {}
+  }
+
+  if (shouldSetupRoot) {
+    return {
+      redirect: {
+        destination: '/signup',
+        permanent: false,
+      },
+    };
+  }
+
   const me = await checkLoginInServerSide(context);
 
   if (me) {
@@ -58,7 +76,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   return {
-    props: {},
+    props: {
+      shouldSetupRoot,
+    },
   };
 };
 

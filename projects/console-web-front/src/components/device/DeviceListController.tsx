@@ -30,7 +30,7 @@ import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
 import EditDeviceTagModal from './EditDeviceTagModal';
 import DeviceSettingModal from './DeviceSettingModal';
-import AddDeviceToProjectModal from './EditDeviceProjectModal';
+import EditDeviceProjectModal from '../../../enterprise/components/device/EditDeviceProjectModal';
 import DeviceName from './DeviceName';
 import DeviceTagAndProject from './DeviceTagAndProject';
 import useEventStore from '../../stores/events';
@@ -40,6 +40,10 @@ import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from './PlatformIcon';
 import DeviceUsageStatusBadge from './DeviceUsageStatusBadge';
 import DeviceVersionAlertIcon from './DeviceVersionAlertIcon';
+import HostDeviceRunnerSettingModal from '../../../enterprise/components/device/HostDeviceRunnerSettingModal';
+import { isDesktop } from '../../utils/device';
+import DeviceCounter from './DeviceCounter';
+import DeviceRunnerItem from './DeviceRuunerItem';
 
 interface DeviceItemProps {
   device: DeviceBase;
@@ -50,12 +54,12 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
   const orgId = router.query.orgId as OrganizationId;
   const { t } = useTranslation();
   const [isDeviceSettingModalOpen, openDeviceSettingModal, closeDeviceSettingModal] = useModal();
+  const [isHostDeviceRunnerModalOpen, openHostDeviceRunnerModal, closeHostDeviceRunnerModal] = useModal();
   const [isEditDeviceTagModalOpen, openEditDeviceTagModal, closeEditDeviceTagModal] = useModal();
   const [isEditDeviceProjectModalOpen, openEditDeviceProjectModal, closeEditDeviceProjectModal] = useModal();
   const [isDetailModlOpen, openDetailModal, closeDetailModal] = useModal();
   const fireEvent = useEventStore((state) => state.fireEvent);
 
-  const streamingable = device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED;
   const rebootable =
     (device.platform === Platform.PLATFORM_ANDROID || device.platform === Platform.PLATFORM_IOS) &&
     device.connectionState === DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED;
@@ -114,6 +118,20 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
       ),
       key: 'setting',
     },
+    isDesktop(device)
+      ? {
+          label: (
+            <MenuItemButton
+              danger={false}
+              onClick={() => openHostDeviceRunnerModal()}
+              id={`${device.name}-runner-setting-menu-btn`}
+            >
+              {t('device-farm:deviceItemRunnerSettingMenu')}
+            </MenuItemButton>
+          ),
+          key: 'runner-setting',
+        }
+      : null,
     { type: 'divider' },
     {
       label: (
@@ -145,7 +163,7 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
 
   return (
     <>
-      <Item key={`device-${device.deviceId}`}>
+      <Item key={`device-${device.deviceId}`} style={{ flexDirection: 'column' }}>
         <DeviceItemInner>
           <NameCell>
             <DeviceName device={device} onClick={handleClickDetail} />
@@ -180,17 +198,36 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
             </FlexSpaceBetweenBox>
           </InfoCell>
         </DeviceItemInner>
+        {isDesktop(device) && (
+          <RunnerWrapper>
+            {device.deviceRunners?.map((runner, index) => {
+              return (
+                <DeviceRunnerItem
+                  key={`device-runner-${runner.deviceRunnerId}`}
+                  runner={runner}
+                  index={index + 1}
+                  hideStatus={device.connectionState !== DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED}
+                />
+              );
+            })}
+          </RunnerWrapper>
+        )}
       </Item>
 
       <DeviceSettingModal device={device} isOpen={isDeviceSettingModalOpen} close={closeDeviceSettingModal} />
+      <HostDeviceRunnerSettingModal
+        device={device}
+        isOpen={isHostDeviceRunnerModalOpen}
+        close={closeHostDeviceRunnerModal}
+      />
       <DeviceDetailModal isOpen={isDetailModlOpen} device={device} close={closeDetailModal} />
       <EditDeviceTagModal
         deviceId={device.deviceId}
         isOpen={isEditDeviceTagModalOpen}
         close={closeEditDeviceTagModal}
       />
-      <AddDeviceToProjectModal
-        deviceId={device.deviceId}
+      <EditDeviceProjectModal
+        device={device}
         isOpen={isEditDeviceProjectModalOpen}
         close={closeEditDeviceProjectModal}
         isGlobal={isGlobalDevice}
@@ -227,7 +264,9 @@ const DeviceListController = () => {
       'onDeviceStopped',
       'onDeviceReboot',
     ],
-    () => mutate(),
+    () => {
+      mutate();
+    },
   );
 
   if (error) {
@@ -241,6 +280,9 @@ const DeviceListController = () => {
 
   return (
     <>
+      <div style={{ marginBottom: '.5rem' }}>
+        <DeviceCounter />
+      </div>
       <Header>
         <DeviceItemInner>
           <NameCell>{t('device-farm:deviceTableNameColumn')}</NameCell>
@@ -354,4 +396,8 @@ const PrimaryLinkButton = styled(Link)<{ disabled: boolean }>`
     background-color: ${(props) => (props.disabled ? '#0000000a' : props.theme.colorPrimary)};
     color: ${(props) => (props.disabled ? '#00000040' : '#fff')} !important;
   }
+`;
+
+const RunnerWrapper = styled.div`
+  padding-left: 1rem;
 `;

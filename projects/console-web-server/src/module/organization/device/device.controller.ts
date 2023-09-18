@@ -19,6 +19,7 @@ import {
   FindAddableDevicesByOrganizationIdDto,
   FindDevicesByOrganizationIdDto,
   UpdateDeviceDto,
+  UpdateDeviceMaxParallelJobsDto,
 } from './dto/device.dto';
 
 @Controller('organizations/:organizationId/devices')
@@ -105,6 +106,19 @@ export class DeviceController {
   ): Promise<DeviceResponse> {
     const device = await this.dataSource.transaction(async (manager) => {
       return await this.deviceStatusService.updateDevice(manager, organizationId, deviceId, updateDeviceDto);
+    });
+    return device;
+  }
+
+  @Patch(':deviceId/max-parallel-job')
+  @OrganizationPermission(ORGANIZATION_ROLE.ADMIN)
+  async updateMaxParallelJob(
+    @Param(OrganizationPropCamel.organizationId) organizationId: OrganizationId, //
+    @Param(DevicePropCamel.deviceId) deviceId: DeviceId,
+    @Body() dto: UpdateDeviceMaxParallelJobsDto,
+  ): Promise<DeviceResponse> {
+    const device = await this.dataSource.transaction(async (manager) => {
+      return await this.deviceStatusService.updateDeviceMaxParallelJobs(manager, organizationId, deviceId, dto);
     });
     return device;
   }

@@ -29,6 +29,8 @@ import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from '../device/PlatformIcon';
 import DeviceVersionAlertIcon from '../device/DeviceVersionAlertIcon';
 import DeviceUsageStatusBadge from '../device/DeviceUsageStatusBadge';
+import { isDesktop } from '../../utils/device';
+import DeviceRunnerItem from '../device/DeviceRuunerItem';
 
 interface DeviceItemProps {
   device: DeviceBase;
@@ -86,7 +88,7 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
 
   return (
     <>
-      <Item>
+      <Item style={{ flexDirection: 'column' }}>
         <FlexRowBase>
           <NameCell>
             <DeviceName device={device} onClick={handleClickDetail} />
@@ -154,6 +156,21 @@ const DeviceItem = ({ device, projectId }: DeviceItemProps) => {
             </FlexEndBox>
           </MenuCell>
         </FlexRowBase>
+
+        {isDesktop(device) && (
+          <RunnerWrapper>
+            {device.deviceRunners?.map((runner, index) => {
+              return (
+                <DeviceRunnerItem
+                  key={`device-runner-${runner.deviceRunnerId}`}
+                  runner={runner}
+                  index={index + 1}
+                  hideStatus={device.connectionState !== DeviceConnectionState.DEVICE_CONNECTION_STATE_CONNECTED}
+                />
+              );
+            })}
+          </RunnerWrapper>
+        )}
       </Item>
 
       <DeviceDetailModal isOpen={isDetailModalOpen} device={device} close={closeDetailModal} />
@@ -275,4 +292,8 @@ const StudioLinkButton = styled(Link)<{ disabled: boolean }>`
     color: #fff;
     background-color: ${(props) => (props.disabled ? props.theme.main.colors.gray5 : `${props.theme.colorPrimary}bb`)};
   }
+`;
+
+const RunnerWrapper = styled.div`
+  padding-left: 1rem;
 `;

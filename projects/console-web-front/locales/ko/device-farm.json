@@ -73,6 +73,10 @@
 
   "hostEmptyDescription": "호스트가 없습니다.<br></br>호스트를 추가해 여러 디바이스를 쉽게 관리해보세요.<br></br><br></br><tutorialLink>튜토리얼</tutorialLink>을 진행하거나 <link>여기를 눌러</link> 더 많은 정보 확인하기",
 
+  "doguAgentUpdateDisconnectedMessage": "연결된 상태에서만 가능합니다",
+  "doguAgentVersionMismatchMessage": "Dogu와 Agent의 버전이 일치하지 않습니다.\n예기치 못한 문제가 발생할 수 있습니다.\nDogu: {{doguVersion}}, Agent: {{agentVersion}}",
+  "doguAgentUpdateAvailableMessage": "최신으로 업데이트",
+
   "deviceListMenuTitle": "사용중인 디바이스",
   "deviceAddMenuTitle": "대기중인 디바이스",
   "deviceTagMenuTitle": "디바이스 태그",
@@ -87,6 +91,7 @@
 
   "deviceItemStreamingMenu": "스트리밍",
   "deviceItemSettingMenu": "설정",
+  "deviceItemRunnerSettingMenu": "러너 설정",
   "deviceItemEditTagMenu": "태그 변경",
   "deviceItemEditProejctMenu": "프로젝트 변경",
   "deviceItemRebootMenu": "재시작",
@@ -99,8 +104,9 @@
   "deviceSettingFailureMsg": "업데이트 실패.\n{{message}}",
   "deviceSettingNameLabelText": "디바이스 이름",
   "deviceSettingNameRequiredMsg": "이름을 입력하세요",
-  "deviceSettingMaxParallelJobLabelText": "최대 병렬 작업 수 <span>(호스트 디바이스만 변경할 수 있습니다.)</span>",
-  "deviceSettingMaxParallelJobErrorMsg": "최대 병렬 작업 수는 1~16 사이의 정수여야 합니다",
+
+  "hostDeviceRunnerSettingModalTitle": "호스트 디바이스 러너 설정",
+  "hostDeviceRunnerSettingBrowserLabelText": "브라우저 러너 수",
 
   "deviceEditTagModalTitle": "태그 변경하기",
   "deviceEditTagSearchTitle": "태그 검색",

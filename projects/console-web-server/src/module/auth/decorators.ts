@@ -38,7 +38,7 @@ import { ProjectGuard } from './guard/project.guard';
 import { RemoteOrganizationGuard } from './guard/remote/remote-organization.guard';
 import { RemoteProjectGuard } from './guard/remote/remote-project.guard';
 import { RemoteGuard } from './guard/remote/remote.guard';
-import { SelfHostedRoleGuard } from './guard/self-hosted-root.guard';
+import { SelfHostedRoleGuard } from './guard/self-hosted.guard';
 import { UserJwtGuard } from './guard/user-jwt.guard';
 
 export function RemoteOrganizationPermission(roleType: ORGANIZATION_ROLE): PropertyDecorator {
@@ -111,5 +111,5 @@ export const V1OpenApiCaller = createParamDecorator((data: unknown, ctx: Executi
 });
 
 export function LicensePermission(roleType: LICENSE_AUTHROIZE): PropertyDecorator {
-  return applyDecorators(SetMetadata(LICENSE_AUTHROIZE_KEY, roleType), UseGuards(LicenseGuard));
+  return applyDecorators(SetMetadata(LICENSE_AUTHROIZE_KEY, roleType), UseGuards(UserJwtGuard), UseGuards(LicenseGuard));
 }

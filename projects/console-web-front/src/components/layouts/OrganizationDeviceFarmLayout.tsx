@@ -60,11 +60,11 @@ const AddDeviceTabButton = ({ selected, href }: TabButtonProps) => {
   );
 };
 
-interface Props extends Pick<ConsoleLayoutProps, 'organization'> {
+interface Props extends Pick<ConsoleLayoutProps, 'organization' | 'user'> {
   children: React.ReactNode;
 }
 
-const OrganizationDeviceFarmLayout = ({ children, organization }: Props) => {
+const OrganizationDeviceFarmLayout = ({ children, ...props }: Props) => {
   const router = useRouter();
   const orgId = router.query.orgId;
   const { t } = useTranslation();
@@ -98,11 +98,7 @@ const OrganizationDeviceFarmLayout = ({ children, organization }: Props) => {
   ];
 
   return (
-    <ConsoleLayout
-      organization={organization}
-      sidebar={<OrganizationSideBar />}
-      titleI18nKey={'organization:deviceFarmPageTitle'}
-    >
+    <ConsoleLayout {...props} sidebar={<OrganizationSideBar />} titleI18nKey={'organization:deviceFarmPageTitle'}>
       <MenuLinkTabs tabs={tabs} />
       <Inner>{children}</Inner>
     </ConsoleLayout>

@@ -11,7 +11,7 @@ import useRefresh from 'src/hooks/useRefresh';
 import useUnallowedDeviceFilterStore from 'src/stores/unallowed-device-filter';
 import DeviceConnectionStateTag from './DeviceConnectionStateTag';
 import { flexRowBaseStyle, listItemStyle, tableCellStyle, tableHeaderStyle } from '../../styles/box';
-import AddDeviceToProjectModal from './EditDeviceProjectModal';
+import EditDeviceProjectModal from '../../../enterprise/components/device/EditDeviceProjectModal';
 import useModal from '../../hooks/useModal';
 import MenuButton from '../buttons/MenuButton';
 import MenuItemButton from '../buttons/MenuItemButton';
@@ -20,6 +20,10 @@ import ListEmpty from '../common/boxes/ListEmpty';
 import PlatformIcon from './PlatformIcon';
 import DevicePrefixTag from './DevicePrefixTag';
 import useEventStore from '../../stores/events';
+import { isDesktop } from '../../utils/device';
+import HostDeviceRunnerSettingModal from '../../../enterprise/components/device/HostDeviceRunnerSettingModal';
+import DeviceCounter from './DeviceCounter';
+import DeviceRunnerItem from './DeviceRuunerItem';
 
 interface DeviceItemProps {
   device: DeviceBase;
@@ -28,6 +32,7 @@ interface DeviceItemProps {
 const DeviceItem = ({ device }: DeviceItemProps) => {
   const [isAddProjectModalOpen, openAddProjectModal, closeAddProjectModal] = useModal();
   const [isEditModalOpen, openEditModal, closeEditModal] = useModal();
+  const [isHostDeviceRunnerModalOpen, openHostDeviceRunnerModal, closeHostDeviceRunnerModal] = useModal();
   const fireEvent = useEventStore((state) => state.fireEvent);
   const { t } = useTranslation();
 
@@ -56,11 +61,25 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
       ),
       key: 'edit',
     },
+    isDesktop(device)
+      ? {
+          label: (
+            <MenuItemButton
+              danger={false}
+              onClick={() => openHostDeviceRunnerModal()}
+              id={`${device.name}-runner-setting-menu-btn`}
+            >
+              {t('device-farm:deviceItemRunnerSettingMenu')}
+            </MenuItemButton>
+          ),
+          key: 'runner-setting',
+        }
+      : null,
   ];
 
   return (
     <>
-      <Item>
+      <Item style={{ flexDirection: 'column' }}>
         <FlexRowBase>
           <NameCell>
             <DevicePrefixTag device={device} />
@@ -86,15 +105,35 @@ const DeviceItem = ({ device }: DeviceItemProps) => {
             </FlexRowEnd>
           </MenuCell>
         </FlexRowBase>
+
+        {isDesktop(device) && (
+          <RunnerWrapper>
+            {device.deviceRunners?.map((runner, index) => {
+              return (
+                <DeviceRunnerItem
+                  key={`device-runner-${runner.deviceRunnerId}`}
+                  runner={runner}
+                  index={index + 1}
+                  hideStatus
+                />
+              );
+            })}
+          </RunnerWrapper>
+        )}
       </Item>
 
-      <AddDeviceToProjectModal
-        deviceId={device.deviceId}
+      <EditDeviceProjectModal
+        device={device}
         isOpen={isAddProjectModalOpen}
         close={closeAddProjectModal}
         isGlobal={false}
       />
       <DeviceSettingModal device={device} isOpen={isEditModalOpen} close={closeEditModal} />
+      <HostDeviceRunnerSettingModal
+        device={device}
+        isOpen={isHostDeviceRunnerModalOpen}
+        close={closeHostDeviceRunnerModal}
+      />
     </>
   );
 };
@@ -115,6 +154,9 @@ const AddableDeviceListController = () => {
 
   return (
     <>
+      <div style={{ marginBottom: '.5rem' }}>
+        <DeviceCounter />
+      </div>
       <Header>
         <FlexRowBase>
           <NameCell>{t('device-farm:deviceTableNameColumn')}</NameCell>
@@ -240,4 +282,8 @@ const EmptyDescriptionList = styled.ol`
 
 const EmptyDescriptionListItem = styled.li`
   list-style-type: decimal;
+`;
+
+const RunnerWrapper = styled.div`
+  padding-left: 1rem;
 `;

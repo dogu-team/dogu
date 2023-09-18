@@ -1,24 +1,21 @@
-import { FeatureTableBase, OrganizationBase, UserBase } from '@dogu-private/console';
+import { OrganizationResponse, UserBase } from '@dogu-private/console';
 import { AxiosError } from 'axios';
 import { GetServerSideProps } from 'next';
 
 import { getOrganizationInServerSide } from 'src/api/organization';
-import { getFeatureConfigInServerSide } from '../../enterprise/api/feature';
 import { redirectWithLocale } from '../ssr/locale';
 import { checkUserVerifiedInServerSide } from '../utils/auth';
 
 export interface OrganizationServerSideProps {
-  organization: OrganizationBase;
+  organization: OrganizationResponse;
   user: UserBase;
-  featureConfig: FeatureTableBase;
 }
 
 export const getOrganizationPageServerSideProps: GetServerSideProps<OrganizationServerSideProps> = async (context) => {
   try {
-    const [organization, checkResult, featureConfig] = await Promise.all([
+    const [organization, checkResult] = await Promise.all([
       getOrganizationInServerSide(context),
       checkUserVerifiedInServerSide(context),
-      getFeatureConfigInServerSide(context),
     ]);
 
     if (checkResult.redirect) {
@@ -35,7 +32,6 @@ export const getOrganizationPageServerSideProps: GetServerSideProps<Organization
       props: {
         organization,
         user: checkResult.props.fallback['/registery/check'],
-        featureConfig,
       },
     };
   } catch (e) {

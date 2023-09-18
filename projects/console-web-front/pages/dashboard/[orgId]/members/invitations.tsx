@@ -35,7 +35,7 @@ const InvitationUserPage: NextPageWithLayout<OrganizationServerSideProps> = ({ o
 
 InvitationUserPage.getLayout = (page) => {
   return (
-    <OrganizationMemberLayout organization={page.props.organization} titleI18nKey="organization:memberPageTitle">
+    <OrganizationMemberLayout {...page.props} titleI18nKey="organization:memberPageTitle">
       {page}
     </OrganizationMemberLayout>
   );

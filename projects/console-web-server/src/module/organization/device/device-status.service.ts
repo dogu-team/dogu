@@ -7,6 +7,7 @@ import {
   DevicePropSnake,
   DeviceResponse,
   DeviceTagPropCamel,
+  GetEnabledDeviceCountResponse,
   ProjectAndDevicePropCamel,
   ProjectAndDevicePropSnake,
   ProjectBase,
@@ -32,7 +33,7 @@ import { notEmpty } from '@dogu-tech/common';
 import { BrowserInstallation } from '@dogu-tech/device-client-common';
 import { ForbiddenException, forwardRef, HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
-import { BaseEntity, Brackets, DataSource, EntityManager, In, SelectQueryBuilder } from 'typeorm';
+import { BaseEntity, Brackets, DataSource, EntityManager, In, IsNull, Not, SelectQueryBuilder } from 'typeorm';
 import { v4 } from 'uuid';
 import { DeviceRunner } from '../../../db/entity/device-runner.entity';
 import { Device } from '../../../db/entity/device.entity';
@@ -41,10 +42,16 @@ import { DeviceAndDeviceTag } from '../../../db/entity/relations/device-and-devi
 import { ProjectAndDevice } from '../../../db/entity/relations/project-and-device.entity';
 import { LicenseValidator } from '../../../enterprise/module/license/common/validation';
 import { FeatureLicenseService } from '../../../enterprise/module/license/feature-license.service';
-import { FEATURE_CONFIG } from '../../../feature.config';
 import { Page } from '../../common/dto/pagination/page';
 import { DeviceTagService } from '../device-tag/device-tag.service';
-import { AttachTagToDeviceDto, EnableDeviceDto, FindAddableDevicesByOrganizationIdDto, FindDevicesByOrganizationIdDto, UpdateDeviceDto } from './dto/device.dto';
+import {
+  AttachTagToDeviceDto,
+  EnableDeviceDto,
+  FindAddableDevicesByOrganizationIdDto,
+  FindDevicesByOrganizationIdDto,
+  UpdateDeviceDto,
+  UpdateDeviceMaxParallelJobsDto,
+} from './dto/device.dto';
 
 @Injectable()
 export class DeviceStatusService {
@@ -56,6 +63,21 @@ export class DeviceStatusService {
     @InjectDataSource()
     private readonly dataSource: DataSource,
   ) {}
+
+  async getEnabledDeviceCount(): Promise<GetEnabledDeviceCountResponse> {
+    const enabledMobileDevices = await LicenseValidator.enabledMobileDevices(this.dataSource.manager);
+    const enabledHostDevices = await LicenseValidator.enabledHostDevices(this.dataSource.manager);
+
+    const enabledMobileCount = enabledMobileDevices.length;
+    const enabledHostRunnerCount = enabledHostDevices.map((device) => device.maxParallelJobs).reduce((a, b) => a + b, 0);
+
+    const rv: GetEnabledDeviceCountResponse = {
+      enabledMobileCount,
+      enabledBrowserCount: enabledHostRunnerCount,
+    };
+
+    return rv;
+  }
 
   async findDevicesByOrganizationId(userPayload: UserPayload, organizationId: OrganizationId, dto: FindDevicesByOrganizationIdDto): Promise<Page<DeviceResponse>> {
     const projectIdFilterClause = dto.projectIds.length !== 0 ? 'project.project_id IN (:...projectIds)' : '1=1';
@@ -87,6 +109,7 @@ export class DeviceStatusService {
       .leftJoinAndSelect(`device.${DevicePropCamel.remoteDeviceJobs}`, 'remoteDeviceJob', `remoteDeviceJob.${RemoteDeviceJobPropCamel.sessionState} IN (:...sessionStates)`, {
         sessionStates: [REMOTE_DEVICE_JOB_STATE.WAITING, REMOTE_DEVICE_JOB_STATE.IN_PROGRESS],
       })
+      .leftJoinAndSelect(`device.${DevicePropCamel.deviceRunners}`, 'deviceRunner')
       .where('organization.organization_id = :organizationId', { organizationId })
       .andWhere('device.name ILIKE :name', { name: `%${dto.deviceName}%` })
       .andWhere(projectIdFilterClause, { projectIds: dto.projectIds })
@@ -128,6 +151,7 @@ export class DeviceStatusService {
       .where(`hostDevice.${DevicePropSnake.is_host} = 1 AND hostDevice.${DevicePropSnake.enable_host_device} = 0`);
 
     const rawPagedDevicesQuery = qb
+      .leftJoinAndSelect(`device.${DevicePropCamel.deviceRunners}`, 'deviceRunner')
       .where('device.organization_id = :organizationId', { organizationId })
       .andWhere(`device.${DevicePropSnake.device_id} NOT IN ${projectDeviceSubQuery.getQuery()}`)
       .andWhere(`device.${DevicePropSnake.device_id} NOT IN ${hostDeviceSubQuery.getQuery()}`)
@@ -155,6 +179,7 @@ export class DeviceStatusService {
       .leftJoinAndSelect(`device.${DevicePropCamel.host}`, 'host')
       .leftJoinAndSelect(`device.${DevicePropCamel.projectAndDevices}`, 'projectAndDevice')
       .leftJoinAndSelect(`projectAndDevice.${ProjectAndDevicePropCamel.project}`, 'project')
+      .leftJoinAndSelect(`device.${DevicePropCamel.deviceRunners}`, 'deviceRunner')
       .where(`device.${DevicePropCamel.deviceId} = :deviceId`, { deviceId })
       .orderBy(`device.${DevicePropCamel.updatedAt}`, 'DESC')
       .orderBy(`deviceTag.${DeviceTagPropCamel.createdAt}`, 'ASC')
@@ -197,7 +222,6 @@ export class DeviceStatusService {
       // public device
       if (device.isGlobal === 1) {
         await this.dataSource.getRepository(Device).save(Object.assign(device, { isGlobal: 0 }));
-        // return;
       }
 
       //  belongs to project device
@@ -228,76 +252,49 @@ export class DeviceStatusService {
     return;
   }
 
-  async curUsedDevices(organizationId: OrganizationId): Promise<Device[]> {
-    const qb = this.dataSource.getRepository(Device).createQueryBuilder('device');
-
-    const devices = await qb
-      .leftJoinAndSelect(`device.${DevicePropCamel.projectAndDevices}`, 'projectAndDevice')
-      .where(`device.${DevicePropSnake.organization_id} = :${DevicePropCamel.organizationId}`, { organizationId })
-      .getMany();
-
-    const globalDevices = devices.filter((device) => device.isGlobal === 1);
-    const projectDevices = devices.filter((device) => {
-      return device.isGlobal === 0 && device.projectAndDevices && device.projectAndDevices.length > 0;
-    });
-
-    const curUsedDevices = [...globalDevices, ...projectDevices];
-
-    return curUsedDevices;
-  }
-
-  async curUsedAllDevices(): Promise<Device[]> {
-    const qb = this.dataSource.getRepository(Device).createQueryBuilder('device');
-    const devices = await qb.leftJoinAndSelect(`device.${DevicePropCamel.projectAndDevices}`, 'projectAndDevice').getMany();
-
-    const globalDevices = devices.filter((device) => device.isGlobal === 1);
-    const projectDevices = devices.filter((device) => {
-      return device.isGlobal === 0 && device.projectAndDevices && device.projectAndDevices.length > 0;
-    });
-
-    const curUsedDevices = [...globalDevices, ...projectDevices];
-    return curUsedDevices;
-  }
-
   async enableAndUpateDevice(organizationId: OrganizationId, deviceId: DeviceId, dto: EnableDeviceDto): Promise<void> {
-    const { projectId } = dto;
-    const device = await this.dataSource.getRepository(Device).findOne({ where: { deviceId } });
+    const { projectId, isGlobal } = dto;
+    const device = await this.dataSource
+      .getRepository(Device) //
+      .createQueryBuilder('device')
+      .leftJoinAndSelect(`device.${DevicePropCamel.projectAndDevices}`, 'projectAndDevice')
+      .where(`device.${DevicePropCamel.deviceId} = :deviceId`, { deviceId })
+      .andWhere(`device.${DevicePropCamel.organizationId} = :organizationId`, { organizationId })
+      .getOne();
+
     if (!device) {
       throw new HttpException(`Cannot find device. deviceId: ${deviceId}`, HttpStatus.NOT_FOUND);
     }
 
-    if (FEATURE_CONFIG.get('licenseModule') === 'self-hosted') {
-      const curUsedDevices = await this.curUsedAllDevices();
-      const curUsedDeviceIds = curUsedDevices.map((device) => device.deviceId);
-      const isUsingDevice = curUsedDeviceIds.includes(deviceId);
-
-      if (!isUsingDevice) {
-        const license = await this.licenseService.getLicense(organizationId);
-        LicenseValidator.validateDeviceCount(license, curUsedDevices.length + 1);
+    if (projectId || isGlobal) {
+      if (device.isHost) {
+        await LicenseValidator.validateBrowserEnableCount(this.dataSource.manager, this.licenseService, organizationId, device, device.maxParallelJobs);
+      } else {
+        await LicenseValidator.validateMobileEnableCount(this.dataSource.manager, this.licenseService, organizationId, device);
       }
     }
 
     await this.dataSource.transaction(async (manager) => {
-      if (dto.isGlobal === true) {
+      if (isGlobal === true) {
         const deviceAndProjects = await manager.getRepository(ProjectAndDevice).find({ where: { deviceId } });
         if (deviceAndProjects.length > 0) {
           await manager.getRepository(ProjectAndDevice).softRemove(deviceAndProjects);
         }
-        await manager.getRepository(Device).save(Object.assign(device, { isGlobal: 1 }));
-      } else if (dto.projectId) {
+        await manager.getRepository(Device).update({ deviceId }, { isGlobal: 1 });
+      } else if (projectId) {
         const deviceAndProject = await manager.getRepository(ProjectAndDevice).findOne({ where: { deviceId, projectId }, withDeleted: true });
         if (deviceAndProject) {
           if (deviceAndProject.deletedAt) {
             await manager.getRepository(ProjectAndDevice).recover(deviceAndProject);
           }
-          await manager.getRepository(Device).save(Object.assign(device, { isGlobal: 0 }));
+          await manager.getRepository(Device).update({ deviceId }, { isGlobal: 0 });
         } else {
           const newData = manager.getRepository(ProjectAndDevice).create({ deviceId, projectId });
           await manager.getRepository(ProjectAndDevice).save(newData);
-          await manager.getRepository(Device).save(Object.assign(device, { isGlobal: 0 }));
+          await manager.getRepository(Device).update({ deviceId }, { isGlobal: 0 });
         }
       } else {
-        await manager.getRepository(Device).save(Object.assign(device, { isGlobal: 0 }));
+        await manager.getRepository(Device).update({ deviceId }, { isGlobal: 0 });
       }
       await this.addDefaultTagToDevices(manager, device);
     });
@@ -336,8 +333,46 @@ export class DeviceStatusService {
     await this.dataSource.getRepository(ProjectAndDevice).softRemove(deviceAndProject);
   }
 
+  async updateDeviceMaxParallelJobs(manager: EntityManager, organizationId: OrganizationId, deviceId: DeviceId, dto: UpdateDeviceMaxParallelJobsDto): Promise<DeviceResponse> {
+    const { maxParallelJobs } = dto;
+    // const device = await manager.getRepository(Device).findOne({ where: { deviceId, organizationId, isHost: 1 } });
+
+    const device = await manager
+      .getRepository(Device) //
+      .createQueryBuilder('device')
+      .leftJoinAndSelect(`device.${DevicePropCamel.projectAndDevices}`, 'projectAndDevice')
+      .where(`device.${DevicePropCamel.deviceId} = :deviceId`, { deviceId })
+      .andWhere(`device.${DevicePropCamel.organizationId} = :organizationId`, { organizationId })
+      .andWhere(`device.${DevicePropCamel.isHost} = :isHost`, { isHost: 1 })
+      .getOne();
+
+    if (!device) {
+      throw new HttpException(`This device does not exists. : ${deviceId}`, HttpStatus.BAD_REQUEST);
+    }
+
+    if (maxParallelJobs) {
+      if (!validateMaxParallelJobs(device.platform, maxParallelJobs)) {
+        throw new HttpException(`maxParallelJobs is invalid. : ${maxParallelJobs}, platform: ${platformTypeFromPlatform(device.platform)}`, HttpStatus.BAD_REQUEST);
+      }
+    }
+
+    if (device.isGlobal === 1 || (device.projectAndDevices && device.projectAndDevices.length > 0)) {
+      if (device.maxParallelJobs < maxParallelJobs) {
+        await LicenseValidator.validateBrowserEnableCount(manager, this.licenseService, organizationId, device, maxParallelJobs);
+      }
+    }
+
+    const newData = Object.assign(device, {
+      maxParallelJobs,
+    });
+
+    const updateDevice = await manager.getRepository(Device).save(newData);
+    await DeviceStatusService.updateDeviceRunners(manager, deviceId);
+    return updateDevice;
+  }
+
   async updateDevice(manager: EntityManager, organizationId: OrganizationId, deviceId: DeviceId, dto: UpdateDeviceDto): Promise<DeviceResponse> {
-    const { name, maxParallelJobs } = dto;
+    const { name } = dto;
     const deviceById = await manager.getRepository(Device).findOne({ where: { deviceId } });
     const deviceByName = await manager.getRepository(Device).findOne({ where: { organizationId, name } });
     const nameTag = await manager.getRepository(DeviceTag).findOne({ where: { organizationId, name: dto.name } });
@@ -354,15 +389,9 @@ export class DeviceStatusService {
         throw new HttpException(`This device name already exists. : ${name}`, HttpStatus.BAD_REQUEST);
       }
     }
-    if (maxParallelJobs) {
-      if (!validateMaxParallelJobs(deviceById.platform, maxParallelJobs)) {
-        throw new HttpException(`maxParallelJobs is invalid. : ${maxParallelJobs}, platform: ${platformTypeFromPlatform(deviceById.platform)}`, HttpStatus.BAD_REQUEST);
-      }
-    }
 
     const newData = Object.assign(deviceById, {
       name: name ? name : deviceById.name,
-      maxParallelJobs: maxParallelJobs ? maxParallelJobs : deviceById.maxParallelJobs,
     });
     const updateDevice = await manager.getRepository(Device).save(newData);
     await DeviceStatusService.updateDeviceRunners(manager, deviceId);
@@ -742,10 +771,12 @@ export class DeviceStatusService {
     const currentCount = await manager.getRepository(DeviceRunner).count({ where: { deviceId } });
     const toRecoverOrCreateCount = Math.max(0, toUpdateCount - currentCount);
     if (toRecoverOrCreateCount > 0) {
-      const softDeletedCount = await manager.getRepository(DeviceRunner).count({ where: { deviceId }, withDeleted: true });
+      // const softDeletedCount = await manager.getRepository(DeviceRunner).count({ where: { deviceId }, withDeleted: true });
+      const softDeletedCount = await manager.getRepository(DeviceRunner).count({ where: { deviceId, deletedAt: Not(IsNull()) }, withDeleted: true });
       const toRecoverCount = Math.min(toRecoverOrCreateCount, softDeletedCount);
       if (toRecoverCount > 0) {
-        const softDeleteds = await manager.getRepository(DeviceRunner).find({ where: { deviceId }, withDeleted: true, take: toRecoverCount });
+        // const softDeleteds = await manager.getRepository(DeviceRunner).find({ where: { deviceId }, withDeleted: true, take: toRecoverCount });
+        const softDeleteds = await manager.getRepository(DeviceRunner).find({ where: { deviceId, deletedAt: Not(IsNull()) }, withDeleted: true, take: toRecoverCount });
         await manager.getRepository(DeviceRunner).recover(softDeleteds);
       }
 

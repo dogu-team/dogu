@@ -43,19 +43,6 @@ export class LicenseValidateClass implements LicenseBase {
   lastAccessedAt!: Date;
 }
 
-// export const DEFAULT_CLOUD_LICENSE_DATA: LicenseBase = {
-//   licenseId: '',
-//   licenseTierId: 0,
-//   type: 'cloud',
-//   licenseTokenId: '',
-//   organizationId: null,
-//   companyName: null,
-//   createdAt: new Date(),
-//   deletedAt: null,
-//   licenseTier: DEFAULT_CLOUD_LICENSE_TIER_DATA,
-//   licenseToken: undefined,
-// };
-
 export const DEFAULT_SELF_HOSTED_LICENSE_DATA: LicenseBase = {
   licenseId: '',
   licenseTierId: 0,

@@ -1,28 +1,26 @@
-import {
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  ExclamationCircleOutlined,
-  QuestionCircleFilled,
-} from '@ant-design/icons';
+import { CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { HostBase } from '@dogu-private/console';
-import { EDITION_TYPE, HostConnectionState } from '@dogu-private/types';
+import { HostConnectionState } from '@dogu-private/types';
 import { Button, Tag, Tooltip } from 'antd';
 import { useContext } from 'react';
 import styled from 'styled-components';
+import useTranslation from 'next-translate/useTranslation';
+import { isAxiosError } from 'axios';
 
 import { DoguAgentLatestContext } from '../../../pages/dashboard/[orgId]/device-farm/hosts';
 import { parseSemver } from '../../../src/utils/download';
-import useFeatureContext from '../../contexts/feature';
 import { getAgentUpdatableInfo } from '../../utils/host';
 import ProTag from '../common/ProTag';
 import useModal from '../../../src/hooks/useModal';
 import DangerConfirmModal from '../../../src/components/modals/DangerConfirmModal';
-import useTranslation from 'next-translate/useTranslation';
 import useRequest from '../../../src/hooks/useRequest';
 import { updateHostApp } from '../../api/host';
 import { sendErrorNotification, sendSuccessNotification } from '../../../src/utils/antd';
-import { isAxiosError } from 'axios';
 import { getErrorMessageFromAxios } from '../../../src/utils/error';
+import { OrganizationContext } from '../../../src/hooks/context/useOrganizationContext';
+import { isPaymentRequired, isTimeout } from '../../utils/error';
+import { UpgradeConveniencePlanModal } from '../license/UpgradePlanBannerModal';
+import TimeoutDocsModal from '../license/TimeoutDocsModal';
 
 interface Props {
   host: HostBase;
@@ -30,8 +28,10 @@ interface Props {
 
 const HostVesrsionBadge = ({ host }: Props) => {
   const latestContext = useContext(DoguAgentLatestContext);
-  const featureContext = useFeatureContext();
+  const { organization } = useContext(OrganizationContext);
   const [isOpen, openModal, closeModal] = useModal();
+  const [isBannerOpen, openBanner, closeBanner] = useModal();
+  const [isDocsOtpen, openDocs, closeDocs] = useModal();
   const [loading, request] = useRequest(updateHostApp);
   const { t } = useTranslation();
 
@@ -46,7 +46,13 @@ const HostVesrsionBadge = ({ host }: Props) => {
       closeModal();
     } catch (e) {
       if (isAxiosError(e)) {
-        sendErrorNotification(t('device-farm:hostUpdateFailMsg', { reason: getErrorMessageFromAxios(e) }));
+        if (isPaymentRequired(e)) {
+          openBanner();
+        } else if (isTimeout(e)) {
+          openDocs();
+        } else {
+          sendErrorNotification(t('device-farm:hostUpdateFailMsg', { reason: getErrorMessageFromAxios(e) }));
+        }
       }
     }
   };
@@ -59,12 +65,13 @@ const HostVesrsionBadge = ({ host }: Props) => {
 
   const updatableInfo = getAgentUpdatableInfo(latestContext.latestInfo, host);
   const updatable =
-    host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED &&
-    featureContext?.defaultEdition === EDITION_TYPE.ENTERPRISE &&
-    updatableInfo.isUpdatable;
+    host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED && updatableInfo.isUpdatable;
   const shouldShowUpdateButton =
     host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED &&
     (updatableInfo.reason || updatableInfo.isUpdatable);
+  const isCommunityEdition =
+    process.env.NEXT_PUBLIC_ENV === 'self-hosted' &&
+    !organization?.licenseInfo?.licenseTier?.doguAgentAutoUpdateEnabled;
 
   return (
     <>
@@ -73,17 +80,30 @@ const HostVesrsionBadge = ({ host }: Props) => {
           host.connectionState === HostConnectionState.HOST_CONNECTION_STATE_CONNECTED && updatableInfo.reason
             ? updatableInfo.reason
             : host.connectionState !== HostConnectionState.HOST_CONNECTION_STATE_CONNECTED
-            ? `Updatable when connected`
-            : `Dogu and Agent version not matched!\nThis can result in unexpected behavior.\nDogu: ${process.env.NEXT_PUBLIC_DOGU_VERSION}, Agent: ${host.agentVersion}`
+            ? t('device-farm:doguAgentUpdateDisconnectedMessage')
+            : t('device-farm:doguAgentVersionMismatchMessage', {
+                doguVersion: process.env.NEXT_PUBLIC_DOGU_VERSION,
+                agentVersion: host.agentVersion,
+              })
         }
         open={!updatableInfo.reason && isMatched ? false : undefined}
         overlayInnerStyle={{ fontSize: '.8rem', textAlign: 'center', whiteSpace: 'pre-wrap' }}
       >
         {shouldShowUpdateButton ? (
-          <FlexButton disabled={!updatable} type="primary" onClick={() => openModal()}>
-            Update to latest&nbsp;
+          <FlexButton
+            disabled={!updatable}
+            type="primary"
+            onClick={() => {
+              if (isCommunityEdition) {
+                openBanner();
+              } else {
+                openModal();
+              }
+            }}
+          >
+            {t('device-farm:doguAgentUpdateAvailableMessage')}&nbsp;
             <b style={{ fontSize: '.75rem' }}>{`(current: ${host.agentVersion})`}</b>
-            {featureContext?.defaultEdition === EDITION_TYPE.COMUINITIY && <ProTag style={{ marginLeft: '.5rem' }} />}
+            {isCommunityEdition && <ProTag style={{ marginLeft: '.5rem' }} />}
           </FlexButton>
         ) : (
           <Tag
@@ -114,6 +134,13 @@ const HostVesrsionBadge = ({ host }: Props) => {
       >
         <p>{t('device-farm:hostUpdateModalContentInfo')}</p>
       </DangerConfirmModal>
+      <UpgradeConveniencePlanModal
+        isOpen={isBannerOpen}
+        close={closeBanner}
+        title={t('license:agentUpdateModalTitle')}
+        description={null}
+      />
+      <TimeoutDocsModal isOpen={isDocsOtpen} close={closeDocs} />
     </>
   );
 };

@@ -7,6 +7,7 @@ import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import useTranslation from 'next-translate/useTranslation';
+import Trans from 'next-translate/Trans';
 
 import { getHostByToken, updateUseHostAsDevice } from '../../api/host';
 import useModal from '../../hooks/useModal';
@@ -22,9 +23,8 @@ import GuideAnchor from './GuideAnchor';
 import GuideBanner from './GuideBanner';
 import GuideLayout from './GuideLayout';
 import GuideStep from './GuideStep';
-import TutorialDeviceList from './TutorialDeviceLIst';
+import TutorialDeviceList from '../../../enterprise/components/device/TutorialDeviceList';
 import CreateProjectModal from '../projects/CreateProjectModal';
-import Trans from 'next-translate/Trans';
 import DoguText from '../common/DoguText';
 
 const INTRODUCTION_ID = 'introduction';

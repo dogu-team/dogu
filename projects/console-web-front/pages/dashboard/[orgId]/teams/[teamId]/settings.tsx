@@ -64,7 +64,7 @@ const TeamMemberPage: NextPageWithLayout<OrganizationServerSideProps> = ({ organ
 };
 
 TeamMemberPage.getLayout = (page) => {
-  return <TeamPageLayout organization={page.props.organization}>{page}</TeamPageLayout>;
+  return <TeamPageLayout {...page.props}>{page}</TeamPageLayout>;
 };
 
 export const getServerSideProps = getOrganizationPageServerSideProps;

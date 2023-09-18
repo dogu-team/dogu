@@ -162,12 +162,14 @@ const ItemTitleWrapper = styled.div`
 `;
 
 const ItemTitle = styled.p`
+  font-size: 0.9rem;
   font-weight: 700;
-  line-height: 1.4;
+  line-height: 1.5;
 `;
 
 const ItemDescription = styled.p`
-  line-height: 1.4;
+  font-size: 0.9rem;
+  line-height: 1.5;
   white-space: pre-wrap;
   word-break: keep-all;
 `;
