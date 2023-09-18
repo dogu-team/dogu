@@ -31,24 +31,28 @@ const DeviceCounter: React.FC = () => {
   const isBrowserMaxed = browserUsedCount >= browserMaxCount;
   const isMobileMaxed = mobileUsedCount >= mobileMaxCount;
 
-  return (
-    <FlexRow>
-      <StyledText>
-        {isBrowserMaxed && <ExclamationCircleOutlined style={{ color: 'red' }} />}&nbsp;Browsers: {browserUsedCount} /{' '}
-        {browserMaxCount === Number.POSITIVE_INFINITY ? '∞' : browserMaxCount}
-        &nbsp;&nbsp;&nbsp;{isMobileMaxed && <ExclamationCircleOutlined style={{ color: 'red' }} />}&nbsp;Devices:{' '}
-        {countInfo?.enabledMobileCount} / {mobileMaxCount === Number.POSITIVE_INFINITY ? '∞' : mobileMaxCount}
-      </StyledText>
+  if (process.env.NEXT_PUBLIC_ENV === 'self-hosted') {
+    return (
+      <FlexRow>
+        <StyledText>
+          {isBrowserMaxed && <ExclamationCircleOutlined style={{ color: 'red' }} />}&nbsp;Browsers: {browserUsedCount} /{' '}
+          {browserMaxCount === Number.POSITIVE_INFINITY ? '∞' : browserMaxCount}
+          &nbsp;&nbsp;&nbsp;{isMobileMaxed && <ExclamationCircleOutlined style={{ color: 'red' }} />}&nbsp;Devices:{' '}
+          {mobileUsedCount} / {mobileMaxCount === Number.POSITIVE_INFINITY ? '∞' : mobileMaxCount}
+        </StyledText>
 
-      {/* {(isBrowserMaxed || isMobileMaxed) && (
+        {/* {(isBrowserMaxed || isMobileMaxed) && (
         <a href={`${process.env.NEXT_PUBLIC_LANDING_URL}/pricing`} target="_blank">
           <Button type="primary" size="small">
             Upgrade plan
           </Button>
         </a>
       )} */}
-    </FlexRow>
-  );
+      </FlexRow>
+    );
+  }
+
+  return null;
 };
 
 export default DeviceCounter;
