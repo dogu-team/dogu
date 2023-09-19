@@ -16,6 +16,7 @@
 #pragma comment(lib, "Winmm.lib")
 #elif defined(__APPLE__)
 #define WEBRTC_MAC
+#define WEBRTC_POSIX
 #else
 #define WEBRTC_POSIX
 #endif // defined(_WIN32 )
