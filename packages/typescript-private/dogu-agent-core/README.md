@@ -1,1 +1,1 @@
-# Device Server
+# @dogu-private/dogu-agent-core
