@@ -1,1 +1,1 @@
-# @dogu-private/dogu-agent-core
+# Dogu Agent Core
