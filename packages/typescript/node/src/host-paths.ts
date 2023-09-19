@@ -76,7 +76,6 @@ export const HostPaths = {
     },
     browser: {
       browsersPath: (): string => path.resolve(HostPaths.external.externalsPath(), 'browsers'),
-      geckodriverPath: (): string => path.resolve(HostPaths.external.browser.browsersPath(), process.platform === 'win32' ? 'geckodriver.exe' : 'geckodriver'),
       safariBrowserPath: (): string => path.resolve('/Applications/Safari.app/Contents/MacOS/Safari'),
       safaridriverPath: (): string => (process.platform === 'darwin' ? path.resolve('/usr/bin/safaridriver') : ''),
     },

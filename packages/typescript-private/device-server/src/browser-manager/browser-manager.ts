@@ -25,7 +25,7 @@ import { Edge, EdgeInstallablePlatformArch, edgeVersionUtils } from './edge';
 import { Edgedriver, EdgedriverInstallablePlatform } from './edgedriver';
 import { Firefox, FirefoxInstallablePlatform } from './firefox';
 import { firefoxVersionUtils } from './firefox-version-utils';
-import { Geckodriver } from './geckodriver';
+import { Geckodriver, GeckodriverInstallablePlatform } from './geckodriver';
 import { Safari, safariVersionUtils } from './safari';
 import { Safaridriver } from './safaridriver';
 
@@ -392,17 +392,35 @@ export class BrowserManager {
 
   private async ensureBrowserDriverForFirefox(options: EnsureBrowserDriverOptions): Promise<EnsureBrowserDriverResult> {
     const { browserName, browserPlatform } = options;
-    const driverPath = this.geckodriver.getExecutablePath();
-    const driverVersion = await this.geckodriver.getVersion();
-    if (!driverVersion) {
-      throw new Error('Geckodriver version not found');
+    const resolvedBrowserPlatform = this.getBrowserPlatformForBrowserDriver(browserPlatform);
+    const geckodriverPlatform = this.getGeckodriverInstallablePlatformByBrowserPlatform(resolvedBrowserPlatform);
+    if (!geckodriverPlatform) {
+      throw new Error(`Firefox is not supported on platform ${resolvedBrowserPlatform}`);
     }
 
+    const driverFounds = await this.geckodriver.findInstallations({ installableName: 'geckodriver', rootPath: this.rootPath, platform: geckodriverPlatform });
+    if (driverFounds.length > 0) {
+      const match = driverFounds[0];
+      return {
+        browserName,
+        browserPlatform,
+        browserDriverVersion: match.version,
+        browserDriverPath: match.executablePath,
+      };
+    }
+
+    const latestVersion = await this.geckodriver.getLatestVersion({ installableName: 'geckodriver' });
+    const driverInstallResult = await this.geckodriver.install({
+      installableName: 'geckodriver',
+      rootPath: this.rootPath,
+      platform: geckodriverPlatform,
+      version: latestVersion,
+    });
     return {
       browserName,
       browserPlatform,
-      browserDriverVersion: driverVersion,
-      browserDriverPath: driverPath,
+      browserDriverVersion: latestVersion,
+      browserDriverPath: driverInstallResult.executablePath,
     };
   }
 
@@ -743,6 +761,20 @@ export class BrowserManager {
         return this.firefox.getFirefoxInstallablePlatform({ platform: 'darwin', arch: process.arch });
       case 'windows':
         return this.firefox.getFirefoxInstallablePlatform({ platform: 'win32', arch: process.arch });
+      case 'android':
+      case 'ios':
+        return undefined;
+      default:
+        assertUnreachable(browserPlatform);
+    }
+  }
+
+  private getGeckodriverInstallablePlatformByBrowserPlatform(browserPlatform: BrowserPlatform): GeckodriverInstallablePlatform | undefined {
+    switch (browserPlatform) {
+      case 'macos':
+        return this.geckodriver.getGeckodriverInstallablePlatform({ platform: 'darwin', arch: process.arch });
+      case 'windows':
+        return this.geckodriver.getGeckodriverInstallablePlatform({ platform: 'win32', arch: process.arch });
       case 'android':
       case 'ios':
         return undefined;
