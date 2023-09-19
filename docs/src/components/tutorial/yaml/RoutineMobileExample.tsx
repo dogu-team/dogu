@@ -2,6 +2,7 @@ import CodeBlock from '@theme/CodeBlock';
 import React from 'react';
 
 export function RoutineMobileExample(option: {
+  name: string;
   environment: 'python' | 'node';
   androidAppPackageName: string;
   androidCommand: string;
@@ -13,7 +14,7 @@ export function RoutineMobileExample(option: {
   if (option.environment === 'python') {
     prepareCommand = 'pip3 install -r requirements.txt';
   }
-  const text = `name: app_test
+  const text = `name: ${option.name}
 
 on:
   workflow_dispatch:
