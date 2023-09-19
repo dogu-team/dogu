@@ -1,10 +1,9 @@
 import { cmake } from '@dogu-dev-private/base-build-tools';
-import { download, OctokitContext } from '@dogu-tech/node';
+import { download } from '@dogu-tech/node';
 import fs from 'fs';
 import path from 'path';
 import * as shelljs from 'shelljs';
 import { copyForce } from './build_helpers';
-import { env } from './env';
 
 const doguWorkspacePath = path.resolve(__dirname, '../../..');
 const parameter: {
@@ -70,7 +69,7 @@ const parameter: {
         {
           src: 'build/desktop-capturer',
           dests: [path.resolve(doguWorkspacePath, `third-party/linux/x64/desktop-capturer`)],
-        }
+        },
       ],
       libs: [{ path: 'externals/webrtc/lib/linux-x86_64-libwebrtc.a' }],
     },
@@ -86,7 +85,7 @@ export async function checkLibs(desktopCapturerProjPath: string, libPaths: strin
 
     const libFileName = path.basename(libPath);
 
-    await download(`https://github.com/dogu-team/third-party-binaries/releases/download/libwebrtc-4976/${libFileName}`, libPath, {}, console);
+    await download({ url: `https://github.com/dogu-team/third-party-binaries/releases/download/libwebrtc-4976/${libFileName}`, filePath: libPath, logger: console });
   }
 }
 
