@@ -31,8 +31,7 @@ struct WindowInfo
     }
 };
 
-std::vector<WindowInfo> getInfos();
-void getInfosString(std::string &out);
+void getInfosString(std::vector<WindowInfo> &infos, std::string &out);
 } // namespace mywindows
 
 #endif /* MYWINDOWS_H */

@@ -1,10 +1,3 @@
-//
-//  tcpClient.hpp
-//  webrtc_lib_practice
-//
-//  Created by jenkins on 2022/12/05.
-//
-
 #ifndef TCPCLIENT_H
 #define TCPCLIENT_H
 

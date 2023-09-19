@@ -1,10 +1,3 @@
-//
-//  tcpClient.cpp
-//  webrtc_lib_practice
-//
-//  Created by Dogu on 2022/12/05.
-//
-
 #include "tcpClient.h"
 
 #if defined(_WIN32)
