@@ -82,6 +82,9 @@ const HostDeviceRunnerSettingModal: React.FC<Props> = ({ device, isOpen, close }
         cancelText={t('common:cancel')}
         destroyOnClose
         centered
+        okButtonProps={{
+          id: 'host-device-runner-setting-submit-btn',
+        }}
       >
         <Form form={form} layout="vertical">
           <Form.Item

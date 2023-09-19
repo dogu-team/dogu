@@ -949,7 +949,7 @@ Dest.withOptions({
       const hostDeviceSettingConfig = deviceSettingInfos.find((item) => item.settingJobName === 'Host device setting');
       const androidDeviceSettingConfig = deviceSettingInfos.find((item) => item.settingJobName === 'Android device setting');
 
-      test('Update device settings', async () => {
+      test('Rename device name', async () => {
         expect(!!hostDeviceSettingConfig).toBe(true);
         await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
         await Driver.clickElement({ xpath: `//button[@id="${hostDeviceName}-setting-menu-btn"]` });
@@ -960,23 +960,22 @@ Dest.withOptions({
       });
 
       test('Check device settings', async () => {
-        await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
         const deviceName = await Driver.getText({ xpath: `//p[text()="${hostDeviceName}"]` });
         expect(deviceName).toBe(hostDeviceName);
       });
 
-      // test('Update runner in host device', async () => {
-      //   await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
-      //   await Driver.clickElement({ xpath: `//button[@id="${hostDeviceName}-runner-setting-menu-btn"]` });
-      //   await Driver.clickElement({ xpath: `//input[@id="browser"]` });
-      //   await Driver.sendKeys({ xpath: `//input[@id="browser"]` }, '\b2');
-      //   await Driver.clickElement({ xpath: `//button[text()="${l10n('SAVE')}"]` });
-      //   await Timer.wait(2000, 'wait for changing device setting');
-      // });
+      test('Update runner in host device', async () => {
+        await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
+        await Driver.clickElement({ xpath: `//button[@id="${hostDeviceName}-runner-setting-menu-btn"]` });
+        await Driver.clickElement({ xpath: `//input[@id="browser"]` });
+        await Driver.sendKeys({ xpath: `//input[@id="browser"]` }, '\b2');
+        await Driver.clickElement({ xpath: `//button[@id="host-device-runner-setting-submit-btn"]` });
+        await Timer.wait(2000, 'wait for changing device setting');
+      });
 
-      // test('Check runner count', async () => {
-      //   await Driver.findElement({ xpath: `//p[text()="${hostDeviceName}"]/../../../../div[2]/div[2]` });
-      // });
+      test('Check runner count', async () => {
+        await Driver.findElement({ xpath: `//p[text()="${hostDeviceName}"]/../../../../div[2]/div[2]` });
+      });
 
       test('Detach tag', async () => {
         await Driver.clickElement({ xpath: hostDeviceSettingConfig!.listTabMenu });
