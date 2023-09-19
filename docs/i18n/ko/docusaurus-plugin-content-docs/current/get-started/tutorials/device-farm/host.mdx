@@ -5,8 +5,17 @@ locale: ko
 sidebar_class_name: laptop_document_header
 ---
 
+import {
+  getBrowserPlatform,
+  BrowserPlatform,
+} from '@site/src/platform/platform.ts';
+import BrowserOnly from '@docusaurus/BrowserOnly';
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
+import DoguAgentInstallationWindowsCloud from '@site/src/components/device-farm/DoguAgentInstallationWindowsCloudKor.mdx';
+import DoguAgentInstallationWindowsSelfHosted from '@site/src/components/device-farm/DoguAgentInstallationWindowsSelfHostedKor.mdx';
+import DoguAgentInstallationMacOSCloud from '@site/src/components/device-farm/DoguAgentInstallationMacOSCloudKor.mdx';
+import DoguAgentInstallationMacOSSelfHosted from '@site/src/components/device-farm/DoguAgentInstallationMacOSSelfHostedKor.mdx';
 
 ### 호스트 요구사항
 
@@ -24,18 +33,53 @@ import TabItem from '@theme/TabItem';
 <Tabs groupId="service" defaultValue="cloud" queryString>
 <TabItem value="cloud" label="Cloud" default>
 
-1. [Dogu Agent](https://dogutech.io/downloads/dogu-agent)를 설치 및 실행합니다.
+1. [Dogu Agent](/device-farm/host)를 설치하고 실행하세요.
+
+<BrowserOnly>
+{() => (
+<Tabs groupId="service" defaultValue={getBrowserPlatform('macos')} queryString>
+<TabItem value="windows" label="Windows" default>
+
+<DoguAgentInstallationWindowsCloud />
+
+</TabItem>
+<TabItem value="macos" label="macOS" default>
+
+<DoguAgentInstallationMacOSCloud />
+
+</TabItem>
+</Tabs>
+)}
+</BrowserOnly>
 
 </TabItem>
 
 <TabItem value="self-hosted" label="Self-Hosted" default>
 
-1. [Release](https://github.com/dogu-team/dogu/releases)에서 Dogu 버전과 일치하는 Dogu Agent를 설치합니다.  
-   1-1. `DOGU_HOST:4000` 값을 API URL에 입력합니다.
-   <img
-     src="/ko/img/get-started/dost-api-url-input.png"
-     style={{ width: 600, display: 'block' }}
-   />
+1. [Dogu Agent](/device-farm/host)를 설치하고 실행하세요.
+
+<BrowserOnly>
+{() => (
+<Tabs groupId="service" defaultValue={getBrowserPlatform('macos')} queryString>
+<TabItem value="windows" label="Windows" default>
+
+<DoguAgentInstallationWindowsSelfHosted />
+
+</TabItem>
+<TabItem value="macos" label="macOS" default>
+
+<DoguAgentInstallationMacOSSelfHosted />
+
+</TabItem>
+</Tabs>
+)}
+</BrowserOnly>
+
+- `DOGU_HOST:4000` 값을 API URL에 입력합니다.
+  <img
+    src="/ko/img/get-started/dost-api-url-input.png"
+    style={{ width: 600, display: 'block' }}
+  />
 
 </TabItem>
 </Tabs>

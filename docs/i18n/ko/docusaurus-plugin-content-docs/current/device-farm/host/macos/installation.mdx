@@ -11,8 +11,6 @@ import {
 
 import dost_macos_setting from '@site/static/img/dost/dost_macos_setting.png';
 import dost_macos_troubleshoot from '@site/static/img/dost/dost_macos_troubleshoot.png';
-import dost_macos_to_application from '@site/static/img/dost/dost_macos_to_application.png';
-import dost_macos_to_application_dmg from '@site/static/img/dost/dost_macos_to_application_dmg.png';
 import dost_macos_manual_setup from '@site/static/img/dost/dost_macos_manual_setup.png';
 import dost_macos_macossettings from '@site/static/img/dost/dost_macos_macossettings.png';
 import dost_windows_setting from '@site/static/img/dost/dost_windows_setting.png';
@@ -26,6 +24,8 @@ import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
 import XcodeSettings from '@site/src/components/device-farm/XcodeSettingsKor.mdx';
+import DoguAgentInstallationCloud from '@site/src/components/device-farm/DoguAgentInstallationMacOSCloudKor.mdx';
+import DoguAgentInstallationSelfHosted from '@site/src/components/device-farm/DoguAgentInstallationMacOSSelfHostedKor.mdx';
 
 ### 요구사항
 
@@ -40,17 +40,12 @@ import XcodeSettings from '@site/src/components/device-farm/XcodeSettingsKor.mdx
 <Tabs groupId="service" defaultValue="cloud" queryString>
 <TabItem value="cloud" label="Cloud" default>
 
-- [Dogu Agent 다운로드](https://dogutech.io/downloads/dogu-agent) 페이지에서 `Dogu Agent`를 다운로드 받을 수 있습니다.  
-  원하는 Platform, Architecture에 맞게 다운로드 받아주세요.
-  - <img src={dost_macos_to_application_dmg} style={{ width: 400 }} />
-  - dmg file을 열고 Dogu Agent를 Applications 폴더로 이동해주세요.
+<DoguAgentInstallationCloud />
 
 </TabItem>
 <TabItem value="self-hosted" label="Self-Hosted">
 
-- Self-hosted 빌드의 경우에는 [Github Release](https://github.com/dogu-team/dogu/releases)에서 다운로드 받아주세요.
-  - <img src={dost_macos_to_application} style={{ width: 400 }} />
-  - Dogu-Agent.app file을 Dogu Agent를 Applications 폴더로 이동해주세요.
+<DoguAgentInstallationSelfHosted />
 
 </TabItem>
 </Tabs>

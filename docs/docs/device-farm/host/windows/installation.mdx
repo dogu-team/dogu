@@ -8,10 +8,6 @@ import {
   getBrowserPlatform,
   BrowserPlatform,
 } from '@site/src/platform/platform.ts';
-import dost_macos_setting from '@site/static/img/dost/dost_macos_setting.png';
-import dost_macos_troubleshoot from '@site/static/img/dost/dost_macos_troubleshoot.png';
-import dost_macos_to_application from '@site/static/img/dost/dost_macos_to_application.png';
-import dost_macos_manual_setup from '@site/static/img/dost/dost_macos_manual_setup.png';
 import dost_windows_setting from '@site/static/img/dost/dost_windows_setting.png';
 import dost_windows_troubleshoot from '@site/static/img/dost/dost_windows_troubleshoot.png';
 import xcode_login_0 from '@site/static/img/dost/xcode_login_0.png';
@@ -22,6 +18,8 @@ import xcode_webdriveragent from '@site/static/img/dost/xcode_webdriveragent.png
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 import Admonition from '@theme/Admonition';
+import DoguAgentInstallationCloud from '@site/src/components/device-farm/DoguAgentInstallationWindowsCloud.mdx';
+import DoguAgentInstallationSelfHosted from '@site/src/components/device-farm/DoguAgentInstallationWindowsSelfHosted.mdx';
 
 ### Requirements
 
@@ -34,25 +32,15 @@ import Admonition from '@theme/Admonition';
 <Tabs groupId="service" defaultValue="cloud" queryString>
 <TabItem value="cloud" label="Cloud" default>
 
-- You can download `Dogu Agent` from the [Dogu Agent download page](https://dogutech.io/downloads/dogu-agent). Please download according to the platform and architecture you want.
+<DoguAgentInstallationCloud />
 
 </TabItem>
 <TabItem value="self-hosted" label="Self-Hosted">
 
-- For self-hosted builds, please download from [Github Release](https://github.com/dogu-team/dogu/releases).
+<DoguAgentInstallationSelfHosted />
 
 </TabItem>
 </Tabs>
-
-- Please run the exe installation file and agree to allow additional
-  network access.
-
-:::caution
-
-Installation may fail due to conflicts with security programs. If you suspect a conflict, you can add the $HOME/.dogu folder as a security exception folder.
-[For Microsoft Defender](https://support.microsoft.com/en-us/windows/add-an-exclusion-to-windows-security-811816c0-4dfd-af4a-47e4-c301afe13b26)
-
-:::
 
 ### Run
 
