@@ -50,9 +50,11 @@ export async function onDmgMounted(dmgPath: string, mountPath: string, timeout =
 const installerPackageNamePattern = /^installer: Package name is (?<packageName>.+)$/;
 
 /**
- * @example installer: Upgrading at base path /Users/dogu
+ * @example
+ * installer: Upgrading at base path /Users/dogu
+ * installer: Installing at base path /Users/dogu
  */
-const installerBasePathPattern = /^installer: Upgrading at base path (?<basePath>.+)$/;
+const installerBasePathPattern = /^installer: (Upgrading|Installing) at base path (?<basePath>.+)$/;
 
 export interface InstallPkgResult {
   appPath: string;
