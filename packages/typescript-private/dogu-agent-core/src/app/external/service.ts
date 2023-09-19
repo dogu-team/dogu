@@ -1,5 +1,6 @@
+import { PlatformAbility } from '@dogu-private/dost-children';
 import { errorify, Printable } from '@dogu-tech/common';
-import { categoryFromPlatform, isValidPlatformType, PlatformType, ThirdPartyPathMap } from '@dogu-tech/types';
+import { ThirdPartyPathMap } from '@dogu-tech/types';
 import { setInterval } from 'timers/promises';
 import { DotenvConfigKey } from '../../shares/dotenv-config';
 import { ExternalKey, ValidationCheckOption } from '../../shares/external';
@@ -41,47 +42,34 @@ export class ExternalService {
     this.unitCallbackFactory = options.unitCallbackFactory;
     this.logger = options.logger;
 
-    const platformTypes = this.appConfigService
-      .getOrDefault('DOGU_DEVICE_PLATFORM_ENABLED', '')
-      .split(',')
-      .map((platformType) => {
-        if (isValidPlatformType(platformType)) {
-          return platformType;
-        }
-        throw new Error(`invalid platform type found. platformType: ${platformType}`);
-      });
-    this.registerUnits(platformTypes);
+    const platformAbility = new PlatformAbility(this.appConfigService.getOrDefault('DOGU_DEVICE_PLATFORM_ENABLED', ''));
+    this.registerUnits(platformAbility);
   }
 
   /**
    * @note register order is important
    */
-  private registerUnits(platformTypes: PlatformType[]): void {
-    const hasDesktop = platformTypes.some((platformType) => categoryFromPlatform(platformType) === 'desktop');
-    const hasMobile = platformTypes.some((platformType) => categoryFromPlatform(platformType) === 'mobile');
-    const hasAndroid = platformTypes.includes('android');
-    const hasIos = platformTypes.includes('ios');
-
-    if (hasDesktop || hasAndroid) {
+  private registerUnits(platformAbility: PlatformAbility): void {
+    if (platformAbility.isDesktopEnabled || platformAbility.isAndroidEnabled) {
       this.registerUnit('jdk', (unitCallback) => new JdkExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.logger));
     }
 
-    if (hasAndroid) {
+    if (platformAbility.isAndroidEnabled) {
       this.registerUnit('android-sdk', (unitCallback) => new AndroidSdkExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.logger));
     }
 
-    if (hasMobile) {
+    if (platformAbility.isMobileEnabled) {
       this.registerUnit('appium', (unitCallback) => new AppiumExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.thirdPartyPathMap, this.logger));
     }
 
-    if (hasAndroid) {
+    if (platformAbility.isAndroidEnabled) {
       this.registerUnit(
         'appium-uiautomator2-driver',
         (unitCallback) => new AppiumUiAutomator2DriverExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.thirdPartyPathMap, this.logger),
       );
     }
 
-    if (hasIos) {
+    if (platformAbility.isIosEnabled) {
       this.registerUnit('xcode', () => new XcodeExternalUnit(this.logger));
       this.registerUnit(
         'appium-xcuitest-driver',
@@ -92,7 +80,7 @@ export class ExternalService {
       this.registerUnit('ios-device-agent-build', () => new IdaBuildExternalUnit(this.logger));
     }
 
-    if (hasDesktop) {
+    if (platformAbility.isDesktopEnabled) {
       this.registerUnit('selenium-server', (unitCallback) => new SeleniumServerExternalUnit(this.appConfigService, unitCallback, this.logger));
     }
   }

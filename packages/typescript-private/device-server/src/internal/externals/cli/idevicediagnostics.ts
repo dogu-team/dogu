@@ -1,3 +1,4 @@
+import { PlatformAbility } from '@dogu-private/dost-children';
 import { Printable, stringify } from '@dogu-tech/common';
 import { ChildProcess, HostPaths } from '@dogu-tech/node';
 import fs from 'fs';
@@ -38,4 +39,4 @@ registerBootstrapHandler(__filename, async () => {
     const cause = error instanceof Error ? error : new Error(stringify(error));
     throw new Error(`Failed to chmod idevicediagnostics`, { cause });
   }
-});
+}, () => new PlatformAbility().isIosEnabled);
