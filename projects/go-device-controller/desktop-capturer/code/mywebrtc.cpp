@@ -1,27 +1,13 @@
 #include "mywebrtc.h"
 #include "myWindows.h"
 #include "tcpClient.h"
+#include "webrtcImports.h"
+#include "webrtcUtil.h"
 
 #include <algorithm>
 #include <chrono>
 #include <iostream>
 #include <thread>
-
-#if defined(_WIN32)
-#define WEBRTC_WIN
-#define NOMINMAX
-#define WIN32_LEAN_AND_MEAN
-#pragma comment(lib, "D3D11.lib")
-#pragma comment(lib, "DXGI.lib")
-#pragma comment(lib, "Winmm.lib")
-#elif defined(__APPLE__)
-#define WEBRTC_MAC
-#define WEBRTC_POSIX
-#else
-#define WEBRTC_POSIX
-#else
-#error "Unsupported OS"
-#endif // defined(_WIN32 )
 
 #include "media/engine/internal_encoder_factory.h"
 #include "media/engine/simulcast_encoder_adapter.h"
@@ -46,12 +32,6 @@
 #include "modules/desktop_capture/desktop_capturer.h"
 #include "modules/desktop_capture/desktop_frame.h"
 #include "modules/desktop_capture/desktop_region.h"
-
-#if defined(__APPLE__)
-#include "modules/desktop_capture/mac/desktop_configuration.h"
-#include "modules/desktop_capture/mac/full_screen_mac_application_handler.h"
-#include "modules/desktop_capture/mac/window_list_utils.h"
-#endif // defined(__APPLE__ )
 
 #include "call/rtp_transport_controller_send.h"
 #include "modules/rtp_rtcp/include/rtp_rtcp_defines.h"
@@ -214,9 +194,8 @@ class CaptureCallback : public webrtc::DesktopCapturer::Callback
 std::unique_ptr<webrtc::DesktopCapturer> createCapturer()
 {
     webrtc::DesktopCaptureOptions option = webrtc::DesktopCaptureOptions::CreateDefault();
-#ifdef WEBRTC_MAC
-    option.set_allow_iosurface(true);
-#endif
+
+    webrtcUtil::applyCaptureOptions(option);
 
     webrtc::DesktopCapturer::SourceList desktop_screens;
 
@@ -234,7 +213,7 @@ std::unique_ptr<webrtc::DesktopCapturer> createCapturer()
     else
     {
 
-        auto windows = mywindows::getInfos();
+        auto windows = webrtcUtil::getWindowInfos();
         for (auto &w : windows)
         {
             if (w.pid == g_pid)
@@ -362,9 +341,7 @@ void startCapture()
         //            std::cout << " CaptureFrame :" << std::this_thread::get_id()
         //            << "\n";
         // https://groups.google.com/g/discuss-webrtc/c/VsX5YrPmEmE
-#ifdef WEBRTC_MAC
-        CFRunLoopRunInMode(kCFRunLoopDefaultMode, 0, true);
-#endif
+        webrtcUtil::onCaptureLoop();
 
         g_capturer->CaptureFrame();
 

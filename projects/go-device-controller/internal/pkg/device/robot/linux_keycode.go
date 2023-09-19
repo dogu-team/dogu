@@ -7,7 +7,6 @@ import (
 
 	"go-device-controller/types/protocol/generated/proto/inner/types"
 	"go-device-controller/types/protocol/generated/proto/outer"
-
 )
 
 func getKeyCode(code types.DeviceControlKeycode, platform outer.Platform) (PseudoKey, error) {
