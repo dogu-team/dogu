@@ -1,6 +1,7 @@
 import { Platform, PlatformType } from '@dogu-private/types';
 import { AndroidDriver } from '../driver/android-driver';
 import { IosDriver } from '../driver/ios-driver';
+import { LinuxDriver } from '../driver/linux-driver';
 import { MacosDriver } from '../driver/macos-driver';
 import { NullDeviceDriver } from '../driver/null-device-driver';
 import { WindowsDriver } from '../driver/windows-driver';
@@ -38,6 +39,22 @@ export class MacOSDeviceDriverFactory implements DeviceDriverFactory {
   }
 }
 
+export class LinuxDeviceDriverFactory implements DeviceDriverFactory {
+  constructor(private readonly enabledPlatforms: readonly PlatformType[], private readonly deviceServerService: DeviceServerService) {}
+
+  async create(): Promise<Map<Platform, DeviceDriver>> {
+    const map = new Map<Platform, DeviceDriver>();
+    if (this.enabledPlatforms.includes('linux')) {
+      map.set(Platform.PLATFORM_LINUX, await LinuxDriver.create(this.deviceServerService));
+    }
+    if (this.enabledPlatforms.includes('android')) {
+      map.set(Platform.PLATFORM_ANDROID, await AndroidDriver.create(this.deviceServerService));
+    }
+
+    return map;
+  }
+}
+
 export class WindowsDeviceDriverFactory implements DeviceDriverFactory {
   constructor(private readonly enabledPlatforms: readonly PlatformType[], private readonly deviceServerService: DeviceServerService) {}
 
@@ -63,6 +80,8 @@ export function createDeviceDriverFactoryByHostPlatform(
       return new MacOSDeviceDriverFactory(enabledPlatforms, deviceServerService);
     case Platform.PLATFORM_WINDOWS:
       return new WindowsDeviceDriverFactory(enabledPlatforms, deviceServerService);
+    case Platform.PLATFORM_LINUX:
+      return new LinuxDeviceDriverFactory(enabledPlatforms, deviceServerService);
     default:
       return new NullDeviceDriverFactory();
   }
@@ -74,6 +93,8 @@ export async function createDeviceDriverByDevicePlatform(platform: Platform, dev
       return await MacosDriver.create(deviceServerService);
     case Platform.PLATFORM_WINDOWS:
       return await WindowsDriver.create(deviceServerService);
+    case Platform.PLATFORM_LINUX:
+      return await LinuxDriver.create(deviceServerService);
     case Platform.PLATFORM_ANDROID:
       return await AndroidDriver.create(deviceServerService);
     case Platform.PLATFORM_IOS:
