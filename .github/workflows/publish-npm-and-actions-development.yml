@@ -1,7 +1,9 @@
 name: 📤publish-npm-and-actions-development
 
 on:
-  workflow_dispatch:
+  workflow_run:
+    workflows: ['📤publish-dogu-agent-cloud-development']
+    types: [requested]
 
 permissions:
   id-token: write

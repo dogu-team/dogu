@@ -1,3 +1,6 @@
+# DO NOT CHANGE NAME because it is used in the workflow_dispatch event.
+# Path: .github/workflows/publish-dogu-agent-cloud-development.yml
+# If you change the name, you must also change the name of the workflow_dispatch event.
 name: 📤publish-dogu-agent-cloud-development
 run-name: 📤publish-dogu-agent-cloud-development-${{ github.event.inputs.version }}
 
