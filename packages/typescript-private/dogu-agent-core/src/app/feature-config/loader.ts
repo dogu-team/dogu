@@ -5,7 +5,7 @@ import { FeatureTable } from '../../shares/feature-config';
 import { AppConfigService } from '../app-config/service';
 import { FeatureConfigService } from './service';
 
-const featuresPath = path.resolve(__dirname, 'features');
+const featureSearchPath = path.resolve(__dirname);
 
 export interface FeatureConfigLoaderOptions {
   appConfigService: AppConfigService;
@@ -21,15 +21,15 @@ export class FeatureConfigLoader {
 
     if (
       !(await fs.promises
-        .stat(featuresPath)
+        .stat(featureSearchPath)
         .then((stat) => stat.isDirectory())
         .catch(() => false))
     ) {
-      throw new Error(`Feature config directory not found: ${featuresPath}`);
+      throw new Error(`Feature config directory not found: ${featureSearchPath}`);
     }
 
     const runType = appConfigService.get<string>('DOGU_RUN_TYPE');
-    const featureConfig = await loadFeatureConfig<FeatureTable>(runType, logger, featuresPath);
+    const featureConfig = await loadFeatureConfig<FeatureTable>(runType, logger, featureSearchPath);
     const service = new FeatureConfigService({
       featureConfig,
     });
