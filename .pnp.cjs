@@ -56,10 +56,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/typescript-dev-private/cli-tools"\
       },\
       {\
-        "name": "@dogu-dev-private/docs-gen",\
-        "reference": "workspace:packages/typescript-dev-private/docs-gen"\
-      },\
-      {\
         "name": "@dogu-dev-private/publish-package",\
         "reference": "workspace:packages/typescript-dev-private/publish-package"\
       },\
@@ -233,7 +229,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@dogu-dev-private/base-build-tools", ["workspace:packages/typescript-dev-private/base-build-tools"]],\
       ["@dogu-dev-private/build-tools", ["workspace:packages/typescript-dev-private/build-tools"]],\
       ["@dogu-dev-private/cli-tools", ["workspace:packages/typescript-dev-private/cli-tools"]],\
-      ["@dogu-dev-private/docs-gen", ["workspace:packages/typescript-dev-private/docs-gen"]],\
       ["@dogu-dev-private/publish-package", ["workspace:packages/typescript-dev-private/publish-package"]],\
       ["@dogu-private/console", ["workspace:packages/typescript-private/console"]],\
       ["@dogu-private/console-host-agent", ["workspace:packages/typescript-private/console-host-agent"]],\
@@ -10993,29 +10988,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["nodemon", "npm:2.0.22"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
-          ],\
-          "linkType": "SOFT"\
-        }]\
-      ]],\
-      ["@dogu-dev-private/docs-gen", [\
-        ["workspace:packages/typescript-dev-private/docs-gen", {\
-          "packageLocation": "./packages/typescript-dev-private/docs-gen/",\
-          "packageDependencies": [\
-            ["@dogu-dev-private/docs-gen", "workspace:packages/typescript-dev-private/docs-gen"],\
-            ["@dogu-dev-private/build-tools", "workspace:packages/typescript-dev-private/build-tools"],\
-            ["@dogu-private/types", "workspace:packages/typescript-private/types"],\
-            ["@dogu-tech/common", "workspace:packages/typescript/common"],\
-            ["@dogu-tech/node", "workspace:packages/typescript/node"],\
-            ["@types/glob", "npm:8.1.0"],\
-            ["@types/node", "npm:18.15.11"],\
-            ["chalk", "npm:4.1.2"],\
-            ["compressing", "npm:1.9.0"],\
-            ["glob", "npm:10.0.0"],\
-            ["nodemon", "npm:2.0.22"],\
-            ["shx", "npm:0.3.4"],\
-            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
-            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"],\
-            ["typescript-parser", "npm:2.6.1"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -49765,13 +49737,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["typescript", [\
-        ["patch:typescript@npm%3A3.9.10#~builtin<compat/typescript>::version=3.9.10&hash=3bd3d3", {\
-          "packageLocation": "./.yarn/cache/typescript-patch-7ad1c7f5d0-dc7141ab55.zip/node_modules/typescript/",\
-          "packageDependencies": [\
-            ["typescript", "patch:typescript@npm%3A3.9.10#~builtin<compat/typescript>::version=3.9.10&hash=3bd3d3"]\
-          ],\
-          "linkType": "HARD"\
-        }],\
         ["patch:typescript@npm%3A4.5.2#~builtin<compat/typescript>::version=4.5.2&hash=bcec9a", {\
           "packageLocation": "./.yarn/cache/typescript-patch-e2f8286ac9-e25e689eba.zip/node_modules/typescript/",\
           "packageDependencies": [\
@@ -49783,19 +49748,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/typescript-patch-0feff98f1a-9096d8f6c1.zip/node_modules/typescript/",\
           "packageDependencies": [\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
-          ],\
-          "linkType": "HARD"\
-        }]\
-      ]],\
-      ["typescript-parser", [\
-        ["npm:2.6.1", {\
-          "packageLocation": "./.yarn/cache/typescript-parser-npm-2.6.1-3490e192c6-2f3f51d01b.zip/node_modules/typescript-parser/",\
-          "packageDependencies": [\
-            ["typescript-parser", "npm:2.6.1"],\
-            ["lodash", "npm:4.17.21"],\
-            ["lodash-es", "npm:4.17.21"],\
-            ["tslib", "npm:1.14.1"],\
-            ["typescript", "patch:typescript@npm%3A3.9.10#~builtin<compat/typescript>::version=3.9.10&hash=3bd3d3"]\
           ],\
           "linkType": "HARD"\
         }]\
