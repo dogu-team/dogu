@@ -13,8 +13,8 @@ export type BrowserOrDriverName = BrowserName | BrowserDriverName;
 
 export type BrowserVersion = string;
 
-export const BrowserPlatform = ['macos', 'windows', 'android', 'ios'] as const;
-export type BrowserPlatform = (typeof BrowserPlatform)[number] extends Extract<PlatformType, 'macos' | 'windows' | 'android' | 'ios'> ? (typeof BrowserPlatform)[number] : never;
+export const BrowserPlatform = ['macos', 'windows', 'linux', 'android', 'ios'] as const;
+export type BrowserPlatform = (typeof BrowserPlatform)[number] extends Extract<PlatformType, 'macos' | 'windows' | 'linux' | 'android' | 'ios'> ? (typeof BrowserPlatform)[number] : never;
 export const isAllowedBrowserPlatform = (value: string): value is BrowserPlatform => BrowserPlatform.includes(value as BrowserPlatform);
 
 export const MacosBrowserName = ['chrome', 'firefox', 'firefox-devedition', 'safari', 'safaritp', 'edge'] as const;
@@ -28,6 +28,10 @@ export type WindowsBrowserName = (typeof WindowsBrowserName)[number] extends Ext
   ? (typeof WindowsBrowserName)[number]
   : never;
 export const isAllowedWindowsBrowserName = (value: string): value is WindowsBrowserName => WindowsBrowserName.includes(value as WindowsBrowserName);
+
+export const LinuxBrowserName = ['chrome', 'firefox', 'firefox-devedition', 'edge'] as const;
+export type LinuxBrowserName = (typeof LinuxBrowserName)[number] extends Extract<BrowserName, 'chrome' | 'firefox' | 'firefox-devedition' | 'edge'> ? (typeof LinuxBrowserName)[number] : never;
+export const isAllowedLinuxBrowserName = (value: string): value is LinuxBrowserName => LinuxBrowserName.includes(value as LinuxBrowserName);
 
 export const AndroidBrowserName = ['chrome', 'firefox', 'edge', 'samsung-internet'] as const;
 export type AndroidBrowserName = (typeof AndroidBrowserName)[number] extends Extract<BrowserName, 'chrome' | 'firefox' | 'edge' | 'samsung-internet'>
@@ -59,6 +63,8 @@ export function isAllowedBrowserNameForPlatform(browserName: BrowserName, platfo
       return isAllowedMacosBrowserName(browserName);
     case 'windows':
       return isAllowedWindowsBrowserName(browserName);
+    case 'linux':
+      return isAllowedLinuxBrowserName(browserName);
     case 'android':
       return isAllowedAndroidBrowserName(browserName);
     case 'ios':
@@ -74,6 +80,8 @@ export function getBrowserNamesByPlatform(browserPlatform: BrowserPlatform): Bro
       return MacosBrowserName as unknown as BrowserName[];
     case 'windows':
       return WindowsBrowserName as unknown as BrowserName[];
+    case 'linux':
+      return LinuxBrowserName as unknown as BrowserName[];
     case 'android':
       return AndroidBrowserName as unknown as BrowserName[];
     case 'ios':
@@ -91,10 +99,11 @@ export function getBrowserPlatformByNodeJsPlatform(platform: NodeJS.Platform): B
       return 'windows';
     case 'android':
       return 'android';
+    case 'linux':
+      return 'linux';
     case 'aix':
     case 'freebsd':
     case 'haiku':
-    case 'linux':
     case 'openbsd':
     case 'sunos':
     case 'cygwin':

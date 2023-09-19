@@ -184,20 +184,18 @@ export class Geckodriver {
     return await this.pathLock.acquire(installPath, async () => {
       const executablePath = this.getExecutablePath({ ...mergedOptions, installPath });
       if (await fs.promises.stat(executablePath).catch(() => null)) {
-        this.logger.debug(`Already installed at ${installPath}`);
+        this.logger.info(`Already installed at ${installPath}`);
         return { executablePath };
       }
 
       await fs.promises.mkdir(installPath, { recursive: true });
       const assetInfo = releaseInfo.assetInfos.find((assetInfo) => {
-        this.logger.debug(`assetInfo.name: ${assetInfo.name}`);
         const match = assetInfo.name.match(assetNamePattern);
         if (!match) {
           return false;
         }
 
         const { version: assetVersion, platform: assetPlatform, extension } = match.groups as Record<string, string | undefined>;
-        this.logger.debug(match.groups);
         if (!assetVersion || !assetPlatform || !extension) {
           return false;
         }

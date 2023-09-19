@@ -11,7 +11,6 @@ import { AndroidSdkExternalUnit } from './units/android-sdk';
 import { AppiumExternalUnit } from './units/appium';
 import { AppiumUiAutomator2DriverExternalUnit } from './units/appium-uiautomator2-driver';
 import { AppiumXcUiTestDriverExternalUnit } from './units/appium-xcuitest-driver';
-import { GeckoDriverExternalUnit } from './units/gecko-driver';
 import { IdaBuildExternalUnit } from './units/ida-build';
 import { JdkExternalUnit } from './units/jdk';
 import { LibimobledeviceExternalUnit } from './units/libimobiledevice';
@@ -86,7 +85,6 @@ export class ExternalService {
     }
 
     if (platformTypes.some((platformType) => categoryFromPlatform(platformType) === 'desktop')) {
-      this.registerUnit('gecko-driver', (unitCallback) => new GeckoDriverExternalUnit(this.appConfigService, unitCallback, this.logger));
       this.registerUnit('selenium-server', (unitCallback) => new SeleniumServerExternalUnit(this.appConfigService, unitCallback, this.logger));
     }
   }

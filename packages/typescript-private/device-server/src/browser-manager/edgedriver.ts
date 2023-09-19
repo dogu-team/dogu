@@ -15,7 +15,7 @@ import { WebCache } from './web-cache';
 
 export type EdgedriverInstallableName = Extract<BrowserOrDriverName, 'msedgedriver'>;
 
-export const EdgedriverInstallablePlatform = ['win64', 'mac64', 'mac64_m1'] as const;
+export const EdgedriverInstallablePlatform = ['win64', 'mac64', 'mac64_m1', 'linux64'] as const;
 export type EdgedriverInstallablePlatform = (typeof EdgedriverInstallablePlatform)[number];
 const isValidEdgedriverInstallablePlatform = (platform: string): platform is EdgedriverInstallablePlatform =>
   EdgedriverInstallablePlatform.includes(platform as EdgedriverInstallablePlatform);
@@ -25,16 +25,20 @@ const executablePathMap: DeepReadonly<Record<EdgedriverInstallableName, Record<E
     mac64: 'msedgedriver',
     mac64_m1: 'msedgedriver',
     win64: 'msedgedriver.exe',
+    linux64: 'msedgedriver',
   },
 };
 
-const platformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' | 'win32'>, Record<string, EdgedriverInstallablePlatform>>> = {
+const platformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' | 'win32' | 'linux'>, Record<string, EdgedriverInstallablePlatform>>> = {
   darwin: {
     x64: 'mac64',
     arm64: 'mac64_m1',
   },
   win32: {
     x64: 'win64',
+  },
+  linux: {
+    x64: 'linux64',
   },
 };
 

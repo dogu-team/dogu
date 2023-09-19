@@ -4922,6 +4922,8 @@ __metadata:
     "@types/plist": 3
     "@types/rimraf": 3
     "@types/semver": 7
+    "@types/tar": 6
+    "@types/unbzip2-stream": ^1.4.1
     "@types/uuid": 9.0.1
     "@types/ws": 8
     adbkit-apkreader: 3.2.0
@@ -4931,7 +4933,7 @@ __metadata:
     class-validator: 0.14.0
     compressing: 1.9.0
     cross-env: 7.0.3
-    fast-xml-parser: ^4.2.7
+    fast-xml-parser: 4.2.7
     find-free-ports: 3.0.0
     gamium: 2.0.2
     glob: 10.0.0
@@ -4947,10 +4949,12 @@ __metadata:
     shx: 0.3.4
     source-map-support: 0.5.21
     systeminformation: 5.17.14
+    tar: 6.2.0
     ts-jest: 29.1.1
     ts-node: 10.9.1
     tsconfig-paths: 4.0.0
     typescript: 4.7.4
+    unbzip2-stream: 1.4.3
     uuid: 9.0.0
     webdriverio: 7.32.0
     winston: 3.8.2
@@ -10901,6 +10905,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/tar@npm:6":
+  version: 6.1.6
+  resolution: "@types/tar@npm:6.1.6"
+  dependencies:
+    "@types/node": "*"
+    minipass: ^4.0.0
+  checksum: d4bcb5a06d8e4b6eac564f22274d72f6a14c614eaf5f6c6c270f3a43c197da2797a7c707bc0377cd2e6d8c429f277e1ca446121546c86021e9782034a306eafb
+  languageName: node
+  linkType: hard
+
 "@types/tar@npm:6.1.5":
   version: 6.1.5
   resolution: "@types/tar@npm:6.1.5"
@@ -10908,6 +10922,15 @@ __metadata:
     "@types/node": "*"
     minipass: ^4.0.0
   checksum: 1efa71c8d72f2b02d16ffecb65c4a96be9dacce000c4207532a686477386524dd99b6e26904319354be3ac9ac4d41296a0cb9cf87d05f8f21ae31c68fe446348
+  languageName: node
+  linkType: hard
+
+"@types/through@npm:*":
+  version: 0.0.31
+  resolution: "@types/through@npm:0.0.31"
+  dependencies:
+    "@types/node": "*"
+  checksum: 8c4a58e17816dc5013559517c48a697c1cb48a76d26716210dcf4d57272eba0d9d8888a1d88f7b9cee47b4acfcc9cf29aee27ec53cc43d57b5391d20881037fd
   languageName: node
   linkType: hard
 
@@ -10929,6 +10952,15 @@ __metadata:
   version: 0.7.36
   resolution: "@types/ua-parser-js@npm:0.7.36"
   checksum: 8c24d4dc12ed1b8b98195838093391c358c81bf75e9cae0ecec8f7824b441e069daaa17b974a3e257172caddb671439f0c0b44bf43bfcf409b7a574a25aab948
+  languageName: node
+  linkType: hard
+
+"@types/unbzip2-stream@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "@types/unbzip2-stream@npm:1.4.1"
+  dependencies:
+    "@types/through": "*"
+  checksum: 8c477f4e74d71d700300de88b05028a9a6d852f3853acb30d528133a6a49c6a6b470ff47c3809f011de6045c4a3c3139e0bc44bb8e1d4da7e7253f3e4b0bcff3
   languageName: node
   linkType: hard
 
@@ -18978,7 +19010,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-xml-parser@npm:^4.2.7":
+"fast-xml-parser@npm:4.2.7":
   version: 4.2.7
   resolution: "fast-xml-parser@npm:4.2.7"
   dependencies:
@@ -34282,6 +34314,20 @@ __metadata:
     mkdirp: ^1.0.3
     yallist: ^4.0.0
   checksum: f23832fceeba7578bf31907aac744ae21e74a66f4a17a9e94507acf460e48f6db598c7023882db33bab75b80e027c21f276d405e4a0322d58f51c7088d428268
+  languageName: node
+  linkType: hard
+
+"tar@npm:6.2.0":
+  version: 6.2.0
+  resolution: "tar@npm:6.2.0"
+  dependencies:
+    chownr: ^2.0.0
+    fs-minipass: ^2.0.0
+    minipass: ^5.0.0
+    minizlib: ^2.1.1
+    mkdirp: ^1.0.3
+    yallist: ^4.0.0
+  checksum: db4d9fe74a2082c3a5016630092c54c8375ff3b280186938cfd104f2e089c4fd9bad58688ef6be9cf186a889671bf355c7cda38f09bbf60604b281715ca57f5c
   languageName: node
   linkType: hard
 

@@ -80,7 +80,8 @@ export class BrowserManager {
 
           switch (browserPlatform) {
             case 'macos':
-            case 'windows': {
+            case 'windows': 
+            case 'linux': {
               const edgePlatformArch = this.getEdgeInstallablePlatformArchByBrowserPlatform(browserPlatform);
               if (!edgePlatformArch) {
                 throw new Error(`Edge is not supported on platform ${browserPlatform}`);
@@ -111,7 +112,8 @@ export class BrowserManager {
 
           switch (browserPlatform) {
             case 'macos':
-            case 'windows': {
+            case 'windows':
+            case 'linux': {
               this.logger.warn(`Safari is only support default version`);
               return this.safari.getVersion();
             }
@@ -154,6 +156,7 @@ export class BrowserManager {
     switch (browserPlatform) {
       case 'macos':
       case 'windows':
+      case 'linux':
         {
           switch (browserName) {
             case 'chrome':
@@ -578,6 +581,7 @@ export class BrowserManager {
     switch (browserPlatform) {
       case 'macos':
       case 'windows':
+      case 'linux':
         {
           switch (browserName) {
             case 'chrome':
@@ -731,6 +735,7 @@ export class BrowserManager {
     switch (browserPlatform) {
       case 'macos':
       case 'windows':
+      case 'linux':
         return browserPlatform;
       case 'android':
         return getBrowserPlatformByNodeJsPlatform(process.platform);
@@ -747,6 +752,8 @@ export class BrowserManager {
         return this.chrome.getChromeInstallablePlatform({ platform: 'darwin', arch: process.arch });
       case 'windows':
         return this.chrome.getChromeInstallablePlatform({ platform: 'win32', arch: process.arch });
+      case 'linux':
+        return this.chrome.getChromeInstallablePlatform({ platform: 'linux', arch: process.arch });
       case 'android':
       case 'ios':
         return undefined;
@@ -761,6 +768,8 @@ export class BrowserManager {
         return this.firefox.getFirefoxInstallablePlatform({ platform: 'darwin', arch: process.arch });
       case 'windows':
         return this.firefox.getFirefoxInstallablePlatform({ platform: 'win32', arch: process.arch });
+      case 'linux':
+        return this.firefox.getFirefoxInstallablePlatform({ platform: 'linux', arch: process.arch });
       case 'android':
       case 'ios':
         return undefined;
@@ -775,6 +784,8 @@ export class BrowserManager {
         return this.geckodriver.getGeckodriverInstallablePlatform({ platform: 'darwin', arch: process.arch });
       case 'windows':
         return this.geckodriver.getGeckodriverInstallablePlatform({ platform: 'win32', arch: process.arch });
+      case 'linux':
+        return this.geckodriver.getGeckodriverInstallablePlatform({ platform: 'linux', arch: process.arch });
       case 'android':
       case 'ios':
         return undefined;
@@ -789,6 +800,8 @@ export class BrowserManager {
         return this.edge.getEdgeInstallablePlatformArch({ platform: 'darwin' });
       case 'windows':
         return this.edge.getEdgeInstallablePlatformArch({ platform: 'win32' });
+      case 'linux':
+        return this.edge.getEdgeInstallablePlatformArch({ platform: 'linux' });
       case 'android':
       case 'ios':
         return undefined;
@@ -803,6 +816,8 @@ export class BrowserManager {
         return this.edgedriver.getEdgedriverInstallablePlatform({ platform: 'darwin' });
       case 'windows':
         return this.edgedriver.getEdgedriverInstallablePlatform({ platform: 'win32' });
+      case 'linux':
+        return this.edgedriver.getEdgedriverInstallablePlatform({ platform: 'linux' });
       case 'android':
       case 'ios':
         return undefined;
