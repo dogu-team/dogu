@@ -57,23 +57,31 @@ export class ExternalService {
    * @note register order is important
    */
   private registerUnits(platformTypes: PlatformType[]): void {
-    if (platformTypes.includes('android')) {
+    const hasDesktop = platformTypes.some((platformType) => categoryFromPlatform(platformType) === 'desktop');
+    const hasMobile = platformTypes.some((platformType) => categoryFromPlatform(platformType) === 'mobile');
+    const hasAndroid = platformTypes.includes('android');
+    const hasIos = platformTypes.includes('ios');
+
+    if (hasDesktop || hasAndroid) {
       this.registerUnit('jdk', (unitCallback) => new JdkExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.logger));
+    }
+
+    if (hasAndroid) {
       this.registerUnit('android-sdk', (unitCallback) => new AndroidSdkExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.logger));
     }
 
-    if (platformTypes.some((platformType) => categoryFromPlatform(platformType) === 'mobile')) {
+    if (hasMobile) {
       this.registerUnit('appium', (unitCallback) => new AppiumExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.thirdPartyPathMap, this.logger));
     }
 
-    if (platformTypes.includes('android')) {
+    if (hasAndroid) {
       this.registerUnit(
         'appium-uiautomator2-driver',
         (unitCallback) => new AppiumUiAutomator2DriverExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.thirdPartyPathMap, this.logger),
       );
     }
 
-    if (platformTypes.includes('ios')) {
+    if (hasIos) {
       this.registerUnit('xcode', () => new XcodeExternalUnit(this.logger));
       this.registerUnit(
         'appium-xcuitest-driver',
@@ -84,12 +92,16 @@ export class ExternalService {
       this.registerUnit('ios-device-agent-build', () => new IdaBuildExternalUnit(this.logger));
     }
 
-    if (platformTypes.some((platformType) => categoryFromPlatform(platformType) === 'desktop')) {
+    if (hasDesktop) {
       this.registerUnit('selenium-server', (unitCallback) => new SeleniumServerExternalUnit(this.appConfigService, unitCallback, this.logger));
     }
   }
 
   private registerUnit(key: ExternalKey, onRegister: (unitCallback: ExternalUnitCallback) => IExternalUnit): void {
+    if (this.units.has(key)) {
+      throw new Error(`external tool unit already registered. key: ${key}`);
+    }
+    
     this.logger.info(`register external tool unit. key: ${key}`);
     const unit = onRegister(this.unitCallbackFactory(key));
     this.units.set(key, unit);

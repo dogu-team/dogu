@@ -3,5 +3,15 @@
   "compilerOptions": {
     "outDir": "build"
   },
-  "include": ["src"]
+  "include": [
+    "src"
+  ],
+  "references": [
+    {
+      "path": "../../packages/typescript-private/dogu-agent-core"
+    },
+    {
+      "path": "../../packages/typescript/node"
+    }
+  ]
 }
