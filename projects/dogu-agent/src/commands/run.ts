@@ -8,17 +8,10 @@ import {
   UnitCallbackFactory,
 } from '@dogu-private/dogu-agent-core/app';
 import { HostPaths, LoggerFactory } from '@dogu-tech/node';
-import path from 'path';
 
 export async function run(url: string, token: string) {
-  /**
-   * @fixme
-   */
   const appName = 'dogu-agent-cli' + (process.env.DOGU_RUN_TYPE ? `-${process.env.DOGU_RUN_TYPE?.toLowerCase()}` : '');
   const logger = LoggerFactory.create(appName);
-  const doguAgentAppPath = path.resolve('../../nm-space/projects/dost');
-  const dotenvSearchPaths = [doguAgentAppPath];
-
   const configsPath = HostPaths.configsPath(HostPaths.doguHomePath);
   const logsPath = HostPaths.logsPath(HostPaths.doguHomePath);
   const thirdPartyPathMap = HostPaths.thirdParty.pathMap();
@@ -27,14 +20,10 @@ export async function run(url: string, token: string) {
     configsPath,
     logger,
     appName,
-    dotenvSearchPaths,
+    dotenvSearchPaths: [process.cwd()],
   }).load();
   appConfigService.set('DOGU_API_BASE_URL', url);
   appConfigService.set('DOGU_HOST_TOKEN', token);
-
-  /**
-   * @fixme
-   */
   appConfigService.set('DOGU_DEVICE_PLATFORM_ENABLED', 'windows,macos,linux');
 
   const featureConfigService = await new FeatureConfigLoader({
