@@ -16,8 +16,10 @@
 #pragma comment(lib, "Winmm.lib")
 #elif defined(__APPLE__)
 #define WEBRTC_MAC
-#else
+#elif defined(__linux__)
 #define WEBRTC_POSIX
+#else
+#error "Unsupported OS"
 #endif // defined(_WIN32 )
 
 #include "media/engine/internal_encoder_factory.h"
