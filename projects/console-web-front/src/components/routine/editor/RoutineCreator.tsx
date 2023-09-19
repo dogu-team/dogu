@@ -47,7 +47,7 @@ on:
 jobs:
   new-job-1:
     runs-on: []
-    appPackageName:
+    browserName:
     record: true
     steps:
       - name: run test
