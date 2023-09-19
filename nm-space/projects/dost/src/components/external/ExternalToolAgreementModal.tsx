@@ -1,7 +1,7 @@
 import { Button, Checkbox, Flex, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, ModalOverlay } from '@chakra-ui/react';
 import { useState } from 'react';
 
-import { ExternalKey } from '../../shares/external';
+import { ExternalKey } from '@dogu-private/dogu-agent-core/shares';
 import ExternalToolAgreementContent from './ExternalToolAgreementContent';
 
 interface Props {

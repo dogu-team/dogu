@@ -1,6 +1,6 @@
 import { BrowserOrDriverName, BrowserVersion } from '@dogu-private/types';
 import { DeepReadonly, PrefixLogger, setAxiosErrorFilterToIntercepter, stringify } from '@dogu-tech/common';
-import { renameRetry } from '@dogu-tech/node';
+import { defaultDownloadRequestTimeout, download, renameRetry } from '@dogu-tech/node';
 import AsyncLock from 'async-lock';
 import axios, { AxiosInstance } from 'axios';
 import compressing from 'compressing';
@@ -9,7 +9,7 @@ import _ from 'lodash';
 import path from 'path';
 import { logger } from '../logger/logger.instance';
 import { chromeVersionUtils } from './chrome-version-utils';
-import { defaultDownloadRequestTimeout, defaultVersionRequestTimeout, download, validatePrefixOrPatternWithin } from './common';
+import { defaultVersionRequestTimeout, validatePrefixOrPatternWithin } from './common';
 import { WebCache } from './web-cache';
 
 export type ChromeInstallableName = Extract<BrowserOrDriverName, 'chrome' | 'chromedriver'>;

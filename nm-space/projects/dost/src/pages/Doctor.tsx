@@ -12,13 +12,13 @@ import ManualExternalToolValidCheckerItem from '../components/external/ManualExt
 import usePlatformSupportedExternalInfo from '../hooks/platform-supported-external-info';
 
 export default function Doctor() {
-  const [dotEnvConfigPath, setDotEnvConfigPath] = useState<string>('');
+  const [dotenvConfigPath, setDotenvConfigPath] = useState<string>('');
   const { externalInfos, getExternalInfos } = usePlatformSupportedExternalInfo();
   const { results } = useManualSetupExternalValidResult();
 
   useEffect(() => {
     (async () => {
-      setDotEnvConfigPath(await ipc.dotEnvConfigClient.getDotEnvConfigPath());
+      setDotenvConfigPath(await ipc.dotenvConfigClient.getDotenvConfigPath());
     })();
   }, []);
 
@@ -31,7 +31,7 @@ export default function Doctor() {
             <Icon as={QuestionIcon} color="gray.500" ml="8px" />
           </Tooltip>
         </Flex>
-        <Input readOnly value={dotEnvConfigPath} color="gray.500" width="60%" maxWidth="500px" />
+        <Input readOnly value={dotenvConfigPath} color="gray.500" width="60%" maxWidth="500px" />
       </VStack>
 
       <StyledContent>

@@ -1,26 +1,61 @@
-import { DefaultProcessInfo, loop } from '@dogu-tech/common';
-import { getProcessesMap } from '@dogu-tech/node';
-import { Code } from '@dogu-tech/types';
+import { ChildListener, ChildService as Impl, ChildServiceFactory, DeviceServerChild, HostAgentChild } from '@dogu-private/dogu-agent-core/app';
+import * as Sentry from '@sentry/electron/main';
 import { ipcMain } from 'electron';
-import pidtree from 'pidtree';
-import { childClientKey, ChildTree, HostAgentConnectionStatus, IChildClient, Key } from '../../src/shares/child';
+import { childClientKey, ChildTree, HostAgentConnectionStatus, Key } from '../../src/shares/child';
 import { AppConfigService } from '../app-config/app-config-service';
 import { ExternalService } from '../external/external-service';
 import { FeatureConfigService } from '../feature-config/feature-config-service';
 import { logger } from '../log/logger.instance';
-import { DeviceServerChild } from './instances/device-server';
-import { HostAgentChild } from './instances/host-agent';
-import { closeAllChildren } from './instances/lifecycle';
-import { Child } from './types';
+import { LogsPath } from '../path-map';
 
-export class ChildService implements IChildClient {
+export class ChildService {
   static instance: ChildService;
 
   static open(appConfigService: AppConfigService, featureConfigService: FeatureConfigService, externalService: ExternalService) {
-    ChildService.instance = new ChildService(appConfigService, featureConfigService, {
-      'device-server': new DeviceServerChild(appConfigService, featureConfigService, externalService),
-      'host-agent': new HostAgentChild(appConfigService, featureConfigService),
-    });
+    const listener: ChildListener = {
+      onStdout: (key, data) => {
+        if (featureConfigService.get('useSentry')) {
+          Sentry.addBreadcrumb({
+            type: 'default',
+            category: key as string,
+            message: data,
+            level: 'info',
+          });
+        }
+      },
+      onStderr: (key, data) => {
+        if (featureConfigService.get('useSentry')) {
+          Sentry.addBreadcrumb({
+            type: 'default',
+            category: key as string,
+            message: data,
+            level: 'error',
+          });
+        }
+      },
+      onClose: (key, code, signal) => {
+        if (code !== 0) {
+          if (featureConfigService.get('useSentry')) {
+            Sentry.addBreadcrumb({
+              type: 'default',
+              category: key as string,
+              message: `child process(${key}) exited with code ${code} and signal ${signal}`,
+              level: 'fatal',
+            });
+          }
+        }
+      },
+    };
+
+    const impl = new ChildServiceFactory({
+      appConfigService: appConfigService.impl,
+      externalService: externalService.impl,
+      logsPath: LogsPath,
+      logger: logger,
+      listener,
+    }).create();
+
+    ChildService.instance = new ChildService(impl);
     const { instance } = ChildService;
     ipcMain.handle(childClientKey.isActive, (_, key: Key) => instance.isActive(key));
     ipcMain.handle(childClientKey.connect, (_, token: string) => instance.connect(token));
@@ -28,160 +63,37 @@ export class ChildService implements IChildClient {
     ipcMain.handle(childClientKey.getChildTree, () => instance.getChildTree());
   }
 
-  static close(): Promise<void> {
-    return ChildService.instance.closeAll();
+  static async close(): Promise<void> {
+    return await ChildService.instance.closeAll();
   }
 
   get deviceServer(): DeviceServerChild {
-    return this.children['device-server'] as DeviceServerChild;
+    return this.impl.deviceServer;
   }
 
   get hostAgent(): HostAgentChild {
-    return this.children['host-agent'] as HostAgentChild;
+    return this.impl.hostAgent;
   }
 
-  private constructor(
-    private readonly appConfigService: AppConfigService,
-    public readonly featureConfigService: FeatureConfigService,
-    private readonly children: { [key in Key]: Child },
-    private isConnecting = false,
-  ) {}
+  private constructor(readonly impl: Impl) {}
 
   async isActive(key: Key): Promise<boolean> {
-    return await this.children[key].isActive();
+    return await this.impl.isActive(key);
   }
 
   async closeAll(): Promise<void> {
-    await Promise.all([this.deviceServer.close, this.hostAgent.close, closeAllChildren]);
+    return await this.impl.closeAll();
   }
 
   async connect(token: string): Promise<HostAgentConnectionStatus> {
-    this.isConnecting = true;
-    const ret = await this.connectInternal(token).catch((e) => {
-      logger.error('connectInternal error', { error: e });
-      this.isConnecting = false;
-      throw e;
-    });
-    this.isConnecting = false;
-    return ret;
-  }
-
-  private async connectInternal(token: string): Promise<HostAgentConnectionStatus> {
-    if (!(await this.deviceServer.isActive())) {
-      if (!(await this.deviceServer.openable())) {
-        return {
-          status: 'disconnected',
-          code: Code.CODE_DEVICE_SERVER_UNEXPECTED_ERROR,
-          reason: 'device-server not openable.',
-          updatedAt: new Date(),
-        };
-      }
-      await this.deviceServer.open();
-      for await (const _ of loop(1000, 60)) {
-        if (await this.deviceServer.isActive()) {
-          break;
-        }
-      }
-      const isActive = await this.deviceServer.isActive();
-      if (!isActive) {
-        return {
-          status: 'disconnected',
-          code: Code.CODE_DEVICE_SERVER_UNEXPECTED_ERROR,
-          reason: 'device-server boot failed.',
-          updatedAt: new Date(),
-        };
-      }
-    }
-    if (await this.hostAgent.isActive()) {
-      await this.hostAgent.close();
-    }
-    await this.appConfigService.set('DOGU_HOST_TOKEN', token);
-    if (!(await this.hostAgent.openable())) {
-      return {
-        status: 'disconnected',
-        code: Code.CODE_HOST_AGENT_UNEXPECTED_ERROR,
-        reason: 'host-agent not openable.',
-        updatedAt: new Date(),
-      };
-    }
-    await this.hostAgent.open();
-    for await (const _ of loop(1000, 60)) {
-      if (await this.hostAgent.isActive()) {
-        break;
-      }
-    }
-
-    for await (const _ of loop(1000, 999)) {
-      const status = await this.hostAgent.getConnectionStatus();
-      if (status.status !== 'connecting') {
-        return status;
-      }
-    }
-    return {
-      status: 'disconnected',
-      code: Code.CODE_HOST_AGENT_REQUEST_FAILED,
-      reason: 'Tried to connect, but it took too long.',
-      updatedAt: new Date(),
-    };
+    return await this.impl.connect(token);
   }
 
   async getHostAgentConnectionStatus(): Promise<HostAgentConnectionStatus> {
-    if (this.isConnecting) {
-      return {
-        status: 'connecting',
-        code: Code.CODE_SUCCESS_COMMON_BEGIN_UNSPECIFIED,
-        updatedAt: new Date(),
-      };
-    }
-    return await this.hostAgent.getConnectionStatus();
+    return await this.impl.getHostAgentConnectionStatus();
   }
 
-  getChildTree(): Promise<ChildTree> {
-    return new Promise((resolve) => {
-      pidtree(process.pid, { advanced: true }, async (err, procs) => {
-        const procInfoMap = await getProcessesMap(logger);
-        const myInfo = procInfoMap.get(process.pid) ?? { ...DefaultProcessInfo(), pid: process.pid };
-        const root: ChildTree = { info: myInfo, children: [] };
-        if (err) {
-          logger.error('child process pidtree error', { error: err });
-          resolve(root);
-        } else {
-          const childTrees: ChildTree[] = procs
-            .map((proc) => {
-              const elem = procInfoMap.get(proc.pid);
-
-              if (elem) {
-                const spaceSplited = elem.commandLine.replaceAll('\\', '/').split(' ');
-                const commandName = spaceSplited[0].split('/').slice(-1).join('/');
-                const shortCommandLine = `${commandName} ${spaceSplited.slice(1).join(' ')}`;
-                return {
-                  info: {
-                    ...elem,
-                    commandLine: shortCommandLine,
-                  },
-                  children: [],
-                };
-              }
-              return {
-                info: {
-                  ...DefaultProcessInfo(),
-                  pid: proc.pid,
-                },
-                children: [],
-              };
-            })
-            .sort((a, b) => a.info.pid - b.info.pid);
-          for (const child of childTrees) {
-            const parent = childTrees.find((c) => c.info.pid === child.info.ppid);
-            if (parent) {
-              parent.children.push(child);
-            } else {
-              root.children.push(child);
-            }
-          }
-          resolve(root);
-        }
-      });
-    });
+  async getChildTree(): Promise<ChildTree> {
+    return await this.impl.getChildTree();
   }
 }

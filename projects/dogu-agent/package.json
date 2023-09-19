@@ -1,0 +1,33 @@
+{
+  "name": "dogu-agent",
+  "version": "0.0.0",
+  "license": "SEE LICENSE IN https://github.com/dogu-team/dogu/blob/main/LICENSE.md",
+  "author": "Dogu Technologies",
+  "main": "./build/src/cli.js",
+  "bin": "./build/src/cli.js",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "shx rm -rf build",
+    "rebuild": "yarn run clean && yarn run build",
+    "start": "node ./build/src/cli.js",
+    "watch": "clear; echo dogu-agent Watching... && nodemon"
+  },
+  "types": "./build/src/cli.d.ts",
+  "dependencies": {
+    "@commander-js/extra-typings": "^11.0.0",
+    "@dogu-private/dogu-agent-core": "workspace:^",
+    "@dogu-tech/node": "workspace:^",
+    "commander": "11.0.0",
+    "lodash": "4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash": "4",
+    "@types/node": "18.15.11",
+    "cross-env": "7.0.3",
+    "nodemon": "2.0.22",
+    "shx": "0.3.4",
+    "ts-node": "10.9.1",
+    "typescript": "4.7.4"
+  },
+  "url": "https://github.com/dogu-team/dogu"
+}

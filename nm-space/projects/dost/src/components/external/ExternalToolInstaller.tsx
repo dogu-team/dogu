@@ -3,9 +3,9 @@ import { useEffect, useRef, useState } from 'react';
 import { Text, Textarea, useToast } from '@chakra-ui/react';
 import Convert from 'ansi-to-html';
 
-import { ExternalKey } from '../../shares/external';
 import { ipc } from '../../utils/window';
 import styled from 'styled-components';
+import { ExternalKey } from '@dogu-private/dogu-agent-core/shares';
 
 export type ExternalKeyAndName = { key: ExternalKey; name: string };
 

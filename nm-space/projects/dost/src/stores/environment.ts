@@ -1,7 +1,7 @@
+import { FeatureTable } from '@dogu-private/dogu-agent-core/shares';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { AppConfigTable } from '../shares/app-config';
-import { FeatureTable } from '../shares/feature-config';
 
 export interface EnvironmentStore {
   platform: NodeJS.Platform | null;

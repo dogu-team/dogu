@@ -19,15 +19,15 @@ export function NetworkSetupModal(props: Props) {
     const chkboxIsRejected = e.target.checked ? true : false;
     const tlsRejectValue = chkboxIsRejected ? '0' : '1';
     await ipc.settingsClient.changeStrictSSLOnNPMLikes(chkboxIsRejected ? false : true);
-    await ipc.dotEnvConfigClient.set('NODE_TLS_REJECT_UNAUTHORIZED', tlsRejectValue);
+    await ipc.dotenvConfigClient.set('NODE_TLS_REJECT_UNAUTHORIZED', tlsRejectValue);
 
-    const isRejected = (await ipc.dotEnvConfigClient.get('NODE_TLS_REJECT_UNAUTHORIZED')) === '0' ? true : false;
+    const isRejected = (await ipc.dotenvConfigClient.get('NODE_TLS_REJECT_UNAUTHORIZED')) === '0' ? true : false;
     setTLSAuthRej(isRejected);
   };
 
   useEffect(() => {
     (async () => {
-      const isRejected = (await ipc.dotEnvConfigClient.get('NODE_TLS_REJECT_UNAUTHORIZED')) === '0' ? true : false;
+      const isRejected = (await ipc.dotenvConfigClient.get('NODE_TLS_REJECT_UNAUTHORIZED')) === '0' ? true : false;
       setTLSAuthRej(isRejected);
     })();
   }, []);

@@ -1,8 +1,8 @@
 import { VStack, Text, Button, Flex, Spinner } from '@chakra-ui/react';
+import { ExternalKey } from '@dogu-private/dogu-agent-core/shares';
 import { stringify } from '@dogu-tech/common';
 import { useEffect, useState } from 'react';
 
-import { ExternalKey } from '../../shares/external';
 import { ipc } from '../../utils/window';
 
 type TermInfo = { name: string; url: string | null; keys: ExternalKey[] };

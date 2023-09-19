@@ -66,8 +66,13 @@ const parameter: {
       cmakeProject: 'build',
       cmakeBuildTool: 'Unix Makefiles',
       cmakeMoreArg: '',
-      artifacts: [],
-      libs: [],
+      artifacts: [
+        {
+          src: 'build/desktop-capturer',
+          dests: [path.resolve(doguWorkspacePath, `third-party/linux/x64/desktop-capturer`)],
+        }
+      ],
+      libs: [{ path: 'externals/webrtc/lib/linux-x86_64-libwebrtc.a' }],
     },
   ],
 };

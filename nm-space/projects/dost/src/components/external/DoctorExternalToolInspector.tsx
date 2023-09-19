@@ -1,8 +1,7 @@
 import { Button, Flex, useDisclosure } from '@chakra-ui/react';
+import { ExternalKey } from '@dogu-private/dogu-agent-core/shares';
 import { useCallback, useState } from 'react';
 import { ExternalToolInfo } from '../../hooks/platform-supported-external-info';
-
-import { ExternalKey } from '../../shares/external';
 import { ipc } from '../../utils/window';
 import ExternalToolAgreementModal from './ExternalToolAgreementModal';
 import ExternalToolInstallerModal from './ExternalToolInstallerModal';

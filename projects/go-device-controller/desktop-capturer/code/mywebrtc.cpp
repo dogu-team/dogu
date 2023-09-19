@@ -14,9 +14,10 @@
 #pragma comment(lib, "D3D11.lib")
 #pragma comment(lib, "DXGI.lib")
 #pragma comment(lib, "Winmm.lib")
+#elif defined(__APPLE__)
+#define WEBRTC_MAC
 #else
 #define WEBRTC_POSIX
-#define WEBRTC_MAC
 #endif // defined(_WIN32 )
 
 #include "media/engine/internal_encoder_factory.h"

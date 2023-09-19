@@ -1,7 +1,3 @@
-import { AxiosInstance } from 'axios';
-import fs from 'fs';
-import path from 'path';
-
 export interface VersionUtils<T> {
   parse(version: string): T;
   compareWithAsc(lhs: T, rhs: T): number;
@@ -15,13 +11,6 @@ export interface VersionUtils<T> {
  */
 export type VersionRequestTimeout = number;
 export const defaultVersionRequestTimeout = (): VersionRequestTimeout => 30_000;
-
-/**
- * @description Timeout for download request
- * @unit milliseconds
- */
-export type DownloadRequestTimeout = number;
-export const defaultDownloadRequestTimeout = (): DownloadRequestTimeout => 10 * 60_000;
 
 /**
  * @description Timeout for installation
@@ -56,35 +45,4 @@ export function validatePrefixOrPatternWithin(options: { prefix?: VersionPrefix 
   if (prefix && pattern) {
     throw new Error('Only one of the `prefix` or `pattern` must be defined');
   }
-}
-
-export interface DownloadOptions {
-  client: AxiosInstance;
-  url: string;
-  filePath: string;
-  timeout?: DownloadRequestTimeout;
-}
-
-function mergeDownloadOptions(options: DownloadOptions): Required<DownloadOptions> {
-  return {
-    timeout: defaultDownloadRequestTimeout(),
-    ...options,
-  };
-}
-
-export async function download(options: DownloadOptions): Promise<void> {
-  const mergedOptions = mergeDownloadOptions(options);
-  const { client, url, filePath, timeout } = mergedOptions;
-  const response = await client.get(url, {
-    timeout,
-    responseType: 'stream',
-  });
-  await fs.promises.mkdir(path.dirname(filePath), { recursive: true });
-  const writer = fs.createWriteStream(filePath);
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-  response.data.pipe(writer);
-  await new Promise<void>((resolve, reject) => {
-    writer.on('finish', resolve);
-    writer.on('error', reject);
-  });
 }

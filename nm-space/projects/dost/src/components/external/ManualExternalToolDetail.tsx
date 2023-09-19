@@ -1,7 +1,7 @@
 import { Button, ListItem, Stack, UnorderedList } from '@chakra-ui/react';
+import { ExternalKey } from '@dogu-private/dogu-agent-core/shares';
 import { DoguDocsDeviceFarmIosSettingsUrl } from '../../shares/constants';
 
-import { ExternalKey } from '../../shares/external';
 import { DoguDocsXcodeSettingsUrl } from '../../utils/constants';
 import { ipc } from '../../utils/window';
 import XCodeCheckButton from './XCodeCheckButton';

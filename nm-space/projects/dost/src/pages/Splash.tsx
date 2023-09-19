@@ -12,8 +12,35 @@ const Splash = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const [isLoading, setIsLoading] = useState(true);
+  const [isServicesOpened, setIsServicesOpened] = useState(false);
 
   useEffect(() => {
+    const checkServicesOpened = async () => {
+      try {
+        const isServicesOpened = await ipc.servicesOpenStatusClient.isServicesOpened();
+        if (isServicesOpened) {
+          setIsServicesOpened(isServicesOpened);
+        } else {
+          setTimeout(checkServicesOpened, 1000);
+        }
+      } catch (e) {
+        ipc.rendererLogger.error(`Error while checking services opened: ${stringify(e)}`);
+        toast({
+          title: 'Failed to check Dogu Agent status',
+          description: 'Please try again. If this error persists, please contact us.',
+          status: 'error',
+        });
+      }
+    };
+
+    checkServicesOpened();
+  }, []);
+
+  useEffect(() => {
+    if (!isServicesOpened) {
+      return;
+    }
+
     const checkValidationComplete = () => {
       ipc.externalClient
         .isSupportedPlatformValidationCompleted()
@@ -32,7 +59,7 @@ const Splash = () => {
     };
 
     checkValidationComplete();
-  }, []);
+  }, [isServicesOpened]);
 
   useEffect(() => {
     const redirectOnInit = async () => {

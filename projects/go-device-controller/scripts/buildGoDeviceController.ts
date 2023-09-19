@@ -47,6 +47,20 @@ const srcToDest = [
     ],
     primaryPaths: [],
   },
+  {
+    os: 'linux',
+    arch: 'amd64',
+    nodeOs: 'linux',
+    nodeArch: 'x64',
+    buildDest: 'build/linux/amd64/go-device-controller',
+    artifacts: [
+      {
+        src: 'build/linux/amd64/go-device-controller',
+        dests: ['../../third-party/linux/x64/go-device-controller'],
+      },
+    ],
+    primaryPaths: [],
+  }
 ];
 
 function prepareCgo(os: string, arch: string, primaryPaths: string[]): void {

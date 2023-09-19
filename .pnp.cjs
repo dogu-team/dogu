@@ -84,6 +84,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:packages/typescript-private/device-server"\
       },\
       {\
+        "name": "@dogu-private/dogu-agent-core",\
+        "reference": "workspace:packages/typescript-private/dogu-agent-core"\
+      },\
+      {\
         "name": "@dogu-private/dost-children",\
         "reference": "workspace:packages/typescript-private/dost-children"\
       },\
@@ -196,6 +200,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:projects/device-server"\
       },\
       {\
+        "name": "dogu-agent",\
+        "reference": "workspace:projects/dogu-agent"\
+      },\
+      {\
         "name": "go-device-controller",\
         "reference": "workspace:projects/go-device-controller"\
       },\
@@ -232,6 +240,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@dogu-private/console-open-api", ["workspace:packages/typescript-private/console-open-api"]],\
       ["@dogu-private/console-ui", ["workspace:packages/typescript-private/console-ui"]],\
       ["@dogu-private/device-server", ["workspace:packages/typescript-private/device-server"]],\
+      ["@dogu-private/dogu-agent-core", ["workspace:packages/typescript-private/dogu-agent-core"]],\
       ["@dogu-private/dost-children", ["workspace:packages/typescript-private/dost-children"]],\
       ["@dogu-private/env-tools", ["workspace:packages/typescript-private/env-tools"]],\
       ["@dogu-private/host-agent", ["workspace:packages/typescript-private/host-agent"]],\
@@ -260,6 +269,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["device-server", ["workspace:projects/device-server"]],\
       ["docs", ["workspace:docs"]],\
       ["dogu", ["workspace:."]],\
+      ["dogu-agent", ["workspace:projects/dogu-agent"]],\
       ["dogu-device-client", ["workspace:packages/python/dogu-device-client"]],\
       ["e2e", ["workspace:e2e"]],\
       ["go-device-controller", ["workspace:projects/go-device-controller"]],\
@@ -9517,6 +9527,28 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["@commander-js/extra-typings", [\
+        ["npm:11.0.0", {\
+          "packageLocation": "./.yarn/cache/@commander-js-extra-typings-npm-11.0.0-98c8976286-c17c60f504.zip/node_modules/@commander-js/extra-typings/",\
+          "packageDependencies": [\
+            ["@commander-js/extra-typings", "npm:11.0.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }],\
+        ["virtual:47191191a44bd9e6ca18275c58a85be8d2269a841a5e4898762f00d77f11d1d1e37e8cb87ac6018aa2ce3072ce44d16c2458d3932801aed83cdef01860c571c0#npm:11.0.0", {\
+          "packageLocation": "./.yarn/__virtual__/@commander-js-extra-typings-virtual-9d2be9dae5/0/cache/@commander-js-extra-typings-npm-11.0.0-98c8976286-c17c60f504.zip/node_modules/@commander-js/extra-typings/",\
+          "packageDependencies": [\
+            ["@commander-js/extra-typings", "virtual:47191191a44bd9e6ca18275c58a85be8d2269a841a5e4898762f00d77f11d1d1e37e8cb87ac6018aa2ce3072ce44d16c2458d3932801aed83cdef01860c571c0#npm:11.0.0"],\
+            ["@types/commander", null],\
+            ["commander", "npm:11.0.0"]\
+          ],\
+          "packagePeers": [\
+            "@types/commander",\
+            "commander"\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["@cspotcode/source-map-support", [\
         ["npm:0.8.1", {\
           "packageLocation": "./.yarn/cache/@cspotcode-source-map-support-npm-0.8.1-964f2de99d-5718f26708.zip/node_modules/@cspotcode/source-map-support/",\
@@ -11177,6 +11209,41 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@dogu-private/dogu-agent-core", [\
+        ["workspace:packages/typescript-private/dogu-agent-core", {\
+          "packageLocation": "./packages/typescript-private/dogu-agent-core/",\
+          "packageDependencies": [\
+            ["@dogu-private/dogu-agent-core", "workspace:packages/typescript-private/dogu-agent-core"],\
+            ["@dogu-private/device-server", "workspace:packages/typescript-private/device-server"],\
+            ["@dogu-private/dost-children", "workspace:packages/typescript-private/dost-children"],\
+            ["@dogu-private/env-tools", "workspace:packages/typescript-private/env-tools"],\
+            ["@dogu-private/host-agent", "workspace:packages/typescript-private/host-agent"],\
+            ["@dogu-tech/common", "workspace:packages/typescript/common"],\
+            ["@dogu-tech/node", "workspace:packages/typescript/node"],\
+            ["@dogu-tech/types", "workspace:packages/typescript/types"],\
+            ["@jest/globals", "npm:29.6.1"],\
+            ["@types/lodash", "npm:4.14.195"],\
+            ["@types/node", "npm:18.15.11"],\
+            ["@types/shelljs", "npm:0.8.12"],\
+            ["axios", "npm:1.3.5"],\
+            ["compressing", "npm:1.10.0"],\
+            ["conf", "npm:10.2.0"],\
+            ["dotenv", "npm:16.3.1"],\
+            ["fast-glob", "npm:3.3.1"],\
+            ["find-free-ports", "npm:3.1.1"],\
+            ["jest", "virtual:b2489bbc0216283d7687523442dd6b04aeaedb71246257f8a0a0e6ae86307b18dca708146dd0f430b02186348d070ef7e31b7b07c55f7aabad66d13be5ae7e15#npm:29.6.1"],\
+            ["lodash", "npm:4.17.21"],\
+            ["nodemon", "npm:2.0.22"],\
+            ["pidtree", "npm:0.6.0"],\
+            ["shelljs", "npm:0.8.5"],\
+            ["shx", "npm:0.3.4"],\
+            ["ts-jest", "virtual:b2489bbc0216283d7687523442dd6b04aeaedb71246257f8a0a0e6ae86307b18dca708146dd0f430b02186348d070ef7e31b7b07c55f7aabad66d13be5ae7e15#npm:29.1.1"],\
+            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@dogu-private/dost-children", [\
         ["workspace:packages/typescript-private/dost-children", {\
           "packageLocation": "./packages/typescript-private/dost-children/",\
@@ -11716,6 +11783,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:18.15.11"],\
             ["@types/plist", "npm:3.0.2"],\
             ["@types/ws", "npm:8.5.4"],\
+            ["axios", "npm:1.3.5"],\
             ["bplist-parser", "npm:0.3.2"],\
             ["class-transformer", "npm:0.5.1"],\
             ["class-validator", "npm:0.14.0"],\
@@ -11764,7 +11832,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@jest/globals", "npm:29.5.0"],\
             ["@types/lodash", "npm:4.14.186"],\
             ["@types/node", "npm:18.15.11"],\
-            ["axios", "npm:1.4.0"],\
+            ["axios", "npm:1.3.5"],\
             ["class-transformer", "npm:0.5.1"],\
             ["class-validator", "npm:0.14.0"],\
             ["cross-env", "npm:7.0.3"],\
@@ -18994,6 +19062,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node", "npm:18.15.13"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:0.8.12", {\
+          "packageLocation": "./.yarn/cache/@types-shelljs-npm-0.8.12-cbc88427ef-ffb47809ab.zip/node_modules/@types/shelljs/",\
+          "packageDependencies": [\
+            ["@types/shelljs", "npm:0.8.12"],\
+            ["@types/glob", "npm:7.2.0"],\
+            ["@types/node", "npm:18.15.13"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["@types/sockjs", [\
@@ -21534,6 +21611,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/atob-npm-2.1.2-bcb583261e-dfeeeb7009.zip/node_modules/atob/",\
           "packageDependencies": [\
             ["atob", "npm:2.1.2"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["atomically", [\
+        ["npm:1.7.0", {\
+          "packageLocation": "./.yarn/cache/atomically-npm-1.7.0-e742e5293b-991153b173.zip/node_modules/atomically/",\
+          "packageDependencies": [\
+            ["atomically", "npm:1.7.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -24121,6 +24207,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["commander", [\
+        ["npm:11.0.0", {\
+          "packageLocation": "./.yarn/cache/commander-npm-11.0.0-7def992f0c-6621954e1e.zip/node_modules/commander/",\
+          "packageDependencies": [\
+            ["commander", "npm:11.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
         ["npm:2.14.1", {\
           "packageLocation": "./.yarn/cache/commander-npm-2.14.1-c6046110cb-26bd49febe.zip/node_modules/commander/",\
           "packageDependencies": [\
@@ -24236,6 +24329,22 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["compressing", [\
+        ["npm:1.10.0", {\
+          "packageLocation": "./.yarn/cache/compressing-npm-1.10.0-81d2590528-e26573ff35.zip/node_modules/compressing/",\
+          "packageDependencies": [\
+            ["compressing", "npm:1.10.0"],\
+            ["@eggjs/yauzl", "npm:2.11.0"],\
+            ["flushwritable", "npm:1.0.0"],\
+            ["get-ready", "npm:1.0.0"],\
+            ["iconv-lite", "npm:0.5.2"],\
+            ["mkdirp", "npm:0.5.6"],\
+            ["pump", "npm:3.0.0"],\
+            ["streamifier", "npm:0.1.1"],\
+            ["tar-stream", "npm:1.6.2"],\
+            ["yazl", "npm:2.5.1"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
         ["npm:1.9.0", {\
           "packageLocation": "./.yarn/cache/compressing-npm-1.9.0-b52c2b9ca2-e359047104.zip/node_modules/compressing/",\
           "packageDependencies": [\
@@ -24296,6 +24405,25 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["inherits", "npm:2.0.4"],\
             ["readable-stream", "npm:2.3.8"],\
             ["typedarray", "npm:0.0.6"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["conf", [\
+        ["npm:10.2.0", {\
+          "packageLocation": "./.yarn/cache/conf-npm-10.2.0-8d0cbf5589-27066f38a2.zip/node_modules/conf/",\
+          "packageDependencies": [\
+            ["conf", "npm:10.2.0"],\
+            ["ajv", "npm:8.12.0"],\
+            ["ajv-formats", "virtual:e3acbe4bfe48c95f107e2d8719a598fe5c53dea0295158d351849eb929ec6c3b0c4bcc2b82a4700ef303e0e4ca21f47ef2fedf2e752aedaf8ae874427b92a524#npm:2.1.1"],\
+            ["atomically", "npm:1.7.0"],\
+            ["debounce-fn", "npm:4.0.0"],\
+            ["dot-prop", "npm:6.0.1"],\
+            ["env-paths", "npm:2.2.1"],\
+            ["json-schema-typed", "npm:7.0.3"],\
+            ["onetime", "npm:5.1.2"],\
+            ["pkg-up", "npm:3.1.0"],\
+            ["semver", "npm:7.5.0"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -26005,6 +26133,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["debounce-fn", [\
+        ["npm:4.0.0", {\
+          "packageLocation": "./.yarn/cache/debounce-fn-npm-4.0.0-fc4e97bcb1-7bf8d142b4.zip/node_modules/debounce-fn/",\
+          "packageDependencies": [\
+            ["debounce-fn", "npm:4.0.0"],\
+            ["mimic-fn", "npm:3.1.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["debug", [\
         ["npm:2.6.9", {\
           "packageLocation": "./.yarn/cache/debug-npm-2.6.9-7d4cb597dc-d2f51589ca.zip/node_modules/debug/",\
@@ -26872,6 +27010,27 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["dogu-agent", [\
+        ["workspace:projects/dogu-agent", {\
+          "packageLocation": "./projects/dogu-agent/",\
+          "packageDependencies": [\
+            ["dogu-agent", "workspace:projects/dogu-agent"],\
+            ["@commander-js/extra-typings", "virtual:47191191a44bd9e6ca18275c58a85be8d2269a841a5e4898762f00d77f11d1d1e37e8cb87ac6018aa2ce3072ce44d16c2458d3932801aed83cdef01860c571c0#npm:11.0.0"],\
+            ["@dogu-private/dogu-agent-core", "workspace:packages/typescript-private/dogu-agent-core"],\
+            ["@dogu-tech/node", "workspace:packages/typescript/node"],\
+            ["@types/lodash", "npm:4.14.195"],\
+            ["@types/node", "npm:18.15.11"],\
+            ["commander", "npm:11.0.0"],\
+            ["cross-env", "npm:7.0.3"],\
+            ["lodash", "npm:4.17.21"],\
+            ["nodemon", "npm:2.0.22"],\
+            ["shx", "npm:0.3.4"],\
+            ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
+            ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["dogu-device-client", [\
         ["workspace:packages/python/dogu-device-client", {\
           "packageLocation": "./packages/python/dogu-device-client/",\
@@ -27026,6 +27185,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["is-obj", "npm:2.0.0"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:6.0.1", {\
+          "packageLocation": "./.yarn/cache/dot-prop-npm-6.0.1-de66211710-0f47600a4b.zip/node_modules/dot-prop/",\
+          "packageDependencies": [\
+            ["dot-prop", "npm:6.0.1"],\
+            ["is-obj", "npm:2.0.0"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["dotenv", [\
@@ -27047,6 +27214,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/dotenv-npm-16.1.3-4df6c2511f-8f73bae720.zip/node_modules/dotenv/",\
           "packageDependencies": [\
             ["dotenv", "npm:16.1.3"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:16.3.1", {\
+          "packageLocation": "./.yarn/cache/dotenv-npm-16.3.1-e6d380a398-15d75e7279.zip/node_modules/dotenv/",\
+          "packageDependencies": [\
+            ["dotenv", "npm:16.3.1"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -29037,6 +29211,18 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["micromatch", "npm:4.0.5"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:3.3.1", {\
+          "packageLocation": "./.yarn/cache/fast-glob-npm-3.3.1-8045ff8f4d-b6f3add640.zip/node_modules/fast-glob/",\
+          "packageDependencies": [\
+            ["fast-glob", "npm:3.3.1"],\
+            ["@nodelib/fs.stat", "npm:2.0.5"],\
+            ["@nodelib/fs.walk", "npm:1.2.8"],\
+            ["glob-parent", "npm:5.1.2"],\
+            ["merge2", "npm:1.4.1"],\
+            ["micromatch", "npm:4.0.5"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["fast-json-stable-stringify", [\
@@ -29388,6 +29574,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/find-free-ports-npm-3.0.0-ea346e89d2-faffd16f2e.zip/node_modules/find-free-ports/",\
           "packageDependencies": [\
             ["find-free-ports", "npm:3.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:3.1.1", {\
+          "packageLocation": "./.yarn/cache/find-free-ports-npm-3.1.1-9468a40788-e9e6296c79.zip/node_modules/find-free-ports/",\
+          "packageDependencies": [\
+            ["find-free-ports", "npm:3.1.1"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -34502,6 +34695,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["json-schema-typed", [\
+        ["npm:7.0.3", {\
+          "packageLocation": "./.yarn/cache/json-schema-typed-npm-7.0.3-b2c25a2ec3-e861b19e97.zip/node_modules/json-schema-typed/",\
+          "packageDependencies": [\
+            ["json-schema-typed", "npm:7.0.3"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["json-stable-stringify-without-jsonify", [\
         ["npm:1.0.1", {\
           "packageLocation": "./.yarn/cache/json-stable-stringify-without-jsonify-npm-1.0.1-b65772b28b-cff44156dd.zip/node_modules/json-stable-stringify-without-jsonify/",\
@@ -37115,6 +37317,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/mimic-fn-npm-2.1.0-4fbeb3abb4-d2421a3444.zip/node_modules/mimic-fn/",\
           "packageDependencies": [\
             ["mimic-fn", "npm:2.1.0"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:3.1.0", {\
+          "packageLocation": "./.yarn/cache/mimic-fn-npm-3.1.0-12d126ec66-f7b167f911.zip/node_modules/mimic-fn/",\
+          "packageDependencies": [\
+            ["mimic-fn", "npm:3.1.0"]\
           ],\
           "linkType": "HARD"\
         }],\

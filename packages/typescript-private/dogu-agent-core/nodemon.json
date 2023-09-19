@@ -1,0 +1,15 @@
+{
+  "verbose": true,
+  "watch": [
+    "./src",
+    "../../typescript-private/device-server/src",
+    "../../typescript-private/dost-children/src",
+    "../../typescript-private/env-tools/src",
+    "../../typescript-private/host-agent/src",
+    "../../typescript/common/src",
+    "../../typescript/node/src",
+    "../../typescript/types/src"
+  ],
+  "exec": "tsc -b",
+  "ext": "ts"
+}

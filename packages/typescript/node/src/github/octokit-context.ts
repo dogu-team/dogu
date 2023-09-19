@@ -16,6 +16,11 @@ export class OctokitContext {
 
   async downloadReleaseAsset(owner: string, repo: string, assetId: number, destPath: string, printable: Printable): Promise<void> {
     const asset = await this.client.rest.repos.getReleaseAsset({ owner, repo, asset_id: assetId });
-    await download(asset.data.url, destPath, { Authorization: `token ${this.token}`, Accept: 'application/octet-stream' }, printable);
+    await download({
+      url: asset.data.url,
+      filePath: destPath,
+      headers: { Authorization: `token ${this.token}`, Accept: 'application/octet-stream' },
+      logger: printable,
+    });
   }
 }
