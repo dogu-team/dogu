@@ -13,9 +13,11 @@
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
+#elif defined(__APPLE__)
+#define WEBRTC_MAC
 #else
 #define WEBRTC_POSIX
-#define WEBRTC_MAC
+#define WEBRTC_USE_X11
 #endif // defined(_WIN32 )
 
 #include "modules/desktop_capture/desktop_capture_options.h"
@@ -32,7 +34,8 @@
 #include "modules/desktop_capture/mac/full_screen_mac_application_handler.h"
 #include "modules/desktop_capture/mac/window_list_utils.h"
 #else
-#error "Unsupported platform."
+#include "modules/desktop_capture/linux/x11/window_capturer_x11.h"
+#include "modules/desktop_capture/linux/x11/window_list_utils.h"
 #endif // defined(_WIN32)
 
 namespace mywindows
@@ -66,7 +69,8 @@ std::vector<WindowInfo> getInfos()
         info.pid = webrtc::GetWindowOwnerPid(uint32_t(s.id));
         info.rect = webrtc::GetWindowBounds(uint32_t(s.id));
 #else
-#error "Unsupported platform."
+        info.pid = 0;
+        webrtc::GetWindowRect(option.x_display()->display(), s.id, &info.rect);
 #endif // defined(_WIN32 )
         infos.push_back(info);
     }
