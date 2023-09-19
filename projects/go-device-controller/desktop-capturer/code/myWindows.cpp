@@ -15,7 +15,8 @@
 #include <windows.h>
 #elif defined(__APPLE__)
 #define WEBRTC_MAC
-#elif defined(__linux__)
+#define WEBRTC_POSIX
+#else
 #define WEBRTC_POSIX
 #define WEBRTC_USE_X11
 #else

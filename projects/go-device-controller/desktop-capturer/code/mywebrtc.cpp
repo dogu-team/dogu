@@ -16,7 +16,8 @@
 #pragma comment(lib, "Winmm.lib")
 #elif defined(__APPLE__)
 #define WEBRTC_MAC
-#elif defined(__linux__)
+#define WEBRTC_POSIX
+#else
 #define WEBRTC_POSIX
 #else
 #error "Unsupported OS"
