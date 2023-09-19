@@ -1,5 +1,5 @@
 import { PrefixLogger, Printable, stringify } from '@dogu-tech/common';
-import { HostPaths, killChildProcess } from '@dogu-tech/node';
+import { HostPaths, killChildProcess, Pbxproj } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
@@ -69,18 +69,32 @@ export class WdaBuildExternalUnit extends IExternalUnit {
     }
     const wdaDerivedDataPath = HostPaths.external.xcodeProject.wdaDerivedDataPath();
     const wdaProjectPath = path.resolve(HostPaths.external.xcodeProject.wdaProjectDirectoryPath(), 'WebDriverAgent.xcodeproj');
+    const wdaPbxProjectPath = path.resolve(HostPaths.external.xcodeProject.wdaProjectDirectoryPath(), 'WebDriverAgent.xcodeproj', 'project.pbxproj');
+    const pbxproj = new Pbxproj(wdaPbxProjectPath);
+    const style = pbxproj.getSingingStyle('WebDriverAgentRunner');
+
+    const args = [
+      'build-for-testing',
+      '-project',
+      wdaProjectPath,
+      '-scheme',
+      'WebDriverAgentRunner',
+      '-destination',
+      'generic/platform=iOS',
+      '-derivedDataPath',
+      wdaDerivedDataPath,
+    ];
+
+    if (style !== 'Manual') {
+      args.push('-allowProvisioningUpdates');
+      args.push('-allowProvisioningDeviceRegistration');
+    }
+    this.logger.info(`${this.getName()} signing style: ${style}`);
+
     await new Promise<void>((resolve, reject) => {
-      this.child = spawn('xcodebuild', [
-        'build-for-testing',
-        '-project',
-        wdaProjectPath,
-        '-scheme',
-        'WebDriverAgentRunner',
-        '-destination',
-        'generic/platform=iOS',
-        '-derivedDataPath',
-        wdaDerivedDataPath,
-      ]);
+      this.logger.info(`${this.getName()} spawn: xcodebuild ${args.join(' ')}`);
+
+      this.child = spawn('xcodebuild', args);
 
       const onErrorForReject = (error: Error): void => {
         reject(error);

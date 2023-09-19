@@ -1,5 +1,5 @@
 import { PrefixLogger, Printable, stringify } from '@dogu-tech/common';
-import { HostPaths, killChildProcess } from '@dogu-tech/node';
+import { HostPaths, killChildProcess, Pbxproj } from '@dogu-tech/node';
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
 import fs from 'fs';
 import fsPromises from 'fs/promises';
@@ -85,21 +85,27 @@ export class IdaBuildExternalUnit extends IExternalUnit {
     this.logger.info(`${this.getName()} copy project done.`);
     const idaDerivedDataPath = HostPaths.external.xcodeProject.idaDerivedDataPath();
     const idaProjectPath = path.resolve(HostPaths.external.xcodeProject.idaProjectDirectoryPath(), 'IOSDeviceAgent.xcodeproj');
+
     if (!fs.existsSync(idaProjectPath)) {
       throw Error(`iOSDeviceAgent project not found. path: ${idaProjectPath}`);
     }
+
+    const idaPbxProjectPath = path.resolve(HostPaths.external.xcodeProject.idaProjectDirectoryPath(), 'IOSDeviceAgent.xcodeproj', 'project.pbxproj');
+
+    const pbxproj = new Pbxproj(idaPbxProjectPath);
+
+    const style = pbxproj.getSingingStyle('DoguRunner');
+    const args = ['build-for-testing', '-project', idaProjectPath, '-scheme', 'DoguRunner', '-destination', 'generic/platform=iOS', '-derivedDataPath', idaDerivedDataPath];
+    if (style !== 'Manual') {
+      args.push('-allowProvisioningUpdates');
+      args.push('-allowProvisioningDeviceRegistration');
+    }
+    this.logger.info(`${this.getName()} signing style: ${style}`);
+
     await new Promise<void>((resolve, reject) => {
-      this.child = spawn('xcodebuild', [
-        'build-for-testing',
-        '-project',
-        idaProjectPath,
-        '-scheme',
-        'DoguRunner',
-        '-destination',
-        'generic/platform=iOS',
-        '-derivedDataPath',
-        idaDerivedDataPath,
-      ]);
+      this.logger.info(`${this.getName()} spawn: xcodebuild ${args.join(' ')}`);
+
+      this.child = spawn('xcodebuild', args);
 
       const onErrorForReject = (error: Error): void => {
         reject(error);
