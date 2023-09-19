@@ -11,5 +11,26 @@
   "exclude": ["node_modules", "test", "build", "**/*spec.ts"],
   "include": ["src"],
   "references": [
+    {
+      "path": "../../typescript-private/device-server"
+    },
+    {
+      "path": "../../typescript-private/dost-children"
+    },
+    {
+      "path": "../../typescript-private/env-tools"
+    },
+    {
+      "path": "../../typescript-private/host-agent"
+    },
+    {
+      "path": "../../typescript/common"
+    },
+    {
+      "path": "../../typescript/node"
+    },
+    {
+      "path": "../../typescript/types"
+    }
   ]
 }
