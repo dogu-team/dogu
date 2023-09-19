@@ -4046,27 +4046,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dogu-dev-private/docs-gen@workspace:mirror/packages/@dogu-dev-private-docs-gen":
-  version: 0.0.0-use.local
-  resolution: "@dogu-dev-private/docs-gen@workspace:mirror/packages/@dogu-dev-private-docs-gen"
-  dependencies:
-    "@dogu-dev-private/build-tools": "workspace:^"
-    "@dogu-private/types": "workspace:^"
-    "@dogu-tech/common": "workspace:^"
-    "@dogu-tech/node": "workspace:^"
-    "@types/glob": 8
-    "@types/node": 18.15.11
-    chalk: 4.1.2
-    compressing: 1.9.0
-    glob: 10.0.0
-    nodemon: 2.0.22
-    shx: 0.3.4
-    ts-node: 10.9.1
-    typescript: 4.7.4
-    typescript-parser: 2.6.1
-  languageName: unknown
-  linkType: soft
-
 "@dogu-dev-private/publish-package@workspace:^, @dogu-dev-private/publish-package@workspace:mirror/packages/@dogu-dev-private-publish-package":
   version: 0.0.0-use.local
   resolution: "@dogu-dev-private/publish-package@workspace:mirror/packages/@dogu-dev-private-publish-package"
@@ -8325,7 +8304,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/glob@npm:*, @types/glob@npm:8, @types/glob@npm:^8.1.0":
+"@types/glob@npm:*, @types/glob@npm:^8.1.0":
   version: 8.1.0
   resolution: "@types/glob@npm:8.1.0"
   dependencies:
@@ -19136,13 +19115,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash-es@npm:^4.17.10":
-  version: 4.17.21
-  resolution: "lodash-es@npm:4.17.21"
-  checksum: 05cbffad6e2adbb331a4e16fbd826e7faee403a1a04873b82b42c0f22090f280839f85b95393f487c1303c8a3d2a010048bf06151a6cbe03eee4d388fb0a12d2
-  languageName: node
-  linkType: hard
-
 "lodash.camelcase@npm:^4.3.0":
   version: 4.3.0
   resolution: "lodash.camelcase@npm:4.3.0"
@@ -19248,7 +19220,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:4.17.21, lodash@npm:^4.17.10, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.7.0":
+"lodash@npm:4.17.21, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21, lodash@npm:^4.7.0":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: eb835a2e51d381e561e508ce932ea50a8e5a68f4ebdd771ea240d3048244a8d13658acbd502cd4829768c56f2e16bdd4340b9ea141297d472517b83868e677f7
@@ -25923,18 +25895,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript-parser@npm:2.6.1":
-  version: 2.6.1
-  resolution: "typescript-parser@npm:2.6.1"
-  dependencies:
-    lodash: ^4.17.10
-    lodash-es: ^4.17.10
-    tslib: ^1.9.3
-    typescript: ^3.0.3
-  checksum: 2f3f51d01b8157e956401df004ac72bc63d6596f1f3d14f0d04fa99eacb9b8f0e892a04fb0fab016a4f5a32863f5a334a7036430423633a8f2fb03710f3c32c8
-  languageName: node
-  linkType: hard
-
 "typescript@npm:4.7.4":
   version: 4.7.4
   resolution: "typescript@npm:4.7.4"
@@ -25945,16 +25905,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^3.0.3":
-  version: 3.9.10
-  resolution: "typescript@npm:3.9.10"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 46c842e2cd4797b88b66ef06c9c41dd21da48b95787072ccf39d5f2aa3124361bc4c966aa1c7f709fae0509614d76751455b5231b12dbb72eb97a31369e1ff92
-  languageName: node
-  linkType: hard
-
 "typescript@patch:typescript@4.7.4#~builtin<compat/typescript>":
   version: 4.7.4
   resolution: "typescript@patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"
@@ -25962,16 +25912,6 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 9096d8f6c16cb80ef3bf96fcbbd055bf1c4a43bd14f3b7be45a9fbe7ada46ec977f604d5feed3263b4f2aa7d4c7477ce5f9cd87de0d6feedec69a983f3a4f93e
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@^3.0.3#~builtin<compat/typescript>":
-  version: 3.9.10
-  resolution: "typescript@patch:typescript@npm%3A3.9.10#~builtin<compat/typescript>::version=3.9.10&hash=3bd3d3"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: dc7141ab555b23a8650a6787f98845fc11692063d02b75ff49433091b3af2fe3d773650dea18389d7c21f47d620fb3b110ea363dab4ab039417a6ccbbaf96fc2
   languageName: node
   linkType: hard
 
