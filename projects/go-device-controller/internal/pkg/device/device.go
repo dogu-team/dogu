@@ -31,6 +31,8 @@ func newDevice(context *types.DcGdcDeviceContext) (device, error) {
 		return newWindowsDevice(context)
 	case outer.Platform_PLATFORM_MACOS:
 		return newMacOSDevice(context)
+	case outer.Platform_PLATFORM_LINUX:
+		return newLinuxDevice(context)
 	}
 	return nil, errors.New("invalid platform")
 }

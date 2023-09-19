@@ -123,8 +123,18 @@ func handleControlInjectKeyCode(c *types.DeviceControl, platform outer.Platform,
 	return gotypes.Success
 }
 
+var lastPasteTime = time.Now()
+
 func handleSetClipboard(c *types.DeviceControl, platform outer.Platform, kb *keybd_event.KeyBonding) *outer.ErrorResult {
 	log.Inst.Debug("MessageHandler.handleSetClipboard start")
+	delta := time.Now().Sub(lastPasteTime)
+	if delta < 2000*time.Second {
+		log.Inst.Debug("MessageHandler.handleSetClipboard too fast", zap.Duration("delta", delta))
+		return &outer.ErrorResult{
+			Code:    outer.Code_CODE_DEVICE_CONTROLLER_INPUT_NOTSUPPORTED,
+			Message: fmt.Sprintf("MessageHandler.handleControl clipboard too fast %s", delta.String()),
+		}
+	}
 
 	log.Inst.Info("MessageHandler.clearAllMetaKeys")
 	err := clipboard.WriteAll(c.GetText())
@@ -136,6 +146,7 @@ func handleSetClipboard(c *types.DeviceControl, platform outer.Platform, kb *key
 		}
 	}
 	kb.Clear()
+	lastPasteTime = time.Now()
 
 	if runtime.GOOS == "darwin" {
 		kb.HasSuper(true)
