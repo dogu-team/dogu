@@ -1,6 +1,6 @@
 ---
-sidebar_position: 1
-title: Pytest
+sidebar_position: 2
+title: Jest
 locale: en
 ---
 
@@ -17,7 +17,7 @@ import IntegrateWithGitRepository from '@site/src/components/tutorial/routine/In
 import CreateARoutine from '@site/src/components/tutorial/routine/CreateARoutineKor.mdx';
 import RunARoutine from '@site/src/components/tutorial/routine/RunARoutineKor.mdx';
 
-Pytest를 이용하여 Dogu와 함께 브라우저 테스트를 작성하고 실행하는 방법을 설명합니다.
+Jest를 이용하여 Dogu와 함께 브라우저 테스트를 작성하고 실행하는 방법을 설명합니다.
 
 <DevicePrerequisites />
 
@@ -32,9 +32,9 @@ Pytest를 이용하여 Dogu와 함께 브라우저 테스트를 작성하고 실
 <div>
   {RoutineSeleniumExample({
     runsOn: 'windows',
-    environment: 'python',
-    cwd: 'selenium/python/pytest',
-    command: 'pytest web/test_web.py --capture=no -x',
+    environment: 'node',
+    cwd: 'selenium/typescript/jest',
+    command: 'npm run test:web',
   })}
 </div>
 
@@ -44,9 +44,9 @@ Pytest를 이용하여 Dogu와 함께 브라우저 테스트를 작성하고 실
 <div>
   {RoutineSeleniumExample({
     runsOn: 'macos',
-    environment: 'python',
-    cwd: 'selenium/python/pytest',
-    command: 'pytest web/test_web.py --capture=no -x',
+    environment: 'node',
+    cwd: 'selenium/typescript/jest',
+    command: 'npm run test:web',
   })}
 </div>
 
