@@ -39,7 +39,6 @@ export async function run(url: string, token: string) {
 
   const featureConfigService = await new FeatureConfigLoader({
     appConfigService,
-    configDirPath: doguAgentAppPath,
     logger,
   }).load();
 
