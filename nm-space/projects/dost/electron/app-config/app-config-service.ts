@@ -22,7 +22,6 @@ export class AppConfigService {
       configsPath: ConfigsPath,
       dotenvSearchPaths,
       logger,
-      enableOpenInEditor: isDev,
     }).load();
 
     AppConfigService.instance = new AppConfigService(impl);

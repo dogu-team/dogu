@@ -79,18 +79,6 @@ async function copyThirdParty(platform: NodeJS.Platform, archs: NodeJS.Architect
   });
 }
 
-async function copyFeatureConfig(runType: string): Promise<ExtraResource> {
-  const featureConfigPath = path.resolve(process.cwd(), 'features', `${runType}.feature.config.json`);
-  if (!(await access(featureConfigPath, fs.constants.R_OK))) {
-    console.error('Feature config not found', { featureConfigPath });
-    process.exit(1);
-  }
-  return {
-    from: featureConfigPath,
-    to: 'feature.config.json',
-  };
-}
-
 export async function prepare(platform: NodeJS.Platform, runType: string): Promise<{ archs: Arch[]; extraResources: ExtraResource[] }> {
   await validateResourceEnvs();
   const archs = getArchs(platform);
@@ -98,8 +86,6 @@ export async function prepare(platform: NodeJS.Platform, runType: string): Promi
     await signThirdParties();
   }
   const extraResources = await copyThirdParty(platform, archs);
-  const featureConfig = await copyFeatureConfig(runType);
-  extraResources.push(featureConfig);
   return {
     archs,
     extraResources,
