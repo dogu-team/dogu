@@ -17,6 +17,7 @@ export * from './git';
 export * from './github/octokit-context';
 export * from './host-paths';
 export * from './ios/mobile-provisioning-profile';
+export * from './ios/pbxproj';
 export * from './ios/plist-parser';
 export * from './logs';
 export * from './macos-utils';
