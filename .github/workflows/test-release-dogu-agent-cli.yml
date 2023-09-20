@@ -1,0 +1,55 @@
+name: 🧪🚀test-release-dogu-agent-cli
+
+on:
+  workflow_dispatch:
+    inputs:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: yarn
+
+      - name: Authenticate with Google Cloud
+        run: |
+          echo ${{ secrets.TEST_GOOGLE_CLOUD_ARTIFACT_REGISTRY }} > gcr-service-account.json
+          gcloud auth activate-service-account --key-file=gcr-service-account.json
+          gcloud auth configure-docker gcr.io
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ./gcr-service-account.json
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          context: ./
+          tags: asia-northeast3-docker.pkg.dev/dogu-project-379607/test-dogu-agent-cli:latest
+          platforms: linux/amd64
+          target: dogu-agent
+
+  send-slack:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: ${{ always() }}
+
+    steps:
+      - name: Send Slack
+        uses: dogu-team/slack@v1.0
+        with:
+          template: 'CD'
+          slack-channel-id: 'C057ML9UH34'
+          result-status: ${{ needs.build-and-push.result }}
+          ignore-notify: false
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
