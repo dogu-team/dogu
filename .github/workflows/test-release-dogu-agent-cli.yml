@@ -8,6 +8,14 @@ permissions:
   id-token: write
   contents: read
 
+env:
+  GCAR_REGION: asia-northeast3
+  GCAR_PROJECT_ID: dogu-project-379607
+  GCAR_REPOSITORY: test-dogu-agent-cli
+  GCAR_IMAGE: test-dogu-agent-cli
+  GCAR_TAG: latest
+  GCAR_KEY_FILE: service-account-key.json
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -16,34 +24,31 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
+      - name: load credentials
+        uses: jsdaniell/create-json@v1.2.2
         with:
-          node-version: 16
-          cache: yarn
+          name: ${{ env.GCAR_KEY_FILE }}
+          json: ${{ secrets.TEST_GCAR_KEY }}
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.TEST_GOOGLE_CLOUD_ARTIFACT_REGISTRY }}
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v1
 
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v1'
-
-      - name: 'Use gcloud CLI'
-        run: 'gcloud info'
-
-      - name: build Docker Image
-        run: docker build -t asia-northeast3-docker.pkg.dev/dogu-project-379607/test-dogu-agent-cli:latest --platform linux/amd64 --target dogu-agent .
-
-      - name: Configure Docker Client of Gcloud
+      - name: Login to GCR
         run: |-
+          gcloud auth activate-service-account --key-file=${{ env.GCAR_KEY_FILE }}
           gcloud auth configure-docker --quiet
-          gcloud auth configure-docker asia-northeast3-docker.pkg.dev --quiet
+          gcloud auth configure-docker ${{ env.GCAR_REGION }}-docker.pkg.dev --quiet
 
-      - name: Push Docker Image to Artifact Registry
-        run: |-
-          docker tag asia-northeast3-docker.pkg.dev/dogu-project-379607/test-dogu-agent-cli:latest asia-northeast3-docker.pkg.dev/dogu-project-379607/test-dogu-agent-cli:latest
-          docker push asia-northeast3-docker.pkg.dev/dogu-project-379607/test-dogu-agent-cli:latest
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./dockerfile
+          push: true
+          target: dogu-agent
+          platforms: linux/amd64
+          no-cache: true
+          tags: ${{ env.GCAR_REGION }}-docker.pkg.dev/${{ env.GCAR_PROJECT_ID }}/${{ env.GCAR_REPOSITORY }}/${{ env.GCAR_IMAGE }}:${{ env.GCAR_TAG }}
 
   send-slack:
     runs-on: ubuntu-latest
