@@ -52,8 +52,6 @@ export function DefaultDeviceConfig(platform: Platform): DeviceConfigDto {
           { profileMethod: ProfileMethods.Desktop.Cpu, periodSec: 3 },
           { profileMethod: ProfileMethods.Desktop.CpuFreq, periodSec: 3 },
           { profileMethod: ProfileMethods.Desktop.Mem, periodSec: 3 },
-          { profileMethod: ProfileMethods.Desktop.Fs, periodSec: 3 },
-          { profileMethod: ProfileMethods.Desktop.Net, periodSec: 3 },
           { profileMethod: ProfileMethods.Desktop.Display, periodSec: 3 },
         ],
       };
@@ -63,8 +61,16 @@ export function DefaultDeviceConfig(platform: Platform): DeviceConfigDto {
           { profileMethod: ProfileMethods.Desktop.Cpu, periodSec: 3 },
           { profileMethod: ProfileMethods.Desktop.CpuFreq, periodSec: 3 },
           { profileMethod: ProfileMethods.Desktop.Mem, periodSec: 3 },
-          { profileMethod: ProfileMethods.Desktop.Fs, periodSec: 3 },
-          { profileMethod: ProfileMethods.Desktop.Net, periodSec: 3 },
+          { profileMethod: ProfileMethods.Desktop.Display, periodSec: 3 },
+        ],
+      };
+
+    case Platform.PLATFORM_LINUX:
+      return {
+        profileMethods: [
+          { profileMethod: ProfileMethods.Desktop.Cpu, periodSec: 3 },
+          { profileMethod: ProfileMethods.Desktop.CpuFreq, periodSec: 3 },
+          { profileMethod: ProfileMethods.Desktop.Mem, periodSec: 3 },
           { profileMethod: ProfileMethods.Desktop.Display, periodSec: 3 },
         ],
       };

@@ -1,6 +1,6 @@
 import { Platform, Serial } from '@dogu-private/types';
 import { delay, Printable } from '@dogu-tech/common';
-import { ChildProcess, killChildProcess, killProcessOnPortOnMacos, waitPortOpen } from '@dogu-tech/node';
+import { ChildProcess, killChildProcess, killProcessOnPortOnUnix, waitPortOpen } from '@dogu-tech/node';
 import child_process from 'child_process';
 import { idcLogger, logger } from '../../../logger/logger.instance';
 import { Zombieable, ZombieProps, ZombieQueriable } from '../../services/zombie/zombie-component';
@@ -82,7 +82,7 @@ export class ZombieTunnel implements Zombieable {
   }
 
   async revive(): Promise<void> {
-    await killProcessOnPortOnMacos('mobile', this.hostPort, this.logger).catch(() => {
+    await killProcessOnPortOnUnix('mobile', this.hostPort, this.logger).catch(() => {
       // ignore
     });
     await delay(1000);
