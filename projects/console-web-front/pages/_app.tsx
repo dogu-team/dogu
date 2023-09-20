@@ -19,6 +19,8 @@ export type NextPageWithLayout<P = {}> = NextPage<P> & {
   getLayout?: (page: React.ReactElement<P>) => React.ReactNode;
 };
 
+export const IS_CLOUD = process.env.NEXT_PUBLIC_ENV === 'production';
+
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };

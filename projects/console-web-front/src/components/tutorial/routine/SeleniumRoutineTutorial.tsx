@@ -24,6 +24,8 @@ import DoneStep from './DoneStep';
 import RoutineGitTutorial from './RoutineGitTutorial';
 import TutorialRoutineCreator from './TutorialRoutineCreator';
 import DoguText from '../../common/DoguText';
+import { IS_CLOUD } from '../../../../pages/_app';
+import { CLOUD_LINUX_DEVICE_NAME } from '../../../resources/routine';
 
 const INTRODUCTION_ID = 'introduction';
 const CLONE_GIT_ID = 'clone-git';
@@ -46,11 +48,10 @@ const SeleniumRoutineTutorial = () => {
   );
   const frameworkLanguage = Object.keys(
     routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang,
-  ).find(
-    (language) =>
-      routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[
-        language as TutorialSupportLanguage
-      ]?.includes(framework),
+  ).find((language) =>
+    routineTutorialSdkSupportInfo[TutorialSupportSdk.APPIUM].frameworksPerLang[
+      language as TutorialSupportLanguage
+    ]?.includes(framework),
   );
 
   const WEB_ROUTINE_SAMPLE = `name: sample-routine
@@ -60,7 +61,7 @@ on:
 
 jobs:
   sample-job:
-    runs-on: []
+    runs-on: ${IS_CLOUD ? CLOUD_LINUX_DEVICE_NAME : '[]'}
     browserName: chrome
     record: true
     steps:

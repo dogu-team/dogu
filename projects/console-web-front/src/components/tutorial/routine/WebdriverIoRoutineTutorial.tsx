@@ -2,9 +2,11 @@ import { PROJECT_TYPE } from '@dogu-private/types';
 import Trans from 'next-translate/Trans';
 import useTranslation from 'next-translate/useTranslation';
 import styled from 'styled-components';
+import { IS_CLOUD } from '../../../../pages/_app';
 
 import useTutorialContext from '../../../hooks/context/useTutorialContext';
 import useTutorialSelector from '../../../hooks/useTutorialSelector';
+import { CLOUD_LINUX_DEVICE_NAME } from '../../../resources/routine';
 import {
   ROUTINE_SAMPLE_GIT_URL,
   TutorialSupportLanguage,
@@ -100,7 +102,7 @@ on:
 
 jobs:
   sample-job:
-    runs-on: []
+    runs-on: ${IS_CLOUD ? CLOUD_LINUX_DEVICE_NAME : '[]'}
     browserName: chrome
     record: true
     steps:
@@ -113,6 +115,8 @@ jobs:
             ${selectedGuide?.command ?? ''}
         cwd: ${selectedGuide?.cwd ?? ''}
 `;
+
+  console.log(WEB_ROUTINE_SAMPLE);
 
   if (!project) {
     return <ErrorBox title="Something went wrong" desc="Project not found" />;

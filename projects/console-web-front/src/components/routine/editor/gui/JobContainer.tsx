@@ -17,6 +17,7 @@ import { RUN_TEST_ACTION_NAME } from '../../../../types/routine';
 import { RoutineProjectTypeContext } from '../RoutineGUIEditor';
 import AppPackageNameContainer from './AppPackageNameContainer';
 import BrowserPicker from './BrowserPicker';
+import { IS_CLOUD } from '../../../../../pages/_app';
 
 interface NeedsProps {
   needs: JobSchema['needs'];
@@ -231,11 +232,6 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
         updateJob({ ...job, 'runs-on': { group: newRunsOn } }, name);
         return;
       }
-      // // FIXME: henry - browser-manager
-      // else if ('browserName' in runsOn) {
-      //   updateJob({ ...job, 'runs-on': { browserName: runsOn.browserName, tag: '' } }, name);
-      //   return;
-      // }
 
       const newRunsOn = runsOn.filter((t) => t !== tag);
       updateJob({ ...job, 'runs-on': newRunsOn }, name);
@@ -394,50 +390,52 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
           </ContentInner>
         </Content>
       )}
-      <Content>
-        <div>
-          <FlexRow style={{ marginBottom: '.25rem' }}>
-            <ContentTitle style={{ marginBottom: '0' }}>{t('routine:routineGuiEditorJobDeviceLabel')}</ContentTitle>
-            <Checkbox
-              checked={isGroupRun}
-              style={{ marginLeft: '.75rem' }}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  updateJob({ ...job, 'runs-on': { group: job['runs-on'] as string | string[] } }, name);
-                } else {
-                  updateJob(
-                    {
-                      ...job,
-                      'runs-on': (job['runs-on'] as { group: string | string[] }).group as string | string[],
-                    },
-                    name,
-                  );
-                }
-              }}
-            >
-              {t('routine:routineGuiEditorJobDeviceGroupLabel')}
-            </Checkbox>
-          </FlexRow>
-          <ContentDesc>
-            {isGroupRun ? (
-              <Trans
-                i18nKey="routine:routineGuiEditorJobDeviceGroupDescription"
-                components={{ b: <b style={{ fontWeight: '600' }} /> }}
-              />
-            ) : (
-              t('routine:routineGuiEditorJobDeviceDescription')
-            )}
-          </ContentDesc>
-        </div>
-        <ContentInner>
-          <RunsOn runsOn={job['runs-on']} onDelete={handleRemoveRunsOn} />
-          <AddDeviceAndTagButton
-            group={isGroupRun}
-            onSelect={handleAddRunsOn}
-            devicePlatform={getPlatformByAppPackageName()}
-          />
-        </ContentInner>
-      </Content>
+      {!IS_CLOUD && (
+        <Content>
+          <div>
+            <FlexRow style={{ marginBottom: '.25rem' }}>
+              <ContentTitle style={{ marginBottom: '0' }}>{t('routine:routineGuiEditorJobDeviceLabel')}</ContentTitle>
+              <Checkbox
+                checked={isGroupRun}
+                style={{ marginLeft: '.75rem' }}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    updateJob({ ...job, 'runs-on': { group: job['runs-on'] as string | string[] } }, name);
+                  } else {
+                    updateJob(
+                      {
+                        ...job,
+                        'runs-on': (job['runs-on'] as { group: string | string[] }).group as string | string[],
+                      },
+                      name,
+                    );
+                  }
+                }}
+              >
+                {t('routine:routineGuiEditorJobDeviceGroupLabel')}
+              </Checkbox>
+            </FlexRow>
+            <ContentDesc>
+              {isGroupRun ? (
+                <Trans
+                  i18nKey="routine:routineGuiEditorJobDeviceGroupDescription"
+                  components={{ b: <b style={{ fontWeight: '600' }} /> }}
+                />
+              ) : (
+                t('routine:routineGuiEditorJobDeviceDescription')
+              )}
+            </ContentDesc>
+          </div>
+          <ContentInner>
+            <RunsOn runsOn={job['runs-on']} onDelete={handleRemoveRunsOn} />
+            <AddDeviceAndTagButton
+              group={isGroupRun}
+              onSelect={handleAddRunsOn}
+              devicePlatform={getPlatformByAppPackageName()}
+            />
+          </ContentInner>
+        </Content>
+      )}
       <Content>
         <div>
           <ContentTitle>{t('routine:routineGuiEditorJobScreenRecordLabel')}</ContentTitle>

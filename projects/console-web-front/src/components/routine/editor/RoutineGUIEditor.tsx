@@ -7,6 +7,8 @@ import useRoutineEditorStore from '../../../stores/routine-editor';
 import JobContainer from './gui/JobContainer';
 import RoutineNameEditor from './gui/RoutineNameEditor';
 import { RUN_TEST_ACTION_NAME } from '../../../types/routine';
+import { CLOUD_LINUX_DEVICE_NAME } from '../../../resources/routine';
+import { IS_CLOUD } from '../../../../pages/_app';
 
 interface Props {
   projectType: PROJECT_TYPE;
@@ -19,6 +21,26 @@ const RoutineGUIEditor = ({ projectType, hideAddButton }: Props) => {
   const [schema, updateSchema] = useRoutineEditorStore((state) => [state.schema, state.updateSchema]);
   const { t } = useTranslation();
 
+  const getNewJob = (index: number): { [k: string]: JobSchema } => {
+    if (IS_CLOUD) {
+      return {
+        [`new-job-${index}`]: {
+          'runs-on': projectType === PROJECT_TYPE.WEB ? CLOUD_LINUX_DEVICE_NAME : { group: [] },
+          ...(projectType === PROJECT_TYPE.WEB ? { browserName: 'chrome' } : {}),
+          steps: [{ name: 'run-test', uses: RUN_TEST_ACTION_NAME, with: {} }],
+        },
+      };
+    }
+
+    return {
+      [`new-job-${index}`]: {
+        'runs-on': projectType === PROJECT_TYPE.WEB ? [] : { group: [] },
+        ...(projectType === PROJECT_TYPE.WEB ? { browserName: 'chrome' } : {}),
+        steps: [{ name: 'run-test', uses: RUN_TEST_ACTION_NAME, with: {} }],
+      },
+    };
+  };
+
   const handleAddJob = () => {
     const jobNames = Object.keys(schema.jobs);
     const newJobNames = jobNames.filter((name) => name.match(/^new-job-[0-9]{1,}$/));
@@ -29,10 +51,7 @@ const RoutineGUIEditor = ({ projectType, hideAddButton }: Props) => {
       ...schema,
       jobs: {
         ...schema.jobs,
-        [`new-job-${newIndex}`]: {
-          'runs-on': { group: [] },
-          steps: [{ name: 'run-test', uses: RUN_TEST_ACTION_NAME, with: {} }],
-        },
+        ...getNewJob(newIndex),
       },
     });
   };

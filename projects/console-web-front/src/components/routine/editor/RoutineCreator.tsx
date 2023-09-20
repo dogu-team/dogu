@@ -18,45 +18,7 @@ import { getErrorMessageFromAxios } from '../../../utils/error';
 import useRoutineEditorStore from '../../../stores/routine-editor';
 import RoutineGUIEditor from './RoutineGUIEditor';
 import RoutineFlow from './RoutineFlow';
-
-const APP_ROUTINE_SAMPLE = `name: sample-routine
-
-on:
-  workflow_dispatch:
-
-jobs:
-  new-job-1:
-    runs-on:
-      group: []
-    appPackageName:
-    record: true
-    steps:
-      - name: run test
-        uses: dogu-actions/run-test
-        with:
-          checkout: true
-          command:
-        cwd:
-`;
-
-const WEB_ROUTINE_SAMPLE = `name: sample-routine
-
-on:
-  workflow_dispatch:
-
-jobs:
-  new-job-1:
-    runs-on: []
-    browserName:
-    record: true
-    steps:
-      - name: run test
-        uses: dogu-actions/run-test
-        with:
-          checkout: true
-          command:
-        cwd:
-`;
+import { getSampleRoutine } from '../../../resources/routine';
 
 interface Props {
   project: ProjectBase;
@@ -71,15 +33,17 @@ const RoutineCreator = ({ project }: Props) => {
   useExitBlocker(isChanged);
   const { t } = useTranslation();
 
+  const sampleRouine = getSampleRoutine(project.type);
+
   useEffect(() => {
-    updateYaml(project.type === PROJECT_TYPE.WEB ? WEB_ROUTINE_SAMPLE : APP_ROUTINE_SAMPLE);
-  }, [project.type]);
+    updateYaml(sampleRouine);
+  }, [sampleRouine]);
 
   function handleEditorOnChange() {
     if (editorRef.current) {
       const value = editorRef.current.getValue();
       updateYaml(value);
-      if (value !== (project.type === PROJECT_TYPE.WEB ? WEB_ROUTINE_SAMPLE : APP_ROUTINE_SAMPLE)) {
+      if (value !== sampleRouine) {
         setChanged(true);
         return;
       }
