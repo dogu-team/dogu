@@ -70,6 +70,11 @@ export interface VersionItem {
 const handler: NextApiHandler<VersionItem[]> = async (req, res) => {
   const { browser, linuxOnly } = req.query;
 
+  if (req.method !== 'GET') {
+    res.status(404).end();
+    return;
+  }
+
   if (!AVAILABLE_BROSEWRS.includes(browser as string)) {
     res.status(404).end();
     return;
