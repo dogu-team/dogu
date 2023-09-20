@@ -1,4 +1,4 @@
-import { QuestionCircleFilled, QuestionCircleOutlined } from '@ant-design/icons';
+import { QuestionCircleFilled } from '@ant-design/icons';
 import { Tooltip } from 'antd';
 import axios from 'axios';
 import Image from 'next/image';
