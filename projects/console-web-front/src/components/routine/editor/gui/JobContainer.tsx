@@ -15,8 +15,8 @@ import NameEditor from './NameEditor';
 import StepContainer from './StepContainer';
 import { RUN_TEST_ACTION_NAME } from '../../../../types/routine';
 import { RoutineProjectTypeContext } from '../RoutineGUIEditor';
-import BrowserNameSelector from './BrowserNameSelector';
 import AppPackageNameContainer from './AppPackageNameContainer';
+import BrowserPicker from './BrowserPicker';
 
 interface NeedsProps {
   needs: JobSchema['needs'];
@@ -84,14 +84,6 @@ const RunsOn = ({ runsOn, onDelete }: RunsOnProps) => {
       </>
     );
   }
-  // // FIXME: henry - browser-manager
-  // else if ('browserName' in runsOn) {
-  //   return (
-  //     <Tag color="pink" closable onClose={() => onDelete(runsOn!)}>
-  //       {runsOn.browserName}
-  //     </Tag>
-  //   );
-  // }
 
   return (
     <>
@@ -359,10 +351,11 @@ const JobContainer = ({ name, job, updateJob, updateJobName, deleteJob, updateJo
             <ContentDesc>{t('routine:routineGuiEditorJobBrowserNameDescription')}</ContentDesc>
           </div>
           <ContentInner>
-            <BrowserNameSelector
-              value={job.browserName}
-              onChange={(value) => {
-                updateJob({ ...job, browserName: value }, name);
+            <BrowserPicker
+              browserName={job.browserName}
+              browserVersion={job.browserVersion}
+              onChange={(bName, bVersion) => {
+                updateJob({ ...job, browserName: bName, browserVersion: bVersion }, name);
               }}
             />
           </ContentInner>

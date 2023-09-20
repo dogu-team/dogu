@@ -8,7 +8,9 @@ import { useCallback, useState } from 'react';
 import styled from 'styled-components';
 
 import { getOrganizationInServerSide } from '../../../../src/api/organization';
+import DoguText from '../../../../src/components/common/DoguText';
 import ConsoleBasicLayout from '../../../../src/components/layouts/ConsoleBasicLayout';
+import CloudUserTutorial from '../../../../src/components/tutorial/CloudUserTutorial';
 import DeviceFarmTutorial from '../../../../src/components/tutorial/DeviceFarmTutorial';
 import SkipTutorialButton from '../../../../src/components/tutorial/SkipTutorialButton';
 import { TutorialContext } from '../../../../src/hooks/context/useTutorialContext';
@@ -24,6 +26,8 @@ interface ServerSideProps {
 const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organization, me }) => {
   const [project, setProject] = useState<ProjectBase>();
   const { t } = useTranslation('tutorial');
+
+  const isCloud = process.env.NEXT_PUBLIC_ENV === 'production';
 
   const updateProject = useCallback((project: ProjectBase) => {
     setProject(project);
@@ -46,17 +50,21 @@ const OrganizationTutorialPage: NextPageWithLayout<ServerSideProps> = ({ organiz
           <HeaderContent>
             <div>
               <StyledTitle>
-                <Trans
-                  i18nKey="tutorial:deviceFarmTutorialTitle"
-                  components={{ icon: <ClusterOutlined style={{ margin: '0 0.35rem' }} /> }}
-                />
+                {isCloud ? (
+                  'Tutorial'
+                ) : (
+                  <Trans
+                    i18nKey="tutorial:deviceFarmTutorialTitle"
+                    components={{ icon: <ClusterOutlined style={{ margin: '0 0.35rem' }} /> }}
+                  />
+                )}
               </StyledTitle>
             </div>
             <div>
               <SkipTutorialButton>{t('skipTutorialLinkTitle')}</SkipTutorialButton>
             </div>
           </HeaderContent>
-          <DeviceFarmTutorial />
+          {isCloud ? <CloudUserTutorial /> : <DeviceFarmTutorial />}
           <FlexEndBox>
             <SkipTutorialButton>{t('closeTutorialLinkTitle')}</SkipTutorialButton>
           </FlexEndBox>
@@ -117,4 +125,5 @@ const StyledTitle = styled.h1`
   ${flexRowBaseStyle}
   font-size: 1.5rem;
   font-weight: 600;
+  line-height: 1.5;
 `;
