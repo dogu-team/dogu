@@ -64,7 +64,7 @@ export class SlackController {
   @Get('channels')
   @OrganizationPermission(ORGANIZATION_ROLE.MEMBER)
   async getChannels(@Param('organizationId') organizationId: OrganizationId): Promise<SlackChannelItem[]> {
-    const channels = this.slackService.getChannels(organizationId);
+    const channels = await this.slackService.getChannels(organizationId);
     return channels;
   }
 }
