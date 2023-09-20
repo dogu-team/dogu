@@ -16,7 +16,10 @@ const BrowserStatusTag: React.FC<Props> = ({ status }) => {
   };
 
   return (
-    <Tag color={colorMap[status as keyof typeof colorMap] ?? 'red'} style={{ margin: '0 0.25rem' }}>
+    <Tag
+      color={colorMap[status as keyof typeof colorMap] ?? 'red'}
+      style={{ margin: '0 0.25rem', textTransform: 'capitalize' }}
+    >
       {status}
     </Tag>
   );

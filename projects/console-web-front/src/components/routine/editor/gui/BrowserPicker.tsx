@@ -1,3 +1,5 @@
+import { QuestionCircleFilled, QuestionCircleOutlined } from '@ant-design/icons';
+import { Tooltip } from 'antd';
 import axios from 'axios';
 import Image from 'next/image';
 import { useEffect, useRef } from 'react';
@@ -80,6 +82,22 @@ const BrowserPicker: React.FC<Props> = ({ browserName, browserVersion, onChange 
             <>
               <VersionButton isSelected={!browserVersion} onClick={() => handleClickVersion(undefined)}>
                 Latest{!!latestVersion && <b>{`(${latestVersion})`}</b>}
+                <Tooltip
+                  title={
+                    <>
+                      Always runs with latest version
+                      {latestVersion ? (
+                        <>
+                          <br />
+                          Current latest version: {latestVersion}
+                        </>
+                      ) : null}
+                    </>
+                  }
+                  overlayInnerStyle={{ fontSize: '0.75rem', textAlign: 'center' }}
+                >
+                  <QuestionCircleFilled style={{ marginLeft: '.25rem' }} />
+                </Tooltip>
               </VersionButton>
 
               {data?.map((item) => {
@@ -116,16 +134,17 @@ const BrowserWrapper = styled.div`
 `;
 
 const VersionWrapper = styled.div`
-  width: 120px;
+  width: 160px;
   max-height: 300px;
   overflow: auto;
+  padding-right: 1rem;
 `;
 
 const StyledButton = styled.button<{ isSelected: boolean }>`
   display: block;
   width: 100%;
   padding: 0.5rem;
-  margin: 0.5rem 0;
+  margin-bottom: 0.5rem;
   background-color: ${(props) => (props.isSelected ? `${props.theme.colorPrimary}22` : '#ffffff')};
   border: 1px solid ${(props) => (props.isSelected ? props.theme.colorPrimary : 'transparent')};
   border-radius: 2rem;

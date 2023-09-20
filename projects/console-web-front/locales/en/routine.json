@@ -120,7 +120,7 @@
   "routineGuiEditorJobAppPackageNameLabel": "App package name",
   "routineGuiEditorJobAppPackageNameDescription": "Select the platform to run on and the app package name.\nThe latest build version among apps with the same package name will be executed.",
   "routineGuiEditorJobBrowserNameLabel": "Browser",
-  "routineGuiEditorJobBrowserNameDescription": "Select browser for running test.",
+  "routineGuiEditorJobBrowserNameDescription": "Select browser and version for running test.",
   "routineGuiEditorStepLabel": "Steps",
   "routineGuiEditorStepNamePlaceholder": "Name",
   "routineGuiEditorStepTypeLabel": "Type",
