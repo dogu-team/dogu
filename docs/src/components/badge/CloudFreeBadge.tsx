@@ -4,8 +4,8 @@ import Badge from './Badge';
 const CloudFreeBadge = () => {
   return (
     <Badge
-      label={'Cloud Free'}
-      overlayText={'Available in the cloud free, cloud professional'}
+      label={'Cloud'}
+      overlayText={'Available in the cloud service'}
       backgroundColor={'#5ba2e9'}
     />
   );
