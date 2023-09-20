@@ -7,7 +7,8 @@ export type Pid = string | number;
 export async function killProcessOnPort(port: number, printable: Printable): Promise<void> {
   switch (process.platform) {
     case 'darwin':
-      await killProcessOnPortOnMacos('""', port, printable);
+    case 'linux':
+      await killProcessOnPortOnUnix('""', port, printable);
       await waitPortIdle(port);
       break;
     case 'win32':
@@ -20,7 +21,7 @@ export async function killProcessOnPort(port: number, printable: Printable): Pro
   }
 }
 
-export async function killProcessOnPortOnMacos(includes: string, port: number, printable: Printable): Promise<void> {
+export async function killProcessOnPortOnUnix(includes: string, port: number, printable: Printable): Promise<void> {
   const lsofResult = await ChildProcess.execIgnoreError(`lsof -i :${port} | grep LISTEN | grep ${includes}`, { timeout: 10000 }, new NullLogger());
   if (0 === lsofResult.stdout.length) {
     return;
