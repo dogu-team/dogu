@@ -12,7 +12,7 @@ env:
   GCAR_REGION: asia-northeast3
   GCAR_PROJECT_ID: dogu-project-379607
   GCAR_REPOSITORY: test-dogu-agent-cli
-  GCAR_IMAGE: test-dogu-agent-cli
+  GCAR_IMAGE: dogu-agent-cli
   GCAR_TAG: latest
   GCAR_KEY_FILE: service-account-key.json
 
