@@ -32,20 +32,18 @@ jobs:
       - name: 'Use gcloud CLI'
         run: 'gcloud info'
 
+      - name: build Docker Image
+        run: docker build -t asia-northeast3-docker.pkg.dev/dogu-project-379607/test-dogu-agent-cli:latest --platform linux/amd64 --target dogu-agent .
+
       - name: Configure Docker Client of Gcloud
         run: |-
           gcloud auth configure-docker --quiet
           gcloud auth configure-docker asia-northeast3-docker.pkg.dev --quiet
 
-      - name: Build and push
-        uses: docker/build-push-action@v3
-        with:
-          file: ./dockerfile
-          target: dogu-agent
-          platforms: linux/amd64
-          no-cache: true
-          push: true
-          tags: asia-northeast3-docker.pkg.dev/dogu-project-379607/test-dogu-agent-cli:latest
+      - name: Push Docker Image to Artifact Registry
+        run: |-
+          docker tag asia-northeast3-docker.pkg.dev/dogu-project-379607/test-dogu-agent-cli:latest asia-northeast3-docker.pkg.dev/dogu-project-379607/test-dogu-agent-cli:latest
+          docker push asia-northeast3-docker.pkg.dev/dogu-project-379607/test-dogu-agent-cli:latest
 
   send-slack:
     runs-on: ubuntu-latest
