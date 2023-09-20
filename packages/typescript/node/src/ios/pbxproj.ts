@@ -7,18 +7,21 @@ export class Pbxproj {
   }
 
   getSingingStyle(targetName: string): 'Automatic' | 'Manual' | 'None' {
-    const config = this.xcode.document.targets.find((target) => target.name === targetName)?.buildConfigurationsList.buildConfigurations[0];
-    if (!config) {
+    const configs = this.xcode.document.targets.find((target) => target.name === targetName)?.buildConfigurationsList.buildConfigurations;
+    if (!configs) {
       return 'None';
     }
-    var buildSettings = config.ast.get('buildSettings');
-    var type = buildSettings.get('CODE_SIGN_STYLE').text;
-    if (type === 'Automatic') {
-      return 'Automatic';
+    for (const config of configs) {
+      const buildSettings = config.ast.get('buildSettings');
+      const type = buildSettings.get('CODE_SIGN_STYLE').text;
+      if (type === 'Automatic') {
+        return 'Automatic';
+      }
+      if (type === 'Manual') {
+        return 'Manual';
+      }
     }
-    if (type === 'Manual') {
-      return 'Manual';
-    }
+
     return 'None';
   }
 }
