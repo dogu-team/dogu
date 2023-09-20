@@ -1,3 +1,4 @@
+import { PlatformAbility } from '@dogu-private/dost-children';
 import { Serial } from '@dogu-private/types';
 import { Printable, stringify } from '@dogu-tech/common';
 import { HostPaths } from '@dogu-tech/node';
@@ -62,4 +63,4 @@ registerBootstrapHandler(__filename, async () => {
     const cause = error instanceof Error ? error : new Error(stringify(error));
     throw new Error(`Failed to chmod idevicesyslog`, { cause });
   }
-});
+}, () => new PlatformAbility().isIosEnabled);

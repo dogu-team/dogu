@@ -1,5 +1,6 @@
+import { PlatformAbility } from '@dogu-private/dost-children';
 import { errorify, Printable } from '@dogu-tech/common';
-import { categoryFromPlatform, isValidPlatformType, PlatformType, ThirdPartyPathMap } from '@dogu-tech/types';
+import { ThirdPartyPathMap } from '@dogu-tech/types';
 import { setInterval } from 'timers/promises';
 import { DotenvConfigKey } from '../../shares/dotenv-config';
 import { ExternalKey, ValidationCheckOption } from '../../shares/external';
@@ -11,7 +12,6 @@ import { AndroidSdkExternalUnit } from './units/android-sdk';
 import { AppiumExternalUnit } from './units/appium';
 import { AppiumUiAutomator2DriverExternalUnit } from './units/appium-uiautomator2-driver';
 import { AppiumXcUiTestDriverExternalUnit } from './units/appium-xcuitest-driver';
-import { GeckoDriverExternalUnit } from './units/gecko-driver';
 import { IdaBuildExternalUnit } from './units/ida-build';
 import { JdkExternalUnit } from './units/jdk';
 import { LibimobledeviceExternalUnit } from './units/libimobiledevice';
@@ -42,39 +42,34 @@ export class ExternalService {
     this.unitCallbackFactory = options.unitCallbackFactory;
     this.logger = options.logger;
 
-    const platformTypes = this.appConfigService
-      .getOrDefault('DOGU_DEVICE_PLATFORM_ENABLED', '')
-      .split(',')
-      .map((platformType) => {
-        if (isValidPlatformType(platformType)) {
-          return platformType;
-        }
-        throw new Error(`invalid platform type found. platformType: ${platformType}`);
-      });
-    this.registerUnits(platformTypes);
+    const platformAbility = new PlatformAbility(this.appConfigService.getOrDefault('DOGU_DEVICE_PLATFORM_ENABLED', ''));
+    this.registerUnits(platformAbility);
   }
 
   /**
    * @note register order is important
    */
-  private registerUnits(platformTypes: PlatformType[]): void {
-    if (platformTypes.includes('android')) {
+  private registerUnits(platformAbility: PlatformAbility): void {
+    if (platformAbility.isDesktopEnabled || platformAbility.isAndroidEnabled) {
       this.registerUnit('jdk', (unitCallback) => new JdkExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.logger));
+    }
+
+    if (platformAbility.isAndroidEnabled) {
       this.registerUnit('android-sdk', (unitCallback) => new AndroidSdkExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.logger));
     }
 
-    if (platformTypes.some((platformType) => categoryFromPlatform(platformType) === 'mobile')) {
+    if (platformAbility.isMobileEnabled) {
       this.registerUnit('appium', (unitCallback) => new AppiumExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.thirdPartyPathMap, this.logger));
     }
 
-    if (platformTypes.includes('android')) {
+    if (platformAbility.isAndroidEnabled) {
       this.registerUnit(
         'appium-uiautomator2-driver',
         (unitCallback) => new AppiumUiAutomator2DriverExternalUnit(this.dotenvConfigService, this.appConfigService, unitCallback, this.thirdPartyPathMap, this.logger),
       );
     }
 
-    if (platformTypes.includes('ios')) {
+    if (platformAbility.isIosEnabled) {
       this.registerUnit('xcode', () => new XcodeExternalUnit(this.logger));
       this.registerUnit(
         'appium-xcuitest-driver',
@@ -85,13 +80,16 @@ export class ExternalService {
       this.registerUnit('ios-device-agent-build', () => new IdaBuildExternalUnit(this.logger));
     }
 
-    if (platformTypes.some((platformType) => categoryFromPlatform(platformType) === 'desktop')) {
-      this.registerUnit('gecko-driver', (unitCallback) => new GeckoDriverExternalUnit(this.appConfigService, unitCallback, this.logger));
+    if (platformAbility.isDesktopEnabled) {
       this.registerUnit('selenium-server', (unitCallback) => new SeleniumServerExternalUnit(this.appConfigService, unitCallback, this.logger));
     }
   }
 
   private registerUnit(key: ExternalKey, onRegister: (unitCallback: ExternalUnitCallback) => IExternalUnit): void {
+    if (this.units.has(key)) {
+      throw new Error(`external tool unit already registered. key: ${key}`);
+    }
+    
     this.logger.info(`register external tool unit. key: ${key}`);
     const unit = onRegister(this.unitCallbackFactory(key));
     this.units.set(key, unit);

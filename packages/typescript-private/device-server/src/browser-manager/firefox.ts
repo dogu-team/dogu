@@ -13,6 +13,8 @@ import { logger } from '../logger/logger.instance';
 import { defaultVersionRequestTimeout, validatePrefixOrPatternWithin } from './common';
 import { firefoxVersionUtils } from './firefox-version-utils';
 import { WebCache } from './web-cache';
+import * as tar from 'tar';
+import unbzip2 from 'unbzip2-stream';
 
 const execAsync = promisify(exec);
 
@@ -271,7 +273,7 @@ export class Firefox {
     return await this.pathLock.acquire(installPath, async () => {
       const executablePath = this.getExecutablePath({ ...mergedOptions, installPath });
       if (await fs.promises.stat(executablePath).catch(() => null)) {
-        this.logger.debug(`Already installed at ${installPath}`);
+        this.logger.info(`Already installed at ${installPath}`);
         return {
           executablePath,
         };
@@ -307,6 +309,28 @@ export class Firefox {
           if (stdout) {
             this.logger.info(stdout);
           }
+        } else if (downloadFileName.toLowerCase().endsWith('.tar.bz2')) {
+          const readStream = fs.createReadStream(downloadFilePath);
+          const extractStream = tar.extract({
+            cwd: installPath,
+          });
+          readStream.pipe(unbzip2()).pipe(extractStream);
+          await new Promise<void>((resolve, reject) => {
+            extractStream.on('end', resolve);
+            extractStream.on('error', reject);
+          });
+          const tempPath = path.resolve(installPath, 'mv-temp');
+          const firefoxPath = path.resolve(installPath, 'firefox');
+          await fs.promises.rename(firefoxPath, tempPath);
+          const tempFiles = await fs.promises.readdir(tempPath);
+          await Promise.all(
+            tempFiles.map((tempFile) => {
+              const tempFilePath = path.resolve(tempPath, tempFile);
+              const filePath = path.resolve(installPath, tempFile);
+              return fs.promises.rename(tempFilePath, filePath);
+            }),
+          );
+          await fs.promises.rm(tempPath, { recursive: true });
         } else {
           throw new Error(`Unexpected download file name: ${downloadFileName}`);
         }

@@ -10,7 +10,8 @@ import {
 import { HostPaths, LoggerFactory } from '@dogu-tech/node';
 
 export async function run(url: string, token: string) {
-  const appName = 'dogu-agent-cli' + (process.env.DOGU_RUN_TYPE ? `-${process.env.DOGU_RUN_TYPE?.toLowerCase()}` : '');
+  const runType = process.env.DOGU_RUN_TYPE;
+  const appName = 'dogu-agent-cli' + (runType ? `-${runType?.toLowerCase()}` : '');
   const logger = LoggerFactory.create(appName);
   const configsPath = HostPaths.configsPath(HostPaths.doguHomePath);
   const logsPath = HostPaths.logsPath(HostPaths.doguHomePath);
@@ -66,10 +67,10 @@ export async function run(url: string, token: string) {
       const unit = externalService.getUnit(key);
       if (unit.isInstallNeeded()) {
         await unit.install();
+        await unit.validate();
       }
     }
   }
-  await externalService.updateIsSupportedPlatformValid();
 
   const childListener: ChildListener = {
     onStdout: (key, data) => {

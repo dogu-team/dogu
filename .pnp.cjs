@@ -11144,6 +11144,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/plist", "npm:3.0.2"],\
             ["@types/rimraf", "npm:3.0.2"],\
             ["@types/semver", "npm:7.3.13"],\
+            ["@types/tar", "npm:6.1.6"],\
+            ["@types/unbzip2-stream", "npm:1.4.1"],\
             ["@types/uuid", "npm:9.0.1"],\
             ["@types/ws", "npm:8.5.4"],\
             ["adbkit-apkreader", "npm:3.2.0"],\
@@ -11169,10 +11171,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["shx", "npm:0.3.4"],\
             ["source-map-support", "npm:0.5.21"],\
             ["systeminformation", "npm:5.17.14"],\
+            ["tar", "npm:6.2.0"],\
             ["ts-jest", "virtual:b2489bbc0216283d7687523442dd6b04aeaedb71246257f8a0a0e6ae86307b18dca708146dd0f430b02186348d070ef7e31b7b07c55f7aabad66d13be5ae7e15#npm:29.1.1"],\
             ["ts-node", "virtual:f2635a2fcff48218c189c72f8ec68a58c0c9a493231eeb25fc0d4d97932a237dd3a38bfaa7c8a6d4be36984c08b243589188d7525f771fc6d7018c6cf79aeba1#npm:10.9.1"],\
             ["tsconfig-paths", "npm:4.0.0"],\
             ["typescript", "patch:typescript@npm%3A4.7.4#~builtin<compat/typescript>::version=4.7.4&hash=65a307"],\
+            ["unbzip2-stream", "npm:1.4.3"],\
             ["uuid", "npm:9.0.0"],\
             ["webdriverio", "npm:7.32.0"],\
             ["winston", "npm:3.8.2"],\
@@ -19136,6 +19140,25 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["minipass", "npm:4.2.8"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["npm:6.1.6", {\
+          "packageLocation": "./.yarn/cache/@types-tar-npm-6.1.6-68a3be4ade-d4bcb5a06d.zip/node_modules/@types/tar/",\
+          "packageDependencies": [\
+            ["@types/tar", "npm:6.1.6"],\
+            ["@types/node", "npm:18.15.13"],\
+            ["minipass", "npm:4.2.8"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/through", [\
+        ["npm:0.0.31", {\
+          "packageLocation": "./.yarn/cache/@types-through-npm-0.0.31-5f747b6047-8c4a58e178.zip/node_modules/@types/through/",\
+          "packageDependencies": [\
+            ["@types/through", "npm:0.0.31"],\
+            ["@types/node", "npm:18.15.13"]\
+          ],\
+          "linkType": "HARD"\
         }]\
       ]],\
       ["@types/treeify", [\
@@ -19161,6 +19184,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/@types-ua-parser-js-npm-0.7.36-f5ace9ead6-8c24d4dc12.zip/node_modules/@types/ua-parser-js/",\
           "packageDependencies": [\
             ["@types/ua-parser-js", "npm:0.7.36"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/unbzip2-stream", [\
+        ["npm:1.4.1", {\
+          "packageLocation": "./.yarn/cache/@types-unbzip2-stream-npm-1.4.1-24fb432974-8c477f4e74.zip/node_modules/@types/unbzip2-stream/",\
+          "packageDependencies": [\
+            ["@types/unbzip2-stream", "npm:1.4.1"],\
+            ["@types/through", "npm:0.0.31"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -48385,6 +48418,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/tar-npm-6.1.15-44c3e71720-f23832fcee.zip/node_modules/tar/",\
           "packageDependencies": [\
             ["tar", "npm:6.1.15"],\
+            ["chownr", "npm:2.0.0"],\
+            ["fs-minipass", "npm:2.1.0"],\
+            ["minipass", "npm:5.0.0"],\
+            ["minizlib", "npm:2.1.2"],\
+            ["mkdirp", "npm:1.0.4"],\
+            ["yallist", "npm:4.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }],\
+        ["npm:6.2.0", {\
+          "packageLocation": "./.yarn/cache/tar-npm-6.2.0-3eb25205a7-db4d9fe74a.zip/node_modules/tar/",\
+          "packageDependencies": [\
+            ["tar", "npm:6.2.0"],\
             ["chownr", "npm:2.0.0"],\
             ["fs-minipass", "npm:2.1.0"],\
             ["minipass", "npm:5.0.0"],\

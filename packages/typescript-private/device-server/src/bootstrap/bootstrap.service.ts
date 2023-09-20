@@ -16,9 +16,13 @@ export class BootstrapService implements OnApplicationBootstrap {
   }
 }
 
-export function registerBootstrapHandler(name: string, handler: () => PromiseOrValue<void>): void {
+export function registerBootstrapHandler(name: string, handler: () => PromiseOrValue<void>, condition: () => boolean = () => true): void {
+  if (!condition()) {
+    return;
+  }
+
   if (handlers.has(name)) {
     logger.warn(`BootstrapService.register: ${name} is already registered. Overwriting...`);
   }
-  handlers.set(name, handler);
+  handlers.set(name, handler);  
 }

@@ -1,3 +1,4 @@
+import { PlatformAbility } from '@dogu-private/dost-children';
 import { PrivateProtocol, Serial } from '@dogu-private/types';
 import { errorify, Printable, stringify } from '@dogu-tech/common';
 import { ChildProcess } from '@dogu-tech/node';
@@ -855,4 +856,4 @@ registerBootstrapHandler(__filename, async (): Promise<void> => {
     const cause = error instanceof Error ? error : new Error(stringify(error));
     throw new Error(`Failed to chmod adb`, { cause });
   }
-});
+}, () => new PlatformAbility().isAndroidEnabled);  

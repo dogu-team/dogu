@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import { ChildError } from '@dogu-private/dost-children';
+import { ChildError, PlatformAbility } from '@dogu-private/dost-children';
 import { Code, DOGU_PROTOCOL_VERSION } from '@dogu-private/types';
 import { errorify } from '@dogu-tech/common';
 import { ValidationPipe } from '@nestjs/common';
@@ -27,7 +27,9 @@ export async function bootstrap(): Promise<void> {
    */
   logger.info('bootstrap', { DOGU_RUN_TYPE: env.DOGU_RUN_TYPE, cwd: process.cwd() });
   logger.info('dogu protocol version', { DOGU_PROTOCOL_VERSION });
-  const pathMap = await openPathMap(env.ANDROID_HOME);
+
+  const platformAbility = new PlatformAbility(env.DOGU_DEVICE_PLATFORM_ENABLED);
+  const pathMap = await openPathMap(env.ANDROID_HOME, platformAbility);
   logger.info('path map', { pathMap });
 
   const app = await NestFactory.create(AppModule, {
@@ -35,6 +37,7 @@ export async function bootstrap(): Promise<void> {
       instance: logger.winstonLogger(),
     }),
   });
+  
   app
     .useWebSocketAdapter(new WsAdapter(app))
     .useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }))

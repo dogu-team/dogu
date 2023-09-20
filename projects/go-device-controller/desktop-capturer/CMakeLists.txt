@@ -6,6 +6,10 @@
 cmake_minimum_required(VERSION 3.20)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 set(CMAKE_CXX_STANDARD 17)
+if (UNIX)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+endif()
+
 project(desktop-capturer)
 
 # set(CMAKE_XCODE_LINK_BUILD_PHASE_MODE "BUILT_ONLY")
@@ -68,4 +72,5 @@ elseif (UNIX)
     target_link_libraries(desktop-capturer PUBLIC "-lgobject-2.0")
     target_link_libraries(desktop-capturer PUBLIC "-lgbm")
     target_link_libraries(desktop-capturer PUBLIC "-latomic")
+    target_link_libraries(desktop-capturer PUBLIC ${CMAKE_DL_LIBS})
 endif()

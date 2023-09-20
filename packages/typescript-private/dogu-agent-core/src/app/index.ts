@@ -17,7 +17,6 @@ export * from './external/units/android-sdk';
 export * from './external/units/appium';
 export * from './external/units/appium-uiautomator2-driver';
 export * from './external/units/appium-xcuitest-driver';
-export * from './external/units/gecko-driver';
 export * from './external/units/ida-build';
 export * from './external/units/jdk';
 export * from './external/units/libimobiledevice';

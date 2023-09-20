@@ -1,6 +1,6 @@
 {
   "verbose": true,
-  "watch": ["./src"],
+  "watch": ["./src", "../../packages/typescript-private/dogu-agent-core/src", "../../packages/typescript/node/src"],
   "exec": "yarn run build",
   "ext": "ts"
 }

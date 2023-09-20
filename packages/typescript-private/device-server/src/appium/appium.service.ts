@@ -10,6 +10,7 @@ import { DevicePortService } from '../device-port/device-port.service';
 import { env } from '../env';
 import { DoguLogger } from '../logger/logger';
 import { pathMap } from '../path-map';
+import { PlatformAbilityService } from '../platform-ability/platform-ability.module';
 import { AndroidAppiumContextOptions, AppiumContextKey, AppiumContextProxy, DefaultAppiumContextOptions, IosAppiumContextOptions } from './appium.context';
 
 const execAsync = util.promisify(exec);
@@ -32,11 +33,16 @@ export class AppiumService implements OnModuleInit {
 
   private logger: PrefixLogger;
 
-  constructor(private readonly devicePortService: DevicePortService, logger: DoguLogger) {
+  constructor(private readonly devicePortService: DevicePortService, logger: DoguLogger, private readonly platformAbilityService: PlatformAbilityService) {
     this.logger = new PrefixLogger(logger, '[AppiumService]');
   }
 
   async onModuleInit(): Promise<void> {
+    if (!this.platformAbilityService.isMobileEnabled) {
+      this.logger.info('AppiumService is not initialized because there is no mobile platform');
+      return;
+    }
+
     this.createDefaultAppiumContextOptions();
     await this.validateExternalAppium();
   }

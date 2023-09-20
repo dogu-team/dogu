@@ -1,3 +1,4 @@
+import { parseEnv_DOGU_DEVICE_PLATFORM_ENABLED } from '@dogu-private/dost-children';
 import { DeviceConnectionState, ErrorDevice, Platform, platformFromPlatformType, PlatformSerial, PlatformType, platformTypeFromPlatform, Serial } from '@dogu-private/types';
 import { DuplicatedCallGuarder, Instance, stringifyError, validateAndEmitEventAsync } from '@dogu-tech/common';
 import { DefaultDeviceConnectionSubscribeReceiveMessage, DeviceConnectionSubscribe } from '@dogu-tech/device-client-common';
@@ -92,11 +93,7 @@ export class ScanService implements OnModuleInit {
 
   async onModuleInit(): Promise<void> {
     const hostPlatform = processPlatform();
-    const enabledPlatforms: readonly PlatformType[] =
-      process.env.DOGU_DEVICE_PLATFORM_ENABLED?.split(',')
-        .filter((e) => PlatformType.includes(e as PlatformType))
-        .map((e) => e as PlatformType) ?? PlatformType;
-
+    const enabledPlatforms: readonly PlatformType[] = parseEnv_DOGU_DEVICE_PLATFORM_ENABLED();
     const factory = createDeviceDriverFactoryByHostPlatform(hostPlatform, enabledPlatforms, {
       appiumService: this.appiumService,
       gamiumService: this.gamiumService,

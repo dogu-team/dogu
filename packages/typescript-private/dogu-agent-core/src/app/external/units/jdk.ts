@@ -28,6 +28,14 @@ const Infos = {
     fileExtensionPattern: /\.zip$/,
     relativeJavaHomePath: 'jdk-17.0.7+7',
   },
+  linux: {
+    url: {
+      x64: 'https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.7%2B7/OpenJDK17U-jdk_x64_linux_hotspot_17.0.7_7.tar.gz',
+    },
+    uncompress: compressing.tgz.uncompress,
+    fileExtensionPattern: /\.tar(?: \(\d+\))?\.gz$/,
+    relativeJavaHomePath: 'jdk-17.0.7+7',
+  },
 };
 
 export class JdkExternalUnit extends IExternalUnit {
@@ -127,6 +135,8 @@ export class JdkExternalUnit extends IExternalUnit {
       return Infos.darwin.url.arm64;
     } else if (process.platform === 'win32' && process.arch === 'x64') {
       return Infos.win32.url.x64;
+    }  else if (process.platform ==='linux' && process.arch === 'x64') {
+      return Infos.linux.url.x64;
     } else {
       throw new Error(`platform not supported. platform: ${process.platform}, arch: ${process.arch}`);
     }
@@ -137,6 +147,8 @@ export class JdkExternalUnit extends IExternalUnit {
       return Infos.darwin.relativeJavaHomePath;
     } else if (process.platform === 'win32') {
       return Infos.win32.relativeJavaHomePath;
+    } else if (process.platform === 'linux') {
+      return Infos.linux.relativeJavaHomePath;
     } else {
       throw new Error(`platform not supported. platform: ${process.platform}`);
     }
@@ -201,7 +213,7 @@ export class JdkExternalUnit extends IExternalUnit {
         uncompressedPath,
         savePath,
       });
-      await fs.promises.rmdir(uncompressedPath, { recursive: true });
+      await fs.promises.rm(uncompressedPath, { recursive: true, force: true });
       await fs.promises.unlink(savePath);
     } catch (error) {
       this.logger.warn('uncompressedPath or savePath delete failed.', {
@@ -218,6 +230,8 @@ export class JdkExternalUnit extends IExternalUnit {
       return Infos.darwin.fileExtensionPattern;
     } else if (process.platform === 'win32') {
       return Infos.win32.fileExtensionPattern;
+    } else if (process.platform === 'linux') {
+      return Infos.linux.fileExtensionPattern;
     } else {
       throw new Error(`platform not supported. platform: ${process.platform}`);
     }
@@ -228,6 +242,8 @@ export class JdkExternalUnit extends IExternalUnit {
       return compressing.tgz.uncompress;
     } else if (process.platform === 'win32') {
       return compressing.zip.uncompress;
+    } else if (process.platform === 'linux') {
+      return compressing.tgz.uncompress;
     } else {
       throw new Error(`platform not supported. platform: ${process.platform}`);
     }

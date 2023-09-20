@@ -34,7 +34,7 @@ export type EdgeInstallableName = Extract<BrowserOrDriverName, 'edge'>;
 export type EdgeChannelName = ChromeChannelName;
 const defaultEdgeChannelName = (): EdgeChannelName => 'stable';
 
-export const EdgeInstallablePlatform = ['MacOS', 'Windows'] as const;
+export const EdgeInstallablePlatform = ['MacOS', 'Windows', 'Linux'] as const;
 export type EdgeInstallablePlatform = (typeof EdgeInstallablePlatform)[number];
 const isValidEdgeInstallablePlatform = (platform: string): platform is EdgeInstallablePlatform => EdgeInstallablePlatform.includes(platform as EdgeInstallablePlatform);
 
@@ -66,10 +66,13 @@ const executablePathMap: DeepReadonly<Record<EdgeInstallableName, Record<EdgeIns
       x64: ['msedge.exe'],
       arm64: ['msedge.exe'],
     },
+    Linux: {
+      x64: ['opt', 'microsoft', 'msedge', 'msedge'],
+    },
   },
 };
 
-const platformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' | 'win32'>, Record<string, EdgeInstallablePlatformArch>>> = {
+const platformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' | 'win32' | 'linux'>, Record<string, EdgeInstallablePlatformArch>>> = {
   darwin: {
     arm64: {
       platform: 'MacOS',
@@ -85,9 +88,11 @@ const platformMap: DeepReadonly<Record<Extract<NodeJS.Platform, 'darwin' | 'win3
       platform: 'Windows',
       arch: 'x64',
     },
-    arm64: {
-      platform: 'Windows',
-      arch: 'arm64',
+  },
+  linux: {
+    x64: {
+      platform: 'Linux',
+      arch: 'x64',
     },
   },
 };
@@ -98,7 +103,9 @@ const artifactNameMap: DeepReadonly<Record<EdgeInstallablePlatform, Record<strin
   },
   Windows: {
     x64: 'msi',
-    arm64: 'msi',
+  },
+  Linux: {
+    x64: 'deb',
   },
 };
 
@@ -358,6 +365,14 @@ export class Edge {
           } catch (error) {
             this.logger.warn(`Failed to install msiexec: ${stringify(error)}`);
           }
+          return {
+            executablePath,
+          };
+        } else if (downloadFileName.toLowerCase().endsWith('.deb')) { 
+          const { stdout } = await execAsync(`dpkg-deb -x ${downloadFilePath} ${installPath}`, {
+            timeout: installTimeout,
+            encoding: 'utf8',
+          });
           return {
             executablePath,
           };

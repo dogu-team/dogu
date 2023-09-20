@@ -13,6 +13,7 @@ import { DeviceModule } from '../device/device.module';
 import { GamiumModule } from '../gamium/gamium.module';
 import { HttpRequestRelayModule } from '../http-request-relay/http-request-relay.module';
 import { LoggerModule } from '../logger/logger.module';
+import { PlatformAbilityModule } from '../platform-ability/platform-ability.module';
 import { ProfileModule } from '../profile/profile.module';
 import { ScanModule } from '../scan/scan.module';
 import { SeleniumModule } from '../selenium/selenium.module';
@@ -42,6 +43,7 @@ import { AppService } from './app.service';
     HttpRequestRelayModule,
     BrowserManagerModule,
     DevicePortModule,
+    PlatformAbilityModule,
   ],
   controllers: [AppController],
   providers: [AppService],

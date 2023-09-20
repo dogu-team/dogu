@@ -25,7 +25,7 @@ import { Edge, EdgeInstallablePlatformArch, edgeVersionUtils } from './edge';
 import { Edgedriver, EdgedriverInstallablePlatform } from './edgedriver';
 import { Firefox, FirefoxInstallablePlatform } from './firefox';
 import { firefoxVersionUtils } from './firefox-version-utils';
-import { Geckodriver } from './geckodriver';
+import { Geckodriver, GeckodriverInstallablePlatform } from './geckodriver';
 import { Safari, safariVersionUtils } from './safari';
 import { Safaridriver } from './safaridriver';
 
@@ -80,7 +80,8 @@ export class BrowserManager {
 
           switch (browserPlatform) {
             case 'macos':
-            case 'windows': {
+            case 'windows': 
+            case 'linux': {
               const edgePlatformArch = this.getEdgeInstallablePlatformArchByBrowserPlatform(browserPlatform);
               if (!edgePlatformArch) {
                 throw new Error(`Edge is not supported on platform ${browserPlatform}`);
@@ -111,7 +112,8 @@ export class BrowserManager {
 
           switch (browserPlatform) {
             case 'macos':
-            case 'windows': {
+            case 'windows':
+            case 'linux': {
               this.logger.warn(`Safari is only support default version`);
               return this.safari.getVersion();
             }
@@ -154,6 +156,7 @@ export class BrowserManager {
     switch (browserPlatform) {
       case 'macos':
       case 'windows':
+      case 'linux':
         {
           switch (browserName) {
             case 'chrome':
@@ -392,17 +395,35 @@ export class BrowserManager {
 
   private async ensureBrowserDriverForFirefox(options: EnsureBrowserDriverOptions): Promise<EnsureBrowserDriverResult> {
     const { browserName, browserPlatform } = options;
-    const driverPath = this.geckodriver.getExecutablePath();
-    const driverVersion = await this.geckodriver.getVersion();
-    if (!driverVersion) {
-      throw new Error('Geckodriver version not found');
+    const resolvedBrowserPlatform = this.getBrowserPlatformForBrowserDriver(browserPlatform);
+    const geckodriverPlatform = this.getGeckodriverInstallablePlatformByBrowserPlatform(resolvedBrowserPlatform);
+    if (!geckodriverPlatform) {
+      throw new Error(`Firefox is not supported on platform ${resolvedBrowserPlatform}`);
     }
 
+    const driverFounds = await this.geckodriver.findInstallations({ installableName: 'geckodriver', rootPath: this.rootPath, platform: geckodriverPlatform });
+    if (driverFounds.length > 0) {
+      const match = driverFounds[0];
+      return {
+        browserName,
+        browserPlatform,
+        browserDriverVersion: match.version,
+        browserDriverPath: match.executablePath,
+      };
+    }
+
+    const latestVersion = await this.geckodriver.getLatestVersion({ installableName: 'geckodriver' });
+    const driverInstallResult = await this.geckodriver.install({
+      installableName: 'geckodriver',
+      rootPath: this.rootPath,
+      platform: geckodriverPlatform,
+      version: latestVersion,
+    });
     return {
       browserName,
       browserPlatform,
-      browserDriverVersion: driverVersion,
-      browserDriverPath: driverPath,
+      browserDriverVersion: latestVersion,
+      browserDriverPath: driverInstallResult.executablePath,
     };
   }
 
@@ -560,6 +581,7 @@ export class BrowserManager {
     switch (browserPlatform) {
       case 'macos':
       case 'windows':
+      case 'linux':
         {
           switch (browserName) {
             case 'chrome':
@@ -713,6 +735,7 @@ export class BrowserManager {
     switch (browserPlatform) {
       case 'macos':
       case 'windows':
+      case 'linux':
         return browserPlatform;
       case 'android':
         return getBrowserPlatformByNodeJsPlatform(process.platform);
@@ -729,6 +752,8 @@ export class BrowserManager {
         return this.chrome.getChromeInstallablePlatform({ platform: 'darwin', arch: process.arch });
       case 'windows':
         return this.chrome.getChromeInstallablePlatform({ platform: 'win32', arch: process.arch });
+      case 'linux':
+        return this.chrome.getChromeInstallablePlatform({ platform: 'linux', arch: process.arch });
       case 'android':
       case 'ios':
         return undefined;
@@ -743,6 +768,24 @@ export class BrowserManager {
         return this.firefox.getFirefoxInstallablePlatform({ platform: 'darwin', arch: process.arch });
       case 'windows':
         return this.firefox.getFirefoxInstallablePlatform({ platform: 'win32', arch: process.arch });
+      case 'linux':
+        return this.firefox.getFirefoxInstallablePlatform({ platform: 'linux', arch: process.arch });
+      case 'android':
+      case 'ios':
+        return undefined;
+      default:
+        assertUnreachable(browserPlatform);
+    }
+  }
+
+  private getGeckodriverInstallablePlatformByBrowserPlatform(browserPlatform: BrowserPlatform): GeckodriverInstallablePlatform | undefined {
+    switch (browserPlatform) {
+      case 'macos':
+        return this.geckodriver.getGeckodriverInstallablePlatform({ platform: 'darwin', arch: process.arch });
+      case 'windows':
+        return this.geckodriver.getGeckodriverInstallablePlatform({ platform: 'win32', arch: process.arch });
+      case 'linux':
+        return this.geckodriver.getGeckodriverInstallablePlatform({ platform: 'linux', arch: process.arch });
       case 'android':
       case 'ios':
         return undefined;
@@ -757,6 +800,8 @@ export class BrowserManager {
         return this.edge.getEdgeInstallablePlatformArch({ platform: 'darwin' });
       case 'windows':
         return this.edge.getEdgeInstallablePlatformArch({ platform: 'win32' });
+      case 'linux':
+        return this.edge.getEdgeInstallablePlatformArch({ platform: 'linux' });
       case 'android':
       case 'ios':
         return undefined;
@@ -771,6 +816,8 @@ export class BrowserManager {
         return this.edgedriver.getEdgedriverInstallablePlatform({ platform: 'darwin' });
       case 'windows':
         return this.edgedriver.getEdgedriverInstallablePlatform({ platform: 'win32' });
+      case 'linux':
+        return this.edgedriver.getEdgedriverInstallablePlatform({ platform: 'linux' });
       case 'android':
       case 'ios':
         return undefined;
