@@ -26,6 +26,17 @@ jobs:
         with:
           credentials_json: ${{ secrets.TEST_GOOGLE_CLOUD_ARTIFACT_REGISTRY }}
 
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v1'
+
+      - name: 'Use gcloud CLI'
+        run: 'gcloud info'
+
+      - name: Configure Docker Client of Gcloud
+        run: |-
+          gcloud auth configure-docker --quiet
+          gcloud auth configure-docker asia-northeast3-docker.pkg.dev --quiet
+
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
