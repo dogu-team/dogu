@@ -32,11 +32,12 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          push: true
-          context: ./
-          tags: asia-northeast3-docker.pkg.dev/dogu-project-379607/test-dogu-agent-cli:latest
-          platforms: linux/amd64
+          file: ./dockerfile
           target: dogu-agent
+          platforms: linux/amd64
+          no-cache: true
+          push: true
+          tags: asia-northeast3-docker.pkg.dev/dogu-project-379607/test-dogu-agent-cli:latest
 
   send-slack:
     runs-on: ubuntu-latest
