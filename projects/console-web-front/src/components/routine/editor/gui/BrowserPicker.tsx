@@ -18,7 +18,7 @@ interface Props {
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 const BrowserPicker: React.FC<Props> = ({ browserName, browserVersion, onChange }) => {
-  const { data, isLoading, error } = useSWR<VersionItem[]>(
+  const { data, isLoading } = useSWR<VersionItem[]>(
     browserName &&
       `/api/browsers/${browserName}/available-versions${
         process.env.NEXT_PUBLIC_ENV === 'production' ? '?linuxOnly=true' : ``
