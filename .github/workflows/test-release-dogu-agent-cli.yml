@@ -33,7 +33,7 @@ jobs:
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v1
 
-      - name: Login to GCR
+      - name: Login to gcloud
         run: |-
           gcloud auth activate-service-account --key-file=${{ env.GCAR_KEY_FILE }}
           gcloud auth configure-docker --quiet
