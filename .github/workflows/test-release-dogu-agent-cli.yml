@@ -39,6 +39,21 @@ jobs:
           gcloud auth configure-docker --quiet
           gcloud auth configure-docker ${{ env.GCAR_REGION }}-docker.pkg.dev --quiet
 
+      - name: create dotEnv development
+        run: |
+          echo "DOGU_DEVICE_SERVER_PORT=5001" > .env.device-server
+          echo "DOGU_RUN_TYPE=development" >> .env.device-server
+          echo "NODE_ENV=development" >> .env.device-server
+          echo "DOGU_DEVICE_PLATFORM_ENABLED=linux" >> .env.device-server
+
+          echo "DOGU_API_BASE_URL=https://api.dev.dogutech.io" > .env.host-agent
+          echo "DOGU_DEVICE_SERVER_HOST_PORT=localhost:5001" >> .env.host-agent
+          echo "DOGU_HOST_TOKEN=" >> .env.host-agent
+          echo "DOGU_RUN_TYPE=development" >> .env.host-agent
+          echo "NODE_ENV=development" >> .env.host-agent
+          echo "DOGU_HOST_AGENT_PORT=5100" >> .env.host-agent
+        working-directory: ./projects/dogu-agent
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
