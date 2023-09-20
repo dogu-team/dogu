@@ -107,3 +107,8 @@ export async function callAsyncWithTimeout<T>(returningPromise: Promise<T>, opti
 export function assertUnreachable(x: never): never {
   throw new Error("Didn't expect to get here");
 }
+
+export async function filterAsync<T>(array: T[], predicate: (value: T) => Promise<boolean>): Promise<T[]> {
+  const results = await Promise.all(array.map(predicate));
+  return array.filter((_, index) => results[index]);
+}

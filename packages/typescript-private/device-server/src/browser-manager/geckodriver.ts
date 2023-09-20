@@ -1,5 +1,5 @@
 import { BrowserOrDriverName, BrowserVersion } from '@dogu-private/types';
-import { assertUnreachable, DeepReadonly, errorify, PrefixLogger } from '@dogu-tech/common';
+import { assertUnreachable, DeepReadonly, errorify, filterAsync, PrefixLogger } from '@dogu-tech/common';
 import { defaultDownloadRequestTimeout, OctokitContext } from '@dogu-tech/node';
 import { logger } from '../logger/logger.instance';
 import { defaultVersionRequestTimeout } from './common';
@@ -160,12 +160,13 @@ export class Geckodriver {
     const mergedOptions = mergeGetLatestVersionOptions(options);
     const { installableName, timeout } = mergedOptions;
     switch (installableName) {
-      case 'geckodriver': {
-        const releaseInfo = await this.octikitContext.getLatestReleaseInfo(owner, repo, timeout);
-        const { tagName } = releaseInfo;
-        return getVersionFromTagName(tagName);
-      }
-      break;
+      case 'geckodriver':
+        {
+          const releaseInfo = await this.octikitContext.getLatestReleaseInfo(owner, repo, timeout);
+          const { tagName } = releaseInfo;
+          return getVersionFromTagName(tagName);
+        }
+        break;
       default:
         assertUnreachable(installableName);
     }
@@ -227,17 +228,17 @@ export class Geckodriver {
           return { executablePath };
         } else {
           throw new Error(`Unsupported extension: ${downloadFileName}`);
-        }  
+        }
       } catch (error) {
-        this.logger.error('Failed to download release asset', {error: errorify(error)});
+        this.logger.error('Failed to download release asset', { error: errorify(error) });
         throw error;
       } finally {
         try {
           if (await fs.promises.stat(downloadFilePath).catch(() => false)) {
             await fs.promises.rm(downloadFilePath, { recursive: true, force: true });
-          }  
+          }
         } catch (error) {
-          this.logger.error('Failed to remove download file', {error: errorify(error)});
+          this.logger.error('Failed to remove download file', { error: errorify(error) });
         }
       }
     });
@@ -246,129 +247,93 @@ export class Geckodriver {
   async findInstallations(options: FindInstallationsOptions): Promise<FindInstallationsResult> {
     const { installableName, platform: requestedPlatform, rootPath } = options;
     const installableNames: GeckodriverInstallableName[] = ['geckodriver'];
-    const withInstallablePaths = installableNames.filter((name) => name === installableName).map((installableName) => ({
-      installableName,
-      installablePath: path.resolve(rootPath, installableName),
-    }));
-    const withInstallablePathExists = await Promise.all(withInstallablePaths.map(async ({ installableName, installablePath }) => ({
-      installableName,
-      installablePath,
-      installablePathExist: await fs.promises.stat(installablePath).then((stat) => stat.isDirectory()).catch(() => false),
-    })));
-    const withInstallablePathResults = withInstallablePathExists.filter(({ installablePathExist }) => installablePathExist)
-    .map(({ installableName, installablePath }) => ({
-      installableName,
-      installablePath,
-    }));
-    const withVersionss = await Promise.all(withInstallablePathResults.map(async ({ installableName, installablePath }) => {
-      const versions = await fs.promises.readdir(installablePath);
-      return versions.map((version) => {
-        try {
-          const parsed = geckodriverVersionUtils.parse(version);
-          return {
-            installableName,
-            installablePath,
-            version,
-            majorVersion: parsed.major,
-          };
-          } catch (error) {
-            this.logger.warn('Failed to parse version', { error: errorify(error) });
-            return null;
-          }
-        }).filter((result): result is NonNullable<typeof result> => !!result);
-    }));
-    const withVersions = withVersionss.flat();
-    const withVersionPaths = withVersions.map(({ installableName, version, majorVersion, installablePath }) => ({
-      installableName,
-      version,
-      majorVersion,
-      versionPath: path.resolve(installablePath, version),
-    }));
-    const withVersionPathExists = await Promise.all(withVersionPaths.map(async ({ installableName, version, majorVersion, versionPath }) => ({
-      installableName,
-      version,
-      majorVersion,
-      versionPath,
-      versionPathExist: await fs.promises.stat(versionPath).then((stat) => stat.isDirectory()).catch(() => false),
-    })));
-    const withVersionPathResults = withVersionPathExists.filter(({ versionPathExist }) => versionPathExist).map(({ installableName, version, majorVersion, versionPath }) => ({
-      installableName,
-      version,
-      majorVersion,
-      versionPath,
-    }));
-    const withPlatformss = await Promise.all(withVersionPathResults.map(async ({ installableName, version, majorVersion, versionPath }) => {
-      const platforms = await fs.promises.readdir(versionPath);
-      return platforms
-        .filter((platform) => platform === requestedPlatform)
-        .map((platform) => ({
+
+    const withInstallablePaths = await filterAsync(
+      installableNames
+        .filter((name) => name === installableName)
+        .map((installableName) => ({
           installableName,
-          version,
-          majorVersion,
-          platform,
-          versionPath,
-        }))
-        .filter(({ platform }) => isValidGeckodriverInstallablePlatform(platform))
-        .map(({ installableName, version, majorVersion, platform }) => ({
-          installableName,
-          version,
-          majorVersion,
-          platform: platform as GeckodriverInstallablePlatform,
-          versionPath,
-        }));
+          installablePath: path.resolve(rootPath, installableName),
+        })),
+      async (value) =>
+        fs.promises
+          .stat(value.installablePath)
+          .then((stat) => stat.isDirectory())
+          .catch(() => false),
+    );
+
+    const withVersionPathss = await Promise.all(
+      withInstallablePaths.map(async ({ installablePath, ...rest }) => {
+        const versions = await fs.promises.readdir(installablePath);
+        return await filterAsync(
+          versions
+            .map((version) => {
+              try {
+                const parsed = geckodriverVersionUtils.parse(version);
+                return {
+                  ...rest,
+                  installablePath,
+                  version,
+                  majorVersion: parsed.major,
+                };
+              } catch (error) {
+                this.logger.warn('Failed to parse version', { error: errorify(error) });
+                return null;
+              }
+            })
+            .filter((value): value is NonNullable<typeof value> => !!value)
+            .map(({ installablePath, version, ...rest }) => ({ ...rest, version, versionPath: path.resolve(installablePath, version) })),
+          async (value) =>
+            fs.promises
+              .stat(value.versionPath)
+              .then((stat) => stat.isDirectory())
+              .catch(() => false),
+        );
       }),
     );
-    const withPlatforms = withPlatformss.flat();
-    const withPlatformPaths = withPlatforms.map(({ installableName, version, majorVersion, platform, versionPath }) => ({
-      installableName,
-      version,
-      majorVersion,
-      platform,
-      platformPath: path.resolve(versionPath, platform),
-    }));
-    const withPlatformPathExists = await Promise.all(withPlatformPaths.map(async ({ installableName, version, majorVersion, platform, platformPath }) => ({
-      installableName,
-      version,
-      majorVersion,
-      platform,
-      platformPath,
-      platformPathExist: await fs.promises.stat(platformPath).then((stat) => stat.isDirectory()).catch(() => false),
-    })));
-    const withPlatformPathResults = withPlatformPathExists.filter(({ platformPathExist }) => platformPathExist).map(({ installableName, version, majorVersion, platform, platformPath }) => ({
-      installableName,
-      version,
-      majorVersion,
-      platform,
-      platformPath,
-    }));
-    const withExecutablePaths = withPlatformPathResults.map(({ installableName, version, majorVersion, platform, platformPath }) => ({
-      installableName,
-      version,
-      majorVersion,
-      platform,
-      executablePath: this.getExecutablePath({ installableName, platform, installPath: platformPath }),
-    }));
-    const withExecutablePathExists = await Promise.all(withExecutablePaths.map(async ({ installableName, version, majorVersion, platform, executablePath }) => ({
-      installableName,
-      version,
-      majorVersion,
-      platform,
-      executablePath,
-      executablePathExist: await fs.promises.stat(executablePath).then((stat) => stat.isFile()).catch(() => false),
-    })));
-    const withExecutablePathResults = withExecutablePathExists.filter(({ executablePathExist }) => executablePathExist)
-    .map(({ installableName, version, majorVersion, platform, executablePath }) => ({
-      installableName,
-      version,
-      majorVersion,
-      platform,
-      executablePath,
-    })).sort((lhs, rhs) => {
-      const lhsVersion = geckodriverVersionUtils.parse(lhs.version);
-      const rhsVersion = geckodriverVersionUtils.parse(rhs.version);
-      return geckodriverVersionUtils.compareWithDesc(lhsVersion, rhsVersion);
-    });
-    return withExecutablePathResults;
+    const withVersionPaths = withVersionPathss.flat();
+
+    const withPlatformPathss = await Promise.all(
+      withVersionPaths.map(async ({ versionPath, ...rest }) => {
+        const platforms = await fs.promises.readdir(versionPath);
+        return await filterAsync(
+          platforms
+            .filter((platform) => platform === requestedPlatform)
+            .filter((platform): platform is GeckodriverInstallablePlatform => isValidGeckodriverInstallablePlatform(platform))
+            .map((platform) => ({ ...rest, platform, platformPath: path.resolve(versionPath, platform) })),
+          async (value) =>
+            fs.promises
+              .stat(value.platformPath)
+              .then((stat) => stat.isDirectory())
+              .catch(() => false),
+        );
+      }),
+    );
+    const withPlatformPaths = withPlatformPathss.flat();
+
+    const withExecutablePathss = await filterAsync(
+      withPlatformPaths.map(({ installableName, version, majorVersion, platform, platformPath }) => ({
+        installableName,
+        version,
+        majorVersion,
+        platform,
+        executablePath: this.getExecutablePath({ installableName, platform, installPath: platformPath }),
+      })),
+      async (value) =>
+        fs.promises
+          .stat(value.executablePath)
+          .then((stat) => stat.isFile())
+          .catch(() => false),
+    );
+    const withExecutablePaths = withExecutablePathss //
+      .flat()
+      .sort((lhs, rhs) => {
+        const lhsVersion = geckodriverVersionUtils.parse(lhs.version);
+        const rhsVersion = geckodriverVersionUtils.parse(rhs.version);
+        return geckodriverVersionUtils.compareWithDesc(lhsVersion, rhsVersion);
+      });
+
+    return withExecutablePaths;
   }
 
   getInstallPath(options: GetInstallPathOptions): string {

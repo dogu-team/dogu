@@ -1,13 +1,17 @@
-import { categoryFromPlatform, isValidPlatformType, PlatformType } from "@dogu-private/types";
+import { categoryFromPlatform, isValidPlatformType, PlatformType } from '@dogu-private/types';
 
 export function parseEnv_DOGU_DEVICE_PLATFORM_ENABLED(DOGU_DEVICE_PLATFORM_ENABLED?: string): PlatformType[] {
-  const resolvedValue = DOGU_DEVICE_PLATFORM_ENABLED ?? process.env.DOGU_DEVICE_PLATFORM_ENABLED ?? '';
-  const enabledPlatforms =  resolvedValue.split(',').map((platform) => {
-    if (!isValidPlatformType(platform)) {
-      throw new Error(`invalid platform type: ${platform}`);
-    }
-    return platform;
-  });
+  const resolvedValue = (DOGU_DEVICE_PLATFORM_ENABLED ?? process.env.DOGU_DEVICE_PLATFORM_ENABLED ?? '').trim();
+  const enabledPlatforms = resolvedValue
+    .split(',')
+    .map((platform) => platform.trim())
+    .filter((platform) => platform.length > 0)
+    .map((platform) => {
+      if (!isValidPlatformType(platform)) {
+        throw new Error(`invalid platform type: ${platform}`);
+      }
+      return platform;
+    });
   return enabledPlatforms;
 }
 
