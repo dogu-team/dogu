@@ -21,13 +21,10 @@ jobs:
           node-version: 16
           cache: yarn
 
-      - name: Authenticate with Google Cloud
-        run: |
-          echo ${{ secrets.TEST_GOOGLE_CLOUD_ARTIFACT_REGISTRY }} > gcr-service-account.json
-          gcloud auth activate-service-account --key-file=gcr-service-account.json
-          gcloud auth configure-docker gcr.io
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ./gcr-service-account.json
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.TEST_GOOGLE_CLOUD_ARTIFACT_REGISTRY }}
 
       - name: Build and push
         uses: docker/build-push-action@v3
