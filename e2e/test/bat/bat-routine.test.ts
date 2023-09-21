@@ -415,7 +415,7 @@ Dest.withOptions({
         await Driver.sendKeys({ xpath: `//input[@value="${values.value.TEAM_NAME}"]` }, '1');
         await Driver.clickElement({ xpath: '//button[@access-id="update-team-profile-btn"]' });
         await Timer.wait(1000, 'wait for changing team name');
-        const value = await Driver.getText({ xpath: '//*[@id="__next"]/div/section/main/div/div[1]/h4' });
+        const value = await Driver.getText({ xpath: '//*[@id="__next"]/div/main/section/main/div/div[1]/h4' });
         const endsWith = value.endsWith(`${values.value.TEAM_NAME}1`);
         expect(endsWith).toBe(true);
       });
@@ -424,7 +424,7 @@ Dest.withOptions({
         await Driver.sendKeys({ xpath: `//input[@value="${values.value.TEAM_NAME}1"]` }, '\b');
         await Driver.clickElement({ xpath: '//button[@access-id="update-team-profile-btn"]' });
         await Timer.wait(1000, 'wait for changing team name');
-        const value = await Driver.getText({ xpath: '//*[@id="__next"]/div/section/main/div/div[1]/h4' });
+        const value = await Driver.getText({ xpath: '//*[@id="__next"]/div/main/section/main/div/div[1]/h4' });
         const endsWith = value.endsWith(`${values.value.TEAM_NAME}`);
         expect(endsWith).toBe(true);
       });
