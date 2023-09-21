@@ -55,13 +55,14 @@ const FlexRow = styled.div`
   display: flex;
   width: 100%;
   flex: 1;
+  height: 100%;
 `;
 
 const SideBar = styled.div<{ offset: number }>`
   position: sticky;
   top: 0px;
   width: 300px;
-  height: 100dvh;
+  max-height: calc(100dvh - 57px);
   padding: 1rem 1rem 0 0;
   flex-shrink: 0;
   overflow-y: auto;
