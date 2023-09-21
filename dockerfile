@@ -105,4 +105,4 @@ RUN yarn run build
 RUN yarn run third-party:download:build
 
 WORKDIR /dogu/projects/dogu-agent
-ENTRYPOINT ["Xvfb", ":9", "-screen", "0", "1920x1080x24", "&", "yarn", "dogu-agent"]
+ENTRYPOINT ["Xvfb", ":9", "-screen", "0", "1920x1080x24", "&", "yarn", "dogu-agent", "run"]
