@@ -99,10 +99,11 @@ COPY packages/typescript-dev-private ./packages/typescript-dev-private
 COPY projects/dogu-agent ./projects/dogu-agent
 COPY projects/go-device-controller ./projects/go-device-controller
 COPY scripts ./scripts
+COPY shells/entrypoint-dogu-agent.sh ./projects/dogu-agent/entrypoint.sh
 
 RUN yarn run newbie:cicd
 RUN yarn run build
 RUN yarn run third-party:download:build
 
 WORKDIR /dogu/projects/dogu-agent
-ENTRYPOINT ["Xvfb", ":9", "-screen", "0", "1920x1080x24", "&", "yarn", "dogu-agent", "run"]
+ENTRYPOINT ["./entrypoint.sh"]
