@@ -143,6 +143,10 @@ export async function spawnAndWait(command: string, args: string[], options: chi
   });
 }
 
+export function defaultShell(): string | true | undefined {
+  return process.platform === 'linux' ? '/bin/bash' : true;
+}
+
 async function _initialize(): Promise<void> {
   // Responding to Windows Hangul encoding broken problem
   if (process.platform === 'win32') {

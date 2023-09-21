@@ -1,4 +1,4 @@
-import { ActionKit, assertUnreachable, checkoutProject, downloadApp, errorify, newCleanNodeEnv, stringify } from '@dogu-tech/action-kit';
+import { ActionKit, assertUnreachable, checkoutProject, downloadApp, errorify, newCleanNodeEnv, stringify, ChildProcess } from '@dogu-tech/action-kit';
 import { exec, spawnSync } from 'child_process';
 import fs from 'fs';
 import _ from 'lodash';
@@ -159,7 +159,7 @@ ActionKit.run(async ({ options, logger, input, deviceHostClient, consoleActionCl
   const result = spawnSync(executeCommand, {
     encoding: 'utf8',
     stdio: 'inherit',
-    shell: process.env.SHELL ?? true,
+    shell: ChildProcess.defaultShell(),
     cwd: DOGU_STEP_WORKING_PATH,
     env,
   });

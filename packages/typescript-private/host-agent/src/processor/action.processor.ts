@@ -1,7 +1,7 @@
 import { Action, ErrorResult } from '@dogu-private/console-host-agent';
 import { ActionContextEnv } from '@dogu-private/types';
 import { ActionConfigLoader } from '@dogu-tech/action-kit';
-import { EnvironmentVariableReplacementProvider, GitCommand, GitCommandBuilder, HostPaths, isGitRepositoryPath, isSameRemoteOriginUrl } from '@dogu-tech/node';
+import { ChildProcess, EnvironmentVariableReplacementProvider, GitCommand, GitCommandBuilder, HostPaths, isGitRepositoryPath, isSameRemoteOriginUrl } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import fs from 'fs';
 import path from 'path';
@@ -260,7 +260,7 @@ export class ActionProcessor {
       {
         cwd: actionGitPath,
         env,
-        shell: process.env.SHELL ?? true,
+        shell: ChildProcess.defaultShell(),
       },
       context,
     );

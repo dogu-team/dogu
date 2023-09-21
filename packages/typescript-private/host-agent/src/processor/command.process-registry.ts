@@ -1,7 +1,7 @@
 import { ErrorResult } from '@dogu-private/console-host-agent';
 import { Code } from '@dogu-private/types';
 import { errorify, PromiseOrValue } from '@dogu-tech/common';
-import { DateNano, EnvironmentVariableReplacementProvider, killProcess } from '@dogu-tech/node';
+import { DateNano, EnvironmentVariableReplacementProvider, killProcess, ChildProcess as ChildProcessModule } from '@dogu-tech/node';
 import { Injectable } from '@nestjs/common';
 import { ChildProcess, spawn, SpawnOptions } from 'child_process';
 import fs from 'fs';
@@ -131,7 +131,7 @@ export class CommandProcessRegistry {
   }
 
   commandLine(commandLine: string, options: SpawnOptions, context: MessageContext): Promise<ErrorResult> {
-    options.shell = process.env.SHELL ?? true;
+    options.shell = ChildProcessModule.defaultShell();
     return this.command(commandLine, [], options, context);
   }
 }
